@@ -5758,19 +5758,19 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
       /*
       **	3rd token: strength.
       */
-      int strength = tech::ParseInteger<int>(tokens.Next()).value_or(0);
+      int strength = tech::ParseIntegerOr<int>(tokens.Next(), 0);
 
       /*
       **	4th token: cell #.
       */
-      CELL const cell = tech::ParseInteger<CELL>(tokens.Next())
-                            .value_or(0);  // Cell of building.
+      CELL const cell =
+          tech::ParseIntegerOr<CELL>(tokens.Next(), 0);  // Cell of building.
 
       /*
       **	5th token: facing.
       */
-      const DirType facing = static_cast<DirType>(
-          tech::ParseInteger<int>(tokens.Next()).value_or(0));
+      const auto facing =
+          static_cast<DirType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
 
       /*
       **	6th token: triggername (can be nullptr).
@@ -5780,13 +5780,13 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
       bool sellable = false;
       const char* token_pointer = tokens.Next();
       if (token_pointer) {
-        sellable = tech::ParseInteger<int>(token_pointer).value_or(0) != 0;
+        sellable = tech::ParseIntegerOr<int>(token_pointer, 0) != 0;
       }
 
       bool rebuild = false;
       token_pointer = tokens.Next();
       if (token_pointer) {
-        rebuild = tech::ParseInteger<int>(token_pointer).value_or(0) != 0;
+        rebuild = tech::ParseIntegerOr<int>(token_pointer, 0) != 0;
       }
 
       auto* b = new BuildingClass(classid, bhouse);  // Working unit pointer.

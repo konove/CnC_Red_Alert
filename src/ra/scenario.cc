@@ -1812,7 +1812,7 @@ void ScenarioClass::Set_Scenario_Name(const char* name) {
 
       Scenario = (36 * first) + second;
     } else {
-      Scenario = tech::ParseInteger<int>(buf).value_or(0);
+      Scenario = tech::ParseIntegerOr<int>(buf, 0);
     }
   }
 }
@@ -3161,7 +3161,7 @@ void Disect_Scenario_Name(const char* name_data, int& scenario,
   char first = base::At(buf, 0);
   char second = base::At(buf, 1);
   if (first <= '9' && second <= '9') {
-    scenario = tech::ParseInteger<int>(buf).value_or(0);
+    scenario = tech::ParseIntegerOr<int>(buf, 0);
   } else {
     if (first <= '9') {
       first -= '0';

@@ -1576,7 +1576,7 @@ bool TriggerTypeClass::Edit() {
           case NEED_TIME:
           case NEED_NUMBER:
             Event1.Data.Value =
-                tech::ParseInteger<int>(event1data.Get_Text()).value_or(0);
+                tech::ParseIntegerOr<int>(event1data.Get_Text(), 0);
             break;
 
           case NEED_STRUCTURE:
@@ -1634,7 +1634,7 @@ bool TriggerTypeClass::Edit() {
           case NEED_TIME:
           case NEED_NUMBER:
             Event2.Data.Value =
-                tech::ParseInteger<int>(event2data.Get_Text()).value_or(0);
+                tech::ParseIntegerOr<int>(event2data.Get_Text(), 0);
             break;
 
           case NEED_STRUCTURE:
@@ -1705,7 +1705,7 @@ bool TriggerTypeClass::Edit() {
 
           case NEED_NUMBER:
             Action1.Data.Value =
-                tech::ParseInteger<int>(action1data.Get_Text()).value_or(0);
+                tech::ParseIntegerOr<int>(action1data.Get_Text(), 0);
             break;
 
           case NEED_WAYPOINT:
@@ -1776,7 +1776,7 @@ bool TriggerTypeClass::Edit() {
 
           case NEED_NUMBER:
             Action2.Data.Value =
-                tech::ParseInteger<int>(action2data.Get_Text()).value_or(0);
+                tech::ParseIntegerOr<int>(action2data.Get_Text(), 0);
             break;
 
           case NEED_WAYPOINT:
@@ -2097,14 +2097,13 @@ void TriggerTypeClass::Fill_In(const char* name, char* entry) {
   Set_Name(name);
 
   port::Tokenizer tokens(entry, ",");
-  IsPersistant = static_cast<PersistantType>(
-      tech::ParseInteger<int>(tokens.Next()).value_or(0));
-  House = static_cast<HousesType>(
-      tech::ParseInteger<int>(tokens.Next()).value_or(0));
-  EventControl = static_cast<MultiStyleType>(
-      tech::ParseInteger<int>(tokens.Next()).value_or(0));
-  ActionControl = static_cast<MultiStyleType>(
-      tech::ParseInteger<int>(tokens.Next()).value_or(0));
+  IsPersistant =
+      static_cast<PersistantType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+  House = static_cast<HousesType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+  EventControl =
+      static_cast<MultiStyleType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+  ActionControl =
+      static_cast<MultiStyleType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
 
   Event1.Read_INI(tokens);
   Event2.Read_INI(tokens);

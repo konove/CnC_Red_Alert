@@ -2441,7 +2441,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       }
 
         tempsettings.Baud =
-            tech::ParseInteger<int>(baudbuf).value_or(tempsettings.Baud);
+            tech::ParseIntegerOr<int>(baudbuf, tempsettings.Baud);
 
         tempsettings.InitStringIndex = initstr_index;
         tempsettings.CallWaitStringIndex = cwaitstr_index;

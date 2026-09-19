@@ -943,7 +943,7 @@ int MapEditClass::Load_Scenario() {
     **	Save selections & return
     */
     if (base::At(scen_buf, 0) <= '9' && base::At(scen_buf, 1) <= '9') {
-      scen_nump = tech::ParseInteger<int>(scen_buf).value_or(0);
+      scen_nump = tech::ParseIntegerOr<int>(scen_buf, 0);
     } else {
       char first = base::At(scen_buf, 0);
       char second = base::At(scen_buf, 1);

@@ -833,7 +833,7 @@ int INIClass::Get_Int(const char* section, const char* entry,
 
   const INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr) {
-    return tech::ParseIniInteger(entryptr->Value).value_or(defvalue);
+    return tech::ParseIniIntegerOr(entryptr->Value, defvalue);
   }
   return defvalue;
 }

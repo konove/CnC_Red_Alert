@@ -770,7 +770,7 @@ int LoadOptionsClass::Num_From_Ext(const char* fname) {
 
   int num = 0;
   if (ext.size() > 1) {  // Has more than just '.'
-    num = tech::ParseInteger<int>(std::string_view(ext).substr(1)).value_or(0);
+    num = tech::ParseIntegerOr<int>(std::string_view(ext).substr(1), 0);
   }
   return num;
 }

@@ -2193,8 +2193,8 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
       break;
     }
     case WOL_GAMEOPT_REQHOUSE: {
-      const HousesType HouseChoice = static_cast<HousesType>(
-          tech::ParseInteger<int>(szRequest).value_or(0));
+      const auto HouseChoice =
+          static_cast<HousesType>(tech::ParseIntegerOr<int>(szRequest, 0));
       //		debugprint( "Host received: '%s' changed house to
       //%u.\n", (char*)pUser->name, HouseChoice );
       SetPlayerHouse(WolText(pUser->name), HouseChoice);
@@ -2206,7 +2206,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
     case WOL_GAMEOPT_REQACCEPT:
       //	Does Param ID of accept request match the last param change ID
       // sent? See notes at top.
-      if (std::cmp_equal(tech::ParseInteger<int>(szRequest).value_or(0),
+      if (std::cmp_equal(tech::ParseIntegerOr<int>(szRequest, 0),
                          nHostLastParamID)) {
         //			debugprint( "Host received valid accept from
         //'%s'.\n", (char*)pUser->name );
@@ -2229,7 +2229,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
     case WOL_GAMEOPT_REQSTART:
       //	Does Param ID of accept request match the last param change ID
       // sent? See notes at top.
-      if (std::cmp_equal(tech::ParseInteger<int>(szRequest).value_or(0),
+      if (std::cmp_equal(tech::ParseIntegerOr<int>(szRequest, 0),
                          nHostLastParamID) &&
           bWaitingToStart)  //	Otherwise ignore - it's old and
                             // we don't care. (Incredibly
@@ -2253,7 +2253,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
     case WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO:
       //	Does Param ID of accept request match the last param change ID
       // sent? See notes at top.
-      if (std::cmp_equal(tech::ParseInteger<int>(szRequest).value_or(0),
+      if (std::cmp_equal(tech::ParseIntegerOr<int>(szRequest, 0),
                          nHostLastParamID) &&
           bWaitingToStart)  //	Otherwise ignore - it's old and
                             // we don't care. (Incredibly
@@ -2399,8 +2399,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
         //			debugprint( "Guest received
         // WOL_GAMEOPT_INFSTART.\n" );
         nGuestLastParamID =
-            tech::ParseInteger<int>(std::string_view(szInform.data()))
-                .value_or(0);
+            tech::ParseIntegerOr<int>(std::string_view(szInform.data()), 0);
         //	The following check is not necessary. Rules.ini, if manually
         // replaced by a cheater, is not reloaded. 	So prior checks (that
         // occur on game params receives) are sufficient.
@@ -2611,14 +2610,14 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   port::Tokenizer tokens(szParams, " ");
 
   const char* szToken = tokens.Next();
-  nGuestLastParamID = tech::ParseInteger<int>(szToken).value_or(0);
+  nGuestLastParamID = tech::ParseIntegerOr<int>(szToken, 0);
 
   //	Read in length of following string.
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  int iLen = tech::ParseInteger<int>(szToken).value_or(-1);
+  int iLen = tech::ParseIntegerOr<int>(szToken, -1);
   //	The string follows the 3-digit length and may contain spaces, so it is
   //	read from the unparsed text rather than as a token.
   char* const szRemaining = tokens.Remaining();
@@ -2647,7 +2646,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
     return false;
   }
   Session.ScenarioFileLength =
-      static_cast<unsigned int>(tech::ParseInteger<int>(szToken).value_or(0));
+      static_cast<unsigned int>(tech::ParseIntegerOr<int>(szToken, 0));
 
   szToken = tokens.Next();
   if (!szToken) {
@@ -2666,8 +2665,8 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  iLen = tech::ParseInteger<int>(szToken).value_or(
-      0);  //	1 or 0, indicating if there is a digest following.
+  iLen = tech::ParseIntegerOr<int>(
+      szToken, 0);  //	1 or 0, indicating if there is a digest following.
   if (iLen) {
     //		//	Set string pointer to start of string (previous field is
     // 1 digit). 		szRemaining = szToken + 2; 		iLen =
@@ -2696,118 +2695,111 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  Session.ScenarioIsOfficial =
-      tech::ParseInteger<int>(szToken).value_or(0) != 0;
+  Session.ScenarioIsOfficial = tech::ParseIntegerOr<int>(szToken, 0) != 0;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Session.Options.Credits = tech::ParseInteger<int>(szToken).value_or(0);
+  Session.Options.Credits = tech::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Session.Options.Bases = tech::ParseInteger<int>(szToken).value_or(0);
+  Session.Options.Bases = tech::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Session.Options.Tiberium = tech::ParseInteger<int>(szToken).value_or(0);
+  Session.Options.Tiberium = tech::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Session.Options.Goodies = tech::ParseInteger<int>(szToken).value_or(0);
+  Session.Options.Goodies = tech::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  BuildLevel = tech::ParseInteger<int>(szToken).value_or(0);
+  BuildLevel = tech::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Session.Options.UnitCount = tech::ParseInteger<int>(szToken).value_or(0);
+  Session.Options.UnitCount = tech::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Session.Options.AIPlayers = tech::ParseInteger<int>(szToken).value_or(0);
+  Session.Options.AIPlayers = tech::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Seed = tech::ParseInteger<int>(szToken).value_or(0);
+  Seed = tech::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Special.IsShadowGrow =
-      (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
+  Special.IsShadowGrow = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Special.IsSpeedBuild =
-      (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
+  Special.IsSpeedBuild = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Special.IsFromInstall =
-      (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
+  Special.IsFromInstall = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Special.IsCaptureTheFlag =
-      (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
+      (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Special.IsInert = (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
+  Special.IsInert = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Special.IsThreePoint =
-      (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
+  Special.IsThreePoint = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Special.IsTGrowth =
-      (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
+  Special.IsTGrowth = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Special.IsTSpread =
-      (tech::ParseInteger<int>(szToken).value_or(0) == 0) ? 0 : 1;
+  Special.IsTSpread = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   Options.GameSpeed =
-      static_cast<unsigned int>(tech::ParseInteger<int>(szToken).value_or(0));
+      static_cast<unsigned int>(tech::ParseIntegerOr<int>(szToken, 0));
 
   szToken = tokens.Next();
   if (!szToken) {
@@ -2819,20 +2811,19 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  bAftermathUnits = tech::ParseInteger<int>(szToken).value_or(0) != 0;
+  bAftermathUnits = tech::ParseIntegerOr<int>(szToken, 0) != 0;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  bSlowUnitBuildRate = tech::ParseInteger<int>(szToken).value_or(0) != 0;
+  bSlowUnitBuildRate = tech::ParseIntegerOr<int>(szToken, 0) != 0;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  const int iRulesID = tech::ParseInteger<int>(szToken).value_or(0);
-
+  const int iRulesID = tech::ParseIntegerOr<int>(szToken, 0);
 
   return (RuleINI.Get_Unique_ID() == iRulesID);
 }
@@ -3248,7 +3239,7 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
   for (unsigned int nPlayer = 0; nPlayer != nPlayers; ++nPlayer) {
     //	Read in length of following string.
     szToken = tokens.Next();
-    const int iLen = tech::ParseInteger<int>(szToken).value_or(-1);
+    const int iLen = tech::ParseIntegerOr<int>(szToken, -1);
     //	The name follows the 2-digit length and may contain spaces, so it is
     //	read from the unparsed text rather than as a token.
     char* const szRemaining = tokens.Remaining();
@@ -3273,19 +3264,19 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
 
     //	Read color.
     szToken = tokens.Next();
-    const PlayerColorType Color = static_cast<PlayerColorType>(
-        tech::ParseInteger<int>(szToken).value_or(0));
+    const auto Color =
+        static_cast<PlayerColorType>(tech::ParseIntegerOr<int>(szToken, 0));
     SetPlayerColor(szPlayerName, Color);
 
     //	Read whether there is a house field.
     szToken = tokens.Next();
-    const bool bHouseField = tech::ParseInteger<int>(szToken).value_or(0) != 0;
+    const bool bHouseField = tech::ParseIntegerOr<int>(szToken, 0) != 0;
 
     if (bHouseField) {
       //	Read house.
       szToken = tokens.Next();
-      const HousesType House =
-          static_cast<HousesType>(tech::ParseInteger<int>(szToken).value_or(0));
+      const auto House =
+          static_cast<HousesType>(tech::ParseIntegerOr<int>(szToken, 0));
       SetPlayerHouse(szPlayerName, House);
     }
 
@@ -3608,8 +3599,8 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   while (const char* szToken = tokens.Next()) {
     port::SafeCopy(szPlayerName, szToken);
 
-    const PlayerColorType Color = static_cast<PlayerColorType>(
-        tech::ParseInteger<int>(tokens.Next()).value_or(0));
+    const auto Color = static_cast<PlayerColorType>(
+        tech::ParseIntegerOr<int>(tokens.Next(), 0));
     SetPlayerColor(szPlayerName, Color);  //	ajw note: inserts if not found.
   }
 

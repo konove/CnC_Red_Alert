@@ -110,7 +110,7 @@ bool ParseHostAndPort(const unsigned char (&conndata)[N], char (&host)[M],
     return false;
   }
   port::SafeCopy(host, host_text);
-  port = tech::ParseInteger<int>(port_text).value_or(0);
+  port = tech::ParseIntegerOr<int>(port_text, 0);
   return true;
 }
 
@@ -635,8 +635,7 @@ STDMETHODIMP RAChatEventSink::OnPublicMessage(HRESULT /*res*/,
     if (std::string_view(szMessage).starts_with("#ajw")) {
       if (std::string_view(szMessage).size() > 4) {
         const int i =
-            tech::ParseInteger<int>(std::string_view(szMessage).substr(4))
-                .value_or(0);
+            tech::ParseIntegerOr<int>(std::string_view(szMessage).substr(4), 0);
         if (i >= static_cast<int>(VOX_ACCOMPLISHED) &&
             i <= static_cast<int>(VOX_LOAD1) && pOwner->bEggSounds) {
           Speak(static_cast<VoxType>(i));
@@ -689,9 +688,8 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
     if (!bSpecialMessage(szMessage)) {
       if (std::string_view(szMessage).starts_with("#ajw")) {
         if (std::string_view(szMessage).size() > 4) {
-          const int i =
-              tech::ParseInteger<int>(std::string_view(szMessage).substr(4))
-                  .value_or(0);
+          const int i = tech::ParseIntegerOr<int>(
+              std::string_view(szMessage).substr(4), 0);
           if (i >= static_cast<int>(VOX_ACCOMPLISHED) &&
               i <= static_cast<int>(VOX_LOAD1) && pOwner->bEggSounds) {
             Speak(static_cast<VoxType>(i));
@@ -726,8 +724,7 @@ bool RAChatEventSink::bSpecialMessage(const char* szMessage) {
   }
   const UtcDate today = TodayUtc();
   const int iCode =
-      tech::ParseInteger<int>(std::string_view(szMessage).substr(4, 4))
-          .value_or(0);
+      tech::ParseIntegerOr<int>(std::string_view(szMessage).substr(4, 4), 0);
   // The code mixes the date fields as bit patterns.
   const uint32_t expected = (static_cast<uint32_t>(today.month * 99) ^
                              static_cast<uint32_t>(today.day * 33)) ^
@@ -2095,7 +2092,7 @@ int iChannelLobbyNumber(const char* szChannelName) {
                               .substr(std::string_view(LOB_PREFIX).size()));
     //		debugprint( " ^ iChannelLobbyNumber returning atoi of %s\n",
     // szNum );
-    return tech::ParseInteger<int>(szNum).value_or(0);
+    return tech::ParseIntegerOr<int>(szNum, 0);
   }
   return -1;
 }

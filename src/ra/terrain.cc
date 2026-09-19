@@ -718,7 +718,7 @@ void TerrainClass::Read_INI(CCINIClass& ini) {
     const char* entry = ini.Get_Entry(INI_Name(), index);
     const TerrainType terrain =
         ini.Get_TerrainType(INI_Name(), entry, TERRAIN_NONE);
-    const CELL cell = tech::ParseInteger<CELL>(entry).value_or(0);
+    const CELL cell = tech::ParseIntegerOr<CELL>(entry, 0);
 
     if (terrain != TERRAIN_NONE) {
       new TerrainClass(terrain, cell);

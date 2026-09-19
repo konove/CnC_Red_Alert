@@ -1186,8 +1186,7 @@ bool TeamTypeClass::Edit() {
               break;
 
             case NEED_NUMBER:
-              tm->Data.Value =
-                  tech::ParseInteger<int>(arg_edt.Get_Text()).value_or(0);
+              tm->Data.Value = tech::ParseIntegerOr<int>(arg_edt.Get_Text(), 0);
               break;
 
             case NEED_HEX_NUMBER:
@@ -1253,8 +1252,7 @@ bool TeamTypeClass::Edit() {
               break;
 
             case NEED_NUMBER:
-              tm->Data.Value =
-                  tech::ParseInteger<int>(arg_edt.Get_Text()).value_or(0);
+              tm->Data.Value = tech::ParseIntegerOr<int>(arg_edt.Get_Text(), 0);
               break;
 
             case NEED_HEX_NUMBER:
@@ -1321,8 +1319,7 @@ bool TeamTypeClass::Edit() {
               break;
 
             case NEED_NUMBER:
-              tm->Data.Value =
-                  tech::ParseInteger<int>(arg_edt.Get_Text()).value_or(0);
+              tm->Data.Value = tech::ParseIntegerOr<int>(arg_edt.Get_Text(), 0);
               break;
 
             case NEED_HEX_NUMBER:
@@ -1417,12 +1414,11 @@ bool TeamTypeClass::Edit() {
         IsPrebuilt = prebuildbtn.IsOn;
         IsReinforcable = reinforcebtn.IsOn;
 
-        RecruitPriority =
-            tech::ParseInteger<int>(recr_edt.Get_Text()).value_or(0);
+        RecruitPriority = tech::ParseIntegerOr<int>(recr_edt.Get_Text(), 0);
         InitNum = static_cast<unsigned char>(
-            tech::ParseInteger<int>(initnum_edt.Get_Text()).value_or(0));
+            tech::ParseIntegerOr<int>(initnum_edt.Get_Text(), 0));
         MaxAllowed = static_cast<unsigned char>(
-            tech::ParseInteger<int>(maxnum_edt.Get_Text()).value_or(0));
+            tech::ParseIntegerOr<int>(maxnum_edt.Get_Text(), 0));
         House = HousesType(housebtn.Current_Index());
         Trigger = nullptr;
         if (triggerbtn.Current_Index() > 0) {
@@ -1786,13 +1782,12 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
   Set_Name(name);
 
   port::Tokenizer tokens(entry, ",");
-  House = static_cast<HousesType>(
-      tech::ParseInteger<int>(tokens.Next()).value_or(0));
+  House = static_cast<HousesType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
 
   uint32_t code = 0;
   switch (NewINIFormat) {
     default:
-      code = tech::ParseInteger<uint32_t>(tokens.Next()).value_or(0);
+      code = tech::ParseIntegerOr<uint32_t>(tokens.Next(), 0);
       IsRoundAbout = (code & 0x0001) != 0;
       IsSuicide = (code & 0x0002) != 0;
       IsAutocreate = (code & 0x0004) != 0;
@@ -1802,24 +1797,24 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
 
     case 0:
     case 1:
-      IsRoundAbout = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
-      IsSuicide = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
-      IsAutocreate = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
-      IsPrebuilt = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
-      IsReinforcable = tech::ParseInteger<int>(tokens.Next()).value_or(0) != 0;
+      IsRoundAbout = tech::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+      IsSuicide = tech::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+      IsAutocreate = tech::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+      IsPrebuilt = tech::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+      IsReinforcable = tech::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
       break;
   }
 
-  RecruitPriority = tech::ParseInteger<int>(tokens.Next()).value_or(0);
-  InitNum = static_cast<unsigned char>(
-      tech::ParseInteger<int>(tokens.Next()).value_or(0));
-  MaxAllowed = static_cast<unsigned char>(
-      tech::ParseInteger<int>(tokens.Next()).value_or(0));
-  Origin = tech::ParseInteger<int>(tokens.Next()).value_or(0);
+  RecruitPriority = tech::ParseIntegerOr<int>(tokens.Next(), 0);
+  InitNum =
+      static_cast<unsigned char>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+  MaxAllowed =
+      static_cast<unsigned char>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+  Origin = tech::ParseIntegerOr<int>(tokens.Next(), 0);
 
   switch (NewINIFormat) {
     default:
-      Trigger.Set_Raw(tech::ParseInteger<int>(tokens.Next()).value_or(0));
+      Trigger.Set_Raw(tech::ParseIntegerOr<int>(tokens.Next(), 0));
       break;
 
     case 0:
@@ -1831,7 +1826,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
   /*
   **	Fetch the team member types and quantity values.
   */
-  ClassCount = tech::ParseInteger<int>(tokens.Next()).value_or(-1);
+  ClassCount = tech::ParseIntegerOr<int>(tokens.Next(), -1);
   if (ClassCount < 0 || ClassCount > kMaxTeamClasscount) {
     ClassCount = 0;
     MissionCount = 0;
@@ -1884,8 +1879,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
     */
     if (otype) {
       base::At(Members, index).Class = otype;
-      base::At(Members, index).Quantity =
-          tech::ParseInteger<int>(p2).value_or(0);
+      base::At(Members, index).Quantity = tech::ParseIntegerOr<int>(p2, 0);
     } else {
       ClassCount--;
       if (index == 0) {
@@ -1898,7 +1892,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
   /*
   **	Fetch the missions assigned to this team type.
   */
-  MissionCount = tech::ParseInteger<int>(tokens.Next()).value_or(-1);
+  MissionCount = tech::ParseIntegerOr<int>(tokens.Next(), -1);
   if (MissionCount < 0 || MissionCount > kMaxTeamMissions) {
     ClassCount = 0;
     MissionCount = 0;
@@ -1906,16 +1900,16 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
   }
   for (int index = 0; index < MissionCount; index++) {
     base::At(MissionList, index).Mission = static_cast<TeamMissionType>(
-        tech::ParseInteger<int>(tokens.Next(",:")).value_or(0));
+        tech::ParseIntegerOr<int>(tokens.Next(",:"), 0));
     base::At(MissionList, index).Data.Value =
-        tech::ParseInteger<int>(tokens.Next(",:")).value_or(0);
+        tech::ParseIntegerOr<int>(tokens.Next(",:"), 0);
   }
 
   if (NewINIFormat < 2) {
     /*
     **	Fetch the trigger ID.
     */
-    Trigger.Set_Raw(tech::ParseInteger<int>(tokens.Next()).value_or(0));
+    Trigger.Set_Raw(tech::ParseIntegerOr<int>(tokens.Next(), 0));
   }
 }
 

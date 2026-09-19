@@ -705,7 +705,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         char* token = tokens.Next();
         if (token) {
           strtrim(port::MutableCString(token));
-          CrateShares.at(crate) = tech::ParseInteger<int>(token).value_or(0);
+          CrateShares.at(crate) = tech::ParseIntegerOr<int>(token, 0);
         }
 
         /*
@@ -727,7 +727,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
             CrateData.at(crate) = fixed::FromString(token) * 256;
           } else {
             strtrim(port::MutableCString(token));
-            CrateData.at(crate) = tech::ParseInteger<int>(token).value_or(0);
+            CrateData.at(crate) = tech::ParseIntegerOr<int>(token, 0);
           }
         }
       }
@@ -810,7 +810,7 @@ bool RulesClass::Themes(CCINIClass& ini) {
         port::Tokenizer tokens(buffer, ",");
         const char* token = tokens.Next();
         if (token != nullptr) {
-          scen = tech::ParseInteger<int>(token).value_or(0);
+          scen = tech::ParseIntegerOr<int>(token, 0);
         }
 
         token = tokens.Next();

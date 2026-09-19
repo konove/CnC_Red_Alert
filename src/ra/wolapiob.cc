@@ -485,7 +485,7 @@ void WolapiObject::PrepareButtonsAndIcons() {
     GameTypeInfos.resize(base::ToSize(nGameTypeInfos));
     int iMyIndex = 0;
     for (const std::string_view sku : skus) {
-      GetGameTypeInfo(tech::ParseInteger<int>(sku).value_or(0),
+      GetGameTypeInfo(tech::ParseIntegerOr<int>(sku, 0),
                       GameTypeInfos.at(base::ToSize(iMyIndex)), Palette);
       iMyIndex++;
     }
@@ -1489,8 +1489,8 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
 
   if (std::string_view(szMessage).size() > 4 &&
       std::string_view(szMessage).starts_with("?ajw")) {
-    const int i = tech::ParseInteger<int>(std::string_view(szMessage).substr(4))
-                      .value_or(0);
+    const int i =
+        tech::ParseIntegerOr<int>(std::string_view(szMessage).substr(4), 0);
     if (i >= static_cast<int>(VOX_ACCOMPLISHED) &&
         i <= static_cast<int>(VOX_LOAD1)) {
       Speak(static_cast<VoxType>(i));
@@ -1499,8 +1499,8 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
   }
   if (std::string_view(szMessage).size() > 4 &&
       std::string_view(szMessage).starts_with("#ajw")) {
-    const int i = tech::ParseInteger<int>(std::string_view(szMessage).substr(4))
-                      .value_or(0);
+    const int i =
+        tech::ParseIntegerOr<int>(std::string_view(szMessage).substr(4), 0);
     if (i >= static_cast<int>(VOX_ACCOMPLISHED) &&
         i <= static_cast<int>(VOX_LOAD1)) {
       Speak(static_cast<VoxType>(i));

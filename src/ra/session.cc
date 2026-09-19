@@ -680,14 +680,14 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
       tokenptr = tokens.Next();
       if (tokenptr) {
-        phone->Settings.IRQ = tech::ParseInteger<int>(tokenptr).value_or(0);
+        phone->Settings.IRQ = tech::ParseIntegerOr<int>(tokenptr, 0);
       } else {
         phone->Settings.IRQ = -1;
       }
 
       tokenptr = tokens.Next();
       if (tokenptr) {
-        phone->Settings.Baud = tech::ParseInteger<int>(tokenptr).value_or(0);
+        phone->Settings.Baud = tech::ParseIntegerOr<int>(tokenptr, 0);
       } else {
         phone->Settings.Baud = -1;
       }
@@ -724,18 +724,18 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
         if (i == static_cast<int>(DIAL_METHODS)) {
           phone->Settings.Compression =
-              tech::ParseInteger<int>(tokenptr).value_or(0) != 0;
+              tech::ParseIntegerOr<int>(tokenptr, 0) != 0;
 
           tokenptr = tokens.Next();
           if (tokenptr) {
             phone->Settings.ErrorCorrection =
-                tech::ParseInteger<int>(tokenptr).value_or(0) != 0;
+                tech::ParseIntegerOr<int>(tokenptr, 0) != 0;
           }
 
           tokenptr = tokens.Next();
           if (tokenptr) {
             phone->Settings.HardwareFlowControl =
-                tech::ParseInteger<int>(tokenptr).value_or(0) != 0;
+                tech::ParseIntegerOr<int>(tokenptr, 0) != 0;
           }
 
           tokenptr = tokens.Next();
@@ -765,7 +765,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       tokenptr = tokens.Next();
       if (tokenptr) {
         phone->Settings.InitStringIndex =
-            tech::ParseInteger<int>(tokenptr).value_or(0);
+            tech::ParseIntegerOr<int>(tokenptr, 0);
       } else {
         phone->Settings.InitStringIndex = 0;
       }
@@ -773,7 +773,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       tokenptr = tokens.Next();
       if (tokenptr) {
         phone->Settings.CallWaitStringIndex =
-            tech::ParseInteger<int>(tokenptr).value_or(0);
+            tech::ParseIntegerOr<int>(tokenptr, 0);
       } else {
         phone->Settings.CallWaitStringIndex = kCallWaitCustom;
       }
@@ -813,13 +813,13 @@ void SessionClass::Read_MultiPlayer_Settings() {
     }
 
     ini.Get_String("SyncBug", "Coord", "0", buf, 80);
-    TrapCoord = tech::ParseHex<uint32_t>(buf).value_or(0);
+    TrapCoord = tech::ParseHexOr<uint32_t>(buf, 0);
 
     ini.Get_String("SyncBug", "Target", "0", buf, 80);
-    TrapTarget = static_cast<TARGET>(tech::ParseHex<uint32_t>(buf).value_or(0));
+    TrapTarget = static_cast<TARGET>(tech::ParseHexOr<uint32_t>(buf, 0));
 
     ini.Get_String("SyncBug", "Cell", "0", buf, 80);
-    CELL const cell = tech::ParseInteger<CELL>(buf).value_or(0);
+    CELL const cell = tech::ParseIntegerOr<CELL>(buf, 0);
     if (cell) {
       TrapCell = &Map.at(cell);
     }

@@ -640,22 +640,21 @@ void AircraftClass::Read_INI(CCINIClass& ini) {
           */
           const char* token = tokens.Next();
           if (token) {
-            strength = tech::ParseInteger<int>(token).value_or(0);
+            strength = tech::ParseIntegerOr<int>(token, 0);
           } else {
             strength = 0;
           }
 
           token = tokens.Next();
           if (token) {
-            coord = Cell_Coord(tech::ParseInteger<CELL>(token).value_or(0));
+            coord = Cell_Coord(tech::ParseIntegerOr<CELL>(token, 0));
           } else {
             coord = 0xFFFFFFFFL;
           }
 
           token = tokens.Next();
           if (token) {
-            dir = static_cast<DirType>(
-                tech::ParseInteger<int>(token).value_or(0));
+            dir = static_cast<DirType>(tech::ParseIntegerOr<int>(token, 0));
           } else {
             dir = DIR_N;
           }

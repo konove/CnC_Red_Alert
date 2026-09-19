@@ -316,10 +316,10 @@ void SmudgeClass::Read_INI(CCINIClass& ini) {
       const char* ptr = tokens.Next();
       if (ptr != nullptr) {
         int data = 0;
-        const CELL cell = tech::ParseInteger<CELL>(ptr).value_or(0);
+        const CELL cell = tech::ParseIntegerOr<CELL>(ptr, 0);
         ptr = tokens.Next();
         if (ptr != nullptr) {
-          data = tech::ParseInteger<int>(ptr).value_or(0);
+          data = tech::ParseIntegerOr<int>(ptr, 0);
         }
         new SmudgeClass(smudge, Cell_Coord(cell));
         if (Map.at(cell).Smudge == smudge && data != 0) {

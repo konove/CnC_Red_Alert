@@ -4446,7 +4446,7 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
     */
     const char* cellentry = ini.Get_Entry("CellTriggers", index);
     TriggerTypeClass* tp = ini.Get_TriggerType("CellTriggers", cellentry);
-    const CELL cell = tech::ParseInteger<CELL>(cellentry).value_or(0);
+    const CELL cell = tech::ParseIntegerOr<CELL>(cellentry, 0);
 
     if (tp != nullptr && !(*this).at(cell).Trigger.Is_Valid()) {
       TriggerClass* tt = Find_Or_Make(tp);

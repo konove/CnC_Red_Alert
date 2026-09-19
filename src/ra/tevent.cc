@@ -664,18 +664,17 @@ void TEventClass::Read_INI(port::Tokenizer& tokens) {
   const char* token = nullptr;
   switch (NewINIFormat) {
     default:
-      Event = static_cast<TEventType>(
-          tech::ParseInteger<int>(tokens.Next()).value_or(0));
-      Team.Set_Raw(tech::ParseInteger<int>(tokens.Next()).value_or(0));
-      Data.Value = tech::ParseInteger<int>(tokens.Next()).value_or(0);
+      Event =
+          static_cast<TEventType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+      Team.Set_Raw(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+      Data.Value = tech::ParseIntegerOr<int>(tokens.Next(), 0);
       break;
 
     case 1:
       token = tokens.Next();
       Event = TEVENT_NONE;
       if (token) {
-        Event =
-            static_cast<TEventType>(tech::ParseInteger<int>(token).value_or(0));
+        Event = static_cast<TEventType>(tech::ParseIntegerOr<int>(token, 0));
       }
 
       token = tokens.Next();
@@ -683,22 +682,22 @@ void TEventClass::Read_INI(port::Tokenizer& tokens) {
       Data.Value = -1;
       if (token) {
         if (Event_Needs(Event) == NEED_TEAM) {
-          Team = TeamTypes.Raw_Ptr(tech::ParseInteger<int>(token).value_or(0));
+          Team = TeamTypes.Raw_Ptr(tech::ParseIntegerOr<int>(token, 0));
         } else {
-          Data.Value = tech::ParseInteger<int>(token).value_or(0);
+          Data.Value = tech::ParseIntegerOr<int>(token, 0);
         }
       }
       break;
 
     case 0:
-      Event = static_cast<TEventType>(
-          tech::ParseInteger<int>(tokens.Next()).value_or(0));
+      Event =
+          static_cast<TEventType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
 
       tokens.Next();  // Old-format field, unused.
       tokens.Next();  // Old-format field, unused.
 
       Team = TeamTypeClass::From_Name(tokens.Next());
-      Data.Value = tech::ParseInteger<int>(tokens.Next()).value_or(0);
+      Data.Value = tech::ParseIntegerOr<int>(tokens.Next(), 0);
       tokens.Next();  // Old-format field, unused.
       break;
   }

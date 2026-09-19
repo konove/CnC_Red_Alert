@@ -1967,16 +1967,14 @@ void VesselClass::Read_INI(CCINIClass& ini) {
           /*
           **	Read the raw data.
           */
-          const int strength =
-              tech::ParseInteger<int>(tokens.Next()).value_or(0);
+          const int strength = tech::ParseIntegerOr<int>(tokens.Next(), 0);
 
-          const CELL cell =
-              tech::ParseInteger<CELL>(tokens.Next()).value_or(0);
+          const CELL cell = tech::ParseIntegerOr<CELL>(tokens.Next(), 0);
 
           const COORDINATE coord = Cell_Coord(cell);
 
-          const DirType dir = static_cast<DirType>(
-              tech::ParseInteger<int>(tokens.Next()).value_or(0));
+          const auto dir =
+              static_cast<DirType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
           const MissionType mission =
               Mission_From_Name(tokens.Next());
 

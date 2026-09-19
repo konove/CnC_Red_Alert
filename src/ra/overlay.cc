@@ -324,7 +324,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
     const int len = ini.Entry_Count(INI_Name());
     for (int index = 0; index < len; index++) {
       const char* entry = ini.Get_Entry(INI_Name(), index);
-      const CELL cell = tech::ParseInteger<CELL>(entry).value_or(0);
+      const CELL cell = tech::ParseIntegerOr<CELL>(entry, 0);
       const OverlayType classid =
           ini.Get_OverlayType(INI_Name(), entry, OVERLAY_NONE);
 

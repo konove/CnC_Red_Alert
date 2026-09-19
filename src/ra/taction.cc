@@ -307,18 +307,18 @@ void TActionClass::Build_INI_Entry(std::string& buffer) const {
 void TActionClass::Read_INI(port::Tokenizer& tokens) {
   switch (NewINIFormat) {
     default: {
-      Action = static_cast<TActionType>(
-          tech::ParseInteger<int>(tokens.Next()).value_or(0));
-      Team.Set_Raw(tech::ParseInteger<int>(tokens.Next()).value_or(0));
-      Trigger.Set_Raw(tech::ParseInteger<int>(tokens.Next()).value_or(0));
-      Data.Value = tech::ParseInteger<int>(tokens.Next()).value_or(0);
+      Action =
+          static_cast<TActionType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+      Team.Set_Raw(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+      Trigger.Set_Raw(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+      Data.Value = tech::ParseIntegerOr<int>(tokens.Next(), 0);
       break;
     }
 
     case 1:
     case 0:
-      Action = static_cast<TActionType>(
-          tech::ParseInteger<int>(tokens.Next()).value_or(0));
+      Action =
+          static_cast<TActionType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
 
       const char* ptr = tokens.Next();
       Team = TeamTypeClass::From_Name(ptr);
@@ -331,7 +331,7 @@ void TActionClass::Read_INI(port::Tokenizer& tokens) {
       const char* trig_name = tokens.Next();
       PendingTriggerName = trig_name != nullptr ? trig_name : "";
 
-      Data.Value = tech::ParseInteger<int>(tokens.Next()).value_or(0);
+      Data.Value = tech::ParseIntegerOr<int>(tokens.Next(), 0);
       break;
   }
 

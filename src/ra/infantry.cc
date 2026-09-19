@@ -3297,21 +3297,19 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           /*
           **	3rd token: strength.
           */
-          const int strength =
-              tech::ParseInteger<int>(tokens.Next()).value_or(0);
+          const int strength = tech::ParseIntegerOr<int>(tokens.Next(), 0);
 
           /*
           **	4th token: cell #.
           */
-          const CELL cell =
-              tech::ParseInteger<CELL>(tokens.Next()).value_or(0);
+          const CELL cell = tech::ParseIntegerOr<CELL>(tokens.Next(), 0);
           COORDINATE coord = Cell_Coord(cell);
 
           /*
           **	5th token: cell sub-location.
           */
-          const int sub = std::clamp(
-              tech::ParseInteger<int>(tokens.Next(",")).value_or(0), 0, 4);
+          const int sub =
+              std::clamp(tech::ParseIntegerOr<int>(tokens.Next(","), 0), 0, 4);
           coord =
               Coord_Add(Coord_Whole(coord), base::At(StoppingCoordAbs, sub));
 
@@ -3322,8 +3320,8 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
               Mission_From_Name(tokens.Next());
           char* validation = tokens.Next();
           if (validation) {
-            dir = static_cast<DirType>(
-                tech::ParseInteger<int>(validation).value_or(0));
+            dir =
+                static_cast<DirType>(tech::ParseIntegerOr<int>(validation, 0));
             validation = tokens.Next();
             if (validation) {
               tp = TriggerTypeClass::From_Name(validation);

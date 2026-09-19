@@ -360,7 +360,7 @@ void BaseClass::Read_INI(CCINIClass& ini) {
     /*
     ** Read & set the node's coordinate
     */
-    node.Cell = tech::ParseInteger<CELL>(tokens.Next()).value_or(0);
+    node.Cell = tech::ParseIntegerOr<CELL>(tokens.Next(), 0);
 
     /*
     ** Add this node to the Base's list
