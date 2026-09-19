@@ -359,6 +359,9 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
 
   void Init(int w, int h, std::span<uint8_t> buffer, int32_t size,
             GBC_Enum flags);
+  // Releases the window texture and surfaces Init() created for a visible
+  // buffer, and cancels its pending redraw. The destructor calls it; calling
+  // it again does nothing.
   void Un_Init();
 
   // Locks and unlocks the underlying SDL surface. Callers normally use the
@@ -390,6 +393,7 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
 
  protected:
   void Init_Display_Surface();
+  void Release_Display_Surface();
   void* WindowTexture = nullptr;
   void* PaletteSurface = nullptr;
   int RedrawTimer = 0;

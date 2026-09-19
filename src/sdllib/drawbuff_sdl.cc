@@ -172,6 +172,22 @@ void GraphicBufferClass::Init_Display_Surface() {
                                     SDL_TEXTUREACCESS_STREAMING, Width, Height);
   PaletteSurface = SDL_CreateRGBSurface(0, Width, Height, 8, 0, 0, 0, 0);
 }
+
+void GraphicBufferClass::Release_Display_Surface() {
+  if (RedrawTimer) {
+    SDL_RemoveTimer(RedrawTimer);
+    RedrawTimer = 0;
+  }
+  Destroy_VQA_Texture();
+  if (WindowTexture) {
+    SDL_DestroyTexture(static_cast<SDL_Texture*>(WindowTexture));
+    WindowTexture = nullptr;
+  }
+  if (PaletteSurface) {
+    SDL_FreeSurface(static_cast<SDL_Surface*>(PaletteSurface));
+    PaletteSurface = nullptr;
+  }
+}
 void GraphicBufferClass::Render_Scaled_Frame(
     std::span<const uint8_t> paletted_data, int width, int height) {
   if (width <= 0 || height <= 0) {

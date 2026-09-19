@@ -74,6 +74,16 @@ class RejectedFrameBuffer : public GraphicBufferClass {
     PaletteSurface = have_surface ? &surface_ : nullptr;
     RedrawTimer = 1;
   }
+  // The surface and timer are fakes; the base destructor must not release
+  // them.
+  ~RejectedFrameBuffer() {
+    PaletteSurface = nullptr;
+    RedrawTimer = 0;
+  }
+  RejectedFrameBuffer(const RejectedFrameBuffer&) = delete;
+  RejectedFrameBuffer& operator=(const RejectedFrameBuffer&) = delete;
+  RejectedFrameBuffer(RejectedFrameBuffer&&) = delete;
+  RejectedFrameBuffer& operator=(RejectedFrameBuffer&&) = delete;
   [[nodiscard]] int PendingTimer() const { return RedrawTimer; }
 
  private:
@@ -111,15 +121,8 @@ class ScaledFrameTest : public ::testing::Test {
  protected:
   class Buffer : public GraphicBufferClass {
    public:
+    // The base destructor frees the surface and the scaled-frame texture.
     Buffer() { PaletteSurface = SDL_CreateRGBSurface(0, 2, 2, 8, 0, 0, 0, 0); }
-    ~Buffer() {
-      Destroy_VQA_Texture();
-      SDL_FreeSurface(static_cast<SDL_Surface*>(PaletteSurface));
-    }
-    Buffer(const Buffer&) = delete;
-    Buffer& operator=(const Buffer&) = delete;
-    Buffer(Buffer&&) = delete;
-    Buffer& operator=(Buffer&&) = delete;
   };
 
   void SetUp() override {

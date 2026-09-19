@@ -1154,9 +1154,7 @@ void GraphicBufferClass::Init(int w, int h, std::span<uint8_t> buffer,
   }
 }
 
-void GraphicBufferClass::Un_Init() {
-  // de-alloc surface
-}
+void GraphicBufferClass::Un_Init() { Release_Display_Surface(); }
 
 void Video_End_Frame() {
   if (WindowBuffer) {
