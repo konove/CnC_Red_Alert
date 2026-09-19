@@ -577,7 +577,6 @@ bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number) {
 }
 
 int Get_Animation_Frame_Count(void* handle) {
-
   if (!handle) {
     return 0;
   }
