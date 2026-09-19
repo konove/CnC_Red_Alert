@@ -467,7 +467,7 @@ bool Read_Scenario(char* name) {
         GamePalette.Set(kFadePaletteFast, ServiceRealTime);
         RequiredCD = 3;
         if (!Force_CD_Available(RequiredCD)) {  // force Aftermath CD in drive.
-          Emergency_Exit(EXIT_FAILURE);
+          EmergencyExit(EXIT_FAILURE);
         }
       }
       CCINIClass ini;
@@ -1927,7 +1927,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     }
     if (!Force_CD_Available(RequiredCD)) {
       // Prog_End();
-      Emergency_Exit(EXIT_FAILURE);
+      EmergencyExit(EXIT_FAILURE);
     }
   } else {
     /*

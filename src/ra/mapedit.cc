@@ -741,7 +741,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         }
       }
       // Prog_End();
-      Emergency_Exit(0);
+      EmergencyExit(0);
 
     /*
     **	LEFT = go to previous placement object
@@ -1872,7 +1872,7 @@ HousesType MapEditClass::Cycle_House(HousesType curhouse,
 void MapEditClass::Fatal(int txt) {
   // Prog_End();
   absl::PrintF("%s\n", Text_String(txt));
-  Emergency_Exit(EXIT_FAILURE);
+  EmergencyExit(EXIT_FAILURE);
 }
 
 bool MapEditClass::Scroll_Map(DirType facing, int& distance, bool really) {

@@ -4215,7 +4215,7 @@ int Com_Scenario_Dialog(bool skirmish) {
               if (Session.Scenarios.at(Session.Options.ScenarioIndex)
                       ->Get_Official() &&
                   (!Force_Scenario_Available(Scen.ScenarioName))) {
-                Emergency_Exit(EXIT_FAILURE);
+                EmergencyExit(EXIT_FAILURE);
               }
 
               break;
@@ -4239,7 +4239,7 @@ int Com_Scenario_Dialog(bool skirmish) {
               if (Session.Scenarios.at(Session.Options.ScenarioIndex)
                       ->Get_Official() &&
                   (!Force_Scenario_Available(Scen.ScenarioName))) {
-                Emergency_Exit(EXIT_FAILURE);
+                EmergencyExit(EXIT_FAILURE);
               }
 
               Send_Remote_File(Scen.ScenarioName, 0);
@@ -5730,7 +5730,7 @@ int Com_Show_Scenario_Dialog() {
                     ready_packet_was_sent = true;
 
                     if (!Force_CD_Available(RequiredCD)) {
-                      Emergency_Exit(EXIT_FAILURE);
+                      EmergencyExit(EXIT_FAILURE);
                     }
 
                     /*

@@ -2102,7 +2102,7 @@ static void Init_CDROM_Access() {
           Show_Mouse();
           WWMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
           // Prog_End();
-          Emergency_Exit(EXIT_FAILURE);
+          EmergencyExit(EXIT_FAILURE);
 
         case 2:
           VisiblePage.Clear();
@@ -2111,7 +2111,7 @@ static void Init_CDROM_Access() {
           if (WWMessageBox().Process(TXT_CD_DIALOG_1, TXT_OK, TXT_CANCEL) ==
               1) {
             // Prog_End();
-            Emergency_Exit(EXIT_FAILURE);
+            EmergencyExit(EXIT_FAILURE);
           }
           Hide_Mouse();
           break;
@@ -2121,7 +2121,7 @@ static void Init_CDROM_Access() {
           Show_Mouse();
           if (!Force_CD_Available(RequiredCD)) {
             // Prog_End();
-            Emergency_Exit(EXIT_FAILURE);
+            EmergencyExit(EXIT_FAILURE);
           }
           Hide_Mouse();
           break;
@@ -2450,7 +2450,7 @@ static void Init_Mouse() {
     VisiblePage.Clear();
     WWMessageBox().Process(kLanguageText.no_mouse, TXT_OK);
     // Prog_End();
-    Emergency_Exit(1);
+    EmergencyExit(1);
   }
 
   Map.Set_Default_Mouse(MOUSE_NORMAL, false);

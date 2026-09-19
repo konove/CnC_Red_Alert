@@ -18,7 +18,7 @@
 
 // Red Alert's process entry point and exit paths: main() sets up the
 // library systems, reads the options needed before the window exists, and
-// hands over to RunGame(); Prog_End(), Emergency_Exit() and the memory-error
+// hands over to RunGame(); Prog_End(), EmergencyExit() and the memory-error
 // hooks tear it all down again.
 //
 // Originally STARTUP.CPP by Joe L. Bostic, October 1994.
@@ -84,17 +84,17 @@
 #include "ra/ipx95.h"
 #endif  // _WIN32
 
-// Prints `string` and exits with status 1 without any cleanup. Installed as
+// Prints `message` and exits with status 1 without any cleanup. Installed as
 // Memory_Error_Exit once the game systems are gone, or when they are being
 // torn down anyway.
-[[noreturn]] static void Print_Error_Exit(char* string);
+[[noreturn]] static void ExitWithError(char* message);
 
 #ifdef _WIN32
 HINSTANCE ProgramInstance;
 #endif
 // Reads the options that have to be known before the window and the network
 // exist: blit fills, the screen height, the IPX socket and a bridge network.
-static void Read_Setup_Options(DiskFile* config_file);
+static void ReadStartupOptions(DiskFile* config_file);
 
 // Parses the command line, checks the machine can run the game, opens the
 // window, sound and video, then runs the game until the player quits.
@@ -169,10 +169,10 @@ int main(int argc, char* argv[])
 
   // Run from the executable's directory, so the relative paths to the config
   // file and the local MIX files resolve however the game was launched.
-  const auto dir_path = std::filesystem::path(argv[0]).parent_path();
+  const auto exe_dir = std::filesystem::path(argv[0]).parent_path();
 
-  if (!dir_path.empty()) {
-    std::filesystem::current_path(dir_path);
+  if (!exe_dir.empty()) {
+    std::filesystem::current_path(exe_dir);
   }
 
   // Westwood Online's own installer left these behind. None of it can
@@ -180,33 +180,35 @@ int main(int argc, char* argv[])
   if constexpr (config::kWolapiEnabled) {
     // The version 3 patch shipped wolsetup.exe to install the "Shared
     // Internet Components"; the registry value says it has finished.
-    WIN32_FIND_DATA wfd{};
-    HANDLE hWOLSetupFile = FindFirstFile("wolsetup.exe", &wfd);
-    const bool bWOLSetupFile = (hWOLSetupFile != INVALID_HANDLE_VALUE);
-    FindClose(hWOLSetupFile);
-    HKEY hKey = nullptr;
-    RegOpenKeyEx(HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_READ, &hKey);
-    DWORD dwValue = 0;
-    DWORD dwBufSize = sizeof(DWORD);
-    if (RegQueryValueEx(hKey, "WolapiInstallComplete", nullptr, nullptr,
-                        port::BytesOf(dwValue), &dwBufSize) == ERROR_SUCCESS) {
+    WIN32_FIND_DATA find_data{};
+    HANDLE setup_exe = FindFirstFile("wolsetup.exe", &find_data);
+    const bool setup_exe_found = (setup_exe != INVALID_HANDLE_VALUE);
+    FindClose(setup_exe);
+    HKEY wol_key = nullptr;
+    RegOpenKeyEx(HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_READ,
+                 &wol_key);
+    DWORD install_complete = 0;
+    DWORD value_size = sizeof(DWORD);
+    if (RegQueryValueEx(wol_key, "WolapiInstallComplete", nullptr, nullptr,
+                        port::BytesOf(install_complete),
+                        &value_size) == ERROR_SUCCESS) {
       // Setup has finished: delete the setup exe, and drop the registry value
       // only once the exe is gone, so a failed delete is retried next launch.
-      if (bWOLSetupFile) {
+      if (setup_exe_found) {
         if (DeleteFile("wolsetup.exe")) {
-          RegDeleteValue(hKey, "WolapiInstallComplete");
+          RegDeleteValue(wol_key, "WolapiInstallComplete");
         }
       } else {
-        RegDeleteValue(hKey, "WolapiInstallComplete");
+        RegDeleteValue(wol_key, "WolapiInstallComplete");
       }
     }
-    RegCloseKey(hKey);
+    RegCloseKey(wol_key);
 
     // The 1.08 patch left a loose conquer.eng in the game directory, and the
     // patch to this version had trouble deleting it. It must not be there:
     // the Aftermath MIX files now carry the string overrides it used to, and
     // a loose file would shadow them.
-    if (FindFirstFile("conquer.eng", &wfd) != INVALID_HANDLE_VALUE) {
+    if (FindFirstFile("conquer.eng", &find_data) != INVALID_HANDLE_VALUE) {
       DeleteFile("conquer.eng");
     }
   }
@@ -217,7 +219,7 @@ int main(int argc, char* argv[])
   const std::span arguments(argv, static_cast<size_t>(argc));
   if (Parse_Command_Line(arguments)) {
     InitTickTimer();
-    DiskFile cfile(kConfigFileName);
+    DiskFile config_file(kConfigFileName);
 
     Keyboard = new KeyboardClass();
 
@@ -232,21 +234,21 @@ int main(int argc, char* argv[])
 
     // The original installer wrote the config file. Without one, start from
     // an empty file: every option has a default.
-    if (!cfile.IsAvailable()) {
-      cfile.Create();
+    if (!config_file.IsAvailable()) {
+      config_file.Create();
     }
 
-    if (cfile.IsAvailable()) {
-      Read_Private_Config_Struct(cfile, &NewConfig);
+    if (config_file.IsAvailable()) {
+      Read_Private_Config_Struct(config_file, &NewConfig);
 
       // Sets ScreenHeight, so it has to come before the window is opened.
-      Read_Setup_Options(&cfile);
+      ReadStartupOptions(&config_file);
 
       Create_Main_Window(nullptr, 0, ScreenWidth, ScreenHeight);
       // 22050 Hz mono.
       SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
 
-      if (!InitDDraw()) {
+      if (!InitVideo()) {
         return EXIT_FAILURE;
       }
 
@@ -272,7 +274,7 @@ int main(int argc, char* argv[])
       // movie. The installer used to write PlayIntro=yes; with no entry it
       // still defaults to yes, so a fresh install sees the movie once.
       INIClass ini;
-      ini.Load(cfile);
+      ini.Load(config_file);
 
       if (!Special.IsFromInstall) {
         Special.IsFromInstall = ini.Get_Bool("Intro", "PlayIntro", true);
@@ -284,7 +286,7 @@ int main(int argc, char* argv[])
       if (Special.IsFromInstall) {
         BreakoutAllowed = true;
         ini.Put_Bool("Intro", "PlayIntro", false);
-        ini.Save(cfile);
+        ini.Save(config_file);
       }
 
       // Tiberian Dawn forbids skipping the first-run intro with <ESC>. Red
@@ -296,20 +298,19 @@ int main(int argc, char* argv[])
 
       // While the game runs an out-of-memory exit still has everything to
       // clean up; after RunGame() returns it only has to report.
-      Memory_Error_Exit = Print_Error_End_Exit;
+      Memory_Error_Exit = CleanUpAndExitWithError;
 
       RunGame();
 
       VisiblePage.Clear();
       HiddenPage.Clear();
-      Memory_Error_Exit = Print_Error_Exit;
+      Memory_Error_Exit = ExitWithError;
 
       // ReadyToQuit is the shutdown handshake with the message handler:
       // 1 is a clean quit, and the Windows handler answered 2 once it had
-      // closed everything down. The SDL handler for
-      // the quit event calls Prog_End() and exit(0) itself, so on SDL this
-      // loop only pumps events until that happens and the return below is
-      // never reached.
+      // closed everything down. The SDL handler for the quit event calls
+      // Prog_End() and exit(0) itself, so on SDL this loop only pumps events
+      // until that happens and the return below is never reached.
       ReadyToQuit = 1;
 
       SDL_Send_Quit();
@@ -329,27 +330,27 @@ int main(int argc, char* argv[])
   return EXIT_SUCCESS;
 }
 
-bool InitDDraw() {
-  bool video_success = false;
+bool InitVideo() {
+  bool mode_set = false;
 
   // The game draws 640x400. A 400-line mode is asked for first; failing
   // that, 480 lines with the picture letterboxed in the middle.
   if (ScreenHeight == 400) {
     if (Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8)) {
-      video_success = true;
+      mode_set = true;
     } else {
       if (Set_Video_Mode(MainWindow, ScreenWidth, 480, 8)) {
-        video_success = true;
+        mode_set = true;
         ScreenHeight = 480;
       }
     }
   } else {
     if (Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8)) {
-      video_success = true;
+      mode_set = true;
     }
   }
 
-  if (!video_success) {
+  if (!mode_set) {
     ShutdownTickTimer();
 
     return false;
@@ -368,10 +369,10 @@ bool InitDDraw() {
     ScreenHeight = 400;
   }
 
-  const int yoff = VisiblePage.Get_Height() == 480 ? 40 : 0;
+  const int letterbox_top = VisiblePage.Get_Height() == 480 ? 40 : 0;
 
-  SeenBuff.Attach(&VisiblePage, 0, yoff, ScreenWidth, ScreenHeight);
-  HidPage.Attach(&HiddenPage, 0, yoff, ScreenWidth, ScreenHeight);
+  SeenBuff.Attach(&VisiblePage, 0, letterbox_top, ScreenWidth, ScreenHeight);
+  HidPage.Attach(&HiddenPage, 0, letterbox_top, ScreenWidth, ScreenHeight);
 
   return true;
 }
@@ -388,10 +389,10 @@ void __cdecl Prog_End() {
   // type heaps. The custom heap allocator (TFixedIHeapClass) never calls
   // destructors when it frees its buffer, so RAII members (unique_ptr, variant
   // holding vector) must be released explicitly before global destruction.
-  const auto reset_object_type = [](ObjectTypeClass* obj) {
-    obj->DimensionData.clear();
-    obj->RadarIcon.clear();
-    obj->ClearImage();
+  const auto reset_object_type = [](ObjectTypeClass* object_type) {
+    object_type->DimensionData.clear();
+    object_type->RadarIcon.clear();
+    object_type->ClearImage();
   };
   for (int i = 0; i < AircraftTypes.Count(); i++) {
     reset_object_type(AircraftTypes.Ptr(i));
@@ -428,34 +429,34 @@ void __cdecl Prog_End() {
   }
 }
 
-void Print_Error_End_Exit(char* string) {
+void CleanUpAndExitWithError(char* message) {
   Prog_End();
-  absl::PrintF("%s\n", string);
+  absl::PrintF("%s\n", message);
   exit(1);
 }
 
-void Print_Error_Exit(char* string) {
-  absl::PrintF("%s\n", string);
+void ExitWithError(char* message) {
+  absl::PrintF("%s\n", message);
   exit(1);
 }
 
-[[noreturn]] void Emergency_Exit(int code) {
+[[noreturn]] void EmergencyExit(int exit_code) {
   // Blank the screen first, so nothing glitches while the window loses focus
   // on the way out.
   VisiblePage.Clear();
   HiddenPage.Clear();
   BlackPalette.Set();
-  Memory_Error_Exit = Print_Error_Exit;
+  Memory_Error_Exit = ExitWithError;
 
   // Clean up here rather than through the quit handler's handshake (see
-  // main()): the SDL handler ends in exit(0), which would lose `code`.
+  // main()): the SDL handler ends in exit(0), which would lose `exit_code`.
   Prog_End();
   VisiblePage.Un_Init();
   HiddenPage.Un_Init();
-  exit(code);
+  exit(exit_code);
 }
 
-void Read_Setup_Options(DiskFile* config_file) {
+void ReadStartupOptions(DiskFile* config_file) {
   if (config_file->IsAvailable()) {
     INIClass ini;
 
@@ -463,7 +464,7 @@ void Read_Setup_Options(DiskFile* config_file) {
 
     AllowHardwareBlitFills = ini.Get_Bool("Options", "HardwareFills", true);
 
-    // Resolution=yes asks for a 480-line mode; InitDDraw() letterboxes the
+    // Resolution=yes asks for a 480-line mode; InitVideo() letterboxes the
     // 400-line game area inside it.
     ScreenHeight = ini.Get_Bool("Options", "Resolution", false) ? 480 : 400;
 
@@ -477,33 +478,34 @@ void Read_Setup_Options(DiskFile* config_file) {
     // DestNet names a network on the far side of an IPX bridge, as dotted
     // hex bytes: four for the network number, optionally followed by up to
     // six node bytes.
-    std::array<char, 512> netbuf{};
+    std::array<char, 512> dest_net{};
     // Get_String() returns the length of the trimmed value; 0 if absent.
-    if (ini.Get_String("Options", "DestNet", nullptr, netbuf,
-                       static_cast<int>(netbuf.size())) > 0) {
+    if (ini.Get_String("Options", "DestNet", nullptr, dest_net,
+                       static_cast<int>(dest_net.size())) > 0) {
       NetNumType net;
       NetNodeType node;
 
-      // i counts the bytes read: 0-3 are the network number, 4-9 the node.
-      int i = 0;
-      port::Tokenizer tokens(netbuf.data(), ".");
-      while (const char* p = tokens.Next()) {
-        const auto byte = tech::ParseHex<uint8_t>(p);
-        if (!byte || i >= 10) {
-          i = 0;  // Reject the address instead of accepting a partial network.
+      // Bytes 0-3 are the network number, 4-9 the node.
+      int byte_count = 0;
+      port::Tokenizer tokens(dest_net.data(), ".");
+      while (const char* token = tokens.Next()) {
+        const auto byte = tech::ParseHex<uint8_t>(token);
+        if (!byte || byte_count >= 10) {
+          byte_count =
+              0;  // Reject the address instead of accepting a partial network.
           break;
         }
-        if (i < 4) {
-          base::At(net, i) = *byte;
+        if (byte_count < 4) {
+          base::At(net, byte_count) = *byte;
         } else {
-          base::At(node, i - 4) = *byte;
+          base::At(node, byte_count - 4) = *byte;
         }
-        i++;
+        byte_count++;
       }
 
       // Only the network number matters: the node is replaced by the
       // broadcast node, so packets reach every machine across the bridge.
-      if (i >= 4) {
+      if (byte_count >= 4) {
         Session.IsBridge = 1;
         base::FillBytes(base::ObjectBytes(node), 0xff, 6);
         Session.BridgeNet = IPXAddressClass(net, node);

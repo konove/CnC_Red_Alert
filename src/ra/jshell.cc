@@ -166,7 +166,7 @@ void Set_Window(int window, int x, int y, int w, int h) {
 void Fatal_Message(const std::string_view message) {
   // Prog_End();
   absl::FPrintF(stderr, "%s", message);
-  Emergency_Exit(EXIT_FAILURE);
+  EmergencyExit(EXIT_FAILURE);
 }
 
 void Format_Runtime_Text(std::span<char> buffer, const size_t size,

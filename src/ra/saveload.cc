@@ -758,7 +758,7 @@ bool Load_Game(int id) {
       }
       RequiredCD = cd;
       if (!Force_CD_Available(RequiredCD)) {
-        Emergency_Exit(EXIT_FAILURE);
+        EmergencyExit(EXIT_FAILURE);
       }
 
       /*
@@ -1028,7 +1028,7 @@ bool Load_Game(int id) {
 
   if (!Force_CD_Available(RequiredCD)) {
     // Prog_End();
-    Emergency_Exit(EXIT_FAILURE);
+    EmergencyExit(EXIT_FAILURE);
   }
 
   ScenarioInit = 0;
@@ -1110,7 +1110,7 @@ bool Load_Game(int id) {
         GamePalette.Set(kFadePaletteFast, ServiceRealTime);
         // force Aftermath CD in drive.
         if (!Force_CD_Available(3)) {
-          Emergency_Exit(EXIT_FAILURE);
+          EmergencyExit(EXIT_FAILURE);
         }
       }
       CCINIClass mpini;

@@ -2537,7 +2537,7 @@ static int Net_Join_Dialog() {
               ready_packet_was_sent = true;
 
               if (!Force_CD_Available(RequiredCD)) {
-                Emergency_Exit(EXIT_FAILURE);
+                EmergencyExit(EXIT_FAILURE);
               }
 
               /*
@@ -5124,7 +5124,7 @@ static int Net_New_Dialog() {
 
     if (Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Official() &&
         (!Force_Scenario_Available(Scen.ScenarioName))) {
-      Emergency_Exit(EXIT_FAILURE);
+      EmergencyExit(EXIT_FAILURE);
     }
 
     /*
