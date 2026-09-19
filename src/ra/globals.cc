@@ -416,7 +416,6 @@ Buffer* TheaterBuffer;
 /***************************************************************************
 **	This holds the theater specific mixfiles.
 */
-MixArchive* TheaterData = nullptr;
 MixArchive* MoviesMix = nullptr;
 MixArchive* GeneralMix = nullptr;
 MixArchive* ScoreMix = nullptr;
@@ -465,8 +464,6 @@ static CreditClass CreditDisplay;
 **	supports.
 */
 SpecialClass Special;
-
-bool PassedProximity;  // used in display.cpp
 
 /***************************************************************************
 **	This is the scenario data for the currently loaded scenario.

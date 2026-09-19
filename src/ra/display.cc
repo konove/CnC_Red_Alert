@@ -338,6 +338,9 @@ void DisplayClass::Init_IO() {
   }
 }
 
+// The current theater's art, registered and cached by Init_Theater().
+static MixArchive* theater_data = nullptr;
+
 /***********************************************************************************************
  * DisplayClass::Init_Theater -- Performs theater-specific initialization
  *(mixfiles, etc)      *
@@ -395,11 +398,11 @@ void DisplayClass::Init_Theater(TheaterType theater) {
                  Theaters.at(theater).Root);
 
   if (Scen.Theater != LastTheater) {
-    delete TheaterData;
+    delete theater_data;
 
-    TheaterData = MixArchive::Register(fullname, &FastKey);
+    theater_data = MixArchive::Register(fullname, &FastKey);
 
-    if (!TheaterData->Cache()) {
+    if (!theater_data->Cache()) {
       // A theater the scenario names but whose art cannot be read leaves the
       // map with nothing to draw. Damaged data files are a user setup
       // problem, not a bug.
@@ -723,10 +726,6 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
   int retval = -1;
   bool noradar = false;
 
-  if (house == PlayerPtr->Class->House) {
-    PassedProximity = false;
-  }
-
   /*
   ** In editor mode, the proximity check always passes.
   */
@@ -842,10 +841,6 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
 
   if (retval == -1) {
     retval = 0;
-  }
-
-  if (house == PlayerPtr->Class->House) {
-    PassedProximity = static_cast<bool>(retval);
   }
 
   /*

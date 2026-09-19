@@ -181,7 +181,6 @@ extern GameOptionsClass Options;
 extern LogicClass Logic;
 extern MapEditClass Map;
 extern ScoreClass Score;
-extern MixArchive* TheaterData;
 extern MixArchive* MoviesMix;
 extern MixArchive* GeneralMix;
 extern MixArchive* ScoreMix;
@@ -289,7 +288,6 @@ extern std::span<const std::byte> DebugStrings;
 */
 extern ChronalVortexClass ChronalVortex;
 extern Stopwatch<SystemTickSource> TickCount;
-extern bool PassedProximity;  // used in display.cpp
 extern HousesType Whom;
 extern VQAConfig AnimControl;
 extern int ScenarioInit;
