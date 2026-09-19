@@ -358,9 +358,7 @@ VersionClass VerNum;
 */
 VQAConfig AnimControl;
 
-int PreserveVQAScreen;        // Used for screen mode transition control.
 bool BreakoutAllowed = true;  // "true" if aborting of movies is allowed.
-bool Brokeout;                // Was the movie broken out of?
 bool SlowPalette = false;     // Slow palette flag set?
 
 /***************************************************************************

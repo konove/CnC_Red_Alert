@@ -47,6 +47,10 @@
 #include "tech/game_file_vqa_io.h"
 #include "winvq/vqa32/vqaplay.h"
 
+// Set by VQ_Call_Back() when the player presses Esc to abort a movie, so
+// Play_Movie() knows to clear the half-drawn frame.
+static bool movie_broken_out = false;
+
 void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
   // Both named and enum-based movies come through here, including campaign
   // briefings that would otherwise delay headless save/load checks.
@@ -81,7 +85,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     // then back, which is what produces the fade rather than a hard cut.
     Hide_Mouse();
     Theme.Queue_Song(theme);
-    if (PreserveVQAScreen == 0 && !clear_screen) {
+    if (!clear_screen) {
       BlackPalette.Set(kFadePaletteMedium);
       visible_page.Clear();
       BlackPalette.Adjust(0x08, WhitePalette);
@@ -89,7 +93,6 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
       BlackPalette.Adjust(0xFF);
       BlackPalette.Set();
     }
-    PreserveVQAScreen = 0;
     Keyboard->Clear();
 
     VqaPlayer player;
@@ -113,7 +116,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     }
 
     if (player.Open(fullname.c_str(), &AnimControl) == 0) {
-      Brokeout = false;
+      movie_broken_out = false;
       if (!IsVQ640) {
         Load_Interpolated_Palettes(pal_name.c_str());
       }
@@ -128,10 +131,10 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
       IsVQ640 = false;
 
       // Early exit leaves the palette in an inconsistent state.
-      if (Brokeout) {
+      if (movie_broken_out) {
         clear_screen = true;
         visible_page.Clear();
-        Brokeout = false;
+        movie_broken_out = false;
       }
     } else {
       DLOG(FATAL) << "VQA_Open failed unexpectedly";
@@ -178,7 +181,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
 
   if ((BreakoutAllowed || Debug_Flag) && key == KN_ESC) {
     Keyboard->Clear();
-    Brokeout = true;
+    movie_broken_out = true;
     return 1;
   }
 

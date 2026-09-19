@@ -172,9 +172,7 @@ extern bool PlayerLoses;
 extern bool PlayerRestarts;
 extern VoxType SpeechRecord[2];
 extern std::vector<std::byte> SpeechBuffer[2];
-extern int PreserveVQAScreen;
 extern bool BreakoutAllowed;
-extern bool Brokeout;
 
 extern GameOptionsClass Options;
 
