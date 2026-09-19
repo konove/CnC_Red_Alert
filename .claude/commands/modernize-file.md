@@ -18,7 +18,9 @@ Each stage makes the next one cheaper or more accurate:
 2. **Comments and bugs** next. The comment pass is the close reading: it is where the file is
    understood, and where the bugs surface. Everything after it leans on that understanding.
 3. **Types** once the values are understood. Choosing `int32_t` over `uint32_t` needs to know
-   whether a value is a count or a bit pattern, which is what the comment pass found out.
+   whether a value is a count or a bit pattern, and choosing `std::string_view` over `std::string`,
+   or a span over a vector, needs to know who owns the data - which is what the comment pass found
+   out.
 4. **Names** after the types, so a name can carry the unit the type now states (`distance_cells`).
 5. **Simplify** what the earlier stages listed but kept out of their diffs - every one of them ends
    with "noticed but not changed", and the user always asks for those next.
