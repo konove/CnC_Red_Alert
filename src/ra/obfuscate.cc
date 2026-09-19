@@ -2,155 +2,116 @@
 
 #include <algorithm>
 #include <array>
-#include <cstddef>
+#include <bit>
 #include <cstdint>
+#include <ranges>
 #include <span>
 #include <string_view>
 
 #include "absl/strings/ascii.h"
+#include "base/array.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "tech/crc.h"
 
 uint32_t HashKeyPhrase(const std::string_view phrase) {
   // Up to 127 phrase characters and a terminator, which the padding can
-  // overwrite to reach 128. The 0xA5 fill is not just initialization: an empty
-  // phrase's padding is derived from it (see below), so it is part of the hash.
+  // overwrite to reach 128.
   std::array<char, 128> phrase_buffer{};
-  phrase_buffer.fill('\xA5');
 
   // Work on a copy so the caller's phrase is left alone. The original read at
   // most 127 characters and stopped at an embedded NUL; keep both limits.
+  // SafeCopy() zero-fills the rest of the buffer, as the original's strncpy()
+  // did, and an empty phrase's padding reads those zeros.
   port::SafeCopy(phrase_buffer, phrase);
-  int length = static_cast<int>(std::string_view(phrase_buffer.data()).size());
+  const int length =
+      static_cast<int>(std::string_view(phrase_buffer.data()).size());
 
-  // Case-insensitive: fold the phrase to upper case.
-  std::ranges::transform(port::MutableCString(phrase_buffer.data()),
-                         phrase_buffer.begin(), absl::ascii_toupper);
-
-  // Replace spaces, control characters and other non-printing bytes with a
-  // letter that depends on the position, so the hash only ever sees visible
-  // ASCII; bytes >= 0x80 count as non-printing. "7TH GRADE" therefore hashes
-  // like "7THDGRADE".
+  // Fold the phrase to upper case, and replace spaces, control characters and
+  // other non-printing bytes with a letter that depends on the position, so
+  // the hash only ever sees visible ASCII; bytes >= 0x80 count as
+  // non-printing. "7TH GRADE" therefore hashes like "7THDGRADE".
   for (int index = 0; index < length; index++) {
-    if (!absl::ascii_isgraph(static_cast<unsigned char>(
-            phrase_buffer.at(base::ToSize(index))))) {
-      phrase_buffer.at(base::ToSize(index)) =
-          static_cast<char>('A' + (index % 26));
-    }
+    char& c = phrase_buffer.at(base::ToSize(index));
+    c = absl::ascii_isgraph(static_cast<uint8_t>(c))
+            ? absl::ascii_toupper(static_cast<uint8_t>(c))
+            : static_cast<char>('A' + (index % 26));
   }
 
   // Pad the phrase to at least 16 characters and to a multiple of four, which
-  // the four-byte cipher below needs. Each padding letter is derived from the
+  // the four-byte round below needs. Each padding letter is derived from the
   // character `length` positions earlier, which past the phrase is earlier
-  // padding. An empty phrase reads its own slot instead - the terminator, then
-  // the 0xA5 fill - so it still hashes to a non-zero code.
-  if (length < 16 || length % 4 != 0) {
-    const int padded_length = std::max(((length + 3) / 4) * 4, 16);
-    int index = 0;
-    for (index = length; index < padded_length; index++) {
-      const int mixed =
-          static_cast<uint8_t>('?') ^
-          static_cast<uint8_t>(phrase_buffer.at(base::ToSize(index - length)));
-      phrase_buffer.at(base::ToSize(index)) =
-          static_cast<char>('A' + ((mixed + index) % 26));
-    }
-    length = index;
+  // padding. An empty phrase reads its own slot instead, which is zero, and
+  // still hashes to a non-zero code.
+  const int padded_length = std::max(((length + 3) / 4) * 4, 16);
+  for (int index = length; index < padded_length; index++) {
+    const int mixed =
+        static_cast<uint8_t>('?') ^
+        static_cast<uint8_t>(phrase_buffer.at(base::ToSize(index - length)));
+    phrase_buffer.at(base::ToSize(index)) =
+        static_cast<char>('A' + ((mixed + index) % 26));
   }
+  const std::span padded =
+      std::span(phrase_buffer).first(base::ToSize(padded_length));
 
-  // Start from the CRC of the reversed padded phrase. The original also
-  // hashed the phrase forwards, meaning to double the work of reversing the
-  // CRC, but then XORed that same CRC back out; only the reversed one reaches
-  // the result.
-  std::ranges::reverse(std::span(phrase_buffer).first(base::ToSize(length)));
-  uint32_t code = CrcEngine::Compute(
-      std::string_view(phrase_buffer.data(), base::ToSize(length)));
-
-  // Feed `code` through the phrase one byte at a time: each byte is XORed with
-  // the low byte of the running code, and that byte is rotated back in at the
-  // top. The original calls this a decoy cipher ahead of the real one.
-  // Put the phrase back in its original order first.
-  std::ranges::reverse(std::span(phrase_buffer).first(base::ToSize(length)));
-  for (int index = 0; index < length; index++) {
-    code ^= static_cast<uint8_t>(phrase_buffer.at(base::ToSize(index)));
-    const auto low_byte = static_cast<uint8_t>(code);
-    phrase_buffer.at(base::ToSize(index)) = static_cast<char>(
-        static_cast<uint8_t>(phrase_buffer.at(base::ToSize(index))) ^ low_byte);
-    // Preserve the original signed shift's sign extension using unsigned
-    // operations. A logical shift changes the historical password hashes.
-    const uint32_t sign_extension = (code & 0x80000000U) ? 0xFF000000U : 0U;
-    code = (code >> 8) | sign_extension;
-    code |= uint32_t{low_byte} << 24;
+  // Start from the CRC of the padded phrase read backwards. The original also
+  // hashed it forwards, meaning to double the work of reversing the CRC, but
+  // then XORed that same CRC back out; only the backward one reaches the
+  // result.
+  CrcEngine backward_crc;
+  for (const char c : padded | std::views::reverse) {
+    backward_crc.Update(static_cast<uint8_t>(c));
   }
+  uint32_t code = backward_crc.Value();
 
-  // Force a few bits on and a few off, repeating every eight bytes, so that
-  // the scrambled bytes lose information. The original meant this to frustrate
-  // cryptographic attacks and limited it to under 10% of the bits.
-  for (int index = 0; index < length; index++) {
-    static constexpr std::array<uint8_t, 8> kBitsForcedOff = {
-        0x00, 0x08, 0x00, 0x20, 0x00, 0x04, 0x10, 0x00};
-    static constexpr std::array<uint8_t, 8> kBitsForcedOn = {
-        0x10, 0x00, 0x00, 0x80, 0x40, 0x00, 0x00, 0x04};
-
+  // Feed the phrase through `code` one byte at a time, which the original
+  // calls a decoy cipher ahead of the real one: each byte is replaced by the
+  // code's current low byte, XORed into it, and the code rotates right by a
+  // byte. The rotation must also sign-extend, as the original's shift of a
+  // signed long did; a plain rotate changes the historical codes. Then force a
+  // few bits on and a few off, repeating every eight bytes, so that the bytes
+  // lose information; the original meant this to frustrate cryptographic
+  // attacks and limited it to under 10% of the bits.
+  static constexpr std::array<uint8_t, 8> kBitsForcedOff = {
+      0x00, 0x08, 0x00, 0x20, 0x00, 0x04, 0x10, 0x00};
+  static constexpr std::array<uint8_t, 8> kBitsForcedOn = {
+      0x10, 0x00, 0x00, 0x80, 0x40, 0x00, 0x00, 0x04};
+  for (int index = 0; index < padded_length; index++) {
     char& byte = phrase_buffer.at(base::ToSize(index));
-    const size_t pattern = base::ToSize(index) % kBitsForcedOn.size();
-    const uint32_t bits =
-        (uint32_t{static_cast<uint8_t>(byte)} | kBitsForcedOn.at(pattern)) &
-        ~uint32_t{kBitsForcedOff.at(pattern)};
-    byte = static_cast<char>(bits);
+    const auto phrase_byte = static_cast<uint8_t>(byte);
+    const uint32_t forced_on = kBitsForcedOn.at(base::ToSize(index % 8));
+    const uint32_t forced_off = kBitsForcedOff.at(base::ToSize(index % 8));
+    byte = static_cast<char>(((code & 0xFFU) | forced_on) & ~forced_off);
+    code ^= phrase_byte;
+    const uint32_t sign_extension = (code & 0x80000000U) ? 0xFF000000U : 0U;
+    code = std::rotr(code, 8) | sign_extension;
   }
 
   // Scramble each group of four bytes with a multiply/add/XOR round that
   // uses the bytes themselves as the key. The original calls it a variation
   // on the cipher in PGP; keyed by its own data it is not a real cipher, only
   // one more step an attacker has to invert.
-  for (int index = 0; index < length; index += 4) {
-    // The original read these bytes as signed char and computed in signed
-    // 16-bit values. Unsigned ones give the same result: the transformation
-    // below uses only +, * and ^, whose low 8 bits depend only on the low 8
-    // bits of their operands, and only those low 8 bits are stored back into
-    // the buffer.
-    const uint16_t key1 =
-        static_cast<uint8_t>(phrase_buffer.at(base::ToSize(index)));
-    const uint16_t key2 =
-        static_cast<uint8_t>(phrase_buffer.at(base::ToSize(index + 1)));
-    const uint16_t key3 =
-        static_cast<uint8_t>(phrase_buffer.at(base::ToSize(index + 2)));
-    const uint16_t key4 =
-        static_cast<uint8_t>(phrase_buffer.at(base::ToSize(index + 3)));
-    uint16_t val1 = key1;
-    uint16_t val2 = key2;
-    uint16_t val3 = key3;
-    uint16_t val4 = key4;
-
-    val1 = static_cast<uint16_t>(val1 * key1);
-    val2 = static_cast<uint16_t>(val2 + key2);
-    val3 = static_cast<uint16_t>(val3 + key3);
-    val4 = static_cast<uint16_t>(val4 * key4);
-
-    const uint16_t saved_val3 = val3;
-    val3 = static_cast<uint16_t>(val3 ^ val1);
-    val3 = static_cast<uint16_t>(val3 * key1);
-    const uint16_t saved_val2 = val2;
-    val2 = static_cast<uint16_t>(val2 ^ val4);
-    val2 = static_cast<uint16_t>(val2 + val3);
-    val2 = static_cast<uint16_t>(val2 * key3);
-    val3 = static_cast<uint16_t>(val3 + val2);
-
-    val1 = static_cast<uint16_t>(val1 ^ val2);
-    val4 = static_cast<uint16_t>(val4 ^ val3);
-
-    val2 = static_cast<uint16_t>(val2 ^ saved_val3);
-    val3 = static_cast<uint16_t>(val3 ^ saved_val2);
-
-    phrase_buffer.at(base::ToSize(index)) = static_cast<char>(val1);
-    phrase_buffer.at(base::ToSize(index + 1)) = static_cast<char>(val2);
-    phrase_buffer.at(base::ToSize(index + 2)) = static_cast<char>(val3);
-    phrase_buffer.at(base::ToSize(index + 3)) = static_cast<char>(val4);
+  for (int index = 0; index < padded_length; index += 4) {
+    // The original computed in signed 16-bit values from signed chars. 32-bit
+    // unsigned ones give the same bytes: +, * and ^ produce low 8 bits that
+    // depend only on the low 8 bits of their operands, and only those are
+    // stored back.
+    const std::span group = padded.subspan(base::ToSize(index), 4);
+    const uint32_t a = static_cast<uint8_t>(base::At(group, 0));
+    const uint32_t b = static_cast<uint8_t>(base::At(group, 1));
+    const uint32_t c = static_cast<uint8_t>(base::At(group, 2));
+    const uint32_t d = static_cast<uint8_t>(base::At(group, 3));
+    const uint32_t a_squared = a * a;
+    const uint32_t d_squared = d * d;
+    const uint32_t mix3 = ((c + c) ^ a_squared) * a;
+    const uint32_t mix2 = (((b + b) ^ d_squared) + mix3) * c;
+    const uint32_t mix3b = mix3 + mix2;
+    base::At(group, 0) = static_cast<char>(a_squared ^ mix2);
+    base::At(group, 1) = static_cast<char>(mix2 ^ (c + c));
+    base::At(group, 2) = static_cast<char>(mix3b ^ (b + b));
+    base::At(group, 3) = static_cast<char>(d_squared ^ mix3b);
   }
 
-  // The result is the CRC of the scrambled bytes. They can contain zeros, so
-  // hash by length rather than as a string.
   return CrcEngine::Compute(
-      std::string_view(phrase_buffer.data(), base::ToSize(length)));
+      std::string_view(phrase_buffer.data(), base::ToSize(padded_length)));
 }
