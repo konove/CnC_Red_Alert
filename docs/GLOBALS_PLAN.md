@@ -298,3 +298,20 @@ only where the two games' layouts already match.
   Windows-only and not built; the early `return`s in both `main`s (bad command line, low disk or
   RAM, no video mode) skip `ShutDown()`, which only matters once `Game` owns something, so phase 1
   must route them through it. The ASan exit check was not run: `Game` owns nothing yet.
+- 2026-09-19: phase 1 done for both games (2e6903c7..67d27480), except the check on a real display.
+  `Screen` (`ra/screen.h`, `td/screen.h`) replaces the page and view globals and is a member of
+  `Game`; `InitVideo()` and TD's inline mode code became `Screen::Init()`. Deviations from the
+  table: `ScreenWidth` was never written and `ScreenHeight` meant both the requested mode and, after
+  init, the 400-line game area, so the game area is the constants `Screen::kWidth`/`kHeight` and the
+  requested mode is `mode_height()`. `IsVQ640` stayed with `Screen` as the table says, though it is
+  movie state. The lifetime audit found three things: sdllib's `LogicPage` and `WindowBuffer` would
+  dangle once `Game` destroyed the pages (the destructors now reset them),
+  `GraphicBufferClass::Un_Init()` was an empty stub so a destroyed visible page leaked its SDL
+  texture and surfaces (it now frees them), and TD's static sidebar buttons called
+  `Get_Resolution_Factor()`, which read the visible view during static initialization (it now tests
+  `Screen::kWidth`). Both `main`s now route their early returns through `ShutDown()`. ASan:
+  `-QUITFRAME` (the same `RunGame()` return as the menu's exit button) and `SDL_QUIT` (sent as
+  SIGINT) exit cleanly in both games. LeakSanitizer still reports leaks that predate this work and
+  belong to later phases: RA's type-class `DimensionData`/`RadarIcon` vectors, which `Prog_End()`
+  clears without freeing (phase 5), and TD's `HouseClass` trackers (phase 6). Still to do: run Red
+  Alert on a real display into a mission and through a movie.
