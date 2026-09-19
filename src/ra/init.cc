@@ -1316,13 +1316,9 @@ void Anim_Init() {
   AnimControl.AudioSpec = Audio.output_spec();
 }
 
-// Applies "-DESTNET<address>": up to ten dot-separated hex bytes, the first
-// four the IPX network and the rest the node, naming the network across a
-// bridge. A malformed address, or one shorter than four bytes, is ignored.
-// `address` is the text after "-DESTNET". Split out of Parse_Command_Line()
-// so the std::optional below does not make clang-tidy run its optional-access
-// dataflow over that whole function.
-static void ApplyDestNetArgument(const std::string_view address) {
+// Kept out of Parse_Command_Line() so the std::optional below does not make
+// clang-tidy run its optional-access dataflow over that whole function.
+void ApplyDestNet(const std::string_view address) {
   NetNumType net;
   NetNodeType node;
 
@@ -1491,7 +1487,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
     **	Specify destination connection for network play
     */
     if (string.contains("-DESTNET")) {
-      ApplyDestNetArgument(string.substr(8));
+      ApplyDestNet(string.substr(8));
       continue;
     }
 

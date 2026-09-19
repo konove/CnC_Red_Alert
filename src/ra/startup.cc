@@ -39,9 +39,8 @@
 #include "absl/log/initialize.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
-#include "base/buffer.h"
+#include "base/numeric.h"
 #include "port/bytes_of.h"
-#include "port/tokenizer.h"
 #include "port/win32/win32_registry.h"
 #include "port/win32/win32_system.h"
 #include "port/win32/win32_types.h"
@@ -54,15 +53,12 @@
 #include "ra/ini.h"
 #include "ra/init.h"
 #include "ra/installation.h"
-#include "ra/ipx.h"
-#include "ra/ipxaddr.h"
 #include "ra/ipxmgr.h"
 #include "ra/jshell.h"
 #include "ra/language.h"
 #include "ra/nullconn.h"
 #include "ra/palette.h"
 #include "ra/profile.h"
-#include "ra/session.h"
 #include "ra/special.h"
 #include "ra/type.h"
 #include "sdllib/drawbuff.h"
@@ -76,7 +72,6 @@
 #include "sdllib/ww_win.h"
 #include "tech/audio_mixer.h"
 #include "tech/disk_file.h"
-#include "tech/number_parse.h"
 #include "tech/search_paths.h"
 
 #ifdef _WIN32
@@ -116,42 +111,13 @@ static void ReadStartupOptions(const INIClass& ini) {
     Ipx.Set_Socket(static_cast<uint16_t>(0x4000 + socket));
   }
 
-  // DestNet names a network on the far side of an IPX bridge, as dotted hex
-  // bytes: four for the network number, optionally followed by up to six
-  // node bytes.
+  // DestNet names a network on the far side of an IPX bridge.
   std::array<char, 512> dest_net{};
   // Get_String() returns the length of the trimmed value; 0 if absent.
-  if (ini.Get_String("Options", "DestNet", nullptr, dest_net,
-                     static_cast<int>(dest_net.size())) == 0) {
-    return;
-  }
-  NetNumType net;
-  NetNodeType node;
-
-  // Bytes 0-3 are the network number, 4-9 the node.
-  int byte_count = 0;
-  port::Tokenizer tokens(dest_net.data(), ".");
-  while (const char* token = tokens.Next()) {
-    const auto byte = tech::ParseHex<uint8_t>(token);
-    if (!byte || byte_count >= 10) {
-      // Reject the address instead of accepting a partial network.
-      byte_count = 0;
-      break;
-    }
-    if (byte_count < 4) {
-      base::At(net, byte_count) = *byte;
-    } else {
-      base::At(node, byte_count - 4) = *byte;
-    }
-    byte_count++;
-  }
-
-  // Only the network number matters: the node is replaced by the broadcast
-  // node, so packets reach every machine across the bridge.
-  if (byte_count >= 4) {
-    Session.IsBridge = 1;
-    base::FillBytes(base::ObjectBytes(node), 0xff, 6);
-    Session.BridgeNet = IPXAddressClass(net, node);
+  const int length = ini.Get_String("Options", "DestNet", nullptr, dest_net,
+                                    static_cast<int>(dest_net.size()));
+  if (length > 0) {
+    ApplyDestNet(std::string_view(dest_net.data(), base::ToSize(length)));
   }
 }
 
