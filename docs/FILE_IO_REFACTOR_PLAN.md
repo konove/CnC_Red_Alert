@@ -54,6 +54,10 @@
 - Follow-up (`b115a46d`): `MixFileVqaIo` (two copies) → `GameFileVqaIo` in `tech/game_file_vqa_io.*`
   over a ByteStream; `VqaIo` now uses `std::string_view`/`std::span<std::byte>`/`SeekOrigin`/bool;
   `SeekOrigin` lives in `base/seek_origin.h`.
+- Follow-up (2026-09-18): the integer-handle API is gone. Its users read through `File` instead: the
+  WSA player (`tech/wsa_animation.*`), the audio mixer (`tech/audio_mixer.*`, a streamed score owns
+  a `std::unique_ptr<File>`) and TD's PCX writer (a `GameFile`). `tech/file_handles*.cc` and the
+  declarations in `sdllib/file.h` are deleted; mentions of them below are history.
 - The refactor is complete.
 - Later (streams refactor A4, `b25297a8`): `ByteStream::ok()` and `File::ok()` report C-library read
   and write errors, so `FileSource` can tell the end of a file from a failed read.

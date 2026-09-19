@@ -44,12 +44,12 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
+#include "tech/file.h"
+#include "tech/game_file.h"
 
-static void Write_Pcx_ScanLine(int file_handle,
-                               std::span<const uint8_t> pixels);
+static void Write_Pcx_ScanLine(File& file, std::span<const uint8_t> pixels);
 
 /***************************************************************************
  * WRITE_PCX_FILE -- Write the data in ViewPort to a pcx file              *
@@ -77,16 +77,15 @@ int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
   PCX_HEADER header = {10,  5,   1,  8, 0, 0,   319, 199,
                        320, 200, {}, 0, 1, 320, 1,   {}};
 
-  // Open file name
-  const int file_handle = OpenFileHandle(name, FileAccess::kWrite);
-  if (file_handle == -1) {
+  GameFile file(name);
+  if (!file.Open(FileAccess::kWrite)) {
     return 0;
   }
 
   header.width = static_cast<int16_t>(pic.Get_Width() - 1);
   header.height = static_cast<int16_t>(pic.Get_Height() - 1);
   header.byte_per_line = static_cast<int16_t>(pic.Get_Width());
-  WriteFileHandle(file_handle, base::ObjectBytes(header));
+  file.WriteObject(header);
 
   const int VP_Scan_Line = pic.Get_Width() + pic.Get_XAdd();
   GraphicBufferClass* Graphic_Buffer = pic.Get_Graphic_Buffer();
@@ -94,9 +93,8 @@ int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
       base::ToSize((pic.Get_YPos() * VP_Scan_Line) + pic.Get_XPos()));
   for (i = 0; i < static_cast<unsigned>(header.height) + 1; i++) {
     Write_Pcx_ScanLine(
-        file_handle,
-        pixels.subspan(i * static_cast<std::size_t>(VP_Scan_Line),
-                       static_cast<std::size_t>(header.byte_per_line)));
+        file, pixels.subspan(i * static_cast<std::size_t>(VP_Scan_Line),
+                             static_cast<std::size_t>(header.byte_per_line)));
   }
   base::CopyBytes(base::ObjectBytes(palcopy), std::as_bytes(palette),
                   sizeof(palcopy));
@@ -105,9 +103,8 @@ int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
     component = static_cast<unsigned char>(component << 2);
   }
   i = 0x0c;
-  WriteFileHandle(file_handle, base::ObjectBytes(i).first(1));
-  WriteFileHandle(file_handle, base::ObjectBytes(palcopy));
-  CloseFileHandle(file_handle);
+  file.Write(base::ObjectBytes(i).first(1));
+  file.Write(base::ObjectBytes(palcopy));
   return 0;
 }
 
@@ -126,7 +123,7 @@ int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
  *=========================================================================*/
 
 constexpr int kPoolSize = 2048;
-void Write_Pcx_ScanLine(int file_handle, std::span<const uint8_t> pixels) {
+void Write_Pcx_ScanLine(File& file, std::span<const uint8_t> pixels) {
   unsigned char pool[kPoolSize];
 
   std::size_t used = 0;
@@ -137,7 +134,7 @@ void Write_Pcx_ScanLine(int file_handle, std::span<const uint8_t> pixels) {
   const auto write_char = [&](unsigned char x) {
     base::At(pool, used++) = x;
     if (used >= kPoolSize) {
-      WriteFileHandle(file_handle, base::ObjectBytes(pool));
+      file.Write(base::ObjectBytes(pool));
       used = 0;
     }
   };
@@ -175,5 +172,5 @@ void Write_Pcx_ScanLine(int file_handle, std::span<const uint8_t> pixels) {
     }
   }
 
-  WriteFileHandle(file_handle, base::ObjectBytes(pool).first(used));
+  file.Write(base::ObjectBytes(pool).first(used));
 }

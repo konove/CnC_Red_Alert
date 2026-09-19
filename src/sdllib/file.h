@@ -46,23 +46,6 @@
 
 #include "sdllib/file_access.h"
 
-#ifndef SEEK_SET
-#define SEEK_SET 0  // Seek from start of file.
-#define SEEK_CUR 1  // Seek relative from current location.
-#define SEEK_END 2  // Seek from end of file.
-#endif
-
-// Integer-handle file access, which only the PCX writer still uses. The game
-// implements these (tech/file_handles.cc) so that names resolve through its
-// mixfiles. A handle is kInvalidHandle (-1) when the open failed.
-int OpenFileHandle(std::string_view file_name, FileAccess mode);
-void CloseFileHandle(int handle);
-int32_t ReadFileHandle(int handle, std::span<std::byte> buffer);
-int32_t WriteFileHandle(int handle, std::span<const std::byte> buffer);
-int32_t SeekFileHandle(int handle, int32_t offset, int origin);
-int32_t FileHandleSize(int handle);
-bool FileExists(std::string_view file_name);
-
 // low level IO implemented here
 void* IO_Open_File(const char* filename, FileAccess mode);
 void IO_Close_File(void* handle);

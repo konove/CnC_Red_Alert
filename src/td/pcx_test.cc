@@ -97,6 +97,40 @@ TEST(PcxTest, RejectsMissingTrailingRunColor) {
   EXPECT_EQ(PcxFile(pixels, true).Load(), nullptr);
 }
 
+// Writes through the game's file lookup, which puts a new file where the name
+// says; runs, literals and the 0xC0 escape come back as they went in.
+TEST(PcxTest, WrittenFileReadsBack) {
+  const std::filesystem::path path = std::filesystem::temp_directory_path() /
+                                     "cnc_pcx_WrittenFileReadsBack.pcx";
+  constexpr int kWidth = 70;
+  GraphicBufferClass picture(kWidth, 2);
+  const auto pixels = picture.Get_Bytes();
+  for (int x = 0; x < kWidth; x++) {
+    base::At(pixels, x) = 9;  // One run, longer than a count can hold.
+    base::At(pixels, kWidth + x) =
+        static_cast<uint8_t>(x % 2 == 0 ? 0xC5 : x);  // Literals and escapes.
+  }
+  std::array<uint8_t, 768> palette{};
+  palette.at(3) = 63;
+
+  Write_PCX_File(path.string().c_str(), picture, palette);
+
+  std::array<uint8_t, 768> loaded_palette{};
+  const std::unique_ptr<GraphicBufferClass> loaded(
+      Read_PCX_File(path.string().c_str(), loaded_palette, {}, 0));
+  std::error_code ignored;
+  std::filesystem::remove(path, ignored);
+
+  ASSERT_NE(loaded, nullptr);
+  ASSERT_EQ(loaded->Get_Width(), kWidth);
+  ASSERT_EQ(loaded->Get_Height(), 2);
+  const auto loaded_pixels = loaded->Get_Bytes();
+  for (int i = 0; i < 2 * kWidth; i++) {
+    ASSERT_EQ(base::At(loaded_pixels, i), base::At(pixels, i)) << i;
+  }
+  EXPECT_EQ(loaded_palette.at(3), 63);
+}
+
 TEST(PcxTest, DecodesLiteralPixels) {
   constexpr std::array<uint8_t, 4> pixels{7, 8, 0, 0};
   for (const bool padded : {false, true}) {
@@ -112,7 +146,8 @@ TEST(PcxTest, DecodesLiteralPixels) {
 TEST(PcxTest, DecodesRepeatedPixels) {
   constexpr std::array<uint8_t, 4> pixels{194, 7, 194, 0};
   for (const bool padded : {false, true}) {
-    const auto image = PcxFile(std::span(pixels).first(padded ? 4 : 2), padded).Load();
+    const auto image =
+        PcxFile(std::span(pixels).first(padded ? 4 : 2), padded).Load();
     ASSERT_NE(image, nullptr);
     const auto decoded = image->Get_Bytes();
     EXPECT_EQ(base::At(decoded, 0), 7);
