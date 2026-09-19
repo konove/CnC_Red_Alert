@@ -89,9 +89,6 @@
 // torn down anyway.
 [[noreturn]] static void ExitWithError(char* message);
 
-#ifdef _WIN32
-HINSTANCE ProgramInstance;
-#endif
 // Reads the options that have to be known before the window and the network
 // exist: blit fills, the screen height, the IPX socket and a bridge network.
 static void ReadStartupOptions(DiskFile* config_file);
@@ -109,14 +106,6 @@ int main(int argc, char* argv[])
   absl::InitializeLog();
   absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
 
-  // The original minimum of about 7 MB. The SDL Ram_Free() always reports
-  // 64 MB, so this never fails any more.
-  if (Ram_Free(MEM_NORMAL) < 7000000) {
-    absl::PrintF("%s", kLanguageText.no_ram);
-
-    return EXIT_FAILURE;
-  }
-
 #ifdef _WIN32
 
   // Westwood's own network share: refuse to run a build straight off it.
@@ -132,8 +121,6 @@ int main(int argc, char* argv[])
   char command_char;
   char* argv[20];  // Pointers to command line arguments
   char path_to_exe[132];
-
-  ProgramInstance = instance;
 
   // WinMain gets the command line as one string without the program name.
   // Rebuild the DOS-style argc/argv: argv[0] is the full path to the .EXE,
