@@ -3025,7 +3025,9 @@ void Load_Recording_Values() {
  * HISTORY: * 08/19/1995 JLB : Created. *
  *=============================================================================================*/
 uint32_t Obfuscate(const char* string) {
-  char buffer[128];
+  // 127 phrase characters, the padding that can bring 127 up to 128, and a
+  // terminator.
+  char buffer[129];
 
   if (!string) {
     return 0;
@@ -3036,8 +3038,7 @@ uint32_t Obfuscate(const char* string) {
   **	Copy key phrase into a working buffer. This hides any transformation
   *done *	to the string.
   */
-  port::SafeCopy(buffer, string);
-  base::At(buffer, sizeof(buffer) - 1) = '\0';
+  port::SafeCopy(std::span(buffer).first(128), string);
   int length = static_cast<int>(std::string_view(buffer).size());
 
   /*
