@@ -125,6 +125,7 @@
 #include "ra/netdlg.h"
 #include "ra/nulldlg.h"
 #include "ra/nullmgr.h"
+#include "ra/obfuscate.h"
 #include "ra/palette.h"
 #include "ra/queue.h"
 #include "ra/rules.h"

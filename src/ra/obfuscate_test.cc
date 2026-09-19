@@ -1,8 +1,9 @@
+#include "ra/obfuscate.h"
+
 #include <cstdint>
 #include <string>
 
 #include "gtest/gtest.h"
-#include "ra/init.h"
 
 namespace {
 

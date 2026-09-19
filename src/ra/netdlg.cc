@@ -175,6 +175,7 @@
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
+#include "ra/obfuscate.h"
 #include "ra/palette.h"
 #include "ra/queue.h"
 #include "ra/rules.h"

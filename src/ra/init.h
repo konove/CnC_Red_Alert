@@ -1,12 +1,9 @@
 #ifndef CNC_RED_ALERT_RA_INIT_H_
 #define CNC_RED_ALERT_RA_INIT_H_
 
-#include <cstdint>
 #include <span>
-#include <string_view>
 
 void Load_Title_Page(bool visible = false);
-uint32_t Obfuscate(std::string_view string);
 void Anim_Init();
 bool Init_Game();
 bool Select_Game(bool fade = false);

@@ -1,3 +1,5 @@
+#include "ra/obfuscate.h"
+
 #include <algorithm>
 #include <array>
 #include <cctype>
@@ -9,41 +11,8 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
-#include "ra/init.h"
 #include "tech/crc.h"
 
-/***********************************************************************************************
- * Obfuscate -- Sufficiently transform parameter to thwart casual hackers. *
- *                                                                                             *
- *    This routine borrows from CRC and PGP technology to sufficiently alter the
- *parameter     * in order to make it difficult to reverse engineer the key
- *phrase. This is designed to    * be used for hidden game options that will be
- *released at a later time over Westwood's    * Web page or through magazine
- *hint articles.                                              *
- *                                                                                             *
- *    This algorithm is cryptographically categorized as a "one way hash". *
- *                                                                                             *
- *    Since this is a one way transformation, it becomes much more difficult to
- *reverse        * engineer the pass phrase even if the resultant pass code is
- *known. This has an added     * benefit of making this algorithm immune to
- *traditional cryptographic attacks.            *
- *                                                                                             *
- *    The largest strength of this transformation algorithm lies in the
- *restriction on the     * source vector being legal ASCII uppercase characters.
- *This restriction alone makes even  * a simple CRC transformation practically
- *impossible to reverse engineer. This algorithm   * uses far more than a simple
- *CRC transformation to achieve added strength from advanced   * attack methods.
- **
- *                                                                                             *
- * INPUT:   string   -- Pointer to the key phrase that will be transformed into
- *a code.        *
- *                                                                                             *
- * OUTPUT:  Returns with the code that the key phrase is translated into. *
- *                                                                                             *
- * WARNINGS:   A zero length pass phrase results in a 0x00000000 result code. *
- *                                                                                             *
- * HISTORY: * 08/19/1995 JLB : Created. *
- *=============================================================================================*/
 uint32_t Obfuscate(const std::string_view string) {
   std::array<char, 129> buffer{};
 
