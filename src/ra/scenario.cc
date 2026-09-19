@@ -813,10 +813,10 @@ void Do_Win() {
                      kTBlack,
                      TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
     CountDownTimer.Set(int64_t{kTimerSecond} * 3);
-    while (Is_Speaking()) {
+    while (IsSpeaking()) {
     }
     Speak(VOX_ACCOMPLISHED);
-    while (CountDownTimer.HasTimeLeft() || Is_Speaking()) {
+    while (CountDownTimer.HasTimeLeft() || IsSpeaking()) {
       ServiceRealTime();
     }
   }
@@ -1020,10 +1020,10 @@ void Do_Lose() {
                    kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   CountDownTimer.Set(int64_t{kTimerSecond} * 3);
-  while (Is_Speaking()) {
+  while (IsSpeaking()) {
   }
   Speak(VOX_FAIL);
-  while (CountDownTimer.HasTimeLeft() || Is_Speaking()) {
+  while (CountDownTimer.HasTimeLeft() || IsSpeaking()) {
     ServiceRealTime();
   }
 
@@ -1109,10 +1109,10 @@ void Do_Draw() {
   Fancy_Text_Print(TXT_WOL_DRAW, x, 180, &ColorRemaps.at(PCOLOR_RED), kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   CountDownTimer.Set(int64_t{kTimerSecond} * 3);
-  while (Is_Speaking()) {
+  while (IsSpeaking()) {
   }
   Speak(VOX_CONTROL_EXIT);
-  while (CountDownTimer.HasTimeLeft() || Is_Speaking()) {
+  while (CountDownTimer.HasTimeLeft() || IsSpeaking()) {
     ServiceRealTime();
   }
 

@@ -1724,7 +1724,7 @@ void TeamClass::Coordinate_Attack() {
             tank->Teleport_To(As_Cell(Target));
             tank->MoebiusCountDown.Set(ChronoTankDuration * kTicksPerMinute);
             Scen.Do_BW_Fade();
-            Sound_Effect(VOC_CHRONOTANK1, unit->Coord);
+            PlaySoundEffectAt(VOC_CHRONOTANK1, unit->Coord);
             tank->Assign_Target(kTargetNone);
             tank->Assign_Mission(MISSION_GUARD);
           } else {

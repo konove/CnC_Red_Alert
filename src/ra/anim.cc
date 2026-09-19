@@ -861,7 +861,7 @@ void AnimClass::Start() {
   /*
   **	Play the sound effect for this animation.
   */
-  Sound_Effect(Class->Sound, Coord);
+  PlaySoundEffectAt(Class->Sound, Coord);
 
   /*
   **	If the stage where collateral effects occur is the first stage of the

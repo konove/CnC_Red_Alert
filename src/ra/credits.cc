@@ -111,9 +111,9 @@ void CreditClass::Graphic_Logic(bool forced) {
     */
     if (IsAudible) {
       if (IsUp) {
-        Sound_Effect(VOC_MONEY_UP, fixed(1, 2));
+        PlaySoundEffect(VOC_MONEY_UP, fixed(1, 2));
       } else {
-        Sound_Effect(VOC_MONEY_DOWN, fixed(1, 2));
+        PlaySoundEffect(VOC_MONEY_DOWN, fixed(1, 2));
       }
     }
 

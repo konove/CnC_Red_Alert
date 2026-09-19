@@ -271,7 +271,7 @@ STDMETHODIMP RAChatEventSink::OnPaged(HRESULT /*res*/, User* pUser,
     Map.Flag_To_Redraw(true);
   }
 
-  Sound_Effect(WOLSOUND_ONPAGE);
+  PlaySoundEffect(WOLSOUND_ONPAGE);
 
   return S_OK;
 }
@@ -701,7 +701,7 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
         const std::string szPrint = absl::StrFormat(
             "%s%s: %s", WolText(pUserSender->name), TXT_WOL_PRIVATE, szMessage);
         pOwner->PrintMessage(szPrint.c_str(), WOLCOLORREMAP_PRIVATEMESSAGE);
-        Sound_Effect(VOC_INCOMING_MESSAGE);
+        PlaySoundEffect(VOC_INCOMING_MESSAGE);
       }
     } else {
       char szOut[kMessageMax];
@@ -1088,40 +1088,40 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
       std::string_view(szMessage).contains("<<died>>")) {
     const int i = Sim_Random_Pick(0, 29);
     if (i == 0) {
-      Sound_Effect(VOC_DOG_HURT);
+      PlaySoundEffect(VOC_DOG_HURT);
     } else if (i == 1) {
-      Sound_Effect(VOC_ANTDIE);
+      PlaySoundEffect(VOC_ANTDIE);
     } else {
-      Sound_Effect(static_cast<VocType>(static_cast<int>(VOC_SCREAM1) +
+      PlaySoundEffect(static_cast<VocType>(static_cast<int>(VOC_SCREAM1) +
                                         Sim_Random_Pick(0, 8)));
     }
   } else if (std::string_view(szMessage).contains("<<whines>>") ||
              std::string_view(szMessage).contains("<<whining>>") ||
              std::string_view(szMessage).contains("<<bitching>>") ||
              std::string_view(szMessage).contains("<<whine>>")) {
-    Sound_Effect(VOC_DOG_WHINE);
+    PlaySoundEffect(VOC_DOG_WHINE);
   } else if (std::string_view(szMessage).contains("<<shoots>>") ||
              std::string_view(szMessage).contains("<<shooting>>") ||
              std::string_view(szMessage).contains("<<shoot>>") ||
              std::string_view(szMessage).contains("<<shot>>")) {
     switch (Sim_Random_Pick(0, 5)) {
       case 0:
-        Sound_Effect(VOC_CANNON1);
+        PlaySoundEffect(VOC_CANNON1);
         break;
       case 1:
-        Sound_Effect(VOC_CANNON2);
+        PlaySoundEffect(VOC_CANNON2);
         break;
       case 2:
-        Sound_Effect(VOC_GUN_RIFLE);
+        PlaySoundEffect(VOC_GUN_RIFLE);
         break;
       case 3:
-        Sound_Effect(VOC_SILENCER);
+        PlaySoundEffect(VOC_SILENCER);
         break;
       case 4:
-        Sound_Effect(VOC_CANNON6);
+        PlaySoundEffect(VOC_CANNON6);
         break;
       case 5:
-        Sound_Effect(VOC_CANNON8);
+        PlaySoundEffect(VOC_CANNON8);
         break;
       default:
         break;
@@ -1134,19 +1134,19 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
              std::string_view(szMessage).contains("<<nukes>>")) {
     switch (Sim_Random_Pick(0, 4)) {
       case 0:
-        Sound_Effect(VOC_KABOOM1);
+        PlaySoundEffect(VOC_KABOOM1);
         break;
       case 1:
-        Sound_Effect(VOC_KABOOM12);
+        PlaySoundEffect(VOC_KABOOM12);
         break;
       case 2:
-        Sound_Effect(VOC_KABOOM15);
+        PlaySoundEffect(VOC_KABOOM15);
         break;
       case 3:
-        Sound_Effect(VOC_KABOOM30);
+        PlaySoundEffect(VOC_KABOOM30);
         break;
       case 4:
-        Sound_Effect(VOC_KABOOM25);
+        PlaySoundEffect(VOC_KABOOM25);
         break;
       default:
         break;
@@ -1157,28 +1157,28 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
              std::string_view(szMessage).contains("<<yeah>>")) {
     switch (Sim_Random_Pick(0, 7)) {
       case 0:
-        Sound_Effect(VOC_E_AH);
+        PlaySoundEffect(VOC_E_AH);
         break;
       case 1:
-        Sound_Effect(VOC_E_YES);
+        PlaySoundEffect(VOC_E_YES);
         break;
       case 2:
-        Sound_Effect(VOC_THIEF_YEA);
+        PlaySoundEffect(VOC_THIEF_YEA);
         break;
       case 3:
-        Sound_Effect(VOC_SPY_YESSIR);
+        PlaySoundEffect(VOC_SPY_YESSIR);
         break;
       case 4:
-        Sound_Effect(VOC_SPY_INDEED);
+        PlaySoundEffect(VOC_SPY_INDEED);
         break;
       case 5:
-        Sound_Effect(VOC_ENG_YES);
+        PlaySoundEffect(VOC_ENG_YES);
         break;
       case 6:
-        Sound_Effect(VOC_MED_YESSIR);
+        PlaySoundEffect(VOC_MED_YESSIR);
         break;
       case 7:
-        Sound_Effect(VOC_MED_AFFIRM);
+        PlaySoundEffect(VOC_MED_AFFIRM);
         break;
       default:
         break;
@@ -1186,76 +1186,76 @@ void RAChatEventSink::ActionEggSound(const char* szMessage) {
   } else if (std::string_view(szMessage).contains("<<incredible>>") ||
              std::string_view(szMessage).contains("<<adam>>") ||
              std::string_view(szMessage).contains("<<Adam>>")) {
-    Sound_Effect(VOC_E_OK);
+    PlaySoundEffect(VOC_E_OK);
   } else if (std::string_view(szMessage).contains("<<coming>>") ||
              std::string_view(szMessage).contains("<<on my way>>") ||
              std::string_view(szMessage).contains("<<moving out>>")) {
     switch (Sim_Random_Pick(0, 4)) {
       case 0:
-        Sound_Effect(VOC_SPY_ONWAY);
+        PlaySoundEffect(VOC_SPY_ONWAY);
         break;
       case 1:
-        Sound_Effect(VOC_ENG_MOVEOUT);
+        PlaySoundEffect(VOC_ENG_MOVEOUT);
         break;
       case 2:
-        Sound_Effect(VOC_SPY_KING);
+        PlaySoundEffect(VOC_SPY_KING);
         break;
       case 3:
-        Sound_Effect(VOC_MED_MOVEOUT);
+        PlaySoundEffect(VOC_MED_MOVEOUT);
         break;
       case 4:
-        Sound_Effect(VOC_THIEF_MOVEOUT);
+        PlaySoundEffect(VOC_THIEF_MOVEOUT);
         break;
       default:
         break;
     }
   } else if (std::string_view(szMessage).contains("<<water>>")) {
-    Sound_Effect(VOC_SPLASH);
+    PlaySoundEffect(VOC_SPLASH);
   } else if (std::string_view(szMessage).contains("<<charging>>") ||
              std::string_view(szMessage).contains("<<powering>>")) {
-    Sound_Effect(VOC_TESLA_POWER_UP);
+    PlaySoundEffect(VOC_TESLA_POWER_UP);
   } else if (std::string_view(szMessage).contains("<<zap>>") ||
              std::string_view(szMessage).contains("<<zaps>>")) {
-    Sound_Effect(VOC_TESLA_ZAP);
+    PlaySoundEffect(VOC_TESLA_ZAP);
   } else if (std::string_view(szMessage).contains("<<torpedo>>") ||
              std::string_view(szMessage).contains("<<torpedoes>>")) {
-    Sound_Effect(VOC_TORPEDO);
+    PlaySoundEffect(VOC_TORPEDO);
   } else if (std::string_view(szMessage).contains("<<appears>>") ||
              std::string_view(szMessage).contains("<<surfaces>>") ||
              std::string_view(szMessage).contains("<<emerges>>")) {
-    Sound_Effect(VOC_SUBSHOW);
+    PlaySoundEffect(VOC_SUBSHOW);
   } else if (std::string_view(szMessage).contains("<<bark>>") ||
              std::string_view(szMessage).contains("<<barks>>")) {
-    Sound_Effect(VOC_DOG_BARK);
+    PlaySoundEffect(VOC_DOG_BARK);
   } else if (std::string_view(szMessage).contains("<<growl>>") ||
              std::string_view(szMessage).contains("<<growls>>")) {
-    Sound_Effect(VOC_DOG_GROWL2);
+    PlaySoundEffect(VOC_DOG_GROWL2);
   } else if (std::string_view(szMessage).contains("<<chronoshift>>") ||
              std::string_view(szMessage).contains("<<disappears>>")) {
-    Sound_Effect(VOC_CHRONO);
+    PlaySoundEffect(VOC_CHRONO);
   } else if (std::string_view(szMessage).contains("<<crumble>>") ||
              std::string_view(szMessage).contains("<<crumbles>>") ||
              std::string_view(szMessage).contains("<<collapse>>") ||
              std::string_view(szMessage).contains("<<collapses>>")) {
-    Sound_Effect(VOC_CRUMBLE);
+    PlaySoundEffect(VOC_CRUMBLE);
   } else if (std::string_view(szMessage).contains("<<sell>>") ||
              std::string_view(szMessage).contains("<<sells>>") ||
              std::string_view(szMessage).contains("<<cash>>") ||
              std::string_view(szMessage).contains("<<money>>")) {
-    Sound_Effect(VOC_CASHTURN);
+    PlaySoundEffect(VOC_CASHTURN);
   } else if (std::string_view(szMessage).contains("<<heal>>") ||
              std::string_view(szMessage).contains("<<heals>>")) {
-    Sound_Effect(VOC_HEAL);
+    PlaySoundEffect(VOC_HEAL);
   } else if (std::string_view(szMessage).contains("<<missile>>")) {
     switch (Sim_Random_Pick(0, 2)) {
       case 0:
-        Sound_Effect(VOC_MISSILE_1);
+        PlaySoundEffect(VOC_MISSILE_1);
         break;
       case 1:
-        Sound_Effect(VOC_MISSILE_2);
+        PlaySoundEffect(VOC_MISSILE_2);
         break;
       case 2:
-        Sound_Effect(VOC_MISSILE_3);
+        PlaySoundEffect(VOC_MISSILE_3);
         break;
       default:
         break;
@@ -1440,16 +1440,16 @@ STDMETHODIMP RAChatEventSink::OnUserKick(HRESULT hRes, Channel* /*channel*/,
     }
     switch (Sim_Random_Pick(0, 3)) {
       case 0:
-        Sound_Effect(VOC_TANYA_CHEW);
+        PlaySoundEffect(VOC_TANYA_CHEW);
         break;
       case 1:
-        Sound_Effect(VOC_TANYA_LAUGH);
+        PlaySoundEffect(VOC_TANYA_LAUGH);
         break;
       case 2:
-        Sound_Effect(VOC_TANYA_CHING);
+        PlaySoundEffect(VOC_TANYA_CHING);
         break;
       case 3:
-        Sound_Effect(VOC_TANYA_KISS);
+        PlaySoundEffect(VOC_TANYA_KISS);
         break;
       default:
         break;

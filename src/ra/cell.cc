@@ -2569,7 +2569,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       */
       case CRATE_HEAL_BASE:
         if (object->IsOwnedByPlayer) {
-          Sound_Effect(VOC_HEAL, object->Center_Coord());
+          PlaySoundEffectAt(VOC_HEAL, object->Center_Coord());
         }
         for (int index = 0; index < Logic.Count(); index++) {
           ObjectClass* obj = Logic.at(index);
@@ -2677,7 +2677,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         if (!ChronalVortex.Is_Active()) {
           ChronalVortex.Appear(Cell_Coord());
           ChronalVortex.Set_Target(object);
-          Sound_Effect(VOC_TESLA_ZAP, object->Center_Coord());
+          PlaySoundEffectAt(VOC_TESLA_ZAP, object->Center_Coord());
         }
         break;
 

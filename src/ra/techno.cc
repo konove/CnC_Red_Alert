@@ -3423,7 +3423,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     /*
     **	Play any sound effect tied to this weapon type.
     */
-    Sound_Effect(weapon->Sound, Fire_Coord(which));
+    PlaySoundEffectAt(weapon->Sound, Fire_Coord(which));
 
     /*
     **	If there is a special firing animation, then create and attach
@@ -4422,9 +4422,9 @@ void TechnoClass::Do_Uncloak() {
     CloakingDevice.Set_Stage(0);
     CloakingDevice.Set_Rate(1);
     if (What_Am_I() == RTTI_VESSEL) {
-      Sound_Effect(VOC_SUBSHOW, Coord);
+      PlaySoundEffectAt(VOC_SUBSHOW, Coord);
     } else {
-      Sound_Effect(VOC_IRON1, Coord);
+      PlaySoundEffectAt(VOC_IRON1, Coord);
     }
   }
 }
@@ -4456,9 +4456,9 @@ void TechnoClass::Do_Cloak() {
     CloakingDevice.Set_Stage(0);
     CloakingDevice.Set_Rate(1);
     if (What_Am_I() == RTTI_VESSEL) {
-      Sound_Effect(VOC_SUBSHOW, Coord);
+      PlaySoundEffectAt(VOC_SUBSHOW, Coord);
     } else {
-      Sound_Effect(VOC_IRON1, Coord);
+      PlaySoundEffectAt(VOC_IRON1, Coord);
     }
   }
 }

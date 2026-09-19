@@ -577,8 +577,8 @@ VocType CCINIClass::Get_VocType(const char* section, const char* entry,
                                 VocType defvalue) const {
   char buffer[128];
 
-  Get_String(section, entry, Voc_Name(defvalue), buffer, sizeof(buffer));
-  return Voc_From_Name(buffer);
+  Get_String(section, entry, VocName(defvalue), buffer, sizeof(buffer));
+  return VocFromName(buffer);
 }
 
 /***********************************************************************************************
@@ -605,7 +605,7 @@ bool CCINIClass::Put_VocType(const char* section, const char* entry,
   if (value == VOC_NONE) {
     return Put_String(section, entry, "<none>");
   }
-  return Put_String(section, entry, Voc_Name(value));
+  return Put_String(section, entry, VocName(value));
 }
 
 /***********************************************************************************************

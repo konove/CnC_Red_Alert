@@ -2450,7 +2450,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           Map.Column[1].Flag_To_Redraw();
           Map.Activate_Pulse();
         }
-        Sound_Effect(VOC_SONAR);
+        PlaySoundEffect(VOC_SONAR);
         IsRecalcNeeded = true;
         for (int index = 0; index < Vessels.Count(); index++) {
           VesselClass* sub = Vessels.Ptr(index);
@@ -2592,7 +2592,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
                                                kTicksPerSecond);
               }
               tech->Mark(MARK_CHANGE);
-              Sound_Effect(VOC_IRON1, tech->Center_Coord());
+              PlaySoundEffectAt(VOC_IRON1, tech->Center_Coord());
               if (this == PlayerPtr) {
                 Map.IsTargettingMode = SPC_NONE;
               }
@@ -2701,7 +2701,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
             drive->MoebiusCountDown.Set(ChronoTankDuration * kTicksPerMinute);
           }
           Scen.Do_BW_Fade();
-          Sound_Effect(VOC_CHRONO, drive->Coord);
+          PlaySoundEffectAt(VOC_CHRONO, drive->Coord);
         }
       }
       UnitToTeleport = kTargetNone;
@@ -2895,7 +2895,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
             Abandon_Production(type);
 
             if (PlayerPtr == this) {
-              Sound_Effect(VOC_PLACE_BUILDING_DOWN);
+              PlaySoundEffect(VOC_PLACE_BUILDING_DOWN);
               Map.Set_Cursor_Shape({});
               Map.PendingObjectPtr = nullptr;
               Map.PendingObject = nullptr;
@@ -4015,7 +4015,7 @@ void HouseClass::Sell_Wall(CELL cell) {
         }
         if (btype != nullptr && !btype->IsUnsellable) {
           if (PlayerPtr == this) {
-            Sound_Effect(VOC_CASHTURN);
+            PlaySoundEffect(VOC_CASHTURN);
           }
 
           Refund_Money(btype->Raw_Cost() * Rule.RefundPercent);

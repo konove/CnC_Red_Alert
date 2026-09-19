@@ -726,8 +726,8 @@ bool TriggerTypeClass::Edit() {
       MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const VocType sound : magic_enum::enum_values<VocType>()) {
-    soundtype1list.Add_Item(Voc_Name(sound));
-    soundtype2list.Add_Item(Voc_Name(sound));
+    soundtype1list.Add_Item(VocName(sound));
+    soundtype2list.Add_Item(VocName(sound));
   }
 
   if (Action_Needs(Action1.Action) == NEED_SOUND) {
@@ -758,8 +758,8 @@ bool TriggerTypeClass::Edit() {
                                 MixArchive::RetrieveData("EBTN-DN.SHP"));
 
   for (const VoxType speech : magic_enum::enum_values<VoxType>()) {
-    speechtype1list.Add_Item(Speech_Name(speech));
-    speechtype2list.Add_Item(Speech_Name(speech));
+    speechtype1list.Add_Item(VoxName(speech));
+    speechtype2list.Add_Item(VoxName(speech));
   }
 
   if (Action_Needs(Action1.Action) == NEED_SPEECH) {
@@ -1540,12 +1540,12 @@ bool TriggerTypeClass::Edit() {
         break;
 
       case ButtonKey(kDataSound1):
-        Sound_Effect(VocType(soundtype1list.Current_Index()));
+        PlaySoundEffect(VocType(soundtype1list.Current_Index()));
         display = true;
         break;
 
       case ButtonKey(kDataSound2):
-        Sound_Effect(VocType(soundtype2list.Current_Index()));
+        PlaySoundEffect(VocType(soundtype2list.Current_Index()));
         display = true;
         break;
 

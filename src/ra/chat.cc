@@ -70,7 +70,7 @@ constexpr KeyNumType kPageRespondKey = KN_RETURN;  // KN_COMMA
         nullptr, 0, TXT_WOL_NOTPAGED, PCOLOR_GOLD,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
         Rule.MessageDelay * kTicksPerMinute);
-    Sound_Effect(VOC_SYS_ERROR);
+    PlaySoundEffect(VOC_SYS_ERROR);
     return;
   }
 
@@ -384,7 +384,7 @@ void IPX_Call_Back() {
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                 Rule.MessageDelay * kTicksPerMinute);
 
-            Sound_Effect(VOC_INCOMING_MESSAGE);
+            PlaySoundEffect(VOC_INCOMING_MESSAGE);
           }
 
           // Tell the map to do a partial update (just to force the

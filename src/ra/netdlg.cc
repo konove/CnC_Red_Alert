@@ -2071,7 +2071,7 @@ static int Net_Join_Dialog() {
             Session.Messages.Add_Message(nullptr, 0,
                                          Text_String(TXT_ONLY_HOST_CAN_MODIFY),
                                          PCOLOR_BROWN, kTpfText, 1200);
-            Sound_Effect(VOC_SYS_ERROR);
+            PlaySoundEffect(VOC_SYS_ERROR);
             display = REDRAW_MESSAGE;
           }
           break;
@@ -2316,7 +2316,7 @@ static int Net_Join_Dialog() {
         if (std::string_view(namebuf).empty()) {
           Session.Messages.Add_Message(nullptr, 0, Text_String(TXT_NAME_ERROR),
                                        PCOLOR_BROWN, kTpfText, 1200);
-          Sound_Effect(VOC_SYS_ERROR);
+          PlaySoundEffect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
           break;
         }
@@ -2331,7 +2331,7 @@ static int Net_Join_Dialog() {
             Session.Messages.Add_Message(
                 nullptr, 0, Text_String(TXT_GAMENAME_MUSTBE_UNIQUE),
                 PCOLOR_BROWN, kTpfText, 1200);
-            Sound_Effect(VOC_SYS_ERROR);
+            PlaySoundEffect(VOC_SYS_ERROR);
             display = REDRAW_MESSAGE;
             break;
           }
@@ -2658,7 +2658,7 @@ static int Net_Join_Dialog() {
         Session.Messages.Add_Message(nullptr, 0,
                                      Text_String(TXT_REQUEST_DENIED),
                                      PCOLOR_BROWN, kTpfText, 1200);
-        Sound_Effect(VOC_SYS_ERROR);
+        PlaySoundEffect(VOC_SYS_ERROR);
 
         const char* message = nullptr;
         if (why == REJECT_DUPLICATE_NAME) {
@@ -2707,7 +2707,7 @@ static int Net_Join_Dialog() {
       optionlist.Check_Item(4, Special.IsShadowGrow);
       optionlist.Flag_To_Redraw();
 
-      Sound_Effect(VOC_OPTIONS_CHANGED);
+      PlaySoundEffect(VOC_OPTIONS_CHANGED);
 
       parms_received = 1;
       display = REDRAW_PARMS;
@@ -2716,7 +2716,7 @@ static int Net_Join_Dialog() {
       //	Draw an incoming message
       //.....................................................................
       display = REDRAW_MESSAGE;
-      Sound_Effect(VOC_INCOMING_MESSAGE);
+      PlaySoundEffect(VOC_INCOMING_MESSAGE);
     } else if (event == EV_NEW_GAME) {
       //.....................................................................
       // If a new game has formed, or an existing game has changed state
@@ -3041,13 +3041,13 @@ static bool Request_To_Join(const char* playername, int join_index,
   if (join_index < 1) {
     Session.Messages.Add_Message(nullptr, 0, Text_String(TXT_MUST_SELECT_GAME),
                                  PCOLOR_BROWN, kTpfText, 1200);
-    Sound_Effect(VOC_SYS_ERROR);
+    PlaySoundEffect(VOC_SYS_ERROR);
     return false;
   }
   if (Session.Games.Count() <= 1 || join_index > Session.Games.Count()) {
     Session.Messages.Add_Message(nullptr, 0, Text_String(TXT_NOTHING_TO_JOIN),
                                  PCOLOR_BROWN, kTpfText, 1200);
-    Sound_Effect(VOC_SYS_ERROR);
+    PlaySoundEffect(VOC_SYS_ERROR);
     return false;
   }
 
@@ -3057,7 +3057,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   if (std::string_view(playername).empty()) {
     Session.Messages.Add_Message(nullptr, 0, Text_String(TXT_NAME_ERROR),
                                  PCOLOR_BROWN, kTpfText, 1200);
-    Sound_Effect(VOC_SYS_ERROR);
+    PlaySoundEffect(VOC_SYS_ERROR);
     return false;
   }
 
@@ -3067,7 +3067,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   if (!Session.Games.at(join_index)->Game.IsOpen) {
     Session.Messages.Add_Message(nullptr, 0, Text_String(TXT_GAME_IS_CLOSED),
                                  PCOLOR_BROWN, kTpfText, 1200);
-    Sound_Effect(VOC_SYS_ERROR);
+    PlaySoundEffect(VOC_SYS_ERROR);
     return false;
   }
 
@@ -3459,12 +3459,12 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
               Format_Runtime_Text(
                   txt, sizeof(txt), Text_String(TXT_S_FORMED_NEW_GAME),
                   Session.Games.at(Session.Games.Count() - 1)->Name);
-              Sound_Effect(VOC_GAME_FORMING);
+              PlaySoundEffect(VOC_GAME_FORMING);
             } else {
               Format_Runtime_Text(
                   txt, sizeof(txt), Text_String(TXT_GAME_NOW_IN_PROGRESS),
                   Session.Games.at(Session.Games.Count() - 1)->Name);
-              Sound_Effect(VOC_GAME_CLOSED);
+              PlaySoundEffect(VOC_GAME_CLOSED);
             }
             Session.Messages.Add_Message(nullptr, 0, txt, PCOLOR_BROWN,
                                          kTpfText, 1200);
@@ -3525,7 +3525,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                             Session.GPacket.Name);
         Session.Messages.Add_Message(nullptr, 0, txt, PCOLOR_BROWN, kTpfText,
                                      1200);
-        Sound_Effect(VOC_GAME_FORMING);
+        PlaySoundEffect(VOC_GAME_FORMING);
       }
 
       retcode = EV_NEW_GAME;
@@ -3636,7 +3636,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       // If this player has joined our game, play a special sound.
       //..................................................................
       if (*joinstate >= JOIN_CONFIRMED) {
-        Sound_Effect(VOC_PLAYER_JOINED);
+        PlaySoundEffect(VOC_PLAYER_JOINED);
       }
 
       retcode = EV_NEW_PLAYER;
@@ -3853,7 +3853,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         // If this player has left our game, play a special sound.
         //...............................................................
         if (*joinstate >= JOIN_CONFIRMED) {
-          Sound_Effect(VOC_PLAYER_LEFT);
+          PlaySoundEffect(VOC_PLAYER_LEFT);
         }
 
         if (retcode == EV_NONE) {
@@ -4594,7 +4594,7 @@ static int Net_New_Dialog() {
           Session.Messages.Add_Message(nullptr, 0,
                                        Text_String(TXT_CANT_REJECT_SELF),
                                        PCOLOR_BROWN, kTpfText, 1200);
-          Sound_Effect(VOC_SYS_ERROR);
+          PlaySoundEffect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
           break;
         }
@@ -4602,7 +4602,7 @@ static int Net_New_Dialog() {
           Session.Messages.Add_Message(nullptr, 0,
                                        Text_String(TXT_SELECT_PLAYER_REJECT),
                                        PCOLOR_BROWN, kTpfText, 1200);
-          Sound_Effect(VOC_SYS_ERROR);
+          PlaySoundEffect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
           break;
         }
@@ -4738,7 +4738,7 @@ static int Net_New_Dialog() {
         } else {
           Session.Messages.Add_Message(nullptr, 0, Text_String(TXT_ONLY_ONE),
                                        PCOLOR_BROWN, kTpfText, 1200);
-          Sound_Effect(VOC_SYS_ERROR);
+          PlaySoundEffect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
         }
         if (input == ButtonKey(kButtonLoad)) {
@@ -4984,7 +4984,7 @@ static int Net_New_Dialog() {
                                 sizeof(GlobalPacketType), 1,
                                 &Session.Players.at(i)->Address);
       }
-      Sound_Effect(VOC_OPTIONS_CHANGED);
+      PlaySoundEffect(VOC_OPTIONS_CHANGED);
       transmit = 0;
     }
 
@@ -5437,7 +5437,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       //..................................................................
       // Play a special sound.
       //..................................................................
-      Sound_Effect(VOC_PLAYER_JOINED);
+      PlaySoundEffect(VOC_PLAYER_JOINED);
 
       retval = EV_NEW_PLAYER;
     }
@@ -5475,7 +5475,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
         //...............................................................
         // Play a special sound.
         //...............................................................
-        Sound_Effect(VOC_PLAYER_LEFT);
+        PlaySoundEffect(VOC_PLAYER_LEFT);
 
         retval = EV_PLAYER_SIGNOFF;
 
@@ -5499,7 +5499,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
             : Session.GPacket.Message.Color,
         kTpfText, -1);
 
-    Sound_Effect(VOC_INCOMING_MESSAGE);
+    PlaySoundEffect(VOC_INCOMING_MESSAGE);
 
     retval = EV_MESSAGE;
   }

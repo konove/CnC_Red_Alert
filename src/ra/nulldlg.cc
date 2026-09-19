@@ -3794,7 +3794,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         //..................................................................
         // Play a little sound effect
         //..................................................................
-        Sound_Effect(VOC_OPTIONS_CHANGED);
+        PlaySoundEffect(VOC_OPTIONS_CHANGED);
       }
 
       //
@@ -3989,7 +3989,7 @@ int Com_Scenario_Dialog(bool skirmish) {
               //.........................................................
               // Play a little sound effect
               //.........................................................
-              Sound_Effect(VOC_OPTIONS_CHANGED);
+              PlaySoundEffect(VOC_OPTIONS_CHANGED);
 
               break;
 
@@ -4011,7 +4011,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                       : static_cast<PlayerColorType>(ReceivePacket.ID),
                   kTpfText, -1);
 
-              Sound_Effect(VOC_INCOMING_MESSAGE);
+              PlaySoundEffect(VOC_INCOMING_MESSAGE);
               display = std::max(display, REDRAW_MESSAGE);
 
               break;
@@ -5168,7 +5168,7 @@ int Com_Show_Scenario_Dialog() {
           Session.Messages.Add_Message(nullptr, 0,
                                        Text_String(TXT_ONLY_HOST_CAN_MODIFY),
                                        PCOLOR_BROWN, kTpfText, 1200);
-          Sound_Effect(VOC_SYS_ERROR);
+          PlaySoundEffect(VOC_SYS_ERROR);
           display = std::max(display, REDRAW_MESSAGE);
           if (housebtn.IsDropped) {
             housebtn.Collapse();
@@ -5349,7 +5349,7 @@ int Com_Show_Scenario_Dialog() {
       //..................................................................
       // Play a little sound effect
       //..................................................................
-      Sound_Effect(VOC_OPTIONS_CHANGED);
+      PlaySoundEffect(VOC_OPTIONS_CHANGED);
     }
 
     //
@@ -5656,7 +5656,7 @@ int Com_Show_Scenario_Dialog() {
             //.........................................................
             // Play a little sound effect
             //.........................................................
-            Sound_Effect(VOC_OPTIONS_CHANGED);
+            PlaySoundEffect(VOC_OPTIONS_CHANGED);
 
             break;
 
@@ -5857,7 +5857,7 @@ int Com_Show_Scenario_Dialog() {
                     : static_cast<PlayerColorType>(ReceivePacket.ID),
                 kTpfText, -1);
 
-            Sound_Effect(VOC_INCOMING_MESSAGE);
+            PlaySoundEffect(VOC_INCOMING_MESSAGE);
             display = std::max(display, REDRAW_MESSAGE);
             break;
 

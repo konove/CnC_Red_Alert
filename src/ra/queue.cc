@@ -1988,7 +1988,7 @@ static RetcodeType Process_Serial_Packet(
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           Rule.MessageDelay * kTicksPerMinute);
 
-      Sound_Effect(VOC_INCOMING_MESSAGE);
+      PlaySoundEffect(VOC_INCOMING_MESSAGE);
     }
 
     //.....................................................................

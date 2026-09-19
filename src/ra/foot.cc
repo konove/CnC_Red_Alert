@@ -2179,7 +2179,7 @@ void FootClass::Sell_Back(int control) {
   if (control != 0) {
     if (House == PlayerPtr) {
       Speak(VOX_UNIT_SOLD);
-      Sound_Effect(VOC_CASHTURN);
+      PlaySoundEffect(VOC_CASHTURN);
     }
     House->Refund_Money(Refund_Amount());
     Stun();

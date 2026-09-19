@@ -683,7 +683,7 @@ void ChronalVortexClass::Zap_Target() {
       temptech->Coord = here;
       ObjectClass* obj = As_Object(TargetObject);
       const TARGET target = As_Target(obj->Center_Coord());
-      Sound_Effect(VOC_TESLA_ZAP, obj->Center_Coord());
+      PlaySoundEffectAt(VOC_TESLA_ZAP, obj->Center_Coord());
       temptech->Electric_Zap(target, 0, here, LightningRemap);
       delete temptech;
 

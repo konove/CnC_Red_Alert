@@ -165,7 +165,7 @@ void LogicClass::AI() {
   ** If there's a time quake, handle it here.
   */
   if (TimeQuake) {
-    Sound_Effect(VOC_KABOOM15);
+    PlaySoundEffect(VOC_KABOOM15);
     Shake_The_Screen(8);
   }
 
@@ -280,7 +280,7 @@ void LogicClass::AI() {
   if (Session.Type != GAME_NORMAL && Scen.AutoSonarTimer.IsFinished()) {
     if (bAutoSonarPulse) {
       Map.Activate_Pulse();
-      Sound_Effect(VOC_SONAR);
+      PlaySoundEffect(VOC_SONAR);
       bAutoSonarPulse = false;
     }
     Scen.AutoSonarTimer.Set(int64_t{kTicksPerSecond} * 40);

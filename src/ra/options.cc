@@ -185,7 +185,7 @@ void OptionsClass::Set_Score_Volume(fixed volume, bool feedback) {
   ScoreVolume = fixed(volume).Sub_Saturate(1);
   Audio.SetScoreVolume(ScoreVolume * 256);
   if (feedback && !Theme.Still_Playing()) {
-    Sound_Effect(VOC_BEEP, ScoreVolume);
+    PlaySoundEffect(VOC_BEEP, ScoreVolume);
   }
 }
 
@@ -209,7 +209,7 @@ void OptionsClass::Set_Score_Volume(fixed volume, bool feedback) {
 void OptionsClass::Set_Sound_Volume(fixed volume, bool feedback) {
   Volume = fixed(volume).Sub_Saturate(1);
   if (feedback) {
-    Sound_Effect(VOC_BEEP);
+    PlaySoundEffect(VOC_BEEP);
   }
 }
 

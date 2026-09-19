@@ -432,7 +432,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   }
   txtlabel->UserData2 = id;
 
-  Sound_Effect(VOC_INCOMING_MESSAGE);
+  PlaySoundEffect(VOC_INCOMING_MESSAGE);
 
   //------------------------------------------------------------------------
   //	Attach the message to our list

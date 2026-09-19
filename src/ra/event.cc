@@ -882,9 +882,9 @@ void EventClass::Execute() {
     */
     case EXIT:
       Theme.Queue_Song(THEME_NONE);
-      Stop_Speaking();
+      StopSpeaking();
       Speak(VOX_CONTROL_EXIT);
-      while (Is_Speaking()) {
+      while (IsSpeaking()) {
         ServiceRealTime();
       }
       GameActive = false;
@@ -1040,7 +1040,7 @@ void EventClass::Execute() {
               Rule.MessageDelay * kTicksPerMinute);
         }
       }
-      Sound_Effect(VOC_INCOMING_MESSAGE);
+      PlaySoundEffect(VOC_INCOMING_MESSAGE);
       break;
 
     case RETRACT_DRAW:
@@ -1072,7 +1072,7 @@ void EventClass::Execute() {
               Rule.MessageDelay * kTicksPerMinute);
         }
       }
-      Sound_Effect(VOC_INCOMING_MESSAGE);
+      PlaySoundEffect(VOC_INCOMING_MESSAGE);
       break;
 
     /*

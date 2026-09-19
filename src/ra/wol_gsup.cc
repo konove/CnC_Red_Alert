@@ -757,7 +757,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   //	pGaugeAIPlayers->Set_Maximum(Rule.MaxPlayers-Session.Players.Count());
   //	pGaugeAIPlayers->Set_Value(Session.Options.AIPlayers);
 
-  Sound_Effect(WOLSOUND_ENTERGAME);
+  PlaySoundEffect(WOLSOUND_ENTERGAME);
 
   //------------------------------------------------------------------------
   //	Processing loop
@@ -918,7 +918,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                           // start.
       WOL_PrintMessage(*pILDisc, TXT_WOL_STARTTIMEOUT,
                        WOLCOLORREMAP_LOCALMACHINEMESS);
-      Sound_Effect(WOLSOUND_ERROR);
+      PlaySoundEffect(WOLSOUND_ERROR);
     }
 
     //	Regularly send game param changes if I'm the host.
@@ -1306,7 +1306,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             // kTpfText, 1200);
             WOL_PrintMessage(*pILDisc, Text_String(TXT_ONLY_HOST_CAN_MODIFY),
                              WOLCOLORREMAP_LOCALMACHINEMESS);
-            Sound_Effect(WOLSOUND_ERROR);
+            PlaySoundEffect(WOLSOUND_ERROR);
             display = std::max(display, REDRAW_MESSAGE);
             break;
           }
@@ -1419,7 +1419,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           display = REDRAW_BACKGROUND;  //	Droplist already got contracted.
         }
 
-        Sound_Effect(VOC_OPTIONS_CHANGED);
+        PlaySoundEffect(VOC_OPTIONS_CHANGED);
         break;
 
       case ButtonKey(kButtonAftermathunits):
@@ -1467,7 +1467,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                            pILScens->Get_Item(pILScens->Current_Index()));
             // if (display < REDRAW_PARMS) display = REDRAW_PARMS;
             display = REDRAW_ALL;
-            Sound_Effect(VOC_OPTIONS_CHANGED);
+            PlaySoundEffect(VOC_OPTIONS_CHANGED);
           }
         }
         break;
@@ -1480,7 +1480,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             pGaugeCount->Get_Value() +
             base::At(SessionClass::CountMin, Session.Options.Bases);
         display = std::max(display, REDRAW_PARMS);
-        Sound_Effect(VOC_OPTIONS_CHANGED);
+        PlaySoundEffect(VOC_OPTIONS_CHANGED);
         break;
 
       //..................................................................
@@ -1492,7 +1492,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             BuildLevel, MPLAYER_BUILD_LEVEL_MAX);  // if it's pegged, max it out
 
         display = std::max(display, REDRAW_PARMS);
-        Sound_Effect(VOC_OPTIONS_CHANGED);
+        PlaySoundEffect(VOC_OPTIONS_CHANGED);
         break;
 
       //..................................................................
@@ -1503,7 +1503,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         Session.Options.Credits = pGaugeCredits->Get_Value();
         Session.Options.Credits = ((Session.Options.Credits + 250) / 500) * 500;
         display = std::max(display, REDRAW_PARMS);
-        Sound_Effect(VOC_OPTIONS_CHANGED);
+        PlaySoundEffect(VOC_OPTIONS_CHANGED);
         break;
 
       //..................................................................
@@ -1521,7 +1521,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           pGaugeAIPlayers->Set_Value(Session.Options.AIPlayers);
         }
         display = std::max(display, REDRAW_PARMS);
-        Sound_Effect(VOC_OPTIONS_CHANGED);
+        PlaySoundEffect(VOC_OPTIONS_CHANGED);
         break;
 
       //..................................................................
@@ -1582,7 +1582,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         bSlowUnitBuildRate = pCheckListOptions->Is_Checked(5);
 
         display = std::max(display, REDRAW_PARMS);
-        Sound_Effect(VOC_OPTIONS_CHANGED);
+        PlaySoundEffect(VOC_OPTIONS_CHANGED);
         break;
 
       case ButtonKey(kButtonAcceptstart):  //	'Accept' or 'Start Game' button.
@@ -1640,7 +1640,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             WWMessageBox().Process(TXT_WOL_WAITINGTOSTART, TXT_NONE);
             BindControls(false);
             SetPlayerReadyToGo(pWO->szMyName, "ready");
-            Sound_Effect(VOC_GAME_CLOSED);
+            PlaySoundEffect(VOC_GAME_CLOSED);
           }
         }
         break;
@@ -2335,7 +2335,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
         SetPlayerColor(szInform.data(),
                        Color);  //	(szInform is now sitting at the
                                 // start of the name string.)
-        Sound_Effect(VOC_OPTIONS_CHANGED);
+        PlaySoundEffect(VOC_OPTIONS_CHANGED);
         break;
       }
       case WOL_GAMEOPT_INFHOUSE:  //	Note: In theory, I could ignore this if
@@ -2366,7 +2366,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
                        House);  //	(szInform is now sitting at the
                                 // start of the name string.)
         ClearAllAccepts();
-        Sound_Effect(VOC_OPTIONS_CHANGED);
+        PlaySoundEffect(VOC_OPTIONS_CHANGED);
         break;
       }
       case WOL_GAMEOPT_INFACCEPT:  //	Note: In theory, I could ignore this if
@@ -2386,13 +2386,13 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
         // pILScens->Set_Selected_Index( Session.Options.ScenarioIndex );
         display = REDRAW_ALL;
         ClearAllAccepts();
-        Sound_Effect(VOC_OPTIONS_CHANGED);
+        PlaySoundEffect(VOC_OPTIONS_CHANGED);
         break;
       case WOL_GAMEOPT_INFNEWGUESTPLAYERINFO:
         //	I have just joined and have received a message with info on all
         // players in game.
         AcceptNewGuestPlayerInfo(szInform.data());
-        Sound_Effect(VOC_OPTIONS_CHANGED);
+        PlaySoundEffect(VOC_OPTIONS_CHANGED);
         break;
       case WOL_GAMEOPT_INFSTART: {
         //	Host tells us to wait for start of game.
@@ -2446,7 +2446,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
           // WOL_GAMEOPT_INFSTART.\n" );
           Fatal("Impossible arose on WOL_GAMEOPT_INFSTART.\n");
         }
-        Sound_Effect(VOC_GAME_CLOSED);
+        PlaySoundEffect(VOC_GAME_CLOSED);
         break;
       }
       case WOL_GAMEOPT_INFCANCELSTART:
@@ -2456,7 +2456,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
         BindControls(true);
         WOL_PrintMessage(*pILDisc, TXT_WOL_STARTCANCELLED,
                          WOLCOLORREMAP_LOCALMACHINEMESS);
-        Sound_Effect(VOC_SYS_ERROR);
+        PlaySoundEffect(VOC_SYS_ERROR);
         display = REDRAW_ALL;
         //	If we are in a modal dialog, we must have arrived here through
         // ServiceRealTime()'s PumpMessages. Set global that will 	force a

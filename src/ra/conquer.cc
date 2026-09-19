@@ -360,7 +360,7 @@ void RunGame() {
         nullptr, 0, TXT_WOL_WOLAPIGONE, PCOLOR_GOLD,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
         Rule.MessageDelay * kTicksPerMinute);
-    Sound_Effect(WOLSOUND_LOGOUT);
+    PlaySoundEffect(WOLSOUND_LOGOUT);
   }
 }
 
@@ -381,7 +381,7 @@ void ServiceBackgroundTasks() {
   if (Audio.is_open()) {
     Audio.PumpStreams();
     Theme.AI();
-    Speak_AI();
+    ServiceSpeech();
   }
 
   // Network maintenance.

@@ -1740,7 +1740,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
           tech->Take_Damage(occupant_damage, 0, WARHEAD_AP, source, forced);
         }
 
-        Sound_Effect(VOC_KABOOM22, Coord);
+        PlaySoundEffectAt(VOC_KABOOM22, Coord);
         while (offset.front() != kRefreshEol) {
           const CELL cell =
               static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(offset));
@@ -1771,7 +1771,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         if (shakes) {
           Shake_The_Screen(shakes);
         }
-        Sound_Effect(VOC_CRUMBLE, Coord);
+        PlaySoundEffectAt(VOC_CRUMBLE, Coord);
         if (Mission == MISSION_DECONSTRUCTION) {
           CountDown.Set(0);
           Set_Rate(0);
@@ -1884,7 +1884,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         [[fallthrough]];
 
       case RESULT_MAJOR:
-        Sound_Effect(VOC_KABOOM1, Coord);
+        PlaySoundEffectAt(VOC_KABOOM1, Coord);
         while (offset.front() != kRefreshEol) {
           const CELL cell =
               static_cast<CELL>(Coord_Cell(Coord) + base::ConsumeFront(offset));
@@ -3216,7 +3216,7 @@ void BuildingClass::Repair(int control) {
     soundid = VOC_CLICK;
   }
   if (House->IsPlayerControl) {
-    Sound_Effect(soundid, Coord);
+    PlaySoundEffectAt(soundid, Coord);
   }
 }
 
@@ -3280,7 +3280,7 @@ void BuildingClass::Sell_Back(int control) {
       }
     }
     if (House->IsPlayerControl) {
-      Sound_Effect(VOC_CLICK);
+      PlaySoundEffect(VOC_CLICK);
     }
   }
 }
@@ -4038,7 +4038,7 @@ int BuildingClass::Mission_Construction() {
       Begin_Mode(BSTATE_CONSTRUCTION);
       Transmit_Message(RADIO_BUILDING);
       if (House->IsPlayerControl) {
-        Sound_Effect(VOC_CONSTRUCTION, Coord);
+        PlaySoundEffectAt(VOC_CONSTRUCTION, Coord);
       }
       Status = kDuring;
       break;
@@ -4190,7 +4190,7 @@ int BuildingClass::Mission_Deconstruction() {
         }
 
         if (House->IsPlayerControl) {
-          Sound_Effect(VOC_CASHTURN, Coord);
+          PlaySoundEffectAt(VOC_CASHTURN, Coord);
         }
         Status = kDuring;
         Begin_Mode(BSTATE_CONSTRUCTION);
@@ -6138,7 +6138,7 @@ void BuildingClass::Charging_AI() {
           IsCharging = true;
           Set_Stage(0);
           Set_Rate(3);
-          Sound_Effect(VOC_TESLA_POWER_UP, Coord);
+          PlaySoundEffectAt(VOC_TESLA_POWER_UP, Coord);
         }
       }
     } else {

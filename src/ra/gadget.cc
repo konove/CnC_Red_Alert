@@ -494,7 +494,7 @@ KeyNumType GadgetClass::Input() {
       }
 
       Write_PCX_File(file, temp_page, &GamePalette);
-      Sound_Effect(VOC_BEEP);
+      PlaySoundEffect(VOC_BEEP);
     }
   }
 

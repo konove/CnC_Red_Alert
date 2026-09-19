@@ -56,27 +56,27 @@
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
 
-// Controls what special effects may occur on the sound effect.
-enum class ContextType {
+// Whether a sound effect comes in per-house, per-unit-kind variants.
+enum class Variants {
   // One recording, NAME.AUD, for everybody.
   IN_NOVAR,
   // A unit response recorded in four variations for each side's accent:
   // NAME.V00-.V03 for the Allies and NAME.R00-.R03 for the Soviets.
-  // Sound_Effect() picks one from the house and the variation number.
+  // PlaySoundEffect() picks one from the house and the variation number.
   IN_VAR
 };
-using enum ContextType;
+using enum Variants;
 
 struct SoundEffect {
-  // Root file name; Sound_Effect() adds the extension. "x" marks a VocType
+  // Root file name; PlaySoundEffect() adds the extension. "x" marks a VocType
   // slot that has no sound: there is no X.AUD, so it plays nothing.
-  const char* Name;
-  // Playback priority at full volume. Sound_Effect() scales it by the volume,
-  // so a faint distant sound loses a busy mixer to a loud nearby one.
-  int Priority;
-  ContextType Where;  // In what game context does this sample exist.
+  const char* name;
+  // Playback priority at full volume. PlaySoundEffect() scales it by the
+  // volume, so a faint distant sound loses a busy mixer to a loud nearby one.
+  int priority;
+  Variants variants;
 };
-static base::EnumArray<VocType, SoundEffect> SoundEffectName = {{
+static base::EnumArray<VocType, SoundEffect> sound_effects = {{
 
     // Civilian voices (technicians too).
     {"GIRLOKAY", 20, IN_NOVAR},  // VOC_GIRL_OKAY
@@ -267,13 +267,13 @@ static base::EnumArray<VocType, SoundEffect> SoundEffectName = {{
     {"SHKTROP1", 20, IN_NOVAR},  // VOC_SHOCK_TROOP1 Shock Trooper fires.
 }};
 
-VocType Voc_From_Name(const char* name) {
+VocType VocFromName(const char* name) {
   if (name == nullptr) {
     return VOC_NONE;
   }
 
   for (const VocType voc : magic_enum::enum_values<VocType>()) {
-    if (absl::EqualsIgnoreCase(name, SoundEffectName.at(voc).Name)) {
+    if (absl::EqualsIgnoreCase(name, sound_effects.at(voc).name)) {
       return voc;
     }
   }
@@ -281,23 +281,23 @@ VocType Voc_From_Name(const char* name) {
   return VOC_NONE;
 }
 
-const char* Voc_Name(VocType voc) {
+const char* VocName(VocType voc) {
   if (voc == VOC_NONE) {
     return "none";
   }
-  return SoundEffectName.at(voc).Name;
+  return sound_effects.at(voc).name;
 }
 
-void Sound_Effect(VocType voc, COORDINATE coord, int variation,
-                  HousesType house) {
-  CELL cell_pos = 0;
+void PlaySoundEffectAt(VocType voc, COORDINATE coord, int variation,
+                       HousesType house) {
+  CELL cell = 0;
 
   if (Debug_Quiet || Options.Volume == 0 || voc == VOC_NONE || !SoundOn ||
       !Audio.is_open()) {
     return;
   }
   if (coord) {
-    cell_pos = Coord_Cell(coord);
+    cell = Coord_Cell(coord);
   }
 
   // A sound on screen, or with no location, plays at full volume, centred.
@@ -305,8 +305,8 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
   // 192 cells away (1.5 map widths). Sub_Saturate() keeps a sliver of 1/256
   // even there.
   fixed volume(1);
-  int pan_value = 0;
-  if (coord && !Map.In_View(cell_pos)) {
+  int pan = 0;
+  if (coord && !Map.In_View(cell)) {
     // Measured from the centre of the view: TacticalCoord is its upper-left
     // corner, which would make sounds below and right of the screen quieter
     // than those as far above and left.
@@ -314,35 +314,35 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation,
         Coord_Add(Map.TacticalCoord,
                   XY_Coord(static_cast<LEPTON>(Map.TacLeptonWidth / 2),
                            static_cast<LEPTON>(Map.TacLeptonHeight / 2)));
-    const int distance = Distance(coord, view_center) / CELL_LEPTON_W;
-    fixed dfixed = fixed(distance, 128 + 64);
-    dfixed.Sub_Saturate(1);
-    volume = fixed(1) - dfixed;
+    const int distance_cells = Distance(coord, view_center) / CELL_LEPTON_W;
+    fixed fade = fixed(distance_cells, 128 + 64);
+    fade.Sub_Saturate(1);
+    volume = fixed(1) - fade;
 
     // Pan by the column offset from the centre of the view, and only once the
     // sound lies left or right of the screen: 0x8000 per quarter map width,
     // clamped to the int16_t range. The mixer mixes in mono and ignores it.
-    pan_value = Cell_X(cell_pos);
-    pan_value -= Coord_XCell(Map.TacticalCoord) +
-                 (Lepton_To_Cell(Map.TacLeptonWidth) / 2);
-    if (std::abs(pan_value) > Lepton_To_Cell(Map.TacLeptonWidth / 2)) {
-      pan_value *= 0x8000;
-      pan_value /= MAP_CELL_W / 4;
-      pan_value = Bound(pan_value, -0x7FFF, 0x7FFF);
+    pan = Cell_X(cell);
+    pan -= Coord_XCell(Map.TacticalCoord) +
+           (Lepton_To_Cell(Map.TacLeptonWidth) / 2);
+    if (std::abs(pan) > Lepton_To_Cell(Map.TacLeptonWidth / 2)) {
+      pan *= 0x8000;
+      pan /= MAP_CELL_W / 4;
+      pan = Bound(pan, -0x7FFF, 0x7FFF);
     } else {
-      pan_value = 0;
+      pan = 0;
     }
   }
 
-  Sound_Effect(voc, volume, variation, static_cast<int16_t>(pan_value), house);
+  PlaySoundEffect(voc, volume, variation, static_cast<int16_t>(pan), house);
 }
 
-int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
-                 HousesType house) {
+int PlaySoundEffect(VocType voc, fixed volume, int variation, int16_t pan,
+                    HousesType house) {
   // A VocType cast from scenario or INI data can be out of range; indexing
   // the table with it would fail the at() check.
   if (voc != VOC_NONE && !magic_enum::enum_contains(voc)) {
-    DLOG(WARNING) << "Sound_Effect: invalid voc=" << static_cast<int>(voc)
+    DLOG(WARNING) << "PlaySoundEffect: invalid voc=" << static_cast<int>(voc)
                   << ", valid range is [0, "
                   << static_cast<int>(magic_enum::enum_count<VocType>()) - 1
                   << "]";
@@ -358,8 +358,8 @@ int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
 
   // Pick the file: NAME.AUD, or for a unit response the variation that fits
   // the house's accent and the kind of unit.
-  const char* ext = ".AUD";
-  if (SoundEffectName.at(voc).Where == IN_VAR) {
+  const char* extension = ".AUD";
+  if (sound_effects.at(voc).variants == IN_VAR) {
     // If no house is forced, use the one the player's house acts like.
     // Responses only come from units the player selects or orders, so there
     // is always a player house by then.
@@ -375,54 +375,54 @@ int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
     if ((base::Bit<uint32_t>(house) & kHouseFlagAllies) != 0) {
       if (variation < 0) {
         if (std::abs(variation) % 2) {
-          ext = ".V00";
+          extension = ".V00";
         } else {
-          ext = ".V02";
+          extension = ".V02";
         }
       } else {
         if (variation % 2) {
-          ext = ".V01";
+          extension = ".V01";
         } else {
-          ext = ".V03";
+          extension = ".V03";
         }
       }
     } else {
       if (variation < 0) {
         if (std::abs(variation) % 2) {
-          ext = ".R00";
+          extension = ".R00";
         } else {
-          ext = ".R02";
+          extension = ".R02";
         }
       } else {
         if (variation % 2) {
-          ext = ".R01";
+          extension = ".R01";
         } else {
-          ext = ".R03";
+          extension = ".R03";
         }
       }
     }
   }
-  const auto name = std::filesystem::path(SoundEffectName.at(voc).Name)
-                        .replace_extension(ext)
-                        .string();
-  const auto ptr = MixArchive::RetrieveData(name);
+  const auto file_name = std::filesystem::path(sound_effects.at(voc).name)
+                             .replace_extension(extension)
+                             .string();
+  const auto sample = MixArchive::RetrieveData(file_name);
 
   // The sample is played straight out of the mixfile cache, which keeps it
   // alive for as long as the mixer needs it. An empty span means the file is
   // in no loaded mixfile, as for the "x" placeholders.
-  if (!ptr.empty()) {
+  if (!sample.empty()) {
     // Clamp to 255/256 so that volume * 256 fits the mixer's 0..255 range. A
     // quieter sound also plays at a lower priority.
     volume.Sub_Saturate(1);
-    return Audio.Play(ptr, SoundEffectName.at(voc).Priority * volume,
-                      volume * 256, pan_value);
+    return Audio.Play(sample, sound_effects.at(voc).priority * volume,
+                      volume * 256, pan);
   }
   return -1;
 }
 
 // The root file names of the EVA speech, one per VoxType. "none" marks a slot
 // with no recording: there is no NONE.AUD, so speaking it says nothing.
-static constexpr base::EnumArray<VoxType, const char*> Speech = {
+static constexpr base::EnumArray<VoxType, const char*> kSpeechFiles = {
     "MISNWON1",  // VOX_ACCOMPLISHED  mission accomplished
     "MISNLST1",  // VOX_FAIL  your mission has failed
     "PROGRES1",  // VOX_NO_FACTORY  unable to comply, building in progress
@@ -542,51 +542,52 @@ static constexpr base::EnumArray<VoxType, const char*> Speech = {
     "LOAD1"      // VOX_LOAD1  mission loaded
 };
 
-// The voice EVA is saying now, or VOX_NONE once Speak_AI() finds the speech
-// buffer silent. Speak() drops a request for this voice so that the same
+// The voice EVA is saying now, or VOX_NONE once ServiceSpeech() finds the
+// speech buffer silent. Speak() drops a request for this voice so that the same
 // announcement does not queue up behind itself.
-static VoxType CurrentVoice = VOX_NONE;
+static VoxType current_voice = VOX_NONE;
 
-const char* Speech_Name(VoxType speech) {
-  if (speech == VOX_NONE) {
+const char* VoxName(VoxType voice) {
+  if (voice == VOX_NONE) {
     return "none";
   }
-  return Speech.at(speech);
+  return kSpeechFiles.at(voice);
 }
 
 void Speak(VoxType voice) {
   // Only one voice waits in the queue: a request made while another is
   // pending is dropped, not queued behind it.
   if (!Debug_Quiet && Options.Volume != 0 && Audio.is_open() &&
-      voice != VOX_NONE && voice != SpeakQueue && voice != CurrentVoice &&
+      voice != VOX_NONE && voice != SpeakQueue && voice != current_voice &&
       SpeakQueue == VOX_NONE) {
     SpeakQueue = voice;
     // Start it now if EVA is silent, rather than a tick later.
-    Speak_AI();
+    ServiceSpeech();
   }
 }
 
-void Speak_AI() {
+void ServiceSpeech() {
   // The speech buffer EVA played last, and so the one to watch for the end of
   // the voice. The other buffer is the older one, reused for the next load.
-  static int _index = 0;
+  static int playing_buffer = 0;
   if (Debug_Quiet || !Audio.is_open()) {
     return;
   }
 
-  if (!Audio.IsPlaying(base::At(SpeechBuffer, _index).data())) {
-    CurrentVoice = VOX_NONE;
+  if (!Audio.IsPlaying(base::At(SpeechBuffer, playing_buffer).data())) {
+    current_voice = VOX_NONE;
     if (SpeakQueue != VOX_NONE) {
       // Try to find a previously loaded copy of the EVA speech in one of the
       // speech buffers.
       std::span<const std::byte> speech;
-      for (size_t index = 0; index < std::size(SpeechRecord); index++) {
-        if (base::At(SpeechRecord, index) == SpeakQueue) {
-          // _index tracks the buffer being played, so move it to the cached
-          // one -- the poll at the top of this routine watches that buffer to
-          // decide when the voice has finished.
-          _index = static_cast<int>(index);
-          speech = base::At(SpeechBuffer, index);
+      for (size_t buffer_index = 0; buffer_index < std::size(SpeechRecord);
+           buffer_index++) {
+        if (base::At(SpeechRecord, buffer_index) == SpeakQueue) {
+          // playing_buffer tracks the buffer being played, so move it to the
+          // cached one -- the poll at the top of this routine watches that
+          // buffer to decide when the voice has finished.
+          playing_buffer = static_cast<int>(buffer_index);
+          speech = base::At(SpeechBuffer, buffer_index);
           break;
         }
       }
@@ -596,16 +597,19 @@ void Speak_AI() {
       // buffer (kSpeechBufferSize) is cut short. SpeechRecord is only updated
       // on success, so a failed load leaves the old voice cached.
       if (speech.empty()) {
-        _index = static_cast<int>((_index + 1) % std::ssize(SpeechRecord));
+        playing_buffer =
+            static_cast<int>((playing_buffer + 1) % std::ssize(SpeechRecord));
 
-        const auto name = std::filesystem::path(Speech.at(SpeakQueue))
-                              .replace_extension(".AUD")
-                              .string();
+        const auto file_name =
+            std::filesystem::path(kSpeechFiles.at(SpeakQueue))
+                .replace_extension(".AUD")
+                .string();
 
-        GameFile file(name);
-        if (file.IsAvailable() && file.Read(base::At(SpeechBuffer, _index))) {
-          speech = base::At(SpeechBuffer, _index);
-          base::At(SpeechRecord, _index) = SpeakQueue;
+        GameFile file(file_name);
+        if (file.IsAvailable() &&
+            file.Read(base::At(SpeechBuffer, playing_buffer))) {
+          speech = base::At(SpeechBuffer, playing_buffer);
+          base::At(SpeechRecord, playing_buffer) = SpeakQueue;
         }
       }
 
@@ -614,7 +618,7 @@ void Speak_AI() {
       // a channel.
       if (!speech.empty()) {
         Audio.Play(speech, 254, Options.Volume * 256);
-        CurrentVoice = SpeakQueue;
+        current_voice = SpeakQueue;
       }
 
       // Cleared even if the voice could not be loaded, so that a missing
@@ -624,20 +628,20 @@ void Speak_AI() {
   }
 }
 
-void Stop_Speaking() {
+void StopSpeaking() {
   SpeakQueue = VOX_NONE;
-  // Cleared here, not left for the next Speak_AI(), so that Speak() does not
-  // drop the voice just stopped as one still being said.
-  CurrentVoice = VOX_NONE;
-  for (auto& index : SpeechBuffer) {
-    Audio.Stop(index.data());
+  // Cleared here, not left for the next ServiceSpeech(), so that Speak() does
+  // not drop the voice just stopped as one still being said.
+  current_voice = VOX_NONE;
+  for (auto& buffer : SpeechBuffer) {
+    Audio.Stop(buffer.data());
   }
 }
 
-bool Is_Speaking() {
+bool IsSpeaking() {
   // Starts any queued voice first, so a caller waiting in a loop for EVA to
   // finish also keeps the queue moving.
-  Speak_AI();
+  ServiceSpeech();
   return !Debug_Quiet && Audio.is_open() &&
          (SpeakQueue != VOX_NONE ||
           std::ranges::any_of(SpeechBuffer, [](const auto& buffer) {

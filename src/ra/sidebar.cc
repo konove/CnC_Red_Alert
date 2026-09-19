@@ -709,7 +709,7 @@ bool SidebarClass::Scroll(bool up, int column) {
     scr |= base::At(Column, 0).Scroll(up);
     scr |= base::At(Column, 1).Scroll(up);
     if (!scr) {
-      Sound_Effect(VOC_SCOLD);
+      PlaySoundEffect(VOC_SCOLD);
     }
     if (scr) {
       IsSidebarToRedraw = true;
@@ -1394,14 +1394,14 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
                    base::At(UpButton, ID).ID))) {  // && !IsScrolling
     base::At(UpButton, ID).IsPressed = false;
     if (!Scroll(true)) {
-      Sound_Effect(VOC_SCOLD);
+      PlaySoundEffect(VOC_SCOLD);
     }
   }
   if (input == ButtonKey(static_cast<int>(
                    base::At(DownButton, ID).ID))) {  // && !IsScrolling
     base::At(DownButton, ID).IsPressed = false;
     if (!Scroll(false)) {
-      Sound_Effect(VOC_SCOLD);
+      PlaySoundEffect(VOC_SCOLD);
     }
   }
 

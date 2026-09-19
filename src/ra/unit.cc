@@ -1543,7 +1543,7 @@ bool UnitClass::Try_To_Deploy() {
           **	MCV.
           */
           if (building->House == PlayerPtr) {
-            Sound_Effect(VOC_PLACE_BUILDING_DOWN, Center_Coord());
+            PlaySoundEffectAt(VOC_PLACE_BUILDING_DOWN, Center_Coord());
           } else {
             building->IsToRebuild = true;
             building->IsToRepair = true;
@@ -1906,9 +1906,9 @@ void UnitClass::Per_Cell_Process(PCPType why) {
 
     if (optr->IsCrushable) {
       if (optr->Type == OVERLAY_SANDBAG_WALL) {
-        Sound_Effect(VOC_SANDBAG, Center_Coord());
+        PlaySoundEffectAt(VOC_SANDBAG, Center_Coord());
       } else {
-        Sound_Effect(VOC_WALLKILL2, Center_Coord());
+        PlaySoundEffectAt(VOC_WALLKILL2, Center_Coord());
       }
       cellptr->Reduce_Wall(-1);
     }
@@ -2684,7 +2684,7 @@ int UnitClass::Mission_Unload() {
               if (building != nullptr) {
                 ScenarioInit = 1;
                 if (building->Unlimbo(Coord)) {
-                  Sound_Effect(VOC_MINELAY1, Coord);
+                  PlaySoundEffectAt(VOC_MINELAY1, Coord);
                   ScenarioInit = 0;
                   building->Revealed(House);
                   Ammo--;
@@ -2725,7 +2725,7 @@ int UnitClass::Mission_Unload() {
         if constexpr (config::kIsEnglish) {
           Speak(VOX_MADTANK_DEPLOYED);  // Only the English speech set has it.
         } else {
-          Sound_Effect(VOC_BUZZY1, Center_Coord());
+          PlaySoundEffectAt(VOC_BUZZY1, Center_Coord());
         }
         Set_Stage(0);
         Set_Rate(Rule.OreDumpRate * 2);
@@ -2760,7 +2760,7 @@ int UnitClass::Mission_Unload() {
       }
 
       if (!Gold) {
-        Sound_Effect(VOC_MAD_CHARGE, Center_Coord());
+        PlaySoundEffectAt(VOC_MAD_CHARGE, Center_Coord());
         Set_Stage(0);
         Gold = 1;
         return 1;
@@ -2772,7 +2772,7 @@ int UnitClass::Mission_Unload() {
 
       IsDumping = false;
 
-      Sound_Effect(VOC_MAD_EXPLODE, Center_Coord());
+      PlaySoundEffectAt(VOC_MAD_EXPLODE, Center_Coord());
 
       Strength = 1;             // assure destruction
       PendingTimeQuake = true;  // trigger a time quake
@@ -4447,7 +4447,7 @@ void UnitClass::Overrun_Square(CELL cell, bool threaten) {
           /*
           ** Record credit for the kill(s)
           */
-          Sound_Effect(VOC_SQUISH, Coord);
+          PlaySoundEffectAt(VOC_SQUISH, Coord);
           if (object->Height == 0) {
             new AnimClass(ANIM_CORPSE1, object->Center_Coord());
           }

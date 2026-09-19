@@ -581,7 +581,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Play a sound effect.
     */
     case TACTION_PLAY_SOUND:
-      Sound_Effect(Data.Sound);
+      PlaySoundEffect(Data.Sound);
       break;
 
     /*

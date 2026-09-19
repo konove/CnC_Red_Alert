@@ -269,7 +269,7 @@ bool RadarClass::Radar_Activate(int control) {
     case 0:
       if (Map.IsSidebarActive) {
         if (IsRadarActive && !IsRadarDeactivating) {
-          Sound_Effect(VOC_RADAR_OFF);
+          PlaySoundEffect(VOC_RADAR_OFF);
           IsRadarDeactivating = true;
           IsRadarActive = false;
           if (static_cast<bool>(IsRadarActivating)) {
@@ -286,7 +286,7 @@ bool RadarClass::Radar_Activate(int control) {
     case 1:
       if (Map.IsSidebarActive) {
         if (!IsRadarActivating && !IsRadarActive) {
-          Sound_Effect(VOC_RADAR_ON);
+          PlaySoundEffect(VOC_RADAR_ON);
           IsRadarActivating = true;
           if (static_cast<bool>(IsRadarDeactivating)) {
             IsRadarDeactivating = false;

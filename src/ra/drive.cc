@@ -117,7 +117,7 @@ void DriveClass::Response_Select() {
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (AllowVoice) {
-    Sound_Effect(response, fixed(1), -(ID + 1));
+    PlaySoundEffect(response, fixed(1), -(ID + 1));
   }
 }
 
@@ -145,7 +145,7 @@ void DriveClass::Response_Move() {
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (AllowVoice) {
-    Sound_Effect(response, fixed(1), -(ID + 1));
+    PlaySoundEffect(response, fixed(1), -(ID + 1));
   }
 }
 
@@ -170,7 +170,7 @@ void DriveClass::Response_Attack() {
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (AllowVoice) {
-    Sound_Effect(response, fixed(1), -(ID + 1));
+    PlaySoundEffect(response, fixed(1), -(ID + 1));
   }
 }
 
@@ -929,7 +929,7 @@ bool DriveClass::Start_Of_Move() {
             return false;
           }
           if (IsNewNavCom) {
-            Sound_Effect(VOC_SCOLD);
+            PlaySoundEffect(VOC_SCOLD);
           }
           IsNewNavCom = false;
         }
@@ -1070,7 +1070,7 @@ bool DriveClass::Start_Of_Move() {
       }
     } else {
       if (IsNewNavCom) {
-        Sound_Effect(VOC_SCOLD);
+        PlaySoundEffect(VOC_SCOLD);
       }
     }
     IsNewNavCom = false;

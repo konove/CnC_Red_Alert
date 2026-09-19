@@ -775,7 +775,7 @@ void WolapiObject::Logout() {
   pChatSink->bConnected = false;
   *szMyName = 0;
 
-  Sound_Effect(WOLSOUND_LOGOUT);
+  PlaySoundEffect(WOLSOUND_LOGOUT);
 }
 
 //***********************************************************************************************
@@ -1911,10 +1911,10 @@ void WolapiObject::DoKick(IconListClass* pILUsersOrPlayers, bool bAndBan) {
       CurrentLevel != WOL_LEVEL_INLOBBY &&
       CurrentLevel != WOL_LEVEL_INGAMECHANNEL) {
     PrintMessage(TXT_WOL_YOURENOTINCHANNEL, WOLCOLORREMAP_LOCALMACHINEMESS);
-    Sound_Effect(WOLSOUND_ERROR);
+    PlaySoundEffect(WOLSOUND_ERROR);
   } else if (!bChannelOwner) {
     PrintMessage(TXT_WOL_ONLYOWNERCANKICK, WOLCOLORREMAP_LOCALMACHINEMESS);
-    Sound_Effect(WOLSOUND_ERROR);
+    PlaySoundEffect(WOLSOUND_ERROR);
   } else {
     int iFound = 0;
     for (int i = 0; i < pILUsersOrPlayers->Count(); i++) {
@@ -1930,7 +1930,7 @@ void WolapiObject::DoKick(IconListClass* pILUsersOrPlayers, bool bAndBan) {
           }
           iFound++;
           if (iFound < 5) {
-            Sound_Effect(static_cast<VocType>(static_cast<int>(VOC_SCREAM1) +
+            PlaySoundEffect(static_cast<VocType>(static_cast<int>(VOC_SCREAM1) +
                                               Sim_Random_Pick(0, 8)));
           }
         }
@@ -1938,7 +1938,7 @@ void WolapiObject::DoKick(IconListClass* pILUsersOrPlayers, bool bAndBan) {
     }
     if (!iFound) {
       PrintMessage(TXT_WOL_NOONETOKICK, WOLCOLORREMAP_LOCALMACHINEMESS);
-      Sound_Effect(WOLSOUND_ERROR);
+      PlaySoundEffect(WOLSOUND_ERROR);
     }
   }
 }
@@ -1994,7 +1994,7 @@ void WolapiObject::DoSquelch(IconListClass* pILUsersOrPlayers) {
     }
   }
   if (bFound) {
-    Sound_Effect(VOC_SQUISH);
+    PlaySoundEffect(VOC_SQUISH);
     ListChannelUsers();  //	Refresh displayed user list.
   }
 }
@@ -2506,7 +2506,7 @@ bool WolapiObject::OnEnteringChatChannel(const char* szChannelName,
 
   PrintMessage(szMess.c_str(), WOLCOLORREMAP_LOCALMACHINEMESS);
 
-  Sound_Effect(WOLSOUND_ENTERCHAN);
+  PlaySoundEffect(WOLSOUND_ENTERCHAN);
 
   //	Set wol buttons enabled/disabled.
   pShpBtnLeave->Enable();
@@ -2555,7 +2555,7 @@ void WolapiObject::OnExitingChatChannel() {
   *szChannelNameCurrent = 0;
   CurrentLevel = WOL_LEVEL_INVALID;
 
-  Sound_Effect(WOLSOUND_EXITCHAN);
+  PlaySoundEffect(WOLSOUND_EXITCHAN);
 }
 
 //***********************************************************************************************

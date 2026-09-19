@@ -1520,7 +1520,7 @@ int AircraftClass::Paradrop_Cargo() {
       /*
       **	Play a sound effect of the parachute opening.
       */
-      Sound_Effect(VOC_CHUTE1, Coord);
+      PlaySoundEffectAt(VOC_CHUTE1, Coord);
 
       if (Team.Is_Valid()) {
         Team->Remove(passenger);
@@ -3959,7 +3959,7 @@ void AircraftClass::Response_Attack() {
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (AllowVoice) {
-    Sound_Effect(response, fixed(1), -(ID + 1));
+    PlaySoundEffect(response, fixed(1), -(ID + 1));
   }
 }
 
@@ -3984,7 +3984,7 @@ void AircraftClass::Response_Move() {
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (AllowVoice) {
-    Sound_Effect(response, fixed(1), -(ID + 1));
+    PlaySoundEffect(response, fixed(1), -(ID + 1));
   }
 }
 
@@ -4010,7 +4010,7 @@ void AircraftClass::Response_Select() {
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
   if (AllowVoice) {
-    Sound_Effect(response, fixed(1), -(ID + 1));
+    PlaySoundEffect(response, fixed(1), -(ID + 1));
   }
 }
 

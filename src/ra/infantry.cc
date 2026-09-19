@@ -397,27 +397,27 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
         break;
 
       case 1:
-        Sound_Effect(sound, Coord);
+        PlaySoundEffectAt(sound, Coord);
         Do_Action(DO_GUN_DEATH, true);
         break;
 
       case 2:
-        Sound_Effect(sound, Coord);
+        PlaySoundEffectAt(sound, Coord);
         Do_Action(DO_EXPLOSION_DEATH, true);
         break;
 
       case 3:
-        Sound_Effect(sound, Coord);
+        PlaySoundEffectAt(sound, Coord);
         Do_Action(DO_GRENADE_DEATH, true);
         break;
 
       case 4:
-        Sound_Effect(altsound, Coord);
+        PlaySoundEffectAt(altsound, Coord);
         Do_Action(DO_FIRE_DEATH, true);
         break;
 
       case 5:
-        Sound_Effect(sound, Coord);
+        PlaySoundEffectAt(sound, Coord);
         AnimType anim = ANIM_ELECT_DIE;
         if (Class->IsDog) {
           anim = ANIM_DOG_ELECT_DIE;
@@ -798,7 +798,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
       **	Special voice play.
       */
       if (*this == INFANTRY_TANYA) {
-        Sound_Effect(VOC_TANYA_LAUGH, Coord);
+        PlaySoundEffectAt(VOC_TANYA_LAUGH, Coord);
       }
 
       /*
@@ -1707,7 +1707,7 @@ bool InfantryClass::Random_Animate() {
         Mark(MARK_CHANGE_REDRAW);
         if (!IsSelected && IsOwnedByPlayer && *this == INFANTRY_TANYA &&
             Sim_Random_Pick(0, 2) == 0) {
-          Sound_Effect(VOC_TANYA_SHAKE, Coord);
+          PlaySoundEffectAt(VOC_TANYA_SHAKE, Coord);
         }
         break;
 
@@ -2312,7 +2312,7 @@ void InfantryClass::Response_Select() {
     } else {
       response = VOC_GUY_YEAH;
     }
-    Sound_Effect(response, fixed(1), ID + 1);
+    PlaySoundEffect(response, fixed(1), ID + 1);
 
   } else {
     static const VocType _eng_response[] = {VOC_ENG_YES, VOC_ENG_ENG};
@@ -2417,7 +2417,7 @@ void InfantryClass::Response_Select() {
         break;
     }
     if (!response.empty()) {
-      Sound_Effect(
+      PlaySoundEffect(
           base::At(response, base::ToSize(Sim_Random_Pick(0, size - 1))),
           fixed(1), ID + 1, 0, house);
     }
@@ -2449,7 +2449,7 @@ void InfantryClass::Response_Move() {
 
   if (Class->IsCivilian && *this != INFANTRY_EINSTEIN) {
     const VocType response = Class->IsFemale ? VOC_GIRL_OKAY : VOC_GUY_OKAY;
-    Sound_Effect(response, fixed(1), ID + 1);
+    PlaySoundEffect(response, fixed(1), ID + 1);
 
   } else {
     static const VocType _eng_response[] = {VOC_ENG_AFFIRM, VOC_ENG_AFFIRM};
@@ -2562,7 +2562,7 @@ void InfantryClass::Response_Move() {
         break;
     }
     if (!response.empty()) {
-      Sound_Effect(
+      PlaySoundEffect(
           base::At(response, base::ToSize(Sim_Random_Pick(0, size - 1))),
           fixed(1), ID + 1, 0, house);
     }
@@ -2595,7 +2595,7 @@ void InfantryClass::Response_Attack() {
 
   if (Class->IsCivilian && *this != INFANTRY_EINSTEIN) {
     const VocType response = Class->IsFemale ? VOC_GIRL_OKAY : VOC_GUY_OKAY;
-    Sound_Effect(response, fixed(1), ID + 1);
+    PlaySoundEffect(response, fixed(1), ID + 1);
 
   } else {
     static const VocType _eng_response[] = {VOC_ENG_AFFIRM, VOC_ENG_AFFIRM};
@@ -2709,7 +2709,7 @@ void InfantryClass::Response_Attack() {
         break;
     }
     if (!response.empty()) {
-      Sound_Effect(
+      PlaySoundEffect(
           base::At(response, base::ToSize(Sim_Random_Pick(0, size - 1))),
           fixed(1), ID + 1, 0, house);
     }
@@ -3859,7 +3859,7 @@ void InfantryClass::Movement_AI() {
                   TryTryAgain--;
                 } else {
                   if (IsNewNavCom) {
-                    Sound_Effect(VOC_SCOLD);
+                    PlaySoundEffect(VOC_SCOLD);
                   }
                   IsNewNavCom = false;
 
@@ -3929,7 +3929,7 @@ void InfantryClass::Movement_AI() {
           base::At(Path, 0) = FACING_NONE;
           Stop_Driver();
           if (IsNewNavCom) {
-            Sound_Effect(VOC_SCOLD);
+            PlaySoundEffect(VOC_SCOLD);
           }
           IsNewNavCom = false;
 

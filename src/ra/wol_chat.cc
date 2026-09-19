@@ -426,10 +426,10 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     pWO->iLobbyReturnAfterGame = -1;
 
     if (pWO->bReturningAfterGame) {
-      Sound_Effect(WOLSOUND_LOGIN);
+      PlaySoundEffect(WOLSOUND_LOGIN);
       pWO->bReturningAfterGame = false;
     } else {
-      Sound_Effect(WOLSOUND_EXITGAME);
+      PlaySoundEffect(WOLSOUND_EXITGAME);
     }
   }
 
@@ -597,7 +597,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       pWO->bChatShownBefore = true;
       display = REDRAW_ALL;
       //	Play login sound.
-      Sound_Effect(WOLSOUND_LOGIN);
+      PlaySoundEffect(WOLSOUND_LOGIN);
     }
     bFirsttime = false;
 
@@ -735,7 +735,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         } else {
           WOL_PrintMessage(chatlist, TXT_WOL_YOURENOTINCHANNEL,
                            WOLCOLORREMAP_LOCALMACHINEMESS);
-          Sound_Effect(WOLSOUND_ERROR);
+          PlaySoundEffect(WOLSOUND_ERROR);
           sendedit.Set_Focus();
           //	Mark for redraw.
           sendedit.Flag_To_Redraw();
@@ -876,7 +876,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
             // TXT_WOL_CANTCREATEINCHANNEL );
             WOL_PrintMessage(chatlist, TXT_WOL_CANTCREATEINCHANNEL,
                              WOLCOLORREMAP_LOCALMACHINEMESS);
-            Sound_Effect(WOLSOUND_ERROR);
+            PlaySoundEffect(WOLSOUND_ERROR);
             break;
           case WOL_LEVEL_INLOBBY: {
             pWO->bPump_In_Call_Back = true;
@@ -895,7 +895,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           case WOL_LEVEL_LOBBIES:
             WOL_PrintMessage(chatlist, TXT_WOL_CANTCREATEHERE,
                              WOLCOLORREMAP_LOCALMACHINEMESS);
-            Sound_Effect(WOLSOUND_ERROR);
+            PlaySoundEffect(WOLSOUND_ERROR);
             break;
           case WOL_LEVEL::WOL_LEVEL_TOP:
           case WOL_LEVEL::WOL_LEVEL_OFFICIALCHAT:
@@ -990,7 +990,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         } else {
           WOL_PrintMessage(chatlist, TXT_WOL_YOURENOTINCHANNEL,
                            WOLCOLORREMAP_LOCALMACHINEMESS);
-          Sound_Effect(WOLSOUND_ERROR);
+          PlaySoundEffect(WOLSOUND_ERROR);
           sendedit.Set_Focus();
           //	Mark for redraw.
           sendedit.Flag_To_Redraw();
@@ -1178,7 +1178,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
   {
     WOL_PrintMessage(chatlist, TXT_WOL_CHANNELFULL,
                      WOLCOLORREMAP_LOCALMACHINEMESS);
-    Sound_Effect(WOLSOUND_ERROR);
+    PlaySoundEffect(WOLSOUND_ERROR);
     return false;
   }
 
@@ -1269,13 +1269,13 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
       case CHAT_E_BANNED:
         WOL_PrintMessage(chatlist, TXT_WOL_YOUREBANNED,
                          WOLCOLORREMAP_LOCALMACHINEMESS);
-        Sound_Effect(WOLSOUND_ERROR);
+        PlaySoundEffect(WOLSOUND_ERROR);
         bKeepTrying = false;
         break;
       case CHAT_E_CHANNELFULL:
         WOL_PrintMessage(chatlist, TXT_WOL_CHANNELFULL,
                          WOLCOLORREMAP_LOCALMACHINEMESS);
-        Sound_Effect(WOLSOUND_ERROR);
+        PlaySoundEffect(WOLSOUND_ERROR);
         bKeepTrying = false;
         break;
       case E_FAIL:
@@ -1517,7 +1517,7 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
             if (!Is_Counterstrike_Installed()) {
               WOL_PrintMessage(chatlist, TXT_WOL_NEEDCOUNTERSTRIKE,
                                WOLCOLORREMAP_LOCALMACHINEMESS);
-              Sound_Effect(WOLSOUND_ERROR);
+              PlaySoundEffect(WOLSOUND_ERROR);
               return false;
             }
             break;
@@ -1525,14 +1525,14 @@ bool ProcessChannelListSelection(WolapiObject* pWO, IconListClass& chatlist,
             if (!Is_Aftermath_Installed()) {
               WOL_PrintMessage(chatlist, TXT_WOL_NEEDAFTERMATH,
                                WOLCOLORREMAP_LOCALMACHINEMESS);
-              Sound_Effect(WOLSOUND_ERROR);
+              PlaySoundEffect(WOLSOUND_ERROR);
               return false;
             }
             break;
           default:
             //					debugprint( "Illegal value for
             // GameKind channel reserved field: %s\n", (char*)pChannel->name );
-            Sound_Effect(WOLSOUND_ERROR);
+            PlaySoundEffect(WOLSOUND_ERROR);
             return false;
         }
         //	Join the game channel.
