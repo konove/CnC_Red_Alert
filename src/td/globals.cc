@@ -75,7 +75,6 @@
 #include "td/ipxmgr.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
-#include "td/menus.h"
 #include "td/msglist.h"
 #include "td/nodename.h"
 #include "td/nullmgr.h"
@@ -752,8 +751,6 @@ int WindowList[][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
 
 };
-
-MenuConfig menu_config;
 
 GraphicBufferClass VisiblePage;
 GraphicBufferClass HiddenPage;

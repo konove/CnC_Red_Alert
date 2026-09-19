@@ -82,6 +82,8 @@ static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
 
 int UnknownKey;
 
+static MenuConfig menu_config;
+
 static int MenuUpdate = 1;
 static int MenuSkip;
 

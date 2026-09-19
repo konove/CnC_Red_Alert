@@ -336,8 +336,6 @@ extern GraphicBufferClass VisiblePage;
 extern GraphicBufferClass HiddenPage;
 extern GraphicViewPortClass HidPage;
 extern GraphicBufferClass SysMemPage;
-struct MenuConfig;
-extern MenuConfig menu_config;
 extern CountDownTimerClass CountDownTimer;
 
 extern int ProcessTicks;
