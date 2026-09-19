@@ -3052,7 +3052,8 @@ uint32_t Obfuscate(const char* string) {
   **	discourages the direct forced illegal character input method of attack.
   */
   for (int index = 0; index < length; index++) {
-    if (!isgraph(base::At(buffer, index))) {
+    if (!absl::ascii_isgraph(
+            static_cast<unsigned char>(base::At(buffer, index)))) {
       base::At(buffer, index) = static_cast<char>('A' + (index % 26));
     }
   }
