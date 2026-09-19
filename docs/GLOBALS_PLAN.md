@@ -315,3 +315,20 @@ only where the two games' layouts already match.
   belong to later phases: RA's type-class `DimensionData`/`RadarIcon` vectors, which `Prog_End()`
   clears without freeing (phase 5), and TD's `HouseClass` trackers (phase 6). Still to do: run Red
   Alert on a real display into a mission and through a movie.
+- 2026-09-19: phase 2 done for both games (0494113d..c5396ae3). `Palettes` (`ra/palettes.h`,
+  `td/palettes.h`) is its own subsystem rather than part of `Screen`: palettes are data, not video
+  pages, and `intro_test.cc` now installs one instead of defining `BlackPalette`, `CCPalette` and
+  `GamePalette`. `CCPalette` and TD's `Palette` are `title_palette()`. Tiberian Dawn has no remap
+  tables among its globals, and its palettes are raw 768-byte vectors, so its class differs. Before
+  the move, both games' movie interpolation tables (`InterpolatedPalettes`, `PalettesRead`,
+  `PaletteCounter`, `PaletteInterpolationTable`, TD's `InterpolationPalette`) were deleted: nothing
+  has read the table since the SDL scaler replaced the 2x interpolation, and TD's map screen wrote
+  it out as junk `.PAL` files. `PaletteClass`'s fill constructor and `at()` are inline now, so
+  `Palettes` needs no `palette.cc`. Found on the way: TD's `Uninit_Game()` freed the MIX archives
+  and speech buffer while the audio thread could still be mixing from them (a smoke run crashed in
+  `AudioMixer::RefillConverter()`); it now closes the audio first. TD's `Prog_End()` no longer
+  clears the title palette, which made `ShutDown()` fail without a `Game`. ASan: `-QUITFRAME` and
+  `SDL_QUIT` exit cleanly in both games. One of 22 ASan runs of Red Alert's `-QUITFRAME` stalled
+  after `Set_Video_Mode` and hit the timeout; it did not recur in 20 more runs of either build, and
+  the first ASan run in phase 1 also hung, so there may be an intermittent startup hang. Still to
+  do, as for phase 1: run Red Alert on a real display into a mission and through a movie.
