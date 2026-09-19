@@ -49,8 +49,9 @@ constexpr int kCompassTenths[8][2] = {{0, -10}, {7, -7}, {10, 0},  {7, 7},
 
 }  // namespace
 
-DirectionDial::DirectionDial(int id, int x, int y, int width, int height,
-                             DirType initial_direction)
+DirectionDial::DirectionDial(const int id, const int x, const int y,
+                             const int width, const int height,
+                             const DirType initial_direction)
     : ControlClass(static_cast<unsigned>(id), x, y, width, height,
                    kLeftPress | kLeftHeld | kLeftRelease, true),
       center_x_(X + (Width / 2)),
@@ -72,7 +73,7 @@ DirectionDial::DirectionDial(int id, int x, int y, int width, int height,
   }
 }
 
-bool DirectionDial::Action(unsigned flags, KeyNumType& key) {
+bool DirectionDial::Action(const unsigned flags, KeyNumType& key) {
   // We might end up clearing the event bits. Make sure that the sticky
   // process is properly updated anyway: it is what makes StuckOn this dial
   // from the press to the release.
@@ -107,7 +108,7 @@ bool DirectionDial::Action(unsigned flags, KeyNumType& key) {
   return ControlClass::Action(0, key);
 }
 
-bool DirectionDial::Draw_Me(bool forced) {
+bool DirectionDial::Draw_Me(const bool forced) {
   // Redraw only if the parent says a redraw is needed.
   if (!ControlClass::Draw_Me(forced)) {
     return false;
@@ -141,7 +142,7 @@ bool DirectionDial::Draw_Me(bool forced) {
 
 DirType DirectionDial::direction() const { return direction_; }
 
-void DirectionDial::set_direction(DirType direction) {
+void DirectionDial::set_direction(const DirType direction) {
   direction_ = direction;
   facing_ = Dir_Facing(direction_);
   Flag_To_Redraw();
