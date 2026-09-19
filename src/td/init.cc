@@ -702,6 +702,10 @@ bool Init_Game() {
 }
 
 void Uninit_Game() {
+  // The audio thread keeps mixing whatever is playing, straight out of the
+  // speech buffer and the MIX archives freed below; stop it first.
+  Audio.Close();
+
   delete MouseClass::ShadowPage;
   MouseClass::ShadowPage = nullptr;
   Map.Free_Cells();
