@@ -226,7 +226,7 @@ int main(const int argc, char* argv[])
       absl::PrintF("%s", kLanguageText.insufficient_disk);
       absl::PrintF("%s\n",
                    MustHaveDiskSpaceText(kInitFreeDiskSpace / (1024 * 1024)));
-      ShutdownTickTimer();
+      ShutDown();
       return EXIT_FAILURE;
     }
 
@@ -248,6 +248,7 @@ int main(const int argc, char* argv[])
       SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
 
       if (!InitVideo()) {
+        ShutDown();
         return EXIT_FAILURE;
       }
 
@@ -301,9 +302,10 @@ int main(const int argc, char* argv[])
     // The config file could neither be opened nor created. There is no
     // window yet to read a key from, so report and leave.
     absl::PrintF("%s\n", kLanguageText.setup_first);
-    ShutdownTickTimer();
+    ShutDown();
     return EXIT_FAILURE;
   }
+  ShutDown();
   return EXIT_SUCCESS;
 }
 
@@ -319,7 +321,6 @@ bool InitVideo() {
   }
 
   if (!mode_set) {
-    ShutdownTickTimer();
     return false;
   }
 
