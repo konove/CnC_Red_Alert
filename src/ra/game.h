@@ -1,0 +1,32 @@
+// File: Game, the owner of Red Alert's subsystems.
+
+#ifndef CNC_RED_ALERT_RA_GAME_H_
+#define CNC_RED_ALERT_RA_GAME_H_
+
+// Owns the game's subsystems and so fixes the order they are built and torn
+// down in. Members are declared in dependency order, which C++ constructs
+// front to back and destroys back to front; each one is installed with
+// base::Installed as soon as it is built. docs/GLOBALS_PLAN.md moves the
+// globals into it one subsystem at a time, and until then it is empty.
+//
+// main() creates the one Game on the heap before anything else, and
+// ShutDown() destroys it, so every way out of the game tears the subsystems
+// down in the same order. Constructing a Game does no I/O and needs neither a
+// window nor the game data, so a test can build one.
+//
+// Example:
+//   auto* game = new Game();
+//   ...
+//   delete game;  // In ShutDown().
+class Game {
+ public:
+  Game() = default;
+  ~Game() = default;
+
+  Game(const Game&) = delete;
+  Game& operator=(const Game&) = delete;
+  Game(Game&&) = delete;
+  Game& operator=(Game&&) = delete;
+};
+
+#endif  // CNC_RED_ALERT_RA_GAME_H_

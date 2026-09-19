@@ -48,6 +48,7 @@
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
+#include "ra/game.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/ini.h"
@@ -86,12 +87,18 @@
   exit(1);
 }
 
+// The one Game; main() creates it and ShutDown() destroys it. nullptr before
+// main() and after ShutDown().
+static Game* game = nullptr;
+
 void ShutDown() {
   // Nothing is left for an allocation failure from here on to clean up.
   Memory_Error_Exit = ExitWithError;
   Prog_End();
   visible_page.Un_Init();
   hidden_page.Un_Init();
+  delete game;
+  game = nullptr;
 }
 
 // Reads the options that have to be known before the window and the network
@@ -132,6 +139,8 @@ int main(const int argc, char* argv[])
 {
   absl::InitializeLog();
   absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
+
+  game = new Game();
 
 #ifdef _WIN32
 

@@ -113,6 +113,11 @@ add_gtest(
 )
 
 add_gtest(
+    NAME ra_game_test
+    SOURCES game_test.cc
+)
+
+add_gtest(
     NAME ra_mission_id_test
     SOURCES mission_id_test.cc mission_id.cc
     LIBS absl::strings

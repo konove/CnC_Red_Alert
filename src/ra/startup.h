@@ -12,10 +12,10 @@
 // with `exit_code`.
 [[noreturn]] void EmergencyExit(int exit_code);
 
-// Releases everything the game set up - Prog_End() and the video pages - so
-// the caller only has to exit. Every way out of the game goes through it: the
-// end of main(), EmergencyExit(), the memory-error exits and the SDL quit
-// handler. It does not draw, so it is safe before the video pages exist.
+// Releases everything the game set up - Prog_End(), the video pages and the
+// Game - so the caller only has to exit. Every way out of the game goes through
+// it: the end of main(), EmergencyExit(), the memory-error exits and the SDL
+// quit handler. It does not draw, so it is safe before the video pages exist.
 void ShutDown();
 
 // Sets the video mode for ScreenWidth x ScreenHeight (falling back from 400
