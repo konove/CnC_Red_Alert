@@ -2674,34 +2674,34 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         ** Destroy any infantryman that gets teleported
         */
         if (tech->What_Am_I() == RTTI_INFANTRY) {
-          auto* inf = dynamic_cast<InfantryClass*>(tech);
-          inf->Mark(MARK_UP);
-          inf->Coord = Cell_Coord(cell);
-          inf->Mark(MARK_DOWN);
-          int damage = inf->Strength;
-          inf->Take_Damage(damage, 0, WARHEAD_FIRE, nullptr, true);
+          auto& inf = dynamic_cast<InfantryClass&>(*tech);
+          inf.Mark(MARK_UP);
+          inf.Coord = Cell_Coord(cell);
+          inf.Mark(MARK_DOWN);
+          int damage = inf.Strength;
+          inf.Take_Damage(damage, 0, WARHEAD_FIRE, nullptr, true);
         } else if (tech->What_Am_I() == RTTI_UNIT &&
-                   *dynamic_cast<UnitClass*>(tech) == UNIT_DEMOTRUCK) {
+                   dynamic_cast<UnitClass&>(*tech) == UNIT_DEMOTRUCK) {
           tech->Assign_Target(tech->As_Target());
         } else {
           /*
           **	Warp the unit to the new location.
           */
-          auto* drive = dynamic_cast<DriveClass*>(tech);
-          drive->MoebiusCell = Coord_Cell(drive->Coord);
-          drive->Teleport_To(cell);
-          drive->IsMoebius = true;
+          auto& drive = dynamic_cast<DriveClass&>(*tech);
+          drive.MoebiusCell = Coord_Cell(drive.Coord);
+          drive.Teleport_To(cell);
+          drive.IsMoebius = true;
           if (tech->What_Am_I() == RTTI_UNIT &&
-              *dynamic_cast<UnitClass*>(tech) == UNIT_CHRONOTANK) {
-            drive->IsMoebius = false;
+              dynamic_cast<UnitClass&>(*tech) == UNIT_CHRONOTANK) {
+            drive.IsMoebius = false;
           }
-          drive->MoebiusCountDown.Set(Rule.ChronoDuration * kTicksPerMinute);
+          drive.MoebiusCountDown.Set(Rule.ChronoDuration * kTicksPerMinute);
           if (tech->What_Am_I() == RTTI_UNIT &&
-              *dynamic_cast<UnitClass*>(tech) == UNIT_CHRONOTANK) {
-            drive->MoebiusCountDown.Set(ChronoTankDuration * kTicksPerMinute);
+              dynamic_cast<UnitClass&>(*tech) == UNIT_CHRONOTANK) {
+            drive.MoebiusCountDown.Set(ChronoTankDuration * kTicksPerMinute);
           }
           Scen.Do_BW_Fade();
-          PlaySoundEffectAt(VOC_CHRONO, drive->Coord);
+          PlaySoundEffectAt(VOC_CHRONO, drive.Coord);
         }
       }
       UnitToTeleport = kTargetNone;
@@ -2710,7 +2710,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       }
       if (tech && tech->IsActive &&
           (tech->What_Am_I() != RTTI_UNIT ||
-           *dynamic_cast<UnitClass*>(tech) != UNIT_CHRONOTANK)) {
+           dynamic_cast<UnitClass&>(*tech) != UNIT_CHRONOTANK)) {
         SuperWeapon.at(SPC_CHRONOSPHERE).Discharged(this == PlayerPtr);
       }
       IsRecalcNeeded = true;

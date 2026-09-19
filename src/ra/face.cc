@@ -206,7 +206,9 @@ DirType Desired_Facing256(int srcx, int srcy, int dstx, int dsty) {
   **	is calculated as a ratio from 0 (matches orthogonal) to 31
   **	(matches diagonal).
   */
-  CHECK_NE(bigger, 0);
+  // CHECK(a != b), not CHECK_NE: the shallow analyzer does not see through the
+  // CHECK_NE helper and would still report the division below.
+  CHECK(bigger != 0);
   int frac = smaller * 32 / bigger;
 
   /*

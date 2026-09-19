@@ -99,7 +99,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   TextButtonClass* buttons[3] = {};
   std::vector<uint8_t> back;
   bool display = true;  // display level
-  int realval[5];
+  int realval[5] = {};
 
   if (b1txt != nullptr && *b1txt == '\0') {
     b1txt = nullptr;

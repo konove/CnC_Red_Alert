@@ -1879,8 +1879,9 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	a threat.
   */
   if (base::Any(method & THREAT_POWER) && otype == RTTI_BUILDING) {
-    if (dynamic_cast<const BuildingTypeClass*>(tclass)->Power > 0) {
-      value += dynamic_cast<const BuildingTypeClass*>(tclass)->Power * 1000;
+    const int power = dynamic_cast<const BuildingTypeClass&>(*tclass).Power;
+    if (power > 0) {
+      value += power * 1000;
     } else {
       value = 0;
     }
@@ -1891,7 +1892,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	consider any non-factory building.
   */
   if ((base::Any(method & THREAT_FACTORIES) && otype == RTTI_BUILDING) &&
-      (dynamic_cast<const BuildingTypeClass*>(tclass)->ToBuild == RTTI_NONE)) {
+      (dynamic_cast<const BuildingTypeClass&>(*tclass).ToBuild == RTTI_NONE)) {
     value = 0;
   }
 

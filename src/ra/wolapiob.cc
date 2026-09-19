@@ -2987,7 +2987,8 @@ bool WolapiObject::GetNameOfBeginningLobby(std::span<char> szNameToSet) {
   //	All lobbies have 50 or more users. So just choose a random one.
   const int iChoice = Sim_Random_Pick(0, iCount - 1);
   pChannel = pChatSink->pChannelList;
-  for (int i = 0; i != iChoice; i++) {
+  // Also stop at the tail, in case the list shrank since it was counted.
+  for (int i = 0; i != iChoice && pChannel->next != nullptr; i++) {
     pChannel = pChannel->next;
   }
 
