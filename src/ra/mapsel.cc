@@ -141,7 +141,7 @@ static int ChoiceUnderMouse(const bool is_soviet, const int scenario) {
 }
 
 static void PlayMapSound(const std::string_view file_name) {
-  Play_Sample(MixArchive::RetrieveData(file_name), /*priority=*/255,
+  Play_Sample(MixArchive::RetrieveData(file_name), 255,
               Options.Normalize_Volume(170));
 }
 
@@ -169,7 +169,7 @@ static void PlayMapReveal(const std::string& animation_name,
   SeenBuff.Clear();
   palette.Set(kFadePaletteFast, ServiceRealTime);
 
-  Animate_Frame(animation, page, /*frame_number=*/1);
+  Animate_Frame(animation, page, 1);
   Interpolate_2X_Scale(&page, &SeenBuff, {});
 
   PlayMapSound("MAPWIPE2.AUD");
@@ -197,7 +197,7 @@ static int WaitForMissionChoice(PaletteClass& palette, const bool is_soviet) {
   int cursor_frame = 0;
   while (true) {
     PulseHotspots(palette);
-    ServiceRealTimeFor(/*ticks=*/1);
+    ServiceRealTimeFor(1);
 
     // MouseClass animates the pointer only while the game map runs, so step
     // through the crosshair's frames here.
