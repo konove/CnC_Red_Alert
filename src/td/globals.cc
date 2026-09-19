@@ -487,11 +487,6 @@ char CallWaitStrings[kCallWaitStringsNum][CALL_WAIT_STRING_MAX] = {
 int ScenarioIdx;
 
 /***************************************************************************
-**	This array of flags tells if the given colors have been used, or are
-*/
-int ColorUsed[MAX_MPLAYER_COLORS];
-
-/***************************************************************************
 **	This string stores the player's name.
 */
 char MPlayerName[MPLAYER_NAME_MAX];

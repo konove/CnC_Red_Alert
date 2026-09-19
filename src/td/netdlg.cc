@@ -186,6 +186,9 @@
 #include "td/ccdde.h"
 #endif
 
+// Which multiplayer colors the players in the game dialog have taken; nonzero
+// means taken.
+static int color_used[MAX_MPLAYER_COLORS];
 
 #ifndef DEMO
 
@@ -3085,9 +3088,9 @@ static int Net_New_Dialog() {
   Init player color-used flags
   ........................................................................*/
   for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-    base::At(ColorUsed, i) = 0;  // init all colors to available
+    base::At(color_used, i) = 0;  // init all colors to available
   }
-  base::At(ColorUsed, MPlayerColorIdx) = 1;  // set my color to used
+  base::At(color_used, MPlayerColorIdx) = 1;  // set my color to used
   playerlist.Set_Selected_Style(ColorListClass::SELECT_BAR, kCcGreenShadow);
 
   /*........................................................................
@@ -3986,18 +3989,18 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       give him as used.
       ..................................................................*/
       if (GPacket.PlayerInfo.Color < MAX_MPLAYER_COLORS &&
-          base::At(ColorUsed, GPacket.PlayerInfo.Color) == 0) {
+          base::At(color_used, GPacket.PlayerInfo.Color) == 0) {
         who->Player.Color =
             static_cast<unsigned char>(GPacket.PlayerInfo.Color);
       } else {
         for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          if (base::At(ColorUsed, i) == 0) {
+          if (base::At(color_used, i) == 0) {
             who->Player.Color = static_cast<unsigned char>(i);
             break;
           }
         }
       }
-      base::At(ColorUsed, who->Player.Color) = 1;
+      base::At(color_used, who->Player.Color) = 1;
 
       /*..................................................................
       Add player name to the list box
@@ -4048,7 +4051,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
         /*...............................................................
         Mark his color as available
         ...............................................................*/
-        base::At(ColorUsed, Players.at(i)->Player.Color) = 0;
+        base::At(color_used, Players.at(i)->Player.Color) = 0;
         /*...............................................................
         Delete from the Vector list
         ...............................................................*/
@@ -4416,9 +4419,9 @@ static int Net_Fake_New_Dialog() {
   Init player color-used flags
   ........................................................................*/
   for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-    base::At(ColorUsed, i) = 0;  // init all colors to available
+    base::At(color_used, i) = 0;  // init all colors to available
   }
-  base::At(ColorUsed, MPlayerColorIdx) = 1;  // set my color to used
+  base::At(color_used, MPlayerColorIdx) = 1;  // set my color to used
   playerlist.Set_Selected_Style(ColorListClass::SELECT_BAR, kCcGreenShadow);
 
   /*........................................................................

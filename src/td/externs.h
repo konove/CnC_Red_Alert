@@ -254,7 +254,6 @@ extern char CallWaitStrings[kCallWaitStringsNum][CALL_WAIT_STRING_MAX];
 ** Network/Modem globals
 */
 extern int ScenarioIdx;
-extern int ColorUsed[MAX_MPLAYER_COLORS];
 extern char MPlayerName[MPLAYER_NAME_MAX];
 extern int MPlayerGColors[MAX_MPLAYER_COLORS];
 extern int MPlayerTColors[MAX_MPLAYER_COLORS];
