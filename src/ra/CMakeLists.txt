@@ -214,3 +214,9 @@ add_gtest(
     SOURCES utracker_test.cc utracker.cc
     LIBS base
 )
+
+add_gtest(
+    NAME ra_obfuscate_test
+    SOURCES obfuscate_test.cc obfuscate.cc
+    LIBS base port absl::strings absl::check absl::log
+)

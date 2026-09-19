@@ -19,30 +19,33 @@ extern base::EnumArray<LandType, GroundType> Ground;
 **	These are the access passwords used to activate cheat mode, editor mode,
 **	and special game options.
 */
-constexpr uint32_t PlayCodes[] = {0xE0792D6D,  // Dwight Okahara
-                                  0x90046ECF,  // Paul S. Mudra
-                                  0xC3EE9A26,  // Frank Klepaki
-                                  0xED382178,  // Ed Del Castillo
+// These phrases reproduce the legacy hashes. Multiple phrases can match a
+// hash, so they are not necessarily the original passwords.
+constexpr uint32_t PlayCodes[] = {0xE0792D6D,  // Dwight Okahara; SONY
+                                  0x90046ECF,  // Paul S. Mudra; ANTHRAXROCKAWAY
+                                  0xC3EE9A26,  // Frank Klepaki; FUNK
+                                  0xED382178,  // Ed Del Castillo; SLICK
                                   0};
 
-constexpr uint32_t CheatCodes[] = {0xA0E2AB53,  // Joseph Hewitt
-                                   0x00532693,  // Mike Lightner
-                                   0x7DDFF824,  // Joe Bostic
-                                   0x2CB5CF01,  // Phil Gorrow
-                                   0xB5B63531,  // Bill Randolph
-                                   0xDFABC23A,  // Adam Isgreen
-                                   0x52B19A22,  // Erik Yeo
-                                   0xBE79088C,  // David Dettmer
-                                   0xB216AE7E,  // Barry Green
-                                   0x0E07B213,  // Steve Tall
-                                   0x56129C99,  // konove (PEROPERO)
-                                   0};
+constexpr uint32_t CheatCodes[] = {
+    0xA0E2AB53,  // Joseph Hewitt; JUPITER
+    0x00532693,  // Mike Lightner; NATE
+    0x7DDFF824,  // Joe Bostic; PASSWORD
+    0x2CB5CF01,  // Phil Gorrow; CHEATER
+    0xB5B63531,  // Bill Randolph; BLUB
+    0xDFABC23A,  // Adam Isgreen; ADEN / ATEN / ADUN / ATUN
+    0x52B19A22,  // Erik Yeo; NUKE
+    0xBE79088C,  // David Dettmer; EARTHIMPROVED
+    0xB216AE7E,  // Barry Green; SPOON
+    0x0E07B213,  // Steve Tall; CARPET
+    0x905F36A5,  // konove (PEROPERO), regenerated for the legacy algorithm
+    0};
 
-constexpr uint32_t EditorCodes[] = {0xA2C09326,  // Erik Yeo
-                                    0x1F944BB3,  // Mike Lightner
-                                    0xDE07154D,  // Adam Isgreen
-                                    0x0E07B213,  // Steve Tall
-                                    0x16B170B1,  // Joe Bostic
+constexpr uint32_t EditorCodes[] = {0xA2C09326,  // Erik Yeo; BUILD
+                                    0x1F944BB3,  // Mike Lightner; MOBIUS
+                                    0xDE07154D,  // Adam Isgreen; CYCLONE
+                                    0x0E07B213,  // Steve Tall; CARPET
+                                    0x16B170B1,  // Joe Bostic; EDITOR
                                     // 0x7DDFF824,  // PASSWORD
                                     0};
 
