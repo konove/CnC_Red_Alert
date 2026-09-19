@@ -27,11 +27,11 @@
 // back to frame 0.
 //
 // Example:
-//   void* anim = Open_Animation("TITLE.WSA", WSA_OPEN_FROM_MEM, palette);
-//   for (int i = 0; i < Get_Animation_Frame_Count(anim); ++i) {
-//     Animate_Frame(anim, view, i);
+//   void* anim = OpenAnimation("TITLE.WSA", WSA_OPEN_FROM_MEM, palette);
+//   for (int i = 0; i < AnimationFrameCount(anim); ++i) {
+//     DrawAnimationFrame(anim, view, i);
 //   }
-//   Close_Animation(anim);
+//   CloseAnimation(anim);
 
 #ifndef CNC_RED_ALERT_SDLLIB_WSA_H_
 #define CNC_RED_ALERT_SDLLIB_WSA_H_
@@ -45,7 +45,7 @@
 #include "base/flags.h"
 #include "sdllib/gbuffer.h"
 
-// Flags for Open_Animation(). The zero-valued names are the defaults and exist
+// Flags for OpenAnimation(). The zero-valued names are the defaults and exist
 // only to make call sites readable; testing for them with `&` is always false.
 enum class CNC_FLAG_ENUM WsaOpenFlags {
   // Try to load the entire animation into memory.
@@ -70,16 +70,16 @@ template <>
 inline constexpr bool base::kIsFlagEnum<WsaOpenFlags> = true;
 
 // Opens the animation in `file_name` and returns a handle to pass to
-// Animate_Frame(), or nullptr if the file is missing, corrupt or too large for
-// memory. If the file has a palette and `palette` holds at least 768 bytes
+// DrawAnimationFrame(), or nullptr if the file is missing, corrupt or too large
+// for memory. If the file has a palette and `palette` holds at least 768 bytes
 // (256 RGB triples), it is read into `palette`. Release the handle with
-// Close_Animation().
-void* Open_Animation(const char* file_name, WsaOpenFlags user_flags,
-                     std::span<uint8_t> palette = {});
+// CloseAnimation().
+void* OpenAnimation(const char* file_name, WsaOpenFlags open_flags,
+                    std::span<uint8_t> palette = {});
 
 // Closes the animation's file, if it is being played from disk, and frees
 // `handle`. Does nothing if `handle` is nullptr.
-void Close_Animation(void* handle);
+void CloseAnimation(void* handle);
 
 // Draws frame `frame_number` of the animation into `view` at the offset stored
 // in the animation file, applying every delta between the last frame drawn and
@@ -89,10 +89,11 @@ void Close_Animation(void* handle);
 // frame does not fit the view. Also returns false if a delta on the way cannot
 // be loaded; `view` then shows the last frame that could be reached, and a
 // later call carries on from there.
-bool Animate_Frame(void* handle, GraphicViewPortClass& view, int frame_number);
+bool DrawAnimationFrame(void* handle, GraphicViewPortClass& view,
+                        int frame_number);
 
 // Returns the number of frames in the animation, or 0 if `handle` is nullptr.
-int Get_Animation_Frame_Count(void* handle);
+int AnimationFrameCount(void* handle);
 
 // XOR delta decoders, formerly the assembly in LP_ASM.ASM and now in wsa.cc.
 // All of them stop quietly at the first command that is malformed or would
@@ -100,18 +101,18 @@ int Get_Animation_Frame_Count(void* handle);
 
 // Applies the uncompressed XOR delta in `delta` to `target`, treating `target`
 // as one contiguous run of pixels. Always returns 0.
-unsigned int Apply_XOR_Delta(std::span<uint8_t> target,
-                             std::span<const std::byte> delta);
-unsigned int Apply_XOR_Delta(std::span<uint8_t> target,
-                             std::span<const uint8_t> delta);
+unsigned int ApplyXorDelta(std::span<uint8_t> target,
+                           std::span<const std::byte> delta);
+unsigned int ApplyXorDelta(std::span<uint8_t> target,
+                           std::span<const uint8_t> delta);
 
 // Applies the uncompressed XOR delta in `delta` to a `width`-pixel-wide image
-// whose rows start `nextrow` bytes apart in `target`; pixels past `width` on
+// whose rows start `stride` bytes apart in `target`; pixels past `width` on
 // each row are left alone. `copy` is 0 to XOR the delta onto `target` and
-// nonzero to overwrite `target` with it. Does nothing if `width` or `nextrow`
-// is not positive or `nextrow` is less than `width`.
-void Apply_XOR_Delta_To_Page_Or_Viewport(std::span<uint8_t> target,
-                                         std::span<const uint8_t> delta,
-                                         int width, int nextrow, int copy);
+// nonzero to overwrite `target` with it. Does nothing if `width` or `stride`
+// is not positive or `stride` is less than `width`.
+void ApplyXorDeltaToView(std::span<uint8_t> target,
+                         std::span<const uint8_t> delta, int width, int stride,
+                         int copy);
 
 #endif  // CNC_RED_ALERT_SDLLIB_WSA_H_

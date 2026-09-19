@@ -151,10 +151,10 @@ void Choose_Side() {
     BreakoutAllowed = true;
   }
 
-  // anim = Open_Animation("CHOOSE.WSA",NULL,0L,(WsaOpenFlags)(WSA_OPEN_FROM_MEM
+  // anim = OpenAnimation("CHOOSE.WSA",NULL,0L,(WsaOpenFlags)(WSA_OPEN_FROM_MEM
   // | WSA_OPEN_TO_PAGE),Palette);
-  void* anim = Open_Animation("CHOOSE.WSA",
-                              WSA_OPEN_FROM_DISK | WSA_OPEN_TO_PAGE, Palette);
+  void* anim = OpenAnimation("CHOOSE.WSA",
+                             WSA_OPEN_FROM_DISK | WSA_OPEN_TO_PAGE, Palette);
   Call_Back();
 
   InterpolationPaletteChanged = true;
@@ -204,7 +204,7 @@ void Choose_Side() {
 
   while (endframe != frame ||
          (speechplaying && Is_Sample_Playing(speech.data()))) {
-    Animate_Frame(anim, SysMemPage, frame++);
+    DrawAnimationFrame(anim, SysMemPage, frame++);
     if (setpalette) {
       Wait_Vert_Blank();
       Set_Palette(Palette);
@@ -234,7 +234,7 @@ void Choose_Side() {
         Show_Mouse();
       }
     }
-    if (frame >= Get_Animation_Frame_Count(anim)) {
+    if (frame >= AnimationFrameCount(anim)) {
       frame = 0;
     }
     if ((Keyboard::Check() && endframe == 255) &&
@@ -263,7 +263,7 @@ void Choose_Side() {
   }
 
   Hide_Mouse();
-  Close_Animation(anim);
+  CloseAnimation(anim);
 
   // erase the "choose side" text
   PseudoSeenBuff->Fill_Rect(0, 180, 319, 199, 0);

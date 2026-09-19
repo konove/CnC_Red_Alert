@@ -154,7 +154,7 @@ std::span<uint8_t> Build_Frame(std::span<const std::byte> data, uint16_t frame,
     if (delta_offset >= data.size()) {
       return {};
     }
-    Apply_XOR_Delta(output, data.subspan(delta_offset));
+    ApplyXorDelta(output, data.subspan(delta_offset));
   }
   return output.subspan(0);
 }

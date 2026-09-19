@@ -724,8 +724,8 @@ void ScoreClass::Presentation() {
   /*
   ** Load the background for the score screen
   */
-  void* anim = Open_Animation(base::At(ScreenNames, house),
-                              WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
+  void* anim = OpenAnimation(base::At(ScreenNames, house),
+                             WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
 
   const int minutes = static_cast<int>(ElapsedTime / kTimerMinute) + 1;
 
@@ -802,7 +802,7 @@ void ScoreClass::Presentation() {
 
   /* --- Now display the background animation --- */
   Hide_Mouse();
-  Animate_Frame(anim, SysMemPage, 1);
+  DrawAnimationFrame(anim, SysMemPage, 1);
   SysMemPage.Blit(*PseudoSeenBuff);
   Increase_Palette_Luminance(Palette, 30, 30, 30, 63);
 
@@ -815,13 +815,13 @@ void ScoreClass::Presentation() {
   Play_Sample(country4, 255, Options.Normalize_Sound(90));
 
   int frame = 1;
-  while (frame < Get_Animation_Frame_Count(anim)) {
-    Animate_Frame(anim, *PseudoSeenBuff, frame++);
+  while (frame < AnimationFrameCount(anim)) {
+    DrawAnimationFrame(anim, *PseudoSeenBuff, frame++);
     ////////////////Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff , NULL);
     Call_Back_Delay(2);
   }
   Call_Back();
-  Close_Animation(anim);
+  CloseAnimation(anim);
 
   /*
   ** Background's up, so now load various shapes and animations
@@ -2182,8 +2182,8 @@ void Multi_Score_Presentation() {
 
   Set_Palette(BlackPalette);
 
-  void* anim = Open_Animation("MLTIPLYR.WSA",
-                              WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
+  void* anim = OpenAnimation("MLTIPLYR.WSA",
+                             WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, Palette);
   Hide_Mouse();
 
   /*
@@ -2193,16 +2193,16 @@ void Multi_Score_Presentation() {
   InterpolationPaletteChanged = true;
   InterpolationPalette = Palette;
   Increase_Palette_Luminance(Palette, 30, 30, 30, 63);
-  Animate_Frame(anim, *PseudoSeenBuff, 1);
+  DrawAnimationFrame(anim, *PseudoSeenBuff, 1);
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "MULTSCOR.PAL");
   Fade_Palette_To(Palette, kFadePaletteFast, Call_Back);
 
   int frame = 1;
-  while (frame < Get_Animation_Frame_Count(anim)) {
-    Animate_Frame(anim, *PseudoSeenBuff, frame++);
+  while (frame < AnimationFrameCount(anim)) {
+    DrawAnimationFrame(anim, *PseudoSeenBuff, frame++);
     Call_Back_Delay(2);
   }
-  Close_Animation(anim);
+  CloseAnimation(anim);
 
   /* Change to the six-point font for Text_Print */
   const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);

@@ -1066,22 +1066,22 @@ void Multi_Score_Presentation() {
   SeenBuff.Clear();
   HidPage.Clear();
   Hide_Mouse();
-  void* anim = Open_Animation(
+  void* anim = OpenAnimation(
       "MLTIPLYR.WSA", WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, ScorePalette);
   // Display the background animation. The first frame goes up under a black
   // palette and is faded in; the remaining frames then play at two ticks each.
   pseudoseenbuff.Clear();
-  Animate_Frame(anim, pseudoseenbuff, 1);
+  DrawAnimationFrame(anim, pseudoseenbuff, 1);
   Interpolate_2X_Scale(&pseudoseenbuff, &SeenBuff, {});
   ScorePalette.Set(kFadePaletteFast, ServiceRealTime);
 
   int frame = 1;
-  while (frame < Get_Animation_Frame_Count(anim)) {
-    Animate_Frame(anim, pseudoseenbuff, frame++);
+  while (frame < AnimationFrameCount(anim)) {
+    DrawAnimationFrame(anim, pseudoseenbuff, frame++);
     Interpolate_2X_Scale(&pseudoseenbuff, &SeenBuff, {});
     TickScoreScreen(2);
   }
-  Close_Animation(anim);
+  CloseAnimation(anim);
 
   // Change to the score screen font; restored on the way out.
   const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);

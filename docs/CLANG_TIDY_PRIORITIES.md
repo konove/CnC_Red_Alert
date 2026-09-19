@@ -1165,7 +1165,7 @@ and 209 are range-for variables:
 | `Declare never-modified variables const in Tiberian Dawn`        | 120   |
 
 Pointer parameters that became pointer-to-`const` changed in their header declarations too. Once
-WSA's `Apply_XOR_Delta` stopped casting its delta to a mutable pointer,
+WSA's `ApplyXorDelta` stopped casting its delta to a mutable pointer,
 `readability-non-const-parameter` asked for `const char*` on that parameter as well. Adding `const`
 changes no value, class layout or save format, and a `const` local can still be elided on return.
 The full strict build of both games is clean, all 359 tests pass, and the RA and TD save/load checks
@@ -1486,7 +1486,7 @@ go through one documented helper each, and downcasts became `dynamic_cast`.
 | Object-model downcasts                                | 99    | `dynamic_cast`, hoisted to one local per block; reference casts where the result is dereferenced unconditionally, so the analyzer sees no null path. `xTargetClass::As_*` and `Contact_With_Whom` moved out of line. |
 | Packed coordinate, cell and target words              | 48    | RA: `std::bit_cast` to the `*_COMPOSITE` unions (`CELL_COMPOSITE` now uses `uint16_t` bit-fields so it is the size of a `CELL`). TD: shifts and `HighWord`/`LowWord`; `td/coord_inline_test.cc` pins the old bytes.  |
 | Unaligned words, packet structs, sockets, bit helpers | 43    | `port::ReadUnaligned`/`WriteUnaligned` for CRC and length words and packet copies; `SocketAddress(sockaddr_in&)`; `static_cast` from the `const void*` parameters of `jshell.h` and `search.h`.                      |
-| Byte views, palettes, graphics buffers                | 43    | `port::BytesOf`; `Scale` remap tables are `const unsigned char*`; `Apply_XOR_Delta` takes `void*`; the PCX palette loops walk bytes instead of `RGB` structs.                                                        |
+| Byte views, palettes, graphics buffers                | 43    | `port::BytesOf`; `Scale` remap tables are `const unsigned char*`; `ApplyXorDelta` takes `void*`; the PCX palette loops walk bytes instead of `RGB` structs.                                                          |
 | `tech/mp.cc` half-word digit views                    | 15    | One file-local `XMP_Halves` overload pair carries the documented `reinterpret_cast`.                                                                                                                                 |
 | Connection and serial-port byte sinks                 | 13    | `ConnectionClass::Send`, `Send_To` and `Broadcast` take `void*`; `Compute_CRC` and the serial port read and write take `void*`/`const void*`.                                                                        |
 | Defects                                               | 16    | See below.                                                                                                                                                                                                           |
