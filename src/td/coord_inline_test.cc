@@ -79,8 +79,8 @@ TEST(TdCoordInline, SnapAndMidMatchLegacyWords) {
 TEST(TdCoordInline, DirDiffMatchesSignedBytes) {
   for (int first = 0; first < 256; first += 5) {
     for (int second = 0; second < 256; second += 3) {
-      const auto dir1 = static_cast<DirType>(first);
-      const auto dir2 = static_cast<DirType>(second);
+      const DirType dir1 = AsDirection(first);
+      const DirType dir2 = AsDirection(second);
       EXPECT_EQ(Dir_Diff(dir1, dir2), LegacyDirDiff(dir1, dir2))
           << first << " " << second;
     }

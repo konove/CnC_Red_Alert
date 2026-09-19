@@ -1239,7 +1239,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   */
   if (base::Any(method & THREAT_CAPTURE) &&
       (otype != RTTI_BUILDING ||
-       !dynamic_cast<const BuildingTypeClass*>(tclass)->IsCaptureable)) {
+       !dynamic_cast<const BuildingTypeClass&>(*tclass).IsCaptureable)) {
     return false;
   }
 

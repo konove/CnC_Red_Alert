@@ -153,3 +153,4 @@ Full-pass time, the cost breakdown, and the sharing prerequisites.
 
 - 2026-09-19: plan written.
 - 2026-09-19: step 1 done — IWYU off by default; `build-strict` reconfigured, strict build clean.
+- 2026-09-19: step 2 done — all 15 shallow-only findings fixed; shallow and deep clean on the 8 TUs.
