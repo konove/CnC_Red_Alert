@@ -308,7 +308,6 @@ extern int GPacketlen;
 extern IPXAddressClass GAddress;
 extern uint16_t GProductID;
 extern std::vector<std::byte> MetaPacket;
-extern int MetaSize;
 extern DynamicVectorClass<NodeNameType*> Games;
 extern DynamicVectorClass<NodeNameType*> Players;
 

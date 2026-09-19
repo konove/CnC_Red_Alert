@@ -131,6 +131,11 @@
 //---------------------------------------------------------------------------
 #ifndef DEMO
 static uint32_t GameCRC;
+
+// The size of MetaPacket: IPX's largest packet (546 bytes), less its header,
+// rounded down to a whole number of events.
+static constexpr int kMetaSize =
+    (546 - sizeof(CommHeaderType)) / sizeof(EventClass) * sizeof(EventClass);
 static uint32_t CRC[32] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -608,7 +613,7 @@ static void Queue_AI_Multiplayer() {
     net = &NullModem;
   } else if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
     multi_packet_buf = MetaPacket;
-    multi_packet_max = MetaSize;
+    multi_packet_max = kMetaSize;
     net = &Ipx;
   }
 

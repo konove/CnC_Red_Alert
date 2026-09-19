@@ -696,8 +696,6 @@ uint16_t GProductID;        // sender's Product ID
 ** the max number of events possible.
 */
 std::vector<std::byte> MetaPacket;
-int MetaSize =
-    (546 - sizeof(CommHeaderType)) / sizeof(EventClass) * sizeof(EventClass);
 
 /***************************************************************************
 **	This is the random-number seed; it's synchronized between systems for
