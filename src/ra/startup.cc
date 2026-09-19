@@ -27,7 +27,6 @@
 
 #include <array>
 #include <cstdint>
-#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
@@ -79,19 +78,83 @@
 #include "tech/search_paths.h"
 
 #ifdef _WIN32
-#include <direct.h>  //chdir
-
 #include "ra/ipx95.h"
 #endif  // _WIN32
 
 // Prints `message` and exits with status 1 without any cleanup. Installed as
 // Memory_Error_Exit once the game systems are gone, or when they are being
 // torn down anyway.
-[[noreturn]] static void ExitWithError(char* message);
+[[noreturn]] static void ExitWithError(char* message) {
+  absl::PrintF("%s\n", message);
+  exit(1);
+}
+
+// Clears the screen and releases everything the game set up, leaving only the
+// process exit to the caller. The SDL quit handler does the same before its
+// exit(0).
+static void ShutDown() {
+  VisiblePage.Clear();
+  HiddenPage.Clear();
+  Memory_Error_Exit = ExitWithError;
+  Prog_End();
+  VisiblePage.Un_Init();
+  HiddenPage.Un_Init();
+}
 
 // Reads the options that have to be known before the window and the network
 // exist: blit fills, the screen height, the IPX socket and a bridge network.
-static void ReadStartupOptions(const INIClass& ini);
+static void ReadStartupOptions(const INIClass& ini) {
+  AllowHardwareBlitFills = ini.Get_Bool("Options", "HardwareFills", true);
+
+  // Resolution=yes asks for a 480-line mode; InitVideo() letterboxes the
+  // 400-line game area inside it.
+  ScreenHeight = ini.Get_Bool("Options", "Resolution", false) ? 480 : 400;
+
+  // Socket is an offset into the dynamic IPX socket range 0x4000-0x7FFF,
+  // letting several games share a network without seeing each other.
+  const int socket = ini.Get_Int("Options", "Socket", 0);
+  if (socket > 0 && socket < 0x4000) {
+    Ipx.Set_Socket(static_cast<uint16_t>(0x4000 + socket));
+  }
+
+  // DestNet names a network on the far side of an IPX bridge, as dotted hex
+  // bytes: four for the network number, optionally followed by up to six
+  // node bytes.
+  std::array<char, 512> dest_net{};
+  // Get_String() returns the length of the trimmed value; 0 if absent.
+  if (ini.Get_String("Options", "DestNet", nullptr, dest_net,
+                     static_cast<int>(dest_net.size())) == 0) {
+    return;
+  }
+  NetNumType net;
+  NetNodeType node;
+
+  // Bytes 0-3 are the network number, 4-9 the node.
+  int byte_count = 0;
+  port::Tokenizer tokens(dest_net.data(), ".");
+  while (const char* token = tokens.Next()) {
+    const auto byte = tech::ParseHex<uint8_t>(token);
+    if (!byte || byte_count >= 10) {
+      // Reject the address instead of accepting a partial network.
+      byte_count = 0;
+      break;
+    }
+    if (byte_count < 4) {
+      base::At(net, byte_count) = *byte;
+    } else {
+      base::At(node, byte_count - 4) = *byte;
+    }
+    byte_count++;
+  }
+
+  // Only the network number matters: the node is replaced by the broadcast
+  // node, so packets reach every machine across the bridge.
+  if (byte_count >= 4) {
+    Session.IsBridge = 1;
+    base::FillBytes(base::ObjectBytes(node), 0xff, 6);
+    Session.BridgeNet = IPXAddressClass(net, node);
+  }
+}
 
 // Parses the command line, checks the machine can run the game, opens the
 // window, sound and video, then runs the game until the player quits.
@@ -176,18 +239,14 @@ int main(int argc, char* argv[])
                  &wol_key);
     DWORD install_complete = 0;
     DWORD value_size = sizeof(DWORD);
+    // Once setup has finished, delete the setup exe, and drop the registry
+    // value only once the exe is gone, so a failed delete is retried next
+    // launch.
     if (RegQueryValueEx(wol_key, "WolapiInstallComplete", nullptr, nullptr,
                         port::BytesOf(install_complete),
-                        &value_size) == ERROR_SUCCESS) {
-      // Setup has finished: delete the setup exe, and drop the registry value
-      // only once the exe is gone, so a failed delete is retried next launch.
-      if (setup_exe_found) {
-        if (DeleteFile("wolsetup.exe")) {
-          RegDeleteValue(wol_key, "WolapiInstallComplete");
-        }
-      } else {
-        RegDeleteValue(wol_key, "WolapiInstallComplete");
-      }
+                        &value_size) == ERROR_SUCCESS &&
+        (!setup_exe_found || DeleteFile("wolsetup.exe"))) {
+      RegDeleteValue(wol_key, "WolapiInstallComplete");
     }
     RegCloseKey(wol_key);
 
@@ -284,15 +343,9 @@ int main(int argc, char* argv[])
 
       RunGame();
 
-      VisiblePage.Clear();
-      HiddenPage.Clear();
-      Memory_Error_Exit = ExitWithError;
-
-      // The same cleanup as the SDL quit handler. The Windows build posted a
-      // quit message and waited for its handler to do this.
-      Prog_End();
-      VisiblePage.Un_Init();
-      HiddenPage.Un_Init();
+      // The Windows build posted a quit message and waited for its handler to
+      // do this.
+      ShutDown();
       return EXIT_SUCCESS;
     }
     // The config file could neither be opened nor created. There is no
@@ -327,11 +380,10 @@ bool InitVideo() {
   // The pages are the full mode; from here on ScreenHeight is the 400-line
   // game area, and SeenBuff/HidPage are views of it 40 lines down in a
   // 480-line mode.
+  const int letterbox_top = ScreenHeight == 480 ? 40 : 0;
   if (ScreenHeight == 480) {
     ScreenHeight = 400;
   }
-
-  const int letterbox_top = VisiblePage.Get_Height() == 480 ? 40 : 0;
 
   SeenBuff.Attach(&VisiblePage, 0, letterbox_top, ScreenWidth, ScreenHeight);
   HidPage.Attach(&HiddenPage, 0, letterbox_top, ScreenWidth, ScreenHeight);
@@ -349,14 +401,12 @@ void __cdecl Prog_End() {
   // type heaps. The custom heap allocator (TFixedIHeapClass) never calls
   // destructors when it frees its buffer, so RAII members (unique_ptr, variant
   // holding vector) must be released explicitly before global destruction.
-  const auto reset_object_type = [](ObjectTypeClass* object_type) {
-    object_type->DimensionData.clear();
-    object_type->RadarIcon.clear();
-    object_type->ClearImage();
-  };
-  const auto reset_heap = [&](auto& heap) {
+  const auto reset_heap = [](auto& heap) {
     for (int i = 0; i < heap.Count(); i++) {
-      reset_object_type(heap.Ptr(i));
+      ObjectTypeClass* const object_type = heap.Ptr(i);
+      object_type->DimensionData.clear();
+      object_type->RadarIcon.clear();
+      object_type->ClearImage();
     }
   };
   reset_heap(AircraftTypes);
@@ -374,80 +424,14 @@ void __cdecl Prog_End() {
 
 void CleanUpAndExitWithError(char* message) {
   Prog_End();
-  absl::PrintF("%s\n", message);
-  exit(1);
-}
-
-void ExitWithError(char* message) {
-  absl::PrintF("%s\n", message);
-  exit(1);
+  ExitWithError(message);
 }
 
 [[noreturn]] void EmergencyExit(int exit_code) {
-  // Blank the screen first, so nothing glitches while the window loses focus
-  // on the way out.
-  VisiblePage.Clear();
-  HiddenPage.Clear();
+  // Black out the palette first, so nothing glitches while the window loses
+  // focus on the way out. Clean up here rather than by posting a quit event:
+  // the SDL quit handler ends in exit(0), which would lose `exit_code`.
   BlackPalette.Set();
-  Memory_Error_Exit = ExitWithError;
-
-  // Clean up here rather than by posting a quit event: the SDL quit handler
-  // ends in exit(0), which would lose `exit_code`.
-  Prog_End();
-  VisiblePage.Un_Init();
-  HiddenPage.Un_Init();
+  ShutDown();
   exit(exit_code);
-}
-
-void ReadStartupOptions(const INIClass& ini) {
-  AllowHardwareBlitFills = ini.Get_Bool("Options", "HardwareFills", true);
-
-  // Resolution=yes asks for a 480-line mode; InitVideo() letterboxes the
-  // 400-line game area inside it.
-  ScreenHeight = ini.Get_Bool("Options", "Resolution", false) ? 480 : 400;
-
-  // Socket is an offset into the dynamic IPX socket range 0x4000-0x7FFF,
-  // letting several games share a network without seeing each other.
-  const int socket = ini.Get_Int("Options", "Socket", 0);
-  if (socket > 0 && socket < 0x4000) {
-    Ipx.Set_Socket(static_cast<uint16_t>(0x4000 + socket));
-  }
-
-  // DestNet names a network on the far side of an IPX bridge, as dotted hex
-  // bytes: four for the network number, optionally followed by up to six
-  // node bytes.
-  std::array<char, 512> dest_net{};
-  // Get_String() returns the length of the trimmed value; 0 if absent.
-  if (ini.Get_String("Options", "DestNet", nullptr, dest_net,
-                     static_cast<int>(dest_net.size())) == 0) {
-    return;
-  }
-  NetNumType net;
-  NetNodeType node;
-
-  // Bytes 0-3 are the network number, 4-9 the node.
-  int byte_count = 0;
-  port::Tokenizer tokens(dest_net.data(), ".");
-  while (const char* token = tokens.Next()) {
-    const auto byte = tech::ParseHex<uint8_t>(token);
-    if (!byte || byte_count >= 10) {
-      // Reject the address instead of accepting a partial network.
-      byte_count = 0;
-      break;
-    }
-    if (byte_count < 4) {
-      base::At(net, byte_count) = *byte;
-    } else {
-      base::At(node, byte_count - 4) = *byte;
-    }
-    byte_count++;
-  }
-
-  // Only the network number matters: the node is replaced by the broadcast
-  // node, so packets reach every machine across the bridge.
-  if (byte_count >= 4) {
-    Session.IsBridge = 1;
-    base::FillBytes(base::ObjectBytes(node), 0xff, 6);
-    Session.BridgeNet = IPXAddressClass(net, node);
-  }
 }
