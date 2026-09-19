@@ -13,7 +13,7 @@
 //   port::Tokenizer tokens(entry, ",");
 //   const HousesType house = HouseTypeClass::From_Name(tokens.Next());
 //   const InfantryType type = InfantryTypeClass::From_Name(tokens.Next());
-//   const int strength = tech::ParseInteger<int>(tokens.Next()).value_or(0);
+//   const int strength = tech::ParseIntegerOr<int>(tokens.Next(), 0);
 
 #ifndef CNC_RED_ALERT_PORT_TOKENIZER_H_
 #define CNC_RED_ALERT_PORT_TOKENIZER_H_

@@ -159,3 +159,7 @@ Full-pass time, the cost breakdown, and the sharing prerequisites.
 - 2026-09-19: step 4 done — 46 duplicate aliases off (538 → 492 checks); cert-dcl16-c, cert-str34-c
   and the two google-readability aliases keep different options and stay. Full pass 185 s wall, 2360
   CPU-s, clean.
+- 2026-09-19: step 5 done — helpers plus 235 call sites (139 RA, 96 TD, one doc example);
+  `-DESTNET`/`-SOCKET` moved out of both `Parse_Command_Line()`s.
+  `bugprone-unchecked-optional-access` on the 10 hotspot TUs: init.cc 8.2/7.9 s → 0.01 s, session.cc
+  0.5 s, the rest ≤ 0.01 s.
