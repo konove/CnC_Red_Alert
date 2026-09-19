@@ -177,13 +177,13 @@ class AudioMixer {
     // PumpStreams() has more of the file to queue, so an empty converter is
     // an underrun and not the end of the sound.
     bool expecting_data = false;
-    AudCompression compression = AudCompression::SCOMP_NONE;
+    AudCompression compression = SCOMP_NONE;
   };
 
   static void DeviceCallback(void* mixer, uint8_t* device_buffer,
                              int device_bytes);
 
-  [[nodiscard]] static bool IsValidHandle(int handle) {
+  [[nodiscard]] static bool IsValidHandle(const int handle) {
     return handle >= 0 && handle < kChannelCount;
   }
 
