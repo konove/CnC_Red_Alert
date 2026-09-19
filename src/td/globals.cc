@@ -118,7 +118,6 @@ int In_Debugger = 0;
 bool Debug_Heap_Dump = false;  // true = print the Heap Dump
 bool Debug_Smart_Print =
     false;  // true = print everything that calls Smart_Printf
-bool Debug_Trap_Check_Heap = false;  // true = check the Heap
 bool Debug_Instant_Build = false;
 
 TFixedIHeapClass<UnitClass> Units;
@@ -166,7 +165,6 @@ VQAConfig AnimControl;
 
 bool PreserveVQAScreen;       // Used for screen mode transition control.
 bool BreakoutAllowed = true;  // "true" if aborting of movies is allowed.
-bool Brokeout;                // Was the movie broken out of?
 bool SlowPalette = true;      // Slow palette flag set?
 
 /***************************************************************************
@@ -602,7 +600,6 @@ char MPlayerNames[MAX_PLAYERS][MPLAYER_NAME_MAX];
 ** sent (for the computer's messages).
 */
 MessageListClass Messages;
-IPXAddressClass MessageAddress;
 char LastMessage[MAX_MESSAGE_LENGTH];
 
 /***************************************************************************
@@ -638,7 +635,6 @@ int DesiredFrameRate;
 */
 int32_t TrapFrame = 0x7fffffff;    // frame to start trapping object values at
 RTTIType TrapObjType = RTTI_NONE;  // type of object to trap
-TrapObjectType TrapObject = {nullptr};  // ptr to object being trapped
 COORDINATE TrapCoord = 0;               // COORD of object to trap
 void* TrapThis = nullptr;               // 'this' ptr of object to trap
 CellClass* TrapCell = nullptr;          // for trapping a cell
@@ -770,17 +766,15 @@ GraphicViewPortClass SeenBuff(&VisiblePage, 0, 0, 640, 480);
 GraphicViewPortClass HidPage(&HiddenPage, 0, 0, 640, 480);
 GraphicBufferClass SysMemPage(kDefaultScreenWidth, 200, {});
 bool SoundOn;
-CountDownTimerClass FrameTimer{0L};
 static CountDownTimerClass DebugTimer{0L};
 CountDownTimerClass CountDownTimer{0L};
 
 NewConfigType NewConfig;
 
 /***************************************************************************
-**	This timer measures how long (in ticks) it takes to process the game's
-** logic, with no packet processing or artificial delays.
+**	These measure how long (in ticks) it takes to process the game's logic,
+** with no packet processing or artificial delays.
 */
-TimerClass ProcessTimer;
 int ProcessTicks;   // accumulated ticks
 int ProcessFrames;  // # frames used to measure 'ProcessTicks'
 

@@ -103,7 +103,6 @@ extern bool Debug_Playtest;
 
 extern bool Debug_Heap_Dump;
 extern bool Debug_Smart_Print;
-extern bool Debug_Trap_Check_Heap;
 extern bool Debug_Instant_Build;
 
 extern std::span<const std::byte> WarFactoryOverlay;
@@ -138,7 +137,6 @@ extern bool TempleIoned;
 extern std::vector<std::byte> SpeechBuffer;
 extern bool PreserveVQAScreen;
 extern bool BreakoutAllowed;
-extern bool Brokeout;
 extern CELL Views[4];
 
 extern GameOptionsClass Options;
@@ -288,7 +286,6 @@ extern unsigned char MPlayerID[MAX_PLAYERS];
 extern HousesType MPlayerHouses[MAX_PLAYERS];
 extern char MPlayerNames[MAX_PLAYERS][MPLAYER_NAME_MAX];
 extern MessageListClass Messages;
-extern IPXAddressClass MessageAddress;
 extern char LastMessage[MAX_MESSAGE_LENGTH];
 extern int MPlayerBlitz;
 extern bool MPlayerObiWan;
@@ -301,21 +298,8 @@ extern int MPlayerCurGame;
 extern int TheirProcessTime[MAX_PLAYERS - 1];
 extern int DesiredFrameRate;
 
-struct TrapObjectType {
-  union {
-    AircraftClass* Aircraft;
-    AnimClass* Anim;
-    BuildingClass* Building;
-    BulletClass* Bullet;
-    InfantryClass* Infantry;
-    UnitClass* Unit;
-    void* All;
-  } Ptr;
-};
-
 extern int32_t TrapFrame;
 extern RTTIType TrapObjType;
-extern TrapObjectType TrapObject;
 extern COORDINATE TrapCoord;
 extern void* TrapThis;
 extern CellClass* TrapCell;
@@ -357,10 +341,8 @@ extern GraphicViewPortClass HidPage;
 extern GraphicBufferClass SysMemPage;
 struct MenuConfig;
 extern MenuConfig menu_config;
-extern CountDownTimerClass FrameTimer;
 extern CountDownTimerClass CountDownTimer;
 
-extern TimerClass ProcessTimer;
 extern int ProcessTicks;
 extern int ProcessFrames;
 

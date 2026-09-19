@@ -170,6 +170,40 @@
 #include "td/ccdde.h"
 #endif
 
+// Holds the end of the current frame; Main_Loop() sets it and Sync_Delay()
+// waits it out.
+static CountDownTimerClass frame_timer{0L};
+
+// Measures how long one frame's logic takes, for the multiplayer frame rate.
+static TimerClass process_timer;
+
+// Set by VQ_Call_Back() when the player presses Esc to abort a movie, so
+// Play_Movie() knows to clear the half-drawn frame.
+static bool movie_broken_out;
+
+// Where the message being typed goes: a broadcast address after F4, or the
+// player picked with F1-F3. IPX only.
+static IPXAddressClass message_address;
+
+// Turned on at the [SyncBug] trap frame when CheckHeap is set; from then on
+// Heap_Dump_Check() dumps the heaps.
+static bool check_heap = false;
+
+// The object Trap_Object() found for the [SyncBug] trap, for watching in a
+// debugger; nullptr if none.
+struct TrapObjectType {
+  union {
+    AircraftClass* Aircraft;
+    AnimClass* Anim;
+    BuildingClass* Building;
+    BulletClass* Bullet;
+    InfantryClass* Infantry;
+    UnitClass* Unit;
+    void* All;
+  } Ptr;
+};
+static TrapObjectType trap_object = {nullptr};
+
 /****************************************
 **	Function prototypes for this module **
 *****************************************/
@@ -856,7 +890,7 @@ static void Message_Input(KeyNumType& input) {
       if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
         if (input == KN_F1 + MPlayerMax - 1 &&
             Messages.Get_Edit_Buf() == nullptr) {
-          MessageAddress = IPXAddressClass();            // set to broadcast
+          message_address = IPXAddressClass();           // set to broadcast
           port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
 
           Messages.Add_Edit(base::At(MPlayerTColors, MPlayerColorIdx),
@@ -868,7 +902,7 @@ static void Message_Input(KeyNumType& input) {
           if ((Messages.Get_Edit_Buf() == nullptr) &&
               (input - KN_F1 < Ipx.Num_Connections() && !MPlayerObiWan)) {
             const int id = Ipx.Connection_ID(input - KN_F1);
-            MessageAddress = *Ipx.Connection_Address(id);
+            message_address = *Ipx.Connection_Address(id);
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_TO),
                                 Ipx.Connection_Name(id));
 
@@ -1078,10 +1112,10 @@ static void Message_Input(KeyNumType& input) {
           GPacket.Message.NameCRC = Compute_Name_CRC(MPlayerGameName);
 
           /*
-          **	If 'F4' was hit, MessageAddress will be a broadcast address;
+          **	If 'F4' was hit, message_address will be a broadcast address;
           *send *	the message to every player we have a connection with.
           */
-          if (MessageAddress.Is_Broadcast()) {
+          if (message_address.Is_Broadcast()) {
             for (int i = 0; i < Ipx.Num_Connections(); i++) {
               Ipx.Send_Global_Message(
                   base::ObjectBytes(GPacket), sizeof(GlobalPacketType), 1,
@@ -1090,12 +1124,12 @@ static void Message_Input(KeyNumType& input) {
             }
           } else {
             /*
-            **	Otherwise, MessageAddress contains the exact address to send to.
-            **	Send to that address only.
+            **	Otherwise, message_address contains the exact address to send
+            * to. *	Send to that address only.
             */
             Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
                                     sizeof(GlobalPacketType), 1,
-                                    &MessageAddress);
+                                    &message_address);
             Ipx.Service();
           }
 
@@ -1509,7 +1543,7 @@ static void Sync_Delay() {
   /*
   **	Delay one tick.
   */
-  while (FrameTimer.Time()) {
+  while (frame_timer.Time()) {
     Color_Cycle();
     Call_Back();
 
@@ -1573,10 +1607,10 @@ bool Main_Loop() {
   //
   // Initialize our AI processing timer
   //
-  ProcessTimer.Set(0, true);
+  process_timer.Set(0, true);
 
   if (TrapCheckHeap) {
-    Debug_Trap_Check_Heap = true;
+    check_heap = true;
   }
 
   if constexpr (config::kCheatKeysEnabled) {
@@ -1598,9 +1632,9 @@ bool Main_Loop() {
   */
   if (GameToPlay != GAME_NORMAL && CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
     const int framedelay = 60 / DesiredFrameRate;
-    FrameTimer.Set(framedelay);
+    frame_timer.Set(framedelay);
   } else {
-    FrameTimer.Set(Options.GameSpeed);
+    frame_timer.Set(Options.GameSpeed);
   }
 
   /*
@@ -1655,7 +1689,7 @@ bool Main_Loop() {
   //
   // Measure how long it took to process the AI
   //
-  ProcessTicks = static_cast<int>(ProcessTicks + ProcessTimer.Time());
+  ProcessTicks = static_cast<int>(ProcessTicks + process_timer.Time());
   ProcessFrames++;
 
   //	Heap_Dump_Check( "Before Queue_AI" );
@@ -2158,7 +2192,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     }
 
     if (player.Open(fullname.c_str(), &AnimControl) == 0) {
-      Brokeout = false;
+      movie_broken_out = false;
       // Suspend_Audio_Thread();
 
 #if (defined(FRENCH) || defined(GERMAN) || defined(JAPANESE))
@@ -2207,10 +2241,10 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       **	Any movie that ends prematurely must have the screen
       **	cleared to avoid any unexpected palette glitches.
       */
-      if (Brokeout) {
+      if (movie_broken_out) {
         clear_screen = true;
         VisiblePage.Clear();
-        Brokeout = false;
+        movie_broken_out = false;
       }
     }
 
@@ -2545,15 +2579,14 @@ const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id) {
  *   06/02/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Trap_Object() {
-
-  TrapObject.Ptr.All = nullptr;
+  trap_object.Ptr.All = nullptr;
 
   switch (TrapObjType) {
     case RTTI_AIRCRAFT:
       for (int i = 0; i < Aircraft.Count(); i++) {
         if (Aircraft.Ptr(i)->Coord == TrapCoord ||
             Aircraft.Ptr(i) == TrapThis) {
-          TrapObject.Ptr.Aircraft = Aircraft.Ptr(i);
+          trap_object.Ptr.Aircraft = Aircraft.Ptr(i);
           break;
         }
       }
@@ -2562,7 +2595,7 @@ void Trap_Object() {
     case RTTI_ANIM:
       for (int i = 0; i < Anims.Count(); i++) {
         if (Anims.Ptr(i)->Coord == TrapCoord || Anims.Ptr(i) == TrapThis) {
-          TrapObject.Ptr.Anim = Anims.Ptr(i);
+          trap_object.Ptr.Anim = Anims.Ptr(i);
           break;
         }
       }
@@ -2572,7 +2605,7 @@ void Trap_Object() {
       for (int i = 0; i < Buildings.Count(); i++) {
         if (Buildings.Ptr(i)->Coord == TrapCoord ||
             Buildings.Ptr(i) == TrapThis) {
-          TrapObject.Ptr.Building = Buildings.Ptr(i);
+          trap_object.Ptr.Building = Buildings.Ptr(i);
           break;
         }
       }
@@ -2581,7 +2614,7 @@ void Trap_Object() {
     case RTTI_BULLET:
       for (int i = 0; i < Bullets.Count(); i++) {
         if (Bullets.Ptr(i)->Coord == TrapCoord || Bullets.Ptr(i) == TrapThis) {
-          TrapObject.Ptr.Bullet = Bullets.Ptr(i);
+          trap_object.Ptr.Bullet = Bullets.Ptr(i);
           break;
         }
       }
@@ -2591,7 +2624,7 @@ void Trap_Object() {
       for (int i = 0; i < Infantry.Count(); i++) {
         if (Infantry.Ptr(i)->Coord == TrapCoord ||
             Infantry.Ptr(i) == TrapThis) {
-          TrapObject.Ptr.Infantry = Infantry.Ptr(i);
+          trap_object.Ptr.Infantry = Infantry.Ptr(i);
           break;
         }
       }
@@ -2600,7 +2633,7 @@ void Trap_Object() {
     case RTTI_UNIT:
       for (int i = 0; i < Units.Count(); i++) {
         if (Units.Ptr(i)->Coord == TrapCoord || Units.Ptr(i) == TrapThis) {
-          TrapObject.Ptr.Unit = Units.Ptr(i);
+          trap_object.Ptr.Unit = Units.Ptr(i);
           break;
         }
       }
@@ -2613,7 +2646,7 @@ void Trap_Object() {
       for (int i = 0; i < Aircraft.Count(); i++) {
         if (Aircraft.Raw_Ptr(i)->Coord == TrapCoord ||
             Aircraft.Raw_Ptr(i) == TrapThis) {
-          TrapObject.Ptr.Aircraft = Aircraft.Raw_Ptr(i);
+          trap_object.Ptr.Aircraft = Aircraft.Raw_Ptr(i);
           TrapObjType = RTTI_AIRCRAFT;
           return;
         }
@@ -2621,7 +2654,7 @@ void Trap_Object() {
       for (int i = 0; i < Anims.Count(); i++) {
         if (Anims.Raw_Ptr(i)->Coord == TrapCoord ||
             Anims.Raw_Ptr(i) == TrapThis) {
-          TrapObject.Ptr.Anim = Anims.Raw_Ptr(i);
+          trap_object.Ptr.Anim = Anims.Raw_Ptr(i);
           TrapObjType = RTTI_ANIM;
           return;
         }
@@ -2629,7 +2662,7 @@ void Trap_Object() {
       for (int i = 0; i < Buildings.Count(); i++) {
         if (Buildings.Raw_Ptr(i)->Coord == TrapCoord ||
             Buildings.Raw_Ptr(i) == TrapThis) {
-          TrapObject.Ptr.Building = Buildings.Raw_Ptr(i);
+          trap_object.Ptr.Building = Buildings.Raw_Ptr(i);
           TrapObjType = RTTI_BUILDING;
           return;
         }
@@ -2637,7 +2670,7 @@ void Trap_Object() {
       for (int i = 0; i < Bullets.Count(); i++) {
         if (Bullets.Raw_Ptr(i)->Coord == TrapCoord ||
             Bullets.Raw_Ptr(i) == TrapThis) {
-          TrapObject.Ptr.Bullet = Bullets.Raw_Ptr(i);
+          trap_object.Ptr.Bullet = Bullets.Raw_Ptr(i);
           TrapObjType = RTTI_BULLET;
           return;
         }
@@ -2645,7 +2678,7 @@ void Trap_Object() {
       for (int i = 0; i < Infantry.Count(); i++) {
         if (Infantry.Raw_Ptr(i)->Coord == TrapCoord ||
             Infantry.Raw_Ptr(i) == TrapThis) {
-          TrapObject.Ptr.Infantry = Infantry.Raw_Ptr(i);
+          trap_object.Ptr.Infantry = Infantry.Raw_Ptr(i);
           TrapObjType = RTTI_INFANTRY;
           return;
         }
@@ -2653,7 +2686,7 @@ void Trap_Object() {
       for (int i = 0; i < Units.Count(); i++) {
         if (Units.Raw_Ptr(i)->Coord == TrapCoord ||
             Units.Raw_Ptr(i) == TrapThis) {
-          TrapObject.Ptr.Unit = Units.Raw_Ptr(i);
+          trap_object.Ptr.Unit = Units.Raw_Ptr(i);
           TrapObjType = RTTI_UNIT;
           return;
         }
@@ -2714,7 +2747,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   // Call_Back();
   if ((BreakoutAllowed || Debug_Flag) && key == KN_ESC) {
     Keyboard::Clear();
-    Brokeout = true;
+    movie_broken_out = true;
     return 1;
   }
 
@@ -2958,7 +2991,7 @@ void Handle_View(int view, int action) {
 
 void Heap_Dump_Check(const char* string) {
   if constexpr (config::kCheatKeysEnabled) {
-    if (!Debug_Trap_Check_Heap) {  // check the heap?
+    if (!check_heap) {  // check the heap?
       return;
     }
 
