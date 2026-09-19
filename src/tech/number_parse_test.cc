@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <string_view>
 
 #include "gtest/gtest.h"
 
@@ -72,6 +73,40 @@ TEST(ParseDecimalBitsTest, AcceptsSignedAndUnsignedCoordinateSpellings) {
   EXPECT_FALSE(tech::ParseDecimalBits("4294967296").has_value());
   EXPECT_FALSE(tech::ParseDecimalBits("-2147483649").has_value());
   EXPECT_FALSE(tech::ParseDecimalBits("123x").has_value());
+}
+
+TEST(ParseIntegerOrTest, ReturnsTheValueOrTheFallback) {
+  EXPECT_EQ(tech::ParseIntegerOr<int>(" -42 ", 7), -42);
+  EXPECT_EQ(tech::ParseIntegerOr<int>(std::string_view{"123", 2}, 7), 12);
+  for (const char* text : {static_cast<const char*>(nullptr), "", "1x", "0x10",
+                           "2147483648", "-2147483649"}) {
+    EXPECT_EQ(tech::ParseIntegerOr<int>(text, 7), 7) << (text ? text : "null");
+  }
+  EXPECT_EQ(tech::ParseIntegerOr<uint16_t>("65535", 1), UINT16_MAX);
+  EXPECT_EQ(tech::ParseIntegerOr<uint16_t>("65536", 1), 1);
+  EXPECT_EQ(tech::ParseIntegerOr<uint32_t>("-1", 1), 1U);
+}
+
+TEST(ParseHexOrTest, ReturnsTheValueOrTheFallback) {
+  EXPECT_EQ(tech::ParseHexOr<uint32_t>(" 0xFfFFffff ", 0), UINT32_MAX);
+  EXPECT_EQ(tech::ParseHexOr<int>("-A", 0), -10);
+  for (const char* text : {static_cast<const char*>(nullptr), "", "0x", "12z",
+                           "ffh", "100000000"}) {
+    EXPECT_EQ(tech::ParseHexOr<uint32_t>(text, 5), 5U)
+        << (text ? text : "null");
+  }
+  EXPECT_EQ(tech::ParseHexOr<uint8_t>("ff", 0), 255);
+  EXPECT_EQ(tech::ParseHexOr<uint8_t>("100", 3), 3);
+}
+
+TEST(ParseIniIntegerOrTest, ReturnsTheValueOrTheFallback) {
+  EXPECT_EQ(tech::ParseIniIntegerOr(" +010 ", -1), 10);
+  EXPECT_EQ(tech::ParseIniIntegerOr("$ff", -1), 255);
+  EXPECT_EQ(tech::ParseIniIntegerOr("80000000h", 0),
+            std::numeric_limits<int>::min());
+  for (const std::string_view text : {"", " ", "$", "h", "12z", "$fffffffff"}) {
+    EXPECT_EQ(tech::ParseIniIntegerOr(text, -1), -1) << text;
+  }
 }
 
 }  // namespace

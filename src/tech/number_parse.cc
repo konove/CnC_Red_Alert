@@ -42,4 +42,8 @@ std::optional<int> ParseIniInteger(std::string_view text) {
   return ParseInteger<int>(text);
 }
 
+int ParseIniIntegerOr(std::string_view text, int fallback) {
+  return ParseIniInteger(text).value_or(fallback);
+}
+
 }  // namespace tech
