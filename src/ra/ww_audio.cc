@@ -55,6 +55,8 @@
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
 
+namespace {
+
 // Whether a sound effect comes in per-house, per-unit-kind variants.
 enum class Variants {
   // One recording, NAME.AUD, for everybody.
@@ -75,6 +77,9 @@ struct SoundEffect {
   int priority;
   Variants variants;
 };
+
+}  // namespace
+
 static constexpr base::EnumArray<VocType, SoundEffect> kSoundEffects = {{
 
     // Civilian voices (technicians too).
@@ -280,15 +285,15 @@ VocType VocFromName(const char* name) {
   return VOC_NONE;
 }
 
-const char* VocName(VocType voc) {
+const char* VocName(const VocType voc) {
   if (voc == VOC_NONE) {
     return "none";
   }
   return kSoundEffects.at(voc).name;
 }
 
-void PlaySoundEffectAt(VocType voc, COORDINATE coord, int variation,
-                       HousesType house) {
+void PlaySoundEffectAt(const VocType voc, const COORDINATE coord,
+                       const int variation, const HousesType house) {
   CELL cell = 0;
 
   if (Debug_Quiet || Options.Volume == 0 || voc == VOC_NONE || !SoundOn ||
@@ -313,7 +318,7 @@ void PlaySoundEffectAt(VocType voc, COORDINATE coord, int variation,
                   XY_Coord(static_cast<LEPTON>(Map.TacLeptonWidth / 2),
                            static_cast<LEPTON>(Map.TacLeptonHeight / 2)));
     const int distance_cells = Distance(coord, view_center) / CELL_LEPTON_W;
-    fixed fade = fixed(distance_cells, 128 + 64);
+    auto fade = fixed(distance_cells, 128 + 64);
     fade.Sub_Saturate(1);
     volume = fixed(1) - fade;
   }
@@ -321,7 +326,7 @@ void PlaySoundEffectAt(VocType voc, COORDINATE coord, int variation,
   PlaySoundEffect(voc, volume, variation, house);
 }
 
-int PlaySoundEffect(VocType voc, fixed volume, int variation,
+int PlaySoundEffect(VocType voc, fixed volume, const int variation,
                     HousesType house) {
   // A VocType cast from scenario or INI data can be out of range; indexing
   // the table with it would fail the at() check.
@@ -342,7 +347,7 @@ int PlaySoundEffect(VocType voc, fixed volume, int variation,
 
   // Pick the file: NAME.AUD, or for a unit response the variation that fits
   // the house's accent and the kind of unit.
-  const char* extension = ".AUD";
+  const auto* extension = ".AUD";
   if (kSoundEffects.at(voc).variants == IN_VAR) {
     // If no house is forced, use the one the player's house acts like.
     // Responses only come from units the player selects or orders, so there
@@ -529,16 +534,16 @@ static constexpr base::EnumArray<VoxType, const char*> kSpeechFiles = {
 // The voice EVA is saying now, or VOX_NONE once ServiceSpeech() finds the
 // speech buffer silent. Speak() drops a request for this voice so that the same
 // announcement does not queue up behind itself.
-static VoxType current_voice = VOX_NONE;
+static auto current_voice = VOX_NONE;
 
-const char* VoxName(VoxType voice) {
+const char* VoxName(const VoxType voice) {
   if (voice == VOX_NONE) {
     return "none";
   }
   return kSpeechFiles.at(voice);
 }
 
-void Speak(VoxType voice) {
+void Speak(const VoxType voice) {
   // Only one voice waits in the queue: a request made while another is
   // pending is dropped, not queued behind it.
   if (!Debug_Quiet && Options.Volume != 0 && Audio.is_open() &&
