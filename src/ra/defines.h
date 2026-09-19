@@ -2928,15 +2928,6 @@ using enum SpecialDialogType;
 // it alone.
 inline constexpr int kMouseColor = 16;
 
-/****************************************************************************
-**	These specify the shape numbers in the OPTIONS.SHP file. These shapes
-**	are used to dress up the dialog boxes. Many of these shapes come in
-*pairs. *	For dialog box shapes, they are left image / right image paired.
-*For buttons, *	they are up / down paired.
-*/
-
-inline constexpr int kMaxLogLevel = 10;
-
 // Maximum number of multiplayer players.
 inline constexpr int kMaxPlayers = 8;
 

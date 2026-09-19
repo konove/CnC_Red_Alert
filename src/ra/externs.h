@@ -107,9 +107,6 @@ extern bool Debug_Unshroud;
 extern bool Debug_Check_Map;
 extern bool Debug_Playtest;
 
-extern bool Debug_Heap_Dump;
-extern bool Debug_Smart_Print;
-extern bool Debug_Modem_Dump;
 extern bool Debug_Print_Events;
 
 extern std::span<const std::byte> LightningShapes;
@@ -317,11 +314,7 @@ extern int RequiredCD;
 extern int CurrentCD;
 extern bool MouseInstalled;
 
-extern int LogLevel;
-extern int64_t LogLevelTime[kMaxLogLevel];
-extern int64_t LogLastTime;
 
-extern bool LogDump_Print;
 
 
 extern TheaterType LastTheater;

@@ -123,10 +123,6 @@ bool Debug_Unshroud = false;   // true = hide the shroud
 bool Debug_Check_Map = false;  // true = validate the map each frame
 bool Debug_Playtest = false;
 
-bool Debug_Heap_Dump = false;  // true = print the Heap Dump
-bool Debug_Smart_Print =
-    false;  // true = print everything that calls Smart_Printf
-bool Debug_Modem_Dump = false;       // true = print the Modem Stuff
 bool Debug_Print_Events = false;     // true = print event & packet processing
 
 TFixedIHeapClass<AircraftClass> Aircraft;
@@ -673,14 +669,6 @@ SpecialDialogType SpecialDialog = SDLG_NONE;
 int RequiredCD = -1;
 int CurrentCD = -1;
 bool MouseInstalled;
-
-//
-// Variables for helping track how much time goes bye in routines
-//
-int LogLevel = 0;
-int64_t LogLevelTime[kMaxLogLevel] = {0};
-int64_t LogLastTime = 0;
-bool LogDump_Print = false;  // true = print the Log time Stuff
 
 /***************************************************************************
 ** Tick Count global timer object.
