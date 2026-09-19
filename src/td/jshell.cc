@@ -75,6 +75,7 @@
 #include "sdllib/tile.h"
 #include "sdllib/ww_win.h"
 #include "support.h"
+#include "td/startup.h"
 #include "tech/file.h"
 #include "tech/game_file.h"
 
@@ -169,7 +170,7 @@ void Set_Window(int window, int x, int y, int w, int h) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 void Fatal_Message(const std::string_view message) {
-  Prog_End();
+  ShutDown();
   absl::FPrintF(stderr, "%s", message);
   exit(EXIT_FAILURE);
 }
@@ -182,7 +183,7 @@ void Format_Runtime_Text(std::span<char> buffer, const size_t size,
 
 #ifdef NEVER
 void File_Fatal(const char* message) {
-  Prog_End();
+  ShutDown();
   perror(message);
   exit(EXIT_FAILURE);
 }

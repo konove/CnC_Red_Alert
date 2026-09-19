@@ -124,6 +124,7 @@
 #include "td/score.h"
 #include "td/smudge.h"
 #include "td/special.h"
+#include "td/startup.h"
 #include "td/target.h"
 #include "td/tcpip.h"
 #include "td/team.h"
@@ -371,7 +372,7 @@ bool Init_Game() {
 #endif
 #endif
     CCMessageBox().Process(buffer, TXT_OK);
-    Prog_End();
+    ShutDown();
     exit(1);
   }
 
@@ -402,7 +403,7 @@ bool Init_Game() {
         Set_Palette(GamePalette);
         Show_Mouse();
         CCMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
-        Prog_End();
+        ShutDown();
         exit(EXIT_FAILURE);
       }
       SearchPaths::SetCdDrive(CDList.Get_First_CD_Drive());
@@ -413,7 +414,7 @@ bool Init_Game() {
           Set_Palette(GamePalette);
           Show_Mouse();
           CCMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
-          Prog_End();
+          ShutDown();
           exit(EXIT_FAILURE);
 
         case 2:
@@ -421,7 +422,7 @@ bool Init_Game() {
           Show_Mouse();
           if (CCMessageBox().Process(TXT_CD_DIALOG_1, TXT_OK, TXT_CANCEL) ==
               1) {
-            Prog_End();
+            ShutDown();
             exit(EXIT_FAILURE);
           }
           Hide_Mouse();
@@ -430,7 +431,7 @@ bool Init_Game() {
         default:
           Show_Mouse();
           if (!Force_CD_Available(RequiredCD)) {
-            Prog_End();
+            ShutDown();
             exit(EXIT_FAILURE);
           }
           Hide_Mouse();
@@ -1080,7 +1081,7 @@ bool Select_Game(bool fade) {
           if (cd_index == 2) {
             RequiredCD = 0;
             if (!Force_CD_Available(RequiredCD)) {
-              Prog_End();
+              ShutDown();
               exit(EXIT_FAILURE);
             }
           }

@@ -69,7 +69,6 @@
 #include "port/bytes_of.h"
 #include "port/platform.h"
 #include "port/safe_string.h"
-#include "sdllib/misc.h"
 #include "sdllib/shape.h"
 #include "td/base.h"
 #include "td/building.h"
@@ -95,6 +94,7 @@
 #include "td/scenario.h"
 #include "td/smudge.h"
 #include "td/special.h"
+#include "td/startup.h"
 #include "td/teamtype.h"
 #include "td/techno.h"
 #include "td/template.h"
@@ -332,7 +332,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     }
   }
   if (!Force_CD_Available(RequiredCD)) {
-    Prog_End();
+    ShutDown();
     exit(EXIT_FAILURE);
   }
 

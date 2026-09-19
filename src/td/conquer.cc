@@ -148,6 +148,7 @@
 #include "td/scenario.h"
 #include "td/score.h"
 #include "td/special.h"
+#include "td/startup.h"
 #include "td/target.h"
 #include "td/tcpip.h"
 #include "td/text.h"
@@ -3259,7 +3260,7 @@ void Validate_Error(const char* name) {
   // Callers only validate in cheat-key builds, where a bad object pointer is a
   // programmer error. Abort rather than exit(0), so the failure is visible to
   // shells and test runners instead of looking like a clean shutdown.
-  Prog_End();
+  ShutDown();
   LOG(FATAL) << name << " object error!";
 }
 

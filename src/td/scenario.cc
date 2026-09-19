@@ -60,7 +60,6 @@
 #include "base/array.h"
 #include "port/safe_string.h"
 #include "sdllib/gbuffer.h"
-#include "sdllib/misc.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -95,6 +94,7 @@
 #include "td/score.h"
 #include "td/smudge.h"
 #include "td/special.h"
+#include "td/startup.h"
 #include "td/team.h"
 #include "td/teamtype.h"
 #include "td/template.h"
@@ -485,7 +485,7 @@ void Do_Win() {
     }
 
     if (Special.IsJurassic && AreThingiesEnabled && Scenario == 5) {
-      Prog_End();
+      ShutDown();
       exit(0);
     }
 

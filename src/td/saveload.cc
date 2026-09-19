@@ -51,7 +51,6 @@
 #include "port/platform.h"
 #include "port/safe_string.h"
 #include "sdllib/file_access.h"
-#include "sdllib/misc.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/base.h"
@@ -78,6 +77,7 @@
 #include "td/score.h"
 #include "td/serialize.h"
 #include "td/smudge.h"
+#include "td/startup.h"
 #include "td/target.h"
 #include "td/team.h"
 #include "td/teamtype.h"
@@ -329,7 +329,7 @@ bool Load_Game(int id) {
     }
   }
   if (!Force_CD_Available(RequiredCD)) {
-    Prog_End();
+    ShutDown();
     exit(EXIT_FAILURE);
   }
 

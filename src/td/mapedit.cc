@@ -73,7 +73,6 @@
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -100,6 +99,7 @@
 #include "td/msgbox.h"
 #include "td/profile.h"
 #include "td/scenario.h"
+#include "td/startup.h"
 #include "td/target.h"
 #include "td/techno.h"
 #include "td/text.h"
@@ -794,7 +794,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
           Changed = false;
         }
       }
-      Prog_End();
+      ShutDown();
       exit(0);
 
     /*---------------------------------------------------------------------
@@ -1894,7 +1894,7 @@ HousesType MapEditClass::Cycle_House(HousesType curhouse,
  *   12/12/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Fatal(int txt) {
-  Prog_End();
+  ShutDown();
   absl::PrintF("%s\n", Text_String(txt));
   exit(EXIT_FAILURE);
 }
