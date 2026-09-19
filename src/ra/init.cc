@@ -50,8 +50,7 @@
  *-- Initializes the random-number generator * Init_Secondary_Mixfiles --
  *Register and cache secondary mixfiles.                         *
  *   Load_Recording_Values -- Loads recording values from recording file *
- *   Load_Title_Page -- Load the background art for the title page. * Obfuscate
- *-- Sufficiently transform parameter to thwart casual hackers. *
+ *   Load_Title_Page -- Load the background art for the title page. *
  *   Parse_Command_Line -- Parses the command line parameters. * Parse_INI_File
  *-- Parses CONQUER.INI for special options                                  *
  *   Play_Intro -- plays the introduction & logo movies * Save_Recording_Values
@@ -1421,7 +1420,7 @@ bool Parse_Command_Line(std::span<char*> arguments) {
     }
 
     bool processed = true;
-    const uint32_t ob = Obfuscate(argument);
+    const uint32_t ob = HashKeyPhrase(argument);
 
     /*
     **	Check to see if the parameter is a cheat enabling one.

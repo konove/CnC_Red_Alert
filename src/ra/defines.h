@@ -53,7 +53,7 @@
 **	Optional parameter control for special options.
 */
 
-// Obfuscated command-line keywords, compared against Obfuscate() output.
+// Obfuscated command-line keywords, compared against HashKeyPhrase() output.
 // Cheat behaviour itself is controlled by config::kVirginCheatKeysEnabled.
 inline constexpr uint32_t kParmPlaytest = 0xF7DDC227;  // "PLAYTEST"
 inline constexpr uint32_t kParmInstall = 0xD95C68A2;   // "FROMINSTALL"

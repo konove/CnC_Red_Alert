@@ -11,6 +11,6 @@
 // the binary. The hash ignores ASCII case, reads at most the first 127
 // characters and stops at an embedded NUL. It must reproduce the original
 // game's codes exactly, so the ones in defines.h and const.h keep working.
-uint32_t Obfuscate(std::string_view string);
+uint32_t HashKeyPhrase(std::string_view phrase);
 
 #endif  // CNC_RED_ALERT_RA_OBFUSCATE_H_

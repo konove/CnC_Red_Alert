@@ -2423,7 +2423,7 @@ static int Net_Join_Dialog() {
                                       &Session.Chat.at(i)->Address);
               Ipx.Service();
             }
-            if (Obfuscate(Session.GPacket.Message.Buf) == 0x72A47EF6) {
+            if (HashKeyPhrase(Session.GPacket.Message.Buf) == 0x72A47EF6) {
               Session.WWChat = true;
               Clear_Listbox(&playerlist);
               Start_WWChat(&playerlist);
