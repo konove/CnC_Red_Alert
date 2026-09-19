@@ -372,12 +372,6 @@ bool SlowPalette = false;     // Slow palette flag set?
 ScenarioClass Scen;
 
 /***************************************************************************
-**	This is the pending speech sample to play. This sample will be played
-**	at the first opportunity.
-*/
-VoxType SpeakQueue = VOX_NONE;
-
-/***************************************************************************
 **	This records if the score (music) file is present. If not, then much of
 **	the streaming score system can be disabled.
 */

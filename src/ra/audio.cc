@@ -536,6 +536,9 @@ static constexpr base::EnumArray<VoxType, const char*> kSpeechFiles = {
 // announcement does not queue up behind itself.
 static auto current_voice = VOX_NONE;
 
+// The voice Speak() has queued for ServiceSpeech() to start, or VOX_NONE.
+static auto speak_queue = VOX_NONE;
+
 const char* VoxName(const VoxType voice) {
   if (voice == VOX_NONE) {
     return "none";
@@ -547,8 +550,8 @@ void Speak(const VoxType voice) {
   // Only one voice waits in the queue: a request made while another is
   // pending is dropped, not queued behind it.
   if (!Debug_Quiet && Options.Volume != 0 && Audio.is_open() &&
-      voice != VOX_NONE && voice != current_voice && SpeakQueue == VOX_NONE) {
-    SpeakQueue = voice;
+      voice != VOX_NONE && voice != current_voice && speak_queue == VOX_NONE) {
+    speak_queue = voice;
     // Start it now if EVA is silent, rather than a tick later.
     ServiceSpeech();
   }
@@ -564,13 +567,13 @@ void ServiceSpeech() {
 
   if (!Audio.IsPlaying(base::At(SpeechBuffer, playing_buffer).data())) {
     current_voice = VOX_NONE;
-    if (SpeakQueue != VOX_NONE) {
+    if (speak_queue != VOX_NONE) {
       // Try to find a previously loaded copy of the EVA speech in one of the
       // speech buffers.
       std::span<const std::byte> speech;
       for (size_t buffer_index = 0; buffer_index < std::size(SpeechRecord);
            buffer_index++) {
-        if (base::At(SpeechRecord, buffer_index) == SpeakQueue) {
+        if (base::At(SpeechRecord, buffer_index) == speak_queue) {
           // playing_buffer tracks the buffer being played, so move it to the
           // cached one -- the poll at the top of this routine watches that
           // buffer to decide when the voice has finished.
@@ -589,7 +592,7 @@ void ServiceSpeech() {
             static_cast<int>((playing_buffer + 1) % std::ssize(SpeechRecord));
 
         const auto file_name =
-            std::filesystem::path(kSpeechFiles.at(SpeakQueue))
+            std::filesystem::path(kSpeechFiles.at(speak_queue))
                 .replace_extension(".AUD")
                 .string();
 
@@ -597,7 +600,7 @@ void ServiceSpeech() {
         if (file.IsAvailable() &&
             file.Read(base::At(SpeechBuffer, playing_buffer))) {
           speech = base::At(SpeechBuffer, playing_buffer);
-          base::At(SpeechRecord, playing_buffer) = SpeakQueue;
+          base::At(SpeechRecord, playing_buffer) = speak_queue;
         }
       }
 
@@ -606,18 +609,18 @@ void ServiceSpeech() {
       // a channel.
       if (!speech.empty()) {
         Audio.Play(speech, 254, Options.Volume * 256);
-        current_voice = SpeakQueue;
+        current_voice = speak_queue;
       }
 
       // Cleared even if the voice could not be loaded, so that a missing
       // file is not retried every tick.
-      SpeakQueue = VOX_NONE;
+      speak_queue = VOX_NONE;
     }
   }
 }
 
 void StopSpeaking() {
-  SpeakQueue = VOX_NONE;
+  speak_queue = VOX_NONE;
   // Cleared here, not left for the next ServiceSpeech(), so that Speak() does
   // not drop the voice just stopped as one still being said.
   current_voice = VOX_NONE;
@@ -631,7 +634,7 @@ bool IsSpeaking() {
   // finish also keeps the queue moving.
   ServiceSpeech();
   return !Debug_Quiet && Audio.is_open() &&
-         (SpeakQueue != VOX_NONE ||
+         (speak_queue != VOX_NONE ||
           std::ranges::any_of(SpeechBuffer, [](const auto& buffer) {
             return Audio.IsPlaying(buffer.data());
           }));

@@ -169,7 +169,6 @@ extern bool SlowPalette;
 extern bool ScoresPresent;
 extern bool AllowVoice;
 extern NewConfigType NewConfig;
-extern VoxType SpeakQueue;
 extern bool PlayerWins;
 extern bool PlayerLoses;
 extern bool PlayerRestarts;
