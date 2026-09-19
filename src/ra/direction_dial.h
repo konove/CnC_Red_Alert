@@ -20,8 +20,8 @@
 //
 // Originally DIAL8.H by Bill Randolph, February 1995.
 
-#ifndef CNC_RED_ALERT_RA_DIAL8_H_
-#define CNC_RED_ALERT_RA_DIAL8_H_
+#ifndef CNC_RED_ALERT_RA_DIRECTION_DIAL_H_
+#define CNC_RED_ALERT_RA_DIRECTION_DIAL_H_
 
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -64,7 +64,7 @@ class DirectionDial : public ControlClass {
   int decoration_points_[8][2]{};  // x, y of each decoration, by FacingType
   int hand_tips_[8][2]{};          // x, y of the hand's tip, by FacingType
   DirType direction_;              // direction the dial points in, 0-255
-  FacingType facing_;       // direction_ snapped to one of the eight facings
+  FacingType facing_;  // direction_ snapped to one of the eight facings
 };
 
-#endif  // CNC_RED_ALERT_RA_DIAL8_H_
+#endif  // CNC_RED_ALERT_RA_DIRECTION_DIAL_H_

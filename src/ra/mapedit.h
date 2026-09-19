@@ -58,7 +58,7 @@
 #include "ra/ccini.h"
 #include "ra/control.h"
 #include "ra/defines.h"
-#include "ra/dial8.h"
+#include "ra/direction_dial.h"
 #include "ra/face.h"
 #include "ra/gadget.h"
 #include "ra/gauge.h"

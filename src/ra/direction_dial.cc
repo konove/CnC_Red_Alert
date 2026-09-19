@@ -22,7 +22,7 @@
 // Originally DIAL8.CPP, written by Bill Randolph in 1994-95; the Red Alert copy
 // of the file is credited to Joe L. Bostic, July 1996.
 
-#include "ra/dial8.h"
+#include "ra/direction_dial.h"
 
 #include <iterator>
 
