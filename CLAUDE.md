@@ -15,7 +15,7 @@ JOBS=$(($(getconf _NPROCESSORS_ONLN) / 2))
 | Both games             | `cmake -Bbuild -G Ninja && cmake --build build --parallel $JOBS`                 | `build/src/ra/rasdl`, `build/src/td/tdsdl` |
 | Red Alert only         | `cmake --build build --parallel $JOBS --target rasdl`                            | `build/src/ra/rasdl`                       |
 | Tiberian Dawn only     | `cmake --build build --parallel $JOBS --target tdsdl`                            | `build/src/td/tdsdl`                       |
-| Fast build (no checks) | `cmake -Bbuild -G Ninja -DSTRICT_CHECKS=OFF`                                     | Disables clang-tidy, IWYU, warnings        |
+| Fast build (no checks) | `cmake -Bbuild -G Ninja -DSTRICT_CHECKS=OFF`                                     | Disables clang-tidy and warnings           |
 | Unoptimized (stepping) | `cmake -Bbuild -G Ninja -DCMAKE_BUILD_TYPE=Debug`                                | `-O0 -g`; see the warning below            |
 | With ASan              | `cmake -Bbuild -G Ninja -DENABLE_ASAN=ON`                                        | Memory debugging                           |
 | Clean rebuild          | `rm -rf build && cmake -Bbuild -G Ninja && cmake --build build --parallel $JOBS` |                                            |
@@ -90,10 +90,11 @@ one; don't run bare `ninja` in those directories, and pass ninja flags through i
 because a dry run can't check whether the glob verification changed anything; only a real build
 shows whether CMake re-runs.
 
-ccache caches only the compile. clang-tidy and IWYU run as separate passes in front of it, so under
-`STRICT_CHECKS=ON` a fully cached rebuild still pays their full cost — measured on `src/ra/drop.cc`:
-0.00 s for the cached compile, 1.5 s for clang-tidy, 1.0 s for IWYU. Nothing caches IWYU, so
-`-DENABLE_IWYU=OFF` is the lever when iterating on tidy findings.
+ccache caches only the compile; clang-tidy runs as a separate pass in front of it and is cached by
+`clang-tidy-cache` (below). IWYU is off by default, `STRICT_CHECKS` included: its suggestions never
+fail a build, `misc-include-cleaner` already enforces `.cc` includes as an error, and it re-parses
+every TU uncached (~950 CPU-s per full strict pass). Turn it on with `-DENABLE_IWYU=ON` to review
+header includes by hand.
 
 **`clang-tidy-cache` only caches a translation unit whose preprocess is silent.** It derives its
 hash by re-running the compiler to preprocess the TU and gives up on any compiler output to stderr
@@ -338,10 +339,10 @@ Omit the `std::` prefix on fixed-width types. See `docs/TYPE_MIGRATION.md` for f
 
 ## Tools Configuration
 
-| Tool       | Config File                          | Notes                                                      |
-| ---------- | ------------------------------------ | ---------------------------------------------------------- |
-| clang-tidy | `.clang-tidy`                        | Many checks disabled for legacy code                       |
-| IWYU       | `cmake/IWYU.cmake`, `.iwyu_mappings` | Can segfault on `ra/externs.h`; warnings don't fail builds |
+| Tool       | Config File                          | Notes                                                 |
+| ---------- | ------------------------------------ | ----------------------------------------------------- |
+| clang-tidy | `.clang-tidy`                        | Many checks disabled for legacy code                  |
+| IWYU       | `cmake/IWYU.cmake`, `.iwyu_mappings` | Opt-in (`-DENABLE_IWYU=ON`); advice only, never fails |
 
 ## Key Files
 

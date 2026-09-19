@@ -27,7 +27,7 @@ This project uses [Include-What-You-Use (IWYU)](https://include-what-you-use.org
 headers. Install with `sudo apt install iwyu` (Linux) or `brew install include-what-you-use`
 (macOS). See [docs/IWYU.md](docs/IWYU.md) for details.
 
-To disable: `cmake -Bbuild -DENABLE_IWYU=OFF`
+It is off by default; enable it with `cmake -Bbuild -DENABLE_IWYU=ON`.
 
 ### Markdown formatting
 

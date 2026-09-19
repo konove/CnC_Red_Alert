@@ -33,11 +33,11 @@ A commit on `main` should build, pass its tests and pass the strict checks. Do n
 that already ran in this session after the last edit - say "already verified" and move on. If the
 user says they built or tested it themselves ("built it, works, commit"), take their word.
 
-| Step          | Command                                                       | What it proves                                                                                                                                  |
-| ------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Format        | `git clang-format -f -- <touched files>`                      | Formats the changed lines only. Never `clang-format -i`: it reflows untouched legacy code and buries the diff.                                  |
-| Build + tests | `cmake --build build --parallel 22 && ctest --test-dir build` | It compiles with GCC and the tests pass. `build/` has `STRICT_CHECKS=OFF` (`-w`), so this says nothing about warnings.                          |
-| Strict        | `cmake --build build-strict --parallel 14`                    | clang, `-Weverything`, clang-tidy and IWYU as errors. This is what the IDE and CI enforce, and the only place a bad `absl` format string fails. |
+| Step          | Command                                                       | What it proves                                                                                                                            |
+| ------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Format        | `git clang-format -f -- <touched files>`                      | Formats the changed lines only. Never `clang-format -i`: it reflows untouched legacy code and buries the diff.                            |
+| Build + tests | `cmake --build build --parallel 22 && ctest --test-dir build` | It compiles with GCC and the tests pass. `build/` has `STRICT_CHECKS=OFF` (`-w`), so this says nothing about warnings.                    |
+| Strict        | `cmake --build build-strict --parallel 14`                    | clang, `-Weverything` and clang-tidy as errors. This is what the IDE and CI enforce, and the only place a bad `absl` format string fails. |
 
 Scale the work to the change:
 

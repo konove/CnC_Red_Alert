@@ -105,7 +105,7 @@ Fixed, not suppressed, with patterns the tree already uses; must land before ste
   fallback on failure, with no optional involved. Tests in `tech/number_parse_test.cc`.
 - Rewrite every `Parse{Integer,Hex,IniInteger}<…>(…).value_or(…)` call site (~238 in 51 files).
 - Re-profile the 10 hotspot TUs with `--enable-check-profile`:
-  `td/{mapeddlg,init,nulldlg,mapedtm, netdlg}` and `ra/{nulldlg,init,teamtype,trigtype,session}`. A
+  `td/{mapeddlg,init,nulldlg,mapedtm,netdlg}` and `ra/{nulldlg,init,teamtype,trigtype,session}`. A
   function that is still slow holds another optional call; extract that code into its own function.
 
 ### 6. Share the clang-tidy cache between build dirs
@@ -152,3 +152,4 @@ Full-pass time, the cost breakdown, and the sharing prerequisites.
 ## Progress
 
 - 2026-09-19: plan written.
+- 2026-09-19: step 1 done — IWYU off by default; `build-strict` reconfigured, strict build clean.

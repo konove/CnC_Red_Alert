@@ -1,15 +1,12 @@
 # IWYU.cmake - Include-What-You-Use integration module
 # This module provides functions to enable IWYU checking for CMake targets
 
-# Set default based on STRICT_CHECKS, but allow independent override
-if (NOT DEFINED ENABLE_IWYU)
-    if (DEFINED STRICT_CHECKS)
-        set(ENABLE_IWYU_DEFAULT ${STRICT_CHECKS})
-    else ()
-        set(ENABLE_IWYU_DEFAULT ON)
-    endif ()
-    option(ENABLE_IWYU "Enable Include-What-You-Use analysis" ${ENABLE_IWYU_DEFAULT})
-endif ()
+# Off by default, even under STRICT_CHECKS. CMake ignores IWYU's exit code, so
+# its suggestions never fail a build, while clang-tidy's misc-include-cleaner
+# already enforces the .cc includes as an error. IWYU also re-parses every TU
+# with its own clang, which cost ~950 CPU-s per full strict pass (2026-09-19)
+# for advice nobody acted on. Turn it on to review header includes by hand.
+option(ENABLE_IWYU "Enable Include-What-You-Use analysis" OFF)
 
 if (ENABLE_IWYU)
     # Find the IWYU executable

@@ -1215,7 +1215,8 @@ merged with `clang-apply-replacements`, add 767 includes and remove 312 across 3
 
 The earlier review kept it excluded because include-what-you-use already runs in the strict build.
 IWYU runs without `--error`, though, so its suggestions never fail a build; this check is the first
-include rule that does. IWYU keeps running as advice.
+include rule that does. IWYU keeps running as advice. (Since 2026-09-19 IWYU is opt-in,
+`-DENABLE_IWYU=ON`; see `docs/STRICT_BUILD_PERF_PLAN.md`.)
 
 **glibc private headers.** For `htonl`, `in_addr`, `SOL_SOCKET` and `timeval` the check names the
 header glibc declares them in (`<netinet/in.h>`, `<asm-generic/socket.h>`,

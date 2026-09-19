@@ -114,7 +114,7 @@ else ()
     message(STATUS "Strict checks disabled (quick build mode)")
 endif ()
 
-# Include What You Use integration (automatically enabled/disabled by STRICT_CHECKS)
+# Include What You Use integration (opt-in with -DENABLE_IWYU=ON)
 include(cmake/IWYU.cmake)
 
 # Development .env file support (disabled in Release builds)

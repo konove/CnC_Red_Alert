@@ -2,8 +2,8 @@
 #   build  - compiles and tests on each supported compiler with the static
 #            analysis off. Its question is "does the code build and run on
 #            gcc, clang and MSVC".
-#   lint   - one Linux job with STRICT_CHECKS on: clang-tidy, IWYU and the
-#            extra warnings. The analysis does not depend on the surrounding
+#   lint   - one Linux job with STRICT_CHECKS on: clang-tidy and the extra
+#            warnings. The analysis does not depend on the surrounding
 #            compiler, so it runs once, on a pinned clang-tidy version.
 name: CMake on multiple platforms
 
@@ -125,8 +125,8 @@ jobs:
         wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- ${{ env.LLVM_VERSION }}
         sudo apt install -y clang-tidy-${{ env.LLVM_VERSION }}
 
-    - name: Install SDL, IWYU and build tools
-      run: sudo apt install -y libsdl2-dev iwyu ninja-build
+    - name: Install SDL and build tools
+      run: sudo apt install -y libsdl2-dev ninja-build
 
     - name: Configure CMake
       # Debug so DLOG/DCHECK code is compiled and analysed too.
@@ -140,5 +140,5 @@ jobs:
         -DCMAKE_BUILD_TYPE=Debug
         -S ${{ github.workspace }}
 
-    - name: Build with clang-tidy and IWYU
+    - name: Build with clang-tidy
       run: cmake --build ${{ github.workspace }}/build --parallel $(( $(getconf _NPROCESSORS_ONLN) / 2 ))
