@@ -14,41 +14,38 @@
 #include "tech/crc.h"
 
 uint32_t Obfuscate(const std::string_view string) {
+  // 127 phrase characters, the padding that can bring 127 up to 128, and a
+  // terminator. The 0xA5 fill is not just initialization: an empty phrase's
+  // padding is derived from it (see below), so it is part of the hash.
   std::array<char, 129> buffer{};
 
   base::FillBytes(base::ObjectBytes(buffer), '\xA5', sizeof(buffer));
 
-  /*
-  **	Copy key phrase into a working buffer. This hides any transformation
-  *done *	to the string.
-  */
-  // Retain the 127-character input limit, with room for padding and terminator.
+  // Work on a copy so the caller's phrase is left alone. The original read at
+  // most 127 characters and stopped at an embedded NUL; keep both limits.
   port::SafeCopy(std::span(buffer).first(128), string);
   int length = static_cast<int>(std::string_view(buffer.data()).size());
 
-  /*
-  **	Only upper case letters are significant.
-  */
+  // Case-insensitive: fold the phrase to upper case.
   std::ranges::transform(port::MutableCString(buffer.data()), buffer.begin(),
                          absl::ascii_toupper);
 
-  /*
-  **	Ensure that only visible ASCII characters compose the key phrase. This
-  **	discourages the direct forced illegal character input method of attack.
-  */
+  // Replace spaces, control characters and other non-printing bytes with a
+  // letter that depends on the position, so the hash only ever sees visible
+  // ASCII. "7TH GRADE" therefore hashes like "7THDGRADE".
+  // TODO: isgraph() is undefined for a negative char, which any byte >= 0x80
+  // is here (a chat message from netdlg.cc can carry one).
   for (int index = 0; index < length; index++) {
     if (!isgraph(buffer.at(base::ToSize(index)))) {
       buffer.at(base::ToSize(index)) = static_cast<char>('A' + (index % 26));
     }
   }
 
-  /*
-  **	Increase the strength of even short pass phrases by extending the
-  **	length to be at least a minimum number of characters. This helps prevent
-  **	a weak pass phrase from compromising the obfuscation process. This
-  **	process also forces the key phrase to be an even multiple of four.
-  **	This is necessary to support the cypher process that occurs later.
-  */
+  // Pad the phrase to at least 16 characters and to a multiple of four, which
+  // the four-byte cipher below needs. Each padding letter is derived from the
+  // character `length` positions earlier, which past the phrase is earlier
+  // padding. An empty phrase reads its own slot instead - the terminator, then
+  // the 0xA5 fill - so it still hashes to a non-zero code.
   if (length < 16 || length % 4 != 0) {
     const int maxlen = std::max(((length + 3) / 4) * 4, 16);
     int index = 0;
@@ -63,41 +60,27 @@ uint32_t Obfuscate(const std::string_view string) {
     buffer.at(base::ToSize(length)) = '\0';
   }
 
-  /*
-  **	Transform the buffer into a number. This transformation is character
-  **	order dependant.
-  */
+  // Hash the padded phrase. The CRC is order dependent, so anagrams differ.
   uint32_t code =
       CrcEngine::Compute(std::string_view(buffer.data(), base::ToSize(length)));
 
-  /*
-  **	Record a copy of this initial transformation to be used in a later
-  **	self referential transformation.
-  */
+  // Kept to XOR back in below.
   const uint32_t copy = code;
 
-  /*
-  **	Reverse the character string and combine with the previous
-  *transformation. *	This doubles the workload of trying to reverse engineer
-  *the CRC calculation.
-  */
+  // Fold in the CRC of the reversed phrase. The original meant this to double
+  // the work of reversing the CRC, but see the next step.
   std::ranges::reverse(std::span(buffer).first(base::ToSize(length)));
   code ^=
       CrcEngine::Compute(std::string_view(buffer.data(), base::ToSize(length)));
 
-  /*
-  **	Perform a self referential transformation. This makes a reverse
-  *engineering *	by using a cause and effect attack more difficult.
-  */
+  // XORing the first CRC back out cancels it: from here `code` is just the
+  // CRC of the reversed phrase. The historical codes depend on exactly that.
   code = code ^ copy;
 
-  /*
-  **	Unroll and combine the code value into the pass phrase and then perform
-  **	another self referential transformation. Although this is a trivial
-  *cypher *	process, it gives the sophisticated hacker false hope since the
-  *strong *	cypher process occurs later.
-  */
-  // Restore original string order.
+  // Feed `code` through the phrase one byte at a time: each byte is XORed with
+  // the low byte of the running code, and that byte is rotated back in at the
+  // top. The original calls this a decoy cipher ahead of the real one.
+  // Put the phrase back in its original order first.
   std::ranges::reverse(std::span(buffer).first(base::ToSize(length)));
   for (int index = 0; index < length; index++) {
     code ^= static_cast<unsigned char>(buffer.at(base::ToSize(index)));
@@ -111,12 +94,9 @@ uint32_t Obfuscate(const std::string_view string) {
     code |= uint32_t{temp} << 24;
   }
 
-  /*
-  **	Introduce loss into the vector. This strengthens the key against
-  *traditional *	cryptographic attack engines. Since this also weakens
-  *the key against *	unconventional attacks, the loss is limited to less than
-  *10%.
-  */
+  // Force a few bits on and a few off, repeating every eight bytes, so that
+  // the scrambled bytes lose information. The original meant this to frustrate
+  // cryptographic attacks and limited it to under 10% of the bits.
   for (int index = 0; index < length; index++) {
     static constexpr std::array<uint8_t, 8> _lossbits = {
         0x00, 0x08, 0x00, 0x20, 0x00, 0x04, 0x10, 0x00};
@@ -132,16 +112,10 @@ uint32_t Obfuscate(const std::string_view string) {
                               base::ToSize(index) % _lossbits.size())));
   }
 
-  /*
-  **	Perform a general cypher transformation on the vector
-  **	and use the vector itself as the cypher key. This is a variation on the
-  **	cypher process used in PGP. It is a very strong cypher process with no
-  *known *	weaknesses. However, in this case, the cypher key is the vector
-  *itself and this *	opens up a weakness against attacks that have access to
-  *this transformation *	algorithm. The sheer workload of reversing this
-  *transformation should be enough *	to discourage even the most determined
-  *hackers.
-  */
+  // Scramble each group of four bytes with a multiply/add/XOR round that
+  // uses the bytes themselves as the key. The original calls it a variation
+  // on the cipher in PGP; keyed by its own data it is not a real cipher, only
+  // one more step an attacker has to invert.
   for (int index = 0; index < length; index += 4) {
     // The original read these bytes as signed char and computed in signed
     // 16-bit values. Unsigned ones give the same result: the transformation
@@ -187,11 +161,8 @@ uint32_t Obfuscate(const std::string_view string) {
     buffer.at(base::ToSize(index + 3)) = static_cast<char>(val4);
   }
 
-  /*
-  **	Convert this final vector into a cypher key code to be
-  **	returned by this routine.
-  */
-  // The transformed data can contain zero bytes; hash all of it.
+  // The result is the CRC of the scrambled bytes. They can contain zeros, so
+  // hash by length rather than as a string.
   return CrcEngine::Compute(
       std::string_view(buffer.data(), base::ToSize(length)));
 }
