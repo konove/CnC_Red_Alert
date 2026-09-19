@@ -21,7 +21,7 @@
 
 // Generated Westwood Online API names (MIDL guards, struct tags) are reserved
 // identifiers; they stay as generated.
-// NOLINTBEGIN(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
+// NOLINTBEGIN(bugprone-reserved-identifier,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
 
 // Every FTP_* value is built out of MAKE_HRESULT.
 #include "port/win32/win32_com.h"
@@ -32,6 +32,6 @@
 #define FTP_FAILED MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 1)
 #define FTP_TRYING MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 2)
 
-// NOLINTEND(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
+// NOLINTEND(bugprone-reserved-identifier,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
 
 #endif  // CNC_RED_ALERT_RA_WOLAPI_FTPDEFS_H_

@@ -58,11 +58,11 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreserved-macro-identifier"
 #endif
-// NOLINTNEXTLINE(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp)
+// NOLINTNEXTLINE(bugprone-reserved-identifier)
 #define __RPC_FAR
-// NOLINTNEXTLINE(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp)
+// NOLINTNEXTLINE(bugprone-reserved-identifier)
 #define __RPC_USER
-// NOLINTNEXTLINE(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp)
+// NOLINTNEXTLINE(bugprone-reserved-identifier)
 #define __RPC_STUB
 
 using HRESULT = std::int32_t;
@@ -102,7 +102,7 @@ inline constexpr HRESULT REGDB_E_CLASSNOTREG =
 //
 // The guard names are the ones wolapi_i.c actually tests, so defining them
 // stops it declaring a second, differently sized IID.
-// NOLINTNEXTLINE(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp)
+// NOLINTNEXTLINE(bugprone-reserved-identifier)
 #define __IID_DEFINED__
 #define CLSID_DEFINED
 #ifdef __clang__

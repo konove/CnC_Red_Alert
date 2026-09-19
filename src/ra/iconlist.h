@@ -50,14 +50,14 @@ using enum ICONKIND;
 struct IconListIcon {
   IconListIcon() = default;
   // These conversions preserve Add_Item's optional icon arguments.
-  // NOLINTNEXTLINE(google-explicit-constructor,cppcoreguidelines-explicit-constructor,misc-explicit-constructor)
+  // NOLINTNEXTLINE(misc-explicit-constructor)
   IconListIcon(std::nullptr_t) {}
-  // NOLINTNEXTLINE(google-explicit-constructor,cppcoreguidelines-explicit-constructor,misc-explicit-constructor)
+  // NOLINTNEXTLINE(misc-explicit-constructor)
   IconListIcon(void* image_value ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : image(image_value) {}
   // The span owns no storage; the resource allocation, not the temporary view,
   // supplies the lifetime.
-  // NOLINTNEXTLINE(google-explicit-constructor,cppcoreguidelines-explicit-constructor,misc-explicit-constructor,clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
+  // NOLINTNEXTLINE(misc-explicit-constructor,clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
   IconListIcon(std::span<const std::byte> shape_value) : shape(shape_value) {}
   explicit operator bool() const { return image != nullptr || !shape.empty(); }
   void* image = nullptr;

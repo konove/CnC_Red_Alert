@@ -156,3 +156,6 @@ Full-pass time, the cost breakdown, and the sharing prerequisites.
 - 2026-09-19: step 2 done — all 15 shallow-only findings fixed; shallow and deep clean on the 8 TUs.
 - 2026-09-19: step 3 done — `CLANG_ANALYZER_MODE` (shallow default, CI deep). Full re-analysis of
   `build-strict` at `-j14`: 183 s wall, 2424 CPU-s (tidy only, compiles from ccache), zero findings.
+- 2026-09-19: step 4 done — 46 duplicate aliases off (538 → 492 checks); cert-dcl16-c, cert-str34-c
+  and the two google-readability aliases keep different options and stay. Full pass 185 s wall, 2360
+  CPU-s, clean.

@@ -248,7 +248,6 @@ class EventClass {
   // be deterministic - the padding and the unused half of Data included.
   // Member initializers cannot reach padding. Every other defined constructor
   // delegates here to clear IsExecuted and all unused payload bytes.
-  // NOLINTNEXTLINE(cert-oop57-cpp)
   EventClass() { base::FillBytes(base::ObjectBytes(*this), 0, sizeof(EventClass)); }
   explicit EventClass(SpecialClass data);
   EventClass(EventType type, TargetClass target);

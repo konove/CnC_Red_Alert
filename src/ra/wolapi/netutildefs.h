@@ -21,7 +21,7 @@
 
 // Generated Westwood Online API names (MIDL guards, struct tags) are reserved
 // identifiers; they stay as generated.
-// NOLINTBEGIN(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
+// NOLINTBEGIN(bugprone-reserved-identifier,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
 
 // Every NETUTIL_E_* and NETUTIL_S_* value is built out of MAKE_HRESULT.
 #include "port/win32/win32_com.h"
@@ -31,6 +31,6 @@
 
 #define NETUTIL_S_FINISHED MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_ITF, 500)
 
-// NOLINTEND(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
+// NOLINTEND(bugprone-reserved-identifier,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
 
 #endif  // CNC_RED_ALERT_RA_WOLAPI_NETUTILDEFS_H_

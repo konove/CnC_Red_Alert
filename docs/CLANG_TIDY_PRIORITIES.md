@@ -32,6 +32,11 @@ the analyzer shallow (`CLANG_ANALYZER_MODE`, default `shallow`) and the CI lint 
 When sweeping an analyzer check before enabling it, sweep in both modes; shallow reports some paths
 deep mode prunes, and the reverse. See [STRICT_BUILD_PERF_PLAN.md](STRICT_BUILD_PERF_PLAN.md).
 
+46 aliases whose primary is enabled with the same options are excluded as well (2026-09-19), and are
+not listed below: they only ran the same matchers again. They count as **Covered**; the comment at
+the top of [`.clang-tidy`](../.clang-tidy) says how to tell them apart, and NOLINTs name the
+primary.
+
 ## P1 — Direct correctness and memory safety
 
 | Check                                                         | Status  | Reason / result                                                                                                                                                                                                                                   |

@@ -2608,7 +2608,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
  *before sending scenario file *
  *=============================================================================================*/
 // A single legacy dialog loop; splitting it is a refactor of its own.
-// NOLINTNEXTLINE(readability-function-size,google-readability-function-size)
+// NOLINTNEXTLINE(readability-function-size)
 int Com_Scenario_Dialog(bool skirmish) {
   /*........................................................................
   Dialog & button dimensions

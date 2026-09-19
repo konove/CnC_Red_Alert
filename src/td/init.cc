@@ -761,7 +761,7 @@ extern int Com_Fake_Scenario_Dialog();
 extern int Com_Show_Fake_Scenario_Dialog();
 
 // A single legacy dialog loop; splitting it is a refactor of its own.
-// NOLINTNEXTLINE(readability-function-size,google-readability-function-size)
+// NOLINTNEXTLINE(readability-function-size)
 bool Select_Game(bool fade) {
   if (DebugQuitAtFrame >= 0 && DebugNewGame.empty() && DebugLoadGame < 0) {
     return false;
