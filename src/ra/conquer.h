@@ -37,6 +37,11 @@ bool RunFrame();
 // PresentFrame), which is also what keeps those loops from spinning.
 void ServiceRealTime();
 
+// Waits `ticks` system timer ticks (60 a second), calling ServiceRealTime()
+// throughout so sound, the network and the screen stay alive. Even a zero wait
+// services once.
+void ServiceRealTimeFor(int ticks);
+
 // The maintenance half of ServiceRealTime(), without presenting. For work
 // that runs straight through, such as saving and loading, where nothing on
 // screen changes and each present would only wait out a display refresh.

@@ -76,7 +76,6 @@
 #include "sdllib/wsa.h"
 #include "sdllib/ww_audio.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
@@ -97,6 +96,12 @@
 // name being typed on 320x200 row `ypos`, erasing the old one if `pos` moved.
 static void Animate_Cursor(int pos, int ypos);
 
+// Waits `ticks` system timer ticks (60 a second) while keeping the score screen
+// alive: every pass services sound, network and video and updates every object
+// in ScoreObjs[]. Even a zero wait runs one pass. Once Ctrl-Q has been seen,
+// every wait is cut to zero until the screen finishes.
+static void TickScoreScreen(int ticks);
+
 // Gives every object in ScoreObjs[] one Update(). Objects may delete themselves
 // and free their slot while this runs.
 static void Animate_Score_Objs();
@@ -111,13 +116,12 @@ static void Cycle_Wait_Click(bool cycle = true);
 
 // The count-up tick sound; loaded by Presentation().
 static std::span<const std::byte> Beepy6;
-// Ctrl-Q cheat key to skip past the score and map selection screens: once
-// Call_Back_Delay() has seen it, every later delay (the map selection's
-// included) is zero and Cycle_Wait_Click() returns at once.
+// Ctrl-Q cheat key to skip past the score screen: once TickScoreScreen() has
+// seen it, every later wait is zero and Cycle_Wait_Click() returns at once.
 static bool ControlQ;
 // True while some ScorePrintClass is still typing. Animate_Score_Objs() clears
 // it and the unfinished printers set it again, so it is valid after any
-// Call_Back_Delay().
+// TickScoreScreen().
 static bool StillUpdating;
 
 // Score screen backgrounds, indexed by side: 0 Allied, 1 Soviet.
@@ -288,7 +292,7 @@ int Alloc_Object(ScoreAnimClass* obj) {
         return i;
       }
     }
-    Call_Back_Delay(1);
+    TickScoreScreen(1);
   }
 }
 
@@ -370,7 +374,7 @@ void ScoreClass::Presentation() {
   ScoreObjs[1] = new ScoreTimeClass(4, 89, hiscore1shape, 10, 4);
   ScoreObjs[2] = new ScoreTimeClass(4, 180, hiscore2shape, 10, 4);
 
-  // Type out the headings. Each Call_Back_Delay() below is sized to let the
+  // Type out the headings. Each TickScoreScreen() below is sized to let the
   // text queued before it finish, which is what keeps ScoreObjs[] from
   // overflowing.
   Set_Logic_Page(SeenBuff);
@@ -381,7 +385,7 @@ void ScoreClass::Presentation() {
   Alloc_Object(new ScorePrintClass(TXT_SCORE_EFFI, 164, 38, greenpal));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TOTA, 164, 50, greenpal));
   Play_Sample(sfx4, 255, Options.Normalize_Volume(150));
-  Call_Back_Delay(13);
+  TickScoreScreen(13);
 
   Keyboard->Clear();
 
@@ -475,7 +479,7 @@ void ScoreClass::Presentation() {
       Count_Up_Print("%3d%%", econo, economy, 244, 38);
     }
     Print_Minutes(minutes);
-    Call_Back_Delay(1);
+    TickScoreScreen(1);
     Play_Sample(Beepy6, 255, Options.Normalize_Volume(100));
     if (i >= 30 && lead == leadership && econo == economy) {
       break;
@@ -491,16 +495,16 @@ void ScoreClass::Presentation() {
   absl::SNPrintF(buffer, sizeof(buffer), "x %5d", uspoints);
   Alloc_Object(new ScorePrintClass(buffer, 274, 26, greenpal));
   Alloc_Object(new ScorePrintClass(buffer, 274, 38, greenpal));
-  Call_Back_Delay(8);
+  TickScoreScreen(8);
   // Rule off the sum: flash the line white for a tick, then settle on green.
   SeenBuff.Draw_Line(548, 96, 626, 96, kWhite);
-  Call_Back_Delay(1);
+  TickScoreScreen(1);
   SeenBuff.Draw_Line(548, 96, 626, 96, kGreen);
 
   absl::SNPrintF(buffer, sizeof(buffer), "%5d", total);
   Alloc_Object(new ScorePrintClass(buffer, 286, 50, greenpal));
 
-  Call_Back_Delay(60);
+  TickScoreScreen(60);
 
   // The Soviet background has its credits box up here, under the ratings; the
   // Allied one has it at the bottom, so that side shows credits after the
@@ -511,8 +515,8 @@ void ScoreClass::Presentation() {
 
   // The `BG` remnants here and in Do_GDI_Graph(): these pauses used to be
   // skipped once a key was waiting. With that disabled, Ctrl-Q (see
-  // Call_Back_Delay) is the only way to hurry the screen along.
-  /*BG	if (!Keyboard->Check()) */ Call_Back_Delay(60);
+  // TickScoreScreen) is the only way to hurry the screen along.
+  /*BG	if (!Keyboard->Check()) */ TickScoreScreen(60);
 
   // Show stats on # of units killed. The player's own side is always the upper
   // of the two rows.
@@ -523,7 +527,7 @@ void ScoreClass::Presentation() {
   const int indx = 0;
   Alloc_Object(new ScorePrintClass(TXT_SCORE_CASU, _casuax[indx], _casuay[indx],
                                    greenpal));
-  Call_Back_Delay(9);
+  TickScoreScreen(9);
   if (house) {
     Alloc_Object(
         new ScorePrintClass(TXT_SOVIET, _nodtxx[indx], _gditxy[indx], redpal));
@@ -535,7 +539,7 @@ void ScoreClass::Presentation() {
     Alloc_Object(
         new ScorePrintClass(TXT_SOVIET, _nodtxx[indx], _nodtxy[indx], redpal));
   }
-  Call_Back_Delay(6);
+  TickScoreScreen(6);
 
   Set_Font_Palette(redpal);
   Do_GDI_Graph(yellowptr, redptr, GKilled + CKilled, NKilled, 89);
@@ -545,7 +549,7 @@ void ScoreClass::Presentation() {
   // Print out stats on buildings destroyed, laid out like the casualties above.
   Play_Sample(sfx4, 255, Options.Normalize_Volume(150));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_BUIL, 144, 126, greenpal));
-  Call_Back_Delay(9);
+  TickScoreScreen(9);
   if (house) {
     Alloc_Object(
         new ScorePrintClass(TXT_SOVIET, _gditxx[indx], _bldggy[indx], redpal));
@@ -557,12 +561,12 @@ void ScoreClass::Presentation() {
     Alloc_Object(
         new ScorePrintClass(TXT_SOVIET, _gditxx[indx], _bldgny[indx], redpal));
   }
-  Call_Back_Delay(7);
+  TickScoreScreen(7);
   Do_GDI_Graph(yellowptr, redptr, GBKilled + CBKilled, NBKilled, 137);
 
   // Wait for text printing to complete
   while (StillUpdating) {
-    Call_Back_Delay(1);
+    TickScoreScreen(1);
   }
 
   Keyboard->Clear();
@@ -573,7 +577,7 @@ void ScoreClass::Presentation() {
   // Hall of fame display and processing.
   Play_Sample(sfx4, 255, Options.Normalize_Volume(150));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TOP, 28, 110, greenpal));
-  Call_Back_Delay(9);
+  TickScoreScreen(9);
 
   // Load the table. A missing or short file reads as an empty table.
   std::array<std::byte, kFameFileSize> rawfame{};
@@ -616,12 +620,12 @@ void ScoreClass::Presentation() {
       Alloc_Object(new ScorePrintClass(str.subspan(16).data(),
                                        HALLFAME_X + (6 * 11),
                                        HALLFAME_Y + (i * 8), pal));
-      Call_Back_Delay(13);
+      TickScoreScreen(13);
     }
   }
   // Wait for text printing to complete
   while (StillUpdating) {
-    Call_Back_Delay(1);
+    TickScoreScreen(1);
   }
   // If the player's on the hall of fame, have him enter his name now and save
   // the table. Otherwise just wait for a click.
@@ -704,7 +708,7 @@ void Cycle_Wait_Click(bool cycle) {
       NullModem.Service();
     }
 
-    Call_Back_Delay(1);
+    TickScoreScreen(1);
     if (minclicks) {
       minclicks--;
       Keyboard->Clear();
@@ -780,12 +784,12 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
     Count_Up_Print("%d", CountUpValue(gkilled, i, gdikilled), gkilled, 297,
                    ypos + 2);
     Play_Sample(Beepy6, 255, Options.Normalize_Volume(150));
-    Call_Back_Delay(2);
+    TickScoreScreen(2);
   }
   CC_Draw_Shape(yellowptr, gdikilled, xpos * 2, ypos * 2, WINDOW_MAIN,
                 SHAPE_WIN_REL, {}, {});
   Count_Up_Print("%d", gkilled, gkilled, 297, ypos + 2);
-  /*BG	if (!Keyboard->Check()) */ Call_Back_Delay(40);
+  /*BG	if (!Keyboard->Check()) */ TickScoreScreen(40);
 
   Set_Font_Palette(house ? bluepal : redpal);
   for (int i = 1; i <= nodkilled; i++) {
@@ -800,7 +804,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
     Count_Up_Print("%d", CountUpValue(nkilled, i, nodkilled), nkilled, 297,
                    ypos + 14);
     Play_Sample(Beepy6, 255, Options.Normalize_Volume(150));
-    Call_Back_Delay(2);
+    TickScoreScreen(2);
   }
 
   // Make sure accurate count is printed at end: with no losses the loop above
@@ -808,7 +812,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   CC_Draw_Shape(redptr, nodkilled, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
                 SHAPE_WIN_REL, {}, {});
   Count_Up_Print("%d", nkilled, nkilled, 297, ypos + 14);
-  /*BG	if (!Keyboard->Check()) */ Call_Back_Delay(40);
+  /*BG	if (!Keyboard->Check()) */ TickScoreScreen(40);
 }
 
 void ScoreClass::Show_Credits(int house, std::span<const uint8_t> pal) {
@@ -828,7 +832,7 @@ void ScoreClass::Show_Credits(int house, std::span<const uint8_t> pal) {
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_ENDCRED, base::At(_credtx, house),
                                    base::At(_credty, house), pal));
-  Call_Back_Delay(15);
+  TickScoreScreen(15);
 
   const int credobj = Alloc_Object(new ScoreCredsClass(
       base::At(_credsx, house), base::At(_credsy, house), credshape, 32, 2));
@@ -860,7 +864,7 @@ void ScoreClass::Show_Credits(int house, std::span<const uint8_t> pal) {
     Set_Font_Palette(pal);
     Count_Up_Print("%d", i, static_cast<int>(PlayerPtr->Available_Money()),
                    base::At(_credpx, house), base::At(_credpy, house));
-    Call_Back_Delay(2);
+    TickScoreScreen(2);
   } while (i < PlayerPtr->Available_Money());
 
   // The credits animation loops forever, so stop it by hand.
@@ -972,7 +976,7 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
               new ScoreScaleClass(str.subspan(base::ToSize(index)).data(),
                                   xpos + (index * 6), ypos, pal));
           while (base::At(ScoreObjs, objindex)) {
-            Call_Back_Delay(1);
+            TickScoreScreen(1);
           }
 
           if (index < kFameNameSize - 2) {
@@ -1013,36 +1017,19 @@ void Animate_Cursor(int pos, int ypos) {
   }
 }
 
-void Call_Back_Delay(int time) {
-  time = std::clamp(time, 0, 60);
-  // Paces the full ServiceRealTime(): at most four times a second.
-  Timer<SystemTickSource> callbackcd{0};
-
-  if ((!ControlQ) &&
-      (KeyboardClass::Down(KN_LCTRL) && KeyboardClass::Down(KN_Q))) {
+void TickScoreScreen(const int ticks) {
+  if (!ControlQ && KeyboardClass::Down(KN_LCTRL) && KeyboardClass::Down(KN_Q)) {
     ControlQ = true;
     Keyboard->Clear();
   }
 
-  if (ControlQ) {
-    time = 0;
-  }
-
-  const Timer<SystemTickSource> cd{time};
-  // In between the full services, only keep the sound fed and the frame
-  // presented.
+  // ServiceRealTime() presents the frame, so each pass lasts one display
+  // refresh and the objects animate at the refresh rate.
+  const Timer<SystemTickSource> wait{ControlQ ? 0 : ticks};
   do {
-    if (callbackcd.IsFinished()) {
-      ServiceRealTime();
-      callbackcd.Set(kTimerSecond / 4);
-    } else {
-      if (SoundType != SFX_NONE) {
-        Sound_Callback();
-      }
-      Video_End_Frame();
-    }
+    ServiceRealTime();
     Animate_Score_Objs();
-  } while (cd.HasTimeLeft());
+  } while (wait.HasTimeLeft());
 }
 
 void Animate_Score_Objs() {
@@ -1092,7 +1079,7 @@ void Multi_Score_Presentation() {
   while (frame < Get_Animation_Frame_Count(anim)) {
     Animate_Frame(anim, pseudoseenbuff, frame++);
     Interpolate_2X_Scale(&pseudoseenbuff, &SeenBuff, {});
-    Call_Back_Delay(2);
+    TickScoreScreen(2);
   }
   Close_Animation(anim);
 
@@ -1104,9 +1091,9 @@ void Multi_Score_Presentation() {
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TOP, config::kIsFrench ? 113 : 130,
                                    13, greenpal));
-  Call_Back_Delay(5);
+  TickScoreScreen(5);
   Alloc_Object(new ScorePrintClass(TXT_COMMANDER, 27, 31, greenpal));
-  Call_Back_Delay(10);
+  TickScoreScreen(10);
   Alloc_Object(new ScorePrintClass(
       TXT_BATTLES_WON,
       [] {
@@ -1119,9 +1106,9 @@ void Multi_Score_Presentation() {
         return 126;
       }(),
       31, greenpal));
-  Call_Back_Delay(13);
+  TickScoreScreen(13);
   Alloc_Object(new ScorePrintClass(TXT_KILLS_COLON, 249, 31, greenpal));
-  Call_Back_Delay(6);
+  TickScoreScreen(6);
 
   // Move all the scores over a notch if there's more games than can be shown
   // (which is known by Session.CurGame == MAX_MULTI_GAMES-1), dropping the
@@ -1148,10 +1135,10 @@ void Multi_Score_Presentation() {
       remap[14] = ColorRemaps.at(color).FontRemap[15];
 
       Alloc_Object(new ScorePrintClass(i.Name, 15, y, remap));
-      Call_Back_Delay(20);
+      TickScoreScreen(20);
 
       Alloc_Object(new ScorePrintClass(Int_Print(i.Wins), 118, y, remap));
-      Call_Back_Delay(6);
+      TickScoreScreen(6);
 
       for (int k = 0; k <= std::min(Session.CurGame, MAX_MULTI_GAMES - 2);
            k++) {
@@ -1159,7 +1146,7 @@ void Multi_Score_Presentation() {
         if (base::At(i.Kills, k) >= 0) {
           Alloc_Object(new ScorePrintClass(Int_Print(base::At(i.Kills, k)),
                                            225 + (24 * k), y, remap));
-          Call_Back_Delay(6);
+          TickScoreScreen(6);
         }
       }
       y += 12;

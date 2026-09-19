@@ -46,7 +46,6 @@
 #include "ra/mouse.h"
 #include "ra/palette.h"
 #include "ra/scenario.h"
-#include "ra/score.h"
 #include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "ra/type.h"
@@ -174,10 +173,13 @@ static void PlayMapReveal(const std::string& animation_name,
   Interpolate_2X_Scale(&page, &SeenBuff, {});
 
   PlayMapSound("MAPWIPE2.AUD");
+  // Ctrl-Q, the score screen's skip key, plays the rest without the waits.
+  bool skip = false;
   for (int frame = 1; frame < Get_Animation_Frame_Count(animation); frame++) {
     Animate_Frame(animation, page, frame);
     Interpolate_2X_Scale(&page, &SeenBuff, {});
-    Call_Back_Delay(/*time=*/2);
+    skip = skip || (KeyboardClass::Down(KN_LCTRL) && KeyboardClass::Down(KN_Q));
+    ServiceRealTimeFor(skip ? 0 : 2);
     for (const SoundCue& cue : kSoundCues) {
       if (cue.frame == frame) {
         PlayMapSound(cue.file_name);
@@ -195,7 +197,7 @@ static int WaitForMissionChoice(PaletteClass& palette, const bool is_soviet) {
   int cursor_frame = 0;
   while (true) {
     PulseHotspots(palette);
-    Call_Back_Delay(/*time=*/1);
+    ServiceRealTimeFor(/*ticks=*/1);
 
     // MouseClass animates the pointer only while the game map runs, so step
     // through the crosshair's frames here.

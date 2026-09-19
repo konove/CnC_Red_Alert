@@ -23,7 +23,7 @@
 // economy ratings, casualty and building bar graphs, remaining credits and the
 // hall of fame. Multi_Score_Presentation() is the simpler multiplayer tally.
 // Both screens animate their text and shapes through the small ScoreAnimClass
-// hierarchy, which Call_Back_Delay() ticks while the presentation code waits.
+// hierarchy, which is ticked whenever the presentation code waits.
 //
 // Originally SCORE.H by Joe L. Bostic, started April 19, 1994.
 
@@ -128,9 +128,9 @@ class ScoreClass {
 
 // Base class for the things that animate on the score screens. An object is
 // heap-allocated, parked in ScoreObjs[] with Alloc_Object(), and has Update()
-// called on every pass of Call_Back_Delay(). Text animations delete themselves
-// and clear their slot when finished; the looping shape animations live until
-// the screen tears ScoreObjs[] down.
+// called on every display refresh while the screen waits. Text animations
+// delete themselves and clear their slot when finished; the looping shape
+// animations live until the screen tears ScoreObjs[] down.
 //
 // Constructors take 320x200 coordinates and double them; XPos and YPos are
 // hi-res pixels. The data and text are viewed, not copied, so they must outlive
@@ -250,16 +250,10 @@ extern ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 // mouse before returning.
 void Multi_Score_Presentation();
 
-// Waits `time` timer ticks (clamped to 0..60, i.e. one second) while keeping
-// the score screen alive: it services sound and video and updates every object
-// in ScoreObjs[]. Even a zero delay runs one update pass. Once Ctrl-Q has been
-// seen, every delay is cut to zero until the screen finishes.
-void Call_Back_Delay(int time);
-
 // Hands `obj` to the first free ScoreObjs[] slot, which then owns it, and
-// returns the slot index. If the table is full this runs the animations, via
-// Call_Back_Delay(), until one finishes and frees its slot; at least one slot
-// must therefore hold an animation that ends, or the call never returns.
+// returns the slot index. If the table is full this runs the animations until
+// one finishes and frees its slot; at least one slot must therefore hold an
+// animation that ends, or the call never returns.
 int Alloc_Object(ScoreAnimClass* obj);
 
 class ArchiveReader;

@@ -369,6 +369,13 @@ void ServiceRealTime() {
   Video_End_Frame();
 }
 
+void ServiceRealTimeFor(const int ticks) {
+  const Timer<SystemTickSource> wait{ticks};
+  do {
+    ServiceRealTime();
+  } while (wait.HasTimeLeft());
+}
+
 void ServiceBackgroundTasks() {
   // Music and speech maintenance
   if (SampleType != SAMPLE_NONE) {
