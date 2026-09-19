@@ -16,30 +16,11 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /CounterStrike/DIAL8.CPP 1     3/03/97 10:24a Joe_bostic $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : DIAL8.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : 07/05/96 *
- *                                                                                             *
- *                  Last Update : July 5, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * Dial8Class::Action -- action routine for Dial8Class *
- *   Dial8Class::Dial8Class -- constructor for the facing dial *
- *   Dial8Class::Draw_Me -- render routine for Dial8Class *
- *   Dial8Class::Get_Direction -- retrieves direction (0-255) of dial *
- *   Dial8Class::Set_Direction -- sets current direction (0-255) of dial *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// Dial8Class, the eight-way facing dial the map editor shows for the selected
+// unit or building.
+//
+// Originally DIAL8.CPP, written by Bill Randolph in 1994-95; the Red Alert copy
+// of the file is credited to Joe L. Bostic, July 1996.
 
 #include "ra/dial8.h"
 
@@ -56,24 +37,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 
-/***************************************************************************
- * Dial8Class::Dial8Class -- constructor for the facing dial               *
- *                                                                         *
- * INPUT:                                                                  *
- *      id            button ID                                            *
- *      x,y,w,h      dimensions in window-relative pixels                  *
- *      dir         numerical initial facing value (0-255); this is the    *
- *                  value returned by WWLIB Desired_Facing8()              *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      none.                                                              *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   11/16/1994 BR : Created.                                              *
- *=========================================================================*/
 Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
     : ControlClass(static_cast<unsigned>(id), x, y, w, h,
                    kLeftPress | kLeftHeld | kLeftRelease, true),
@@ -82,20 +45,13 @@ Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
       Direction(dir),
       Facing(Dir_Facing(Direction)),
       OldFacing(Facing) {
-  /*
-  **	Center coordinates.
-  */
-
-  /*
-  **	Init directions.
-  */
-
-  /*
-  **	Compute the drawing dimensions:  a 45-degree angle intersects a unity-
-  **	radius circle at (.707,.707). Make the decorations 8/10 of the radius,
-  **	and the line extend to 6/10 of the radius. Use Width/2 for x-radius,
-  **	Height/2 for y-radius.
-  */
+  // The centre and the initial direction are set in the initializer list.
+  //
+  // Compute the drawing dimensions: a 45-degree angle intersects a unit circle
+  // at (.707, .707), written as 7/10 in integer math. The decorations sit at
+  // 8/10 of the radius and the hand reaches 6/10 of it, with Width/2 as the x
+  // radius and Height/2 as the y radius. Index 0 is north and the points go
+  // clockwise, matching FacingType, so Draw_Me() can index by Facing.
   FacePoint[0][0] = FaceX;
   FacePoint[0][1] = FaceY - (h * 8 / 2 / 10);
 
@@ -145,73 +101,49 @@ Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
   FaceLine[7][1] = FaceY - (h * 7 * 6 / 2 / 100);
 }
 
-/***************************************************************************
- * Dial8Class::Action -- activation function for Dial8Class                *
- *                                                                         *
- * INPUT:                                                                  *
- *      flags      the reason we're being called                           *
- *      key      the KN_number that was pressed                            *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      true = event was processed, false = event not processed            *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   02/06/1995 BR : Created.                                              *
- *=========================================================================*/
 bool Dial8Class::Action(unsigned flags, KeyNumType& key) {
+  // Set by a press on the dial and cleared by the release, so that dragging
+  // into the dial with the button already down does not turn it. The dial is
+  // sticky: once pressed it receives every mouse event until the release,
+  // wherever the pointer goes. A function static, so every dial shares it; the
+  // map editor only ever has one.
   static int is_sel = 0;
 
-  /*
-  **	We might end up clearing the event bits. Make sure that the sticky
-  **	process is properly updated anyway.
-  */
+  // We might end up clearing the event bits. Make sure that the sticky
+  // process is properly updated anyway.
   Sticky_Process(flags);
 
   if (flags & kLeftPress) {
     is_sel = 1;
   }
 
-  /*
-  **	If left mouse is clicked or held, and the dial has changed its
-  *direction, *	invoke the parent Action routine: *	GadgetClass::Action
-  *handles Sticky processing, & sets IsToRepaint if any *	  flag bits are
-  *set. *	ControlClass::Action handles Peer_To_Peer notification, and
-  *substitutes *	  'key' with the button ID if any flags are set, or 0 if
-  *no flags are set
-  */
+  // If the left button is pressed, or held after a press on the dial, and
+  // the dial has changed its direction, invoke the parent Action routine:
+  // GadgetClass::Action handles sticky processing and asks for a redraw if
+  // any flag bits are set; ControlClass::Action notifies the peer and, when
+  // flags are set, replaces `key` with the button ID. With no flags it leaves
+  // `key` alone, which is why this function clears it itself before passing
+  // 0.
   if (flags & kLeftPress || (flags & kLeftHeld && is_sel)) {
-    /*
-    **	Get new dial position (0-255)
-    */
+    // Get the new dial position, snapped to one of the eight directions.
     Direction = Desired_Facing8(FaceX, FaceY, Get_Mouse_X(), Get_Mouse_Y());
 
-    /*
-    **	Convert to Facing value (0-7).
-    */
+    // Convert to a FacingType (0-7).
     Facing = Dir_Facing(Direction);
 
-    /*
-    **	If it's moved, redraw.
-    */
+    // If it has moved, report the change to the owner (the button ID in
+    // `key`) and redraw.
     if (Facing != OldFacing) {
       OldFacing = Facing;
       ControlClass::Action(flags, key);
       return true;
     }
-    /*
-     **	Dial hasn't moved; kill the event & return
-     */
+    // The dial has not moved; kill the event so the owner sees nothing.
     key = KN_NONE;
     ControlClass::Action(0, key);
     return true;
   }
-  /*
-   **	Otherwise, no events have occurred; kill the event if it's a
-   *kLeftRelease, *	and return
-   */
+  // Otherwise nothing changed. A release ends the drag and is swallowed.
   if (flags & kLeftRelease) {
     key = KN_NONE;
     is_sel = 0;
@@ -219,47 +151,24 @@ bool Dial8Class::Action(unsigned flags, KeyNumType& key) {
   return ControlClass::Action(0, key);
 }
 
-/***************************************************************************
- * Dial8Class::Draw_Me -- custom render routine for Dial8Class             *
- *                                                                         *
- * INPUT:                                                                  *
- *      forced      true = draw regardless of the current redraw flag state*
- *                                                                         *
- * OUTPUT:                                                                 *
- *      true = gadget was redrawn, false = wasn't                          *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   02/06/1995 BR : Created.                                              *
- *=========================================================================*/
 bool Dial8Class::Draw_Me(bool forced) {
   const RemapControlType* scheme = Get_Color_Scheme();
 
-  /*
-  **	Redraw if parent indicates a redraw is needed
-  */
+  // Redraw only if the parent says a redraw is needed.
   if (ControlClass::Draw_Me(forced)) {
-    /*
-    **	Hide the mouse.
-    */
-
+    // Hide the mouse while drawing on the visible page, so the software
+    // cursor does not save and restore pixels the drawing is changing.
     if (LogicPage == &SeenBuff) {
       Hide_Mouse();
     }
 
-    /*
-    **	Draw background & decorations.
-    */
+    // Draw the background and the eight decorations.
     Draw_Box(X, Y, Width, Height, BOXSTYLE_DOWN, true);
     for (const auto& point : FacePoint) {
       Draw_Box(point[0] - 1, point[1] - 1, 3, 3, BOXSTYLE_RAISED, false);
     }
 
-    /*
-    **	Draw the hand & its shadow.
-    */
+    // Draw the hand's shadow one pixel down and right, then the hand.
     LogicPage->Draw_Line(
         FaceX + 1, FaceY + 1,
         base::At(base::At(FaceLine, static_cast<int>(Facing)), 0) + 1,
@@ -270,9 +179,7 @@ bool Dial8Class::Draw_Me(bool forced) {
         base::At(base::At(FaceLine, static_cast<int>(Facing)), 1),
         scheme->Highlight);
 
-    /*
-    **	Restore the mouse.
-    */
+    // Restore the mouse.
     if (LogicPage == &SeenBuff) {
       Show_Mouse();
     }
@@ -283,38 +190,8 @@ bool Dial8Class::Draw_Me(bool forced) {
   return false;
 }
 
-/***************************************************************************
- * Dial8Class::Get_Direction -- retrieves direction (0-255) of dial        *
- *                                                                         *
- * INPUT:                                                                  *
- *      none.                                                              *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      DirType dial is pointing to                                        *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   11/17/1994 BR : Created.                                              *
- *=========================================================================*/
 DirType Dial8Class::Get_Direction() const { return Direction; }
 
-/***************************************************************************
- * Dial8Class::Set_Direction -- sets current direction (0-255) of dial     *
- *                                                                         *
- * INPUT:                                                                  *
- *      DirType to set dial to                                             *
- *                                                                         *
- * OUTPUT:                                                                 *
- *      none.                                                              *
- *                                                                         *
- * WARNINGS:                                                               *
- *      none.                                                              *
- *                                                                         *
- * HISTORY:                                                                *
- *   11/17/1994 BR : Created.                                              *
- *=========================================================================*/
 void Dial8Class::Set_Direction(DirType dir) {
   Direction = dir;
   Facing = Dir_Facing(Direction);
