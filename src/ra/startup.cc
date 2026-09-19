@@ -163,7 +163,7 @@ static void ReadStartupOptions(const INIClass& ini) {
 int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
                    int command_show)
 #else   // _WIN32
-int main(int argc, char* argv[])
+int main(const int argc, char* argv[])
 #endif  // _WIN32
 {
   absl::InitializeLog();
@@ -391,7 +391,7 @@ bool InitVideo() {
   return true;
 }
 
-void __cdecl Prog_End() {
+void Prog_End() {
   Audio.Close();
   delete WWMouse;
   WWMouse = nullptr;
@@ -427,7 +427,7 @@ void CleanUpAndExitWithError(char* message) {
   ExitWithError(message);
 }
 
-[[noreturn]] void EmergencyExit(int exit_code) {
+[[noreturn]] void EmergencyExit(const int exit_code) {
   // Black out the palette first, so nothing glitches while the window loses
   // focus on the way out. Clean up here rather than by posting a quit event:
   // the SDL quit handler ends in exit(0), which would lose `exit_code`.
