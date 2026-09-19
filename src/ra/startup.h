@@ -3,15 +3,20 @@
 
 // Red Alert's startup and exit paths. main() itself lives in startup.cc.
 
-// Runs Prog_End(), prints `message` and exits with status 1. Installed as
+// Runs ShutDown(), prints `message` and exits with status 1. Installed as
 // Memory_Error_Exit while the game runs, when the game systems still have to
 // be cleaned up.
 [[noreturn]] void CleanUpAndExitWithError(char* message);
 
-// Leaves the game from anywhere, cleaning up as a normal quit would: blanks
-// the screen, runs Prog_End(), releases the video pages and exits with
-// `exit_code`.
+// Leaves the game from anywhere: blanks the screen, runs ShutDown() and exits
+// with `exit_code`.
 [[noreturn]] void EmergencyExit(int exit_code);
+
+// Releases everything the game set up - Prog_End() and the video pages - so
+// the caller only has to exit. Every way out of the game goes through it: the
+// end of main(), EmergencyExit(), the memory-error exits and the SDL quit
+// handler. It does not draw, so it is safe before the video pages exist.
+void ShutDown();
 
 // Sets the video mode for ScreenWidth x ScreenHeight (falling back from 400
 // to 480 lines), creates VisiblePage and HiddenPage, and attaches SeenBuff

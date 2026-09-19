@@ -359,7 +359,6 @@ extern TheaterType LastTheater;
 void Do_Vortex(int x, int y, int frame);
 
 // Shutdown state: 0 = running, 1 = clean shutdown, 2 = complete, 3 = emergency.
-extern int ReadyToQuit;
 extern bool InDebugger;       // Are we being run from a debugger
 [[noreturn]] void Memory_Error_Handler();  // Memory error handler function
 void WWDebugString(const char* string);

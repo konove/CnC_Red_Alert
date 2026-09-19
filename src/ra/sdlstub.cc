@@ -12,6 +12,7 @@
 #include "ra/msgbox.h"
 #include "ra/nullconn.h"
 #include "ra/palette.h"
+#include "ra/startup.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/misc.h"
 #include "sdllib/ww_mouse.h"
@@ -37,13 +38,8 @@ void Memory_Error_Handler() {
   }
   WWMessageBox().Process(kLanguageText.memory_error, kLanguageText.abort);
 
-  ReadyToQuit = 1;
-
-  do {
-    Keyboard->Check();
-  } while (ReadyToQuit == 1);
-
-  exit(0);
+  ShutDown();
+  exit(EXIT_FAILURE);
 }
 
 static constexpr const char* kWindowName = [] {
@@ -88,10 +84,7 @@ void SDL_Event_Handler(SDL_Event* event) {
       break;
     }
     case SDL_QUIT:
-      Prog_End();
-      VisiblePage.Un_Init();
-      HiddenPage.Un_Init();
-
+      ShutDown();
       exit(0);
     default:
       break;

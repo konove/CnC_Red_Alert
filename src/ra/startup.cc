@@ -89,12 +89,8 @@
   exit(1);
 }
 
-// Clears the screen and releases everything the game set up, leaving only the
-// process exit to the caller. The SDL quit handler does the same before its
-// exit(0).
-static void ShutDown() {
-  VisiblePage.Clear();
-  HiddenPage.Clear();
+void ShutDown() {
+  // Nothing is left for an allocation failure from here on to clean up.
   Memory_Error_Exit = ExitWithError;
   Prog_End();
   VisiblePage.Un_Init();
@@ -343,8 +339,8 @@ int main(const int argc, char* argv[])
 
       RunGame();
 
-      // The Windows build posted a quit message and waited for its handler to
-      // do this.
+      VisiblePage.Clear();
+      HiddenPage.Clear();
       ShutDown();
       return EXIT_SUCCESS;
     }
@@ -423,14 +419,15 @@ void Prog_End() {
 }
 
 void CleanUpAndExitWithError(char* message) {
-  Prog_End();
+  ShutDown();
   ExitWithError(message);
 }
 
 [[noreturn]] void EmergencyExit(const int exit_code) {
-  // Black out the palette first, so nothing glitches while the window loses
-  // focus on the way out. Clean up here rather than by posting a quit event:
-  // the SDL quit handler ends in exit(0), which would lose `exit_code`.
+  // Blank the screen first, so nothing glitches while the window loses focus
+  // on the way out.
+  VisiblePage.Clear();
+  HiddenPage.Clear();
   BlackPalette.Set();
   ShutDown();
   exit(exit_code);
