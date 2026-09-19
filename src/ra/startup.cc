@@ -16,27 +16,12 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* $Header: /counterstrike/STARTUP.CPP 6     3/15/97 7:18p Steve_tall $ */
-/***********************************************************************************************
- ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Command & Conquer *
- *                                                                                             *
- *                    File Name : STARTUP.CPP *
- *                                                                                             *
- *                   Programmer : Joe L. Bostic *
- *                                                                                             *
- *                   Start Date : October 3, 1994 *
- *                                                                                             *
- *                  Last Update : September 30, 1996 [JLB] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: * Prog_End -- Cleans up library systems in prep for game exit. *
- *   main -- Initial startup routine (preps library systems). *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// Red Alert's process entry point and exit paths: main() sets up the
+// library systems, reads the options needed before the window exists, and
+// hands over to RunGame(); Prog_End(), Emergency_Exit() and the memory-error
+// hooks tear it all down again.
+//
+// Originally STARTUP.CPP by Joe L. Bostic, October 1994.
 
 #include "ra/startup.h"
 
@@ -99,30 +84,21 @@
 #include "ra/ipx95.h"
 #endif  // _WIN32
 
+// Prints `string` and exits with status 1 without any cleanup. Installed as
+// Memory_Error_Exit once the game systems are gone, or when they are being
+// torn down anyway.
 [[noreturn]] static void Print_Error_Exit(char* string);
 
 #ifdef _WIN32
 HINSTANCE ProgramInstance;
 #endif
+// Reads the options that have to be known before the window and the network
+// exist: blit fills, the screen height, the IPX socket and a bridge network.
 static void Read_Setup_Options(DiskFile* config_file);
 
-/***********************************************************************************************
- * main -- Initial startup routine (preps library systems). *
- *                                                                                             *
- *    This is the routine that is first called when the program starts up. It
- *basically        * handles the command line parsing and setting up library
- *systems.                         *
- *                                                                                             *
- * INPUT:   argc  -- Number of command line arguments. *
- *                                                                                             *
- *          argv  -- Pointer to array of command line argument strings. *
- *                                                                                             *
- * OUTPUT:  Returns with execution failure code (if any). *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 03/20/1995 JLB : Created. *
- *=============================================================================================*/
+// Parses the command line, checks the machine can run the game, opens the
+// window, sound and video, then runs the game until the player quits.
+// Returns the process exit status.
 #ifdef _WIN32
 int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
                    int command_show)
@@ -133,6 +109,8 @@ int main(int argc, char* argv[])
   absl::InitializeLog();
   absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
 
+  // The original minimum of about 7 MB. The SDL Ram_Free() always reports
+  // 64 MB, so this never fails any more.
   if (Ram_Free(MEM_NORMAL) < 7000000) {
     absl::PrintF("%s", kLanguageText.no_ram);
 
@@ -141,6 +119,7 @@ int main(int argc, char* argv[])
 
 #ifdef _WIN32
 
+  // Westwood's own network share: refuse to run a build straight off it.
   if (strstr(command_line, "f:\\projects\\c&c0") != NULL ||
       strstr(command_line, "F:\\PROJECTS\\C&C0") != NULL) {
     MessageBox(0, "Playing off of the network is not allowed.", "Red Alert",
@@ -156,32 +135,20 @@ int main(int argc, char* argv[])
 
   ProgramInstance = instance;
 
-  /*
-  ** Get the full path to the .EXE
-  */
+  // WinMain gets the command line as one string without the program name.
+  // Rebuild the DOS-style argc/argv: argv[0] is the full path to the .EXE,
+  // the rest point into command_line, which is split in place by writing a
+  // terminator over each separating space. The line may end in a carriage
+  // return (13) as well as a null. At most 19 arguments are kept.
   GetModuleFileName(instance, &path_to_exe[0], 132);
 
-  /*
-  ** First argument is supposed to be a pointer to the .EXE that is running
-  **
-  */
-  argc = 1;  // Set argument count to 1
-  argv[0] =
-      &path_to_exe[0];  // Set 1st command line argument to point to full path
-
-  /*
-  ** Get pointers to command line arguments just like if we were in DOS
-  **
-  ** The command line we get is cr/zero? terminated.
-  **
-  */
+  argc = 1;
+  argv[0] = &path_to_exe[0];
 
   command_scan = 0;
 
   do {
-    /*
-    ** Scan for non-space character on command line
-    */
+    // Skip the spaces before the next argument.
     do {
       command_char = *(command_line + command_scan++);
     } while (command_char == ' ');
@@ -189,9 +156,7 @@ int main(int argc, char* argv[])
     if (command_char != 0 && command_char != 13) {
       argv[argc++] = command_line + command_scan - 1;
 
-      /*
-      ** Scan for space character on command line
-      */
+      // Find the end of the argument and terminate it there.
       do {
         command_char = *(command_line + command_scan++);
       } while (command_char != ' ' && command_char != 0 && command_char != 13);
@@ -202,31 +167,31 @@ int main(int argc, char* argv[])
 
 #endif  // _WIN32
 
-  // Change to executable's directory (if path is present)
+  // Run from the executable's directory, so the relative paths to the config
+  // file and the local MIX files resolve however the game was launched.
   const auto dir_path = std::filesystem::path(argv[0]).parent_path();
 
   if (!dir_path.empty()) {
     std::filesystem::current_path(dir_path);
   }
 
-  //	Westwood Online's own installer left these behind. None of it can
-  //	happen here, but it is what the WOL build did on startup.
+  // Westwood Online's own installer left these behind. None of it can
+  // happen here, but it is what the WOL build did on startup.
   if constexpr (config::kWolapiEnabled) {
-    //	Look for special wolapi install program, used after the patch to version
-    // 3, to install "Shared Internet Components".
+    // The version 3 patch shipped wolsetup.exe to install the "Shared
+    // Internet Components"; the registry value says it has finished.
     WIN32_FIND_DATA wfd{};
     HANDLE hWOLSetupFile = FindFirstFile("wolsetup.exe", &wfd);
     const bool bWOLSetupFile = (hWOLSetupFile != INVALID_HANDLE_VALUE);
     FindClose(hWOLSetupFile);
-    //	Look for special registry entry that tells us when the setup exe has
-    // done its thing.
     HKEY hKey = nullptr;
     RegOpenKeyEx(HKEY_LOCAL_MACHINE, Game_Registry_Key(), 0, KEY_READ, &hKey);
     DWORD dwValue = 0;
     DWORD dwBufSize = sizeof(DWORD);
     if (RegQueryValueEx(hKey, "WolapiInstallComplete", nullptr, nullptr,
                         port::BytesOf(dwValue), &dwBufSize) == ERROR_SUCCESS) {
-      //	Setup has finished. Delete the setup exe and remove reg key.
+      // Setup has finished: delete the setup exe, and drop the registry value
+      // only once the exe is gone, so a failed delete is retried next launch.
       if (bWOLSetupFile) {
         if (DeleteFile("wolsetup.exe")) {
           RegDeleteValue(hKey, "WolapiInstallComplete");
@@ -237,11 +202,10 @@ int main(int argc, char* argv[])
     }
     RegCloseKey(hKey);
 
-    //	I've been having problems getting the patch to delete "conquer.eng",
-    // which is present in the game 	directory for 1.08, but which must NOT
-    // be present for this version (Aftermath mix files provide the 	string
-    // overrides that the 1.08 separate conquer.eng did before Aftermath).
-    // Delete conquer.eng if it's found.
+    // The 1.08 patch left a loose conquer.eng in the game directory, and the
+    // patch to this version had trouble deleting it. It must not be there:
+    // the Aftermath MIX files now carry the string overrides it used to, and
+    // a loose file would shadow them.
     if (FindFirstFile("conquer.eng", &wfd) != INVALID_HANDLE_VALUE) {
       DeleteFile("conquer.eng");
     }
@@ -257,11 +221,8 @@ int main(int argc, char* argv[])
 
     Keyboard = new KeyboardClass();
 
-    /*
-    ** If there is not enough disk space free, don't allow the product to run.
-    */
+    // Refuse to start without 8 MB free for save games and the config file.
     if (Disk_Space_Available() < kInitFreeDiskSpace) {
-      // pretty unlikely, but print something anyway
       absl::PrintF("%s", kLanguageText.insufficient_disk);
       absl::PrintF("%s\n",
                    MustHaveDiskSpaceText(kInitFreeDiskSpace / (1024 * 1024)));
@@ -269,17 +230,20 @@ int main(int argc, char* argv[])
       return EXIT_FAILURE;
     }
 
+    // The original installer wrote the config file. Without one, start from
+    // an empty file: every option has a default.
     if (!cfile.IsAvailable()) {
-      // just create an empty config, we don't care about most of it anyway
       cfile.Create();
     }
 
     if (cfile.IsAvailable()) {
       Read_Private_Config_Struct(cfile, &NewConfig);
 
+      // Sets ScreenHeight, so it has to come before the window is opened.
       Read_Setup_Options(&cfile);
 
       Create_Main_Window(nullptr, 0, ScreenWidth, ScreenHeight);
+      // 22050 Hz mono.
       SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
 
       if (!InitDDraw()) {
@@ -288,11 +252,10 @@ int main(int argc, char* argv[])
 
       Options.Adjust_Variables_For_Resolution();
 
-      /*
-      ** Install the memory error handler
-      */
       Memory_Error = &Memory_Error_Handler;
 
+      // The full-screen and editor windows cover the visible viewport, whose
+      // size is only known now that the video mode is set.
       base::At(WindowList[0], kWindowWidth) = SeenBuff.Get_Width();
       base::At(WindowList[0], kWindowHeight) = SeenBuff.Get_Height();
       base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowWidth) =
@@ -305,39 +268,34 @@ int main(int argc, char* argv[])
 
       SearchPaths::SetCdDrive(CDList.Get_First_CD_Drive());
 
-      /*
-      ** See if we should run the intro
-      */
+      // IsFromInstall means "first launch after installing": play the intro
+      // movie. The installer used to write PlayIntro=yes; with no entry it
+      // still defaults to yes, so a fresh install sees the movie once.
       INIClass ini;
       ini.Load(cfile);
 
-      /*
-      **	Check for forced intro movie run disabling. If the conquer
-      **	configuration file says "no", then don't run the intro.
-      */
       if (!Special.IsFromInstall) {
         Special.IsFromInstall = ini.Get_Bool("Intro", "PlayIntro", true);
       }
       SlowPalette = ini.Get_Bool("Options", "SlowPalette", false);
 
-      /*
-      ** Regardless of whether we should run it or not, here we're
-      ** gonna change it to say "no" in the future.
-      */
+      // Whatever happens next, the intro has now been shown once: write
+      // PlayIntro=no so later launches go straight to the menu.
       if (Special.IsFromInstall) {
         BreakoutAllowed = true;
         ini.Put_Bool("Intro", "PlayIntro", false);
         ini.Save(cfile);
       }
 
-      /*
-      **	If the intro is being run for the first time, then don't
-      **	allow breaking out of it with the <ESC> key.
-      */
+      // Tiberian Dawn forbids skipping the first-run intro with <ESC>. Red
+      // Alert shipped with that assignment changed to true, so the movie can
+      // always be skipped, which makes this block a repeat of the one above.
       if (Special.IsFromInstall) {
         BreakoutAllowed = true;
       }
 
+      // While the game runs an out-of-memory exit still has everything to
+      // clean up; after RunGame() returns it only has to report.
       Memory_Error_Exit = Print_Error_End_Exit;
 
       RunGame();
@@ -346,41 +304,39 @@ int main(int argc, char* argv[])
       HiddenPage.Clear();
       Memory_Error_Exit = Print_Error_Exit;
 
-      /*
-      ** Flag that this is a clean shutdown (not killed with Ctrl-Alt-Del)
-      */
+      // ReadyToQuit is the shutdown handshake with the message handler:
+      // 1 is a clean quit, 3 an Emergency_Exit(), and the Windows handler
+      // answered 2 once it had closed everything down. The SDL handler for
+      // the quit event calls Prog_End() and exit(0) itself, so on SDL this
+      // loop only pumps events until that happens and the return below is
+      // never reached.
       ReadyToQuit = 1;
 
-      /*
-      ** Post a message to our message handler to tell it to clean up.
-      */
       SDL_Send_Quit();
 
-      /*
-      ** Wait until the message handler has dealt with the message
-      */
       do {
         Keyboard->Check();
       } while (ReadyToQuit == 1);
 
       return EXIT_SUCCESS;
     }
+    // The config file could neither be opened nor created.
+    // TODO: Keyboard->Get() waits for a key the SDL port can never deliver:
+    // no window exists yet, so the process hangs here after the message, and
+    // then exits with EXIT_SUCCESS.
     absl::PrintF("%s\n", kLanguageText.setup_first);
     Keyboard->Get();
 
     ShutdownTickTimer();
   }
-  /*
-  **	Restore the current drive and directory.
-  */
   return EXIT_SUCCESS;
 }
 
-/* Initialize DirectDraw and surfaces */
 bool InitDDraw() {
   bool video_success = false;
 
-  /* Set 640x400 video mode. If its not available then try for 640x480 */
+  // The game draws 640x400. A 400-line mode is asked for first; failing
+  // that, 480 lines with the picture letterboxed in the middle.
   if (ScreenHeight == 400) {
     if (Set_Video_Mode(MainWindow, ScreenWidth, ScreenHeight, 8)) {
       video_success = true;
@@ -408,6 +364,9 @@ bool InitDDraw() {
     HiddenPage.Init(ScreenWidth, ScreenHeight, {}, 0, GBC_NONE);
   }
 
+  // The pages are the full mode; from here on ScreenHeight is the 400-line
+  // game area, and SeenBuff/HidPage are views of it 40 lines down in a
+  // 480-line mode.
   if (ScreenHeight == 480) {
     ScreenHeight = 400;
   }
@@ -420,21 +379,6 @@ bool InitDDraw() {
   return true;
 }
 
-/***********************************************************************************************
- * Prog_End -- Cleans up library systems in prep for game exit. *
- *                                                                                             *
- *    This routine should be called before the game terminates. It handles
- *cleaning up         * library systems so that a graceful return to the host
- *operating system is achieved.      *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 03/20/1995 JLB : Created. *
- *=============================================================================================*/
 void __cdecl Prog_End() {
   Audio.Close();
   if (WWMouse) {
@@ -498,42 +442,23 @@ void Print_Error_Exit(char* string) {
   exit(1);
 }
 
-/***********************************************************************************************
- * Emergency_Exit -- Function to call when we want to exit unexpectedly. * Use
- *this function instead of exit(n) so everything is properly cleaned up.*
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Code to return to the OS *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 3/13/97 1:32AM ST : Created *
- *=============================================================================================*/
 [[noreturn]] void Emergency_Exit(int code) {
-  /*
-  ** Clear out the video buffers so we dont glitch when we lose focus
-  */
+  // Blank the screen first, so nothing glitches while the window loses focus
+  // on the way out.
   VisiblePage.Clear();
   HiddenPage.Clear();
   BlackPalette.Set();
   Memory_Error_Exit = Print_Error_Exit;
 
-  /*
-  ** Flag that this is an emergency shut down - not a clean shutdown but
-  ** not killed with Ctrl-Alt-Del either.
-  */
+  // 3 flags an emergency shutdown: not a clean quit, but not a forced kill
+  // either (see the ReadyToQuit handshake in main()).
+  // TODO: The SDL quit handler exits with status 0 before this loop ends,
+  // so `code` is never used and every Emergency_Exit(EXIT_FAILURE) reports
+  // success to the shell.
   ReadyToQuit = 3;
 
-  /*
-  ** Post a message to our message handler to tell it to clean up.
-  */
   SDL_Send_Quit();
 
-  /*
-  ** Wait until the message handler has dealt with the message
-  */
   do {
     Keyboard->Check();
   } while (ReadyToQuit == 3);
@@ -541,36 +466,22 @@ void Print_Error_Exit(char* string) {
   exit(code);
 }
 
-/***********************************************************************************************
- * Read_Setup_Options -- Read stuff in from the INI file that we need to know
- *sooner           *
- *                                                                                             *
- *                                                                                             *
- *                                                                                             *
- * INPUT:    Ptr to config file class *
- *                                                                                             *
- * OUTPUT:   Nothing *
- *                                                                                             *
- * WARNINGS: None *
- *                                                                                             *
- * HISTORY: * 6/7/96 4:09PM ST : Created * 09/30/1996 JLB : Uses INI class. *
- *=============================================================================================*/
 void Read_Setup_Options(DiskFile* config_file) {
   if (config_file->IsAvailable()) {
     INIClass ini;
 
     ini.Load(*config_file);
 
-    /*
-    ** Read in the boolean options
-    */
     AllowHardwareBlitFills = ini.Get_Bool("Options", "HardwareFills", true);
 
+    // Resolution=yes asks for a 480-line mode; InitDDraw() letterboxes the
+    // 400-line game area inside it.
     ScreenHeight = ini.Get_Bool("Options", "Resolution", false) ? 480 : 400;
 
-    /*
-    ** See if an alternative socket number has been specified
-    */
+    // Socket is an offset into the dynamic IPX socket range 0x4000-0x7FFF,
+    // letting several games share a network without seeing each other.
+    // TODO: A Socket value near INT_MAX overflows the addition (undefined
+    // behaviour) instead of being rejected as out of range.
     int socket = ini.Get_Int("Options", "Socket", 0);
     if (socket > 0) {
       socket += 0x4000;
@@ -579,9 +490,9 @@ void Read_Setup_Options(DiskFile* config_file) {
       }
     }
 
-    /*
-    ** See if a destination network has been specified
-    */
+    // DestNet names a network on the far side of an IPX bridge, as dotted
+    // hex bytes: four for the network number, optionally followed by up to
+    // six node bytes.
     char netbuf[512];
     base::FillBytes(base::ObjectBytes(netbuf), 0, sizeof(netbuf));
     const char* netptr = netbuf;
@@ -592,9 +503,7 @@ void Read_Setup_Options(DiskFile* config_file) {
       NetNumType net;
       NetNodeType node;
 
-      /*
-      ** Scan the string, pulling off each address piece
-      */
+      // i counts the bytes read: 0-3 are the network number, 4-9 the node.
       int i = 0;
       port::Tokenizer tokens(netbuf, ".");
       while (const char* p = tokens.Next()) {
@@ -604,17 +513,15 @@ void Read_Setup_Options(DiskFile* config_file) {
           break;
         }
         if (i < 4) {
-          base::At(net, i) = *byte;  // fill NetNum
+          base::At(net, i) = *byte;
         } else {
-          base::At(node, i - 4) = *byte;  // fill NetNode
+          base::At(node, i - 4) = *byte;
         }
         i++;
       }
 
-      /*
-      ** If all the address components were successfully read, fill in the
-      ** BridgeNet with a broadcast address to the network across the bridge.
-      */
+      // Only the network number matters: the node is replaced by the
+      // broadcast node, so packets reach every machine across the bridge.
       if (i >= 4) {
         Session.IsBridge = 1;
         base::FillBytes(base::ObjectBytes(node), 0xff, 6);

@@ -70,12 +70,8 @@ extern SurfaceMonitorClass AllSurfaces;  // List of all direct draw surfaces
 
 extern bool OverlappedVideoBlits;  // Can video driver blit overlapped regions?
 
-/*=========================================================================*/
-/* The following prototypes are for the file: EXIT.CPP
- */
-/* Prog_End Must be supplied by the user program in startup.cpp
- */
-/*=========================================================================*/
+// Cleans up the library systems (audio, mouse, tick timer, ...) before the
+// process exits. Each game defines it in its startup.cc.
 void Prog_End();
 
 /*=========================================================================*/
