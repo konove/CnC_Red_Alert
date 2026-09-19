@@ -1,14 +1,14 @@
 ---
-description: Rename the identifiers a file declares to the Google C++ naming scheme and, while doing so, replace legacy names with ones that say what the code does. Use whenever the user asks to rename things in a file "according to the Google style guide / naming guidelines", to "use better names", to modernize names in a .cc/.h pair, or pastes the styleguide Naming link, even if they only mention one of the two goals.
+description: Rename the identifiers a file declares to the Google C++ naming scheme and, while doing so, replace legacy names with ones that say what the code does - and rename the file itself when its name no longer says what it holds. Use whenever the user asks to rename things in a file "according to the Google style guide / naming guidelines", to "use better names", to modernize names in a .cc/.h pair, or pastes the styleguide Naming link, even if they only mention one of the two goals.
 ---
 
 Rename the identifiers declared in: $ARGUMENTS
 
 Two jobs in one pass: put every name the file owns into the Google scheme, and make each name say
-what the thing is or does. The second job is the one that gets skipped. The first time this was done
-on `conquer.cc`, `Main_Loop` became `MainLoop` and the user had to come back with "since you are
-renaming anyway, use better names" - after which it became `RunFrame`. A transliteration is only
-right when the old name was already good.
+what the thing is or does - including the name of the file itself. The second job is the one that
+gets skipped. The first time this was done on `conquer.cc`, `Main_Loop` became `MainLoop` and the
+user had to come back with "since you are renaming anyway, use better names" - after which it became
+`RunFrame`. A transliteration is only right when the old name was already good.
 
 ## 1. Scope: what the file owns
 
@@ -24,7 +24,6 @@ _use_ belong to some other file's pass.
 | Macros                                                  | Google style keeps macros `ALL_CAPS`. A macro that is really a constant is better turned into a `constexpr kName`, but say so rather than doing it silently.                                                           |
 | Text inside string literals                             | INI keys, file names and scenario codes look like identifiers and are not.                                                                                                                                             |
 | Tiberian Dawn's copy of an RA function, and the reverse | `src/ra` and `src/td` are separate targets that share many names. Rename within the game the file belongs to. Files under `sdllib`, `tech`, `port`, `base`, `winvq` are shared, so their callers are in all of `src/`. |
-| File names                                              | Only when asked.                                                                                                                                                                                                       |
 
 Dropping a legacy `Class` / `Type` suffix from a type (`FileClass` -> `File`) is welcome, but it is
 a wide change with real collision risk. Do it when the type is declared in scope, check the new name
@@ -96,6 +95,23 @@ better word used once.
 **Do not rename for the sake of it.** If the old name is accurate and only the case is wrong, change
 the case and move on.
 
+**The file name is part of the pass.** Decide it last, once the identifiers have their new names,
+because the file should be named after what it holds now:
+
+- A file built around one class is named after that class in `snake_case`: `AudioMixer` lives in
+  `audio_mixer.h`, `WsaAnimation` in `wsa_animation.h`, `GameFile` in `game_file.h`.
+- A file of free functions and tables is named after its subject, in the game's vocabulary, and a
+  `.cc`/`.h` pair shares one name.
+- Westwood-era names usually fail this: 8.3 truncations (`blwstraw` -> `blowfish_source`, `b64pipe`
+  -> `base64_sink`), library prefixes that meant "from the Westwood library" (`ww_`), and names of
+  what a file used to hold.
+- Keep the name when it already fits, and keep the original's name when it is still accurate: the
+  twin in the other game (`td/audio.cc` for `ra/ww_audio.cc`) and the original source (`AUDIO.CPP`)
+  are worth matching, because they are what a reader compares against.
+- The new name must be free in its directory and should not echo a file in a shared directory that
+  holds something else: `ra/audio_mixer.h` next to `tech/audio_mixer.h` would mislead.
+- Tests follow their file: `wsa_test.cc` became `wsa_animation_test.cc`.
+
 ## 4. Build the rename table first
 
 Before editing, write the table to the scratchpad: every name the files declare, its new name, and
@@ -133,6 +149,18 @@ Work from the narrowest scope outwards.
    function.
 6. **Everything that mentions the old name in prose:** the header's file comment, tests,
    `docs/*.md`, `CLAUDE.md` (its Key Files and examples name real functions), `TODO.md`.
+7. **The file rename, last.** `git mv` the `.h`, the `.cc` and the `_test.cc` together, then:
+   - Rewrite the path-qualified includes over the whole scope of section 1 (`#include "ra/old.h"` ->
+     `"ra/new.h"`); for a shared directory that is all of `src/`. The shell is zsh, which does not
+     word-split `$files`, so pipe the list:
+     `git grep -lz '"ra/old.h"' -- src | xargs -0 sed -i 's#"ra/old.h"#"ra/new.h"#'`.
+   - Rename the include guard to match (`CNC_RED_ALERT_RA_NEW_H_`).
+   - `git grep` the old basename, with and without extension, and fix what names the file:
+     `CMakeLists.txt` files (sources are globbed, but tests, `optimize_in_debug()`, per-platform
+     lists and glob exclusions name files), `cmake/`, `.iwyu_mappings`, `CLAUDE.md`, `TODO.md`,
+     living `docs/`, `tools/` and `.claude/commands/`. Leave historical records alone - a baseline
+     or a finished plan's log (`docs/MEMBER_INIT_BASELINE.tsv`) describes the tree as it was.
+   - Do not rename the other game's twin in the same pass; it gets its own.
 
 This pass changes names only. Unused parameters, a parameter every caller passes the same value for,
 dead code and outright bugs will turn up while reading closely; the user nearly always wants them
@@ -145,16 +173,23 @@ as a pure rename.
   `clang-format -i`, which reflows the untouched legacy code in the same files.
 - `cmake --build build --parallel 22 && ctest --test-dir build`.
 - `cmake --build build-strict --parallel 14`, in the foreground as its own command. This is where a
-  new shadowing warning or a missed clang-only call site shows up.
+  new shadowing warning or a missed clang-only call site shows up. A file rename makes CMake re-run
+  its globs, which re-populates `_deps` in that directory: if the build then reports hundreds of
+  `absl/...` or `gtest/...` "file not found" errors, build once more before believing any of them.
+- `git grep -n '<old basename>'` comes back empty apart from historical records, and `git status`
+  shows the renamed files as `R`, not as a delete and an add.
 - Skim `git diff --stat` for files that should not be there, and grep the diff for changes inside
   quotes: `git diff -U0 | grep '^[-+]' | grep '"'`.
 
-Commit only when asked, through `/commit`: one commit per game, a type rename on its own, and a
+Commit only when asked, through `/commit`: one commit per game, a type rename on its own, the file
+rename on its own after the identifier rename (a commit that only moves the file and fixes paths
+keeps git's rename detection, so `git log --follow` still finds the history; see `0073bcc3`), and a
 message that names the renames worth knowing about the way `615ce9a1` does.
 
 ## 7. Report
 
-- The rename table, non-mechanical rows first, each with its reason.
+- The rename table, non-mechanical rows first, each with its reason. The file rename is a row too,
+  or a line saying why the file keeps its name.
 - Names deliberately left alone, and why (section 1, or "already accurate").
 - Names you were unsure of, with the alternative you considered.
 - What you noticed but did not change: unused or constant parameters, functions doing two jobs, dead
