@@ -16,6 +16,10 @@ target_sources(port PUBLIC
 )
 
 target_link_libraries(port PUBLIC absl::check absl::log absl::span absl::str_format absl::strings)
+# inet_ntop (inet_text.cc) is in Winsock 2, not the wsock32 the games link.
+if(WIN32)
+    target_link_libraries(port PUBLIC ws2_32)
+endif()
 
 # Tests
 include(Testing)
