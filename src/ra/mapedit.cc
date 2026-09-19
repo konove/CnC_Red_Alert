@@ -1323,18 +1323,18 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     case ButtonKey(kPopupFacingdial):
       if (CurrentObject.at(0)->Is_Techno()) {
         auto* techno = dynamic_cast<TechnoClass*>(CurrentObject.at(0));
-        if (FacingDial->Get_Direction() != techno->PrimaryFacing.Get()) {
+        if (FacingDial->direction() != techno->PrimaryFacing.Get()) {
           /*
           **	Set body's facing
           */
-          techno->PrimaryFacing.Set(FacingDial->Get_Direction());
+          techno->PrimaryFacing.Set(FacingDial->direction());
 
           /*
           **	Set turret facing, if there is one
           */
           if (techno->What_Am_I() == RTTI_UNIT) {
             dynamic_cast<UnitClass&>(*techno).SecondaryFacing.Set(
-                FacingDial->Get_Direction());
+                FacingDial->direction());
           }
 
           HidPage.Clear();

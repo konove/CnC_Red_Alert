@@ -352,7 +352,7 @@ void MapEditClass::Popup_Controls() {
       HealthGauge->Set_Value(strength);
       absl::SNPrintF(HealthBuf, sizeof(HealthBuf), "%d",
                      CurrentObject.at(0)->Strength);
-      FacingDial->Set_Direction(techno->PrimaryFacing);
+      FacingDial->set_direction(techno->PrimaryFacing);
 
       /*
       **	Make the list.
@@ -390,7 +390,7 @@ void MapEditClass::Popup_Controls() {
       }
 
       if (objtype->IsTurretEquipped) {
-        FacingDial->Set_Direction(techno->PrimaryFacing);
+        FacingDial->set_direction(techno->PrimaryFacing);
         Add_A_Button(*FacingDial);
       }
       break;

@@ -37,68 +37,69 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 
-Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
-    : ControlClass(static_cast<unsigned>(id), x, y, w, h,
+Dial8Class::Dial8Class(int id, int x, int y, int width, int height,
+                       DirType initial_direction)
+    : ControlClass(static_cast<unsigned>(id), x, y, width, height,
                    kLeftPress | kLeftHeld | kLeftRelease, true),
-      FaceX(X + (Width / 2)),
-      FaceY(Y + (Height / 2)),
-      Direction(dir),
-      Facing(Dir_Facing(Direction)),
-      OldFacing(Facing) {
+      center_x_(X + (Width / 2)),
+      center_y_(Y + (Height / 2)),
+      direction_(initial_direction),
+      facing_(Dir_Facing(direction_)),
+      last_facing_(facing_) {
   // The centre and the initial direction are set in the initializer list.
   //
   // Compute the drawing dimensions: a 45-degree angle intersects a unit circle
   // at (.707, .707), written as 7/10 in integer math. The decorations sit at
   // 8/10 of the radius and the hand reaches 6/10 of it, with Width/2 as the x
   // radius and Height/2 as the y radius. Index 0 is north and the points go
-  // clockwise, matching FacingType, so Draw_Me() can index by Facing.
-  FacePoint[0][0] = FaceX;
-  FacePoint[0][1] = FaceY - (h * 8 / 2 / 10);
+  // clockwise, matching FacingType, so Draw_Me() can index by facing_.
+  decoration_points_[0][0] = center_x_;
+  decoration_points_[0][1] = center_y_ - (height * 8 / 2 / 10);
 
-  FacePoint[1][0] = FaceX + (w * 7 * 8 / 2 / 100);
-  FacePoint[1][1] = FaceY - (h * 7 * 8 / 2 / 100);
+  decoration_points_[1][0] = center_x_ + (width * 7 * 8 / 2 / 100);
+  decoration_points_[1][1] = center_y_ - (height * 7 * 8 / 2 / 100);
 
-  FacePoint[2][0] = FaceX + (w * 8 / 2 / 10);
-  FacePoint[2][1] = FaceY;
+  decoration_points_[2][0] = center_x_ + (width * 8 / 2 / 10);
+  decoration_points_[2][1] = center_y_;
 
-  FacePoint[3][0] = FaceX + (w * 7 * 8 / 2 / 100);
-  FacePoint[3][1] = FaceY + (h * 7 * 8 / 2 / 100);
+  decoration_points_[3][0] = center_x_ + (width * 7 * 8 / 2 / 100);
+  decoration_points_[3][1] = center_y_ + (height * 7 * 8 / 2 / 100);
 
-  FacePoint[4][0] = FaceX;
-  FacePoint[4][1] = FaceY + (h * 8 / 2 / 10);
+  decoration_points_[4][0] = center_x_;
+  decoration_points_[4][1] = center_y_ + (height * 8 / 2 / 10);
 
-  FacePoint[5][0] = FaceX - (w * 7 * 8 / 2 / 100);
-  FacePoint[5][1] = FaceY + (h * 7 * 8 / 2 / 100);
+  decoration_points_[5][0] = center_x_ - (width * 7 * 8 / 2 / 100);
+  decoration_points_[5][1] = center_y_ + (height * 7 * 8 / 2 / 100);
 
-  FacePoint[6][0] = FaceX - (w * 8 / 2 / 10);
-  FacePoint[6][1] = FaceY;
+  decoration_points_[6][0] = center_x_ - (width * 8 / 2 / 10);
+  decoration_points_[6][1] = center_y_;
 
-  FacePoint[7][0] = FaceX - (w * 7 * 8 / 2 / 100);
-  FacePoint[7][1] = FaceY - (h * 7 * 8 / 2 / 100);
+  decoration_points_[7][0] = center_x_ - (width * 7 * 8 / 2 / 100);
+  decoration_points_[7][1] = center_y_ - (height * 7 * 8 / 2 / 100);
 
-  FaceLine[0][0] = FaceX;
-  FaceLine[0][1] = FaceY - (h * 6 / 2 / 10);
+  hand_tips_[0][0] = center_x_;
+  hand_tips_[0][1] = center_y_ - (height * 6 / 2 / 10);
 
-  FaceLine[1][0] = FaceX + (w * 7 * 6 / 2 / 100);
-  FaceLine[1][1] = FaceY - (h * 7 * 6 / 2 / 100);
+  hand_tips_[1][0] = center_x_ + (width * 7 * 6 / 2 / 100);
+  hand_tips_[1][1] = center_y_ - (height * 7 * 6 / 2 / 100);
 
-  FaceLine[2][0] = FaceX + (w * 6 / 2 / 10);
-  FaceLine[2][1] = FaceY;
+  hand_tips_[2][0] = center_x_ + (width * 6 / 2 / 10);
+  hand_tips_[2][1] = center_y_;
 
-  FaceLine[3][0] = FaceX + (w * 7 * 6 / 2 / 100);
-  FaceLine[3][1] = FaceY + (h * 7 * 6 / 2 / 100);
+  hand_tips_[3][0] = center_x_ + (width * 7 * 6 / 2 / 100);
+  hand_tips_[3][1] = center_y_ + (height * 7 * 6 / 2 / 100);
 
-  FaceLine[4][0] = FaceX;
-  FaceLine[4][1] = FaceY + (h * 6 / 2 / 10);
+  hand_tips_[4][0] = center_x_;
+  hand_tips_[4][1] = center_y_ + (height * 6 / 2 / 10);
 
-  FaceLine[5][0] = FaceX - (w * 7 * 6 / 2 / 100);
-  FaceLine[5][1] = FaceY + (h * 7 * 6 / 2 / 100);
+  hand_tips_[5][0] = center_x_ - (width * 7 * 6 / 2 / 100);
+  hand_tips_[5][1] = center_y_ + (height * 7 * 6 / 2 / 100);
 
-  FaceLine[6][0] = FaceX - (w * 6 / 2 / 10);
-  FaceLine[6][1] = FaceY;
+  hand_tips_[6][0] = center_x_ - (width * 6 / 2 / 10);
+  hand_tips_[6][1] = center_y_;
 
-  FaceLine[7][0] = FaceX - (w * 7 * 6 / 2 / 100);
-  FaceLine[7][1] = FaceY - (h * 7 * 6 / 2 / 100);
+  hand_tips_[7][0] = center_x_ - (width * 7 * 6 / 2 / 100);
+  hand_tips_[7][1] = center_y_ - (height * 7 * 6 / 2 / 100);
 }
 
 bool Dial8Class::Action(unsigned flags, KeyNumType& key) {
@@ -107,14 +108,14 @@ bool Dial8Class::Action(unsigned flags, KeyNumType& key) {
   // sticky: once pressed it receives every mouse event until the release,
   // wherever the pointer goes. A function static, so every dial shares it; the
   // map editor only ever has one.
-  static int is_sel = 0;
+  static int pressed_on_dial = 0;
 
   // We might end up clearing the event bits. Make sure that the sticky
   // process is properly updated anyway.
   Sticky_Process(flags);
 
   if (flags & kLeftPress) {
-    is_sel = 1;
+    pressed_on_dial = 1;
   }
 
   // If the left button is pressed, or held after a press on the dial, and
@@ -124,17 +125,18 @@ bool Dial8Class::Action(unsigned flags, KeyNumType& key) {
   // flags are set, replaces `key` with the button ID. With no flags it leaves
   // `key` alone, which is why this function clears it itself before passing
   // 0.
-  if (flags & kLeftPress || (flags & kLeftHeld && is_sel)) {
+  if (flags & kLeftPress || (flags & kLeftHeld && pressed_on_dial)) {
     // Get the new dial position, snapped to one of the eight directions.
-    Direction = Desired_Facing8(FaceX, FaceY, Get_Mouse_X(), Get_Mouse_Y());
+    direction_ =
+        Desired_Facing8(center_x_, center_y_, Get_Mouse_X(), Get_Mouse_Y());
 
     // Convert to a FacingType (0-7).
-    Facing = Dir_Facing(Direction);
+    facing_ = Dir_Facing(direction_);
 
     // If it has moved, report the change to the owner (the button ID in
     // `key`) and redraw.
-    if (Facing != OldFacing) {
-      OldFacing = Facing;
+    if (facing_ != last_facing_) {
+      last_facing_ = facing_;
       ControlClass::Action(flags, key);
       return true;
     }
@@ -146,7 +148,7 @@ bool Dial8Class::Action(unsigned flags, KeyNumType& key) {
   // Otherwise nothing changed. A release ends the drag and is swallowed.
   if (flags & kLeftRelease) {
     key = KN_NONE;
-    is_sel = 0;
+    pressed_on_dial = 0;
   }
   return ControlClass::Action(0, key);
 }
@@ -164,19 +166,20 @@ bool Dial8Class::Draw_Me(bool forced) {
 
     // Draw the background and the eight decorations.
     Draw_Box(X, Y, Width, Height, BOXSTYLE_DOWN, true);
-    for (const auto& point : FacePoint) {
+    for (const auto& point : decoration_points_) {
       Draw_Box(point[0] - 1, point[1] - 1, 3, 3, BOXSTYLE_RAISED, false);
     }
 
     // Draw the hand's shadow one pixel down and right, then the hand.
     LogicPage->Draw_Line(
-        FaceX + 1, FaceY + 1,
-        base::At(base::At(FaceLine, static_cast<int>(Facing)), 0) + 1,
-        base::At(base::At(FaceLine, static_cast<int>(Facing)), 1) + 1,
+        center_x_ + 1, center_y_ + 1,
+        base::At(base::At(hand_tips_, static_cast<int>(facing_)), 0) + 1,
+        base::At(base::At(hand_tips_, static_cast<int>(facing_)), 1) + 1,
         scheme->Shadow);
     LogicPage->Draw_Line(
-        FaceX, FaceY, base::At(base::At(FaceLine, static_cast<int>(Facing)), 0),
-        base::At(base::At(FaceLine, static_cast<int>(Facing)), 1),
+        center_x_, center_y_,
+        base::At(base::At(hand_tips_, static_cast<int>(facing_)), 0),
+        base::At(base::At(hand_tips_, static_cast<int>(facing_)), 1),
         scheme->Highlight);
 
     // Restore the mouse.
@@ -190,11 +193,11 @@ bool Dial8Class::Draw_Me(bool forced) {
   return false;
 }
 
-DirType Dial8Class::Get_Direction() const { return Direction; }
+DirType Dial8Class::direction() const { return direction_; }
 
-void Dial8Class::Set_Direction(DirType dir) {
-  Direction = dir;
-  Facing = Dir_Facing(Direction);
-  OldFacing = Facing;
+void Dial8Class::set_direction(DirType direction) {
+  direction_ = direction;
+  facing_ = Dir_Facing(direction_);
+  last_facing_ = facing_;
   Flag_To_Redraw();
 }
