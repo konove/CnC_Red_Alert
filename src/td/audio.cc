@@ -345,8 +345,13 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
   int distance = 0xFF;
   int pan_value = 0;
   if (coord && !Map.In_View(cell_pos)) {
-    distance =
-        MapEditClass::Cell_Distance(cell_pos, Coord_Cell(Map.TacticalCoord));
+    // Measured from the centre of the view: TacticalCoord is its upper-left
+    // corner, which would make sounds below and right of the screen quieter
+    // than those as far above and left.
+    const COORDINATE view_center =
+        Coord_Add(Map.TacticalCoord,
+                  XY_Coord(Map.TacLeptonWidth / 2, Map.TacLeptonHeight / 2));
+    distance = MapEditClass::Cell_Distance(cell_pos, Coord_Cell(view_center));
     distance = std::min<int>(distance, MAP_CELL_W);
     distance = Cardinal_To_Fixed(MAP_CELL_W, distance);
     distance = std::min(distance, 0xFF);
@@ -627,6 +632,9 @@ void Speak_AI() {
  *=============================================================================================*/
 void Stop_Speaking() {
   SpeakQueue = VOX_NONE;
+  // Cleared here, not left for the next Speak_AI(), so that Speak() does not
+  // drop the voice just stopped as one still being said.
+  CurrentVoice = VOX_NONE;
   if (Audio.is_open()) {
     Audio.Stop(SpeechBuffer.data());
   }
