@@ -25,13 +25,13 @@
 
 #include "ra/startup.h"
 
+#include <array>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
 #include <span>
-#include <string_view>
 
 #include "absl/base/log_severity.h"
 #include "absl/log/globals.h"
@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
   }
 
   int argc;  // Command line argument count
-  unsigned command_scan;
+  int command_scan;
   char command_char;
   char* argv[20];  // Pointers to command line arguments
   char path_to_exe[132];
@@ -477,19 +477,16 @@ void Read_Setup_Options(DiskFile* config_file) {
     // DestNet names a network on the far side of an IPX bridge, as dotted
     // hex bytes: four for the network number, optionally followed by up to
     // six node bytes.
-    char netbuf[512];
-    base::FillBytes(base::ObjectBytes(netbuf), 0, sizeof(netbuf));
-    const char* netptr = netbuf;
-    const bool found = ini.Get_String("Options", "DestNet", nullptr, netbuf,
-                                      sizeof(netbuf)) != 0;
-
-    if (found && netptr != nullptr && !std::string_view(netbuf).empty()) {
+    std::array<char, 512> netbuf{};
+    // Get_String() returns the length of the trimmed value; 0 if absent.
+    if (ini.Get_String("Options", "DestNet", nullptr, netbuf,
+                       static_cast<int>(netbuf.size())) > 0) {
       NetNumType net;
       NetNodeType node;
 
       // i counts the bytes read: 0-3 are the network number, 4-9 the node.
       int i = 0;
-      port::Tokenizer tokens(netbuf, ".");
+      port::Tokenizer tokens(netbuf.data(), ".");
       while (const char* p = tokens.Next()) {
         const auto byte = tech::ParseHex<uint8_t>(p);
         if (!byte || i >= 10) {
