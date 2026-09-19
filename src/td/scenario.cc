@@ -228,17 +228,6 @@ bool Read_Scenario(char* root) {
   ScenarioInit++;
   if (Read_Scenario_Ini(root)) {
     Fill_In_Data();
-
-    /*
-    **	SPECIAL CASE:
-    **	Clear out the tutor flags for scenarios one and two. This is designed
-    **	so that tutorial message will reappear in scenario two.
-    */
-    if (Scenario < 5) {
-      base::At(TutorFlags, 0) = 0L;
-      base::At(TutorFlags, 1) = 0L;
-    }
-
   } else {
     Fade_Palette_To(GamePalette, kFadePaletteFast, Call_Back);
     Show_Mouse();

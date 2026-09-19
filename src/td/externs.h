@@ -205,7 +205,6 @@ extern std::vector<unsigned char> OriginalPalette;
 extern int EndCountDown;
 extern bool SpecialFlag;
 extern int ScenarioInit;
-extern int32_t TutorFlags[2];
 extern HouseClass* PlayerPtr;
 extern std::vector<unsigned char> BlackPalette;
 extern std::vector<unsigned char> WhitePalette;

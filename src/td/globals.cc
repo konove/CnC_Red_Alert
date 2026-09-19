@@ -306,13 +306,6 @@ ScoreClass Score;
 */
 static CreditClass CreditDisplay;
 
-/***************************************************************************
-**	These are the bits that are set when the appropriate tutor message
-**	has been displayed. Once the message has been displayed, it will not be
-**	displayed again.
-*/
-int32_t TutorFlags[2];
-
 /**************************************************************************
 ** This class records the special command override options that C&C
 **	supports.
