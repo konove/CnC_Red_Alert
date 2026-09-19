@@ -61,7 +61,6 @@
  *- - - - - - - */
 #include "ra/init.h"
 
-#include <algorithm>
 #include <array>
 #include <cctype>
 #include <cstdint>
@@ -80,14 +79,13 @@
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
+#include "absl/strings/str_split.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/platform.h"
 #include "port/random_seed.h"
-#include "port/safe_string.h"
-#include "port/tokenizer.h"
 #include "ra/_wsproto.h"
 #include "ra/ccini.h"
 #include "ra/compat.h"
@@ -1321,10 +1319,10 @@ void Anim_Init() {
 // Applies "-DESTNET<address>": up to ten dot-separated hex bytes, the first
 // four the IPX network and the rest the node, naming the network across a
 // bridge. A malformed address, or one shorter than four bytes, is ignored.
-// `address` is the text after "-DESTNET" and is tokenized in place. Split out
-// of Parse_Command_Line() so the std::optional below does not make clang-tidy
-// run its optional-access dataflow over that whole function.
-static void ApplyDestNetArgument(char* address) {
+// `address` is the text after "-DESTNET". Split out of Parse_Command_Line()
+// so the std::optional below does not make clang-tidy run its optional-access
+// dataflow over that whole function.
+static void ApplyDestNetArgument(const std::string_view address) {
   NetNumType net;
   NetNodeType node;
 
@@ -1332,9 +1330,9 @@ static void ApplyDestNetArgument(char* address) {
   ** Scan the command-line string, pulling off each address piece
   */
   int i = 0;
-  port::Tokenizer tokens(address, ".");
-  while (const char* p = tokens.Next()) {
-    const auto byte = tech::ParseHex<uint8_t>(p);
+  for (const std::string_view piece :
+       absl::StrSplit(address, '.', absl::SkipEmpty())) {
+    const auto byte = tech::ParseHex<uint8_t>(piece);
     if (!byte || i >= 10) {
       i = 0;  // Reject the address instead of accepting a partial network.
       break;
@@ -1367,26 +1365,7 @@ static void ApplySocketArgument(std::string_view offset_text) {
   }
 }
 
-/***********************************************************************************************
- * Parse_Command_Line -- Parses the command line parameters. *
- *                                                                                             *
- *    This routine should be called before the graphic mode is initialized. It
- *examines the    * command line parameters and sets the appropriate globals. If
- *there is an error, then     * it outputs a command summary and then returns
- *false.                                     *
- *                                                                                             *
- * INPUT:   argc  -- The number of command line arguments. *
- *                                                                                             *
- *          argv  -- Pointer to character string array that holds the individual
- *arguments.    *
- *                                                                                             *
- * OUTPUT:  bool; Was the command line parsed successfully? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 03/18/1995 JLB : Created. *
- *=============================================================================================*/
-bool Parse_Command_Line(std::span<char*> arguments) {
+bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
   /*
   **	Parse the command line and set globals to reflect the parameters
   **	passed in.
@@ -1397,12 +1376,9 @@ bool Parse_Command_Line(std::span<char*> arguments) {
   MapEditorActive = false;
   Debug_Unshroud = false;
 
-  for (auto* const argument :
-       arguments.subspan(std::min(size_t{1}, arguments.size()))) {
-    const std::string original_arg = argument;  // Copy for preserving case.
-    std::ranges::transform(port::MutableCString(argument), argument,
-                           absl::ascii_toupper);
-    const std::string_view string = argument;
+  for (const std::string_view argument : arguments) {
+    const std::string upper_argument = absl::AsciiStrToUpper(argument);
+    const std::string_view string = upper_argument;
 
     /*
     **	Print usage text only if requested.
@@ -1420,7 +1396,7 @@ bool Parse_Command_Line(std::span<char*> arguments) {
     }
 
     bool processed = true;
-    const uint32_t ob = HashKeyPhrase(argument);
+    const uint32_t ob = HashKeyPhrase(string);
 
     /*
     **	Check to see if the parameter is a cheat enabling one.
@@ -1506,8 +1482,8 @@ bool Parse_Command_Line(std::span<char*> arguments) {
     **	File search path override.
     */
     if (string.contains("-CD")) {
-      // Use original arg to preserve case-sensitive path on Unix systems
-      SearchPaths::Add(original_arg.substr(3));
+      // The original argument keeps the case of the path for Unix.
+      SearchPaths::Add(argument.substr(3));
       continue;
     }
 
@@ -1515,7 +1491,7 @@ bool Parse_Command_Line(std::span<char*> arguments) {
     **	Specify destination connection for network play
     */
     if (string.contains("-DESTNET")) {
-      ApplyDestNetArgument(port::MutableCString(argument).subspan(8).data());
+      ApplyDestNetArgument(string.substr(8));
       continue;
     }
 

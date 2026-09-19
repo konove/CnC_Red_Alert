@@ -31,6 +31,8 @@
 #include <cstring>
 #include <filesystem>
 #include <span>
+#include <string_view>
+#include <vector>
 
 #include "absl/base/log_severity.h"
 #include "absl/log/globals.h"
@@ -78,6 +80,7 @@
 #include "tech/search_paths.h"
 
 #ifdef _WIN32
+#include "absl/strings/str_split.h"
 #include "ra/ipx95.h"
 #endif  // _WIN32
 
@@ -175,47 +178,30 @@ int main(const int argc, char* argv[])
     return (EXIT_FAILURE);
   }
 
-  int argc;  // Command line argument count
-  int command_scan;
-  char command_char;
-  char* argv[20];  // Pointers to command line arguments
-  char path_to_exe[132];
+  // WinMain gets the command line as one string without the program name,
+  // possibly ending in a carriage return; arguments are separated by spaces.
+  std::array<char, 260> path_to_exe{};
+  GetModuleFileName(instance, path_to_exe.data(), path_to_exe.size());
+  const std::filesystem::path program_path = path_to_exe.data();
 
-  // WinMain gets the command line as one string without the program name.
-  // Rebuild the DOS-style argc/argv: argv[0] is the full path to the .EXE,
-  // the rest point into command_line, which is split in place by writing a
-  // terminator over each separating space. The line may end in a carriage
-  // return (13) as well as a null. At most 19 arguments are kept.
-  GetModuleFileName(instance, &path_to_exe[0], 132);
+  std::string_view line = command_line;
+  line = line.substr(0, line.find('\r'));
+  const std::vector<std::string_view> arguments =
+      absl::StrSplit(line, ' ', absl::SkipEmpty());
 
-  argc = 1;
-  argv[0] = &path_to_exe[0];
+#else  // _WIN32
 
-  command_scan = 0;
-
-  do {
-    // Skip the spaces before the next argument.
-    do {
-      command_char = *(command_line + command_scan++);
-    } while (command_char == ' ');
-
-    if (command_char != 0 && command_char != 13) {
-      argv[argc++] = command_line + command_scan - 1;
-
-      // Find the end of the argument and terminate it there.
-      do {
-        command_char = *(command_line + command_scan++);
-      } while (command_char != ' ' && command_char != 0 && command_char != 13);
-      *(command_line + command_scan - 1) = 0;
-    }
-
-  } while (command_char != 0 && command_char != 13 && argc < 20);
+  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+  const std::span raw_arguments(argv, static_cast<size_t>(argc));
+  const std::filesystem::path program_path = raw_arguments.front();
+  const std::vector<std::string_view> arguments(raw_arguments.begin() + 1,
+                                                raw_arguments.end());
 
 #endif  // _WIN32
 
   // Run from the executable's directory, so the relative paths to the config
   // file and the local MIX files resolve however the game was launched.
-  const auto exe_dir = std::filesystem::path(argv[0]).parent_path();
+  const auto exe_dir = program_path.parent_path();
 
   if (!exe_dir.empty()) {
     std::filesystem::current_path(exe_dir);
@@ -255,10 +241,6 @@ int main(const int argc, char* argv[])
     }
   }
 
-  // The process entry point supplies argc valid argv elements. Windows builds
-  // populate the local array and count above under the same contract.
-  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-  const std::span arguments(argv, static_cast<size_t>(argc));
   if (Parse_Command_Line(arguments)) {
     InitTickTimer();
     DiskFile config_file(kConfigFileName);
