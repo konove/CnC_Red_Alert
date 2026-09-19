@@ -320,14 +320,11 @@ int main(int argc, char* argv[])
 
       return EXIT_SUCCESS;
     }
-    // The config file could neither be opened nor created.
-    // TODO: Keyboard->Get() waits for a key the SDL port can never deliver:
-    // no window exists yet, so the process hangs here after the message, and
-    // then exits with EXIT_SUCCESS.
+    // The config file could neither be opened nor created. There is no
+    // window yet to read a key from, so report and leave.
     absl::PrintF("%s\n", kLanguageText.setup_first);
-    Keyboard->Get();
-
     ShutdownTickTimer();
+    return EXIT_FAILURE;
   }
   return EXIT_SUCCESS;
 }
