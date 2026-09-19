@@ -533,7 +533,6 @@ PaletteClass BlackPalette(RGBClass(0, 0, 0));
 PaletteClass WhitePalette(RGBClass(RGBClass::kMaxValue, RGBClass::kMaxValue,
                                    RGBClass::kMaxValue));
 PaletteClass OriginalPalette;
-PaletteClass ScorePalette;
 
 /***************************************************************************
 **	These are the event queues. One is for holding events until they are

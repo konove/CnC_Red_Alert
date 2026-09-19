@@ -295,7 +295,6 @@ extern PaletteClass BlackPalette;
 extern PaletteClass WhitePalette;
 extern PaletteClass GamePalette;
 extern PaletteClass OriginalPalette;
-extern PaletteClass ScorePalette;
 extern int BuildLevel;
 extern uint32_t ScenarioCRC;
 

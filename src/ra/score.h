@@ -127,10 +127,11 @@ class ScoreClass {
 };
 
 // Base class for the things that animate on the score screens. An object is
-// heap-allocated, parked in ScoreObjs[] with Alloc_Object(), and has Update()
+// heap-allocated, parked in the score screen's object table with
+// Alloc_Object(), and has Update()
 // called on every display refresh while the screen waits. Text animations
 // delete themselves and clear their slot when finished; the looping shape
-// animations live until the screen tears ScoreObjs[] down.
+// animations live until the screen tears the table down.
 //
 // Constructors take 320x200 coordinates and double them; XPos and YPos are
 // hi-res pixels. The data and text are viewed, not copied, so they must outlive
@@ -239,21 +240,15 @@ class ScoreScaleClass : public ScoreAnimClass {
   ScoreScaleClass& operator=(ScoreScaleClass&&) = delete;
 };
 
-// The live score screen animations; nullptr marks a free slot. Eight is enough
-// only because the presentation code paces its Alloc_Object() calls with
-// delays that let earlier text finish.
-#define MAXSCOREOBJS 8
-extern ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
-
 // Plays the multiplayer score screen: every player's name, games won and kills
 // per game, then waits for a key or click. Restores the game palette, font and
 // mouse before returning.
 void Multi_Score_Presentation();
 
-// Hands `obj` to the first free ScoreObjs[] slot, which then owns it, and
-// returns the slot index. If the table is full this runs the animations until
-// one finishes and frees its slot; at least one slot must therefore hold an
-// animation that ends, or the call never returns.
+// Hands `obj` to the first free slot of the score screen's object table, which
+// then owns it, and returns the slot index. If the table is full this runs the
+// animations until one finishes and frees its slot; at least one slot must
+// therefore hold an animation that ends, or the call never returns.
 int Alloc_Object(ScoreAnimClass* obj);
 
 class ArchiveReader;

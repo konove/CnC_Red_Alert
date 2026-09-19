@@ -98,18 +98,18 @@ static void Animate_Cursor(int pos, int ypos);
 
 // Waits `ticks` system timer ticks (60 a second) while keeping the score screen
 // alive: every pass services sound, network and video and updates every object
-// in ScoreObjs[]. Even a zero wait runs one pass. Once Ctrl-Q has been seen,
-// every wait is cut to zero until the screen finishes.
+// in score_objects[]. Even a zero wait runs one pass. Once Ctrl-Q has been
+// seen, every wait is cut to zero until the screen finishes.
 static void TickScoreScreen(int ticks);
 
-// Gives every object in ScoreObjs[] one Update(). Objects may delete themselves
-// and free their slot while this runs.
+// Gives every object in score_objects[] one Update(). Objects may delete
+// themselves and free their slot while this runs.
 static void Animate_Score_Objs();
 
 // Waits for a key, a click or Ctrl-Q. Input during the first 20 ticks is
 // discarded so a stray click left over from the mission cannot dismiss the
 // screen. With `cycle` set (and palette scrolling enabled in the options) it
-// also colour-cycles ScorePalette entries 233..237 while waiting. In modem
+// also colour-cycles score_palette entries 233..237 while waiting. In modem
 // games it keeps answering the other machine's timing packets so the link
 // does not time out.
 static void Cycle_Wait_Click(bool cycle = true);
@@ -127,7 +127,14 @@ static bool StillUpdating;
 // Score screen backgrounds, indexed by side: 0 Allied, 1 Soviet.
 static const char* ScreenNames[2] = {"ALIBACKH.PCX", "SOVBACKH.PCX"};
 
-ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
+// The live score screen animations; nullptr marks a free slot. Eight is enough
+// only because the presentation code paces its Alloc_Object() calls with
+// delays that let earlier text finish.
+static constexpr int kMaxScoreObjects = 8;
+static ScoreAnimClass* score_objects[kMaxScoreObjects];
+
+// The palette of the score screen backgrounds, brightened on load.
+static PaletteClass score_palette;
 
 ScoreAnimClass::ScoreAnimClass(int x, int y, std::span<const std::byte> data)
     : XPos(x * 2), YPos(y * 2), DataPtr(data) {
@@ -203,7 +210,7 @@ void ScorePrintClass::Update() {
   // Letter Stage - 1 is the last one that still needs its clean reprint. Once
   // that is past the end the text is complete: free the slot and self-destruct.
   if (Stage && base::ToSize(Stage - 1) >= Text().size()) {
-    for (auto& ScoreObj : ScoreObjs) {
+    for (auto& ScoreObj : score_objects) {
       if (ScoreObj == this) {
         ScoreObj = nullptr;
       }
@@ -268,7 +275,7 @@ void ScoreScaleClass::Update() {
       // Zoom finished: print the letter at its final size, free the slot (which
       // Input_Name() is waiting on) and self-destruct.
       Set_Font_Palette(Palette);
-      for (auto& ScoreObj : ScoreObjs) {
+      for (auto& ScoreObj : score_objects) {
         if (ScoreObj == this) {
           ScoreObj = nullptr;
         }
@@ -288,9 +295,9 @@ void ScoreScaleClass::Update() {
 // rows back to back.
 int Alloc_Object(ScoreAnimClass* obj) {
   for (;;) {
-    for (int i = 0; i < MAXSCOREOBJS; i++) {
-      if (!base::At(ScoreObjs, i)) {
-        base::At(ScoreObjs, i) = obj;
+    for (int i = 0; i < kMaxScoreObjects; i++) {
+      if (!base::At(score_objects, i)) {
+        base::At(score_objects, i) = obj;
         return i;
       }
     }
@@ -360,24 +367,24 @@ void ScoreClass::Presentation() {
   // Load this side's background onto the hidden page, brighten its palette,
   // and fade it in from black.
   Hide_Mouse();
-  Load_Title_Screen(base::At(ScreenNames, house), &hidden_view, ScorePalette);
-  Increase_Palette_Luminance(ScorePalette, 30, 30, 30, 63);
+  Load_Title_Screen(base::At(ScreenNames, house), &hidden_view, score_palette);
+  Increase_Palette_Luminance(score_palette, 30, 30, 30, 63);
   hidden_view.Blit(visible_view);
-  ScorePalette.Set(kFadePaletteFast, ServiceRealTime);
+  score_palette.Set(kFadePaletteFast, ServiceRealTime);
   Audio.Play(country4, 255, Options.Normalize_Volume(150));
 
   // Background's up, so now start the animations that loop for the whole
   // screen: the clock and the two hall of fame ornaments. They take slots 0..2
-  // of ScoreObjs[] and are only deleted by the teardown at the end.
+  // of score_objects[] and are only deleted by the teardown at the end.
   const auto timeshape = MixArchive::RetrieveData("TIMEHR.SHP");
   const auto hiscore1shape = MixArchive::RetrieveData("HISC1-HR.SHP");
   const auto hiscore2shape = MixArchive::RetrieveData("HISC2-HR.SHP");
-  ScoreObjs[0] = new ScoreTimeClass(238, 2, timeshape, 30, 4);
-  ScoreObjs[1] = new ScoreTimeClass(4, 89, hiscore1shape, 10, 4);
-  ScoreObjs[2] = new ScoreTimeClass(4, 180, hiscore2shape, 10, 4);
+  score_objects[0] = new ScoreTimeClass(238, 2, timeshape, 30, 4);
+  score_objects[1] = new ScoreTimeClass(4, 89, hiscore1shape, 10, 4);
+  score_objects[2] = new ScoreTimeClass(4, 180, hiscore2shape, 10, 4);
 
   // Type out the headings. Each TickScoreScreen() below is sized to let the
-  // text queued before it finish, which is what keeps ScoreObjs[] from
+  // text queued before it finish, which is what keeps score_objects[] from
   // overflowing.
   Set_Logic_Page(visible_view);
 
@@ -652,7 +659,7 @@ void ScoreClass::Presentation() {
 
   // Get rid of all the animating objects: the three looping shapes and any
   // text that Ctrl-Q cut short.
-  for (auto& ScoreObj : ScoreObjs) {
+  for (auto& ScoreObj : score_objects) {
     if (ScoreObj) {
       delete ScoreObj;
       ScoreObj = nullptr;
@@ -720,12 +727,12 @@ void Cycle_Wait_Click(bool cycle) {
     if (cycle) {
       counter = (counter + 1) % 8;
       if (counter == 0 && Options.IsPaletteScroll) {
-        const RGBClass rgb = ScorePalette.at(233);
+        const RGBClass rgb = score_palette.at(233);
         for (int i = 233; i < 237; i++) {
-          ScorePalette.at(i) = ScorePalette.at(i + 1);
+          score_palette.at(i) = score_palette.at(i + 1);
         }
-        ScorePalette.at(237) = rgb;
-        ScorePalette.Set();
+        score_palette.at(237) = rgb;
+        score_palette.Set();
       }
     }
   }
@@ -871,8 +878,8 @@ void ScoreClass::Show_Credits(int house, std::span<const uint8_t> pal) {
   } while (i < PlayerPtr->Available_Money());
 
   // The credits animation loops forever, so stop it by hand.
-  delete base::At(ScoreObjs, credobj);
-  base::At(ScoreObjs, credobj) = nullptr;
+  delete base::At(score_objects, credobj);
+  base::At(score_objects, credobj) = nullptr;
 }
 
 void ScoreClass::Print_Minutes(int minutes) {
@@ -980,7 +987,7 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
           const int objindex = Alloc_Object(
               new ScoreScaleClass(str.subspan(base::ToSize(index)).data(),
                                   xpos + (index * 6), ypos, pal));
-          while (base::At(ScoreObjs, objindex)) {
+          while (base::At(score_objects, objindex)) {
             TickScoreScreen(1);
           }
 
@@ -1040,7 +1047,7 @@ void TickScoreScreen(const int ticks) {
 
 void Animate_Score_Objs() {
   StillUpdating = false;
-  for (auto& ScoreObj : ScoreObjs) {
+  for (auto& ScoreObj : score_objects) {
     if (ScoreObj) {
       ScoreObj->Update();
     }
@@ -1072,13 +1079,13 @@ void Multi_Score_Presentation() {
   visible_view.Clear();
   hidden_view.Clear();
   Hide_Mouse();
-  WsaAnimation anim("MLTIPLYR.WSA", ScorePalette);
+  WsaAnimation anim("MLTIPLYR.WSA", score_palette);
   // Display the background animation. The first frame goes up under a black
   // palette and is faded in; the remaining frames then play at two ticks each.
   pseudoseenbuff.Clear();
   anim.DrawFrame(pseudoseenbuff, 1);
   Interpolate_2X_Scale(&pseudoseenbuff, &visible_view, {});
-  ScorePalette.Set(kFadePaletteFast, ServiceRealTime);
+  score_palette.Set(kFadePaletteFast, ServiceRealTime);
 
   int frame = 1;
   while (frame < anim.frame_count()) {
@@ -1163,7 +1170,7 @@ void Multi_Score_Presentation() {
   Cycle_Wait_Click(false);
 
   // Get rid of any text that Ctrl-Q cut short.
-  for (auto& ScoreObj : ScoreObjs) {
+  for (auto& ScoreObj : score_objects) {
     if (ScoreObj) {
       delete ScoreObj;
       ScoreObj = nullptr;
