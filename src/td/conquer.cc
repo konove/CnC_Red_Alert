@@ -200,24 +200,19 @@ bool InMainLoop = false;
  *    - This routine performs any un-inits required, both for each game played,
  *and one-time   *
  *                                                                                             *
- * INPUT:   argc  -- Number of command line arguments (including program name
- *itself).         *
- *                                                                                             *
- *          argv  -- Array of command line argument pointers. *
- *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
  * WARNINGS:   none *
  *                                                                                             *
  * HISTORY: * 10/01/1994 JLB : Created. *
  *=============================================================================================*/
-void Main_Game(int argc, char* argv[]) {
+void Main_Game() {
   bool fade = false;  // don't fade title screen the first time through
 
   /*
   **	Perform one-time-only initializations
   */
-  if (!Init_Game(argc, argv)) {
+  if (!Init_Game()) {
     return;
   }
 

@@ -64,11 +64,11 @@
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
+#include "absl/strings/str_split.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "port/random_seed.h"
 #include "port/safe_string.h"
-#include "port/tokenizer.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "sdllib/font.h"
@@ -165,7 +165,6 @@ static void Play_Intro(bool for_real = false);
  *    allocations and table setups. The intro and other one-time startup * tasks
  *are also performed here. *
  *                                                                                             *
- * INPUT:   argc,argv   -- Command line arguments. *
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
@@ -173,7 +172,7 @@ static void Play_Intro(bool for_real = false);
  *                                                                                             *
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
-bool Init_Game(int /*unused*/, char* /*unused*/[]) {
+bool Init_Game() {
   std::span<const std::byte> temp_mouse_shapes;
 
   /*
@@ -2134,10 +2133,10 @@ void Anim_Init() {
 // Applies "-DESTNET<address>": up to ten dot-separated hex bytes, the first
 // four the IPX network and the rest the node, naming the network across a
 // bridge. A malformed address, or one shorter than four bytes, is ignored.
-// `address` is the text after "-DESTNET" and is tokenized in place. Split out
-// of Parse_Command_Line() so the std::optional below does not make clang-tidy
-// run its optional-access dataflow over that whole function.
-static void ApplyDestNetArgument(char* address) {
+// `address` is the text after "-DESTNET". Split out of Parse_Command_Line()
+// so the std::optional below does not make clang-tidy run its optional-access
+// dataflow over that whole function.
+static void ApplyDestNetArgument(const std::string_view address) {
   NetNumType net;
   NetNodeType node;
 
@@ -2145,10 +2144,9 @@ static void ApplyDestNetArgument(char* address) {
   ** Scan the command-line string, pulling off each address piece
   */
   int i = 0;
-  port::Tokenizer tokens(address, ".");
-  const char* p = tokens.Next();
-  while (p) {
-    const auto byte = tech::ParseHex<uint8_t>(p);
+  for (const std::string_view piece :
+       absl::StrSplit(address, '.', absl::SkipEmpty())) {
+    const auto byte = tech::ParseHex<uint8_t>(piece);
     if (!byte || i >= 10) {
       i = 0;  // Reject the address instead of accepting a partial network.
       break;
@@ -2159,7 +2157,6 @@ static void ApplyDestNetArgument(char* address) {
       base::At(node, i - 4) = *byte;  // fill NetNode
     }
     i++;
-    p = tokens.Next();
   }
 
   /*
@@ -2182,26 +2179,7 @@ static void ApplySocketArgument(std::string_view offset_text) {
   }
 }
 
-/***********************************************************************************************
- * Parse_Command_Line -- Parses the command line parameters. *
- *                                                                                             *
- *    This routine should be called before the graphic mode is initialized. It
- *examines the    * command line parameters and sets the appropriate globals. If
- *there is an error, then     * it outputs a command summary and then returns
- *false.                                     *
- *                                                                                             *
- * INPUT:   argc  -- The number of command line arguments. *
- *                                                                                             *
- *          argv  -- Pointer to character string array that holds the individual
- *arguments.    *
- *                                                                                             *
- * OUTPUT:  bool; Was the command line parsed successfully? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 03/18/1995 JLB : Created. *
- *=============================================================================================*/
-bool Parse_Command_Line(std::span<char*> arguments) {
+bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
   /*
   **	Parse the command line and set globals to reflect the parameters
   **	passed in.
@@ -2220,10 +2198,8 @@ bool Parse_Command_Line(std::span<char*> arguments) {
   //	Debug_Play_Map = false;
   Debug_Unshroud = false;
 
-  for (char* argument :
-       arguments.subspan(std::min<size_t>(1, arguments.size()))) {
-    const std::string original_arg = argument;
-    std::string string = absl::AsciiStrToUpper(original_arg);
+  for (const std::string_view argument : arguments) {
+    const std::string string = absl::AsciiStrToUpper(argument);
 
     if (string.starts_with("-SEED")) {
       CustomSeed = tech::ParseIntegerOr<uint16_t>(
@@ -2465,7 +2441,7 @@ bool Parse_Command_Line(std::span<char*> arguments) {
     **	File search path override.
     */
     if (string.contains("-CD")) {
-      SearchPaths::Add(original_arg.substr(3));
+      SearchPaths::Add(argument.substr(3));
       continue;
     }
 #ifdef JAPANESE
@@ -2482,7 +2458,7 @@ bool Parse_Command_Line(std::span<char*> arguments) {
     **	Specify destination connection for network play
     */
     if (string.contains("-DESTNET")) {
-      ApplyDestNetArgument(std::span(string).subspan(8).data());
+      ApplyDestNetArgument(std::string_view(string).substr(8));
       continue;
     }
 

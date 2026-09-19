@@ -100,6 +100,9 @@
 #include <direct.h>  //chdir
 #include <windows.h>
 
+#include <array>
+
+#include "absl/strings/str_split.h"
 #include "td/ccdde.h"
 #endif
 
@@ -183,61 +186,28 @@ int main(int argc, char* argv[])
   // Free(test_buffer);
 
 #ifdef _WIN32
-  int argc;  // Command line argument count
-  unsigned command_scan;
-  char command_char;
-  char* argv[20];  // Pointers to command line arguments
-  char path_to_exe[280];
-
   ProgramInstance = instance;
 
-  /*
-  ** Get the full path to the .EXE
-  */
-  GetModuleFileName(instance, &path_to_exe[0], 280);
+  // WinMain gets the command line as one string without the program name,
+  // possibly ending in a carriage return; arguments are separated by spaces.
+  std::array<char, 280> path_to_exe{};
+  GetModuleFileName(instance, path_to_exe.data(), path_to_exe.size());
+  const std::filesystem::path program_path = path_to_exe.data();
 
-  /*
-  ** First argument is supposed to be a pointer to the .EXE that is running
-  **
-  */
-  argc = 1;  // Set argument count to 1
-  argv[0] =
-      &path_to_exe[0];  // Set 1st command line argument to point to full path
-
-  /*
-  ** Get pointers to command line arguments just like if we were in DOS
-  **
-  ** The command line we get is cr/zero? terminated.
-  **
-  */
-
-  command_scan = 0;
-
-  do {
-    /*
-    ** Scan for non-space character on command line
-    */
-    do {
-      command_char = *(command_line + command_scan++);
-    } while (command_char == ' ');
-
-    if (command_char != 0 && command_char != 13) {
-      argv[argc++] = command_line + command_scan - 1;
-
-      /*
-      ** Scan for space character on command line
-      */
-      do {
-        command_char = *(command_line + command_scan++);
-      } while (command_char != ' ' && command_char != 0 && command_char != 13);
-      *(command_line + command_scan - 1) = 0;
-    }
-
-  } while (command_char != 0 && command_char != 13 && argc < 20);
+  std::string_view line = command_line;
+  line = line.substr(0, line.find('\r'));
+  const std::vector<std::string_view> arguments =
+      absl::StrSplit(line, ' ', absl::SkipEmpty());
+#else
+  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+  const std::span raw_arguments(argv, base::ToSize(argc));
+  const std::filesystem::path program_path = raw_arguments.front();
+  const std::vector<std::string_view> arguments(raw_arguments.begin() + 1,
+                                                raw_arguments.end());
 #endif
 
   // Change to executable's directory (if path is present)
-  const auto dir_path = std::filesystem::path(argv[0]).parent_path();
+  const auto dir_path = program_path.parent_path();
 
   if (!dir_path.empty()) {
     std::filesystem::current_path(dir_path);
@@ -246,10 +216,6 @@ int main(int argc, char* argv[])
 #ifdef JAPANESE
   ForceEnglish = false;
 #endif
-  // main receives argc valid argument pointers from the C++ runtime. On
-  // Windows, the local argv array above is bounded by its command-line parser.
-  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-  const std::span<char*> arguments(argv, base::ToSize(argc));
   if (Parse_Command_Line(arguments)) {
     InitTickTimer();
     TickCount.Start();
@@ -417,7 +383,7 @@ int main(int argc, char* argv[])
       Memory_Error_Exit = Print_Error_End_Exit;
 
       CCDebugString("C&C95 - Entering main game.\n");
-      Main_Game(argc, argv);
+      Main_Game();
 
       VisiblePage.Clear();
       HiddenPage.Clear();
