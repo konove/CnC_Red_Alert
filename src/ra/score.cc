@@ -81,7 +81,7 @@
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
 #include "tech/rgb.h"
-#include "tech/wsa.h"
+#include "tech/wsa_animation.h"
 
 // Layout, in 320x200 coordinates.
 

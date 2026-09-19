@@ -1,7 +1,7 @@
 // Tests for opening and animating WSA animations, read from an in-memory image
 // of the file.
 
-#include "tech/wsa.h"
+#include "tech/wsa_animation.h"
 
 #include <algorithm>
 #include <cstddef>

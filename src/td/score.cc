@@ -100,7 +100,7 @@
 #include "td/vector.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
-#include "tech/wsa.h"
+#include "tech/wsa_animation.h"
 
 #define SCORETEXT_X 184
 // #define SCORETEXT_Y 8

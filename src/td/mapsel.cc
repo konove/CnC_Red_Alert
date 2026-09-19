@@ -80,7 +80,7 @@
 #include "td/type.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
-#include "tech/wsa.h"
+#include "tech/wsa_animation.h"
 
 #ifndef DEMO
 

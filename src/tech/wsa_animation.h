@@ -32,8 +32,8 @@
 //     anim.DrawFrame(view, i);
 //   }
 
-#ifndef CNC_RED_ALERT_TECH_WSA_H_
-#define CNC_RED_ALERT_TECH_WSA_H_
+#ifndef CNC_RED_ALERT_TECH_WSA_ANIMATION_H_
+#define CNC_RED_ALERT_TECH_WSA_ANIMATION_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -137,4 +137,4 @@ class WsaAnimation {
   uint32_t offset_bias_ = 0;
 };
 
-#endif  // CNC_RED_ALERT_TECH_WSA_H_
+#endif  // CNC_RED_ALERT_TECH_WSA_ANIMATION_H_
