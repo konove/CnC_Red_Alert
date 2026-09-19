@@ -216,7 +216,7 @@ add_gtest(
 )
 
 add_gtest(
-    NAME ra_obfuscate_test
-    SOURCES obfuscate_test.cc obfuscate.cc
+    NAME ra_key_phrase_hash_test
+    SOURCES key_phrase_hash_test.cc key_phrase_hash.cc
     LIBS base port absl::strings absl::check absl::log
 )

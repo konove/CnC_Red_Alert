@@ -148,8 +148,9 @@ Keep what the code relies on:
 ## Verify
 
 - If the file computes something others store or compare - a hash, a checksum, an encoded value -
-  pin its outputs with a test before converting (`obfuscate_test.cc` holds the historical password
-  codes), and run it after. A type change that alters one byte of the input changes every result.
+  pin its outputs with a test before converting (`ra/key_phrase_hash_test.cc` holds the historical
+  password codes), and run it after. A type change that alters one byte of the input changes every
+  result.
 - `git clang-format -f -- <touched files>`.
 - `cmake --build build --parallel 22 && ctest --test-dir build --output-on-failure`; both games if a
   shared directory changed.
