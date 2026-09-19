@@ -275,10 +275,26 @@ only where the two games' layouts already match.
 
 ## Progress
 
-- 2026-09-19: plan written. No phase has started.
+- 2026-09-19: plan written.
 - 2026-09-19: reviewed against the tree. Added phase 0, the lifetime rules (`Game` on the heap and
   destroyed by `ShutDown()`, constructors without I/O, the lifetime audit, `GameClock`), the split
   of startup options from debug state and of type heaps from object heaps, homes for the globals no
   phase named (`Ground`, `MissionControl`, `pWolapi`, `WindowList` and others), and the
   `--load-fixture` and ASan checks. Corrected: `MenuList` is live (`Do_Menu` has four callers),
   there are 31 heaps and not 33, and `session.h` and `display.h` declare no globals.
+- 2026-09-19: phase 0 done for both games (90c5aebf..dfb957e3). Many of the single-file globals
+  turned out to be write-only or never set once they were looked at in their one file, so they were
+  deleted rather than moved: in Red Alert `TheaterBuffer` (a 1.1 MB allocation nothing read),
+  `SlowKey`, `ConquerMix`, `NewConfig` with `Read_Private_Config_Struct()`, `PassedProximity`,
+  `PreserveVQAScreen`, `Debug_Threat`, `Debug_Trap_Check_Heap` with `Session.TrapCheckHeap`, the
+  whole uncalled `Smart_Print`/`Log_*_Time` cluster with its seven globals, and
+  `InterpolationPaletteChanged` with the table builder it never triggered; in Tiberian Dawn
+  `MPlayerWinner`, `TutorFlags` and `TrapCell`. The moved ones took Google-style names. TD's
+  `TrapObject` stays (file-local in `conquer.cc`): it is the sync-bug trap's output, meant for a
+  debugger. `base/installed.h` and an empty `Game` per game exist; `main` creates it and
+  `ShutDown()` destroys it, and TD's 14 live `Prog_End(); exit()` pairs now call `ShutDown()`. Left
+  for later: RA's `PaletteInterpolationTable` is now write-only (phase 2, with
+  `InterpolatedPalettes` and `PaletteCounter`); TD's `NewConfig` is write-only too; `ipx95.cc` is
+  Windows-only and not built; the early `return`s in both `main`s (bad command line, low disk or
+  RAM, no video mode) skip `ShutDown()`, which only matters once `Game` owns something, so phase 1
+  must route them through it. The ASan exit check was not run: `Game` owns nothing yet.
