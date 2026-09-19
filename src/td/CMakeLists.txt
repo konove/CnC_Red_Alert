@@ -73,6 +73,11 @@ add_gtest(
 target_compile_definitions(td_saveload_test PRIVATE TD=1)
 
 add_gtest(
+    NAME td_game_test
+    SOURCES game_test.cc
+)
+
+add_gtest(
     NAME td_heap_test
     SOURCES heap_test.cc heap.cc
     LIBS tech

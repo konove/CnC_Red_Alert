@@ -63,6 +63,7 @@
 #include "sdllib/timer.h"
 #include "td/defines.h"
 #include "td/externs.h"
+#include "td/game.h"
 #include "td/globals.h"
 #include "td/ipx.h"
 #include "td/ipxaddr.h"
@@ -143,6 +144,10 @@ HINSTANCE ProgramInstance;
 extern bool CC95AlreadyRunning;
 void Move_Point(int16_t& x, int16_t& y, DirType dir, uint16_t distance);
 
+// The one Game; main() creates it and ShutDown() destroys it. nullptr before
+// main() and after ShutDown().
+static Game* game = nullptr;
+
 #ifndef TD_NO_ENTRY_POINT
 #ifdef _WIN32
 int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
@@ -153,6 +158,8 @@ int main(int argc, char* argv[])
 {
   absl::InitializeLog();
   absl::SetStderrThreshold(absl::LogSeverityAtLeast::kInfo);
+
+  game = new Game();
 
   // Heap_Dump_Check( "first thing in main" );
   //	malloc(1);
@@ -484,6 +491,8 @@ void ShutDown() {
   Prog_End();
   VisiblePage.Un_Init();
   HiddenPage.Un_Init();
+  delete game;
+  game = nullptr;
 }
 
 /***********************************************************************************************
