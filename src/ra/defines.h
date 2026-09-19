@@ -227,13 +227,6 @@ inline constexpr int kDiffCount = static_cast<int>(DIFF_HARD) + 1;
 inline constexpr int kSpeechBufferSize = 50000;
 
 /**********************************************************************
-**	The theater mixfiles are cached into a buffer of this size. Ensure
-**	that the size specified is at least as large as the largest
-**	theater mixfile data block.
-*/
-inline constexpr int kTheaterBufferSize = 1100000;
-
-/**********************************************************************
 **	This is the size of the shape buffer. This buffer is used as a staging
 **	buffer for the shape drawing technology. It MUST be as big as the
 **	largest shape (uncompressed) that will be drawn. If this value is

@@ -146,7 +146,6 @@
 #include "sdllib/wwstd.h"
 #include "tech/archive.h"
 #include "tech/audio_mixer.h"
-#include "tech/buff.h"
 #include "tech/file_sink.h"
 #include "tech/file_source.h"
 #include "tech/fixed.h"
@@ -1900,12 +1899,6 @@ static void Init_Heaps() {
     base::At(SpeechRecord, index) = VOX_NONE;
     DCHECK(!base::At(SpeechBuffer, index).empty());
   }
-
-  /*
-  **	Allocate the theater buffer block.
-  */
-  TheaterBuffer = new Buffer(kTheaterBufferSize);
-  DCHECK(TheaterBuffer != nullptr);
 }
 
 /***********************************************************************************************
@@ -2254,7 +2247,7 @@ static void Init_Secondary_Mixfiles() {
   /*
   **	Inform the file system of the various MIX files.
   */
-  ConquerMix = MixArchive::Register("CONQUER.MIX", &FastKey);  // Cached.
+  MixArchive::Register("CONQUER.MIX", &FastKey);  // Cached.
   //	MixArchive::Register("TRANSIT.MIX", &FastKey);
 
   if (GeneralMix == nullptr) {
@@ -2514,9 +2507,6 @@ static void Init_Keys() {
   ini.Load(file);
 
   FastKey = ini.Get_PKey(true);
-  if constexpr (config::kScenarioEditorEnabled) {
-    SlowKey = ini.Get_PKey(false);
-  }
 }
 
 /***************************************************************************

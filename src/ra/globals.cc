@@ -99,7 +99,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/audio_mixer.h"
-#include "tech/buff.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/mix_archive.h"
@@ -277,7 +276,6 @@ bool GameInFocus = false;
 **	Encryption keys.
 */
 PKey FastKey;
-PKey SlowKey;
 
 /***************************************************************************
 **	This is where the name overrides for the units will reside.
@@ -406,19 +404,12 @@ std::vector<std::byte> SpeechBuffer[2];
 VoxType SpeechRecord[2];
 
 /***************************************************************************
-**	The theater specific mixfiles are cached into the buffer pointed to by
-**	this global.
-*/
-Buffer* TheaterBuffer;
-
-/***************************************************************************
 **	This holds the theater specific mixfiles.
 */
 MixArchive* MoviesMix = nullptr;
 MixArchive* GeneralMix = nullptr;
 MixArchive* ScoreMix = nullptr;
 MixArchive* MainMix = nullptr;
-MixArchive* ConquerMix = nullptr;
 
 /***************************************************************************
 **	This is the options control class. The options control such things as
