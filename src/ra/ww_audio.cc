@@ -49,7 +49,6 @@
 #include "ra/goptions.h"
 #include "ra/house.h"
 #include "ra/inline.h"
-#include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "tech/audio_mixer.h"
 #include "tech/fixed.h"
@@ -76,7 +75,7 @@ struct SoundEffect {
   int priority;
   Variants variants;
 };
-static base::EnumArray<VocType, SoundEffect> sound_effects = {{
+static constexpr base::EnumArray<VocType, SoundEffect> kSoundEffects = {{
 
     // Civilian voices (technicians too).
     {"GIRLOKAY", 20, IN_NOVAR},  // VOC_GIRL_OKAY
@@ -273,7 +272,7 @@ VocType VocFromName(const char* name) {
   }
 
   for (const VocType voc : magic_enum::enum_values<VocType>()) {
-    if (absl::EqualsIgnoreCase(name, sound_effects.at(voc).name)) {
+    if (absl::EqualsIgnoreCase(name, kSoundEffects.at(voc).name)) {
       return voc;
     }
   }
@@ -285,7 +284,7 @@ const char* VocName(VocType voc) {
   if (voc == VOC_NONE) {
     return "none";
   }
-  return sound_effects.at(voc).name;
+  return kSoundEffects.at(voc).name;
 }
 
 void PlaySoundEffectAt(VocType voc, COORDINATE coord, int variation,
@@ -300,12 +299,11 @@ void PlaySoundEffectAt(VocType voc, COORDINATE coord, int variation,
     cell = Coord_Cell(coord);
   }
 
-  // A sound on screen, or with no location, plays at full volume, centred.
+  // A sound on screen, or with no location, plays at full volume.
   // Off screen it fades linearly with the distance in cells, reaching silence
   // 192 cells away (1.5 map widths). Sub_Saturate() keeps a sliver of 1/256
   // even there.
   fixed volume(1);
-  int pan = 0;
   if (coord && !Map.In_View(cell)) {
     // Measured from the centre of the view: TacticalCoord is its upper-left
     // corner, which would make sounds below and right of the screen quieter
@@ -318,26 +316,12 @@ void PlaySoundEffectAt(VocType voc, COORDINATE coord, int variation,
     fixed fade = fixed(distance_cells, 128 + 64);
     fade.Sub_Saturate(1);
     volume = fixed(1) - fade;
-
-    // Pan by the column offset from the centre of the view, and only once the
-    // sound lies left or right of the screen: 0x8000 per quarter map width,
-    // clamped to the int16_t range. The mixer mixes in mono and ignores it.
-    pan = Cell_X(cell);
-    pan -= Coord_XCell(Map.TacticalCoord) +
-           (Lepton_To_Cell(Map.TacLeptonWidth) / 2);
-    if (std::abs(pan) > Lepton_To_Cell(Map.TacLeptonWidth / 2)) {
-      pan *= 0x8000;
-      pan /= MAP_CELL_W / 4;
-      pan = Bound(pan, -0x7FFF, 0x7FFF);
-    } else {
-      pan = 0;
-    }
   }
 
-  PlaySoundEffect(voc, volume, variation, static_cast<int16_t>(pan), house);
+  PlaySoundEffect(voc, volume, variation, house);
 }
 
-int PlaySoundEffect(VocType voc, fixed volume, int variation, int16_t pan,
+int PlaySoundEffect(VocType voc, fixed volume, int variation,
                     HousesType house) {
   // A VocType cast from scenario or INI data can be out of range; indexing
   // the table with it would fail the at() check.
@@ -359,7 +343,7 @@ int PlaySoundEffect(VocType voc, fixed volume, int variation, int16_t pan,
   // Pick the file: NAME.AUD, or for a unit response the variation that fits
   // the house's accent and the kind of unit.
   const char* extension = ".AUD";
-  if (sound_effects.at(voc).variants == IN_VAR) {
+  if (kSoundEffects.at(voc).variants == IN_VAR) {
     // If no house is forced, use the one the player's house acts like.
     // Responses only come from units the player selects or orders, so there
     // is always a player house by then.
@@ -402,7 +386,7 @@ int PlaySoundEffect(VocType voc, fixed volume, int variation, int16_t pan,
       }
     }
   }
-  const auto file_name = std::filesystem::path(sound_effects.at(voc).name)
+  const auto file_name = std::filesystem::path(kSoundEffects.at(voc).name)
                              .replace_extension(extension)
                              .string();
   const auto sample = MixArchive::RetrieveData(file_name);
@@ -414,8 +398,8 @@ int PlaySoundEffect(VocType voc, fixed volume, int variation, int16_t pan,
     // Clamp to 255/256 so that volume * 256 fits the mixer's 0..255 range. A
     // quieter sound also plays at a lower priority.
     volume.Sub_Saturate(1);
-    return Audio.Play(sample, sound_effects.at(voc).priority * volume,
-                      volume * 256, pan);
+    return Audio.Play(sample, kSoundEffects.at(voc).priority * volume,
+                      volume * 256);
   }
   return -1;
 }
@@ -558,8 +542,7 @@ void Speak(VoxType voice) {
   // Only one voice waits in the queue: a request made while another is
   // pending is dropped, not queued behind it.
   if (!Debug_Quiet && Options.Volume != 0 && Audio.is_open() &&
-      voice != VOX_NONE && voice != SpeakQueue && voice != current_voice &&
-      SpeakQueue == VOX_NONE) {
+      voice != VOX_NONE && voice != current_voice && SpeakQueue == VOX_NONE) {
     SpeakQueue = voice;
     // Start it now if EVA is silent, rather than a tick later.
     ServiceSpeech();

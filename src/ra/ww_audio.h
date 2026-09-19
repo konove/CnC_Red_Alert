@@ -26,8 +26,6 @@
 #ifndef CNC_RED_ALERT_RA_WW_AUDIO_H_
 #define CNC_RED_ALERT_RA_WW_AUDIO_H_
 
-#include <cstdint>
-
 #include "ra/defines.h"
 #include "tech/fixed.h"
 
@@ -49,10 +47,10 @@ const char* VocName(VocType voc);
 // Unit responses come in variations: `variation` picks one (negative for
 // vehicles and aircraft, positive for infantry; the units pass their ID), and
 // `house` picks the accent, defaulting to the house the player acts like.
-// Other sounds ignore both. `pan` is ignored by the mono mixer. Returns the
-// mixer's sound handle, or -1 if nothing was played.
+// Other sounds ignore both. Returns the mixer's sound handle, or -1 if
+// nothing was played.
 int PlaySoundEffect(VocType voc, fixed volume = fixed(1), int variation = 1,
-                    int16_t pan = 0, HousesType house = HOUSE_NONE);
+                    HousesType house = HOUSE_NONE);
 
 // Has EVA say `voice`. Only one voice waits in the queue: the request is
 // dropped if another is already waiting or `voice` is being said now. It

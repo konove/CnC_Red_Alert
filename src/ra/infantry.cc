@@ -2419,7 +2419,7 @@ void InfantryClass::Response_Select() {
     if (!response.empty()) {
       PlaySoundEffect(
           base::At(response, base::ToSize(Sim_Random_Pick(0, size - 1))),
-          fixed(1), ID + 1, 0, house);
+          fixed(1), ID + 1, house);
     }
   }
 }
@@ -2564,7 +2564,7 @@ void InfantryClass::Response_Move() {
     if (!response.empty()) {
       PlaySoundEffect(
           base::At(response, base::ToSize(Sim_Random_Pick(0, size - 1))),
-          fixed(1), ID + 1, 0, house);
+          fixed(1), ID + 1, house);
     }
   }
 }
@@ -2711,7 +2711,7 @@ void InfantryClass::Response_Attack() {
     if (!response.empty()) {
       PlaySoundEffect(
           base::At(response, base::ToSize(Sim_Random_Pick(0, size - 1))),
-          fixed(1), ID + 1, 0, house);
+          fixed(1), ID + 1, house);
     }
   }
 }
