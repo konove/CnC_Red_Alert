@@ -129,7 +129,9 @@ jobs:
       run: sudo apt install -y libsdl2-dev ninja-build
 
     - name: Configure CMake
-      # Debug so DLOG/DCHECK code is compiled and analysed too.
+      # Debug so DLOG/DCHECK code is compiled and analysed too. Deep analyzer
+      # mode: local builds default to shallow, so this is the backstop for the
+      # paths only deep mode explores.
       run: >
         cmake -B ${{ github.workspace }}/build
         -G Ninja
@@ -138,6 +140,7 @@ jobs:
         -DCMAKE_CXX_COMPILER=clang++-${{ env.LLVM_VERSION }}
         -DCMAKE_C_COMPILER=clang-${{ env.LLVM_VERSION }}
         -DCMAKE_BUILD_TYPE=Debug
+        -DCLANG_ANALYZER_MODE=deep
         -S ${{ github.workspace }}
 
     - name: Build with clang-tidy

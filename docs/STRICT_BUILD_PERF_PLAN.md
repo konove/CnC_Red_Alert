@@ -154,3 +154,5 @@ Full-pass time, the cost breakdown, and the sharing prerequisites.
 - 2026-09-19: plan written.
 - 2026-09-19: step 1 done — IWYU off by default; `build-strict` reconfigured, strict build clean.
 - 2026-09-19: step 2 done — all 15 shallow-only findings fixed; shallow and deep clean on the 8 TUs.
+- 2026-09-19: step 3 done — `CLANG_ANALYZER_MODE` (shallow default, CI deep). Full re-analysis of
+  `build-strict` at `-j14`: 183 s wall, 2424 CPU-s (tidy only, compiles from ccache), zero findings.

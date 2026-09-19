@@ -104,6 +104,23 @@ if (STRICT_CHECKS)
     list(APPEND CMAKE_CXX_CLANG_TIDY
             "--extra-arg=-DCLANG_TIDY_CONFIG_HASH=${CLANG_TIDY_CONFIG_HASH}")
 
+    # The static analyzer's budget. Shallow inlines only tiny callees and caps
+    # the paths it explores; deep is clang's default. Measured 2026-09-19 over
+    # the tree, the analyzer's own cost is ~1080 CPU-s deep and ~540 shallow,
+    # and ra/ioobj.cc alone drops from 62 s to 4 s. Shallow is the local
+    # default for the edit loop; the CI lint job runs deep as the backstop, so
+    # a path only deep mode finds still fails before it lands.
+    set(CLANG_ANALYZER_MODE "shallow" CACHE STRING
+            "Static analyzer mode under clang-tidy: shallow (local) or deep (CI)")
+    set_property(CACHE CLANG_ANALYZER_MODE PROPERTY STRINGS shallow deep)
+    if (NOT CLANG_ANALYZER_MODE MATCHES "^(shallow|deep)$")
+        message(FATAL_ERROR "CLANG_ANALYZER_MODE must be shallow or deep, "
+                "not '${CLANG_ANALYZER_MODE}'.")
+    endif ()
+    list(APPEND CMAKE_CXX_CLANG_TIDY
+            "--extra-arg=-Xclang" "--extra-arg=-analyzer-config"
+            "--extra-arg=-Xclang" "--extra-arg=mode=${CLANG_ANALYZER_MODE}")
+
     # ctcache takes the clang-tidy invocation as its arguments, so it goes in
     # front of the list rather than replacing anything in it. Set by Speedup.
     if (CTCACHE_PROGRAM)

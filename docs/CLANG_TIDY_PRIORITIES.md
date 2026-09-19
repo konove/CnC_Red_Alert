@@ -27,6 +27,11 @@ Alias relationships can be checked in the
 [LLVM check index](https://clang.llvm.org/extra/clang-tidy/checks/list.html). Availability above
 comes from the installed tool, since the online documentation follows LLVM development.
 
+The `clang-analyzer-*` rows are enforced in two modes (since 2026-09-19): local strict builds run
+the analyzer shallow (`CLANG_ANALYZER_MODE`, default `shallow`) and the CI lint job runs it deep.
+When sweeping an analyzer check before enabling it, sweep in both modes; shallow reports some paths
+deep mode prunes, and the reverse. See [STRICT_BUILD_PERF_PLAN.md](STRICT_BUILD_PERF_PLAN.md).
+
 ## P1 — Direct correctness and memory safety
 
 | Check                                                         | Status  | Reason / result                                                                                                                                                                                                                                   |

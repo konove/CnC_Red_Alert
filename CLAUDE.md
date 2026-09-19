@@ -96,6 +96,13 @@ fail a build, `misc-include-cleaner` already enforces `.cc` includes as an error
 every TU uncached (~950 CPU-s per full strict pass). Turn it on with `-DENABLE_IWYU=ON` to review
 header includes by hand.
 
+**The static analyzer runs shallow locally and deep in CI.** `CLANG_ANALYZER_MODE` (`shallow` by
+default, or `deep`) sets clang-tidy's `-analyzer-config mode=`. Shallow halves the analyzer's cost
+and takes `ra/ioobj.cc` from 62 s to 4 s; the CI lint job configures `deep`, so a path only deep
+mode explores still fails there. To reproduce a CI-only analyzer finding, reconfigure a strict dir
+with `-DCLANG_ANALYZER_MODE=deep` or run clang-tidy on the one TU with
+`--extra-arg=-Xclang --extra-arg=-analyzer-config --extra-arg=-Xclang --extra-arg=mode=deep`.
+
 **`clang-tidy-cache` only caches a translation unit whose preprocess is silent.** It derives its
 hash by re-running the compiler to preprocess the TU and gives up on any compiler output to stderr
 (`hash_inputs` returns `None`), and under `-Weverything` a single preprocessor warning in a widely
