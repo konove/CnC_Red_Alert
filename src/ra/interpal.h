@@ -34,10 +34,8 @@
  * functionality used for scaling 320x200 animations  * to 640x400 screen
  * resolution.                                                            *
  *                                                                                             *
- * Functions:                * Read_Interpolation_Palette -- reads an
- * interpolation palette table from disk             *
- *   Write_Interpolation_Palette -- writes an interpolation palette to disk
- *              * Increase_Palette_Luminance -- increase the contrast of a
+ * Functions:
+ *   Increase_Palette_Luminance -- increase the contrast of a
  * palette                         * Interpolate_2X_Scale -- Stretch a 320x200
  * graphic buffer into 640x400                    *
  *                                                                                             *
@@ -56,9 +54,7 @@ class GraphicViewPortClass;
 #define SIZE_OF_PALETTE 256
 
 // Palette interpolation functions
-void Read_Interpolation_Palette(const char* palette_file_name);
-void Write_Interpolation_Palette(const char* palette_file_name);
-void Increase_Palette_Luminance(std::span<unsigned char> InterpolationPalette,
+void Increase_Palette_Luminance(std::span<unsigned char> palette,
                                 int red_percentage, int green_percentage,
                                 int blue_percentage, int cap);
 void Interpolate_2X_Scale(GraphicBufferClass* source,
@@ -69,12 +65,7 @@ void Interpolate_2X_Scale(GraphicBufferClass* source,
 extern "C" {
 extern unsigned char PaletteInterpolationTable[SIZE_OF_PALETTE]
                                               [SIZE_OF_PALETTE];
-extern std::span<unsigned char> InterpolationPalette;
-void __cdecl Asm_Create_Palette_Interpolation_Table();
 }
-
-// Global state
-extern bool InterpolationPaletteChanged;
 
 // Mirrors an interpolation table's lower triangle into its upper one. The
 // tables are symmetric, so only half of each is stored on disk.
