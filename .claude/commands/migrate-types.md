@@ -148,7 +148,7 @@ Keep what the code relies on:
 ## Verify
 
 - If the file computes something others store or compare - a hash, a checksum, an encoded value -
-  pin its outputs with a test before converting (`ra/key_phrase_hash_test.cc` holds the historical
+  pin its outputs with a test before converting (`tech/key_phrase_hash_test.cc` holds the historical
   password codes), and run it after. A type change that alters one byte of the input changes every
   result.
 - `git clang-format -f -- <touched files>`.

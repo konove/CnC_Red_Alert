@@ -32,5 +32,6 @@ add_gtest(
         packet_test.cc disk_file_test.cc stream_golden_test.cc blowfish_stream_test.cc pk_stream_test.cc random_source_test.cc stream_error_test.cc
         file_test.cc search_paths_test.cc byte_stream_test.cc game_file_test.cc
         sha1_compress_test.cc rgb_test.cc glow_pulse_test.cc wsa_animation_test.cc audio_mixer_test.cc
+        key_phrase_hash_test.cc
     LIBS tech
 )

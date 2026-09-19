@@ -214,9 +214,3 @@ add_gtest(
     SOURCES utracker_test.cc utracker.cc
     LIBS base
 )
-
-add_gtest(
-    NAME ra_key_phrase_hash_test
-    SOURCES key_phrase_hash_test.cc key_phrase_hash.cc
-    LIBS base port absl::strings absl::check absl::log
-)

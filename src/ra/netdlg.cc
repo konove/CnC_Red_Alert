@@ -169,7 +169,6 @@
 #include "ra/ipxgconn.h"
 #include "ra/ipxmgr.h"
 #include "ra/jshell.h"
-#include "ra/key_phrase_hash.h"
 #include "ra/list.h"
 #include "ra/mapedit.h"
 #include "ra/mission_id.h"
@@ -201,6 +200,7 @@
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
+#include "tech/key_phrase_hash.h"
 #include "tech/mix_archive.h"
 #include "tech/random.h"
 

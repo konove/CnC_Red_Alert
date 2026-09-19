@@ -1,7 +1,7 @@
 // File: One-way hash of the key phrases that unlock hidden game options.
 
-#ifndef CNC_RED_ALERT_RA_KEY_PHRASE_HASH_H_
-#define CNC_RED_ALERT_RA_KEY_PHRASE_HASH_H_
+#ifndef CNC_RED_ALERT_TECH_KEY_PHRASE_HASH_H_
+#define CNC_RED_ALERT_TECH_KEY_PHRASE_HASH_H_
 
 #include <cstdint>
 #include <string_view>
@@ -10,7 +10,8 @@
 // or chat message against a stored code without keeping the phrase itself in
 // the binary. The hash ignores ASCII case, reads at most the first 127
 // characters and stops at an embedded NUL. It must reproduce the original
-// game's codes exactly, so the ones in defines.h and const.h keep working.
+// game's codes exactly, so the ones in ra/defines.h and ra/const.h keep
+// working.
 uint32_t HashKeyPhrase(std::string_view phrase);
 
-#endif  // CNC_RED_ALERT_RA_KEY_PHRASE_HASH_H_
+#endif  // CNC_RED_ALERT_TECH_KEY_PHRASE_HASH_H_
