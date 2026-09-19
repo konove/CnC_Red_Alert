@@ -403,7 +403,6 @@ extern TimerClass TickCount;
 
 bool Do_The_Internet_Menu_Thang();
 bool Spawn_WChat(bool can_launch);
-extern bool ReadyToQuit;
 extern bool SpawnedFromWChat;
 extern bool VQPaletteChange;
 extern int WChatMaxAhead;

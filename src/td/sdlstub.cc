@@ -18,9 +18,8 @@
 #include "td/nullconn.h"
 #include "td/palette.h"
 #include "td/rand.h"
+#include "td/startup.h"
 #include "winvq/vqa32/vqaplay.h"
-
-bool ReadyToQuit = false;
 
 void CCDebugString(const char* /*string*/) {}
 
@@ -41,7 +40,8 @@ void Memory_Error_Handler() {
   }
   CCMessageBox().Process("Error - out of memory.", "Abort");
 
-  exit(0);
+  ShutDown();
+  exit(EXIT_FAILURE);
 }
 
 #define WINDOW_NAME "Command & Conquer"
@@ -78,9 +78,7 @@ void SDL_Event_Handler(SDL_Event* event) {
       break;
     }
     case SDL_QUIT:
-      Prog_End();
-      VisiblePage.Un_Init();
-      HiddenPage.Un_Init();
+      ShutDown();
 
       fflush(stdout);
       exit(0);

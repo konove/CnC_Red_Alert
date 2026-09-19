@@ -58,6 +58,7 @@
 #include "port/tokenizer.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/memflag.h"
 #include "sdllib/misc.h"
 #include "sdllib/timer.h"
 #include "td/defines.h"
@@ -68,6 +69,7 @@
 #include "td/ipxmgr.h"
 #include "td/nullmgr.h"
 #include "td/profile.h"
+#include "td/startup.h"
 #include "tech/audio_mixer.h"
 #include "tech/disk_file.h"
 #include "tech/number_parse.h"
@@ -83,7 +85,6 @@
 #include "absl/strings/match.h"
 #include "sdllib/file.h"
 #include "sdllib/gbuffer.h"
-#include "sdllib/memflag.h"
 #include "sdllib/playcd.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
@@ -420,25 +421,9 @@ int main(int argc, char* argv[])
 
       VisiblePage.Clear();
       HiddenPage.Clear();
-      //			Set_Video_Mode(RESET_MODE);
-
-      Memory_Error_Exit = Print_Error_Exit;
 
       CCDebugString("C&C95 - About to exit.\n");
-      ReadyToQuit = true;
-      SDL_Send_Quit();
-      do {
-        Keyboard::Check();
-      } while (ReadyToQuit);
-
-      CCDebugString("C&C95 - Returned from final message loop.\n");
-      // Prog_End();
-      // Invalidate_Cached_Icons();
-      // VisiblePage.Un_Init();
-      // HiddenPage.Un_Init();
-      // AllSurfaces.Release();
-      // Reset_Video_Mode();
-      // Stop_Profiler();
+      ShutDown();
       return EXIT_SUCCESS;
     }
 #ifdef GERMAN
@@ -517,7 +502,7 @@ void __cdecl Prog_End() {
 void Print_Error_End_Exit(char* string) {
   absl::PrintF("%s\n", string);
   Get_Key();
-  Prog_End();
+  ShutDown();
   absl::PrintF("%s\n", string);
   exit(1);
 }
@@ -525,6 +510,14 @@ void Print_Error_End_Exit(char* string) {
 void Print_Error_Exit(char* string) {
   absl::PrintF("%s\n", string);
   exit(1);
+}
+
+void ShutDown() {
+  // Nothing is left for an allocation failure from here on to clean up.
+  Memory_Error_Exit = Print_Error_Exit;
+  Prog_End();
+  VisiblePage.Un_Init();
+  HiddenPage.Un_Init();
 }
 
 /***********************************************************************************************
