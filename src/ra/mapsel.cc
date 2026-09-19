@@ -162,21 +162,20 @@ static void PlayMapReveal(const std::string& animation_name,
   // The artwork is drawn at this size and scaled up to the screen.
   GraphicBufferClass page(320, 200);
   page.Clear();
-  void* animation = OpenAnimation(
-      animation_name.c_str(), WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, palette);
+  WsaAnimation animation(animation_name, palette);
 
   Keyboard->Clear();
   SeenBuff.Clear();
   palette.Set(kFadePaletteFast, ServiceRealTime);
 
-  DrawAnimationFrame(animation, page, 1);
+  animation.DrawFrame(page, 1);
   Interpolate_2X_Scale(&page, &SeenBuff, {});
 
   PlayMapSound("MAPWIPE2.AUD");
   // Ctrl-Q, the score screen's skip key, plays the rest without the waits.
   bool skip = false;
-  for (int frame = 1; frame < AnimationFrameCount(animation); frame++) {
-    DrawAnimationFrame(animation, page, frame);
+  for (int frame = 1; frame < animation.frame_count(); frame++) {
+    animation.DrawFrame(page, frame);
     Interpolate_2X_Scale(&page, &SeenBuff, {});
     skip = skip || (KeyboardClass::Down(KN_LCTRL) && KeyboardClass::Down(KN_Q));
     ServiceRealTimeFor(skip ? 0 : 2);
@@ -187,7 +186,6 @@ static void PlayMapReveal(const std::string& animation_name,
     }
   }
   ServiceRealTime();
-  CloseAnimation(animation);
 }
 
 // Waits for the player to click one of the hotspots on the map, which pulse in

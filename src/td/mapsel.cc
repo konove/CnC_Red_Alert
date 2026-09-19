@@ -482,8 +482,6 @@ struct nodstats {
  * HISTORY: * 04/17/1995 BWG : Created. *
  *=============================================================================================*/
 void Map_Selection() {
-  void* anim = nullptr;
-  void* progress = nullptr;
   // Static: InterpolationPalette is a global that keeps pointing here after
   // this function returns, and interpal.cc reads it from another
   // translation unit. Every path fills the buffer before reading it, so
@@ -555,27 +553,19 @@ void Map_Selection() {
   /*
   ** Now start the process where we fade the gray earth in.
   */
-  void* greyearth = OpenAnimation(
-      "GREYERTH.WSA", WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, localpalette);
-  void* greyearth2 = OpenAnimation(
-      "E-BWTOCL.WSA", WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, grey2palette);
+  WsaAnimation greyearth("GREYERTH.WSA", localpalette);
+  WsaAnimation greyearth2("E-BWTOCL.WSA", grey2palette);
 
   /*
   ** Load the spinning-globe anim
   */
-  if (house == HOUSE_GOOD) {
-    anim = OpenAnimation("HEARTH_E.WSA", WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE,
-                         Palette);
-    progress =
-        OpenAnimation(lastscenario ? "HBOSNIA.WSA" : "EUROPE.WSA",
-                      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, progresspalette);
-  } else {
-    anim = OpenAnimation("HEARTH_A.WSA", WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE,
-                         Palette);
-    progress =
-        OpenAnimation(lastscenario ? "HSAFRICA.WSA" : "AFRICA.WSA",
-                      WSA_OPEN_FROM_MEM | WSA_OPEN_TO_PAGE, progresspalette);
+  const bool good = house == HOUSE_GOOD;
+  WsaAnimation anim(good ? "HEARTH_E.WSA" : "HEARTH_A.WSA", Palette);
+  const char* progress_name = lastscenario ? "HSAFRICA.WSA" : "AFRICA.WSA";
+  if (good) {
+    progress_name = lastscenario ? "HBOSNIA.WSA" : "EUROPE.WSA";
   }
+  WsaAnimation progress(progress_name, progresspalette);
 
   const auto appear1 = MixArchive::RetrieveData("APPEAR1.AUD");
   const auto sfx4 = MixArchive::RetrieveData("SFX4.AUD");
@@ -602,7 +592,7 @@ void Map_Selection() {
   Read_Interpolation_Palette("MAP1.PAL");
 
   //	SeenBuff.Blit(HidPage);
-  DrawAnimationFrame(greyearth, SysMemPage, 0);
+  greyearth.DrawFrame(SysMemPage, 0);
 
   Bit_It_In(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff);
   PseudoSeenBuff->Put_Pixel(237, 92, kTBlack);
@@ -617,18 +607,18 @@ void Map_Selection() {
 
   Play_Sample(appear1, 255, Options.Normalize_Sound(110));
   Fade_Palette_To(localpalette, kFadePaletteMedium, Call_Back);
-  for (int i = 1; i < AnimationFrameCount(greyearth); i++) {
+  for (int i = 1; i < greyearth.frame_count(); i++) {
     Call_Back_Delay(4);
-    DrawAnimationFrame(greyearth, *PseudoSeenBuff, i);
+    greyearth.DrawFrame(*PseudoSeenBuff, i);
   }
-  CloseAnimation(greyearth);
+  greyearth.Close();
 
   Write_Interpolation_Palette("MAP_LOCL.PAL");
 
   Call_Back_Delay(4);
 
   SysMemPage.Clear();
-  DrawAnimationFrame(greyearth2, SysMemPage, 0);
+  greyearth2.DrawFrame(SysMemPage, 0);
 
   InterpolationPaletteChanged = true;
   InterpolationPalette = grey2palette;
@@ -640,11 +630,11 @@ void Map_Selection() {
   SysMemPage.Blit(*PseudoSeenBuff);
 
   Call_Back_Delay(4);
-  for (int i = 1; i < AnimationFrameCount(greyearth2); i++) {
-    DrawAnimationFrame(greyearth2, *PseudoSeenBuff, i);
+  for (int i = 1; i < greyearth2.frame_count(); i++) {
+    greyearth2.DrawFrame(*PseudoSeenBuff, i);
     Call_Back_Delay(4);
   }
-  CloseAnimation(greyearth2);
+  greyearth2.Close();
 
   Write_Interpolation_Palette("MAP_GRY2.PAL");
 
@@ -652,7 +642,7 @@ void Map_Selection() {
   ** Copy the first frame up to the seenpage (while screen is black)
   */
   SysMemPage.Clear();
-  DrawAnimationFrame(anim, SysMemPage, 1);
+  anim.DrawFrame(SysMemPage, 1);
   SysMemPage.Blit(*PseudoSeenBuff);
 
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
@@ -677,7 +667,7 @@ void Map_Selection() {
 
   int frame = 1;
 
-  while (frame < AnimationFrameCount(anim)) {
+  while (frame < anim.frame_count()) {
     if (frame == 16 || frame == 33 || frame == 44 || frame == 70 ||
         frame == 73) {
       Play_Sample(text2, 255, Options.Normalize_Sound(90));
@@ -777,7 +767,7 @@ void Map_Selection() {
         break;
     }
 
-    DrawAnimationFrame(anim, *PseudoSeenBuff, frame++);
+    anim.DrawFrame(*PseudoSeenBuff, frame++);
     Call_Back_Delay(/*Keyboard::Check() ? 0 :*/ 3);
   }
 
@@ -792,7 +782,7 @@ void Map_Selection() {
                              2 * (10 + 24), kTBlack);
   Call_Back_Delay(1);
 
-  CloseAnimation(anim);
+  anim.Close();
 
   Keyboard::Clear();
   BlitList.Clear();
@@ -802,7 +792,7 @@ void Map_Selection() {
   */
 
   SysMemPage.Clear();
-  DrawAnimationFrame(progress, SysMemPage, 0);
+  progress.DrawFrame(SysMemPage, 0);
 
   SysMemPage.Blit(*PseudoSeenBuff);
 
@@ -821,7 +811,7 @@ void Map_Selection() {
   int startframe = base::At(base::At(CountryArray, scenario).Start,
                             static_cast<int>(ScenDir));
   if (startframe) {
-    DrawAnimationFrame(progress, SysMemPage, startframe);
+    progress.DrawFrame(SysMemPage, startframe);
     SysMemPage.Blit(*PseudoSeenBuff);
   }
   Set_Palette(progresspalette);
@@ -842,8 +832,8 @@ void Map_Selection() {
   Call_Back_Delay(60);
 
   Play_Sample(country1, 255, Options.Normalize_Sound(90));
-  DrawAnimationFrame(progress, SysMemPage, startframe + 1);
-  DrawAnimationFrame(progress, SysMemPage, startframe + 1);
+  progress.DrawFrame(SysMemPage, startframe + 1);
+  progress.DrawFrame(SysMemPage, startframe + 1);
   Bit_It_In(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff, 1, true);
   backpage.Blit(SysMemPage, 0, 0, xcoord, 1, 20 * 6, 8);
   Call_Back_Delay(85);
@@ -875,7 +865,7 @@ void Map_Selection() {
   }
 
   Play_Sample(country1, 255, Options.Normalize_Sound(90));
-  DrawAnimationFrame(progress, SysMemPage, startframe + 2);
+  progress.DrawFrame(SysMemPage, startframe + 2);
   Bit_It_In(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff, 1, true);
   backpage.Blit(SysMemPage, 0, 0, xcoord, 11, 20 * 6, 8);
   if (!lastscenario) {
@@ -947,8 +937,7 @@ void Map_Selection() {
   }
 
   int q = 0;
-  for (frame = 0;
-       frame < (lastscenario ? AnimationFrameCount(progress) - 4 : 13);
+  for (frame = 0; frame < (lastscenario ? progress.frame_count() - 4 : 13);
        frame++) {
     if (!frame) {
       Play_Sample(beepy3, 255, Options.Normalize_Sound(90));
@@ -1027,7 +1016,7 @@ void Map_Selection() {
       }
     }
 
-    DrawAnimationFrame(progress, *PseudoSeenBuff, startframe + frame);
+    progress.DrawFrame(*PseudoSeenBuff, startframe + frame);
     Call_Back_Delay(6);
     /* Cause it to cycle on the flashing on the country for a little while */
     if (!lastscenario && frame == 4 && q < 4) {
@@ -1124,7 +1113,7 @@ void Map_Selection() {
                      selection);
 
   if (!lastscenario) {
-    CloseAnimation(progress);
+    progress.Close();
 
     /*
     ** Now it's time to highlight the country we're going to.
@@ -1207,10 +1196,9 @@ void Map_Selection() {
 #endif
     Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
 
-    DrawAnimationFrame(progress, *PseudoSeenBuff,
-                       AnimationFrameCount(progress) - 1);
+    progress.DrawFrame(*PseudoSeenBuff, progress.frame_count() - 1);
     Set_Palette(localpalette);
-    CloseAnimation(progress);
+    progress.Close();
     PseudoSeenBuff->Blit(SysMemPage);
     Print_Statistics(20, 160, house == HOUSE_GOOD ? 0 : 160);
   }

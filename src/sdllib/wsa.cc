@@ -6,94 +6,48 @@
 #include <cstdio>
 #include <cstdlib>
 #include <span>
+#include <string_view>
 #include <utility>
+#include <vector>
 
-#include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/attributes.h"
 #include "base/buffer.h"
 #include "base/flags.h"
 #include "base/numeric.h"
 #include "base/types.h"
-#include "port/aligned_buffer.h"
 #include "port/unaligned.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/iff.h"
-#include "sdllib/memflag.h"
 #include "sdllib/wwstd.h"
 
-// SysAnimHeader::flags: how OpenAnimation() set the animation up. Exactly
-// one of WSA_FILE and WSA_RESIDENT is set.
+namespace {
 
-// Deltas are read from the file, which stays open in file_handle.
-#define WSA_FILE 0x04U
-// The whole file is in memory and deltas are copied out of file_buffer.
-#define WSA_RESIDENT 0x08U
-// Frames are built in target_buffer and then copied to the destination, rather
-// than XORed straight onto it.
-#define WSA_TARGET_IN_BUFFER 0x10U
-// The file has no loop delta, so playback cannot wrap from the last frame to
-// frame 0 or back; DrawAnimationFrame() always takes the direct route.
-#define WSA_LINEAR_ONLY 0x20U
-// The file has no frame 0: the animation starts from whatever is already on
-// the destination.
-#define WSA_FRAME_0_ON_PAGE 0x40U
-// A 768-byte palette sits between the offset table and the first frame, and
-// the table's offsets do not count it.
-#define WSA_PALETTE_PRESENT 0x100U
-// Frame 0 is a delta against a picture the caller has already drawn, so it is
-// XORed onto a direct destination instead of overwriting it.
-#define WSA_FRAME_0_IS_DELTA 0x200U
+// The size of the run-time animation header ANIMATE.EXE allocated in front of
+// the delta buffer: the packed DOS layout with two 32-bit buffer pointers. It
+// added this to largest_frame_size before saving the file, so the delta buffer
+// is the file's largest_frame_size less these bytes.
+constexpr int kAnimateHeaderSize = 37;
 
-// Run-time state of an open animation. The handle OpenAnimation() returns
-// points at one of these, at the start of a single allocation laid out as
-//
-//   SysAnimHeader | target buffer | delta buffer | file buffer
-//
-// The target buffer is absent for WSA_OPEN_DIRECT animations and the file
-// buffer for animations played from disk.
-struct SysAnimHeader {
-  // The frame the destination currently shows. Equal to total_frames until the
-  // first DrawAnimationFrame(), meaning that not even frame 0 has been applied
-  // yet.
-  uint16_t current_frame;
-  uint16_t total_frames;
-  // Where the frame goes on the destination. Read back as signed.
-  uint16_t pixel_x;
-  uint16_t pixel_y;
-  uint16_t pixel_width;
-  uint16_t pixel_height;
-  // Scratch space that holds one frame's delta, first compressed at the back
-  // and then decompressed at the front. Its size is the file's
-  // largest_frame_size without ANIMATE's 37 header bytes.
-  std::span<uint8_t> delta_buffer;
-  // The file's offset table and frames 1 and up. Empty unless WSA_RESIDENT.
-  std::span<uint8_t> file_buffer;
-  // The current frame, pixel_width * pixel_height bytes. Empty unless
-  // WSA_TARGET_IN_BUFFER.
-  std::span<uint8_t> target_buffer;
-  // An 8.3 file name and its terminator; longer names are truncated.
-  char file_name[13];
-  uint16_t flags;  // WSA_* header flags above.
-  // New fields that ANIMATE does not know about below this point. See
-  // kExtraBytesAnimateDoesNotKnowAbout.
-  int16_t file_handle;  // -1 if WSA_RESIDENT; the file is already closed.
+// WsaFileHeader::flags, as ANIMATE wrote them.
+enum class CNC_FLAG_ENUM WsaFileFlags : uint16_t {
+  kNone = 0,
+  // A 768-byte palette sits between the offset table and the first frame.
+  kHasPalette = 0x01,
+  // The animation was made from a .LBM and a .ANM, so frame 0 is an XOR delta
+  // against that picture rather than against black.
+  kFrame0IsDelta = 0x02,
 };
 
-// The original note: "THIS IS A BAD THING. SINCE sizeof(SysAnimHeaderType)
-// CHANGED, THE ANIMATE.EXE UTILITY DID NOT KNOW I UPDATED IT, IT ADDS IT TO
-// largest_frame_size BEFORE SAVING IT TO THE FILE. THIS MEANS I HAVE TO ADD
-// THESE charS ON NOW FOR IT TO WORK."
-//
-// That is, the file's largest_frame_size is the size of one allocation for the
-// header plus the delta buffer, using the header ANIMATE knew: 37 bytes, the
-// packed DOS layout through `flags` with two 32-bit buffer pointers. The header
-// has grown since (file_handle then, the spans now), so the growth is added
-// back when sizing the allocation and the delta buffer always comes out as the
-// file's largest_frame_size - 37 bytes.
-constexpr int kExtraBytesAnimateDoesNotKnowAbout =
-    int{sizeof(SysAnimHeader) - 37};
+}  // namespace
+
+// A specialization has to be declared in the template's own namespace.
+template <>
+inline constexpr bool base::kIsFlagEnum<WsaFileFlags> = true;
+
+namespace {
 
 // Header structure for the file, little-endian and unpadded.
 // NOTE:  The 'total_frames' field is used to differentiate between Amiga and
@@ -101,21 +55,19 @@ constexpr int kExtraBytesAnimateDoesNotKnowAbout =
 // checks for it.
 #pragma pack(push, 1)
 struct WsaFileHeader {
-  uint16_t total_frames;
-  uint16_t pixel_x;
-  uint16_t pixel_y;
-  uint16_t pixel_width;
-  uint16_t pixel_height;
-  // Includes 37 bytes for ANIMATE's idea of SysAnimHeader; see
-  // kExtraBytesAnimateDoesNotKnowAbout.
-  uint16_t largest_frame_size;
-  // Bit 0: a palette is present. Bit 1: frame 0 is a delta against a picture.
-  uint16_t flags;
+  uint16_t total_frames = 0;
+  uint16_t pixel_x = 0;
+  uint16_t pixel_y = 0;
+  uint16_t pixel_width = 0;
+  uint16_t pixel_height = 0;
+  // Includes kAnimateHeaderSize.
+  uint16_t largest_frame_size = 0;
+  WsaFileFlags flags = WsaFileFlags::kNone;
   // The first two entries of the frame offset table, read along with the header
   // because their difference is the size of frame 0. frame0_offset is 0 if the
   // file has no frame 0.
-  uint32_t frame0_offset;
-  uint32_t frame0_end;
+  uint32_t frame0_offset = 0;
+  uint32_t frame0_end = 0;
   // The rest of the offset table follows: total_frames + 2 uint32_t entries in
   // all, one per frame, one for the loop delta that turns the last frame back
   // into frame 0, and one for the end of the data. The last entry is 0 if the
@@ -132,42 +84,35 @@ constexpr int kWsaFileHeaderSize{sizeof(WsaFileHeader) -
 // 0 if the offset table has no entry for it. 0 is never a real position, since
 // the table itself sits there. Frame total_frames is the loop delta and
 // total_frames + 1 is the end of the data.
-static int64_t ResidentFrameOffset(std::span<const uint8_t> file_buffer,
-                                   int frame);
+int64_t ResidentFrameOffset(std::span<const std::byte> file_buffer, int frame);
 
-// As ResidentFrameOffset(), but reads the table from the open file and
-// returns a file position, or 0 if the entry is missing or cannot be read.
-// `palette_size` is the size of the file's palette, 0 if it has none.
-static int64_t FileFrameOffset(int file_handle, int frame, int palette_size);
+}  // namespace
 
-// Loads the delta that produces `delta_number` from the frame before it and
-// XORs it onto `dest`. `dest_stride` is the stride of `dest`, used only when it
-// is the destination view rather than the target buffer. Returns false, with
-// `dest` untouched, if the offset table is corrupt or the file read comes
-// up short.
-static bool ApplyFrameDelta(const SysAnimHeader* sys_header, int delta_number,
-                            std::span<uint8_t> dest, int dest_stride);
-
-void* OpenAnimation(const char* file_name, WsaOpenFlags open_flags,
-                    std::span<uint8_t> palette) {
-  int palette_size = 0;
-  int frame0_size = 0;
-  base::ssize target_buffer_size = 0;
-  WsaFileHeader file_header = {};
-
-  // Open the file to get the header information.
-  uint16_t anim_flags = 0;
+WsaAnimation::WsaAnimation(const std::string_view file_name,
+                           const std::span<uint8_t> palette) {
   const int file_handle = OpenFileHandle(file_name, FileAccess::kRead);
   if (file_handle == kInvalidHandle) {
-    return nullptr;
+    return;
   }
+  if (!Load(file_handle, palette)) {
+    Close();
+  }
+  CloseFileHandle(file_handle);
+}
+
+void WsaAnimation::Close() { *this = WsaAnimation(); }
+
+bool WsaAnimation::Load(const int file_handle,
+                        const std::span<uint8_t> palette) {
+  // The size of the palette between the offset table and the first frame,
+  // which the table's offsets do not count.
+  int palette_size = 0;
+  WsaFileHeader file_header;
   ReadFileHandle(file_handle, base::ObjectBytes(file_header));
 
-  // If the file has an attached palette (bit 0 of its flags), it has to be
-  // allowed for in every file position from here on, and is read in if the
-  // caller gave us room for its 256 RGB triples.
-  if (file_header.flags & 1) {
-    anim_flags |= WSA_PALETTE_PRESENT;
+  // An attached palette has to be skipped on the way to the frames, and is
+  // read in if the caller gave us room for its 256 RGB triples.
+  if (base::Any(file_header.flags & WsaFileFlags::kHasPalette)) {
     palette_size = 768;
 
     if (palette.size() >= 768) {
@@ -180,13 +125,8 @@ void* OpenAnimation(const char* file_name, WsaOpenFlags open_flags,
       ReadFileHandle(file_handle, std::as_writable_bytes(palette.first(768)));
     }
   }
-
-  // Check for the flag from ANIMATE (bit 1) indicating that this animation was
-  // created from a .LBM and a .ANM.  This means that the first frame is an XOR
-  // delta from a picture, not from black.
-  if (file_header.flags & 2) {
-    anim_flags |= WSA_FRAME_0_IS_DELTA;
-  }
+  frame0_is_delta_ =
+      base::Any(file_header.flags & WsaFileFlags::kFrame0IsDelta);
 
   // Get the total file size minus the size of the first frame, the palette and
   // the file header.  These will not be kept in the file buffer, to save even
@@ -196,12 +136,12 @@ void* OpenAnimation(const char* file_name, WsaOpenFlags open_flags,
   // A zero offset means the file has no frame 0. Otherwise its size is cut to
   // 16 bits like every frame size in this format; a bogus size is caught by the
   // capacity check below.
-  if (file_header.frame0_offset) {
+  int frame0_size = 0;
+  has_frame0_ = file_header.frame0_offset != 0;
+  if (has_frame0_) {
     const auto full_frame0_size = static_cast<int32_t>(
         file_header.frame0_end - file_header.frame0_offset);
     frame0_size = static_cast<uint16_t>(full_frame0_size);
-  } else {
-    anim_flags |= WSA_FRAME_0_ON_PAGE;
   }
 
   // What is left must at least hold the offset table, and a frame with no area
@@ -209,207 +149,81 @@ void* OpenAnimation(const char* file_name, WsaOpenFlags open_flags,
   file_buffer_size -= palette_size + frame0_size + kWsaFileHeaderSize;
   if (file_buffer_size < (base::ssize{file_header.total_frames} + 2) * 4 ||
       file_header.pixel_width == 0 || file_header.pixel_height == 0) {
-    CloseFileHandle(file_handle);
-    return nullptr;
+    return false;
   }
 
-  // We need to determine the buffer sizes required for the animation.  At a
-  // minimum, we need a target buffer for the uncompressed frame and a delta
-  // buffer for the delta data.  We may be able to make the file resident,
-  // so we will determine the file size.
-  //
-  // A direct animation XORs its deltas straight onto the destination and needs
-  // no target buffer; otherwise reserve one byte per pixel of the frame.
-  if (base::Any(open_flags & WSA_OPEN_DIRECT)) {
-    target_buffer_size = 0L;
-  } else {
-    anim_flags |= WSA_TARGET_IN_BUFFER;
-    target_buffer_size =
-        base::ssize{file_header.pixel_width} * file_header.pixel_height;
-  }
-
-  // Despite its name, the file's largest_frame_size is the size of the header
-  // and the delta buffer together, as ANIMATE saved it; see
-  // kExtraBytesAnimateDoesNotKnowAbout.
-  const base::ssize header_and_delta_size =
-      base::ssize{file_header.largest_frame_size} +
-      kExtraBytesAnimateDoesNotKnowAbout;
-
-  // Frame 0 is read into the back of the delta buffer, which holds the file's
-  // largest_frame_size - 37 bytes. A corrupt header whose frame 0 is bigger
-  // than that, or whose largest_frame_size is too small to include ANIMATE's 37
-  // header bytes, would write outside it.
-  const base::ssize delta_capacity =
-      header_and_delta_size - base::ssize{sizeof(SysAnimHeader)};
+  // Frame 0 is read into the back of the delta buffer. A corrupt header whose
+  // frame 0 is bigger than that, or whose largest_frame_size is too small to
+  // include ANIMATE's header bytes, would write outside it.
+  const int delta_capacity =
+      file_header.largest_frame_size - kAnimateHeaderSize;
   if (delta_capacity < 0 || frame0_size > delta_capacity) {
-    CloseFileHandle(file_handle);
-    return nullptr;
+    return false;
   }
-  const base::ssize size_without_file =
-      target_buffer_size + header_and_delta_size;
-  const base::ssize size_with_file = size_without_file + file_buffer_size;
+  delta_buffer_.resize(base::ToSize(delta_capacity));
 
-  // Hold the whole file in memory unless the caller wants it read from disk or
-  // there is only room for the minimum.
-  base::ssize allocation_size = base::Any(open_flags & WSA_OPEN_FROM_DISK)
-                                    ? size_without_file
-                                    : size_with_file;
-  if (allocation_size > Ram_Free(MEM_NORMAL)) {
-    if (size_without_file > Ram_Free(MEM_NORMAL)) {
-      CloseFileHandle(file_handle);
-      return nullptr;
-    }
-    allocation_size = size_without_file;
-  }
-
-  // Value-initialized, so the target buffer starts out black. CloseAnimation()
-  // frees it.
-  auto* allocation = new uint8_t[base::ToSize(allocation_size)]();
-  // This owner allocates exactly allocation_size elements.
-  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-  const auto buffer = std::span(allocation, base::ToSize(allocation_size));
-
-  // Set the pointers to the RAM buffers: the target buffer follows the header
-  // and the delta buffer follows that. The file buffer, if any, comes last.
-  const auto target_buffer =
-      buffer.subspan(sizeof(SysAnimHeader), base::ToSize(target_buffer_size));
-  const auto delta_buffer =
-      buffer.subspan(sizeof(SysAnimHeader) + base::ToSize(target_buffer_size),
-                     base::ToSize(delta_capacity));
-
-  // Poke data into the system animation header (start of the buffer).
-  // current_frame is set to total_frames so that DrawAnimationFrame() knows
-  // that nothing has been drawn yet and frame 0 has to be applied first.
-
-  // new[] storage is aligned for any fundamental type.
-  auto* sys_header = port::AlignedObject<SysAnimHeader>(buffer.data());
-  sys_header->current_frame = sys_header->total_frames =
-      file_header.total_frames;
-  sys_header->pixel_x = file_header.pixel_x;
-  sys_header->pixel_y = file_header.pixel_y;
-  sys_header->pixel_width = file_header.pixel_width;
-  sys_header->pixel_height = file_header.pixel_height;
-  sys_header->delta_buffer = delta_buffer;
-  sys_header->target_buffer = target_buffer;
-
-  absl::SNPrintF(sys_header->file_name, sizeof(sys_header->file_name), "%s",
-                 file_name);
+  // current_frame_ is set to total_frames_ so that DrawFrame() knows that
+  // nothing has been drawn yet and frame 0 has to be applied first.
+  current_frame_ = total_frames_ = file_header.total_frames;
+  // The offsets are read as signed so that a negative one fails DrawFrame()'s
+  // bounds check instead of wrapping to a large positive offset.
+  x_ = static_cast<int16_t>(file_header.pixel_x);
+  y_ = static_cast<int16_t>(file_header.pixel_y);
+  width_ = file_header.pixel_width;
+  height_ = file_header.pixel_height;
 
   // Figure how much room the frame offsets take up in the file.
   // Add 2 - one for the wrap around (loop) delta and one for the final end
   // offset.
-  const int offset_table_size = (file_header.total_frames + 2) * 4;
+  const int offset_table_size = (total_frames_ + 2) * 4;
 
-  // Is there room for the whole file?
-  if (allocation_size == size_with_file) {
-    // Set the file buffer pointer, skip over the header information and read
-    // in the offsets. Then skip over the palette and the first frame, which are
-    // not kept, and read in the remaining frames.
-    sys_header->file_buffer = buffer.subspan(base::ToSize(size_without_file),
-                                             base::ToSize(file_buffer_size));
-    SeekFileHandle(file_handle, kWsaFileHeaderSize, SEEK_SET);
-    ReadFileHandle(file_handle,
-                   std::as_writable_bytes(sys_header->file_buffer.first(
-                       base::ToSize(offset_table_size))));
-    SeekFileHandle(file_handle, frame0_size + palette_size, SEEK_CUR);
-    ReadFileHandle(file_handle,
-                   std::as_writable_bytes(sys_header->file_buffer.subspan(
-                       base::ToSize(offset_table_size))));
+  // Skip over the header information and read in the offsets. Then skip over
+  // the palette and the first frame, which are not kept, and read in the
+  // remaining frames.
+  file_buffer_.resize(base::ToSize(file_buffer_size));
+  const std::span file_buffer = file_buffer_;
+  SeekFileHandle(file_handle, kWsaFileHeaderSize, SEEK_SET);
+  ReadFileHandle(file_handle,
+                 file_buffer.first(base::ToSize(offset_table_size)));
+  SeekFileHandle(file_handle, frame0_size + palette_size, SEEK_CUR);
+  ReadFileHandle(file_handle,
+                 file_buffer.subspan(base::ToSize(offset_table_size)));
 
-    // Find out if there is an ending value for the last frame, that is, an end
-    // offset for the loop delta. If there is not, then this animation will not
-    // be able to loop back to the beginning.
-    if (ResidentFrameOffset(sys_header->file_buffer,
-                            sys_header->total_frames + 1)) {
-      anim_flags |= WSA_RESIDENT;
-    } else {
-      anim_flags |= WSA_LINEAR_ONLY | WSA_RESIDENT;
-    }
-  } else {
-    // There is only room for the minimum, or the caller asked for disk: leave
-    // the frames in the file and make the same loop delta check there.
-    if (FileFrameOffset(file_handle, sys_header->total_frames + 1,
-                        palette_size)) {
-      anim_flags |= WSA_FILE;
-    } else {
-      anim_flags |= WSA_LINEAR_ONLY | WSA_FILE;
-    }
-    sys_header->file_buffer = {};
-  }
+  // Find out if there is an ending value for the last frame, that is, an end
+  // offset for the loop delta. If there is not, then this animation will not be
+  // able to loop back to the beginning.
+  has_loop_delta_ = ResidentFrameOffset(file_buffer_, total_frames_ + 1) != 0;
 
   // Figure where to back load frame 0 into the delta buffer. Compressed data
   // goes at the very end so that LCW_Uncompress() can write its output from the
   // front of the same buffer, behind the input it has yet to read; ANIMATE's
   // largest_frame_size is what makes the buffer big enough for that.
+  const std::span delta_buffer = delta_buffer_;
   const auto compressed_delta =
       delta_buffer.subspan(delta_buffer.size() - base::ToSize(frame0_size));
 
-  // Read the first frame into the delta buffer and uncompress it (below).
-  // Then close the file, unless later frames will come from it.
+  // Read the first frame into the delta buffer and uncompress it.
   SeekFileHandle(file_handle,
                  kWsaFileHeaderSize + offset_table_size + palette_size,
                  SEEK_SET);
-  ReadFileHandle(file_handle, std::as_writable_bytes(compressed_delta));
-
-  // We do not use the file handle when the file is in RAM; -1 marks it closed.
-  if (anim_flags & WSA_RESIDENT) {
-    sys_header->file_handle = static_cast<int16_t>(-1);
-    CloseFileHandle(file_handle);
-  } else {
-    sys_header->file_handle = static_cast<int16_t>(file_handle);
-  }
+  ReadFileHandle(file_handle, compressed_delta);
 
   // Frame 0 now waits, uncompressed, at the front of the delta buffer until the
-  // first DrawAnimationFrame() applies it. With no frame 0 this decodes
-  // nothing.
+  // first DrawFrame() applies it. With no frame 0 this decodes nothing.
   LCW_Uncompress(compressed_delta, delta_buffer);
 
-  // Finally set the flags.
-  sys_header->flags = anim_flags;
-
-  // The handle is the allocation itself; CloseAnimation() deletes it as such.
-  return buffer.data();
+  is_open_ = true;
+  return true;
 }
 
-void CloseAnimation(void* handle) {
-  if (handle == nullptr) {
-    return;
-  }
-
-  // The system header sits at the beginning of the handle space.
-  auto* sys_header = static_cast<SysAnimHeader*>(handle);
-
-  // Close the WSA file if it was disk based.
-  if (sys_header->flags & WSA_FILE) {
-    CloseFileHandle(sys_header->file_handle);
-  }
-
-  // The handle is the start of the buffer OpenAnimation() allocated.
-  delete[] static_cast<uint8_t*>(handle);
-}
-
-bool DrawAnimationFrame(void* handle, GraphicViewPortClass& view,
-                        int frame_number) {
-  if (handle == nullptr || frame_number < 0) {
+bool WsaAnimation::DrawFrame(GraphicViewPortClass& view,
+                             const int frame_number) {
+  // A closed animation has no frames, so every frame number is out of range.
+  if (frame_number < 0 || total_frames_ <= frame_number) {
     return false;
   }
   // How many deltas have to be applied to get to frame_number.
   int steps = 0;
-  // Where the deltas are applied: the target buffer or the view's own pixels.
-  std::span<uint8_t> frame_buffer;
-
-  // Assign local pointer to the beginning of the buffer where the system
-  // information resides.
-  auto* sys_header = static_cast<SysAnimHeader*>(handle);
-
-  // Get the total number of frames.
-  const int total_frames = sys_header->total_frames;
-
-  // Is the frame number valid?
-  if (total_frames <= frame_number) {
-    return false;
-  }
-
   if (!view.Lock()) {
     return false;
   }
@@ -419,62 +233,36 @@ bool DrawAnimationFrame(void* handle, GraphicViewPortClass& view,
   // buffer's row and any surface padding.
   const int dest_stride = view.Get_Width() + view.Get_XAdd() + view.Get_Pitch();
 
-  // The frame is drawn at the offset stored in the animation file. The offsets
-  // are read as signed so that a negative one fails the bounds check below
-  // instead of wrapping to a large positive offset.
-  const int pixel_x = static_cast<int16_t>(sys_header->pixel_x);
-  const int pixel_y = static_cast<int16_t>(sys_header->pixel_y);
-
-  // Check to see if we are using a buffer inside of the animation buffer or if
-  // it is being drawn directly to the destination page or buffer.
-  const bool direct_to_dest = (sys_header->flags & WSA_TARGET_IN_BUFFER) == 0;
-  if (!direct_to_dest) {
-    // Get a pointer to the frame in animation buffer.
-    frame_buffer = sys_header->target_buffer;
-  } else {
-    // Deltas are clipped to the end of the view's pixels but not to its edges,
-    // so a frame that sticks out would wrap onto the next row. Buffer_To_Page()
-    // clips the buffered case instead.
-    if (pixel_x < 0 || pixel_y < 0 ||
-        pixel_x + sys_header->pixel_width > view.Get_Width() ||
-        pixel_y + sys_header->pixel_height > view.Get_Height()) {
-      view.Unlock();
-      return false;
-    }
-    frame_buffer = view.Get_Pixels().subspan(
-        base::ToSize((pixel_y * dest_stride) + pixel_x));
+  // Deltas are XORed straight onto the view's pixels. They are clipped to the
+  // end of the pixels but not to the view's edges, so a frame that sticks out
+  // would wrap onto the next row.
+  if (x_ < 0 || y_ < 0 || x_ + width_ > view.Get_Width() ||
+      y_ + height_ > view.Get_Height()) {
+    view.Unlock();
+    return false;
   }
-  // If current_frame is equal to total_frames, then no animations have taken
-  // place, so frame 0, which OpenAnimation() left uncompressed in the delta
-  // buffer, must be applied to the frame_buffer/page if it exists.
-  if (std::cmp_equal(sys_header->current_frame, total_frames)) {
-    // Call apply delta telling it whether to copy or to xor depending on if the
-    // target is a page or a buffer.
+  const std::span<uint8_t> frame_buffer =
+      view.Get_Pixels().subspan(base::ToSize((y_ * dest_stride) + x_));
 
-    if (!(sys_header->flags & WSA_FRAME_0_ON_PAGE)) {
-      if (direct_to_dest) {
-        // The last parameter says whether to copy or to XOR.  If the first
-        // frame is a DELTA, then it must be XOR'd onto the picture already
-        // there; otherwise it replaces whatever is there. `dest_stride` is the
-        // full stride, not the gap between the end of one row and the next.
-        ApplyXorDeltaToView(
-            frame_buffer, sys_header->delta_buffer, sys_header->pixel_width,
-            dest_stride,
-            /*copy=*/(sys_header->flags & WSA_FRAME_0_IS_DELTA) == 0);
-      } else {
-        // The target buffer starts out zeroed (black), so an XOR onto it is a
-        // copy. WSA_FRAME_0_IS_DELTA has no effect here: the picture is not in
-        // the target buffer to be XORed with.
-        ApplyXorDelta(frame_buffer, sys_header->delta_buffer);
-      }
+  // If current_frame_ is equal to total_frames_, then no animations have taken
+  // place, so frame 0, which Load() left uncompressed in the delta buffer, must
+  // be applied to the view if it exists.
+  if (current_frame_ == total_frames_) {
+    if (has_frame0_) {
+      // The last parameter says whether to copy or to XOR.  If the first frame
+      // is a DELTA, then it must be XOR'd onto the picture already there;
+      // otherwise it replaces whatever is there. `dest_stride` is the full
+      // stride, not the gap between the end of one row and the next.
+      ApplyXorDeltaToView(frame_buffer, delta_buffer_, width_, dest_stride,
+                          /*copy=*/!frame0_is_delta_);
     }
-    sys_header->current_frame = 0;
+    current_frame_ = 0;
   }
 
   // Get the current frame. XOR deltas undo themselves, so the requested frame
   // can be reached by stepping in either direction, and through the loop delta
   // if there is one. Pick whichever route applies the fewest deltas.
-  int cursor_frame = sys_header->current_frame;
+  int cursor_frame = current_frame_;
 
   // Get absolute distance from our current frame to the target frame, which is
   // the cost of the route that does not wrap.
@@ -487,11 +275,11 @@ bool DrawAnimationFrame(void* handle, GraphicViewPortClass& view,
   if (frame_number > cursor_frame) {
     // Calculate the number of frames to search if we go left and wrap from
     // frame 0 round to the last frame.
-    steps = total_frames - frame_number + cursor_frame;
+    steps = total_frames_ - frame_number + cursor_frame;
 
     // Is wrapping faster than going right? If no looping is allowed, are they
     // trying to do it anyway?
-    if (steps < distance && !(sys_header->flags & WSA_LINEAR_ONLY)) {
+    if (steps < distance && has_loop_delta_) {
       direction = -1;  // Yes, so go left
     } else {
       steps = distance;
@@ -499,11 +287,11 @@ bool DrawAnimationFrame(void* handle, GraphicViewPortClass& view,
   } else {
     // Calculate the number of frames to search if we go right and wrap from the
     // last frame round to frame 0.
-    steps = total_frames - cursor_frame + frame_number;
+    steps = total_frames_ - cursor_frame + frame_number;
 
     // Is going straight left at least as fast as wrapping? Or are they trying
     // to loop when they should not?
-    if (steps >= distance || sys_header->flags & WSA_LINEAR_ONLY) {
+    if (steps >= distance || !has_loop_delta_) {
       direction = -1;  // Yes, so go left
       steps = distance;
     }
@@ -522,8 +310,7 @@ bool DrawAnimationFrame(void* handle, GraphicViewPortClass& view,
       // Move the logical frame number ordinally right
       cursor_frame += direction;
 
-      if (!ApplyFrameDelta(sys_header, cursor_frame, frame_buffer,
-                           dest_stride)) {
+      if (!ApplyFrameDelta(cursor_frame, frame_buffer, dest_stride)) {
         reached = false;
         break;
       }
@@ -531,7 +318,7 @@ bool DrawAnimationFrame(void* handle, GraphicViewPortClass& view,
       // Adjust the current frame number, taking into consideration that we
       // could have wrapped: delta total_frames is the loop delta, which has
       // just produced frame 0.
-      if (cursor_frame == total_frames) {
+      if (cursor_frame == total_frames_) {
         cursor_frame = 0;
       }
       shown_frame = cursor_frame;
@@ -542,11 +329,10 @@ bool DrawAnimationFrame(void* handle, GraphicViewPortClass& view,
       // to the last frame is the n + 1 delta (wrap delta). The step below then
       // lands on frame total_frames - 1.
       if (cursor_frame == 0) {
-        cursor_frame = total_frames;
+        cursor_frame = total_frames_;
       }
 
-      if (!ApplyFrameDelta(sys_header, cursor_frame, frame_buffer,
-                           dest_stride)) {
+      if (!ApplyFrameDelta(cursor_frame, frame_buffer, dest_stride)) {
         reached = false;
         break;
       }
@@ -556,27 +342,10 @@ bool DrawAnimationFrame(void* handle, GraphicViewPortClass& view,
     }
   }
 
-  sys_header->current_frame = static_cast<uint16_t>(shown_frame);
-
-  // If we did this all in a hidden buffer, then copy it to the desired page or
-  // viewport.
-  if (!direct_to_dest) {
-    Buffer_To_Page(pixel_x, pixel_y, sys_header->pixel_width,
-                   sys_header->pixel_height, frame_buffer, view);
-  }
+  current_frame_ = shown_frame;
 
   view.Unlock();
   return reached;
-}
-
-int AnimationFrameCount(void* handle) {
-  if (!handle) {
-    return 0;
-  }
-  auto* sys_header = static_cast<SysAnimHeader*>(handle);
-  // Read as signed, so an Amiga animation (high bit of total_frames set; see
-  // WsaFileHeader) reports a negative count.
-  return static_cast<int16_t>(sys_header->total_frames);
 }
 
 namespace {
@@ -597,8 +366,9 @@ namespace {
 //
 // Decoding stops at the end of `delta`, at a command that is cut short or has
 // a zero count, or at one that would run past the end of `target`.
-void DecodeDelta(std::span<uint8_t> target, std::span<const std::byte> delta,
-                 size_t width, size_t stride, bool copy) {
+void DecodeDelta(const std::span<uint8_t> target,
+                 std::span<const std::byte> delta, const size_t width,
+                 const size_t stride, const bool copy) {
   if (width == 0 || stride < width) {
     return;
   }
@@ -673,30 +443,26 @@ void DecodeDelta(std::span<uint8_t> target, std::span<const std::byte> delta,
 }
 }  // namespace
 
-void ApplyXorDelta(std::span<uint8_t> target,
-                   std::span<const std::byte> delta) {
+void ApplyXorDelta(const std::span<uint8_t> target,
+                   const std::span<const std::byte> delta) {
   // One row as wide as the whole target makes the decoder treat it as a
   // contiguous run of pixels.
   DecodeDelta(target, delta, target.size(), target.size(), false);
 }
 
-void ApplyXorDelta(std::span<uint8_t> target, std::span<const uint8_t> delta) {
-  DecodeDelta(target, std::as_bytes(delta), target.size(), target.size(),
-              false);
-}
-
-void ApplyXorDeltaToView(std::span<uint8_t> target,
-                         std::span<const uint8_t> delta, int width, int stride,
-                         bool copy) {
+void ApplyXorDeltaToView(const std::span<uint8_t> target,
+                         const std::span<const std::byte> delta,
+                         const int width, const int stride, const bool copy) {
   if (width <= 0 || stride <= 0) {
     return;
   }
-  DecodeDelta(target, std::as_bytes(delta), base::ToSize(width),
-              base::ToSize(stride), copy);
+  DecodeDelta(target, delta, base::ToSize(width), base::ToSize(stride), copy);
 }
 
-static int64_t ResidentFrameOffset(std::span<const uint8_t> file_buffer,
-                                   int frame) {
+namespace {
+
+int64_t ResidentFrameOffset(const std::span<const std::byte> file_buffer,
+                            const int frame) {
   // The first two table entries are always read, to size frame 0, and then the
   // entry for `frame` itself.
   if (frame < 0 || file_buffer.size() < 8 ||
@@ -704,119 +470,56 @@ static int64_t ResidentFrameOffset(std::span<const uint8_t> file_buffer,
     return 0;
   }
   uint32_t frame0_size = 0;
-  const auto frame0_offset =
-      port::ReadUnaligned<uint32_t>(std::as_bytes(file_buffer));
-  if (frame0_offset) {
-    frame0_size = port::ReadUnaligned<uint32_t>(
-                      std::as_bytes(file_buffer.subspan(sizeof(uint32_t)))) -
-                  frame0_offset;
+  if (const auto frame0_offset = port::ReadUnaligned<uint32_t>(file_buffer)) {
+    frame0_size =
+        port::ReadUnaligned<uint32_t>(file_buffer.subspan(sizeof(uint32_t))) -
+        frame0_offset;
   }
 
   // The table holds file positions, worked out as if the file had no palette.
   // The file buffer starts at the table and leaves frame 0 out, so take off
   // the header and frame 0 to get a position in the buffer.
-  const auto offset = port::ReadUnaligned<uint32_t>(std::as_bytes(
-      file_buffer.subspan(base::ToSize(frame) * sizeof(uint32_t))));
+  const auto offset = port::ReadUnaligned<uint32_t>(
+      file_buffer.subspan(base::ToSize(frame) * sizeof(uint32_t)));
   if (offset) {
     return offset - (frame0_size + kWsaFileHeaderSize);
   }
   return 0L;
 }
 
-static int64_t FileFrameOffset(int file_handle, int frame, int palette_size) {
-  uint32_t offset = 0;
+}  // namespace
 
-  SeekFileHandle(file_handle, (frame * 4) + kWsaFileHeaderSize, SEEK_SET);
+bool WsaAnimation::ApplyFrameDelta(const int delta_number,
+                                   const std::span<uint8_t> dest,
+                                   const int dest_stride) {
+  // Get the offset of the given frame in the file buffer and its size, which
+  // is (frame + 1 offset) - (offset).
+  const std::span<const std::byte> file_buffer = file_buffer_;
+  const int64_t frame_offset = ResidentFrameOffset(file_buffer, delta_number);
+  const int64_t frame_data_size =
+      ResidentFrameOffset(file_buffer, delta_number + 1) - frame_offset;
 
-  // A zero entry means there is no such delta; it must stay zero rather than
-  // pick up the palette size, or callers could not tell.
-  if (ReadFileHandle(file_handle, base::ObjectBytes(offset)) !=
-          sizeof(uint32_t) ||
-      offset == 0) {
-    return 0;
-  }
-  // The table's offsets are worked out as if the file had no palette.
-  return int64_t{offset} + palette_size;
-}
-
-static bool ApplyFrameDelta(const SysAnimHeader* sys_header, int delta_number,
-                            std::span<uint8_t> dest, int dest_stride) {
-  int64_t frame_data_size = 0;
-  int64_t frame_offset = 0;
-
-  const int palette_size = sys_header->flags & WSA_PALETTE_PRESENT ? 768 : 0;
-  auto compressed_delta = sys_header->delta_buffer;
-
-  if (sys_header->flags & WSA_RESIDENT) {
-    // Get the offset of the given frame in the resident file and its size,
-    // which is (frame + 1 offset) - (offset). Point at the delta data, figure
-    // the offset to load it into the end of the delta buffer, and copy it
-    // there; see OpenAnimation() for why the end.
-    frame_offset = ResidentFrameOffset(sys_header->file_buffer, delta_number);
-    frame_data_size =
-        ResidentFrameOffset(sys_header->file_buffer, delta_number + 1) -
-        frame_offset;
-
-    // A corrupt offset table must not copy from outside the loaded file data
-    // or past the delta buffer. A zero
-    // offset for either frame (no such delta) also ends up here.
-    if (frame_offset < 0 || frame_data_size <= 0 ||
-        std::cmp_greater(frame_data_size, sys_header->delta_buffer.size()) ||
-        std::cmp_greater(frame_offset + frame_data_size,
-                         sys_header->file_buffer.size())) {
-      return false;
-    }
-
-    const auto data = sys_header->file_buffer.subspan(
-        base::ToSize(frame_offset), base::ToSize(frame_data_size));
-    compressed_delta = compressed_delta.subspan(
-        sys_header->delta_buffer.size() - base::ToSize(frame_data_size));
-
-    base::CopyBytes(std::as_writable_bytes(compressed_delta),
-                    std::as_bytes(data), frame_data_size);
-
-  } else if (sys_header->flags & WSA_FILE) {
-    // The file is not in RAM, so go to the file on disk, which is still open.
-    // Get the offset of the given frame and its size, which is
-    // (frame + 1 offset) - (offset), and return if FileFrameOffset()
-    // failed. Seek to the delta data, figure the offset to load it into the end
-    // of the delta buffer and read it in, returning if the correct amount was
-    // not read. The original asked "need error handling????" at both returns;
-    // DrawAnimationFrame() now stops at the frame it reached and reports it.
-    const int file_handle = sys_header->file_handle;
-    SeekFileHandle(file_handle, 0L, SEEK_SET);
-
-    frame_offset = FileFrameOffset(file_handle, delta_number, palette_size);
-    frame_data_size =
-        FileFrameOffset(file_handle, delta_number + 1, palette_size) -
-        frame_offset;
-
-    // A corrupt offset table must not size a read past the delta buffer.
-    if (!frame_offset || frame_data_size <= 0 ||
-        std::cmp_greater(frame_data_size, sys_header->delta_buffer.size())) {
-      return false;
-    }
-
-    SeekFileHandle(file_handle, static_cast<int32_t>(frame_offset), SEEK_SET);
-    compressed_delta = compressed_delta.subspan(
-        sys_header->delta_buffer.size() - base::ToSize(frame_data_size));
-
-    if (ReadFileHandle(file_handle, std::as_writable_bytes(compressed_delta)) !=
-        static_cast<int>(frame_data_size)) {
-      return false;
-    }
+  // A corrupt offset table must not copy from outside the loaded file data or
+  // past the delta buffer. A zero offset for either frame (no such delta) also
+  // ends up here.
+  const std::span delta_buffer = delta_buffer_;
+  if (frame_offset < 0 || frame_data_size <= 0 ||
+      std::cmp_greater(frame_data_size, delta_buffer.size()) ||
+      std::cmp_greater(frame_offset + frame_data_size, file_buffer.size())) {
+    return false;
   }
 
-  // Uncompress data at end of delta buffer to the beginning of delta buffer,
-  // then apply the XOR delta to the target buffer or straight to the view.
-  LCW_Uncompress(compressed_delta, sys_header->delta_buffer);
+  // Copy the compressed delta to the end of the delta buffer; see Load() for
+  // why the end.
+  const auto data = file_buffer.subspan(base::ToSize(frame_offset),
+                                        base::ToSize(frame_data_size));
+  const auto compressed_delta =
+      delta_buffer.subspan(delta_buffer.size() - base::ToSize(frame_data_size));
+  base::CopyBytes(compressed_delta, data, frame_data_size);
 
-  if (sys_header->flags & WSA_TARGET_IN_BUFFER) {
-    ApplyXorDelta(dest, sys_header->delta_buffer);
-  } else {
-    ApplyXorDeltaToView(dest, sys_header->delta_buffer, sys_header->pixel_width,
-                        dest_stride, /*copy=*/false);
-  }
-
+  // Uncompress it to the beginning of the delta buffer, then XOR the delta
+  // onto the view.
+  LCW_Uncompress(compressed_delta, delta_buffer);
+  ApplyXorDeltaToView(dest, delta_buffer, width_, dest_stride, /*copy=*/false);
   return true;
 }

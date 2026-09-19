@@ -26,16 +26,23 @@ namespace {
 // Contents of the single file the stubs below serve, and the read cursor.
 std::vector<char> file_image;
 int64_t file_pos = 0;
+// Handles opened and not yet closed.
+int open_handles = 0;
 
 }  // namespace
 
 // Link-time stubs for the file layer the game supplies.
-int OpenFileHandle(std::string_view /*file_name*/, FileAccess /*mode*/) {
+// Every name but "MISSING.WSA" opens the file image.
+int OpenFileHandle(std::string_view file_name, FileAccess /*mode*/) {
+  if (file_name == "MISSING.WSA") {
+    return -1;
+  }
   file_pos = 0;
+  ++open_handles;
   return 1;
 }
 
-void CloseFileHandle(int /*handle*/) {}
+void CloseFileHandle(int /*handle*/) { --open_handles; }
 
 int32_t ReadFileHandle(int /*handle*/, std::span<std::byte> buffer) {
   const int64_t available =
@@ -68,8 +75,8 @@ void SDL_Event_Handler(SDL_Event* /*event*/) {}
 // LCW decoding is not under test: frames are "stored", so the compressed bytes
 // are the delta itself. `source` is the back of `dest`, which a forward copy
 // handles.
-int32_t LCW_Uncompress(std::span<const unsigned char> source,
-                       std::span<unsigned char> dest) {
+int32_t LCW_Uncompress(std::span<const std::byte> source,
+                       std::span<std::byte> dest) {
   if (source.size() > dest.size()) {
     return 0;
   }
@@ -121,23 +128,41 @@ std::vector<char> MakeWsa(int width, int height, int largest_frame_size = 256,
   return out;
 }
 
-TEST(WsaTest, OpenClearsWholeTargetBufferForLargeFrames) {
-  constexpr int kWidth = 320;
-  constexpr int kHeight = 240;
-  file_image = MakeWsa(kWidth, kHeight);
+TEST(WsaTest, ClosedAnimationDrawsNothing) {
+  WsaAnimation animation("MISSING.WSA");
+  EXPECT_FALSE(animation.is_open());
+  EXPECT_EQ(animation.frame_count(), 0);
 
-  void* handle = OpenAnimation("TEST.WSA", WSA_OPEN_FROM_DISK);
-  ASSERT_NE(handle, nullptr);
+  std::vector<uint8_t> page(size_t{16} * 16, '\x5a');
+  GraphicBufferClass view(16, 16, page);
+  EXPECT_FALSE(animation.DrawFrame(view, 0));
+  EXPECT_EQ(std::count(page.begin(), page.end(), '\x5a'), std::ssize(page));
+}
 
-  // Frame 0 decodes to nothing here, so the page receives the target buffer as
-  // OpenAnimation() left it. The old 16-bit clear stopped after
-  // 76800 % 65536 bytes.
-  std::vector<uint8_t> page(size_t{kWidth} * kHeight, '\x5a');
-  GraphicBufferClass view(kWidth, kHeight, page);
-  ASSERT_TRUE(DrawAnimationFrame(handle, view, 0));
-  EXPECT_EQ(std::count(page.begin(), page.end(), '\0'), std::ssize(page));
+TEST(WsaTest, CloseMakesAnimationInert) {
+  file_image = MakeWsa(16, 16);
+  WsaAnimation animation("TEST.WSA");
+  ASSERT_TRUE(animation.is_open());
 
-  CloseAnimation(handle);
+  animation.Close();
+  EXPECT_FALSE(animation.is_open());
+  EXPECT_EQ(animation.frame_count(), 0);
+
+  std::vector<uint8_t> page(size_t{16} * 16, '\0');
+  GraphicBufferClass view(16, 16, page);
+  EXPECT_FALSE(animation.DrawFrame(view, 0));
+}
+
+TEST(WsaTest, ClosesFileAfterLoading) {
+  file_image = MakeWsa(16, 16);
+  open_handles = 0;
+  EXPECT_TRUE(WsaAnimation("TEST.WSA").is_open());
+  EXPECT_EQ(open_handles, 0);
+
+  // A rejected file is closed again too.
+  file_image = MakeWsa(16, 16, 10, 4);
+  EXPECT_FALSE(WsaAnimation("TEST.WSA").is_open());
+  EXPECT_EQ(open_handles, 0);
 }
 
 TEST(WsaTest, OpenRejectsFirstFrameLargerThanDeltaBuffer) {
@@ -145,7 +170,7 @@ TEST(WsaTest, OpenRejectsFirstFrameLargerThanDeltaBuffer) {
   // header bytes ANIMATE counts, but frame 0 is 16 bytes.
   file_image = MakeWsa(16, 16, 40, 16);
 
-  EXPECT_EQ(OpenAnimation("TEST.WSA", WSA_OPEN_FROM_DISK), nullptr);
+  EXPECT_FALSE(WsaAnimation("TEST.WSA").is_open());
 }
 
 TEST(WsaTest, OpenRejectsLargestFrameSmallerThanAnimateHeader) {
@@ -153,7 +178,7 @@ TEST(WsaTest, OpenRejectsLargestFrameSmallerThanAnimateHeader) {
   // past the delta buffer.
   file_image = MakeWsa(16, 16, 10, 4);
 
-  EXPECT_EQ(OpenAnimation("TEST.WSA", WSA_OPEN_FROM_DISK), nullptr);
+  EXPECT_FALSE(WsaAnimation("TEST.WSA").is_open());
 }
 
 // Builds a 16x16 two-frame WSA. Frame 0 is on the page; the offset table
@@ -180,22 +205,18 @@ std::vector<char> MakeTwoFrameWsa(int claimed_size) {
   return out;
 }
 
-// Opens the corrupt animation, animates to frame 1, and checks that the
-// oversized frame was not drawn. Run under ASan, this also catches the frame
-// landing outside the delta buffer.
-void ExpectOversizedFrameIsNotLoaded(WsaOpenFlags flags) {
+// Run under ASan, this also catches the frame landing outside the delta buffer.
+TEST(WsaTest, AnimateRejectsOversizedFrame) {
   file_image = MakeTwoFrameWsa(600);
 
-  void* handle = OpenAnimation("TEST.WSA", flags);
-  ASSERT_NE(handle, nullptr);
+  WsaAnimation animation("TEST.WSA");
+  ASSERT_TRUE(animation.is_open());
 
   std::vector<uint8_t> page(size_t{16} * 16, '\0');
   GraphicBufferClass view(16, 16, page);
-  DrawAnimationFrame(handle, view, 1);
+  animation.DrawFrame(view, 1);
 
   EXPECT_EQ(std::count(page.begin(), page.end(), '\xee'), 0);
-
-  CloseAnimation(handle);
 }
 
 // Returns a delta that XORs the first pixel of the frame with `value`.
@@ -236,23 +257,21 @@ std::vector<char> MakeDeltaWsa(const std::vector<std::vector<uint8_t>>& deltas,
   return out;
 }
 
-TEST(WsaTest, DiskAnimationWithPaletteDoesNotWrapWithoutLoopFrame) {
+TEST(WsaTest, AnimationWithPaletteDoesNotWrapWithoutLoopFrame) {
   file_image = MakeDeltaWsa({XorFirstPixel(0x01), XorFirstPixel(0x02)},
                             /*palette=*/true);
 
-  void* handle = OpenAnimation("TEST.WSA", WSA_OPEN_FROM_DISK);
-  ASSERT_NE(handle, nullptr);
+  WsaAnimation animation("TEST.WSA");
+  ASSERT_TRUE(animation.is_open());
 
   std::vector<uint8_t> page(4, 0);
   GraphicBufferClass view(4, 1, page);
-  ASSERT_TRUE(DrawAnimationFrame(handle, view, 0));
+  ASSERT_TRUE(animation.DrawFrame(view, 0));
 
   // Going backwards through a loop frame would reach frame 2 in one step, but
   // there is none, so both deltas have to be applied.
-  EXPECT_TRUE(DrawAnimationFrame(handle, view, 2));
+  EXPECT_TRUE(animation.DrawFrame(view, 2));
   EXPECT_EQ(page.front(), 0x03);
-
-  CloseAnimation(handle);
 }
 
 TEST(WsaTest, AnimateStopsAtFrameItCannotLoad) {
@@ -261,27 +280,17 @@ TEST(WsaTest, AnimateStopsAtFrameItCannotLoad) {
       MakeDeltaWsa({XorFirstPixel(0x01), std::vector<uint8_t>(600, 0xee)},
                    /*palette=*/false);
 
-  void* handle = OpenAnimation("TEST.WSA", WSA_OPEN_FROM_MEM);
-  ASSERT_NE(handle, nullptr);
+  WsaAnimation animation("TEST.WSA");
+  ASSERT_TRUE(animation.is_open());
 
   std::vector<uint8_t> page(4, 0);
   GraphicBufferClass view(4, 1, page);
-  EXPECT_FALSE(DrawAnimationFrame(handle, view, 2));
+  EXPECT_FALSE(animation.DrawFrame(view, 2));
   EXPECT_EQ(page.front(), 0x01);
 
   // The animation knows it is showing frame 1, so asking for it is no work.
-  EXPECT_TRUE(DrawAnimationFrame(handle, view, 1));
+  EXPECT_TRUE(animation.DrawFrame(view, 1));
   EXPECT_EQ(page.front(), 0x01);
-
-  CloseAnimation(handle);
-}
-
-TEST(WsaTest, AnimateRejectsOversizedFrameReadFromFile) {
-  ExpectOversizedFrameIsNotLoaded(WSA_OPEN_FROM_DISK);
-}
-
-TEST(WsaTest, AnimateRejectsOversizedFrameCopiedFromMemory) {
-  ExpectOversizedFrameIsNotLoaded(WSA_OPEN_FROM_MEM);
 }
 
 }  // namespace
@@ -289,17 +298,17 @@ TEST(WsaTest, AnimateRejectsOversizedFrameCopiedFromMemory) {
 TEST(WsaDeltaTest, BoundsRunsSkipsAndTruncatedCommands) {
   std::array<uint8_t, 6> output{1, 2, 3, 4, 5, 6};
   const std::array<uint8_t, 6> run{0, 3, 0x10, 0x80, 0, 0};
-  ApplyXorDelta(std::span(output).first(3), run);
+  ApplyXorDelta(std::span(output).first(3), std::as_bytes(std::span(run)));
   EXPECT_EQ(output, (std::array<uint8_t, 6>{0x11, 0x12, 0x13, 4, 5, 6}));
   const auto before = output;
   const std::array<uint8_t, 3> excessive_run{0, 7, 0xff};
-  ApplyXorDelta(output, excessive_run);
+  ApplyXorDelta(output, std::as_bytes(std::span(excessive_run)));
   EXPECT_EQ(output, before);
   const std::array<uint8_t, 2> truncated{0x80, 0};
-  ApplyXorDelta(output, truncated);
+  ApplyXorDelta(output, std::as_bytes(std::span(truncated)));
   EXPECT_EQ(output, before);
   const std::array<uint8_t, 4> skip{0x86, 1, 0xff, 0};
-  ApplyXorDelta(output, skip);
+  ApplyXorDelta(output, std::as_bytes(std::span(skip)));
   EXPECT_EQ(output, before);
 }
 
@@ -307,7 +316,8 @@ TEST(WsaDeltaTest, CopiesRowsWithoutTouchingPadding) {
   std::array<uint8_t, 8> output{};
   output.fill(0xa5);
   const std::array<uint8_t, 8> literal{4, 1, 2, 3, 4, 0x80, 0, 0};
-  ApplyXorDeltaToView(output, literal, 2, 4, /*copy=*/true);
+  ApplyXorDeltaToView(output, std::as_bytes(std::span(literal)), 2, 4,
+                      /*copy=*/true);
   EXPECT_EQ(output,
             (std::array<uint8_t, 8>{1, 2, 0xa5, 0xa5, 3, 4, 0xa5, 0xa5}));
 }
@@ -316,7 +326,8 @@ TEST(WsaDeltaTest, XorsRowsWithoutTouchingPadding) {
   std::array<uint8_t, 8> output{};
   output.fill(0xa5);
   const std::array<uint8_t, 8> literal{4, 1, 2, 3, 4, 0x80, 0, 0};
-  ApplyXorDeltaToView(output, literal, 2, 4, /*copy=*/false);
+  ApplyXorDeltaToView(output, std::as_bytes(std::span(literal)), 2, 4,
+                      /*copy=*/false);
   EXPECT_EQ(output, (std::array<uint8_t, 8>{0xa4, 0xa7, 0xa5, 0xa5, 0xa6, 0xa1,
                                             0xa5, 0xa5}));
 }

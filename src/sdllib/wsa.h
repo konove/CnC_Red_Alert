@@ -27,73 +27,99 @@
 // back to frame 0.
 //
 // Example:
-//   void* anim = OpenAnimation("TITLE.WSA", WSA_OPEN_FROM_MEM, palette);
-//   for (int i = 0; i < AnimationFrameCount(anim); ++i) {
-//     DrawAnimationFrame(anim, view, i);
+//   WsaAnimation anim("TITLE.WSA", palette);
+//   for (int i = 0; i < anim.frame_count(); ++i) {
+//     anim.DrawFrame(view, i);
 //   }
-//   CloseAnimation(anim);
 
 #ifndef CNC_RED_ALERT_SDLLIB_WSA_H_
 #define CNC_RED_ALERT_SDLLIB_WSA_H_
 
 #include <cstddef>
-
 #include <cstdint>
 #include <span>
+#include <string_view>
+#include <vector>
 
-#include "base/attributes.h"
-#include "base/flags.h"
 #include "sdllib/gbuffer.h"
 
-// Flags for OpenAnimation(). The zero-valued names are the defaults and exist
-// only to make call sites readable; testing for them with `&` is always false.
-enum class CNC_FLAG_ENUM WsaOpenFlags {
-  // Try to load the entire animation into memory.
-  WSA_OPEN_FROM_MEM = 0x0000,
-  // First animate to an internal buffer, then copy to the page or viewport.
-  WSA_OPEN_INDIRECT = 0x0000,
-  // Keep the file open and read each frame's delta from disk as needed.
-  WSA_OPEN_FROM_DISK = 0x0001,
-  // Animate directly to the page or viewport.
-  WSA_OPEN_DIRECT = 0x0002,
+// A .WSA animation held in memory, in the manner of std::ifstream: the
+// constructor loads the file, is_open() says whether that worked, and a closed
+// animation is safe to use, drawing nothing and reporting no frames. The games
+// rely on that to play on without an animation whose file is missing.
+//
+// Frames are XORed straight onto the view, so the view has to keep the previous
+// frame intact between calls to DrawFrame().
+class WsaAnimation {
+ public:
+  // A closed animation.
+  WsaAnimation() = default;
 
-  // These two were added for the 32-bit library to say where the deltas land
-  // rather than how. Indirect is best if the destination is the visible page
-  // and the animation is not played linearly, or if the destination is modified
-  // between frames: a direct animation XORs onto whatever is on the destination
-  // and so needs the previous frame still intact there.
-  WSA_OPEN_TO_PAGE = WSA_OPEN_DIRECT,
-  WSA_OPEN_TO_BUFFER = WSA_OPEN_INDIRECT,
+  // Loads the animation in `file_name`; it stays closed if the file is missing
+  // or corrupt. If the file has a palette and `palette` holds at least 768
+  // bytes (256 RGB triples), it is read into `palette`.
+  explicit WsaAnimation(std::string_view file_name,
+                        std::span<uint8_t> palette = {});
+
+  [[nodiscard]] bool is_open() const { return is_open_; }
+
+  // Frees the animation's buffers. Does nothing if it is already closed.
+  void Close();
+
+  // Draws frame `frame_number` into `view` at the offset stored in the
+  // animation file, applying every delta between the last frame drawn and the
+  // requested one. Frames may be requested in any order, but the cost grows
+  // with the distance from the previous frame. Returns false if the animation
+  // is closed, the frame number is out of range, the view cannot be locked, or
+  // the frame does not fit the view. Also returns false if a delta on the way
+  // is corrupt; `view` then shows the last frame that could be reached, and a
+  // later call carries on from there.
+  bool DrawFrame(GraphicViewPortClass& view, int frame_number);
+
+  // The number of frames, 0 if the animation is closed. Negative for an Amiga
+  // animation, which sets the high bit of the file's 16-bit frame count.
+  [[nodiscard]] int frame_count() const {
+    return static_cast<int16_t>(total_frames_);
+  }
+
+ private:
+  // Does the constructor's work on the open file. On failure the animation is
+  // left half set up for Close() to reset.
+  bool Load(int file_handle, std::span<uint8_t> palette);
+
+  // Decompresses the delta that produces frame `delta_number` from the frame
+  // before it and XORs it onto `dest`, the view's pixels, whose rows are
+  // `dest_stride` apart; delta total_frames_ is the loop delta. Returns false,
+  // with `dest` untouched, if the offset table is corrupt.
+  bool ApplyFrameDelta(int delta_number, std::span<uint8_t> dest,
+                       int dest_stride);
+
+  bool is_open_ = false;
+  int total_frames_ = 0;
+  // The frame the view currently shows. Equal to total_frames_ until the first
+  // DrawFrame(), meaning that not even frame 0 has been applied yet.
+  int current_frame_ = 0;
+  // Where the frame goes on the view. The file's offsets are read as signed,
+  // so x_ and y_ may be negative.
+  int x_ = 0;
+  int y_ = 0;
+  int width_ = 0;
+  int height_ = 0;
+  // False if the file has no frame 0: the animation starts from whatever is
+  // already on the view.
+  bool has_frame0_ = false;
+  // Frame 0 is a delta against a picture the caller has already drawn, so it is
+  // XORed onto the view instead of overwriting it.
+  bool frame0_is_delta_ = false;
+  // False if the file has no loop delta, so playback cannot wrap from the last
+  // frame to frame 0 or back and DrawFrame() always takes the direct route.
+  bool has_loop_delta_ = false;
+  // Scratch space that holds one frame's delta, first compressed at the back
+  // and then decompressed at the front.
+  std::vector<std::byte> delta_buffer_;
+  // The file's offset table and frames 1 and up.
+  std::vector<std::byte> file_buffer_;
 };
-using enum WsaOpenFlags;
-template <>
-inline constexpr bool base::kIsFlagEnum<WsaOpenFlags> = true;
-
-// Opens the animation in `file_name` and returns a handle to pass to
-// DrawAnimationFrame(), or nullptr if the file is missing, corrupt or too large
-// for memory. If the file has a palette and `palette` holds at least 768 bytes
-// (256 RGB triples), it is read into `palette`. Release the handle with
-// CloseAnimation().
-void* OpenAnimation(const char* file_name, WsaOpenFlags open_flags,
-                    std::span<uint8_t> palette = {});
-
-// Closes the animation's file, if it is being played from disk, and frees
-// `handle`. Does nothing if `handle` is nullptr.
-void CloseAnimation(void* handle);
-
-// Draws frame `frame_number` of the animation into `view` at the offset stored
-// in the animation file, applying every delta between the last frame drawn and
-// the requested one. Frames may be requested in any order, but the cost grows
-// with the distance from the previous frame. Returns false if `handle` is
-// nullptr, the frame number is out of range, the view cannot be locked, or the
-// frame does not fit the view. Also returns false if a delta on the way cannot
-// be loaded; `view` then shows the last frame that could be reached, and a
-// later call carries on from there.
-bool DrawAnimationFrame(void* handle, GraphicViewPortClass& view,
-                        int frame_number);
-
-// Returns the number of frames in the animation, or 0 if `handle` is nullptr.
-int AnimationFrameCount(void* handle);
 
 // XOR delta decoders, formerly the assembly in LP_ASM.ASM and now in wsa.cc.
 // All of them stop quietly at the first command that is malformed or would
@@ -102,7 +128,6 @@ int AnimationFrameCount(void* handle);
 // Applies the uncompressed XOR delta in `delta` to `target`, treating `target`
 // as one contiguous run of pixels.
 void ApplyXorDelta(std::span<uint8_t> target, std::span<const std::byte> delta);
-void ApplyXorDelta(std::span<uint8_t> target, std::span<const uint8_t> delta);
 
 // Applies the uncompressed XOR delta in `delta` to a `width`-pixel-wide image
 // whose rows start `stride` bytes apart in `target`; pixels past `width` on
@@ -110,7 +135,7 @@ void ApplyXorDelta(std::span<uint8_t> target, std::span<const uint8_t> delta);
 // if `copy` is set. Does nothing if `width` or `stride` is not positive or
 // `stride` is less than `width`.
 void ApplyXorDeltaToView(std::span<uint8_t> target,
-                         std::span<const uint8_t> delta, int width, int stride,
-                         bool copy);
+                         std::span<const std::byte> delta, int width,
+                         int stride, bool copy);
 
 #endif  // CNC_RED_ALERT_SDLLIB_WSA_H_
