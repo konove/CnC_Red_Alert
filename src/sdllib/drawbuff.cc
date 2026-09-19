@@ -1011,6 +1011,12 @@ int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height) {
   return 0;
 }
 
+GraphicViewPortClass::~GraphicViewPortClass() {
+  if (LogicPage == this) {
+    LogicPage = nullptr;
+  }
+}
+
 GraphicViewPortClass* Set_Logic_Page(GraphicViewPortClass* ptr) {
   std::swap(LogicPage, ptr);
   return ptr;
@@ -1097,7 +1103,12 @@ GraphicBufferClass::GraphicBufferClass(int w, int h, std::span<uint8_t> buffer)
 
 GraphicBufferClass::GraphicBufferClass() { GraphicBuff = this; }
 
-GraphicBufferClass::~GraphicBufferClass() { Un_Init(); }
+GraphicBufferClass::~GraphicBufferClass() {
+  Un_Init();
+  if (WindowBuffer == this) {
+    WindowBuffer = nullptr;
+  }
+}
 
 void GraphicBufferClass::Init(int w, int h, std::span<uint8_t> buffer,
                               int32_t size, GBC_Enum flags) {

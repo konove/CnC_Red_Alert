@@ -105,4 +105,38 @@ TEST(LinearBlitTest, ClipsRowsAndColumnsOffTheBottomRight) {
                                         0, 0, 4, 5}));
 }
 
+// The game's pages are destroyed with the Game in ShutDown(), before the
+// static destructors run; nothing may be left pointing at them.
+TEST(LifetimeTest, DestroyingTheLogicPageClearsLogicPage) {
+  std::vector<uint8_t> pixels(size_t{4} * 4);
+  {
+    GraphicBufferClass buffer(4, 4, pixels);
+    GraphicViewPortClass view(&buffer, 0, 0, 2, 2);
+    Set_Logic_Page(view);
+  }
+  EXPECT_EQ(LogicPage, nullptr);
+}
+
+TEST(LifetimeTest, DestroyingAnotherViewKeepsLogicPage) {
+  std::vector<uint8_t> pixels(size_t{4} * 4);
+  GraphicBufferClass buffer(4, 4, pixels);
+  Set_Logic_Page(buffer);
+  {
+    const GraphicViewPortClass view(&buffer, 0, 0, 2, 2);
+  }
+  EXPECT_EQ(LogicPage, &buffer);
+  Set_Logic_Page(nullptr);
+}
+
+TEST(LifetimeTest, DestroyingTheWindowBufferClearsWindowBuffer) {
+  std::vector<uint8_t> pixels(size_t{4} * 4);
+  {
+    GraphicBufferClass buffer(4, 4, pixels);
+    // Escaping the scope is the point: the destructor must clear it.
+    // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-use-after-scope)
+    WindowBuffer = &buffer;
+  }
+  EXPECT_EQ(WindowBuffer, nullptr);
+}
+
 }  // namespace

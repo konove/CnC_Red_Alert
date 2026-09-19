@@ -209,7 +209,9 @@ class GraphicViewPortClass {
   GraphicViewPortClass(GraphicBufferClass* graphic_buff, int x, int y, int w,
                        int h);
   GraphicViewPortClass() = default;
-  ~GraphicViewPortClass() = default;
+  // Resets LogicPage if it points here, so that nothing draws into a
+  // viewport that is gone.
+  ~GraphicViewPortClass();
   GraphicViewPortClass(const GraphicViewPortClass&) = delete;
   GraphicViewPortClass& operator=(const GraphicViewPortClass&) = delete;
   GraphicViewPortClass(GraphicViewPortClass&&) = delete;
@@ -347,6 +349,7 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   GraphicBufferClass(int w, int h, std::span<uint8_t> buffer, int32_t size);
   GraphicBufferClass(int w, int h, std::span<uint8_t> buffer = {});
   GraphicBufferClass();
+  // Also resets WindowBuffer if this buffer is the window's surface.
   ~GraphicBufferClass();
 
   GraphicBufferClass(const GraphicBufferClass&) = delete;
