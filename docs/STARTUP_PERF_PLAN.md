@@ -126,7 +126,7 @@ Only worth doing after steps 2–3, when it is a visible share of the time.
 default audio driver (PulseAudio on PipeWire): 0.31 s wall, 0.11 s CPU.
 
 **Wall time: 0.19 s of it is waiting for audio to close.** At exit, `SDL_CloseAudioDevice` joins
-SDL2's audio thread, which sleeps for two buffer lengths to let the sound drain. `Audio_Init`
+SDL2's audio thread, which sleeps for two buffer lengths to let the sound drain. `OpenAudio`
 (`src/sdllib/ww_audio.cc`) asks for 2048 samples at 22,050 Hz, which is 93 ms per buffer, so the
 drain takes 186 ms. strace shows the 184 ms sleep, and the main thread blocked 0.27 s on the join
 (slower under strace). SDL's own PipeWire driver doesn't sleep like that: the same run takes 0.12 s.
@@ -152,10 +152,10 @@ but check playback on the real device. Skipping the close on process exit would 
 drain, but it leaves shutdown to the OS; prefer the smaller buffer.
 
 **Done 2026-09-17** (`src/sdllib/ww_audio.cc`, both games): 512 samples. Headless load 0.31 s → 0.16
-s wall with the default PulseAudio driver. Also clamped `Fade_Sample`'s step count to at least 1: a
-fade shorter than one callback divided by zero, which with 2048-sample buffers already happened for
-fades under 6 ticks. RA and TD save/load smoke tests pass. Listening on real speakers is still to
-do.
+s wall with the default PulseAudio driver. Also clamped `FadeOutSample`'s step count to at least 1:
+a fade shorter than one callback divided by zero, which with 2048-sample buffers already happened
+for fades under 6 ticks. RA and TD save/load smoke tests pass. Listening on real speakers is still
+to do.
 
 ### Step 5 update
 

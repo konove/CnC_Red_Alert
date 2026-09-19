@@ -178,8 +178,8 @@ void Nod_Ending() {
 #else
   SysMemPage.Blit(*PseudoSeenBuff);
 #endif  // NOT_FOR_WIN95
-  const auto kanefinl = Load_Sample("KANEFINL.AUD");
-  const auto loopie6m = Load_Sample("LOOPIE6M.AUD");
+  const auto kanefinl = LoadSample("KANEFINL.AUD");
+  const auto loopie6m = LoadSample("LOOPIE6M.AUD");
 
   Play_Movie("NODFINAL", THEME_NONE, false);
 
@@ -199,15 +199,15 @@ void Nod_Ending() {
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, "SATSELIN.PAL");
 
   Keyboard::Clear();
-  Play_Sample(kanefinl, 255, 128);
-  Play_Sample(loopie6m, 255, 128);
+  PlaySample(kanefinl, 255, 128);
+  PlaySample(loopie6m, 255, 128);
 
   bool mouseshown = false;
   bool done = false;
   int selection = 1;
   bool printedtext = false;
   while (!done) {
-    if (!printedtext && !Is_Sample_Playing(kanefinl.data())) {
+    if (!printedtext && !IsSamplePlaying(kanefinl.data())) {
       printedtext = true;
       Alloc_Object(
           new ScorePrintClass(Text_String(TXT_SEL_TARGET), 0, 180, _tanpal));
@@ -216,11 +216,11 @@ void Nod_Ending() {
     }
     Call_Back_Delay(1);
     if (!Keyboard::Check()) {
-      if (!Is_Sample_Playing(loopie6m.data())) {
-        Play_Sample(loopie6m, 255, 128);
+      if (!IsSamplePlaying(loopie6m.data())) {
+        PlaySample(loopie6m, 255, 128);
       }
     } else {
-      if (Is_Sample_Playing(kanefinl.data())) {
+      if (IsSamplePlaying(kanefinl.data())) {
         Clear_KeyBuffer();
       } else {
         const auto key = static_cast<uint32_t>(Keyboard::Get());
@@ -269,8 +269,8 @@ void Nod_Ending() {
 
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
-  Free_Sample(kanefinl.data());
-  Free_Sample(loopie6m.data());
+  FreeSample(kanefinl.data());
+  FreeSample(loopie6m.data());
 
   absl::SNPrintF(fname, sizeof(fname), "NODEND%d", selection);
   PreserveVQAScreen = true;

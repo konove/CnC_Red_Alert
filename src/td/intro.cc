@@ -73,7 +73,7 @@
 // Opens a movie on the given player without playing it. The io object must
 // stay alive until the player is closed. Returns true if the movie opened.
 static bool Open_Movie(VqaPlayer& player, GameFileVqaIo& io, const char* name) {
-  if (!Debug_Quiet && Get_Digi_Handle() != -1) {
+  if (!Debug_Quiet && GetDigiHandle() != -1) {
     AnimControl.OptionFlags |= VQAOPTF_AUDIO;
   } else {
     AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
@@ -175,7 +175,7 @@ void Choose_Side() {
   // setpalette = 1;
   //}
 
-  int statichandle = Play_Sample(staticaud, 255, 64);
+  int statichandle = PlaySample(staticaud, 255, 64);
   CountDownTimerClass sample_timer;
   sample_timer.Set(0x3f);
   Alloc_Object(new ScorePrintClass(TXT_GDI_NAME, 0, 180, yellowpal));
@@ -200,7 +200,7 @@ void Choose_Side() {
   }
 
   while (endframe != frame ||
-         (speechplaying && Is_Sample_Playing(speech.data()))) {
+         (speechplaying && IsSamplePlaying(speech.data()))) {
     anim.DrawFrame(SysMemPage, frame++);
     if (setpalette) {
       Wait_Vert_Blank();
@@ -212,9 +212,9 @@ void Choose_Side() {
     /*
     ** If the sample has stopped or is about to then restart it
     */
-    if (!Is_Sample_Playing(staticaud.data()) || !sample_timer.Time()) {
-      Stop_Sample(statichandle);
-      statichandle = Play_Sample(staticaud, 255, 64);
+    if (!IsSamplePlaying(staticaud.data()) || !sample_timer.Time()) {
+      StopSample(statichandle);
+      statichandle = PlaySample(staticaud, 255, 64);
       sample_timer.Set(0x3f);
     }
     Call_Back_Delay(3);  // delay only if haven't clicked
@@ -242,7 +242,7 @@ void Choose_Side() {
         Whom = HOUSE_GOOD;
         ScenPlayer = SCEN_PLAYER_GDI;
         endframe = 0;
-        Play_Sample(speechg);
+        PlaySample(speechg);
         speechplaying = true;
         speech = speechg;
 
@@ -252,7 +252,7 @@ void Choose_Side() {
         endframe = 14;
         Whom = HOUSE_BAD;
         ScenPlayer = SCEN_PLAYER_NOD;
-        Play_Sample(speechn);
+        PlaySample(speechn);
         speechplaying = true;
         speech = speechn;
       }
@@ -324,7 +324,7 @@ void Choose_Side() {
   } else {
     PreserveVQAScreen = true;
   }
-  Stop_Sample(statichandle);
+  StopSample(statichandle);
   delete[] port::CharBytes(std::span(staticaud)).data();
   delete[] port::CharBytes(std::span(speechg)).data();
   delete[] port::CharBytes(std::span(speechn)).data();

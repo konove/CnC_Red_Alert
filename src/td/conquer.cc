@@ -2156,7 +2156,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     GameFileVqaIo movie_io;  // Must outlive the open movie.
     player.SetIo(&movie_io);
 
-    if (!Debug_Quiet && Get_Digi_Handle() != -1) {
+    if (!Debug_Quiet && GetDigiHandle() != -1) {
       AnimControl.OptionFlags |= VQAOPTF_AUDIO;
     } else {
       AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;

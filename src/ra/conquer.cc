@@ -379,7 +379,7 @@ void ServiceRealTimeFor(const int ticks) {
 void ServiceBackgroundTasks() {
   // Music and speech maintenance
   if (SampleType != SAMPLE_NONE) {
-    Sound_Callback();
+    PumpSampleStreams();
     Theme.AI();
     Speak_AI();
   }

@@ -284,7 +284,7 @@ int main(int argc, char* argv[])
       Create_Main_Window(nullptr, 0, ScreenWidth, ScreenHeight);
       CCDebugString("C&C95 - Initialising audio.\n");
 
-      SoundOn = Audio_Init(MainWindow, 16, false, 11025 * 2, 0);
+      SoundOn = OpenAudio(MainWindow, 16, false, 11025 * 2, 0);
 
       Palette.assign(768, 0);
 
@@ -496,9 +496,9 @@ void __cdecl Prog_End() {
     NullModemClass::Change_IRQ_Priority(0);
   }
 #endif
-  CCDebugString("C&C95 - About to call Sound_End.\n");
-  Sound_End();
-  CCDebugString("C&C95 - Returned from Sound_End.\n");
+  CCDebugString("C&C95 - About to call CloseAudio.\n");
+  CloseAudio();
+  CCDebugString("C&C95 - Returned from CloseAudio.\n");
   if (WWMouse) {
     CCDebugString("C&C95 - Deleting mouse object.\n");
     delete WWMouse;

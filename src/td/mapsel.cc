@@ -605,7 +605,7 @@ void Map_Selection() {
   Increase_Palette_Luminance(InterpolationPalette, 30, 30, 30, 63);
   Read_Interpolation_Palette("MAP_LOCL.PAL");
 
-  Play_Sample(appear1, 255, Options.Normalize_Sound(110));
+  PlaySample(appear1, 255, Options.Normalize_Sound(110));
   Fade_Palette_To(localpalette, kFadePaletteMedium, Call_Back);
   for (int i = 1; i < greyearth.frame_count(); i++) {
     Call_Back_Delay(4);
@@ -662,30 +662,30 @@ void Map_Selection() {
   SysMemPage.Blit(*PseudoSeenBuff);
   Interpolate_2X_Scale(PseudoSeenBuff, &SeenBuff, {});
 
-  Play_Sample(sfx4, 255, Options.Normalize_Sound(130));
-  Play_Sample(text2, 255, Options.Normalize_Sound(90));
+  PlaySample(sfx4, 255, Options.Normalize_Sound(130));
+  PlaySample(text2, 255, Options.Normalize_Sound(90));
 
   int frame = 1;
 
   while (frame < anim.frame_count()) {
     if (frame == 16 || frame == 33 || frame == 44 || frame == 70 ||
         frame == 73) {
-      Play_Sample(text2, 255, Options.Normalize_Sound(90));
+      PlaySample(text2, 255, Options.Normalize_Sound(90));
     }
     if (frame == 21 || frame == 27) {
-      Play_Sample(target1, 255, Options.Normalize_Sound(90));
+      PlaySample(target1, 255, Options.Normalize_Sound(90));
     }
     if (frame == 45 || frame == 47 || frame == 49) {
-      Play_Sample(beepy6, 255, Options.Normalize_Sound(90));
+      PlaySample(beepy6, 255, Options.Normalize_Sound(90));
     }
     if (frame == 51) {
-      Play_Sample(world2, 255, Options.Normalize_Sound(90));
+      PlaySample(world2, 255, Options.Normalize_Sound(90));
     }
     if (frame == 70 || frame == 72) {
-      Play_Sample(beepy2, 255, Options.Normalize_Sound(90));
+      PlaySample(beepy2, 255, Options.Normalize_Sound(90));
     }
     if (frame == 74) {
-      Play_Sample(target2, 255, Options.Normalize_Sound(110));
+      PlaySample(target2, 255, Options.Normalize_Sound(110));
     }
 
     // the HEARTH_* animations don't have the text, but the EARTH_* ones do
@@ -823,7 +823,7 @@ void Map_Selection() {
   */
   const int xcoord = house == HOUSE_GOOD ? 0 : 204;
   SysMemPage.Blit(backpage, xcoord, 1, 0, 0, 20 * 6, 8);
-  Play_Sample(text2, 255, Options.Normalize_Sound(90));
+  PlaySample(text2, 255, Options.Normalize_Sound(90));
   if (house == HOUSE_GOOD) {
     Alloc_Object(new ScorePrintClass(TXT_MAP_GDI, 0, 2, greenpal));
   } else {
@@ -831,7 +831,7 @@ void Map_Selection() {
   }
   Call_Back_Delay(60);
 
-  Play_Sample(country1, 255, Options.Normalize_Sound(90));
+  PlaySample(country1, 255, Options.Normalize_Sound(90));
   progress.DrawFrame(SysMemPage, startframe + 1);
   progress.DrawFrame(SysMemPage, startframe + 1);
   Bit_It_In(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff, 1, true);
@@ -855,7 +855,7 @@ void Map_Selection() {
 
   SysMemPage.Blit(backpage, xcoord, 1, 0, 0, 20 * 6, 8);
   if (!lastscenario) {
-    Play_Sample(text2, 255, Options.Normalize_Sound(90));
+    PlaySample(text2, 255, Options.Normalize_Sound(90));
     if (house == HOUSE_GOOD) {
       Alloc_Object(new ScorePrintClass(TXT_MAP_NOD, 0, 12, greenpal));
     } else {
@@ -864,7 +864,7 @@ void Map_Selection() {
     Call_Back_Delay(65);
   }
 
-  Play_Sample(country1, 255, Options.Normalize_Sound(90));
+  PlaySample(country1, 255, Options.Normalize_Sound(90));
   progress.DrawFrame(SysMemPage, startframe + 2);
   Bit_It_In(0, 0, 320, 200, &SysMemPage, PseudoSeenBuff, 1, true);
   backpage.Blit(SysMemPage, 0, 0, xcoord, 11, 20 * 6, 8);
@@ -890,7 +890,7 @@ void Map_Selection() {
   /*
   ** Now print the text over the page
   */
-  Play_Sample(text2, 255, Options.Normalize_Sound(90));
+  PlaySample(text2, 255, Options.Normalize_Sound(90));
   Alloc_Object(new ScorePrintClass(TXT_MAP_LOCATE, 0, 160, greenpal));
   Call_Back_Delay(20);
   Alloc_Object(new ScorePrintClass(TXT_MAP_NEXT_MISSION, 0, 170, greenpal));
@@ -940,13 +940,13 @@ void Map_Selection() {
   for (frame = 0; frame < (lastscenario ? progress.frame_count() - 4 : 13);
        frame++) {
     if (!frame) {
-      Play_Sample(beepy3, 255, Options.Normalize_Sound(90));
+      PlaySample(beepy3, 255, Options.Normalize_Sound(90));
     }
     if (frame == 2) {
-      Play_Sample(beepy3, 255, Options.Normalize_Sound(90));
+      PlaySample(beepy3, 255, Options.Normalize_Sound(90));
     }
     if (frame == 6) {
-      Play_Sample(newtarg1, 255, Options.Normalize_Sound(90));
+      PlaySample(newtarg1, 255, Options.Normalize_Sound(90));
     }
 
     if (lastscenario) {
@@ -1028,7 +1028,7 @@ void Map_Selection() {
   int selection = 0;
   int color = 0;
   // erase the "Locating Coordinates" message...
-  Play_Sample(beepy6, 255, Options.Normalize_Sound(90));
+  PlaySample(beepy6, 255, Options.Normalize_Sound(90));
   if (!lastscenario) {
 #if (defined(GERMAN) || defined(FRENCH))
     SysMemPage.Fill_Rect(0, 160, 20 * 6, 186, kTBlack);
@@ -1061,7 +1061,7 @@ void Map_Selection() {
   }
 
   //	Set_Font(ScoreFontPtr);
-  Play_Sample(text2, 255, Options.Normalize_Sound(90));
+  PlaySample(text2, 255, Options.Normalize_Sound(90));
   Alloc_Object(
       new ScorePrintClass(TXT_MAP_SELECT, attackxcoord, 160, greenpal));
   Cycle_Call_Back_Delay(16, progresspalette);
@@ -1097,11 +1097,11 @@ void Map_Selection() {
         if (base::At(base::At(base::At(CountryArray, scenario).CountryColor,
                               static_cast<int>(ScenDir)),
                      selection) == color) {
-          Play_Sample(world2, 255, Options.Normalize_Sound(90));
+          PlaySample(world2, 255, Options.Normalize_Sound(90));
           done = 1;
           break;
         }
-        Play_Sample(scold1, 255, Options.Normalize_Sound(90));
+        PlaySample(scold1, 255, Options.Normalize_Sound(90));
       }
     }
   }

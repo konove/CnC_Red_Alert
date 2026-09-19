@@ -211,7 +211,7 @@ void ThemeClass::AI() {
       Play_Song(Pending);
       Pending = THEME_PICK_ANOTHER;
     }
-    Sound_Callback();
+    PumpSampleStreams();
   }
 }
 
@@ -289,7 +289,7 @@ void ThemeClass::Queue_Song(ThemeType theme) {
     }
 
     Pending = theme;
-    Fade_Sample(Current, kThemeDelay);
+    FadeOutSample(Current, kThemeDelay);
   }
 }
 
@@ -319,7 +319,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
       if (_themes[theme].Scenario != 99) {
         GameFile file(Theme_File_Name(theme));
         if (file.IsAvailable()) {
-          Current = File_Stream_Sample_Vol(Theme_File_Name(theme), 0xFF, true);
+          Current = StreamSampleFile(Theme_File_Name(theme), 0xFF, true);
         } else {
           Current = -1;
         }
@@ -327,7 +327,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
         Current = -1;
       }
 #else
-      Current = File_Stream_Sample_Vol(Theme_File_Name(theme), 0xFF, true);
+      Current = StreamSampleFile(Theme_File_Name(theme), 0xFF, true);
 #endif
     }
   }
@@ -411,7 +411,7 @@ int ThemeClass::Track_Length(ThemeType theme) {
 void ThemeClass::Stop() {
   if ((ScoresPresent && SampleType != SAMPLE_NONE && !Debug_Quiet) &&
       (Current != -1)) {
-    Stop_Sample(Current);
+    StopSample(Current);
     Current = -1;
     Score = THEME_NONE;
     Pending = THEME_NONE;
@@ -434,7 +434,7 @@ void ThemeClass::Stop() {
 bool ThemeClass::Still_Playing() const {
   if (ScoresPresent && SampleType != SAMPLE_NONE && Current != -1 &&
       !Debug_Quiet) {
-    return Sample_Status(Current);
+    return IsSamplePlaying(Current);
   }
   return false;
 }

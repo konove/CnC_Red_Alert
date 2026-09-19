@@ -2123,14 +2123,14 @@ void Anim_Init() {
   //	AnimControl.AudioBufSize = 32768U;
   // AnimControl.DigiCard = NewConfig.DigitCard;
   // AnimControl.HMIBufSize = 8192;
-  // AnimControl.DigiHandle = Get_Digi_Handle();
+  // AnimControl.DigiHandle = GetDigiHandle();
   // AnimControl.Volume = 0x00FF;
   // AnimControl.AudioRate = 22050;
   //	if (NewConfig.Speed) AnimControl.AudioRate = 11025;
-  AnimControl.AudioDeviceID = Get_Audio_Device();
-  AnimControl.AudioCallback = Get_Audio_Callback_Ptr();
-  AnimControl.AudioSpec = Get_Audio_Spec();
-  // if (!Debug_Quiet && Get_Digi_Handle() != -1) {
+  AnimControl.AudioDeviceID = AudioDeviceId();
+  AnimControl.AudioCallback = ExtraAudioCallbackSlot();
+  AnimControl.AudioSpec = AudioOutputSpec();
+  // if (!Debug_Quiet && GetDigiHandle() != -1) {
   // AnimControl.OptionFlags |= VQAOPTF_AUDIO;
   //}
 }

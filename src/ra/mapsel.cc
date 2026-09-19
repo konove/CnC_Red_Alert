@@ -141,8 +141,8 @@ static int ChoiceUnderMouse(const bool is_soviet, const int scenario) {
 }
 
 static void PlayMapSound(const std::string_view file_name) {
-  Play_Sample(MixArchive::RetrieveData(file_name), 255,
-              Options.Normalize_Volume(170));
+  PlaySample(MixArchive::RetrieveData(file_name), 255,
+             Options.Normalize_Volume(170));
 }
 
 // Plays the animation that draws the map, leaving its last frame on screen and

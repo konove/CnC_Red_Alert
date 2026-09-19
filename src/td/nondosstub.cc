@@ -72,7 +72,7 @@ void Focus_Loss() {
   }
 
   Theme.Stop();
-  Stop_Primary_Sound_Buffer();
+  PauseAudio();
   if (WWMouse) {
     WWMouseClass::Clear_Cursor_Clip();
   }
@@ -81,7 +81,7 @@ void Focus_Loss() {
 void Focus_Restore() {
   Restore_Cached_Icons();
   Map.Flag_To_Redraw(true);
-  Start_Primary_Sound_Buffer(true);
+  ResumeAudio(true);
 
   if (!InMovie) {
     Theme.Queue_Song(OldTheme);

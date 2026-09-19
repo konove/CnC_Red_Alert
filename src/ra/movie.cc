@@ -106,7 +106,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
       AnimControl.ImageBuf = SysMemPage.Get_Bytes();
     }
 
-    if (!Debug_Quiet && Get_Digi_Handle() != -1) {
+    if (!Debug_Quiet && GetDigiHandle() != -1) {
       AnimControl.OptionFlags |= VQAOPTF_AUDIO;
     } else {
       AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;

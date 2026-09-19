@@ -1886,8 +1886,8 @@ fix:
   `externs.h`. TD's `Keyboard_Process` and `CC_Texture_Fill` are declared in `td/conquer.h`.
   `WOL_PrintMessage` is declared in `ra/wolapiob.h`, `WOL_Download_Dialog` in `ra/rawolapi.h` and
   `bSpecialAftermathScenario` in `ra/wol_main.h`, replacing seven local copies.
-- `sdllib` declared `Get_Font_Palette_Ptr`, `Load_Sample` and `Free_Sample` only under `#ifdef TD`,
-  a macro the library itself is never built with, so its own definitions went unchecked. The guards
+- `sdllib` declared `Get_Font_Palette_Ptr`, `LoadSample` and `FreeSample` only under `#ifdef TD`, a
+  macro the library itself is never built with, so its own definitions went unchecked. The guards
   are gone. `LCW_Comp`'s stub and `RandNumb` are declared in `sdllib/iff.h` and `sdllib/misc.h`, and
   `tech/lcwuncmp.cc` includes the `iff.h` declaration of `LCW_Uncompress`.
 - TD's `Bibx3` smudge is `static`, as RA's already was.

@@ -44,21 +44,20 @@
 /* AUD file header type
  */
 /*=========================================================================*/
-#define AUD_FLAG_STEREO 1
-#define AUD_FLAG_16BIT 2
+// Bits of AudHeader::flags.
+constexpr uint8_t kAudFlagStereo = 1;
+constexpr uint8_t kAudFlag16Bit = 2;
 
 // PWG 3-14-95: This structure used to have bit fields defined for Stereo
 //   and Bits.  These were removed because watcom packs them into a 32 bit
 //   flag entry even though they could have fit in a 8 bit entry.
 #pragma pack(push, 1)
-struct AUDHeaderType {
-  uint16_t Rate;        // Playback rate (hertz).
-  int32_t Size;         // Size of data (bytes).
-  int32_t UncompSize;   // Size of data (bytes).
-  uint8_t Flags;        // Holds flags for info
-                        //  1: Is the sample stereo?
-                        //  2: Is the sample 16 bits?
-  uint8_t Compression;  // What kind of compression for this sample?
+struct AudHeader {
+  uint16_t sample_rate;        // Playback rate (hertz).
+  int32_t compressed_bytes;    // Size of the data that follows the header.
+  int32_t uncompressed_bytes;  // Size of the data once decoded.
+  uint8_t flags;               // kAudFlagStereo, kAudFlag16Bit
+  uint8_t compression;         // What kind of compression for this sample?
 };
 #pragma pack(pop)
 
@@ -90,35 +89,35 @@ using enum SFX_Type;
 /* The following prototypes are for the file: SOUNDIO.CPP
  */
 /*=========================================================================*/
-int File_Stream_Sample_Vol(const char* filename, int volume,
-                           bool real_time_start = false);
-void Sound_Callback();
-bool Audio_Init(void* window, int bits_per_sample, bool stereo, int rate,
-                int reverse_channels);
-void Sound_End();
-void Stop_Sample(int handle);
-bool Sample_Status(int handle);
-bool Is_Sample_Playing(const void* sample);
-void Stop_Sample_Playing(const void* sample);
-int Play_Sample(std::span<const std::byte> sample, int priority = 0xFF,
-                int volume = 0xFF, int16_t panloc = 0x0);
-int Play_Sample_Handle(std::span<const std::byte> sample, int priority,
-                       int volume, int16_t panloc, int id);
-int Set_Score_Vol(int volume);
-void Fade_Sample(int handle, int ticks);
-int AcquireSampleHandle(int priority);
-int Get_Digi_Handle();
-bool Start_Primary_Sound_Buffer(bool forced);
-void Stop_Primary_Sound_Buffer();
+int StreamSampleFile(const char* filename, int volume,
+                     bool real_time_start = false);
+void PumpSampleStreams();
+bool OpenAudio(void* window, int bits_per_sample, bool stereo, int rate,
+               int reverse_channels);
+void CloseAudio();
+void StopSample(int handle);
+bool IsSamplePlaying(int handle);
+bool IsSamplePlaying(const void* sample);
+void StopSample(const void* sample);
+int PlaySample(std::span<const std::byte> sample, int priority = 0xFF,
+               int volume = 0xFF, int16_t panloc = 0x0);
+int PlaySampleOnChannel(std::span<const std::byte> sample, int priority,
+                        int volume, int16_t panloc, int handle);
+int SetScoreVolume(int volume);
+void FadeOutSample(int handle, int ticks);
+int AcquireChannel(int priority);
+int GetDigiHandle();
+bool ResumeAudio(bool forced);
+void PauseAudio();
 
-std::span<std::byte> Load_Sample(const char* filename);
-void Free_Sample(void* sample);
+std::span<std::byte> LoadSample(const char* filename);
+void FreeSample(void* sample);
 
-using AudioCallback = void (*)(uint8_t* stream, int len);
-uint32_t Get_Audio_Device();
-void* Get_Audio_Spec();
+using AudioCallback = void (*)(uint8_t* device_buffer, int device_bytes);
+uint32_t AudioDeviceId();
+void* AudioOutputSpec();
 AudioCallback*
-Get_Audio_Callback_Ptr();  // returns a ptr to a function ptr as we're passing
+ExtraAudioCallbackSlot();  // returns a ptr to a function ptr as we're passing
                            // this the wrong way around
 
 extern SFX_Type SoundType;

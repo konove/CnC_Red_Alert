@@ -1315,9 +1315,9 @@ void Anim_Init() {
   if (SlowPalette) {
     AnimControl.OptionFlags |= VQAOPTF_SLOWPAL;
   }
-  AnimControl.AudioDeviceID = Get_Audio_Device();
-  AnimControl.AudioCallback = Get_Audio_Callback_Ptr();
-  AnimControl.AudioSpec = Get_Audio_Spec();
+  AnimControl.AudioDeviceID = AudioDeviceId();
+  AnimControl.AudioCallback = ExtraAudioCallbackSlot();
+  AnimControl.AudioSpec = AudioOutputSpec();
 }
 
 /***********************************************************************************************

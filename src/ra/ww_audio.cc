@@ -610,8 +610,8 @@ int Sound_Effect(VocType voc, fixed volume, int variation, int16_t pan_value,
   */
   if (!ptr.empty()) {
     volume.Sub_Saturate(1);
-    return Play_Sample(ptr, SoundEffectName.at(voc).Priority * volume,
-                       volume * 256, pan_value);
+    return PlaySample(ptr, SoundEffectName.at(voc).Priority * volume,
+                      volume * 256, pan_value);
   }
   return -1;
 }
@@ -848,7 +848,7 @@ void Speak_AI() {
     return;
   }
 
-  if (!Is_Sample_Playing(base::At(SpeechBuffer, _index).data())) {
+  if (!IsSamplePlaying(base::At(SpeechBuffer, _index).data())) {
     CurrentVoice = VOX_NONE;
     if (SpeakQueue != VOX_NONE) {
       /*
@@ -889,7 +889,7 @@ void Speak_AI() {
       **	Since the speech file was loaded, play it.
       */
       if (!speech.empty()) {
-        Play_Sample(speech, 254, Options.Volume * 256);
+        PlaySample(speech, 254, Options.Volume * 256);
         CurrentVoice = SpeakQueue;
       }
 
@@ -915,7 +915,7 @@ void Speak_AI() {
 void Stop_Speaking() {
   SpeakQueue = VOX_NONE;
   for (auto& index : SpeechBuffer) {
-    Stop_Sample_Playing(index.data());
+    StopSample(index.data());
   }
 }
 
@@ -939,6 +939,6 @@ bool Is_Speaking() {
   return !Debug_Quiet && SampleType != SAMPLE_NONE &&
          (SpeakQueue != VOX_NONE ||
           std::ranges::any_of(SpeechBuffer, [](const auto& buffer) {
-            return Is_Sample_Playing(buffer.data());
+            return IsSamplePlaying(buffer.data());
           }));
 }

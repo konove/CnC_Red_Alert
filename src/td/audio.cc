@@ -440,9 +440,9 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   */
   if (!ptr.empty()) {
     const int vol = static_cast<int>(volume);
-    return Play_Sample(ptr,
-                       Fixed_To_Cardinal(SoundEffectName.at(voc).Priority, vol),
-                       vol, pan_value);
+    return PlaySample(ptr,
+                      Fixed_To_Cardinal(SoundEffectName.at(voc).Priority, vol),
+                      vol, pan_value);
   }
   return -1;
 }
@@ -593,7 +593,7 @@ void Speak_AI() {
     return;
   }
 
-  if (!Is_Sample_Playing(SpeechBuffer.data())) {
+  if (!IsSamplePlaying(SpeechBuffer.data())) {
     CurrentVoice = VOX_NONE;
     if (SpeakQueue != VOX_NONE) {
       if (SpeakQueue != _last) {
@@ -602,11 +602,11 @@ void Speak_AI() {
                               .string();
 
         if (GameFile(name).Read(std::span(SpeechBuffer), SPEECH_BUFFER_SIZE)) {
-          Play_Sample(SpeechBuffer, 254, Options.Volume);
+          PlaySample(SpeechBuffer, 254, Options.Volume);
         }
         _last = SpeakQueue;
       } else {
-        Play_Sample(SpeechBuffer, 254, Options.Volume);
+        PlaySample(SpeechBuffer, 254, Options.Volume);
       }
       SpeakQueue = VOX_NONE;
     }
@@ -630,7 +630,7 @@ void Speak_AI() {
 void Stop_Speaking() {
   SpeakQueue = VOX_NONE;
   if (SampleType != SAMPLE_NONE) {
-    Stop_Sample_Playing(SpeechBuffer.data());
+    StopSample(SpeechBuffer.data());
   }
 }
 
@@ -652,5 +652,5 @@ void Stop_Speaking() {
 bool Is_Speaking() {
   Speak_AI();
   return SampleType != SAMPLE_NONE &&
-         (SpeakQueue != VOX_NONE || Is_Sample_Playing(SpeechBuffer.data()));
+         (SpeakQueue != VOX_NONE || IsSamplePlaying(SpeechBuffer.data()));
 }
