@@ -663,7 +663,6 @@ GraphicViewPortClass hidden_view(&hidden_page, 0, 0, 640, 480);
 bool SoundOn;
 Timer<SystemTickSource> CountDownTimer;
 
-NewConfigType NewConfig;
 TheaterType LastTheater =
     THEATER_NONE;  // Lets us know when theater type changes.
 

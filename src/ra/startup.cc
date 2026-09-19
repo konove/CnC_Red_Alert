@@ -58,7 +58,6 @@
 #include "ra/language.h"
 #include "ra/nullconn.h"
 #include "ra/palette.h"
-#include "ra/profile.h"
 #include "ra/special.h"
 #include "ra/type.h"
 #include "sdllib/drawbuff.h"
@@ -229,8 +228,6 @@ int main(const int argc, char* argv[])
     }
 
     if (config_file.IsAvailable()) {
-      Read_Private_Config_Struct(config_file, &NewConfig);
-
       INIClass ini;
       ini.Load(config_file);
 

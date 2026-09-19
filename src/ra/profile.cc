@@ -54,29 +54,7 @@
 #include "base/numeric.h"
 #include "port/profile_buffer.h"
 #include "port/safe_string.h"
-#include "ra/defines.h"
-#include "ra/ini.h"
-#include "tech/file.h"
 #include "tech/number_parse.h"
-
-bool Read_Private_Config_Struct(File& file, NewConfigType* config) {
-  INIClass ini;
-  ini.Load(file);
-
-  config->DigitCard = static_cast<unsigned>(ini.Get_Hex("Sound", "Card", 0));
-  config->IRQ = static_cast<unsigned>(ini.Get_Int("Sound", "IRQ", 0));
-  config->DMA = static_cast<unsigned>(ini.Get_Int("Sound", "DMA", 0));
-  config->Port = static_cast<unsigned>(ini.Get_Hex("Sound", "Port", 0));
-  config->BitsPerSample =
-      static_cast<unsigned>(ini.Get_Int("Sound", "BitsPerSample", 0));
-  config->Channels = static_cast<unsigned>(ini.Get_Int("Sound", "Channels", 0));
-  config->Reverse = ini.Get_Int("Sound", "Reverse", 0) != 0;
-  config->Speed = static_cast<unsigned>(ini.Get_Int("Sound", "Speed", 0));
-  ini.Get_String("Language", "Language", nullptr, config->Language,
-                 sizeof(config->Language));
-
-  return config->DigitCard == 0 && config->IRQ == 0 && config->DMA == 0;
-}
 
 unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
                                 const char* profile) {
