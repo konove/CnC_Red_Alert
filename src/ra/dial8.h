@@ -65,7 +65,6 @@ class DirectionDial : public ControlClass {
   int hand_tips_[8][2]{};          // x, y of the hand's tip, by FacingType
   DirType direction_;              // direction the dial points in, 0-255
   FacingType facing_;       // direction_ snapped to one of the eight facings
-  FacingType last_facing_;  // last facing reported or set, to detect a change
 };
 
 #endif  // CNC_RED_ALERT_RA_DIAL8_H_
