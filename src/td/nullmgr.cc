@@ -93,6 +93,7 @@
 #include "td/init.h"
 #include "td/jshell.h"
 #include "td/msgbox.h"
+#include "td/network.h"
 #include "td/nullconn.h"
 #include "td/nulldlg.h"
 #include "td/screen.h"
@@ -1133,14 +1134,17 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     status = Send_Modem_Command("", '\r', buffer, 81, 300, 1);
   } else {
     const size_t str_length =
-        2 + std::string_view(InitStrings.at(settings->InitStringIndex)).size();
+        2 + std::string_view(
+                TheNetwork().init_strings().at(settings->InitStringIndex))
+                .size();
     /*
     ** Split up the init string into seperate strings if it contains one or more
     *'|' characters.
     ** This character acts as a carriage return/pause.
     */
     std::vector<char> istr(str_length);
-    port::SafeCopy(istr, InitStrings.at(settings->InitStringIndex));
+    port::SafeCopy(istr,
+                   TheNetwork().init_strings().at(settings->InitStringIndex));
 
     /*
     ** Tokenise the string and send it in chunks
@@ -1811,12 +1815,12 @@ bool NullModemClass::Hangup_Modem() {
   /*
   **	Turn modem servicing off in the callback routine.
   */
-  ModemService = false;
+  TheNetwork().modem_service() = false;
 
   int status = Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
 
   if (status == kModemCmdOk) {
-    ModemService = true;
+    TheNetwork().modem_service() = true;
     return true;
   }
 
@@ -1831,7 +1835,7 @@ bool NullModemClass::Hangup_Modem() {
   status = Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
 
   if (status == kModemCmdOk) {
-    ModemService = true;
+    TheNetwork().modem_service() = true;
     return true;
   }
 
@@ -1863,7 +1867,7 @@ bool NullModemClass::Hangup_Modem() {
 
   if (status == kModemCmdOk) {
   } else {
-    ModemService = true;
+    TheNetwork().modem_service() = true;
     return false;
   }
 
@@ -1871,11 +1875,11 @@ bool NullModemClass::Hangup_Modem() {
 
   if (status == kModemCmdOk) {
   } else {
-    ModemService = true;
+    TheNetwork().modem_service() = true;
     return false;
   }
 
-  ModemService = true;
+  TheNetwork().modem_service() = true;
   return true;
 
 } /* end of Hangup_Modem */
@@ -1932,14 +1936,15 @@ void NullModemClass::Remove_Modem_Echo() {
  * HISTORY: * 8/2/96 12:51PM ST : Documented *
  *=============================================================================================*/
 void NullModemClass::Print_EchoBuf() {
-  for (int i = 0;
-       std::cmp_less(i, std::string_view(NullModem.EchoBuf.data()).size());
+  for (int i = 0; std::cmp_less(
+           i,
+           std::string_view(TheNetwork().null_modem().EchoBuf.data()).size());
        i++) {
-    if (NullModem.EchoBuf.at(base::ToSize(i)) == '\r') {
-      NullModem.EchoBuf.at(base::ToSize(i)) = 1;
+    if (TheNetwork().null_modem().EchoBuf.at(base::ToSize(i)) == '\r') {
+      TheNetwork().null_modem().EchoBuf.at(base::ToSize(i)) = 1;
     } else {
-      if (NullModem.EchoBuf.at(base::ToSize(i)) == '\n') {
-        NullModem.EchoBuf.at(base::ToSize(i)) = 2;
+      if (TheNetwork().null_modem().EchoBuf.at(base::ToSize(i)) == '\n') {
+        TheNetwork().null_modem().EchoBuf.at(base::ToSize(i)) = 2;
       }
     }
   }

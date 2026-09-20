@@ -91,12 +91,14 @@
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/msglist.h"
+#include "td/network.h"
 #include "td/nulldlg.h"
 #include "td/phone.h"
 #include "td/profile.h"
 #include "td/rand.h"
 #include "td/randomstate.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/text.h"
 #include "td/textbtn.h"
@@ -197,7 +199,7 @@ GameType Select_MPlayer_Game() {
   //
   // If neither IPX or winsock are active then do only the modem serial dialog
   //
-  if (Ipx.Is_IPX()) {
+  if (TheNetwork().ipx().Is_IPX()) {
     ipx_avail = true;
   }
 
@@ -435,18 +437,18 @@ void Read_MultiPlayer_Settings() {
   /*------------------------------------------------------------------------
   Clear the initstring entries
   ------------------------------------------------------------------------*/
-  for (i = 0; i < InitStrings.Count(); i++) {
-    delete[] InitStrings.at(i);
+  for (i = 0; i < TheNetwork().init_strings().Count(); i++) {
+    delete[] TheNetwork().init_strings().at(i);
   }
-  InitStrings.Clear();
+  TheNetwork().init_strings().Clear();
 
   /*------------------------------------------------------------------------
   Clear the dialing entries
   ------------------------------------------------------------------------*/
-  for (i = 0; i < PhoneBook.Count(); i++) {
-    delete PhoneBook.at(i);
+  for (i = 0; i < TheNetwork().phone_book().Count(); i++) {
+    delete TheNetwork().phone_book().at(i);
   }
-  PhoneBook.Clear();
+  TheNetwork().phone_book().Clear();
 
   /*------------------------------------------------------------------------
   Create filename and read the file.
@@ -463,20 +465,20 @@ void Read_MultiPlayer_Settings() {
     /*------------------------------------------------------------------------
     Get the player's last-used Handle
     ------------------------------------------------------------------------*/
-    WWGetPrivateProfileString("MultiPlayer", "Handle", "Noname", MPlayerName,
-                              buffer);
+    WWGetPrivateProfileString("MultiPlayer", "Handle", "Noname",
+                              TheSession().player_name(), buffer);
 
     /*------------------------------------------------------------------------
     Get the player's last-used Color
     ------------------------------------------------------------------------*/
-    MPlayerPrefColor =
+    TheSession().preferred_color() =
         WWGetPrivateProfileInt("MultiPlayer", "Color", 0, buffer);
-    MPlayerHouse = static_cast<HousesType>(WWGetPrivateProfileInt(
+    TheSession().house() = static_cast<HousesType>(WWGetPrivateProfileInt(
         "MultiPlayer", "Side", static_cast<int>(HOUSE_GOOD), buffer));
-    CurPhoneIdx =
+    TheNetwork().current_phone_index() =
         WWGetPrivateProfileInt("MultiPlayer", "PhoneIndex", -1, buffer);
   } else {
-    CurPhoneIdx = -1;
+    TheNetwork().current_phone_index() = -1;
   }
 
   TrapCheckHeap = WWGetPrivateProfileInt("MultiPlayer", "CheckHeap", 0, buffer);
@@ -486,30 +488,31 @@ void Read_MultiPlayer_Settings() {
   ------------------------------------------------------------------------*/
   WWGetPrivateProfileString(
       "SerialDefaults", "ModemName", "NoName",
-      std::span(SerialDefaults.ModemName)
+      std::span(TheNetwork().serial_defaults().ModemName)
           .first(static_cast<std::size_t>(MODEM_NAME_MAX)),
       buffer);
-  if ((std::string_view(SerialDefaults.ModemName) == "NoName")) {
-    base::At(SerialDefaults.ModemName, 0) = 0;
+  if ((std::string_view(TheNetwork().serial_defaults().ModemName) ==
+       "NoName")) {
+    base::At(TheNetwork().serial_defaults().ModemName, 0) = 0;
   }
   WWGetPrivateProfileString("SerialDefaults", "Port", "0",
                             std::span(buf).first(static_cast<std::size_t>(5)),
                             buffer);
   if (const auto value = tech::ParseHex<int>(buf)) {
-    SerialDefaults.Port = *value;
+    TheNetwork().serial_defaults().Port = *value;
   }
-  SerialDefaults.IRQ =
+  TheNetwork().serial_defaults().IRQ =
       WWGetPrivateProfileInt("SerialDefaults", "IRQ", -1, buffer);
-  SerialDefaults.Baud =
+  TheNetwork().serial_defaults().Baud =
       WWGetPrivateProfileInt("SerialDefaults", "Baud", -1, buffer);
-  SerialDefaults.Init =
+  TheNetwork().serial_defaults().Init =
       WWGetPrivateProfileInt("SerialDefaults", "Init", 0, buffer) != 0;
-  SerialDefaults.Compression =
+  TheNetwork().serial_defaults().Compression =
       WWGetPrivateProfileInt("SerialDefaults", "Compression", 0, buffer) != 0;
-  SerialDefaults.ErrorCorrection =
+  TheNetwork().serial_defaults().ErrorCorrection =
       WWGetPrivateProfileInt("SerialDefaults", "ErrorCorrection", 0, buffer) !=
       0;
-  SerialDefaults.HardwareFlowControl =
+  TheNetwork().serial_defaults().HardwareFlowControl =
       WWGetPrivateProfileInt("SerialDefaults", "HardwareFlowControl", 1,
                              buffer) != 0;
   WWGetPrivateProfileString("SerialDefaults", "DialMethod", "T",
@@ -521,7 +524,8 @@ void Read_MultiPlayer_Settings() {
   for (i = 0; i < kDialMethods; i++) {
     if (absl::EqualsIgnoreCase(
             buf, kDialMethodCheck.at(static_cast<DialMethodType>(i)))) {
-      SerialDefaults.DialMethod = static_cast<DialMethodType>(i);
+      TheNetwork().serial_defaults().DialMethod =
+          static_cast<DialMethodType>(i);
       break;
     }
   }
@@ -529,25 +533,26 @@ void Read_MultiPlayer_Settings() {
   // if method not found set to touch tone
 
   if (i == kDialMethods) {
-    SerialDefaults.DialMethod = DIAL_TOUCH_TONE;
+    TheNetwork().serial_defaults().DialMethod = DIAL_TOUCH_TONE;
   }
 
-  SerialDefaults.InitStringIndex =
+  TheNetwork().serial_defaults().InitStringIndex =
       WWGetPrivateProfileInt("SerialDefaults", "InitStringIndex", 0, buffer);
 
-  SerialDefaults.CallWaitStringIndex = WWGetPrivateProfileInt(
+  TheNetwork().serial_defaults().CallWaitStringIndex = WWGetPrivateProfileInt(
       "SerialDefaults", "CallWaitStringIndex", kCallWaitCustom, buffer);
 
   WWGetPrivateProfileString(
       "SerialDefaults", "CallWaitString", "",
-      std::span(SerialDefaults.CallWaitString)
+      std::span(TheNetwork().serial_defaults().CallWaitString)
           .first(static_cast<std::size_t>(CWAITSTRBUF_MAX)),
       buffer);
 
-  if (SerialDefaults.IRQ == 0 || SerialDefaults.Baud == 0) {
-    SerialDefaults.Port = 0;
-    SerialDefaults.IRQ = -1;
-    SerialDefaults.Baud = -1;
+  if (TheNetwork().serial_defaults().IRQ == 0 ||
+      TheNetwork().serial_defaults().Baud == 0) {
+    TheNetwork().serial_defaults().Port = 0;
+    TheNetwork().serial_defaults().IRQ = -1;
+    TheNetwork().serial_defaults().Baud = -1;
   }
 
   /*------------------------------------------------------------------------
@@ -580,7 +585,7 @@ void Read_MultiPlayer_Settings() {
     std::ranges::transform(port::MutableCString(entry), entry,
                            absl::ascii_toupper);
 
-    InitStrings.Add(entry);
+    TheNetwork().init_strings().Add(entry);
 
     key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
     tbuffer = key_cursor.data();
@@ -594,8 +599,8 @@ void Read_MultiPlayer_Settings() {
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
     const std::span<char> entry_storage(entry, INITSTRBUF_MAX);
     port::SafeCopy(entry_storage, "ATZ");
-    InitStrings.Add(entry);
-    SerialDefaults.InitStringIndex = 0;
+    TheNetwork().init_strings().Add(entry);
+    TheNetwork().serial_defaults().InitStringIndex = 0;
   }
 
   /*------------------------------------------------------------------------
@@ -743,7 +748,7 @@ void Read_MultiPlayer_Settings() {
     /*.....................................................................
     Add it to our list
     .....................................................................*/
-    PhoneBook.Add(phone);
+    TheNetwork().phone_book().Add(phone);
 
     key_cursor = key_cursor.subspan(std::string_view(tbuffer).size() + 1);
     tbuffer = key_cursor.data();
@@ -752,7 +757,7 @@ void Read_MultiPlayer_Settings() {
   /*------------------------------------------------------------------------
   Read special recording playback values, to help find sync bugs
   ------------------------------------------------------------------------*/
-  if (PlaybackGame) {
+  if (TheSession().playback_game()) {
     TrapFrame = WWGetPrivateProfileInt("SyncBug", "Frame", 0x7fffffff, buffer);
 
     TrapObjType = static_cast<RTTIType>(WWGetPrivateProfileInt(
@@ -824,14 +829,17 @@ void Write_MultiPlayer_Settings() {
   /*------------------------------------------------------------------------
   Save the player's last-used Handle & Color
   ------------------------------------------------------------------------*/
-  WWWritePrivateProfileInt("MultiPlayer", "PhoneIndex", CurPhoneIdx,
+  WWWritePrivateProfileInt("MultiPlayer", "PhoneIndex",
+                           TheNetwork().current_phone_index(),
                            port::CharBytes(ShapeBufferBytes));
-  WWWritePrivateProfileInt("MultiPlayer", "Color", MPlayerPrefColor,
+  WWWritePrivateProfileInt("MultiPlayer", "Color",
+                           TheSession().preferred_color(),
                            port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("MultiPlayer", "Side",
-                           static_cast<int>(MPlayerHouse),
+                           static_cast<int>(TheSession().house()),
                            port::CharBytes(ShapeBufferBytes));
-  WWWritePrivateProfileString("MultiPlayer", "Handle", MPlayerName,
+  WWWritePrivateProfileString("MultiPlayer", "Handle",
+                              TheSession().player_name(),
                               port::CharBytes(ShapeBufferBytes));
 
   /*------------------------------------------------------------------------
@@ -844,40 +852,46 @@ void Write_MultiPlayer_Settings() {
   Save default serial settings in opposite order you want to see them
   ------------------------------------------------------------------------*/
   WWWritePrivateProfileString("SerialDefaults", "CallWaitString",
-                              SerialDefaults.CallWaitString,
+                              TheNetwork().serial_defaults().CallWaitString,
                               port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "CallWaitStringIndex",
-                           SerialDefaults.CallWaitStringIndex,
+                           TheNetwork().serial_defaults().CallWaitStringIndex,
                            port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "InitStringIndex",
-                           SerialDefaults.InitStringIndex,
+                           TheNetwork().serial_defaults().InitStringIndex,
                            port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "Init",
-                           SerialDefaults.Init ? 1 : 0,
+                           TheNetwork().serial_defaults().Init ? 1 : 0,
                            port::CharBytes(ShapeBufferBytes));
-  WWWritePrivateProfileString("SerialDefaults", "DialMethod",
-                              kDialMethodCheck.at(SerialDefaults.DialMethod),
-                              port::CharBytes(ShapeBufferBytes));
-  WWWritePrivateProfileInt("SerialDefaults", "Baud", SerialDefaults.Baud,
+  WWWritePrivateProfileString(
+      "SerialDefaults", "DialMethod",
+      kDialMethodCheck.at(TheNetwork().serial_defaults().DialMethod),
+      port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt("SerialDefaults", "Baud",
+                           TheNetwork().serial_defaults().Baud,
                            port::CharBytes(ShapeBufferBytes));
-  WWWritePrivateProfileInt("SerialDefaults", "IRQ", SerialDefaults.IRQ,
+  WWWritePrivateProfileInt("SerialDefaults", "IRQ",
+                           TheNetwork().serial_defaults().IRQ,
                            port::CharBytes(ShapeBufferBytes));
-  absl::SNPrintF(buf, sizeof(buf), "%x",
-                 static_cast<unsigned int>(SerialDefaults.Port));
+  absl::SNPrintF(
+      buf, sizeof(buf), "%x",
+      static_cast<unsigned int>(TheNetwork().serial_defaults().Port));
   WWWritePrivateProfileString("SerialDefaults", "Port", buf,
                               port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileString("SerialDefaults", "ModemName",
-                              SerialDefaults.ModemName,
+                              TheNetwork().serial_defaults().ModemName,
                               port::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "Compression",
-                           SerialDefaults.Compression ? 1 : 0,
+                           TheNetwork().serial_defaults().Compression ? 1 : 0,
                            port::CharBytes(ShapeBufferBytes));
-  WWWritePrivateProfileInt("SerialDefaults", "ErrorCorrection",
-                           SerialDefaults.ErrorCorrection ? 1 : 0,
-                           port::CharBytes(ShapeBufferBytes));
-  WWWritePrivateProfileInt("SerialDefaults", "HardwareFlowControl",
-                           SerialDefaults.HardwareFlowControl ? 1 : 0,
-                           port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt(
+      "SerialDefaults", "ErrorCorrection",
+      TheNetwork().serial_defaults().ErrorCorrection ? 1 : 0,
+      port::CharBytes(ShapeBufferBytes));
+  WWWritePrivateProfileInt(
+      "SerialDefaults", "HardwareFlowControl",
+      TheNetwork().serial_defaults().HardwareFlowControl ? 1 : 0,
+      port::CharBytes(ShapeBufferBytes));
 
   /*------------------------------------------------------------------------
   Clear all existing InitString entries.
@@ -889,9 +903,11 @@ void Write_MultiPlayer_Settings() {
   Save all InitString entries.  In descending order so they come out in
   ascending order.
   ------------------------------------------------------------------------*/
-  for (int i = static_cast<int>(InitStrings.Count()) - 1; i >= 0; i--) {
+  for (int i = static_cast<int>(TheNetwork().init_strings().Count()) - 1;
+       i >= 0; i--) {
     absl::SNPrintF(buf, sizeof(buf), "%03d", i);
-    WWWritePrivateProfileString("InitStrings", buf, InitStrings.at(i),
+    WWWritePrivateProfileString("InitStrings", buf,
+                                TheNetwork().init_strings().at(i),
                                 port::CharBytes(ShapeBufferBytes));
   }
 
@@ -905,19 +921,24 @@ void Write_MultiPlayer_Settings() {
   Save all Phone Book entries.
   Format: Entry=Name,PhoneNum,Port,IRQ,Baud,InitString
   ------------------------------------------------------------------------*/
-  for (int i = static_cast<int>(PhoneBook.Count()) - 1; i >= 0; i--) {
-    absl::SNPrintF(buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s",
-                   PhoneBook.at(i)->Name, PhoneBook.at(i)->Number,
-                   static_cast<unsigned int>(PhoneBook.at(i)->Settings.Port),
-                   PhoneBook.at(i)->Settings.IRQ,
-                   PhoneBook.at(i)->Settings.Baud,
-                   PhoneBook.at(i)->Settings.Compression ? 1 : 0,
-                   PhoneBook.at(i)->Settings.ErrorCorrection ? 1 : 0,
-                   PhoneBook.at(i)->Settings.HardwareFlowControl ? 1 : 0,
-                   kDialMethodCheck.at(PhoneBook.at(i)->Settings.DialMethod),
-                   PhoneBook.at(i)->Settings.InitStringIndex,
-                   PhoneBook.at(i)->Settings.CallWaitStringIndex,
-                   PhoneBook.at(i)->Settings.CallWaitString);
+  for (int i = static_cast<int>(TheNetwork().phone_book().Count()) - 1; i >= 0;
+       i--) {
+    absl::SNPrintF(
+        buf, sizeof(buf), "%s|%s|%x|%d|%d|%d|%d|%d|%s|%d|%d|%s",
+        TheNetwork().phone_book().at(i)->Name,
+        TheNetwork().phone_book().at(i)->Number,
+        static_cast<unsigned int>(
+            TheNetwork().phone_book().at(i)->Settings.Port),
+        TheNetwork().phone_book().at(i)->Settings.IRQ,
+        TheNetwork().phone_book().at(i)->Settings.Baud,
+        TheNetwork().phone_book().at(i)->Settings.Compression ? 1 : 0,
+        TheNetwork().phone_book().at(i)->Settings.ErrorCorrection ? 1 : 0,
+        TheNetwork().phone_book().at(i)->Settings.HardwareFlowControl ? 1 : 0,
+        kDialMethodCheck.at(
+            TheNetwork().phone_book().at(i)->Settings.DialMethod),
+        TheNetwork().phone_book().at(i)->Settings.InitStringIndex,
+        TheNetwork().phone_book().at(i)->Settings.CallWaitStringIndex,
+        TheNetwork().phone_book().at(i)->Settings.CallWaitString);
     absl::SNPrintF(entrytext, sizeof(entrytext), "%03d", i);
     WWWritePrivateProfileString("PhoneBook", entrytext, buf,
                                 port::CharBytes(ShapeBufferBytes));
@@ -951,8 +972,8 @@ void Read_Scenario_Descriptions() {
   /*------------------------------------------------------------------------
   Clear the scenario description lists
   ------------------------------------------------------------------------*/
-  MPlayerScenarios.Clear();
-  MPlayerFilenum.Clear();
+  TheSession().scenarios().Clear();
+  TheSession().scenario_files().Clear();
 
   /*------------------------------------------------------------------------
   Loop through all possible scenario numbers; if a file is available, add
@@ -965,7 +986,7 @@ void Read_Scenario_Descriptions() {
     file.SetName(fname);
 
     if (file.IsAvailable()) {
-      MPlayerFilenum.Add(i);
+      TheSession().scenario_files().Add(i);
     }
   }
 
@@ -973,7 +994,7 @@ void Read_Scenario_Descriptions() {
   Now, for every file in the FileNum list, read in the INI file, and extract
   its description.
   ------------------------------------------------------------------------*/
-  for (int i = 0; i < MPlayerFilenum.Count(); i++) {
+  for (int i = 0; i < TheSession().scenario_files().Count(); i++) {
     /*.....................................................................
     Fetch working pointer to the INI staging buffer. Make sure that the
     buffer is cleared out before proceeding.
@@ -984,8 +1005,9 @@ void Read_Scenario_Descriptions() {
     /*.....................................................................
     Create filename and read the file.
     .....................................................................*/
-    Set_Scenario_Name(TheWorld().scenario_name(), MPlayerFilenum.at(i),
-                      SCEN_PLAYER_MPLAYER, SCEN_DIR_EAST, SCEN_VAR_A);
+    Set_Scenario_Name(TheWorld().scenario_name(),
+                      TheSession().scenario_files().at(i), SCEN_PLAYER_MPLAYER,
+                      SCEN_DIR_EAST, SCEN_VAR_A);
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
     file.SetName(fname);
     file.Read(std::as_writable_bytes(ShapeBufferBytes)
@@ -999,7 +1021,7 @@ void Read_Scenario_Descriptions() {
                               std::span(base::At(mplayer_descriptions, i))
                                   .first(static_cast<std::size_t>(40)),
                               buffer);
-    MPlayerScenarios.Add(base::At(mplayer_descriptions, i));
+    TheSession().scenarios().Add(base::At(mplayer_descriptions, i));
   }
 }
 
@@ -1019,24 +1041,24 @@ void Free_Scenario_Descriptions() {
   /*------------------------------------------------------------------------
   Clear the scenario descriptions & filenames
   ------------------------------------------------------------------------*/
-  MPlayerScenarios.Clear();
-  MPlayerFilenum.Clear();
+  TheSession().scenarios().Clear();
+  TheSession().scenario_files().Clear();
 
   /*------------------------------------------------------------------------
   Clear the initstring entries
   ------------------------------------------------------------------------*/
-  for (int i = 0; i < InitStrings.Count(); i++) {
-    delete InitStrings.at(i);
+  for (int i = 0; i < TheNetwork().init_strings().Count(); i++) {
+    delete TheNetwork().init_strings().at(i);
   }
-  InitStrings.Clear();
+  TheNetwork().init_strings().Clear();
 
   /*------------------------------------------------------------------------
   Clear the dialing entries
   ------------------------------------------------------------------------*/
-  for (int i = 0; i < PhoneBook.Count(); i++) {
-    delete PhoneBook.at(i);
+  for (int i = 0; i < TheNetwork().phone_book().Count(); i++) {
+    delete TheNetwork().phone_book().at(i);
   }
-  PhoneBook.Clear();
+  TheNetwork().phone_book().Clear();
 }
 
 /***************************************************************************
@@ -1061,7 +1083,8 @@ void Computer_Message() {
   Find the computer house that the message will be from
   ------------------------------------------------------------------------*/
   for (HousesType house = HOUSE_MULTI1;
-       static_cast<int>(house) < static_cast<int>(HOUSE_MULTI1) + MPlayerMax;
+       static_cast<int>(house) <
+       static_cast<int>(HOUSE_MULTI1) + TheSession().max_players();
        house++) {
     HouseClass* ptr = HouseClass::As_Pointer(house);
 
@@ -1073,7 +1096,7 @@ void Computer_Message() {
     Decode this house's color
     .....................................................................*/
     const int color =
-        base::At(MPlayerTColors, static_cast<int>(ptr->RemapColor));
+        base::At(TheSession().text_colors(), static_cast<int>(ptr->RemapColor));
 
     /*.....................................................................
     We now have a 1/4 chance of echoing one of the human players' messages
@@ -1084,25 +1107,26 @@ void Computer_Message() {
       Now we have a 1/3 chance of garbling the human message.
       ..................................................................*/
       if (GameRandomRange(0, 2) == 1) {
-        Garble_Message(LastMessage);
+        Garble_Message(TheSession().last_message());
       }
 
       /*..................................................................
       Only add the message if there is one to add.
       ..................................................................*/
-      if (!std::string_view(LastMessage).empty()) {
+      if (!std::string_view(TheSession().last_message()).empty()) {
         absl::SNPrintF(txt, sizeof(txt), "%s %s",
-                       Text_String(TXT_FROM_COMPUTER), LastMessage);
-        Messages.Add_Message(txt, color,
-                             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                             600, 0, 0);
+                       Text_String(TXT_FROM_COMPUTER),
+                       TheSession().last_message());
+        TheSession().messages().Add_Message(
+            txt, color, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
+            0, 0);
       }
     } else {
       absl::SNPrintF(txt, sizeof(txt), "%s %s", Text_String(TXT_FROM_COMPUTER),
                      Text_String(TXT_COMP_MSG1 + GameRandomRange(0, 12)));
-      Messages.Add_Message(txt, color,
-                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                           600, 0, 0);
+      TheSession().messages().Add_Message(
+          txt, color, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0,
+          0);
     }
 
     return;

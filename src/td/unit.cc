@@ -168,6 +168,7 @@
 #include "td/profile.h"
 #include "td/radio.h"
 #include "td/rand.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/tarcom.h"
 #include "td/target.h"
@@ -982,8 +983,8 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
            (Distance(source) < 0x0180 &&
             BulletTypeClass::As_Reference(Weapons.at(Class->Primary).Fires)
                     .Warhead != WARHEAD_FIRE)) &&
-          (GameToPlay != GAME_NORMAL || *this != UNIT_HARVESTER ||
-           BuildLevel > 8 || Special.IsDifficult) &&
+          (TheSession().type() != GAME_NORMAL || *this != UNIT_HARVESTER ||
+           TheWorld().build_level() > 8 || Special.IsDifficult) &&
           !Special.IsEasy && Class->IsCrusher && source->Is_Techno() &&
           source->Class_Of().IsCrushable) {
         Assign_Destination(source->As_Target());
@@ -1127,7 +1128,7 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
   /*
   ** Keep count of the number of units created.
   */
-  if (GameToPlay == GAME_INTERNET) {
+  if (TheSession().type() == GAME_INTERNET) {
     House->UnitTotals->Increment_Unit_Total(static_cast<int>(classid));
   }
 }
@@ -1258,10 +1259,10 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
       if (Target_Legal(NavCom)) {
         order = MISSION_MOVE;
       } else {
-        if (GameToPlay == GAME_NORMAL || House->IsHuman) {
+        if (TheSession().type() == GAME_NORMAL || House->IsHuman) {
           order = MISSION_GUARD;
         } else {
-          if (GameToPlay != GAME_NORMAL) {
+          if (TheSession().type() != GAME_NORMAL) {
             order = MISSION_TIMED_HUNT;
           } else {
             order = MISSION_HUNT;
@@ -2174,7 +2175,7 @@ bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
 
   center = XY_Cell(Cell_X(center) + x, Cell_Y(center) + y);
 
-  return (GameToPlay != GAME_NORMAL || !IsOwnedByPlayer ||
+  return (TheSession().type() != GAME_NORMAL || !IsOwnedByPlayer ||
           TheMap().at(center).IsVisible) &&
          (TheMap().at(center).Cell_Techno() == nullptr &&
           TheMap().at(center).Land_Type() == LAND_TIBERIUM);
@@ -3533,7 +3534,7 @@ void UnitClass::Read_INI(char* buffer) {
           if (unit->Unlimbo(coord, dir)) {
             unit->Strength = static_cast<int16_t>(
                 Fixed_To_Cardinal(unit->Class->MaxStrength, strength));
-            if (GameToPlay == GAME_NORMAL || unit->House->IsHuman) {
+            if (TheSession().type() == GAME_NORMAL || unit->House->IsHuman) {
               unit->Assign_Mission(mission);
               unit->Commence();
             } else {

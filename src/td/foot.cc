@@ -125,11 +125,13 @@
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
+#include "td/network.h"
 #include "td/object.h"
 #include "td/queue.h"
 #include "td/radio.h"
 #include "td/rand.h"
 #include "td/randomstate.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/target.h"
 #include "td/team.h"
@@ -691,7 +693,7 @@ int FootClass::Mission_Timed_Hunt() {
     ** has expired, or if our owning house has lost more than 1/4 of its units
     ** (it gets mad at you)
     */
-    if ((MPlayerBlitz && House->BlitzTime == 0) ||
+    if ((TheSession().blitz() && House->BlitzTime == 0) ||
         House->CurUnits < House->MaxUnit * 4 / 5) {
       Assign_Mission(MISSION_HUNT);
       changed = 1;
@@ -703,7 +705,7 @@ int FootClass::Mission_Timed_Hunt() {
     ** "snap out" of their daze, and begin hunting.  Try to time it so that all
     ** units will be hunting within 10 minutes (600 calls to this routine).
     */
-    if (MPlayerBases) {
+    if (TheSession().bases()) {
       rndmax = 5000;
     } else {
       rndmax = 1000;
@@ -1118,7 +1120,8 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
       TechnoClass::Take_Damage(damage, distance, warhead, source);
 
   if (result != RESULT_NONE && Team) {
-    if (GameToPlay != GAME_NORMAL || (source && !House->Is_Ally(source))) {
+    if (TheSession().type() != GAME_NORMAL ||
+        (source && !House->Is_Ally(source))) {
       Team->Took_Damage(this, result, source);
     }
 
@@ -1313,7 +1316,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
       if (AllowVoice) {
         const COORDINATE coord =
             TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y());
-        OutList.Add(
+        TheNetwork().out_list().Add(
             EventClass(ANIM_MOVE_FLASH, ThePlayer()->Class->House, coord));
       }
       [[fallthrough]];
@@ -1801,7 +1804,7 @@ void FootClass::Death_Announcement(const TechnoClass* source) const {
           Speak(VOX_DEAD_CIV);
         }
       } else {
-        if (House != ThePlayer() && GameToPlay != GAME_NORMAL) {
+        if (House != ThePlayer() && TheSession().type() != GAME_NORMAL) {
           if (Options.IsDeathAnnounce) {
             Speak(VOX_ENEMY_UNIT);
           }

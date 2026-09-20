@@ -95,6 +95,7 @@
 #include "td/palettes.h"
 #include "td/score.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/smudge.h"
 #include "td/special.h"
 #include "td/startup.h"
@@ -152,11 +153,12 @@ bool Start_Scenario(char* root, bool briefing) {
   */
   if (TheWorld().scenario() < 20 &&
       (!Special.IsJurassic || !AreThingiesEnabled)) {
-    if (TheWorld().scenario() != 1 || Whom == HOUSE_GOOD) {
+    if (TheWorld().scenario() != 1 || TheWorld().whom() == HOUSE_GOOD) {
       Play_Movie(TheWorld().intro_movie());
     }
 
-    if ((TheWorld().scenario() > 1 || Whom == HOUSE_BAD) && briefing) {
+    if ((TheWorld().scenario() > 1 || TheWorld().whom() == HOUSE_BAD) &&
+        briefing) {
       PreserveVQAScreen = TheWorld().scenario() == 1;
       Play_Movie(TheWorld().brief_movie());
     }
@@ -174,7 +176,7 @@ bool Start_Scenario(char* root, bool briefing) {
     absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA", TheWorld().brief_movie());
     GameFile file(buffer);
 
-    if (GameToPlay == GAME_NORMAL && !file.IsAvailable()) {
+    if (TheSession().type() == GAME_NORMAL && !file.IsAvailable()) {
       TheScreen().visible_page().Clear();
       Set_Palette(ThePalettes().game_palette());
       //			Show_Mouse();
@@ -276,7 +278,7 @@ void Fill_In_Data() {
   **	Bring up the score display on the radar map when starting a multiplayer
   **	game.
   */
-  if (GameToPlay != GAME_NORMAL) {
+  if (TheSession().type() != GAME_NORMAL) {
     TheMap().Player_Names(true);
   }
 
@@ -362,8 +364,8 @@ void Do_Win() {
   ** If this is a multiplayer game, clear the game's name so we won't respond
   ** to game queries any more (in Call_Back)
   */
-  if (GameToPlay != GAME_NORMAL) {
-    base::At(MPlayerGameName, 0) = 0;
+  if (TheSession().type() != GAME_NORMAL) {
+    base::At(TheSession().game_name(), 0) = 0;
   }
 
   /*
@@ -393,13 +395,13 @@ void Do_Win() {
   /*
   ** Stop here if this is a multiplayer game.
   */
-  if (GameToPlay != GAME_NORMAL) {
-    if (!PlaybackGame) {
-      MPlayerGamesPlayed++;
+  if (TheSession().type() != GAME_NORMAL) {
+    if (!TheSession().playback_game()) {
+      TheSession().games_played()++;
       Multi_Score_Presentation();
-      MPlayerCurGame++;
-      if (MPlayerCurGame >= MAX_MULTI_GAMES) {
-        MPlayerCurGame = MAX_MULTI_GAMES - 1;
+      TheSession().current_game()++;
+      if (TheSession().current_game() >= MAX_MULTI_GAMES) {
+        TheSession().current_game() = MAX_MULTI_GAMES - 1;
       }
     }
     GameActive = false;
@@ -412,7 +414,7 @@ void Do_Win() {
   */
   if (RequiredCD != -2) {
     if (TheWorld().scenario() >= 20 && TheWorld().scenario() < 60 &&
-        GameToPlay == GAME_NORMAL) {
+        TheSession().type() == GAME_NORMAL) {
       RequiredCD = 2;
     } else {
       if (TheWorld().scenario() >= 60) {
@@ -436,7 +438,7 @@ void Do_Win() {
   /*
   **	Do the ending screens only if not playing back a recorded game.
   */
-  if (!PlaybackGame) {
+  if (!TheSession().playback_game()) {
 #ifdef DEMO
 
     switch (TheWorld().scenario()) {
@@ -589,8 +591,8 @@ void Do_Lose() {
   ** If this is a multiplayer game, clear the game's name so we won't respond
   ** to game queries any more (in Call_Back)
   */
-  if (GameToPlay != GAME_NORMAL) {
-    base::At(MPlayerGameName, 0) = 0;
+  if (TheSession().type() != GAME_NORMAL) {
+    base::At(TheSession().game_name(), 0) = 0;
   }
 
   /*
@@ -626,13 +628,13 @@ void Do_Lose() {
   /*
   ** Stop here if this is a multiplayer game.
   */
-  if (GameToPlay != GAME_NORMAL) {
-    if (!PlaybackGame) {
-      MPlayerGamesPlayed++;
+  if (TheSession().type() != GAME_NORMAL) {
+    if (!TheSession().playback_game()) {
+      TheSession().games_played()++;
       Multi_Score_Presentation();
-      MPlayerCurGame++;
-      if (MPlayerCurGame >= MAX_MULTI_GAMES) {
-        MPlayerCurGame = MAX_MULTI_GAMES - 1;
+      TheSession().current_game()++;
+      if (TheSession().current_game() >= MAX_MULTI_GAMES) {
+        TheSession().current_game() = MAX_MULTI_GAMES - 1;
       }
     }
     GameActive = false;
@@ -647,7 +649,7 @@ void Do_Lose() {
   */
   Set_Palette(ThePalettes().game_palette());
   Show_Mouse();
-  if (!PlaybackGame &&
+  if (!TheSession().playback_game() &&
       !CCMessageBox().Process(TXT_TO_REPLAY, TXT_YES, TXT_NO)) {
     Hide_Mouse();
     Keyboard::Clear();

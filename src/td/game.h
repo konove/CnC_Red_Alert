@@ -9,9 +9,11 @@
 #include "td/assets.h"
 #include "td/debug_state.h"
 #include "td/game_clock.h"
+#include "td/network.h"
 #include "td/object_heaps.h"
 #include "td/palettes.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/startup_options.h"
 #include "td/world.h"
 
@@ -62,6 +64,10 @@ class Game {
   base::Installed<ObjectHeaps>::Scope object_heaps_scope_{object_heaps_};
   World world_;
   base::Installed<World>::Scope world_scope_{world_};
+  SessionClass session_;
+  base::Installed<SessionClass>::Scope session_scope_{session_};
+  Network network_;
+  base::Installed<Network>::Scope network_scope_{network_};
   DebugState debug_state_;
   base::Installed<DebugState>::Scope debug_state_scope_{debug_state_};
 };

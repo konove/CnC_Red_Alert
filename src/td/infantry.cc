@@ -155,6 +155,7 @@
 #include "td/profile.h"
 #include "td/radio.h"
 #include "td/rand.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/target.h"
 #include "td/team.h"
@@ -288,7 +289,7 @@ InfantryClass::InfantryClass(InfantryType classid, HousesType house)
   /*
   ** Keep count of the number of units created. Dont track civilians.
   */
-  if (!Class->IsCivilian && GameToPlay == GAME_INTERNET) {
+  if (!Class->IsCivilian && TheSession().type() == GAME_INTERNET) {
     House->InfantryTotals->Increment_Unit_Total(static_cast<int>(classid));
   }
 }
@@ -977,7 +978,7 @@ void InfantryClass::Assign_Target(TARGET target) {
       Class->Primary == WEAPON_NONE) {
     const BuildingClass* building = As_Building(target);
     if (building && building->Class->IsCaptureable &&
-        (GameToPlay != GAME_NORMAL ||
+        (TheSession().type() != GAME_NORMAL ||
          (*building != STRUCT_EYE && TheWorld().scenario() < 13))) {
       Assign_Destination(target);
     }
@@ -1934,7 +1935,7 @@ void InfantryClass::Enter_Idle_Mode(bool /*initial*/) {
     if (Target_Legal(NavCom)) {
       order = MISSION_MOVE;
     } else {
-      if (GameToPlay == GAME_NORMAL || House->IsHuman) {
+      if (TheSession().type() == GAME_NORMAL || House->IsHuman) {
         order = MISSION_GUARD;
       } else {
         order = MISSION_HUNT;
@@ -3034,7 +3035,7 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
           *dynamic_cast<AircraftClass*>(object) == AIRCRAFT_TRANSPORT) ||
          (object->What_Am_I() == RTTI_BUILDING &&
           dynamic_cast<BuildingClass*>(object)->Class->IsCaptureable &&
-          (GameToPlay != GAME_NORMAL ||
+          (TheSession().type() != GAME_NORMAL ||
            *dynamic_cast<BuildingClass*>(object) != STRUCT_EYE ||
            TheWorld().scenario() < 13)))) {
       action = ACTION_CAPTURE;
@@ -3137,7 +3138,8 @@ void InfantryClass::Read_INI(char* buffer) {
           if (infantry->Unlimbo(coord, dir)) {
             infantry->Strength = static_cast<int16_t>(
                 Fixed_To_Cardinal(infantry->Class_Of().MaxStrength, strength));
-            if (GameToPlay == GAME_NORMAL || infantry->House->IsHuman) {
+            if (TheSession().type() == GAME_NORMAL ||
+                infantry->House->IsHuman) {
               infantry->Assign_Mission(mission);
               infantry->Commence();
             } else {

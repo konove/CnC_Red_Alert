@@ -119,8 +119,6 @@ extern ThemeClass Theme;
 **	Game object allocation and tracking classes.
 */
 
-extern QueueClass<EventClass, MAX_EVENTS> OutList;
-extern QueueClass<EventClass, MAX_EVENTS * 8> DoList;
 
 
 
@@ -132,75 +130,22 @@ extern QueueClass<EventClass, MAX_EVENTS * 8> DoList;
 /*
 **	Miscellaneous globals.
 */
-extern HousesType Whom;
 extern VQAConfig AnimControl;
 extern bool SpecialFlag;
 extern ScenarioVarType ScenVar;
-extern int BuildLevel;
 
 
-extern GameType GameToPlay;
 
-extern CommProtocolType CommProtocol;
 
-extern GameFile RecordFile;
-extern bool RecordGame;
-extern int SuperRecord;
-extern bool PlaybackGame;
-extern bool AllowAttract;
 
 
 /*
 ** Modem globals
 */
-extern bool ModemService;
-extern NullModemClass NullModem;
-extern DynamicVectorClass<PhoneEntryClass*> PhoneBook;
-extern int CurPhoneIdx;
-extern DynamicVectorClass<char*> InitStrings;
-extern SerialSettingsType SerialDefaults;
-extern ModemGameType ModemGameToPlay;
 
 /*
 ** Network/Modem globals
 */
-extern int ScenarioIdx;
-extern char MPlayerName[MPLAYER_NAME_MAX];
-extern int MPlayerGColors[MAX_MPLAYER_COLORS];
-extern int MPlayerTColors[MAX_MPLAYER_COLORS];
-extern DynamicVectorClass<char*> MPlayerScenarios;
-extern DynamicVectorClass<int> MPlayerFilenum;
-extern int MPlayerMax;
-extern int MPlayerPrefColor;
-extern int MPlayerColorIdx;
-extern HousesType MPlayerHouse;
-extern unsigned char MPlayerLocalID;
-extern int MPlayerCount;
-extern int MPlayerBases;
-extern int MPlayerCredits;
-extern int MPlayerTiberium;
-extern int MPlayerGoodies;
-extern int MPlayerGhosts;
-extern bool MPlayerSolo;
-extern int MPlayerUnitCount;
-extern int MPlayerCountMin[2];
-extern int MPlayerCountMax[2];
-extern int MPlayerMaxAhead;
-extern int32_t FrameSendRate;
-extern unsigned char MPlayerID[MAX_PLAYERS];
-extern HousesType MPlayerHouses[MAX_PLAYERS];
-extern char MPlayerNames[MAX_PLAYERS][MPLAYER_NAME_MAX];
-extern MessageListClass Messages;
-extern char LastMessage[MAX_MESSAGE_LENGTH];
-extern int MPlayerBlitz;
-extern bool MPlayerObiWan;
-extern MPlayerScoreType MPlayerScore[MAX_MULTI_NAMES];
-extern int MPlayerGamesPlayed;
-extern int MPlayerNumScores;
-extern int MPlayerCurGame;
-
-extern int TheirProcessTime[MAX_PLAYERS - 1];
-extern int DesiredFrameRate;
 
 extern int32_t TrapFrame;
 extern RTTIType TrapObjType;
@@ -211,24 +156,6 @@ extern int TrapCheckHeap;
 /*
 ** Network (IPX) globals
 */
-extern IPXManagerClass Ipx;
-extern int IsBridge;
-extern IPXAddressClass BridgeNet;
-extern bool NetStealth;
-extern bool NetProtect;
-extern bool NetOpen;
-extern char MPlayerGameName[MPLAYER_NAME_MAX];
-extern GlobalPacketType GPacket;
-extern int GPacketlen;
-extern IPXAddressClass GAddress;
-extern uint16_t GProductID;
-extern std::vector<std::byte> MetaPacket;
-extern DynamicVectorClass<NodeNameType*> Games;
-extern DynamicVectorClass<NodeNameType*> Players;
-
-extern int Seed;
-extern int NewMaxAheadFrame1;
-extern int NewMaxAheadFrame2;
 
 /*
 **	Constant externs (data is not modified during game play).
@@ -237,8 +164,6 @@ extern int NewMaxAheadFrame2;
 extern bool SoundOn;
 extern CountDownTimerClass CountDownTimer;
 
-extern int ProcessTicks;
-extern int ProcessFrames;
 
 extern SpecialDialogType SpecialDialog;
 // extern bool						IsFindPath;
@@ -254,11 +179,8 @@ extern HANDLE hInstance;
 extern "C" bool MMXAvailable;
 extern int Get_CD_Index(int cd_drive, int timeout);
 [[noreturn]] void Memory_Error_Handler();
-extern bool GameStatisticsPacketSent;
-extern bool ConnectionLost;
 extern bool InMainLoop;  // True if in game state rather than menu state
 void CCDebugString(const char* string);
-extern void* PacketLater;
 void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
                        std::span<unsigned char> palette);
 

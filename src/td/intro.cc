@@ -241,7 +241,7 @@ void Choose_Side() {
         (ActiveKeyboard->MouseQY > 96 && ActiveKeyboard->MouseQY < 300)) {
       if (ActiveKeyboard->MouseQX > 36 && ActiveKeyboard->MouseQX < 296) {
         // Chose GDI
-        Whom = HOUSE_GOOD;
+        TheWorld().whom() = HOUSE_GOOD;
         TheWorld().scen_player() = SCEN_PLAYER_GDI;
         endframe = 0;
         Audio.Play(speechg);
@@ -252,7 +252,7 @@ void Choose_Side() {
                  ActiveKeyboard->MouseQX < 600) {
         // Chose Nod
         endframe = 14;
-        Whom = HOUSE_BAD;
+        TheWorld().whom() = HOUSE_BAD;
         TheWorld().scen_player() = SCEN_PLAYER_NOD;
         Audio.Play(speechn);
         speechplaying = true;
@@ -288,7 +288,7 @@ void Choose_Side() {
   }
 
   /* play the scenario 1 briefing movie */
-  if (Whom == HOUSE_GOOD) {
+  if (TheWorld().whom() == HOUSE_GOOD) {
     if (nodbrief) {
       nodbrief_player.Close();
     }
@@ -314,7 +314,7 @@ void Choose_Side() {
     }
   }
 
-  if (Whom == HOUSE_GOOD) {
+  if (TheWorld().whom() == HOUSE_GOOD) {
     /*
     ** Make sure the screen's fully clear after the movie plays
     */

@@ -64,8 +64,10 @@
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"
+#include "td/network.h"
 #include "td/object_heaps.h"
 #include "td/profile.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/tcpip.h"
 #include "td/type.h"
@@ -160,7 +162,6 @@ extern "C" char CPUType;
 
 static TimerClass GameTimer;
 static int32_t GameEndTime;
-void* PacketLater = nullptr;
 
 /***********************************************************************************************
  * Send_Statistics_To_Server -- sends internet game statistics to the Westeood
@@ -209,7 +210,7 @@ void Send_Statistics_Packet() {
 
   CCDebugString("C&C95 - In Send_Statistics_Packet.\n");
 
-  if (!PacketLater) {
+  if (!TheNetwork().packet_later()) {
     CCDebugString("C&C95 - PacketLater is false.\n");
 
     /*
@@ -224,32 +225,33 @@ void Send_Statistics_Packet() {
     /*
     ** Game ID. A unique game identifier assigned by WChat.
     */
-    stats.Add_Field(FIELD_GAME_ID, PlanetWestwoodGameID);
+    stats.Add_Field(FIELD_GAME_ID, TheNetwork().westwood_game_id());
 
     /*
     ** Start credits.
     */
-    stats.Add_Field(FIELD_START_CREDITS, static_cast<uint32_t>(MPlayerCredits));
+    stats.Add_Field(FIELD_START_CREDITS,
+                    static_cast<uint32_t>(TheSession().credits()));
 
     /*
     ** Bases (On/Off)
     */
-    stats.Add_Field(FIELD_BASES, MPlayerBases ? "ON" : "OFF");
+    stats.Add_Field(FIELD_BASES, TheSession().bases() ? "ON" : "OFF");
 
     /*
     ** Tiberium (On/Off)
     */
-    stats.Add_Field(FIELD_TIBERIUM, MPlayerTiberium ? "ON" : "OFF");
+    stats.Add_Field(FIELD_TIBERIUM, TheSession().tiberium() ? "ON" : "OFF");
 
     /*
     ** Crates (On/Off)
     */
-    stats.Add_Field(FIELD_CRATES, MPlayerGoodies ? "ON" : "OFF");
+    stats.Add_Field(FIELD_CRATES, TheSession().crates() ? "ON" : "OFF");
 
     /*
     ** AI Players (On/Off/Capture the flag)
     */
-    stats.Add_Field(FIELD_AI_PLAYERS, MPlayerGhosts ? "ON" : "OFF");
+    stats.Add_Field(FIELD_AI_PLAYERS, TheSession().ghosts() ? "ON" : "OFF");
     stats.Add_Field(FIELD_CAPTURE_THE_FLAG,
                     Special.IsCaptureTheFlag ? "ON" : "OFF");
 
@@ -257,12 +259,13 @@ void Send_Statistics_Packet() {
     ** Start unit count
     */
     stats.Add_Field(FIELD_START_UNIT_COUNT,
-                    static_cast<uint32_t>(MPlayerUnitCount));
+                    static_cast<uint32_t>(TheSession().unit_count()));
 
     /*
     ** Tech level.
     */
-    stats.Add_Field(FIELD_TECH_LEVEL, static_cast<uint32_t>(BuildLevel));
+    stats.Add_Field(FIELD_TECH_LEVEL,
+                    static_cast<uint32_t>(TheWorld().build_level()));
 
     CCDebugString("C&C95 - Adding stats field for scenario.\n");
     /*
@@ -297,13 +300,13 @@ void Send_Statistics_Packet() {
     */
     CCDebugString("C&C95 - Adding stats field for completion status.\n");
     const HouseClass* player1 =
-        HouseClass::As_Pointer(base::At(MPlayerHouses, 0));
+        HouseClass::As_Pointer(base::At(TheSession().player_houses(), 0));
     const HouseClass* player2 =
-        HouseClass::As_Pointer(base::At(MPlayerHouses, 1));
+        HouseClass::As_Pointer(base::At(TheSession().player_houses(), 1));
 
     int completion = -1;
 
-    if (ConnectionLost) {
+    if (TheNetwork().connection_lost()) {
       completion = kCompletionConnectionLost;
       CCDebugString("C&C95 - Completion status is connection lost.\n");
     } else {
@@ -366,7 +369,7 @@ void Send_Statistics_Packet() {
     ** Passed from WChat
     */
     stats.Add_Field(FIELD_START_TIME,
-                    static_cast<int32_t>(PlanetWestwoodStartTime));
+                    static_cast<int32_t>(TheNetwork().westwood_start_time()));
 
     /*
     ** Game duration (seconds).
@@ -403,7 +406,7 @@ void Send_Statistics_Packet() {
     */
     for (int house = 0; house < 2; house++) {
       HouseClass* player =
-          HouseClass::As_Pointer(base::At(MPlayerHouses, house));
+          HouseClass::As_Pointer(base::At(TheSession().player_houses(), house));
 
       if (player) {
         /*
@@ -411,7 +414,8 @@ void Send_Statistics_Packet() {
         */
         base::At(field_player_handle, 3) =
             static_cast<char>('1' + static_cast<char>(house));
-        stats.Add_Field(field_player_handle, base::At(MPlayerNames, house));
+        stats.Add_Field(field_player_handle,
+                        base::At(TheSession().player_names(), house));
 
         /*
         ** Player team. (NOD or GDI)
@@ -621,7 +625,7 @@ void Send_Statistics_Packet() {
     */
     if (completion == kCompletionPlayer1WonByDisconnection ||
         completion == kCompletionPlayer2WonByDisconnection) {
-      PacketLater = packet;
+      TheNetwork().packet_later() = packet;
       CCDebugString("C&C95 - Flagging to send the packet later.\n");
       return;
     }
@@ -633,8 +637,8 @@ void Send_Statistics_Packet() {
     /*
     ** Send the packet we calculated earlier when the disconnect occurred
     */
-    packet = PacketLater;
-    PacketLater = nullptr;
+    packet = TheNetwork().packet_later();
+    TheNetwork().packet_later() = nullptr;
   }
 
   /*
@@ -662,7 +666,7 @@ void Send_Statistics_Packet() {
   CCDebugString("C&C95 - About to delete packet memory.\n");
   delete[] static_cast<char*>(packet);
 
-  GameStatisticsPacketSent = true;
+  TheNetwork().statistics_sent() = true;
   CCDebugString("C&C95 - Returning from Send_Statistics_Packet.\n");
 #endif  // DEMO
 }

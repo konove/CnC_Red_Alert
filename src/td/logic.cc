@@ -55,6 +55,7 @@
 #include "td/mapedit.h"
 #include "td/object.h"
 #include "td/object_heaps.h"
+#include "td/session.h"
 #include "td/team.h"
 #include "td/type.h"
 #include "td/unit.h"
@@ -81,7 +82,8 @@ void LogicClass::AI() {
   /*
   **	Crate regeneration is handled here.
   */
-  if (GameToPlay != GAME_NORMAL && CrateMaker && CrateTimer.Expired()) {
+  if (TheSession().type() != GAME_NORMAL && CrateMaker &&
+      CrateTimer.Expired()) {
     TheMap().Place_Random_Crate();
     CrateTimer = kTicksPerMinute * Random_Pick(7, 15);
   }
@@ -121,8 +123,9 @@ void LogicClass::AI() {
   */
   for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
     const UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
-    if (unit->IsLocked && (GameToPlay != GAME_NORMAL || !unit->House->IsHuman ||
-                           unit->IsDiscoveredByPlayer)) {
+    if (unit->IsLocked &&
+        (TheSession().type() != GAME_NORMAL || !unit->House->IsHuman ||
+         unit->IsDiscoveredByPlayer)) {
       unit->House->NewUScan |= ScanBit(static_cast<int>(unit->Class->Type));
       if (!unit->IsInLimbo) {
         unit->House->NewActiveUScan |=
@@ -133,7 +136,7 @@ void LogicClass::AI() {
   for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
     const InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
     if (infantry->IsLocked &&
-        (GameToPlay != GAME_NORMAL || !infantry->House->IsHuman ||
+        (TheSession().type() != GAME_NORMAL || !infantry->House->IsHuman ||
          infantry->IsDiscoveredByPlayer)) {
       infantry->House->NewIScan |=
           ScanBit(static_cast<int>(infantry->Class->Type));
@@ -146,7 +149,7 @@ void LogicClass::AI() {
   for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
     const AircraftClass* aircraft = TheObjectHeaps().aircraft().Ptr(index);
     if (aircraft->IsLocked &&
-        (GameToPlay != GAME_NORMAL || !aircraft->House->IsHuman ||
+        (TheSession().type() != GAME_NORMAL || !aircraft->House->IsHuman ||
          aircraft->IsDiscoveredByPlayer)) {
       aircraft->House->NewAScan |=
           ScanBit(static_cast<int>(aircraft->Class->Type));
@@ -159,7 +162,7 @@ void LogicClass::AI() {
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
     const BuildingClass* building = TheObjectHeaps().building().Ptr(index);
     if (building->IsLocked &&
-        (GameToPlay != GAME_NORMAL || !building->House->IsHuman ||
+        (TheSession().type() != GAME_NORMAL || !building->House->IsHuman ||
          building->IsDiscoveredByPlayer)) {
       building->House->NewBScan |=
           ScanBit(static_cast<int>(building->Class->Type));

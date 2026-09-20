@@ -211,6 +211,7 @@
 #include "td/queue.h"
 #include "td/radio.h"
 #include "td/rand.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/stage.h"
 #include "td/target.h"
@@ -354,7 +355,7 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const {
   **	For computer controlled buildings, slow down production on
   **	cheaper buildings.
   */
-  if (!Special.IsDifficult && GameToPlay == GAME_NORMAL &&
+  if (!Special.IsDifficult && TheSession().type() == GAME_NORMAL &&
       What_Am_I() == RTTI_BUILDINGTYPE && ThePlayer()->Class->House != house) {
     cost = (cost + (Special.IsEasy ? 4000 : 2000)) / 2;
   }
@@ -1181,7 +1182,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	are always considered to be visible.
   */
   if (!object->IsOwnedByPlayer && !object->IsDiscoveredByPlayer &&
-      GameToPlay == GAME_NORMAL && object->What_Am_I() != RTTI_AIRCRAFT) {
+      TheSession().type() == GAME_NORMAL &&
+      object->What_Am_I() != RTTI_AIRCRAFT) {
     return false;
   }
 
@@ -2293,7 +2295,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     */
     if ((!IsOwnedByPlayer && !IsDiscoveredByPlayer) ||
         !TheMap().at(Coord_Cell(Center_Coord())).IsMapped) {
-      if (GameToPlay == GAME_NORMAL) {
+      if (TheSession().type() == GAME_NORMAL) {
         TheMap().Sight_From(Coord_Cell(Center_Coord()), 1, false);
       } else {
         const ObjectClass* obj = As_Object(target);
@@ -2634,7 +2636,7 @@ int TechnoClass::Weapon_Range(int which) const {
       break;
   }
   if (weapon != WEAPON_NONE) {
-    if (weapon == WEAPON_NIKE && GameToPlay == GAME_NORMAL) {
+    if (weapon == WEAPON_NIKE && TheSession().type() == GAME_NORMAL) {
       return Weapons.at(weapon).Range * 2;
     }
     return Weapons.at(weapon).Range;
@@ -2935,7 +2937,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
         House->BuildingsLost++;
       }
       if (source) {
-        if (GameToPlay == GAME_INTERNET) {
+        if (TheSession().type() == GAME_INTERNET) {
           source->House->DestroyedBuildings->Increment_Unit_Total(
               static_cast<int>(
                   dynamic_cast<BuildingClass*>(this)->Class->Type));
@@ -2955,7 +2957,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
     case RTTI_AIRCRAFT:
       House->UnitsLost++;
       if (source) {
-        if (GameToPlay == GAME_INTERNET) {
+        if (TheSession().type() == GAME_INTERNET) {
           source->House->DestroyedAircraft->Increment_Unit_Total(
               static_cast<int>(
                   dynamic_cast<AircraftClass*>(this)->Class->Type));
@@ -2974,7 +2976,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
     case RTTI_INFANTRY:
       House->UnitsLost++;
       if (source) {
-        if (GameToPlay == GAME_INTERNET) {
+        if (TheSession().type() == GAME_INTERNET) {
           source->House->DestroyedInfantry->Increment_Unit_Total(
               static_cast<int>(
                   dynamic_cast<InfantryClass*>(this)->Class->Type));
@@ -2993,7 +2995,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
     case RTTI_UNIT:
       House->UnitsLost++;
       if (source) {
-        if (GameToPlay == GAME_INTERNET) {
+        if (TheSession().type() == GAME_INTERNET) {
           source->House->DestroyedUnits->Increment_Unit_Total(
               static_cast<int>(dynamic_cast<UnitClass*>(this)->Class->Type));
         }
@@ -3432,7 +3434,7 @@ int TechnoClass::Value() const {
   **	In early missions, contents of transports are not figured
   **	into the total value. - 8/16/95
   */
-  if ((BuildLevel > 8 || GameToPlay != GAME_NORMAL) &&
+  if ((TheWorld().build_level() > 8 || TheSession().type() != GAME_NORMAL) &&
       Is_Something_Attached()) {
     const FootClass* object = Attached_Object();
 

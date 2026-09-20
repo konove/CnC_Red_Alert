@@ -99,11 +99,13 @@
 #include "td/mplayer.h"
 #include "td/msgbox.h"
 #include "td/msglist.h"
+#include "td/network.h"
 #include "td/nullmgr.h"
 #include "td/palette.h"
 #include "td/palettes.h"
 #include "td/phone.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/tcpip.h"
 #include "td/text.h"
@@ -181,9 +183,9 @@ static SerialSettingsType* DialSettings;
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 bool Init_Null_Modem(SerialSettingsType* settings) {
-  return NullModem.Init(settings->Port, settings->IRQ, settings->ModemName,
-                        settings->Baud, 0, 8, 1,
-                        settings->HardwareFlowControl ? 1 : 0) != 0;
+  return TheNetwork().null_modem().Init(
+             settings->Port, settings->IRQ, settings->ModemName, settings->Baud,
+             0, 8, 1, settings->HardwareFlowControl ? 1 : 0) != 0;
 }
 
 /***************************************************************************
@@ -205,14 +207,14 @@ bool Init_Null_Modem(SerialSettingsType* settings) {
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Shutdown_Modem() {
-  if ((!PlaybackGame) && (GameToPlay == GAME_MODEM)) {
-    NullModem.Hangup_Modem();
+  if ((!TheSession().playback_game()) && (TheSession().type() == GAME_MODEM)) {
+    TheNetwork().null_modem().Hangup_Modem();
   }
 
   //
   // close port
   //
-  NullModem.Shutdown();
+  TheNetwork().null_modem().Shutdown();
 }
 
 /***************************************************************************
@@ -237,17 +239,19 @@ void Shutdown_Modem() {
 void Modem_Signoff() {
   EventClass event;
 
-  if (!PlaybackGame) {
+  if (!TheSession().playback_game()) {
     /*------------------------------------------------------------------------
     Send a sign-off packet
     ------------------------------------------------------------------------*/
     event.Type = EventClass::EXIT;
-    NullModem.Send_Message(base::ObjectBytes(event), sizeof(EventClass), 0);
-    NullModem.Send_Message(base::ObjectBytes(event), sizeof(EventClass), 0);
+    TheNetwork().null_modem().Send_Message(base::ObjectBytes(event),
+                                           sizeof(EventClass), 0);
+    TheNetwork().null_modem().Send_Message(base::ObjectBytes(event),
+                                           sizeof(EventClass), 0);
 
     const int64_t starttime = SystemTicks();
     while (SystemTicks() - starttime < 30) {
-      NullModem.Service();
+      TheNetwork().null_modem().Service();
     }
   }
 }
@@ -388,15 +392,15 @@ int Test_Null_Modem() {
   ------------------------------------------------------------------------*/
   starttime = SystemTicks();
   while (SystemTicks() - starttime < 80) {
-    NullModem.Service();
-    if ((NullModem.Get_Message(base::ObjectBytes(ReceivePacket), &packetlen) >
-         0) &&
+    TheNetwork().null_modem().Service();
+    if ((TheNetwork().null_modem().Get_Message(base::ObjectBytes(ReceivePacket),
+                                               &packetlen) > 0) &&
         (ReceivePacket.Command == SERIAL_CONNECT)) {
       // Smart_Printf( "Received SERIAL_CONNECT %d, ID %d \n",
       // ReceivePacket.Seed, ReceivePacket.ID );
       starttime = SystemTicks();
       while (SystemTicks() - starttime < 30) {
-        NullModem.Service();
+        TheNetwork().null_modem().Service();
       }
       process = false;
       retval = 2;
@@ -421,20 +425,20 @@ int Test_Null_Modem() {
 
     // Smart_Printf( "Sending SERIAL_CONNECT %d, ID %d \n", SendPacket.Seed,
     // SendPacket.ID );
-    NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
-                           1);
+    TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                           sizeof(SendPacket), 1);
 
     starttime = SystemTicks();
     while (SystemTicks() - starttime < 80) {
-      NullModem.Service();
-      if ((NullModem.Get_Message(base::ObjectBytes(ReceivePacket), &packetlen) >
-           0) &&
+      TheNetwork().null_modem().Service();
+      if ((TheNetwork().null_modem().Get_Message(
+               base::ObjectBytes(ReceivePacket), &packetlen) > 0) &&
           (ReceivePacket.Command == SERIAL_CONNECT)) {
         // Smart_Printf( "Received2 SERIAL_CONNECT %d, ID %d \n",
         // ReceivePacket.Seed, ReceivePacket.ID );
         starttime = SystemTicks();
         while (SystemTicks() - starttime < 30) {
-          NullModem.Service();
+          TheNetwork().null_modem().Service();
         }
 
         //
@@ -507,17 +511,17 @@ int Test_Null_Modem() {
     /*.....................................................................
     Service the connection.
     .....................................................................*/
-    NullModem.Service();
-    if (NullModem.Num_Send() == 0) {
+    TheNetwork().null_modem().Service();
+    if (TheNetwork().null_modem().Num_Send() == 0) {
       // Smart_Printf( "No more messages to send.\n" );
-      if (NullModem.Get_Message(base::ObjectBytes(ReceivePacket), &packetlen) >
-          0) {
+      if (TheNetwork().null_modem().Get_Message(
+              base::ObjectBytes(ReceivePacket), &packetlen) > 0) {
         if (ReceivePacket.Command == SERIAL_CONNECT) {
           // Smart_Printf( "Received3 SERIAL_CONNECT %d, ID %d \n",
           // ReceivePacket.Seed, ReceivePacket.ID );
           starttime = SystemTicks();
           while (SystemTicks() - starttime < 30) {
-            NullModem.Service();
+            TheNetwork().null_modem().Service();
           }
 
           //
@@ -585,7 +589,7 @@ int Reconnect_Modem() {
   int status = 0;
   unsigned modemstatus = 0;
 
-  switch (ModemGameToPlay) {
+  switch (TheNetwork().modem_game_type()) {
     case MODEM_NULL_HOST:
     case MODEM_NULL_JOIN:
       status = Reconnect_Null_Modem();
@@ -751,7 +755,7 @@ static int Reconnect_Null_Modem() {
     /*.....................................................................
     Service the connection.
     .....................................................................*/
-    NullModem.Service();
+    TheNetwork().null_modem().Service();
 
     /*.....................................................................
     Resend our message if it's time
@@ -759,17 +763,17 @@ static int Reconnect_Null_Modem() {
     if (SystemTicks() - starttime > PACKET_RETRANS_TIME) {
       starttime = SystemTicks();
       SendPacket.Command = SERIAL_CONNECT;
-      SendPacket.ID = MPlayerLocalID;
+      SendPacket.ID = TheSession().local_id();
       // Smart_Printf( "Sending a SERIAL_CONNECT packet !!!!!!!!\n" );
-      NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
-                             0);
+      TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                             sizeof(SendPacket), 0);
     }
 
     /*.....................................................................
     Check for an incoming message
     .....................................................................*/
-    if (NullModem.Get_Message(base::ObjectBytes(ReceivePacket), &packetlen) >
-        0) {
+    if (TheNetwork().null_modem().Get_Message(base::ObjectBytes(ReceivePacket),
+                                              &packetlen) > 0) {
       lastmsgtime = SystemTicks();
 
       if (ReceivePacket.Command == SERIAL_CONNECT) {
@@ -777,7 +781,7 @@ static int Reconnect_Null_Modem() {
 
         // are we getting our own packets back??
 
-        if (ReceivePacket.ID == MPlayerLocalID) {
+        if (ReceivePacket.ID == TheSession().local_id()) {
           CCMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
           retval = 0;
           break;
@@ -788,12 +792,12 @@ static int Reconnect_Null_Modem() {
         guy gets his, so send him one with an ACK required.
         ...............................................................*/
         SendPacket.Command = SERIAL_CONNECT;
-        SendPacket.ID = MPlayerLocalID;
-        NullModem.Send_Message(base::ObjectBytes(SendPacket),
-                               sizeof(SendPacket), 1);
+        SendPacket.ID = TheSession().local_id();
+        TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                               sizeof(SendPacket), 1);
         starttime = SystemTicks();
         while (SystemTicks() - starttime < 60) {
-          NullModem.Service();
+          TheNetwork().null_modem().Service();
         }
         retval = 1;
         process = false;
@@ -835,15 +839,16 @@ static int Reconnect_Null_Modem() {
 void Destroy_Null_Connection(int id, int error) {
   char txt[80];
 
-  if (MPlayerCount == 1) {
+  if (TheSession().player_count() == 1) {
     return;
   }
 
   // find index for id
 
   int idx = -1;
-  for (int i = 0; i < MPlayerCount; i++) {
-    if (base::At(MPlayerID, i) == static_cast<unsigned char>(id)) {
+  for (int i = 0; i < TheSession().player_count(); i++) {
+    if (base::At(TheSession().player_ids(), i) ==
+        static_cast<unsigned char>(id)) {
       idx = i;
       break;
     }
@@ -859,56 +864,62 @@ void Destroy_Null_Connection(int id, int error) {
   base::At(txt, 0) = '\0';
   if (error == 1) {
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_CONNECTION_LOST),
-                        base::At(MPlayerNames, idx));
+                        base::At(TheSession().player_names(), idx));
   } else if (error == 0) {
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_LEFT_GAME),
-                        base::At(MPlayerNames, idx));
+                        base::At(TheSession().player_names(), idx));
   } else if (error == -1) {
-    NullModem.Delete_Connection();
+    TheNetwork().null_modem().Delete_Connection();
   }
 
   if (!std::string_view(txt).empty()) {
-    Messages.Add_Message(
+    TheSession().messages().Add_Message(
         txt,
-        base::At(MPlayerTColors, static_cast<int>(MPlayerID_To_ColorIndex(
-                                     static_cast<unsigned char>(id)))),
+        base::At(TheSession().text_colors(),
+                 static_cast<int>(
+                     MPlayerID_To_ColorIndex(static_cast<unsigned char>(id)))),
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     TheMap().Flag_To_Redraw(false);
   }
 
-  for (int i = 0; i < MPlayerCount; i++) {
-    if (base::At(MPlayerID, i) == static_cast<unsigned char>(id)) {
+  for (int i = 0; i < TheSession().player_count(); i++) {
+    if (base::At(TheSession().player_ids(), i) ==
+        static_cast<unsigned char>(id)) {
       /*..................................................................
       Turn the player's house over to the computer's AI
       ..................................................................*/
-      const HousesType house = base::At(MPlayerHouses, i);
+      const HousesType house = base::At(TheSession().player_houses(), i);
       HouseClass* housep = HouseClass::As_Pointer(house);
       housep->IsHuman = false;
 
       /*..................................................................
       Move arrays back by one
       ..................................................................*/
-      for (int j = i; j < MPlayerCount - 1; j++) {
-        base::At(MPlayerID, j) = base::At(MPlayerID, j + 1);
-        base::At(MPlayerHouses, j) = base::At(MPlayerHouses, j + 1);
-        port::SafeCopy(base::At(MPlayerNames, j),
-                       base::At(MPlayerNames, j + 1));
-        base::At(TheirProcessTime, j) = base::At(TheirProcessTime, j + 1);
+      for (int j = i; j < TheSession().player_count() - 1; j++) {
+        base::At(TheSession().player_ids(), j) =
+            base::At(TheSession().player_ids(), j + 1);
+        base::At(TheSession().player_houses(), j) =
+            base::At(TheSession().player_houses(), j + 1);
+        port::SafeCopy(base::At(TheSession().player_names(), j),
+                       base::At(TheSession().player_names(), j + 1));
+        base::At(TheSession().their_process_time(), j) =
+            base::At(TheSession().their_process_time(), j + 1);
       }
     }
   }
 
-  MPlayerCount--;
+  TheSession().player_count()--;
 
   /*------------------------------------------------------------------------
   If we're the last player left, tell the user.
   ------------------------------------------------------------------------*/
-  if (MPlayerCount == 1) {
+  if (TheSession().player_count() == 1) {
     absl::SNPrintF(txt, sizeof(txt), "%s", Text_String(TXT_JUST_YOU_AND_ME));
-    Messages.Add_Message(
+    TheSession().messages().Add_Message(
         txt,
-        base::At(MPlayerTColors, static_cast<int>(MPlayerID_To_ColorIndex(
-                                     static_cast<unsigned char>(id)))),
+        base::At(TheSession().text_colors(),
+                 static_cast<int>(
+                     MPlayerID_To_ColorIndex(static_cast<unsigned char>(id)))),
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     TheMap().Flag_To_Redraw(false);
   }
@@ -1062,11 +1073,13 @@ GameType Select_Serial_Dialog() {
   ........................................................................*/
   Read_MultiPlayer_Settings();
 
-  if (SerialDefaults.Port == 0 || SerialDefaults.IRQ == -1 ||
-      SerialDefaults.Baud == -1) {
+  if (TheNetwork().serial_defaults().Port == 0 ||
+      TheNetwork().serial_defaults().IRQ == -1 ||
+      TheNetwork().serial_defaults().Baud == -1) {
     selectsettings = true;
   } else {
-    if (NullModemClass::Detect_Port(&SerialDefaults) != PORT_VALID) {
+    if (NullModemClass::Detect_Port(&TheNetwork().serial_defaults()) !=
+        PORT_VALID) {
       selectsettings = true;
     }
   }
@@ -1098,7 +1111,7 @@ GameType Select_Serial_Dialog() {
 
   smart_print_enabled = true;
 
-  MPlayerLocalID = 0xff;  // set to invalid value
+  TheSession().local_id() = 0xff;  // set to invalid value
 
   /*
   -------------------------- Main Processing Loop --------------------------
@@ -1239,10 +1252,16 @@ GameType Select_Serial_Dialog() {
           ** Remote-connect
           */
           else if (Phone_Dialog()) {
-            if (PhoneBook.at(CurPhoneIdx)->Settings.Port == 0) {
-              settings = &SerialDefaults;
+            if (TheNetwork()
+                    .phone_book()
+                    .at(TheNetwork().current_phone_index())
+                    ->Settings.Port == 0) {
+              settings = &TheNetwork().serial_defaults();
             } else {
-              settings = &PhoneBook.at(CurPhoneIdx)->Settings;
+              settings = &TheNetwork()
+                              .phone_book()
+                              .at(TheNetwork().current_phone_index())
+                              ->Settings;
             }
 
             delete SerialPort;
@@ -1256,10 +1275,14 @@ GameType Select_Serial_Dialog() {
                     DialString,
                     base::At(call_wait_strings, settings->CallWaitStringIndex));
               }
-              port::SafeAppend(DialString, PhoneBook.at(CurPhoneIdx)->Number);
+              port::SafeAppend(DialString,
+                               TheNetwork()
+                                   .phone_book()
+                                   .at(TheNetwork().current_phone_index())
+                                   ->Number);
 
               if (Dial_Modem(settings, false)) {
-                ModemGameToPlay = MODEM_DIALER;
+                TheNetwork().modem_game_type() = MODEM_DIALER;
                 if (Com_Scenario_Dialog()) {
                   retval = GAME_MODEM;
                   process = false;
@@ -1290,14 +1313,14 @@ GameType Select_Serial_Dialog() {
             /*
             ** Remote-connect
             */
-            settings = &SerialDefaults;
+            settings = &TheNetwork().serial_defaults();
 
             delete SerialPort;
             SerialPort = new WinModemClass;
 
             if (Init_Null_Modem(settings)) {
               if (Answer_Modem(settings, false)) {
-                ModemGameToPlay = MODEM_ANSWERER;
+                TheNetwork().modem_game_type() = MODEM_ANSWERER;
                 if (Com_Show_Scenario_Dialog()) {
                   retval = GAME_MODEM;
                   process = false;
@@ -1332,11 +1355,11 @@ GameType Select_Serial_Dialog() {
             delete SerialPort;
             SerialPort = new WinNullModemClass;
 
-            if (Init_Null_Modem(&SerialDefaults)) {
+            if (Init_Null_Modem(&TheNetwork().serial_defaults())) {
               rc = Test_Null_Modem();
               switch (rc) {
                 case 1:
-                  ModemGameToPlay = MODEM_NULL_HOST;
+                  TheNetwork().modem_game_type() = MODEM_NULL_HOST;
                   if (Com_Scenario_Dialog()) {
                     retval = GAME_NULL_MODEM;
                     process = false;
@@ -1344,7 +1367,7 @@ GameType Select_Serial_Dialog() {
                   break;
 
                 case 2:
-                  ModemGameToPlay = MODEM_NULL_JOIN;
+                  TheNetwork().modem_game_type() = MODEM_NULL_JOIN;
                   if (Com_Show_Scenario_Dialog()) {
                     retval = GAME_NULL_MODEM;
                     process = false;
@@ -1375,14 +1398,16 @@ GameType Select_Serial_Dialog() {
           break;
 
         case kButtonSettings:
-          if (Com_Settings_Dialog(&SerialDefaults)) {
+          if (Com_Settings_Dialog(&TheNetwork().serial_defaults())) {
             Write_MultiPlayer_Settings();
 
             selectsettings = true;
 
-            if ((SerialDefaults.Port != 0 && SerialDefaults.IRQ != -1 &&
-                 SerialDefaults.Baud != -1) &&
-                (NullModemClass::Detect_Port(&SerialDefaults) == PORT_VALID)) {
+            if ((TheNetwork().serial_defaults().Port != 0 &&
+                 TheNetwork().serial_defaults().IRQ != -1 &&
+                 TheNetwork().serial_defaults().Baud != -1) &&
+                (NullModemClass::Detect_Port(&TheNetwork().serial_defaults()) ==
+                 PORT_VALID)) {
               selectsettings = false;
             }
           }
@@ -2766,16 +2791,17 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
         port::SafeCopy(std::span(item, INITSTRBUF_MAX), initstrbuf);
 
-        InitStrings.Add(item);
+        TheNetwork().init_strings().Add(item);
         Build_Init_String_Listbox(&initstrlist, &initstr_edt, initstrbuf,
                                   &initstr_index);
         /*............................................................
         Set the current listbox index to the newly-added item.
         ............................................................*/
-        for (i = 0; i < InitStrings.Count(); i++) {
-          if (item == InitStrings.at(i)) {
+        for (i = 0; i < TheNetwork().init_strings().Count(); i++) {
+          if (item == TheNetwork().init_strings().at(i)) {
             initstr_index = i;
-            port::SafeCopy(initstrbuf, InitStrings.at(initstr_index));
+            port::SafeCopy(initstrbuf,
+                           TheNetwork().init_strings().at(initstr_index));
             initstr_edt.Set_Text(initstrbuf, INITSTRBUF_MAX);
             initstrlist.Set_Selected_Index(initstr_index);
           }
@@ -2790,8 +2816,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonDelete):
 
-        if (InitStrings.Count() && initstr_index != -1) {
-          InitStrings.Delete(initstr_index);
+        if (TheNetwork().init_strings().Count() && initstr_index != -1) {
+          TheNetwork().init_strings().Delete(initstr_index);
           Build_Init_String_Listbox(&initstrlist, &initstr_edt, initstrbuf,
                                     &initstr_index);
         }
@@ -3021,8 +3047,8 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   /*
   ** Now sort the init string list by name then number
   */
-  if (InitStrings.Count() > 0) {
-    std::ranges::sort(InitStrings.ActiveElements(),
+  if (TheNetwork().init_strings().Count() > 0) {
+    std::ranges::sort(TheNetwork().init_strings().ActiveElements(),
                       [](const char* left, const char* right) {
                         return std::string_view(left).compare(right) < 0;
                       });
@@ -3031,8 +3057,8 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   /*........................................................................
   Build the list
   ........................................................................*/
-  for (int i = 0; i < InitStrings.Count(); i++) {
-    list->Add_Item(InitStrings.at(i));
+  for (int i = 0; i < TheNetwork().init_strings().Count(); i++) {
+    list->Add_Item(TheNetwork().init_strings().at(i));
   }
   list->Flag_To_Redraw();
 
@@ -3052,7 +3078,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   ........................................................................*/
   if (curidx > -1) {
     port::SafeCopy(std::span(buf).first(INITSTRBUF_MAX),
-                   InitStrings.at(curidx));
+                   TheNetwork().init_strings().at(curidx));
     edit->Set_Text(buf, INITSTRBUF_MAX);
     list->Set_Selected_Index(curidx);
   }
@@ -3408,12 +3434,14 @@ int Com_Scenario_Dialog() {
   /*........................................................................
   Init player name & house
   ........................................................................*/
-  MPlayerColorIdx = MPlayerPrefColor;    // init my preferred color
-  port::SafeCopy(namebuf, MPlayerName);  // set my name
+  TheSession().color_index() =
+      TheSession().preferred_color();  // init my preferred color
+  port::SafeCopy(namebuf, TheSession().player_name());  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
-  name_edt.Set_Color(base::At(MPlayerTColors, MPlayerColorIdx));
+  name_edt.Set_Color(
+      base::At(TheSession().text_colors(), TheSession().color_index()));
 
-  if (MPlayerHouse == HOUSE_GOOD) {
+  if (TheSession().house() == HOUSE_GOOD) {
     gdibtn.Turn_On();
   } else {
     nodbtn.Turn_On();
@@ -3423,84 +3451,88 @@ int Com_Scenario_Dialog() {
   Init scenario values, only the first time through
   ........................................................................*/
   if (first_time) {
-    MPlayerCredits = 3000;  // init credits & credit buffer
-    MPlayerBases = 1;       // init scenario parameters
-    MPlayerTiberium = 0;
-    MPlayerGoodies = 0;
-    MPlayerGhosts = 0;
+    TheSession().credits() = 3000;  // init credits & credit buffer
+    TheSession().bases() = 1;       // init scenario parameters
+    TheSession().tiberium() = 0;
+    TheSession().crates() = 0;
+    TheSession().ghosts() = 0;
     Special.IsCaptureTheFlag = 0;
-    MPlayerUnitCount = (base::At(MPlayerCountMax, MPlayerBases) +
-                        base::At(MPlayerCountMin, MPlayerBases)) /
-                       2;
+    TheSession().unit_count() =
+        (base::At(TheSession().unit_count_max(), TheSession().bases()) +
+         base::At(TheSession().unit_count_min(), TheSession().bases())) /
+        2;
     first_time = 0;
   }
 
   /*........................................................................
   Init button states
   ........................................................................*/
-  if (MPlayerBases) {
+  if (TheSession().bases()) {
     basesbtn.Turn_On();
     basesbtn.Set_Text(TXT_BASES_ON);
   }
-  if (MPlayerTiberium) {
+  if (TheSession().tiberium()) {
     tiberiumbtn.Turn_On();
     tiberiumbtn.Set_Text(TXT_TIBERIUM_ON);
   }
-  if (MPlayerGoodies) {
+  if (TheSession().crates()) {
     goodiesbtn.Turn_On();
     goodiesbtn.Set_Text(TXT_CRATES_ON);
   }
-  if (MPlayerGhosts) {
+  if (TheSession().ghosts()) {
     ghostsbtn.Turn_On();
     ghostsbtn.Set_Text(TXT_AI_PLAYERS_ON);
   }
   if (Special.IsCaptureTheFlag) {
-    MPlayerGhosts = 0;
+    TheSession().ghosts() = 0;
     ghostsbtn.Turn_On();
     ghostsbtn.Set_Text(TXT_CAPTURE_THE_FLAG);
   }
 
-  absl::SNPrintF(credbuf, sizeof(credbuf), "%d", MPlayerCredits);
+  absl::SNPrintF(credbuf, sizeof(credbuf), "%d", TheSession().credits());
   credit_edt.Set_Text(credbuf, CREDITSBUF_MAX);
-  int old_cred = MPlayerCredits;  // old value in credits buffer
+  int old_cred = TheSession().credits();  // old value in credits buffer
 
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
-  levelgauge.Set_Value(BuildLevel - 1);
+  levelgauge.Set_Value(TheWorld().build_level() - 1);
 
-  countgauge.Set_Maximum(base::At(MPlayerCountMax, MPlayerBases) -
-                         base::At(MPlayerCountMin, MPlayerBases));
-  countgauge.Set_Value(MPlayerUnitCount -
-                       base::At(MPlayerCountMin, MPlayerBases));
+  countgauge.Set_Maximum(
+      base::At(TheSession().unit_count_max(), TheSession().bases()) -
+      base::At(TheSession().unit_count_min(), TheSession().bases()));
+  countgauge.Set_Value(
+      TheSession().unit_count() -
+      base::At(TheSession().unit_count_min(), TheSession().bases()));
 
   /*........................................................................
   Init other scenario parameters
   ........................................................................*/
-  Special.IsTGrowth = static_cast<unsigned>(MPlayerTiberium);
-  Special.IsTSpread = static_cast<unsigned>(MPlayerTiberium);
+  Special.IsTGrowth = static_cast<unsigned>(TheSession().tiberium());
+  Special.IsTSpread = static_cast<unsigned>(TheSession().tiberium());
   int transmit = 1;  // 1 = re-transmit new game options
 
   /*........................................................................
   Init scenario description list box
   ........................................................................*/
-  for (i = 0; i < MPlayerScenarios.Count(); i++) {
-    char* const scenario = MPlayerScenarios.at(i);
+  for (i = 0; i < TheSession().scenarios().Count(); i++) {
+    char* const scenario = TheSession().scenarios().at(i);
     std::ranges::transform(port::MutableCString(scenario), scenario,
                            absl::ascii_toupper);
     scenariolist.Add_Item(scenario);
   }
-  ScenarioIdx = 0;  // 1st scenario is selected
+  TheSession().scenario_index() = 0;  // 1st scenario is selected
 
   /*........................................................................
   Init random-number generator, & create a seed to be used for all random
   numbers from here on out
   ........................................................................*/
-  Seed = port::RandomSeed();
+  TheWorld().seed() = port::RandomSeed();
 
   /*........................................................................
   Init the message display system
   ........................................................................*/
-  Messages.Init(d_message_x + (2 * factor), d_message_y + (2 * factor), 4,
-                MAX_MESSAGE_LENGTH, d_txt6_h);
+  TheSession().messages().Init(d_message_x + (2 * factor),
+                               d_message_y + (2 * factor), 4,
+                               MAX_MESSAGE_LENGTH, d_txt6_h);
 
   Load_Title_Page(true);
   Set_Palette(ThePalettes().title_palette());
@@ -3510,9 +3542,9 @@ int Com_Scenario_Dialog() {
   }
 
   if (!std::string_view(ModemRXString).empty()) {
-    Messages.Add_Message(ModemRXString, kCcTan,
-                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
-                         0, 0);
+    TheSession().messages().Add_Message(
+        ModemRXString, kCcTan, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+        1200, 0, 0);
   }
 
   base::At(ModemRXString, 0) = '\0';
@@ -3520,7 +3552,7 @@ int Com_Scenario_Dialog() {
   /*
   ---------------------------- Processing loop -----------------------------
   */
-  NullModem.Reset_Response_Time();  // clear response time
+  TheNetwork().null_modem().Reset_Response_Time();  // clear response time
   decltype(SerialPacketType::ResponseTime) theirresponsetime =
       10000;  // an invalid value
   timingtime = lastmsgtime = lastredrawtime = SystemTicks();
@@ -3620,9 +3652,10 @@ int Com_Scenario_Dialog() {
               base::At(cbox_x, i) + (1 * factor), d_color_y + (1 * factor),
               base::At(cbox_x, i) + (1 * factor) + d_color_w - (2 * factor),
               d_color_y + (1 * factor) + d_color_h - (2 * factor),
-              static_cast<unsigned char>(base::At(MPlayerGColors, i)));
+              static_cast<unsigned char>(
+                  base::At(TheSession().graphic_colors(), i)));
 
-          if (i == MPlayerColorIdx) {
+          if (i == TheSession().color_index()) {
             Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
                      BOXSTYLE_GREEN_DOWN, false);
           } else {
@@ -3639,7 +3672,7 @@ int Com_Scenario_Dialog() {
       if (display >= REDRAW_MESSAGE) {
         Draw_Box(d_message_x, d_message_y, d_message_w, d_message_h,
                  BOXSTYLE_GREEN_BORDER, true);
-        Messages.Draw();
+        TheSession().messages().Draw();
 
         LogicPage->Fill_Rect(d_dialog_x + (2 * factor), d_opponent_y,
                              d_dialog_x + d_dialog_w - (4 * factor),
@@ -3670,18 +3703,19 @@ int Com_Scenario_Dialog() {
             }
 
             Fancy_Text_Print(txt, d_opponent_x, d_opponent_y,
-                             base::At(MPlayerTColors, TheirColor), kTBlack,
+                             base::At(TheSession().text_colors(), TheirColor),
+                             kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
         }
 
-        absl::SNPrintF(txt, sizeof(txt), "%d ", MPlayerUnitCount);
+        absl::SNPrintF(txt, sizeof(txt), "%d ", TheSession().unit_count());
         Fancy_Text_Print(txt, d_count_x + d_count_w + (3 * factor), d_count_y,
                          kCcGreen, kBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-        if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          absl::SNPrintF(txt, sizeof(txt), "%d ", BuildLevel);
+        if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
+          absl::SNPrintF(txt, sizeof(txt), "%d ", TheWorld().build_level());
         } else {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
@@ -3720,15 +3754,16 @@ int Com_Scenario_Dialog() {
              ActiveKeyboard->MouseQY > d_color_y &&
              ActiveKeyboard->MouseQY < d_color_y + d_color_h) &&
             (!ready_to_go)) {
-          MPlayerPrefColor =
+          TheSession().preferred_color() =
               (ActiveKeyboard->MouseQX - base::At(cbox_x, 0)) / d_color_w;
-          MPlayerColorIdx = MPlayerPrefColor;
+          TheSession().color_index() = TheSession().preferred_color();
           display = REDRAW_COLORS;
 
-          name_edt.Set_Color(base::At(MPlayerTColors, MPlayerColorIdx));
+          name_edt.Set_Color(
+              base::At(TheSession().text_colors(), TheSession().color_index()));
           name_edt.Flag_To_Redraw();
-          MPlayerCredits = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(MPlayerName, namebuf);
+          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+          port::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
           changed = 1;
         }
@@ -3742,8 +3777,8 @@ int Com_Scenario_Dialog() {
         if (!ready_to_go) {
           credit_edt.Clear_Focus();
           credit_edt.Flag_To_Redraw();
-          MPlayerCredits = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(MPlayerName, namebuf);
+          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+          port::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
           changed = 1;
         }
@@ -3754,22 +3789,22 @@ int Com_Scenario_Dialog() {
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonGdi):
         if (!ready_to_go) {
-          MPlayerHouse = HOUSE_GOOD;
+          TheSession().house() = HOUSE_GOOD;
           gdibtn.Turn_On();
           nodbtn.Turn_Off();
-          MPlayerCredits = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(MPlayerName, namebuf);
+          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+          port::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
 
       case ButtonKey(kButtonNod):
         if (!ready_to_go) {
-          MPlayerHouse = HOUSE_BAD;
+          TheSession().house() = HOUSE_BAD;
           gdibtn.Turn_Off();
           nodbtn.Turn_On();
-          MPlayerCredits = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(MPlayerName, namebuf);
+          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+          port::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
@@ -3781,8 +3816,8 @@ int Com_Scenario_Dialog() {
         if (!ready_to_go) {
           name_edt.Clear_Focus();
           name_edt.Flag_To_Redraw();
-          MPlayerCredits = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(MPlayerName, namebuf);
+          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+          port::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
@@ -3791,10 +3826,11 @@ int Com_Scenario_Dialog() {
       New Scenario selected.
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonScenariolist):
-        if (scenariolist.Current_Index() != ScenarioIdx && !ready_to_go) {
-          ScenarioIdx = scenariolist.Current_Index();
-          MPlayerCredits = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(MPlayerName, namebuf);
+        if (scenariolist.Current_Index() != TheSession().scenario_index() &&
+            !ready_to_go) {
+          TheSession().scenario_index() = scenariolist.Current_Index();
+          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+          port::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
@@ -3804,8 +3840,9 @@ int Com_Scenario_Dialog() {
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonCount):
         if (!ready_to_go) {
-          MPlayerUnitCount =
-              countgauge.Get_Value() + base::At(MPlayerCountMin, MPlayerBases);
+          TheSession().unit_count() =
+              countgauge.Get_Value() +
+              base::At(TheSession().unit_count_min(), TheSession().bases());
           display = std::max(display, REDRAW_MESSAGE);
           transmit = 1;
         }
@@ -3816,8 +3853,8 @@ int Com_Scenario_Dialog() {
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonLevel):
         if (!ready_to_go) {
-          BuildLevel = std::min(levelgauge.Get_Value() + 1,
-                                              MPLAYER_BUILD_LEVEL_MAX);
+          TheWorld().build_level() =
+              std::min(levelgauge.Get_Value() + 1, MPLAYER_BUILD_LEVEL_MAX);
           display = std::max(display, REDRAW_MESSAGE);
           transmit = 1;
         }
@@ -3828,37 +3865,43 @@ int Com_Scenario_Dialog() {
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonBases):
         if (!ready_to_go) {
-          if (MPlayerBases) {
-            MPlayerBases = 0;
+          if (TheSession().bases()) {
+            TheSession().bases() = 0;
             basesbtn.Turn_Off();
             basesbtn.Set_Text(TXT_BASES_OFF);
-            MPlayerUnitCount =
+            TheSession().unit_count() =
                 Fixed_To_Cardinal(
-                    base::At(MPlayerCountMax, 0) - base::At(MPlayerCountMin, 0),
+                    base::At(TheSession().unit_count_max(), 0) -
+                        base::At(TheSession().unit_count_min(), 0),
                     Cardinal_To_Fixed(
-                        base::At(MPlayerCountMax, 1) -
-                            base::At(MPlayerCountMin, 1),
-                        MPlayerUnitCount - base::At(MPlayerCountMin, 1))) +
-                base::At(MPlayerCountMin, 0);
+                        base::At(TheSession().unit_count_max(), 1) -
+                            base::At(TheSession().unit_count_min(), 1),
+                        TheSession().unit_count() -
+                            base::At(TheSession().unit_count_min(), 1))) +
+                base::At(TheSession().unit_count_min(), 0);
           } else {
-            MPlayerBases = 1;
+            TheSession().bases() = 1;
             basesbtn.Turn_On();
             basesbtn.Set_Text(TXT_BASES_ON);
-            MPlayerUnitCount =
+            TheSession().unit_count() =
                 Fixed_To_Cardinal(
-                    base::At(MPlayerCountMax, 1) - base::At(MPlayerCountMin, 1),
+                    base::At(TheSession().unit_count_max(), 1) -
+                        base::At(TheSession().unit_count_min(), 1),
                     Cardinal_To_Fixed(
-                        base::At(MPlayerCountMax, 0) -
-                            base::At(MPlayerCountMin, 0),
-                        MPlayerUnitCount - base::At(MPlayerCountMin, 0))) +
-                base::At(MPlayerCountMin, 1);
+                        base::At(TheSession().unit_count_max(), 0) -
+                            base::At(TheSession().unit_count_min(), 0),
+                        TheSession().unit_count() -
+                            base::At(TheSession().unit_count_min(), 0))) +
+                base::At(TheSession().unit_count_min(), 1);
           }
-          MPlayerCredits = tech::ParseIntegerOr<int>(credbuf, 0);
-          countgauge.Set_Maximum(base::At(MPlayerCountMax, MPlayerBases) -
-                                 base::At(MPlayerCountMin, MPlayerBases));
-          countgauge.Set_Value(MPlayerUnitCount -
-                               base::At(MPlayerCountMin, MPlayerBases));
-          port::SafeCopy(MPlayerName, namebuf);
+          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+          countgauge.Set_Maximum(
+              base::At(TheSession().unit_count_max(), TheSession().bases()) -
+              base::At(TheSession().unit_count_min(), TheSession().bases()));
+          countgauge.Set_Value(
+              TheSession().unit_count() -
+              base::At(TheSession().unit_count_min(), TheSession().bases()));
+          port::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
           display = REDRAW_ALL;
         }
@@ -3869,21 +3912,21 @@ int Com_Scenario_Dialog() {
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonTiberium):
         if (!ready_to_go) {
-          if (MPlayerTiberium) {
-            MPlayerTiberium = 0;
+          if (TheSession().tiberium()) {
+            TheSession().tiberium() = 0;
             Special.IsTGrowth = 0;
             Special.IsTSpread = 0;
             tiberiumbtn.Turn_Off();
             tiberiumbtn.Set_Text(TXT_TIBERIUM_OFF);
           } else {
-            MPlayerTiberium = 1;
+            TheSession().tiberium() = 1;
             Special.IsTGrowth = 1;
             Special.IsTSpread = 1;
             tiberiumbtn.Turn_On();
             tiberiumbtn.Set_Text(TXT_TIBERIUM_ON);
           }
-          MPlayerCredits = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(MPlayerName, namebuf);
+          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+          port::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
@@ -3893,17 +3936,17 @@ int Com_Scenario_Dialog() {
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonGoodies):
         if (!ready_to_go) {
-          if (MPlayerGoodies) {
-            MPlayerGoodies = 0;
+          if (TheSession().crates()) {
+            TheSession().crates() = 0;
             goodiesbtn.Turn_Off();
             goodiesbtn.Set_Text(TXT_CRATES_OFF);
           } else {
-            MPlayerGoodies = 1;
+            TheSession().crates() = 1;
             goodiesbtn.Turn_On();
             goodiesbtn.Set_Text(TXT_CRATES_ON);
           }
-          MPlayerCredits = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(MPlayerName, namebuf);
+          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+          port::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
@@ -3913,25 +3956,25 @@ int Com_Scenario_Dialog() {
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonGhosts):
         if (!ready_to_go) {
-          if (!MPlayerGhosts &&
+          if (!TheSession().ghosts() &&
               !Special.IsCaptureTheFlag) {  // ghosts OFF => ghosts ON
-            MPlayerGhosts = 1;
+            TheSession().ghosts() = 1;
             Special.IsCaptureTheFlag = 0;
             ghostsbtn.Turn_On();
             ghostsbtn.Set_Text(TXT_AI_PLAYERS_ON);
-          } else if (MPlayerGhosts) {  // ghosts ON => capture-flag
-            MPlayerGhosts = 0;
+          } else if (TheSession().ghosts()) {  // ghosts ON => capture-flag
+            TheSession().ghosts() = 0;
             Special.IsCaptureTheFlag = 1;
             ghostsbtn.Turn_On();
             ghostsbtn.Set_Text(TXT_CAPTURE_THE_FLAG);
           } else if (Special.IsCaptureTheFlag) {  // capture-flag => AI OFF
-            MPlayerGhosts = 0;
+            TheSession().ghosts() = 0;
             Special.IsCaptureTheFlag = 0;
             ghostsbtn.Turn_Off();
             ghostsbtn.Set_Text(TXT_AI_PLAYERS_OFF);
           }
-          MPlayerCredits = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(MPlayerName, namebuf);
+          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+          port::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
@@ -3951,15 +3994,16 @@ int Com_Scenario_Dialog() {
             // force transmitting of game options packet one last time
 
             SendPacket.Command = SERIAL_READY_TO_GO;
-            SendPacket.ID = static_cast<unsigned char>(ModemGameToPlay);
-            NullModem.Send_Message(base::ObjectBytes(SendPacket),
-                                   sizeof(SendPacket), 1);
+            SendPacket.ID =
+                static_cast<unsigned char>(TheNetwork().modem_game_type());
+            TheNetwork().null_modem().Send_Message(
+                base::ObjectBytes(SendPacket), sizeof(SendPacket), 1);
 
             starttime = SystemTicks();
 
-            while (NullModem.Num_Send() &&
+            while (TheNetwork().null_modem().Num_Send() &&
                    SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) {
-              NullModem.Service();
+              TheNetwork().null_modem().Service();
               Keyboard::Check();  // Make sure the message loop gets called
             }
 
@@ -3980,8 +4024,9 @@ int Com_Scenario_Dialog() {
       CANCEL: send a SIGN_OFF, bail out with error code
       ------------------------------------------------------------------*/
       case KN_ESC:
-        if ((!ready_to_go) && (Messages.Get_Edit_Buf() != nullptr)) {
-          Messages.Input(input);
+        if ((!ready_to_go) &&
+            (TheSession().messages().Get_Edit_Buf() != nullptr)) {
+          TheSession().messages().Input(input);
           display = std::max(display, REDRAW_MESSAGE);
           break;
         }
@@ -4005,16 +4050,18 @@ int Com_Scenario_Dialog() {
         /*...............................................................
         F4/SEND/'M' = send a message
         ...............................................................*/
-        if (Messages.Get_Edit_Buf() == nullptr) {
+        if (TheSession().messages().Get_Edit_Buf() == nullptr) {
           if (input == KN_M || input == ButtonKey(kButtonSend) ||
               input == KN_F4) {
             base::FillBytes(base::ObjectBytes(txt), 0, 80);
 
             port::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
 
-            Messages.Add_Edit(base::At(MPlayerTColors, MPlayerColorIdx),
-                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                              txt, d_message_w - (70 * factor));
+            TheSession().messages().Add_Edit(
+                base::At(TheSession().text_colors(),
+                         TheSession().color_index()),
+                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
+                d_message_w - (70 * factor));
             display = std::max(display, REDRAW_MESSAGE);
 
             credit_edt.Clear_Focus();
@@ -4033,20 +4080,20 @@ int Com_Scenario_Dialog() {
         /*...............................................................
         Manage the message system (get rid of old messages)
         ...............................................................*/
-        if (Messages.Manage()) {
+        if (TheSession().messages().Manage()) {
           display = std::max(display, REDRAW_MESSAGE);
         }
 
         /*...............................................................
         Service keyboard input for any message being edited.
         ...............................................................*/
-        i = Messages.Input(input);
+        i = TheSession().messages().Input(input);
 
         /*...............................................................
         If 'Input' returned 1, it means refresh the message display.
         ...............................................................*/
         if (i == 1) {
-          Messages.Draw();
+          TheSession().messages().Draw();
         }
 
         /*...............................................................
@@ -4064,18 +4111,19 @@ int Com_Scenario_Dialog() {
           sent_so_far = 0;
           magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
           message_length = static_cast<int>(
-              std::string_view(Messages.Get_Edit_Buf()).size());
+              std::string_view(TheSession().messages().Get_Edit_Buf()).size());
           crc = static_cast<uint16_t>(
-              CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
+              CrcEngine::Compute(TheSession().messages().Get_Edit_Buf()) &
+              0xffff);
 
           while (sent_so_far < message_length) {
             SendPacket.Command = SERIAL_MESSAGE;
-            port::SafeCopy(SendPacket.Name, MPlayerName);
-            SendPacket.ID = static_cast<unsigned char>(
-                Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
+            port::SafeCopy(SendPacket.Name, TheSession().player_name());
+            SendPacket.ID = static_cast<unsigned char>(Build_MPlayerID(
+                TheSession().color_index(), TheSession().house()));
             port::SafeCopy(
                 std::span(SendPacket.Message).first(COMPAT_MESSAGE_LENGTH - 4),
-                std::string_view(Messages.Get_Edit_Buf())
+                std::string_view(TheSession().messages().Get_Edit_Buf())
                     .substr(base::ToSize(sent_so_far)));
 
             /*
@@ -4115,17 +4163,19 @@ int Com_Scenario_Dialog() {
             /*..................................................................
             Send the message
             ..................................................................*/
-            NullModem.Send_Message(base::ObjectBytes(SendPacket),
-                                   sizeof(SendPacket), 1);
-            NullModem.Service();
+            TheNetwork().null_modem().Send_Message(
+                base::ObjectBytes(SendPacket), sizeof(SendPacket), 1);
+            TheNetwork().null_modem().Service();
 
             /*..................................................................
             Add the message to our own screen
             ..................................................................*/
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
-                                MPlayerName, SendPacket.Message);
-            Messages.Add_Message(
-                txt, base::At(MPlayerTColors, MPlayerColorIdx),
+                                TheSession().player_name(), SendPacket.Message);
+            TheSession().messages().Add_Message(
+                txt,
+                base::At(TheSession().text_colors(),
+                         TheSession().color_index()),
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
                 magic_number, crc);
 
@@ -4144,17 +4194,17 @@ int Com_Scenario_Dialog() {
     ---------------------------------------------------------------------*/
     if (tech::ParseIntegerOr<int>(credbuf, 0) != old_cred) {
       old_cred = Bound(tech::ParseIntegerOr<int>(credbuf, 0), 0, 9999);
-      MPlayerCredits = old_cred;
+      TheSession().credits() = old_cred;
       transmit = 1;
-      absl::SNPrintF(credbuf, sizeof(credbuf), "%d", MPlayerCredits);
+      absl::SNPrintF(credbuf, sizeof(credbuf), "%d", TheSession().credits());
       credit_edt.Set_Text(credbuf, CREDITSBUF_MAX);
     }
 
     /*---------------------------------------------------------------------
     Detect editing of the name buffer, transmit new values to players
     ---------------------------------------------------------------------*/
-    if (std::string_view(namebuf) != MPlayerName) {
-      port::SafeCopy(MPlayerName, namebuf);
+    if (std::string_view(namebuf) != TheSession().player_name()) {
+      port::SafeCopy(TheSession().player_name(), namebuf);
       transmit = 1;
       changed = 1;
     }
@@ -4167,7 +4217,7 @@ int Com_Scenario_Dialog() {
     ---------------------------------------------------------------------*/
     if (transmit && SystemTicks() - transmittime > PACKET_RETRANS_TIME) {
       SendPacket.Command = SERIAL_GAME_OPTIONS;
-      port::SafeCopy(SendPacket.Name, MPlayerName);
+      port::SafeCopy(SendPacket.Name, TheSession().player_name());
 #ifdef PATCH
       if (IsV107) {
         SendPacket.Version = 1;
@@ -4177,34 +4227,38 @@ int Com_Scenario_Dialog() {
 #else
       SendPacket.Version = Version_Number();
 #endif
-      SendPacket.House = MPlayerHouse;
-      SendPacket.Color = static_cast<unsigned char>(MPlayerColorIdx);
+      SendPacket.House = TheSession().house();
+      SendPacket.Color = static_cast<unsigned char>(TheSession().color_index());
 
-      SendPacket.Scenario =
-          static_cast<unsigned char>(MPlayerFilenum.at(ScenarioIdx));
+      SendPacket.Scenario = static_cast<unsigned char>(
+          TheSession().scenario_files().at(TheSession().scenario_index()));
 
-      SendPacket.Credits = static_cast<unsigned int>(MPlayerCredits);
-      SendPacket.IsBases = static_cast<unsigned int>(MPlayerBases);
-      SendPacket.IsTiberium = static_cast<unsigned int>(MPlayerTiberium);
-      SendPacket.IsGoodies = static_cast<unsigned int>(MPlayerGoodies);
-      SendPacket.IsGhosties = static_cast<unsigned int>(MPlayerGhosts);
-      SendPacket.BuildLevel = static_cast<unsigned char>(BuildLevel);
-      SendPacket.UnitCount = static_cast<unsigned char>(MPlayerUnitCount);
-      SendPacket.Seed = Seed;
+      SendPacket.Credits = static_cast<unsigned int>(TheSession().credits());
+      SendPacket.IsBases = static_cast<unsigned int>(TheSession().bases());
+      SendPacket.IsTiberium =
+          static_cast<unsigned int>(TheSession().tiberium());
+      SendPacket.IsGoodies = static_cast<unsigned int>(TheSession().crates());
+      SendPacket.IsGhosties = static_cast<unsigned int>(TheSession().ghosts());
+      SendPacket.BuildLevel =
+          static_cast<unsigned char>(TheWorld().build_level());
+      SendPacket.UnitCount =
+          static_cast<unsigned char>(TheSession().unit_count());
+      SendPacket.Seed = TheWorld().seed();
       SendPacket.Special = Special;
       SendPacket.GameSpeed = Options.GameSpeed;
-      SendPacket.ID = static_cast<unsigned char>(ModemGameToPlay);
+      SendPacket.ID =
+          static_cast<unsigned char>(TheNetwork().modem_game_type());
 
-      NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
-                             1);
+      TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                             sizeof(SendPacket), 1);
 
       transmittime = SystemTicks();
       transmit = 0;
 
       starttime = SystemTicks();
-      while (NullModem.Num_Send() &&
+      while (TheNetwork().null_modem().Num_Send() &&
              SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) {
-        NullModem.Service();
+        TheNetwork().null_modem().Service();
         Keyboard::Check();  // Make sure the message loop gets called
       }
     }
@@ -4215,19 +4269,20 @@ int Com_Scenario_Dialog() {
     if (SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
       SendPacket.Command = SERIAL_TIMING;
       SendPacket.ResponseTime =
-          static_cast<uint32_t>(NullModem.Response_Time());
-      SendPacket.ID = static_cast<unsigned char>(ModemGameToPlay);
+          static_cast<uint32_t>(TheNetwork().null_modem().Response_Time());
+      SendPacket.ID =
+          static_cast<unsigned char>(TheNetwork().modem_game_type());
 
-      NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
-                             0);
+      TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                             sizeof(SendPacket), 0);
       timingtime = SystemTicks();
     }
 
     /*---------------------------------------------------------------------
     Check for an incoming message
     ---------------------------------------------------------------------*/
-    while (NullModem.Get_Message(base::ObjectBytes(ReceivePacket), &packetlen) >
-           0) {
+    while (TheNetwork().null_modem().Get_Message(
+               base::ObjectBytes(ReceivePacket), &packetlen) > 0) {
       // Smart_Printf( "received packet of length %d\n", packetlen );
 
       lastmsgtime = SystemTicks();
@@ -4239,7 +4294,8 @@ int Com_Scenario_Dialog() {
       if (ReceivePacket.Command >= SERIAL_CONNECT &&
           ReceivePacket.Command < SERIAL_LAST_COMMAND &&
           ReceivePacket.Command != SERIAL_MESSAGE &&
-          ReceivePacket.ID == static_cast<unsigned char>(ModemGameToPlay)) {
+          ReceivePacket.ID ==
+              static_cast<unsigned char>(TheNetwork().modem_game_type())) {
         CCMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
 
         // to skip the other system not responding msg
@@ -4277,7 +4333,7 @@ int Com_Scenario_Dialog() {
             // Smart_Printf( "received sign off\n" );
             starttime = SystemTicks();
             while (SystemTicks() - starttime < 60) {
-              NullModem.Service();
+              TheNetwork().null_modem().Service();
             }
             CCMessageBox().Process(TXT_USER_SIGNED_OFF);
 
@@ -4358,9 +4414,9 @@ int Com_Scenario_Dialog() {
             crc = port::ReadUnaligned<uint16_t>(
                 base::ObjectBytes(ReceivePacket.Message)
                     .subspan(COMPAT_MESSAGE_LENGTH - 2));
-            Messages.Add_Message(
+            TheSession().messages().Add_Message(
                 txt,
-                base::At(MPlayerTColors,
+                base::At(TheSession().text_colors(),
                          static_cast<int>(
                              MPlayerID_To_ColorIndex(ReceivePacket.ID))),
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
@@ -4426,7 +4482,7 @@ int Com_Scenario_Dialog() {
     /*---------------------------------------------------------------------
     Service the connection
     ---------------------------------------------------------------------*/
-    NullModem.Service();
+    TheNetwork().null_modem().Service();
 
     /*
     ** If user has clicked 'GO' and the timeout has elapsed then quit the loop
@@ -4446,9 +4502,9 @@ int Com_Scenario_Dialog() {
     /*.....................................................................
     Set the number of players in this game, and my ID
     .....................................................................*/
-    MPlayerCount = 2;
-    MPlayerLocalID = static_cast<unsigned char>(
-        Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
+    TheSession().player_count() = 2;
+    TheSession().local_id() = static_cast<unsigned char>(
+        Build_MPlayerID(TheSession().color_index(), TheSession().house()));
 
     TheirID =
         static_cast<unsigned char>(Build_MPlayerID(TheirColor, TheirHouse));
@@ -4458,28 +4514,32 @@ int Com_Scenario_Dialog() {
     determine the order of event execution, so the ID's must be stored
     in the same order on all systems.
     .....................................................................*/
-    if (TheirID < MPlayerLocalID) {
-      base::At(MPlayerID, 0) = TheirID;
-      base::At(MPlayerID, 1) = MPlayerLocalID;
-      port::SafeCopy(base::At(MPlayerNames, 0), TheirName);
-      port::SafeCopy(base::At(MPlayerNames, 1), MPlayerName);
+    if (TheirID < TheSession().local_id()) {
+      base::At(TheSession().player_ids(), 0) = TheirID;
+      base::At(TheSession().player_ids(), 1) = TheSession().local_id();
+      port::SafeCopy(base::At(TheSession().player_names(), 0), TheirName);
+      port::SafeCopy(base::At(TheSession().player_names(), 1),
+                     TheSession().player_name());
     } else {
-      base::At(MPlayerID, 0) = MPlayerLocalID;
-      base::At(MPlayerID, 1) = TheirID;
-      port::SafeCopy(base::At(MPlayerNames, 0), MPlayerName);
-      port::SafeCopy(base::At(MPlayerNames, 1), TheirName);
+      base::At(TheSession().player_ids(), 0) = TheSession().local_id();
+      base::At(TheSession().player_ids(), 1) = TheirID;
+      port::SafeCopy(base::At(TheSession().player_names(), 0),
+                     TheSession().player_name());
+      port::SafeCopy(base::At(TheSession().player_names(), 1), TheirName);
     }
 
     /*.....................................................................
     Get the scenario filename
     .....................................................................*/
-    TheWorld().scenario() = MPlayerFilenum.at(ScenarioIdx);
+    TheWorld().scenario() =
+        TheSession().scenario_files().at(TheSession().scenario_index());
 
     /*.....................................................................
     Send all players the GO packet.
     .....................................................................*/
     SendPacket.Command = SERIAL_GO;
-    SendPacket.ResponseTime = static_cast<uint32_t>(NullModem.Response_Time());
+    SendPacket.ResponseTime =
+        static_cast<uint32_t>(TheNetwork().null_modem().Response_Time());
     // 10000 means the other side never reported a response time.
     if (theirresponsetime != 10000) {
       SendPacket.ResponseTime =
@@ -4490,26 +4550,27 @@ int Com_Scenario_Dialog() {
     // calculated one way delay for a packet and overall delay to execute
     // a packet
     //
-    MPlayerMaxAhead = std::max<int>(static_cast<int>(SendPacket.ResponseTime / 8), 2);
+    TheSession().max_ahead() =
+        std::max<int>(static_cast<int>(SendPacket.ResponseTime / 8), 2);
     char flip[128];
     absl::SNPrintF(flip, sizeof(flip), "C&C95 - MaxAhead set to %d frames\n",
-                   MPlayerMaxAhead);
+                   TheSession().max_ahead());
     CCDebugString(flip);
 
-    SendPacket.ID = static_cast<unsigned char>(ModemGameToPlay);
+    SendPacket.ID = static_cast<unsigned char>(TheNetwork().modem_game_type());
 
-    NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
-                           1);
+    TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                           sizeof(SendPacket), 1);
 
     starttime = SystemTicks();
-    while (NullModem.Num_Send() &&
+    while (TheNetwork().null_modem().Num_Send() &&
            SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) {
-      NullModem.Service();
+      TheNetwork().null_modem().Service();
       Keyboard::Check();  // Make sure the message loop gets called
     }
 
     // clear queue to keep from doing any resends
-    NullModem.Init_Send_Queue();
+    TheNetwork().null_modem().Init_Send_Queue();
 
   } else {
     if (!recsignedoff) {
@@ -4517,18 +4578,20 @@ int Com_Scenario_Dialog() {
       Broadcast my sign-off over my network
       .....................................................................*/
       SendPacket.Command = SERIAL_SIGN_OFF;
-      SendPacket.Color = MPlayerLocalID;  // use Color for ID
-      SendPacket.ID = static_cast<unsigned char>(ModemGameToPlay);
-      NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
-                             1);
+      SendPacket.Color = TheSession().local_id();  // use Color for ID
+      SendPacket.ID =
+          static_cast<unsigned char>(TheNetwork().modem_game_type());
+      TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                             sizeof(SendPacket), 1);
 
       starttime = SystemTicks();
-      while (NullModem.Num_Send() &&
+      while (TheNetwork().null_modem().Num_Send() &&
              SystemTicks() - starttime < PACKET_CANCEL_TIMEOUT) {
-        if ((NullModem.Get_Message(base::ObjectBytes(ReceivePacket),
-                                   &packetlen) > 0) &&
+        if ((TheNetwork().null_modem().Get_Message(
+                 base::ObjectBytes(ReceivePacket), &packetlen) > 0) &&
             (ReceivePacket.Command == SERIAL_SIGN_OFF &&
-             ReceivePacket.ID == static_cast<unsigned char>(ModemGameToPlay)))
+             ReceivePacket.ID ==
+                 static_cast<unsigned char>(TheNetwork().modem_game_type())))
         // are we getting our own packets back??
 
         {
@@ -4536,7 +4599,7 @@ int Com_Scenario_Dialog() {
           break;
         }
 
-        NullModem.Service();
+        TheNetwork().null_modem().Service();
       }
     }
 
@@ -4773,12 +4836,14 @@ int Com_Show_Scenario_Dialog() {
   /*........................................................................
   Init player name & house
   ........................................................................*/
-  MPlayerColorIdx = MPlayerPrefColor;    // init my preferred color
-  port::SafeCopy(namebuf, MPlayerName);  // set my name
+  TheSession().color_index() =
+      TheSession().preferred_color();  // init my preferred color
+  port::SafeCopy(namebuf, TheSession().player_name());  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
-  name_edt.Set_Color(base::At(MPlayerTColors, MPlayerColorIdx));
+  name_edt.Set_Color(
+      base::At(TheSession().text_colors(), TheSession().color_index()));
 
-  if (MPlayerHouse == HOUSE_GOOD) {
+  if (TheSession().house() == HOUSE_GOOD) {
     gdibtn.Turn_On();
   } else {
     nodbtn.Turn_On();
@@ -4793,8 +4858,9 @@ int Com_Show_Scenario_Dialog() {
   /*........................................................................
   Init the message display system
   ........................................................................*/
-  Messages.Init(d_message_x + (2 * factor), d_message_y + (2 * factor), 4,
-                MAX_MESSAGE_LENGTH, d_txt6_h);
+  TheSession().messages().Init(d_message_x + (2 * factor),
+                               d_message_y + (2 * factor), 4,
+                               MAX_MESSAGE_LENGTH, d_txt6_h);
 
   Load_Title_Page(true);
   Set_Palette(ThePalettes().title_palette());
@@ -4804,9 +4870,9 @@ int Com_Show_Scenario_Dialog() {
   }
 
   if (!std::string_view(ModemRXString).empty()) {
-    Messages.Add_Message(ModemRXString, kCcTan,
-                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
-                         0, 0);
+    TheSession().messages().Add_Message(
+        ModemRXString, kCcTan, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+        1200, 0, 0);
   }
 
   base::At(ModemRXString, 0) = '\0';
@@ -4814,7 +4880,7 @@ int Com_Show_Scenario_Dialog() {
   /*
   ---------------------------- Processing loop -----------------------------
   */
-  NullModem.Reset_Response_Time();  // clear response time
+  TheNetwork().null_modem().Reset_Response_Time();  // clear response time
   timingtime = lastmsgtime = lastredrawtime = SystemTicks();
   while (Get_Mouse_State() > 0) {
     Show_Mouse();
@@ -4888,9 +4954,10 @@ int Com_Show_Scenario_Dialog() {
               base::At(cbox_x, i) + (1 * factor), d_color_y + (1 * factor),
               base::At(cbox_x, i) + (1 * factor) + d_color_w - (2 * factor),
               d_color_y + (1 * factor) + d_color_h - (2 * factor),
-              static_cast<unsigned char>(base::At(MPlayerGColors, i)));
+              static_cast<unsigned char>(
+                  base::At(TheSession().graphic_colors(), i)));
 
-          if (i == MPlayerColorIdx) {
+          if (i == TheSession().color_index()) {
             Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
                      BOXSTYLE_GREEN_DOWN, false);
           } else {
@@ -4907,7 +4974,7 @@ int Com_Show_Scenario_Dialog() {
       if (display >= REDRAW_MESSAGE) {
         Draw_Box(d_message_x, d_message_y, d_message_w, d_message_h,
                  BOXSTYLE_GREEN_BORDER, true);
-        Messages.Draw();
+        TheSession().messages().Draw();
 
         LogicPage->Fill_Rect(d_dialog_x + (2 * factor), d_opponent_y,
                              d_dialog_x + d_dialog_w - (4 * factor),
@@ -4941,7 +5008,8 @@ int Com_Show_Scenario_Dialog() {
             }
 
             Fancy_Text_Print(txt, d_dialog_cx, d_opponent_y,
-                             base::At(MPlayerTColors, TheirColor), kTBlack,
+                             base::At(TheSession().text_colors(), TheirColor),
+                             kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             /*............................................................
@@ -4952,9 +5020,10 @@ int Com_Show_Scenario_Dialog() {
                 kCcGreen, kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-            if (ScenarioIdx != -1) {
-              absl::SNPrintF(txt, sizeof(txt), "%s",
-                             MPlayerScenarios.at(ScenarioIdx));
+            if (TheSession().scenario_index() != -1) {
+              absl::SNPrintF(
+                  txt, sizeof(txt), "%s",
+                  TheSession().scenarios().at(TheSession().scenario_index()));
 
               Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y, kCcGreen,
                                kTBlack,
@@ -4974,7 +5043,7 @@ int Com_Show_Scenario_Dialog() {
                 d_credits_y, kCcGreen, kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-            absl::SNPrintF(txt, sizeof(txt), "%d", MPlayerCredits);
+            absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().credits());
             Fancy_Text_Print(txt, d_dialog_cx, d_credits_y, kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -4987,7 +5056,7 @@ int Com_Show_Scenario_Dialog() {
                 kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-            absl::SNPrintF(txt, sizeof(txt), "%d ", MPlayerUnitCount);
+            absl::SNPrintF(txt, sizeof(txt), "%d ", TheSession().unit_count());
             Fancy_Text_Print(txt, d_dialog_cx, d_count_y, kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -5000,8 +5069,8 @@ int Com_Show_Scenario_Dialog() {
                 kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-            if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-              absl::SNPrintF(txt, sizeof(txt), "%d ", BuildLevel);
+            if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
+              absl::SNPrintF(txt, sizeof(txt), "%d ", TheWorld().build_level());
             } else {
               absl::SNPrintF(txt, sizeof(txt), "**");
             }
@@ -5016,7 +5085,7 @@ int Com_Show_Scenario_Dialog() {
                 kCcGreen, kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-            if (MPlayerBases) {
+            if (TheSession().bases()) {
               port::SafeCopy(txt, Text_String(TXT_ON));
             } else {
               port::SafeCopy(txt, Text_String(TXT_OFF));
@@ -5032,7 +5101,7 @@ int Com_Show_Scenario_Dialog() {
                 kCcGreen, kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-            if (MPlayerTiberium) {
+            if (TheSession().tiberium()) {
               port::SafeCopy(txt, Text_String(TXT_ON));
             } else {
               port::SafeCopy(txt, Text_String(TXT_OFF));
@@ -5048,7 +5117,7 @@ int Com_Show_Scenario_Dialog() {
                 kCcGreen, kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-            if (MPlayerGoodies) {
+            if (TheSession().crates()) {
               port::SafeCopy(txt, Text_String(TXT_ON));
             } else {
               port::SafeCopy(txt, Text_String(TXT_OFF));
@@ -5079,7 +5148,7 @@ int Com_Show_Scenario_Dialog() {
                   kCcGreen, kTBlack,
                   TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-              if (MPlayerGhosts) {
+              if (TheSession().ghosts()) {
                 port::SafeCopy(txt, Text_String(TXT_ON));
               } else {
                 port::SafeCopy(txt, Text_String(TXT_OFF));
@@ -5123,23 +5192,25 @@ int Com_Show_Scenario_Dialog() {
           /*.........................................................
           Compute my preferred color as the one I clicked on.
           .........................................................*/
-          MPlayerPrefColor =
+          TheSession().preferred_color() =
               (ActiveKeyboard->MouseQX - base::At(cbox_x, 0)) / d_color_w;
           changed = 1;
           /*.........................................................
           If 'TheirColor' is set to the other player's color, make
           sure we can't pick that color.
           .........................................................*/
-          if (parms_received && std::cmp_equal(MPlayerPrefColor, TheirColor)) {
+          if (parms_received &&
+              std::cmp_equal(TheSession().preferred_color(), TheirColor)) {
             break;
           }
 
-          MPlayerColorIdx = MPlayerPrefColor;
+          TheSession().color_index() = TheSession().preferred_color();
 
-          name_edt.Set_Color(base::At(MPlayerTColors, MPlayerColorIdx));
+          name_edt.Set_Color(
+              base::At(TheSession().text_colors(), TheSession().color_index()));
           name_edt.Flag_To_Redraw();
           display = REDRAW_COLORS;
-          port::SafeCopy(MPlayerName, namebuf);
+          port::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
 
@@ -5150,20 +5221,20 @@ int Com_Show_Scenario_Dialog() {
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonGdi):
         if (!ready_to_go) {
-          MPlayerHouse = HOUSE_GOOD;
+          TheSession().house() = HOUSE_GOOD;
           gdibtn.Turn_On();
           nodbtn.Turn_Off();
-          port::SafeCopy(MPlayerName, namebuf);
+          port::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
 
       case ButtonKey(kButtonNod):
         if (!ready_to_go) {
-          MPlayerHouse = HOUSE_BAD;
+          TheSession().house() = HOUSE_BAD;
           gdibtn.Turn_Off();
           nodbtn.Turn_On();
-          port::SafeCopy(MPlayerName, namebuf);
+          port::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
@@ -5173,7 +5244,7 @@ int Com_Show_Scenario_Dialog() {
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonName):
         if (!ready_to_go) {
-          port::SafeCopy(MPlayerName, namebuf);
+          port::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
           changed = 1;
         }
@@ -5183,8 +5254,9 @@ int Com_Show_Scenario_Dialog() {
       CANCEL: send a SIGN_OFF, bail out with error code
       ------------------------------------------------------------------*/
       case KN_ESC:
-        if ((!ready_to_go) && (Messages.Get_Edit_Buf() != nullptr)) {
-          Messages.Input(input);
+        if ((!ready_to_go) &&
+            (TheSession().messages().Get_Edit_Buf() != nullptr)) {
+          TheSession().messages().Input(input);
           display = REDRAW_MESSAGE;
           break;
         }
@@ -5205,15 +5277,16 @@ int Com_Show_Scenario_Dialog() {
           /*...............................................................
           F4/SEND/'M' = send a message
           ...............................................................*/
-          if (Messages.Get_Edit_Buf() == nullptr) {
+          if (TheSession().messages().Get_Edit_Buf() == nullptr) {
             if (input == KN_M || input == ButtonKey(kButtonSend) ||
                 input == KN_F4) {
               base::FillBytes(base::ObjectBytes(txt), 0, 80);
 
               port::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
 
-              Messages.Add_Edit(
-                  base::At(MPlayerTColors, MPlayerColorIdx),
+              TheSession().messages().Add_Edit(
+                  base::At(TheSession().text_colors(),
+                           TheSession().color_index()),
                   TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
                   d_message_w - (70 * factor));
               display = REDRAW_MESSAGE;
@@ -5232,7 +5305,7 @@ int Com_Show_Scenario_Dialog() {
           /*...............................................................
           Manage the message system (get rid of old messages)
           ...............................................................*/
-          if (Messages.Manage()) {
+          if (TheSession().messages().Manage()) {
             display = REDRAW_MESSAGE;
           }
 
@@ -5240,13 +5313,13 @@ int Com_Show_Scenario_Dialog() {
           Re-draw the messages & service keyboard input for any message
           being edited.
           ...............................................................*/
-          i = Messages.Input(input);
+          i = TheSession().messages().Input(input);
 
           /*...............................................................
           If 'Input' returned 1, it means refresh the message display.
           ...............................................................*/
           if (i == 1) {
-            Messages.Draw();
+            TheSession().messages().Draw();
           } else {
             /*...............................................................
             If 'Input' returned 2, it means redraw the message display.
@@ -5262,19 +5335,22 @@ int Com_Show_Scenario_Dialog() {
                 sent_so_far = 0;
                 magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
                 message_length = static_cast<int>(
-                    std::string_view(Messages.Get_Edit_Buf()).size());
+                    std::string_view(TheSession().messages().Get_Edit_Buf())
+                        .size());
                 crc = static_cast<uint16_t>(
-                    CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
+                    CrcEngine::Compute(TheSession().messages().Get_Edit_Buf()) &
+                    0xffff);
 
                 while (sent_so_far < message_length) {
                   SendPacket.Command = SERIAL_MESSAGE;
-                  port::SafeCopy(SendPacket.Name, MPlayerName);
-                  SendPacket.ID = static_cast<unsigned char>(
-                      Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
-                  port::SafeCopy(std::span(SendPacket.Message)
-                                     .first(COMPAT_MESSAGE_LENGTH - 4),
-                                 std::string_view(Messages.Get_Edit_Buf())
-                                     .substr(base::ToSize(sent_so_far)));
+                  port::SafeCopy(SendPacket.Name, TheSession().player_name());
+                  SendPacket.ID = static_cast<unsigned char>(Build_MPlayerID(
+                      TheSession().color_index(), TheSession().house()));
+                  port::SafeCopy(
+                      std::span(SendPacket.Message)
+                          .first(COMPAT_MESSAGE_LENGTH - 4),
+                      std::string_view(TheSession().messages().Get_Edit_Buf())
+                          .substr(base::ToSize(sent_so_far)));
 
                   /*
                   ** Steve I's stuff for splitting message on word boundries
@@ -5283,7 +5359,8 @@ int Com_Show_Scenario_Dialog() {
 
                   /* Start at the end of the message and find a space with 10
                    * chars. */
-                  const auto the_string = std::span(GPacket.Message.Buf);
+                  const auto the_string =
+                      std::span(TheNetwork().global_packet().Message.Buf);
                   while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
                          base::At(the_string,
                                   base::ToSize(actual_message_size)) != ' ') {
@@ -5315,18 +5392,20 @@ int Com_Show_Scenario_Dialog() {
                   /*..................................................................
                   Send the message
                   ..................................................................*/
-                  NullModem.Send_Message(base::ObjectBytes(SendPacket),
-                                         sizeof(SendPacket), 1);
-                  NullModem.Service();
+                  TheNetwork().null_modem().Send_Message(
+                      base::ObjectBytes(SendPacket), sizeof(SendPacket), 1);
+                  TheNetwork().null_modem().Service();
 
                   /*..................................................................
                   Add the message to our own screen
                   ..................................................................*/
-                  Format_Runtime_Text(txt, sizeof(txt),
-                                      Text_String(TXT_FROM), MPlayerName,
+                  Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
+                                      TheSession().player_name(),
                                       SendPacket.Message);
-                  Messages.Add_Message(
-                      txt, base::At(MPlayerTColors, MPlayerColorIdx),
+                  TheSession().messages().Add_Message(
+                      txt,
+                      base::At(TheSession().text_colors(),
+                               TheSession().color_index()),
                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
                       magic_number, crc);
 
@@ -5345,8 +5424,8 @@ int Com_Show_Scenario_Dialog() {
     /*---------------------------------------------------------------------
     Detect editing of the name buffer, transmit new values to players
     ---------------------------------------------------------------------*/
-    if (std::string_view(namebuf) != MPlayerName) {
-      port::SafeCopy(MPlayerName, namebuf);
+    if (std::string_view(namebuf) != TheSession().player_name()) {
+      port::SafeCopy(TheSession().player_name(), namebuf);
       transmit = 1;
       changed = 1;
     }
@@ -5356,7 +5435,7 @@ int Com_Show_Scenario_Dialog() {
     ---------------------------------------------------------------------*/
     if (transmit && SystemTicks() - transmittime > PACKET_RETRANS_TIME) {
       SendPacket.Command = SERIAL_GAME_OPTIONS;
-      port::SafeCopy(SendPacket.Name, MPlayerName);
+      port::SafeCopy(SendPacket.Name, TheSession().player_name());
 #ifdef PATCH
       if (IsV107) {
         SendPacket.Version = 1;
@@ -5366,12 +5445,13 @@ int Com_Show_Scenario_Dialog() {
 #else
       SendPacket.Version = Version_Number();
 #endif
-      SendPacket.House = MPlayerHouse;
-      SendPacket.Color = static_cast<unsigned char>(MPlayerColorIdx);
-      SendPacket.ID = static_cast<unsigned char>(ModemGameToPlay);
+      SendPacket.House = TheSession().house();
+      SendPacket.Color = static_cast<unsigned char>(TheSession().color_index());
+      SendPacket.ID =
+          static_cast<unsigned char>(TheNetwork().modem_game_type());
 
-      NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
-                             1);
+      TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                             sizeof(SendPacket), 1);
 
       transmittime = SystemTicks();
       transmit = 0;
@@ -5383,19 +5463,20 @@ int Com_Show_Scenario_Dialog() {
     if (SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
       SendPacket.Command = SERIAL_TIMING;
       SendPacket.ResponseTime =
-          static_cast<uint32_t>(NullModem.Response_Time());
-      SendPacket.ID = static_cast<unsigned char>(ModemGameToPlay);
+          static_cast<uint32_t>(TheNetwork().null_modem().Response_Time());
+      SendPacket.ID =
+          static_cast<unsigned char>(TheNetwork().modem_game_type());
 
-      NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
-                             0);
+      TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                             sizeof(SendPacket), 0);
       timingtime = SystemTicks();
     }
 
     /*---------------------------------------------------------------------
     Check for an incoming message
     ---------------------------------------------------------------------*/
-    if (NullModem.Get_Message(base::ObjectBytes(ReceivePacket), &packetlen) >
-        0) {
+    if (TheNetwork().null_modem().Get_Message(base::ObjectBytes(ReceivePacket),
+                                              &packetlen) > 0) {
       // Smart_Printf( "received packet of length %d\n", packetlen );
 
       lastmsgtime = SystemTicks();
@@ -5407,7 +5488,8 @@ int Com_Show_Scenario_Dialog() {
       if (ReceivePacket.Command >= SERIAL_CONNECT &&
           ReceivePacket.Command < SERIAL_LAST_COMMAND &&
           ReceivePacket.Command != SERIAL_MESSAGE &&
-          ReceivePacket.ID == static_cast<unsigned char>(ModemGameToPlay)) {
+          ReceivePacket.ID ==
+              static_cast<unsigned char>(TheNetwork().modem_game_type())) {
         CCMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
 
         // to skip the other system not responding msg
@@ -5443,7 +5525,7 @@ int Com_Show_Scenario_Dialog() {
           case SERIAL_SIGN_OFF:
             starttime = SystemTicks();
             while (SystemTicks() - starttime < 60) {
-              NullModem.Service();
+              TheNetwork().null_modem().Service();
             }
             CCMessageBox().Process(TXT_USER_SIGNED_OFF);
 
@@ -5470,17 +5552,18 @@ int Com_Show_Scenario_Dialog() {
             /*...............................................................
             Make sure I don't have the same color as the other guy.
             ...............................................................*/
-            if (std::cmp_equal(MPlayerColorIdx, TheirColor)) {
+            if (std::cmp_equal(TheSession().color_index(), TheirColor)) {
               // force transmitting of game options packet
 
               transmit = 1;
               transmittime = 0;
 
-              MPlayerColorIdx = TheirColor + 1;
-              if (MPlayerColorIdx >= 6) {
-                MPlayerColorIdx = 0;
+              TheSession().color_index() = TheirColor + 1;
+              if (TheSession().color_index() >= 6) {
+                TheSession().color_index() = 0;
               }
-              name_edt.Set_Color(base::At(MPlayerTColors, MPlayerColorIdx));
+              name_edt.Set_Color(base::At(TheSession().text_colors(),
+                                          TheSession().color_index()));
               name_edt.Flag_To_Redraw();
               display = REDRAW_COLORS;
             }
@@ -5488,18 +5571,18 @@ int Com_Show_Scenario_Dialog() {
             /*...............................................................
             Save scenario settings.
             ...............................................................*/
-            MPlayerCredits = static_cast<int>(ReceivePacket.Credits);
-            MPlayerBases = ReceivePacket.IsBases;
-            MPlayerTiberium = ReceivePacket.IsTiberium;
-            MPlayerGoodies = ReceivePacket.IsGoodies;
-            MPlayerGhosts = ReceivePacket.IsGhosties;
-            BuildLevel = ReceivePacket.BuildLevel;
-            MPlayerUnitCount = ReceivePacket.UnitCount;
-            Seed = ReceivePacket.Seed;
+            TheSession().credits() = static_cast<int>(ReceivePacket.Credits);
+            TheSession().bases() = ReceivePacket.IsBases;
+            TheSession().tiberium() = ReceivePacket.IsTiberium;
+            TheSession().crates() = ReceivePacket.IsGoodies;
+            TheSession().ghosts() = ReceivePacket.IsGhosties;
+            TheWorld().build_level() = ReceivePacket.BuildLevel;
+            TheSession().unit_count() = ReceivePacket.UnitCount;
+            TheWorld().seed() = ReceivePacket.Seed;
             Special = ReceivePacket.Special;
             Options.GameSpeed = ReceivePacket.GameSpeed;
 
-            if (MPlayerTiberium) {
+            if (TheSession().tiberium()) {
               Special.IsTGrowth = 1;
               Special.IsTSpread = 1;
             } else {
@@ -5511,11 +5594,11 @@ int Com_Show_Scenario_Dialog() {
             Find the index of the scenario number; if it's not found, leave
             it at -1.
             ...............................................................*/
-            ScenarioIdx = -1;
-            for (i = 0; i < MPlayerFilenum.Count(); i++) {
+            TheSession().scenario_index() = -1;
+            for (i = 0; i < TheSession().scenario_files().Count(); i++) {
               if (std::cmp_equal(ReceivePacket.Scenario,
-                                 MPlayerFilenum.at(i))) {
-                ScenarioIdx = i;
+                                 TheSession().scenario_files().at(i))) {
+                TheSession().scenario_index() = i;
               }
             }
 
@@ -5573,11 +5656,12 @@ int Com_Show_Scenario_Dialog() {
             // calculated one way delay for a packet and overall delay
             // to execute a packet
             //
-            MPlayerMaxAhead = std::max<int>(static_cast<int>(ReceivePacket.ResponseTime / 8), 2);
+            TheSession().max_ahead() = std::max<int>(
+                static_cast<int>(ReceivePacket.ResponseTime / 8), 2);
             char flip[128];
             absl::SNPrintF(flip, sizeof(flip),
                            "C&C95 - MaxAhead set to %d frames\n",
-                           MPlayerMaxAhead);
+                           TheSession().max_ahead());
             CCDebugString(flip);
 
             process = false;
@@ -5597,9 +5681,9 @@ int Com_Show_Scenario_Dialog() {
             crc = port::ReadUnaligned<uint16_t>(
                 base::ObjectBytes(ReceivePacket.Message)
                     .subspan(COMPAT_MESSAGE_LENGTH - 2));
-            Messages.Add_Message(
+            TheSession().messages().Add_Message(
                 txt,
-                base::At(MPlayerTColors,
+                base::At(TheSession().text_colors(),
                          static_cast<int>(
                              MPlayerID_To_ColorIndex(ReceivePacket.ID))),
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
@@ -5650,7 +5734,7 @@ int Com_Show_Scenario_Dialog() {
     /*---------------------------------------------------------------------
     Service the connection
     ---------------------------------------------------------------------*/
-    NullModem.Service();
+    TheNetwork().null_modem().Service();
 
   } /* end of while */
 
@@ -5662,9 +5746,9 @@ int Com_Show_Scenario_Dialog() {
     /*.....................................................................
     Set the number of players in this game, and my ID
     .....................................................................*/
-    MPlayerCount = 2;
-    MPlayerLocalID = static_cast<unsigned char>(
-        Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
+    TheSession().player_count() = 2;
+    TheSession().local_id() = static_cast<unsigned char>(
+        Build_MPlayerID(TheSession().color_index(), TheSession().house()));
 
     TheirID =
         static_cast<unsigned char>(Build_MPlayerID(TheirColor, TheirHouse));
@@ -5674,32 +5758,35 @@ int Com_Show_Scenario_Dialog() {
     determine the order of event execution, so the ID's must be stored
     in the same order on all systems.
     .....................................................................*/
-    if (TheirID < MPlayerLocalID) {
-      base::At(MPlayerID, 0) = TheirID;
-      base::At(MPlayerID, 1) = MPlayerLocalID;
-      port::SafeCopy(base::At(MPlayerNames, 0), TheirName);
-      port::SafeCopy(base::At(MPlayerNames, 1), MPlayerName);
+    if (TheirID < TheSession().local_id()) {
+      base::At(TheSession().player_ids(), 0) = TheirID;
+      base::At(TheSession().player_ids(), 1) = TheSession().local_id();
+      port::SafeCopy(base::At(TheSession().player_names(), 0), TheirName);
+      port::SafeCopy(base::At(TheSession().player_names(), 1),
+                     TheSession().player_name());
     } else {
-      base::At(MPlayerID, 0) = MPlayerLocalID;
-      base::At(MPlayerID, 1) = TheirID;
-      port::SafeCopy(base::At(MPlayerNames, 0), MPlayerName);
-      port::SafeCopy(base::At(MPlayerNames, 1), TheirName);
+      base::At(TheSession().player_ids(), 0) = TheSession().local_id();
+      base::At(TheSession().player_ids(), 1) = TheirID;
+      port::SafeCopy(base::At(TheSession().player_names(), 0),
+                     TheSession().player_name());
+      port::SafeCopy(base::At(TheSession().player_names(), 1), TheirName);
     }
 
     /*.....................................................................
     Get the scenario filename
     .....................................................................*/
-    TheWorld().scenario() = MPlayerFilenum.at(ScenarioIdx);
+    TheWorld().scenario() =
+        TheSession().scenario_files().at(TheSession().scenario_index());
 
     starttime = SystemTicks();
-    while (NullModem.Num_Send() &&
+    while (TheNetwork().null_modem().Num_Send() &&
            SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) {
-      NullModem.Service();
+      TheNetwork().null_modem().Service();
       Keyboard::Check();  // Make sure the message loop gets called
     }
 
     // clear queue to keep from doing any resends
-    NullModem.Init_Send_Queue();
+    TheNetwork().null_modem().Init_Send_Queue();
 
   } else {
     if (!recsignedoff) {
@@ -5707,18 +5794,20 @@ int Com_Show_Scenario_Dialog() {
       Broadcast my sign-off over my network
       .....................................................................*/
       SendPacket.Command = SERIAL_SIGN_OFF;
-      SendPacket.Color = MPlayerLocalID;  // use Color for ID
-      SendPacket.ID = static_cast<unsigned char>(ModemGameToPlay);
-      NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
-                             1);
+      SendPacket.Color = TheSession().local_id();  // use Color for ID
+      SendPacket.ID =
+          static_cast<unsigned char>(TheNetwork().modem_game_type());
+      TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                             sizeof(SendPacket), 1);
 
       starttime = SystemTicks();
-      while (NullModem.Num_Send() &&
+      while (TheNetwork().null_modem().Num_Send() &&
              SystemTicks() - starttime < PACKET_CANCEL_TIMEOUT) {
-        if ((NullModem.Get_Message(base::ObjectBytes(ReceivePacket),
-                                   &packetlen) > 0) &&
+        if ((TheNetwork().null_modem().Get_Message(
+                 base::ObjectBytes(ReceivePacket), &packetlen) > 0) &&
             (ReceivePacket.Command == SERIAL_SIGN_OFF &&
-             ReceivePacket.ID == static_cast<unsigned char>(ModemGameToPlay)))
+             ReceivePacket.ID ==
+                 static_cast<unsigned char>(TheNetwork().modem_game_type())))
         // are we getting our own packets back??
 
         {
@@ -5726,7 +5815,7 @@ int Com_Show_Scenario_Dialog() {
           break;
         }
 
-        NullModem.Service();
+        TheNetwork().null_modem().Service();
       }
     }
 
@@ -5940,7 +6029,7 @@ static int Phone_Dialog() {
   phonelist.Set_Tabs(tabs);
   Build_Phone_Listbox(&phonelist, &numedit, phone_num);
 
-  if (CurPhoneIdx == -1) {
+  if (TheNetwork().current_phone_index() == -1) {
     firsttime = 1;
   }
 
@@ -6028,9 +6117,12 @@ static int Phone_Dialog() {
         Detect a change in the selected item; update CurPhoneIdx, and
         the edit box buffer.
         ...............................................................*/
-        if (phonelist.Current_Index() != CurPhoneIdx) {
-          CurPhoneIdx = phonelist.Current_Index();
-          port::SafeCopy(phone_num, PhoneBook.at(CurPhoneIdx)->Number);
+        if (phonelist.Current_Index() != TheNetwork().current_phone_index()) {
+          TheNetwork().current_phone_index() = phonelist.Current_Index();
+          port::SafeCopy(phone_num, TheNetwork()
+                                        .phone_book()
+                                        .at(TheNetwork().current_phone_index())
+                                        ->Number);
           numedit.Set_Text(phone_num, PhoneEntryClass::kPhoneMaxNum);
           changed = 1;
         }
@@ -6060,17 +6152,21 @@ static int Phone_Dialog() {
         to the list, and rebuild the list box.
         ...............................................................*/
         if (Edit_Phone_Dialog(p_entry)) {
-          PhoneBook.Add(p_entry);
+          TheNetwork().phone_book().Add(p_entry);
           Build_Phone_Listbox(&phonelist, &numedit, phone_num);
           /*............................................................
           Set the current listbox index to the newly-added item.
           ............................................................*/
-          for (int i = 0; i < PhoneBook.Count(); i++) {
-            if (p_entry == PhoneBook.at(i)) {
-              CurPhoneIdx = i;
-              port::SafeCopy(phone_num, PhoneBook.at(CurPhoneIdx)->Number);
+          for (int i = 0; i < TheNetwork().phone_book().Count(); i++) {
+            if (p_entry == TheNetwork().phone_book().at(i)) {
+              TheNetwork().current_phone_index() = i;
+              port::SafeCopy(phone_num,
+                             TheNetwork()
+                                 .phone_book()
+                                 .at(TheNetwork().current_phone_index())
+                                 ->Number);
               numedit.Set_Text(phone_num, PhoneEntryClass::kPhoneMaxNum);
-              phonelist.Set_Selected_Index(CurPhoneIdx);
+              phonelist.Set_Selected_Index(TheNetwork().current_phone_index());
             }
           }
           changed = 1;
@@ -6091,7 +6187,7 @@ static int Phone_Dialog() {
         /*...............................................................
         Do nothing if no entry is selected.
         ...............................................................*/
-        if (CurPhoneIdx == -1) {
+        if (TheNetwork().current_phone_index() == -1) {
           break;
         }
 
@@ -6099,7 +6195,8 @@ static int Phone_Dialog() {
         Allocate a new entry & copy the currently-selected entry into it
         ...............................................................*/
         p_entry = new PhoneEntryClass();
-        *p_entry = *PhoneBook.at(CurPhoneIdx);
+        *p_entry =
+            *TheNetwork().phone_book().at(TheNetwork().current_phone_index());
 
         /*...............................................................
         Pass the new entry to the entry editor; if the user selects OK,
@@ -6107,17 +6204,24 @@ static int Phone_Dialog() {
         the changes show up in the list box.
         ...............................................................*/
         if (Edit_Phone_Dialog(p_entry)) {
-          *PhoneBook.at(CurPhoneIdx) = *p_entry;
+          *TheNetwork().phone_book().at(TheNetwork().current_phone_index()) =
+              *p_entry;
           Build_Phone_Listbox(&phonelist, &numedit, phone_num);
           /*............................................................
           Set the current listbox index to the newly-added item.
           ............................................................*/
-          for (int i = 0; i < PhoneBook.Count(); i++) {
-            if (PhoneBook.at(CurPhoneIdx) == PhoneBook.at(i)) {
-              CurPhoneIdx = i;
-              port::SafeCopy(phone_num, PhoneBook.at(CurPhoneIdx)->Number);
+          for (int i = 0; i < TheNetwork().phone_book().Count(); i++) {
+            if (TheNetwork().phone_book().at(
+                    TheNetwork().current_phone_index()) ==
+                TheNetwork().phone_book().at(i)) {
+              TheNetwork().current_phone_index() = i;
+              port::SafeCopy(phone_num,
+                             TheNetwork()
+                                 .phone_book()
+                                 .at(TheNetwork().current_phone_index())
+                                 ->Number);
               numedit.Set_Text(phone_num, PhoneEntryClass::kPhoneMaxNum);
-              phonelist.Set_Selected_Index(CurPhoneIdx);
+              phonelist.Set_Selected_Index(TheNetwork().current_phone_index());
             }
           }
           changed = 1;
@@ -6134,17 +6238,17 @@ static int Phone_Dialog() {
         /*...............................................................
         Do nothing if no entry is selected.
         ...............................................................*/
-        if (CurPhoneIdx == -1) {
+        if (TheNetwork().current_phone_index() == -1) {
           break;
         }
 
         /*...............................................................
         Delete the current item & rebuild the phone listbox
         ...............................................................*/
-        PhoneBook.Delete(CurPhoneIdx);
+        TheNetwork().phone_book().Delete(TheNetwork().current_phone_index());
         Build_Phone_Listbox(&phonelist, &numedit, phone_num);
 
-        if (CurPhoneIdx == -1) {
+        if (TheNetwork().current_phone_index() == -1) {
           *phone_num = 0;
           numedit.Set_Text(phone_num, PhoneEntryClass::kPhoneMaxNum);
         }
@@ -6168,8 +6272,11 @@ static int Phone_Dialog() {
         - Copy the phone number into it
         - Set settings to defaults
         ...............................................................*/
-        if (CurPhoneIdx == -1 ||
-            std::string_view(PhoneBook.at(CurPhoneIdx)->Number) != phone_num) {
+        if (TheNetwork().current_phone_index() == -1 ||
+            std::string_view(TheNetwork()
+                                 .phone_book()
+                                 .at(TheNetwork().current_phone_index())
+                                 ->Number) != phone_num) {
           if (std::string_view(phone_num).empty()) {  // do not dial
             dialbtn.IsPressed = false;
             dialbtn.Flag_To_Redraw();
@@ -6187,14 +6294,14 @@ static int Phone_Dialog() {
           p_entry->Settings.CallWaitStringIndex = kCallWaitCustom;
           base::At(p_entry->Settings.CallWaitString, 0) = 0;
 
-          PhoneBook.Add(p_entry);
+          TheNetwork().phone_book().Add(p_entry);
           Build_Phone_Listbox(&phonelist, &numedit, phone_num);
           /*............................................................
           Set the current listbox index to the newly-added item.
           ............................................................*/
-          for (int i = 0; i < PhoneBook.Count(); i++) {
-            if (p_entry == PhoneBook.at(i)) {
-              CurPhoneIdx = i;
+          for (int i = 0; i < TheNetwork().phone_book().Count(); i++) {
+            if (p_entry == TheNetwork().phone_book().at(i)) {
+              TheNetwork().current_phone_index() = i;
             }
           }
           changed = 1;
@@ -6270,9 +6377,9 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
   /*
   ** Now sort the phone list by name then number
   */
-  if (PhoneBook.Count() > 0) {
+  if (TheNetwork().phone_book().Count() > 0) {
     std::ranges::sort(
-        PhoneBook.ActiveElements(),
+        TheNetwork().phone_book().ActiveElements(),
         [](const PhoneEntryClass* left, const PhoneEntryClass* right) {
           int result = std::string_view(left->Name).compare(right->Name);
           if (result == 0) {
@@ -6286,29 +6393,31 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
   /*........................................................................
   Build the list
   ........................................................................*/
-  for (int i = 0; i < PhoneBook.Count(); i++) {
-    if (std::string_view(PhoneBook.at(i)->Name).empty()) {
+  for (int i = 0; i < TheNetwork().phone_book().Count(); i++) {
+    if (std::string_view(TheNetwork().phone_book().at(i)->Name).empty()) {
       port::SafeCopy(phonename, " ");
     } else {
-      port::SafeCopy(phonename, PhoneBook.at(i)->Name);
+      port::SafeCopy(phonename, TheNetwork().phone_book().at(i)->Name);
     }
 
-    if (std::string_view(PhoneBook.at(i)->Number).empty()) {
+    if (std::string_view(TheNetwork().phone_book().at(i)->Number).empty()) {
       port::SafeCopy(phonenum, " ");
     } else {
-      if (std::string_view(PhoneBook.at(i)->Number).size() < 15) {
-        port::SafeCopy(phonenum, PhoneBook.at(i)->Number);
+      if (std::string_view(TheNetwork().phone_book().at(i)->Number).size() <
+          15) {
+        port::SafeCopy(phonenum, TheNetwork().phone_book().at(i)->Number);
       } else {
         port::SafeCopy(phonenum,
-                       std::string_view(PhoneBook.at(i)->Number).substr(0, 12));
+                       std::string_view(TheNetwork().phone_book().at(i)->Number)
+                           .substr(0, 12));
         base::At(phonenum, 12) = 0;
         port::SafeAppend(phonenum, "...");
       }
     }
 
-    if (PhoneBook.at(i)->Settings.Baud != -1) {
+    if (TheNetwork().phone_book().at(i)->Settings.Baud != -1) {
       absl::SNPrintF(item, sizeof(item), "%s\t%s\t%d", phonename, phonenum,
-                     PhoneBook.at(i)->Settings.Baud);
+                     TheNetwork().phone_book().at(i)->Settings.Baud);
     } else {
       absl::SNPrintF(item, sizeof(item), "%s\t%s\t[%s]", phonename, phonenum,
                      Text_String(TXT_DEFAULT));
@@ -6320,22 +6429,25 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
   /*........................................................................
   Init the current phone book index
   ........................................................................*/
-  if (list->Count() == 0 || CurPhoneIdx < -1) {
-    CurPhoneIdx = -1;
+  if (list->Count() == 0 || TheNetwork().current_phone_index() < -1) {
+    TheNetwork().current_phone_index() = -1;
   } else {
-    if (CurPhoneIdx >= list->Count()) {
-      CurPhoneIdx = 0;
+    if (TheNetwork().current_phone_index() >= list->Count()) {
+      TheNetwork().current_phone_index() = 0;
     }
   }
 
   /*........................................................................
   Fill in phone number edit buffer
   ........................................................................*/
-  if (CurPhoneIdx > -1) {
+  if (TheNetwork().current_phone_index() > -1) {
     port::SafeCopy(std::span(buf).first(PhoneEntryClass::kPhoneMaxNum),
-                   PhoneBook.at(CurPhoneIdx)->Number);
+                   TheNetwork()
+                       .phone_book()
+                       .at(TheNetwork().current_phone_index())
+                       ->Number);
     edit->Set_Text(buf, PhoneEntryClass::kPhoneMaxNum);
-    list->Set_Selected_Index(CurPhoneIdx);
+    list->Set_Selected_Index(TheNetwork().current_phone_index());
   }
 }
 
@@ -6509,7 +6621,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   ........................................................................*/
   if (phone->Settings.Port == 0 || phone->Settings.IRQ == -1 ||
       phone->Settings.Baud == -1) {
-    settings = SerialDefaults;
+    settings = TheNetwork().serial_defaults();
     defaultbtn.Turn_On();
     custom = 0;
   } else {
@@ -6693,7 +6805,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   **	Turn modem servicing off in the callback routine.
   */
-  ModemService = false;
+  TheNetwork().modem_service() = false;
 
   // save for later to reconnect
 
@@ -6703,23 +6815,23 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   if (reconnect) {
     if (carrier & kCdSet) {
       connected = true;
-      ModemService = true;
+      TheNetwork().modem_service() = true;
       return connected;
     }
   } else {
     if (carrier & kCdSet) {
-      NullModem.Hangup_Modem();
-      ModemService = false;
+      TheNetwork().null_modem().Hangup_Modem();
+      TheNetwork().modem_service() = false;
     }
   }
 
   NullModemClass::Setup_Modem_Echo(Modem_Echo);
 
-  int modemstatus = NullModem.Detect_Modem(settings, reconnect);
+  int modemstatus = TheNetwork().null_modem().Detect_Modem(settings, reconnect);
   if (!modemstatus) {
     NullModemClass::Remove_Modem_Echo();
     NullModemClass::Print_EchoBuf();
-    NullModem.Reset_EchoBuf();
+    TheNetwork().null_modem().Reset_EchoBuf();
 
     /*
     ** If our first attempt to detect the modem failed, and we're at
@@ -6731,13 +6843,14 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
         Shutdown_Modem();
         Init_Null_Modem(settings);
         NullModemClass::Setup_Modem_Echo(Modem_Echo);
-        modemstatus = NullModem.Detect_Modem(settings, reconnect);
+        modemstatus =
+            TheNetwork().null_modem().Detect_Modem(settings, reconnect);
         if (!modemstatus) {
           NullModemClass::Remove_Modem_Echo();
           NullModemClass::Print_EchoBuf();
-          NullModem.Reset_EchoBuf();
+          TheNetwork().null_modem().Reset_EchoBuf();
           CCMessageBox().Process(TXT_UNABLE_FIND_MODEM);
-          ModemService = true;
+          TheNetwork().modem_service() = true;
           return connected;
         }
         break;
@@ -6747,28 +6860,29 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
         Shutdown_Modem();
         Init_Null_Modem(settings);
         NullModemClass::Setup_Modem_Echo(Modem_Echo);
-        modemstatus = NullModem.Detect_Modem(settings, reconnect);
+        modemstatus =
+            TheNetwork().null_modem().Detect_Modem(settings, reconnect);
         if (!modemstatus) {
           NullModemClass::Remove_Modem_Echo();
           NullModemClass::Print_EchoBuf();
-          NullModem.Reset_EchoBuf();
+          TheNetwork().null_modem().Reset_EchoBuf();
           CCMessageBox().Process(TXT_UNABLE_FIND_MODEM);
-          ModemService = true;
+          TheNetwork().modem_service() = true;
           return connected;
         }
         break;
 
       default:
         CCMessageBox().Process(TXT_UNABLE_FIND_MODEM);
-        ModemService = true;
+        TheNetwork().modem_service() = true;
         return connected;
     }
   } else if (modemstatus == -1) {
     NullModemClass::Remove_Modem_Echo();
     NullModemClass::Print_EchoBuf();
-    NullModem.Reset_EchoBuf();
+    TheNetwork().null_modem().Reset_EchoBuf();
     CCMessageBox().Process(TXT_ERROR_IN_INITSTRING);
-    ModemService = true;
+    TheNetwork().modem_service() = true;
     return connected;
   }
 
@@ -6794,8 +6908,8 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     SoundOn = false;
   }
 
-  const DialStatusType dialstatus =
-      NullModem.Dial_Modem(DialString, settings->DialMethod, reconnect);
+  const DialStatusType dialstatus = TheNetwork().null_modem().Dial_Modem(
+      DialString, settings->DialMethod, reconnect);
 
   if (reconnect) {
     /*
@@ -6832,8 +6946,8 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
       break;
 
     case DIAL_CANCELED:
-      NullModem.Hangup_Modem();
-      ModemService = false;
+      TheNetwork().null_modem().Hangup_Modem();
+      TheNetwork().modem_service() = false;
       CCMessageBox().Process(TXT_DIALING_CANCELED);
       connected = false;
       break;
@@ -6843,7 +6957,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
 
   NullModemClass::Remove_Modem_Echo();
   NullModemClass::Print_EchoBuf();
-  NullModem.Reset_EchoBuf();
+  TheNetwork().null_modem().Reset_EchoBuf();
 
   /*
   ** Restore audio capability
@@ -6853,7 +6967,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     Theme.Play_Song(old_theme);
   }
 
-  ModemService = true;
+  TheNetwork().modem_service() = true;
   return connected;
 
 } /* end of Dial_Modem */
@@ -6865,7 +6979,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   **	Turn modem servicing off in the callback routine.
   */
-  ModemService = false;
+  TheNetwork().modem_service() = false;
 
   // save for later to reconnect
 
@@ -6875,23 +6989,23 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   if (reconnect) {
     if (carrier & kCdSet) {
       connected = true;
-      ModemService = true;
+      TheNetwork().modem_service() = true;
       return connected;
     }
   } else {
     if (carrier & kCdSet) {
-      NullModem.Hangup_Modem();
-      ModemService = false;
+      TheNetwork().null_modem().Hangup_Modem();
+      TheNetwork().modem_service() = false;
     }
   }
 
   NullModemClass::Setup_Modem_Echo(Modem_Echo);
 
-  int modemstatus = NullModem.Detect_Modem(settings, reconnect);
+  int modemstatus = TheNetwork().null_modem().Detect_Modem(settings, reconnect);
   if (!modemstatus) {
     NullModemClass::Remove_Modem_Echo();
     NullModemClass::Print_EchoBuf();
-    NullModem.Reset_EchoBuf();
+    TheNetwork().null_modem().Reset_EchoBuf();
 
     /*
     ** If our first attempt to detect the modem failed, and we're at
@@ -6903,13 +7017,14 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
         Shutdown_Modem();
         Init_Null_Modem(settings);
         NullModemClass::Setup_Modem_Echo(Modem_Echo);
-        modemstatus = NullModem.Detect_Modem(settings, reconnect);
+        modemstatus =
+            TheNetwork().null_modem().Detect_Modem(settings, reconnect);
         if (!modemstatus) {
           NullModemClass::Remove_Modem_Echo();
           NullModemClass::Print_EchoBuf();
-          NullModem.Reset_EchoBuf();
+          TheNetwork().null_modem().Reset_EchoBuf();
           CCMessageBox().Process(TXT_UNABLE_FIND_MODEM);
-          ModemService = true;
+          TheNetwork().modem_service() = true;
           return connected;
         }
         break;
@@ -6919,29 +7034,30 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
         Shutdown_Modem();
         Init_Null_Modem(settings);
         NullModemClass::Setup_Modem_Echo(Modem_Echo);
-        modemstatus = NullModem.Detect_Modem(settings, reconnect);
+        modemstatus =
+            TheNetwork().null_modem().Detect_Modem(settings, reconnect);
         if (!modemstatus) {
           NullModemClass::Remove_Modem_Echo();
           NullModemClass::Print_EchoBuf();
-          NullModem.Reset_EchoBuf();
+          TheNetwork().null_modem().Reset_EchoBuf();
           CCMessageBox().Process(TXT_UNABLE_FIND_MODEM);
-          ModemService = true;
+          TheNetwork().modem_service() = true;
           return connected;
         }
         break;
 
       default:
         CCMessageBox().Process(TXT_UNABLE_FIND_MODEM);
-        ModemService = true;
+        TheNetwork().modem_service() = true;
         return connected;
     }
 
   } else if (modemstatus == -1) {
     NullModemClass::Remove_Modem_Echo();
     NullModemClass::Print_EchoBuf();
-    NullModem.Reset_EchoBuf();
+    TheNetwork().null_modem().Reset_EchoBuf();
     CCMessageBox().Process(TXT_ERROR_IN_INITSTRING);
-    ModemService = true;
+    TheNetwork().modem_service() = true;
     return connected;
   }
 
@@ -6967,7 +7083,8 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     SoundOn = false;
   }
 
-  const DialStatusType dialstatus = NullModem.Answer_Modem(reconnect);
+  const DialStatusType dialstatus =
+      TheNetwork().null_modem().Answer_Modem(reconnect);
 
   switch (dialstatus) {
     case DIAL_CONNECTED:
@@ -7004,7 +7121,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
 
   NullModemClass::Remove_Modem_Echo();
   NullModemClass::Print_EchoBuf();
-  NullModem.Reset_EchoBuf();
+  TheNetwork().null_modem().Reset_EchoBuf();
 
   /*
   ** Restore audio capability
@@ -7014,16 +7131,19 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     Theme.Play_Song(old_theme);
   }
 
-  ModemService = true;
+  TheNetwork().modem_service() = true;
   return connected;
 
 } /* end of Answer_Modem */
 
 static void Modem_Echo(char c) {
-  if (NullModem.EchoCount < NullModem.EchoSize - 1) {
-    NullModem.EchoBuf.at(base::ToSize(NullModem.EchoCount)) = c;
-    NullModem.EchoBuf.at(base::ToSize(NullModem.EchoCount + 1)) = 0;
-    NullModem.EchoCount++;
+  if (TheNetwork().null_modem().EchoCount <
+      TheNetwork().null_modem().EchoSize - 1) {
+    TheNetwork().null_modem().EchoBuf.at(
+        base::ToSize(TheNetwork().null_modem().EchoCount)) = c;
+    TheNetwork().null_modem().EchoBuf.at(
+        base::ToSize(TheNetwork().null_modem().EchoCount + 1)) = 0;
+    TheNetwork().null_modem().EchoCount++;
   } else {
     // Smart_Printf( "Echo buffer full!!!\n" );
   }

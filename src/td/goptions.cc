@@ -73,11 +73,13 @@
 #include "td/mapedit.h"
 #include "td/mplayer.h"
 #include "td/msgbox.h"
+#include "td/network.h"
 #include "td/palette.h"
 #include "td/palettes.h"
 #include "td/queue.h"
 #include "td/scenario.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/tab.h"
 #include "td/text.h"
 #include "td/textbtn.h"
@@ -159,12 +161,13 @@ void GameOptionsClass::Process() {
     int text = base::At(_constants, index).Text;
     base::At(buttonsel, index) = nullptr;
 
-    if (GameToPlay != GAME_NORMAL && !base::At(_constants, index).Multiplay) {
+    if (TheSession().type() != GAME_NORMAL &&
+        !base::At(_constants, index).Multiplay) {
       base::At(buttonsel, index) = nullptr;
       continue;
     }
 
-    if (GameToPlay != GAME_NORMAL && text == TXT_DELETE_MISSION) {
+    if (TheSession().type() != GAME_NORMAL && text == TXT_DELETE_MISSION) {
       text = TXT_RESIGN;
     }
 
@@ -208,7 +211,7 @@ void GameOptionsClass::Process() {
 #endif
   base::At(buttonsel, kButtonResume - 1)->X = OptionX + (5 * resfactor);
 
-  if (GameToPlay == GAME_NORMAL) {
+  if (TheSession().type() == GAME_NORMAL) {
     base::At(buttonsel, kButtonRestate - 1)->Width = 90 * resfactor;
     base::At(buttonsel, kButtonRestate - 1)->X =
         OptionX + OptionWidth -
@@ -257,7 +260,7 @@ void GameOptionsClass::Process() {
     /*
     **	Invoke game callback.
     */
-    if (GameToPlay == GAME_NORMAL) {
+    if (TheSession().type() == GAME_NORMAL) {
       Call_Back();
     } else {
       if (Main_Loop()) {
@@ -307,8 +310,8 @@ void GameOptionsClass::Process() {
               3 * resfactor,
           WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowY] +
               WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowHeight] -
-              ((GameToPlay == GAME_NORMAL) ? (32 * resfactor)
-                                           : (24 * resfactor)),
+              ((TheSession().type() == GAME_NORMAL) ? (32 * resfactor)
+                                                    : (24 * resfactor)),
           kGrey, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT, ScenarioName,
           VersionText);
 #else
@@ -324,7 +327,8 @@ void GameOptionsClass::Process() {
                    kWindowY) +
               base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
                        kWindowHeight) -
-              (GameToPlay == GAME_NORMAL ? 32 * resfactor : 24 * resfactor),
+              (TheSession().type() == GAME_NORMAL ? 32 * resfactor
+                                                  : 24 * resfactor),
           kGrey, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT,
           TheWorld().scenario_name(), Version_Number(), VersionText);
 #endif
@@ -384,7 +388,7 @@ void GameOptionsClass::Process() {
         base::At(buttonsel, curbutton - 1)->Turn_Off();
         base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
         curbutton--;
-        if (GameToPlay == GAME_NORMAL) {
+        if (TheSession().type() == GAME_NORMAL) {
           if (curbutton < kButtonLoad) {
             curbutton = kButtonCount - 1;
           }
@@ -403,7 +407,7 @@ void GameOptionsClass::Process() {
         base::At(buttonsel, curbutton - 1)->Turn_Off();
         base::At(buttonsel, curbutton - 1)->Flag_To_Redraw();
         curbutton++;
-        if (GameToPlay == GAME_NORMAL) {
+        if (TheSession().type() == GAME_NORMAL) {
           if (curbutton >= kButtonCount) {
             curbutton = kButtonLoad;
           }
@@ -478,9 +482,9 @@ void GameOptionsClass::Process() {
 
         case kButtonDelete:
           display = true;
-          if (GameToPlay != GAME_NORMAL) {
+          if (TheSession().type() != GAME_NORMAL) {
             if (Surrender_Dialog()) {
-              OutList.Add(EventClass(EventClass::DESTRUCT));
+              TheNetwork().out_list().Add(EventClass(EventClass::DESTRUCT));
             }
             process = false;
           } else {
@@ -489,7 +493,7 @@ void GameOptionsClass::Process() {
           break;
 
         case kButtonQuit:
-          if (GameToPlay == GAME_NORMAL) {
+          if (TheSession().type() == GAME_NORMAL) {
 #ifdef JAPANESE
             switch (CCMessageBox().Process(TXT_CONFIRM_EXIT, TXT_YES, TXT_NO,
                                            TXT_RESTART)) {

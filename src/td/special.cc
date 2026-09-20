@@ -53,14 +53,15 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/event.h"
-#include "td/externs.h"
 #include "td/gadget.h"
 #include "td/globals.h"
 #include "td/goptions.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
+#include "td/network.h"
 #include "td/queue.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/textbtn.h"
 #include "td/world.h"
 
@@ -188,7 +189,7 @@ void Special_Dialog() {
       display = true;
     }
 
-    if (GameToPlay == GAME_NORMAL) {
+    if (TheSession().type() == GAME_NORMAL) {
       Call_Back();
     } else {
       if (Main_Loop()) {
@@ -274,7 +275,7 @@ void Special_Dialog() {
               break;
           }
         }
-        OutList.Add(EventClass(oldspecial));
+        TheNetwork().out_list().Add(EventClass(oldspecial));
         break;
 
       case ButtonKey(201):

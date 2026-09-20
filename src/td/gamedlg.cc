@@ -56,9 +56,11 @@
 #include "td/goptions.h"
 #include "td/jshell.h"
 #include "td/msgbox.h"
+#include "td/network.h"
 #include "td/options.h"
 #include "td/queue.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/slider.h"
 #include "td/sounddlg.h"
 #include "td/text.h"
@@ -218,7 +220,7 @@ void GameControlsClass::Process() {
     /*
     **	Invoke game callback.
     */
-    if (GameToPlay == GAME_NORMAL) {
+    if (TheSession().type() == GAME_NORMAL) {
       Call_Back();
     } else {
       if (Main_Loop()) {
@@ -406,7 +408,8 @@ void GameControlsClass::Process() {
       if (gamespeed !=
           OptionsClass::kMaxSpeedSetting - 1 - gspeed_btn.Get_Value()) {
         gamespeed = OptionsClass::kMaxSpeedSetting - 1 - gspeed_btn.Get_Value();
-        OutList.Add(EventClass(EventClass::GAMESPEED, gamespeed));
+        TheNetwork().out_list().Add(
+            EventClass(EventClass::GAMESPEED, gamespeed));
       }
 
       if (scrollrate !=

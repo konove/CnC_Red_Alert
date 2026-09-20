@@ -39,34 +39,20 @@
 
 #include "td/globals.h"
 
-#include <cstddef>
 #include <cstdint>
-#include <vector>
 
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "td/connect.h"
 #include "td/credits.h"
 #include "td/defines.h"
-#include "td/event.h"
 #include "td/externs.h"
 #include "td/ftimer.h"
 #include "td/goptions.h"
-#include "td/ipxaddr.h"
-#include "td/ipxgconn.h"
-#include "td/ipxmgr.h"
-#include "td/msglist.h"
-#include "td/nodename.h"
-#include "td/nullmgr.h"
-#include "td/phone.h"
-#include "td/queue.h"
 #include "td/special.h"
 #include "td/theme.h"
-#include "td/vector.h"
 #include "tech/audio_mixer.h"
-#include "tech/game_file.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifdef JAPANESE
@@ -216,25 +202,27 @@ SpecialClass Special;
 **	This is the scenario data for the currently loaded scenario.
 ** These variables should all be set together.
 */
-HousesType Whom;                           // Initial command line house choice.
-ScenarioVarType ScenVar;                   // variation A/B/C
+ScenarioVarType ScenVar;  // variation A/B/C
+
+/***************************************************************************
+** This flag is for the special command-line options.
+*/
 bool SpecialFlag = false;
-
-/***************************************************************************
-** This value tells the sidebar what items it's allowed to add.  The
-** lower the value, the simpler the sidebar will be.
-*/
-int BuildLevel = 3;  // Buildable level (1 = simplest)
-
-/***************************************************************************
-** This value is computed every time a new scenario is loaded; it's a
-** CRC of the INI and binary map files.
-*/
 
 /***************************************************************************
 **	The game plays as long as this var is true.
 */
 bool GameActive;
+
+/***************************************************************************
+**	This flag is for popping up dialogs that call the main loop.
+*/
+SpecialDialogType SpecialDialog = SDLG_NONE;
+
+/***************************************************************************
+** This value tells the sidebar what items it's allowed to add.  The
+** lower the value, the simpler the sidebar will be.
+*/
 
 /***************************************************************************
 **	This is a scratch variable that is used to when a reference is needed to
@@ -257,8 +245,6 @@ int32_t LParam;
 *for incoming events *	that need to be executed when the correct frame has been
 *reached.
 */
-QueueClass<EventClass, MAX_EVENTS> OutList;
-QueueClass<EventClass, MAX_EVENTS * 8> DoList;
 
 /***************************************************************************
 **	These are arrays/lists of trigger pointers for each cell & the houses.
@@ -280,125 +266,46 @@ QueueClass<EventClass, MAX_EVENTS * 8> DoList;
 /***************************************************************************
 **	This value tells what type of multiplayer game we're playing.
 */
-GameType GameToPlay = GAME_NORMAL;
 
 /***************************************************************************
 **	This is the current communications protocol
 */
-CommProtocolType CommProtocol;
 
-/***************************************************************************
-**	These values are used for recording & playing back a game.
-*/
-GameFile RecordFile("RECORD.BIN");
-bool RecordGame = false;  // 1 = record a game
-int SuperRecord = 0;   // 1 = reopen record file with every write
-bool PlaybackGame = false;  // 1 = play back a game
-bool AllowAttract = false;  // 1 = allow attract mode
-
-/***************************************************************************
-**	This is the null modem manager class.  Declaring this class doesn't
-** perform any allocations;
-** the class itself is ?? bytes.
-*/
-bool ModemService = true;     // When false disable servicing modem.
-NullModemClass NullModem(16,  // number of send entries
-                         64,  // number of receive entries
-                              //	sizeof (EventClass) * MAX_EVENTS,
-                              //// maxlen of entry buffer
-                         (200 / sizeof(EventClass) * sizeof(EventClass)) +
-                             sizeof(CommHeaderType),
-                         0x1234);  // Magic number must have each digit unique
-                                   // and different from the queue magic number
-
-DynamicVectorClass<PhoneEntryClass*> PhoneBook;
-int CurPhoneIdx;  // current phonebook index, for dialing
-
-DynamicVectorClass<char*> InitStrings;
-
-SerialSettingsType SerialDefaults;  // serial port default settings
-
-ModemGameType ModemGameToPlay;  // type of modem play Dialer, answerer, null
-
-/***************************************************************************
-**	Index into scenario description list box
-*/
-int ScenarioIdx;
 
 /***************************************************************************
 **	This string stores the player's name.
 */
-char MPlayerName[MPLAYER_NAME_MAX];
 
 /***************************************************************************
 **	This is the array of remap colors.  Each player in a network game is
 ** assigned one of these colors.  The 'G' is for graphics drawing; the 'T'
 ** is for text printing (indicates a remap table for the font to use).
 */
-int MPlayerGColors[MAX_MPLAYER_COLORS] = {
-    5,    // Yellow
-    127,  // Red
-    135,  // BlueGreen
-    26,   // Orange
-    4,    // Green
-    202   // Blue-Grey
-};
 
-int MPlayerTColors[MAX_MPLAYER_COLORS] = {
-    kCcGdiColor,   // Yellow
-    kCcNodColor,   // Red
-    kCcBlueGreen,  // BlueGreen
-    kCcOrange,     // Orange	//26
-    kCcGreen,      // Green
-    kCcBlueGrey,   // Blue
-};
 
 /***************************************************************************
 **	This is a list of all the names of the multiplayer scenarios that use
 ** bases (production), and those that don't.  There is a list for
 ** descriptions, and another for actual filenames.
 */
-DynamicVectorClass<char*> MPlayerScenarios;
-DynamicVectorClass<int> MPlayerFilenum;
 
 /***************************************************************************
 **	This value determines the max allowable # of players.
 */
-int MPlayerMax = 4;
 
 /***************************************************************************
 **	Multiplayer game options
 */
-int MPlayerPrefColor;          // preferred color index for this player
-int MPlayerColorIdx;           // actual color index of this player
-HousesType MPlayerHouse;       // House of this player (GDI/NOD)
-unsigned char MPlayerLocalID;  // ID of this player
-int MPlayerCount;              // # of human players in this game
-int MPlayerBases;              // 1 = bases are on for this scenario
-int MPlayerCredits;            // # credits everyone gets
-int MPlayerTiberium;           // 1 = tiberium enabled for this scenario
-int MPlayerGoodies;            // 1 = goodies enabled for this scenario
-int MPlayerGhosts;             // 1 = houses with no players will still play
-bool MPlayerSolo = false;      // 1 = allows a single-player net game
-int MPlayerUnitCount = 10;     // # units for non-base multiplayer scenarios
-
-/*---------------------------------------------------------------------------
-Min & Max unit count values; index0 = bases OFF, index1 = bases ON
----------------------------------------------------------------------------*/
-int MPlayerCountMin[2] = {1, 0};
-int MPlayerCountMax[2] = {50, 12};
 
 /*---------------------------------------------------------------------------
 MPlayerMaxAhead is the number of frames ahead of this one to execute a given
 packet.  It's set by the RESPONSE_TIME event.
 ---------------------------------------------------------------------------*/
-int MPlayerMaxAhead = 3;
 
 /*---------------------------------------------------------------------------
 'FrameSendRate' is the # frames between data packets
 'FrameRateDelay' is the time ticks to wait between frames, for smoothing.
 ---------------------------------------------------------------------------*/
-int32_t FrameSendRate;
 
 /***************************************************************************
 **	Multiplayer ID's, stored in order of event execution.
@@ -407,52 +314,34 @@ int32_t FrameSendRate;
 ** bits 4-7: the player's Color Index
 ** These values are used as the IPX connection ID's.
 */
-unsigned char MPlayerID[MAX_PLAYERS];
 
 /***************************************************************************
 ** This array stores the actual HousesType for all players (MULT1, etc).
 */
-HousesType MPlayerHouses[MAX_PLAYERS];
 
 /***************************************************************************
 ** This array stores the names of all players in a multiplayer game.
 */
-char MPlayerNames[MAX_PLAYERS][MPLAYER_NAME_MAX];
 
 /***************************************************************************
 **	This is a list of the messages received from / sent to other players,
 ** the address to send to (IPX only), and the last message received or
 ** sent (for the computer's messages).
 */
-MessageListClass Messages;
-char LastMessage[MAX_MESSAGE_LENGTH];
 
 /***************************************************************************
 ** If this flag is set, computer AI will blitz the humans all at once;
 ** otherwise, the computer units trickle gradually out.
 */
-int MPlayerBlitz = 0;
 
 /***************************************************************************
 ** If this flag is set, we can move around the map, but we can't do anything.
 ** It means we've been defeated, but we're still allowed to watch the action.
 */
-bool MPlayerObiWan = false;
 
 /***************************************************************************
 ** These variables keep track of the multiplayer game scores.
 */
-MPlayerScoreType MPlayerScore[MAX_MULTI_NAMES];
-int MPlayerGamesPlayed;  // # games played this run
-int MPlayerNumScores;    // # active entries in MPlayerScore
-int MPlayerCurGame;      // index of current game being played
-
-//
-// This array stores the processing time required by all multiplayer systems.
-// The values are stored in the same order as the 'MPlayerID' array.
-//
-int TheirProcessTime[MAX_PLAYERS - 1];
-int DesiredFrameRate;
 
 /***************************************************************************
 **	These variables are just to help find sync bugs.
@@ -468,28 +357,6 @@ int TrapCheckHeap = 0;                  // start checking the Heap
 ** connections.  Declaring this class doesn't perform any allocations;
 ** the class itself is 140 bytes.
 */
-IPXManagerClass Ipx(sizeof(GlobalPacketType),  // size of Global Channel packets
-                    (546 - sizeof(CommHeaderType)) / sizeof(EventClass) *
-                        sizeof(EventClass),
-                    10,             // # entries in Global Queue
-                    8,              // # entries in Private Queues
-                    VIRGIN_SOCKET,  // Socket ID #
-                    IPXGlobalConnClass::kCommandAndConquer);  // Product ID #
-
-// #if(TIMING_FIX)
-//
-//  These values store the min & max frame #'s for when MaxAhead >>increases<<.
-//  If MaxAhead increases, and the other systems free-run to the new MaxAhead
-//  value, they may miss an event generated after the MaxAhead event was sent,
-//  but before it executed, since it will have been scheduled with the older,
-//  shorter MaxAhead value.  This will cause a Packet_Received_Too_Late error.
-//  The frames from the point where the new MaxAhead takes effect, up to that
-//  frame Plus the new MaxAhead, represent a "period of vulnerability"; any
-//  events received that are scheduled to execute during this period should
-//  be re-scheduled for after that period.
-//
-int NewMaxAheadFrame1;
-int NewMaxAheadFrame2;
 // #endif
 
 /***************************************************************************
@@ -498,54 +365,36 @@ int NewMaxAheadFrame2;
 ** used; the rest are set to ff's, for broadcasting.  'IsBridge' is set
 ** if this address should be used.
 */
-int IsBridge = 0;
-IPXAddressClass BridgeNet;
 
 /***************************************************************************
 **	This flag is true if the user has requested that this game be "secret"
 ** (The game will not appear to other systems just starting up.)
 */
-bool NetStealth = false;
 
 /***************************************************************************
 **	If this flag is true, the user won't receive messages from any player
 ** other than those in his own game. It defaults to protected mode.
 */
-bool NetProtect = true;
 
 /***************************************************************************
 **	This flag indicates whether the game is "open" or not to other network
 *players.
 */
-bool NetOpen = false;
 
 /***************************************************************************
 **	This string stores the game's network name.
 ** GameName does not include the "'s Game"; comparing GameName to
 ** PlayerName can determine if this player is the originator of the game.
 */
-char MPlayerGameName[MPLAYER_NAME_MAX];
 
 /***************************************************************************
 **	These variables are for servicing the Global Channel.
 */
-GlobalPacketType GPacket;   // Global Channel packet
-int GPacketlen;             // length of incoming packet
-IPXAddressClass GAddress;   // address of sender
-uint16_t GProductID;        // sender's Product ID
-
-/***************************************************************************
-**	This is the "meta-packet"; it's a bunch of events lumped together.
-** The packet's size is IPX's max size (546), rounded down to accommodate
-** the max number of events possible.
-*/
-std::vector<std::byte> MetaPacket;
 
 /***************************************************************************
 **	This is the random-number seed; it's synchronized between systems for
 ** multiplayer games.
 */
-int Seed = 0;
 
 int WindowList[][8] = {
     /* xbyte, ypixel, bytewid, pixelht, cursor color, bkgd color, cursor x,
@@ -582,13 +431,6 @@ NewConfigType NewConfig;
 **	These measure how long (in ticks) it takes to process the game's logic,
 ** with no packet processing or artificial delays.
 */
-int ProcessTicks;   // accumulated ticks
-int ProcessFrames;  // # frames used to measure 'ProcessTicks'
-
-/***************************************************************************
-**	This flag is for popping up dialogs that call the main loop.
-*/
-SpecialDialogType SpecialDialog = SDLG_NONE;
 
 /*
 ** This flags if used to tell can enter cell that we are in a find path
@@ -603,7 +445,6 @@ SpecialDialogType SpecialDialog = SDLG_NONE;
 /*
 **	List of all games out there, & the address of the game's owner
 */
-DynamicVectorClass<NodeNameType*> Games;
 
 /*
 **	List of names & addresses of all the players in the game I'm joining.
@@ -616,7 +457,6 @@ DynamicVectorClass<NodeNameType*> Games;
 *about him; to prevent *	this, a timer restriction is put on the New Game
 *dialog's GO button.
 */
-DynamicVectorClass<NodeNameType*> Players;
 
 #ifdef DEMO
 int RequiredCD = -2;
@@ -636,8 +476,6 @@ WWKeyboardClass Kbd;
 WWMouseClass* WWMouse = nullptr;
 bool InMovie = false;       // Are we currently playing a VQ movie?
 bool MMXAvailable = false;  // Does this CPU support MMX extensions?
-bool GameStatisticsPacketSent;
-bool ConnectionLost;
 
 TheaterType LastTheater = THEATER_NONE;
 

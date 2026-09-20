@@ -118,6 +118,7 @@
 #include "td/mplayer.h"
 #include "td/object.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/shapebtn.h"
 #include "td/special.h"
 #include "td/techno.h"
@@ -312,7 +313,7 @@ bool RadarClass::Radar_Activate(int control) {
       return old;
 
     case 2:
-      if (GameToPlay == GAME_NORMAL) {
+      if (TheSession().type() == GAME_NORMAL) {
         MouseClass::Zoom.Disable();
       }
       IsRadarActive = false;
@@ -321,7 +322,7 @@ bool RadarClass::Radar_Activate(int control) {
       break;
 
     case 3:
-      if (GameToPlay == GAME_NORMAL) {
+      if (TheSession().type() == GAME_NORMAL) {
         MouseClass::Zoom.Enable();
       }
       IsRadarActive = true;
@@ -1928,7 +1929,8 @@ void RadarClass::Draw_Names() const {
   y += 2 * factor;
 
   for (HousesType house = HOUSE_MULTI1;
-       static_cast<int>(house) < static_cast<int>(HOUSE_MULTI1) + MPlayerMax;
+       static_cast<int>(house) <
+       static_cast<int>(HOUSE_MULTI1) + TheSession().max_players();
        house++) {
     HouseClass* ptr = HouseClass::As_Pointer(house);
 
@@ -1944,7 +1946,7 @@ void RadarClass::Draw_Names() const {
     if (ptr->IsDefeated) {
       color = kGrey;
     } else {
-      color = base::At(MPlayerTColors, c_idx);
+      color = base::At(TheSession().text_colors(), c_idx);
     }
     const TextPrintType style = TPF_6PT_GRAD | TPF_NOSHADOW | TPF_USE_GRAD_PAL;
 
@@ -1966,9 +1968,10 @@ void RadarClass::Draw_Names() const {
       */
       const auto id =
           static_cast<unsigned char>(Build_MPlayerID(c_idx, ptr->ActLike));
-      for (int i = 0; i < MPlayerCount; i++) {
-        if (id == base::At(MPlayerID, i)) {
-          absl::SNPrintF(txt, sizeof(txt), "%s", base::At(MPlayerNames, i));
+      for (int i = 0; i < TheSession().player_count(); i++) {
+        if (id == base::At(TheSession().player_ids(), i)) {
+          absl::SNPrintF(txt, sizeof(txt), "%s",
+                         base::At(TheSession().player_names(), i));
           break;
         }
       }

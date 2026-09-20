@@ -69,6 +69,7 @@
 #include "td/inline.h"
 #include "td/object_heaps.h"
 #include "td/profile.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/type.h"
 #include "td/vector.h"
@@ -365,7 +366,7 @@ void OverlayClass::Read_INI(char* buffer) {
     **	Don't allow placement of crates in the multiplayer scenarios.
     */
     if ((classid != OVERLAY_NONE &&
-         (GameToPlay == GAME_NORMAL ||
+         (TheSession().type() == GAME_NORMAL ||
           !OverlayTypeClass::As_Reference(classid).IsCrate)) &&
         (cell >= MAP_CELL_W && cell <= MAP_CELL_TOTAL - MAP_CELL_W))
     /*

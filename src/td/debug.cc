@@ -70,6 +70,7 @@
 #include "td/object_heaps.h"
 #include "td/palette.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/team.h"
 #include "td/techno.h"
 #include "td/type.h"
@@ -532,7 +533,7 @@ void Debug_Key(unsigned input) {
       **	Reveal entire map to player.
       */
       case KN_F4:
-        if (GameToPlay == GAME_NORMAL) {
+        if (TheSession().type() == GAME_NORMAL) {
           TheDebugState().set_unshroud(!TheDebugState().unshroud());
           TheMap().Flag_To_Redraw(true);
         }

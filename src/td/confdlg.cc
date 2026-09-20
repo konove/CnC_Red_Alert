@@ -55,11 +55,11 @@
 #include "td/control.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/externs.h"
 #include "td/gadget.h"
 #include "td/goptions.h"
 #include "td/jshell.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/text.h"
 #include "td/textbtn.h"
 
@@ -150,7 +150,7 @@ bool ConfirmationClass::Process(const char* string) {
     /*
     **	Invoke game callback.
     */
-    if (GameToPlay == GAME_NORMAL) {
+    if (TheSession().type() == GAME_NORMAL) {
       Call_Back();
     } else {
       if (Main_Loop()) {

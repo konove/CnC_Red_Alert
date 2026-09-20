@@ -112,6 +112,15 @@ class World {
     return scenario_crc_;
   }
 
+  // What the scenario's synchronized random generator was started from.
+  // Every machine in a multiplayer game seeds from this one value.
+  int& seed() ABSL_ATTRIBUTE_LIFETIME_BOUND { return seed_; }
+
+  // How much of the tech tree the scenario allows, and the house the
+  // command line asked the player to be.
+  int& build_level() ABSL_ATTRIBUTE_LIFETIME_BOUND { return build_level_; }
+  HousesType& whom() ABSL_ATTRIBUTE_LIFETIME_BOUND { return whom_; }
+
   // Non-zero while the scenario is being read, which suppresses the side
   // effects that placing an object would otherwise have.
   int& scenario_init() ABSL_ATTRIBUTE_LIFETIME_BOUND { return scenario_init_; }
@@ -165,6 +174,9 @@ class World {
   int carry_over_money_ = 0;
   int carry_over_percent_ = 0;
   uint32_t scenario_crc_ = 0;
+  int seed_ = 0;
+  int build_level_ = 3;
+  HousesType whom_{};
   int scenario_init_ = 0;
   CELL current_cell_ = 0;
 

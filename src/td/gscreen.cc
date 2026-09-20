@@ -73,6 +73,7 @@
 #include "td/msglist.h"
 #include "td/palette.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/world.h"
 #include "tech/pcx_file.h"
 
@@ -412,11 +413,11 @@ void GScreenClass::Render() {
     ** Draw the multiplayer message system to the Hidpage at this point.
     ** This way, they'll Blit along with the rest of the map.
     */
-    if (Messages.Num_Messages() > 0) {
-      Messages.Set_Width(Lepton_To_Cell(TheMap().TacLeptonWidth) *
-                         ICON_PIXEL_W);
+    if (TheSession().messages().Num_Messages() > 0) {
+      TheSession().messages().Set_Width(
+          Lepton_To_Cell(TheMap().TacLeptonWidth) * ICON_PIXEL_W);
     }
-    Messages.Draw();
+    TheSession().messages().Draw();
 
     Blit_Display();
     IsToUpdate = false;

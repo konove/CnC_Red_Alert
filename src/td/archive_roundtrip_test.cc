@@ -23,6 +23,7 @@
 #include "td/map.h"
 #include "td/mapedit.h"
 #include "td/object_heaps.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/target.h"
 #include "td/team.h"
@@ -44,6 +45,10 @@ const base::Installed<ObjectHeaps>::Scope object_heaps_scope(object_heaps);
 // that runs out of memory building the world has nothing to report.
 World world;
 const base::Installed<World>::Scope world_scope(world);
+// The serializers read the game type out of the session, and the team
+// parser reports through the message list it owns.
+SessionClass session;
+const base::Installed<SessionClass>::Scope session_scope(session);
 // NOLINTEND(bugprone-throwing-static-initialization)
 }  // namespace
 

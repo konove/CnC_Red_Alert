@@ -129,7 +129,6 @@
 #include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/externs.h"
 #include "td/foot.h"
 #include "td/globals.h"
 #include "td/heap.h"
@@ -141,6 +140,7 @@
 #include "td/mapedit.h"
 #include "td/object_heaps.h"
 #include "td/radio.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/target.h"
 #include "td/team.h"
@@ -1383,7 +1383,7 @@ bool ObjectClass::Mark(MarkType mark) {
     **	placed down.
     */
     if (mark == MARK_DOWN && !IsDown) {
-      if (tech && GameToPlay == GAME_NORMAL) {
+      if (tech && TheSession().type() == GAME_NORMAL) {
         TheMap().at(cell).Adjust_Threat(house, threat);
       }
       IsDown = true;
@@ -1396,7 +1396,7 @@ bool ObjectClass::Mark(MarkType mark) {
     **	lifted up from the map.
     */
     if (mark == MARK_UP && IsDown) {
-      if (tech && GameToPlay == GAME_NORMAL) {
+      if (tech && TheSession().type() == GAME_NORMAL) {
         TheMap().at(cell).Adjust_Threat(house, -threat);
       }
       IsDown = false;

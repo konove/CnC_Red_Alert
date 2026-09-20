@@ -171,11 +171,13 @@
 #include "td/mplayer.h"
 #include "td/msgbox.h"
 #include "td/msglist.h"
+#include "td/network.h"
 #include "td/nodename.h"
 #include "td/palette.h"
 #include "td/palettes.h"
 #include "td/queue.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/tcpip.h"
 #include "td/text.h"
@@ -267,23 +269,23 @@ bool Init_Network() {
   This call allocates all necessary queue buffers, allocates Real-mode
   memory, and commands IPX to start listening on the Global Channel.
   ------------------------------------------------------------------------*/
-  if (!Ipx.Init()) {
+  if (!TheNetwork().ipx().Init()) {
     return false;
   }
 
   /*------------------------------------------------------------------------
   Allocate our "meta-packet" buffer
   ------------------------------------------------------------------------*/
-  if (MetaPacket.empty()) {
-    MetaPacket.resize(sizeof(EventClass) * MAX_EVENTS);
+  if (TheNetwork().meta_packet().empty()) {
+    TheNetwork().meta_packet().resize(sizeof(EventClass) * MAX_EVENTS);
   }
 
   /*------------------------------------------------------------------------
   Set up the IPX manager to cross a bridge
   ------------------------------------------------------------------------*/
-  if ((!(GameToPlay == GAME_INTERNET)) && IsBridge) {
-    BridgeNet.Get_Address(net, node);
-    Ipx.Set_Bridge(net);
+  if ((!(TheSession().type() == GAME_INTERNET)) && TheNetwork().is_bridge()) {
+    TheNetwork().bridge_net().Get_Address(net, node);
+    TheNetwork().ipx().Set_Bridge(net);
   }
 
   return true;
@@ -321,13 +323,13 @@ void Shutdown_Network() {
   /*------------------------------------------------------------------------
   Delete our "meta-packet"
   ------------------------------------------------------------------------*/
-MetaPacket.clear();
-MetaPacket.shrink_to_fit();
+TheNetwork().meta_packet().clear();
+TheNetwork().meta_packet().shrink_to_fit();
 
 /*------------------------------------------------------------------------
 If I was in a game, I'm not now, so clear the game name
 ------------------------------------------------------------------------*/
-base::At(MPlayerGameName, 0) = 0;
+base::At(TheSession().game_name(), 0) = 0;
 }
 
 /***********************************************************************************************
@@ -360,21 +362,23 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
   /*
   ---------------- Another system asking what game this is -----------------
   */
-  if (packet->Command == NET_QUERY_GAME && !NetStealth) {
+  if (packet->Command == NET_QUERY_GAME && !TheNetwork().stealth()) {
     /*.....................................................................
     If the game is closed, let every player respond, and let the sender of
     the query sort it all out.  This way, if the game's host exits the game,
     the game still shows up on other players' dialogs.
     If the game is open, only the game owner may respond.
     .....................................................................*/
-    if (!std::string_view(MPlayerName).empty() &&
-        !std::string_view(MPlayerGameName).empty() &&
-        (!NetOpen ||
-         (NetOpen && (std::string_view(MPlayerName) == MPlayerGameName)))) {
+    if (!std::string_view(TheSession().player_name()).empty() &&
+        !std::string_view(TheSession().game_name()).empty() &&
+        (!TheNetwork().is_open() ||
+         (TheNetwork().is_open() &&
+          (std::string_view(TheSession().player_name()) ==
+           TheSession().game_name())))) {
       base::FillBytes(base::ObjectBytes(*packet), 0, sizeof(GlobalPacketType));
 
       mypacket.Command = NET_ANSWER_GAME;
-      port::SafeCopy(mypacket.Name, MPlayerGameName);
+      port::SafeCopy(mypacket.Name, TheSession().game_name());
 #ifdef PATCH
       if (IsV107) {
         mypacket.GameInfo.Version = 1;
@@ -384,10 +388,10 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
 #else
       mypacket.GameInfo.Version = Version_Number();
 #endif
-      mypacket.GameInfo.IsOpen = NetOpen;
+      mypacket.GameInfo.IsOpen = TheNetwork().is_open();
 
-      Ipx.Send_Global_Message(base::ObjectBytes(mypacket),
-                              sizeof(GlobalPacketType), 1, address);
+      TheNetwork().ipx().Send_Global_Message(
+          base::ObjectBytes(mypacket), sizeof(GlobalPacketType), 1, address);
     }
     return true;
   }
@@ -395,18 +399,20 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
       ----------------- Another system asking what player I am -----------------
       */
   if (packet->Command == NET_QUERY_PLAYER &&
-      (std::string_view(packet->Name) == MPlayerGameName) &&
-      !std::string_view(MPlayerGameName).empty() && !NetStealth) {
+      (std::string_view(packet->Name) == TheSession().game_name()) &&
+      !std::string_view(TheSession().game_name()).empty() &&
+      !TheNetwork().stealth()) {
     base::FillBytes(base::ObjectBytes(*packet), 0, sizeof(GlobalPacketType));
 
     mypacket.Command = NET_ANSWER_PLAYER;
-    port::SafeCopy(mypacket.Name, MPlayerName);
-    mypacket.PlayerInfo.House = MPlayerHouse;
-    mypacket.PlayerInfo.Color = static_cast<unsigned int>(MPlayerColorIdx);
-    mypacket.PlayerInfo.NameCRC = Compute_Name_CRC(MPlayerGameName);
+    port::SafeCopy(mypacket.Name, TheSession().player_name());
+    mypacket.PlayerInfo.House = TheSession().house();
+    mypacket.PlayerInfo.Color =
+        static_cast<unsigned int>(TheSession().color_index());
+    mypacket.PlayerInfo.NameCRC = Compute_Name_CRC(TheSession().game_name());
 
-    Ipx.Send_Global_Message(base::ObjectBytes(mypacket),
-                            sizeof(GlobalPacketType), 1, address);
+    TheNetwork().ipx().Send_Global_Message(
+        base::ObjectBytes(mypacket), sizeof(GlobalPacketType), 1, address);
     return true;
   }
   return false;
@@ -440,17 +446,18 @@ void Destroy_Connection(int id, int error) {
   base::At(txt, 0) = '\0';
   if (error == 1) {
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_CONNECTION_LOST),
-                        Ipx.Connection_Name(id));
+                        TheNetwork().ipx().Connection_Name(id));
   } else if (error == 0) {
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_LEFT_GAME),
-                        Ipx.Connection_Name(id));
+                        TheNetwork().ipx().Connection_Name(id));
   }
 
   if (!std::string_view(txt).empty()) {
-    Messages.Add_Message(
+    TheSession().messages().Add_Message(
         txt,
-        base::At(MPlayerTColors, static_cast<int>(MPlayerID_To_ColorIndex(
-                                     static_cast<unsigned char>(id)))),
+        base::At(TheSession().text_colors(),
+                 static_cast<int>(
+                     MPlayerID_To_ColorIndex(static_cast<unsigned char>(id)))),
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     TheMap().Flag_To_Redraw(false);
   }
@@ -458,14 +465,15 @@ void Destroy_Connection(int id, int error) {
   /*------------------------------------------------------------------------
   Delete the IPX connection, shift the MPlayerID's & MPlayerHouses' back one.
   ------------------------------------------------------------------------*/
-  Ipx.Delete_Connection(id);
+  TheNetwork().ipx().Delete_Connection(id);
 
-  for (int i = 0; i < MPlayerCount; i++) {
-    if (base::At(MPlayerID, i) == static_cast<unsigned char>(id)) {
+  for (int i = 0; i < TheSession().player_count(); i++) {
+    if (base::At(TheSession().player_ids(), i) ==
+        static_cast<unsigned char>(id)) {
       /*..................................................................
       Turn the player's house over to the computer's AI
       ..................................................................*/
-      const HousesType house = base::At(MPlayerHouses, i);
+      const HousesType house = base::At(TheSession().player_houses(), i);
       HouseClass* housep = HouseClass::As_Pointer(house);
       housep->IsHuman = false;
       housep->IsStarted = true;
@@ -473,27 +481,31 @@ void Destroy_Connection(int id, int error) {
       /*..................................................................
       Move arrays back by one
       ..................................................................*/
-      for (int j = i; j < MPlayerCount - 1; j++) {
-        base::At(MPlayerID, j) = base::At(MPlayerID, j + 1);
-        base::At(MPlayerHouses, j) = base::At(MPlayerHouses, j + 1);
-        port::SafeCopy(base::At(MPlayerNames, j),
-                       base::At(MPlayerNames, j + 1));
-        base::At(TheirProcessTime, j) = base::At(TheirProcessTime, j + 1);
+      for (int j = i; j < TheSession().player_count() - 1; j++) {
+        base::At(TheSession().player_ids(), j) =
+            base::At(TheSession().player_ids(), j + 1);
+        base::At(TheSession().player_houses(), j) =
+            base::At(TheSession().player_houses(), j + 1);
+        port::SafeCopy(base::At(TheSession().player_names(), j),
+                       base::At(TheSession().player_names(), j + 1));
+        base::At(TheSession().their_process_time(), j) =
+            base::At(TheSession().their_process_time(), j + 1);
       }
     }
   }
 
-  MPlayerCount--;
+  TheSession().player_count()--;
 
   /*------------------------------------------------------------------------
   If we're the last player left, tell the user.
   ------------------------------------------------------------------------*/
-  if (MPlayerCount == 1) {
+  if (TheSession().player_count() == 1) {
     absl::SNPrintF(txt, sizeof(txt), "%s", Text_String(TXT_JUST_YOU_AND_ME));
-    Messages.Add_Message(
+    TheSession().messages().Add_Message(
         txt,
-        base::At(MPlayerTColors, static_cast<int>(MPlayerID_To_ColorIndex(
-                                     static_cast<unsigned char>(id)))),
+        base::At(TheSession().text_colors(),
+                 static_cast<int>(
+                     MPlayerID_To_ColorIndex(static_cast<unsigned char>(id)))),
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     TheMap().Flag_To_Redraw(false);
   }
@@ -521,27 +533,28 @@ bool Remote_Connect() {
   Init network timing parameters; these values should work for both a "real"
   network, and a simulated modem network (ie Kali)
   ------------------------------------------------------------------------*/
-  Ipx.Set_Timing(30,    // retry 2 times per second
-                 -1,    // ignore max retries
-                 600);  // give up after 10 seconds
+  TheNetwork().ipx().Set_Timing(30,    // retry 2 times per second
+                                -1,    // ignore max retries
+                                600);  // give up after 10 seconds
 
   /*------------------------------------------------------------------------
   Save the original value of the NetStealth flag, so we can turn stealth
   off for now (during this portion of the dialogs, we must show ourselves)
   ------------------------------------------------------------------------*/
-  const bool stealth = NetStealth;  // original state of NetStealth flag
-  NetStealth = false;
+  const bool stealth =
+      TheNetwork().stealth();  // original state of NetStealth flag
+  TheNetwork().stealth() = false;
 
   /*------------------------------------------------------------------------
   Init my game name to 0-length, since I haven't joined any game yet.
   ------------------------------------------------------------------------*/
-  base::At(MPlayerGameName, 0) = 0;
+  base::At(TheSession().game_name(), 0) = 0;
 
   /*------------------------------------------------------------------------
   The game is now "open" for joining.  Close it as soon as we exit this
   routine.
   ------------------------------------------------------------------------*/
-  NetOpen = true;
+  TheNetwork().is_open() = true;
 
   /*------------------------------------------------------------------------
   Read the default values from the INI file
@@ -561,8 +574,8 @@ bool Remote_Connect() {
     -1 = user selected Cancel
     ---------------------------------------------------------------------*/
     if (rc == -1) {
-      NetStealth = stealth;
-      NetOpen = false;
+      TheNetwork().stealth() = stealth;
+      TheNetwork().is_open() = false;
       return false;
     }
     /*---------------------------------------------------------------------
@@ -570,8 +583,8 @@ bool Remote_Connect() {
           ---------------------------------------------------------------------*/
     if (rc == 0) {
       Write_MultiPlayer_Settings();
-      NetStealth = stealth;
-      NetOpen = false;
+      TheNetwork().stealth() = stealth;
+      TheNetwork().is_open() = false;
 
       return true;
     }
@@ -585,9 +598,9 @@ bool Remote_Connect() {
     ..................................................................*/
     {
       Write_MultiPlayer_Settings();
-      NetOpen = false;
-      NetStealth = stealth;
-      NetOpen = false;
+      TheNetwork().is_open() = false;
+      TheNetwork().stealth() = stealth;
+      TheNetwork().is_open() = false;
 
       return true;
     }
@@ -615,22 +628,23 @@ bool Server_Remote_Connect() {
   Init network timing parameters; these values should work for both a "real"
   network, and a simulated modem network (ie Kali)
   ------------------------------------------------------------------------*/
-  Ipx.Set_Timing(30,    // retry 2 times per second
-                 -1,    // ignore max retries
-                 600);  // give up after 10 seconds
+  TheNetwork().ipx().Set_Timing(30,    // retry 2 times per second
+                                -1,    // ignore max retries
+                                600);  // give up after 10 seconds
 
   /*------------------------------------------------------------------------
   Save the original value of the NetStealth flag, so we can turn stealth
   off for now (during this portion of the dialogs, we must show ourselves)
   ------------------------------------------------------------------------*/
-  const bool stealth = NetStealth;  // original state of NetStealth flag
-  NetStealth = false;
+  const bool stealth =
+      TheNetwork().stealth();  // original state of NetStealth flag
+  TheNetwork().stealth() = false;
 
   /*------------------------------------------------------------------------
   The game is now "open" for joining.  Close it as soon as we exit this
   routine.
   ------------------------------------------------------------------------*/
-  NetOpen = true;
+  TheNetwork().is_open() = true;
 
   /*------------------------------------------------------------------------
   Read the default values from the INI file
@@ -642,8 +656,8 @@ bool Server_Remote_Connect() {
     return false;
   }
 
-  NetOpen = false;
-  NetStealth = stealth;
+  TheNetwork().is_open() = false;
+  TheNetwork().stealth() = stealth;
   Write_MultiPlayer_Settings();
   return true;
 }
@@ -669,22 +683,23 @@ bool Client_Remote_Connect() {
   Init network timing parameters; these values should work for both a "real"
   network, and a simulated modem network (ie Kali)
   ------------------------------------------------------------------------*/
-  Ipx.Set_Timing(30,    // retry 2 times per second
-                 -1,    // ignore max retries
-                 600);  // give up after 10 seconds
+  TheNetwork().ipx().Set_Timing(30,    // retry 2 times per second
+                                -1,    // ignore max retries
+                                600);  // give up after 10 seconds
 
   /*------------------------------------------------------------------------
   Save the original value of the NetStealth flag, so we can turn stealth
   off for now (during this portion of the dialogs, we must show ourselves)
   ------------------------------------------------------------------------*/
-  const bool stealth = NetStealth;  // original state of NetStealth flag
-  NetStealth = false;
+  const bool stealth =
+      TheNetwork().stealth();  // original state of NetStealth flag
+  TheNetwork().stealth() = false;
 
   /*------------------------------------------------------------------------
   The game is now "open" for joining.  Close it as soon as we exit this
   routine.
   ------------------------------------------------------------------------*/
-  NetOpen = true;
+  TheNetwork().is_open() = true;
 
   /*------------------------------------------------------------------------
   Read the default values from the INI file
@@ -697,8 +712,8 @@ bool Client_Remote_Connect() {
   const int rc = Net_Fake_Join_Dialog();
   Write_MultiPlayer_Settings();
 
-  NetStealth = stealth;
-  NetOpen = false;
+  TheNetwork().stealth() = stealth;
+  TheNetwork().is_open() = false;
 
   return rc != -1;
 }
@@ -1009,14 +1024,16 @@ static int Net_Join_Dialog() {
   /*
   ----------------------------- Various Inits ------------------------------
   */
-  MPlayerColorIdx = MPlayerPrefColor;    // init my preferred color
-  port::SafeCopy(namebuf, MPlayerName);  // set my name
+  TheSession().color_index() =
+      TheSession().preferred_color();  // init my preferred color
+  port::SafeCopy(namebuf, TheSession().player_name());  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
-  name_edt.Set_Color(base::At(MPlayerTColors, MPlayerColorIdx));
+  name_edt.Set_Color(
+      base::At(TheSession().text_colors(), TheSession().color_index()));
 
   playerlist.Set_Selected_Style(ColorListClass::SELECT_NONE);
 
-  if (MPlayerHouse == HOUSE_GOOD) {
+  if (TheSession().house() == HOUSE_GOOD) {
     gdibtn.Turn_On();
   } else {
     nodbtn.Turn_On();
@@ -1025,8 +1042,8 @@ static int Net_Join_Dialog() {
   Fancy_Text_Print("", 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  Messages.Init(d_message_x + 2, d_message_y + 2, 4, MAX_MESSAGE_LENGTH,
-                d_txt6_h);
+  TheSession().messages().Init(d_message_x + 2, d_message_y + 2, 4,
+                               MAX_MESSAGE_LENGTH, d_txt6_h);
 
   /*
   --------------------------- Send network query ---------------------------
@@ -1102,7 +1119,7 @@ static int Net_Join_Dialog() {
         if (joinstate > JOIN_NOTHING) {
           Fancy_Text_Print(namebuf, d_name_x, d_name_y + 1, kCcGreen, kTBlack,
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
-          if (MPlayerHouse == HOUSE_GOOD) {
+          if (TheSession().house() == HOUSE_GOOD) {
             Fancy_Text_Print(TXT_G_D_I, d_gdi_x, d_gdi_y + 1, kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           } else {
@@ -1154,13 +1171,13 @@ static int Net_Join_Dialog() {
       ..................................................................*/
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          LogicPage->Fill_Rect(
-              base::At(cbox_x, i) + 1, d_color_y + 1,
-              base::At(cbox_x, i) + 1 + d_color_w - 2,
-              d_color_y + 1 + d_color_h - 2,
-              static_cast<unsigned char>(base::At(MPlayerGColors, i)));
+          LogicPage->Fill_Rect(base::At(cbox_x, i) + 1, d_color_y + 1,
+                               base::At(cbox_x, i) + 1 + d_color_w - 2,
+                               d_color_y + 1 + d_color_h - 2,
+                               static_cast<unsigned char>(
+                                   base::At(TheSession().graphic_colors(), i)));
 
-          if (i == MPlayerColorIdx) {
+          if (i == TheSession().color_index()) {
             Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
                      BOXSTYLE_GREEN_DOWN, false);
           } else {
@@ -1180,7 +1197,7 @@ static int Net_Join_Dialog() {
       if (display >= REDRAW_MESSAGE) {
         Draw_Box(d_message_x, d_message_y, d_message_w, d_message_h,
                  BOXSTYLE_GREEN_BORDER, true);
-        Messages.Draw();
+        TheSession().messages().Draw();
 
         LogicPage->Fill_Rect(d_dialog_x + 2, d_msg1_y,
                              d_dialog_x + d_dialog_w - 4, d_msg5_y + d_txt6_h,
@@ -1191,9 +1208,10 @@ static int Net_Join_Dialog() {
           Scenario title
           ............................................................*/
           p = Text_String(TXT_SCENARIO_COLON);
-          if (ScenarioIdx != -1) {
-            absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
-                           MPlayerScenarios.at(ScenarioIdx));
+          if (TheSession().scenario_index() != -1) {
+            absl::SNPrintF(
+                txt, sizeof(txt), "%s %s", p,
+                TheSession().scenarios().at(TheSession().scenario_index()));
 
             Fancy_Text_Print(
                 txt, d_dialog_cx, d_msg1_y, kCcGreen, kTBlack,
@@ -1211,7 +1229,7 @@ static int Net_Join_Dialog() {
           # of credits
           ............................................................*/
           p = Text_String(TXT_START_CREDITS_COLON);
-          absl::SNPrintF(txt, sizeof(txt), "%s %d", p, MPlayerCredits);
+          absl::SNPrintF(txt, sizeof(txt), "%s %d", p, TheSession().credits());
           Fancy_Text_Print(
               txt, d_dialog_cx, d_msg2_y, kCcGreen, kTBlack,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_CENTER);
@@ -1220,15 +1238,17 @@ static int Net_Join_Dialog() {
           Count & Level values
           ............................................................*/
           p = Text_String(TXT_COUNT);
-          absl::SNPrintF(txt, sizeof(txt), "%s %d", p, MPlayerUnitCount);
+          absl::SNPrintF(txt, sizeof(txt), "%s %d", p,
+                         TheSession().unit_count());
           Fancy_Text_Print(
               txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
               d_msg3_y, kCcGreen, kTBlack,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           p = Text_String(TXT_LEVEL);
-          if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-            absl::SNPrintF(txt, sizeof(txt), "%s %d", p, BuildLevel);
+          if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
+            absl::SNPrintF(txt, sizeof(txt), "%s %d", p,
+                           TheWorld().build_level());
           } else {
             absl::SNPrintF(txt, sizeof(txt), "%s **", p);
           }
@@ -1242,7 +1262,7 @@ static int Net_Join_Dialog() {
           Bases
           ............................................................*/
           p = Text_String(TXT_BASES_COLON);
-          if (MPlayerBases) {
+          if (TheSession().bases()) {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_ON));
           } else {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_OFF));
@@ -1256,7 +1276,7 @@ static int Net_Join_Dialog() {
           Tiberium
           ............................................................*/
           p = Text_String(TXT_TIBERIUM_COLON);
-          if (MPlayerTiberium) {
+          if (TheSession().tiberium()) {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_ON));
           } else {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_OFF));
@@ -1271,7 +1291,7 @@ static int Net_Join_Dialog() {
           Goody boxes
           ............................................................*/
           p = Text_String(TXT_CRATES_COLON);
-          if (MPlayerGoodies) {
+          if (TheSession().crates()) {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_ON));
           } else {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_OFF));
@@ -1291,7 +1311,7 @@ static int Net_Join_Dialog() {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_ON));
           } else {
             p = Text_String(TXT_AI_PLAYERS_COLON);
-            if (MPlayerGhosts) {
+            if (TheSession().ghosts()) {
               absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_ON));
             } else {
               absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
@@ -1343,11 +1363,12 @@ static int Net_Join_Dialog() {
                 base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w &&
             ActiveKeyboard->MouseQY > d_color_y &&
             ActiveKeyboard->MouseQY < d_color_y + d_color_h) {
-          MPlayerPrefColor =
+          TheSession().preferred_color() =
               (ActiveKeyboard->MouseQX - base::At(cbox_x, 0)) / d_color_w;
-          MPlayerColorIdx = MPlayerPrefColor;
+          TheSession().color_index() = TheSession().preferred_color();
 
-          name_edt.Set_Color(base::At(MPlayerTColors, MPlayerColorIdx));
+          name_edt.Set_Color(
+              base::At(TheSession().text_colors(), TheSession().color_index()));
           name_edt.Flag_To_Redraw();
 
           display = REDRAW_COLORS;
@@ -1377,13 +1398,13 @@ static int Net_Join_Dialog() {
       House Buttons: set the player's desired House
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonGdi):
-        MPlayerHouse = HOUSE_GOOD;
+        TheSession().house() = HOUSE_GOOD;
         gdibtn.Turn_On();
         nodbtn.Turn_Off();
         break;
 
       case ButtonKey(kButtonNod):
-        MPlayerHouse = HOUSE_BAD;
+        TheSession().house() = HOUSE_BAD;
         gdibtn.Turn_Off();
         nodbtn.Turn_On();
         break;
@@ -1398,8 +1419,8 @@ static int Net_Join_Dialog() {
 
         join_index = gamelist.Current_Index();
         parms_received = 0;
-        if (Request_To_Join(namebuf, join_index, &playerlist, MPlayerHouse,
-                            MPlayerColorIdx)) {
+        if (Request_To_Join(namebuf, join_index, &playerlist,
+                            TheSession().house(), TheSession().color_index())) {
           joinstate = JOIN_WAIT_CONFIRM;
         } else {
           display = REDRAW_ALL;
@@ -1411,18 +1432,19 @@ static int Net_Join_Dialog() {
       - If we're part of a game, stay in this dialog; otherwise, exit
       ------------------------------------------------------------------*/
       case KN_ESC:
-        if (Messages.Get_Edit_Buf() != nullptr) {
-          Messages.Input(input);
+        if (TheSession().messages().Get_Edit_Buf() != nullptr) {
+          TheSession().messages().Input(input);
           display = REDRAW_MESSAGE;
           break;
         }
         [[fallthrough]];
       case ButtonKey(kButtonCancel):
-        base::FillBytes(base::ObjectBytes(GPacket), 0,
+        base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                         sizeof(GlobalPacketType));
 
-        GPacket.Command = NET_SIGN_OFF;
-        port::SafeCopy(GPacket.Name, MPlayerName);
+        TheNetwork().global_packet().Command = NET_SIGN_OFF;
+        port::SafeCopy(TheNetwork().global_packet().Name,
+                       TheSession().player_name());
 
         /*...............................................................
         If we're joined to a game, make extra sure the other players in
@@ -1441,17 +1463,18 @@ static int Net_Join_Dialog() {
           //
           // Remove myself from the Players list
           //
-          if (Players.Count()) {  // added: BRR 6/14/96
-            who = Players.at(0);
-            Players.Delete(0);
+          if (TheNetwork().players().Count()) {  // added: BRR 6/14/96
+            who = TheNetwork().players().at(0);
+            TheNetwork().players().Delete(0);
             delete who;
           }
 
-          for (i = 0; i < Players.Count(); i++) {
-            Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                    sizeof(GlobalPacketType), 1,
-                                    &Players.at(i)->Address);
-            Ipx.Service();
+          for (i = 0; i < TheNetwork().players().Count(); i++) {
+            TheNetwork().ipx().Send_Global_Message(
+                base::ObjectBytes(TheNetwork().global_packet()),
+                sizeof(GlobalPacketType), 1,
+                &TheNetwork().players().at(i)->Address);
+            TheNetwork().ipx().Service();
           }
         }
 
@@ -1459,26 +1482,31 @@ static int Net_Join_Dialog() {
         Now broadcast my SIGN_OFF so other players looking at this game
         know I'm leaving.
         ...............................................................*/
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 0, nullptr);
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 0, nullptr);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 0, nullptr);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 0, nullptr);
 
-        if (IsBridge) {
-          Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                  sizeof(GlobalPacketType), 0, &BridgeNet);
-          Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                  sizeof(GlobalPacketType), 0, &BridgeNet);
+        if (TheNetwork().is_bridge()) {
+          TheNetwork().ipx().Send_Global_Message(
+              base::ObjectBytes(TheNetwork().global_packet()),
+              sizeof(GlobalPacketType), 0, &TheNetwork().bridge_net());
+          TheNetwork().ipx().Send_Global_Message(
+              base::ObjectBytes(TheNetwork().global_packet()),
+              sizeof(GlobalPacketType), 0, &TheNetwork().bridge_net());
         }
 
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+               TheNetwork().ipx().Service() != 0) {
         }
 
         if (joinstate != JOIN_CONFIRMED) {
           process = false;
           rc = -1;
         } else {
-          base::At(MPlayerGameName, 0) = 0;
+          base::At(TheSession().game_name(), 0) = 0;
           joinstate = JOIN_NOTHING;
           display = REDRAW_ALL;
         }
@@ -1500,8 +1528,9 @@ static int Net_Join_Dialog() {
         ..................... Ensure name is unique .....................
         */
         found = 0;
-        for (i = 0; i < Games.Count(); i++) {
-          if (absl::EqualsIgnoreCase(Games.at(i)->Name, namebuf)) {
+        for (i = 0; i < TheNetwork().games().Count(); i++) {
+          if (absl::EqualsIgnoreCase(TheNetwork().games().at(i)->Name,
+                                     namebuf)) {
             found = 1;
             CCMessageBox().Process(TXT_GAMENAME_MUSTBE_UNIQUE);
             display = REDRAW_ALL;
@@ -1514,8 +1543,8 @@ static int Net_Join_Dialog() {
         /*
         .................... Save player & game name ....................
         */
-        port::SafeCopy(MPlayerName, namebuf);
-        port::SafeCopy(MPlayerGameName, namebuf);
+        port::SafeCopy(TheSession().player_name(), namebuf);
+        port::SafeCopy(TheSession().game_name(), namebuf);
 
         name_edt.Clear_Focus();
         name_edt.Flag_To_Redraw();
@@ -1531,16 +1560,18 @@ static int Net_Join_Dialog() {
         /*...............................................................
         F4/SEND/'M' = edit a message
         ...............................................................*/
-        if (Messages.Get_Edit_Buf() == nullptr) {
+        if (TheSession().messages().Get_Edit_Buf() == nullptr) {
           if ((input == KN_M && joinstate == JOIN_CONFIRMED) ||
               input == ButtonKey(kButtonSend) || input == KN_F4) {
             base::FillBytes(base::ObjectBytes(txt), 0, 80);
 
             port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
 
-            Messages.Add_Edit(base::At(MPlayerTColors, MPlayerColorIdx),
-                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                              txt, d_message_w - (70 * factor));
+            TheSession().messages().Add_Edit(
+                base::At(TheSession().text_colors(),
+                         TheSession().color_index()),
+                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
+                d_message_w - (70 * factor));
 
             if (joinstate <= JOIN_NOTHING) {
               name_edt.Clear_Focus();
@@ -1565,20 +1596,20 @@ static int Net_Join_Dialog() {
         /*...............................................................
         Manage the message system (get rid of old messages)
         ...............................................................*/
-        if (Messages.Manage()) {
+        if (TheSession().messages().Manage()) {
           display = REDRAW_MESSAGE;
         }
 
         /*...............................................................
         Service keyboard input for any message being edited.
         ...............................................................*/
-        i = Messages.Input(input);
+        i = TheSession().messages().Input(input);
 
         /*...............................................................
         If 'Input' returned 1, it means refresh the message display.
         ...............................................................*/
         if (i == 1) {
-          Messages.Draw();
+          TheSession().messages().Draw();
         } else {
           /*...............................................................
           If 'Input' returned 2, it means redraw the message display.
@@ -1594,17 +1625,20 @@ static int Net_Join_Dialog() {
               sent_so_far = 0;
               magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
               message_length = static_cast<int>(
-                  std::string_view(Messages.Get_Edit_Buf()).size());
+                  std::string_view(TheSession().messages().Get_Edit_Buf())
+                      .size());
               crc = static_cast<uint16_t>(
-                  CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
+                  CrcEngine::Compute(TheSession().messages().Get_Edit_Buf()) &
+                  0xffff);
 
               while (sent_so_far < message_length) {
-                GPacket.Command = NET_MESSAGE;
-                port::SafeCopy(GPacket.Name, namebuf);
-                port::SafeCopy(std::span(GPacket.Message.Buf)
-                                   .first(COMPAT_MESSAGE_LENGTH - 4),
-                               std::string_view(Messages.Get_Edit_Buf())
-                                   .substr(base::ToSize(sent_so_far)));
+                TheNetwork().global_packet().Command = NET_MESSAGE;
+                port::SafeCopy(TheNetwork().global_packet().Name, namebuf);
+                port::SafeCopy(
+                    std::span(TheNetwork().global_packet().Message.Buf)
+                        .first(COMPAT_MESSAGE_LENGTH - 4),
+                    std::string_view(TheSession().messages().Get_Edit_Buf())
+                        .substr(base::ToSize(sent_so_far)));
 
                 /*
                 ** Steve I's stuff for splitting message on word boundries
@@ -1613,7 +1647,8 @@ static int Net_Join_Dialog() {
 
                 /* Start at the end of the message and find a space with 10
                  * chars. */
-                const auto the_string = std::span(GPacket.Message.Buf);
+                const auto the_string =
+                    std::span(TheNetwork().global_packet().Message.Buf);
                 while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
                        base::At(the_string,
                                 base::ToSize(actual_message_size)) != ' ') {
@@ -1634,16 +1669,21 @@ static int Net_Join_Dialog() {
                   actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
                 }
 
-                base::At(GPacket.Message.Buf, COMPAT_MESSAGE_LENGTH - 5) = 0;
-                port::WriteUnaligned(base::ObjectBytes(GPacket.Message.Buf)
-                                         .subspan(COMPAT_MESSAGE_LENGTH - 4),
-                                     magic_number);
-                port::WriteUnaligned(base::ObjectBytes(GPacket.Message.Buf)
-                                         .subspan(COMPAT_MESSAGE_LENGTH - 2),
-                                     crc);
-                GPacket.Message.ID = static_cast<unsigned char>(
-                    Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
-                GPacket.Message.NameCRC = Compute_Name_CRC(MPlayerGameName);
+                base::At(TheNetwork().global_packet().Message.Buf,
+                         COMPAT_MESSAGE_LENGTH - 5) = 0;
+                port::WriteUnaligned(
+                    base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
+                        .subspan(COMPAT_MESSAGE_LENGTH - 4),
+                    magic_number);
+                port::WriteUnaligned(
+                    base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
+                        .subspan(COMPAT_MESSAGE_LENGTH - 2),
+                    crc);
+                TheNetwork().global_packet().Message.ID =
+                    static_cast<unsigned char>(Build_MPlayerID(
+                        TheSession().color_index(), TheSession().house()));
+                TheNetwork().global_packet().Message.NameCRC =
+                    Compute_Name_CRC(TheSession().game_name());
 
                 /*..................................................................
                 Send the message to every player in our player list.  The local
@@ -1651,26 +1691,30 @@ static int Net_Join_Dialog() {
                 list.
                 ..................................................................*/
                 if (joinstate == JOIN_CONFIRMED) {
-                  for (i = 1; i < Players.Count(); i++) {
-                    Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                            sizeof(GlobalPacketType), 1,
-                                            &Players.at(i)->Address);
-                    Ipx.Service();
+                  for (i = 1; i < TheNetwork().players().Count(); i++) {
+                    TheNetwork().ipx().Send_Global_Message(
+                        base::ObjectBytes(TheNetwork().global_packet()),
+                        sizeof(GlobalPacketType), 1,
+                        &TheNetwork().players().at(i)->Address);
+                    TheNetwork().ipx().Service();
                   }
 
-                  Format_Runtime_Text(txt, sizeof(txt),
-                                      Text_String(TXT_FROM), MPlayerName,
-                                      GPacket.Message.Buf);
-                  Messages.Add_Message(
-                      txt, base::At(MPlayerTColors, MPlayerColorIdx),
+                  Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
+                                      TheSession().player_name(),
+                                      TheNetwork().global_packet().Message.Buf);
+                  TheSession().messages().Add_Message(
+                      txt,
+                      base::At(TheSession().text_colors(),
+                               TheSession().color_index()),
                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
                       magic_number, crc);
                 } else {
-                  for (i = 0; i < Players.Count(); i++) {
-                    Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                            sizeof(GlobalPacketType), 1,
-                                            &Players.at(i)->Address);
-                    Ipx.Service();
+                  for (i = 0; i < TheNetwork().players().Count(); i++) {
+                    TheNetwork().ipx().Send_Global_Message(
+                        base::ObjectBytes(TheNetwork().global_packet()),
+                        sizeof(GlobalPacketType), 1,
+                        &TheNetwork().players().at(i)->Address);
+                    TheNetwork().ipx().Service();
                   }
                 }
                 magic_number++;
@@ -1709,22 +1753,24 @@ static int Net_Join_Dialog() {
         if (joinstate == JOIN_CONFIRMED) {
           Clear_Player_List(&playerlist);
 
-          if (MPlayerHouse == HOUSE_GOOD) {
-            absl::SNPrintF(item, sizeof(item), "%s\t%s", MPlayerName,
-                           Text_String(TXT_G_D_I));
+          if (TheSession().house() == HOUSE_GOOD) {
+            absl::SNPrintF(item, sizeof(item), "%s\t%s",
+                           TheSession().player_name(), Text_String(TXT_G_D_I));
           } else {
-            absl::SNPrintF(item, sizeof(item), "%s\t%s", MPlayerName,
-                           Text_String(TXT_N_O_D));
+            absl::SNPrintF(item, sizeof(item), "%s\t%s",
+                           TheSession().player_name(), Text_String(TXT_N_O_D));
           }
-          playerlist.Add_Item(item, static_cast<char>(base::At(
-                                        MPlayerTColors, MPlayerColorIdx)));
+          playerlist.Add_Item(
+              item, static_cast<char>(base::At(TheSession().text_colors(),
+                                               TheSession().color_index())));
 
           who = new NodeNameType;
-          port::SafeCopy(who->Name, MPlayerName);
+          port::SafeCopy(who->Name, TheSession().player_name());
           who->Address = IPXAddressClass();
-          who->Player.House = MPlayerHouse;
-          who->Player.Color = static_cast<unsigned char>(MPlayerColorIdx);
-          Players.Add(who);
+          who->Player.House = TheSession().house();
+          who->Player.Color =
+              static_cast<unsigned char>(TheSession().color_index());
+          TheNetwork().players().Add(who);
 
           Send_Join_Queries(game_index, 0, 1);
         } else {
@@ -1743,14 +1789,14 @@ static int Net_Join_Dialog() {
             //
             // Remove myself from the Players list
             //
-            if (Players.Count()) {
-              who = Players.at(0);
-              Players.Delete(0);
+            if (TheNetwork().players().Count()) {
+              who = TheNetwork().players().at(0);
+              TheNetwork().players().Delete(0);
               delete who;
             }
 
-            Messages.Init(d_message_x + 2, d_message_y + 2, 4,
-                          MAX_MESSAGE_LENGTH, d_txt6_h);
+            TheSession().messages().Init(d_message_x + 2, d_message_y + 2, 4,
+                                         MAX_MESSAGE_LENGTH, d_txt6_h);
           }
         }
       }
@@ -1805,7 +1851,7 @@ static int Net_Join_Dialog() {
     /*---------------------------------------------------------------------
     Service the Ipx connections
     ---------------------------------------------------------------------*/
-    Ipx.Service();
+    TheNetwork().ipx().Service();
 
     /*---------------------------------------------------------------------
     Clean out the Game List; if an old entry is found:
@@ -1813,9 +1859,9 @@ static int Net_Join_Dialog() {
     - Clear the player list
     - Send queries for the new selected game, if there is one
     ---------------------------------------------------------------------*/
-    for (i = 0; i < Games.Count(); i++) {
-      if (SystemTicks() - Games.at(i)->Game.LastTime > 400) {
-        Games.Delete(Games.at(i));
+    for (i = 0; i < TheNetwork().games().Count(); i++) {
+      if (SystemTicks() - TheNetwork().games().at(i)->Game.LastTime > 400) {
+        TheNetwork().games().Delete(TheNetwork().games().at(i));
         gamelist.Remove_Item(i);
         if (i <= game_index) {
           gamelist.Flag_To_Redraw();
@@ -1841,7 +1887,7 @@ static int Net_Join_Dialog() {
     If the other guys are playing a scenario I don't have (sniff), I can't
     play.  Try to bail gracefully.
     .....................................................................*/
-    if (ScenarioIdx == -1) {
+    if (TheSession().scenario_index() == -1) {
       CCMessageBox().Process(TXT_UNABLE_PLAY_WAAUGH);
 
       //
@@ -1855,37 +1901,45 @@ static int Net_Join_Dialog() {
       //
       // Remove myself from the Players list
       //
-      if (Players.Count()) {  // added: BRR 6/14/96
-        who = Players.at(0);
-        Players.Delete(0);
+      if (TheNetwork().players().Count()) {  // added: BRR 6/14/96
+        who = TheNetwork().players().at(0);
+        TheNetwork().players().Delete(0);
         delete who;
       }
 
-      base::FillBytes(base::ObjectBytes(GPacket), 0, sizeof(GlobalPacketType));
+      base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
+                      sizeof(GlobalPacketType));
 
-      GPacket.Command = NET_SIGN_OFF;
-      port::SafeCopy(GPacket.Name, MPlayerName);
+      TheNetwork().global_packet().Command = NET_SIGN_OFF;
+      port::SafeCopy(TheNetwork().global_packet().Name,
+                     TheSession().player_name());
 
-      for (i = 0; i < Players.Count(); i++) {
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 1,
-                                &Players.at(i)->Address);
-        Ipx.Service();
+      for (i = 0; i < TheNetwork().players().Count(); i++) {
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 1,
+            &TheNetwork().players().at(i)->Address);
+        TheNetwork().ipx().Service();
       }
 
-      Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                              sizeof(GlobalPacketType), 0, nullptr);
-      Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                              sizeof(GlobalPacketType), 0, nullptr);
+      TheNetwork().ipx().Send_Global_Message(
+          base::ObjectBytes(TheNetwork().global_packet()),
+          sizeof(GlobalPacketType), 0, nullptr);
+      TheNetwork().ipx().Send_Global_Message(
+          base::ObjectBytes(TheNetwork().global_packet()),
+          sizeof(GlobalPacketType), 0, nullptr);
 
-      if (IsBridge) {
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 0, &BridgeNet);
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 0, &BridgeNet);
+      if (TheNetwork().is_bridge()) {
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 0, &TheNetwork().bridge_net());
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 0, &TheNetwork().bridge_net());
       }
 
-      while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+      while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+             TheNetwork().ipx().Service() != 0) {
       }
 
       rc = -1;
@@ -1894,14 +1948,16 @@ static int Net_Join_Dialog() {
       /*..................................................................
       Set the number of players in this game, and my ID
       ..................................................................*/
-      MPlayerCount = static_cast<int>(Players.Count());
-      MPlayerLocalID = static_cast<unsigned char>(
-          Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
+      TheSession().player_count() =
+          static_cast<int>(TheNetwork().players().Count());
+      TheSession().local_id() = static_cast<unsigned char>(
+          Build_MPlayerID(TheSession().color_index(), TheSession().house()));
 
       /*..................................................................
       Get the scenario number
       ..................................................................*/
-      TheWorld().scenario() = MPlayerFilenum.at(ScenarioIdx);
+      TheWorld().scenario() =
+          TheSession().scenario_files().at(TheSession().scenario_index());
 
       /*..................................................................
       Form connections with all other players.  Form the IPX Connection ID
@@ -1909,20 +1965,23 @@ static int Net_Join_Dialog() {
       player's color & house at any time.  Fill in 'tmp_id' while we're
       doing this.
       ..................................................................*/
-      for (i = 0; i < Players.Count(); i++) {
+      for (i = 0; i < TheNetwork().players().Count(); i++) {
         /*...............................................................
         Only create the connection if it's not myself!
         ...............................................................*/
-        if (std::string_view(MPlayerName) != Players.at(i)->Name) {
-          id = static_cast<unsigned char>(Build_MPlayerID(
-              Players.at(i)->Player.Color, Players.at(i)->Player.House));
+        if (std::string_view(TheSession().player_name()) !=
+            TheNetwork().players().at(i)->Name) {
+          id = static_cast<unsigned char>(
+              Build_MPlayerID(TheNetwork().players().at(i)->Player.Color,
+                              TheNetwork().players().at(i)->Player.House));
 
           base::At(tmp_id, i) = id;
 
-          Ipx.Create_Connection(id, Players.at(i)->Name,
-                                &Players.at(i)->Address);
+          TheNetwork().ipx().Create_Connection(
+              id, TheNetwork().players().at(i)->Name,
+              &TheNetwork().players().at(i)->Address);
         } else {
-          base::At(tmp_id, i) = MPlayerLocalID;
+          base::At(tmp_id, i) = TheSession().local_id();
         }
       }
 
@@ -1931,27 +1990,29 @@ static int Net_Join_Dialog() {
       determine the order of event execution, so the ID's must be stored
       in the same order on all systems.
       ..................................................................*/
-      for (i = 0; i < MPlayerCount; i++) {
+      for (i = 0; i < TheSession().player_count(); i++) {
         min_index = 0;
         min_id = 0xff;
-        for (j = 0; j < MPlayerCount; j++) {
+        for (j = 0; j < TheSession().player_count(); j++) {
           if (base::At(tmp_id, j) < min_id) {
             min_id = base::At(tmp_id, j);
             min_index = j;
           }
         }
-        base::At(MPlayerID, i) = base::At(tmp_id, min_index);
+        base::At(TheSession().player_ids(), i) = base::At(tmp_id, min_index);
         base::At(tmp_id, min_index) = 0xff;
       }
       /*..................................................................
       Fill in the array of player names, including my own.
       ..................................................................*/
-      for (i = 0; i < MPlayerCount; i++) {
-        if (base::At(MPlayerID, i) == MPlayerLocalID) {
-          port::SafeCopy(base::At(MPlayerNames, i), MPlayerName);
+      for (i = 0; i < TheSession().player_count(); i++) {
+        if (base::At(TheSession().player_ids(), i) == TheSession().local_id()) {
+          port::SafeCopy(base::At(TheSession().player_names(), i),
+                         TheSession().player_name());
         } else {
-          port::SafeCopy(base::At(MPlayerNames, i),
-                         Ipx.Connection_Name(base::At(MPlayerID, i)));
+          port::SafeCopy(base::At(TheSession().player_names(), i),
+                         TheNetwork().ipx().Connection_Name(
+                             base::At(TheSession().player_ids(), i)));
         }
       }
     }
@@ -1960,10 +2021,11 @@ static int Net_Join_Dialog() {
     a chance to get to the other system.  If he doesn't get our ACK, he'll
     be waiting the whole time we load MIX files.
     ---------------------------------------------------------------------*/
-    i = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 60);
+    i = std::max<int>(
+        static_cast<int>(TheNetwork().ipx().Global_Response_Time()) * 2, 60);
     starttime = SystemTicks();
     while (SystemTicks() - starttime < static_cast<int64_t>(i)) {
-      Ipx.Service();
+      TheNetwork().ipx().Service();
     }
   }
 
@@ -1971,8 +2033,9 @@ static int Net_Join_Dialog() {
   Init network timing values, using previous response times as a measure
   of what our retry delta & timeout should be.
   ------------------------------------------------------------------------*/
-  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, -1,
-                 Ipx.Global_Response_Time() * 4);
+  TheNetwork().ipx().Set_Timing(TheNetwork().ipx().Global_Response_Time() + 2,
+                                -1,
+                                TheNetwork().ipx().Global_Response_Time() * 4);
 
   /*------------------------------------------------------------------------
   Clear all lists
@@ -2021,11 +2084,11 @@ static void Clear_Game_List(ListClass* gamelist) {
   /*------------------------------------------------------------------------
   Clear the 'Games' Vector
   ------------------------------------------------------------------------*/
-  for (int i = 0; i < Games.Count(); i++) {
-    delete Games.at(i);
+  for (int i = 0; i < TheNetwork().games().Count(); i++) {
+    delete TheNetwork().games().at(i);
   }
 
-  Games.Clear();
+  TheNetwork().games().Clear();
 
 } /* end of Clear_Game_List */
 
@@ -2060,11 +2123,11 @@ static void Clear_Player_List(ListClass* playerlist) {
   /*------------------------------------------------------------------------
   Clear the 'Players' Vector
   ------------------------------------------------------------------------*/
-  for (int i = 0; i < Players.Count(); i++) {
-    delete Players.at(i);
+  for (int i = 0; i < TheNetwork().players().Count(); i++) {
+    delete TheNetwork().players().at(i);
   }
 
-  Players.Clear();
+  TheNetwork().players().Clear();
 
 } /* end of Clear_Player_List */
 
@@ -2100,7 +2163,8 @@ static bool Request_To_Join(const char* playername, int join_index,
   /*
   --------------------------- Validate join_index --------------------------
   */
-  if (Games.Count() == 0 || join_index > Games.Count() || join_index < 0) {
+  if (TheNetwork().games().Count() == 0 ||
+      join_index > TheNetwork().games().Count() || join_index < 0) {
     CCMessageBox().Process(TXT_NOTHING_TO_JOIN);
     return false;
   }
@@ -2116,7 +2180,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   /*
   ------------------------- The game must be open --------------------------
   */
-  if (!Games.at(join_index)->Game.IsOpen) {
+  if (!TheNetwork().games().at(join_index)->Game.IsOpen) {
     CCMessageBox().Process(TXT_GAME_IS_CLOSED);
     return false;
   }
@@ -2124,8 +2188,9 @@ static bool Request_To_Join(const char* playername, int join_index,
   /*
   ------------------------ Make sure name is unique ------------------------
   */
-  for (int i = 0; i < Players.Count(); i++) {
-    if (absl::EqualsIgnoreCase(playername, Players.at(i)->Name)) {
+  for (int i = 0; i < TheNetwork().players().Count(); i++) {
+    if (absl::EqualsIgnoreCase(playername,
+                               TheNetwork().players().at(i)->Name)) {
       CCMessageBox().Process(TXT_NAME_MUSTBE_UNIQUE);
       return false;
     }
@@ -2144,11 +2209,11 @@ static bool Request_To_Join(const char* playername, int join_index,
 #else
   v = Version_Number();
 #endif
-  if (Games.at(join_index)->Game.Version > v) {
+  if (TheNetwork().games().at(join_index)->Game.Version > v) {
     CCMessageBox().Process(TXT_YOURGAME_OUTDATED);
     return false;
   }
-  if (Games.at(join_index)->Game.Version < v) {
+  if (TheNetwork().games().at(join_index)->Game.Version < v) {
     CCMessageBox().Process(TXT_DESTGAME_OUTDATED);
     return false;
   }
@@ -2156,20 +2221,23 @@ static bool Request_To_Join(const char* playername, int join_index,
   /*
   ----------------------------- Save game name -----------------------------
   */
-  port::SafeCopy(MPlayerName, playername);
+  port::SafeCopy(TheSession().player_name(), playername);
 
   /*
   ----------------------- Send packet to game's owner ----------------------
   */
-  base::FillBytes(base::ObjectBytes(GPacket), 0, sizeof(GlobalPacketType));
+  base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
+                  sizeof(GlobalPacketType));
 
-  GPacket.Command = NET_QUERY_JOIN;
-  port::SafeCopy(GPacket.Name, MPlayerName);
-  GPacket.PlayerInfo.House = house;
-  GPacket.PlayerInfo.Color = static_cast<unsigned int>(color);
+  TheNetwork().global_packet().Command = NET_QUERY_JOIN;
+  port::SafeCopy(TheNetwork().global_packet().Name, TheSession().player_name());
+  TheNetwork().global_packet().PlayerInfo.House = house;
+  TheNetwork().global_packet().PlayerInfo.Color =
+      static_cast<unsigned int>(color);
 
-  Ipx.Send_Global_Message(base::ObjectBytes(GPacket), sizeof(GlobalPacketType),
-                          1, &Games.at(join_index)->Address);
+  TheNetwork().ipx().Send_Global_Message(
+      base::ObjectBytes(TheNetwork().global_packet()), sizeof(GlobalPacketType),
+      1, &TheNetwork().games().at(join_index)->Address);
 
   return true;
 }
@@ -2214,20 +2282,23 @@ static void Send_Join_Queries(int curgame, int gamenow, int playernow) {
   if (SystemTicks() - lasttime1 > 120 || gamenow) {
     lasttime1 = static_cast<int>(SystemTicks());
 
-    base::FillBytes(base::ObjectBytes(GPacket), 0, sizeof(GlobalPacketType));
+    base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
+                    sizeof(GlobalPacketType));
 
-    GPacket.Command = NET_QUERY_GAME;
+    TheNetwork().global_packet().Command = NET_QUERY_GAME;
 
-    Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                            sizeof(GlobalPacketType), 0, nullptr);
+    TheNetwork().ipx().Send_Global_Message(
+        base::ObjectBytes(TheNetwork().global_packet()),
+        sizeof(GlobalPacketType), 0, nullptr);
 
     /*.....................................................................
     If the user specified a remote server address, broadcast over that
     network, too.
     .....................................................................*/
-    if (IsBridge) {
-      Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                              sizeof(GlobalPacketType), 0, &BridgeNet);
+    if (TheNetwork().is_bridge()) {
+      TheNetwork().ipx().Send_Global_Message(
+          base::ObjectBytes(TheNetwork().global_packet()),
+          sizeof(GlobalPacketType), 0, &TheNetwork().bridge_net());
     }
   }
 
@@ -2236,25 +2307,29 @@ static void Send_Join_Queries(int curgame, int gamenow, int playernow) {
   expired and there is a currently-selected game, or we're told to do it
   right now
   ------------------------------------------------------------------------*/
-  if (curgame != -1 && curgame < Games.Count() &&
+  if (curgame != -1 && curgame < TheNetwork().games().Count() &&
       (SystemTicks() - lasttime2 > 35 || playernow)) {
     lasttime2 = static_cast<int>(SystemTicks());
 
-    base::FillBytes(base::ObjectBytes(GPacket), 0, sizeof(GlobalPacketType));
+    base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
+                    sizeof(GlobalPacketType));
 
-    GPacket.Command = NET_QUERY_PLAYER;
-    port::SafeCopy(GPacket.Name, Games.at(curgame)->Name);
+    TheNetwork().global_packet().Command = NET_QUERY_PLAYER;
+    port::SafeCopy(TheNetwork().global_packet().Name,
+                   TheNetwork().games().at(curgame)->Name);
 
-    Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                            sizeof(GlobalPacketType), 0, nullptr);
+    TheNetwork().ipx().Send_Global_Message(
+        base::ObjectBytes(TheNetwork().global_packet()),
+        sizeof(GlobalPacketType), 0, nullptr);
 
     /*.....................................................................
     If the user specified a remote server address, broadcast over that
     network, too.
     .....................................................................*/
-    if (IsBridge) {
-      Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                              sizeof(GlobalPacketType), 0, &BridgeNet);
+    if (TheNetwork().is_bridge()) {
+      TheNetwork().ipx().Send_Global_Message(
+          base::ObjectBytes(TheNetwork().global_packet()),
+          sizeof(GlobalPacketType), 0, &TheNetwork().bridge_net());
     }
   }
 
@@ -2315,9 +2390,12 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   /*------------------------------------------------------------------------
   If there is no incoming packet, just return
   ------------------------------------------------------------------------*/
-  const int rc = Ipx.Get_Global_Message(base::ObjectBytes(GPacket), &GPacketlen,
-                                        &GAddress, &GProductID);
-  if (!rc || GProductID != IPXGlobalConnClass::kCommandAndConquer) {
+  const int rc = TheNetwork().ipx().Get_Global_Message(
+      base::ObjectBytes(TheNetwork().global_packet()),
+      &TheNetwork().global_packet_length(), &TheNetwork().global_address(),
+      &TheNetwork().product_id());
+  if (!rc ||
+      TheNetwork().product_id() != IPXGlobalConnClass::kCommandAndConquer) {
     return EV_NONE;
   }
 
@@ -2326,7 +2404,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   don't answer standard queries.
   ------------------------------------------------------------------------*/
   if (*joinstate == JOIN_CONFIRMED &&
-      Process_Global_Packet(&GPacket, &GAddress)) {
+      Process_Global_Packet(&TheNetwork().global_packet(),
+                            &TheNetwork().global_address())) {
     return EV_NONE;
   }
 
@@ -2334,38 +2413,42 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   NET_ANSWER_GAME:  Another system is answering our GAME query, so add that
   system to our list box if it's new.
   ------------------------------------------------------------------------*/
-  if (GPacket.Command == NET_ANSWER_GAME) {
+  if (TheNetwork().global_packet().Command == NET_ANSWER_GAME) {
     /*.....................................................................
     See if this name is unique
     .....................................................................*/
     retcode = EV_NONE;
     found = 0;
-    for (i = 0; i < Games.Count(); i++) {
-      if ((std::string_view(Games.at(i)->Name) == GPacket.Name)) {
+    for (i = 0; i < TheNetwork().games().Count(); i++) {
+      if ((std::string_view(TheNetwork().games().at(i)->Name) ==
+           TheNetwork().global_packet().Name)) {
         found = 1;
         /*...............................................................
         If name was found, update the node's time stamp & IsOpen flag.
         ...............................................................*/
-        Games.at(i)->Game.LastTime = SystemTicks();
-        if (Games.at(i)->Game.IsOpen != GPacket.GameInfo.IsOpen) {
-          if (GPacket.GameInfo.IsOpen) {
+        TheNetwork().games().at(i)->Game.LastTime = SystemTicks();
+        if (TheNetwork().games().at(i)->Game.IsOpen !=
+            TheNetwork().global_packet().GameInfo.IsOpen) {
+          if (TheNetwork().global_packet().GameInfo.IsOpen) {
             Format_Runtime_Text(item, kGameListItemSize,
-                                Text_String(TXT_THATGUYS_GAME), GPacket.Name);
+                                Text_String(TXT_THATGUYS_GAME),
+                                TheNetwork().global_packet().Name);
           } else {
             Format_Runtime_Text(item, kGameListItemSize,
                                 Text_String(TXT_THATGUYS_GAME_BRACKET),
-                                GPacket.Name);
+                                TheNetwork().global_packet().Name);
           }
           gamelist->Set_Item(i, item);
-          Games.at(i)->Game.IsOpen = GPacket.GameInfo.IsOpen;
+          TheNetwork().games().at(i)->Game.IsOpen =
+              TheNetwork().global_packet().GameInfo.IsOpen;
           gamelist->Flag_To_Redraw();
           /*............................................................
           If this game has gone from closed to open, copy the responder's
           address into our Game slot, since the guy responding to this
           must be game owner.
           ............................................................*/
-          if (Games.at(i)->Game.IsOpen) {
-            Games.at(i)->Address = GAddress;
+          if (TheNetwork().games().at(i)->Game.IsOpen) {
+            TheNetwork().games().at(i)->Address = TheNetwork().global_address();
           }
         }
         break;
@@ -2379,24 +2462,25 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       Create a new node structure, fill it in, add it to 'Games'
       ..................................................................*/
       who = new NodeNameType;
-      port::SafeCopy(who->Name, GPacket.Name);
-      who->Address = GAddress;
-      who->Game.Version = GPacket.GameInfo.Version;
-      who->Game.IsOpen = GPacket.GameInfo.IsOpen;
+      port::SafeCopy(who->Name, TheNetwork().global_packet().Name);
+      who->Address = TheNetwork().global_address();
+      who->Game.Version = TheNetwork().global_packet().GameInfo.Version;
+      who->Game.IsOpen = TheNetwork().global_packet().GameInfo.IsOpen;
       who->Game.LastTime = SystemTicks();
-      Games.Add(who);
+      TheNetwork().games().Add(who);
 
       /*..................................................................
       Create a string for "xxx's Game", leaving room for brackets around
       the string if it's a closed game
       ..................................................................*/
-      if (GPacket.GameInfo.IsOpen) {
+      if (TheNetwork().global_packet().GameInfo.IsOpen) {
         Format_Runtime_Text(item, kGameListItemSize,
-                            Text_String(TXT_THATGUYS_GAME), GPacket.Name);
+                            Text_String(TXT_THATGUYS_GAME),
+                            TheNetwork().global_packet().Name);
       } else {
         Format_Runtime_Text(item, kGameListItemSize,
                             Text_String(TXT_THATGUYS_GAME_BRACKET),
-                            GPacket.Name);
+                            TheNetwork().global_packet().Name);
       }
       gamelist->Add_Item(item);
 
@@ -2408,25 +2492,29 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   NET_ANSWER_PLAYER: Another system is answering our PLAYER query, so add it
   to our player list box & the Player Vector if it's new
   ------------------------------------------------------------------------*/
-  else if (GPacket.Command == NET_ANSWER_PLAYER) {
+  else if (TheNetwork().global_packet().Command == NET_ANSWER_PLAYER) {
     /*.....................................................................
     See if this name is unique
     .....................................................................*/
     retcode = EV_NONE;
     found = 0;
-    for (i = 0; i < Players.Count(); i++) {
+    for (i = 0; i < TheNetwork().players().Count(); i++) {
       /*..................................................................
       If the address is already present, re-copy their name, color &
       house into the existing entry, in case they've changed it without
       our knowledge; set the 'found' flag so we won't create a new entry.
       ..................................................................*/
-      if (Players.at(i)->Address == GAddress) {
-        port::SafeCopy(Players.at(i)->Name, GPacket.Name);
-        Players.at(i)->Player.House = GPacket.PlayerInfo.House;
-        Players.at(i)->Player.Color =
-            static_cast<unsigned char>(GPacket.PlayerInfo.Color);
+      if (TheNetwork().players().at(i)->Address ==
+          TheNetwork().global_address()) {
+        port::SafeCopy(TheNetwork().players().at(i)->Name,
+                       TheNetwork().global_packet().Name);
+        TheNetwork().players().at(i)->Player.House =
+            TheNetwork().global_packet().PlayerInfo.House;
+        TheNetwork().players().at(i)->Player.Color = static_cast<unsigned char>(
+            TheNetwork().global_packet().PlayerInfo.Color);
         playerlist->Colors.at(i) = static_cast<char>(
-            base::At(MPlayerTColors, GPacket.PlayerInfo.Color));
+            base::At(TheSession().text_colors(),
+                     TheNetwork().global_packet().PlayerInfo.Color));
         found = 1;
         break;
       }
@@ -2435,15 +2523,17 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     Don't add this player if he's not part of the game that's selected.
     .....................................................................*/
     i = gamelist->Current_Index();
-    if (Games.Count() &&
-        GPacket.PlayerInfo.NameCRC != Compute_Name_CRC(Games.at(i)->Name)) {
+    if (TheNetwork().games().Count() &&
+        TheNetwork().global_packet().PlayerInfo.NameCRC !=
+            Compute_Name_CRC(TheNetwork().games().at(i)->Name)) {
       found = 1;
     }
 
     /*
     ** Dont add this player if its really me! (hack, hack)
     */
-    if ((std::string_view(GPacket.Name) == MPlayerName)) {
+    if ((std::string_view(TheNetwork().global_packet().Name) ==
+         TheSession().player_name())) {
       found = 1;
     }
 
@@ -2455,24 +2545,28 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       Create & add a node to the Vector
       ..................................................................*/
       who = new NodeNameType;
-      port::SafeCopy(who->Name, GPacket.Name);
-      who->Address = GAddress;
-      who->Player.House = GPacket.PlayerInfo.House;
-      who->Player.Color = static_cast<unsigned char>(GPacket.PlayerInfo.Color);
-      Players.Add(who);
+      port::SafeCopy(who->Name, TheNetwork().global_packet().Name);
+      who->Address = TheNetwork().global_address();
+      who->Player.House = TheNetwork().global_packet().PlayerInfo.House;
+      who->Player.Color = static_cast<unsigned char>(
+          TheNetwork().global_packet().PlayerInfo.Color);
+      TheNetwork().players().Add(who);
 
       /*..................................................................
       Create & add a string to the list box
       ..................................................................*/
-      if (GPacket.PlayerInfo.House == HOUSE_GOOD) {
-        absl::SNPrintF(item, sizeof(item), "%s\t%s", GPacket.Name,
+      if (TheNetwork().global_packet().PlayerInfo.House == HOUSE_GOOD) {
+        absl::SNPrintF(item, sizeof(item), "%s\t%s",
+                       TheNetwork().global_packet().Name,
                        Text_String(TXT_G_D_I));
       } else {
-        absl::SNPrintF(item, sizeof(item), "%s\t%s", GPacket.Name,
+        absl::SNPrintF(item, sizeof(item), "%s\t%s",
+                       TheNetwork().global_packet().Name,
                        Text_String(TXT_N_O_D));
       }
       playerlist->Add_Item(
-          item, static_cast<char>(base::At(MPlayerTColors, who->Player.Color)));
+          item, static_cast<char>(
+                    base::At(TheSession().text_colors(), who->Player.Color)));
 
       retcode = EV_NEW_PLAYER;
     }
@@ -2482,11 +2576,13 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   NET_CONFIRM_JOIN: The game owner has confirmed our JOIN query; mark us as
   being confirmed, and start answering queries from other systems
   ------------------------------------------------------------------------*/
-  else if (GPacket.Command == NET_CONFIRM_JOIN) {
+  else if (TheNetwork().global_packet().Command == NET_CONFIRM_JOIN) {
     if (*joinstate != JOIN_CONFIRMED) {
-      port::SafeCopy(MPlayerGameName, GPacket.Name);
-      MPlayerHouse = GPacket.PlayerInfo.House;
-      MPlayerColorIdx = static_cast<int>(GPacket.PlayerInfo.Color);
+      port::SafeCopy(TheSession().game_name(),
+                     TheNetwork().global_packet().Name);
+      TheSession().house() = TheNetwork().global_packet().PlayerInfo.House;
+      TheSession().color_index() =
+          static_cast<int>(TheNetwork().global_packet().PlayerInfo.Color);
 
       *joinstate = JOIN_CONFIRMED;
       retcode = EV_STATE_CHANGE;
@@ -2499,29 +2595,36 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   tell all other systems that I'm no longer a part of any game; this way,
   I'll be properly removed from their dialogs.
   ------------------------------------------------------------------------*/
-  else if (GPacket.Command == NET_REJECT_JOIN) {
+  else if (TheNetwork().global_packet().Command == NET_REJECT_JOIN) {
     if (*joinstate != JOIN_REJECTED) {
-      base::FillBytes(base::ObjectBytes(GPacket), 0, sizeof(GlobalPacketType));
+      base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
+                      sizeof(GlobalPacketType));
 
-      GPacket.Command = NET_SIGN_OFF;
-      port::SafeCopy(GPacket.Name, MPlayerName);
+      TheNetwork().global_packet().Command = NET_SIGN_OFF;
+      port::SafeCopy(TheNetwork().global_packet().Name,
+                     TheSession().player_name());
 
-      Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                              sizeof(GlobalPacketType), 0, nullptr);
-      Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                              sizeof(GlobalPacketType), 0, nullptr);
+      TheNetwork().ipx().Send_Global_Message(
+          base::ObjectBytes(TheNetwork().global_packet()),
+          sizeof(GlobalPacketType), 0, nullptr);
+      TheNetwork().ipx().Send_Global_Message(
+          base::ObjectBytes(TheNetwork().global_packet()),
+          sizeof(GlobalPacketType), 0, nullptr);
 
-      if (IsBridge) {
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 0, &BridgeNet);
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 0, &BridgeNet);
+      if (TheNetwork().is_bridge()) {
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 0, &TheNetwork().bridge_net());
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 0, &TheNetwork().bridge_net());
       }
 
-      while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+      while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+             TheNetwork().ipx().Service() != 0) {
       }
 
-      base::At(MPlayerGameName, 0) = 0;
+      base::At(TheSession().game_name(), 0) = 0;
 
       *joinstate = JOIN_REJECTED;
       retcode = EV_STATE_CHANGE;
@@ -2532,20 +2635,26 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   NET_GAME_OPTIONS: The game owner has changed the game options & is sending
   us the new values.
   ------------------------------------------------------------------------*/
-  else if (GPacket.Command == NET_GAME_OPTIONS) {
+  else if (TheNetwork().global_packet().Command == NET_GAME_OPTIONS) {
     if (*joinstate == JOIN_CONFIRMED) {
-      MPlayerCredits = static_cast<int>(GPacket.ScenarioInfo.Credits);
-      MPlayerBases = GPacket.ScenarioInfo.IsBases;
-      MPlayerTiberium = GPacket.ScenarioInfo.IsTiberium;
-      MPlayerGoodies = GPacket.ScenarioInfo.IsGoodies;
-      MPlayerGhosts = GPacket.ScenarioInfo.IsGhosties;
-      BuildLevel = GPacket.ScenarioInfo.BuildLevel;
-      MPlayerUnitCount = GPacket.ScenarioInfo.UnitCount;
-      Seed = GPacket.ScenarioInfo.Seed;
-      Special = GPacket.ScenarioInfo.Special;
-      Options.GameSpeed = GPacket.ScenarioInfo.GameSpeed;
+      TheSession().credits() =
+          static_cast<int>(TheNetwork().global_packet().ScenarioInfo.Credits);
+      TheSession().bases() = TheNetwork().global_packet().ScenarioInfo.IsBases;
+      TheSession().tiberium() =
+          TheNetwork().global_packet().ScenarioInfo.IsTiberium;
+      TheSession().crates() =
+          TheNetwork().global_packet().ScenarioInfo.IsGoodies;
+      TheSession().ghosts() =
+          TheNetwork().global_packet().ScenarioInfo.IsGhosties;
+      TheWorld().build_level() =
+          TheNetwork().global_packet().ScenarioInfo.BuildLevel;
+      TheSession().unit_count() =
+          TheNetwork().global_packet().ScenarioInfo.UnitCount;
+      TheWorld().seed() = TheNetwork().global_packet().ScenarioInfo.Seed;
+      Special = TheNetwork().global_packet().ScenarioInfo.Special;
+      Options.GameSpeed = TheNetwork().global_packet().ScenarioInfo.GameSpeed;
 
-      if (MPlayerTiberium) {
+      if (TheSession().tiberium()) {
         Special.IsTGrowth = 1;
         Special.IsTSpread = 1;
       } else {
@@ -2554,13 +2663,14 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       }
 
       if (Winsock.Get_Connected()) {
-        ScenarioIdx = GPacket.ScenarioInfo.Scenario;
+        TheSession().scenario_index() =
+            TheNetwork().global_packet().ScenarioInfo.Scenario;
       } else {
-        ScenarioIdx = -1;
-        for (i = 0; i < MPlayerFilenum.Count(); i++) {
-          if (std::cmp_equal(GPacket.ScenarioInfo.Scenario,
-                             MPlayerFilenum.at(i))) {
-            ScenarioIdx = i;
+        TheSession().scenario_index() = -1;
+        for (i = 0; i < TheSession().scenario_files().Count(); i++) {
+          if (std::cmp_equal(TheNetwork().global_packet().ScenarioInfo.Scenario,
+                             TheSession().scenario_files().at(i))) {
+            TheSession().scenario_index() = i;
           }
         }
       }
@@ -2573,13 +2683,15 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   NET_SIGN_OFF: Another system is signing off: search for that system in
   both the game list & player list, & remove it if found
   ------------------------------------------------------------------------*/
-  else if (GPacket.Command == NET_SIGN_OFF) {
+  else if (TheNetwork().global_packet().Command == NET_SIGN_OFF) {
     /*.....................................................................
     Remove this name from the list of games
     .....................................................................*/
-    for (i = 0; i < Games.Count(); i++) {
-      if ((std::string_view(Games.at(i)->Name) == GPacket.Name) &&
-          Games.at(i)->Address == GAddress) {
+    for (i = 0; i < TheNetwork().games().Count(); i++) {
+      if ((std::string_view(TheNetwork().games().at(i)->Name) ==
+           TheNetwork().global_packet().Name) &&
+          TheNetwork().games().at(i)->Address ==
+              TheNetwork().global_address()) {
         /*...............................................................
         If the system signing off is the currently-selected list
         item, clear the player list since that game is no longer
@@ -2612,7 +2724,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         /*
         ................. Remove game name from game list ...............
         */
-        Games.Delete(Games.at(i));
+        TheNetwork().games().Delete(TheNetwork().games().at(i));
         gamelist->Remove_Item(i);
         gamelist->Flag_To_Redraw();
       }
@@ -2620,13 +2732,14 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     /*.....................................................................
     Remove this name from the list of players
     .....................................................................*/
-    for (i = 0; i < Players.Count(); i++) {
+    for (i = 0; i < TheNetwork().players().Count(); i++) {
       /*
       ..................... Name found; remove it .....................
       */
-      if (Players.at(i)->Address == GAddress) {
+      if (TheNetwork().players().at(i)->Address ==
+          TheNetwork().global_address()) {
         playerlist->Remove_Item(i);
-        Players.Delete(Players.at(i));
+        TheNetwork().players().Delete(TheNetwork().players().at(i));
         playerlist->Flag_To_Redraw();
 
         if (retcode == EV_NONE) {
@@ -2639,9 +2752,10 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   /*------------------------------------------------------------------------
   NET_GO: The game's owner is signalling us to start playing.
   ------------------------------------------------------------------------*/
-  else if (GPacket.Command == NET_GO) {
+  else if (TheNetwork().global_packet().Command == NET_GO) {
     if (*joinstate == JOIN_CONFIRMED) {
-      MPlayerMaxAhead = GPacket.ResponseTime.OneWay;
+      TheSession().max_ahead() =
+          TheNetwork().global_packet().ResponseTime.OneWay;
       *joinstate = JOIN_GAME_START;
       retcode = EV_STATE_CHANGE;
       CCDebugString("C&C95 - Received the 'GO' packet\n");
@@ -2651,20 +2765,22 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   /*------------------------------------------------------------------------
   NET_MESSAGE: Someone is sending us a message
   ------------------------------------------------------------------------*/
-  else if (GPacket.Command == NET_MESSAGE) {
-    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM), GPacket.Name,
-                        GPacket.Message.Buf);
-    const auto magic_number =
-        port::ReadUnaligned<uint16_t>(base::ObjectBytes(GPacket.Message.Buf)
-                                          .subspan(COMPAT_MESSAGE_LENGTH - 4));
-    const auto crc =
-        port::ReadUnaligned<uint16_t>(base::ObjectBytes(GPacket.Message.Buf)
-                                          .subspan(COMPAT_MESSAGE_LENGTH - 2));
-    const int color =
-        static_cast<int>(MPlayerID_To_ColorIndex(GPacket.Message.ID));
-    Messages.Add_Message(txt, base::At(MPlayerTColors, color),
-                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
-                         magic_number, crc);
+  else if (TheNetwork().global_packet().Command == NET_MESSAGE) {
+    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
+                        TheNetwork().global_packet().Name,
+                        TheNetwork().global_packet().Message.Buf);
+    const auto magic_number = port::ReadUnaligned<uint16_t>(
+        base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
+            .subspan(COMPAT_MESSAGE_LENGTH - 4));
+    const auto crc = port::ReadUnaligned<uint16_t>(
+        base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
+            .subspan(COMPAT_MESSAGE_LENGTH - 2));
+    const int color = static_cast<int>(
+        MPlayerID_To_ColorIndex(TheNetwork().global_packet().Message.ID));
+    TheSession().messages().Add_Message(
+        txt, base::At(TheSession().text_colors(), color),
+        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, magic_number,
+        crc);
     retcode = EV_MESSAGE;
   }
 
@@ -3020,72 +3136,75 @@ static int Net_New_Dialog() {
   Init dialog values, only the first time through
   ........................................................................*/
   if (first_time) {
-    MPlayerCredits = 3000;  // init credits & credit buffer
-    MPlayerBases = 1;       // init scenario parameters
-    MPlayerTiberium = 0;
-    MPlayerGoodies = 0;
-    MPlayerGhosts = 0;
+    TheSession().credits() = 3000;  // init credits & credit buffer
+    TheSession().bases() = 1;       // init scenario parameters
+    TheSession().tiberium() = 0;
+    TheSession().crates() = 0;
+    TheSession().ghosts() = 0;
     Special.IsCaptureTheFlag = 0;
-    MPlayerUnitCount = (base::At(MPlayerCountMax, MPlayerBases) +
-                        base::At(MPlayerCountMin, MPlayerBases)) /
-                       2;
+    TheSession().unit_count() =
+        (base::At(TheSession().unit_count_max(), TheSession().bases()) +
+         base::At(TheSession().unit_count_min(), TheSession().bases())) /
+        2;
     first_time = 0;
   }
 
   /*........................................................................
   Init button states
   ........................................................................*/
-  if (MPlayerBases) {
+  if (TheSession().bases()) {
     basesbtn.Turn_On();
     basesbtn.Set_Text(TXT_BASES_ON);
   }
-  if (MPlayerTiberium) {
+  if (TheSession().tiberium()) {
     tiberiumbtn.Turn_On();
     tiberiumbtn.Set_Text(TXT_TIBERIUM_ON);
   }
-  if (MPlayerGoodies) {
+  if (TheSession().crates()) {
     goodiesbtn.Turn_On();
     goodiesbtn.Set_Text(TXT_CRATES_ON);
   }
-  if (MPlayerGhosts) {
+  if (TheSession().ghosts()) {
     ghostsbtn.Turn_On();
     ghostsbtn.Set_Text(TXT_AI_PLAYERS_ON);
   }
   if (Special.IsCaptureTheFlag) {
-    MPlayerGhosts = 0;
+    TheSession().ghosts() = 0;
     ghostsbtn.Turn_On();
     ghostsbtn.Set_Text(TXT_CAPTURE_THE_FLAG);
   }
 
-  absl::SNPrintF(credbuf, sizeof(credbuf), "%d", MPlayerCredits);
+  absl::SNPrintF(credbuf, sizeof(credbuf), "%d", TheSession().credits());
   credit_edt.Set_Text(credbuf, CREDITSBUF_MAX);
-  int old_cred = MPlayerCredits;  // old value in credits buffer
+  int old_cred = TheSession().credits();  // old value in credits buffer
 
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
-  levelgauge.Set_Value(BuildLevel - 1);
+  levelgauge.Set_Value(TheWorld().build_level() - 1);
 
-  countgauge.Set_Maximum(base::At(MPlayerCountMax, MPlayerBases) -
-                         base::At(MPlayerCountMin, MPlayerBases));
-  countgauge.Set_Value(MPlayerUnitCount -
-                       base::At(MPlayerCountMin, MPlayerBases));
+  countgauge.Set_Maximum(
+      base::At(TheSession().unit_count_max(), TheSession().bases()) -
+      base::At(TheSession().unit_count_min(), TheSession().bases()));
+  countgauge.Set_Value(
+      TheSession().unit_count() -
+      base::At(TheSession().unit_count_min(), TheSession().bases()));
 
   /*........................................................................
   Init other scenario parameters
   ........................................................................*/
-  Special.IsTGrowth = static_cast<unsigned>(MPlayerTiberium);
-  Special.IsTSpread = static_cast<unsigned>(MPlayerTiberium);
+  Special.IsTGrowth = static_cast<unsigned>(TheSession().tiberium());
+  Special.IsTSpread = static_cast<unsigned>(TheSession().tiberium());
   int transmit = 0;  // 1 = re-transmit new game options
 
   /*........................................................................
   Init scenario description list box
   ........................................................................*/
-  for (i = 0; i < MPlayerScenarios.Count(); i++) {
-    char* const scenario = MPlayerScenarios.at(i);
+  for (i = 0; i < TheSession().scenarios().Count(); i++) {
+    char* const scenario = TheSession().scenarios().at(i);
     std::ranges::transform(port::MutableCString(scenario), scenario,
                            absl::ascii_toupper);
     scenariolist.Add_Item(scenario);
   }
-  ScenarioIdx = 0;  // 1st scenario is selected
+  TheSession().scenario_index() = 0;  // 1st scenario is selected
 
   /*........................................................................
   Init player color-used flags
@@ -3093,34 +3212,36 @@ static int Net_New_Dialog() {
   for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
     base::At(color_used, i) = 0;  // init all colors to available
   }
-  base::At(color_used, MPlayerColorIdx) = 1;  // set my color to used
+  base::At(color_used, TheSession().color_index()) = 1;  // set my color to used
   playerlist.Set_Selected_Style(ColorListClass::SELECT_BAR, kCcGreenShadow);
 
   /*........................................................................
   Init random-number generator, & create a seed to be used for all random
   numbers from here on out
   ........................................................................*/
-  Seed = port::RandomSeed();
+  TheWorld().seed() = port::RandomSeed();
 
   /*........................................................................
   Init the message display system
   ........................................................................*/
-  Messages.Init(d_message_x + (2 * factor), d_message_y + (2 * factor), 4,
-                MAX_MESSAGE_LENGTH, d_txt6_h);
+  TheSession().messages().Init(d_message_x + (2 * factor),
+                               d_message_y + (2 * factor), 4,
+                               MAX_MESSAGE_LENGTH, d_txt6_h);
 
   /*------------------------------------------------------------------------
   Add myself to the list.  Note that since I'm not in the Players Vector,
   the Vector & listbox are now 1 out of sync.
   ------------------------------------------------------------------------*/
-  if (MPlayerHouse == HOUSE_GOOD) {
-    absl::SNPrintF(item, sizeof(item), "%s\t%s", MPlayerName,
+  if (TheSession().house() == HOUSE_GOOD) {
+    absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().player_name(),
                    Text_String(TXT_G_D_I));
   } else {
-    absl::SNPrintF(item, sizeof(item), "%s\t%s", MPlayerName,
+    absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().player_name(),
                    Text_String(TXT_N_O_D));
   }
-  playerlist.Add_Item(
-      item, static_cast<char>(base::At(MPlayerTColors, MPlayerColorIdx)));
+  playerlist.Add_Item(item,
+                      static_cast<char>(base::At(TheSession().text_colors(),
+                                                 TheSession().color_index())));
 
   Load_Title_Page(true);
   Set_Palette(ThePalettes().title_palette());
@@ -3152,7 +3273,7 @@ static int Net_New_Dialog() {
       LogicPage->Fill_Rect(d_count_x + d_count_w + (2 * factor), d_count_y,
                            d_count_x + d_count_w + (2 * factor) + 20,
                            d_count_y + 12, 0);
-      absl::SNPrintF(txt, sizeof(txt), "%d", MPlayerUnitCount);
+      absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
       Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
                        kCcGreen, kTBlack,
                        TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
@@ -3192,7 +3313,7 @@ static int Net_New_Dialog() {
             TXT_COUNT, d_count_x - (2 * factor), d_count_y, kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
 
-        absl::SNPrintF(txt, sizeof(txt), "%d", MPlayerUnitCount);
+        absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
         Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
                          kCcGreen, kTBlack,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
@@ -3201,8 +3322,8 @@ static int Net_New_Dialog() {
             TXT_LEVEL, d_level_x - (2 * factor), d_level_y, kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
 
-        if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          absl::SNPrintF(txt, sizeof(txt), "%d", BuildLevel);
+        if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
+          absl::SNPrintF(txt, sizeof(txt), "%d", TheWorld().build_level());
         } else {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
@@ -3233,7 +3354,7 @@ static int Net_New_Dialog() {
       if (display >= REDRAW_MESSAGE) {
         Draw_Box(d_message_x, d_message_y, d_message_w, d_message_h,
                  BOXSTYLE_GREEN_BORDER, true);
-        Messages.Draw();
+        TheSession().messages().Draw();
       }
 
       Show_Mouse();
@@ -3253,9 +3374,9 @@ static int Net_New_Dialog() {
       New Scenario selected.
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonScenariolist):
-        if (scenariolist.Current_Index() != ScenarioIdx) {
-          ScenarioIdx = scenariolist.Current_Index();
-          MPlayerCredits = tech::ParseIntegerOr<int>(credbuf, 0);
+        if (scenariolist.Current_Index() != TheSession().scenario_index()) {
+          TheSession().scenario_index() = scenariolist.Current_Index();
+          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
           transmit = 1;
         }
         break;
@@ -3276,29 +3397,31 @@ static int Net_New_Dialog() {
           display = REDRAW_ALL;
           break;
         }
-        base::FillBytes(base::ObjectBytes(GPacket), 0,
+        base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                         sizeof(GlobalPacketType));
 
-        GPacket.Command = NET_REJECT_JOIN;
+        TheNetwork().global_packet().Command = NET_REJECT_JOIN;
 
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 1,
-                                &Players.at(index - 1)->Address);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 1,
+            &TheNetwork().players().at(index - 1)->Address);
         break;
 
       /*------------------------------------------------------------------
       User adjusts max # units
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonCount):
-        MPlayerUnitCount =
-            countgauge.Get_Value() + base::At(MPlayerCountMin, MPlayerBases);
+        TheSession().unit_count() =
+            countgauge.Get_Value() +
+            base::At(TheSession().unit_count_min(), TheSession().bases());
 
         Hide_Mouse();
         LogicPage->Fill_Rect(d_count_x + d_count_w + (2 * factor), d_count_y,
                              d_count_x + d_count_w + (14 * factor),
                              d_count_y + (6 * factor), kBlack);
 
-        absl::SNPrintF(txt, sizeof(txt), "%d", MPlayerUnitCount);
+        absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
         Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
                          kCcGreen, kTBlack,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
@@ -3311,16 +3434,16 @@ static int Net_New_Dialog() {
       User adjusts build level
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonLevel):
-        BuildLevel = std::min(levelgauge.Get_Value() + 1,
-                                            MPLAYER_BUILD_LEVEL_MAX);
+        TheWorld().build_level() =
+            std::min(levelgauge.Get_Value() + 1, MPLAYER_BUILD_LEVEL_MAX);
 
         Hide_Mouse();
         LogicPage->Fill_Rect(d_level_x + d_level_w + (2 * factor), d_level_y,
                              d_level_x + d_level_w + (14 * factor),
                              d_level_y + (6 * factor), kBlack);
 
-        if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          absl::SNPrintF(txt, sizeof(txt), "%d", BuildLevel);
+        if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
+          absl::SNPrintF(txt, sizeof(txt), "%d", TheWorld().build_level());
         } else {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
@@ -3336,7 +3459,7 @@ static int Net_New_Dialog() {
       User edits the credits value; retransmit new game options
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonCredits):
-        MPlayerCredits = tech::ParseIntegerOr<int>(credbuf, 0);
+        TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
         transmit = 1;
         break;
 
@@ -3349,36 +3472,42 @@ static int Net_New_Dialog() {
       - Change the unit count gauge limit & value
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonBases):
-        if (MPlayerBases) {
-          MPlayerBases = 0;
+        if (TheSession().bases()) {
+          TheSession().bases() = 0;
           basesbtn.Turn_Off();
           basesbtn.Set_Text(TXT_BASES_OFF);
-          MPlayerUnitCount =
+          TheSession().unit_count() =
               Fixed_To_Cardinal(
-                  base::At(MPlayerCountMax, 0) - base::At(MPlayerCountMin, 0),
+                  base::At(TheSession().unit_count_max(), 0) -
+                      base::At(TheSession().unit_count_min(), 0),
                   Cardinal_To_Fixed(
-                      base::At(MPlayerCountMax, 1) -
-                          base::At(MPlayerCountMin, 1),
-                      MPlayerUnitCount - base::At(MPlayerCountMin, 1))) +
-              base::At(MPlayerCountMin, 0);
+                      base::At(TheSession().unit_count_max(), 1) -
+                          base::At(TheSession().unit_count_min(), 1),
+                      TheSession().unit_count() -
+                          base::At(TheSession().unit_count_min(), 1))) +
+              base::At(TheSession().unit_count_min(), 0);
         } else {
-          MPlayerBases = 1;
+          TheSession().bases() = 1;
           basesbtn.Turn_On();
           basesbtn.Set_Text(TXT_BASES_ON);
-          MPlayerUnitCount =
+          TheSession().unit_count() =
               Fixed_To_Cardinal(
-                  base::At(MPlayerCountMax, 1) - base::At(MPlayerCountMin, 1),
+                  base::At(TheSession().unit_count_max(), 1) -
+                      base::At(TheSession().unit_count_min(), 1),
                   Cardinal_To_Fixed(
-                      base::At(MPlayerCountMax, 0) -
-                          base::At(MPlayerCountMin, 0),
-                      MPlayerUnitCount - base::At(MPlayerCountMin, 0))) +
-              base::At(MPlayerCountMin, 1);
+                      base::At(TheSession().unit_count_max(), 0) -
+                          base::At(TheSession().unit_count_min(), 0),
+                      TheSession().unit_count() -
+                          base::At(TheSession().unit_count_min(), 0))) +
+              base::At(TheSession().unit_count_min(), 1);
         }
-        MPlayerCredits = tech::ParseIntegerOr<int>(credbuf, 0);
-        countgauge.Set_Maximum(base::At(MPlayerCountMax, MPlayerBases) -
-                               base::At(MPlayerCountMin, MPlayerBases));
-        countgauge.Set_Value(MPlayerUnitCount -
-                             base::At(MPlayerCountMin, MPlayerBases));
+        TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+        countgauge.Set_Maximum(
+            base::At(TheSession().unit_count_max(), TheSession().bases()) -
+            base::At(TheSession().unit_count_min(), TheSession().bases()));
+        countgauge.Set_Value(
+            TheSession().unit_count() -
+            base::At(TheSession().unit_count_min(), TheSession().bases()));
         transmit = 1;
         countgauge.Flag_To_Redraw();
         display = REDRAW_UNIT_COUNT;
@@ -3388,20 +3517,20 @@ static int Net_New_Dialog() {
       Toggle tiberium
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonTiberium):
-        if (MPlayerTiberium) {
-          MPlayerTiberium = 0;
+        if (TheSession().tiberium()) {
+          TheSession().tiberium() = 0;
           Special.IsTGrowth = 0;
           Special.IsTSpread = 0;
           tiberiumbtn.Turn_Off();
           tiberiumbtn.Set_Text(TXT_TIBERIUM_OFF);
         } else {
-          MPlayerTiberium = 1;
+          TheSession().tiberium() = 1;
           Special.IsTGrowth = 1;
           Special.IsTSpread = 1;
           tiberiumbtn.Turn_On();
           tiberiumbtn.Set_Text(TXT_TIBERIUM_ON);
         }
-        MPlayerCredits = tech::ParseIntegerOr<int>(credbuf, 0);
+        TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
         transmit = 1;
         break;
 
@@ -3409,16 +3538,16 @@ static int Net_New_Dialog() {
       Toggle goodies
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonGoodies):
-        if (MPlayerGoodies) {
-          MPlayerGoodies = 0;
+        if (TheSession().crates()) {
+          TheSession().crates() = 0;
           goodiesbtn.Turn_Off();
           goodiesbtn.Set_Text(TXT_CRATES_OFF);
         } else {
-          MPlayerGoodies = 1;
+          TheSession().crates() = 1;
           goodiesbtn.Turn_On();
           goodiesbtn.Set_Text(TXT_CRATES_ON);
         }
-        MPlayerCredits = tech::ParseIntegerOr<int>(credbuf, 0);
+        TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
         transmit = 1;
         break;
 
@@ -3426,21 +3555,21 @@ static int Net_New_Dialog() {
       Toggle ghosts/capture-the-flag
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonGhosts):
-        if (!MPlayerGhosts &&
+        if (!TheSession().ghosts() &&
             !Special.IsCaptureTheFlag) {  // ghosts OFF => ghosts ON
-          MPlayerGhosts = 1;
+          TheSession().ghosts() = 1;
           Special.IsCaptureTheFlag = 0;
           ghostsbtn.Turn_On();
           ghostsbtn.Set_Text(TXT_AI_PLAYERS_ON);
         } else {
-          if (MPlayerGhosts) {  // ghosts ON => capture-flag
-            MPlayerGhosts = 0;
+          if (TheSession().ghosts()) {  // ghosts ON => capture-flag
+            TheSession().ghosts() = 0;
             Special.IsCaptureTheFlag = 1;
             ghostsbtn.Turn_On();
             ghostsbtn.Set_Text(TXT_CAPTURE_THE_FLAG);
           } else {
             if (Special.IsCaptureTheFlag) {  // capture-flag => AI OFF
-              MPlayerGhosts = 0;
+              TheSession().ghosts() = 0;
               Special.IsCaptureTheFlag = 0;
               ghostsbtn.Turn_Off();
               ghostsbtn.Set_Text(TXT_AI_PLAYERS_OFF);
@@ -3448,7 +3577,7 @@ static int Net_New_Dialog() {
           }
         }
 
-        MPlayerCredits = tech::ParseIntegerOr<int>(credbuf, 0);
+        TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
         transmit = 1;
         break;
 
@@ -3461,15 +3590,17 @@ static int Net_New_Dialog() {
         an OK; force a wait longer than 1 second (to give all players
         a chance to know about this new guy)
         ...............................................................*/
-        i = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 60);
+        i = std::max<int>(
+            static_cast<int>(TheNetwork().ipx().Global_Response_Time()) * 2,
+            60);
         while (SystemTicks() - ok_timer < i) {
-          Ipx.Service();
+          TheNetwork().ipx().Service();
         }
 
         /*...............................................................
         If there are at least 2 players, go ahead & play; error otherwise
         ...............................................................*/
-        if (MPlayerSolo || Players.Count() > 0) {
+        if (TheSession().solo() || TheNetwork().players().Count() > 0) {
           rc = 1;
           process = false;
         } else {
@@ -3482,39 +3613,46 @@ static int Net_New_Dialog() {
       CANCEL: send a SIGN_OFF, bail out with error code
       ------------------------------------------------------------------*/
       case KN_ESC:
-        if (Messages.Get_Edit_Buf() != nullptr) {
-          Messages.Input(input);
+        if (TheSession().messages().Get_Edit_Buf() != nullptr) {
+          TheSession().messages().Input(input);
           display = std::max(display, REDRAW_MESSAGE);
           break;
         }
         [[fallthrough]];
       case ButtonKey(kButtonCancel):
-        base::FillBytes(base::ObjectBytes(GPacket), 0,
+        base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                         sizeof(GlobalPacketType));
 
-        GPacket.Command = NET_SIGN_OFF;
-        port::SafeCopy(GPacket.Name, MPlayerName);
+        TheNetwork().global_packet().Command = NET_SIGN_OFF;
+        port::SafeCopy(TheNetwork().global_packet().Name,
+                       TheSession().player_name());
 
         /*...............................................................
         Broadcast my sign-off over my network
         ...............................................................*/
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 0, nullptr);
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 0, nullptr);
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 0, nullptr);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 0, nullptr);
+        while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+               TheNetwork().ipx().Service() != 0) {
         }
 
         /*...............................................................
         Broadcast my sign-off over a bridged network if there is one
         ...............................................................*/
-        if (IsBridge) {
-          Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                  sizeof(GlobalPacketType), 0, &BridgeNet);
-          Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                  sizeof(GlobalPacketType), 0, &BridgeNet);
+        if (TheNetwork().is_bridge()) {
+          TheNetwork().ipx().Send_Global_Message(
+              base::ObjectBytes(TheNetwork().global_packet()),
+              sizeof(GlobalPacketType), 0, &TheNetwork().bridge_net());
+          TheNetwork().ipx().Send_Global_Message(
+              base::ObjectBytes(TheNetwork().global_packet()),
+              sizeof(GlobalPacketType), 0, &TheNetwork().bridge_net());
         }
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+               TheNetwork().ipx().Service() != 0) {
         }
 
         /*...............................................................
@@ -3525,15 +3663,17 @@ static int Net_New_Dialog() {
         only way I have of crossing the bridge is to send a packet
         directly to him.)
         ...............................................................*/
-        for (i = 0; i < Players.Count(); i++) {
-          Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                  sizeof(GlobalPacketType), 1,
-                                  &Players.at(i)->Address);
-          Ipx.Service();
+        for (i = 0; i < TheNetwork().players().Count(); i++) {
+          TheNetwork().ipx().Send_Global_Message(
+              base::ObjectBytes(TheNetwork().global_packet()),
+              sizeof(GlobalPacketType), 1,
+              &TheNetwork().players().at(i)->Address);
+          TheNetwork().ipx().Service();
         }
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+               TheNetwork().ipx().Service() != 0) {
         }
-        base::At(MPlayerGameName, 0) = 0;
+        base::At(TheSession().game_name(), 0) = 0;
         process = false;
         rc = 0;
         break;
@@ -3545,16 +3685,18 @@ static int Net_New_Dialog() {
         /*...............................................................
         F4/SEND/'M' = send a message
         ...............................................................*/
-        if (Messages.Get_Edit_Buf() == nullptr) {
+        if (TheSession().messages().Get_Edit_Buf() == nullptr) {
           if (input == KN_M || input == ButtonKey(kButtonSend) ||
               input == KN_F4) {
             base::FillBytes(base::ObjectBytes(txt), 0, 80);
 
             port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
 
-            Messages.Add_Edit(base::At(MPlayerTColors, MPlayerColorIdx),
-                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                              txt, d_message_w - (70 * factor));
+            TheSession().messages().Add_Edit(
+                base::At(TheSession().text_colors(),
+                         TheSession().color_index()),
+                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
+                d_message_w - (70 * factor));
 
             credit_edt.Clear_Focus();
             credit_edt.Flag_To_Redraw();
@@ -3576,7 +3718,7 @@ static int Net_New_Dialog() {
         /*...............................................................
         Manage the message system (get rid of old messages)
         ...............................................................*/
-        if (Messages.Manage()) {
+        if (TheSession().messages().Manage()) {
           display = std::max(display, REDRAW_MESSAGE);
         }
 
@@ -3584,13 +3726,13 @@ static int Net_New_Dialog() {
         Re-draw the messages & service keyboard input for any message
         being edited.
         ...............................................................*/
-        i = Messages.Input(input);
+        i = TheSession().messages().Input(input);
 
         /*...............................................................
         If 'Input' returned 1, it means refresh the message display.
         ...............................................................*/
         if (i == 1) {
-          Messages.Draw();
+          TheSession().messages().Draw();
         }
 
         /*...............................................................
@@ -3608,17 +3750,20 @@ static int Net_New_Dialog() {
           sent_so_far = 0;
           magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
           message_length = static_cast<int>(
-              std::string_view(Messages.Get_Edit_Buf()).size());
+              std::string_view(TheSession().messages().Get_Edit_Buf()).size());
           crc = static_cast<uint16_t>(
-              CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
+              CrcEngine::Compute(TheSession().messages().Get_Edit_Buf()) &
+              0xffff);
           while (sent_so_far < message_length) {
-            base::FillBytes(base::ObjectBytes(GPacket), 0,
+            base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                             sizeof(GlobalPacketType));
-            GPacket.Command = NET_MESSAGE;
-            port::SafeCopy(GPacket.Name, MPlayerName);
+            TheNetwork().global_packet().Command = NET_MESSAGE;
+            port::SafeCopy(TheNetwork().global_packet().Name,
+                           TheSession().player_name());
             port::SafeCopy(
-                std::span(GPacket.Message.Buf).first(COMPAT_MESSAGE_LENGTH - 4),
-                std::string_view(Messages.Get_Edit_Buf())
+                std::span(TheNetwork().global_packet().Message.Buf)
+                    .first(COMPAT_MESSAGE_LENGTH - 4),
+                std::string_view(TheSession().messages().Get_Edit_Buf())
                     .substr(base::ToSize(sent_so_far)));
 
             /*
@@ -3628,7 +3773,8 @@ static int Net_New_Dialog() {
 
             /* Start at the end of the message and find a space with 10 chars.
              */
-            const auto the_string = std::span(GPacket.Message.Buf);
+            const auto the_string =
+                std::span(TheNetwork().global_packet().Message.Buf);
             while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
                    base::At(the_string, base::ToSize(actual_message_size)) !=
                        ' ') {
@@ -3647,34 +3793,43 @@ static int Net_New_Dialog() {
               actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
             }
 
-            base::At(GPacket.Message.Buf, COMPAT_MESSAGE_LENGTH - 5) = 0;
-            port::WriteUnaligned(base::ObjectBytes(GPacket.Message.Buf)
-                                     .subspan(COMPAT_MESSAGE_LENGTH - 4),
-                                 magic_number);
-            port::WriteUnaligned(base::ObjectBytes(GPacket.Message.Buf)
-                                     .subspan(COMPAT_MESSAGE_LENGTH - 2),
-                                 crc);
-            GPacket.Message.ID = static_cast<unsigned char>(
-                Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
-            GPacket.Message.NameCRC = Compute_Name_CRC(MPlayerGameName);
+            base::At(TheNetwork().global_packet().Message.Buf,
+                     COMPAT_MESSAGE_LENGTH - 5) = 0;
+            port::WriteUnaligned(
+                base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
+                    .subspan(COMPAT_MESSAGE_LENGTH - 4),
+                magic_number);
+            port::WriteUnaligned(
+                base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
+                    .subspan(COMPAT_MESSAGE_LENGTH - 2),
+                crc);
+            TheNetwork().global_packet().Message.ID =
+                static_cast<unsigned char>(Build_MPlayerID(
+                    TheSession().color_index(), TheSession().house()));
+            TheNetwork().global_packet().Message.NameCRC =
+                Compute_Name_CRC(TheSession().game_name());
 
             /*..................................................................
             Send the message to every player in our player list.
             ..................................................................*/
-            for (i = 0; i < Players.Count(); i++) {
-              Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                      sizeof(GlobalPacketType), 1,
-                                      &Players.at(i)->Address);
-              Ipx.Service();
+            for (i = 0; i < TheNetwork().players().Count(); i++) {
+              TheNetwork().ipx().Send_Global_Message(
+                  base::ObjectBytes(TheNetwork().global_packet()),
+                  sizeof(GlobalPacketType), 1,
+                  &TheNetwork().players().at(i)->Address);
+              TheNetwork().ipx().Service();
             }
             /*..................................................................
             Add the message to our own list, since we're not in the player list
             on this dialog.
             ..................................................................*/
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
-                                MPlayerName, GPacket.Message.Buf);
-            Messages.Add_Message(
-                txt, base::At(MPlayerTColors, MPlayerColorIdx),
+                                TheSession().player_name(),
+                                TheNetwork().global_packet().Message.Buf);
+            TheSession().messages().Add_Message(
+                txt,
+                base::At(TheSession().text_colors(),
+                         TheSession().color_index()),
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
                 magic_number, crc);
 
@@ -3691,9 +3846,9 @@ static int Net_New_Dialog() {
     ---------------------------------------------------------------------*/
     if (tech::ParseIntegerOr<int>(credbuf, 0) != old_cred) {
       old_cred = Bound(tech::ParseIntegerOr<int>(credbuf, 0), 0, 9999);
-      MPlayerCredits = old_cred;
+      TheSession().credits() = old_cred;
       transmit = 1;
-      absl::SNPrintF(credbuf, sizeof(credbuf), "%d", MPlayerCredits);
+      absl::SNPrintF(credbuf, sizeof(credbuf), "%d", TheSession().credits());
       credit_edt.Set_Text(credbuf, CREDITSBUF_MAX);
     }
 
@@ -3714,34 +3869,36 @@ static int Net_New_Dialog() {
     If our Transmit flag is set, we need to send out a game option packet
     ---------------------------------------------------------------------*/
     if (transmit) {
-      for (i = 0; i < Players.Count(); i++) {
-        base::FillBytes(base::ObjectBytes(GPacket), 0,
+      for (i = 0; i < TheNetwork().players().Count(); i++) {
+        base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                         sizeof(GlobalPacketType));
 
-        GPacket.Command = NET_GAME_OPTIONS;
-        GPacket.ScenarioInfo.Scenario =
-            static_cast<unsigned char>(MPlayerFilenum.at(ScenarioIdx));
-        GPacket.ScenarioInfo.Credits =
-            static_cast<unsigned int>(MPlayerCredits);
-        GPacket.ScenarioInfo.IsBases =
-            static_cast<unsigned int>(MPlayerBases);
-        GPacket.ScenarioInfo.IsTiberium =
-            static_cast<unsigned int>(MPlayerTiberium);
-        GPacket.ScenarioInfo.IsGoodies =
-            static_cast<unsigned int>(MPlayerGoodies);
-        GPacket.ScenarioInfo.IsGhosties =
-            static_cast<unsigned int>(MPlayerGhosts);
-        GPacket.ScenarioInfo.BuildLevel =
-            static_cast<unsigned char>(BuildLevel);
-        GPacket.ScenarioInfo.UnitCount =
-            static_cast<unsigned char>(MPlayerUnitCount);
-        GPacket.ScenarioInfo.Seed = Seed;
-        GPacket.ScenarioInfo.Special = Special;
-        GPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
+        TheNetwork().global_packet().Command = NET_GAME_OPTIONS;
+        TheNetwork().global_packet().ScenarioInfo.Scenario =
+            static_cast<unsigned char>(TheSession().scenario_files().at(
+                TheSession().scenario_index()));
+        TheNetwork().global_packet().ScenarioInfo.Credits =
+            static_cast<unsigned int>(TheSession().credits());
+        TheNetwork().global_packet().ScenarioInfo.IsBases =
+            static_cast<unsigned int>(TheSession().bases());
+        TheNetwork().global_packet().ScenarioInfo.IsTiberium =
+            static_cast<unsigned int>(TheSession().tiberium());
+        TheNetwork().global_packet().ScenarioInfo.IsGoodies =
+            static_cast<unsigned int>(TheSession().crates());
+        TheNetwork().global_packet().ScenarioInfo.IsGhosties =
+            static_cast<unsigned int>(TheSession().ghosts());
+        TheNetwork().global_packet().ScenarioInfo.BuildLevel =
+            static_cast<unsigned char>(TheWorld().build_level());
+        TheNetwork().global_packet().ScenarioInfo.UnitCount =
+            static_cast<unsigned char>(TheSession().unit_count());
+        TheNetwork().global_packet().ScenarioInfo.Seed = TheWorld().seed();
+        TheNetwork().global_packet().ScenarioInfo.Special = Special;
+        TheNetwork().global_packet().ScenarioInfo.GameSpeed = Options.GameSpeed;
 
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 1,
-                                &Players.at(i)->Address);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 1,
+            &TheNetwork().players().at(i)->Address);
       }
       transmit = 0;
     }
@@ -3751,12 +3908,14 @@ static int Net_New_Dialog() {
     the connection response time.
     ---------------------------------------------------------------------*/
     if (SystemTicks() - ping_timer > 15) {
-      base::FillBytes(base::ObjectBytes(GPacket), 0, sizeof(GlobalPacketType));
-      GPacket.Command = NET_PING;
-      for (i = 0; i < Players.Count(); i++) {
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 1,
-                                &Players.at(i)->Address);
+      base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
+                      sizeof(GlobalPacketType));
+      TheNetwork().global_packet().Command = NET_PING;
+      for (i = 0; i < TheNetwork().players().Count(); i++) {
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 1,
+            &TheNetwork().players().at(i)->Address);
       }
       ping_timer = SystemTicks();
     }
@@ -3764,7 +3923,7 @@ static int Net_New_Dialog() {
     /*---------------------------------------------------------------------
     Service the Ipx connections
     ---------------------------------------------------------------------*/
-    Ipx.Service();
+    TheNetwork().ipx().Service();
 
     /*---------------------------------------------------------------------
     Service the sounds & score; GameActive must be false at this point,
@@ -3781,38 +3940,42 @@ static int Net_New_Dialog() {
     /*.....................................................................
     Set the number of players in this game, and my ID
     .....................................................................*/
-    MPlayerCount = static_cast<int>(Players.Count()) + 1;
-    MPlayerLocalID = static_cast<unsigned char>(
-        Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
+    TheSession().player_count() =
+        static_cast<int>(TheNetwork().players().Count()) + 1;
+    TheSession().local_id() = static_cast<unsigned char>(
+        Build_MPlayerID(TheSession().color_index(), TheSession().house()));
 
     /*.....................................................................
     Get the scenario filename
     .....................................................................*/
-    TheWorld().scenario() = MPlayerFilenum.at(ScenarioIdx);
+    TheWorld().scenario() =
+        TheSession().scenario_files().at(TheSession().scenario_index());
 
     /*.....................................................................
     Compute frame delay value for packet transmissions:
     - Divide global channel's response time by 8 (2 to convert to 1-way
       value, 4 more to convert from ticks to frames)
     .....................................................................*/
-    MPlayerMaxAhead = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) / 8, 2);
+    TheSession().max_ahead() = std::max<int>(
+        static_cast<int>(TheNetwork().ipx().Global_Response_Time()) / 8, 2);
 
     /*.....................................................................
     Send all players the NET_GO packet.  Wait until all ACK's have been
     received.
     .....................................................................*/
-    base::FillBytes(base::ObjectBytes(GPacket), 0, sizeof(GlobalPacketType));
-    GPacket.Command = NET_GO;
-    GPacket.ResponseTime.OneWay = MPlayerMaxAhead;
-    for (i = 0; i < Players.Count(); i++) {
-      Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                              sizeof(GlobalPacketType), 1,
-                              &Players.at(i)->Address);
+    base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
+                    sizeof(GlobalPacketType));
+    TheNetwork().global_packet().Command = NET_GO;
+    TheNetwork().global_packet().ResponseTime.OneWay = TheSession().max_ahead();
+    for (i = 0; i < TheNetwork().players().Count(); i++) {
+      TheNetwork().ipx().Send_Global_Message(
+          base::ObjectBytes(TheNetwork().global_packet()),
+          sizeof(GlobalPacketType), 1, &TheNetwork().players().at(i)->Address);
       /*..................................................................
       Wait for all the ACK's to come in.
       ..................................................................*/
-      while (Ipx.Global_Num_Send() > 0) {
-        Ipx.Service();
+      while (TheNetwork().ipx().Global_Num_Send() > 0) {
+        TheNetwork().ipx().Service();
       }
     }
 
@@ -3822,42 +3985,47 @@ static int Net_New_Dialog() {
     will let us extract any player's color & house at any time.
     Fill in 'tmp_id' while we're doing this.
     .....................................................................*/
-    for (i = 0; i < Players.Count(); i++) {
-      id = static_cast<unsigned char>(Build_MPlayerID(
-          Players.at(i)->Player.Color, Players.at(i)->Player.House));
+    for (i = 0; i < TheNetwork().players().Count(); i++) {
+      id = static_cast<unsigned char>(
+          Build_MPlayerID(TheNetwork().players().at(i)->Player.Color,
+                          TheNetwork().players().at(i)->Player.House));
 
       base::At(tmp_id, i) = id;
 
-      Ipx.Create_Connection(id, Players.at(i)->Name, &Players.at(i)->Address);
+      TheNetwork().ipx().Create_Connection(
+          id, TheNetwork().players().at(i)->Name,
+          &TheNetwork().players().at(i)->Address);
     }
-    base::At(tmp_id, i) = MPlayerLocalID;
+    base::At(tmp_id, i) = TheSession().local_id();
 
     /*.....................................................................
     Store every player's ID in the MPlayerID[] array.  This array will
     determine the order of event execution, so the ID's must be stored
     in the same order on all systems.
     .....................................................................*/
-    for (i = 0; i < MPlayerCount; i++) {
+    for (i = 0; i < TheSession().player_count(); i++) {
       min_index = 0;
       min_id = 0xff;
-      for (j = 0; j < MPlayerCount; j++) {
+      for (j = 0; j < TheSession().player_count(); j++) {
         if (base::At(tmp_id, j) < min_id) {
           min_id = base::At(tmp_id, j);
           min_index = j;
         }
       }
-      base::At(MPlayerID, i) = base::At(tmp_id, min_index);
+      base::At(TheSession().player_ids(), i) = base::At(tmp_id, min_index);
       base::At(tmp_id, min_index) = 0xff;
     }
     /*.....................................................................
     Fill in the array of player names, including my own.
     .....................................................................*/
-    for (i = 0; i < MPlayerCount; i++) {
-      if (base::At(MPlayerID, i) == MPlayerLocalID) {
-        port::SafeCopy(base::At(MPlayerNames, i), MPlayerName);
+    for (i = 0; i < TheSession().player_count(); i++) {
+      if (base::At(TheSession().player_ids(), i) == TheSession().local_id()) {
+        port::SafeCopy(base::At(TheSession().player_names(), i),
+                       TheSession().player_name());
       } else {
-        port::SafeCopy(base::At(MPlayerNames, i),
-                       Ipx.Connection_Name(base::At(MPlayerID, i)));
+        port::SafeCopy(base::At(TheSession().player_names(), i),
+                       TheNetwork().ipx().Connection_Name(
+                           base::At(TheSession().player_ids(), i)));
       }
     }
   }
@@ -3866,8 +4034,9 @@ static int Net_New_Dialog() {
   Init network timing values, using previous response times as a measure
   of what our retry delta & timeout should be.
   ------------------------------------------------------------------------*/
-  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, -1,
-                 Ipx.Global_Response_Time() * 4);
+  TheNetwork().ipx().Set_Timing(TheNetwork().ipx().Global_Response_Time() + 2,
+                                -1,
+                                TheNetwork().ipx().Global_Response_Time() * 4);
 
   /*------------------------------------------------------------------------
   Clear all lists
@@ -3919,23 +4088,27 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
   /*------------------------------------------------------------------------
   If there is no incoming packet, just return
   ------------------------------------------------------------------------*/
-  const int rc = Ipx.Get_Global_Message(base::ObjectBytes(GPacket), &GPacketlen,
-                                        &GAddress, &GProductID);
-  if (!rc || GProductID != IPXGlobalConnClass::kCommandAndConquer) {
+  const int rc = TheNetwork().ipx().Get_Global_Message(
+      base::ObjectBytes(TheNetwork().global_packet()),
+      &TheNetwork().global_packet_length(), &TheNetwork().global_address(),
+      &TheNetwork().product_id());
+  if (!rc ||
+      TheNetwork().product_id() != IPXGlobalConnClass::kCommandAndConquer) {
     return EV_NONE;
   }
 
   /*------------------------------------------------------------------------
   Try to handle the packet in a standard way
   ------------------------------------------------------------------------*/
-  if (Process_Global_Packet(&GPacket, &GAddress)) {
+  if (Process_Global_Packet(&TheNetwork().global_packet(),
+                            &TheNetwork().global_address())) {
     return EV_NONE;
   }
 
   /*------------------------------------------------------------------------
   NET_QUERY_JOIN:
   ------------------------------------------------------------------------*/
-  if (GPacket.Command == NET_QUERY_JOIN) {
+  if (TheNetwork().global_packet().Command == NET_QUERY_JOIN) {
     /*.....................................................................
     See if this name is unique:
     - If the name matches, but the address is different, reject this player
@@ -3946,9 +4119,11 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
     .....................................................................*/
     int found = 0;
     int resend = 0;
-    for (int i = 0; i < Players.Count(); i++) {
-      if ((std::string_view(Players.at(i)->Name) == GPacket.Name)) {
-        if (Players.at(i)->Address != GAddress) {
+    for (int i = 0; i < TheNetwork().players().Count(); i++) {
+      if ((std::string_view(TheNetwork().players().at(i)->Name) ==
+           TheNetwork().global_packet().Name)) {
+        if (TheNetwork().players().at(i)->Address !=
+            TheNetwork().global_address()) {
           found = 1;
         } else {
           resend = 1;
@@ -3956,20 +4131,25 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
         break;
       }
     }
-    if ((std::string_view(MPlayerName) == GPacket.Name)) {
+    if ((std::string_view(TheSession().player_name()) ==
+         TheNetwork().global_packet().Name)) {
       found = 1;
     }
 
     /*.....................................................................
     Reject if name is a duplicate, or if there are too many players:
     .....................................................................*/
-    if (found || (Players.Count() >= MPlayerMax - 1 && !resend)) {
-      base::FillBytes(base::ObjectBytes(GPacket), 0, sizeof(GlobalPacketType));
+    if (found ||
+        (TheNetwork().players().Count() >= TheSession().max_players() - 1 &&
+         !resend)) {
+      base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
+                      sizeof(GlobalPacketType));
 
-      GPacket.Command = NET_REJECT_JOIN;
+      TheNetwork().global_packet().Command = NET_REJECT_JOIN;
 
-      Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                              sizeof(GlobalPacketType), 1, &GAddress);
+      TheNetwork().ipx().Send_Global_Message(
+          base::ObjectBytes(TheNetwork().global_packet()),
+          sizeof(GlobalPacketType), 1, &TheNetwork().global_address());
     }
 
     /*.....................................................................
@@ -3981,20 +4161,21 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       Add node to the Vector list
       ..................................................................*/
       auto* who = new NodeNameType;  // node to add to Players Vector
-      port::SafeCopy(who->Name, GPacket.Name);
-      who->Address = GAddress;
-      who->Player.House = GPacket.PlayerInfo.House;
-      Players.Add(who);
+      port::SafeCopy(who->Name, TheNetwork().global_packet().Name);
+      who->Address = TheNetwork().global_address();
+      who->Player.House = TheNetwork().global_packet().PlayerInfo.House;
+      TheNetwork().players().Add(who);
 
       /*..................................................................
       Set player's color; if requested color isn't used, give it to him;
       otherwise, give him the 1st available color.  Mark the color we
       give him as used.
       ..................................................................*/
-      if (GPacket.PlayerInfo.Color < MAX_MPLAYER_COLORS &&
-          base::At(color_used, GPacket.PlayerInfo.Color) == 0) {
-        who->Player.Color =
-            static_cast<unsigned char>(GPacket.PlayerInfo.Color);
+      if (TheNetwork().global_packet().PlayerInfo.Color < MAX_MPLAYER_COLORS &&
+          base::At(color_used, TheNetwork().global_packet().PlayerInfo.Color) ==
+              0) {
+        who->Player.Color = static_cast<unsigned char>(
+            TheNetwork().global_packet().PlayerInfo.Color);
       } else {
         for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
           if (base::At(color_used, i) == 0) {
@@ -4008,28 +4189,34 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       /*..................................................................
       Add player name to the list box
       ..................................................................*/
-      if (GPacket.PlayerInfo.House == HOUSE_GOOD) {
-        absl::SNPrintF(item, sizeof(item), "%s\t%s", GPacket.Name,
+      if (TheNetwork().global_packet().PlayerInfo.House == HOUSE_GOOD) {
+        absl::SNPrintF(item, sizeof(item), "%s\t%s",
+                       TheNetwork().global_packet().Name,
                        Text_String(TXT_G_D_I));
       } else {
-        absl::SNPrintF(item, sizeof(item), "%s\t%s", GPacket.Name,
+        absl::SNPrintF(item, sizeof(item), "%s\t%s",
+                       TheNetwork().global_packet().Name,
                        Text_String(TXT_N_O_D));
       }
       playerlist->Add_Item(
-          item, static_cast<char>(base::At(MPlayerTColors, who->Player.Color)));
+          item, static_cast<char>(
+                    base::At(TheSession().text_colors(), who->Player.Color)));
 
       /*..................................................................
       Send a confirmation packet
       ..................................................................*/
-      base::FillBytes(base::ObjectBytes(GPacket), 0, sizeof(GlobalPacketType));
+      base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
+                      sizeof(GlobalPacketType));
 
-      GPacket.Command = NET_CONFIRM_JOIN;
-      port::SafeCopy(GPacket.Name, MPlayerName);
-      GPacket.PlayerInfo.House = who->Player.House;
-      GPacket.PlayerInfo.Color = who->Player.Color;
+      TheNetwork().global_packet().Command = NET_CONFIRM_JOIN;
+      port::SafeCopy(TheNetwork().global_packet().Name,
+                     TheSession().player_name());
+      TheNetwork().global_packet().PlayerInfo.House = who->Player.House;
+      TheNetwork().global_packet().PlayerInfo.Color = who->Player.Color;
 
-      Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                              sizeof(GlobalPacketType), 1, &GAddress);
+      TheNetwork().ipx().Send_Global_Message(
+          base::ObjectBytes(TheNetwork().global_packet()),
+          sizeof(GlobalPacketType), 1, &TheNetwork().global_address());
 
       retval = EV_NEW_PLAYER;
     }
@@ -4039,13 +4226,15 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
   NET_SIGN_OFF: Another system is signing off: search for that system in
   the player list, & remove it if found
   ------------------------------------------------------------------------*/
-  else if (GPacket.Command == NET_SIGN_OFF) {
-    for (int i = 0; i < Players.Count(); i++) {
+  else if (TheNetwork().global_packet().Command == NET_SIGN_OFF) {
+    for (int i = 0; i < TheNetwork().players().Count(); i++) {
       /*
       ....................... Name found; remove it ......................
       */
-      if ((std::string_view(Players.at(i)->Name) == GPacket.Name) &&
-          Players.at(i)->Address == GAddress) {
+      if ((std::string_view(TheNetwork().players().at(i)->Name) ==
+           TheNetwork().global_packet().Name) &&
+          TheNetwork().players().at(i)->Address ==
+              TheNetwork().global_address()) {
         /*...............................................................
         Remove from the list box
         ...............................................................*/
@@ -4054,11 +4243,11 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
         /*...............................................................
         Mark his color as available
         ...............................................................*/
-        base::At(color_used, Players.at(i)->Player.Color) = 0;
+        base::At(color_used, TheNetwork().players().at(i)->Player.Color) = 0;
         /*...............................................................
         Delete from the Vector list
         ...............................................................*/
-        Players.Delete(Players.at(i));
+        TheNetwork().players().Delete(TheNetwork().players().at(i));
         break;
       }
     }
@@ -4067,20 +4256,22 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
   /*------------------------------------------------------------------------
   NET_MESSAGE: Someone is sending us a message
   ------------------------------------------------------------------------*/
-  else if (GPacket.Command == NET_MESSAGE) {
-    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM), GPacket.Name,
-                        GPacket.Message.Buf);
-    const auto magic_number =
-        port::ReadUnaligned<uint16_t>(base::ObjectBytes(GPacket.Message.Buf)
-                                          .subspan(COMPAT_MESSAGE_LENGTH - 4));
-    const auto crc =
-        port::ReadUnaligned<uint16_t>(base::ObjectBytes(GPacket.Message.Buf)
-                                          .subspan(COMPAT_MESSAGE_LENGTH - 2));
-    const int color =
-        static_cast<int>(MPlayerID_To_ColorIndex(GPacket.Message.ID));
-    Messages.Add_Message(txt, base::At(MPlayerTColors, color),
-                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200,
-                         magic_number, crc);
+  else if (TheNetwork().global_packet().Command == NET_MESSAGE) {
+    Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
+                        TheNetwork().global_packet().Name,
+                        TheNetwork().global_packet().Message.Buf);
+    const auto magic_number = port::ReadUnaligned<uint16_t>(
+        base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
+            .subspan(COMPAT_MESSAGE_LENGTH - 4));
+    const auto crc = port::ReadUnaligned<uint16_t>(
+        base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
+            .subspan(COMPAT_MESSAGE_LENGTH - 2));
+    const int color = static_cast<int>(
+        MPlayerID_To_ColorIndex(TheNetwork().global_packet().Message.ID));
+    TheSession().messages().Add_Message(
+        txt, base::At(TheSession().text_colors(), color),
+        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, magic_number,
+        crc);
     retval = EV_MESSAGE;
   }
 
@@ -4163,10 +4354,9 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
         "", 0, 0, kCcGreen, kTBlack,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
     if (reconn) {
-      const int id = Ipx.Connection_ID(oldest_index);
-      Format_Runtime_Text(buf1, sizeof(buf1),
-                          Text_String(TXT_RECONNECTING_TO),
-                          Ipx.Connection_Name(id));
+      const int id = TheNetwork().ipx().Connection_ID(oldest_index);
+      Format_Runtime_Text(buf1, sizeof(buf1), Text_String(TXT_RECONNECTING_TO),
+                          TheNetwork().ipx().Connection_Name(id));
     } else {
       absl::SNPrintF(buf1, sizeof(buf1), "%s",
                      Text_String(TXT_WAITING_FOR_CONNECTIONS));
@@ -4410,13 +4600,13 @@ static int Net_Fake_New_Dialog() {
   ----------------------------- Various Inits ------------------------------
   */
 
-  absl::SNPrintF(credbuf, sizeof(credbuf), "%d", MPlayerCredits);
+  absl::SNPrintF(credbuf, sizeof(credbuf), "%d", TheSession().credits());
 
   /*........................................................................
   Init other scenario parameters
   ........................................................................*/
-  Special.IsTGrowth = static_cast<unsigned>(MPlayerTiberium);
-  Special.IsTSpread = static_cast<unsigned>(MPlayerTiberium);
+  Special.IsTGrowth = static_cast<unsigned>(TheSession().tiberium());
+  Special.IsTSpread = static_cast<unsigned>(TheSession().tiberium());
   int transmit = 0;  // 1 = re-transmit new game options
 
   /*........................................................................
@@ -4425,28 +4615,29 @@ static int Net_Fake_New_Dialog() {
   for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
     base::At(color_used, i) = 0;  // init all colors to available
   }
-  base::At(color_used, MPlayerColorIdx) = 1;  // set my color to used
+  base::At(color_used, TheSession().color_index()) = 1;  // set my color to used
   playerlist.Set_Selected_Style(ColorListClass::SELECT_BAR, kCcGreenShadow);
 
   /*........................................................................
   Init random-number generator, & create a seed to be used for all random
   numbers from here on out
   ........................................................................*/
-  Seed = port::RandomSeed();
+  TheWorld().seed() = port::RandomSeed();
 
   /*------------------------------------------------------------------------
   Add myself to the list.  Note that since I'm not in the Players Vector,
   the Vector & listbox are now 1 out of sync.
   ------------------------------------------------------------------------*/
-  if (MPlayerHouse == HOUSE_GOOD) {
-    absl::SNPrintF(item, sizeof(item), "%s\t%s", MPlayerName,
+  if (TheSession().house() == HOUSE_GOOD) {
+    absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().player_name(),
                    Text_String(TXT_G_D_I));
   } else {
-    absl::SNPrintF(item, sizeof(item), "%s\t%s", MPlayerName,
+    absl::SNPrintF(item, sizeof(item), "%s\t%s", TheSession().player_name(),
                    Text_String(TXT_N_O_D));
   }
-  playerlist.Add_Item(
-      item, static_cast<char>(base::At(MPlayerTColors, MPlayerColorIdx)));
+  playerlist.Add_Item(item,
+                      static_cast<char>(base::At(TheSession().text_colors(),
+                                                 TheSession().color_index())));
 
   Wait_For_Focus();
 
@@ -4464,19 +4655,20 @@ static int Net_Fake_New_Dialog() {
 
   char a_buffer[128];
   absl::SNPrintF(a_buffer, sizeof(a_buffer), "Number of players:%d",
-                 static_cast<int>(Players.Count()));
+                 static_cast<int>(TheNetwork().players().Count()));
   CCDebugString(a_buffer);
 
 #ifdef VIRTUAL_SUBNET_SERVER
   /*
   ** Send a bogus packet to wake up the VSS
   */
-  memset(&GPacket, 0, sizeof(GlobalPacketType));
+  memset(&TheNetwork().global_packet(), 0, sizeof(GlobalPacketType));
 
-  GPacket.Command = (NetCommandType)50;  // Invalid command
-  port::SafeCopy(GPacket.Name, MPlayerName);
-  Ipx.Send_Global_Message(base::ObjectBytes(GPacket), sizeof(GlobalPacketType),
-                          0, NULL);
+  TheNetwork().global_packet().Command = (NetCommandType)50;  // Invalid command
+  port::SafeCopy(TheNetwork().global_packet().Name, TheSession().player_name());
+  TheNetwork().ipx().Send_Global_Message(
+      base::ObjectBytes(TheNetwork().global_packet()), sizeof(GlobalPacketType),
+      0, NULL);
 #endif  // VIRTUAL_SUBNET_SERVER
 
   CCDebugString("C&C95 - About to reveal mouse\n");
@@ -4548,26 +4740,31 @@ static int Net_Fake_New_Dialog() {
       ------------------------------------------------------------------*/
       case KN_ESC:
       case ButtonKey(kButtonCancel):
-        base::FillBytes(base::ObjectBytes(GPacket), 0,
+        base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                         sizeof(GlobalPacketType));
 
-        GPacket.Command = NET_SIGN_OFF;
-        port::SafeCopy(GPacket.Name, MPlayerName);
+        TheNetwork().global_packet().Command = NET_SIGN_OFF;
+        port::SafeCopy(TheNetwork().global_packet().Name,
+                       TheSession().player_name());
 
         /*...............................................................
         Broadcast my sign-off over my network
         ...............................................................*/
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 0, nullptr);
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 0, nullptr);
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 0, nullptr);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 0, nullptr);
+        while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+               TheNetwork().ipx().Service() != 0) {
         }
 
         /*...............................................................
         Broadcast my sign-off over a bridged network if there is one
         ...............................................................*/
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+               TheNetwork().ipx().Service() != 0) {
         }
 
         /*...............................................................
@@ -4578,22 +4775,24 @@ static int Net_Fake_New_Dialog() {
         only way I have of crossing the bridge is to send a packet
         directly to him.)
         ...............................................................*/
-        for (i = 0; i < Players.Count(); i++) {
-          Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                  sizeof(GlobalPacketType), 1,
-                                  &Players.at(i)->Address);
-          Ipx.Service();
+        for (i = 0; i < TheNetwork().players().Count(); i++) {
+          TheNetwork().ipx().Send_Global_Message(
+              base::ObjectBytes(TheNetwork().global_packet()),
+              sizeof(GlobalPacketType), 1,
+              &TheNetwork().players().at(i)->Address);
+          TheNetwork().ipx().Service();
         }
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+               TheNetwork().ipx().Service() != 0) {
         }
-        base::At(MPlayerGameName, 0) = 0;
+        base::At(TheSession().game_name(), 0) = 0;
         process = false;
         rc = 0;
 #ifdef _WIN32
         Send_Data_To_DDE_Server("Hello", strlen("Hello"),
                                 DDEServerClass::DDE_CONNECTION_FAILED);
 #endif
-        GameStatisticsPacketSent = false;
+        TheNetwork().statistics_sent() = false;
         Spawn_WChat(false);
         break;
 
@@ -4602,9 +4801,9 @@ static int Net_Fake_New_Dialog() {
       ------------------------------------------------------------------*/
       default:
 #ifdef VIRTUAL_SUBNET_SERVER
-        if (Players.Count() == InternetMaxPlayers - 1) {
+        if (TheNetwork().players().Count() == InternetMaxPlayers - 1) {
 #else   // VIRTUAL_SUBNET_SERVER
-        if (Players.Count() > 0) {
+        if (TheNetwork().players().Count() > 0) {
 #endif  // VIRTUAL_SUBNET_SERVER
 
           // char ddkks[128];
@@ -4632,15 +4831,17 @@ static int Net_Fake_New_Dialog() {
           an OK; force a wait longer than 2 seconds (to give all players
           a chance to know about this new guy)
           ...............................................................*/
-          i = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 120);
+          i = std::max<int>(
+              static_cast<int>(TheNetwork().ipx().Global_Response_Time()) * 2,
+              120);
           while (SystemTicks() - ok_timer < i) {
-            Ipx.Service();
+            TheNetwork().ipx().Service();
           }
 
           /*...............................................................
           If there are at least 2 players, go ahead & play; error otherwise
           ...............................................................*/
-          if (MPlayerSolo || Players.Count() > 0) {
+          if (TheSession().solo() || TheNetwork().players().Count() > 0) {
             rc = 1;
             process = false;
           } else {
@@ -4668,34 +4869,36 @@ static int Net_Fake_New_Dialog() {
     If our Transmit flag is set, we need to send out a game option packet
     ---------------------------------------------------------------------*/
     if (transmit) {
-      for (i = 0; i < Players.Count(); i++) {
-        base::FillBytes(base::ObjectBytes(GPacket), 0,
+      for (i = 0; i < TheNetwork().players().Count(); i++) {
+        base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                         sizeof(GlobalPacketType));
 
-        GPacket.Command = NET_GAME_OPTIONS;
-        GPacket.ScenarioInfo.Scenario = static_cast<unsigned char>(
-            ScenarioIdx);  // MPlayerFilenum[ScenarioIdx];
-        GPacket.ScenarioInfo.Credits =
-            static_cast<unsigned int>(MPlayerCredits);
-        GPacket.ScenarioInfo.IsBases =
-            static_cast<unsigned int>(MPlayerBases);
-        GPacket.ScenarioInfo.IsTiberium =
-            static_cast<unsigned int>(MPlayerTiberium);
-        GPacket.ScenarioInfo.IsGoodies =
-            static_cast<unsigned int>(MPlayerGoodies);
-        GPacket.ScenarioInfo.IsGhosties =
-            static_cast<unsigned int>(MPlayerGhosts);
-        GPacket.ScenarioInfo.BuildLevel =
-            static_cast<unsigned char>(BuildLevel);
-        GPacket.ScenarioInfo.UnitCount =
-            static_cast<unsigned char>(MPlayerUnitCount);
-        GPacket.ScenarioInfo.Seed = Seed;
-        GPacket.ScenarioInfo.Special = Special;
-        GPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
+        TheNetwork().global_packet().Command = NET_GAME_OPTIONS;
+        TheNetwork().global_packet().ScenarioInfo.Scenario =
+            static_cast<unsigned char>(
+                TheSession().scenario_index());  // MPlayerFilenum[ScenarioIdx];
+        TheNetwork().global_packet().ScenarioInfo.Credits =
+            static_cast<unsigned int>(TheSession().credits());
+        TheNetwork().global_packet().ScenarioInfo.IsBases =
+            static_cast<unsigned int>(TheSession().bases());
+        TheNetwork().global_packet().ScenarioInfo.IsTiberium =
+            static_cast<unsigned int>(TheSession().tiberium());
+        TheNetwork().global_packet().ScenarioInfo.IsGoodies =
+            static_cast<unsigned int>(TheSession().crates());
+        TheNetwork().global_packet().ScenarioInfo.IsGhosties =
+            static_cast<unsigned int>(TheSession().ghosts());
+        TheNetwork().global_packet().ScenarioInfo.BuildLevel =
+            static_cast<unsigned char>(TheWorld().build_level());
+        TheNetwork().global_packet().ScenarioInfo.UnitCount =
+            static_cast<unsigned char>(TheSession().unit_count());
+        TheNetwork().global_packet().ScenarioInfo.Seed = TheWorld().seed();
+        TheNetwork().global_packet().ScenarioInfo.Special = Special;
+        TheNetwork().global_packet().ScenarioInfo.GameSpeed = Options.GameSpeed;
 
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 1,
-                                &Players.at(i)->Address);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 1,
+            &TheNetwork().players().at(i)->Address);
       }
       transmit = 0;
     }
@@ -4705,12 +4908,14 @@ static int Net_Fake_New_Dialog() {
     the connection response time.
     ---------------------------------------------------------------------*/
     if (SystemTicks() - ping_timer > 15) {
-      base::FillBytes(base::ObjectBytes(GPacket), 0, sizeof(GlobalPacketType));
-      GPacket.Command = NET_PING;
-      for (i = 0; i < Players.Count(); i++) {
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 1,
-                                &Players.at(i)->Address);
+      base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
+                      sizeof(GlobalPacketType));
+      TheNetwork().global_packet().Command = NET_PING;
+      for (i = 0; i < TheNetwork().players().Count(); i++) {
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 1,
+            &TheNetwork().players().at(i)->Address);
       }
       ping_timer = SystemTicks();
     }
@@ -4718,7 +4923,7 @@ static int Net_Fake_New_Dialog() {
     /*---------------------------------------------------------------------
     Service the Ipx connections
     ---------------------------------------------------------------------*/
-    Ipx.Service();
+    TheNetwork().ipx().Service();
 
     /*---------------------------------------------------------------------
     Service the sounds & score; GameActive must be false at this point,
@@ -4737,16 +4942,18 @@ static int Net_Fake_New_Dialog() {
     /*.....................................................................
     Set the number of players in this game, and my ID
     .....................................................................*/
-    MPlayerCount = static_cast<int>(Players.Count()) + 1;
-    MPlayerLocalID = static_cast<unsigned char>(
-        Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
+    TheSession().player_count() =
+        static_cast<int>(TheNetwork().players().Count()) + 1;
+    TheSession().local_id() = static_cast<unsigned char>(
+        Build_MPlayerID(TheSession().color_index(), TheSession().house()));
 
     /*.....................................................................
     Get the scenario filename
     .....................................................................*/
     TheWorld().scenario() =
-        ScenarioIdx;  // PlayerFilenum[ScenarioIdx]; We are passed actual
-                      // number now from wchat not index from
+        TheSession()
+            .scenario_index();  // PlayerFilenum[ScenarioIdx]; We are passed
+                                // actual number now from wchat not index from
     // Scenario = MPlayerFilenum[ScenarioIdx];
 
     /*.....................................................................
@@ -4754,32 +4961,34 @@ static int Net_Fake_New_Dialog() {
     - Divide global channel's response time by 8 (2 to convert to 1-way
       value, 4 more to convert from ticks to frames)
     .....................................................................*/
-    MPlayerMaxAhead = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) / 8, 2);
+    TheSession().max_ahead() = std::max<int>(
+        static_cast<int>(TheNetwork().ipx().Global_Response_Time()) / 8, 2);
 
     /*.....................................................................
     Send all players the NET_GO packet.  Wait until all ACK's have been
     received.
     .....................................................................*/
     CCDebugString("C&C95 - Sending the 'GO' packet\n");
-    base::FillBytes(base::ObjectBytes(GPacket), 0, sizeof(GlobalPacketType));
-    GPacket.Command = NET_GO;
-    GPacket.ResponseTime.OneWay = MPlayerMaxAhead;
-    for (i = 0; i < Players.Count(); i++) {
+    base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
+                    sizeof(GlobalPacketType));
+    TheNetwork().global_packet().Command = NET_GO;
+    TheNetwork().global_packet().ResponseTime.OneWay = TheSession().max_ahead();
+    for (i = 0; i < TheNetwork().players().Count(); i++) {
       char flopbuf[128];
-      absl::SNPrintF(flopbuf, sizeof(flopbuf),
-                     "Sending 'GO' packet to address %d\n",
-                     port::ReadUnaligned<uint16_t>(
-                         base::ObjectBytes(Players.at(i)->Address)));
+      absl::SNPrintF(
+          flopbuf, sizeof(flopbuf), "Sending 'GO' packet to address %d\n",
+          port::ReadUnaligned<uint16_t>(
+              base::ObjectBytes(TheNetwork().players().at(i)->Address)));
       CCDebugString(flopbuf);
 
-      Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                              sizeof(GlobalPacketType), 1,
-                              &Players.at(i)->Address);
+      TheNetwork().ipx().Send_Global_Message(
+          base::ObjectBytes(TheNetwork().global_packet()),
+          sizeof(GlobalPacketType), 1, &TheNetwork().players().at(i)->Address);
       /*..................................................................
       Wait for all the ACK's to come in.
       ..................................................................*/
-      while (Ipx.Global_Num_Send() > 0) {
-        Ipx.Service();
+      while (TheNetwork().ipx().Global_Num_Send() > 0) {
+        TheNetwork().ipx().Service();
       }
     }
 
@@ -4789,13 +4998,16 @@ static int Net_Fake_New_Dialog() {
     will let us extract any player's color & house at any time.
     Fill in 'tmp_id' while we're doing this.
     .....................................................................*/
-    for (i = 0; i < Players.Count(); i++) {
-      id = static_cast<unsigned char>(Build_MPlayerID(
-          Players.at(i)->Player.Color, Players.at(i)->Player.House));
+    for (i = 0; i < TheNetwork().players().Count(); i++) {
+      id = static_cast<unsigned char>(
+          Build_MPlayerID(TheNetwork().players().at(i)->Player.Color,
+                          TheNetwork().players().at(i)->Player.House));
 
       base::At(tmp_id, i) = id;
 
-      Ipx.Create_Connection(id, Players.at(i)->Name, &Players.at(i)->Address);
+      TheNetwork().ipx().Create_Connection(
+          id, TheNetwork().players().at(i)->Name,
+          &TheNetwork().players().at(i)->Address);
     }
 
 #ifdef VIRTUAL_SUBNET_SERVER
@@ -4810,37 +5022,39 @@ static int Net_Fake_New_Dialog() {
       memset(vss_net, 1, sizeof(vss_net));
       memset(vss_node, 0, sizeof(vss_node));
       vss_global_address.Set_Address(vss_net, vss_node);
-      Ipx.Create_Connection(VSS_ID, "VSS", &vss_global_address);
+      TheNetwork().ipx().Create_Connection(VSS_ID, "VSS", &vss_global_address);
     }
 #endif  // VIRTUAL_SUBNET_SERVER
-    base::At(tmp_id, i) = MPlayerLocalID;
+    base::At(tmp_id, i) = TheSession().local_id();
 
     /*.....................................................................
     Store every player's ID in the MPlayerID[] array.  This array will
     determine the order of event execution, so the ID's must be stored
     in the same order on all systems.
     .....................................................................*/
-    for (i = 0; i < MPlayerCount; i++) {
+    for (i = 0; i < TheSession().player_count(); i++) {
       min_index = 0;
       min_id = 0xff;
-      for (j = 0; j < MPlayerCount; j++) {
+      for (j = 0; j < TheSession().player_count(); j++) {
         if (base::At(tmp_id, j) < min_id) {
           min_id = base::At(tmp_id, j);
           min_index = j;
         }
       }
-      base::At(MPlayerID, i) = base::At(tmp_id, min_index);
+      base::At(TheSession().player_ids(), i) = base::At(tmp_id, min_index);
       base::At(tmp_id, min_index) = 0xff;
     }
     /*.....................................................................
     Fill in the array of player names, including my own.
     .....................................................................*/
-    for (i = 0; i < MPlayerCount; i++) {
-      if (base::At(MPlayerID, i) == MPlayerLocalID) {
-        port::SafeCopy(base::At(MPlayerNames, i), MPlayerName);
+    for (i = 0; i < TheSession().player_count(); i++) {
+      if (base::At(TheSession().player_ids(), i) == TheSession().local_id()) {
+        port::SafeCopy(base::At(TheSession().player_names(), i),
+                       TheSession().player_name());
       } else {
-        port::SafeCopy(base::At(MPlayerNames, i),
-                       Ipx.Connection_Name(base::At(MPlayerID, i)));
+        port::SafeCopy(base::At(TheSession().player_names(), i),
+                       TheNetwork().ipx().Connection_Name(
+                           base::At(TheSession().player_ids(), i)));
       }
     }
   }
@@ -4849,8 +5063,9 @@ static int Net_Fake_New_Dialog() {
   Init network timing values, using previous response times as a measure
   of what our retry delta & timeout should be.
   ------------------------------------------------------------------------*/
-  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, -1,
-                 Ipx.Global_Response_Time() * 4);
+  TheNetwork().ipx().Set_Timing(TheNetwork().ipx().Global_Response_Time() + 2,
+                                -1,
+                                TheNetwork().ipx().Global_Response_Time() * 4);
 
   /*------------------------------------------------------------------------
   Clear all lists
@@ -5057,7 +5272,7 @@ static int Net_Fake_Join_Dialog() {
 
   char a_buffer[128];
   absl::SNPrintF(a_buffer, sizeof(a_buffer), "C&C95 - Number of players:%d\n",
-                 static_cast<int>(Players.Count()));
+                 static_cast<int>(TheNetwork().players().Count()));
   CCDebugString(a_buffer);
 
   CCDebugString("C&C95 - About to reveal mouse\n");
@@ -5140,11 +5355,12 @@ static int Net_Fake_Join_Dialog() {
       ------------------------------------------------------------------*/
       case KN_ESC:
       case ButtonKey(kButtonCancel):
-        base::FillBytes(base::ObjectBytes(GPacket), 0,
+        base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                         sizeof(GlobalPacketType));
 
-        GPacket.Command = NET_SIGN_OFF;
-        port::SafeCopy(GPacket.Name, MPlayerName);
+        TheNetwork().global_packet().Command = NET_SIGN_OFF;
+        port::SafeCopy(TheNetwork().global_packet().Name,
+                       TheSession().player_name());
 
         /*...............................................................
         If we're joined to a game, make extra sure the other players in
@@ -5161,15 +5377,16 @@ static int Net_Fake_Join_Dialog() {
           //
           // Remove myself from the Players list
           //
-          who = Players.at(0);
-          Players.Delete(0);
+          who = TheNetwork().players().at(0);
+          TheNetwork().players().Delete(0);
           delete who;
 
-          for (i = 0; i < Players.Count(); i++) {
-            Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                    sizeof(GlobalPacketType), 1,
-                                    &Players.at(i)->Address);
-            Ipx.Service();
+          for (i = 0; i < TheNetwork().players().Count(); i++) {
+            TheNetwork().ipx().Send_Global_Message(
+                base::ObjectBytes(TheNetwork().global_packet()),
+                sizeof(GlobalPacketType), 1,
+                &TheNetwork().players().at(i)->Address);
+            TheNetwork().ipx().Service();
           }
         }
 
@@ -5177,26 +5394,31 @@ static int Net_Fake_Join_Dialog() {
         Now broadcast my SIGN_OFF so other players looking at this game
         know I'm leaving.
         ...............................................................*/
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 0, nullptr);
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 0, nullptr);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 0, nullptr);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 0, nullptr);
 
-        if (IsBridge) {
-          Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                  sizeof(GlobalPacketType), 0, &BridgeNet);
-          Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                  sizeof(GlobalPacketType), 0, &BridgeNet);
+        if (TheNetwork().is_bridge()) {
+          TheNetwork().ipx().Send_Global_Message(
+              base::ObjectBytes(TheNetwork().global_packet()),
+              sizeof(GlobalPacketType), 0, &TheNetwork().bridge_net());
+          TheNetwork().ipx().Send_Global_Message(
+              base::ObjectBytes(TheNetwork().global_packet()),
+              sizeof(GlobalPacketType), 0, &TheNetwork().bridge_net());
         }
 
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+               TheNetwork().ipx().Service() != 0) {
         }
 
 #ifdef _WIN32
         Send_Data_To_DDE_Server("Hello", strlen("Hello"),
                                 DDEServerClass::DDE_CONNECTION_FAILED);
 #endif
-        GameStatisticsPacketSent = false;
+        TheNetwork().statistics_sent() = false;
         Spawn_WChat(false);
         process = false;
         rc = -1;
@@ -5207,11 +5429,12 @@ static int Net_Fake_Join_Dialog() {
       mode.  (Request_To_Join fills in MPlayerName with my namebuf.)
       ------------------------------------------------------------------*/
       default:
-        if (joinstate == JOIN_NOTHING && Games.Count() != 0) {
+        if (joinstate == JOIN_NOTHING && TheNetwork().games().Count() != 0) {
           gamelist.Set_Selected_Index(0);
           join_index = gamelist.Current_Index();
-          if (Request_To_Join(MPlayerName, join_index, &playerlist,
-                              MPlayerHouse, MPlayerColorIdx)) {
+          if (Request_To_Join(TheSession().player_name(), join_index,
+                              &playerlist, TheSession().house(),
+                              TheSession().color_index())) {
             joinstate = JOIN_WAIT_CONFIRM;
           } else {
             display = REDRAW_ALL;
@@ -5247,22 +5470,24 @@ static int Net_Fake_Join_Dialog() {
         if (joinstate == JOIN_CONFIRMED) {
           Clear_Player_List(&playerlist);
 
-          if (MPlayerHouse == HOUSE_GOOD) {
-            absl::SNPrintF(item, sizeof(item), "%s\t%s", MPlayerName,
-                           Text_String(TXT_G_D_I));
+          if (TheSession().house() == HOUSE_GOOD) {
+            absl::SNPrintF(item, sizeof(item), "%s\t%s",
+                           TheSession().player_name(), Text_String(TXT_G_D_I));
           } else {
-            absl::SNPrintF(item, sizeof(item), "%s\t%s", MPlayerName,
-                           Text_String(TXT_N_O_D));
+            absl::SNPrintF(item, sizeof(item), "%s\t%s",
+                           TheSession().player_name(), Text_String(TXT_N_O_D));
           }
-          playerlist.Add_Item(item, static_cast<char>(base::At(
-                                        MPlayerTColors, MPlayerColorIdx)));
+          playerlist.Add_Item(
+              item, static_cast<char>(base::At(TheSession().text_colors(),
+                                               TheSession().color_index())));
 
           who = new NodeNameType;
-          port::SafeCopy(who->Name, MPlayerName);
+          port::SafeCopy(who->Name, TheSession().player_name());
           who->Address = IPXAddressClass();
-          who->Player.House = MPlayerHouse;
-          who->Player.Color = static_cast<unsigned char>(MPlayerColorIdx);
-          Players.Add(who);
+          who->Player.House = TheSession().house();
+          who->Player.Color =
+              static_cast<unsigned char>(TheSession().color_index());
+          TheNetwork().players().Add(who);
 
           Send_Join_Queries(game_index, 0, 1);
         } else {
@@ -5279,9 +5504,9 @@ static int Net_Fake_Join_Dialog() {
             //
             // Remove myself from the Players list
             //
-            if (Players.Count()) {
-              who = Players.at(0);
-              Players.Delete(0);
+            if (TheNetwork().players().Count()) {
+              who = TheNetwork().players().at(0);
+              TheNetwork().players().Delete(0);
               delete who;
             }
           }
@@ -5331,7 +5556,7 @@ static int Net_Fake_Join_Dialog() {
     /*---------------------------------------------------------------------
     Service the Ipx connections
     ---------------------------------------------------------------------*/
-    Ipx.Service();
+    TheNetwork().ipx().Service();
 
     /*---------------------------------------------------------------------
     Clean out the Game List; if an old entry is found:
@@ -5339,9 +5564,9 @@ static int Net_Fake_Join_Dialog() {
     - Clear the player list
     - Send queries for the new selected game, if there is one
     ---------------------------------------------------------------------*/
-    for (i = 0; i < Games.Count(); i++) {
-      if (SystemTicks() - Games.at(i)->Game.LastTime > 400) {
-        Games.Delete(Games.at(i));
+    for (i = 0; i < TheNetwork().games().Count(); i++) {
+      if (SystemTicks() - TheNetwork().games().at(i)->Game.LastTime > 400) {
+        TheNetwork().games().Delete(TheNetwork().games().at(i));
         gamelist.Remove_Item(i);
         if (i <= game_index) {
           gamelist.Flag_To_Redraw();
@@ -5380,7 +5605,7 @@ static int Net_Fake_Join_Dialog() {
     If the other guys are playing a scenario I don't have (sniff), I can't
     play.  Try to bail gracefully.
     .....................................................................*/
-    if (ScenarioIdx == -1) {
+    if (TheSession().scenario_index() == -1) {
       CCMessageBox().Process(TXT_UNABLE_PLAY_WAAUGH);
 
       //
@@ -5392,35 +5617,43 @@ static int Net_Fake_Join_Dialog() {
       //
       // Remove myself from the Players list
       //
-      who = Players.at(0);
-      Players.Delete(0);
+      who = TheNetwork().players().at(0);
+      TheNetwork().players().Delete(0);
       delete who;
 
-      base::FillBytes(base::ObjectBytes(GPacket), 0, sizeof(GlobalPacketType));
+      base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
+                      sizeof(GlobalPacketType));
 
-      GPacket.Command = NET_SIGN_OFF;
-      port::SafeCopy(GPacket.Name, MPlayerName);
+      TheNetwork().global_packet().Command = NET_SIGN_OFF;
+      port::SafeCopy(TheNetwork().global_packet().Name,
+                     TheSession().player_name());
 
-      for (i = 0; i < Players.Count(); i++) {
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 1,
-                                &Players.at(i)->Address);
-        Ipx.Service();
+      for (i = 0; i < TheNetwork().players().Count(); i++) {
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 1,
+            &TheNetwork().players().at(i)->Address);
+        TheNetwork().ipx().Service();
       }
 
-      Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                              sizeof(GlobalPacketType), 0, nullptr);
-      Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                              sizeof(GlobalPacketType), 0, nullptr);
+      TheNetwork().ipx().Send_Global_Message(
+          base::ObjectBytes(TheNetwork().global_packet()),
+          sizeof(GlobalPacketType), 0, nullptr);
+      TheNetwork().ipx().Send_Global_Message(
+          base::ObjectBytes(TheNetwork().global_packet()),
+          sizeof(GlobalPacketType), 0, nullptr);
 
-      if (IsBridge) {
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 0, &BridgeNet);
-        Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                sizeof(GlobalPacketType), 0, &BridgeNet);
+      if (TheNetwork().is_bridge()) {
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 0, &TheNetwork().bridge_net());
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            sizeof(GlobalPacketType), 0, &TheNetwork().bridge_net());
       }
 
-      while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+      while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+             TheNetwork().ipx().Service() != 0) {
       }
 
       rc = -1;
@@ -5429,16 +5662,18 @@ static int Net_Fake_Join_Dialog() {
       /*..................................................................
       Set the number of players in this game, and my ID
       ..................................................................*/
-      MPlayerCount = static_cast<int>(Players.Count());
-      MPlayerLocalID = static_cast<unsigned char>(
-          Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
+      TheSession().player_count() =
+          static_cast<int>(TheNetwork().players().Count());
+      TheSession().local_id() = static_cast<unsigned char>(
+          Build_MPlayerID(TheSession().color_index(), TheSession().house()));
 
       /*..................................................................
       Get the scenario number
       ..................................................................*/
       TheWorld().scenario() =
-          ScenarioIdx;  // PlayerFilenum[ScenarioIdx]; We are passed
-                        // actual number now from wchat not index from
+          TheSession()
+              .scenario_index();  // PlayerFilenum[ScenarioIdx]; We are passed
+                                  // actual number now from wchat not index from
 
       /*..................................................................
       Form connections with all other players.  Form the IPX Connection ID
@@ -5446,20 +5681,23 @@ static int Net_Fake_Join_Dialog() {
       player's color & house at any time.  Fill in 'tmp_id' while we're
       doing this.
       ..................................................................*/
-      for (i = 0; i < Players.Count(); i++) {
+      for (i = 0; i < TheNetwork().players().Count(); i++) {
         /*...............................................................
         Only create the connection if it's not myself!
         ...............................................................*/
-        if (std::string_view(MPlayerName) != Players.at(i)->Name) {
-          id = static_cast<unsigned char>(Build_MPlayerID(
-              Players.at(i)->Player.Color, Players.at(i)->Player.House));
+        if (std::string_view(TheSession().player_name()) !=
+            TheNetwork().players().at(i)->Name) {
+          id = static_cast<unsigned char>(
+              Build_MPlayerID(TheNetwork().players().at(i)->Player.Color,
+                              TheNetwork().players().at(i)->Player.House));
 
           base::At(tmp_id, i) = id;
 
-          Ipx.Create_Connection(id, Players.at(i)->Name,
-                                &Players.at(i)->Address);
+          TheNetwork().ipx().Create_Connection(
+              id, TheNetwork().players().at(i)->Name,
+              &TheNetwork().players().at(i)->Address);
         } else {
-          base::At(tmp_id, i) = MPlayerLocalID;
+          base::At(tmp_id, i) = TheSession().local_id();
         }
       }
 
@@ -5474,7 +5712,8 @@ static int Net_Fake_Join_Dialog() {
         memset(vss_net, 1, sizeof(vss_net));
         memset(vss_node, 0, sizeof(vss_node));
         vss_global_address.Set_Address(vss_net, vss_node);
-        Ipx.Create_Connection(VSS_ID, "VSS", &vss_global_address);
+        TheNetwork().ipx().Create_Connection(VSS_ID, "VSS",
+                                             &vss_global_address);
       }
 #endif  // VIRTUAL_SUBNET_SERVER
 
@@ -5483,27 +5722,29 @@ static int Net_Fake_Join_Dialog() {
       determine the order of event execution, so the ID's must be stored
       in the same order on all systems.
       ..................................................................*/
-      for (i = 0; i < MPlayerCount; i++) {
+      for (i = 0; i < TheSession().player_count(); i++) {
         min_index = 0;
         min_id = 0xff;
-        for (j = 0; j < MPlayerCount; j++) {
+        for (j = 0; j < TheSession().player_count(); j++) {
           if (base::At(tmp_id, j) < min_id) {
             min_id = base::At(tmp_id, j);
             min_index = j;
           }
         }
-        base::At(MPlayerID, i) = base::At(tmp_id, min_index);
+        base::At(TheSession().player_ids(), i) = base::At(tmp_id, min_index);
         base::At(tmp_id, min_index) = 0xff;
       }
       /*..................................................................
       Fill in the array of player names, including my own.
       ..................................................................*/
-      for (i = 0; i < MPlayerCount; i++) {
-        if (base::At(MPlayerID, i) == MPlayerLocalID) {
-          port::SafeCopy(base::At(MPlayerNames, i), MPlayerName);
+      for (i = 0; i < TheSession().player_count(); i++) {
+        if (base::At(TheSession().player_ids(), i) == TheSession().local_id()) {
+          port::SafeCopy(base::At(TheSession().player_names(), i),
+                         TheSession().player_name());
         } else {
-          port::SafeCopy(base::At(MPlayerNames, i),
-                         Ipx.Connection_Name(base::At(MPlayerID, i)));
+          port::SafeCopy(base::At(TheSession().player_names(), i),
+                         TheNetwork().ipx().Connection_Name(
+                             base::At(TheSession().player_ids(), i)));
         }
       }
     }
@@ -5512,10 +5753,11 @@ static int Net_Fake_Join_Dialog() {
     a chance to get to the other system.  If he doesn't get our ACK, he'll
     be waiting the whole time we load MIX files.
     ---------------------------------------------------------------------*/
-    i = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 120);
+    i = std::max<int>(
+        static_cast<int>(TheNetwork().ipx().Global_Response_Time()) * 2, 120);
     starttime = SystemTicks();
     while (SystemTicks() - starttime < static_cast<int64_t>(i)) {
-      Ipx.Service();
+      TheNetwork().ipx().Service();
     }
   }
 
@@ -5523,8 +5765,9 @@ static int Net_Fake_Join_Dialog() {
   Init network timing values, using previous response times as a measure
   of what our retry delta & timeout should be.
   ------------------------------------------------------------------------*/
-  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, -1,
-                 Ipx.Global_Response_Time() * 4);
+  TheNetwork().ipx().Set_Timing(TheNetwork().ipx().Global_Response_Time() + 2,
+                                -1,
+                                TheNetwork().ipx().Global_Response_Time() * 4);
 
   /*------------------------------------------------------------------------
   Clear all lists

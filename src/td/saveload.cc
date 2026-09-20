@@ -77,6 +77,7 @@
 #include "td/scenario.h"
 #include "td/score.h"
 #include "td/serialize.h"
+#include "td/session.h"
 #include "td/smudge.h"
 #include "td/startup.h"
 #include "td/target.h"
@@ -323,7 +324,7 @@ bool Load_Game(int id) {
   **	loaded.
   */
   if (RequiredCD != -2) {
-    if (scenario >= 20 && scenario < 60 && GameToPlay == GAME_NORMAL) {
+    if (scenario >= 20 && scenario < 60 && TheSession().type() == GAME_NORMAL) {
       RequiredCD = 2;
     } else {
       if (scenario >= 60) {
@@ -449,8 +450,8 @@ bool Load_Game(int id) {
   }
 
   file.Close();
-  Whom = ThePlayer()->Class->House;
-  switch (Whom) {
+  TheWorld().whom() = ThePlayer()->Class->House;
+  switch (TheWorld().whom()) {
     case HOUSE_GOOD:
       TheWorld().scen_player() = SCEN_PLAYER_GDI;
       break;
@@ -514,9 +515,10 @@ static void Serialize_Misc_Values(Archive& ar) {
   }
   SerializeObjectList(ar, TheWorld().current_object());
   ar(TheWorld().waypoint(), TheWorld().scen_dir(), ScenVar,
-     TheWorld().carry_over_money(), TheWorld().carry_over_percent(), BuildLevel,
-     TheWorld().brief_movie(), TheWorld().views(), TheWorld().end_count_down(),
-     TheWorld().briefing_text(), TheWorld().action_movie());
+     TheWorld().carry_over_money(), TheWorld().carry_over_percent(),
+     TheWorld().build_level(), TheWorld().brief_movie(), TheWorld().views(),
+     TheWorld().end_count_down(), TheWorld().briefing_text(),
+     TheWorld().action_movie());
   if constexpr (Archive::kIsReading) {
     base::At(TheWorld().win_movie(), sizeof(TheWorld().win_movie()) - 1) = '\0';
     base::At(TheWorld().lose_movie(), sizeof(TheWorld().lose_movie()) - 1) =

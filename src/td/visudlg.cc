@@ -58,6 +58,7 @@
 #include "td/goptions.h"
 #include "td/jshell.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/slider.h"
 #include "td/textbtn.h"
 
@@ -203,7 +204,7 @@ void VisualControlsClass::Process() {
     /*
     **	Invoke game callback.
     */
-    if (GameToPlay == GAME_NORMAL) {
+    if (TheSession().type() == GAME_NORMAL) {
       Call_Back();
     } else {
       if (Main_Loop()) {

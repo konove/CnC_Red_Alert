@@ -79,7 +79,6 @@
 #include "td/dialog.h"
 #include "td/display_constants.h"
 #include "td/edit.h"
-#include "td/externs.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -97,6 +96,7 @@
 #include "td/profile.h"
 #include "td/scenario.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/teamtype.h"
 #include "td/terrain.h"
 #include "td/textbtn.h"
@@ -269,8 +269,9 @@ int MapEditClass::Load_Scenario() {
     into working properly.
   ------------------------------------------------------------------------*/
   if (TheWorld().scen_player() == SCEN_PLAYER_MPLAYER) {
-    MPlayerLocalID = static_cast<unsigned char>(Build_MPlayerID(2, HOUSE_GOOD));
-    MPlayerCount = 1;
+    TheSession().local_id() =
+        static_cast<unsigned char>(Build_MPlayerID(2, HOUSE_GOOD));
+    TheSession().player_count() = 1;
     LastHouse = HOUSE_MULTI1;
   } else if (TheWorld().scen_player() == SCEN_PLAYER_JP) {
     ThePlayer() = HouseClass::As_Pointer(HOUSE_MULTI4);
@@ -1814,7 +1815,7 @@ int MapEditClass::Scenario_Dialog() {
   /*
   .......................... Init credits buffers ..........................
   */
-  absl::SNPrintF(level_buf, sizeof(level_buf), "%d", BuildLevel);
+  absl::SNPrintF(level_buf, sizeof(level_buf), "%d", TheWorld().build_level());
   leveledt.Set_Text(level_buf, 4);
 
   absl::SNPrintF(gdicred_buf, sizeof(gdicred_buf), "%ld", gdi_credits);
@@ -2050,7 +2051,7 @@ int MapEditClass::Scenario_Dialog() {
   /*
   ........................... Sidebar build level ..........................
   */
-  BuildLevel = tech::ParseIntegerOr<int>(level_buf, 0);
+  TheWorld().build_level() = tech::ParseIntegerOr<int>(level_buf, 0);
 
   /*........................................................................
   Change the theater:

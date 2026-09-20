@@ -86,6 +86,7 @@
 #include "td/palette.h"
 #include "td/palettes.h"
 #include "td/profile.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
@@ -539,7 +540,7 @@ void OptionsClass::Load_Settings() {
   */
   WWGetPrivateProfileString("Options", "Players", "", workbuf, buffer);
   if (HashKeyPhrase(workbuf) == PARM_6PLAYER) {
-    MPlayerMax = 6;
+    TheSession().max_players() = 6;
   }
 
   /*

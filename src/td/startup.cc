@@ -66,10 +66,12 @@
 #include "td/init.h"
 #include "td/ipxaddr.h"
 #include "td/ipxmgr.h"
+#include "td/network.h"
 #include "td/nullmgr.h"
 #include "td/palettes.h"  // IWYU pragma: keep (used only with an entry point)
 #include "td/profile.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/startup.h"
 #include "td/startup_options.h"
 #include "tech/audio_mixer.h"
@@ -187,14 +189,14 @@ static void ApplyStartupOptions(const StartupOptions& options) {
   Special.IsSpeedBuild = options.speed_build;
   Special.IsVisibleTarget = options.visible_target;
 
-  RecordGame = options.record;
-  PlaybackGame = options.playback;
-  SuperRecord = options.super_record ? 1 : 0;
+  TheSession().record_game() = options.record;
+  TheSession().playback_game() = options.playback;
+  TheSession().super_record() = options.super_record ? 1 : 0;
 
-  NetStealth = options.net_stealth;
-  NetProtect = !options.outside_messages;
-  AllowAttract = options.attract;
-  MPlayerSolo = options.solo_net_play;
+  TheNetwork().stealth() = options.net_stealth;
+  TheNetwork().protect() = !options.outside_messages;
+  TheSession().allow_attract() = options.attract;
+  TheSession().solo() = options.solo_net_play;
 
   NoMouseGrab = options.no_mouse_grab;
   SpawnedFromWChat = options.spawned_from_wchat;
@@ -288,7 +290,7 @@ int main(int argc, char* argv[])
 #endif
   TheWorld().scen_player() = SCEN_PLAYER_GDI;
   TheWorld().scen_dir() = SCEN_DIR_EAST;
-  Whom = HOUSE_GOOD;
+  TheWorld().whom() = HOUSE_GOOD;
   Special.Init();
 
   const std::optional<StartupOptions> options = Parse_Command_Line(arguments);
@@ -476,7 +478,8 @@ int main(int argc, char* argv[])
  *=============================================================================================*/
 void __cdecl Prog_End() {
 #ifndef DEMO
-  if (GameToPlay == GAME_MODEM || GameToPlay == GAME_NULL_MODEM) {
+  if (TheSession().type() == GAME_MODEM ||
+      TheSession().type() == GAME_NULL_MODEM) {
     NullModemClass::Change_IRQ_Priority(0);
   }
 #endif
@@ -551,11 +554,11 @@ void Read_Setup_Options(DiskFile* config_file, const StartupOptions& options) {
     ** See if an alternative socket number has been specified
     */
     if (options.socket.has_value()) {
-      Ipx.Set_Socket(*options.socket);
+      TheNetwork().ipx().Set_Socket(*options.socket);
     } else {
       const int socket = WWGetPrivateProfileInt("Options", "Socket", 0, buffer);
       if (socket > 0 && socket < 0x4000) {
-        Ipx.Set_Socket(static_cast<uint16_t>(0x4000 + socket));
+        TheNetwork().ipx().Set_Socket(static_cast<uint16_t>(0x4000 + socket));
       }
     }
 
@@ -572,8 +575,8 @@ void Read_Setup_Options(DiskFile* config_file, const StartupOptions& options) {
       }
     }
     if (bridge_net.has_value()) {
-      IsBridge = 1;
-      BridgeNet = *bridge_net;
+      TheNetwork().is_bridge() = 1;
+      TheNetwork().bridge_net() = *bridge_net;
     }
   }
 }

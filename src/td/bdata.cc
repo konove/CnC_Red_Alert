@@ -92,6 +92,7 @@
 #include "td/mapedit.h"
 #include "td/object.h"
 #include "td/object_heaps.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/type.h"
 #include "td/vector.h"
@@ -4432,7 +4433,7 @@ int BuildingTypeClass::Raw_Cost() const {
   **	Forces the turret cost down to original 250 for old
   **	version games.
   */
-  if (IsV107 && Type == STRUCT_TURRET && GameToPlay != GAME_NORMAL) {
+  if (IsV107 && Type == STRUCT_TURRET && TheSession().type() != GAME_NORMAL) {
     return 250;
   }
 #endif
@@ -4458,7 +4459,7 @@ int BuildingTypeClass::Cost_Of() const {
   **	Forces the turret cost down to original 250 for old
   **	version games.
   */
-  if (IsV107 && Type == STRUCT_TURRET && GameToPlay != GAME_NORMAL) {
+  if (IsV107 && Type == STRUCT_TURRET && TheSession().type() != GAME_NORMAL) {
     return 250;
   }
 #endif

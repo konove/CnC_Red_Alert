@@ -140,6 +140,7 @@
 #include "td/msgbox.h"
 #include "td/msglist.h"
 #include "td/netdlg.h"
+#include "td/network.h"
 #include "td/nulldlg.h"
 #include "td/nullmgr.h"
 #include "td/object.h"
@@ -152,6 +153,7 @@
 #include "td/scenario.h"
 #include "td/score.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/startup.h"
 #include "td/startup_options.h"
@@ -284,7 +286,7 @@ void Main_Game() {
     /*
     ** Only show the mouse if we're not playing back a recording.
     */
-    if (PlaybackGame) {
+    if (TheSession().playback_game()) {
       Hide_Mouse();
     } else {
       Show_Mouse();
@@ -292,11 +294,11 @@ void Main_Game() {
 
     SpecialDialog = SDLG_NONE;
     // Start_Profiler();
-    if (GameToPlay == GAME_INTERNET) {
+    if (TheSession().type() == GAME_INTERNET) {
       Register_Game_Start_Time();
-      GameStatisticsPacketSent = false;
-      PacketLater = nullptr;
-      ConnectionLost = false;
+      TheNetwork().statistics_sent() = false;
+      TheNetwork().packet_later() = nullptr;
+      TheNetwork().connection_lost() = false;
     } else {
 #ifdef _WIN32
       DDEServer.Disable();
@@ -341,7 +343,7 @@ void Main_Game() {
                 TheMap().Help_Text(TXT_NONE);
                 TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
                 if (Surrender_Dialog()) {
-                  OutList.Add(EventClass(EventClass::DESTRUCT));
+                  TheNetwork().out_list().Add(EventClass(EventClass::DESTRUCT));
                 }
                 SpecialDialog = SDLG_NONE;
                 TheMap().Revert_Mouse_Shape();
@@ -402,7 +404,7 @@ void Main_Game() {
               TheMap().Help_Text(TXT_NONE);
               TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
               if (Surrender_Dialog()) {
-                OutList.Add(EventClass(EventClass::DESTRUCT));
+                TheNetwork().out_list().Add(EventClass(EventClass::DESTRUCT));
               }
               SpecialDialog = SDLG_NONE;
               TheMap().Revert_Mouse_Shape();
@@ -418,7 +420,7 @@ void Main_Game() {
     // Stop_Profiler();
     InMainLoop = false;
 
-    if (!GameStatisticsPacketSent && PacketLater) {
+    if (!TheNetwork().statistics_sent() && TheNetwork().packet_later()) {
       Send_Statistics_Packet();
     }
 
@@ -439,12 +441,13 @@ void Main_Game() {
     ** (Skip this step if we're in playback mode; the modem or net won't have
     ** been initialized in that case.)
     */
-    if ((RecordGame && !SuperRecord) || PlaybackGame) {
-      RecordFile.Close();
+    if ((TheSession().record_game() && !TheSession().super_record()) ||
+        TheSession().playback_game()) {
+      TheSession().record_file().Close();
     }
 
-    if (!PlaybackGame) {
-      switch (GameToPlay) {
+    if (!TheSession().playback_game()) {
+      switch (TheSession().type()) {
         case GAME_NULL_MODEM:
         case GAME_MODEM:
           Modem_Signoff();
@@ -466,10 +469,10 @@ void Main_Game() {
     **	If we're playing back, the mouse will be hidden; show it.
     ** Also, set all variables back to normal, to return to the main menu.
     */
-    if (PlaybackGame) {
+    if (TheSession().playback_game()) {
       Show_Mouse();
-      GameToPlay = GAME_NORMAL;
-      PlaybackGame = false;
+      TheSession().type() = GAME_NORMAL;
+      TheSession().playback_game() = false;
     }
 
     /*
@@ -489,8 +492,8 @@ void Main_Game() {
       DDEServer.Delete_MPlayer_Game_Info();  // Make sure we dont use the same
                                              // start packet twice
 #endif
-      GameToPlay = GAME_NORMAL;  // Have to do this or we will got straight to
-                                 // the multiplayer menu
+      TheSession().type() = GAME_NORMAL;  // Have to do this or we will got
+                                          // straight to the multiplayer menu
       Spawn_WChat(false);        // Will switch back to Wchat. It must be there
                                  // because its been poking us
       // break;
@@ -592,7 +595,7 @@ void Keyboard_Process(KeyNumType& input) {
   }
 
   if (TheDebugState().developer_mode() && input == KN_SLASH) {
-    if (GameToPlay != GAME_NORMAL) {
+    if (TheSession().type() != GAME_NORMAL) {
       SpecialDialog = SDLG_SPECIAL;
       input = KN_NONE;
     } else {
@@ -714,11 +717,12 @@ void Keyboard_Process(KeyNumType& input) {
     **	Handle making and breaking alliances.
     */
     case VK_A:
-      if ((GameToPlay != GAME_NORMAL || TheDebugState().developer_mode()) &&
+      if ((TheSession().type() != GAME_NORMAL ||
+           TheDebugState().developer_mode()) &&
           (TheWorld().current_object().Count() && !ThePlayer()->IsDefeated) &&
           (TheWorld().current_object().at(0)->Owner() !=
            ThePlayer()->Class->House)) {
-        OutList.Add(EventClass(
+        TheNetwork().out_list().Add(EventClass(
             EventClass::ALLY,
             static_cast<int>(TheWorld().current_object().at(0)->Owner())));
       }
@@ -764,7 +768,8 @@ void Keyboard_Process(KeyNumType& input) {
           if (tech && (tech->Can_Player_Move() ||
                        (tech->Can_Player_Fire() &&
                         tech->What_Am_I() != RTTI_BUILDING))) {
-            OutList.Add(EventClass(EventClass::IDLE, tech->As_Target()));
+            TheNetwork().out_list().Add(
+                EventClass(EventClass::IDLE, tech->As_Target()));
           }
         }
       }
@@ -779,7 +784,8 @@ void Keyboard_Process(KeyNumType& input) {
           const ObjectClass* tech = TheWorld().current_object().at(j);
 
           if (tech && tech->Can_Player_Move()) {
-            OutList.Add(EventClass(EventClass::SCATTER, tech->As_Target()));
+            TheNetwork().out_list().Add(
+                EventClass(EventClass::SCATTER, tech->As_Target()));
           }
         }
       }
@@ -794,7 +800,8 @@ void Keyboard_Process(KeyNumType& input) {
           const ObjectClass* tech = TheWorld().current_object().at(j);
 
           if (tech && tech->Can_Player_Move() && tech->Can_Player_Fire()) {
-            OutList.Add(EventClass(tech->As_Target(), MISSION_GUARD_AREA));
+            TheNetwork().out_list().Add(
+                EventClass(tech->As_Target(), MISSION_GUARD_AREA));
           }
         }
       }
@@ -877,22 +884,24 @@ static void Message_Input(KeyNumType& input) {
   **	'to' portion.  At the other end, the buffer allocated to display the
   **	message must be MAX_MESSAGE_LENGTH plus the size of "From: xxx (house)".
   */
-  if (input >= KN_F1 && input < KN_F1 + MPlayerMax &&
-      Messages.Get_Edit_Buf() == nullptr) {
+  if (input >= KN_F1 && input < KN_F1 + TheSession().max_players() &&
+      TheSession().messages().Get_Edit_Buf() == nullptr) {
     base::FillBytes(base::ObjectBytes(txt), 0, 40);
 
     /*
     **	For a serial game, send a message on F1 or F4; set 'txt' to the
     **	"Message:" string & add an editable message to the list.
     */
-    if (GameToPlay == GAME_NULL_MODEM || GameToPlay == GAME_MODEM) {
+    if (TheSession().type() == GAME_NULL_MODEM ||
+        TheSession().type() == GAME_MODEM) {
       //|| GameToPlay == GAME_INTERNET) {
-      if (input == KN_F1 || input == KN_F1 + MPlayerMax - 1) {
+      if (input == KN_F1 || input == KN_F1 + TheSession().max_players() - 1) {
         port::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
 
-        Messages.Add_Edit(base::At(MPlayerTColors, MPlayerColorIdx),
-                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
-                          180 * factor);
+        TheSession().messages().Add_Edit(
+            base::At(TheSession().text_colors(), TheSession().color_index()),
+            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
+            180 * factor);
 
         TheMap().Flag_To_Redraw(false);
       }
@@ -902,28 +911,33 @@ static void Message_Input(KeyNumType& input) {
       **	F1-F3 = "To <name> (house):" (only allowed if we're not in
       *ObiWan mode) *	F4 = "To All:"
       */
-      if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
-        if (input == KN_F1 + MPlayerMax - 1 &&
-            Messages.Get_Edit_Buf() == nullptr) {
+      if (TheSession().type() == GAME_IPX ||
+          TheSession().type() == GAME_INTERNET) {
+        if (input == KN_F1 + TheSession().max_players() - 1 &&
+            TheSession().messages().Get_Edit_Buf() == nullptr) {
           message_address = IPXAddressClass();           // set to broadcast
           port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
 
-          Messages.Add_Edit(base::At(MPlayerTColors, MPlayerColorIdx),
-                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                            txt, 180 * factor);
+          TheSession().messages().Add_Edit(
+              base::At(TheSession().text_colors(), TheSession().color_index()),
+              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
+              180 * factor);
 
           TheMap().Flag_To_Redraw(false);
         } else {
-          if ((Messages.Get_Edit_Buf() == nullptr) &&
-              (input - KN_F1 < Ipx.Num_Connections() && !MPlayerObiWan)) {
-            const int id = Ipx.Connection_ID(input - KN_F1);
-            message_address = *Ipx.Connection_Address(id);
+          if ((TheSession().messages().Get_Edit_Buf() == nullptr) &&
+              (input - KN_F1 < TheNetwork().ipx().Num_Connections() &&
+               !TheSession().obi_wan())) {
+            const int id = TheNetwork().ipx().Connection_ID(input - KN_F1);
+            message_address = *TheNetwork().ipx().Connection_Address(id);
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_TO),
-                                Ipx.Connection_Name(id));
+                                TheNetwork().ipx().Connection_Name(id));
 
-            Messages.Add_Edit(base::At(MPlayerTColors, MPlayerColorIdx),
-                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                              txt, 180 * factor);
+            TheSession().messages().Add_Edit(
+                base::At(TheSession().text_colors(),
+                         TheSession().color_index()),
+                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
+                180 * factor);
 
             TheMap().Flag_To_Redraw(false);
           }
@@ -945,7 +959,7 @@ static void Message_Input(KeyNumType& input) {
   /*
   **	Process message-system input; send the message out if RETURN is hit.
   */
-  const int rc = Messages.Input(input);
+  const int rc = TheSession().messages().Input(input);
 
   /*
   **	If a single character has been added to an edit buffer, update the
@@ -974,12 +988,13 @@ static void Message_Input(KeyNumType& input) {
     Store this message in our LastMessage buffer; the computer may send
     us a version of it later.
     .....................................................................*/
-    if (!std::string_view(Messages.Get_Edit_Buf()).empty()) {
-      port::SafeCopy(LastMessage, Messages.Get_Edit_Buf());
+    if (!std::string_view(TheSession().messages().Get_Edit_Buf()).empty()) {
+      port::SafeCopy(TheSession().last_message(),
+                     TheSession().messages().Get_Edit_Buf());
     }
 
-    const int message_length =
-        static_cast<int>(std::string_view(Messages.Get_Edit_Buf()).size());
+    const int message_length = static_cast<int>(
+        std::string_view(TheSession().messages().Get_Edit_Buf()).size());
 
     int32_t actual_message_size = 0;
     std::span<char> the_string;
@@ -989,13 +1004,14 @@ static void Message_Input(KeyNumType& input) {
     **	(Note: The size of the SerialPacketType.Command must be the same as
     **	the EventClass.Type!)
     */
-    if (GameToPlay == GAME_NULL_MODEM || GameToPlay == GAME_MODEM) {
+    if (TheSession().type() == GAME_NULL_MODEM ||
+        TheSession().type() == GAME_MODEM) {
       //|| GameToPlay==GAME_INTERNET) {
 
       sent_so_far = 0;
       magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
-      crc = static_cast<uint16_t>(CrcEngine::Compute(Messages.Get_Edit_Buf()) &
-                                  0xffff);
+      crc = static_cast<uint16_t>(
+          CrcEngine::Compute(TheSession().messages().Get_Edit_Buf()) & 0xffff);
 
       while (sent_so_far < message_length) {
         SerialPacketType packet{.Command = SERIAL_MESSAGE,
@@ -1020,10 +1036,10 @@ static void Message_Input(KeyNumType& input) {
         auto* serial_packet = &packet;
 
         serial_packet->Command = SERIAL_MESSAGE;
-        port::SafeCopy(serial_packet->Name, MPlayerName);
+        port::SafeCopy(serial_packet->Name, TheSession().player_name());
         port::SafeCopy(
             std::span(serial_packet->Message).first(COMPAT_MESSAGE_LENGTH - 4),
-            std::string_view(Messages.Get_Edit_Buf())
+            std::string_view(TheSession().messages().Get_Edit_Buf())
                 .substr(base::ToSize(sent_so_far)));
 
         /*
@@ -1059,10 +1075,10 @@ static void Message_Input(KeyNumType& input) {
         port::WriteUnaligned(base::ObjectBytes(serial_packet->Message)
                                  .subspan(COMPAT_MESSAGE_LENGTH - 2),
                              crc);
-        serial_packet->ID = MPlayerLocalID;
+        serial_packet->ID = TheSession().local_id();
 
-        NullModem.Send_Message(base::ObjectBytes(packet),
-                               sizeof(SerialPacketType), 1);
+        TheNetwork().null_modem().Send_Message(base::ObjectBytes(packet),
+                                               sizeof(SerialPacketType), 1);
 
         magic_number++;
         sent_so_far =
@@ -1073,18 +1089,22 @@ static void Message_Input(KeyNumType& input) {
       /*
       **	Network game: fill in a GlobalPacketType & send it.
       */
-      if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
+      if (TheSession().type() == GAME_IPX ||
+          TheSession().type() == GAME_INTERNET) {
         sent_so_far = 0;
         magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
         crc = static_cast<uint16_t>(
-            CrcEngine::Compute(Messages.Get_Edit_Buf()) & 0xffff);
+            CrcEngine::Compute(TheSession().messages().Get_Edit_Buf()) &
+            0xffff);
 
         while (sent_so_far < message_length) {
-          GPacket.Command = NET_MESSAGE;
-          port::SafeCopy(GPacket.Name, MPlayerName);
+          TheNetwork().global_packet().Command = NET_MESSAGE;
+          port::SafeCopy(TheNetwork().global_packet().Name,
+                         TheSession().player_name());
           port::SafeCopy(
-              std::span(GPacket.Message.Buf).first(COMPAT_MESSAGE_LENGTH - 4),
-              std::string_view(Messages.Get_Edit_Buf())
+              std::span(TheNetwork().global_packet().Message.Buf)
+                  .first(COMPAT_MESSAGE_LENGTH - 4),
+              std::string_view(TheSession().messages().Get_Edit_Buf())
                   .substr(base::ToSize(sent_so_far)));
 
           /*
@@ -1093,7 +1113,7 @@ static void Message_Input(KeyNumType& input) {
           actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
 
           /* Start at the end of the message and find a space with 10 chars. */
-          the_string = GPacket.Message.Buf;
+          the_string = TheNetwork().global_packet().Message.Buf;
           while (COMPAT_MESSAGE_LENGTH - 5 - actual_message_size < 10 &&
                  base::At(the_string, base::ToSize(actual_message_size)) !=
                      ' ') {
@@ -1111,41 +1131,47 @@ static void Message_Input(KeyNumType& input) {
             actual_message_size = COMPAT_MESSAGE_LENGTH - 5;
           }
 
-          base::At(GPacket.Message.Buf, COMPAT_MESSAGE_LENGTH - 5) = 0;
+          base::At(TheNetwork().global_packet().Message.Buf,
+                   COMPAT_MESSAGE_LENGTH - 5) = 0;
           /*
           ** Flag this message segment as either a message head or a message
           *tail.
           */
-          port::WriteUnaligned(base::ObjectBytes(GPacket.Message.Buf)
-                                   .subspan(COMPAT_MESSAGE_LENGTH - 4),
-                               magic_number);
-          port::WriteUnaligned(base::ObjectBytes(GPacket.Message.Buf)
-                                   .subspan(COMPAT_MESSAGE_LENGTH - 2),
-                               crc);
+          port::WriteUnaligned(
+              base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
+                  .subspan(COMPAT_MESSAGE_LENGTH - 4),
+              magic_number);
+          port::WriteUnaligned(
+              base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
+                  .subspan(COMPAT_MESSAGE_LENGTH - 2),
+              crc);
 
-          GPacket.Message.ID = MPlayerLocalID;
-          GPacket.Message.NameCRC = Compute_Name_CRC(MPlayerGameName);
+          TheNetwork().global_packet().Message.ID = TheSession().local_id();
+          TheNetwork().global_packet().Message.NameCRC =
+              Compute_Name_CRC(TheSession().game_name());
 
           /*
           **	If 'F4' was hit, message_address will be a broadcast address;
           *send *	the message to every player we have a connection with.
           */
           if (message_address.Is_Broadcast()) {
-            for (int i = 0; i < Ipx.Num_Connections(); i++) {
-              Ipx.Send_Global_Message(
-                  base::ObjectBytes(GPacket), sizeof(GlobalPacketType), 1,
-                  Ipx.Connection_Address(Ipx.Connection_ID(i)));
-              Ipx.Service();
+            for (int i = 0; i < TheNetwork().ipx().Num_Connections(); i++) {
+              TheNetwork().ipx().Send_Global_Message(
+                  base::ObjectBytes(TheNetwork().global_packet()),
+                  sizeof(GlobalPacketType), 1,
+                  TheNetwork().ipx().Connection_Address(
+                      TheNetwork().ipx().Connection_ID(i)));
+              TheNetwork().ipx().Service();
             }
           } else {
             /*
             **	Otherwise, message_address contains the exact address to send
             * to. *	Send to that address only.
             */
-            Ipx.Send_Global_Message(base::ObjectBytes(GPacket),
-                                    sizeof(GlobalPacketType), 1,
-                                    &message_address);
-            Ipx.Service();
+            TheNetwork().ipx().Send_Global_Message(
+                base::ObjectBytes(TheNetwork().global_packet()),
+                sizeof(GlobalPacketType), 1, &message_address);
+            TheNetwork().ipx().Service();
           }
 
           magic_number++;
@@ -1294,17 +1320,19 @@ void Call_Back() {
   /*
   **	Network maintenance
   */
-  if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
-    Ipx.Service();
+  if (TheSession().type() == GAME_IPX || TheSession().type() == GAME_INTERNET) {
+    TheNetwork().ipx().Service();
 
     /*
     ** Read packets only if the game is "closed", so we don't steal global
     ** messages from the connection dialogs.
     */
-    if ((!NetOpen) &&
-        Ipx.Get_Global_Message(base::ObjectBytes(GPacket), &GPacketlen,
-                               &GAddress, &GProductID) &&
-        (GProductID == IPXGlobalConnClass::kCommandAndConquer))
+    if ((!TheNetwork().is_open()) &&
+        TheNetwork().ipx().Get_Global_Message(
+            base::ObjectBytes(TheNetwork().global_packet()),
+            &TheNetwork().global_packet_length(),
+            &TheNetwork().global_address(), &TheNetwork().product_id()) &&
+        (TheNetwork().product_id() == IPXGlobalConnClass::kCommandAndConquer))
 
     {
       /*
@@ -1312,12 +1340,14 @@ void Call_Back() {
       **	mark that player's house as non-human, so the computer will take
       **	it over.
       */
-      if (GPacket.Command == NET_SIGN_OFF) {
-        for (i = 0; i < Ipx.Num_Connections(); i++) {
-          id = Ipx.Connection_ID(i);
+      if (TheNetwork().global_packet().Command == NET_SIGN_OFF) {
+        for (i = 0; i < TheNetwork().ipx().Num_Connections(); i++) {
+          id = TheNetwork().ipx().Connection_ID(i);
 
-          if ((std::string_view(GPacket.Name) == Ipx.Connection_Name(id)) &&
-              GAddress == *Ipx.Connection_Address(id)) {
+          if ((std::string_view(TheNetwork().global_packet().Name) ==
+               TheNetwork().ipx().Connection_Name(id)) &&
+              TheNetwork().global_address() ==
+                  *TheNetwork().ipx().Connection_Address(id)) {
             CCDebugString("C&C95 = Destroying connection due to sign off\n");
             Destroy_Connection(id, 0);
           }
@@ -1326,7 +1356,7 @@ void Call_Back() {
         /*
         **	Process a message from another user.
         */
-        if (GPacket.Command == NET_MESSAGE) {
+        if (TheNetwork().global_packet().Command == NET_MESSAGE) {
           bool msg_ok = false;
           char txt[80];
 
@@ -1334,26 +1364,27 @@ void Call_Back() {
           ** If NetProtect is set, make sure this message came from within
           ** this game.
           */
-          if (!NetProtect) {
+          if (!TheNetwork().protect()) {
             msg_ok = true;
           } else {
-            msg_ok =
-                GPacket.Message.NameCRC == Compute_Name_CRC(MPlayerGameName);
+            msg_ok = TheNetwork().global_packet().Message.NameCRC ==
+                     Compute_Name_CRC(TheSession().game_name());
           }
 
           if (msg_ok) {
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
-                                GPacket.Name, GPacket.Message.Buf);
+                                TheNetwork().global_packet().Name,
+                                TheNetwork().global_packet().Message.Buf);
             magic_number = port::ReadUnaligned<uint16_t>(
-                base::ObjectBytes(GPacket.Message.Buf)
+                base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
                     .subspan(COMPAT_MESSAGE_LENGTH - 4));
             crc = port::ReadUnaligned<uint16_t>(
-                base::ObjectBytes(GPacket.Message.Buf)
+                base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
                     .subspan(COMPAT_MESSAGE_LENGTH - 2));
-            color =
-                static_cast<int>(MPlayerID_To_ColorIndex(GPacket.Message.ID));
-            Messages.Add_Message(
-                txt, base::At(MPlayerTColors, color),
+            color = static_cast<int>(MPlayerID_To_ColorIndex(
+                TheNetwork().global_packet().Message.ID));
+            TheSession().messages().Add_Message(
+                txt, base::At(TheSession().text_colors(), color),
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
                 magic_number, crc);
 
@@ -1366,12 +1397,15 @@ void Call_Back() {
             /*
             **	Save this message in our last-message buffer
             */
-            if (!std::string_view(GPacket.Message.Buf).empty()) {
-              port::SafeCopy(LastMessage, GPacket.Message.Buf);
+            if (!std::string_view(TheNetwork().global_packet().Message.Buf)
+                     .empty()) {
+              port::SafeCopy(TheSession().last_message(),
+                             TheNetwork().global_packet().Message.Buf);
             }
           }
         } else {
-          Process_Global_Packet(&GPacket, &GAddress);
+          Process_Global_Packet(&TheNetwork().global_packet(),
+                                &TheNetwork().global_address());
         }
       }
     }
@@ -1380,10 +1414,10 @@ void Call_Back() {
   /*
   **	Modem and Null Modem maintenance
   */
-  if (GameToPlay == GAME_NULL_MODEM ||
-      (GameToPlay == GAME_MODEM && ModemService)) {
+  if (TheSession().type() == GAME_NULL_MODEM ||
+      (TheSession().type() == GAME_MODEM && TheNetwork().modem_service())) {
     //|| GameToPlay == GAME_INTERNET) {
-    NullModem.Service();
+    TheNetwork().null_modem().Service();
   }
 #endif
 
@@ -1647,8 +1681,9 @@ bool Main_Loop() {
   **	Setup the timer so that the Main_Loop function processes at the correct
   *rate.
   */
-  if (GameToPlay != GAME_NORMAL && CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-    const int framedelay = 60 / DesiredFrameRate;
+  if (TheSession().type() != GAME_NORMAL &&
+      TheSession().comm_protocol() == COMM_PROTOCOL_MULTI_E_COMP) {
+    const int framedelay = 60 / TheSession().desired_frame_rate();
     frame_timer.Set(framedelay);
   } else {
     frame_timer.Set(Options.GameSpeed);
@@ -1657,7 +1692,8 @@ bool Main_Loop() {
   /*
   **	Update the display, unless we're inside a dialog.
   */
-  if ((!PlaybackGame) && (SpecialDialog == SDLG_NONE && GameInFocus)) {
+  if ((!TheSession().playback_game()) &&
+      (SpecialDialog == SDLG_NONE && GameInFocus)) {
     WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
     TheMap().Input(input, x, y);
     if (input) {
@@ -1671,7 +1707,7 @@ bool Main_Loop() {
   /*
   ** Save map's position & selected objects, if we're recording the game.
   */
-  if (RecordGame || PlaybackGame) {
+  if (TheSession().record_game() || TheSession().playback_game()) {
     Do_Record_Playback();
   }
 
@@ -1698,7 +1734,7 @@ bool Main_Loop() {
   *means *	a message has expired & been removed, and the entire map must be
   *updated.
   */
-  if (Messages.Manage()) {
+  if (TheSession().messages().Manage()) {
     TheScreen().hidden_page().Clear();
     TheMap().Flag_To_Redraw(true);
   }
@@ -1706,8 +1742,9 @@ bool Main_Loop() {
   //
   // Measure how long it took to process the AI
   //
-  ProcessTicks = static_cast<int>(ProcessTicks + process_timer.Time());
-  ProcessFrames++;
+  TheSession().process_ticks() =
+      static_cast<int>(TheSession().process_ticks() + process_timer.Time());
+  TheSession().process_frames()++;
 
   //	Heap_Dump_Check( "Before Queue_AI" );
 
@@ -1739,7 +1776,8 @@ bool Main_Loop() {
   */
 
   if (PlayerWins) {
-    if (GameToPlay == GAME_INTERNET && !GameStatisticsPacketSent) {
+    if (TheSession().type() == GAME_INTERNET &&
+        !TheNetwork().statistics_sent()) {
       Register_Game_End_Time();
       Send_Statistics_Packet();
     }
@@ -1752,7 +1790,8 @@ bool Main_Loop() {
     Do_Win();
   }
   if (PlayerLoses) {
-    if (GameToPlay == GAME_INTERNET && !GameStatisticsPacketSent) {
+    if (TheSession().type() == GAME_INTERNET &&
+        !TheNetwork().statistics_sent()) {
       Register_Game_End_Time();
       Send_Statistics_Packet();
     }
@@ -1897,7 +1936,7 @@ bool Main_Loop() {
   /*
   ** Very rarely, the human players will get a message from the computer.
   */
-  if (GameToPlay != GAME_NORMAL && MPlayerGhosts &&
+  if (TheSession().type() != GAME_NORMAL && TheSession().ghosts() &&
       GameRandomRange(0, 10000) == 1) {
     Computer_Message();
   }
@@ -2083,7 +2122,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
   /*
   ** Don't play movies in multiplayer mode
   */
-  if (GameToPlay != GAME_NORMAL) {
+  if (TheSession().type() != GAME_NORMAL) {
     return;
   }
 
@@ -3172,25 +3211,25 @@ static void Do_Record_Playback() {
   /*------------------------------------------------------------------------
   Record a game
   ------------------------------------------------------------------------*/
-  if (RecordGame) {
+  if (TheSession().record_game()) {
     /*.....................................................................
     For 'SuperRecord', we'll open & close the file with every entry.
     .....................................................................*/
-    if (SuperRecord) {
-      RecordFile.Open(FileAccess::kReadWrite);
-      RecordFile.Seek(0, SeekOrigin::kEnd);
+    if (TheSession().super_record()) {
+      TheSession().record_file().Open(FileAccess::kReadWrite);
+      TheSession().record_file().Seek(0, SeekOrigin::kEnd);
     }
 
     /*.....................................................................
     Save the map's location
     .....................................................................*/
-    RecordFile.WriteObject(TheMap().DesiredTacticalCoord);
+    TheSession().record_file().WriteObject(TheMap().DesiredTacticalCoord);
 
     /*.....................................................................
     Save the current object list count
     .....................................................................*/
     count = static_cast<int>(TheWorld().current_object().Count());
-    RecordFile.WriteObject(count);
+    TheSession().record_file().WriteObject(count);
 
     /*.....................................................................
     Save a CRC of the selected-object list.
@@ -3201,37 +3240,37 @@ static void Do_Record_Playback() {
           static_cast<uint32_t>(TheWorld().current_object().at(i)->As_Target());
       sum += ltgt;
     }
-    RecordFile.WriteObject(sum);
+    TheSession().record_file().WriteObject(sum);
 
     /*.....................................................................
     Save all selected objects.
     .....................................................................*/
     for (int i = 0; i < count; i++) {
       tgt = TheWorld().current_object().at(i)->As_Target();
-      RecordFile.WriteObject(tgt);
+      TheSession().record_file().WriteObject(tgt);
     }
 
     /*.....................................................................
     If 'SuperRecord', close the file now.
     .....................................................................*/
-    if (SuperRecord) {
-      RecordFile.Close();
+    if (TheSession().super_record()) {
+      TheSession().record_file().Close();
     }
   }
 
   /*------------------------------------------------------------------------
   Play back a game ("attract" mode)
   ------------------------------------------------------------------------*/
-  if (PlaybackGame) {
+  if (TheSession().playback_game()) {
     /*.....................................................................
     Read & set the map's location.
     .....................................................................*/
-    if (RecordFile.ReadObject(coord) &&
+    if (TheSession().record_file().ReadObject(coord) &&
         coord != TheMap().DesiredTacticalCoord) {
       TheMap().Set_Tactical_Position(coord);
     }
 
-    if (RecordFile.ReadObject(count)) {
+    if (TheSession().record_file().ReadObject(count)) {
       /*..................................................................
       Compute a CRC of the current object-selection list.
       ..................................................................*/
@@ -3246,7 +3285,7 @@ static void Do_Record_Playback() {
       Load the CRC of the objects on disk; if it doesn't match, select
       all objects as they're loaded.
       ..................................................................*/
-      RecordFile.ReadObject(sum2);
+      TheSession().record_file().ReadObject(sum2);
       if (sum2 != sum) {
         Unselect_All();
       }
@@ -3254,7 +3293,7 @@ static void Do_Record_Playback() {
       AllowVoice = true;
 
       for (int i = 0; i < count; i++) {
-        if (RecordFile.ReadObject(tgt)) {
+        if (TheSession().record_file().ReadObject(tgt)) {
           ObjectClass* obj = As_Object(tgt);
           if (obj && sum2 != sum) {
             obj->Select();

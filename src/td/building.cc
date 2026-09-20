@@ -183,6 +183,7 @@
 #include "td/jshell.h"
 #include "td/keyframe.h"
 #include "td/mapedit.h"
+#include "td/network.h"
 #include "td/object.h"
 #include "td/object_heaps.h"
 #include "td/overlay.h"
@@ -191,6 +192,7 @@
 #include "td/queue.h"
 #include "td/radio.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/smudge.h"
 #include "td/special.h"
 #include "td/target.h"
@@ -1711,7 +1713,7 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
     LastStrength = 0;
 
     if ((!IsDiscoveredByPlayer && TheMap().at(Coord_Cell(coord)).IsVisible) ||
-        GameToPlay != GAME_NORMAL) {
+        TheSession().type() != GAME_NORMAL) {
       Revealed(ThePlayer());
     }
     if (!House->IsHuman) {
@@ -1784,7 +1786,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
     **	Damage from an ion cannon against the Temple of Nod does more damage
     *than *	usual.
     */
-    if (GameToPlay == GAME_NORMAL && *this == STRUCT_TEMPLE &&
+    if (TheSession().type() == GAME_NORMAL && *this == STRUCT_TEMPLE &&
         warhead == WARHEAD_PB) {
       damage += damage / 2;
     }
@@ -2097,7 +2099,7 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
     IsCaptured = true;
   }
 
-  if (GameToPlay == GAME_INTERNET) {
+  if (TheSession().type() == GAME_INTERNET) {
     House->BuildingTotals->Increment_Unit_Total(static_cast<int>(type));
   }
 }
@@ -2148,7 +2150,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
   **	Special case for Moebius to run from destroyed technology
   **	building.
   */
-  if (GameToPlay == GAME_NORMAL && *this == STRUCT_MISSION &&
+  if (TheSession().type() == GAME_NORMAL && *this == STRUCT_MISSION &&
       ThePlayer()->ActLike == HOUSE_BAD && TheWorld().scenario() == 10) {
     auto* i = new InfantryClass(INFANTRY_CHAN, House->Class->House);
 
@@ -2270,7 +2272,7 @@ void BuildingClass::Active_Click_With(ActionType action, ObjectClass* object) {
   }
 
   if (action == ACTION_SELF && Class->IsFactory) {
-    OutList.Add(EventClass(EventClass::PRIMARY, As_Target()));
+    TheNetwork().out_list().Add(EventClass(EventClass::PRIMARY, As_Target()));
   }
 }
 
@@ -3798,7 +3800,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     ** Add this building to the list of buildings captured this game. For
     *internet stats purposes
     */
-    if (GameToPlay == GAME_INTERNET) {
+    if (TheSession().type() == GAME_INTERNET) {
       newowner->CapturedBuildings->Increment_Unit_Total(
           static_cast<int>(Class->Type));
     }
@@ -4976,7 +4978,8 @@ bool BuildingClass::Revealed(HouseClass* house) {
     **	owned house is not yet revealed, it won't be reflected in the sidebar
     **	selection icons.
     */
-    if (!In_Radio_Contact() && (house == House || GameToPlay != GAME_NORMAL) &&
+    if (!In_Radio_Contact() &&
+        (house == House || TheSession().type() != GAME_NORMAL) &&
         Mission != MISSION_CONSTRUCTION) {
       Grand_Opening();
     }
@@ -5059,7 +5062,7 @@ int BuildingClass::Pip_Count() const {
 void BuildingClass::Death_Announcement(const TechnoClass* /*source*/) const {
   Validate();
   if (IsDiscoveredByPlayer || IsOwnedByPlayer) {
-    if (House != ThePlayer() && GameToPlay != GAME_NORMAL) {
+    if (House != ThePlayer() && TheSession().type() != GAME_NORMAL) {
       if (Options.IsDeathAnnounce) {
         Speak(VOX_ENEMY_STRUCTURE);
       }

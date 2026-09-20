@@ -51,13 +51,13 @@
 #include "td/building.h"
 #include "td/cell.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/foot.h"
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/object.h"
 #include "td/rand.h"
+#include "td/session.h"
 #include "td/target.h"
 #include "td/team.h"
 #include "td/teamtype.h"
@@ -436,7 +436,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
       *created. *	This prevent "phantom" teams and team types from being
       *left around.
       */
-      if (GameToPlay == GAME_NORMAL && !placed) {
+      if (TheSession().type() == GAME_NORMAL && !placed) {
         return false;
       }
 
@@ -600,7 +600,7 @@ bool Create_Special_Reinforcement(const HouseClass* house,
       }
 
       const bool ok = Do_Reinforcements(team);
-      if (!ok && GameToPlay == GAME_NORMAL) {
+      if (!ok && TheSession().type() == GAME_NORMAL) {
         delete team;
       }
       return ok;

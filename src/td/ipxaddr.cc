@@ -209,7 +209,7 @@ void IPXAddressClass::Set_Address(IPXHeaderType* header) {
     */
     if (!UseVirtualSubnetServer) {
       if (target_mask == 0) {
-        target_mask = 1 << PlanetWestwoodIsHost;
+        target_mask = 1 << TheNetwork().westwood_is_host();
       }
       target_mask ^= 3;
     }

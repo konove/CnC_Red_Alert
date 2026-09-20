@@ -150,6 +150,7 @@
 #include "td/queue.h"
 #include "td/radio.h"
 #include "td/rand.h"
+#include "td/session.h"
 #include "td/target.h"
 #include "td/team.h"
 #include "td/techno.h"
@@ -294,7 +295,7 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house)
   *are created
   ** automatically, not bought.
   */
-  if (classid != AIRCRAFT_CARGO && GameToPlay == GAME_INTERNET) {
+  if (classid != AIRCRAFT_CARGO && TheSession().type() == GAME_INTERNET) {
     House->AircraftTotals->Increment_Unit_Total(static_cast<int>(classid));
   }
 }
@@ -2106,7 +2107,7 @@ ActionType AircraftClass::What_Action(CELL cell) const {
   Validate();
   ActionType action = FootClass::What_Action(cell);
 
-  if (action == ACTION_MOVE && GameToPlay == GAME_NORMAL &&
+  if (action == ACTION_MOVE && TheSession().type() == GAME_NORMAL &&
       !TheMap().at(cell).IsVisible) {
     action = ACTION_NOMOVE;
   }
@@ -2807,7 +2808,8 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
     return MOVE_NO;
   }
 
-  if (GameToPlay == GAME_NORMAL && IsOwnedByPlayer && !cellptr->IsVisible) {
+  if (TheSession().type() == GAME_NORMAL && IsOwnedByPlayer &&
+      !cellptr->IsVisible) {
     return MOVE_NO;
   }
 
@@ -2848,7 +2850,8 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
         const CELL newcell = Coord_Cell(newcoord);
 
         if (TheMap().In_Radar(newcell) &&
-            (GameToPlay != GAME_NORMAL || TheMap().at(newcell).IsVisible) &&
+            (TheSession().type() != GAME_NORMAL ||
+             TheMap().at(newcell).IsVisible) &&
             Cell_Seems_Ok(newcell, true)) {
           const int dist = Distance(newcoord);
           if (bestval == -1 || dist < bestval) {
@@ -3363,7 +3366,7 @@ int AircraftClass::Mission_Guard() {
   **	Special case to force the GDI helicopter to be brain dead in the Nod
   **	mission where it is supposed to be captured.
   */
-  if (GameToPlay == GAME_NORMAL && TheWorld().scenario() == 7 &&
+  if (TheSession().type() == GAME_NORMAL && TheWorld().scenario() == 7 &&
       House->Class->House == HOUSE_GOOD) {
     return kTicksPerSecond * 20;
   }

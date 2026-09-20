@@ -69,6 +69,7 @@
 #include "port/safe_string.h"
 #include "port/socket_bytes.h"
 #include "td/jshell.h"
+#include "td/network.h"
 
 #ifdef _WIN32
 #include <winsock.h>
@@ -415,7 +416,7 @@ bool TcpipManagerClass::Add_Client() {
   ** Bind our UDP socket to our UDP port number
   */
   addr.sin_family = AF_INET;
-  addr.sin_port = htons(static_cast<uint16_t>(PlanetWestwoodPortNumber));
+  addr.sin_port = htons(static_cast<uint16_t>(TheNetwork().westwood_port()));
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   if (bind(UDPSocket, SocketAddress(addr), sizeof(addr)) == SOCKET_ERROR) {
@@ -557,7 +558,7 @@ void TcpipManagerClass::Start_Client() {
   ** Bind our UDP socket to our UDP port number
   */
   addr.sin_family = AF_INET;
-  addr.sin_port = htons(static_cast<uint16_t>(PlanetWestwoodPortNumber));
+  addr.sin_port = htons(static_cast<uint16_t>(TheNetwork().westwood_port()));
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   if (bind(UDPSocket, SocketAddress(addr), sizeof(addr)) == SOCKET_ERROR) {

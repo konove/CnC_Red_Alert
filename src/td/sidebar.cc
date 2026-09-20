@@ -119,7 +119,6 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/event.h"
-#include "td/externs.h"
 #include "td/factory.h"
 #include "td/gadget.h"
 #include "td/heap.h"
@@ -128,11 +127,13 @@
 #include "td/jshell.h"
 #include "td/keyframe.h"
 #include "td/mapedit.h"
+#include "td/network.h"
 #include "td/object.h"
 #include "td/object_heaps.h"
 #include "td/power.h"
 #include "td/queue.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/shapebtn.h"
 #include "td/super.h"
 #include "td/techno.h"
@@ -390,7 +391,7 @@ void SidebarClass::Init_IO() {
 #endif
 #endif
 
-    if (IsRadarActive || GameToPlay != GAME_NORMAL) {
+    if (IsRadarActive || TheSession().type() != GAME_NORMAL) {
       Zoom.Enable();
     } else {
       Zoom.Disable();
@@ -837,7 +838,7 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
       ** player status => zoomed
       */
       if (IsRadarActive) {
-        if (Is_Zoomed() || GameToPlay == GAME_NORMAL) {
+        if (Is_Zoomed() || TheSession().type() == GAME_NORMAL) {
           Zoom_Mode(Coord_Cell(TacticalCoord));
         } else {
           if (!Is_Player_Names()) {
@@ -848,7 +849,7 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
           }
         }
       } else {
-        if (GameToPlay != GAME_NORMAL) {
+        if (TheSession().type() != GAME_NORMAL) {
           Player_Names(Is_Player_Names() == 0);
         }
       }
@@ -957,7 +958,7 @@ bool SidebarClass::Activate(int control) {
   const int sidex = TheScreen().visible_view().Get_Width() - SideBarWidth;
   const int sidewidth = TheScreen().visible_view().Get_Width() - sidex;
 
-  if (PlaybackGame) {
+  if (TheSession().playback_game()) {
     return old;
   }
 
@@ -1391,7 +1392,7 @@ bool SidebarClass::StripClass::Add(RTTIType type, int id) {
     BuildableCount++;
     IsToRedraw = true;
 #ifdef OBSOLETE
-    if (GameToPlay == GAME_NORMAL) {
+    if (TheSession().type() == GAME_NORMAL) {
       qsort(&Buildables[0], BuildableCount, sizeof(Buildables[0]), sortfunc);
     }
 #endif
@@ -1611,7 +1612,7 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
               switch (pending->What_Am_I()) {
                 case RTTI_UNIT:
                 case RTTI_AIRCRAFT:
-                  OutList.Add(
+                  TheNetwork().out_list().Add(
                       EventClass(EventClass::PLACE, pending->What_Am_I(), -1));
                   [[fallthrough]];
 
@@ -1620,7 +1621,7 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
                   break;
 
                 case RTTI_INFANTRY:
-                  OutList.Add(
+                  TheNetwork().out_list().Add(
                       EventClass(EventClass::PLACE, pending->What_Am_I(), -1));
                   Speak(VOX_UNIT_READY);
                   break;
@@ -2360,10 +2361,12 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
 
         if (!factory->Is_Building()) {
           Speak(VOX_CANCELED);
-          OutList.Add(EventClass(EventClass::ABANDON, otype, oid));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::ABANDON, otype, oid));
         } else {
           Speak(VOX_SUSPENDED);
-          OutList.Add(EventClass(EventClass::SUSPEND, otype, oid));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::SUSPEND, otype, oid));
         }
       }
 
@@ -2403,7 +2406,8 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                 BuildingClass* builder =
                     pending->Who_Can_Build_Me(false, false);
                 if (!builder) {
-                  OutList.Add(EventClass(EventClass::ABANDON, otype, oid));
+                  TheNetwork().out_list().Add(
+                      EventClass(EventClass::ABANDON, otype, oid));
                   Speak(VOX_NO_FACTORY);
                 } else {
                   /*
@@ -2421,7 +2425,8 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                     **	power, queue this event and process through normal house
                     **	production channels.
                     */
-                    OutList.Add(EventClass(EventClass::PLACE, otype, -1));
+                    TheNetwork().out_list().Add(
+                        EventClass(EventClass::PLACE, otype, -1));
                   }
                 }
               }
@@ -2431,7 +2436,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
               *construction *	normally.
               */
               Speak(VOX_BUILDING);
-              OutList.Add(
+              TheNetwork().out_list().Add(
                   EventClass(EventClass::PRODUCE,
                              base::At(Strip->Buildables, index).BuildableType,
                              base::At(Strip->Buildables, index).BuildableID));
@@ -2447,7 +2452,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
           //						Speak(VOX_NO_FACTORY);
           //					} else {
           Speak(VOX_BUILDING);
-          OutList.Add(
+          TheNetwork().out_list().Add(
               EventClass(EventClass::PRODUCE,
                          base::At(Strip->Buildables, index).BuildableType,
                          base::At(Strip->Buildables, index).BuildableID));

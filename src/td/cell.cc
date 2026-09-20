@@ -125,6 +125,7 @@
 #include "td/mouse.h"
 #include "td/object.h"
 #include "td/rand.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/super.h"
 #include "td/target.h"
@@ -589,7 +590,7 @@ void CellClass::Occupy_Down(ObjectClass* object) {
   **	If being placed down on a visible square, then flag this
   **	techno object as being revealed to the player.
   */
-  if (IsVisible || GameToPlay != GAME_NORMAL) {
+  if (IsVisible || TheSession().type() != GAME_NORMAL) {
     object->Revealed(ThePlayer());
   }
 
@@ -2009,7 +2010,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       int damage = 0;
       int what = kMoney;
 
-      if (GameToPlay != GAME_NORMAL &&
+      if (TheSession().type() != GAME_NORMAL &&
           (Random_Pick(1, 2) == 1 || !object->House->BScan)) {
         what = -1;
 
@@ -2029,8 +2030,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
         **	If the player should get an MCV replacement, then give it now
         *(probably).
         */
-        if (Random_Pick(0, 1) == 0 && MPlayerBases &&
-            !(object->House->UScan & kUnitFlagMcv) && object->House->BScan == 0 &&
+        if (Random_Pick(0, 1) == 0 && TheSession().bases() &&
+            !(object->House->UScan & kUnitFlagMcv) &&
+            object->House->BScan == 0 &&
             object->House->Available_Money() >
                 BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost +
                     BuildingTypeClass::As_Reference(STRUCT_POWER).Cost) {
@@ -2065,7 +2067,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       /*
       ** Keep track of the number of each type of crate found
       */
-      if (GameToPlay == GAME_INTERNET) {
+      if (TheSession().type() == GAME_INTERNET) {
         object->House->TotalCrates->Increment_Unit_Total(what);
       }
 
@@ -2074,7 +2076,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
       *discovered, flag *	to generate a new one.
       */
       CrateCount--;
-      if (!CrateMaker && CrateCount <= 0 && GameToPlay != GAME_NORMAL) {
+      if (!CrateMaker && CrateCount <= 0 &&
+          TheSession().type() != GAME_NORMAL) {
         CrateMaker = true;
         CrateTimer = 1;
       }
@@ -2090,7 +2093,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
         */
         case kMoney:
           new AnimClass(ANIM_CRATE_DOLLAR, Cell_Coord());
-          if (GameToPlay == GAME_NORMAL) {
+          if (TheSession().type() == GAME_NORMAL) {
             HouseClass::As_Pointer(object->Owner())->Refund_Money(2000);
           } else {
             HouseClass::As_Pointer(object->Owner())
@@ -2150,7 +2153,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           *than enough *	money to rebuild a new base. Of course, if he
           *already has an MCV, then don't *	give him another one.
           */
-          if (MPlayerBases && !(object->House->UScan & kUnitFlagMcv) &&
+          if (TheSession().bases() && !(object->House->UScan & kUnitFlagMcv) &&
               object->House->BScan == 0 &&
               object->House->Available_Money() >
                   BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost +
@@ -2170,11 +2173,11 @@ bool CellClass::Goodie_Check(FootClass* object) {
           while (!utp) {
             const UnitType utype =
                 Random_Pick(UNIT_HTANK, static_cast<UnitType>(kUnitCount - 1));
-            if (utype != UNIT_MCV || MPlayerBases) {
+            if (utype != UNIT_MCV || TheSession().bases()) {
               utp = &UnitTypeClass::As_Reference(utype);
               if (utp->IsCrateGoodie &&
                   (utp->Ownable & base::Bit<uint16_t>(object->Owner())) != 0 &&
-                  utp->Level <= BuildLevel + 2) {
+                  utp->Level <= TheWorld().build_level() + 2) {
                 break;
               }
               utp = nullptr;

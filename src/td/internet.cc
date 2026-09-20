@@ -74,10 +74,12 @@
 #include "td/jshell.h"
 #include "td/mplayer.h"
 #include "td/msgbox.h"
+#include "td/network.h"
 #include "td/palette.h"
 #include "td/palettes.h"
 #include "td/profile.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/tcpip.h"
 #include "td/text.h"
@@ -91,23 +93,11 @@
 #include "td/ccdde.h"
 #endif
 
-/***************************************************************************
-** Internet specific globals
-*/
-char PlanetWestwoodIPAddress[IP_ADDRESS_MAX] = {
-    "206.154.108.87"};                 // IP of server or other player
-int32_t PlanetWestwoodPortNumber = 1234;  // Port number to send to
-bool PlanetWestwoodIsHost =
-    false;  // Flag true if player has control of game options
-uint32_t PlanetWestwoodGameID;     // Game ID
-uint32_t PlanetWestwoodStartTime;  // Time that game was started
 #ifdef _WIN32
 HWND WChatHWND = 0;  // Handle to Wchat window.
 #endif
 bool UseVirtualSubnetServer;
 int InternetMaxPlayers;
-int WChatMaxAhead;
-int WChatSendRate;
 
 int Read_Game_Options();
 
@@ -173,7 +163,7 @@ void Check_From_WChat(const char* wchat_name) {
       }
       return;
     }
-    port::SafeCopy(PlanetWestwoodIPAddress, key_string);
+    port::SafeCopy(TheNetwork().westwood_address(), key_string);
 
     /*
     ** Get the port number
@@ -189,7 +179,7 @@ void Check_From_WChat(const char* wchat_name) {
       return;
     }
 
-    PlanetWestwoodPortNumber = tech::ParseIntegerOr<int>(key_string, 0);
+    TheNetwork().westwood_port() = tech::ParseIntegerOr<int>(key_string, 0);
 
     /*
     ** Get host or client
@@ -205,7 +195,8 @@ void Check_From_WChat(const char* wchat_name) {
       return;
     }
 
-    PlanetWestwoodIsHost = std::string_view(key_string).contains('1');
+    TheNetwork().westwood_is_host() =
+        std::string_view(key_string).contains('1');
 
     UseVirtualSubnetServer =
         WWGetPrivateProfileInt("Internet", "UseVSS", 0, ini_file) != 0;
@@ -276,50 +267,59 @@ int Read_Game_Options(const char* name) {
   /*------------------------------------------------------------------------
   Get the player's name
   ------------------------------------------------------------------------*/
-  WWGetPrivateProfileString("Options", "Handle", "Noname", MPlayerName, buffer);
-  port::SafeCopy(MPlayerGameName, MPlayerName);
-  MPlayerColorIdx = WWGetPrivateProfileInt("Options", "Color", 0, buffer);
-  MPlayerPrefColor = MPlayerColorIdx;
-  MPlayerHouse = static_cast<HousesType>(WWGetPrivateProfileInt(
+  WWGetPrivateProfileString("Options", "Handle", "Noname",
+                            TheSession().player_name(), buffer);
+  port::SafeCopy(TheSession().game_name(), TheSession().player_name());
+  TheSession().color_index() =
+      WWGetPrivateProfileInt("Options", "Color", 0, buffer);
+  TheSession().preferred_color() = TheSession().color_index();
+  TheSession().house() = static_cast<HousesType>(WWGetPrivateProfileInt(
       "Options", "Side", static_cast<int>(HOUSE_GOOD), buffer));
 
-  MPlayerCredits = WWGetPrivateProfileInt("Options", "Credits", 0, buffer);
-  MPlayerBases = WWGetPrivateProfileInt("Options", "Bases", 0, buffer);
-  MPlayerTiberium = WWGetPrivateProfileInt("Options", "Tiberium", 0, buffer);
-  MPlayerGoodies = WWGetPrivateProfileInt("Options", "Crates", 0, buffer);
-  MPlayerGhosts = WWGetPrivateProfileInt("Options", "AI", 0, buffer);
-  BuildLevel = WWGetPrivateProfileInt("Options", "BuildLevel", 0, buffer);
-  MPlayerUnitCount = WWGetPrivateProfileInt("Options", "UnitCount", 0, buffer);
-  Seed = WWGetPrivateProfileInt("Options", "Seed", 0, buffer);
+  TheSession().credits() =
+      WWGetPrivateProfileInt("Options", "Credits", 0, buffer);
+  TheSession().bases() = WWGetPrivateProfileInt("Options", "Bases", 0, buffer);
+  TheSession().tiberium() =
+      WWGetPrivateProfileInt("Options", "Tiberium", 0, buffer);
+  TheSession().crates() =
+      WWGetPrivateProfileInt("Options", "Crates", 0, buffer);
+  TheSession().ghosts() = WWGetPrivateProfileInt("Options", "AI", 0, buffer);
+  TheWorld().build_level() =
+      WWGetPrivateProfileInt("Options", "BuildLevel", 0, buffer);
+  TheSession().unit_count() =
+      WWGetPrivateProfileInt("Options", "UnitCount", 0, buffer);
+  TheWorld().seed() = WWGetPrivateProfileInt("Options", "Seed", 0, buffer);
   Special.IsCaptureTheFlag = static_cast<unsigned>(
       WWGetPrivateProfileInt("Options", "CaptureTheFlag", 0, buffer));
   // externs.h declares these unsigned long; the INI stores them as ints.
-  PlanetWestwoodGameID = static_cast<uint32_t>(
+  TheNetwork().westwood_game_id() = static_cast<uint32_t>(
       WWGetPrivateProfileInt("Internet", "GameID", 0, buffer));
-  PlanetWestwoodStartTime = static_cast<uint32_t>(
+  TheNetwork().westwood_start_time() = static_cast<uint32_t>(
       WWGetPrivateProfileInt("Internet", "StartTime", 0, buffer));
 
   InternetMaxPlayers =
       WWGetPrivateProfileInt("Internet", "MaxPlayers", 2, buffer);
 
-  if (MPlayerTiberium) {
+  if (TheSession().tiberium()) {
     Special.IsTGrowth = 1;
     Special.IsTSpread = 1;
   } else {
     Special.IsTGrowth = 0;
     Special.IsTSpread = 0;
   }
-  ScenarioIdx = WWGetPrivateProfileInt("Options", "Scenario", 0, buffer);
-  TheWorld().scenario() = ScenarioIdx;  // MPlayerFilenum[ScenarioIdx];
+  TheSession().scenario_index() =
+      WWGetPrivateProfileInt("Options", "Scenario", 0, buffer);
+  TheWorld().scenario() =
+      TheSession().scenario_index();  // MPlayerFilenum[ScenarioIdx];
 
   Options.GameSpeed = 0;
 
-  MPlayerLocalID = static_cast<unsigned char>(
-      Build_MPlayerID(MPlayerColorIdx, MPlayerHouse));
+  TheSession().local_id() = static_cast<unsigned char>(
+      Build_MPlayerID(TheSession().color_index(), TheSession().house()));
 
-  MPlayerMaxAhead = WChatMaxAhead =
+  TheSession().max_ahead() = TheNetwork().chat_max_ahead() =
       WWGetPrivateProfileInt("Timing", "MaxAhead", 9, buffer);
-  FrameSendRate = WChatSendRate =
+  TheSession().frame_send_rate() = TheNetwork().chat_send_rate() =
       WWGetPrivateProfileInt("Timing", "SendRate", 3, buffer);
 
   if (name) {
@@ -495,7 +495,7 @@ bool Do_The_Internet_Menu_Thang() {
     ** If the user is registered with Planet Westwood then spawn WChat.
     */
     if (Is_User_WChat_Registered(users_name, buffer_len)) {
-      GameStatisticsPacketSent = false;
+      TheNetwork().statistics_sent() = false;
       if (!Spawn_WChat(true)) {
         Set_Logic_Page(TheScreen().visible_view());
         Load_Title_Page(true);
@@ -603,7 +603,7 @@ bool Do_The_Internet_Menu_Thang() {
         Send_Data_To_DDE_Server(packet, strlen(packet),
                                 DDEServerClass::DDE_CONNECTION_FAILED);
 #endif
-        GameStatisticsPacketSent = false;
+        TheNetwork().statistics_sent() = false;
         Spawn_WChat(false);
         break;
       default:

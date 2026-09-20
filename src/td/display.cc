@@ -141,6 +141,7 @@
 #include "td/map.h"
 #include "td/mapedit.h"
 #include "td/msglist.h"
+#include "td/network.h"
 #include "td/object.h"
 #include "td/object_heaps.h"
 #include "td/palettes.h"
@@ -148,6 +149,7 @@
 #include "td/queue.h"
 #include "td/rand.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/target.h"
 #include "td/techno.h"
 #include "td/trigger.h"
@@ -1747,7 +1749,7 @@ void DisplayClass::Draw_It(bool forced) {
     ** flag all cells covered by the messages to redraw.  This will prevent
     ** messages from smearing the map if it scrolls.
     */
-    const int num = Messages.Num_Messages();
+    const int num = TheSession().messages().Num_Messages();
     if (num) {
       // One message covers a single map row, but the first one also claims the
       // row below it. At most five rows are ever covered.
@@ -3306,8 +3308,8 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
     **	Try to place the pending object onto the map.
     */
     if (ProximityCheck) {
-      OutList.Add(EventClass(EventClass::PLACE, PendingObjectPtr->What_Am_I(),
-                             cell + ZoneOffset));
+      TheNetwork().out_list().Add(EventClass(
+          EventClass::PLACE, PendingObjectPtr->What_Am_I(), cell + ZoneOffset));
     } else {
       Speak(VOX_DEPLOY);
     }
@@ -3399,13 +3401,15 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
 
         if (object != nullptr && action == ACTION_REPAIR &&
             object->What_Am_I() == RTTI_BUILDING) {
-          OutList.Add(EventClass(EventClass::REPAIR, object->As_Target()));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::REPAIR, object->As_Target()));
         }
         if (action == ACTION_SELL_UNIT && object) {
           switch (object->What_Am_I()) {
             case RTTI_AIRCRAFT:
             case RTTI_UNIT:
-              OutList.Add(EventClass(EventClass::SELL, object->As_Target()));
+              TheNetwork().out_list().Add(
+                  EventClass(EventClass::SELL, object->As_Target()));
               break;
 
             case RTTIType::RTTI_NONE:
@@ -3437,22 +3441,27 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         }
         if (action == ACTION_SELL) {
           if (object) {
-            OutList.Add(EventClass(EventClass::SELL, object->As_Target()));
+            TheNetwork().out_list().Add(
+                EventClass(EventClass::SELL, object->As_Target()));
           } else {
-            OutList.Add(EventClass(EventClass::SELL, As_Target(cell)));
+            TheNetwork().out_list().Add(
+                EventClass(EventClass::SELL, As_Target(cell)));
           }
         }
         if (action == ACTION_ION) {
-          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
-                                 static_cast<int>(SPC_ION_CANNON), cell));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::SPECIAL_PLACE,
+                         static_cast<int>(SPC_ION_CANNON), cell));
         }
         if (action == ACTION_NUKE_BOMB) {
-          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
-                                 static_cast<int>(SPC_NUCLEAR_BOMB), cell));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::SPECIAL_PLACE,
+                         static_cast<int>(SPC_NUCLEAR_BOMB), cell));
         }
         if (action == ACTION_AIR_STRIKE) {
-          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
-                                 static_cast<int>(SPC_AIR_STRIKE), cell));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::SPECIAL_PLACE,
+                         static_cast<int>(SPC_AIR_STRIKE), cell));
         }
       }
 

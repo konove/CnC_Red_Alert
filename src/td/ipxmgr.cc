@@ -83,12 +83,12 @@
 #include "td/combuf.h"
 #include "td/connect.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/ipx.h"
 #include "td/ipx95.h"
 #include "td/ipxaddr.h"
 #include "td/ipxconn.h"
 #include "td/ipxgconn.h"
+#include "td/session.h"
 #include "td/tcpip.h"
 
 /***************************************************************************
@@ -229,8 +229,7 @@ IPXManagerClass::~IPXManagerClass() {
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXManagerClass::Init() {
-
-  if (!(GameToPlay == GAME_INTERNET)) {
+  if (!(TheSession().type() == GAME_INTERNET)) {
     /*
     ----------------------- Error if IPX not installed -----------------------
     */
@@ -273,7 +272,7 @@ int IPXManagerClass::Init() {
   }
   NumConnections = 0;
 
-  if (!(GameToPlay == GAME_INTERNET)) {
+  if (!(TheSession().type() == GAME_INTERNET)) {
     /*------------------------------------------------------------------------
     Allocate real-mode memory
     ------------------------------------------------------------------------*/
@@ -306,7 +305,8 @@ int IPXManagerClass::Init() {
   /*------------------------------------------------------------------------
   Start Listening
   ------------------------------------------------------------------------*/
-  if ((!(GameToPlay == GAME_INTERNET)) && (!IPXConnClass::Start_Listening())) {
+  if ((!(TheSession().type() == GAME_INTERNET)) &&
+      (!IPXConnClass::Start_Listening())) {
     return 0;
   }
 

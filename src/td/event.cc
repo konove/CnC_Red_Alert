@@ -76,8 +76,10 @@
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/msglist.h"
+#include "td/network.h"
 #include "td/object.h"
 #include "td/object_heaps.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/target.h"
 #include "td/team.h"
@@ -466,8 +468,10 @@ void EventClass::Execute() {
 
       Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_SPECIAL_WARNING),
                           sender->Name);
-      Messages.Add_Message(
-          txt, base::At(MPlayerTColors, static_cast<int>(sender->RemapColor)),
+      TheSession().messages().Add_Message(
+          txt,
+          base::At(TheSession().text_colors(),
+                   static_cast<int>(sender->RemapColor)),
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, 0, 0);
       TheMap().Flag_To_Redraw(false);
     } break;
@@ -742,7 +746,7 @@ void EventClass::Execute() {
                      "C&C95 - Changing MaxAhead to %d frames\n",
                      Data.FrameInfo.Delay);
       CCDebugString(flip);
-      MPlayerMaxAhead = Data.FrameInfo.Delay;
+      TheSession().max_ahead() = Data.FrameInfo.Delay;
       break;
 
     //
@@ -760,14 +764,14 @@ void EventClass::Execute() {
       //  period of vulnerability's frame start & end values, so we
       //  can reschedule these events to execute after it's over.
       //
-      if (std::cmp_greater(Data.Timing.MaxAhead, MPlayerMaxAhead)) {
-        NewMaxAheadFrame1 = Frame;
-        NewMaxAheadFrame2 = Frame + Data.Timing.MaxAhead;
+      if (std::cmp_greater(Data.Timing.MaxAhead, TheSession().max_ahead())) {
+        TheNetwork().new_max_ahead_frame1() = Frame;
+        TheNetwork().new_max_ahead_frame2() = Frame + Data.Timing.MaxAhead;
       }
       // #endif
 
-      DesiredFrameRate = Data.Timing.DesiredFrameRate;
-      MPlayerMaxAhead = Data.Timing.MaxAhead;
+      TheSession().desired_frame_rate() = Data.Timing.DesiredFrameRate;
+      TheSession().max_ahead() = Data.Timing.MaxAhead;
 
       absl::SNPrintF(flip, sizeof(flip),
                      "C&C95 -  Timing packet: DesiredFrameRate = %d\n",
@@ -785,7 +789,8 @@ void EventClass::Execute() {
       */
       if (Special.IsFromWChat) {
 #ifdef _WIN32
-        MPlayerMaxAhead += DDEServer.Time_Since_Heartbeat() / (70 * 60);
+        TheSession().max_ahead() +=
+            DDEServer.Time_Since_Heartbeat() / (70 * 60);
 // if (DDEServer.Time_Since_Heartbeat() >= 70*60) CCDebugString ("C&C95 - Missed
 // a heartbeat\n");
 #endif
@@ -798,9 +803,10 @@ void EventClass::Execute() {
     // for the game.
     //
     case PROCESS_TIME:
-      for (i = 0; i < MPlayerCount; i++) {
-        if (MPlayerID == base::At(::MPlayerID, i)) {
-          base::At(TheirProcessTime, i) = Data.ProcessTime.AverageTicks;
+      for (i = 0; i < TheSession().player_count(); i++) {
+        if (MPlayerID == base::At(TheSession().player_ids(), i)) {
+          base::At(TheSession().their_process_time(), i) =
+              Data.ProcessTime.AverageTicks;
 
           char flip_text[128];
           absl::SNPrintF(flip_text, sizeof(flip_text),

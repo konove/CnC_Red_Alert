@@ -65,6 +65,7 @@
 #include "td/jshell.h"
 #include "td/list.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/shapebtn.h"
 #include "td/slider.h"
 #include "td/textbtn.h"
@@ -341,7 +342,7 @@ void SoundControlsClass::Process() {
     /*
     **	Invoke game callback.
     */
-    if (GameToPlay == GAME_NORMAL) {
+    if (TheSession().type() == GAME_NORMAL) {
       Call_Back();
     } else {
       if (Main_Loop()) {

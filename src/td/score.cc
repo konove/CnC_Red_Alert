@@ -89,11 +89,13 @@
 #include "td/logic.h"
 #include "td/mapedit.h"
 #include "td/mouse.h"
+#include "td/network.h"
 #include "td/nullmgr.h"
 #include "td/object.h"
 #include "td/palette.h"
 #include "td/palettes.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/text.h"
 #include "td/textblit.h"
@@ -794,7 +796,7 @@ void ScoreClass::Presentation() {
   if (!total) {
     total++;
   }
-  total *= BuildLevel + 1;
+  total *= TheWorld().build_level() + 1;
 
   // Load up the shapes for the Nod score screen
   if (player_house == HOUSE_GOOD) {
@@ -1163,7 +1165,8 @@ void Cycle_Wait_Click() {
 
   Keyboard::Clear();
   while (minclicks || (!Check_Key() && !ControlQ)) {
-    if (GameToPlay == GAME_NULL_MODEM || GameToPlay == GAME_MODEM) {
+    if (TheSession().type() == GAME_NULL_MODEM ||
+        TheSession().type() == GAME_MODEM) {
       // GameToPlay == GAME_INTERNET) {
 
       //
@@ -1172,20 +1175,21 @@ void Cycle_Wait_Click() {
       if (SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
         sendpacket.Command = SERIAL_SCORE_SCREEN;
         sendpacket.ResponseTime =
-            static_cast<uint32_t>(NullModem.Response_Time());
-        sendpacket.ID = static_cast<unsigned char>(ModemGameToPlay);
+            static_cast<uint32_t>(TheNetwork().null_modem().Response_Time());
+        sendpacket.ID =
+            static_cast<unsigned char>(TheNetwork().modem_game_type());
 
-        NullModem.Send_Message(base::ObjectBytes(sendpacket),
-                               sizeof(sendpacket), 0);
+        TheNetwork().null_modem().Send_Message(base::ObjectBytes(sendpacket),
+                                               sizeof(sendpacket), 0);
         timingtime = SystemTicks();
       }
 
-      if (NullModem.Get_Message(base::ObjectBytes(receivepacket), &packetlen) >
-          0) {
+      if (TheNetwork().null_modem().Get_Message(
+              base::ObjectBytes(receivepacket), &packetlen) > 0) {
         // throw packet away
       }
 
-      NullModem.Service();
+      TheNetwork().null_modem().Service();
     }
 
     Call_Back_Delay(1);
@@ -2222,8 +2226,8 @@ void Multi_Score_Presentation() {
   ** Move all the scores over a notch if there's more games than can be
   ** shown (which is known by MPlayerCurGame == MAX_MULTI_GAMES-1);
   */
-  if (MPlayerCurGame == MAX_MULTI_GAMES - 1) {
-    for (auto& i : MPlayerScore) {
+  if (TheSession().current_game() == MAX_MULTI_GAMES - 1) {
+    for (auto& i : TheSession().scores()) {
       for (int k = 0; k < MAX_MULTI_GAMES - 1; k++) {
         base::At(i.Kills, k) = base::At(i.Kills, k + 1);
       }
@@ -2231,7 +2235,7 @@ void Multi_Score_Presentation() {
   }
 
   int y = 41;
-  for (auto& i : MPlayerScore) {
+  for (auto& i : TheSession().scores()) {
     if (!std::string_view(i.Name).empty()) {
       const auto pal = base::At(_colors, i.Color);
 
@@ -2241,7 +2245,9 @@ void Multi_Score_Presentation() {
       Alloc_Object(new ScorePrintClass(Int_Print(i.Wins), 118, y, pal));
       Call_Back_Delay(6);
 
-      for (int k = 0; k <= std::min(MPlayerCurGame, MAX_MULTI_GAMES - 2); k++) {
+      for (int k = 0;
+           k <= std::min(TheSession().current_game(), MAX_MULTI_GAMES - 2);
+           k++) {
         if (base::At(i.Kills, k) >= 0) {
           Alloc_Object(new ScorePrintClass(Int_Print(base::At(i.Kills, k)),
                                            225 + (24 * k), y, pal));

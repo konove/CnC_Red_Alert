@@ -1,4 +1,3 @@
-#include "td/vector.h"
 // Exercise native event formats at deliberately unaligned packet addresses.
 #include <array>
 #include <cstddef>
@@ -7,21 +6,28 @@
 
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/installed.h"
 #include "gtest/gtest.h"
 #include "port/unaligned.h"
 #include "td/connect.h"
 #include "td/defines.h"
 #include "td/event.h"
+#include "td/network.h"
 #include "td/noseqcon.h"
 #include "td/queue.h"
-
-extern QueueClass<EventClass, MAX_EVENTS * 8> DoList;
+#include "td/vector.h"
 
 namespace {
+// Extract_*_Events() writes into the event queue Network owns, so the
+// fixture installs one. No socket and no port is opened by doing so.
 class QueueAlignmentTest : public testing::Test {
  protected:
-  void SetUp() override { DoList.Init(); }
-  void TearDown() override { DoList.Init(); }
+  void SetUp() override { TheNetwork().do_list().Init(); }
+  void TearDown() override { TheNetwork().do_list().Init(); }
+
+ private:
+  Network network_;
+  base::Installed<Network>::Scope network_scope_{network_};
 };
 
 // Queue-only connection: these tests do not send through a network device.
@@ -79,13 +85,13 @@ TEST_F(QueueAlignmentTest, ExtractsCompressedFrameAndPayloadFromOddAddress) {
   const int size = static_cast<int>(
       header_size + sizeof(EventClass::EventType) + sizeof(delay));
   EXPECT_EQ(Extract_Compressed_Events(packet, size), 2);
-  ASSERT_EQ(DoList.Count(), 2);
-  EXPECT_EQ(DoList.at(0).Type, EventClass::FRAMEINFO);
-  EXPECT_EQ(DoList.at(1).Type, EventClass::RESPONSE_TIME);
-  EXPECT_EQ(DoList.at(1).Frame, 123);
-  EXPECT_EQ(DoList.at(1).ID, static_cast<unsigned>(HOUSE_GOOD));
-  EXPECT_EQ(DoList.at(1).MPlayerID, 7);
-  EXPECT_EQ(DoList.at(1).Data.FrameInfo.Delay, 9);
+  ASSERT_EQ(TheNetwork().do_list().Count(), 2);
+  EXPECT_EQ(TheNetwork().do_list().at(0).Type, EventClass::FRAMEINFO);
+  EXPECT_EQ(TheNetwork().do_list().at(1).Type, EventClass::RESPONSE_TIME);
+  EXPECT_EQ(TheNetwork().do_list().at(1).Frame, 123);
+  EXPECT_EQ(TheNetwork().do_list().at(1).ID, static_cast<unsigned>(HOUSE_GOOD));
+  EXPECT_EQ(TheNetwork().do_list().at(1).MPlayerID, 7);
+  EXPECT_EQ(TheNetwork().do_list().at(1).Data.FrameInfo.Delay, 9);
 }
 
 TEST_F(QueueAlignmentTest, ExtractsUncompressedEventWithoutMutatingPacket) {
@@ -102,10 +108,10 @@ TEST_F(QueueAlignmentTest, ExtractsUncompressedEventWithoutMutatingPacket) {
       Extract_Uncompressed_Events(
           std::as_writable_bytes(std::span(bytes)).subspan(1), sizeof(event)),
       1);
-  ASSERT_EQ(DoList.Count(), 1);
-  EXPECT_EQ(DoList.at(0).Frame, 321);
-  EXPECT_EQ(DoList.at(0).Data.FrameInfo.Delay, 11);
-  EXPECT_FALSE(DoList.at(0).IsExecuted);
+  ASSERT_EQ(TheNetwork().do_list().Count(), 1);
+  EXPECT_EQ(TheNetwork().do_list().at(0).Frame, 321);
+  EXPECT_EQ(TheNetwork().do_list().at(0).Data.FrameInfo.Delay, 11);
+  EXPECT_FALSE(TheNetwork().do_list().at(0).IsExecuted);
   EXPECT_EQ(bytes, before);
 }
 
@@ -114,13 +120,13 @@ TEST_F(QueueAlignmentTest, RejectsTruncatedCompressedType) {
   EXPECT_EQ(
       Extract_Compressed_Events(std::as_bytes(std::span(bytes)), bytes.size()),
       0);
-  EXPECT_EQ(DoList.Count(), 0);
+  EXPECT_EQ(TheNetwork().do_list().Count(), 0);
 }
 TEST_F(QueueAlignmentTest, RejectsClaimedExtentBeyondStorage) {
   std::array<std::byte, sizeof(EventClass)> bytes{};
   EXPECT_EQ(Extract_Uncompressed_Events(bytes, sizeof(EventClass) + 1), 0);
   EXPECT_EQ(Extract_Compressed_Events(bytes, -1), 0);
-  EXPECT_EQ(DoList.Count(), 0);
+  EXPECT_EQ(TheNetwork().do_list().Count(), 0);
 }
 
 TEST_F(QueueAlignmentTest, RejectsTruncatedMissionRun) {
@@ -137,7 +143,7 @@ TEST_F(QueueAlignmentTest, RejectsTruncatedMissionRun) {
       static_cast<int>(header_size + sizeof(EventClass::EventType) + 1 +
                        sizeof(frame.Data.MegaMission));
   EXPECT_EQ(Extract_Compressed_Events(bytes, size), 1);
-  EXPECT_EQ(DoList.Count(), 1);
+  EXPECT_EQ(TheNetwork().do_list().Count(), 1);
 }
 
 }  // namespace

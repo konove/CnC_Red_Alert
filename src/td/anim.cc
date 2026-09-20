@@ -90,6 +90,7 @@
 #include "td/object_heaps.h"
 #include "td/palette.h"
 #include "td/palettes.h"
+#include "td/session.h"
 #include "td/smudge.h"
 #include "td/target.h"
 #include "td/techno.h"
@@ -1138,7 +1139,7 @@ void AnimClass::Middle() {
 
     int radius = 3;
     int rawdamage = 200;
-    if (GameToPlay == GAME_NORMAL) {
+    if (TheSession().type() == GAME_NORMAL) {
       radius = 4;
       rawdamage = 1000;
       Fade_Palette_To(ThePalettes().white_palette(), 30, nullptr);
@@ -1171,7 +1172,7 @@ void AnimClass::Middle() {
       }
     }
     Shake_Screen(3);
-    if (GameToPlay == GAME_NORMAL) {
+    if (TheSession().type() == GAME_NORMAL) {
       Fade_Palette_To(ThePalettes().game_palette(), 15, nullptr);
     }
   }

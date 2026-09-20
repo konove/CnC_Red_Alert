@@ -175,6 +175,7 @@
 #include "td/mouse.h"
 #include "td/mplayer.h"
 #include "td/msglist.h"
+#include "td/network.h"
 #include "td/object.h"
 #include "td/object_heaps.h"
 #include "td/profile.h"
@@ -183,6 +184,7 @@
 #include "td/region.h"
 #include "td/reinf.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/sidebar.h"
 #include "td/special.h"
 #include "td/super.h"
@@ -559,12 +561,14 @@ bool HouseClass::Can_Build(const TechnoTypeClass* type,
   /*
   **	Multiplayer game uses a different legality check for building.
   */
-  if (GameToPlay != GAME_NORMAL || (Special.IsJurassic && AreThingiesEnabled)) {
-    return (pre & flags) == pre && std::cmp_less_equal(type->Level, BuildLevel);
+  if (TheSession().type() != GAME_NORMAL ||
+      (Special.IsJurassic && AreThingiesEnabled)) {
+    return (pre & flags) == pre &&
+           std::cmp_less_equal(type->Level, TheWorld().build_level());
   }
 
 #ifdef NEWMENU
-  int level = BuildLevel;
+  int level = TheWorld().build_level();
 #else
   int level = TheWorld().scenario();
 #endif
@@ -860,7 +864,7 @@ void HouseClass::AI() {
   /*
   **	Check to see if the house wins.
   */
-  if (GameToPlay == GAME_NORMAL && IsToWin && BorrowedTime.Expired() &&
+  if (TheSession().type() == GAME_NORMAL && IsToWin && BorrowedTime.Expired() &&
       Blockage <= 0) {
     IsToWin = false;
     if (this == ThePlayer()) {
@@ -873,7 +877,8 @@ void HouseClass::AI() {
   /*
   **	Check to see if the house loses.
   */
-  if (GameToPlay == GAME_NORMAL && IsToLose && BorrowedTime.Expired()) {
+  if (TheSession().type() == GAME_NORMAL && IsToLose &&
+      BorrowedTime.Expired()) {
     IsToLose = false;
     if (this == ThePlayer()) {
       PlayerLoses = true;
@@ -897,7 +902,7 @@ void HouseClass::AI() {
   *adjustements. If the *	power rating drops below zero, then make it
   *zero.
   */
-  if (GameToPlay == GAME_NORMAL) {
+  if (TheSession().type() == GAME_NORMAL) {
     Power = std::max(Power, 0);
     Drain = std::max(Drain, 0);
   }
@@ -911,8 +916,8 @@ void HouseClass::AI() {
     /*
     **	Adjusted to reduce maximum number of teams created.
     */
-    const int maxteams =
-        Random_Pick(2, static_cast<int>(((BuildLevel - 1) / 3) + 1));
+    const int maxteams = Random_Pick(
+        2, static_cast<int>(((TheWorld().build_level() - 1) / 3) + 1));
     for (int index = 0; index < maxteams; index++) {
       const TeamTypeClass* ttype = Suggested_New_Team(true);
       if (ttype) {
@@ -948,7 +953,8 @@ void HouseClass::AI() {
     **	someone sitting on it.  If so, make the scatter.  If they
     *refuse, *	blow them up.
     */
-    if (Special.IsCaptureTheFlag && GameToPlay != GAME_NORMAL && FlagHome) {
+    if (Special.IsCaptureTheFlag && TheSession().type() != GAME_NORMAL &&
+        FlagHome) {
       TechnoClass* techno = TheMap().at(FlagHome).Cell_Techno();
       if (techno) {
         bool moving = false;
@@ -984,7 +990,7 @@ void HouseClass::AI() {
     ** Create the object, and use Scan_Place_Object to place the object near
     ** the center of the map.
     */
-    if (GameToPlay != GAME_NORMAL && Class->House == HOUSE_JP) {
+    if (TheSession().type() != GAME_NORMAL && Class->House == HOUSE_JP) {
       int rlimit = 0;
 
       if (Special.IsJurassic && AreThingiesEnabled) {
@@ -999,7 +1005,7 @@ void HouseClass::AI() {
         if (Special.IsJurassic && AreThingiesEnabled) {
           obj = new UnitClass(Random_Pick(UNIT_TRIC, UNIT_STEG), HOUSE_JP);
         } else {
-          if ((BuildLevel >= 7) && (!(UScan & kUnitFlagVice))) {
+          if ((TheWorld().build_level() >= 7) && (!(UScan & kUnitFlagVice))) {
             obj = new UnitClass(UNIT_VICE, HOUSE_JP);
           }
         }
@@ -1030,8 +1036,8 @@ void HouseClass::AI() {
     /*
     **	Replace the last harvester if there is a refinery present.
     */
-    if (GameToPlay == GAME_NORMAL && CurrentFrame() > 5 &&
-        (!IsHuman && BuildLevel <= 6) &&
+    if (TheSession().type() == GAME_NORMAL && CurrentFrame() > 5 &&
+        (!IsHuman && TheWorld().build_level() <= 6) &&
         (ActiveBScan & kStructFlagRefinery) != 0 &&
         (UScan & kUnitFlagHarvester) == 0 && !IsFreeHarvester) {
       IsFreeHarvester = true;
@@ -1167,8 +1173,8 @@ void HouseClass::AI() {
     **	center available, then make the ion cannon available as well.
     */
     if (ActiveBScan & kStructFlagEye &&
-        (ActLike == HOUSE_GOOD || GameToPlay != GAME_NORMAL) &&
-        (IsHuman || GameToPlay != GAME_NORMAL)) {
+        (ActLike == HOUSE_GOOD || TheSession().type() != GAME_NORMAL) &&
+        (IsHuman || TheSession().type() != GAME_NORMAL)) {
       IonCannon.Enable(false, this == ThePlayer(), Power_Fraction() < 0x0100);
 
       /*
@@ -1188,7 +1194,7 @@ void HouseClass::AI() {
   */
   if (NukeStrike.Is_Present()) {
     if (!(ActiveBScan & kStructFlagTemple) &&
-        (!NukeStrike.Is_One_Time() || GameToPlay == GAME_NORMAL)) {
+        (!NukeStrike.Is_One_Time() || TheSession().type() == GAME_NORMAL)) {
       /*
       **	Remove the nuke strike when there is no Temple of Nod.
       **	Note that this will not remove the one time created nuke strike.
@@ -1229,7 +1235,8 @@ void HouseClass::AI() {
     **	available, then make the nuke strike strike available.
     */
     if (ActiveBScan & kStructFlagTemple && Has_Nuke_Device() && IsHuman) {
-      NukeStrike.Enable(GameToPlay == GAME_NORMAL, this == ThePlayer());
+      NukeStrike.Enable(TheSession().type() == GAME_NORMAL,
+                        this == ThePlayer());
 
       /*
       **	Flag the sidebar to be redrawn if necessary.
@@ -1290,7 +1297,7 @@ void HouseClass::AI() {
   ** may not properly set IScan etc for each house; you have to go
   ** through each object's AI before it will be properly set.
   */
-  if (GameToPlay != GAME_NORMAL && !IsDefeated && !ActiveBScan &&
+  if (TheSession().type() != GAME_NORMAL && !IsDefeated && !ActiveBScan &&
       !ActiveAScan && !UScan && !ActiveIScan && CurrentFrame() > 0) {
     MPlayer_Defeated();
   }
@@ -1733,7 +1740,7 @@ void HouseClass::Read_INI(char* buffer) {
       p->Edge = SOURCE_NORTH;
     }
 
-    if (GameToPlay == GAME_NORMAL) {
+    if (TheSession().type() == GAME_NORMAL) {
       WWGetPrivateProfileString(
           hname, "Allies", "",
           std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
@@ -1910,7 +1917,8 @@ void HouseClass::Make_Ally(HousesType house) {
       }
     }
 
-    if ((TheDebugState().developer_mode() || GameToPlay != GAME_NORMAL) &&
+    if ((TheDebugState().developer_mode() ||
+         TheSession().type() != GAME_NORMAL) &&
         !TheWorld().scenario_init()) {
       char buffer[80];
 
@@ -1933,8 +1941,9 @@ void HouseClass::Make_Ally(HousesType house) {
 
       Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_HAS_ALLIED),
                           Name, As_Pointer(house)->Name);
-      Messages.Add_Message(
-          buffer, base::At(MPlayerTColors, static_cast<int>(RemapColor)),
+      TheSession().messages().Add_Message(
+          buffer,
+          base::At(TheSession().text_colors(), static_cast<int>(RemapColor)),
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, 0, 0);
       TheMap().Flag_To_Redraw(false);
     }
@@ -1966,14 +1975,16 @@ void HouseClass::Make_Enemy(HousesType house) {
     }
 
     if (enemy &&
-        (TheDebugState().developer_mode() || GameToPlay != GAME_NORMAL) &&
+        (TheDebugState().developer_mode() ||
+         TheSession().type() != GAME_NORMAL) &&
         !TheWorld().scenario_init()) {
       char buffer[80];
 
       Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_AT_WAR), Name,
                           enemy->Name);
-      Messages.Add_Message(
-          buffer, base::At(MPlayerTColors, static_cast<int>(RemapColor)),
+      TheSession().messages().Add_Message(
+          buffer,
+          base::At(TheSession().text_colors(), static_cast<int>(RemapColor)),
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
       TheMap().Flag_To_Redraw(false);
     }
@@ -2011,7 +2022,7 @@ std::span<const unsigned char> HouseClass::Remap_Table(bool blushing,
   ** For normal game play, return the TypeClass's remap table for this
   ** house type
   */
-  if (GameToPlay == GAME_NORMAL) {
+  if (TheSession().type() == GAME_NORMAL) {
     /*
     **	Special case exception for Nod and single player only. Remap
     **	buildings to red as opposed to the default color of bluegrey.
@@ -2541,7 +2552,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           **	Only in the multiplayer version can the nuclear bomb be
           **	sent from some off screen source.
           */
-          if (GameToPlay == GAME_NORMAL) {
+          if (TheSession().type() == GAME_NORMAL) {
             return false;
           }
 
@@ -2575,10 +2586,10 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
     case SPC_AIR_STRIKE:
       if (AirStrike.Is_Ready()) {
         int strike = 1;
-        if (GameToPlay == GAME_NORMAL) {
-          strike = Bound(BuildLevel / 3, 1, 3);
+        if (TheSession().type() == GAME_NORMAL) {
+          strike = Bound(TheWorld().build_level() / 3, 1, 3);
         } else {
-          strike = Bound(MPlayerUnitCount / 5, 1, 3);
+          strike = Bound(TheSession().unit_count() / 5, 1, 3);
         }
         Create_Air_Reinforcement(this, AIRCRAFT_A10, strike, MISSION_HUNT,
                                  As_Target(cell), kTargetNone);
@@ -3269,20 +3280,20 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         if (!Special.IsEasy && !IsHuman && ActiveBScan & kStructFlagRefinery &&
             !(UScan & kUnitFlagHarvester)) {
           techno = &UnitTypeClass::As_Reference(UNIT_HARVESTER);
-          if (std::cmp_less_equal(techno->Scenario, BuildLevel)) {
+          if (std::cmp_less_equal(techno->Scenario, TheWorld().build_level())) {
             break;
           }
           techno = nullptr;
         }
 
         base::EnumArray<UnitType, int, kUnitCount> counter{};
-        if (GameToPlay == GAME_NORMAL) {
+        if (TheSession().type() == GAME_NORMAL) {
           counter = {};
         } else {
           for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
             if (Can_Build(index, Class->House) &&
                 std::cmp_less_equal(UnitTypeClass::As_Reference(index).Level,
-                                    BuildLevel)) {
+                                    TheWorld().build_level())) {
               counter.at(index) = 16;
             } else {
               counter.at(index) = 0;
@@ -3396,14 +3407,15 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
     case RTTI_INFANTRYTYPE:
       if (CurUnits < MaxUnit) {
         base::EnumArray<InfantryType, int, kInfantryCount> counter{};
-        if (GameToPlay == GAME_NORMAL) {
+        if (TheSession().type() == GAME_NORMAL) {
           counter = {};
         } else {
           for (InfantryType index = INFANTRY_E1; index < INFANTRY_COUNT;
                index++) {
             if (Can_Build(index, Class->House) &&
                 std::cmp_less_equal(
-                    InfantryTypeClass::As_Reference(index).Level, BuildLevel)) {
+                    InfantryTypeClass::As_Reference(index).Level,
+                    TheWorld().build_level())) {
               counter.at(index) = 16;
             } else {
               counter.at(index) = 0;
@@ -3810,7 +3822,7 @@ void HouseClass::MPlayer_Defeated() {
   - Add my defeat message
   ------------------------------------------------------------------------*/
   if (ThePlayer() == this) {
-    MPlayerObiWan = true;
+    TheSession().obi_wan() = true;
     TheDebugState().set_unshroud(true);
     TheScreen().hidden_page().Clear();
     TheMap().Flag_To_Redraw(true);
@@ -3819,10 +3831,10 @@ void HouseClass::MPlayer_Defeated() {
     Pop up a message showing that I was defeated
     .....................................................................*/
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_PLAYER_DEFEATED),
-                        MPlayerName);
-    Messages.Add_Message(txt, base::At(MPlayerTColors, MPlayerColorIdx),
-                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
-                         0, 0);
+                        TheSession().player_name());
+    TheSession().messages().Add_Message(
+        txt, base::At(TheSession().text_colors(), TheSession().color_index()),
+        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
     TheMap().Flag_To_Redraw(false);
 
   } else {
@@ -3833,19 +3845,19 @@ void HouseClass::MPlayer_Defeated() {
       Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_PLAYER_DEFEATED),
                           Text_String(TXT_UNKNOWN));
       id = 0;
-      for (i = 0; i < MPlayerCount; i++) {
-        house = base::At(MPlayerHouses, i);
+      for (i = 0; i < TheSession().player_count(); i++) {
+        house = base::At(TheSession().player_houses(), i);
         if (As_Pointer(house) == this) {
           Format_Runtime_Text(txt, sizeof(txt),
                               Text_String(TXT_PLAYER_DEFEATED),
-                              base::At(MPlayerNames, i));
-          id = base::At(MPlayerID, i);
+                              base::At(TheSession().player_names(), i));
+          id = base::At(TheSession().player_ids(), i);
         }
       }
 
-      Messages.Add_Message(
+      TheSession().messages().Add_Message(
           txt,
-          base::At(MPlayerTColors,
+          base::At(TheSession().text_colors(),
                    static_cast<int>(MPlayerID_To_ColorIndex(id))),
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
       TheMap().Flag_To_Redraw(false);
@@ -3857,7 +3869,7 @@ void HouseClass::MPlayer_Defeated() {
   ------------------------------------------------------------------------*/
   int num_alive = 0;
   int num_humans = 0;
-  for (i = 0; i < MPlayerMax; i++) {
+  for (i = 0; i < TheSession().max_players(); i++) {
     hptr =
         As_Pointer(static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + i));
     if (hptr && hptr->IsDefeated == 0) {
@@ -3873,7 +3885,7 @@ void HouseClass::MPlayer_Defeated() {
   there's only one player left:
   ------------------------------------------------------------------------*/
   int all_allies = 1;
-  for (i = 0; i < MPlayerMax; i++) {
+  for (i = 0; i < TheSession().max_players(); i++) {
     /*.....................................................................
     Get a pointer to this house
     .....................................................................*/
@@ -3887,7 +3899,7 @@ void HouseClass::MPlayer_Defeated() {
     Loop through all houses; if there's one left alive that this house
     isn't allied with, then all_allies will be false
     .....................................................................*/
-    for (int j = 0; j < MPlayerMax; j++) {
+    for (int j = 0; j < TheSession().max_players(); j++) {
       HouseClass* hptr2 = As_Pointer(
           static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + j));
       if (!hptr2) {
@@ -3926,15 +3938,15 @@ void HouseClass::MPlayer_Defeated() {
     /*---------------------------------------------------------------------
     Find each player's score index
     ---------------------------------------------------------------------*/
-    for (i = 0; i < MPlayerCount; i++) {
+    for (i = 0; i < TheSession().player_count(); i++) {
       base::At(score_index, i) = -1;
 
       /*..................................................................
       Search for this player's name in the MPlayerScore array
       ..................................................................*/
-      for (int j = 0; j < MPlayerNumScores; j++) {
-        if (absl::EqualsIgnoreCase(base::At(MPlayerNames, i),
-                                   base::At(MPlayerScore, j).Name)) {
+      for (int j = 0; j < TheSession().score_count(); j++) {
+        if (absl::EqualsIgnoreCase(base::At(TheSession().player_names(), i),
+                                   base::At(TheSession().scores(), j).Name)) {
           base::At(score_index, i) = j;
           break;
         }
@@ -3944,9 +3956,9 @@ void HouseClass::MPlayer_Defeated() {
       If the index is still -1, the name wasn't found; add a new entry.
       ..................................................................*/
       if (base::At(score_index, i) == -1) {
-        if (MPlayerNumScores < MAX_MULTI_NAMES) {
-          base::At(score_index, i) = MPlayerNumScores;
-          MPlayerNumScores++;
+        if (TheSession().score_count() < MAX_MULTI_NAMES) {
+          base::At(score_index, i) = TheSession().score_count();
+          TheSession().score_count()++;
         } else {
           /*...............................................................
           For each player in the scores array, count the # of '-1' entries
@@ -3955,10 +3967,10 @@ void HouseClass::MPlayer_Defeated() {
           ...............................................................*/
           int max_index = 0;
           int max_count = 0;
-          for (int j = 0; j < MPlayerNumScores; j++) {
+          for (int j = 0; j < TheSession().score_count(); j++) {
             int count = 0;
-            for (int k = MPlayerNumScores - 1; k >= 0; k--) {
-              if (base::At(base::At(MPlayerScore, j).Kills, k) == -1) {
+            for (int k = TheSession().score_count() - 1; k >= 0; k--) {
+              if (base::At(base::At(TheSession().scores(), j).Kills, k) == -1) {
                 count++;
               } else {
                 break;
@@ -3975,11 +3987,12 @@ void HouseClass::MPlayer_Defeated() {
         /*...............................................................
         Initialize this score entry
         ...............................................................*/
-        base::At(MPlayerScore, base::At(score_index, i)).Wins = 0;
-        port::SafeCopy(base::At(MPlayerScore, base::At(score_index, i)).Name,
-                       base::At(MPlayerNames, i));
+        base::At(TheSession().scores(), base::At(score_index, i)).Wins = 0;
+        port::SafeCopy(
+            base::At(TheSession().scores(), base::At(score_index, i)).Name,
+            base::At(TheSession().player_names(), i));
         for (int& Kill :
-             base::At(MPlayerScore, base::At(score_index, i)).Kills) {
+             base::At(TheSession().scores(), base::At(score_index, i)).Kills) {
           Kill = -1;
         }
       }
@@ -3988,14 +4001,15 @@ void HouseClass::MPlayer_Defeated() {
       Init this player's Kills to 0 (-1 means he didn't play this round;
       0 means he played but got no kills).
       ..................................................................*/
-      base::At(base::At(MPlayerScore, base::At(score_index, i)).Kills,
-               MPlayerCurGame) = 0;
+      base::At(base::At(TheSession().scores(), base::At(score_index, i)).Kills,
+               TheSession().current_game()) = 0;
 
       /*..................................................................
       Init this player's color to his last-used color index
       ..................................................................*/
-      base::At(MPlayerScore, base::At(score_index, i)).Color =
-          static_cast<int>(MPlayerID_To_ColorIndex(base::At(MPlayerID, i)));
+      base::At(TheSession().scores(), base::At(score_index, i)).Color =
+          static_cast<int>(
+              MPlayerID_To_ColorIndex(base::At(TheSession().player_ids(), i)));
     }
 
     /*---------------------------------------------------------------------
@@ -4004,26 +4018,28 @@ void HouseClass::MPlayer_Defeated() {
       - If this player is undefeated this round, he's the winner
       - Each player's Kills value is the sum of the unit's they killed
     ---------------------------------------------------------------------*/
-    for (i = 0; i < MPlayerCount; i++) {
-      hptr = As_Pointer(base::At(MPlayerHouses, i));
+    for (i = 0; i < TheSession().player_count(); i++) {
+      hptr = As_Pointer(base::At(TheSession().player_houses(), i));
 
       /*..................................................................
       If this house was undefeated, it must have been the winner.  (If
       no human houses are undefeated, the computer won.)
       ..................................................................*/
       if (!hptr->IsDefeated) {
-        base::At(MPlayerScore, base::At(score_index, i)).Wins++;
+        base::At(TheSession().scores(), base::At(score_index, i)).Wins++;
       }
 
       /*..................................................................
       Tally up all kills for this player
       ..................................................................*/
       for (house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
-        base::At(base::At(MPlayerScore, base::At(score_index, i)).Kills,
-                 MPlayerCurGame) += hptr->UnitsKilled.at(house);
+        base::At(
+            base::At(TheSession().scores(), base::At(score_index, i)).Kills,
+            TheSession().current_game()) += hptr->UnitsKilled.at(house);
 
-        base::At(base::At(MPlayerScore, base::At(score_index, i)).Kills,
-                 MPlayerCurGame) += hptr->BuildingsKilled.at(house);
+        base::At(
+            base::At(TheSession().scores(), base::At(score_index, i)).Kills,
+            TheSession().current_game()) += hptr->BuildingsKilled.at(house);
       }
     }
 
@@ -4032,13 +4048,14 @@ void HouseClass::MPlayer_Defeated() {
     of the Main_Loop() before we detect that the game is over, and we'll
     end up waiting for frame sync packets from the other machines.
     ---------------------------------------------------------------------*/
-    if (GameToPlay == GAME_IPX || GameToPlay == GAME_INTERNET) {
+    if (TheSession().type() == GAME_IPX ||
+        TheSession().type() == GAME_INTERNET) {
       i = 0;
-      while (Ipx.Num_Connections() && i++ < 1000) {
-        id = static_cast<unsigned char>(Ipx.Connection_ID(0));
-        Ipx.Delete_Connection(id);
+      while (TheNetwork().ipx().Num_Connections() && i++ < 1000) {
+        id = static_cast<unsigned char>(TheNetwork().ipx().Connection_ID(0));
+        TheNetwork().ipx().Delete_Connection(id);
       }
-      MPlayerCount = 0;
+      TheSession().player_count() = 0;
     }
   }
 
@@ -4386,7 +4403,7 @@ int HouseClass::Power_Fraction() const {
  *=============================================================================================*/
 bool HouseClass::Has_Nuke_Device() const {
   Validate();
-  if (GameToPlay != GAME_NORMAL || !IsHuman) {
+  if (TheSession().type() != GAME_NORMAL || !IsHuman) {
     return true;
   }
   return (NukePieces & 0x07) == 0x07;

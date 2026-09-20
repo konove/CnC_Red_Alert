@@ -68,6 +68,7 @@
 #include "td/goptions.h"
 #include "td/jshell.h"
 #include "td/rand.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/text.h"
 #include "td/world.h"
@@ -479,7 +480,7 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
           (Special.IsVariation && _themes.at(index).Variation &&
            index != THEME_WIN1 &&
 #ifndef DEMO
-           (GameToPlay != GAME_NORMAL ||
+           (TheSession().type() != GAME_NORMAL ||
             _themes.at(index).Scenario <= TheWorld().scenario()) &&
 #endif
            (index != THEME_J1 || Special.IsJurassic)));

@@ -256,7 +256,7 @@ bool Expansion_Dialog() {
           TheWorld().scen_player() = SCEN_PLAYER_NOD;
         }
         TheWorld().scen_dir() = SCEN_DIR_EAST;
-        Whom = HOUSE_GOOD;
+        TheWorld().whom() = HOUSE_GOOD;
         TheWorld().scenario() = list.Current_Scenario();
         process = false;
         okval = true;
@@ -266,7 +266,7 @@ bool Expansion_Dialog() {
       case ButtonKey(201):
         TheWorld().scen_player() = SCEN_PLAYER_GDI;
         TheWorld().scen_dir() = SCEN_DIR_EAST;
-        Whom = HOUSE_GOOD;
+        TheWorld().whom() = HOUSE_GOOD;
         TheWorld().scenario() = list.Current_Scenario();
         process = false;
         okval = false;
@@ -410,7 +410,7 @@ bool Bonus_Dialog() {
           TheWorld().scen_player() = SCEN_PLAYER_NOD;
         }
         TheWorld().scen_dir() = SCEN_DIR_EAST;
-        Whom = HOUSE_GOOD;
+        TheWorld().whom() = HOUSE_GOOD;
         TheWorld().scenario() = list.Current_Scenario();
         process = false;
         okval = true;
@@ -420,7 +420,7 @@ bool Bonus_Dialog() {
       case ButtonKey(201):
         TheWorld().scen_player() = SCEN_PLAYER_GDI;
         TheWorld().scen_dir() = SCEN_DIR_EAST;
-        Whom = HOUSE_GOOD;
+        TheWorld().whom() = HOUSE_GOOD;
         TheWorld().scenario() = list.Current_Scenario();
         process = false;
         okval = false;

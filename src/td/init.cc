@@ -114,6 +114,7 @@
 #include "td/msgbox.h"
 #include "td/msglist.h"
 #include "td/netdlg.h"
+#include "td/network.h"
 #include "td/nulldlg.h"
 #include "td/nullmgr.h"
 #include "td/object_heaps.h"
@@ -126,6 +127,7 @@
 #include "td/scenario.h"
 #include "td/score.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/smudge.h"
 #include "td/special.h"
 #include "td/startup.h"
@@ -597,10 +599,10 @@ bool Init_Game() {
   /*
   **	Initialize the multiplayer score values
   */
-  MPlayerGamesPlayed = 0;
-  MPlayerNumScores = 0;
-  MPlayerCurGame = 0;
-  for (auto& i : MPlayerScore) {
+  TheSession().games_played() = 0;
+  TheSession().score_count() = 0;
+  TheSession().current_game() = 0;
+  for (auto& i : TheSession().scores()) {
     base::At(i.Name, 0) = '\0';
     i.Wins = 0;
     for (int& kills : i.Kills) {
@@ -745,12 +747,12 @@ bool Select_Game(bool fade) {
   **	[Re]set any globals that need it, in preparation for a new scenario
   */
   GameActive = true;
-  DoList.Init();
-  OutList.Init();
+  TheNetwork().do_list().Init();
+  TheNetwork().out_list().Init();
   TheGameClock().set_frame(0);
   PlayerWins = false;
   PlayerLoses = false;
-  MPlayerObiWan = false;
+  TheSession().obi_wan() = false;
   TheDebugState().set_unshroud(false);
   TheMap().Set_Cursor_Shape({});
   TheMap().PendingObjectPtr = nullptr;
@@ -764,17 +766,17 @@ bool Select_Game(bool fade) {
   ** Init MPlayerMaxAhead to an even multiple of FrameSendRate, and it must
   **   be at least 2 * MPlayerMaxAhead
   */
-  CommProtocol = COMM_PROTOCOL_SINGLE_NO_COMP;
+  TheSession().comm_protocol() = COMM_PROTOCOL_SINGLE_NO_COMP;
   if (!Special.IsFromWChat) {
-    FrameSendRate = 3;
+    TheSession().frame_send_rate() = 3;
   }
 
-  ProcessTicks = 0;
-  ProcessFrames = 0;
-  DesiredFrameRate = 30;
+  TheSession().process_ticks() = 0;
+  TheSession().process_frames() = 0;
+  TheSession().desired_frame_rate() = 30;
   // #if(TIMING_FIX)
-  NewMaxAheadFrame1 = 0;
-  NewMaxAheadFrame2 = 0;
+  TheNetwork().new_max_ahead_frame1() = 0;
+  TheNetwork().new_max_ahead_frame2() = 0;
   // #endif
 
   /*
@@ -783,7 +785,8 @@ bool Select_Game(bool fade) {
   ** Kills for this game.  Kills of -1 means this player didn't play this round.
   */
   for (int i = 0; i < MAX_MULTI_GAMES; i++) {
-    base::At(base::At(MPlayerScore, i).Kills, MPlayerCurGame) = -1;
+    base::At(base::At(TheSession().scores(), i).Kills,
+             TheSession().current_game()) = -1;
   }
 
   /*
@@ -795,7 +798,7 @@ bool Select_Game(bool fade) {
   **	If the last game we played was a multiplayer game, jump right to that
   **	menu by pre-setting 'selection'.
   */
-  if (GameToPlay == GAME_NORMAL) {
+  if (TheSession().type() == GAME_NORMAL) {
     selection = kSelNone;
   } else {
     selection = kSelMultiplayerGame;
@@ -816,13 +819,14 @@ bool Select_Game(bool fade) {
     ** If we're playing back a recording, load all pertinant values & skip
     ** the menu loop.  Hide the now-useless mouse pointer.
     */
-    if (PlaybackGame && RecordFile.IsAvailable()) {
-      if (RecordFile.Open(FileAccess::kRead)) {
+    if (TheSession().playback_game() &&
+        TheSession().record_file().IsAvailable()) {
+      if (TheSession().record_file().Open(FileAccess::kRead)) {
         Load_Recording_Values();
         process = false;
         Theme.Fade_Out();
       } else {
-        PlaybackGame = false;
+        TheSession().playback_game() = false;
       }
     }
 
@@ -834,7 +838,7 @@ bool Select_Game(bool fade) {
           false;  // Dont play intro if we were spawned from wchat
       selection = kSelInternet;
       Theme.Queue_Song(THEME_NONE);
-      GameToPlay = GAME_INTERNET;
+      TheSession().type() = GAME_INTERNET;
       display = false;
       Set_Logic_Page(TheScreen().visible_view());
     }
@@ -845,9 +849,10 @@ bool Select_Game(bool fade) {
             std::string_view{options.new_game}.substr(3, 2), 0);
         TheWorld().scen_player() =
             options.new_game.at(2) == 'B' ? SCEN_PLAYER_NOD : SCEN_PLAYER_GDI;
-        Whom = TheWorld().scen_player() == SCEN_PLAYER_NOD ? HOUSE_BAD
-                                                           : HOUSE_GOOD;
-        GameToPlay = GAME_NORMAL;
+        TheWorld().whom() = TheWorld().scen_player() == SCEN_PLAYER_NOD
+                                ? HOUSE_BAD
+                                : HOUSE_GOOD;
+        TheSession().type() = GAME_NORMAL;
         process = false;
         continue;
       }
@@ -933,7 +938,7 @@ bool Select_Game(bool fade) {
         Check_From_WChat(NULL);
         selection = kSelMultiplayerGame;
         Theme.Queue_Song(THEME_NONE);
-        GameToPlay = GAME_INTERNET;
+        TheSession().type() = GAME_INTERNET;
       } else {
         /*
         ** We werent spawned but we could still receive a DDE packet from wchat
@@ -974,7 +979,7 @@ bool Select_Game(bool fade) {
               Check_From_WChat(NULL);
               selection = kSelMultiplayerGame;
               display = false;
-              GameToPlay = GAME_INTERNET;
+              TheSession().type() = GAME_INTERNET;
             } else {
               selection = kSelNone;
               display = true;
@@ -983,7 +988,7 @@ bool Select_Game(bool fade) {
             DLOG(INFO) << "C&C95 - About to call Check_From_WChat.";
             Check_From_WChat(NULL);
             display = false;
-            GameToPlay = GAME_INTERNET;
+            TheSession().type() = GAME_INTERNET;
             selection = kSelMultiplayerGame;
           }
 #endif
@@ -997,7 +1002,7 @@ bool Select_Game(bool fade) {
           if (Expansion_Dialog()) {
             Theme.Fade_Out();
             //						Theme.Queue_Song(THEME_AOI);
-            GameToPlay = GAME_NORMAL;
+            TheSession().type() = GAME_NORMAL;
             process = false;
           } else {
             display = true;
@@ -1031,7 +1036,7 @@ bool Select_Game(bool fade) {
 
           if (Bonus_Dialog()) {
             Theme.Fade_Out();
-            GameToPlay = GAME_NORMAL;
+            TheSession().type() = GAME_NORMAL;
             process = false;
           } else {
             display = true;
@@ -1068,14 +1073,14 @@ bool Select_Game(bool fade) {
           Show_Mouse();
 
           TheWorld().scenario() = 1;
-          BuildLevel = 1;
+          TheWorld().build_level() = 1;
 #else
           TheWorld().scenario() = 1;
-          BuildLevel = 1;
+          TheWorld().build_level() = 1;
 #endif
           TheWorld().scen_player() = SCEN_PLAYER_GDI;
           TheWorld().scen_dir() = SCEN_DIR_EAST;
-          Whom = HOUSE_GOOD;
+          TheWorld().whom() = HOUSE_GOOD;
 
 #ifndef DEMO
           Theme.Fade_Out();
@@ -1093,7 +1098,7 @@ bool Select_Game(bool fade) {
             TheWorld().scen_dir() = SCEN_DIR_EAST;
           }
 
-          GameToPlay = GAME_NORMAL;
+          TheSession().type() = GAME_NORMAL;
           process = false;
           break;
 
@@ -1138,15 +1143,15 @@ bool Select_Game(bool fade) {
           fade = true;
           selection = kSelNone;
 #else
-          switch (GameToPlay) {
+          switch (TheSession().type()) {
             /*
             **	If 'GameToPlay' isn't already set up for a multiplayer game,
             **	we must prompt the user for which type of multiplayer game
             **	they want.
             */
             case GAME_NORMAL:
-              GameToPlay = Select_MPlayer_Game();
-              if (GameToPlay == GAME_NORMAL) {  // 'Cancel'
+              TheSession().type() = Select_MPlayer_Game();
+              if (TheSession().type() == GAME_NORMAL) {  // 'Cancel'
                 display = true;
                 selection = kSelNone;
               }
@@ -1154,32 +1159,34 @@ bool Select_Game(bool fade) {
 
             case GAME_NULL_MODEM:
             case GAME_MODEM:
-              if (NullModem.Num_Connections()) {
-                NullModem.Init_Send_Queue();
+              if (TheNetwork().null_modem().Num_Connections()) {
+                TheNetwork().null_modem().Init_Send_Queue();
 
-                if ((GameToPlay == GAME_NULL_MODEM &&
-                     ModemGameToPlay == MODEM_NULL_HOST) ||
-                    (GameToPlay == GAME_MODEM &&
-                     ModemGameToPlay == MODEM_DIALER)) {
+                if ((TheSession().type() == GAME_NULL_MODEM &&
+                     TheNetwork().modem_game_type() == MODEM_NULL_HOST) ||
+                    (TheSession().type() == GAME_MODEM &&
+                     TheNetwork().modem_game_type() == MODEM_DIALER)) {
                   if (!Com_Scenario_Dialog()) {
-                    GameToPlay = Select_Serial_Dialog();
-                    if (GameToPlay == GAME_NORMAL) {  // user hit Cancel
+                    TheSession().type() = Select_Serial_Dialog();
+                    if (TheSession().type() ==
+                        GAME_NORMAL) {  // user hit Cancel
                       display = true;
                       selection = kSelNone;
                     }
                   }
                 } else {
                   if (!Com_Show_Scenario_Dialog()) {
-                    GameToPlay = Select_Serial_Dialog();
-                    if (GameToPlay == GAME_NORMAL) {  // user hit Cancel
+                    TheSession().type() = Select_Serial_Dialog();
+                    if (TheSession().type() ==
+                        GAME_NORMAL) {  // user hit Cancel
                       display = true;
                       selection = kSelNone;
                     }
                   }
                 }
               } else {
-                GameToPlay = Select_MPlayer_Game();
-                if (GameToPlay == GAME_NORMAL) {  // 'Cancel'
+                TheSession().type() = Select_MPlayer_Game();
+                if (TheSession().type() == GAME_NORMAL) {  // 'Cancel'
                   display = true;
                   selection = kSelNone;
                 }
@@ -1202,18 +1209,18 @@ bool Select_Game(bool fade) {
                 if (Winsock.Init()) {
                   DLOG(INFO) << "C&C95 - About to read multiplayer settings.";
                   Read_MultiPlayer_Settings();
-                  Server = PlanetWestwoodIsHost;
+                  Server = TheNetwork().westwood_is_host();
 
                   DLOG(INFO) << "C&C95 - About to set addresses.";
-                  Winsock.Set_Host_Address(PlanetWestwoodIPAddress);
+                  Winsock.Set_Host_Address(TheNetwork().westwood_address());
 
                   DLOG(INFO)
                       << "C&C95 - About to call Start_Server or Start_Client.";
                   if (Server) {
-                    ModemGameToPlay = INTERNET_HOST;
+                    TheNetwork().modem_game_type() = INTERNET_HOST;
                     Winsock.Start_Server();
                   } else {
-                    ModemGameToPlay = INTERNET_JOIN;
+                    TheNetwork().modem_game_type() = INTERNET_JOIN;
                     Winsock.Start_Client();
                   }
 
@@ -1240,7 +1247,7 @@ bool Select_Game(bool fade) {
 
                 } else {
                   DLOG(INFO) << "C&C95 - Winsock failed to initialise.";
-                  GameToPlay = GAME_NORMAL;
+                  TheSession().type() = GAME_NORMAL;
                   selection = kSelExit;
                   Special.IsFromWChat = false;
                   break;
@@ -1271,7 +1278,7 @@ bool Select_Game(bool fade) {
                    *
                    */
                   Winsock.Close();
-                  GameToPlay = GAME_NORMAL;
+                  TheSession().type() = GAME_NORMAL;
                   selection = kSelNone;
 #ifdef _WIN32
                   DDEServer.Delete_MPlayer_Game_Info();  // Make sure we dont
@@ -1294,7 +1301,7 @@ bool Select_Game(bool fade) {
                  *
                  */
                 Winsock.Close();
-                GameToPlay = GAME_NORMAL;
+                TheSession().type() = GAME_NORMAL;
                 selection = kSelNone;
 #ifdef _WIN32
                 DDEServer.Delete_MPlayer_Game_Info();  // Make sure we dont
@@ -1304,8 +1311,8 @@ bool Select_Game(bool fade) {
                 // Special.IsFromWChat = false;
                 break;
               }
-              GameToPlay = Select_MPlayer_Game();
-              if (GameToPlay == GAME_NORMAL) {  // 'Cancel'
+              TheSession().type() = Select_MPlayer_Game();
+              if (TheSession().type() == GAME_NORMAL) {  // 'Cancel'
                 display = true;
                 selection = kSelNone;
               }
@@ -1317,7 +1324,7 @@ bool Select_Game(bool fade) {
               break;
           }
 
-          switch (GameToPlay) {
+          switch (TheSession().type()) {
             /*
             **	Internet, Modem or Null-Modem
             */
@@ -1345,7 +1352,7 @@ bool Select_Game(bool fade) {
                 process = false;
                 Theme.Fade_Out();
               } else {  // user hit cancel, or init failed
-                GameToPlay = GAME_NORMAL;
+                TheSession().type() = GAME_NORMAL;
                 display = true;
                 selection = kSelNone;
               }
@@ -1499,14 +1506,15 @@ bool Select_Game(bool fade) {
           break;
 
         case kSelTimeout:
-          if (AllowAttract && RecordFile.IsAvailable()) {
-            PlaybackGame = true;
-            if (RecordFile.Open(FileAccess::kRead)) {
+          if (TheSession().allow_attract() &&
+              TheSession().record_file().IsAvailable()) {
+            TheSession().playback_game() = true;
+            if (TheSession().record_file().Open(FileAccess::kRead)) {
               Load_Recording_Values();
               process = false;
               Theme.Fade_Out();
             } else {
-              PlaybackGame = false;
+              TheSession().playback_game() = false;
               selection = kSelNone;
             }
           } else {
@@ -1531,10 +1539,10 @@ bool Select_Game(bool fade) {
   }
   DLOG(INFO) << "C&C95 - About to start game initialisation.";
 #ifdef FORCE_WINSOCK
-  if (GameToPlay == GAME_INTERNET) {
-    CommProtocol = COMM_PROTOCOL_MULTI_E_COMP;
+  if (TheSession().type() == GAME_INTERNET) {
+    TheSession().comm_protocol() = COMM_PROTOCOL_MULTI_E_COMP;
     if (!Special.IsFromWChat) {
-      FrameSendRate = 5;  // 3;
+      TheSession().frame_send_rate() = 5;  // 3;
     }
   }
 #endif  // FORCE_WINSOCK
@@ -1550,8 +1558,8 @@ bool Select_Game(bool fade) {
   *playing
   ** back a recording, init the Seed to a random value.
   */
-  if (GameToPlay == GAME_NORMAL && !PlaybackGame) {
-    Seed = port::RandomSeed();
+  if (TheSession().type() == GAME_NORMAL && !TheSession().playback_game()) {
+    TheWorld().seed() = port::RandomSeed();
   }
 
   /*
@@ -1559,18 +1567,18 @@ bool Select_Game(bool fade) {
   *games
   */
   if (TheStartupOptions().custom_seed != 0) {
-    Seed = TheStartupOptions().custom_seed;
+    TheWorld().seed() = TheStartupOptions().custom_seed;
   }
 
   /*
   ** Save initialization values if we're recording this game.
   ** This must be done after 'Seed' has been initialized.
   */
-  if (RecordGame) {
-    if (RecordFile.Open(FileAccess::kWrite)) {
+  if (TheSession().record_game()) {
+    if (TheSession().record_file().Open(FileAccess::kWrite)) {
       Save_Recording_Values();
     } else {
-      RecordGame = false;
+      TheSession().record_game() = false;
     }
   }
 
@@ -1579,7 +1587,7 @@ bool Select_Game(bool fade) {
   */
   // Loading already restored the exact stream positions.
   if (!gameloaded) {
-    SeedGameRandom(static_cast<uint32_t>(Seed));
+    SeedGameRandom(static_cast<uint32_t>(TheWorld().seed()));
   }
 
   /*
@@ -1930,8 +1938,8 @@ bool Select_Game(bool fade) {
   */
   DLOG(INFO) << "C&C95 - Initialising message system.";
   const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
-  Messages.Init(TheMap().TacPixelX, TheMap().TacPixelY, 6, MAX_MESSAGE_LENGTH,
-                (6 * factor) + 1);
+  TheSession().messages().Init(TheMap().TacPixelX, TheMap().TacPixelY, 6,
+                               MAX_MESSAGE_LENGTH, (6 * factor) + 1);
 
   /*
   **	Hide the SeenBuff; force the map to render one frame.  The caller can
@@ -1966,12 +1974,13 @@ bool Select_Game(bool fade) {
   ** compression protocol technology.
   */
 #ifdef FORCE_WINSOCK
-  if (CommProtocol == COMM_PROTOCOL_MULTI_E_COMP && GameToPlay != GAME_NORMAL) {
+  if (TheSession().comm_protocol() == COMM_PROTOCOL_MULTI_E_COMP &&
+      TheSession().type() != GAME_NORMAL) {
     if (!Special.IsFromWChat) {
-      MPlayerMaxAhead = FrameSendRate * 3;  // 2;
+      TheSession().max_ahead() = TheSession().frame_send_rate() * 3;  // 2;
     } else {
-      MPlayerMaxAhead = WChatMaxAhead;
-      FrameSendRate = WChatSendRate;
+      TheSession().max_ahead() = TheNetwork().chat_max_ahead();
+      TheSession().frame_send_rate() = TheNetwork().chat_send_rate();
     }
   }
 #endif  // FORCE_WINSOCK
@@ -2867,35 +2876,35 @@ int Version_Number() {
  *   05/15/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Save_Recording_Values() {
-  RecordFile.WriteObject(GameToPlay);
-  RecordFile.WriteObject(ModemGameToPlay);
-  RecordFile.WriteObject(BuildLevel);
-  RecordFile.WriteObject(MPlayerName);
-  RecordFile.WriteObject(MPlayerPrefColor);
-  RecordFile.WriteObject(MPlayerColorIdx);
-  RecordFile.WriteObject(MPlayerHouse);
-  RecordFile.WriteObject(MPlayerLocalID);
-  RecordFile.WriteObject(MPlayerCount);
-  RecordFile.WriteObject(MPlayerBases);
-  RecordFile.WriteObject(MPlayerCredits);
-  RecordFile.WriteObject(MPlayerTiberium);
-  RecordFile.WriteObject(MPlayerGoodies);
-  RecordFile.WriteObject(MPlayerGhosts);
-  RecordFile.WriteObject(MPlayerUnitCount);
-  RecordFile.WriteObject(MPlayerID);
-  RecordFile.WriteObject(MPlayerHouses);
-  RecordFile.WriteObject(Seed);
-  RecordFile.WriteObject(TheWorld().scenario());
-  RecordFile.WriteObject(TheWorld().scen_player());
-  RecordFile.WriteObject(TheWorld().scen_dir());
-  RecordFile.WriteObject(Whom);
-  RecordFile.WriteObject(Special);
-  RecordFile.WriteObject(Options);
-  RecordFile.WriteObject(FrameSendRate);
-  RecordFile.WriteObject(CommProtocol);
+  TheSession().record_file().WriteObject(TheSession().type());
+  TheSession().record_file().WriteObject(TheNetwork().modem_game_type());
+  TheSession().record_file().WriteObject(TheWorld().build_level());
+  TheSession().record_file().WriteObject(TheSession().player_name());
+  TheSession().record_file().WriteObject(TheSession().preferred_color());
+  TheSession().record_file().WriteObject(TheSession().color_index());
+  TheSession().record_file().WriteObject(TheSession().house());
+  TheSession().record_file().WriteObject(TheSession().local_id());
+  TheSession().record_file().WriteObject(TheSession().player_count());
+  TheSession().record_file().WriteObject(TheSession().bases());
+  TheSession().record_file().WriteObject(TheSession().credits());
+  TheSession().record_file().WriteObject(TheSession().tiberium());
+  TheSession().record_file().WriteObject(TheSession().crates());
+  TheSession().record_file().WriteObject(TheSession().ghosts());
+  TheSession().record_file().WriteObject(TheSession().unit_count());
+  TheSession().record_file().WriteObject(TheSession().player_ids());
+  TheSession().record_file().WriteObject(TheSession().player_houses());
+  TheSession().record_file().WriteObject(TheWorld().seed());
+  TheSession().record_file().WriteObject(TheWorld().scenario());
+  TheSession().record_file().WriteObject(TheWorld().scen_player());
+  TheSession().record_file().WriteObject(TheWorld().scen_dir());
+  TheSession().record_file().WriteObject(TheWorld().whom());
+  TheSession().record_file().WriteObject(Special);
+  TheSession().record_file().WriteObject(Options);
+  TheSession().record_file().WriteObject(TheSession().frame_send_rate());
+  TheSession().record_file().WriteObject(TheSession().comm_protocol());
 
-  if (SuperRecord) {
-    RecordFile.Close();
+  if (TheSession().super_record()) {
+    TheSession().record_file().Close();
   }
 }
 
@@ -2917,32 +2926,32 @@ void Save_Recording_Values() {
 void Load_Recording_Values() {
   Read_MultiPlayer_Settings();
 
-  RecordFile.ReadObject(GameToPlay);
-  RecordFile.ReadObject(ModemGameToPlay);
-  RecordFile.ReadObject(BuildLevel);
-  RecordFile.ReadObject(MPlayerName);
-  RecordFile.ReadObject(MPlayerPrefColor);
-  RecordFile.ReadObject(MPlayerColorIdx);
-  RecordFile.ReadObject(MPlayerHouse);
-  RecordFile.ReadObject(MPlayerLocalID);
-  RecordFile.ReadObject(MPlayerCount);
-  RecordFile.ReadObject(MPlayerBases);
-  RecordFile.ReadObject(MPlayerCredits);
-  RecordFile.ReadObject(MPlayerTiberium);
-  RecordFile.ReadObject(MPlayerGoodies);
-  RecordFile.ReadObject(MPlayerGhosts);
-  RecordFile.ReadObject(MPlayerUnitCount);
-  RecordFile.ReadObject(MPlayerID);
-  RecordFile.ReadObject(MPlayerHouses);
-  RecordFile.ReadObject(Seed);
-  RecordFile.ReadObject(TheWorld().scenario());
-  RecordFile.ReadObject(TheWorld().scen_player());
-  RecordFile.ReadObject(TheWorld().scen_dir());
-  RecordFile.ReadObject(Whom);
-  RecordFile.ReadObject(Special);
-  RecordFile.ReadObject(Options);
-  RecordFile.ReadObject(FrameSendRate);
-  RecordFile.ReadObject(CommProtocol);
+  TheSession().record_file().ReadObject(TheSession().type());
+  TheSession().record_file().ReadObject(TheNetwork().modem_game_type());
+  TheSession().record_file().ReadObject(TheWorld().build_level());
+  TheSession().record_file().ReadObject(TheSession().player_name());
+  TheSession().record_file().ReadObject(TheSession().preferred_color());
+  TheSession().record_file().ReadObject(TheSession().color_index());
+  TheSession().record_file().ReadObject(TheSession().house());
+  TheSession().record_file().ReadObject(TheSession().local_id());
+  TheSession().record_file().ReadObject(TheSession().player_count());
+  TheSession().record_file().ReadObject(TheSession().bases());
+  TheSession().record_file().ReadObject(TheSession().credits());
+  TheSession().record_file().ReadObject(TheSession().tiberium());
+  TheSession().record_file().ReadObject(TheSession().crates());
+  TheSession().record_file().ReadObject(TheSession().ghosts());
+  TheSession().record_file().ReadObject(TheSession().unit_count());
+  TheSession().record_file().ReadObject(TheSession().player_ids());
+  TheSession().record_file().ReadObject(TheSession().player_houses());
+  TheSession().record_file().ReadObject(TheWorld().seed());
+  TheSession().record_file().ReadObject(TheWorld().scenario());
+  TheSession().record_file().ReadObject(TheWorld().scen_player());
+  TheSession().record_file().ReadObject(TheWorld().scen_dir());
+  TheSession().record_file().ReadObject(TheWorld().whom());
+  TheSession().record_file().ReadObject(Special);
+  TheSession().record_file().ReadObject(Options);
+  TheSession().record_file().ReadObject(TheSession().frame_send_rate());
+  TheSession().record_file().ReadObject(TheSession().comm_protocol());
 }
 
 /***********************************************************************************************

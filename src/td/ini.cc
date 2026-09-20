@@ -93,6 +93,7 @@
 #include "td/rand.h"
 #include "td/randomstate.h"
 #include "td/scenario.h"
+#include "td/session.h"
 #include "td/smudge.h"
 #include "td/special.h"
 #include "td/startup.h"
@@ -305,7 +306,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   */
   if (RequiredCD != -2) {
     if (TheWorld().scenario() >= 20 && TheWorld().scenario() < 60 &&
-        GameToPlay == GAME_NORMAL) {
+        TheSession().type() == GAME_NORMAL) {
       RequiredCD = 2;
     } else {
       if (TheWorld().scenario() != 1) {
@@ -383,16 +384,16 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	This must be set before any buildings are created (if a factory is
   *created, *	it needs to know the BuildLevel for the sidebar.)
   */
-  if (GameToPlay == GAME_NORMAL) {
+  if (TheSession().type() == GAME_NORMAL) {
 #ifdef NEWMENU
     if (TheWorld().scenario() <= 15) {
-      BuildLevel = TheWorld().scenario();
+      TheWorld().build_level() = TheWorld().scenario();
     } else {
-      BuildLevel = WWGetPrivateProfileInt("Basic", "BuildLevel",
-                                          TheWorld().scenario(), buffer);
+      TheWorld().build_level() = WWGetPrivateProfileInt(
+          "Basic", "BuildLevel", TheWorld().scenario(), buffer);
     }
 #else
-    BuildLevel = TheWorld().scenario();
+    TheWorld().build_level() = TheWorld().scenario();
 #endif
   }
 
@@ -401,7 +402,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	of objects.
   */
   if (Special.IsJurassic && AreThingiesEnabled) {
-    BuildLevel = 98;
+    TheWorld().build_level() = 98;
   }
 
   /*
@@ -431,7 +432,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   */
   //	if (GameToPlay == GAME_NORMAL && (ScenPlayer == SCEN_PLAYER_GDI ||
   // ScenPlayer == SCEN_PLAYER_NOD)) {
-  if (GameToPlay == GAME_NORMAL) {
+  if (TheSession().type() == GAME_NORMAL) {
     WWGetPrivateProfileString(
         "Basic", "Player", "GoodGuy",
         std::span(buf).first(static_cast<std::size_t>(127)), buffer);
@@ -459,17 +460,17 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     ThePlayer()->InitialCredits += carryover;
 
     if (Special.IsJurassic) {
-      ThePlayer()->ActLike = Whom;
+      ThePlayer()->ActLike = TheWorld().whom();
     }
   } else {
 #ifdef OBSOLETE
-    if (GameToPlay == GAME_NORMAL &&
+    if (TheSession().type() == GAME_NORMAL &&
         TheWorld().scen_player() == SCEN_PLAYER_JP) {
       ThePlayer() = HouseClass::As_Pointer(HOUSE_MULTI4);
       ThePlayer()->IsHuman = true;
       ThePlayer()->Credits += TheWorld().carry_over_money();
       ThePlayer()->InitialCredits += TheWorld().carry_over_money();
-      ThePlayer()->ActLike = Whom;
+      ThePlayer()->ActLike = TheWorld().whom();
     } else {
       Assign_Houses();
     }
@@ -617,22 +618,22 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	- Remove any flag spot overlays lying around
   **	- If capture-the-flag is enabled, assign flags to cells.
   */
-  if (GameToPlay != GAME_NORMAL ||
+  if (TheSession().type() != GAME_NORMAL ||
       TheWorld().scen_player() == SCEN_PLAYER_2PLAYER ||
       TheWorld().scen_player() == SCEN_PLAYER_MPLAYER) {
     /*
     **	If Ghosts are disabled and we're not editing, remove computer players
     **	(Must be done after all objects are read in from the INI)
     */
-    if (!MPlayerGhosts && !TheDebugState().map_editor_active()) {
+    if (!TheSession().ghosts() && !TheDebugState().map_editor_active()) {
       Remove_AI_Players();
     } else {
       /*
       ** If Ghosts are on, set up their houses for blitzing the humans
       */
-      MPlayerBlitz = GameRandomRange(0, 1);  // 1 = computer will blitz
-      if (MPlayerBlitz) {
-        if (MPlayerBases) {
+      TheSession().blitz() = GameRandomRange(0, 1);  // 1 = computer will blitz
+      if (TheSession().blitz()) {
+        if (TheSession().bases()) {
           rndmax = 14000;
           rndmin = 10000;
         } else {
@@ -640,7 +641,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
           rndmin = 4000;
         }
 
-        for (int i = 0; i < MPlayerMax; i++) {
+        for (int i = 0; i < TheSession().max_players(); i++) {
           const auto house =
               static_cast<HousesType>(i + static_cast<int>(HOUSE_MULTI1));
           HouseClass* housep = HouseClass::As_Pointer(house);
@@ -666,8 +667,9 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     /*
     **	Place crates if MPlayerGoodies is on.
     */
-    if (MPlayerGoodies) {
-      for (int player_index = 0; player_index < MPlayerCount; player_index++) {
+    if (TheSession().crates()) {
+      for (int player_index = 0; player_index < TheSession().player_count();
+           player_index++) {
         TheMap().Place_Random_Crate();
       }
     }
@@ -765,7 +767,7 @@ void Write_Scenario_Ini(const char* root) {
     WWWritePrivateProfileString(
         "Basic", "Theme", ThemeClass::Base_Name(TheWorld().transit_theme()),
         port::CharBytes(ShapeBufferBytes));
-    WWWritePrivateProfileInt("Basic", "BuildLevel", BuildLevel,
+    WWWritePrivateProfileInt("Basic", "BuildLevel", TheWorld().build_level(),
                              port::CharBytes(ShapeBufferBytes));
     WWWritePrivateProfileInt(
         "Basic", "CarryOverMoney",
@@ -846,7 +848,7 @@ static void Assign_Houses() {
   char wibble[256];
   absl::SNPrintF(wibble, sizeof(wibble),
                  "C&C95 - In 'Assign_Houses'. Number of players:%d\n",
-                 MPlayerCount);
+                 TheSession().player_count());
   CCDebugString(wibble);
 
   /*
@@ -862,8 +864,8 @@ static void Assign_Houses() {
   /*
   **	For each player, randomly pick a house
   */
-  for (int i = 0; i < MPlayerCount; i++) {
-    const int j = Random_Pick(0, MPlayerMax - 1);
+  for (int i = 0; i < TheSession().player_count(); i++) {
+    const int j = Random_Pick(0, TheSession().max_players() - 1);
 
     /*
     **	If this house was already selected, decrement 'i' & keep looping.
@@ -878,10 +880,11 @@ static void Assign_Houses() {
     **	get a pointer to the house instance
     */
     house = static_cast<HousesType>(j + static_cast<int>(HOUSE_MULTI1));
-    pref_house = MPlayerID_To_HousesType(base::At(MPlayerID, i));
-    color = MPlayerID_To_ColorIndex(base::At(MPlayerID, i));
+    pref_house =
+        MPlayerID_To_HousesType(base::At(TheSession().player_ids(), i));
+    color = MPlayerID_To_ColorIndex(base::At(TheSession().player_ids(), i));
     housep = HouseClass::As_Pointer(house);
-    base::At(MPlayerHouses, i) = house;
+    base::At(TheSession().player_houses(), i) = house;
 
     /*
     **	Mark this house & color as used
@@ -893,14 +896,14 @@ static void Assign_Houses() {
     **	Set the house's IsHuman, Credits, ActLike, & RemapTable
     */
     base::FillBytes(base::ObjectBytes(housep->Name), 0, MPLAYER_NAME_MAX);
-    port::SafeCopy(housep->Name, base::At(MPlayerNames, i));
+    port::SafeCopy(housep->Name, base::At(TheSession().player_names(), i));
     housep->IsHuman = true;
-    housep->Init_Data(color, pref_house, MPlayerCredits);
+    housep->Init_Data(color, pref_house, TheSession().credits());
 
     /*
     **	If this ID is for myself, set up PlayerPtr
     */
-    if (base::At(MPlayerID, i) == MPlayerLocalID) {
+    if (base::At(TheSession().player_ids(), i) == TheSession().local_id()) {
       ThePlayer() = housep;
     }
   }
@@ -908,7 +911,7 @@ static void Assign_Houses() {
   /*
   **	For all houses not assigned to a player, set them up for computer use
   */
-  for (int i = 0; i < MPlayerMax; i++) {
+  for (int i = 0; i < TheSession().max_players(); i++) {
     if (!base::At(house_used, i)) {
       /*
       **	Set the house, preferred house (GDI/NOD), and color; get a
@@ -935,15 +938,15 @@ static void Assign_Houses() {
       **	Set the house's IsHuman, Credits, ActLike, & RemapTable
       */
       housep->IsHuman = false;
-      housep->Init_Data(color, pref_house, MPlayerCredits);
+      housep->Init_Data(color, pref_house, TheSession().credits());
     }
   }
 
   /*
   **	Now make all computer-owned houses allies of each other.
   */
-  const auto last_house =
-      static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + MPlayerMax);
+  const auto last_house = static_cast<HousesType>(
+      static_cast<int>(HOUSE_MULTI1) + TheSession().max_players());
   for (house = HOUSE_MULTI1; house < last_house; house++) {
     housep = HouseClass::As_Pointer(house);
     if (housep->IsHuman) {
@@ -1072,12 +1075,12 @@ static void Create_Units() {
   For the current BuildLevel, find the max allowable index into the tables
   ------------------------------------------------------------------------*/
   for (int i = 0; i < kNumUnitCategories; i++) {
-    if (BuildLevel >= base::At(utable, i).MinLevel) {
+    if (TheWorld().build_level() >= base::At(utable, i).MinLevel) {
       u_limit = i;
     }
   }
   for (int i = 0; i < kNumInfantryCategories; i++) {
-    if (BuildLevel >= base::At(utable, i).MinLevel) {
+    if (TheWorld().build_level() >= base::At(utable, i).MinLevel) {
       i_limit = i;
     }
   }
@@ -1088,7 +1091,8 @@ static void Create_Units() {
   /*........................................................................
   Compute allowed # units
   ........................................................................*/
-  const int tot_units = MPlayerUnitCount * 2 / 3;  // total # units to create
+  const int tot_units =
+      TheSession().unit_count() * 2 / 3;  // total # units to create
   //	tot_units = std::max(tot_units, 1);
 
   /*........................................................................
@@ -1114,7 +1118,7 @@ static void Create_Units() {
   Compute allowed # infantry
   ........................................................................*/
   const int tot_infantry =
-      MPlayerUnitCount - tot_units;  // total # infantry to create
+      TheSession().unit_count() - tot_units;  // total # infantry to create
 
   /*........................................................................
   Init # of each category to 0
@@ -1160,8 +1164,8 @@ static void Create_Units() {
   ON, are treated as though bases are OFF (since we have no base-building
   AI logic.)
   ------------------------------------------------------------------------*/
-  const auto last_house =
-      static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + MPlayerMax);
+  const auto last_house = static_cast<HousesType>(
+      static_cast<int>(HOUSE_MULTI1) + TheSession().max_players());
   for (HousesType h = HOUSE_MULTI1; h < last_house; h++) {
     /*.....................................................................
     Get a pointer to this house; if there is none, go to the next house
@@ -1178,7 +1182,7 @@ static void Create_Units() {
     .....................................................................*/
     int try_count = 0;  // # times we've tried to select a centroid
     while (true) {
-      j = GameRandomRange(0, MPlayerMax - 1);
+      j = GameRandomRange(0, TheSession().max_players() - 1);
       if (base::At(sorted_waypts, j) != -1) {
         centroid = base::At(sorted_waypts, j);
         base::At(sorted_waypts, j) = -1;
@@ -1204,7 +1208,7 @@ static void Create_Units() {
     /*---------------------------------------------------------------------
     If Bases are ON, human & computer houses are treated differently
     ---------------------------------------------------------------------*/
-    if (MPlayerBases) {
+    if (TheSession().bases()) {
       /*..................................................................
       - For a human-controlled house:
         - Set 'scaleval' to 1
@@ -1233,7 +1237,8 @@ static void Create_Units() {
           - Set 'scaleval' to 3
           - Create a Mobile HQ for capture-the-flag mode
         ..................................................................*/
-        scaleval = 3 / (MPlayerMax - MPlayerCount);
+        scaleval =
+            3 / (TheSession().max_players() - TheSession().player_count());
         if (scaleval == 0) {
           scaleval = 1;
         }
@@ -1267,7 +1272,7 @@ static void Create_Units() {
     /*---------------------------------------------------------------------
     Set the house's max # units (this is used in the Mission_Timed_Hunt())
     ---------------------------------------------------------------------*/
-    hptr->MaxUnit = MPlayerUnitCount * scaleval;
+    hptr->MaxUnit = TheSession().unit_count() * scaleval;
 
     /*---------------------------------------------------------------------
     Create units for this house

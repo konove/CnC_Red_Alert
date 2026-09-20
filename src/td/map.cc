@@ -77,7 +77,6 @@
 #include "sdllib/tile.h"
 #include "td/cell.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/globals.h"
 #include "td/gscreen.h"
 #include "td/house.h"
@@ -88,6 +87,7 @@
 #include "td/overlay.h"
 #include "td/queue.h"
 #include "td/region.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/techno.h"
 #include "td/terrain.h"
@@ -1126,7 +1126,7 @@ void MapClass::Logic() {
 
   if (TiberiumScan >= MAP_CELL_TOTAL) {
     int tries = 1;
-    if (Special.IsTFast || GameToPlay != GAME_NORMAL) {
+    if (Special.IsTFast || TheSession().type() != GAME_NORMAL) {
       tries = 2;
     }
     TiberiumScan = 0;

@@ -80,6 +80,7 @@
 #include "td/palettes.h"
 #include "td/saveload.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/vector.h"
@@ -300,7 +301,7 @@ bool LoadOptionsClass::Process() {
     /*
     **	Invoke game callback.
     */
-    if (GameToPlay == GAME_NORMAL) {
+    if (TheSession().type() == GAME_NORMAL) {
       Call_Back();
     } else {
       if (Main_Loop()) {

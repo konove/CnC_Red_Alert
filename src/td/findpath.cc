@@ -68,7 +68,6 @@
 #include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/externs.h"
 #include "td/foot.h"
 #include "td/globals.h"
 #include "td/inline.h"
@@ -76,6 +75,7 @@
 #include "td/mapedit.h"
 #include "td/path_overlap.h"
 #include "td/screen.h"
+#include "td/session.h"
 #include "td/special.h"
 #include "td/support.h"
 #include "td/team.h"
@@ -1524,7 +1524,7 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
     return 0;
   }
 
-  if (GameToPlay == GAME_NORMAL) {
+  if (TheSession().type() == GAME_NORMAL) {
     if (threat != -1) {
       if (MapEditClass::Cell_Distance(cell, DestLocation) > THREAT_THRESHOLD) {
         if (MapEditClass::Cell_Threat(cell, Owner()) > threat) {
