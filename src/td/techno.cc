@@ -189,6 +189,7 @@
 #include "td/cell.h"
 #include "td/conquer.h"
 #include "td/const.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
 #include "td/door.h"
@@ -1862,7 +1863,8 @@ void TechnoClass::AI() {
  * HISTORY: * 12/11/1994 JLB : Created. *
  *=============================================================================================*/
 bool TechnoClass::Select() {
-  if (!IsDiscoveredByPlayer && !IsOwnedByPlayer && !Debug_Unshroud) {
+  if (!IsDiscoveredByPlayer && !IsOwnedByPlayer &&
+      !TheDebugState().unshroud()) {
     return false;
   }
 
@@ -2087,7 +2089,8 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
   /*
   **	Perform a quick legality check to see if firing can occur.
   */
-  if (Debug_Map || weapon->Fires == BULLET_NONE || !Target_Legal(target)) {
+  if (TheDebugState().map_editor_active() || weapon->Fires == BULLET_NONE ||
+      !Target_Legal(target)) {
     return nullptr;
   }
 
@@ -3180,7 +3183,7 @@ VisualType TechnoClass::Visual_Character(bool raw) const {
   /*
   **	When uncloaked or in map editor mode, always draw the object normally.
   */
-  if (Cloak == UNCLOAKED || Debug_Map) {
+  if (Cloak == UNCLOAKED || TheDebugState().map_editor_active()) {
     return VISUAL_NORMAL;
   }
 

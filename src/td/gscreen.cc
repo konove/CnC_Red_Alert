@@ -62,6 +62,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "td/config.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
 #include "td/externs.h"
@@ -402,7 +403,7 @@ void GScreenClass::Render() {
       /*
       ** Draw the Editor's buttons
       */
-      if (Debug_Map && Buttons) {
+      if (TheDebugState().map_editor_active() && Buttons) {
         Buttons->Draw_All();
       }
     }

@@ -154,6 +154,7 @@
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/coord.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/facing.h"
@@ -670,7 +671,7 @@ bool HouseClass::Can_Build(const TechnoTypeClass* type,
     level = 1;
   }
 
-  if (Debug_Cheat) {
+  if (TheDebugState().build_anything()) {
     level = 98;
   }
   return (pre & flags) == pre && std::cmp_less_equal(type->Scenario, level);
@@ -1893,7 +1894,7 @@ void HouseClass::Make_Ally(HousesType house) {
     Allies |= base::Bit<uint32_t>(house);
 
     if constexpr (config::kCheatKeysEnabled) {
-      if (Debug_Flag) {
+      if (TheDebugState().developer_mode()) {
         HouseClass* enemy = HouseClass::As_Pointer(house);
         if (enemy && !enemy->Is_Ally(this)) {
           enemy->Make_Ally(Class->House);
@@ -1901,7 +1902,8 @@ void HouseClass::Make_Ally(HousesType house) {
       }
     }
 
-    if ((Debug_Flag || GameToPlay != GAME_NORMAL) && !ScenarioInit) {
+    if ((TheDebugState().developer_mode() || GameToPlay != GAME_NORMAL) &&
+        !ScenarioInit) {
       char buffer[80];
 
       /*
@@ -1955,7 +1957,9 @@ void HouseClass::Make_Enemy(HousesType house) {
       enemy->Allies &= ~base::Bit<uint32_t>(Class->House);
     }
 
-    if (enemy && (Debug_Flag || GameToPlay != GAME_NORMAL) && !ScenarioInit) {
+    if (enemy &&
+        (TheDebugState().developer_mode() || GameToPlay != GAME_NORMAL) &&
+        !ScenarioInit) {
       char buffer[80];
 
       Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_AT_WAR), Name,
@@ -3794,7 +3798,7 @@ void HouseClass::MPlayer_Defeated() {
   ------------------------------------------------------------------------*/
   if (PlayerPtr == this) {
     MPlayerObiWan = true;
-    Debug_Unshroud = true;
+    TheDebugState().set_unshroud(true);
     TheScreen().hidden_page().Clear();
     Map.Flag_To_Redraw(true);
 

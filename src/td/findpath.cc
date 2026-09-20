@@ -65,6 +65,7 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/wwstd.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/externs.h"
@@ -135,7 +136,7 @@ static inline FacingType Opposite(FacingType face) { return face + 4; }
 static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
                                    int overide = 0) {
   if (DrawPath) {
-    if (!Debug_Find_Path) {
+    if (!TheDebugState().trace_path_search()) {
       int x = 0;
       int y = 0;
 
@@ -603,7 +604,7 @@ PathType* FootClass::Find_Path(CELL dest, std::span<FacingType> final_moves,
   ** Set the draw path variable to draw the path of the selected unit
   ** if necessary.
   */
-  if (!Debug_Find_Path) {
+  if (!TheDebugState().trace_path_search()) {
     DrawPath = IsSelected && Special.IsShowPath;
   } else {
     DrawPath = IsSelected;
@@ -699,7 +700,7 @@ PathType* FootClass::Find_Path(CELL dest, std::span<FacingType> final_moves,
       Draw_Cell_Point(next, true, threat_stage);
       Register_Cell(&path, next, direction, cost, threshhold);
     } else {
-      if (Debug_Find_Path && DrawPath) {
+      if (TheDebugState().trace_path_search() && DrawPath) {
         Debug_Draw_Map("Walk Through Obstacle", startcell, dest, true);
       }
       Draw_Cell_Point(next, false, threat_stage);
@@ -799,7 +800,7 @@ PathType* FootClass::Find_Path(CELL dest, std::span<FacingType> final_moves,
         ** If we are in debug mode then let us know how well our left path
         ** did.
         */
-        if (Debug_Find_Path && DrawPath) {
+        if (TheDebugState().trace_path_search() && DrawPath) {
           Fancy_Text_Print("   Left", 0, 92, kWhite, kBlack, TPF_6POINT);
           Fancy_Text_Print("Total Steps", 0, 100, kWhite, kBlack, TPF_6POINT);
           if (left) {
@@ -828,7 +829,7 @@ PathType* FootClass::Find_Path(CELL dest, std::span<FacingType> final_moves,
         ** If we are in debug mode then let us know how well our right path
         ** did.
         */
-        if (Debug_Find_Path && DrawPath) {
+        if (TheDebugState().trace_path_search() && DrawPath) {
           Fancy_Text_Print("  Right", 0, 92, kWhite, kBlack, TPF_6POINT);
           Fancy_Text_Print("Total Steps", 0, 100, kWhite, kBlack, TPF_6POINT);
           if (right) {
@@ -945,7 +946,7 @@ end_of_list:
   if (path.Length < maxlen) {
     base::At(path.Command, base::ToSize(path.Length++)) = END;
   }
-  if (Debug_Find_Path && DrawPath) {
+  if (TheDebugState().trace_path_search() && DrawPath) {
     Map.Flag_To_Redraw(true);
   }
 /*
@@ -955,7 +956,7 @@ end_of_list:
 #ifdef DIAGONAL
   Optimize_Moves(&path, threshhold);
 #endif
-  if (Debug_Find_Path && DrawPath) {
+  if (TheDebugState().trace_path_search() && DrawPath) {
     Debug_Draw_Map("Final Generated Path", startcell, dest, false);
     Debug_Draw_Path(&path);
     Get_Key_Num();
@@ -1198,7 +1199,7 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
       cellcount++;
       if (cellcount == 100) {
         //				DrawPath = true;
-        //				Debug_Find_Path = true;
+        //				TheDebugState().set_trace_path_search(true);
         //				Debug_Draw_Map("Loop failure", start,
         // target, false); 				Debug_Draw_Path(path);
         return false;
@@ -1589,7 +1590,7 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
 
 void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
                                bool pause) const {
-  if (!Debug_Find_Path || !DrawPath) {
+  if (!TheDebugState().trace_path_search() || !DrawPath) {
     return;
   }
 

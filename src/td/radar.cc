@@ -102,6 +102,7 @@
 #include "td/audio.h"
 #include "td/cell.h"
 #include "td/conquer.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/display.h"
@@ -857,7 +858,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     **	Determine what (if any) vehicle or unit should be rendered in this blip.
     */
     int color = kTBlack;  // Color of the pixel to plot.
-    if ((*this).at(cell).IsVisible || Debug_Unshroud) {
+    if ((*this).at(cell).IsVisible || TheDebugState().unshroud()) {
       color = cellptr->Cell_Color(true);
     } else {
       color = kBlack;
@@ -1464,8 +1465,9 @@ bool RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     CELL cell =
         Map.RadarClass::Click_Cell_Calc(x, y);  // cell num click happened over
     if (cell != -1 && Map.In_Radar(cell)) {
-      const bool shadow = !Map.at(cell).IsVisible &&
-                          !Debug_Unshroud;  // is the cell in shadow or not
+      const bool shadow =
+          !Map.at(cell).IsVisible &&
+          !TheDebugState().unshroud();  // is the cell in shadow or not
       const int cellx = 12;
       const int celly = 12;  // Sub cell pixel coordinates.
 

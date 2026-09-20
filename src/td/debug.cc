@@ -57,6 +57,7 @@
 #include "td/combat.h"
 #include "td/const.h"
 #include "td/coord.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/ending.h"
 #include "td/externs.h"
@@ -103,7 +104,7 @@ void Debug_Key(unsigned input) {
   /*
   **	Processing of normal keystrokes.
   */
-  if (Debug_Flag) {
+  if (TheDebugState().developer_mode()) {
     switch (input) {
       /*
       ** Start saving off screens
@@ -158,7 +159,7 @@ void Debug_Key(unsigned input) {
       } break;
 
       case KN_B | KN_ALT_BIT: {
-        Debug_Instant_Build ^= 1;
+        TheDebugState().set_instant_build(!TheDebugState().instant_build());
       } break;
       case KN_B: {
         auto* air =
@@ -192,7 +193,7 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_C:
-        Debug_Cheat = !Debug_Cheat;
+        TheDebugState().set_build_anything(!TheDebugState().build_anything());
         PlayerPtr->IsRecalcNeeded = true;
         PlayerPtr->Add_Nuke_Piece();
         PlayerPtr->Add_Nuke_Piece();
@@ -259,7 +260,8 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_F:
-        Debug_Find_Path ^= 1;
+        TheDebugState().set_trace_path_search(
+            !TheDebugState().trace_path_search());
         break;
 
       case KN_DELETE:
@@ -323,16 +325,16 @@ void Debug_Key(unsigned input) {
 
         // #ifdef SCENARIO_EDITOR
       case KN_F2:  // enable/disable the map editor
-        Go_Editor(!Debug_Map);
+        Go_Editor(!TheDebugState().map_editor_active());
         break;
 // #endif
 #endif
 
 #ifdef NEVER
       case KN_F2: {
-        Debug_Map++;
+        TheDebugState().map_editor_active()++;
         Scenario_Editor();
-        Debug_Map--;
+        TheDebugState().map_editor_active()--;
 #ifdef NEVER
 #define MAX_RADIUS 10
         COORDINATE coord;
@@ -506,14 +508,14 @@ void Debug_Key(unsigned input) {
 
 #ifdef NEVER
       case (KN_F3 | KN_ALT_BIT):  // quick load/save for debugging
-        Debug_Threat = (Debug_Threat == false);
+        TheDebugState().set_show_threat(!TheDebugState().show_threat());
         Map.Flag_To_Redraw(true);
         break;
 
 #endif
 
       case KN_F3:
-        Debug_Icon = !Debug_Icon;
+        TheDebugState().set_show_cell_info(!TheDebugState().show_cell_info());
         Map.Flag_To_Redraw(true);
         break;
 
@@ -522,7 +524,7 @@ void Debug_Key(unsigned input) {
       */
       case KN_F4:
         if (GameToPlay == GAME_NORMAL) {
-          Debug_Unshroud = !Debug_Unshroud;
+          TheDebugState().set_unshroud(!TheDebugState().unshroud());
           Map.Flag_To_Redraw(true);
         }
         break;
@@ -573,7 +575,7 @@ void Debug_Key(unsigned input) {
         break;
 
       case (KN_F4 | KN_CTRL_BIT):
-        Debug_Unshroud = !Debug_Unshroud;
+        TheDebugState().set_unshroud(!TheDebugState().unshroud());
         Map.Flag_To_Redraw(true);
         break;
 

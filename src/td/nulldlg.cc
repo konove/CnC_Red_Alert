@@ -81,6 +81,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "td/conquer.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/edit.h"
@@ -7038,7 +7039,7 @@ void Smart_Print(const std::string_view text) {
   if (smart_print_enabled) {
     absl::PrintF("%s", text);
   } else {
-    if (Debug_Heap_Dump) {
+    if (TheDebugState().heap_dump()) {
       absl::PrintF("%s", text);
     }
   }

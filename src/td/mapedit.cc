@@ -81,6 +81,7 @@
 #include "td/cell.h"
 #include "td/conquer.h"
 #include "td/control.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/dial8.h"
 #include "td/dialog.h"
@@ -286,7 +287,7 @@ void MapEditClass::Init_IO() {
   /*------------------------------------------------------------------------
   For normal game mode, jump to the parent's Init routine.
   ------------------------------------------------------------------------*/
-  if (!Debug_Map) {
+  if (!TheDebugState().map_editor_active()) {
     MouseClass::Init_IO();
 
   } else {
@@ -548,14 +549,15 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
   /*------------------------------------------------------------------------
   Trap 'F2' regardless of whether we're in game or editor mode
   ------------------------------------------------------------------------*/
-  if (Debug_Flag && (/*(input == KN_F2 && Session == GAME_SOLO) ||*/ input ==
-                     (KN_F2 | KN_CTRL_BIT))) {
+  if (TheDebugState().developer_mode() &&
+      (/*(input == KN_F2 && Session == GAME_SOLO) ||*/ input ==
+       (KN_F2 | KN_CTRL_BIT))) {
     ScenarioInit = 0;
 
     /*
     ** If we're in editor mode & Changed is set, prompt for saving changes
     */
-    if (Debug_Map && Changed) {
+    if (TheDebugState().map_editor_active() && Changed) {
       rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
       TheScreen().hidden_page().Clear();
       Flag_To_Redraw(true);
@@ -571,13 +573,13 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
           input = KN_NONE;
         } else {
           Changed = false;
-          Go_Editor(!Debug_Map);
+          Go_Editor(!TheDebugState().map_editor_active());
         }
       } else {
         /*
         .................... User doesn't want to save .....................
         */
-        Go_Editor(!Debug_Map);
+        Go_Editor(!TheDebugState().map_editor_active());
       }
     } else {
       /*
@@ -585,17 +587,17 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       ** changes above, they won't keep coming back to haunt us with continual
       ** Save Changes? prompts!)
       */
-      if (!Debug_Map) {
+      if (!TheDebugState().map_editor_active()) {
         Changed = false;
       }
-      Go_Editor(!Debug_Map);
+      Go_Editor(!TheDebugState().map_editor_active());
     }
   }
 
   /*------------------------------------------------------------------------
   For normal game mode, jump to the parent's AI routine.
   ------------------------------------------------------------------------*/
-  if (!Debug_Map) {
+  if (!TheDebugState().map_editor_active()) {
     MouseClass::AI(input, x, y);
     return;
   }
@@ -708,7 +710,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     F6 = toggle passable/impassable display
     ---------------------------------------------------------------------*/
     case KN_F6:
-      Debug_Passable = !Debug_Passable;
+      TheDebugState().set_show_passability(!TheDebugState().show_passability());
       TheScreen().hidden_page().Clear();
       Flag_To_Redraw(true);
       input = KN_NONE;
@@ -1387,7 +1389,7 @@ void MapEditClass::Draw_It(bool forced) {
 
   MouseClass::Draw_It(forced);
 
-  if (!Debug_Map) {
+  if (!TheDebugState().map_editor_active()) {
     return;
   }
 
@@ -1678,7 +1680,7 @@ void MapEditClass::Main_Menu() {
           }
         }
         Changed = false;
-        Debug_Map = false;
+        TheDebugState().set_map_editor_active(false);
         Start_Scenario(ScenarioName);
         return;
       default:
@@ -1904,7 +1906,7 @@ bool MapEditClass::Scroll_Map(DirType facing, int& distance, bool really) {
   /*
   ** The popup gadgets require the entire map to be redrawn if we scroll.
   */
-  if (Debug_Map && really) {
+  if (TheDebugState().map_editor_active() && really) {
     Flag_To_Redraw(true);
   }
 

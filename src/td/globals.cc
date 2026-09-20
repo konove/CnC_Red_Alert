@@ -100,20 +100,7 @@
 bool ForceEnglish = false;
 #endif
 
-bool Debug_Quiet = false;
-bool Debug_Cheat = false;
-bool Debug_Icon = false;
-bool Debug_Flag = false;
-bool Debug_Map = false;       // true = map editor mode
-bool Debug_Passable = false;  // true = show passable/impassable terrain
-bool Debug_Unshroud = false;  // true = hide the shroud
-bool Debug_Threat = false;
-bool Debug_Find_Path = false;
-bool Debug_Check_Map = false;  // true = validate the map each frame
-bool Debug_Playtest = false;
 int In_Debugger = 0;
-bool Debug_Heap_Dump = false;  // true = print the Heap Dump
-bool Debug_Instant_Build = false;
 
 TFixedIHeapClass<UnitClass> Units;
 TFixedIHeapClass<FactoryClass> Factories;

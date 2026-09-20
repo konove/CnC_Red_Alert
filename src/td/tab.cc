@@ -53,6 +53,7 @@
 #include "sdllib/wwstd.h"
 #include "td/conquer.h"
 #include "td/credits.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/externs.h"
@@ -102,7 +103,7 @@ TabClass::TabClass() = default;
 void TabClass::Draw_It(bool complete) {
   SidebarClass::Draw_It(complete);
 
-  if (Debug_Map) {
+  if (TheDebugState().map_editor_active()) {
     // HidPage.Unlock();
     return;
   }

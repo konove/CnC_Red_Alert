@@ -7,9 +7,11 @@
 #include <vector>
 
 #include "base/buffer.h"
+#include "base/installed.h"
 #include "base/numeric.h"
 #include "gtest/gtest.h"
 #include "td/cell.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/event.h"
 #include "td/externs.h"
@@ -55,6 +57,9 @@ bool Restore(T& object, const std::vector<uint8_t>& bytes) {
 class TdArchiveRoundTripTest : public testing::Test {
  protected:
   static void SetUpTestSuite() {
+    // Selecting and drawing an object reads the debug switches, which Game
+    // installs in the real game.
+    debug_state_scope_ = new base::Installed<DebugState>::Scope(debug_state_);
     GameActive = false;
     Frame = 100;
     Houses.Set_Heap(8);
@@ -79,7 +84,14 @@ class TdArchiveRoundTripTest : public testing::Test {
     delete PlayerPtr;
     PlayerPtr = nullptr;
     Map.Clear();
+    delete debug_state_scope_;
+    debug_state_scope_ = nullptr;
   }
+
+ private:
+  static inline DebugState debug_state_;
+  static inline base::Installed<DebugState>::Scope* debug_state_scope_ =
+      nullptr;
 };
 
 TEST_F(TdArchiveRoundTripTest, TriggerIniPreserves64BitDataAndRejectsOverflow) {

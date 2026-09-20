@@ -111,6 +111,7 @@
 #include "td/config.h"
 #include "td/const.h"
 #include "td/debug.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/display.h"
 #include "td/event.h"
@@ -307,7 +308,7 @@ void Main_Game() {
         /*
         **	Non-scenario-editor-mode: call the game's main loop
         */
-        if (!Debug_Map) {
+        if (!TheDebugState().map_editor_active()) {
           if (Main_Loop()) {
             break;
           }
@@ -558,7 +559,7 @@ void Keyboard_Process(KeyNumType& input) {
       input & ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT | WWKEY_CTRL_BIT));
 
   if constexpr (config::kCheatKeysEnabled) {
-    if (Debug_Flag) {
+    if (TheDebugState().developer_mode()) {
       switch (static_cast<int>(input)) {
         case KN_M | KN_SHIFT_BIT:
         case KN_M | KN_ALT_BIT:
@@ -573,19 +574,19 @@ void Keyboard_Process(KeyNumType& input) {
   }
 
   if constexpr (config::kVirginCheatKeysEnabled) {
-    if (Debug_Playtest && input == (KN_W | KN_ALT_BIT)) {
+    if (TheDebugState().playtest() && input == (KN_W | KN_ALT_BIT)) {
       PlayerPtr->Blockage = 0;
       PlayerPtr->Flag_To_Win();
     }
   }
 
   // #ifdef CHEAT_KEYS
-  if (/*Debug_Playtest && */ input == (KN_W | KN_ALT_BIT)) {
+  if (/*TheDebugState().playtest() && */ input == (KN_W | KN_ALT_BIT)) {
     PlayerPtr->Blockage = 0;
     PlayerPtr->Flag_To_Win();
   }
 
-  if (Debug_Flag && input == KN_SLASH) {
+  if (TheDebugState().developer_mode() && input == KN_SLASH) {
     if (GameToPlay != GAME_NORMAL) {
       SpecialDialog = SDLG_SPECIAL;
       input = KN_NONE;
@@ -706,7 +707,7 @@ void Keyboard_Process(KeyNumType& input) {
     **	Handle making and breaking alliances.
     */
     case VK_A:
-      if ((GameToPlay != GAME_NORMAL || Debug_Flag) &&
+      if ((GameToPlay != GAME_NORMAL || TheDebugState().developer_mode()) &&
           (CurrentObject.Count() && !PlayerPtr->IsDefeated) &&
           (CurrentObject.at(0)->Owner() != PlayerPtr->Class->House)) {
         OutList.Add(EventClass(EventClass::ALLY,
@@ -722,7 +723,7 @@ void Keyboard_Process(KeyNumType& input) {
     case VK_F8:
     case VK_F9:
     case VK_F10:
-      if (!Debug_Map) {
+      if (!TheDebugState().map_editor_active()) {
         Handle_View(KN_To_VK(plain) - VK_F7, action);
       }
       break;
@@ -823,7 +824,8 @@ void Keyboard_Process(KeyNumType& input) {
 #endif
 
   if constexpr (config::kCheatKeysEnabled) {
-    if (Debug_Flag && input && (input & KN_RLSE_BIT) == 0) {
+    if (TheDebugState().developer_mode() && input &&
+        (input & KN_RLSE_BIT) == 0) {
       Debug_Key(input);
     }
   }
@@ -1890,7 +1892,7 @@ bool Main_Loop() {
   /*
   ** Is there a memory trasher altering the map??
   */
-  if (Debug_Check_Map && (!Map.Validate())) {
+  if (TheDebugState().check_map() && (!Map.Validate())) {
     const char* error_msg = nullptr;
     const char* stop_msg = nullptr;
     const char* continue_msg = nullptr;
@@ -1983,8 +1985,8 @@ void Go_Editor(bool flag) {
   **	Go into Scenario Editor mode
   */
   if (flag) {
-    Debug_Map = true;
-    Debug_Unshroud = true;
+    TheDebugState().set_map_editor_active(true);
+    TheDebugState().set_unshroud(true);
 
     /*
     ** Un-select any selected objects
@@ -2012,8 +2014,8 @@ void Go_Editor(bool flag) {
     /*
     **	Go into normal game mode
     */
-    Debug_Map = false;
-    Debug_Unshroud = false;
+    TheDebugState().set_map_editor_active(false);
+    TheDebugState().set_unshroud(false);
 
     /*
     ** Un-select any selected objects
@@ -2061,7 +2063,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
   /*
   ** Don't play movies in editor mode
   */
-  if (Debug_Map) {
+  if (TheDebugState().map_editor_active()) {
     return;
   }
 
@@ -2107,7 +2109,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     GameFileVqaIo movie_io;  // Must outlive the open movie.
     player.SetIo(&movie_io);
 
-    if (!Debug_Quiet && Audio.is_open()) {
+    if (!TheDebugState().quiet() && Audio.is_open()) {
       AnimControl.OptionFlags |= VQAOPTF_AUDIO;
     } else {
       AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
@@ -2633,7 +2635,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
                        nullptr);
 
   // Call_Back();
-  if ((BreakoutAllowed || Debug_Flag) && key == KN_ESC) {
+  if ((BreakoutAllowed || TheDebugState().developer_mode()) && key == KN_ESC) {
     Keyboard::Clear();
     movie_broken_out = true;
     return 1;
@@ -2883,11 +2885,11 @@ void Heap_Dump_Check(const char* string) {
       return;
     }
 
-    //	Debug_Heap_Dump = true;
+    //	TheDebugState().set_heap_dump(true);
 
     Smart_Printf("%s\n", string);
 
-    //	Debug_Heap_Dump = false;
+    //	TheDebugState().set_heap_dump(false);
   }
 }
 

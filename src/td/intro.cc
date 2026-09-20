@@ -53,6 +53,7 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "td/conquer.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/globals.h"
@@ -75,7 +76,7 @@
 // Opens a movie on the given player without playing it. The io object must
 // stay alive until the player is closed. Returns true if the movie opened.
 static bool Open_Movie(VqaPlayer& player, GameFileVqaIo& io, const char* name) {
-  if (!Debug_Quiet && Audio.is_open()) {
+  if (!TheDebugState().quiet() && Audio.is_open()) {
     AnimControl.OptionFlags |= VQAOPTF_AUDIO;
   } else {
     AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;

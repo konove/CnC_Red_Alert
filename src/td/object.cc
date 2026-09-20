@@ -126,6 +126,7 @@
 #include "td/combat.h"
 #include "td/config.h"
 #include "td/conquer.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/externs.h"
@@ -736,7 +737,8 @@ void ObjectClass::Unselect() {
  *Adds to head or tail depending on leader type flag.                      *
  *=============================================================================================*/
 bool ObjectClass::Select() {
-  if (!Debug_Map && (IsSelected || !Class_Of().IsSelectable)) {
+  if (!TheDebugState().map_editor_active() &&
+      (IsSelected || !Class_Of().IsSelectable)) {
     return false;
   }
 
@@ -801,7 +803,7 @@ bool ObjectClass::Render(bool forced) {
   int y = 0;
   const COORDINATE coord = Render_Coord();
 
-  if (Debug_Map || Debug_Unshroud ||
+  if (TheDebugState().map_editor_active() || TheDebugState().unshroud() ||
       ((forced || IsToDisplay) && IsDown && !IsInLimbo)) {
     IsToDisplay = false;
 
@@ -875,7 +877,7 @@ bool ObjectClass::Render(bool forced) {
         **	Draw the trigger attached to the object. Draw_It is window-
         **	relative, so add the window's x-coord to 'x'.
         */
-        if (Debug_Map && Trigger) {
+        if (TheDebugState().map_editor_active() && Trigger) {
           Fancy_Text_Print(Trigger->Get_Name(),
                            x + (static_cast<int>(WinX) * 8), y, kPink, kTBlack,
                            TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);

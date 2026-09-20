@@ -114,6 +114,7 @@
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/control.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/event.h"
@@ -315,7 +316,7 @@ void SidebarClass::Init_IO() {
   /*
   ** Add the sidebar's buttons only if we're not in editor mode.
   */
-  if (!Debug_Map) {
+  if (!TheDebugState().map_editor_active()) {
     /*
     ** Set the button widths based on the string that goes in them.
     */
@@ -657,7 +658,7 @@ bool SidebarClass::Add(RTTIType type, int id) {
   /*
   ** Add the sidebar only if we're not in editor mode.
   */
-  if (!Debug_Map) {
+  if (!TheDebugState().map_editor_active()) {
     const int column = Which_Column(type);
 
     if (base::At(Column, column).Add(type, id)) {
@@ -716,7 +717,8 @@ bool SidebarClass::Scroll(bool up, int column) {
 void SidebarClass::Draw_It(bool complete) {
   PowerClass::Draw_It(complete);
 
-  if (IsSidebarActive && (IsSidebarToRedraw || complete) && !Debug_Map) {
+  if (IsSidebarActive && (IsSidebarToRedraw || complete) &&
+      !TheDebugState().map_editor_active()) {
     IsSidebarToRedraw = false;
 
     if (LogicPage->Lock()) {
@@ -791,12 +793,12 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
     Activate(-1);
   }
 
-  if (!Debug_Map) {
+  if (!TheDebugState().map_editor_active()) {
     base::At(Column, 0).AI(input, x, y);
     base::At(Column, 1).AI(input, x, y);
   }
 
-  if (IsSidebarActive && !Debug_Map) {
+  if (IsSidebarActive && !TheDebugState().map_editor_active()) {
     if (input == KN_DOWN) {
       redraw |= base::At(Column, 0).Scroll(false);
       redraw |= base::At(Column, 1).Scroll(false);
@@ -1983,7 +1985,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
 bool SidebarClass::StripClass::Recalc() {
   bool ok = false;
 
-  if (Debug_Map || !BuildableCount) {
+  if (TheDebugState().map_editor_active() || !BuildableCount) {
     return false;
   }
 

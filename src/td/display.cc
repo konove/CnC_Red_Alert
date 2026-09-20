@@ -125,6 +125,7 @@
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/coord.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
 #include "td/event.h"
@@ -344,7 +345,7 @@ void DisplayClass::Init_IO() {
   /*
   ** Re-attach our buttons to the main map button list, only in non-edit mode.
   */
-  if (!Debug_Map) {
+  if (!TheDebugState().map_editor_active()) {
     TacButton.Zap();
     Add_A_Button(TacButton);
   }
@@ -684,7 +685,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object) {
   /*
   ** In editor mode, the proximity check always passes.
   */
-  if (Debug_Map) {
+  if (TheDebugState().map_editor_active()) {
     return true;
   }
 
@@ -2053,7 +2054,7 @@ void DisplayClass::Draw_It(bool forced) {
       * the coord value *	with 0xFF00FF00 to strip off the lepton
       * coordinates, but leave the *	cell coordinates.
       */
-      if (Debug_Map && PendingObjectPtr) {
+      if (TheDebugState().map_editor_active() && PendingObjectPtr) {
         PendingObjectPtr->Coord = PendingObjectPtr->Class_Of().Coord_Fixup(
             Cell_Coord(static_cast<CELL>(ZoneCell + ZoneOffset)));
         PendingObjectPtr->Render(true);
@@ -2105,16 +2106,16 @@ void DisplayClass::Redraw_Icons(int draw_flags) {
           **	If there is a portion of the underlying icon that could be
           *visible, *	then draw it.  Also draw the cell if the shroud is off.
           */
-          if (cellptr->IsVisible || Debug_Unshroud) {
+          if (cellptr->IsVisible || TheDebugState().unshroud()) {
             cellptr->Draw_It(xpixel, ypixel, draw_flags);
           }
 
           /*
           **	If any cell is not fully mapped, then flag it so that the shadow
           *drawing *	process will occur.  Only draw the shadow if
-          *Debug_Unshroud is false.
+          *TheDebugState().unshroud() is false.
           */
-          if (!cellptr->IsMapped && !Debug_Unshroud) {
+          if (!cellptr->IsMapped && !TheDebugState().unshroud()) {
             IsShadowPresent = true;
           }
         }
@@ -2808,7 +2809,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   const CELL cell = Coord_Cell(coord);
   //	CELL cell = Map.Click_Cell_Calc(x, y);
   if (coord) {
-    const bool shadow = !Map.at(cell).IsVisible && !Debug_Unshroud;
+    const bool shadow = !Map.at(cell).IsVisible && !TheDebugState().unshroud();
     x -= Map.TacPixelX;
     y -= Map.TacPixelY;
 

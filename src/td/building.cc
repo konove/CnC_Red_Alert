@@ -164,6 +164,7 @@
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/coord.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/drive.h"
 #include "td/event.h"
@@ -3093,7 +3094,8 @@ void BuildingClass::Grand_Opening(bool captured) {
   **	Refineries get a free harvester. Add a harvester to the reinforcement
   *list *	at this time.
   */
-  if (*this == STRUCT_REFINERY && !ScenarioInit && !captured && !Debug_Map &&
+  if (*this == STRUCT_REFINERY && !ScenarioInit && !captured &&
+      !TheDebugState().map_editor_active() &&
       (!House->IsHuman || PurchasePrice == 0 ||
        PurchasePrice > Class->Raw_Cost())) {
     CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), DIR_SW));
@@ -4998,7 +5000,7 @@ void BuildingClass::Enter_Idle_Mode(bool initial) {
   *during game play and thus it must start in *	the "construction" mission.
   */
   MissionType mission = MISSION_GUARD;
-  if (!initial || ScenarioInit || Debug_Map) {
+  if (!initial || ScenarioInit || TheDebugState().map_editor_active()) {
     Begin_Mode(BSTATE_IDLE);
     mission = MISSION_GUARD;
   } else {
@@ -5581,7 +5583,7 @@ bool BuildingClass::Passes_Proximity_Check(CELL homecell) {
   /*
   ** In editor mode, the proximity check always passes.
   */
-  if (Debug_Map || !House->IsHuman) {
+  if (TheDebugState().map_editor_active() || !House->IsHuman) {
     return true;
   }
 

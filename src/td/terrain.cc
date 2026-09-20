@@ -92,6 +92,7 @@
 #include "td/combat.h"
 #include "td/config.h"
 #include "td/conquer.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/globals.h"
@@ -399,7 +400,7 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) {
     }
 
     ShapeFlags_Type flags = SHAPE_NORMAL;
-    if (IsSelected && Debug_Map) {
+    if (IsSelected && TheDebugState().map_editor_active()) {
       flags = flags | SHAPE_FADING;
     }
 

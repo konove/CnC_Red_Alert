@@ -87,6 +87,7 @@
 #include "td/bullet.h"
 #include "td/config.h"
 #include "td/conquer.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/expand.h"
@@ -595,7 +596,7 @@ bool Init_Game() {
   **	Cache the main game data. This operation can take a very long time.
   */
   MixArchive::Cache("CONQUER.MIX");
-  if (Audio.is_open() && !Debug_Quiet) {
+  if (Audio.is_open() && !TheDebugState().quiet()) {
     MixArchive::Cache("SOUNDS.MIX");
     if (Special.IsJuvenile) {
       (void)MixArchive::Register("ZOUNDS.MIX");
@@ -818,7 +819,7 @@ bool Select_Game(bool fade) {
   PlayerWins = false;
   PlayerLoses = false;
   MPlayerObiWan = false;
-  Debug_Unshroud = false;
+  TheDebugState().set_unshroud(false);
   Map.Set_Cursor_Shape({});
   Map.PendingObjectPtr = nullptr;
   Map.PendingObject = nullptr;
@@ -871,7 +872,7 @@ bool Select_Game(bool fade) {
   /*
   **	Main menu processing; only do this if we're not in editor mode.
   */
-  if (!Debug_Map) {
+  if (!TheDebugState().map_editor_active()) {
     /*
     **	Menu selection processing loop
     */
@@ -1586,8 +1587,8 @@ bool Select_Game(bool fade) {
     }
   } else {
     /*
-    ** For Debug_Map (editor) mode, if JP option is on, set to load that
-    *scenario
+    ** For TheDebugState().map_editor_active() (editor) mode, if JP option is
+    * on, set to load that scenario
     */
     Scenario = 1;
     if (Special.IsJurassic && AreThingiesEnabled) {
@@ -1657,7 +1658,7 @@ bool Select_Game(bool fade) {
     if (DebugNewGame.size() >= 5) {
       port::SafeCopy(ScenarioName, DebugNewGame.c_str());
       DebugNewGame.clear();
-    } else if (Debug_Map) {
+    } else if (TheDebugState().map_editor_active()) {
       Set_Scenario_Name(ScenarioName, Scenario, ScenPlayer, ScenDir,
                         SCEN_VAR_A);
     } else {
@@ -2030,7 +2031,7 @@ bool Select_Game(bool fade) {
   }
 #endif  // FORCE_WINSOCK
 
-  if (Debug_Map) {
+  if (TheDebugState().map_editor_active()) {
     while (Get_Mouse_State() > 1) {
       Show_Mouse();
     }
@@ -2093,7 +2094,7 @@ static void Play_Intro(bool for_real) {
     Play_Movie("LOGO", THEME_NONE, false);
     Show_Mouse();
   } else {
-    if (!Debug_Flag) {
+    if (!TheDebugState().developer_mode()) {
       _counter = 0;
     } else {
       if (playright) {
@@ -2168,7 +2169,7 @@ void Anim_Init() {
   AnimControl.AudioDeviceID = Audio.device_id();
   AnimControl.AudioCallback = Audio.extra_callback_slot();
   AnimControl.AudioSpec = Audio.output_spec();
-  // if (!Debug_Quiet && Audio.is_open()) {
+  // if (!TheDebugState().quiet() && Audio.is_open()) {
   // AnimControl.OptionFlags |= VQAOPTF_AUDIO;
   //}
 }
@@ -2237,9 +2238,9 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
   Whom = HOUSE_GOOD;
   Special.Init();
 
-  Debug_Map = false;
+  TheDebugState().set_map_editor_active(false);
   //	Debug_Play_Map = false;
-  Debug_Unshroud = false;
+  TheDebugState().set_unshroud(false);
 
   for (const std::string_view argument : arguments) {
     const std::string string = absl::AsciiStrToUpper(argument);
@@ -2417,7 +2418,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
 
       case PARM_PLAYTEST:
         if constexpr (config::kVirginCheatKeysEnabled) {
-          Debug_Playtest = true;
+          TheDebugState().set_playtest(true);
         }
         break;
 
@@ -2428,15 +2429,15 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
       case PARM_CHEATPHIL:
       case PARM_CHEATBILL:
       case PARM_CHEAT_STEVET:
-        Debug_Playtest = true;
-        Debug_Flag = true;
+        TheDebugState().set_playtest(true);
+        TheDebugState().set_developer_mode(true);
         break;
 
       case PARM_EDITORBILL:
       case PARM_EDITORERIK:
-        Debug_Map = true;
-        Debug_Unshroud = true;
-        Debug_Flag = true;
+        TheDebugState().set_map_editor_active(true);
+        TheDebugState().set_unshroud(true);
+        TheDebugState().set_developer_mode(true);
         break;
 
       case PARM_SPECIAL:
@@ -2466,7 +2467,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
       **	Scenario Editor Mode
       */
       if (absl::EqualsIgnoreCase(string, "-CHECKMAP")) {
-        Debug_Check_Map = true;
+        TheDebugState().set_check_map(true);
         continue;
       }
     }
@@ -2677,7 +2678,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
           **	Quiet mode override control.
           */
           case 'Q':
-            Debug_Quiet = true;
+            TheDebugState().set_quiet(true);
             break;
 
           /*

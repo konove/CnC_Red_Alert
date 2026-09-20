@@ -89,21 +89,6 @@
 extern bool ForceEnglish;
 #endif
 
-extern bool Debug_Quiet;
-extern bool Debug_Cheat;
-extern bool Debug_Flag;
-extern bool Debug_Map;
-extern bool Debug_Icon;
-extern bool Debug_Passable;
-extern bool Debug_Unshroud;
-extern bool Debug_Threat;
-extern bool Debug_Find_Path;
-extern bool Debug_Check_Map;
-extern bool Debug_Playtest;
-
-extern bool Debug_Heap_Dump;
-extern bool Debug_Instant_Build;
-
 extern std::span<const std::byte> WarFactoryOverlay;
 
 /*

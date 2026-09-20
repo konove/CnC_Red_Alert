@@ -82,6 +82,7 @@
 
 #include "td/config.h"
 #include "td/conquer.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/globals.h"
@@ -296,7 +297,7 @@ void FactoryClass::AI() {
           Get_House()->Spend_Money(cost);
           Balance -= cost;
         }
-        if (Debug_Instant_Build) {
+        if (TheDebugState().instant_build()) {
           Set_Stage(kStepCount);
         }
         /*

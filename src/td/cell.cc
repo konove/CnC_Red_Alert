@@ -104,6 +104,7 @@
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/coord.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/display.h"
@@ -934,7 +935,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
   /*
   **	Draw the stamp of the template.
   */
-  if (Debug_Icon) {
+  if (TheDebugState().show_cell_info()) {
     LogicPage->Fill_Rect(Map.TacPixelX + x, Map.TacPixelY + y,
                          Map.TacPixelX + x + ICON_PIXEL_W - 1,
                          Map.TacPixelY + y + ICON_PIXEL_H - 1,
@@ -952,7 +953,8 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
         /*
         **	Set up the remap table for this icon.
         */
-        if (Debug_Map && Debug_Passable) {
+        if (TheDebugState().map_editor_active() &&
+            TheDebugState().show_passability()) {
           if (::Ground.at(Land).Cost.at(SPEED_FOOT) == 0 ||
               (Cell_Occupier() != nullptr &&
                Cell_Occupier()->What_Am_I() != RTTI_INFANTRY)) {  // impassable
@@ -990,7 +992,8 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
         *draw before the placement cursor, but after drawing the *	objects
         *in the cell.
         */
-        if (Debug_Map && CurrentCell == Cell_Number()) {
+        if (TheDebugState().map_editor_active() &&
+            CurrentCell == Cell_Number()) {
           LogicPage->Draw_Rect(x + Map.TacPixelX, y + Map.TacPixelY,
                                Map.TacPixelX + x + CELL_PIXEL_W - 1,
                                Map.TacPixelY + y + CELL_PIXEL_H - 1, kYellow);
@@ -1050,7 +1053,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       }
 
       if constexpr (config::kScenarioEditorEnabled) {
-        if (Debug_Map) {
+        if (TheDebugState().map_editor_active()) {
           /*
           **	Draw the cell's Trigger mnemonic, if it has a trigger
           */
@@ -1111,7 +1114,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
         }
 
         if constexpr (config::kScenarioEditorEnabled) {
-          if (Debug_Map && Map.PendingObject) {
+          if (TheDebugState().map_editor_active() && Map.PendingObject) {
             switch (Map.PendingObject->What_Am_I()) {
               /*
               **	Draw a template:
@@ -1874,7 +1877,7 @@ void CellClass::Adjust_Threat(HousesType house, int threat_value) {
       house_ptr->Adjust_Threat(region, threat_value);
     }
   }
-  if (Debug_Threat) {
+  if (TheDebugState().show_threat()) {
     Map.Flag_To_Redraw(true);
   }
 }

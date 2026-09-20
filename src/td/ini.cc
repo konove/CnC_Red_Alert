@@ -75,6 +75,7 @@
 #include "td/cell.h"
 #include "td/config.h"
 #include "td/conquer.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/ftimer.h"
@@ -611,7 +612,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     **	If Ghosts are disabled and we're not editing, remove computer players
     **	(Must be done after all objects are read in from the INI)
     */
-    if (!MPlayerGhosts && !Debug_Map) {
+    if (!MPlayerGhosts && !TheDebugState().map_editor_active()) {
       Remove_AI_Players();
     } else {
       /*
@@ -642,7 +643,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     **	a whole bunch of units.  MPlayerUnitCount is the total # of units
     **	to create.
     */
-    if (!Debug_Map) {
+    if (!TheDebugState().map_editor_active()) {
       const int save_init = ScenarioInit;  // turn ScenarioInit off
       ScenarioInit = 0;
       Create_Units();

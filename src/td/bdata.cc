@@ -79,6 +79,7 @@
 #include "td/cell.h"
 #include "td/conquer.h"
 #include "td/const.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
 #include "td/externs.h"
@@ -4414,9 +4415,9 @@ int BuildingTypeClass::Full_Name() const {
   if (::Scenario == 3 && Type == STRUCT_MISSION) {
     return TXT_PRISON;
   }
-  if (!IsNominal || Special.IsNamed || IsWall || Debug_Map ||
-      Type == STRUCT_V23 || Type == STRUCT_V30 || Type == STRUCT_MISSION ||
-      Type == STRUCT_BIO_LAB) {
+  if (!IsNominal || Special.IsNamed || IsWall ||
+      TheDebugState().map_editor_active() || Type == STRUCT_V23 ||
+      Type == STRUCT_V30 || Type == STRUCT_MISSION || Type == STRUCT_BIO_LAB) {
     return TechnoTypeClass::Full_Name();
   }
   return TXT_CIVILIAN_BUILDING;
