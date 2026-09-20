@@ -69,7 +69,7 @@ constexpr KeyNumType kPageRespondKey = KN_RETURN;  // KN_COMMA
     Session.Messages.Add_Message(
         nullptr, 0, TXT_WOL_NOTPAGED, PCOLOR_GOLD,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-        Rule.MessageDelay * kTicksPerMinute);
+        TheRules().MessageDelay * kTicksPerMinute);
     PlaySoundEffect(VOC_SYS_ERROR);
     return;
   }
@@ -129,7 +129,7 @@ static void Send_Network_Chat_Message(const int rc) {
   if (Session.MessageAddress.Is_Broadcast()) {
     char* ptr = &Session.GPacket.Message.Buf[0];
     if (std::string_view(ptr).starts_with("SECRET UNITS ON ") &&
-        Rule.NewUnitsEnabled) {
+        TheRules().NewUnitsEnabled) {
       *ptr = 'X';  // force it to an odd hack so we know it was broadcast.
       Enable_Secret_Units();
     }
@@ -289,7 +289,7 @@ void Message_Input(KeyNumType& input) {
       // the setting stays in step without a new packet type.
       const char* ptr = &serial_packet->Message.Message[0];
       if (std::string_view(ptr).starts_with("SECRET UNITS ON ") &&
-          Rule.NewUnitsEnabled) {
+          TheRules().NewUnitsEnabled) {
         Enable_Secret_Units();
       }
       port::SafeCopy(Session.LastMessage, serial_packet->Message.Message);
@@ -371,8 +371,8 @@ void IPX_Call_Back() {
                   Session.GPacket.Name,
                   static_cast<int>(Session.GPacket.Message.Color),
                   Session.GPacket.Message.Buf,
-                  Rule.MessageDelay * kTicksPerMinute)) {
-            if (Rule.NewUnitsEnabled &&
+                  TheRules().MessageDelay * kTicksPerMinute)) {
+            if (TheRules().NewUnitsEnabled &&
                 std::string_view(Session.GPacket.Message.Buf)
                     .starts_with("XECRET UNITS ON ")) {
               Session.GPacket.Message.Buf[0] = 'S';
@@ -383,7 +383,7 @@ void IPX_Call_Back() {
                 static_cast<int>(Session.GPacket.Message.Color),
                 Session.GPacket.Message.Buf, Session.GPacket.Message.Color,
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                Rule.MessageDelay * kTicksPerMinute);
+                TheRules().MessageDelay * kTicksPerMinute);
 
             PlaySoundEffect(VOC_INCOMING_MESSAGE);
           }

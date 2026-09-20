@@ -707,7 +707,7 @@ int TechnoClass::Time_To_Build() const {
       val *= House->BuildSpeedBias;
     } else {
       val *= House->BuildSpeedBias *
-             fixed(Rule.UnitBuildPenalty, 100);  // UNIT_BUILD_BIAS;
+             fixed(TheRules().UnitBuildPenalty, 100);  // UNIT_BUILD_BIAS;
     }
   }
 
@@ -731,7 +731,7 @@ int TechnoClass::Time_To_Build() const {
   if (divisor != 0) {
     // Hack: allow the multiple-factory bonus, but only up to two factories if
     //			this is an AM<->AM game.
-    if (Rule.NewUnitsEnabled) {
+    if (TheRules().NewUnitsEnabled) {
       val /= std::min(divisor, 2);
     } else {
       val /= divisor;
@@ -1027,7 +1027,7 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
       **	Determine if this unit can be repaired becaause it is under
       *strength. If so, then *	proceed with the repair process.
       */
-      if (Health_Ratio() < Rule.ConditionGreen) {
+      if (Health_Ratio() < TheRules().ConditionGreen) {
         int cost = Techno_Type_Class()->Repair_Cost();
         cost = std::max(cost, 1);
         int step = Techno_Type_Class()->Repair_Step();
@@ -1046,7 +1046,7 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
           *message. This *	lets the repairing object know if it should
           *abort the repair control process *	or continue it.
           */
-          if (Health_Ratio() < Rule.ConditionGreen) {
+          if (Health_Ratio() < TheRules().ConditionGreen) {
             return RADIO_ROGER;
           }
           Strength = Techno_Type_Class()->MaxStrength;
@@ -1188,7 +1188,7 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
     int height = 0;
     Class_Of().Dimensions(width, height);
 
-    if (Strength && (House->Is_Ally(PlayerPtr) || Rule.IsHealthBar)) {
+    if (Strength && (House->Is_Ally(PlayerPtr) || TheRules().IsHealthBar)) {
       const fixed ratio = Health_Ratio();
 
       const int xx = x - (width / 2);
@@ -1210,10 +1210,10 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
       pwidth = Bound(pwidth, 1, width - 2);
 
       int color = kLtGreen;  // The color to give the interior of the bargraph.
-      if (ratio <= Rule.ConditionYellow) {
+      if (ratio <= TheRules().ConditionYellow) {
         color = kYellow;
       }
-      if (ratio <= Rule.ConditionRed) {
+      if (ratio <= TheRules().ConditionRed) {
         color = kRed;
       }
       draw_window.Fill_Rect(xx + 1, yy + 1, xx + pwidth, yy + (3 - 1),
@@ -1228,7 +1228,8 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
       const int ly = height / 2;
       const int dx = width / 5;
       const int dy = height / 5;
-      const int fudge = House->Is_Ally(PlayerPtr) || Rule.IsHealthBar ? 4 : 0;
+      const int fudge =
+          House->Is_Ally(PlayerPtr) || TheRules().IsHealthBar ? 4 : 0;
       if (What_Am_I() == RTTI_VESSEL) {
         lx = width / 2;
       }
@@ -1420,7 +1421,7 @@ fixed TechnoClass::Area_Modify(CELL cell) const {
     return fixed(1);
   }
 
-  const int crange = Lepton_To_Cell(Rule.SupressRadius);
+  const int crange = Lepton_To_Cell(TheRules().SupressRadius);
   fixed odds(1);
 
   for (int radius = 1; radius < crange; radius++) {
@@ -1554,7 +1555,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	a threat.
   */
   if (object->Mission != MISSION_NONE &&
-      MissionControl.at(object->Mission).IsNoThreat) {
+      TheRules().mission_control().at(object->Mission).IsNoThreat) {
     return false;
   }
 
@@ -1576,7 +1577,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   */
   if (House->Is_Ally(object)) {
     if (Combat_Damage() < 0) {
-      if (object->Health_Ratio() == Rule.ConditionGreen) {
+      if (object->Health_Ratio() == TheRules().ConditionGreen) {
         return false;
       }
     } else {
@@ -1925,7 +1926,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	an unmodified scan would.
   */
   if (House->Which_Zone(object) != ZONE_NONE) {
-    value *= Rule.NervousBias;
+    value *= TheRules().NervousBias;
   }
 
   /*
@@ -2017,7 +2018,7 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
   while (tentative != nullptr) {
     if ((tentative != this) && tentative->Is_Techno()) {
       if (Combat_Damage() < 0) {
-        if (tentative->Health_Ratio() < Rule.ConditionGreen &&
+        if (tentative->Health_Ratio() < TheRules().ConditionGreen &&
             House->Is_Ally(tentative)) {
           break;
         }
@@ -2077,7 +2078,7 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
   **	Even then, if the difficulty indicates that it shouldn't search for wall
   **	targets, then don't allow it to do so.
   */
-  if (!base::At(Rule.Diff, static_cast<int>(House->Difficulty))
+  if (!base::At(TheRules().Diff, static_cast<int>(House->Difficulty))
            .IsWallDestroyer) {
     return 0;
   }
@@ -2552,8 +2553,8 @@ void TechnoClass::AI() {
   *will perform *	the heal logic here.
   */
   if (Techno_Type_Class()->IsSelfHealing &&
-      Frame % (Rule.RepairRate * kTicksPerMinute) == 0 &&
-      Health_Ratio() <= Rule.ConditionYellow) {
+      Frame % (TheRules().RepairRate * kTicksPerMinute) == 0 &&
+      Health_Ratio() <= TheRules().ConditionYellow) {
     Strength++;
     Mark(MARK_CHANGE);
   }
@@ -2643,7 +2644,7 @@ void TechnoClass::Cloaking_AI() {
 #endif
       CloakingDevice.Graphic_Logic();
       if (Is_Ready_To_Cloak()) {
-        if (Health_Ratio() > Rule.ConditionRed) {
+        if (Health_Ratio() > TheRules().ConditionRed) {
           Do_Cloak();
         } else {
           if (Percent_Chance(4)) {
@@ -2665,7 +2666,7 @@ void TechnoClass::Cloaking_AI() {
             CloakingDevice.Set_Rate(0);
             CloakingDevice.Set_Stage(0);  // re-start the stage counter
             Cloak = UNCLOAKED;
-            CloakDelay.Set(Rule.CloakDelay * kTicksPerMinute);
+            CloakDelay.Set(TheRules().CloakDelay * kTicksPerMinute);
             Mark(MARK_CHANGE);
           }
           break;
@@ -2685,7 +2686,8 @@ void TechnoClass::Cloaking_AI() {
             **	If badly damaged, then it can never fully cloak.
             */
             case VISUAL_DARKEN:
-              if (Health_Ratio() <= Rule.ConditionRed && Percent_Chance(25)) {
+              if (Health_Ratio() <= TheRules().ConditionRed &&
+                  Percent_Chance(25)) {
                 Cloak = UNCLOAKING;
               }
               break;
@@ -3294,7 +3296,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
   */
   int firespeed = static_cast<int>(weapon->MaxSpeed);
   if (weapon->IsTurboBoosted && Is_Target_Aircraft(target)) {
-    firespeed *= Rule.TurboBoost;
+    firespeed *= TheRules().TurboBoost;
   }
 
   auto* bullet =
@@ -3648,7 +3650,8 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
               : nullptr;
       if ((House->IsPlayerControl && (ctrldown || !House->Is_Ally(object)) &&
            (ctrldown || object->Class_Of().IsLegalTarget ||
-            (Rule.IsTreeTarget && object->What_Am_I() == RTTI_TERRAIN))) &&
+            (TheRules().IsTreeTarget &&
+             object->What_Am_I() == RTTI_TERRAIN))) &&
           (Is_Weapon_Equipped() ||
            (infantry_type != nullptr &&
             (infantry_type->IsBomber || infantry_type->IsCapture)))) {
@@ -4161,7 +4164,7 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
         new AnimClass(Combat_Anim(explosion_damage, wh,
                                   Map.at(Center_Coord()).Land_Type()),
                       Center_Coord());
-        const int radius = explosion_damage * Rule.ExplosionSpread;
+        const int radius = explosion_damage * TheRules().ExplosionSpread;
         //				int radius = damage/2;
         Wide_Area_Damage(Center_Coord(), static_cast<LEPTON>(radius), explosion_damage,
                          source, wh);
@@ -4826,8 +4829,9 @@ int TechnoClass::Value() const {
   **	In early missions, contents of transports are not figured
   **	into the total value.
   */
-  if ((base::At(Rule.Diff, static_cast<int>(House->Difficulty)).IsContentScan ||
-       House->IQ >= Rule.IQContentScan) &&
+  if ((base::At(TheRules().Diff, static_cast<int>(House->Difficulty))
+           .IsContentScan ||
+       House->IQ >= TheRules().IQContentScan) &&
       Is_Something_Attached()) {
     const FootClass* object = Attached_Object();
 
@@ -5000,7 +5004,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
   ** We will need units to defend our base.  We need to suspend teams until
   ** the situation has been dealt with.
   */
-  TeamClass::Suspend_Teams(Rule.SuspendPriority, House);
+  TeamClass::Suspend_Teams(TheRules().SuspendPriority, House);
 
   /*
   ** Loop through the infantry looking for those who are capable of going
@@ -5014,7 +5018,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       */
       if (!infantry->Is_Weapon_Equipped() ||
           (infantry->Mission != MISSION_NONE &&
-           !MissionControl.at(infantry->Mission).IsRecruitable &&
+           !TheRules().mission_control().at(infantry->Mission).IsRecruitable &&
            Session.Type == GAME_NORMAL)) {
         continue;
       }
@@ -5105,7 +5109,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       */
       if (!unit->Is_Weapon_Equipped() ||
           (unit->Mission != MISSION_NONE &&
-           !MissionControl.at(unit->Mission).IsRecruitable &&
+           !TheRules().mission_control().at(unit->Mission).IsRecruitable &&
            Session.Type == GAME_NORMAL)) {
         continue;
       }
@@ -5214,8 +5218,8 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
   }
 
   if (risktotal > desired && enemy->Is_Foot()) {
-    dynamic_cast<FootClass*>(enemy)->BaseAttackTimer.Set(kTicksPerMinute *
-                                                         Rule.BaseDefenseDelay);
+    dynamic_cast<FootClass*>(enemy)->BaseAttackTimer.Set(
+        kTicksPerMinute * TheRules().BaseDefenseDelay);
   }
 }
 
@@ -5247,7 +5251,8 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   /*
   **	If the mission precludes retaliation, then don't retaliate.
   */
-  if (Mission != MISSION_NONE && !MissionControl.at(Mission).IsRetaliate) {
+  if (Mission != MISSION_NONE &&
+      !TheRules().mission_control().at(Mission).IsRetaliate) {
     return false;
   }
 
@@ -5320,7 +5325,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   /*
   **	If a human house is not allowed to retaliate automatically, then don't
   */
-  if (House->IsHuman && !Rule.IsSmartDefense &&
+  if (House->IsHuman && !TheRules().IsSmartDefense &&
       (What_Am_I() != RTTI_INFANTRY ||
        *dynamic_cast<const InfantryClass*>(this) != INFANTRY_TANYA ||
        source->What_Am_I() != RTTI_INFANTRY)) {
@@ -5777,8 +5782,8 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
 
       const int iron = harv->Gems;
       const int nickel = harv->Gold;
-      int graypips = pips * fixed(iron, Rule.BailCount);
-      int greenpips = pips * fixed(nickel, Rule.BailCount);
+      int graypips = pips * fixed(iron, TheRules().BailCount);
+      int greenpips = pips * fixed(nickel, TheRules().BailCount);
 
       while (greenpips + graypips < pips) {
         if (iron > nickel) {
@@ -6103,7 +6108,7 @@ int TechnoClass::Refund_Amount() const {
   int cost = Techno_Type_Class()->Raw_Cost() * House->CostBias;
 
   if (House->IsHuman) {
-    cost = cost * Rule.RefundPercent;
+    cost = cost * TheRules().RefundPercent;
     //		cost /= 2;
   }
   return cost;
@@ -6370,7 +6375,7 @@ uint32_t TechnoTypeClass::Get_Ownable() const {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 int TechnoTypeClass::Time_To_Build() const {
-  return Cost * Rule.BuildSpeedBias * fixed(kTicksPerMinute, 1000);
+  return Cost * TheRules().BuildSpeedBias * fixed(kTicksPerMinute, 1000);
 }
 
 /***********************************************************************************************
@@ -6427,9 +6432,11 @@ std::span<const std::byte> TechnoTypeClass::Get_Cameo_Data() const {
  *=============================================================================================*/
 int TechnoTypeClass::Repair_Cost() const {
   if (Is_Foot()) {
-    return Raw_Cost() / (MaxStrength / Rule.URepairStep) * Rule.URepairPercent;
+    return Raw_Cost() / (MaxStrength / TheRules().URepairStep) *
+           TheRules().URepairPercent;
   }
-  return Raw_Cost() / (MaxStrength / Rule.RepairStep) * Rule.RepairPercent;
+  return Raw_Cost() / (MaxStrength / TheRules().RepairStep) *
+         TheRules().RepairPercent;
 }
 
 /***********************************************************************************************
@@ -6449,9 +6456,9 @@ int TechnoTypeClass::Repair_Cost() const {
  *=============================================================================================*/
 int TechnoTypeClass::Repair_Step() const {
   if (Is_Foot()) {
-    return Rule.URepairStep;
+    return TheRules().URepairStep;
   }
-  return Rule.RepairStep;
+  return TheRules().RepairStep;
 }
 
 /***********************************************************************************************

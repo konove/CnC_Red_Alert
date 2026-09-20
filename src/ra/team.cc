@@ -1722,7 +1722,7 @@ void TeamClass::Coordinate_Attack() {
               *dynamic_cast<UnitClass*>(unit) == UNIT_CHRONOTANK) {
             auto* tank = dynamic_cast<UnitClass*>(unit);
             tank->Teleport_To(As_Cell(Target));
-            tank->MoebiusCountDown.Set(Rule.ChronoTankDuration *
+            tank->MoebiusCountDown.Set(TheRules().ChronoTankDuration *
                                        kTicksPerMinute);
             Scen.Do_BW_Fade();
             PlaySoundEffectAt(VOC_CHRONOTANK1, unit->Coord);
@@ -1778,7 +1778,7 @@ bool TeamClass::Coordinate_Regroup() {
     Coordinate_Conscript(unit);
 
     if (Is_It_Playing(unit)) {
-      if (unit->Distance(Zone) > Rule.StrayDistance &&
+      if (unit->Distance(Zone) > TheRules().StrayDistance &&
           (unit->Mission != MISSION_GUARD_AREA ||
            !Target_Legal(unit->TarCom))) {
         if (!Target_Legal(unit->NavCom)) {
@@ -1847,7 +1847,7 @@ void TeamClass::Coordinate_Do() {
 
     if (Is_It_Playing(unit)) {
       if (!Target_Legal(unit->TarCom) && !Target_Legal(unit->NavCom) &&
-          unit->Distance(Zone) > Rule.StrayDistance * 2) {
+          unit->Distance(Zone) > TheRules().StrayDistance * 2) {
         /*
         **	Only if the unit isn't already heading to regroup with the team,
         *will it *	be given orders to do so.
@@ -1922,7 +1922,7 @@ void TeamClass::Coordinate_Move() {
 
         if (Is_It_Playing(unit) && unit->Mission != MISSION_UNLOAD &&
             unit->MissionQueue != MISSION_UNLOAD) {
-          int stray = Rule.StrayDistance;
+          int stray = TheRules().StrayDistance;
           if (unit->What_Am_I() == RTTI_AIRCRAFT) {
             stray *= 3;
           }
@@ -1941,7 +1941,8 @@ void TeamClass::Coordinate_Move() {
           int dist = unit->Distance(Target);
           if (unit->IsFormationMove &&
               (::As_Target(Coord_Cell(unit->Coord)) != unit->NavCom)) {
-            dist = Rule.StrayDistance + 1;  // formation moves must be exact.
+            dist =
+                TheRules().StrayDistance + 1;  // formation moves must be exact.
           }
 
           if (dist > stray ||
@@ -2074,7 +2075,7 @@ bool TeamClass::Lagging_Units() {
   */
   while (unit != nullptr) {
     if (Is_It_Playing(unit)) {
-      int stray = Rule.StrayDistance;
+      int stray = TheRules().StrayDistance;
       if (unit->What_Am_I() == RTTI_AIRCRAFT) {
         stray *= 3;
       }
@@ -2297,7 +2298,7 @@ bool TeamClass::Coordinate_Conscript(FootClass* unit) {
   DCHECK(Teams.ID(this) == ID);
 
   if (Is_It_Breathing(unit) && !unit->IsInitiated) {
-    if (unit->Distance(Zone) > Rule.StrayDistance) {
+    if (unit->Distance(Zone) > TheRules().StrayDistance) {
       if (!Target_Legal(unit->NavCom)) {
         unit->Assign_Mission(MISSION_MOVE);
         unit->Assign_Target(kTargetNone);
@@ -2368,7 +2369,7 @@ void TeamClass::Suspend_Teams(int priority, const HouseClass* house) {
         team->Remove(team->Member);
       }
       team->IsAltered = team->JustAltered = true;
-      team->SuspendTimer.Set(Rule.SuspendDelay * kTicksPerMinute);
+      team->SuspendTimer.Set(TheRules().SuspendDelay * kTicksPerMinute);
       team->Suspended = true;
     }
   }
@@ -2882,7 +2883,8 @@ int TeamClass::TMission_Loop() {
 int TeamClass::TMission_Invulnerable() {
   FootClass* foot = Member;
   while (foot != nullptr) {
-    foot->IronCurtainCountDown.Set(Rule.IronCurtainDuration * kTicksPerMinute);
+    foot->IronCurtainCountDown.Set(TheRules().IronCurtainDuration *
+                                   kTicksPerMinute);
     foot->Mark(MARK_CHANGE);
     foot = foot->Member;
   }
@@ -2950,7 +2952,7 @@ int TeamClass::TMission_Patrol() {
   /*
   **	Every so often, scan for a nearby enemy.
   */
-  if (Frame % (Rule.PatrolTime * kTicksPerMinute) == 0) {
+  if (Frame % (TheRules().PatrolTime * kTicksPerMinute) == 0) {
     FootClass* leader = Fetch_A_Leader();
     if (leader != nullptr) {
       const TARGET target =

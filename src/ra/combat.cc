@@ -145,11 +145,11 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
     **	that at least one damage point is done.
     */
     if (distance < 4) {
-      damage = std::max(damage, Rule.MinDamage);
+      damage = std::max(damage, TheRules().MinDamage);
     }
   }
 
-  damage = std::min(damage, Rule.MaxDamage);
+  damage = std::min(damage, TheRules().MaxDamage);
   return damage;
 }
 
@@ -300,7 +300,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
        cellptr->TType == TEMPLATE_BRIDGE_3A ||
        cellptr->TType == TEMPLATE_BRIDGE_3B) &&
       ((warhead == WARHEAD_AP || warhead == WARHEAD_HE) &&
-       Random_Pick(1, Rule.BridgeStrength) < strength)) {
+       Random_Pick(1, TheRules().BridgeStrength) < strength)) {
     Map.Destroy_Bridge_At(cell);
   }
 }

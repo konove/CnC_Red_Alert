@@ -148,9 +148,9 @@ void LogicClass::AI() {
   /*
   **	Shadow creeping back over time is handled here.
   */
-  if (Special.IsShadowGrow && Rule.ShroudRate != 0 &&
+  if (Special.IsShadowGrow && TheRules().ShroudRate != 0 &&
       Scen.ShroudTimer.IsFinished()) {
-    Scen.ShroudTimer.Set(kTicksPerMinute * Rule.ShroudRate);
+    Scen.ShroudTimer.Set(kTicksPerMinute * TheRules().ShroudRate);
     Map.Encroach_Shadow();
   }
 
@@ -179,16 +179,17 @@ void LogicClass::AI() {
     obj->AI();
 
     if (TimeQuake && obj->IsActive && !obj->IsInLimbo && obj->Strength) {
-      int damage = obj->Class_Of().MaxStrength * Rule.QuakeDamagePercent;
+      int damage = obj->Class_Of().MaxStrength * TheRules().QuakeDamagePercent;
       if (TimeQuakeCenter) {
         if (Distance(obj->As_Target(), TimeQuakeCenter) / 256 <
-            Rule.MTankDistance) {
+            TheRules().MTankDistance) {
           switch (obj->What_Am_I()) {
             case RTTI_INFANTRY:
-              damage = Rule.QuakeInfantryDamage;
+              damage = TheRules().QuakeInfantryDamage;
               break;
             case RTTI_BUILDING:
-              damage = Rule.QuakeBuildingDamage * obj->Class_Of().MaxStrength;
+              damage =
+                  TheRules().QuakeBuildingDamage * obj->Class_Of().MaxStrength;
               break;
             case RTTIType::RTTI_NONE:
             case RTTIType::RTTI_AIRCRAFT:
@@ -221,7 +222,7 @@ void LogicClass::AI() {
             case RTTIType::RTTI_VESSEL:
             case RTTIType::RTTI_VESSELTYPE:
             default:
-              damage = Rule.QuakeUnitDamage * obj->Class_Of().MaxStrength;
+              damage = TheRules().QuakeUnitDamage * obj->Class_Of().MaxStrength;
               break;
           }
           if (damage) {

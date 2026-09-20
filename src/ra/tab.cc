@@ -162,7 +162,7 @@ void TabClass::Draw_Credits_Tab() {
 
   if (Scen.MissionTimer.IsRunning()) {
     const bool light =
-        Scen.MissionTimer.Value() < kTicksPerMinute * Rule.TimerWarning ||
+        Scen.MissionTimer.Value() < kTicksPerMinute * TheRules().TimerWarning ||
         Map.FlasherTimer.HasTimeLeft();
     CC_Draw_Shape(TabShape, light ? 4 : 2, 320, 0, WINDOW_MAIN, SHAPE_NORMAL);
   }

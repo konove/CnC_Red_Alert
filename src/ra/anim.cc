@@ -516,7 +516,7 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
   **	Drop zone smoke always reveals the map around itself.
   */
   if (*this == ANIM_LZ_SMOKE) {
-    Map.Sight_From(Coord_Cell(coord), Rule.DropZoneRadius / CELL_LEPTON_W,
+    Map.Sight_From(Coord_Cell(coord), TheRules().DropZoneRadius / CELL_LEPTON_W,
                    PlayerPtr, false);
   }
 
@@ -1125,11 +1125,11 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
   int rawdamage = 0;
   if (Session.Type == GAME_NORMAL) {
     radius = 4;
-    rawdamage = Rule.AtomDamage;
+    rawdamage = TheRules().AtomDamage;
     ThePalettes().white_palette().Set(kFadePaletteSlow, ServiceRealTime);
   } else {
     radius = 3;
-    rawdamage = Rule.AtomDamage / 5;
+    rawdamage = TheRules().AtomDamage / 5;
   }
 
   Wide_Area_Damage(Cell_Coord(cell),

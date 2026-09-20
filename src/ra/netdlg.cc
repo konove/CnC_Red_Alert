@@ -1170,7 +1170,7 @@ void Destroy_Connection(int id, int error) {
 
   if (!std::string_view(txt).empty()) {
     Session.Messages.Add_Message(nullptr, 0, txt, housep->RemapColor, kTpfText,
-                                 Rule.MessageDelay * kTicksPerMinute);
+                                 TheRules().MessageDelay * kTicksPerMinute);
     Map.Flag_To_Redraw(false);
   }
 
@@ -1194,7 +1194,7 @@ void Destroy_Connection(int id, int error) {
   //	Turn the player's house over to the computer's AI
   //------------------------------------------------------------------------
   housep->IsHuman = false;
-  housep->IQ = Rule.MaxIQ;
+  housep->IQ = TheRules().MaxIQ;
   port::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
 
   Session.NumPlayers--;
@@ -1205,7 +1205,7 @@ void Destroy_Connection(int id, int error) {
   if (Session.NumPlayers == 1) {
     absl::SNPrintF(txt, sizeof(txt), "%s", Text_String(TXT_JUST_YOU_AND_ME));
     Session.Messages.Add_Message(nullptr, 0, txt, housep->RemapColor, kTpfText,
-                                 Rule.MessageDelay * kTicksPerMinute);
+                                 TheRules().MessageDelay * kTicksPerMinute);
     Map.Flag_To_Redraw(false);
   }
 
@@ -1637,11 +1637,11 @@ static int Net_Join_Dialog() {
   optionlist.Add_Item(Text_String(TXT_CAPTURE_THE_FLAG));
   optionlist.Add_Item(Text_String(TXT_SHADOW_REGROWS));
 
-  optionlist.Check_Item(0, Rule.IsMPBasesOn);
-  optionlist.Check_Item(1, Rule.IsMPTiberiumGrow);
-  optionlist.Check_Item(2, Rule.IsMPCrates);
-  optionlist.Check_Item(3, Rule.IsMPCaptureTheFlag);
-  optionlist.Check_Item(4, Rule.IsMPShadowGrow);
+  optionlist.Check_Item(0, TheRules().IsMPBasesOn);
+  optionlist.Check_Item(1, TheRules().IsMPTiberiumGrow);
+  optionlist.Check_Item(2, TheRules().IsMPCrates);
+  optionlist.Check_Item(3, TheRules().IsMPCaptureTheFlag);
+  optionlist.Check_Item(4, TheRules().IsMPShadowGrow);
 
   //........................................................................
   // House buttons
@@ -1677,7 +1677,7 @@ static int Net_Join_Dialog() {
   levelgauge.Set_Value(BuildLevel - 1);
 
   creditsgauge.Use_Thumb(false);
-  creditsgauge.Set_Maximum(Rule.MPMaxMoney);
+  creditsgauge.Set_Maximum(TheRules().MPMaxMoney);
   creditsgauge.Set_Value(Session.Options.Credits);
 
   aiplayersgauge.Use_Thumb(false);
@@ -1902,10 +1902,12 @@ static int Net_Join_Dialog() {
       //	Redraw buttons
       //..................................................................
       if (display >= REDRAW_BUTTONS) {
-        aiplayersgauge.Set_Maximum(Rule.MaxPlayers - static_cast<int>(Session.Players.Count()));
+        aiplayersgauge.Set_Maximum(TheRules().MaxPlayers -
+                                   static_cast<int>(Session.Players.Count()));
         if (Session.Options.AIPlayers >
-            Rule.MaxPlayers - Session.Players.Count()) {
-          aiplayersgauge.Set_Value(Rule.MaxPlayers - static_cast<int>(Session.Players.Count()));
+            TheRules().MaxPlayers - Session.Players.Count()) {
+          aiplayersgauge.Set_Value(TheRules().MaxPlayers -
+                                   static_cast<int>(Session.Players.Count()));
         }
         commands->Draw_All();
       }
@@ -2711,8 +2713,9 @@ static int Net_Join_Dialog() {
       levelgauge.Set_Value(BuildLevel - 1);
       creditsgauge.Set_Value(Session.Options.Credits);
       if (Session.Options.AIPlayers >
-          Rule.MaxPlayers - Session.Players.Count()) {
-        aiplayersgauge.Set_Value(Rule.MaxPlayers - static_cast<int>(Session.Players.Count()));
+          TheRules().MaxPlayers - Session.Players.Count()) {
+        aiplayersgauge.Set_Value(TheRules().MaxPlayers -
+                                 static_cast<int>(Session.Players.Count()));
       } else {
         aiplayersgauge.Set_Value(Session.Options.AIPlayers);
       }
@@ -2740,10 +2743,12 @@ static int Net_Join_Dialog() {
       //.....................................................................
       display = REDRAW_MESSAGE;
     } else if (event == EV_NEW_PLAYER || event == EV_PLAYER_SIGNOFF) {
-      aiplayersgauge.Set_Maximum(Rule.MaxPlayers - static_cast<int>(Session.Players.Count()));
+      aiplayersgauge.Set_Maximum(TheRules().MaxPlayers -
+                                 static_cast<int>(Session.Players.Count()));
       if (Session.Options.AIPlayers >
-          Rule.MaxPlayers - Session.Players.Count()) {
-        aiplayersgauge.Set_Value(Rule.MaxPlayers - static_cast<int>(Session.Players.Count()));
+          TheRules().MaxPlayers - Session.Players.Count()) {
+        aiplayersgauge.Set_Value(TheRules().MaxPlayers -
+                                 static_cast<int>(Session.Players.Count()));
       }
     } else if (event == EV_GAME_SIGNOFF) {
       //.....................................................................
@@ -3111,7 +3116,7 @@ static bool Request_To_Join(const char* playername, int join_index,
     Session.GPacket.PlayerInfo.MinVersion = VersionClass::Min_Version();
   }
   Session.GPacket.PlayerInfo.MaxVersion = VersionClass::Max_Version();
-  Session.GPacket.PlayerInfo.CheatCheck = RuleINI.Get_Unique_ID();
+  Session.GPacket.PlayerInfo.CheatCheck = TheRules().rule_ini().Get_Unique_ID();
 
   Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
                           sizeof(GlobalPacketType), 1,
@@ -3773,14 +3778,14 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
 
       if (Session.Options.Tiberium) {
         Special.IsTGrowth = 1;
-        Rule.IsTGrowth = true;
+        TheRules().IsTGrowth = true;
         Special.IsTSpread = 1;
-        Rule.IsTSpread = true;
+        TheRules().IsTSpread = true;
       } else {
         Special.IsTGrowth = 0;
-        Rule.IsTGrowth = false;
+        TheRules().IsTGrowth = false;
         Special.IsTSpread = 0;
-        Rule.IsTSpread = false;
+        TheRules().IsTSpread = false;
       }
 
       /*...............................................................
@@ -4274,13 +4279,13 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   //	Init dialog values, only the first time through
   //------------------------------------------------------------------------
-  Special.IsCaptureTheFlag = Rule.IsMPCaptureTheFlag;
+  Special.IsCaptureTheFlag = TheRules().IsMPCaptureTheFlag;
   if (first_time) {
     Session.Options.Credits =
-        Rule.MPDefaultMoney;                   // init credits & credit buffer
-    Session.Options.Bases = Rule.IsMPBasesOn;  // init scenario parameters
-    Session.Options.Tiberium = Rule.IsMPTiberiumGrow;
-    Session.Options.Goodies = Rule.IsMPCrates;
+        TheRules().MPDefaultMoney;  // init credits & credit buffer
+    Session.Options.Bases = TheRules().IsMPBasesOn;  // init scenario parameters
+    Session.Options.Tiberium = TheRules().IsMPTiberiumGrow;
+    Session.Options.Goodies = TheRules().IsMPCrates;
     Session.Options.AIPlayers = 0;
     Session.Options.UnitCount =
         (base::At(SessionClass::CountMax, Session.Options.Bases) +
@@ -4316,16 +4321,16 @@ static int Net_New_Dialog() {
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
   levelgauge.Set_Value(BuildLevel - 1);
 
-  creditsgauge.Set_Maximum(Rule.MPMaxMoney);
+  creditsgauge.Set_Maximum(TheRules().MPMaxMoney);
   creditsgauge.Set_Value(Session.Options.Credits);
 
   //------------------------------------------------------------------------
   //	Init other scenario parameters
   //------------------------------------------------------------------------
   Special.IsTGrowth = static_cast<unsigned>(Session.Options.Tiberium);
-  Rule.IsTGrowth = Session.Options.Tiberium != 0;
+  TheRules().IsTGrowth = Session.Options.Tiberium != 0;
   Special.IsTSpread = static_cast<unsigned>(Session.Options.Tiberium);
-  Rule.IsTSpread = Session.Options.Tiberium != 0;
+  TheRules().IsTSpread = Session.Options.Tiberium != 0;
   int transmit = 0;  // 1 = re-transmit new game options
 
   //------------------------------------------------------------------------
@@ -4434,7 +4439,8 @@ static int Net_New_Dialog() {
   //
   // Now init the max range of the AI players slider.
   //
-  aiplayersgauge.Set_Maximum(Rule.MaxPlayers - static_cast<int>(Session.Players.Count()));
+  aiplayersgauge.Set_Maximum(TheRules().MaxPlayers -
+                             static_cast<int>(Session.Players.Count()));
   aiplayersgauge.Set_Value(Session.Options.AIPlayers);
 
   //------------------------------------------------------------------------
@@ -4675,8 +4681,9 @@ static int Net_New_Dialog() {
       case ButtonKey(kButtonAiplayers):
         Session.Options.AIPlayers = aiplayersgauge.Get_Value();
         if (Session.Options.AIPlayers + Session.Players.Count() >
-            Rule.MaxPlayers) {  // if it's pegged, max it out
-          Session.Options.AIPlayers = Rule.MaxPlayers - static_cast<int>(Session.Players.Count());
+            TheRules().MaxPlayers) {  // if it's pegged, max it out
+          Session.Options.AIPlayers =
+              TheRules().MaxPlayers - static_cast<int>(Session.Players.Count());
           aiplayersgauge.Set_Value(Session.Options.AIPlayers);
         }
         transmit = 1;
@@ -4720,9 +4727,9 @@ static int Net_New_Dialog() {
         }
         Session.Options.Tiberium = optionlist.Is_Checked(1) ? 1 : 0;
         Special.IsTGrowth = static_cast<unsigned>(Session.Options.Tiberium);
-        Rule.IsTGrowth = Session.Options.Tiberium != 0;
+        TheRules().IsTGrowth = Session.Options.Tiberium != 0;
         Special.IsTSpread = static_cast<unsigned>(Session.Options.Tiberium);
-        Rule.IsTSpread = Session.Options.Tiberium != 0;
+        TheRules().IsTSpread = Session.Options.Tiberium != 0;
 
         Session.Options.Goodies = optionlist.Is_Checked(2) ? 1 : 0;
         Special.IsCaptureTheFlag = optionlist.Is_Checked(3);
@@ -4913,11 +4920,13 @@ static int Net_New_Dialog() {
     whahoppa = Get_NewGame_Responses(&playerlist, color_used);
     if (whahoppa == EV_NEW_PLAYER) {
       ok_timer = TickCount.Value();
-      aiplayersgauge.Set_Maximum(Rule.MaxPlayers - static_cast<int>(Session.Players.Count()));
+      aiplayersgauge.Set_Maximum(TheRules().MaxPlayers -
+                                 static_cast<int>(Session.Players.Count()));
       Session.Options.AIPlayers = aiplayersgauge.Get_Value();
       if (Session.Options.AIPlayers + Session.Players.Count() >
-          Rule.MaxPlayers) {  // if it's pegged, max it out
-        Session.Options.AIPlayers = Rule.MaxPlayers - static_cast<int>(Session.Players.Count());
+          TheRules().MaxPlayers) {  // if it's pegged, max it out
+        Session.Options.AIPlayers =
+            TheRules().MaxPlayers - static_cast<int>(Session.Players.Count());
         aiplayersgauge.Set_Value(Session.Options.AIPlayers);
       }
       // All scenarios now allowable for download,
@@ -4927,11 +4936,13 @@ static int Net_New_Dialog() {
     } else if (whahoppa == EV_MESSAGE) {
       display = REDRAW_MESSAGE;
     } else if (whahoppa == EV_PLAYER_SIGNOFF) {
-      aiplayersgauge.Set_Maximum(Rule.MaxPlayers - static_cast<int>(Session.Players.Count()));
+      aiplayersgauge.Set_Maximum(TheRules().MaxPlayers -
+                                 static_cast<int>(Session.Players.Count()));
       Session.Options.AIPlayers = aiplayersgauge.Get_Value();
       if (Session.Options.AIPlayers + Session.Players.Count() >
-          Rule.MaxPlayers) {  // if it's pegged, max it out
-        Session.Options.AIPlayers = Rule.MaxPlayers - static_cast<int>(Session.Players.Count());
+          TheRules().MaxPlayers) {  // if it's pegged, max it out
+        Session.Options.AIPlayers =
+            TheRules().MaxPlayers - static_cast<int>(Session.Players.Count());
         aiplayersgauge.Set_Value(Session.Options.AIPlayers);
         display = REDRAW_PARMS;
       }
@@ -5327,7 +5338,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
     **	Don't allow joining if the rules.ini file doesn't appear to
     * match.
     */
-    if (Session.GPacket.PlayerInfo.CheatCheck != RuleINI.Get_Unique_ID() &&
+    if (Session.GPacket.PlayerInfo.CheatCheck !=
+            TheRules().rule_ini().Get_Unique_ID() &&
         !resend) {
       base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
                       sizeof(Session.GPacket));

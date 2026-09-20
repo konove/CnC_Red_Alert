@@ -10,11 +10,6 @@
 #include "ra/text_ids.h"
 #include "sdllib/wwstd.h"
 
-extern base::EnumArray<CrateType, int> CrateShares;
-extern base::EnumArray<CrateType, AnimType> CrateAnims;
-extern base::EnumArray<CrateType, int> CrateData;
-extern base::EnumArray<LandType, GroundType> Ground;
-
 /***************************************************************************
 **	These are the access passwords used to activate cheat mode, editor mode,
 **	and special game options.

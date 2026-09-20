@@ -2051,7 +2051,7 @@ int MapEditClass::Load_Scenario() {
     */
     SliderClass smarties(kButtonSmarties, sourcebtn.X,
                          sourcebtn.Y + sourcebtn.Height + 15, 35, 8);
-    smarties.Set_Maximum(Rule.MaxIQ + 1);
+    smarties.Set_Maximum(TheRules().MaxIQ + 1);
 
     char staticsmartiesbuff[15];
     StaticButtonClass smartiesstatic(0, "9999", TPF_EFNT | TPF_NOSHADOW,

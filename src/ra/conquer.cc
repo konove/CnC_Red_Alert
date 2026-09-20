@@ -367,7 +367,7 @@ void RunGame() {
     Session.Messages.Add_Message(
         nullptr, 0, TXT_WOL_WOLAPIGONE, PCOLOR_GOLD,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-        Rule.MessageDelay * kTicksPerMinute);
+        TheRules().MessageDelay * kTicksPerMinute);
     PlaySoundEffect(WOLSOUND_LOGOUT);
   }
 }
@@ -578,7 +578,7 @@ static void CaptureMotionFrame() {
   if (frames.empty()) {
     // Sized when a capture run starts rather than once per process, so that
     // an edit to MovieTime takes effect on the next run.
-    const int frame_count = Rule.MovieTime * kTicksPerMinute;
+    const int frame_count = TheRules().MovieTime * kTicksPerMinute;
     frames.resize(base::ToSize(frame_count));
   }
 

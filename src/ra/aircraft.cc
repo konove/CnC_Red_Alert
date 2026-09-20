@@ -931,7 +931,8 @@ int AircraftClass::Mission_Hunt() {
       return 1;
     }
   }
-  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+  return TheRules().mission_control().at(Mission).Normal_Delay() +
+         Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -1286,7 +1287,8 @@ int AircraftClass::Mission_Unload() {
     default:
       break;
   }
-  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+  return TheRules().mission_control().at(Mission).Normal_Delay() +
+         Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -1440,7 +1442,8 @@ int AircraftClass::Mission_Retreat() {
     default:
       break;
   }
-  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+  return TheRules().mission_control().at(Mission).Normal_Delay() +
+         Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -1895,7 +1898,8 @@ int AircraftClass::Mission_Move() {
       break;
   }
 
-  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+  return TheRules().mission_control().at(Mission).Normal_Delay() +
+         Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -2608,7 +2612,8 @@ int AircraftClass::Mission_Attack() {
           Map.at(As_Cell(TarCom)).Incoming(Coord, true);
 
           if (Ammo) {
-            Status = Rule.IsCurleyShuffle ? kPickAttackLocation : kFireAtTarget;
+            Status = TheRules().IsCurleyShuffle ? kPickAttackLocation
+                                                : kFireAtTarget;
           } else {
             Status = kReturnToBase;
           }
@@ -2629,8 +2634,8 @@ int AircraftClass::Mission_Attack() {
             if (!In_Range(TarCom)) {
               Status = kPickAttackLocation;
             } else {
-              Status =
-                  Rule.IsCurleyShuffle ? kPickAttackLocation : kFireAtTarget;
+              Status = TheRules().IsCurleyShuffle ? kPickAttackLocation
+                                                  : kFireAtTarget;
             }
           }
           break;
@@ -2657,7 +2662,8 @@ int AircraftClass::Mission_Attack() {
       break;
   }
 
-  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+  return TheRules().mission_control().at(Mission).Normal_Delay() +
+         Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -2691,7 +2697,8 @@ TARGET AircraftClass::New_LZ(TARGET oldlz) const {
     **	Scan outward in a series of concentric rings up to certain distance
     **	in cells.
     */
-    for (int radius = 0; radius < Rule.LZScanRadius / CELL_LEPTON_W; radius++) {
+    for (int radius = 0; radius < TheRules().LZScanRadius / CELL_LEPTON_W;
+         radius++) {
       const FacingType modifier = Random_Pick(FACING_N, FACING_NW);
       CELL lastcell = -1;
 
@@ -3735,7 +3742,7 @@ void AircraftClass::Scatter(COORDINATE /*unused*/, bool /*forced*/,
   **	Certain missions prevent scattering regardless of whether it would be
   **	a good idea or not.
   */
-  if (!MissionControl.at(Mission).IsScatter) {
+  if (!TheRules().mission_control().at(Mission).IsScatter) {
     return;
   }
 
@@ -3785,7 +3792,7 @@ int AircraftClass::Mission_Guard() {
       if (Target_Legal(NavCom)) {
         Assign_Mission(MISSION_MOVE);
       }
-      return MissionControl.at(Mission).Normal_Delay();
+      return TheRules().mission_control().at(Mission).Normal_Delay();
     }
 
     if (Class->PrimaryWeapon == nullptr) {
@@ -3799,7 +3806,7 @@ int AircraftClass::Mission_Guard() {
     return 1;
   }
   if (House->IsHuman) {
-    return MissionControl.at(Mission).Normal_Delay();
+    return TheRules().mission_control().at(Mission).Normal_Delay();
   }
 
   /*
@@ -3807,7 +3814,7 @@ int AircraftClass::Mission_Guard() {
   **	repair bay first.
   */
   if (House->Available_Money() >= 100 &&
-      Health_Ratio() <= Rule.ConditionYellow) {
+      Health_Ratio() <= TheRules().ConditionYellow) {
     if (!In_Radio_Contact() ||
         (Height == 0 && (Contact_With_Whom()->What_Am_I() != RTTI_BUILDING ||
                          *dynamic_cast<BuildingClass*>(Contact_With_Whom()) !=

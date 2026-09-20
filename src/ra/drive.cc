@@ -75,7 +75,6 @@
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
-#include "ra/const.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
@@ -207,7 +206,7 @@ void DriveClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
   **	Certain missions prevent scattering regardless of whether it would be
   **	a good idea or not.
   */
-  if (MissionControl.at(Mission).IsParalyzed) {
+  if (TheRules().mission_control().at(Mission).IsParalyzed) {
     return;
   }
 
@@ -357,7 +356,7 @@ bool DriveClass::Teleport_To(CELL cell) {
   /*
   **	All cargo gets destroyed.
   */
-  if (Rule.IsChronoKill) {
+  if (TheRules().IsChronoKill) {
     Kill_Cargo(nullptr);
   }
 
@@ -886,7 +885,7 @@ bool DriveClass::Start_Of_Move() {
       **	several units with the same mouse click.
       */
       if (!Is_On_Priority_Mission() &&
-          Distance(NavCom) < Rule.CloseEnoughDistance &&
+          Distance(NavCom) < TheRules().CloseEnoughDistance &&
           (Mission == MISSION_MOVE || Mission == MISSION_GUARD_AREA)) {
         Assign_Destination(kTargetNone);
         if (!IsActive) {
@@ -911,7 +910,7 @@ bool DriveClass::Start_Of_Move() {
               *bother *	to do so if we aren't very close to the target and this
               **	object can just say "good enough" and stop here.
               */
-              if (Distance(NavCom) < Rule.CloseEnoughDistance &&
+              if (Distance(NavCom) < TheRules().CloseEnoughDistance &&
                   !In_Radio_Contact()) {
                 Assign_Destination(kTargetNone);
                 return false;
@@ -977,7 +976,7 @@ bool DriveClass::Start_Of_Move() {
           **	to do so if we aren't very close to the target and this
           **	object can just say "good enough" and stop here.
           */
-          if (Distance(NavCom) < Rule.CloseEnoughDistance &&
+          if (Distance(NavCom) < TheRules().CloseEnoughDistance &&
               !In_Radio_Contact()) {
             Assign_Destination(kTargetNone);
             return false;
@@ -1024,7 +1023,7 @@ bool DriveClass::Start_Of_Move() {
 
   if (cando != MOVE_OK) {
     if (Mission == MISSION_MOVE /*KO&& House->IsHuman */ &&
-        Distance(NavCom) < Rule.CloseEnoughDistance) {
+        Distance(NavCom) < TheRules().CloseEnoughDistance) {
       Assign_Destination(kTargetNone);
       if (!IsActive) {
         return false;  // BG
@@ -1083,12 +1082,13 @@ bool DriveClass::Start_Of_Move() {
   */
   const LandType ground =
       Map.at(destcell).Land_Type();  // Ground unit is entering.
-  int speed = Ground.at(ground).Cost.at(Techno_Type_Class()->Speed) *
-              256;  // Speed of unit.
+  int speed =
+      TheRules().ground().at(ground).Cost.at(Techno_Type_Class()->Speed) *
+      256;  // Speed of unit.
 
   /* change speed if it's related to a team move */
   if (IsFormationMove) {
-    speed = Ground.at(ground).Cost.at(FormationSpeed) * 256;
+    speed = TheRules().ground().at(ground).Cost.at(FormationSpeed) * 256;
   }
   if (!speed) {
     speed = 128;
@@ -1097,7 +1097,7 @@ bool DriveClass::Start_Of_Move() {
   /*
   **	A damaged unit has a reduced speed.
   */
-  if (Health_Ratio() <= Rule.ConditionYellow /*(Techno_Type_Class()->MaxStrength>>1) > Strength*/) {
+  if (Health_Ratio() <= TheRules().ConditionYellow /*(Techno_Type_Class()->MaxStrength>>1) > Strength*/) {
     speed -= speed / 4;  // Three quarters speed.
   }
   if (speed != Speed /* || !SpeedAdd*/) {

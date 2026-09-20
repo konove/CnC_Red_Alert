@@ -16,13 +16,15 @@ function(apply_language_setting TARGET_NAME)
     endif ()
 endfunction()
 
-add_executable(rasdl WIN32)
+add_executable(rasdl WIN32 startup.cc)
+add_library(ra_engine OBJECT)
 
 file(GLOB_RECURSE RA_SOURCES
         CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cc"
 )
 list(FILTER RA_SOURCES EXCLUDE REGEX "_test\\.cc$")
 list(REMOVE_ITEM RA_SOURCES
+        "${CMAKE_CURRENT_SOURCE_DIR}/startup.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/adpcm.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/alloc.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/bmp8.cc"
@@ -65,11 +67,11 @@ list(REMOVE_ITEM RA_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/wspudp.h"
 )
 
-target_sources(rasdl PRIVATE
+target_sources(ra_engine PRIVATE
         ${RA_SOURCES}
 )
 
-target_sources(rasdl PUBLIC
+target_sources(ra_engine PUBLIC
         FILE_SET HEADERS
         BASE_DIRS ${CMAKE_SOURCE_DIR}/src
         FILES ${RA_HEADERS}
@@ -83,14 +85,16 @@ if (WIN32)
     target_sources(rasdl PRIVATE
             cc_icon.rc
     )
-    target_link_libraries(rasdl PRIVATE wsock32)
+    target_link_libraries(ra_engine PUBLIC wsock32)
 endif ()
 
+apply_dotenv_settings(ra_engine)
 apply_dotenv_settings(rasdl)
+apply_language_setting(ra_engine)
 apply_language_setting(rasdl)
 # magic_enum is PUBLIC because the public header defines.h includes it; the
 # interface-header-set verification compiles that header standalone.
-target_link_libraries(rasdl PUBLIC absl::strings magic_enum::magic_enum PRIVATE
+target_link_libraries(ra_engine PUBLIC absl::strings magic_enum::magic_enum
         tech
         port
         sdllib
@@ -100,6 +104,7 @@ target_link_libraries(rasdl PUBLIC absl::strings magic_enum::magic_enum PRIVATE
         absl::log
         absl::log_initialize
         absl::str_format) # mpgdll wwipx32
+target_link_libraries(rasdl PRIVATE ra_engine)
 
 install(TARGETS rasdl)
 
@@ -111,11 +116,14 @@ add_gtest(
     LIBS tech port sdllib absl::strings absl::check absl::log magic_enum::magic_enum
 )
 
+# The real engine, with the startup helpers but no game entry point.
 add_gtest(
     NAME ra_game_test
-    SOURCES game_test.cc assets.cc ini.cc screen.cc
-    LIBS base port sdllib tech magic_enum::magic_enum absl::strings absl::check absl::log
+    SOURCES game_test.cc startup.cc
+    LIBS ra_engine absl::core_headers
 )
+target_compile_definitions(ra_game_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_game_test)
 apply_language_setting(ra_game_test)
 
 add_gtest(

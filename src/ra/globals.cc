@@ -67,12 +67,10 @@
 #include "ra/jshell.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
-#include "ra/mission.h"
 #include "ra/nullmgr.h"
 #include "ra/object.h"
 #include "ra/overlay.h"
 #include "ra/queue.h"
-#include "ra/rules.h"
 #include "ra/scenario.h"
 #include "ra/score.h"
 #include "ra/session.h"
@@ -239,19 +237,15 @@ int NameIDOverride[25];
 **	These are the mission control structures. They hold the information
 *about *	how the missions should behave in the system.
 */
-base::EnumArray<MissionType, MissionControlClass> MissionControl;
 
 /***************************************************************************
 **	This holds the rules database. The rules database won't change during
 *the *	program's run, but may need to be referenced intermitently.
 */
-CCINIClass RuleINI;
-CCINIClass AftermathINI;
 
 /***************************************************************************
 **	General rules that control the game.
 */
-RulesClass Rule;
 
 /***************************************************************************
 ** All keyboard input is routed through the object pointed to by this

@@ -847,11 +847,11 @@ void Destroy_Null_Connection(int id, int error) {
   }
 
   if (!std::string_view(txt).empty()) {
-    Session.Messages.Add_Message(nullptr, 0, txt,
-                                 housep->RemapColor == PCOLOR_DIALOG_BLUE
-                                     ? PCOLOR_REALLY_BLUE
-                                     : housep->RemapColor,
-                                 kTpfText, Rule.MessageDelay * kTicksPerMinute);
+    Session.Messages.Add_Message(
+        nullptr, 0, txt,
+        housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                 : housep->RemapColor,
+        kTpfText, TheRules().MessageDelay * kTicksPerMinute);
     Map.Flag_To_Redraw(false);
   }
 
@@ -871,7 +871,7 @@ void Destroy_Null_Connection(int id, int error) {
   */
   housep->IsHuman = false;
   //	housep->Smartness = IQ_MENSA;
-  housep->IQ = Rule.MaxIQ;
+  housep->IQ = TheRules().MaxIQ;
   port::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
 
   Session.NumPlayers--;
@@ -881,11 +881,11 @@ void Destroy_Null_Connection(int id, int error) {
   */
   if (Session.NumPlayers == 1) {
     absl::SNPrintF(txt, sizeof(txt), "%s", Text_String(TXT_JUST_YOU_AND_ME));
-    Session.Messages.Add_Message(nullptr, 0, txt,
-                                 housep->RemapColor == PCOLOR_DIALOG_BLUE
-                                     ? PCOLOR_REALLY_BLUE
-                                     : housep->RemapColor,
-                                 kTpfText, Rule.MessageDelay * kTicksPerMinute);
+    Session.Messages.Add_Message(
+        nullptr, 0, txt,
+        housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                 : housep->RemapColor,
+        kTpfText, TheRules().MessageDelay * kTicksPerMinute);
     Map.Flag_To_Redraw(false);
   }
 }
@@ -2890,7 +2890,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       kButtonDifficulty, d_name_x,
       optionlist.Y + optionlist.Height + d_margin1 + d_margin1,
       d_dialog_w - ((d_name_x - d_dialog_x) * 2), 16, true);
-  if (Rule.IsFineDifficulty) {
+  if (TheRules().IsFineDifficulty) {
     difficulty.Set_Maximum(5);
     difficulty.Set_Value(2);
   } else {
@@ -2964,15 +2964,15 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*........................................................................
   Init scenario values, only the first time through
   ........................................................................*/
-  Special.IsCaptureTheFlag = Rule.IsMPCaptureTheFlag;
+  Special.IsCaptureTheFlag = TheRules().IsMPCaptureTheFlag;
   if (first_time) {
     Session.Options.Credits =
-        Rule.MPDefaultMoney;                   // init credits & credit buffer
-    Session.Options.Bases = Rule.IsMPBasesOn;  // init scenario parameters
-    Session.Options.Tiberium = Rule.IsMPTiberiumGrow;
-    Session.Options.Goodies = Rule.IsMPCrates;
+        TheRules().MPDefaultMoney;  // init credits & credit buffer
+    Session.Options.Bases = TheRules().IsMPBasesOn;  // init scenario parameters
+    Session.Options.Tiberium = TheRules().IsMPTiberiumGrow;
+    Session.Options.Goodies = TheRules().IsMPCrates;
     Session.Options.AIPlayers = 0;
-    Special.IsShadowGrow = Rule.IsMPShadowGrow;
+    Special.IsShadowGrow = TheRules().IsMPShadowGrow;
     Session.Options.UnitCount =
         (base::At(SessionClass::CountMax, Session.Options.Bases) +
          base::At(SessionClass::CountMin, Session.Options.Bases)) /
@@ -3014,10 +3014,10 @@ int Com_Scenario_Dialog(bool skirmish) {
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
   levelgauge.Set_Value(BuildLevel - 1);
 
-  creditsgauge.Set_Maximum(Rule.MPMaxMoney);
+  creditsgauge.Set_Maximum(TheRules().MPMaxMoney);
   creditsgauge.Set_Value(Session.Options.Credits);
 
-  const int maxp = Rule.MaxPlayers - 2;
+  const int maxp = TheRules().MaxPlayers - 2;
   //	int maxp = Rule.MaxPlayers - (skirmish ? 1 : 2);
   aiplayersgauge.Set_Maximum(maxp);
 
@@ -3032,8 +3032,8 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*........................................................................
   Init other scenario parameters
   ........................................................................*/
-  Rule.IsTGrowth = Rule.IsTSpread = Session.Options.Tiberium != 0;
-  Special.IsTGrowth = Special.IsTSpread = Rule.IsTGrowth ? 1 : 0;
+  TheRules().IsTGrowth = TheRules().IsTSpread = Session.Options.Tiberium != 0;
+  Special.IsTGrowth = Special.IsTSpread = TheRules().IsTGrowth ? 1 : 0;
   transmit = true;
 
   /*........................................................................
@@ -3515,8 +3515,8 @@ int Com_Scenario_Dialog(bool skirmish) {
             //						}
           }
           if (Session.Options.AIPlayers + humans >=
-              Rule.MaxPlayers) {  // if it's pegged, max it out
-            Session.Options.AIPlayers = Rule.MaxPlayers - humans;
+              TheRules().MaxPlayers) {  // if it's pegged, max it out
+            Session.Options.AIPlayers = TheRules().MaxPlayers - humans;
             aiplayersgauge.Set_Value(Session.Options.AIPlayers -
                                      (skirmish ? 1 : 0));
           }
@@ -3569,9 +3569,9 @@ int Com_Scenario_Dialog(bool skirmish) {
           }
           Session.Options.Tiberium = optionlist.Is_Checked(1) ? 1 : 0;
           Special.IsTGrowth = static_cast<unsigned>(Session.Options.Tiberium);
-          Rule.IsTGrowth = Session.Options.Tiberium != 0;
+          TheRules().IsTGrowth = Session.Options.Tiberium != 0;
           Special.IsTSpread = static_cast<unsigned>(Session.Options.Tiberium);
-          Rule.IsTSpread = Session.Options.Tiberium != 0;
+          TheRules().IsTSpread = Session.Options.Tiberium != 0;
 
           Session.Options.Goodies = optionlist.Is_Checked(2) ? 1 : 0;
           Special.IsShadowGrow = optionlist.Is_Checked(3);
@@ -3723,7 +3723,8 @@ int Com_Scenario_Dialog(bool skirmish) {
         base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
         SendPacket.Command = SERIAL_GAME_OPTIONS;
         port::SafeCopy(SendPacket.Name, namebuf);
-        SendPacket.ScenarioInfo.CheatCheck = RuleINI.Get_Unique_ID();
+        SendPacket.ScenarioInfo.CheatCheck =
+            TheRules().rule_ini().Get_Unique_ID();
         SendPacket.ScenarioInfo.MinVersion = VersionClass::Min_Version();
         SendPacket.ScenarioInfo.MaxVersion = VersionClass::Max_Version();
         SendPacket.ScenarioInfo.House = Session.House;
@@ -3921,7 +3922,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                 rc = 0;
               } else {
                 if (ReceivePacket.ScenarioInfo.CheatCheck !=
-                    RuleINI.Get_Unique_ID()) {
+                    TheRules().rule_ini().Get_Unique_ID()) {
                   WWMessageBox().Process(TXT_MISMATCH);
 
                   // to skip the other system not responding msg
@@ -4104,7 +4105,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       */
       if (skirmish) {
         const int diff =
-            difficulty.Get_Value() * (Rule.IsFineDifficulty ? 1 : 2);
+            difficulty.Get_Value() * (TheRules().IsFineDifficulty ? 1 : 2);
         switch (diff) {
           case 0:
             Scen.CDifficulty = DIFF_HARD;
@@ -4829,11 +4830,11 @@ int Com_Show_Scenario_Dialog() {
   levelgauge.Set_Value(BuildLevel - 1);
 
   creditsgauge.Use_Thumb(false);
-  creditsgauge.Set_Maximum(Rule.MPMaxMoney);
+  creditsgauge.Set_Maximum(TheRules().MPMaxMoney);
   creditsgauge.Set_Value(Session.Options.Credits);
 
   aiplayersgauge.Use_Thumb(false);
-  aiplayersgauge.Set_Maximum(Rule.MaxPlayers - 2);
+  aiplayersgauge.Set_Maximum(TheRules().MaxPlayers - 2);
   aiplayersgauge.Set_Value(Session.Options.AIPlayers);
 
   Fancy_Text_Print("", 0, 0, scheme, kTBlack, TPF_CENTER | kTpfText);
@@ -5320,7 +5321,8 @@ int Com_Show_Scenario_Dialog() {
       base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
       SendPacket.Command = SERIAL_GAME_OPTIONS;
       port::SafeCopy(SendPacket.Name, namebuf);
-      SendPacket.ScenarioInfo.CheatCheck = RuleINI.Get_Unique_ID();
+      SendPacket.ScenarioInfo.CheatCheck =
+          TheRules().rule_ini().Get_Unique_ID();
       SendPacket.ScenarioInfo.MinVersion = VersionClass::Min_Version();
       SendPacket.ScenarioInfo.MaxVersion = VersionClass::Max_Version();
       SendPacket.ScenarioInfo.House = Session.House;
@@ -5485,14 +5487,14 @@ int Com_Show_Scenario_Dialog() {
 
             if (Session.Options.Tiberium) {
               Special.IsTGrowth = true;
-              Rule.IsTGrowth = true;
+              TheRules().IsTGrowth = true;
               Special.IsTSpread = true;
-              Rule.IsTSpread = true;
+              TheRules().IsTSpread = true;
             } else {
               Special.IsTGrowth = false;
-              Rule.IsTGrowth = false;
+              TheRules().IsTGrowth = false;
               Special.IsTSpread = false;
-              Rule.IsTSpread = false;
+              TheRules().IsTSpread = false;
             }
 
             //.........................................................
@@ -5579,7 +5581,7 @@ int Com_Show_Scenario_Dialog() {
             // ........................................................
             else {
               if (ReceivePacket.ScenarioInfo.CheatCheck !=
-                  RuleINI.Get_Unique_ID()) {
+                  TheRules().rule_ini().Get_Unique_ID()) {
                 WWMessageBox().Process(TXT_MISMATCH);
 
                 // to skip the other system not responding msg

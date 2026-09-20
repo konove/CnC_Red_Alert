@@ -304,8 +304,8 @@ bool FootClass::Basic_Path() {
     *that instead. *	EXCEPT when that cell is very close -- then just bail.
     */
     const int dist = Distance(NavCom);
-    const int checkdist =
-        Team.Is_Valid() ? Rule.StrayDistance : Rule.CloseEnoughDistance;
+    const int checkdist = Team.Is_Valid() ? TheRules().StrayDistance
+                                          : TheRules().CloseEnoughDistance;
     if (Can_Enter_Cell(cell) > MOVE_CLOAK && dist > checkdist) {
       const CELL cell2 = Map.Nearby_Location(
           cell, Techno_Type_Class()->Speed,
@@ -366,7 +366,7 @@ bool FootClass::Basic_Path() {
         **	occupying the destination location.
         */
         if (Mission == MISSION_MOVE &&
-            Distance(NavCom) < Rule.CloseEnoughDistance) {
+            Distance(NavCom) < TheRules().CloseEnoughDistance) {
           maxtype = MOVE_DESTROYABLE;
         }
       }
@@ -408,7 +408,7 @@ bool FootClass::Basic_Path() {
       Mark(MARK_DOWN);
     }
 
-    PathDelay.Set(Rule.PathDelay * kTicksPerMinute);
+    PathDelay.Set(TheRules().PathDelay * kTicksPerMinute);
     if (Path[0] != FACING_NONE) {
       return true;
     }
@@ -453,7 +453,8 @@ int FootClass::Mission_Move() {
       (!Team.Is_Valid() || !Team->Class->IsSuicide)) {
     Target_Something_Nearby(THREAT_RANGE);
   }
-  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+  return TheRules().mission_control().at(Mission).Normal_Delay() +
+         Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -492,7 +493,8 @@ int FootClass::Mission_Capture() {
       Scatter(0, true);
     }
   }
-  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+  return TheRules().mission_control().at(Mission).Normal_Delay() +
+         Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -518,7 +520,8 @@ int FootClass::Mission_Attack() {
   } else {
     Enter_Idle_Mode();
   }
-  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+  return TheRules().mission_control().at(Mission).Normal_Delay() +
+         Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -542,12 +545,12 @@ int FootClass::Mission_Guard() {
     Random_Animate();
   }
 
-  int dtime = MissionControl.at(Mission).Normal_Delay();
+  int dtime = TheRules().mission_control().at(Mission).Normal_Delay();
   if (What_Am_I() == RTTI_VESSEL) {
     switch (dynamic_cast<VesselClass*>(this)->Class->Type) {
       case VESSEL_DD:
       case VESSEL_PT:
-        dtime = MissionControl.at(Mission).AA_Delay();
+        dtime = TheRules().mission_control().at(Mission).AA_Delay();
         break;
 
       case VESSEL_CA:
@@ -577,7 +580,7 @@ int FootClass::Mission_Guard() {
     switch (dynamic_cast<InfantryClass*>(this)->Class->Type) {
       case INFANTRY_E1:
       case INFANTRY_E3:
-        dtime = MissionControl.at(Mission).AA_Delay();
+        dtime = TheRules().mission_control().at(Mission).AA_Delay();
         break;
 
       case InfantryType::INFANTRY_NONE:
@@ -652,7 +655,8 @@ int FootClass::Mission_Hunt() {
       }
     }
   }
-  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+  return TheRules().mission_control().at(Mission).Normal_Delay() +
+         Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -967,7 +971,7 @@ int FootClass::Mission_Guard_Area() {
     Approach_Target();
   }
 
-  int dtime = MissionControl.at(Mission).Normal_Delay();
+  int dtime = TheRules().mission_control().at(Mission).Normal_Delay();
   if (What_Am_I() == RTTI_AIRCRAFT) {
     dtime *= 2;
   }
@@ -1066,8 +1070,9 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
       **	This ensures that if a unit is in sticky mode, then it will snap
       *out of *	it when it takes damage.
       */
-      if (source != nullptr && MissionControl.at(Mission).IsNoThreat &&
-          !MissionControl.at(Mission).IsZombie) {
+      if (source != nullptr &&
+          TheRules().mission_control().at(Mission).IsNoThreat &&
+          !TheRules().mission_control().at(Mission).IsZombie) {
         Enter_Idle_Mode();
       }
 
@@ -1090,7 +1095,8 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
         **	Simple retaliation cannot occur because the source of the damage
         **	is too far away. If scatter logic is enabled, then scatter now.
         */
-        if (!Target_Legal(TarCom) && !Target_Legal(NavCom) && Rule.IsScatter) {
+        if (!Target_Legal(TarCom) && !Target_Legal(NavCom) &&
+            TheRules().IsScatter) {
           Scatter(0, true);
         }
 
@@ -1098,10 +1104,11 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
         /*
         **	If this object isn't doing anything important, then scatter.
         */
-        if ((MissionControl.at(Mission).IsScatter && !IsTethered &&
-             !IsDriving && !Target_Legal(TarCom) && !Target_Legal(NavCom) &&
-             What_Am_I() != RTTI_AIRCRAFT && What_Am_I() != RTTI_VESSEL) &&
-            (!House->IsHuman || Rule.IsScatter)) {
+        if ((TheRules().mission_control().at(Mission).IsScatter &&
+             !IsTethered && !IsDriving && !Target_Legal(TarCom) &&
+             !Target_Legal(NavCom) && What_Am_I() != RTTI_AIRCRAFT &&
+             What_Am_I() != RTTI_VESSEL) &&
+            (!House->IsHuman || TheRules().IsScatter)) {
           Scatter(0, true);
         }
       }
@@ -1740,7 +1747,8 @@ int FootClass::Mission_Enter() {
     Enter_Idle_Mode();
   }
 
-  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+  return TheRules().mission_control().at(Mission).Normal_Delay() +
+         Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -2590,5 +2598,6 @@ int FootClass::Mission_Retreat() {
       break;
   }
 
-  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+  return TheRules().mission_control().at(Mission).Normal_Delay() +
+         Random_Pick(0, 2);
 }

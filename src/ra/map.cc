@@ -676,7 +676,7 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
   /*
   **	Units that are off-map cannot jam.
   */
-  if (!jamrange || jamrange > Rule.GapShroudRadius) {
+  if (!jamrange || jamrange > TheRules().GapShroudRadius) {
     return;
   }
 
@@ -730,7 +730,7 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
   if (!house->IsPlayerControl) {
     MapEditClass::Constrained_Look(
         Cell_Coord(cell),
-        static_cast<LEPTON>(Rule.GapShroudRadius * CELL_LEPTON_W));
+        static_cast<LEPTON>(TheRules().GapShroudRadius * CELL_LEPTON_W));
   }
 
 }
@@ -758,7 +758,7 @@ void MapClass::UnJam_From(CELL cell, int jamrange, HouseClass* house) {
   /*
   **	Units that are off-map cannot jam.
   */
-  if (!jamrange || jamrange > Rule.GapShroudRadius) {
+  if (!jamrange || jamrange > TheRules().GapShroudRadius) {
     return;
   }
 
@@ -1176,7 +1176,7 @@ void MapClass::Logic() {
   /*
   **	Bail early if there is no allowed growth or spread of Tiberium.
   */
-  if (!Rule.IsTGrowth && !Rule.IsTSpread) {
+  if (!TheRules().IsTGrowth && !TheRules().IsTSpread) {
     return;
   }
 
@@ -1184,7 +1184,7 @@ void MapClass::Logic() {
   **	Scan another block of the map in order to accumulate the potential
   **	Tiberium cells that can grow or spread.
   */
-  int subcount = MAP_CELL_TOTAL / (Rule.GrowthRate * kTicksPerMinute);
+  int subcount = MAP_CELL_TOTAL / (TheRules().GrowthRate * kTicksPerMinute);
   subcount = std::max(subcount, 1);
   int index = 0;
   for (index = TiberiumScan; index < MAP_CELL_TOTAL; index++) {

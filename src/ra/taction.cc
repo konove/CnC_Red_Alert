@@ -416,7 +416,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
       Session.Messages.Add_Message(
           nullptr, 0, message, PCOLOR_GREEN,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-          Rule.MessageDelay * kTicksPerMinute);
+          TheRules().MessageDelay * kTicksPerMinute);
       break;
     }
 
@@ -477,7 +477,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     case TACTION_REVEAL_SOME:
       if (!PlayerPtr->IsVisionary) {
         Map.Sight_From(base::At(Scen.Waypoint, Data.Value),
-                       Rule.GapShroudRadius, PlayerPtr, false);
+                       TheRules().GapShroudRadius, PlayerPtr, false);
       }
       break;
 

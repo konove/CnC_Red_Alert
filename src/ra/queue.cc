@@ -1975,12 +1975,13 @@ static RetcodeType Process_Serial_Packet(
   // Process an incoming message
   //------------------------------------------------------------------------
   if (serial_packet->Command == SERIAL_MESSAGE) {
-    if (!Session.Messages.Concat_Message(serial_packet->Name, serial_packet->ID,
-                                         serial_packet->Message.Message,
-                                         Rule.MessageDelay * kTicksPerMinute)) {
+    if (!Session.Messages.Concat_Message(
+            serial_packet->Name, serial_packet->ID,
+            serial_packet->Message.Message,
+            TheRules().MessageDelay * kTicksPerMinute)) {
       const char* ptr = &base::At(serial_packet->Message.Message, 0);
       if (std::string_view(ptr).starts_with("SECRET UNITS ON ") &&
-          Rule.NewUnitsEnabled) {
+          TheRules().NewUnitsEnabled) {
         Enable_Secret_Units();
       }
       Session.Messages.Add_Message(
@@ -1988,7 +1989,7 @@ static RetcodeType Process_Serial_Packet(
           serial_packet->Message.Message,
           static_cast<PlayerColorType>(serial_packet->ID),
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-          Rule.MessageDelay * kTicksPerMinute);
+          TheRules().MessageDelay * kTicksPerMinute);
 
       PlaySoundEffect(VOC_INCOMING_MESSAGE);
     }
@@ -3517,7 +3518,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             //
             if (Session.Play && DoList.at(j).Type == EventClass::EXIT) {
               hptr->IsHuman = false;
-              hptr->IQ = Rule.MaxIQ;
+              hptr->IQ = TheRules().MaxIQ;
               HouseClass::Computer_Paranoid();
               port::SafeCopy(hptr->IniName, Text_String(TXT_COMPUTER));
               Session.NumPlayers--;

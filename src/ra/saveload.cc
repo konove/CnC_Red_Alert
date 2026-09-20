@@ -1054,38 +1054,38 @@ bool Load_Game(int id) {
   /*
   **	Reset the rules values to their initial settings.
   */
-  Rule.General(RuleINI);
-  Rule.Recharge(RuleINI);
-  Rule.AI(RuleINI);
-  RulesClass::Powerups(RuleINI);
-  RulesClass::Land_Types(RuleINI);
-  RulesClass::Themes(RuleINI);
-  Rule.IQ(RuleINI);
-  RulesClass::Objects(RuleINI);
-  Rule.Difficulty(RuleINI);
-  Rule.General(AftermathINI);
-  Rule.Recharge(AftermathINI);
-  Rule.AI(AftermathINI);
-  RulesClass::Powerups(AftermathINI);
-  RulesClass::Land_Types(AftermathINI);
-  RulesClass::Themes(AftermathINI);
-  Rule.IQ(AftermathINI);
-  RulesClass::Objects(AftermathINI);
-  Rule.Difficulty(AftermathINI);
+  TheRules().General(TheRules().rule_ini());
+  TheRules().Recharge(TheRules().rule_ini());
+  TheRules().AI(TheRules().rule_ini());
+  TheRules().Powerups(TheRules().rule_ini());
+  TheRules().Land_Types(TheRules().rule_ini());
+  RulesClass::Themes(TheRules().rule_ini());
+  TheRules().IQ(TheRules().rule_ini());
+  TheRules().Objects(TheRules().rule_ini());
+  TheRules().Difficulty(TheRules().rule_ini());
+  TheRules().General(TheRules().aftermath_ini());
+  TheRules().Recharge(TheRules().aftermath_ini());
+  TheRules().AI(TheRules().aftermath_ini());
+  TheRules().Powerups(TheRules().aftermath_ini());
+  TheRules().Land_Types(TheRules().aftermath_ini());
+  RulesClass::Themes(TheRules().aftermath_ini());
+  TheRules().IQ(TheRules().aftermath_ini());
+  TheRules().Objects(TheRules().aftermath_ini());
+  TheRules().Difficulty(TheRules().aftermath_ini());
 
   /*
   **	Override any rules values specified in this
   **	particular scenario file.
   */
-  Rule.General(ini);
-  Rule.Recharge(ini);
-  Rule.AI(ini);
-  RulesClass::Powerups(ini);
-  RulesClass::Land_Types(ini);
+  TheRules().General(ini);
+  TheRules().Recharge(ini);
+  TheRules().AI(ini);
+  TheRules().Powerups(ini);
+  TheRules().Land_Types(ini);
   RulesClass::Themes(ini);
-  Rule.IQ(ini);
-  RulesClass::Objects(ini);
-  Rule.Difficulty(ini);
+  TheRules().IQ(ini);
+  TheRules().Objects(ini);
+  TheRules().Difficulty(ini);
   if (load_net) {
     bool readini = false;
     switch (Session.Type) {
@@ -1117,15 +1117,15 @@ bool Load_Game(int id) {
       CCINIClass mpini;
       GameFile mplayer_ini("MPLAYER.INI");
       if (mpini.Load(mplayer_ini, false)) {
-        Rule.General(mpini);
-        Rule.Recharge(mpini);
-        Rule.AI(mpini);
-        RulesClass::Powerups(mpini);
-        RulesClass::Land_Types(mpini);
+        TheRules().General(mpini);
+        TheRules().Recharge(mpini);
+        TheRules().AI(mpini);
+        TheRules().Powerups(mpini);
+        TheRules().Land_Types(mpini);
         RulesClass::Themes(mpini);
-        Rule.IQ(mpini);
-        RulesClass::Objects(mpini);
-        Rule.Difficulty(mpini);
+        TheRules().IQ(mpini);
+        TheRules().Objects(mpini);
+        TheRules().Difficulty(mpini);
       }
     }
   }
@@ -1447,7 +1447,7 @@ static bool Reconcile_Players() {
       housep->IsHuman = false;
       housep->IsStarted = true;
       //			housep->Smartness = IQ_MENSA;
-      housep->IQ = Rule.MaxIQ;
+      housep->IQ = TheRules().MaxIQ;
       port::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
 
       Session.NumPlayers--;

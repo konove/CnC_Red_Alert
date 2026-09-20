@@ -285,7 +285,7 @@ void ObjectClass::AI() {
       Riser -= 1;
       Riser = std::max(Riser, -3);
     } else {
-      Riser -= Rule.Gravity;
+      Riser -= TheRules().Gravity;
       //			Riser -= GRAVITY;
       Riser = std::max(Riser, -100);
     }

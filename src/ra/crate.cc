@@ -100,8 +100,8 @@ bool CrateClass::Create_Crate(CELL cell) {
   */
   if (Put_Crate(cell)) {
     Cell = cell;
-    CrateTimer.Set(Random_Pick(Rule.CrateTime * (kTicksPerMinute / 2),
-                               Rule.CrateTime * (kTicksPerMinute * 2)));
+    CrateTimer.Set(Random_Pick(TheRules().CrateTime * (kTicksPerMinute / 2),
+                               TheRules().CrateTime * (kTicksPerMinute * 2)));
     CrateTimer.Start();
     return true;
   }
@@ -136,7 +136,7 @@ bool CrateClass::Put_Crate(CELL& cell) {
            !cellptr->Is_Clear_To_Build(SPEED_FOOT)) {
       cell = MapEditClass::Pick_Random_Location();
 
-      if (Percent_Chance(100 * Rule.WaterCrateChance)) {
+      if (Percent_Chance(100 * TheRules().WaterCrateChance)) {
         cell = Map.Nearby_Location(cell, SPEED_FLOAT);
       } else {
         cell = Map.Nearby_Location(cell, SPEED_TRACK);

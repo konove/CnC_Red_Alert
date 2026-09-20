@@ -530,7 +530,7 @@ int Fetch_Difficulty(bool amath) {
   **	Create the slider button.
   */
   SliderClass slider(2, x + 40, y + h - 58, w - 80, 16, true);
-  if (Rule.IsFineDifficulty) {
+  if (TheRules().IsFineDifficulty) {
     slider.Set_Maximum(5);
     slider.Set_Value(2);
   } else {
@@ -616,5 +616,5 @@ int Fetch_Difficulty(bool amath) {
     }
   }
 
-  return slider.Get_Value() * (Rule.IsFineDifficulty ? 1 : 2);
+  return slider.Get_Value() * (TheRules().IsFineDifficulty ? 1 : 2);
 }

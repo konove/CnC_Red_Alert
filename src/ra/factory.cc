@@ -421,9 +421,11 @@ bool FactoryClass::Start() {
     *slowest to *	just normal time at the fastest.
     */
     if (!House->IsHuman &&
-        base::At(Rule.Diff, static_cast<int>(House->Difficulty))
+        base::At(TheRules().Diff, static_cast<int>(House->Difficulty))
             .IsBuildSlowdown) {
-      time = time * fixed(House->IQ + Rule.MaxIQ, Rule.MaxIQ * 2).Inverse();
+      time =
+          time *
+          fixed(House->IQ + TheRules().MaxIQ, TheRules().MaxIQ * 2).Inverse();
     }
 
     int rate = time / Bound(House->Power_Fraction(), fixed(1, 16), fixed(1));

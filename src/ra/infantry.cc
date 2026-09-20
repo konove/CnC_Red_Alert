@@ -337,7 +337,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
   **	Prone infantry take only half damage, but never below one damage point.
   */
   if (IsProne && damage > 0) {
-    damage = damage * Rule.ProneDamageBias;
+    damage = damage * TheRules().ProneDamageBias;
   }
 
   /*
@@ -464,10 +464,10 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
       *more *	quickly if the infantry is damaged.
       */
       int morefear = static_cast<int>(FEAR_ANXIOUS);
-      if (Health_Ratio() > Rule.ConditionRed) {
+      if (Health_Ratio() > TheRules().ConditionRed) {
         morefear /= 2;
       }
-      if (Health_Ratio() > Rule.ConditionYellow) {
+      if (Health_Ratio() > TheRules().ConditionYellow) {
         morefear /= 2;
       }
       Fear = static_cast<FearType>(std::min(static_cast<int>(Fear) + morefear,
@@ -637,7 +637,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
               iscapturable =
                   dynamic_cast<BuildingClass*>(tech)->Class->IsCaptureable;
             }
-            if (tech->Health_Ratio() <= Rule.EngineerCaptureLevel &&
+            if (tech->Health_Ratio() <= TheRules().EngineerCaptureLevel &&
                 iscapturable) {
               if (tech->Trigger.Is_Valid()) {
                 tech->Trigger->Spring(TEVENT_PLAYER_ENTERED, this);
@@ -645,9 +645,9 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
               tech->House->IsThieved = true;
               tech->Captured(House);
             } else {
-              int damage = std::min(
-                  tech->Techno_Type_Class()->MaxStrength * Rule.EngineerDamage,
-                  tech->Strength - 1);
+              int damage = std::min(tech->Techno_Type_Class()->MaxStrength *
+                                        TheRules().EngineerDamage,
+                                    tech->Strength - 1);
               tech->Take_Damage(damage, 0, WARHEAD_HE, this, true);
             }
             delete this;
@@ -750,8 +750,8 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
         if (building->IronCurtainCountDown.IsFinished() &&
             building->Mission != MISSION_DECONSTRUCTION) {
           building->IsGoingToBlow = true;
-          building->Clicked_As_Target(Rule.C4Delay * kTicksPerMinute / 2);
-          building->CountDown.Set(Rule.C4Delay * kTicksPerMinute);
+          building->Clicked_As_Target(TheRules().C4Delay * kTicksPerMinute / 2);
+          building->CountDown.Set(TheRules().C4Delay * kTicksPerMinute);
           building->WhomToRepay = As_Target();
         }
         NavCom = kTargetNone;
@@ -761,7 +761,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
         return;
       }
       if (::As_Target(Coord_Cell(Center_Coord())) == NavCom) {
-        Explosion_Damage(Coord, Rule.BridgeStrength, this, WARHEAD_HE);
+        Explosion_Damage(Coord, TheRules().BridgeStrength, this, WARHEAD_HE);
 
         Stop_Driver();
         Scatter(Adjacent_Cell(Coord, PrimaryFacing), true, true);
@@ -772,8 +772,8 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
           Mark(MARK_DOWN);  // Needed only so that Tanya will get destroyed by
                             // the explosion.
         }
-        Explosion_Damage(Coord, Rule.BridgeStrength, nullptr, WARHEAD_HE);
-        Explosion_Damage(Coord, Rule.BridgeStrength, nullptr, WARHEAD_HE);
+        Explosion_Damage(Coord, TheRules().BridgeStrength, nullptr, WARHEAD_HE);
+        Explosion_Damage(Coord, TheRules().BridgeStrength, nullptr, WARHEAD_HE);
         if (!IsActive) {
           return;
         }
@@ -831,16 +831,16 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
       ** Show the animation and get rid of the land mine
       */
       const COORDINATE blcoord = bldng->Center_Coord();
-      new AnimClass(
-          Combat_Anim(Rule.APMineDamage, WARHEAD_HE, cellptr->Land_Type()),
-          blcoord);
+      new AnimClass(Combat_Anim(TheRules().APMineDamage, WARHEAD_HE,
+                                cellptr->Land_Type()),
+                    blcoord);
       delete bldng;
       for (int index = 0; index < Infantry.Count(); index++) {
         InfantryClass* obj = Infantry.Ptr(index);
         if (obj != nullptr && !obj->IsInLimbo) {
           const int dist = ::Distance(obj->Coord, blcoord);
           if (dist <= 0xC0) {
-            int damage = Rule.APMineDamage;
+            int damage = TheRules().APMineDamage;
             obj->Take_Damage(damage, 0, WARHEAD_HE);
           }
         }
@@ -1245,7 +1245,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
           obj = obj->Next;
           continue;
         }
-        if (!Rule.IsMineAware ||
+        if (!TheRules().IsMineAware ||
             !dynamic_cast<BuildingClass*>(obj)->House->Is_Ally(House)) {
           if (*dynamic_cast<BuildingClass*>(obj) == STRUCT_APMINE) {
             obj = obj->Next;
@@ -1428,7 +1428,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
   **	If foot soldiers cannot travel on the cell -- consider it impassable.
   */
   if (retval == MOVE_OK && !IsTethered &&
-      Ground.at(cellptr->Land_Type()).Cost.at(SPEED_FOOT) == 0) {
+      TheRules().ground().at(cellptr->Land_Type()).Cost.at(SPEED_FOOT) == 0) {
     return MOVE_NO;
   }
 
@@ -1541,7 +1541,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   */
   if (Combat_Damage() < 0) {
     const TechnoClass* targ = As_Techno(target);
-    if (targ == nullptr || targ->Health_Ratio() >= Rule.ConditionGreen) {
+    if (targ == nullptr || targ->Health_Ratio() >= TheRules().ConditionGreen) {
       return FIRE_ILLEGAL;
     }
   }
@@ -1601,8 +1601,9 @@ void InfantryClass::Enter_Idle_Mode(bool /*initial*/) {
       }
     } else {
       if (Mission == MISSION_GUARD || Mission == MISSION_GUARD_AREA ||
-          (Mission != MISSION_NONE && (MissionControl.at(Mission).IsParalyzed ||
-                                       MissionControl.at(Mission).IsZombie))) {
+          (Mission != MISSION_NONE &&
+           (TheRules().mission_control().at(Mission).IsParalyzed ||
+            TheRules().mission_control().at(Mission).IsZombie))) {
         return;
       }
 
@@ -1617,7 +1618,7 @@ void InfantryClass::Enter_Idle_Mode(bool /*initial*/) {
         if (House->IsHuman || Team.Is_Valid()) {
           order = MISSION_GUARD;
         } else {
-          if (House->IQ < Rule.IQGuardArea) {
+          if (House->IQ < TheRules().IQGuardArea) {
             order = MISSION_GUARD;
           } else {
             if (Is_Weapon_Equipped()) {
@@ -1655,8 +1656,9 @@ bool InfantryClass::Random_Animate() {
   DCHECK(IsActive);
 
   if (Is_Ready_To_Random_Animate()) {
-    IdleTimer.Set(Random_Pick(Rule.RandomAnimateTime * (kTicksPerMinute / 2),
-                              Rule.RandomAnimateTime * (kTicksPerMinute * 2)));
+    IdleTimer.Set(
+        Random_Pick(TheRules().RandomAnimateTime * (kTicksPerMinute / 2),
+                    TheRules().RandomAnimateTime * (kTicksPerMinute * 2)));
 
     /*
     **	Scared infantry will always follow the golden rule of civilians;
@@ -1779,7 +1781,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
   **	Certain missions prevent scattering regardless of whether it would be
   **	a good idea or not.
   */
-  if (!MissionControl.at(Mission).IsScatter && !forced) {
+  if (!TheRules().mission_control().at(Mission).IsScatter && !forced) {
     return;
   }
 
@@ -1802,7 +1804,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
   **	For human players, don't scatter the infantry, if the special
   **	flag has not been enabled that allows infantry scatter.
   */
-  if (!Rule.IsScatter && !nokidding && House->IsHuman && !forced &&
+  if (!TheRules().IsScatter && !nokidding && House->IsHuman && !forced &&
       !Team.Is_Valid()) {
     return;
   }
@@ -2759,7 +2761,7 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
         return ACTION_GREPAIR;
       }
       if (bldg->Class->IsCaptureable) {
-        if (bldg->Health_Ratio() <= Rule.EngineerCaptureLevel) {
+        if (bldg->Health_Ratio() <= TheRules().EngineerCaptureLevel) {
           return ACTION_CAPTURE;
         }
         return ACTION_DAMAGE;
@@ -2779,7 +2781,7 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
           (*this == INFANTRY_MECHANIC &&
            (object->What_Am_I() == RTTI_UNIT ||
             object->What_Am_I() == RTTI_AIRCRAFT))) {
-        if (object->Health_Ratio() < Rule.ConditionGreen) {
+        if (object->Health_Ratio() < TheRules().ConditionGreen) {
           // If it's a mechanic force-moving into an APC, don't try to heal it.
           if (*this == INFANTRY_MECHANIC && object->What_Am_I() == RTTI_UNIT &&
               *dynamic_cast<const UnitClass*>(object) == UNIT_APC &&
@@ -3540,7 +3542,7 @@ void InfantryClass::Firing_AI() {
                   (*this == INFANTRY_MECHANIC &&
                    (targ->What_Am_I() == RTTI_AIRCRAFT ||
                     targ->What_Am_I() == RTTI_UNIT))) {
-                if (targ->Health_Ratio() >= Rule.ConditionGreen) {
+                if (targ->Health_Ratio() >= TheRules().ConditionGreen) {
                   Assign_Target(kTargetNone);
                 }
               }
@@ -3610,7 +3612,7 @@ void InfantryClass::Firing_AI() {
       /*
       **	Run away from slowly approaching projectiles.
       */
-      if (Class->PrimaryWeapon->MaxSpeed < Rule.Incoming) {
+      if (Class->PrimaryWeapon->MaxSpeed < TheRules().Incoming) {
         Map.at(As_Cell(TarCom)).Incoming(Coord, true);
       }
 
@@ -3847,7 +3849,8 @@ void InfantryClass::Movement_AI() {
               **	If the infantry unit is close enough to the target, then
               **	tell it to stop.
               */
-              if (Distance(NavCom) < Rule.CloseEnoughDistance && !IsTethered) {
+              if (Distance(NavCom) < TheRules().CloseEnoughDistance &&
+                  !IsTethered) {
                 Assign_Destination(kTargetNone);
               } else {
                 /*
@@ -3900,7 +3903,7 @@ void InfantryClass::Movement_AI() {
         if (Can_Enter_Cell(acell) != MOVE_OK) {
           if ((Mission == MISSION_MOVE || Mission == MISSION_ENTER) &&
               !IsTethered /*&& House->IsHuman*/ &&
-              Distance(NavCom) < Rule.CloseEnoughDistance) {
+              Distance(NavCom) < TheRules().CloseEnoughDistance) {
             Assign_Destination(kTargetNone);
           } else {
             /*
@@ -3939,9 +3942,11 @@ void InfantryClass::Movement_AI() {
             }
             PrimaryFacing.Set(Direction8(Center_Coord(), Head_To_Coord()));
             if (IsFormationMove) {
-              Set_Speed(
-                  Ground.at(Map.at(Coord).Land_Type()).Cost.at(FormationSpeed) *
-                  256);
+              Set_Speed(TheRules()
+                            .ground()
+                            .at(Map.at(Coord).Land_Type())
+                            .Cost.at(FormationSpeed) *
+                        256);
             } else {
               Set_Speed(0xFF);
             }

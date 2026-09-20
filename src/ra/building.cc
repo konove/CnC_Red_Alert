@@ -828,7 +828,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
     */
     if (*this == STRUCT_WEAP || *this == STRUCT_FAKEWEAP) {
       int shapenum = Door_Stage();
-      if (Health_Ratio() <= Rule.ConditionYellow) {
+      if (Health_Ratio() <= TheRules().ConditionYellow) {
         shapenum += 4;
       }
       Techno_Draw_Object(BuildingTypeClass::WarFactoryOverlay, shapenum, x, y,
@@ -952,14 +952,14 @@ int BuildingClass::Shape_Number() const {
         **	from the building's turret facing. All other animation stages
         **	fetch their frame from the embedded animation sequencer.
         */
-        if (Health_Ratio() <= Rule.ConditionYellow) {
+        if (Health_Ratio() <= TheRules().ConditionYellow) {
           shapenum += 35;
         }
       } else {
         if (IsInRecoilState) {
           shapenum += 32;
         }
-        if (Health_Ratio() <= Rule.ConditionYellow) {
+        if (Health_Ratio() <= TheRules().ConditionYellow) {
           shapenum += 64;
         }
       }
@@ -970,7 +970,7 @@ int BuildingClass::Shape_Number() const {
       */
       if (*this == STRUCT_WEAP || *this == STRUCT_FAKEWEAP) {
         shapenum = 0;
-        if (Health_Ratio() <= Rule.ConditionYellow) {
+        if (Health_Ratio() <= TheRules().ConditionYellow) {
           shapenum = 1;
         }
 
@@ -986,7 +986,7 @@ int BuildingClass::Shape_Number() const {
                   : 0;
 
           shapenum += std::clamp(level, 0, 4);
-          if (Health_Ratio() <= Rule.ConditionYellow) {
+          if (Health_Ratio() <= TheRules().ConditionYellow) {
             shapenum += 5;
           }
 
@@ -995,7 +995,7 @@ int BuildingClass::Shape_Number() const {
           **	If below half strenth, then show the damage frames of the
           **	building.
           */
-          if (Health_Ratio() <= Rule.ConditionYellow) {
+          if (Health_Ratio() <= TheRules().ConditionYellow) {
             const int last1 = Class->Anims.at(BSTATE_IDLE).Start +
                               Class->Anims.at(BSTATE_IDLE).Count;
             int last2 = Class->Anims.at(BSTATE_ACTIVE).Start +
@@ -1391,21 +1391,21 @@ void BuildingClass::AI() {
   if (*this == STRUCT_GAP) {
     if (Arm.IsFinished()) {
       IsJamming = false;
-      Arm.Set(kTicksPerMinute * Rule.GapRegenInterval +
+      Arm.Set(kTicksPerMinute * TheRules().GapRegenInterval +
               Random_Pick(1, kTicksPerSecond));
     }
 
     if (!IsJamming) {
       if (House->Power_Fraction() >= 1) {
-        MapEditClass::Jam_From(Coord_Cell(Center_Coord()), Rule.GapShroudRadius,
-                               House);
+        MapEditClass::Jam_From(Coord_Cell(Center_Coord()),
+                               TheRules().GapShroudRadius, House);
         IsJamming = true;
       }
     } else {
       if (House->Power_Fraction() < 1) {
         IsJamming = false;
         MapEditClass::UnJam_From(Coord_Cell(Center_Coord()),
-                                 Rule.GapShroudRadius, House);
+                                 TheRules().GapShroudRadius, House);
       }
     }
   }
@@ -1420,7 +1420,7 @@ void BuildingClass::AI() {
     for (int index = 0; index < Units.Count(); index++) {
       const UnitClass* obj = Units.Ptr(index);
       if (obj != nullptr && !obj->IsInLimbo && !obj->House->Is_Ally(House) &&
-          obj->Class->IsJammer && Distance(obj) <= Rule.RadarJamRadius) {
+          obj->Class->IsJammer && Distance(obj) <= TheRules().RadarJamRadius) {
         IsJammed = true;
         break;
       }
@@ -1981,7 +1981,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
           !House->Is_Ally(source) && Class->PrimaryWeapon != nullptr &&
           (!Target_Legal(TarCom) || !In_Range(TarCom))) {
         if (source->What_Am_I() != RTTI_AIRCRAFT &&
-            (!House->IsHuman || Rule.IsSmartDefense)) {
+            (!House->IsHuman || TheRules().IsSmartDefense)) {
           Assign_Target(source->As_Target());
         } else {
           /*
@@ -2601,7 +2601,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
               *around the *	center of the base.
               */
               base->Assign_Destination(::As_Target(cell));
-              if (House->IQ >= Rule.IQGuardArea) {
+              if (House->IQ >= TheRules().IQGuardArea) {
                 base->Assign_Mission(MISSION_GUARD_AREA);
                 base->ArchiveTarget = ::As_Target(
                     House->Where_To_Go(dynamic_cast<FootClass*>(base)));
@@ -2719,7 +2719,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
               *around the *	center of the base.
               */
               base->Assign_Destination(::As_Target(cell));
-              if (House->IQ >= Rule.IQGuardArea) {
+              if (House->IQ >= TheRules().IQGuardArea) {
                 base->Assign_Mission(MISSION_GUARD_AREA);
                 base->ArchiveTarget = ::As_Target(
                     House->Where_To_Go(dynamic_cast<FootClass*>(base)));
@@ -3133,7 +3133,7 @@ void BuildingClass::Grand_Opening(bool captured) {
     /*
     **	Helicopter pads get a free attack helicopter.
     */
-    if (!Rule.IsSeparate && *this == STRUCT_HELIPAD && !captured) {
+    if (!TheRules().IsSeparate && *this == STRUCT_HELIPAD && !captured) {
       ScenarioInit++;
       AircraftClass* air = nullptr;
       if (IsSovietHouse(House->ActLike) || House->ActLike == HOUSE_BAD) {
@@ -3421,7 +3421,8 @@ ActionType BuildingClass::What_Action(CELL cell) const {
 
   ActionType action = TechnoClass::What_Action(cell);
 
-  if (action == ACTION_MOVE && (*this != STRUCT_CONST || !Rule.IsMCVDeploy)) {
+  if (action == ACTION_MOVE &&
+      (*this != STRUCT_CONST || !TheRules().IsMCVDeploy)) {
     action = ACTION_NONE;
   }
 
@@ -4007,11 +4008,14 @@ int BuildingClass::Mission_Guard() {
     }
 
     if (*this == STRUCT_REPAIR) {
-      return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+      return TheRules().mission_control().at(Mission).Normal_Delay() +
+             Random_Pick(0, 2);
     }
-    return (MissionControl.at(Mission).Normal_Delay() * 3) + Random_Pick(0, 2);
+    return (TheRules().mission_control().at(Mission).Normal_Delay() * 3) +
+           Random_Pick(0, 2);
   }
-  return MissionControl.at(Mission).AA_Delay() + Random_Pick(0, 2);
+  return TheRules().mission_control().at(Mission).AA_Delay() +
+         Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -4147,7 +4151,7 @@ int BuildingClass::Mission_Deconstruction() {
         **	members leaving is equal to the unrecovered cost of the building
         **	divided by 100 (the typical cost of a minigunner infantryman).
         */
-        if (!Target_Legal(ArchiveTarget) || !Rule.IsMCVDeploy ||
+        if (!Target_Legal(ArchiveTarget) || !TheRules().IsMCVDeploy ||
             *this != STRUCT_CONST) {
           int count = How_Many_Survivors();
           bool engine = false;
@@ -4373,7 +4377,8 @@ int BuildingClass::Mission_Attack() {
       default:
         break;
     }
-    return MissionControl.at(Mission).AA_Delay() + Random_Pick(0, 2);
+    return TheRules().mission_control().at(Mission).AA_Delay() +
+           Random_Pick(0, 2);
   }
 
   if (!Target_Legal(TarCom)) {
@@ -4587,7 +4592,7 @@ int BuildingClass::Mission_Repair() {
         if (Transmit_Message(RADIO_NEED_TO_MOVE) == RADIO_ROGER) {
           TechnoClass* radio = Contact_With_Whom();
 
-          if ((radio->Health_Ratio() < Rule.ConditionGreen ||
+          if ((radio->Health_Ratio() < TheRules().ConditionGreen ||
                (radio->What_Am_I() == RTTI_UNIT &&
                 *dynamic_cast<UnitClass*>(radio) == UNIT_MINELAYER)) &&
               Transmit_Message(RADIO_REPAIR) == RADIO_ROGER) {
@@ -4718,7 +4723,7 @@ int BuildingClass::Mission_Repair() {
       default:
         break;
     }
-    return MissionControl.at(Mission).Normal_Delay();
+    return TheRules().mission_control().at(Mission).Normal_Delay();
   }
 
   if (*this == STRUCT_HELIPAD || *this == STRUCT_AIRSTRIP) {
@@ -4760,7 +4765,8 @@ int BuildingClass::Mission_Repair() {
           if (pfrac < fixed::_1_2) {
             pfrac = fixed::_1_2;
           }
-          const int time = pfrac.Inverse() * Rule.ReloadRate * kTicksPerMinute;
+          const int time =
+              pfrac.Inverse() * TheRules().ReloadRate * kTicksPerMinute;
           IsReadyToCommence = false;
           return time;
         }
@@ -4952,7 +4958,7 @@ int BuildingClass::Mission_Missile() {
         break;
     }
   }
-  return MissionControl.at(Mission).Normal_Delay();
+  return TheRules().mission_control().at(Mission).Normal_Delay();
 }
 
 /***********************************************************************************************
@@ -5195,7 +5201,7 @@ int BuildingClass::Mission_Unload() {
           if (unit) {
             unit->Assign_Mission(MISSION_MOVE);
 
-            if (House->IQ >= Rule.IQGuardArea) {
+            if (House->IQ >= TheRules().IQGuardArea) {
               unit->Assign_Mission(MISSION_GUARD_AREA);
               unit->ArchiveTarget = ::As_Target(House->Where_To_Go(unit));
             }
@@ -5239,7 +5245,8 @@ int BuildingClass::Mission_Unload() {
       default:
         break;
     }
-    return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+    return TheRules().mission_control().at(Mission).Normal_Delay() +
+           Random_Pick(0, 2);
   }
 
   Assign_Mission(MISSION_GUARD);
@@ -6172,15 +6179,15 @@ void BuildingClass::Charging_AI() {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Repair_AI() {
-  if ((House->IQ >= Rule.IQRepairSell && Mission != MISSION_CONSTRUCTION &&
-       Mission != MISSION_DECONSTRUCTION) &&
+  if ((House->IQ >= TheRules().IQRepairSell &&
+       Mission != MISSION_CONSTRUCTION && Mission != MISSION_DECONSTRUCTION) &&
       Can_Repair())
   /*
   **	Possibly start repair process if the building is below half strength.
   */
   //		unsigned ratio = std::min(House->Smartness, 0x00F0);
   {
-    if (House->Available_Money() >= Rule.RepairThreshhold) {
+    if (House->Available_Money() >= TheRules().RepairThreshhold) {
       if ((!House->DidRepair) &&
           (!IsRepairing && (IsCaptured || IsToRepair || House->IsHuman ||
                             Session.Type != GAME_NORMAL))) {
@@ -6197,10 +6204,10 @@ void BuildingClass::Repair_AI() {
 
     } else {
       if ((Session.Type != GAME_NORMAL || IsAllowedToSell) && IsTickedOff &&
-          House->Control.TechLevel >= Rule.IQSellBack &&
+          House->Control.TechLevel >= TheRules().IQSellBack &&
           Random_Pick(0, 50) < House->Control.TechLevel &&
           !Trigger.Is_Valid() && *this != STRUCT_CONST &&
-          Health_Ratio() < Rule.ConditionRed) {
+          Health_Ratio() < TheRules().ConditionRed) {
         Sell_Back(1);
       }
     }
@@ -6209,7 +6216,7 @@ void BuildingClass::Repair_AI() {
   /*
   **	If it is repairing, then apply any repair effects as necessary.
   */
-  if (IsRepairing && Frame % (Rule.RepairRate * kTicksPerMinute) == 0) {
+  if (IsRepairing && Frame % (TheRules().RepairRate * kTicksPerMinute) == 0) {
     IsWrenchVisible = !static_cast<bool>(IsWrenchVisible);
     Mark(MARK_CHANGE);
     const int cost = Class->Repair_Cost();
@@ -6340,7 +6347,7 @@ int BuildingClass::How_Many_Survivors() const {
     soldier_cost *= 2;
   }
   const int survivors =
-      Class->Raw_Cost() * Rule.SurvivorFraction / soldier_cost;
+      Class->Raw_Cost() * TheRules().SurvivorFraction / soldier_cost;
   return std::clamp(survivors, 1, 5);
 }
 
@@ -6511,10 +6518,11 @@ int BuildingClass::Value() const {
  *=============================================================================================*/
 void BuildingClass::Remove_Gap_Effect() {
   // unjam this one's field...
-  MapEditClass::UnJam_From(Coord_Cell(Center_Coord()), Rule.GapShroudRadius,
-                           House);
+  MapEditClass::UnJam_From(Coord_Cell(Center_Coord()),
+                           TheRules().GapShroudRadius, House);
   if (!House->IsPlayerControl && PlayerPtr->IsGPSActive) {
-    Map.Sight_From(Coord_Cell(Center_Coord()), Rule.GapShroudRadius, PlayerPtr);
+    Map.Sight_From(Coord_Cell(Center_Coord()), TheRules().GapShroudRadius,
+                   PlayerPtr);
   }
   // and rejam any overlapping buildings' fields
   for (int index = 0; index < Buildings.Count(); index++) {

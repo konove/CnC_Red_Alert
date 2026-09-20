@@ -333,44 +333,48 @@ DiffType HouseClass::Assign_Handicap(DiffType handicap) {
     const HouseTypeClass* hptr = &HouseTypeClass::As_Reference(ActLike);
     FirepowerBias =
         hptr->FirepowerBias *
-        base::At(Rule.Diff, static_cast<int>(handicap)).FirepowerBias;
+        base::At(TheRules().Diff, static_cast<int>(handicap)).FirepowerBias;
     GroundspeedBias =
         hptr->GroundspeedBias *
-        base::At(Rule.Diff, static_cast<int>(handicap)).GroundspeedBias *
-        Rule.GameSpeedBias;
+        base::At(TheRules().Diff, static_cast<int>(handicap)).GroundspeedBias *
+        TheRules().GameSpeedBias;
     AirspeedBias =
         hptr->AirspeedBias *
-        base::At(Rule.Diff, static_cast<int>(handicap)).AirspeedBias *
-        Rule.GameSpeedBias;
+        base::At(TheRules().Diff, static_cast<int>(handicap)).AirspeedBias *
+        TheRules().GameSpeedBias;
     ArmorBias = hptr->ArmorBias *
-                base::At(Rule.Diff, static_cast<int>(handicap)).ArmorBias;
-    ROFBias =
-        hptr->ROFBias * base::At(Rule.Diff, static_cast<int>(handicap)).ROFBias;
+                base::At(TheRules().Diff, static_cast<int>(handicap)).ArmorBias;
+    ROFBias = hptr->ROFBias *
+              base::At(TheRules().Diff, static_cast<int>(handicap)).ROFBias;
     CostBias = hptr->CostBias *
-               base::At(Rule.Diff, static_cast<int>(handicap)).CostBias;
-    RepairDelay = base::At(Rule.Diff, static_cast<int>(handicap)).RepairDelay;
-    BuildDelay = base::At(Rule.Diff, static_cast<int>(handicap)).BuildDelay;
+               base::At(TheRules().Diff, static_cast<int>(handicap)).CostBias;
+    RepairDelay =
+        base::At(TheRules().Diff, static_cast<int>(handicap)).RepairDelay;
+    BuildDelay =
+        base::At(TheRules().Diff, static_cast<int>(handicap)).BuildDelay;
     BuildSpeedBias =
         hptr->BuildSpeedBias *
-        base::At(Rule.Diff, static_cast<int>(handicap)).BuildSpeedBias *
-        Rule.GameSpeedBias;
+        base::At(TheRules().Diff, static_cast<int>(handicap)).BuildSpeedBias *
+        TheRules().GameSpeedBias;
   } else {
     FirepowerBias =
-        base::At(Rule.Diff, static_cast<int>(handicap)).FirepowerBias;
+        base::At(TheRules().Diff, static_cast<int>(handicap)).FirepowerBias;
     GroundspeedBias =
-        base::At(Rule.Diff, static_cast<int>(handicap)).GroundspeedBias *
-        Rule.GameSpeedBias;
+        base::At(TheRules().Diff, static_cast<int>(handicap)).GroundspeedBias *
+        TheRules().GameSpeedBias;
     AirspeedBias =
-        base::At(Rule.Diff, static_cast<int>(handicap)).AirspeedBias *
-        Rule.GameSpeedBias;
-    ArmorBias = base::At(Rule.Diff, static_cast<int>(handicap)).ArmorBias;
-    ROFBias = base::At(Rule.Diff, static_cast<int>(handicap)).ROFBias;
-    CostBias = base::At(Rule.Diff, static_cast<int>(handicap)).CostBias;
-    RepairDelay = base::At(Rule.Diff, static_cast<int>(handicap)).RepairDelay;
-    BuildDelay = base::At(Rule.Diff, static_cast<int>(handicap)).BuildDelay;
+        base::At(TheRules().Diff, static_cast<int>(handicap)).AirspeedBias *
+        TheRules().GameSpeedBias;
+    ArmorBias = base::At(TheRules().Diff, static_cast<int>(handicap)).ArmorBias;
+    ROFBias = base::At(TheRules().Diff, static_cast<int>(handicap)).ROFBias;
+    CostBias = base::At(TheRules().Diff, static_cast<int>(handicap)).CostBias;
+    RepairDelay =
+        base::At(TheRules().Diff, static_cast<int>(handicap)).RepairDelay;
+    BuildDelay =
+        base::At(TheRules().Diff, static_cast<int>(handicap)).BuildDelay;
     BuildSpeedBias =
-        base::At(Rule.Diff, static_cast<int>(handicap)).BuildSpeedBias *
-        Rule.GameSpeedBias;
+        base::At(TheRules().Diff, static_cast<int>(handicap)).BuildSpeedBias *
+        TheRules().GameSpeedBias;
   }
 
   return old;
@@ -445,8 +449,8 @@ HouseClass::HouseClass(HousesType house)
       ActLike(Class->House),
       IQ(Control.IQ),
       WhoLastHurtMe(house),
-      DamageTime(kTicksPerMinute * Rule.DamageDelay),
-      TeamTime(kTicksPerMinute * Rule.TeamDelay),
+      DamageTime(kTicksPerMinute * TheRules().DamageDelay),
+      TeamTime(kTicksPerMinute * TheRules().TeamDelay),
       RemapColor(Class->RemapColor) {
   /*
   **	Explicit in-place construction of the super weapons is
@@ -454,29 +458,29 @@ HouseClass::HouseClass(HousesType house)
   **	weapons must serve as a no-initialization constructor (save/load
   *reasons).
   */
-  new (&SuperWeapon.at(SPC_NUCLEAR_BOMB))
-      SuperClass(kTicksPerMinute * Rule.NukeTime, true, VOX_ABOMB_PREPPING,
-                 VOX_ABOMB_READY, VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
+  new (&SuperWeapon.at(SPC_NUCLEAR_BOMB)) SuperClass(
+      kTicksPerMinute * TheRules().NukeTime, true, VOX_ABOMB_PREPPING,
+      VOX_ABOMB_READY, VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
   new (&SuperWeapon.at(SPC_SONAR_PULSE))
-      SuperClass(kTicksPerMinute * Rule.SonarTime, false, VOX_NONE,
+      SuperClass(kTicksPerMinute * TheRules().SonarTime, false, VOX_NONE,
                  VOX_SONAR_AVAILABLE, VOX_NOT_READY, VOX_NOT_READY);
-  new (&SuperWeapon.at(SPC_CHRONOSPHERE))
-      SuperClass(kTicksPerMinute * Rule.ChronoTime, true, VOX_CHRONO_CHARGING,
-                 VOX_CHRONO_READY, VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
+  new (&SuperWeapon.at(SPC_CHRONOSPHERE)) SuperClass(
+      kTicksPerMinute * TheRules().ChronoTime, true, VOX_CHRONO_CHARGING,
+      VOX_CHRONO_READY, VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
   new (&SuperWeapon.at(SPC_PARA_BOMB))
-      SuperClass(kTicksPerMinute * Rule.ParaBombTime, false, VOX_NONE, VOX_NONE,
-                 VOX_NOT_READY, VOX_NOT_READY);
+      SuperClass(kTicksPerMinute * TheRules().ParaBombTime, false, VOX_NONE,
+                 VOX_NONE, VOX_NOT_READY, VOX_NOT_READY);
   new (&SuperWeapon.at(SPC_PARA_INFANTRY))
-      SuperClass(kTicksPerMinute * Rule.ParaInfantryTime, false, VOX_NONE,
+      SuperClass(kTicksPerMinute * TheRules().ParaInfantryTime, false, VOX_NONE,
                  VOX_NONE, VOX_NOT_READY, VOX_NOT_READY);
   new (&SuperWeapon.at(SPC_SPY_MISSION))
-      SuperClass(kTicksPerMinute * Rule.SpyTime, false, VOX_NONE, VOX_SPY_PLANE,
-                 VOX_NOT_READY, VOX_NOT_READY);
+      SuperClass(kTicksPerMinute * TheRules().SpyTime, false, VOX_NONE,
+                 VOX_SPY_PLANE, VOX_NOT_READY, VOX_NOT_READY);
   new (&SuperWeapon.at(SPC_IRON_CURTAIN)) SuperClass(
-      kTicksPerMinute * Rule.IronCurtainTime, true, VOX_IRON_CHARGING,
+      kTicksPerMinute * TheRules().IronCurtainTime, true, VOX_IRON_CHARGING,
       VOX_IRON_READY, VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
   new (&SuperWeapon.at(SPC_GPS))
-      SuperClass(kTicksPerMinute * Rule.GPSTime, true, VOX_NONE, VOX_NONE,
+      SuperClass(kTicksPerMinute * TheRules().GPSTime, true, VOX_NONE, VOX_NONE,
                  VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
 
   port::SafeCopy(IniName, Text_String(TXT_COMPUTER));  // Default computer name.
@@ -487,8 +491,9 @@ HouseClass::HouseClass(HousesType house)
   /*
   **	Set the time of the first AI attack.
   */
-  Attack.Set(Rule.AttackDelay *
-             static_cast<int>(Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
+  Attack.Set(
+      TheRules().AttackDelay *
+      static_cast<int>(Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
 
   Init_Trackers();
 }
@@ -587,11 +592,11 @@ HouseClass::~HouseClass() {
  * HISTORY: * 07/31/1996 JLB : Created. *
  *=============================================================================================*/
 HouseStaticClass::HouseStaticClass()
-    : MaxUnit(Rule.UnitMax / 6),
-      MaxBuilding(Rule.BuildingMax / 6),
-      MaxInfantry(Rule.InfantryMax / 6),
-      MaxVessel(Rule.VesselMax / 6),
-      MaxAircraft(Rule.UnitMax / 6) {}
+    : MaxUnit(TheRules().UnitMax / 6),
+      MaxBuilding(TheRules().BuildingMax / 6),
+      MaxInfantry(TheRules().InfantryMax / 6),
+      MaxVessel(TheRules().VesselMax / 6),
+      MaxAircraft(TheRules().UnitMax / 6) {}
 
 /***********************************************************************************************
  * HouseClass::Can_Build -- General purpose build legality checker. *
@@ -635,7 +640,7 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
   ** game in 'downshifted' mode against CounterStrike or Red Alert, then
   ** don't allow building this unit.
   */
-  if (!Rule.NewUnitsEnabled) {
+  if (!TheRules().NewUnitsEnabled) {
     // The saved quantity arrays assume the Aftermath types are exactly those
     // past the kOriginal*Count boundaries; the data flags must agree.
     switch (type->What_Am_I()) {
@@ -815,7 +820,7 @@ void HouseClass::AI() {
   *to begin *	production and team creation as well. This is also true if the
   *IQ is high enough to *	being base building.
   */
-  if (IsBaseBuilding || IQ >= Rule.IQProduction) {
+  if (IsBaseBuilding || IQ >= TheRules().IQProduction) {
     IsBaseBuilding = true;
     IsStarted = true;
     IsAlerted = true;
@@ -882,8 +887,9 @@ void HouseClass::AI() {
         ScenarioInit--;
       }
     }
-    AlertTime.Set(Rule.AutocreateTime *
-                  static_cast<int>(Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
+    AlertTime.Set(TheRules().AutocreateTime *
+                  static_cast<int>(
+                      Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
     //		int mintime = Rule.AutocreateTime * (kTicksPerMinute/2);
     //		int maxtime = Rule.AutocreateTime * (kTicksPerMinute*2);
     //		AlertTime = Random_Pick(mintime, maxtime);
@@ -940,7 +946,7 @@ void HouseClass::AI() {
       ttype->Create_One_Of();
     }
 
-    TeamTime.Set(Rule.TeamDelay * kTicksPerMinute);
+    TeamTime.Set(TheRules().TeamDelay * kTicksPerMinute);
   }
 
   /*
@@ -958,14 +964,15 @@ void HouseClass::AI() {
 
         // BG: Only damage buildings that require power, to keep the
         //     land mines from blowing up under low-power conditions
-        if ((b.House == this && b.Health_Ratio() > Rule.ConditionYellow) &&
+        if ((b.House == this &&
+             b.Health_Ratio() > TheRules().ConditionYellow) &&
             b.Class->Drain) {
           int damage = 1;
           b.Take_Damage(damage, 0, WARHEAD_AP, nullptr);
         }
       }
     }
-    DamageTime.Set(kTicksPerMinute * Rule.DamageDelay);
+    DamageTime.Set(kTicksPerMinute * TheRules().DamageDelay);
   }
 
   /*
@@ -986,7 +993,7 @@ void HouseClass::AI() {
       Speak(VOX_NEED_MO_MONEY);
       Map.Flash_Money();
       SpeakMaxedDelay.Set(
-          Options.Normalize_Delay(kTicksPerMinute * Rule.SpeakDelay));
+          Options.Normalize_Delay(kTicksPerMinute * TheRules().SpeakDelay));
     }
 
     if (SpeakMaxedDelay.IsFinished() && IsMaxedOut) {
@@ -995,14 +1002,14 @@ void HouseClass::AI() {
           ActiveBScan & (kStructFlagRefinery | kStructFlagConst)) {
         Speak(VOX_NEED_MO_CAPACITY);
         SpeakMaxedDelay.Set(
-            Options.Normalize_Delay(kTicksPerMinute * Rule.SpeakDelay));
+            Options.Normalize_Delay(kTicksPerMinute * TheRules().SpeakDelay));
       }
     }
     if ((SpeakPowerDelay.IsFinished() && Power_Fraction() < 1) &&
         (ActiveBScan & kStructFlagConst)) {
       Speak(VOX_LOW_POWER);
       SpeakPowerDelay.Set(
-          Options.Normalize_Delay(kTicksPerMinute * Rule.SpeakDelay));
+          Options.Normalize_Delay(kTicksPerMinute * TheRules().SpeakDelay));
       Map.Flash_Power();
 
       const char* text = nullptr;
@@ -1019,7 +1026,7 @@ void HouseClass::AI() {
         Session.Messages.Add_Message(
             nullptr, 0, text, PCOLOR_GREEN,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            Rule.MessageDelay * kTicksPerMinute);
+            TheRules().MessageDelay * kTicksPerMinute);
       }
     }
   }
@@ -1337,8 +1344,8 @@ void HouseClass::Super_Weapon_Handler() {
     **	facility available, then make the GPS satellite available as well.
     */
     if ((ActiveBScan & kStructFlagAdvancedTech) != 0 && !IsGPSActive &&
-        Control.TechLevel >= Rule.GPSTechLevel &&
-        (IsHuman || IQ >= Rule.IQSuperWeapons)) {
+        Control.TechLevel >= TheRules().GPSTechLevel &&
+        (IsHuman || IQ >= TheRules().IQSuperWeapons)) {
       bool canfire = false;
       for (int index = 0; index < Buildings.Count(); index++) {
         const BuildingClass* bldg = Buildings.Ptr(index);
@@ -1413,7 +1420,7 @@ void HouseClass::Super_Weapon_Handler() {
         Control.TechLevel >=
             BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE).Level &&
         //			Control.TechLevel >= Rule.ChronoTechLevel &&
-        (IsHuman || IQ >= Rule.IQSuperWeapons)) {
+        (IsHuman || IQ >= TheRules().IQSuperWeapons)) {
       SuperWeapon.at(SPC_CHRONOSPHERE)
           .Enable(false, this == PlayerPtr, Power_Fraction() < 1);
 
@@ -1459,7 +1466,7 @@ void HouseClass::Super_Weapon_Handler() {
     */
     if (ActiveBScan & kStructFlagIronCurtain &&
         (IsSovietHouse(ActLike) || Session.Type != GAME_NORMAL) &&
-        (IsHuman || IQ >= Rule.IQSuperWeapons)) {
+        (IsHuman || IQ >= TheRules().IQSuperWeapons)) {
       SuperWeapon.at(SPC_IRON_CURTAIN)
           .Enable(false, this == PlayerPtr, Power_Fraction() < 1);
 
@@ -1544,7 +1551,7 @@ void HouseClass::Super_Weapon_Handler() {
     */
     if (ActiveBScan & kStructFlagMslo &&
         (!IsSovietHouse(ActLike) || Session.Type != GAME_NORMAL) &&
-        (IsHuman || IQ >= Rule.IQSuperWeapons)) {
+        (IsHuman || IQ >= TheRules().IQSuperWeapons)) {
       SuperWeapon.at(SPC_NUCLEAR_BOMB)
           .Enable(false, this == PlayerPtr, Power_Fraction() < 1);
 
@@ -1576,7 +1583,7 @@ void HouseClass::Super_Weapon_Handler() {
     }
   } else {
     if ((ActiveBScan & kStructFlagAirstrip) != 0 && !Scen.IsNoSpyPlane &&
-        Control.TechLevel >= Rule.SpyPlaneTechLevel) {
+        Control.TechLevel >= TheRules().SpyPlaneTechLevel) {
       SuperWeapon.at(SPC_SPY_MISSION).Enable(false, this == PlayerPtr, false);
       if (this == PlayerPtr) {
         Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_SPY_MISSION));
@@ -1600,7 +1607,7 @@ void HouseClass::Super_Weapon_Handler() {
     }
   } else {
     if ((ActiveBScan & kStructFlagAirstrip) != 0 &&
-        Control.TechLevel >= Rule.ParaBombTechLevel &&
+        Control.TechLevel >= TheRules().ParaBombTechLevel &&
         Session.Type == GAME_NORMAL) {
       SuperWeapon.at(SPC_PARA_BOMB).Enable(false, this == PlayerPtr, false);
       if (this == PlayerPtr) {
@@ -1625,7 +1632,7 @@ void HouseClass::Super_Weapon_Handler() {
     }
   } else {
     if ((ActiveBScan & kStructFlagAirstrip) != 0 &&
-        Control.TechLevel >= Rule.ParaInfantryTechLevel) {
+        Control.TechLevel >= TheRules().ParaInfantryTechLevel) {
       SuperWeapon.at(SPC_PARA_INFANTRY).Enable(false, this == PlayerPtr, false);
       if (this == PlayerPtr) {
         Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_PARA_INFANTRY));
@@ -1659,7 +1666,7 @@ void HouseClass::Attacked() {
        PlayerPtr->Class->House == Class->House)) {
     Speak(VOX_BASE_UNDER_ATTACK);
     SpeakAttackDelay.Set(
-        Options.Normalize_Delay(kTicksPerMinute * Rule.SpeakDelay));
+        Options.Normalize_Delay(kTicksPerMinute * TheRules().SpeakDelay));
 
     /*
     **	If there is a trigger event associated with being attacked, process it
@@ -1997,7 +2004,7 @@ void HouseClass::Make_Ally(HousesType house) {
       **	An alliance with another human player will cause the computer
       **	players (if present) to become paranoid.
       */
-      if (hptr != nullptr && IsHuman && Rule.IsComputerParanoid) {
+      if (hptr != nullptr && IsHuman && TheRules().IsComputerParanoid) {
         //			if (hptr != nullptr && hptr->IsHuman) {
         //				if (!hptr->IsHuman) {
         //					hptr->Make_Ally(Class->House);
@@ -2029,7 +2036,7 @@ void HouseClass::Make_Ally(HousesType house) {
       **	Cause all structures to be revealed to the house that has been
       **	allied with.
       */
-      if (Rule.IsAllyReveal && house == PlayerPtr->Class->House) {
+      if (TheRules().IsAllyReveal && house == PlayerPtr->Class->House) {
         for (int index = 0; index < Buildings.Count(); index++) {
           const BuildingClass* b = Buildings.Ptr(index);
 
@@ -2053,7 +2060,7 @@ void HouseClass::Make_Ally(HousesType house) {
         Session.Messages.Add_Message(
             nullptr, 0, buffer, RemapColor,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            kTicksPerMinute * Rule.MessageDelay);
+            kTicksPerMinute * TheRules().MessageDelay);
       }
 
       Map.Flag_To_Redraw(false);
@@ -2110,7 +2117,7 @@ void HouseClass::Make_Enemy(HousesType house) {
       Session.Messages.Add_Message(
           nullptr, 0, buffer, RemapColor,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-          kTicksPerMinute * Rule.MessageDelay);
+          kTicksPerMinute * TheRules().MessageDelay);
       Map.Flag_To_Redraw(false);
     }
   }
@@ -2566,8 +2573,9 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
 
     case SPC_PARA_BOMB:
       if (SuperWeapon.at(SPC_PARA_BOMB).Is_Ready()) {
-        Create_Air_Reinforcement(this, AIRCRAFT_BADGER, Rule.BadgerBombCount,
-                                 MISSION_HUNT, As_Target(cell), kTargetNone);
+        Create_Air_Reinforcement(this, AIRCRAFT_BADGER,
+                                 TheRules().BadgerBombCount, MISSION_HUNT,
+                                 As_Target(cell), kTargetNone);
         if (this == PlayerPtr) {
           Map.IsTargettingMode = SPC_NONE;
         }
@@ -2587,11 +2595,11 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
             case RTTI_BUILDING:
             case RTTI_VESSEL:
             case RTTI_AIRCRAFT:
-              tech->IronCurtainCountDown.Set(Rule.IronCurtainDuration *
+              tech->IronCurtainCountDown.Set(TheRules().IronCurtainDuration *
                                              kTicksPerMinute);
               if (tech->What_Am_I() == RTTI_UNIT &&
                   *dynamic_cast<UnitClass*>(tech) == UNIT_DEMOTRUCK) {
-                tech->IronCurtainCountDown.Set(Rule.IronCurtainDuration *
+                tech->IronCurtainCountDown.Set(TheRules().IronCurtainDuration *
                                                kTicksPerSecond);
               }
               tech->Mark(MARK_CHANGE);
@@ -2698,10 +2706,11 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
               dynamic_cast<UnitClass&>(*tech) == UNIT_CHRONOTANK) {
             drive.IsMoebius = false;
           }
-          drive.MoebiusCountDown.Set(Rule.ChronoDuration * kTicksPerMinute);
+          drive.MoebiusCountDown.Set(TheRules().ChronoDuration *
+                                     kTicksPerMinute);
           if (tech->What_Am_I() == RTTI_UNIT &&
               dynamic_cast<UnitClass&>(*tech) == UNIT_CHRONOTANK) {
-            drive.MoebiusCountDown.Set(Rule.ChronoTankDuration *
+            drive.MoebiusCountDown.Set(TheRules().ChronoTankDuration *
                                        kTicksPerMinute);
           }
           Scen.Do_BW_Fade();
@@ -2723,7 +2732,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
       ** Now set a percentage chance that a time quake will occur.
       */
       if (!TimeQuake) {
-        TimeQuake = Percent_Chance(Rule.QuakeChance * 100);
+        TimeQuake = Percent_Chance(TheRules().QuakeChance * 100);
       }
 
       /*
@@ -2736,7 +2745,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           (tech->What_Am_I() != RTTI_UNIT ||
            *dynamic_cast<UnitClass*>(tech) != UNIT_CHRONOTANK)) {
         if (!ChronalVortex.Is_Active() &&
-            Percent_Chance(Rule.VortexChance * 100)) {
+            Percent_Chance(TheRules().VortexChance * 100)) {
           const int x = Random_Pick(0, Map.MapCellWidth - 1);
           const int y = Random_Pick(0, Map.MapCellHeight - 1);
           ChronalVortex.Appear(
@@ -3403,7 +3412,7 @@ void HouseClass::MPlayer_Defeated() {
   **	If this is a computer controlled house, then all computer controlled
   **	houses become paranoid.
   */
-  if (IQ == Rule.MaxIQ && !IsHuman && Rule.IsComputerParanoid) {
+  if (IQ == TheRules().MaxIQ && !IsHuman && TheRules().IsComputerParanoid) {
     Computer_Paranoid();
   }
 
@@ -3441,7 +3450,7 @@ void HouseClass::MPlayer_Defeated() {
     Session.Messages.Add_Message(
         nullptr, 0, txt, Session.ColorIdx,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-        Rule.MessageDelay * kTicksPerMinute);
+        TheRules().MessageDelay * kTicksPerMinute);
     Map.Flag_To_Redraw(false);
 
   } else {
@@ -3455,7 +3464,7 @@ void HouseClass::MPlayer_Defeated() {
       Session.Messages.Add_Message(
           nullptr, 0, txt, RemapColor,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-          Rule.MessageDelay * kTicksPerMinute);
+          TheRules().MessageDelay * kTicksPerMinute);
       Map.Flag_To_Redraw(false);
       RedrawOptionsMenu = true;
     }
@@ -3831,7 +3840,7 @@ bool HouseClass::Flag_To_Die() {
 
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToDie = true;
-    BorrowedTime.Set(kTicksPerMinute * Rule.SavourDelay);
+    BorrowedTime.Set(kTicksPerMinute * TheRules().SavourDelay);
   }
   return IsToDie;
 }
@@ -3855,7 +3864,7 @@ bool HouseClass::Flag_To_Win() {
 
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToWin = true;
-    BorrowedTime.Set(kTicksPerMinute * Rule.SavourDelay);
+    BorrowedTime.Set(kTicksPerMinute * TheRules().SavourDelay);
   }
   return IsToWin;
 }
@@ -3882,7 +3891,7 @@ bool HouseClass::Flag_To_Lose() {
   IsToWin = false;
   if (!IsToDie && !IsToLose) {
     IsToLose = true;
-    BorrowedTime.Set(kTicksPerMinute * Rule.SavourDelay);
+    BorrowedTime.Set(kTicksPerMinute * TheRules().SavourDelay);
   }
   return IsToLose;
 }
@@ -4022,7 +4031,7 @@ void HouseClass::Sell_Wall(CELL cell) {
             PlaySoundEffect(VOC_CASHTURN);
           }
 
-          Refund_Money(btype->Raw_Cost() * Rule.RefundPercent);
+          Refund_Money(btype->Raw_Cost() * TheRules().RefundPercent);
           Map.at(cell).Overlay = OVERLAY_NONE;
           Map.at(cell).OverlayData = 0;
           Map.at(cell).Owner = HOUSE_NONE;
@@ -4790,7 +4799,8 @@ UrgencyType HouseClass::Check_Raise_Power() const {
 
   UrgencyType urgency = URGENCY_NONE;
 
-  if (Power_Fraction() < Rule.PowerEmergencyFraction && Power < Drain - 400) {
+  if (Power_Fraction() < TheRules().PowerEmergencyFraction &&
+      Power < Drain - 400) {
     //	if (Power_Fraction() < Rule.PowerEmergencyFraction &&
     //(BQuantity[STRUCT_CONST] == 0 || Available_Money() < 200 || Power <
     // Drain-400)) {
@@ -4856,8 +4866,9 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
       }
     }
   }
-  Attack.Set(Rule.AttackInterval *
-             static_cast<int>(Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
+  Attack.Set(
+      TheRules().AttackInterval *
+      static_cast<int>(Random_Pick(kTicksPerMinute / 2, kTicksPerMinute * 2)));
   return true;
 }
 
@@ -5120,7 +5131,7 @@ int HouseClass::AI_Building() {
     *enough *	money available.
     */
     b = &BuildingTypeClass::As_Reference(STRUCT_ADVANCED_POWER);
-    if (Can_Build(b, ActLike) && Power <= Drain + Rule.PowerSurplus &&
+    if (Can_Build(b, ActLike) && Power <= Drain + TheRules().PowerSurplus &&
         b->Cost_Of() < money) {
       choiceptr = BuildChoice.Alloc();
       if (choiceptr != nullptr) {
@@ -5130,7 +5141,7 @@ int HouseClass::AI_Building() {
       }
     } else {
       b = &BuildingTypeClass::As_Reference(STRUCT_POWER);
-      if (Can_Build(b, ActLike) && Power <= Drain + Rule.PowerSurplus &&
+      if (Can_Build(b, ActLike) && Power <= Drain + TheRules().PowerSurplus &&
           b->Cost_Of() < money) {
         choiceptr = BuildChoice.Alloc();
         if (choiceptr != nullptr) {
@@ -5146,9 +5157,9 @@ int HouseClass::AI_Building() {
     */
     int current = BQuantity.at(STRUCT_REFINERY);
     if (!IsTiberiumShort &&
-        (Rule.RefineryRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+        (TheRules().RefineryRatio * fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
-        current < Rule.RefineryLimit) {
+        current < TheRules().RefineryLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_REFINERY);
       if (Can_Build(b, ActLike) && (money > b->Cost_Of() || hasincome)) {
         choiceptr = BuildChoice.Alloc();
@@ -5166,9 +5177,9 @@ int HouseClass::AI_Building() {
     **	will be sufficient money to train troopers.
     */
     current = BQuantity.at(STRUCT_BARRACKS) + BQuantity.at(STRUCT_TENT);
-    if ((Rule.BarracksRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+    if ((TheRules().BarracksRatio * fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
-        current < Rule.BarracksLimit && (money > 300 || hasincome)) {
+        current < TheRules().BarracksLimit && (money > 300 || hasincome)) {
       b = &BuildingTypeClass::As_Reference(STRUCT_BARRACKS);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
         choiceptr = BuildChoice.Alloc();
@@ -5221,9 +5232,9 @@ int HouseClass::AI_Building() {
     **	be sufficient money to build vehicles.
     */
     current = BQuantity.at(STRUCT_WEAP);
-    if ((Rule.WarRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+    if ((TheRules().WarRatio * fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
-        current < Rule.WarLimit && (money > 2000 || hasincome)) {
+        current < TheRules().WarLimit && (money > 2000 || hasincome)) {
       b = &BuildingTypeClass::As_Reference(STRUCT_WEAP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
         choiceptr = BuildChoice.Alloc();
@@ -5239,9 +5250,9 @@ int HouseClass::AI_Building() {
     */
     current = BQuantity.at(STRUCT_PILLBOX) + BQuantity.at(STRUCT_CAMOPILLBOX) +
               BQuantity.at(STRUCT_TURRET) + BQuantity.at(STRUCT_FLAME_TURRET);
-    if ((Rule.DefenseRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+    if ((TheRules().DefenseRatio * fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
-        current < Rule.DefenseLimit) {
+        current < TheRules().DefenseLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_FLAME_TURRET);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
         choiceptr = BuildChoice.Alloc();
@@ -5273,9 +5284,9 @@ int HouseClass::AI_Building() {
     **	Build some air defense.
     */
     current = BQuantity.at(STRUCT_SAM) + BQuantity.at(STRUCT_AAGUN);
-    if ((Rule.AARatio * fixed(static_cast<uint8_t>(CurBuildings)))
+    if ((TheRules().AARatio * fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
-        current < Rule.AALimit) {
+        current < TheRules().AALimit) {
       /*
       **	Building air defense only makes sense if the opponent has
       *aircraft *	of some kind.
@@ -5333,9 +5344,9 @@ int HouseClass::AI_Building() {
     **	Advanced base defense would be good.
     */
     current = BQuantity.at(STRUCT_TESLA);
-    if ((Rule.TeslaRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+    if ((TheRules().TeslaRatio * fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
-        current < Rule.TeslaLimit) {
+        current < TheRules().TeslaLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_TESLA);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome) &&
           Power_Fraction() >= 1) {
@@ -5375,9 +5386,9 @@ int HouseClass::AI_Building() {
     **	A helipad would be good.
     */
     current = BQuantity.at(STRUCT_HELIPAD);
-    if ((Rule.HelipadRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+    if ((TheRules().HelipadRatio * fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
-        current < Rule.HelipadLimit) {
+        current < TheRules().HelipadLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_HELIPAD);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
         choiceptr = BuildChoice.Alloc();
@@ -5398,9 +5409,9 @@ int HouseClass::AI_Building() {
     **	An airstrip would be good.
     */
     current = BQuantity.at(STRUCT_AIRSTRIP);
-    if ((Rule.AirstripRatio * fixed(static_cast<uint8_t>(CurBuildings)))
+    if ((TheRules().AirstripRatio * fixed(static_cast<uint8_t>(CurBuildings)))
                 .Round_Up() > current &&
-        current < Rule.AirstripLimit) {
+        current < TheRules().AirstripLimit) {
       b = &BuildingTypeClass::As_Reference(STRUCT_AIRSTRIP);
       if (Can_Build(b, ActLike) && (b->Cost_Of() < money || hasincome)) {
         choiceptr = BuildChoice.Alloc();
@@ -5481,7 +5492,7 @@ int HouseClass::AI_Unit() {
   **	A computer controlled house will try to build a replacement
   **	harvester if possible.
   */
-  if ((IQ >= Rule.IQHarvester && !IsTiberiumShort && !IsHuman &&
+  if ((IQ >= TheRules().IQHarvester && !IsTiberiumShort && !IsHuman &&
        BQuantity.at(STRUCT_REFINERY) >
            UQuantity[static_cast<int>(UNIT_HARVESTER)] &&
        Difficulty != DIFF_HARD) &&
@@ -5892,8 +5903,8 @@ int HouseClass::AI_Infantry() {
         }
         if ((enemy != nullptr && base::At(enemy->IQuantity, clipindex) >
                                      base::At(IQuantity, clipindex)) ||
-            Available_Money() > Rule.InfantryReserve ||
-            CurInfantry < CurBuildings * Rule.InfantryBaseMult) {
+            Available_Money() > TheRules().InfantryReserve ||
+            CurInfantry < CurBuildings * TheRules().InfantryBaseMult) {
           switch (index) {
             case INFANTRY_E1:
               base::At(typetrack, count).Value = 3;
@@ -5998,7 +6009,7 @@ int HouseClass::AI_Infantry() {
 int HouseClass::AI_Aircraft() {
   CHECK_EQ(Houses.ID(this), ID);
 
-  if (!IsHuman && IQ >= Rule.IQAircraft) {
+  if (!IsHuman && IQ >= TheRules().IQAircraft) {
     if (BuildAircraft != AIRCRAFT_NONE) {
       return kTicksPerSecond;
     }
@@ -7101,7 +7112,7 @@ void HouseClass::Read_INI(CCINIClass& ini) {
     p->Credits = p->Control.InitialCredits;
 
     int iq = ini.Get_Int(hname, "IQ", 0);
-    if (iq > Rule.MaxIQ) {
+    if (iq > TheRules().MaxIQ) {
       iq = 1;
     }
     p->IQ = p->Control.IQ = iq;

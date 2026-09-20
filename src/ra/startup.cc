@@ -25,21 +25,37 @@
 
 #include "ra/startup.h"
 
-#include <array>
-#include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <vector>
+
+#include "absl/strings/str_format.h"
+#include "ra/externs.h"
+#include "ra/game.h"
+#include "ra/palette.h"
+#include "ra/palettes.h"
+#include "ra/screen.h"
+#include "ra/type.h"
+#include "sdllib/gbuffer.h"
+#include "sdllib/memflag.h"
+#include "sdllib/misc.h"
+#include "sdllib/timer.h"
+#include "tech/audio_mixer.h"
+
+// The test that links this file defines RA_NO_ENTRY_POINT; these headers
+// serve only main() and the two helpers it calls.
+#ifndef RA_NO_ENTRY_POINT
+#include <array>
+#include <cstdint>
 #include <filesystem>
 #include <optional>
 #include <span>
 #include <string>
 #include <string_view>
-#include <vector>
 
 #include "absl/base/log_severity.h"
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
-#include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/numeric.h"
 #include "port/bytes_of.h"
@@ -50,8 +66,6 @@
 #include "ra/conquer.h"
 #include "ra/debug_state.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
-#include "ra/game.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/ini.h"
@@ -63,28 +77,21 @@
 #include "ra/language.h"
 #include "ra/movie.h"
 #include "ra/nullconn.h"
-#include "ra/palette.h"
-#include "ra/palettes.h"
-#include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/special.h"
 #include "ra/startup_options.h"
-#include "ra/type.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/file.h"
-#include "sdllib/gbuffer.h"
-#include "sdllib/memflag.h"
-#include "sdllib/misc.h"
-#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
-#include "tech/audio_mixer.h"
 #include "tech/disk_file.h"
 #include "tech/search_paths.h"
+#endif  // RA_NO_ENTRY_POINT
 
 #ifdef _WIN32
 #include "absl/strings/str_split.h"
 #include "ra/ipx95.h"
+
 #endif  // _WIN32
 
 // Prints `message` and exits with status 1 without any cleanup. Installed as
@@ -106,6 +113,10 @@ void ShutDown() {
   delete game;
   game = nullptr;
 }
+
+// The test that links this file defines RA_NO_ENTRY_POINT: it needs
+// ShutDown() and Prog_End(), which the engine calls, but not main().
+#ifndef RA_NO_ENTRY_POINT
 
 // Hands what the command line asked for to whatever owns it. The screen
 // mode, the IPX socket and the bridge network wait for ReadConfigOptions(),
@@ -382,6 +393,8 @@ int main(const int argc, char* argv[])
   ShutDown();
   return EXIT_SUCCESS;
 }
+
+#endif  // RA_NO_ENTRY_POINT
 
 void Prog_End() {
   Audio.Close();

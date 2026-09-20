@@ -58,8 +58,8 @@
 #include "ra/ccini.h"
 #include "ra/const.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/object.h"
+#include "ra/rules.h"
 #include "tech/fixed.h"
 
 /***********************************************************************************************
@@ -473,7 +473,7 @@ bool MissionClass::Is_Recruitable_Mission(MissionType mission) {
   if (mission == MISSION_NONE) {
     return true;
   }
-  return MissionControl.at(mission).IsRecruitable;
+  return TheRules().mission_control().at(mission).IsRecruitable;
 }
 
 MissionControlClass::MissionControlClass()

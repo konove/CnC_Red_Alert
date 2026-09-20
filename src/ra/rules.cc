@@ -697,7 +697,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         char* token = tokens.Next();
         if (token) {
           strtrim(port::MutableCString(token));
-          CrateShares.at(crate) = tech::ParseIntegerOr<int>(token, 0);
+          crate_shares_.at(crate) = tech::ParseIntegerOr<int>(token, 0);
         }
 
         /*
@@ -706,7 +706,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         token = tokens.Next();
         if (token) {
           strtrim(port::MutableCString(token));
-          CrateAnims.at(crate) = Anim_From_Name(token);
+          crate_anims_.at(crate) = Anim_From_Name(token);
         }
 
         /*
@@ -716,10 +716,10 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         if (token != nullptr) {
           if ((std::string_view(token).contains('.') ||
                std::string_view(token).contains('%'))) {
-            CrateData.at(crate) = fixed::FromString(token) * 256;
+            crate_data_.at(crate) = fixed::FromString(token) * 256;
           } else {
             strtrim(port::MutableCString(token));
-            CrateData.at(crate) = tech::ParseIntegerOr<int>(token, 0);
+            crate_data_.at(crate) = tech::ParseIntegerOr<int>(token, 0);
           }
         }
       }
@@ -752,7 +752,7 @@ bool RulesClass::Land_Types(CCINIClass& ini) {
         "Clear", "Road",  "Water", "Rock", "Wall",
         "Ore",   "Beach", "Rough", "River"};
 
-    GroundType* gptr = &Ground.at(land);
+    GroundType* gptr = &ground_.at(land);
 
     if (ini.Is_Present(_lands.at(land))) {
       gptr->Cost.at(SPEED_FOOT) =
@@ -915,7 +915,7 @@ bool RulesClass::Objects(CCINIClass& ini) {
   **	Fetch the mission control values.
   */
   for (const MissionType mission : magic_enum::enum_values<MissionType>()) {
-    MissionControlClass* miss = &MissionControl.at(mission);
+    MissionControlClass* miss = &mission_control_.at(mission);
     miss->Mission = mission;
     miss->Read_INI(ini);
   }

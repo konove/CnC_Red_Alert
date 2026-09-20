@@ -88,7 +88,6 @@
 #include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/cell.h"
-#include "ra/const.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display.h"
@@ -327,7 +326,7 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
   **	If the cell is out and out impassable because of underlying terrain,
   *then *	return this immutable fact.
   */
-  if (Ground.at(cellptr->Land_Type()).Cost.at(Class->Speed) == 0) {
+  if (TheRules().ground().at(cellptr->Land_Type()).Cost.at(Class->Speed) == 0) {
     return MOVE_NO;
   }
 
@@ -592,7 +591,7 @@ void VesselClass::AI() {
   // Re-stock the ammo of any on-board helicopters on an aircraft carrier.
   if (*this == VESSEL_CARRIER && How_Many()) {
     if (MoebiusCountDown.IsFinished()) {
-      MoebiusCountDown.Set(Rule.ReloadRate * kTicksPerMinute);
+      MoebiusCountDown.Set(TheRules().ReloadRate * kTicksPerMinute);
       ObjectClass* obj = Attached_Object();
       while (obj) {
         int32_t bogus = 0;
@@ -752,7 +751,8 @@ ActionType VesselClass::What_Action(ObjectClass* object) {
           const CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
           const CellClass* cell = &Map.at(cellnum);
           if (!Map.In_Radar(cellnum) ||
-              Ground.at(cell->Land_Type()).Cost.at(SPEED_FOOT) == 0 ||
+              TheRules().ground().at(cell->Land_Type()).Cost.at(SPEED_FOOT) ==
+                  0 ||
               cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
               cell->Flag.Occupy.Monolith ||
               (cell->Flag.Composite & 0x01F) == 0x01F) {
@@ -956,7 +956,7 @@ ResultType VesselClass::Take_Damage(int& damage, int distance,
     **	When damaged and below half strength, start smoking if
     **	it isn't already smoking (and it's not a submarine).
     */
-    if (Health_Ratio() <= Rule.ConditionYellow && !IsAnimAttached &&
+    if (Health_Ratio() <= TheRules().ConditionYellow && !IsAnimAttached &&
         *this != VESSEL_SS && *this != VESSEL_MISSILESUB) {
       auto* anim =
           new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
@@ -1273,15 +1273,16 @@ void VesselClass::Enter_Idle_Mode(bool /*initial*/) {
 
     } else {
       if (Mission == MISSION_GUARD || Mission == MISSION_GUARD_AREA ||
-          (Mission != MISSION_NONE && (MissionControl.at(Mission).IsParalyzed ||
-                                       MissionControl.at(Mission).IsZombie))) {
+          (Mission != MISSION_NONE &&
+           (TheRules().mission_control().at(Mission).IsParalyzed ||
+            TheRules().mission_control().at(Mission).IsZombie))) {
         return;
       }
 
       if (House->IsHuman || Team.Is_Valid()) {
         order = MISSION_GUARD;
       } else {
-        if (House->IQ < Rule.IQGuardArea) {
+        if (House->IQ < TheRules().IQGuardArea) {
           order = MISSION_GUARD;
         } else {
           order = MISSION_GUARD_AREA;
@@ -1578,7 +1579,7 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
                   : -128;
     } else {
       const CellClass* cell = &Map.at(cellnum);
-      if (Ground.at(cell->Land_Type()).Cost.at(SPEED_FOOT) == 0 ||
+      if (TheRules().ground().at(cell->Land_Type()).Cost.at(SPEED_FOOT) == 0 ||
           cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
           cell->Flag.Occupy.Monolith ||
           (cell->Flag.Composite & 0x01F) == 0x01F) {
@@ -1806,7 +1807,7 @@ int VesselClass::Mission_Unload() {
         break;
     }
   }
-  return MissionControl.at(Mission).Normal_Delay();
+  return TheRules().mission_control().at(Mission).Normal_Delay();
 }
 
 /***********************************************************************************************
@@ -1908,7 +1909,7 @@ int VesselClass::Mission_Retreat() {
     default:
       break;
   }
-  return MissionControl.at(Mission).Normal_Delay();
+  return TheRules().mission_control().at(Mission).Normal_Delay();
 }
 
 /***********************************************************************************************
@@ -2270,7 +2271,8 @@ bool VesselClass::Edge_Of_World_AI() {
  * HISTORY: * 07/29/1996 BWG : Created. *
  *=============================================================================================*/
 void VesselClass::Repair_AI() {
-  if (IsSelfRepairing && (Frame % (kTicksPerMinute * Rule.RepairRate) == 0)) {
+  if (IsSelfRepairing &&
+      (Frame % (kTicksPerMinute * TheRules().RepairRate) == 0)) {
     Mark(MARK_CHANGE);
     const int cost = Class->Repair_Cost();
     const int step = Class->Repair_Step();
@@ -2313,7 +2315,7 @@ BulletClass* VesselClass::Fire_At(TARGET target, int which) {
   DCHECK(IsActive);
 
   if (*this == VESSEL_CARRIER) {
-    Arm.Set(Rule.CarrierLaunchDelay);
+    Arm.Set(TheRules().CarrierLaunchDelay);
     FootClass* passenger = Detach_Object();
     if (passenger != nullptr) {
       ScenarioInit++;

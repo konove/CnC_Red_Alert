@@ -9,18 +9,8 @@
 #include "gtest/gtest.h"
 #include "ra/assets.h"
 #include "ra/palettes.h"
+#include "ra/rules.h"
 #include "ra/screen.h"
-#include "sdllib/ww_win.h"
-
-// ww_win.cc, pulled in through gbuffer, dispatches events to the app.
-void SDL_Event_Handler(SDL_Event* /*event*/) {}
-
-// search_paths.cc, reached through GameFile, calls the game's CD check. The
-// tests never look for a disc.
-// NOLINTBEGIN(misc-use-internal-linkage): satisfies search_paths.cc's extern.
-int Get_CD_Index(int cd_drive, int timeout);
-int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) { return -1; }
-// NOLINTEND(misc-use-internal-linkage)
 
 namespace {
 
@@ -38,15 +28,18 @@ TEST(GameTest, InstallsItsSubsystemsForItsLifetime) {
   EXPECT_FALSE(base::Installed<Screen>::IsInstalled());
   EXPECT_FALSE(base::Installed<Palettes>::IsInstalled());
   EXPECT_FALSE(base::Installed<Assets>::IsInstalled());
+  EXPECT_FALSE(base::Installed<RulesClass>::IsInstalled());
   {
     const Game game;
     EXPECT_TRUE(base::Installed<Screen>::IsInstalled());
     EXPECT_TRUE(base::Installed<Palettes>::IsInstalled());
     EXPECT_TRUE(base::Installed<Assets>::IsInstalled());
+    EXPECT_TRUE(base::Installed<RulesClass>::IsInstalled());
   }
   EXPECT_FALSE(base::Installed<Screen>::IsInstalled());
   EXPECT_FALSE(base::Installed<Palettes>::IsInstalled());
   EXPECT_FALSE(base::Installed<Assets>::IsInstalled());
+  EXPECT_FALSE(base::Installed<RulesClass>::IsInstalled());
 }
 
 }  // namespace

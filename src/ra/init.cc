@@ -310,20 +310,20 @@ bool Init_Game() {
   **	Find and process any rules for this game.
   */
   GameFile fc("RULES.INI");
-  if (RuleINI.Load(fc, false)) {
-    Rule.Process(RuleINI);
+  if (TheRules().rule_ini().Load(fc, false)) {
+    TheRules().Process(TheRules().rule_ini());
   }
   //  Aftermath runtime change 9/29/98
   //	This is safe to do, as only rules for aftermath units are included in
   // this ini.
   if (Is_Aftermath_Installed()) {
     GameFile aftermath_ini("AFTRMATH.INI");
-    if (AftermathINI.Load(aftermath_ini, false)) {
-      Rule.Process(AftermathINI);
+    if (TheRules().aftermath_ini().Load(aftermath_ini, false)) {
+      TheRules().Process(TheRules().aftermath_ini());
     }
   }
 
-  Session.MaxPlayers = Rule.MaxPlayers;
+  Session.MaxPlayers = TheRules().MaxPlayers;
 
   /*
   **	Initialize the game object heaps as well as other rules-dependant buffer
@@ -480,7 +480,7 @@ bool Select_Game(bool /*fade*/) {
 
   Show_Mouse();
 
-  Rule.NewUnitsEnabled = Rule.SecretUnitsEnabled =
+  TheRules().NewUnitsEnabled = TheRules().SecretUnitsEnabled =
       false;  // Assume new units disabled, unless specifically .INI enabled or
               // multiplayer negotiations enable it.
 
@@ -1086,9 +1086,9 @@ bool Select_Game(bool /*fade*/) {
     case GAME_NULL_MODEM:
     case GAME_IPX:
       if (!bAftermathMultiplayer) {
-        Rule.NewUnitsEnabled = Rule.SecretUnitsEnabled = false;
+        TheRules().NewUnitsEnabled = TheRules().SecretUnitsEnabled = false;
       } else {
-        Rule.NewUnitsEnabled = true;
+        TheRules().NewUnitsEnabled = true;
       }
       //			debugprint( "Non Internet game: NewUnitsEnabled
       //= %i\n", NewUnitsEnabled );
@@ -1101,9 +1101,9 @@ bool Select_Game(bool /*fade*/) {
       }
       // if( pWolapi->bEnableNewAftermathUnits )
       if (bAftermathMultiplayer) {
-        Rule.NewUnitsEnabled = true;
+        TheRules().NewUnitsEnabled = true;
       } else {
-        Rule.NewUnitsEnabled = Rule.SecretUnitsEnabled = false;
+        TheRules().NewUnitsEnabled = TheRules().SecretUnitsEnabled = false;
       }
       //			debugprint( "Internet game: NewUnitsEnabled =
       //%i\n", NewUnitsEnabled );
@@ -1174,7 +1174,7 @@ bool Select_Game(bool /*fade*/) {
   *value
   */
   if (Session.Type != GAME_INTERNET) {
-    Rule.UnitBuildPenalty = 100;
+    TheRules().UnitBuildPenalty = 100;
   }
 
   /*
@@ -1894,23 +1894,23 @@ static void Init_Heaps() {
   /*
   **	Initialize the game object heaps.
   */
-  Vessels.Set_Heap(Rule.VesselMax);
-  Units.Set_Heap(Rule.UnitMax);
-  Factories.Set_Heap(Rule.FactoryMax);
-  Terrains.Set_Heap(Rule.TerrainMax);
-  Templates.Set_Heap(Rule.TemplateMax);
-  Smudges.Set_Heap(Rule.SmudgeMax);
-  Overlays.Set_Heap(Rule.OverlayMax);
-  Infantry.Set_Heap(Rule.InfantryMax);
-  Bullets.Set_Heap(Rule.BulletMax);
-  Buildings.Set_Heap(Rule.BuildingMax);
-  Anims.Set_Heap(Rule.AnimMax);
-  Aircraft.Set_Heap(Rule.AircraftMax);
-  Triggers.Set_Heap(Rule.TriggerMax);
-  TeamTypes.Set_Heap(Rule.TeamTypeMax);
-  Teams.Set_Heap(Rule.TeamMax);
+  Vessels.Set_Heap(TheRules().VesselMax);
+  Units.Set_Heap(TheRules().UnitMax);
+  Factories.Set_Heap(TheRules().FactoryMax);
+  Terrains.Set_Heap(TheRules().TerrainMax);
+  Templates.Set_Heap(TheRules().TemplateMax);
+  Smudges.Set_Heap(TheRules().SmudgeMax);
+  Overlays.Set_Heap(TheRules().OverlayMax);
+  Infantry.Set_Heap(TheRules().InfantryMax);
+  Bullets.Set_Heap(TheRules().BulletMax);
+  Buildings.Set_Heap(TheRules().BuildingMax);
+  Anims.Set_Heap(TheRules().AnimMax);
+  Aircraft.Set_Heap(TheRules().AircraftMax);
+  Triggers.Set_Heap(TheRules().TriggerMax);
+  TeamTypes.Set_Heap(TheRules().TeamTypeMax);
+  Teams.Set_Heap(TheRules().TeamMax);
   Houses.Set_Heap(kHouseMax);
-  TriggerTypes.Set_Heap(Rule.TrigTypeMax);
+  TriggerTypes.Set_Heap(TheRules().TrigTypeMax);
   //	Weapons.Set_Heap(Rule.WeaponMax);
 
 }

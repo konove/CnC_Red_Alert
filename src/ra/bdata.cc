@@ -3140,7 +3140,7 @@ void BuildingTypeClass::One_Time() {
       int timedelay = 1;
       const int count = Get_Build_Frame_Count(dataptr);
       if (count > 0) {
-        timedelay = Rule.BuildupTime * kTicksPerMinute / count;
+        timedelay = TheRules().BuildupTime * kTicksPerMinute / count;
       }
       building.Init_Anim(BSTATE_CONSTRUCTION, 0, count, timedelay);
     }
@@ -3643,7 +3643,7 @@ int BuildingTypeClass::Max_Pips() const {
 int BuildingTypeClass::Raw_Cost() const {
   int cost = TechnoTypeClass::Raw_Cost();
 
-  if (Type == STRUCT_HELIPAD && !Rule.IsSeparate) {
+  if (Type == STRUCT_HELIPAD && !TheRules().IsSeparate) {
     cost -= (AircraftTypeClass::As_Reference(AIRCRAFT_HIND).Cost +
              AircraftTypeClass::As_Reference(AIRCRAFT_HIND).Cost) /
             2;
@@ -3668,7 +3668,7 @@ int BuildingTypeClass::Raw_Cost() const {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Cost_Of() const {
-  if (Rule.IsSeparate && Type == STRUCT_HELIPAD) {
+  if (TheRules().IsSeparate && Type == STRUCT_HELIPAD) {
     return Raw_Cost();
   }
   return TechnoTypeClass::Cost_Of();
@@ -3797,7 +3797,7 @@ COORDINATE BuildingTypeClass::Coord_Fixup(COORDINATE coord) const {
  * HISTORY: * 10/02/1996 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Full_Name() const {
-  if (TheDebugState().map_editor_active() || Rule.IsNamed ||
+  if (TheDebugState().map_editor_active() || TheRules().IsNamed ||
       *this < STRUCT_V01 || *this > STRUCT_V37) {
     return TechnoTypeClass::Full_Name();
   }

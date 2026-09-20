@@ -200,7 +200,10 @@ ScenarioClass::ScenarioClass()
     :
 
       MissionTimer(0),
-      ShroudTimer(kTicksPerMinute * Rule.ShroudRate),
+      // Not seeded from the rules: Scen is built before Game installs them,
+      // and Clear_Scenario() zeroes this at the start of every scenario
+      // anyway. LogicClass::AI() refills it from Rule.ShroudRate.
+      ShroudTimer(0),
 
       CarryOverPercent(0),
 #define AUTOSONAR_PERIOD (int64_t{kTicksPerSecond} * 40)
@@ -478,15 +481,15 @@ bool Read_Scenario(char* name) {
       CCINIClass ini;
       GameFile fc("MPLAYER.INI");
       if (ini.Load(fc, false)) {
-        Rule.General(ini);
-        Rule.Recharge(ini);
-        Rule.AI(ini);
-        RulesClass::Powerups(ini);
-        RulesClass::Land_Types(ini);
+        TheRules().General(ini);
+        TheRules().Recharge(ini);
+        TheRules().AI(ini);
+        TheRules().Powerups(ini);
+        TheRules().Land_Types(ini);
         RulesClass::Themes(ini);
-        Rule.IQ(ini);
-        RulesClass::Objects(ini);
-        Rule.Difficulty(ini);
+        TheRules().IQ(ini);
+        TheRules().Objects(ini);
+        TheRules().Difficulty(ini);
       }
     }
     Fill_In_Data();
@@ -2000,37 +2003,37 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   BuildingTypeClass::As_Reference(STRUCT_LARVA1).Level = -1;
   BuildingTypeClass::As_Reference(STRUCT_LARVA2).Level = -1;
 
-  Rule.General(RuleINI);
-  Rule.Recharge(RuleINI);
-  Rule.AI(RuleINI);
-  RulesClass::Powerups(RuleINI);
-  RulesClass::Land_Types(RuleINI);
-  RulesClass::Themes(RuleINI);
-  Rule.IQ(RuleINI);
-  RulesClass::Objects(RuleINI);
-  Rule.Difficulty(RuleINI);
-  Rule.General(AftermathINI);
-  Rule.Recharge(AftermathINI);
-  Rule.AI(AftermathINI);
-  RulesClass::Powerups(AftermathINI);
-  RulesClass::Land_Types(AftermathINI);
-  RulesClass::Themes(AftermathINI);
-  Rule.IQ(AftermathINI);
-  RulesClass::Objects(AftermathINI);
-  Rule.Difficulty(AftermathINI);
+  TheRules().General(TheRules().rule_ini());
+  TheRules().Recharge(TheRules().rule_ini());
+  TheRules().AI(TheRules().rule_ini());
+  TheRules().Powerups(TheRules().rule_ini());
+  TheRules().Land_Types(TheRules().rule_ini());
+  RulesClass::Themes(TheRules().rule_ini());
+  TheRules().IQ(TheRules().rule_ini());
+  TheRules().Objects(TheRules().rule_ini());
+  TheRules().Difficulty(TheRules().rule_ini());
+  TheRules().General(TheRules().aftermath_ini());
+  TheRules().Recharge(TheRules().aftermath_ini());
+  TheRules().AI(TheRules().aftermath_ini());
+  TheRules().Powerups(TheRules().aftermath_ini());
+  TheRules().Land_Types(TheRules().aftermath_ini());
+  RulesClass::Themes(TheRules().aftermath_ini());
+  TheRules().IQ(TheRules().aftermath_ini());
+  TheRules().Objects(TheRules().aftermath_ini());
+  TheRules().Difficulty(TheRules().aftermath_ini());
   /*
   **	Override any rules values specified in this
   **	particular scenario file.
   */
-  Rule.General(ini);
-  Rule.Recharge(ini);
-  Rule.AI(ini);
-  RulesClass::Powerups(ini);
-  RulesClass::Land_Types(ini);
+  TheRules().General(ini);
+  TheRules().Recharge(ini);
+  TheRules().AI(ini);
+  TheRules().Powerups(ini);
+  TheRules().Land_Types(ini);
   RulesClass::Themes(ini);
-  Rule.IQ(ini);
-  RulesClass::Objects(ini);
-  Rule.Difficulty(ini);
+  TheRules().IQ(ini);
+  TheRules().Objects(ini);
+  TheRules().Difficulty(ini);
   /*
   ** Init the Scenario CRC value
   */
@@ -2200,7 +2203,8 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     **	If Ghosts are disabled and we're not editing, remove computer players
     **	(Must be done after all objects are read in from the INI)
     */
-    if (Session.Options.AIPlayers + Session.Players.Count() < Rule.MaxPlayers &&
+    if (Session.Options.AIPlayers + Session.Players.Count() <
+            TheRules().MaxPlayers &&
         !TheDebugState().map_editor_active()) {
       Remove_AI_Players();
     }
@@ -2223,8 +2227,8 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     **	this scenario.
     */
     if (Session.Options.Goodies) {
-      int count = std::max(Rule.CrateMinimum, Session.NumPlayers);
-      count = std::min(count, Rule.CrateMaximum);
+      int count = std::max(TheRules().CrateMinimum, Session.NumPlayers);
+      count = std::min(count, TheRules().CrateMaximum);
       for (int index = 0; index < count; index++) {
         Map.Place_Random_Crate();
       }
@@ -2242,7 +2246,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	Return with flag saying that the scenario file was read.
   */
   if (Is_Aftermath_Installed() && (Session.Type == GAME_SKIRMISH)) {
-    bAftermathMultiplayer = Rule.NewUnitsEnabled = true;
+    bAftermathMultiplayer = TheRules().NewUnitsEnabled = true;
   }
 
   ScenarioInit--;
@@ -2461,7 +2465,7 @@ void Assign_Houses() {
     port::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
 
     if (Session.Type != GAME_NORMAL) {
-      housep->IQ = Rule.MaxIQ;
+      housep->IQ = TheRules().MaxIQ;
     }
 
     housep->Init_Data(static_cast<PlayerColorType>(color), pref_house,
@@ -2471,7 +2475,7 @@ void Assign_Houses() {
 
     DiffType difficulty = Scen.CDifficulty;
 
-    if (Session.Players.Count() > 1 && Rule.IsCompEasyBonus &&
+    if (Session.Players.Count() > 1 && TheRules().IsCompEasyBonus &&
         difficulty > DIFF_EASY) {
       difficulty = static_cast<DiffType>(static_cast<int>(difficulty) - 1);
     }
@@ -2480,7 +2484,7 @@ void Assign_Houses() {
 
   for (int i = static_cast<int>(Session.Players.Count()) +
                Session.Options.AIPlayers;
-       i < Rule.MaxPlayers; i++) {
+       i < TheRules().MaxPlayers; i++) {
     house = static_cast<HousesType>(i + static_cast<int>(HOUSE_MULTI1));
     housep = HouseClass::As_Pointer(house);
     if (housep != nullptr) {
@@ -2652,7 +2656,7 @@ static void Create_Units(bool official) {
   */
   bool taken[26];
   CELL waypts[26];
-  DCHECK(Rule.MaxPlayers < std::ssize(waypts));
+  DCHECK(TheRules().MaxPlayers < std::ssize(waypts));
   int num_waypts = 0;
 
   /*

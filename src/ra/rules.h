@@ -40,9 +40,13 @@
 #ifndef CNC_RED_ALERT_RA_RULES_H_
 #define CNC_RED_ALERT_RA_RULES_H_
 
+#include "absl/base/attributes.h"
+#include "base/enum_array.h"
+#include "base/installed.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
+#include "ra/mission.h"
 #include "tech/fixed.h"
 
 class DifficultyClass {
@@ -73,12 +77,51 @@ class RulesClass {
   bool Recharge(CCINIClass& ini);
   bool Heap_Maximums(CCINIClass& ini);
   bool AI(CCINIClass& ini);
-  static bool Powerups(CCINIClass& ini);
-  static bool Land_Types(CCINIClass& ini);
+  bool Powerups(CCINIClass& ini);
+  bool Land_Types(CCINIClass& ini);
   static bool Themes(CCINIClass& ini);
   bool IQ(CCINIClass& ini);
-  static bool Objects(CCINIClass& ini);
+  bool Objects(CCINIClass& ini);
   bool Difficulty(CCINIClass& ini);
+
+  // The rules files, kept open for the rest of the process: loading a saved
+  // game reads the rules again rather than restoring them.
+  CCINIClass& rule_ini() ABSL_ATTRIBUTE_LIFETIME_BOUND { return rule_ini_; }
+  CCINIClass& aftermath_ini() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return aftermath_ini_;
+  }
+
+  // What each kind of terrain costs to cross and how much cover it gives.
+  // Land_Types() fills it in from the rules file.
+  base::EnumArray<LandType, GroundType>& ground()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return ground_;
+  }
+
+  // How each mission behaves: how often it is given time, and whether it
+  // makes the object a threat or a recruit. AI() fills it in.
+  base::EnumArray<MissionType, MissionControlClass>& mission_control()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return mission_control_;
+  }
+
+  // The crate tables. Powerups() reads the rules file over them; the
+  // defaults here are what the game ships with.
+  //
+  // crate_shares() is each crate's odds, as shares of the total;
+  // crate_anims() the animation it plays when picked up, and crate_data()
+  // the one number its effect needs -- money, damage or a duration.
+  base::EnumArray<CrateType, int>& crate_shares()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return crate_shares_;
+  }
+  base::EnumArray<CrateType, AnimType>& crate_anims()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return crate_anims_;
+  }
+  base::EnumArray<CrateType, int>& crate_data() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return crate_data_;
+  }
 
   /*
   **	This specifies the turbo boost speed for missiles when they are fired
@@ -938,6 +981,77 @@ class RulesClass {
   // Build times are scaled by this percentage. The WOL lobby raises it to
   // slow the game down; nothing else changes it.
   int UnitBuildPenalty{100};
+
+ private:
+  CCINIClass rule_ini_;
+  CCINIClass aftermath_ini_;
+  base::EnumArray<LandType, GroundType> ground_{};
+  base::EnumArray<MissionType, MissionControlClass> mission_control_{};
+
+  base::EnumArray<CrateType, int> crate_shares_ = {
+      50,  //	CRATE_MONEY
+      20,  //	CRATE_UNIT
+      3,   //	CRATE_PARA_BOMB
+      1,   //	CRATE_HEAL_BASE
+      3,   //	CRATE_CLOAK
+      5,   //	CRATE_EXPLOSION
+      5,   //	CRATE_NAPALM
+      20,  //	CRATE_SQUAD
+      1,   //	CRATE_DARKNESS
+      1,   //	CRATE_REVEAL
+      3,   //	CRATE_SONAR
+      10,  //	CRATE_ARMOR
+      10,  //	CRATE_SPEED
+      10,  //	CRATE_FIREPOWER
+      1,   //	CRATE_ICBM
+      1,   //	CRATE_TIMEQUAKE
+      3,   //	CRATE_INVULN
+      5    // CRATE_VORTEX
+  };
+  base::EnumArray<CrateType, AnimType> crate_anims_ = {
+      ANIM_NONE,  //	CRATE_MONEY
+      ANIM_NONE,  //	CRATE_UNIT
+      ANIM_NONE,  //	CRATE_PARA_BOMB
+      ANIM_NONE,  //	CRATE_HEAL_BASE
+      ANIM_NONE,  //	CRATE_CLOAK
+      ANIM_NONE,  //	CRATE_EXPLOSION
+      ANIM_NONE,  //	CRATE_NAPALM
+      ANIM_NONE,  //	CRATE_SQUAD
+      ANIM_NONE,  //	CRATE_DARKNESS
+      ANIM_NONE,  //	CRATE_REVEAL
+      ANIM_NONE,  //	CRATE_SONAR
+      ANIM_NONE,  //	CRATE_ARMOR
+      ANIM_NONE,  //	CRATE_SPEED
+      ANIM_NONE,  //	CRATE_FIREPOWER
+      ANIM_NONE,  //	CRATE_ICBM
+      ANIM_NONE,  //	CRATE_TIMEQUAKE
+      ANIM_NONE,  //	CRATE_INVULN
+      ANIM_NONE   // CRATE_VORTEX
+  };
+  base::EnumArray<CrateType, int> crate_data_ = {
+      0,  //	CRATE_MONEY
+      0,  //	CRATE_UNIT
+      0,  //	CRATE_PARA_BOMB
+      0,  //	CRATE_HEAL_BASE
+      0,  //	CRATE_CLOAK
+      0,  //	CRATE_EXPLOSION
+      0,  //	CRATE_NAPALM
+      0,  //	CRATE_SQUAD
+      0,  //	CRATE_DARKNESS
+      0,  //	CRATE_REVEAL
+      0,  //	CRATE_SONAR
+      0,  //	CRATE_ARMOR
+      0,  //	CRATE_SPEED
+      0,  //	CRATE_FIREPOWER
+      0,  //	CRATE_ICBM
+      0,  //	CRATE_TIMEQUAKE
+      0,  //	CRATE_INVULN
+      0   //	CRATE_VORTEX
+  };
 };
+
+// Returns the RulesClass that Game installed. CHECK-fails outside a Game's
+// lifetime unless a test installed its own.
+inline RulesClass& TheRules() { return base::Installed<RulesClass>::Get(); }
 
 #endif  // CNC_RED_ALERT_RA_RULES_H_

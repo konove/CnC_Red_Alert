@@ -505,7 +505,7 @@ void TerrainClass::AI() {
   ObjectClass::AI();
 
   if (*this == TERRAIN_MINE &&
-      Frame % (Rule.GrowthRate * kTicksPerMinute) == 0) {
+      Frame % (TheRules().GrowthRate * kTicksPerMinute) == 0) {
     Map.at(As_Cell(As_Target())).Spread_Tiberium(true);
   }
   if (Graphic_Logic()) {

@@ -733,15 +733,15 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
       if (/*Class->ROT != 0 ||*/ Class->IsArcing) {
         int scatterdist = (::Distance(coord, tcoord) / 16) - 0x0040;
         scatterdist =
-            std::min(scatterdist, static_cast<int>(Rule.HomingScatter));
+            std::min(scatterdist, static_cast<int>(TheRules().HomingScatter));
         scatterdist = std::max(scatterdist, 0);
 
         dir = AsDirection(static_cast<int>(dir) + (Random_Pick(0, 10) - 5));
         tcoord = Coord_Scatter(tcoord, Random_Pick(0, scatterdist));
       } else {
         int scatterdist = (::Distance(coord, tcoord) / 16) - 0x0040;
-        scatterdist =
-            std::min(scatterdist, static_cast<int>(Rule.BallisticScatter));
+        scatterdist = std::min(scatterdist,
+                               static_cast<int>(TheRules().BallisticScatter));
         scatterdist = std::max(scatterdist, 0);
         tcoord = Coord_Move(tcoord, dir,
                             static_cast<uint16_t>(Random_Pick(0, scatterdist)));
@@ -807,7 +807,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
     if (Class->IsArcing) {
       IsFalling = true;
       Height = 1;
-      Riser = Distance(tcoord) / 2 / (speed + 1) * Rule.Gravity;
+      Riser = Distance(tcoord) / 2 / (speed + 1) * TheRules().Gravity;
       Riser = std::max(Riser, 10);
     }
     if (Class->IsDropping) {

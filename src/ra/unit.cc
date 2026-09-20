@@ -124,7 +124,6 @@
 #include "ra/cell.h"
 #include "ra/combat.h"
 #include "ra/config.h"
-#include "ra/const.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display.h"
@@ -1034,7 +1033,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
       **	Harvesters explode with a force equal to the amount of
       **	Tiberium they are carrying.
       */
-      if (Tiberium > 0 && Rule.IsExplosiveHarvester) {
+      if (Tiberium > 0 && TheRules().IsExplosiveHarvester) {
         Wide_Area_Damage(Coord, CELL_LEPTON_W + (CELL_LEPTON_W / 2),
                          Credit_Load() + Class->MaxStrength, this, WARHEAD_HE);
       }
@@ -1128,7 +1127,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
     **	When damaged and below half strength, start smoking if
     **	it isn't already smoking.
     */
-    if (Health_Ratio() <= Rule.ConditionYellow && !IsAnimAttached) {
+    if (Health_Ratio() <= TheRules().ConditionYellow && !IsAnimAttached) {
       if (*this != UNIT_ANT1 && *this != UNIT_ANT2 && *this != UNIT_ANT3) {
         auto* anim =
             new AnimClass(ANIM_SMOKE_M, Coord_Add(Coord, XYP_Coord(0, -8)));
@@ -1143,7 +1142,8 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
     **	typically is the only one that will qualify here.
     */
     if (!Team.Is_Valid() && source != nullptr && !IsTethered &&
-        !House->Is_Ally(source) && (!House->IsHuman || Rule.IsAutoCrush)) {
+        !House->Is_Ally(source) &&
+        (!House->IsHuman || TheRules().IsAutoCrush)) {
       /*
       **	Try to crush the attacker if it can be crushed by this unit and
       *this unit is *	not equipped with a flame type weapon. If this unit has
@@ -1159,7 +1159,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
         **	Try to return to base if possible.
         */
         if (*this == UNIT_HARVESTER && Pip_Count() &&
-            Health_Ratio() <= Rule.ConditionYellow) {
+            Health_Ratio() <= TheRules().ConditionYellow) {
           /*
           **	Find nearby refinery and head to it?
           */
@@ -1377,12 +1377,13 @@ void UnitClass::Enter_Idle_Mode(bool initial) {
       }
     } else {
       if (Mission == MISSION_GUARD || Mission == MISSION_GUARD_AREA ||
-          (Mission != MISSION_NONE && (MissionControl.at(Mission).IsParalyzed ||
-                                       MissionControl.at(Mission).IsZombie))) {
+          (Mission != MISSION_NONE &&
+           (TheRules().mission_control().at(Mission).IsParalyzed ||
+            TheRules().mission_control().at(Mission).IsZombie))) {
         return;
       }
 
-      if (House->IQ < Rule.IQGuardArea || Team.Is_Valid()) {
+      if (House->IQ < TheRules().IQGuardArea || Team.Is_Valid()) {
         order = MISSION_GUARD;
       } else {
         order = MISSION_GUARD_AREA;
@@ -1865,7 +1866,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
         *from AV mines.
         */
         if (*bldng == STRUCT_AVMINE) {
-          int damage = Rule.AVMineDamage;
+          int damage = TheRules().AVMineDamage;
           Take_Damage(damage, 0, WARHEAD_HE);
         } else {
           int damage = 10;
@@ -2324,8 +2325,8 @@ bool UnitClass::Harvesting() {
     //		int reducer = (ptr->OverlayData % 6) + 1;
     int reducer = 1;
     const OverlayType overlay = ptr->Overlay;
-    reducer =
-        ptr->Reduce_Tiberium(std::min(reducer, Rule.BailCount - Tiberium));
+    reducer = ptr->Reduce_Tiberium(
+        std::min(reducer, TheRules().BailCount - Tiberium));
     Tiberium += reducer;
     switch (overlay) {
       case OVERLAY_GOLD1:
@@ -2340,15 +2341,15 @@ bool UnitClass::Harvesting() {
       case OVERLAY_GEMS3:
       case OVERLAY_GEMS4:
         Gems += reducer;
-        if (Rule.BailCount > Tiberium) {
+        if (TheRules().BailCount > Tiberium) {
           Gems++;
           Tiberium++;
         }
-        if (Rule.BailCount > Tiberium) {
+        if (TheRules().BailCount > Tiberium) {
           Gems++;
           Tiberium++;
         }
-        if (Rule.BailCount > Tiberium) {
+        if (TheRules().BailCount > Tiberium) {
           Gems++;
           Tiberium++;
         }
@@ -2376,7 +2377,7 @@ bool UnitClass::Harvesting() {
         break;
     }
     Set_Stage(0);
-    Set_Rate(Rule.OreDumpRate);
+    Set_Rate(TheRules().OreDumpRate);
 
   } else {
     /*
@@ -2430,7 +2431,7 @@ int UnitClass::Mission_Unload() {
       if (!IsDumping) {
         IsDumping = true;
         Set_Stage(0);
-        Set_Rate(Rule.OreDumpRate);
+        Set_Rate(TheRules().OreDumpRate);
         break;
       }
       if (Fetch_Stage() < std::ssize(UnitTypeClass::Harvester_Dump_List) - 1) {
@@ -2721,14 +2722,14 @@ int UnitClass::Mission_Unload() {
       if (!Gems && !IsDumping) {
         Gems = 1;
         Gold = 0;
-        Arm.Set(Rule.QuakeDelay * House->ROFBias);
+        Arm.Set(TheRules().QuakeDelay * House->ROFBias);
         if constexpr (config::kIsEnglish) {
           Speak(VOX_MADTANK_DEPLOYED);  // Only the English speech set has it.
         } else {
           PlaySoundEffectAt(VOC_BUZZY1, Center_Coord());
         }
         Set_Stage(0);
-        Set_Rate(Rule.OreDumpRate * 2);
+        Set_Rate(TheRules().OreDumpRate * 2);
         IsDumping = true;
 
         auto* crew = new InfantryClass(INFANTRY_C1, House->Class->House);
@@ -2806,7 +2807,8 @@ int UnitClass::Mission_Unload() {
     default:
       break;
   }
-  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+  return TheRules().mission_control().at(Mission).Normal_Delay() +
+         Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -2876,7 +2878,7 @@ int UnitClass::Mission_Harvest() {
         ArchiveTarget = 0;
       }
       IsHarvesting = false;
-      if (Goto_Tiberium(Rule.TiberiumLongScan / CELL_LEPTON_W)) {
+      if (Goto_Tiberium(TheRules().TiberiumLongScan / CELL_LEPTON_W)) {
         IsHarvesting = true;
         Set_Rate(2);
         Set_Stage(0);
@@ -2919,7 +2921,7 @@ int UnitClass::Mission_Harvest() {
       //			}
       if (Fetch_Rate() == 0) {
         Set_Stage(0);
-        Set_Rate(Rule.OreDumpRate);
+        Set_Rate(TheRules().OreDumpRate);
       }
 
       if (Fetch_Stage() < std::ssize(UnitTypeClass::Harvester_Load_List)) {
@@ -2931,7 +2933,7 @@ int UnitClass::Mission_Harvest() {
           Status = kFindhome;
           ArchiveTarget = ::As_Target(Coord_Cell(Coord));
         } else {
-          if (!Goto_Tiberium(Rule.TiberiumShortScan / CELL_LEPTON_W) &&
+          if (!Goto_Tiberium(TheRules().TiberiumShortScan / CELL_LEPTON_W) &&
               !Target_Legal(NavCom)) {
             ArchiveTarget = kTargetNone;
             Status = kFindhome;
@@ -3006,7 +3008,8 @@ int UnitClass::Mission_Harvest() {
     default:
       break;
   }
-  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+  return TheRules().mission_control().at(Mission).Normal_Delay() +
+         Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -3061,7 +3064,8 @@ int UnitClass::Mission_Hunt() {
   } else {
     return DriveClass::Mission_Hunt();
   }
-  return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+  return TheRules().mission_control().at(Mission).Normal_Delay() +
+         Random_Pick(0, 2);
 }
 
 /***********************************************************************************************
@@ -3193,7 +3197,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
       ** If object is a land mine, allow movement if possible.
       */
       if (obj->What_Am_I() == RTTI_BUILDING &&
-          (!Rule.IsMineAware ||
+          (!TheRules().IsMineAware ||
            !dynamic_cast<BuildingClass*>(obj)->House->Is_Ally(House))) {
         if (*dynamic_cast<BuildingClass*>(obj) == STRUCT_APMINE) {
           return MOVE_OK;
@@ -3323,7 +3327,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
   *then *	return this immutable fact.
   */
   if (!cancrush && retval != MOVE_DESTROYABLE &&
-      Ground.at(cellptr->Land_Type()).Cost.at(Class->Speed) == 0) {
+      TheRules().ground().at(cellptr->Land_Type()).Cost.at(Class->Speed) == 0) {
     return MOVE_NO;
   }
 
@@ -3732,7 +3736,8 @@ int UnitClass::Mission_Guard() {
 
   if (*this == UNIT_MCV && House->IsBaseBuilding) {
     Assign_Mission(MISSION_UNLOAD);
-    return MissionControl.at(Mission).Normal_Delay() + Random_Pick(0, 2);
+    return TheRules().mission_control().at(Mission).Normal_Delay() +
+           Random_Pick(0, 2);
   }
   return DriveClass::Mission_Guard();
 }
@@ -3827,7 +3832,7 @@ DirType UnitClass::Desired_Load_Dir(ObjectClass* passenger,
                   : -128;
     } else {
       const CellClass* cell = &Map.at(cellnum);
-      if (Ground.at(cell->Land_Type()).Cost.at(SPEED_FOOT) == 0 ||
+      if (TheRules().ground().at(cell->Land_Type()).Cost.at(SPEED_FOOT) == 0 ||
           cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
           cell->Flag.Occupy.Monolith ||
           (cell->Flag.Composite & 0x01F) == 0x01F) {
@@ -3971,7 +3976,7 @@ int UnitClass::Pip_Count() const {
   }
 
   if (*this == UNIT_CHRONOTANK) {
-    const int fulldur = Rule.ChronoTankDuration * kTicksPerMinute;
+    const int fulldur = TheRules().ChronoTankDuration * kTicksPerMinute;
     return (fulldur - static_cast<int>(MoebiusCountDown.Value())) / (fulldur / 5);
   }
   return 0;
@@ -4103,7 +4108,7 @@ int UnitClass::Mission_Repair() {
   **	If no action could be performed at this time, then wait
   **	around for a bit before trying again.
   */
-  return MissionControl.at(Mission).Normal_Delay();
+  return TheRules().mission_control().at(Mission).Normal_Delay();
 }
 
 /***********************************************************************************************
@@ -4345,7 +4350,7 @@ fixed UnitClass::Tiberium_Load() const {
   DCHECK(IsActive);
 
   if (*this == UNIT_HARVESTER) {
-    return {Tiberium, Rule.BailCount};
+    return {Tiberium, TheRules().BailCount};
   }
   return fixed(0);
 }
@@ -4383,8 +4388,8 @@ void UnitClass::Approach_Target() {
     **	to drive over the infantry instead of firing on it.
     */
     const TechnoClass* target = As_Techno(TarCom);
-    if (Class->IsCrusher && Distance(TarCom) < Rule.CrushDistance && target &&
-        target->Class_Of().IsCrushable) {
+    if (Class->IsCrusher && Distance(TarCom) < TheRules().CrushDistance &&
+        target && target->Class_Of().IsCrushable) {
       Assign_Destination(TarCom);
       return;
     }
@@ -4604,7 +4609,9 @@ void UnitClass::Assign_Destination(TARGET target) {
         */
         const CELL cell =
             static_cast<CELL>(Coord_Cell(b->Center_Coord()) + (MAP_CELL_W - 1));
-        if (Ground.at(Map.at(cell).Land_Type())
+        if (TheRules()
+                .ground()
+                .at(Map.at(cell).Land_Type())
                 .Cost.at(Techno_Type_Class()->Speed) > 0) {
           if (Transmit_Message(RADIO_DOCKING) == RADIO_ROGER) {
             // Docking with the service depot is already arranged, so this wants
@@ -4804,7 +4811,7 @@ void UnitClass::Write_INI(CCINIClass& ini) {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 int UnitClass::Credit_Load() const {
-  return (Gold * Rule.GoldValue) + (Gems * Rule.GemValue);
+  return (Gold * TheRules().GoldValue) + (Gems * TheRules().GemValue);
 }
 
 /***********************************************************************************************
@@ -4842,7 +4849,7 @@ bool UnitClass::Should_Crush_It(const TechnoClass* it) const {
   **	Objects that are far away should really be fired upon rather than
   *crushed.
   */
-  if (Distance(it) > Rule.CrushDistance) {
+  if (Distance(it) > TheRules().CrushDistance) {
     return false;
   }
 
@@ -4868,7 +4875,7 @@ bool UnitClass::Should_Crush_It(const TechnoClass* it) const {
   **	If the house IQ indicates that crushing should not be allowed, then
   *don't *	suggest that crushing be done.
   */
-  if (House->IQ < Rule.IQCrush) {
+  if (House->IQ < TheRules().IQCrush) {
     return false;
   }
 
@@ -4918,7 +4925,7 @@ void UnitClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
   **	Certain missions prevent scattering regardless of whether it would be
   **	a good idea or not.
   */
-  if (!MissionControl.at(Mission).IsScatter && !forced) {
+  if (!TheRules().mission_control().at(Mission).IsScatter && !forced) {
     return;
   }
 

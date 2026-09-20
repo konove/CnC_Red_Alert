@@ -103,13 +103,9 @@ extern WWMouseClass* WWMouse;
 /*
 **	Dynamic global variables (these change or are initialized at run time).
 */
-extern base::EnumArray<MissionType, MissionControlClass> MissionControl;
-extern CCINIClass RuleINI;
-extern CCINIClass AftermathINI;
 extern int MapTriggerID;
 extern int LogicTriggerID;
 extern PKey FastKey;
-extern RulesClass Rule;
 extern KeyboardClass* Keyboard;
 extern RandomClass local_rng;
 extern std::vector<CarryoverClass> Carryover;

@@ -1014,7 +1014,7 @@ void EventClass::Execute() {
         Session.Messages.Add_Message(
             nullptr, 0, TXT_WOL_DRAW_PROPOSED_LOCAL, PCOLOR_GOLD,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            Rule.MessageDelay * kTicksPerMinute);
+            TheRules().MessageDelay * kTicksPerMinute);
       } else {
         if (Scen.bLocalProposesDraw) {
           //	Both sides agree to draw. Game will end in a tie.
@@ -1039,7 +1039,7 @@ void EventClass::Execute() {
           Session.Messages.Add_Message(
               nullptr, 0, message.c_str(), PCOLOR_GOLD,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-              Rule.MessageDelay * kTicksPerMinute);
+              TheRules().MessageDelay * kTicksPerMinute);
         }
       }
       PlaySoundEffect(VOC_INCOMING_MESSAGE);
@@ -1051,7 +1051,7 @@ void EventClass::Execute() {
         Session.Messages.Add_Message(
             nullptr, 0, TXT_WOL_DRAW_RETRACTED_LOCAL, PCOLOR_GOLD,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            Rule.MessageDelay * kTicksPerMinute);
+            TheRules().MessageDelay * kTicksPerMinute);
       } else {
         std::string message;
         // The format string lives in the localized string table, so verify the
@@ -1071,7 +1071,7 @@ void EventClass::Execute() {
           Session.Messages.Add_Message(
               nullptr, 0, message.c_str(), PCOLOR_GOLD,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-              Rule.MessageDelay * kTicksPerMinute);
+              TheRules().MessageDelay * kTicksPerMinute);
         }
       }
       PlaySoundEffect(VOC_INCOMING_MESSAGE);

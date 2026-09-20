@@ -52,6 +52,7 @@
 #include "ra/mission_id.h"
 #include "ra/palettes.h"
 #include "ra/rawolapi.h"
+#include "ra/rules.h"
 #include "ra/session.h"
 #include "ra/text_ids.h"
 #include "ra/tooltip.h"
@@ -604,13 +605,14 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     }
 
     Special.IsCaptureTheFlag =
-        Rule.IsMPCaptureTheFlag;  //	Ugh. Use of "Special" global.
+        TheRules().IsMPCaptureTheFlag;  //	Ugh. Use of "Special" global.
     if (bHost) {
       Session.Options.Credits =
-          Rule.MPDefaultMoney;                   // init credits & credit buffer
-      Session.Options.Bases = Rule.IsMPBasesOn;  // init scenario parameters
-      Session.Options.Tiberium = Rule.IsMPTiberiumGrow;
-      Session.Options.Goodies = Rule.IsMPCrates;
+          TheRules().MPDefaultMoney;  // init credits & credit buffer
+      Session.Options.Bases =
+          TheRules().IsMPBasesOn;  // init scenario parameters
+      Session.Options.Tiberium = TheRules().IsMPTiberiumGrow;
+      Session.Options.Goodies = TheRules().IsMPCrates;
       Session.Options.AIPlayers = 0;
       Session.Options.UnitCount =
           (base::At(SessionClass::CountMax, Session.Options.Bases) +
@@ -623,10 +625,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //------------------------------------------------------------------------
     Special.IsTGrowth =
         static_cast<unsigned>(Session.Options.Tiberium);  //	Ugh. Use of "Special" global.
-    Rule.IsTGrowth = Session.Options.Tiberium != 0;
+    TheRules().IsTGrowth = Session.Options.Tiberium != 0;
     Special.IsTSpread =
         static_cast<unsigned>(Session.Options.Tiberium);  //	Ugh. Use of "Special" global.
-    Rule.IsTSpread = Session.Options.Tiberium != 0;
+    TheRules().IsTSpread = Session.Options.Tiberium != 0;
 
     if (bHost) {
       //------------------------------------------------------------------------
@@ -1518,9 +1520,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         //(Session.Options.AIPlayers+Session.Players.Count() > Rule.MaxPlayers)
         //{	// if it's pegged, max it out
         if (Session.Options.AIPlayers + pWO->GameInfoCurrent.iPlayerMax >
-            Rule.MaxPlayers) {  // if it's pegged, max it out
+            TheRules().MaxPlayers) {  // if it's pegged, max it out
           Session.Options.AIPlayers =
-              Rule.MaxPlayers - pWO->GameInfoCurrent.iPlayerMax;
+              TheRules().MaxPlayers - pWO->GameInfoCurrent.iPlayerMax;
           pGaugeAIPlayers->Set_Value(Session.Options.AIPlayers);
         }
         display = std::max(display, REDRAW_PARMS);
@@ -1571,10 +1573,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         Session.Options.Tiberium = pCheckListOptions->Is_Checked(1) ? 1 : 0;
         Special.IsTGrowth =
             static_cast<unsigned>(Session.Options.Tiberium);  //	Ugh. Use of "Special" global.
-        Rule.IsTGrowth = Session.Options.Tiberium != 0;
+        TheRules().IsTGrowth = Session.Options.Tiberium != 0;
         Special.IsTSpread =
             static_cast<unsigned>(Session.Options.Tiberium);  //	Ugh. Use of "Special" global.
-        Rule.IsTSpread = Session.Options.Tiberium != 0;
+        TheRules().IsTSpread = Session.Options.Tiberium != 0;
 
         Session.Options.Goodies = pCheckListOptions->Is_Checked(2) ? 1 : 0;
         Special.IsCaptureTheFlag = pCheckListOptions->Is_Checked(
@@ -1725,7 +1727,7 @@ void WOL_GameSetupDialog::SetSpecialControlStates() {
   pGaugeLevel->Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
   pGaugeLevel->Set_Value(BuildLevel - 1);
 
-  pGaugeCredits->Set_Maximum(Rule.MPMaxMoney);
+  pGaugeCredits->Set_Maximum(TheRules().MPMaxMoney);
   pGaugeCredits->Set_Value(Session.Options.Credits);
 
   if (pWO->GameInfoCurrent.bTournament) {
@@ -1733,7 +1735,7 @@ void WOL_GameSetupDialog::SetSpecialControlStates() {
   } else {
     //	Note dependency of AIPlayers on number of human players.
     //	pGaugeAIPlayers->Set_Maximum(Rule.MaxPlayers-Session.Players.Count());
-    pGaugeAIPlayers->Set_Maximum(Rule.MaxPlayers -
+    pGaugeAIPlayers->Set_Maximum(TheRules().MaxPlayers -
                                  pWO->GameInfoCurrent.iPlayerMax);
   }
   pGaugeAIPlayers->Set_Value(Session.Options.AIPlayers);
@@ -2592,7 +2594,9 @@ void WOL_GameSetupDialog::SendParams() {
       static_cast<int>(GParamsLastSent.GPacket.ScenarioInfo.Version),
       GParamsLastSent.bAftermathUnits ? 1 : 0,  //	Not currently used.
       GParamsLastSent.bSlowUnitBuildRate ? 1 : 0,
-      RuleINI.Get_Unique_ID()  //	Used to verify rules.ini files match.
+      TheRules()
+          .rule_ini()
+          .Get_Unique_ID()  //	Used to verify rules.ini files match.
   );
 
   pWO->SendGameOpt(szSend, nullptr);
@@ -2828,7 +2832,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   }
   const int iRulesID = tech::ParseIntegerOr<int>(szToken, 0);
 
-  return (RuleINI.Get_Unique_ID() == iRulesID);
+  return (TheRules().rule_ini().Get_Unique_ID() == iRulesID);
 }
 
 //***********************************************************************************************
@@ -3531,9 +3535,9 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	UnitBuildPenalty = WWGetPrivateProfileInt ("Options", "BuildRate", 100,
   // buffer);
   if (bSlowUnitBuildRate) {
-    Rule.UnitBuildPenalty = 250;
+    TheRules().UnitBuildPenalty = 250;
   } else {
-    Rule.UnitBuildPenalty = 100;
+    TheRules().UnitBuildPenalty = 100;
   }
 
   // PlanetWestwoodGameID = WWGetPrivateProfileInt("Internet", "GameID", 0,

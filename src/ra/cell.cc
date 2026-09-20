@@ -535,9 +535,9 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
       return false;
     }
 
-    return Ground.at(Land_Type()).Build;
+    return TheRules().ground().at(Land_Type()).Build;
   }
-  if (Ground.at(Land_Type()).Cost.at(loco) == fixed(0)) {
+  if (TheRules().ground().at(Land_Type()).Cost.at(loco) == fixed(0)) {
     return false;
   }
   return true;
@@ -1114,12 +1114,12 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         */
         if (TheDebugState().map_editor_active() &&
             TheDebugState().show_passability()) {
-          if (::Ground.at(Land).Cost.at(SPEED_FOOT) == 0 ||
+          if (TheRules().ground().at(Land).Cost.at(SPEED_FOOT) == 0 ||
               (Cell_Occupier() != nullptr &&
                Cell_Occupier()->What_Am_I() != RTTI_INFANTRY)) {  // impassable
             remap = DisplayClass::FadingRed;
           } else {
-            if (::Ground.at(Land).Cost.at(SPEED_FOOT) >
+            if (TheRules().ground().at(Land).Cost.at(SPEED_FOOT) >
                 fixed(1, 3)) {  // pretty passable
               remap = DisplayClass::FadingGreen;
             } else {
@@ -1885,9 +1885,9 @@ void CellClass::Incoming(COORDINATE threat, bool forced, bool nokidding) {
     /*
     **	Special check to make sure that friendly units never scatter.
     */
-    if (nokidding || Rule.IsScatter ||
-        (object->Is_Techno() &&
-         dynamic_cast<TechnoClass*>(object)->House->IQ >= Rule.IQScatter)) {
+    if (nokidding || TheRules().IsScatter ||
+        (object->Is_Techno() && dynamic_cast<TechnoClass*>(object)->House->IQ >=
+                                    TheRules().IQScatter)) {
       object->Scatter(threat, forced, nokidding);
     }
     object = object->Next;
@@ -1992,7 +1992,7 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
         case OVERLAY_GOLD2:
         case OVERLAY_GOLD3:
         case OVERLAY_GOLD4:
-          value = Rule.GoldValue;
+          value = TheRules().GoldValue;
           Overlay = Random_Pick(OVERLAY_GOLD1, OVERLAY_GOLD4);
           break;
 
@@ -2001,7 +2001,7 @@ int32_t CellClass::Tiberium_Adjust(bool pregame) {
         case OVERLAY_GEMS3:
         case OVERLAY_GEMS4:
           gems = true;
-          value = Rule.GemValue * 4;
+          value = TheRules().GemValue * 4;
           Overlay = Random_Pick(OVERLAY_GEMS1, OVERLAY_GEMS4);
           break;
 
@@ -2089,7 +2089,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     */
     int total_shares = 0;
     for (const CrateType index : magic_enum::enum_values<CrateType>()) {
-      total_shares += CrateShares.at(index);
+      total_shares += TheRules().crate_shares().at(index);
     }
 
     /*
@@ -2102,18 +2102,18 @@ bool CellClass::Goodie_Check(FootClass* object) {
       /*
       **	Solo play has money amount determined by rules.ini file.
       */
-      force_money = Rule.SoloCrateMoney;
+      force_money = TheRules().SoloCrateMoney;
 
       if (Overlay == OVERLAY_STEEL_CRATE) {
-        powerup = Rule.SilverCrate;
+        powerup = TheRules().SilverCrate;
       }
 
       if (Overlay == OVERLAY_WOOD_CRATE) {
-        powerup = Rule.WoodCrate;
+        powerup = TheRules().WoodCrate;
       }
 
       if (Overlay == OVERLAY_WATER_CRATE) {
-        powerup = Rule.WaterCrate;
+        powerup = TheRules().WaterCrate;
       }
 
     } else {
@@ -2122,7 +2122,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
       int share_count = 0;
       bool found = false;
       for (const CrateType candidate : magic_enum::enum_values<CrateType>()) {
-        share_count += CrateShares.at(candidate);
+        share_count += TheRules().crate_shares().at(candidate);
         if (pick <= share_count) {
           powerup = candidate;
           found = true;
@@ -2346,15 +2346,15 @@ bool CellClass::Goodie_Check(FootClass* object) {
     Map.Remove_Crate(Cell_Number());
     //		Map[Cell_Number()].Overlay = OVERLAY_NONE;
 
-    if (Session.Type != GAME_NORMAL && Rule.IsMPCrates) {
+    if (Session.Type != GAME_NORMAL && TheRules().IsMPCrates) {
       Map.Place_Random_Crate();
     }
 
     /*
     **	Generate any corresponding animation associated with this crate powerup.
     */
-    if (CrateAnims.at(powerup) != ANIM_NONE) {
-      new AnimClass(CrateAnims.at(powerup), Cell_Coord());
+    if (TheRules().crate_anims().at(powerup) != ANIM_NONE) {
+      new AnimClass(TheRules().crate_anims().at(powerup), Cell_Coord());
     }
 
     /*
@@ -2366,7 +2366,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
         object->House->Refund_Money(force_money);
       } else {
         object->House->Refund_Money(
-            Random_Pick(CrateData.at(powerup), CrateData.at(powerup) + 900));
+            Random_Pick(TheRules().crate_data().at(powerup),
+                        TheRules().crate_data().at(powerup) + 900));
       }
     };
     switch (powerup) {
@@ -2430,8 +2431,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
         /*
         **	Check for special unit type override value.
         */
-        if (Rule.UnitCrateType != UNIT_NONE) {
-          utp = &UnitTypeClass::As_Reference(Rule.UnitCrateType);
+        if (TheRules().UnitCrateType != UNIT_NONE) {
+          utp = &UnitTypeClass::As_Reference(TheRules().UnitCrateType);
         }
 
         /*
@@ -2525,14 +2526,14 @@ bool CellClass::Goodie_Check(FootClass* object) {
       */
       case CRATE_EXPLOSION:
         if (object != nullptr) {
-          int d = CrateData.at(powerup);
+          int d = TheRules().crate_data().at(powerup);
           object->Take_Damage(d, 0, WARHEAD_HE, nullptr, true);
         }
         for (int index = 0; index < 5; index++) {
           const COORDINATE frag_coord =
               Coord_Scatter(Cell_Coord(), Random_Pick(0, 0x0200));
           new AnimClass(ANIM_FBALL1, frag_coord);
-          damage = CrateData.at(powerup);
+          damage = TheRules().crate_data().at(powerup);
           Explosion_Damage(frag_coord, damage, nullptr, WARHEAD_HE);
         }
         break;
@@ -2544,10 +2545,10 @@ bool CellClass::Goodie_Check(FootClass* object) {
         coord = Coord_Mid(Cell_Coord(), object->Center_Coord());
         new AnimClass(ANIM_NAPALM3, coord);
         if (object != nullptr) {
-          int d = CrateData.at(powerup);
+          int d = TheRules().crate_data().at(powerup);
           object->Take_Damage(d, 0, WARHEAD_FIRE, nullptr, true);
         }
-        damage = CrateData.at(powerup);
+        damage = TheRules().crate_data().at(powerup);
         Explosion_Damage(coord, damage, nullptr, WARHEAD_FIRE);
         break;
 
@@ -2561,7 +2562,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
           ObjectClass* obj = DisplayClass::Layer.at(LAYER_GROUND).at(index);
 
           if (obj && obj->Is_Techno() &&
-              Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius) {
+              Distance(Cell_Coord(), obj->Center_Coord()) <
+                  TheRules().CrateRadius) {
             dynamic_cast<TechnoClass*>(obj)->IsCloakable = true;
           }
         }
@@ -2599,10 +2601,12 @@ bool CellClass::Goodie_Check(FootClass* object) {
           ObjectClass* obj = DisplayClass::Layer.at(LAYER_GROUND).at(index);
 
           if (obj != nullptr && obj->Is_Techno() &&
-              Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius &&
+              Distance(Cell_Coord(), obj->Center_Coord()) <
+                  TheRules().CrateRadius &&
               dynamic_cast<TechnoClass*>(obj)->ArmorBias == 1) {
-            const fixed val = dynamic_cast<TechnoClass*>(obj)->ArmorBias *
-                              fixed(CrateData.at(powerup), 256).Inverse();
+            const fixed val =
+                dynamic_cast<TechnoClass*>(obj)->ArmorBias *
+                fixed(TheRules().crate_data().at(powerup), 256).Inverse();
             dynamic_cast<TechnoClass*>(obj)->ArmorBias = val;
             if (obj->Owner() == PlayerPtr->Class->House) {
               tospeak = true;
@@ -2620,13 +2624,14 @@ bool CellClass::Goodie_Check(FootClass* object) {
           ObjectClass* obj = DisplayClass::Layer.at(LAYER_GROUND).at(index);
 
           if (obj && obj->Is_Foot() &&
-              Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius &&
+              Distance(Cell_Coord(), obj->Center_Coord()) <
+                  TheRules().CrateRadius &&
               dynamic_cast<FootClass*>(obj)->SpeedBias == 1 &&
               obj->What_Am_I() != RTTI_AIRCRAFT) {
             auto* foot = dynamic_cast<FootClass*>(obj);
 
-            const fixed val =
-                foot->SpeedBias * fixed(CrateData.at(powerup), 256);
+            const fixed val = foot->SpeedBias *
+                              fixed(TheRules().crate_data().at(powerup), 256);
             foot->SpeedBias = val;
             if (foot->IsOwnedByPlayer) {
               tospeak = true;
@@ -2644,10 +2649,11 @@ bool CellClass::Goodie_Check(FootClass* object) {
           ObjectClass* obj = DisplayClass::Layer.at(LAYER_GROUND).at(index);
 
           if (obj && obj->Is_Techno() &&
-              Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius &&
+              Distance(Cell_Coord(), obj->Center_Coord()) <
+                  TheRules().CrateRadius &&
               dynamic_cast<TechnoClass*>(obj)->FirepowerBias == 1) {
             const fixed val = dynamic_cast<TechnoClass*>(obj)->FirepowerBias *
-                              fixed(CrateData.at(powerup), 256);
+                              fixed(TheRules().crate_data().at(powerup), 256);
             dynamic_cast<TechnoClass*>(obj)->FirepowerBias = val;
             if (obj->Owner() == PlayerPtr->Class->House) {
               tospeak = true;
@@ -2665,9 +2671,11 @@ bool CellClass::Goodie_Check(FootClass* object) {
           ObjectClass* obj = DisplayClass::Layer.at(LAYER_GROUND).at(index);
 
           if (obj && obj->Is_Techno() &&
-              Distance(Cell_Coord(), obj->Center_Coord()) < Rule.CrateRadius) {
+              Distance(Cell_Coord(), obj->Center_Coord()) <
+                  TheRules().CrateRadius) {
             dynamic_cast<TechnoClass*>(obj)->IronCurtainCountDown.Set(
-                kTicksPerMinute * fixed(CrateData.at(powerup), 256));
+                kTicksPerMinute *
+                fixed(TheRules().crate_data().at(powerup), 256));
             obj->Mark(MARK_CHANGE);
           }
         }
@@ -2870,7 +2878,7 @@ bool CellClass::Is_Clear_To_Move(SpeedType loco, bool ignoreinfantry,
   **	See if the ground type is impassable to this locomotion type and if
   **	so, return the error condition.
   */
-  if (Ground.at(land).Cost.at(loco) == 0) {
+  if (TheRules().ground().at(land).Cost.at(loco) == 0) {
     return false;
   }
 
@@ -2928,7 +2936,7 @@ bool CellClass::Is_Bridge_Here() const {
  * HISTORY: * 08/14/1996 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Can_Tiberium_Grow() const {
-  if (!Rule.IsTGrowth) {
+  if (!TheRules().IsTGrowth) {
     return false;
   }
 
@@ -2970,7 +2978,7 @@ bool CellClass::Can_Tiberium_Grow() const {
  * HISTORY: * 08/14/1996 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Can_Tiberium_Spread() const {
-  if (!Rule.IsTSpread) {
+  if (!TheRules().IsTSpread) {
     return false;
   }
 
@@ -3087,7 +3095,7 @@ bool CellClass::Can_Tiberium_Germinate() const {
     return false;
   }
 
-  if (!Ground.at(Land_Type()).Build) {
+  if (!TheRules().ground().at(Land_Type()).Build) {
     return false;
   }
 

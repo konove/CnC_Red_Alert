@@ -4588,7 +4588,7 @@ void DisplayClass::All_To_Look(bool units_only) {
           object->Look();
         }
       } else {
-        if (tech->What_Am_I() == RTTI_BUILDING && Rule.IsAllyReveal &&
+        if (tech->What_Am_I() == RTTI_BUILDING && TheRules().IsAllyReveal &&
             tech->House->Is_Ally(PlayerPtr)) {
           tech->Look();
         }
@@ -4614,7 +4614,7 @@ void DisplayClass::Constrained_Look(COORDINATE center, LEPTON distance) {
           object->Look();
         }
       } else {
-        if (tech->What_Am_I() == RTTI_BUILDING && Rule.IsAllyReveal &&
+        if (tech->What_Am_I() == RTTI_BUILDING && TheRules().IsAllyReveal &&
             tech->House->Is_Ally(PlayerPtr) &&
             Distance(tech->Center_Coord(), center) <=
                 (tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W) +
