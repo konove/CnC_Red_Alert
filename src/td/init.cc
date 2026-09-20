@@ -1208,22 +1208,23 @@ bool Select_Game(bool fade) {
                 DLOG(INFO) << "C&C95 - About to give myself focus.";
 
                 DLOG(INFO) << "C&C95 - About to initialise Winsock.";
-                if (Winsock.Init()) {
+                if (TheNetwork().winsock().Init()) {
                   DLOG(INFO) << "C&C95 - About to read multiplayer settings.";
                   Read_MultiPlayer_Settings();
-                  Server = TheNetwork().westwood_is_host();
+                  TheNetwork().is_server() = TheNetwork().westwood_is_host();
 
                   DLOG(INFO) << "C&C95 - About to set addresses.";
-                  Winsock.Set_Host_Address(TheNetwork().westwood_address());
+                  TheNetwork().winsock().Set_Host_Address(
+                      TheNetwork().westwood_address());
 
                   DLOG(INFO)
                       << "C&C95 - About to call Start_Server or Start_Client.";
-                  if (Server) {
+                  if (TheNetwork().is_server()) {
                     TheNetwork().modem_game_type() = INTERNET_HOST;
-                    Winsock.Start_Server();
+                    TheNetwork().winsock().Start_Server();
                   } else {
                     TheNetwork().modem_game_type() = INTERNET_JOIN;
-                    Winsock.Start_Client();
+                    TheNetwork().winsock().Start_Client();
                   }
 
                   // #if (0)
@@ -1238,7 +1239,7 @@ bool Select_Game(bool fade) {
                   CountDownTimerClass ptimer;
 
                   DLOG(INFO) << "C&C95 - Entering read loop.";
-                  while (Winsock.Read(temp_buffer, 1024)) {
+                  while (TheNetwork().winsock().Read(temp_buffer, 1024)) {
                     DLOG(INFO) << "C&C95 - Discarding a packet.";
                     ptimer.Set(30, true);
                     while (ptimer.Time()) {
@@ -1266,7 +1267,7 @@ bool Select_Game(bool fade) {
 #endif
                   Read_Game_Options("C&CSPAWN.INI");
 
-                if (Server) {
+                if (TheNetwork().is_server()) {
                   DLOG(INFO) << "C&C95 - About to call Server_Remote_Connect.";
                   if (Server_Remote_Connect()) {
                     DLOG(INFO)
@@ -1279,7 +1280,7 @@ bool Select_Game(bool fade) {
                    *   SEND FAILURE PACKET TO WCHAT HERE !!!!!
                    *
                    */
-                  Winsock.Close();
+                  TheNetwork().winsock().Close();
                   TheSession().type() = GAME_NORMAL;
                   selection = kSelNone;
 #ifdef _WIN32
@@ -1302,7 +1303,7 @@ bool Select_Game(bool fade) {
                  *   SEND FAILURE PACKET TO WCHAT HERE !!!!!
                  *
                  */
-                Winsock.Close();
+                TheNetwork().winsock().Close();
                 TheSession().type() = GAME_NORMAL;
                 selection = kSelNone;
 #ifdef _WIN32

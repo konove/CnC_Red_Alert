@@ -30,7 +30,4 @@ void Smart_Printf(const absl::FormatSpec<Args...>& format,
 void Hex_Dump_Data(std::span<const char> buffer);
 void itoh(int i, std::span<char> s);
 
-class ModemRegistryEntryClass;
-extern ModemRegistryEntryClass* ModemRegistry;
-
 #endif  // CNC_RED_ALERT_TD_NULLDLG_H_

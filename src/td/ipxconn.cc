@@ -61,6 +61,7 @@
 #include "td/ipx.h"
 #include "td/ipx95.h"
 #include "td/ipxaddr.h"
+#include "td/network.h"
 #include "td/noseqcon.h"
 #include "td/tcpip.h"
 
@@ -125,7 +126,7 @@ IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
   ID = id;
   port::SafeCopy(Name, name);
 
-  if (!Winsock.Get_Connected()) {
+  if (!TheNetwork().winsock().Get_Connected()) {
     /*------------------------------------------------------------------------
     If our Address field is an actual address (ie NULL wasn't passed to the
     constructor), pre-compute the ImmediateAddress value for the SendECB.
@@ -275,7 +276,7 @@ void IPXConnClass::Configure(uint16_t socket, int conn_num, ECBType* listen_ecb,
 bool IPXConnClass::Start_Listening() {
 #ifndef NOT_FOR_WIN95
 
-  if (Winsock.Get_Connected()) {
+  if (TheNetwork().winsock().Get_Connected()) {
     return true;
   }
 
@@ -384,7 +385,7 @@ bool IPXConnClass::Stop_Listening() {
 
 #ifndef NOT_FOR_WIN95
 
-  if (Winsock.Get_Connected()) {
+  if (TheNetwork().winsock().Get_Connected()) {
     Listening = 0;
     return true;
   }
@@ -459,8 +460,7 @@ int IPXConnClass::Send(std::span<const std::byte> buf, int buflen) {
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXConnClass::Open_Socket(uint16_t socket) {
-
-  if (Winsock.Get_Connected()) {
+  if (TheNetwork().winsock().Get_Connected()) {
     SocketOpen = 1;
     return 1;
   }
@@ -514,7 +514,7 @@ int IPXConnClass::Open_Socket(uint16_t socket) {
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
 void IPXConnClass::Close_Socket(uint16_t socket) {
-  if (Winsock.Get_Connected()) {
+  if (TheNetwork().winsock().Get_Connected()) {
     SocketOpen = 0;
     return;
   }
@@ -573,7 +573,7 @@ int IPXConnClass::Send_To(std::span<const std::byte> buf, int buflen,
 
   unsigned char send_address[6];
 
-  if (Winsock.Get_Connected()) {
+  if (TheNetwork().winsock().Get_Connected()) {
 #ifdef VIRTUAL_SUBNET_SERVER
     if (!immed.empty()) {
       base::CopyBytes(base::ObjectBytes(send_address), std::as_bytes(immed), 6);
@@ -592,10 +592,10 @@ int IPXConnClass::Send_To(std::span<const std::byte> buf, int buflen,
     *(unsigned short*)tempsend = htons(target_mask);
     base::CopyBytes(tempsend + 2, buf, buflen);
 
-    Winsock.Write((void*)tempsend, buflen + sizeof(target_mask));
+    TheNetwork().winsock().Write((void*)tempsend, buflen + sizeof(target_mask));
     delete[] tempsend;
 #else   // VIRTUAL_SUBNET_SERVER
-    Winsock.Write(buf, buflen);
+    TheNetwork().winsock().Write(buf, buflen);
 #endif  // VIRTUAL_SUBNET_SERVER
 
     return 1;
@@ -651,17 +651,18 @@ int IPXConnClass::Send_To(std::span<const std::byte> buf, int buflen,
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXConnClass::Broadcast(std::span<const std::byte> buf, int buflen) {
-  if (Winsock.Get_Connected()) {
+  if (TheNetwork().winsock().Get_Connected()) {
 #ifdef VIRTUAL_SUBNET_SERVER
     char* tempsend = new char[buflen + sizeof(unsigned short)];
     base::CopyBytes(tempsend + 2, buf, buflen);
     *tempsend = 0;
     *(tempsend + 1) = 0;
 
-    Winsock.Write((void*)tempsend, buflen + sizeof(unsigned short));
+    TheNetwork().winsock().Write((void*)tempsend,
+                                 buflen + sizeof(unsigned short));
     delete[] tempsend;
 #else   // VIRTUAL_SUBNET_SERVER
-    Winsock.Write(buf, buflen);
+    TheNetwork().winsock().Write(buf, buflen);
 #endif  // VIRTUAL_SUBNET_SERVER
     return 1;
   }

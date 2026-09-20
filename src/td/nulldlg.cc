@@ -117,7 +117,6 @@
 #include "tech/crc.h"
 #include "tech/number_parse.h"
 
-ModemRegistryEntryClass* ModemRegistry = nullptr;  // Ptr to modem registry data
 
 // Whether Smart_Print() echoes to stdout; on while a serial game runs.
 static bool smart_print_enabled = false;
@@ -2187,19 +2186,19 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   *its just
   ** tough luck if the user has more than 10 modems attached!
   */
-  delete ModemRegistry;
+  delete TheNetwork().modem_registry();
   int modems_found = 0;
   for (i = 0; i < 10; i++) {
-    ModemRegistry = new ModemRegistryEntryClass(i);
-    if (ModemRegistry->Get_Modem_Name()) {
+    TheNetwork().modem_registry() = new ModemRegistryEntryClass(i);
+    if (TheNetwork().modem_registry()->Get_Modem_Name()) {
       port::SafeCopy(base::At(modemnames, modems_found),
-                     ModemRegistry->Get_Modem_Name());
+                     TheNetwork().modem_registry()->Get_Modem_Name());
       portlist.Add_Item(base::At(modemnames, modems_found++));
       port_custom_index++;
     }
-    delete ModemRegistry;
+    delete TheNetwork().modem_registry();
   }
-  ModemRegistry = nullptr;
+  TheNetwork().modem_registry() = nullptr;
 
   portlist.Add_Item(custom_port);
 
@@ -3598,7 +3597,7 @@ int Com_Scenario_Dialog() {
         Dialog & Field labels
         ...............................................................*/
 #ifdef FORCE_WINSOCK
-        if (Winsock.Get_Connected()) {
+        if (TheNetwork().winsock().Get_Connected()) {
           Draw_Caption(TXT_HOST_INTERNET_GAME, d_dialog_x, d_dialog_y,
                        d_dialog_w);
         } else {
@@ -4918,7 +4917,7 @@ int Com_Show_Scenario_Dialog() {
         Dialog & Field labels
         ...............................................................*/
 #ifdef FORCE_WINSOCK
-        if (Winsock.Get_Connected()) {
+        if (TheNetwork().winsock().Get_Connected()) {
           Draw_Caption(TXT_JOIN_INTERNET_GAME, d_dialog_x, d_dialog_y,
                        d_dialog_w);
         } else {

@@ -198,7 +198,7 @@ void IPXAddressClass::Set_Address(const NetNumType& net,
  *=========================================================================*/
 void IPXAddressClass::Set_Address(IPXHeaderType* header) {
 #ifdef VIRTUAL_SUBNET_SERVER
-  if (Winsock.Get_Connected()) {
+  if (TheNetwork().winsock().Get_Connected()) {
     memset(NetworkNumber, 1, 4);
     memset(NodeAddress, 0, 6);
     unsigned short target_mask = *(unsigned short*)header;
@@ -207,7 +207,7 @@ void IPXAddressClass::Set_Address(IPXHeaderType* header) {
     **  If mask is 0 then this packet was broadcast from the other player
     **  Otherwise exclusive or with 3 to get other players mask
     */
-    if (!UseVirtualSubnetServer) {
+    if (!TheNetwork().use_subnet_server()) {
       if (target_mask == 0) {
         target_mask = 1 << TheNetwork().westwood_is_host();
       }

@@ -97,8 +97,6 @@
 #ifdef _WIN32
 HWND WChatHWND = 0;  // Handle to Wchat window.
 #endif
-bool UseVirtualSubnetServer;
-int InternetMaxPlayers;
 
 int Read_Game_Options();
 
@@ -199,7 +197,7 @@ void Check_From_WChat(const char* wchat_name) {
     TheNetwork().westwood_is_host() =
         std::string_view(key_string).contains('1');
 
-    UseVirtualSubnetServer =
+    TheNetwork().use_subnet_server() =
         WWGetPrivateProfileInt("Internet", "UseVSS", 0, ini_file) != 0;
 
     TheSpecial().IsFromWChat = true;
@@ -298,7 +296,7 @@ int Read_Game_Options(const char* name) {
   TheNetwork().westwood_start_time() = static_cast<uint32_t>(
       WWGetPrivateProfileInt("Internet", "StartTime", 0, buffer));
 
-  InternetMaxPlayers =
+  TheNetwork().internet_max_players() =
       WWGetPrivateProfileInt("Internet", "MaxPlayers", 2, buffer);
 
   if (TheSession().tiberium()) {

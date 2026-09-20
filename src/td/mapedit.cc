@@ -88,6 +88,7 @@
 #include "td/facing.h"
 #include "td/gadget.h"
 #include "td/game_clock.h"
+#include "td/game_state.h"
 #include "td/gauge.h"
 #include "td/house.h"
 #include "td/inline.h"
@@ -1577,8 +1578,9 @@ void MapEditClass::Main_Menu() {
     Hide_Mouse();  // Do_Menu assumes the mouse is already hidden
     const int selection = Do_Menu(_menus, true);  // option the user picks
     Show_Mouse();
-    if (UnknownKey == KN_ESC || UnknownKey == KN_LMOUSE ||
-        UnknownKey == KN_RMOUSE) {
+    if (TheGameState().unknown_key() == KN_ESC ||
+        TheGameState().unknown_key() == KN_LMOUSE ||
+        TheGameState().unknown_key() == KN_RMOUSE) {
       break;
     }
 
@@ -1758,8 +1760,9 @@ void MapEditClass::AI_Menu() {
     Hide_Mouse();  // Do_Menu assumes the mouse is already hidden
     const int selection = Do_Menu(_menus, true);  // option the user picks
     Show_Mouse();
-    if (UnknownKey == KN_ESC || UnknownKey == KN_LMOUSE ||
-        UnknownKey == KN_RMOUSE) {
+    if (TheGameState().unknown_key() == KN_ESC ||
+        TheGameState().unknown_key() == KN_LMOUSE ||
+        TheGameState().unknown_key() == KN_RMOUSE) {
       break;
     }
 

@@ -57,6 +57,7 @@
 #include "sdllib/wincomm.h"
 #include "td/connect.h"
 #include "td/defines.h"
+#include "td/network.h"
 #include "td/noseqcon.h"
 #include "td/session.h"
 #include "td/tcpip.h"
@@ -208,8 +209,9 @@ int NullModemConnClass::Send(std::span<const std::byte> buf, int buflen) {
   ------------------------------------------------------------------------*/
   // status =
 #ifdef FORCE_WINSOCK
-  if (Winsock.Get_Connected() || TheSession().type() == GAME_INTERNET) {
-    Winsock.Write(std::as_bytes(std::span(SendBuf)), sendlen);
+  if (TheNetwork().winsock().Get_Connected() ||
+      TheSession().type() == GAME_INTERNET) {
+    TheNetwork().winsock().Write(std::as_bytes(std::span(SendBuf)), sendlen);
   } else {
     SerialPort->Write_To_Serial_Port(SendBuf.data(), sendlen);
   }

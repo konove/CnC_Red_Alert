@@ -92,8 +92,6 @@ using socklen_t = int;
 /*
 ** Nasty globals
 */
-bool Server;                // Is this player acting as client or server
-TcpipManagerClass Winsock;  // The object for interfacing with Winsock
 
 /***********************************************************************************************
  * TMC::TcpipManagerClass -- constructor for the TcpipManagerClass *

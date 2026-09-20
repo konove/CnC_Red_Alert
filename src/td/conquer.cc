@@ -487,7 +487,7 @@ void Main_Game() {
 #ifdef FORCE_WINSOCK
     if (TheSpecial().IsFromWChat) {
       Shutdown_Network();  // Clear up the pseudo IPX stuff
-      Winsock.Close();
+      TheNetwork().winsock().Close();
       TheSpecial().IsFromWChat = false;
       TheGameState().spawned_from_chat() = false;
 #ifdef _WIN32

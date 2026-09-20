@@ -88,6 +88,7 @@
 #include "td/ipxaddr.h"
 #include "td/ipxconn.h"
 #include "td/ipxgconn.h"
+#include "td/network.h"
 #include "td/session.h"
 #include "td/tcpip.h"
 
@@ -780,7 +781,8 @@ int IPXManagerClass::Send_Private_Message(std::span<const std::byte> buf,
     */
 
 #ifdef VIRTUAL_SUBNET_SERVER
-    if (ack_req || (!Winsock.Get_Connected() || !UseVirtualSubnetServer)) {
+    if (ack_req || (!TheNetwork().winsock().Get_Connected() ||
+                    !TheNetwork().use_subnet_server())) {
 #endif  // VIRTUAL_SUBNET_SERVER
       /*.....................................................................
       Check for room in all connections
@@ -896,8 +898,8 @@ int IPXManagerClass::Get_Private_Message(std::span<std::byte> buf, int* buflen,
   }
 
 #ifdef VIRTUAL_SUBNET_SERVER
-  if (Winsock.Get_Connected()) {
-    vss = (int)UseVirtualSubnetServer;
+  if (TheNetwork().winsock().Get_Connected()) {
+    vss = (int)TheNetwork().use_subnet_server();
   }
 #endif  // VIRTUAL_SUBNET_SERVER
 
@@ -989,9 +991,9 @@ int IPXManagerClass::Service() {
   IPXHeaderType* cur_header_buf = nullptr;
   std::span<std::byte> cur_data_buf;
 
-  if (Winsock.Get_Connected()) {
-    while ((recv_length = Winsock.Read(base::ObjectBytes(temp_receive_buffer),
-                                       1024)) != 0) {
+  if (TheNetwork().winsock().Get_Connected()) {
+    while ((recv_length = TheNetwork().winsock().Read(
+                base::ObjectBytes(temp_receive_buffer), 1024)) != 0) {
 #ifdef VIRTUAL_SUBNET_SERVER
       /*
       ** Get a pointer to the data header and swap the bit mask
@@ -1471,8 +1473,8 @@ int32_t IPXManagerClass::Response_Time() {
 #ifdef VIRTUAL_SUBNET_SERVER
   int vss = 0;
 
-  if (Winsock.Get_Connected()) {
-    vss = (int)UseVirtualSubnetServer;
+  if (TheNetwork().winsock().Get_Connected()) {
+    vss = (int)TheNetwork().use_subnet_server();
   }
 
   for (i = 0; i < NumConnections - vss; i++) {

@@ -69,7 +69,6 @@
 #include "td/profile.h"
 #include "td/session.h"
 #include "td/special.h"
-#include "td/tcpip.h"
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/utracker.h"
@@ -217,7 +216,7 @@ void Send_Statistics_Packet() {
     /*
     ** Field to identify this as C&C 95 internet game statistics packet
     */
-    if (Server) {
+    if (TheNetwork().is_server()) {
       stats.Add_Field(FIELD_PACKET_TYPE, kPacketTypeHostGameInfo);
     } else {
       stats.Add_Field(FIELD_PACKET_TYPE, kPacketTypeGuestGameInfo);

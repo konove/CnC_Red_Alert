@@ -80,7 +80,6 @@ static int Select_To_Entry(int select, uint32_t bitfield, int index);
 static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
                        int hfgc, int bgc);
 
-int UnknownKey;
 
 static MenuConfig menu_config;
 
@@ -297,7 +296,7 @@ int Check_Menu(MenuConfig& menu, std::span<const char* const> text,
   **	be done.
   */
   int key = 0;
-  UnknownKey = 0;
+  TheGameState().unknown_key() = 0;
   if (Keyboard::Check()) {
     key = (Keyboard::Get() & 0x18FF); /* mask off all but release bit	*/
   }
@@ -354,7 +353,8 @@ int Check_Menu(MenuConfig& menu, std::span<const char* const> text,
                                 ActiveKeyboard->MouseQY, mx1, my1, mx2, my2)) {
         newitem = (ActiveKeyboard->MouseQY - my1) / menuskip;
       } else {
-        UnknownKey = key;  //	Pass the unprocessed button click back.
+        TheGameState().unknown_key() =
+            key;  //	Pass the unprocessed button click back.
         break;
       }
       [[fallthrough]];
@@ -388,7 +388,7 @@ int Check_Menu(MenuConfig& menu, std::span<const char* const> text,
           break;
         }
       }
-      UnknownKey = key;
+      TheGameState().unknown_key() = key;
       break;
   }
 
@@ -493,14 +493,14 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
 
   Keyboard::Clear();
   int selection = -1;  // Selection from user.
-  UnknownKey = 0;
+  TheGameState().unknown_key() = 0;
   while (selection == -1) {
     Call_Back();
     selection = Check_Menu(menu_config, strings, 0xFFL, 0);
     // The KN_ESC/KN_LMOUSE/KN_RMOUSE tests were unreachable: any of them
     // already satisfies the != 0 in front of them, so the loop has always
     // exited on the first unrecognized key of any kind.
-    if (UnknownKey != 0) {
+    if (TheGameState().unknown_key() != 0) {
       break;
     }
   }

@@ -16,8 +16,10 @@
 #include "td/nodename.h"
 #include "td/nullmgr.h"
 #include "td/queue.h"
+#include "td/tcpip.h"
 #include "td/vector.h"
 
+class ModemRegistryEntryClass;
 class PhoneEntryClass;
 
 // The transports a multiplayer game runs over -- the null modem and the IPX
@@ -144,6 +146,26 @@ class Network {
     return players_;
   }
 
+  // The TCP/IP transport, whether this machine is the server rather than a
+  // client, whether the games are routed through Westwood's subnet server,
+  // and how many players an internet game may hold.
+  TcpipManagerClass& winsock() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return winsock_;
+  }
+  bool& is_server() ABSL_ATTRIBUTE_LIFETIME_BOUND { return is_server_; }
+  bool& use_subnet_server() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return use_subnet_server_;
+  }
+  int& internet_max_players() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return internet_max_players_;
+  }
+
+  // The modems the registry lists, as a linked list, or null before the
+  // serial dialog has read it.
+  ModemRegistryEntryClass*& modem_registry() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return modem_registry_;
+  }
+
   // A packet that arrived before the game was ready for it, kept until it
   // is. Null when there is none.
   void*& packet_later() ABSL_ATTRIBUTE_LIFETIME_BOUND { return packet_later_; }
@@ -238,6 +260,13 @@ class Network {
 
   DynamicVectorClass<NodeNameType*> games_;
   DynamicVectorClass<NodeNameType*> players_;
+
+  TcpipManagerClass winsock_;
+  bool is_server_ = false;
+  bool use_subnet_server_ = false;
+  int internet_max_players_ = 0;
+
+  ModemRegistryEntryClass* modem_registry_ = nullptr;
 
   void* packet_later_ = nullptr;
 

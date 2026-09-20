@@ -21,7 +21,6 @@ void Setup_Menu(const MenuConfig& menu, std::span<const char* const> labels,
 int Check_Menu(MenuConfig& menu, std::span<const char* const> text,
                uint32_t field, int index);
 int Do_Menu(std::span<const char* const> strings, bool blue);
-extern int UnknownKey;
 int Main_Menu(int timeout);
 
 #endif  // CNC_RED_ALERT_TD_MENUS_H_

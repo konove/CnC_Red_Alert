@@ -103,6 +103,9 @@ class GameState {
     return speech_timer_;
   }
 
+  // The key a dialog did not understand and handed back to its caller.
+  int& unknown_key() ABSL_ATTRIBUTE_LIFETIME_BOUND { return unknown_key_; }
+
   // Whether the dinosaurs of the Jurassic cheat may appear, and the flag a
   // unit sets while it is carrying the scenario's archive target.
   bool& thingies_enabled() ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -151,6 +154,8 @@ class GameState {
   VQAConfig anim_control_{};
   SpecialDialogType special_dialog_ = SDLG_NONE;
   CountDownTimerClass speech_timer_{int64_t{0}};
+
+  int unknown_key_ = 0;
 
   bool thingies_enabled_ = false;
   bool special_flag_ = false;

@@ -2664,7 +2664,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         TheSpecial().IsTSpread = 0;
       }
 
-      if (Winsock.Get_Connected()) {
+      if (TheNetwork().winsock().Get_Connected()) {
         TheSession().scenario_index() =
             TheNetwork().global_packet().ScenarioInfo.Scenario;
       } else {
@@ -4804,7 +4804,8 @@ static int Net_Fake_New_Dialog() {
       ------------------------------------------------------------------*/
       default:
 #ifdef VIRTUAL_SUBNET_SERVER
-        if (TheNetwork().players().Count() == InternetMaxPlayers - 1) {
+        if (TheNetwork().players().Count() ==
+            TheNetwork().internet_max_players() - 1) {
 #else   // VIRTUAL_SUBNET_SERVER
         if (TheNetwork().players().Count() > 0) {
 #endif  // VIRTUAL_SUBNET_SERVER
@@ -5019,7 +5020,7 @@ static int Net_Fake_New_Dialog() {
     /*
     ** Create an additional connection to the VSS
     */
-    if (UseVirtualSubnetServer) {
+    if (TheNetwork().use_subnet_server()) {
       IPXAddressClass vss_global_address;
       NetNodeType vss_node;
       NetNumType vss_net;
@@ -5709,7 +5710,7 @@ static int Net_Fake_Join_Dialog() {
       /*
       ** Create an additional connection to the VSS
       */
-      if (UseVirtualSubnetServer) {
+      if (TheNetwork().use_subnet_server()) {
         IPXAddressClass vss_global_address;
         NetNodeType vss_node;
         NetNumType vss_net;

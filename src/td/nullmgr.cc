@@ -94,7 +94,6 @@
 #include "td/msgbox.h"
 #include "td/network.h"
 #include "td/nullconn.h"
-#include "td/nulldlg.h"
 #include "td/screen.h"
 #include "td/tcpip.h"
 #include "td/text.h"
@@ -306,20 +305,21 @@ int NullModemClass::Init(int port, int /*unused*/, char* dev_name, int baud,
       *otherwise use
       ** the device name directly to open the port with.
       */
-      if (ModemRegistry) {
-        delete ModemRegistry;
-        ModemRegistry = nullptr;
+      if (TheNetwork().modem_registry()) {
+        delete TheNetwork().modem_registry();
+        TheNetwork().modem_registry() = nullptr;
       }
       for (int i = 0; i < 10; i++) {
-        ModemRegistry = new ModemRegistryEntryClass(i);
-        if (ModemRegistry->Get_Modem_Name() &&
-            (std::string_view(dev_name) == ModemRegistry->Get_Modem_Name())) {
-          device = ModemRegistry->Get_Modem_Device_Name();
+        TheNetwork().modem_registry() = new ModemRegistryEntryClass(i);
+        if (TheNetwork().modem_registry()->Get_Modem_Name() &&
+            (std::string_view(dev_name) ==
+             TheNetwork().modem_registry()->Get_Modem_Name())) {
+          device = TheNetwork().modem_registry()->Get_Modem_Device_Name();
           break;
         }
 
-        delete ModemRegistry;
-        ModemRegistry = nullptr;
+        delete TheNetwork().modem_registry();
+        TheNetwork().modem_registry() = nullptr;
       }
       break;
 
@@ -489,23 +489,24 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
       *otherwise use
       ** the device name directly to open the port with.
       */
-      if (ModemRegistry) {
-        delete ModemRegistry;
-        ModemRegistry = nullptr;
+      if (TheNetwork().modem_registry()) {
+        delete TheNetwork().modem_registry();
+        TheNetwork().modem_registry() = nullptr;
       }
       for (int i = 0; i < 10; i++) {
-        ModemRegistry = new ModemRegistryEntryClass(i);
-        if (ModemRegistry->Get_Modem_Name() &&
-            (std::string_view(device) == ModemRegistry->Get_Modem_Name())) {
+        TheNetwork().modem_registry() = new ModemRegistryEntryClass(i);
+        if (TheNetwork().modem_registry()->Get_Modem_Name() &&
+            (std::string_view(device) ==
+             TheNetwork().modem_registry()->Get_Modem_Name())) {
           /*
           ** Got a match. Break out leaving the registry info intact.
           */
-          device = ModemRegistry->Get_Modem_Device_Name();
+          device = TheNetwork().modem_registry()->Get_Modem_Device_Name();
           break;
         }
 
-        delete ModemRegistry;
-        ModemRegistry = nullptr;
+        delete TheNetwork().modem_registry();
+        TheNetwork().modem_registry() = nullptr;
       }
       break;
 
@@ -550,7 +551,7 @@ void NullModemClass::Shutdown() {
   }
 
 #ifdef FORCE_WINSOCK
-  if (Winsock.Get_Connected()) {
+  if (TheNetwork().winsock().Get_Connected()) {
     Delete_Connection();
   }
 #endif
@@ -1171,7 +1172,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Use the settings from the registry to further initialise the modem
   */
-  if (settings->Port == 1 && ModemRegistry) {
+  if (settings->Port == 1 && TheNetwork().modem_registry()) {
     /*
     ** Send the init strings from the registry if available
     */
@@ -1181,9 +1182,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
       /*
       ** Send the init string for hardware flow control
       */
-      if (ModemRegistry->Get_Modem_Hardware_Flow_Control()) {
-        port::SafeAppend(send_string,
-                         ModemRegistry->Get_Modem_Hardware_Flow_Control());
+      if (TheNetwork().modem_registry()->Get_Modem_Hardware_Flow_Control()) {
+        port::SafeAppend(
+            send_string,
+            TheNetwork().modem_registry()->Get_Modem_Hardware_Flow_Control());
         status = Send_Modem_Command(send_string, '\r', buffer, 81,
                                     DEFAULT_TIMEOUT, 1);
         if ((status != kModemCmdOk && status != kModemCmd0) &&
@@ -1196,9 +1198,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
       /*
       ** Send the init string for no flow control
       */
-      if (ModemRegistry->Get_Modem_No_Flow_Control()) {
-        port::SafeAppend(send_string,
-                         ModemRegistry->Get_Modem_No_Flow_Control());
+      if (TheNetwork().modem_registry()->Get_Modem_No_Flow_Control()) {
+        port::SafeAppend(
+            send_string,
+            TheNetwork().modem_registry()->Get_Modem_No_Flow_Control());
         status = Send_Modem_Command(send_string, '\r', buffer, 81,
                                     DEFAULT_TIMEOUT, 1);
         if ((status != kModemCmdOk && status != kModemCmd0) &&
@@ -1213,9 +1216,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     ** Send the string for data compresseion
     */
     if (settings->Compression) {
-      if (ModemRegistry->Get_Modem_Compression_Enable()) {
-        port::SafeAppend(send_string,
-                         ModemRegistry->Get_Modem_Compression_Enable());
+      if (TheNetwork().modem_registry()->Get_Modem_Compression_Enable()) {
+        port::SafeAppend(
+            send_string,
+            TheNetwork().modem_registry()->Get_Modem_Compression_Enable());
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
         if ((status != kModemCmdOk && status != kModemCmd0) &&
             CCMessageBox().Process(TXT_NO_COMPRESSION_RESPONSE, TXT_IGNORE,
@@ -1224,9 +1228,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         }
       }
     } else {
-      if (ModemRegistry->Get_Modem_Compression_Disable()) {
-        port::SafeAppend(send_string,
-                         ModemRegistry->Get_Modem_Compression_Disable());
+      if (TheNetwork().modem_registry()->Get_Modem_Compression_Disable()) {
+        port::SafeAppend(
+            send_string,
+            TheNetwork().modem_registry()->Get_Modem_Compression_Disable());
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
         if ((status != kModemCmdOk && status != kModemCmd0) &&
             CCMessageBox().Process(TXT_NO_COMPRESSION_RESPONSE, TXT_IGNORE,
@@ -1240,9 +1245,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     ** Send the string for error correction
     */
     if (settings->ErrorCorrection) {
-      if (ModemRegistry->Get_Modem_Error_Correction_Enable()) {
-        port::SafeAppend(send_string,
-                         ModemRegistry->Get_Modem_Error_Correction_Enable());
+      if (TheNetwork().modem_registry()->Get_Modem_Error_Correction_Enable()) {
+        port::SafeAppend(
+            send_string,
+            TheNetwork().modem_registry()->Get_Modem_Error_Correction_Enable());
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
         if ((status != kModemCmdOk && status != kModemCmd0) &&
             CCMessageBox().Process(TXT_NO_ERROR_CORRECTION_RESPONSE, TXT_IGNORE,
@@ -1251,9 +1257,11 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
         }
       }
     } else {
-      if (ModemRegistry->Get_Modem_Error_Correction_Disable()) {
+      if (TheNetwork().modem_registry()->Get_Modem_Error_Correction_Disable()) {
         port::SafeAppend(send_string,
-                         ModemRegistry->Get_Modem_Error_Correction_Disable());
+                         TheNetwork()
+                             .modem_registry()
+                             ->Get_Modem_Error_Correction_Disable());
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
         if ((status != kModemCmdOk && status != kModemCmd0) &&
             CCMessageBox().Process(TXT_NO_ERROR_CORRECTION_RESPONSE, TXT_IGNORE,

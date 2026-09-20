@@ -63,7 +63,6 @@ using HANDLE = void*;
 #define WM_USER 0x400
 #endif
 
-extern bool Server;
 
 #define FORCE_WINSOCK 1
 
@@ -192,11 +191,8 @@ class TcpipManagerClass {
   int RXBufferTail = 0;
 };
 
-extern TcpipManagerClass Winsock;
 
 extern int Read_Game_Options(const char* /*name*/);
-extern bool UseVirtualSubnetServer;
-extern int InternetMaxPlayers;
 
 #define TXT_WINSOCK_CONNECTING (4567 + 13)
 #define TXT_WINSOCK_NOT_CONNECTING (4567 + 14)

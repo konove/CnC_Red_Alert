@@ -47,6 +47,7 @@
 #include "td/function.h"
 #include "td/game_state.h"
 #include "td/input.h"
+#include "td/network.h"
 #include "td/screen.h"
 #include "td/tcpip.h"
 
@@ -223,8 +224,8 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
         Shutdown_Network();
 #endif
         CCDebugString("C&C95 - Kill the Winsock stuff.\n");
-        if (Winsock.Get_Connected()) {
-          Winsock.Close();
+        if (TheNetwork().winsock().Get_Connected()) {
+          TheNetwork().winsock().Close();
         }
         CCDebugString("C&C95 - Call ExitProcess.\n");
         ExitProcess(0);
@@ -275,7 +276,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
     case WM_HOSTBYNAME:
     case WM_ASYNCEVENT:
     case WM_UDPASYNCEVENT:
-      Winsock.Message_Handler(hwnd, message, wParam, lParam);
+      TheNetwork().winsock().Message_Handler(hwnd, message, wParam, lParam);
       return 0;
 #endif  // FORCE_WINSOCK
   }
