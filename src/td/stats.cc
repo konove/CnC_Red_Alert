@@ -58,6 +58,7 @@
 #include "td/defines.h"
 #include "td/expand.h"
 #include "td/externs.h"
+#include "td/game_clock.h"
 #include "td/globals.h"
 #include "td/goptions.h"
 #include "td/heap.h"
@@ -376,8 +377,9 @@ void Send_Statistics_Packet() {
     if (GameEndTime / 60 == 0) {
       stats.Add_Field(FIELD_FRAME_RATE, int32_t{0});
     } else {
-      stats.Add_Field(FIELD_FRAME_RATE,
-                      static_cast<int32_t>(Frame / (GameEndTime / 60)));
+      stats.Add_Field(
+          FIELD_FRAME_RATE,
+          static_cast<int32_t>(CurrentFrame() / (GameEndTime / 60)));
     }
 
     CCDebugString("C&C95 - Adding game info stats.\n");

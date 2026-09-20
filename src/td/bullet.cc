@@ -74,7 +74,7 @@
 #include "td/externs.h"
 #include "td/facing.h"
 #include "td/fly.h"
-#include "td/globals.h"
+#include "td/game_clock.h"
 #include "td/heap.h"
 #include "td/inline.h"
 #include "td/mapedit.h"
@@ -351,7 +351,7 @@ void BulletClass::AI() {
   *but *	they only do so every other game frame (improves game speed and
   *makes *	missiles not so deadly).
   */
-  if (Frame % 2 != 0 && Class->IsHoming && Target_Legal(TarCom)) {
+  if (CurrentFrame() % 2 != 0 && Class->IsHoming && Target_Legal(TarCom)) {
     PrimaryFacing.Set_Desired(Direction256(Coord, As_Coord(TarCom)));
   }
 
@@ -537,11 +537,11 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
   **	For tumbling projectiles, fetch offset stage.
   */
   if (*this == BULLET_NAPALM) {
-    shapenum = static_cast<int>(shapenum + (Frame % 6));
+    shapenum = static_cast<int>(shapenum + (CurrentFrame() % 6));
   }
 
   if (*this == BULLET_GRENADE) {
-    shapenum = static_cast<int>(shapenum + (Frame % 8));
+    shapenum = static_cast<int>(shapenum + (CurrentFrame() % 8));
     //		Timer++;
   }
 

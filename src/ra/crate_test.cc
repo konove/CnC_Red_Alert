@@ -6,17 +6,21 @@
 #include <span>
 #include <vector>
 
+#include "base/installed.h"
 #include "gtest/gtest.h"
 #include "ra/defines.h"
-#include "ra/globals.h"
+#include "ra/game_clock.h"
 #include "ra/jshell.h"
 #include "tech/archive.h"
 #include "tech/byte_sink.h"
 #include "tech/ftimer.h"
 #include "tech/span_source.h"
 
-// The game clock is supplied by globals.cc in rasdl.
-int64_t Frame = 0;
+// The game clock Game owns in the real game.
+namespace {
+GameClock game_clock;
+const base::Installed<GameClock>::Scope game_clock_scope(game_clock);
+}  // namespace
 
 namespace {
 
@@ -53,7 +57,7 @@ TEST(CrateSerializeTest, DefaultCrateHasNoCellOrExpiry) {
 }
 
 TEST(CrateSerializeTest, CountdownSurvivesSaveAndReanchorsOnLoad) {
-  Frame = 100;
+  TheGameClock().set_frame(100);
   CELL cell = 42;
   Timer<FrameTickSource> timer(30);
   CrateSink fixture;
@@ -63,19 +67,19 @@ TEST(CrateSerializeTest, CountdownSurvivesSaveAndReanchorsOnLoad) {
   ASSERT_TRUE(ReadCrate(crate, fixture.bytes));
   EXPECT_TRUE(crate.Is_Here(cell));
 
-  Frame += 10;
+  TheGameClock().set_frame(CurrentFrame() + 10);
   CrateSink saved;
   ArchiveWriter writer(saved);
   writer(crate);
   EXPECT_FALSE(crate.Is_Expired());
 
-  Frame = 1000;
+  TheGameClock().set_frame(1000);
   CrateClass loaded;
   ASSERT_TRUE(ReadCrate(loaded, saved.bytes));
   EXPECT_TRUE(loaded.Is_Here(cell));
-  Frame += 19;
+  TheGameClock().set_frame(CurrentFrame() + 19);
   EXPECT_FALSE(loaded.Is_Expired());
-  ++Frame;
+  TheGameClock().Advance();
   EXPECT_TRUE(loaded.Is_Expired());
   loaded.Init();
   EXPECT_FALSE(loaded.Is_Valid());

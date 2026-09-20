@@ -44,6 +44,7 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "td/game_clock.h"
 #include "td/globals.h"
 
 /*
@@ -88,7 +89,7 @@ class TCountDownTimerClass {
 
   // Public functions
   void Set(int64_t set) {
-    Started = Frame;
+    Started = CurrentFrame();
     DelayTime = set;
   }  // Set count down value.
 
@@ -101,7 +102,7 @@ class TCountDownTimerClass {
   [[nodiscard]] bool Active() const { return Started != -1; }
   [[nodiscard]] bool Expired() const { return Time() == 0; }
   [[nodiscard]] int64_t Time() const {
-    return std::max<int64_t>(DelayTime - (Frame - Started), 0);
+    return std::max<int64_t>(DelayTime - (CurrentFrame() - Started), 0);
   }  // Fetch current count down value.
 
  protected:

@@ -61,7 +61,7 @@
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/factory.h"
-#include "td/globals.h"
+#include "td/game_clock.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -160,7 +160,8 @@ bool Save_Game(int id, const char* descr) {
   FileSink sink(file);
   ArchiveWriter writer(sink);
   writer.Section(FourCC("FRAM"));
-  writer(Frame);
+  int64_t frame = CurrentFrame();
+  writer(frame);
   const bool saved = [&] {
     Call_Back();
     /*
@@ -300,7 +301,9 @@ bool Load_Game(int id) {
   if (!reader.Section(FourCC("FRAM"))) {
     return false;
   }
-  reader(Frame);
+  int64_t frame = 0;
+  reader(frame);
+  TheGameClock().set_frame(frame);
   if (!reader.ok()) {
     return false;
   }

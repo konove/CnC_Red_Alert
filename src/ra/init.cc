@@ -98,6 +98,7 @@
 #include "ra/dialog.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
+#include "ra/game_clock.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/graphics_loader.h"
@@ -491,7 +492,7 @@ bool Select_Game(bool /*fade*/) {
   GameActive = true;
   DoList.Init();
   OutList.Init();
-  Frame = 0;
+  TheGameClock().set_frame(0);
   Scen.MissionTimer.Set(0);
   Scen.MissionTimer.Stop();
   Scen.CDifficulty = DIFF_NORMAL;

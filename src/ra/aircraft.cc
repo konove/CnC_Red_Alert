@@ -139,6 +139,7 @@
 #include "ra/facing.h"
 #include "ra/fly.h"
 #include "ra/foot.h"
+#include "ra/game_clock.h"
 #include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -503,7 +504,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   if (Height == kFlightLevel && static_cast<int>(Get_Speed()) < 3) {
     static const int _jitter[] = {0, 0, 0, 0, 1,  1,  1,  0,
                                   0, 0, 0, 0, -1, -1, -1, 0};
-    jitter = base::At(_jitter, Frame % 16);
+    jitter = base::At(_jitter, CurrentFrame() % 16);
   }
 
   /*

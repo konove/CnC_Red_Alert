@@ -81,7 +81,7 @@
 #include "ra/display.h"
 #include "ra/display_constants.h"
 #include "ra/externs.h"
-#include "ra/globals.h"
+#include "ra/game_clock.h"
 #include "ra/inline.h"
 #include "ra/keyframe.h"
 #include "ra/layer.h"
@@ -184,7 +184,7 @@ void ChronalVortexClass::Appear(COORDINATE coordinate) {
   Active = true;
   Animate = 0;
   StartShutdown = false;
-  LastAttackFrame = static_cast<int>(Frame);
+  LastAttackFrame = static_cast<int>(CurrentFrame());
   TargetObject = kTargetNone;
   ZapFrame = 0;
   Hidden = false;
@@ -355,13 +355,13 @@ void ChronalVortexClass::AI() {
     */
     Zap_Target();
 
-    if (Hidden && Frame - HiddenFrame > 50) {
+    if (Hidden && CurrentFrame() - HiddenFrame > 50) {
       /*
       ** Vortex is hidden. Chance of it showing itself increases the longer its
       *stays hidden.
       */
       const int chance = Random_Pick(0, 2000);
-      if (chance <= Frame - HiddenFrame) {
+      if (chance <= CurrentFrame() - HiddenFrame) {
         Show();
       }
     } else {
@@ -401,7 +401,7 @@ void ChronalVortexClass::AI() {
                 Set_Redraw();
                 StartHiding = false;
                 Hidden = true;
-                HiddenFrame = static_cast<int>(Frame);
+                HiddenFrame = static_cast<int>(CurrentFrame());
                 if (Random_Pick(0, 4) == 4) {
                   Disappear();
                 }
@@ -551,7 +551,7 @@ void ChronalVortexClass::Set_Target(ObjectClass* target) {
     if (target != nullptr) {
       TargetObject = target->As_Target();
     }
-    LastAttackFrame = static_cast<int>(Frame);
+    LastAttackFrame = static_cast<int>(CurrentFrame());
     TargetDistance =
         target != nullptr ? Distance(target->Center_Coord(), Position) : 0;
   }
@@ -623,7 +623,7 @@ void ChronalVortexClass::Attack() {
   */
 
   int chance = Random_Pick(0, 1000);
-  if (chance > Frame - LastAttackFrame) {
+  if (chance > CurrentFrame() - LastAttackFrame) {
     return;
   }
 

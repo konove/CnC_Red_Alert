@@ -161,6 +161,7 @@
 #include "td/factory.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
+#include "td/game_clock.h"
 #include "td/globals.h"
 #include "td/goptions.h"
 #include "td/heap.h"
@@ -1027,7 +1028,7 @@ void HouseClass::AI() {
     /*
     **	Replace the last harvester if there is a refinery present.
     */
-    if (GameToPlay == GAME_NORMAL && Frame > 5 &&
+    if (GameToPlay == GAME_NORMAL && CurrentFrame() > 5 &&
         (!IsHuman && BuildLevel <= 6) &&
         (ActiveBScan & kStructFlagRefinery) != 0 &&
         (UScan & kUnitFlagHarvester) == 0 && !IsFreeHarvester) {
@@ -1287,7 +1288,7 @@ void HouseClass::AI() {
   ** through each object's AI before it will be properly set.
   */
   if (GameToPlay != GAME_NORMAL && !IsDefeated && !ActiveBScan &&
-      !ActiveAScan && !UScan && !ActiveIScan && Frame > 0) {
+      !ActiveAScan && !UScan && !ActiveIScan && CurrentFrame() > 0) {
     MPlayer_Defeated();
   }
 

@@ -96,6 +96,7 @@
 #include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/foot.h"
+#include "ra/game_clock.h"
 #include "ra/globals.h"
 #include "ra/gscreen.h"
 #include "ra/heap.h"
@@ -2273,7 +2274,7 @@ bool VesselClass::Edge_Of_World_AI() {
  *=============================================================================================*/
 void VesselClass::Repair_AI() {
   if (IsSelfRepairing &&
-      (Frame % (kTicksPerMinute * TheRules().RepairRate) == 0)) {
+      (CurrentFrame() % (kTicksPerMinute * TheRules().RepairRate) == 0)) {
     Mark(MARK_CHANGE);
     const int cost = Class->Repair_Cost();
     const int step = Class->Repair_Step();

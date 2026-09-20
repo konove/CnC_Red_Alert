@@ -172,7 +172,7 @@
 #include "ra/face.h"
 #include "ra/factory.h"
 #include "ra/foot.h"
-#include "ra/globals.h"
+#include "ra/game_clock.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/infantry.h"
@@ -901,7 +901,7 @@ void HouseClass::AI() {
   **	someone sitting on it.  If so, make the scatter.  If they refuse,
   **	blow them up.
   */
-  if (FlagHome != 0 && Frame % kTicksPerSecond == 0) {
+  if (FlagHome != 0 && CurrentFrame() % kTicksPerSecond == 0) {
     TechnoClass* techno = Map.at(FlagHome).Cell_Techno();
     if (techno != nullptr) {
       bool moving = false;
@@ -1115,7 +1115,8 @@ void HouseClass::AI() {
   ** through each object's AI before it will be properly set.
   */
   if (Session.Type != GAME_NORMAL && !IsDefeated && !ActiveBScan &&
-      !ActiveAScan && !UScan && !ActiveIScan && !ActiveVScan && Frame > 0) {
+      !ActiveAScan && !UScan && !ActiveIScan && !ActiveVScan &&
+      CurrentFrame() > 0) {
     MPlayer_Defeated();
   }
 
@@ -4529,10 +4530,10 @@ int HouseClass::Expert_AI() {
       State = STATE_BUILDUP;
     }
 
-    if (State == STATE_ATTACKED && LATime + kTicksPerMinute < Frame) {
+    if (State == STATE_ATTACKED && LATime + kTicksPerMinute < CurrentFrame()) {
       State = STATE_BUILDUP;
     }
-    if (State != STATE_ATTACKED && LATime + kTicksPerMinute > Frame) {
+    if (State != STATE_ATTACKED && LATime + kTicksPerMinute > CurrentFrame()) {
       State = STATE_ATTACKED;
     }
   }
@@ -4709,7 +4710,7 @@ UrgencyType HouseClass::Check_Build_Offense() const {
 UrgencyType HouseClass::Check_Attack() const {
   CHECK_EQ(Houses.ID(this), ID);
 
-  if (Frame > kTicksPerMinute && Attack.IsFinished()) {
+  if (CurrentFrame() > kTicksPerMinute && Attack.IsFinished()) {
     if (State == STATE_ATTACKED) {
       return URGENCY_LOW;
     }
@@ -4817,7 +4818,8 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
   CHECK_EQ(Houses.ID(this), ID);
 
   const bool shuffle =
-      (Frame <= kTicksPerMinute || CurBuildings != 0) && !Percent_Chance(33);
+      (CurrentFrame() <= kTicksPerMinute || CurBuildings != 0) &&
+      !Percent_Chance(33);
   const bool forced = CurBuildings == 0;
   for (int index = 0; index < Aircraft.Count(); index++) {
     AircraftClass* a = Aircraft.Ptr(index);

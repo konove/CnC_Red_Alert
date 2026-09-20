@@ -58,6 +58,7 @@
 #include "base/types.h"
 #include "port/format.h"
 #include "ra/compat.h"
+#include "ra/game_clock.h"
 #include "ra/globals.h"
 #include "ra/palette.h"
 #include "sdllib/buffer.h"
@@ -196,7 +197,7 @@ inline int First_False_Bit(std::span<const uint32_t> array) {
 // Tick sources for Ticker<T>. Each provides a Tick() function that
 // returns the current value of a specific time source.
 struct FrameTickSource {
-  static int64_t Tick() { return Frame; }
+  static int64_t Tick() { return CurrentFrame(); }
 };
 
 struct SystemTickSource {

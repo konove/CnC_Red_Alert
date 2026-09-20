@@ -35,7 +35,7 @@ class Installed {
   // order they began; ending one out of order CHECK-fails.
   class Scope {
    public:
-    explicit Scope(T& instance ABSL_ATTRIBUTE_LIFETIME_BOUND)
+    explicit Scope(T& instance ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept
         : instance_(&instance),
           previous_(std::exchange(installed_, &instance)) {}
     ~Scope() {

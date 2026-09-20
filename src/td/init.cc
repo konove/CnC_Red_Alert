@@ -93,6 +93,7 @@
 #include "td/expand.h"
 #include "td/externs.h"
 #include "td/factory.h"
+#include "td/game_clock.h"
 #include "td/globals.h"
 #include "td/goptions.h"
 #include "td/heap.h"
@@ -743,7 +744,7 @@ bool Select_Game(bool fade) {
   GameActive = true;
   DoList.Init();
   OutList.Init();
-  Frame = 0;
+  TheGameClock().set_frame(0);
   PlayerWins = false;
   PlayerLoses = false;
   MPlayerObiWan = false;

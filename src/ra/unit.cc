@@ -133,6 +133,7 @@
 #include "ra/face.h"
 #include "ra/facing.h"
 #include "ra/foot.h"
+#include "ra/game_clock.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/gscreen.h"
@@ -467,7 +468,7 @@ void UnitClass::AI() {
   **	Mobile gap generators regenerate their gap every so often (just in
   *case).
   */
-  if (Class->IsGapper && !IsDriving && Frame % kTicksPerSecond == 0) {
+  if (Class->IsGapper && !IsDriving && CurrentFrame() % kTicksPerSecond == 0) {
     Shroud_Regen();
   }
 }
@@ -1962,14 +1963,15 @@ int UnitClass::Shape_Number() const {
     *number.
     */
     if (IsDriving) {
-      shapenum = static_cast<int>(8 + (shapenum * 8) + ((Frame + ID) / 2 % 8));
+      shapenum = static_cast<int>(8 + (shapenum * 8) +
+                                  ((CurrentFrame() + ID) / 2 % 8));
     } else {
       /*
       **	If in combat, then do combat anims.
       */
       if (Arm.HasTimeLeft()) {
-        shapenum =
-            static_cast<int>(8 + 64 + (shapenum * 4) + ((Frame + ID) / 2 % 4));
+        shapenum = static_cast<int>(8 + 64 + (shapenum * 4) +
+                                    ((CurrentFrame() + ID) / 2 % 4));
       }
     }
   } else {
@@ -2108,11 +2110,11 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
       if (*this == UNIT_MGG) {
         int x2 = x;
         int y2 = y;
-        shapenum = static_cast<int>(32 + (Frame % 8));
+        shapenum = static_cast<int>(32 + (CurrentFrame() % 8));
         Class->Turret_Adjust(PrimaryFacing, x2, y2);
         Techno_Draw_Object(shapefile, shapenum, x2, y2, window);
       } else {
-        shapenum = static_cast<int>(32 + (Frame % 32));
+        shapenum = static_cast<int>(32 + (CurrentFrame() % 32));
         if (*this == UNIT_TESLATANK) {
           Techno_Draw_Object(shapefile, shapenum, x, y, window);
         } else {
@@ -2160,8 +2162,9 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
   */
   if (Flagged != HOUSE_NONE) {
     CC_Draw_Shape(
-        MixArchive::RetrieveData("FLAGFLY.SHP"), static_cast<int>(Frame % 14),
-        x, y, window, SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
+        MixArchive::RetrieveData("FLAGFLY.SHP"),
+        static_cast<int>(CurrentFrame() % 14), x, y, window,
+        SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
         HouseClass::As_Pointer(Flagged)->Remap_Table(false, Class->Remap),
         MouseClass::UnitShadow);
   }

@@ -50,7 +50,7 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
-#include "ra/globals.h"
+#include "ra/game_clock.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
@@ -206,10 +206,10 @@ void CreditClass::Graphic_Logic(bool forced) {
 void CreditClass::AI(bool forced) {
   static int _last = 0;
 
-  if (!forced && Frame == _last) {
+  if (!forced && CurrentFrame() == _last) {
     return;
   }
-  _last = static_cast<int>(Frame);
+  _last = static_cast<int>(CurrentFrame());
 
   Credits = PlayerPtr->Available_Money();
 

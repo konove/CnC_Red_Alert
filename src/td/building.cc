@@ -173,6 +173,7 @@
 #include "td/factory.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
+#include "td/game_clock.h"
 #include "td/globals.h"
 #include "td/goptions.h"
 #include "td/heap.h"
@@ -1327,7 +1328,7 @@ void BuildingClass::AI() {
   /*
   **	Handle any repair process that may be going on.
   */
-  if (IsRepairing && (Frame % 15 == 0)) {
+  if (IsRepairing && (CurrentFrame() % 15 == 0)) {
     IsWrenchVisible = !static_cast<bool>(IsWrenchVisible);
     Mark(MARK_CHANGE);
     const int cost = Class->Repair_Cost();

@@ -88,6 +88,7 @@
 #include "ra/expand.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
+#include "ra/game_clock.h"
 #include "ra/gauge.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
@@ -4343,7 +4344,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       WWMessageBox().Process(TXT_ERROR_LOADING_GAME);
       rc = 0;
     }
-    Frame++;
+    TheGameClock().Advance();
   }
 
   return rc;
@@ -6037,7 +6038,7 @@ int Com_Show_Scenario_Dialog() {
       WWMessageBox().Process(TXT_ERROR_LOADING_GAME);
       rc = 0;
     }
-    Frame++;
+    TheGameClock().Advance();
   }
 
   return rc;

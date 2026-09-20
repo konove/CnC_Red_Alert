@@ -116,7 +116,7 @@
 #include "ra/display_constants.h"
 #include "ra/externs.h"
 #include "ra/foot.h"
-#include "ra/globals.h"
+#include "ra/game_clock.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
@@ -1350,8 +1350,9 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         const auto flag_remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, REMAP_NORMAL);
         CC_Draw_Shape(MixArchive::RetrieveData("FLAGFLY.SHP"),
-                      static_cast<int>(Frame % 14), x + (ICON_PIXEL_W / 2),
-                      y + (ICON_PIXEL_H / 2), WINDOW_TACTICAL,
+                      static_cast<int>(CurrentFrame() % 14),
+                      x + (ICON_PIXEL_W / 2), y + (ICON_PIXEL_H / 2),
+                      WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, flag_remap,
                       DisplayClass::UnitShadow);
       }

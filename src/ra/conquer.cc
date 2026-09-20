@@ -55,6 +55,7 @@
 #include "ra/event.h"
 #include "ra/externs.h"
 #include "ra/filepcx.h"
+#include "ra/game_clock.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
@@ -533,7 +534,7 @@ static void LogObjectPositions(const TFixedIHeapClass<T>& objects,
                                const std::string_view kind) {
   for (int index = 0; index < objects.Count(); index++) {
     const T* object = objects.Ptr(index);
-    LOG(INFO) << "frame " << Frame << " " << kind << " "
+    LOG(INFO) << "frame " << CurrentFrame() << " " << kind << " "
               << std::string_view(object->Class->Name()) << " coord "
               << absl::StrFormat("%08x", object->Coord) << " mission "
               << magic_enum::enum_name(object->Mission) << " navcom "
@@ -551,7 +552,7 @@ static bool LogFrameAndQuitIfDue() {
   LogObjectPositions(Vessels, "vessel");
   LogObjectPositions(Aircraft, "aircraft");
 
-  if (Frame < TheStartupOptions().quit_at_frame) {
+  if (CurrentFrame() < TheStartupOptions().quit_at_frame) {
     return false;
   }
   if (TheStartupOptions().save_slot >= 0) {
@@ -636,7 +637,7 @@ bool RunFrame() {
   Check_For_Focus_Loss();
 
   // Sync-bug trapping code
-  if (Frame >= Session.TrapFrame) {
+  if (CurrentFrame() >= Session.TrapFrame) {
     Session.Trap_Object();
   }
 
@@ -710,7 +711,7 @@ bool RunFrame() {
     return !GameActive;
   }
 
-  Frame++;
+  TheGameClock().Advance();
 
   if (TheStartupOptions().quit_at_frame >= 0 && LogFrameAndQuitIfDue()) {
     return true;

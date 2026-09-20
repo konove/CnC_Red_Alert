@@ -8,6 +8,7 @@
 #include "base/installed.h"
 #include "ra/assets.h"
 #include "ra/debug_state.h"
+#include "ra/game_clock.h"
 #include "ra/palettes.h"
 #include "ra/rules.h"
 #include "ra/screen.h"
@@ -49,6 +50,8 @@ class Game {
   StartupOptions startup_options_;
   base::Installed<StartupOptions>::Scope startup_options_scope_{
       startup_options_};
+  GameClock game_clock_;
+  base::Installed<GameClock>::Scope game_clock_scope_{game_clock_};
   Screen screen_;
   base::Installed<Screen>::Scope screen_scope_{screen_};
   Palettes palettes_;

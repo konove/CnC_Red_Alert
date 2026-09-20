@@ -80,6 +80,7 @@
 #include "ra/display.h"
 #include "ra/externs.h"
 #include "ra/face.h"
+#include "ra/game_clock.h"
 #include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
@@ -506,7 +507,7 @@ void TerrainClass::AI() {
   ObjectClass::AI();
 
   if (*this == TERRAIN_MINE &&
-      Frame % (TheRules().GrowthRate * kTicksPerMinute) == 0) {
+      CurrentFrame() % (TheRules().GrowthRate * kTicksPerMinute) == 0) {
     Map.at(As_Cell(As_Target())).Spread_Tiberium(true);
   }
   if (Graphic_Logic()) {

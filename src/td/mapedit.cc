@@ -88,8 +88,8 @@
 #include "td/externs.h"
 #include "td/facing.h"
 #include "td/gadget.h"
+#include "td/game_clock.h"
 #include "td/gauge.h"
-#include "td/globals.h"
 #include "td/house.h"
 #include "td/inline.h"
 #include "td/jshell.h"
@@ -602,7 +602,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     return;
   }
 
-  ::Frame++;
+  TheGameClock().Advance();
 
   /*------------------------------------------------------------------------
   Do special mouse processing if the mouse is over the map

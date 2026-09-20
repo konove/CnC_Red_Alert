@@ -159,6 +159,7 @@
 #include "ra/expand.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
+#include "ra/game_clock.h"
 #include "ra/gauge.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
@@ -3014,7 +3015,7 @@ static int Net_Join_Dialog() {
       WWMessageBox().Process(TXT_ERROR_LOADING_GAME);
       rc = -1;
     }
-    Frame++;
+    TheGameClock().Advance();
   }
 
   //------------------------------------------------------------------------
@@ -5203,7 +5204,7 @@ static int Net_New_Dialog() {
       WWMessageBox().Process(TXT_ERROR_LOADING_GAME);
       rc = 0;
     }
-    Frame++;
+    TheGameClock().Advance();
   }
 
   //------------------------------------------------------------------------

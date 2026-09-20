@@ -112,6 +112,7 @@
 #include "td/externs.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
+#include "td/game_clock.h"
 #include "td/globals.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -1194,8 +1195,9 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
         const auto const_remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, false);
         CC_Draw_Shape(MixArchive::RetrieveData("FLAGFLY.SHP"),
-                      static_cast<int>(Frame % 14), x + (ICON_PIXEL_W / 2),
-                      y + (ICON_PIXEL_H / 2), WINDOW_TACTICAL,
+                      static_cast<int>(CurrentFrame() % 14),
+                      x + (ICON_PIXEL_W / 2), y + (ICON_PIXEL_H / 2),
+                      WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_GHOST | SHAPE_FADING, const_remap,
                       MouseClass::UnitShadow);
       }

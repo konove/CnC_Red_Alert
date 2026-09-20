@@ -177,7 +177,7 @@
 #include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/foot.h"
-#include "ra/globals.h"
+#include "ra/game_clock.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/infantry.h"
@@ -2553,7 +2553,7 @@ void TechnoClass::AI() {
   *will perform *	the heal logic here.
   */
   if (Techno_Type_Class()->IsSelfHealing &&
-      Frame % (TheRules().RepairRate * kTicksPerMinute) == 0 &&
+      CurrentFrame() % (TheRules().RepairRate * kTicksPerMinute) == 0 &&
       Health_Ratio() <= TheRules().ConditionYellow) {
     Strength++;
     Mark(MARK_CHANGE);

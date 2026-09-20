@@ -77,6 +77,7 @@
 #include "ra/expand.h"
 #include "ra/externs.h"
 #include "ra/factory.h"
+#include "ra/game_clock.h"
 #include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -243,7 +244,8 @@ static void Put_All(ByteSink& pipe, int save_net) {
   **	Frame goes first: every frame-based timer re-anchors to it when read.
   */
   Put_Section(pipe, FourCC("FRAM"));
-  writer(Frame);
+  int64_t frame = CurrentFrame();
+  writer(frame);
 
   /*
   **	Save the scenario global information.
@@ -717,7 +719,9 @@ bool Load_Game(int id) {
     return false;
   }
   ArchiveReader reader(straw);
-  reader(Frame);
+  int64_t frame = 0;
+  reader(frame);
+  TheGameClock().set_frame(frame);
   if (!reader.ok()) {
     return false;
   }

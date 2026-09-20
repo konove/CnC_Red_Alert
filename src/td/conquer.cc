@@ -118,6 +118,7 @@
 #include "td/externs.h"
 #include "td/factory.h"
 #include "td/foot.h"
+#include "td/game_clock.h"
 #include "td/globals.h"
 #include "td/goptions.h"
 #include "td/heap.h"
@@ -1609,7 +1610,7 @@ bool Main_Loop() {
   /*
   ** Sync-bug trapping code
   */
-  if (Frame >= TrapFrame) {
+  if (CurrentFrame() >= TrapFrame) {
     Trap_Object();
   }
 
@@ -1769,23 +1770,23 @@ bool Main_Loop() {
   **	The frame logic has been completed. Increment the frame
   **	counter.
   */
-  Frame++;
+  TheGameClock().Advance();
 
   // Record mobile-object state and optionally save before ending a smoke run.
   if (TheStartupOptions().quit_at_frame >= 0) {
     for (int index = 0; index < Units.Count(); ++index) {
       const UnitClass* unit = Units.Ptr(index);
-      LOG(INFO) << "frame " << Frame << " unit " << unit->Class->IniName
-                << " coord " << unit->Coord << " mission "
-                << static_cast<int>(unit->Mission) << " navcom "
+      LOG(INFO) << "frame " << CurrentFrame() << " unit "
+                << unit->Class->IniName << " coord " << unit->Coord
+                << " mission " << static_cast<int>(unit->Mission) << " navcom "
                 << unit->NavCom;
     }
     for (int index = 0; index < Infantry.Count(); ++index) {
       const InfantryClass* infantry = Infantry.Ptr(index);
-      LOG(INFO) << "frame " << Frame << " infantry " << Infantry.ID(infantry)
-                << " coord " << infantry->Coord << " mission "
-                << static_cast<int>(infantry->Mission) << " navcom "
-                << infantry->NavCom;
+      LOG(INFO) << "frame " << CurrentFrame() << " infantry "
+                << Infantry.ID(infantry) << " coord " << infantry->Coord
+                << " mission " << static_cast<int>(infantry->Mission)
+                << " navcom " << infantry->NavCom;
     }
     // Compare every serialized field of migrated objects in smoke runs.
     const auto log_heap = [](auto& heap, const char* kind) {
@@ -1806,7 +1807,7 @@ bool Main_Loop() {
         } sink;
         ArchiveWriter writer(sink);
         heap.Ptr(index)->Serialize(writer);
-        LOG(INFO) << "frame " << Frame << " " << kind << " "
+        LOG(INFO) << "frame " << CurrentFrame() << " " << kind << " "
                   << heap.ID(heap.Ptr(index)) << " fields " << sink.fields;
       }
     };
@@ -1845,7 +1846,7 @@ bool Main_Loop() {
     } map_sink;
     ArchiveWriter map_writer(map_sink);
     Map.Serialize(map_writer);
-    LOG(INFO) << "frame " << Frame << " mapstate " << map_sink.hash;
+    LOG(INFO) << "frame " << CurrentFrame() << " mapstate " << map_sink.hash;
     MapHashSink globals_sink;
     ArchiveWriter globals_writer(globals_sink);
     Score.Serialize(globals_writer);
@@ -1855,22 +1856,23 @@ bool Main_Loop() {
       layer.Serialize(globals_writer);
     }
     Save_Misc_Values(globals_writer);
-    LOG(INFO) << "frame " << Frame << " globalstate " << globals_sink.hash;
+    LOG(INFO) << "frame " << CurrentFrame() << " globalstate "
+              << globals_sink.hash;
 
-    if (map_sink.trace && (Frame == 60 || Frame == 61)) {
+    if (map_sink.trace && (CurrentFrame() == 60 || CurrentFrame() == 61)) {
       // Keep each record below the logger's message-size limit.
       for (size_t offset = 0; offset < map_sink.fields.size(); offset += 2048) {
-        LOG(INFO) << "frame " << Frame << " mapfields " << offset << " "
-                  << map_sink.fields.substr(offset, 2048);
+        LOG(INFO) << "frame " << CurrentFrame() << " mapfields " << offset
+                  << " " << map_sink.fields.substr(offset, 2048);
       }
     }
 
     for (int i = 0; i < TeamTypes.Count(); ++i) {
       const int id = TeamTypes.ID(TeamTypes.Ptr(i));
-      LOG(INFO) << "frame " << Frame << " teamcount " << id << " "
+      LOG(INFO) << "frame " << CurrentFrame() << " teamcount " << id << " "
                 << static_cast<int>(base::At(TeamClass::Number, id));
     }
-    if (Frame >= TheStartupOptions().quit_at_frame) {
+    if (CurrentFrame() >= TheStartupOptions().quit_at_frame) {
       if (TheStartupOptions().save_slot >= 0) {
         char description[] = "debug";
         if (!Save_Game(TheStartupOptions().save_slot, description)) {
@@ -2375,7 +2377,7 @@ void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
         ghostdata = MouseClass::SpecialGhost;
       }
 
-      int predoffset = static_cast<int>(Frame);
+      int predoffset = static_cast<int>(CurrentFrame());
 
       if (x > base::At(base::At(WindowList, static_cast<int>(window)),
                        kWindowWidth) *

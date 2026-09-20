@@ -188,7 +188,6 @@ bool CrateMaker = false;
 **	upward at the rate of one per game logic process. The target rate is 15
 **	per second. This value is saved and restored with the saved game.
 */
-int64_t Frame = 0;
 
 /***************************************************************************
 **	These globals are constantly monitored to determine if the player

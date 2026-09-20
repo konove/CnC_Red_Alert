@@ -93,6 +93,7 @@
 #include "ra/display_constants.h"
 #include "ra/externs.h"
 #include "ra/foot.h"
+#include "ra/game_clock.h"
 #include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -2952,7 +2953,7 @@ int TeamClass::TMission_Patrol() {
   /*
   **	Every so often, scan for a nearby enemy.
   */
-  if (Frame % (TheRules().PatrolTime * kTicksPerMinute) == 0) {
+  if (CurrentFrame() % (TheRules().PatrolTime * kTicksPerMinute) == 0) {
     FootClass* leader = Fetch_A_Leader();
     if (leader != nullptr) {
       const TARGET target =

@@ -16,6 +16,7 @@
 #include "td/event.h"
 #include "td/externs.h"
 #include "td/factory.h"
+#include "td/game_clock.h"
 #include "td/globals.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -60,8 +61,9 @@ class TdArchiveRoundTripTest : public testing::Test {
     // Selecting and drawing an object reads the debug switches, which Game
     // installs in the real game.
     debug_state_scope_ = new base::Installed<DebugState>::Scope(debug_state_);
+    game_clock_scope_ = new base::Installed<GameClock>::Scope(game_clock_);
     GameActive = false;
-    Frame = 100;
+    TheGameClock().set_frame(100);
     Houses.Set_Heap(8);
     Units.Set_Heap(8);
     Triggers.Set_Heap(8);
@@ -84,11 +86,15 @@ class TdArchiveRoundTripTest : public testing::Test {
     delete PlayerPtr;
     PlayerPtr = nullptr;
     Map.Clear();
+    delete game_clock_scope_;
+    game_clock_scope_ = nullptr;
     delete debug_state_scope_;
     debug_state_scope_ = nullptr;
   }
 
  private:
+  static inline GameClock game_clock_;
+  static inline base::Installed<GameClock>::Scope* game_clock_scope_ = nullptr;
   static inline DebugState debug_state_;
   static inline base::Installed<DebugState>::Scope* debug_state_scope_ =
       nullptr;
@@ -113,7 +119,7 @@ TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireB
   const auto check = [](auto configure, auto... args) {
     EventClass expected;
     expected.ID = static_cast<unsigned>(Houses.ID(PlayerPtr));
-    expected.Frame = static_cast<unsigned>(Frame);
+    expected.Frame = static_cast<unsigned>(CurrentFrame());
     configure(expected);
     alignas(EventClass) std::array<unsigned char, sizeof(EventClass)> storage{};
     storage.fill(0xff);

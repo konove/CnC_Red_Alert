@@ -56,7 +56,7 @@
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
-#include "ra/globals.h"
+#include "ra/game_clock.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -551,8 +551,8 @@ void Send_Statistics_Packet() {
     */
     const int32_t divisor = GameEndTime / 60;
     if (divisor != 0) {
-      stats.Add_Field(FIELD_FRAME_RATE,
-                      static_cast<int32_t>(Frame) / (GameEndTime / 60));
+      stats.Add_Field(FIELD_FRAME_RATE, static_cast<int32_t>(CurrentFrame()) /
+                                            (GameEndTime / 60));
     } else {
       stats.Add_Field(FIELD_FRAME_RATE, int32_t{0});
     }

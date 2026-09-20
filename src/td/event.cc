@@ -68,6 +68,7 @@
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/foot.h"
+#include "td/game_clock.h"
 #include "td/globals.h"
 #include "td/goptions.h"
 #include "td/heap.h"
@@ -149,7 +150,7 @@ EventClass::EventClass(SpecialClass data) : EventClass() {
   ID = static_cast<unsigned>(Houses.ID(PlayerPtr));
   Type = SPECIAL;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(::Frame);
+  Frame = static_cast<unsigned>(CurrentFrame());
   Data.Options.Data = data;
 }
 
@@ -173,7 +174,7 @@ EventClass::EventClass(EventType type, TARGET target) : EventClass() {
   ID = static_cast<unsigned>(Houses.ID(PlayerPtr));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(::Frame);
+  Frame = static_cast<unsigned>(CurrentFrame());
   Data.Target.Whom = target;
 }
 
@@ -195,7 +196,7 @@ EventClass::EventClass(EventType type) : EventClass() {
   ID = static_cast<unsigned>(Houses.ID(PlayerPtr));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(::Frame);
+  Frame = static_cast<unsigned>(CurrentFrame());
 }
 
 /***********************************************************************************************
@@ -214,7 +215,7 @@ EventClass::EventClass(EventType type, int val) : EventClass() {
   Type = type;
   Data.General.Value = val;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(::Frame);
+  Frame = static_cast<unsigned>(CurrentFrame());
 }
 
 /***********************************************************************************************
@@ -240,7 +241,7 @@ EventClass::EventClass(EventType type, TARGET src, TARGET dest) : EventClass() {
   ID = static_cast<unsigned>(Houses.ID(PlayerPtr));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(::Frame);
+  Frame = static_cast<unsigned>(CurrentFrame());
   Data.NavCom.Whom = src;
   Data.NavCom.Where = dest;
 }
@@ -265,7 +266,7 @@ EventClass::EventClass(AnimType anim, HousesType owner, COORDINATE coord) : Even
   ID = static_cast<unsigned>(Houses.ID(PlayerPtr));
   Type = ANIMATION;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(::Frame);
+  Frame = static_cast<unsigned>(CurrentFrame());
   Data.Anim.What = anim;
   Data.Anim.Owner = owner;
   Data.Anim.Where = coord;
@@ -296,7 +297,7 @@ EventClass::EventClass(TARGET src, MissionType mission, TARGET target,
   ID = static_cast<unsigned>(Houses.ID(PlayerPtr));
   Type = MEGAMISSION;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(::Frame);
+  Frame = static_cast<unsigned>(CurrentFrame());
   Data.MegaMission.Whom = src;
   Data.MegaMission.Mission = mission;
   Data.MegaMission.Target = target;
@@ -325,7 +326,7 @@ EventClass::EventClass(EventType type, RTTIType object, int id) : EventClass() {
   ID = static_cast<unsigned>(Houses.ID(PlayerPtr));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(::Frame);
+  Frame = static_cast<unsigned>(CurrentFrame());
   Data.Specific.Type = object;
   Data.Specific.ID = id;
 }
@@ -355,7 +356,7 @@ EventClass::EventClass(EventType type, RTTIType object, CELL cell) : EventClass(
   ID = static_cast<unsigned>(Houses.ID(PlayerPtr));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(::Frame);
+  Frame = static_cast<unsigned>(CurrentFrame());
   Data.Place.Type = object;
   Data.Place.Cell = cell;
 }
@@ -382,7 +383,7 @@ EventClass::EventClass(EventType type, int id, CELL cell) : EventClass() {
   ID = static_cast<unsigned>(Houses.ID(PlayerPtr));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
-  Frame = static_cast<unsigned>(::Frame);
+  Frame = static_cast<unsigned>(CurrentFrame());
   Data.Special.ID = id;
   Data.Special.Cell = cell;
 }

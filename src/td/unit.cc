@@ -151,6 +151,7 @@
 #include "td/facing.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
+#include "td/game_clock.h"
 #include "td/globals.h"
 #include "td/goptions.h"
 #include "td/heap.h"
@@ -395,13 +396,14 @@ void UnitClass::AI() {
   **	If this is a vehicle that heals itself (e.g., Mammoth Tank), then it
   *will perform *	the heal logic here.
   */
-  if (*this == UNIT_HTANK && Frame % 16 == 0 && Health_Ratio() < 0x0080) {
+  if (*this == UNIT_HTANK && CurrentFrame() % 16 == 0 &&
+      Health_Ratio() < 0x0080) {
     Strength++;
     Mark(MARK_CHANGE);
   }
   if (*this == UNIT_VICE &&
       Map.at(Coord_Cell(Coord)).Land_Type() == LAND_TIBERIUM &&
-      Health_Ratio() < 0x0100 && Frame % 16 == 0) {
+      Health_Ratio() < 0x0100 && CurrentFrame() % 16 == 0) {
     Strength++;
     Mark(MARK_CHANGE);
   }
@@ -2033,7 +2035,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
     **	If there is a rotating radar dish, draw it now.
     */
     if (Class->IsRadarEquipped) {
-      shapenum = static_cast<int>(32 + (Frame % 32));
+      shapenum = static_cast<int>(32 + (CurrentFrame() % 32));
       Techno_Draw_Object(shapefile, shapenum, x, y - 5, window);
     }
 
@@ -2119,7 +2121,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
   */
   if (Flagged != HOUSE_NONE) {
     CC_Draw_Shape(MixArchive::RetrieveData("FLAGFLY.SHP"),
-                  static_cast<int>(Frame % 14), x, y, window,
+                  static_cast<int>(CurrentFrame() % 14), x, y, window,
                   SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
                   HouseClass::As_Pointer(Flagged)->Remap_Table(false, false),
                   MouseClass::UnitShadow);

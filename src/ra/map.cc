@@ -87,7 +87,7 @@
 #include "ra/display.h"
 #include "ra/display_constants.h"
 #include "ra/externs.h"
-#include "ra/globals.h"
+#include "ra/game_clock.h"
 #include "ra/gscreen.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
@@ -1905,7 +1905,7 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
   }
 
   if (count > 0) {
-    return base::At(topten, Frame % count);
+    return base::At(topten, CurrentFrame() % count);
   }
   return 0;
 }

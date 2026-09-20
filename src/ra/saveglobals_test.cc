@@ -8,11 +8,12 @@
 #include <vector>
 
 #include "base/buffer.h"
+#include "base/installed.h"
 #include "gtest/gtest.h"
 #include "port/safe_string.h"
 #include "ra/_wsproto.h"
 #include "ra/defines.h"
-#include "ra/globals.h"
+#include "ra/game_clock.h"
 #include "ra/ipx.h"
 #include "ra/ipxaddr.h"
 #include "ra/score.h"
@@ -23,8 +24,12 @@
 #include "tech/ftimer.h"
 #include "tech/span_source.h"
 
-// Game clock used by the scenario serializer in this test executable.
-int64_t Frame = 0;
+// The game clock the scenario serializer reads; Game owns it in the real
+// game.
+namespace {
+GameClock game_clock;
+const base::Installed<GameClock>::Scope game_clock_scope(game_clock);
+}  // namespace
 // Address tests do not use a live network transport.
 WinsockInterfaceClass* PacketTransport = nullptr;
 

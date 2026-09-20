@@ -33,7 +33,7 @@
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/face.h"
-#include "ra/globals.h"
+#include "ra/game_clock.h"
 #include "ra/interpal.h"
 #include "ra/keyframe.h"
 #include "ra/screen.h"
@@ -121,7 +121,7 @@ void CC_Draw_Shape(const std::span<const std::byte> shapefile,
       // walks with the frame counter, which is what makes it shimmer. Objects
       // on the right half of the window walk it the other way, so that two
       // cloaked objects side by side do not ripple in lockstep.
-      int pred_offset = static_cast<int>(Frame);
+      int pred_offset = static_cast<int>(CurrentFrame());
 
       if (x > base::At(base::At(WindowList, static_cast<int>(window)),
                        kWindowWidth) *

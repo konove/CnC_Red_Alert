@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <span>
 
+#include "base/installed.h"
 #include "gtest/gtest.h"
 #include "sdllib/misc.h"
 #include "sdllib/ww_win.h"
@@ -17,6 +18,7 @@
 #include "td/fly.h"
 #include "td/ftimer.h"
 #include "td/fuse.h"
+#include "td/game_clock.h"
 #include "td/rand.h"
 #include "td/randomstate.h"
 #include "td/region.h"
@@ -31,7 +33,10 @@
 #include "tech/span_source.h"
 
 // The value tests need a frame source, but no game session.
-int64_t Frame = 0;
+namespace {
+GameClock game_clock;
+const base::Installed<GameClock>::Scope game_clock_scope(game_clock);
+}  // namespace
 SpecialClass Special{};
 void Speak(VoxType /*unused*/) {}
 // Linking the legacy byte RNG also pulls in the SDL event pump.
@@ -62,25 +67,25 @@ void Restore(T& value, const std::array<uint8_t, 64>& bytes) {
 }
 
 TEST(TdSaveValuesTest, CountdownReanchorsAndKeepsWideRemainingTime) {
-  Frame = 100;
+  TheGameClock().set_frame(100);
   TCountDownTimerClass timer(int64_t{1} * 1024 * 1024 * 1024 * 1024);
-  Frame += 17;
+  TheGameClock().set_frame(CurrentFrame() + 17);
   const int64_t remaining = timer.Time();
   const auto bytes = Save(timer);
-  Frame = 10000;
+  TheGameClock().set_frame(10000);
   TCountDownTimerClass loaded;
   Restore(loaded, bytes);
   EXPECT_TRUE(loaded.Active());
-  EXPECT_EQ(loaded.Get_Start(), Frame);
+  EXPECT_EQ(loaded.Get_Start(), CurrentFrame());
   EXPECT_EQ(loaded.Time(), remaining);
-  Frame += 9;
+  TheGameClock().set_frame(CurrentFrame() + 9);
   EXPECT_EQ(loaded.Time(), remaining - 9);
 }
 
 TEST(TdSaveValuesTest, ClearedAndExpiredCountdownsRemainDistinct) {
-  Frame = 100;
+  TheGameClock().set_frame(100);
   TCountDownTimerClass timer(1);
-  Frame = 102;
+  TheGameClock().set_frame(102);
   TCountDownTimerClass loaded;
   Restore(loaded, Save(timer));
   EXPECT_TRUE(loaded.Active());
@@ -326,43 +331,43 @@ TEST(TdSaveValuesTest, RegionPreservesWideAndNegativeThreat) {
 }
 
 TEST(TdSaveValuesTest, SuperweaponResumesPartialChargeAtRestoredFrame) {
-  Frame = 100;
+  TheGameClock().set_frame(100);
   SuperClass weapon(100, VOX_ION_READY, VOX_ION_CHARGING);
   ASSERT_TRUE(weapon.Enable());
-  Frame = 125;
+  TheGameClock().set_frame(125);
   const auto bytes = Save(weapon);
-  Frame = 1000;
+  TheGameClock().set_frame(1000);
   SuperClass loaded;
   Restore(loaded, bytes);
   EXPECT_TRUE(loaded.Is_Present());
   EXPECT_FALSE(loaded.Is_Ready());
   EXPECT_EQ(Save(loaded), bytes);
-  Frame += 74;
+  TheGameClock().set_frame(CurrentFrame() + 74);
   loaded.AI();
   EXPECT_FALSE(loaded.Is_Ready());
-  ++Frame;
+  TheGameClock().Advance();
   loaded.AI();
   EXPECT_TRUE(loaded.Is_Ready());
 }
 
 TEST(TdSaveValuesTest, SuperweaponSuspensionPreservesRemainingCharge) {
-  Frame = 200;
+  TheGameClock().set_frame(200);
   SuperClass weapon(80);
   ASSERT_TRUE(weapon.Enable());
-  Frame += 30;
+  TheGameClock().set_frame(CurrentFrame() + 30);
   ASSERT_TRUE(weapon.Suspend(true));
   const auto bytes = Save(weapon);
-  Frame = 2000;
+  TheGameClock().set_frame(2000);
   SuperClass loaded;
   Restore(loaded, bytes);
-  Frame += 500;
+  TheGameClock().set_frame(CurrentFrame() + 500);
   loaded.AI();
   EXPECT_FALSE(loaded.Is_Ready());
   ASSERT_TRUE(loaded.Suspend(false));
-  Frame += 49;
+  TheGameClock().set_frame(CurrentFrame() + 49);
   loaded.AI();
   EXPECT_FALSE(loaded.Is_Ready());
-  ++Frame;
+  TheGameClock().Advance();
   loaded.AI();
   EXPECT_TRUE(loaded.Is_Ready());
 }

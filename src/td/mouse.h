@@ -51,6 +51,7 @@ class ArchiveWriter;
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
 #include "td/defines.h"
+#include "td/game_clock.h"
 #include "td/scroll.h"
 #include "tech/file.h"
 

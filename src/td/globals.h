@@ -6,7 +6,6 @@
 
 #include "td/special.h"
 
-extern int64_t Frame;
 //  True if we are currently in focus windows app
 extern bool GameInFocus;
 extern bool GameActive;

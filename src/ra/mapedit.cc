@@ -91,8 +91,8 @@
 #include "ra/face.h"
 #include "ra/facing.h"
 #include "ra/gadget.h"
+#include "ra/game_clock.h"
 #include "ra/gauge.h"
-#include "ra/globals.h"
 #include "ra/hotkeys.h"
 #include "ra/house.h"
 #include "ra/inline.h"
@@ -547,7 +547,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     return;
   }
 
-  ::Frame++;
+  TheGameClock().Advance();
 
   /*
   **	Do special mouse processing if the mouse is over the map
