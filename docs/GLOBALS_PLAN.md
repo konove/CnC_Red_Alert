@@ -358,3 +358,27 @@ only where the two games' layouts already match.
   does not end either game, and Tiberian Dawn's `--globals`, `--map`, `--building` and `--mobile`
   smoke fixtures fail their corrupt-save rejection checks. Still to do, as for phases 1 and 2: run
   Red Alert on a real display into a mission and through a movie.
+- 2026-09-20: phase 4 done for both games (693c2395..ae16f529). `Assets` (`ra/assets.h`,
+  `td/assets.h`) holds the fonts, the string tables, the speech buffers and the handles for the
+  archives a disc change re-registers, plus, in Red Alert, the tutorial messages and the
+  chronosphere's lightning shapes. Both games' fonts became one `base::EnumArray` keyed by a
+  `FontType` enum, so `Init_Fonts()` is a loop over a table of file names and `Fancy_Text_Print()`
+  names the font it wants; Tiberian Dawn's table also says whether an archive serves the file,
+  because six of its fonts are loose files. Those six used to be read into function-local statics
+  that were never freed. Two shapes changed: Red Alert's tutorial messages were a 225-entry uint16
+  offset table into one `std::vector<char>` and are an array of `std::string` now, and
+  `SpeechBuffer[2]` and `SpeechRecord[2]` were parallel arrays and became one array of `SpeechSlot`.
+  The speech buffers are sized by the `Assets` constructor rather than by `Init_Heaps` /
+  `Init_Game`; everything else still loads where it did, through `LoadFonts()`, `LoadStrings()` and
+  `LoadTutorialText()`. `CDList` was deleted rather than moved (693c2395): `GetCDClass` enumerated
+  the machine's CD drives on DOS and Windows and nothing has filled it in since the port, so
+  `Get_Number_Of_Drives()` always returned 0, both games scanned an empty drive list in
+  `Force_CD_Available()`, and Tiberian Dawn's bootstrap always took the "no CD drives" error exit.
+  Red Alert keeps `SearchPaths::SetCdDrive(-1)` as a literal, because `Scan()` only substitutes the
+  `"?:\"` placeholder for a non-zero drive. Tiberian Dawn's list tests now install an `Assets`:
+  measuring a list item reads the font it is printed in. Verification: both build dirs clean, 681
+  tests pass, Red Alert's round trip and `--load-fixture` pass, Tiberian Dawn's fixtures pass their
+  comparison (the four corrupt-save rejection checks phase 3 recorded still fail, unchanged), and
+  ASan `-QUITFRAME` exits cleanly in both games with only the leaks phases 1 and 3 recorded (RA's
+  type-class vectors, phase 5; TD's `HouseClass` trackers, phase 6). Still to do, as for phases 1-3:
+  run Red Alert on a real display into a mission and through a movie.
