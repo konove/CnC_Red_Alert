@@ -308,7 +308,7 @@ const unsigned char Facing32[256] = {
 #define S4 0xA0
 #define S5 0xC0
 #define S6 0xFF
-base::EnumArray<LandType, GroundType, kLandCount> Ground = {{
+const base::EnumArray<LandType, GroundType, kLandCount> Ground = {{
     //						Foot
     //						|		Tracked
     //						|		|

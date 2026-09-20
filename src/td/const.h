@@ -18,7 +18,9 @@ extern const base::EnumArray<WeaponType, WeaponTypeClass, kWeaponCount> Weapons;
 extern const base::EnumArray<WarheadType, WarheadTypeClass, kWarheadCount>
     Warheads;
 extern const base::EnumArray<SourceType, const char*, kSourceCount> SourceName;
-extern base::EnumArray<LandType, GroundType, kLandCount> Ground;
+// What each kind of terrain costs to cross, whether it can be built on,
+// and the colour it shows as on the map editor's radar.
+extern const base::EnumArray<LandType, GroundType, kLandCount> Ground;
 extern const base::EnumArray<TheaterType, TheaterDataType, kTheaterCount>
     Theaters;
 extern const unsigned char Facing32[256];
