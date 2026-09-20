@@ -290,7 +290,6 @@ extern DynamicVectorClass<NodeNameType*> Games;
 extern DynamicVectorClass<NodeNameType*> Players;
 
 extern int Seed;
-extern int CustomSeed;
 extern int NewMaxAheadFrame1;
 extern int NewMaxAheadFrame2;
 

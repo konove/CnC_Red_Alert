@@ -52,10 +52,8 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "port/tokenizer.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/memflag.h"
@@ -65,7 +63,7 @@
 #include "td/externs.h"
 #include "td/game.h"
 #include "td/globals.h"  // IWYU pragma: keep (used only with an entry point)
-#include "td/ipx.h"
+#include "td/init.h"
 #include "td/ipxaddr.h"
 #include "td/ipxmgr.h"
 #include "td/nullmgr.h"
@@ -73,14 +71,16 @@
 #include "td/profile.h"
 #include "td/screen.h"
 #include "td/startup.h"
+#include "td/startup_options.h"
 #include "tech/audio_mixer.h"
 #include "tech/disk_file.h"
-#include "tech/number_parse.h"
 
 // The two tests that link this file define TD_NO_ENTRY_POINT; these headers
 // serve only main().
 #ifndef TD_NO_ENTRY_POINT
 #include <filesystem>
+#include <optional>
+#include <string>
 
 #include "absl/base/log_severity.h"
 #include "absl/log/globals.h"
@@ -92,8 +92,8 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "td/conquer.h"
+#include "td/debug_state.h"
 #include "td/goptions.h"
-#include "td/init.h"
 #include "td/jshell.h"
 #include "td/special.h"
 #include "tech/search_paths.h"
@@ -113,7 +113,8 @@ void Delete_Swap_Files();
 [[maybe_unused]] [[noreturn]] static void Print_Error_End_Exit(char* string);
 [[maybe_unused]] [[noreturn]] static void Print_Error_Exit(char* string);
 
-[[maybe_unused]] static void Read_Setup_Options(DiskFile* config_file);
+[[maybe_unused]] static void Read_Setup_Options(DiskFile* config_file,
+                                                const StartupOptions& options);
 
 bool SpawnedFromWChat = false;
 
@@ -151,6 +152,58 @@ void Move_Point(int16_t& x, int16_t& y, DirType dir, uint16_t distance);
 static Game* game = nullptr;
 
 #ifndef TD_NO_ENTRY_POINT
+// Hands what the command line asked for to whatever owns it. The screen
+// mode, the IPX socket, the bridge network and the 1.07 compatibility flag
+// wait for Read_Setup_Options(), because the config file asks for them too.
+static void ApplyStartupOptions(const StartupOptions& options) {
+  for (const std::string& path : options.search_paths) {
+    SearchPaths::Add(path);
+  }
+
+  DebugState& debug_state = TheDebugState();
+  debug_state.set_developer_mode(options.developer_mode);
+  debug_state.set_playtest(options.playtest);
+  debug_state.set_map_editor_active(options.map_editor_active);
+  debug_state.set_unshroud(options.unshroud);
+  debug_state.set_quiet(options.quiet);
+  debug_state.set_check_map(options.check_map);
+
+  if (options.easy) {
+    Special.IsHealthBar = true;
+    Special.IsEasy = true;
+    Special.IsDifficult = false;
+  }
+  if (options.hard) {
+    Special.IsHealthBar = false;
+    Special.IsEasy = false;
+    Special.IsDifficult = true;
+  }
+  if (options.jurassic) {
+    Special.IsJurassic = true;
+    AreThingiesEnabled = true;
+  }
+  Special.IsFromInstall = options.from_install;
+  Special.IsInert = options.inert_weapons;
+  Special.IsSpeedBuild = options.speed_build;
+  Special.IsVisibleTarget = options.visible_target;
+
+  RecordGame = options.record;
+  PlaybackGame = options.playback;
+  SuperRecord = options.super_record ? 1 : 0;
+
+  NetStealth = options.net_stealth;
+  NetProtect = !options.outside_messages;
+  AllowAttract = options.attract;
+  MPlayerSolo = options.solo_net_play;
+
+  NoMouseGrab = options.no_mouse_grab;
+  SpawnedFromWChat = options.spawned_from_wchat;
+  MMXAvailable = options.mmx_available;
+#ifdef JAPANESE
+  ForceEnglish = options.force_english;
+#endif
+}
+
 #ifdef _WIN32
 int PASCAL WinMain(HINSTANCE instance, HINSTANCE, char* command_line,
                    int command_show)
@@ -226,7 +279,23 @@ int main(int argc, char* argv[])
 #ifdef JAPANESE
   ForceEnglish = false;
 #endif
-  if (Parse_Command_Line(arguments)) {
+  // The parser writes no game state, so these defaults come first and
+  // ApplyStartupOptions() lays the command line over them.
+#ifdef DEMO
+  Scenario = 3;
+#else
+  Scenario = 1;
+#endif
+  ScenPlayer = SCEN_PLAYER_GDI;
+  ScenDir = SCEN_DIR_EAST;
+  Whom = HOUSE_GOOD;
+  Special.Init();
+
+  const std::optional<StartupOptions> options = Parse_Command_Line(arguments);
+  if (options.has_value()) {
+    game->set_startup_options(*options);
+    ApplyStartupOptions(*options);
+
     InitTickTimer();
     TickCount.Start();
 
@@ -254,7 +323,7 @@ int main(int argc, char* argv[])
       char* cdata = config_data.data();
       Read_Private_Config_Struct(cdata, &NewConfig);
       delete[] cdata;
-      Read_Setup_Options(&cfile);
+      Read_Setup_Options(&cfile, *options);
 
       CCDebugString("C&C95 - Creating main window.\n");
 
@@ -461,7 +530,7 @@ void ShutDown() {
  *                                                                                             *
  * HISTORY: * 6/7/96 4:09PM ST : Created *
  *=============================================================================================*/
-void Read_Setup_Options(DiskFile* config_file) {
+void Read_Setup_Options(DiskFile* config_file, const StartupOptions& options) {
   std::vector<char> profile_storage(base::ToSize(config_file->Size() + 1));
   char* buffer = profile_storage.data();
 
@@ -471,62 +540,43 @@ void Read_Setup_Options(DiskFile* config_file) {
 
     AllowHardwareBlitFills =
         WWGetPrivateProfileInt("Options", "HardwareFills", 1, buffer) != 0;
+    // Resolution=yes and -480 both ask for a 480-line mode; Screen::Init()
+    // letterboxes the 400-line game area inside it.
     TheScreen().set_mode_height(
-        WWGetPrivateProfileInt("Options", "Resolution", 0, buffer)
+        options.tall_screen ||
+                WWGetPrivateProfileInt("Options", "Resolution", 0, buffer) != 0
             ? 480
             : Screen::kHeight);
-    IsV107 = WWGetPrivateProfileInt("Options", "Compatibility", 0, buffer) != 0;
+    IsV107 = options.compatibility_v107 ||
+             WWGetPrivateProfileInt("Options", "Compatibility", 0, buffer) != 0;
 
     /*
     ** See if an alternative socket number has been specified
     */
-    const int socket = WWGetPrivateProfileInt("Options", "Socket", 0, buffer);
-    if (socket > 0 && socket < 0x4000) {
-      Ipx.Set_Socket(static_cast<uint16_t>(0x4000 + socket));
+    if (options.socket.has_value()) {
+      Ipx.Set_Socket(*options.socket);
+    } else {
+      const int socket = WWGetPrivateProfileInt("Options", "Socket", 0, buffer);
+      if (socket > 0 && socket < 0x4000) {
+        Ipx.Set_Socket(static_cast<uint16_t>(0x4000 + socket));
+      }
     }
 
     /*
     ** See if a destination network has been specified
     */
-    char netbuf[512];
-    base::FillBytes(base::ObjectBytes(netbuf), 0, sizeof(netbuf));
-    const char* netptr = WWGetPrivateProfileString("Options", "DestNet",
-                                                   nullptr, netbuf, buffer);
-
-    if (netptr && !std::string_view(netbuf).empty()) {
-      NetNumType net;
-      NetNodeType node;
-
-      /*
-      ** Scan the string, pulling off each address piece
-      */
-      int i = 0;
-      port::Tokenizer tokens(netbuf, ".");
-      const char* p = tokens.Next();
-      while (p) {
-        const auto byte = tech::ParseHex<uint8_t>(p);
-        if (!byte || i >= 10) {
-          i = 0;  // Reject the address instead of accepting a partial network.
-          break;
-        }
-        if (i < 4) {
-          base::At(net, i) = *byte;  // fill NetNum
-        } else {
-          base::At(node, i - 4) = *byte;  // fill NetNode
-        }
-        i++;
-        p = tokens.Next();
+    std::optional<IPXAddressClass> bridge_net = options.bridge_net;
+    if (!bridge_net.has_value()) {
+      char netbuf[512];
+      base::FillBytes(base::ObjectBytes(netbuf), 0, sizeof(netbuf));
+      if (WWGetPrivateProfileString("Options", "DestNet", nullptr, netbuf,
+                                    buffer) != nullptr) {
+        bridge_net = ParseDestNet(netbuf);
       }
-
-      /*
-      ** If all the address components were successfully read, fill in the
-      ** BridgeNet with a broadcast address to the network across the bridge.
-      */
-      if (i >= 4) {
-        IsBridge = 1;
-        base::FillBytes(base::ObjectBytes(node), 0xff, 6);
-        BridgeNet = IPXAddressClass(net, node);
-      }
+    }
+    if (bridge_net.has_value()) {
+      IsBridge = 1;
+      BridgeNet = *bridge_net;
     }
   }
 }

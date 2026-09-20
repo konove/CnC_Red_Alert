@@ -152,6 +152,7 @@
 #include "td/screen.h"
 #include "td/special.h"
 #include "td/startup.h"
+#include "td/startup_options.h"
 #include "td/target.h"
 #include "td/tcpip.h"
 #include "td/text.h"
@@ -1771,7 +1772,7 @@ bool Main_Loop() {
   Frame++;
 
   // Record mobile-object state and optionally save before ending a smoke run.
-  if (DebugQuitAtFrame >= 0) {
+  if (TheStartupOptions().quit_at_frame >= 0) {
     for (int index = 0; index < Units.Count(); ++index) {
       const UnitClass* unit = Units.Ptr(index);
       LOG(INFO) << "frame " << Frame << " unit " << unit->Class->IniName
@@ -1869,11 +1870,12 @@ bool Main_Loop() {
       LOG(INFO) << "frame " << Frame << " teamcount " << id << " "
                 << static_cast<int>(base::At(TeamClass::Number, id));
     }
-    if (Frame >= DebugQuitAtFrame) {
-      if (DebugSaveSlot >= 0) {
+    if (Frame >= TheStartupOptions().quit_at_frame) {
+      if (TheStartupOptions().save_slot >= 0) {
         char description[] = "debug";
-        if (!Save_Game(DebugSaveSlot, description)) {
-          LOG(ERROR) << "-SAVESLOT: could not save slot " << DebugSaveSlot;
+        if (!Save_Game(TheStartupOptions().save_slot, description)) {
+          LOG(ERROR) << "-SAVESLOT: could not save slot "
+                     << TheStartupOptions().save_slot;
         }
       }
       GameActive = false;
@@ -2057,7 +2059,7 @@ void Go_Editor(bool flag) {
  * HISTORY: * 12/19/1994 JLB : Created. *
  *=============================================================================================*/
 void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
-  if (DebugNoMovies) {
+  if (TheStartupOptions().no_movies) {
     return;
   }
   /*

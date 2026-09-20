@@ -42,7 +42,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
-#include <string>
 #include <vector>
 
 #include "base/enum_array.h"
@@ -192,18 +191,6 @@ bool CrateMaker = false;
 **	upward at the rate of one per game logic process. The target rate is 15
 **	per second. This value is saved and restored with the saved game.
 */
-std::string DebugNewGame;
-bool DebugFactoryTest = false;
-bool DebugTeamTest = false;
-bool DebugWorldTest = false;
-bool DebugBuildingTest = false;
-bool DebugMobileTest = false;
-bool DebugMapTest = false;
-bool DebugGlobalsTest = false;
-int DebugLoadGame = -1;
-int DebugQuitAtFrame = -1;
-int DebugSaveSlot = -1;
-bool DebugNoMovies = false;
 int64_t Frame = 0;
 
 /***************************************************************************
@@ -669,12 +656,6 @@ std::vector<std::byte> MetaPacket;
 ** multiplayer games.
 */
 int Seed = 0;
-
-/***************************************************************************
-** If this value is non-zero, use it as the random # seed instead; this should
-** help reproduce some bugs.
-*/
-int CustomSeed = 0;
 
 int WindowList[][8] = {
     /* xbyte, ypixel, bytewid, pixelht, cursor color, bkgd color, cursor x,
