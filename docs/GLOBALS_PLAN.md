@@ -332,3 +332,29 @@ only where the two games' layouts already match.
   after `Set_Video_Mode` and hit the timeout; it did not recur in 20 more runs of either build, and
   the first ASan run in phase 1 also hung, so there may be an intermittent startup hang. Still to
   do, as for phase 1: run Red Alert on a real display into a mission and through a movie.
+- 2026-09-20: phase 3 done for both games (de4cd0f3..4759aa96). `DebugState` (`ra/debug_state.h`,
+  `td/debug_state.h`) holds the switches that change while the game runs -- 11 in Red Alert, 13 in
+  Tiberian Dawn -- and `StartupOptions` (`ra/startup_options.h`, `td/startup_options.h`) holds what
+  the command line asks for. `Parse_Command_Line` returns `std::optional<StartupOptions>` and writes
+  nothing; `main` sets the defaults the parser used to (`Whom`, `Special.Init()`, and Tiberian
+  Dawn's `Scenario`, `ScenPlayer` and `ScenDir`), installs the options in `Game`, and hands each
+  value to its owner. The switches took names that say what they do: `Debug_Flag` is
+  `developer_mode()`, `Debug_Cheat` is `build_anything()`, `Debug_Icon` is `show_cell_info()`,
+  `MapEditorActive` and TD's `Debug_Map` are `map_editor_active()`. Deviations from the plan: the
+  struct also carries the seven `-*TEST` fixtures, `-WCHAT`, `-MMX` and `-HANSOLO`, which no phase
+  had named; `Debug_Unshroud` is written to the recording as well as the multiplayer save, and a
+  local `bool` stands in for it in both, so neither archive changed; and `DebugNewGame` and
+  `DebugLoadGame` were cleared on use, which a const struct cannot do, so the startup path notes it
+  in a file-local `startup_game_started`. Found on the way: the command line lost to the config file
+  for everything both could set, because `Parse_Command_Line` ran first and the config read
+  overwrote it, so `-480` (both games) and `-O` (Tiberian Dawn) never had any effect; the parse now
+  wins. Tiberian Dawn's `Read_Setup_Options` had its own copy of the `-DESTNET` address parser and
+  now calls `ParseDestNet`. Its archive round-trip test installs a `DebugState` of its own, because
+  `ObjectClass::Select()` reads the switches. Red Alert's commented-out `KN_F4` case in `DebugKeys`
+  went with the rename; the live Ctrl-F4 case does the same thing. ASan: `-QUITFRAME` exits cleanly
+  in both games, with only the leaks phase 1 recorded (RA's type-class vectors, phase 5; TD's
+  `HouseClass` trackers, phase 6), and one Red Alert run hung after `Set_Video_Mode` again. Two
+  things are pre-existing, checked against 5e412117 and unchanged by this phase: a mid-game `SIGINT`
+  does not end either game, and Tiberian Dawn's `--globals`, `--map`, `--building` and `--mobile`
+  smoke fixtures fail their corrupt-save rejection checks. Still to do, as for phases 1 and 2: run
+  Red Alert on a real display into a mission and through a movie.
