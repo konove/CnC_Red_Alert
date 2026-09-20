@@ -14,6 +14,10 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 
+// The keyboard the Get_Key() family reads. Each game points this at its
+// own keyboard when it builds one, and clears it again afterwards.
+WWKeyboardClass* ActiveKeyboard = nullptr;
+
 // Mask for modifier keys that affect gameplay input.
 // Excludes toggle modifiers (Caps Lock, Num Lock, Scroll Lock) so that their
 // state doesn't interfere with keyboard handling.

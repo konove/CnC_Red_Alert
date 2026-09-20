@@ -14,6 +14,7 @@
 #include "sdllib/ww_win.h"
 #include "td/externs.h"
 #include "td/globals.h"
+#include "td/input.h"
 #include "td/msgbox.h"
 #include "td/nullconn.h"
 #include "td/palette.h"
@@ -59,7 +60,7 @@ void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
 }
 
 void SDL_Event_Handler(SDL_Event* event) {
-  if (Kbd.Event_Handler(event)) {
+  if (TheKeyboard().Event_Handler(event)) {
     return;
   }
 

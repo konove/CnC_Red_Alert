@@ -1,13 +1,13 @@
 // File: Input, the keyboard and the mouse the player plays with.
 
-#ifndef CNC_RED_ALERT_RA_INPUT_H_
-#define CNC_RED_ALERT_RA_INPUT_H_
+#ifndef CNC_RED_ALERT_TD_INPUT_H_
+#define CNC_RED_ALERT_TD_INPUT_H_
 
 #include <memory>
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
-#include "ra/jshell.h"
+#include "sdllib/keyboard.h"
 
 class GraphicViewPortClass;
 class WWMouseClass;
@@ -37,14 +37,12 @@ class Input {
   Input(Input&&) = delete;
   Input& operator=(Input&&) = delete;
 
-  KeyboardClass& keyboard() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return *keyboard_;
+  WWKeyboardClass& keyboard() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return keyboard_;
   }
 
   // The mouse cursor, or null before InstallMouse() and after RemoveMouse().
-  WWMouseClass* mouse() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return mouse_.get();
-  }
+  WWMouseClass* mouse() ABSL_ATTRIBUTE_LIFETIME_BOUND { return mouse_.get(); }
 
   // Creates the cursor over the given page. Called once the video mode is
   // set; calling it again replaces the cursor.
@@ -54,7 +52,7 @@ class Input {
   void RemoveMouse();
 
  private:
-  std::unique_ptr<KeyboardClass> keyboard_;
+  WWKeyboardClass keyboard_;
   std::unique_ptr<WWMouseClass> mouse_;
 };
 
@@ -63,7 +61,7 @@ class Input {
 inline Input& TheInput() { return base::Installed<Input>::Get(); }
 
 // Shorthands for the two devices.
-inline KeyboardClass& TheKeyboard() { return TheInput().keyboard(); }
+inline WWKeyboardClass& TheKeyboard() { return TheInput().keyboard(); }
 inline WWMouseClass* TheMouse() { return TheInput().mouse(); }
 
-#endif  // CNC_RED_ALERT_RA_INPUT_H_
+#endif  // CNC_RED_ALERT_TD_INPUT_H_

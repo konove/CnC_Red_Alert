@@ -45,6 +45,7 @@
 
 #include "base/seek_origin.h"
 #include "td/function.h"
+#include "td/input.h"
 #include "td/screen.h"
 #include "td/tcpip.h"
 
@@ -83,8 +84,8 @@ void Focus_Loss() {
   }
   TheTheme().Stop();
   TheAudio().Pause();
-  if (WWMouse) {
-    WWMouse->Clear_Cursor_Clip();
+  if (TheMouse()) {
+    TheMouse()->Clear_Cursor_Clip();
   }
 }
 
@@ -92,8 +93,8 @@ void Focus_Restore() {
   Restore_Cached_Icons();
   TheMap().Flag_To_Redraw(true);
   TheAudio().Resume();
-  if (WWMouse) {
-    WWMouse->Set_Cursor_Clip();
+  if (TheMouse()) {
+    TheMouse()->Set_Cursor_Clip();
   }
   TheScreen().visible_page().Clear();
   TheScreen().hidden_page().Clear();
@@ -184,7 +185,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
     case WM_RBUTTONDOWN:
     case WM_RBUTTONUP:
     case WM_RBUTTONDBLCLK:
-      Kbd.Message_Handler(hwnd, message, wParam, lParam);
+      TheKeyboard().Message_Handler(hwnd, message, wParam, lParam);
       return 0;
 
     case WM_DESTROY:
@@ -242,7 +243,8 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       //				Restore_Cached_Icons();
       //				Map.Flag_To_Redraw(true);
       //				Audio.Resume();
-      //				if (WWMouse) WWMouse->Set_Cursor_Clip();
+      //				if (TheMouse())
+      // TheMouse()->Set_Cursor_Clip();
       //			}
       return 0;
 

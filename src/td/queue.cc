@@ -110,6 +110,7 @@
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/mplayer.h"
@@ -1062,7 +1063,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     //---------------------------------------------------------------------
     Call_Back();
     if (!first_time && SpecialDialog == SDLG_NONE && reconnect_dlg == 0) {
-      WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+      TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
       TheMap().Input(input, x, y);
       if (input) {
         Keyboard_Process(input);

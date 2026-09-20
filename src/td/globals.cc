@@ -41,9 +41,7 @@
 
 #include <cstdint>
 
-#include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
-#include "sdllib/ww_mouse.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/ftimer.h"
@@ -428,7 +426,6 @@ int RequiredCD = -2;
 #else
 int RequiredCD = -1;
 #endif
-bool MouseInstalled;
 
 /*
 ** Certain options must be enabled by both a command-line option, and an
@@ -437,11 +434,8 @@ bool MouseInstalled;
 */
 bool AreThingiesEnabled = false;
 
-WWKeyboardClass Kbd;
-WWMouseClass* WWMouse = nullptr;
 bool InMovie = false;       // Are we currently playing a VQ movie?
 bool MMXAvailable = false;  // Does this CPU support MMX extensions?
 
 TheaterType LastTheater = THEATER_NONE;
 
-WWKeyboardClass* ActiveKeyboard = &Kbd;

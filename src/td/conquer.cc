@@ -126,6 +126,7 @@
 #include "td/infantry.h"
 #include "td/init.h"
 #include "td/inline.h"
+#include "td/input.h"
 #include "td/interpal.h"
 #include "td/ipxaddr.h"
 #include "td/ipxgconn.h"
@@ -1600,11 +1601,11 @@ static void Sync_Delay() {
     Call_Back();
 
     if (SpecialDialog == SDLG_NONE) {
-      WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+      TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
       KeyNumType input = KN_NONE;
       int x = 0;
       int y = 0;
-      WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+      TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
       TheMap().Input(input, x, y);
       if (input) {
         Keyboard_Process(input);
@@ -1695,7 +1696,7 @@ bool Main_Loop() {
   */
   if ((!TheSession().playback_game()) &&
       (SpecialDialog == SDLG_NONE && GameInFocus)) {
-    WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+    TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     TheMap().Input(input, x, y);
     if (input) {
       Keyboard_Process(input);
@@ -1783,7 +1784,7 @@ bool Main_Loop() {
       Send_Statistics_Packet();
     }
 
-    WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+    TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     PlayerLoses = false;
     PlayerWins = false;
     PlayerRestarts = false;
@@ -1797,7 +1798,7 @@ bool Main_Loop() {
       Send_Statistics_Packet();
     }
 
-    WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+    TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     PlayerWins = false;
     PlayerLoses = false;
     PlayerRestarts = false;
@@ -1805,7 +1806,7 @@ bool Main_Loop() {
     Do_Lose();
   }
   if (PlayerRestarts) {
-    WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+    TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     PlayerWins = false;
     PlayerLoses = false;
     PlayerRestarts = false;

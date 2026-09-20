@@ -69,6 +69,7 @@
 #include "td/externs.h"
 #include "td/goptions.h"
 #include "td/house.h"
+#include "td/input.h"
 #include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/palette.h"
@@ -584,7 +585,7 @@ void Map_Selection() {
 
   TheScreen().sys_mem_page().Clear();
   PseudoSeenBuff->Clear();
-  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
   TheScreen().hidden_page().Clear();
 
   Increase_Palette_Luminance(ThePalettes().title_palette(), 30, 30, 30, 63);

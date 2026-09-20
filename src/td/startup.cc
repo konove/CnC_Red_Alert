@@ -64,6 +64,7 @@
 #include "td/game.h"
 #include "td/globals.h"  // IWYU pragma: keep (used only with an entry point)
 #include "td/init.h"
+#include "td/input.h"
 #include "td/ipxaddr.h"
 #include "td/ipxmgr.h"
 #include "td/network.h"
@@ -375,9 +376,7 @@ int main(int argc, char* argv[])
       Memory_Error = &Memory_Error_Handler;
 
       CCDebugString("C&C95 - Creating mouse class.\n");
-      WWMouse = new WWMouseClass(&TheScreen().visible_view(), 32, 32);
-      //			MouseInstalled = Install_Mouse(32,24,320,200);
-      MouseInstalled = true;
+      TheInput().InstallMouse(TheScreen().visible_view());
 
       /*
       ** See if we should run the intro
@@ -506,11 +505,8 @@ void __cdecl Prog_End() {
   CCDebugString("C&C95 - About to call CloseAudio.\n");
   TheAudio().Close();
   CCDebugString("C&C95 - Returned from CloseAudio.\n");
-  if (WWMouse) {
-    CCDebugString("C&C95 - Deleting mouse object.\n");
-    delete WWMouse;
-    WWMouse = nullptr;
-  }
+  CCDebugString("C&C95 - Deleting mouse object.\n");
+  TheInput().RemoveMouse();
   CCDebugString("C&C95 - Deleting tick timer.\n");
   ShutdownTickTimer();
 }

@@ -1,21 +1,18 @@
-#include "ra/input.h"
+#include "td/input.h"
 
 #include <memory>
 
-#include "ra/jshell.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 
 namespace {
 // The cursor's hot-spot box, in pixels. The original picked a square large
 // enough for every mouse shape the game draws.
-constexpr int kCursorWidth = 48;
-constexpr int kCursorHeight = 48;
+constexpr int kCursorWidth = 32;
+constexpr int kCursorHeight = 32;
 }  // namespace
 
-Input::Input() : keyboard_(std::make_unique<KeyboardClass>()) {
-  ActiveKeyboard = keyboard_.get();
-}
+Input::Input() { ActiveKeyboard = &keyboard_; }
 
 Input::~Input() { ActiveKeyboard = nullptr; }
 

@@ -166,12 +166,9 @@ extern SpecialDialogType SpecialDialog;
 // extern bool						IsFindPath;
 
 extern int RequiredCD;
-extern bool MouseInstalled;
 extern bool AreThingiesEnabled;
 
-extern WWKeyboardClass Kbd;
 extern int In_Debugger;
-extern WWMouseClass* WWMouse;
 extern HANDLE hInstance;
 extern "C" bool MMXAvailable;
 extern int Get_CD_Index(int cd_drive, int timeout);

@@ -83,6 +83,7 @@
 #include "td/externs.h"
 #include "td/goptions.h"
 #include "td/house.h"
+#include "td/input.h"
 #include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/logic.h"
@@ -718,7 +719,7 @@ void ScoreClass::Presentation() {
   TheScreen().visible_page().Clear();
   PseudoSeenBuff->Clear();
   TheScreen().sys_mem_page().Clear();
-  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
   TheScreen().hidden_page().Clear();
   Set_Palette(ThePalettes().black_palette());
 
@@ -1318,9 +1319,9 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     */
     Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().hidden_view(), {});
     BlitList.Update();
-    WWMouse->Draw_Mouse(&TheScreen().hidden_view());
+    TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
     TheScreen().hidden_view().Blit(TheScreen().visible_view());
-    WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+    TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     // Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff , NULL);
 
     if (!Check_Key()) {
@@ -1511,9 +1512,9 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
   */
   Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().hidden_view(), {});
   BlitList.Update();
-  WWMouse->Draw_Mouse(&TheScreen().hidden_view());
+  TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
   TheScreen().hidden_view().Blit(TheScreen().visible_view());
-  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
 
   Call_Back_Delay(40);
 
@@ -2100,9 +2101,9 @@ void Call_Back_Delay(int time) {
     Animate_Score_Objs();
     Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().hidden_view(), {});
     BlitList.Update();
-    WWMouse->Draw_Mouse(&TheScreen().hidden_view());
+    TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
     TheScreen().hidden_view().Blit(TheScreen().visible_view());
-    WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+    TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     //}
   } while (cd.Time());
 }

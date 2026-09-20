@@ -33,6 +33,7 @@
 #include "sdllib/file_access.h"
 #include "td/defines.h"
 #include "td/externs.h"
+#include "td/input.h"
 #include "td/world.h"
 #include "tech/game_file.h"
 // #include "ra/filepcx.h"
@@ -72,7 +73,7 @@ void Focus_Loss() {
 
   TheTheme().Stop();
   TheAudio().Pause();
-  if (WWMouse) {
+  if (TheMouse()) {
     WWMouseClass::Clear_Cursor_Clip();
   }
 }
@@ -87,7 +88,7 @@ void Focus_Restore() {
     OldTheme = THEME_NONE;
   }
 
-  if (WWMouse) {
+  if (TheMouse()) {
     WWMouseClass::Set_Cursor_Clip();
   }
 }

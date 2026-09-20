@@ -57,6 +57,7 @@
 #include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/externs.h"
+#include "td/input.h"
 #include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/palette.h"
@@ -165,7 +166,7 @@ void Choose_Side() {
   Call_Back();
   gdibrief = Open_Movie(gdibrief_player, gdibrief_io, "GDI1.VQA");
 
-  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
   TheScreen().hidden_page().Clear();
   PseudoSeenBuff->Clear();
   TheScreen().sys_mem_page().Clear();

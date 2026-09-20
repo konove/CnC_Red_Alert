@@ -101,6 +101,7 @@
 #include "td/infantry.h"
 #include "td/ini.h"
 #include "td/inline.h"
+#include "td/input.h"
 #include "td/intro.h"
 #include "td/ipx.h"
 #include "td/ipxaddr.h"
@@ -236,7 +237,7 @@ bool Init_Game() {
                           TASKSWITCHABLE);
 #endif  // FIX_ME_LATER
   Keyboard::Clear();
-  Kbd.Clear();
+  TheKeyboard().Clear();
 
   /*
   **	This is the shape staging buffer. It must always be available, so it is
@@ -303,7 +304,7 @@ bool Init_Game() {
   ** Since there is no mouse shape currently available we need'
   ** to set one of our own.
   */
-  if (MouseInstalled) {
+  if (TheMouse() != nullptr) {
     temp_mouse_shapes = MixArchive::RetrieveData("MOUSE.SHP");
     if (!temp_mouse_shapes.empty()) {
       Set_Mouse_Cursor(0, 0, Extract_Shape(temp_mouse_shapes, 0));
@@ -333,7 +334,7 @@ bool Init_Game() {
   GameFile palfile("TEMPERAT.PAL");
   palfile.Read(std::span(ThePalettes().game_palette()), 768L);
 
-  if (!MouseInstalled) {
+  if (TheMouse() == nullptr) {
     char buffer[255];
     Set_Palette(ThePalettes().game_palette());
 #ifdef GERMAN
@@ -1549,7 +1550,7 @@ bool Select_Game(bool fade) {
   /*
   **	Don't carry stray keystrokes into game.
   */
-  Kbd.Clear();
+  TheKeyboard().Clear();
 
   /*
   **	Initialize the random number Seed.  For multiplayer, this will have been
@@ -1958,7 +1959,7 @@ bool Select_Game(bool fade) {
   Hide_Mouse();
   Hide_Mouse();
   Hide_Mouse();
-  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
 
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
   TheScreen().hidden_page().Clear();

@@ -65,9 +65,9 @@
 #include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
-#include "td/externs.h"
 #include "td/gadget.h"
 #include "td/inline.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/msglist.h"
@@ -387,7 +387,7 @@ void GScreenClass::Render() {
   // }
 
   if (IsToUpdate || IsScreenToRedraw) {
-    // WWMouse->Erase_Mouse(&HidPage, true);
+    // TheMouse()->Erase_Mouse(&HidPage, true);
     GraphicViewPortClass* oldpage = Set_Logic_Page(TheScreen().hidden_view());
 
     // if (IsToRedraw) {
@@ -477,12 +477,12 @@ extern bool CanVblankSync;
  *function.                                            *
  *=============================================================================================*/
 void GScreenClass::Blit_Display() {
-  WWMouse->Draw_Mouse(&TheScreen().hidden_view());
+  TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
   TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 0, 0, 0,
                                  TheScreen().hidden_view().Get_Width(),
                                  TheScreen().hidden_view().Get_Height(), false);
   if (config::kCheatKeysEnabled) {
     Add_Current_Screen();
   }
-  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), false);
+  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), false);
 }
