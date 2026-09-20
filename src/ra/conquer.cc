@@ -87,6 +87,7 @@
 #include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/special.h"
+#include "ra/startup_options.h"
 #include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "ra/unit.h"  // IWYU pragma: keep
@@ -550,11 +551,11 @@ static bool LogFrameAndQuitIfDue() {
   LogObjectPositions(Vessels, "vessel");
   LogObjectPositions(Aircraft, "aircraft");
 
-  if (Frame < DebugQuitAtFrame) {
+  if (Frame < TheStartupOptions().quit_at_frame) {
     return false;
   }
-  if (DebugSaveSlot >= 0) {
-    Save_Game(DebugSaveSlot, "debug");
+  if (TheStartupOptions().save_slot >= 0) {
+    Save_Game(TheStartupOptions().save_slot, "debug");
   }
   GameActive = false;
   return true;
@@ -711,7 +712,7 @@ bool RunFrame() {
 
   Frame++;
 
-  if (DebugQuitAtFrame >= 0 && LogFrameAndQuitIfDue()) {
+  if (TheStartupOptions().quit_at_frame >= 0 && LogFrameAndQuitIfDue()) {
     return true;
   }
 

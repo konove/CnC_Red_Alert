@@ -69,6 +69,7 @@
 #include <cstring>
 #include <ctime>
 #include <iterator>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -108,7 +109,6 @@
 #include "ra/intro.h"
 #include "ra/ipx.h"
 #include "ra/ipxaddr.h"
-#include "ra/ipxmgr.h"
 #include "ra/jshell.h"
 #include "ra/language.h"
 #include "ra/loaddlg.h"
@@ -133,6 +133,7 @@
 #include "ra/session.h"
 #include "ra/special.h"
 #include "ra/startup.h"
+#include "ra/startup_options.h"
 #include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "ra/type.h"
@@ -441,6 +442,11 @@ bool Init_Game() {
  *                                                                                             *
  * HISTORY: * 06/05/1995 BRR : Created. *
  *=============================================================================================*/
+// -NEWGAME and -LOADGAME each start one game. Select_Game() sets this when
+// it has acted on the request, so coming back from that game shows the menu
+// instead of starting it again.
+static bool startup_game_started = false;
+
 bool Select_Game(bool /*fade*/) {
   //	Enums in Select_Game() must match order of buttons in Main_Menu().
   constexpr int kSelTimeout = -1;  // main menu timeout--go into attract mode
@@ -459,12 +465,15 @@ bool Select_Game(bool /*fade*/) {
   bool process = true;      // false = break out of while loop
   bool display = true;
 
+  const StartupOptions& options = TheStartupOptions();
+
   // A -QUITFRAME run has ended when the game it started (-NEWGAME or
-  // -LOADGAME, both consumed on use, or recording playback) brings control
-  // back here. Leave rather
-  // than wait at the menu for input that never comes.
-  if (DebugQuitAtFrame >= 0 && DebugNewGame.empty() && DebugLoadGame < 0 &&
-      !Session.Play) {
+  // -LOADGAME, each started once, or recording playback) brings control back
+  // here. Leave rather than wait at the menu for input that never comes.
+  const bool startup_game_pending =
+      !startup_game_started &&
+      (!options.new_game.empty() || options.load_game >= 0);
+  if (options.quit_at_frame >= 0 && !startup_game_pending && !Session.Play) {
     return false;
   }
 
@@ -596,7 +605,8 @@ bool Select_Game(bool /*fade*/) {
       // normal-difficulty campaign game, e.g. -NEWGAMESCG01EA. Used with
       // -QUITFRAME and -SAVESLOT to produce a reference save without a
       // display.
-      if (selection == kSelNone && !DebugNewGame.empty()) {
+      if (selection == kSelNone && !startup_game_started &&
+          !options.new_game.empty()) {
         Scen.CDifficulty = DIFF_NORMAL;
         Scen.Difficulty = DIFF_NORMAL;
         Scen.CarryOverMoney = 0;
@@ -604,8 +614,8 @@ bool Select_Game(bool /*fade*/) {
         IsTanyaDead = false;
         SaveTanya = false;
         Whom = HOUSE_GOOD;
-        Scen.Set_Scenario_Name((DebugNewGame + ".INI").c_str());
-        DebugNewGame.clear();
+        Scen.Set_Scenario_Name((options.new_game + ".INI").c_str());
+        startup_game_started = true;
         Session.Type = GAME_NORMAL;
         process = false;
         continue;
@@ -613,9 +623,10 @@ bool Select_Game(bool /*fade*/) {
 
       // -LOADGAME<n>: skip the menu and load save slot n straight away.
       // Used with -QUITFRAME to drive save/load checks without a display.
-      if (selection == kSelNone && DebugLoadGame >= 0) {
-        const int slot = DebugLoadGame;
-        DebugLoadGame = -1;
+      if (selection == kSelNone && !startup_game_started &&
+          options.load_game >= 0) {
+        const int slot = options.load_game;
+        startup_game_started = true;
         if (Load_Game(slot)) {
           Theme.Queue_Song(magic_enum::enum_values<ThemeType>().front());
           process = false;
@@ -1321,7 +1332,7 @@ void Anim_Init() {
 
 // Kept out of Parse_Command_Line() so the std::optional below does not make
 // clang-tidy run its optional-access dataflow over that whole function.
-void ApplyDestNet(const std::string_view address) {
+std::optional<IPXAddressClass> ParseDestNet(const std::string_view address) {
   NetNumType net;
   NetNodeType node;
 
@@ -1344,36 +1355,29 @@ void ApplyDestNet(const std::string_view address) {
     i++;
   }
 
-  /*
-  ** If all the address components were successfully read, fill in the
-  ** BridgeNet with a broadcast address to the network across the bridge.
-  */
-  if (i >= 4) {
-    Session.IsBridge = 1;
-    base::FillBytes(base::ObjectBytes(node), 0xff, 6);
-    Session.BridgeNet = IPXAddressClass(net, node);
+  if (i < 4) {
+    return std::nullopt;
   }
+  // The node becomes a broadcast address, so packets reach every machine on
+  // the network across the bridge.
+  base::FillBytes(base::ObjectBytes(node), 0xff, 6);
+  return IPXAddressClass(net, node);
 }
 
-// Applies "-SOCKET<offset>": the IPX socket is 0x4000 plus an offset in
+// Returns the IPX socket "-SOCKET<offset>" asks for: 0x4000 plus an offset in
 // [0, 0x4000). Anything else leaves the socket alone.
-static void ApplySocketArgument(std::string_view offset_text) {
+static std::optional<uint16_t> ParseSocketArgument(
+    std::string_view offset_text) {
   const auto offset = tech::ParseInteger<int>(offset_text);
-  if (offset && *offset >= 0 && *offset < 0x4000) {
-    Ipx.Set_Socket(static_cast<uint16_t>(*offset + 0x4000));
+  if (!offset || *offset < 0 || *offset >= 0x4000) {
+    return std::nullopt;
   }
+  return static_cast<uint16_t>(*offset + 0x4000);
 }
 
-bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
-  /*
-  **	Parse the command line and set globals to reflect the parameters
-  **	passed in.
-  */
-  Whom = HOUSE_GOOD;
-  Special.Init();
-
-  TheDebugState().set_map_editor_active(false);
-  TheDebugState().set_unshroud(false);
+std::optional<StartupOptions> Parse_Command_Line(
+    const std::span<const std::string_view> arguments) {
+  StartupOptions options;
 
   for (const std::string_view argument : arguments) {
     const std::string upper_argument = absl::AsciiStrToUpper(argument);
@@ -1391,7 +1395,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
       **	and then exit.
       */
       absl::PrintF("%s\n", kLanguageText.options);
-      return false;
+      return std::nullopt;
     }
 
     bool processed = true;
@@ -1405,8 +1409,8 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
         break;
       }
       if (code == ob) {
-        TheDebugState().set_playtest(true);
-        TheDebugState().set_developer_mode(true);
+        options.playtest = true;
+        options.developer_mode = true;
         break;
       }
     }
@@ -1419,8 +1423,8 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
         break;
       }
       if (code == ob) {
-        TheDebugState().set_playtest(true);
-        TheDebugState().set_developer_mode(true);
+        options.playtest = true;
+        options.developer_mode = true;
         break;
       }
     }
@@ -1434,10 +1438,10 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
         break;
       }
       if (code == ob) {
-        TheDebugState().set_map_editor_active(true);
-        TheDebugState().set_unshroud(true);
-        TheDebugState().set_developer_mode(true);
-        TheDebugState().set_playtest(true);
+        options.map_editor_active = true;
+        options.unshroud = true;
+        options.developer_mode = true;
+        options.playtest = true;
         break;
       }
     }
@@ -1445,7 +1449,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
     switch (ob) {
       case kParmPlaytest:
         if constexpr (config::kVirginCheatKeysEnabled) {
-          TheDebugState().set_playtest(true);
+          options.playtest = true;
         }
         break;
 
@@ -1453,10 +1457,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
       ** Special flag - is C&C being run from the install program?
       */
       case kParmInstall:
-        Special.IsFromInstall = true;
-        // If uncommented, will disable the <ESC> key during the first movie
-        // run.
-        //				BreakoutAllowed = false;
+        options.from_install = true;
         break;
 
       default:
@@ -1472,7 +1473,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
       **	Scenario Editor Mode
       */
       if (absl::EqualsIgnoreCase(string, "-CHECKMAP")) {
-        TheDebugState().set_check_map(true);
+        options.check_map = true;
         continue;
       }
     }
@@ -1482,7 +1483,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
     */
     if (string.contains("-CD")) {
       // The original argument keeps the case of the path for Unix.
-      SearchPaths::Add(argument.substr(3));
+      options.search_paths.emplace_back(argument.substr(3));
       continue;
     }
 
@@ -1490,7 +1491,12 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
     **	Specify destination connection for network play
     */
     if (string.contains("-DESTNET")) {
-      ApplyDestNet(string.substr(8));
+      // A malformed address leaves any earlier one alone.
+      const std::optional<IPXAddressClass> bridge_net =
+          ParseDestNet(string.substr(8));
+      if (bridge_net.has_value()) {
+        options.bridge_net = bridge_net;
+      }
       continue;
     }
 
@@ -1498,7 +1504,12 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
     **	Specify socket ID, as an offset from 0x4000.
     */
     if (string.contains("-SOCKET")) {
-      ApplySocketArgument(string.substr(std::string_view("-SOCKET").size()));
+      // An out-of-range offset leaves any earlier one alone.
+      const std::optional<uint16_t> socket = ParseSocketArgument(
+          string.substr(std::string_view("-SOCKET").size()));
+      if (socket.has_value()) {
+        options.socket = socket;
+      }
       continue;
     }
 
@@ -1506,7 +1517,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
     **	Set the Net Stealth option
     */
     if (string.contains("-STEALTH")) {
-      Session.NetStealth = true;
+      options.net_stealth = true;
       continue;
     }
 
@@ -1514,7 +1525,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
     **	Set the Net Protection option
     */
     if (string.contains("-MESSAGES")) {
-      Session.NetProtect = false;
+      options.outside_messages = true;
       continue;
     }
 
@@ -1522,7 +1533,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
     **	Allow "attract" mode
     */
     if (string.contains("-ATTRACT")) {
-      Session.Attract = true;
+      options.attract = true;
       continue;
     }
 
@@ -1530,55 +1541,55 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
     ** Set screen to 640x480 instead of 640x400
     */
     if (string.contains("-480")) {
-      TheScreen().set_mode_height(480);
+      options.tall_screen = true;
       continue;
     }
 
     if constexpr (config::kCheatKeysEnabled) {
       // Specify the random number seed (for debugging)
       if (string.contains("-SEED")) {
-        CustomSeed = tech::ParseIntegerOr<uint16_t>(
+        options.custom_seed = tech::ParseIntegerOr<uint16_t>(
             string.substr(std::string_view("-SEED").size()),
-            static_cast<uint16_t>(CustomSeed));
+            options.custom_seed);
         continue;
       }
     }
 
     if (std::string_view(string) == "-NOMOVIES") {
-      bNoMovies = true;
+      options.no_movies = true;
+      continue;
+    }
+
+    // Developer switches for save-game checks; see Select_Game and
+    // RunFrame.
+    if (string.starts_with("-LOADGAME")) {
+      options.load_game = tech::ParseIntegerOr<int>(string.substr(9), -1);
+      continue;
+    }
+    if (string.starts_with("-QUITFRAME")) {
+      options.quit_at_frame = tech::ParseIntegerOr<int>(string.substr(10), -1);
+      // Nobody watches an automated run; its fades only add wall time.
+      options.disable_fades = true;
+      continue;
+    }
+    if (std::string_view(string) == "-NOFADE") {
+      options.disable_fades = true;
+      continue;
+    }
+    if (string.starts_with("-NEWGAME")) {
+      options.new_game = string.substr(8);
+      continue;
+    }
+    if (string.starts_with("-SAVESLOT")) {
+      options.save_slot = tech::ParseIntegerOr<int>(string.substr(9), -1);
       continue;
     }
 
     /*
     ** Disable mouse grabbing for debugging
     */
-    // Developer switches for save-game checks; see Select_Game and
-    // RunFrame.
-    if (string.starts_with("-LOADGAME")) {
-      DebugLoadGame = tech::ParseIntegerOr<int>(string.substr(9), -1);
-      continue;
-    }
-    if (string.starts_with("-QUITFRAME")) {
-      DebugQuitAtFrame = tech::ParseIntegerOr<int>(string.substr(10), -1);
-      // Nobody watches an automated run; its fades only add wall time.
-      PaletteClass::DisableFades();
-      continue;
-    }
-    if (std::string_view(string) == "-NOFADE") {
-      PaletteClass::DisableFades();
-      continue;
-    }
-    if (string.starts_with("-NEWGAME")) {
-      DebugNewGame = string.substr(8);
-      continue;
-    }
-    if (string.starts_with("-SAVESLOT")) {
-      DebugSaveSlot = tech::ParseIntegerOr<int>(string.substr(9), -1);
-      continue;
-    }
-
     if (string.contains("-NOMOUSEGRAB")) {
-      NoMouseGrab = true;
+      options.no_mouse_grab = true;
     }
 
     /*
@@ -1589,19 +1600,19 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
         if constexpr (config::kCheatKeysEnabled) {
           switch (code) {
             case 'I':
-              Special.IsInert = true;
+              options.inert_weapons = true;
               continue;
             case 'H':
-              Special.IsSpeedBuild = true;
+              options.speed_build = true;
               continue;
             case 'X':
-              Session.Record = true;
+              options.record = true;
               continue;
             case 'Y':
-              Session.Play = true;
+              options.play = true;
               continue;
             case 'P':
-              TheDebugState().set_print_events(true);
+              options.print_events = true;
               continue;
             default:
               break;
@@ -1609,15 +1620,15 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
         }
 
         if (code == 'Q') {
-          TheDebugState().set_quiet(true);
+          options.quiet = true;
         } else {
           absl::PrintF("%s\n", kLanguageText.invalid_option);
-          return false;
+          return std::nullopt;
         }
       }
     }
   }
-  return true;
+  return options;
 }
 
 /***************************************************************************
@@ -1669,8 +1680,8 @@ void Init_Random() {
     /*
     ** Set the optional user-specified seed
     */
-    if (CustomSeed != 0) {
-      Seed = CustomSeed;
+    if (TheStartupOptions().custom_seed != 0) {
+      Seed = TheStartupOptions().custom_seed;
     } else {
       Seed = port::RandomSeed();
     }

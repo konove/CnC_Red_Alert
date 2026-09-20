@@ -88,13 +88,6 @@ inline char staging_buffer[32000];
 
 
 
-// Developer switches (-NEWGAME<scenario>, -LOADGAME<n>, -QUITFRAME<n>,
-// -SAVESLOT<n>) for save-game checks without a display; see init.cc and
-// conquer.cc. -1 or empty means unset.
-extern std::string DebugNewGame;
-extern int DebugLoadGame;
-extern int64_t DebugQuitAtFrame;
-extern int DebugSaveSlot;
 extern std::span<const std::byte> LightningShapes;
 
 extern int NewINIFormat;

@@ -3,10 +3,13 @@
 #ifndef CNC_RED_ALERT_RA_GAME_H_
 #define CNC_RED_ALERT_RA_GAME_H_
 
+#include <utility>
+
 #include "base/installed.h"
 #include "ra/debug_state.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
+#include "ra/startup_options.h"
 
 // Owns the game's subsystems and so fixes the order they are built and torn
 // down in. Members are declared in dependency order, which C++ constructs
@@ -33,7 +36,16 @@ class Game {
   Game(Game&&) = delete;
   Game& operator=(Game&&) = delete;
 
+  // Installs what the command line asked for. main() calls this once, as
+  // soon as it has parsed the arguments and before anything reads them.
+  void set_startup_options(StartupOptions options) {
+    startup_options_ = std::move(options);
+  }
+
  private:
+  StartupOptions startup_options_;
+  base::Installed<StartupOptions>::Scope startup_options_scope_{
+      startup_options_};
   Screen screen_;
   base::Installed<Screen>::Scope screen_scope_{screen_};
   Palettes palettes_;

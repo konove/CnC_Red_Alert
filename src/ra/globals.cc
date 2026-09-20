@@ -42,7 +42,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
-#include <string>
 #include <vector>
 
 #include "base/enum_array.h"
@@ -104,10 +103,6 @@
 #include "tech/random.h"
 #include "winvq/vqa32/vqaplay.h"
 
-std::string DebugNewGame;
-int DebugLoadGame = -1;
-int64_t DebugQuitAtFrame = -1;
-int DebugSaveSlot = -1;
 TFixedIHeapClass<AircraftClass> Aircraft;
 TFixedIHeapClass<AnimClass> Anims;
 TFixedIHeapClass<BuildingClass> Buildings;
@@ -568,12 +563,6 @@ IPXManagerClass Ipx(
 ** multiplayer games.
 */
 int Seed = 0;
-
-/***************************************************************************
-** If this value is non-zero, use it as the random # seed instead; this should
-** help reproduce some bugs.
-*/
-int CustomSeed = 0;
 
 int WindowList[][8] = {
     /* xbyte, ypixel, bytewid, pixelht, cursor color, bkgd color,	cursor

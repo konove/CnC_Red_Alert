@@ -30,7 +30,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <optional>
 #include <span>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -46,6 +48,7 @@
 #include "port/win32/win32_types.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/game.h"
@@ -54,14 +57,18 @@
 #include "ra/ini.h"
 #include "ra/init.h"
 #include "ra/installation.h"
+#include "ra/ipxaddr.h"
 #include "ra/ipxmgr.h"
 #include "ra/jshell.h"
 #include "ra/language.h"
+#include "ra/movie.h"
 #include "ra/nullconn.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
+#include "ra/session.h"
 #include "ra/special.h"
+#include "ra/startup_options.h"
 #include "ra/type.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/file.h"
@@ -101,30 +108,80 @@ void ShutDown() {
   game = nullptr;
 }
 
-// Reads the options that have to be known before the window and the network
-// exist: blit fills, the screen height, the IPX socket and a bridge network.
-static void ReadStartupOptions(const INIClass& ini) {
+// Hands what the command line asked for to whatever owns it. The screen
+// mode, the IPX socket and the bridge network wait for ReadConfigOptions(),
+// because the config file asks for them too.
+static void ApplyStartupOptions(const StartupOptions& options) {
+  for (const std::string& path : options.search_paths) {
+    SearchPaths::Add(path);
+  }
+
+  DebugState& debug_state = TheDebugState();
+  debug_state.set_developer_mode(options.developer_mode);
+  debug_state.set_playtest(options.playtest);
+  debug_state.set_map_editor_active(options.map_editor_active);
+  debug_state.set_unshroud(options.unshroud);
+  debug_state.set_quiet(options.quiet);
+  debug_state.set_print_events(options.print_events);
+  debug_state.set_check_map(options.check_map);
+
+  Special.IsFromInstall = options.from_install;
+  Special.IsInert = options.inert_weapons;
+  Special.IsSpeedBuild = options.speed_build;
+
+  Session.NetStealth = options.net_stealth;
+  Session.NetProtect = !options.outside_messages;
+  Session.Attract = options.attract;
+  Session.Record = options.record;
+  Session.Play = options.play;
+
+  if (options.disable_fades) {
+    PaletteClass::DisableFades();
+  }
+  bNoMovies = options.no_movies;
+  NoMouseGrab = options.no_mouse_grab;
+}
+
+// Reads the config-file options that have to be known before the window and
+// the network exist: blit fills, the screen height, the IPX socket and a
+// bridge network. The command line wins wherever it asked for the same thing.
+static void ReadConfigOptions(const INIClass& ini,
+                              const StartupOptions& options) {
   AllowHardwareBlitFills = ini.Get_Bool("Options", "HardwareFills", true);
 
-  // Resolution=yes asks for a 480-line mode; Screen::Init() letterboxes the
-  // 400-line game area inside it.
+  // Resolution=yes and -480 both ask for a 480-line mode; Screen::Init()
+  // letterboxes the 400-line game area inside it.
   TheScreen().set_mode_height(
-      ini.Get_Bool("Options", "Resolution", false) ? 480 : Screen::kHeight);
+      options.tall_screen || ini.Get_Bool("Options", "Resolution", false)
+          ? 480
+          : Screen::kHeight);
 
   // Socket is an offset into the dynamic IPX socket range 0x4000-0x7FFF,
   // letting several games share a network without seeing each other.
-  const int socket = ini.Get_Int("Options", "Socket", 0);
-  if (socket > 0 && socket < 0x4000) {
-    Ipx.Set_Socket(static_cast<uint16_t>(0x4000 + socket));
+  if (options.socket.has_value()) {
+    Ipx.Set_Socket(*options.socket);
+  } else {
+    const int socket = ini.Get_Int("Options", "Socket", 0);
+    if (socket > 0 && socket < 0x4000) {
+      Ipx.Set_Socket(static_cast<uint16_t>(0x4000 + socket));
+    }
   }
 
   // DestNet names a network on the far side of an IPX bridge.
-  std::array<char, 512> dest_net{};
-  // Get_String() returns the length of the trimmed value; 0 if absent.
-  const int length = ini.Get_String("Options", "DestNet", nullptr, dest_net,
-                                    static_cast<int>(dest_net.size()));
-  if (length > 0) {
-    ApplyDestNet(std::string_view(dest_net.data(), base::ToSize(length)));
+  std::optional<IPXAddressClass> bridge_net = options.bridge_net;
+  if (!bridge_net.has_value()) {
+    std::array<char, 512> dest_net{};
+    // Get_String() returns the length of the trimmed value; 0 if absent.
+    const int length = ini.Get_String("Options", "DestNet", nullptr, dest_net,
+                                      static_cast<int>(dest_net.size()));
+    if (length > 0) {
+      bridge_net =
+          ParseDestNet(std::string_view(dest_net.data(), base::ToSize(length)));
+    }
+  }
+  if (bridge_net.has_value()) {
+    Session.IsBridge = 1;
+    Session.BridgeNet = *bridge_net;
   }
 }
 
@@ -216,99 +273,109 @@ int main(const int argc, char* argv[])
     }
   }
 
-  if (Parse_Command_Line(arguments)) {
-    InitTickTimer();
-    DiskFile config_file(kConfigFileName);
+  // The parser writes no game state, so these defaults come first and
+  // ApplyStartupOptions() lays the command line over them.
+  Whom = HOUSE_GOOD;
+  Special.Init();
 
-    Keyboard = new KeyboardClass();
+  const std::optional<StartupOptions> options = Parse_Command_Line(arguments);
+  if (!options.has_value()) {
+    // The usage text or the invalid-option message has been printed.
+    ShutDown();
+    return EXIT_SUCCESS;
+  }
+  game->set_startup_options(*options);
+  ApplyStartupOptions(*options);
 
-    // Refuse to start without 8 MB free for save games and the config file.
-    if (Disk_Space_Available() < kInitFreeDiskSpace) {
-      absl::PrintF("%s", kLanguageText.insufficient_disk);
-      absl::PrintF("%s\n",
-                   MustHaveDiskSpaceText(kInitFreeDiskSpace / (1024 * 1024)));
-      ShutDown();
-      return EXIT_FAILURE;
-    }
+  InitTickTimer();
+  DiskFile config_file(kConfigFileName);
 
-    // The original installer wrote the config file. Without one, start from
-    // an empty file: every option has a default.
-    if (!config_file.IsAvailable()) {
-      config_file.Create();
-    }
+  Keyboard = new KeyboardClass();
 
-    if (config_file.IsAvailable()) {
-      INIClass ini;
-      ini.Load(config_file);
+  // Refuse to start without 8 MB free for save games and the config file.
+  if (Disk_Space_Available() < kInitFreeDiskSpace) {
+    absl::PrintF("%s", kLanguageText.insufficient_disk);
+    absl::PrintF("%s\n",
+                 MustHaveDiskSpaceText(kInitFreeDiskSpace / (1024 * 1024)));
+    ShutDown();
+    return EXIT_FAILURE;
+  }
 
-      // Sets the mode height, so it has to come before the window is opened.
-      ReadStartupOptions(ini);
+  // The original installer wrote the config file. Without one, start from
+  // an empty file: every option has a default.
+  if (!config_file.IsAvailable()) {
+    config_file.Create();
+  }
 
-      Create_Main_Window(nullptr, 0, Screen::kWidth, TheScreen().mode_height());
-      // 22050 Hz mono.
-      SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
-
-      if (!TheScreen().Init()) {
-        ShutDown();
-        return EXIT_FAILURE;
-      }
-
-      Options.Adjust_Variables_For_Resolution();
-
-      Memory_Error = &Memory_Error_Handler;
-
-      // The full-screen and editor windows cover the visible viewport, whose
-      // size is only known now that the video mode is set.
-      base::At(WindowList[0], kWindowWidth) =
-          TheScreen().visible_view().Get_Width();
-      base::At(WindowList[0], kWindowHeight) =
-          TheScreen().visible_view().Get_Height();
-      base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowWidth) =
-          TheScreen().visible_view().Get_Width();
-      base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowHeight) =
-          TheScreen().visible_view().Get_Height();
-
-      WWMouse = new WWMouseClass(&TheScreen().visible_view(), 48, 48);
-      MouseInstalled = true;
-
-      SearchPaths::SetCdDrive(CDList.Get_First_CD_Drive());
-
-      // IsFromInstall means "first launch after installing": play the intro
-      // movie. The installer used to write PlayIntro=yes; with no entry it
-      // still defaults to yes, so a fresh install sees the movie once.
-      if (!Special.IsFromInstall) {
-        Special.IsFromInstall = ini.Get_Bool("Intro", "PlayIntro", true);
-      }
-      ThePalettes().set_slow_palette(
-          ini.Get_Bool("Options", "SlowPalette", false));
-
-      // Whatever happens next, the intro has now been shown once: write
-      // PlayIntro=no so later launches go straight to the menu. Tiberian
-      // Dawn forbids skipping this first-run intro with <ESC>; Red Alert
-      // shipped allowing it.
-      if (Special.IsFromInstall) {
-        BreakoutAllowed = true;
-        ini.Put_Bool("Intro", "PlayIntro", false);
-        ini.Save(config_file);
-      }
-
-      // While the game runs an out-of-memory exit still has everything to
-      // clean up; after RunGame() returns it only has to report.
-      Memory_Error_Exit = CleanUpAndExitWithError;
-
-      RunGame();
-
-      TheScreen().visible_page().Clear();
-      TheScreen().hidden_page().Clear();
-      ShutDown();
-      return EXIT_SUCCESS;
-    }
+  if (!config_file.IsAvailable()) {
     // The config file could neither be opened nor created. There is no
     // window yet to read a key from, so report and leave.
     absl::PrintF("%s\n", kLanguageText.setup_first);
     ShutDown();
     return EXIT_FAILURE;
   }
+
+  INIClass ini;
+  ini.Load(config_file);
+
+  // Sets the mode height, so it has to come before the window is opened.
+  ReadConfigOptions(ini, *options);
+
+  Create_Main_Window(nullptr, 0, Screen::kWidth, TheScreen().mode_height());
+  // 22050 Hz mono.
+  SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
+
+  if (!TheScreen().Init()) {
+    ShutDown();
+    return EXIT_FAILURE;
+  }
+
+  Options.Adjust_Variables_For_Resolution();
+
+  Memory_Error = &Memory_Error_Handler;
+
+  // The full-screen and editor windows cover the visible viewport, whose
+  // size is only known now that the video mode is set.
+  base::At(WindowList[0], kWindowWidth) =
+      TheScreen().visible_view().Get_Width();
+  base::At(WindowList[0], kWindowHeight) =
+      TheScreen().visible_view().Get_Height();
+  base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowWidth) =
+      TheScreen().visible_view().Get_Width();
+  base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowHeight) =
+      TheScreen().visible_view().Get_Height();
+
+  WWMouse = new WWMouseClass(&TheScreen().visible_view(), 48, 48);
+  MouseInstalled = true;
+
+  SearchPaths::SetCdDrive(CDList.Get_First_CD_Drive());
+
+  // IsFromInstall means "first launch after installing": play the intro
+  // movie. The installer used to write PlayIntro=yes; with no entry it
+  // still defaults to yes, so a fresh install sees the movie once.
+  if (!Special.IsFromInstall) {
+    Special.IsFromInstall = ini.Get_Bool("Intro", "PlayIntro", true);
+  }
+  ThePalettes().set_slow_palette(ini.Get_Bool("Options", "SlowPalette", false));
+
+  // Whatever happens next, the intro has now been shown once: write
+  // PlayIntro=no so later launches go straight to the menu. Tiberian
+  // Dawn forbids skipping this first-run intro with <ESC>; Red Alert
+  // shipped allowing it.
+  if (Special.IsFromInstall) {
+    BreakoutAllowed = true;
+    ini.Put_Bool("Intro", "PlayIntro", false);
+    ini.Save(config_file);
+  }
+
+  // While the game runs an out-of-memory exit still has everything to
+  // clean up; after RunGame() returns it only has to report.
+  Memory_Error_Exit = CleanUpAndExitWithError;
+
+  RunGame();
+
+  TheScreen().visible_page().Clear();
+  TheScreen().hidden_page().Clear();
   ShutDown();
   return EXIT_SUCCESS;
 }
