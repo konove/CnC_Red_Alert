@@ -63,7 +63,7 @@
 #include "td/assets.h"
 #include "td/conquer.h"
 #include "td/defines.h"
-#include "td/externs.h"
+#include "td/game_state.h"
 #include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/palette.h"
@@ -72,6 +72,7 @@
 #include "td/screen.h"
 #include "td/text.h"
 #include "td/textblit.h"
+#include "td/winstub.h"
 #include "td/world.h"
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
@@ -290,7 +291,7 @@ void Nod_Ending() {
   TheAudio().Stop(loopie6m.data());
 
   absl::SNPrintF(fname, sizeof(fname), "NODEND%d", selection);
-  PreserveVQAScreen = true;
+  TheGameState().preserve_movie_screen() = true;
   Play_Movie(fname);
 
   CountDownTimerClass count;

@@ -155,13 +155,13 @@
 #include "td/dialog.h"
 #include "td/edit.h"
 #include "td/event.h"
-#include "td/externs.h"
 #include "td/gadget.h"
+#include "td/game_state.h"
 #include "td/gauge.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/house.h"
 #include "td/init.h"
+#include "td/internet.h"
 #include "td/ipx.h"
 #include "td/ipxgconn.h"
 #include "td/ipxmgr.h"
@@ -183,6 +183,7 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/vector.h"
+#include "td/winstub.h"
 #include "td/world.h"
 #include "tech/crc.h"
 #include "tech/number_parse.h"
@@ -380,7 +381,7 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
       mypacket.Command = NET_ANSWER_GAME;
       port::SafeCopy(mypacket.Name, TheSession().game_name());
 #ifdef PATCH
-      if (IsV107) {
+      if (TheGameState().compatibility_v107()) {
         mypacket.GameInfo.Version = 1;
       } else {
         mypacket.GameInfo.Version = 2;
@@ -951,7 +952,7 @@ static int Net_Join_Dialog() {
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
 
-  if (InMainLoop) {
+  if (TheGameState().in_main_loop()) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
     down_button = Hires_Retrieve("BTN-DN.SHP");
   } else {
@@ -2201,7 +2202,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   */
   int v = 0;
 #ifdef PATCH
-  if (IsV107) {
+  if (TheGameState().compatibility_v107()) {
     v = 1;
   } else {
     v = 2;
@@ -3030,7 +3031,7 @@ static int Net_New_Dialog() {
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
 
-  if (InMainLoop) {
+  if (TheGameState().in_main_loop()) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
     down_button = Hires_Retrieve("BTN-DN.SHP");
   } else {
@@ -4435,7 +4436,7 @@ static void Wait_For_Focus() {
   /*
   ** Process the message loop until we are in focus.
   */
-  if (!GameInFocus) {
+  if (!TheGameState().in_focus()) {
     CCDebugString("C&C95 - Waiting for game to come into focus.");
     do {
       CCDebugString(".");
@@ -4444,7 +4445,7 @@ static void Wait_For_Focus() {
         focus_timer.Set(int64_t{5} * 60);
       }
 
-    } while (!GameInFocus);
+    } while (!TheGameState().in_focus());
     CCDebugString("\n");
     AllSurfaces.SurfacesRestored = false;
   }
@@ -4563,7 +4564,7 @@ static int Net_Fake_New_Dialog() {
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
 
-  if (InMainLoop) {
+  if (TheGameState().in_main_loop()) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
     down_button = Hires_Retrieve("BTN-DN.SHP");
   } else {
@@ -5211,7 +5212,7 @@ static int Net_Fake_Join_Dialog() {
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
 
-  if (InMainLoop) {
+  if (TheGameState().in_main_loop()) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
     down_button = Hires_Retrieve("BTN-DN.SHP");
   } else {

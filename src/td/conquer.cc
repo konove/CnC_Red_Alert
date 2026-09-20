@@ -115,11 +115,10 @@
 #include "td/defines.h"
 #include "td/display.h"
 #include "td/event.h"
-#include "td/externs.h"
 #include "td/factory.h"
 #include "td/foot.h"
 #include "td/game_clock.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -127,6 +126,7 @@
 #include "td/init.h"
 #include "td/inline.h"
 #include "td/input.h"
+#include "td/internet.h"
 #include "td/interpal.h"
 #include "td/ipxaddr.h"
 #include "td/ipxgconn.h"
@@ -158,6 +158,7 @@
 #include "td/special.h"
 #include "td/startup.h"
 #include "td/startup_options.h"
+#include "td/stats.h"
 #include "td/target.h"
 #include "td/tcpip.h"
 #include "td/text.h"
@@ -165,6 +166,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "td/winstub.h"
 #include "td/world.h"
 #include "tech/2keyfbuf.h"
 #include "tech/archive.h"
@@ -229,7 +231,6 @@ static void Do_Record_Playback();
 extern "C" {
 extern char* nheapbeg;
 }
-bool InMainLoop = false;
 
 /***********************************************************************************************
  * Main_Game -- Main game startup routine. *
@@ -293,7 +294,7 @@ void Main_Game() {
       Show_Mouse();
     }
 
-    SpecialDialog = SDLG_NONE;
+    TheGameState().special_dialog() = SDLG_NONE;
     // Start_Profiler();
     if (TheSession().type() == GAME_INTERNET) {
       Register_Game_Start_Time();
@@ -306,7 +307,7 @@ void Main_Game() {
 #endif
     }
 
-    InMainLoop = true;
+    TheGameState().in_main_loop() = true;
 
     if (config::kScenarioEditorEnabled) {
       /*
@@ -321,15 +322,15 @@ void Main_Game() {
             break;
           }
 
-          if (SpecialDialog != SDLG_NONE) {
+          if (TheGameState().special_dialog() != SDLG_NONE) {
             // Stop_Profiler();
-            switch (SpecialDialog) {
+            switch (TheGameState().special_dialog()) {
               case SDLG_SPECIAL:
                 TheMap().Help_Text(TXT_NONE);
                 TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
                 Special_Dialog();
                 TheMap().Revert_Mouse_Shape();
-                SpecialDialog = SDLG_NONE;
+                TheGameState().special_dialog() = SDLG_NONE;
                 break;
 
               case SDLG_OPTIONS:
@@ -337,7 +338,7 @@ void Main_Game() {
                 TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
                 TheOptions().Process();
                 TheMap().Revert_Mouse_Shape();
-                SpecialDialog = SDLG_NONE;
+                TheGameState().special_dialog() = SDLG_NONE;
                 break;
 
               case SDLG_SURRENDER:
@@ -346,7 +347,7 @@ void Main_Game() {
                 if (Surrender_Dialog()) {
                   TheNetwork().out_list().Add(EventClass(EventClass::DESTRUCT));
                 }
-                SpecialDialog = SDLG_NONE;
+                TheGameState().special_dialog() = SDLG_NONE;
                 TheMap().Revert_Mouse_Shape();
                 break;
 
@@ -382,15 +383,15 @@ void Main_Game() {
         *dialog will call *	Main_Loop(), allowing the game to run in the
         *background.
         */
-        if (SpecialDialog != SDLG_NONE) {
+        if (TheGameState().special_dialog() != SDLG_NONE) {
           // Stop_Profiler();
-          switch (SpecialDialog) {
+          switch (TheGameState().special_dialog()) {
             case SDLG_SPECIAL:
               TheMap().Help_Text(TXT_NONE);
               TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
               Special_Dialog();
               TheMap().Revert_Mouse_Shape();
-              SpecialDialog = SDLG_NONE;
+              TheGameState().special_dialog() = SDLG_NONE;
               break;
 
             case SDLG_OPTIONS:
@@ -398,7 +399,7 @@ void Main_Game() {
               TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
               TheOptions().Process();
               TheMap().Revert_Mouse_Shape();
-              SpecialDialog = SDLG_NONE;
+              TheGameState().special_dialog() = SDLG_NONE;
               break;
 
             case SDLG_SURRENDER:
@@ -407,7 +408,7 @@ void Main_Game() {
               if (Surrender_Dialog()) {
                 TheNetwork().out_list().Add(EventClass(EventClass::DESTRUCT));
               }
-              SpecialDialog = SDLG_NONE;
+              TheGameState().special_dialog() = SDLG_NONE;
               TheMap().Revert_Mouse_Shape();
               break;
 
@@ -419,7 +420,7 @@ void Main_Game() {
       }
     }
     // Stop_Profiler();
-    InMainLoop = false;
+    TheGameState().in_main_loop() = false;
 
     if (!TheNetwork().statistics_sent() && TheNetwork().packet_later()) {
       Send_Statistics_Packet();
@@ -488,7 +489,7 @@ void Main_Game() {
       Shutdown_Network();  // Clear up the pseudo IPX stuff
       Winsock.Close();
       TheSpecial().IsFromWChat = false;
-      SpawnedFromWChat = false;
+      TheGameState().spawned_from_chat() = false;
 #ifdef _WIN32
       DDEServer.Delete_MPlayer_Game_Info();  // Make sure we dont use the same
                                              // start packet twice
@@ -597,7 +598,7 @@ void Keyboard_Process(KeyNumType& input) {
 
   if (TheDebugState().developer_mode() && input == KN_SLASH) {
     if (TheSession().type() != GAME_NORMAL) {
-      SpecialDialog = SDLG_SPECIAL;
+      TheGameState().special_dialog() = SDLG_SPECIAL;
       input = KN_NONE;
     } else {
       Special_Dialog();
@@ -710,7 +711,7 @@ void Keyboard_Process(KeyNumType& input) {
     */
     case VK_R:
       if (/*GameToPlay != GAME_NORMAL &&*/ !ThePlayer()->IsDefeated) {
-        SpecialDialog = SDLG_SURRENDER;
+        TheGameState().special_dialog() = SDLG_SURRENDER;
         input = KN_NONE;
       }
       break;
@@ -1600,7 +1601,7 @@ static void Sync_Delay() {
     Color_Cycle();
     Call_Back();
 
-    if (SpecialDialog == SDLG_NONE) {
+    if (TheGameState().special_dialog() == SDLG_NONE) {
       TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
       KeyNumType input = KN_NONE;
       int x = 0;
@@ -1653,7 +1654,7 @@ bool Main_Loop() {
   /*
   ** Sync-bug trapping code
   */
-  if (CurrentFrame() >= TrapFrame) {
+  if (CurrentFrame() >= TheDebugState().trap_frame()) {
     Trap_Object();
   }
 
@@ -1662,7 +1663,7 @@ bool Main_Loop() {
   //
   process_timer.Set(0, true);
 
-  if (TrapCheckHeap) {
+  if (TheDebugState().trap_check_heap()) {
     check_heap = true;
   }
 
@@ -1695,7 +1696,8 @@ bool Main_Loop() {
   **	Update the display, unless we're inside a dialog.
   */
   if ((!TheSession().playback_game()) &&
-      (SpecialDialog == SDLG_NONE && GameInFocus)) {
+      (TheGameState().special_dialog() == SDLG_NONE &&
+       TheGameState().in_focus())) {
     TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     TheMap().Input(input, x, y);
     if (input) {
@@ -1777,7 +1779,7 @@ bool Main_Loop() {
   **	Check for player wins or loses according to global event flag.
   */
 
-  if (PlayerWins) {
+  if (TheGameState().player_wins()) {
     if (TheSession().type() == GAME_INTERNET &&
         !TheNetwork().statistics_sent()) {
       Register_Game_End_Time();
@@ -1785,13 +1787,13 @@ bool Main_Loop() {
     }
 
     TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
-    PlayerLoses = false;
-    PlayerWins = false;
-    PlayerRestarts = false;
+    TheGameState().player_loses() = false;
+    TheGameState().player_wins() = false;
+    TheGameState().player_restarts() = false;
     TheMap().Help_Text(TXT_NONE);
     Do_Win();
   }
-  if (PlayerLoses) {
+  if (TheGameState().player_loses()) {
     if (TheSession().type() == GAME_INTERNET &&
         !TheNetwork().statistics_sent()) {
       Register_Game_End_Time();
@@ -1799,17 +1801,17 @@ bool Main_Loop() {
     }
 
     TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
-    PlayerWins = false;
-    PlayerLoses = false;
-    PlayerRestarts = false;
+    TheGameState().player_wins() = false;
+    TheGameState().player_loses() = false;
+    TheGameState().player_restarts() = false;
     TheMap().Help_Text(TXT_NONE);
     Do_Lose();
   }
-  if (PlayerRestarts) {
+  if (TheGameState().player_restarts()) {
     TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
-    PlayerWins = false;
-    PlayerLoses = false;
-    PlayerRestarts = false;
+    TheGameState().player_wins() = false;
+    TheGameState().player_loses() = false;
+    TheGameState().player_restarts() = false;
     TheMap().Help_Text(TXT_NONE);
     Do_Restart();
   }
@@ -1930,7 +1932,7 @@ bool Main_Loop() {
                      << TheStartupOptions().save_slot;
         }
       }
-      GameActive = false;
+      TheGameState().active() = false;
       return true;
     }
   }
@@ -1965,14 +1967,14 @@ bool Main_Loop() {
       continue_msg = "Continue";
     }
     if (CCMessageBox().Process(error_msg, stop_msg, continue_msg) == 0) {
-      GameActive = false;
+      TheGameState().active() = false;
     }
     TheMap().Validate();  // give debugger a chance to catch it
   }
 
   Sync_Delay();
   //	InMainLoop = false;
-  return !GameActive;
+  return !TheGameState().active();
 }
 
 /***************************************************************************
@@ -2012,7 +2014,7 @@ bool Map_Edit_Loop() {
   Call_Back();  // maintains Theme.AI() for music
   Color_Cycle();
 
-  return (!GameActive);
+  return (!TheGameState().active());
 }
 
 /***************************************************************************
@@ -2136,7 +2138,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     **	Reset the anim control structure.
     */
     Anim_Init();
-    VQPaletteChange = false;
+    Discard_VQ_Palette_Change();
 
     /*
     **	Prepare to play a movie. First hide the mouse and stop any score that is
@@ -2148,7 +2150,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     // Theme.Stop();
     // Theme.AI();
     TheTheme().Queue_Song(theme);
-    if (!PreserveVQAScreen) {
+    if (!TheGameState().preserve_movie_screen()) {
       Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                       Call_Back);
       TheScreen().visible_page().Clear();
@@ -2156,7 +2158,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       Set_Palette(ThePalettes().black_palette());
       std::ranges::fill(ThePalettes().black_palette(), 0x00);
     }
-    PreserveVQAScreen = false;
+    TheGameState().preserve_movie_screen() = false;
     Keyboard::Clear();
 
     VqaPlayer player;
@@ -2164,22 +2166,22 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     player.SetIo(&movie_io);
 
     if (!TheDebugState().quiet() && TheAudio().is_open()) {
-      AnimControl.OptionFlags |= VQAOPTF_AUDIO;
+      TheGameState().anim_control().OptionFlags |= VQAOPTF_AUDIO;
     } else {
-      AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
+      TheGameState().anim_control().OptionFlags &= ~VQAOPTF_AUDIO;
     }
 
-    if (player.Open(fullname.c_str(), &AnimControl) == 0) {
+    if (player.Open(fullname.c_str(), &TheGameState().anim_control()) == 0) {
       movie_broken_out = false;
       // Suspend_Audio_Thread();
 
       // Set_Palette(BlackPalette);
       TheScreen().sys_mem_page().Clear();
-      InMovie = true;
+      TheGameState().in_movie() = true;
       player.Play(VQAMODE_RUN);
       player.Close();
       // Resume_Audio_Thread();
-      InMovie = false;
+      TheGameState().in_movie() = false;
       /*
       **	Any movie that ends prematurely must have the screen
       **	cleared to avoid any unexpected palette glitches.
@@ -2524,11 +2526,12 @@ const TechnoTypeClass* Fetch_Techno_Type(RTTIType type, int id) {
 void Trap_Object() {
   trap_object.Ptr.All = nullptr;
 
-  switch (TrapObjType) {
+  switch (TheDebugState().trap_object_type()) {
     case RTTI_AIRCRAFT:
       for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
-        if (TheObjectHeaps().aircraft().Ptr(i)->Coord == TrapCoord ||
-            TheObjectHeaps().aircraft().Ptr(i) == TrapThis) {
+        if (TheObjectHeaps().aircraft().Ptr(i)->Coord ==
+                TheDebugState().trap_coord() ||
+            TheObjectHeaps().aircraft().Ptr(i) == TheDebugState().trap_this()) {
           trap_object.Ptr.Aircraft = TheObjectHeaps().aircraft().Ptr(i);
           break;
         }
@@ -2537,8 +2540,9 @@ void Trap_Object() {
 
     case RTTI_ANIM:
       for (int i = 0; i < TheObjectHeaps().anim().Count(); i++) {
-        if (TheObjectHeaps().anim().Ptr(i)->Coord == TrapCoord ||
-            TheObjectHeaps().anim().Ptr(i) == TrapThis) {
+        if (TheObjectHeaps().anim().Ptr(i)->Coord ==
+                TheDebugState().trap_coord() ||
+            TheObjectHeaps().anim().Ptr(i) == TheDebugState().trap_this()) {
           trap_object.Ptr.Anim = TheObjectHeaps().anim().Ptr(i);
           break;
         }
@@ -2547,8 +2551,9 @@ void Trap_Object() {
 
     case RTTI_BUILDING:
       for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
-        if (TheObjectHeaps().building().Ptr(i)->Coord == TrapCoord ||
-            TheObjectHeaps().building().Ptr(i) == TrapThis) {
+        if (TheObjectHeaps().building().Ptr(i)->Coord ==
+                TheDebugState().trap_coord() ||
+            TheObjectHeaps().building().Ptr(i) == TheDebugState().trap_this()) {
           trap_object.Ptr.Building = TheObjectHeaps().building().Ptr(i);
           break;
         }
@@ -2557,8 +2562,9 @@ void Trap_Object() {
 
     case RTTI_BULLET:
       for (int i = 0; i < TheObjectHeaps().bullet().Count(); i++) {
-        if (TheObjectHeaps().bullet().Ptr(i)->Coord == TrapCoord ||
-            TheObjectHeaps().bullet().Ptr(i) == TrapThis) {
+        if (TheObjectHeaps().bullet().Ptr(i)->Coord ==
+                TheDebugState().trap_coord() ||
+            TheObjectHeaps().bullet().Ptr(i) == TheDebugState().trap_this()) {
           trap_object.Ptr.Bullet = TheObjectHeaps().bullet().Ptr(i);
           break;
         }
@@ -2567,8 +2573,9 @@ void Trap_Object() {
 
     case RTTI_INFANTRY:
       for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
-        if (TheObjectHeaps().infantry().Ptr(i)->Coord == TrapCoord ||
-            TheObjectHeaps().infantry().Ptr(i) == TrapThis) {
+        if (TheObjectHeaps().infantry().Ptr(i)->Coord ==
+                TheDebugState().trap_coord() ||
+            TheObjectHeaps().infantry().Ptr(i) == TheDebugState().trap_this()) {
           trap_object.Ptr.Infantry = TheObjectHeaps().infantry().Ptr(i);
           break;
         }
@@ -2577,8 +2584,9 @@ void Trap_Object() {
 
     case RTTI_UNIT:
       for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-        if (TheObjectHeaps().unit().Ptr(i)->Coord == TrapCoord ||
-            TheObjectHeaps().unit().Ptr(i) == TrapThis) {
+        if (TheObjectHeaps().unit().Ptr(i)->Coord ==
+                TheDebugState().trap_coord() ||
+            TheObjectHeaps().unit().Ptr(i) == TheDebugState().trap_this()) {
           trap_object.Ptr.Unit = TheObjectHeaps().unit().Ptr(i);
           break;
         }
@@ -2590,50 +2598,60 @@ void Trap_Object() {
     */
     case RTTI_NONE:
       for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
-        if (TheObjectHeaps().aircraft().Raw_Ptr(i)->Coord == TrapCoord ||
-            TheObjectHeaps().aircraft().Raw_Ptr(i) == TrapThis) {
+        if (TheObjectHeaps().aircraft().Raw_Ptr(i)->Coord ==
+                TheDebugState().trap_coord() ||
+            TheObjectHeaps().aircraft().Raw_Ptr(i) ==
+                TheDebugState().trap_this()) {
           trap_object.Ptr.Aircraft = TheObjectHeaps().aircraft().Raw_Ptr(i);
-          TrapObjType = RTTI_AIRCRAFT;
+          TheDebugState().trap_object_type() = RTTI_AIRCRAFT;
           return;
         }
       }
       for (int i = 0; i < TheObjectHeaps().anim().Count(); i++) {
-        if (TheObjectHeaps().anim().Raw_Ptr(i)->Coord == TrapCoord ||
-            TheObjectHeaps().anim().Raw_Ptr(i) == TrapThis) {
+        if (TheObjectHeaps().anim().Raw_Ptr(i)->Coord ==
+                TheDebugState().trap_coord() ||
+            TheObjectHeaps().anim().Raw_Ptr(i) == TheDebugState().trap_this()) {
           trap_object.Ptr.Anim = TheObjectHeaps().anim().Raw_Ptr(i);
-          TrapObjType = RTTI_ANIM;
+          TheDebugState().trap_object_type() = RTTI_ANIM;
           return;
         }
       }
       for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
-        if (TheObjectHeaps().building().Raw_Ptr(i)->Coord == TrapCoord ||
-            TheObjectHeaps().building().Raw_Ptr(i) == TrapThis) {
+        if (TheObjectHeaps().building().Raw_Ptr(i)->Coord ==
+                TheDebugState().trap_coord() ||
+            TheObjectHeaps().building().Raw_Ptr(i) ==
+                TheDebugState().trap_this()) {
           trap_object.Ptr.Building = TheObjectHeaps().building().Raw_Ptr(i);
-          TrapObjType = RTTI_BUILDING;
+          TheDebugState().trap_object_type() = RTTI_BUILDING;
           return;
         }
       }
       for (int i = 0; i < TheObjectHeaps().bullet().Count(); i++) {
-        if (TheObjectHeaps().bullet().Raw_Ptr(i)->Coord == TrapCoord ||
-            TheObjectHeaps().bullet().Raw_Ptr(i) == TrapThis) {
+        if (TheObjectHeaps().bullet().Raw_Ptr(i)->Coord ==
+                TheDebugState().trap_coord() ||
+            TheObjectHeaps().bullet().Raw_Ptr(i) ==
+                TheDebugState().trap_this()) {
           trap_object.Ptr.Bullet = TheObjectHeaps().bullet().Raw_Ptr(i);
-          TrapObjType = RTTI_BULLET;
+          TheDebugState().trap_object_type() = RTTI_BULLET;
           return;
         }
       }
       for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
-        if (TheObjectHeaps().infantry().Raw_Ptr(i)->Coord == TrapCoord ||
-            TheObjectHeaps().infantry().Raw_Ptr(i) == TrapThis) {
+        if (TheObjectHeaps().infantry().Raw_Ptr(i)->Coord ==
+                TheDebugState().trap_coord() ||
+            TheObjectHeaps().infantry().Raw_Ptr(i) ==
+                TheDebugState().trap_this()) {
           trap_object.Ptr.Infantry = TheObjectHeaps().infantry().Raw_Ptr(i);
-          TrapObjType = RTTI_INFANTRY;
+          TheDebugState().trap_object_type() = RTTI_INFANTRY;
           return;
         }
       }
       for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
-        if (TheObjectHeaps().unit().Raw_Ptr(i)->Coord == TrapCoord ||
-            TheObjectHeaps().unit().Raw_Ptr(i) == TrapThis) {
+        if (TheObjectHeaps().unit().Raw_Ptr(i)->Coord ==
+                TheDebugState().trap_coord() ||
+            TheObjectHeaps().unit().Raw_Ptr(i) == TheDebugState().trap_this()) {
           trap_object.Ptr.Unit = TheObjectHeaps().unit().Raw_Ptr(i);
-          TrapObjType = RTTI_UNIT;
+          TheDebugState().trap_object_type() = RTTI_UNIT;
           return;
         }
       }
@@ -2692,15 +2710,16 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
                        nullptr);
 
   // Call_Back();
-  if ((BreakoutAllowed || TheDebugState().developer_mode()) && key == KN_ESC) {
+  if ((TheGameState().breakout_allowed() || TheDebugState().developer_mode()) &&
+      key == KN_ESC) {
     Keyboard::Clear();
     movie_broken_out = true;
     return 1;
   }
 
-  if (!GameInFocus) {
+  if (!TheGameState().in_focus()) {
     VQA_PauseAudio();
-    while (!GameInFocus) {
+    while (!TheGameState().in_focus()) {
       Keyboard::Check();
       Check_For_Focus_Loss();
     }
@@ -2740,8 +2759,7 @@ int32_t VQ_Event_Handler(uint32_t event, void* /*buffer*/, int32_t /*nbytes*/) {
  * HISTORY: * 06/27/1995 JLB : Created. *
  *=============================================================================================*/
 void Handle_Team(int team, int action) {
-
-  AllowVoice = true;
+  TheGameState().allow_voice() = true;
   switch (action) {
     /*
     **	Toggle the team selection. If the team is selected, then merely unselect
@@ -2799,7 +2817,7 @@ void Handle_Team(int team, int action) {
              obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
           obj->Select();
-          AllowVoice = false;
+          TheGameState().allow_voice() = false;
         }
       }
       for (int index = 0; index < TheObjectHeaps().infantry().Count();
@@ -2809,7 +2827,7 @@ void Handle_Team(int team, int action) {
              obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
           obj->Select();
-          AllowVoice = false;
+          TheGameState().allow_voice() = false;
         }
       }
       for (int index = 0; index < TheObjectHeaps().aircraft().Count();
@@ -2819,7 +2837,7 @@ void Handle_Team(int team, int action) {
              obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
           obj->Select();
-          AllowVoice = false;
+          TheGameState().allow_voice() = false;
         }
       }
 
@@ -2842,7 +2860,7 @@ void Handle_Team(int team, int action) {
              obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
           obj->Select();
-          AllowVoice = false;
+          TheGameState().allow_voice() = false;
         }
       }
       for (int index = 0; index < TheObjectHeaps().infantry().Count();
@@ -2852,7 +2870,7 @@ void Handle_Team(int team, int action) {
              obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
           obj->Select();
-          AllowVoice = false;
+          TheGameState().allow_voice() = false;
         }
       }
       for (int index = 0; index < TheObjectHeaps().aircraft().Count();
@@ -2862,7 +2880,7 @@ void Handle_Team(int team, int action) {
              obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
           obj->Select();
-          AllowVoice = false;
+          TheGameState().allow_voice() = false;
         }
       }
       break;
@@ -2910,7 +2928,7 @@ void Handle_Team(int team, int action) {
     default:
       break;
   }
-  AllowVoice = true;
+  TheGameState().allow_voice() = true;
 }
 
 /***********************************************************************************************
@@ -3106,8 +3124,8 @@ bool Force_CD_Available(int cd) {
       /*
       ** Pretend we are in the game, even if we arent
       */
-      const bool old_in_main_loop = InMainLoop;
-      InMainLoop = true;
+      const bool old_in_main_loop = TheGameState().in_main_loop();
+      TheGameState().in_main_loop() = true;
 
       Keyboard::Clear();
 
@@ -3119,7 +3137,7 @@ bool Force_CD_Available(int cd) {
           1) {
         Set_Logic_Page(oldpage);
         Hide_Mouse();
-        InMainLoop = old_in_main_loop;
+        TheGameState().in_main_loop() = old_in_main_loop;
         return false;
       }
       while (hidden--) {
@@ -3129,7 +3147,7 @@ bool Force_CD_Available(int cd) {
       Set_Font(font);
       Set_Font_Palette(_hold);
       Set_Logic_Page(oldpage);
-      InMainLoop = old_in_main_loop;
+      TheGameState().in_main_loop() = old_in_main_loop;
     }
   }
 
@@ -3292,19 +3310,19 @@ static void Do_Record_Playback() {
         Unselect_All();
       }
 
-      AllowVoice = true;
+      TheGameState().allow_voice() = true;
 
       for (int i = 0; i < count; i++) {
         if (TheSession().record_file().ReadObject(tgt)) {
           ObjectClass* obj = As_Object(tgt);
           if (obj && sum2 != sum) {
             obj->Select();
-            AllowVoice = false;
+            TheGameState().allow_voice() = false;
           }
         }
       }
 
-      AllowVoice = true;
+      TheGameState().allow_voice() = true;
     }
 
     /*.....................................................................

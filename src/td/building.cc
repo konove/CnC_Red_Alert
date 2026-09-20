@@ -156,6 +156,7 @@
 #include "sdllib/shape.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
+#include "td/assets.h"
 #include "td/audio.h"
 #include "td/base.h"
 #include "td/bullet.h"
@@ -168,13 +169,12 @@
 #include "td/defines.h"
 #include "td/drive.h"
 #include "td/event.h"
-#include "td/externs.h"
 #include "td/facing.h"
 #include "td/factory.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
 #include "td/game_clock.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -830,7 +830,8 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
       if (Health_Ratio() < 0x0080) {
         shapenum += 10;
       }
-      Techno_Draw_Object(WarFactoryOverlay, shapenum, x, y, window);
+      Techno_Draw_Object(TheAssets().war_factory_overlay(), shapenum, x, y,
+                         window);
     }
 
     /*
@@ -1077,7 +1078,7 @@ BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
           Set_Rate(0);
 
           if (TheMap().Push_Onto_TacMap(source, dest) &&
-              SpecialDialog == SDLG_NONE) {
+              TheGameState().special_dialog() == SDLG_NONE) {
             TheMap().Coord_To_Pixel(source, x, y);
             TheMap().Coord_To_Pixel(dest, x1, y1);
             x += TheMap().TacPixelX;
@@ -2120,7 +2121,7 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
  * HISTORY: * 01/18/1995 JLB : Created. *
  *=============================================================================================*/
 BuildingClass::~BuildingClass() {
-  if (GameActive && Class) {
+  if (TheGameState().active() && Class) {
     if (House) {
       House->CurBuildings--;
     }
@@ -5289,7 +5290,7 @@ int BuildingClass::Refund_Amount() const {
   /*
   **	Add in any Tiberium that was stored within the building.
   */
-  if (IsV107 && Class->Capacity > 0) {
+  if (TheGameState().compatibility_v107() && Class->Capacity > 0) {
     cost += Fixed_To_Cardinal(
         Class->Capacity, Cardinal_To_Fixed(static_cast<int>(House->Capacity),
                                            static_cast<int>(House->Tiberium)));

@@ -90,6 +90,13 @@ class Assets {
     return disc_archives_;
   }
 
+  // The overlay frames drawn over the weapons factory while it builds.
+  // Empty until the building type data is loaded.
+  std::span<const std::byte>& war_factory_overlay()
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return war_factory_overlay_;
+  }
+
  private:
   base::EnumArray<FontType, std::span<const std::byte>> fonts_{};
   // The fonts that are read from a file rather than served out of a cached
@@ -100,6 +107,7 @@ class Assets {
   std::span<const std::byte> system_strings_;
   std::vector<std::byte> speech_buffer_;
   DiscArchives disc_archives_;
+  std::span<const std::byte> war_factory_overlay_;
 };
 
 // Returns the Assets that Game installed. CHECK-fails outside a Game's

@@ -69,7 +69,7 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/edit.h"
-#include "td/externs.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/init.h"
 #include "td/jshell.h"
@@ -219,7 +219,7 @@ bool LoadOptionsClass::Process() {
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
 
-  if (InMainLoop || factor == 1) {
+  if (TheGameState().in_main_loop() || factor == 1) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
     down_button = Hires_Retrieve("BTN-DN.SHP");
   } else {
@@ -328,7 +328,7 @@ bool LoadOptionsClass::Process() {
       /*
       **	Redraw the map.
       */
-      if (InMainLoop) {
+      if (TheGameState().in_main_loop()) {
         TheScreen().hidden_page().Clear();
         TheMap().Flag_To_Redraw(true);
         TheMap().Render();

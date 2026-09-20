@@ -84,10 +84,10 @@
 #include "td/const.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
-#include "td/externs.h"
 #include "td/facing.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
+#include "td/game_state.h"
 #include "td/house.h"
 #include "td/inline.h"
 #include "td/jshell.h"
@@ -148,7 +148,7 @@ void DriveClass::Do_Turn(DirType dir) {
       }
     } else {
       PrimaryFacing.Set_Desired(dir);
-      if (TheSpecial().IsJurassic && AreThingiesEnabled &&
+      if (TheSpecial().IsJurassic && TheGameState().thingies_enabled() &&
           What_Am_I() == RTTI_UNIT && this->Class->IsPieceOfEight) {
         PrimaryFacing.Set_Current(dir);
       }

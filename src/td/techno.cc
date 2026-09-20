@@ -193,10 +193,10 @@
 #include "td/defines.h"
 #include "td/display_constants.h"
 #include "td/door.h"
-#include "td/externs.h"
 #include "td/facing.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
+#include "td/game_state.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -1877,7 +1877,7 @@ bool TechnoClass::Select() {
     /*
     **	Speak a confirmation of selection.
     */
-    if (IsOwnedByPlayer && AllowVoice) {
+    if (IsOwnedByPlayer && TheGameState().allow_voice()) {
       Response_Select();
     }
     return true;
@@ -2337,7 +2337,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
  *=============================================================================================*/
 void TechnoClass::Player_Assign_Mission(MissionType mission, TARGET target,
                                         TARGET destination) {
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     if (mission == MISSION_ATTACK) {
       Response_Attack();
     } else {

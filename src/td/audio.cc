@@ -55,7 +55,7 @@
 #include "base/enum_array.h"
 #include "td/assets.h"
 #include "td/defines.h"
-#include "td/externs.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/inline.h"
 #include "td/jshell.h"
@@ -338,7 +338,7 @@ static base::EnumArray<VocType, SoundEffectEntry, kVocCount> SoundEffectName = {
 void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
   CELL cell_pos = 0;
 
-  if (!TheOptions().Volume || voc == VOC_NONE || !SoundOn ||
+  if (!TheOptions().Volume || voc == VOC_NONE || !TheGameState().sound_on() ||
       !TheAudio().is_open()) {
     return;
   }
@@ -405,7 +405,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
  *=============================================================================================*/
 int Sound_Effect(VocType voc, VolType volume, int variation,
                  int16_t pan_value) {
-  if (!TheOptions().Volume || voc == VOC_NONE || !SoundOn ||
+  if (!TheOptions().Volume || voc == VOC_NONE || !TheGameState().sound_on() ||
       !TheAudio().is_open()) {
     return -1;
   }

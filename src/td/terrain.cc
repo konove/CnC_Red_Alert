@@ -94,7 +94,7 @@
 #include "td/conquer.h"
 #include "td/debug_state.h"
 #include "td/defines.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/inline.h"
@@ -158,7 +158,7 @@ int TerrainClass::Validate() const {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 TerrainClass::~TerrainClass() {
-  if (GameActive && Class) {
+  if (TheGameState().active() && Class) {
     TerrainClass::Limbo();
   }
 }

@@ -49,7 +49,7 @@ class ArchiveWriter;
 
 #include "absl/base/attributes.h"
 #include "td/defines.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/object.h"
 #include "td/type.h"
 
@@ -77,7 +77,7 @@ class SmudgeClass : public ObjectClass {
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator SmudgeType() const { return Class->Type; }
   ~SmudgeClass() override {
-    if (GameActive) {
+    if (TheGameState().active()) {
       SmudgeClass::Limbo();
     }
   }

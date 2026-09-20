@@ -59,8 +59,8 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/externs.h"
 #include "td/gadget.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/ini.h"
 #include "td/init.h"
@@ -149,7 +149,7 @@ bool Expansion_Dialog() {
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
 
-  if (InMainLoop) {
+  if (TheGameState().in_main_loop()) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
     down_button = Hires_Retrieve("BTN-DN.SHP");
   } else {
@@ -307,7 +307,7 @@ bool Bonus_Dialog() {
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
 
-  if (InMainLoop) {
+  if (TheGameState().in_main_loop()) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
     down_button = Hires_Retrieve("BTN-DN.SHP");
   } else {

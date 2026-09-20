@@ -73,10 +73,9 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/ending.h"
-#include "td/externs.h"
 #include "td/factory.h"
 #include "td/ftimer.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -108,6 +107,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "td/winstub.h"
 #include "td/world.h"
 #include "tech/game_file.h"
 
@@ -152,14 +152,14 @@ bool Start_Scenario(char* root, bool briefing) {
   ** we don't want a briefing movie on GDI scenario 1.
   */
   if (TheWorld().scenario() < 20 &&
-      (!TheSpecial().IsJurassic || !AreThingiesEnabled)) {
+      (!TheSpecial().IsJurassic || !TheGameState().thingies_enabled())) {
     if (TheWorld().scenario() != 1 || TheWorld().whom() == HOUSE_GOOD) {
       Play_Movie(TheWorld().intro_movie());
     }
 
     if ((TheWorld().scenario() > 1 || TheWorld().whom() == HOUSE_BAD) &&
         briefing) {
-      PreserveVQAScreen = TheWorld().scenario() == 1;
+      TheGameState().preserve_movie_screen() = TheWorld().scenario() == 1;
       Play_Movie(TheWorld().brief_movie());
     }
     Play_Movie(TheWorld().action_movie(), TheWorld().transit_theme());
@@ -185,10 +185,10 @@ bool Start_Scenario(char* root, bool briefing) {
       *palette
       ** will be correct on the textured buttons.
       */
-      const bool oldinmain = InMainLoop;
-      InMainLoop = true;
+      const bool oldinmain = TheGameState().in_main_loop();
+      TheGameState().in_main_loop() = true;
       Restate_Mission(TheWorld().scenario_name(), TXT_OK, TXT_NONE);
-      InMainLoop = oldinmain;
+      TheGameState().in_main_loop() = oldinmain;
       //			Hide_Mouse();
       if (TheWorld().transit_theme() == THEME_NONE) {
         TheTheme().Queue_Song(THEME_AOI);
@@ -304,9 +304,9 @@ void Fill_In_Data() {
  *=============================================================================================*/
 void Clear_Scenario() {
   TheWorld().end_count_down() = kTicksPerSecond * 30;
-  CrateCount = 0;
-  CrateTimer = 0;
-  CrateMaker = false;
+  TheWorld().crate_count() = 0;
+  TheWorld().crate_timer() = 0;
+  TheWorld().crate_maker() = false;
 
   /*
   ** Call everyone's Init routine, except the Map's; for the Map, only call
@@ -385,10 +385,10 @@ void Do_Win() {
 #endif
   Fancy_Text_Print(TXT_SCENARIO_WON, x, y + 30, kWhite, kTBlack,
                    TPF_CENTER | TPF_VCR);
-  CountDownTimer.Set(int64_t{kTimerSecond} * 3);
+  TheGameState().speech_timer().Set(int64_t{kTimerSecond} * 3);
   Stop_Speaking();
   Speak(VOX_ACCOMPLISHED);
-  while (CountDownTimer.Time() || Is_Speaking()) {
+  while (TheGameState().speech_timer().Time() || Is_Speaking()) {
     Call_Back();
   }
 
@@ -404,7 +404,7 @@ void Do_Win() {
         TheSession().current_game() = MAX_MULTI_GAMES - 1;
       }
     }
-    GameActive = false;
+    TheGameState().active() = false;
     Show_Mouse();
     return;
   }
@@ -412,18 +412,18 @@ void Do_Win() {
   /*
   **	Play the winning movie and then start the next scenario.
   */
-  if (RequiredCD != -2) {
+  if (TheGameState().required_cd() != -2) {
     if (TheWorld().scenario() >= 20 && TheWorld().scenario() < 60 &&
         TheSession().type() == GAME_NORMAL) {
-      RequiredCD = 2;
+      TheGameState().required_cd() = 2;
     } else {
       if (TheWorld().scenario() >= 60) {
-        RequiredCD = -1;
+        TheGameState().required_cd() = -1;
       } else {
         if (ThePlayer()->Class->House == HOUSE_GOOD) {
-          RequiredCD = 0;
+          TheGameState().required_cd() = 0;
         } else {
-          RequiredCD = 1;
+          TheGameState().required_cd() = 1;
         }
       }
     }
@@ -455,7 +455,7 @@ void Do_Win() {
       default:
         TheWorld().score().Presentation();
         GDI_Ending();
-        GameActive = false;
+        TheGameState().active() = false;
         Show_Mouse();
         return;
         //				Prog_End();
@@ -469,7 +469,7 @@ void Do_Win() {
     if (TheWorld().scenario() >= 20) {
       Keyboard::Clear();
       TheWorld().score().Presentation();
-      GameActive = false;
+      TheGameState().active() = false;
       Show_Mouse();
       return;
     }
@@ -481,7 +481,7 @@ void Do_Win() {
       // exit(0);
       TheScreen().visible_view().Clear();
       Show_Mouse();
-      GameActive = false;
+      TheGameState().active() = false;
       return;
     }
     if (ThePlayer()->Class->House == HOUSE_GOOD &&
@@ -491,17 +491,17 @@ void Do_Win() {
       // exit(0);
       TheScreen().visible_view().Clear();
       Show_Mouse();
-      GameActive = false;
+      TheGameState().active() = false;
       return;
     }
 
-    if (TheSpecial().IsJurassic && AreThingiesEnabled &&
+    if (TheSpecial().IsJurassic && TheGameState().thingies_enabled() &&
         TheWorld().scenario() == 5) {
       ShutDown();
       exit(0);
     }
 
-    if (!TheSpecial().IsJurassic || !AreThingiesEnabled) {
+    if (!TheSpecial().IsJurassic || !TheGameState().thingies_enabled()) {
       Keyboard::Clear();
       TheWorld().score().Presentation();
 
@@ -529,7 +529,8 @@ void Do_Win() {
   ** Generate a new scenario filename
   */
   Set_Scenario_Name(TheWorld().scenario_name(), TheWorld().scenario(),
-                    TheWorld().scen_player(), TheWorld().scen_dir(), ScenVar);
+                    TheWorld().scen_player(), TheWorld().scen_dir(),
+                    TheWorld().scen_var());
   Start_Scenario(TheWorld().scenario_name());
 
   ThePlayer()->NukePieces = static_cast<uint8_t>(pieces);
@@ -610,10 +611,10 @@ void Do_Lose() {
   Fancy_Text_Print(TXT_MISSION, x, y, kWhite, kTBlack, TPF_CENTER | TPF_VCR);
   Fancy_Text_Print(TXT_SCENARIO_LOST, x, y + 30, kWhite, kTBlack,
                    TPF_CENTER | TPF_VCR);
-  CountDownTimer.Set(int64_t{kTimerSecond} * 3);
+  TheGameState().speech_timer().Set(int64_t{kTimerSecond} * 3);
   Stop_Speaking();
   Speak(VOX_FAIL);
-  while (CountDownTimer.Time() || Is_Speaking()) {
+  while (TheGameState().speech_timer().Time() || Is_Speaking()) {
     Call_Back();
   }
 
@@ -637,7 +638,7 @@ void Do_Lose() {
         TheSession().current_game() = MAX_MULTI_GAMES - 1;
       }
     }
-    GameActive = false;
+    TheGameState().active() = false;
     Show_Mouse();
     return;
   }
@@ -657,7 +658,7 @@ void Do_Lose() {
     TheMap().Render();
   } else {
     Hide_Mouse();
-    GameActive = false;
+    TheGameState().active() = false;
   }
 
   Fade_Palette_To(ThePalettes().game_palette(), kFadePaletteFast, Call_Back);

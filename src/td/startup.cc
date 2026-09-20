@@ -60,9 +60,8 @@
 #include "sdllib/misc.h"
 #include "sdllib/timer.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/game.h"
-#include "td/globals.h"  // IWYU pragma: keep (used only with an entry point)
+#include "td/game_state.h"
 #include "td/init.h"
 #include "td/input.h"
 #include "td/ipxaddr.h"
@@ -75,6 +74,7 @@
 #include "td/session.h"
 #include "td/startup.h"
 #include "td/startup_options.h"
+#include "td/winstub.h"
 #include "tech/audio_mixer.h"
 #include "tech/disk_file.h"
 
@@ -120,7 +120,6 @@ void Delete_Swap_Files();
 [[maybe_unused]] static void Read_Setup_Options(DiskFile* config_file,
                                                 const StartupOptions& options);
 
-bool SpawnedFromWChat = false;
 
 extern "C" {
 bool __cdecl Detect_MMX_Availability();
@@ -202,7 +201,7 @@ static void ApplyStartupOptions(const StartupOptions& options) {
   }
   if (options.jurassic) {
     TheSpecial().IsJurassic = true;
-    AreThingiesEnabled = true;
+    TheGameState().thingies_enabled() = true;
   }
   TheSpecial().IsFromInstall = options.from_install;
   TheSpecial().IsInert = options.inert_weapons;
@@ -219,8 +218,7 @@ static void ApplyStartupOptions(const StartupOptions& options) {
   TheSession().solo() = options.solo_net_play;
 
   NoMouseGrab = options.no_mouse_grab;
-  SpawnedFromWChat = options.spawned_from_wchat;
-  MMXAvailable = options.mmx_available;
+  TheGameState().spawned_from_chat() = options.spawned_from_wchat;
 #ifdef JAPANESE
   ForceEnglish = options.force_english;
 #endif
@@ -341,7 +339,6 @@ int main(int argc, char* argv[])
     if (cfile.IsAvailable()) {
       const auto config_data = port::CharBytes(Load_Alloc_Data(cfile));
       char* cdata = config_data.data();
-      Read_Private_Config_Struct(cdata, &NewConfig);
       delete[] cdata;
       Read_Setup_Options(&cfile, *options);
 
@@ -350,7 +347,7 @@ int main(int argc, char* argv[])
       Create_Main_Window(nullptr, 0, Screen::kWidth, TheScreen().mode_height());
       CCDebugString("C&C95 - Initialising audio.\n");
 
-      SoundOn = TheAudio().Open(11025 * 2, /*stereo=*/false);
+      TheGameState().sound_on() = TheAudio().Open(11025 * 2, /*stereo=*/false);
 
       ThePalettes().title_palette().assign(768, 0);
 
@@ -395,8 +392,8 @@ int main(int argc, char* argv[])
       WWGetPrivateProfileString(
           "Intro", "PlayIntro", "Yes",
           std::span(tempbuff).first(static_cast<std::size_t>(4)), buffer);
-      TheSpecial().IsFromInstall =
-          !absl::EqualsIgnoreCase(tempbuff, "No") && !SpawnedFromWChat;
+      TheSpecial().IsFromInstall = !absl::EqualsIgnoreCase(tempbuff, "No") &&
+                                   !TheGameState().spawned_from_chat();
       ThePalettes().set_slow_palette(
           WWGetPrivateProfileInt("Options", "SlowPalette", 1, buffer) != 0);
 
@@ -404,7 +401,9 @@ int main(int argc, char* argv[])
       /*
       **	Check for override directory path for CD searches.
       */
-      WWGetPrivateProfileString("CD", "Path", ".", OverridePath, buffer);
+      std::array<char, 128> cd_path{};
+      WWGetPrivateProfileString("CD", "Path", ".", cd_path.data(), buffer);
+      TheGameState().override_path() = cd_path.data();
 #endif
 
       /*
@@ -435,7 +434,7 @@ int main(int argc, char* argv[])
       **	allow breaking out of it with the <ESC> key.
       */
       if (TheSpecial().IsFromInstall) {
-        BreakoutAllowed = false;
+        TheGameState().breakout_allowed() = false;
       }
 
       Memory_Error_Exit = Print_Error_End_Exit;
@@ -570,8 +569,9 @@ void Read_Setup_Options(DiskFile* config_file, const StartupOptions& options) {
                 WWGetPrivateProfileInt("Options", "Resolution", 0, buffer) != 0
             ? 480
             : Screen::kHeight);
-    IsV107 = options.compatibility_v107 ||
-             WWGetPrivateProfileInt("Options", "Compatibility", 0, buffer) != 0;
+    TheGameState().compatibility_v107() =
+        options.compatibility_v107 ||
+        WWGetPrivateProfileInt("Options", "Compatibility", 0, buffer) != 0;
 
     /*
     ** See if an alternative socket number has been specified

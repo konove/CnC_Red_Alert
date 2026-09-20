@@ -138,12 +138,11 @@
 #include "td/const.h"
 #include "td/coord.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/face.h"
 #include "td/facing.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -310,10 +309,10 @@ InfantryClass::InfantryClass(InfantryType classid, HousesType house)
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
 InfantryClass::~InfantryClass() {
-  if (GameActive && Class) {
+  if (TheGameState().active() && Class) {
     Limbo();
   }
-  if (GameActive && Team) {
+  if (TheGameState().active() && Team) {
     Team->Remove(this);
   }
 }
@@ -2673,7 +2672,7 @@ void InfantryClass::Response_Select() {
                                  1));
     }
   }
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     Sound_Effect(response, 0, TheObjectHeaps().infantry().ID(this) + 1);
   }
 }
@@ -2731,7 +2730,7 @@ void InfantryClass::Response_Move() {
                                  1));
     }
   }
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     Sound_Effect(response, 0, TheObjectHeaps().infantry().ID(this) + 1);
   }
 }
@@ -2782,7 +2781,7 @@ void InfantryClass::Response_Attack() {
     }
   }
 
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     Sound_Effect(response, 0, TheObjectHeaps().infantry().ID(this) + 1);
   }
 }

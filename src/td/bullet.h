@@ -53,7 +53,7 @@ class ArchiveWriter;
 #include "td/facing.h"
 #include "td/fly.h"
 #include "td/fuse.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/object.h"
 #include "td/type.h"
 
@@ -95,7 +95,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
   }
   explicit BulletClass(BulletType id);
   ~BulletClass() override {
-    if (GameActive) {
+    if (TheGameState().active()) {
       BulletClass::Limbo();
     }
   }

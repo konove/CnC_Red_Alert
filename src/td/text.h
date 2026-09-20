@@ -4,7 +4,6 @@
 #include "sdllib/string_table.h"
 #include "td/assets.h"
 #include "td/conquer.h"
-#include "td/externs.h"
 
 inline const char* Text_String(int index) {
   // can't find a conquer.eng that contains these

@@ -147,12 +147,11 @@
 #include "td/coord.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
-#include "td/externs.h"
 #include "td/facing.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
 #include "td/game_clock.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -463,7 +462,7 @@ void UnitClass::AI() {
   */
   // Only animate if they're walking
   if ((Class->IsPieceOfEight && TheSpecial().IsJurassic &&
-       AreThingiesEnabled) &&
+       TheGameState().thingies_enabled()) &&
       (IsDriving || IsFiring)) {
     if (!Fetch_Rate()) {
       Set_Rate(static_cast<unsigned char>(TheOptions().Normalize_Delay(2)));
@@ -1085,7 +1084,7 @@ void UnitClass::operator delete(void* ptr) {
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
 UnitClass::~UnitClass() {
-  if (GameActive && Class) {
+  if (TheGameState().active() && Class) {
     /*
     **	If there are any cargo members, delete them.
     */
@@ -1095,7 +1094,7 @@ UnitClass::~UnitClass() {
 
     Limbo();
   }
-  if (GameActive && Team) {
+  if (TheGameState().active() && Team) {
     Team->Remove(this);
   }
 }
@@ -1620,9 +1619,9 @@ void UnitClass::Per_Cell_Process(bool center) {
 
       case RADIO_ATTACH:
         Mark(MARK_UP);
-        SpecialFlag = true;
+        TheGameState().special_flag() = true;
         Limbo();
-        SpecialFlag = false;
+        TheGameState().special_flag() = false;
         whom->Attach(this);
         return;
 
@@ -3292,7 +3291,7 @@ void UnitClass::Response_Select() {
     response = VOC_DINOYES;
   }
 
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     Sound_Effect(response, 0, -(TheObjectHeaps().unit().ID(this) + 1));
   }
 }
@@ -3326,7 +3325,7 @@ void UnitClass::Response_Move() {
     response = VOC_DINOMOUT;
   }
 
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     Sound_Effect(response, 0, -(TheObjectHeaps().unit().ID(this) + 1));
   }
 }
@@ -3360,7 +3359,7 @@ void UnitClass::Response_Attack() {
     response = VOC_DINOMOUT;
   }
 
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     Sound_Effect(response, 0, -(TheObjectHeaps().unit().ID(this) + 1));
   }
 }

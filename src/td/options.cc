@@ -80,7 +80,7 @@
 #include "td/audio.h"
 #include "td/conquer.h"
 #include "td/defines.h"
-#include "td/externs.h"
+#include "td/game_state.h"
 #include "td/jshell.h"
 #include "td/palette.h"
 #include "td/palettes.h"
@@ -237,7 +237,7 @@ void OptionsClass::Set_Brightness(int brightness) {
       static_cast<unsigned char>(0x40 + Fixed_To_Cardinal(0x80, brightness));
   Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
                  Brightness, Color, Tint, Contrast);
-  if (InMainLoop) {
+  if (TheGameState().in_main_loop()) {
     Set_Palette(ThePalettes().game_palette());
   }
 }
@@ -280,7 +280,7 @@ void OptionsClass::Set_Color(int color) {
   Color = static_cast<unsigned char>(color);
   Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
                  Brightness, Color, Tint, Contrast);
-  if (InMainLoop) {
+  if (TheGameState().in_main_loop()) {
     Set_Palette(ThePalettes().game_palette());
   }
 }
@@ -321,7 +321,7 @@ void OptionsClass::Set_Contrast(int contrast) {
       static_cast<unsigned char>(0x40 + Fixed_To_Cardinal(0x80, contrast));
   Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
                  Brightness, Color, Tint, Contrast);
-  if (InMainLoop) {
+  if (TheGameState().in_main_loop()) {
     Set_Palette(ThePalettes().game_palette());
   }
 }
@@ -364,7 +364,7 @@ void OptionsClass::Set_Tint(int tint) {
   Tint = static_cast<unsigned char>(tint);
   Adjust_Palette(ThePalettes().original_palette(), ThePalettes().game_palette(),
                  Brightness, Color, Tint, Contrast);
-  if (InMainLoop) {
+  if (TheGameState().in_main_loop()) {
     Set_Palette(ThePalettes().game_palette());
   }
 }

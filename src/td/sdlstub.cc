@@ -12,8 +12,7 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
-#include "td/externs.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/input.h"
 #include "td/msgbox.h"
 #include "td/nullconn.h"
@@ -22,14 +21,15 @@
 #include "td/rand.h"
 #include "td/screen.h"
 #include "td/startup.h"
+#include "td/winstub.h"
 #include "winvq/vqa32/vqaplay.h"
 
 void CCDebugString(const char* /*string*/) {}
 
 void Check_For_Focus_Loss() {
-  if (!GameInFocus) {
+  if (!TheGameState().in_focus()) {
     SDL_Event_Loop();
-    if (GameInFocus) {
+    if (TheGameState().in_focus()) {
       VQA_ResumeAudio();
     }
   }
@@ -68,11 +68,11 @@ void SDL_Event_Handler(SDL_Event* event) {
     case SDL_WINDOWEVENT: {
       switch (event->window.event) {
         case SDL_WINDOWEVENT_FOCUS_GAINED:
-          GameInFocus = true;
+          TheGameState().in_focus() = true;
           Focus_Restore();
           break;
         case SDL_WINDOWEVENT_FOCUS_LOST:
-          GameInFocus = false;
+          TheGameState().in_focus() = false;
           Focus_Loss();
           break;
         default:

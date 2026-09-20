@@ -66,10 +66,9 @@
 #include "td/building.h"
 #include "td/conquer.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/foot.h"
 #include "td/game_clock.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -87,6 +86,7 @@
 #include "td/text.h"
 #include "td/theme.h"
 #include "td/type.h"
+#include "td/winstub.h"
 #include "td/world.h"
 
 #ifdef _WIN32
@@ -719,14 +719,14 @@ void EventClass::Execute() {
       while (Is_Speaking()) {
         Call_Back();
       }
-      GameActive = false;
+      TheGameState().active() = false;
       break;
 
     /*
     **	Process the options menu.
     */
     case OPTIONS:
-      SpecialDialog = SDLG_OPTIONS;
+      TheGameState().special_dialog() = SDLG_OPTIONS;
       break;
 
     /*

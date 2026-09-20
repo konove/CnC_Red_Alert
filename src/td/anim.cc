@@ -77,7 +77,7 @@
 #include "td/conquer.h"
 #include "td/coord.h"
 #include "td/defines.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/inline.h"
@@ -793,7 +793,7 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
  *=============================================================================================*/
 AnimClass::~AnimClass() {
   Validate();
-  if (GameActive) {
+  if (TheGameState().active()) {
     /*
     **	If this anim is attached to another object
     **	then check to see if this is the last anim attached to it. If this

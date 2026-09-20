@@ -41,6 +41,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/stats.h"
+
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -57,7 +59,6 @@
 #include "td/building.h"
 #include "td/defines.h"
 #include "td/expand.h"
-#include "td/externs.h"
 #include "td/game_clock.h"
 #include "td/goptions.h"
 #include "td/heap.h"
@@ -72,6 +73,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/utracker.h"
+#include "td/winstub.h"
 #include "td/world.h"
 #include "tech/game_file.h"
 #include "tech/packet.h"

@@ -49,7 +49,7 @@ class ArchiveWriter;
 
 #include "absl/base/attributes.h"
 #include "td/defines.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/object.h"
 #include "td/type.h"
 
@@ -73,7 +73,7 @@ class OverlayClass : public ObjectClass {
   explicit OverlayClass(OverlayType type, CELL pos = -1,
                         HousesType /*house*/ = HOUSE_NONE);
   ~OverlayClass() override {
-    if (GameActive) {
+    if (TheGameState().active()) {
       OverlayClass::Limbo();
     }
   }

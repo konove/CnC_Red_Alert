@@ -63,7 +63,6 @@
 #include "td/const.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
-#include "td/externs.h"
 #include "td/house.h"
 #include "td/inline.h"
 #include "td/jshell.h"
@@ -287,7 +286,7 @@ std::span<const int16_t> SmudgeTypeClass::Occupy_List(
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 void SmudgeTypeClass::Init(TheaterType theater) {
-  if (theater != LastTheater) {
+  if (theater != TheWorld().last_theater()) {
     for (SmudgeType index = SMUDGE_CRATER1; index < SMUDGE_COUNT; index++) {
       const SmudgeTypeClass& smudge = As_Reference(index);
 

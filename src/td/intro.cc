@@ -56,7 +56,7 @@
 #include "td/conquer.h"
 #include "td/debug_state.h"
 #include "td/defines.h"
-#include "td/externs.h"
+#include "td/game_state.h"
 #include "td/input.h"
 #include "td/interpal.h"
 #include "td/jshell.h"
@@ -79,13 +79,13 @@
 // stay alive until the player is closed. Returns true if the movie opened.
 static bool Open_Movie(VqaPlayer& player, GameFileVqaIo& io, const char* name) {
   if (!TheDebugState().quiet() && TheAudio().is_open()) {
-    AnimControl.OptionFlags |= VQAOPTF_AUDIO;
+    TheGameState().anim_control().OptionFlags |= VQAOPTF_AUDIO;
   } else {
-    AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
+    TheGameState().anim_control().OptionFlags &= ~VQAOPTF_AUDIO;
   }
 
   player.SetIo(&io);
-  return player.Open(name, &AnimControl) == 0;
+  return player.Open(name, &TheGameState().anim_control()) == 0;
 }
 
 /***********************************************************************************************
@@ -152,10 +152,10 @@ void Choose_Side() {
   if (TheSpecial().IsFromInstall) {
     {
       TheScreen().visible_page().Clear();
-      PreserveVQAScreen = true;
+      TheGameState().preserve_movie_screen() = true;
       Play_Movie("INTRO2", THEME_NONE, false);
     }
-    BreakoutAllowed = true;
+    TheGameState().breakout_allowed() = true;
   }
 
   WsaAnimation anim("CHOOSE.WSA", ThePalettes().title_palette());
@@ -276,7 +276,7 @@ void Choose_Side() {
   /*
   ** Skip the briefings if we're in special mode.
   */
-  if (TheSpecial().IsJurassic && AreThingiesEnabled) {
+  if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
     if (nodbrief) {
       nodbrief_player.Close();
       nodbrief = false;
@@ -323,7 +323,7 @@ void Choose_Side() {
     Set_Palette(ThePalettes().black_palette());
     std::ranges::fill(ThePalettes().black_palette(), 0x00);
   } else {
-    PreserveVQAScreen = true;
+    TheGameState().preserve_movie_screen() = true;
   }
   TheAudio().Stop(statichandle);
   delete[] port::CharBytes(std::span(staticaud)).data();

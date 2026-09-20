@@ -33,7 +33,6 @@
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/jshell.h"
@@ -401,7 +400,7 @@ bool AircraftTypeClass::Create_And_Place(CELL /*unused*/,
 }
 
 void AircraftTypeClass::Init(TheaterType theater) {
-  if ((theater != LastTheater) && Get_Resolution_Factor()) {
+  if ((theater != TheWorld().last_theater()) && Get_Resolution_Factor()) {
     for (AircraftType index = AIRCRAFT_TRANSPORT; index < AIRCRAFT_COUNT;
          ++index) {
       const AircraftTypeClass& uclass = As_Reference(index);

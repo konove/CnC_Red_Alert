@@ -57,7 +57,6 @@
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/house.h"
 #include "td/inline.h"
 #include "td/jshell.h"
@@ -653,7 +652,7 @@ TerrainTypeClass::TerrainTypeClass(
  * HISTORY: * 05/16/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainTypeClass::Init(TheaterType theater) {
-  if (theater != LastTheater) {
+  if (theater != TheWorld().last_theater()) {
     for (TerrainType index = TERRAIN_TREE1; index < TERRAIN_COUNT; index++) {
       const TerrainTypeClass& terrain = As_Reference(index);
 

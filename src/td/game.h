@@ -9,6 +9,7 @@
 #include "td/assets.h"
 #include "td/debug_state.h"
 #include "td/game_clock.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/input.h"
 #include "td/network.h"
@@ -69,6 +70,8 @@ class Game {
   base::Installed<ObjectHeaps>::Scope object_heaps_scope_{object_heaps_};
   World world_;
   base::Installed<World>::Scope world_scope_{world_};
+  GameState game_state_;
+  base::Installed<GameState>::Scope game_state_scope_{game_state_};
   Input input_;
   base::Installed<Input>::Scope input_scope_{input_};
   GameOptionsClass options_;

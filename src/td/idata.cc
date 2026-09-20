@@ -69,7 +69,6 @@
 #include "td/const.h"
 #include "td/debug_state.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -1853,7 +1852,7 @@ void InfantryTypeClass::One_Time() {
  *=============================================================================================*/
 
 void InfantryTypeClass::Init(TheaterType theater) {
-  if (Get_Resolution_Factor() && (theater != LastTheater)) {
+  if (Get_Resolution_Factor() && (theater != TheWorld().last_theater())) {
     for (InfantryType index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
       const GameFile file;
 

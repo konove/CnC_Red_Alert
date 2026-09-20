@@ -63,7 +63,7 @@
 #include "td/conquer.h"
 #include "td/debug_state.h"
 #include "td/defines.h"
-#include "td/externs.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/jshell.h"
 #include "td/rand.h"
@@ -197,8 +197,8 @@ const char* ThemeClass::Full_Name(ThemeType theme) {
  *=============================================================================================*/
 void ThemeClass::AI() {
   if (TheAudio().is_open() && !TheDebugState().quiet()) {
-    if (ScoresPresent && TheOptions().ScoreVolume && !Still_Playing() &&
-        Pending != THEME_NONE) {
+    if (TheGameState().scores_present() && TheOptions().ScoreVolume &&
+        !Still_Playing() && Pending != THEME_NONE) {
       /*
       **	If the pending song needs to be picked, then pick it now.
       */
@@ -284,7 +284,8 @@ ThemeType ThemeClass::Next_Song(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 void ThemeClass::Queue_Song(ThemeType theme) {
-  if (ScoresPresent && TheAudio().is_open() && !TheDebugState().quiet() &&
+  if (TheGameState().scores_present() && TheAudio().is_open() &&
+      !TheDebugState().quiet() &&
       (Pending == THEME_NONE || Pending == THEME_PICK_ANOTHER)) {
     if (!TheOptions().ScoreVolume && theme != THEME_NONE) {
       return;
@@ -312,8 +313,8 @@ void ThemeClass::Queue_Song(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int ThemeClass::Play_Song(ThemeType theme) {
-  if (ScoresPresent && TheAudio().is_open() && !TheDebugState().quiet() &&
-      TheOptions().ScoreVolume) {
+  if (TheGameState().scores_present() && TheAudio().is_open() &&
+      !TheDebugState().quiet() && TheOptions().ScoreVolume) {
     Stop();
     Score = theme;
     if (theme >= THEME_AIRSTRIKE) {
@@ -411,7 +412,8 @@ int ThemeClass::Track_Length(ThemeType theme) {
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
 void ThemeClass::Stop() {
-  if ((ScoresPresent && TheAudio().is_open() && !TheDebugState().quiet()) &&
+  if ((TheGameState().scores_present() && TheAudio().is_open() &&
+       !TheDebugState().quiet()) &&
       (Current != -1)) {
     TheAudio().Stop(Current);
     Current = -1;
@@ -434,8 +436,8 @@ void ThemeClass::Stop() {
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
 bool ThemeClass::Still_Playing() const {
-  if (ScoresPresent && TheAudio().is_open() && Current != -1 &&
-      !TheDebugState().quiet()) {
+  if (TheGameState().scores_present() && TheAudio().is_open() &&
+      Current != -1 && !TheDebugState().quiet()) {
     return TheAudio().IsPlaying(Current);
   }
   return false;

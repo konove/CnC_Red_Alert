@@ -64,7 +64,6 @@
  *- - - - - - - */
 
 #include <algorithm>
-#include <cstddef>
 #include <cstdint>
 #include <filesystem>
 #include <span>
@@ -75,6 +74,7 @@
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "sdllib/shape.h"
+#include "td/assets.h"
 #include "td/building.h"
 #include "td/cell.h"
 #include "td/conquer.h"
@@ -82,7 +82,7 @@
 #include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
-#include "td/externs.h"
+#include "td/game_state.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/inline.h"
@@ -3570,7 +3570,6 @@ const base::EnumArray<StructType, const BuildingTypeClass*, kStructCount>
         &Wood,      //	STRUCT_WOOD_WALL
 };
 
-std::span<const std::byte> WarFactoryOverlay;
 
 /***********************************************************************************************
  * BuildingTypeClass::BuildingTypeClass -- This is the constructor for the
@@ -3749,7 +3748,7 @@ void BuildingTypeClass::One_Time() {
   }
 
   // Try to load weap2.shp
-  WarFactoryOverlay = MixArchive::RetrieveData("WEAP2.SHP");
+  TheAssets().war_factory_overlay() = MixArchive::RetrieveData("WEAP2.SHP");
 
   /*
   **	Install all the special animation sequences for the different building
@@ -4058,7 +4057,7 @@ BuildingClass* BuildingTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingTypeClass::Init(TheaterType theater) {
-  if (theater != LastTheater) {
+  if (theater != TheWorld().last_theater()) {
     for (StructType sindex = STRUCT_WEAP; sindex < STRUCT_COUNT; sindex++) {
       const BuildingTypeClass* classptr = &As_Reference(sindex);
 
@@ -4432,7 +4431,8 @@ int BuildingTypeClass::Raw_Cost() const {
   **	Forces the turret cost down to original 250 for old
   **	version games.
   */
-  if (IsV107 && Type == STRUCT_TURRET && TheSession().type() != GAME_NORMAL) {
+  if (TheGameState().compatibility_v107() && Type == STRUCT_TURRET &&
+      TheSession().type() != GAME_NORMAL) {
     return 250;
   }
 #endif
@@ -4458,7 +4458,8 @@ int BuildingTypeClass::Cost_Of() const {
   **	Forces the turret cost down to original 250 for old
   **	version games.
   */
-  if (IsV107 && Type == STRUCT_TURRET && TheSession().type() != GAME_NORMAL) {
+  if (TheGameState().compatibility_v107() && Type == STRUCT_TURRET &&
+      TheSession().type() != GAME_NORMAL) {
     return 250;
   }
 #endif

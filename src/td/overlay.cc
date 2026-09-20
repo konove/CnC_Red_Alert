@@ -63,7 +63,6 @@
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/heap.h"
 #include "td/inline.h"
 #include "td/object_heaps.h"
@@ -263,7 +262,7 @@ bool OverlayClass::Mark(MarkType mark) {
           **	the crate generation.
           */
           if (Class->IsCrate) {
-            CrateCount++;
+            TheWorld().crate_count()++;
           }
 
           /*

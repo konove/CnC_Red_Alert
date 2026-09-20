@@ -129,8 +129,8 @@
 #include "td/defines.h"
 #include "td/display_constants.h"
 #include "td/event.h"
-#include "td/externs.h"
 #include "td/gadget.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -387,7 +387,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   */
   absl::SNPrintF(fullname, sizeof(fullname), "%s.MIX",
                  Theaters.at(Theater).Root);
-  if (Theater != LastTheater) {
+  if (Theater != TheWorld().last_theater()) {
     delete theater_data;
     theater_data = MixArchive::Register(fullname);
     theater_data->Cache();
@@ -401,7 +401,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
                  Theaters.at(Theater).Root);
   absl::SNPrintF(iconname, sizeof(iconname), "%.4sICNH.MIX",
                  Theaters.at(Theater).Root);
-  if (Theater != LastTheater) {
+  if (Theater != TheWorld().last_theater()) {
     delete theater_icons;
     theater_icons = MixArchive::Register(iconname);
     theater_icons->Cache();
@@ -1106,7 +1106,7 @@ void DisplayClass::Read_INI(char* buffer) {
   AircraftTypeClass::Init(Theater);
   SmudgeTypeClass::Init(Theater);
 
-  LastTheater = Theater;
+  TheWorld().last_theater() = Theater;
 
   /*
   **	Read the Waypoint entries.
@@ -2676,7 +2676,7 @@ void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
   **	bounding box.
   */
   Unselect_All();
-  AllowVoice = true;
+  TheGameState().allow_voice() = true;
   for (int index = 0; index < Layer.at(LAYER_GROUND).Count(); index++) {
     ObjectClass* obj = Layer.at(LAYER_GROUND).at(index);
     const COORDINATE ocoord = obj->Center_Coord();
@@ -2691,10 +2691,10 @@ void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
          obj->Class_Of().IsSelectable && obj->What_Am_I() != RTTI_BUILDING &&
          x >= x1 && x <= x2 && y >= y1 && y <= y2) &&
         obj->Select()) {
-      AllowVoice = false;
+      TheGameState().allow_voice() = false;
     }
   }
-  AllowVoice = true;
+  TheGameState().allow_voice() = true;
 }
 
 /***********************************************************************************************
@@ -3386,7 +3386,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         *selected and each *	might perform a different action when the click
         *occurs.
         */
-        AllowVoice = true;
+        TheGameState().allow_voice() = true;
         for (int index = 0; index < TheWorld().current_object().Count();
              index++) {
           ObjectClass* tobject = TheWorld().current_object().at(index);
@@ -3395,9 +3395,9 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
           } else {
             tobject->Active_Click_With(tobject->What_Action(cell), cell);
           }
-          AllowVoice = false;
+          TheGameState().allow_voice() = false;
         }
-        AllowVoice = true;
+        TheGameState().allow_voice() = true;
 
         if (object != nullptr && action == ACTION_REPAIR &&
             object->What_Am_I() == RTTI_BUILDING) {

@@ -79,9 +79,9 @@
 #include "sdllib/wwstd.h"
 #include "td/conquer.h"
 #include "td/control.h"
+#include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/externs.h"
 #include "td/goptions.h"
 #include "td/house.h"
 #include "td/ini.h"
@@ -480,7 +480,8 @@ void Read_MultiPlayer_Settings() {
     TheNetwork().current_phone_index() = -1;
   }
 
-  TrapCheckHeap = WWGetPrivateProfileInt("MultiPlayer", "CheckHeap", 0, buffer);
+  TheDebugState().trap_check_heap() =
+      WWGetPrivateProfileInt("MultiPlayer", "CheckHeap", 0, buffer);
 
   /*------------------------------------------------------------------------
   Read in default serial settings
@@ -757,39 +758,41 @@ void Read_MultiPlayer_Settings() {
   Read special recording playback values, to help find sync bugs
   ------------------------------------------------------------------------*/
   if (TheSession().playback_game()) {
-    TrapFrame = WWGetPrivateProfileInt("SyncBug", "Frame", 0x7fffffff, buffer);
+    TheDebugState().trap_frame() =
+        WWGetPrivateProfileInt("SyncBug", "Frame", 0x7fffffff, buffer);
 
-    TrapObjType = static_cast<RTTIType>(WWGetPrivateProfileInt(
-        "SyncBug", "Type", static_cast<int>(RTTI_NONE), buffer));
+    TheDebugState().trap_object_type() =
+        static_cast<RTTIType>(WWGetPrivateProfileInt(
+            "SyncBug", "Type", static_cast<int>(RTTI_NONE), buffer));
     WWGetPrivateProfileString(
         "SyncBug", "Type", "NONE",
         std::span(buf).first(static_cast<std::size_t>(80)), buffer);
     if (absl::EqualsIgnoreCase(buf, "AIRCRAFT")) {
-      TrapObjType = RTTI_AIRCRAFT;
+      TheDebugState().trap_object_type() = RTTI_AIRCRAFT;
     } else if (absl::EqualsIgnoreCase(buf, "ANIM")) {
-      TrapObjType = RTTI_ANIM;
+      TheDebugState().trap_object_type() = RTTI_ANIM;
     } else if (absl::EqualsIgnoreCase(buf, "BUILDING")) {
-      TrapObjType = RTTI_BUILDING;
+      TheDebugState().trap_object_type() = RTTI_BUILDING;
     } else if (absl::EqualsIgnoreCase(buf, "BULLET")) {
-      TrapObjType = RTTI_BULLET;
+      TheDebugState().trap_object_type() = RTTI_BULLET;
     } else if (absl::EqualsIgnoreCase(buf, "INFANTRY")) {
-      TrapObjType = RTTI_INFANTRY;
+      TheDebugState().trap_object_type() = RTTI_INFANTRY;
     } else if (absl::EqualsIgnoreCase(buf, "UNIT")) {
-      TrapObjType = RTTI_UNIT;
+      TheDebugState().trap_object_type() = RTTI_UNIT;
     } else {
-      TrapObjType = RTTI_NONE;
+      TheDebugState().trap_object_type() = RTTI_NONE;
     }
 
     WWGetPrivateProfileString(
         "SyncBug", "Coord", "0",
         std::span(buf).first(static_cast<std::size_t>(80)), buffer);
-    TrapCoord = tech::ParseHexOr<uint32_t>(buf, 0);
+    TheDebugState().trap_coord() = tech::ParseHexOr<uint32_t>(buf, 0);
 
     WWGetPrivateProfileString(
         "SyncBug", "this", "0",
         std::span(buf).first(static_cast<std::size_t>(80)), buffer);
     if (const auto trap_this = tech::ParseHex<uintptr_t>(buf)) {
-      TrapThis = std::bit_cast<void*>(*trap_this);
+      TheDebugState().trap_this() = std::bit_cast<void*>(*trap_this);
     }
   }
 }

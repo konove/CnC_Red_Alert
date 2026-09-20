@@ -8,6 +8,7 @@
 #include "base/installed.h"
 #include "gtest/gtest.h"
 #include "magic_enum/magic_enum.hpp"
+#include "td/conquer.h"
 #include "td/defines.h"
 
 // LoadFonts() and LoadStrings() are not run here; these stand in for the game
@@ -16,9 +17,7 @@ class File;
 // NOLINTBEGIN(misc-use-internal-linkage): these satisfy other units' externs.
 std::vector<std::byte> LoadAllocData(File& file);
 std::vector<std::byte> LoadAllocData(File& /*file*/) { return {}; }
-const char* Language_Name(const char* basename);
 const char* Language_Name(const char* /*basename*/) { return "CONQUER.ENG"; }
-int Get_CD_Index(int cd_drive, int timeout);
 int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) { return -1; }
 // NOLINTEND(misc-use-internal-linkage)
 

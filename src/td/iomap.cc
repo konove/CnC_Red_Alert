@@ -27,7 +27,6 @@
 #include "td/credits.h"
 #include "td/defines.h"
 #include "td/display.h"
-#include "td/externs.h"
 #include "td/factory.h"
 #include "td/gscreen.h"
 #include "td/help.h"
@@ -366,7 +365,7 @@ void MouseClass::Serialize(Archive& ar) {
       }
       previous = cell;
     }
-    LastTheater = Theater;
+    TheWorld().last_theater() = Theater;
   } else {
     for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
       if ((*this).at(cell).Should_Save()) {

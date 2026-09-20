@@ -87,7 +87,6 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/externs.h"
 #include "td/gadget.h"
 #include "td/goptions.h"
 #include "td/init.h"
@@ -101,6 +100,7 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/vector.h"
+#include "td/winstub.h"
 #include "tech/number_parse.h"
 
 #ifdef _WIN32

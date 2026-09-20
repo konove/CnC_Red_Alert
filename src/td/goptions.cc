@@ -64,8 +64,8 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/event.h"
-#include "td/externs.h"
 #include "td/gadget.h"
+#include "td/game_state.h"
 #include "td/gamedlg.h"
 #include "td/init.h"
 #include "td/jshell.h"
@@ -313,7 +313,7 @@ void GameOptionsClass::Process() {
               ((TheSession().type() == GAME_NORMAL) ? (32 * resfactor)
                                                     : (24 * resfactor)),
           kGrey, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT, ScenarioName,
-          VersionText);
+          TheGameState().version_text());
 #else
       Fancy_Text_Print(
           "%s\rV.%d%s",
@@ -330,7 +330,8 @@ void GameOptionsClass::Process() {
               (TheSession().type() == GAME_NORMAL ? 32 * resfactor
                                                   : 24 * resfactor),
           kGrey, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT,
-          TheWorld().scenario_name(), Version_Number(), VersionText);
+          TheWorld().scenario_name(), Version_Number(),
+          TheGameState().version_text());
 #endif
 
       buttons->Draw_All();
@@ -448,7 +449,7 @@ void GameOptionsClass::Process() {
           if (!Restate_Mission(TheWorld().scenario_name(), TXT_VIDEO,
                                TXT_OPTIONS)) {
 #endif
-            BreakoutAllowed = true;
+            TheGameState().breakout_allowed() = true;
             char buffer[25];
             absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA",
                            TheWorld().brief_movie());
@@ -511,7 +512,7 @@ void GameOptionsClass::Process() {
                 break;
 
               case 1:
-                PlayerRestarts = true;
+                TheGameState().player_restarts() = true;
                 process = false;
                 break;
               default:

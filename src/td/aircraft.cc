@@ -131,12 +131,11 @@
 #include "td/coord.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
-#include "td/externs.h"
 #include "td/facing.h"
 #include "td/fly.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -2045,7 +2044,7 @@ void AircraftClass::Active_Click_With(ActionType action, CELL cell) {
 void AircraftClass::Player_Assign_Mission(MissionType mission, TARGET target,
                                           TARGET destination) {
   Validate();
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     if (mission == MISSION_ATTACK) {
       Response_Attack();
     } else {
@@ -3221,7 +3220,7 @@ DirType AircraftClass::Fire_Direction() const {
  * HISTORY: * 06/24/1995 JLB : Created. *
  *=============================================================================================*/
 AircraftClass::~AircraftClass() {
-  if (GameActive && Class) {
+  if (TheGameState().active() && Class) {
     /*
     **	If there are any cargo members, delete them.
     */
@@ -3232,7 +3231,7 @@ AircraftClass::~AircraftClass() {
     Limbo();
   }
 
-  if (GameActive && Class && Team) {
+  if (TheGameState().active() && Class && Team) {
     Team->Remove(this);
   }
 }
@@ -3493,7 +3492,7 @@ void AircraftClass::Response_Attack() {
       Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
                                           sizeof(base::At(_response, 0))) -
                              1));
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     Sound_Effect(response, 0, -(TheObjectHeaps().aircraft().ID(this) + 1));
   }
 }
@@ -3520,7 +3519,7 @@ void AircraftClass::Response_Move() {
       Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
                                           sizeof(base::At(_response, 0))) -
                              1));
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     Sound_Effect(response, 0, -(TheObjectHeaps().aircraft().ID(this) + 1));
   }
 }
@@ -3547,7 +3546,7 @@ void AircraftClass::Response_Select() {
       Sim_Random_Pick(0, static_cast<int>(sizeof(_response) /
                                           sizeof(base::At(_response, 0))) -
                              1));
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     Sound_Effect(response, 0, -(TheObjectHeaps().aircraft().ID(this) + 1));
   }
 }

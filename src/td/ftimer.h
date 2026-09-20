@@ -45,7 +45,6 @@
 #include <cstdint>
 
 #include "td/game_clock.h"
-#include "td/globals.h"
 
 /*
 **	This timer class is based around an external tick system. As such, it is

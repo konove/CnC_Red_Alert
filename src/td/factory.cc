@@ -84,7 +84,7 @@
 #include "td/conquer.h"
 #include "td/debug_state.h"
 #include "td/defines.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/jshell.h"
@@ -137,7 +137,7 @@ int FactoryClass::Validate() const {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 FactoryClass::~FactoryClass() {
-  if (GameActive) {
+  if (TheGameState().active()) {
     Abandon();
   }
 }

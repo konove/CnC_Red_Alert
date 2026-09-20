@@ -86,8 +86,8 @@
 #include "td/dialog.h"
 #include "td/edit.h"
 #include "td/event.h"
-#include "td/externs.h"
 #include "td/gadget.h"
+#include "td/game_state.h"
 #include "td/gauge.h"
 #include "td/goptions.h"
 #include "td/house.h"
@@ -111,6 +111,7 @@
 #include "td/textbtn.h"
 #include "td/theme.h"
 #include "td/vector.h"
+#include "td/winstub.h"
 #include "td/world.h"
 #include "tech/audio_mixer.h"
 #include "tech/crc.h"
@@ -1984,7 +1985,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
 
-  if (InMainLoop) {
+  if (TheGameState().in_main_loop()) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
     down_button = Hires_Retrieve("BTN-DN.SHP");
   } else {
@@ -3324,7 +3325,7 @@ int Com_Scenario_Dialog() {
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
 
-  if (InMainLoop) {
+  if (TheGameState().in_main_loop()) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
     down_button = Hires_Retrieve("BTN-DN.SHP");
   } else {
@@ -4218,7 +4219,7 @@ int Com_Scenario_Dialog() {
       SendPacket.Command = SERIAL_GAME_OPTIONS;
       port::SafeCopy(SendPacket.Name, TheSession().player_name());
 #ifdef PATCH
-      if (IsV107) {
+      if (TheGameState().compatibility_v107()) {
         SendPacket.Version = 1;
       } else {
         SendPacket.Version = 2;
@@ -4370,7 +4371,7 @@ int Com_Scenario_Dialog() {
             Check the version number of the other system.
             ...............................................................*/
 #ifdef PATCH
-            if (IsV107) {
+            if (TheGameState().compatibility_v107()) {
               version = 1;
             } else {
               version = 2;
@@ -5436,7 +5437,7 @@ int Com_Show_Scenario_Dialog() {
       SendPacket.Command = SERIAL_GAME_OPTIONS;
       port::SafeCopy(SendPacket.Name, TheSession().player_name());
 #ifdef PATCH
-      if (IsV107) {
+      if (TheGameState().compatibility_v107()) {
         SendPacket.Version = 1;
       } else {
         SendPacket.Version = 2;
@@ -5605,7 +5606,7 @@ int Com_Show_Scenario_Dialog() {
             Check our version numbers; if they're incompatible, sign off.
             ...............................................................*/
 #ifdef PATCH
-            if (IsV107) {
+            if (TheGameState().compatibility_v107()) {
               version = 1;
             } else {
               version = 2;
@@ -5951,7 +5952,7 @@ static int Phone_Dialog() {
   std::span<const std::byte> up_button;
   std::span<const std::byte> down_button;
 
-  if (InMainLoop) {
+  if (TheGameState().in_main_loop()) {
     up_button = Hires_Retrieve("BTN-UP.SHP");
     down_button = Hires_Retrieve("BTN-DN.SHP");
   } else {
@@ -6889,7 +6890,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   ** Completely disable audio. This is required for MWave devices
   */
   ThemeType old_theme = THEME_NONE;
-  if (SoundOn) {
+  if (TheGameState().sound_on()) {
     old_theme = TheTheme().What_Is_Playing();
     TheTheme().Stop();
     CountDownTimerClass wait;
@@ -6904,7 +6905,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     while (wait.Time()) {
       Call_Back();
     }
-    SoundOn = false;
+    TheGameState().sound_on() = false;
   }
 
   const DialStatusType dialstatus = TheNetwork().null_modem().Dial_Modem(
@@ -6961,8 +6962,8 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Restore audio capability
   */
-  SoundOn = TheAudio().Open(11025 * 2, /*stereo=*/false);
-  if (SoundOn) {
+  TheGameState().sound_on() = TheAudio().Open(11025 * 2, /*stereo=*/false);
+  if (TheGameState().sound_on()) {
     TheTheme().Play_Song(old_theme);
   }
 
@@ -7064,7 +7065,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   ** Completely disable audio. This is required for MWave devices
   */
   ThemeType old_theme = THEME_NONE;
-  if (SoundOn) {
+  if (TheGameState().sound_on()) {
     old_theme = TheTheme().What_Is_Playing();
     TheTheme().Stop();
     CountDownTimerClass wait;
@@ -7079,7 +7080,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     while (wait.Time()) {
       Call_Back();
     }
-    SoundOn = false;
+    TheGameState().sound_on() = false;
   }
 
   const DialStatusType dialstatus =
@@ -7125,8 +7126,8 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Restore audio capability
   */
-  SoundOn = TheAudio().Open(11025 * 2, /*stereo=*/false);
-  if (SoundOn) {
+  TheGameState().sound_on() = TheAudio().Open(11025 * 2, /*stereo=*/false);
+  if (TheGameState().sound_on()) {
     TheTheme().Play_Song(old_theme);
   }
 

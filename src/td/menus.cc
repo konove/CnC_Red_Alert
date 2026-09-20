@@ -64,7 +64,7 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/expand.h"
-#include "td/externs.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/init.h"
 #include "td/jshell.h"
@@ -859,12 +859,13 @@ int Main_Menu(int timeout) {
         Version_Number();
         Fancy_Text_Print("Demo%s", kDialogX + kDialogW - 10,
                          kDialogY + kDialogH - 20, kGrey, kTBlack,
-                         TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT, VersionText);
-#else
-        Fancy_Text_Print("V.%d%s", kDialogX + kDialogW - 10,
-                         kDialogY + kDialogH - 20, kGrey, kTBlack,
                          TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
-                         Version_Number(), VersionText, FOREIGN_VERSION_NUMBER);
+                         TheGameState().version_text());
+#else
+        Fancy_Text_Print(
+            "V.%d%s", kDialogX + kDialogW - 10, kDialogY + kDialogH - 20, kGrey,
+            kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT, Version_Number(),
+            TheGameState().version_text(), FOREIGN_VERSION_NUMBER);
 #endif
         //			Fancy_Text_Print("V.%d%s%02d",
         // D_DIALOG_X+D_DIALOG_W-5,
@@ -876,12 +877,13 @@ int Main_Menu(int timeout) {
         Version_Number();
         Fancy_Text_Print("Demo%s", kDialogX + kDialogW - 10,
                          kDialogY + kDialogH - 20, kGrey, kTBlack,
-                         TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT, VersionText);
+                         TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
+                         TheGameState().version_text());
 #else
         Fancy_Text_Print("V.%d%s", kDialogX + kDialogW - 10,
                          kDialogY + kDialogH - 20, kGrey, kTBlack,
                          TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
-                         Version_Number(), VersionText);
+                         Version_Number(), TheGameState().version_text());
 #endif
       }
 

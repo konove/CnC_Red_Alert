@@ -77,8 +77,8 @@
 #include "td/conquer.h"
 #include "td/debug_state.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/ftimer.h"
+#include "td/game_state.h"
 #include "td/house.h"
 #include "td/infantry.h"
 #include "td/inline.h"
@@ -105,6 +105,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "td/winstub.h"
 #include "td/world.h"
 #include "tech/game_file.h"
 
@@ -303,21 +304,21 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   ** If we are not dealing with scenario 1, or a multi player scenario
   ** then make sure the correct disk is in the drive.
   */
-  if (RequiredCD != -2) {
+  if (TheGameState().required_cd() != -2) {
     if (TheWorld().scenario() >= 20 && TheWorld().scenario() < 60 &&
         TheSession().type() == GAME_NORMAL) {
-      RequiredCD = 2;
+      TheGameState().required_cd() = 2;
     } else {
       if (TheWorld().scenario() != 1) {
         if (TheWorld().scenario() >= 60) {
-          RequiredCD = -1;
+          TheGameState().required_cd() = -1;
         } else {
           switch (TheWorld().scen_player()) {
             case SCEN_PLAYER_GDI:
-              RequiredCD = 0;
+              TheGameState().required_cd() = 0;
               break;
             case SCEN_PLAYER_NOD:
-              RequiredCD = 1;
+              TheGameState().required_cd() = 1;
               break;
             case ScenarioPlayerType::SCEN_PLAYER_NONE:
             case ScenarioPlayerType::SCEN_PLAYER_JP:
@@ -325,16 +326,16 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
             case ScenarioPlayerType::SCEN_PLAYER_MPLAYER:
             case ScenarioPlayerType::SCEN_PLAYER_COUNT:
             default:
-              RequiredCD = -1;
+              TheGameState().required_cd() = -1;
               break;
           }
         }
       } else {
-        RequiredCD = -1;
+        TheGameState().required_cd() = -1;
       }
     }
   }
-  if (!Force_CD_Available(RequiredCD)) {
+  if (!Force_CD_Available(TheGameState().required_cd())) {
     ShutDown();
     exit(EXIT_FAILURE);
   }
@@ -400,7 +401,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	Jurassic scenarios are allowed to build the full multiplayer set
   **	of objects.
   */
-  if (TheSpecial().IsJurassic && AreThingiesEnabled) {
+  if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
     TheWorld().build_level() = 98;
   }
 

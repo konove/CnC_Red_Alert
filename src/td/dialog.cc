@@ -75,7 +75,7 @@
 #include "td/assets.h"
 #include "td/conquer.h"
 #include "td/defines.h"
-#include "td/externs.h"
+#include "td/game_state.h"
 #include "td/jshell.h"
 #include "td/screen.h"
 #include "td/text.h"
@@ -154,7 +154,7 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
   if (filled) {
     if (style.Filler == kCcGreenBkgd) {
       CC_Texture_Fill(MixArchive::RetrieveData("BTEXTURE.SHP"),
-                      InMainLoop ? 1 : 0, x, y, w, h);
+                      TheGameState().in_main_loop() ? 1 : 0, x, y, w, h);
     } else {
       LogicPage->Fill_Rect(x, y, x + w, y + h,
                            static_cast<unsigned char>(style.Filler));

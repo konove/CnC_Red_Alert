@@ -32,15 +32,15 @@
 #include "base/seek_origin.h"
 #include "sdllib/file_access.h"
 #include "td/defines.h"
-#include "td/externs.h"
+#include "td/game_state.h"
 #include "td/input.h"
+#include "td/winstub.h"
 #include "td/world.h"
 #include "tech/game_file.h"
 // #include "ra/filepcx.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/iconcach.h"
 #include "sdllib/ww_mouse.h"
-#include "td/globals.h"
 #include "td/interpal.h"
 #include "td/mapedit.h"
 #include "td/palette.h"
@@ -67,7 +67,7 @@ static ThemeType OldTheme = THEME_NONE;
  *=============================================================================================*/
 
 void Focus_Loss() {
-  if (SoundOn && (OldTheme == THEME_NONE)) {
+  if (TheGameState().sound_on() && (OldTheme == THEME_NONE)) {
     OldTheme = TheTheme().What_Is_Playing();
   }
 
@@ -83,7 +83,7 @@ void Focus_Restore() {
   TheMap().Flag_To_Redraw(true);
   TheAudio().Resume();
 
-  if (!InMovie) {
+  if (!TheGameState().in_movie()) {
     TheTheme().Queue_Song(OldTheme);
     OldTheme = THEME_NONE;
   }
@@ -96,7 +96,7 @@ void Focus_Restore() {
 static std::span<unsigned char> VQPalette;
 static int32_t VQNumBytes;
 static uint32_t VQSlowpal;
-bool VQPaletteChange = false;
+static bool VQPaletteChange = false;
 
 extern "C" {
 void __cdecl SetPalette(std::span<unsigned char> palette, int32_t numbytes,
@@ -110,6 +110,8 @@ void Flag_To_Set_Palette(std::span<unsigned char> palette, int32_t numbytes,
   VQSlowpal = slowpal;
   VQPaletteChange = true;
 }
+
+void Discard_VQ_Palette_Change() { VQPaletteChange = false; }
 
 void Check_VQ_Palette_Set() {
   if (VQPaletteChange) {

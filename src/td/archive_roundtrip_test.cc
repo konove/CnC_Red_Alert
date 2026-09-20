@@ -16,7 +16,7 @@
 #include "td/event.h"
 #include "td/factory.h"
 #include "td/game_clock.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/inline.h"
@@ -53,6 +53,9 @@ const base::Installed<SessionClass>::Scope session_scope(session);
 // command overrides.
 SpecialClass special{};
 const base::Installed<SpecialClass>::Scope special_scope(special);
+// The serializers also read the run-state flags.
+GameState game_state;
+const base::Installed<GameState>::Scope game_state_scope(game_state);
 // NOLINTEND(bugprone-throwing-static-initialization)
 }  // namespace
 
@@ -85,7 +88,7 @@ class TdArchiveRoundTripTest : public testing::Test {
     // Selecting and drawing an object reads the debug switches, which Game
     // installs in the real game.
     debug_state_scope_ = new base::Installed<DebugState>::Scope(debug_state_);
-    GameActive = false;
+    TheGameState().active() = false;
     TheGameClock().set_frame(100);
     TheObjectHeaps().house().Set_Heap(8);
     TheObjectHeaps().unit().Set_Heap(8);

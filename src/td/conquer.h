@@ -836,6 +836,10 @@ void Bubba_Print(char* format, ...);
 void Heap_Dump_Check(const char* string);
 
 [[noreturn]] void Validate_Error(const char* name);
+
+// Returns which C&C disc is in the given drive: 0 = GDI, 1 = Nod,
+// 2 = Covert Operations, -1 = not a C&C disc.
+int Get_CD_Index(int cd_drive, int timeout);
 std::span<const std::byte> Hires_Retrieve(const char* name);
 int Get_Resolution_Factor();
 

@@ -85,7 +85,7 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/ftimer.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -367,7 +367,8 @@ bool TriggerClass::Action_Need_Team(ActionType action) {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 TriggerClass::~TriggerClass() {
-  if (GameActive && House != HOUSE_NONE && Action == ACTION_ALLOWWIN) {
+  if (TheGameState().active() && House != HOUSE_NONE &&
+      Action == ACTION_ALLOWWIN) {
     if (HouseClass::As_Pointer(House)->Blockage) {
       HouseClass::As_Pointer(House)->Blockage--;
     }

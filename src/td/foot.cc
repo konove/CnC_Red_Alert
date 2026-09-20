@@ -116,9 +116,8 @@
 #include "td/coord.h"
 #include "td/defines.h"
 #include "td/event.h"
-#include "td/externs.h"
 #include "td/ftimer.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -201,7 +200,7 @@ FootClass::FootClass()
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
 FootClass::~FootClass() {
-  if (GameActive && House) {
+  if (TheGameState().active() && House) {
     House->CurUnits--;
   }
 }
@@ -1313,7 +1312,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
       break;
 
     case ACTION_MOVE:
-      if (AllowVoice) {
+      if (TheGameState().allow_voice()) {
         const COORDINATE coord =
             TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y());
         TheNetwork().out_list().Add(
@@ -1906,7 +1905,7 @@ TARGET FootClass::Greatest_Threat(ThreatType method) const {
 void FootClass::Detach(TARGET target, bool all) {
   TechnoClass::Detach(target, all);
 
-  if ((!SpecialFlag) && (ArchiveTarget == target)) {
+  if ((!TheGameState().special_flag()) && (ArchiveTarget == target)) {
     ArchiveTarget = kTargetNone;
   }
 

@@ -48,6 +48,8 @@
  *                                                                         				*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
+#include "td/internet.h"
+
 #include <algorithm>
 #include <array>
 #include <cstdint>
@@ -67,7 +69,7 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/externs.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/init.h"
 #include "td/jshell.h"
@@ -489,7 +491,7 @@ bool Do_The_Internet_Menu_Thang() {
   const int buffer_len = sizeof(users_name);
   KeyNumType input = KN_NONE;
 
-  if (!TheSpecial().IsFromWChat && !SpawnedFromWChat) {
+  if (!TheSpecial().IsFromWChat && !TheGameState().spawned_from_chat()) {
     /*
     ** If the user is registered with Planet Westwood then spawn WChat.
     */

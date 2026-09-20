@@ -91,10 +91,9 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/expand.h"
-#include "td/externs.h"
 #include "td/factory.h"
 #include "td/game_clock.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -143,6 +142,7 @@
 #include "td/trigger.h"
 #include "td/type.h"
 #include "td/unit.h"
+#include "td/winstub.h"
 #include "td/world.h"
 #include "tech/audio_mixer.h"
 #include "tech/disk_file.h"
@@ -258,8 +258,8 @@ bool Init_Game() {
   (void)MixArchive::Register("DEMOL.MIX");
   MixArchive::Cache("DEMOL.MIX");
 #else
-  const int temp = RequiredCD;
-  RequiredCD = -2;
+  const int temp = TheGameState().required_cd();
+  TheGameState().required_cd() = -2;
 
   (void)MixArchive::Register("CCLOCAL.MIX");
   MixArchive::Cache("CCLOCAL.MIX");
@@ -274,7 +274,7 @@ bool Init_Game() {
   (void)MixArchive::Register("LANGUAGE.MIX");
 #endif  // JAPANESE
 
-  RequiredCD = temp;
+  TheGameState().required_cd() = temp;
 
 #endif
   DLOG(INFO) << "C&C95 - About to load fonts";
@@ -321,7 +321,7 @@ bool Init_Game() {
   do {
     DLOG(INFO) << "C&C95 - About to call Keyboard::Check";
     Keyboard::Check();
-  } while (!GameInFocus);
+  } while (!TheGameState().in_focus());
   AllSurfaces.SurfacesRestored = false;
 
   DLOG(INFO) << "C&C95 - About to load the language file";
@@ -358,8 +358,8 @@ bool Init_Game() {
   /*
   **	Add in any override path specified in the conquer.ini file.
   */
-  if (strlen(OverridePath)) {
-    GameFile::Set_Search_Drives(OverridePath);
+  if (!TheGameState().override_path().empty()) {
+    GameFile::Set_Search_Drives(TheGameState().override_path().c_str());
   }
 #endif
 
@@ -384,7 +384,7 @@ bool Init_Game() {
   ** If there are search drives specified then all files are to be
   ** considered local.
   */
-  RequiredCD = -2;
+  TheGameState().required_cd() = -2;
 #ifndef DEMO
   DLOG(INFO) << "C&C95 - About to register addon mixfiles";
   /*
@@ -429,7 +429,7 @@ bool Init_Game() {
     if (archives.movies == nullptr) {
       archives.movies = MixArchive::Register("DEMOM.MIX");
     }
-    ScoresPresent = true;
+    TheGameState().scores_present() = true;
     ThemeClass::Scan();
   }
 
@@ -455,9 +455,9 @@ bool Init_Game() {
   **	Register the score mixfile.
   */
   DLOG(INFO) << "C&C95 - About to register SCORES.MIX";
-  ScoresPresent = false;
+  TheGameState().scores_present() = false;
   //	if (GameFile("SCORES.MIX").IsAvailable()) {
-  ScoresPresent = true;
+  TheGameState().scores_present() = true;
   if (archives.score == nullptr) {
     archives.score = MixArchive::Register("SCORES.MIX");
     ThemeClass::Scan();
@@ -482,7 +482,7 @@ bool Init_Game() {
   DLOG(INFO) << "C&C95 - About to initialise the animation system";
   Anim_Init();
 
-  if (SpawnedFromWChat) {
+  if (TheGameState().spawned_from_chat()) {
     TheSpecial().IsFromWChat = true;
   }
 
@@ -747,12 +747,12 @@ bool Select_Game(bool fade) {
   /*
   **	[Re]set any globals that need it, in preparation for a new scenario
   */
-  GameActive = true;
+  TheGameState().active() = true;
   TheNetwork().do_list().Init();
   TheNetwork().out_list().Init();
   TheGameClock().set_frame(0);
-  PlayerWins = false;
-  PlayerLoses = false;
+  TheGameState().player_wins() = false;
+  TheGameState().player_loses() = false;
   TheSession().obi_wan() = false;
   TheDebugState().set_unshroud(false);
   TheMap().Set_Cursor_Shape({});
@@ -834,7 +834,7 @@ bool Select_Game(bool fade) {
     /*
     ** Handle case where we were spawned from Wchat
     */
-    if (SpawnedFromWChat) {
+    if (TheGameState().spawned_from_chat()) {
       TheSpecial().IsFromInstall =
           false;  // Dont play intro if we were spawned from wchat
       selection = kSelInternet;
@@ -903,20 +903,21 @@ bool Select_Game(bool fade) {
           Fancy_Text_Print("V.%d%s", TheScreen().visible_view().Get_Width() - 1,
                            TheScreen().visible_view().Get_Height() - 10, kGrey,
                            kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
-                           Version_Number(), VersionText,
+                           Version_Number(), TheGameState().version_text(),
                            FOREIGN_VERSION_NUMBER);
         } else {
 #ifdef DEMO
           Version_Number();
-          Fancy_Text_Print(
-              "DEMO V%s", TheScreen().visible_view().Get_Width() - 1,
-              TheScreen().visible_view().Get_Height() - 10, kGrey, kTBlack,
-              TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT, VersionText);
+          Fancy_Text_Print("DEMO V%s",
+                           TheScreen().visible_view().Get_Width() - 1,
+                           TheScreen().visible_view().Get_Height() - 10, kGrey,
+                           kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
+                           TheGameState().version_text());
 #else
           Fancy_Text_Print("V.%d%s", TheScreen().visible_view().Get_Width() - 1,
                            TheScreen().visible_view().Get_Height() - 10, kGrey,
                            kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
-                           Version_Number(), VersionText);
+                           Version_Number(), TheGameState().version_text());
 #endif
         }
         display = false;
@@ -1028,8 +1029,8 @@ bool Select_Game(bool fade) {
           ** If cd_index == 2 then its a covert CD
           */
           if (cd_index == 2) {
-            RequiredCD = 0;
-            if (!Force_CD_Available(RequiredCD)) {
+            TheGameState().required_cd() = 0;
+            if (!Force_CD_Available(TheGameState().required_cd())) {
               ShutDown();
               exit(EXIT_FAILURE);
             }
@@ -1094,7 +1095,7 @@ bool Select_Game(bool fade) {
           ** GDI or NOD.  Ini.cpp will set the player's ActLike to mirror the
           ** Whom value.
           */
-          if (TheSpecial().IsJurassic && AreThingiesEnabled) {
+          if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
             TheWorld().scen_player() = SCEN_PLAYER_JP;
             TheWorld().scen_dir() = SCEN_DIR_EAST;
           }
@@ -1533,7 +1534,7 @@ bool Select_Game(bool fade) {
     * on, set to load that scenario
     */
     TheWorld().scenario() = 1;
-    if (TheSpecial().IsJurassic && AreThingiesEnabled) {
+    if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
       TheWorld().scen_player() = SCEN_PLAYER_JP;
       TheWorld().scen_dir() = SCEN_DIR_EAST;
     }
@@ -2085,33 +2086,34 @@ static void Play_Intro(bool for_real) {
  *=============================================================================================*/
 void Anim_Init() {
   /* Configure player with INI file */
-  VQA_DefaultConfig(&AnimControl);
+  VQA_DefaultConfig(&TheGameState().anim_control());
   //	void const * font = Load_Font(FONT8);
   //	AnimControl.EVAFont = (char *)font;
   //	AnimControl.CapFont = (char *)font;
 
-  AnimControl.DrawFlags = VQACFGF_TOPLEFT;
-  AnimControl.DrawFlags |= VQACFGF_BUFFER;
+  TheGameState().anim_control().DrawFlags = VQACFGF_TOPLEFT;
+  TheGameState().anim_control().DrawFlags |= VQACFGF_BUFFER;
 
-  AnimControl.DrawFlags |= VQACFGF_NOSKIP;
+  TheGameState().anim_control().DrawFlags |= VQACFGF_NOSKIP;
 
   // AnimControl.X1 =0;
   // AnimControl.Y1 =0;
-  AnimControl.FrameRate = -1;
-  AnimControl.DrawRate = -1;
+  TheGameState().anim_control().FrameRate = -1;
+  TheGameState().anim_control().DrawRate = -1;
 
-  AnimControl.DrawerCallback = VQ_Call_Back;
-  AnimControl.EventHandler = VQ_Event_Handler;
-  AnimControl.ImageWidth = 320;
-  AnimControl.ImageHeight = 200;
-  AnimControl.Vmode = 0;
-  AnimControl.ImageBuf = TheScreen().sys_mem_page().Get_Bytes();
+  TheGameState().anim_control().DrawerCallback = VQ_Call_Back;
+  TheGameState().anim_control().EventHandler = VQ_Event_Handler;
+  TheGameState().anim_control().ImageWidth = 320;
+  TheGameState().anim_control().ImageHeight = 200;
+  TheGameState().anim_control().Vmode = 0;
+  TheGameState().anim_control().ImageBuf =
+      TheScreen().sys_mem_page().Get_Bytes();
   // AnimControl.VBIBit = VertBlank;
   // AnimControl.DrawFlags |= VQACFGF_TOPLEFT;
-  AnimControl.OptionFlags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
+  TheGameState().anim_control().OptionFlags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
 
   if (ThePalettes().slow_palette()) {
-    AnimControl.OptionFlags |= VQAOPTF_SLOWPAL;
+    TheGameState().anim_control().OptionFlags |= VQAOPTF_SLOWPAL;
   }
 
   //	AnimControl.AudioBuf = (unsigned char *)HidPage.Get_Buffer();
@@ -2121,9 +2123,10 @@ void Anim_Init() {
   // AnimControl.Volume = 0x00FF;
   // AnimControl.AudioRate = 22050;
   //	if (NewConfig.Speed) AnimControl.AudioRate = 11025;
-  AnimControl.AudioDeviceID = TheAudio().device_id();
-  AnimControl.AudioCallback = TheAudio().extra_callback_slot();
-  AnimControl.AudioSpec = TheAudio().output_spec();
+  TheGameState().anim_control().AudioDeviceID = TheAudio().device_id();
+  TheGameState().anim_control().AudioCallback =
+      TheAudio().extra_callback_slot();
+  TheGameState().anim_control().AudioSpec = TheAudio().output_spec();
   // if (!TheDebugState().quiet() && Audio.is_open()) {
   // AnimControl.OptionFlags |= VQAOPTF_AUDIO;
   //}
@@ -2733,7 +2736,7 @@ void Parse_INI_File() {
   WWGetPrivateProfileString(section, entry, "", buf, buffer);
 
   if (absl::EqualsIgnoreCase(buf, name)) {
-    AreThingiesEnabled = true;
+    TheGameState().thingies_enabled() = true;
   }
 
   memset(section, 0, sizeof(section));
@@ -2801,13 +2804,17 @@ int Version_Number() {
     */
     DiskFile file("VERSION.TXT");
     if (file.IsAvailable()) {
-      file.ReadObject(VersionText);
-      VersionText[sizeof(VersionText) - 1] = '\0';
-      while (VersionText[sizeof(VersionText) - 1] == '\r') {
-        VersionText[sizeof(VersionText) - 1] = '\0';
+      file.ReadObject(TheGameState().version_text());
+      TheGameState().version_text()[sizeof(TheGameState().version_text()) - 1] =
+          '\0';
+      while (TheGameState()
+                 .version_text()[sizeof(TheGameState().version_text()) - 1] ==
+             '\r') {
+        TheGameState()
+            .version_text()[sizeof(TheGameState().version_text()) - 1] = '\0';
       }
     } else {
-      VersionText[0] = '\0';
+      TheGameState().version_text()[0] = '\0';
     }
 
     initialized = true;
@@ -2816,19 +2823,20 @@ int Version_Number() {
 #endif
 
 #ifdef FRENCH
-  sprintf(VersionText, ".02");  // Win95 french version number
+  sprintf(TheGameState().version_text(), ".02");  // Win95 french version number
 #endif                          // FRENCH
 
 #ifdef GERMAN
-  sprintf(VersionText, ".01");  // Win95 german version number
+  sprintf(TheGameState().version_text(), ".01");  // Win95 german version number
 #endif                          // GERMAN
 
 #ifdef JAPANESE
-  sprintf(VersionText, ".01");  // Win95 german version number
+  sprintf(TheGameState().version_text(), ".01");  // Win95 german version number
 #endif                          // GERMAN
 
 #if !(defined(FRENCH) || defined(GERMAN) || defined(JAPANESE))
-  absl::SNPrintF(VersionText, sizeof(VersionText),
+  absl::SNPrintF(TheGameState().version_text(),
+                 sizeof(TheGameState().version_text()),
                  ".07");        // Win95 USA version number
 #endif                          // FRENCH | GERMAN
 
@@ -2839,7 +2847,7 @@ int Version_Number() {
     file.ReadObject(version);
   }
   port::SafeAppend(
-      VersionText,
+      TheGameState().version_text(),
       std::string_view(version,
                        static_cast<size_t>(std::ranges::find(version, '\0') -
                                            std::begin(version))));

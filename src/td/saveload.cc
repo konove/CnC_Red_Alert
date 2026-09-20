@@ -59,9 +59,9 @@
 #include "td/cell.h"
 #include "td/conquer.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/factory.h"
 #include "td/game_clock.h"
+#include "td/game_state.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -323,25 +323,25 @@ bool Load_Game(int id) {
   **	Set the required CD to be in the drive according to the scenario
   **	loaded.
   */
-  if (RequiredCD != -2) {
+  if (TheGameState().required_cd() != -2) {
     if (scenario >= 20 && scenario < 60 && TheSession().type() == GAME_NORMAL) {
-      RequiredCD = 2;
+      TheGameState().required_cd() = 2;
     } else {
       if (scenario >= 60) {
         /*
         ** This is a gateway bonus scenario
         */
-        RequiredCD = -1;
+        TheGameState().required_cd() = -1;
       } else {
         if (house == HOUSE_GOOD) {
-          RequiredCD = 0;
+          TheGameState().required_cd() = 0;
         } else {
-          RequiredCD = 1;
+          TheGameState().required_cd() = 1;
         }
       }
     }
   }
-  if (!Force_CD_Available(RequiredCD)) {
+  if (!Force_CD_Available(TheGameState().required_cd())) {
     ShutDown();
     exit(EXIT_FAILURE);
   }
@@ -473,7 +473,8 @@ bool Load_Game(int id) {
     default: break;
   }
   Set_Scenario_Name(TheWorld().scenario_name(), TheWorld().scenario(),
-                    TheWorld().scen_player(), TheWorld().scen_dir(), ScenVar);
+                    TheWorld().scen_player(), TheWorld().scen_dir(),
+                    TheWorld().scen_var());
   // Placement type resources need every object heap to be loaded first.
   if (TheMap().PendingObjectPtr) {
     TheMap().PendingObject = &TheMap().PendingObjectPtr->Class_Of();
@@ -514,7 +515,7 @@ static void Serialize_Misc_Values(Archive& ar) {
     }
   }
   SerializeObjectList(ar, TheWorld().current_object());
-  ar(TheWorld().waypoint(), TheWorld().scen_dir(), ScenVar,
+  ar(TheWorld().waypoint(), TheWorld().scen_dir(), TheWorld().scen_var(),
      TheWorld().carry_over_money(), TheWorld().carry_over_percent(),
      TheWorld().build_level(), TheWorld().brief_movie(), TheWorld().views(),
      TheWorld().end_count_down(), TheWorld().briefing_text(),
@@ -530,8 +531,10 @@ static void Serialize_Misc_Values(Archive& ar) {
     base::At(TheWorld().briefing_text(),
              sizeof(TheWorld().briefing_text()) - 1) = '\0';
     if (TheWorld().scen_dir() < SCEN_DIR_EAST ||
-        TheWorld().scen_dir() >= SCEN_DIR_COUNT || ScenVar < SCEN_VAR_A ||
-        (ScenVar >= SCEN_VAR_COUNT && ScenVar != SCEN_VAR_LOSE)) {
+        TheWorld().scen_dir() >= SCEN_DIR_COUNT ||
+        TheWorld().scen_var() < SCEN_VAR_A ||
+        (TheWorld().scen_var() >= SCEN_VAR_COUNT &&
+         TheWorld().scen_var() != SCEN_VAR_LOSE)) {
       ar.Fail("invalid saved scenario direction or variant");
     }
     for (const CELL cell : TheWorld().waypoint()) {

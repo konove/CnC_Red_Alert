@@ -106,8 +106,8 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/display.h"
-#include "td/externs.h"
 #include "td/gadget.h"
+#include "td/game_state.h"
 #include "td/house.h"
 #include "td/infantry.h"
 #include "td/inline.h"
@@ -380,7 +380,7 @@ void RadarClass::Draw_It(bool forced) {
   if (ThePlayer()->ActLike != _house) {
     std::string name;
 
-    if (TheSpecial().IsJurassic && AreThingiesEnabled) {
+    if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
       name = "RADAR.JP";
     } else {
       name = std::filesystem::path("RADAR")

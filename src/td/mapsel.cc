@@ -66,7 +66,7 @@
 #include "td/audio.h"
 #include "td/conquer.h"
 #include "td/defines.h"
-#include "td/externs.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/house.h"
 #include "td/input.h"
@@ -640,7 +640,7 @@ void Map_Selection() {
 
   Stop_Speaking();
 
-  while (CountDownTimer.Time() || Is_Speaking()) {
+  while (TheGameState().speech_timer().Time() || Is_Speaking()) {
     Call_Back();
     //		if (Keyboard::Check()) CountDownTimer.Set(0);
   }
@@ -1096,9 +1096,10 @@ void Map_Selection() {
       }
     }
   }
-  ScenVar = base::At(base::At(base::At(CountryArray, scenario).CountryVariant,
-                              static_cast<int>(TheWorld().scen_dir())),
-                     selection);
+  TheWorld().scen_var() =
+      base::At(base::At(base::At(CountryArray, scenario).CountryVariant,
+                        static_cast<int>(TheWorld().scen_dir())),
+               selection);
   TheWorld().scen_dir() =
       base::At(base::At(base::At(CountryArray, scenario).CountryDir,
                         static_cast<int>(TheWorld().scen_dir())),

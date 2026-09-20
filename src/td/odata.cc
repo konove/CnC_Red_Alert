@@ -65,7 +65,6 @@
 #include "td/const.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
-#include "td/externs.h"
 #include "td/house.h"
 #include "td/jshell.h"
 #include "td/keyframe.h"
@@ -889,7 +888,7 @@ void OverlayTypeClass::Draw_It(int x, int y, int data) const {
  *theater specific sidebar icons if available              *
  *=============================================================================================*/
 void OverlayTypeClass::Init(TheaterType theater) {
-  if (theater != LastTheater) {
+  if (theater != TheWorld().last_theater()) {
     for (OverlayType index = OVERLAY_CONCRETE; index < OVERLAY_COUNT; index++) {
       const OverlayTypeClass& overlay = As_Reference(index);
       std::string fullname;  // Fully constructed iconset name.

@@ -102,10 +102,9 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/event.h"
-#include "td/externs.h"
 #include "td/ftimer.h"
 #include "td/game_clock.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -124,9 +123,11 @@
 #include "td/randomstate.h"
 #include "td/screen.h"
 #include "td/session.h"
+#include "td/stats.h"
 #include "td/text.h"
 #include "td/type.h"
 #include "td/unit.h"
+#include "td/winstub.h"
 #include "td/world.h"
 #include "tech/game_file.h"
 
@@ -430,7 +431,7 @@ static void Queue_AI_Normal() {
   //------------------------------------------------------------------------
   if (!Execute_DoList(1, ThePlayer()->Class->House, nullptr, nullptr, {}, {},
                       {})) {
-    GameActive = false;
+    TheGameState().active() = false;
     return;
   }
   //------------------------------------------------------------------------
@@ -914,7 +915,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     //---------------------------------------------------------------------
     //	Pop up a reconnect dialog if enough time goes by
     //---------------------------------------------------------------------
-    if (!dialog_timer.Time() && SpecialDialog == SDLG_NONE) {
+    if (!dialog_timer.Time() && TheGameState().special_dialog() == SDLG_NONE) {
       if (Process_Reconnect_Dialog(&timeout_timer, their_frame,
                                    net->Num_Connections(), first_time == 0,
                                    reconnect_dlg == 0)) {
@@ -1062,7 +1063,8 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     // anything.
     //---------------------------------------------------------------------
     Call_Back();
-    if (!first_time && SpecialDialog == SDLG_NONE && reconnect_dlg == 0) {
+    if (!first_time && TheGameState().special_dialog() == SDLG_NONE &&
+        reconnect_dlg == 0) {
       TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
       TheMap().Input(input, x, y);
       if (input) {
@@ -2147,7 +2149,7 @@ static int Handle_Timeout(ConnManClass* net, std::span<int> their_frame,
  *=========================================================================*/
 static void Stop_Game() {
   CCDebugString("C&C95 - In Stop_Game.\n");
-  GameActive = false;
+  TheGameState().active() = false;
 
   if (TheSession().type() == GAME_INTERNET) {
     TheNetwork().connection_lost() = true;
@@ -3441,7 +3443,7 @@ static void Queue_Playback() {
     // recording, end it no matter what the user does (any key or mouse).
     //
     if (key == KA_ESC || TheSession().allow_attract()) {
-      GameActive = false;
+      TheGameState().active() = false;
       return;
     }
   }
@@ -3452,7 +3454,7 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   if (TheSession().allow_attract() && CurrentFrame() > 0 &&
       (mx != Get_Mouse_X() || my != Get_Mouse_Y())) {
-    GameActive = false;
+    TheGameState().active() = false;
     return;
   }
   mx = Get_Mouse_X();
@@ -3505,7 +3507,7 @@ static void Queue_Playback() {
   }
 
   if (!ok) {
-    GameActive = false;
+    TheGameState().active() = false;
     return;
   }
 
@@ -3520,7 +3522,7 @@ static void Queue_Playback() {
     base_house = HOUSE_MULTI1;
   }
   if (!Execute_DoList(max_houses, base_house, nullptr, nullptr, {}, {}, {})) {
-    GameActive = false;
+    TheGameState().active() = false;
     return;
   }
 

@@ -109,7 +109,6 @@
 #include "td/dialog.h"
 #include "td/display.h"
 #include "td/display_constants.h"
-#include "td/externs.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
 #include "td/game_clock.h"
@@ -2074,11 +2073,11 @@ bool CellClass::Goodie_Check(FootClass* object) {
       **	Update the crate count and when all the crates have been
       *discovered, flag *	to generate a new one.
       */
-      CrateCount--;
-      if (!CrateMaker && CrateCount <= 0 &&
+      TheWorld().crate_count()--;
+      if (!TheWorld().crate_maker() && TheWorld().crate_count() <= 0 &&
           TheSession().type() != GAME_NORMAL) {
-        CrateMaker = true;
-        CrateTimer = 1;
+        TheWorld().crate_maker() = true;
+        TheWorld().crate_timer() = 1;
       }
 
       /*

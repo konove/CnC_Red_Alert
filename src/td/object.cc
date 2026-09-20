@@ -130,7 +130,7 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/foot.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -1016,7 +1016,7 @@ void ObjectClass::Mark_For_Redraw() {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool ObjectClass::Limbo() {
-  if (GameActive && !IsInLimbo) {
+  if (TheGameState().active() && !IsInLimbo) {
     Unselect();
     Detach_All();
     Mark(MARK_UP);
@@ -1060,7 +1060,7 @@ bool ObjectClass::Limbo() {
  **
  *=============================================================================================*/
 bool ObjectClass::Unlimbo(COORDINATE coord, DirType /*unused*/) {
-  if ((GameActive && IsInLimbo && !IsDown) &&
+  if ((TheGameState().active() && IsInLimbo && !IsDown) &&
       (TheWorld().scenario_init() ||
        Can_Enter_Cell(Coord_Cell(coord), FACING_NONE) == MOVE_OK)) {
     IsInLimbo = false;

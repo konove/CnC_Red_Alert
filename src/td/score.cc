@@ -80,7 +80,7 @@
 #include "td/audio.h"
 #include "td/conquer.h"
 #include "td/defines.h"
-#include "td/externs.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/house.h"
 #include "td/input.h"
@@ -700,7 +700,7 @@ void ScoreClass::Presentation() {
     absl::SNPrintF(inter_pal, sizeof(inter_pal), "SNODPAL1.PAL");
   }
 
-  if (TheSpecial().IsJurassic && AreThingiesEnabled) {
+  if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
     return;
   }
 

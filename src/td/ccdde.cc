@@ -61,6 +61,7 @@
 #include <cstring>
 
 #include "sdllib/timer.h"
+#include "td/winstub.h"
 
 DDEServerClass DDEServer;  // Instance of the DDE Server class
 

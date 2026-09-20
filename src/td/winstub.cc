@@ -45,6 +45,7 @@
 
 #include "base/seek_origin.h"
 #include "td/function.h"
+#include "td/game_state.h"
 #include "td/input.h"
 #include "td/screen.h"
 #include "td/tcpip.h"
@@ -77,7 +78,7 @@ ThemeType OldTheme = THEME_NONE;
  *=============================================================================================*/
 
 void Focus_Loss() {
-  if (SoundOn) {
+  if (TheGameState().sound_on()) {
     if (OldTheme == THEME_NONE) {
       OldTheme = TheTheme().What_Is_Playing();
     }
@@ -118,7 +119,7 @@ void Check_For_Focus_Loss() {
   static BOOL focus_last_time = 1;
   MSG msg;
 
-  if (!GameInFocus) {
+  if (!TheGameState().in_focus()) {
     Focus_Loss();
     while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE | PM_NOYIELD)) {
       if (!GetMessage(&msg, NULL, 0, 0)) {
@@ -129,7 +130,7 @@ void Check_For_Focus_Loss() {
     }
   }
 
-  if (!focus_last_time && GameInFocus) {
+  if (!focus_last_time && TheGameState().in_focus()) {
     VQA_PauseAudio();
     CountDownTimerClass cd;
     cd.Set(60 * 1);
@@ -152,10 +153,9 @@ void Check_For_Focus_Loss() {
     PostMessage(MainWindow, CCFocusMessage, 0, 0);
   }
 
-  focus_last_time = GameInFocus;
+  focus_last_time = TheGameState().in_focus();
 }
 
-extern BOOL InMovie;
 
 long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
                                           LONG lParam) {
@@ -163,7 +163,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
 
   if (message == CCFocusMessage) {
     TheAudio().Resume();
-    if (!InMovie) {
+    if (!TheGameState().in_movie()) {
       TheTheme().Queue_Song(OldTheme);
       OldTheme = THEME_NONE;
     }
@@ -233,11 +233,11 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       return 0;
 
     case WM_ACTIVATEAPP:
-      GameInFocus = static_cast<BOOL>(wParam);
-      if (!GameInFocus) {
+      TheGameState().in_focus() = static_cast<BOOL>(wParam);
+      if (!TheGameState().in_focus()) {
         Focus_Loss();
       }
-      AllSurfaces.Set_Surface_Focus(GameInFocus);
+      AllSurfaces.Set_Surface_Focus(TheGameState().in_focus());
       AllSurfaces.Restore_Surfaces();
       //			if (GameInFocus){
       //				Restore_Cached_Icons();
@@ -335,7 +335,6 @@ void Create_Main_Window(HANDLE instance, int command_show, int width,
   UpdateWindow(hwnd);
   SetFocus(hwnd);
   MainWindow = hwnd;  // Save the handle to our main window
-  hInstance = instance;
 
   CCFocusMessage = RegisterWindowMessage("CC_GOT_FOCUS");
 
@@ -505,7 +504,7 @@ void CCDebugString(const char* string) {
 unsigned char* VQPalette;
 long VQNumBytes;
 unsigned long VQSlowpal;
-bool VQPaletteChange = false;
+static bool VQPaletteChange = false;
 
 extern "C" {
 void __cdecl SetPalette(unsigned char* palette, long numbytes,
@@ -519,6 +518,8 @@ void Flag_To_Set_Palette(unsigned char* palette, long numbytes,
   VQSlowpal = slowpal;
   VQPaletteChange = true;
 }
+
+void Discard_VQ_Palette_Change() { VQPaletteChange = false; }
 
 void Check_VQ_Palette_Set() {
   if (VQPaletteChange) {

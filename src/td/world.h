@@ -11,6 +11,7 @@
 #include "port/platform.h"
 #include "td/base.h"
 #include "td/defines.h"
+#include "td/ftimer.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
 #include "td/score.h"
@@ -112,6 +113,23 @@ class World {
     return scenario_crc_;
   }
 
+  // Which variation of the scenario is being played, and the theater whose
+  // art is loaded, which tells the loaders when it changes.
+  ScenarioVarType& scen_var() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return scen_var_;
+  }
+  TheaterType& last_theater() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return last_theater_;
+  }
+
+  // The crates scattered over the map: how many there are, when the next
+  // one appears, and whether the scenario makes more of them.
+  int& crate_count() ABSL_ATTRIBUTE_LIFETIME_BOUND { return crate_count_; }
+  TCountDownTimerClass& crate_timer() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return crate_timer_;
+  }
+  bool& crate_maker() ABSL_ATTRIBUTE_LIFETIME_BOUND { return crate_maker_; }
+
   // What the scenario's synchronized random generator was started from.
   // Every machine in a multiplayer game seeds from this one value.
   int& seed() ABSL_ATTRIBUTE_LIFETIME_BOUND { return seed_; }
@@ -174,6 +192,13 @@ class World {
   int carry_over_money_ = 0;
   int carry_over_percent_ = 0;
   uint32_t scenario_crc_ = 0;
+  ScenarioVarType scen_var_{};
+  TheaterType last_theater_ = THEATER_NONE;
+
+  int crate_count_ = 0;
+  TCountDownTimerClass crate_timer_;
+  bool crate_maker_ = false;
+
   int seed_ = 0;
   int build_level_ = 3;
   HousesType whom_{};

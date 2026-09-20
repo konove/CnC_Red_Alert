@@ -74,7 +74,7 @@
 #include "td/display_constants.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
-#include "td/globals.h"
+#include "td/game_state.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -164,7 +164,7 @@ void TeamClass::operator delete(void* ptr) {
 }
 
 TeamClass::~TeamClass() {
-  if (GameActive && Class) {
+  if (TheGameState().active() && Class) {
     base::At(Number, TheObjectHeaps().team_type().ID(Class))--;
     while (Member) {
       Remove(Member);

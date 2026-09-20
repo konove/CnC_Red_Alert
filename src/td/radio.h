@@ -44,7 +44,6 @@
 #include <cstdint>
 
 #include "td/defines.h"
-#include "td/globals.h"
 #include "td/mission.h"
 #include "td/object.h"
 

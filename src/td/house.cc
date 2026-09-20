@@ -156,12 +156,12 @@
 #include "td/coord.h"
 #include "td/debug_state.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/facing.h"
 #include "td/factory.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
 #include "td/game_clock.h"
+#include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/infantry.h"
@@ -440,7 +440,8 @@ HouseClass::HouseClass(HousesType house)
   BrightColor = Class->BrightColor;
   // Give the special units their own radar color; otherwise they would be the
   // same color as the player.
-  if (house == HOUSE_JP && TheSpecial().IsJurassic && AreThingiesEnabled) {
+  if (house == HOUSE_JP && TheSpecial().IsJurassic &&
+      TheGameState().thingies_enabled()) {
     const HouseTypeClass& bad = HouseTypeClass::As_Reference(HOUSE_BAD);
     Color = bad.Color;
     BrightColor = bad.BrightColor;
@@ -561,7 +562,7 @@ bool HouseClass::Can_Build(const TechnoTypeClass* type,
   **	Multiplayer game uses a different legality check for building.
   */
   if (TheSession().type() != GAME_NORMAL ||
-      (TheSpecial().IsJurassic && AreThingiesEnabled)) {
+      (TheSpecial().IsJurassic && TheGameState().thingies_enabled())) {
     return (pre & flags) == pre &&
            std::cmp_less_equal(type->Level, TheWorld().build_level());
   }
@@ -867,9 +868,9 @@ void HouseClass::AI() {
       Blockage <= 0) {
     IsToWin = false;
     if (this == ThePlayer()) {
-      PlayerWins = true;
+      TheGameState().player_wins() = true;
     } else {
-      PlayerLoses = true;
+      TheGameState().player_loses() = true;
     }
   }
 
@@ -880,9 +881,9 @@ void HouseClass::AI() {
       BorrowedTime.Expired()) {
     IsToLose = false;
     if (this == ThePlayer()) {
-      PlayerLoses = true;
+      TheGameState().player_loses() = true;
     } else {
-      PlayerWins = true;
+      TheGameState().player_wins() = true;
     }
   }
 
@@ -992,7 +993,7 @@ void HouseClass::AI() {
     if (TheSession().type() != GAME_NORMAL && Class->House == HOUSE_JP) {
       int rlimit = 0;
 
-      if (TheSpecial().IsJurassic && AreThingiesEnabled) {
+      if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
         rlimit = 450;
       } else {
         rlimit = 1000;
@@ -1001,7 +1002,7 @@ void HouseClass::AI() {
       if (GameRandomRange(0, rlimit) == 0) {
         UnitClass* obj = nullptr;
 
-        if (TheSpecial().IsJurassic && AreThingiesEnabled) {
+        if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
           obj = new UnitClass(Random_Pick(UNIT_TRIC, UNIT_STEG), HOUSE_JP);
         } else {
           if ((TheWorld().build_level() >= 7) && (!(UScan & kUnitFlagVice))) {
@@ -3930,9 +3931,9 @@ void HouseClass::MPlayer_Defeated() {
   ------------------------------------------------------------------------*/
   if (num_alive == 1 || num_humans == 0) {
     if (ThePlayer()->IsDefeated) {
-      PlayerLoses = true;
+      TheGameState().player_loses() = true;
     } else {
-      PlayerWins = true;
+      TheGameState().player_wins() = true;
     }
 
     /*---------------------------------------------------------------------
@@ -4224,7 +4225,7 @@ bool HouseClass::Flag_To_Die() {
   Validate();
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToDie = true;
-    if (IsV107) {
+    if (TheGameState().compatibility_v107()) {
       BorrowedTime = int64_t{kTicksPerSecond} * 3;
     } else {
       BorrowedTime = int64_t{kTicksPerSecond} * 1;
@@ -4251,7 +4252,7 @@ bool HouseClass::Flag_To_Win() {
   Validate();
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToWin = true;
-    if (IsV107) {
+    if (TheGameState().compatibility_v107()) {
       BorrowedTime = int64_t{kTicksPerSecond} * 3;
     } else {
       BorrowedTime = int64_t{kTicksPerSecond} * 1;
@@ -4281,7 +4282,7 @@ bool HouseClass::Flag_To_Lose() {
   IsToWin = false;
   if (!IsToDie && !IsToLose) {
     IsToLose = true;
-    if (IsV107) {
+    if (TheGameState().compatibility_v107()) {
       BorrowedTime = int64_t{kTicksPerSecond} * 3;
     } else {
       BorrowedTime = int64_t{kTicksPerSecond} * 1;
