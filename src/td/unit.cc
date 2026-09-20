@@ -164,6 +164,7 @@
 #include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/profile.h"
 #include "td/radio.h"
 #include "td/rand.h"
@@ -201,7 +202,7 @@
  *=============================================================================================*/
 int UnitClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = Units.ID(this);
+    const int num = TheObjectHeaps().unit().ID(this);
     if (num < 0 || num >= kUnitMax) {
       Validate_Error("UNIT");
     }
@@ -300,7 +301,7 @@ static void Turret_Adjust(DirType dir, int& x, int& y) {
  *=============================================================================================*/
 TARGET UnitClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_UNIT, Units.ID(this));
+  return Build_Target(KIND_UNIT, TheObjectHeaps().unit().ID(this));
 }
 
 /***********************************************************************************************
@@ -1035,7 +1036,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
  *new.                                               *
  *=============================================================================================*/
 void* UnitClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = static_cast<UnitClass*>(Units.Allocate());
+  void* ptr = static_cast<UnitClass*>(TheObjectHeaps().unit().Allocate());
   if (ptr) {
     static_cast<UnitClass*>(ptr)->IsActive = true;
   }
@@ -1061,7 +1062,7 @@ void UnitClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<UnitClass*>(ptr)->IsActive = false;
   }
-  Units.Free(static_cast<UnitClass*>(ptr));
+  TheObjectHeaps().unit().Free(static_cast<UnitClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -3085,7 +3086,7 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void UnitClass::Init() { Units.Free_All(); }
+void UnitClass::Init() { TheObjectHeaps().unit().Free_All(); }
 
 /***********************************************************************************************
  * UnitClass::Target_Coord -- The coordinate to use when targeting this unit. *
@@ -3283,7 +3284,7 @@ void UnitClass::Response_Select() {
   }
 
   if (AllowVoice) {
-    Sound_Effect(response, 0, -(Units.ID(this) + 1));
+    Sound_Effect(response, 0, -(TheObjectHeaps().unit().ID(this) + 1));
   }
 }
 
@@ -3317,7 +3318,7 @@ void UnitClass::Response_Move() {
   }
 
   if (AllowVoice) {
-    Sound_Effect(response, 0, -(Units.ID(this) + 1));
+    Sound_Effect(response, 0, -(TheObjectHeaps().unit().ID(this) + 1));
   }
 }
 
@@ -3351,7 +3352,7 @@ void UnitClass::Response_Attack() {
   }
 
   if (AllowVoice) {
-    Sound_Effect(response, 0, -(Units.ID(this) + 1));
+    Sound_Effect(response, 0, -(TheObjectHeaps().unit().ID(this) + 1));
   }
 }
 
@@ -3599,8 +3600,8 @@ void UnitClass::Write_INI(std::span<char> buffer) {
   /*
   **	Write the unit data out.
   */
-  for (int index = 0; index < Units.Count(); index++) {
-    UnitClass* unit = Units.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+    UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
     if (!unit->IsInLimbo && unit->IsActive) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);
       absl::SNPrintF(buf, sizeof(buf), "%s,%s,%d,%u,%d,%s,%s",

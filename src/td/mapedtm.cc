@@ -79,6 +79,7 @@
 #include "td/list.h"
 #include "td/mapedit.h"
 #include "td/msgbox.h"
+#include "td/object_heaps.h"
 #include "td/screen.h"
 #include "td/teamtype.h"
 #include "td/textbtn.h"
@@ -314,7 +315,7 @@ int MapEditClass::Select_Team(const char* caption) {
   ........................... Fill in team names ...........................
   */
   int def_idx = 0;  // default list index
-  for (int i = 0; i < TeamTypes.Count(); i++) {
+  for (int i = 0; i < TheObjectHeaps().team_type().Count(); i++) {
     /*
     ................... Generate string for this team .....................
     */
@@ -330,20 +331,23 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     ........................ Fill in name & house .........................
     */
-    port::SafeCopy(team_name, TeamTypes.Ptr(i)->IniName);
+    port::SafeCopy(team_name, TheObjectHeaps().team_type().Ptr(i)->IniName);
     port::SafeAppend(team_name, "\t");
-    port::SafeAppend(
-        team_name,
-        HouseTypeClass::As_Reference(TeamTypes.Ptr(i)->House).Suffix);
+    port::SafeAppend(team_name, HouseTypeClass::As_Reference(
+                                    TheObjectHeaps().team_type().Ptr(i)->House)
+                                    .Suffix);
     port::SafeAppend(team_name, "\t");
 
     /*
     ................ Fill in class & count for all classes ................
     */
-    for (int j = 0; std::cmp_less(j, TeamTypes.Ptr(i)->ClassCount); j++) {
-      absl::SNPrintF(txt, sizeof(txt), "%s:%d",
-                     base::At(TeamTypes.Ptr(i)->Class, j)->IniName,
-                     base::At(TeamTypes.Ptr(i)->DesiredNum, j));
+    for (int j = 0;
+         std::cmp_less(j, TheObjectHeaps().team_type().Ptr(i)->ClassCount);
+         j++) {
+      absl::SNPrintF(
+          txt, sizeof(txt), "%s:%d",
+          base::At(TheObjectHeaps().team_type().Ptr(i)->Class, j)->IniName,
+          base::At(TheObjectHeaps().team_type().Ptr(i)->DesiredNum, j));
 
       /*..................................................................
       Add entry if there's room; break otherwise
@@ -366,7 +370,7 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     .................. Set def_idx if this is CurTeam .....................
     */
-    if (TeamTypes.Ptr(i) == CurTeam) {
+    if (TheObjectHeaps().team_type().Ptr(i) == CurTeam) {
       def_idx = i;
     }
 
@@ -379,11 +383,11 @@ int MapEditClass::Select_Team(const char* caption) {
   /*
   ....................... Set CurTeam if it isn't ..........................
   */
-  if (TeamTypes.Count() == 0) {
+  if (TheObjectHeaps().team_type().Count() == 0) {
     CurTeam = nullptr;
   } else {
     if (!CurTeam) {
-      CurTeam = TeamTypes.Ptr(def_idx);
+      CurTeam = TheObjectHeaps().team_type().Ptr(def_idx);
     }
   }
 
@@ -462,8 +466,8 @@ int MapEditClass::Select_Team(const char* caption) {
     switch (static_cast<int>(input)) {
       case ButtonKey(kTeamList):
         def_idx = teamlist.Current_Index();
-        if (def_idx < TeamTypes.Count()) {
-          CurTeam = TeamTypes.Ptr(def_idx);
+        if (def_idx < TheObjectHeaps().team_type().Count()) {
+          CurTeam = TheObjectHeaps().team_type().Ptr(def_idx);
         }
         break;
 
@@ -500,7 +504,7 @@ int MapEditClass::Select_Team(const char* caption) {
   Flag_To_Redraw(true);
   Render();
 
-  for (int i = 0; i < TeamTypes.Count(); i++) {
+  for (int i = 0; i < TheObjectHeaps().team_type().Count(); i++) {
     delete[] base::At(teamtext, i);
   }
   if (edit_team) {

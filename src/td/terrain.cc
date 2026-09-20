@@ -102,6 +102,7 @@
 #include "td/keyframe.h"
 #include "td/mapedit.h"
 #include "td/mouse.h"
+#include "td/object_heaps.h"
 #include "td/profile.h"
 #include "td/target.h"
 #include "td/techno.h"
@@ -130,7 +131,7 @@
  *=============================================================================================*/
 int TerrainClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = Terrains.ID(this);
+    const int num = TheObjectHeaps().terrain().ID(this);
     if (num < 0 || num >= kTerrainMax) {
       Validate_Error("TERRAIN");
     }
@@ -242,7 +243,7 @@ ResultType TerrainClass::Take_Damage(int& damage, int distance,
  *=============================================================================================*/
 TARGET TerrainClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_TERRAIN, Terrains.ID(this));
+  return Build_Target(KIND_TERRAIN, TheObjectHeaps().terrain().ID(this));
 }
 
 /***********************************************************************************************
@@ -260,7 +261,7 @@ TARGET TerrainClass::As_Target() const {
  * HISTORY: * 05/14/1994 JLB : Created. *
  *=============================================================================================*/
 void* TerrainClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Terrains.Allocate();
+  void* ptr = TheObjectHeaps().terrain().Allocate();
   if (ptr) {
     static_cast<TerrainClass*>(ptr)->IsActive = true;
   }
@@ -285,7 +286,7 @@ void TerrainClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<TerrainClass*>(ptr)->IsActive = false;
   }
-  Terrains.Free(static_cast<TerrainClass*>(ptr));
+  TheObjectHeaps().terrain().Free(static_cast<TerrainClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -427,7 +428,7 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Init() { Terrains.Free_All(); }
+void TerrainClass::Init() { TheObjectHeaps().terrain().Free_All(); }
 
 /***********************************************************************************************
  * TerrainClass::Can_Enter_Cell -- Determines if the terrain object can exist in
@@ -832,8 +833,8 @@ void TerrainClass::Write_INI(std::span<char> buffer) {
   /*
   **	Write the terrain data out.
   */
-  for (int index = 0; index < Terrains.Count(); index++) {
-    TerrainClass* terrain = Terrains.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().terrain().Count(); index++) {
+    TerrainClass* terrain = TheObjectHeaps().terrain().Ptr(index);
     if (!terrain->IsInLimbo && terrain->IsActive) {
       absl::SNPrintF(uname, sizeof(uname), "%d", Coord_Cell(terrain->Coord));
       absl::SNPrintF(buf, sizeof(buf), "%s,%s", terrain->Class->IniName,

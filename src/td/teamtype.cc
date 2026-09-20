@@ -75,6 +75,7 @@
 #include "td/externs.h"
 #include "td/heap.h"
 #include "td/house.h"
+#include "td/object_heaps.h"
 #include "td/profile.h"
 #include "td/target.h"
 #include "td/team.h"
@@ -119,7 +120,7 @@ base::EnumArray<TeamMissionType, const char*, static_cast<int>(TMISSION_COUNT)>
  *=============================================================================================*/
 int TeamTypeClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = TeamTypes.ID(this);
+    const int num = TheObjectHeaps().team_type().ID(this);
     if (num < 0 || num >= kTeamTypeMax) {
       Validate_Error("TEAMTYPE");
     }
@@ -141,7 +142,7 @@ int TeamTypeClass::Validate() const {
  * HISTORY:                                                                *
  *   12/07/1994 BR : Created.                                              *
  *=========================================================================*/
-void TeamTypeClass::Init() { TeamTypes.Free_All(); }
+void TeamTypeClass::Init() { TheObjectHeaps().team_type().Free_All(); }
 
 /***************************************************************************
  * TeamTypeClass::Read_INI -- reads INI data                               *
@@ -212,7 +213,7 @@ void TeamTypeClass::Read_INI(char* buffer) {
   /*
   ** If no teams were read in, try reading the old INI format.
   */
-  if (TeamTypes.Count() == 0) {
+  if (TheObjectHeaps().team_type().Count() == 0) {
     Read_Old_INI(buffer);
   }
 }
@@ -440,11 +441,11 @@ void TeamTypeClass::Write_INI(std::span<char> buffer, bool refresh) {
   Now write all the team data out
   ------------------------------------------------------------------------*/
   base::At(buf, 0) = 0;
-  for (int index = 0; index < TeamTypes.Count(); index++) {
+  for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
     /*
     .................. Get ptr to next active teamtype ....................
     */
-    TeamTypeClass* team = TeamTypes.Ptr(index);
+    TeamTypeClass* team = TheObjectHeaps().team_type().Ptr(index);
 
     /*
     .......................... Find house's name ..........................
@@ -695,9 +696,10 @@ TeamTypeClass* TeamTypeClass::As_Pointer(const char* name) {
     return nullptr;
   }
 
-  for (int i = 0; i < TeamTypes.Count(); i++) {
-    if (absl::EqualsIgnoreCase(name, TeamTypes.Ptr(i)->IniName)) {
-      return TeamTypes.Ptr(i);
+  for (int i = 0; i < TheObjectHeaps().team_type().Count(); i++) {
+    if (absl::EqualsIgnoreCase(name,
+                               TheObjectHeaps().team_type().Ptr(i)->IniName)) {
+      return TheObjectHeaps().team_type().Ptr(i);
     }
   }
 
@@ -725,8 +727,8 @@ void TeamTypeClass::Remove() {
   /*
   **	Remove all trigger references to this team.
   */
-  for (int i = 0; i < Triggers.Count(); i++) {
-    TriggerClass* trigger = Triggers.Ptr(i);
+  for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
+    TriggerClass* trigger = TheObjectHeaps().trigger().Ptr(i);
     if (trigger->Team == this) {
       trigger->Team = nullptr;
     }
@@ -805,7 +807,7 @@ const char* TeamTypeClass::Name_From_Mission(TeamMissionType order) {
  *   11/28/1994 BR : Created.                                              *
  *=========================================================================*/
 void* TeamTypeClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = TeamTypes.Allocate();
+  void* ptr = TheObjectHeaps().team_type().Allocate();
   if (ptr) {
     static_cast<TeamTypeClass*>(ptr)->IsActive = true;
   }
@@ -831,12 +833,13 @@ void TeamTypeClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<TeamTypeClass*>(ptr)->IsActive = false;
   }
-  TeamTypes.Free(static_cast<TeamTypeClass*>(ptr));
+  TheObjectHeaps().team_type().Free(static_cast<TeamTypeClass*>(ptr));
 }
 
 TeamClass* TeamTypeClass::Create_One_Of() const {
   if (ScenarioInit ||
-      base::At(TeamClass::Number, TeamTypes.ID(this)) < MaxAllowed) {
+      base::At(TeamClass::Number, TheObjectHeaps().team_type().ID(this)) <
+          MaxAllowed) {
     return new TeamClass(this, HouseClass::As_Pointer(House));
   }
   return nullptr;
@@ -844,12 +847,12 @@ TeamClass* TeamTypeClass::Create_One_Of() const {
 
 TARGET TeamTypeClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_TEAMTYPE, TeamTypes.ID(this));
+  return Build_Target(KIND_TEAMTYPE, TheObjectHeaps().team_type().ID(this));
 }
 
 void TeamTypeClass::Destroy_All_Of() const {
-  for (int index = 0; index < Teams.Count(); index++) {
-    const TeamClass* team = Teams.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
+    const TeamClass* team = TheObjectHeaps().team().Ptr(index);
 
     if (team->Class == this) {
       delete team;
@@ -890,8 +893,8 @@ const TeamTypeClass* TeamTypeClass::Suggested_New_Team(HouseClass* house,
   const TeamTypeClass* best = nullptr;
   int bestvalue = 0;
 
-  for (int index = 0; index < TeamTypes.Count(); index++) {
-    const TeamTypeClass* ttype = TeamTypes.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
+    const TeamTypeClass* ttype = TheObjectHeaps().team_type().Ptr(index);
 
     if (ttype && ttype->House == house->Class->House &&
         base::At(TeamClass::Number, index) <

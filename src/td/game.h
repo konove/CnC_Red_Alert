@@ -9,6 +9,7 @@
 #include "td/assets.h"
 #include "td/debug_state.h"
 #include "td/game_clock.h"
+#include "td/object_heaps.h"
 #include "td/palettes.h"
 #include "td/screen.h"
 #include "td/startup_options.h"
@@ -56,6 +57,8 @@ class Game {
   base::Installed<Palettes>::Scope palettes_scope_{palettes_};
   Assets assets_;
   base::Installed<Assets>::Scope assets_scope_{assets_};
+  ObjectHeaps object_heaps_;
+  base::Installed<ObjectHeaps>::Scope object_heaps_scope_{object_heaps_};
   DebugState debug_state_;
   base::Installed<DebugState>::Scope debug_state_scope_{debug_state_};
 };

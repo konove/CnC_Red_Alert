@@ -91,6 +91,7 @@
 #include "td/mplayer.h"
 #include "td/msgbox.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/palette.h"
 #include "td/palettes.h"
 #include "td/profile.h"
@@ -2332,7 +2333,7 @@ int MapEditClass::Select_Trigger() {
   ......................... Fill in trigger names ..........................
   */
   int def_idx = 0;  // default list index
-  for (int i = 0; i < Triggers.Count(); i++) {
+  for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
     /*.....................................................................
     Generate string for this trigger
     - Name can be up to 4 characters
@@ -2348,19 +2349,23 @@ int MapEditClass::Select_Trigger() {
     // The allocation immediately above has exactly kTrigTextSize bytes.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
     const std::span<char> trigger_text(base::At(trigtext, i), kTrigTextSize);
-    absl::SNPrintF(base::At(trigtext, i), kTrigTextSize, "%s\t%s\t%s\t",
-                   Triggers.Ptr(i)->Get_Name(),
-                   TriggerClass::Name_From_Event(Triggers.Ptr(i)->Event),
-                   TriggerClass::Name_From_Action(Triggers.Ptr(i)->Action));
+    absl::SNPrintF(
+        base::At(trigtext, i), kTrigTextSize, "%s\t%s\t%s\t",
+        TheObjectHeaps().trigger().Ptr(i)->Get_Name(),
+        TriggerClass::Name_From_Event(TheObjectHeaps().trigger().Ptr(i)->Event),
+        TriggerClass::Name_From_Action(
+            TheObjectHeaps().trigger().Ptr(i)->Action));
 
     /*
     ......................... Add on the house ID .........................
     */
-    if (TriggerClass::Event_Need_House(Triggers.Ptr(i)->Event)) {
-      if (Triggers.Ptr(i)->House != HOUSE_NONE) {
-        port::SafeAppend(
-            trigger_text,
-            HouseTypeClass::As_Reference(Triggers.Ptr(i)->House).Suffix);
+    if (TriggerClass::Event_Need_House(
+            TheObjectHeaps().trigger().Ptr(i)->Event)) {
+      if (TheObjectHeaps().trigger().Ptr(i)->House != HOUSE_NONE) {
+        port::SafeAppend(trigger_text,
+                         HouseTypeClass::As_Reference(
+                             TheObjectHeaps().trigger().Ptr(i)->House)
+                             .Suffix);
       } else {
         port::SafeAppend(trigger_text, "!!!");
       }
@@ -2372,9 +2377,11 @@ int MapEditClass::Select_Trigger() {
     .......................... Add the team name ..........................
     */
     port::SafeAppend(trigger_text, "\t");
-    if (TriggerClass::Action_Need_Team(Triggers.Ptr(i)->Action)) {
-      if (Triggers.Ptr(i)->Team) {
-        port::SafeAppend(trigger_text, Triggers.Ptr(i)->Team->IniName);
+    if (TriggerClass::Action_Need_Team(
+            TheObjectHeaps().trigger().Ptr(i)->Action)) {
+      if (TheObjectHeaps().trigger().Ptr(i)->Team) {
+        port::SafeAppend(trigger_text,
+                         TheObjectHeaps().trigger().Ptr(i)->Team->IniName);
       } else {
         port::SafeAppend(trigger_text, "!!!");
       }
@@ -2383,7 +2390,7 @@ int MapEditClass::Select_Trigger() {
     /*
     ................. Set def_idx if this is CurTrigger ...................
     */
-    if (Triggers.Ptr(i) == CurTrigger) {
+    if (TheObjectHeaps().trigger().Ptr(i) == CurTrigger) {
       def_idx = i;
     }
   }
@@ -2391,7 +2398,7 @@ int MapEditClass::Select_Trigger() {
   /*
   .......................... Fill in the list box ..........................
   */
-  for (int i = 0; i < Triggers.Count(); i++) {
+  for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
     triggerlist.Add_Item(base::At(trigtext, i));
   }
   triggerlist.Set_Selected_Index(def_idx);
@@ -2399,11 +2406,11 @@ int MapEditClass::Select_Trigger() {
   /*
   ....................... Set CurTrigger if it isn't .......................
   */
-  if (Triggers.Count() == 0) {
+  if (TheObjectHeaps().trigger().Count() == 0) {
     CurTrigger = nullptr;
   } else {
     if (!CurTrigger) {
-      CurTrigger = Triggers.Ptr(def_idx);
+      CurTrigger = TheObjectHeaps().trigger().Ptr(def_idx);
     }
   }
 
@@ -2483,8 +2490,8 @@ int MapEditClass::Select_Trigger() {
     switch (static_cast<int>(input)) {
       case ButtonKey(kTriggerList):
         def_idx = triggerlist.Current_Index();
-        if (def_idx < Triggers.Count()) {
-          CurTrigger = Triggers.Ptr(def_idx);
+        if (def_idx < TheObjectHeaps().trigger().Count()) {
+          CurTrigger = TheObjectHeaps().trigger().Ptr(def_idx);
         }
         break;
 
@@ -2521,7 +2528,7 @@ int MapEditClass::Select_Trigger() {
   Flag_To_Redraw(true);
   Render();
 
-  for (int i = 0; i < Triggers.Count(); i++) {
+  for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
     delete[] base::At(trigtext, i);
   }
 

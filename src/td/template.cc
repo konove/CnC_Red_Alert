@@ -76,6 +76,7 @@
 #include "td/heap.h"
 #include "td/inline.h"
 #include "td/mapedit.h"
+#include "td/object_heaps.h"
 #include "td/profile.h"
 #include "td/target.h"
 #include "td/type.h"
@@ -99,7 +100,7 @@
  *=============================================================================================*/
 int TemplateClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = Templates.ID(this);
+    const int num = TheObjectHeaps().tmplate().ID(this);
     if (num < 0 || num >= kTemplateMax) {
       Validate_Error("TEMPLATE");
     }
@@ -231,7 +232,7 @@ void TemplateClass::Write_INI(std::span<char> buffer) {
  *=============================================================================================*/
 TARGET TemplateClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_TEMPLATE, Templates.ID(this));
+  return Build_Target(KIND_TEMPLATE, TheObjectHeaps().tmplate().ID(this));
 }
 
 /***********************************************************************************************
@@ -248,7 +249,7 @@ TARGET TemplateClass::As_Target() const {
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TemplateClass::Init() { Templates.Free_All(); }
+void TemplateClass::Init() { TheObjectHeaps().tmplate().Free_All(); }
 
 /***********************************************************************************************
  * TemplateClass::Mark -- Lifts or drops a template object. *
@@ -352,7 +353,7 @@ bool TemplateClass::Mark(MarkType mark) {
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
 void* TemplateClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Templates.Allocate();
+  void* ptr = TheObjectHeaps().tmplate().Allocate();
   if (ptr) {
     static_cast<TemplateClass*>(ptr)->IsActive = true;
   }
@@ -377,7 +378,7 @@ void TemplateClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<TemplateClass*>(ptr)->IsActive = false;
   }
-  Templates.Free(static_cast<TemplateClass*>(ptr));
+  TheObjectHeaps().tmplate().Free(static_cast<TemplateClass*>(ptr));
 }
 
 /***********************************************************************************************

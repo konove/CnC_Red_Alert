@@ -23,6 +23,7 @@
 #include "td/inline.h"
 #include "td/map.h"
 #include "td/mapedit.h"
+#include "td/object_heaps.h"
 #include "td/special.h"
 #include "td/target.h"
 #include "td/team.h"
@@ -31,6 +32,15 @@
 #include "tech/archive.h"
 #include "tech/span_sink.h"
 #include "tech/span_source.h"
+
+// The frame counter and the object heaps every suite in this binary needs;
+// Game owns them in the real game.
+namespace {
+GameClock game_clock;
+const base::Installed<GameClock>::Scope game_clock_scope(game_clock);
+ObjectHeaps object_heaps;
+const base::Installed<ObjectHeaps>::Scope object_heaps_scope(object_heaps);
+}  // namespace
 
 namespace {
 template <class T>
@@ -61,14 +71,13 @@ class TdArchiveRoundTripTest : public testing::Test {
     // Selecting and drawing an object reads the debug switches, which Game
     // installs in the real game.
     debug_state_scope_ = new base::Installed<DebugState>::Scope(debug_state_);
-    game_clock_scope_ = new base::Installed<GameClock>::Scope(game_clock_);
     GameActive = false;
     TheGameClock().set_frame(100);
-    Houses.Set_Heap(8);
-    Units.Set_Heap(8);
-    Triggers.Set_Heap(8);
-    Factories.Set_Heap(8);
-    Teams.Set_Heap(8);
+    TheObjectHeaps().house().Set_Heap(8);
+    TheObjectHeaps().unit().Set_Heap(8);
+    TheObjectHeaps().trigger().Set_Heap(8);
+    TheObjectHeaps().factory().Set_Heap(8);
+    TheObjectHeaps().team().Set_Heap(8);
     Map.Resize(MAP_CELL_TOTAL);
     CellTriggers.Resize(MAP_CELL_TOTAL);
     Map.Init_Cells();
@@ -77,24 +86,20 @@ class TdArchiveRoundTripTest : public testing::Test {
   static void TearDownTestSuite() {
     Map.Init_Cells();
     CellTriggers.Clear();
-    while (Units.Count() != 0) {
-      delete Units.Ptr(0);
+    while (TheObjectHeaps().unit().Count() != 0) {
+      delete TheObjectHeaps().unit().Ptr(0);
     }
-    while (Triggers.Count() != 0) {
-      delete Triggers.Ptr(0);
+    while (TheObjectHeaps().trigger().Count() != 0) {
+      delete TheObjectHeaps().trigger().Ptr(0);
     }
     delete PlayerPtr;
     PlayerPtr = nullptr;
     Map.Clear();
-    delete game_clock_scope_;
-    game_clock_scope_ = nullptr;
     delete debug_state_scope_;
     debug_state_scope_ = nullptr;
   }
 
  private:
-  static inline GameClock game_clock_;
-  static inline base::Installed<GameClock>::Scope* game_clock_scope_ = nullptr;
   static inline DebugState debug_state_;
   static inline base::Installed<DebugState>::Scope* debug_state_scope_ =
       nullptr;
@@ -118,7 +123,7 @@ TEST_F(TdArchiveRoundTripTest, TriggerIniPreserves64BitDataAndRejectsOverflow) {
 TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireBytes) {
   const auto check = [](auto configure, auto... args) {
     EventClass expected;
-    expected.ID = static_cast<unsigned>(Houses.ID(PlayerPtr));
+    expected.ID = static_cast<unsigned>(TheObjectHeaps().house().ID(PlayerPtr));
     expected.Frame = static_cast<unsigned>(CurrentFrame());
     configure(expected);
     alignas(EventClass) std::array<unsigned char, sizeof(EventClass)> storage{};

@@ -60,11 +60,11 @@
 #include "td/building.h"
 #include "td/bullet.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/heap.h"
 #include "td/infantry.h"
 #include "td/inline.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/team.h"
 #include "td/teamtype.h"
 #include "td/techno.h"
@@ -88,8 +88,9 @@
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 TriggerClass* As_Trigger(TARGET target) {
-  return Is_Target_Trigger(target) ? Triggers.Raw_Ptr(Target_Value(target))
-                                   : nullptr;
+  return Is_Target_Trigger(target)
+             ? TheObjectHeaps().trigger().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -108,7 +109,9 @@ TriggerClass* As_Trigger(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 TeamClass* As_Team(TARGET target) {
-  return Is_Target_Team(target) ? Teams.Raw_Ptr(Target_Value(target)) : nullptr;
+  return Is_Target_Team(target)
+             ? TheObjectHeaps().team().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -128,8 +131,9 @@ TeamClass* As_Team(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 TeamTypeClass* As_TeamType(TARGET target) {
-  return Is_Target_TeamType(target) ? TeamTypes.Raw_Ptr(Target_Value(target))
-                                    : nullptr;
+  return Is_Target_TeamType(target)
+             ? TheObjectHeaps().team_type().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -150,8 +154,9 @@ TeamTypeClass* As_TeamType(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 AnimClass* As_Animation(TARGET target) {
-  return Is_Target_Animation(target) ? Anims.Raw_Ptr(Target_Value(target))
-                                     : nullptr;
+  return Is_Target_Animation(target)
+             ? TheObjectHeaps().anim().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -170,8 +175,9 @@ AnimClass* As_Animation(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 BulletClass* As_Bullet(TARGET target) {
-  return Is_Target_Bullet(target) ? Bullets.Raw_Ptr(Target_Value(target))
-                                  : nullptr;
+  return Is_Target_Bullet(target)
+             ? TheObjectHeaps().bullet().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -191,8 +197,9 @@ BulletClass* As_Bullet(TARGET target) {
  * HISTORY: * 08/27/1995 JLB : Created. *
  *=============================================================================================*/
 AircraftClass* As_Aircraft(TARGET target) {
-  return Is_Target_Aircraft(target) ? Aircraft.Raw_Ptr(Target_Value(target))
-                                    : nullptr;
+  return Is_Target_Aircraft(target)
+             ? TheObjectHeaps().aircraft().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -244,31 +251,31 @@ ObjectClass* As_Object(TARGET target) {
 
   switch (Target_Kind(target)) {
     case KIND_INFANTRY:
-      object = Infantry.Raw_Ptr(val);
+      object = TheObjectHeaps().infantry().Raw_Ptr(val);
       break;
 
     case KIND_UNIT:
-      object = Units.Raw_Ptr(val);
+      object = TheObjectHeaps().unit().Raw_Ptr(val);
       break;
 
     case KIND_BUILDING:
-      object = Buildings.Raw_Ptr(val);
+      object = TheObjectHeaps().building().Raw_Ptr(val);
       break;
 
     case KIND_AIRCRAFT:
-      object = Aircraft.Raw_Ptr(val);
+      object = TheObjectHeaps().aircraft().Raw_Ptr(val);
       break;
 
     case KIND_TERRAIN:
-      object = Terrains.Raw_Ptr(val);
+      object = TheObjectHeaps().terrain().Raw_Ptr(val);
       break;
 
     case KIND_BULLET:
-      object = Bullets.Raw_Ptr(val);
+      object = TheObjectHeaps().bullet().Raw_Ptr(val);
       break;
 
     case KIND_ANIMATION:
-      object = Anims.Raw_Ptr(val);
+      object = TheObjectHeaps().anim().Raw_Ptr(val);
       break;
 
     case KindType::KIND_NONE:
@@ -311,7 +318,9 @@ ObjectClass* As_Object(TARGET target) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 UnitClass* As_Unit(TARGET target) {
-  return Is_Target_Unit(target) ? Units.Raw_Ptr(Target_Value(target)) : nullptr;
+  return Is_Target_Unit(target)
+             ? TheObjectHeaps().unit().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -331,13 +340,16 @@ UnitClass* As_Unit(TARGET target) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 InfantryClass* As_Infantry(TARGET target) {
-  return Is_Target_Infantry(target) ? Infantry.Raw_Ptr(Target_Value(target))
-                                    : nullptr;
+  return Is_Target_Infantry(target)
+             ? TheObjectHeaps().infantry().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 #ifdef NEVER
 TerrainClass* As_Terrain(TARGET target) {
-  return (Is_Target_Terrain(target) ? &Terrains[Target_Value(target)] : NULL);
+  return (Is_Target_Terrain(target)
+              ? &TheObjectHeaps().terrain()[Target_Value(target)]
+              : NULL);
 }
 #endif
 
@@ -357,8 +369,9 @@ TerrainClass* As_Terrain(TARGET target) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 BuildingClass* As_Building(TARGET target) {
-  return Is_Target_Building(target) ? Buildings.Raw_Ptr(Target_Value(target))
-                                    : nullptr;
+  return Is_Target_Building(target)
+             ? TheObjectHeaps().building().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 #ifdef NEVER

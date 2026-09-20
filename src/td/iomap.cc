@@ -33,6 +33,7 @@
 #include "td/help.h"
 #include "td/map.h"
 #include "td/mouse.h"
+#include "td/object_heaps.h"
 #include "td/power.h"
 #include "td/radar.h"
 #include "td/scroll.h"
@@ -190,7 +191,8 @@ void SidebarClass::StripClass::Serialize(Archive& ar) {
     auto& item = base::At(Buildables, i);
     ar(item.BuildableID, item.BuildableType, item.Factory);
     if constexpr (Archive::kIsReading) {
-      if (item.Factory < -1 || item.Factory >= Factories.Length() ||
+      if (item.Factory < -1 ||
+          item.Factory >= TheObjectHeaps().factory().Length() ||
           item.BuildableID < 0 || item.BuildableType <= RTTI_NONE ||
           item.BuildableType > RTTI_SPECIAL) {
         ar.Fail("invalid sidebar buildable");

@@ -94,6 +94,7 @@
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/profile.h"
 #include "td/super.h"
 #include "td/target.h"
@@ -157,7 +158,7 @@ static const char* ActionText[static_cast<int>(TriggerClass::ACTION_COUNT) +
  *=============================================================================================*/
 int TriggerClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = Triggers.ID(this);
+    const int num = TheObjectHeaps().trigger().ID(this);
     if (num < 0 || num >= kTriggerMax) {
       Validate_Error("TRIGGER");
     }
@@ -385,7 +386,7 @@ TriggerClass::~TriggerClass() {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Init() { Triggers.Free_All(); }
+void TriggerClass::Init() { TheObjectHeaps().trigger().Free_All(); }
 
 /***********************************************************************************************
  * TriggerClass::Spring -- Trigger processing routine *
@@ -683,8 +684,8 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
       break;
 
     case ACTION_AUTOCREATE:
-      for (int index = 0; index < Houses.Count(); index++) {
-        Houses.Ptr(index)->IsAlerted = true;
+      for (int index = 0; index < TheObjectHeaps().house().Count(); index++) {
+        TheObjectHeaps().house().Ptr(index)->IsAlerted = true;
       }
       break;
 
@@ -1007,24 +1008,24 @@ bool TriggerClass::Remove() {
   /*
   **	Loop through all objects, removing any reference to this trigger
   */
-  for (int index = 0; index < Infantry.Count(); index++) {
-    if (Infantry.Ptr(index)->Trigger == this) {
-      Infantry.Ptr(index)->Trigger = nullptr;
+  for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
+    if (TheObjectHeaps().infantry().Ptr(index)->Trigger == this) {
+      TheObjectHeaps().infantry().Ptr(index)->Trigger = nullptr;
     }
   }
-  for (int index = 0; index < Buildings.Count(); index++) {
-    if (Buildings.Ptr(index)->Trigger == this) {
-      Buildings.Ptr(index)->Trigger = nullptr;
+  for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+    if (TheObjectHeaps().building().Ptr(index)->Trigger == this) {
+      TheObjectHeaps().building().Ptr(index)->Trigger = nullptr;
     }
   }
-  for (int index = 0; index < Units.Count(); index++) {
-    if (Units.Ptr(index)->Trigger == this) {
-      Units.Ptr(index)->Trigger = nullptr;
+  for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+    if (TheObjectHeaps().unit().Ptr(index)->Trigger == this) {
+      TheObjectHeaps().unit().Ptr(index)->Trigger = nullptr;
     }
   }
-  for (int index = 0; index < Terrains.Count(); index++) {
-    if (Terrains.Ptr(index)->Trigger == this) {
-      Terrains.Ptr(index)->Trigger = nullptr;
+  for (int index = 0; index < TheObjectHeaps().terrain().Count(); index++) {
+    if (TheObjectHeaps().terrain().Ptr(index)->Trigger == this) {
+      TheObjectHeaps().terrain().Ptr(index)->Trigger = nullptr;
     }
   }
 
@@ -1238,11 +1239,11 @@ void TriggerClass::Write_INI(std::span<char> buffer, bool refresh) {
   /*
   **	Now write all the trigger data out
   */
-  for (int index = 0; index < Triggers.Count(); index++) {
+  for (int index = 0; index < TheObjectHeaps().trigger().Count(); index++) {
     /*
     **	Get ptr to next active trigger.
     */
-    TriggerClass* trigger = Triggers.Ptr(index);
+    TriggerClass* trigger = TheObjectHeaps().trigger().Ptr(index);
 
     /*
     **	Generate INI entry.
@@ -1287,8 +1288,8 @@ TriggerClass* TriggerClass::As_Pointer(const char* name) {
     return nullptr;
   }
 
-  for (int i = 0; i < Triggers.Count(); i++) {
-    TriggerClass* trigger = Triggers.Ptr(i);
+  for (int i = 0; i < TheObjectHeaps().trigger().Count(); i++) {
+    TriggerClass* trigger = TheObjectHeaps().trigger().Ptr(i);
 
     if (absl::EqualsIgnoreCase(name, trigger->Name)) {
       return trigger;
@@ -1310,7 +1311,7 @@ TriggerClass* TriggerClass::As_Pointer(const char* name) {
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
 void* TriggerClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Triggers.Allocate();
+  void* ptr = TheObjectHeaps().trigger().Allocate();
   if (ptr) {
     static_cast<TriggerClass*>(ptr)->IsActive = true;
   }
@@ -1332,7 +1333,7 @@ void TriggerClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<TriggerClass*>(ptr)->IsActive = false;
   }
-  Triggers.Free(static_cast<TriggerClass*>(ptr));
+  TheObjectHeaps().trigger().Free(static_cast<TriggerClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -1432,7 +1433,7 @@ const char* TriggerClass::Name_From_Action(ActionType action) {
  *=============================================================================================*/
 TARGET TriggerClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_TRIGGER, Triggers.ID(this));
+  return Build_Target(KIND_TRIGGER, TheObjectHeaps().trigger().ID(this));
 }
 
 /***********************************************************************************************
@@ -1451,8 +1452,8 @@ TARGET TriggerClass::As_Target() const {
  *from a team if necessary.                             *
  *=============================================================================================*/
 static void Do_All_To_Hunt() {
-  for (int index = 0; index < Units.Count(); index++) {
-    UnitClass* unit = Units.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+    UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
 
     if (!unit->House->IsHuman && unit->IsDown && !unit->IsInLimbo) {
       if (unit->Team) {
@@ -1462,8 +1463,8 @@ static void Do_All_To_Hunt() {
     }
   }
 
-  for (int index = 0; index < Infantry.Count(); index++) {
-    InfantryClass* infantry = Infantry.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
+    InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
 
     if (!infantry->House->IsHuman && infantry->IsDown && !infantry->IsInLimbo) {
       if (infantry->Team) {

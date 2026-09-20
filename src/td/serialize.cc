@@ -10,11 +10,11 @@
 #include "td/bullet.h"
 #include "td/cargo.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/foot.h"
 #include "td/heap.h"
 #include "td/infantry.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/radio.h"
 #include "td/target.h"
 #include "td/teamtype.h"
@@ -62,21 +62,21 @@ ObjectClass* ResolveSavedObject(TARGET target, ArchiveReader& ar, bool active_on
   const int index = Target_Value(target);
   switch (Target_Kind(target)) {
     case KIND_INFANTRY:
-      return Slot(Infantry, index, ar, active_only);
+      return Slot(TheObjectHeaps().infantry(), index, ar, active_only);
     case KIND_UNIT:
-      return Slot(Units, index, ar, active_only);
+      return Slot(TheObjectHeaps().unit(), index, ar, active_only);
     case KIND_BUILDING:
-      return Slot(Buildings, index, ar, active_only);
+      return Slot(TheObjectHeaps().building(), index, ar, active_only);
     case KIND_AIRCRAFT:
-      return Slot(Aircraft, index, ar, active_only);
+      return Slot(TheObjectHeaps().aircraft(), index, ar, active_only);
     case KIND_TERRAIN:
-      return Slot(Terrains, index, ar, active_only);
+      return Slot(TheObjectHeaps().terrain(), index, ar, active_only);
     case KIND_BULLET:
-      return Slot(Bullets, index, ar, active_only);
+      return Slot(TheObjectHeaps().bullet(), index, ar, active_only);
     case KIND_ANIMATION:
-      return Slot(Anims, index, ar, active_only);
+      return Slot(TheObjectHeaps().anim(), index, ar, active_only);
     case KIND_TEMPLATE:
-      return Slot(Templates, index, ar, active_only);
+      return Slot(TheObjectHeaps().tmplate(), index, ar, active_only);
     case KindType::KIND_NONE:
     case KindType::KIND_CELL:
     case KindType::KIND_TRIGGER:
@@ -156,18 +156,18 @@ void TeamTypePtr<T>::Serialize(ArchiveReader& ar) {
     return;
   }
   if (Target_Kind(target) != KIND_TEAMTYPE ||
-      Target_Value(target) >= TeamTypes.Length()) {
+      Target_Value(target) >= TheObjectHeaps().team_type().Length()) {
     ar.Fail("invalid saved team type target");
     return;
   }
-  ref_ = TeamTypes.Raw_Ptr(Target_Value(target));
+  ref_ = TheObjectHeaps().team_type().Raw_Ptr(Target_Value(target));
 }
 
 template class TeamTypePtr<TeamTypeClass>;
 template class TeamTypePtr<const TeamTypeClass>;
 
 void HousePtr::Serialize(ArchiveWriter& ar) {
-  int32_t index = ref_ == nullptr ? -1 : Houses.ID(ref_);
+  int32_t index = ref_ == nullptr ? -1 : TheObjectHeaps().house().ID(ref_);
   ar(index);
 }
 void HousePtr::Serialize(ArchiveReader& ar) {
@@ -177,11 +177,11 @@ void HousePtr::Serialize(ArchiveReader& ar) {
   if (!ar.ok() || index == -1) {
     return;
   }
-  if (index < 0 || index >= Houses.Length()) {
+  if (index < 0 || index >= TheObjectHeaps().house().Length()) {
     ar.Fail("invalid saved house slot");
     return;
   }
-  ref_ = Houses.Raw_Ptr(index);
+  ref_ = TheObjectHeaps().house().Raw_Ptr(index);
 }
 
 void TechnoTypePtr::Serialize(ArchiveWriter& ar) {
@@ -301,11 +301,11 @@ void TriggerPtr::Serialize(ArchiveReader& ar) {
     return;
   }
   if (Target_Kind(target) != KIND_TRIGGER ||
-      Target_Value(target) >= Triggers.Length()) {
+      Target_Value(target) >= TheObjectHeaps().trigger().Length()) {
     ar.Fail("invalid saved trigger target");
     return;
   }
-  ref_ = Triggers.Raw_Ptr(Target_Value(target));
+  ref_ = TheObjectHeaps().trigger().Raw_Ptr(Target_Value(target));
 }
 
 

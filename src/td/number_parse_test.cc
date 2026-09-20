@@ -3,7 +3,7 @@
 
 #include "gtest/gtest.h"
 #include "td/config.h"
-#include "td/externs.h"
+#include "td/object_heaps.h"
 #include "td/profile.h"
 #include "td/teamtype.h"
 
@@ -25,8 +25,8 @@ TEST(TdNumberParseTest, InvalidProfileNumbersKeepTheDefault) {
 // allocate them there rather than on the stack.
 class TdTeamTypeParseTest : public testing::Test {
  protected:
-  static void SetUpTestSuite() { TeamTypes.Set_Heap(4); }
-  static void TearDownTestSuite() { TeamTypes.Set_Heap(0); }
+  static void SetUpTestSuite() { TheObjectHeaps().team_type().Set_Heap(4); }
+  static void TearDownTestSuite() { TheObjectHeaps().team_type().Set_Heap(0); }
 };
 
 TEST_F(TdTeamTypeParseTest, RejectsInvalidTeamClassAndMissionCounts) {

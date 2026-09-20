@@ -74,6 +74,7 @@
 #include "td/keyframe.h"
 #include "td/mapedit.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/rand.h"
 #include "td/special.h"
 #include "td/type.h"
@@ -1604,8 +1605,8 @@ BuildingClass* UnitTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
                                                HousesType house) const {
   BuildingClass* anybuilding = nullptr;
 
-  for (int index = 0; index < Buildings.Count(); index++) {
-    BuildingClass* building = Buildings.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+    BuildingClass* building = TheObjectHeaps().building().Ptr(index);
 
     if (building && !building->IsInLimbo &&
         building->House->Class->House == house &&

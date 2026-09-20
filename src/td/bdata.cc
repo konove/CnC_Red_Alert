@@ -91,6 +91,7 @@
 #include "td/keyframe.h"
 #include "td/mapedit.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/special.h"
 #include "td/type.h"
 #include "td/vector.h"
@@ -4023,8 +4024,9 @@ bool BuildingTypeClass::Legal_Placement(CELL pos) const {
  *=============================================================================================*/
 BuildingClass* BuildingTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
                                                    HousesType house) const {
-  for (int index = Buildings.Count() - 1; index >= 0; index--) {
-    BuildingClass* building = Buildings.Ptr(index);
+  for (int index = TheObjectHeaps().building().Count() - 1; index >= 0;
+       index--) {
+    BuildingClass* building = TheObjectHeaps().building().Ptr(index);
 
     if (building && !building->IsInLimbo &&
         building->House->Class->House == house &&

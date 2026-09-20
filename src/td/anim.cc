@@ -87,6 +87,7 @@
 #include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/palette.h"
 #include "td/palettes.h"
 #include "td/smudge.h"
@@ -113,7 +114,7 @@
  *=============================================================================================*/
 int AnimClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = Anims.ID(this);
+    const int num = TheObjectHeaps().anim().ID(this);
     if (num < 0 || num >= kAnimMax) {
       Validate_Error("ANIM");
     }
@@ -145,8 +146,8 @@ int AnimClass::Validate() const {
  *=============================================================================================*/
 void Shorten_Attached_Anims(const ObjectClass* obj) {
   if (obj) {
-    for (int index = 0; index < Anims.Count(); index++) {
-      AnimClass& anim = *Anims.Ptr(index);
+    for (int index = 0; index < TheObjectHeaps().anim().Count(); index++) {
+      AnimClass& anim = *TheObjectHeaps().anim().Ptr(index);
 
       if (anim.Object == obj) {
         anim.Loops = 0;
@@ -660,7 +661,7 @@ std::span<const int16_t> AnimClass::Occupy_List(bool /*placement*/) const {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void AnimClass::Init() { Anims.Free_All(); }
+void AnimClass::Init() { TheObjectHeaps().anim().Free_All(); }
 
 /***********************************************************************************************
  * AnimClass::new -- Allocates an anim object from the pool. *
@@ -678,7 +679,7 @@ void AnimClass::Init() { Anims.Free_All(); }
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void* AnimClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Anims.Allocate();
+  void* ptr = TheObjectHeaps().anim().Allocate();
   if (ptr) {
     static_cast<AnimClass*>(ptr)->IsActive = true;
   }
@@ -704,7 +705,7 @@ void AnimClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<AnimClass*>(ptr)->IsActive = false;
   }
-  Anims.Free(static_cast<AnimClass*>(ptr));
+  TheObjectHeaps().anim().Free(static_cast<AnimClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -808,8 +809,8 @@ AnimClass::~AnimClass() {
       *inform the *	attached object of this fact.
       */
       int index = 0;
-      for (index = 0; index < Anims.Count(); index++) {
-        if (Anims.Ptr(index)->Object == to) {
+      for (index = 0; index < TheObjectHeaps().anim().Count(); index++) {
+        if (TheObjectHeaps().anim().Ptr(index)->Object == to) {
           break;
         }
       }
@@ -817,7 +818,7 @@ AnimClass::~AnimClass() {
       /*
       **	Tell the object that it is no longer being damaged.
       */
-      if (index != Anims.Count()) {
+      if (index != TheObjectHeaps().anim().Count()) {
         to->Fire_Out();
       }
       to->Mark(MARK_OVERLAP_UP);
@@ -1393,7 +1394,7 @@ void AnimClass::Middle() {
  *=============================================================================================*/
 TARGET AnimClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_ANIMATION, Anims.ID(this));
+  return Build_Target(KIND_ANIMATION, TheObjectHeaps().anim().ID(this));
 }
 
 /***************************************************************************

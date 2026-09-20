@@ -80,6 +80,7 @@
 #include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/target.h"
 #include "td/techno.h"
 #include "td/type.h"
@@ -105,7 +106,7 @@
  *=============================================================================================*/
 int BulletClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = Bullets.ID(this);
+    const int num = TheObjectHeaps().bullet().ID(this);
     if (num < 0 || num >= kBulletMax) {
       Validate_Error("BULLET");
     }
@@ -148,7 +149,7 @@ int BulletClass::Validate() const {
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
 void* BulletClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Bullets.Allocate();
+  void* ptr = TheObjectHeaps().bullet().Allocate();
   if (ptr) {
     static_cast<BulletClass*>(ptr)->IsActive = true;
   }
@@ -173,7 +174,7 @@ void BulletClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<BulletClass*>(ptr)->IsActive = false;
   }
-  Bullets.Free(static_cast<BulletClass*>(ptr));
+  TheObjectHeaps().bullet().Free(static_cast<BulletClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -583,7 +584,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void BulletClass::Init() { Bullets.Free_All(); }
+void BulletClass::Init() { TheObjectHeaps().bullet().Free_All(); }
 
 /***********************************************************************************************
  * BulletClass::Detach -- Removes specified target from this bullet's targeting
@@ -794,5 +795,5 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
  *=============================================================================================*/
 TARGET BulletClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_BULLET, Bullets.ID(this));
+  return Build_Target(KIND_BULLET, TheObjectHeaps().bullet().ID(this));
 }

@@ -67,6 +67,7 @@
 #include "td/globals.h"
 #include "td/heap.h"
 #include "td/inline.h"
+#include "td/object_heaps.h"
 #include "td/profile.h"
 #include "td/special.h"
 #include "td/type.h"
@@ -92,7 +93,7 @@ HousesType OverlayClass::ToOwn = HOUSE_NONE;
  *=============================================================================================*/
 int OverlayClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = Overlays.ID(this);
+    const int num = TheObjectHeaps().overlay().ID(this);
     if (num < 0 || num >= kOverlayMax) {
       Validate_Error("OVERLAY");
     }
@@ -117,7 +118,7 @@ int OverlayClass::Validate() const {
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
 void OverlayClass::Init() {
-  Overlays.Free_All();
+  TheObjectHeaps().overlay().Free_All();
   ToOwn = HOUSE_NONE;
 }
 
@@ -136,7 +137,7 @@ void OverlayClass::Init() {
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
 void* OverlayClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Overlays.Allocate();
+  void* ptr = TheObjectHeaps().overlay().Allocate();
   if (ptr) {
     static_cast<OverlayClass*>(ptr)->IsActive = true;
   }
@@ -161,7 +162,7 @@ void OverlayClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<OverlayClass*>(ptr)->IsActive = false;
   }
-  Overlays.Free(static_cast<OverlayClass*>(ptr));
+  TheObjectHeaps().overlay().Free(static_cast<OverlayClass*>(ptr));
 }
 
 /***********************************************************************************************

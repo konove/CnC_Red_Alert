@@ -67,6 +67,7 @@
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/palette.h"
 #include "td/screen.h"
 #include "td/team.h"
@@ -205,8 +206,9 @@ void Debug_Key(unsigned input) {
         */
         if (!ScenarioInit) {
           Map.Recalc();
-          for (int index = 0; index < Buildings.Count(); index++) {
-            Buildings.Ptr(index)->Update_Buildables();
+          for (int index = 0; index < TheObjectHeaps().building().Count();
+               index++) {
+            TheObjectHeaps().building().Ptr(index)->Update_Buildables();
           }
         }
         break;
@@ -273,8 +275,8 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_D:
-        if (Teams.Ptr(0)) {
-          delete Teams.Ptr(0);
+        if (TheObjectHeaps().team().Ptr(0)) {
+          delete TheObjectHeaps().team().Ptr(0);
         }
         break;
 

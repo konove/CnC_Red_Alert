@@ -39,6 +39,7 @@
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/type.h"
 #include "tech/mix_archive.h"
 
@@ -359,8 +360,8 @@ std::span<const int16_t> AircraftTypeClass::Overlap_List() const {
 BuildingClass* AircraftTypeClass::Who_Can_Build_Me(bool /*unused*/, bool legal,
                                                    HousesType house) const {
   BuildingClass* anybuilding = nullptr;
-  for (int index = 0; index < Buildings.Count(); index++) {
-    BuildingClass* building = Buildings.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+    BuildingClass* building = TheObjectHeaps().building().Ptr(index);
 
     if (building && !building->IsInLimbo &&
         building->House->Class->House == house &&

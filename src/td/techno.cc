@@ -207,6 +207,7 @@
 #include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/queue.h"
 #include "td/radio.h"
 #include "td/rand.h"
@@ -1502,8 +1503,9 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
     *recorded *	at the cell level.
     */
     if (base::Any(method & THREAT_AIR)) {
-      for (int index = 0; index < Aircraft.Count(); index++) {
-        const TechnoClass* object = Aircraft.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().aircraft().Count();
+           index++) {
+        const TechnoClass* object = TheObjectHeaps().aircraft().Ptr(index);
 
         int value = 0;
         if (Evaluate_Object(method, mask, range, object, value) &&
@@ -1611,8 +1613,8 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method) const {
     *layer *	is NOT scanned since that layer will probably contain more
     *bullets and animations *	than aircraft.
     */
-    for (int index = 0; index < Aircraft.Count(); index++) {
-      const TechnoClass* object = Aircraft.Ptr(index);
+    for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
+      const TechnoClass* object = TheObjectHeaps().aircraft().Ptr(index);
 
       int value = 0;
       if (Evaluate_Object(method, mask, -1, object, value) &&
@@ -3550,8 +3552,9 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
   ** Loop through the infantry looking for those who are capable of going
   ** on a rescue mission.
   */
-  for (int index = 0; index < Infantry.Count() && desired > 0; index++) {
-    InfantryClass* infantry = Infantry.Ptr(index);
+  for (int index = 0;
+       index < TheObjectHeaps().infantry().Count() && desired > 0; index++) {
+    InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
     if (infantry && infantry->Owner() == Owner()) {
       /*
       **	Never recruite sticky guard units to defend a base.
@@ -3612,8 +3615,9 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
   ** Loop through the units looking for those who are capable of going
   ** on a rescue mission.
   */
-  for (int index = 0; index < Units.Count() && desired > 0; index++) {
-    UnitClass* unit = Units.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().unit().Count() && desired > 0;
+       index++) {
+    UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
     if (unit && unit->Owner() == Owner()) {
       /*
       **	Never recruite sticky guard units to defend a base.
@@ -4136,8 +4140,8 @@ BuildingClass* TechnoClass::Find_Docking_Bay(StructType b, bool friendly) {
     **	Loop through all the buildings and find the one that matches the
     *specification *	and is willing to dock with this object.
     */
-    for (int index = 0; index < Buildings.Count(); index++) {
-      BuildingClass* building = Buildings.Ptr(index);
+    for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+      BuildingClass* building = TheObjectHeaps().building().Ptr(index);
 
       /*
       **	Check to see if the building qualifies (preliminary scan).

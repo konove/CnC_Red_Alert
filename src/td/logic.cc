@@ -54,6 +54,7 @@
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/team.h"
 #include "td/type.h"
 #include "td/unit.h"
@@ -87,8 +88,8 @@ void LogicClass::AI() {
   /*
   **	Team AI is processed.
   */
-  for (int index = 0; index < Teams.Count(); index++) {
-    Teams.Ptr(index)->AI();
+  for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
+    TheObjectHeaps().team().Ptr(index)->AI();
   }
 
   //	Heap_Dump_Check( "After Team AI" );
@@ -117,8 +118,8 @@ void LogicClass::AI() {
   **	A second pass through the sentient objects is required so that the
   *appropriate scan *	bits will be set for the owner house.
   */
-  for (int index = 0; index < Units.Count(); index++) {
-    const UnitClass* unit = Units.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+    const UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
     if (unit->IsLocked && (GameToPlay != GAME_NORMAL || !unit->House->IsHuman ||
                            unit->IsDiscoveredByPlayer)) {
       unit->House->NewUScan |= ScanBit(static_cast<int>(unit->Class->Type));
@@ -128,8 +129,8 @@ void LogicClass::AI() {
       }
     }
   }
-  for (int index = 0; index < Infantry.Count(); index++) {
-    const InfantryClass* infantry = Infantry.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
+    const InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
     if (infantry->IsLocked &&
         (GameToPlay != GAME_NORMAL || !infantry->House->IsHuman ||
          infantry->IsDiscoveredByPlayer)) {
@@ -141,8 +142,8 @@ void LogicClass::AI() {
       }
     }
   }
-  for (int index = 0; index < Aircraft.Count(); index++) {
-    const AircraftClass* aircraft = Aircraft.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
+    const AircraftClass* aircraft = TheObjectHeaps().aircraft().Ptr(index);
     if (aircraft->IsLocked &&
         (GameToPlay != GAME_NORMAL || !aircraft->House->IsHuman ||
          aircraft->IsDiscoveredByPlayer)) {
@@ -154,8 +155,8 @@ void LogicClass::AI() {
       }
     }
   }
-  for (int index = 0; index < Buildings.Count(); index++) {
-    const BuildingClass* building = Buildings.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+    const BuildingClass* building = TheObjectHeaps().building().Ptr(index);
     if (building->IsLocked &&
         (GameToPlay != GAME_NORMAL || !building->House->IsHuman ||
          building->IsDiscoveredByPlayer)) {
@@ -180,8 +181,8 @@ void LogicClass::AI() {
   /*
   **	Factory processing is performed.
   */
-  for (int index = 0; index < Factories.Count(); index++) {
-    Factories.Ptr(index)->AI();
+  for (int index = 0; index < TheObjectHeaps().factory().Count(); index++) {
+    TheObjectHeaps().factory().Ptr(index)->AI();
   }
 
   //	Heap_Dump_Check( "After Factory AI" );

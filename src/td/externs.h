@@ -131,21 +131,6 @@ extern ThemeClass Theme;
 /*
 **	Game object allocation and tracking classes.
 */
-extern TFixedIHeapClass<UnitClass> Units;
-extern TFixedIHeapClass<FactoryClass> Factories;
-extern TFixedIHeapClass<TerrainClass> Terrains;
-extern TFixedIHeapClass<TemplateClass> Templates;
-extern TFixedIHeapClass<SmudgeClass> Smudges;
-extern TFixedIHeapClass<OverlayClass> Overlays;
-extern TFixedIHeapClass<InfantryClass> Infantry;
-extern TFixedIHeapClass<BulletClass> Bullets;
-extern TFixedIHeapClass<BuildingClass> Buildings;
-extern TFixedIHeapClass<AnimClass> Anims;
-extern TFixedIHeapClass<AircraftClass> Aircraft;
-extern TFixedIHeapClass<TriggerClass> Triggers;
-extern TFixedIHeapClass<TeamTypeClass> TeamTypes;
-extern TFixedIHeapClass<TeamClass> Teams;
-extern TFixedIHeapClass<HouseClass> Houses;
 
 extern QueueClass<EventClass, MAX_EVENTS> OutList;
 extern QueueClass<EventClass, MAX_EVENTS * 8> DoList;

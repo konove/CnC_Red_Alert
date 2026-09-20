@@ -142,6 +142,7 @@
 #include "td/mapedit.h"
 #include "td/msglist.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/palettes.h"
 #include "td/profile.h"
 #include "td/queue.h"
@@ -3586,8 +3587,8 @@ void DisplayClass::Compute_Start_Pos() {
   int32_t x = 0;
   int32_t y = 0;
   int32_t num = 0;
-  for (int i = 0; i < Infantry.Count(); i++) {
-    const InfantryClass* infp = Infantry.Ptr(i);
+  for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
+    const InfantryClass* infp = TheObjectHeaps().infantry().Ptr(i);
     if (!infp->IsInLimbo && infp->House == PlayerPtr) {
       x += static_cast<int32_t>(Coord_XCell(infp->Coord));
       y += static_cast<int32_t>(Coord_YCell(infp->Coord));
@@ -3595,8 +3596,8 @@ void DisplayClass::Compute_Start_Pos() {
     }
   }
 
-  for (int i = 0; i < Units.Count(); i++) {
-    const UnitClass* unitp = Units.Ptr(i);
+  for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
+    const UnitClass* unitp = TheObjectHeaps().unit().Ptr(i);
     if (!unitp->IsInLimbo && unitp->House == PlayerPtr) {
       x += static_cast<int32_t>(Coord_XCell(unitp->Coord));
       y += static_cast<int32_t>(Coord_YCell(unitp->Coord));
@@ -3604,8 +3605,8 @@ void DisplayClass::Compute_Start_Pos() {
     }
   }
 
-  for (int i = 0; i < Buildings.Count(); i++) {
-    const BuildingClass* bldgp = Buildings.Ptr(i);
+  for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
+    const BuildingClass* bldgp = TheObjectHeaps().building().Ptr(i);
     if (!bldgp->IsInLimbo && bldgp->House == PlayerPtr) {
       x += static_cast<int32_t>(Coord_XCell(bldgp->Coord)) * 16;
       y += static_cast<int32_t>(Coord_YCell(bldgp->Coord)) * 16;

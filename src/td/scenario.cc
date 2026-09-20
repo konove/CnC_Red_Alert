@@ -89,6 +89,7 @@
 #include "td/mapedit.h"
 #include "td/msgbox.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/overlay.h"
 #include "td/palette.h"
 #include "td/palettes.h"
@@ -263,8 +264,8 @@ void Fill_In_Data() {
   */
   ScenarioInit++;
 
-  for (int index = 0; index < Buildings.Count(); index++) {
-    Buildings.Ptr(index)->Update_Buildables();
+  for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+    TheObjectHeaps().building().Ptr(index)->Update_Buildables();
   }
 
   Map.Flag_To_Redraw(true);
@@ -528,8 +529,8 @@ void Do_Win() {
   */
   if (SabotagedType != STRUCT_NONE && Scenario == 7 &&
       PlayerPtr->Class->House == HOUSE_GOOD) {
-    for (int index = 0; index < Buildings.Count(); index++) {
-      BuildingClass* building = Buildings.Ptr(index);
+    for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+      BuildingClass* building = TheObjectHeaps().building().Ptr(index);
 
       if (building && !building->IsInLimbo && building->House != PlayerPtr &&
           building->Class->Type == SabotagedType) {

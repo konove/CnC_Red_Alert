@@ -56,7 +56,6 @@
 #include "td/defines.h"
 #include "td/door.h"
 #include "td/drive.h"
-#include "td/externs.h"
 #include "td/factory.h"
 #include "td/flasher.h"
 #include "td/fly.h"
@@ -68,6 +67,7 @@
 #include "td/layer.h"
 #include "td/mission.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/overlay.h"
 #include "td/radio.h"
 #include "td/saveload.h"
@@ -207,14 +207,15 @@ void TeamClass::Serialize(Archive& ar) {
     Suspended = suspended;
     // TeamTypes and Houses precede Teams in the stream. Members load later.
     bool known_type = false;
-    for (int i = 0; i < TeamTypes.Count(); ++i) {
-      if (TeamTypes.Ptr(i) == Class) {
+    for (int i = 0; i < TheObjectHeaps().team_type().Count(); ++i) {
+      if (TheObjectHeaps().team_type().Ptr(i) == Class) {
         known_type = true;
         break;
       }
     }
-    if (!known_type || Houses.ActivePointers.ID(House) < 0 || Total < 0 ||
-        CurrentMission < -1 || CurrentMission >= Class->MissionCount) {
+    if (!known_type || TheObjectHeaps().house().ActivePointers.ID(House) < 0 ||
+        Total < 0 || CurrentMission < -1 ||
+        CurrentMission >= Class->MissionCount) {
       ar.Fail("invalid team state");
     }
   }
@@ -306,7 +307,7 @@ void HouseClass::Serialize(Archive& ar) {
     }
     for (const int factory : {AircraftFactory, InfantryFactory, UnitFactory,
                               BuildingFactory, SpecialFactory}) {
-      if (factory < -1 || factory >= Factories.Length()) {
+      if (factory < -1 || factory >= TheObjectHeaps().factory().Length()) {
         ar.Fail("invalid house factory slot");
         return;
       }
@@ -532,7 +533,7 @@ void BuildingClass::Serialize(Archive& ar) {
   int32_t factory_index = -1;
   if constexpr (!Archive::kIsReading) {
     if (Factory != nullptr) {
-      factory_index = Factories.ID(Factory);
+      factory_index = TheObjectHeaps().factory().ID(Factory);
     }
   }
   bool ready = IsReadyToCommence;
@@ -556,11 +557,12 @@ void BuildingClass::Serialize(Archive& ar) {
     IsCharged = charged;
     IsCaptured = captured;
     Factory = nullptr;
-    if (factory_index < -1 || factory_index >= Factories.Length()) {
+    if (factory_index < -1 ||
+        factory_index >= TheObjectHeaps().factory().Length()) {
       ar.Fail("invalid saved building factory index");
     } else if (factory_index != -1) {
       // Factories load later; resolve the address without inspecting the slot.
-      Factory = Factories.Raw_Ptr(factory_index);
+      Factory = TheObjectHeaps().factory().Raw_Ptr(factory_index);
     }
     if (Class == nullptr || ActLike < HOUSE_NONE || ActLike >= HOUSE_COUNT ||
         WhoLastHurtMe < HOUSE_NONE || WhoLastHurtMe >= HOUSE_COUNT ||
@@ -587,7 +589,7 @@ void FootClass::Serialize(Archive& ar) {
   int32_t team_index = -1;
   if constexpr (!Archive::kIsReading) {
     if (Team != nullptr) {
-      team_index = Teams.ID(Team);
+      team_index = TheObjectHeaps().team().ID(Team);
     }
   }
   ar(initiated, new_nav, look, deploying, firing, rotating, driving, unloading,
@@ -623,10 +625,10 @@ void FootClass::Serialize(Archive& ar) {
     IsDriving = driving;
     IsUnloading = unloading;
     Team = nullptr;
-    if (team_index < -1 || team_index >= Teams.Length()) {
+    if (team_index < -1 || team_index >= TheObjectHeaps().team().Length()) {
       ar.Fail("invalid saved mobile team index");
     } else if (team_index != -1) {
-      Team = Teams.Raw_Ptr(team_index);
+      Team = TheObjectHeaps().team().Raw_Ptr(team_index);
       if (!Team->IsActive) {
         ar.Fail("inactive saved mobile team");
       }

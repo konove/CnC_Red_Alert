@@ -73,9 +73,11 @@ target_compile_definitions(td_saveload_test PRIVATE TD=1)
 
 add_gtest(
     NAME td_game_test
-    SOURCES game_test.cc assets.cc screen.cc
-    LIBS base sdllib tech magic_enum::magic_enum absl::check absl::log absl::strings
+    SOURCES game_test.cc startup.cc
+    LIBS td_engine absl::core_headers
 )
+target_compile_definitions(td_game_test PRIVATE TD_NO_ENTRY_POINT=1)
+apply_dotenv_settings(td_game_test)
 
 add_gtest(
     NAME td_assets_test

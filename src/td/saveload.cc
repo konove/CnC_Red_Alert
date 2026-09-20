@@ -71,6 +71,7 @@
 #include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/overlay.h"
 #include "td/randomstate.h"
 #include "td/scenario.h"
@@ -176,14 +177,21 @@ bool Save_Game(int id, const char* descr) {
     **	Save all game objects.  This code saves every object that's stored in a
     **	TFixedIHeap class.
     */
-    if (!Houses.Save(writer) || !TeamTypes.Save(writer) ||
-        !Teams.Save(writer) || !Triggers.Save(writer) ||
-        !Aircraft.Save(writer) || !Anims.Save(writer) ||
-        !Buildings.Save(writer) || !Bullets.Save(writer) ||
-        !Infantry.Save(writer) || !Overlays.Save(writer) ||
-        !Smudges.Save(writer) || !Templates.Save(writer) ||
-        !Terrains.Save(writer) || !Units.Save(writer) ||
-        !Factories.Save(writer)) {
+    if (!TheObjectHeaps().house().Save(writer) ||
+        !TheObjectHeaps().team_type().Save(writer) ||
+        !TheObjectHeaps().team().Save(writer) ||
+        !TheObjectHeaps().trigger().Save(writer) ||
+        !TheObjectHeaps().aircraft().Save(writer) ||
+        !TheObjectHeaps().anim().Save(writer) ||
+        !TheObjectHeaps().building().Save(writer) ||
+        !TheObjectHeaps().bullet().Save(writer) ||
+        !TheObjectHeaps().infantry().Save(writer) ||
+        !TheObjectHeaps().overlay().Save(writer) ||
+        !TheObjectHeaps().smudge().Save(writer) ||
+        !TheObjectHeaps().tmplate().Save(writer) ||
+        !TheObjectHeaps().terrain().Save(writer) ||
+        !TheObjectHeaps().unit().Save(writer) ||
+        !TheObjectHeaps().factory().Save(writer)) {
       return false;
     }
 
@@ -353,13 +361,21 @@ bool Load_Game(int id) {
   /*
   **	Load the object data.
   */
-  if (!Houses.Load(reader) || !TeamTypes.Load(reader) || !Teams.Load(reader) ||
-      !Triggers.Load(reader) || !Aircraft.Load(reader) || !Anims.Load(reader) ||
-      !Buildings.Load(reader) || !Bullets.Load(reader) ||
-      !Infantry.Load(reader) || !Overlays.Load(reader) ||
-      !Smudges.Load(reader) || !Templates.Load(reader) ||
-      !Terrains.Load(reader) || !Units.Load(reader) ||
-      !Factories.Load(reader)) {
+  if (!TheObjectHeaps().house().Load(reader) ||
+      !TheObjectHeaps().team_type().Load(reader) ||
+      !TheObjectHeaps().team().Load(reader) ||
+      !TheObjectHeaps().trigger().Load(reader) ||
+      !TheObjectHeaps().aircraft().Load(reader) ||
+      !TheObjectHeaps().anim().Load(reader) ||
+      !TheObjectHeaps().building().Load(reader) ||
+      !TheObjectHeaps().bullet().Load(reader) ||
+      !TheObjectHeaps().infantry().Load(reader) ||
+      !TheObjectHeaps().overlay().Load(reader) ||
+      !TheObjectHeaps().smudge().Load(reader) ||
+      !TheObjectHeaps().tmplate().Load(reader) ||
+      !TheObjectHeaps().terrain().Load(reader) ||
+      !TheObjectHeaps().unit().Load(reader) ||
+      !TheObjectHeaps().factory().Load(reader)) {
     DLOG(ERROR) << "Cannot load saved heaps: " << reader.error();
     file.Close();
     return false;
@@ -370,13 +386,14 @@ bool Load_Game(int id) {
   for (auto& count : TeamClass::Number) {
     count = 0;
   }
-  for (int j = 0; j < Teams.Count(); ++j) {
-    ++base::At(TeamClass::Number, TeamTypes.ID(Teams.Ptr(j)->Class));
+  for (int j = 0; j < TheObjectHeaps().team().Count(); ++j) {
+    ++base::At(TeamClass::Number, TheObjectHeaps().team_type().ID(
+                                      TheObjectHeaps().team().Ptr(j)->Class));
   }
 
   // add triggers
-  for (int j = 0; j < Triggers.Count(); j++) {
-    TriggerClass* trig = Triggers.Ptr(j);
+  for (int j = 0; j < TheObjectHeaps().trigger().Count(); j++) {
+    TriggerClass* trig = TheObjectHeaps().trigger().Ptr(j);
     if (trig->House != HOUSE_NONE) {
       HouseTriggers.at(trig->House).Add(trig);
     }
@@ -477,8 +494,8 @@ static void Serialize_Misc_Values(Archive& ar) {
   ar(HousePtr(PlayerPtr), Scenario, WinMovie, LoseMovie);
   if constexpr (Archive::kIsReading) {
     bool player_loaded = false;
-    for (int32_t i = 0; i < Houses.Count(); ++i) {
-      player_loaded |= PlayerPtr == Houses.Ptr(i);
+    for (int32_t i = 0; i < TheObjectHeaps().house().Count(); ++i) {
+      player_loaded |= PlayerPtr == TheObjectHeaps().house().Ptr(i);
     }
     if (!ar.ok() || !player_loaded) {
       ar.Fail("invalid saved player house");

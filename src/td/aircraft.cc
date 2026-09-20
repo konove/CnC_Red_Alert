@@ -145,6 +145,7 @@
 #include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/profile.h"
 #include "td/queue.h"
 #include "td/radio.h"
@@ -178,7 +179,7 @@
  *=============================================================================================*/
 int AircraftClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = Aircraft.ID(this);
+    const int num = TheObjectHeaps().aircraft().ID(this);
     if (num < 0 || num >= kAircraftMax) {
       Validate_Error("AIRCRAFT");
     }
@@ -204,7 +205,7 @@ int AircraftClass::Validate() const {
  *=============================================================================================*/
 TARGET AircraftClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_AIRCRAFT, Aircraft.ID(this));
+  return Build_Target(KIND_AIRCRAFT, TheObjectHeaps().aircraft().ID(this));
 }
 
 /***********************************************************************************************
@@ -225,7 +226,7 @@ TARGET AircraftClass::As_Target() const {
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
 void* AircraftClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Aircraft.Allocate();
+  void* ptr = TheObjectHeaps().aircraft().Allocate();
   if (ptr) {
     static_cast<AircraftClass*>(ptr)->IsActive = true;
   }
@@ -250,7 +251,7 @@ void AircraftClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<AircraftClass*>(ptr)->IsActive = false;
   }
-  Aircraft.Free(static_cast<AircraftClass*>(ptr));
+  TheObjectHeaps().aircraft().Free(static_cast<AircraftClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -592,8 +593,8 @@ void AircraftClass::Write_INI(std::span<char> buffer) {
   /*
   **	Write the unit data out.
   */
-  for (int index = 0; index < Aircraft.Count(); index++) {
-    AircraftClass* unit = Aircraft.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
+    AircraftClass* unit = TheObjectHeaps().aircraft().Ptr(index);
     if (!unit->IsInLimbo) {
       absl::SNPrintF(uname, 10, "%03d", index);
       absl::SNPrintF(buf, 128, "%s,%s,%d,%u,%d,%s", unit->House->Class->IniName,
@@ -1008,7 +1009,7 @@ std::span<const int16_t> AircraftClass::Overlap_List() const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Init() { Aircraft.Free_All(); }
+void AircraftClass::Init() { TheObjectHeaps().aircraft().Free_All(); }
 
 /***********************************************************************************************
  * AircraftClass::Mission_Unload -- Handles unloading cargo. *
@@ -2904,8 +2905,8 @@ bool AircraftClass::Cell_Seems_Ok(CELL cell, bool strict) const {
   *If they *	are, then don't consider the location as valid.
   */
   const TARGET astarget = ::As_Target(cell);
-  for (int index = 0; index < Aircraft.Count(); index++) {
-    const AircraftClass* air = Aircraft.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
+    const AircraftClass* air = TheObjectHeaps().aircraft().Ptr(index);
     if ((air && (strict || air != this) && !air->IsInLimbo) &&
         (Coord_Cell(air->Coord) == cell || air->NavCom == astarget)) {
       return false;
@@ -3127,8 +3128,8 @@ TARGET AircraftClass::Good_LZ() const {
   */
   CELL bestcell = 0;
   int bestdist = -1;
-  for (int index = 0; index < Buildings.Count(); index++) {
-    const BuildingClass* building = Buildings.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+    const BuildingClass* building = TheObjectHeaps().building().Ptr(index);
 
     if (building && !building->IsInLimbo && building->House == House) {
       int dist = Distance(building);
@@ -3484,7 +3485,7 @@ void AircraftClass::Response_Attack() {
                                           sizeof(base::At(_response, 0))) -
                              1));
   if (AllowVoice) {
-    Sound_Effect(response, 0, -(Aircraft.ID(this) + 1));
+    Sound_Effect(response, 0, -(TheObjectHeaps().aircraft().ID(this) + 1));
   }
 }
 
@@ -3511,7 +3512,7 @@ void AircraftClass::Response_Move() {
                                           sizeof(base::At(_response, 0))) -
                              1));
   if (AllowVoice) {
-    Sound_Effect(response, 0, -(Aircraft.ID(this) + 1));
+    Sound_Effect(response, 0, -(TheObjectHeaps().aircraft().ID(this) + 1));
   }
 }
 
@@ -3538,6 +3539,6 @@ void AircraftClass::Response_Select() {
                                           sizeof(base::At(_response, 0))) -
                              1));
   if (AllowVoice) {
-    Sound_Effect(response, 0, -(Aircraft.ID(this) + 1));
+    Sound_Effect(response, 0, -(TheObjectHeaps().aircraft().ID(this) + 1));
   }
 }

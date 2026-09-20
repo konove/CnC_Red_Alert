@@ -83,6 +83,7 @@
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/rand.h"
 #include "td/target.h"
 #include "td/teamtype.h"
@@ -117,7 +118,7 @@ unsigned char TeamClass::Success[kTeamTypeMax];
  *=============================================================================================*/
 int TeamClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = Teams.ID(this);
+    const int num = TheObjectHeaps().team().ID(this);
     if (num < 0 || num >= kTeamMax) {
       Validate_Error("TEAM");
     }
@@ -142,13 +143,13 @@ int TeamClass::Validate() const {
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
 void TeamClass::Init() {
-  Teams.Free_All();
+  TheObjectHeaps().team().Free_All();
   base::FillBytes(base::ObjectBytes(Number), 0, sizeof(Number));
   base::FillBytes(base::ObjectBytes(Success), 0, sizeof(Success));
 }
 
 void* TeamClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Teams.Allocate();
+  void* ptr = TheObjectHeaps().team().Allocate();
   if (ptr) {
     static_cast<TeamClass*>(ptr)->IsActive = true;
   }
@@ -159,17 +160,18 @@ void TeamClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<TeamClass*>(ptr)->IsActive = false;
   }
-  Teams.Free(static_cast<TeamClass*>(ptr));
+  TheObjectHeaps().team().Free(static_cast<TeamClass*>(ptr));
 }
 
 TeamClass::~TeamClass() {
   if (GameActive && Class) {
-    base::At(Number, TeamTypes.ID(Class))--;
+    base::At(Number, TheObjectHeaps().team_type().ID(Class))--;
     while (Member) {
       Remove(Member);
     }
 
-    if (Class->IsTransient && !base::At(Number, TeamTypes.ID(Class))) {
+    if (Class->IsTransient &&
+        !base::At(Number, TheObjectHeaps().team_type().ID(Class))) {
       delete Class;
     }
   }
@@ -179,7 +181,7 @@ TeamClass::TeamClass(const TeamTypeClass* type, HouseClass* owner)
     : TeamClass() {
   Class = type;
   House = owner;
-  base::At(Number, TeamTypes.ID(Class))++;
+  base::At(Number, TheObjectHeaps().team_type().ID(Class))++;
 }
 
 /***************************************************************************
@@ -360,8 +362,9 @@ void TeamClass::AI() {
       CELL dest = Center;
       int max = 0x7FFFFFFF;
 
-      for (int index = 0; index < Buildings.Count(); index++) {
-        const BuildingClass* b = Buildings.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().building().Count();
+           index++) {
+        const BuildingClass* b = TheObjectHeaps().building().Ptr(index);
 
         if (b && !b->IsInLimbo && b->House == House &&
             b->Class->Primary == WEAPON_NONE) {
@@ -895,8 +898,9 @@ int TeamClass::Recruit(int typeindex) {
     **	ones owned by the house that owns the team. When found, try to add.
     */
     if (base::At(Class->Class, typeindex)->What_Am_I() == RTTI_INFANTRYTYPE) {
-      for (int index = 0; index < Infantry.Count(); index++) {
-        InfantryClass* infantry = Infantry.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().infantry().Count();
+           index++) {
+        InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
 
         if ((infantry->House == House &&
              infantry->Class == base::At(Class->Class, typeindex)) &&
@@ -916,8 +920,8 @@ int TeamClass::Recruit(int typeindex) {
     }
 
     if (base::At(Class->Class, typeindex)->What_Am_I() == RTTI_UNITTYPE) {
-      for (int index = 0; index < Units.Count(); index++) {
-        UnitClass* unit = Units.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+        UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
 
         if ((unit->House == House &&
              unit->Class == base::At(Class->Class, typeindex)) &&
@@ -1001,7 +1005,7 @@ void TeamClass::Detach(TARGET target, bool /*unused*/) {
  *=============================================================================================*/
 TARGET TeamClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_TEAM, Teams.ID(this));
+  return Build_Target(KIND_TEAM, TheObjectHeaps().team().ID(this));
 }
 
 /***********************************************************************************************
@@ -1467,8 +1471,8 @@ bool TeamClass::Is_A_Member(const void* who) const {
  *   06/19/1995 PWG : Created.                                             *
  *=========================================================================*/
 void TeamClass::Suspend_Teams(int priority) {
-  for (int index = 0; index < Teams.Count(); index++) {
-    TeamClass* team = Teams.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
+    TeamClass* team = TheObjectHeaps().team().Ptr(index);
 
     /*
     **	If a team is below the "survival priority level", then it gets

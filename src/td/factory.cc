@@ -90,12 +90,13 @@
 #include "td/house.h"
 #include "td/jshell.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/techno.h"
 #include "td/type.h"
 
 int FactoryClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = Factories.ID(this);
+    const int num = TheObjectHeaps().factory().ID(this);
     if (num < 0 || num >= kFactoryMax) {
       Validate_Error("FACTORY");
     }
@@ -156,7 +157,7 @@ FactoryClass::~FactoryClass() {
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void FactoryClass::Init() { Factories.Free_All(); }
+void FactoryClass::Init() { TheObjectHeaps().factory().Free_All(); }
 
 /***********************************************************************************************
  * FactoryClass::operator new -- Allocates a factory object from the free
@@ -174,7 +175,7 @@ void FactoryClass::Init() { Factories.Free_All(); }
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 void* FactoryClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Factories.Allocate();
+  void* ptr = TheObjectHeaps().factory().Allocate();
   if (ptr) {
     static_cast<FactoryClass*>(ptr)->IsActive = true;
   }
@@ -200,7 +201,7 @@ void FactoryClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<FactoryClass*>(ptr)->IsActive = false;
   }
-  Factories.Free(static_cast<FactoryClass*>(ptr));
+  TheObjectHeaps().factory().Free(static_cast<FactoryClass*>(ptr));
 }
 
 /***********************************************************************************************

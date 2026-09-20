@@ -139,6 +139,7 @@
 #include "td/jshell.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
+#include "td/object_heaps.h"
 #include "td/radio.h"
 #include "td/special.h"
 #include "td/target.h"
@@ -1136,26 +1137,26 @@ void ObjectClass::Detach_All(bool all) {
  *=============================================================================================*/
 void ObjectClass::Detach_This_From_All(TARGET target, bool all) {
   if (Target_Legal(target)) {
-    for (int index = 0; index < Teams.Count(); index++) {
-      Teams.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
+      TheObjectHeaps().team().Ptr(index)->Detach(target, all);
     }
-    for (int index = 0; index < Units.Count(); index++) {
-      Units.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+      TheObjectHeaps().unit().Ptr(index)->Detach(target, all);
     }
-    for (int index = 0; index < Infantry.Count(); index++) {
-      Infantry.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
+      TheObjectHeaps().infantry().Ptr(index)->Detach(target, all);
     }
-    for (int index = 0; index < Aircraft.Count(); index++) {
-      Aircraft.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
+      TheObjectHeaps().aircraft().Ptr(index)->Detach(target, all);
     }
-    for (int index = 0; index < Buildings.Count(); index++) {
-      Buildings.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+      TheObjectHeaps().building().Ptr(index)->Detach(target, all);
     }
-    for (int index = 0; index < Bullets.Count(); index++) {
-      Bullets.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().bullet().Count(); index++) {
+      TheObjectHeaps().bullet().Ptr(index)->Detach(target, all);
     }
-    for (int index = 0; index < Anims.Count(); index++) {
-      Anims.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().anim().Count(); index++) {
+      TheObjectHeaps().anim().Ptr(index)->Detach(target, all);
     }
   }
 }

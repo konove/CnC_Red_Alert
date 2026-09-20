@@ -67,6 +67,7 @@
 #include "td/heap.h"
 #include "td/inline.h"
 #include "td/mapedit.h"
+#include "td/object_heaps.h"
 #include "td/profile.h"
 #include "td/type.h"
 #include "td/vector.h"
@@ -91,7 +92,7 @@ HousesType SmudgeClass::ToOwn = HOUSE_NONE;
  *=============================================================================================*/
 int SmudgeClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = Smudges.ID(this);
+    const int num = TheObjectHeaps().smudge().ID(this);
     if (num < 0 || num >= kSmudgeMax) {
       Validate_Error("SMUDGE");
     }
@@ -117,7 +118,7 @@ int SmudgeClass::Validate() const {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 void* SmudgeClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Smudges.Allocate();
+  void* ptr = TheObjectHeaps().smudge().Allocate();
   if (ptr) {
     static_cast<SmudgeClass*>(ptr)->IsActive = true;
   }
@@ -142,7 +143,7 @@ void SmudgeClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<SmudgeClass*>(ptr)->IsActive = false;
   }
-  Smudges.Free(static_cast<SmudgeClass*>(ptr));
+  TheObjectHeaps().smudge().Free(static_cast<SmudgeClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -190,7 +191,7 @@ SmudgeClass::SmudgeClass(SmudgeType type, COORDINATE pos, HousesType house)
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void SmudgeClass::Init() { Smudges.Free_All(); }
+void SmudgeClass::Init() { TheObjectHeaps().smudge().Free_All(); }
 
 /***********************************************************************************************
  * SmudgeClass::Mark -- Marks a smudge down on the map. *

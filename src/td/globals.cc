@@ -49,22 +49,15 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "td/aircraft.h"
-#include "td/anim.h"
 #include "td/base.h"
-#include "td/building.h"
-#include "td/bullet.h"
 #include "td/connect.h"
 #include "td/credits.h"
 #include "td/defines.h"
 #include "td/event.h"
 #include "td/externs.h"
-#include "td/factory.h"
 #include "td/ftimer.h"
 #include "td/goptions.h"
-#include "td/heap.h"
 #include "td/house.h"
-#include "td/infantry.h"
 #include "td/ipxaddr.h"
 #include "td/ipxgconn.h"
 #include "td/ipxmgr.h"
@@ -74,19 +67,12 @@
 #include "td/nodename.h"
 #include "td/nullmgr.h"
 #include "td/object.h"
-#include "td/overlay.h"
 #include "td/phone.h"
 #include "td/queue.h"
 #include "td/score.h"
-#include "td/smudge.h"
 #include "td/special.h"
-#include "td/team.h"
-#include "td/teamtype.h"
-#include "td/template.h"
-#include "td/terrain.h"
 #include "td/theme.h"
 #include "td/trigger.h"
-#include "td/unit.h"
 #include "td/vector.h"
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
@@ -98,21 +84,6 @@ bool ForceEnglish = false;
 
 int In_Debugger = 0;
 
-TFixedIHeapClass<UnitClass> Units;
-TFixedIHeapClass<FactoryClass> Factories;
-TFixedIHeapClass<TerrainClass> Terrains;
-TFixedIHeapClass<TemplateClass> Templates;
-TFixedIHeapClass<SmudgeClass> Smudges;
-TFixedIHeapClass<OverlayClass> Overlays;
-TFixedIHeapClass<InfantryClass> Infantry;
-TFixedIHeapClass<BulletClass> Bullets;
-TFixedIHeapClass<BuildingClass> Buildings;
-TFixedIHeapClass<AnimClass> Anims;
-TFixedIHeapClass<AircraftClass> Aircraft;
-TFixedIHeapClass<TriggerClass> Triggers;
-TFixedIHeapClass<TeamTypeClass> TeamTypes;
-TFixedIHeapClass<TeamClass> Teams;
-TFixedIHeapClass<HouseClass> Houses;
 
 #ifdef PATCH
 /***************************************************************************

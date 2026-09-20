@@ -151,6 +151,7 @@
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/object.h"
+#include "td/object_heaps.h"
 #include "td/profile.h"
 #include "td/radio.h"
 #include "td/rand.h"
@@ -237,7 +238,7 @@ const base::EnumArray<DoType, DoStruct, kDoCount>
  *=============================================================================================*/
 int InfantryClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
-    const int num = Infantry.ID(this);
+    const int num = TheObjectHeaps().infantry().ID(this);
     if (num < 0 || num >= kInfantryMax) {
       Validate_Error("INFANTRY");
     }
@@ -332,7 +333,7 @@ InfantryClass::~InfantryClass() {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 void* InfantryClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Infantry.Allocate();
+  void* ptr = TheObjectHeaps().infantry().Allocate();
   if (ptr) {
     static_cast<InfantryClass*>(ptr)->IsActive = true;
   }
@@ -357,7 +358,7 @@ void InfantryClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<InfantryClass*>(ptr)->IsActive = false;
   }
-  Infantry.Free(static_cast<InfantryClass*>(ptr));
+  TheObjectHeaps().infantry().Free(static_cast<InfantryClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -819,7 +820,7 @@ void InfantryClass::Detach(TARGET target, bool all) {
  *=============================================================================================*/
 TARGET InfantryClass::As_Target() const {
   Validate();
-  return Build_Target(KIND_INFANTRY, Infantry.ID(this));
+  return Build_Target(KIND_INFANTRY, TheObjectHeaps().infantry().ID(this));
 }
 
 /***********************************************************************************************
@@ -837,7 +838,7 @@ TARGET InfantryClass::As_Target() const {
  *                                                                                             *
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Init() { Infantry.Free_All(); }
+void InfantryClass::Init() { TheObjectHeaps().infantry().Free_All(); }
 
 /***********************************************************************************************
  * InfantryClass::Look -- The infantry performs a look operation. *
@@ -2665,7 +2666,7 @@ void InfantryClass::Response_Select() {
     }
   }
   if (AllowVoice) {
-    Sound_Effect(response, 0, Infantry.ID(this) + 1);
+    Sound_Effect(response, 0, TheObjectHeaps().infantry().ID(this) + 1);
   }
 }
 
@@ -2723,7 +2724,7 @@ void InfantryClass::Response_Move() {
     }
   }
   if (AllowVoice) {
-    Sound_Effect(response, 0, Infantry.ID(this) + 1);
+    Sound_Effect(response, 0, TheObjectHeaps().infantry().ID(this) + 1);
   }
 }
 
@@ -2774,7 +2775,7 @@ void InfantryClass::Response_Attack() {
   }
 
   if (AllowVoice) {
-    Sound_Effect(response, 0, Infantry.ID(this) + 1);
+    Sound_Effect(response, 0, TheObjectHeaps().infantry().ID(this) + 1);
   }
 }
 
@@ -3188,8 +3189,8 @@ void InfantryClass::Write_INI(std::span<char> buffer) {
   /*
   **	Write the infantry data out.
   */
-  for (int index = 0; index < Infantry.Count(); index++) {
-    InfantryClass* infantry = Infantry.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
+    InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
     if (!infantry->IsInLimbo) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);
       absl::SNPrintF(
