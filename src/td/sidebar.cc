@@ -109,6 +109,7 @@
 #include "sdllib/shape.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
+#include "td/assets.h"
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/conquer.h"
@@ -320,7 +321,7 @@ void SidebarClass::Init_IO() {
     /*
     ** Set the button widths based on the string that goes in them.
     */
-    oldfont = Set_Font(Font6Ptr);
+    oldfont = Set_Font(TheAssets().font(FontType::k6Point));
     oldx = FontXSpacing;
     FontXSpacing = -1;
     Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,

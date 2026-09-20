@@ -73,8 +73,14 @@ target_compile_definitions(td_saveload_test PRIVATE TD=1)
 
 add_gtest(
     NAME td_game_test
-    SOURCES game_test.cc screen.cc
-    LIBS base sdllib
+    SOURCES game_test.cc assets.cc screen.cc
+    LIBS base sdllib tech magic_enum::magic_enum absl::check absl::log absl::strings
+)
+
+add_gtest(
+    NAME td_assets_test
+    SOURCES assets_test.cc assets.cc
+    LIBS base sdllib tech magic_enum::magic_enum absl::check absl::log absl::strings
 )
 
 add_gtest(

@@ -60,6 +60,7 @@
 #include "sdllib/misc.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
+#include "td/assets.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -167,7 +168,8 @@ void Nod_Ending() {
 
   Score.Presentation();
 
-  const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);
+  const std::span<const std::byte> oldfont =
+      Set_Font(TheAssets().font(FontType::kScore));
   PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
   TextPrintBuffer =
       new GraphicBufferClass(TheScreen().visible_view().Get_Width(),

@@ -52,6 +52,7 @@
 #include "sdllib/misc.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
+#include "td/assets.h"
 #include "td/conquer.h"
 #include "td/debug_state.h"
 #include "td/defines.h"
@@ -131,7 +132,8 @@ void Choose_Side() {
 
   Hide_Mouse();
   /* Change to the six-point font for Text_Print */
-  const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);
+  const std::span<const std::byte> oldfont =
+      Set_Font(TheAssets().font(FontType::kScore));
 
   Call_Back();
 

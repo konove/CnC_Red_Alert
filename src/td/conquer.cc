@@ -103,6 +103,7 @@
 #include "sdllib/wwstd.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
+#include "td/assets.h"
 #include "td/audio.h"
 #include "td/base.h"
 #include "td/building.h"
@@ -3084,13 +3085,14 @@ bool Force_CD_Available(int cd) {
 
     Theme.Stop();
 
-    delete MoviesMix;
-    delete GeneralMix;
-    delete ScoreMix;
+    Assets::DiscArchives& archives = TheAssets().disc_archives();
+    delete archives.movies;
+    delete archives.general;
+    delete archives.score;
 
-    MoviesMix = MixArchive::Register("MOVIES.MIX");
-    GeneralMix = MixArchive::Register("GENERAL.MIX");
-    ScoreMix = MixArchive::Register("SCORES.MIX");
+    archives.movies = MixArchive::Register("MOVIES.MIX");
+    archives.general = MixArchive::Register("GENERAL.MIX");
+    archives.score = MixArchive::Register("SCORES.MIX");
     ThemeClass::Scan();
   }
 #endif

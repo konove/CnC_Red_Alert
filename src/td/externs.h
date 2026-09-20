@@ -116,7 +116,6 @@ extern bool PlayerLoses;
 extern bool PlayerRestarts;
 extern StructType SabotagedType;
 extern bool TempleIoned;
-extern std::vector<std::byte> SpeechBuffer;
 extern bool PreserveVQAScreen;
 extern bool BreakoutAllowed;
 extern CELL Views[4];
@@ -126,9 +125,6 @@ extern GameOptionsClass Options;
 extern LogicClass Logic;
 extern MapEditClass Map;
 extern ScoreClass Score;
-extern MixArchive* ScoreMix;
-extern MixArchive* MoviesMix;
-extern MixArchive* GeneralMix;
 extern AudioMixer Audio;
 extern ThemeClass Theme;
 
@@ -167,17 +163,6 @@ extern BaseClass Base;
 /*
 **	Loaded data file pointers.
 */
-extern std::span<const std::byte> Green12FontPtr;
-extern std::span<const std::byte> Green12GradFontPtr;
-extern std::span<const std::byte> MapFontPtr;
-extern std::span<const std::byte> VCRFontPtr;
-extern std::span<const std::byte> Font3Ptr;
-extern std::span<const std::byte> Font6Ptr;
-extern std::span<const std::byte> Font8Ptr;
-extern std::span<const std::byte> FontLEDPtr;
-extern std::span<const std::byte> ScoreFontPtr;
-extern std::span<const std::byte> GradFont6Ptr;
-extern std::span<const std::byte> SystemStrings;
 
 /*
 **	Miscellaneous globals.

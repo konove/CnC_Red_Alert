@@ -61,11 +61,11 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "td/assets.h"
 #include "td/conquer.h"
 #include "td/control.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/externs.h"
 #include "td/gadget.h"
 #include "td/jshell.h"
 #include "td/screen.h"
@@ -345,7 +345,7 @@ void EditClass::Draw_Background() {
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
 void EditClass::Draw_Text(const char* text) {
-  if (FontPtr.data() == GradFont6Ptr.data()) {
+  if (FontPtr.data() == TheAssets().font(FontType::k6PointGradient).data()) {
     const TextPrintType flags =
         Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 

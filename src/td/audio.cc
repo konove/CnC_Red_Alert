@@ -45,12 +45,15 @@
 #include "td/audio.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
 #include <span>
+#include <vector>
 
 #include "base/enum_array.h"
+#include "td/assets.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/globals.h"
@@ -600,7 +603,8 @@ void Speak_AI() {
     return;
   }
 
-  if (!Audio.IsPlaying(SpeechBuffer.data())) {
+  std::vector<std::byte>& speech_buffer = TheAssets().speech_buffer();
+  if (!Audio.IsPlaying(speech_buffer.data())) {
     CurrentVoice = VOX_NONE;
     if (speak_queue != VOX_NONE) {
       if (speak_queue != _last) {
@@ -608,12 +612,12 @@ void Speak_AI() {
                               .replace_extension(".AUD")
                               .string();
 
-        if (GameFile(name).Read(std::span(SpeechBuffer), SPEECH_BUFFER_SIZE)) {
-          Audio.Play(SpeechBuffer, 254, Options.Volume);
+        if (GameFile(name).Read(std::span(speech_buffer), SPEECH_BUFFER_SIZE)) {
+          Audio.Play(speech_buffer, 254, Options.Volume);
         }
         _last = speak_queue;
       } else {
-        Audio.Play(SpeechBuffer, 254, Options.Volume);
+        Audio.Play(speech_buffer, 254, Options.Volume);
       }
       speak_queue = VOX_NONE;
     }
@@ -640,7 +644,7 @@ void Stop_Speaking() {
   // drop the voice just stopped as one still being said.
   CurrentVoice = VOX_NONE;
   if (Audio.is_open()) {
-    Audio.Stop(SpeechBuffer.data());
+    Audio.Stop(TheAssets().speech_buffer().data());
   }
 }
 
@@ -662,5 +666,6 @@ void Stop_Speaking() {
 bool Is_Speaking() {
   Speak_AI();
   return Audio.is_open() &&
-         (speak_queue != VOX_NONE || Audio.IsPlaying(SpeechBuffer.data()));
+         (speak_queue != VOX_NONE ||
+          Audio.IsPlaying(TheAssets().speech_buffer().data()));
 }

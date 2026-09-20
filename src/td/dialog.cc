@@ -72,6 +72,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
+#include "td/assets.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -463,51 +464,52 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
   xspace = 1;
   yspace = 0;
 
+  const Assets& assets = TheAssets();
   switch (point) {
     case TPF_GREEN12:
-      font = Green12FontPtr;
+      font = assets.font(FontType::kGreen12);
       break;
 
     case TPF_GREEN12_GRAD:
-      font = Green12GradFontPtr;
+      font = assets.font(FontType::kGreen12Gradient);
       break;
 
     case TPF_MAP:
-      font = MapFontPtr;
+      font = assets.font(FontType::kMap);
       xspace -= 1;
       break;
 
     case TPF_VCR:
-      font = VCRFontPtr;
+      font = assets.font(FontType::kVcr);
       break;
 
     case TPF_6PT_GRAD:
-      font = GradFont6Ptr;
+      font = assets.font(FontType::k6PointGradient);
       xspace -= 1;
       // yspace -= 1;
       break;
 
     case TPF_3POINT:
       xspace += 1;
-      font = Font3Ptr;
+      font = assets.font(FontType::k3Point);
       flag = flag & ~(TPF_DROPSHADOW | TPF_FULLSHADOW | TPF_NOSHADOW);
       break;
 
     case TPF_6POINT:
-      font = Font6Ptr;
+      font = assets.font(FontType::k6Point);
       xspace -= 1;
       // yspace -= 1;
       break;
 
     case TPF_8POINT:
-      font = Font8Ptr;
+      font = assets.font(FontType::k8Point);
       xspace -= 2;
       yspace -= 4;
       break;
 
     case TPF_LED:
       xspace -= 4;
-      font = FontLEDPtr;
+      font = assets.font(FontType::kLed);
       break;
 
     case TextPrintType::TPF_LASTPOINT:

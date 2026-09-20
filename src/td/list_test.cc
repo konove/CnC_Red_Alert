@@ -4,7 +4,9 @@
 #include <string>
 #include <string_view>
 
+#include "base/installed.h"
 #include "gtest/gtest.h"
+#include "td/assets.h"
 #include "td/cheklist.h"
 #include "td/defines.h"
 #include "td/msglist.h"
@@ -12,7 +14,16 @@
 
 namespace {
 
-class TdListClassTest : public testing::Test {
+// Measuring a list item reads the font it is printed in, which Game installs
+// in the real game. A default Assets has no fonts, so the items measure as
+// nothing, which is all these tests need.
+class InstalledAssets {
+ protected:
+  Assets assets_;
+  base::Installed<Assets>::Scope assets_scope_{assets_};
+};
+
+class TdListClassTest : public InstalledAssets, public testing::Test {
  protected:
   // No scroll arrow shapes: the tests never draw.
   ListClass list_{0, 0, 0, 100, 60, TPF_6POINT, {}, {}};
@@ -94,7 +105,9 @@ TEST_F(TdListClassTest, ClearRemovesEverything) {
   EXPECT_EQ(list_.Get_Item(0), nullptr);
 }
 
-TEST(TdCheckListClassTest, CheckItemWritesTheGlyphIntoTheOwnedText) {
+class TdCheckListClassTest : public InstalledAssets, public testing::Test {};
+
+TEST_F(TdCheckListClassTest, CheckItemWritesTheGlyphIntoTheOwnedText) {
   CheckListClass list(0, 0, 0, 100, 60, TPF_6POINT, {}, {});
   const std::string source = " trigger";
   list.Add_Item(source.c_str());

@@ -62,6 +62,7 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "td/assets.h"
 #include "td/audio.h"
 #include "td/conquer.h"
 #include "td/defines.h"
@@ -512,7 +513,7 @@ void Map_Selection() {
   std::array<unsigned char, 768> progresspalette{};
 
   Keyboard::Clear();
-  Set_Font(ScoreFontPtr);
+  Set_Font(TheAssets().font(FontType::kScore));
   Set_Font_Palette(_regpal);
   Set_Palette(ThePalettes().black_palette());
 
@@ -1047,7 +1048,7 @@ void Map_Selection() {
     }
   }
 
-  //	Set_Font(ScoreFontPtr);
+  //	Set_Font(TheAssets().font(FontType::kScore));
   Audio.Play(text2, 255, Options.Normalize_Sound(90));
   Alloc_Object(
       new ScorePrintClass(TXT_MAP_SELECT, attackxcoord, 160, greenpal));
@@ -1254,7 +1255,8 @@ void Print_Statistics(int country, int xpos, int ypos) {
   static char _deststr[16];
 
   /* Change to the six-point font for Text_Print */
-  const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);
+  const std::span<const std::byte> oldfont =
+      Set_Font(TheAssets().font(FontType::kScore));
 
 #ifdef GERMAN
   xpos = 8;

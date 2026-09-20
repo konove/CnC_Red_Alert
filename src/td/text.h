@@ -2,6 +2,7 @@
 #define CNC_RED_ALERT_TD_TEXT_H_
 
 #include "sdllib/string_table.h"
+#include "td/assets.h"
 #include "td/conquer.h"
 #include "td/externs.h"
 
@@ -37,7 +38,7 @@ inline const char* Text_String(int index) {
     default:
       break;
   }
-  return Extract_String(SystemStrings, index).data();
+  return Extract_String(TheAssets().system_strings(), index).data();
 }
 
 #endif  // CNC_RED_ALERT_TD_TEXT_H_

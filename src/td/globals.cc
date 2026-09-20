@@ -41,7 +41,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <span>
 #include <vector>
 
 #include "base/enum_array.h"
@@ -91,7 +90,6 @@
 #include "td/vector.h"
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
-#include "tech/mix_archive.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifdef JAPANESE
@@ -202,14 +200,6 @@ bool PlayerLoses;
 bool PlayerRestarts;
 
 /***************************************************************************
-**	This is the pointer for the speech staging buffer. This buffer is used
-**	to hold the currently speaking voice data. Since only one speech sample
-**	is played at a time, this buffer is only as big as the largest speech
-**	sample that can be played.
-*/
-std::vector<std::byte> SpeechBuffer;
-
-/***************************************************************************
 **	This is a special scenario count down value. End of game condition will
 **	not be checked until this value reaches zero.
 */
@@ -232,13 +222,6 @@ bool TempleIoned = false;
 **
 */
 bool GameInFocus;
-
-/***************************************************************************
-**	This holds the theater specific mixfiles.
-*/
-MixArchive* MoviesMix = nullptr;
-MixArchive* GeneralMix = nullptr;
-MixArchive* ScoreMix = nullptr;
 
 /***************************************************************************
 **	This is the options control class. The options control such things as
@@ -311,12 +294,6 @@ int BuildLevel = 3;  // Buildable level (1 = simplest)
 uint32_t ScenarioCRC;
 
 /***************************************************************************
-**	The various tutor and dialog messages are located in the data block
-**	referenced by this pointer.
-*/
-std::span<const std::byte> SystemStrings;
-
-/***************************************************************************
 **	The game plays as long as this var is true.
 */
 bool GameActive;
@@ -332,23 +309,6 @@ int32_t LParam;
 ** The currently-selected cell for the Scenario Editor
 */
 CELL CurrentCell = 0;
-
-/***************************************************************************
-**	Most of the text in the game will use the six point font. These are the
-**	pointers to the fonts. If it is NULL, then the font hasn't been loaded
-**	yet.
-*/
-std::span<const std::byte> Green12FontPtr;  // Green font for pressed in tabs
-std::span<const std::byte> Green12GradFontPtr;  // Graduated green font for tabs
-std::span<const std::byte> MapFontPtr;          // Standard very small font.
-std::span<const std::byte> Font3Ptr;            // Standard very small font.
-std::span<const std::byte> Font6Ptr;            // Standard small font.
-std::span<const std::byte> Font8Ptr;            // 8 point proportional.
-std::span<const std::byte> FontLEDPtr;          // LED fixed point font.
-std::span<const std::byte> VCRFontPtr;          // VCR font pointer.
-std::span<const std::byte>
-    ScoreFontPtr;  // font for score & map selection screens
-std::span<const std::byte> GradFont6Ptr;  // gradient 6 point font pointer.
 
 /***************************************************************************
 **	This is the house that the human player is currently playing.

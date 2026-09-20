@@ -76,6 +76,7 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
+#include "td/assets.h"
 #include "td/audio.h"
 #include "td/conquer.h"
 #include "td/defines.h"
@@ -801,7 +802,8 @@ void ScoreClass::Presentation() {
   }
 
   /* Change to the six-point font for Text_Print */
-  const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);
+  const std::span<const std::byte> oldfont =
+      Set_Font(TheAssets().font(FontType::kScore));
   Call_Back();
 
   /* --- Now display the background animation --- */
@@ -2209,7 +2211,8 @@ void Multi_Score_Presentation() {
   anim.Close();
 
   /* Change to the six-point font for Text_Print */
-  const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);
+  const std::span<const std::byte> oldfont =
+      Set_Font(TheAssets().font(FontType::kScore));
   Call_Back();
 
   Set_Logic_Page(*PseudoSeenBuff);

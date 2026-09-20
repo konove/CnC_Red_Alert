@@ -295,7 +295,8 @@ void TextButtonClass::Draw_Background() {
   **	Draw the body & set text color.
   */
   const BoxStyleEnum style = [this] {
-    // if (FontPtr.data() == GradFont6Ptr.data()) {
+    // if (FontPtr.data() == TheAssets().font(FontType::k6PointGradient)
+    //                            .data()) {
     if (base::Any(PrintFlags & TPF_6PT_GRAD)) {
       if (IsDisabled) {
         return BOXSTYLE_GREEN_DIS_RAISED;
@@ -332,7 +333,8 @@ void TextButtonClass::Draw_Text(const char* text) {
   */
   if (String) {
     int color = 0;
-    // if (FontPtr.data() == GradFont6Ptr.data()) {
+    // if (FontPtr.data() == TheAssets().font(FontType::k6PointGradient)
+    //                            .data()) {
     if (base::Any(PrintFlags & TPF_6PT_GRAD)) {
       color = kCcGreen;
 

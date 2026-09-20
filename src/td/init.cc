@@ -72,7 +72,6 @@
 #include "port/safe_string.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
-#include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -82,6 +81,7 @@
 #include "sdllib/wwstd.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
+#include "td/assets.h"
 #include "td/base.h"
 #include "td/building.h"
 #include "td/bullet.h"
@@ -177,6 +177,7 @@ static void Play_Intro(bool for_real = false);
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
 bool Init_Game() {
+  Assets::DiscArchives& archives = TheAssets().disc_archives();
   std::span<const std::byte> temp_mouse_shapes;
 
   /*
@@ -270,40 +271,7 @@ bool Init_Game() {
 
 #endif
   DLOG(INFO) << "C&C95 - About to load fonts";
-  GameFile f("12GREEN.FNT");
-  static std::vector<std::byte> green12_font_ptr_storage;
-  green12_font_ptr_storage = LoadAllocData(f);
-  Green12FontPtr = green12_font_ptr_storage;
-  f.Open("12GRNGRD.FNT");
-  static std::vector<std::byte> green12_grad_font_ptr_storage;
-  green12_grad_font_ptr_storage = LoadAllocData(f);
-  Green12GradFontPtr = green12_grad_font_ptr_storage;
-  f.Open("8FAT.FNT");
-  static std::vector<std::byte> map_font_ptr_storage;
-  map_font_ptr_storage = LoadAllocData(f);
-  MapFontPtr = map_font_ptr_storage;
-  Font8Ptr = MixArchive::RetrieveData(FONT8);
-  FontPtr = Font8Ptr;
-  Set_Font(FontPtr);
-  Font3Ptr = MixArchive::RetrieveData(FONT3);
-  //	Font6Ptr = MixArchive::RetrieveData(FONT6);
-  f.Open("6POINT.FNT");
-  static std::vector<std::byte> font6_ptr_storage;
-  font6_ptr_storage = LoadAllocData(f);
-  Font6Ptr = font6_ptr_storage;
-  // ScoreFontPtr = MixArchive::RetrieveData("12GRNGRD.FNT");	//GRAD12FN");
-  // //("SCOREFNT.FNT");
-  f.Open("12GRNGRD.FNT");
-  static std::vector<std::byte> score_font_ptr_storage;
-  score_font_ptr_storage = LoadAllocData(f);
-  ScoreFontPtr = score_font_ptr_storage;
-  FontLEDPtr = MixArchive::RetrieveData("LED.FNT");
-  VCRFontPtr = MixArchive::RetrieveData("VCR.FNT");
-  //	GradFont6Ptr = MixArchive::RetrieveData("GRAD6FNT.FNT");
-  f.Open("GRAD6FNT.FNT");
-  static std::vector<std::byte> grad_font6_ptr_storage;
-  grad_font6_ptr_storage = LoadAllocData(f);
-  GradFont6Ptr = grad_font6_ptr_storage;
+  TheAssets().LoadFonts();
   ThePalettes().black_palette().assign(768, 0);
   ThePalettes().game_palette().assign(768, 0);
   ThePalettes().original_palette().assign(768, 0);
@@ -350,7 +318,7 @@ bool Init_Game() {
   AllSurfaces.SurfacesRestored = false;
 
   DLOG(INFO) << "C&C95 - About to load the language file";
-  SystemStrings = MixArchive::RetrieveData(Language_Name("CONQUER"));
+  TheAssets().LoadStrings();
 
   /*
   **	Default palette initialization. Uses the desert palette for convenience,
@@ -436,7 +404,7 @@ bool Init_Game() {
 
   DLOG(INFO) << "C&C95 - About to register GENERAL.MIX";
   MixArchive::Unregister("GENERAL.MIX");
-  GeneralMix = MixArchive::Register("GENERAL.MIX");
+  archives.general = MixArchive::Register("GENERAL.MIX");
 
   //	if (!_dos_findfirst("SC*.MIX", _A_NORMAL, &ff)) {
   //		do {
@@ -451,8 +419,8 @@ bool Init_Game() {
 #ifdef DEMO
   (void)MixArchive::Register("DEMO.MIX");
   if (GameFile("DEMOM.MIX").IsAvailable()) {
-    if (!MoviesMix) {
-      MoviesMix = MixArchive::Register("DEMOM.MIX");
+    if (archives.movies == nullptr) {
+      archives.movies = MixArchive::Register("DEMOM.MIX");
     }
     ScoresPresent = true;
     ThemeClass::Scan();
@@ -465,15 +433,15 @@ bool Init_Game() {
   (void)MixArchive::Register("TRANSIT.MIX");
 
   DLOG(INFO) << "C&C95 - About to register GENERAL.MIX";
-  if (!GeneralMix) {
-    GeneralMix = MixArchive::Register("GENERAL.MIX");  // Never cached.
+  if (archives.general == nullptr) {
+    archives.general = MixArchive::Register("GENERAL.MIX");  // Never cached.
   }
 
   //	if (GameFile("MOVIES.MIX").IsAvailable()) {
   DLOG(INFO) << "C&C95 - About to register MOVIES.MIX";
-  if (!MoviesMix) {
-    MoviesMix = MixArchive::Register("MOVIES.MIX");  // Never cached.
-                                                     //	}
+  if (archives.movies == nullptr) {
+    archives.movies = MixArchive::Register("MOVIES.MIX");  // Never cached.
+                                                           //	}
   }
 
   /*
@@ -483,8 +451,8 @@ bool Init_Game() {
   ScoresPresent = false;
   //	if (GameFile("SCORES.MIX").IsAvailable()) {
   ScoresPresent = true;
-  if (!ScoreMix) {
-    ScoreMix = MixArchive::Register("SCORES.MIX");
+  if (archives.score == nullptr) {
+    archives.score = MixArchive::Register("SCORES.MIX");
     ThemeClass::Scan();
   }
 //	}
@@ -600,12 +568,6 @@ bool Init_Game() {
   AircraftTypeClass::One_Time();
   HouseClass::One_Time();
 
-  /*
-  **	Speech holding tank buffer. Since speech does not mix, it can be placed
-  **	into a custom holding tank only as large as the largest speech file to
-  **	be played.
-  */
-  SpeechBuffer.resize(SPEECH_BUFFER_SIZE);
   Call_Back();
 
   /*
@@ -669,9 +631,6 @@ void Uninit_Game() {
   delete MouseClass::ShadowPage;
   MouseClass::ShadowPage = nullptr;
   Map.Free_Cells();
-
-  SpeechBuffer.clear();
-  SpeechBuffer.shrink_to_fit();
 
   SearchPaths::Clear();
   MixArchive::Free_All();
