@@ -408,3 +408,34 @@ only where the two games' layouts already match.
   `__lsan_do_recoverable_leak_check()` reports nothing leaked at that point, but the vectors'
   capacity is unchanged after the loop assigns an empty vector over them, and the final total is the
   same whether the loop runs or not. A TODO in `type_heaps.cc` records it.
+- 2026-09-20: phase 6 done for both games in four steps (460aec01..78aeda09), with the exceptions
+  below. `GameClock` (`ra/game_clock.h`, `td/game_clock.h`) holds the frame counter and is the first
+  member of `Game`, so it exists before anything that holds a frame-based timer; reads go through
+  `CurrentFrame()`, which reports zero when no clock is installed, because timers inside statically
+  constructed objects read it while they are being built and the global was zero then too. Then the
+  object heaps became `ObjectHeaps` (`ra/object_heaps.h`, `td/object_heaps.h`), binding the
+  `CCPtr<T>::Heap` pointers in Red Alert as `TypeHeaps` does; Tiberian Dawn has none to bind,
+  because it stores object references as raw pointers. Finally `World` (`ra/world.h`, `td/world.h`)
+  took the scenario state: the map, the scenario record, the player's house, the logic layer, the
+  base, the score, the selection, the triggers and the loose flags. Red Alert has a `ScenarioClass`
+  to hold most of the scenario fields; Tiberian Dawn keeps them loose, as the original did, so its
+  `World` holds them directly. Most of `World` hands out references rather than getter and setter
+  pairs: this state is read and written all over the simulation. The save format did not change in
+  any of the four steps. The lifetime audit found one thing in each game, the same thing:
+  `MapEditClass`'s constructor zeroed the home waypoint and the editor's current cell, which it
+  could do while those were globals but cannot while `World` is building its own members, so
+  `World`'s constructor does it. What made the sweeps slow was name collisions: `MouseClass`,
+  `EventClass` and the infantry animation struct all have a `Frame` member, `MapClass` has a
+  `Logic()` method, and `ThemeClass`, `SessionClass`, `TEventClass`, `CarryoverClass`,
+  `BuildingTypeClass` and `MapEditClass` have members called `Score`, `BuildLevel`, `Infantry`,
+  `Aircraft`, `Anims`, `Scenario` and `ScenVar`. The rename script skips comments, strings and
+  member access, but an unqualified use inside the owning class looks exactly like the global; each
+  one was found by the compiler and put back by hand. Left for later: `Whom` and `BuildLevel` in
+  both games, because `EventClass` and `SessionClass` have members of those names and they belong
+  with phase 7's session state anyway; Tiberian Dawn's `ScenVar`, because `MapEditClass` has one;
+  Red Alert's `AntsEnabled` and `bAutoSonarPulse`, noted in phase 5; and `staging_buffer`, which is
+  scratch space rather than state. Red Alert's `externs.h` is down from 204 declarations to 39.
+  Verification: both build dirs clean, 681 tests pass, all save/load smoke fixtures pass in both
+  games including Red Alert's `--load-fixture`, and ASan `-QUITFRAME` exits cleanly with no errors
+  in either game -- only the leak the phase 5 TODO already records, which grew from 26 KB to 29 KB
+  in Red Alert because more type objects fill their `DimensionData` cache before the exit.
