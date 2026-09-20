@@ -130,7 +130,7 @@ static void CyclePalette() {
   static Timer<SystemTickSource> water_timer;
   static GlowPulse<SystemTickSource> pulse(kTimerSecond / 6);
 
-  if (!Options.IsPaletteScroll) {
+  if (!TheOptions().IsPaletteScroll) {
     return;
   }
 
@@ -208,7 +208,7 @@ static void RunPendingDialog() {
       break;
 
     case SDLG_OPTIONS:
-      Options.Process();
+      TheOptions().Process();
       break;
 
     case SDLG_SURRENDER:
@@ -395,9 +395,9 @@ void ServiceRealTimeFor(const int ticks) {
 
 void ServiceBackgroundTasks() {
   // Music and speech maintenance
-  if (Audio.is_open()) {
-    Audio.PumpStreams();
-    Theme.AI();
+  if (TheAudio().is_open()) {
+    TheAudio().PumpStreams();
+    TheTheme().AI();
     ServiceSpeech();
   }
 
@@ -462,7 +462,7 @@ static void StartFrameTimer() {
     return;
   }
 
-  int delay = static_cast<int>(Options.GameSpeed);
+  int delay = static_cast<int>(TheOptions().GameSpeed);
   if (ThePlayer()->Difficulty == DIFF_EASY) {
     delay++;
   } else if (ThePlayer()->Difficulty == DIFF_HARD && delay > 0) {
@@ -655,8 +655,8 @@ bool RunFrame() {
   // If there is no theme playing, but it looks like one is required, then
   // start one playing. This is usually the symptom of there being no
   // transition score.
-  if (Audio.is_open() && Theme.What_Is_Playing() == THEME_NONE) {
-    Theme.Queue_Song(THEME_PICK_ANOTHER);
+  if (TheAudio().is_open() && TheTheme().What_Is_Playing() == THEME_NONE) {
+    TheTheme().Queue_Song(THEME_PICK_ANOTHER);
   }
 
   StartFrameTimer();

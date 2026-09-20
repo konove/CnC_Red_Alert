@@ -8,9 +8,15 @@
 #include "base/installed.h"
 #include "gtest/gtest.h"
 #include "ra/assets.h"
+#include "ra/goptions.h"
+#include "ra/network.h"
 #include "ra/palettes.h"
 #include "ra/rules.h"
 #include "ra/screen.h"
+#include "ra/session.h"
+#include "ra/special.h"
+#include "ra/theme.h"
+#include "tech/audio_mixer.h"
 
 namespace {
 
@@ -25,21 +31,24 @@ TEST(GameTest, BuildsAndTearsDownWithoutAWindowOrGameData) {
 }
 
 TEST(GameTest, InstallsItsSubsystemsForItsLifetime) {
-  EXPECT_FALSE(base::Installed<Screen>::IsInstalled());
-  EXPECT_FALSE(base::Installed<Palettes>::IsInstalled());
-  EXPECT_FALSE(base::Installed<Assets>::IsInstalled());
-  EXPECT_FALSE(base::Installed<RulesClass>::IsInstalled());
+  const auto installed = [] {
+    return base::Installed<Screen>::IsInstalled() &&
+           base::Installed<Palettes>::IsInstalled() &&
+           base::Installed<Assets>::IsInstalled() &&
+           base::Installed<RulesClass>::IsInstalled() &&
+           base::Installed<GameOptionsClass>::IsInstalled() &&
+           base::Installed<SpecialClass>::IsInstalled() &&
+           base::Installed<AudioMixer>::IsInstalled() &&
+           base::Installed<ThemeClass>::IsInstalled() &&
+           base::Installed<SessionClass>::IsInstalled() &&
+           base::Installed<Network>::IsInstalled();
+  };
+  EXPECT_FALSE(installed());
   {
-    const Game game;
-    EXPECT_TRUE(base::Installed<Screen>::IsInstalled());
-    EXPECT_TRUE(base::Installed<Palettes>::IsInstalled());
-    EXPECT_TRUE(base::Installed<Assets>::IsInstalled());
-    EXPECT_TRUE(base::Installed<RulesClass>::IsInstalled());
+    const Game game{};
+    EXPECT_TRUE(installed());
   }
-  EXPECT_FALSE(base::Installed<Screen>::IsInstalled());
-  EXPECT_FALSE(base::Installed<Palettes>::IsInstalled());
-  EXPECT_FALSE(base::Installed<Assets>::IsInstalled());
-  EXPECT_FALSE(base::Installed<RulesClass>::IsInstalled());
+  EXPECT_FALSE(installed());
 }
 
 }  // namespace

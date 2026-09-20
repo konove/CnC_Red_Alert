@@ -44,14 +44,10 @@
 #include "ra/credits.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
-#include "ra/goptions.h"
 #include "ra/jshell.h"
-#include "ra/special.h"
-#include "ra/theme.h"
 #include "ra/version.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/audio_mixer.h"
 #include "winvq/vqa32/vqaplay.h"
 
 
@@ -167,7 +163,6 @@ bool PlayerRestarts;
 **	This is the options control class. The options control such things as
 **	game speed, visual controls, and other user settings.
 */
-GameOptionsClass Options;
 
 /***************************************************************************
 **	Logic processing is controlled by this element. It handles both graphic
@@ -176,12 +171,10 @@ GameOptionsClass Options;
 
 // The sound device and its four channels. Defined ahead of Theme, which
 // plays through it.
-AudioMixer Audio;
 
 /***************************************************************************
 **	This handles the background music.
 */
-ThemeClass Theme;
 
 /***************************************************************************
 **	This is the main control class for the map.
@@ -201,7 +194,6 @@ static CreditClass CreditDisplay;
 ** This class records the special command override options that C&C
 **	supports.
 */
-SpecialClass Special;
 
 /***************************************************************************
 **	The game plays as long as this var is true.

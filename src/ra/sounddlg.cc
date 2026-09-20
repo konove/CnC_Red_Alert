@@ -51,7 +51,6 @@
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/goptions.h"
 #include "ra/jshell.h"
@@ -245,7 +244,7 @@ void SoundControlsClass::Process() {
   **	between saying "on" and "off".
   */
   shufflebtn.IsToggleType = true;
-  if (Options.IsScoreShuffle) {
+  if (TheOptions().IsScoreShuffle) {
     shufflebtn.Turn_On();
   } else {
     shufflebtn.Turn_Off();
@@ -253,7 +252,7 @@ void SoundControlsClass::Process() {
   shufflebtn.Set_Text(shufflebtn.IsOn ? TXT_ON : TXT_OFF);
 
   repeatbtn.IsToggleType = true;
-  if (Options.IsScoreRepeat) {
+  if (TheOptions().IsScoreRepeat) {
     repeatbtn.Turn_On();
   } else {
     repeatbtn.Turn_Off();
@@ -265,10 +264,10 @@ void SoundControlsClass::Process() {
   */
   music.Set_Maximum(255);
   music.Set_Thumb_Size(16);
-  music.Set_Value(Options.ScoreVolume * 256);
+  music.Set_Value(TheOptions().ScoreVolume * 256);
   sound.Set_Maximum(255);
   sound.Set_Thumb_Size(16);
-  sound.Set_Value(Options.Volume * 256);
+  sound.Set_Value(TheOptions().Volume * 256);
 
   /*
   **	Set up the window.  Window x-coords are in bytes not pixels.
@@ -303,7 +302,7 @@ void SoundControlsClass::Process() {
                      listbox.Count() + 1, length / 60, length % 60, fullname);
       listbox.Add_Track(index, buffer);
 
-      if (Theme.What_Is_Playing() == index) {
+      if (TheTheme().What_Is_Playing() == index) {
         listbox.Set_Selected_Index(listbox.Count() - 1);
       }
     }
@@ -392,9 +391,9 @@ void SoundControlsClass::Process() {
       **	Control music volume.
       */
       case ButtonKey(kSliderMusic):
-        Options.Set_Score_Volume(fixed(music.Get_Value(), 256), true);
+        TheOptions().Set_Score_Volume(fixed(music.Get_Value(), 256), true);
         if (TheSession().Type != GAME_NORMAL) {
-          Options.MultiScoreVolume = Options.ScoreVolume;
+          TheOptions().MultiScoreVolume = TheOptions().ScoreVolume;
         }
         break;
 
@@ -402,7 +401,7 @@ void SoundControlsClass::Process() {
       **	Control sound volume.
       */
       case ButtonKey(kSliderSound):
-        Options.Set_Sound_Volume(fixed(sound.Get_Value(), 256), true);
+        TheOptions().Set_Sound_Volume(fixed(sound.Get_Value(), 256), true);
         break;
 
       case ButtonKey(kButtonListbox):
@@ -412,8 +411,8 @@ void SoundControlsClass::Process() {
       **	Stop all themes from playing.
       */
       case ButtonKey(kButtonStop):
-        Theme.Stop();
-        Theme.Queue_Song(THEME_QUIET);
+        TheTheme().Stop();
+        TheTheme().Queue_Song(THEME_QUIET);
         //				Theme.Queue_Song(THEME_NONE);
         break;
 
@@ -422,7 +421,7 @@ void SoundControlsClass::Process() {
       */
       case KN_SPACE:
       case ButtonKey(kButtonPlay):
-        Theme.Queue_Song(listbox.Current_Theme());
+        TheTheme().Queue_Song(listbox.Current_Theme());
         break;
 
       /*
@@ -430,7 +429,7 @@ void SoundControlsClass::Process() {
       */
       case ButtonKey(kButtonShuffle):
         shufflebtn.Set_Text(shufflebtn.IsOn ? TXT_ON : TXT_OFF);
-        Options.Set_Shuffle(shufflebtn.IsOn);
+        TheOptions().Set_Shuffle(shufflebtn.IsOn);
         break;
 
       /*
@@ -438,7 +437,7 @@ void SoundControlsClass::Process() {
       */
       case ButtonKey(kButtonRepeat):
         repeatbtn.Set_Text(repeatbtn.IsOn ? TXT_ON : TXT_OFF);
-        Options.Set_Repeat(repeatbtn.IsOn);
+        TheOptions().Set_Repeat(repeatbtn.IsOn);
         break;
       default:
         break;
@@ -449,8 +448,8 @@ void SoundControlsClass::Process() {
   **	If the score volume was turned all the way down, then actually
   **	stop the scores from being played.
   */
-  if (Options.ScoreVolume == 0) {
-    Theme.Stop();
+  if (TheOptions().ScoreVolume == 0) {
+    TheTheme().Stop();
   }
 
   /*

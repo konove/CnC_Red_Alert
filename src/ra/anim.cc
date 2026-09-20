@@ -76,7 +76,6 @@
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/gscreen.h"
@@ -503,7 +502,7 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
     Class->LoopEnd = Class->Stages;
   }
   if (Class->IsNormalized) {
-    Set_Rate(Options.Normalize_Delay(Class->Delay));
+    Set_Rate(TheOptions().Normalize_Delay(Class->Delay));
   } else {
     Set_Rate(Class->Delay);
   }
@@ -763,7 +762,7 @@ void AnimClass::AI() {
             Loops = static_cast<unsigned char>(Class->Loops);
             Accum = fixed(0);
             if (Class->IsNormalized) {
-              Set_Rate(Options.Normalize_Delay(Class->Delay));
+              Set_Rate(TheOptions().Normalize_Delay(Class->Delay));
             } else {
               Set_Rate(Class->Delay);
             }

@@ -169,7 +169,7 @@ void Keyboard_Process(KeyNumType& input) {
   }
 
   // If the "N" key is pressed, then select the next object.
-  if (key != 0 && key == Options.KeyNext) {
+  if (key != 0 && key == TheOptions().KeyNext) {
     if (action) {
       obj = MapEditClass::Prev_Object(TheWorld().current_object().Count()
                                           ? TheWorld().current_object().at(0)
@@ -187,7 +187,7 @@ void Keyboard_Process(KeyNumType& input) {
     }
     input = KN_NONE;
   }
-  if (key != 0 && key == Options.KeyPrevious) {
+  if (key != 0 && key == TheOptions().KeyPrevious) {
     if (action) {
       obj = MapEditClass::Next_Object(TheWorld().current_object().Count()
                                           ? TheWorld().current_object().at(0)
@@ -207,7 +207,7 @@ void Keyboard_Process(KeyNumType& input) {
   }
 
   // All selected units will go into idle mode.
-  if (key != 0 && key == Options.KeyStop) {
+  if (key != 0 && key == TheOptions().KeyStop) {
     if (TheWorld().current_object().Count()) {
       for (int index = 0; index < TheWorld().current_object().Count();
            index++) {
@@ -225,7 +225,7 @@ void Keyboard_Process(KeyNumType& input) {
   }
 
   // All selected units will attempt to go into guard area mode.
-  if (key != 0 && key == Options.KeyGuard) {
+  if (key != 0 && key == TheOptions().KeyGuard) {
     if (TheWorld().current_object().Count()) {
       for (int index = 0; index < TheWorld().current_object().Count();
            index++) {
@@ -242,7 +242,7 @@ void Keyboard_Process(KeyNumType& input) {
   }
 
   // All selected units will attempt to scatter.
-  if (key != 0 && key == Options.KeyScatter) {
+  if (key != 0 && key == TheOptions().KeyScatter) {
     if (TheWorld().current_object().Count()) {
       for (int index = 0; index < TheWorld().current_object().Count();
            index++) {
@@ -259,19 +259,20 @@ void Keyboard_Process(KeyNumType& input) {
 
   // Center the map around the currently selected objects. If no
   // objects are selected, then fall into the home case.
-  if (key != 0 && (key == Options.KeyHome1 || key == Options.KeyHome2)) {
+  if (key != 0 &&
+      (key == TheOptions().KeyHome1 || key == TheOptions().KeyHome2)) {
     if (TheWorld().current_object().Count()) {
       TheMap().Center_Map();
       TheMap().Flag_To_Redraw(true);
       input = KN_NONE;
     } else {
-      input = Options.KeyBase;
+      input = TheOptions().KeyBase;
     }
   }
 
   // Center the map about the construction yard or construction vehicle
   // if one is present.
-  if (key != 0 && key == Options.KeyBase) {
+  if (key != 0 && key == TheOptions().KeyBase) {
     Unselect_All();
     if (ThePlayer()->CurBuildings) {
       for (int index = 0; index < TheObjectHeaps().building().Count();
@@ -312,7 +313,7 @@ void Keyboard_Process(KeyNumType& input) {
   }
 
   // Toggle the status of formation for the current team
-  if (key != 0 && key == Options.KeyFormation) {
+  if (key != 0 && key == TheOptions().KeyFormation) {
     Toggle_Formation();
     input = KN_NONE;
   }
@@ -320,7 +321,7 @@ void Keyboard_Process(KeyNumType& input) {
   // In multiplayer the resign key brings up the surrender dialog. Single
   // player has the mission abort in the options menu instead: surrendering
   // there would only self-destruct the base and lose the mission.
-  if (key != 0 && key == Options.KeyResign) {
+  if (key != 0 && key == TheOptions().KeyResign) {
     if (TheSession().Type != GAME_NORMAL && !PlayerLoses &&
         !ThePlayer()->IsDefeated) {
       SpecialDialog = SDLG_SURRENDER;
@@ -329,7 +330,7 @@ void Keyboard_Process(KeyNumType& input) {
   }
 
   // Handle making and breaking alliances.
-  if (key != 0 && key == Options.KeyAlliance) {
+  if (key != 0 && key == TheOptions().KeyAlliance) {
     if ((TheSession().Type != GAME_NORMAL ||
          TheDebugState().developer_mode()) &&
         (TheWorld().current_object().Count() && !ThePlayer()->IsDefeated) &&
@@ -345,7 +346,7 @@ void Keyboard_Process(KeyNumType& input) {
 
   // Select all the units on the current display. This is equivalent to
   // drag selecting the whole view.
-  if (key != 0 && key == Options.KeySelectView) {
+  if (key != 0 && key == TheOptions().KeySelectView) {
     // The corners are leptons relative to the tactical view, so 0 is its top
     // left and the size below is its full extent -- a drag select of everything
     // on screen.
@@ -355,37 +356,38 @@ void Keyboard_Process(KeyNumType& input) {
   }
 
   // Toggles the repair state similarly to pressing the repair button.
-  if (key != 0 && key == Options.KeyRepair) {
+  if (key != 0 && key == TheOptions().KeyRepair) {
     TheMap().Repair_Mode_Control(-1);
     input = KN_NONE;
   }
 
   // Toggles the sell state similarly to pressing the sell button.
-  if (key != 0 && key == Options.KeySell) {
+  if (key != 0 && key == TheOptions().KeySell) {
     TheMap().Sell_Mode_Control(-1);
     input = KN_NONE;
   }
 
   // Toggles the map zoom mode similarly to pressing the map button.
-  if (key != 0 && key == Options.KeyMap) {
+  if (key != 0 && key == TheOptions().KeyMap) {
     TheMap().Zoom_Mode_Control();
     input = KN_NONE;
   }
 
   // Scrolls the sidebar up one slot.
-  if (key != 0 && key == Options.KeySidebarUp) {
+  if (key != 0 && key == TheOptions().KeySidebarUp) {
     TheMap().Scroll(true, -1);
     input = KN_NONE;
   }
 
   // Scrolls the sidebar down one slot.
-  if (key != 0 && key == Options.KeySidebarDown) {
+  if (key != 0 && key == TheOptions().KeySidebarDown) {
     TheMap().Scroll(false, -1);
     input = KN_NONE;
   }
 
   // Brings up the options dialog box.
-  if (key != 0 && (key == Options.KeyOption1 || key == Options.KeyOption2)) {
+  if (key != 0 &&
+      (key == TheOptions().KeyOption1 || key == TheOptions().KeyOption2)) {
     TheMap().Help_Text(TXT_NONE);  // Turns off help text.
     Queue_Options();
     input = KN_NONE;
@@ -393,19 +395,19 @@ void Keyboard_Process(KeyNumType& input) {
 
   // Scrolls the tactical map in the direction specified.
   int distance = CELL_LEPTON_W;
-  if (key != 0 && key == Options.KeyScrollLeft) {
+  if (key != 0 && key == TheOptions().KeyScrollLeft) {
     TheMap().Scroll_Map(DIR_W, distance, true);
     input = KN_NONE;
   }
-  if (key != 0 && key == Options.KeyScrollRight) {
+  if (key != 0 && key == TheOptions().KeyScrollRight) {
     TheMap().Scroll_Map(DIR_E, distance, true);
     input = KN_NONE;
   }
-  if (key != 0 && key == Options.KeyScrollUp) {
+  if (key != 0 && key == TheOptions().KeyScrollUp) {
     TheMap().Scroll_Map(DIR_N, distance, true);
     input = KN_NONE;
   }
-  if (key != 0 && key == Options.KeyScrollDown) {
+  if (key != 0 && key == TheOptions().KeyScrollDown) {
     TheMap().Scroll_Map(DIR_S, distance, true);
     input = KN_NONE;
   }
@@ -414,64 +416,64 @@ void Keyboard_Process(KeyNumType& input) {
   // to the KN numbers is because the Windows keyboard driver can vary
   // the base code number for the key depending on the shift or alt key
   // state!
-  if (input != 0 && (plain == Options.KeyTeam1 || plain == KN_1)) {
+  if (input != 0 && (plain == TheOptions().KeyTeam1 || plain == KN_1)) {
     Handle_Team(0, action);
     input = KN_NONE;
   }
-  if (input != 0 && (plain == Options.KeyTeam2 || plain == KN_2)) {
+  if (input != 0 && (plain == TheOptions().KeyTeam2 || plain == KN_2)) {
     Handle_Team(1, action);
     input = KN_NONE;
   }
-  if (input != 0 && (plain == Options.KeyTeam3 || plain == KN_3)) {
+  if (input != 0 && (plain == TheOptions().KeyTeam3 || plain == KN_3)) {
     Handle_Team(2, action);
     input = KN_NONE;
   }
-  if (input != 0 && (plain == Options.KeyTeam4 || plain == KN_4)) {
+  if (input != 0 && (plain == TheOptions().KeyTeam4 || plain == KN_4)) {
     Handle_Team(3, action);
     input = KN_NONE;
   }
-  if (input != 0 && (plain == Options.KeyTeam5 || plain == KN_5)) {
+  if (input != 0 && (plain == TheOptions().KeyTeam5 || plain == KN_5)) {
     Handle_Team(4, action);
     input = KN_NONE;
   }
-  if (input != 0 && (plain == Options.KeyTeam6 || plain == KN_6)) {
+  if (input != 0 && (plain == TheOptions().KeyTeam6 || plain == KN_6)) {
     Handle_Team(5, action);
     input = KN_NONE;
   }
-  if (input != 0 && (plain == Options.KeyTeam7 || plain == KN_7)) {
+  if (input != 0 && (plain == TheOptions().KeyTeam7 || plain == KN_7)) {
     Handle_Team(6, action);
     input = KN_NONE;
   }
-  if (input != 0 && (plain == Options.KeyTeam8 || plain == KN_8)) {
+  if (input != 0 && (plain == TheOptions().KeyTeam8 || plain == KN_8)) {
     Handle_Team(7, action);
     input = KN_NONE;
   }
-  if (input != 0 && (plain == Options.KeyTeam9 || plain == KN_9)) {
+  if (input != 0 && (plain == TheOptions().KeyTeam9 || plain == KN_9)) {
     Handle_Team(8, action);
     input = KN_NONE;
   }
-  if (input != 0 && (plain == Options.KeyTeam10 || plain == KN_0)) {
+  if (input != 0 && (plain == TheOptions().KeyTeam10 || plain == KN_0)) {
     Handle_Team(9, action);
     input = KN_NONE;
   }
 
   // Handle the bookmark hotkeys.
-  if (input != 0 && plain == Options.KeyBookmark1 &&
+  if (input != 0 && plain == TheOptions().KeyBookmark1 &&
       !TheDebugState().map_editor_active()) {
     Handle_View(0, action);
     input = KN_NONE;
   }
-  if (input != 0 && plain == Options.KeyBookmark2 &&
+  if (input != 0 && plain == TheOptions().KeyBookmark2 &&
       !TheDebugState().map_editor_active()) {
     Handle_View(1, action);
     input = KN_NONE;
   }
-  if (input != 0 && plain == Options.KeyBookmark3 &&
+  if (input != 0 && plain == TheOptions().KeyBookmark3 &&
       !TheDebugState().map_editor_active()) {
     Handle_View(2, action);
     input = KN_NONE;
   }
-  if (input != 0 && plain == Options.KeyBookmark4 &&
+  if (input != 0 && plain == TheOptions().KeyBookmark4 &&
       !TheDebugState().map_editor_active()) {
     Handle_View(3, action);
     input = KN_NONE;

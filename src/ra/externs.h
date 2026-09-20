@@ -109,11 +109,7 @@ extern bool PlayerLoses;
 extern bool PlayerRestarts;
 extern bool BreakoutAllowed;
 
-extern GameOptionsClass Options;
 
-extern AudioMixer Audio;
-extern ThemeClass Theme;
-extern SpecialClass Special;
 
 /*
 **	Game object allocation and tracking classes.

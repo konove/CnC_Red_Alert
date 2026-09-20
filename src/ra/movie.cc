@@ -84,7 +84,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     // adjust-set-adjust-set sequence below drives the palette to black and
     // then back, which is what produces the fade rather than a hard cut.
     Hide_Mouse();
-    Theme.Queue_Song(theme);
+    TheTheme().Queue_Song(theme);
     if (!clear_screen) {
       ThePalettes().black_palette().Set(kFadePaletteMedium);
       TheScreen().visible_page().Clear();
@@ -109,7 +109,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
       AnimControl.ImageBuf = TheScreen().sys_mem_page().Get_Bytes();
     }
 
-    if (!TheDebugState().quiet() && Audio.is_open()) {
+    if (!TheDebugState().quiet() && TheAudio().is_open()) {
       AnimControl.OptionFlags |= VQAOPTF_AUDIO;
     } else {
       AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;

@@ -2975,7 +2975,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*........................................................................
   Init scenario values, only the first time through
   ........................................................................*/
-  Special.IsCaptureTheFlag = TheRules().IsMPCaptureTheFlag;
+  TheSpecial().IsCaptureTheFlag = TheRules().IsMPCaptureTheFlag;
   if (first_time) {
     TheSession().Options.Credits =
         TheRules().MPDefaultMoney;  // init credits & credit buffer
@@ -2984,7 +2984,7 @@ int Com_Scenario_Dialog(bool skirmish) {
     TheSession().Options.Tiberium = TheRules().IsMPTiberiumGrow;
     TheSession().Options.Goodies = TheRules().IsMPCrates;
     TheSession().Options.AIPlayers = 0;
-    Special.IsShadowGrow = TheRules().IsMPShadowGrow;
+    TheSpecial().IsShadowGrow = TheRules().IsMPShadowGrow;
     TheSession().Options.UnitCount =
         (base::At(SessionClass::CountMax, TheSession().Options.Bases) +
          base::At(SessionClass::CountMin, TheSession().Options.Bases)) /
@@ -3012,9 +3012,9 @@ int Com_Scenario_Dialog(bool skirmish) {
   optionlist.Check_Item(0, TheSession().Options.Bases != 0);
   optionlist.Check_Item(1, TheSession().Options.Tiberium != 0);
   optionlist.Check_Item(2, TheSession().Options.Goodies != 0);
-  optionlist.Check_Item(3, Special.IsShadowGrow);
+  optionlist.Check_Item(3, TheSpecial().IsShadowGrow);
   if (!skirmish) {
-    optionlist.Check_Item(4, Special.IsCaptureTheFlag);
+    optionlist.Check_Item(4, TheSpecial().IsCaptureTheFlag);
   }
 
   countgauge.Set_Maximum(
@@ -3049,7 +3049,8 @@ int Com_Scenario_Dialog(bool skirmish) {
   ........................................................................*/
   TheRules().IsTGrowth = TheRules().IsTSpread =
       TheSession().Options.Tiberium != 0;
-  Special.IsTGrowth = Special.IsTSpread = TheRules().IsTGrowth ? 1 : 0;
+  TheSpecial().IsTGrowth = TheSpecial().IsTSpread =
+      TheRules().IsTGrowth ? 1 : 0;
   transmit = true;
 
   /*........................................................................
@@ -3565,8 +3566,9 @@ int Com_Scenario_Dialog(bool skirmish) {
         //------------------------------------------------------------------
         case ButtonKey(kButtonOptions):
           if (!skirmish &&
-              (Special.IsCaptureTheFlag != 0) != optionlist.Is_Checked(4) &&
-              !Special.IsCaptureTheFlag) {
+              (TheSpecial().IsCaptureTheFlag != 0) !=
+                  optionlist.Is_Checked(4) &&
+              !TheSpecial().IsCaptureTheFlag) {
             optionlist.Check_Item(0, true);
           }
           if ((TheSession().Options.Bases != 0) != optionlist.Is_Checked(0)) {
@@ -3599,17 +3601,17 @@ int Com_Scenario_Dialog(bool skirmish) {
                 base::At(SessionClass::CountMin, TheSession().Options.Bases));
           }
           TheSession().Options.Tiberium = optionlist.Is_Checked(1) ? 1 : 0;
-          Special.IsTGrowth =
+          TheSpecial().IsTGrowth =
               static_cast<unsigned>(TheSession().Options.Tiberium);
           TheRules().IsTGrowth = TheSession().Options.Tiberium != 0;
-          Special.IsTSpread =
+          TheSpecial().IsTSpread =
               static_cast<unsigned>(TheSession().Options.Tiberium);
           TheRules().IsTSpread = TheSession().Options.Tiberium != 0;
 
           TheSession().Options.Goodies = optionlist.Is_Checked(2) ? 1 : 0;
-          Special.IsShadowGrow = optionlist.Is_Checked(3);
+          TheSpecial().IsShadowGrow = optionlist.Is_Checked(3);
           if (!skirmish) {
-            Special.IsCaptureTheFlag = optionlist.Is_Checked(4);
+            TheSpecial().IsCaptureTheFlag = optionlist.Is_Checked(4);
           }
 
           transmit = true;
@@ -3778,8 +3780,8 @@ int Com_Scenario_Dialog(bool skirmish) {
         SendPacket.ScenarioInfo.UnitCount =
             static_cast<unsigned char>(TheSession().Options.UnitCount);
         SendPacket.ScenarioInfo.Seed = TheWorld().seed();
-        SendPacket.ScenarioInfo.Special = Special;
-        SendPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
+        SendPacket.ScenarioInfo.Special = TheSpecial();
+        SendPacket.ScenarioInfo.GameSpeed = TheOptions().GameSpeed;
         SendPacket.ID = static_cast<unsigned char>(TheSession().ModemType);
 
         /*
@@ -4842,8 +4844,8 @@ int Com_Show_Scenario_Dialog() {
   optionlist.Check_Item(0, TheSession().Options.Bases != 0);
   optionlist.Check_Item(1, TheSession().Options.Tiberium != 0);
   optionlist.Check_Item(2, TheSession().Options.Goodies != 0);
-  optionlist.Check_Item(3, Special.IsCaptureTheFlag);
-  optionlist.Check_Item(4, Special.IsShadowGrow);
+  optionlist.Check_Item(3, TheSpecial().IsCaptureTheFlag);
+  optionlist.Check_Item(4, TheSpecial().IsShadowGrow);
 
   //........................................................................
   // House buttons
@@ -5544,18 +5546,18 @@ int Com_Show_Scenario_Dialog() {
             TheSession().Options.UnitCount =
                 ReceivePacket.ScenarioInfo.UnitCount;
             TheWorld().seed() = ReceivePacket.ScenarioInfo.Seed;
-            Special = ReceivePacket.ScenarioInfo.Special;
-            Options.GameSpeed = ReceivePacket.ScenarioInfo.GameSpeed;
+            TheSpecial() = ReceivePacket.ScenarioInfo.Special;
+            TheOptions().GameSpeed = ReceivePacket.ScenarioInfo.GameSpeed;
 
             if (TheSession().Options.Tiberium) {
-              Special.IsTGrowth = true;
+              TheSpecial().IsTGrowth = true;
               TheRules().IsTGrowth = true;
-              Special.IsTSpread = true;
+              TheSpecial().IsTSpread = true;
               TheRules().IsTSpread = true;
             } else {
-              Special.IsTGrowth = false;
+              TheSpecial().IsTGrowth = false;
               TheRules().IsTGrowth = false;
-              Special.IsTSpread = false;
+              TheSpecial().IsTSpread = false;
               TheRules().IsTSpread = false;
             }
 
@@ -5578,8 +5580,8 @@ int Com_Show_Scenario_Dialog() {
             optionlist.Check_Item(0, TheSession().Options.Bases != 0);
             optionlist.Check_Item(1, TheSession().Options.Tiberium != 0);
             optionlist.Check_Item(2, TheSession().Options.Goodies != 0);
-            optionlist.Check_Item(3, Special.IsCaptureTheFlag);
-            optionlist.Check_Item(4, Special.IsShadowGrow);
+            optionlist.Check_Item(3, TheSpecial().IsCaptureTheFlag);
+            optionlist.Check_Item(4, TheSpecial().IsShadowGrow);
             optionlist.Flag_To_Redraw();
 
             /*
@@ -7069,15 +7071,15 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   */
   ThemeType old_theme = THEME_NONE;
   if (SoundOn) {
-    old_theme = Theme.What_Is_Playing();
-    Theme.Stop();
+    old_theme = TheTheme().What_Is_Playing();
+    TheTheme().Stop();
     CountDownTimerClass wait;
     ServiceRealTime();
     wait.Set(60, true);
     while (wait.Time()) {
       ServiceRealTime();
     }
-    Audio.Close();
+    TheAudio().Close();
     ServiceRealTime();
     wait.Set(60, true);
     while (wait.Time()) {
@@ -7140,9 +7142,9 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Restore audio capability
   */
-  SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
+  SoundOn = TheAudio().Open(11025 * 2, /*stereo=*/false);
   if (SoundOn) {
-    Theme.Play_Song(old_theme);
+    TheTheme().Play_Song(old_theme);
   }
 
   TheSession().ModemService = true;
@@ -7241,15 +7243,15 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   */
   ThemeType old_theme = THEME_NONE;
   if (SoundOn) {
-    old_theme = Theme.What_Is_Playing();
-    Theme.Stop();
+    old_theme = TheTheme().What_Is_Playing();
+    TheTheme().Stop();
     CountDownTimerClass wait;
     ServiceRealTime();
     wait.Set(60, true);
     while (wait.Time()) {
       ServiceRealTime();
     }
-    Audio.Close();
+    TheAudio().Close();
     ServiceRealTime();
     wait.Set(60, true);
     while (wait.Time()) {
@@ -7298,9 +7300,9 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Restore audio capability
   */
-  SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
+  SoundOn = TheAudio().Open(11025 * 2, /*stereo=*/false);
   if (SoundOn) {
-    Theme.Play_Song(old_theme);
+    TheTheme().Play_Song(old_theme);
   }
 
   TheSession().ModemService = true;

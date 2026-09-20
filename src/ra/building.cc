@@ -145,7 +145,6 @@
 #include "ra/display_constants.h"
 #include "ra/drive.h"
 #include "ra/event.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/facing.h"
 #include "ra/factory.h"
@@ -1317,7 +1316,7 @@ void BuildingClass::AI() {
       BState = QueueBState;
       const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
       if (BState == BSTATE_CONSTRUCTION || BState == BSTATE_IDLE) {
-        Set_Rate(Options.Normalize_Delay(ctrl->Rate));
+        Set_Rate(TheOptions().Normalize_Delay(ctrl->Rate));
       } else {
         Set_Rate(ctrl->Rate);
       }
@@ -3486,7 +3485,7 @@ void BuildingClass::Begin_Mode(BStateType bstate) {
 
     int rate = ctrl->Rate;
     if (Class->IsRegulated && bstate != BSTATE_CONSTRUCTION) {
-      rate = Options.Normalize_Delay(rate);
+      rate = TheOptions().Normalize_Delay(rate);
     }
     Set_Rate(rate);
     Set_Stage(ctrl->Start);
@@ -6345,7 +6344,7 @@ void BuildingClass::Animation_AI() {
   if (toloop) {
     const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
     if (BState == BSTATE_CONSTRUCTION || BState == BSTATE_IDLE) {
-      Set_Rate(Options.Normalize_Delay(ctrl->Rate));
+      Set_Rate(TheOptions().Normalize_Delay(ctrl->Rate));
     } else {
       Set_Rate(ctrl->Rate);
     }

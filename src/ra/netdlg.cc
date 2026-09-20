@@ -2751,8 +2751,8 @@ static int Net_Join_Dialog() {
       optionlist.Check_Item(0, TheSession().Options.Bases != 0);
       optionlist.Check_Item(1, TheSession().Options.Tiberium != 0);
       optionlist.Check_Item(2, TheSession().Options.Goodies != 0);
-      optionlist.Check_Item(3, Special.IsCaptureTheFlag);
-      optionlist.Check_Item(4, Special.IsShadowGrow);
+      optionlist.Check_Item(3, TheSpecial().IsCaptureTheFlag);
+      optionlist.Check_Item(4, TheSpecial().IsShadowGrow);
       optionlist.Flag_To_Redraw();
 
       PlaySoundEffect(VOC_OPTIONS_CHANGED);
@@ -3818,8 +3818,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       TheSession().Options.UnitCount =
           TheSession().GPacket.ScenarioInfo.UnitCount;
       TheWorld().seed() = TheSession().GPacket.ScenarioInfo.Seed;
-      Special = TheSession().GPacket.ScenarioInfo.Special;
-      Options.GameSpeed = TheSession().GPacket.ScenarioInfo.GameSpeed;
+      TheSpecial() = TheSession().GPacket.ScenarioInfo.Special;
+      TheOptions().GameSpeed = TheSession().GPacket.ScenarioInfo.GameSpeed;
 
       //	Guest receives game version number from host.
       //	Added to the transmitted version number is a bit indicating
@@ -3837,14 +3837,14 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       // );
 
       if (TheSession().Options.Tiberium) {
-        Special.IsTGrowth = 1;
+        TheSpecial().IsTGrowth = 1;
         TheRules().IsTGrowth = true;
-        Special.IsTSpread = 1;
+        TheSpecial().IsTSpread = 1;
         TheRules().IsTSpread = true;
       } else {
-        Special.IsTGrowth = 0;
+        TheSpecial().IsTGrowth = 0;
         TheRules().IsTGrowth = false;
-        Special.IsTSpread = 0;
+        TheSpecial().IsTSpread = 0;
         TheRules().IsTSpread = false;
       }
 
@@ -4346,7 +4346,7 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   //	Init dialog values, only the first time through
   //------------------------------------------------------------------------
-  Special.IsCaptureTheFlag = TheRules().IsMPCaptureTheFlag;
+  TheSpecial().IsCaptureTheFlag = TheRules().IsMPCaptureTheFlag;
   if (first_time) {
     TheSession().Options.Credits =
         TheRules().MPDefaultMoney;  // init credits & credit buffer
@@ -4377,8 +4377,8 @@ static int Net_New_Dialog() {
   optionlist.Check_Item(0, TheSession().Options.Bases != 0);
   optionlist.Check_Item(1, TheSession().Options.Tiberium != 0);
   optionlist.Check_Item(2, TheSession().Options.Goodies != 0);
-  optionlist.Check_Item(3, Special.IsCaptureTheFlag);
-  optionlist.Check_Item(4, Special.IsShadowGrow);
+  optionlist.Check_Item(3, TheSpecial().IsCaptureTheFlag);
+  optionlist.Check_Item(4, TheSpecial().IsShadowGrow);
 
   countgauge.Set_Maximum(
       base::At(SessionClass::CountMax, TheSession().Options.Bases) -
@@ -4396,9 +4396,9 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   //	Init other scenario parameters
   //------------------------------------------------------------------------
-  Special.IsTGrowth = static_cast<unsigned>(TheSession().Options.Tiberium);
+  TheSpecial().IsTGrowth = static_cast<unsigned>(TheSession().Options.Tiberium);
   TheRules().IsTGrowth = TheSession().Options.Tiberium != 0;
-  Special.IsTSpread = static_cast<unsigned>(TheSession().Options.Tiberium);
+  TheSpecial().IsTSpread = static_cast<unsigned>(TheSession().Options.Tiberium);
   TheRules().IsTSpread = TheSession().Options.Tiberium != 0;
   int transmit = 0;  // 1 = re-transmit new game options
 
@@ -4774,8 +4774,8 @@ static int Net_New_Dialog() {
       // in SpecialClass.
       //..................................................................
       case ButtonKey(kButtonOptions):
-        if ((Special.IsCaptureTheFlag != 0) != optionlist.Is_Checked(3) &&
-            !Special.IsCaptureTheFlag) {
+        if ((TheSpecial().IsCaptureTheFlag != 0) != optionlist.Is_Checked(3) &&
+            !TheSpecial().IsCaptureTheFlag) {
           optionlist.Check_Item(0, true);
         }
         if ((TheSession().Options.Bases != 0) != optionlist.Is_Checked(0)) {
@@ -4806,16 +4806,16 @@ static int Net_New_Dialog() {
               base::At(SessionClass::CountMin, TheSession().Options.Bases));
         }
         TheSession().Options.Tiberium = optionlist.Is_Checked(1) ? 1 : 0;
-        Special.IsTGrowth =
+        TheSpecial().IsTGrowth =
             static_cast<unsigned>(TheSession().Options.Tiberium);
         TheRules().IsTGrowth = TheSession().Options.Tiberium != 0;
-        Special.IsTSpread =
+        TheSpecial().IsTSpread =
             static_cast<unsigned>(TheSession().Options.Tiberium);
         TheRules().IsTSpread = TheSession().Options.Tiberium != 0;
 
         TheSession().Options.Goodies = optionlist.Is_Checked(2) ? 1 : 0;
-        Special.IsCaptureTheFlag = optionlist.Is_Checked(3);
-        Special.IsShadowGrow = optionlist.Is_Checked(4);
+        TheSpecial().IsCaptureTheFlag = optionlist.Is_Checked(3);
+        TheSpecial().IsShadowGrow = optionlist.Is_Checked(4);
 
         transmit = 1;
         display = REDRAW_PARMS;
@@ -5101,8 +5101,8 @@ static int Net_New_Dialog() {
         TheSession().GPacket.ScenarioInfo.AIPlayers =
             static_cast<unsigned char>(TheSession().Options.AIPlayers);
         TheSession().GPacket.ScenarioInfo.Seed = TheWorld().seed();
-        TheSession().GPacket.ScenarioInfo.Special = Special;
-        TheSession().GPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
+        TheSession().GPacket.ScenarioInfo.Special = TheSpecial();
+        TheSession().GPacket.ScenarioInfo.GameSpeed = TheOptions().GameSpeed;
         TheSession().GPacket.ScenarioInfo.Version =
             VerNum.Get_Clipped_Version();
         //	Host encodes whether or not this is an Aftermath game in the

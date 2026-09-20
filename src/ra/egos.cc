@@ -635,7 +635,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Stop the music.
   */
-  Theme.Stop();
+  TheTheme().Stop();
 
   /*
   ** Fade to black.
@@ -707,11 +707,11 @@ void Show_Who_Was_Responsible() {
   /*
   ** Start any old song.
   */
-  const fixed oldvolume = Options.ScoreVolume;
+  const fixed oldvolume = TheOptions().ScoreVolume;
   if (oldvolume == 0) {
-    Options.Set_Score_Volume(fixed(4, 10), false);
+    TheOptions().Set_Score_Volume(fixed(4, 10), false);
   }
-  Theme.Queue_Song(THEME_CREDITS);
+  TheTheme().Queue_Song(THEME_CREDITS);
 
   /*
   ** Init misc timing variables.
@@ -785,8 +785,8 @@ void Show_Who_Was_Responsible() {
       LogicPage->Unlock();
     }
 
-    if (frame > 1000 && !Theme.Still_Playing()) {
-      Theme.Queue_Song(THEME_CREDITS);
+    if (frame > 1000 && !TheTheme().Still_Playing()) {
+      TheTheme().Queue_Song(THEME_CREDITS);
     }
 
     /*
@@ -838,7 +838,7 @@ void Show_Who_Was_Responsible() {
   }
 
   if (key == KN_ESC) {
-    Theme.Fade_Out();
+    TheTheme().Fade_Out();
     ThePalettes().black_palette().Set(kTimerSecond * 2, ServiceRealTime);
   } else {
     /*
@@ -874,8 +874,8 @@ void Show_Who_Was_Responsible() {
   GadgetClass::Set_Color_Scheme(
       &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE));
 
-  Theme.Stop();
-  Options.Set_Score_Volume(oldvolume, false);
+  TheTheme().Stop();
+  TheOptions().Set_Score_Volume(oldvolume, false);
 
   for (auto& SlideBuffer : SlideBuffers) {
     delete SlideBuffer;

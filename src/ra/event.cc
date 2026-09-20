@@ -572,7 +572,7 @@ void EventClass::Execute() {
     *options have changed.
     */
     case SPECIAL: {
-      Special = Data.Options.Data;
+      TheSpecial() = Data.Options.Data;
       const HouseClass* house = TheObjectHeaps().house().Raw_Ptr(ID);
 
       // The format string comes from the localized string table, so verify the
@@ -892,7 +892,7 @@ void EventClass::Execute() {
     ** Give parting message while palette is fading to black.
     */
     case EXIT:
-      Theme.Queue_Song(THEME_NONE);
+      TheTheme().Queue_Song(THEME_NONE);
       StopSpeaking();
       Speak(VOX_CONTROL_EXIT);
       while (IsSpeaking()) {
@@ -914,7 +914,7 @@ void EventClass::Execute() {
     **	Process the options Game Speed
     */
     case GAMESPEED:
-      Options.GameSpeed = static_cast<unsigned>(Data.General.Value);
+      TheOptions().GameSpeed = static_cast<unsigned>(Data.General.Value);
       break;
 
     /*

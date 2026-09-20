@@ -998,8 +998,8 @@ void HouseClass::AI() {
         UnitFactories + BuildingFactories + InfantryFactories > 0) {
       Speak(VOX_NEED_MO_MONEY);
       TheMap().Flash_Money();
-      SpeakMaxedDelay.Set(
-          Options.Normalize_Delay(kTicksPerMinute * TheRules().SpeakDelay));
+      SpeakMaxedDelay.Set(TheOptions().Normalize_Delay(kTicksPerMinute *
+                                                       TheRules().SpeakDelay));
     }
 
     if (SpeakMaxedDelay.IsFinished() && IsMaxedOut) {
@@ -1007,15 +1007,15 @@ void HouseClass::AI() {
       if (Capacity - Tiberium < 300 && Capacity > 500 &&
           ActiveBScan & (kStructFlagRefinery | kStructFlagConst)) {
         Speak(VOX_NEED_MO_CAPACITY);
-        SpeakMaxedDelay.Set(
-            Options.Normalize_Delay(kTicksPerMinute * TheRules().SpeakDelay));
+        SpeakMaxedDelay.Set(TheOptions().Normalize_Delay(
+            kTicksPerMinute * TheRules().SpeakDelay));
       }
     }
     if ((SpeakPowerDelay.IsFinished() && Power_Fraction() < 1) &&
         (ActiveBScan & kStructFlagConst)) {
       Speak(VOX_LOW_POWER);
-      SpeakPowerDelay.Set(
-          Options.Normalize_Delay(kTicksPerMinute * TheRules().SpeakDelay));
+      SpeakPowerDelay.Set(TheOptions().Normalize_Delay(kTicksPerMinute *
+                                                       TheRules().SpeakDelay));
       TheMap().Flash_Power();
 
       const char* text = nullptr;
@@ -1681,7 +1681,7 @@ void HouseClass::Attacked() {
        ThePlayer()->Class->House == Class->House)) {
     Speak(VOX_BASE_UNDER_ATTACK);
     SpeakAttackDelay.Set(
-        Options.Normalize_Delay(kTicksPerMinute * TheRules().SpeakDelay));
+        TheOptions().Normalize_Delay(kTicksPerMinute * TheRules().SpeakDelay));
 
     /*
     **	If there is a trigger event associated with being attacked, process it
@@ -3441,7 +3441,7 @@ void HouseClass::MPlayer_Defeated() {
   /*
   **	Remove this house's flag & flag home cell
   */
-  if (Special.IsCaptureTheFlag) {
+  if (TheSpecial().IsCaptureTheFlag) {
     if (FlagLocation) {
       Flag_Remove(FlagLocation, true);
     } else {

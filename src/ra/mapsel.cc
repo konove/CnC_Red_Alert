@@ -144,8 +144,8 @@ static int ChoiceUnderMouse(const bool is_soviet, const int scenario) {
 }
 
 static void PlayMapSound(const std::string_view file_name) {
-  Audio.Play(MixArchive::RetrieveData(file_name), 255,
-             Options.Normalize_Volume(170));
+  TheAudio().Play(MixArchive::RetrieveData(file_name), 255,
+                  TheOptions().Normalize_Volume(170));
 }
 
 // Plays the animation that draws the map, leaving its last frame on screen and
@@ -233,7 +233,7 @@ ScenarioVarType ChooseMissionVariant() {
                   static_cast<char>('A' + TheScenario().Scenario));
   PaletteClass map_palette;
 
-  Theme.Queue_Song(THEME_MAP);
+  TheTheme().Queue_Song(THEME_MAP);
   PlayMapReveal(animation_name, map_palette);
   Show_Mouse();
   Keyboard->Clear();
@@ -249,7 +249,7 @@ ScenarioVarType ChooseMissionVariant() {
 
   Fancy_Text_Print(TXT_STAND_BY, 320, 380, GadgetClass::Get_Color_Scheme(),
                    kTBlack, TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
-  Theme.Fade_Out();
+  TheTheme().Fade_Out();
 
   return base::At(kChoiceVariants, choice);
 }

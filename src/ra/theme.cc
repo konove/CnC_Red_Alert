@@ -215,8 +215,8 @@ const char* ThemeClass::Full_Name(ThemeType theme) {
  *as it is about to play it.                           *
  *=============================================================================================*/
 void ThemeClass::AI() {
-  if (Audio.is_open() && !TheDebugState().quiet()) {
-    if (ScoresPresent && Options.ScoreVolume != 0 && !Still_Playing() &&
+  if (TheAudio().is_open() && !TheDebugState().quiet()) {
+    if (ScoresPresent && TheOptions().ScoreVolume != 0 && !Still_Playing() &&
         Pending != THEME_NONE) {
       /*
       **	If the pending song needs to be picked, then pick it now.
@@ -232,7 +232,7 @@ void ThemeClass::AI() {
       Play_Song(Pending);
       Pending = THEME_PICK_ANOTHER;
     }
-    Audio.PumpStreams();
+    TheAudio().PumpStreams();
   }
 }
 
@@ -256,8 +256,8 @@ void ThemeClass::AI() {
 ThemeType ThemeClass::Next_Song(ThemeType theme) {
   if (theme == THEME_NONE || theme == THEME_PICK_ANOTHER ||
       (theme != THEME_QUIET && !_themes.at(theme).Repeat &&
-       !Options.IsScoreRepeat)) {
-    if (Options.IsScoreShuffle) {
+       !TheOptions().IsScoreRepeat)) {
+    if (TheOptions().IsScoreShuffle) {
       /*
       **	Shuffle the theme, but never pick the same theme that was just
       **	playing.
@@ -312,7 +312,7 @@ void ThemeClass::Queue_Song(ThemeType theme) {
   **	If there is no sound driver or sounds have been specifically
   **	turned off, then abort.
   */
-  if (!Audio.is_open() || TheDebugState().quiet()) {
+  if (!TheAudio().is_open() || TheDebugState().quiet()) {
     return;
   }
 
@@ -320,7 +320,7 @@ void ThemeClass::Queue_Song(ThemeType theme) {
   **	If the current score volumne is set to silent, then there is no need to
   *play the *	specified theme.
   */
-  if (Options.ScoreVolume == 0) {
+  if (TheOptions().ScoreVolume == 0) {
     return;
   }
 
@@ -332,7 +332,7 @@ void ThemeClass::Queue_Song(ThemeType theme) {
       theme == THEME_NONE || theme == THEME_QUIET) {
     Pending = theme;
     if (Still_Playing()) {
-      Audio.FadeOut(Current, kThemeDelay);
+      TheAudio().FadeOut(Current, kThemeDelay);
     }
   }
 }
@@ -354,12 +354,12 @@ void ThemeClass::Queue_Song(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int ThemeClass::Play_Song(ThemeType theme) {
-  if (ScoresPresent && Audio.is_open() && !TheDebugState().quiet() &&
-      Options.ScoreVolume != 0) {
+  if (ScoresPresent && TheAudio().is_open() && !TheDebugState().quiet() &&
+      TheOptions().ScoreVolume != 0) {
     Stop();
     Score = theme;
     if (theme != THEME_NONE && theme != THEME_QUIET) {
-      Current = Audio.Stream(Theme_File_Name(theme), 0xFF);
+      Current = TheAudio().Stream(Theme_File_Name(theme), 0xFF);
     }
   }
   return Current;
@@ -435,9 +435,9 @@ int ThemeClass::Track_Length(ThemeType theme) {
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
 void ThemeClass::Stop() {
-  if (ScoresPresent && Audio.is_open() && !TheDebugState().quiet() &&
+  if (ScoresPresent && TheAudio().is_open() && !TheDebugState().quiet() &&
       Current != -1) {
-    Audio.Stop(Current);
+    TheAudio().Stop(Current);
     Current = -1;
     Score = THEME_NONE;
     Pending = THEME_NONE;
@@ -445,9 +445,9 @@ void ThemeClass::Stop() {
 }
 
 void ThemeClass::Suspend() {
-  if (ScoresPresent && Audio.is_open() && !TheDebugState().quiet() &&
+  if (ScoresPresent && TheAudio().is_open() && !TheDebugState().quiet() &&
       Current != -1) {
-    Audio.Stop(Current);
+    TheAudio().Stop(Current);
     Current = -1;
     Pending = Score;
     Score = THEME_NONE;
@@ -468,9 +468,9 @@ void ThemeClass::Suspend() {
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
 bool ThemeClass::Still_Playing() const {
-  if (ScoresPresent && Audio.is_open() && Current != -1 &&
+  if (ScoresPresent && TheAudio().is_open() && Current != -1 &&
       !TheDebugState().quiet()) {
-    return Audio.IsPlaying(Current);
+    return TheAudio().IsPlaying(Current);
   }
   return false;
 }

@@ -45,6 +45,7 @@
 #include "ra/defines.h"
 #include "ra/dib.h"
 #include "ra/externs.h"
+#include "ra/goptions.h"
 #include "ra/iconlist.h"
 #include "ra/installation.h"
 #include "ra/ipx.h"
@@ -54,6 +55,7 @@
 #include "ra/rawolapi.h"
 #include "ra/rules.h"
 #include "ra/session.h"
+#include "ra/special.h"
 #include "ra/text_ids.h"
 #include "ra/tooltip.h"
 #include "ra/vector_dynamic.h"
@@ -603,7 +605,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       pTextBtnAcceptStart->Disable();
     }
 
-    Special.IsCaptureTheFlag =
+    TheSpecial().IsCaptureTheFlag =
         TheRules().IsMPCaptureTheFlag;  //	Ugh. Use of "Special" global.
     if (bHost) {
       TheSession().Options.Credits =
@@ -622,10 +624,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //------------------------------------------------------------------------
     //	Init other scenario parameters
     //------------------------------------------------------------------------
-    Special.IsTGrowth = static_cast<unsigned>(
+    TheSpecial().IsTGrowth = static_cast<unsigned>(
         TheSession().Options.Tiberium);  //	Ugh. Use of "Special" global.
     TheRules().IsTGrowth = TheSession().Options.Tiberium != 0;
-    Special.IsTSpread = static_cast<unsigned>(
+    TheSpecial().IsTSpread = static_cast<unsigned>(
         TheSession().Options.Tiberium);  //	Ugh. Use of "Special" global.
     TheRules().IsTSpread = TheSession().Options.Tiberium != 0;
 
@@ -1545,9 +1547,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //..................................................................
       case ButtonKey(kButtonParams):
         bRetractHouseDropDown = true;
-        if ((Special.IsCaptureTheFlag != 0) !=
+        if ((TheSpecial().IsCaptureTheFlag != 0) !=
                 pCheckListOptions->Is_Checked(3) &&
-            !Special.IsCaptureTheFlag) {
+            !TheSpecial().IsCaptureTheFlag) {
           pCheckListOptions->Check_Item(0, true);
         }
         if ((TheSession().Options.Bases != 0) !=
@@ -1580,17 +1582,17 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         }
         TheSession().Options.Tiberium =
             pCheckListOptions->Is_Checked(1) ? 1 : 0;
-        Special.IsTGrowth = static_cast<unsigned>(
+        TheSpecial().IsTGrowth = static_cast<unsigned>(
             TheSession().Options.Tiberium);  //	Ugh. Use of "Special" global.
         TheRules().IsTGrowth = TheSession().Options.Tiberium != 0;
-        Special.IsTSpread = static_cast<unsigned>(
+        TheSpecial().IsTSpread = static_cast<unsigned>(
             TheSession().Options.Tiberium);  //	Ugh. Use of "Special" global.
         TheRules().IsTSpread = TheSession().Options.Tiberium != 0;
 
         TheSession().Options.Goodies = pCheckListOptions->Is_Checked(2) ? 1 : 0;
-        Special.IsCaptureTheFlag = pCheckListOptions->Is_Checked(
+        TheSpecial().IsCaptureTheFlag = pCheckListOptions->Is_Checked(
             3);  //	Ugh. Use of "Special" global.
-        Special.IsShadowGrow = pCheckListOptions->Is_Checked(
+        TheSpecial().IsShadowGrow = pCheckListOptions->Is_Checked(
             4);  //	Ugh. Use of "Special" global.
 
         bSlowUnitBuildRate = pCheckListOptions->Is_Checked(5);
@@ -1721,9 +1723,9 @@ void WOL_GameSetupDialog::SetSpecialControlStates() {
   pCheckListOptions->Check_Item(1, TheSession().Options.Tiberium != 0);
   pCheckListOptions->Check_Item(2, TheSession().Options.Goodies != 0);
   pCheckListOptions->Check_Item(
-      3, Special.IsCaptureTheFlag);  //	Ugh. Use of "Special" global.
+      3, TheSpecial().IsCaptureTheFlag);  //	Ugh. Use of "Special" global.
   pCheckListOptions->Check_Item(
-      4, Special.IsShadowGrow);  //	Ugh. Use of "Special" global.
+      4, TheSpecial().IsShadowGrow);  //	Ugh. Use of "Special" global.
 
   pCheckListOptions->Check_Item(
       5, bSlowUnitBuildRate);  //	Ugh. Use of "Special" global.
@@ -2767,56 +2769,60 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  Special.IsShadowGrow = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
-
-  szToken = tokens.Next();
-  if (!szToken) {
-    return false;
-  }
-  Special.IsSpeedBuild = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
-
-  szToken = tokens.Next();
-  if (!szToken) {
-    return false;
-  }
-  Special.IsFromInstall = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
-
-  szToken = tokens.Next();
-  if (!szToken) {
-    return false;
-  }
-  Special.IsCaptureTheFlag =
+  TheSpecial().IsShadowGrow =
       (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Special.IsInert = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+  TheSpecial().IsSpeedBuild =
+      (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Special.IsThreePoint = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+  TheSpecial().IsFromInstall =
+      (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Special.IsTGrowth = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+  TheSpecial().IsCaptureTheFlag =
+      (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Special.IsTSpread = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+  TheSpecial().IsInert = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Options.GameSpeed =
+  TheSpecial().IsThreePoint =
+      (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+
+  szToken = tokens.Next();
+  if (!szToken) {
+    return false;
+  }
+  TheSpecial().IsTGrowth = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+
+  szToken = tokens.Next();
+  if (!szToken) {
+    return false;
+  }
+  TheSpecial().IsTSpread = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+
+  szToken = tokens.Next();
+  if (!szToken) {
+    return false;
+  }
+  TheOptions().GameSpeed =
       static_cast<unsigned int>(tech::ParseIntegerOr<int>(szToken, 0));
 
   szToken = tokens.Next();
@@ -2886,8 +2892,8 @@ void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
   GParams.GPacket.ScenarioInfo.AIPlayers =
       static_cast<unsigned char>(TheSession().Options.AIPlayers);
   GParams.GPacket.ScenarioInfo.Seed = TheWorld().seed();
-  GParams.GPacket.ScenarioInfo.Special = Special;
-  GParams.GPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
+  GParams.GPacket.ScenarioInfo.Special = TheSpecial();
+  GParams.GPacket.ScenarioInfo.GameSpeed = TheOptions().GameSpeed;
   GParams.GPacket.ScenarioInfo.Version = VerNum.Get_Clipped_Version();
 
   GParams.bAftermathUnits = bAftermathUnits;
@@ -3582,11 +3588,11 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   }
 
   if (TheSession().Options.Tiberium) {
-    Special.IsTGrowth = 1;
-    Special.IsTSpread = 1;
+    TheSpecial().IsTGrowth = 1;
+    TheSpecial().IsTSpread = 1;
   } else {
-    Special.IsTGrowth = 0;
-    Special.IsTSpread = 0;
+    TheSpecial().IsTGrowth = 0;
+    TheSpecial().IsTSpread = 0;
   }
 
   //	The preceding was based on Read_Game_Options()...
@@ -3852,7 +3858,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
                        ->Description());
   }
 
-  Options.GameSpeed = 0;
+  TheOptions().GameSpeed = 0;
 
   // Session.MaxAhead = WChatMaxAhead = WWGetPrivateProfileInt("Timing",
   // "MaxAhead", 9, buffer); Session.FrameSendRate = WChatSendRate =

@@ -40,6 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_SPECIAL_H_
 #define CNC_RED_ALERT_RA_SPECIAL_H_
 
+#include "base/installed.h"
 #include "ra/text_ids.h"
 
 class SpecialClass {
@@ -106,5 +107,11 @@ class ArchiveReader;
 class ArchiveWriter;
 extern template void SpecialClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void SpecialClass::Serialize<ArchiveReader>(ArchiveReader&);
+
+// Returns the special command overrides that Game installed. CHECK-fails
+// outside a Game's lifetime unless a test installed its own.
+inline SpecialClass& TheSpecial() {
+  return base::Installed<SpecialClass>::Get();
+}
 
 #endif  // CNC_RED_ALERT_RA_SPECIAL_H_

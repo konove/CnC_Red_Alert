@@ -51,7 +51,6 @@
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
@@ -101,7 +100,7 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
   **	If there is no raw damage value to start with, then
   **	there can be no modified damage either.
   */
-  if (Special.IsInert || !damage || warhead == WARHEAD_NONE) {
+  if (TheSpecial().IsInert || !damage || warhead == WARHEAD_NONE) {
     return 0;
   }
 
@@ -189,7 +188,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   ObjectClass* objects[32];  // Maximum number of objects that can be damaged.
   int distance = 0;          // Distance to unit.
 
-  if (!strength || Special.IsInert || warhead == WARHEAD_NONE) {
+  if (!strength || TheSpecial().IsInert || warhead == WARHEAD_NONE) {
     return;
   }
 

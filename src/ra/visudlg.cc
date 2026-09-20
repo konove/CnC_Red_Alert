@@ -47,7 +47,6 @@
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/goptions.h"
 #include "ra/jshell.h"
@@ -131,7 +130,7 @@ void VisualControlsClass::Process() {
                          slider_y + (slider_y_spacing * 0), slider_width,
                          slider_height, true);
   brightness.Set_Thumb_Size(40);
-  brightness.Set_Value(Options.Get_Brightness() * 256);
+  brightness.Set_Value(TheOptions().Get_Brightness() * 256);
   brightness.Add_Tail(optionsbtn);
 
   /*
@@ -140,7 +139,7 @@ void VisualControlsClass::Process() {
   SliderClass color(kButtonColor, slider_x, slider_y + (slider_y_spacing * 1),
                     slider_width, slider_height, true);
   color.Set_Thumb_Size(40);
-  color.Set_Value(Options.Get_Saturation() * 256);
+  color.Set_Value(TheOptions().Get_Saturation() * 256);
   color.Add_Tail(optionsbtn);
 
   /*
@@ -150,7 +149,7 @@ void VisualControlsClass::Process() {
                        slider_y + (slider_y_spacing * 2), slider_width,
                        slider_height, true);
   contrast.Set_Thumb_Size(40);
-  contrast.Set_Value(Options.Get_Contrast() * 256);
+  contrast.Set_Value(TheOptions().Get_Contrast() * 256);
   contrast.Add_Tail(optionsbtn);
 
   /*
@@ -159,7 +158,7 @@ void VisualControlsClass::Process() {
   SliderClass tint(kButtonTint, slider_x, slider_y + (slider_y_spacing * 3),
                    slider_width, slider_height, true);
   tint.Set_Thumb_Size(40);
-  tint.Set_Value(Options.Get_Tint() * 256);
+  tint.Set_Value(TheOptions().Get_Tint() * 256);
   tint.Add_Tail(optionsbtn);
 
   /*
@@ -263,19 +262,19 @@ void VisualControlsClass::Process() {
     const KeyNumType input = optionsbtn.Input();
     switch (static_cast<int>(input)) {
       case ButtonKey(kButtonBrightness):
-        Options.Set_Brightness(fixed(brightness.Get_Value(), 256));
+        TheOptions().Set_Brightness(fixed(brightness.Get_Value(), 256));
         break;
 
       case ButtonKey(kButtonColor):
-        Options.Set_Saturation(fixed(color.Get_Value(), 256));
+        TheOptions().Set_Saturation(fixed(color.Get_Value(), 256));
         break;
 
       case ButtonKey(kButtonContrast):
-        Options.Set_Contrast(fixed(contrast.Get_Value(), 256));
+        TheOptions().Set_Contrast(fixed(contrast.Get_Value(), 256));
         break;
 
       case ButtonKey(kButtonTint):
-        Options.Set_Tint(fixed(tint.Get_Value(), 256));
+        TheOptions().Set_Tint(fixed(tint.Get_Value(), 256));
         break;
 
       case ButtonKey(kButtonReset):
@@ -294,19 +293,19 @@ void VisualControlsClass::Process() {
           base::At(buttonsliders, curbutton)->Bump(true);
           switch (curbutton) {
             case kButtonBrightness - kButtonBase:
-              Options.Set_Brightness(fixed(brightness.Get_Value(), 256));
+              TheOptions().Set_Brightness(fixed(brightness.Get_Value(), 256));
               break;
 
             case kButtonColor - kButtonBase:
-              Options.Set_Saturation(fixed(color.Get_Value(), 256));
+              TheOptions().Set_Saturation(fixed(color.Get_Value(), 256));
               break;
 
             case kButtonContrast - kButtonBase:
-              Options.Set_Contrast(fixed(contrast.Get_Value(), 256));
+              TheOptions().Set_Contrast(fixed(contrast.Get_Value(), 256));
               break;
 
             case kButtonTint - kButtonBase:
-              Options.Set_Tint(fixed(tint.Get_Value(), 256));
+              TheOptions().Set_Tint(fixed(tint.Get_Value(), 256));
               break;
             default:
               break;
@@ -330,19 +329,19 @@ void VisualControlsClass::Process() {
           base::At(buttonsliders, curbutton)->Bump(false);
           switch (curbutton) {
             case kButtonBrightness - kButtonBase:
-              Options.Set_Brightness(fixed(brightness.Get_Value(), 256));
+              TheOptions().Set_Brightness(fixed(brightness.Get_Value(), 256));
               break;
 
             case kButtonColor - kButtonBase:
-              Options.Set_Saturation(fixed(color.Get_Value(), 256));
+              TheOptions().Set_Saturation(fixed(color.Get_Value(), 256));
               break;
 
             case kButtonContrast - kButtonBase:
-              Options.Set_Contrast(fixed(contrast.Get_Value(), 256));
+              TheOptions().Set_Contrast(fixed(contrast.Get_Value(), 256));
               break;
 
             case kButtonTint - kButtonBase:
-              Options.Set_Tint(fixed(tint.Get_Value(), 256));
+              TheOptions().Set_Tint(fixed(tint.Get_Value(), 256));
               break;
             default:
               break;
@@ -424,10 +423,10 @@ void VisualControlsClass::Process() {
           color.Set_Value(128);
           tint.Set_Value(128);
 
-          Options.Set_Brightness(fixed::_1_2);
-          Options.Set_Contrast(fixed::_1_2);
-          Options.Set_Saturation(fixed::_1_2);
-          Options.Set_Tint(fixed::_1_2);
+          TheOptions().Set_Brightness(fixed::_1_2);
+          TheOptions().Set_Contrast(fixed::_1_2);
+          TheOptions().Set_Saturation(fixed::_1_2);
+          TheOptions().Set_Tint(fixed::_1_2);
           break;
 
         case kButtonOptions:

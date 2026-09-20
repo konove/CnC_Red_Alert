@@ -1398,10 +1398,10 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
     TheSession().DesiredFrameRate = 60 / highest_ticks;
   }
 
-  if (Options.GameSpeed == 0) {
+  if (TheOptions().GameSpeed == 0) {
     specified_frame_rate = 60;
   } else {
-    specified_frame_rate = 60 / Options.GameSpeed;
+    specified_frame_rate = 60 / TheOptions().GameSpeed;
   }
 
   TheSession().DesiredFrameRate =

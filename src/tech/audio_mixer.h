@@ -34,6 +34,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
+#include "base/installed.h"
 #include "sdllib/aud_decoder.h"
 #include "tech/file.h"
 
@@ -223,5 +224,9 @@ class AudioMixer {
   int score_volume_ = 255;
   std::array<Channel, kChannelCount> channels_;
 };
+
+// Returns the mixer the game installed. CHECK-fails outside a Game's
+// lifetime unless a test installed its own.
+inline AudioMixer& TheAudio() { return base::Installed<AudioMixer>::Get(); }
 
 #endif  // CNC_RED_ALERT_TECH_AUDIO_MIXER_H_

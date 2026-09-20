@@ -136,9 +136,9 @@ static void ApplyStartupOptions(const StartupOptions& options) {
   debug_state.set_print_events(options.print_events);
   debug_state.set_check_map(options.check_map);
 
-  Special.IsFromInstall = options.from_install;
-  Special.IsInert = options.inert_weapons;
-  Special.IsSpeedBuild = options.speed_build;
+  TheSpecial().IsFromInstall = options.from_install;
+  TheSpecial().IsInert = options.inert_weapons;
+  TheSpecial().IsSpeedBuild = options.speed_build;
 
   TheSession().NetStealth = options.net_stealth;
   TheSession().NetProtect = !options.outside_messages;
@@ -287,7 +287,7 @@ int main(const int argc, char* argv[])
   // The parser writes no game state, so these defaults come first and
   // ApplyStartupOptions() lays the command line over them.
   TheWorld().whom() = HOUSE_GOOD;
-  Special.Init();
+  TheSpecial().Init();
 
   const std::optional<StartupOptions> options = Parse_Command_Line(arguments);
   if (!options.has_value()) {
@@ -334,14 +334,14 @@ int main(const int argc, char* argv[])
 
   Create_Main_Window(nullptr, 0, Screen::kWidth, TheScreen().mode_height());
   // 22050 Hz mono.
-  SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
+  SoundOn = TheAudio().Open(11025 * 2, /*stereo=*/false);
 
   if (!TheScreen().Init()) {
     ShutDown();
     return EXIT_FAILURE;
   }
 
-  Options.Adjust_Variables_For_Resolution();
+  TheOptions().Adjust_Variables_For_Resolution();
 
   Memory_Error = &Memory_Error_Handler;
 
@@ -368,8 +368,8 @@ int main(const int argc, char* argv[])
   // IsFromInstall means "first launch after installing": play the intro
   // movie. The installer used to write PlayIntro=yes; with no entry it
   // still defaults to yes, so a fresh install sees the movie once.
-  if (!Special.IsFromInstall) {
-    Special.IsFromInstall = ini.Get_Bool("Intro", "PlayIntro", true);
+  if (!TheSpecial().IsFromInstall) {
+    TheSpecial().IsFromInstall = ini.Get_Bool("Intro", "PlayIntro", true);
   }
   ThePalettes().set_slow_palette(ini.Get_Bool("Options", "SlowPalette", false));
 
@@ -377,7 +377,7 @@ int main(const int argc, char* argv[])
   // PlayIntro=no so later launches go straight to the menu. Tiberian
   // Dawn forbids skipping this first-run intro with <ESC>; Red Alert
   // shipped allowing it.
-  if (Special.IsFromInstall) {
+  if (TheSpecial().IsFromInstall) {
     BreakoutAllowed = true;
     ini.Put_Bool("Intro", "PlayIntro", false);
     ini.Save(config_file);
@@ -398,7 +398,7 @@ int main(const int argc, char* argv[])
 #endif  // RA_NO_ENTRY_POINT
 
 void Prog_End() {
-  Audio.Close();
+  TheAudio().Close();
   delete WWMouse;
   WWMouse = nullptr;
   ShutdownTickTimer();

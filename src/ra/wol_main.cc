@@ -38,7 +38,6 @@ static void HandleDLLFail();
 #include "port/sleep.h"
 #include "port/win32/win32_registry.h"
 #include "port/win32/win32_system.h"
-#include "ra/externs.h"
 #include "ra/msgbox.h"
 #include "ra/theme.h"
 
@@ -64,7 +63,7 @@ int WOL_Main() {
     //	We have returned from a game started through ww online.
 
     //	Start theme up again.
-    Theme.Play_Song(THEME_INTRO);
+    TheTheme().Play_Song(THEME_INTRO);
 
     //	Verify that we are still connected. If we aren't, kill WolapiObject and
     // start over. 	(This will likely occur during the game, if connection

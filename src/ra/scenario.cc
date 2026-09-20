@@ -264,13 +264,13 @@ void ScenarioClass::Do_Fade_AI() {
       IsFadingColor = false;
     }
     const fixed newsat =
-        Options.Get_Saturation() *
+        TheOptions().Get_Saturation() *
         fixed(static_cast<int>(kGrayFadeTime - FadeTimer.Value()),
               static_cast<int>(kGrayFadeTime));
     GameOptionsClass::Adjust_Palette(
         ThePalettes().original_palette(), ThePalettes().game_palette(),
-        Options.Get_Brightness(), newsat, Options.Get_Tint(),
-        Options.Get_Contrast());
+        TheOptions().Get_Brightness(), newsat, TheOptions().Get_Tint(),
+        TheOptions().Get_Contrast());
     ThePalettes().game_palette().Set();
   }
   if (IsFadingBW) {
@@ -278,12 +278,12 @@ void ScenarioClass::Do_Fade_AI() {
       IsFadingBW = false;
     }
     const fixed newsat =
-        Options.Get_Saturation() *
+        TheOptions().Get_Saturation() *
         fixed(static_cast<int>(FadeTimer.Value()), kGrayFadeTime);
     GameOptionsClass::Adjust_Palette(
         ThePalettes().original_palette(), ThePalettes().game_palette(),
-        Options.Get_Brightness(), newsat, Options.Get_Tint(),
-        Options.Get_Contrast());
+        TheOptions().Get_Brightness(), newsat, TheOptions().Get_Tint(),
+        TheOptions().Get_Contrast());
     ThePalettes().game_palette().Set();
     if (!IsFadingBW) {
       IsFadingColor = true;
@@ -359,7 +359,7 @@ bool ScenarioClass::Set_Global_To(int global, bool value) {
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
 bool Start_Scenario(char* name, bool briefing) {
-  Theme.Stop();
+  TheTheme().Stop();
   TheWorld().is_tanya_dead() = TheWorld().save_tanya();
   if (!Read_Scenario(name)) {
     return false;
@@ -384,7 +384,7 @@ bool Start_Scenario(char* name, bool briefing) {
   //
 
   //   	}
-  Theme.Stop();
+  TheTheme().Stop();
 
   if (briefing) {
     Hide_Mouse();
@@ -422,14 +422,14 @@ bool Start_Scenario(char* name, bool briefing) {
   }
 
   if (TheScenario().TransitTheme == THEME_NONE) {
-    Theme.Queue_Song(magic_enum::enum_values<ThemeType>().front());
+    TheTheme().Queue_Song(magic_enum::enum_values<ThemeType>().front());
   }
 
   /*
   ** Set the options values, since the palette has been initialized by
   *Read_Scenario
   */
-  Options.Set();
+  TheOptions().Set();
 
   return true;
 }
@@ -809,7 +809,7 @@ void Clear_Scenario() {
 void Do_Win() {
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
   Hide_Mouse();
-  Theme.Queue_Song(THEME_QUIET);
+  TheTheme().Queue_Song(THEME_QUIET);
 
   /*
   ** If this is a multiplayer game, clear the game's name so we won't respond
@@ -1031,7 +1031,7 @@ void Do_Lose() {
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
   Hide_Mouse();
 
-  Theme.Queue_Song(THEME_QUIET);
+  TheTheme().Queue_Song(THEME_QUIET);
 
   /*
   ** If this is a multiplayer game, clear the game's name so we won't respond
@@ -1122,7 +1122,7 @@ void Do_Draw() {
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
   Hide_Mouse();
 
-  Theme.Queue_Song(THEME_QUIET);
+  TheTheme().Queue_Song(THEME_QUIET);
 
   /*
   ** If this is a multiplayer game, clear the game's name so we won't respond
@@ -1190,7 +1190,7 @@ void Do_Restart() {
   */
   Timer<SystemTickSource> timer;
   timer.Set(int64_t{kTicksPerSecond} * 4);
-  Theme.Queue_Song(THEME_QUIET);
+  TheTheme().Queue_Song(THEME_QUIET);
 
   WWMessageBox().Process(TXT_RESTARTING, TXT_NONE);
 
@@ -1483,7 +1483,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       }
     }
     if (base::At(bufprint, 0) == '\r' || base::At(bufprint, 0) == '@') {
-      Audio.Play(briefsnd, 255, Options.Normalize_Volume(135));
+      TheAudio().Play(briefsnd, 255, TheOptions().Normalize_Volume(135));
       Timer<SystemTickSource> cd;
       cd.Set(5);
       do {
@@ -2005,7 +2005,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     base::At(NameIDOverride, index) = 0;
   }
   if (TheSession().Type == GAME_NORMAL) {
-    Special.IsShadowGrow = false;
+    TheSpecial().IsShadowGrow = false;
   }
 
   TheSession().Messages.Reset();
@@ -2859,7 +2859,7 @@ static void Create_Units(bool official) {
       if (obj != nullptr) {
         hptr->FlagHome = 0;
         hptr->FlagLocation = 0;
-        if (Special.IsCaptureTheFlag) {
+        if (TheSpecial().IsCaptureTheFlag) {
           hptr->Flag_Attach(dynamic_cast<UnitClass*>(obj), true);
         }
       }

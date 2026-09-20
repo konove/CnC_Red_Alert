@@ -44,7 +44,6 @@
 #include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/house.h"
@@ -297,8 +296,8 @@ void PlaySoundEffectAt(const VocType voc, const COORDINATE coord,
                        const int variation, const HousesType house) {
   CELL cell = 0;
 
-  if (TheDebugState().quiet() || Options.Volume == 0 || voc == VOC_NONE ||
-      !SoundOn || !Audio.is_open()) {
+  if (TheDebugState().quiet() || TheOptions().Volume == 0 || voc == VOC_NONE ||
+      !SoundOn || !TheAudio().is_open()) {
     return;
   }
   if (coord) {
@@ -338,13 +337,13 @@ int PlaySoundEffect(VocType voc, fixed volume, const int variation,
                   << "]";
     return -1;
   }
-  if (TheDebugState().quiet() || Options.Volume == 0 || voc == VOC_NONE ||
-      !SoundOn || !Audio.is_open()) {
+  if (TheDebugState().quiet() || TheOptions().Volume == 0 || voc == VOC_NONE ||
+      !SoundOn || !TheAudio().is_open()) {
     return -1;
   }
 
   // Alter the volume according to the game volume setting.
-  volume = volume * Options.Volume;
+  volume = volume * TheOptions().Volume;
 
   // Pick the file: NAME.AUD, or for a unit response the variation that fits
   // the house's accent and the kind of unit.
@@ -404,8 +403,8 @@ int PlaySoundEffect(VocType voc, fixed volume, const int variation,
     // Clamp to 255/256 so that volume * 256 fits the mixer's 0..255 range. A
     // quieter sound also plays at a lower priority.
     volume.Sub_Saturate(1);
-    return Audio.Play(sample, kSoundEffects.at(voc).priority * volume,
-                      volume * 256);
+    return TheAudio().Play(sample, kSoundEffects.at(voc).priority * volume,
+                           volume * 256);
   }
   return -1;
 }
@@ -550,8 +549,9 @@ const char* VoxName(const VoxType voice) {
 void Speak(const VoxType voice) {
   // Only one voice waits in the queue: a request made while another is
   // pending is dropped, not queued behind it.
-  if (!TheDebugState().quiet() && Options.Volume != 0 && Audio.is_open() &&
-      voice != VOX_NONE && voice != current_voice && speak_queue == VOX_NONE) {
+  if (!TheDebugState().quiet() && TheOptions().Volume != 0 &&
+      TheAudio().is_open() && voice != VOX_NONE && voice != current_voice &&
+      speak_queue == VOX_NONE) {
     speak_queue = voice;
     // Start it now if EVA is silent, rather than a tick later.
     ServiceSpeech();
@@ -562,12 +562,12 @@ void ServiceSpeech() {
   // The speech buffer EVA played last, and so the one to watch for the end of
   // the voice. The other buffer is the older one, reused for the next load.
   static int playing_buffer = 0;
-  if (TheDebugState().quiet() || !Audio.is_open()) {
+  if (TheDebugState().quiet() || !TheAudio().is_open()) {
     return;
   }
 
   const std::span<Assets::SpeechSlot> slots = TheAssets().speech_slots();
-  if (!Audio.IsPlaying(base::At(slots, playing_buffer).buffer.data())) {
+  if (!TheAudio().IsPlaying(base::At(slots, playing_buffer).buffer.data())) {
     current_voice = VOX_NONE;
     if (speak_queue != VOX_NONE) {
       // Try to find a previously loaded copy of the EVA speech in one of the
@@ -610,7 +610,7 @@ void ServiceSpeech() {
       // it cuts off any sound effect (their priorities are at most 20) to get
       // a channel.
       if (!speech.empty()) {
-        Audio.Play(speech, 254, Options.Volume * 256);
+        TheAudio().Play(speech, 254, TheOptions().Volume * 256);
         current_voice = speak_queue;
       }
 
@@ -627,7 +627,7 @@ void StopSpeaking() {
   // not drop the voice just stopped as one still being said.
   current_voice = VOX_NONE;
   for (const Assets::SpeechSlot& slot : TheAssets().speech_slots()) {
-    Audio.Stop(slot.buffer.data());
+    TheAudio().Stop(slot.buffer.data());
   }
 }
 
@@ -635,10 +635,10 @@ bool IsSpeaking() {
   // Starts any queued voice first, so a caller waiting in a loop for EVA to
   // finish also keeps the queue moving.
   ServiceSpeech();
-  return !TheDebugState().quiet() && Audio.is_open() &&
+  return !TheDebugState().quiet() && TheAudio().is_open() &&
          (speak_queue != VOX_NONE ||
           std::ranges::any_of(TheAssets().speech_slots(),
                               [](const Assets::SpeechSlot& slot) {
-                                return Audio.IsPlaying(slot.buffer.data());
+                                return TheAudio().IsPlaying(slot.buffer.data());
                               }));
 }

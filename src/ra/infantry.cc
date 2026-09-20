@@ -1904,7 +1904,7 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
     Doing = todo;
     Mark(MARK_OVERLAP_DOWN);
     if (todo == DO_IDLE1 || todo == DO_IDLE2) {
-      Set_Rate(Options.Normalize_Delay(MasterDoControls.at(Doing).Rate));
+      Set_Rate(TheOptions().Normalize_Delay(MasterDoControls.at(Doing).Rate));
     } else {
       Set_Rate(MasterDoControls.at(Doing).Rate);
     }
@@ -2791,8 +2791,8 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
           // If it's a mechanic force-moving into an APC, don't try to heal it.
           if (*this == INFANTRY_MECHANIC && object->What_Am_I() == RTTI_UNIT &&
               *dynamic_cast<const UnitClass*>(object) == UNIT_APC &&
-              (KeyboardClass::Down(Options.KeyForceMove1) ||
-               KeyboardClass::Down(Options.KeyForceMove2))) {
+              (KeyboardClass::Down(TheOptions().KeyForceMove1) ||
+               KeyboardClass::Down(TheOptions().KeyForceMove2))) {
           } else {
             return ACTION_HEAL;
           }
@@ -3217,7 +3217,8 @@ ActionType InfantryClass::What_Action(CELL cell) const {
   /*
   **	Demolitioners may destroy a bridge
   */
-  if (Class->IsBomber && action == ACTION_MOVE && !Special.IsCaptureTheFlag) {
+  if (Class->IsBomber && action == ACTION_MOVE &&
+      !TheSpecial().IsCaptureTheFlag) {
     const TemplateType bridge_type = TheMap().at(cell).TType;
     if (bridge_type == TEMPLATE_BRIDGE1 || bridge_type == TEMPLATE_BRIDGE2 ||
         bridge_type == TEMPLATE_BRIDGE1H || bridge_type == TEMPLATE_BRIDGE2H ||

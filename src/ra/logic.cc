@@ -48,7 +48,6 @@
 #include "ra/audio.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/factory.h"
 #include "ra/gscreen.h"
 #include "ra/heap.h"
@@ -155,7 +154,7 @@ void LogicClass::AI() {
   /*
   **	Shadow creeping back over time is handled here.
   */
-  if (Special.IsShadowGrow && TheRules().ShroudRate != 0 &&
+  if (TheSpecial().IsShadowGrow && TheRules().ShroudRate != 0 &&
       TheScenario().ShroudTimer.IsFinished()) {
     TheScenario().ShroudTimer.Set(kTicksPerMinute * TheRules().ShroudRate);
     TheMap().Encroach_Shadow();

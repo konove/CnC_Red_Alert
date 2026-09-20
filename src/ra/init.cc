@@ -267,7 +267,7 @@ bool Init_Game() {
   */
   Init_CDROM_Access();
 
-  if (Special.IsFromInstall) {
+  if (TheSpecial().IsFromInstall) {
     Load_Prolog_Page();
   }
 
@@ -341,7 +341,7 @@ bool Init_Game() {
   /*
   **	Play the startup animation.
   */
-  if (!Special.IsFromInstall) {
+  if (!TheSpecial().IsFromInstall) {
     TheScreen().visible_page().Clear();
     if (!LogoAlreadyPlayed()) {
       Play_Intro();
@@ -379,7 +379,7 @@ bool Init_Game() {
   **	If not automatically launching into the intro, then display the title
   **	page while the bulk data is cached.
   */
-  if (!Special.IsFromInstall) {
+  if (!TheSpecial().IsFromInstall) {
     Load_Title_Page(true);
 
     Hide_Mouse();
@@ -424,7 +424,7 @@ bool Init_Game() {
   **	Read game options, so the GameSpeed is initialized when multiplayer
   ** dialogs are invoked.  (GameSpeed must be synchronized between systems.)
   */
-  Options.Load_Settings();
+  TheOptions().Load_Settings();
 
   return true;
 }
@@ -544,7 +544,7 @@ bool Select_Game(bool /*fade*/) {
     /*
     **	Menu selection processing loop
     */
-    Theme.Queue_Song(THEME_CRUS);
+    TheTheme().Queue_Song(THEME_CRUS);
 
     /*
     ** If we're playing back a recording, load all pertinent values & skip
@@ -554,7 +554,7 @@ bool Select_Game(bool /*fade*/) {
       if (TheSession().RecordFile.Open(FileAccess::kRead)) {
         if (Load_Recording_Values(TheSession().RecordFile)) {
           process = false;
-          Theme.Fade_Out();
+          TheTheme().Fade_Out();
         } else {
           TheSession().RecordFile.Close();
           TheSession().Play = false;
@@ -595,7 +595,7 @@ bool Select_Game(bool /*fade*/) {
       /*
       **	Display menu and fetch selection from player.
       */
-      if (Special.IsFromInstall) {
+      if (TheSpecial().IsFromInstall) {
         selection = kSelStartNewGame;
       }
 
@@ -630,7 +630,7 @@ bool Select_Game(bool /*fade*/) {
         const int slot = options.load_game;
         startup_game_started = true;
         if (Load_Game(slot)) {
-          Theme.Queue_Song(magic_enum::enum_values<ThemeType>().front());
+          TheTheme().Queue_Song(magic_enum::enum_values<ThemeType>().front());
           process = false;
           gameloaded = true;
           continue;
@@ -707,8 +707,8 @@ bool Select_Game(bool /*fade*/) {
                      << ", computer "
                      << magic_enum::enum_name(TheScenario().CDifficulty);
 
-          Theme.Fade_Out();
-          Theme.Queue_Song(magic_enum::enum_values<ThemeType>().front());
+          TheTheme().Fade_Out();
+          TheTheme().Queue_Song(magic_enum::enum_values<ThemeType>().front());
           TheSession().Type = GAME_NORMAL;
           process = false;
           break;
@@ -717,7 +717,7 @@ bool Select_Game(bool /*fade*/) {
         **	SEL_START_NEW_GAME: Play the game
         */
         case kSelStartNewGame:
-          if (Special.IsFromInstall) {
+          if (TheSpecial().IsFromInstall) {
             TheScenario().CDifficulty = DIFF_NORMAL;
             TheScenario().Difficulty = DIFF_NORMAL;
           } else {
@@ -756,7 +756,7 @@ bool Select_Game(bool /*fade*/) {
           TheWorld().save_tanya() = false;
           TheWorld().whom() = HOUSE_GOOD;
 
-          if (!Special.IsFromInstall) {
+          if (!TheSpecial().IsFromInstall) {
             if (TheWorld().ants_enabled()) {
               TheScenario().Set_Scenario_Name("SCA01EA.INI");
             } else {
@@ -773,10 +773,10 @@ bool Select_Game(bool /*fade*/) {
                   break;
               }
             }
-            Theme.Fade_Out();
+            TheTheme().Fade_Out();
             Load_Title_Page();
           } else {
-            Theme.Fade_Out();
+            TheTheme().Fade_Out();
             PlayFirstLaunchIntro(TheScreen().hidden_view(),
                                  TheScreen().visible_view());
             Hide_Mouse();
@@ -796,7 +796,7 @@ bool Select_Game(bool /*fade*/) {
         */
         case kSelLoadMission:
           if (LoadOptionsClass(LoadOptionsClass::LOAD).Process()) {
-            Theme.Queue_Song(magic_enum::enum_values<ThemeType>().front());
+            TheTheme().Queue_Song(magic_enum::enum_values<ThemeType>().front());
             process = false;
             gameloaded = true;
           } else {
@@ -913,9 +913,9 @@ bool Select_Game(bool /*fade*/) {
             case GAME_MODEM:
             case GAME_NULL_MODEM:
             case GAME_SKIRMISH:
-              Theme.Fade_Out();
+              TheTheme().Fade_Out();
               process = false;
-              Options.ScoreVolume = Options.MultiScoreVolume;
+              TheOptions().ScoreVolume = TheOptions().MultiScoreVolume;
               break;
 
             //	With Westwood Online on, this runs the whole lobby; without it,
@@ -930,9 +930,9 @@ bool Select_Game(bool /*fade*/) {
                   switch (WOL_Main()) {
                     case 1:
                       //	Start game.
-                      Options.ScoreVolume = Options.MultiScoreVolume;
+                      TheOptions().ScoreVolume = TheOptions().MultiScoreVolume;
                       process = false;
-                      Theme.Fade_Out();
+                      TheTheme().Fade_Out();
                       break;
                     case 0:
                       //	User cancelled.
@@ -944,7 +944,7 @@ bool Select_Game(bool /*fade*/) {
                       break;
                     case -1:
                       //	Patch was downloaded. Exit app.
-                      Theme.Fade_Out();
+                      TheTheme().Fade_Out();
                       ThePalettes().black_palette().Set(kFadePaletteSlow);
                       return false;
                     default:
@@ -958,9 +958,9 @@ bool Select_Game(bool /*fade*/) {
                   TheNetwork().packet_transport() = nullptr;
                 }
               } else {
-                Theme.Fade_Out();
+                TheTheme().Fade_Out();
                 process = false;
-                Options.ScoreVolume = Options.MultiScoreVolume;
+                TheOptions().ScoreVolume = TheOptions().MultiScoreVolume;
               }
               break;
 
@@ -980,9 +980,9 @@ bool Select_Game(bool /*fade*/) {
               WWDebugString("RA95 - About to call Init_Network.\n");
               if (TheSession().Type == GAME_IPX && Init_Network() &&
                   Remote_Connect()) {
-                Options.ScoreVolume = Options.MultiScoreVolume;
+                TheOptions().ScoreVolume = TheOptions().MultiScoreVolume;
                 process = false;
-                Theme.Fade_Out();
+                TheTheme().Fade_Out();
               } else {  // user hit cancel, or init failed
                 TheSession().Type = GAME_NORMAL;
                 display = true;
@@ -1001,7 +1001,7 @@ bool Select_Game(bool /*fade*/) {
         **	Play a VQ
         */
         case kSelIntro:
-          Theme.Fade_Out();
+          TheTheme().Fade_Out();
           if (TheDebugState().developer_mode()) {
             Play_Intro(TheDebugState().developer_mode());
           } else {
@@ -1017,7 +1017,7 @@ bool Select_Game(bool /*fade*/) {
             // THEME_NONE, false);		// has transitino picture to
             // briefing
           }
-          Theme.Queue_Song(THEME_CRUS);
+          TheTheme().Queue_Song(THEME_CRUS);
           display = true;
           selection = kSelNone;
           break;
@@ -1028,7 +1028,7 @@ bool Select_Game(bool /*fade*/) {
         case kSelExit:
           // No palette fade: the window closes right after, so it would
           // only delay the exit.
-          Theme.Fade_Out();
+          TheTheme().Fade_Out();
           return false;
 
         /*
@@ -1043,7 +1043,7 @@ bool Select_Game(bool /*fade*/) {
             if (TheSession().RecordFile.Open(FileAccess::kRead)) {
               if (Load_Recording_Values(TheSession().RecordFile)) {
                 process = false;
-                Theme.Fade_Out();
+                TheTheme().Fade_Out();
               } else {
                 TheSession().RecordFile.Close();
                 TheSession().Play = false;
@@ -1151,10 +1151,10 @@ bool Select_Game(bool /*fade*/) {
     if (!Start_Scenario(TheScenario().ScenarioName)) {
       return false;
     }
-    if (Special.IsFromInstall) {
+    if (TheSpecial().IsFromInstall) {
       Show_Mouse();
     }
-    Special.IsFromInstall = false;
+    TheSpecial().IsFromInstall = false;
   }
 
   /*
@@ -1334,9 +1334,9 @@ void Anim_Init() {
   if (ThePalettes().slow_palette()) {
     AnimControl.OptionFlags |= VQAOPTF_SLOWPAL;
   }
-  AnimControl.AudioDeviceID = Audio.device_id();
-  AnimControl.AudioCallback = Audio.extra_callback_slot();
-  AnimControl.AudioSpec = Audio.output_spec();
+  AnimControl.AudioDeviceID = TheAudio().device_id();
+  AnimControl.AudioCallback = TheAudio().extra_callback_slot();
+  AnimControl.AudioSpec = TheAudio().output_spec();
 }
 
 // Kept out of Parse_Command_Line() so the std::optional below does not make
@@ -1983,7 +1983,7 @@ static void Init_One_Time_Systems() {
   ServiceRealTime();
   TheMap().One_Time();
   TheWorld().logic().One_Time();
-  Options.One_Time();
+  TheOptions().One_Time();
   TheSession().One_Time();
 
   ObjectTypeClass::One_Time();
@@ -2461,7 +2461,7 @@ static void Init_Bulk_Data() {
   **	Cache the main game data. This operation can take a very long time.
   */
   MixArchive::Cache("CONQUER.MIX");
-  if (Audio.is_open() && !TheDebugState().quiet()) {
+  if (TheAudio().is_open() && !TheDebugState().quiet()) {
     MixArchive::Cache("SOUNDS.MIX");
     MixArchive::Cache("RUSSIAN.MIX");
     MixArchive::Cache("ALLIES.MIX");
@@ -2548,7 +2548,7 @@ static void SerializeRecording(Archive& ar) {
   bool unshroud = TheDebugState().unshroud();
   ar(TheWorld().build_level(), unshroud, TheWorld().seed(),
      TheScenario().Scenario, TheScenario().ScenarioName, TheWorld().whom(),
-     Special, Options);
+     TheSpecial(), TheOptions());
   if constexpr (Archive::kIsReading) {
     TheDebugState().set_unshroud(unshroud);
     TheScenario().ScenarioName[sizeof(TheScenario().ScenarioName) - 1] = '\0';

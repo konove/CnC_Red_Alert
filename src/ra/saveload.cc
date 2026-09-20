@@ -79,6 +79,7 @@
 #include "ra/externs.h"
 #include "ra/factory.h"
 #include "ra/game_clock.h"
+#include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
@@ -1157,9 +1158,9 @@ bool Load_Game(int id) {
     }
   }
   if (TheScenario().TransitTheme == THEME_NONE) {
-    Theme.Queue_Song(magic_enum::enum_values<ThemeType>().front());
+    TheTheme().Queue_Song(magic_enum::enum_values<ThemeType>().front());
   } else {
-    Theme.Queue_Song(TheScenario().TransitTheme);
+    TheTheme().Queue_Song(TheScenario().TransitTheme);
   }
   return true;
 }
@@ -1208,7 +1209,7 @@ static void SerializeMultiplayer(Archive& ar) {
   // The switch keeps its place in the record, so a local stands in for it.
   bool unshroud = TheDebugState().unshroud();
   ar(TheSession(), TheWorld().build_level(), unshroud, TheWorld().seed(),
-     TheWorld().whom(), Special, Options);
+     TheWorld().whom(), TheSpecial(), TheOptions());
   if constexpr (Archive::kIsReading) {
     TheDebugState().set_unshroud(unshroud);
   }

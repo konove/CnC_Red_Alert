@@ -129,7 +129,6 @@
 #include "ra/display.h"
 #include "ra/display_constants.h"
 #include "ra/drive.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/facing.h"
 #include "ra/foot.h"
@@ -322,7 +321,7 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
   Ammo = Class->MaxAmmo;
   IsCloakable = Class->IsCloakable;
   if (Class->IsAnimating) {
-    Set_Rate(Options.Normalize_Delay(3));
+    Set_Rate(TheOptions().Normalize_Delay(3));
   }
 
   /*

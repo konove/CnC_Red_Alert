@@ -46,7 +46,6 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/event.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/goptions.h"
 #include "ra/inline.h"
@@ -166,8 +165,8 @@ void GameControlsClass::Process() {
   **	Dialog variables
   */
 
-  int gamespeed = static_cast<int>(Options.GameSpeed);
-  int scrollrate = Options.ScrollRate;
+  int gamespeed = static_cast<int>(TheOptions().GameSpeed);
+  int scrollrate = TheOptions().ScrollRate;
   int selection = 0;
   bool pressed = false;
   int curbutton = 0;
@@ -452,7 +451,7 @@ void GameControlsClass::Process() {
           OptionsClass::kMaxScrollSetting - 1 - scrate_btn.Get_Value()) {
         scrollrate =
             OptionsClass::kMaxScrollSetting - 1 - scrate_btn.Get_Value();
-        Options.ScrollRate = scrollrate;
+        TheOptions().ScrollRate = scrollrate;
       }
       process = false;
 
@@ -463,13 +462,13 @@ void GameControlsClass::Process() {
       ** go out of sync.
       */
       if (TheSession().Type == GAME_NORMAL) {
-        Options.GameSpeed = static_cast<unsigned int>(gamespeed);
-        Options.Save_Settings();  // save new value
+        TheOptions().GameSpeed = static_cast<unsigned int>(gamespeed);
+        TheOptions().Save_Settings();  // save new value
       } else {
-        const auto old = Options.GameSpeed;  // save orig value
-        Options.GameSpeed = static_cast<unsigned int>(gamespeed);
-        Options.Save_Settings();  // save new value
-        Options.GameSpeed = old;  // restore old value
+        const auto old = TheOptions().GameSpeed;  // save orig value
+        TheOptions().GameSpeed = static_cast<unsigned int>(gamespeed);
+        TheOptions().Save_Settings();  // save new value
+        TheOptions().GameSpeed = old;  // restore old value
       }
 
       /*
@@ -484,7 +483,7 @@ void GameControlsClass::Process() {
           break;
 
         case kButtonSound:
-          if (!Audio.is_open()) {
+          if (!TheAudio().is_open()) {
             WWMessageBox().Process(Text_String(TXT_NO_SOUND_CARD));
             process = true;
             display = true;

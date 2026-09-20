@@ -448,7 +448,7 @@ void GameOptionsClass::Process() {
           if (Restate_Mission() == BriefingAction::kPlayVideo) {
             BreakoutAllowed = true;
             Play_Movie(TheScenario().BriefMovie);
-            Theme.Queue_Song(THEME_PICK_ANOTHER);
+            TheTheme().Queue_Song(THEME_PICK_ANOTHER);
           }
           ThePalettes().black_palette().Adjust(0x08,
                                                ThePalettes().white_palette());

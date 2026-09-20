@@ -73,7 +73,6 @@
 #include "ra/cell.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -593,7 +592,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Play a musical theme.
     */
     case TACTION_PLAY_MUSIC:
-      Theme.Queue_Song(Data.Theme);
+      TheTheme().Queue_Song(Data.Theme);
       break;
 
     /*

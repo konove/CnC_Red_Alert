@@ -427,7 +427,7 @@ bool LoadOptionsClass::Process() {
           // Shown in case a load is ever slow; it no longer holds the screen
           // for a second, since loading takes milliseconds.
           WWMessageBox().Process(TXT_LOADING, TXT_NONE);
-          Theme.Fade_Out();
+          TheTheme().Fade_Out();
           const bool rc = Load_Game(game_num);  // return code
           Keyboard->Clear();
 

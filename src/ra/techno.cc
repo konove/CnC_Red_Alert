@@ -3561,8 +3561,8 @@ void TechnoClass::Player_Assign_Mission(MissionType mission, TARGET target,
     *the ALT key was *	held down.
     */
     if (mission == MISSION_MOVE &&
-        (KeyboardClass::Down(Options.KeyQueueMove1) ||
-         KeyboardClass::Down(Options.KeyQueueMove2))) {
+        (KeyboardClass::Down(TheOptions().KeyQueueMove1) ||
+         KeyboardClass::Down(TheOptions().KeyQueueMove2))) {
       mission = MISSION_QMOVE;
     }
 
@@ -3603,12 +3603,12 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
       return ACTION_SELF;
     }
 
-    const bool altdown = KeyboardClass::Down(Options.KeyForceMove1) ||
-                         KeyboardClass::Down(Options.KeyForceMove2);
-    const bool ctrldown = KeyboardClass::Down(Options.KeyForceAttack1) ||
-                          KeyboardClass::Down(Options.KeyForceAttack2);
-    const bool shiftdown = KeyboardClass::Down(Options.KeySelect1) ||
-                           KeyboardClass::Down(Options.KeySelect2);
+    const bool altdown = KeyboardClass::Down(TheOptions().KeyForceMove1) ||
+                         KeyboardClass::Down(TheOptions().KeyForceMove2);
+    const bool ctrldown = KeyboardClass::Down(TheOptions().KeyForceAttack1) ||
+                          KeyboardClass::Down(TheOptions().KeyForceAttack2);
+    const bool shiftdown = KeyboardClass::Down(TheOptions().KeySelect1) ||
+                           KeyboardClass::Down(TheOptions().KeySelect2);
 
     /*
     **	Special guard area mission is possible if both the control and
@@ -3723,12 +3723,12 @@ ActionType TechnoClass::What_Action(CELL cell) const {
   const CellClass* cellptr = &TheMap().at(cell);
   const OverlayTypeClass* optr = nullptr;
 
-  bool ctrldown = KeyboardClass::Down(Options.KeyForceAttack1) ||
-                  KeyboardClass::Down(Options.KeyForceAttack2);
-  const bool shiftdown = KeyboardClass::Down(Options.KeySelect1) ||
-                         KeyboardClass::Down(Options.KeySelect2);
-  const bool altdown = KeyboardClass::Down(Options.KeyForceMove1) ||
-                       KeyboardClass::Down(Options.KeyForceMove2);
+  bool ctrldown = KeyboardClass::Down(TheOptions().KeyForceAttack1) ||
+                  KeyboardClass::Down(TheOptions().KeyForceAttack2);
+  const bool shiftdown = KeyboardClass::Down(TheOptions().KeySelect1) ||
+                         KeyboardClass::Down(TheOptions().KeySelect2);
+  const bool altdown = KeyboardClass::Down(TheOptions().KeyForceMove1) ||
+                       KeyboardClass::Down(TheOptions().KeyForceMove2);
 
   /*
   **	Disable recognizing the <CTRL> key forced fire option when dealing with

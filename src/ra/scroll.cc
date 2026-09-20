@@ -47,7 +47,6 @@
 #include "base/array.h"
 #include "ra/debug_state.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/goptions.h"
 #include "ra/help.h"
@@ -164,13 +163,13 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         static const int _rate[9] = {0x01C0, 0x0180, 0x0140, 0x0100, 0x00C0,
                                      0x0080, 0x0040, 0x0020, 0x0010};
         if (TheDebugState().map_editor_active()) {
-          rate = Options.ScrollRate + 1;
+          rate = TheOptions().ScrollRate + 1;
         } else {
           rate = 8 - Inertia;
         }
 
-        if (rate < Options.ScrollRate + 1) {
-          rate = Options.ScrollRate + 1;
+        if (rate < TheOptions().ScrollRate + 1) {
+          rate = TheOptions().ScrollRate + 1;
           Inertia = 8 - rate;
         }
 

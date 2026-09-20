@@ -72,7 +72,6 @@
 #include "base/array.h"
 #include "ra/audio.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/ini.h"
 #include "ra/jshell.h"
 #include "ra/palettes.h"
@@ -130,7 +129,7 @@ OptionsClass::OptionsClass()
  *=============================================================================================*/
 // Not const: applies the score volume to the audio system.
 // NOLINTNEXTLINE(readability-make-member-function-const)
-void OptionsClass::One_Time() { Audio.SetScoreVolume(ScoreVolume * 256); }
+void OptionsClass::One_Time() { TheAudio().SetScoreVolume(ScoreVolume * 256); }
 
 /***********************************************************************************************
  * OptionsClass::Set_Shuffle -- Controls the play shuffle setting. *
@@ -184,8 +183,8 @@ void OptionsClass::Set_Repeat(bool on) { IsScoreRepeat = on; }
  *=============================================================================================*/
 void OptionsClass::Set_Score_Volume(fixed volume, bool feedback) {
   ScoreVolume = fixed(volume).Sub_Saturate(1);
-  Audio.SetScoreVolume(ScoreVolume * 256);
-  if (feedback && !Theme.Still_Playing()) {
+  TheAudio().SetScoreVolume(ScoreVolume * 256);
+  if (feedback && !TheTheme().Still_Playing()) {
     PlaySoundEffect(VOC_BEEP, ScoreVolume);
   }
 }

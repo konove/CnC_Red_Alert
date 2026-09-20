@@ -55,7 +55,6 @@
 #include "ra/audio.h"
 #include "ra/config.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/special.h"
 #include "tech/fixed.h"
 
@@ -206,7 +205,7 @@ bool SuperClass::Recharge(bool player) {
     Control.Set(RechargeTime);
 
     if constexpr (config::kCheatKeysEnabled) {
-      if (Special.IsSpeedBuild) {
+      if (TheSpecial().IsSpeedBuild) {
         Control.Set(1);
       }
     }

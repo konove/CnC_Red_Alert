@@ -9,15 +9,19 @@
 #include "ra/assets.h"
 #include "ra/debug_state.h"
 #include "ra/game_clock.h"
+#include "ra/goptions.h"
 #include "ra/network.h"
 #include "ra/object_heaps.h"
 #include "ra/palettes.h"
 #include "ra/rules.h"
 #include "ra/screen.h"
 #include "ra/session.h"
+#include "ra/special.h"
 #include "ra/startup_options.h"
+#include "ra/theme.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
+#include "tech/audio_mixer.h"
 
 // Owns the game's subsystems and so fixes the order they are built and torn
 // down in. Members are declared in dependency order, which C++ constructs
@@ -70,6 +74,15 @@ class Game {
   base::Installed<RulesClass>::Scope rules_scope_{rules_};
   World world_;
   base::Installed<World>::Scope world_scope_{world_};
+  GameOptionsClass options_;
+  base::Installed<GameOptionsClass>::Scope options_scope_{options_};
+  SpecialClass special_{};
+  base::Installed<SpecialClass>::Scope special_scope_{special_};
+  // The mixer comes before the music player, which plays through it.
+  AudioMixer audio_;
+  base::Installed<AudioMixer>::Scope audio_scope_{audio_};
+  ThemeClass theme_;
+  base::Installed<ThemeClass>::Scope theme_scope_{theme_};
   SessionClass session_;
   base::Installed<SessionClass>::Scope session_scope_{session_};
   Network network_;

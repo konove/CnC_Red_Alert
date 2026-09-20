@@ -177,7 +177,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
   }
 
   // Flag that we will have to restart the theme
-  Theme.Stop();
+  TheTheme().Stop();
 
   // Check the last drive
   if (!new_cd_drive) {
@@ -261,7 +261,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
 
       GraphicViewPortClass* old_page =
           Set_Logic_Page(TheScreen().visible_view());
-      Theme.Stop();
+      TheTheme().Stop();
       int hidden = Get_Mouse_State();
       font = FontPtr;
 
@@ -320,7 +320,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
   if (cd_desired > -1 && _last != cd_desired && cd_desired != 5) {
     _last = cd_desired;
 
-    Theme.Stop();
+    TheTheme().Stop();
 
     Assets::DiscArchives& archives = TheAssets().disc_archives();
     delete archives.movies;

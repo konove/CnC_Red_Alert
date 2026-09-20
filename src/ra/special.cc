@@ -61,7 +61,6 @@
 #include "ra/dialog.h"
 #include "ra/edit.h"
 #include "ra/event.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
@@ -130,7 +129,7 @@ void SpecialClass::Init() {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 void Special_Dialog(bool simple) {
-  SpecialClass oldspecial = Special;
+  SpecialClass oldspecial = TheSpecial();
   GadgetClass* buttons = nullptr;
   static struct {
     int Description;
@@ -159,11 +158,11 @@ void Special_Dialog(bool simple) {
       bool value = false;
       switch (base::At(_options, index).Description) {
         case TXT_THREE_POINT:
-          value = Special.IsThreePoint;
+          value = TheSpecial().IsThreePoint;
           break;
 
         case TXT_SPEED_BUILD:
-          value = Special.IsSpeedBuild;
+          value = TheSpecial().IsSpeedBuild;
           break;
         default:
           break;
@@ -230,7 +229,7 @@ void Special_Dialog(bool simple) {
         if (!simple) {
           TheNetwork().out_list().Add(EventClass(oldspecial));
         } else {
-          Special = oldspecial;
+          TheSpecial() = oldspecial;
         }
         break;
 

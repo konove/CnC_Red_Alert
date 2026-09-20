@@ -335,13 +335,14 @@ void Send_Statistics_Packet() {
     /*
     ** Shadow regrowth enabled
     */
-    stats.Add_Field(FIELD_SHADOW_REGROWS, Special.IsShadowGrow ? "ON" : "OFF");
+    stats.Add_Field(FIELD_SHADOW_REGROWS,
+                    TheSpecial().IsShadowGrow ? "ON" : "OFF");
 
     /*
     ** Capture the flag mode (On/Off)
     */
     stats.Add_Field(FIELD_CAPTURE_THE_FLAG,
-                    Special.IsCaptureTheFlag ? "ON" : "OFF");
+                    TheSpecial().IsCaptureTheFlag ? "ON" : "OFF");
 
     /*
     ** Start unit count
@@ -568,7 +569,8 @@ void Send_Statistics_Packet() {
     /*
     ** Game speed setting.
     */
-    stats.Add_Field(FIELD_SPEED_SETTING, static_cast<char>(Options.GameSpeed));
+    stats.Add_Field(FIELD_SPEED_SETTING,
+                    static_cast<char>(TheOptions().GameSpeed));
 
     /*
     ** Red Alert version/build date

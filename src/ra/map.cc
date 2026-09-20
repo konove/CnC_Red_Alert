@@ -86,7 +86,6 @@
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/game_clock.h"
 #include "ra/gscreen.h"
 #include "ra/inline.h"
@@ -1968,7 +1967,7 @@ bool MapClass::Base_Region(CELL cell, HousesType& house, ZoneType& zone) const {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 bool MapClass::Destroy_Bridge_At(CELL cell) {
-  if (In_Radar(cell) && !Special.IsCaptureTheFlag) {
+  if (In_Radar(cell) && !TheSpecial().IsCaptureTheFlag) {
     const CellClass* cellptr = &(*this).at(cell);
     TemplateType ttype = cellptr->TType;
 

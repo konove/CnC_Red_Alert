@@ -135,10 +135,10 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
   int low_param = LOWORD(wParam);
 
   if (message == CCFocusMessage) {
-    Audio.Resume();
+    TheAudio().Resume();
     if (!InMovie) {
-      Theme.Stop();
-      Theme.Queue_Song(THEME_PICK_ANOTHER);
+      TheTheme().Stop();
+      TheTheme().Queue_Song(THEME_PICK_ANOTHER);
     }
     return (0);
   }

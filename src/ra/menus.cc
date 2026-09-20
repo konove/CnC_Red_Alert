@@ -656,11 +656,11 @@ int Main_Menu(int32_t /*unused*/) {
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  const fixed oldvolume = Options.ScoreVolume;
+  const fixed oldvolume = TheOptions().ScoreVolume;
   if (oldvolume == 0) {
-    Options.Set_Score_Volume(fixed(4, 10), false);
+    TheOptions().Set_Score_Volume(fixed(4, 10), false);
   }
-  Theme.Play_Song(THEME_INTRO);
+  TheTheme().Play_Song(THEME_INTRO);
 
   /*
   **	Main Processing Loop.
@@ -807,7 +807,7 @@ int Main_Menu(int32_t /*unused*/) {
                                   48)) {
           Show_Who_Was_Responsible();
           display = true;
-          Theme.Play_Song(THEME_INTRO);
+          TheTheme().Play_Song(THEME_INTRO);
 
           break;
         }
@@ -828,7 +828,7 @@ int Main_Menu(int32_t /*unused*/) {
     }
   }
 
-  Options.Set_Score_Volume(oldvolume, false);
+  TheOptions().Set_Score_Volume(oldvolume, false);
 
   return retval;
 }
