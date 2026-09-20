@@ -76,7 +76,7 @@
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/display_constants.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/gscreen.h"
 #include "ra/heap.h"
@@ -554,7 +554,7 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
 AnimClass::~AnimClass() {
   DCHECK(TheObjectHeaps().anim().ID(this) == ID);
   DCHECK(IsActive);
-  if (GameActive) {
+  if (TheGameState().active()) {
     /*
     **	If this anim is attached to another object
     **	then check to see if this is the last anim attached to it. If this

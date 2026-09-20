@@ -45,6 +45,7 @@
 #include "absl/base/attributes.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
+#include "ra/game_state.h"
 #include "ra/globals.h"
 #include "ra/object.h"
 #include "ra/type.h"
@@ -76,7 +77,7 @@ class TemplateClass : public ObjectClass {
   void operator delete(void* ptr);
   explicit TemplateClass(TemplateType type, CELL pos = -1);
   ~TemplateClass() override {
-    if (GameActive) {
+    if (TheGameState().active()) {
       TemplateClass::Limbo();
     }
     Class = nullptr;

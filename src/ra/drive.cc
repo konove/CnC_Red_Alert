@@ -78,10 +78,10 @@
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/facing.h"
 #include "ra/foot.h"
+#include "ra/game_state.h"
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/mapedit.h"
@@ -116,7 +116,7 @@ void DriveClass::Response_Select() {
                                       VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     PlaySoundEffect(response, fixed(1), -(ID + 1));
   }
 }
@@ -144,7 +144,7 @@ void DriveClass::Response_Move() {
   };
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     PlaySoundEffect(response, fixed(1), -(ID + 1));
   }
 }
@@ -169,7 +169,7 @@ void DriveClass::Response_Attack() {
   static const VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL};
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     PlaySoundEffect(response, fixed(1), -(ID + 1));
   }
 }

@@ -56,7 +56,7 @@
 #include "ra/externs.h"
 #include "ra/filepcx.h"
 #include "ra/game_clock.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/hotkeys.h"
@@ -189,14 +189,14 @@ static bool RunMapEditorFrame() {
   ServiceRealTime();  // maintains Theme.AI() for music
   CyclePalette();
 
-  return !GameActive;
+  return !TheGameState().active();
 }
 
 // Runs the dialog SpecialDialog asks for, then clears the request. The dialogs
 // call RunFrame() themselves so the game keeps running behind them, which is
 // why this is invoked between frames rather than from inside one.
 static void RunPendingDialog() {
-  const SpecialDialogType dialog = SpecialDialog;
+  const SpecialDialogType dialog = TheGameState().special_dialog();
   if (dialog == SDLG_NONE) {
     return;
   }
@@ -226,7 +226,7 @@ static void RunPendingDialog() {
     default:
       break;
   }
-  SpecialDialog = SDLG_NONE;
+  TheGameState().special_dialog() = SDLG_NONE;
   TheMap().Revert_Mouse_Shape();
 }
 
@@ -433,7 +433,7 @@ static void WaitForNextFrame() {
     CyclePalette();
     ServiceRealTime();
 
-    if (SpecialDialog == SDLG_NONE) {
+    if (TheGameState().special_dialog() == SDLG_NONE) {
       ProcessInput();
       TheMap().Render();
     }
@@ -478,13 +478,13 @@ enum class ScenarioOutcome { kNone, kWin, kLose, kRestart, kDraw };
 // Reads the outcome flags that game logic raised during the frame. A draw needs
 // both players of a two-player multiplayer game to have proposed it.
 static ScenarioOutcome PendingOutcome() {
-  if (PlayerWins) {
+  if (TheGameState().player_wins()) {
     return ScenarioOutcome::kWin;
   }
-  if (PlayerLoses) {
+  if (TheGameState().player_loses()) {
     return ScenarioOutcome::kLose;
   }
-  if (PlayerRestarts) {
+  if (TheGameState().player_restarts()) {
     return ScenarioOutcome::kRestart;
   }
   if (TheSession().Type != GAME_NORMAL && TheSession().Type != GAME_SKIRMISH &&
@@ -511,9 +511,9 @@ static bool FinishScenarioIfDecided() {
   }
 
   TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
-  PlayerWins = false;
-  PlayerLoses = false;
-  PlayerRestarts = false;
+  TheGameState().player_wins() = false;
+  TheGameState().player_loses() = false;
+  TheGameState().player_restarts() = false;
   TheMap().Help_Text(TXT_NONE);
 
   switch (outcome) {
@@ -567,7 +567,7 @@ static bool LogFrameAndQuitIfDue() {
   if (TheStartupOptions().save_slot >= 0) {
     Save_Game(TheStartupOptions().save_slot, "debug");
   }
-  GameActive = false;
+  TheGameState().active() = false;
   return true;
 }
 
@@ -639,7 +639,7 @@ static void CaptureMotionFrame() {
 // only visual -- every machine in a multiplayer game runs this same sequence
 // and must arrive at the same state, or the session desyncs.
 bool RunFrame() {
-  if (!GameActive) {
+  if (!TheGameState().active()) {
     return true;
   }
 
@@ -667,7 +667,8 @@ bool RunFrame() {
   // Skipped entirely during playback: the recording drives the view instead,
   // and Do_Record_Playback() renders below once it has restored the
   // position.
-  if (!TheSession().Play && SpecialDialog == SDLG_NONE && GameInFocus) {
+  if (!TheSession().Play && TheGameState().special_dialog() == SDLG_NONE &&
+      TheGameState().in_focus()) {
     ProcessInput();
     TheMap().Render();
   }
@@ -717,7 +718,7 @@ bool RunFrame() {
   ServiceRealTime();
 
   if (FinishScenarioIfDecided()) {
-    return !GameActive;
+    return !TheGameState().active();
   }
 
   TheGameClock().Advance();
@@ -730,7 +731,7 @@ bool RunFrame() {
   if (TheDebugState().check_map() && (!TheMap().Validate())) {
     if (WWMessageBox().Process(kLanguageText.map_error, kLanguageText.stop,
                                kLanguageText.continue_button) == 0) {
-      GameActive = false;
+      TheGameState().active() = false;
     }
     TheMap().Validate();  // give debugger a chance to catch it
   }
@@ -740,5 +741,5 @@ bool RunFrame() {
   }
 
   WaitForNextFrame();
-  return !GameActive;
+  return !TheGameState().active();
 }

@@ -174,10 +174,10 @@
 #include "ra/display.h"
 #include "ra/display_constants.h"
 #include "ra/door.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/foot.h"
 #include "ra/game_clock.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/infantry.h"
@@ -2854,7 +2854,7 @@ bool TechnoClass::Select() {
     /*
     **	Speak a confirmation of selection.
     */
-    if (House->IsPlayerControl && AllowVoice) {
+    if (House->IsPlayerControl && TheGameState().allow_voice()) {
       Response_Select();
     }
     return true;
@@ -3129,7 +3129,8 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
   }
   bool gonnadraw = false;
 
-  if (TheMap().Push_Onto_TacMap(source, dest) && SpecialDialog == SDLG_NONE) {
+  if (TheMap().Push_Onto_TacMap(source, dest) &&
+      TheGameState().special_dialog() == SDLG_NONE) {
     TheMap().Coord_To_Pixel(source, x, y);
     TheMap().Coord_To_Pixel(dest, x1, y1);
     x += TheMap().TacPixelX;
@@ -3545,7 +3546,7 @@ void TechnoClass::Player_Assign_Mission(MissionType mission, TARGET target,
                                         TARGET destination) {
   DCHECK(IsActive);
 
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     if (mission == MISSION_ATTACK) {
       Response_Attack();
     } else {
@@ -6562,10 +6563,11 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
       /*
       **	Insert the new name text into the buffer list.
       */
-      for (int index = 0; index < std::ssize(NameOverride); index++) {
-        if (base::At(NameIDOverride, index) == 0) {
-          base::At(NameOverride, index) = port::CloneString(buffer);
-          base::At(NameIDOverride, index) = id;
+      for (int index = 0; index < std::ssize(TheWorld().name_override());
+           index++) {
+        if (base::At(std::span(TheWorld().name_override_id()), index) == 0) {
+          base::At(std::span(TheWorld().name_override()), index) = buffer;
+          base::At(std::span(TheWorld().name_override_id()), index) = id;
           break;
         }
       }

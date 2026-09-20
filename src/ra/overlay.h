@@ -46,6 +46,7 @@
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
+#include "ra/game_state.h"
 #include "ra/globals.h"
 #include "ra/object.h"
 #include "ra/type.h"
@@ -78,7 +79,7 @@ class OverlayClass : public ObjectClass {
   explicit OverlayClass(OverlayType type, CELL pos = -1,
                         HousesType /*house*/ = HOUSE_NONE);
   ~OverlayClass() override {
-    if (GameActive) {
+    if (TheGameState().active()) {
       OverlayClass::Limbo();
     }
     Class = nullptr;

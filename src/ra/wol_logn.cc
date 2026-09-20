@@ -34,6 +34,7 @@
 #include "ra/dialog.h"
 #include "ra/edit.h"
 #include "ra/gadget.h"
+#include "ra/game_state.h"
 #include "ra/iconlist.h"
 #include "ra/init.h"
 #include "ra/input.h"
@@ -274,7 +275,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     /*
     **	Get user input.
     */
-    bTabKeyPressedHack = false;
+    TheGameState().tab_key_pressed() = false;
     const KeyNumType input = commands->Input();
 
     /*
@@ -315,7 +316,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     //		if( input )
     //			debugprint( "input: %i\n", input );
 
-    if (bTabKeyPressedHack) {
+    if (TheGameState().tab_key_pressed()) {
       if (NameEdit.Has_Focus()) {
         PassEdit.Set_Focus();
       } else {

@@ -576,7 +576,8 @@ void Send_Statistics_Packet() {
     ** Red Alert version/build date
     */
     char version[128];
-    absl::SNPrintF(version, sizeof(version), "V%s", VerNum.Version_Name());
+    absl::SNPrintF(version, sizeof(version), "V%s",
+                   TheVersion().Version_Name());
     stats.Add_Field(FIELD_GAME_VERSION, version);
 
     /*

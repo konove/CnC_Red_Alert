@@ -111,7 +111,7 @@
 #include "ra/event.h"
 #include "ra/externs.h"
 #include "ra/game_clock.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/hotkeys.h"
@@ -478,7 +478,7 @@ static void Queue_AI_Normal() {
   //------------------------------------------------------------------------
   if (!Execute_DoList(1, ThePlayer()->Class->House, nullptr, nullptr, {}, {},
                       {})) {
-    GameActive = false;
+    TheGameState().active() = false;
     return;
   }
 
@@ -1015,7 +1015,8 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     //---------------------------------------------------------------------
     //	Pop up a reconnect dialog if enough time goes by
     //---------------------------------------------------------------------
-    if (dialog_timer.IsFinished() && SpecialDialog == SDLG_NONE) {
+    if (dialog_timer.IsFinished() &&
+        TheGameState().special_dialog() == SDLG_NONE) {
       if (reconnect_dlg == 0 && first_time == 0) {
         FILE* fp = fopen("recon.txt", "wt");
         if (fp) {
@@ -1237,7 +1238,8 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     // anything.
     //---------------------------------------------------------------------
     ServiceRealTime();
-    if (!first_time && SpecialDialog == SDLG_NONE && reconnect_dlg == 0) {
+    if (!first_time && TheGameState().special_dialog() == SDLG_NONE &&
+        reconnect_dlg == 0) {
       TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
       TheMap().Input(input, x, y);
       if (input) {
@@ -2349,7 +2351,7 @@ static int Handle_Timeout(ConnManClass* net, std::span<int64_t> their_frame,
 static void Stop_Game() {
   TheSession().LoadGame = false;
   TheSession().EmergencySave = false;
-  GameActive = false;
+  TheGameState().active() = false;
   if (TheSession().Type == GAME_INTERNET) {
     TheNetwork().connection_lost() = true;
     Send_Statistics_Packet();  //	Stop_Game()
@@ -3805,7 +3807,7 @@ static void Queue_Playback() {
   if (TheKeyboard().Check()) {
     const int key = TheKeyboard().Get();
     if (key == KA_ESC || TheSession().Attract) {
-      GameActive = false;
+      TheGameState().active() = false;
       return;
     }
   }
@@ -3816,7 +3818,7 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   if (TheSession().Attract && CurrentFrame() > 0 &&
       (mx != Get_Mouse_X() || my != Get_Mouse_Y())) {
-    GameActive = false;
+    TheGameState().active() = false;
     return;
   }
   mx = Get_Mouse_X();
@@ -3877,7 +3879,7 @@ static void Queue_Playback() {
   }
 
   if (!ok) {
-    GameActive = false;
+    TheGameState().active() = false;
     return;
   }
 
@@ -3892,7 +3894,7 @@ static void Queue_Playback() {
     base_house = HOUSE_MULTI1;
   }
   if (!Execute_DoList(max_houses, base_house, nullptr, nullptr, {}, {}, {})) {
-    GameActive = false;
+    TheGameState().active() = false;
     return;
   }
 

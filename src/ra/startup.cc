@@ -66,7 +66,7 @@
 #include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/ini.h"
 #include "ra/init.h"
@@ -333,7 +333,7 @@ int main(const int argc, char* argv[])
 
   Create_Main_Window(nullptr, 0, Screen::kWidth, TheScreen().mode_height());
   // 22050 Hz mono.
-  SoundOn = TheAudio().Open(11025 * 2, /*stereo=*/false);
+  TheGameState().sound_on() = TheAudio().Open(11025 * 2, /*stereo=*/false);
 
   if (!TheScreen().Init()) {
     ShutDown();
@@ -376,7 +376,7 @@ int main(const int argc, char* argv[])
   // Dawn forbids skipping this first-run intro with <ESC>; Red Alert
   // shipped allowing it.
   if (TheSpecial().IsFromInstall) {
-    BreakoutAllowed = true;
+    TheGameState().breakout_allowed() = true;
     ini.Put_Bool("Intro", "PlayIntro", false);
     ini.Save(config_file);
   }

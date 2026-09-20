@@ -27,7 +27,6 @@
 // The same idea as cancel_current_msgbox in ra/msgbox.h, but instead of
 // closing the dialog it greys out every control on it: the dialog stays up
 // with what the player typed still visible while the answer is on its way.
-extern bool disable_current_msgbox;
 
 class SimpleEditDlgClass {
  public:

@@ -89,8 +89,8 @@
 #include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/game_clock.h"
+#include "ra/game_state.h"
 #include "ra/gauge.h"
-#include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/house.h"
 #include "ra/ini.h"
@@ -3120,7 +3120,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*........................................................................
   Init version number clipping system
   ........................................................................*/
-  VerNum.Init_Clipping();
+  TheVersion().Init_Clipping();
   Load_Title_Page(true);
   ThePalettes().title_palette().Set();
 
@@ -3941,9 +3941,9 @@ int Com_Scenario_Dialog(bool skirmish) {
               //.........................................................
               // "Clip" the other system's version range to our own
               // ........................................................
-              version =
-                  VerNum.Clip_Version(ReceivePacket.ScenarioInfo.MinVersion,
-                                      ReceivePacket.ScenarioInfo.MaxVersion);
+              version = TheVersion().Clip_Version(
+                  ReceivePacket.ScenarioInfo.MinVersion,
+                  ReceivePacket.ScenarioInfo.MaxVersion);
               // ........................................................
               // If the greatest-common-version comes back 0, the other
               // system's range is too low for ours
@@ -4916,7 +4916,7 @@ int Com_Show_Scenario_Dialog() {
   /*........................................................................
   Init version number clipping system
   ........................................................................*/
-  VerNum.Init_Clipping();
+  TheVersion().Init_Clipping();
   Load_Title_Page(true);
   ThePalettes().title_palette().Set();
 
@@ -5615,9 +5615,9 @@ int Com_Show_Scenario_Dialog() {
             //.........................................................
             // "Clip" the other system's version range to our own
             // ........................................................
-            version =
-                VerNum.Clip_Version(ReceivePacket.ScenarioInfo.MinVersion,
-                                    ReceivePacket.ScenarioInfo.MaxVersion);
+            version = TheVersion().Clip_Version(
+                ReceivePacket.ScenarioInfo.MinVersion,
+                ReceivePacket.ScenarioInfo.MaxVersion);
             // ........................................................
             // If the greatest-common-version comes back 0, the other
             // system's range is too low for ours
@@ -5780,13 +5780,13 @@ int Com_Show_Scenario_Dialog() {
                   bool needcd = false;
                   if (IsMissionCounterstrike(TheSession().ScenarioFileName) &&
                       (index != 2 && index != 3)) {
-                    RequiredCD = 2;
+                    TheGameState().required_cd() = 2;
                     needcd = true;
                   }
 
                   if (IsMissionAftermath(TheSession().ScenarioFileName) &&
                       (index != 3)) {
-                    RequiredCD = 3;
+                    TheGameState().required_cd() = 3;
                     needcd = true;
                   }
 
@@ -5812,7 +5812,7 @@ int Com_Show_Scenario_Dialog() {
                     }
                     ready_packet_was_sent = true;
 
-                    if (!Force_CD_Available(RequiredCD)) {
+                    if (!Force_CD_Available(TheGameState().required_cd())) {
                       EmergencyExit(EXIT_FAILURE);
                     }
 
@@ -7073,7 +7073,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   ** found in the IBM Aptiva.
   */
   ThemeType old_theme = THEME_NONE;
-  if (SoundOn) {
+  if (TheGameState().sound_on()) {
     old_theme = TheTheme().What_Is_Playing();
     TheTheme().Stop();
     CountDownTimerClass wait;
@@ -7088,7 +7088,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     while (wait.Time()) {
       ServiceRealTime();
     }
-    SoundOn = false;
+    TheGameState().sound_on() = false;
   }
 
   const DialStatusType dialstatus = TheNetwork().null_modem().Dial_Modem(
@@ -7145,8 +7145,8 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Restore audio capability
   */
-  SoundOn = TheAudio().Open(11025 * 2, /*stereo=*/false);
-  if (SoundOn) {
+  TheGameState().sound_on() = TheAudio().Open(11025 * 2, /*stereo=*/false);
+  if (TheGameState().sound_on()) {
     TheTheme().Play_Song(old_theme);
   }
 
@@ -7245,7 +7245,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   ** found in the IBM Aptiva.
   */
   ThemeType old_theme = THEME_NONE;
-  if (SoundOn) {
+  if (TheGameState().sound_on()) {
     old_theme = TheTheme().What_Is_Playing();
     TheTheme().Stop();
     CountDownTimerClass wait;
@@ -7260,7 +7260,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     while (wait.Time()) {
       ServiceRealTime();
     }
-    SoundOn = false;
+    TheGameState().sound_on() = false;
   }
 
   const DialStatusType dialstatus =
@@ -7303,8 +7303,8 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Restore audio capability
   */
-  SoundOn = TheAudio().Open(11025 * 2, /*stereo=*/false);
-  if (SoundOn) {
+  TheGameState().sound_on() = TheAudio().Open(11025 * 2, /*stereo=*/false);
+  if (TheGameState().sound_on()) {
     TheTheme().Play_Song(old_theme);
   }
 

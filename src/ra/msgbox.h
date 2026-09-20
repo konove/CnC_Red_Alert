@@ -46,7 +46,6 @@
 // user had picked its cancel button. WOL uses it to take a dialog down when
 // the server answers before the player does. The loop clears it on the way
 // out.
-extern bool cancel_current_msgbox;
 
 class WWMessageBox {
   int Caption;

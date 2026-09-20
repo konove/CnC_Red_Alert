@@ -118,11 +118,10 @@
 #include "ra/const.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/facing.h"
 #include "ra/foot.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -240,7 +239,7 @@ InfantryClass::InfantryClass(InfantryType classid, HousesType house)
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
 InfantryClass::~InfantryClass() {
-  if (GameActive && Class.Is_Valid()) {
+  if (TheGameState().active() && Class.Is_Valid()) {
     /*
     **	Remove this member from any team it may be associated with. This must
     *occur at the *	top most level of the inheritance hierarchy because it
@@ -2310,7 +2309,7 @@ void InfantryClass::Response_Select() {
   DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
   DCHECK(IsActive);
 
-  if (!AllowVoice) {
+  if (!TheGameState().allow_voice()) {
     return;
   }
 
@@ -2452,7 +2451,7 @@ void InfantryClass::Response_Move() {
   DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
   DCHECK(IsActive);
 
-  if (!AllowVoice) {
+  if (!TheGameState().allow_voice()) {
     return;
   }
 
@@ -2598,7 +2597,7 @@ void InfantryClass::Response_Attack() {
   DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
   DCHECK(IsActive);
 
-  if (!AllowVoice) {
+  if (!TheGameState().allow_voice()) {
     return;
   }
 

@@ -7,6 +7,7 @@
 
 #include "ra/config.h"
 #include "ra/externs.h"
+#include "ra/game_state.h"
 #include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/language.h"
@@ -26,9 +27,9 @@
 void WWDebugString(const char* /*string*/) {}
 
 void Check_For_Focus_Loss() {
-  if (!GameInFocus) {
+  if (!TheGameState().in_focus()) {
     SDL_Event_Loop();
-    if (GameInFocus) {
+    if (TheGameState().in_focus()) {
       VQA_ResumeAudio();
     }
   }
@@ -74,11 +75,11 @@ void SDL_Event_Handler(SDL_Event* event) {
     case SDL_WINDOWEVENT: {
       switch (event->window.event) {
         case SDL_WINDOWEVENT_FOCUS_GAINED:
-          GameInFocus = true;
+          TheGameState().in_focus() = true;
           Focus_Restore();
           break;
         case SDL_WINDOWEVENT_FOCUS_LOST:
-          GameInFocus = false;
+          TheGameState().in_focus() = false;
           Focus_Loss();
           break;
         default:

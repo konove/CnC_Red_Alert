@@ -61,7 +61,7 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
@@ -180,7 +180,7 @@ TriggerClass::TriggerClass()
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 TriggerClass::~TriggerClass() {
-  if ((GameActive && Class.Is_Valid() &&
+  if ((TheGameState().active() && Class.Is_Valid() &&
        base::Any(Class->Attaches_To() & ATTACH_GENERAL)) &&
       (TheWorld().logic_trigger_id() >= TheWorld().logic_triggers().ID(this))) {
     TheWorld().logic_trigger_id()--;
@@ -190,7 +190,7 @@ TriggerClass::~TriggerClass() {
     }
   }
 
-  if ((GameActive && Class.Is_Valid() &&
+  if ((TheGameState().active() && Class.Is_Valid() &&
        base::Any(Class->Attaches_To() & ATTACH_MAP)) &&
       (TheWorld().map_trigger_id() >= TheWorld().map_triggers().ID(this))) {
     TheWorld().map_trigger_id()--;
@@ -200,7 +200,7 @@ TriggerClass::~TriggerClass() {
     }
   }
 
-  if (GameActive && Class->House != HOUSE_NONE &&
+  if (TheGameState().active() && Class->House != HOUSE_NONE &&
       Class->Action1.Action == TACTION_ALLOWWIN) {
     if (HouseClass::As_Pointer(Class->House)->Blockage) {
       HouseClass::As_Pointer(Class->House)->Blockage--;

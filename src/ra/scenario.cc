@@ -106,11 +106,10 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/egos.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/factory.h"
 #include "ra/gadget.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/graphics_loader.h"
 #include "ra/heap.h"
@@ -369,7 +368,7 @@ bool Start_Scenario(char* name, bool briefing) {
   /*
   **	Play the winning movie and then start the next scenario.
   */
-  RequiredCD = -1;
+  TheGameState().required_cd() = -1;
   //	if (RequiredCD != -2 && Session.Type == GAME_NORMAL) {
   //		if (Scen.Scenario == 1)
   //			RequiredCD = -1;
@@ -481,8 +480,10 @@ bool Read_Scenario(char* name) {
           Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60);
       if ((!Using_DVD() || cd_index != 5) && cd_index != 3) {
         ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
-        RequiredCD = 3;
-        if (!Force_CD_Available(RequiredCD)) {  // force Aftermath CD in drive.
+        TheGameState().required_cd() = 3;
+        if (!Force_CD_Available(
+                TheGameState()
+                    .required_cd())) {  // force Aftermath CD in drive.
           EmergencyExit(EXIT_FAILURE);
         }
       }
@@ -863,7 +864,7 @@ void Do_Win() {
         TheSession().CurGame = MAX_MULTI_GAMES - 1;
       }
     }
-    GameActive = false;
+    TheGameState().active() = false;
     Show_Mouse();
     return;
   }
@@ -894,7 +895,7 @@ void Do_Win() {
     }
 
     if (TheScenario().IsOneTimeOnly) {
-      GameActive = false;
+      TheGameState().active() = false;
       Show_Mouse();
       TheWorld().ants_enabled() = false;
       return;
@@ -911,7 +912,7 @@ void Do_Win() {
         Play_Movie(VQ_ALLYEND);
       }
       Show_Who_Was_Responsible();
-      GameActive = false;
+      TheGameState().active() = false;
       Show_Mouse();
       TheWorld().ants_enabled() = false;
       return;
@@ -1075,7 +1076,7 @@ void Do_Lose() {
         TheSession().CurGame = MAX_MULTI_GAMES - 1;
       }
     }
-    GameActive = false;
+    TheGameState().active() = false;
     Show_Mouse();
     return;
   }
@@ -1108,7 +1109,7 @@ void Do_Lose() {
     TheMap().Render();
   } else {
     Hide_Mouse();
-    GameActive = false;
+    TheGameState().active() = false;
   }
 
   ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
@@ -1165,7 +1166,7 @@ void Do_Draw() {
       TheSession().CurGame = MAX_MULTI_GAMES - 1;
     }
   }
-  GameActive = false;
+  TheGameState().active() = false;
   Show_Mouse();
 }
 
@@ -1901,7 +1902,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     */
     if (TheScenario().Scenario == 1 &&
         base::At(TheScenario().ScenarioName, 2) != 'A') {
-      RequiredCD = -1;
+      TheGameState().required_cd() = -1;
     } else {
       /*
       ** If this is a multiplayer scenario we need to find out if its a
@@ -1911,20 +1912,20 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
       ** all CDs.
       */
       if (TheSession().Type != GAME_NORMAL) {
-        RequiredCD = -1;  // default that any CD will do.
+        TheGameState().required_cd() = -1;  // default that any CD will do.
         // If it's a counterstrike mission, require the counterstrike CD, unless
         // the Aftermath CD is already in the drive, in which case, leave it
         // there. Note, this works because this section only tests for
         // multiplayer scenarios.
         if (IsMissionCounterstrike(TheScenario().ScenarioName)) {
-          RequiredCD = 2;
+          TheGameState().required_cd() = 2;
           if (Is_Aftermath_Installed() ||
               Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60) == 3) {
-            RequiredCD = 3;
+            TheGameState().required_cd() = 3;
           }
         }
         if (IsMissionAftermath(TheScenario().ScenarioName)) {
-          RequiredCD = 3;
+          TheGameState().required_cd() = 3;
         }
       } else {
         /*
@@ -1934,12 +1935,12 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
         */
         if (TheScenario().Scenario >= 20 ||
             base::At(TheScenario().ScenarioName, 2) == 'A') {
-          RequiredCD = 2;
+          TheGameState().required_cd() = 2;
           if (TheScenario().Scenario >= 36 &&
               base::At(TheScenario().ScenarioName, 2) != 'A') {
-            RequiredCD = 3;
+            TheGameState().required_cd() = 3;
 #ifdef BOGUSCD
-            RequiredCD = -1;
+            TheGameState().required_cd() = -1;
 #endif
           }
         } else {
@@ -1949,10 +1950,10 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
           ** allied CD depending on the scenario name.
           */
           if (base::At(TheScenario().ScenarioName, 2) == 'U') {
-            RequiredCD = 1;
+            TheGameState().required_cd() = 1;
           } else {
             if (base::At(TheScenario().ScenarioName, 2) == 'G') {
-              RequiredCD = 0;
+              TheGameState().required_cd() = 0;
             }
           }
         }
@@ -1964,14 +1965,16 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     // up.
 
     const int cd_index = Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60);
-    if ((!Using_DVD() || cd_index != 5) && cd_index != RequiredCD) {
-      if ((RequiredCD == 0 || RequiredCD == 1) &&
+    if ((!Using_DVD() || cd_index != 5) &&
+        cd_index != TheGameState().required_cd()) {
+      if ((TheGameState().required_cd() == 0 ||
+           TheGameState().required_cd() == 1) &&
           TheSession().Type == GAME_NORMAL) {
         TheScreen().visible_view().Clear();
       }
       ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
     }
-    if (!Force_CD_Available(RequiredCD)) {
+    if (!Force_CD_Available(TheGameState().required_cd())) {
       // Prog_End();
       EmergencyExit(EXIT_FAILURE);
     }
@@ -1979,7 +1982,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     /*
     ** This is a user scenario so any old CD will do.
     */
-    RequiredCD = -1;
+    TheGameState().required_cd() = -1;
   }
 
   /*
@@ -2000,11 +2003,8 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   /*
   **	Reset the rules values to their initial settings.
   */
-  for (int index = 0; index < std::ssize(NameOverride); index++) {
-    delete[] base::At(NameOverride, index);
-    base::At(NameOverride, index) = nullptr;
-    base::At(NameIDOverride, index) = 0;
-  }
+  TheWorld().name_override() = {};
+  TheWorld().name_override_id() = {};
   if (TheSession().Type == GAME_NORMAL) {
     TheSpecial().IsShadowGrow = false;
   }

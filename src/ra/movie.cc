@@ -32,6 +32,7 @@
 #include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
+#include "ra/game_state.h"
 #include "ra/init.h"
 #include "ra/input.h"
 #include "ra/interpal.h"
@@ -101,28 +102,29 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     player.SetIo(&movie_io);
 
     if (TheScreen().is_vq640()) {
-      AnimControl.ImageWidth = 640;
-      AnimControl.ImageHeight = 400;
-      AnimControl.ImageBuf = TheScreen().vq640().Get_Bytes();
+      TheGameState().anim_control().ImageWidth = 640;
+      TheGameState().anim_control().ImageHeight = 400;
+      TheGameState().anim_control().ImageBuf = TheScreen().vq640().Get_Bytes();
     } else {
-      AnimControl.ImageWidth = 320;
-      AnimControl.ImageHeight = 200;
-      AnimControl.ImageBuf = TheScreen().sys_mem_page().Get_Bytes();
+      TheGameState().anim_control().ImageWidth = 320;
+      TheGameState().anim_control().ImageHeight = 200;
+      TheGameState().anim_control().ImageBuf =
+          TheScreen().sys_mem_page().Get_Bytes();
     }
 
     if (!TheDebugState().quiet() && TheAudio().is_open()) {
-      AnimControl.OptionFlags |= VQAOPTF_AUDIO;
+      TheGameState().anim_control().OptionFlags |= VQAOPTF_AUDIO;
     } else {
-      AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
+      TheGameState().anim_control().OptionFlags &= ~VQAOPTF_AUDIO;
     }
 
-    if (player.Open(fullname.c_str(), &AnimControl) == 0) {
+    if (player.Open(fullname.c_str(), &TheGameState().anim_control()) == 0) {
       movie_broken_out = false;
       TheScreen().sys_mem_page().Clear();
-      InMovie = true;
+      TheGameState().in_movie() = true;
       player.Play(VQAMODE_RUN);
       player.Close();
-      InMovie = false;
+      TheGameState().in_movie() = false;
       TheScreen().set_is_vq640(false);
 
       // Early exit leaves the palette in an inconsistent state.
@@ -175,15 +177,16 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   // audio itself while a movie runs, and the game logic it would service is
   // stopped.
 
-  if ((BreakoutAllowed || TheDebugState().developer_mode()) && key == KN_ESC) {
+  if ((TheGameState().breakout_allowed() || TheDebugState().developer_mode()) &&
+      key == KN_ESC) {
     TheKeyboard().Clear();
     movie_broken_out = true;
     return 1;
   }
 
-  if (!GameInFocus) {
+  if (!TheGameState().in_focus()) {
     VQA_PauseAudio();
-    while (!GameInFocus) {
+    while (!TheGameState().in_focus()) {
       Check_For_Focus_Loss();
     }
   }

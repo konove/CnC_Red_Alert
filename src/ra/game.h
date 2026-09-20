@@ -9,6 +9,7 @@
 #include "ra/assets.h"
 #include "ra/debug_state.h"
 #include "ra/game_clock.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/input.h"
 #include "ra/network.h"
@@ -21,6 +22,7 @@
 #include "ra/startup_options.h"
 #include "ra/theme.h"
 #include "ra/type_heaps.h"
+#include "ra/version.h"
 #include "ra/world.h"
 #include "tech/audio_mixer.h"
 
@@ -75,6 +77,10 @@ class Game {
   base::Installed<RulesClass>::Scope rules_scope_{rules_};
   World world_;
   base::Installed<World>::Scope world_scope_{world_};
+  VersionClass version_;
+  base::Installed<VersionClass>::Scope version_scope_{version_};
+  GameState game_state_;
+  base::Installed<GameState>::Scope game_state_scope_{game_state_};
   Input input_;
   base::Installed<Input>::Scope input_scope_{input_};
   GameOptionsClass options_;

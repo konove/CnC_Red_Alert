@@ -91,6 +91,7 @@
 #include "ra/facing.h"
 #include "ra/gadget.h"
 #include "ra/game_clock.h"
+#include "ra/game_state.h"
 #include "ra/gauge.h"
 #include "ra/hotkeys.h"
 #include "ra/house.h"
@@ -1569,8 +1570,9 @@ void MapEditClass::Main_Menu() {
     Hide_Mouse();  // Do_Menu assumes the mouse is already hidden
     const int selection = Do_Menu(_menus, true);  // option the user picks
     Show_Mouse();
-    if (UnknownKey == KN_ESC || UnknownKey == KN_LMOUSE ||
-        UnknownKey == KN_RMOUSE) {
+    if (TheGameState().unknown_key() == KN_ESC ||
+        TheGameState().unknown_key() == KN_LMOUSE ||
+        TheGameState().unknown_key() == KN_RMOUSE) {
       break;
     }
 
@@ -1752,8 +1754,9 @@ void MapEditClass::AI_Menu() {
     Hide_Mouse();  // Do_Menu assumes the mouse is already hidden
     const int selection = Do_Menu(_menus, true);  // option the user picks
     Show_Mouse();
-    if (UnknownKey == KN_ESC || UnknownKey == KN_LMOUSE ||
-        UnknownKey == KN_RMOUSE) {
+    if (TheGameState().unknown_key() == KN_ESC ||
+        TheGameState().unknown_key() == KN_LMOUSE ||
+        TheGameState().unknown_key() == KN_RMOUSE) {
       break;
     }
 

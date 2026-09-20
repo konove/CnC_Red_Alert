@@ -54,8 +54,8 @@
 #include "ra/dialog.h"
 #include "ra/egos.h"
 #include "ra/expand.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/init.h"
 #include "ra/input.h"
@@ -91,7 +91,6 @@ static int Select_To_Entry(int selection, uint32_t enabled_mask,
 static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
                        int hfgc, int bgc);
 
-int UnknownKey;
 
 // X, Y, item width, items high, selected, normal color, selected color, zero.
 static int menu_list[][8] = {
@@ -263,7 +262,7 @@ int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
   **	be done.
   */
   uint32_t key = 0;  // Key number with its modifier bits.
-  UnknownKey = 0;
+  TheGameState().unknown_key() = 0;
   if (TheKeyboard().Check()) {
     key = static_cast<uint32_t>(TheKeyboard().Get()) &
           ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT |
@@ -324,7 +323,7 @@ int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
                                 mx1, my1, mx2, my2)) {
         newitem = (TheKeyboard().MouseQY - my1) / menuskip;
       } else {
-        UnknownKey =
+        TheGameState().unknown_key() =
             static_cast<int>(key);  //	Pass the unprocessed button click back.
         break;
       }
@@ -360,7 +359,7 @@ int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
           break;
         }
       }
-      UnknownKey = static_cast<int>(key);
+      TheGameState().unknown_key() = static_cast<int>(key);
       break;
   }
 
@@ -468,11 +467,11 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
 
   TheKeyboard().Clear();
   int selection = -1;  // Selection from user.
-  UnknownKey = 0;
+  TheGameState().unknown_key() = 0;
   while (selection == -1) {
     ServiceRealTime();
     selection = Check_Menu(0, strings, nullptr, 0xFFL, 0);
-    if (UnknownKey != 0) {
+    if (TheGameState().unknown_key() != 0) {
       break;
     }
   }
@@ -609,9 +608,9 @@ int Main_Menu(int32_t /*unused*/) {
   /*
   **	Initialize
   */
-  if (RequiredCD != -2) {
-    RequiredCD = -1;
-    Force_CD_Available(RequiredCD);
+  if (TheGameState().required_cd() != -2) {
+    TheGameState().required_cd() = -1;
+    Force_CD_Available(TheGameState().required_cd());
   }
   Set_Logic_Page(TheScreen().visible_view());
   TheKeyboard().Clear();

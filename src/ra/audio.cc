@@ -44,7 +44,7 @@
 #include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/house.h"
 #include "ra/inline.h"
@@ -297,7 +297,7 @@ void PlaySoundEffectAt(const VocType voc, const COORDINATE coord,
   CELL cell = 0;
 
   if (TheDebugState().quiet() || TheOptions().Volume == 0 || voc == VOC_NONE ||
-      !SoundOn || !TheAudio().is_open()) {
+      !TheGameState().sound_on() || !TheAudio().is_open()) {
     return;
   }
   if (coord) {
@@ -338,7 +338,7 @@ int PlaySoundEffect(VocType voc, fixed volume, const int variation,
     return -1;
   }
   if (TheDebugState().quiet() || TheOptions().Volume == 0 || voc == VOC_NONE ||
-      !SoundOn || !TheAudio().is_open()) {
+      !TheGameState().sound_on() || !TheAudio().is_open()) {
     return -1;
   }
 

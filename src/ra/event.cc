@@ -72,10 +72,9 @@
 #include "ra/conquer.h"
 #include "ra/debug_state.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/foot.h"
 #include "ra/game_clock.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -898,7 +897,7 @@ void EventClass::Execute() {
       while (IsSpeaking()) {
         ServiceRealTime();
       }
-      GameActive = false;
+      TheGameState().active() = false;
       break;
 
     /*
@@ -906,7 +905,7 @@ void EventClass::Execute() {
     */
     case OPTIONS:
       if (!TheSession().Play) {
-        SpecialDialog = SDLG_OPTIONS;
+        TheGameState().special_dialog() = SDLG_OPTIONS;
       }
       break;
 
@@ -933,7 +932,7 @@ void EventClass::Execute() {
       ** Show the user what's going on with a message box (but only if
       ** we're not already inside a dialog box routine!)
       */
-      if (SpecialDialog == SDLG_NONE) {
+      if (TheGameState().special_dialog() == SDLG_NONE) {
         const Timer<SystemTickSource> timer{int64_t{kTicksPerSecond} * 4};
 
         WWMessageBox().Process(TXT_SAVING_GAME, TXT_NONE);

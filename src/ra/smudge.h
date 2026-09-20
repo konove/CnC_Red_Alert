@@ -46,6 +46,7 @@
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
+#include "ra/game_state.h"
 #include "ra/globals.h"
 #include "ra/object.h"
 #include "ra/type.h"
@@ -82,7 +83,7 @@ class SmudgeClass : public ObjectClass {
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator SmudgeType() const { return Class->Type; }
   ~SmudgeClass() override {
-    if (GameActive) {
+    if (TheGameState().active()) {
       SmudgeClass::Limbo();
     }
     Class = nullptr;

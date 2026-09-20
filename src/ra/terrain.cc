@@ -80,7 +80,7 @@
 #include "ra/display.h"
 #include "ra/face.h"
 #include "ra/game_clock.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
 #include "ra/keyframe.h"
@@ -116,7 +116,7 @@
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 TerrainClass::~TerrainClass() {
-  if (GameActive && Class) {
+  if (TheGameState().active() && Class) {
     TerrainClass::Limbo();
   }
 }

@@ -46,7 +46,7 @@
  *   VersionClass::Max_Version -- returns highest version # to connect to  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#include "version.h"
+#include "ra/version.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -58,10 +58,10 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "ra/config.h"
-#include "ra/externs.h"
 #include "ra/installation.h"
 #include "ra/rawolapi.h"
 #include "tech/disk_file.h"
+#include "version.h"
 
 /****************************** Globals ************************************/
 //---------------------------------------------------------------------------
@@ -304,7 +304,7 @@ char* VersionClass::Version_Name() {
   }
 
   absl::SNPrintF(VersionName, sizeof(VersionName), "%x.%x",
-                 VerNum.Major_Version(), adjusted_minor);
+                 TheVersion().Major_Version(), adjusted_minor);
 
   return VersionName;
 

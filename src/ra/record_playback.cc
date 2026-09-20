@@ -24,7 +24,7 @@
 #include <cstdint>
 
 #include "ra/defines.h"
-#include "ra/externs.h"
+#include "ra/game_state.h"
 #include "ra/house.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
@@ -124,19 +124,19 @@ void Do_Record_Playback() {
         Unselect_All();
       }
 
-      AllowVoice = true;
+      TheGameState().allow_voice() = true;
 
       for (int i = 0; i < count; ++i) {
         if (TheSession().RecordFile.ReadObject(tgt)) {
           ObjectClass* obj = As_Object(tgt);
           if (obj != nullptr && sum2 != sum) {
             obj->Select();
-            AllowVoice = false;
+            TheGameState().allow_voice() = false;
           }
         }
       }
 
-      AllowVoice = true;
+      TheGameState().allow_voice() = true;
     }
 
     // Save team-selection and formation events

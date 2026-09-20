@@ -168,11 +168,11 @@
 #include "ra/defines.h"
 #include "ra/display_constants.h"
 #include "ra/drive.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/factory.h"
 #include "ra/foot.h"
 #include "ra/game_clock.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/infantry.h"
@@ -838,9 +838,9 @@ void HouseClass::AI() {
       BorrowedTime.IsFinished() && Blockage <= 0) {
     IsToWin = false;
     if (this == ThePlayer()) {
-      PlayerWins = true;
+      TheGameState().player_wins() = true;
     } else {
-      PlayerLoses = true;
+      TheGameState().player_loses() = true;
     }
   }
 
@@ -851,9 +851,9 @@ void HouseClass::AI() {
       BorrowedTime.IsFinished()) {
     IsToLose = false;
     if (this == ThePlayer()) {
-      PlayerLoses = true;
+      TheGameState().player_loses() = true;
     } else {
-      PlayerWins = true;
+      TheGameState().player_wins() = true;
     }
   }
 
@@ -3489,7 +3489,7 @@ void HouseClass::MPlayer_Defeated() {
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           TheRules().MessageDelay * kTicksPerMinute);
       TheMap().Flag_To_Redraw(false);
-      RedrawOptionsMenu = true;
+      TheGameState().redraw_options_menu() = true;
     }
   }
 
@@ -3560,9 +3560,9 @@ void HouseClass::MPlayer_Defeated() {
   */
   if (num_alive == 1 || num_humans == 0) {
     if (ThePlayer()->IsDefeated) {
-      PlayerLoses = true;
+      TheGameState().player_loses() = true;
     } else {
-      PlayerWins = true;
+      TheGameState().player_wins() = true;
     }
 
     /*

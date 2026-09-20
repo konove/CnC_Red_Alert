@@ -94,7 +94,7 @@
 #include "ra/display_constants.h"
 #include "ra/foot.h"
 #include "ra/game_clock.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
@@ -284,7 +284,7 @@ void TeamClass::operator delete(void* ptr) {
  *trigger still attached to objects.                      *
  *=============================================================================================*/
 TeamClass::~TeamClass() {
-  if (GameActive && Class.Is_Valid()) {
+  if (TheGameState().active() && Class.Is_Valid()) {
     while (Member != nullptr) {
       Remove(Member);
     }

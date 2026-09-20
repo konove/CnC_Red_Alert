@@ -42,6 +42,7 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "base/installed.h"
 
 #define VERSION_RED_ALERT_104 0x00010000  // Shipped US version number
 #define VERSION_RED_ALERT_107 0x00011000  // Shipped Counterstrike number
@@ -204,6 +205,12 @@ class VersionClass {
 };
 
 const char* Version_Name();
+
+// Returns the version record that Game installed. CHECK-fails outside a
+// Game's lifetime unless a test installed its own.
+inline VersionClass& TheVersion() {
+  return base::Installed<VersionClass>::Get();
+}
 
 #endif  // CNC_RED_ALERT_RA_VERSION_H_
 /************************** end of version.h *******************************/

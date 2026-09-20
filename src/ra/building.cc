@@ -150,7 +150,7 @@
 #include "ra/factory.h"
 #include "ra/foot.h"
 #include "ra/game_clock.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/gscreen.h"
 #include "ra/heap.h"
@@ -2113,7 +2113,7 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
  * HISTORY: * 01/18/1995 JLB : Created. *
  *=============================================================================================*/
 BuildingClass::~BuildingClass() {
-  if (GameActive && Class) {
+  if (TheGameState().active() && Class) {
     if (House) {
       House->Tracking_Remove(this);
     }

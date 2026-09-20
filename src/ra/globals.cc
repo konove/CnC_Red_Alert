@@ -42,11 +42,8 @@
 
 #include "ra/compat.h"
 #include "ra/credits.h"
-#include "ra/defines.h"
-#include "ra/externs.h"
-#include "ra/version.h"
+#include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
-#include "winvq/vqa32/vqaplay.h"
 
 
 
@@ -70,19 +67,15 @@
 
 
 
-bool InMovie = false;  // Are we currently playing a VQ movie?
 
 /***************************************************************************
 **	This is true if the game is the currently in focus windows app
 **
 */
-bool GameInFocus = false;
 
 /***************************************************************************
 **	This is where the name overrides for the units will reside.
 */
-const char* NameOverride[25];
-int NameIDOverride[25];
 
 /***************************************************************************
 **	These are the mission control structures. They hold the information
@@ -112,15 +105,12 @@ int NameIDOverride[25];
 /***************************************************************************
 **	This is the game version.
 */
-VersionClass VerNum;
 
 /***************************************************************************
 **	This is the VQ animation controller structure. It is filled in by
 *reading *	the PLAYER.INI and overridden through program control.
 */
-VQAConfig AnimControl;
 
-bool BreakoutAllowed = true;  // "true" if aborting of movies is allowed.
 
 /***************************************************************************
 **	These are the movie names to use for mission briefing, winning, and
@@ -131,14 +121,12 @@ bool BreakoutAllowed = true;  // "true" if aborting of movies is allowed.
 **	This records if the score (music) file is present. If not, then much of
 **	the streaming score system can be disabled.
 */
-bool ScoresPresent;
 
 /***************************************************************************
 **	This flag will control whether there is a response from game units.
 **	By carefully controlling this global, multiple responses are suppressed
 **	when a large group of infantry is given the movement order.
 */
-bool AllowVoice = true;
 
 /***************************************************************************
 **	This is the current frame number. This number is guaranteed to count
@@ -151,9 +139,6 @@ bool AllowVoice = true;
 **	has won or lost. They get set according to the trigger events associated
 **	with the scenario.
 */
-bool PlayerWins;
-bool PlayerLoses;
-bool PlayerRestarts;
 
 /***************************************************************************
 **	This is the options control class. The options control such things as
@@ -194,7 +179,6 @@ static CreditClass CreditDisplay;
 /***************************************************************************
 **	The game plays as long as this var is true.
 */
-bool GameActive;
 
 /***************************************************************************
 **	This is a scratch variable that is used to when a reference is needed to
@@ -265,16 +249,12 @@ int WindowList[][8] = {
     {0, 0, 0, 0, kWhite, kBlack, 0, 0}};
 
 
-bool SoundOn;
 
 
 /***************************************************************************
 **	This flag is for popping up dialogs that call the main loop.
 */
-SpecialDialogType SpecialDialog = SDLG_NONE;
 
-int RequiredCD = -1;
-int CurrentCD = -1;
 
 
 /***************************************************************************

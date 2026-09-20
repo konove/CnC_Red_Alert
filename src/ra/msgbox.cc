@@ -52,6 +52,7 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
+#include "ra/game_state.h"
 #include "ra/inline.h"
 #include "ra/input.h"
 #include "ra/jshell.h"
@@ -64,8 +65,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-
-bool cancel_current_msgbox = false;
 
 /***********************************************************************************************
  * WWMessageBox::Process -- pops up a message with yes/no, etc *
@@ -293,8 +292,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       */
       KeyNumType input = buttonlist->Input();
       //	I really hate to do this, but...      ajw
-      if (cancel_current_msgbox) {
-        cancel_current_msgbox = false;
+      if (TheGameState().cancel_msgbox()) {
+        TheGameState().cancel_msgbox() = false;
         input = KN_ESC;
       }
       switch (static_cast<int>(input)) {

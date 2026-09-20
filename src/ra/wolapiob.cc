@@ -34,6 +34,7 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/dib.h"
+#include "ra/game_state.h"
 #include "ra/iconlist.h"
 #include "ra/input.h"
 #include "ra/installation.h"
@@ -2157,10 +2158,10 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
         ServiceRealTime();
         port::SleepMs(200);
         ::GetExitCodeProcess(pi.hProcess, &dwActive);
-        if (dwActive != STILL_ACTIVE || cancel_current_msgbox) {
+        if (dwActive != STILL_ACTIVE || TheGameState().cancel_msgbox()) {
           //	Either user closed the browser app, or game is starting and we
           // should return focus to game.
-          cancel_current_msgbox = false;
+          TheGameState().cancel_msgbox() = false;
           Restore_Game_Window();
           break;
         }

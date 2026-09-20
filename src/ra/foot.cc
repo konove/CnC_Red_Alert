@@ -105,8 +105,8 @@
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/event.h"
-#include "ra/externs.h"
 #include "ra/face.h"
+#include "ra/game_state.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
@@ -1266,7 +1266,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
       break;
 
     case ACTION_MOVE:
-      if (AllowVoice) {
+      if (TheGameState().allow_voice()) {
         const COORDINATE coord =
             TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y());
         TheNetwork().out_list().Add(

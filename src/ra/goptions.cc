@@ -49,8 +49,8 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/event.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
+#include "ra/game_state.h"
 #include "ra/gamedlg.h"
 #include "ra/house.h"
 #include "ra/input.h"
@@ -80,8 +80,6 @@
 #include "sdllib/misc.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-
-bool RedrawOptionsMenu;
 
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *
@@ -304,7 +302,7 @@ void GameOptionsClass::Process() {
     /*
     **	Refresh display if needed.
     */
-    if (display || RedrawOptionsMenu) {
+    if (display || TheGameState().redraw_options_menu()) {
       /*
       **	Redraw the map.
       */
@@ -343,7 +341,7 @@ void GameOptionsClass::Process() {
       TabClass::Hilite_Tab(0);
       Show_Mouse();
       display = false;
-      RedrawOptionsMenu = false;
+      TheGameState().redraw_options_menu() = false;
     }
 
     /*
@@ -447,7 +445,7 @@ void GameOptionsClass::Process() {
         case kButtonRestate:
           display = true;
           if (Restate_Mission() == BriefingAction::kPlayVideo) {
-            BreakoutAllowed = true;
+            TheGameState().breakout_allowed() = true;
             Play_Movie(TheScenario().BriefMovie);
             TheTheme().Queue_Song(THEME_PICK_ANOTHER);
           }
@@ -505,7 +503,7 @@ void GameOptionsClass::Process() {
                 break;
 
               case 2:
-                PlayerRestarts = true;
+                TheGameState().player_restarts() = true;
                 process = false;
                 break;
               default:

@@ -134,13 +134,12 @@
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/facing.h"
 #include "ra/fly.h"
 #include "ra/foot.h"
 #include "ra/game_clock.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
@@ -2284,7 +2283,7 @@ void AircraftClass::Player_Assign_Mission(MissionType mission, TARGET target,
   DCHECK_EQ(TheObjectHeaps().aircraft().ID(this), ID);
   DCHECK(IsActive);
 
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     if (mission == MISSION_ATTACK) {
       Response_Attack();
     } else {
@@ -3704,7 +3703,7 @@ DirType AircraftClass::Fire_Direction() const {
  * HISTORY: * 06/24/1995 JLB : Created. *
  *=============================================================================================*/
 AircraftClass::~AircraftClass() {
-  if (GameActive && Class) {
+  if (TheGameState().active() && Class) {
     /*
     **	Remove this member from any team it may be associated with. This must
     *occur at the *	top most level of the inheritance hierarchy because it
@@ -3976,7 +3975,7 @@ void AircraftClass::Response_Attack() {
   static const VocType _response[] = {VOC_AFFIRM, VOC_ACKNOWL};
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     PlaySoundEffect(response, fixed(1), -(ID + 1));
   }
 }
@@ -4001,7 +4000,7 @@ void AircraftClass::Response_Move() {
   static const VocType _response[] = {VOC_ACKNOWL, VOC_AFFIRM};
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     PlaySoundEffect(response, fixed(1), -(ID + 1));
   }
 }
@@ -4027,7 +4026,7 @@ void AircraftClass::Response_Select() {
                                       VOC_YESSIR, VOC_YESSIR, VOC_AWAIT};
   const VocType response =
       base::At(_response, Sim_Random_Pick<int>(0, std::ssize(_response) - 1));
-  if (AllowVoice) {
+  if (TheGameState().allow_voice()) {
     PlaySoundEffect(response, fixed(1), -(ID + 1));
   }
 }

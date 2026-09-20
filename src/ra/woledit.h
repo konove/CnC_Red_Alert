@@ -33,7 +33,6 @@
 // Set by WOLEditClass::Action when Tab is pressed, and cleared by whoever
 // reads it. The login dialog uses it to move focus between its two edit boxes,
 // which EditClass has no way to express on its own.
-extern bool bTabKeyPressedHack;
 
 class WOLEditClass : public EditClass {
  public:

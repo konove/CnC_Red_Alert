@@ -79,7 +79,7 @@
 #include "ra/facing.h"
 #include "ra/fly.h"
 #include "ra/game_clock.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
@@ -149,7 +149,7 @@ BulletClass::BulletClass(BulletType id, TARGET target, TechnoClass* payback,
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 BulletClass::~BulletClass() {
-  if (GameActive) {
+  if (TheGameState().active()) {
     /*
     **	SPECIAL CASE:
     **	The dog is attached to the dog bullet in a limbo state. When the bullet

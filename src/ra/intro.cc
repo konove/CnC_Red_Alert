@@ -22,7 +22,7 @@
 #include "ra/intro.h"
 
 #include "ra/defines.h"
-#include "ra/externs.h"
+#include "ra/game_state.h"
 #include "ra/init.h"
 #include "ra/movie.h"
 #include "ra/mplayer.h"
@@ -54,11 +54,11 @@ void PlayFirstLaunchIntro(GraphicViewPortClass& hidden,
     // disc numbering, 0 for the Allied disc and 1 for the Soviet one.
     switch (WWMessageBox().Process(TXT_CHOOSE, TXT_ALLIES, TXT_SOVIET)) {
       case 0:
-        CurrentCD = 0;
+        TheGameState().current_cd() = 0;
         break;
 
       case 1:
-        CurrentCD = 1;
+        TheGameState().current_cd() = 1;
         break;
       default:
         break;

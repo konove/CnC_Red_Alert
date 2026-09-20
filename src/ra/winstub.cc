@@ -50,6 +50,7 @@
 #include "WSProto.h"
 #include "ra/config.h"
 #include "ra/function.h"
+#include "ra/game_state.h"
 #include "ra/input.h"
 #include "ra/network.h"
 #include "ra/palettes.h"
@@ -92,7 +93,7 @@ void Check_For_Focus_Loss() {
   static BOOL focus_last_time = 1;
   MSG msg;
 
-  if (!GameInFocus) {
+  if (!TheGameState().in_focus()) {
     Focus_Loss();
     while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE | PM_NOYIELD)) {
       if (!GetMessage(&msg, NULL, 0, 0)) {
@@ -103,7 +104,7 @@ void Check_For_Focus_Loss() {
     }
   }
 
-  if (!focus_last_time && GameInFocus) {
+  if (!focus_last_time && TheGameState().in_focus()) {
     VQA_PauseAudio();
     CountDownTimerClass cd;
     cd.Set(60 * 1);
@@ -126,10 +127,8 @@ void Check_For_Focus_Loss() {
     //		Map.Flag_To_Redraw(true);
   }
 
-  focus_last_time = GameInFocus;
+  focus_last_time = TheGameState().in_focus();
 }
-
-extern BOOL InMovie;
 
 long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
                                           LONG lParam) {
@@ -137,7 +136,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
 
   if (message == CCFocusMessage) {
     TheAudio().Resume();
-    if (!InMovie) {
+    if (!TheGameState().in_movie()) {
       TheTheme().Stop();
       TheTheme().Queue_Song(THEME_PICK_ANOTHER);
     }
@@ -223,11 +222,11 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       return (0);
 
     case WM_ACTIVATEAPP:
-      GameInFocus = (BOOL)wParam;
-      if (!GameInFocus) {
+      TheGameState().in_focus() = (BOOL)wParam;
+      if (!TheGameState().in_focus()) {
         Focus_Loss();
       }
-      AllSurfaces.Set_Surface_Focus(GameInFocus);
+      AllSurfaces.Set_Surface_Focus(TheGameState().in_focus());
       AllSurfaces.Restore_Surfaces();
       //			if (GameInFocus) {
       //				Restore_Cached_Icons();

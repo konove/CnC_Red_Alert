@@ -79,6 +79,7 @@
 #include "ra/externs.h"
 #include "ra/factory.h"
 #include "ra/game_clock.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -766,8 +767,8 @@ bool Load_Game(int id) {
         cd = -1;
 #endif
       }
-      RequiredCD = cd;
-      if (!Force_CD_Available(RequiredCD)) {
+      TheGameState().required_cd() = cd;
+      if (!Force_CD_Available(TheGameState().required_cd())) {
         EmergencyExit(EXIT_FAILURE);
       }
 
@@ -782,7 +783,7 @@ bool Load_Game(int id) {
       ** in the drive.
       */
       const int current_drive = SearchPaths::current_cd_drive();
-      RequiredCD = Get_CD_Index(current_drive, 1 * 60);
+      TheGameState().required_cd() = Get_CD_Index(current_drive, 1 * 60);
     }
   }
 
@@ -988,7 +989,7 @@ bool Load_Game(int id) {
   **	Set the required CD to be in the drive according to the scenario
   **	loaded.
   */
-  if (RequiredCD != -2 && !load_net) {
+  if (TheGameState().required_cd() != -2 && !load_net) {
     /*
     **	Determines if this an ant mission. Since the ant mission looks no
     *different from *	a regular mission, examining of the scenario name is the
@@ -1002,21 +1003,21 @@ bool Load_Game(int id) {
                                 toupper(TheScenario().ScenarioName[6]) == 'A';
 
     if (TheScenario().Scenario == 1) {
-      RequiredCD = -1;
+      TheGameState().required_cd() = -1;
     } else {
       if (TheScenario().Scenario > 19 || TheWorld().ants_enabled()) {
-        RequiredCD = 2;
+        TheGameState().required_cd() = 2;
         if (TheScenario().Scenario >= 36) {
-          RequiredCD = 3;
+          TheGameState().required_cd() = 3;
 #ifdef BOGUSCD
-          RequiredCD = -1;
+          TheGameState().required_cd() = -1;
 #endif
         }
       } else {
         if (!IsSovietHouse(ThePlayer()->Class->House)) {
-          RequiredCD = 0;
+          TheGameState().required_cd() = 0;
         } else {
-          RequiredCD = 1;
+          TheGameState().required_cd() = 1;
         }
       }
     }
@@ -1055,7 +1056,7 @@ bool Load_Game(int id) {
     }
   }
 
-  if (!Force_CD_Available(RequiredCD)) {
+  if (!Force_CD_Available(TheGameState().required_cd())) {
     // Prog_End();
     EmergencyExit(EXIT_FAILURE);
   }

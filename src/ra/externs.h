@@ -90,22 +90,11 @@ inline char staging_buffer[32000];
 
 
 
-extern const char* NameOverride[25];
-extern int NameIDOverride[25];
 
-extern bool GameInFocus;
-extern bool InMovie;
 
 /*
 **	Dynamic global variables (these change or are initialized at run time).
 */
-extern VersionClass VerNum;
-extern bool ScoresPresent;
-extern bool AllowVoice;
-extern bool PlayerWins;
-extern bool PlayerLoses;
-extern bool PlayerRestarts;
-extern bool BreakoutAllowed;
 
 
 
@@ -124,17 +113,13 @@ extern bool BreakoutAllowed;
 /*
 **	Miscellaneous globals.
 */
-extern VQAConfig AnimControl;
 
 
 
 
 
 
-extern SpecialDialogType SpecialDialog;
 
-extern int RequiredCD;
-extern int CurrentCD;
 
 
 

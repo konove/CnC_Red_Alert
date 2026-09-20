@@ -66,7 +66,7 @@
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
@@ -109,7 +109,7 @@ FactoryClass::FactoryClass() : ID(TheObjectHeaps().factory().ID(this)) {}
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 FactoryClass::~FactoryClass() {
-  if (GameActive) {
+  if (TheGameState().active()) {
     Abandon();
   }
 }

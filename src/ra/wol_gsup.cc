@@ -45,6 +45,7 @@
 #include "ra/defines.h"
 #include "ra/dib.h"
 #include "ra/externs.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/iconlist.h"
 #include "ra/input.h"
@@ -109,7 +110,6 @@ static bool operator==(const GlobalPacketType& gp1,
                        const GlobalPacketType& gp2);
 static PlayerColorType PlayerColorTypeOf(const RemapControlType* pColorRemap);
 
-extern bool disable_current_msgbox;
 
 void Debug_GlobalPacketType(const GlobalPacketType& gp1);
 
@@ -752,7 +752,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   //------------------------------------------------------------------------
   //	Init the version-clipping system
   //------------------------------------------------------------------------
-  VerNum.Init_Clipping();
+  TheVersion().Init_Clipping();
 
   //	Load_Title_Page(true);
   //	CCPalette.Set();	//GamePalette.Set();
@@ -2457,7 +2457,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
           // glitch: guests can keep typing into a "page" dialog editbox after
           // the 	"Launching game..." message has appeared on top of it.
           if (pWO->bPump_In_Call_Back) {
-            disable_current_msgbox = true;
+            TheGameState().disable_msgbox() = true;
           }
         } else {
           //				debugprint( "Impossible arose on
@@ -2480,7 +2480,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
         // ServiceRealTime()'s PumpMessages. Set global that will 	force a
         // cancel out of the dialog.
         if (pWO->bPump_In_Call_Back) {
-          cancel_current_msgbox = true;
+          TheGameState().cancel_msgbox() = true;
         }
         break;
       case WOL_GAMEOPT_INFGO:
@@ -2490,7 +2490,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
         // ServiceRealTime()'s PumpMessages. Set global that will 	force a
         // cancel out of the dialog.
         if (pWO->bPump_In_Call_Back) {
-          cancel_current_msgbox = true;
+          TheGameState().cancel_msgbox() = true;
         }
         break;
       case WOL_GAMEOPT::WOL_GAMEOPT_REQCOLOR:
@@ -2895,7 +2895,7 @@ void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
   GParams.GPacket.ScenarioInfo.Seed = TheWorld().seed();
   GParams.GPacket.ScenarioInfo.Special = TheSpecial();
   GParams.GPacket.ScenarioInfo.GameSpeed = TheOptions().GameSpeed;
-  GParams.GPacket.ScenarioInfo.Version = VerNum.Get_Clipped_Version();
+  GParams.GPacket.ScenarioInfo.Version = TheVersion().Get_Clipped_Version();
 
   GParams.bAftermathUnits = bAftermathUnits;
   GParams.bSlowUnitBuildRate = bSlowUnitBuildRate;
@@ -3519,7 +3519,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   // ServiceRealTime()'s PumpMessages. Set global that will 	force a cancel
   // out of the dialog.
   if (pWO->bPump_In_Call_Back) {
-    cancel_current_msgbox = true;
+    TheGameState().cancel_msgbox() = true;
   }
 
   bHostWaitingForGoTrigger = false;

@@ -30,8 +30,8 @@
 #include "ra/ccptr.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/foot.h"
+#include "ra/game_state.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
@@ -261,7 +261,7 @@ void Handle_Team(const int team, const int action) {
     RecordTeamEvent(team, action);
   }
 
-  AllowVoice = true;
+  TheGameState().allow_voice() = true;
   switch (action) {
     // Toggle the team selection. If the team is selected, then merely unselect
     // it. If the team is not selected, then unselect all others before
@@ -286,7 +286,7 @@ void Handle_Team(const int team, const int action) {
              obj->House->IsPlayerControl) &&
             (!obj->IsSelected)) {
           obj->Select();
-          AllowVoice = false;
+          TheGameState().allow_voice() = false;
         }
       }
       for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
@@ -295,7 +295,7 @@ void Handle_Team(const int team, const int action) {
              obj->House->IsPlayerControl) &&
             (!obj->IsSelected)) {
           obj->Select();
-          AllowVoice = false;
+          TheGameState().allow_voice() = false;
         }
       }
       for (int index = 0; index < TheObjectHeaps().infantry().Count();
@@ -305,7 +305,7 @@ void Handle_Team(const int team, const int action) {
              obj->House->IsPlayerControl) &&
             (!obj->IsSelected)) {
           obj->Select();
-          AllowVoice = false;
+          TheGameState().allow_voice() = false;
         }
       }
       for (int index = 0; index < TheObjectHeaps().aircraft().Count();
@@ -315,7 +315,7 @@ void Handle_Team(const int team, const int action) {
              obj->House->IsPlayerControl) &&
             (!obj->IsSelected)) {
           obj->Select();
-          AllowVoice = false;
+          TheGameState().allow_voice() = false;
         }
       }
 
@@ -334,7 +334,7 @@ void Handle_Team(const int team, const int action) {
              obj->House->IsPlayerControl) &&
             (!obj->IsSelected)) {
           obj->Select();
-          AllowVoice = false;
+          TheGameState().allow_voice() = false;
         }
       }
       for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {
@@ -343,7 +343,7 @@ void Handle_Team(const int team, const int action) {
              obj->House->IsPlayerControl) &&
             (!obj->IsSelected)) {
           obj->Select();
-          AllowVoice = false;
+          TheGameState().allow_voice() = false;
         }
       }
       for (int index = 0; index < TheObjectHeaps().infantry().Count();
@@ -353,7 +353,7 @@ void Handle_Team(const int team, const int action) {
              obj->House->IsPlayerControl) &&
             (!obj->IsSelected)) {
           obj->Select();
-          AllowVoice = false;
+          TheGameState().allow_voice() = false;
         }
       }
       for (int index = 0; index < TheObjectHeaps().aircraft().Count();
@@ -363,7 +363,7 @@ void Handle_Team(const int team, const int action) {
              obj->House->IsPlayerControl) &&
             (!obj->IsSelected)) {
           obj->Select();
-          AllowVoice = false;
+          TheGameState().allow_voice() = false;
         }
       }
       break;
@@ -499,5 +499,5 @@ void Handle_Team(const int team, const int action) {
     default:
       break;
   }
-  AllowVoice = true;
+  TheGameState().allow_voice() = true;
 }

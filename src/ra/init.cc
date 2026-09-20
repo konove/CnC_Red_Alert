@@ -98,7 +98,7 @@
 #include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/game_clock.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/graphics_loader.h"
 #include "ra/heap.h"
@@ -491,7 +491,7 @@ bool Select_Game(bool /*fade*/) {
   /*
   **	[Re]set any globals that need it, in preparation for a new scenario
   */
-  GameActive = true;
+  TheGameState().active() = true;
   TheNetwork().do_list().Init();
   TheNetwork().out_list().Init();
   TheGameClock().set_frame(0);
@@ -499,8 +499,8 @@ bool Select_Game(bool /*fade*/) {
   TheScenario().MissionTimer.Stop();
   TheScenario().CDifficulty = DIFF_NORMAL;
   TheScenario().Difficulty = DIFF_NORMAL;
-  PlayerWins = false;
-  PlayerLoses = false;
+  TheGameState().player_wins() = false;
+  TheGameState().player_loses() = false;
   TheSession().ObiWan = false;
   TheDebugState().set_unshroud(false);
   TheMap().Set_Cursor_Shape({});
@@ -781,7 +781,7 @@ bool Select_Game(bool /*fade*/) {
             PlayFirstLaunchIntro(TheScreen().hidden_view(),
                                  TheScreen().visible_view());
             Hide_Mouse();
-            if (CurrentCD == 0) {
+            if (TheGameState().current_cd() == 0) {
               TheScenario().Set_Scenario_Name("SCG01EA.INI");
             } else {
               TheScenario().Set_Scenario_Name("SCU01EA.INI");
@@ -1310,34 +1310,36 @@ static void Play_Intro(bool sequenced) {
  *=============================================================================================*/
 void Anim_Init() {
   /* Configure player with INI file */
-  VQA_DefaultConfig(&AnimControl);
-  AnimControl.DrawFlags = VQACFGF_TOPLEFT;
-  AnimControl.DrawFlags |= VQACFGF_BUFFER;
+  VQA_DefaultConfig(&TheGameState().anim_control());
+  TheGameState().anim_control().DrawFlags = VQACFGF_TOPLEFT;
+  TheGameState().anim_control().DrawFlags |= VQACFGF_BUFFER;
   // AnimControl.DrawFlags |= VQACFGF_NODRAW;
   // BG - M. Grayford says turn this off
   // AnimControl.DrawFlags |= VQACFGF_NOSKIP;
 
-  AnimControl.DrawFlags |= VQACFGF_NOSKIP;
-  AnimControl.FrameRate = -1;
-  AnimControl.DrawRate = -1;
-  AnimControl.DrawerCallback = VQ_Call_Back;
-  AnimControl.EventHandler = VQ_Event_Handler;
-  AnimControl.ImageWidth = 320;
-  AnimControl.ImageHeight = 200;
-  AnimControl.ImageBuf = TheScreen().sys_mem_page().Get_Bytes();
+  TheGameState().anim_control().DrawFlags |= VQACFGF_NOSKIP;
+  TheGameState().anim_control().FrameRate = -1;
+  TheGameState().anim_control().DrawRate = -1;
+  TheGameState().anim_control().DrawerCallback = VQ_Call_Back;
+  TheGameState().anim_control().EventHandler = VQ_Event_Handler;
+  TheGameState().anim_control().ImageWidth = 320;
+  TheGameState().anim_control().ImageHeight = 200;
+  TheGameState().anim_control().ImageBuf =
+      TheScreen().sys_mem_page().Get_Bytes();
   if (TheScreen().is_vq640()) {
-    AnimControl.ImageWidth = 640;
-    AnimControl.ImageHeight = 400;
-    AnimControl.ImageBuf = TheScreen().vq640().Get_Bytes();
+    TheGameState().anim_control().ImageWidth = 640;
+    TheGameState().anim_control().ImageHeight = 400;
+    TheGameState().anim_control().ImageBuf = TheScreen().vq640().Get_Bytes();
   }
-  AnimControl.Vmode = 0;
-  AnimControl.OptionFlags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
+  TheGameState().anim_control().Vmode = 0;
+  TheGameState().anim_control().OptionFlags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
   if (ThePalettes().slow_palette()) {
-    AnimControl.OptionFlags |= VQAOPTF_SLOWPAL;
+    TheGameState().anim_control().OptionFlags |= VQAOPTF_SLOWPAL;
   }
-  AnimControl.AudioDeviceID = TheAudio().device_id();
-  AnimControl.AudioCallback = TheAudio().extra_callback_slot();
-  AnimControl.AudioSpec = TheAudio().output_spec();
+  TheGameState().anim_control().AudioDeviceID = TheAudio().device_id();
+  TheGameState().anim_control().AudioCallback =
+      TheAudio().extra_callback_slot();
+  TheGameState().anim_control().AudioSpec = TheAudio().output_spec();
 }
 
 // Kept out of Parse_Command_Line() so the std::optional below does not make
@@ -2095,7 +2097,7 @@ static void Init_CDROM_Access() {
         default:
           TheScreen().visible_page().Clear();
           Show_Mouse();
-          if (!Force_CD_Available(RequiredCD)) {
+          if (!Force_CD_Available(TheGameState().required_cd())) {
             // Prog_End();
             EmergencyExit(EXIT_FAILURE);
           }
@@ -2104,13 +2106,13 @@ static void Init_CDROM_Access() {
       }
     } while (error);
 
-    RequiredCD = -1;
+    TheGameState().required_cd() = -1;
   } else {
     /*
     ** If there are search drives specified then all files are to be
     ** considered local.
     */
-    RequiredCD = -2;
+    TheGameState().required_cd() = -2;
   }
 }
 
@@ -2142,8 +2144,8 @@ static void Cache_Or_Exit(const char* name) {
 }
 
 static void Init_Bootstrap_Mixfiles() {
-  const int temp = RequiredCD;
-  RequiredCD = -2;
+  const int temp = TheGameState().required_cd();
+  TheGameState().required_cd() = -2;
 
   if constexpr (config::kWolapiEnabled) {
     GameFile fileWolapiMix("WOLAPI.MIX");
@@ -2184,7 +2186,7 @@ static void Init_Bootstrap_Mixfiles() {
       "NCHIRES.MIX",
       &TheAssets().mix_key());  // Non-cached hires stuff incl VQ palettes
 
-  RequiredCD = temp;
+  TheGameState().required_cd() = temp;
 }
 
 /***********************************************************************************************
@@ -2284,7 +2286,7 @@ static void Init_Secondary_Mixfiles() {
   /*
   **	Register the score mixfile.
   */
-  ScoresPresent = true;
+  TheGameState().scores_present() = true;
   archives.score = MixArchive::Register("SCORES.MIX", &TheAssets().mix_key());
   ThemeClass::Scan();
 
@@ -2321,7 +2323,7 @@ static void Bootstrap() {
   **	path.
   */
   if (SearchPaths::HasAny()) {
-    RequiredCD = -2;
+    TheGameState().required_cd() = -2;
   }
 
   /*
@@ -2331,7 +2333,7 @@ static void Bootstrap() {
   */
   do {
     TheKeyboard().Check();
-  } while (!GameInFocus);
+  } while (!TheGameState().in_focus());
   AllSurfaces.SurfacesRestored = false;
 
   /*

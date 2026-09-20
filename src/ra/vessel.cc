@@ -96,7 +96,7 @@
 #include "ra/face.h"
 #include "ra/foot.h"
 #include "ra/game_clock.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/gscreen.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -190,7 +190,7 @@ VesselClass::VesselClass(VesselType classid, HousesType house)
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
 VesselClass::~VesselClass() {
-  if (GameActive && Class.Is_Valid()) {
+  if (TheGameState().active() && Class.Is_Valid()) {
     /*
     **	Remove this member from any team it may be associated with. This must
     *occur at the *	top most level of the inheritance hierarchy because it

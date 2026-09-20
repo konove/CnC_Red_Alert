@@ -11,7 +11,7 @@
 #include "base/installed.h"
 #include "gtest/gtest.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
+#include "ra/game_state.h"
 #include "ra/init.h"
 #include "ra/movie.h"
 #include "ra/mplayer.h"
@@ -30,10 +30,12 @@ int dialogs_shown = 0;
 int movies_played = 0;
 int mouse_hides = 0;  // Hide_Mouse() calls not yet matched by Show_Mouse().
 
-}  // namespace
+// intro.cc reads the disc number out of the run state, so the test
+// installs one.
+GameState game_state;
+const base::Installed<GameState>::Scope game_state_scope(game_state);
 
-// The global intro.cc reaches for.
-int CurrentCD = -1;
+}  // namespace
 
 bool Using_DVD() { return using_dvd; }
 void Hide_Mouse() { ++mouse_hides; }
@@ -59,7 +61,7 @@ namespace {
 class IntroTest : public testing::Test {
  protected:
   void SetUp() override {
-    CurrentCD = -1;
+    TheGameState().current_cd() = -1;
     dialogs_shown = 0;
     movies_played = 0;
     mouse_hides = 0;
@@ -84,7 +86,7 @@ TEST_F(IntroTest, CdInstallPlaysTheIntroWithoutAsking) {
 
   EXPECT_EQ(dialogs_shown, 0);
   EXPECT_EQ(movies_played, 1);
-  EXPECT_EQ(CurrentCD, -1);
+  EXPECT_EQ(TheGameState().current_cd(), -1);
   EXPECT_EQ(mouse_hides, 0);
 }
 
@@ -96,7 +98,7 @@ TEST_F(IntroTest, DvdAsksForTheSideBeforeTheIntro) {
 
   EXPECT_EQ(dialogs_shown, 1);
   EXPECT_EQ(movies_played, 1);
-  EXPECT_EQ(CurrentCD, 1);
+  EXPECT_EQ(TheGameState().current_cd(), 1);
 }
 
 TEST_F(IntroTest, DvdLeavesTheMouseAsItFoundIt) {

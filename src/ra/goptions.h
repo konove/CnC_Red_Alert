@@ -86,7 +86,6 @@ class GameOptionsClass : public OptionsClass {
   int ButtonResumeY = 0;
 };
 
-extern bool RedrawOptionsMenu;
 
 // Returns the game options that Game installed. CHECK-fails outside a
 // Game's lifetime unless a test installed its own.

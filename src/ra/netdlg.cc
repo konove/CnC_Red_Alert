@@ -159,6 +159,7 @@
 #include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/game_clock.h"
+#include "ra/game_state.h"
 #include "ra/gauge.h"
 #include "ra/goptions.h"
 #include "ra/house.h"
@@ -2545,13 +2546,13 @@ static int Net_Join_Dialog() {
             bool needcd = false;
             if (IsMissionCounterstrike(TheSession().ScenarioFileName) &&
                 (index != 2 && index != 3)) {
-              RequiredCD = 2;
+              TheGameState().required_cd() = 2;
               needcd = true;
             }
 
             if (IsMissionAftermath(TheSession().ScenarioFileName) &&
                 (index != 3)) {
-              RequiredCD = 3;
+              TheGameState().required_cd() = 3;
               needcd = true;
             }
 
@@ -2571,7 +2572,7 @@ static int Net_Join_Dialog() {
               }
               ready_packet_was_sent = true;
 
-              if (!Force_CD_Available(RequiredCD)) {
+              if (!Force_CD_Available(TheGameState().required_cd())) {
                 EmergencyExit(EXIT_FAILURE);
               }
 
@@ -4474,7 +4475,7 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   //	Init the version-clipping system
   //------------------------------------------------------------------------
-  VerNum.Init_Clipping();
+  TheVersion().Init_Clipping();
 
   //------------------------------------------------------------------------
   //	Clear the list of players
@@ -5106,19 +5107,19 @@ static int Net_New_Dialog() {
         TheSession().GPacket.ScenarioInfo.Special = TheSpecial();
         TheSession().GPacket.ScenarioInfo.GameSpeed = TheOptions().GameSpeed;
         TheSession().GPacket.ScenarioInfo.Version =
-            VerNum.Get_Clipped_Version();
+            TheVersion().Get_Clipped_Version();
         //	Host encodes whether or not this is an Aftermath game in the
         // highest bit.
         if (TheSession().IsAftermath) {
           //					debugprint( "Host tells guests
           //'This is an Aftermath game'\n" );
           TheSession().GPacket.ScenarioInfo.Version =
-              VerNum.Get_Clipped_Version() | 0x80000000;
+              TheVersion().Get_Clipped_Version() | 0x80000000;
         } else {
           //					debugprint( "Host tells guests
           //'This is NOT an Aftermath game'\n" );
           TheSession().GPacket.ScenarioInfo.Version =
-              VerNum.Get_Clipped_Version();
+              TheVersion().Get_Clipped_Version();
         }
 
         TheNetwork().ipx().Send_Global_Message(
@@ -5488,7 +5489,8 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
 
       TheSession().GPacket.PlayerInfo.MinVersion &=
           ~0x80000000;  // Strip special bit.
-      version = VerNum.Clip_Version(TheSession().GPacket.PlayerInfo.MinVersion,
+      version =
+          TheVersion().Clip_Version(TheSession().GPacket.PlayerInfo.MinVersion,
                                     TheSession().GPacket.PlayerInfo.MaxVersion);
 
       // TCTCTC save off version number

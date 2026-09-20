@@ -128,7 +128,7 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/face.h"
-#include "ra/globals.h"
+#include "ra/game_state.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
@@ -1232,7 +1232,7 @@ void ObjectClass::Mark_For_Redraw() {
 bool ObjectClass::Limbo() {
   DCHECK(IsActive);
 
-  if (GameActive && !IsInLimbo) {
+  if (TheGameState().active() && !IsInLimbo) {
     Unselect();
     Detach_All();
     Mark(MARK_UP);
@@ -1277,7 +1277,7 @@ bool ObjectClass::Limbo() {
  *=============================================================================================*/
 bool ObjectClass::Unlimbo(COORDINATE coord, DirType /*unused*/) {
   DCHECK(IsActive);
-  if ((GameActive && IsInLimbo && !IsDown) &&
+  if ((TheGameState().active() && IsInLimbo && !IsDown) &&
       (TheWorld().scenario_init() ||
        Can_Enter_Cell(Coord_Cell(coord), FACING_NONE) == MOVE_OK)) {
     IsInLimbo = false;

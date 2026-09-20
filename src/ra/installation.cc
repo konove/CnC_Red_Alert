@@ -34,7 +34,7 @@
 #include "port/win32/win32_registry.h"
 #include "ra/assets.h"
 #include "ra/config.h"
-#include "ra/externs.h"
+#include "ra/game_state.h"
 #include "ra/inline.h"
 #include "ra/input.h"
 #include "ra/interpal.h"
@@ -297,7 +297,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
     }
   }
 
-  CurrentCD = cd_current;
+  TheGameState().current_cd() = cd_current;
 
   SearchPaths::SetCdDrive(new_cd_drive);
   SearchPaths::Refresh();

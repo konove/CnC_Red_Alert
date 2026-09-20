@@ -5,6 +5,7 @@
 
 #include <array>
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "absl/base/attributes.h"
@@ -40,6 +41,9 @@ class World {
  public:
   // The number of teams the player can assign with the number keys.
   static constexpr int kTeamCount = 10;
+
+  // How many objects one scenario may rename.
+  static constexpr int kNameOverrideCount = 25;
 
   // Most of these hand out a reference: the state is read and written all
   // over the simulation, and a getter and setter pair for each would only
@@ -158,6 +162,15 @@ class World {
     return auto_sonar_pulse_;
   }
 
+  // Names the scenario gives particular objects in place of their usual
+  // ones. AbstractTypeClass::Full_Name() returns a negative index into
+  // these when an object has one, and Text_String() looks it up here.
+  // A slot is free when its id is zero.
+  auto& name_override() ABSL_ATTRIBUTE_LIFETIME_BOUND { return name_override_; }
+  auto& name_override_id() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return name_override_id_;
+  }
+
   // What the scenario's synchronized random generator was started from.
   // Every machine in a multiplayer game seeds from this one value, so the
   // saved game and the recording both store it.
@@ -214,6 +227,9 @@ class World {
 
   int scenario_init_ = 0;
   uint32_t scenario_crc_ = 0;
+  std::array<std::string, kNameOverrideCount> name_override_;
+  std::array<int, kNameOverrideCount> name_override_id_{};
+
   int seed_ = 0;
   bool ants_enabled_ = false;
   bool auto_sonar_pulse_ = false;

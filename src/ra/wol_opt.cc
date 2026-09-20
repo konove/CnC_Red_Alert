@@ -26,9 +26,9 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
+#include "ra/game_state.h"
 #include "ra/input.h"
 #include "ra/jshell.h"
-#include "ra/msgbox.h"
 #include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
@@ -204,8 +204,8 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     **	Process input.
     */
 
-    if (cancel_current_msgbox) {
-      cancel_current_msgbox = false;
+    if (TheGameState().cancel_msgbox()) {
+      TheGameState().cancel_msgbox() = false;
       input = ButtonKey(kButtonOk);
     }
     switch (static_cast<int>(input)) {

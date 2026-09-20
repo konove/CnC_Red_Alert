@@ -6,8 +6,8 @@
 #include "base/types.h"
 #include "port/safe_string.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/type.h"
+#include "ra/world.h"
 
 AbstractTypeClass::AbstractTypeClass(const RTTIType rtti, const int id,
                                      const int name, const char* ini) noexcept
@@ -23,8 +23,9 @@ int AbstractTypeClass::Full_Name() const {
   // Scenario-specific overrides are matched by a composite key encoding the
   // object type and ID. A negative return signals the caller to look up the
   // string in NameOverride rather than the normal text table.
-  for (base::ssize index = 0; index < std::ssize(NameOverride); index++) {
-    if (base::At(NameIDOverride, index) ==
+  for (base::ssize index = 0; index < std::ssize(TheWorld().name_override());
+       index++) {
+    if (base::At(std::span(TheWorld().name_override_id()), index) ==
         ((static_cast<int>(RTTI) + 1) * 100) + ID) {
       return static_cast<int>(-(index + 1));
     }

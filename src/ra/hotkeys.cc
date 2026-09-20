@@ -38,8 +38,8 @@
 #include "ra/defines.h"
 #include "ra/display_constants.h"
 #include "ra/event.h"
-#include "ra/externs.h"
 #include "ra/face.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -146,7 +146,7 @@ void Keyboard_Process(KeyNumType& input) {
 
     if (TheDebugState().developer_mode() && input == KN_SLASH) {
       if (TheSession().Type != GAME_NORMAL) {
-        SpecialDialog = SDLG_SPECIAL;
+        TheGameState().special_dialog() = SDLG_SPECIAL;
         input = KN_NONE;
       } else {
         Special_Dialog();
@@ -322,9 +322,9 @@ void Keyboard_Process(KeyNumType& input) {
   // player has the mission abort in the options menu instead: surrendering
   // there would only self-destruct the base and lose the mission.
   if (key != 0 && key == TheOptions().KeyResign) {
-    if (TheSession().Type != GAME_NORMAL && !PlayerLoses &&
+    if (TheSession().Type != GAME_NORMAL && !TheGameState().player_loses() &&
         !ThePlayer()->IsDefeated) {
-      SpecialDialog = SDLG_SURRENDER;
+      TheGameState().special_dialog() = SDLG_SURRENDER;
     }
     input = KN_NONE;
   }

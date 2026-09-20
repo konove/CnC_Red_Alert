@@ -141,6 +141,7 @@
 #include "ra/face.h"
 #include "ra/foot.h"
 #include "ra/gadget.h"
+#include "ra/game_state.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"
 #include "ra/infantry.h"
@@ -2719,7 +2720,7 @@ void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
   **	bounding box.
   */
   Unselect_All();
-  AllowVoice = true;
+  TheGameState().allow_voice() = true;
   for (int index = 0; index < Layer.at(LAYER_GROUND).Count(); index++) {
     ObjectClass* obj = Layer.at(LAYER_GROUND).at(index);
     const COORDINATE ocoord = obj->Center_Coord();
@@ -2735,7 +2736,7 @@ void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
          obj->Class_Of().IsSelectable && obj->What_Am_I() != RTTI_BUILDING &&
          x >= x1 && x <= x2 && y >= y1 && y <= y2) &&
         obj->Select()) {
-      AllowVoice = false;
+      TheGameState().allow_voice() = false;
     }
   }
 
@@ -2756,11 +2757,11 @@ void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
     if ((aircraft->House->IsPlayerControl && aircraft->Class->IsSelectable &&
          !aircraft->IsSelected && x >= x1 && x <= x2 && y >= y1 && y <= y2) &&
         aircraft->Select()) {
-      AllowVoice = false;
+      TheGameState().allow_voice() = false;
     }
   }
 
-  AllowVoice = true;
+  TheGameState().allow_voice() = true;
 }
 
 /***********************************************************************************************
@@ -3578,7 +3579,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         *selected and each *	might perform a different action when the click
         *occurs.
         */
-        AllowVoice = true;
+        TheGameState().allow_voice() = true;
         TheWorld().form_move() = false;
         TheWorld().form_speed() = SPEED_WHEEL;
         TheWorld().form_max_speed() = MPH_LIGHT_SPEED;
@@ -3713,9 +3714,9 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
             }
             tobject->Active_Click_With(tobject->What_Action(cell), newmove);
           }
-          AllowVoice = false;
+          TheGameState().allow_voice() = false;
         }
-        AllowVoice = true;
+        TheGameState().allow_voice() = true;
         TheWorld().form_move() = false;
 
         if (object != nullptr && action == ACTION_REPAIR &&

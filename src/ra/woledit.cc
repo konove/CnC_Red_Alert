@@ -29,12 +29,11 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
+#include "ra/game_state.h"
 #include "ra/jshell.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/wwstd.h"
-
-bool bTabKeyPressedHack = false;
 
 //***********************************************************************************************
 void WOLEditClass::Draw_Text(const char* text) {
@@ -131,7 +130,7 @@ bool WOLEditClass::Action(unsigned flags, KeyNumType& key) {
 
         } else {
           if (key == KN_TAB) {
-            bTabKeyPressedHack = true;
+            TheGameState().tab_key_pressed() = true;
           }
           flags &= ~kKeyboard;
           key = KN_NONE;

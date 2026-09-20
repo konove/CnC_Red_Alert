@@ -31,9 +31,9 @@
 #include "ra/dialog.h"
 #include "ra/edit.h"
 #include "ra/gadget.h"
+#include "ra/game_state.h"
 #include "ra/inline.h"
 #include "ra/input.h"
-#include "ra/msgbox.h"
 #include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
@@ -43,8 +43,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-
-bool disable_current_msgbox = false;
 
 //***********************************************************************************************
 SimpleEditDlgClass::SimpleEditDlgClass(int dialog_width, const char* title,
@@ -278,13 +276,13 @@ const char* SimpleEditDlgClass::Show() {
     }
 
     //	I really hate to do this, but...      ajw
-    if (cancel_current_msgbox) {
-      cancel_current_msgbox = false;
+    if (TheGameState().cancel_msgbox()) {
+      TheGameState().cancel_msgbox() = false;
       input = ButtonKey(kButtonCancel);
     }
 
-    if (disable_current_msgbox) {
-      disable_current_msgbox = false;
+    if (TheGameState().disable_msgbox()) {
+      TheGameState().disable_msgbox() = false;
       EditBox.Disable();
       //	These do not actually draw. I am actually clearing the "draw"
       // flag! 	Problem is Disable sets them to redraw, and I don't want to, and
