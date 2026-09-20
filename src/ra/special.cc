@@ -183,7 +183,7 @@ void Special_Dialog(bool simple) {
   bool display = true;
   bool process = true;
   while (process) {
-    if (Session.Type == GAME_NORMAL) {
+    if (TheSession().Type == GAME_NORMAL) {
       ServiceRealTime();
     } else {
       if (RunFrame()) {

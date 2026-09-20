@@ -677,7 +677,7 @@ void OptionsClass::Save_Settings() const {
   ini.Put_Int(OPTIONS, "ScrollRate", ScrollRate);
   ini.Put_Fixed(OPTIONS, "Brightness", Brightness);
   ini.Put_Fixed(OPTIONS, "Volume", Volume);
-  if (Session.Type == GAME_NORMAL) {  // Save only when non-multiplayer.
+  if (TheSession().Type == GAME_NORMAL) {  // Save only when non-multiplayer.
     ini.Put_Fixed(OPTIONS, "ScoreVolume", ScoreVolume);
   }
   ini.Put_Fixed(OPTIONS, "MultiplayerScoreVolume", MultiScoreVolume);

@@ -338,7 +338,7 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
   /*
   ** Keep count of the number of units created.
   */
-  //	if (Session.Type == GAME_INTERNET) {
+  //	if (TheSession().Type == GAME_INTERNET) {
   //		House->UnitTotals->Increment_Unit_Total((int)classid);
   //	}
 }
@@ -2219,7 +2219,7 @@ bool UnitClass::Tiberium_Check(CELL& center, int x, int y) {
 
   center = XY_Cell(Cell_X(center) + x, Cell_Y(center) + y);
 
-  if (Session.Type != GAME_NORMAL || !IsOwnedByPlayer ||
+  if (TheSession().Type != GAME_NORMAL || !IsOwnedByPlayer ||
       TheMap().at(center).IsMapped) {
     if (TheMap().at(Coord).Zones.at(Class->MZone) !=
         TheMap().at(center).Zones.at(Class->MZone)) {
@@ -2629,7 +2629,7 @@ int UnitClass::Mission_Unload() {
               if (IsDeploying) {
                 Status = 2;
               } else {
-                if (!House->IsHuman && Session.Type != GAME_NORMAL) {
+                if (!House->IsHuman && TheSession().Type != GAME_NORMAL) {
                   Assign_Mission(MISSION_HUNT);
                 } else {
                   Assign_Mission(MISSION_GUARD);
@@ -3163,9 +3163,9 @@ MoveType UnitClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
         &OverlayTypeClass::As_Reference(cellptr->Overlay);
 
     if (optr->IsCrate && House &&
-        !(Session.Type == GAME_NORMAL ? House->IsPlayerControl
-                                      : House->IsHuman) &&
-        Session.Type == GAME_NORMAL) {
+        !(TheSession().Type == GAME_NORMAL ? House->IsPlayerControl
+                                           : House->IsHuman) &&
+        TheSession().Type == GAME_NORMAL) {
       return MOVE_NO;
     }
 
@@ -4742,7 +4742,7 @@ void UnitClass::Read_INI(CCINIClass& ini) {
             if (unit->Strength > unit->Class->MaxStrength - 3) {
               unit->Strength = unit->Class->MaxStrength;
             }
-            if (Session.Type == GAME_NORMAL || unit->House->IsHuman) {
+            if (TheSession().Type == GAME_NORMAL || unit->House->IsHuman) {
               unit->Assign_Mission(mission);
               unit->Commence();
             } else {
@@ -5052,7 +5052,7 @@ int UnitClass::Mission_Guard_Area() {
   **	Check to see if this is an APC that is largely empty and not otherwise
   *doing anything. *	Such an APC should load up with infantry.
   */
-  if (Session.Type != GAME_NORMAL &&
+  if (TheSession().Type != GAME_NORMAL &&
       (*this == UNIT_APC || *this == UNIT_PHASE) && !Target_Legal(TarCom) &&
       !In_Radio_Contact() && House->Which_Zone(this) != ZONE_NONE &&
       !House->IsHuman) {

@@ -46,7 +46,6 @@
 #include "ra/externs.h"
 #include "ra/goptions.h"
 #include "ra/jshell.h"
-#include "ra/session.h"
 #include "ra/special.h"
 #include "ra/theme.h"
 #include "ra/version.h"
@@ -73,7 +72,6 @@
 ** no longer available.
 */
 
-bool AntsEnabled = false;
 
 
 
@@ -251,13 +249,6 @@ int32_t LParam;
 ** CRC of the INI and binary map files.
 */
 
-/***************************************************************************
-** This class manages data specific to multiplayer games.
-*/
-SessionClass Session;
-
-bool bAftermathMultiplayer;  //	Is multiplayer game being played with Aftermath
-                             // rules?
 
 
 
@@ -305,4 +296,3 @@ bool MouseInstalled;
 
 
 
-bool bAutoSonarPulse = false;

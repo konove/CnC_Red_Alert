@@ -242,14 +242,14 @@ static void BeginScenario() {
   Keyboard->Clear();
 
   // A recording drives the view on playback, so there is no mouse to show.
-  if (Session.Play) {
+  if (TheSession().Play) {
     Hide_Mouse();
     ResetRecordedEvents();
   } else {
     Show_Mouse();
   }
 
-  if (Session.Type == GAME_INTERNET) {
+  if (TheSession().Type == GAME_INTERNET) {
     Register_Game_Start_Time();
     TheNetwork().statistics_sent() = false;
     TheNetwork().packet_later() = nullptr;
@@ -293,23 +293,24 @@ static void EndScenario() {
   ThePalettes().black_palette().Set(kFadePaletteSlow);
   TheScreen().visible_page().Clear();
 
-  if (Session.Record || Session.Play) {
-    Session.RecordFile.Close();
+  if (TheSession().Record || TheSession().Play) {
+    TheSession().RecordFile.Close();
   }
 
-  if (!Session.Play) {
-    if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
+  if (!TheSession().Play) {
+    if (TheSession().Type == GAME_NULL_MODEM ||
+        TheSession().Type == GAME_MODEM) {
       Modem_Signoff();
-    } else if (Session.Type == GAME_IPX) {
+    } else if (TheSession().Type == GAME_IPX) {
       Shutdown_Network();
     }
   }
 
   // Return from playback to the main menu with the mouse visible again.
-  if (Session.Play) {
+  if (TheSession().Play) {
     Show_Mouse();
-    Session.Type = GAME_NORMAL;
-    Session.Play = false;
+    TheSession().Type = GAME_NORMAL;
+    TheSession().Play = false;
   }
 }
 
@@ -329,7 +330,7 @@ void RunGame() {
     EndScenario();
   }
 
-  Session.Free_Scenario_Descriptions();
+  TheSession().Free_Scenario_Descriptions();
 }
 
 // Gives the Westwood Online chat and matchmaking objects a slice of time
@@ -372,7 +373,7 @@ void RunGame() {
   if (TheNetwork().wolapi()->bConnectionDown) {
     // The Wolapi object is kept rather than deleted, so that the game results
     // can still be sent.
-    Session.Messages.Add_Message(
+    TheSession().Messages.Add_Message(
         nullptr, 0, TXT_WOL_WOLAPIGONE, PCOLOR_GOLD,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
         TheRules().MessageDelay * kTicksPerMinute);
@@ -401,13 +402,13 @@ void ServiceBackgroundTasks() {
   }
 
   // Network maintenance.
-  if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
+  if (TheSession().Type == GAME_IPX || TheSession().Type == GAME_INTERNET) {
     IPX_Call_Back();
   }
 
   // Serial game maintenance.
-  if (Session.Type == GAME_NULL_MODEM ||
-      (Session.Type == GAME_MODEM && Session.ModemService)) {
+  if (TheSession().Type == GAME_NULL_MODEM ||
+      (TheSession().Type == GAME_MODEM && TheSession().ModemService)) {
     TheNetwork().null_modem().Service();
   }
 
@@ -447,17 +448,17 @@ static void WaitForNextFrame() {
 // fast as possible. Otherwise the delay comes from the game-speed option, a
 // tick slower on easy and a tick faster on hard.
 static void StartFrameTimer() {
-  if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
-      Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-    if (Session.Play) {
+  if (TheSession().Type != GAME_NORMAL && TheSession().Type != GAME_SKIRMISH &&
+      TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
+    if (TheSession().Play) {
       frame_timer.Set(0);
       return;
     }
     // A zero rate was seen, rarely, and divided by zero.
-    if (Session.DesiredFrameRate == 0) {
-      Session.DesiredFrameRate = 60;
+    if (TheSession().DesiredFrameRate == 0) {
+      TheSession().DesiredFrameRate = 60;
     }
-    frame_timer.Set(kTimerSecond / Session.DesiredFrameRate);
+    frame_timer.Set(kTimerSecond / TheSession().DesiredFrameRate);
     return;
   }
 
@@ -485,8 +486,8 @@ static ScenarioOutcome PendingOutcome() {
   if (PlayerRestarts) {
     return ScenarioOutcome::kRestart;
   }
-  if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
-      Session.Players.Count() == 2 && TheScenario().bLocalProposesDraw &&
+  if (TheSession().Type != GAME_NORMAL && TheSession().Type != GAME_SKIRMISH &&
+      TheSession().Players.Count() == 2 && TheScenario().bLocalProposesDraw &&
       TheScenario().bOtherProposesDraw) {
     return ScenarioOutcome::kDraw;
   }
@@ -502,8 +503,8 @@ static bool FinishScenarioIfDecided() {
     return false;
   }
 
-  if (outcome != ScenarioOutcome::kRestart && Session.Type == GAME_INTERNET &&
-      !TheNetwork().statistics_sent()) {
+  if (outcome != ScenarioOutcome::kRestart &&
+      TheSession().Type == GAME_INTERNET && !TheNetwork().statistics_sent()) {
     Register_Game_End_Time();
     Send_Statistics_Packet();
   }
@@ -644,12 +645,12 @@ bool RunFrame() {
   Check_For_Focus_Loss();
 
   // Sync-bug trapping code
-  if (CurrentFrame() >= Session.TrapFrame) {
-    Session.Trap_Object();
+  if (CurrentFrame() >= TheSession().TrapFrame) {
+    TheSession().Trap_Object();
   }
 
   // Initialize our AI processing timer
-  Session.ProcessTimer = SystemTicks();
+  TheSession().ProcessTimer = SystemTicks();
 
   // If there is no theme playing, but it looks like one is required, then
   // start one playing. This is usually the symptom of there being no
@@ -665,13 +666,13 @@ bool RunFrame() {
   // Skipped entirely during playback: the recording drives the view instead,
   // and Do_Record_Playback() renders below once it has restored the
   // position.
-  if (!Session.Play && SpecialDialog == SDLG_NONE && GameInFocus) {
+  if (!TheSession().Play && SpecialDialog == SDLG_NONE && GameInFocus) {
     ProcessInput();
     TheMap().Render();
   }
 
   // Save map's position & selected objects, if we're recording the game.
-  if (Session.Record || Session.Play) {
+  if (TheSession().Record || TheSession().Play) {
     Do_Record_Playback();
   }
 
@@ -694,7 +695,7 @@ bool RunFrame() {
   // Manage the inter-player message list.  If Manage() returns true, it
   // means a message has expired & been removed, and the entire map must be
   // updated.
-  if (Session.Messages.Manage()) {
+  if (TheSession().Messages.Manage()) {
     TheScreen().hidden_page().Clear();
     TheMap().Flag_To_Redraw(true);
   }
@@ -703,8 +704,8 @@ bool RunFrame() {
   //
   // Multiplayer uses this running average to pick a frame rate every machine
   // in the session can actually keep up with.
-  Session.ProcessTicks += SystemTicks() - Session.ProcessTimer;
-  Session.ProcessFrames++;
+  TheSession().ProcessTicks += SystemTicks() - TheSession().ProcessTimer;
+  TheSession().ProcessFrames++;
 
   // Process all commands that are ready to be processed.
   Queue_AI();

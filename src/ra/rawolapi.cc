@@ -49,12 +49,12 @@
 #include "port/win32/win32_types.h"
 #include "ra/audio.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/inline.h"
 #include "ra/installation.h"
 #include "ra/jshell.h"
 #include "ra/msgbox.h"
 #include "ra/rules.h"
+#include "ra/session.h"
 #include "ra/text_ids.h"
 #include "ra/wol_gsup.h"
 #include "ra/wolapi/chatdefs.h"
@@ -263,7 +263,7 @@ STDMETHODIMP RAChatEventSink::OnPaged(HRESULT /*res*/, User* pUser,
   if (!pOwner->bInGame) {
     pOwner->PrintMessage(szPrint, WOLCOLORREMAP_PAGE);
   } else {
-    Session.Messages.Add_Message(
+    TheSession().Messages.Add_Message(
         nullptr, 0, szPrint, PCOLOR_GOLD,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
         TheRules().MessageDelay * kTicksPerMinute);

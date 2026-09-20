@@ -399,12 +399,12 @@ bool Queue_Exit() {
  *   09/21/1995 JLB : Created.                                             *
  *=========================================================================*/
 void Queue_AI() {
-  if (Session.Play) {
+  if (TheSession().Play) {
     Queue_Playback();
   }
 
   else {
-    switch (Session.Type) {
+    switch (TheSession().Type) {
       case GAME_SKIRMISH:
       case GAME_NORMAL:
         Queue_AI_Normal();
@@ -468,7 +468,7 @@ static void Queue_AI_Normal() {
   //------------------------------------------------------------------------
   // Save the TheNetwork().do_list() to disk, if we're in "Record" mode
   //------------------------------------------------------------------------
-  if (Session.Record) {
+  if (TheSession().Record) {
     Queue_Record();
   }
 
@@ -508,7 +508,7 @@ static void Queue_AI_Normal() {
  *                                                                         *
  * The Frame-Sync'ing logic is the heart & soul of network play.  It works
  ** by ensuring that any system won't out-run the other system by more than
- ** 'Session.MaxAhead' frames; this in turn ensures that a packet's
+ ** 'TheSession().MaxAhead' frames; this in turn ensures that a packet's
  ** execution frame # won't have been passed by the time that packet is
  ** received by all systems.
  **
@@ -531,7 +531,7 @@ static void Queue_AI_Normal() {
  *                                                                         *
  * Thus, two conditions must be met in order to advance to the next frame:
  **
- * - Our current frame # must be < their_frame + Session.MaxAhead
+ * - Our current frame # must be < their_frame + TheSession().MaxAhead
  **
  * - their_recv[base::ToSize(i)] must be >= their_sent[base::ToSize(i)]
  **
@@ -574,20 +574,20 @@ static void Queue_AI_Normal() {
  *	* identifying all the infantry told to move.
  **
  * - The protocol also only sends packets out every 'n' frames.  This cuts *
- *   the data rate dramatically.  It means that 'Session.MaxAhead' must be *
- *   divisible by 'n'; also, the minimum value for 'Session.MaxAhead' is * 'n *
- *2', to give both sides some "breathing" room in case a FRAMEINFO	* packet
- *gets missed.
+ *   the data rate dramatically.  It means that 'TheSession().MaxAhead' must be
+ * * divisible by 'n'; also, the minimum value for 'TheSession().MaxAhead' is *
+ * 'n * 2', to give both sides some "breathing" room in case a FRAMEINFO
+ *	* packet gets missed.
  **
  *                                                                         *
  * Note:  For synchronization-waiting loops (like waiting to hear from all *
  * other players, waiting to advance to the next frame, etc), use
- ** Net.Num_Connections() rather than Session.NumPlayers; this reflects the *
- * actual # of connections, and can be "faked" into playing even when * there
+ ** Net.Num_Connections() rather than TheSession().NumPlayers; this reflects the
+ * * actual # of connections, and can be "faked" into playing even when * there
  *aren't any other players actually there.  A typical example of 	* this
  *is playing back a recorded game.  For command-execution loops, use *
- * Session.NumPlayers.  This ensures all commands get executed, even if * there
- *isn't a human generating those commands.
+ * TheSession().NumPlayers.  This ensures all commands get executed, even if *
+ * there isn't a human generating those commands.
  **
  *                                                                         *
  * The modem works a little differently from the network in this respect:
@@ -603,8 +603,8 @@ static void Queue_AI_Normal() {
  *has left.
  **
  * - Any waits on Num_Connections() must also check for
- ** Session.NumPlayers > 1, to keep from waiting forever if the other * guy has
- *left
+ ** TheSession().NumPlayers > 1, to keep from waiting forever if the other * guy
+ * has left
  **
  * - Packets sent to a player who's left require no ACK
  **
@@ -625,7 +625,7 @@ static void Queue_AI_Normal() {
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Queue_AI_Multiplayer() {
-  if (Session.Type == GAME_SKIRMISH) {
+  if (TheSession().Type == GAME_SKIRMISH) {
     return;
   }
 
@@ -639,7 +639,7 @@ static void Queue_AI_Multiplayer() {
   constexpr int kFramesyncTimeout =
       15 * 60;  // timeout waiting for frame sync packet
 
-  const int timeout_factor = Session.Type == GAME_INTERNET ? 6 : 1;
+  const int timeout_factor = TheSession().Type == GAME_INTERNET ? 6 : 1;
 
   //........................................................................
   // Variables for sending, receiving & parsing packets:
@@ -673,14 +673,15 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   //	Initialize the packet buffer pointer & its max size
   //------------------------------------------------------------------------
-  if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
+  if (TheSession().Type == GAME_MODEM || TheSession().Type == GAME_NULL_MODEM) {
     multi_packet_buf = TheNetwork().null_modem().BuildBuf;
     multi_packet_max = TheNetwork().null_modem().MaxLen -
                        static_cast<int>(sizeof(CommHeaderType));
     net = &TheNetwork().null_modem();
-  } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
-    multi_packet_buf = base::ObjectBytes(Session.MetaPacket);
-    multi_packet_max = Session.MetaSize;
+  } else if (TheSession().Type == GAME_IPX ||
+             TheSession().Type == GAME_INTERNET) {
+    multi_packet_buf = base::ObjectBytes(TheSession().MetaPacket);
+    multi_packet_max = TheSession().MetaSize;
     net = &TheNetwork().ipx();
   }
 
@@ -703,7 +704,7 @@ static void Queue_AI_Multiplayer() {
   //	If we've just started a game, or loaded a multiplayer game, we must
   // wait for all other systems to signal ready.
   //------------------------------------------------------------------------
-  if (CurrentFrame() == 0 || Session.LoadGame) {
+  if (CurrentFrame() == 0 || TheSession().LoadGame) {
     //.....................................................................
     //	Initialize static locals
     //.....................................................................
@@ -725,8 +726,8 @@ static void Queue_AI_Multiplayer() {
     // - Otherwise, use the GameCRC value, so we'll compare save-game files
     //   rather than scenario INI files
     //.....................................................................
-    if (Session.LoadGame) {
-      if (Session.EmergencySave) {
+    if (TheSession().LoadGame) {
+      if (TheSession().EmergencySave) {
         TheWorld().scenario_crc() = 0;
       } else {
         TheWorld().scenario_crc() = GameCRC;
@@ -747,7 +748,7 @@ static void Queue_AI_Multiplayer() {
                           their_recv);
 
     if (rc != RC_NORMAL) {
-      if (Session.Type == GAME_INTERNET) {
+      if (TheSession().Type == GAME_INTERNET) {
         Register_Game_End_Time();
       }
 
@@ -781,16 +782,16 @@ static void Queue_AI_Multiplayer() {
     //.....................................................................
     // Initialize the frame timers
     //.....................................................................
-    if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
+    if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
       Process_Send_Period(net);  //, 1);
     }
 
     //.....................................................................
     // Turn off our special load-game flags
     //.....................................................................
-    if (Session.LoadGame) {
-      Session.EmergencySave = false;
-      Session.LoadGame = false;
+    if (TheSession().LoadGame) {
+      TheSession().EmergencySave = false;
+      TheSession().LoadGame = false;
     }
 
   }  // end of Frame 0 wait
@@ -805,7 +806,7 @@ static void Queue_AI_Multiplayer() {
     // If we're the net "master", compute our desired frame rate & new
     // 'MaxAhead' value.
     //
-    if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
+    if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
       //
       // All systems will transmit their required process time.
       //
@@ -828,7 +829,7 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   // Only process every 'FrameSendRate' frames
   //------------------------------------------------------------------------
-  if ((Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) &&
+  if ((TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) &&
       (!Process_Send_Period(net))) {  //, 0)) {
     return;
   }
@@ -837,7 +838,7 @@ static void Queue_AI_Multiplayer() {
   // Send our data packet(s); update my command-sent counter
   //------------------------------------------------------------------------
   my_sent += Send_Packets(net, multi_packet_buf, multi_packet_max,
-                          Session.MaxAhead, my_sent);
+                          TheSession().MaxAhead, my_sent);
 
   //------------------------------------------------------------------------
   //	If this is our first time through, we're done.
@@ -851,21 +852,21 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   //	Shortened resync timeout for non-2 player games.
   const int iFramesyncTimeout =
-      (config::kWolapiEnabled && Session.Type == GAME_INTERNET &&
+      (config::kWolapiEnabled && TheSession().Type == GAME_INTERNET &&
        TheNetwork().wolapi() != nullptr &&
        TheNetwork().wolapi()->GameInfoCurrent.iPlayerCount > 2)
           ? 5 * 60  //	One minute.
           : kFramesyncTimeout;
 
   rc = Wait_For_Players(
-      0, net, Session.MaxAhead * 8,
+      0, net, TheSession().MaxAhead * 8,
       std::max<int>(static_cast<int>(net->Response_Time()) * 3,
                     kFramesyncDlgTime * timeout_factor),
       iFramesyncTimeout * (2 * timeout_factor), multi_packet_buf, my_sent,
       their_frame, their_sent, their_recv);
 
   if (rc != RC_NORMAL) {
-    if (Session.Type == GAME_INTERNET) {
+    if (TheSession().Type == GAME_INTERNET) {
       Register_Game_End_Time();
       // New rule - if you cancel a waiting to reconnect dialog, you lose.
       TheNetwork().reconnect_cancelled() = (rc == RC_CANCEL);
@@ -884,16 +885,16 @@ static void Queue_AI_Multiplayer() {
   //------------------------------------------------------------------------
   //	Save the TheNetwork().do_list() to disk, if we're in "Record" mode
   //------------------------------------------------------------------------
-  if (Session.Record) {
+  if (TheSession().Record) {
     Queue_Record();
   }
 
   //------------------------------------------------------------------------
   // Execute the TheNetwork().do_list(); if an error occurs, bail out.
   //------------------------------------------------------------------------
-  if (!Execute_DoList(Session.MaxPlayers, HOUSE_MULTI1, net, &skip_crc,
+  if (!Execute_DoList(TheSession().MaxPlayers, HOUSE_MULTI1, net, &skip_crc,
                       their_frame, their_sent, their_recv)) {
-    if (Session.Type == GAME_INTERNET) {
+    if (TheSession().Type == GAME_INTERNET) {
       Register_Game_End_Time();
     }
     Stop_Game();
@@ -1036,7 +1037,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
         //	"Reconnecting" dialog is about to be shown.
         // At this point, begin wolapi "disconnect pinging", if
         // appropriate.
-        if (config::kWolapiEnabled && Session.Type == GAME_INTERNET &&
+        if (config::kWolapiEnabled && TheSession().Type == GAME_INTERNET &&
             TheNetwork().wolapi() != nullptr &&
             TheNetwork().wolapi()->GameInfoCurrent.bTournament) {
           TheNetwork().wolapi()->Init_DisconnectPinging();
@@ -1052,7 +1053,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
       reconnect_dlg = 1;
 
       //	Continue wolapi "disconnect pinging", if appropriate.
-      if (config::kWolapiEnabled && Session.Type == GAME_INTERNET &&
+      if (config::kWolapiEnabled && TheSession().Type == GAME_INTERNET &&
           TheNetwork().wolapi() != nullptr &&
           TheNetwork().wolapi()->bDoingDisconnectPinging) {
         TheNetwork().wolapi()->Pump_DisconnectPinging();
@@ -1080,11 +1081,11 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
         retry_timer.Set(resend_delta);
         dialog_timer.Set(dialog_time);
         timeout_timer.Set(timeout);
-      } else if (Session.Type == GAME_MODEM ||
-                 Session.Type == GAME_NULL_MODEM) {
+      } else if (TheSession().Type == GAME_MODEM ||
+                 TheSession().Type == GAME_NULL_MODEM) {
         if (WWMessageBox().Process(TXT_ASK_EMERGENCY_SAVE_NOT_RESPONDING,
                                    TXT_YES, TXT_NO, TXT_NONE) == 0) {
-          Session.EmergencySave = true;
+          TheSession().EmergencySave = true;
           // absl::PrintF("Saving emergency game; frame:%d,
           // CRC:%d\n",Frame,GameCRC); Print_CRCs(NULL); absl::PrintF("Before
           // Save: Count1:%d, Count2:%d, Seed:%d\n", Scen.RandomNumber.Count1,
@@ -1095,7 +1096,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
           //	Scen.RandomNumber.Count1,
           //	Scen.RandomNumber.Count2,
           //	Scen.RandomNumber.Seed);
-          Session.EmergencySave = false;
+          TheSession().EmergencySave = false;
         }
         return RC_CANCEL;
       } else {
@@ -1121,7 +1122,8 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
       //------------------------------------------------------------------
       // Special processing for a modem game: process SERIAL packets
       //------------------------------------------------------------------
-      if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
+      if (TheSession().Type == GAME_MODEM ||
+          TheSession().Type == GAME_NULL_MODEM) {
         rc = Process_Serial_Packet(multi_packet_buf, packetlen, first_time);
         //...............................................................
         // SERIAL packet received & processed
@@ -1148,7 +1150,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
         if (rc == RC_HUNG_UP) {
           if (WWMessageBox().Process(TXT_ASK_EMERGENCY_SAVE_HUNG_UP, TXT_YES,
                                      TXT_NO, TXT_NONE) == 0) {
-            Session.EmergencySave = true;
+            TheSession().EmergencySave = true;
             // absl::PrintF("Saving emergency game; frame:%d,
             // CRC:%d\n",Frame,GameCRC); Print_CRCs(NULL); absl::PrintF("Before
             // Save: Count1:%d, Count2:%d, Seed:%d\n",
@@ -1160,7 +1162,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
             //	Scen.RandomNumber.Count1,
             //	Scen.RandomNumber.Count2,
             //	Scen.RandomNumber.Seed);
-            Session.EmergencySave = false;
+            TheSession().EmergencySave = false;
           }
           return RC_CANCEL;
         }
@@ -1219,7 +1221,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     // their_frame, etc.
     //.....................................................................
     else {
-      if (Can_Advance(net, Session.MaxAhead, their_frame, their_sent,
+      if (Can_Advance(net, TheSession().MaxAhead, their_frame, their_sent,
                       their_recv)) {
         break;
       }
@@ -1312,21 +1314,23 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
       // For multi-frame compressed events, the MaxAhead must be an even
       // multiple of the FrameSendRate.
       //..................................................................
-      if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-        ev.Data.FrameInfo.Delay = static_cast<unsigned char>(
-            std::max(((resp_time / 8) + (Session.FrameSendRate - 1)) /
-                         Session.FrameSendRate * Session.FrameSendRate,
-                     Session.FrameSendRate * 2));
+      if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
+        ev.Data.FrameInfo.Delay = static_cast<unsigned char>(std::max(
+            ((resp_time / 8) + (TheSession().FrameSendRate - 1)) /
+                TheSession().FrameSendRate * TheSession().FrameSendRate,
+            TheSession().FrameSendRate * 2));
       }
       //..................................................................
       // For sending packets every frame, just use the 1-way connection
       // response time.
       //..................................................................
       else {
-        if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
+        if (TheSession().Type == GAME_MODEM ||
+            TheSession().Type == GAME_NULL_MODEM) {
           ev.Data.FrameInfo.Delay = static_cast<unsigned char>(std::max(
               resp_time / 8, MODEM_MIN_MAX_AHEAD));
-        } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
+        } else if (TheSession().Type == GAME_IPX ||
+                   TheSession().Type == GAME_INTERNET) {
           ev.Data.FrameInfo.Delay = static_cast<unsigned char>(std::max(
               resp_time / 8, NETWORK_MIN_MAX_AHEAD));
         }
@@ -1372,15 +1376,15 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
   // Find the highest processing time we have stored
   //
   int highest_ticks = 0;
-  for (int i = 0; i < Session.Players.Count(); i++) {
+  for (int i = 0; i < TheSession().Players.Count(); i++) {
     //
     // If we haven't heard from all systems yet, bail out.
     //
-    if (Session.Players.at(i)->Player.ProcessTime == -1) {
+    if (TheSession().Players.at(i)->Player.ProcessTime == -1) {
       return;
     }
     highest_ticks =
-        std::max(Session.Players.at(i)->Player.ProcessTime, highest_ticks);
+        std::max(TheSession().Players.at(i)->Player.ProcessTime, highest_ticks);
   }
 
   //
@@ -1389,9 +1393,9 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
   // - What we're really able to run at
   //
   if (highest_ticks == 0) {
-    Session.DesiredFrameRate = 60;
+    TheSession().DesiredFrameRate = 60;
   } else {
-    Session.DesiredFrameRate = 60 / highest_ticks;
+    TheSession().DesiredFrameRate = 60 / highest_ticks;
   }
 
   if (Options.GameSpeed == 0) {
@@ -1400,8 +1404,8 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
     specified_frame_rate = 60 / Options.GameSpeed;
   }
 
-  Session.DesiredFrameRate =
-      std::min(Session.DesiredFrameRate, specified_frame_rate);
+  TheSession().DesiredFrameRate =
+      std::min(TheSession().DesiredFrameRate, specified_frame_rate);
 
   //
   // Measure the current connection response time.  This time will be in
@@ -1422,21 +1426,22 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
   // resp_time is divided by 2 because, as reported, it represents a round-
   // trip, and we only want to use a one-way trip.
   //
-  int maxahead = resp_time * Session.DesiredFrameRate / (2 * 60);
+  int maxahead = resp_time * TheSession().DesiredFrameRate / (2 * 60);
 
   //
   // Now, we have to round 'maxahead' so it's an even multiple of our
   // send rate.  It also must be at least thrice the FrameSendRate.
   // (Isn't "thrice" a cool word?)
   //
-  maxahead = static_cast<int>((maxahead + Session.FrameSendRate - 1) /
-                              Session.FrameSendRate * Session.FrameSendRate);
   maxahead =
-      std::max<int>(maxahead, static_cast<int>(Session.FrameSendRate * 3));
+      static_cast<int>((maxahead + TheSession().FrameSendRate - 1) /
+                       TheSession().FrameSendRate * TheSession().FrameSendRate);
+  maxahead =
+      std::max<int>(maxahead, static_cast<int>(TheSession().FrameSendRate * 3));
 
   ev.Type = EventClass::TIMING;
   ev.Data.Timing.DesiredFrameRate =
-      static_cast<uint16_t>(Session.DesiredFrameRate);
+      static_cast<uint16_t>(TheSession().DesiredFrameRate);
   ev.Data.Timing.MaxAhead = static_cast<uint16_t>(maxahead);
 
   TheNetwork().out_list().Add(ev);
@@ -1448,7 +1453,7 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
   //
   // net->Set_Timing (resp_time + 10, -1, (resp_time * 4)+15);
 
-  if (Session.Type == GAME_INTERNET) {
+  if (TheSession().Type == GAME_INTERNET) {
     net->Set_Timing(resp_time + 10, -1, ((resp_time + 10) * 8) + 15);
   } else {
     net->Set_Timing(resp_time + 10, -1, (resp_time * 4) + 15);
@@ -1491,21 +1496,21 @@ static void Generate_Process_Time_Event(ConnManClass* net) {
   // connection timeout to allow for about 4 retries.
   //
   // net->Set_Timing (resp_time + 10, -1, (resp_time * 4)+15);
-  if (Session.Type == GAME_INTERNET) {
+  if (TheSession().Type == GAME_INTERNET) {
     net->Set_Timing(resp_time + 10, -1, ((resp_time + 10) * 8) + 15);
   } else {
     net->Set_Timing(resp_time + 10, -1, (resp_time * 4) + 15);
   }
 
   const int avgticks =
-      static_cast<int>(Session.ProcessTicks / Session.ProcessFrames);
+      static_cast<int>(TheSession().ProcessTicks / TheSession().ProcessFrames);
 
   ev.Type = EventClass::PROCESS_TIME;
   ev.Data.ProcessTime.AverageTicks = static_cast<uint16_t>(avgticks);
   TheNetwork().out_list().Add(ev);
 
-  Session.ProcessTicks = 0;
-  Session.ProcessFrames = 0;
+  TheSession().ProcessTicks = 0;
+  TheSession().ProcessFrames = 0;
 }
 
 /***************************************************************************
@@ -1534,8 +1539,9 @@ static int Process_Send_Period(ConnManClass* net)  //, int init)
   // If the current frame # is not an even multiple of 'FrameSendRate', then
   // it's not time to send a packet; just return.
   //------------------------------------------------------------------------
-  if (CurrentFrame() != (CurrentFrame() + (Session.FrameSendRate - 1)) /
-                            Session.FrameSendRate * Session.FrameSendRate) {
+  if (CurrentFrame() != (CurrentFrame() + (TheSession().FrameSendRate - 1)) /
+                            TheSession().FrameSendRate *
+                            TheSession().FrameSendRate) {
     net->Service();
 
     return 0;
@@ -1629,8 +1635,8 @@ static int Send_Packets(ConnManClass* net,
   //
   // 10/21/96 5:12PM - ST
   //
-  if (Session.Type == GAME_INTERNET || Session.Type == GAME_MODEM ||
-      Session.Type == GAME_NULL_MODEM) {
+  if (TheSession().Type == GAME_INTERNET || TheSession().Type == GAME_MODEM ||
+      TheSession().Type == GAME_NULL_MODEM) {
     cap = TheNetwork().out_list().Count();
     do_once = 0;
   }
@@ -1644,11 +1650,11 @@ static int Send_Packets(ConnManClass* net,
     //.....................................................................
     //	If there are no commands this frame, we'll just be sending a FRAMEINFO
     //	packet; no ack is required.  For the modem's sake, check
-    // Session.NumPlayers; no ACK is needed if we're just sending to someone
-    // who's left the game.
+    // TheSession().NumPlayers; no ACK is needed if we're just sending to
+    // someone who's left the game.
     //.....................................................................
     if (cap == 0 || TheNetwork().out_list().Count() == 0 ||
-        Session.NumPlayers == 1) {
+        TheSession().NumPlayers == 1) {
       ack_req = 0;
     } else {
       ack_req = 1;
@@ -1713,18 +1719,21 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
   // games compare scenario CRC's on startup.
   //------------------------------------------------------------------------
   packet.Type = EventClass::FRAMESYNC;
-  if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
+  if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
     packet.Frame = static_cast<unsigned>(
-        (CurrentFrame() + Session.MaxAhead + (Session.FrameSendRate - 1)) /
-        (Session.FrameSendRate * Session.FrameSendRate));
+        (CurrentFrame() + TheSession().MaxAhead +
+         (TheSession().FrameSendRate - 1)) /
+        (TheSession().FrameSendRate * TheSession().FrameSendRate));
   } else {
-    packet.Frame = static_cast<unsigned>(CurrentFrame() + Session.MaxAhead);
+    packet.Frame =
+        static_cast<unsigned>(CurrentFrame() + TheSession().MaxAhead);
   }
   packet.ID = static_cast<unsigned>(ThePlayer()->ID);
   packet.Data.FrameInfo.CRC =
       static_cast<std::uint32_t>(TheWorld().scenario_crc());
   packet.Data.FrameInfo.CommandCount = static_cast<uint16_t>(cmd_count);
-  packet.Data.FrameInfo.Delay = static_cast<unsigned char>(Session.MaxAhead);
+  packet.Data.FrameInfo.Delay =
+      static_cast<unsigned char>(TheSession().MaxAhead);
 
   //------------------------------------------------------------------------
   // Send the event.  For modem, this just sends to the other player;
@@ -1990,7 +1999,7 @@ static RetcodeType Process_Serial_Packet(
   // Process an incoming message
   //------------------------------------------------------------------------
   if (serial_packet->Command == SERIAL_MESSAGE) {
-    if (!Session.Messages.Concat_Message(
+    if (!TheSession().Messages.Concat_Message(
             serial_packet->Name, serial_packet->ID,
             serial_packet->Message.Message,
             TheRules().MessageDelay * kTicksPerMinute)) {
@@ -1999,7 +2008,7 @@ static RetcodeType Process_Serial_Packet(
           TheRules().NewUnitsEnabled) {
         Enable_Secret_Units();
       }
-      Session.Messages.Add_Message(
+      TheSession().Messages.Add_Message(
           serial_packet->Name, serial_packet->ID,
           serial_packet->Message.Message,
           static_cast<PlayerColorType>(serial_packet->ID),
@@ -2013,7 +2022,7 @@ static RetcodeType Process_Serial_Packet(
     //	Save this message in our last-message buffer
     //.....................................................................
     if (!std::string_view(serial_packet->Message.Message).empty()) {
-      port::SafeCopy(Session.LastMessage, serial_packet->Message.Message);
+      port::SafeCopy(TheSession().LastMessage, serial_packet->Message.Message);
     }
 
     //.....................................................................
@@ -2033,7 +2042,7 @@ static RetcodeType Process_Serial_Packet(
        serial_packet->Command < SERIAL_LAST_COMMAND) ||
       (serial_packet->Command >= SERIAL_REQ_SCENARIO &&
        serial_packet->Command <= SERIAL_NO_SCENARIO) ||
-      Session.NumPlayers == 1) {
+      TheSession().NumPlayers == 1) {
     return RC_SERIAL_PROCESSED;
   }
 
@@ -2111,7 +2120,7 @@ static int Can_Advance(ConnManClass* net, int max_ahead,
   // Special case for modem: if the other player has left, go ahead and
   // advance to the next frame; don't wait on him.
   //------------------------------------------------------------------------
-  if (Session.NumPlayers == 1) {
+  if (TheSession().NumPlayers == 1) {
     return 1;
   }
 
@@ -2259,7 +2268,7 @@ static int Handle_Timeout(ConnManClass* net, std::span<int64_t> their_frame,
   //------------------------------------------------------------------------
   // For modem, attempt to reconnect; if that fails, save the game & bail.
   //------------------------------------------------------------------------
-  if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
+  if (TheSession().Type == GAME_MODEM || TheSession().Type == GAME_NULL_MODEM) {
     if (net->Num_Connections()) {
       if (!Reconnect_Modem()) {
         return 0;
@@ -2271,7 +2280,8 @@ static int Handle_Timeout(ConnManClass* net, std::span<int64_t> their_frame,
   //------------------------------------------------------------------------
   //	For network, destroy the oldest connection
   //------------------------------------------------------------------------
-  else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
+  else if (TheSession().Type == GAME_IPX ||
+           TheSession().Type == GAME_INTERNET) {
     int64_t j = 0x7fffffff;  // oldest frame number seen so far
     int oldest_index = 0;    // index of person requiring a reconnect
     for (int i = 0; i < net->Num_Connections(); i++) {
@@ -2285,8 +2295,8 @@ static int Handle_Timeout(ConnManClass* net, std::span<int64_t> their_frame,
     /*
     ** Send the game statistics packet now if the game is effectivly over
     */
-    if (Session.Players.Count() == 2 && Session.Type == GAME_INTERNET &&
-        !TheNetwork().statistics_sent()) {
+    if (TheSession().Players.Count() == 2 &&
+        TheSession().Type == GAME_INTERNET && !TheNetwork().statistics_sent()) {
       Register_Game_End_Time();
       TheNetwork().connection_lost() = true;
       Send_Statistics_Packet();  //	Disconnect, and I'll be the only one
@@ -2302,7 +2312,7 @@ static int Handle_Timeout(ConnManClass* net, std::span<int64_t> their_frame,
         base::At(their_recv, base::ToSize(i)) =
             base::At(their_recv, base::ToSize(i + 1));
       }
-      if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
+      if (TheSession().Type == GAME_IPX || TheSession().Type == GAME_INTERNET) {
         Destroy_Connection(id, 1);
       }
     }
@@ -2336,10 +2346,10 @@ static int Handle_Timeout(ConnManClass* net, std::span<int64_t> their_frame,
  *   11/22/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Stop_Game() {
-  Session.LoadGame = false;
-  Session.EmergencySave = false;
+  TheSession().LoadGame = false;
+  TheSession().EmergencySave = false;
   GameActive = false;
-  if (Session.Type == GAME_INTERNET) {
+  if (TheSession().Type == GAME_INTERNET) {
     TheNetwork().connection_lost() = true;
     Send_Statistics_Packet();  //	Stop_Game()
   }
@@ -2396,10 +2406,10 @@ static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
   //........................................................................
   // Set the frame to execute this event on; this is protocol-specific
   //........................................................................
-  if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
+  if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
     finfo->Frame = static_cast<unsigned>(
-        (CurrentFrame() + frame_delay + (Session.FrameSendRate - 1)) /
-        (Session.FrameSendRate * Session.FrameSendRate));
+        (CurrentFrame() + frame_delay + (TheSession().FrameSendRate - 1)) /
+        (TheSession().FrameSendRate * TheSession().FrameSendRate));
   } else {
     finfo->Frame = static_cast<unsigned>(CurrentFrame() + frame_delay);
   }
@@ -2417,7 +2427,7 @@ static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
   //------------------------------------------------------------------------
   // Initialize the # of bytes processed; this is protocol-specific
   //------------------------------------------------------------------------
-  if (Session.CommProtocol == COMM_PROTOCOL_SINGLE_NO_COMP) {
+  if (TheSession().CommProtocol == COMM_PROTOCOL_SINGLE_NO_COMP) {
     size += sizeof(EventClass);
   } else {
     size += offsetof(EventClass, Data) +
@@ -2428,7 +2438,7 @@ static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
   //	Transfer all events from the TheNetwork().out_list() into the
   // TheNetwork().do_list(), building our 	packet while we go.
   //------------------------------------------------------------------------
-  switch (Session.CommProtocol) {
+  switch (TheSession().CommProtocol) {
     //.....................................................................
     // COMM_PROTOCOL_SINGLE_NO_COMP:
     // We'll send at least a FRAMEINFO every single frame, no compression
@@ -2769,10 +2779,10 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
     //.....................................................................
     // Set the event's frame delay (this is protocol-dependent)
     //.....................................................................
-    if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
+    if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
       TheNetwork().out_list().First().Frame = static_cast<unsigned>(
-          (CurrentFrame() + frame_delay + (Session.FrameSendRate - 1)) /
-          (Session.FrameSendRate * Session.FrameSendRate));
+          (CurrentFrame() + frame_delay + (TheSession().FrameSendRate - 1)) /
+          (TheSession().FrameSendRate * TheSession().FrameSendRate));
     } else {
       TheNetwork().out_list().First().Frame =
           static_cast<unsigned>(CurrentFrame() + frame_delay);
@@ -2982,7 +2992,7 @@ static int Breakup_Receive_Packet(std::span<const std::byte> buf, int bufsize) {
   /*
   ** is there enough leftover for another record
   */
-  if (Session.CommProtocol == COMM_PROTOCOL_SINGLE_NO_COMP) {
+  if (TheSession().CommProtocol == COMM_PROTOCOL_SINGLE_NO_COMP) {
     count = Extract_Uncompressed_Events(buf, bufsize);
   } else {
     count = Extract_Compressed_Events(buf, bufsize);
@@ -3482,7 +3492,8 @@ static int Execute_DoList(int max_houses, HousesType base_house,
         if (std::cmp_greater(CurrentFrame(),
                              TheNetwork().do_list().at(j).Frame) &&
             TheNetwork().do_list().at(j).Type != EventClass::FRAMEINFO &&
-            Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH) {
+            TheSession().Type != GAME_NORMAL &&
+            TheSession().Type != GAME_SKIRMISH) {
           Dump_Packet_Too_Late_Stuff(&TheNetwork().do_list().at(j), net,
                                      their_frame, their_sent, their_recv);
           WWMessageBox().Process(TXT_PACKET_TOO_LATE);
@@ -3517,7 +3528,8 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             ** Send the game statistics packet now since the game is effectivly
             *over
             */
-            if (Session.Players.Count() == 2 && Session.Type == GAME_INTERNET &&
+            if (TheSession().Players.Count() == 2 &&
+                TheSession().Type == GAME_INTERNET &&
                 !TheNetwork().statistics_sent()) {
               Register_Game_End_Time();
               Send_Statistics_Packet();  //	Event - player aborted, and
@@ -3545,10 +3557,11 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             //	for that player.  The HousesType for this event is the
             // connection ID.
             //............................................................
-            if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
+            if (TheSession().Type == GAME_MODEM ||
+                TheSession().Type == GAME_NULL_MODEM) {
               Destroy_Null_Connection(static_cast<int>(house), 0);
-            } else if ((Session.Type == GAME_IPX ||
-                        Session.Type == GAME_INTERNET) &&
+            } else if ((TheSession().Type == GAME_IPX ||
+                        TheSession().Type == GAME_INTERNET) &&
                        net) {
               index = net->Connection_Index(static_cast<int>(house));
               if (index != -1) {
@@ -3560,7 +3573,8 @@ static int Execute_DoList(int max_houses, HousesType base_house,
                   base::At(their_recv, base::ToSize(k)) =
                       base::At(their_recv, base::ToSize(k + 1));
                 }
-                if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
+                if (TheSession().Type == GAME_IPX ||
+                    TheSession().Type == GAME_INTERNET) {
                   Destroy_Connection(static_cast<int>(house), 0);
                 }
               }
@@ -3569,13 +3583,13 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             // Special case for recording playback: turn the house over
             // to the computer.
             //
-            if (Session.Play &&
+            if (TheSession().Play &&
                 TheNetwork().do_list().at(j).Type == EventClass::EXIT) {
               hptr->IsHuman = false;
               hptr->IQ = TheRules().MaxIQ;
               HouseClass::Computer_Paranoid();
               port::SafeCopy(hptr->IniName, Text_String(TXT_COMPUTER));
-              Session.NumPlayers--;
+              TheSession().NumPlayers--;
             }
           }
         }
@@ -3610,13 +3624,13 @@ static int Execute_DoList(int max_houses, HousesType base_house,
 
               if (WWMessageBox().Process(TXT_OUT_OF_SYNC, TXT_CONTINUE,
                                          TXT_STOP) == 0) {
-                if (Session.Type == GAME_MODEM ||
-                    Session.Type == GAME_NULL_MODEM) {
+                if (TheSession().Type == GAME_MODEM ||
+                    TheSession().Type == GAME_NULL_MODEM) {
                   Destroy_Null_Connection(static_cast<int>(house), -1);
                   Shutdown_Modem();
-                  Session.Type = GAME_NORMAL;
-                } else if ((Session.Type == GAME_IPX ||
-                            Session.Type == GAME_INTERNET) &&
+                  TheSession().Type = GAME_NORMAL;
+                } else if ((TheSession().Type == GAME_IPX ||
+                            TheSession().Type == GAME_INTERNET) &&
                            net) {
                   while (net->Num_Connections()) {
                     Keyboard->Check();
@@ -3737,11 +3751,11 @@ static void Queue_Record() {
   //------------------------------------------------------------------------
   //	Save the # of events, then all events.
   //------------------------------------------------------------------------
-  Session.RecordFile.WriteObject(j);
+  TheSession().RecordFile.WriteObject(j);
   for (int i = 0; i < TheNetwork().do_list().Count(); i++) {
     if (std::cmp_equal(CurrentFrame(), TheNetwork().do_list().at(i).Frame) &&
         !TheNetwork().do_list().at(i).IsExecuted) {
-      Session.RecordFile.WriteObject(TheNetwork().do_list().at(i));
+      TheSession().RecordFile.WriteObject(TheNetwork().do_list().at(i));
       j--;
     }
   }
@@ -3789,7 +3803,7 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   if (Keyboard->Check()) {
     const int key = Keyboard->Get();
-    if (key == KA_ESC || Session.Attract) {
+    if (key == KA_ESC || TheSession().Attract) {
       GameActive = false;
       return;
     }
@@ -3799,7 +3813,7 @@ static void Queue_Playback() {
   // If we're in "Attract" mode, and the user moves the mouse, stop the
   // playback.
   //------------------------------------------------------------------------
-  if (Session.Attract && CurrentFrame() > 0 &&
+  if (TheSession().Attract && CurrentFrame() > 0 &&
       (mx != Get_Mouse_X() || my != Get_Mouse_Y())) {
     GameActive = false;
     return;
@@ -3816,7 +3830,7 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   // If we've reached the CRC print frame, do so & exit
   //------------------------------------------------------------------------
-  if (CurrentFrame() >= Session.TrapPrintCRC) {
+  if (CurrentFrame() >= TheSession().TrapPrintCRC) {
     Print_CRCs(nullptr);
     // Prog_End();
     EmergencyExit(0);
@@ -3827,7 +3841,7 @@ static void Queue_Playback() {
   //	routine didn't write anything the first time through); do this after the
   //	CRC is computed, since we'll still need a CRC for Frame 0.
   //------------------------------------------------------------------------
-  if (CurrentFrame() == 0 && Session.Type != GAME_NORMAL) {
+  if (CurrentFrame() == 0 && TheSession().Type != GAME_NORMAL) {
     return;
   }
 
@@ -3835,10 +3849,10 @@ static void Queue_Playback() {
   // Only process every 'FrameSendRate' frames
   //------------------------------------------------------------------------
   const int testframe =
-      static_cast<int>((CurrentFrame() + (Session.FrameSendRate - 1)) /
-                       Session.FrameSendRate * Session.FrameSendRate);
-  if ((Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
-       Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) &&
+      static_cast<int>((CurrentFrame() + (TheSession().FrameSendRate - 1)) /
+                       TheSession().FrameSendRate * TheSession().FrameSendRate);
+  if ((TheSession().Type != GAME_NORMAL && TheSession().Type != GAME_SKIRMISH &&
+       TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) &&
       (CurrentFrame() != testframe)) {
     return;
   }
@@ -3847,9 +3861,9 @@ static void Queue_Playback() {
   //	Read the TheNetwork().do_list() from disk
   //------------------------------------------------------------------------
   int ok = 1;
-  if (Session.RecordFile.ReadObject(numevents)) {
+  if (TheSession().RecordFile.ReadObject(numevents)) {
     for (int i = 0; i < numevents; i++) {
-      if (Session.RecordFile.ReadObject(event)) {
+      if (TheSession().RecordFile.ReadObject(event)) {
         event.IsExecuted = 0;
         TheNetwork().do_list().Add(event);
       } else {
@@ -3869,11 +3883,11 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   // Execute the TheNetwork().do_list(); if an error occurs, bail out.
   //------------------------------------------------------------------------
-  if (Session.Type == GAME_NORMAL) {
+  if (TheSession().Type == GAME_NORMAL) {
     max_houses = 1;
     base_house = ThePlayer()->Class->House;
   } else {
-    max_houses = Session.MaxPlayers;
+    max_houses = TheSession().MaxPlayers;
     base_house = HOUSE_MULTI1;
   }
   if (!Execute_DoList(max_houses, base_house, nullptr, nullptr, {}, {}, {})) {
@@ -4425,16 +4439,17 @@ void Dump_Packet_Too_Late_Stuff(const EventClass* event, ConnManClass* net,
   absl::FPrintF(fp, "Frame:      %d\n", event->Frame);
   absl::FPrintF(fp, "ID:         %d\n", event->ID);
 
-  for (int i = 0; i < Session.Players.Count(); i++) {
-    if (event->ID == static_cast<unsigned>(Session.Players.at(i)->Player.ID)) {
-      absl::FPrintF(fp, "Player's Name: %s", Session.Players.at(i)->Name);
+  for (int i = 0; i < TheSession().Players.Count(); i++) {
+    if (event->ID ==
+        static_cast<unsigned>(TheSession().Players.at(i)->Player.ID)) {
+      absl::FPrintF(fp, "Player's Name: %s", TheSession().Players.at(i)->Name);
     }
   }
   absl::FPrintF(fp, "\n");
 
   absl::FPrintF(fp, "--------------------- My data: ---------------------\n");
   absl::FPrintF(fp, "My Frame:%" PRId64 "\n", CurrentFrame());
-  absl::FPrintF(fp, "My MaxAhead:%d\n", Session.MaxAhead);
+  absl::FPrintF(fp, "My MaxAhead:%d\n", TheSession().MaxAhead);
 
   if (net) {
     absl::FPrintF(fp, "-------------------- Frame Stats: ------------------\n");

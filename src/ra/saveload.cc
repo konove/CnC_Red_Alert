@@ -774,7 +774,7 @@ bool Load_Game(int id) {
       ** Update the internal list of scenarios to include the counterstrike
       ** list.
       */
-      Session.Read_Scenario_Descriptions();
+      TheSession().Read_Scenario_Descriptions();
     } else {
       /*
       ** The scenario is available so set RequiredCD to whatever is currently
@@ -993,17 +993,17 @@ bool Load_Game(int id) {
     *different from *	a regular mission, examining of the scenario name is the
     *only way to tell.
     */
-    AntsEnabled = toupper(TheScenario().ScenarioName[0]) == 'S' &&
-                  toupper(TheScenario().ScenarioName[1]) == 'C' &&
-                  toupper(TheScenario().ScenarioName[2]) == 'A' &&
-                  toupper(TheScenario().ScenarioName[3]) == '0' &&
-                  toupper(TheScenario().ScenarioName[5]) == 'E' &&
-                  toupper(TheScenario().ScenarioName[6]) == 'A';
+    TheWorld().ants_enabled() = toupper(TheScenario().ScenarioName[0]) == 'S' &&
+                                toupper(TheScenario().ScenarioName[1]) == 'C' &&
+                                toupper(TheScenario().ScenarioName[2]) == 'A' &&
+                                toupper(TheScenario().ScenarioName[3]) == '0' &&
+                                toupper(TheScenario().ScenarioName[5]) == 'E' &&
+                                toupper(TheScenario().ScenarioName[6]) == 'A';
 
     if (TheScenario().Scenario == 1) {
       RequiredCD = -1;
     } else {
-      if (TheScenario().Scenario > 19 || AntsEnabled) {
+      if (TheScenario().Scenario > 19 || TheWorld().ants_enabled()) {
         RequiredCD = 2;
         if (TheScenario().Scenario >= 36) {
           RequiredCD = 3;
@@ -1027,26 +1027,27 @@ bool Load_Game(int id) {
       /*
       ** Fix up the session class variables
       */
-      for (int s = 0; s < Session.Scenarios.Count(); s++) {
-        if (Session.Scenarios.at(s)->Description() ==
+      for (int s = 0; s < TheSession().Scenarios.Count(); s++) {
+        if (TheSession().Scenarios.at(s)->Description() ==
             TheScenario().Description) {
           base::CopyBytes(
-              base::ObjectBytes(Session.Options.ScenarioDescription),
+              base::ObjectBytes(TheSession().Options.ScenarioDescription),
               base::ObjectBytes(TheScenario().Description),
-              sizeof(Session.Options.ScenarioDescription));
-          base::CopyBytes(base::ObjectBytes(Session.ScenarioFileName),
+              sizeof(TheSession().Options.ScenarioDescription));
+          base::CopyBytes(base::ObjectBytes(TheSession().ScenarioFileName),
                           base::ObjectBytes(TheScenario().ScenarioName),
-                          sizeof(Session.ScenarioFileName));
-          Session.ScenarioFileLength =
-              static_cast<decltype(Session.ScenarioFileLength)>(
+                          sizeof(TheSession().ScenarioFileName));
+          TheSession().ScenarioFileLength =
+              static_cast<decltype(TheSession().ScenarioFileLength)>(
                   scenario_file.Size());
           base::CopyBytes(
-              base::ObjectBytes(Session.ScenarioDigest),
-              std::as_bytes(Session.Scenarios.at(s)->Get_Digest_Bytes()),
-              sizeof(Session.ScenarioDigest));
-          Session.ScenarioIsOfficial = Session.Scenarios.at(s)->Get_Official();
+              base::ObjectBytes(TheSession().ScenarioDigest),
+              std::as_bytes(TheSession().Scenarios.at(s)->Get_Digest_Bytes()),
+              sizeof(TheSession().ScenarioDigest));
+          TheSession().ScenarioIsOfficial =
+              TheSession().Scenarios.at(s)->Get_Official();
           TheScenario().Scenario = s;
-          Session.Options.ScenarioIndex = s;
+          TheSession().Options.ScenarioIndex = s;
           break;
         }
       }
@@ -1065,7 +1066,7 @@ bool Load_Game(int id) {
       return false;
     }
     //!!!!!!!!!! put Fixup_Player_Units() here
-    Session.LoadGame = true;
+    TheSession().LoadGame = true;
   }
 
   SidebarClass::Reload_Sidebar();  // re-load sidebar art.
@@ -1114,7 +1115,7 @@ bool Load_Game(int id) {
   TheRules().Difficulty(ini);
   if (load_net) {
     bool readini = false;
-    switch (Session.Type) {
+    switch (TheSession().Type) {
       case GAME_NORMAL:
         readini = false;
         break;
@@ -1126,7 +1127,7 @@ bool Load_Game(int id) {
       case GameType::GAME_IPX:
       case GameType::GAME_INTERNET:
       default:
-        readini = bAftermathMultiplayer;
+        readini = TheSession().IsAftermath;
         break;
     }
     if (readini) {
@@ -1206,7 +1207,7 @@ template <class Archive>
 static void SerializeMultiplayer(Archive& ar) {
   // The switch keeps its place in the record, so a local stands in for it.
   bool unshroud = TheDebugState().unshroud();
-  ar(Session, TheWorld().build_level(), unshroud, TheWorld().seed(),
+  ar(TheSession(), TheWorld().build_level(), unshroud, TheWorld().seed(),
      TheWorld().whom(), Special, Options);
   if constexpr (Archive::kIsReading) {
     TheDebugState().set_unshroud(unshroud);
@@ -1403,25 +1404,25 @@ static bool Reconcile_Players() {
   /*
   **	If there are no players, there's nothing to do.
   */
-  if (Session.Players.Count() == 0) {
+  if (TheSession().Players.Count() == 0) {
     return true;
   }
 
   /*
   **	Make sure every name we're connected to can be found in a House
   */
-  for (int i = 0; i < Session.Players.Count(); i++) {
+  for (int i = 0; i < TheSession().Players.Count(); i++) {
     found = 0;
     for (HousesType house = HOUSE_MULTI1;
          static_cast<int>(house) <
-         static_cast<int>(HOUSE_MULTI1) + Session.MaxPlayers;
+         static_cast<int>(HOUSE_MULTI1) + TheSession().MaxPlayers;
          house++) {
       housep = HouseClass::As_Pointer(house);
       if (!housep) {
         continue;
       }
 
-      if (absl::EqualsIgnoreCase(Session.Players.at(i)->Name,
+      if (absl::EqualsIgnoreCase(TheSession().Players.at(i)->Name,
                                  housep->IniName)) {
         found = 1;
         break;
@@ -1438,7 +1439,7 @@ static bool Reconcile_Players() {
   //
   for (HousesType house = HOUSE_MULTI1;
        static_cast<int>(house) <
-       static_cast<int>(HOUSE_MULTI1) + Session.MaxPlayers;
+       static_cast<int>(HOUSE_MULTI1) + TheSession().MaxPlayers;
        house++) {
     housep = HouseClass::As_Pointer(house);
     if (!housep) {
@@ -1457,11 +1458,11 @@ static bool Reconcile_Players() {
     // its ID to this house.
     //
     found = 0;
-    for (int i = 0; i < Session.Players.Count(); i++) {
-      if (absl::EqualsIgnoreCase(Session.Players.at(i)->Name,
+    for (int i = 0; i < TheSession().Players.Count(); i++) {
+      if (absl::EqualsIgnoreCase(TheSession().Players.at(i)->Name,
                                  housep->IniName)) {
         found = 1;
-        Session.Players.at(i)->Player.ID = house;
+        TheSession().Players.at(i)->Player.ID = house;
         break;
       }
     }
@@ -1479,13 +1480,13 @@ static bool Reconcile_Players() {
       housep->IQ = TheRules().MaxIQ;
       port::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
 
-      Session.NumPlayers--;
+      TheSession().NumPlayers--;
     }
   }
 
   //
-  // If all went well, our Session.NumPlayers value should now equal the value
-  // from the saved game, minus any players we removed.
+  // If all went well, our TheSession().NumPlayers value should now equal the
+  // value from the saved game, minus any players we removed.
   //
-  return Session.NumPlayers == Session.Players.Count();
+  return TheSession().NumPlayers == TheSession().Players.Count();
 }

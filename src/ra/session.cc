@@ -80,7 +80,6 @@
 #include "ra/bullet.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -298,8 +297,7 @@ void SessionClass::Init() {}  // end of Init
  *   11/30/1995 BRR : Created.                                             *
  *=========================================================================*/
 int SessionClass::Create_Connections() {
-
-  if (Session.Type != GAME_IPX && Session.Type != GAME_INTERNET) {
+  if (TheSession().Type != GAME_IPX && TheSession().Type != GAME_INTERNET) {
     return 0;
   }
 
@@ -351,7 +349,7 @@ bool SessionClass::Am_I_Master() {
   // Check every house; if PlayerPtr points to the first human house, we're
   // the master.
   //------------------------------------------------------------------------
-  for (int i = 0; i < Session.MaxPlayers; i++) {
+  for (int i = 0; i < TheSession().MaxPlayers; i++) {
     const auto house =
         static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + i);
     HouseClass* hptr = HouseClass::As_Pointer(house);

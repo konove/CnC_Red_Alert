@@ -87,7 +87,6 @@
 #include "ra/connect.h"
 #include "ra/defines.h"
 #include "ra/event.h"
-#include "ra/externs.h"
 #include "ra/house.h"  // IWYU pragma: keep - used by an DCHECK() below.
 #include "ra/ipx.h"
 #include "ra/ipxaddr.h"
@@ -216,8 +215,7 @@ IPXManagerClass::~IPXManagerClass() {
  *   12/20/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXManagerClass::Init() {
-
-  if (Session.Type != GAME_INTERNET) {
+  if (TheSession().Type != GAME_INTERNET) {
     //------------------------------------------------------------------------
     //	Error if IPX not installed
     //------------------------------------------------------------------------
@@ -261,7 +259,7 @@ int IPXManagerClass::Init() {
   }
   NumConnections = 0;
 
-  if (Session.Type != GAME_INTERNET) {
+  if (TheSession().Type != GAME_INTERNET) {
     //------------------------------------------------------------------------
     //	Allocate real-mode memory
     //------------------------------------------------------------------------
@@ -294,7 +292,8 @@ int IPXManagerClass::Init() {
   //------------------------------------------------------------------------
   //	Start Listening
   //------------------------------------------------------------------------
-  if ((Session.Type != GAME_INTERNET) && (!IPXConnClass::Start_Listening())) {
+  if ((TheSession().Type != GAME_INTERNET) &&
+      (!IPXConnClass::Start_Listening())) {
     return 0;
   }
 
@@ -980,7 +979,7 @@ int IPXManagerClass::Service() {
             *of our players
             ** packets then it might be from a player whos IP has changed.
             */
-            if ((Session.Type == GAME_INTERNET) && (!found_address) &&
+            if ((TheSession().Type == GAME_INTERNET) && (!found_address) &&
                 (packet->Code == static_cast<unsigned char>(
                                      ConnectionClass::PACKET_DATA_NOACK))) {
               /*
@@ -1005,8 +1004,8 @@ int IPXManagerClass::Service() {
                 const int id = event->ID;
 
                 DCHECK(id != ThePlayer()->ID);
-                for (int k = 1; k < Session.Players.Count(); k++) {
-                  if (Session.Players.at(k)->Player.ID ==
+                for (int k = 1; k < TheSession().Players.Count(); k++) {
+                  if (TheSession().Players.at(k)->Player.ID ==
                       static_cast<HousesType>(id)) {
                     const int iConnectionIndex = Connection_Index(id);
                     if (iConnectionIndex !=
@@ -1020,7 +1019,7 @@ int IPXManagerClass::Service() {
                       ** packet since it's a framesync packet and will will
                       *pick up the next one.
                       */
-                      Session.Players.at(k)->Address = address;
+                      TheSession().Players.at(k)->Address = address;
                       base::At(Connection, iConnectionIndex)->Address = address;
                     }
                     break;

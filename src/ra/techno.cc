@@ -702,7 +702,7 @@ TechnoClass::TechnoClass(RTTIType rtti, int id, HousesType house)
 int TechnoClass::Time_To_Build() const {
   int val = Class_Of().Time_To_Build();
 
-  if (Session.Type == GAME_NORMAL) {
+  if (TheSession().Type == GAME_NORMAL) {
     val *= House->BuildSpeedBias;
   } else {
     if (What_Am_I() == RTTI_BUILDING || What_Am_I() == RTTI_INFANTRY) {
@@ -1608,7 +1608,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   **	are always considered to be visible.
   */
   if (!object->IsOwnedByPlayer && !object->IsDiscoveredByPlayer &&
-      Session.Type == GAME_NORMAL && object->What_Am_I() != RTTI_AIRCRAFT) {
+      TheSession().Type == GAME_NORMAL &&
+      object->What_Am_I() != RTTI_AIRCRAFT) {
     return false;
   }
 
@@ -1690,7 +1691,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   */
   if ((!Is_Foot() || !dynamic_cast<const FootClass*>(this)->Team.Is_Valid()) &&
       (House->IsHuman ||
-       (House->IsPlayerControl && Session.Type == GAME_NORMAL)) &&
+       (House->IsPlayerControl && TheSession().Type == GAME_NORMAL)) &&
       otype == RTTI_BUILDING && tclass->PrimaryWeapon == nullptr) {
     return false;
   }
@@ -1709,7 +1710,7 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
 
       case RTTI_BUILDING:
         if (!dynamic_cast<const BuildingTypeClass&>(*tclass).Capacity &&
-            Session.Type != GAME_NORMAL) {
+            TheSession().Type != GAME_NORMAL) {
           return false;
         }
         break;
@@ -3496,7 +3497,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     if ((!IsOwnedByPlayer && !IsDiscoveredByPlayer) ||
         (!TheMap().at(Center_Coord()).IsMapped &&
          (What_Am_I() != RTTI_AIRCRAFT || !IsOwnedByPlayer))) {
-      if (Session.Type == GAME_NORMAL) {
+      if (TheSession().Type == GAME_NORMAL) {
         TheMap().Sight_From(Coord_Cell(Center_Coord()), 2, ThePlayer(), false);
       } else {
         const ObjectClass* obj = As_Object(target);
@@ -4277,7 +4278,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
         }
 
         if (source != nullptr) {
-          if (Session.Type == GAME_INTERNET) {
+          if (TheSession().Type == GAME_INTERNET) {
             source->House->DestroyedBuildings->Increment_Unit_Total(
                 static_cast<int>(
                     dynamic_cast<BuildingClass*>(this)->Class->Type));
@@ -4296,7 +4297,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
       break;
     }
     case RTTI_AIRCRAFT:
-      if (source != nullptr && Session.Type == GAME_INTERNET) {
+      if (source != nullptr && TheSession().Type == GAME_INTERNET) {
         source->House->DestroyedAircraft->Increment_Unit_Total(
             static_cast<int>(dynamic_cast<AircraftClass*>(this)->Class->Type));
         total_recorded++;
@@ -4304,7 +4305,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
       [[fallthrough]];
     case RTTI_INFANTRY:
       if (source != nullptr && !total_recorded &&
-          Session.Type == GAME_INTERNET) {
+          TheSession().Type == GAME_INTERNET) {
         source->House->DestroyedInfantry->Increment_Unit_Total(
             static_cast<int>(dynamic_cast<InfantryClass*>(this)->Class->Type));
         total_recorded++;
@@ -4312,7 +4313,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
       [[fallthrough]];
     case RTTI_UNIT:
       if (source != nullptr && !total_recorded &&
-          Session.Type == GAME_INTERNET) {
+          TheSession().Type == GAME_INTERNET) {
         source->House->DestroyedUnits->Increment_Unit_Total(
             static_cast<int>(dynamic_cast<UnitClass*>(this)->Class->Type));
         total_recorded++;
@@ -4320,7 +4321,7 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
       [[fallthrough]];
     case RTTI_VESSEL:
       if (source != nullptr && !total_recorded &&
-          Session.Type == GAME_INTERNET) {
+          TheSession().Type == GAME_INTERNET) {
         source->House->DestroyedUnits->Increment_Unit_Total(
             static_cast<int>(dynamic_cast<VesselClass*>(this)->Class->Type));
       }
@@ -4978,7 +4979,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
   /*
   **	Don't overreact if this building can defend itself.
   */
-  if (Session.Type == GAME_NORMAL &&
+  if (TheSession().Type == GAME_NORMAL &&
       Techno_Type_Class()->PrimaryWeapon != nullptr) {
     return;
   }
@@ -5028,11 +5029,11 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       if (!infantry->Is_Weapon_Equipped() ||
           (infantry->Mission != MISSION_NONE &&
            !TheRules().mission_control().at(infantry->Mission).IsRecruitable &&
-           Session.Type == GAME_NORMAL)) {
+           TheSession().Type == GAME_NORMAL)) {
         continue;
       }
       //					(Mission != MISSION_GUARD_AREA
-      //|| Session.Type == GAME_NORMAL)) continue;
+      //|| TheSession().Type == GAME_NORMAL)) continue;
 
       /*
       **	Don't allow a response if it doesn't have a weapon that will
@@ -5122,7 +5123,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       if (!unit->Is_Weapon_Equipped() ||
           (unit->Mission != MISSION_NONE &&
            !TheRules().mission_control().at(unit->Mission).IsRecruitable &&
-           Session.Type == GAME_NORMAL)) {
+           TheSession().Type == GAME_NORMAL)) {
         continue;
       }
 
@@ -5328,7 +5329,7 @@ bool TechnoClass::Is_Allowed_To_Retaliate(const TechnoClass* source) const {
   *to blow it up.
   */
   if ((House->IsHuman ||
-       (Session.Type == GAME_NORMAL && House->IsPlayerControl)) &&
+       (TheSession().Type == GAME_NORMAL && House->IsPlayerControl)) &&
       source->What_Am_I() == RTTI_BUILDING && What_Am_I() == RTTI_INFANTRY &&
       dynamic_cast<const InfantryTypeClass&>(*ttype).IsBomber) {
     return false;
@@ -6368,7 +6369,7 @@ int TechnoTypeClass::Raw_Cost() const { return Cost; }
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 uint32_t TechnoTypeClass::Get_Ownable() const {
-  if (IsDoubleOwned && Session.Type != GAME_NORMAL) {
+  if (IsDoubleOwned && TheSession().Type != GAME_NORMAL) {
     return Ownable | kHouseFlagSoviet | kHouseFlagAllies;
   }
   return Ownable;

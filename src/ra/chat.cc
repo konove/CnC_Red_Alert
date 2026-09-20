@@ -69,7 +69,7 @@ constexpr KeyNumType kPageRespondKey = KN_RETURN;  // KN_COMMA
 // static.
 [[maybe_unused]] static void Start_External_Page_Reply() {
   if (*TheNetwork().wolapi()->szExternalPager == '\0') {
-    Session.Messages.Add_Message(
+    TheSession().Messages.Add_Message(
         nullptr, 0, TXT_WOL_NOTPAGED, PCOLOR_GOLD,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
         TheRules().MessageDelay * kTicksPerMinute);
@@ -83,7 +83,7 @@ constexpr KeyNumType kPageRespondKey = KN_RETURN;  // KN_COMMA
   NetNodeType blop;
   base::FillBytes(base::ObjectBytes(blip), 0, sizeof(blip));
   base::FillBytes(base::ObjectBytes(blop), 0, sizeof(blop));
-  Session.MessageAddress = IPXAddressClass(blip, blop);
+  TheSession().MessageAddress = IPXAddressClass(blip, blop);
 
   // Tell TheNetwork().wolapi() not to reset szExternalPager while the reply is
   // being typed.
@@ -99,40 +99,41 @@ constexpr KeyNumType kPageRespondKey = KN_RETURN;  // KN_COMMA
                  .c_str());
   }
 
-  Session.Messages.Add_Edit(Session.ColorIdx,
-                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-                            txt, 0, 464);
+  TheSession().Messages.Add_Edit(
+      TheSession().ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
+      txt, 0, 464);
 
   TheMap().Flag_To_Redraw(false);
 
   Keyboard->Clear();
 }
 
-// Fills in Session.GPacket with the message just finished in the edit buffer
-// and sends it over IPX, either to every connection (broadcast address) or to
-// the single address the F-key handler recorded.
+// Fills in TheSession().GPacket with the message just finished in the edit
+// buffer and sends it over IPX, either to every connection (broadcast address)
+// or to the single address the F-key handler recorded.
 //
 // rc is the code MessageListClass::Input returned: 3 for a message that fit
 // the edit buffer, 4 for one that spilled into the overflow buffer.
 static void Send_Network_Chat_Message(const int rc) {
-  Session.GPacket.Command = NET_MESSAGE;
-  port::SafeCopy(Session.GPacket.Name, Session.Players.at(0)->Name);
-  Session.GPacket.Message.Color = Session.ColorIdx;
-  Session.GPacket.Message.NameCRC = Compute_Name_CRC(Session.GameName);
+  TheSession().GPacket.Command = NET_MESSAGE;
+  port::SafeCopy(TheSession().GPacket.Name, TheSession().Players.at(0)->Name);
+  TheSession().GPacket.Message.Color = TheSession().ColorIdx;
+  TheSession().GPacket.Message.NameCRC =
+      Compute_Name_CRC(TheSession().GameName);
 
   if (rc == 3) {
-    port::SafeCopy(Session.GPacket.Message.Buf,
-                   Session.Messages.Get_Edit_Buf());
+    port::SafeCopy(TheSession().GPacket.Message.Buf,
+                   TheSession().Messages.Get_Edit_Buf());
   } else {
-    port::SafeCopy(Session.GPacket.Message.Buf,
-                   Session.Messages.Get_Overflow_Buf());
-    Session.Messages.Clear_Overflow_Buf();
+    port::SafeCopy(TheSession().GPacket.Message.Buf,
+                   TheSession().Messages.Get_Overflow_Buf());
+    TheSession().Messages.Clear_Overflow_Buf();
   }
 
   // If 'F4' was hit, MessageAddress will be a broadcast address; send the
   // message to every player we have a connection with.
-  if (Session.MessageAddress.Is_Broadcast()) {
-    char* ptr = &Session.GPacket.Message.Buf[0];
+  if (TheSession().MessageAddress.Is_Broadcast()) {
+    char* ptr = &TheSession().GPacket.Message.Buf[0];
     if (std::string_view(ptr).starts_with("SECRET UNITS ON ") &&
         TheRules().NewUnitsEnabled) {
       *ptr = 'X';  // force it to an odd hack so we know it was broadcast.
@@ -140,7 +141,7 @@ static void Send_Network_Chat_Message(const int rc) {
     }
     for (int i = 0; i < TheNetwork().ipx().Num_Connections(); ++i) {
       TheNetwork().ipx().Send_Global_Message(
-          base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 1,
+          base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType), 1,
           TheNetwork().ipx().Connection_Address(
               TheNetwork().ipx().Connection_ID(i)));
       TheNetwork().ipx().Service();
@@ -148,15 +149,15 @@ static void Send_Network_Chat_Message(const int rc) {
   } else {
     // Otherwise, MessageAddress contains the exact address to send to.
     // Send to that address only.
-    TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                           sizeof(GlobalPacketType), 1,
-                                           &Session.MessageAddress);
+    TheNetwork().ipx().Send_Global_Message(
+        base::ObjectBytes(TheSession().GPacket), sizeof(GlobalPacketType), 1,
+        &TheSession().MessageAddress);
     TheNetwork().ipx().Service();
   }
 
   // Store this message in our LastMessage buffer; the computer may send us a
   // version of it later.
-  port::SafeCopy(Session.LastMessage, Session.GPacket.Message.Buf);
+  port::SafeCopy(TheSession().LastMessage, TheSession().GPacket.Message.Buf);
 }
 
 void Message_Input(KeyNumType& input) {
@@ -173,49 +174,52 @@ void Message_Input(KeyNumType& input) {
   // own gate ahead of them. Compiled and type-checked either way, reachable
   // only when Westwood Online is on.
   if constexpr (config::kWolapiEnabled) {
-    if (input == kPageRespondKey && Session.Type == GAME_INTERNET &&
-        !Session.Messages.Is_Edit() && TheNetwork().wolapi() != nullptr &&
+    if (input == kPageRespondKey && TheSession().Type == GAME_INTERNET &&
+        !TheSession().Messages.Is_Edit() && TheNetwork().wolapi() != nullptr &&
         !TheNetwork().wolapi()->bConnectionDown) {
       Start_External_Page_Reply();
     }
   }
 
-  if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
-      input >= KN_F1 && input < KN_F1 + Session.MaxPlayers &&
-      !Session.Messages.Is_Edit()) {
+  if (TheSession().Type != GAME_NORMAL && TheSession().Type != GAME_SKIRMISH &&
+      input >= KN_F1 && input < KN_F1 + TheSession().MaxPlayers &&
+      !TheSession().Messages.Is_Edit()) {
     base::FillBytes(base::ObjectBytes(txt), 0, 40);
 
     // For a serial game, send a message on F1 or F4; set 'txt' to the
     // "Message:" string & add an editable message to the list.
-    if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
-      if (input == KN_F1 || input == KN_F1 + Session.MaxPlayers - 1) {
+    if (TheSession().Type == GAME_NULL_MODEM ||
+        TheSession().Type == GAME_MODEM) {
+      if (input == KN_F1 || input == KN_F1 + TheSession().MaxPlayers - 1) {
         port::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
 
-        Session.Messages.Add_Edit(
-            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 464);
+        TheSession().Messages.Add_Edit(
+            TheSession().ColorIdx,
+            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 464);
 
         TheMap().Flag_To_Redraw(false);
       }
-    } else if ((Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) &&
-               !Session.Messages.Is_Edit()) {
+    } else if ((TheSession().Type == GAME_IPX ||
+                TheSession().Type == GAME_INTERNET) &&
+               !TheSession().Messages.Is_Edit()) {
       // For a network game:
       // F1-F7 = "To <name> (house):" (only allowed if we're not in
       // ObiWan mode) F8 = "To All:"
-      if (input == KN_F1 + Session.MaxPlayers - 1) {
-        Session.MessageAddress = IPXAddressClass();    // set to broadcast
+      if (input == KN_F1 + TheSession().MaxPlayers - 1) {
+        TheSession().MessageAddress = IPXAddressClass();  // set to broadcast
         port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
 
-        Session.Messages.Add_Edit(
-            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 464);
+        TheSession().Messages.Add_Edit(
+            TheSession().ColorIdx,
+            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 464);
 
         TheMap().Flag_To_Redraw(false);
 
       } else if (input - KN_F1 < TheNetwork().ipx().Num_Connections() &&
-                 !Session.ObiWan) {
+                 !TheSession().ObiWan) {
         const int id = TheNetwork().ipx().Connection_ID(input - KN_F1);
-        Session.MessageAddress = *TheNetwork().ipx().Connection_Address(id);
+        TheSession().MessageAddress =
+            *TheNetwork().ipx().Connection_Address(id);
         // TXT_TO comes from the localized string table, so verify the
         // translation still takes exactly one %s before using it.
         const auto format = absl::ParsedFormat<'s'>::New(Text_String(TXT_TO));
@@ -226,9 +230,9 @@ void Message_Input(KeyNumType& input) {
                   .c_str());
         }
 
-        Session.Messages.Add_Edit(
-            Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
-            txt, 0, 464);
+        TheSession().Messages.Add_Edit(
+            TheSession().ColorIdx,
+            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt, 0, 464);
 
         TheMap().Flag_To_Redraw(false);
       }
@@ -237,11 +241,11 @@ void Message_Input(KeyNumType& input) {
 
   // Process message-system input; send the message out if RETURN is hit.
   const KeyNumType copy_input = input;
-  const int rc = Session.Messages.Input(input);
+  const int rc = TheSession().Messages.Input(input);
 
   // If a single character has been added to an edit buffer, update the
   // display.
-  if (rc == 1 && Session.Type != GAME_NORMAL) {
+  if (rc == 1 && TheSession().Type != GAME_NORMAL) {
     TheMap().Flag_To_Redraw(false);
   }
 
@@ -249,7 +253,7 @@ void Message_Input(KeyNumType& input) {
   // the map must be force-drawn, since it won't be able to compute the
   // cells to redraw; otherwise, let the map compute the cells to redraw,
   // by not force-drawing it, but just setting the IsToRedraw bit.
-  if (rc == 2 && Session.Type != GAME_NORMAL) {
+  if (rc == 2 && TheSession().Type != GAME_NORMAL) {
     if (copy_input == KN_ESC) {
       TheMap().Flag_To_Redraw(true);
       if constexpr (config::kWolapiEnabled) {
@@ -266,26 +270,27 @@ void Message_Input(KeyNumType& input) {
   }
 
   // Send a message
-  if ((rc == 3 || rc == 4) && Session.Type != GAME_NORMAL &&
-      Session.Type != GAME_SKIRMISH) {
+  if ((rc == 3 || rc == 4) && TheSession().Type != GAME_NORMAL &&
+      TheSession().Type != GAME_SKIRMISH) {
     // Serial game: fill in a SerialPacketType & send it.
     // (Note: The size of the SerialPacketType.Command must be the same as
     // the EventClass.Type!)
-    if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
+    if (TheSession().Type == GAME_NULL_MODEM ||
+        TheSession().Type == GAME_MODEM) {
       SerialPacketType packet_storage{
           .Command = SERIAL_MESSAGE, .Name = {}, .ID = 0, .ScenarioInfo = {}};
       auto* serial_packet = &packet_storage;
 
-      port::SafeCopy(serial_packet->Name, Session.Players.at(0)->Name);
-      serial_packet->ID = static_cast<unsigned char>(Session.ColorIdx);
+      port::SafeCopy(serial_packet->Name, TheSession().Players.at(0)->Name);
+      serial_packet->ID = static_cast<unsigned char>(TheSession().ColorIdx);
 
       if (rc == 3) {
         port::SafeCopy(serial_packet->Message.Message,
-                       Session.Messages.Get_Edit_Buf());
+                       TheSession().Messages.Get_Edit_Buf());
       } else {
         port::SafeCopy(serial_packet->Message.Message,
-                       Session.Messages.Get_Overflow_Buf());
-        Session.Messages.Clear_Overflow_Buf();
+                       TheSession().Messages.Get_Overflow_Buf());
+        TheSession().Messages.Clear_Overflow_Buf();
       }
 
       // Send the message, and store this message in our LastMessage
@@ -301,15 +306,16 @@ void Message_Input(KeyNumType& input) {
           TheRules().NewUnitsEnabled) {
         Enable_Secret_Units();
       }
-      port::SafeCopy(Session.LastMessage, serial_packet->Message.Message);
-    } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
+      port::SafeCopy(TheSession().LastMessage, serial_packet->Message.Message);
+    } else if (TheSession().Type == GAME_IPX ||
+               TheSession().Type == GAME_INTERNET) {
       if constexpr (config::kWolapiEnabled) {
         // An all-zero address is the flag Start_External_Page_Reply set,
         // meaning "this is a reply to whoever paged me from outside the
         // game". No F-key ever produces that address.
         NetNumType blip;
         NetNodeType blop;
-        Session.MessageAddress.Get_Address(blip, blop);
+        TheSession().MessageAddress.Get_Address(blip, blop);
         const bool reply_to_external_page =
             blip[0] + blip[1] + blip[2] + blip[3] + blop[0] + blop[1] +
                 blop[2] + blop[3] + blop[4] + blop[5] ==
@@ -322,7 +328,7 @@ void Message_Input(KeyNumType& input) {
             // result, Page returns 0 whether or not the request went out.
             static_cast<void>(TheNetwork().wolapi()->Page(
                 TheNetwork().wolapi()->szExternalPager,
-                Session.Messages.Get_Edit_Buf(), false));
+                TheSession().Messages.Get_Edit_Buf(), false));
             TheNetwork().wolapi()->bFreezeExternalPager = false;
           }
         } else {
@@ -344,54 +350,56 @@ void IPX_Call_Back() {
 
   // Read packets only if the game is "closed", so we don't steal global
   // messages from the connection dialogs.
-  if ((!Session.NetOpen) &&
+  if ((!TheSession().NetOpen) &&
       TheNetwork().ipx().Get_Global_Message(
-          base::ObjectBytes(Session.GPacket), &Session.GPacketlen,
-          &Session.GAddress, &Session.GProductID) &&
-      (Session.GProductID == IPXGlobalConnClass::kCommandAndConquer0))
+          base::ObjectBytes(TheSession().GPacket), &TheSession().GPacketlen,
+          &TheSession().GAddress, &TheSession().GProductID) &&
+      (TheSession().GProductID == IPXGlobalConnClass::kCommandAndConquer0))
 
   {
     // If this is another player signing off, remove the connection &
     // mark that player's house as non-human, so the computer will take
     // it over.
-    if (Session.GPacket.Command == NET_SIGN_OFF) {
+    if (TheSession().GPacket.Command == NET_SIGN_OFF) {
       for (int i = 0; i < TheNetwork().ipx().Num_Connections(); i++) {
         const int id = TheNetwork().ipx().Connection_ID(i);
 
-        if (Session.GAddress == *TheNetwork().ipx().Connection_Address(id)) {
+        if (TheSession().GAddress ==
+            *TheNetwork().ipx().Connection_Address(id)) {
           Destroy_Connection(id, 0);
         }
       }
     } else {
       // Process a message from another user.
-      if (Session.GPacket.Command == NET_MESSAGE) {
+      if (TheSession().GPacket.Command == NET_MESSAGE) {
         bool msg_ok = false;
 
         // If NetProtect is set, make sure this message came from within
         // this game.
-        if (!Session.NetProtect) {
+        if (!TheSession().NetProtect) {
           msg_ok = true;
         } else {
-          msg_ok = Session.GPacket.Message.NameCRC ==
-                   Compute_Name_CRC(Session.GameName);
+          msg_ok = TheSession().GPacket.Message.NameCRC ==
+                   Compute_Name_CRC(TheSession().GameName);
         }
 
         if (msg_ok) {
-          if (!Session.Messages.Concat_Message(
-                  Session.GPacket.Name,
-                  static_cast<int>(Session.GPacket.Message.Color),
-                  Session.GPacket.Message.Buf,
+          if (!TheSession().Messages.Concat_Message(
+                  TheSession().GPacket.Name,
+                  static_cast<int>(TheSession().GPacket.Message.Color),
+                  TheSession().GPacket.Message.Buf,
                   TheRules().MessageDelay * kTicksPerMinute)) {
             if (TheRules().NewUnitsEnabled &&
-                std::string_view(Session.GPacket.Message.Buf)
+                std::string_view(TheSession().GPacket.Message.Buf)
                     .starts_with("XECRET UNITS ON ")) {
-              Session.GPacket.Message.Buf[0] = 'S';
+              TheSession().GPacket.Message.Buf[0] = 'S';
               Enable_Secret_Units();
             }
-            Session.Messages.Add_Message(
-                Session.GPacket.Name,
-                static_cast<int>(Session.GPacket.Message.Color),
-                Session.GPacket.Message.Buf, Session.GPacket.Message.Color,
+            TheSession().Messages.Add_Message(
+                TheSession().GPacket.Name,
+                static_cast<int>(TheSession().GPacket.Message.Color),
+                TheSession().GPacket.Message.Buf,
+                TheSession().GPacket.Message.Color,
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                 TheRules().MessageDelay * kTicksPerMinute);
 
@@ -403,10 +411,11 @@ void IPX_Call_Back() {
           TheMap().Flag_To_Redraw(true);
 
           // Save this message in our last-message buffer
-          port::SafeCopy(Session.LastMessage, Session.GPacket.Message.Buf);
+          port::SafeCopy(TheSession().LastMessage,
+                         TheSession().GPacket.Message.Buf);
         }
       } else {
-        Process_Global_Packet(&Session.GPacket, &Session.GAddress);
+        Process_Global_Packet(&TheSession().GPacket, &TheSession().GAddress);
       }
     }
   }

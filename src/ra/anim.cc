@@ -1129,7 +1129,7 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
 
   int radius = 0;
   int rawdamage = 0;
-  if (Session.Type == GAME_NORMAL) {
+  if (TheSession().Type == GAME_NORMAL) {
     radius = 4;
     rawdamage = TheRules().AtomDamage;
     ThePalettes().white_palette().Set(kFadePaletteSlow, ServiceRealTime);
@@ -1142,7 +1142,7 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
                    static_cast<LEPTON>(radius * CELL_LEPTON_W), rawdamage,
                    building, WARHEAD_FIRE);
   Shake_The_Screen(3);
-  if (Session.Type == GAME_NORMAL) {
+  if (TheSession().Type == GAME_NORMAL) {
     ThePalettes().game_palette().Set(kFadePaletteSlow, ServiceRealTime);
   }
 }

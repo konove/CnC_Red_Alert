@@ -333,7 +333,7 @@ DiffType HouseClass::Assign_Handicap(DiffType handicap) {
   const DiffType old = Difficulty;
   Difficulty = handicap;
 
-  if (Session.Type != GAME_NORMAL) {
+  if (TheSession().Type != GAME_NORMAL) {
     const HouseTypeClass* hptr = &HouseTypeClass::As_Reference(ActLike);
     FirepowerBias =
         hptr->FirepowerBias *
@@ -516,7 +516,7 @@ HouseClass::HouseClass(HousesType house)
  * HISTORY: * 8/6/96 4:48PM ST : Created *
  *=============================================================================================*/
 void HouseClass::Init_Trackers() {
-  if (Session.Type == GAME_INTERNET) {
+  if (TheSession().Type == GAME_INTERNET) {
     AircraftTotals = new UnitTrackerClass(
         static_cast<int>(magic_enum::enum_count<AircraftType>()));
     InfantryTotals = new UnitTrackerClass(
@@ -562,7 +562,7 @@ HouseClass::HouseClass()
 HouseClass::~HouseClass() {
   Class = nullptr;
 
-  if (Session.Type == GAME_INTERNET) {
+  if (TheSession().Type == GAME_INTERNET) {
     delete AircraftTotals;
     delete InfantryTotals;
     delete UnitTotals;
@@ -712,7 +712,7 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
   /*
   **	The computer can always build everything.
   */
-  if (!IsHuman && Session.Type == GAME_NORMAL) {
+  if (!IsHuman && TheSession().Type == GAME_NORMAL) {
     return true;
   }
 
@@ -756,7 +756,7 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
   /*
   **	Either tech center counts as a prerequisite.
   */
-  if ((Session.Type != GAME_NORMAL) &&
+  if ((TheSession().Type != GAME_NORMAL) &&
       ((flags & (kStructFlagSovietTech | kStructFlagAdvancedTech)) != 0)) {
     flags |= kStructFlagSovietTech | kStructFlagAdvancedTech;
   }
@@ -833,8 +833,8 @@ void HouseClass::AI() {
   /*
   **	Check to see if the house wins.
   */
-  if (Session.Type == GAME_NORMAL && IsToWin && BorrowedTime.IsFinished() &&
-      Blockage <= 0) {
+  if (TheSession().Type == GAME_NORMAL && IsToWin &&
+      BorrowedTime.IsFinished() && Blockage <= 0) {
     IsToWin = false;
     if (this == ThePlayer()) {
       PlayerWins = true;
@@ -846,7 +846,8 @@ void HouseClass::AI() {
   /*
   **	Check to see if the house loses.
   */
-  if (Session.Type == GAME_NORMAL && IsToLose && BorrowedTime.IsFinished()) {
+  if (TheSession().Type == GAME_NORMAL && IsToLose &&
+      BorrowedTime.IsFinished()) {
     IsToLose = false;
     if (this == ThePlayer()) {
       PlayerLoses = true;
@@ -1028,7 +1029,7 @@ void HouseClass::AI() {
         text = Text_String(TXT_LOW_POWER);
       }
       if (text != nullptr) {
-        Session.Messages.Add_Message(
+        TheSession().Messages.Add_Message(
             nullptr, 0, text, PCOLOR_GREEN,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             TheRules().MessageDelay * kTicksPerMinute);
@@ -1105,7 +1106,7 @@ void HouseClass::AI() {
                   sub->Do_Uncloak();
                 }
               }
-              bAutoSonarPulse = true;
+              TheWorld().auto_sonar_pulse() = true;
             }
           }
         }
@@ -1119,7 +1120,7 @@ void HouseClass::AI() {
   ** may not properly set IScan etc for each house; you have to go
   ** through each object's AI before it will be properly set.
   */
-  if (Session.Type != GAME_NORMAL && !IsDefeated && !ActiveBScan &&
+  if (TheSession().Type != GAME_NORMAL && !IsDefeated && !ActiveBScan &&
       !ActiveAScan && !UScan && !ActiveIScan && !ActiveVScan &&
       CurrentFrame() > 0) {
     MPlayer_Defeated();
@@ -1427,7 +1428,7 @@ void HouseClass::Super_Weapon_Handler() {
     **	facility available, then make the chronosphere available as well.
     */
     if (ActiveBScan & kStructFlagChronosphere &&
-        //			(ActLike == HOUSE_GOOD || Session.Type !=
+        //			(ActLike == HOUSE_GOOD || TheSession().Type !=
         // GAME_NORMAL) &&
         Control.TechLevel >=
             BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE).Level &&
@@ -1477,7 +1478,7 @@ void HouseClass::Super_Weapon_Handler() {
     **	facility available, then make the iron curtain available as well.
     */
     if (ActiveBScan & kStructFlagIronCurtain &&
-        (IsSovietHouse(ActLike) || Session.Type != GAME_NORMAL) &&
+        (IsSovietHouse(ActLike) || TheSession().Type != GAME_NORMAL) &&
         (IsHuman || IQ >= TheRules().IQSuperWeapons)) {
       SuperWeapon.at(SPC_IRON_CURTAIN)
           .Enable(false, this == ThePlayer(), Power_Fraction() < 1);
@@ -1562,7 +1563,7 @@ void HouseClass::Super_Weapon_Handler() {
     **	silo available, then make the missile available as well.
     */
     if (ActiveBScan & kStructFlagMslo &&
-        (!IsSovietHouse(ActLike) || Session.Type != GAME_NORMAL) &&
+        (!IsSovietHouse(ActLike) || TheSession().Type != GAME_NORMAL) &&
         (IsHuman || IQ >= TheRules().IQSuperWeapons)) {
       SuperWeapon.at(SPC_NUCLEAR_BOMB)
           .Enable(false, this == ThePlayer(), Power_Fraction() < 1);
@@ -1621,7 +1622,7 @@ void HouseClass::Super_Weapon_Handler() {
   } else {
     if ((ActiveBScan & kStructFlagAirstrip) != 0 &&
         Control.TechLevel >= TheRules().ParaBombTechLevel &&
-        Session.Type == GAME_NORMAL) {
+        TheSession().Type == GAME_NORMAL) {
       SuperWeapon.at(SPC_PARA_BOMB).Enable(false, this == ThePlayer(), false);
       if (this == ThePlayer()) {
         TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_PARA_BOMB));
@@ -1676,7 +1677,7 @@ void HouseClass::Attacked() {
   CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
 
   if (SpeakAttackDelay.IsFinished() &&
-      ((Session.Type == GAME_NORMAL && IsPlayerControl) ||
+      ((TheSession().Type == GAME_NORMAL && IsPlayerControl) ||
        ThePlayer()->Class->House == Class->House)) {
     Speak(VOX_BASE_UNDER_ATTACK);
     SpeakAttackDelay.Set(
@@ -2016,7 +2017,7 @@ void HouseClass::Make_Ally(HousesType house) {
       Control.Allies |= base::Bit<uint32_t>(house);
     }
 
-    if (Session.Type != GAME_NORMAL && !TheWorld().scenario_init()) {
+    if (TheSession().Type != GAME_NORMAL && !TheWorld().scenario_init()) {
       const HouseClass* hptr = As_Pointer(house);
 
       /*
@@ -2073,11 +2074,11 @@ void HouseClass::Make_Ally(HousesType house) {
                             Text_String(TXT_HAS_ALLIED), IniName,
                             As_Pointer(house)->IniName);
         //				sprintf(buffer,
-        // Text_String(TXT_HAS_ALLIED), Session.Players[Class->House -
+        // Text_String(TXT_HAS_ALLIED), TheSession().Players[Class->House -
         // HOUSE_MULTI1]->Name,
-        // Session.Players[((HouseClass::As_Pointer(house))->Class->House) -
-        // HOUSE_MULTI1]->Name);
-        Session.Messages.Add_Message(
+        // TheSession().Players[((HouseClass::As_Pointer(house))->Class->House)
+        // - HOUSE_MULTI1]->Name);
+        TheSession().Messages.Add_Message(
             nullptr, 0, buffer, RemapColor,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             kTicksPerMinute * TheRules().MessageDelay);
@@ -2125,16 +2126,17 @@ void HouseClass::Make_Enemy(HousesType house) {
       }
     }
 
-    if ((TheDebugState().developer_mode() || Session.Type != GAME_NORMAL) &&
+    if ((TheDebugState().developer_mode() ||
+         TheSession().Type != GAME_NORMAL) &&
         !TheWorld().scenario_init() && IsHuman) {
       char buffer[80];
 
       Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_AT_WAR),
                           IniName, As_Pointer(house)->IniName);
       //			sprintf(buffer, Text_String(TXT_AT_WAR),
-      // Session.Players[Class->House - HOUSE_MULTI1]->Name,
-      // Session.Players[enemy->Class->House - HOUSE_MULTI1]->Name);
-      Session.Messages.Add_Message(
+      // TheSession().Players[Class->House - HOUSE_MULTI1]->Name,
+      // TheSession().Players[enemy->Class->House - HOUSE_MULTI1]->Name);
+      TheSession().Messages.Add_Message(
           nullptr, 0, buffer, RemapColor,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           kTicksPerMinute * TheRules().MessageDelay);
@@ -3457,7 +3459,7 @@ void HouseClass::MPlayer_Defeated() {
   **	- Add my defeat message
   */
   if (ThePlayer() == this) {
-    Session.ObiWan = true;
+    TheSession().ObiWan = true;
     TheDebugState().set_unshroud(true);
     TheScreen().hidden_view().Clear();
     TheMap().Flag_To_Redraw(true);
@@ -3467,8 +3469,8 @@ void HouseClass::MPlayer_Defeated() {
     */
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_PLAYER_DEFEATED),
                         IniName);
-    Session.Messages.Add_Message(
-        nullptr, 0, txt, Session.ColorIdx,
+    TheSession().Messages.Add_Message(
+        nullptr, 0, txt, TheSession().ColorIdx,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
         TheRules().MessageDelay * kTicksPerMinute);
     TheMap().Flag_To_Redraw(false);
@@ -3481,7 +3483,7 @@ void HouseClass::MPlayer_Defeated() {
       Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_PLAYER_DEFEATED),
                           IniName);
 
-      Session.Messages.Add_Message(
+      TheSession().Messages.Add_Message(
           nullptr, 0, txt, RemapColor,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           TheRules().MessageDelay * kTicksPerMinute);
@@ -3495,7 +3497,7 @@ void HouseClass::MPlayer_Defeated() {
   */
   int num_alive = 0;
   int num_humans = 0;
-  for (i = 0; i < Session.MaxPlayers; i++) {
+  for (i = 0; i < TheSession().MaxPlayers; i++) {
     hptr =
         As_Pointer(static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + i));
     if (hptr && !hptr->IsDefeated) {
@@ -3511,7 +3513,7 @@ void HouseClass::MPlayer_Defeated() {
   **	there's only one player left:
   */
   int all_allies = 1;
-  for (i = 0; i < Session.MaxPlayers; i++) {
+  for (i = 0; i < TheSession().MaxPlayers; i++) {
     /*
     **	Get a pointer to this house
     */
@@ -3525,7 +3527,7 @@ void HouseClass::MPlayer_Defeated() {
     **	Loop through all houses; if there's one left alive that this house
     **	isn't allied with, then all_allies will be false
     */
-    for (int j = 0; j < Session.MaxPlayers; j++) {
+    for (int j = 0; j < TheSession().MaxPlayers; j++) {
       HouseClass* hptr2 = As_Pointer(
           static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + j));
       if (!hptr2) {
@@ -3553,7 +3555,7 @@ void HouseClass::MPlayer_Defeated() {
   **	If there's only one human player left or no humans left, the game is
   *over: *	- Determine whether this player wins or loses, based on the
   *state of the *	  player's IsDefeated flag *	- Find all players'
-  *indices in the Session.Score array *	- Tally up scores for this game
+  *indices in the TheSession().Score array *	- Tally up scores for this game
   */
   if (num_alive == 1 || num_humans == 0) {
     if (ThePlayer()->IsDefeated) {
@@ -3572,13 +3574,13 @@ void HouseClass::MPlayer_Defeated() {
     **	of the RunFrame() before we detect that the game is over, and we'll
     **	end up waiting for frame sync packets from the other machines.
     */
-    if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
+    if (TheSession().Type == GAME_IPX || TheSession().Type == GAME_INTERNET) {
       i = 0;
       while (TheNetwork().ipx().Num_Connections() && i++ < 1000) {
         const int id = TheNetwork().ipx().Connection_ID(0);
         TheNetwork().ipx().Delete_Connection(id);
       }
-      Session.NumPlayers = 0;
+      TheSession().NumPlayers = 0;
     }
   }
 
@@ -3623,9 +3625,9 @@ void HouseClass::Tally_Score() {
     ** Now find out where this player is in the score array
     */
     int score_index = -1;
-    for (int i = 0; i < Session.NumScores; i++) {
+    for (int i = 0; i < TheSession().NumScores; i++) {
       if (absl::EqualsIgnoreCase(hptr->IniName,
-                                 base::At(Session.Score, i).Name)) {
+                                 base::At(TheSession().Score, i).Name)) {
         score_index = i;
         break;
       }
@@ -3638,9 +3640,9 @@ void HouseClass::Tally_Score() {
       /*
       ** Just add this player to the end of the array, if there's room
       */
-      if (Session.NumScores < MAX_MULTI_NAMES) {
-        score_index = Session.NumScores;
-        Session.NumScores++;
+      if (TheSession().NumScores < MAX_MULTI_NAMES) {
+        score_index = TheSession().NumScores;
+        TheSession().NumScores++;
       }
       /*
       ** If there's not room, we have to remove somebody.
@@ -3651,10 +3653,10 @@ void HouseClass::Tally_Score() {
       else {
         int max_index = 0;
         int max_count = 0;
-        for (int j = 0; j < Session.NumScores; j++) {
+        for (int j = 0; j < TheSession().NumScores; j++) {
           int count = 0;
-          for (int k = Session.NumScores - 1; k >= 0; k--) {
-            if (base::At(base::At(Session.Score, j).Kills, k) == -1) {
+          for (int k = TheSession().NumScores - 1; k >= 0; k--) {
+            if (base::At(base::At(TheSession().Score, j).Kills, k) == -1) {
               count++;
             } else {
               break;
@@ -3671,9 +3673,10 @@ void HouseClass::Tally_Score() {
       /*
       **	Initialize this new score entry
       */
-      base::At(Session.Score, score_index).Wins = 0;
-      port::SafeCopy(base::At(Session.Score, score_index).Name, hptr->IniName);
-      for (int& Kill : base::At(Session.Score, score_index).Kills) {
+      base::At(TheSession().Score, score_index).Wins = 0;
+      port::SafeCopy(base::At(TheSession().Score, score_index).Name,
+                     hptr->IniName);
+      for (int& Kill : base::At(TheSession().Score, score_index).Kills) {
         Kill = -1;
       }
     }
@@ -3682,30 +3685,31 @@ void HouseClass::Tally_Score() {
     **	Init this player's Kills to 0 (-1 means he didn't play this round;
     **	0 means he played but got no kills).
     */
-    base::At(base::At(Session.Score, score_index).Kills, Session.CurGame) = 0;
+    base::At(base::At(TheSession().Score, score_index).Kills,
+             TheSession().CurGame) = 0;
 
     /*
     **	Init this player's color to his last-used color index
     */
-    base::At(Session.Score, score_index).Color = hptr->RemapColor;
+    base::At(TheSession().Score, score_index).Color = hptr->RemapColor;
 
     /*
     **	If this house was undefeated, it must have been the winner.
     ** (If no human houses are undefeated, the computer won.)
     */
     if (!hptr->IsDefeated) {
-      base::At(Session.Score, score_index).Wins++;
-      Session.Winner = score_index;
+      base::At(TheSession().Score, score_index).Wins++;
+      TheSession().Winner = score_index;
     }
 
     /*
     **	Tally up all kills for this player
     */
     for (const HousesType house2 : magic_enum::enum_values<HousesType>()) {
-      base::At(base::At(Session.Score, score_index).Kills, Session.CurGame) +=
-          hptr->UnitsKilled.at(house2);
-      base::At(base::At(Session.Score, score_index).Kills, Session.CurGame) +=
-          hptr->BuildingsKilled.at(house2);
+      base::At(base::At(TheSession().Score, score_index).Kills,
+               TheSession().CurGame) += hptr->UnitsKilled.at(house2);
+      base::At(base::At(TheSession().Score, score_index).Kills,
+               TheSession().CurGame) += hptr->BuildingsKilled.at(house2);
     }
   }
 }
@@ -5118,7 +5122,8 @@ int HouseClass::AI_Building() {
     return kTicksPerSecond;
   }
 
-  if (Session.Type == GAME_NORMAL && TheWorld().base().House == Class->House) {
+  if (TheSession().Type == GAME_NORMAL &&
+      TheWorld().base().House == Class->House) {
     const BaseNodeClass* node = TheWorld().base().Next_Buildable();
     if (node) {
       BuildStructure = node->Type;
@@ -5530,7 +5535,7 @@ int HouseClass::AI_Unit() {
     return kTicksPerSecond;
   }
 
-  if (Session.Type == GAME_NORMAL) {
+  if (TheSession().Type == GAME_NORMAL) {
     base::EnumArray<UnitType, int> counter = {};
 
     /*
@@ -5663,9 +5668,9 @@ int HouseClass::AI_Vessel() {
     return kTicksPerSecond;
   }
 
-  if (Session.Type == GAME_NORMAL) {
+  if (TheSession().Type == GAME_NORMAL) {
     base::EnumArray<VesselType, int> counter = {};
-    if (Session.Type == GAME_NORMAL) {
+    if (TheSession().Type == GAME_NORMAL) {
       counter = {};
     } else {
       for (const VesselType index : magic_enum::enum_values<VesselType>()) {
@@ -5800,7 +5805,7 @@ int HouseClass::AI_Infantry() {
     return kTicksPerSecond;
   }
 
-  if (Session.Type == GAME_NORMAL) {
+  if (TheSession().Type == GAME_NORMAL) {
     base::EnumArray<InfantryType, int> counter = {};
 
     /*
@@ -6302,7 +6307,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
           dynamic_cast<const BuildingTypeClass&>(techno->Class_Of()).Type;
       BQuantity.at(building)++;
       BScan |= ScanBit(static_cast<int>(building));
-      if (Session.Type == GAME_INTERNET) {
+      if (TheSession().Type == GAME_INTERNET) {
         BuildingTotals->Increment_Unit_Total(techno->Class_Of().ID);
       }
       break;
@@ -6313,7 +6318,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
           dynamic_cast<const AircraftTypeClass&>(techno->Class_Of()).Type;
       AQuantity.at(aircraft)++;
       AScan |= ScanBit(static_cast<int>(aircraft));
-      if (Session.Type == GAME_INTERNET) {
+      if (TheSession().Type == GAME_INTERNET) {
         AircraftTotals->Increment_Unit_Total(techno->Class_Of().ID);
       }
       break;
@@ -6330,7 +6335,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
         base::At(IQuantity, quant)++;
         if (!dynamic_cast<const InfantryTypeClass&>(techno->Class_Of())
                  .IsCivilian &&
-            Session.Type == GAME_INTERNET) {
+            TheSession().Type == GAME_INTERNET) {
           InfantryTotals->Increment_Unit_Total(techno->Class_Of().ID);
         }
         IScan |= ScanBit(static_cast<int>(infantry));
@@ -6346,7 +6351,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       }
       base::At(UQuantity, quant)++;
       UScan |= ScanBit(static_cast<int>(unit));
-      if (Session.Type == GAME_INTERNET) {
+      if (TheSession().Type == GAME_INTERNET) {
         UnitTotals->Increment_Unit_Total(techno->Class_Of().ID);
       }
       break;
@@ -6360,7 +6365,7 @@ void HouseClass::Tracking_Add(const TechnoClass* techno) {
       }
       base::At(VQuantity, quant)++;
       VScan |= ScanBit(static_cast<int>(vessel));
-      if (Session.Type == GAME_INTERNET) {
+      if (TheSession().Type == GAME_INTERNET) {
         VesselTotals->Increment_Unit_Total(techno->Class_Of().ID);
       }
       break;
@@ -6677,7 +6682,7 @@ void HouseClass::Recalc_Attributes() {
     const UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
     unit->House->UScan |= ScanBit(static_cast<int>(unit->Class->Type));
     if ((unit->IsLocked &&
-         (Session.Type != GAME_NORMAL || !unit->House->IsHuman ||
+         (TheSession().Type != GAME_NORMAL || !unit->House->IsHuman ||
           unit->IsDiscoveredByPlayer)) &&
         (!unit->IsInLimbo)) {
       unit->House->ActiveUScan |= ScanBit(static_cast<int>(unit->Class->Type));
@@ -6687,7 +6692,7 @@ void HouseClass::Recalc_Attributes() {
     const InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
     infantry->House->IScan |= ScanBit(static_cast<int>(infantry->Class->Type));
     if ((infantry->IsLocked &&
-         (Session.Type != GAME_NORMAL || !infantry->House->IsHuman ||
+         (TheSession().Type != GAME_NORMAL || !infantry->House->IsHuman ||
           infantry->IsDiscoveredByPlayer)) &&
         (!infantry->IsInLimbo)) {
       infantry->House->ActiveIScan |=
@@ -6700,7 +6705,7 @@ void HouseClass::Recalc_Attributes() {
     const AircraftClass* aircraft = TheObjectHeaps().aircraft().Ptr(index);
     aircraft->House->AScan |= ScanBit(static_cast<int>(aircraft->Class->Type));
     if ((aircraft->IsLocked &&
-         (Session.Type != GAME_NORMAL || !aircraft->House->IsHuman ||
+         (TheSession().Type != GAME_NORMAL || !aircraft->House->IsHuman ||
           aircraft->IsDiscoveredByPlayer)) &&
         (!aircraft->IsInLimbo)) {
       aircraft->House->ActiveAScan |=
@@ -6715,7 +6720,7 @@ void HouseClass::Recalc_Attributes() {
       building->House->BScan |=
           ScanBit(static_cast<int>(building->Class->Type));
       if ((building->IsLocked &&
-           (Session.Type != GAME_NORMAL || !building->House->IsHuman ||
+           (TheSession().Type != GAME_NORMAL || !building->House->IsHuman ||
             building->IsDiscoveredByPlayer)) &&
           (!building->IsInLimbo)) {
         building->House->ActiveBScan |=
@@ -6729,7 +6734,7 @@ void HouseClass::Recalc_Attributes() {
     const VesselClass* vessel = TheObjectHeaps().vessel().Ptr(index);
     vessel->House->VScan |= ScanBit(static_cast<int>(vessel->Class->Type));
     if ((vessel->IsLocked &&
-         (Session.Type != GAME_NORMAL || !vessel->House->IsHuman ||
+         (TheSession().Type != GAME_NORMAL || !vessel->House->IsHuman ||
           vessel->IsDiscoveredByPlayer)) &&
         (!vessel->IsInLimbo)) {
       vessel->House->ActiveVScan |=
@@ -7444,7 +7449,7 @@ bool HouseClass::Is_Allowed_To_Ally(HousesType house) const {
   **	Alliances (outside of scneario init time) are allowed only if
   **	this is a multiplayer game. Otherwise, they are prohibited.
   */
-  if (Session.Type == GAME_NORMAL) {
+  if (TheSession().Type == GAME_NORMAL) {
     return false;
   }
 

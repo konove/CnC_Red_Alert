@@ -401,11 +401,11 @@ void GScreenClass::Render() {
     ** Draw the multiplayer message system to the Hidpage at this point.
     ** This way, they'll Blit along with the rest of the map.
     */
-    if (Session.Messages.Num_Messages() > 0) {
-      Session.Messages.Set_Width(Lepton_To_Cell(TheMap().TacLeptonWidth) *
-                                 ICON_PIXEL_W);
+    if (TheSession().Messages.Num_Messages() > 0) {
+      TheSession().Messages.Set_Width(Lepton_To_Cell(TheMap().TacLeptonWidth) *
+                                      ICON_PIXEL_W);
     }
-    Session.Messages.Draw();
+    TheSession().Messages.Draw();
 
     Blit_Display();
     IsToUpdate = false;

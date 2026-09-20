@@ -307,7 +307,7 @@ bool RadarClass::Radar_Activate(int control) {
       return old;
 
     case 2:
-      if (Session.Type == GAME_NORMAL) {
+      if (TheSession().Type == GAME_NORMAL) {
         SidebarClass::Zoom.Disable();
       } else {
         SidebarClass::Zoom.Enable();
@@ -318,7 +318,7 @@ bool RadarClass::Radar_Activate(int control) {
       break;
 
     case 3:
-      if (Session.Type == GAME_NORMAL && Is_Zoomable()) {
+      if (TheSession().Type == GAME_NORMAL && Is_Zoomable()) {
         SidebarClass::Zoom.Enable();
       }
       IsRadarActive = true;
@@ -565,7 +565,7 @@ void RadarClass::Draw_It(bool forced) {
       **	Display the country name on the cover plate when in multi play
       *only.
       */
-      if (Session.Type != GAME_NORMAL) {
+      if (TheSession().Type != GAME_NORMAL) {
         Fancy_Text_Print(
             Text_String(
                 HouseTypeClass::As_Reference(ThePlayer()->ActLike).Full_Name()),
@@ -2173,7 +2173,7 @@ bool RadarClass::Spy_Next_House() {
   HousesType firsthouse = HOUSE_NONE;
   HousesType house = HOUSE_NONE;
 
-  if (Session.Type == GAME_NORMAL) {
+  if (TheSession().Type == GAME_NORMAL) {
     firsthouse = HOUSE_SPAIN;
     maxhouse = static_cast<int>(HOUSE_GOOD);
   } else {
@@ -2338,7 +2338,7 @@ void RadarClass::Draw_Names() const {
 
   for (HousesType house = HOUSE_MULTI1;
        static_cast<int>(house) <
-       static_cast<int>(HOUSE_MULTI1) + Session.MaxPlayers;
+       static_cast<int>(HOUSE_MULTI1) + TheSession().MaxPlayers;
        house++) {
     HouseClass* ptr = HouseClass::As_Pointer(house);
 

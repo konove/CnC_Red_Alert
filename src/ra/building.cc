@@ -1619,7 +1619,7 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
     LastStrength = 0;
 
     if ((!IsDiscoveredByPlayer && TheMap().at(coord).IsVisible) ||
-        Session.Type != GAME_NORMAL) {
+        TheSession().Type != GAME_NORMAL) {
       Revealed(ThePlayer());
     }
     if (!House->IsHuman) {
@@ -2094,7 +2094,7 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
     IsAllowedToSell = false;
   }
 
-  //	if (Session.Type == GAME_INTERNET) {
+  //	if (TheSession().Type == GAME_INTERNET) {
   //		House->BuildingTotals->Increment_Unit_Total( (int) type);
   //	}
 }
@@ -3709,7 +3709,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     ** Add this building to the list of buildings captured this game. For
     *internet stats purposes.
     */
-    if (Session.Type == GAME_INTERNET) {
+    if (TheSession().Type == GAME_INTERNET) {
       newowner->CapturedBuildings->Increment_Unit_Total(
           static_cast<int>(Class->Type));
     }
@@ -3786,7 +3786,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
         smudge->Disown(cell);
         delete smudge;
       }
-      if (Session.Type == GAME_NORMAL) {
+      if (TheSession().Type == GAME_NORMAL) {
         new SmudgeClass(bib, Cell_Coord(cell),
                         Class->IsBase ? House->Class->House : HOUSE_NONE);
       } else {
@@ -3904,7 +3904,7 @@ MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   }
 
   if (!TheDebugState().map_editor_active() && TheWorld().scenario_init() == 0 &&
-      Session.Type == GAME_NORMAL && House->IsPlayerControl &&
+      TheSession().Type == GAME_NORMAL && House->IsPlayerControl &&
       !TheMap().at(cell).IsMapped) {
     return MOVE_NO;
   }
@@ -6212,7 +6212,7 @@ void BuildingClass::Repair_AI() {
     if (House->Available_Money() >= TheRules().RepairThreshhold) {
       if ((!House->DidRepair) &&
           (!IsRepairing && (IsCaptured || IsToRepair || House->IsHuman ||
-                            Session.Type != GAME_NORMAL))) {
+                            TheSession().Type != GAME_NORMAL))) {
         House->DidRepair = true;  // flag that this house did its repair
                                   // allocation for this frame
         Repair(1);
@@ -6225,8 +6225,8 @@ void BuildingClass::Repair_AI() {
       }
 
     } else {
-      if ((Session.Type != GAME_NORMAL || IsAllowedToSell) && IsTickedOff &&
-          House->Control.TechLevel >= TheRules().IQSellBack &&
+      if ((TheSession().Type != GAME_NORMAL || IsAllowedToSell) &&
+          IsTickedOff && House->Control.TechLevel >= TheRules().IQSellBack &&
           Random_Pick(0, 50) < House->Control.TechLevel &&
           !Trigger.Is_Valid() && *this != STRUCT_CONST &&
           Health_Ratio() < TheRules().ConditionRed) {

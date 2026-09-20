@@ -525,7 +525,7 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
   **	If the scenario doesn't allow this theme yet, then return the failure
   *flag. The *	scenario check only makes sense for solo play.
   */
-  if (Session.Type == GAME_NORMAL &&
+  if (TheSession().Type == GAME_NORMAL &&
       TheScenario().Scenario < _themes.at(index).Scenario) {
     return false;
   }

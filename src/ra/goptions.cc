@@ -131,8 +131,9 @@ void GameOptionsClass::Process() {
   // Compute the number of real players in the game; only allow saves
   // if there are more than 1.
   //
-  for (int i = 0; i < Session.Players.Count(); i++) {
-    if (!HouseClass::As_Pointer(Session.Players.at(i)->Player.ID)->IsDefeated) {
+  for (int i = 0; i < TheSession().Players.Count(); i++) {
+    if (!HouseClass::As_Pointer(TheSession().Players.at(i)->Player.ID)
+             ->IsDefeated) {
       num_players++;
     }
   }
@@ -148,25 +149,27 @@ void GameOptionsClass::Process() {
     int text = base::At(_constants, index).Text;
     base::At(buttonsel, index) = nullptr;
 
-    if (Session.Type != GAME_NORMAL && !base::At(_constants, index).Multiplay) {
+    if (TheSession().Type != GAME_NORMAL &&
+        !base::At(_constants, index).Multiplay) {
       continue;
     }
 
-    if ((Session.Type == GAME_SKIRMISH || Session.Type == GAME_INTERNET) &&
+    if ((TheSession().Type == GAME_SKIRMISH ||
+         TheSession().Type == GAME_INTERNET) &&
         text == TXT_SAVE_MISSION) {
       continue;
     }
 
-    if (Session.Type != GAME_NORMAL && num_players < 2 &&
+    if (TheSession().Type != GAME_NORMAL && num_players < 2 &&
         text == TXT_SAVE_MISSION) {
       continue;
     }
 
-    if (Session.Type == GAME_SKIRMISH && text == TXT_DELETE_MISSION) {
+    if (TheSession().Type == GAME_SKIRMISH && text == TXT_DELETE_MISSION) {
       continue;
     }
 
-    if (Session.Type != GAME_NORMAL && text == TXT_DELETE_MISSION) {
+    if (TheSession().Type != GAME_NORMAL && text == TXT_DELETE_MISSION) {
       text = TXT_RESIGN;
     }
 
@@ -179,8 +182,9 @@ void GameOptionsClass::Process() {
 
     TextButtonClass* g = nullptr;
     if (base::At(_constants, index).ID == kButtonDraw) {
-      if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
-          Session.Players.Count() == 2) {
+      if (TheSession().Type != GAME_NORMAL &&
+          TheSession().Type != GAME_SKIRMISH &&
+          TheSession().Players.Count() == 2) {
         if (TheScenario().bLocalProposesDraw) {
           if (!TheScenario().bOtherProposesDraw) {
             g = new TextButtonClass(kButtonDraw, TXT_WOL_RETRACT_DRAW,
@@ -239,7 +243,7 @@ void GameOptionsClass::Process() {
   buttonsel[kButtonResume - 1]->Width = 180;
   buttonsel[kButtonResume - 1]->X = OptionX + 34;
 
-  if (Session.Type == GAME_NORMAL) {
+  if (TheSession().Type == GAME_NORMAL) {
     buttonsel[kButtonRestate - 1]->Width = 180;
     buttonsel[kButtonRestate - 1]->X =
         OptionX + OptionWidth - (buttonsel[kButtonRestate - 1]->Width + 34);
@@ -277,7 +281,8 @@ void GameOptionsClass::Process() {
     /*
     **	Invoke game callback.
     */
-    if (Session.Type == GAME_NORMAL || Session.Type == GAME_SKIRMISH) {
+    if (TheSession().Type == GAME_NORMAL ||
+        TheSession().Type == GAME_SKIRMISH) {
       ServiceRealTime();
     } else {
       if (RunFrame()) {
@@ -328,7 +333,7 @@ void GameOptionsClass::Process() {
       */
       Fancy_Text_Print(
           "%s\rV%s", OptionX + OptionWidth - 50,
-          OptionY + OptionHeight - (Session.Type == GAME_NORMAL ? 64 : 48),
+          OptionY + OptionHeight - (TheSession().Type == GAME_NORMAL ? 64 : 48),
           GadgetClass::Get_Color_Scheme(), kTBlack,
           TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, TheScenario().ScenarioName,
           Version_Name());
@@ -464,7 +469,7 @@ void GameOptionsClass::Process() {
 
         case kButtonSave:
           display = true;
-          if (Session.Type == GAME_NORMAL) {
+          if (TheSession().Type == GAME_NORMAL) {
             LoadOptionsClass(LoadOptionsClass::SAVE).Process();
 
           } else {
@@ -475,7 +480,7 @@ void GameOptionsClass::Process() {
 
         case kButtonDelete:
           display = true;
-          if (Session.Type != GAME_NORMAL) {
+          if (TheSession().Type != GAME_NORMAL) {
             if (Surrender_Dialog(TXT_SURRENDER)) {
               TheNetwork().out_list().Add(EventClass(EventClass::DESTRUCT));
             }
@@ -486,7 +491,7 @@ void GameOptionsClass::Process() {
           break;
 
         case kButtonQuit:
-          if (Session.Type == GAME_NORMAL) {
+          if (TheSession().Type == GAME_NORMAL) {
             switch (WWMessageBox().Process(TXT_CONFIRM_EXIT, TXT_ABORT,
                                            TXT_CANCEL, TXT_RESTART)) {
               case 1:

@@ -1197,9 +1197,9 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
         OverlayTypeClass::As_Reference(cellptr->Overlay);
 
     if (otype.IsCrate && House &&
-        !(Session.Type == GAME_NORMAL ? House->IsPlayerControl
-                                      : House->IsHuman) &&
-        Session.Type == GAME_NORMAL) {
+        !(TheSession().Type == GAME_NORMAL ? House->IsPlayerControl
+                                           : House->IsHuman) &&
+        TheSession().Type == GAME_NORMAL) {
       return MOVE_NO;
     }
 
@@ -3360,7 +3360,7 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
             }
             //						infantry->Strength =
             // Fixed_To_Cardinal(infantry->Class_Of().MaxStrength, strength);
-            if (Session.Type == GAME_NORMAL || infantry->House->IsHuman) {
+            if (TheSession().Type == GAME_NORMAL || infantry->House->IsHuman) {
               infantry->Assign_Mission(mission);
               infantry->Commence();
             } else {

@@ -325,15 +325,15 @@ int MapEditClass::Load_Scenario() {
   *routine *	  into working properly.
   */
   if (player == SCEN_PLAYER_MPLAYER) {
-    Clear_Vector(&Session.Players);
+    Clear_Vector(&TheSession().Players);
 
     auto* who = new NodeNameType;  // node to add to Players
-    port::SafeCopy(who->Name, Session.Handle);
-    who->Player.House = Session.House;
-    who->Player.Color = Session.ColorIdx;
-    Session.Players.Add(who);
+    port::SafeCopy(who->Name, TheSession().Handle);
+    who->Player.House = TheSession().House;
+    who->Player.Color = TheSession().ColorIdx;
+    TheSession().Players.Add(who);
 
-    Session.NumPlayers = 1;
+    TheSession().NumPlayers = 1;
     LastHouse = HOUSE_MULTI1;
   } else {
       LastHouse = HOUSE_GOOD;

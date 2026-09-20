@@ -325,7 +325,7 @@ bool Init_Game() {
     }
   }
 
-  Session.MaxPlayers = TheRules().MaxPlayers;
+  TheSession().MaxPlayers = TheRules().MaxPlayers;
 
   /*
   **	Initialize the game object heaps as well as other rules-dependant buffer
@@ -401,10 +401,10 @@ bool Init_Game() {
   /*
   **	Initialize the multiplayer score values
   */
-  Session.GamesPlayed = 0;
-  Session.NumScores = 0;
-  Session.CurGame = 0;
-  for (auto& i : Session.Score) {
+  TheSession().GamesPlayed = 0;
+  TheSession().NumScores = 0;
+  TheSession().CurGame = 0;
+  for (auto& i : TheSession().Score) {
     i.Name[0] = '\0';
     i.Wins = 0;
     for (int& kills : i.Kills) {
@@ -474,7 +474,8 @@ bool Select_Game(bool /*fade*/) {
   const bool startup_game_pending =
       !startup_game_started &&
       (!options.new_game.empty() || options.load_game >= 0);
-  if (options.quit_at_frame >= 0 && !startup_game_pending && !Session.Play) {
+  if (options.quit_at_frame >= 0 && !startup_game_pending &&
+      !TheSession().Play) {
     return false;
   }
 
@@ -499,16 +500,16 @@ bool Select_Game(bool /*fade*/) {
   TheScenario().Difficulty = DIFF_NORMAL;
   PlayerWins = false;
   PlayerLoses = false;
-  Session.ObiWan = false;
+  TheSession().ObiWan = false;
   TheDebugState().set_unshroud(false);
   TheMap().Set_Cursor_Shape({});
   TheMap().PendingObjectPtr = nullptr;
   TheMap().PendingObject = nullptr;
   TheMap().PendingHouse = HOUSE_NONE;
 
-  Session.ProcessTicks = 0;
-  Session.ProcessFrames = 0;
-  Session.DesiredFrameRate = 30;
+  TheSession().ProcessTicks = 0;
+  TheSession().ProcessFrames = 0;
+  TheSession().DesiredFrameRate = 30;
   TheNetwork().new_max_ahead_frame1() = 0;
   TheNetwork().new_max_ahead_frame2() = 0;
 
@@ -518,7 +519,7 @@ bool Select_Game(bool /*fade*/) {
   ** Kills for this game.  Kills of -1 means this player didn't play this round.
   */
   for (int i = 0; i < MAX_MULTI_GAMES; i++) {
-    base::At(base::At(Session.Score, i).Kills, Session.CurGame) = -1;
+    base::At(base::At(TheSession().Score, i).Kills, TheSession().CurGame) = -1;
   }
 
   /*
@@ -530,7 +531,7 @@ bool Select_Game(bool /*fade*/) {
   **	If the last game we played was a multiplayer game, jump right to that
   **	menu by pre-setting 'selection'.
   */
-  if (Session.Type == GAME_NORMAL) {
+  if (TheSession().Type == GAME_NORMAL) {
     selection = kSelNone;
   } else {
     selection = kSelMultiplayerGame;
@@ -549,17 +550,17 @@ bool Select_Game(bool /*fade*/) {
     ** If we're playing back a recording, load all pertinent values & skip
     ** the menu loop.  Hide the now-useless mouse pointer.
     */
-    if (Session.Play && Session.RecordFile.IsAvailable()) {
-      if (Session.RecordFile.Open(FileAccess::kRead)) {
-        if (Load_Recording_Values(Session.RecordFile)) {
+    if (TheSession().Play && TheSession().RecordFile.IsAvailable()) {
+      if (TheSession().RecordFile.Open(FileAccess::kRead)) {
+        if (Load_Recording_Values(TheSession().RecordFile)) {
           process = false;
           Theme.Fade_Out();
         } else {
-          Session.RecordFile.Close();
-          Session.Play = false;
+          TheSession().RecordFile.Close();
+          TheSession().Play = false;
         }
       } else {
-        Session.Play = false;
+        TheSession().Play = false;
       }
     }
 
@@ -617,7 +618,7 @@ bool Select_Game(bool /*fade*/) {
         TheWorld().whom() = HOUSE_GOOD;
         TheScenario().Set_Scenario_Name((options.new_game + ".INI").c_str());
         startup_game_started = true;
-        Session.Type = GAME_NORMAL;
+        TheSession().Type = GAME_NORMAL;
         process = false;
         continue;
       }
@@ -638,7 +639,7 @@ bool Select_Game(bool /*fade*/) {
       }
 
       if (selection == kSelNone) {
-        AntsEnabled = false;
+        TheWorld().ants_enabled() = false;
         selection = Main_Menu(ATTRACT_MODE_TIMEOUT);
       }
       ServiceRealTime();
@@ -708,7 +709,7 @@ bool Select_Game(bool /*fade*/) {
 
           Theme.Fade_Out();
           Theme.Queue_Song(magic_enum::enum_values<ThemeType>().front());
-          Session.Type = GAME_NORMAL;
+          TheSession().Type = GAME_NORMAL;
           process = false;
           break;
 
@@ -756,7 +757,7 @@ bool Select_Game(bool /*fade*/) {
           TheWorld().whom() = HOUSE_GOOD;
 
           if (!Special.IsFromInstall) {
-            if (AntsEnabled) {
+            if (TheWorld().ants_enabled()) {
               TheScenario().Set_Scenario_Name("SCA01EA.INI");
             } else {
               switch (WWMessageBox().Process(TXT_CHOOSE, TXT_ALLIES, TXT_CANCEL,
@@ -786,7 +787,7 @@ bool Select_Game(bool /*fade*/) {
             }
           }
 
-          Session.Type = GAME_NORMAL;
+          TheSession().Type = GAME_NORMAL;
           process = false;
           break;
 
@@ -805,22 +806,22 @@ bool Select_Game(bool /*fade*/) {
           break;
 
         /*
-        **	SEL_MULTIPLAYER_GAME: set 'Session.Type' to nullptr-modem,
+        **	SEL_MULTIPLAYER_GAME: set 'TheSession().Type' to nullptr-modem,
         * modem, or *	network play.
         */
         case kSelMultiplayerGame:
           //	With Westwood Online in charge, coming back here means we are
           //	returning from a game and the menu below is skipped.
           if (!config::kWolapiEnabled || TheNetwork().wolapi() == nullptr) {
-            switch (Session.Type) {
+            switch (TheSession().Type) {
               /*
-              **	If 'Session.Type' isn't already set up for a multiplayer
-              *game, *	we must prompt the user for which type of multiplayer
-              *game *	they want.
+              **	If 'TheSession().Type' isn't already set up for a
+              * multiplayer game, *	we must prompt the user for which type
+              * of multiplayer game *	they want.
               */
               case GAME_NORMAL:
-                Session.Type = Select_MPlayer_Game();
-                if (Session.Type == GAME_NORMAL) {  // 'Cancel'
+                TheSession().Type = Select_MPlayer_Game();
+                if (TheSession().Type == GAME_NORMAL) {  // 'Cancel'
                   display = true;
                   selection = kSelNone;
                 }
@@ -828,55 +829,59 @@ bool Select_Game(bool /*fade*/) {
 
               case GAME_SKIRMISH:
                 if (!Com_Scenario_Dialog(true)) {
-                  Session.Type = Select_MPlayer_Game();
-                  if (Session.Type == GAME_NORMAL) {  // user hit Cancel
+                  TheSession().Type = Select_MPlayer_Game();
+                  if (TheSession().Type == GAME_NORMAL) {  // user hit Cancel
                     display = true;
                     selection = kSelNone;
                   }
                 } else {
-                  //	Ever hits? Session.Type set to GAME_SKIRMISH without
+                  //	Ever hits? TheSession().Type set to GAME_SKIRMISH
+                  // without
                   // user selecting in Select_MPlayer_Game()?
                   //	If mission is Counterstrike, CS CD will be required. But
                   // aftermath units require AM CD.
-                  bAftermathMultiplayer =
+                  TheSession().IsAftermath =
                       Is_Aftermath_Installed() &&
                       !IsMissionCounterstrike(TheScenario().ScenarioName);
                   //	ajw I'll bet this was needed before also...
-                  Session.ScenarioIsOfficial =
-                      Session.Scenarios.at(Session.Options.ScenarioIndex)
+                  TheSession().ScenarioIsOfficial =
+                      TheSession()
+                          .Scenarios.at(TheSession().Options.ScenarioIndex)
                           ->Get_Official();
                 }
                 break;
 
               case GAME_NULL_MODEM:
               case GAME_MODEM:
-                if (Session.Type != GAME_SKIRMISH &&
+                if (TheSession().Type != GAME_SKIRMISH &&
                     TheNetwork().null_modem().Num_Connections()) {
                   TheNetwork().null_modem().Init_Send_Queue();
 
-                  if ((Session.Type == GAME_NULL_MODEM &&
-                       Session.ModemType == MODEM_NULL_HOST) ||
-                      (Session.Type == GAME_MODEM &&
-                       Session.ModemType == MODEM_DIALER)) {
+                  if ((TheSession().Type == GAME_NULL_MODEM &&
+                       TheSession().ModemType == MODEM_NULL_HOST) ||
+                      (TheSession().Type == GAME_MODEM &&
+                       TheSession().ModemType == MODEM_DIALER)) {
                     if (!Com_Scenario_Dialog()) {
-                      Session.Type = Select_Serial_Dialog();
-                      if (Session.Type == GAME_NORMAL) {  // user hit Cancel
+                      TheSession().Type = Select_Serial_Dialog();
+                      if (TheSession().Type ==
+                          GAME_NORMAL) {  // user hit Cancel
                         display = true;
                         selection = kSelNone;
                       }
                     }
                   } else {
                     if (!Com_Show_Scenario_Dialog()) {
-                      Session.Type = Select_Serial_Dialog();
-                      if (Session.Type == GAME_NORMAL) {  // user hit Cancel
+                      TheSession().Type = Select_Serial_Dialog();
+                      if (TheSession().Type ==
+                          GAME_NORMAL) {  // user hit Cancel
                         display = true;
                         selection = kSelNone;
                       }
                     }
                   }
                 } else {
-                  Session.Type = Select_MPlayer_Game();
-                  if (Session.Type == GAME_NORMAL) {  // 'Cancel'
+                  TheSession().Type = Select_MPlayer_Game();
+                  if (TheSession().Type == GAME_NORMAL) {  // 'Cancel'
                     display = true;
                     selection = kSelNone;
                   }
@@ -885,8 +890,8 @@ bool Select_Game(bool /*fade*/) {
 
               // Back from an Internet game: prompt again, like GAME_NORMAL.
               case GAME_INTERNET:
-                Session.Type = Select_MPlayer_Game();
-                if (Session.Type == GAME_NORMAL) {  // 'Cancel'
+                TheSession().Type = Select_MPlayer_Game();
+                if (TheSession().Type == GAME_NORMAL) {  // 'Cancel'
                   display = true;
                   selection = kSelNone;
                 }
@@ -898,10 +903,10 @@ bool Select_Game(bool /*fade*/) {
           }  //	if( !TheNetwork().wolapi() )
 
           if (config::kWolapiEnabled && TheNetwork().wolapi() != nullptr) {
-            Session.Type = GAME_INTERNET;
+            TheSession().Type = GAME_INTERNET;
           }
-          // debugprint( "Session.Type = %i\n", Session.Type );
-          switch (Session.Type) {
+          // debugprint( "TheSession().Type = %i\n", TheSession().Type );
+          switch (TheSession().Type) {
             /*
             **	Modem, Null-Modem or internet
             */
@@ -931,7 +936,7 @@ bool Select_Game(bool /*fade*/) {
                       break;
                     case 0:
                       //	User cancelled.
-                      Session.Type = GAME_NORMAL;
+                      TheSession().Type = GAME_NORMAL;
                       display = true;
                       selection = kSelMultiplayerGame;  // SEL_NONE;
                       delete TheNetwork().packet_transport();
@@ -946,7 +951,7 @@ bool Select_Game(bool /*fade*/) {
                       break;
                   }
                 } else {
-                  Session.Type = GAME_NORMAL;
+                  TheSession().Type = GAME_NORMAL;
                   display = true;
                   selection = kSelMultiplayerGame;  // SEL_NONE;
                   delete TheNetwork().packet_transport();
@@ -973,13 +978,13 @@ bool Select_Game(bool /*fade*/) {
               TheNetwork().packet_transport()->Set_Broadcast_Address(
                   "255.255.255.255");
               WWDebugString("RA95 - About to call Init_Network.\n");
-              if (Session.Type == GAME_IPX && Init_Network() &&
+              if (TheSession().Type == GAME_IPX && Init_Network() &&
                   Remote_Connect()) {
                 Options.ScoreVolume = Options.MultiScoreVolume;
                 process = false;
                 Theme.Fade_Out();
               } else {  // user hit cancel, or init failed
-                Session.Type = GAME_NORMAL;
+                TheSession().Type = GAME_NORMAL;
                 display = true;
                 selection = kSelNone;
                 delete TheNetwork().packet_transport();
@@ -1033,19 +1038,19 @@ bool Select_Game(bool /*fade*/) {
           break;
 
         case kSelTimeout:
-          if (Session.Attract && Session.RecordFile.IsAvailable()) {
-            Session.Play = true;
-            if (Session.RecordFile.Open(FileAccess::kRead)) {
-              if (Load_Recording_Values(Session.RecordFile)) {
+          if (TheSession().Attract && TheSession().RecordFile.IsAvailable()) {
+            TheSession().Play = true;
+            if (TheSession().RecordFile.Open(FileAccess::kRead)) {
+              if (Load_Recording_Values(TheSession().RecordFile)) {
                 process = false;
                 Theme.Fade_Out();
               } else {
-                Session.RecordFile.Close();
-                Session.Play = false;
+                TheSession().RecordFile.Close();
+                TheSession().Play = false;
                 selection = kSelNone;
               }
             } else {
-              Session.Play = false;
+              TheSession().Play = false;
               selection = kSelNone;
             }
           } else {
@@ -1077,19 +1082,19 @@ bool Select_Game(bool /*fade*/) {
   /*
   ** Save initialization values if we're recording this game.
   */
-  if (Session.Record) {
-    if (Session.RecordFile.Open(FileAccess::kWrite)) {
-      Save_Recording_Values(Session.RecordFile);
+  if (TheSession().Record) {
+    if (TheSession().RecordFile.Open(FileAccess::kWrite)) {
+      Save_Recording_Values(TheSession().RecordFile);
     } else {
-      Session.Record = false;
+      TheSession().Record = false;
     }
   }
 
-  switch (Session.Type) {
+  switch (TheSession().Type) {
     case GAME_MODEM:
     case GAME_NULL_MODEM:
     case GAME_IPX:
-      if (!bAftermathMultiplayer) {
+      if (!TheSession().IsAftermath) {
         TheRules().NewUnitsEnabled = TheRules().SecretUnitsEnabled = false;
       } else {
         TheRules().NewUnitsEnabled = true;
@@ -1105,7 +1110,7 @@ bool Select_Game(bool /*fade*/) {
         Fatal("TheNetwork().wolapi() is null on internet game!");
       }
       // if( TheNetwork().wolapi()->bEnableNewAftermathUnits )
-      if (bAftermathMultiplayer) {
+      if (TheSession().IsAftermath) {
         TheRules().NewUnitsEnabled = true;
       } else {
         TheRules().NewUnitsEnabled = TheRules().SecretUnitsEnabled = false;
@@ -1123,7 +1128,7 @@ bool Select_Game(bool /*fade*/) {
   **	don't specify a variation, to make 'Set_Scenario_Name()' pick a random
   *one. *	Skip this if we've already loaded a save-game.
   */
-  if (!gameloaded && !Session.LoadGame) {
+  if (!gameloaded && !TheSession().LoadGame) {
     //		if (TheDebugState().map_editor_active()) {
     //			Set_Scenario_Name(Scen.ScenarioName, Scen.Scenario,
     // Scen.ScenPlayer, Scen.ScenDir, SCEN_VAR_A); 		}  else {
@@ -1157,7 +1162,7 @@ bool Select_Game(bool /*fade*/) {
   **	Do this after loading the scenario, so the map's upper-left corner is
   **	properly set.
   */
-  Session.Messages.Init(
+  TheSession().Messages.Init(
       TheMap().TacPixelX, TheMap().TacPixelY,  // x,y for messages
       6,                                       // max # msgs
       MAX_MESSAGE_LENGTH - 14,                 // max msg length
@@ -1169,16 +1174,16 @@ bool Select_Game(bool /*fade*/) {
       MAX_MESSAGE_LENGTH - 14,  //    max for trimming overflow
       Lepton_To_Pixel(TheMap().TacLeptonWidth));  // Width in pixels of buffer
 
-  if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
-      !Session.Play) {
-    Session.Create_Connections();
+  if (TheSession().Type != GAME_NORMAL && TheSession().Type != GAME_SKIRMISH &&
+      !TheSession().Play) {
+    TheSession().Create_Connections();
   }
 
   /*
   ** If this isnt an internet game that set the unit build rate to its default
   *value
   */
-  if (Session.Type != GAME_INTERNET) {
+  if (TheSession().Type != GAME_INTERNET) {
     TheRules().UnitBuildPenalty = 100;
   }
 
@@ -1658,7 +1663,7 @@ void Init_Random() {
   // If we've loaded a multiplayer save game, return now; the random #
   // class is loaded along with ScenarioClass.
   //
-  if (Session.LoadGame) {
+  if (TheSession().LoadGame) {
     return;
   }
 
@@ -1666,7 +1671,7 @@ void Init_Random() {
   // If we're playing a recording, the TheWorld().seed() is loaded in
   // Load_Recording_Values().  Just init the random # and return.
   //
-  if (Session.Play) {
+  if (TheSession().Play) {
     RandNumb = TheWorld().seed();
     TheScenario().sync_rng_.set_seed(static_cast<uint32_t>(TheWorld().seed()));
     return;
@@ -1679,8 +1684,8 @@ void Init_Random() {
   *playing
   ** back a recording, init the TheWorld().seed() to a random value.
   */
-  if (Session.Type == GAME_NORMAL ||
-      (Session.Type == GAME_SKIRMISH && !Session.Play)) {
+  if (TheSession().Type == GAME_NORMAL ||
+      (TheSession().Type == GAME_SKIRMISH && !TheSession().Play)) {
     /*
     ** Set the optional user-specified seed
     */
@@ -1979,7 +1984,7 @@ static void Init_One_Time_Systems() {
   TheMap().One_Time();
   TheWorld().logic().One_Time();
   Options.One_Time();
-  Session.One_Time();
+  TheSession().One_Time();
 
   ObjectTypeClass::One_Time();
   BuildingTypeClass::One_Time();
@@ -2537,8 +2542,8 @@ static void SerializeRecording(Archive& ar) {
       return;
     }
   }
-  ar(Session);
-  Session.SerializePlayers(ar);
+  ar(TheSession());
+  TheSession().SerializePlayers(ar);
   // The switch keeps its place in the record, so a local stands in for it.
   bool unshroud = TheDebugState().unshroud();
   ar(TheWorld().build_level(), unshroud, TheWorld().seed(),

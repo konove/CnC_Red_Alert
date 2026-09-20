@@ -67,7 +67,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
   if (TheDebugState().map_editor_active()) {
     return;
   }
-  if (Session.Type != GAME_NORMAL) {
+  if (TheSession().Type != GAME_NORMAL) {
     return;
   }
 

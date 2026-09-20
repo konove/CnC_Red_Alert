@@ -93,7 +93,6 @@
 #include "ra/display.h"
 #include "ra/display_constants.h"
 #include "ra/drive.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/foot.h"
 #include "ra/game_clock.h"
@@ -171,7 +170,7 @@ VesselClass::VesselClass(VesselType classid, HousesType house)
   /*
   ** Keep count of the number of units created.
   */
-  //	if (Session.Type == GAME_INTERNET) {
+  //	if (TheSession().Type == GAME_INTERNET) {
   //		House->UnitTotals->Increment_Unit_Total((int)classid);
   //	}
 }
@@ -2004,7 +2003,7 @@ void VesselClass::Read_INI(CCINIClass& ini) {
             }
             //						vessel->Strength =
             // Fixed_To_Cardinal(vessel->Class->MaxStrength, strength);
-            if (Session.Type == GAME_NORMAL || vessel->House->IsHuman) {
+            if (TheSession().Type == GAME_NORMAL || vessel->House->IsHuman) {
               vessel->Assign_Mission(mission);
               vessel->Commence();
             } else {

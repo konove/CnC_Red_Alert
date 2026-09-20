@@ -206,7 +206,8 @@ void VisualControlsClass::Process() {
     /*
     **	Invoke game callback.
     */
-    if (Session.Type == GAME_NORMAL || Session.Type == GAME_SKIRMISH) {
+    if (TheSession().Type == GAME_NORMAL ||
+        TheSession().Type == GAME_SKIRMISH) {
       ServiceRealTime();
     } else {
       if (RunFrame()) {

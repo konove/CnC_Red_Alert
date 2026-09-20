@@ -132,7 +132,7 @@ bool ConfirmationClass::Process(const char* string) {
     /*
     **	Invoke game callback.
     */
-    if (Session.Type == GAME_NORMAL) {
+    if (TheSession().Type == GAME_NORMAL) {
       ServiceRealTime();
     } else {
       if (RunFrame()) {

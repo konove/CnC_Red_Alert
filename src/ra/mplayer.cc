@@ -386,18 +386,19 @@ GameType Select_MPlayer_Game() {
           break;
 
         case kButtonSkirmish:
-          Session.Type = GAME_SKIRMISH;
+          TheSession().Type = GAME_SKIRMISH;
           if (Com_Scenario_Dialog(true)) {
             retval = GAME_SKIRMISH;
             process = false;
-            bAftermathMultiplayer = Is_Aftermath_Installed();
+            TheSession().IsAftermath = Is_Aftermath_Installed();
             //	ajw I'll bet this was needed before also...
-            Session.ScenarioIsOfficial =
-                Session.Scenarios.at(Session.Options.ScenarioIndex)
+            TheSession().ScenarioIsOfficial =
+                TheSession()
+                    .Scenarios.at(TheSession().Options.ScenarioIndex)
                     ->Get_Official();
           } else {
             base::At(buttons, curbutton)->IsPressed = false;
-            Session.Type = GAME_NORMAL;
+            TheSession().Type = GAME_NORMAL;
             display = REDRAW_ALL;
           }
           break;
@@ -581,7 +582,7 @@ int Surrender_Dialog(const char* text) {
     //.....................................................................
     //	Invoke game callback
     //.....................................................................
-    if ((Session.Type != GAME_SKIRMISH) && RunFrame()) {
+    if ((TheSession().Type != GAME_SKIRMISH) && RunFrame()) {
       retcode = 0;
       process = false;
     }
@@ -764,7 +765,7 @@ int Abort_Dialog() {
     //.....................................................................
     //	Invoke game callback
     //.....................................................................
-    if ((Session.Type != GAME_SKIRMISH) && RunFrame()) {
+    if ((TheSession().Type != GAME_SKIRMISH) && RunFrame()) {
       retcode = 0;
       process = false;
     }

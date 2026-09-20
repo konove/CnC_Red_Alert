@@ -1161,7 +1161,7 @@ void MapClass::Logic() {
   /*
   **	Crate regeneration is handled here.
   */
-  if (Session.Type != GAME_NORMAL && Session.Options.Goodies) {
+  if (TheSession().Type != GAME_NORMAL && TheSession().Options.Goodies) {
     /*
     **	Find any crate that has expired and then regenerate it at a new
     **	spot.
@@ -1373,7 +1373,7 @@ bool MapClass::Place_Random_Crate() {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 bool MapClass::Remove_Crate(CELL cell) {
-  if (Session.Type != GAME_NORMAL) {
+  if (TheSession().Type != GAME_NORMAL) {
     for (int index = 0; index < std::ssize(Crates); index++) {
       if (base::At(Crates, index).Is_Here(cell)) {
         return base::At(Crates, index).Remove_It();
@@ -1381,7 +1381,7 @@ bool MapClass::Remove_Crate(CELL cell) {
     }
   }
 
-  //	if (Session.Type == GAME_NORMAL) {
+  //	if (TheSession().Type == GAME_NORMAL) {
   CellClass* cellptr = &(*this).at(cell);
   if (cellptr->Overlay != OVERLAY_NONE &&
       OverlayTypeClass::As_Reference(cellptr->Overlay).IsCrate) {

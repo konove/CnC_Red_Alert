@@ -88,7 +88,6 @@ inline char staging_buffer[32000];
 
 
 
-extern bool AntsEnabled;
 
 
 extern const char* NameOverride[25];
@@ -133,14 +132,8 @@ extern SpecialClass Special;
 */
 extern VQAConfig AnimControl;
 
-extern bool bAftermathMultiplayer;  //	Is multiplayer game being played with
-                                    // Aftermath rules?
-
-extern bool bAutoSonarPulse;
 
 
-class SessionClass;
-extern SessionClass Session;
 
 
 

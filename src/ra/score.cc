@@ -708,7 +708,8 @@ void Cycle_Wait_Click(bool cycle) {
 
   Keyboard->Clear();
   while (minclicks || (!Keyboard->Check() && !ControlQ)) {
-    if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
+    if (TheSession().Type == GAME_NULL_MODEM ||
+        TheSession().Type == GAME_MODEM) {
       // Send a timing packet if enough time has gone by, so the other machine
       // keeps measuring the link while both sit on this screen.
       if (SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
@@ -717,7 +718,7 @@ void Cycle_Wait_Click(bool cycle) {
         sendpacket.Command = SERIAL_SCORE_SCREEN;
         sendpacket.ScenarioInfo.ResponseTime =
             TheNetwork().null_modem().Response_Time();
-        sendpacket.ID = static_cast<unsigned char>(Session.ModemType);
+        sendpacket.ID = static_cast<unsigned char>(TheSession().ModemType);
 
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(sendpacket),
                                                sizeof(sendpacket), 0);
@@ -1144,10 +1145,10 @@ void Multi_Score_Presentation() {
   TickScoreScreen(6);
 
   // Move all the scores over a notch if there's more games than can be shown
-  // (which is known by Session.CurGame == MAX_MULTI_GAMES-1), dropping the
+  // (which is known by TheSession().CurGame == MAX_MULTI_GAMES-1), dropping the
   // oldest game's kills.
-  if (Session.CurGame == MAX_MULTI_GAMES - 1) {
-    for (auto& i : Session.Score) {
+  if (TheSession().CurGame == MAX_MULTI_GAMES - 1) {
+    for (auto& i : TheSession().Score) {
       for (int k = 0; k < MAX_MULTI_GAMES - 1; k++) {
         base::At(i.Kills, k) = base::At(i.Kills, k + 1);
       }
@@ -1155,7 +1156,7 @@ void Multi_Score_Presentation() {
   }
 
   int y = 41;
-  for (auto& i : Session.Score) {
+  for (auto& i : TheSession().Score) {
     if (!std::string_view(i.Name).empty()) {
       // Build a font palette in the player's colour from the brightest five
       // steps of that colour's font ramp. Only the entries the score font
@@ -1173,7 +1174,7 @@ void Multi_Score_Presentation() {
       Alloc_Object(new ScorePrintClass(Int_Print(i.Wins), 118, y, remap));
       TickScoreScreen(6);
 
-      for (int k = 0; k <= std::min(Session.CurGame, MAX_MULTI_GAMES - 2);
+      for (int k = 0; k <= std::min(TheSession().CurGame, MAX_MULTI_GAMES - 2);
            k++) {
         // A negative kill count marks a game the player was not in.
         if (base::At(i.Kills, k) >= 0) {

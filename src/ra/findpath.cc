@@ -67,7 +67,6 @@
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/foot.h"
 #include "ra/inline.h"
@@ -1309,7 +1308,7 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
     return 0;
   }
 
-  if (Session.Type == GAME_NORMAL) {
+  if (TheSession().Type == GAME_NORMAL) {
     if (threat != -1) {
       if (::Distance(Cell_Coord(cell), Cell_Coord(DestLocation)) >
           THREAT_THRESHOLD * CELL_LEPTON_W) {

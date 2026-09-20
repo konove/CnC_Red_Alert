@@ -114,7 +114,6 @@
 #include "ra/dialog.h"
 #include "ra/display.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/foot.h"
 #include "ra/game_clock.h"
 #include "ra/house.h"
@@ -647,7 +646,7 @@ void CellClass::Occupy_Down(ObjectClass* object) {
   **	If being placed down on a visible square, then flag this
   **	techno object as being revealed to the player.
   */
-  if (IsMapped || Session.Type != GAME_NORMAL) {
+  if (IsMapped || TheSession().Type != GAME_NORMAL) {
     object->Revealed(ThePlayer());
   }
 
@@ -2107,7 +2106,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     *control.
     */
     CrateType powerup = CRATE_MONEY;
-    if (Session.Type == GAME_NORMAL) {
+    if (TheSession().Type == GAME_NORMAL) {
       /*
       **	Solo play has money amount determined by rules.ini file.
       */
@@ -2215,14 +2214,14 @@ bool CellClass::Goodie_Check(FootClass* object) {
           ** should be very very low when they first start the mission,
           ** but as time goes on the chance goes up.
           */
-          if (Session.Type != GAME_NORMAL) {
+          if (TheSession().Type != GAME_NORMAL) {
             int minunits = 1000;
             bool found_spot = false;
             const int64_t minutes = std::min<int64_t>(
                 TheWorld().score().ElapsedTime / kTimerMinute, 100);
             if (Random_Pick(0, 100 - static_cast<int>(minutes)) == 0) {
-              for (int i = 0;
-                   i < Session.Players.Count() + Session.Options.AIPlayers;
+              for (int i = 0; i < TheSession().Players.Count() +
+                                      TheSession().Options.AIPlayers;
                    i++) {
                 int ucount = 0;
                 HouseClass* hptr =
@@ -2288,7 +2287,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
               (BuildingTypeClass::As_Reference(STRUCT_REFINERY).Cost +
                BuildingTypeClass::As_Reference(STRUCT_POWER).Cost) *
                   object->House->CostBias &&
-          Session.Options.Bases && !(object->House->UScan & kUnitFlagMcv)) {
+          TheSession().Options.Bases &&
+          !(object->House->UScan & kUnitFlagMcv)) {
         powerup = CRATE_UNIT;
         force_mcv = true;
       }
@@ -2344,7 +2344,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     /*
     ** Keep track of the number of each type of crate found
     */
-    if (Session.Type == GAME_INTERNET) {
+    if (TheSession().Type == GAME_INTERNET) {
       object->House->TotalCrates->Increment_Unit_Total(
           static_cast<int>(powerup));
     }
@@ -2355,7 +2355,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     TheMap().Remove_Crate(Cell_Number());
     //		Map[Cell_Number()].Overlay = OVERLAY_NONE;
 
-    if (Session.Type != GAME_NORMAL && TheRules().IsMPCrates) {
+    if (TheSession().Type != GAME_NORMAL && TheRules().IsMPCrates) {
       TheMap().Place_Random_Crate();
     }
 
@@ -2451,7 +2451,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
           const UnitType utype = Random_Pick(
               magic_enum::enum_values<UnitType>().front(),
               static_cast<UnitType>(HouseClass::kOriginalUnitCount - 1 - 3));
-          if (utype != UNIT_MCV || Session.Options.Bases) {
+          if (utype != UNIT_MCV || TheSession().Options.Bases) {
             utp = &UnitTypeClass::As_Reference(utype);
             if (utp->IsCrateGoodie &&
                 (utp->Ownable &
@@ -2949,7 +2949,7 @@ bool CellClass::Can_Tiberium_Grow() const {
     return false;
   }
 
-  if ((Session.Type != GAME_NORMAL) && (!Session.Options.Tiberium)) {
+  if ((TheSession().Type != GAME_NORMAL) && (!TheSession().Options.Tiberium)) {
     return false;
   }
 
@@ -2991,7 +2991,7 @@ bool CellClass::Can_Tiberium_Spread() const {
     return false;
   }
 
-  if ((Session.Type != GAME_NORMAL) && (!Session.Options.Tiberium)) {
+  if ((TheSession().Type != GAME_NORMAL) && (!TheSession().Options.Tiberium)) {
     return false;
   }
 

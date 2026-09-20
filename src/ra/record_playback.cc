@@ -62,13 +62,13 @@ void Do_Record_Playback() {
   uint32_t ltgt = 0;
 
   // Record a game
-  if (Session.Record) {
+  if (TheSession().Record) {
     // Save the map's location
-    Session.RecordFile.WriteObject(TheMap().DesiredTacticalCoord);
+    TheSession().RecordFile.WriteObject(TheMap().DesiredTacticalCoord);
 
     // Save the current object list count
     count = static_cast<int>(TheWorld().current_object().Count());
-    Session.RecordFile.WriteObject(count);
+    TheSession().RecordFile.WriteObject(count);
 
     // Save a CRC of the selected-object list.
     sum = 0;
@@ -77,37 +77,37 @@ void Do_Record_Playback() {
           static_cast<uint32_t>(TheWorld().current_object().at(i)->As_Target());
       sum += ltgt;
     }
-    Session.RecordFile.WriteObject(sum);
+    TheSession().RecordFile.WriteObject(sum);
 
     // Save all selected objects.
     for (int i = 0; i < count; i++) {
       tgt = TheWorld().current_object().at(i)->As_Target();
-      Session.RecordFile.WriteObject(tgt);
+      TheSession().RecordFile.WriteObject(tgt);
     }
 
     // Save team-selection and formation events
-    Session.RecordFile.WriteObject(TeamEvent);
-    Session.RecordFile.WriteObject(TeamNumber);
-    Session.RecordFile.WriteObject(FormationEvent);
-    Session.RecordFile.WriteObject(TheWorld().team_max_speed());
-    Session.RecordFile.WriteObject(TheWorld().team_speed());
-    Session.RecordFile.WriteObject(TheWorld().form_move());
-    Session.RecordFile.WriteObject(TheWorld().form_speed());
-    Session.RecordFile.WriteObject(TheWorld().form_max_speed());
+    TheSession().RecordFile.WriteObject(TeamEvent);
+    TheSession().RecordFile.WriteObject(TeamNumber);
+    TheSession().RecordFile.WriteObject(FormationEvent);
+    TheSession().RecordFile.WriteObject(TheWorld().team_max_speed());
+    TheSession().RecordFile.WriteObject(TheWorld().team_speed());
+    TheSession().RecordFile.WriteObject(TheWorld().form_move());
+    TheSession().RecordFile.WriteObject(TheWorld().form_speed());
+    TheSession().RecordFile.WriteObject(TheWorld().form_max_speed());
     TeamEvent = 0;
     TeamNumber = 0;
     FormationEvent = 0;
   }
 
   // Play back a game ("attract" mode)
-  if (Session.Play) {
+  if (TheSession().Play) {
     // Read & set the map's location.
-    if (Session.RecordFile.ReadObject(coord) &&
+    if (TheSession().RecordFile.ReadObject(coord) &&
         coord != TheMap().DesiredTacticalCoord) {
       TheMap().Set_Tactical_Position(coord);
     }
 
-    if (Session.RecordFile.ReadObject(count)) {
+    if (TheSession().RecordFile.ReadObject(count)) {
       uint32_t sum2 = 0;
       // Compute a CRC of the current object-selection list.
       sum = 0;
@@ -119,7 +119,7 @@ void Do_Record_Playback() {
 
       // Load the CRC of the objects on disk; if it doesn't match, select
       // all objects as they're loaded.
-      Session.RecordFile.ReadObject(sum2);
+      TheSession().RecordFile.ReadObject(sum2);
       if (sum2 != sum) {
         Unselect_All();
       }
@@ -127,7 +127,7 @@ void Do_Record_Playback() {
       AllowVoice = true;
 
       for (int i = 0; i < count; ++i) {
-        if (Session.RecordFile.ReadObject(tgt)) {
+        if (TheSession().RecordFile.ReadObject(tgt)) {
           ObjectClass* obj = As_Object(tgt);
           if (obj != nullptr && sum2 != sum) {
             obj->Select();
@@ -140,9 +140,9 @@ void Do_Record_Playback() {
     }
 
     // Save team-selection and formation events
-    Session.RecordFile.ReadObject(TeamEvent);
-    Session.RecordFile.ReadObject(TeamNumber);
-    Session.RecordFile.ReadObject(FormationEvent);
+    TheSession().RecordFile.ReadObject(TeamEvent);
+    TheSession().RecordFile.ReadObject(TeamNumber);
+    TheSession().RecordFile.ReadObject(FormationEvent);
     if (TeamEvent) {
       Handle_Team(TeamNumber, TeamEvent - 1);
     }
@@ -150,11 +150,11 @@ void Do_Record_Playback() {
       Toggle_Formation();
     }
 
-    Session.RecordFile.ReadObject(TheWorld().team_max_speed());
-    Session.RecordFile.ReadObject(TheWorld().team_speed());
-    Session.RecordFile.ReadObject(TheWorld().form_move());
-    Session.RecordFile.ReadObject(TheWorld().form_speed());
-    Session.RecordFile.ReadObject(TheWorld().form_max_speed());
+    TheSession().RecordFile.ReadObject(TheWorld().team_max_speed());
+    TheSession().RecordFile.ReadObject(TheWorld().team_speed());
+    TheSession().RecordFile.ReadObject(TheWorld().form_move());
+    TheSession().RecordFile.ReadObject(TheWorld().form_speed());
+    TheSession().RecordFile.ReadObject(TheWorld().form_max_speed());
     // The map isn't drawn in playback mode, so draw it here.
     TheMap().Render();
   }

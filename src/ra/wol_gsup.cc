@@ -606,37 +606,37 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     Special.IsCaptureTheFlag =
         TheRules().IsMPCaptureTheFlag;  //	Ugh. Use of "Special" global.
     if (bHost) {
-      Session.Options.Credits =
+      TheSession().Options.Credits =
           TheRules().MPDefaultMoney;  // init credits & credit buffer
-      Session.Options.Bases =
+      TheSession().Options.Bases =
           TheRules().IsMPBasesOn;  // init scenario parameters
-      Session.Options.Tiberium = TheRules().IsMPTiberiumGrow;
-      Session.Options.Goodies = TheRules().IsMPCrates;
-      Session.Options.AIPlayers = 0;
-      Session.Options.UnitCount =
-          (base::At(SessionClass::CountMax, Session.Options.Bases) +
-           base::At(SessionClass::CountMin, Session.Options.Bases)) /
+      TheSession().Options.Tiberium = TheRules().IsMPTiberiumGrow;
+      TheSession().Options.Goodies = TheRules().IsMPCrates;
+      TheSession().Options.AIPlayers = 0;
+      TheSession().Options.UnitCount =
+          (base::At(SessionClass::CountMax, TheSession().Options.Bases) +
+           base::At(SessionClass::CountMin, TheSession().Options.Bases)) /
           2;
       // first_time = 0;
     }
     //------------------------------------------------------------------------
     //	Init other scenario parameters
     //------------------------------------------------------------------------
-    Special.IsTGrowth =
-        static_cast<unsigned>(Session.Options.Tiberium);  //	Ugh. Use of "Special" global.
-    TheRules().IsTGrowth = Session.Options.Tiberium != 0;
-    Special.IsTSpread =
-        static_cast<unsigned>(Session.Options.Tiberium);  //	Ugh. Use of "Special" global.
-    TheRules().IsTSpread = Session.Options.Tiberium != 0;
+    Special.IsTGrowth = static_cast<unsigned>(
+        TheSession().Options.Tiberium);  //	Ugh. Use of "Special" global.
+    TheRules().IsTGrowth = TheSession().Options.Tiberium != 0;
+    Special.IsTSpread = static_cast<unsigned>(
+        TheSession().Options.Tiberium);  //	Ugh. Use of "Special" global.
+    TheRules().IsTSpread = TheSession().Options.Tiberium != 0;
 
     if (bHost) {
       //------------------------------------------------------------------------
       //	Set up array of lists of available scenarios.
       //------------------------------------------------------------------------
-      for (int i = 0; i < Session.Scenarios.Count(); i++) {
+      for (int i = 0; i < TheSession().Scenarios.Count(); i++) {
         //	Reworking of the loop previously used for language translation.
         //(What a hack I have inherited...)
-        MultiMission* pMMission = Session.Scenarios.at(i);
+        MultiMission* pMMission = TheSession().Scenarios.at(i);
         const char* szScenarioNameShow = pMMission->Description();
         if constexpr (!config::kIsEnglish) {
           // Show the translation when the table has one; otherwise the
@@ -652,14 +652,15 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         }
         //	Place scenario name in a specific scenario list.
         if (pMMission->Get_Official()) {
-          if (IsMissionCounterstrike(Session.Scenarios.at(i)->Get_Filename())) {
+          if (IsMissionCounterstrike(
+                  TheSession().Scenarios.at(i)->Get_Filename())) {
             //					debugprint( " ----------------
             // Adding scenario %s as CS\n", szScenarioNameShow );
             base::At(ar_szScenarios, static_cast<int>(SCENARIO_CS))
                 .Add(szScenarioNameShow);
             base::At(ar_szScenIndexes, static_cast<int>(SCENARIO_CS)).Add(i);
           } else if (IsMissionAftermath(
-                         Session.Scenarios.at(i)->Get_Filename())) {
+                         TheSession().Scenarios.at(i)->Get_Filename())) {
             //					debugprint( " ----------------
             // Adding scenario %s as AM\n", szScenarioNameShow ); 	If this
             // is not an Aftermath game channel, we must filter out any AM maps
@@ -703,7 +704,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                               Fatal( "Illegal GameInfoCurrent value." );
                       }
       */
-      Session.Options.ScenarioIndex = 0;  // 1st scenario is selected
+      TheSession().Options.ScenarioIndex = 0;  // 1st scenario is selected
 
       ScenarioDisplayMode(SCENARIO_RA);  //	Always start on RedAlert tab.
                                          // Next line depends on selected item
@@ -739,7 +740,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     pDropListHouse->Add_Item(
         Text_String(HouseTypeClass::As_Reference(house).Full_Name()));
   }
-  pDropListHouse->Set_Selected_Index(static_cast<int>(Session.House) -
+  pDropListHouse->Set_Selected_Index(static_cast<int>(TheSession().House) -
                                      static_cast<int>(HOUSE_USSR));
   pDropListHouse->Set_Read_Only(true);
 
@@ -756,8 +757,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   //
   // Now init the max range of the AI players slider.
   //
-  //	pGaugeAIPlayers->Set_Maximum(Rule.MaxPlayers-Session.Players.Count());
-  //	pGaugeAIPlayers->Set_Value(Session.Options.AIPlayers);
+  //	pGaugeAIPlayers->Set_Maximum(Rule.MaxPlayers-TheSession().Players.Count());
+  //	pGaugeAIPlayers->Set_Value(TheSession().Options.AIPlayers);
 
   PlaySoundEffect(WOLSOUND_ENTERGAME);
 
@@ -768,17 +769,17 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
     //	Check for change of house. Occurs on first loop and when user changes
     // house.
-    if (HousePrevious != Session.House) {
+    if (HousePrevious != TheSession().House) {
       if (bHost) {
         //	Host changed house.
         //	Do processing as if we'd received a message from a guest.
 
         //	Set house in our own list.
-        SetPlayerHouse(pWO->szMyName, Session.House);
+        SetPlayerHouse(pWO->szMyName, TheSession().House);
         //	Tell guests.
         nHostLastParamID++;
-        InformAboutPlayerHouse(pWO->szMyName, Session.House, nullptr);
-        HousePrevious = Session.House;
+        InformAboutPlayerHouse(pWO->szMyName, TheSession().House, nullptr);
+        HousePrevious = TheSession().House;
         ClearAllAccepts();
       } else {
         User* pUserHost = pWO->pGameHost();
@@ -787,16 +788,16 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                         // until we get a host - HousePrevious keeps us
                         // triggering until then.
         {
-          //					debugprint( "Session.House
+          //					debugprint( "TheSession().House
           // changed.\n" ); 	Tell host we changed our house.
           char szSend[20];
           absl::SNPrintF(szSend, sizeof(szSend), "%02i %02i",
-                         WOL_GAMEOPT_REQHOUSE, Session.House);
+                         WOL_GAMEOPT_REQHOUSE, TheSession().House);
           pWO->SendGameOpt(szSend, pUserHost);
           //	Set house in our own list. This is fine because we know that the
           // change must be affirmed by the host.
-          SetPlayerHouse(pWO->szMyName, Session.House);
-          HousePrevious = Session.House;
+          SetPlayerHouse(pWO->szMyName, TheSession().House);
+          HousePrevious = TheSession().House;
         }
       }
     }
@@ -1105,7 +1106,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                                    .at(static_cast<PlayerColorType>(i))
                                    .Box);
 
-          if (static_cast<PlayerColorType>(i) == Session.ColorIdx) {
+          if (static_cast<PlayerColorType>(i) == TheSession().ColorIdx) {
             Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
                      BOXSTYLE_DOWN, false);
           } else {
@@ -1126,7 +1127,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         //				Draw_Box(d_disc_x, d_disc_y, d_disc_w,
         // d_disc_h, BOXSTYLE_BOX, true);
         // Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX, true);
-        // Session.Messages.Draw();
+        // TheSession().Messages.Draw();
       }
 
       //..................................................................
@@ -1139,16 +1140,20 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         bool bOfficial = false;
         const char* szScenarioFileName = nullptr;
         if (!bHost) {
-          szScenarioDesc = Session.Options.ScenarioDescription;
-          bOfficial = Session.ScenarioIsOfficial;
-          szScenarioFileName = Session.ScenarioFileName;
+          szScenarioDesc = TheSession().Options.ScenarioDescription;
+          bOfficial = TheSession().ScenarioIsOfficial;
+          szScenarioFileName = TheSession().ScenarioFileName;
         } else {
-          szScenarioDesc = Session.Scenarios.at(Session.Options.ScenarioIndex)
-                               ->Description();
-          bOfficial = Session.Scenarios.at(Session.Options.ScenarioIndex)
+          szScenarioDesc =
+              TheSession()
+                  .Scenarios.at(TheSession().Options.ScenarioIndex)
+                  ->Description();
+          bOfficial = TheSession()
+                          .Scenarios.at(TheSession().Options.ScenarioIndex)
                           ->Get_Official();
           szScenarioFileName =
-              Session.Scenarios.at(Session.Options.ScenarioIndex)
+              TheSession()
+                  .Scenarios.at(TheSession().Options.ScenarioIndex)
                   ->Get_Filename();
         }
 
@@ -1203,7 +1208,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                                 d_gamekind_w);
         //				pStaticDescrip->Draw_Me();
 
-        absl::SNPrintF(txt, sizeof(txt), "%d", Session.Options.UnitCount);
+        absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.UnitCount);
         pStaticUnit->Set_Text(txt);
         pStaticUnit->Draw_Me();
 
@@ -1215,11 +1220,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         pStaticLevel->Set_Text(txt);
         pStaticLevel->Draw_Me();
 
-        absl::SNPrintF(txt, sizeof(txt), "%d", Session.Options.Credits);
+        absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.Credits);
         pStaticCredits->Set_Text(txt);
         pStaticCredits->Draw_Me();
 
-        absl::SNPrintF(txt, sizeof(txt), "%d", Session.Options.AIPlayers);
+        absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.AIPlayers);
         pStaticAIPlayers->Set_Text(txt);
         pStaticAIPlayers->Draw_Me();
       }
@@ -1305,7 +1310,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                 Get_Mouse_X() <= d_scenariolist_x + d_scenariolist_w &&
                 Get_Mouse_Y() >= d_scenariolist_y &&
                 Get_Mouse_Y() <= d_scenariolist_y + d_scenariolist_h))) {
-            // Session.Messages.Add_Message(NULL, 0, (char
+            // TheSession().Messages.Add_Message(NULL, 0, (char
             // *)Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
             // kTpfText, 1200);
             WOL_PrintMessage(*pILDisc, Text_String(TXT_ONLY_HOST_CAN_MODIFY),
@@ -1320,24 +1325,24 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                   (base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w) &&
               Keyboard->MouseQY > d_color_y &&
               Keyboard->MouseQY < (d_color_y + d_color_h)) {
-            Session.PrefColor = static_cast<PlayerColorType>(
+            TheSession().PrefColor = static_cast<PlayerColorType>(
                 (Keyboard->MouseQX - base::At(cbox_x, 0)) / d_color_w);
 
             //	Ensure that no one is using this color (to our knowledge).
             if (pILPlayers->FindColor(&ThePalettes().color_remaps().at(
-                    Session.PrefColor == PCOLOR_DIALOG_BLUE
+                    TheSession().PrefColor == PCOLOR_DIALOG_BLUE
                         ? PCOLOR_REALLY_BLUE
-                        : Session.PrefColor)) == -1) {
+                        : TheSession().PrefColor)) == -1) {
               //	Show me as the new color.
               //							debugprint(
               //"Color box pressed - " );
-              SetPlayerColor(pWO->szMyName, Session.PrefColor);
+              SetPlayerColor(pWO->szMyName, TheSession().PrefColor);
               if (bHost) {
                 //	Tell all guests about the color change.
-                InformAboutPlayerColor(pWO->szMyName, Session.PrefColor,
+                InformAboutPlayerColor(pWO->szMyName, TheSession().PrefColor,
                                        nullptr);
               } else {
-                RequestPlayerColor(Session.PrefColor);
+                RequestPlayerColor(TheSession().PrefColor);
               }
             }
           }
@@ -1400,17 +1405,18 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         break;
 
       case ButtonKey(kButtonHouse):
-        Session.House = static_cast<HousesType>(
+        TheSession().House = static_cast<HousesType>(
             pDropListHouse->Current_Index() + static_cast<int>(HOUSE_USSR));
         /*
                                         //	Bloody bloody hell I can't
         believe there are bugs in RA like the one I deal with here... if(
-        strcmp( pDropListHouse->Current_Item(), "Russia" ) == 0 ) Session.House
-        = HOUSE_USSR; else
+        strcmp( pDropListHouse->Current_Item(), "Russia" ) == 0 )
+        TheSession().House = HOUSE_USSR; else
                                         {
-                                                Session.House =
+                                                TheSession().House =
         HouseTypeClass::From_Name( pDropListHouse->Current_Item() );	//
-        Fails on "Russia". (Thinks "USSR".) if( Session.House == HOUSE_NONE )
+        Fails on "Russia". (Thinks "USSR".) if( TheSession().House == HOUSE_NONE
+        )
                                                 {
         //						debugprint( "Couldn't
         find house from selected '%s'.\n", pDropListHouse->Current_Item() );
@@ -1457,8 +1463,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         if (pILScens->Count()) {
           const int iSelectedScenIndex = ItemExtraDataAsInt(
               pILScens->Get_Item_ExtraDataPtr(pILScens->Current_Index()));
-          if (iSelectedScenIndex != Session.Options.ScenarioIndex) {
-            Session.Options.ScenarioIndex = iSelectedScenIndex;
+          if (iSelectedScenIndex != TheSession().Options.ScenarioIndex) {
+            TheSession().Options.ScenarioIndex = iSelectedScenIndex;
             if (!pILScens->SetSelectType(
                     1)) {  //	Hack to deal with ListClass "highlighting
                            // nothing" problem.
@@ -1480,9 +1486,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //	User adjusts max # units
       //..................................................................
       case ButtonKey(kButtonCount):
-        Session.Options.UnitCount =
+        TheSession().Options.UnitCount =
             pGaugeCount->Get_Value() +
-            base::At(SessionClass::CountMin, Session.Options.Bases);
+            base::At(SessionClass::CountMin, TheSession().Options.Bases);
         display = std::max(display, REDRAW_PARMS);
         PlaySoundEffect(VOC_OPTIONS_CHANGED);
         break;
@@ -1505,8 +1511,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       // Round the credits to the nearest 500.
       //..................................................................
       case ButtonKey(kButtonCredits):
-        Session.Options.Credits = pGaugeCredits->Get_Value();
-        Session.Options.Credits = ((Session.Options.Credits + 250) / 500) * 500;
+        TheSession().Options.Credits = pGaugeCredits->Get_Value();
+        TheSession().Options.Credits =
+            ((TheSession().Options.Credits + 250) / 500) * 500;
         display = std::max(display, REDRAW_PARMS);
         PlaySoundEffect(VOC_OPTIONS_CHANGED);
         break;
@@ -1515,15 +1522,15 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //	User adjusts # of AI players
       //..................................................................
       case ButtonKey(kButtonAiplayers):
-        Session.Options.AIPlayers = pGaugeAIPlayers->Get_Value();
+        TheSession().Options.AIPlayers = pGaugeAIPlayers->Get_Value();
         //				if
-        //(Session.Options.AIPlayers+Session.Players.Count() > Rule.MaxPlayers)
-        //{	// if it's pegged, max it out
-        if (Session.Options.AIPlayers + pWO->GameInfoCurrent.iPlayerMax >
+        //(TheSession().Options.AIPlayers+TheSession().Players.Count() >
+        // Rule.MaxPlayers) {	// if it's pegged, max it out
+        if (TheSession().Options.AIPlayers + pWO->GameInfoCurrent.iPlayerMax >
             TheRules().MaxPlayers) {  // if it's pegged, max it out
-          Session.Options.AIPlayers =
+          TheSession().Options.AIPlayers =
               TheRules().MaxPlayers - pWO->GameInfoCurrent.iPlayerMax;
-          pGaugeAIPlayers->Set_Value(Session.Options.AIPlayers);
+          pGaugeAIPlayers->Set_Value(TheSession().Options.AIPlayers);
         }
         display = std::max(display, REDRAW_PARMS);
         PlaySoundEffect(VOC_OPTIONS_CHANGED);
@@ -1543,11 +1550,12 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             !Special.IsCaptureTheFlag) {
           pCheckListOptions->Check_Item(0, true);
         }
-        if ((Session.Options.Bases != 0) != pCheckListOptions->Is_Checked(0)) {
-          Session.Options.Bases = pCheckListOptions->Is_Checked(0) ? 1 : 0;
-          if (Session.Options.Bases) {
-            Session.Options.UnitCount = static_cast<int>(Rescale(
-                static_cast<uint32_t>(Session.Options.UnitCount -
+        if ((TheSession().Options.Bases != 0) !=
+            pCheckListOptions->Is_Checked(0)) {
+          TheSession().Options.Bases = pCheckListOptions->Is_Checked(0) ? 1 : 0;
+          if (TheSession().Options.Bases) {
+            TheSession().Options.UnitCount = static_cast<int>(Rescale(
+                static_cast<uint32_t>(TheSession().Options.UnitCount -
                                       base::At(SessionClass::CountMin, 0)),
                 static_cast<uint32_t>(base::At(SessionClass::CountMax, 0) -
                                       base::At(SessionClass::CountMin, 0)),
@@ -1555,8 +1563,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                                       base::At(SessionClass::CountMin, 1))));
           } else {
             pCheckListOptions->Check_Item(3, false);
-            Session.Options.UnitCount = static_cast<int>(Rescale(
-                static_cast<uint32_t>(Session.Options.UnitCount -
+            TheSession().Options.UnitCount = static_cast<int>(Rescale(
+                static_cast<uint32_t>(TheSession().Options.UnitCount -
                                       base::At(SessionClass::CountMin, 1)),
                 static_cast<uint32_t>(base::At(SessionClass::CountMax, 1) -
                                       base::At(SessionClass::CountMin, 1)),
@@ -1564,21 +1572,22 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                                       base::At(SessionClass::CountMin, 0))));
           }
           pGaugeCount->Set_Maximum(
-              base::At(SessionClass::CountMax, Session.Options.Bases) -
-              base::At(SessionClass::CountMin, Session.Options.Bases));
+              base::At(SessionClass::CountMax, TheSession().Options.Bases) -
+              base::At(SessionClass::CountMin, TheSession().Options.Bases));
           pGaugeCount->Set_Value(
-              Session.Options.UnitCount -
-              base::At(SessionClass::CountMin, Session.Options.Bases));
+              TheSession().Options.UnitCount -
+              base::At(SessionClass::CountMin, TheSession().Options.Bases));
         }
-        Session.Options.Tiberium = pCheckListOptions->Is_Checked(1) ? 1 : 0;
-        Special.IsTGrowth =
-            static_cast<unsigned>(Session.Options.Tiberium);  //	Ugh. Use of "Special" global.
-        TheRules().IsTGrowth = Session.Options.Tiberium != 0;
-        Special.IsTSpread =
-            static_cast<unsigned>(Session.Options.Tiberium);  //	Ugh. Use of "Special" global.
-        TheRules().IsTSpread = Session.Options.Tiberium != 0;
+        TheSession().Options.Tiberium =
+            pCheckListOptions->Is_Checked(1) ? 1 : 0;
+        Special.IsTGrowth = static_cast<unsigned>(
+            TheSession().Options.Tiberium);  //	Ugh. Use of "Special" global.
+        TheRules().IsTGrowth = TheSession().Options.Tiberium != 0;
+        Special.IsTSpread = static_cast<unsigned>(
+            TheSession().Options.Tiberium);  //	Ugh. Use of "Special" global.
+        TheRules().IsTSpread = TheSession().Options.Tiberium != 0;
 
-        Session.Options.Goodies = pCheckListOptions->Is_Checked(2) ? 1 : 0;
+        TheSession().Options.Goodies = pCheckListOptions->Is_Checked(2) ? 1 : 0;
         Special.IsCaptureTheFlag = pCheckListOptions->Is_Checked(
             3);  //	Ugh. Use of "Special" global.
         Special.IsShadowGrow = pCheckListOptions->Is_Checked(
@@ -1627,10 +1636,12 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           // because we're about to send changes 	that will unaccept
           // everyone.
           if ((!bParamsUnfresh()) &&
-              (!Session.Scenarios.at(Session.Options.ScenarioIndex)
+              (!TheSession()
+                    .Scenarios.at(TheSession().Options.ScenarioIndex)
                     ->Get_Official() ||
                Force_Scenario_Available(
-                   Session.Scenarios.at(Session.Options.ScenarioIndex)
+                   TheSession()
+                       .Scenarios.at(TheSession().Options.ScenarioIndex)
                        ->Get_Filename())))
           //	Force user to put the correct disk in before proceeding. (Not
           // crucial, but can lead to ugly 	timeouts if the scenario has to
@@ -1706,9 +1717,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 void WOL_GameSetupDialog::SetSpecialControlStates() {
   //	Set gauges and checklist.
 
-  pCheckListOptions->Check_Item(0, Session.Options.Bases != 0);
-  pCheckListOptions->Check_Item(1, Session.Options.Tiberium != 0);
-  pCheckListOptions->Check_Item(2, Session.Options.Goodies != 0);
+  pCheckListOptions->Check_Item(0, TheSession().Options.Bases != 0);
+  pCheckListOptions->Check_Item(1, TheSession().Options.Tiberium != 0);
+  pCheckListOptions->Check_Item(2, TheSession().Options.Goodies != 0);
   pCheckListOptions->Check_Item(
       3, Special.IsCaptureTheFlag);  //	Ugh. Use of "Special" global.
   pCheckListOptions->Check_Item(
@@ -1718,27 +1729,27 @@ void WOL_GameSetupDialog::SetSpecialControlStates() {
       5, bSlowUnitBuildRate);  //	Ugh. Use of "Special" global.
 
   pGaugeCount->Set_Maximum(
-      base::At(SessionClass::CountMax, Session.Options.Bases) -
-      base::At(SessionClass::CountMin, Session.Options.Bases));
+      base::At(SessionClass::CountMax, TheSession().Options.Bases) -
+      base::At(SessionClass::CountMin, TheSession().Options.Bases));
   pGaugeCount->Set_Value(
-      Session.Options.UnitCount -
-      base::At(SessionClass::CountMin, Session.Options.Bases));
+      TheSession().Options.UnitCount -
+      base::At(SessionClass::CountMin, TheSession().Options.Bases));
 
   pGaugeLevel->Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
   pGaugeLevel->Set_Value(TheWorld().build_level() - 1);
 
   pGaugeCredits->Set_Maximum(TheRules().MPMaxMoney);
-  pGaugeCredits->Set_Value(Session.Options.Credits);
+  pGaugeCredits->Set_Value(TheSession().Options.Credits);
 
   if (pWO->GameInfoCurrent.bTournament) {
     pGaugeAIPlayers->Set_Maximum(0);
   } else {
     //	Note dependency of AIPlayers on number of human players.
-    //	pGaugeAIPlayers->Set_Maximum(Rule.MaxPlayers-Session.Players.Count());
+    //	pGaugeAIPlayers->Set_Maximum(Rule.MaxPlayers-TheSession().Players.Count());
     pGaugeAIPlayers->Set_Maximum(TheRules().MaxPlayers -
                                  pWO->GameInfoCurrent.iPlayerMax);
   }
-  pGaugeAIPlayers->Set_Value(Session.Options.AIPlayers);
+  pGaugeAIPlayers->Set_Value(TheSession().Options.AIPlayers);
 
   if (bAftermathUnits) {
     pCheckAftermathUnits->Turn_On();
@@ -1934,7 +1945,7 @@ void WOL_GameSetupDialog::ScenarioDisplayMode(SCENARIO_GAMEKIND ScenKind) {
     //	Put ScenarioIndex in as extradata to list item.
     const int iScenIndex =
         base::At(ar_szScenIndexes, static_cast<int>(ScenKind)).at(i);
-    if (iScenIndex == Session.Options.ScenarioIndex &&
+    if (iScenIndex == TheSession().Options.ScenarioIndex &&
         !bFoundCurrentSelection) {
       //	(Choose first line of what can be multiline description of
       // currently selected scenario.)
@@ -2007,7 +2018,7 @@ void WOL_GameSetupDialog::SetPlayerColor(const char* szName,
 
   if (std::string_view(pWO->szMyName) == szName) {
     //	I am the player involved.
-    Session.ColorIdx = Color;
+    TheSession().ColorIdx = Color;
     display = std::max(display, REDRAW_COLORS);
   }
   pILPlayers->Set_Item_Color(
@@ -2388,7 +2399,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
           bLeaveDueToRulesMismatchTrigger = true;
         }
         SetSpecialControlStates();
-        // pILScens->Set_Selected_Index( Session.Options.ScenarioIndex );
+        // pILScens->Set_Selected_Index( TheSession().Options.ScenarioIndex );
         display = REDRAW_ALL;
         ClearAllAccepts();
         PlaySoundEffect(VOC_OPTIONS_CHANGED);
@@ -2629,37 +2640,37 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   //	read from the unparsed text rather than as a token.
   char* const szRemaining = tokens.Remaining();
   if (std::string_view(szToken).size() != 3 || iLen < 0 ||
-      std::cmp_greater_equal(iLen,
-                             sizeof(Session.Options.ScenarioDescription)) ||
+      std::cmp_greater_equal(
+          iLen, sizeof(TheSession().Options.ScenarioDescription)) ||
       static_cast<size_t>(iLen) >= std::string_view(szRemaining).size()) {
     return false;
   }
   //	Read in string.
-  port::SafeCopy(Session.Options.ScenarioDescription,
+  port::SafeCopy(TheSession().Options.ScenarioDescription,
                  std::string_view(szRemaining).substr(0, base::ToSize(iLen)));
   //	Null-terminate.
-  base::At(Session.Options.ScenarioDescription, iLen) = 0;
+  base::At(TheSession().Options.ScenarioDescription, iLen) = 0;
   //	Resume parsing after the string.
   tokens = port::Tokenizer(
       port::MutableCString(szRemaining).subspan(base::ToSize(iLen) + 1).data(),
       " ");
 
   // debugprint( "scenario description is '%s'\n",
-  // Session.Options.ScenarioDescription ); debugprint( "remaining: '%s'\n",
-  // szRemaining );
+  // TheSession().Options.ScenarioDescription ); debugprint( "remaining:
+  // '%s'\n", szRemaining );
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Session.ScenarioFileLength =
+  TheSession().ScenarioFileLength =
       static_cast<unsigned int>(tech::ParseIntegerOr<int>(szToken, 0));
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  port::SafeCopy(Session.ScenarioFileName, szToken);
+  port::SafeCopy(TheSession().ScenarioFileName, szToken);
 
   //	//	Read in length of following string.
   //	szToken = strtok( nullptr, szDelimiter );
@@ -2677,12 +2688,12 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (iLen) {
     //		//	Set string pointer to start of string (previous field is
     // 1 digit). 		szRemaining = szToken + 2; 		iLen =
-    // sizeof( Session.ScenarioDigest
+    // sizeof( TheSession().ScenarioDigest
     //);
     //		//	Read in string.
-    //		memcpy( Session.ScenarioDigest, szRemaining, iLen );
+    //		memcpy( TheSession().ScenarioDigest, szRemaining, iLen );
     //		//	//	Null-terminate.
-    //		//	Session.ScenarioDigest[ iLen ] = 0;
+    //		//	TheSession().ScenarioDigest[ iLen ] = 0;
     // Digest has no null-terminator!
     //		//	Advance string pointer to next param.
     //		szRemaining += iLen + 1;
@@ -2692,41 +2703,41 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
     if (!szToken) {
       return false;
     }
-    std::ranges::fill(Session.ScenarioDigest, 0);
-    std::ranges::copy(
-        std::string_view(szToken).substr(0, sizeof(Session.ScenarioDigest)),
-        std::begin(Session.ScenarioDigest));
+    std::ranges::fill(TheSession().ScenarioDigest, 0);
+    std::ranges::copy(std::string_view(szToken).substr(
+                          0, sizeof(TheSession().ScenarioDigest)),
+                      std::begin(TheSession().ScenarioDigest));
   }
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Session.ScenarioIsOfficial = tech::ParseIntegerOr<int>(szToken, 0) != 0;
+  TheSession().ScenarioIsOfficial = tech::ParseIntegerOr<int>(szToken, 0) != 0;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Session.Options.Credits = tech::ParseIntegerOr<int>(szToken, 0);
+  TheSession().Options.Credits = tech::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Session.Options.Bases = tech::ParseIntegerOr<int>(szToken, 0);
+  TheSession().Options.Bases = tech::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Session.Options.Tiberium = tech::ParseIntegerOr<int>(szToken, 0);
+  TheSession().Options.Tiberium = tech::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Session.Options.Goodies = tech::ParseIntegerOr<int>(szToken, 0);
+  TheSession().Options.Goodies = tech::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
@@ -2738,13 +2749,13 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  Session.Options.UnitCount = tech::ParseIntegerOr<int>(szToken, 0);
+  TheSession().Options.UnitCount = tech::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  Session.Options.AIPlayers = tech::ParseIntegerOr<int>(szToken, 0);
+  TheSession().Options.AIPlayers = tech::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
@@ -2839,35 +2850,41 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
 void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
   //	Sets values in a GAMEPARAMS to the current game settings.
 
-  port::SafeCopy(
-      GParams.GPacket.ScenarioInfo.Scenario,
-      Session.Scenarios.at(Session.Options.ScenarioIndex)->Description());
-  GameFile file(
-      Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Filename());
+  port::SafeCopy(GParams.GPacket.ScenarioInfo.Scenario,
+                 TheSession()
+                     .Scenarios.at(TheSession().Options.ScenarioIndex)
+                     ->Description());
+  GameFile file(TheSession()
+                    .Scenarios.at(TheSession().Options.ScenarioIndex)
+                    ->Get_Filename());
   GParams.GPacket.ScenarioInfo.FileLength =
       static_cast<unsigned int>(file.Size());
-  port::SafeCopy(
-      GParams.GPacket.ScenarioInfo.ShortFileName,
-      Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Filename());
+  port::SafeCopy(GParams.GPacket.ScenarioInfo.ShortFileName,
+                 TheSession()
+                     .Scenarios.at(TheSession().Options.ScenarioIndex)
+                     ->Get_Filename());
   //	Digest is not null-terminated.
-  std::ranges::copy(
-      Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Digest_Bytes(),
-      std::begin(GParams.GPacket.ScenarioInfo.FileDigest));
+  std::ranges::copy(TheSession()
+                        .Scenarios.at(TheSession().Options.ScenarioIndex)
+                        ->Get_Digest_Bytes(),
+                    std::begin(GParams.GPacket.ScenarioInfo.FileDigest));
   GParams.GPacket.ScenarioInfo.OfficialScenario =
-      Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Official();
-  GParams.GPacket.ScenarioInfo.Credits = Session.Options.Credits;
+      TheSession()
+          .Scenarios.at(TheSession().Options.ScenarioIndex)
+          ->Get_Official();
+  GParams.GPacket.ScenarioInfo.Credits = TheSession().Options.Credits;
   GParams.GPacket.ScenarioInfo.IsBases =
-      static_cast<uint8_t>(Session.Options.Bases);
+      static_cast<uint8_t>(TheSession().Options.Bases);
   GParams.GPacket.ScenarioInfo.IsTiberium =
-      static_cast<uint8_t>(Session.Options.Tiberium);
+      static_cast<uint8_t>(TheSession().Options.Tiberium);
   GParams.GPacket.ScenarioInfo.IsGoodies =
-      static_cast<uint8_t>(Session.Options.Goodies);
+      static_cast<uint8_t>(TheSession().Options.Goodies);
   GParams.GPacket.ScenarioInfo.BuildLevel =
       static_cast<unsigned char>(TheWorld().build_level());
   GParams.GPacket.ScenarioInfo.UnitCount =
-      static_cast<unsigned char>(Session.Options.UnitCount);
+      static_cast<unsigned char>(TheSession().Options.UnitCount);
   GParams.GPacket.ScenarioInfo.AIPlayers =
-      static_cast<unsigned char>(Session.Options.AIPlayers);
+      static_cast<unsigned char>(TheSession().Options.AIPlayers);
   GParams.GPacket.ScenarioInfo.Seed = TheWorld().seed();
   GParams.GPacket.ScenarioInfo.Special = Special;
   GParams.GPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
@@ -3394,15 +3411,15 @@ bool WOL_GameSetupDialog::bNeedScenarioDownload() {
   //	Returns true if we don't have the scenario and it is allowable as a
   // download.
   if (!bHost) {
-    if (Find_Local_Scenario(Session.Options.ScenarioDescription,
-                            Session.ScenarioFileName,
-                            Session.ScenarioFileLength, Session.ScenarioDigest,
-                            Session.ScenarioIsOfficial)) {
+    if (Find_Local_Scenario(
+            TheSession().Options.ScenarioDescription,
+            TheSession().ScenarioFileName, TheSession().ScenarioFileLength,
+            TheSession().ScenarioDigest, TheSession().ScenarioIsOfficial)) {
       //			debugprint( "bNeedScenarioDownload() returning
       // false.\n" );
       bRequestedScenarioDownload = false;
       return false;
-    } /*			if( !Session.ScenarioIsOfficial )
+    } /*			if( !TheSession().ScenarioIsOfficial )
                         {
                                 bRequestedScenarioDownload = true;
                                 return true;
@@ -3503,32 +3520,33 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
 
   //	The following is based on Read_Game_Options()...
 
-  //	WWGetPrivateProfileString("Options", "Handle", "Noname", Session.Handle,
-  // sizeof(Session.Handle), buffer);
+  //	WWGetPrivateProfileString("Options", "Handle", "Noname",
+  // TheSession().Handle,
+  // sizeof(TheSession().Handle), buffer);
 
-  port::SafeCopy(Session.Handle, pWO->szMyName);
+  port::SafeCopy(TheSession().Handle, pWO->szMyName);
 
   //	GameName will be the host's name...
-  port::SafeCopy(Session.GameName, pWO->pGameHostName());
-  //	debugprint( "Session.GameName is %s\n", Session.GameName );
+  port::SafeCopy(TheSession().GameName, pWO->pGameHostName());
+  //	debugprint( "TheSession().GameName is %s\n", TheSession().GameName );
 
-  //	gotit	Session.ColorIdx = (PlayerColorType)
+  //	gotit	TheSession().ColorIdx = (PlayerColorType)
   // WWGetPrivateProfileInt("Options", "Color", 0, buffer); 	gotit
-  // Session.PrefColor = Session.ColorIdx; 	gotit	int temp =
+  // TheSession().PrefColor = TheSession().ColorIdx; 	gotit	int temp =
   // WWGetPrivateProfileInt("Options", "Side", 0, buffer); 	gotit
-  // Session.House = (HousesType) ((int)HOUSE_USSR + temp);
+  // TheSession().House = (HousesType) ((int)HOUSE_USSR + temp);
 
-  //	gotit	Session.Options.Credits = WWGetPrivateProfileInt("Options",
-  //"Credits", 0, buffer); 	gotit	Session.Options.Bases =
+  //	gotit	TheSession().Options.Credits = WWGetPrivateProfileInt("Options",
+  //"Credits", 0, buffer); 	gotit	TheSession().Options.Bases =
   // WWGetPrivateProfileInt("Options", "Bases", 0, buffer); 	gotit
-  // Session.Options.Tiberium = WWGetPrivateProfileInt("Options", "Tiberium", 0,
-  // buffer); 	gotit	Session.Options.Goodies =
+  // TheSession().Options.Tiberium = WWGetPrivateProfileInt("Options",
+  // "Tiberium", 0, buffer); 	gotit	TheSession().Options.Goodies =
   // WWGetPrivateProfileInt("Options", "Crates", 0, buffer); 	gotit
   // Special.IsShadowGrow = WWGetPrivateProfileInt ("Options", "Shadow", 0,
   // buffer); 	gotit	TheWorld().build_level() =
   // WWGetPrivateProfileInt("Options",
   //"TheWorld().build_level()", 0, buffer); 	gotit
-  //Session.Options.UnitCount =
+  // TheSession().Options.UnitCount =
   // WWGetPrivateProfileInt("Options", "UnitCount", 0, buffer); 	gotit
   // TheWorld().seed() = WWGetPrivateProfileInt("Options", "TheWorld().seed()",
   // 0, buffer); 	gotit Special.IsCaptureTheFlag =
@@ -3556,13 +3574,14 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   // WChatHWND = (HWND) WWGetPrivateProfileInt("Internet", "HWND",
   // (int)FindWindow("OWL_Window", "Westwood Chat"), buffer);
 
-  //	gotit	Session.Options.AIPlayers = WWGetPrivateProfileInt("Options",
-  //"AI", 0, buffer);		//Number of AI players
-  if (Session.Options.AIPlayers) {
-    Session.Options.Ghosts = 1;
+  //	gotit	TheSession().Options.AIPlayers =
+  // WWGetPrivateProfileInt("Options", "AI", 0, buffer);		//Number
+  // of AI players
+  if (TheSession().Options.AIPlayers) {
+    TheSession().Options.Ghosts = 1;
   }
 
-  if (Session.Options.Tiberium) {
+  if (TheSession().Options.Tiberium) {
     Special.IsTGrowth = 1;
     Special.IsTSpread = 1;
   } else {
@@ -3575,13 +3594,13 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	Now do whatever we've left out that the horrific Net_Fake_New_Dialog()
   // and Net_Fake_Join_Dialog() used to do for us...
 
-  //	Set up the Session.Players list.
+  //	Set up the TheSession().Players list.
   //	I think there is dependence on the local player being first, so put him
   // there. 	Else put them in order listed in the szGoMessage. 	I will
   // set "ID" based on a player's color, though it seems unclear if this is even
   // used in the game, or what it should be.
 
-  Clear_Vector(&Session.Players);
+  Clear_Vector(&TheSession().Players);
 
   //	Make the pILPlayers a valid list of players in the game.
   //	Players might (incredibly rarely) have joined in the last split-second,
@@ -3614,12 +3633,12 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
     SetPlayerColor(szPlayerName, Color);  //	ajw note: inserts if not found.
   }
 
-  //	Add myself to Session.Players list.
+  //	Add myself to TheSession().Players list.
   DCHECK(pILPlayers->Find(pWO->szMyName) != -1);
 
   auto* pPlayerNew = new NodeNameType;
   port::SafeCopy(pPlayerNew->Name, pWO->szMyName);  //	"Name" is 12 chars max.
-  // pPlayerNew->Address = Session.GAddress;
+  // pPlayerNew->Address = TheSession().GAddress;
   pPlayerNew->Player.House = GetPlayerHouse(pWO->szMyName);
   // debugprint( "ME: pPlayerNew->Player.House = %i\n", pPlayerNew->Player.House
   // );
@@ -3628,16 +3647,16 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	pPlayerNew->Player.ID = (HousesType)( pPlayerNew->Player.Color +
   // HOUSE_MULTI1 );
 
-  Session.Players.Add(pPlayerNew);
+  TheSession().Players.Add(pPlayerNew);
 
   char szHostName[WOL_NAME_LEN_MAX] = "Game host";
 
-  //	Add all other players to Session.Players list (if they have a valid
+  //	Add all other players to TheSession().Players list (if they have a valid
   // color - see just above). 	Also in this step - build the scenario download
   // requests array (used by hosts only).
-  base::FillBytes(base::ObjectBytes(Session.ScenarioRequests), 0,
-                  sizeof(Session.ScenarioRequests));
-  Session.RequestCount = 0;
+  base::FillBytes(base::ObjectBytes(TheSession().ScenarioRequests), 0,
+                  sizeof(TheSession().ScenarioRequests));
+  TheSession().RequestCount = 0;
   for (int iItem = 0; iItem < pILPlayers->Count(); iItem++) {
     //	The following is not very efficient, but doesn't have to be. Better in
     // this case to keep it clear and simple.
@@ -3668,7 +3687,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       base::CopyBytes(base::ObjectBytes(node), base::ObjectBytes(lAddress), 4);
       // memcpy( node + 2, &lAddress, 4 );
       pPlayerNew->Address.Set_Address(net, node);
-      // pPlayerNew->Address = Session.GAddress;
+      // pPlayerNew->Address = TheSession().GAddress;
       pPlayerNew->Player.House = GetPlayerHouse(szPlayerName);
       // debugprint( "Player %i: pPlayerNew->Player.House = %i\n", iItem,
       // pPlayerNew->Player.House );
@@ -3677,21 +3696,21 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       // pPlayerNew->Player.ID = (HousesType)( pPlayerNew->Player.Color +
       // HOUSE_MULTI1 );
 
-      Session.Players.Add(pPlayerNew);
+      TheSession().Players.Add(pPlayerNew);
 
       //	If player is the game host, set HostAddress. This global is used
       // when downloading scenarios; who knows where else.
       const User* pUser =
           static_cast<const User*>(pILPlayers->Get_Item_ExtraDataPtr(iItem));
       if (pUser && pUser->flags & CHAT_USER_CHANNELOWNER) {
-        Session.HostAddress = pPlayerNew->Address;
+        TheSession().HostAddress = pPlayerNew->Address;
         port::SafeCopy(szHostName, WolText(pUser->name));
         /*
                                         //	debugging
                                         NetNumType netxxx;
                                         NetNodeType nodexxx;
-                                        Session.HostAddress.Get_Address( netxxx,
-        nodexxx );
+                                        TheSession().HostAddress.Get_Address(
+        netxxx, nodexxx );
         //				debugprint( "Host, ip
         %i.%i.%i.%i.%i.%i\n", nodexxx[0], nodexxx[1], nodexxx[2], nodexxx[3],
         nodexxx[4], nodexxx[5] );
@@ -3714,12 +3733,12 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
         //				debugprint( "%s has requested scenario
         // download.\n", szPlayerName );
         //	ScenarioRequests holds player indices, one char each.
-        base::At(Session.ScenarioRequests, Session.RequestCount++) =
-            static_cast<char>(Session.Players.Count() - 1);
+        base::At(TheSession().ScenarioRequests, TheSession().RequestCount++) =
+            static_cast<char>(TheSession().Players.Count() - 1);
       }
     }
     //		else
-    //			debugprint( "%s excluded from Session.Players\n",
+    //			debugprint( "%s excluded from TheSession().Players\n",
     // szPlayerName );
   }
 
@@ -3743,8 +3762,8 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
                                 -1,    // ignore max retries
                                 600);  // give up after 10 seconds
 
-  //	debugprint( "Session.ScenarioFileName is %s.\n",
-  // Session.ScenarioFileName );
+  //	debugprint( "TheSession().ScenarioFileName is %s.\n",
+  // TheSession().ScenarioFileName );
 
   /*
   ** Read the scenario name from the .INI and try to match it with a scenario
@@ -3752,17 +3771,17 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   */
   //	gotit		WWGetPrivateProfileString("Options", "Scenario",
   //"SCM01EA.INI",
-  // Session.Options.ScenarioDescription,
-  // sizeof (Session.Options.ScenarioDescription),
+  // TheSession().Options.ScenarioDescription,
+  // sizeof (TheSession().Options.ScenarioDescription),
   // buffer); WWDebugString ("RA95I -
-  // Scenario is "); WWDebugString (Session.Options.ScenarioDescription);
+  // Scenario is "); WWDebugString (TheSession().Options.ScenarioDescription);
   // WWDebugString ("\n");
 
   if (!bHost)  //	Else ScenarioIndex is already set.
   {
     if (bRequestedScenarioDownload) {
-      Session.Options.ScenarioIndex = 1;
-      if (bSpecialAftermathScenario(Session.Options.ScenarioDescription)) {
+      TheSession().Options.ScenarioIndex = 1;
+      if (bSpecialAftermathScenario(TheSession().Options.ScenarioDescription)) {
         //	Shouldn't ever happen. We should never have the opportunity to
         // ask for one of these maps to be downloaded.
         bExitForGameTrigger = false;
@@ -3773,8 +3792,9 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       }
       //	Wait for download from game host.
       // debugprint( "Wait for download from game host.\n" );
-      if (!Get_Scenario_File_From_Host(Session.ScenarioFileName,
-                                       sizeof(Session.ScenarioFileName), 1)) {
+      if (!Get_Scenario_File_From_Host(TheSession().ScenarioFileName,
+                                       sizeof(TheSession().ScenarioFileName),
+                                       1)) {
         //				debugprint( "Get_Scenario_File_From_Host
         // failed!\n" );
         bExitForGameTrigger = false;
@@ -3783,69 +3803,76 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
         port::SafeCopy(szNameOfHostWhoJustBailedOnUs, szHostName);
         return;
       }
-      TheScenario().Scenario = Session.Options.ScenarioIndex;
+      TheScenario().Scenario = TheSession().Options.ScenarioIndex;
       //			debugprint( "Scen.Scenario = %i\n",
       // Scen.Scenario );
-      port::SafeCopy(TheScenario().ScenarioName, Session.ScenarioFileName);
+      port::SafeCopy(TheScenario().ScenarioName, TheSession().ScenarioFileName);
       //			debugprint( "Scen.ScenarioName = %s\n",
       // Scen.ScenarioName );
     } else {
       //	Match ScenarioDescription to a ScenarioIndex.
       /*	This is how the same code existed previously. Insufficient
          because Description may match on many scenarios.
-                              Session.Options.ScenarioIndex = -1;
-                              for (int i = 0; i < Session.Scenarios.Count();
-         i++) { if (!strcmp (Session.Scenarios[i]->Description(),
-         Session.Options.ScenarioDescription) ){ Session.Options.ScenarioIndex =
-         i; break;
+                              TheSession().Options.ScenarioIndex = -1;
+                              for (int i = 0; i <
+         TheSession().Scenarios.Count(); i++) { if (!strcmp
+         (TheSession().Scenarios[i]->Description(),
+         TheSession().Options.ScenarioDescription) ){
+         TheSession().Options.ScenarioIndex = i; break;
                                       }
                               }
       */
       //	(We have already done the lookup, in Find_Local_Scenario,
       // above.)
-      Session.Options.ScenarioIndex =
-          ScenarioIndex_From_Filename(Session.ScenarioFileName);
-      DCHECK(Session.Options.ScenarioIndex != -1);
-      TheScenario().Scenario = Session.Options.ScenarioIndex;
+      TheSession().Options.ScenarioIndex =
+          ScenarioIndex_From_Filename(TheSession().ScenarioFileName);
+      DCHECK(TheSession().Options.ScenarioIndex != -1);
+      TheScenario().Scenario = TheSession().Options.ScenarioIndex;
       //			debugprint( "Scen.Scenario = %i\n",
       // Scen.Scenario );
-      port::SafeCopy(
-          TheScenario().ScenarioName,
-          Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Filename());
+      port::SafeCopy(TheScenario().ScenarioName,
+                     TheSession()
+                         .Scenarios.at(TheSession().Options.ScenarioIndex)
+                         ->Get_Filename());
       //			debugprint( "Scen.ScenarioName = %s\n",
       // Scen.ScenarioName );
     }
   } else  //	bHost
   {
-    TheScenario().Scenario = Session.Options.ScenarioIndex;
+    TheScenario().Scenario = TheSession().Options.ScenarioIndex;
     //		debugprint( "Scen.Scenario = %i\n", Scen.Scenario );
-    port::SafeCopy(
-        TheScenario().ScenarioName,
-        Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Filename());
+    port::SafeCopy(TheScenario().ScenarioName,
+                   TheSession()
+                       .Scenarios.at(TheSession().Options.ScenarioIndex)
+                       ->Get_Filename());
     //		debugprint( "Scen.ScenarioName = %s\n", Scen.ScenarioName );
-    port::SafeCopy(
-        Session.Options.ScenarioDescription,
-        Session.Scenarios.at(Session.Options.ScenarioIndex)->Description());
+    port::SafeCopy(TheSession().Options.ScenarioDescription,
+                   TheSession()
+                       .Scenarios.at(TheSession().Options.ScenarioIndex)
+                       ->Description());
   }
 
   Options.GameSpeed = 0;
 
-  // Session.MaxAhead = WChatMaxAhead = WWGetPrivateProfileInt("Timing",
-  // "MaxAhead", 9, buffer); Session.FrameSendRate = WChatSendRate =
+  // TheSession().MaxAhead = WChatMaxAhead = WWGetPrivateProfileInt("Timing",
+  // "MaxAhead", 9, buffer); TheSession().FrameSendRate = WChatSendRate =
   // WWGetPrivateProfileInt("Timing", "SendRate", 3, buffer);
-  Session.MaxAhead = 15;  // 9;
-  // Session.FrameSendRate = 5;	//3;
-  Session.FrameSendRate = 3;  // 3;
+  TheSession().MaxAhead = 15;  // 9;
+  // TheSession().FrameSendRate = 5;	//3;
+  TheSession().FrameSendRate = 3;  // 3;
 
   //	This is from NETDLG processing...
-  Session.NumPlayers = static_cast<int>(Session.Players.Count());
+  TheSession().NumPlayers = static_cast<int>(TheSession().Players.Count());
 
-  pWO->GameInfoCurrent.iPlayerCount = static_cast<int>(Session.Players.Count());
+  pWO->GameInfoCurrent.iPlayerCount =
+      static_cast<int>(TheSession().Players.Count());
 
   TheNetwork().ipx().Set_Timing(25, -1, 1000);
 
   if (bHost) {
-    if (Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Official() &&
+    if (TheSession()
+            .Scenarios.at(TheSession().Options.ScenarioIndex)
+            ->Get_Official() &&
         (!Force_Scenario_Available(TheScenario().ScenarioName))) {
       bExitForGameTrigger = false;
       *szTriggerGameStartInfo = 0;
@@ -3853,7 +3880,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       return;
     }
 
-    if (Session.RequestCount) {
+    if (TheSession().RequestCount) {
       //	Send the scenario to any guests that requested a download.
       // debugprint( "Send the scenario to any guests that requested a
       // download.\n" );
@@ -3861,11 +3888,11 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
     }
   }
 
-  Session.CommProtocol = COMM_PROTOCOL_MULTI_E_COMP;
+  TheSession().CommProtocol = COMM_PROTOCOL_MULTI_E_COMP;
   TheNetwork().ipx().Set_Timing(30, -1, 600);
 
   pWO->bEnableNewAftermathUnits = bAftermathUnits;
-  bAftermathMultiplayer = bAftermathUnits;
+  TheSession().IsAftermath = bAftermathUnits;
 
   *pWO->szExternalPager = 0;
 
@@ -3900,9 +3927,10 @@ bool bSpecialAftermathScenario(const char* szScenarioDescription) {
 int ScenarioIndex_From_Filename(const char* szScenarioFilename) {
   //	Returns the scenario index that matches the scenario filename, or -1 if
   // no match found.
-  for (int index = 0; index < Session.Scenarios.Count(); index++) {
-    if (absl::EqualsIgnoreCase(szScenarioFilename,
-                               Session.Scenarios.at(index)->Get_Filename())) {
+  for (int index = 0; index < TheSession().Scenarios.Count(); index++) {
+    if (absl::EqualsIgnoreCase(
+            szScenarioFilename,
+            TheSession().Scenarios.at(index)->Get_Filename())) {
       return index;
     }
   }

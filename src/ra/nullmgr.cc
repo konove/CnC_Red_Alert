@@ -77,7 +77,6 @@
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/init.h"
 #include "ra/inline.h"
@@ -1124,7 +1123,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   */
   if (settings->InitStringIndex != -1) {
     const std::string initStr =
-        Session.InitStrings.at(settings->InitStringIndex);
+        TheSession().InitStrings.at(settings->InitStringIndex);
 
     std::istringstream tokenStream(initStr);
     std::string token;
@@ -1678,12 +1677,12 @@ bool NullModemClass::Hangup_Modem() {
   /*
   **	Turn modem servicing off in the callback routine.
   */
-  Session.ModemService = false;
+  TheSession().ModemService = false;
 
   int status = Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
 
   if (status == kModemCmdOk) {
-    Session.ModemService = true;
+    TheSession().ModemService = true;
     return true;
   }
 
@@ -1697,7 +1696,7 @@ bool NullModemClass::Hangup_Modem() {
   status = Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
 
   if (status == kModemCmdOk) {
-    Session.ModemService = true;
+    TheSession().ModemService = true;
     return true;
   }
 
@@ -1732,7 +1731,7 @@ bool NullModemClass::Hangup_Modem() {
 
   if (status == kModemCmdOk) {
   } else {
-    Session.ModemService = true;
+    TheSession().ModemService = true;
     return false;
   }
 
@@ -1742,11 +1741,11 @@ bool NullModemClass::Hangup_Modem() {
   status = Send_Modem_Command("ATZ", '\r', buffer, 81, 5000, 1);
 
   if (status != kModemCmdOk) {
-    Session.ModemService = true;
+    TheSession().ModemService = true;
     return false;
   }
 
-  Session.ModemService = true;
+  TheSession().ModemService = true;
   return true;
 
 } /* end of Hangup_Modem */

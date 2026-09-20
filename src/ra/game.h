@@ -14,6 +14,7 @@
 #include "ra/palettes.h"
 #include "ra/rules.h"
 #include "ra/screen.h"
+#include "ra/session.h"
 #include "ra/startup_options.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
@@ -69,6 +70,8 @@ class Game {
   base::Installed<RulesClass>::Scope rules_scope_{rules_};
   World world_;
   base::Installed<World>::Scope world_scope_{world_};
+  SessionClass session_;
+  base::Installed<SessionClass>::Scope session_scope_{session_};
   Network network_;
   base::Installed<Network>::Scope network_scope_{network_};
   DebugState debug_state_;

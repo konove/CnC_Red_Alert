@@ -268,7 +268,7 @@ void LogicClass::AI() {
   /*
   **	House processing is performed.
   */
-  if (Session.Type == GAME_NORMAL) {
+  if (TheSession().Type == GAME_NORMAL) {
     for (const HousesType house : magic_enum::enum_values<HousesType>()) {
       HouseClass* hptr = HouseClass::As_Pointer(house);
       if (hptr != nullptr && hptr->IsActive) {
@@ -287,12 +287,12 @@ void LogicClass::AI() {
     }
   }
 
-  if (Session.Type != GAME_NORMAL &&
+  if (TheSession().Type != GAME_NORMAL &&
       TheScenario().AutoSonarTimer.IsFinished()) {
-    if (bAutoSonarPulse) {
+    if (TheWorld().auto_sonar_pulse()) {
       TheMap().Activate_Pulse();
       PlaySoundEffect(VOC_SONAR);
-      bAutoSonarPulse = false;
+      TheWorld().auto_sonar_pulse() = false;
     }
     TheScenario().AutoSonarTimer.Set(int64_t{kTicksPerSecond} * 40);
   }

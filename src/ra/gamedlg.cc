@@ -245,7 +245,8 @@ void GameControlsClass::Process() {
     /*
     **	Invoke game callback.
     */
-    if (Session.Type == GAME_NORMAL || Session.Type == GAME_SKIRMISH) {
+    if (TheSession().Type == GAME_NORMAL ||
+        TheSession().Type == GAME_SKIRMISH) {
       ServiceRealTime();
     } else {
       if (RunFrame()) {
@@ -461,7 +462,7 @@ void GameControlsClass::Process() {
       *don't
       ** go out of sync.
       */
-      if (Session.Type == GAME_NORMAL) {
+      if (TheSession().Type == GAME_NORMAL) {
         Options.GameSpeed = static_cast<unsigned int>(gamespeed);
         Options.Save_Settings();  // save new value
       } else {

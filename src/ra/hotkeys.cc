@@ -139,13 +139,13 @@ void Keyboard_Process(KeyNumType& input) {
 
     if (((TheDebugState().developer_mode() || TheDebugState().playtest()) &&
          plain == KN_F4) &&
-        (Session.Type == GAME_NORMAL)) {
+        (TheSession().Type == GAME_NORMAL)) {
       TheDebugState().set_unshroud(!TheDebugState().unshroud());
       TheMap().Flag_To_Redraw(true);
     }
 
     if (TheDebugState().developer_mode() && input == KN_SLASH) {
-      if (Session.Type != GAME_NORMAL) {
+      if (TheSession().Type != GAME_NORMAL) {
         SpecialDialog = SDLG_SPECIAL;
         input = KN_NONE;
       } else {
@@ -321,7 +321,7 @@ void Keyboard_Process(KeyNumType& input) {
   // player has the mission abort in the options menu instead: surrendering
   // there would only self-destruct the base and lose the mission.
   if (key != 0 && key == Options.KeyResign) {
-    if (Session.Type != GAME_NORMAL && !PlayerLoses &&
+    if (TheSession().Type != GAME_NORMAL && !PlayerLoses &&
         !ThePlayer()->IsDefeated) {
       SpecialDialog = SDLG_SURRENDER;
     }
@@ -330,7 +330,8 @@ void Keyboard_Process(KeyNumType& input) {
 
   // Handle making and breaking alliances.
   if (key != 0 && key == Options.KeyAlliance) {
-    if ((Session.Type != GAME_NORMAL || TheDebugState().developer_mode()) &&
+    if ((TheSession().Type != GAME_NORMAL ||
+         TheDebugState().developer_mode()) &&
         (TheWorld().current_object().Count() && !ThePlayer()->IsDefeated) &&
         (TheWorld().current_object().at(0)->Owner() !=
          ThePlayer()->Class->House)) {

@@ -115,7 +115,6 @@
 #include "ra/defines.h"
 #include "ra/display_constants.h"
 #include "ra/event.h"
-#include "ra/externs.h"
 #include "ra/factory.h"
 #include "ra/gadget.h"
 #include "ra/heap.h"
@@ -359,7 +358,7 @@ void SidebarClass::Init_IO() {
     Zoom.IsPressed = false;
     Zoom.Set_Shape(MixArchive::RetrieveData("MAP.SHP"));
 
-    if ((IsRadarActive && Is_Zoomable()) || Session.Type != GAME_NORMAL) {
+    if ((IsRadarActive && Is_Zoomable()) || TheSession().Type != GAME_NORMAL) {
       Zoom.Enable();
     } else {
       Zoom.Disable();
@@ -925,7 +924,7 @@ void SidebarClass::Recalc() {
 bool SidebarClass::Activate(int control) {
   const bool old = IsSidebarActive;
 
-  if (Session.Play) {
+  if (TheSession().Play) {
     return old;
   }
 
@@ -2348,7 +2347,7 @@ void SidebarClass::Zoom_Mode_Control() {
   ** radar spying readout => zoomed
   */
   if (IsRadarActive) {
-    if (Is_Zoomed() || Session.Type == GAME_NORMAL) {
+    if (Is_Zoomed() || TheSession().Type == GAME_NORMAL) {
       if (Is_Zoomed() || !Spy_Next_House()) {
         Zoom_Mode(Coord_Cell(TacticalCoord));
       }
@@ -2363,7 +2362,7 @@ void SidebarClass::Zoom_Mode_Control() {
       }
     }
   } else {
-    if (Session.Type != GAME_NORMAL) {
+    if (TheSession().Type != GAME_NORMAL) {
       Player_Names(Is_Player_Names() == 0);
     }
   }

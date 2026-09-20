@@ -285,9 +285,9 @@ void Send_Statistics_Packet() {
       // will be
       // statistically...
       stats.Add_Field(FIELD_NUM_REMAINING_PLAYERS,
-                      static_cast<uint32_t>(Session.Players.Count()));
+                      static_cast<uint32_t>(TheSession().Players.Count()));
       // debugprint( "Stats: number of remaining players is %i\n",
-      // Session.Players.Count() );
+      // TheSession().Players.Count() );
 
       //	Whether or not this was a tournament game.
       stats.Add_Field(
@@ -308,28 +308,29 @@ void Send_Statistics_Packet() {
     ** Start credits.
     */
     stats.Add_Field(FIELD_START_CREDITS,
-                    static_cast<uint32_t>(Session.Options.Credits));
+                    static_cast<uint32_t>(TheSession().Options.Credits));
 
     /*
     ** Bases (On/Off)
     */
-    stats.Add_Field(FIELD_BASES, Session.Options.Bases ? "ON" : "OFF");
+    stats.Add_Field(FIELD_BASES, TheSession().Options.Bases ? "ON" : "OFF");
 
     /*
     ** Tiberium (On/Off)
     */
-    stats.Add_Field(FIELD_TIBERIUM, Session.Options.Tiberium ? "ON" : "OFF");
+    stats.Add_Field(FIELD_TIBERIUM,
+                    TheSession().Options.Tiberium ? "ON" : "OFF");
 
     /*
     ** Crates (On/Off)
     */
-    stats.Add_Field(FIELD_CRATES, Session.Options.Goodies ? "ON" : "OFF");
+    stats.Add_Field(FIELD_CRATES, TheSession().Options.Goodies ? "ON" : "OFF");
 
     /*
     ** AI Players (On/Off)
     */
     stats.Add_Field(FIELD_AI_PLAYERS,
-                    static_cast<uint32_t>(Session.Options.AIPlayers));
+                    static_cast<uint32_t>(TheSession().Options.AIPlayers));
 
     /*
     ** Shadow regrowth enabled
@@ -346,7 +347,7 @@ void Send_Statistics_Packet() {
     ** Start unit count
     */
     stats.Add_Field(FIELD_START_UNIT_COUNT,
-                    static_cast<uint32_t>(Session.Options.UnitCount));
+                    static_cast<uint32_t>(TheSession().Options.UnitCount));
 
     /*
     ** Tech level.
@@ -357,7 +358,7 @@ void Send_Statistics_Packet() {
     /*
     ** Scenario
     */
-    stats.Add_Field(FIELD_SCENARIO, Session.Options.ScenarioDescription);
+    stats.Add_Field(FIELD_SCENARIO, TheSession().Options.ScenarioDescription);
 
     //	Read again further down when deciding whether to hold the packet
     //	back, so it outlives the block that fills it in.
@@ -382,7 +383,7 @@ void Send_Statistics_Packet() {
       */
       const HouseClass* player1 = nullptr;
       const HouseClass* player2 = nullptr;
-      for (int h = 0; h < Session.Players.Count(); h++) {
+      for (int h = 0; h < TheSession().Players.Count(); h++) {
         HouseClass* ptr = HouseClass::As_Pointer(
             static_cast<HousesType>(h + static_cast<int>(HOUSE_MULTI1)));
         if (ptr->IsHuman) {
@@ -400,7 +401,7 @@ void Send_Statistics_Packet() {
           NetNumType net;
           NetNodeType node;
           char szIPAddress[30];
-          Session.Players.at(0)->Address.Get_Address(net, node);
+          TheSession().Players.at(0)->Address.Get_Address(net, node);
           absl::SNPrintF(szIPAddress, sizeof(szIPAddress), "%i.%i.%i.%i",
                          node[0], node[1], node[2], node[3]);
           if (std::string_view(szIPAddress) == "255.255.255.255") {
@@ -458,7 +459,7 @@ void Send_Statistics_Packet() {
             // failed with %i, error %i\n", iRes, WSAGetLastError() );
           }
           stats.Add_Field(FIELD_PLAYER1_IP, szIPAddress);
-          Session.Players.at(1)->Address.Get_Address(net, node);
+          TheSession().Players.at(1)->Address.Get_Address(net, node);
           absl::SNPrintF(szIPAddress, sizeof(szIPAddress), "%i.%i.%i.%i",
                          node[0], node[1], node[2], node[3]);
           stats.Add_Field(FIELD_PLAYER2_IP, szIPAddress);
@@ -471,7 +472,7 @@ void Send_Statistics_Packet() {
           if (TheNetwork().connection_lost()) {
             if constexpr (config::kWolapiEnabled) {
               if (TheNetwork().reconnect_cancelled()) {
-                if (Session.Players.at(0)->Player.ID == HOUSE_MULTI1) {
+                if (TheSession().Players.at(0)->Player.ID == HOUSE_MULTI1) {
                   //	I am player1.
                   completion = kCompletionPlayer2WonByDisconnection;
                 } else {

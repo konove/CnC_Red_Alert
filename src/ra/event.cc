@@ -581,7 +581,7 @@ void EventClass::Execute() {
           absl::ParsedFormat<'s'>::New(Text_String(TXT_SPECIAL_WARNING));
       if (format != nullptr) {
         const std::string message = absl::StrFormat(*format, house->Name());
-        Session.Messages.Add_Message(
+        TheSession().Messages.Add_Message(
             nullptr, 0, message.c_str(), house->RemapColor,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200);
       } else {
@@ -905,7 +905,7 @@ void EventClass::Execute() {
     **	Process the options menu, unless we're playing back a recording.
     */
     case OPTIONS:
-      if (!Session.Play) {
+      if (!TheSession().Play) {
         SpecialDialog = SDLG_OPTIONS;
       }
       break;
@@ -921,7 +921,7 @@ void EventClass::Execute() {
     **	Adjust connection timing for multiplayer games
     */
     case RESPONSE_TIME:
-      Session.MaxAhead = Data.FrameInfo.Delay;
+      TheSession().MaxAhead = Data.FrameInfo.Delay;
       break;
 
     /*
@@ -983,16 +983,16 @@ void EventClass::Execute() {
       // period of vulnerability's frame start & end values, so we
       // can reschedule these events to execute after it's over.
       //
-      if (std::cmp_greater(Data.Timing.MaxAhead, Session.MaxAhead)) {
+      if (std::cmp_greater(Data.Timing.MaxAhead, TheSession().MaxAhead)) {
         TheNetwork().new_max_ahead_frame1() = Frame;
         TheNetwork().new_max_ahead_frame2() = Frame + Data.Timing.MaxAhead;
       }
-      Session.DesiredFrameRate = Data.Timing.DesiredFrameRate;
-      Session.MaxAhead = Data.Timing.MaxAhead;
+      TheSession().DesiredFrameRate = Data.Timing.DesiredFrameRate;
+      TheSession().MaxAhead = Data.Timing.MaxAhead;
 
       if (TheDebugState().print_events()) {
         absl::PrintF("DesiredFrameRate:%d MaxAhead:%d ",
-                     Session.DesiredFrameRate, Session.MaxAhead);
+                     TheSession().DesiredFrameRate, TheSession().MaxAhead);
       }
 
       break;
@@ -1003,9 +1003,10 @@ void EventClass::Execute() {
     // for the game.
     //
     case PROCESS_TIME:
-      for (int i = 0; i < Session.Players.Count(); i++) {
-        if (static_cast<HousesType>(ID) == Session.Players.at(i)->Player.ID) {
-          Session.Players.at(i)->Player.ProcessTime =
+      for (int i = 0; i < TheSession().Players.Count(); i++) {
+        if (static_cast<HousesType>(ID) ==
+            TheSession().Players.at(i)->Player.ID) {
+          TheSession().Players.at(i)->Player.ProcessTime =
               Data.ProcessTime.AverageTicks;
           break;
         }
@@ -1020,7 +1021,7 @@ void EventClass::Execute() {
           break;
         }
         TheScenario().bLocalProposesDraw = true;
-        Session.Messages.Add_Message(
+        TheSession().Messages.Add_Message(
             nullptr, 0, TXT_WOL_DRAW_PROPOSED_LOCAL, PCOLOR_GOLD,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             TheRules().MessageDelay * kTicksPerMinute);
@@ -1035,17 +1036,19 @@ void EventClass::Execute() {
         // translation still takes exactly one %s before using it.
         const auto format =
             absl::ParsedFormat<'s'>::New(TXT_WOL_DRAW_PROPOSED_OTHER);
-        for (int i = 0; i < Session.Players.Count(); i++) {
-          if (static_cast<HousesType>(ID) == Session.Players.at(i)->Player.ID) {
+        for (int i = 0; i < TheSession().Players.Count(); i++) {
+          if (static_cast<HousesType>(ID) ==
+              TheSession().Players.at(i)->Player.ID) {
             if (format != nullptr) {
-              message = absl::StrFormat(*format, Session.Players.at(i)->Name);
+              message =
+                  absl::StrFormat(*format, TheSession().Players.at(i)->Name);
             }
             break;
           }
         }
         TheScenario().bOtherProposesDraw = true;
         if (!message.empty()) {
-          Session.Messages.Add_Message(
+          TheSession().Messages.Add_Message(
               nullptr, 0, message.c_str(), PCOLOR_GOLD,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
               TheRules().MessageDelay * kTicksPerMinute);
@@ -1057,7 +1060,7 @@ void EventClass::Execute() {
     case RETRACT_DRAW:
       if (std::cmp_equal(ID, ThePlayer()->ID)) {
         TheScenario().bLocalProposesDraw = false;
-        Session.Messages.Add_Message(
+        TheSession().Messages.Add_Message(
             nullptr, 0, TXT_WOL_DRAW_RETRACTED_LOCAL, PCOLOR_GOLD,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             TheRules().MessageDelay * kTicksPerMinute);
@@ -1067,17 +1070,19 @@ void EventClass::Execute() {
         // translation still takes exactly one %s before using it.
         const auto format =
             absl::ParsedFormat<'s'>::New(TXT_WOL_DRAW_RETRACTED_OTHER);
-        for (int i = 0; i < Session.Players.Count(); i++) {
-          if (static_cast<HousesType>(ID) == Session.Players.at(i)->Player.ID) {
+        for (int i = 0; i < TheSession().Players.Count(); i++) {
+          if (static_cast<HousesType>(ID) ==
+              TheSession().Players.at(i)->Player.ID) {
             if (format != nullptr) {
-              message = absl::StrFormat(*format, Session.Players.at(i)->Name);
+              message =
+                  absl::StrFormat(*format, TheSession().Players.at(i)->Name);
             }
             break;
           }
         }
         TheScenario().bOtherProposesDraw = false;
         if (!message.empty()) {
-          Session.Messages.Add_Message(
+          TheSession().Messages.Add_Message(
               nullptr, 0, message.c_str(), PCOLOR_GOLD,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
               TheRules().MessageDelay * kTicksPerMinute);

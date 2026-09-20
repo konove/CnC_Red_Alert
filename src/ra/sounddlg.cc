@@ -321,7 +321,8 @@ void SoundControlsClass::Process() {
     /*
     **	Invoke game callback.
     */
-    if (Session.Type == GAME_NORMAL || Session.Type == GAME_SKIRMISH) {
+    if (TheSession().Type == GAME_NORMAL ||
+        TheSession().Type == GAME_SKIRMISH) {
       ServiceRealTime();
     } else {
       if (RunFrame()) {
@@ -392,7 +393,7 @@ void SoundControlsClass::Process() {
       */
       case ButtonKey(kSliderMusic):
         Options.Set_Score_Volume(fixed(music.Get_Value(), 256), true);
-        if (Session.Type != GAME_NORMAL) {
+        if (TheSession().Type != GAME_NORMAL) {
           Options.MultiScoreVolume = Options.ScoreVolume;
         }
         break;

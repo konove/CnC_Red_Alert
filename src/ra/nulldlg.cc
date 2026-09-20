@@ -229,7 +229,7 @@ bool Init_Null_Modem(SerialSettingsType* settings) {
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 void Shutdown_Modem() {
-  if ((!Session.Play) && (Session.Type == GAME_MODEM)) {
+  if ((!TheSession().Play) && (TheSession().Type == GAME_MODEM)) {
     TheNetwork().null_modem().Hangup_Modem();
   }
 
@@ -263,7 +263,7 @@ void Shutdown_Modem() {
 void Modem_Signoff() {
   EventClass event;
 
-  if (!Session.Play) {
+  if (!TheSession().Play) {
     /*
     ** Send a sign-off packet
     */
@@ -567,7 +567,7 @@ int Reconnect_Modem() {
   int status = 0;
   uint32_t modemstatus = 0;
 
-  switch (Session.ModemType) {
+  switch (TheSession().ModemType) {
     case MODEM_NULL_HOST:
     case MODEM_NULL_JOIN:
       status = Reconnect_Null_Modem();
@@ -738,7 +738,7 @@ static int Reconnect_Null_Modem() {
       base::FillBytes(base::ObjectBytes(SendPacket), 0,
                       sizeof(SerialPacketType));
       SendPacket.Command = SERIAL_CONNECT;
-      SendPacket.ID = static_cast<unsigned char>(Session.ColorIdx);
+      SendPacket.ID = static_cast<unsigned char>(TheSession().ColorIdx);
       TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                              sizeof(SendPacket), 0);
     }
@@ -753,7 +753,8 @@ static int Reconnect_Null_Modem() {
       if (ReceivePacket.Command == SERIAL_CONNECT) {
         // are we getting our own packets back??
 
-        if (ReceivePacket.ID == static_cast<unsigned char>(Session.ColorIdx)) {
+        if (ReceivePacket.ID ==
+            static_cast<unsigned char>(TheSession().ColorIdx)) {
           WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
           retval = 0;
           break;
@@ -766,7 +767,7 @@ static int Reconnect_Null_Modem() {
         base::FillBytes(base::ObjectBytes(SendPacket), 0,
                         sizeof(SerialPacketType));
         SendPacket.Command = SERIAL_CONNECT;
-        SendPacket.ID = static_cast<unsigned char>(Session.ColorIdx);
+        SendPacket.ID = static_cast<unsigned char>(TheSession().ColorIdx);
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                                sizeof(SendPacket), 1);
         starttime = SystemTicks();
@@ -814,7 +815,7 @@ static int Reconnect_Null_Modem() {
 void Destroy_Null_Connection(int id, int error) {
   char txt[80];
 
-  if (Session.NumPlayers == 1) {
+  if (TheSession().NumPlayers == 1) {
     return;
   }
 
@@ -849,7 +850,7 @@ void Destroy_Null_Connection(int id, int error) {
   }
 
   if (!std::string_view(txt).empty()) {
-    Session.Messages.Add_Message(
+    TheSession().Messages.Add_Message(
         nullptr, 0, txt,
         housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                  : housep->RemapColor,
@@ -860,10 +861,11 @@ void Destroy_Null_Connection(int id, int error) {
   /*
   ** Remove this player from the Players vector
   */
-  for (int i = 0; i < Session.Players.Count(); i++) {
-    if (absl::EqualsIgnoreCase(Session.Players.at(i)->Name, housep->IniName)) {
-      delete Session.Players.at(i);
-      Session.Players.Delete(Session.Players.at(i));
+  for (int i = 0; i < TheSession().Players.Count(); i++) {
+    if (absl::EqualsIgnoreCase(TheSession().Players.at(i)->Name,
+                               housep->IniName)) {
+      delete TheSession().Players.at(i);
+      TheSession().Players.Delete(TheSession().Players.at(i));
       break;
     }
   }
@@ -876,14 +878,14 @@ void Destroy_Null_Connection(int id, int error) {
   housep->IQ = TheRules().MaxIQ;
   port::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
 
-  Session.NumPlayers--;
+  TheSession().NumPlayers--;
 
   /*
   **	If we're the last player left, tell the user.
   */
-  if (Session.NumPlayers == 1) {
+  if (TheSession().NumPlayers == 1) {
     absl::SNPrintF(txt, sizeof(txt), "%s", Text_String(TXT_JUST_YOU_AND_ME));
-    Session.Messages.Add_Message(
+    TheSession().Messages.Add_Message(
         nullptr, 0, txt,
         housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                  : housep->RemapColor,
@@ -1011,9 +1013,10 @@ GameType Select_Serial_Dialog() {
   */
   Set_Logic_Page(TheScreen().visible_view());
 
-  if (Session.SerialDefaults.Port == 0 || Session.SerialDefaults.IRQ == -1 ||
-      Session.SerialDefaults.Baud == -1 ||
-      NullModemClass::Detect_Port(&Session.SerialDefaults) != PORT_VALID) {
+  if (TheSession().SerialDefaults.Port == 0 ||
+      TheSession().SerialDefaults.IRQ == -1 ||
+      TheSession().SerialDefaults.Baud == -1 ||
+      NullModemClass::Detect_Port(&TheSession().SerialDefaults) != PORT_VALID) {
     selectsettings = true;
   }
 
@@ -1175,10 +1178,14 @@ GameType Select_Serial_Dialog() {
             ** Remote-connect
             */
           } else if (Phone_Dialog()) {
-            if (Session.PhoneBook.at(Session.CurPhoneIdx)->Settings.Port == 0) {
-              settings = &Session.SerialDefaults;
+            if (TheSession()
+                    .PhoneBook.at(TheSession().CurPhoneIdx)
+                    ->Settings.Port == 0) {
+              settings = &TheSession().SerialDefaults;
             } else {
-              settings = &Session.PhoneBook.at(Session.CurPhoneIdx)->Settings;
+              settings = &TheSession()
+                              .PhoneBook.at(TheSession().CurPhoneIdx)
+                              ->Settings;
             }
 
             delete SerialPort;
@@ -1191,10 +1198,11 @@ GameType Select_Serial_Dialog() {
                 DialString = base::At(SessionClass::CallWaitStrings,
                                       settings->CallWaitStringIndex);
               }
-              DialString += Session.PhoneBook.at(Session.CurPhoneIdx)->Number;
+              DialString +=
+                  TheSession().PhoneBook.at(TheSession().CurPhoneIdx)->Number;
 
               if (Dial_Modem(settings, false)) {
-                Session.ModemType = MODEM_DIALER;
+                TheSession().ModemType = MODEM_DIALER;
                 if (Com_Scenario_Dialog()) {
                   retval = GAME_MODEM;
                   process = false;
@@ -1225,12 +1233,12 @@ GameType Select_Serial_Dialog() {
             /*
             ** Remote-connect
             */
-            settings = &Session.SerialDefaults;
+            settings = &TheSession().SerialDefaults;
             delete SerialPort;
             SerialPort = new WinModemClass;
             if (Init_Null_Modem(settings)) {
               if (Answer_Modem(settings, false)) {
-                Session.ModemType = MODEM_ANSWERER;
+                TheSession().ModemType = MODEM_ANSWERER;
                 if (Com_Show_Scenario_Dialog()) {
                   retval = GAME_MODEM;
                   process = false;
@@ -1258,11 +1266,12 @@ GameType Select_Serial_Dialog() {
           ** Remote-connect unless the settings still need selecting; save
           ** values if we're recording
           */
-          if (!selectsettings && Init_Null_Modem(&Session.SerialDefaults)) {
+          if (!selectsettings &&
+              Init_Null_Modem(&TheSession().SerialDefaults)) {
             const int rc = Test_Null_Modem();
             switch (rc) {
               case 1:
-                Session.ModemType = MODEM_NULL_HOST;
+                TheSession().ModemType = MODEM_NULL_HOST;
                 if (Com_Scenario_Dialog()) {
                   retval = GAME_NULL_MODEM;
                   process = false;
@@ -1270,7 +1279,7 @@ GameType Select_Serial_Dialog() {
                 break;
 
               case 2:
-                Session.ModemType = MODEM_NULL_JOIN;
+                TheSession().ModemType = MODEM_NULL_JOIN;
                 if (Com_Show_Scenario_Dialog()) {
                   retval = GAME_NULL_MODEM;
                   process = false;
@@ -1300,15 +1309,15 @@ GameType Select_Serial_Dialog() {
           break;
 
         case kButtonSettings:
-          if (Com_Settings_Dialog(&Session.SerialDefaults)) {
-            Session.Write_MultiPlayer_Settings();
+          if (Com_Settings_Dialog(&TheSession().SerialDefaults)) {
+            TheSession().Write_MultiPlayer_Settings();
 
             selectsettings = true;
 
-            if ((Session.SerialDefaults.Port != 0 &&
-                 Session.SerialDefaults.IRQ != -1 &&
-                 Session.SerialDefaults.Baud != -1) &&
-                (NullModemClass::Detect_Port(&Session.SerialDefaults) ==
+            if ((TheSession().SerialDefaults.Port != 0 &&
+                 TheSession().SerialDefaults.IRQ != -1 &&
+                 TheSession().SerialDefaults.Baud != -1) &&
+                (NullModemClass::Detect_Port(&TheSession().SerialDefaults) ==
                  PORT_VALID)) {
               selectsettings = false;
             }
@@ -2345,16 +2354,17 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                                absl::ascii_toupper);
         port::SafeCopy(item_buffer, initstrbuf);
 
-        Session.InitStrings.Add(item);
+        TheSession().InitStrings.Add(item);
         Build_Init_String_Listbox(&initstrlist, &initstr_edt, initstrbuf,
                                   &initstr_index);
         /*............................................................
         Set the current listbox index to the newly-added item.
         ............................................................*/
-        for (int i = 0; i < Session.InitStrings.Count(); i++) {
-          if (item == Session.InitStrings.at(i)) {
+        for (int i = 0; i < TheSession().InitStrings.Count(); i++) {
+          if (item == TheSession().InitStrings.at(i)) {
             initstr_index = i;
-            port::SafeCopy(initstrbuf, Session.InitStrings.at(initstr_index));
+            port::SafeCopy(initstrbuf,
+                           TheSession().InitStrings.at(initstr_index));
             initstr_edt.Set_Text(initstrbuf, INITSTRBUF_MAX);
             initstrlist.Set_Selected_Index(initstr_index);
           }
@@ -2370,8 +2380,8 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonDelete):
 
-        if (Session.InitStrings.Count() && initstr_index != -1) {
-          Session.InitStrings.Delete(initstr_index);
+        if (TheSession().InitStrings.Count() && initstr_index != -1) {
+          TheSession().InitStrings.Delete(initstr_index);
           Build_Init_String_Listbox(&initstrlist, &initstr_edt, initstrbuf,
                                     &initstr_index);
         }
@@ -2552,24 +2562,24 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   /*
   ** Now sort the init string list by name then number
   */
-  if (Session.InitStrings.Count() > 0) {
-    std::vector<char*> sorted(base::ToSize(Session.InitStrings.Count()));
-    for (int i = 0; i < Session.InitStrings.Count(); ++i) {
-      sorted.at(base::ToSize(i)) = Session.InitStrings.at(i);
+  if (TheSession().InitStrings.Count() > 0) {
+    std::vector<char*> sorted(base::ToSize(TheSession().InitStrings.Count()));
+    for (int i = 0; i < TheSession().InitStrings.Count(); ++i) {
+      sorted.at(base::ToSize(i)) = TheSession().InitStrings.at(i);
     }
     std::ranges::sort(sorted, [](const char* left, const char* right) {
       return std::string_view(left).compare(right) < 0;
     });
-    for (int i = 0; i < Session.InitStrings.Count(); ++i) {
-      Session.InitStrings.at(i) = sorted.at(base::ToSize(i));
+    for (int i = 0; i < TheSession().InitStrings.Count(); ++i) {
+      TheSession().InitStrings.at(i) = sorted.at(base::ToSize(i));
     }
   }
 
   /*........................................................................
   Build the list
   ........................................................................*/
-  for (int i = 0; i < Session.InitStrings.Count(); i++) {
-    list->Add_Item(Session.InitStrings.at(i));
+  for (int i = 0; i < TheSession().InitStrings.Count(); i++) {
+    list->Add_Item(TheSession().InitStrings.at(i));
   }
   list->Flag_To_Redraw();
 
@@ -2587,7 +2597,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   ........................................................................*/
   if (curidx > -1) {
     port::SafeCopy(std::span(buf).first(INITSTRBUF_MAX),
-                   Session.InitStrings.at(curidx));
+                   TheSession().InitStrings.at(curidx));
     edit->Set_Text(buf, INITSTRBUF_MAX);
     list->Set_Selected_Index(curidx);
   }
@@ -2802,7 +2812,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   int32_t theirresponsetime = 0;
   int packetlen = 0;
   static bool first_time = true;
-  bool gameoptions = Session.Type == GAME_SKIRMISH;
+  bool gameoptions = TheSession().Type == GAME_SKIRMISH;
   // event ptr
   int64_t msg_timeout = 1200;  // init to 20 seconds
 
@@ -2918,7 +2928,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   creditsgauge.Add_Tail(*commands);
   aiplayersgauge.Add_Tail(*commands);
   optionlist.Add_Tail(*commands);
-  if (Session.Type == GAME_SKIRMISH) {
+  if (TheSession().Type == GAME_SKIRMISH) {
     okbtn.Add_Tail(*commands);
   }
   cancelbtn.Add_Tail(*commands);
@@ -2939,15 +2949,15 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*........................................................................
   Init player name & house
   ........................................................................*/
-  Session.ColorIdx = Session.PrefColor;     // init my preferred color
-  port::SafeCopy(namebuf, Session.Handle);  // set my name
+  TheSession().ColorIdx = TheSession().PrefColor;  // init my preferred color
+  port::SafeCopy(namebuf, TheSession().Handle);    // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
   name_edt.Set_Color(&ThePalettes().color_remaps().at(
-      Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                             : Session.ColorIdx));
+      TheSession().ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                  : TheSession().ColorIdx));
 
 #ifdef OLDWAY
-  if (Session.House == HOUSE_GOOD) {
+  if (TheSession().House == HOUSE_GOOD) {
     gdibtn.Turn_On();
   } else {
     nodbtn.Turn_On();
@@ -2957,7 +2967,7 @@ int Com_Scenario_Dialog(bool skirmish) {
     housebtn.Add_Item(
         Text_String(HouseTypeClass::As_Reference(house).Full_Name()));
   }
-  housebtn.Set_Selected_Index(static_cast<int>(Session.House) -
+  housebtn.Set_Selected_Index(static_cast<int>(TheSession().House) -
                               static_cast<int>(HOUSE_USSR));
   housebtn.Set_Read_Only(true);
 #endif
@@ -2967,16 +2977,17 @@ int Com_Scenario_Dialog(bool skirmish) {
   ........................................................................*/
   Special.IsCaptureTheFlag = TheRules().IsMPCaptureTheFlag;
   if (first_time) {
-    Session.Options.Credits =
+    TheSession().Options.Credits =
         TheRules().MPDefaultMoney;  // init credits & credit buffer
-    Session.Options.Bases = TheRules().IsMPBasesOn;  // init scenario parameters
-    Session.Options.Tiberium = TheRules().IsMPTiberiumGrow;
-    Session.Options.Goodies = TheRules().IsMPCrates;
-    Session.Options.AIPlayers = 0;
+    TheSession().Options.Bases =
+        TheRules().IsMPBasesOn;  // init scenario parameters
+    TheSession().Options.Tiberium = TheRules().IsMPTiberiumGrow;
+    TheSession().Options.Goodies = TheRules().IsMPCrates;
+    TheSession().Options.AIPlayers = 0;
     Special.IsShadowGrow = TheRules().IsMPShadowGrow;
-    Session.Options.UnitCount =
-        (base::At(SessionClass::CountMax, Session.Options.Bases) +
-         base::At(SessionClass::CountMin, Session.Options.Bases)) /
+    TheSession().Options.UnitCount =
+        (base::At(SessionClass::CountMax, TheSession().Options.Bases) +
+         base::At(SessionClass::CountMin, TheSession().Options.Bases)) /
         2;
     first_time = false;
   }
@@ -2998,63 +3009,69 @@ int Com_Scenario_Dialog(bool skirmish) {
     optionlist.Add_Item(Text_String(TXT_CAPTURE_THE_FLAG));
   }
 
-  optionlist.Check_Item(0, Session.Options.Bases != 0);
-  optionlist.Check_Item(1, Session.Options.Tiberium != 0);
-  optionlist.Check_Item(2, Session.Options.Goodies != 0);
+  optionlist.Check_Item(0, TheSession().Options.Bases != 0);
+  optionlist.Check_Item(1, TheSession().Options.Tiberium != 0);
+  optionlist.Check_Item(2, TheSession().Options.Goodies != 0);
   optionlist.Check_Item(3, Special.IsShadowGrow);
   if (!skirmish) {
     optionlist.Check_Item(4, Special.IsCaptureTheFlag);
   }
 
   countgauge.Set_Maximum(
-      base::At(SessionClass::CountMax, Session.Options.Bases) -
-      base::At(SessionClass::CountMin, Session.Options.Bases));
-  countgauge.Set_Value(Session.Options.UnitCount -
-                       base::At(SessionClass::CountMin, Session.Options.Bases));
+      base::At(SessionClass::CountMax, TheSession().Options.Bases) -
+      base::At(SessionClass::CountMin, TheSession().Options.Bases));
+  countgauge.Set_Value(
+      TheSession().Options.UnitCount -
+      base::At(SessionClass::CountMin, TheSession().Options.Bases));
 
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
   levelgauge.Set_Value(TheWorld().build_level() - 1);
 
   creditsgauge.Set_Maximum(TheRules().MPMaxMoney);
-  creditsgauge.Set_Value(Session.Options.Credits);
+  creditsgauge.Set_Value(TheSession().Options.Credits);
 
   const int maxp = TheRules().MaxPlayers - 2;
   //	int maxp = Rule.MaxPlayers - (skirmish ? 1 : 2);
   aiplayersgauge.Set_Maximum(maxp);
 
   if (skirmish) {
-    Session.Options.AIPlayers = std::clamp(Session.Options.AIPlayers, 1, 7);
+    TheSession().Options.AIPlayers =
+        std::clamp(TheSession().Options.AIPlayers, 1, 7);
   } else {
-    Session.Options.AIPlayers = std::min(Session.Options.AIPlayers, 6);
+    TheSession().Options.AIPlayers =
+        std::min(TheSession().Options.AIPlayers, 6);
   }
 
-  aiplayersgauge.Set_Value(Session.Options.AIPlayers - (skirmish ? 1 : 0));
+  aiplayersgauge.Set_Value(TheSession().Options.AIPlayers - (skirmish ? 1 : 0));
 
   /*........................................................................
   Init other scenario parameters
   ........................................................................*/
-  TheRules().IsTGrowth = TheRules().IsTSpread = Session.Options.Tiberium != 0;
+  TheRules().IsTGrowth = TheRules().IsTSpread =
+      TheSession().Options.Tiberium != 0;
   Special.IsTGrowth = Special.IsTSpread = TheRules().IsTGrowth ? 1 : 0;
   transmit = true;
 
   /*........................................................................
   Clear the Players vector
   ........................................................................*/
-  Clear_Vector(&Session.Players);
+  Clear_Vector(&TheSession().Players);
 
   /*........................................................................
   Init scenario description list box
   ........................................................................*/
-  for (i = 0; i < Session.Scenarios.Count(); i++) {
+  for (i = 0; i < TheSession().Scenarios.Count(); i++) {
     int j = 0;
     for (j = 0; base::At(EngMisStr, base::ToSize(j)) != nullptr; j++) {
-      if (std::string_view(Session.Scenarios.at(i)->Description()) ==
+      if (std::string_view(TheSession().Scenarios.at(i)->Description()) ==
           base::At(EngMisStr, base::ToSize(j))) {
         // ajw Added Aftermath installed checks (before, it was
         // assumed). Add mission if it's available to us.
-        if ((!IsMissionCounterstrike(Session.Scenarios.at(i)->Get_Filename()) ||
+        if ((!IsMissionCounterstrike(
+                 TheSession().Scenarios.at(i)->Get_Filename()) ||
              Is_Counterstrike_Installed()) &&
-            (!IsMissionAftermath(Session.Scenarios.at(i)->Get_Filename()) ||
+            (!IsMissionAftermath(
+                 TheSession().Scenarios.at(i)->Get_Filename()) ||
              Is_Aftermath_Installed())) {
           scenariolist.Add_Item(base::At(
               EngMisStr, base::ToSize(config::kIsEnglish ? j : j + 1)));
@@ -3063,20 +3080,21 @@ int Com_Scenario_Dialog(bool skirmish) {
       }
     }
     if ((base::At(EngMisStr, base::ToSize(j)) == nullptr) &&
-        (!Session.Scenarios.at(i)->Get_Official() ||
-         ((!IsMissionCounterstrike(Session.Scenarios.at(i)->Get_Filename()) ||
+        (!TheSession().Scenarios.at(i)->Get_Official() ||
+         ((!IsMissionCounterstrike(
+               TheSession().Scenarios.at(i)->Get_Filename()) ||
            Is_Counterstrike_Installed()) &&
-          (!IsMissionAftermath(Session.Scenarios.at(i)->Get_Filename()) ||
+          (!IsMissionAftermath(TheSession().Scenarios.at(i)->Get_Filename()) ||
            Is_Aftermath_Installed()))))
     // ajw Added Aftermath installed checks (before, it was
     // assumed). Added officialness check. Add mission if
     // it's available to us.
     {
-      scenariolist.Add_Item(Session.Scenarios.at(i)->Description());
+      scenariolist.Add_Item(TheSession().Scenarios.at(i)->Description());
     }
   }
 
-  Session.Options.ScenarioIndex = 0;  // 1st scenario is selected
+  TheSession().Options.ScenarioIndex = 0;  // 1st scenario is selected
 
   /*........................................................................
   Init random-number generator, & create a seed to be used for all random
@@ -3088,13 +3106,13 @@ int Com_Scenario_Dialog(bool skirmish) {
   Init the message display system
   ........................................................................*/
   if (!skirmish) {
-    Session.Messages.Init(
+    TheSession().Messages.Init(
         d_message_x + 1, d_message_y + 1, 8, MAX_MESSAGE_LENGTH, d_txt6_h,
         d_send_x + 1, d_send_y + 1, 1, 20, MAX_MESSAGE_LENGTH - 5, d_message_w);
-    Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                  ? PCOLOR_REALLY_BLUE
-                                  : Session.ColorIdx,
-                              kTpfText, nullptr, '_', d_message_w);
+    TheSession().Messages.Add_Edit(TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
+                                       ? PCOLOR_REALLY_BLUE
+                                       : TheSession().ColorIdx,
+                                   kTpfText, nullptr, '_', d_message_w);
   }
 
   /*........................................................................
@@ -3109,9 +3127,9 @@ int Com_Scenario_Dialog(bool skirmish) {
   }
 
   if (!TheNetwork().modem_response().empty()) {
-    Session.Messages.Add_Message(nullptr, 0,
-                                 TheNetwork().modem_response().c_str(),
-                                 PCOLOR_BROWN, kTpfText, -1);
+    TheSession().Messages.Add_Message(nullptr, 0,
+                                      TheNetwork().modem_response().c_str(),
+                                      PCOLOR_BROWN, kTpfText, -1);
   }
 
   TheNetwork().modem_response().clear();
@@ -3154,7 +3172,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         } else {
           if (!name_edt.Has_Focus()) {
             display = std::max(display, REDRAW_MESSAGE);
-            Session.Messages.Set_Edit_Focus();
+            TheSession().Messages.Set_Edit_Focus();
           }
         }
       }
@@ -3258,7 +3276,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
             // ColorRemaps[static_cast<PlayerColorType>(i)].Box);
 
-            if (static_cast<PlayerColorType>(i) == Session.ColorIdx) {
+            if (static_cast<PlayerColorType>(i) == TheSession().ColorIdx) {
               Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
                        BOXSTYLE_DOWN, false);
             } else {
@@ -3275,7 +3293,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           Draw_Box(d_message_x, d_message_y, d_message_w, d_message_h,
                    BOXSTYLE_BOX, true);
           Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX, true);
-          Session.Messages.Draw();
+          TheSession().Messages.Draw();
         }
 
         //..................................................................
@@ -3287,12 +3305,12 @@ int Com_Scenario_Dialog(bool skirmish) {
           // d_aiplayers_y + d_aiplayers_h+2, BLACK);
 
           absl::SNPrintF(staticcountbuff, sizeof(staticcountbuff), "%d",
-                         Session.Options.UnitCount);
+                         TheSession().Options.UnitCount);
           staticcount.Set_Text(staticcountbuff);
           staticcount.Draw_Me();
           //				Fancy_Text_Print("%d ", d_count_x +
           // d_count_w + 3 * 2, d_count_y, scheme, BLACK, kTpfText,
-          // Session.Options.UnitCount);
+          // TheSession().Options.UnitCount);
 
           if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
             absl::SNPrintF(staticlevelbuff, sizeof(staticlevelbuff), "%d ",
@@ -3306,20 +3324,20 @@ int Com_Scenario_Dialog(bool skirmish) {
           // d_level_w + 3 * 2, d_level_y, scheme, BLACK, kTpfText);
 
           absl::SNPrintF(staticcreditsbuff, sizeof(staticcreditsbuff), "%d",
-                         Session.Options.Credits);
+                         TheSession().Options.Credits);
           staticcredits.Set_Text(staticcreditsbuff);
           staticcredits.Draw_Me();
           //				Fancy_Text_Print("%d", d_credits_x +
           // d_credits_w + 2 * 2, d_credits_y, scheme, BLACK, kTpfText,
-          // Session.Options.Credits);
+          // TheSession().Options.Credits);
 
           absl::SNPrintF(staticaibuff, sizeof(staticaibuff), "%d",
-                         Session.Options.AIPlayers);
+                         TheSession().Options.AIPlayers);
           staticai.Set_Text(staticaibuff);
           staticai.Draw_Me();
           //				Fancy_Text_Print("%d", d_aiplayers_x +
           // d_aiplayers_w + 2*2, d_aiplayers_y, scheme, BLACK,
-          // kTpfText, Session.Options.AIPlayers);
+          // kTpfText, TheSession().Options.AIPlayers);
         }
 
         /*
@@ -3337,7 +3355,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       /*
       ........................... Get user input ............................
       */
-      messages_have_focus = Session.Messages.Has_Edit_Focus();
+      messages_have_focus = TheSession().Messages.Has_Edit_Focus();
       const bool droplist_is_dropped = housebtn.IsDropped;
       input = commands->Input();
 
@@ -3347,7 +3365,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       */
       if ((!skirmish) && messages_have_focus) {
         if (!name_edt.Has_Focus()) {
-          Session.Messages.Set_Edit_Focus();
+          TheSession().Messages.Set_Edit_Focus();
         } else {
           messages_have_focus = false;
           display = REDRAW_MESSAGE;
@@ -3378,19 +3396,21 @@ int Com_Scenario_Dialog(bool skirmish) {
               Keyboard->MouseQX < cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
               Keyboard->MouseQY > d_color_y &&
               Keyboard->MouseQY < d_color_y + d_color_h) {
-            Session.PrefColor = static_cast<PlayerColorType>(
+            TheSession().PrefColor = static_cast<PlayerColorType>(
                 (Keyboard->MouseQX - cbox_x[0]) / d_color_w);
-            Session.ColorIdx = Session.PrefColor;
+            TheSession().ColorIdx = TheSession().PrefColor;
             display = std::max(display, REDRAW_COLORS);
 
             name_edt.Set_Color(&ThePalettes().color_remaps().at(
-                Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                       : Session.ColorIdx));
+                TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
+                    ? PCOLOR_REALLY_BLUE
+                    : TheSession().ColorIdx));
             name_edt.Flag_To_Redraw();
-            Session.Messages.Set_Edit_Color(
-                Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                       : Session.ColorIdx);
-            port::SafeCopy(Session.Handle, namebuf);
+            TheSession().Messages.Set_Edit_Color(TheSession().ColorIdx ==
+                                                         PCOLOR_DIALOG_BLUE
+                                                     ? PCOLOR_REALLY_BLUE
+                                                     : TheSession().ColorIdx);
+            port::SafeCopy(TheSession().Handle, namebuf);
             transmit = true;
             changed = true;
             if (housebtn.IsDropped) {
@@ -3408,7 +3428,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             housebtn.Collapse();
             display = REDRAW_BACKGROUND;
           }
-          port::SafeCopy(Session.Handle, namebuf);
+          port::SafeCopy(TheSession().Handle, namebuf);
           transmit = true;
           changed = true;
           break;
@@ -3418,25 +3438,25 @@ int Com_Scenario_Dialog(bool skirmish) {
         House Buttons: set the player's desired House
         ------------------------------------------------------------------*/
         case ButtonKey(kButtonGdi):
-          Session.House = HOUSE_GOOD;
+          TheSession().House = HOUSE_GOOD;
           gdibtn.Turn_On();
           nodbtn.Turn_Off();
-          port::SafeCopy(Session.Handle, namebuf);
+          port::SafeCopy(TheSession().Handle, namebuf);
           transmit = true;
           break;
 
         case ButtonKey(kButtonNod):
-          Session.House = HOUSE_BAD;
+          TheSession().House = HOUSE_BAD;
           gdibtn.Turn_Off();
           nodbtn.Turn_On();
-          port::SafeCopy(Session.Handle, namebuf);
+          port::SafeCopy(TheSession().Handle, namebuf);
           transmit = true;
           break;
 #else
         case ButtonKey(kButtonHouse):
-          Session.House = static_cast<HousesType>(housebtn.Current_Index() +
-                                                  static_cast<int>(HOUSE_USSR));
-          port::SafeCopy(Session.Handle, namebuf);
+          TheSession().House = static_cast<HousesType>(
+              housebtn.Current_Index() + static_cast<int>(HOUSE_USSR));
+          port::SafeCopy(TheSession().Handle, namebuf);
           display = REDRAW_BACKGROUND;
           transmit = true;
           break;
@@ -3451,9 +3471,10 @@ int Com_Scenario_Dialog(bool skirmish) {
             housebtn.Collapse();
             display = REDRAW_BACKGROUND;
           }
-          if (scenariolist.Current_Index() != Session.Options.ScenarioIndex) {
-            Session.Options.ScenarioIndex = scenariolist.Current_Index();
-            port::SafeCopy(Session.Handle, namebuf);
+          if (scenariolist.Current_Index() !=
+              TheSession().Options.ScenarioIndex) {
+            TheSession().Options.ScenarioIndex = scenariolist.Current_Index();
+            port::SafeCopy(TheSession().Handle, namebuf);
             transmit = true;
           }
           break;
@@ -3462,9 +3483,9 @@ int Com_Scenario_Dialog(bool skirmish) {
         User adjusts max # units
         ------------------------------------------------------------------*/
         case ButtonKey(kButtonCount):
-          Session.Options.UnitCount =
+          TheSession().Options.UnitCount =
               countgauge.Get_Value() +
-              base::At(SessionClass::CountMin, Session.Options.Bases);
+              base::At(SessionClass::CountMin, TheSession().Options.Bases);
           display = std::max(display, REDRAW_PARMS);
           if (housebtn.IsDropped) {
             housebtn.Collapse();
@@ -3491,8 +3512,9 @@ int Com_Scenario_Dialog(bool skirmish) {
         User adjusts max # units
         ------------------------------------------------------------------*/
         case ButtonKey(kButtonCredits):
-          Session.Options.Credits = creditsgauge.Get_Value();
-          Session.Options.Credits = (Session.Options.Credits + 250) / 500 * 500;
+          TheSession().Options.Credits = creditsgauge.Get_Value();
+          TheSession().Options.Credits =
+              (TheSession().Options.Credits + 250) / 500 * 500;
           display = std::max(display, REDRAW_PARMS);
           if (housebtn.IsDropped) {
             housebtn.Collapse();
@@ -3505,21 +3527,22 @@ int Com_Scenario_Dialog(bool skirmish) {
         //	User adjusts # of AI players
         //..................................................................
         case ButtonKey(kButtonAiplayers): {
-          Session.Options.AIPlayers = aiplayersgauge.Get_Value();
+          TheSession().Options.AIPlayers = aiplayersgauge.Get_Value();
           int humans = 2;  // Two humans.
           if (skirmish) {
-            Session.Options.AIPlayers += 1;  // Always one forced AI player.
+            TheSession().Options.AIPlayers +=
+                1;                           // Always one forced AI player.
             humans = 1;                      // One human.
                                              //						if
-            //(Session.Options.AIPlayers == 0) {
-            // Session.Options.AIPlayers = 1;
+            //(TheSession().Options.AIPlayers == 0) {
+            // TheSession().Options.AIPlayers = 1;
             // aiplayersgauge.Set_Value(0);
             //						}
           }
-          if (Session.Options.AIPlayers + humans >=
+          if (TheSession().Options.AIPlayers + humans >=
               TheRules().MaxPlayers) {  // if it's pegged, max it out
-            Session.Options.AIPlayers = TheRules().MaxPlayers - humans;
-            aiplayersgauge.Set_Value(Session.Options.AIPlayers -
+            TheSession().Options.AIPlayers = TheRules().MaxPlayers - humans;
+            aiplayersgauge.Set_Value(TheSession().Options.AIPlayers -
                                      (skirmish ? 1 : 0));
           }
           transmit = true;
@@ -3546,36 +3569,44 @@ int Com_Scenario_Dialog(bool skirmish) {
               !Special.IsCaptureTheFlag) {
             optionlist.Check_Item(0, true);
           }
-          if ((Session.Options.Bases != 0) != optionlist.Is_Checked(0)) {
-            Session.Options.Bases = optionlist.Is_Checked(0) ? 1 : 0;
-            if (Session.Options.Bases) {
-              Session.Options.UnitCount = static_cast<int>(Rescale(
-                static_cast<uint32_t>(Session.Options.UnitCount - SessionClass::CountMin[0]),
-                static_cast<uint32_t>(SessionClass::CountMax[0] - SessionClass::CountMin[0]),
-                static_cast<uint32_t>(SessionClass::CountMax[1] - SessionClass::CountMin[1])));
+          if ((TheSession().Options.Bases != 0) != optionlist.Is_Checked(0)) {
+            TheSession().Options.Bases = optionlist.Is_Checked(0) ? 1 : 0;
+            if (TheSession().Options.Bases) {
+              TheSession().Options.UnitCount = static_cast<int>(
+                  Rescale(static_cast<uint32_t>(TheSession().Options.UnitCount -
+                                                SessionClass::CountMin[0]),
+                          static_cast<uint32_t>(SessionClass::CountMax[0] -
+                                                SessionClass::CountMin[0]),
+                          static_cast<uint32_t>(SessionClass::CountMax[1] -
+                                                SessionClass::CountMin[1])));
             } else {
               if (!skirmish) {
                 optionlist.Check_Item(4, false);
               }
-              Session.Options.UnitCount = static_cast<int>(Rescale(
-                static_cast<uint32_t>(Session.Options.UnitCount - SessionClass::CountMin[1]),
-                static_cast<uint32_t>(SessionClass::CountMax[1] - SessionClass::CountMin[1]),
-                static_cast<uint32_t>(SessionClass::CountMax[0] - SessionClass::CountMin[0])));
+              TheSession().Options.UnitCount = static_cast<int>(
+                  Rescale(static_cast<uint32_t>(TheSession().Options.UnitCount -
+                                                SessionClass::CountMin[1]),
+                          static_cast<uint32_t>(SessionClass::CountMax[1] -
+                                                SessionClass::CountMin[1]),
+                          static_cast<uint32_t>(SessionClass::CountMax[0] -
+                                                SessionClass::CountMin[0])));
             }
             countgauge.Set_Maximum(
-                base::At(SessionClass::CountMax, Session.Options.Bases) -
-                base::At(SessionClass::CountMin, Session.Options.Bases));
+                base::At(SessionClass::CountMax, TheSession().Options.Bases) -
+                base::At(SessionClass::CountMin, TheSession().Options.Bases));
             countgauge.Set_Value(
-                Session.Options.UnitCount -
-                base::At(SessionClass::CountMin, Session.Options.Bases));
+                TheSession().Options.UnitCount -
+                base::At(SessionClass::CountMin, TheSession().Options.Bases));
           }
-          Session.Options.Tiberium = optionlist.Is_Checked(1) ? 1 : 0;
-          Special.IsTGrowth = static_cast<unsigned>(Session.Options.Tiberium);
-          TheRules().IsTGrowth = Session.Options.Tiberium != 0;
-          Special.IsTSpread = static_cast<unsigned>(Session.Options.Tiberium);
-          TheRules().IsTSpread = Session.Options.Tiberium != 0;
+          TheSession().Options.Tiberium = optionlist.Is_Checked(1) ? 1 : 0;
+          Special.IsTGrowth =
+              static_cast<unsigned>(TheSession().Options.Tiberium);
+          TheRules().IsTGrowth = TheSession().Options.Tiberium != 0;
+          Special.IsTSpread =
+              static_cast<unsigned>(TheSession().Options.Tiberium);
+          TheRules().IsTSpread = TheSession().Options.Tiberium != 0;
 
-          Session.Options.Goodies = optionlist.Is_Checked(2) ? 1 : 0;
+          TheSession().Options.Goodies = optionlist.Is_Checked(2) ? 1 : 0;
           Special.IsShadowGrow = optionlist.Is_Checked(3);
           if (!skirmish) {
             Special.IsCaptureTheFlag = optionlist.Is_Checked(4);
@@ -3636,14 +3667,14 @@ int Com_Scenario_Dialog(bool skirmish) {
         ------------------------------------------------------------------*/
         default:
           if (!skirmish) {
-            if (Session.Messages.Manage()) {
+            if (TheSession().Messages.Manage()) {
               display = std::max(display, REDRAW_MESSAGE);
             }
 
             /*...............................................................
             Service keyboard input for any message being edited.
             ...............................................................*/
-            i = Session.Messages.Input(input);
+            i = TheSession().Messages.Input(input);
 
             /*...............................................................
             If 'Input' returned 1, it means refresh the message display; 2
@@ -3655,7 +3686,7 @@ int Com_Scenario_Dialog(bool skirmish) {
               Hide_Mouse();
               Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
                        true);
-              Session.Messages.Draw();
+              TheSession().Messages.Draw();
               Show_Mouse();
             } else if (i == 3 || i == 4) {
               /*...............................................................
@@ -3665,14 +3696,14 @@ int Com_Scenario_Dialog(bool skirmish) {
                               sizeof(SendPacket));
               SendPacket.Command = SERIAL_MESSAGE;
               port::SafeCopy(SendPacket.Name, namebuf);
-              SendPacket.ID = static_cast<unsigned char>(Session.ColorIdx);
+              SendPacket.ID = static_cast<unsigned char>(TheSession().ColorIdx);
               if (i == 3) {
                 port::SafeCopy(SendPacket.Message.Message,
-                               Session.Messages.Get_Edit_Buf());
+                               TheSession().Messages.Get_Edit_Buf());
               } else {
                 port::SafeCopy(SendPacket.Message.Message,
-                               Session.Messages.Get_Overflow_Buf());
-                Session.Messages.Clear_Overflow_Buf();
+                               TheSession().Messages.Get_Overflow_Buf());
+                TheSession().Messages.Clear_Overflow_Buf();
               }
 
               /*..................................................................
@@ -3686,15 +3717,17 @@ int Com_Scenario_Dialog(bool skirmish) {
               /*..................................................................
               Add the message to our own screen
               ..................................................................*/
-              Session.Messages.Add_Message(
+              TheSession().Messages.Add_Message(
                   SendPacket.Name, SendPacket.ID, SendPacket.Message.Message,
-                  Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                         : Session.ColorIdx,
+                  TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
+                      ? PCOLOR_REALLY_BLUE
+                      : TheSession().ColorIdx,
                   kTpfText, -1);
-              Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                            ? PCOLOR_REALLY_BLUE
-                                            : Session.ColorIdx,
-                                        kTpfText, nullptr, '_', d_message_w);
+              TheSession().Messages.Add_Edit(
+                  TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
+                      ? PCOLOR_REALLY_BLUE
+                      : TheSession().ColorIdx,
+                  kTpfText, nullptr, '_', d_message_w);
 
               display = std::max(display, REDRAW_MESSAGE);
             } /* end of send message */
@@ -3705,8 +3738,8 @@ int Com_Scenario_Dialog(bool skirmish) {
       /*---------------------------------------------------------------------
       Detect editing of the name buffer, transmit new values to players
       ---------------------------------------------------------------------*/
-      if (std::string_view(namebuf) != Session.Handle) {
-        port::SafeCopy(Session.Handle, namebuf);
+      if (std::string_view(namebuf) != TheSession().Handle) {
+        port::SafeCopy(TheSession().Handle, namebuf);
         transmit = true;
         changed = true;
       }
@@ -3729,48 +3762,54 @@ int Com_Scenario_Dialog(bool skirmish) {
             TheRules().rule_ini().Get_Unique_ID();
         SendPacket.ScenarioInfo.MinVersion = VersionClass::Min_Version();
         SendPacket.ScenarioInfo.MaxVersion = VersionClass::Max_Version();
-        SendPacket.ScenarioInfo.House = Session.House;
-        SendPacket.ScenarioInfo.Color = Session.ColorIdx;
-        SendPacket.ScenarioInfo.Credits = Session.Options.Credits;
+        SendPacket.ScenarioInfo.House = TheSession().House;
+        SendPacket.ScenarioInfo.Color = TheSession().ColorIdx;
+        SendPacket.ScenarioInfo.Credits = TheSession().Options.Credits;
         SendPacket.ScenarioInfo.IsBases =
-            static_cast<unsigned int>(Session.Options.Bases);
+            static_cast<unsigned int>(TheSession().Options.Bases);
         SendPacket.ScenarioInfo.IsTiberium =
-            static_cast<unsigned int>(Session.Options.Tiberium);
+            static_cast<unsigned int>(TheSession().Options.Tiberium);
         SendPacket.ScenarioInfo.IsGoodies =
-            static_cast<unsigned int>(Session.Options.Goodies);
+            static_cast<unsigned int>(TheSession().Options.Goodies);
         SendPacket.ScenarioInfo.AIPlayers =
-            static_cast<unsigned char>(Session.Options.AIPlayers);
+            static_cast<unsigned char>(TheSession().Options.AIPlayers);
         SendPacket.ScenarioInfo.BuildLevel =
             static_cast<unsigned char>(TheWorld().build_level());
         SendPacket.ScenarioInfo.UnitCount =
-            static_cast<unsigned char>(Session.Options.UnitCount);
+            static_cast<unsigned char>(TheSession().Options.UnitCount);
         SendPacket.ScenarioInfo.Seed = TheWorld().seed();
         SendPacket.ScenarioInfo.Special = Special;
         SendPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
-        SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
+        SendPacket.ID = static_cast<unsigned char>(TheSession().ModemType);
 
         /*
         ** Set up the scenario info so the remote player can match the scenario
         * on his machine
         ** or request a download if it doesnt exist
         */
-        port::SafeCopy(
-            SendPacket.ScenarioInfo.Scenario,
-            Session.Scenarios.at(Session.Options.ScenarioIndex)->Description());
-        GameFile file(Session.Scenarios.at(Session.Options.ScenarioIndex)
+        port::SafeCopy(SendPacket.ScenarioInfo.Scenario,
+                       TheSession()
+                           .Scenarios.at(TheSession().Options.ScenarioIndex)
+                           ->Description());
+        GameFile file(TheSession()
+                          .Scenarios.at(TheSession().Options.ScenarioIndex)
                           ->Get_Filename());
 
         SendPacket.ScenarioInfo.FileLength =
             static_cast<unsigned int>(file.Size());
 
         port::SafeCopy(SendPacket.ScenarioInfo.ShortFileName,
-                       Session.Scenarios.at(Session.Options.ScenarioIndex)
+                       TheSession()
+                           .Scenarios.at(TheSession().Options.ScenarioIndex)
                            ->Get_Filename());
-        port::SafeCopy(
-            SendPacket.ScenarioInfo.FileDigest,
-            Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Digest());
+        port::SafeCopy(SendPacket.ScenarioInfo.FileDigest,
+                       TheSession()
+                           .Scenarios.at(TheSession().Options.ScenarioIndex)
+                           ->Get_Digest());
         SendPacket.ScenarioInfo.OfficialScenario =
-            Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Official();
+            TheSession()
+                .Scenarios.at(TheSession().Options.ScenarioIndex)
+                ->Get_Official();
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                                sizeof(SendPacket), 1);
 
@@ -3782,7 +3821,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         //..................................................................
         if (playerlist.Count()) {
 #ifdef OLDWAY
-          if (Session.House == HOUSE_GOOD) {
+          if (TheSession().House == HOUSE_GOOD) {
             sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
           } else {
             sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
@@ -3790,13 +3829,14 @@ int Com_Scenario_Dialog(bool skirmish) {
 #else   // OLDWAY
           absl::SNPrintF(
               item, sizeof(item), "%s\t%s", namebuf,
-              Text_String(
-                  HouseTypeClass::As_Reference(Session.House).Full_Name()));
+              Text_String(HouseTypeClass::As_Reference(TheSession().House)
+                              .Full_Name()));
 #endif  // OLDWAY
           playerlist.Set_Item(0, item);
           playerlist.Colors.at(0) = &ThePalettes().color_remaps().at(
-              Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                     : Session.ColorIdx);
+              TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
+                  ? PCOLOR_REALLY_BLUE
+                  : TheSession().ColorIdx);
           playerlist.Flag_To_Redraw();
         }
 
@@ -3814,7 +3854,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         SendPacket.Command = SERIAL_TIMING;
         SendPacket.ScenarioInfo.ResponseTime =
             TheNetwork().null_modem().Response_Time();
-        SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
+        SendPacket.ID = static_cast<unsigned char>(TheSession().ModemType);
 
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                                sizeof(SendPacket), 0);
@@ -3835,7 +3875,8 @@ int Com_Scenario_Dialog(bool skirmish) {
         if (ReceivePacket.Command >= SERIAL_CONNECT &&
             ReceivePacket.Command < SERIAL_LAST_COMMAND &&
             ReceivePacket.Command != SERIAL_MESSAGE &&
-            ReceivePacket.ID == static_cast<unsigned char>(Session.ModemType)) {
+            ReceivePacket.ID ==
+                static_cast<unsigned char>(TheSession().ModemType)) {
           WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
 
           // to skip the other system not responding msg
@@ -3939,7 +3980,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                   // Otherwise, 'version' is the highest version we have in
                   // common; look up the protocol that goes with this version.
                   // ........................................................
-                  Session.CommProtocol =
+                  TheSession().CommProtocol =
                       VersionClass::Version_Protocol(version);
                 }
               }
@@ -3951,8 +3992,8 @@ int Com_Scenario_Dialog(bool skirmish) {
                 //......................................................
                 // Add two strings to the player list
                 //......................................................
-                playerlist.Add_Item(
-                    "", &ThePalettes().color_remaps().at(Session.ColorIdx));
+                playerlist.Add_Item("", &ThePalettes().color_remaps().at(
+                                            TheSession().ColorIdx));
                 playerlist.Add_Item(
                     "", &ThePalettes().color_remaps().at(TheirColor));
               }
@@ -3963,7 +4004,7 @@ int Com_Scenario_Dialog(bool skirmish) {
               // options packet.
               //.........................................................
 #ifdef OLDWAY
-              if (Session.House == HOUSE_GOOD) {
+              if (TheSession().House == HOUSE_GOOD) {
                 sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
               } else {
                 sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
@@ -3971,13 +4012,14 @@ int Com_Scenario_Dialog(bool skirmish) {
 #else   // OLDWAY
               absl::SNPrintF(
                   item, sizeof(item), "%s\t%s", namebuf,
-                  Text_String(
-                      HouseTypeClass::As_Reference(Session.House).Full_Name()));
+                  Text_String(HouseTypeClass::As_Reference(TheSession().House)
+                                  .Full_Name()));
 #endif  // OLDWAY
               playerlist.Set_Item(0, item);
               playerlist.Colors.at(0) = &ThePalettes().color_remaps().at(
-                  Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                         : Session.ColorIdx);
+                  TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
+                      ? PCOLOR_REALLY_BLUE
+                      : TheSession().ColorIdx);
 
 #ifdef OLDWAY
               if (TheirHouse == HOUSE_GOOD) {
@@ -4009,7 +4051,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             Incoming message: add to our list
             ..................................................................*/
             case SERIAL_MESSAGE:
-              Session.Messages.Add_Message(
+              TheSession().Messages.Add_Message(
                   ReceivePacket.Name,
                   static_cast<int>(
                       static_cast<PlayerColorType>(ReceivePacket.ID) ==
@@ -4085,12 +4127,13 @@ int Com_Scenario_Dialog(bool skirmish) {
     Prepare to load the scenario
     ------------------------------------------------------------------------*/
     if (rc) {
-      Session.NumPlayers = skirmish ? 1 : 2;
+      TheSession().NumPlayers = skirmish ? 1 : 2;
 
-      TheScenario().Scenario = Session.Options.ScenarioIndex;
-      port::SafeCopy(
-          TheScenario().ScenarioName,
-          Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Filename());
+      TheScenario().Scenario = TheSession().Options.ScenarioIndex;
+      port::SafeCopy(TheScenario().ScenarioName,
+                     TheSession()
+                         .Scenarios.at(TheSession().Options.ScenarioIndex)
+                         ->Get_Filename());
 
       /*.....................................................................
       Add both players to the Players vector; the local system is always
@@ -4098,10 +4141,10 @@ int Com_Scenario_Dialog(bool skirmish) {
       .....................................................................*/
       who = new NodeNameType;
       port::SafeCopy(who->Name, namebuf);
-      who->Player.House = Session.House;
-      who->Player.Color = Session.ColorIdx;
+      who->Player.House = TheSession().House;
+      who->Player.Color = TheSession().ColorIdx;
       who->Player.ProcessTime = -1;
-      Session.Players.Add(who);
+      TheSession().Players.Add(who);
 
       /*
       **	Fetch the difficulty setting when in skirmish mode.
@@ -4161,7 +4204,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         who->Player.House = TheirHouse;
         who->Player.Color = TheirColor;
         who->Player.ProcessTime = -1;
-        Session.Players.Add(who);
+        TheSession().Players.Add(who);
       }
 
       /*.....................................................................
@@ -4188,18 +4231,18 @@ int Com_Scenario_Dialog(bool skirmish) {
       // a packet
       //
       if (!skirmish) {
-        if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-          Session.MaxAhead = static_cast<int>(std::max<int64_t>(
+        if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
+          TheSession().MaxAhead = static_cast<int>(std::max<int64_t>(
               ((SendPacket.ScenarioInfo.ResponseTime / 8) +
-               (Session.FrameSendRate - 1)) /
-                  Session.FrameSendRate * Session.FrameSendRate,
-              Session.FrameSendRate * 2));
+               (TheSession().FrameSendRate - 1)) /
+                  TheSession().FrameSendRate * TheSession().FrameSendRate,
+              TheSession().FrameSendRate * 2));
         } else {
-          Session.MaxAhead = std::max(
+          TheSession().MaxAhead = std::max(
               SendPacket.ScenarioInfo.ResponseTime / 8, MODEM_MIN_MAX_AHEAD);
         }
       }
-      SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
+      SendPacket.ID = static_cast<unsigned char>(TheSession().ModemType);
 
       if (!skirmish) {
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
@@ -4224,7 +4267,8 @@ int Com_Scenario_Dialog(bool skirmish) {
           if (TheNetwork().null_modem().Get_Message(
                   base::ObjectBytes(ReceivePacket), &packetlen) > 0) {
             if (ReceivePacket.Command == SERIAL_READY_TO_GO) {
-              if (Session.Scenarios.at(Session.Options.ScenarioIndex)
+              if (TheSession()
+                      .Scenarios.at(TheSession().Options.ScenarioIndex)
                       ->Get_Official() &&
                   (!Force_Scenario_Available(TheScenario().ScenarioName))) {
                 EmergencyExit(EXIT_FAILURE);
@@ -4248,7 +4292,8 @@ int Com_Scenario_Dialog(bool skirmish) {
             if (ReceivePacket.Command == SERIAL_REQ_SCENARIO) {
               WWDebugString("RA95 - About to call 'Send_Remote_File'.\n");
 
-              if (Session.Scenarios.at(Session.Options.ScenarioIndex)
+              if (TheSession()
+                      .Scenarios.at(TheSession().Options.ScenarioIndex)
                       ->Get_Official() &&
                   (!Force_Scenario_Available(TheScenario().ScenarioName))) {
                 EmergencyExit(EXIT_FAILURE);
@@ -4278,8 +4323,9 @@ int Com_Scenario_Dialog(bool skirmish) {
       {
         base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
         SendPacket.Command = SERIAL_SIGN_OFF;
-        SendPacket.ScenarioInfo.Color = Session.ColorIdx;  // use Color for ID
-        SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
+        SendPacket.ScenarioInfo.Color =
+            TheSession().ColorIdx;  // use Color for ID
+        SendPacket.ID = static_cast<unsigned char>(TheSession().ModemType);
         TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                                sizeof(SendPacket), 1);
 
@@ -4291,7 +4337,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                    base::ObjectBytes(ReceivePacket), &packetlen) > 0) &&
               (ReceivePacket.Command == SERIAL_SIGN_OFF &&
                ReceivePacket.ID ==
-                   static_cast<unsigned char>(Session.ModemType)))
+                   static_cast<unsigned char>(TheSession().ModemType)))
           // are we getting our own packets back??
 
           {
@@ -4324,7 +4370,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   /*------------------------------------------------------------------------
   Remove the chat edit box
   ------------------------------------------------------------------------*/
-  Session.Messages.Remove_Edit();
+  TheSession().Messages.Remove_Edit();
 
   /*------------------------------------------------------------------------
   Restore screen
@@ -4337,7 +4383,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   Save any changes made to our options
   ------------------------------------------------------------------------*/
   if (changed) {
-    Session.Write_MultiPlayer_Settings();
+    TheSession().Write_MultiPlayer_Settings();
   }
 
   if (load_game && !skirmish) {
@@ -4385,13 +4431,13 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
   ** Scan through the scenario list looking for scenarios with matching
   *descriptions.
   */
-  for (int index = 0; index < Session.Scenarios.Count(); index++) {
+  for (int index = 0; index < TheSession().Scenarios.Count(); index++) {
     // debugprint( "Checking against scenario: %s\n",
-    // Session.Scenarios[index]->Description());
-    if (std::string_view(Session.Scenarios.at(index)->Description()) ==
+    // TheSession().Scenarios[index]->Description());
+    if (std::string_view(TheSession().Scenarios.at(index)->Description()) ==
         description) {
       // debugprint("found matching description.\n");
-      GameFile file(Session.Scenarios.at(index)->Get_Filename());
+      GameFile file(TheSession().Scenarios.at(index)->Get_Filename());
 
       /*
       ** Possible rejection on the basis of availability.
@@ -4424,11 +4470,12 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
         ** If this is an aftermath scenario then ignore the digest and return
         *success.
         */
-        if (IsMissionAftermath(Session.Scenarios.at(index)->Get_Filename())) {
+        if (IsMissionAftermath(
+                TheSession().Scenarios.at(index)->Get_Filename())) {
           // debugprint("a 1match!\n");
           port::SafeCopy(
               std::span(filename).first(port::kMaxFname + port::kMaxExt + 1),
-              Session.Scenarios.at(index)->Get_Filename());
+              TheSession().Scenarios.at(index)->Get_Filename());
           return true;
         }
 
@@ -4439,14 +4486,14 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
           // debugprint("a match!\n");
           port::SafeCopy(
               std::span(filename).first(port::kMaxFname + port::kMaxExt + 1),
-              Session.Scenarios.at(index)->Get_Filename());
+              TheSession().Scenarios.at(index)->Get_Filename());
           return true;
         }
       }
 
       //			else
       //				debugprint("file not available '%s'.\n",
-      // Session.Scenarios[index]->Get_Filename());
+      // TheSession().Scenarios[index]->Get_Filename());
     }
   }
   // debugprint("failed match.\n");
@@ -4676,7 +4723,7 @@ int Com_Show_Scenario_Dialog() {
   char item[MPLAYER_NAME_MAX + 64];  // for filling in lists
   const char* p = nullptr;
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
-  Session.Options.ScenarioDescription[0] =
+  TheSession().Options.ScenarioDescription[0] =
       0;  // Flag that we dont know the scenario name yet
   bool messages_have_focus = true;
   bool ready_packet_was_sent = false;
@@ -4770,12 +4817,12 @@ int Com_Show_Scenario_Dialog() {
   //........................................................................
   // Name & Color
   //........................................................................
-  Session.ColorIdx = Session.PrefColor;     // init my preferred color
-  port::SafeCopy(namebuf, Session.Handle);  // set my name
+  TheSession().ColorIdx = TheSession().PrefColor;  // init my preferred color
+  port::SafeCopy(namebuf, TheSession().Handle);    // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
   name_edt.Set_Color(&ThePalettes().color_remaps().at(
-      Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                             : Session.ColorIdx));
+      TheSession().ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
+                                                  : TheSession().ColorIdx));
 
   //........................................................................
   // List boxes
@@ -4792,9 +4839,9 @@ int Com_Show_Scenario_Dialog() {
   optionlist.Add_Item(Text_String(TXT_CAPTURE_THE_FLAG));
   optionlist.Add_Item(Text_String(TXT_SHADOW_REGROWS));
 
-  optionlist.Check_Item(0, Session.Options.Bases != 0);
-  optionlist.Check_Item(1, Session.Options.Tiberium != 0);
-  optionlist.Check_Item(2, Session.Options.Goodies != 0);
+  optionlist.Check_Item(0, TheSession().Options.Bases != 0);
+  optionlist.Check_Item(1, TheSession().Options.Tiberium != 0);
+  optionlist.Check_Item(2, TheSession().Options.Goodies != 0);
   optionlist.Check_Item(3, Special.IsCaptureTheFlag);
   optionlist.Check_Item(4, Special.IsShadowGrow);
 
@@ -4802,7 +4849,7 @@ int Com_Show_Scenario_Dialog() {
   // House buttons
   //........................................................................
 #ifdef OLDWAY
-  if (Session.House == HOUSE_GOOD) {
+  if (TheSession().House == HOUSE_GOOD) {
     gdibtn.Turn_On();
   } else {
     nodbtn.Turn_On();
@@ -4812,7 +4859,7 @@ int Com_Show_Scenario_Dialog() {
     housebtn.Add_Item(
         Text_String(HouseTypeClass::As_Reference(house).Full_Name()));
   }
-  housebtn.Set_Selected_Index(static_cast<int>(Session.House) -
+  housebtn.Set_Selected_Index(static_cast<int>(TheSession().House) -
                               static_cast<int>(HOUSE_USSR));
   housebtn.Set_Read_Only(true);
 #endif  // OLDWAY
@@ -4822,10 +4869,11 @@ int Com_Show_Scenario_Dialog() {
   //........................................................................
   countgauge.Use_Thumb(false);
   countgauge.Set_Maximum(
-      base::At(SessionClass::CountMax, Session.Options.Bases) -
-      base::At(SessionClass::CountMin, Session.Options.Bases));
-  countgauge.Set_Value(Session.Options.UnitCount -
-                       base::At(SessionClass::CountMin, Session.Options.Bases));
+      base::At(SessionClass::CountMax, TheSession().Options.Bases) -
+      base::At(SessionClass::CountMin, TheSession().Options.Bases));
+  countgauge.Set_Value(
+      TheSession().Options.UnitCount -
+      base::At(SessionClass::CountMin, TheSession().Options.Bases));
 
   levelgauge.Use_Thumb(false);
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
@@ -4833,11 +4881,11 @@ int Com_Show_Scenario_Dialog() {
 
   creditsgauge.Use_Thumb(false);
   creditsgauge.Set_Maximum(TheRules().MPMaxMoney);
-  creditsgauge.Set_Value(Session.Options.Credits);
+  creditsgauge.Set_Value(TheSession().Options.Credits);
 
   aiplayersgauge.Use_Thumb(false);
   aiplayersgauge.Set_Maximum(TheRules().MaxPlayers - 2);
-  aiplayersgauge.Set_Value(Session.Options.AIPlayers);
+  aiplayersgauge.Set_Value(TheSession().Options.AIPlayers);
 
   Fancy_Text_Print("", 0, 0, scheme, kTBlack, TPF_CENTER | kTpfText);
 
@@ -4847,20 +4895,19 @@ int Com_Show_Scenario_Dialog() {
   /*........................................................................
   Clear the Players vector
   ........................................................................*/
-  Clear_Vector(&Session.Players);
+  Clear_Vector(&TheSession().Players);
 
   /*........................................................................
   Init the message display system
   ........................................................................*/
-  Session.Messages.Init(d_message_x + 1, d_message_y + 1, 7, MAX_MESSAGE_LENGTH,
-                        d_txt6_h, d_send_x + 2,
-                        d_send_y + 2, 1, 20, MAX_MESSAGE_LENGTH - 5,
-                        d_message_w);
-  Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                ? PCOLOR_REALLY_BLUE
-                                : Session.ColorIdx,
-                            kTpfText, nullptr, '_', d_message_w);
-  Session.WWChat = false;
+  TheSession().Messages.Init(
+      d_message_x + 1, d_message_y + 1, 7, MAX_MESSAGE_LENGTH, d_txt6_h,
+      d_send_x + 2, d_send_y + 2, 1, 20, MAX_MESSAGE_LENGTH - 5, d_message_w);
+  TheSession().Messages.Add_Edit(TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
+                                     ? PCOLOR_REALLY_BLUE
+                                     : TheSession().ColorIdx,
+                                 kTpfText, nullptr, '_', d_message_w);
+  TheSession().WWChat = false;
 
   /*........................................................................
   Init version number clipping system
@@ -4875,9 +4922,9 @@ int Com_Show_Scenario_Dialog() {
   }
 
   if (!TheNetwork().modem_response().empty()) {
-    Session.Messages.Add_Message(nullptr, 0,
-                                 TheNetwork().modem_response().c_str(),
-                                 PCOLOR_BROWN, kTpfText, -1);
+    TheSession().Messages.Add_Message(nullptr, 0,
+                                      TheNetwork().modem_response().c_str(),
+                                      PCOLOR_BROWN, kTpfText, -1);
   }
 
   TheNetwork().modem_response().clear();
@@ -4902,7 +4949,7 @@ int Com_Show_Scenario_Dialog() {
     } else {
       if (!name_edt.Has_Focus()) {
         display = std::max(display, REDRAW_MESSAGE);
-        Session.Messages.Set_Edit_Focus();
+        TheSession().Messages.Set_Edit_Focus();
       }
     }
 
@@ -4985,7 +5032,7 @@ int Com_Show_Scenario_Dialog() {
           // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
           // ColorRemaps[static_cast<PlayerColorType>(i)].Box);
 
-          if (static_cast<PlayerColorType>(i) == Session.ColorIdx) {
+          if (static_cast<PlayerColorType>(i) == TheSession().ColorIdx) {
             Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
                      BOXSTYLE_DOWN, false);
           } else {
@@ -5002,7 +5049,7 @@ int Com_Show_Scenario_Dialog() {
         Draw_Box(d_message_x, d_message_y, d_message_w, d_message_h,
                  BOXSTYLE_BOX, true);
         Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX, true);
-        Session.Messages.Draw();
+        TheSession().Messages.Draw();
 
         //..................................................................
         // Redraw the game options
@@ -5023,28 +5070,29 @@ int Com_Show_Scenario_Dialog() {
             // BLACK);
 
             p = Text_String(TXT_SCENARIO_COLON);
-            if (Session.Options.ScenarioDescription[0]) {
+            if (TheSession().Options.ScenarioDescription[0]) {
               //							sprintf(txt,"%s
-              //%s",p, Session.Options.ScenarioDescription);
+              //%s",p, TheSession().Options.ScenarioDescription);
               // Fancy_Text_Print (txt, d_dialog_cx, d_scenario_y, scheme,
               // TBLACK, kTpfText | TPF_CENTER);
 
               // EW - Scenario language translation goes here!!!!!!!! VG
               for (i = 0; base::At(EngMisStr, base::ToSize(i)) != nullptr;
                    i++) {
-                if (std::string_view(Session.Options.ScenarioDescription) ==
+                if (std::string_view(
+                        TheSession().Options.ScenarioDescription) ==
                     base::At(EngMisStr, base::ToSize(i))) {
                   absl::SNPrintF(
                       txt, sizeof(txt), "%s %s", p,
                       config::kIsEnglish
-                          ? Session.Options.ScenarioDescription
+                          ? TheSession().Options.ScenarioDescription
                           : base::At(EngMisStr, base::ToSize(i + 1)));
                   break;
                 }
               }
               if (base::At(EngMisStr, base::ToSize(i)) == nullptr) {
                 absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
-                               Session.Options.ScenarioDescription);
+                               TheSession().Options.ScenarioDescription);
               }
               Fancy_Text_Print(txt, d_dialog_cx, d_scenario_y, scheme, kTBlack,
                                kTpfText | TPF_CENTER);
@@ -5067,7 +5115,7 @@ int Com_Show_Scenario_Dialog() {
             //+ d_aiplayers_h+2, 	BLACK);
 
             absl::SNPrintF(staticcountbuff, sizeof(staticcountbuff), "%d",
-                           Session.Options.UnitCount);
+                           TheSession().Options.UnitCount);
             staticcount.Set_Text(staticcountbuff);
             staticcount.Draw_Me();
             if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
@@ -5080,12 +5128,12 @@ int Com_Show_Scenario_Dialog() {
             staticlevel.Draw_Me();
 
             absl::SNPrintF(staticcreditsbuff, sizeof(staticcreditsbuff), "%d",
-                           Session.Options.Credits);
+                           TheSession().Options.Credits);
             staticcredits.Set_Text(staticcreditsbuff);
             staticcredits.Draw_Me();
 
             absl::SNPrintF(staticaibuff, sizeof(staticaibuff), "%d",
-                           Session.Options.AIPlayers);
+                           TheSession().Options.AIPlayers);
             staticai.Set_Text(staticaibuff);
             staticai.Draw_Me();
           }
@@ -5105,7 +5153,7 @@ int Com_Show_Scenario_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    messages_have_focus = Session.Messages.Has_Edit_Focus();
+    messages_have_focus = TheSession().Messages.Has_Edit_Focus();
     const bool droplist_is_dropped = housebtn.IsDropped;
     KeyNumType input = commands->Input();
 
@@ -5114,7 +5162,7 @@ int Com_Show_Scenario_Dialog() {
     */
     if (messages_have_focus) {
       if (!name_edt.Has_Focus()) {
-        Session.Messages.Set_Edit_Focus();
+        TheSession().Messages.Set_Edit_Focus();
       } else {
         messages_have_focus = false;
         display = std::max(display, REDRAW_MESSAGE);
@@ -5143,7 +5191,7 @@ int Com_Show_Scenario_Dialog() {
           /*.........................................................
           Compute my preferred color as the one I clicked on.
           .........................................................*/
-          Session.PrefColor = static_cast<PlayerColorType>(
+          TheSession().PrefColor = static_cast<PlayerColorType>(
               (Keyboard->MouseQX - cbox_x[0]) / d_color_w);
           changed = true;
 
@@ -5151,21 +5199,23 @@ int Com_Show_Scenario_Dialog() {
           If 'TheirColor' is set to the other player's color, make
           sure we can't pick that color.
           .........................................................*/
-          if (parms_received && (Session.PrefColor == TheirColor)) {
+          if (parms_received && (TheSession().PrefColor == TheirColor)) {
             break;
           }
 
-          Session.ColorIdx = Session.PrefColor;
+          TheSession().ColorIdx = TheSession().PrefColor;
 
           name_edt.Set_Color(&ThePalettes().color_remaps().at(
-              Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                     : Session.ColorIdx));
+              TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
+                  ? PCOLOR_REALLY_BLUE
+                  : TheSession().ColorIdx));
           name_edt.Flag_To_Redraw();
-          Session.Messages.Set_Edit_Color(Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                              ? PCOLOR_REALLY_BLUE
-                                              : Session.ColorIdx);
+          TheSession().Messages.Set_Edit_Color(TheSession().ColorIdx ==
+                                                       PCOLOR_DIALOG_BLUE
+                                                   ? PCOLOR_REALLY_BLUE
+                                                   : TheSession().ColorIdx);
           display = std::max(display, REDRAW_COLORS);
-          port::SafeCopy(Session.Handle, namebuf);
+          port::SafeCopy(TheSession().Handle, namebuf);
           transmit = true;
           if (housebtn.IsDropped) {
             housebtn.Collapse();
@@ -5179,9 +5229,9 @@ int Com_Show_Scenario_Dialog() {
                     Get_Mouse_X() <= d_options_x + d_options_w &&
                     Get_Mouse_Y() >= d_options_y &&
                     Get_Mouse_Y() <= d_options_y + d_options_h)) {
-          Session.Messages.Add_Message(nullptr, 0,
-                                       Text_String(TXT_ONLY_HOST_CAN_MODIFY),
-                                       PCOLOR_BROWN, kTpfText, 1200);
+          TheSession().Messages.Add_Message(
+              nullptr, 0, Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
+              kTpfText, 1200);
           PlaySoundEffect(VOC_SYS_ERROR);
           display = std::max(display, REDRAW_MESSAGE);
           if (housebtn.IsDropped) {
@@ -5197,25 +5247,25 @@ int Com_Show_Scenario_Dialog() {
       House Buttons: set the player's desired House
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonGdi):
-        Session.House = HOUSE_GOOD;
+        TheSession().House = HOUSE_GOOD;
         gdibtn.Turn_On();
         nodbtn.Turn_Off();
-        port::SafeCopy(Session.Handle, namebuf);
+        port::SafeCopy(TheSession().Handle, namebuf);
         transmit = true;
         break;
 
       case ButtonKey(kButtonNod):
-        Session.House = HOUSE_BAD;
+        TheSession().House = HOUSE_BAD;
         gdibtn.Turn_Off();
         nodbtn.Turn_On();
-        port::SafeCopy(Session.Handle, namebuf);
+        port::SafeCopy(TheSession().Handle, namebuf);
         transmit = true;
         break;
 #else   // OLDWAY
       case ButtonKey(kButtonHouse):
-        Session.House = static_cast<HousesType>(housebtn.Current_Index() +
-                                                static_cast<int>(HOUSE_USSR));
-        port::SafeCopy(Session.Handle, namebuf);
+        TheSession().House = static_cast<HousesType>(
+            housebtn.Current_Index() + static_cast<int>(HOUSE_USSR));
+        port::SafeCopy(TheSession().Handle, namebuf);
         transmit = true;
         // display = REDRAW_BACKGROUND;
         break;
@@ -5229,7 +5279,7 @@ int Com_Show_Scenario_Dialog() {
           housebtn.Collapse();
           display = REDRAW_BACKGROUND;
         }
-        port::SafeCopy(Session.Handle, namebuf);
+        port::SafeCopy(TheSession().Handle, namebuf);
         transmit = true;
         changed = true;
         break;
@@ -5247,14 +5297,14 @@ int Com_Show_Scenario_Dialog() {
       Default: manage the inter-player messages
       ------------------------------------------------------------------*/
       default:
-        if (Session.Messages.Manage()) {
+        if (TheSession().Messages.Manage()) {
           display = std::max(display, REDRAW_MESSAGE);
         }
 
         /*...............................................................
         Service keyboard input for any message being edited.
         ...............................................................*/
-        i = Session.Messages.Input(input);
+        i = TheSession().Messages.Input(input);
 
         /*...............................................................
         If 'Input' returned 1, it means refresh the message display; 2
@@ -5265,7 +5315,7 @@ int Com_Show_Scenario_Dialog() {
         if (i == 1 || i == 2) {
           Hide_Mouse();
           Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX, true);
-          Session.Messages.Draw();
+          TheSession().Messages.Draw();
           Show_Mouse();
         } else if (i == 3 || i == 4) {
           /*...............................................................
@@ -5274,14 +5324,14 @@ int Com_Show_Scenario_Dialog() {
           base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
           SendPacket.Command = SERIAL_MESSAGE;
           port::SafeCopy(SendPacket.Name, namebuf);
-          SendPacket.ID = static_cast<unsigned char>(Session.ColorIdx);
+          SendPacket.ID = static_cast<unsigned char>(TheSession().ColorIdx);
           if (i == 3) {
             port::SafeCopy(SendPacket.Message.Message,
-                           Session.Messages.Get_Edit_Buf());
+                           TheSession().Messages.Get_Edit_Buf());
           } else {
             port::SafeCopy(SendPacket.Message.Message,
-                           Session.Messages.Get_Overflow_Buf());
-            Session.Messages.Clear_Overflow_Buf();
+                           TheSession().Messages.Get_Overflow_Buf());
+            TheSession().Messages.Clear_Overflow_Buf();
           }
 
           /*..................................................................
@@ -5294,15 +5344,17 @@ int Com_Show_Scenario_Dialog() {
           /*..................................................................
           Add the message to our own screen
           ..................................................................*/
-          Session.Messages.Add_Message(
+          TheSession().Messages.Add_Message(
               SendPacket.Name, SendPacket.ID, SendPacket.Message.Message,
-              Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                     : Session.ColorIdx,
+              TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
+                  ? PCOLOR_REALLY_BLUE
+                  : TheSession().ColorIdx,
               kTpfText, -1);
-          Session.Messages.Add_Edit(Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                        ? PCOLOR_REALLY_BLUE
-                                        : Session.ColorIdx,
-                                    kTpfText, nullptr, '_', d_message_w);
+          TheSession().Messages.Add_Edit(
+              TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
+                  ? PCOLOR_REALLY_BLUE
+                  : TheSession().ColorIdx,
+              kTpfText, nullptr, '_', d_message_w);
           display = std::max(display, REDRAW_MESSAGE);
         }
         break;
@@ -5311,8 +5363,8 @@ int Com_Show_Scenario_Dialog() {
     /*---------------------------------------------------------------------
     Detect editing of the name buffer, transmit new values to players
     ---------------------------------------------------------------------*/
-    if (std::string_view(namebuf) != Session.Handle) {
-      port::SafeCopy(Session.Handle, namebuf);
+    if (std::string_view(namebuf) != TheSession().Handle) {
+      port::SafeCopy(TheSession().Handle, namebuf);
       transmit = true;
       changed = true;
     }
@@ -5328,9 +5380,9 @@ int Com_Show_Scenario_Dialog() {
           TheRules().rule_ini().Get_Unique_ID();
       SendPacket.ScenarioInfo.MinVersion = VersionClass::Min_Version();
       SendPacket.ScenarioInfo.MaxVersion = VersionClass::Max_Version();
-      SendPacket.ScenarioInfo.House = Session.House;
-      SendPacket.ScenarioInfo.Color = Session.ColorIdx;
-      SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
+      SendPacket.ScenarioInfo.House = TheSession().House;
+      SendPacket.ScenarioInfo.Color = TheSession().ColorIdx;
+      SendPacket.ID = static_cast<unsigned char>(TheSession().ModemType);
 
       TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                              sizeof(SendPacket), 1);
@@ -5343,7 +5395,7 @@ int Com_Show_Scenario_Dialog() {
       //..................................................................
       if (playerlist.Count()) {
 #ifdef OLDWAY
-        if (Session.House == HOUSE_GOOD) {
+        if (TheSession().House == HOUSE_GOOD) {
           sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
         } else {
           sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
@@ -5352,12 +5404,13 @@ int Com_Show_Scenario_Dialog() {
         absl::SNPrintF(
             item, sizeof(item), "%s\t%s", namebuf,
             Text_String(
-                HouseTypeClass::As_Reference(Session.House).Full_Name()));
+                HouseTypeClass::As_Reference(TheSession().House).Full_Name()));
 #endif  // OLDWAY
         playerlist.Set_Item(0, item);
         playerlist.Colors.at(0) = &ThePalettes().color_remaps().at(
-            Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                   : Session.ColorIdx);
+            TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
+                ? PCOLOR_REALLY_BLUE
+                : TheSession().ColorIdx);
         playerlist.Flag_To_Redraw();
       }
 
@@ -5375,7 +5428,7 @@ int Com_Show_Scenario_Dialog() {
       SendPacket.Command = SERIAL_TIMING;
       SendPacket.ScenarioInfo.ResponseTime =
           TheNetwork().null_modem().Response_Time();
-      SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
+      SendPacket.ID = static_cast<unsigned char>(TheSession().ModemType);
 
       TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                              sizeof(SendPacket), 0);
@@ -5396,7 +5449,8 @@ int Com_Show_Scenario_Dialog() {
       if (ReceivePacket.Command >= SERIAL_CONNECT &&
           ReceivePacket.Command < SERIAL_LAST_COMMAND &&
           ReceivePacket.Command != SERIAL_MESSAGE &&
-          ReceivePacket.ID == static_cast<unsigned char>(Session.ModemType)) {
+          ReceivePacket.ID ==
+              static_cast<unsigned char>(TheSession().ModemType)) {
         WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
 
         // to skip the other system not responding msg
@@ -5452,21 +5506,22 @@ int Com_Show_Scenario_Dialog() {
             /*...............................................................
             Make sure I don't have the same color as the other guy.
             ...............................................................*/
-            if (Session.ColorIdx == TheirColor) {
+            if (TheSession().ColorIdx == TheirColor) {
               // force transmitting of game options packet
 
               transmit = true;
               transmittime = 0;
 
-              Session.ColorIdx = static_cast<PlayerColorType>(
+              TheSession().ColorIdx = static_cast<PlayerColorType>(
                   static_cast<int>(TheirColor) + 1);
-              if (static_cast<int>(Session.ColorIdx) >= 6) {
-                Session.ColorIdx =
+              if (static_cast<int>(TheSession().ColorIdx) >= 6) {
+                TheSession().ColorIdx =
                     magic_enum::enum_values<PlayerColorType>().front();
               }
               name_edt.Set_Color(&ThePalettes().color_remaps().at(
-                  Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                         : Session.ColorIdx));
+                  TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
+                      ? PCOLOR_REALLY_BLUE
+                      : TheSession().ColorIdx));
               name_edt.Flag_To_Redraw();
               display = std::max(display, REDRAW_COLORS);
               if (housebtn.IsDropped) {
@@ -5478,18 +5533,21 @@ int Com_Show_Scenario_Dialog() {
             /*...............................................................
             Save scenario settings.
             ...............................................................*/
-            Session.Options.Credits = ReceivePacket.ScenarioInfo.Credits;
-            Session.Options.Bases = ReceivePacket.ScenarioInfo.IsBases;
-            Session.Options.Tiberium = ReceivePacket.ScenarioInfo.IsTiberium;
-            Session.Options.Goodies = ReceivePacket.ScenarioInfo.IsGoodies;
-            Session.Options.AIPlayers = ReceivePacket.ScenarioInfo.AIPlayers;
+            TheSession().Options.Credits = ReceivePacket.ScenarioInfo.Credits;
+            TheSession().Options.Bases = ReceivePacket.ScenarioInfo.IsBases;
+            TheSession().Options.Tiberium =
+                ReceivePacket.ScenarioInfo.IsTiberium;
+            TheSession().Options.Goodies = ReceivePacket.ScenarioInfo.IsGoodies;
+            TheSession().Options.AIPlayers =
+                ReceivePacket.ScenarioInfo.AIPlayers;
             TheWorld().build_level() = ReceivePacket.ScenarioInfo.BuildLevel;
-            Session.Options.UnitCount = ReceivePacket.ScenarioInfo.UnitCount;
+            TheSession().Options.UnitCount =
+                ReceivePacket.ScenarioInfo.UnitCount;
             TheWorld().seed() = ReceivePacket.ScenarioInfo.Seed;
             Special = ReceivePacket.ScenarioInfo.Special;
             Options.GameSpeed = ReceivePacket.ScenarioInfo.GameSpeed;
 
-            if (Session.Options.Tiberium) {
+            if (TheSession().Options.Tiberium) {
               Special.IsTGrowth = true;
               TheRules().IsTGrowth = true;
               Special.IsTSpread = true;
@@ -5505,21 +5563,21 @@ int Com_Show_Scenario_Dialog() {
             // Adjust the gauges
             //.........................................................
             countgauge.Set_Maximum(
-                base::At(SessionClass::CountMax, Session.Options.Bases) -
-                base::At(SessionClass::CountMin, Session.Options.Bases));
+                base::At(SessionClass::CountMax, TheSession().Options.Bases) -
+                base::At(SessionClass::CountMin, TheSession().Options.Bases));
             countgauge.Set_Value(
-                Session.Options.UnitCount -
-                base::At(SessionClass::CountMin, Session.Options.Bases));
+                TheSession().Options.UnitCount -
+                base::At(SessionClass::CountMin, TheSession().Options.Bases));
             levelgauge.Set_Value(TheWorld().build_level() - 1);
-            creditsgauge.Set_Value(Session.Options.Credits);
-            aiplayersgauge.Set_Value(Session.Options.AIPlayers);
+            creditsgauge.Set_Value(TheSession().Options.Credits);
+            aiplayersgauge.Set_Value(TheSession().Options.AIPlayers);
 
             //.........................................................
             // Update the options list box
             //.........................................................
-            optionlist.Check_Item(0, Session.Options.Bases != 0);
-            optionlist.Check_Item(1, Session.Options.Tiberium != 0);
-            optionlist.Check_Item(2, Session.Options.Goodies != 0);
+            optionlist.Check_Item(0, TheSession().Options.Bases != 0);
+            optionlist.Check_Item(1, TheSession().Options.Tiberium != 0);
+            optionlist.Check_Item(2, TheSession().Options.Goodies != 0);
             optionlist.Check_Item(3, Special.IsCaptureTheFlag);
             optionlist.Check_Item(4, Special.IsShadowGrow);
             optionlist.Flag_To_Redraw();
@@ -5528,7 +5586,7 @@ int Com_Show_Scenario_Dialog() {
             ** If the scenario name changed then we need to redraw the whole
             *lot.
             */
-            if (std::string_view(Session.Options.ScenarioDescription) !=
+            if (std::string_view(TheSession().Options.ScenarioDescription) !=
                 ReceivePacket.ScenarioInfo.Scenario) {
               display = std::max(display, REDRAW_BACKGROUND);
             }
@@ -5538,15 +5596,16 @@ int Com_Show_Scenario_Dialog() {
             play so ee can request this scenario from the host if we don't
             have it locally.
             ...............................................................*/
-            port::SafeCopy(Session.Options.ScenarioDescription,
+            port::SafeCopy(TheSession().Options.ScenarioDescription,
                            ReceivePacket.ScenarioInfo.Scenario);
-            port::SafeCopy(Session.ScenarioFileName,
+            port::SafeCopy(TheSession().ScenarioFileName,
                            ReceivePacket.ScenarioInfo.ShortFileName);
-            port::SafeCopy(Session.ScenarioDigest,
+            port::SafeCopy(TheSession().ScenarioDigest,
                            ReceivePacket.ScenarioInfo.FileDigest);
-            Session.ScenarioIsOfficial =
+            TheSession().ScenarioIsOfficial =
                 ReceivePacket.ScenarioInfo.OfficialScenario;
-            Session.ScenarioFileLength = ReceivePacket.ScenarioInfo.FileLength;
+            TheSession().ScenarioFileLength =
+                ReceivePacket.ScenarioInfo.FileLength;
 
             //.........................................................
             // "Clip" the other system's version range to our own
@@ -5594,7 +5653,8 @@ int Com_Show_Scenario_Dialog() {
                 process = false;
                 rc = 0;
               } else {
-                Session.CommProtocol = VersionClass::Version_Protocol(version);
+                TheSession().CommProtocol =
+                    VersionClass::Version_Protocol(version);
               }
             }
 
@@ -5609,10 +5669,11 @@ int Com_Show_Scenario_Dialog() {
               // list
               //......................................................
               gamelist.Add_Item("");
-              playerlist.Add_Item("", &ThePalettes().color_remaps().at(
-                                          Session.ColorIdx == PCOLOR_DIALOG_BLUE
-                                              ? PCOLOR_REALLY_BLUE
-                                              : Session.ColorIdx));
+              playerlist.Add_Item(
+                  "", &ThePalettes().color_remaps().at(
+                          TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
+                              ? PCOLOR_REALLY_BLUE
+                              : TheSession().ColorIdx));
               playerlist.Add_Item(
                   "", &ThePalettes().color_remaps().at(
                           TheirColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
@@ -5632,7 +5693,7 @@ int Com_Show_Scenario_Dialog() {
                                 Text_String(TXT_THATGUYS_GAME), TheirName);
             gamelist.Set_Item(0, item);
 #ifdef OLDWAY
-            if (Session.House == HOUSE_GOOD) {
+            if (TheSession().House == HOUSE_GOOD) {
               sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
             } else {
               sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
@@ -5640,14 +5701,15 @@ int Com_Show_Scenario_Dialog() {
 #else  // OLDWAY
             absl::SNPrintF(
                 item, sizeof(item), "%s\t%s", namebuf,
-                Text_String(
-                    HouseTypeClass::As_Reference(Session.House).Full_Name()));
+                Text_String(HouseTypeClass::As_Reference(TheSession().House)
+                                .Full_Name()));
 
 #endif  // OLDWAY
             playerlist.Set_Item(0, item);
             playerlist.Colors.at(0) = &ThePalettes().color_remaps().at(
-                Session.ColorIdx == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
-                                                       : Session.ColorIdx);
+                TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
+                    ? PCOLOR_REALLY_BLUE
+                    : TheSession().ColorIdx);
 
 #ifdef OLDWAY
             if (TheirHouse == HOUSE_GOOD) {
@@ -5701,23 +5763,23 @@ int Com_Show_Scenario_Dialog() {
               */
               //	This is duplicated for Aftermath scenarios. ajw
 
-              if (Session.ScenarioIsOfficial &&
+              if (TheSession().ScenarioIsOfficial &&
                   ((Expansion_CS_Present() &&
-                    IsMissionCounterstrike(Session.ScenarioFileName)) ||
+                    IsMissionCounterstrike(TheSession().ScenarioFileName)) ||
                    (Expansion_AM_Present() &&
-                    IsMissionAftermath(Session.ScenarioFileName)))) {
-                GameFile check_file(Session.ScenarioFileName);
+                    IsMissionAftermath(TheSession().ScenarioFileName)))) {
+                GameFile check_file(TheSession().ScenarioFileName);
                 if (!check_file.IsAvailable()) {
                   const int current_drive = SearchPaths::current_cd_drive();
                   const int index = Get_CD_Index(current_drive, 1 * 60);
                   bool needcd = false;
-                  if (IsMissionCounterstrike(Session.ScenarioFileName) &&
+                  if (IsMissionCounterstrike(TheSession().ScenarioFileName) &&
                       (index != 2 && index != 3)) {
                     RequiredCD = 2;
                     needcd = true;
                   }
 
-                  if (IsMissionAftermath(Session.ScenarioFileName) &&
+                  if (IsMissionAftermath(TheSession().ScenarioFileName) &&
                       (index != 3)) {
                     RequiredCD = 3;
                     needcd = true;
@@ -5754,7 +5816,7 @@ int Com_Show_Scenario_Dialog() {
                     *counterstrike
                     ** list.
                     */
-                    Session.Read_Scenario_Descriptions();
+                    TheSession().Read_Scenario_Descriptions();
 
                     /*
                     ** Make sure we dont time out because of the disk swap
@@ -5770,10 +5832,11 @@ int Com_Show_Scenario_Dialog() {
               *can identify the scenario locally then *	we need to fix up the
               *file name so we load the right one.
               */
-              if (Find_Local_Scenario(
-                      Session.Options.ScenarioDescription,
-                      Session.ScenarioFileName, Session.ScenarioFileLength,
-                      Session.ScenarioDigest, Session.ScenarioIsOfficial)) {
+              if (Find_Local_Scenario(TheSession().Options.ScenarioDescription,
+                                      TheSession().ScenarioFileName,
+                                      TheSession().ScenarioFileLength,
+                                      TheSession().ScenarioDigest,
+                                      TheSession().ScenarioIsOfficial)) {
                 /*
                 ** We have the scenario. Tell the host that I am ready to go.
                 */
@@ -5793,12 +5856,12 @@ int Com_Show_Scenario_Dialog() {
                 }
               } else {
                 if (bSpecialAftermathScenario(
-                        Session.Options.ScenarioDescription)) {
+                        TheSession().Options.ScenarioDescription)) {
                   break;
                 }
                 if (!Get_Scenario_File_From_Host(
-                        Session.ScenarioFileName,
-                        sizeof(Session.ScenarioFileName), 0)) {
+                        TheSession().ScenarioFileName,
+                        sizeof(TheSession().ScenarioFileName), 0)) {
                   rc = 0;
                   break;
                 }
@@ -5829,21 +5892,21 @@ int Com_Show_Scenario_Dialog() {
             ** Fall through here...
             */
             port::SafeCopy(TheScenario().ScenarioName,
-                           Session.ScenarioFileName);
+                           TheSession().ScenarioFileName);
             //
             // calculated one way delay for a packet and overall delay
             // to execute a packet
             //
-            if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-              Session.MaxAhead = static_cast<int>(std::max<int64_t>(
+            if (TheSession().CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
+              TheSession().MaxAhead = static_cast<int>(std::max<int64_t>(
                   ((ReceivePacket.ScenarioInfo.ResponseTime / 8) +
-                   (Session.FrameSendRate - 1)) /
-                      Session.FrameSendRate * Session.FrameSendRate,
-                  Session.FrameSendRate * 2));
+                   (TheSession().FrameSendRate - 1)) /
+                      TheSession().FrameSendRate * TheSession().FrameSendRate,
+                  TheSession().FrameSendRate * 2));
             } else {
-              Session.MaxAhead = std::max(
-                  ReceivePacket.ScenarioInfo.ResponseTime / 8,
-                  MODEM_MIN_MAX_AHEAD);
+              TheSession().MaxAhead =
+                  std::max(ReceivePacket.ScenarioInfo.ResponseTime / 8,
+                           MODEM_MIN_MAX_AHEAD);
             }
 
             process = false;
@@ -5859,7 +5922,7 @@ int Com_Show_Scenario_Dialog() {
           case SERIAL_MESSAGE:
             oppscorescreen = false;
 
-            Session.Messages.Add_Message(
+            TheSession().Messages.Add_Message(
                 ReceivePacket.Name,
                 static_cast<int>(
                     static_cast<PlayerColorType>(ReceivePacket.ID) ==
@@ -5927,7 +5990,7 @@ int Com_Show_Scenario_Dialog() {
   Prepare to load the scenario
   ------------------------------------------------------------------------*/
   if (rc) {
-    Session.NumPlayers = 2;
+    TheSession().NumPlayers = 2;
 
     /*.....................................................................
     Add both players to the Players vector; the local system is always
@@ -5948,17 +6011,17 @@ int Com_Show_Scenario_Dialog() {
     }
 
     port::SafeCopy(who->Name, namebuf);
-    who->Player.House = Session.House;
-    who->Player.Color = Session.ColorIdx;
+    who->Player.House = TheSession().House;
+    who->Player.Color = TheSession().ColorIdx;
     who->Player.ProcessTime = -1;
-    Session.Players.Add(who);
+    TheSession().Players.Add(who);
 
     who = new NodeNameType;
     port::SafeCopy(who->Name, TheirName);
     who->Player.House = TheirHouse;
     who->Player.Color = TheirColor;
     who->Player.ProcessTime = -1;
-    Session.Players.Add(who);
+    TheSession().Players.Add(who);
 
     starttime = SystemTicks();
     while ((TheNetwork().null_modem().Num_Send() &&
@@ -5977,8 +6040,9 @@ int Com_Show_Scenario_Dialog() {
       .....................................................................*/
       base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
       SendPacket.Command = SERIAL_SIGN_OFF;
-      SendPacket.ScenarioInfo.Color = Session.ColorIdx;  // use Color for ID
-      SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
+      SendPacket.ScenarioInfo.Color =
+          TheSession().ColorIdx;  // use Color for ID
+      SendPacket.ID = static_cast<unsigned char>(TheSession().ModemType);
       TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
                                              sizeof(SendPacket), 1);
 
@@ -5989,7 +6053,8 @@ int Com_Show_Scenario_Dialog() {
         if ((TheNetwork().null_modem().Get_Message(
                  base::ObjectBytes(ReceivePacket), &packetlen) > 0) &&
             (ReceivePacket.Command == SERIAL_SIGN_OFF &&
-             ReceivePacket.ID == static_cast<unsigned char>(Session.ModemType)))
+             ReceivePacket.ID ==
+                 static_cast<unsigned char>(TheSession().ModemType)))
         // are we getting our own packets back??
 
         {
@@ -6018,7 +6083,7 @@ int Com_Show_Scenario_Dialog() {
   /*------------------------------------------------------------------------
   Remove the chat edit box
   ------------------------------------------------------------------------*/
-  Session.Messages.Remove_Edit();
+  TheSession().Messages.Remove_Edit();
 
   /*------------------------------------------------------------------------
   Restore screen
@@ -6031,7 +6096,7 @@ int Com_Show_Scenario_Dialog() {
   Save any changes made to our options
   ------------------------------------------------------------------------*/
   if (changed) {
-    Session.Write_MultiPlayer_Settings();
+    TheSession().Write_MultiPlayer_Settings();
   }
 
   if (load_game) {
@@ -6192,7 +6257,7 @@ static int Phone_Dialog() {
   phonelist.Set_Tabs(tabs);
   Build_Phone_Listbox(&phonelist, &numedit, phone_num);
 
-  if (Session.CurPhoneIdx == -1) {
+  if (TheSession().CurPhoneIdx == -1) {
     firsttime = true;
   }
 
@@ -6278,11 +6343,12 @@ static int Phone_Dialog() {
         Detect a change in the selected item; update CurPhoneIdx, and
         the edit box buffer.
         ...............................................................*/
-        if ((Session.CurPhoneIdx != -1) &&
-            (phonelist.Current_Index() != Session.CurPhoneIdx)) {
-          Session.CurPhoneIdx = phonelist.Current_Index();
-          port::SafeCopy(phone_num,
-                         Session.PhoneBook.at(Session.CurPhoneIdx)->Number);
+        if ((TheSession().CurPhoneIdx != -1) &&
+            (phonelist.Current_Index() != TheSession().CurPhoneIdx)) {
+          TheSession().CurPhoneIdx = phonelist.Current_Index();
+          port::SafeCopy(
+              phone_num,
+              TheSession().PhoneBook.at(TheSession().CurPhoneIdx)->Number);
           numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
           changed = true;
         }
@@ -6313,18 +6379,19 @@ static int Phone_Dialog() {
         to the list, and rebuild the list box.
         ...............................................................*/
         if (Edit_Phone_Dialog(p_entry)) {
-          Session.PhoneBook.Add(p_entry);
+          TheSession().PhoneBook.Add(p_entry);
           Build_Phone_Listbox(&phonelist, &numedit, phone_num);
           /*............................................................
           Set the current listbox index to the newly-added item.
           ............................................................*/
-          for (int i = 0; i < Session.PhoneBook.Count(); i++) {
-            if (p_entry == Session.PhoneBook.at(i)) {
-              Session.CurPhoneIdx = i;
-              port::SafeCopy(phone_num,
-                             Session.PhoneBook.at(Session.CurPhoneIdx)->Number);
+          for (int i = 0; i < TheSession().PhoneBook.Count(); i++) {
+            if (p_entry == TheSession().PhoneBook.at(i)) {
+              TheSession().CurPhoneIdx = i;
+              port::SafeCopy(
+                  phone_num,
+                  TheSession().PhoneBook.at(TheSession().CurPhoneIdx)->Number);
               numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
-              phonelist.Set_Selected_Index(Session.CurPhoneIdx);
+              phonelist.Set_Selected_Index(TheSession().CurPhoneIdx);
             }
           }
           changed = true;
@@ -6345,7 +6412,7 @@ static int Phone_Dialog() {
         /*...............................................................
         Do nothing if no entry is selected.
         ...............................................................*/
-        if (Session.CurPhoneIdx == -1) {
+        if (TheSession().CurPhoneIdx == -1) {
           break;
         }
 
@@ -6353,7 +6420,7 @@ static int Phone_Dialog() {
         Allocate a new entry & copy the currently-selected entry into it
         ...............................................................*/
         p_entry = new PhoneEntryClass();
-        *p_entry = *Session.PhoneBook.at(Session.CurPhoneIdx);
+        *p_entry = *TheSession().PhoneBook.at(TheSession().CurPhoneIdx);
 
         /*...............................................................
         Pass the new entry to the entry editor; if the user selects OK,
@@ -6361,19 +6428,20 @@ static int Phone_Dialog() {
         the changes show up in the list box.
         ...............................................................*/
         if (Edit_Phone_Dialog(p_entry)) {
-          *Session.PhoneBook.at(Session.CurPhoneIdx) = *p_entry;
+          *TheSession().PhoneBook.at(TheSession().CurPhoneIdx) = *p_entry;
           Build_Phone_Listbox(&phonelist, &numedit, phone_num);
           /*............................................................
           Set the current listbox index to the newly-added item.
           ............................................................*/
-          for (int i = 0; i < Session.PhoneBook.Count(); i++) {
-            if (Session.PhoneBook.at(Session.CurPhoneIdx) ==
-                Session.PhoneBook.at(i)) {
-              Session.CurPhoneIdx = i;
-              port::SafeCopy(phone_num,
-                             Session.PhoneBook.at(Session.CurPhoneIdx)->Number);
+          for (int i = 0; i < TheSession().PhoneBook.Count(); i++) {
+            if (TheSession().PhoneBook.at(TheSession().CurPhoneIdx) ==
+                TheSession().PhoneBook.at(i)) {
+              TheSession().CurPhoneIdx = i;
+              port::SafeCopy(
+                  phone_num,
+                  TheSession().PhoneBook.at(TheSession().CurPhoneIdx)->Number);
               numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
-              phonelist.Set_Selected_Index(Session.CurPhoneIdx);
+              phonelist.Set_Selected_Index(TheSession().CurPhoneIdx);
             }
           }
           changed = true;
@@ -6390,17 +6458,17 @@ static int Phone_Dialog() {
         /*...............................................................
         Do nothing if no entry is selected.
         ...............................................................*/
-        if (Session.CurPhoneIdx == -1) {
+        if (TheSession().CurPhoneIdx == -1) {
           break;
         }
 
         /*...............................................................
         Delete the current item & rebuild the phone listbox
         ...............................................................*/
-        Session.PhoneBook.Delete(Session.CurPhoneIdx);
+        TheSession().PhoneBook.Delete(TheSession().CurPhoneIdx);
         Build_Phone_Listbox(&phonelist, &numedit, phone_num);
 
-        if (Session.CurPhoneIdx == -1) {
+        if (TheSession().CurPhoneIdx == -1) {
           *phone_num = 0;
           numedit.Set_Text(phone_num, PhoneEntryClass::PHONE_MAX_NUM);
         }
@@ -6424,9 +6492,9 @@ static int Phone_Dialog() {
         - Copy the phone number into it
         - Set settings to defaults
         ...............................................................*/
-        if (Session.CurPhoneIdx == -1 ||
+        if (TheSession().CurPhoneIdx == -1 ||
             std::string_view(
-                Session.PhoneBook.at(Session.CurPhoneIdx)->Number) !=
+                TheSession().PhoneBook.at(TheSession().CurPhoneIdx)->Number) !=
                 phone_num) {
           if (std::string_view(phone_num).empty()) {  // do not dial
             dialbtn.IsPressed = true;
@@ -6445,14 +6513,14 @@ static int Phone_Dialog() {
           p_entry->Settings.CallWaitStringIndex = kCallWaitCustom;
           p_entry->Settings.CallWaitString[0] = 0;
 
-          Session.PhoneBook.Add(p_entry);
+          TheSession().PhoneBook.Add(p_entry);
           Build_Phone_Listbox(&phonelist, &numedit, phone_num);
           /*............................................................
           Set the current listbox index to the newly-added item.
           ............................................................*/
-          for (int i = 0; i < Session.PhoneBook.Count(); i++) {
-            if (p_entry == Session.PhoneBook.at(i)) {
-              Session.CurPhoneIdx = i;
+          for (int i = 0; i < TheSession().PhoneBook.Count(); i++) {
+            if (p_entry == TheSession().PhoneBook.at(i)) {
+              TheSession().CurPhoneIdx = i;
             }
           }
           changed = true;
@@ -6480,7 +6548,7 @@ static int Phone_Dialog() {
   Save any changes we've made to the phone list or settings
   ------------------------------------------------------------------------*/
   if (changed) {
-    Session.Write_MultiPlayer_Settings();
+    TheSession().Write_MultiPlayer_Settings();
   }
 
   /*------------------------------------------------------------------------
@@ -6530,11 +6598,11 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
   /*
   ** Now sort the phone list by name then number
   */
-  if (Session.PhoneBook.Count() > 0) {
+  if (TheSession().PhoneBook.Count() > 0) {
     std::vector<PhoneEntryClass*> sorted;
-    sorted.reserve(base::ToSize(Session.PhoneBook.Count()));
-    for (int i = 0; i < Session.PhoneBook.Count(); ++i) {
-      sorted.push_back(Session.PhoneBook.at(i));
+    sorted.reserve(base::ToSize(TheSession().PhoneBook.Count()));
+    for (int i = 0; i < TheSession().PhoneBook.Count(); ++i) {
+      sorted.push_back(TheSession().PhoneBook.at(i));
     }
     std::ranges::sort(
         sorted, [](const PhoneEntryClass* left, const PhoneEntryClass* right) {
@@ -6545,35 +6613,35 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
           }
           return result < 0;
         });
-    for (int i = 0; i < Session.PhoneBook.Count(); ++i) {
-      Session.PhoneBook.at(i) = sorted.at(base::ToSize(i));
+    for (int i = 0; i < TheSession().PhoneBook.Count(); ++i) {
+      TheSession().PhoneBook.at(i) = sorted.at(base::ToSize(i));
     }
   }
 
   /*........................................................................
   Build the list
   ........................................................................*/
-  for (int i = 0; i < Session.PhoneBook.Count(); i++) {
-    if (std::string_view(Session.PhoneBook.at(i)->Name).empty()) {
+  for (int i = 0; i < TheSession().PhoneBook.Count(); i++) {
+    if (std::string_view(TheSession().PhoneBook.at(i)->Name).empty()) {
       port::SafeCopy(phonename, " ");
     } else {
-      port::SafeCopy(phonename, Session.PhoneBook.at(i)->Name);
+      port::SafeCopy(phonename, TheSession().PhoneBook.at(i)->Name);
     }
 
-    if (std::string_view(Session.PhoneBook.at(i)->Number).empty()) {
+    if (std::string_view(TheSession().PhoneBook.at(i)->Number).empty()) {
       port::SafeCopy(phonenum, " ");
     } else {
-      if (std::string_view(Session.PhoneBook.at(i)->Number).size() < 14) {
-        port::SafeCopy(phonenum, Session.PhoneBook.at(i)->Number);
+      if (std::string_view(TheSession().PhoneBook.at(i)->Number).size() < 14) {
+        port::SafeCopy(phonenum, TheSession().PhoneBook.at(i)->Number);
       } else {
-        port::SafeCopy(phonenum, Session.PhoneBook.at(i)->Number);
+        port::SafeCopy(phonenum, TheSession().PhoneBook.at(i)->Number);
         port::SafeAppend(phonenum, "...");
       }
     }
 
-    if (Session.PhoneBook.at(i)->Settings.Baud != -1) {
+    if (TheSession().PhoneBook.at(i)->Settings.Baud != -1) {
       absl::SNPrintF(item, sizeof(item), "%s\t%s\t%d", phonename, phonenum,
-                     Session.PhoneBook.at(i)->Settings.Baud);
+                     TheSession().PhoneBook.at(i)->Settings.Baud);
     } else {
       absl::SNPrintF(item, sizeof(item), "%s\t%s\t[%s]", phonename, phonenum,
                      Text_String(TXT_DEFAULT));
@@ -6585,22 +6653,22 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
   /*........................................................................
   Init the current phone book index
   ........................................................................*/
-  if (list->Count() == 0 || Session.CurPhoneIdx < -1) {
-    Session.CurPhoneIdx = -1;
+  if (list->Count() == 0 || TheSession().CurPhoneIdx < -1) {
+    TheSession().CurPhoneIdx = -1;
   } else {
-    if (Session.CurPhoneIdx >= list->Count()) {
-      Session.CurPhoneIdx = 0;
+    if (TheSession().CurPhoneIdx >= list->Count()) {
+      TheSession().CurPhoneIdx = 0;
     }
   }
 
   /*........................................................................
   Fill in phone number edit buffer
   ........................................................................*/
-  if (Session.CurPhoneIdx > -1) {
+  if (TheSession().CurPhoneIdx > -1) {
     port::SafeCopy(std::span(buf).first(PhoneEntryClass::PHONE_MAX_NUM),
-                   Session.PhoneBook.at(Session.CurPhoneIdx)->Number);
+                   TheSession().PhoneBook.at(TheSession().CurPhoneIdx)->Number);
     edit->Set_Text(buf, PhoneEntryClass::PHONE_MAX_NUM);
-    list->Set_Selected_Index(Session.CurPhoneIdx);
+    list->Set_Selected_Index(TheSession().CurPhoneIdx);
   }
 }
 
@@ -6740,7 +6808,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   ........................................................................*/
   if (phone->Settings.Port == 0 || phone->Settings.IRQ == -1 ||
       phone->Settings.Baud == -1) {
-    settings = Session.SerialDefaults;
+    settings = TheSession().SerialDefaults;
     defaultbtn.Turn_On();
     custom = false;
   } else {
@@ -6914,7 +6982,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   **	Turn modem servicing off in the callback routine.
   */
-  Session.ModemService = false;
+  TheSession().ModemService = false;
 
   // save for later to reconnect
 
@@ -6924,12 +6992,12 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   if (reconnect) {
     if (carrier & kCdSet) {
       connected = true;
-      Session.ModemService = true;
+      TheSession().ModemService = true;
       return connected;
     }
   } else if (carrier & kCdSet) {
     TheNetwork().null_modem().Hangup_Modem();
-    Session.ModemService = false;
+    TheSession().ModemService = false;
   }
 
   NullModemClass::Setup_Modem_Echo(Modem_Echo);
@@ -6956,7 +7024,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
           NullModemClass::Print_EchoBuf();
           TheNetwork().null_modem().Reset_EchoBuf();
           WWMessageBox().Process(TXT_UNABLE_FIND_MODEM);
-          Session.ModemService = true;
+          TheSession().ModemService = true;
           return connected;
         }
         break;
@@ -6973,14 +7041,14 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
           NullModemClass::Print_EchoBuf();
           TheNetwork().null_modem().Reset_EchoBuf();
           WWMessageBox().Process(TXT_UNABLE_FIND_MODEM);
-          Session.ModemService = true;
+          TheSession().ModemService = true;
           return connected;
         }
         break;
 
       default:
         WWMessageBox().Process(TXT_UNABLE_FIND_MODEM);
-        Session.ModemService = true;
+        TheSession().ModemService = true;
         return connected;
     }
 
@@ -6990,7 +7058,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     TheNetwork().null_modem().Reset_EchoBuf();
     WWMessageBox().Process(TXT_ERROR_IN_INITSTRING);
     //		WWMessageBox().Process( "Error in the InitString." );
-    Session.ModemService = true;
+    TheSession().ModemService = true;
     return connected;
   }
 
@@ -7057,7 +7125,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
 
     case DIAL_CANCELED:
       TheNetwork().null_modem().Hangup_Modem();
-      Session.ModemService = false;
+      TheSession().ModemService = false;
       WWMessageBox().Process(TXT_DIALING_CANCELED);
       connected = false;
       break;
@@ -7077,7 +7145,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     Theme.Play_Song(old_theme);
   }
 
-  Session.ModemService = true;
+  TheSession().ModemService = true;
   return connected;
 
 } /* end of Dial_Modem */
@@ -7088,7 +7156,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   **	Turn modem servicing off in the callback routine.
   */
-  Session.ModemService = false;
+  TheSession().ModemService = false;
 
   // save for later to reconnect
 
@@ -7098,12 +7166,12 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   if (reconnect) {
     if (carrier & kCdSet) {
       connected = true;
-      Session.ModemService = true;
+      TheSession().ModemService = true;
       return connected;
     }
   } else if (carrier & kCdSet) {
     TheNetwork().null_modem().Hangup_Modem();
-    Session.ModemService = false;
+    TheSession().ModemService = false;
   }
 
   NullModemClass::Setup_Modem_Echo(Modem_Echo);
@@ -7130,7 +7198,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
           NullModemClass::Print_EchoBuf();
           TheNetwork().null_modem().Reset_EchoBuf();
           WWMessageBox().Process(TXT_UNABLE_FIND_MODEM);
-          Session.ModemService = true;
+          TheSession().ModemService = true;
           return connected;
         }
         break;
@@ -7147,14 +7215,14 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
           NullModemClass::Print_EchoBuf();
           TheNetwork().null_modem().Reset_EchoBuf();
           WWMessageBox().Process(TXT_UNABLE_FIND_MODEM);
-          Session.ModemService = true;
+          TheSession().ModemService = true;
           return connected;
         }
         break;
 
       default:
         WWMessageBox().Process(TXT_UNABLE_FIND_MODEM);
-        Session.ModemService = true;
+        TheSession().ModemService = true;
         return connected;
     }
   } else if (modemstatus == -1) {
@@ -7162,7 +7230,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     NullModemClass::Print_EchoBuf();
     TheNetwork().null_modem().Reset_EchoBuf();
     WWMessageBox().Process(TXT_ERROR_IN_INITSTRING);
-    Session.ModemService = true;
+    TheSession().ModemService = true;
     return connected;
   }
 
@@ -7235,7 +7303,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     Theme.Play_Song(old_theme);
   }
 
-  Session.ModemService = true;
+  TheSession().ModemService = true;
   return connected;
 
 } /* end of Answer_Modem */

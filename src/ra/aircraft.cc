@@ -320,8 +320,9 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house)
   *are created
   ** automatically, not bought.
   */
-  //	if (/*classid != AIRCRAFT_CARGO && */ Session.Type == GAME_INTERNET) {
-  //		House->AircraftTotals->Increment_Unit_Total((int)classid);
+  //	if (/*classid != AIRCRAFT_CARGO && */ TheSession().Type ==
+  // GAME_INTERNET) {
+  // House->AircraftTotals->Increment_Unit_Total((int)classid);
   //	}
 }
 
@@ -721,7 +722,7 @@ int AircraftClass::Mission_Hunt() {
           return 1;
         }
         if (!Team.Is_Valid()) {
-          if (Session.Type != GAME_NORMAL) {
+          if (TheSession().Type != GAME_NORMAL) {
             Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
           }
           if (!Target_Legal(TarCom)) {
@@ -919,7 +920,7 @@ int AircraftClass::Mission_Hunt() {
       Enter_Idle_Mode();
     } else {
       if (!Target_Legal(TarCom)) {
-        if (Session.Type != GAME_NORMAL) {
+        if (TheSession().Type != GAME_NORMAL) {
           Assign_Target(Greatest_Threat(THREAT_TIBERIUM));
         }
         if (!Target_Legal(TarCom)) {
@@ -2383,7 +2384,7 @@ ActionType AircraftClass::What_Action(CELL cell) const {
 
   ActionType action = FootClass::What_Action(cell);
 
-  if (action == ACTION_MOVE && Session.Type == GAME_NORMAL &&
+  if (action == ACTION_MOVE && TheSession().Type == GAME_NORMAL &&
       !TheMap().at(cell).IsVisible) {
     action = ACTION_NOMOVE;
   }
@@ -3148,7 +3149,8 @@ MoveType AircraftClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
     }
   }
 
-  if (Session.Type == GAME_NORMAL && IsOwnedByPlayer && !cellptr->IsMapped) {
+  if (TheSession().Type == GAME_NORMAL && IsOwnedByPlayer &&
+      !cellptr->IsMapped) {
     return MOVE_NO;
   }
 
@@ -3204,7 +3206,8 @@ TARGET AircraftClass::Good_Fire_Location(TARGET target) const {
         const CELL newcell = Coord_Cell(newcoord);
 
         if (TheMap().In_Radar(newcell) &&
-            (Session.Type != GAME_NORMAL || TheMap().at(newcell).IsVisible) &&
+            (TheSession().Type != GAME_NORMAL ||
+             TheMap().at(newcell).IsVisible) &&
             Cell_Seems_Ok(newcell, true)) {
           int dist = 0;
           if (altcoord != 0) {

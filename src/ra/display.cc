@@ -1508,7 +1508,7 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
     if (house->RadarSpied & base::Bit<uint32_t>(ThePlayer()->Class->House)) {
       house = ThePlayer();
     }
-    if (Session.Type == GAME_NORMAL && house->Is_Ally(ThePlayer())) {
+    if (TheSession().Type == GAME_NORMAL && house->Is_Ally(ThePlayer())) {
       house = ThePlayer();
     }
   }
@@ -1757,7 +1757,7 @@ void DisplayClass::Draw_It(bool forced) {
     ** flag all cells covered by the messages to redraw.  This will prevent
     ** messages from smearing the map if it scrolls.
     */
-    const int num = Session.Messages.Num_Messages();
+    const int num = TheSession().Messages.Num_Messages();
     if (num > 0) {
       // One message covers a single map row, but the first one also claims the
       // row below it. At most five rows are ever covered.

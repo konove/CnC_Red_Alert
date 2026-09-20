@@ -294,7 +294,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
         uncomp.ReadObject(classid);
 
         if ((classid != OVERLAY_NONE) &&
-            (Session.Type == GAME_NORMAL ||
+            (TheSession().Type == GAME_NORMAL ||
              !OverlayTypeClass::As_Reference(classid).IsCrate) &&
             (cell >= MAP_CELL_W && cell <= MAP_CELL_TOTAL - MAP_CELL_W))
 
@@ -339,7 +339,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
       **	Don't allow placement of crates in the multiplayer scenarios.
       */
       if ((classid != OVERLAY_NONE &&
-           (Session.Type == GAME_NORMAL ||
+           (TheSession().Type == GAME_NORMAL ||
             !OverlayTypeClass::As_Reference(classid).IsCrate)) &&
           (cell >= MAP_CELL_W && cell <= MAP_CELL_TOTAL - MAP_CELL_W))
       /*

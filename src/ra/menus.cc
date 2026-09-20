@@ -816,7 +816,7 @@ int Main_Menu(int32_t /*unused*/) {
               KeyboardClass::Down(KN_RSHIFT)) &&
              Coordinates_In_Region(Keyboard->MouseQX, Keyboard->MouseQY, 520, 0,
                                    640, 100))) {
-          AntsEnabled = true;
+          TheWorld().ants_enabled() = true;
           process = false;
           retval = 2;  //	To match SEL_START_NEW_GAME
         }

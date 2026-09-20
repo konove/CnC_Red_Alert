@@ -495,7 +495,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
   **	Trap 'F2' regardless of whether we're in game or editor mode
   */
   if (TheDebugState().developer_mode() &&
-      ((input == KN_F2 && Session.Type == GAME_NORMAL) ||
+      ((input == KN_F2 && TheSession().Type == GAME_NORMAL) ||
        input == (KN_F2 | KN_CTRL_BIT))) {
     TheWorld().scenario_init() = 0;
 
@@ -1981,7 +1981,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
     /*
     **	Invoke game callback.
     */
-    if (Session.Type == GAME_NORMAL) {
+    if (TheSession().Type == GAME_NORMAL) {
       ServiceRealTime();
     } else if (RunFrame()) {
       process = false;

@@ -44,6 +44,7 @@
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
+#include "base/installed.h"
 #include "port/platform.h"
 #include "ra/connect.h"
 #include "ra/defines.h"
@@ -568,6 +569,14 @@ class SessionClass {
   CommProtocolType CommProtocol{DEFAULT_COMM_PROTOCOL};
 
   //.....................................................................
+  // Whether this multiplayer game runs under the Aftermath rules, which
+  // decides whether RULES.INI is followed by AFTRMATH.INI and whether the
+  // expansion's units can be built. Not saved: the host tells every guest
+  // when the game is set up.
+  //.....................................................................
+  bool IsAftermath{false};
+
+  //.....................................................................
   // Game options
   //.....................................................................
   GameOptionsType Options{};
@@ -726,6 +735,12 @@ extern template void SessionClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void SessionClass::Serialize<ArchiveReader>(ArchiveReader&);
 
 bool Is_Mission_126x126(const char* file_name);
+
+// Returns the SessionClass that Game installed. CHECK-fails outside a
+// Game's lifetime unless a test installed its own.
+inline SessionClass& TheSession() {
+  return base::Installed<SessionClass>::Get();
+}
 
 #endif  // CNC_RED_ALERT_RA_SESSION_H_
 

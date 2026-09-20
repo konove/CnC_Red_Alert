@@ -416,7 +416,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     */
     case TACTION_TEXT_TRIGGER: {
       const char* message = TheAssets().tutorial_text(Data.Value);
-      Session.Messages.Add_Message(
+      TheSession().Messages.Add_Message(
           nullptr, 0, message, PCOLOR_GREEN,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
           TheRules().MessageDelay * kTicksPerMinute);

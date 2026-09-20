@@ -92,7 +92,6 @@
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/foot.h"
 #include "ra/game_clock.h"
 #include "ra/globals.h"
@@ -500,7 +499,7 @@ void TeamClass::AI() {
       *created as a *	result of reinforcement logic and no longer needs to
       *exist when there *	are no more team members.
       */
-      if (IsHasBeen || Session.Type != GAME_NORMAL) {
+      if (IsHasBeen || TheSession().Type != GAME_NORMAL) {
         /*
         **	If this team had no members (i.e., the team object wasn't
         *terminated by some *	outside means), then pass through the logic
@@ -631,9 +630,10 @@ void TeamClass::AI() {
   **	Only try to recruit members for a non player controlled team.
   */
   if ((!IsMoving || (!IsFullStrength && Class->IsReinforcable)) &&
-      (!House->IsHuman || !IsHasBeen) && Session.Type == GAME_NORMAL) {
+      (!House->IsHuman || !IsHasBeen) && TheSession().Type == GAME_NORMAL) {
     //	if ((!IsMoving || (!IsFullStrength && Class->IsReinforcable)) &&
-    //((/*!House->IsHuman ||*/ !IsHasBeen) && Session.Type == GAME_NORMAL)) {
+    //((/*!House->IsHuman ||*/ !IsHasBeen) && TheSession().Type == GAME_NORMAL))
+    //{
     for (int index = 0; index < Class->ClassCount; index++) {
       if (std::cmp_less(base::At(Quantity, index),
                         base::At(Class->Members, index).Quantity)) {

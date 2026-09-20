@@ -71,7 +71,7 @@ void Toggle_Formation() {
   bool set_form = false;
 
   // Recording support
-  if (Session.Record) {
+  if (TheSession().Record) {
     RecordFormationEvent();
   }
 
@@ -257,7 +257,7 @@ void Toggle_Formation() {
 // group of ten units produces one acknowledgement rather than ten.
 void Handle_Team(const int team, const int action) {
   // Recording support
-  if (Session.Record) {
+  if (TheSession().Record) {
     RecordTeamEvent(team, action);
   }
 

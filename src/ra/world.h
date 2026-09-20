@@ -150,6 +150,14 @@ class World {
     return scenario_crc_;
   }
 
+  // Whether this is one of the giant ant missions, which the scenario name
+  // gives away, and whether a submarine surfaced this frame so the sonar
+  // pulse can reveal it.
+  bool& ants_enabled() ABSL_ATTRIBUTE_LIFETIME_BOUND { return ants_enabled_; }
+  bool& auto_sonar_pulse() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return auto_sonar_pulse_;
+  }
+
   // What the scenario's synchronized random generator was started from.
   // Every machine in a multiplayer game seeds from this one value, so the
   // saved game and the recording both store it.
@@ -207,6 +215,8 @@ class World {
   int scenario_init_ = 0;
   uint32_t scenario_crc_ = 0;
   int seed_ = 0;
+  bool ants_enabled_ = false;
+  bool auto_sonar_pulse_ = false;
   int build_level_ = 10;
   HousesType whom_{};
   CELL current_cell_ = 0;

@@ -127,7 +127,6 @@
 #include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/globals.h"
 #include "ra/heap.h"
@@ -1637,7 +1636,7 @@ bool ObjectClass::Mark(MarkType mark) {
     **	placed down.
     */
     if (mark == MARK_DOWN && !IsDown) {
-      if (tech && Session.Type == GAME_NORMAL &&
+      if (tech && TheSession().Type == GAME_NORMAL &&
           In_Which_Layer() == LAYER_GROUND) {
         TheMap().at(cell).Adjust_Threat(house, threat);
       }
@@ -1651,7 +1650,7 @@ bool ObjectClass::Mark(MarkType mark) {
     **	lifted up from the map.
     */
     if (mark == MARK_UP && IsDown) {
-      if (tech && Session.Type == GAME_NORMAL &&
+      if (tech && TheSession().Type == GAME_NORMAL &&
           In_Which_Layer() == LAYER_GROUND) {
         TheMap().at(cell).Adjust_Threat(house, -threat);
       }

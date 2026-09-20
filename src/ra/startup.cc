@@ -140,11 +140,11 @@ static void ApplyStartupOptions(const StartupOptions& options) {
   Special.IsInert = options.inert_weapons;
   Special.IsSpeedBuild = options.speed_build;
 
-  Session.NetStealth = options.net_stealth;
-  Session.NetProtect = !options.outside_messages;
-  Session.Attract = options.attract;
-  Session.Record = options.record;
-  Session.Play = options.play;
+  TheSession().NetStealth = options.net_stealth;
+  TheSession().NetProtect = !options.outside_messages;
+  TheSession().Attract = options.attract;
+  TheSession().Record = options.record;
+  TheSession().Play = options.play;
 
   if (options.disable_fades) {
     PaletteClass::DisableFades();
@@ -191,8 +191,8 @@ static void ReadConfigOptions(const INIClass& ini,
     }
   }
   if (bridge_net.has_value()) {
-    Session.IsBridge = 1;
-    Session.BridgeNet = *bridge_net;
+    TheSession().IsBridge = 1;
+    TheSession().BridgeNet = *bridge_net;
   }
 }
 

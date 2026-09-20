@@ -369,7 +369,7 @@ bool Start_Scenario(char* name, bool briefing) {
   **	Play the winning movie and then start the next scenario.
   */
   RequiredCD = -1;
-  //	if (RequiredCD != -2 && Session.Type == GAME_NORMAL) {
+  //	if (RequiredCD != -2 && TheSession().Type == GAME_NORMAL) {
   //		if (Scen.Scenario == 1)
   //			RequiredCD = -1;
   //		else {
@@ -402,8 +402,9 @@ bool Start_Scenario(char* name, bool briefing) {
     absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA",
                    VQName.at(TheScenario().BriefMovie));
   }
-  if (Session.Type == GAME_NORMAL && (TheScenario().BriefMovie == VQ_NONE ||
-                                      !GameFile(buffer).IsAvailable())) {
+  if (TheSession().Type == GAME_NORMAL &&
+      (TheScenario().BriefMovie == VQ_NONE ||
+       !GameFile(buffer).IsAvailable())) {
     /*
     ** Make sure the mouse is visible before showing the restatement.
     */
@@ -458,7 +459,7 @@ bool Read_Scenario(char* name) {
   TheWorld().scenario_init()++;
   if (Read_Scenario_INI(name)) {
     bool readini = false;
-    switch (Session.Type) {
+    switch (TheSession().Type) {
       case GAME_NORMAL:
         readini = false;
         break;
@@ -468,7 +469,7 @@ bool Read_Scenario(char* name) {
       case GameType::GAME_NULL_MODEM:
       case GameType::GAME_IPX:
       default:
-        readini = bAftermathMultiplayer;
+        readini = TheSession().IsAftermath;
         break;
     }
     if (readini) {
@@ -549,7 +550,7 @@ void Fill_In_Data() {
   */
   if (!TheDebugState().map_editor_active()) {
     TheMap().Activate(1);
-    //		if (Session.Type == GAME_NORMAL) {
+    //		if (TheSession().Type == GAME_NORMAL) {
     base::At(TheScenario().Views, 0) = base::At(TheScenario().Views, 1) =
         base::At(TheScenario().Views, 2) = base::At(TheScenario().Views, 3) =
             base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint);
@@ -782,7 +783,7 @@ void Clear_Scenario() {
   }
 
   // For endgame auto-sonar pulse.
-  bAutoSonarPulse = false;
+  TheWorld().auto_sonar_pulse() = false;
 
   // Stalemate games.
   TheScenario().bLocalProposesDraw = false;
@@ -814,8 +815,8 @@ void Do_Win() {
   ** If this is a multiplayer game, clear the game's name so we won't respond
   ** to game queries any more (in ServiceRealTime)
   */
-  if (Session.Type != GAME_NORMAL) {
-    base::At(Session.GameName, 0) = 0;
+  if (TheSession().Type != GAME_NORMAL) {
+    base::At(TheSession().GameName, 0) = 0;
   }
 
   /*
@@ -829,8 +830,8 @@ void Do_Win() {
   ** score and map selection, don't increment scenario, and set it to
   ** variation B.
   */
-  if (Session.Type != GAME_NORMAL || !TheScenario().IsSkipScore ||
-      AntsEnabled) {
+  if (TheSession().Type != GAME_NORMAL || !TheScenario().IsSkipScore ||
+      TheWorld().ants_enabled()) {
     /*
     **	Announce win to player.
     */
@@ -852,13 +853,13 @@ void Do_Win() {
   /*
   ** Stop here if this is a multiplayer game.
   */
-  if (Session.Type != GAME_NORMAL) {
-    if (!Session.Play) {
-      Session.GamesPlayed++;
+  if (TheSession().Type != GAME_NORMAL) {
+    if (!TheSession().Play) {
+      TheSession().GamesPlayed++;
       Multi_Score_Presentation();
-      Session.CurGame++;
-      if (Session.CurGame >= MAX_MULTI_GAMES) {
-        Session.CurGame = MAX_MULTI_GAMES - 1;
+      TheSession().CurGame++;
+      if (TheSession().CurGame >= MAX_MULTI_GAMES) {
+        TheSession().CurGame = MAX_MULTI_GAMES - 1;
       }
     }
     GameActive = false;
@@ -881,7 +882,7 @@ void Do_Win() {
   /*
   **	Do the ending screens only if not playing back a recorded game.
   */
-  if (!Session.Play) {
+  if (!TheSession().Play) {
     /*
     **	If the score presentation should be performed, then do
     **	so now.
@@ -894,7 +895,7 @@ void Do_Win() {
     if (TheScenario().IsOneTimeOnly) {
       GameActive = false;
       Show_Mouse();
-      AntsEnabled = false;
+      TheWorld().ants_enabled() = false;
       return;
     }
 
@@ -911,7 +912,7 @@ void Do_Win() {
       Show_Who_Was_Responsible();
       GameActive = false;
       Show_Mouse();
-      AntsEnabled = false;
+      TheWorld().ants_enabled() = false;
       return;
     }
 
@@ -920,7 +921,7 @@ void Do_Win() {
     ** score and map selection, don't increment scenario, and set it to
     ** variation B.
     */
-    if (AntsEnabled) {
+    if (TheWorld().ants_enabled()) {
       // The ant campaign has neither a mission map nor variants.
       TheScenario().AdvanceToNextScenario();
     } else if (TheScenario().IsNoMapSel) {
@@ -1036,8 +1037,8 @@ void Do_Lose() {
   ** If this is a multiplayer game, clear the game's name so we won't respond
   ** to game queries any more (in ServiceRealTime)
   */
-  if (Session.Type != GAME_NORMAL) {
-    base::At(Session.GameName, 0) = 0;
+  if (TheSession().Type != GAME_NORMAL) {
+    base::At(TheSession().GameName, 0) = 0;
   }
 
   /*
@@ -1064,13 +1065,13 @@ void Do_Lose() {
   /*
   ** Stop here if this is a multiplayer game.
   */
-  if (Session.Type != GAME_NORMAL) {
-    if (!Session.Play) {
-      Session.GamesPlayed++;
+  if (TheSession().Type != GAME_NORMAL) {
+    if (!TheSession().Play) {
+      TheSession().GamesPlayed++;
       Multi_Score_Presentation();
-      Session.CurGame++;
-      if (Session.CurGame >= MAX_MULTI_GAMES) {
-        Session.CurGame = MAX_MULTI_GAMES - 1;
+      TheSession().CurGame++;
+      if (TheSession().CurGame >= MAX_MULTI_GAMES) {
+        TheSession().CurGame = MAX_MULTI_GAMES - 1;
       }
     }
     GameActive = false;
@@ -1089,7 +1090,7 @@ void Do_Lose() {
   */
   ThePalettes().game_palette().Set();
   Show_Mouse();
-  if (!Session.Play &&
+  if (!TheSession().Play &&
       !WWMessageBox().Process(TXT_TO_REPLAY, TXT_YES, TXT_NO)) {
     Hide_Mouse();
     Keyboard->Clear();
@@ -1127,8 +1128,8 @@ void Do_Draw() {
   ** If this is a multiplayer game, clear the game's name so we won't respond
   ** to game queries any more (in ServiceRealTime)
   */
-  if (Session.Type != GAME_NORMAL) {
-    base::At(Session.GameName, 0) = 0;
+  if (TheSession().Type != GAME_NORMAL) {
+    base::At(TheSession().GameName, 0) = 0;
   }
 
   /*
@@ -1155,12 +1156,12 @@ void Do_Draw() {
   /*
   ** Stop here if this is a multiplayer game.
   */
-  if (!Session.Play) {
-    Session.GamesPlayed++;
+  if (!TheSession().Play) {
+    TheSession().GamesPlayed++;
     Multi_Score_Presentation();
-    Session.CurGame++;
-    if (Session.CurGame >= MAX_MULTI_GAMES) {
-      Session.CurGame = MAX_MULTI_GAMES - 1;
+    TheSession().CurGame++;
+    if (TheSession().CurGame >= MAX_MULTI_GAMES) {
+      TheSession().CurGame = MAX_MULTI_GAMES - 1;
     }
   }
   GameActive = false;
@@ -1891,7 +1892,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   ** have already verified its existance. ST 3/1/97 4:52PM.
   */
   // Avoid CD check if official scenario was downloaded.
-  if ((Session.Type == GAME_NORMAL || Session.ScenarioIsOfficial) &&
+  if ((TheSession().Type == GAME_NORMAL || TheSession().ScenarioIsOfficial) &&
       !absl::EqualsIgnoreCase(TheScenario().ScenarioName, "download.tmp")) {
     /*
     ** If this is scenario 1 then it should be on all CDs unless its an ant
@@ -1908,7 +1909,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
       *are on
       ** all CDs.
       */
-      if (Session.Type != GAME_NORMAL) {
+      if (TheSession().Type != GAME_NORMAL) {
         RequiredCD = -1;  // default that any CD will do.
         // If it's a counterstrike mission, require the counterstrike CD, unless
         // the Aftermath CD is already in the drive, in which case, leave it
@@ -1963,7 +1964,8 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
 
     const int cd_index = Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60);
     if ((!Using_DVD() || cd_index != 5) && cd_index != RequiredCD) {
-      if ((RequiredCD == 0 || RequiredCD == 1) && Session.Type == GAME_NORMAL) {
+      if ((RequiredCD == 0 || RequiredCD == 1) &&
+          TheSession().Type == GAME_NORMAL) {
         TheScreen().visible_view().Clear();
       }
       ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
@@ -2002,22 +2004,22 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     base::At(NameOverride, index) = nullptr;
     base::At(NameIDOverride, index) = 0;
   }
-  if (Session.Type == GAME_NORMAL) {
+  if (TheSession().Type == GAME_NORMAL) {
     Special.IsShadowGrow = false;
   }
 
-  Session.Messages.Reset();
-  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
+  TheSession().Messages.Reset();
+  //	TheSession().Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
-  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
+  //	TheSession().Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
-  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
+  //	TheSession().Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
-  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
+  //	TheSession().Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
-  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
+  //	TheSession().Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
-  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
+  //	TheSession().Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
   WeaponTypeClass::As_Pointer(WEAPON_FLAMER)->Sound = VOC_NONE;
   InfantryTypeClass::As_Reference(INFANTRY_THIEF).IsDoubleOwned = false;
@@ -2133,7 +2135,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	Assign PlayerPtr by reading the player's house from the INI;
   **	Must be done before any TechnoClass objects are created.
   */
-  if (Session.Type == GAME_NORMAL) {
+  if (TheSession().Type == GAME_NORMAL) {
     ThePlayer() = HouseClass::As_Pointer(
         ini.Get_HousesType(BASIC, "Player", HOUSE_GREECE));
     ThePlayer()->Assign_Handicap(TheScenario().Difficulty);
@@ -2246,12 +2248,12 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	- Remove any flag spot overlays lying around
   **	- If capture-the-flag is enabled, assign flags to cells.
   */
-  if (Session.Type != GAME_NORMAL /*|| Scen.ScenPlayer == SCEN_PLAYER_2PLAYER || Scen.ScenPlayer == SCEN_PLAYER_MPLAYER*/) {
+  if (TheSession().Type != GAME_NORMAL /*|| Scen.ScenPlayer == SCEN_PLAYER_2PLAYER || Scen.ScenPlayer == SCEN_PLAYER_MPLAYER*/) {
     /*
     **	If Ghosts are disabled and we're not editing, remove computer players
     **	(Must be done after all objects are read in from the INI)
     */
-    if (Session.Options.AIPlayers + Session.Players.Count() <
+    if (TheSession().Options.AIPlayers + TheSession().Players.Count() <
             TheRules().MaxPlayers &&
         !TheDebugState().map_editor_active()) {
       Remove_AI_Players();
@@ -2260,8 +2262,8 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     /*
     **	Units must be created for each house.  If bases are ON, this routine
     **	will create an MCV along with the units; otherwise, it will just create
-    **	a whole bunch of units.  Session.Options.UnitCount is the total # of
-    *units *	to create.
+    **	a whole bunch of units.  TheSession().Options.UnitCount is the total #
+    * of units *	to create.
     */
     if (!TheDebugState().map_editor_active()) {
       const int save_init =
@@ -2275,8 +2277,8 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     **	Place crates if random crates are enabled for
     **	this scenario.
     */
-    if (Session.Options.Goodies) {
-      int count = std::max(TheRules().CrateMinimum, Session.NumPlayers);
+    if (TheSession().Options.Goodies) {
+      int count = std::max(TheRules().CrateMinimum, TheSession().NumPlayers);
       count = std::min(count, TheRules().CrateMaximum);
       for (int index = 0; index < count; index++) {
         TheMap().Place_Random_Crate();
@@ -2294,8 +2296,8 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   /*
   **	Return with flag saying that the scenario file was read.
   */
-  if (Is_Aftermath_Installed() && (Session.Type == GAME_SKIRMISH)) {
-    bAftermathMultiplayer = TheRules().NewUnitsEnabled = true;
+  if (Is_Aftermath_Installed() && (TheSession().Type == GAME_SKIRMISH)) {
+    TheSession().IsAftermath = TheRules().NewUnitsEnabled = true;
   }
 
   TheWorld().scenario_init()--;
@@ -2421,13 +2423,13 @@ void Assign_Houses() {
   // be sorted by their chosen color value (this value must be unique among
   // all the players).
   //------------------------------------------------------------------------
-  for (int i = 0; i < Session.Players.Count(); i++) {
+  for (int i = 0; i < TheSession().Players.Count(); i++) {
     //.....................................................................
     // Find the player with the lowest color index
     //.....................................................................
     int index = 0;
     PlayerColorType lowest_color = PCOLOR_NONE;
-    for (int j = 0; j < Session.Players.Count(); j++) {
+    for (int j = 0; j < TheSession().Players.Count(); j++) {
       //..................................................................
       // If we've already assigned this house, skip it.
       //..................................................................
@@ -2435,8 +2437,8 @@ void Assign_Houses() {
         continue;
       }
       if (lowest_color == PCOLOR_NONE ||
-          Session.Players.at(j)->Player.Color < lowest_color) {
-        lowest_color = Session.Players.at(j)->Player.Color;
+          TheSession().Players.at(j)->Player.Color < lowest_color) {
+        lowest_color = TheSession().Players.at(j)->Player.Color;
         index = j;
       }
     }
@@ -2445,7 +2447,7 @@ void Assign_Houses() {
     // Mark this player as having been assigned.
     //.....................................................................
     base::At(assigned, index) = 1;
-    color_used.at(Session.Players.at(index)->Player.Color) = true;
+    color_used.at(TheSession().Players.at(index)->Player.Color) = true;
 
     //.....................................................................
     // Assign the lowest-color'd player to the next available slot in the
@@ -2453,13 +2455,13 @@ void Assign_Houses() {
     //.....................................................................
     house = static_cast<HousesType>(i + static_cast<int>(HOUSE_MULTI1));
     housep = HouseClass::As_Pointer(house);
-    port::SafeCopy(housep->IniName, Session.Players.at(index)->Name);
+    port::SafeCopy(housep->IniName, TheSession().Players.at(index)->Name);
     // A second copy that stays put for the whole game -- see InitialName.
-    port::SafeCopy(housep->InitialName, Session.Players.at(index)->Name);
+    port::SafeCopy(housep->InitialName, TheSession().Players.at(index)->Name);
     housep->IsHuman = true;
-    housep->Init_Data(Session.Players.at(index)->Player.Color,
-                      Session.Players.at(index)->Player.House,
-                      Session.Options.Credits);
+    housep->Init_Data(TheSession().Players.at(index)->Player.Color,
+                      TheSession().Players.at(index)->Player.House,
+                      TheSession().Options.Credits);
     if (index == 0) {
       ThePlayer() = housep;
     }
@@ -2474,17 +2476,17 @@ void Assign_Houses() {
     //.....................................................................
     // Record where we placed this player
     //.....................................................................
-    Session.Players.at(index)->Player.ID = house;
+    TheSession().Players.at(index)->Player.ID = house;
 
     //		debugprint( "Assigned ID of %i to %s\n", house,
-    // Session.Players[index]->Name );
+    // TheSession().Players[index]->Name );
   }
 
   //------------------------------------------------------------------------
   // Now assign computer players to the remaining houses.
   //------------------------------------------------------------------------
-  for (int i = static_cast<int>(Session.Players.Count());
-       i < Session.Players.Count() + Session.Options.AIPlayers; i++) {
+  for (int i = static_cast<int>(TheSession().Players.Count());
+       i < TheSession().Players.Count() + TheSession().Options.AIPlayers; i++) {
     house = static_cast<HousesType>(i + static_cast<int>(HOUSE_MULTI1));
     housep = HouseClass::As_Pointer(house);
     const HousesType pref_house =
@@ -2513,26 +2515,26 @@ void Assign_Houses() {
 
     port::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
 
-    if (Session.Type != GAME_NORMAL) {
+    if (TheSession().Type != GAME_NORMAL) {
       housep->IQ = TheRules().MaxIQ;
     }
 
     housep->Init_Data(static_cast<PlayerColorType>(color), pref_house,
-                      Session.Options.Credits);
+                      TheSession().Options.Credits);
     housep->Control.TechLevel = base::At(build_tech, TheWorld().build_level());
     //		housep->Control.TechLevel = TheWorld().build_level();
 
     DiffType difficulty = TheScenario().CDifficulty;
 
-    if (Session.Players.Count() > 1 && TheRules().IsCompEasyBonus &&
+    if (TheSession().Players.Count() > 1 && TheRules().IsCompEasyBonus &&
         difficulty > DIFF_EASY) {
       difficulty = static_cast<DiffType>(static_cast<int>(difficulty) - 1);
     }
     housep->Assign_Handicap(difficulty);
   }
 
-  for (int i = static_cast<int>(Session.Players.Count()) +
-               Session.Options.AIPlayers;
+  for (int i = static_cast<int>(TheSession().Players.Count()) +
+               TheSession().Options.AIPlayers;
        i < TheRules().MaxPlayers; i++) {
     house = static_cast<HousesType>(i + static_cast<int>(HOUSE_MULTI1));
     housep = HouseClass::As_Pointer(house);
@@ -2562,7 +2564,7 @@ static void Remove_AI_Players() {
     HouseClass* housep = HouseClass::As_Pointer(house);
     if (!static_cast<bool>(housep->IsHuman)) {
       aicount++;
-      if (aicount > Session.Options.AIPlayers) {
+      if (aicount > TheSession().Options.AIPlayers) {
         housep->Clobber_All();
       }
     }
@@ -2651,7 +2653,8 @@ static void Create_Units(bool official) {
   /*
   **	Compute allowed # units
   */
-  int tot_units = Session.Options.UnitCount * 2 / 3;  // total # units to create
+  int tot_units =
+      TheSession().Options.UnitCount * 2 / 3;  // total # units to create
   if (u_limit == 0) {
     tot_units = 0;
   }
@@ -2679,7 +2682,7 @@ static void Create_Units(bool official) {
   **	Compute allowed # infantry
   */
   const int tot_infantry =
-      Session.Options.UnitCount - tot_units;  // total # infantry to create
+      TheSession().Options.UnitCount - tot_units;  // total # infantry to create
 
   /*
   **	Init # of each category to 0
@@ -2717,15 +2720,16 @@ static void Create_Units(bool official) {
   *waypoints are used *	if there are 4 or fewer players. Unofficial maps will
   *pick from all the *	available waypoints.
   */
-  int look_for = std::max(
-      4, static_cast<int>(Session.Players.Count()) + Session.Options.AIPlayers);
+  int look_for = std::max(4, static_cast<int>(TheSession().Players.Count()) +
+                                 TheSession().Options.AIPlayers);
   if (!official) {
     look_for = 8;
   }
 
   for (int waycount = 0; waycount < look_for; waycount++) {
     //	for (int waycount = 0; waycount < max(4,
-    // Session.Players.Count()+Session.Options.AIPlayers); waycount++) {
+    // TheSession().Players.Count()+TheSession().Options.AIPlayers); waycount++)
+    // {
     if (base::At(TheScenario().Waypoint, waycount) != -1) {
       base::At(waypts, num_waypts) = base::At(TheScenario().Waypoint, waycount);
       base::At(taken, num_waypts) = false;
@@ -2738,7 +2742,8 @@ static void Create_Units(bool official) {
   *randomly assign *	starting points until there is enough.
   */
   const int deficiency = look_for - num_waypts;
-  //	int deficiency = (Session.Players.Count() + Session.Options.AIPlayers) -
+  //	int deficiency = (TheSession().Players.Count() +
+  // TheSession().Options.AIPlayers) -
   // num_waypts;
   if (deficiency > 0) {
     for (int index = 0; index < deficiency; index++) {
@@ -2755,11 +2760,11 @@ static void Create_Units(bool official) {
 
   /*
   **	Loop through all houses.  Computer-controlled houses, with
-  *Session.Options.Bases *	ON, are treated as though bases are OFF (since
+  *TheSession().Options.Bases *	ON, are treated as though bases are OFF (since
   *we have no base-building *	AI logic.)
   */
   int numtaken = 0;
-  for (int slot = 0; slot < Session.MaxPlayers; slot++) {
+  for (int slot = 0; slot < TheSession().MaxPlayers; slot++) {
     const auto house =
         static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + slot);
     /*
@@ -2838,7 +2843,7 @@ static void Create_Units(bool official) {
     /*
     **	If Bases are ON, human & computer houses are treated differently
     */
-    if (Session.Options.Bases) {
+    if (TheSession().Options.Bases) {
       /*
       **	- For a human-controlled house:
       **	  - Set 'scaleval' to 1
