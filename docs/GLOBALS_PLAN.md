@@ -470,3 +470,55 @@ only where the two games' layouts already match.
   cleanly in both games with only the leaks phases 1 and 5 recorded. Note for future ASan runs on
   this machine: the NVIDIA GL driver accounts for about 2 MB of the LeakSanitizer report in both
   games and is not ours.
+- 2026-09-20: phases 8 and 9 done for both games (c06d0f0e..f2fb6c10). Phase 8 split four ways in
+  each game. `Options`, `Special`, `Theme` and `Audio` were already classes, so only their owner
+  changed: each header gained its accessor and `tech/audio_mixer.h` gained `TheAudio()`, which both
+  games share; the mixer is declared ahead of the music player that plays through it and after
+  `Assets`, so the device closes before the archives it streams from are freed. `Input`
+  (`ra/input.h`, `td/input.h`) owns the keyboard for the whole of a `Game` -- the startup path reads
+  keys before there is a window -- and the mouse cursor from `InstallMouse()` until `Prog_End()`;
+  `MouseInstalled` is gone in both games, replaced by `TheMouse() != nullptr`, and Red Alert's
+  keyboard leak (new'd in `main`, never deleted) went with it. `GameState` (`ra/game_state.h`,
+  `td/game_state.h`) took the flags that say what the game is doing and nothing else owns, including
+  the dialog plumbing that used to be declared in whichever dialog header happened to hold it.
+  `WindowList` was the last link seam of its kind: sdllib holds the storage now and each game fills
+  its rows in `main`, which let `ra_winbits_test` and sdllib's own `keyframe_test` stop defining the
+  array. `ActiveKeyboard` went the same way, which is why Red Alert could not use `Get_Key()` at all
+  before.
+
+  Deviations. `VerNum` is its own installed `VersionClass` rather than a `GameState` member, so
+  `ra_intro_test` can install a `GameState` without linking `version.cc`. `LParam` was not state at
+  all -- it existed to give `Transmit_Message()` an lvalue for the messages that carry no parameter
+  -- so it is `RadioClass::DiscardedParam()`, a function-local static, in both games. Red Alert's
+  `NameOverride`/`NameIDOverride` went to `World` as `std::array<std::string>` and
+  `std::array<int>`, which removed the `new[]`/`delete[]` pair. Tiberian Dawn's `ScenVar`,
+  `LastTheater` and the three crate values went to `World`, and its sync-bug trap (`TrapFrame` and
+  friends) to `DebugState`. `IsTheaterShape` stays: it is declared in each game's `keyframe.h` and
+  `sdllib/keyframe_test.cc` links `ra/2keyfram.cc`, which would then need a `Game`.
+
+  Phase 9 deleted `ra/externs.h`, `ra/globals.cc`, `ra/globals.h`, `td/externs.h` and
+  `td/globals.cc`. The function declarations at the end of each `externs.h` moved to headers next to
+  the files that define them: `winstub.h` for the platform hooks, `stats.h` for the Westwood
+  statistics, `sendfile.h` (Red Alert) and `internet.h` (Tiberian Dawn) for the transfers and the
+  chat hand-off, and `nulldlg.h`/`conquer.h` for the odd one out in each game. Seven more globals
+  turned out to be write-only or dead and were deleted with their writers: Red Alert's `Do_Vortex`
+  declaration and `CreditDisplay`, and Tiberian Dawn's `MMXAvailable`, `In_Debugger`, `hInstance`,
+  `NewConfig` (with its `Read_Private_Config_Struct()` call) and `CreditDisplay`.
+  `IPXAddressClass::Set_Address(IPXHeaderType*)` and `staging_buffer` went the same way -- the
+  buffer became one named array per file that used it.
+
+  `ShutDown()` in both games now returns at once when no `Game` exists. Everything `Prog_End()`
+  takes down belongs to the `Game`, and an error exit without one -- which Tiberian Dawn's
+  object-validation death test takes -- used to CHECK-fail in `TheAudio()` before it could report
+  the error it was testing for.
+
+  Verification: both build dirs clean, 681 tests pass, Red Alert's round trip and `--load-fixture`
+  pass, Tiberian Dawn's four working fixtures pass, and ASan `-NEWGAME -QUITFRAME` exits with no
+  memory errors in either game and only the leaks phases 1 and 5 recorded.
+
+  What is left, and deliberately so: the `const` tables in `td/const.h` and the two
+  `base::EnumArray` choice tables in Red Alert, which are constants; `ra/ipx95.h`, which is
+  Windows-only and not built; `IsTheaterShape` and `CurrentPalette`, which belong to sdllib;
+  `EngMisStr`, which is `const`; and Tiberian Dawn's score-screen and text-blit globals
+  (`ScoreObjs`, `PseudoSeenBuff`, `ControlQ`, `TextPrintBuffer`, `BlitList`), `ScreenRecording` and
+  `DDEServer`, none of which this plan named and each of which spans several files.
