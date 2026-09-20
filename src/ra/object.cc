@@ -137,6 +137,7 @@
 #include "ra/jshell.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
+#include "ra/object_heaps.h"
 #include "ra/palettes.h"
 #include "ra/radio.h"
 #include "ra/rules.h"
@@ -2049,8 +2050,8 @@ BuildingClass* ObjectTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
                                                  HousesType house) const {
   BuildingClass* anybuilding = nullptr;
 
-  for (int index = 0; index < Buildings.Count(); index++) {
-    BuildingClass* building = Buildings.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+    BuildingClass* building = TheObjectHeaps().building().Ptr(index);
     DCHECK(building != nullptr);
 
     if (!building->IsInLimbo && building->House->Class->House == house &&

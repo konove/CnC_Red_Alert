@@ -61,6 +61,7 @@
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/session.h"
 #include "ra/type_heaps.h"
 #include "tech/block_codec.h"
@@ -86,7 +87,7 @@ HousesType OverlayClass::ToOwn = HOUSE_NONE;
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void OverlayClass::Init() { Overlays.Free_All(); }
+void OverlayClass::Init() { TheObjectHeaps().overlay().Free_All(); }
 
 /***********************************************************************************************
  * OverlayClass::new -- Allocates a overlay object from pool *
@@ -103,7 +104,7 @@ void OverlayClass::Init() { Overlays.Free_All(); }
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
 void* OverlayClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Overlays.Allocate();
+  void* ptr = TheObjectHeaps().overlay().Allocate();
   if (ptr) {
     static_cast<OverlayClass*>(ptr)->IsActive = true;
   }
@@ -128,7 +129,7 @@ void OverlayClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<OverlayClass*>(ptr)->IsActive = false;
   }
-  Overlays.Free(static_cast<OverlayClass*>(ptr));
+  TheObjectHeaps().overlay().Free(static_cast<OverlayClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -147,7 +148,7 @@ void OverlayClass::operator delete(void* ptr) {
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
 OverlayClass::OverlayClass(OverlayType type, CELL pos, HousesType house)
-    : ObjectClass(RTTI_OVERLAY, Overlays.ID(this)),
+    : ObjectClass(RTTI_OVERLAY, TheObjectHeaps().overlay().ID(this)),
       Class(TheTypeHeaps().overlay().Ptr(static_cast<int>(type))) {
   if (pos != -1) {
     ToOwn = house;
@@ -175,7 +176,7 @@ OverlayClass::OverlayClass(OverlayType type, CELL pos, HousesType house)
  *legality before proceeding.                             *
  *=============================================================================================*/
 bool OverlayClass::Mark(MarkType mark) {
-  DCHECK(Overlays.ID(this) == ID);
+  DCHECK(TheObjectHeaps().overlay().ID(this) == ID);
   DCHECK(IsActive);
 
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
@@ -305,8 +306,10 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
           if (OverlayTypeClass::As_Reference(classid).IsWall) {
             HousesType owner = HOUSE_NONE;
             int distance = 0x7FFFFFFF;
-            for (int index = 0; index < Buildings.Count(); index++) {
-              const BuildingClass* building = Buildings.Ptr(index);
+            for (int index = 0; index < TheObjectHeaps().building().Count();
+                 index++) {
+              const BuildingClass* building =
+                  TheObjectHeaps().building().Ptr(index);
               const int newdist =
                   ::Distance(building->Center_Coord(), Cell_Coord(cell));
               if (newdist < distance) {
@@ -347,8 +350,8 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
         if (OverlayTypeClass::As_Reference(classid).IsWall) {
           HousesType owner = HOUSE_NONE;
           int distance = 0x7FFFFFFF;
-          for (int j = 0; j < Buildings.Count(); j++) {
-            const BuildingClass* building = Buildings.Ptr(j);
+          for (int j = 0; j < TheObjectHeaps().building().Count(); j++) {
+            const BuildingClass* building = TheObjectHeaps().building().Ptr(j);
             const int newdist =
                 ::Distance(building->Center_Coord(), Cell_Coord(cell));
             if (newdist < distance) {

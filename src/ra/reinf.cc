@@ -63,6 +63,7 @@
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/scenario.h"
 #include "ra/team.h"
 #include "ra/teamtype.h"
@@ -185,8 +186,8 @@ static bool Need_To_Take(const AircraftClass* air) {
     **	Loop through all aircraft and subtract all the ones that are NOT
     *loaners.
     */
-    for (int index = 0; index < Aircraft.Count(); index++) {
-      const AircraftClass* airptr = Aircraft.Ptr(index);
+    for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
+      const AircraftClass* airptr = TheObjectHeaps().aircraft().Ptr(index);
       if ((*airptr == AIRCRAFT_YAK || *airptr == AIRCRAFT_MIG) &&
           airptr->IsOwnedByPlayer && !airptr->IsALoaner && airptr != air) {
         deficit -= 1;

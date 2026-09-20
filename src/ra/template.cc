@@ -60,6 +60,7 @@
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/type_heaps.h"
 #include "sdllib/tile.h"
 
@@ -77,7 +78,7 @@
  *                                                                                             *
  * HISTORY: * 05/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TemplateClass::Init() { Templates.Free_All(); }
+void TemplateClass::Init() { TheObjectHeaps().tmplate().Free_All(); }
 
 /***********************************************************************************************
  * TemplateClass::Mark -- Lifts or drops a template object. *
@@ -95,7 +96,7 @@ void TemplateClass::Init() { Templates.Free_All(); }
  *legality before processing.                           *
  *=============================================================================================*/
 bool TemplateClass::Mark(MarkType mark) {
-  DCHECK(Templates.ID(this) == ID);
+  DCHECK(TheObjectHeaps().tmplate().ID(this) == ID);
   DCHECK(IsActive);
 
   static bool noup = false;
@@ -191,7 +192,7 @@ bool TemplateClass::Mark(MarkType mark) {
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
 void* TemplateClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Templates.Allocate();
+  void* ptr = TheObjectHeaps().tmplate().Allocate();
   if (ptr) {
     static_cast<TemplateClass*>(ptr)->IsActive = true;
   }
@@ -216,7 +217,7 @@ void TemplateClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<TemplateClass*>(ptr)->IsActive = false;
   }
-  Templates.Free(static_cast<TemplateClass*>(ptr));
+  TheObjectHeaps().tmplate().Free(static_cast<TemplateClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -235,7 +236,7 @@ void TemplateClass::operator delete(void* ptr) {
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
 TemplateClass::TemplateClass(TemplateType type, CELL pos)
-    : ObjectClass(RTTI_TEMPLATE, Templates.ID(this)),
+    : ObjectClass(RTTI_TEMPLATE, TheObjectHeaps().tmplate().ID(this)),
       Class(TheTypeHeaps().tmplate().Ptr(static_cast<int>(type))) {
   if (pos != -1) {
     Unlimbo(Cell_Coord(pos));

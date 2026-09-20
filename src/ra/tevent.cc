@@ -68,6 +68,7 @@
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/palettes.h"
 #include "ra/scenario.h"
 #include "ra/team.h"
@@ -383,8 +384,8 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
       **	Check to see if a team of the appropriate type has left the map.
       */
       case TEVENT_LEAVES_MAP:
-        for (index = 0; index < Teams.Count(); index++) {
-          const TeamClass* ptr = Teams.Ptr(index);
+        for (index = 0; index < TheObjectHeaps().team().Count(); index++) {
+          const TeamClass* ptr = TheObjectHeaps().team().Ptr(index);
           if (ptr->Class == Team && ptr->Is_Empty() && ptr->IsLeaveMap) {
             //					if (ptr->Class == Team &&
             // ptr->House == hptr && ptr->Is_Empty() && ptr->IsLeaveMap) {
@@ -392,7 +393,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
             break;
           }
         }
-        if (index == Teams.Count()) {
+        if (index == TheObjectHeaps().team().Count()) {
           return false;
         }
         break;
@@ -644,8 +645,9 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
  * HISTORY: * 11/28/1995 JLB : Created. *
  *=============================================================================================*/
 void TEventClass::Build_INI_Entry(std::string& buffer) const {
-  buffer += std::format("{},{},{}", std::to_underlying(Event),
-                        TeamTypes.Logical_ID(Team), Data.Value);
+  buffer +=
+      std::format("{},{},{}", std::to_underlying(Event),
+                  TheObjectHeaps().team_type().Logical_ID(Team), Data.Value);
 }
 
 /***********************************************************************************************
@@ -684,7 +686,8 @@ void TEventClass::Read_INI(port::Tokenizer& tokens) {
       Data.Value = -1;
       if (token) {
         if (Event_Needs(Event) == NEED_TEAM) {
-          Team = TeamTypes.Raw_Ptr(tech::ParseIntegerOr<int>(token, 0));
+          Team = TheObjectHeaps().team_type().Raw_Ptr(
+              tech::ParseIntegerOr<int>(token, 0));
         } else {
           Data.Value = tech::ParseIntegerOr<int>(token, 0);
         }

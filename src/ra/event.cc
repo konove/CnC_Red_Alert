@@ -85,6 +85,7 @@
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/rules.h"
 #include "ra/saveload.h"
 #include "ra/scenario.h"
@@ -543,12 +544,13 @@ void EventClass::Execute() {
     **	Make or break alliance.
     */
     case ALLY: {
-      const HouseClass* house = Houses.Raw_Ptr(Data.General.Value);
-      if (Houses.Raw_Ptr(ID)->Is_Ally(house)) {
-        Houses.Raw_Ptr(ID)->Make_Enemy(
+      const HouseClass* house =
+          TheObjectHeaps().house().Raw_Ptr(Data.General.Value);
+      if (TheObjectHeaps().house().Raw_Ptr(ID)->Is_Ally(house)) {
+        TheObjectHeaps().house().Raw_Ptr(ID)->Make_Enemy(
             static_cast<HousesType>(Data.General.Value));
       } else {
-        Houses.Raw_Ptr(ID)->Make_Ally(
+        TheObjectHeaps().house().Raw_Ptr(ID)->Make_Ally(
             static_cast<HousesType>(Data.General.Value));
       }
     } break;
@@ -558,7 +560,7 @@ void EventClass::Execute() {
     *multiplayer mode.
     */
     case DESTRUCT:
-      Houses.Raw_Ptr(ID)->Flag_To_Die();
+      TheObjectHeaps().house().Raw_Ptr(ID)->Flag_To_Die();
       break;
 
     /*
@@ -569,7 +571,7 @@ void EventClass::Execute() {
     */
     case SPECIAL: {
       Special = Data.Options.Data;
-      const HouseClass* house = Houses.Raw_Ptr(ID);
+      const HouseClass* house = TheObjectHeaps().house().Raw_Ptr(ID);
 
       // The format string comes from the localized string table, so verify the
       // translation still takes exactly one %s before using it.
@@ -603,7 +605,8 @@ void EventClass::Execute() {
     */
     case SELL:
       techno = Data.Target.Whom.As_Techno();
-      if (techno && techno->IsActive && techno->House == Houses.Raw_Ptr(ID)) {
+      if (techno && techno->IsActive &&
+          techno->House == TheObjectHeaps().house().Raw_Ptr(ID)) {
         if (techno->What_Am_I() == RTTI_BUILDING ||
             (techno->What_Am_I() == RTTI_UNIT &&
              Map.at(techno->Center_Coord()).Cell_Building() != nullptr)) {
@@ -621,7 +624,7 @@ void EventClass::Execute() {
     */
     case SELLCELL:
       //			cell = Data.SellCell.Cell;
-      Houses.Raw_Ptr(ID)->Sell_Wall(Data.SellCell.Cell);
+      TheObjectHeaps().house().Raw_Ptr(ID)->Sell_Wall(Data.SellCell.Cell);
       break;
 
     /*
@@ -644,7 +647,8 @@ void EventClass::Execute() {
     *determine the *	exact factory and real object pointer to use.
     */
     case PLACE:
-      Houses.Raw_Ptr(ID)->Place_Object(Data.Place.Type, Data.Place.Cell);
+      TheObjectHeaps().house().Raw_Ptr(ID)->Place_Object(Data.Place.Type,
+                                                         Data.Place.Cell);
       break;
 
     /*
@@ -653,8 +657,8 @@ void EventClass::Execute() {
     *and *	what factory to use.
     */
     case PRODUCE:
-      Houses.Raw_Ptr(ID)->Begin_Production(Data.Specific.Type,
-                                           Data.Specific.ID);
+      TheObjectHeaps().house().Raw_Ptr(ID)->Begin_Production(Data.Specific.Type,
+                                                             Data.Specific.ID);
       break;
 
     /*
@@ -662,7 +666,8 @@ void EventClass::Execute() {
     *the *	object type, the factory can be inferred.
     */
     case SUSPEND:
-      Houses.Raw_Ptr(ID)->Suspend_Production(Data.Specific.Type);
+      TheObjectHeaps().house().Raw_Ptr(ID)->Suspend_Production(
+          Data.Specific.Type);
       break;
 
     /*
@@ -671,7 +676,8 @@ void EventClass::Execute() {
     *be inferred.
     */
     case ABANDON:
-      Houses.Raw_Ptr(ID)->Abandon_Production(Data.Specific.Type);
+      TheObjectHeaps().house().Raw_Ptr(ID)->Abandon_Production(
+          Data.Specific.Type);
       break;
 
     /*
@@ -875,7 +881,7 @@ void EventClass::Execute() {
     ** care of it.
     */
     case SPECIAL_PLACE:
-      Houses.Raw_Ptr(ID)->Place_Special_Blast(
+      TheObjectHeaps().house().Raw_Ptr(ID)->Place_Special_Blast(
           static_cast<SpecialWeaponType>(Data.Special.ID), Data.Special.Cell);
       break;
 

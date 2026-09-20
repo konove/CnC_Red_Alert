@@ -71,6 +71,7 @@
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
+#include "ra/object_heaps.h"
 #include "ra/rules.h"
 #include "ra/techno.h"
 #include "ra/type.h"
@@ -90,7 +91,7 @@
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-FactoryClass::FactoryClass() : ID(Factories.ID(this)) {}
+FactoryClass::FactoryClass() : ID(TheObjectHeaps().factory().ID(this)) {}
 
 /***********************************************************************************************
  * FactoryClass::~FactoryClass -- Default destructor for factory objects. *
@@ -128,7 +129,7 @@ FactoryClass::~FactoryClass() {
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void FactoryClass::Init() { Factories.Free_All(); }
+void FactoryClass::Init() { TheObjectHeaps().factory().Free_All(); }
 
 /***********************************************************************************************
  * FactoryClass::operator new -- Allocates a factory object from the free
@@ -146,7 +147,7 @@ void FactoryClass::Init() { Factories.Free_All(); }
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 void* FactoryClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Factories.Allocate();
+  void* ptr = TheObjectHeaps().factory().Allocate();
   if (ptr) {
     static_cast<FactoryClass*>(ptr)->IsActive = true;
   }
@@ -172,7 +173,7 @@ void FactoryClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<FactoryClass*>(ptr)->IsActive = false;
   }
-  Factories.Free(static_cast<FactoryClass*>(ptr));
+  TheObjectHeaps().factory().Free(static_cast<FactoryClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -194,7 +195,7 @@ void FactoryClass::operator delete(void* ptr) {
  *installment payment method.                                   *
  *=============================================================================================*/
 void FactoryClass::AI() {
-  DCHECK(Factories.ID(this) == ID);
+  DCHECK(TheObjectHeaps().factory().ID(this) == ID);
 
   if (!IsSuspended && (Object != nullptr || SpecialItem != SPC_NONE)) {
     for (int index = 0; index < 1; index++) {
@@ -251,7 +252,7 @@ void FactoryClass::AI() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool FactoryClass::Has_Changed() {
-  DCHECK(Factories.ID(this) == ID);
+  DCHECK(TheObjectHeaps().factory().ID(this) == ID);
 
   const bool changed = IsDifferent;
   IsDifferent = false;
@@ -283,7 +284,7 @@ bool FactoryClass::Has_Changed() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool FactoryClass::Set(const TechnoTypeClass& object, HouseClass& house) {
-  DCHECK(Factories.ID(this) == ID);
+  DCHECK(TheObjectHeaps().factory().ID(this) == ID);
 
   /*
   **	If there is any production currently in progress, abandon it.
@@ -344,7 +345,7 @@ bool FactoryClass::Set(const TechnoTypeClass& object, HouseClass& house) {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 void FactoryClass::Set(TechnoClass& object) {
-  DCHECK(Factories.ID(this) == ID);
+  DCHECK(TheObjectHeaps().factory().ID(this) == ID);
 
   Abandon();
   Object = &object;
@@ -374,7 +375,7 @@ void FactoryClass::Set(TechnoClass& object) {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool FactoryClass::Suspend() {
-  DCHECK(Factories.ID(this) == ID);
+  DCHECK(TheObjectHeaps().factory().ID(this) == ID);
 
   if (!IsSuspended) {
     IsSuspended = true;
@@ -402,7 +403,7 @@ bool FactoryClass::Suspend() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool FactoryClass::Start() {
-  DCHECK(Factories.ID(this) == ID);
+  DCHECK(TheObjectHeaps().factory().ID(this) == ID);
 
   if (((Object || SpecialItem != SPC_NONE) && IsSuspended &&
        !Has_Completed()) &&
@@ -462,7 +463,7 @@ bool FactoryClass::Start() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool FactoryClass::Abandon() {
-  DCHECK(Factories.ID(this) == ID);
+  DCHECK(TheObjectHeaps().factory().ID(this) == ID);
 
   if (Object) {
     if (Object) {
@@ -515,7 +516,7 @@ bool FactoryClass::Abandon() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 int FactoryClass::Completion() {
-  DCHECK(Factories.ID(this) == ID);
+  DCHECK(TheObjectHeaps().factory().ID(this) == ID);
 
   return Fetch_Stage();
 }
@@ -538,7 +539,7 @@ int FactoryClass::Completion() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool FactoryClass::Has_Completed() {
-  DCHECK(Factories.ID(this) == ID);
+  DCHECK(TheObjectHeaps().factory().ID(this) == ID);
 
   if (Object && Fetch_Stage() == kStepCount) {
     return true;
@@ -563,7 +564,7 @@ bool FactoryClass::Has_Completed() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 TechnoClass* FactoryClass::Get_Object() const {
-  DCHECK(Factories.ID(this) == ID);
+  DCHECK(TheObjectHeaps().factory().ID(this) == ID);
 
   return Object;
 }
@@ -579,7 +580,7 @@ TechnoClass* FactoryClass::Get_Object() const {
  *   05/05/1995 PWG : Created.                                             *
  *=========================================================================*/
 int FactoryClass::Get_Special_Item() const {
-  DCHECK(Factories.ID(this) == ID);
+  DCHECK(TheObjectHeaps().factory().ID(this) == ID);
 
   return static_cast<int>(SpecialItem);
 }
@@ -601,7 +602,7 @@ int FactoryClass::Get_Special_Item() const {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 int FactoryClass::Cost_Per_Tick() {
-  DCHECK(Factories.ID(this) == ID);
+  DCHECK(TheObjectHeaps().factory().ID(this) == ID);
 
   if (Object) {
     const int steps = kStepCount - Fetch_Stage();
@@ -632,7 +633,7 @@ int FactoryClass::Cost_Per_Tick() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool FactoryClass::Completed() {
-  DCHECK(Factories.ID(this) == ID);
+  DCHECK(TheObjectHeaps().factory().ID(this) == ID);
 
   if (Object && Fetch_Stage() == kStepCount) {
     Object = nullptr;

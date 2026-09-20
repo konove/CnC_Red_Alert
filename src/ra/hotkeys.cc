@@ -46,6 +46,7 @@
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/queue.h"
 #include "ra/scenario.h"
 #include "ra/selection.h"
@@ -261,8 +262,9 @@ void Keyboard_Process(KeyNumType& input) {
   if (key != 0 && key == Options.KeyBase) {
     Unselect_All();
     if (PlayerPtr->CurBuildings) {
-      for (int index = 0; index < Buildings.Count(); index++) {
-        BuildingClass* building = Buildings.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().building().Count();
+           index++) {
+        BuildingClass* building = TheObjectHeaps().building().Ptr(index);
 
         if (building != nullptr && !building->IsInLimbo &&
             building->House == PlayerPtr && *building == STRUCT_CONST) {
@@ -275,8 +277,8 @@ void Keyboard_Process(KeyNumType& input) {
       }
     }
     if (CurrentObject.Count() == 0 && PlayerPtr->CurUnits) {
-      for (int index = 0; index < Units.Count(); index++) {
-        UnitClass* unit = Units.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+        UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
 
         if (unit != nullptr && !unit->IsInLimbo && unit->House == PlayerPtr &&
             *unit == UNIT_MCV) {

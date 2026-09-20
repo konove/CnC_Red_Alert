@@ -101,6 +101,7 @@
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
+#include "ra/object_heaps.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
 #include "ra/session.h"
@@ -222,7 +223,7 @@ static inline bool Is_It_Playing(const FootClass* object) {
  *                                                                                             *
  * HISTORY: * 12/29/1994 JLB : Created. *
  *=============================================================================================*/
-void TeamClass::Init() { Teams.Free_All(); }
+void TeamClass::Init() { TheObjectHeaps().team().Free_All(); }
 
 /***********************************************************************************************
  * TeamClass::operator new -- Allocates a team object. *
@@ -239,7 +240,7 @@ void TeamClass::Init() { Teams.Free_All(); }
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 void* TeamClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Teams.Allocate();
+  void* ptr = TheObjectHeaps().team().Allocate();
   if (ptr != nullptr) {
     static_cast<TeamClass*>(ptr)->IsActive = true;
   }
@@ -263,7 +264,7 @@ void TeamClass::operator delete(void* ptr) {
   if (ptr != nullptr) {
     static_cast<TeamClass*>(ptr)->IsActive = false;
   }
-  Teams.Free(static_cast<TeamClass*>(ptr));
+  TheObjectHeaps().team().Free(static_cast<TeamClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -319,7 +320,7 @@ TeamClass::~TeamClass() {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 TeamClass::TeamClass(TeamTypeClass* type, HouseClass* owner)
-    : AbstractClass(RTTI_TEAM, Teams.ID(this)),
+    : AbstractClass(RTTI_TEAM, TheObjectHeaps().team().ID(this)),
       Class(type),
       House(owner) {
   DCHECK(Class);
@@ -358,7 +359,7 @@ TeamClass::TeamClass(TeamTypeClass* type, HouseClass* owner)
  *=========================================================================*/
 void TeamClass::Assign_Mission_Target(TARGET new_target) {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   /*
   ** First go through and find anyone who is currently targeting
@@ -428,7 +429,7 @@ void TeamClass::Assign_Mission_Target(TARGET new_target) {
  *=============================================================================================*/
 void TeamClass::AI() {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   int desired = 0;
   const bool old_under = IsUnderStrength;
@@ -548,8 +549,9 @@ void TeamClass::AI() {
       CELL dest = As_Cell(Zone);
       int max = 0x7FFFFFFF;
 
-      for (int index = 0; index < Buildings.Count(); index++) {
-        const BuildingClass* b = Buildings.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().building().Count();
+           index++) {
+        const BuildingClass* b = TheObjectHeaps().building().Ptr(index);
 
         if (b != nullptr && !b->IsInLimbo && b->House == House &&
             b->Class->PrimaryWeapon == nullptr) {
@@ -872,7 +874,7 @@ void TeamClass::AI() {
  *=============================================================================================*/
 bool TeamClass::Add(FootClass* obj) {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
   if (!obj) {
     return false;
   }
@@ -945,7 +947,7 @@ bool TeamClass::Add(FootClass* obj) {
  *=============================================================================================*/
 bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   /*
   **	Trying to add the team member to itself is an error condition.
@@ -1040,7 +1042,7 @@ bool TeamClass::Can_Add(FootClass* obj, int& typeindex) const {
  *=============================================================================================*/
 bool TeamClass::Remove(FootClass* obj, int typeindex) {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   /*
   **	Make sure that the object is in fact a member of this team. If not, then
@@ -1170,7 +1172,7 @@ bool TeamClass::Remove(FootClass* obj, int typeindex) {
  *=============================================================================================*/
 int TeamClass::Recruit(int typeindex) {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
   COORDINATE center = As_Coord(Zone);
 
   if (Class->Origin != -1) {
@@ -1196,8 +1198,9 @@ int TeamClass::Recruit(int typeindex) {
         InfantryClass* best = nullptr;
         int bestdist = -1;
 
-        for (int index = 0; index < Infantry.Count(); index++) {
-          InfantryClass* infantry = Infantry.Ptr(index);
+        for (int index = 0; index < TheObjectHeaps().infantry().Count();
+             index++) {
+          InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(index);
           const int d = infantry->Distance(center);
 
           if ((d < bestdist || bestdist == -1) &&
@@ -1219,8 +1222,9 @@ int TeamClass::Recruit(int typeindex) {
         AircraftClass* best = nullptr;
         int bestdist = -1;
 
-        for (int index = 0; index < Aircraft.Count(); index++) {
-          AircraftClass* aircraft = Aircraft.Ptr(index);
+        for (int index = 0; index < TheObjectHeaps().aircraft().Count();
+             index++) {
+          AircraftClass* aircraft = TheObjectHeaps().aircraft().Ptr(index);
           const int d = aircraft->Distance(center);
 
           if ((d < bestdist || bestdist == -1) &&
@@ -1242,8 +1246,8 @@ int TeamClass::Recruit(int typeindex) {
         UnitClass* best = nullptr;
         int bestdist = -1;
 
-        for (int index = 0; index < Units.Count(); index++) {
-          UnitClass* unit = Units.Ptr(index);
+        for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+          UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
           const int d = unit->Distance(center);
 
           if (unit->House == House &&
@@ -1277,8 +1281,9 @@ int TeamClass::Recruit(int typeindex) {
         VesselClass* best = nullptr;
         int bestdist = -1;
 
-        for (int index = 0; index < Vessels.Count(); index++) {
-          VesselClass* vessel = Vessels.Ptr(index);
+        for (int index = 0; index < TheObjectHeaps().vessel().Count();
+             index++) {
+          VesselClass* vessel = TheObjectHeaps().vessel().Ptr(index);
           const int d = vessel->Distance(center);
 
           if (vessel->House == House &&
@@ -1359,7 +1364,7 @@ int TeamClass::Recruit(int typeindex) {
  *=============================================================================================*/
 void TeamClass::Detach(TARGET target, bool /*unused*/) {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   /*
   **	If the target to detach matches the target of this team, then remove
@@ -1399,7 +1404,7 @@ void TeamClass::Detach(TARGET target, bool /*unused*/) {
  *=============================================================================================*/
 void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   /*
   **	Presume there is no center. This will be confirmed in the following
@@ -1441,8 +1446,9 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     /*
     **	Scan through all vehicles.
     */
-    for (int unit_index = 0; unit_index < Units.Count(); unit_index++) {
-      const FootClass* trial_unit = Units.Ptr(unit_index);
+    for (int unit_index = 0; unit_index < TheObjectHeaps().unit().Count();
+         unit_index++) {
+      const FootClass* trial_unit = TheObjectHeaps().unit().Ptr(unit_index);
 
       if (Is_It_Breathing(trial_unit) && trial_unit->House->Is_Ally(House) &&
           trial_unit->Team != this) {
@@ -1458,9 +1464,11 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     /*
     **	Scan through all infantry.
     */
-    for (int infantry_index = 0; infantry_index < Infantry.Count();
+    for (int infantry_index = 0;
+         infantry_index < TheObjectHeaps().infantry().Count();
          infantry_index++) {
-      const FootClass* trial_infantry = Infantry.Ptr(infantry_index);
+      const FootClass* trial_infantry =
+          TheObjectHeaps().infantry().Ptr(infantry_index);
 
       if (Is_It_Breathing(trial_infantry) &&
           trial_infantry->House->Is_Ally(House) &&
@@ -1477,8 +1485,10 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
     /*
     **	Scan through all vessels.
     */
-    for (int vessel_index = 0; vessel_index < Vessels.Count(); vessel_index++) {
-      const FootClass* trial_vessel = Vessels.Ptr(vessel_index);
+    for (int vessel_index = 0; vessel_index < TheObjectHeaps().vessel().Count();
+         vessel_index++) {
+      const FootClass* trial_vessel =
+          TheObjectHeaps().vessel().Ptr(vessel_index);
 
       if (Is_It_Breathing(trial_vessel) &&
           trial_vessel->House->Is_Ally(House) && trial_vessel->Team != this) {
@@ -1596,7 +1606,7 @@ void TeamClass::Calc_Center(TARGET& center, TARGET& close_member) const {
 void TeamClass::Took_Damage(FootClass* /*unused*/, ResultType result,
                             TechnoClass* source) {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   if (result != RESULT_NONE && !Class->IsSuicide) {
     if (!IsMoving) {
@@ -1663,7 +1673,7 @@ void TeamClass::Took_Damage(FootClass* /*unused*/, ResultType result,
  *=============================================================================================*/
 void TeamClass::Coordinate_Attack() {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   if (!Target_Legal(Target)) {
     Target = MissionTarget;
@@ -1767,7 +1777,7 @@ void TeamClass::Coordinate_Attack() {
  *=============================================================================================*/
 bool TeamClass::Coordinate_Regroup() {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   FootClass* unit = Member;
   bool retval = true;
@@ -1833,7 +1843,7 @@ bool TeamClass::Coordinate_Regroup() {
  *=============================================================================================*/
 void TeamClass::Coordinate_Do() {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   FootClass* unit = Member;
   const MissionType do_mission =
@@ -1893,7 +1903,7 @@ void TeamClass::Coordinate_Do() {
  *=============================================================================================*/
 void TeamClass::Coordinate_Move() {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   FootClass* unit = Member;
   bool finished = true;
@@ -2050,7 +2060,7 @@ void TeamClass::Coordinate_Move() {
  *=============================================================================================*/
 bool TeamClass::Lagging_Units() {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   FootClass* unit = Member;
   bool lag = false;
@@ -2133,7 +2143,7 @@ bool TeamClass::Lagging_Units() {
  *=============================================================================================*/
 int TeamClass::TMission_Unload() {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   FootClass* unit = Member;
   bool finished = true;
@@ -2213,7 +2223,7 @@ int TeamClass::TMission_Unload() {
  *=============================================================================================*/
 int TeamClass::TMission_Load() {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   FootClass* unit = Member;
   const FootClass* trans = nullptr;
@@ -2296,7 +2306,7 @@ int TeamClass::TMission_Load() {
  *=============================================================================================*/
 bool TeamClass::Coordinate_Conscript(FootClass* unit) {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   if (Is_It_Breathing(unit) && !unit->IsInitiated) {
     if (unit->Distance(Zone) > TheRules().StrayDistance) {
@@ -2332,7 +2342,7 @@ bool TeamClass::Coordinate_Conscript(FootClass* unit) {
  *=========================================================================*/
 bool TeamClass::Is_A_Member(const void* who) const {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   const FootClass* unit = Member;
   while (unit != nullptr) {
@@ -2357,8 +2367,8 @@ bool TeamClass::Is_A_Member(const void* who) const {
  *   06/19/1995 PWG : Created.                                             *
  *=========================================================================*/
 void TeamClass::Suspend_Teams(int priority, const HouseClass* house) {
-  for (int index = 0; index < Teams.Count(); index++) {
-    TeamClass* team = Teams.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
+    TeamClass* team = TheObjectHeaps().team().Ptr(index);
 
     /*
     **	If a team is below the "survival priority level", then it gets
@@ -2394,7 +2404,7 @@ void TeamClass::Suspend_Teams(int priority, const HouseClass* house) {
  *=============================================================================================*/
 bool TeamClass::Is_Leaving_Map() const {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   if (IsMoving && CurrentMission >= 0) {
     const TeamMissionClass* mission =
@@ -2981,7 +2991,7 @@ int TeamClass::TMission_Patrol() {
 
 int TeamClass::TMission_Deploy() {
   DCHECK(IsActive);
-  DCHECK(Teams.ID(this) == ID);
+  DCHECK(TheObjectHeaps().team().ID(this) == ID);
 
   FootClass* unit = Member;
   bool finished = true;

@@ -88,6 +88,7 @@
 #include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
 #include "ra/shape_draw.h"
@@ -145,7 +146,7 @@ TerrainClass::~TerrainClass() {
 ResultType TerrainClass::Take_Damage(int& damage, int distance,
                                      WarheadType warhead, TechnoClass* source,
                                      bool forced) {
-  DCHECK(Terrains.ID(this) == ID);
+  DCHECK(TheObjectHeaps().terrain().ID(this) == ID);
   DCHECK(IsActive);
 
   ResultType res = RESULT_NONE;
@@ -201,7 +202,7 @@ ResultType TerrainClass::Take_Damage(int& damage, int distance,
  * HISTORY: * 05/14/1994 JLB : Created. *
  *=============================================================================================*/
 void* TerrainClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Terrains.Allocate();
+  void* ptr = TheObjectHeaps().terrain().Allocate();
   if (ptr) {
     static_cast<TerrainClass*>(ptr)->IsActive = true;
   }
@@ -226,7 +227,7 @@ void TerrainClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<TerrainClass*>(ptr)->IsActive = false;
   }
-  Terrains.Free(static_cast<TerrainClass*>(ptr));
+  TheObjectHeaps().terrain().Free(static_cast<TerrainClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -246,7 +247,7 @@ void TerrainClass::operator delete(void* ptr) {
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
 TerrainClass::TerrainClass(TerrainType type, CELL cell)
-    : ObjectClass(RTTI_TERRAIN, Terrains.ID(this)),
+    : ObjectClass(RTTI_TERRAIN, TheObjectHeaps().terrain().ID(this)),
       Class(TheTypeHeaps().terrain().Ptr(static_cast<int>(type))) {
   Strength = Class->MaxStrength;
   if ((cell != -1) && (!Unlimbo(Cell_Coord(cell)))) {
@@ -273,7 +274,7 @@ TerrainClass::TerrainClass(TerrainType type, CELL cell)
  *legality check before proceeding.                     *
  *=============================================================================================*/
 bool TerrainClass::Mark(MarkType mark) {
-  DCHECK(Terrains.ID(this) == ID);
+  DCHECK(TheObjectHeaps().terrain().ID(this) == ID);
   DCHECK(IsActive);
 
   if (ObjectClass::Mark(mark)) {
@@ -324,7 +325,7 @@ bool TerrainClass::Mark(MarkType mark) {
  *terrain highlight method.                               *
  *=============================================================================================*/
 void TerrainClass::Draw_It(int x, int y, WindowNumberType window) const {
-  DCHECK(Terrains.ID(this) == ID);
+  DCHECK(TheObjectHeaps().terrain().ID(this) == ID);
   DCHECK(IsActive);
 
   const auto shapedata = Get_Image_Data();
@@ -374,7 +375,7 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) const {
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainClass::Init() { Terrains.Free_All(); }
+void TerrainClass::Init() { TheObjectHeaps().terrain().Free_All(); }
 
 /***********************************************************************************************
  * TerrainClass::Can_Enter_Cell -- Determines if the terrain object can exist in
@@ -393,7 +394,7 @@ void TerrainClass::Init() { Terrains.Free_All(); }
  * HISTORY: * 09/24/1994 JLB : Created. * 01/01/1995 JLB : Actually works now. *
  *=============================================================================================*/
 MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
-  DCHECK(Terrains.ID(this) == ID);
+  DCHECK(TheObjectHeaps().terrain().ID(this) == ID);
   DCHECK(IsActive);
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
@@ -435,7 +436,7 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
  *already on fire or crumbling.                        *
  *=============================================================================================*/
 bool TerrainClass::Catch_Fire() {
-  DCHECK(Terrains.ID(this) == ID);
+  DCHECK(TheObjectHeaps().terrain().ID(this) == ID);
   DCHECK(IsActive);
 
   if (!IsCrumbling && !IsOnFire && Class->Armor == ARMOR_WOOD) {
@@ -470,7 +471,7 @@ bool TerrainClass::Catch_Fire() {
  * HISTORY: * 09/27/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainClass::Fire_Out() {
-  DCHECK(Terrains.ID(this) == ID);
+  DCHECK(TheObjectHeaps().terrain().ID(this) == ID);
   DCHECK(IsActive);
 
   if (IsOnFire) {
@@ -501,7 +502,7 @@ void TerrainClass::Fire_Out() {
  *JLB : Growth speed regulated by rules. *
  *=============================================================================================*/
 void TerrainClass::AI() {
-  DCHECK(Terrains.ID(this) == ID);
+  DCHECK(TheObjectHeaps().terrain().ID(this) == ID);
   DCHECK(IsActive);
 
   ObjectClass::AI();
@@ -549,7 +550,7 @@ void TerrainClass::AI() {
  *legality.                                             *
  *=============================================================================================*/
 bool TerrainClass::Unlimbo(COORDINATE coord, DirType dir) {
-  DCHECK(Terrains.ID(this) == ID);
+  DCHECK(TheObjectHeaps().terrain().ID(this) == ID);
   DCHECK(IsActive);
 
   if (Class->Theater & base::Bit<uint32_t>(Scen.Theater)) {
@@ -574,7 +575,7 @@ bool TerrainClass::Unlimbo(COORDINATE coord, DirType dir) {
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainClass::Start_To_Crumble() {
-  DCHECK(Terrains.ID(this) == ID);
+  DCHECK(TheObjectHeaps().terrain().ID(this) == ID);
   DCHECK(IsActive);
 
   if (!IsCrumbling) {
@@ -599,7 +600,7 @@ void TerrainClass::Start_To_Crumble() {
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
 bool TerrainClass::Limbo() {
-  DCHECK(Terrains.ID(this) == ID);
+  DCHECK(TheObjectHeaps().terrain().ID(this) == ID);
   DCHECK(IsActive);
 
   if (!IsInLimbo) {
@@ -624,7 +625,7 @@ bool TerrainClass::Limbo() {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE TerrainClass::Center_Coord() const {
-  DCHECK(Terrains.ID(this) == ID);
+  DCHECK(TheObjectHeaps().terrain().ID(this) == ID);
   DCHECK(IsActive);
 
   return Coord_Add(Coord, Class->CenterBase);
@@ -647,7 +648,7 @@ COORDINATE TerrainClass::Center_Coord() const {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 std::span<const unsigned char> TerrainClass::Radar_Icon(CELL cell) {
-  DCHECK(Terrains.ID(this) == ID);
+  DCHECK(TheObjectHeaps().terrain().ID(this) == ID);
   DCHECK(IsActive);
 
   const auto icons = Class->Get_Radar_Data();
@@ -755,8 +756,8 @@ void TerrainClass::Write_INI(CCINIClass& ini) {
   /*
   **	Write the terrain data out.
   */
-  for (int index = 0; index < Terrains.Count(); index++) {
-    TerrainClass* terrain = Terrains.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().terrain().Count(); index++) {
+    TerrainClass* terrain = TheObjectHeaps().terrain().Ptr(index);
     if (terrain != nullptr && !terrain->IsInLimbo && terrain->IsActive) {
       char uname[10];
       absl::SNPrintF(uname, sizeof(uname), "%d", Coord_Cell(terrain->Coord));

@@ -79,6 +79,7 @@
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/team.h"
 #include "ra/teamtype.h"
 #include "ra/techno.h"
@@ -222,8 +223,9 @@ VesselClass* xTargetClass::As_Vessel() const {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 TriggerClass* As_Trigger(TARGET target) {
-  return Is_Target_Trigger(target) ? Triggers.Raw_Ptr(Target_Value(target))
-                                   : nullptr;
+  return Is_Target_Trigger(target)
+             ? TheObjectHeaps().trigger().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -242,7 +244,9 @@ TriggerClass* As_Trigger(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 TeamClass* As_Team(TARGET target) {
-  return Is_Target_Team(target) ? Teams.Raw_Ptr(Target_Value(target)) : nullptr;
+  return Is_Target_Team(target)
+             ? TheObjectHeaps().team().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -262,8 +266,9 @@ TeamClass* As_Team(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 TeamTypeClass* As_TeamType(TARGET target) {
-  return Is_Target_TeamType(target) ? TeamTypes.Raw_Ptr(Target_Value(target))
-                                    : nullptr;
+  return Is_Target_TeamType(target)
+             ? TheObjectHeaps().team_type().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -284,8 +289,9 @@ TeamTypeClass* As_TeamType(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 AnimClass* As_Animation(TARGET target) {
-  return Is_Target_Animation(target) ? Anims.Raw_Ptr(Target_Value(target))
-                                     : nullptr;
+  return Is_Target_Animation(target)
+             ? TheObjectHeaps().anim().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -304,8 +310,9 @@ AnimClass* As_Animation(TARGET target) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 BulletClass* As_Bullet(TARGET target) {
-  return Is_Target_Bullet(target) ? Bullets.Raw_Ptr(Target_Value(target))
-                                  : nullptr;
+  return Is_Target_Bullet(target)
+             ? TheObjectHeaps().bullet().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -325,8 +332,9 @@ BulletClass* As_Bullet(TARGET target) {
  * HISTORY: * 08/27/1995 JLB : Created. *
  *=============================================================================================*/
 AircraftClass* As_Aircraft(TARGET target) {
-  return Is_Target_Aircraft(target) ? Aircraft.Raw_Ptr(Target_Value(target))
-                                    : nullptr;
+  return Is_Target_Aircraft(target)
+             ? TheObjectHeaps().aircraft().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -377,35 +385,35 @@ ObjectClass* As_Object(TARGET target) {
   ObjectClass* object = nullptr;
   switch (Target_Kind(target)) {
     case RTTI_INFANTRY:
-      object = Infantry.Raw_Ptr(val);
+      object = TheObjectHeaps().infantry().Raw_Ptr(val);
       break;
 
     case RTTI_UNIT:
-      object = Units.Raw_Ptr(val);
+      object = TheObjectHeaps().unit().Raw_Ptr(val);
       break;
 
     case RTTI_VESSEL:
-      object = Vessels.Raw_Ptr(val);
+      object = TheObjectHeaps().vessel().Raw_Ptr(val);
       break;
 
     case RTTI_BUILDING:
-      object = Buildings.Raw_Ptr(val);
+      object = TheObjectHeaps().building().Raw_Ptr(val);
       break;
 
     case RTTI_AIRCRAFT:
-      object = Aircraft.Raw_Ptr(val);
+      object = TheObjectHeaps().aircraft().Raw_Ptr(val);
       break;
 
     case RTTI_TERRAIN:
-      object = Terrains.Raw_Ptr(val);
+      object = TheObjectHeaps().terrain().Raw_Ptr(val);
       break;
 
     case RTTI_BULLET:
-      object = Bullets.Raw_Ptr(val);
+      object = TheObjectHeaps().bullet().Raw_Ptr(val);
       break;
 
     case RTTI_ANIM:
-      object = Anims.Raw_Ptr(val);
+      object = TheObjectHeaps().anim().Raw_Ptr(val);
       break;
 
     case RTTIType::RTTI_NONE:
@@ -466,7 +474,9 @@ ObjectClass* As_Object(TARGET target) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 UnitClass* As_Unit(TARGET target) {
-  return Is_Target_Unit(target) ? Units.Raw_Ptr(Target_Value(target)) : nullptr;
+  return Is_Target_Unit(target)
+             ? TheObjectHeaps().unit().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -486,8 +496,9 @@ UnitClass* As_Unit(TARGET target) {
  * HISTORY: * 07/16/1996 JLB : Created. *
  *=============================================================================================*/
 VesselClass* As_Vessel(TARGET target) {
-  return Is_Target_Vessel(target) ? Vessels.Raw_Ptr(Target_Value(target))
-                                  : nullptr;
+  return Is_Target_Vessel(target)
+             ? TheObjectHeaps().vessel().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -507,8 +518,9 @@ VesselClass* As_Vessel(TARGET target) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 InfantryClass* As_Infantry(TARGET target) {
-  return Is_Target_Infantry(target) ? Infantry.Raw_Ptr(Target_Value(target))
-                                    : nullptr;
+  return Is_Target_Infantry(target)
+             ? TheObjectHeaps().infantry().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -527,8 +539,9 @@ InfantryClass* As_Infantry(TARGET target) {
  * HISTORY: * 05/27/1994 JLB : Created. *
  *=============================================================================================*/
 BuildingClass* As_Building(TARGET target) {
-  return Is_Target_Building(target) ? Buildings.Raw_Ptr(Target_Value(target))
-                                    : nullptr;
+  return Is_Target_Building(target)
+             ? TheObjectHeaps().building().Raw_Ptr(Target_Value(target))
+             : nullptr;
 }
 
 /***********************************************************************************************
@@ -657,37 +670,37 @@ AbstractClass* xTargetClass::As_Abstract() const {
   const int value = static_cast<int>(Value());
   switch (static_cast<RTTIType>(*this)) {
     case RTTI_TEAM:
-      return Teams.Raw_Ptr(value);
+      return TheObjectHeaps().team().Raw_Ptr(value);
 
     case RTTI_BULLET:
-      return Bullets.Raw_Ptr(value);
+      return TheObjectHeaps().bullet().Raw_Ptr(value);
 
     case RTTI_OVERLAY:
-      return Overlays.Raw_Ptr(value);
+      return TheObjectHeaps().overlay().Raw_Ptr(value);
 
     case RTTI_SMUDGE:
-      return Smudges.Raw_Ptr(value);
+      return TheObjectHeaps().smudge().Raw_Ptr(value);
 
     case RTTI_UNIT:
-      return Units.Raw_Ptr(value);
+      return TheObjectHeaps().unit().Raw_Ptr(value);
 
     case RTTI_VESSEL:
-      return Vessels.Raw_Ptr(value);
+      return TheObjectHeaps().vessel().Raw_Ptr(value);
 
     case RTTI_BUILDING:
-      return Buildings.Raw_Ptr(value);
+      return TheObjectHeaps().building().Raw_Ptr(value);
 
     case RTTI_INFANTRY:
-      return Infantry.Raw_Ptr(value);
+      return TheObjectHeaps().infantry().Raw_Ptr(value);
 
     case RTTI_AIRCRAFT:
-      return Aircraft.Raw_Ptr(value);
+      return TheObjectHeaps().aircraft().Raw_Ptr(value);
 
     case RTTI_TERRAIN:
-      return Terrains.Raw_Ptr(value);
+      return TheObjectHeaps().terrain().Raw_Ptr(value);
 
     case RTTI_ANIM:
-      return Anims.Raw_Ptr(value);
+      return TheObjectHeaps().anim().Raw_Ptr(value);
 
     case RTTIType::RTTI_NONE:
     case RTTIType::RTTI_AIRCRAFTTYPE:
@@ -720,10 +733,10 @@ AbstractTypeClass* xTargetClass::As_TypeClass() const {
   const int value = static_cast<int>(Value());
   switch (static_cast<RTTIType>(*this)) {
     case RTTI_TEAMTYPE:
-      return TeamTypes.Raw_Ptr(value);
+      return TheObjectHeaps().team_type().Raw_Ptr(value);
 
     case RTTI_TRIGGERTYPE:
-      return TriggerTypes.Raw_Ptr(value);
+      return TheObjectHeaps().trigger_type().Raw_Ptr(value);
 
     case RTTI_BULLETTYPE:
       return &BulletTypeClass::As_Reference(static_cast<BulletType>(value));
@@ -803,19 +816,19 @@ TechnoClass* xTargetClass::As_Techno() const {
   const int value = static_cast<int>(Value());
   switch (static_cast<RTTIType>(*this)) {
     case RTTI_UNIT:
-      return Units.Raw_Ptr(value);
+      return TheObjectHeaps().unit().Raw_Ptr(value);
 
     case RTTI_VESSEL:
-      return Vessels.Raw_Ptr(value);
+      return TheObjectHeaps().vessel().Raw_Ptr(value);
 
     case RTTI_BUILDING:
-      return Buildings.Raw_Ptr(value);
+      return TheObjectHeaps().building().Raw_Ptr(value);
 
     case RTTI_INFANTRY:
-      return Infantry.Raw_Ptr(value);
+      return TheObjectHeaps().infantry().Raw_Ptr(value);
 
     case RTTI_AIRCRAFT:
-      return Aircraft.Raw_Ptr(value);
+      return TheObjectHeaps().aircraft().Raw_Ptr(value);
 
     case RTTIType::RTTI_NONE:
     case RTTIType::RTTI_AIRCRAFTTYPE:
@@ -854,34 +867,34 @@ ObjectClass* xTargetClass::As_Object() const {
   const int value = static_cast<int>(Value());
   switch (static_cast<RTTIType>(*this)) {
     case RTTI_TERRAIN:
-      return Terrains.Raw_Ptr(value);
+      return TheObjectHeaps().terrain().Raw_Ptr(value);
 
     case RTTI_SMUDGE:
-      return Smudges.Raw_Ptr(value);
+      return TheObjectHeaps().smudge().Raw_Ptr(value);
 
     case RTTI_OVERLAY:
-      return Overlays.Raw_Ptr(value);
+      return TheObjectHeaps().overlay().Raw_Ptr(value);
 
     case RTTI_BULLET:
-      return Bullets.Raw_Ptr(value);
+      return TheObjectHeaps().bullet().Raw_Ptr(value);
 
     case RTTI_ANIM:
-      return Anims.Raw_Ptr(value);
+      return TheObjectHeaps().anim().Raw_Ptr(value);
 
     case RTTI_UNIT:
-      return Units.Raw_Ptr(value);
+      return TheObjectHeaps().unit().Raw_Ptr(value);
 
     case RTTI_VESSEL:
-      return Vessels.Raw_Ptr(value);
+      return TheObjectHeaps().vessel().Raw_Ptr(value);
 
     case RTTI_BUILDING:
-      return Buildings.Raw_Ptr(value);
+      return TheObjectHeaps().building().Raw_Ptr(value);
 
     case RTTI_INFANTRY:
-      return Infantry.Raw_Ptr(value);
+      return TheObjectHeaps().infantry().Raw_Ptr(value);
 
     case RTTI_AIRCRAFT:
-      return Aircraft.Raw_Ptr(value);
+      return TheObjectHeaps().aircraft().Raw_Ptr(value);
 
     case RTTIType::RTTI_NONE:
     case RTTIType::RTTI_AIRCRAFTTYPE:
@@ -1039,7 +1052,7 @@ const TechnoTypeClass* As_TechnoType(TARGET target) {
  *=============================================================================================*/
 TriggerTypeClass* As_TriggerType(TARGET target) {
   if (Target_Kind(target) == RTTI_TRIGGERTYPE) {
-    return TriggerTypes.Raw_Ptr(Target_Value(target));
+    return TheObjectHeaps().trigger_type().Raw_Ptr(Target_Value(target));
   }
   return nullptr;
 }

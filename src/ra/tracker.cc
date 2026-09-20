@@ -51,6 +51,7 @@
 #include "ra/infantry.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
+#include "ra/object_heaps.h"
 #include "ra/target.h"
 #include "ra/team.h"
 #include "ra/teamtype.h"
@@ -83,35 +84,35 @@
  *=============================================================================================*/
 void Detach_This_From_All(TARGET target, bool all) {
   if (Target_Legal(target)) {
-    for (int index = 0; index < Houses.Count(); index++) {
-      Houses.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().house().Count(); index++) {
+      TheObjectHeaps().house().Ptr(index)->Detach(target, all);
     }
-    for (int index = 0; index < Teams.Count(); index++) {
-      Teams.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().team().Count(); index++) {
+      TheObjectHeaps().team().Ptr(index)->Detach(target, all);
     }
-    for (int index = 0; index < TeamTypes.Count(); index++) {
-      TeamTypes.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
+      TheObjectHeaps().team_type().Ptr(index)->Detach(target, all);
     }
-    for (int index = 0; index < Units.Count(); index++) {
-      Units.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+      TheObjectHeaps().unit().Ptr(index)->Detach(target, all);
     }
-    for (int index = 0; index < Vessels.Count(); index++) {
-      Vessels.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {
+      TheObjectHeaps().vessel().Ptr(index)->Detach(target, all);
     }
-    for (int index = 0; index < Aircraft.Count(); index++) {
-      Aircraft.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().aircraft().Count(); index++) {
+      TheObjectHeaps().aircraft().Ptr(index)->Detach(target, all);
     }
-    for (int index = 0; index < Buildings.Count(); index++) {
-      Buildings.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+      TheObjectHeaps().building().Ptr(index)->Detach(target, all);
     }
-    for (int index = 0; index < Bullets.Count(); index++) {
-      Bullets.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().bullet().Count(); index++) {
+      TheObjectHeaps().bullet().Ptr(index)->Detach(target, all);
     }
-    for (int index = 0; index < Infantry.Count(); index++) {
-      Infantry.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
+      TheObjectHeaps().infantry().Ptr(index)->Detach(target, all);
     }
-    for (int index = 0; index < Anims.Count(); index++) {
-      Anims.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().anim().Count(); index++) {
+      TheObjectHeaps().anim().Ptr(index)->Detach(target, all);
     }
 
     Map.Detach(target, all);
@@ -125,8 +126,8 @@ void Detach_This_From_All(TARGET target, bool all) {
     **	upon that type.
     */
     if (As_TriggerType(target) != nullptr) {
-      for (int j = 0; j < Triggers.Count(); j++) {
-        const TriggerClass* tp = Triggers.Ptr(j);
+      for (int j = 0; j < TheObjectHeaps().trigger().Count(); j++) {
+        const TriggerClass* tp = TheObjectHeaps().trigger().Ptr(j);
 
         if (tp->Class->As_Target() == target) {
           Detach_This_From_All(tp->As_Target());
@@ -136,11 +137,12 @@ void Detach_This_From_All(TARGET target, bool all) {
       }
     }
 
-    for (int index = 0; index < Triggers.Count(); index++) {
-      Triggers.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().trigger().Count(); index++) {
+      TheObjectHeaps().trigger().Ptr(index)->Detach(target, all);
     }
-    for (int index = 0; index < TriggerTypes.Count(); index++) {
-      TriggerTypes.Ptr(index)->Detach(target, all);
+    for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
+         index++) {
+      TheObjectHeaps().trigger_type().Ptr(index)->Detach(target, all);
     }
   }
 }

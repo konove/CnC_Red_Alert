@@ -64,6 +64,7 @@
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/type_heaps.h"
 #include "tech/number_parse.h"
 
@@ -85,7 +86,7 @@ HousesType SmudgeClass::ToOwn = HOUSE_NONE;
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 void* SmudgeClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Smudges.Allocate();
+  void* ptr = TheObjectHeaps().smudge().Allocate();
   if (ptr != nullptr) {
     static_cast<SmudgeClass*>(ptr)->IsActive = true;
   }
@@ -110,7 +111,7 @@ void SmudgeClass::operator delete(void* ptr) {
   if (ptr != nullptr) {
     static_cast<SmudgeClass*>(ptr)->IsActive = false;
   }
-  Smudges.Free(static_cast<SmudgeClass*>(ptr));
+  TheObjectHeaps().smudge().Free(static_cast<SmudgeClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -134,7 +135,7 @@ void SmudgeClass::operator delete(void* ptr) {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 SmudgeClass::SmudgeClass(SmudgeType type, COORDINATE pos, HousesType house)
-    : ObjectClass(RTTI_SMUDGE, Smudges.ID(this)),
+    : ObjectClass(RTTI_SMUDGE, TheObjectHeaps().smudge().ID(this)),
       Class(TheTypeHeaps().smudge().Ptr(static_cast<int>(type))) {
   if (pos != ~0U) {
     ToOwn = house;
@@ -160,7 +161,7 @@ SmudgeClass::SmudgeClass(SmudgeType type, COORDINATE pos, HousesType house)
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void SmudgeClass::Init() { Smudges.Free_All(); }
+void SmudgeClass::Init() { TheObjectHeaps().smudge().Free_All(); }
 
 /***********************************************************************************************
  * SmudgeClass::Mark -- Marks a smudge down on the map. *
@@ -179,7 +180,7 @@ void SmudgeClass::Init() { Smudges.Free_All(); }
  *legality before proceeding.                             *
  *=============================================================================================*/
 bool SmudgeClass::Mark(MarkType mark) {
-  DCHECK(Smudges.ID(this) == ID);
+  DCHECK(TheObjectHeaps().smudge().ID(this) == ID);
   DCHECK(IsActive);
 
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
@@ -264,7 +265,7 @@ bool SmudgeClass::Mark(MarkType mark) {
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
 void SmudgeClass::Disown(CELL cell) {
-  DCHECK(Smudges.ID(this) == ID);
+  DCHECK(TheObjectHeaps().smudge().ID(this) == ID);
   DCHECK(IsActive);
 
   if (Class->IsBib) {

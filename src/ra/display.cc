@@ -150,6 +150,7 @@
 #include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/msglist.h"
+#include "ra/object_heaps.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/queue.h"
@@ -864,8 +865,8 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
   // For land mines, let's make it check proximity within 10 squares
   if ((!retval && !noradar && object->What_Am_I() == RTTI_BUILDINGTYPE) &&
       (building->Adjacent > 1)) {
-    for (int index = 0; index < Buildings.Count(); index++) {
-      const BuildingClass* obj = Buildings.Ptr(index);
+    for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+      const BuildingClass* obj = TheObjectHeaps().building().Ptr(index);
       if (obj != nullptr && !obj->IsInLimbo &&
           obj->House->Class->House == house && obj->Class->IsBase) {
         int centdist = Distance(obj->Center_Coord(), Cell_Coord(cell));
@@ -2737,8 +2738,9 @@ void DisplayClass::Select_These(COORDINATE coord1, COORDINATE coord2) {
   /*
   **	Select any aircraft with the bounding box.
   */
-  for (int air_index = 0; air_index < Aircraft.Count(); air_index++) {
-    AircraftClass* aircraft = Aircraft.Ptr(air_index);
+  for (int air_index = 0; air_index < TheObjectHeaps().aircraft().Count();
+       air_index++) {
+    AircraftClass* aircraft = TheObjectHeaps().aircraft().Ptr(air_index);
     const COORDINATE ocoord = aircraft->Center_Coord();
     const int x = Coord_X(ocoord);
     const int y = Coord_Y(ocoord);
@@ -3946,8 +3948,8 @@ void DisplayClass::Compute_Start_Pos() {
   int32_t x = 0;
   int32_t y = 0;
   int32_t num = 0;
-  for (int i = 0; i < Infantry.Count(); i++) {
-    const InfantryClass* infp = Infantry.Ptr(i);
+  for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
+    const InfantryClass* infp = TheObjectHeaps().infantry().Ptr(i);
     if (!infp->IsInLimbo && infp->IsOwnedByPlayer) {
       x += static_cast<int32_t>(Coord_XCell(infp->Coord));
       y += static_cast<int32_t>(Coord_YCell(infp->Coord));
@@ -3955,8 +3957,8 @@ void DisplayClass::Compute_Start_Pos() {
     }
   }
 
-  for (int i = 0; i < Units.Count(); i++) {
-    const UnitClass* unitp = Units.Ptr(i);
+  for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
+    const UnitClass* unitp = TheObjectHeaps().unit().Ptr(i);
     if (!unitp->IsInLimbo && unitp->IsOwnedByPlayer) {
       x += static_cast<int32_t>(Coord_XCell(unitp->Coord));
       y += static_cast<int32_t>(Coord_YCell(unitp->Coord));
@@ -3964,8 +3966,8 @@ void DisplayClass::Compute_Start_Pos() {
     }
   }
 
-  for (int i = 0; i < Buildings.Count(); i++) {
-    const BuildingClass* bldgp = Buildings.Ptr(i);
+  for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
+    const BuildingClass* bldgp = TheObjectHeaps().building().Ptr(i);
     if (!bldgp->IsInLimbo && bldgp->IsOwnedByPlayer) {
       x += static_cast<int32_t>(Coord_XCell(bldgp->Coord)) * 16;
       y += static_cast<int32_t>(Coord_YCell(bldgp->Coord)) * 16;
@@ -3973,8 +3975,8 @@ void DisplayClass::Compute_Start_Pos() {
     }
   }
 
-  for (int i = 0; i < Vessels.Count(); i++) {
-    const VesselClass* bldgp = Vessels.Ptr(i);
+  for (int i = 0; i < TheObjectHeaps().vessel().Count(); i++) {
+    const VesselClass* bldgp = TheObjectHeaps().vessel().Ptr(i);
     if (!bldgp->IsInLimbo && bldgp->IsOwnedByPlayer) {
       x += static_cast<int32_t>(Coord_XCell(bldgp->Coord));
       y += static_cast<int32_t>(Coord_YCell(bldgp->Coord));

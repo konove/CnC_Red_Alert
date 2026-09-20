@@ -60,6 +60,7 @@
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/screen.h"
 #include "ra/super.h"
 #include "ra/type.h"
@@ -170,8 +171,9 @@ void Debug_Key(unsigned input) {
         */
         if (!ScenarioInit) {
           Map.Recalc();
-          for (int index = 0; index < Buildings.Count(); index++) {
-            Buildings.Ptr(index)->Update_Buildables();
+          for (int index = 0; index < TheObjectHeaps().building().Count();
+               index++) {
+            TheObjectHeaps().building().Ptr(index)->Update_Buildables();
           }
         }
         break;

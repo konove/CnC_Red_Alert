@@ -76,6 +76,7 @@
 #include "ra/nulldlg.h"
 #include "ra/nullmgr.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/queue.h"
@@ -547,10 +548,10 @@ static void LogObjectPositions(const TFixedIHeapClass<T>& objects,
 // -LOADGAME this checks that loaded objects keep moving without anyone at the
 // keyboard. Returns true once the game has been ended.
 static bool LogFrameAndQuitIfDue() {
-  LogObjectPositions(Units, "unit");
-  LogObjectPositions(Infantry, "infantry");
-  LogObjectPositions(Vessels, "vessel");
-  LogObjectPositions(Aircraft, "aircraft");
+  LogObjectPositions(TheObjectHeaps().unit(), "unit");
+  LogObjectPositions(TheObjectHeaps().infantry(), "infantry");
+  LogObjectPositions(TheObjectHeaps().vessel(), "vessel");
+  LogObjectPositions(TheObjectHeaps().aircraft(), "aircraft");
 
   if (CurrentFrame() < TheStartupOptions().quit_at_frame) {
     return false;

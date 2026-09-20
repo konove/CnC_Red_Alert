@@ -9,6 +9,7 @@
 #include "ra/assets.h"
 #include "ra/debug_state.h"
 #include "ra/game_clock.h"
+#include "ra/object_heaps.h"
 #include "ra/palettes.h"
 #include "ra/rules.h"
 #include "ra/screen.h"
@@ -60,6 +61,8 @@ class Game {
   base::Installed<Assets>::Scope assets_scope_{assets_};
   TypeHeaps type_heaps_;
   base::Installed<TypeHeaps>::Scope type_heaps_scope_{type_heaps_};
+  ObjectHeaps object_heaps_;
+  base::Installed<ObjectHeaps>::Scope object_heaps_scope_{object_heaps_};
   RulesClass rules_;
   base::Installed<RulesClass>::Scope rules_scope_{rules_};
   DebugState debug_state_;

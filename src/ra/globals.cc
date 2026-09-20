@@ -43,13 +43,8 @@
 #include <vector>
 
 #include "base/enum_array.h"
-#include "ra/aircraft.h"
-#include "ra/anim.h"
 #include "ra/base.h"
-#include "ra/building.h"
-#include "ra/bullet.h"
 #include "ra/carry.h"
-#include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/compat.h"
 #include "ra/connect.h"
@@ -57,11 +52,8 @@
 #include "ra/defines.h"
 #include "ra/event.h"
 #include "ra/externs.h"
-#include "ra/factory.h"
 #include "ra/goptions.h"
-#include "ra/heap.h"
 #include "ra/house.h"
-#include "ra/infantry.h"
 #include "ra/ipxgconn.h"
 #include "ra/ipxmgr.h"
 #include "ra/jshell.h"
@@ -69,24 +61,15 @@
 #include "ra/mapedit.h"
 #include "ra/nullmgr.h"
 #include "ra/object.h"
-#include "ra/overlay.h"
 #include "ra/queue.h"
 #include "ra/scenario.h"
 #include "ra/score.h"
 #include "ra/session.h"
-#include "ra/smudge.h"
 #include "ra/special.h"
-#include "ra/team.h"
-#include "ra/teamtype.h"
-#include "ra/template.h"
-#include "ra/terrain.h"
 #include "ra/theme.h"
 #include "ra/trigger.h"
-#include "ra/trigtype.h"
-#include "ra/unit.h"
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
-#include "ra/vessel.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/audio_mixer.h"
@@ -95,23 +78,6 @@
 #include "tech/random.h"
 #include "winvq/vqa32/vqaplay.h"
 
-TFixedIHeapClass<AircraftClass> Aircraft;
-TFixedIHeapClass<AnimClass> Anims;
-TFixedIHeapClass<BuildingClass> Buildings;
-TFixedIHeapClass<BulletClass> Bullets;
-TFixedIHeapClass<FactoryClass> Factories;
-TFixedIHeapClass<HouseClass> Houses;
-TFixedIHeapClass<InfantryClass> Infantry;
-TFixedIHeapClass<OverlayClass> Overlays;
-TFixedIHeapClass<SmudgeClass> Smudges;
-TFixedIHeapClass<TeamClass> Teams;
-TFixedIHeapClass<TeamTypeClass> TeamTypes;
-TFixedIHeapClass<TemplateClass> Templates;
-TFixedIHeapClass<TerrainClass> Terrains;
-TFixedIHeapClass<TriggerClass> Triggers;
-TFixedIHeapClass<UnitClass> Units;
-TFixedIHeapClass<VesselClass> Vessels;
-TFixedIHeapClass<TriggerTypeClass> TriggerTypes;
 
 
 /*
@@ -121,36 +87,6 @@ TFixedIHeapClass<TriggerTypeClass> TriggerTypes;
 *objects *	for that type are not allowed. For every case of a TFixedIHeap
 *manager of *	game objects, then a CCPtr can be instantiated for it.
 */
-template <>
-FixedIHeapClass* CCPtr<AircraftClass>::Heap = &Aircraft;
-template <>
-FixedIHeapClass* CCPtr<AnimClass>::Heap = &Anims;
-template <>
-FixedIHeapClass* CCPtr<BuildingClass>::Heap = &Buildings;
-template <>
-FixedIHeapClass* CCPtr<BulletClass>::Heap = &Bullets;
-template <>
-FixedIHeapClass* CCPtr<FactoryClass>::Heap = &Factories;
-template <>
-FixedIHeapClass* CCPtr<HouseClass>::Heap = &Houses;
-template <>
-FixedIHeapClass* CCPtr<InfantryClass>::Heap = &Infantry;
-template <>
-FixedIHeapClass* CCPtr<OverlayClass>::Heap = &Overlays;
-template <>
-FixedIHeapClass* CCPtr<SmudgeClass>::Heap = &Smudges;
-template <>
-FixedIHeapClass* CCPtr<TeamClass>::Heap = &Teams;
-template <>
-FixedIHeapClass* CCPtr<TeamTypeClass>::Heap = &TeamTypes;
-template <>
-FixedIHeapClass* CCPtr<TemplateClass>::Heap = &Templates;
-template <>
-FixedIHeapClass* CCPtr<TerrainClass>::Heap = &Terrains;
-template <>
-FixedIHeapClass* CCPtr<TriggerClass>::Heap = &Triggers;
-template <>
-FixedIHeapClass* CCPtr<TriggerTypeClass>::Heap = &TriggerTypes;
 
 
 /* These variables are used to keep track of the slowest speed of a team */

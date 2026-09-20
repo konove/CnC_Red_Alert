@@ -129,6 +129,7 @@
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/overlay.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
@@ -315,8 +316,8 @@ bool ScenarioClass::Set_Global_To(int global, bool value) {
       *that depend on this *	global being set/cleared, then if there is an
       *elapsed time event associated, it *	will be reset at this time.
       */
-      for (int index = 0; index < Triggers.Count(); index++) {
-        TriggerClass* tp = Triggers.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().trigger().Count(); index++) {
+        TriggerClass* tp = TheObjectHeaps().trigger().Ptr(index);
         if ((tp->Class->Event1.Event == TEVENT_GLOBAL_SET ||
              tp->Class->Event1.Event == TEVENT_GLOBAL_CLEAR) &&
             tp->Class->Event1.Data.Value == global) {
@@ -526,8 +527,8 @@ void Fill_In_Data() {
   */
   ScenarioInit++;
 
-  for (int index = 0; index < Buildings.Count(); index++) {
-    Buildings.Ptr(index)->Update_Buildables();
+  for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
+    TheObjectHeaps().building().Ptr(index)->Update_Buildables();
   }
 
   Map.Flag_To_Redraw(true);
@@ -560,8 +561,9 @@ void Fill_In_Data() {
   /*
   **	Distribute the trigger pointers to the appropriate working lists.
   */
-  for (int index = 0; index < TriggerTypes.Count(); index++) {
-    TriggerTypeClass* tp = TriggerTypes.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
+       index++) {
+    TriggerTypeClass* tp = TheObjectHeaps().trigger_type().Ptr(index);
 
     DCHECK(tp != nullptr);
 
@@ -610,8 +612,9 @@ void Fill_In_Data() {
   **	The "allow win" action is a special case that is handled here. The total
   *number *	of triggers that have this action must be recorded.
   */
-  for (int index = 0; index < TriggerTypes.Count(); index++) {
-    const TriggerTypeClass* tp = TriggerTypes.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().trigger_type().Count();
+       index++) {
+    const TriggerTypeClass* tp = TheObjectHeaps().trigger_type().Ptr(index);
     if (tp->Action1.Action == TACTION_ALLOWWIN ||
         (tp->ActionControl != MULTI_ONLY &&
          tp->Action2.Action == TACTION_ALLOWWIN)) {
@@ -930,31 +933,35 @@ void Do_Win() {
     **	Record all objects, that are to be part of the carry over set, into
     **	the carry over list.
     */
-    for (int building_index = 0; building_index < Buildings.Count();
+    for (int building_index = 0;
+         building_index < TheObjectHeaps().building().Count();
          building_index++) {
-      BuildingClass* building = Buildings.Ptr(building_index);
+      BuildingClass* building = TheObjectHeaps().building().Ptr(building_index);
 
       if (building && !building->IsInLimbo && building->Strength > 0) {
         Carryover.emplace_back(building);
       }
     }
-    for (int unit_index = 0; unit_index < Units.Count(); unit_index++) {
-      UnitClass* unit = Units.Ptr(unit_index);
+    for (int unit_index = 0; unit_index < TheObjectHeaps().unit().Count();
+         unit_index++) {
+      UnitClass* unit = TheObjectHeaps().unit().Ptr(unit_index);
 
       if (unit && !unit->IsInLimbo && unit->Strength > 0) {
         Carryover.emplace_back(unit);
       }
     }
-    for (int infantry_index = 0; infantry_index < Infantry.Count();
+    for (int infantry_index = 0;
+         infantry_index < TheObjectHeaps().infantry().Count();
          infantry_index++) {
-      InfantryClass* infantry = Infantry.Ptr(infantry_index);
+      InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(infantry_index);
 
       if (infantry && !infantry->IsInLimbo && infantry->Strength > 0) {
         Carryover.emplace_back(infantry);
       }
     }
-    for (int vessel_index = 0; vessel_index < Vessels.Count(); vessel_index++) {
-      VesselClass* vessel = Vessels.Ptr(vessel_index);
+    for (int vessel_index = 0; vessel_index < TheObjectHeaps().vessel().Count();
+         vessel_index++) {
+      VesselClass* vessel = TheObjectHeaps().vessel().Ptr(vessel_index);
 
       if (vessel && !vessel->IsInLimbo && vessel->Strength > 0) {
         Carryover.emplace_back(vessel);

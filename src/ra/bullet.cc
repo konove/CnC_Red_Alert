@@ -87,6 +87,7 @@
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/radar.h"
 #include "ra/rules.h"
 #include "ra/shape_draw.h"
@@ -120,7 +121,7 @@
  *=============================================================================================*/
 BulletClass::BulletClass(BulletType id, TARGET target, TechnoClass* payback,
                          int strength, WarheadType warhead, int speed)
-    : ObjectClass(RTTI_BULLET, Bullets.ID(this)),
+    : ObjectClass(RTTI_BULLET, TheObjectHeaps().bullet().ID(this)),
       Class(TheTypeHeaps().bullet().Ptr(static_cast<int>(id))),
       Payback(payback),
       PrimaryFacing(DIR_N),
@@ -228,7 +229,7 @@ BulletClass::~BulletClass() {
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
 void* BulletClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Bullets.Allocate();
+  void* ptr = TheObjectHeaps().bullet().Allocate();
   if (ptr) {
     static_cast<BulletClass*>(ptr)->IsActive = true;
   }
@@ -253,7 +254,7 @@ void BulletClass::operator delete(void* ptr) {
   if (ptr) {
     static_cast<BulletClass*>(ptr)->IsActive = false;
   }
-  Bullets.Free(static_cast<BulletClass*>(ptr));
+  TheObjectHeaps().bullet().Free(static_cast<BulletClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -274,7 +275,7 @@ void BulletClass::operator delete(void* ptr) {
  *with altitude.                                       *
  *=============================================================================================*/
 std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
-  DCHECK(Bullets.ID(this) == ID);
+  DCHECK(TheObjectHeaps().bullet().ID(this) == ID);
   DCHECK(IsActive);
 
   /*
@@ -351,7 +352,7 @@ std::span<const int16_t> BulletClass::Occupy_List(bool /*placement*/) const {
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
 bool BulletClass::Mark(MarkType mark) {
-  DCHECK(Bullets.ID(this) == ID);
+  DCHECK(TheObjectHeaps().bullet().ID(this) == ID);
   DCHECK(IsActive);
 
   if (ObjectClass::Mark(mark)) {
@@ -379,7 +380,7 @@ bool BulletClass::Mark(MarkType mark) {
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
 void BulletClass::AI() {
-  DCHECK(Bullets.ID(this) == ID);
+  DCHECK(TheObjectHeaps().bullet().ID(this) == ID);
   DCHECK(IsActive);
 
   ObjectClass::AI();
@@ -550,7 +551,7 @@ int BulletClass::Shape_Number() const {
  *Handles translucent colors if necessary.                                 *
  *=============================================================================================*/
 void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
-  DCHECK(Bullets.ID(this) == ID);
+  DCHECK(TheObjectHeaps().bullet().ID(this) == ID);
   DCHECK(IsActive);
 
   /*
@@ -630,7 +631,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
  *                                                                                             *
  * HISTORY: * 08/15/1994 JLB : Created. *
  *=============================================================================================*/
-void BulletClass::Init() { Bullets.Free_All(); }
+void BulletClass::Init() { TheObjectHeaps().bullet().Free_All(); }
 
 /***********************************************************************************************
  * BulletClass::Detach -- Removes specified target from this bullet's targeting
@@ -653,7 +654,7 @@ void BulletClass::Init() { Bullets.Free_All(); }
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 void BulletClass::Detach(TARGET target, bool all) {
-  DCHECK(Bullets.ID(this) == ID);
+  DCHECK(TheObjectHeaps().bullet().ID(this) == ID);
   DCHECK(IsActive);
 
   const ObjectClass* obj = As_Object(target);
@@ -693,7 +694,7 @@ void BulletClass::Detach(TARGET target, bool all) {
  * HISTORY: * 01/10/1995 JLB : Created. *
  *=============================================================================================*/
 bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
-  DCHECK(Bullets.ID(this) == ID);
+  DCHECK(TheObjectHeaps().bullet().ID(this) == ID);
   DCHECK(IsActive);
 
   /*
@@ -849,7 +850,7 @@ bool BulletClass::Unlimbo(COORDINATE coord, DirType dir) {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE BulletClass::Target_Coord() const {
-  DCHECK(Bullets.ID(this) == ID);
+  DCHECK(TheObjectHeaps().bullet().ID(this) == ID);
   DCHECK(IsActive);
 
   return Coord_Add(XY_Coord(0, static_cast<LEPTON>(-Height)), Coord);

@@ -67,6 +67,7 @@
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/palettes.h"
 #include "ra/taction.h"
 #include "ra/target.h"
@@ -154,12 +155,15 @@ void TriggerClass::Draw_It(int /*unused*/, int x, int y, int width, int height,
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
 TriggerClass::TriggerClass(TriggerTypeClass* trigtype)
-    : RTTI(RTTI_TRIGGER), ID(Triggers.ID(this)), Class(trigtype) {
+    : RTTI(RTTI_TRIGGER),
+      ID(TheObjectHeaps().trigger().ID(this)),
+      Class(trigtype) {
   Class->Event1.Reset(Event1);
   Class->Event2.Reset(Event2);
 }
 
-TriggerClass::TriggerClass() : RTTI(RTTI_TRIGGER), ID(Triggers.ID(this)) {}
+TriggerClass::TriggerClass()
+    : RTTI(RTTI_TRIGGER), ID(TheObjectHeaps().trigger().ID(this)) {}
 
 /***********************************************************************************************
  * TriggerClass::~TriggerClass -- Destructor for trigger objects. *
@@ -216,7 +220,7 @@ TriggerClass::~TriggerClass() {
  *                                                                                             *
  * HISTORY: * 11/29/1994 BR : Created. *
  *=============================================================================================*/
-void TriggerClass::Init() { Triggers.Free_All(); }
+void TriggerClass::Init() { TheObjectHeaps().trigger().Free_All(); }
 
 /***********************************************************************************************
  * TriggerClass::Spring -- Spring the trigger (possibly). *
@@ -245,7 +249,7 @@ void TriggerClass::Init() { Triggers.Free_All(); }
  *=============================================================================================*/
 bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
                           bool forced) {
-  DCHECK(Triggers.ID(this) == ID);
+  DCHECK(TheObjectHeaps().trigger().ID(this) == ID);
 
   const bool e1 = Class->Event1(Event1, event, Class->House, obj, forced);
   bool e2 = false;
@@ -386,7 +390,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
 void* TriggerClass::operator new(size_t /*unused*/) noexcept {
-  void* ptr = Triggers.Allocate();
+  void* ptr = TheObjectHeaps().trigger().Allocate();
   if (ptr) {
     static_cast<TriggerClass*>(ptr)->IsActive = true;
   }
@@ -413,7 +417,7 @@ void TriggerClass::operator delete(void* pointer) {
   if (pointer) {
     static_cast<TriggerClass*>(pointer)->IsActive = false;
   }
-  Triggers.Free(static_cast<TriggerClass*>(pointer));
+  TheObjectHeaps().trigger().Free(static_cast<TriggerClass*>(pointer));
 }
 
 /***********************************************************************************************
@@ -430,7 +434,7 @@ void TriggerClass::operator delete(void* pointer) {
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 TARGET TriggerClass::As_Target() const {
-  DCHECK(Triggers.ID(this) == ID);
+  DCHECK(TheObjectHeaps().trigger().ID(this) == ID);
 
   return Build_Target(RTTI_TRIGGER, ID);
 }
@@ -460,9 +464,9 @@ TriggerClass* Find_Or_Make(TriggerTypeClass* trigtype) {
     return nullptr;
   }
 
-  for (int index = 0; index < Triggers.Count(); index++) {
-    if (trigtype == Triggers.Ptr(index)->Class) {
-      return Triggers.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().trigger().Count(); index++) {
+    if (trigtype == TheObjectHeaps().trigger().Ptr(index)->Class) {
+      return TheObjectHeaps().trigger().Ptr(index);
     }
   }
 

@@ -124,6 +124,7 @@
 #include "ra/netdlg.h"
 #include "ra/nulldlg.h"
 #include "ra/nullmgr.h"
+#include "ra/object_heaps.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/queue.h"
@@ -1896,23 +1897,23 @@ static void Init_Heaps() {
   /*
   **	Initialize the game object heaps.
   */
-  Vessels.Set_Heap(TheRules().VesselMax);
-  Units.Set_Heap(TheRules().UnitMax);
-  Factories.Set_Heap(TheRules().FactoryMax);
-  Terrains.Set_Heap(TheRules().TerrainMax);
-  Templates.Set_Heap(TheRules().TemplateMax);
-  Smudges.Set_Heap(TheRules().SmudgeMax);
-  Overlays.Set_Heap(TheRules().OverlayMax);
-  Infantry.Set_Heap(TheRules().InfantryMax);
-  Bullets.Set_Heap(TheRules().BulletMax);
-  Buildings.Set_Heap(TheRules().BuildingMax);
-  Anims.Set_Heap(TheRules().AnimMax);
-  Aircraft.Set_Heap(TheRules().AircraftMax);
-  Triggers.Set_Heap(TheRules().TriggerMax);
-  TeamTypes.Set_Heap(TheRules().TeamTypeMax);
-  Teams.Set_Heap(TheRules().TeamMax);
-  Houses.Set_Heap(kHouseMax);
-  TriggerTypes.Set_Heap(TheRules().TrigTypeMax);
+  TheObjectHeaps().vessel().Set_Heap(TheRules().VesselMax);
+  TheObjectHeaps().unit().Set_Heap(TheRules().UnitMax);
+  TheObjectHeaps().factory().Set_Heap(TheRules().FactoryMax);
+  TheObjectHeaps().terrain().Set_Heap(TheRules().TerrainMax);
+  TheObjectHeaps().tmplate().Set_Heap(TheRules().TemplateMax);
+  TheObjectHeaps().smudge().Set_Heap(TheRules().SmudgeMax);
+  TheObjectHeaps().overlay().Set_Heap(TheRules().OverlayMax);
+  TheObjectHeaps().infantry().Set_Heap(TheRules().InfantryMax);
+  TheObjectHeaps().bullet().Set_Heap(TheRules().BulletMax);
+  TheObjectHeaps().building().Set_Heap(TheRules().BuildingMax);
+  TheObjectHeaps().anim().Set_Heap(TheRules().AnimMax);
+  TheObjectHeaps().aircraft().Set_Heap(TheRules().AircraftMax);
+  TheObjectHeaps().trigger().Set_Heap(TheRules().TriggerMax);
+  TheObjectHeaps().team_type().Set_Heap(TheRules().TeamTypeMax);
+  TheObjectHeaps().team().Set_Heap(TheRules().TeamMax);
+  TheObjectHeaps().house().Set_Heap(kHouseMax);
+  TheObjectHeaps().trigger_type().Set_Heap(TheRules().TrigTypeMax);
   //	Weapons.Set_Heap(Rule.WeaponMax);
 
 }

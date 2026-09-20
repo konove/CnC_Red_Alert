@@ -90,6 +90,7 @@
 #include "ra/mission_id.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/overlay.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
@@ -160,7 +161,7 @@ static void SerializeTriggerList(Archive& ar, DynamicVectorClass<TriggerClass*>&
   auto count = static_cast<int32_t>(list.Count());
   ar(count);
   if constexpr (Archive::kIsReading) {
-    if (!ar.ok() || count < 0 || count > Triggers.Length()) {
+    if (!ar.ok() || count < 0 || count > TheObjectHeaps().trigger().Length()) {
       ar.Fail("invalid trigger list count");
       return;
     }
@@ -180,7 +181,7 @@ static void SerializeTriggerList(Archive& ar, DynamicVectorClass<TriggerClass*>&
     ar(target);
     if constexpr (Archive::kIsReading) {
       if (!ar.ok() || !Is_Target_Trigger(target) ||
-          Target_Value(target) >= Triggers.Length()) {
+          Target_Value(target) >= TheObjectHeaps().trigger().Length()) {
         ar.Fail("invalid saved trigger target");
         return;
       }
@@ -271,89 +272,89 @@ static void Put_All(ByteSink& pipe, int save_net) {
   **	TFixedIHeap class.
   */
   Put_Section(pipe, FourCC("HOUS"));
-  Houses.Save(pipe);
+  TheObjectHeaps().house().Save(pipe);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("TMTY"));
-  TeamTypes.Save(pipe);
+  TheObjectHeaps().team_type().Save(pipe);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("TEAM"));
-  Teams.Save(pipe);
+  TheObjectHeaps().team().Save(pipe);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("TRTY"));
-  TriggerTypes.Save(pipe);
+  TheObjectHeaps().trigger_type().Save(pipe);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("TRIG"));
-  Triggers.Save(pipe);
+  TheObjectHeaps().trigger().Save(pipe);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("AIRC"));
-  Aircraft.Save(pipe);
+  TheObjectHeaps().aircraft().Save(pipe);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("ANIM"));
-  Anims.Save(pipe);
+  TheObjectHeaps().anim().Save(pipe);
 
   if (!save_net) {
     ServiceBackgroundTasks();
   }
 
   Put_Section(pipe, FourCC("BLDG"));
-  Buildings.Save(pipe);
+  TheObjectHeaps().building().Save(pipe);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("BULL"));
-  Bullets.Save(pipe);
+  TheObjectHeaps().bullet().Save(pipe);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("INFT"));
-  Infantry.Save(pipe);
+  TheObjectHeaps().infantry().Save(pipe);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("OVRL"));
-  Overlays.Save(pipe);
+  TheObjectHeaps().overlay().Save(pipe);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("SMDG"));
-  Smudges.Save(pipe);
+  TheObjectHeaps().smudge().Save(pipe);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("TMPL"));
-  Templates.Save(pipe);
+  TheObjectHeaps().tmplate().Save(pipe);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("TERR"));
-  Terrains.Save(pipe);
+  TheObjectHeaps().terrain().Save(pipe);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("UNIT"));
-  Units.Save(pipe);
+  TheObjectHeaps().unit().Save(pipe);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("FACT"));
-  Factories.Save(pipe);
+  TheObjectHeaps().factory().Save(pipe);
   if (!save_net) {
     ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("VESL"));
-  Vessels.Save(pipe);
+  TheObjectHeaps().vessel().Save(pipe);
 
   if (!save_net) {
     ServiceBackgroundTasks();
@@ -799,58 +800,75 @@ bool Load_Game(int id) {
   /*
   **	Load the object data.
   */
-  if (!Get_Section(straw, FourCC("HOUS")) || !Houses.Load(straw)) {
+  if (!Get_Section(straw, FourCC("HOUS")) ||
+      !TheObjectHeaps().house().Load(straw)) {
     return false;
   }
-  if (!Get_Section(straw, FourCC("TMTY")) || !TeamTypes.Load(straw)) {
+  if (!Get_Section(straw, FourCC("TMTY")) ||
+      !TheObjectHeaps().team_type().Load(straw)) {
     return false;
   }
-  if (!Get_Section(straw, FourCC("TEAM")) || !Teams.Load(straw)) {
+  if (!Get_Section(straw, FourCC("TEAM")) ||
+      !TheObjectHeaps().team().Load(straw)) {
     return false;
   }
-  if (!Get_Section(straw, FourCC("TRTY")) || !TriggerTypes.Load(straw)) {
+  if (!Get_Section(straw, FourCC("TRTY")) ||
+      !TheObjectHeaps().trigger_type().Load(straw)) {
     return false;
   }
-  if (!Get_Section(straw, FourCC("TRIG")) || !Triggers.Load(straw)) {
+  if (!Get_Section(straw, FourCC("TRIG")) ||
+      !TheObjectHeaps().trigger().Load(straw)) {
     return false;
   }
-  if (!Get_Section(straw, FourCC("AIRC")) || !Aircraft.Load(straw)) {
+  if (!Get_Section(straw, FourCC("AIRC")) ||
+      !TheObjectHeaps().aircraft().Load(straw)) {
     return false;
   }
-  if (!Get_Section(straw, FourCC("ANIM")) || !Anims.Load(straw)) {
+  if (!Get_Section(straw, FourCC("ANIM")) ||
+      !TheObjectHeaps().anim().Load(straw)) {
     return false;
   }
-  if (!Get_Section(straw, FourCC("BLDG")) || !Buildings.Load(straw)) {
+  if (!Get_Section(straw, FourCC("BLDG")) ||
+      !TheObjectHeaps().building().Load(straw)) {
     return false;
   }
-  if (!Get_Section(straw, FourCC("BULL")) || !Bullets.Load(straw)) {
+  if (!Get_Section(straw, FourCC("BULL")) ||
+      !TheObjectHeaps().bullet().Load(straw)) {
     return false;
   }
 
   ServiceBackgroundTasks();
 
-  if (!Get_Section(straw, FourCC("INFT")) || !Infantry.Load(straw)) {
+  if (!Get_Section(straw, FourCC("INFT")) ||
+      !TheObjectHeaps().infantry().Load(straw)) {
     return false;
   }
-  if (!Get_Section(straw, FourCC("OVRL")) || !Overlays.Load(straw)) {
+  if (!Get_Section(straw, FourCC("OVRL")) ||
+      !TheObjectHeaps().overlay().Load(straw)) {
     return false;
   }
-  if (!Get_Section(straw, FourCC("SMDG")) || !Smudges.Load(straw)) {
+  if (!Get_Section(straw, FourCC("SMDG")) ||
+      !TheObjectHeaps().smudge().Load(straw)) {
     return false;
   }
-  if (!Get_Section(straw, FourCC("TMPL")) || !Templates.Load(straw)) {
+  if (!Get_Section(straw, FourCC("TMPL")) ||
+      !TheObjectHeaps().tmplate().Load(straw)) {
     return false;
   }
-  if (!Get_Section(straw, FourCC("TERR")) || !Terrains.Load(straw)) {
+  if (!Get_Section(straw, FourCC("TERR")) ||
+      !TheObjectHeaps().terrain().Load(straw)) {
     return false;
   }
-  if (!Get_Section(straw, FourCC("UNIT")) || !Units.Load(straw)) {
+  if (!Get_Section(straw, FourCC("UNIT")) ||
+      !TheObjectHeaps().unit().Load(straw)) {
     return false;
   }
-  if (!Get_Section(straw, FourCC("FACT")) || !Factories.Load(straw)) {
+  if (!Get_Section(straw, FourCC("FACT")) ||
+      !TheObjectHeaps().factory().Load(straw)) {
     return false;
   }
-  if (!Get_Section(straw, FourCC("VESL")) || !Vessels.Load(straw)) {
+  if (!Get_Section(straw, FourCC("VESL")) ||
+      !TheObjectHeaps().vessel().Load(straw)) {
     return false;
   }
 

@@ -85,6 +85,7 @@
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/rules.h"
@@ -2759,8 +2760,9 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Fill in the list box
     */
-    for (int i = 0; i < TriggerTypes.Count(); i++) {
-      triggerlist.Add_Item(CCPtr<TriggerTypeClass>(TriggerTypes.Ptr(i)));
+    for (int i = 0; i < TheObjectHeaps().trigger_type().Count(); i++) {
+      triggerlist.Add_Item(
+          CCPtr<TriggerTypeClass>(TheObjectHeaps().trigger_type().Ptr(i)));
     }
 
     PNBubble_Sort(triggerlist, triggerlist.Count());
@@ -2774,7 +2776,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Set CurTrigger if it isn't
     */
-    if (TriggerTypes.Count() == 0) {
+    if (TheObjectHeaps().trigger_type().Count() == 0) {
       CurTrigger = nullptr;
     } else {
       CurTrigger = triggerlist.Current_Item();

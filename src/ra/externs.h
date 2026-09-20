@@ -130,23 +130,6 @@ extern SpecialClass Special;
 /*
 **	Game object allocation and tracking classes.
 */
-extern TFixedIHeapClass<AircraftClass> Aircraft;
-extern TFixedIHeapClass<AnimClass> Anims;
-extern TFixedIHeapClass<BuildingClass> Buildings;
-extern TFixedIHeapClass<BulletClass> Bullets;
-extern TFixedIHeapClass<FactoryClass> Factories;
-extern TFixedIHeapClass<HouseClass> Houses;
-extern TFixedIHeapClass<InfantryClass> Infantry;
-extern TFixedIHeapClass<OverlayClass> Overlays;
-extern TFixedIHeapClass<SmudgeClass> Smudges;
-extern TFixedIHeapClass<TeamClass> Teams;
-extern TFixedIHeapClass<TeamTypeClass> TeamTypes;
-extern TFixedIHeapClass<TemplateClass> Templates;
-extern TFixedIHeapClass<TerrainClass> Terrains;
-extern TFixedIHeapClass<TriggerClass> Triggers;
-extern TFixedIHeapClass<UnitClass> Units;
-extern TFixedIHeapClass<VesselClass> Vessels;
-extern TFixedIHeapClass<TriggerTypeClass> TriggerTypes;
 
 extern QueueClass<EventClass, kMaxEvents> OutList;
 extern QueueClass<EventClass, kMaxEvents * 64> DoList;

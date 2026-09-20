@@ -91,6 +91,7 @@
 #include "ra/jshell.h"
 #include "ra/map.h"
 #include "ra/mission_id.h"
+#include "ra/object_heaps.h"
 #include "ra/palettes.h"
 #include "ra/queue.h"
 #include "ra/unit.h"
@@ -1164,60 +1165,60 @@ void SessionClass::Trap_Object() {
   //------------------------------------------------------------------------
   switch (TrapObjType) {
     case RTTI_AIRCRAFT:
-      for (int i = 0; i < Aircraft.Count(); i++) {
-        if (Aircraft.Ptr(i)->Coord == TrapCoord ||
-            Aircraft.Ptr(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Aircraft = Aircraft.Ptr(i);
+      for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
+        if (TheObjectHeaps().aircraft().Ptr(i)->Coord == TrapCoord ||
+            TheObjectHeaps().aircraft().Ptr(i)->As_Target() == TrapTarget) {
+          TrapObject.Ptr.Aircraft = TheObjectHeaps().aircraft().Ptr(i);
           break;
         }
       }
       break;
 
     case RTTI_ANIM:
-      for (int i = 0; i < Anims.Count(); i++) {
-        if (Anims.Ptr(i)->Coord == TrapCoord ||
-            Anims.Ptr(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Anim = Anims.Ptr(i);
+      for (int i = 0; i < TheObjectHeaps().anim().Count(); i++) {
+        if (TheObjectHeaps().anim().Ptr(i)->Coord == TrapCoord ||
+            TheObjectHeaps().anim().Ptr(i)->As_Target() == TrapTarget) {
+          TrapObject.Ptr.Anim = TheObjectHeaps().anim().Ptr(i);
           break;
         }
       }
       break;
 
     case RTTI_BUILDING:
-      for (int i = 0; i < Buildings.Count(); i++) {
-        if (Buildings.Ptr(i)->Coord == TrapCoord ||
-            Buildings.Ptr(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Building = Buildings.Ptr(i);
+      for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
+        if (TheObjectHeaps().building().Ptr(i)->Coord == TrapCoord ||
+            TheObjectHeaps().building().Ptr(i)->As_Target() == TrapTarget) {
+          TrapObject.Ptr.Building = TheObjectHeaps().building().Ptr(i);
           break;
         }
       }
       break;
 
     case RTTI_BULLET:
-      for (int i = 0; i < Bullets.Count(); i++) {
-        if (Bullets.Ptr(i)->Coord == TrapCoord ||
-            Bullets.Ptr(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Bullet = Bullets.Ptr(i);
+      for (int i = 0; i < TheObjectHeaps().bullet().Count(); i++) {
+        if (TheObjectHeaps().bullet().Ptr(i)->Coord == TrapCoord ||
+            TheObjectHeaps().bullet().Ptr(i)->As_Target() == TrapTarget) {
+          TrapObject.Ptr.Bullet = TheObjectHeaps().bullet().Ptr(i);
           break;
         }
       }
       break;
 
     case RTTI_INFANTRY:
-      for (int i = 0; i < Infantry.Count(); i++) {
-        if (Infantry.Ptr(i)->Coord == TrapCoord ||
-            Infantry.Ptr(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Infantry = Infantry.Ptr(i);
+      for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
+        if (TheObjectHeaps().infantry().Ptr(i)->Coord == TrapCoord ||
+            TheObjectHeaps().infantry().Ptr(i)->As_Target() == TrapTarget) {
+          TrapObject.Ptr.Infantry = TheObjectHeaps().infantry().Ptr(i);
           break;
         }
       }
       break;
 
     case RTTI_UNIT:
-      for (int i = 0; i < Units.Count(); i++) {
-        if (Units.Ptr(i)->Coord == TrapCoord ||
-            Units.Ptr(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Unit = Units.Ptr(i);
+      for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
+        if (TheObjectHeaps().unit().Ptr(i)->Coord == TrapCoord ||
+            TheObjectHeaps().unit().Ptr(i)->As_Target() == TrapTarget) {
+          TrapObject.Ptr.Unit = TheObjectHeaps().unit().Ptr(i);
           break;
         }
       }
@@ -1227,50 +1228,50 @@ void SessionClass::Trap_Object() {
     // Last-ditch find-the-object-right-now-darnit loop
     //.....................................................................
     case RTTI_NONE:
-      for (int i = 0; i < Aircraft.Count(); i++) {
-        if (Aircraft.Raw_Ptr(i)->Coord == TrapCoord ||
-            Aircraft.Raw_Ptr(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Aircraft = Aircraft.Raw_Ptr(i);
+      for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
+        if (TheObjectHeaps().aircraft().Raw_Ptr(i)->Coord == TrapCoord ||
+            TheObjectHeaps().aircraft().Raw_Ptr(i)->As_Target() == TrapTarget) {
+          TrapObject.Ptr.Aircraft = TheObjectHeaps().aircraft().Raw_Ptr(i);
           TrapObjType = RTTI_AIRCRAFT;
           return;
         }
       }
-      for (int i = 0; i < Anims.Count(); i++) {
-        if (Anims.Raw_Ptr(i)->Coord == TrapCoord ||
-            Anims.Raw_Ptr(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Anim = Anims.Raw_Ptr(i);
+      for (int i = 0; i < TheObjectHeaps().anim().Count(); i++) {
+        if (TheObjectHeaps().anim().Raw_Ptr(i)->Coord == TrapCoord ||
+            TheObjectHeaps().anim().Raw_Ptr(i)->As_Target() == TrapTarget) {
+          TrapObject.Ptr.Anim = TheObjectHeaps().anim().Raw_Ptr(i);
           TrapObjType = RTTI_ANIM;
           return;
         }
       }
-      for (int i = 0; i < Buildings.Count(); i++) {
-        if (Buildings.Raw_Ptr(i)->Coord == TrapCoord ||
-            Buildings.Raw_Ptr(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Building = Buildings.Raw_Ptr(i);
+      for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
+        if (TheObjectHeaps().building().Raw_Ptr(i)->Coord == TrapCoord ||
+            TheObjectHeaps().building().Raw_Ptr(i)->As_Target() == TrapTarget) {
+          TrapObject.Ptr.Building = TheObjectHeaps().building().Raw_Ptr(i);
           TrapObjType = RTTI_BUILDING;
           return;
         }
       }
-      for (int i = 0; i < Bullets.Count(); i++) {
-        if (Bullets.Raw_Ptr(i)->Coord == TrapCoord ||
-            Bullets.Raw_Ptr(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Bullet = Bullets.Raw_Ptr(i);
+      for (int i = 0; i < TheObjectHeaps().bullet().Count(); i++) {
+        if (TheObjectHeaps().bullet().Raw_Ptr(i)->Coord == TrapCoord ||
+            TheObjectHeaps().bullet().Raw_Ptr(i)->As_Target() == TrapTarget) {
+          TrapObject.Ptr.Bullet = TheObjectHeaps().bullet().Raw_Ptr(i);
           TrapObjType = RTTI_BULLET;
           return;
         }
       }
-      for (int i = 0; i < Infantry.Count(); i++) {
-        if (Infantry.Raw_Ptr(i)->Coord == TrapCoord ||
-            Infantry.Raw_Ptr(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Infantry = Infantry.Raw_Ptr(i);
+      for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
+        if (TheObjectHeaps().infantry().Raw_Ptr(i)->Coord == TrapCoord ||
+            TheObjectHeaps().infantry().Raw_Ptr(i)->As_Target() == TrapTarget) {
+          TrapObject.Ptr.Infantry = TheObjectHeaps().infantry().Raw_Ptr(i);
           TrapObjType = RTTI_INFANTRY;
           return;
         }
       }
-      for (int i = 0; i < Units.Count(); i++) {
-        if (Units.Raw_Ptr(i)->Coord == TrapCoord ||
-            Units.Raw_Ptr(i)->As_Target() == TrapTarget) {
-          TrapObject.Ptr.Unit = Units.Raw_Ptr(i);
+      for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
+        if (TheObjectHeaps().unit().Raw_Ptr(i)->Coord == TrapCoord ||
+            TheObjectHeaps().unit().Raw_Ptr(i)->As_Target() == TrapTarget) {
+          TrapObject.Ptr.Unit = TheObjectHeaps().unit().Raw_Ptr(i);
           TrapObjType = RTTI_UNIT;
           return;
         }

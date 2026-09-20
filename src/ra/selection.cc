@@ -37,6 +37,7 @@
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/record_playback.h"
 #include "ra/session.h"
 #include "ra/target.h"
@@ -80,8 +81,8 @@ void Toggle_Formation() {
   //
   // The three passes are ordered units, infantry, vessels because a mixed
   // group takes its speed from whichever type is found first.
-  for (int index = 0; index < Units.Count(); index++) {
-    const UnitClass* obj = Units.Ptr(index);
+  for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+    const UnitClass* obj = TheObjectHeaps().unit().Ptr(index);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr && obj->IsSelected) {
       team = obj->Group;
       if (std::cmp_not_equal(team, kNoGroup)) {
@@ -93,8 +94,8 @@ void Toggle_Formation() {
     }
   }
   if (std::cmp_equal(team, kNoGroup)) {
-    for (int index = 0; index < Infantry.Count(); index++) {
-      const InfantryClass* obj = Infantry.Ptr(index);
+    for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
+      const InfantryClass* obj = TheObjectHeaps().infantry().Ptr(index);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->IsSelected) {
         team = obj->Group;
@@ -109,8 +110,8 @@ void Toggle_Formation() {
   }
 
   if (std::cmp_equal(team, kNoGroup)) {
-    for (int index = 0; index < Vessels.Count(); index++) {
-      const VesselClass* obj = Vessels.Ptr(index);
+    for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {
+      const VesselClass* obj = TheObjectHeaps().vessel().Ptr(index);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           obj->IsSelected) {
         team = obj->Group;
@@ -128,8 +129,8 @@ void Toggle_Formation() {
     return;
   }
   // Now that we have a team, let's go set (or clear) the formation offsets.
-  for (int i = 0; i < Units.Count(); i++) {
-    UnitClass* obj = Units.Ptr(i);
+  for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
+    UnitClass* obj = TheObjectHeaps().unit().Ptr(i);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
         std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
@@ -150,8 +151,8 @@ void Toggle_Formation() {
     }
   }
 
-  for (int i = 0; i < Infantry.Count(); i++) {
-    InfantryClass* obj = Infantry.Ptr(i);
+  for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
+    InfantryClass* obj = TheObjectHeaps().infantry().Ptr(i);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
         std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
@@ -170,8 +171,8 @@ void Toggle_Formation() {
     }
   }
 
-  for (int i = 0; i < Vessels.Count(); i++) {
-    VesselClass* obj = Vessels.Ptr(i);
+  for (int i = 0; i < TheObjectHeaps().vessel().Count(); i++) {
+    VesselClass* obj = TheObjectHeaps().vessel().Ptr(i);
     if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
         std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
@@ -200,8 +201,8 @@ void Toggle_Formation() {
     const int center_x = (((maxx - minx) / 2) + minx);
     const int center_y = (((maxy - miny) / 2) + miny);
 
-    for (int i = 0; i < Units.Count(); i++) {
-      UnitClass* obj = Units.Ptr(i);
+    for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
+      UnitClass* obj = TheObjectHeaps().unit().Ptr(i);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           std::cmp_equal(obj->Group, team)) {
         const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
@@ -212,8 +213,8 @@ void Toggle_Formation() {
       }
     }
 
-    for (int i = 0; i < Infantry.Count(); i++) {
-      InfantryClass* obj = Infantry.Ptr(i);
+    for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
+      InfantryClass* obj = TheObjectHeaps().infantry().Ptr(i);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           std::cmp_equal(obj->Group, team)) {
         const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
@@ -224,8 +225,8 @@ void Toggle_Formation() {
       }
     }
 
-    for (int i = 0; i < Vessels.Count(); i++) {
-      VesselClass* obj = Vessels.Ptr(i);
+    for (int i = 0; i < TheObjectHeaps().vessel().Count(); i++) {
+      VesselClass* obj = TheObjectHeaps().vessel().Ptr(i);
       if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
           std::cmp_equal(obj->Group, team)) {
         const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
@@ -266,8 +267,8 @@ void Handle_Team(const int team, const int action) {
         Unselect_All();
       }
 
-      for (int index = 0; index < Vessels.Count(); index++) {
-        VesselClass* obj = Vessels.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {
+        VesselClass* obj = TheObjectHeaps().vessel().Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House->IsPlayerControl) &&
             (!obj->IsSelected)) {
@@ -275,8 +276,8 @@ void Handle_Team(const int team, const int action) {
           AllowVoice = false;
         }
       }
-      for (int index = 0; index < Units.Count(); index++) {
-        UnitClass* obj = Units.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+        UnitClass* obj = TheObjectHeaps().unit().Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House->IsPlayerControl) &&
             (!obj->IsSelected)) {
@@ -284,8 +285,9 @@ void Handle_Team(const int team, const int action) {
           AllowVoice = false;
         }
       }
-      for (int index = 0; index < Infantry.Count(); index++) {
-        InfantryClass* obj = Infantry.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().infantry().Count();
+           index++) {
+        InfantryClass* obj = TheObjectHeaps().infantry().Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House->IsPlayerControl) &&
             (!obj->IsSelected)) {
@@ -293,8 +295,9 @@ void Handle_Team(const int team, const int action) {
           AllowVoice = false;
         }
       }
-      for (int index = 0; index < Aircraft.Count(); index++) {
-        AircraftClass* obj = Aircraft.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().aircraft().Count();
+           index++) {
+        AircraftClass* obj = TheObjectHeaps().aircraft().Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House->IsPlayerControl) &&
             (!obj->IsSelected)) {
@@ -312,8 +315,8 @@ void Handle_Team(const int team, const int action) {
 
     // Additive selection of team.
     case 1:
-      for (int index = 0; index < Units.Count(); index++) {
-        UnitClass* obj = Units.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+        UnitClass* obj = TheObjectHeaps().unit().Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House->IsPlayerControl) &&
             (!obj->IsSelected)) {
@@ -321,8 +324,8 @@ void Handle_Team(const int team, const int action) {
           AllowVoice = false;
         }
       }
-      for (int index = 0; index < Vessels.Count(); index++) {
-        VesselClass* obj = Vessels.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {
+        VesselClass* obj = TheObjectHeaps().vessel().Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House->IsPlayerControl) &&
             (!obj->IsSelected)) {
@@ -330,8 +333,9 @@ void Handle_Team(const int team, const int action) {
           AllowVoice = false;
         }
       }
-      for (int index = 0; index < Infantry.Count(); index++) {
-        InfantryClass* obj = Infantry.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().infantry().Count();
+           index++) {
+        InfantryClass* obj = TheObjectHeaps().infantry().Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House->IsPlayerControl) &&
             (!obj->IsSelected)) {
@@ -339,8 +343,9 @@ void Handle_Team(const int team, const int action) {
           AllowVoice = false;
         }
       }
-      for (int index = 0; index < Aircraft.Count(); index++) {
-        AircraftClass* obj = Aircraft.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().aircraft().Count();
+           index++) {
+        AircraftClass* obj = TheObjectHeaps().aircraft().Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
              obj->House->IsPlayerControl) &&
             (!obj->IsSelected)) {
@@ -359,8 +364,8 @@ void Handle_Team(const int team, const int action) {
       int32_t maxy = 0;
       base::At(TeamSpeed, team) = SPEED_WHEEL;
       base::At(TeamMaxSpeed, team) = MPH_LIGHT_SPEED;
-      for (int index = 0; index < Units.Count(); index++) {
-        UnitClass* obj = Units.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+        UnitClass* obj = TheObjectHeaps().unit().Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (std::cmp_equal(obj->Group, team)) {
             obj->Group = kNoGroup;
@@ -382,8 +387,8 @@ void Handle_Team(const int team, const int action) {
         }
       }
 
-      for (int index = 0; index < Vessels.Count(); index++) {
-        VesselClass* obj = Vessels.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {
+        VesselClass* obj = TheObjectHeaps().vessel().Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (std::cmp_equal(obj->Group, team)) {
             obj->Group = kNoGroup;
@@ -405,8 +410,9 @@ void Handle_Team(const int team, const int action) {
         }
       }
 
-      for (int index = 0; index < Infantry.Count(); index++) {
-        InfantryClass* obj = Infantry.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().infantry().Count();
+           index++) {
+        InfantryClass* obj = TheObjectHeaps().infantry().Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (std::cmp_equal(obj->Group, team)) {
             obj->Group = kNoGroup;
@@ -425,8 +431,9 @@ void Handle_Team(const int team, const int action) {
           }
         }
       }
-      for (int index = 0; index < Aircraft.Count(); index++) {
-        AircraftClass* obj = Aircraft.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().aircraft().Count();
+           index++) {
+        AircraftClass* obj = TheObjectHeaps().aircraft().Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (std::cmp_equal(obj->Group, team)) {
             obj->Group = kNoGroup;
@@ -438,8 +445,8 @@ void Handle_Team(const int team, const int action) {
         }
       }
 
-      for (int index = 0; index < Units.Count(); index++) {
-        UnitClass* obj = Units.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
+        UnitClass* obj = TheObjectHeaps().unit().Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl &&
             std::cmp_equal(obj->Group, team) && obj->IsSelected) {
           // When a team is first created, they're created without a
@@ -451,8 +458,9 @@ void Handle_Team(const int team, const int action) {
         }
       }
 
-      for (int index = 0; index < Infantry.Count(); index++) {
-        InfantryClass* obj = Infantry.Ptr(index);
+      for (int index = 0; index < TheObjectHeaps().infantry().Count();
+           index++) {
+        InfantryClass* obj = TheObjectHeaps().infantry().Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
           if (std::cmp_equal(obj->Group, team)) {
             obj->Group = kNoGroup;

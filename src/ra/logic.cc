@@ -55,6 +55,7 @@
 #include "ra/house.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
 #include "ra/special.h"
@@ -157,8 +158,8 @@ void LogicClass::AI() {
   /*
   **	Team AI is processed.
   */
-  for (int index = 0; index < Teams.Count(); ++index) {
-    Teams.Ptr(index)->AI();
+  for (int index = 0; index < TheObjectHeaps().team().Count(); ++index) {
+    TheObjectHeaps().team().Ptr(index)->AI();
   }
 
   /*
@@ -253,8 +254,8 @@ void LogicClass::AI() {
   /*
   **	Factory processing is performed.
   */
-  for (int index = 0; index < Factories.Count(); index++) {
-    Factories.Ptr(index)->AI();
+  for (int index = 0; index < TheObjectHeaps().factory().Count(); index++) {
+    TheObjectHeaps().factory().Ptr(index)->AI();
   }
 
   /*

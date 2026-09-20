@@ -56,6 +56,7 @@
 #include "ra/list.h"
 #include "ra/mapedit.h"
 #include "ra/msgbox.h"
+#include "ra/object_heaps.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/teamtype.h"
@@ -273,8 +274,9 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   /*
   **	Fill in team names
   */
-  for (int index = 0; index < TeamTypes.Count(); index++) {
-    teamlist.Add_Item(CCPtr<TeamTypeClass>(TeamTypes.Ptr(index)));
+  for (int index = 0; index < TheObjectHeaps().team_type().Count(); index++) {
+    teamlist.Add_Item(
+        CCPtr<TeamTypeClass>(TheObjectHeaps().team_type().Ptr(index)));
   }
 
   PNBubble_Sort(teamlist, teamlist.Count());
@@ -288,7 +290,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     CurTeam = teamlist.Current_Item();
   } else {
     teamlist.Set_Selected_Index(0);
-    if (TeamTypes.Count()) {
+    if (TheObjectHeaps().team_type().Count()) {
       CurTeam = teamlist.Current_Item();
     }
   }

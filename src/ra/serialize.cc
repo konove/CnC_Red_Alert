@@ -8,11 +8,11 @@
 #include "ra/building.h"
 #include "ra/bullet.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/foot.h"
 #include "ra/heap.h"
 #include "ra/infantry.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/overlay.h"
 #include "ra/radio.h"
 #include "ra/smudge.h"
@@ -72,27 +72,27 @@ ObjectClass* ResolveSavedObject(int32_t target, ArchiveReader& ar) {
   const int index = Target_Value(target);
   switch (Target_Kind(target)) {
     case RTTI_INFANTRY:
-      return Slot(Infantry, index, ar);
+      return Slot(TheObjectHeaps().infantry(), index, ar);
     case RTTI_UNIT:
-      return Slot(Units, index, ar);
+      return Slot(TheObjectHeaps().unit(), index, ar);
     case RTTI_VESSEL:
-      return Slot(Vessels, index, ar);
+      return Slot(TheObjectHeaps().vessel(), index, ar);
     case RTTI_BUILDING:
-      return Slot(Buildings, index, ar);
+      return Slot(TheObjectHeaps().building(), index, ar);
     case RTTI_AIRCRAFT:
-      return Slot(Aircraft, index, ar);
+      return Slot(TheObjectHeaps().aircraft(), index, ar);
     case RTTI_TERRAIN:
-      return Slot(Terrains, index, ar);
+      return Slot(TheObjectHeaps().terrain(), index, ar);
     case RTTI_BULLET:
-      return Slot(Bullets, index, ar);
+      return Slot(TheObjectHeaps().bullet(), index, ar);
     case RTTI_ANIM:
-      return Slot(Anims, index, ar);
+      return Slot(TheObjectHeaps().anim(), index, ar);
     case RTTI_OVERLAY:
-      return Slot(Overlays, index, ar);
+      return Slot(TheObjectHeaps().overlay(), index, ar);
     case RTTI_SMUDGE:
-      return Slot(Smudges, index, ar);
+      return Slot(TheObjectHeaps().smudge(), index, ar);
     case RTTI_TEMPLATE:
-      return Slot(Templates, index, ar);
+      return Slot(TheObjectHeaps().tmplate(), index, ar);
     case RTTIType::RTTI_NONE:
     case RTTIType::RTTI_AIRCRAFTTYPE:
     case RTTIType::RTTI_ANIMTYPE:
@@ -174,9 +174,17 @@ void SerializeObjectList(Archive& ar, DynamicVectorClass<ObjectClass*>& objects)
   auto count = static_cast<int32_t>(objects.Count());
   ar(count);
   if constexpr (Archive::kIsReading) {
-    const int capacity = Aircraft.Length() + Anims.Length() + Buildings.Length() +
-        Bullets.Length() + Infantry.Length() + Overlays.Length() + Smudges.Length() +
-        Templates.Length() + Terrains.Length() + Units.Length() + Vessels.Length();
+    const int capacity = TheObjectHeaps().aircraft().Length() +
+                         TheObjectHeaps().anim().Length() +
+                         TheObjectHeaps().building().Length() +
+                         TheObjectHeaps().bullet().Length() +
+                         TheObjectHeaps().infantry().Length() +
+                         TheObjectHeaps().overlay().Length() +
+                         TheObjectHeaps().smudge().Length() +
+                         TheObjectHeaps().tmplate().Length() +
+                         TheObjectHeaps().terrain().Length() +
+                         TheObjectHeaps().unit().Length() +
+                         TheObjectHeaps().vessel().Length();
     if (!ar.ok() || count < 0 || count > capacity) {
       ar.Fail("invalid saved object list count");
       return;

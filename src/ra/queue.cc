@@ -130,6 +130,7 @@
 #include "ra/nulldlg.h"
 #include "ra/nullmgr.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/overlay.h"
 #include "ra/rules.h"
 #include "ra/saveload.h"
@@ -3856,8 +3857,9 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   //	Infantry
   //------------------------------------------------------------------------
-  for (int i = 0; i < Infantry.Count(); i++) {
-    auto* infp = static_cast<InfantryClass*>(Infantry.Active_Ptr(i));
+  for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
+    auto* infp =
+        static_cast<InfantryClass*>(TheObjectHeaps().infantry().Active_Ptr(i));
     Add_CRC(&GameCRC, static_cast<uint32_t>(
                           static_cast<int>(infp->Coord) +
                           static_cast<int>(infp->PrimaryFacing.Current())));
@@ -3869,8 +3871,9 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   //	Units
   //------------------------------------------------------------------------
-  for (int i = 0; i < Units.Count(); i++) {
-    auto* unitp = static_cast<UnitClass*>(Units.Active_Ptr(i));
+  for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
+    auto* unitp =
+        static_cast<UnitClass*>(TheObjectHeaps().unit().Active_Ptr(i));
     Add_CRC(&GameCRC, static_cast<uint32_t>(
                           static_cast<int>(unitp->Coord) +
                           static_cast<int>(unitp->PrimaryFacing.Current()) +
@@ -3880,8 +3883,9 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   //	Shippies
   //------------------------------------------------------------------------
-  for (int i = 0; i < Vessels.Count(); i++) {
-    auto* vessp = static_cast<VesselClass*>(Vessels.Active_Ptr(i));
+  for (int i = 0; i < TheObjectHeaps().vessel().Count(); i++) {
+    auto* vessp =
+        static_cast<VesselClass*>(TheObjectHeaps().vessel().Active_Ptr(i));
     Add_CRC(&GameCRC, static_cast<uint32_t>(
                           static_cast<int>(vessp->Coord) +
                           static_cast<int>(vessp->PrimaryFacing.Current())));
@@ -3894,8 +3898,9 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   //	Buildings
   //------------------------------------------------------------------------
-  for (int i = 0; i < Buildings.Count(); i++) {
-    auto* bldgp = static_cast<BuildingClass*>(Buildings.Active_Ptr(i));
+  for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
+    auto* bldgp =
+        static_cast<BuildingClass*>(TheObjectHeaps().building().Active_Ptr(i));
     Add_CRC(&GameCRC, static_cast<uint32_t>(
                           static_cast<int>(bldgp->Coord) +
                           static_cast<int>(bldgp->PrimaryFacing.Current())));
@@ -3904,8 +3909,9 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   //	Houses
   //------------------------------------------------------------------------
-  for (int i = 0; i < Houses.Count(); i++) {
-    auto* housep = static_cast<HouseClass*>(Houses.Active_Ptr(i));
+  for (int i = 0; i < TheObjectHeaps().house().Count(); i++) {
+    auto* housep =
+        static_cast<HouseClass*>(TheObjectHeaps().house().Active_Ptr(i));
     Add_CRC(&GameCRC, static_cast<uint32_t>(static_cast<int>(housep->Credits) +
                                             housep->Power +
                                             housep->Drain));
@@ -4037,8 +4043,9 @@ static void Print_CRCs(const EventClass* ev) {
       absl::FPrintF(fp,
                     "-------------------- %s Infantry -------------------\n",
                     housep->Class->Name());
-      for (int i = 0; i < Infantry.Count(); i++) {
-        auto* infp = static_cast<InfantryClass*>(Infantry.Active_Ptr(i));
+      for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
+        auto* infp = static_cast<InfantryClass*>(
+            TheObjectHeaps().infantry().Active_Ptr(i));
         if (infp->Owner() == house) {
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(
@@ -4070,8 +4077,9 @@ static void Print_CRCs(const EventClass* ev) {
       GameCRC = 0;
       absl::FPrintF(fp, "-------------------- %s Units -------------------\n",
                     housep->Class->Name());
-      for (int i = 0; i < Units.Count(); i++) {
-        auto* unitp = static_cast<UnitClass*>(Units.Active_Ptr(i));
+      for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
+        auto* unitp =
+            static_cast<UnitClass*>(TheObjectHeaps().unit().Active_Ptr(i));
         if (unitp->Owner() == house) {
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(
@@ -4100,8 +4108,9 @@ static void Print_CRCs(const EventClass* ev) {
       GameCRC = 0;
       absl::FPrintF(fp, "-------------------- %s Vessels -------------------\n",
                     housep->Class->Name());
-      for (int i = 0; i < Vessels.Count(); i++) {
-        auto* vesselp = static_cast<VesselClass*>(Vessels.Active_Ptr(i));
+      for (int i = 0; i < TheObjectHeaps().vessel().Count(); i++) {
+        auto* vesselp =
+            static_cast<VesselClass*>(TheObjectHeaps().vessel().Active_Ptr(i));
         if (vesselp->Owner() == house) {
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(
@@ -4136,8 +4145,9 @@ static void Print_CRCs(const EventClass* ev) {
       absl::FPrintF(fp,
                     "-------------------- %s Buildings -------------------\n",
                     housep->Class->Name());
-      for (int i = 0; i < Buildings.Count(); i++) {
-        auto* bldgp = static_cast<BuildingClass*>(Buildings.Active_Ptr(i));
+      for (int i = 0; i < TheObjectHeaps().building().Count(); i++) {
+        auto* bldgp = static_cast<BuildingClass*>(
+            TheObjectHeaps().building().Active_Ptr(i));
         if (bldgp->Owner() == house) {
           Add_CRC(&GameCRC,
                   static_cast<uint32_t>(
@@ -4157,8 +4167,9 @@ static void Print_CRCs(const EventClass* ev) {
   // Animations
   //
   absl::FPrintF(fp, "-------------------- Animations -------------------\n");
-  for (int i = 0; i < Anims.Count(); i++) {
-    auto* animp = static_cast<AnimClass*>(Anims.Active_Ptr(i));
+  for (int i = 0; i < TheObjectHeaps().anim().Count(); i++) {
+    auto* animp =
+        static_cast<AnimClass*>(TheObjectHeaps().anim().Active_Ptr(i));
     absl::FPrintF(fp, "Target:%x OwnerHouse:%d Loops:%d\\n",
                   static_cast<unsigned int>(animp->xObject), animp->OwnerHouse,
                   animp->Loops);

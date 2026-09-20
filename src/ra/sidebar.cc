@@ -123,6 +123,7 @@
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
+#include "ra/object_heaps.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/power.h"
@@ -1489,7 +1490,7 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
       const int factoryid = base::At(Buildables, index).Factory;
 
       if (factoryid != -1) {
-        FactoryClass* factory = Factories.Raw_Ptr(factoryid);
+        FactoryClass* factory = TheObjectHeaps().factory().Raw_Ptr(factoryid);
 
         if (factory && factory->Has_Changed()) {
           redraw = true;
@@ -1671,7 +1672,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
             shapefile = obj->Get_Cameo_Data();
             shapenum = 0;
             if (base::At(Buildables, index).Factory != -1) {
-              factory = Factories.Raw_Ptr(base::At(Buildables, index).Factory);
+              factory = TheObjectHeaps().factory().Raw_Ptr(
+                  base::At(Buildables, index).Factory);
               production = true;
               completed = factory->Has_Completed();
               stage = factory->Completion();
@@ -1988,7 +1990,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
     }
 
     if (fnumber != -1) {
-      factory = Factories.Raw_Ptr(fnumber);
+      factory = TheObjectHeaps().factory().Raw_Ptr(fnumber);
     }
 
   } else {
@@ -2288,7 +2290,7 @@ bool SidebarClass::StripClass::Abandon_Production(int factory) {
   bool abandon = false;
   for (int index = 0; index < BuildableCount; index++) {
     if (base::At(Buildables, index).Factory == factory) {
-      Factories.Raw_Ptr(factory)->Abandon();
+      TheObjectHeaps().factory().Raw_Ptr(factory)->Abandon();
       base::At(Buildables, index).Factory = -1;
       abandon = true;
     } else {
