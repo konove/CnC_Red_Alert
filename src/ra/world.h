@@ -150,6 +150,11 @@ class World {
     return scenario_crc_;
   }
 
+  // What the scenario's synchronized random generator was started from.
+  // Every machine in a multiplayer game seeds from this one value, so the
+  // saved game and the recording both store it.
+  int& seed() ABSL_ATTRIBUTE_LIFETIME_BOUND { return seed_; }
+
   // How much of the tech tree the scenario allows, and the house the
   // command line asked the player to be.
   int& build_level() ABSL_ATTRIBUTE_LIFETIME_BOUND { return build_level_; }
@@ -201,6 +206,7 @@ class World {
 
   int scenario_init_ = 0;
   uint32_t scenario_crc_ = 0;
+  int seed_ = 0;
   int build_level_ = 10;
   HousesType whom_{};
   CELL current_cell_ = 0;

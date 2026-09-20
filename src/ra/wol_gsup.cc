@@ -716,7 +716,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                      pILScens->Get_Item(pILScens->Current_Index()));
     }
 
-    Seed = port::RandomSeed();
+    TheWorld().seed() = port::RandomSeed();
   }
 
   //------------------------------------------------------------------------
@@ -1209,8 +1209,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         pStaticUnit->Set_Text(txt);
         pStaticUnit->Draw_Me();
 
-        if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          absl::SNPrintF(txt, sizeof(txt), "%d", BuildLevel);
+        if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
+          absl::SNPrintF(txt, sizeof(txt), "%d", TheWorld().build_level());
         } else {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
@@ -1493,9 +1493,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //	User adjusts build level
       //..................................................................
       case ButtonKey(kButtonLevel):
-        BuildLevel = pGaugeLevel->Get_Value() + 1;
-        BuildLevel = std::min(
-            BuildLevel, MPLAYER_BUILD_LEVEL_MAX);  // if it's pegged, max it out
+        TheWorld().build_level() = pGaugeLevel->Get_Value() + 1;
+        TheWorld().build_level() =
+            std::min(TheWorld().build_level(),
+                     MPLAYER_BUILD_LEVEL_MAX);  // if it's pegged, max it out
 
         display = std::max(display, REDRAW_PARMS);
         PlaySoundEffect(VOC_OPTIONS_CHANGED);
@@ -1726,7 +1727,7 @@ void WOL_GameSetupDialog::SetSpecialControlStates() {
       base::At(SessionClass::CountMin, Session.Options.Bases));
 
   pGaugeLevel->Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
-  pGaugeLevel->Set_Value(BuildLevel - 1);
+  pGaugeLevel->Set_Value(TheWorld().build_level() - 1);
 
   pGaugeCredits->Set_Maximum(TheRules().MPMaxMoney);
   pGaugeCredits->Set_Value(Session.Options.Credits);
@@ -2733,7 +2734,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  BuildLevel = tech::ParseIntegerOr<int>(szToken, 0);
+  TheWorld().build_level() = tech::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
@@ -2751,7 +2752,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  Seed = tech::ParseIntegerOr<int>(szToken, 0);
+  TheWorld().seed() = tech::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
@@ -2864,12 +2865,12 @@ void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
   GParams.GPacket.ScenarioInfo.IsGoodies =
       static_cast<uint8_t>(Session.Options.Goodies);
   GParams.GPacket.ScenarioInfo.BuildLevel =
-      static_cast<unsigned char>(BuildLevel);
+      static_cast<unsigned char>(TheWorld().build_level());
   GParams.GPacket.ScenarioInfo.UnitCount =
       static_cast<unsigned char>(Session.Options.UnitCount);
   GParams.GPacket.ScenarioInfo.AIPlayers =
       static_cast<unsigned char>(Session.Options.AIPlayers);
-  GParams.GPacket.ScenarioInfo.Seed = Seed;
+  GParams.GPacket.ScenarioInfo.Seed = TheWorld().seed();
   GParams.GPacket.ScenarioInfo.Special = Special;
   GParams.GPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
   GParams.GPacket.ScenarioInfo.Version = VerNum.Get_Clipped_Version();
@@ -2963,10 +2964,10 @@ void Debug_GlobalPacketType( const GlobalPacketType& gp1 )
                                 "IsBases = %i\n"
                                 "IsTiberium = %i\n"
                                 "IsGoodies = %i\n"
-                                "BuildLevel = %i\n"
+                                "TheWorld().build_level() = %i\n"
                                 "UnitCount = %i\n"
                                 "AIPlayers = %i\n"
-                                "Seed = %i\n"
+                                "TheWorld().seed() = %i\n"
                                 "Special.IsShadowGrow = %i\n"
                                 "Special.IsSpeedBuild = %i\n"
                                 "Special.IsFromInstall = %i\n"
@@ -3526,12 +3527,14 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   // buffer); 	gotit	Session.Options.Goodies =
   // WWGetPrivateProfileInt("Options", "Crates", 0, buffer); 	gotit
   // Special.IsShadowGrow = WWGetPrivateProfileInt ("Options", "Shadow", 0,
-  // buffer); 	gotit	BuildLevel = WWGetPrivateProfileInt("Options",
-  //"BuildLevel", 0, buffer); 	gotit	Session.Options.UnitCount =
+  // buffer); 	gotit	TheWorld().build_level() =
+  // WWGetPrivateProfileInt("Options",
+  //"TheWorld().build_level()", 0, buffer); 	gotit
+  //Session.Options.UnitCount =
   // WWGetPrivateProfileInt("Options", "UnitCount", 0, buffer); 	gotit
-  // Seed = WWGetPrivateProfileInt("Options", "Seed", 0, buffer); 	gotit
-  // Special.IsCaptureTheFlag = WWGetPrivateProfileInt("Options", "CapFlag", 0,
-  // buffer);
+  // TheWorld().seed() = WWGetPrivateProfileInt("Options", "TheWorld().seed()",
+  // 0, buffer); 	gotit Special.IsCaptureTheFlag =
+  // WWGetPrivateProfileInt("Options", "CapFlag", 0, buffer);
 
   //	UnitBuildPenalty = WWGetPrivateProfileInt ("Options", "BuildRate", 100,
   // buffer);

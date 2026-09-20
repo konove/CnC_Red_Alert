@@ -3014,7 +3014,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                        base::At(SessionClass::CountMin, Session.Options.Bases));
 
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
-  levelgauge.Set_Value(BuildLevel - 1);
+  levelgauge.Set_Value(TheWorld().build_level() - 1);
 
   creditsgauge.Set_Maximum(TheRules().MPMaxMoney);
   creditsgauge.Set_Value(Session.Options.Credits);
@@ -3083,7 +3083,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   Init random-number generator, & create a seed to be used for all random
   numbers from here on out
   ........................................................................*/
-  Seed = port::RandomSeed();
+  TheWorld().seed() = port::RandomSeed();
 
   /*........................................................................
   Init the message display system
@@ -3294,9 +3294,9 @@ int Com_Scenario_Dialog(bool skirmish) {
           // d_count_w + 3 * 2, d_count_y, scheme, BLACK, kTpfText,
           // Session.Options.UnitCount);
 
-          if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
+          if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
             absl::SNPrintF(staticlevelbuff, sizeof(staticlevelbuff), "%d ",
-                           BuildLevel);
+                           TheWorld().build_level());
           } else {
             absl::SNPrintF(staticlevelbuff, sizeof(staticlevelbuff), "**");
           }
@@ -3477,7 +3477,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         User adjusts build level
         ------------------------------------------------------------------*/
         case ButtonKey(kButtonLevel):
-          BuildLevel =
+          TheWorld().build_level() =
               std::min(levelgauge.Get_Value() + 1, MPLAYER_BUILD_LEVEL_MAX);
           display = std::max(display, REDRAW_PARMS);
           if (housebtn.IsDropped) {
@@ -3741,10 +3741,10 @@ int Com_Scenario_Dialog(bool skirmish) {
         SendPacket.ScenarioInfo.AIPlayers =
             static_cast<unsigned char>(Session.Options.AIPlayers);
         SendPacket.ScenarioInfo.BuildLevel =
-            static_cast<unsigned char>(BuildLevel);
+            static_cast<unsigned char>(TheWorld().build_level());
         SendPacket.ScenarioInfo.UnitCount =
             static_cast<unsigned char>(Session.Options.UnitCount);
-        SendPacket.ScenarioInfo.Seed = Seed;
+        SendPacket.ScenarioInfo.Seed = TheWorld().seed();
         SendPacket.ScenarioInfo.Special = Special;
         SendPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
         SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
@@ -4827,7 +4827,7 @@ int Com_Show_Scenario_Dialog() {
 
   levelgauge.Use_Thumb(false);
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
-  levelgauge.Set_Value(BuildLevel - 1);
+  levelgauge.Set_Value(TheWorld().build_level() - 1);
 
   creditsgauge.Use_Thumb(false);
   creditsgauge.Set_Maximum(TheRules().MPMaxMoney);
@@ -5067,9 +5067,9 @@ int Com_Show_Scenario_Dialog() {
                            Session.Options.UnitCount);
             staticcount.Set_Text(staticcountbuff);
             staticcount.Draw_Me();
-            if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
+            if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
               absl::SNPrintF(staticlevelbuff, sizeof(staticlevelbuff), "%d ",
-                             BuildLevel);
+                             TheWorld().build_level());
             } else {
               absl::SNPrintF(staticlevelbuff, sizeof(staticlevelbuff), "**");
             }
@@ -5479,9 +5479,9 @@ int Com_Show_Scenario_Dialog() {
             Session.Options.Tiberium = ReceivePacket.ScenarioInfo.IsTiberium;
             Session.Options.Goodies = ReceivePacket.ScenarioInfo.IsGoodies;
             Session.Options.AIPlayers = ReceivePacket.ScenarioInfo.AIPlayers;
-            BuildLevel = ReceivePacket.ScenarioInfo.BuildLevel;
+            TheWorld().build_level() = ReceivePacket.ScenarioInfo.BuildLevel;
             Session.Options.UnitCount = ReceivePacket.ScenarioInfo.UnitCount;
-            Seed = ReceivePacket.ScenarioInfo.Seed;
+            TheWorld().seed() = ReceivePacket.ScenarioInfo.Seed;
             Special = ReceivePacket.ScenarioInfo.Special;
             Options.GameSpeed = ReceivePacket.ScenarioInfo.GameSpeed;
 
@@ -5506,7 +5506,7 @@ int Com_Show_Scenario_Dialog() {
             countgauge.Set_Value(
                 Session.Options.UnitCount -
                 base::At(SessionClass::CountMin, Session.Options.Bases));
-            levelgauge.Set_Value(BuildLevel - 1);
+            levelgauge.Set_Value(TheWorld().build_level() - 1);
             creditsgauge.Set_Value(Session.Options.Credits);
             aiplayersgauge.Set_Value(Session.Options.AIPlayers);
 

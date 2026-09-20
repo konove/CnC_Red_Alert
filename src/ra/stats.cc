@@ -350,7 +350,8 @@ void Send_Statistics_Packet() {
     /*
     ** Tech level.
     */
-    stats.Add_Field(FIELD_TECH_LEVEL, static_cast<uint32_t>(BuildLevel));
+    stats.Add_Field(FIELD_TECH_LEVEL,
+                    static_cast<uint32_t>(TheWorld().build_level()));
 
     /*
     ** Scenario

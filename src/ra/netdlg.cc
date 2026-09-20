@@ -1677,7 +1677,7 @@ static int Net_Join_Dialog() {
 
   levelgauge.Use_Thumb(false);
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
-  levelgauge.Set_Value(BuildLevel - 1);
+  levelgauge.Set_Value(TheWorld().build_level() - 1);
 
   creditsgauge.Use_Thumb(false);
   creditsgauge.Set_Maximum(TheRules().MPMaxMoney);
@@ -2020,8 +2020,8 @@ static int Net_Join_Dialog() {
 
         Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y, scheme, kTBlack,
                          kTpfText | TPF_RIGHT);
-        if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          absl::SNPrintF(txt, sizeof(txt), "%d", BuildLevel);
+        if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
+          absl::SNPrintF(txt, sizeof(txt), "%d", TheWorld().build_level());
         } else {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
@@ -2713,7 +2713,7 @@ static int Net_Join_Dialog() {
       countgauge.Set_Value(
           Session.Options.UnitCount -
           base::At(SessionClass::CountMin, Session.Options.Bases));
-      levelgauge.Set_Value(BuildLevel - 1);
+      levelgauge.Set_Value(TheWorld().build_level() - 1);
       creditsgauge.Set_Value(Session.Options.Credits);
       if (Session.Options.AIPlayers >
           TheRules().MaxPlayers - Session.Players.Count()) {
@@ -3757,9 +3757,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       //			Session.Options.Ghosts =
       // Session.GPacket.ScenarioInfo.IsGhosties;
       Session.Options.AIPlayers = Session.GPacket.ScenarioInfo.AIPlayers;
-      BuildLevel = Session.GPacket.ScenarioInfo.BuildLevel;
+      TheWorld().build_level() = Session.GPacket.ScenarioInfo.BuildLevel;
       Session.Options.UnitCount = Session.GPacket.ScenarioInfo.UnitCount;
-      Seed = Session.GPacket.ScenarioInfo.Seed;
+      TheWorld().seed() = Session.GPacket.ScenarioInfo.Seed;
       Special = Session.GPacket.ScenarioInfo.Special;
       Options.GameSpeed = Session.GPacket.ScenarioInfo.GameSpeed;
 
@@ -4321,7 +4321,7 @@ static int Net_New_Dialog() {
                        base::At(SessionClass::CountMin, Session.Options.Bases));
 
   levelgauge.Set_Maximum(MPLAYER_BUILD_LEVEL_MAX - 1);
-  levelgauge.Set_Value(BuildLevel - 1);
+  levelgauge.Set_Value(TheWorld().build_level() - 1);
 
   creditsgauge.Set_Maximum(TheRules().MPMaxMoney);
   creditsgauge.Set_Value(Session.Options.Credits);
@@ -4385,7 +4385,7 @@ static int Net_New_Dialog() {
   //	Init random-number generator, & create a seed to be used for all random
   //	numbers from here on out
   //------------------------------------------------------------------------
-  Seed = port::RandomSeed();
+  TheWorld().seed() = port::RandomSeed();
 
   //------------------------------------------------------------------------
   //	Init the message display system
@@ -4565,8 +4565,8 @@ static int Net_New_Dialog() {
         //				Fancy_Text_Print(txt, d_count_x +
         // d_count_w + 2*2, d_count_y, scheme, BLACK, kTpfText);
 
-        if (BuildLevel <= MPLAYER_BUILD_LEVEL_MAX) {
-          absl::SNPrintF(txt, sizeof(txt), "%d", BuildLevel);
+        if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
+          absl::SNPrintF(txt, sizeof(txt), "%d", TheWorld().build_level());
         } else {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
@@ -4660,7 +4660,7 @@ static int Net_New_Dialog() {
       //	User adjusts build level
       //..................................................................
       case ButtonKey(kButtonLevel):
-        BuildLevel =
+        TheWorld().build_level() =
             std::min(levelgauge.Get_Value() + 1, MPLAYER_BUILD_LEVEL_MAX);
         transmit = 1;
         display = REDRAW_PARMS;
@@ -4992,12 +4992,12 @@ static int Net_New_Dialog() {
         Session.GPacket.ScenarioInfo.IsGoodies =
             static_cast<uint8_t>(Session.Options.Goodies);
         Session.GPacket.ScenarioInfo.BuildLevel =
-            static_cast<unsigned char>(BuildLevel);
+            static_cast<unsigned char>(TheWorld().build_level());
         Session.GPacket.ScenarioInfo.UnitCount =
             static_cast<unsigned char>(Session.Options.UnitCount);
         Session.GPacket.ScenarioInfo.AIPlayers =
             static_cast<unsigned char>(Session.Options.AIPlayers);
-        Session.GPacket.ScenarioInfo.Seed = Seed;
+        Session.GPacket.ScenarioInfo.Seed = TheWorld().seed();
         Session.GPacket.ScenarioInfo.Special = Special;
         Session.GPacket.ScenarioInfo.GameSpeed = Options.GameSpeed;
         Session.GPacket.ScenarioInfo.Version = VerNum.Get_Clipped_Version();

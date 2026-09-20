@@ -284,7 +284,7 @@ int main(const int argc, char* argv[])
 
   // The parser writes no game state, so these defaults come first and
   // ApplyStartupOptions() lays the command line over them.
-  Whom = HOUSE_GOOD;
+  TheWorld().whom() = HOUSE_GOOD;
   Special.Init();
 
   const std::optional<StartupOptions> options = Parse_Command_Line(arguments);

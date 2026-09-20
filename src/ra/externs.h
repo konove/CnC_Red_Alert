@@ -134,9 +134,7 @@ extern QueueClass<EventClass, kMaxEvents * 64> DoList;
 /*
 **	Miscellaneous globals.
 */
-extern HousesType Whom;
 extern VQAConfig AnimControl;
-extern int BuildLevel;
 
 extern bool bAftermathMultiplayer;  //	Is multiplayer game being played with
                                     // Aftermath rules?

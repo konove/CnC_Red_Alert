@@ -961,7 +961,7 @@ bool Load_Game(int id) {
   }
 
   file.Close();
-  Whom = ThePlayer()->Class->House;
+  TheWorld().whom() = ThePlayer()->Class->House;
   if (TheMap().PendingObjectPtr) {
     TheMap().PendingObject = &TheMap().PendingObjectPtr->Class_Of();
     DCHECK(TheMap().PendingObject != nullptr);
@@ -1207,7 +1207,8 @@ template <class Archive>
 static void SerializeMultiplayer(Archive& ar) {
   // The switch keeps its place in the record, so a local stands in for it.
   bool unshroud = TheDebugState().unshroud();
-  ar(Session, BuildLevel, unshroud, Seed, Whom, Special, Options);
+  ar(Session, TheWorld().build_level(), unshroud, TheWorld().seed(),
+     TheWorld().whom(), Special, Options);
   if constexpr (Archive::kIsReading) {
     TheDebugState().set_unshroud(unshroud);
   }
@@ -1245,7 +1246,8 @@ bool Load_Misc_Values(ByteSource& file) {
  * ensures that the random # sequencer will pick up where it left off when
  ** the game was saved.
  ** This routine also saves the header for a Recording file, so it must
- ** save some data not needed specifically by a save-game file (ie Seed).
+ ** save some data not needed specifically by a save-game file (ie
+ * TheWorld().seed()).
  **
  *                                                                         *
  * INPUT:                                                                  *

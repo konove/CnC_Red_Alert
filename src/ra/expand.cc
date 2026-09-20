@@ -478,7 +478,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     const KeyNumType input = buttons->Input();
     switch (static_cast<int>(input)) {
       case ButtonKey(200):
-        Whom = list.Current_Object().House;
+        TheWorld().whom() = list.Current_Object().House;
         TheScenario().Scenario = list.Current_Object().Scenario;
         port::SafeCopy(TheScenario().ScenarioName,
                        list.Current_Object().FullName);
@@ -493,7 +493,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
         break;
 
       case KN_RETURN:
-        Whom = list.Current_Object().House;
+        TheWorld().whom() = list.Current_Object().House;
         TheScenario().Scenario = list.Current_Object().Scenario;
         port::SafeCopy(TheScenario().ScenarioName,
                        list.Current_Object().FullName);

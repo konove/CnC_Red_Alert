@@ -2463,7 +2463,7 @@ void Assign_Houses() {
     **	Convert the build level into an actual tech level to assign to the
     *house. *	There isn't a one-to-one correspondence.
     */
-    housep->Control.TechLevel = base::At(build_tech, BuildLevel);
+    housep->Control.TechLevel = base::At(build_tech, TheWorld().build_level());
 
     housep->Assign_Handicap(TheScenario().Difficulty);
 
@@ -2515,8 +2515,8 @@ void Assign_Houses() {
 
     housep->Init_Data(static_cast<PlayerColorType>(color), pref_house,
                       Session.Options.Credits);
-    housep->Control.TechLevel = base::At(build_tech, BuildLevel);
-    //		housep->Control.TechLevel = BuildLevel;
+    housep->Control.TechLevel = base::At(build_tech, TheWorld().build_level());
+    //		housep->Control.TechLevel = TheWorld().build_level();
 
     DiffType difficulty = TheScenario().CDifficulty;
 
@@ -2619,13 +2619,16 @@ static void Create_Units(bool official) {
   CELL centroid = 0;  // centroid of this house's stuff
   CELL centerpt = 0;  // centroid for a category of objects, as a CELL
 
-  int u_limit = 0;   // last allowable index of units for this BuildLevel
-  int i_limit = 0;   // last allowable index of infantry for this BuildLevel
+  int u_limit =
+      0;  // last allowable index of units for this TheWorld().build_level()
+  int i_limit =
+      0;  // last allowable index of infantry for this TheWorld().build_level()
   TechnoClass* obj = nullptr;  // newly-created object
   int scaleval = 0;            // value to scale # units or infantry
 
   /*
-  **	For the current BuildLevel, find the max allowable index into the tables
+  **	For the current TheWorld().build_level(), find the max allowable index
+  * into the tables
   */
   for (int i = 0; i < std::ssize(utable); i++) {
     if (ThePlayer()->Control.TechLevel >= base::At(utable, i).MinLevel) {

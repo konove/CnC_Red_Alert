@@ -613,10 +613,10 @@ bool Select_Game(bool /*fade*/) {
         TheScenario().CDifficulty = DIFF_NORMAL;
         TheScenario().Difficulty = DIFF_NORMAL;
         TheScenario().CarryOverMoney = 0;
-        BuildLevel = 10;
+        TheWorld().build_level() = 10;
         TheWorld().is_tanya_dead() = false;
         TheWorld().save_tanya() = false;
-        Whom = HOUSE_GOOD;
+        TheWorld().whom() = HOUSE_GOOD;
         TheScenario().Set_Scenario_Name((options.new_game + ".INI").c_str());
         startup_game_started = true;
         Session.Type = GAME_NORMAL;
@@ -752,10 +752,10 @@ bool Select_Game(bool /*fade*/) {
             }
           }
           TheScenario().CarryOverMoney = 0;
-          BuildLevel = 10;
+          TheWorld().build_level() = 10;
           TheWorld().is_tanya_dead() = false;
           TheWorld().save_tanya() = false;
-          Whom = HOUSE_GOOD;
+          TheWorld().whom() = HOUSE_GOOD;
 
           if (!Special.IsFromInstall) {
             if (AntsEnabled) {
@@ -1663,21 +1663,21 @@ void Init_Random() {
   }
 
   //
-  // If we're playing a recording, the Seed is loaded in
+  // If we're playing a recording, the TheWorld().seed() is loaded in
   // Load_Recording_Values().  Just init the random # and return.
   //
   if (Session.Play) {
-    RandNumb = Seed;
-    TheScenario().sync_rng_.set_seed(static_cast<uint32_t>(Seed));
+    RandNumb = TheWorld().seed();
+    TheScenario().sync_rng_.set_seed(static_cast<uint32_t>(TheWorld().seed()));
     return;
   }
 
   /*
-  **	Initialize the random number Seed.  For multiplayer, this will have been
-  *done
+  **	Initialize the random number TheWorld().seed().  For multiplayer, this
+  * will have been done
   ** in the connection dialogs.  For single-player games, AND if we're not
   *playing
-  ** back a recording, init the Seed to a random value.
+  ** back a recording, init the TheWorld().seed() to a random value.
   */
   if (Session.Type == GAME_NORMAL ||
       (Session.Type == GAME_SKIRMISH && !Session.Play)) {
@@ -1685,17 +1685,17 @@ void Init_Random() {
     ** Set the optional user-specified seed
     */
     if (TheStartupOptions().custom_seed != 0) {
-      Seed = TheStartupOptions().custom_seed;
+      TheWorld().seed() = TheStartupOptions().custom_seed;
     } else {
-      Seed = port::RandomSeed();
+      TheWorld().seed() = port::RandomSeed();
     }
   }
 
   /*
   **	Initialize the random-number generators
   */
-  TheScenario().sync_rng_.set_seed(static_cast<uint32_t>(Seed));
-  RandNumb = Seed;
+  TheScenario().sync_rng_.set_seed(static_cast<uint32_t>(TheWorld().seed()));
+  RandNumb = TheWorld().seed();
 }
 
 /***********************************************************************************************
@@ -2507,7 +2507,8 @@ static void Init_Keys() {
  * ensures that the random # sequencer will pick up where it left off when
  ** the game was saved.
  ** This routine also saves the header for a Recording file, so it must
- ** save some data not needed specifically by a save-game file (ie Seed).
+ ** save some data not needed specifically by a save-game file (ie
+ * TheWorld().seed()).
  **
  *                                                                         *
  * INPUT:                                                                  *
@@ -2540,8 +2541,9 @@ static void SerializeRecording(Archive& ar) {
   Session.SerializePlayers(ar);
   // The switch keeps its place in the record, so a local stands in for it.
   bool unshroud = TheDebugState().unshroud();
-  ar(BuildLevel, unshroud, Seed, TheScenario().Scenario,
-     TheScenario().ScenarioName, Whom, Special, Options);
+  ar(TheWorld().build_level(), unshroud, TheWorld().seed(),
+     TheScenario().Scenario, TheScenario().ScenarioName, TheWorld().whom(),
+     Special, Options);
   if constexpr (Archive::kIsReading) {
     TheDebugState().set_unshroud(unshroud);
     TheScenario().ScenarioName[sizeof(TheScenario().ScenarioName) - 1] = '\0';

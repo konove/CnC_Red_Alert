@@ -216,20 +216,6 @@ static CreditClass CreditDisplay;
 SpecialClass Special;
 
 /***************************************************************************
-**	This is the scenario data for the currently loaded scenario.
-** These variables should all be set together.
-*/
-HousesType Whom;  // Initial command line house choice.
-
-/***************************************************************************
-** This value tells the sidebar what items it's allowed to add.  The
-** lower the value, the simpler the sidebar will be. This value is the
-**	displayed value for tech level in the multiplay dialogs. It remaps to
-**	the in-game rules.ini tech levels.
-*/
-int BuildLevel = 10;  // Buildable level (1 = simplest)
-
-/***************************************************************************
 **	The game plays as long as this var is true.
 */
 bool GameActive;
@@ -334,12 +320,6 @@ IPXManagerClass Ipx(
     32,                                        // # entries in Private Queues
     VIRGIN_SOCKET,                             // Socket ID #
     IPXGlobalConnClass::kCommandAndConquer0);  // Product ID #
-
-/***************************************************************************
-**	This is the random-number seed; it's synchronized between systems for
-** multiplayer games.
-*/
-int Seed = 0;
 
 int WindowList[][8] = {
     /* xbyte, ypixel, bytewid, pixelht, cursor color, bkgd color,	cursor
