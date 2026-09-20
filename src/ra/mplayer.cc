@@ -176,7 +176,7 @@ GameType Select_MPlayer_Game() {
   //------------------------------------------------------------------------
   // If IPX not active then do only the modem serial dialog
   //------------------------------------------------------------------------
-  //	if ( !TheNetwork().ipx().Is_IPX() ) {
+  //	if ( !Ipx.Is_IPX() ) {
   //		return( Select_Serial_Dialog() );
   //	}
 

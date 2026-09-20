@@ -34,7 +34,7 @@ class WolapiObject;
 // the rest later.
 //
 // Example:
-//   TheNetwork().out_list().Add(event);
+//   OutList.Add(event);
 class Network {
  public:
   Network() = default;

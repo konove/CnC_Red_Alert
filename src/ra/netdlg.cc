@@ -1057,7 +1057,7 @@ TheSession().GameName[0] = 0;
  * OUTPUT: * true = packet was processed, false = wasn't
  **
  *                                                                         						  *
- * WARNINGS: * TheSession().GameName must have been filled in before this
+ * WARNINGS: * Session.GameName must have been filled in before this
  * function can be called.				  *
  *                                                                         						  *
  * HISTORY: * 02/15/1995 BR : Created. *
@@ -1248,8 +1248,7 @@ bool Remote_Connect() {
   //	off for now (during this portion of the dialogs, we must show ourselves)
   //------------------------------------------------------------------------
   const bool stealth =
-      TheSession()
-          .NetStealth;  // original state of TheSession().NetStealth flag
+      TheSession().NetStealth;  // original state of Session.NetStealth flag
   TheSession().NetStealth = false;
 
   //------------------------------------------------------------------------
@@ -1998,11 +1997,11 @@ static int Net_Join_Dialog() {
 
           //					absl::SNPrintF(txt, sizeof(txt),
           //"%s %s", p,
-          // TheSession().Options.ScenarioDescription);
+          // Session.Options.ScenarioDescription);
           // descrip.Set_Text(txt);
           // Fancy_Text_Print("%s %s", d_dialog_cx, d_name_y, scheme, BLACK,
           // kTpfText | TPF_CENTER, p,
-          // TheSession().Options.ScenarioDescription);
+          // Session.Options.ScenarioDescription);
         } else {
           absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
                          Text_String(TXT_NOT_FOUND));
@@ -2807,7 +2806,7 @@ static int Net_Join_Dialog() {
     }
 
     //.....................................................................
-    //	Service the TheNetwork().ipx() connections
+    //	Service the Ipx connections
     //.....................................................................
     TheNetwork().ipx().Service();
 
@@ -3019,8 +3018,8 @@ static int Net_Join_Dialog() {
   //	Init network timing values, using previous response times as a measure
   //	of what our retry delta & timeout should be.
   //------------------------------------------------------------------------
-  //	TheNetwork().ipx().Set_Timing (TheNetwork().ipx().Global_Response_Time()
-  //+ 2, -1, 		TheNetwork().ipx().Global_Response_Time() * 4);
+  //	Ipx.Set_Timing (Ipx.Global_Response_Time()
+  //+ 2, -1, 		Ipx.Global_Response_Time() * 4);
   TheNetwork().ipx().Set_Timing(
       TheNetwork().ipx().Global_Response_Time() + 2, -1,
       std::max(120, TheNetwork().ipx().Global_Response_Time() * 8));
@@ -3422,12 +3421,12 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
  **
  *                                                                         						  *
  * This routine sets the globals
- ** TheSession().House					(from NET_CONFIRM_JOIN)
- ** TheSession().ColorIdx				(from NET_CONFIRM_JOIN)
- ** TheSession().Options.Bases		(from NET_GAME_OPTIONS)
- ** TheSession().Options.Tiberium	(from NET_GAME_OPTIONS)
- ** TheSession().Options.Goodies		(from NET_GAME_OPTIONS)
- ** TheSession().Options.Ghosts		(from NET_GAME_OPTIONS)
+ ** Session.House					(from NET_CONFIRM_JOIN)
+ ** Session.ColorIdx				(from NET_CONFIRM_JOIN)
+ ** Session.Options.Bases		(from NET_GAME_OPTIONS)
+ ** Session.Options.Tiberium	(from NET_GAME_OPTIONS)
+ ** Session.Options.Goodies		(from NET_GAME_OPTIONS)
+ ** Session.Options.Ghosts		(from NET_GAME_OPTIONS)
  ** ScenarioIdx				(from NET_GAME_OPTIONS; -1 =
  * scenario not found)						  *
  *                                                                         						  *
@@ -3811,8 +3810,8 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
           TheSession().GPacket.ScenarioInfo.IsTiberium;
       TheSession().Options.Goodies =
           TheSession().GPacket.ScenarioInfo.IsGoodies;
-      //			TheSession().Options.Ghosts =
-      // TheSession().GPacket.ScenarioInfo.IsGhosties;
+      //			Session.Options.Ghosts =
+      // Session.GPacket.ScenarioInfo.IsGhosties;
       TheSession().Options.AIPlayers =
           TheSession().GPacket.ScenarioInfo.AIPlayers;
       TheWorld().build_level() = TheSession().GPacket.ScenarioInfo.BuildLevel;
@@ -3830,7 +3829,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       TheSession().CommProtocol = VersionClass::Version_Protocol(lVersion);
       TheSession().IsAftermath =
           (TheSession().GPacket.ScenarioInfo.Version & 0x80000000) != 0;
-      //			if( TheSession().IsAftermath )
+      //			if( bAftermathMultiplayer )
       //				debugprint( "Guest hears host say 'This
       // is an
       // Aftermath game'\n" ); 			else
@@ -4132,7 +4131,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
  *                                                                                             *
  * OUTPUT: * true = success, false = cancel *
  *                                                                                             *
- * WARNINGS: * TheSession().GameName must contain this player's name. *
+ * WARNINGS: * Session.GameName must contain this player's name. *
  *                                                                                             *
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
@@ -4442,8 +4441,8 @@ static int Net_New_Dialog() {
 
   TheSession().Options.ScenarioIndex = 0;  // 1st scenario is selected
   TheSession().IsAftermath = Is_Aftermath_Installed();
-  //	debugprint( "Host decides that, initially, TheSession().IsAftermath is
-  //%i\n", TheSession().IsAftermath );
+  //	debugprint( "Host decides that, initially, bAftermathMultiplayer is
+  //%i\n", bAftermathMultiplayer );
 
   //------------------------------------------------------------------------
   //	Init player color-used flags
@@ -4844,8 +4843,8 @@ static int Net_New_Dialog() {
         // otherwise
         //...............................................................
         if (TheSession().Players.Count() > 1) {
-          //				if (TheSession().Players.Count() +
-          // TheSession().Options.AIPlayers > 1 ) {
+          //				if (Session.Players.Count() +
+          // Session.Options.AIPlayers > 1 ) {
           rc = 1;
           process = false;
         } else {
@@ -5146,7 +5145,7 @@ static int Net_New_Dialog() {
     }
 
     //.....................................................................
-    //	Service the TheNetwork().ipx() connections
+    //	Service the Ipx connections
     //.....................................................................
     TheNetwork().ipx().Service();
 
@@ -5285,8 +5284,8 @@ static int Net_New_Dialog() {
   //	Init network timing values, using previous response times as a measure
   //	of what our retry delta & timeout should be.
   //------------------------------------------------------------------------
-  // TheNetwork().ipx().Set_Timing (TheNetwork().ipx().Global_Response_Time() +
-  // 2, -1, TheNetwork().ipx().Global_Response_Time() * 4);
+  // Ipx.Set_Timing (Ipx.Global_Response_Time() +
+  // 2, -1, Ipx.Global_Response_Time() * 4);
   TheNetwork().ipx().Set_Timing(
       TheNetwork().ipx().Global_Response_Time() + 2, -1,
       std::max(120, TheNetwork().ipx().Global_Response_Time() * 8));

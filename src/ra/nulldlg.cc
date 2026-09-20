@@ -3310,7 +3310,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           staticcount.Draw_Me();
           //				Fancy_Text_Print("%d ", d_count_x +
           // d_count_w + 3 * 2, d_count_y, scheme, BLACK, kTpfText,
-          // TheSession().Options.UnitCount);
+          // Session.Options.UnitCount);
 
           if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
             absl::SNPrintF(staticlevelbuff, sizeof(staticlevelbuff), "%d ",
@@ -3329,7 +3329,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           staticcredits.Draw_Me();
           //				Fancy_Text_Print("%d", d_credits_x +
           // d_credits_w + 2 * 2, d_credits_y, scheme, BLACK, kTpfText,
-          // TheSession().Options.Credits);
+          // Session.Options.Credits);
 
           absl::SNPrintF(staticaibuff, sizeof(staticaibuff), "%d",
                          TheSession().Options.AIPlayers);
@@ -3337,7 +3337,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           staticai.Draw_Me();
           //				Fancy_Text_Print("%d", d_aiplayers_x +
           // d_aiplayers_w + 2*2, d_aiplayers_y, scheme, BLACK,
-          // kTpfText, TheSession().Options.AIPlayers);
+          // kTpfText, Session.Options.AIPlayers);
         }
 
         /*
@@ -3534,8 +3534,8 @@ int Com_Scenario_Dialog(bool skirmish) {
                 1;                           // Always one forced AI player.
             humans = 1;                      // One human.
                                              //						if
-            //(TheSession().Options.AIPlayers == 0) {
-            // TheSession().Options.AIPlayers = 1;
+            //(Session.Options.AIPlayers == 0) {
+            // Session.Options.AIPlayers = 1;
             // aiplayersgauge.Set_Value(0);
             //						}
           }
@@ -4433,7 +4433,7 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
   */
   for (int index = 0; index < TheSession().Scenarios.Count(); index++) {
     // debugprint( "Checking against scenario: %s\n",
-    // TheSession().Scenarios[index]->Description());
+    // Session.Scenarios[index]->Description());
     if (std::string_view(TheSession().Scenarios.at(index)->Description()) ==
         description) {
       // debugprint("found matching description.\n");
@@ -4493,7 +4493,7 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
 
       //			else
       //				debugprint("file not available '%s'.\n",
-      // TheSession().Scenarios[index]->Get_Filename());
+      // Session.Scenarios[index]->Get_Filename());
     }
   }
   // debugprint("failed match.\n");
@@ -5072,7 +5072,7 @@ int Com_Show_Scenario_Dialog() {
             p = Text_String(TXT_SCENARIO_COLON);
             if (TheSession().Options.ScenarioDescription[0]) {
               //							sprintf(txt,"%s
-              //%s",p, TheSession().Options.ScenarioDescription);
+              //%s",p, Session.Options.ScenarioDescription);
               // Fancy_Text_Print (txt, d_dialog_cx, d_scenario_y, scheme,
               // TBLACK, kTpfText | TPF_CENTER);
 

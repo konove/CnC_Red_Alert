@@ -806,7 +806,7 @@ bool Select_Game(bool /*fade*/) {
           break;
 
         /*
-        **	SEL_MULTIPLAYER_GAME: set 'TheSession().Type' to nullptr-modem,
+        **	SEL_MULTIPLAYER_GAME: set 'Session.Type' to nullptr-modem,
         * modem, or *	network play.
         */
         case kSelMultiplayerGame:
@@ -815,7 +815,7 @@ bool Select_Game(bool /*fade*/) {
           if (!config::kWolapiEnabled || TheNetwork().wolapi() == nullptr) {
             switch (TheSession().Type) {
               /*
-              **	If 'TheSession().Type' isn't already set up for a
+              **	If 'Session.Type' isn't already set up for a
               * multiplayer game, *	we must prompt the user for which type
               * of multiplayer game *	they want.
               */
@@ -835,7 +835,7 @@ bool Select_Game(bool /*fade*/) {
                     selection = kSelNone;
                   }
                 } else {
-                  //	Ever hits? TheSession().Type set to GAME_SKIRMISH
+                  //	Ever hits? Session.Type set to GAME_SKIRMISH
                   // without
                   // user selecting in Select_MPlayer_Game()?
                   //	If mission is Counterstrike, CS CD will be required. But
@@ -900,12 +900,12 @@ bool Select_Game(bool /*fade*/) {
               default:
                 break;
             }
-          }  //	if( !TheNetwork().wolapi() )
+          }  //	if( !pWolapi )
 
           if (config::kWolapiEnabled && TheNetwork().wolapi() != nullptr) {
             TheSession().Type = GAME_INTERNET;
           }
-          // debugprint( "TheSession().Type = %i\n", TheSession().Type );
+          // debugprint( "Session.Type = %i\n", Session.Type );
           switch (TheSession().Type) {
             /*
             **	Modem, Null-Modem or internet
@@ -1104,12 +1104,12 @@ bool Select_Game(bool /*fade*/) {
       break;
     case GAME_INTERNET:
       if (!config::kWolapiEnabled || TheNetwork().wolapi() == nullptr) {
-        //				debugprint( "TheNetwork().wolapi() is
+        //				debugprint( "pWolapi is
         // null on internet
         // game!" );
-        Fatal("TheNetwork().wolapi() is null on internet game!");
+        Fatal("pWolapi is null on internet game!");
       }
-      // if( TheNetwork().wolapi()->bEnableNewAftermathUnits )
+      // if( pWolapi->bEnableNewAftermathUnits )
       if (TheSession().IsAftermath) {
         TheRules().NewUnitsEnabled = true;
       } else {
@@ -1668,7 +1668,7 @@ void Init_Random() {
   }
 
   //
-  // If we're playing a recording, the TheWorld().seed() is loaded in
+  // If we're playing a recording, the Seed is loaded in
   // Load_Recording_Values().  Just init the random # and return.
   //
   if (TheSession().Play) {
@@ -1678,11 +1678,11 @@ void Init_Random() {
   }
 
   /*
-  **	Initialize the random number TheWorld().seed().  For multiplayer, this
+  **	Initialize the random number Seed.  For multiplayer, this
   * will have been done
   ** in the connection dialogs.  For single-player games, AND if we're not
   *playing
-  ** back a recording, init the TheWorld().seed() to a random value.
+  ** back a recording, init the Seed to a random value.
   */
   if (TheSession().Type == GAME_NORMAL ||
       (TheSession().Type == GAME_SKIRMISH && !TheSession().Play)) {
@@ -2513,7 +2513,7 @@ static void Init_Keys() {
  ** the game was saved.
  ** This routine also saves the header for a Recording file, so it must
  ** save some data not needed specifically by a save-game file (ie
- * TheWorld().seed()).
+ * Seed).
  **
  *                                                                         *
  * INPUT:                                                                  *

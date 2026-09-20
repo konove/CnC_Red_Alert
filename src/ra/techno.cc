@@ -5033,7 +5033,7 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
         continue;
       }
       //					(Mission != MISSION_GUARD_AREA
-      //|| TheSession().Type == GAME_NORMAL)) continue;
+      //|| Session.Type == GAME_NORMAL)) continue;
 
       /*
       **	Don't allow a response if it doesn't have a weapon that will

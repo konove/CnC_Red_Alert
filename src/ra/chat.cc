@@ -63,7 +63,7 @@ constexpr KeyNumType kPageRespondKey = KN_RETURN;  // KN_COMMA
 //
 // Only reachable when config::kWolapiEnabled; the caller gates it with
 // `if constexpr` so the whole page-respond path folds away with the toggle.
-// The caller has already checked that TheNetwork().wolapi() is live. Marked
+// The caller has already checked that pWolapi is live. Marked
 // maybe_unused because the only call site sits in a discarded `if constexpr`
 // branch when the toggle is off, which clang otherwise reports as an unneeded
 // static.
@@ -85,7 +85,7 @@ constexpr KeyNumType kPageRespondKey = KN_RETURN;  // KN_COMMA
   base::FillBytes(base::ObjectBytes(blop), 0, sizeof(blop));
   TheSession().MessageAddress = IPXAddressClass(blip, blop);
 
-  // Tell TheNetwork().wolapi() not to reset szExternalPager while the reply is
+  // Tell pWolapi not to reset szExternalPager while the reply is
   // being typed.
   TheNetwork().wolapi()->bFreezeExternalPager = true;
 
@@ -108,7 +108,7 @@ constexpr KeyNumType kPageRespondKey = KN_RETURN;  // KN_COMMA
   Keyboard->Clear();
 }
 
-// Fills in TheSession().GPacket with the message just finished in the edit
+// Fills in Session.GPacket with the message just finished in the edit
 // buffer and sends it over IPX, either to every connection (broadcast address)
 // or to the single address the F-key handler recorded.
 //

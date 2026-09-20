@@ -1428,7 +1428,7 @@ void HouseClass::Super_Weapon_Handler() {
     **	facility available, then make the chronosphere available as well.
     */
     if (ActiveBScan & kStructFlagChronosphere &&
-        //			(ActLike == HOUSE_GOOD || TheSession().Type !=
+        //			(ActLike == HOUSE_GOOD || Session.Type !=
         // GAME_NORMAL) &&
         Control.TechLevel >=
             BuildingTypeClass::As_Reference(STRUCT_CHRONOSPHERE).Level &&
@@ -2074,9 +2074,9 @@ void HouseClass::Make_Ally(HousesType house) {
                             Text_String(TXT_HAS_ALLIED), IniName,
                             As_Pointer(house)->IniName);
         //				sprintf(buffer,
-        // Text_String(TXT_HAS_ALLIED), TheSession().Players[Class->House -
+        // Text_String(TXT_HAS_ALLIED), Session.Players[Class->House -
         // HOUSE_MULTI1]->Name,
-        // TheSession().Players[((HouseClass::As_Pointer(house))->Class->House)
+        // Session.Players[((HouseClass::As_Pointer(house))->Class->House)
         // - HOUSE_MULTI1]->Name);
         TheSession().Messages.Add_Message(
             nullptr, 0, buffer, RemapColor,
@@ -2134,8 +2134,8 @@ void HouseClass::Make_Enemy(HousesType house) {
       Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_AT_WAR),
                           IniName, As_Pointer(house)->IniName);
       //			sprintf(buffer, Text_String(TXT_AT_WAR),
-      // TheSession().Players[Class->House - HOUSE_MULTI1]->Name,
-      // TheSession().Players[enemy->Class->House - HOUSE_MULTI1]->Name);
+      // Session.Players[Class->House - HOUSE_MULTI1]->Name,
+      // Session.Players[enemy->Class->House - HOUSE_MULTI1]->Name);
       TheSession().Messages.Add_Message(
           nullptr, 0, buffer, RemapColor,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -3555,7 +3555,7 @@ void HouseClass::MPlayer_Defeated() {
   **	If there's only one human player left or no humans left, the game is
   *over: *	- Determine whether this player wins or loses, based on the
   *state of the *	  player's IsDefeated flag *	- Find all players'
-  *indices in the TheSession().Score array *	- Tally up scores for this game
+  *indices in the Session.Score array *	- Tally up scores for this game
   */
   if (num_alive == 1 || num_humans == 0) {
     if (ThePlayer()->IsDefeated) {

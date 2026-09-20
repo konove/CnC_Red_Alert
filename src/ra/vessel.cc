@@ -170,7 +170,7 @@ VesselClass::VesselClass(VesselType classid, HousesType house)
   /*
   ** Keep count of the number of units created.
   */
-  //	if (TheSession().Type == GAME_INTERNET) {
+  //	if (Session.Type == GAME_INTERNET) {
   //		House->UnitTotals->Increment_Unit_Total((int)classid);
   //	}
 }

@@ -279,7 +279,7 @@ void Send_Statistics_Packet() {
                       static_cast<uint32_t>(
                           TheNetwork().wolapi()->GameInfoCurrent.iPlayerCount));
       // debugprint( "Stats: number of initial players is %i\n",
-      // TheNetwork().wolapi()->GameInfoCurrent.iPlayerCount );
+      // pWolapi->GameInfoCurrent.iPlayerCount );
 
       //	Number of players remaining in game. Not sure of what use this
       // will be
@@ -287,7 +287,7 @@ void Send_Statistics_Packet() {
       stats.Add_Field(FIELD_NUM_REMAINING_PLAYERS,
                       static_cast<uint32_t>(TheSession().Players.Count()));
       // debugprint( "Stats: number of remaining players is %i\n",
-      // TheSession().Players.Count() );
+      // Session.Players.Count() );
 
       //	Whether or not this was a tournament game.
       stats.Add_Field(
@@ -831,7 +831,7 @@ void Send_Statistics_Packet() {
     */
     packet = stats.Create_Comms_Packet(packet_size);
 
-    //	ajw - 'TheNetwork().packet_later()' is no longer ever used.
+    //	ajw - 'PacketLater' is no longer ever used.
     /*
     ** If a player disconnected then dont send the packet at this time - save it
     *for later
@@ -843,7 +843,7 @@ void Send_Statistics_Packet() {
       return;
     }
 
-  } else {  // else for if (!TheNetwork().packet_later())
+  } else {  // else for if (!PacketLater)
 
     /*
     ** Send the packet we calculated earlier when the disconnect occurred

@@ -43,15 +43,15 @@ static void HandleDLLFail();
 #include "ra/theme.h"
 
 //***********************************************************************************************
-//	The first time through, TheNetwork().wolapi() is NULL thus wolapi gets
+//	The first time through, pWolapi is NULL thus wolapi gets
 // set up.
 // WOL_Login_Dialog presents the user 	with the login dialog and attempts to
 // log us on to the server. If the user continues on all the 	way to a game
-// start, we will drop out of here with TheNetwork().wolapi() still pointing to
-// a valid WolapiObject, 	and with TheNetwork().wolapi()'s
+// start, we will drop out of here with pWolapi still pointing to
+// a valid WolapiObject, 	and with pWolapi's
 // iLobbyReturnAfterGame set to the number of the lobby to return to
 // automatically 	after the game ends. Init() automatically brings us here
-// if TheNetwork().wolapi() is non-null.
+// if pWolapi is non-null.
 //***********************************************************************************************
 int WOL_Main() {
   //	Return values:
@@ -75,7 +75,7 @@ int WOL_Main() {
                                   // connected.
     if (TheNetwork().wolapi()->bConnectionDown) {
       // debugprint( "Re-entering WOL_Main(),
-      // TheNetwork().wolapi()->bConnectionDown is true. Deleting old
+      // pWolapi->bConnectionDown is true. Deleting old
       // WolapiObject...\n" );
       WWMessageBox().Process(TXT_WOL_WOLAPIREINIT);
       //	Kill wolapi.
@@ -258,7 +258,7 @@ bool ReregisterWolapiDLL() {
 void HandleDLLFail() {
   //	The DLL failed to load. Either we failed to reregister it, or we think
   // we succeeded at this but it 	still is not working. Show an error
-  // message and delete TheNetwork().wolapi().
+  // message and delete pWolapi.
   //
   //	ajw picked between "download IE3" and "call tech support" by finding
   //	oleaut32.dll in the Windows system directory and calling it out of date

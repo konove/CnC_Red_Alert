@@ -1145,7 +1145,7 @@ void Multi_Score_Presentation() {
   TickScoreScreen(6);
 
   // Move all the scores over a notch if there's more games than can be shown
-  // (which is known by TheSession().CurGame == MAX_MULTI_GAMES-1), dropping the
+  // (which is known by Session.CurGame == MAX_MULTI_GAMES-1), dropping the
   // oldest game's kills.
   if (TheSession().CurGame == MAX_MULTI_GAMES - 1) {
     for (auto& i : TheSession().Score) {

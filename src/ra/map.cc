@@ -1381,7 +1381,7 @@ bool MapClass::Remove_Crate(CELL cell) {
     }
   }
 
-  //	if (TheSession().Type == GAME_NORMAL) {
+  //	if (Session.Type == GAME_NORMAL) {
   CellClass* cellptr = &(*this).at(cell);
   if (cellptr->Overlay != OVERLAY_NONE &&
       OverlayTypeClass::As_Reference(cellptr->Overlay).IsCrate) {

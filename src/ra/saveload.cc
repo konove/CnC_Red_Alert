@@ -1247,7 +1247,7 @@ bool Load_Misc_Values(ByteSource& file) {
  ** the game was saved.
  ** This routine also saves the header for a Recording file, so it must
  ** save some data not needed specifically by a save-game file (ie
- * TheWorld().seed()).
+ * Seed).
  **
  *                                                                         *
  * INPUT:                                                                  *
@@ -1485,7 +1485,7 @@ static bool Reconcile_Players() {
   }
 
   //
-  // If all went well, our TheSession().NumPlayers value should now equal the
+  // If all went well, our Session.NumPlayers value should now equal the
   // value from the saved game, minus any players we removed.
   //
   return TheSession().NumPlayers == TheSession().Players.Count();

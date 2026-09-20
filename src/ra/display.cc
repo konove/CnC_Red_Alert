@@ -3770,7 +3770,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
                 EventClass(EventClass::SELL, TargetClass(object)));
           } else {
             TheNetwork().out_list().Add(EventClass(EventClass::SELLCELL, cell));
-            //						TheNetwork().out_list().Add(EventClass(EventClass::SELL,
+            //						OutList.Add(EventClass(EventClass::SELL,
             //::As_Target(cell)));
           }
         }

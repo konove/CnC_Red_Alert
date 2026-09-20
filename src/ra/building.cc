@@ -2094,7 +2094,7 @@ BuildingClass::BuildingClass(StructType type, HousesType house)
     IsAllowedToSell = false;
   }
 
-  //	if (TheSession().Type == GAME_INTERNET) {
+  //	if (Session.Type == GAME_INTERNET) {
   //		House->BuildingTotals->Increment_Unit_Total( (int) type);
   //	}
 }

@@ -757,8 +757,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   //
   // Now init the max range of the AI players slider.
   //
-  //	pGaugeAIPlayers->Set_Maximum(Rule.MaxPlayers-TheSession().Players.Count());
-  //	pGaugeAIPlayers->Set_Value(TheSession().Options.AIPlayers);
+  //	pGaugeAIPlayers->Set_Maximum(Rule.MaxPlayers-Session.Players.Count());
+  //	pGaugeAIPlayers->Set_Value(Session.Options.AIPlayers);
 
   PlaySoundEffect(WOLSOUND_ENTERGAME);
 
@@ -788,7 +788,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                         // until we get a host - HousePrevious keeps us
                         // triggering until then.
         {
-          //					debugprint( "TheSession().House
+          //					debugprint( "Session.House
           // changed.\n" ); 	Tell host we changed our house.
           char szSend[20];
           absl::SNPrintF(szSend, sizeof(szSend), "%02i %02i",
@@ -1127,7 +1127,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         //				Draw_Box(d_disc_x, d_disc_y, d_disc_w,
         // d_disc_h, BOXSTYLE_BOX, true);
         // Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX, true);
-        // TheSession().Messages.Draw();
+        // Session.Messages.Draw();
       }
 
       //..................................................................
@@ -1310,7 +1310,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                 Get_Mouse_X() <= d_scenariolist_x + d_scenariolist_w &&
                 Get_Mouse_Y() >= d_scenariolist_y &&
                 Get_Mouse_Y() <= d_scenariolist_y + d_scenariolist_h))) {
-            // TheSession().Messages.Add_Message(NULL, 0, (char
+            // Session.Messages.Add_Message(NULL, 0, (char
             // *)Text_String(TXT_ONLY_HOST_CAN_MODIFY), PCOLOR_BROWN,
             // kTpfText, 1200);
             WOL_PrintMessage(*pILDisc, Text_String(TXT_ONLY_HOST_CAN_MODIFY),
@@ -1411,11 +1411,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                                         //	Bloody bloody hell I can't
         believe there are bugs in RA like the one I deal with here... if(
         strcmp( pDropListHouse->Current_Item(), "Russia" ) == 0 )
-        TheSession().House = HOUSE_USSR; else
+        Session.House = HOUSE_USSR; else
                                         {
-                                                TheSession().House =
+                                                Session.House =
         HouseTypeClass::From_Name( pDropListHouse->Current_Item() );	//
-        Fails on "Russia". (Thinks "USSR".) if( TheSession().House == HOUSE_NONE
+        Fails on "Russia". (Thinks "USSR".) if( Session.House == HOUSE_NONE
         )
                                                 {
         //						debugprint( "Couldn't
@@ -1524,7 +1524,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       case ButtonKey(kButtonAiplayers):
         TheSession().Options.AIPlayers = pGaugeAIPlayers->Get_Value();
         //				if
-        //(TheSession().Options.AIPlayers+TheSession().Players.Count() >
+        //(Session.Options.AIPlayers+Session.Players.Count() >
         // Rule.MaxPlayers) {	// if it's pegged, max it out
         if (TheSession().Options.AIPlayers + pWO->GameInfoCurrent.iPlayerMax >
             TheRules().MaxPlayers) {  // if it's pegged, max it out
@@ -1745,7 +1745,7 @@ void WOL_GameSetupDialog::SetSpecialControlStates() {
     pGaugeAIPlayers->Set_Maximum(0);
   } else {
     //	Note dependency of AIPlayers on number of human players.
-    //	pGaugeAIPlayers->Set_Maximum(Rule.MaxPlayers-TheSession().Players.Count());
+    //	pGaugeAIPlayers->Set_Maximum(Rule.MaxPlayers-Session.Players.Count());
     pGaugeAIPlayers->Set_Maximum(TheRules().MaxPlayers -
                                  pWO->GameInfoCurrent.iPlayerMax);
   }
@@ -2399,7 +2399,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
           bLeaveDueToRulesMismatchTrigger = true;
         }
         SetSpecialControlStates();
-        // pILScens->Set_Selected_Index( TheSession().Options.ScenarioIndex );
+        // pILScens->Set_Selected_Index( Session.Options.ScenarioIndex );
         display = REDRAW_ALL;
         ClearAllAccepts();
         PlaySoundEffect(VOC_OPTIONS_CHANGED);
@@ -2656,7 +2656,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
       " ");
 
   // debugprint( "scenario description is '%s'\n",
-  // TheSession().Options.ScenarioDescription ); debugprint( "remaining:
+  // Session.Options.ScenarioDescription ); debugprint( "remaining:
   // '%s'\n", szRemaining );
 
   szToken = tokens.Next();
@@ -2688,12 +2688,12 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (iLen) {
     //		//	Set string pointer to start of string (previous field is
     // 1 digit). 		szRemaining = szToken + 2; 		iLen =
-    // sizeof( TheSession().ScenarioDigest
+    // sizeof( Session.ScenarioDigest
     //);
     //		//	Read in string.
-    //		memcpy( TheSession().ScenarioDigest, szRemaining, iLen );
+    //		memcpy( Session.ScenarioDigest, szRemaining, iLen );
     //		//	//	Null-terminate.
-    //		//	TheSession().ScenarioDigest[ iLen ] = 0;
+    //		//	Session.ScenarioDigest[ iLen ] = 0;
     // Digest has no null-terminator!
     //		//	Advance string pointer to next param.
     //		szRemaining += iLen + 1;
@@ -2979,10 +2979,10 @@ void Debug_GlobalPacketType( const GlobalPacketType& gp1 )
                                 "IsBases = %i\n"
                                 "IsTiberium = %i\n"
                                 "IsGoodies = %i\n"
-                                "TheWorld().build_level() = %i\n"
+                                "BuildLevel = %i\n"
                                 "UnitCount = %i\n"
                                 "AIPlayers = %i\n"
-                                "TheWorld().seed() = %i\n"
+                                "Seed = %i\n"
                                 "Special.IsShadowGrow = %i\n"
                                 "Special.IsSpeedBuild = %i\n"
                                 "Special.IsFromInstall = %i\n"
@@ -3419,7 +3419,7 @@ bool WOL_GameSetupDialog::bNeedScenarioDownload() {
       // false.\n" );
       bRequestedScenarioDownload = false;
       return false;
-    } /*			if( !TheSession().ScenarioIsOfficial )
+    } /*			if( !Session.ScenarioIsOfficial )
                         {
                                 bRequestedScenarioDownload = true;
                                 return true;
@@ -3521,34 +3521,34 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	The following is based on Read_Game_Options()...
 
   //	WWGetPrivateProfileString("Options", "Handle", "Noname",
-  // TheSession().Handle,
-  // sizeof(TheSession().Handle), buffer);
+  // Session.Handle,
+  // sizeof(Session.Handle), buffer);
 
   port::SafeCopy(TheSession().Handle, pWO->szMyName);
 
   //	GameName will be the host's name...
   port::SafeCopy(TheSession().GameName, pWO->pGameHostName());
-  //	debugprint( "TheSession().GameName is %s\n", TheSession().GameName );
+  //	debugprint( "Session.GameName is %s\n", Session.GameName );
 
-  //	gotit	TheSession().ColorIdx = (PlayerColorType)
+  //	gotit	Session.ColorIdx = (PlayerColorType)
   // WWGetPrivateProfileInt("Options", "Color", 0, buffer); 	gotit
-  // TheSession().PrefColor = TheSession().ColorIdx; 	gotit	int temp =
+  // Session.PrefColor = Session.ColorIdx; 	gotit	int temp =
   // WWGetPrivateProfileInt("Options", "Side", 0, buffer); 	gotit
-  // TheSession().House = (HousesType) ((int)HOUSE_USSR + temp);
+  // Session.House = (HousesType) ((int)HOUSE_USSR + temp);
 
-  //	gotit	TheSession().Options.Credits = WWGetPrivateProfileInt("Options",
-  //"Credits", 0, buffer); 	gotit	TheSession().Options.Bases =
+  //	gotit	Session.Options.Credits = WWGetPrivateProfileInt("Options",
+  //"Credits", 0, buffer); 	gotit	Session.Options.Bases =
   // WWGetPrivateProfileInt("Options", "Bases", 0, buffer); 	gotit
-  // TheSession().Options.Tiberium = WWGetPrivateProfileInt("Options",
-  // "Tiberium", 0, buffer); 	gotit	TheSession().Options.Goodies =
+  // Session.Options.Tiberium = WWGetPrivateProfileInt("Options",
+  // "Tiberium", 0, buffer); 	gotit	Session.Options.Goodies =
   // WWGetPrivateProfileInt("Options", "Crates", 0, buffer); 	gotit
   // Special.IsShadowGrow = WWGetPrivateProfileInt ("Options", "Shadow", 0,
-  // buffer); 	gotit	TheWorld().build_level() =
+  // buffer); 	gotit	BuildLevel =
   // WWGetPrivateProfileInt("Options",
-  //"TheWorld().build_level()", 0, buffer); 	gotit
-  // TheSession().Options.UnitCount =
+  //"BuildLevel", 0, buffer); 	gotit
+  // Session.Options.UnitCount =
   // WWGetPrivateProfileInt("Options", "UnitCount", 0, buffer); 	gotit
-  // TheWorld().seed() = WWGetPrivateProfileInt("Options", "TheWorld().seed()",
+  // Seed = WWGetPrivateProfileInt("Options", "Seed",
   // 0, buffer); 	gotit Special.IsCaptureTheFlag =
   // WWGetPrivateProfileInt("Options", "CapFlag", 0, buffer);
 
@@ -3560,7 +3560,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
     TheRules().UnitBuildPenalty = 100;
   }
 
-  // TheNetwork().westwood_game_id() = WWGetPrivateProfileInt("Internet",
+  // PlanetWestwoodGameID = WWGetPrivateProfileInt("Internet",
   // "GameID", 0, buffer);
   TheNetwork().westwood_game_id() =
       static_cast<uint32_t>(pWO->pChatSink->iGameID);
@@ -3568,13 +3568,13 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	Reset ChatSink's iGameID.
   pWO->pChatSink->iGameID = 0;
 
-  // TheNetwork().westwood_start_time() = WWGetPrivateProfileInt ("Internet",
+  // PlanetWestwoodStartTime = WWGetPrivateProfileInt ("Internet",
   // "StartTime", 0, buffer);
   TheNetwork().westwood_start_time() = static_cast<uint32_t>(time(nullptr));
   // WChatHWND = (HWND) WWGetPrivateProfileInt("Internet", "HWND",
   // (int)FindWindow("OWL_Window", "Westwood Chat"), buffer);
 
-  //	gotit	TheSession().Options.AIPlayers =
+  //	gotit	Session.Options.AIPlayers =
   // WWGetPrivateProfileInt("Options", "AI", 0, buffer);		//Number
   // of AI players
   if (TheSession().Options.AIPlayers) {
@@ -3594,7 +3594,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	Now do whatever we've left out that the horrific Net_Fake_New_Dialog()
   // and Net_Fake_Join_Dialog() used to do for us...
 
-  //	Set up the TheSession().Players list.
+  //	Set up the Session.Players list.
   //	I think there is dependence on the local player being first, so put him
   // there. 	Else put them in order listed in the szGoMessage. 	I will
   // set "ID" based on a player's color, though it seems unclear if this is even
@@ -3633,12 +3633,12 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
     SetPlayerColor(szPlayerName, Color);  //	ajw note: inserts if not found.
   }
 
-  //	Add myself to TheSession().Players list.
+  //	Add myself to Session.Players list.
   DCHECK(pILPlayers->Find(pWO->szMyName) != -1);
 
   auto* pPlayerNew = new NodeNameType;
   port::SafeCopy(pPlayerNew->Name, pWO->szMyName);  //	"Name" is 12 chars max.
-  // pPlayerNew->Address = TheSession().GAddress;
+  // pPlayerNew->Address = Session.GAddress;
   pPlayerNew->Player.House = GetPlayerHouse(pWO->szMyName);
   // debugprint( "ME: pPlayerNew->Player.House = %i\n", pPlayerNew->Player.House
   // );
@@ -3651,7 +3651,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
 
   char szHostName[WOL_NAME_LEN_MAX] = "Game host";
 
-  //	Add all other players to TheSession().Players list (if they have a valid
+  //	Add all other players to Session.Players list (if they have a valid
   // color - see just above). 	Also in this step - build the scenario download
   // requests array (used by hosts only).
   base::FillBytes(base::ObjectBytes(TheSession().ScenarioRequests), 0,
@@ -3687,7 +3687,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       base::CopyBytes(base::ObjectBytes(node), base::ObjectBytes(lAddress), 4);
       // memcpy( node + 2, &lAddress, 4 );
       pPlayerNew->Address.Set_Address(net, node);
-      // pPlayerNew->Address = TheSession().GAddress;
+      // pPlayerNew->Address = Session.GAddress;
       pPlayerNew->Player.House = GetPlayerHouse(szPlayerName);
       // debugprint( "Player %i: pPlayerNew->Player.House = %i\n", iItem,
       // pPlayerNew->Player.House );
@@ -3709,7 +3709,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
                                         //	debugging
                                         NetNumType netxxx;
                                         NetNodeType nodexxx;
-                                        TheSession().HostAddress.Get_Address(
+                                        Session.HostAddress.Get_Address(
         netxxx, nodexxx );
         //				debugprint( "Host, ip
         %i.%i.%i.%i.%i.%i\n", nodexxx[0], nodexxx[1], nodexxx[2], nodexxx[3],
@@ -3738,7 +3738,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       }
     }
     //		else
-    //			debugprint( "%s excluded from TheSession().Players\n",
+    //			debugprint( "%s excluded from Session.Players\n",
     // szPlayerName );
   }
 
@@ -3762,8 +3762,8 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
                                 -1,    // ignore max retries
                                 600);  // give up after 10 seconds
 
-  //	debugprint( "TheSession().ScenarioFileName is %s.\n",
-  // TheSession().ScenarioFileName );
+  //	debugprint( "Session.ScenarioFileName is %s.\n",
+  // Session.ScenarioFileName );
 
   /*
   ** Read the scenario name from the .INI and try to match it with a scenario
@@ -3771,10 +3771,10 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   */
   //	gotit		WWGetPrivateProfileString("Options", "Scenario",
   //"SCM01EA.INI",
-  // TheSession().Options.ScenarioDescription,
-  // sizeof (TheSession().Options.ScenarioDescription),
+  // Session.Options.ScenarioDescription,
+  // sizeof (Session.Options.ScenarioDescription),
   // buffer); WWDebugString ("RA95I -
-  // Scenario is "); WWDebugString (TheSession().Options.ScenarioDescription);
+  // Scenario is "); WWDebugString (Session.Options.ScenarioDescription);
   // WWDebugString ("\n");
 
   if (!bHost)  //	Else ScenarioIndex is already set.
@@ -3813,12 +3813,12 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       //	Match ScenarioDescription to a ScenarioIndex.
       /*	This is how the same code existed previously. Insufficient
          because Description may match on many scenarios.
-                              TheSession().Options.ScenarioIndex = -1;
+                              Session.Options.ScenarioIndex = -1;
                               for (int i = 0; i <
-         TheSession().Scenarios.Count(); i++) { if (!strcmp
-         (TheSession().Scenarios[i]->Description(),
-         TheSession().Options.ScenarioDescription) ){
-         TheSession().Options.ScenarioIndex = i; break;
+         Session.Scenarios.Count(); i++) { if (!strcmp
+         (Session.Scenarios[i]->Description(),
+         Session.Options.ScenarioDescription) ){
+         Session.Options.ScenarioIndex = i; break;
                                       }
                               }
       */
@@ -3854,11 +3854,11 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
 
   Options.GameSpeed = 0;
 
-  // TheSession().MaxAhead = WChatMaxAhead = WWGetPrivateProfileInt("Timing",
-  // "MaxAhead", 9, buffer); TheSession().FrameSendRate = WChatSendRate =
+  // Session.MaxAhead = WChatMaxAhead = WWGetPrivateProfileInt("Timing",
+  // "MaxAhead", 9, buffer); Session.FrameSendRate = WChatSendRate =
   // WWGetPrivateProfileInt("Timing", "SendRate", 3, buffer);
   TheSession().MaxAhead = 15;  // 9;
-  // TheSession().FrameSendRate = 5;	//3;
+  // Session.FrameSendRate = 5;	//3;
   TheSession().FrameSendRate = 3;  // 3;
 
   //	This is from NETDLG processing...

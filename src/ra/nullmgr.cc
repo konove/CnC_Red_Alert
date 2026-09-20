@@ -1812,8 +1812,8 @@ void NullModemClass::Print_EchoBuf() {
     }
   }
   //	Smart_Printf( "Echo buffer length %d (%s)\n",
-  // TheNetwork().null_modem().EchoCount,
-  // TheNetwork().null_modem().EchoBuf );
+  // NullModem.EchoCount,
+  // NullModem.EchoBuf );
 }
 
 /***********************************************************************************************

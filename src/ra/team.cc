@@ -632,7 +632,7 @@ void TeamClass::AI() {
   if ((!IsMoving || (!IsFullStrength && Class->IsReinforcable)) &&
       (!House->IsHuman || !IsHasBeen) && TheSession().Type == GAME_NORMAL) {
     //	if ((!IsMoving || (!IsFullStrength && Class->IsReinforcable)) &&
-    //((/*!House->IsHuman ||*/ !IsHasBeen) && TheSession().Type == GAME_NORMAL))
+    //((/*!House->IsHuman ||*/ !IsHasBeen) && Session.Type == GAME_NORMAL))
     //{
     for (int index = 0; index < Class->ClassCount; index++) {
       if (std::cmp_less(base::At(Quantity, index),

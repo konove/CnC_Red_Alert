@@ -320,7 +320,7 @@ AircraftClass::AircraftClass(AircraftType classid, HousesType house)
   *are created
   ** automatically, not bought.
   */
-  //	if (/*classid != AIRCRAFT_CARGO && */ TheSession().Type ==
+  //	if (/*classid != AIRCRAFT_CARGO && */ Session.Type ==
   // GAME_INTERNET) {
   // House->AircraftTotals->Increment_Unit_Total((int)classid);
   //	}

@@ -287,7 +287,7 @@ static void RunScenario() {
 static void EndScenario() {
   if (!TheNetwork().statistics_sent() && TheNetwork().packet_later()) {
     Send_Statistics_Packet();  // After game sending if
-                               // TheNetwork().packet_later() set.
+                               // PacketLater set.
   }
 
   ThePalettes().black_palette().Set(kFadePaletteSlow);
@@ -338,7 +338,7 @@ void RunGame() {
 //
 // Both PumpMessages HRESULT's are dropped on purpose: a lost connection is
 // reported through the callbacks they fire, which set
-// TheNetwork().wolapi()->bConnectionDown (rawolapi.cc), and every caller tests
+// pWolapi->bConnectionDown (rawolapi.cc), and every caller tests
 // that flag instead. Only reachable when config::kWolapiEnabled, hence
 // maybe_unused.
 [[maybe_unused]] static void PumpWolapiMessages() {

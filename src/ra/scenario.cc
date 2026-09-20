@@ -369,7 +369,7 @@ bool Start_Scenario(char* name, bool briefing) {
   **	Play the winning movie and then start the next scenario.
   */
   RequiredCD = -1;
-  //	if (RequiredCD != -2 && TheSession().Type == GAME_NORMAL) {
+  //	if (RequiredCD != -2 && Session.Type == GAME_NORMAL) {
   //		if (Scen.Scenario == 1)
   //			RequiredCD = -1;
   //		else {
@@ -550,7 +550,7 @@ void Fill_In_Data() {
   */
   if (!TheDebugState().map_editor_active()) {
     TheMap().Activate(1);
-    //		if (TheSession().Type == GAME_NORMAL) {
+    //		if (Session.Type == GAME_NORMAL) {
     base::At(TheScenario().Views, 0) = base::At(TheScenario().Views, 1) =
         base::At(TheScenario().Views, 2) = base::At(TheScenario().Views, 3) =
             base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint);
@@ -2009,17 +2009,17 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   }
 
   TheSession().Messages.Reset();
-  //	TheSession().Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
+  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
-  //	TheSession().Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
+  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
-  //	TheSession().Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
+  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
-  //	TheSession().Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
+  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
-  //	TheSession().Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
+  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
-  //	TheSession().Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
+  //	Session.Messages.Add_Message(nullptr, 0, nullptr, PCOLOR_GREEN,
   // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_FULLSHADOW, 1);
   WeaponTypeClass::As_Pointer(WEAPON_FLAMER)->Sound = VOC_NONE;
   InfantryTypeClass::As_Reference(INFANTRY_THIEF).IsDoubleOwned = false;
@@ -2262,7 +2262,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     /*
     **	Units must be created for each house.  If bases are ON, this routine
     **	will create an MCV along with the units; otherwise, it will just create
-    **	a whole bunch of units.  TheSession().Options.UnitCount is the total #
+    **	a whole bunch of units.  Session.Options.UnitCount is the total #
     * of units *	to create.
     */
     if (!TheDebugState().map_editor_active()) {
@@ -2479,7 +2479,7 @@ void Assign_Houses() {
     TheSession().Players.at(index)->Player.ID = house;
 
     //		debugprint( "Assigned ID of %i to %s\n", house,
-    // TheSession().Players[index]->Name );
+    // Session.Players[index]->Name );
   }
 
   //------------------------------------------------------------------------
@@ -2522,7 +2522,7 @@ void Assign_Houses() {
     housep->Init_Data(static_cast<PlayerColorType>(color), pref_house,
                       TheSession().Options.Credits);
     housep->Control.TechLevel = base::At(build_tech, TheWorld().build_level());
-    //		housep->Control.TechLevel = TheWorld().build_level();
+    //		housep->Control.TechLevel = BuildLevel;
 
     DiffType difficulty = TheScenario().CDifficulty;
 
@@ -2625,15 +2625,13 @@ static void Create_Units(bool official) {
   CELL centroid = 0;  // centroid of this house's stuff
   CELL centerpt = 0;  // centroid for a category of objects, as a CELL
 
-  int u_limit =
-      0;  // last allowable index of units for this TheWorld().build_level()
-  int i_limit =
-      0;  // last allowable index of infantry for this TheWorld().build_level()
+  int u_limit = 0;  // last allowable index of units for this BuildLevel
+  int i_limit = 0;  // last allowable index of infantry for this BuildLevel
   TechnoClass* obj = nullptr;  // newly-created object
   int scaleval = 0;            // value to scale # units or infantry
 
   /*
-  **	For the current TheWorld().build_level(), find the max allowable index
+  **	For the current BuildLevel, find the max allowable index
   * into the tables
   */
   for (int i = 0; i < std::ssize(utable); i++) {
@@ -2728,7 +2726,7 @@ static void Create_Units(bool official) {
 
   for (int waycount = 0; waycount < look_for; waycount++) {
     //	for (int waycount = 0; waycount < max(4,
-    // TheSession().Players.Count()+TheSession().Options.AIPlayers); waycount++)
+    // Session.Players.Count()+Session.Options.AIPlayers); waycount++)
     // {
     if (base::At(TheScenario().Waypoint, waycount) != -1) {
       base::At(waypts, num_waypts) = base::At(TheScenario().Waypoint, waycount);
@@ -2742,8 +2740,8 @@ static void Create_Units(bool official) {
   *randomly assign *	starting points until there is enough.
   */
   const int deficiency = look_for - num_waypts;
-  //	int deficiency = (TheSession().Players.Count() +
-  // TheSession().Options.AIPlayers) -
+  //	int deficiency = (Session.Players.Count() +
+  // Session.Options.AIPlayers) -
   // num_waypts;
   if (deficiency > 0) {
     for (int index = 0; index < deficiency; index++) {
@@ -2760,7 +2758,7 @@ static void Create_Units(bool official) {
 
   /*
   **	Loop through all houses.  Computer-controlled houses, with
-  *TheSession().Options.Bases *	ON, are treated as though bases are OFF (since
+  *Session.Options.Bases *	ON, are treated as though bases are OFF (since
   *we have no base-building *	AI logic.)
   */
   int numtaken = 0;
