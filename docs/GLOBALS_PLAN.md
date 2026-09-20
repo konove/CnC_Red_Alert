@@ -439,3 +439,34 @@ only where the two games' layouts already match.
   games including Red Alert's `--load-fixture`, and ASan `-QUITFRAME` exits cleanly with no errors
   in either game -- only the leak the phase 5 TODO already records, which grew from 26 KB to 29 KB
   in Red Alert because more type objects fill their `DimensionData` cache before the exit.
+- 2026-09-20: phase 7 done for both games (30edf99e..6385463a). Three of the phase's globals needed
+  no subsystem: `TickCount` was never a stopwatch in either game -- every use read the elapsed value
+  -- so `sdllib/timer.h` gained `SystemTicks()` and both globals went; `FastKey` is the key the MIX
+  archives and the saved game are encrypted with, so it is `Assets::mix_key()`; and `local_rng` is
+  `LocalRandom()`, an inline accessor over a function-local static in `ra/inline.h`. Red Alert's
+  `CountDownTimer` turned out not to be network state either -- only `scenario.cc` read it, to pace
+  the mission briefing -- so it is file-local there; `HelpClass` has a member of the same name,
+  which is what hid it. Red Alert's `SessionClass` became the subsystem itself, as `RulesClass` did
+  in phase 5 (2139 sites across 54 files), and `Network` (`ra/network.h`) took the transports, the
+  event queues and the connection flags; `ra/internet.cc`, `ra/internet.h`, `ra/_wsproto.cc` and
+  `ra/_wsproto.h` are gone, each having held nothing but those globals. Tiberian Dawn had no
+  `SessionClass` at all, so `td/session.h` is new: it holds the three dozen `MPlayer*` globals with
+  the prefix dropped, plus the game type, the timing values, the message list and the recording.
+  `Seed`, `Whom` and `BuildLevel` went to `World` in both games rather than to the session, and with
+  them phase 6's leftovers: `bAftermathMultiplayer` is `SessionClass::IsAftermath`, and
+  `AntsEnabled` and `bAutoSonarPulse` are `World` members. Two lessons for the sweeps: rewriting the
+  accessor call into comments and string literals turns prose into nonsense, so the sweep script
+  (scratchpad `sweep.py`) skips comments and literals and a follow-up commit put Red Alert's
+  comments back; and a name that is also a class member must be excluded per file, which in Tiberian
+  Dawn meant `EventClass`'s `MPlayerID` and `DesiredFrameRate`, `RadioClass`'s `LastMessage`,
+  `IPXGlobalConnClass`'s `IsBridge` and `BridgeNet`, and `defines.h`'s packet fields. The lifetime
+  audit found one thing: Red Alert's `IPXManagerClass` constructor parked a throwaway
+  `WinsockInterfaceClass` in the `PacketTransport` global just to ask whether Winsock is available,
+  which it cannot do while `Network` is building that very member; the probe is a local now. Falling
+  out of that, `IPXAddressClass::Set_Address(IPXHeaderType*)` proved to have had no callers since
+  the port and was deleted. Verification: both build dirs clean, 681 tests pass, Red Alert's round
+  trip and `--load-fixture` pass, Tiberian Dawn's four working fixtures pass (the four corrupt-save
+  rejection checks phase 3 recorded still fail, unchanged), and ASan `-NEWGAME -QUITFRAME` exits
+  cleanly in both games with only the leaks phases 1 and 5 recorded. Note for future ASan runs on
+  this machine: the NVIDIA GL driver accounts for about 2 MB of the LeakSanitizer report in both
+  games and is not ours.
