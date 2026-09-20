@@ -104,6 +104,7 @@
 #include "ra/techno.h"
 #include "ra/text_ids.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
 #include "tech/mix_archive.h"
@@ -2910,7 +2911,7 @@ BuildingTypeClass::BuildingTypeClass(
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 void* BuildingTypeClass::operator new(size_t /*unused*/) noexcept {
-  return BuildingTypes.Alloc();
+  return TheTypeHeaps().building().Alloc();
 }
 
 /***********************************************************************************************
@@ -2930,7 +2931,7 @@ void* BuildingTypeClass::operator new(size_t /*unused*/) noexcept {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 void BuildingTypeClass::operator delete(void* ptr) {
-  BuildingTypes.Free(static_cast<BuildingTypeClass*>(ptr));
+  TheTypeHeaps().building().Free(static_cast<BuildingTypeClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -3423,7 +3424,7 @@ void BuildingTypeClass::Dimensions(int& width, int& height) const {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 BuildingTypeClass& BuildingTypeClass::As_Reference(StructType type) {
-  return *BuildingTypes.Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().building().Ptr(static_cast<int>(type));
 }
 
 /***********************************************************************************************

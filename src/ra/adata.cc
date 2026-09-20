@@ -58,6 +58,7 @@
 #include "ra/jshell.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "ra/text_ids.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "tech/fixed.h"
 #include "tech/mix_archive.h"
@@ -2037,7 +2038,7 @@ AnimTypeClass::AnimTypeClass(AnimType anim, const char* name, int size,
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void* AnimTypeClass::operator new(size_t /*unused*/) noexcept {
-  return AnimTypes.Alloc();
+  return TheTypeHeaps().anim().Alloc();
 }
 
 /***********************************************************************************************
@@ -2057,7 +2058,7 @@ void* AnimTypeClass::operator new(size_t /*unused*/) noexcept {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void AnimTypeClass::operator delete(void* pointer) {
-  AnimTypes.Free(static_cast<AnimTypeClass*>(pointer));
+  TheTypeHeaps().anim().Free(static_cast<AnimTypeClass*>(pointer));
 }
 
 /***********************************************************************************************
@@ -2263,5 +2264,5 @@ const char* Anim_Name(AnimType anim) {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 AnimTypeClass& AnimTypeClass::As_Reference(AnimType type) {
-  return *AnimTypes.Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().anim().Ptr(static_cast<int>(type));
 }

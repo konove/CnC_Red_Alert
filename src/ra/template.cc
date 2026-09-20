@@ -60,6 +60,7 @@
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
+#include "ra/type_heaps.h"
 #include "sdllib/tile.h"
 
 /***********************************************************************************************
@@ -235,7 +236,7 @@ void TemplateClass::operator delete(void* ptr) {
  *=============================================================================================*/
 TemplateClass::TemplateClass(TemplateType type, CELL pos)
     : ObjectClass(RTTI_TEMPLATE, Templates.ID(this)),
-      Class(TemplateTypes.Ptr(static_cast<int>(type))) {
+      Class(TheTypeHeaps().tmplate().Ptr(static_cast<int>(type))) {
   if (pos != -1) {
     Unlimbo(Cell_Coord(pos));
   }

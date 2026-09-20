@@ -78,6 +78,7 @@
 #include "ra/shape_draw.h"
 #include "ra/text_ids.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "ra/unit.h"
 #include "sdllib/shape.h"
 #include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
@@ -894,7 +895,7 @@ UnitTypeClass::UnitTypeClass(
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void* UnitTypeClass::operator new(size_t /*unused*/) noexcept {
-  return UnitTypes.Alloc();
+  return TheTypeHeaps().unit().Alloc();
 }
 
 /***********************************************************************************************
@@ -914,7 +915,7 @@ void* UnitTypeClass::operator new(size_t /*unused*/) noexcept {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void UnitTypeClass::operator delete(void* pointer) {
-  UnitTypes.Free(static_cast<UnitTypeClass*>(pointer));
+  TheTypeHeaps().unit().Free(static_cast<UnitTypeClass*>(pointer));
 }
 
 /***********************************************************************************************
@@ -1175,7 +1176,7 @@ ObjectClass* UnitTypeClass::Create_One_Of(HouseClass* house) const {
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 UnitTypeClass& UnitTypeClass::As_Reference(UnitType type) {
-  return *UnitTypes.Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().unit().Ptr(static_cast<int>(type));
 }
 
 /***********************************************************************************************

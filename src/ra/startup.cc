@@ -27,7 +27,6 @@
 
 #include <cstdlib>
 #include <cstring>
-#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "ra/externs.h"
@@ -35,7 +34,6 @@
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
-#include "ra/type.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/memflag.h"
 #include "sdllib/misc.h"
@@ -52,6 +50,7 @@
 #include <span>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "absl/base/log_severity.h"
 #include "absl/log/globals.h"
@@ -401,30 +400,6 @@ void Prog_End() {
   delete WWMouse;
   WWMouse = nullptr;
   ShutdownTickTimer();
-
-  // Release owning members of ObjectTypeClass-derived objects in all global
-  // type heaps. The custom heap allocator (TFixedIHeapClass) never calls
-  // destructors when it frees its buffer, so RAII members (unique_ptr, variant
-  // holding vector) must be released explicitly before global destruction.
-  const auto reset_heap = [](auto& heap) {
-    for (int i = 0; i < heap.Count(); i++) {
-      ObjectTypeClass* const object_type = heap.Ptr(i);
-      object_type->DimensionData.clear();
-      object_type->RadarIcon.clear();
-      object_type->ClearImage();
-    }
-  };
-  reset_heap(AircraftTypes);
-  reset_heap(AnimTypes);
-  reset_heap(BuildingTypes);
-  reset_heap(BulletTypes);
-  reset_heap(InfantryTypes);
-  reset_heap(OverlayTypes);
-  reset_heap(SmudgeTypes);
-  reset_heap(TemplateTypes);
-  reset_heap(TerrainTypes);
-  reset_heap(UnitTypes);
-  reset_heap(VesselTypes);
 }
 
 void CleanUpAndExitWithError(char* message) {

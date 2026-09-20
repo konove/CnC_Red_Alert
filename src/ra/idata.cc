@@ -82,6 +82,7 @@
 #include "ra/shape_draw.h"
 #include "ra/text_ids.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "sdllib/shape.h"
 #include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "tech/game_file.h"
@@ -998,7 +999,7 @@ InfantryTypeClass::InfantryTypeClass(
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 void* InfantryTypeClass::operator new(size_t /*unused*/) noexcept {
-  return InfantryTypes.Alloc();
+  return TheTypeHeaps().infantry().Alloc();
 }
 
 /***********************************************************************************************
@@ -1016,7 +1017,7 @@ void* InfantryTypeClass::operator new(size_t /*unused*/) noexcept {
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 void InfantryTypeClass::operator delete(void* pointer) {
-  InfantryTypes.Free(static_cast<InfantryTypeClass*>(pointer));
+  TheTypeHeaps().infantry().Free(static_cast<InfantryTypeClass*>(pointer));
 }
 
 /***********************************************************************************************
@@ -1315,7 +1316,7 @@ int InfantryTypeClass::Full_Name() const {
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
 InfantryTypeClass& InfantryTypeClass::As_Reference(InfantryType type) {
-  return *InfantryTypes.Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().infantry().Ptr(static_cast<int>(type));
 }
 
 /***********************************************************************************************

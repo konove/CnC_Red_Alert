@@ -64,6 +64,7 @@
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
+#include "ra/type_heaps.h"
 #include "tech/number_parse.h"
 
 HousesType SmudgeClass::ToOwn = HOUSE_NONE;
@@ -134,7 +135,7 @@ void SmudgeClass::operator delete(void* ptr) {
  *=============================================================================================*/
 SmudgeClass::SmudgeClass(SmudgeType type, COORDINATE pos, HousesType house)
     : ObjectClass(RTTI_SMUDGE, Smudges.ID(this)),
-      Class(SmudgeTypes.Ptr(static_cast<int>(type))) {
+      Class(TheTypeHeaps().smudge().Ptr(static_cast<int>(type))) {
   if (pos != ~0U) {
     ToOwn = house;
     if (!Unlimbo(pos)) {

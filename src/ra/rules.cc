@@ -74,6 +74,7 @@
 #include "ra/mission.h"
 #include "ra/theme.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "ra/vortex.h"
 #include "ra/warhead.h"
 #include "ra/weapon.h"
@@ -554,7 +555,7 @@ bool RulesClass::Heap_Maximums(CCINIClass& ini) {
   **	Any heaps that use the maximums that were just loaded, must
   **	be initialized as necessary.
   */
-  Warheads.Set_Heap(WarheadMax);
+  TheTypeHeaps().warhead().Set_Heap(WarheadMax);
   new WarheadTypeClass("SA");
   new WarheadTypeClass("HE");
   new WarheadTypeClass("AP");
@@ -565,7 +566,7 @@ bool RulesClass::Heap_Maximums(CCINIClass& ini) {
   new WarheadTypeClass("Nuke");
   new WarheadTypeClass("Mechanical");
 
-  Weapons.Set_Heap(WeaponMax);
+  TheTypeHeaps().weapon().Set_Heap(WeaponMax);
   new WeaponTypeClass("Colt45");
   new WeaponTypeClass("ZSU-23");
   new WeaponTypeClass("Vulcan");
@@ -872,36 +873,36 @@ bool RulesClass::Objects(CCINIClass& ini) {
   /*
   **	Fetch the game object values from the rules file.
   */
-  for (int index = 0; index < Warheads.Count(); index++) {
-    Warheads.Ptr(index)->Read_INI(ini);
+  for (int index = 0; index < TheTypeHeaps().warhead().Count(); index++) {
+    TheTypeHeaps().warhead().Ptr(index)->Read_INI(ini);
   }
 
-  for (int proj = 0; proj < BulletTypes.Count(); proj++) {
-    BulletTypes.Ptr(proj)->Read_INI(ini);
+  for (int proj = 0; proj < TheTypeHeaps().bullet().Count(); proj++) {
+    TheTypeHeaps().bullet().Ptr(proj)->Read_INI(ini);
   }
 
-  for (int windex = 0; windex < Weapons.Count(); windex++) {
-    Weapons.Ptr(windex)->Read_INI(ini);
+  for (int windex = 0; windex < TheTypeHeaps().weapon().Count(); windex++) {
+    TheTypeHeaps().weapon().Ptr(windex)->Read_INI(ini);
   }
 
-  for (int uindex = 0; uindex < UnitTypes.Count(); uindex++) {
-    UnitTypes.Ptr(uindex)->Read_INI(ini);
+  for (int uindex = 0; uindex < TheTypeHeaps().unit().Count(); uindex++) {
+    TheTypeHeaps().unit().Ptr(uindex)->Read_INI(ini);
   }
 
-  for (int iindex = 0; iindex < InfantryTypes.Count(); iindex++) {
-    InfantryTypes.Ptr(iindex)->Read_INI(ini);
+  for (int iindex = 0; iindex < TheTypeHeaps().infantry().Count(); iindex++) {
+    TheTypeHeaps().infantry().Ptr(iindex)->Read_INI(ini);
   }
 
-  for (int vindex = 0; vindex < VesselTypes.Count(); vindex++) {
-    VesselTypes.Ptr(vindex)->Read_INI(ini);
+  for (int vindex = 0; vindex < TheTypeHeaps().vessel().Count(); vindex++) {
+    TheTypeHeaps().vessel().Ptr(vindex)->Read_INI(ini);
   }
 
-  for (int aindex = 0; aindex < AircraftTypes.Count(); aindex++) {
-    AircraftTypes.Ptr(aindex)->Read_INI(ini);
+  for (int aindex = 0; aindex < TheTypeHeaps().aircraft().Count(); aindex++) {
+    TheTypeHeaps().aircraft().Ptr(aindex)->Read_INI(ini);
   }
 
-  for (int bindex = 0; bindex < BuildingTypes.Count(); bindex++) {
-    BuildingTypes.Ptr(bindex)->Read_INI(ini);
+  for (int bindex = 0; bindex < TheTypeHeaps().building().Count(); bindex++) {
+    TheTypeHeaps().building().Ptr(bindex)->Read_INI(ini);
   }
 
   /*

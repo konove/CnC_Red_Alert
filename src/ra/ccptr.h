@@ -103,6 +103,11 @@ class CCPtr {
     }
   }
 
+  // Points the whole CCPtr<T> family at the heap that holds T. The subsystem
+  // that owns the heap calls this when it is installed, and passes nullptr
+  // when it goes away.
+  static void BindHeap(FixedIHeapClass* heap) { Heap = heap; }
+
  private:
   static FixedIHeapClass* Heap;
 

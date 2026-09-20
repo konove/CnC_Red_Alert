@@ -51,13 +51,12 @@
 #include "port/tokenizer.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/heap.h"
+#include "ra/type_heaps.h"
 
 /***************************************************************************
 **	This is the warhead data object array.
 */
-TFixedIHeapClass<WarheadTypeClass> Warheads;
 
 /***********************************************************************************************
  * WarheadTypeClass::WarheadTypeClass -- Default constructor for warhead
@@ -76,7 +75,7 @@ TFixedIHeapClass<WarheadTypeClass> Warheads;
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 WarheadTypeClass::WarheadTypeClass(const char* name)
-    : ID(Warheads.ID(this)), IniName(name) {
+    : ID(TheTypeHeaps().warhead().ID(this)), IniName(name) {
   for (const ArmorType armor : magic_enum::enum_values<ArmorType>()) {
     Modifier.at(armor) = fixed(1);
   }
@@ -100,7 +99,7 @@ WarheadTypeClass::WarheadTypeClass(const char* name)
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 void* WarheadTypeClass::operator new(size_t /*unused*/) noexcept {
-  return Warheads.Alloc();
+  return TheTypeHeaps().warhead().Alloc();
 }
 
 /***********************************************************************************************
@@ -120,7 +119,7 @@ void* WarheadTypeClass::operator new(size_t /*unused*/) noexcept {
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 void WarheadTypeClass::operator delete(void* pointer) {
-  Warheads.Free(static_cast<WarheadTypeClass*>(pointer));
+  TheTypeHeaps().warhead().Free(static_cast<WarheadTypeClass*>(pointer));
 }
 
 /***********************************************************************************************
@@ -140,7 +139,7 @@ void WarheadTypeClass::operator delete(void* pointer) {
  *=============================================================================================*/
 WarheadTypeClass* WarheadTypeClass::As_Pointer(WarheadType warhead) {
   if (warhead != WARHEAD_NONE) {
-    return Warheads.Ptr(static_cast<int>(warhead));
+    return TheTypeHeaps().warhead().Ptr(static_cast<int>(warhead));
   }
   return nullptr;
 }

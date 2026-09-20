@@ -148,22 +148,6 @@ extern TFixedIHeapClass<UnitClass> Units;
 extern TFixedIHeapClass<VesselClass> Vessels;
 extern TFixedIHeapClass<TriggerTypeClass> TriggerTypes;
 
-extern TFixedIHeapClass<HouseTypeClass> HouseTypes;
-extern TFixedIHeapClass<BuildingTypeClass> BuildingTypes;
-extern TFixedIHeapClass<AircraftTypeClass> AircraftTypes;
-extern TFixedIHeapClass<InfantryTypeClass> InfantryTypes;
-extern TFixedIHeapClass<BulletTypeClass> BulletTypes;
-extern TFixedIHeapClass<AnimTypeClass> AnimTypes;
-extern TFixedIHeapClass<UnitTypeClass> UnitTypes;
-extern TFixedIHeapClass<VesselTypeClass> VesselTypes;
-extern TFixedIHeapClass<TemplateTypeClass> TemplateTypes;
-extern TFixedIHeapClass<TerrainTypeClass> TerrainTypes;
-extern TFixedIHeapClass<OverlayTypeClass> OverlayTypes;
-extern TFixedIHeapClass<SmudgeTypeClass> SmudgeTypes;
-
-extern TFixedIHeapClass<WeaponTypeClass> Weapons;
-extern TFixedIHeapClass<WarheadTypeClass> Warheads;
-
 extern QueueClass<EventClass, kMaxEvents> OutList;
 extern QueueClass<EventClass, kMaxEvents * 64> DoList;
 

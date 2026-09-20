@@ -158,6 +158,7 @@
 #include "ra/trigger.h"
 #include "ra/trigtype.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "ra/vessel.h"
 #include "ra/warhead.h"
 #include "ra/weapon.h"
@@ -311,7 +312,7 @@ UnitClass::~UnitClass() {
  *=============================================================================================*/
 UnitClass::UnitClass(UnitType classid, HousesType house)
     : DriveClass(RTTI_UNIT, Units.ID(this), house),
-      Class(UnitTypes.Ptr(static_cast<int>(classid))),
+      Class(TheTypeHeaps().unit().Ptr(static_cast<int>(classid))),
       SecondaryFacing(PrimaryFacing) {
   Reload.Set(0);
   House->Tracking_Add(this);

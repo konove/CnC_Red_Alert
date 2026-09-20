@@ -176,6 +176,7 @@
 #include "ra/trigger.h"
 #include "ra/trigtype.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "ra/unit.h"
 #include "ra/utracker.h"
 #include "ra/vector_dynamic.h"
@@ -2070,7 +2071,7 @@ void BuildingClass::operator delete(void* ptr) {
  *=============================================================================================*/
 BuildingClass::BuildingClass(StructType type, HousesType house)
     : TechnoClass(RTTI_BUILDING, Buildings.ID(this), house),
-      Class(BuildingTypes.Ptr(static_cast<int>(type))),
+      Class(TheTypeHeaps().building().Ptr(static_cast<int>(type))),
       ActLike(House->ActLike),
       WhoLastHurtMe(house) {
   House->Tracking_Add(this);

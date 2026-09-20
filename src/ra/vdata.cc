@@ -76,6 +76,7 @@
 #include "ra/shape_draw.h"
 #include "ra/text_ids.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "ra/vessel.h"
 #include "sdllib/shape.h"
 #include "tech/mix_archive.h"
@@ -270,7 +271,7 @@ VesselTypeClass::VesselTypeClass(VesselType type, int name, const char* ininame,
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void* VesselTypeClass::operator new(size_t /*unused*/) noexcept {
-  return VesselTypes.Alloc();
+  return TheTypeHeaps().vessel().Alloc();
 }
 
 /***********************************************************************************************
@@ -290,7 +291,7 @@ void* VesselTypeClass::operator new(size_t /*unused*/) noexcept {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselTypeClass::operator delete(void* pointer) {
-  VesselTypes.Free(static_cast<VesselTypeClass*>(pointer));
+  TheTypeHeaps().vessel().Free(static_cast<VesselTypeClass*>(pointer));
 }
 
 /***********************************************************************************************
@@ -340,7 +341,7 @@ void VesselTypeClass::Init_Heap() {
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 VesselTypeClass& VesselTypeClass::As_Reference(VesselType type) {
-  return *VesselTypes.Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().vessel().Ptr(static_cast<int>(type));
 }
 
 /***********************************************************************************************

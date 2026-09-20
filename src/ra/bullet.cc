@@ -92,6 +92,7 @@
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "ra/unit.h"
 #include "ra/vessel.h"
 #include "sdllib/shape.h"
@@ -119,7 +120,7 @@
 BulletClass::BulletClass(BulletType id, TARGET target, TechnoClass* payback,
                          int strength, WarheadType warhead, int speed)
     : ObjectClass(RTTI_BULLET, Bullets.ID(this)),
-      Class(BulletTypes.Ptr(static_cast<int>(id))),
+      Class(TheTypeHeaps().bullet().Ptr(static_cast<int>(id))),
       Payback(payback),
       PrimaryFacing(DIR_N),
       TarCom(target),

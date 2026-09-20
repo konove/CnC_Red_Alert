@@ -92,6 +92,7 @@
 #include "ra/shape_draw.h"
 #include "ra/target.h"
 #include "ra/techno.h"
+#include "ra/type_heaps.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
 #include "tech/number_parse.h"
@@ -245,7 +246,7 @@ void TerrainClass::operator delete(void* ptr) {
  *=============================================================================================*/
 TerrainClass::TerrainClass(TerrainType type, CELL cell)
     : ObjectClass(RTTI_TERRAIN, Terrains.ID(this)),
-      Class(TerrainTypes.Ptr(static_cast<int>(type))) {
+      Class(TheTypeHeaps().terrain().Ptr(static_cast<int>(type))) {
   Strength = Class->MaxStrength;
   if ((cell != -1) && (!Unlimbo(Cell_Coord(cell)))) {
     delete this;

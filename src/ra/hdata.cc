@@ -56,11 +56,11 @@
 #include "port/safe_string.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/palettes.h"
 #include "ra/text_ids.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "tech/fixed.h"
 
 static const HouseTypeClass HouseEngland(
@@ -315,7 +315,7 @@ HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
  * HISTORY: * 09/04/1996 JLB : Created. *
  *=============================================================================================*/
 void* HouseTypeClass::operator new(size_t /*unused*/) noexcept {
-  return HouseTypes.Alloc();
+  return TheTypeHeaps().house().Alloc();
 }
 
 /***********************************************************************************************
@@ -334,7 +334,7 @@ void* HouseTypeClass::operator new(size_t /*unused*/) noexcept {
  * HISTORY: * 09/04/1996 JLB : Created. *
  *=============================================================================================*/
 void HouseTypeClass::operator delete(void* ptr) {
-  HouseTypes.Free(static_cast<HouseTypeClass*>(ptr));
+  TheTypeHeaps().house().Free(static_cast<HouseTypeClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -437,7 +437,7 @@ void HouseTypeClass::One_Time() {}
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 HouseTypeClass& HouseTypeClass::As_Reference(HousesType house) {
-  return *HouseTypes.Ptr(static_cast<int>(house));
+  return *TheTypeHeaps().house().Ptr(static_cast<int>(house));
 }
 
 /***********************************************************************************************

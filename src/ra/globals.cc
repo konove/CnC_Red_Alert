@@ -83,7 +83,6 @@
 #include "ra/theme.h"
 #include "ra/trigger.h"
 #include "ra/trigtype.h"
-#include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
@@ -114,18 +113,6 @@ TFixedIHeapClass<UnitClass> Units;
 TFixedIHeapClass<VesselClass> Vessels;
 TFixedIHeapClass<TriggerTypeClass> TriggerTypes;
 
-TFixedIHeapClass<HouseTypeClass> HouseTypes;
-TFixedIHeapClass<BuildingTypeClass> BuildingTypes;
-TFixedIHeapClass<AircraftTypeClass> AircraftTypes;
-TFixedIHeapClass<InfantryTypeClass> InfantryTypes;
-TFixedIHeapClass<BulletTypeClass> BulletTypes;
-TFixedIHeapClass<AnimTypeClass> AnimTypes;
-TFixedIHeapClass<UnitTypeClass> UnitTypes;
-TFixedIHeapClass<VesselTypeClass> VesselTypes;
-TFixedIHeapClass<TemplateTypeClass> TemplateTypes;
-TFixedIHeapClass<TerrainTypeClass> TerrainTypes;
-TFixedIHeapClass<OverlayTypeClass> OverlayTypes;
-TFixedIHeapClass<SmudgeTypeClass> SmudgeTypes;
 
 /*
 **	These are the instantiate static heap pointers for the various
@@ -165,30 +152,6 @@ FixedIHeapClass* CCPtr<TriggerClass>::Heap = &Triggers;
 template <>
 FixedIHeapClass* CCPtr<TriggerTypeClass>::Heap = &TriggerTypes;
 
-template <>
-FixedIHeapClass* CCPtr<HouseTypeClass>::Heap = &HouseTypes;
-template <>
-FixedIHeapClass* CCPtr<BuildingTypeClass>::Heap = &BuildingTypes;
-template <>
-FixedIHeapClass* CCPtr<AircraftTypeClass>::Heap = &AircraftTypes;
-template <>
-FixedIHeapClass* CCPtr<InfantryTypeClass>::Heap = &InfantryTypes;
-template <>
-FixedIHeapClass* CCPtr<BulletTypeClass>::Heap = &BulletTypes;
-template <>
-FixedIHeapClass* CCPtr<AnimTypeClass>::Heap = &AnimTypes;
-template <>
-FixedIHeapClass* CCPtr<UnitTypeClass>::Heap = &UnitTypes;
-template <>
-FixedIHeapClass* CCPtr<VesselTypeClass>::Heap = &VesselTypes;
-template <>
-FixedIHeapClass* CCPtr<TemplateTypeClass>::Heap = &TemplateTypes;
-template <>
-FixedIHeapClass* CCPtr<TerrainTypeClass>::Heap = &TerrainTypes;
-template <>
-FixedIHeapClass* CCPtr<OverlayTypeClass>::Heap = &OverlayTypes;
-template <>
-FixedIHeapClass* CCPtr<SmudgeTypeClass>::Heap = &SmudgeTypes;
 
 /* These variables are used to keep track of the slowest speed of a team */
 MPHType TeamMaxSpeed[10];

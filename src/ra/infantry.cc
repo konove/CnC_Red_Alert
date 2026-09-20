@@ -142,6 +142,7 @@
 #include "ra/trigger.h"
 #include "ra/trigtype.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "ra/unit.h"
 #include "ra/vessel.h"
 #include "ra/warhead.h"
@@ -202,7 +203,7 @@ const base::EnumArray<DoType, DoStruct> InfantryClass::MasterDoControls = {{
  *=============================================================================================*/
 InfantryClass::InfantryClass(InfantryType classid, HousesType house)
     : FootClass(RTTI_INFANTRY, Infantry.ID(this), house),
-      Class(InfantryTypes.Ptr(static_cast<int>(classid))) {
+      Class(TheTypeHeaps().infantry().Ptr(static_cast<int>(classid))) {
   House->Tracking_Add(this);
   IsCloakable = Class->IsCloakable;
   /*

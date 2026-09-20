@@ -74,6 +74,7 @@
 #include "ra/terrain.h"
 #include "ra/text_ids.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "sdllib/shape.h"
 #include "tech/mix_archive.h"
 
@@ -397,7 +398,7 @@ TerrainTypeClass::TerrainTypeClass(TerrainType terrain, uint32_t theater,
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 void* TerrainTypeClass::operator new(size_t /*unused*/) noexcept {
-  return TerrainTypes.Alloc();
+  return TheTypeHeaps().terrain().Alloc();
 }
 
 /***********************************************************************************************
@@ -417,7 +418,7 @@ void* TerrainTypeClass::operator new(size_t /*unused*/) noexcept {
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 void TerrainTypeClass::operator delete(void* pointer) {
-  TerrainTypes.Free(static_cast<TerrainTypeClass*>(pointer));
+  TheTypeHeaps().terrain().Free(static_cast<TerrainTypeClass*>(pointer));
 }
 
 /***********************************************************************************************
@@ -728,7 +729,7 @@ std::span<const int16_t> TerrainTypeClass::Overlap_List() const {
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
 TerrainTypeClass& TerrainTypeClass::As_Reference(TerrainType type) {
-  return *TerrainTypes.Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().terrain().Ptr(static_cast<int>(type));
 }
 
 COORDINATE TerrainTypeClass::Coord_Fixup(COORDINATE coord) const {

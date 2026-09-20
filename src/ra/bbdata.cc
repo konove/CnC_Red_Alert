@@ -52,11 +52,11 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccini.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/jshell.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "ra/text_ids.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "tech/mix_archive.h"
 
@@ -77,8 +77,8 @@
  *values.                                             *
  *=============================================================================================*/
 BulletTypeClass::BulletTypeClass(const char* name) noexcept
-    : ObjectTypeClass(RTTI_BULLETTYPE, BulletTypes.ID(this), true, true, false,
-                      false, true, true, false, TXT_NONE, name),
+    : ObjectTypeClass(RTTI_BULLETTYPE, TheTypeHeaps().bullet().ID(this), true,
+                      true, false, false, true, true, false, TXT_NONE, name),
 
       Type(static_cast<BulletType>(ID)) {}
 
@@ -99,7 +99,7 @@ BulletTypeClass::BulletTypeClass(const char* name) noexcept
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 void* BulletTypeClass::operator new(size_t /*unused*/) noexcept {
-  return BulletTypes.Alloc();
+  return TheTypeHeaps().bullet().Alloc();
 }
 
 /***********************************************************************************************
@@ -119,7 +119,7 @@ void* BulletTypeClass::operator new(size_t /*unused*/) noexcept {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 void BulletTypeClass::operator delete(void* ptr) {
-  BulletTypes.Free(static_cast<BulletTypeClass*>(ptr));
+  TheTypeHeaps().bullet().Free(static_cast<BulletTypeClass*>(ptr));
 }
 
 /***********************************************************************************************
@@ -212,7 +212,7 @@ void BulletTypeClass::One_Time() {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 BulletTypeClass& BulletTypeClass::As_Reference(BulletType type) {
-  return *BulletTypes.Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().bullet().Ptr(static_cast<int>(type));
 }
 
 /***********************************************************************************************

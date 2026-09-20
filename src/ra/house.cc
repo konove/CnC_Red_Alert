@@ -205,6 +205,7 @@
 #include "ra/trigger.h"
 #include "ra/trigtype.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "ra/unit.h"
 #include "ra/utracker.h"
 #include "ra/vector_dynamic.h"
@@ -444,7 +445,7 @@ void HouseClass::operator delete(void* ptr) {
 HouseClass::HouseClass(HousesType house)
     : RTTI(RTTI_HOUSE),
       ID(Houses.ID(this)),
-      Class(HouseTypes.Ptr(static_cast<int>(house))),
+      Class(TheTypeHeaps().house().Ptr(static_cast<int>(house))),
       Difficulty(Scen.CDifficulty),
       ActLike(Class->House),
       IQ(Control.IQ),

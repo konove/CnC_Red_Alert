@@ -57,14 +57,13 @@
 #include "ra/ccini.h"
 #include "ra/const.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/jshell.h"
+#include "ra/type_heaps.h"
 
 /***************************************************************************
 **	These are the various weapons and their characteristics.
 */
-TFixedIHeapClass<WeaponTypeClass> Weapons;
 
 /***********************************************************************************************
  * WeaponTypeClass::WeaponTypeClass -- Default constructor for weapon type
@@ -84,7 +83,7 @@ TFixedIHeapClass<WeaponTypeClass> Weapons;
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
 WeaponTypeClass::WeaponTypeClass(const char* name)
-    : ID(Weapons.ID(this)), IniName(name) {}
+    : ID(TheTypeHeaps().weapon().ID(this)), IniName(name) {}
 
 /***********************************************************************************************
  * WeaponTypeClass::~WeaponTypeClass -- Destructor for weapon type class
@@ -124,7 +123,7 @@ WeaponTypeClass::~WeaponTypeClass() {
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
 void* WeaponTypeClass::operator new(size_t /*unused*/) noexcept {
-  return Weapons.Alloc();
+  return TheTypeHeaps().weapon().Alloc();
 }
 
 /***********************************************************************************************
@@ -145,7 +144,7 @@ void* WeaponTypeClass::operator new(size_t /*unused*/) noexcept {
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
 void WeaponTypeClass::operator delete(void* pointer) {
-  Weapons.Free(static_cast<WeaponTypeClass*>(pointer));
+  TheTypeHeaps().weapon().Free(static_cast<WeaponTypeClass*>(pointer));
 }
 
 /***********************************************************************************************
@@ -167,7 +166,7 @@ void WeaponTypeClass::operator delete(void* pointer) {
  *=============================================================================================*/
 WeaponTypeClass* WeaponTypeClass::As_Pointer(WeaponType weapon) {
   if (weapon != WEAPON_NONE) {
-    return Weapons.Ptr(static_cast<int>(weapon));
+    return TheTypeHeaps().weapon().Ptr(static_cast<int>(weapon));
     //		for (int index = 0; index < Weapons.Count(); index++) {
     //			WeaponTypeClass * ptr = Weapons.Ptr(index);
     //			if (ptr->ID == weapon) {
@@ -253,9 +252,10 @@ WeaponType Weapon_From_Name(const char* name) {
     return WEAPON_NONE;
   }
 
-  for (int index = 0; index < Weapons.Count(); index++) {
-    if (absl::EqualsIgnoreCase(Weapons.Ptr(index)->Name(), name)) {
-      return static_cast<WeaponType>(Weapons.Ptr(index)->ID);
+  for (int index = 0; index < TheTypeHeaps().weapon().Count(); index++) {
+    if (absl::EqualsIgnoreCase(TheTypeHeaps().weapon().Ptr(index)->Name(),
+                               name)) {
+      return static_cast<WeaponType>(TheTypeHeaps().weapon().Ptr(index)->ID);
     }
   }
 

@@ -74,6 +74,7 @@
 #include "ra/shape_draw.h"
 #include "ra/text_ids.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "sdllib/shape.h"
 #include "tech/mix_archive.h"
 
@@ -299,7 +300,7 @@ AircraftTypeClass::AircraftTypeClass(
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void* AircraftTypeClass::operator new(size_t /*unused*/) noexcept {
-  return AircraftTypes.Alloc();
+  return TheTypeHeaps().aircraft().Alloc();
 }
 
 /***********************************************************************************************
@@ -318,7 +319,7 @@ void* AircraftTypeClass::operator new(size_t /*unused*/) noexcept {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void AircraftTypeClass::operator delete(void* pointer) {
-  AircraftTypes.Free(static_cast<AircraftTypeClass*>(pointer));
+  TheTypeHeaps().aircraft().Free(static_cast<AircraftTypeClass*>(pointer));
 }
 
 /***********************************************************************************************
@@ -611,5 +612,5 @@ void AircraftTypeClass::Dimensions(int& width, int& height) const {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 AircraftTypeClass& AircraftTypeClass::As_Reference(AircraftType aircraft) {
-  return *AircraftTypes.Ptr(static_cast<int>(aircraft));
+  return *TheTypeHeaps().aircraft().Ptr(static_cast<int>(aircraft));
 }

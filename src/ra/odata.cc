@@ -80,6 +80,7 @@
 #include "ra/shape_draw.h"
 #include "ra/text_ids.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "sdllib/shape.h"
 #include "tech/mix_archive.h"
 
@@ -565,7 +566,7 @@ OverlayTypeClass::OverlayTypeClass(OverlayType iconset, const char* ininame,
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void* OverlayTypeClass::operator new(size_t /*unused*/) noexcept {
-  return OverlayTypes.Alloc();
+  return TheTypeHeaps().overlay().Alloc();
 }
 
 /***********************************************************************************************
@@ -585,7 +586,7 @@ void* OverlayTypeClass::operator new(size_t /*unused*/) noexcept {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void OverlayTypeClass::operator delete(void* pointer) {
-  OverlayTypes.Free(static_cast<OverlayTypeClass*>(pointer));
+  TheTypeHeaps().overlay().Free(static_cast<OverlayTypeClass*>(pointer));
 }
 
 /***********************************************************************************************
@@ -915,7 +916,7 @@ void OverlayTypeClass::Init(TheaterType theater) {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 OverlayTypeClass& OverlayTypeClass::As_Reference(OverlayType type) {
-  return *OverlayTypes.Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().overlay().Ptr(static_cast<int>(type));
 }
 
 /***********************************************************************************************

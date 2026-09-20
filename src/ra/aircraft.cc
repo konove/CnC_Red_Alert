@@ -159,6 +159,7 @@
 #include "ra/teamtype.h"
 #include "ra/techno.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "ra/vessel.h"
 #include "ra/weapon.h"
 #include "sdllib/shape.h"
@@ -295,7 +296,7 @@ void AircraftClass::operator delete(void* ptr) {
  *=============================================================================================*/
 AircraftClass::AircraftClass(AircraftType classid, HousesType house)
     : FootClass(RTTI_AIRCRAFT, Aircraft.ID(this), house),
-      Class(AircraftTypes.Ptr(static_cast<int>(classid))),
+      Class(TheTypeHeaps().aircraft().Ptr(static_cast<int>(classid))),
       SecondaryFacing(PrimaryFacing) {
   /*
   **	For two shooters, clear out the second shot flag -- it will be set the

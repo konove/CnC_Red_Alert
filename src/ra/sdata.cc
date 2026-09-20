@@ -75,6 +75,7 @@
 #include "ra/smudge.h"
 #include "ra/text_ids.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_win.h"
 #include "tech/mix_archive.h"
@@ -212,7 +213,7 @@ SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, const char* ininame,
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void* SmudgeTypeClass::operator new(size_t /*unused*/) noexcept {
-  return SmudgeTypes.Alloc();
+  return TheTypeHeaps().smudge().Alloc();
 }
 
 /***********************************************************************************************
@@ -232,7 +233,7 @@ void* SmudgeTypeClass::operator new(size_t /*unused*/) noexcept {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void SmudgeTypeClass::operator delete(void* pointer) {
-  SmudgeTypes.Free(static_cast<SmudgeTypeClass*>(pointer));
+  TheTypeHeaps().smudge().Free(static_cast<SmudgeTypeClass*>(pointer));
 }
 
 /***********************************************************************************************
@@ -516,5 +517,5 @@ void SmudgeTypeClass::One_Time() {}
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 SmudgeTypeClass& SmudgeTypeClass::As_Reference(SmudgeType type) {
-  return *SmudgeTypes.Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().smudge().Ptr(static_cast<int>(type));
 }

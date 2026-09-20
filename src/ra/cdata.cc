@@ -76,6 +76,7 @@
 #include "ra/template.h"
 #include "ra/text_ids.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/iconcach.h"
@@ -1258,7 +1259,7 @@ TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 void* TemplateTypeClass::operator new(size_t /*unused*/) noexcept {
-  return TemplateTypes.Alloc();
+  return TheTypeHeaps().tmplate().Alloc();
 }
 
 /***********************************************************************************************
@@ -1276,7 +1277,7 @@ void* TemplateTypeClass::operator new(size_t /*unused*/) noexcept {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 void TemplateTypeClass::operator delete(void* ptr) {
-  TemplateTypes.Free(static_cast<TemplateTypeClass*>(ptr));
+  TheTypeHeaps().tmplate().Free(static_cast<TemplateTypeClass*>(ptr));
 }
 
 static void Watcom_Ugh_Hack() {
@@ -2019,7 +2020,7 @@ void TemplateTypeClass::One_Time() {}
  * HISTORY: * 07/03/1996 JLB : Created. *
  *=============================================================================================*/
 TemplateTypeClass& TemplateTypeClass::As_Reference(TemplateType type) {
-  return *TemplateTypes.Ptr(static_cast<int>(type));
+  return *TheTypeHeaps().tmplate().Ptr(static_cast<int>(type));
 }
 
 COORDINATE TemplateTypeClass::Coord_Fixup(COORDINATE coord) const {

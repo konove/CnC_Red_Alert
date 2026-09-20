@@ -137,6 +137,7 @@
 #include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
 #include "sdllib/file.h"
@@ -280,18 +281,18 @@ bool Init_Game() {
   *allocated as a consequence *	of processing the rules.ini file, but that is a
   *bit beyond the capabilities of *	the rule parser routine (currently).
   */
-  HouseTypes.Set_Heap(magic_enum::enum_count<HousesType>());
-  BuildingTypes.Set_Heap(magic_enum::enum_count<StructType>());
-  AircraftTypes.Set_Heap(magic_enum::enum_count<AircraftType>());
-  InfantryTypes.Set_Heap(magic_enum::enum_count<InfantryType>());
-  BulletTypes.Set_Heap(magic_enum::enum_count<BulletType>());
-  AnimTypes.Set_Heap(magic_enum::enum_count<AnimType>());
-  UnitTypes.Set_Heap(magic_enum::enum_count<UnitType>());
-  VesselTypes.Set_Heap(magic_enum::enum_count<VesselType>());
-  TemplateTypes.Set_Heap(magic_enum::enum_count<TemplateType>());
-  TerrainTypes.Set_Heap(magic_enum::enum_count<TerrainType>());
-  OverlayTypes.Set_Heap(magic_enum::enum_count<OverlayType>());
-  SmudgeTypes.Set_Heap(magic_enum::enum_count<SmudgeType>());
+  TheTypeHeaps().house().Set_Heap(magic_enum::enum_count<HousesType>());
+  TheTypeHeaps().building().Set_Heap(magic_enum::enum_count<StructType>());
+  TheTypeHeaps().aircraft().Set_Heap(magic_enum::enum_count<AircraftType>());
+  TheTypeHeaps().infantry().Set_Heap(magic_enum::enum_count<InfantryType>());
+  TheTypeHeaps().bullet().Set_Heap(magic_enum::enum_count<BulletType>());
+  TheTypeHeaps().anim().Set_Heap(magic_enum::enum_count<AnimType>());
+  TheTypeHeaps().unit().Set_Heap(magic_enum::enum_count<UnitType>());
+  TheTypeHeaps().vessel().Set_Heap(magic_enum::enum_count<VesselType>());
+  TheTypeHeaps().tmplate().Set_Heap(magic_enum::enum_count<TemplateType>());
+  TheTypeHeaps().terrain().Set_Heap(magic_enum::enum_count<TerrainType>());
+  TheTypeHeaps().overlay().Set_Heap(magic_enum::enum_count<OverlayType>());
+  TheTypeHeaps().smudge().Set_Heap(magic_enum::enum_count<SmudgeType>());
 
   HouseTypeClass::Init_Heap();
   BuildingTypeClass::Init_Heap();

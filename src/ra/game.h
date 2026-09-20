@@ -12,6 +12,7 @@
 #include "ra/rules.h"
 #include "ra/screen.h"
 #include "ra/startup_options.h"
+#include "ra/type_heaps.h"
 
 // Owns the game's subsystems and so fixes the order they are built and torn
 // down in. Members are declared in dependency order, which C++ constructs
@@ -54,6 +55,8 @@ class Game {
   base::Installed<Palettes>::Scope palettes_scope_{palettes_};
   Assets assets_;
   base::Installed<Assets>::Scope assets_scope_{assets_};
+  TypeHeaps type_heaps_;
+  base::Installed<TypeHeaps>::Scope type_heaps_scope_{type_heaps_};
   RulesClass rules_;
   base::Installed<RulesClass>::Scope rules_scope_{rules_};
   DebugState debug_state_;

@@ -114,6 +114,7 @@
 #include "ra/trigger.h"
 #include "ra/trigtype.h"
 #include "ra/type.h"
+#include "ra/type_heaps.h"
 #include "ra/unit.h"
 #include "ra/weapon.h"
 #include "tech/fixed.h"
@@ -137,7 +138,7 @@
  *=============================================================================================*/
 VesselClass::VesselClass(VesselType classid, HousesType house)
     : DriveClass(RTTI_VESSEL, Vessels.ID(this), house),
-      Class(VesselTypes.Ptr(static_cast<int>(classid))),
+      Class(TheTypeHeaps().vessel().Ptr(static_cast<int>(classid))),
       SecondaryFacing(PrimaryFacing) {
   House->Tracking_Add(this);
 

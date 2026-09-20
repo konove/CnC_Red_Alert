@@ -62,6 +62,7 @@
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/session.h"
+#include "ra/type_heaps.h"
 #include "tech/block_codec.h"
 #include "tech/lcw_sink.h"
 #include "tech/lcw_source.h"
@@ -147,7 +148,7 @@ void OverlayClass::operator delete(void* ptr) {
  *=============================================================================================*/
 OverlayClass::OverlayClass(OverlayType type, CELL pos, HousesType house)
     : ObjectClass(RTTI_OVERLAY, Overlays.ID(this)),
-      Class(OverlayTypes.Ptr(static_cast<int>(type))) {
+      Class(TheTypeHeaps().overlay().Ptr(static_cast<int>(type))) {
   if (pos != -1) {
     ToOwn = house;
     Unlimbo(Cell_Coord(pos));
