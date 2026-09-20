@@ -19,7 +19,7 @@
 // Red Alert's sound effects (VocType) and EVA speech (VoxType): name lookups,
 // playing an effect in the world or the interface, and the EVA speech queue.
 // Everything here is silent when the audio device is closed or the game runs
-// with Debug_Quiet.
+// with TheDebugState().quiet().
 //
 // Originally AUDIO.H by Joe L. Bostic, started June 21, 1994.
 

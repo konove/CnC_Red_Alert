@@ -34,6 +34,7 @@
 #include "ra/config.h"
 #include "ra/coord.h"
 #include "ra/debug.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
 #include "ra/event.h"
@@ -109,7 +110,7 @@ void Keyboard_Process(KeyNumType& input) {
                                            ~unsigned{WWKEY_VK_BIT});
 
   if constexpr (config::kCheatKeysEnabled) {
-    if (Debug_Flag) {
+    if (TheDebugState().developer_mode()) {
       switch (static_cast<unsigned>(input)) {
         case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_SHIFT_BIT):
         case static_cast<unsigned>(KN_M) | static_cast<unsigned>(KN_ALT_BIT):
@@ -126,20 +127,21 @@ void Keyboard_Process(KeyNumType& input) {
   }
 
   if constexpr (config::kCheatKeysEnabled) {
-    if (Debug_Playtest &&
+    if (TheDebugState().playtest() &&
         static_cast<unsigned>(input) ==
             (static_cast<unsigned>(KN_W) | static_cast<unsigned>(KN_ALT_BIT))) {
       PlayerPtr->Blockage = 0;
       PlayerPtr->Flag_To_Win();
     }
 
-    if (((Debug_Flag || Debug_Playtest) && plain == KN_F4) &&
+    if (((TheDebugState().developer_mode() || TheDebugState().playtest()) &&
+         plain == KN_F4) &&
         (Session.Type == GAME_NORMAL)) {
-      Debug_Unshroud = !Debug_Unshroud;
+      TheDebugState().set_unshroud(!TheDebugState().unshroud());
       Map.Flag_To_Redraw(true);
     }
 
-    if (Debug_Flag && input == KN_SLASH) {
+    if (TheDebugState().developer_mode() && input == KN_SLASH) {
       if (Session.Type != GAME_NORMAL) {
         SpecialDialog = SDLG_SPECIAL;
         input = KN_NONE;
@@ -313,7 +315,7 @@ void Keyboard_Process(KeyNumType& input) {
 
   // Handle making and breaking alliances.
   if (key != 0 && key == Options.KeyAlliance) {
-    if ((Session.Type != GAME_NORMAL || Debug_Flag) &&
+    if ((Session.Type != GAME_NORMAL || TheDebugState().developer_mode()) &&
         (CurrentObject.Count() && !PlayerPtr->IsDefeated) &&
         (CurrentObject.at(0)->Owner() != PlayerPtr->Class->House)) {
       OutList.Add(EventClass(EventClass::ALLY,
@@ -436,25 +438,29 @@ void Keyboard_Process(KeyNumType& input) {
   }
 
   // Handle the bookmark hotkeys.
-  if (input != 0 && plain == Options.KeyBookmark1 && !MapEditorActive) {
+  if (input != 0 && plain == Options.KeyBookmark1 &&
+      !TheDebugState().map_editor_active()) {
     Handle_View(0, action);
     input = KN_NONE;
   }
-  if (input != 0 && plain == Options.KeyBookmark2 && !MapEditorActive) {
+  if (input != 0 && plain == Options.KeyBookmark2 &&
+      !TheDebugState().map_editor_active()) {
     Handle_View(1, action);
     input = KN_NONE;
   }
-  if (input != 0 && plain == Options.KeyBookmark3 && !MapEditorActive) {
+  if (input != 0 && plain == Options.KeyBookmark3 &&
+      !TheDebugState().map_editor_active()) {
     Handle_View(2, action);
     input = KN_NONE;
   }
-  if (input != 0 && plain == Options.KeyBookmark4 && !MapEditorActive) {
+  if (input != 0 && plain == Options.KeyBookmark4 &&
+      !TheDebugState().map_editor_active()) {
     Handle_View(3, action);
     input = KN_NONE;
   }
 
   if constexpr (config::kCheatKeysEnabled) {
-    if (input != 0 && Debug_Flag &&
+    if (input != 0 && TheDebugState().developer_mode() &&
         (static_cast<unsigned>(input) & static_cast<unsigned>(KN_RLSE_BIT)) ==
             0U) {
       Debug_Key(input);

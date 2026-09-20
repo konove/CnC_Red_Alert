@@ -67,6 +67,7 @@
 #include "ra/ccptr.h"
 #include "ra/cell.h"
 #include "ra/const.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/face.h"
@@ -1287,8 +1288,9 @@ void InfantryTypeClass::One_Time() {
  * HISTORY: * 06/29/1995 JLB : Created. *
  *=============================================================================================*/
 int InfantryTypeClass::Full_Name() const {
-  if (MapEditorActive || !IsNominal || Rule.IsNamed || Type == INFANTRY_C10 ||
-      Type == INFANTRY_DELPHI || Type == INFANTRY_EINSTEIN) {
+  if (TheDebugState().map_editor_active() || !IsNominal || Rule.IsNamed ||
+      Type == INFANTRY_C10 || Type == INFANTRY_DELPHI ||
+      Type == INFANTRY_EINSTEIN) {
     return TechnoTypeClass::Full_Name();
   }
   return TXT_CIVILIAN;

@@ -75,6 +75,7 @@
 #include "ra/ccini.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/externs.h"
@@ -341,7 +342,7 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) const {
     }
 
     ShapeFlags_Type flags = SHAPE_NORMAL;
-    if (IsSelected && MapEditorActive) {
+    if (IsSelected && TheDebugState().map_editor_active()) {
       flags = flags | SHAPE_FADING;
     }
 

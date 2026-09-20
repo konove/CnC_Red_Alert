@@ -29,6 +29,7 @@
 
 #include "absl/log/log.h"
 #include "ra/const.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/init.h"
@@ -63,7 +64,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
 
   // A movie blocks until it finishes, which would stall every other player in
   // a multiplayer session and interrupt editing, so both modes skip it.
-  if (MapEditorActive) {
+  if (TheDebugState().map_editor_active()) {
     return;
   }
   if (Session.Type != GAME_NORMAL) {
@@ -108,7 +109,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
       AnimControl.ImageBuf = TheScreen().sys_mem_page().Get_Bytes();
     }
 
-    if (!Debug_Quiet && Audio.is_open()) {
+    if (!TheDebugState().quiet() && Audio.is_open()) {
       AnimControl.OptionFlags |= VQAOPTF_AUDIO;
     } else {
       AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
@@ -173,7 +174,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   // audio itself while a movie runs, and the game logic it would service is
   // stopped.
 
-  if ((BreakoutAllowed || Debug_Flag) && key == KN_ESC) {
+  if ((BreakoutAllowed || TheDebugState().developer_mode()) && key == KN_ESC) {
     Keyboard->Clear();
     movie_broken_out = true;
     return 1;

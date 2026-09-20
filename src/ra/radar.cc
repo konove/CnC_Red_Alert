@@ -98,6 +98,7 @@
 #include "ra/cell.h"
 #include "ra/compat.h"
 #include "ra/coord.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/display.h"
@@ -983,9 +984,9 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     const uint16_t celljammed = (*this).at(cell).Jammed;
     const auto jammed =
         static_cast<uint16_t>(celljammed & static_cast<uint16_t>(~housebit));
-    if (!jammed && ((*this).at(cell).IsMapped || Debug_Unshroud)) {
+    if (!jammed && ((*this).at(cell).IsMapped || TheDebugState().unshroud())) {
       // 		if (!jammed && ((*this)[cell].IsVisible ||
-      // Debug_Unshroud)) {
+      // TheDebugState().unshroud())) {
       color = cellptr->Cell_Color(true);
       if (celljammed & housebit && color == kTBlack) {
         color = kBlack;  // FadingWayDark[color];
@@ -1707,10 +1708,11 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
     CELL cell =
         Map.RadarClass::Click_Cell_Calc(x, y);  // cell num click happened over
     if (cell != -1 && Map.In_Radar(cell)) {
-      const bool shadow = !Map.at(cell).IsMapped &&
-                          !Debug_Unshroud;  // is the cell in shadow or not
+      const bool shadow =
+          !Map.at(cell).IsMapped &&
+          !TheDebugState().unshroud();  // is the cell in shadow or not
       //			shadow	= (!Map[cell].IsVisible &&
-      //! Debug_Unshroud);
+      //! TheDebugState().unshroud());
       const int cellx = 12;
       const int celly = 12;  // Sub cell pixel coordinates.
 

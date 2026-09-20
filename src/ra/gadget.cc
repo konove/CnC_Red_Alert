@@ -68,6 +68,7 @@
 #include "ra/audio.h"
 #include "ra/config.h"
 #include "ra/control.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/filepcx.h"
@@ -475,8 +476,9 @@ KeyNumType GadgetClass::Input() {
     /*
     ** time to create a screen shot using the PCX code (if it works)
     */
-    if ((key == KN_K && !MapEditorActive && (Debug_Flag || Debug_Playtest)) &&
-        (!Debug_MotionCapture)) {
+    if ((key == KN_K && !TheDebugState().map_editor_active() &&
+         (TheDebugState().developer_mode() || TheDebugState().playtest())) &&
+        (!TheDebugState().motion_capture())) {
       GraphicBufferClass temp_page(
           TheScreen().visible_view().Get_Width(),
           TheScreen().visible_view().Get_Height(), {},

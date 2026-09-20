@@ -84,6 +84,7 @@
 #include "ra/ccptr.h"
 #include "ra/cell.h"
 #include "ra/const.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
 #include "ra/externs.h"
@@ -3796,8 +3797,8 @@ COORDINATE BuildingTypeClass::Coord_Fixup(COORDINATE coord) const {
  * HISTORY: * 10/02/1996 JLB : Created. *
  *=============================================================================================*/
 int BuildingTypeClass::Full_Name() const {
-  if (MapEditorActive || Rule.IsNamed || *this < STRUCT_V01 ||
-      *this > STRUCT_V37) {
+  if (TheDebugState().map_editor_active() || Rule.IsNamed ||
+      *this < STRUCT_V01 || *this > STRUCT_V37) {
     return TechnoTypeClass::Full_Name();
   }
   return TXT_CIVILIAN_BUILDING;

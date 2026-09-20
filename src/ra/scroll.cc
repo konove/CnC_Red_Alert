@@ -45,6 +45,7 @@
 #include <iterator>
 
 #include "base/array.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/face.h"
@@ -162,7 +163,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         */
         static const int _rate[9] = {0x01C0, 0x0180, 0x0140, 0x0100, 0x00C0,
                                      0x0080, 0x0040, 0x0020, 0x0010};
-        if (MapEditorActive) {
+        if (TheDebugState().map_editor_active()) {
           rate = Options.ScrollRate + 1;
         } else {
           rate = 8 - Inertia;
@@ -213,7 +214,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
           if (KeyboardClass::Down(KN_LMOUSE) || IsAutoScroll) {
             distance = base::At(_rate, rate);
 
-            if (MapEditorActive) {
+            if (TheDebugState().map_editor_active()) {
               Scroll_Map(direction, distance, true);
               Counter.Set(SCROLL_DELAY);
             } else {
@@ -229,7 +230,8 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         }
       }
 
-      if ((!MapEditorActive && !player_scrolled) && Counter.IsFinished()) {
+      if ((!TheDebugState().map_editor_active() && !player_scrolled) &&
+          Counter.IsFinished()) {
         Inertia--;
         if (Inertia < 0) {
           Inertia++;

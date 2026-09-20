@@ -48,6 +48,7 @@
 #include <span>
 
 #include "ra/credits.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
@@ -110,7 +111,7 @@ TabClass::TabClass() : FlasherTimer(0), MoneyFlashTimer(0) {}
 void TabClass::Draw_It(bool complete) {
   SidebarClass::Draw_It(complete);
 
-  if (MapEditorActive) {
+  if (TheDebugState().map_editor_active()) {
     return;
   }
 

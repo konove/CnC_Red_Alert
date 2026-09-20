@@ -109,6 +109,7 @@
 #include "ra/config.h"
 #include "ra/const.h"
 #include "ra/coord.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/display.h"
@@ -511,7 +512,7 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
   **	purposes. In normal game mode, all overlays are not buildable.
   */
   if (Overlay != OVERLAY_NONE &&
-      (Overlay == OVERLAY_FLAG_SPOT || !MapEditorActive ||
+      (Overlay == OVERLAY_FLAG_SPOT || !TheDebugState().map_editor_active() ||
        OverlayTypeClass::As_Reference(Overlay).IsWall)) {
     return false;
   }
@@ -1085,7 +1086,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
 
     bool draw_debug_icon = false;
     if constexpr (config::kCheatKeysEnabled) {
-      draw_debug_icon = Debug_Icon;
+      draw_debug_icon = TheDebugState().show_cell_info();
     }
 
     if (draw_debug_icon) {
@@ -1111,7 +1112,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         /*
         **	Set up the remap table for this icon.
         */
-        if (MapEditorActive && Debug_Passable) {
+        if (TheDebugState().map_editor_active() &&
+            TheDebugState().show_passability()) {
           if (::Ground.at(Land).Cost.at(SPEED_FOOT) == 0 ||
               (Cell_Occupier() != nullptr &&
                Cell_Occupier()->What_Am_I() != RTTI_INFANTRY)) {  // impassable
@@ -1146,7 +1148,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         **	before the placement cursor, but after drawing the objects in
         * the *	cell.
         */
-        if (MapEditorActive && CurrentCell == Cell_Number()) {
+        if (TheDebugState().map_editor_active() &&
+            CurrentCell == Cell_Number()) {
           LogicPage->Draw_Rect(x + Map.TacPixelX, y + Map.TacPixelY,
                                Map.TacPixelX + x + CELL_PIXEL_W - 1,
                                Map.TacPixelY + y + CELL_PIXEL_H - 1, kYellow);
@@ -1177,7 +1180,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       }
 
       if constexpr (config::kScenarioEditorEnabled) {
-        if (MapEditorActive) {
+        if (TheDebugState().map_editor_active()) {
           /*
           **	Draw the cell's Trigger mnemonic, if it has a trigger
           */
@@ -1258,7 +1261,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         }
 
         if constexpr (config::kScenarioEditorEnabled) {
-          if (MapEditorActive && Map.PendingObject) {
+          if (TheDebugState().map_editor_active() && Map.PendingObject) {
             switch (Map.PendingObject->What_Am_I()) {
               /*
               **	Draw a template:
@@ -1453,7 +1456,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
           object->Draw_It(xx, yy, WINDOW_PARTIAL);
           // IsToDisplay clearing moved to frame end in DisplayClass::Draw_It
           // to prevent flickering when render rate exceeds logic tick rate.
-          if (MapEditorActive) {
+          if (TheDebugState().map_editor_active()) {
             object->IsToDisplay = true;
           }
         }

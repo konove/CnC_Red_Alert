@@ -49,6 +49,7 @@
 #include "ra/ccptr.h"
 #include "ra/chat.h"
 #include "ra/config.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/event.h"
@@ -257,7 +258,7 @@ static void RunScenario() {
   for (;;) {
     // A plain `if`: a discarded `if constexpr` branch would leave
     // RunMapEditorFrame() unreferenced in builds without the editor.
-    if (config::kScenarioEditorEnabled && MapEditorActive) {
+    if (config::kScenarioEditorEnabled && TheDebugState().map_editor_active()) {
       if (RunMapEditorFrame()) {
         return;
       }
@@ -603,7 +604,7 @@ static void CaptureMotionFrame() {
     return;
   }
 
-  Debug_MotionCapture = false;
+  TheDebugState().set_motion_capture(false);
 
   DiskFile file;
   for (base::ssize index = 0; index < captured_count; index++) {
@@ -715,7 +716,7 @@ bool RunFrame() {
   }
 
   // Is there a memory trasher altering the map??
-  if (Debug_Check_Map && (!Map.Validate())) {
+  if (TheDebugState().check_map() && (!Map.Validate())) {
     if (WWMessageBox().Process(kLanguageText.map_error, kLanguageText.stop,
                                kLanguageText.continue_button) == 0) {
       GameActive = false;
@@ -723,7 +724,7 @@ bool RunFrame() {
     Map.Validate();  // give debugger a chance to catch it
   }
 
-  if (Debug_MotionCapture) {
+  if (TheDebugState().motion_capture()) {
     CaptureMotionFrame();
   }
 

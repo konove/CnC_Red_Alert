@@ -124,6 +124,7 @@
 #include "ra/combat.h"
 #include "ra/config.h"
 #include "ra/coord.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
@@ -1068,12 +1069,13 @@ void ObjectClass::Unselect() {
 bool ObjectClass::Select() {
   DCHECK(IsActive);
 
-  if (!MapEditorActive && (IsSelected || !Class_Of().IsSelectable)) {
+  if (!TheDebugState().map_editor_active() &&
+      (IsSelected || !Class_Of().IsSelectable)) {
     return false;
   }
 
-  if (!MapEditorActive && Can_Player_Move() && Is_Techno() &&
-      dynamic_cast<TechnoClass*>(this)->IsALoaner) {
+  if (!TheDebugState().map_editor_active() && Can_Player_Move() &&
+      Is_Techno() && dynamic_cast<TechnoClass*>(this)->IsALoaner) {
     return false;
   }
 
@@ -1147,7 +1149,7 @@ bool ObjectClass::Render(bool forced)  // const
   int y = 0;
   const COORDINATE coord = Render_Coord();
 
-  if (MapEditorActive || Debug_Unshroud ||
+  if (TheDebugState().map_editor_active() || TheDebugState().unshroud() ||
       ((forced || IsToDisplay) && IsDown && !IsInLimbo)) {
     IsToDisplay = false;
 
@@ -1162,7 +1164,7 @@ bool ObjectClass::Render(bool forced)  // const
         **	Draw the trigger attached to the object. Draw_It is window-
         **	relative, so add the window's x-coord to 'x'.
         */
-        if (MapEditorActive && Trigger.Is_Valid()) {
+        if (TheDebugState().map_editor_active() && Trigger.Is_Valid()) {
           Fancy_Text_Print(Trigger->Class->IniName, x + static_cast<int>(WinX),
                            y, &ThePalettes().color_remaps().at(PCOLOR_RED),
                            kTBlack, TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);

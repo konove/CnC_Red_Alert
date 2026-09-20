@@ -50,6 +50,7 @@
 #include "ra/cell.h"
 #include "ra/combat.h"
 #include "ra/coord.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/externs.h"
@@ -99,7 +100,7 @@ void Debug_Key(unsigned input) {
   /*
   **	Processing of normal keystrokes.
   */
-  if (Debug_Flag) {
+  if (TheDebugState().developer_mode()) {
     switch (input) {
       case KN_BACKSPACE:
 
@@ -114,7 +115,7 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_J:
-        Debug_MotionCapture = true;
+        TheDebugState().set_motion_capture(true);
         break;
 
       case KN_P: {
@@ -160,7 +161,7 @@ void Debug_Key(unsigned input) {
       } break;
 
       case KN_C:
-        Debug_Cheat = !Debug_Cheat;
+        TheDebugState().set_build_anything(!TheDebugState().build_anything());
         PlayerPtr->IsRecalcNeeded = true;
 
         /*
@@ -245,19 +246,9 @@ void Debug_Key(unsigned input) {
 
       case KN_V:
       case KN_F3:
-        Debug_Icon = !Debug_Icon;
+        TheDebugState().set_show_cell_info(!TheDebugState().show_cell_info());
         Map.Flag_To_Redraw(true);
         break;
-
-        /*
-        **	Reveal entire map to player.
-        */
-        //			case KN_F4:
-        //				if (Session.Type == GAME_NORMAL) {
-        //					Debug_Unshroud = (Debug_Unshroud
-        //== false); Map.Flag_To_Redraw(true);
-        //				}
-        //				break;
 
       /*
       **	Shows sight and fire range in the form of circles emanating from
@@ -304,8 +295,11 @@ void Debug_Key(unsigned input) {
         }
         break;
 
+      /*
+      **	Reveal the entire map to the player.
+      */
       case (KN_F4 | KN_CTRL_BIT):
-        Debug_Unshroud = !Debug_Unshroud;
+        TheDebugState().set_unshroud(!TheDebugState().unshroud());
         Map.Flag_To_Redraw(true);
         break;
 

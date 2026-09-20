@@ -72,6 +72,7 @@
 #include "ra/ccptr.h"
 #include "ra/cell.h"
 #include "ra/conquer.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/expand.h"
 #include "ra/externs.h"
@@ -1176,7 +1177,12 @@ static void SerializeMisc(Archive& ar) {
 
 template <class Archive>
 static void SerializeMultiplayer(Archive& ar) {
-  ar(Session, BuildLevel, Debug_Unshroud, Seed, Whom, Special, Options);
+  // The switch keeps its place in the record, so a local stands in for it.
+  bool unshroud = TheDebugState().unshroud();
+  ar(Session, BuildLevel, unshroud, Seed, Whom, Special, Options);
+  if constexpr (Archive::kIsReading) {
+    TheDebugState().set_unshroud(unshroud);
+  }
 }
 
 bool Save_Misc_Values(ByteSink& file) {

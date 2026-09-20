@@ -70,6 +70,7 @@
 #include "ra/ccptr.h"
 #include "ra/cell.h"
 #include "ra/conquer.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/foot.h"
@@ -521,7 +522,7 @@ void EventClass::Execute() {
   bool formation = false;
   //	RTTIType rt;
 
-  if (Debug_Print_Events) {
+  if (TheDebugState().print_events()) {
     absl::PrintF("(%" PRId64 ") Executing %s ID:%d Frame:%d ", ::Frame,
                  EventNames.at(Type), ID, Frame);
   }
@@ -702,7 +703,7 @@ void EventClass::Execute() {
       [[fallthrough]];
 
     case MEGAMISSION:
-      if (Debug_Print_Events) {
+      if (TheDebugState().print_events()) {
         absl::PrintF(
             "Whom:%x Tgt:%x Dest:%x ",
             static_cast<unsigned>(Data.MegaMission.Whom.As_TARGET()),
@@ -980,7 +981,7 @@ void EventClass::Execute() {
       Session.DesiredFrameRate = Data.Timing.DesiredFrameRate;
       Session.MaxAhead = Data.Timing.MaxAhead;
 
-      if (Debug_Print_Events) {
+      if (TheDebugState().print_events()) {
         absl::PrintF("DesiredFrameRate:%d MaxAhead:%d ",
                      Session.DesiredFrameRate, Session.MaxAhead);
       }
@@ -1089,7 +1090,7 @@ void EventClass::Execute() {
       break;
   }
 
-  if (Debug_Print_Events) {
+  if (TheDebugState().print_events()) {
     absl::PrintF("\n");
   }
 }

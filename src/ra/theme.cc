@@ -64,6 +64,7 @@
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/goptions.h"
@@ -213,7 +214,7 @@ const char* ThemeClass::Full_Name(ThemeType theme) {
  *as it is about to play it.                           *
  *=============================================================================================*/
 void ThemeClass::AI() {
-  if (Audio.is_open() && !Debug_Quiet) {
+  if (Audio.is_open() && !TheDebugState().quiet()) {
     if (ScoresPresent && Options.ScoreVolume != 0 && !Still_Playing() &&
         Pending != THEME_NONE) {
       /*
@@ -310,7 +311,7 @@ void ThemeClass::Queue_Song(ThemeType theme) {
   **	If there is no sound driver or sounds have been specifically
   **	turned off, then abort.
   */
-  if (!Audio.is_open() || Debug_Quiet) {
+  if (!Audio.is_open() || TheDebugState().quiet()) {
     return;
   }
 
@@ -352,7 +353,7 @@ void ThemeClass::Queue_Song(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int ThemeClass::Play_Song(ThemeType theme) {
-  if (ScoresPresent && Audio.is_open() && !Debug_Quiet &&
+  if (ScoresPresent && Audio.is_open() && !TheDebugState().quiet() &&
       Options.ScoreVolume != 0) {
     Stop();
     Score = theme;
@@ -433,7 +434,8 @@ int ThemeClass::Track_Length(ThemeType theme) {
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
 void ThemeClass::Stop() {
-  if (ScoresPresent && Audio.is_open() && !Debug_Quiet && Current != -1) {
+  if (ScoresPresent && Audio.is_open() && !TheDebugState().quiet() &&
+      Current != -1) {
     Audio.Stop(Current);
     Current = -1;
     Score = THEME_NONE;
@@ -442,7 +444,8 @@ void ThemeClass::Stop() {
 }
 
 void ThemeClass::Suspend() {
-  if (ScoresPresent && Audio.is_open() && !Debug_Quiet && Current != -1) {
+  if (ScoresPresent && Audio.is_open() && !TheDebugState().quiet() &&
+      Current != -1) {
     Audio.Stop(Current);
     Current = -1;
     Pending = Score;
@@ -464,7 +467,8 @@ void ThemeClass::Suspend() {
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
 bool ThemeClass::Still_Playing() const {
-  if (ScoresPresent && Audio.is_open() && Current != -1 && !Debug_Quiet) {
+  if (ScoresPresent && Audio.is_open() && Current != -1 &&
+      !TheDebugState().quiet()) {
     return Audio.IsPlaying(Current);
   }
   return false;

@@ -55,6 +55,7 @@
 #include <cstdint>
 
 #include "ra/config.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
 #include "ra/externs.h"
@@ -390,7 +391,7 @@ void GScreenClass::Render() {
       /*
       ** Draw the Editor's buttons
       */
-      if (MapEditorActive && Buttons) {
+      if (TheDebugState().map_editor_active() && Buttons) {
         Buttons->Draw_All();
       }
     }

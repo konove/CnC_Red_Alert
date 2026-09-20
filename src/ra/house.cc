@@ -164,6 +164,7 @@
 #include "ra/cell.h"
 #include "ra/config.h"
 #include "ra/coord.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
 #include "ra/drive.h"
@@ -753,7 +754,7 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
 
   int level = Control.TechLevel;
   if constexpr (config::kCheatKeysEnabled) {
-    if (Debug_Cheat) {
+    if (TheDebugState().build_anything()) {
       level = 98;
       pre = 0;
     }
@@ -2097,8 +2098,8 @@ void HouseClass::Make_Enemy(HousesType house) {
       }
     }
 
-    if ((Debug_Flag || Session.Type != GAME_NORMAL) && !ScenarioInit &&
-        IsHuman) {
+    if ((TheDebugState().developer_mode() || Session.Type != GAME_NORMAL) &&
+        !ScenarioInit && IsHuman) {
       char buffer[80];
 
       Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_AT_WAR),
@@ -3427,7 +3428,7 @@ void HouseClass::MPlayer_Defeated() {
   */
   if (PlayerPtr == this) {
     Session.ObiWan = true;
-    Debug_Unshroud = true;
+    TheDebugState().set_unshroud(true);
     TheScreen().hidden_view().Clear();
     Map.Flag_To_Redraw(true);
 

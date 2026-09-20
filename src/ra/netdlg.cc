@@ -151,6 +151,7 @@
 #include "ra/colrlist.h"
 #include "ra/conquer.h"
 #include "ra/coord.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/drop.h"
@@ -1142,7 +1143,7 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
 void Destroy_Connection(int id, int error) {
   char txt[80];
 
-  if (Debug_Print_Events) {
+  if (TheDebugState().print_events()) {
     absl::PrintF("Destroying connection for house %d (%s)\n", id,
                  HouseClass::As_Pointer(static_cast<HousesType>(id))->IniName);
   }

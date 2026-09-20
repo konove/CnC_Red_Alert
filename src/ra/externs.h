@@ -95,19 +95,6 @@ extern std::string DebugNewGame;
 extern int DebugLoadGame;
 extern int64_t DebugQuitAtFrame;
 extern int DebugSaveSlot;
-extern bool Debug_MotionCapture;
-extern bool Debug_Quiet;
-extern bool Debug_Cheat;
-extern bool Debug_Flag;
-extern bool MapEditorActive;
-extern bool Debug_Icon;
-extern bool Debug_Passable;
-extern bool Debug_Unshroud;
-extern bool Debug_Check_Map;
-extern bool Debug_Playtest;
-
-extern bool Debug_Print_Events;
-
 extern std::span<const std::byte> LightningShapes;
 
 extern int NewINIFormat;

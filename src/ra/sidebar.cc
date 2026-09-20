@@ -111,6 +111,7 @@
 #include "ra/const.h"
 #include "ra/control.h"
 #include "ra/coord.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
 #include "ra/event.h"
@@ -329,7 +330,7 @@ void SidebarClass::Init_IO() {
   /*
   ** Add the sidebar's buttons only if we're not in editor mode.
   */
-  if (!MapEditorActive) {
+  if (!TheDebugState().map_editor_active()) {
     Repair.IsSticky = true;
     Repair.ID = kButtonRepair;
     Repair.X = 0x1f2;
@@ -671,7 +672,7 @@ bool SidebarClass::Add(RTTIType type, int id) {
   /*
   ** Add the sidebar only if we're not in editor mode.
   */
-  if (!MapEditorActive) {
+  if (!TheDebugState().map_editor_active()) {
     const int column = Which_Column(type);
 
     if (base::At(Column, column).Add(type, id)) {
@@ -747,7 +748,8 @@ bool SidebarClass::Scroll(bool up, int column) {
 void SidebarClass::Draw_It(bool complete) {
   PowerClass::Draw_It(complete);
 
-  if (IsSidebarActive && (IsSidebarToRedraw || complete) && !MapEditorActive) {
+  if (IsSidebarActive && (IsSidebarToRedraw || complete) &&
+      !TheDebugState().map_editor_active()) {
     IsSidebarToRedraw = false;
 
     if (LogicPage->Lock()) {
@@ -818,10 +820,10 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
   /*
   **	Toggle the sidebar in and out with the <TAB> key.
   */
-  if (!MapEditorActive) {
+  if (!TheDebugState().map_editor_active()) {
     Activate(1);  // Force the sidebar always on in Win95 mode
   }
-  if (!MapEditorActive) {
+  if (!TheDebugState().map_editor_active()) {
     base::At(Column, 0).AI(input, x, y);
     base::At(Column, 1).AI(input, x, y);
   }
@@ -1841,7 +1843,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
 bool SidebarClass::StripClass::Recalc() {
   bool ok = false;
 
-  if (MapEditorActive || !BuildableCount) {
+  if (TheDebugState().map_editor_active() || !BuildableCount) {
     return false;
   }
 

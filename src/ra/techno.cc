@@ -168,6 +168,7 @@
 #include "ra/combat.h"
 #include "ra/config.h"
 #include "ra/coord.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/display_constants.h"
@@ -2833,7 +2834,8 @@ bool TechnoClass::Is_Ready_To_Cloak() const {
 bool TechnoClass::Select() {
   DCHECK(IsActive);
 
-  if (!IsDiscoveredByPlayer && !House->IsPlayerControl && !Debug_Unshroud) {
+  if (!IsDiscoveredByPlayer && !House->IsPlayerControl &&
+      !TheDebugState().unshroud()) {
     return false;
   }
 
@@ -3242,7 +3244,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
   /*
   **	Perform a quick legality check to see if firing can occur.
   */
-  if (MapEditorActive || !Target_Legal(target)) {
+  if (TheDebugState().map_editor_active() || !Target_Legal(target)) {
     return nullptr;
   }
 
@@ -4514,14 +4516,14 @@ VisualType TechnoClass::Visual_Character(bool raw) const {
     return VISUAL_NORMAL;
   }
   if (Techno_Type_Class()->IsInvisible && !IsOwnedByPlayer &&
-      !MapEditorActive) {
+      !TheDebugState().map_editor_active()) {
     return VISUAL_HIDDEN;
   }
 
   /*
   **	When uncloaked or in map editor mode, always draw the object normally.
   */
-  if (Cloak == UNCLOAKED || MapEditorActive) {
+  if (Cloak == UNCLOAKED || TheDebugState().map_editor_active()) {
     return VISUAL_NORMAL;
   }
 

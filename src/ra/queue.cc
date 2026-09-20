@@ -105,6 +105,7 @@
 #include "ra/connect.h"
 #include "ra/connmgr.h"
 #include "ra/conquer.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/event.h"
 #include "ra/externs.h"
@@ -1837,7 +1838,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
         event->Data.FrameInfo.CommandCount;
   }
 
-  if (Debug_Print_Events) {
+  if (TheDebugState().print_events()) {
     if (event->Type == EventClass::FRAMESYNC) {
       absl::PrintF("(%" PRId64 ") Received FRAMESYNC: ", Frame);
     } else {
@@ -2573,7 +2574,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
   // clear previous event
   //------------------------------------------------------------------------
 
-  if (Debug_Print_Events) {
+  if (TheDebugState().print_events()) {
     absl::PrintF("\n(%" PRId64 ") Building Send Packet\n", Frame);
   }
 
@@ -2632,7 +2633,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
                 prevevent.Data.MegaMission.Target &&
             OutList.First().Data.MegaMission.Destination ==
                 prevevent.Data.MegaMission.Destination) {
-          if (Debug_Print_Events) {
+          if (TheDebugState().print_events()) {
             absl::PrintF(
                 "      adding Whom:%x (%x) Mission:%s Target:%x (%x) Dest:%x "
                 "(%x)\n",
@@ -2670,7 +2671,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
         // - clear the MegaMission rep flag
         //...............................................................
         else {
-          if (Debug_Print_Events) {
+          if (TheDebugState().print_events()) {
             absl::PrintF("  New MEGAMISSION run:\n");
           }
 
@@ -2711,7 +2712,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
     // - clear the MegaMission rep flag
     //.....................................................................
     else if (eventtype == EventClass::MEGAMISSION) {
-      if (Debug_Print_Events) {
+      if (TheDebugState().print_events()) {
         absl::PrintF("  New MEGAMISSION run:\n");
       }
 
@@ -2901,7 +2902,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
     OutList.Next();
   }
 
-  if (Debug_Print_Events) {
+  if (TheDebugState().print_events()) {
     absl::PrintF("\n");
   }
 
@@ -3472,7 +3473,8 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             }
           }
 
-          if (Debug_Print_Events && (DoList.at(j).Type == EventClass::EXIT)) {
+          if (TheDebugState().print_events() &&
+              (DoList.at(j).Type == EventClass::EXIT)) {
             absl::PrintF(
                 "(%" PRId64 ") Executing EXIT, ID:%d (%s), EvFrame:%d\\n",
                 Frame, DoList.at(j).ID,

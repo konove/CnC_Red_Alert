@@ -92,6 +92,7 @@
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/const.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/externs.h"
@@ -489,7 +490,7 @@ bool Select_Game(bool /*fade*/) {
   PlayerWins = false;
   PlayerLoses = false;
   Session.ObiWan = false;
-  Debug_Unshroud = false;
+  TheDebugState().set_unshroud(false);
   Map.Set_Cursor_Shape({});
   Map.PendingObjectPtr = nullptr;
   Map.PendingObject = nullptr;
@@ -528,7 +529,7 @@ bool Select_Game(bool /*fade*/) {
   /*
   **	Main menu processing; only do this if we're not in editor mode.
   */
-  if (!MapEditorActive) {
+  if (!TheDebugState().map_editor_active()) {
     /*
     **	Menu selection processing loop
     */
@@ -982,8 +983,8 @@ bool Select_Game(bool /*fade*/) {
         */
         case kSelIntro:
           Theme.Fade_Out();
-          if (Debug_Flag) {
-            Play_Intro(Debug_Flag);
+          if (TheDebugState().developer_mode()) {
+            Play_Intro(TheDebugState().developer_mode());
           } else {
             Hide_Mouse();
             TheScreen().visible_page().Clear();
@@ -1044,7 +1045,7 @@ bool Select_Game(bool /*fade*/) {
     }
   } else {
     /*
-    ** For MapEditorActive (editor) mode to load scenario
+    ** For TheDebugState().map_editor_active() (editor) mode to load scenario
     */
     Scen.Set_Scenario_Name("SCG01EA.INI");
   }
@@ -1108,7 +1109,7 @@ bool Select_Game(bool /*fade*/) {
   *one. *	Skip this if we've already loaded a save-game.
   */
   if (!gameloaded && !Session.LoadGame) {
-    //		if (MapEditorActive) {
+    //		if (TheDebugState().map_editor_active()) {
     //			Set_Scenario_Name(Scen.ScenarioName, Scen.Scenario,
     // Scen.ScenPlayer, Scen.ScenDir, SCEN_VAR_A); 		}  else {
     //			Set_Scenario_Name(Scen.ScenarioName, Scen.Scenario,
@@ -1183,7 +1184,7 @@ bool Select_Game(bool /*fade*/) {
   /*
   ** Sidebar is always active in hi-res.
   */
-  if (!MapEditorActive) {
+  if (!TheDebugState().map_editor_active()) {
     Map.Activate(1);
   }
   Map.Flag_To_Redraw();
@@ -1371,8 +1372,8 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
   Whom = HOUSE_GOOD;
   Special.Init();
 
-  MapEditorActive = false;
-  Debug_Unshroud = false;
+  TheDebugState().set_map_editor_active(false);
+  TheDebugState().set_unshroud(false);
 
   for (const std::string_view argument : arguments) {
     const std::string upper_argument = absl::AsciiStrToUpper(argument);
@@ -1404,8 +1405,8 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
         break;
       }
       if (code == ob) {
-        Debug_Playtest = true;
-        Debug_Flag = true;
+        TheDebugState().set_playtest(true);
+        TheDebugState().set_developer_mode(true);
         break;
       }
     }
@@ -1418,8 +1419,8 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
         break;
       }
       if (code == ob) {
-        Debug_Playtest = true;
-        Debug_Flag = true;
+        TheDebugState().set_playtest(true);
+        TheDebugState().set_developer_mode(true);
         break;
       }
     }
@@ -1433,10 +1434,10 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
         break;
       }
       if (code == ob) {
-        MapEditorActive = true;
-        Debug_Unshroud = true;
-        Debug_Flag = true;
-        Debug_Playtest = true;
+        TheDebugState().set_map_editor_active(true);
+        TheDebugState().set_unshroud(true);
+        TheDebugState().set_developer_mode(true);
+        TheDebugState().set_playtest(true);
         break;
       }
     }
@@ -1444,7 +1445,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
     switch (ob) {
       case kParmPlaytest:
         if constexpr (config::kVirginCheatKeysEnabled) {
-          Debug_Playtest = true;
+          TheDebugState().set_playtest(true);
         }
         break;
 
@@ -1471,7 +1472,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
       **	Scenario Editor Mode
       */
       if (absl::EqualsIgnoreCase(string, "-CHECKMAP")) {
-        Debug_Check_Map = true;
+        TheDebugState().set_check_map(true);
         continue;
       }
     }
@@ -1600,7 +1601,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
               Session.Play = true;
               continue;
             case 'P':
-              Debug_Print_Events = true;
+              TheDebugState().set_print_events(true);
               continue;
             default:
               break;
@@ -1608,7 +1609,7 @@ bool Parse_Command_Line(const std::span<const std::string_view> arguments) {
         }
 
         if (code == 'Q') {
-          Debug_Quiet = true;
+          TheDebugState().set_quiet(true);
         } else {
           absl::PrintF("%s\n", kLanguageText.invalid_option);
           return false;
@@ -2461,7 +2462,7 @@ static void Init_Bulk_Data() {
   **	Cache the main game data. This operation can take a very long time.
   */
   MixArchive::Cache("CONQUER.MIX");
-  if (Audio.is_open() && !Debug_Quiet) {
+  if (Audio.is_open() && !TheDebugState().quiet()) {
     MixArchive::Cache("SOUNDS.MIX");
     MixArchive::Cache("RUSSIAN.MIX");
     MixArchive::Cache("ALLIES.MIX");
@@ -2562,9 +2563,12 @@ static void SerializeRecording(Archive& ar) {
   }
   ar(Session);
   Session.SerializePlayers(ar);
-  ar(BuildLevel, Debug_Unshroud, Seed, Scen.Scenario, Scen.ScenarioName,
-     Whom, Special, Options);
+  // The switch keeps its place in the record, so a local stands in for it.
+  bool unshroud = TheDebugState().unshroud();
+  ar(BuildLevel, unshroud, Seed, Scen.Scenario, Scen.ScenarioName, Whom,
+     Special, Options);
   if constexpr (Archive::kIsReading) {
+    TheDebugState().set_unshroud(unshroud);
     Scen.ScenarioName[sizeof(Scen.ScenarioName) - 1] = '\0';
   }
 }

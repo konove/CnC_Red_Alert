@@ -132,6 +132,7 @@
 #include "ra/config.h"
 #include "ra/const.h"
 #include "ra/coord.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
 #include "ra/event.h"
@@ -333,7 +334,7 @@ void DisplayClass::Init_IO() {
   /*
   ** Re-attach our buttons to the main map button list, only in non-edit mode.
   */
-  if (!MapEditorActive) {
+  if (!TheDebugState().map_editor_active()) {
     TacButton.Zap();
     Add_A_Button(TacButton);
   }
@@ -740,7 +741,7 @@ bool DisplayClass::Passes_Proximity_Check(const ObjectTypeClass* object,
   /*
   ** In editor mode, the proximity check always passes.
   */
-  if (MapEditorActive) {
+  if (TheDebugState().map_editor_active()) {
     return true;
   }
 
@@ -2056,7 +2057,7 @@ void DisplayClass::Draw_It(bool forced) {
             // Objects with IsFootprint are rendered cell by cell. Skip them here
             // to avoid double-rendering, except cloaked Techno (cells skip
             // those).
-            if (!MapEditorActive && layer == LAYER_GROUND) {
+            if (!TheDebugState().map_editor_active() && layer == LAYER_GROUND) {
               bool rendered_by_cells = ptr->Class_Of().IsFootprint;
               if (rendered_by_cells && ptr->Is_Techno()) {
                 // Cloaked/invisible techno objects are NOT rendered by cells.
@@ -2117,7 +2118,7 @@ void DisplayClass::Draw_It(bool forced) {
       ** value with 0xFF00FF00 to strip off the lepton coordinates, but leave
       ** the cell coordinates.
       */
-      if (MapEditorActive && PendingObjectPtr) {
+      if (TheDebugState().map_editor_active() && PendingObjectPtr) {
         PendingObjectPtr->Coord = PendingObjectPtr->Class_Of().Coord_Fixup(
             Cell_Coord(static_cast<CELL>(ZoneCell + ZoneOffset)));
         PendingObjectPtr->Render(true);
@@ -2171,16 +2172,16 @@ void DisplayClass::Redraw_Icons() {
           **	If there is a portion of the underlying icon that could be
           *visible, *	then draw it.  Also draw the cell if the shroud is off.
           */
-          if (cellptr->IsMapped || Debug_Unshroud) {
+          if (cellptr->IsMapped || TheDebugState().unshroud()) {
             cellptr->Draw_It(xpixel, ypixel);
           }
 
           /*
           **	If any cell is not fully mapped, then flag it so that the shadow
           *drawing *	process will occur.  Only draw the shadow if
-          *Debug_Unshroud is false.
+          *TheDebugState().unshroud() is false.
           */
-          if (!cellptr->IsVisible && !Debug_Unshroud) {
+          if (!cellptr->IsVisible && !TheDebugState().unshroud()) {
             IsShadowPresent = true;
           }
         }
@@ -2214,7 +2215,7 @@ void DisplayClass::Redraw_OIcons() {
           **	If there is a portion of the underlying icon that could be
           *visible, *	then draw it.  Also draw the cell if the shroud is off.
           */
-          if (cellptr->IsMapped || Debug_Unshroud) {
+          if (cellptr->IsMapped || TheDebugState().unshroud()) {
             cellptr->Draw_It(xpixel, ypixel, true);
           }
         }
@@ -2881,7 +2882,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   const COORDINATE coord = Map.Pixel_To_Coord(x, y);
   const CELL cell = Coord_Cell(coord);
   if (coord) {
-    const bool shadow = !Map.at(cell).IsMapped && !Debug_Unshroud;
+    const bool shadow = !Map.at(cell).IsMapped && !TheDebugState().unshroud();
     x -= Map.TacPixelX;
     y -= Map.TacPixelY;
 

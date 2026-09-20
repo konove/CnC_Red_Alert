@@ -108,19 +108,6 @@ std::string DebugNewGame;
 int DebugLoadGame = -1;
 int64_t DebugQuitAtFrame = -1;
 int DebugSaveSlot = -1;
-bool Debug_MotionCapture = false;
-bool Debug_Quiet = false;
-bool Debug_Cheat = false;
-bool Debug_Icon = false;
-bool Debug_Flag = false;
-bool MapEditorActive = false;  // true = scenario/map editor is active
-bool Debug_Passable = false;   // true = show passable/impassable terrain
-bool Debug_Unshroud = false;   // true = hide the shroud
-bool Debug_Check_Map = false;  // true = validate the map each frame
-bool Debug_Playtest = false;
-
-bool Debug_Print_Events = false;     // true = print event & packet processing
-
 TFixedIHeapClass<AircraftClass> Aircraft;
 TFixedIHeapClass<AnimClass> Anims;
 TFixedIHeapClass<BuildingClass> Buildings;

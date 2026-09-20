@@ -119,6 +119,12 @@ add_gtest(
 apply_language_setting(ra_game_test)
 
 add_gtest(
+    NAME ra_debug_state_test
+    SOURCES debug_state_test.cc
+    LIBS base
+)
+
+add_gtest(
     NAME ra_palettes_test
     SOURCES palettes_test.cc
     LIBS base tech magic_enum::magic_enum

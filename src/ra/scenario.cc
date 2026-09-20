@@ -102,6 +102,7 @@
 #include "ra/conquer.h"
 #include "ra/const.h"
 #include "ra/coord.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/egos.h"
@@ -537,7 +538,7 @@ void Fill_In_Data() {
   **	Since the sidebar starts up activated, adjust the home start position so
   *that *	the right edge of the map will still be visible.
   */
-  if (!MapEditorActive) {
+  if (!TheDebugState().map_editor_active()) {
     Map.Activate(1);
     //		if (Session.Type == GAME_NORMAL) {
     base::At(Scen.Views, 0) = base::At(Scen.Views, 1) =
@@ -2200,7 +2201,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     **	(Must be done after all objects are read in from the INI)
     */
     if (Session.Options.AIPlayers + Session.Players.Count() < Rule.MaxPlayers &&
-        !MapEditorActive) {
+        !TheDebugState().map_editor_active()) {
       Remove_AI_Players();
     }
 
@@ -2210,7 +2211,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     **	a whole bunch of units.  Session.Options.UnitCount is the total # of
     *units *	to create.
     */
-    if (!MapEditorActive) {
+    if (!TheDebugState().map_editor_active()) {
       const int save_init = ScenarioInit;  // turn ScenarioInit off
       ScenarioInit = 0;
       Create_Units(ini.Get_Bool("Basic", "Official", false));

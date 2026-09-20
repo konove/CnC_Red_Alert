@@ -42,6 +42,7 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/config.h"
 #include "ra/coord.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
 #include "ra/externs.h"
@@ -296,8 +297,8 @@ void PlaySoundEffectAt(const VocType voc, const COORDINATE coord,
                        const int variation, const HousesType house) {
   CELL cell = 0;
 
-  if (Debug_Quiet || Options.Volume == 0 || voc == VOC_NONE || !SoundOn ||
-      !Audio.is_open()) {
+  if (TheDebugState().quiet() || Options.Volume == 0 || voc == VOC_NONE ||
+      !SoundOn || !Audio.is_open()) {
     return;
   }
   if (coord) {
@@ -337,8 +338,8 @@ int PlaySoundEffect(VocType voc, fixed volume, const int variation,
                   << "]";
     return -1;
   }
-  if (Debug_Quiet || Options.Volume == 0 || voc == VOC_NONE || !SoundOn ||
-      !Audio.is_open()) {
+  if (TheDebugState().quiet() || Options.Volume == 0 || voc == VOC_NONE ||
+      !SoundOn || !Audio.is_open()) {
     return -1;
   }
 
@@ -549,7 +550,7 @@ const char* VoxName(const VoxType voice) {
 void Speak(const VoxType voice) {
   // Only one voice waits in the queue: a request made while another is
   // pending is dropped, not queued behind it.
-  if (!Debug_Quiet && Options.Volume != 0 && Audio.is_open() &&
+  if (!TheDebugState().quiet() && Options.Volume != 0 && Audio.is_open() &&
       voice != VOX_NONE && voice != current_voice && speak_queue == VOX_NONE) {
     speak_queue = voice;
     // Start it now if EVA is silent, rather than a tick later.
@@ -561,7 +562,7 @@ void ServiceSpeech() {
   // The speech buffer EVA played last, and so the one to watch for the end of
   // the voice. The other buffer is the older one, reused for the next load.
   static int playing_buffer = 0;
-  if (Debug_Quiet || !Audio.is_open()) {
+  if (TheDebugState().quiet() || !Audio.is_open()) {
     return;
   }
 
@@ -633,7 +634,7 @@ bool IsSpeaking() {
   // Starts any queued voice first, so a caller waiting in a loop for EVA to
   // finish also keeps the queue moving.
   ServiceSpeech();
-  return !Debug_Quiet && Audio.is_open() &&
+  return !TheDebugState().quiet() && Audio.is_open() &&
          (speak_queue != VOX_NONE ||
           std::ranges::any_of(SpeechBuffer, [](const auto& buffer) {
             return Audio.IsPlaying(buffer.data());

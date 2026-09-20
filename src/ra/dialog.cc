@@ -65,6 +65,7 @@
 #include "port/format.h"
 #include "port/safe_string.h"
 #include "ra/config.h"
+#include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/gadget.h"
@@ -946,7 +947,7 @@ void Draw_Caption(const char* text, int x, int y, int w) {
   **	Draw the caption.
   */
   if (text != nullptr && *text != '\0') {
-    if (MapEditorActive) {
+    if (TheDebugState().map_editor_active()) {
       Fancy_Text_Print(text, (w / 2) + x, 4 + y,
                        GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_CENTER | TPF_EFNT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
