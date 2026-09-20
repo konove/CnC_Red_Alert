@@ -76,7 +76,6 @@
 #include "ra/version.h"
 #include "ra/vortex.h"
 #include "ra/warhead.h"
-#include "sdllib/playcd.h"
 #include "tech/audio_mixer.h"
 #include "tech/buff.h"
 #include "tech/game_file.h"
@@ -112,7 +111,6 @@ extern WWMouseClass* WWMouse;
 extern base::EnumArray<MissionType, MissionControlClass> MissionControl;
 extern std::vector<char> TutorialTextData;
 extern uint16_t TutorialTextOffsets[225];
-extern GetCDClass CDList;
 extern CCINIClass RuleINI;
 extern CCINIClass AftermathINI;
 extern int MapTriggerID;

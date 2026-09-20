@@ -48,7 +48,6 @@
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
-#include "sdllib/playcd.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
@@ -213,42 +212,12 @@ bool Force_CD_Available(int cd_desired)  // ajw
   // Lordy.  No sign of that blimming CD anywhere. Search all the CD drives
   // then if we still can't find it prompt the user to insert it.
   if (!new_cd_drive) {
-    // Small timeout for the first pass through the drives
-    int drive_search_timeout = 2 * 60;
-
+    // The original walked every CD drive here looking for the disc. There is
+    // no drive to walk, so all that is left is to ask for the disc in the
+    // one the search path already points at, over and over until the player
+    // cancels.
     for (;;) {
       char buffer[128];
-      // Search all present CD drives for the required disc.
-      for (int i = 0; i < CDList.Get_Number_Of_Drives(); i++) {
-        const int cd_drive = CDList.Get_Next_CD_Drive();
-        cd_current = Get_CD_Index(cd_drive, drive_search_timeout);
-
-        if (cd_current >= 0) {
-          // We found a C&C cd - lets see if it was the one we were looking for
-          // Require CS or AM
-          // If the cd is CS or AM then change request to whatever
-          // is present.
-          if ((cd_desired == kCdCsOrAm) &&
-              (cd_current == kCdCounterstrike || cd_current == kCdAftermath)) {
-            cd_desired = cd_current;
-          }
-
-          if (cd_desired == cd_current || cd_desired == kCdAny) {
-            // Woohoo! The disk was in a different cd drive. Refresh the search
-            // path list and return.
-            new_cd_drive = cd_drive;
-            break;
-          }
-        }
-      }
-
-      // A new disc has become available so break
-      if (new_cd_drive) {
-        break;
-      }
-
-      // Increase the timeout for subsequent drive searches.
-      drive_search_timeout = 5 * 60;
 
       // Prompt to insert the CD into the drive.
       // V.Grippi

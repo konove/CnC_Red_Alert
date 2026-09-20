@@ -92,7 +92,6 @@
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/vessel.h"
-#include "sdllib/playcd.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/audio_mixer.h"
@@ -614,7 +613,6 @@ Stopwatch<SystemTickSource> TickCount;
 */
 
 
-GetCDClass CDList;
 int UnitBuildPenalty = 100;
 
 bool bAutoSonarPulse = false;

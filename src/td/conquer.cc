@@ -96,7 +96,6 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
-#include "sdllib/playcd.h"
 #include "sdllib/shape.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
@@ -3004,43 +3003,11 @@ bool Force_CD_Available(int cd) {
   ** then if we still cant find it prompt the user to insert it.
   */
   if (!new_cd_drive) {
-    /*
-    ** Small timeout for the first pass through the drives
-    */
-    int drive_search_timeout = 2 * 60;
-
+    // The original walked every CD drive here looking for the disc. There is
+    // no drive to walk, so all that is left is to ask for the disc in the one
+    // the search path already points at, over and over until the player
+    // cancels.
     for (;;) {
-      /*
-      ** Search all present CD drives for the required disc.
-      */
-      for (int i = 0; i < CDList.Get_Number_Of_Drives(); i++) {
-        const int cd_drive = CDList.Get_Next_CD_Drive();
-        cd_index = Get_CD_Index(cd_drive, drive_search_timeout);
-        /*
-        ** We found a C&C cd - lets see if it was the one we were looking for
-        */
-        if ((cd_index >= 0) && (cd == cd_index || cd == -1)) {
-          /*
-          ** Woohoo! The disk was in a different cd drive. Refresh the search
-          *path list and return.
-          */
-          new_cd_drive = cd_drive;
-          break;
-        }
-      }
-
-      /*
-      ** A new disc has become available so break
-      */
-      if (new_cd_drive) {
-        break;
-      }
-
-      /*
-      ** Increase the timeout for subsequent drive searches.
-      */
-      drive_search_timeout = 5 * 60;
-
       /*
       **	Prompt to insert the CD into the drive.
       */
@@ -3060,7 +3027,8 @@ bool Force_CD_Available(int cd) {
       }
       GraphicViewPortClass* oldpage =
           Set_Logic_Page(TheScreen().visible_view());
-      theme_playing = Theme.What_Is_Playing();
+      // The theme was already stopped above, and the only way out of this
+      // loop is the cancel below, so there is nothing to remember here.
       Theme.Stop();
       int hidden = Get_Mouse_State();
       font = FontPtr;

@@ -88,7 +88,6 @@
 #include "absl/strings/match.h"
 #include "sdllib/file.h"
 #include "sdllib/gbuffer.h"
-#include "sdllib/playcd.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "td/conquer.h"
@@ -310,8 +309,6 @@ int main(int argc, char* argv[])
       ShutDown();
       return EXIT_FAILURE;
     }
-
-    SearchPaths::SetCdDrive(CDList.Get_First_CD_Drive());
 
     if (!cfile.IsAvailable()) {
       // just create an empty config, we don't care about most of it anyway

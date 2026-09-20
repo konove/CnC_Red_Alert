@@ -75,7 +75,6 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/memflag.h"
 #include "sdllib/misc.h"
-#include "sdllib/playcd.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
@@ -348,7 +347,11 @@ int main(const int argc, char* argv[])
   WWMouse = new WWMouseClass(&TheScreen().visible_view(), 48, 48);
   MouseInstalled = true;
 
-  SearchPaths::SetCdDrive(CDList.Get_First_CD_Drive());
+  // SDL enumerates no CD drives, so there is no drive letter to record. -1
+  // rather than 0 keeps "?:\" in the search path list: SearchPaths::Scan()
+  // drops that placeholder when the CD drive is 0, and the bootstrap in
+  // init.cc reports a missing CD and quits when the list comes back empty.
+  SearchPaths::SetCdDrive(-1);
 
   // IsFromInstall means "first launch after installing": play the intro
   // movie. The installer used to write PlayIntro=yes; with no entry it

@@ -76,7 +76,6 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
-#include "sdllib/playcd.h"
 #include "sdllib/shape.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
@@ -391,70 +390,26 @@ bool Init_Game() {
 
   SearchPaths::Add(".");  // allow running without CD
 
-  DLOG(INFO) << "C&C95 - About to search for CD drives";
   /*
   **	Always try to look at the CD-ROM for data files.
   */
   if (!SearchPaths::HasAny()) {
-    /*
-    ** If there are no search drives specified then we must be playing
-    ** off cd, so read files from there.
-    */
-    int error = 0;
-
-    do {
-      if (!CDList.Get_Number_Of_Drives()) {
-        Set_Palette(ThePalettes().game_palette());
-        Show_Mouse();
-        CCMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
-        ShutDown();
-        exit(EXIT_FAILURE);
-      }
-      SearchPaths::SetCdDrive(CDList.Get_First_CD_Drive());
-
-      error = SearchPaths::Add("?:\\");
-      switch (error) {
-        case 1:
-          Set_Palette(ThePalettes().game_palette());
-          Show_Mouse();
-          CCMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
-          ShutDown();
-          exit(EXIT_FAILURE);
-
-        case 2:
-          Set_Palette(ThePalettes().game_palette());
-          Show_Mouse();
-          if (CCMessageBox().Process(TXT_CD_DIALOG_1, TXT_OK, TXT_CANCEL) ==
-              1) {
-            ShutDown();
-            exit(EXIT_FAILURE);
-          }
-          Hide_Mouse();
-          break;
-
-        default:
-          Show_Mouse();
-          if (!Force_CD_Available(RequiredCD)) {
-            ShutDown();
-            exit(EXIT_FAILURE);
-          }
-          Hide_Mouse();
-          break;
-      }
-    } while (error);
-
-#ifdef DEMO
-    RequiredCD = -2;
-#else
-    RequiredCD = -1;
-#endif
-  } else {
-    /*
-    ** If there are search drives specified then all files are to be
-    ** considered local.
-    */
-    RequiredCD = -2;
+    // Without a search path there is nowhere to read the data from. The
+    // original fell back on the CD drive here, but SDL enumerates no drives,
+    // so the scan for the disc had nothing to scan and this always ended in
+    // the same error.
+    Set_Palette(ThePalettes().game_palette());
+    Show_Mouse();
+    CCMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
+    ShutDown();
+    exit(EXIT_FAILURE);
   }
+
+  /*
+  ** If there are search drives specified then all files are to be
+  ** considered local.
+  */
+  RequiredCD = -2;
 #ifndef DEMO
   DLOG(INFO) << "C&C95 - About to register addon mixfiles";
   /*

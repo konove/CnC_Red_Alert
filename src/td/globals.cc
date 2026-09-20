@@ -47,7 +47,6 @@
 #include "base/enum_array.h"
 #include "port/platform.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/playcd.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -746,7 +745,6 @@ WWKeyboardClass Kbd;
 WWMouseClass* WWMouse = nullptr;
 bool InMovie = false;       // Are we currently playing a VQ movie?
 bool MMXAvailable = false;  // Does this CPU support MMX extensions?
-GetCDClass CDList;
 bool GameStatisticsPacketSent;
 bool ConnectionLost;
 

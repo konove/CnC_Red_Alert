@@ -48,7 +48,6 @@
 
 #include "base/enum_array.h"
 #include "port/platform.h"
-#include "sdllib/playcd.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/base.h"
@@ -211,7 +210,6 @@ extern int SuperRecord;
 extern bool PlaybackGame;
 extern bool AllowAttract;
 
-extern GetCDClass CDList;
 
 /*
 ** Modem globals
