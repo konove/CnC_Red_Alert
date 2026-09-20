@@ -68,9 +68,9 @@
 #include "ra/config.h"
 #include "ra/debug_state.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
@@ -158,10 +158,10 @@ void Dialog_Box(int x, int y, int w, int h) {
   CC_Draw_Shape(shapedata, 2, 0, h - 24, WINDOW_PARTIAL, SHAPE_WIN_REL);
   CC_Draw_Shape(shapedata, 3, w - 23, h - 24, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
-  WWMouse->Draw_Mouse(&TheScreen().hidden_view());
+  TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
   TheScreen().hidden_view().Blit(TheScreen().visible_view(), x, y, x, y, w, h,
                                  false);
-  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), false);
+  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), false);
   Set_Logic_Page(oldpage);
 }
 

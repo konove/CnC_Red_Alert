@@ -58,9 +58,9 @@
 #include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/msglist.h"
@@ -264,7 +264,7 @@ void GScreenClass::Flag_To_Redraw(bool complete) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void GScreenClass::Input(KeyNumType& key, int& x, int& y) {
-  key = Keyboard->Check();
+  key = TheKeyboard().Check();
 
   x = KeyboardClass::Mouse_X();
   y = KeyboardClass::Mouse_Y();
@@ -288,7 +288,7 @@ void GScreenClass::Input(KeyNumType& key, int& x, int& y) {
 
   } else {
     if (key != 0) {
-      key = Keyboard->Get();
+      key = TheKeyboard().Get();
     }
   }
 
@@ -432,11 +432,11 @@ void GScreenClass::Render() {
  *function.                                            *
  *=============================================================================================*/
 void GScreenClass::Blit_Display() {
-  WWMouse->Draw_Mouse(&TheScreen().hidden_view());
+  TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
   TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 0, 0, 0,
                                  TheScreen().hidden_view().Get_Width(),
                                  TheScreen().hidden_view().Get_Height(), false);
-  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), false);
+  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), false);
 }
 
 // Shows the screen two pixels up, centred, or two pixels down, picking a

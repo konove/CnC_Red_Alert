@@ -57,10 +57,10 @@
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/goptions.h"
 #include "ra/graphics_loader.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
@@ -700,7 +700,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Go away nasty keyboard.
   */
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 
   Set_Logic_Page(TheScreen().hidden_view());
 
@@ -799,7 +799,7 @@ void Show_Who_Was_Responsible() {
     ** Kill any spare time before blitting the hid page forward.
     */
     while (SystemTicks() - time < static_cast<int64_t>(frame) * speed &&
-           !Keyboard->Check()) {
+           !TheKeyboard().Check()) {
     }
 
     /*
@@ -829,8 +829,8 @@ void Show_Who_Was_Responsible() {
     ** If user hits escape then break.
     */
     key = KN_NONE;
-    if (Keyboard->Check()) {
-      key = Keyboard->Get();
+    if (TheKeyboard().Check()) {
+      key = TheKeyboard().Get();
       if (key == KN_ESC) {
         break;
       }
@@ -859,7 +859,7 @@ void Show_Who_Was_Responsible() {
       ** Kill any spare time
       */
       while (SystemTicks() - time < static_cast<int64_t>(frame) * speed &&
-             !Keyboard->Check()) {
+             !TheKeyboard().Check()) {
       }
     }
   }

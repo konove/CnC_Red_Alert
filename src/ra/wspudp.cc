@@ -64,6 +64,7 @@
 #include "port/socket_bytes.h"
 #include "port/unaligned.h"
 #include "ra/externs.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/network.h"
 #include "ra/wsproto.h"
@@ -317,7 +318,7 @@ void UDPInterfaceClass::Broadcast(std::span<const std::byte> buffer,
     /*
     ** Make sure the message loop gets called.
     */
-    Keyboard->Check();
+    TheKeyboard().Check();
   }
 }
 

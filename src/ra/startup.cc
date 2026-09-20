@@ -29,8 +29,8 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
-#include "ra/externs.h"
 #include "ra/game.h"
+#include "ra/input.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
@@ -65,6 +65,7 @@
 #include "ra/conquer.h"
 #include "ra/debug_state.h"
 #include "ra/defines.h"
+#include "ra/externs.h"
 #include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/ini.h"
@@ -72,7 +73,6 @@
 #include "ra/installation.h"
 #include "ra/ipxaddr.h"
 #include "ra/ipxmgr.h"
-#include "ra/jshell.h"
 #include "ra/language.h"
 #include "ra/movie.h"
 #include "ra/network.h"
@@ -301,7 +301,6 @@ int main(const int argc, char* argv[])
   InitTickTimer();
   DiskFile config_file(kConfigFileName);
 
-  Keyboard = new KeyboardClass();
 
   // Refuse to start without 8 MB free for save games and the config file.
   if (Disk_Space_Available() < kInitFreeDiskSpace) {
@@ -356,8 +355,7 @@ int main(const int argc, char* argv[])
   base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowHeight) =
       TheScreen().visible_view().Get_Height();
 
-  WWMouse = new WWMouseClass(&TheScreen().visible_view(), 48, 48);
-  MouseInstalled = true;
+  TheInput().InstallMouse(TheScreen().visible_view());
 
   // SDL enumerates no CD drives, so there is no drive letter to record. -1
   // rather than 0 keeps "?:\" in the search path list: SearchPaths::Scan()
@@ -399,8 +397,7 @@ int main(const int argc, char* argv[])
 
 void Prog_End() {
   TheAudio().Close();
-  delete WWMouse;
-  WWMouse = nullptr;
+  TheInput().RemoveMouse();
   ShutdownTickTimer();
 }
 

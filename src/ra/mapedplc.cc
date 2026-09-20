@@ -71,11 +71,11 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/mapedit.h"
@@ -1612,8 +1612,8 @@ void MapEditClass::Place_Trigger() {
   /*
   **	See if an object was clicked on
   */
-  int x = Keyboard->MouseQX;
-  int y = Keyboard->MouseQY;
+  int x = TheKeyboard().MouseQX;
+  int y = TheKeyboard().MouseQY;
 
   /*
   **	Get cell for x,y

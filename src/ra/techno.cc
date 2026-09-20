@@ -182,6 +182,7 @@
 #include "ra/heap.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/keyframe.h"
 #include "ra/layer.h"
@@ -6605,7 +6606,7 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
     MaxPassengers = ini.Get_Int(Name(), "Passengers", MaxPassengers);
     ini.Get_String(Name(), "Image", GraphicName, GraphicName,
                    sizeof(GraphicName));
-    // Keyboard->Get();
+    // TheKeyboard().Get();
 
     IsLeader = false;
     if (PrimaryWeapon != nullptr && PrimaryWeapon->Attack > 0) {

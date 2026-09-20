@@ -145,6 +145,7 @@
 #include "ra/heap.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/layer.h"
 #include "ra/logic.h"
@@ -2875,8 +2876,8 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   *used. Other *	events must use the current mouse position globals.
   */
   if (flags & (kLeftPress | kLeftRelease | kRightPress | kRightRelease)) {
-    x = Keyboard->MouseQX;
-    y = Keyboard->MouseQY;
+    x = TheKeyboard().MouseQX;
+    y = TheKeyboard().MouseQY;
   } else {
     x = Get_Mouse_X();
     y = Get_Mouse_Y();

@@ -103,10 +103,10 @@
 #include "ra/dialog.h"
 #include "ra/display.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/mouse.h"
@@ -1685,8 +1685,8 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
   *used. Other *	events must use the current mouse position globals.
   */
   if (flags & (kLeftPress | kLeftRelease | kRightPress | kRightRelease)) {
-    x = Keyboard->MouseQX;
-    y = Keyboard->MouseQY;
+    x = TheKeyboard().MouseQX;
+    y = TheKeyboard().MouseQY;
   } else {
     x = Get_Mouse_X();
     y = Get_Mouse_Y();

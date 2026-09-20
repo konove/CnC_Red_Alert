@@ -30,9 +30,9 @@
 #include "ra/audio.h"
 #include "ra/config.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/house.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/ipx.h"
 #include "ra/ipxaddr.h"
 #include "ra/ipxgconn.h"
@@ -105,7 +105,7 @@ constexpr KeyNumType kPageRespondKey = KN_RETURN;  // KN_COMMA
 
   TheMap().Flag_To_Redraw(false);
 
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 }
 
 // Fills in Session.GPacket with the message just finished in the edit

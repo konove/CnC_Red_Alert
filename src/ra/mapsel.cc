@@ -36,10 +36,10 @@
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/goptions.h"
 #include "ra/house.h"
+#include "ra/input.h"
 #include "ra/interpal.h"
 #include "ra/jshell.h"
 #include "ra/mouse.h"
@@ -167,7 +167,7 @@ static void PlayMapReveal(const std::string& animation_name,
   page.Clear();
   WsaAnimation animation(animation_name, palette);
 
-  Keyboard->Clear();
+  TheKeyboard().Clear();
   TheScreen().visible_view().Clear();
   palette.Set(kFadePaletteFast, ServiceRealTime);
 
@@ -213,7 +213,7 @@ static int WaitForMissionChoice(PaletteClass& palette, const bool is_soviet) {
                                      cursor.StartFrame + cursor_frame));
     }
 
-    if (Keyboard->Check() && KeyCode(Keyboard->Get()) == KN_LMOUSE) {
+    if (TheKeyboard().Check() && KeyCode(TheKeyboard().Get()) == KN_LMOUSE) {
       if (choice != -1) {
         PlayMapSound("TONEY10.AUD");
         return choice;
@@ -236,7 +236,7 @@ ScenarioVarType ChooseMissionVariant() {
   TheTheme().Queue_Song(THEME_MAP);
   PlayMapReveal(animation_name, map_palette);
   Show_Mouse();
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 
   const int choice = WaitForMissionChoice(map_palette, is_soviet);
 
@@ -245,7 +245,7 @@ ScenarioVarType ChooseMissionVariant() {
   // Restore normal cursor before returning.
   Set_Mouse_Cursor(0, 0, Extract_Shape(MouseClass::MouseShapes, 0));
 
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 
   Fancy_Text_Print(TXT_STAND_BY, 320, 380, GadgetClass::Get_Color_Scheme(),
                    kTBlack, TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);

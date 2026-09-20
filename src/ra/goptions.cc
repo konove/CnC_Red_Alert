@@ -53,6 +53,7 @@
 #include "ra/gadget.h"
 #include "ra/gamedlg.h"
 #include "ra/house.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/loaddlg.h"
 #include "ra/mapedit.h"
@@ -266,7 +267,7 @@ void GameOptionsClass::Process() {
                     GadgetClass::kLeftPress | GadgetClass::kRightPress))
       ->Add_Tail(*buttons);
 
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | kTpfText);
@@ -428,7 +429,7 @@ void GameOptionsClass::Process() {
         base::At(buttonsel, curbutton - 1)->Draw_Me(true);
         selection = curbutton;
         pressed = true;
-        Keyboard->Clear();
+        TheKeyboard().Clear();
         break;
 
       default:
@@ -582,7 +583,7 @@ void GameOptionsClass::Process() {
   /*
   **	Redraw the map.
   */
-  Keyboard->Clear();
+  TheKeyboard().Clear();
   TheScreen().hidden_view().Clear();
   TheMap().Flag_To_Redraw(true);
   TheMap().Render();

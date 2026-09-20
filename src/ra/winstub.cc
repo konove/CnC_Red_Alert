@@ -50,6 +50,7 @@
 #include "WSProto.h"
 #include "ra/config.h"
 #include "ra/function.h"
+#include "ra/input.h"
 #include "ra/network.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
@@ -163,7 +164,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
   **	was processed and requires no further action, then return with
   **	this information.
   */
-  if (Keyboard->Message_Handler(hwnd, message, wParam, lParam)) {
+  if (TheKeyboard().Message_Handler(hwnd, message, wParam, lParam)) {
     return (1);
   }
 
@@ -181,7 +182,8 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       //		case WM_RBUTTONDOWN:
       //		case WM_RBUTTONUP:
       //		case WM_RBUTTONDBLCLK:
-      //	 		Keyboard->Message_Handler(hwnd, message, wParam,
+      //	 		TheKeyboard().Message_Handler(hwnd, message,
+      // wParam,
       // lParam); 			return(0);
 
       /*
@@ -231,7 +233,8 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       //				Restore_Cached_Icons();
       //				Map.Flag_To_Redraw(true);
       //				Audio.Resume();
-      //				if (WWMouse) WWMouse->Set_Cursor_Clip();
+      //				if (TheMouse())
+      // TheMouse()->Set_Cursor_Clip();
       //			}
       return (0);
 
@@ -511,7 +514,7 @@ void Memory_Error_Handler() {
 
   PostMessage(MainWindow, WM_DESTROY, 0, 0);
   do {
-    Keyboard->Check();
+    TheKeyboard().Check();
   } while (ReadyToQuit == 1);
 
   ExitProcess(0);

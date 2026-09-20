@@ -66,9 +66,9 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/edit.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/msgbox.h"
@@ -286,7 +286,7 @@ bool LoadOptionsClass::Process() {
   /*
   **	Main Processing Loop.
   */
-  Keyboard->Clear();
+  TheKeyboard().Clear();
   bool firsttime = true;
   bool display = true;
   bool process = true;
@@ -429,7 +429,7 @@ bool LoadOptionsClass::Process() {
           WWMessageBox().Process(TXT_LOADING, TXT_NONE);
           TheTheme().Fade_Out();
           const bool rc = Load_Game(game_num);  // return code
-          Keyboard->Clear();
+          TheKeyboard().Clear();
 
           if (!rc) {
             WWMessageBox().Process(TXT_ERROR_LOADING_GAME);
@@ -488,7 +488,7 @@ bool LoadOptionsClass::Process() {
           while (timer.HasTimeLeft()) {
             ServiceRealTime();
           }
-          Keyboard->Clear();
+          TheKeyboard().Clear();
         }
         process = false;
         break;

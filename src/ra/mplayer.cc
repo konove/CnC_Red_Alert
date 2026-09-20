@@ -53,10 +53,10 @@
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/init.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/installation.h"
 #include "ra/ipxmgr.h"
 #include "ra/jshell.h"
@@ -236,7 +236,7 @@ GameType Select_MPlayer_Game() {
   base::At(buttons, iButton) = &cancelbtn;
   base::At(buttons, curbutton)->Turn_On();
 
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | kTpfText);

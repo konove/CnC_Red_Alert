@@ -118,6 +118,7 @@
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/layer.h"
 #include "ra/logic.h"
@@ -992,7 +993,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   timeout_timer.Set(timeout);     // time to bail out
 
   while (true) {
-    Keyboard->Check();
+    TheKeyboard().Check();
 
     //---------------------------------------------------------------------
     //	Resend a frame-sync packet if longer than one propagation delay goes
@@ -1117,7 +1118,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
 
     while (messages_this_loop++ < message_limit &&
            net->Get_Private_Message(multi_packet_buf, &packetlen, &id)) {
-      Keyboard->Check();
+      TheKeyboard().Check();
 
       //------------------------------------------------------------------
       // Special processing for a modem game: process SERIAL packets
@@ -1237,7 +1238,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     //---------------------------------------------------------------------
     ServiceRealTime();
     if (!first_time && SpecialDialog == SDLG_NONE && reconnect_dlg == 0) {
-      WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+      TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
       TheMap().Input(input, x, y);
       if (input) {
         Keyboard_Process(input);
@@ -1645,7 +1646,7 @@ static int Send_Packets(ConnManClass* net,
   //	Build our meta-packet & transmit it.
   //------------------------------------------------------------------------
   while (true) {
-    Keyboard->Check();
+    TheKeyboard().Check();
 
     //.....................................................................
     //	If there are no commands this frame, we'll just be sending a FRAMEINFO
@@ -2218,7 +2219,7 @@ static int Process_Reconnect_Dialog(
   //........................................................................
   //	If user hits ESC, bail out
   //........................................................................
-  if (Keyboard->Check() && (Keyboard->Get() == KN_ESC)) {
+  if (TheKeyboard().Check() && (TheKeyboard().Get() == KN_ESC)) {
     return 1;
   }
 
@@ -2505,7 +2506,7 @@ int Add_Uncompressed_Events(std::span<std::byte> buf, int bufsize,
   // events, or the buffer is full.
   //------------------------------------------------------------------------
   while (TheNetwork().out_list().Count() && num < cap) {
-    Keyboard->Check();
+    TheKeyboard().Check();
 
     if (TheNetwork().out_list().First().Type == EventClass::ADDPLAYER) {
       ev_size =
@@ -2616,7 +2617,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
   // events, or the buffer is full.
   //------------------------------------------------------------------------
   while (TheNetwork().out_list().Count() && num < cap) {
-    Keyboard->Check();
+    TheKeyboard().Check();
 
     const EventClass::EventType eventtype =
         TheNetwork().out_list().First().Type;  // type of event being compressed
@@ -3036,7 +3037,7 @@ int Extract_Uncompressed_Events(std::span<const std::byte> buf, int bufsize) {
   // Loop until there are no more events in the packet
   //------------------------------------------------------------------------
   while (std::cmp_greater_equal(leftover, sizeof(EventClass))) {
-    Keyboard->Check();
+    TheKeyboard().Check();
 
     event_storage =
         port::ReadUnaligned<EventClass>(buf.subspan(base::ToSize(pos)));
@@ -3146,7 +3147,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
 
   while (leftover >=
          datasize + static_cast<int>(sizeof(EventClass::EventType))) {
-    Keyboard->Check();
+    TheKeyboard().Check();
 
     //.....................................................................
     // add event to the DoList, only if it's not a FRAMESYNC
@@ -3243,7 +3244,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
             datasize = sizeof(eventdata.Data.MegaMission.Whom);
 
             while (numunits) {
-              Keyboard->Check();
+              TheKeyboard().Check();
 
               if (!TheNetwork().do_list().Add(eventdata)) {
                 return -1;
@@ -3633,7 +3634,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
                             TheSession().Type == GAME_INTERNET) &&
                            net) {
                   while (net->Num_Connections()) {
-                    Keyboard->Check();
+                    TheKeyboard().Check();
                     Destroy_Connection(net->Connection_ID(0), -1);
                   }
                 }
@@ -3692,7 +3693,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
  *=========================================================================*/
 static void Clean_DoList() {
   while (TheNetwork().do_list().Count()) {
-    Keyboard->Check();
+    TheKeyboard().Check();
 
     //.....................................................................
     //	Discard events that have been executed, OR it's too late to execute.
@@ -3801,8 +3802,8 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   //	If the user hits ESC, stop the playback
   //------------------------------------------------------------------------
-  if (Keyboard->Check()) {
-    const int key = Keyboard->Get();
+  if (TheKeyboard().Check()) {
+    const int key = TheKeyboard().Get();
     if (key == KA_ESC || TheSession().Attract) {
       GameActive = false;
       return;

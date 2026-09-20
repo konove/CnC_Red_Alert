@@ -118,6 +118,7 @@
 #include "ra/infantry.h"
 #include "ra/ini.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/installation.h"
 #include "ra/jshell.h"
 #include "ra/logic.h"
@@ -872,7 +873,7 @@ void Do_Win() {
   Show_Mouse();
   Play_Movie(TheScenario().WinMovie);
 
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 
   TheWorld().save_tanya() = TheWorld().is_tanya_dead();
   TheScenario().CarryOverTimer =
@@ -887,7 +888,7 @@ void Do_Win() {
     **	If the score presentation should be performed, then do
     **	so now.
     */
-    Keyboard->Clear();
+    TheKeyboard().Clear();
     if (!TheScenario().IsSkipScore) {
       TheWorld().score().Presentation();
     }
@@ -931,7 +932,7 @@ void Do_Win() {
       TheScenario().AdvanceToNextScenario(ChooseMissionVariant());
     }
 
-    Keyboard->Clear();
+    TheKeyboard().Clear();
   }
 
   TheScenario().CarryOverMoney = static_cast<int>(ThePlayer()->Credits);
@@ -1093,7 +1094,7 @@ void Do_Lose() {
   if (!TheSession().Play &&
       !WWMessageBox().Process(TXT_TO_REPLAY, TXT_YES, TXT_NO)) {
     Hide_Mouse();
-    Keyboard->Clear();
+    TheKeyboard().Clear();
     Start_Scenario(TheScenario().ScenarioName, false);
 
     /*
@@ -1195,7 +1196,7 @@ void Do_Restart() {
   WWMessageBox().Process(TXT_RESTARTING, TXT_NONE);
 
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
-  Keyboard->Clear();
+  TheKeyboard().Clear();
   Start_Scenario(TheScenario().ScenarioName, false);
 
   /*
@@ -1212,7 +1213,7 @@ void Do_Restart() {
   while (timer.HasTimeLeft()) {
     ServiceRealTime();
   }
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 
   TheMap().Render();
 }
@@ -1462,7 +1463,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   int bufindex = 0;
 
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 
   Set_Font_Palette(_scorepal);
   int xprint = x + 20;
@@ -1488,12 +1489,12 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       cd.Set(5);
       do {
         ServiceRealTime();
-      } while (!Keyboard->Check() && cd.HasTimeLeft());
+      } while (!TheKeyboard().Check() && cd.HasTimeLeft());
     }
   } while (base::At(buffer, ++bufindex));
 
   Show_Mouse();
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 
   if (buttonlist) {
     bool process = true;  // loop while true
@@ -1618,7 +1619,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       }
     }
   } else {
-    Keyboard->Clear();
+    TheKeyboard().Clear();
   }
 
   // Handle MORE button - recurse to show next page (no fade on subsequent

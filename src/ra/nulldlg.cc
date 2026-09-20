@@ -96,6 +96,7 @@
 #include "ra/ini.h"
 #include "ra/init.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/installation.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
@@ -1040,7 +1041,7 @@ GameType Select_Serial_Dialog() {
   buttons[4] = &cancelbtn;
   base::At(buttons, curbutton)->Turn_On();
 
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 
   Fancy_Text_Print(TXT_NONE, 0, 0, scheme, kTBlack, TPF_CENTER | kTpfText);
 
@@ -3393,12 +3394,13 @@ int Com_Scenario_Dialog(bool skirmish) {
         User clicks on a color button
         ------------------------------------------------------------------*/
         case KN_LMOUSE:
-          if (Keyboard->MouseQX > cbox_x[0] &&
-              Keyboard->MouseQX < cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
-              Keyboard->MouseQY > d_color_y &&
-              Keyboard->MouseQY < d_color_y + d_color_h) {
+          if (TheKeyboard().MouseQX > cbox_x[0] &&
+              TheKeyboard().MouseQX <
+                  cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
+              TheKeyboard().MouseQY > d_color_y &&
+              TheKeyboard().MouseQY < d_color_y + d_color_h) {
             TheSession().PrefColor = static_cast<PlayerColorType>(
-                (Keyboard->MouseQX - cbox_x[0]) / d_color_w);
+                (TheKeyboard().MouseQX - cbox_x[0]) / d_color_w);
             TheSession().ColorIdx = TheSession().PrefColor;
             display = std::max(display, REDRAW_COLORS);
 
@@ -4307,7 +4309,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             }
           }
 
-        } while (!Keyboard->Check() && !retry_setup);
+        } while (!TheKeyboard().Check() && !retry_setup);
 
         // clear queue to keep from doing any resends
         TheNetwork().null_modem().Init_Send_Queue();
@@ -5186,15 +5188,16 @@ int Com_Show_Scenario_Dialog() {
       User clicks on a color button
       ------------------------------------------------------------------*/
       case KN_LMOUSE:
-        if (Keyboard->MouseQX > cbox_x[0] &&
-            Keyboard->MouseQX < cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
-            Keyboard->MouseQY > d_color_y &&
-            Keyboard->MouseQY < d_color_y + d_color_h) {
+        if (TheKeyboard().MouseQX > cbox_x[0] &&
+            TheKeyboard().MouseQX <
+                cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
+            TheKeyboard().MouseQY > d_color_y &&
+            TheKeyboard().MouseQY < d_color_y + d_color_h) {
           /*.........................................................
           Compute my preferred color as the one I clicked on.
           .........................................................*/
           TheSession().PrefColor = static_cast<PlayerColorType>(
-              (Keyboard->MouseQX - cbox_x[0]) / d_color_w);
+              (TheKeyboard().MouseQX - cbox_x[0]) / d_color_w);
           changed = true;
 
           /*.........................................................

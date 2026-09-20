@@ -63,6 +63,7 @@
 #include "ra/house.h"
 #include "ra/infantry.h"  // IWYU pragma: keep
 #include "ra/init.h"
+#include "ra/input.h"
 #include "ra/interpal.h"
 #include "ra/jshell.h"
 #include "ra/language.h"
@@ -166,7 +167,7 @@ static void CyclePalette() {
 // Reads one input event from the map and dispatches any keypress. The mouse is
 // erased from the hidden page first so the next render draws it afresh.
 static void ProcessInput() {
-  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
   KeyNumType input = KN_NONE;
   int x = 0;
   int y = 0;
@@ -239,7 +240,7 @@ static void BeginScenario() {
 
   // This PRESUMES that Select_Game() has told the map to draw itself.
   ThePalettes().game_palette().Set(kFadePaletteMedium);
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 
   // A recording drives the view on playback, so there is no mouse to show.
   if (TheSession().Play) {
@@ -509,7 +510,7 @@ static bool FinishScenarioIfDecided() {
     Send_Statistics_Packet();
   }
 
-  WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
+  TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
   PlayerWins = false;
   PlayerLoses = false;
   PlayerRestarts = false;

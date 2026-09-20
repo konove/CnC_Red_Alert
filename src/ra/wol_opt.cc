@@ -25,8 +25,8 @@
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/msgbox.h"
 #include "ra/screen.h"
@@ -134,7 +134,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   /*
   **	Main Processing Loop.
   */
-  Keyboard->Clear();
+  TheKeyboard().Clear();
   bool display = true;
   bool process = true;
   while (process) {

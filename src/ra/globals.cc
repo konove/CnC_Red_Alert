@@ -44,9 +44,7 @@
 #include "ra/credits.h"
 #include "ra/defines.h"
 #include "ra/externs.h"
-#include "ra/jshell.h"
 #include "ra/version.h"
-#include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "winvq/vqa32/vqaplay.h"
 
@@ -72,7 +70,6 @@
 
 
 
-WWMouseClass* WWMouse = nullptr;
 bool InMovie = false;  // Are we currently playing a VQ movie?
 
 /***************************************************************************
@@ -105,7 +102,6 @@ int NameIDOverride[25];
 ** All keyboard input is routed through the object pointed to by this
 **	keyboard class pointer.
 */
-KeyboardClass* Keyboard;
 
 /***************************************************************************
 **	This is a list of all selected objects (for this map). The support
@@ -279,7 +275,6 @@ SpecialDialogType SpecialDialog = SDLG_NONE;
 
 int RequiredCD = -1;
 int CurrentCD = -1;
-bool MouseInstalled;
 
 
 /***************************************************************************

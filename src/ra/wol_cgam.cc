@@ -28,10 +28,10 @@
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/gauge.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/installation.h"
 #include "ra/jshell.h"
 #include "ra/msgbox.h"
@@ -203,7 +203,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   /*
   **	Main Processing Loop.
   */
-  Keyboard->Clear();
+  TheKeyboard().Clear();
   bool display = true;
   bool process = true;
   while (process) {

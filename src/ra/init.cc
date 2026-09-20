@@ -105,6 +105,7 @@
 #include "ra/house.h"
 #include "ra/ini.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/installation.h"
 #include "ra/intro.h"
 #include "ra/ipx.h"
@@ -1010,7 +1011,7 @@ bool Select_Game(bool /*fade*/) {
             Show_Mouse();
             Play_Movie(VQ_INTRO_MOVIE, THEME_NONE,
                        true);  // no transition picture to briefing
-            Keyboard->Clear();
+            TheKeyboard().Clear();
             Play_Movie(VQ_SIZZLE, THEME_NONE, true);
             Play_Movie(VQ_SIZZLE2, THEME_NONE, true);
             //						Play_Movie(VQ_INTRO_MOVIE,
@@ -1072,7 +1073,7 @@ bool Select_Game(bool /*fade*/) {
   /*
   **	Don't carry stray keystrokes into game.
   */
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 
   /*
   ** Initialize the random number generator(s)
@@ -1266,7 +1267,7 @@ static void MarkLogoPlayed() {
 static void Play_Intro(bool sequenced) {
   static VQType _counter = magic_enum::enum_values<VQType>().front();
 
-  Keyboard->Clear();
+  TheKeyboard().Clear();
   if (sequenced) {
     // Play the movies from the last down to the first, then wrap.
     if (_counter <= magic_enum::enum_values<VQType>().front()) {
@@ -2329,7 +2330,7 @@ static void Bootstrap() {
   ** the screen.
   */
   do {
-    Keyboard->Check();
+    TheKeyboard().Check();
   } while (!GameInFocus);
   AllSurfaces.SurfacesRestored = false;
 
@@ -2348,7 +2349,7 @@ static void Bootstrap() {
   /*
   **	Setup the keyboard processor in preparation for the game.
   */
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 
   /*
   **	This is the shape staging buffer. It must always be available, so it is
@@ -2415,7 +2416,7 @@ static void Init_Mouse() {
   ** Since there is no mouse shape currently available we need
   ** to set one of our own.
   */
-  if (MouseInstalled) {
+  if (TheMouse() != nullptr) {
     const auto temp_mouse_shapes = MixArchive::RetrieveData("MOUSE.SHP");
     if (!temp_mouse_shapes.empty()) {
       Set_Mouse_Cursor(0, 0, Extract_Shape(temp_mouse_shapes, 0));

@@ -10,6 +10,7 @@
 #include "ra/debug_state.h"
 #include "ra/game_clock.h"
 #include "ra/goptions.h"
+#include "ra/input.h"
 #include "ra/network.h"
 #include "ra/object_heaps.h"
 #include "ra/palettes.h"
@@ -74,6 +75,8 @@ class Game {
   base::Installed<RulesClass>::Scope rules_scope_{rules_};
   World world_;
   base::Installed<World>::Scope world_scope_{world_};
+  Input input_;
+  base::Installed<Input>::Scope input_scope_{input_};
   GameOptionsClass options_;
   base::Installed<GameOptionsClass>::Scope options_scope_{options_};
   SpecialClass special_{};

@@ -177,6 +177,7 @@
 #include "ra/heap.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/ipxmgr.h"
 #include "ra/jshell.h"
 #include "ra/logic.h"
@@ -2609,8 +2610,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
 
     case SPC_IRON_CURTAIN:
       if (SuperWeapon.at(SPC_IRON_CURTAIN).Is_Ready()) {
-        const int x = Keyboard->MouseQX - TheMap().TacPixelX;
-        const int y = Keyboard->MouseQY - TheMap().TacPixelY;
+        const int x = TheKeyboard().MouseQX - TheMap().TacPixelX;
+        const int y = TheKeyboard().MouseQY - TheMap().TacPixelY;
         TechnoClass* tech = TheMap().at(cell).Cell_Techno(x, y);
         if (tech) {
           switch (tech->What_Am_I()) {
@@ -2671,8 +2672,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
 
     case SPC_CHRONOSPHERE:
       if (SuperWeapon.at(SPC_CHRONOSPHERE).Is_Ready()) {
-        const int x = Keyboard->MouseQX - TheMap().TacPixelX;
-        const int y = Keyboard->MouseQY - TheMap().TacPixelY;
+        const int x = TheKeyboard().MouseQX - TheMap().TacPixelX;
+        const int y = TheKeyboard().MouseQY - TheMap().TacPixelY;
         TechnoClass* tech = TheMap().at(cell).Cell_Techno(x, y);
         if (tech && Is_Ally(tech)) {
           if (tech->What_Am_I() == RTTI_UNIT ||

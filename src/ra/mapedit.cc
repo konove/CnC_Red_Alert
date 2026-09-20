@@ -87,7 +87,6 @@
 #include "ra/dialog.h"
 #include "ra/direction_dial.h"
 #include "ra/edit.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/facing.h"
 #include "ra/gadget.h"
@@ -96,6 +95,7 @@
 #include "ra/hotkeys.h"
 #include "ra/house.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/menus.h"
@@ -1070,8 +1070,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
                 /*
                 **	No object: select the cell
                 */
-                TheWorld().current_cell() =
-                    Click_Cell_Calc(Keyboard->MouseQX, Keyboard->MouseQY);
+                TheWorld().current_cell() = Click_Cell_Calc(
+                    TheKeyboard().MouseQX, TheKeyboard().MouseQY);
                 TheScreen().hidden_view().Clear();
                 Flag_To_Redraw(true);
                 Render();

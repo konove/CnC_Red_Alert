@@ -58,6 +58,7 @@
 #include "ra/gadget.h"
 #include "ra/goptions.h"
 #include "ra/init.h"
+#include "ra/input.h"
 #include "ra/installation.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
@@ -228,7 +229,7 @@ void Setup_Menu(int menu, std::span<const char* const> text, uint32_t field,
   }
   MenuSkip = skip;
   Show_Mouse();
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 }
 
 int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
@@ -263,8 +264,8 @@ int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
   */
   uint32_t key = 0;  // Key number with its modifier bits.
   UnknownKey = 0;
-  if (Keyboard->Check()) {
-    key = static_cast<uint32_t>(Keyboard->Get()) &
+  if (TheKeyboard().Check()) {
+    key = static_cast<uint32_t>(TheKeyboard().Get()) &
           ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT |
             WWKEY_CTRL_BIT); /* mask off all but release bit	*/
   }
@@ -319,9 +320,9 @@ int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
     */
     case KN_RMOUSE:
     case KN_LMOUSE:
-      if (Coordinates_In_Region(Keyboard->MouseQX, Keyboard->MouseQY, mx1, my1,
-                                mx2, my2)) {
-        newitem = (Keyboard->MouseQY - my1) / menuskip;
+      if (Coordinates_In_Region(TheKeyboard().MouseQX, TheKeyboard().MouseQY,
+                                mx1, my1, mx2, my2)) {
+        newitem = (TheKeyboard().MouseQY - my1) / menuskip;
       } else {
         UnknownKey =
             static_cast<int>(key);  //	Pass the unprocessed button click back.
@@ -419,7 +420,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
     return -1;
   }
   Set_Logic_Page(TheScreen().visible_view());
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 
   /*
   **	Determine the number of entries in this string.
@@ -465,7 +466,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   Window_Box(WINDOW_MENU, BOXSTYLE_RAISED);
   Setup_Menu(0, strings, 0xFFFFL, 0, 0);
 
-  Keyboard->Clear();
+  TheKeyboard().Clear();
   int selection = -1;  // Selection from user.
   UnknownKey = 0;
   while (selection == -1) {
@@ -475,7 +476,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
       break;
     }
   }
-  Keyboard->Clear();
+  TheKeyboard().Clear();
   Hide_Mouse();
 
   TheScreen().hidden_view().Blit(TheScreen().visible_view());
@@ -613,7 +614,7 @@ int Main_Menu(int32_t /*unused*/) {
     Force_CD_Available(RequiredCD);
   }
   Set_Logic_Page(TheScreen().visible_view());
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 
   /*
   **	Create the list
@@ -651,7 +652,7 @@ int Main_Menu(int32_t /*unused*/) {
 
   base::At(buttons, curbutton)->Turn_On();
 
-  Keyboard->Clear();
+  TheKeyboard().Clear();
 
   Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
@@ -801,10 +802,9 @@ int Main_Menu(int32_t /*unused*/) {
         break;
 
       case KN_LMOUSE:
-        if (Coordinates_In_Region(Keyboard->MouseQX, Keyboard->MouseQY,
+        if (Coordinates_In_Region(TheKeyboard().MouseQX, TheKeyboard().MouseQY,
 
-                                  18, 20, 158,
-                                  48)) {
+                                  18, 20, 158, 48)) {
           Show_Who_Was_Responsible();
           display = true;
           TheTheme().Play_Song(THEME_INTRO);
@@ -814,8 +814,8 @@ int Main_Menu(int32_t /*unused*/) {
         if (Is_Counterstrike_Installed() &&
             ((KeyboardClass::Down(KN_LSHIFT) ||
               KeyboardClass::Down(KN_RSHIFT)) &&
-             Coordinates_In_Region(Keyboard->MouseQX, Keyboard->MouseQY, 520, 0,
-                                   640, 100))) {
+             Coordinates_In_Region(TheKeyboard().MouseQX, TheKeyboard().MouseQY,
+                                   520, 0, 640, 100))) {
           TheWorld().ants_enabled() = true;
           process = false;
           retval = 2;  //	To match SEL_START_NEW_GAME

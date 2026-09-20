@@ -164,6 +164,7 @@
 #include "ra/house.h"
 #include "ra/init.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/installation.h"
 #include "ra/ipx.h"
 #include "ra/ipxgconn.h"
@@ -2103,12 +2104,13 @@ static int Net_Join_Dialog() {
           break;
         }
 
-        if (Keyboard->MouseQX > cbox_x[0] &&
-            Keyboard->MouseQX < cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
-            Keyboard->MouseQY > d_color_y &&
-            Keyboard->MouseQY < d_color_y + d_color_h) {
+        if (TheKeyboard().MouseQX > cbox_x[0] &&
+            TheKeyboard().MouseQX <
+                cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
+            TheKeyboard().MouseQY > d_color_y &&
+            TheKeyboard().MouseQY < d_color_y + d_color_h) {
           TheSession().PrefColor = static_cast<PlayerColorType>(
-              (Keyboard->MouseQX - cbox_x[0]) / d_color_w);
+              (TheKeyboard().MouseQX - cbox_x[0]) / d_color_w);
           TheSession().ColorIdx = TheSession().PrefColor;
 
           if (TheSession().ColorIdx == PCOLOR_DIALOG_BLUE) {

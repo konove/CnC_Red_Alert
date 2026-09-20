@@ -55,11 +55,11 @@
 #include "ra/defines.h"
 #include "ra/direction_dial.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/gauge.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/mapedit.h"
@@ -97,8 +97,8 @@ int MapEditClass::Select_Object() {
   /*
   **	See if an object was clicked on
   */
-  int x = Keyboard->MouseQX;
-  int y = Keyboard->MouseQY;
+  int x = TheKeyboard().MouseQX;
+  int y = TheKeyboard().MouseQY;
 
   /*
   **	Get cell for x,y

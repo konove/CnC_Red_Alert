@@ -34,6 +34,7 @@
 #include "ra/externs.h"
 #include "ra/filepcx.h"
 #include "ra/graphics_loader.h"
+#include "ra/input.h"
 #include "ra/interpal.h"
 #include "ra/mapedit.h"
 #include "ra/palette.h"
@@ -64,7 +65,7 @@
 void Focus_Loss() {
   TheTheme().Suspend();
   TheAudio().Pause();
-  if (WWMouse) {
+  if (TheMouse()) {
     WWMouseClass::Clear_Cursor_Clip();
   }
 }
@@ -73,7 +74,7 @@ void Focus_Restore() {
   Restore_Cached_Icons();
   TheMap().Flag_To_Redraw(true);
   TheAudio().Resume();
-  if (WWMouse) {
+  if (TheMouse()) {
     WWMouseClass::Set_Cursor_Clip();
   }
 }

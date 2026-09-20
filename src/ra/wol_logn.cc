@@ -33,10 +33,10 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/edit.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/iconlist.h"
 #include "ra/init.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/msgbox.h"
 #include "ra/passedit.h"
@@ -218,7 +218,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   /*
   **	Main Processing Loop.
   */
-  Keyboard->Clear();
+  TheKeyboard().Clear();
   bool firsttime = true;
   bool display = true;
   bool process = true;
@@ -343,7 +343,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
           WWMessageBox().Process(TXT_WOL_MISSINGNAME);
           firsttime = true;  //	Bloody hack.
           NameEdit.Set_Focus();
-          Keyboard->Clear();
+          TheKeyboard().Clear();
           display = true;
           break;
         }
@@ -351,7 +351,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
           WWMessageBox().Process(TXT_WOL_MISSINGPASSWORD);
           firsttime = true;  //	Bloody hack.
           PassEdit.Set_Focus();
-          Keyboard->Clear();
+          TheKeyboard().Clear();
           display = true;
           break;
         }
@@ -366,7 +366,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
               WWMessageBox().Process(TXT_WOL_CANTCONNECT);
               firsttime = true;  //	Bloody hack.
               NameEdit.Set_Focus();
-              Keyboard->Clear();
+              TheKeyboard().Clear();
               display = true;
               break;
             case USERCANCELLED:
@@ -374,14 +374,14 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
               WWMessageBox().Process(TXT_WOL_LOGINCANCEL);
               firsttime = true;  //	Bloody hack.
               NameEdit.Set_Focus();
-              Keyboard->Clear();
+              TheKeyboard().Clear();
               display = true;
               break;
             case PATCHAVOIDED:
               bBreak = true;
               firsttime = true;  //	Bloody hack.
               NameEdit.Set_Focus();
-              Keyboard->Clear();
+              TheKeyboard().Clear();
               display = true;
               break;
             case PATCHDOWNLOADED:
@@ -431,7 +431,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
           }
           firsttime = true;  //	Bloody hack.
           NameEdit.Set_Focus();
-          Keyboard->Clear();
+          TheKeyboard().Clear();
           display = true;
         }
         break;
@@ -446,7 +446,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
                                         while (timer > 0) {
                                                 ServiceRealTime();
                                         }
-                                        Keyboard->Clear();
+                                        TheKeyboard().Clear();
 
                                         display = true;
                                         break;

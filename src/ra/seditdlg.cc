@@ -30,9 +30,9 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/edit.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/msgbox.h"
 #include "ra/screen.h"
 #include "ra/text_ids.h"
@@ -206,7 +206,7 @@ const char* SimpleEditDlgClass::Show() {
   /*
   **	Main Processing Loop.
   */
-  Keyboard->Clear();
+  TheKeyboard().Clear();
   bool firsttime = true;
   bool display = true;
   bool process = true;

@@ -33,6 +33,7 @@
 #include "ra/defines.h"
 #include "ra/externs.h"
 #include "ra/init.h"
+#include "ra/input.h"
 #include "ra/interpal.h"
 #include "ra/jshell.h"
 #include "ra/palette.h"
@@ -93,7 +94,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
       ThePalettes().black_palette().Adjust(0xFF);
       ThePalettes().black_palette().Set();
     }
-    Keyboard->Clear();
+    TheKeyboard().Clear();
 
     VqaPlayer player;
     GameFileVqaIo movie_io;  // Must outlive the open movie.
@@ -159,9 +160,9 @@ void Play_Movie(const VQType name, const ThemeType theme,
 
 int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   int key = 0;
-  if (Keyboard->Check()) {
-    key = Keyboard->Get();
-    Keyboard->Clear();
+  if (TheKeyboard().Check()) {
+    key = TheKeyboard().Get();
+    TheKeyboard().Clear();
   }
   Check_VQ_Palette_Set();
   if (TheScreen().is_vq640()) {
@@ -175,7 +176,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   // stopped.
 
   if ((BreakoutAllowed || TheDebugState().developer_mode()) && key == KN_ESC) {
-    Keyboard->Clear();
+    TheKeyboard().Clear();
     movie_broken_out = true;
     return 1;
   }

@@ -36,6 +36,7 @@
 #include "ra/config.h"
 #include "ra/externs.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/interpal.h"
 #include "ra/jshell.h"
 #include "ra/mission_id.h"
@@ -273,7 +274,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
         ThePalettes().game_palette().Set();
       }
 
-      Keyboard->Clear();
+      TheKeyboard().Clear();
 
       while (Get_Mouse_State()) {
         Show_Mouse();

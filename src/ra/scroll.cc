@@ -51,6 +51,7 @@
 #include "ra/goptions.h"
 #include "ra/help.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/screen.h"
 #include "sdllib/gbuffer.h"
@@ -176,7 +177,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         /*
         **	Increase the scroll rate if the mouse button is held down.
         */
-        //			if (Keyboard->Down(KN_LMOUSE)) {
+        //			if (TheKeyboard().Down(KN_LMOUSE)) {
         //				rate = Bound(rate-3, 0, 4);
         //			}
         if (KeyboardClass::Down(KN_RMOUSE)) {

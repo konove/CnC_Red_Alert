@@ -51,9 +51,9 @@
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/inline.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/screen.h"
 #include "ra/text_ids.h"
@@ -429,7 +429,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     }
 
   } else {
-    Keyboard->Clear();
+    TheKeyboard().Clear();
   }
 
   /*

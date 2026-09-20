@@ -7,6 +7,7 @@
 
 #include "ra/config.h"
 #include "ra/externs.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/language.h"
 #include "ra/msgbox.h"
@@ -65,7 +66,7 @@ void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
 }
 
 void SDL_Event_Handler(SDL_Event* event) {
-  if (Keyboard->Event_Handler(event)) {
+  if (TheKeyboard().Event_Handler(event)) {
     return;
   }
 

@@ -35,6 +35,7 @@
 #include "ra/dialog.h"
 #include "ra/dib.h"
 #include "ra/iconlist.h"
+#include "ra/input.h"
 #include "ra/installation.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
@@ -81,7 +82,6 @@
 #include "port/win32/win32_system.h"
 #include "ra/audio.h"
 #include "ra/config.h"
-#include "ra/externs.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/msgbox.h"
@@ -614,7 +614,7 @@ HRESULT WolapiObject::GetChatServer() {
                                             // minute, in case wolapi chokes.
   //	debugprint( "Called RequestServerList...\n" );
   DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
-  Keyboard->Clear();  //	Set up for escape key checking.
+  TheKeyboard().Clear();  //	Set up for escape key checking.
   bool bCancel = false;
   hresPatchResults = 0;
   while (pChatSink->bRequestServerListWait &&
@@ -641,7 +641,7 @@ HRESULT WolapiObject::GetChatServer() {
   }
   //	debugprint( "RequestServerList wait finished\n" );
   if (bCancel) {
-    Keyboard->Clear();
+    TheKeyboard().Clear();
     return USERCANCELLED;
   }
   if (pChatSink->pServer) {
@@ -703,7 +703,7 @@ HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
 
   const DWORD dwTimeStart = Get_Time_Ms();
   DWORD dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
-  Keyboard->Clear();  //	Set up for escape key checking.
+  TheKeyboard().Clear();  //	Set up for escape key checking.
   bool bCancel = false;
   while (pChatSink->bRequestConnectionWait &&
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
@@ -723,7 +723,7 @@ HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
     //        to ServiceRealTime()
   }
   if (bCancel) {
-    Keyboard->Clear();
+    TheKeyboard().Clear();
     return USERCANCELLED;
   }
   if (pChatSink->bRequestConnectionWait) {

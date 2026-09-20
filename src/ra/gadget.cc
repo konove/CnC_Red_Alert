@@ -70,8 +70,8 @@
 #include "ra/control.h"
 #include "ra/debug_state.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/filepcx.h"
+#include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/link.h"
 #include "ra/palettes.h"
@@ -467,9 +467,9 @@ KeyNumType GadgetClass::Input() {
   /*
   **	Fetch any pending keyboard input.
   */
-  KeyNumType key = Keyboard->Check();
+  KeyNumType key = TheKeyboard().Check();
   if (key != 0) {
-    key = Keyboard->Get();
+    key = TheKeyboard().Get();
   }
 
   if constexpr (config::kCheatKeysEnabled) {
@@ -511,8 +511,8 @@ KeyNumType GadgetClass::Input() {
   *to this function.
   */
   if ((key & 0xFF) == KN_LMOUSE || (key & 0xFF) == KN_RMOUSE) {
-    mousex = Keyboard->MouseQX;
-    mousey = Keyboard->MouseQY;
+    mousex = TheKeyboard().MouseQX;
+    mousey = TheKeyboard().MouseQY;
   } else {
     mousex = Get_Mouse_X();
     mousey = Get_Mouse_Y();

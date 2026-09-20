@@ -95,12 +95,10 @@ extern int NameIDOverride[25];
 
 extern bool GameInFocus;
 extern bool InMovie;
-extern WWMouseClass* WWMouse;
 
 /*
 **	Dynamic global variables (these change or are initialized at run time).
 */
-extern KeyboardClass* Keyboard;
 extern VersionClass VerNum;
 extern bool ScoresPresent;
 extern bool AllowVoice;
@@ -137,7 +135,6 @@ extern SpecialDialogType SpecialDialog;
 
 extern int RequiredCD;
 extern int CurrentCD;
-extern bool MouseInstalled;
 
 
 

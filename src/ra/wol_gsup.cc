@@ -47,6 +47,7 @@
 #include "ra/externs.h"
 #include "ra/goptions.h"
 #include "ra/iconlist.h"
+#include "ra/input.h"
 #include "ra/installation.h"
 #include "ra/ipx.h"
 #include "ra/mission_id.h"
@@ -1322,13 +1323,13 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             break;
           }
 
-          if (Keyboard->MouseQX > base::At(cbox_x, 0) &&
-              Keyboard->MouseQX <
+          if (TheKeyboard().MouseQX > base::At(cbox_x, 0) &&
+              TheKeyboard().MouseQX <
                   (base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w) &&
-              Keyboard->MouseQY > d_color_y &&
-              Keyboard->MouseQY < (d_color_y + d_color_h)) {
+              TheKeyboard().MouseQY > d_color_y &&
+              TheKeyboard().MouseQY < (d_color_y + d_color_h)) {
             TheSession().PrefColor = static_cast<PlayerColorType>(
-                (Keyboard->MouseQX - base::At(cbox_x, 0)) / d_color_w);
+                (TheKeyboard().MouseQX - base::At(cbox_x, 0)) / d_color_w);
 
             //	Ensure that no one is using this color (to our knowledge).
             if (pILPlayers->FindColor(&ThePalettes().color_remaps().at(
