@@ -99,7 +99,7 @@ void Shake_Screen(int shakes) {
   const int oldyoff = 0;
   int newyoff = 0;
   while (shakes--) {
-    const int x = static_cast<int>(TickCount.Time());
+    const int x = static_cast<int>(SystemTicks());
 
     do {
       newyoff = Sim_Random_Pick(0, 2) - 1;
@@ -119,7 +119,7 @@ void Shake_Screen(int shakes) {
       default:
         break;
     }
-    while (x == TickCount.Time()) {
+    while (x == SystemTicks()) {
       Video_End_Frame();
     }
   }

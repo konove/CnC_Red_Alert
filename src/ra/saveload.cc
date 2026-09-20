@@ -64,6 +64,7 @@
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
+#include "ra/assets.h"
 #include "ra/base.h"
 #include "ra/building.h"
 #include "ra/bullet.h"
@@ -536,7 +537,8 @@ bool Save_Game(int id, const std::string_view descr, bool /*unused*/) {
   Sha1Sink sha(fpipe);
   BlowfishSink bpipe(CipherMode::kEncrypt, sha);
   LzoSink pipe(CodecMode::kCompress, bpipe, SAVE_BLOCK_SIZE);
-  bpipe.Key(base::ObjectBytes(FastKey).first(BlowfishEngine::kMaxKeyLength));
+  bpipe.Key(base::ObjectBytes(TheAssets().mix_key())
+                .first(BlowfishEngine::kMaxKeyLength));
 
   // Tee the field-wise body before compression. The dump has Section tags
   // but no save header, encryption, or digest, so it can be compared directly.
@@ -704,7 +706,8 @@ bool Load_Game(int id) {
   file.Seek(pos, SeekOrigin::kBegin);
   BlowfishSource bstraw(CipherMode::kDecrypt, fstraw);
   LzoSource straw(CodecMode::kDecompress, bstraw, SAVE_BLOCK_SIZE);
-  bstraw.Key(base::ObjectBytes(FastKey).first(BlowfishEngine::kMaxKeyLength));
+  bstraw.Key(base::ObjectBytes(TheAssets().mix_key())
+                 .first(BlowfishEngine::kMaxKeyLength));
 
   /*
   **	Clear the scenario so we start fresh; this calls the Init_Clear()

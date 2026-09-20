@@ -644,7 +644,7 @@ bool RunFrame() {
   }
 
   // Initialize our AI processing timer
-  Session.ProcessTimer = TickCount.Value();
+  Session.ProcessTimer = SystemTicks();
 
   // If there is no theme playing, but it looks like one is required, then
   // start one playing. This is usually the symptom of there being no
@@ -698,7 +698,7 @@ bool RunFrame() {
   //
   // Multiplayer uses this running average to pick a frame rate every machine
   // in the session can actually keep up with.
-  Session.ProcessTicks += TickCount.Value() - Session.ProcessTimer;
+  Session.ProcessTicks += SystemTicks() - Session.ProcessTimer;
   Session.ProcessFrames++;
 
   // Process all commands that are ready to be processed.

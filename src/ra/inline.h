@@ -100,6 +100,16 @@
 #include "sdllib/string_table.h"
 #include "tech/random.h"
 
+// Source of random numbers for events that must NOT affect game logic, such
+// as cosmetic animations and one-machine-only effects. Because it never
+// influences the simulation, it does not need to stay in sync across
+// networked machines, and it is not saved. For sync-critical randomness use
+// TheScenario().sync_rng_.
+inline RandomClass& LocalRandom() {
+  static RandomClass rng;
+  return rng;
+}
+
 /***********************************************************************************************
  * Lepton_To_Pixel -- Convert a lepton value into pixel value. *
  *                                                                                             *
@@ -957,7 +967,7 @@ inline bool Percent_Chance(int percent) {
  *=============================================================================================*/
 template <class T>
 T Sim_Random_Pick(T a, T b) {
-  return T(local_rng.InRange(static_cast<int>(a), static_cast<int>(b)));
+  return T(LocalRandom().InRange(static_cast<int>(a), static_cast<int>(b)));
 };
 
 /***********************************************************************************************
@@ -981,7 +991,7 @@ T Sim_Random_Pick(T a, T b) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline bool Sim_Percent_Chance(int percent) {
-  return local_rng.InRange(0, 99) < percent;
+  return LocalRandom().InRange(0, 99) < percent;
 }
 
 /***********************************************************************************************

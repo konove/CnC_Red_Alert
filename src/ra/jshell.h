@@ -201,9 +201,7 @@ struct FrameTickSource {
 };
 
 struct SystemTickSource {
-  static int64_t Tick() {
-    return g_tick_timer == nullptr ? 0 : g_tick_timer->TickCount();
-  }
+  static int64_t Tick() { return SystemTicks(); }
 };
 
 template <class T>

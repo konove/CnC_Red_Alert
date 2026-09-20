@@ -83,6 +83,7 @@
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/ftimer.h"
@@ -430,7 +431,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   if (timeout == -1) {
     txtlabel->UserData1 = 0;
   } else {
-    txtlabel->UserData1 = TickCount.Value() + timeout;
+    txtlabel->UserData1 = SystemTicks() + timeout;
   }
   txtlabel->UserData2 = id;
 
@@ -673,7 +674,7 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
   if (timeout == -1) {
     tlabel->UserData1 = 0;
   } else {
-    tlabel->UserData1 = TickCount.Value() + timeout;
+    tlabel->UserData1 = SystemTicks() + timeout;
   }
 
   return 1;
@@ -923,7 +924,7 @@ int MessageListClass::Manage() {
     //.....................................................................
     //	If this message's time is up, remove it from the list
     //.....................................................................
-    if (txtlabel->UserData1 != 0 && TickCount.Value() > txtlabel->UserData1) {
+    if (txtlabel->UserData1 != 0 && SystemTicks() > txtlabel->UserData1) {
       //..................................................................
       //	Save the next ptr in the list; remove this entry
       //..................................................................

@@ -120,6 +120,7 @@
 #include "ra/world.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
@@ -1058,7 +1059,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
             **	Check for double-click
             */
             if (TheWorld().current_object().Count() &&
-                ((TickCount.Value() - LastClickTime) < 15)) {
+                ((SystemTicks() - LastClickTime) < 15)) {
             } else {
               /*
               **	Single-click: select object
@@ -1079,7 +1080,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
             }
           }
         }
-        LastClickTime = TickCount.Value();
+        LastClickTime = SystemTicks();
         input = KN_NONE;
       } else {
         /*

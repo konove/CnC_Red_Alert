@@ -1946,13 +1946,13 @@ static void Init_Expansion_Files() {
       if (absl::EqualsIgnoreCase(state.name, "scores.mix")) {
         continue;
       }
-      MixArchive::Register(state.name, &FastKey);
+      MixArchive::Register(state.name, &TheAssets().mix_key());
       MixArchive::Cache(state.name);
     } while (Find_Next_File(state));
   }
   if (Find_First_File("SS*.MIX", state)) {
     do {
-      MixArchive::Register(state.name, &FastKey);
+      MixArchive::Register(state.name, &TheAssets().mix_key());
     } while (Find_Next_File(state));
   }
 }
@@ -2142,40 +2142,41 @@ static void Init_Bootstrap_Mixfiles() {
   if constexpr (config::kWolapiEnabled) {
     GameFile fileWolapiMix("WOLAPI.MIX");
     if (fileWolapiMix.IsAvailable()) {
-      MixArchive::Register("WOLAPI.MIX", &FastKey);
+      MixArchive::Register("WOLAPI.MIX", &TheAssets().mix_key());
       MixArchive::Cache("WOLAPI.MIX");
     }
   }
 
   GameFile file2("EXPAND2.MIX");
   if (file2.IsAvailable()) {
-    MixArchive::Register("EXPAND2.MIX", &FastKey);
+    MixArchive::Register("EXPAND2.MIX", &TheAssets().mix_key());
     Cache_Or_Exit("EXPAND2.MIX");
 
-    MixArchive::Register("HIRES1.MIX", &FastKey);
+    MixArchive::Register("HIRES1.MIX", &TheAssets().mix_key());
     Cache_Or_Exit("HIRES1.MIX");
   }
 
   GameFile file("EXPAND.MIX");
   if (file.IsAvailable()) {
-    MixArchive::Register("EXPAND.MIX", &FastKey);
+    MixArchive::Register("EXPAND.MIX", &TheAssets().mix_key());
     Cache_Or_Exit("EXPAND.MIX");
   }
 
-  MixArchive::Register("REDALERT.MIX", &FastKey);
+  MixArchive::Register("REDALERT.MIX", &TheAssets().mix_key());
 
   /*
   **	Bootstrap enough of the system so that the error dialog box can
   *successfully *	be displayed.
   */
-  MixArchive::Register("LOCAL.MIX", &FastKey);  // Cached.
+  MixArchive::Register("LOCAL.MIX", &TheAssets().mix_key());  // Cached.
   Cache_Or_Exit("LOCAL.MIX");
 
-  MixArchive::Register("HIRES.MIX", &FastKey);
+  MixArchive::Register("HIRES.MIX", &TheAssets().mix_key());
   Cache_Or_Exit("HIRES.MIX");
 
-  MixArchive::Register("NCHIRES.MIX",
-                       &FastKey);  // Non-cached hires stuff incl VQ palettes
+  MixArchive::Register(
+      "NCHIRES.MIX",
+      &TheAssets().mix_key());  // Non-cached hires stuff incl VQ palettes
 
   RequiredCD = temp;
 }
@@ -2208,29 +2209,31 @@ static void Init_Secondary_Mixfiles() {
     // (they don't contain the base missions)
     if (GameFile("MAIN3.MIX").IsAvailable() &&
         !GameFile("GENERAL3.MIX").IsAvailable()) {
-      const MixArchive* tmp = MixArchive::Register("MAIN3.MIX", &FastKey);
+      const MixArchive* tmp =
+          MixArchive::Register("MAIN3.MIX", &TheAssets().mix_key());
       Extract("GENERAL.MIX", "GENERAL3.MIX");
       delete tmp;
     }
 
     if (GameFile("MAIN4.MIX").IsAvailable() &&
         !GameFile("GENERAL4.MIX").IsAvailable()) {
-      const MixArchive* tmp = MixArchive::Register("MAIN4.MIX", &FastKey);
+      const MixArchive* tmp =
+          MixArchive::Register("MAIN4.MIX", &TheAssets().mix_key());
       Extract("GENERAL.MIX", "GENERAL4.MIX");
       Extract("SCORES.MIX", "SCORES.MIX");  // also extract scores
       delete tmp;
     }
 
     // load the first two to get both movies
-    MixArchive::Register("MAIN2.MIX", &FastKey);
-    MixArchive::Register("MAIN1.MIX", &FastKey);
+    MixArchive::Register("MAIN2.MIX", &TheAssets().mix_key());
+    MixArchive::Register("MAIN1.MIX", &TheAssets().mix_key());
 
     // load extra missions
-    MixArchive::Register("GENERAL4.MIX", &FastKey);
-    MixArchive::Register("GENERAL3.MIX", &FastKey);
+    MixArchive::Register("GENERAL4.MIX", &TheAssets().mix_key());
+    MixArchive::Register("GENERAL3.MIX", &TheAssets().mix_key());
   } else {
     // assume regular/TFD files
-    archives.main = MixArchive::Register("MAIN.MIX", &FastKey);
+    archives.main = MixArchive::Register("MAIN.MIX", &TheAssets().mix_key());
     DCHECK(archives.main != nullptr);
   }
 
@@ -2253,22 +2256,22 @@ static void Init_Secondary_Mixfiles() {
   /*
   **	Inform the file system of the various MIX files.
   */
-  MixArchive::Register("CONQUER.MIX", &FastKey);  // Cached.
-  //	MixArchive::Register("TRANSIT.MIX", &FastKey);
+  MixArchive::Register("CONQUER.MIX", &TheAssets().mix_key());  // Cached.
+  //	MixArchive::Register("TRANSIT.MIX", &TheAssets().mix_key());
 
   if (archives.general == nullptr) {
-    archives.general =
-        MixArchive::Register("GENERAL.MIX", &FastKey);  // Never cached.
+    archives.general = MixArchive::Register(
+        "GENERAL.MIX", &TheAssets().mix_key());  // Never cached.
   }
 
   if (GameFile("MOVIES1.MIX").IsAvailable()) {
-    archives.movies =
-        MixArchive::Register("MOVIES1.MIX", &FastKey);  // Never cached.
+    archives.movies = MixArchive::Register(
+        "MOVIES1.MIX", &TheAssets().mix_key());  // Never cached.
   }
   // load both sets of movies if possible
   if (GameFile("MOVIES2.MIX").IsAvailable()) {
-    archives.movies =
-        MixArchive::Register("MOVIES2.MIX", &FastKey);  // Never cached.
+    archives.movies = MixArchive::Register(
+        "MOVIES2.MIX", &TheAssets().mix_key());  // Never cached.
   }
   DCHECK(archives.movies != nullptr);
 
@@ -2276,17 +2279,17 @@ static void Init_Secondary_Mixfiles() {
   **	Register the score mixfile.
   */
   ScoresPresent = true;
-  archives.score = MixArchive::Register("SCORES.MIX", &FastKey);
+  archives.score = MixArchive::Register("SCORES.MIX", &TheAssets().mix_key());
   ThemeClass::Scan();
 
   /*
   **	These are sound card specific, but the install program would have
   **	copied the correct versions to the hard drive.
   */
-  MixArchive::Register("SPEECH.MIX", &FastKey);   // Never cached.
-  MixArchive::Register("SOUNDS.MIX", &FastKey);   // Cached.
-  MixArchive::Register("RUSSIAN.MIX", &FastKey);  // Cached.
-  MixArchive::Register("ALLIES.MIX", &FastKey);   // Cached.
+  MixArchive::Register("SPEECH.MIX", &TheAssets().mix_key());   // Never cached.
+  MixArchive::Register("SOUNDS.MIX", &TheAssets().mix_key());   // Cached.
+  MixArchive::Register("RUSSIAN.MIX", &TheAssets().mix_key());  // Cached.
+  MixArchive::Register("ALLIES.MIX", &TheAssets().mix_key());   // Cached.
 }
 
 /***********************************************************************************************
@@ -2492,7 +2495,7 @@ static void Init_Keys() {
   INIClass ini;
   ini.Load(file);
 
-  FastKey = ini.Get_PKey(true);
+  TheAssets().set_mix_key(ini.Get_PKey(true));
 }
 
 /***************************************************************************

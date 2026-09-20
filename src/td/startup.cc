@@ -297,7 +297,6 @@ int main(int argc, char* argv[])
     ApplyStartupOptions(*options);
 
     InitTickTimer();
-    TickCount.Start();
 
     DiskFile cfile("CONQUER.INI");
 

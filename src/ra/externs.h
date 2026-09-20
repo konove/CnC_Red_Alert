@@ -102,9 +102,7 @@ extern WWMouseClass* WWMouse;
 /*
 **	Dynamic global variables (these change or are initialized at run time).
 */
-extern PKey FastKey;
 extern KeyboardClass* Keyboard;
-extern RandomClass local_rng;
 extern VersionClass VerNum;
 extern bool ScoresPresent;
 extern bool AllowVoice;
@@ -136,7 +134,6 @@ extern QueueClass<EventClass, kMaxEvents * 64> DoList;
 /*
 **	Miscellaneous globals.
 */
-extern Stopwatch<SystemTickSource> TickCount;
 extern HousesType Whom;
 extern VQAConfig AnimControl;
 extern int BuildLevel;

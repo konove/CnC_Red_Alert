@@ -1863,13 +1863,13 @@ int MapEditClass::Team_Members(HousesType house) {
     */
     if (lheld) {
       /*
-      **	The first time in, TickCount - heldtime will be larger than
+      **	The first time in, the elapsed time will be larger than
       **	tdelay[2], so we increment the count immediately; then, we
       *decrement *	tindex to go to the next time delay, which is longer;
       *then, decr. *	again to go to the 1st time delay which is the shortest.
       */
-      if (TickCount.Time() - heldtime > base::At(tdelay, tindex)) {
-        heldtime = TickCount.Time();
+      if (SystemTicks() - heldtime > base::At(tdelay, tindex)) {
+        heldtime = SystemTicks();
         if (tindex) {
           tindex--;
         }
@@ -1898,16 +1898,16 @@ int MapEditClass::Team_Members(HousesType house) {
 
     } else {
       /*
-      **	The first time in, TickCount - heldtime will be larger than
+      **	The first time in, the elapsed time will be larger than
       **	tdelay[2], so we increment the count immediately; then, we
       *decrement *	tindex to go to the next time delay, which is longer;
       *then, decr. *	again to go to the 1st time delay which is the shortest.
       */
-      if (rheld && (TickCount.Time() - heldtime > base::At(tdelay, tindex))) {
+      if (rheld && (SystemTicks() - heldtime > base::At(tdelay, tindex))) {
         if (tindex) {
           tindex--;
         }
-        heldtime = TickCount.Time();
+        heldtime = SystemTicks();
 
         if (teamcount.at(base::ToSize(curclass)) > 0) {
           teamcount.at(base::ToSize(curclass))--;

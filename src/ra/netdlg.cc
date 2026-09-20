@@ -200,6 +200,7 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
+#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
@@ -2789,7 +2790,7 @@ static int Net_Join_Dialog() {
       //	- Send queries for the new selected game, if there is one
       //.....................................................................
       for (i = 1; i < Session.Games.Count(); i++) {
-        if (TickCount.Value() - Session.Games.at(i)->Game.LastTime > 400) {
+        if (SystemTicks() - Session.Games.at(i)->Game.LastTime > 400) {
           delete Session.Games.at(i);
           Session.Games.Delete(Session.Games.at(i));
 
@@ -2830,11 +2831,10 @@ static int Net_Join_Dialog() {
       // for a chat announcement; he then has 1 second to reply.
       //.....................................................................
       for (i = 1; i < Session.Chat.Count(); i++) {
-        if (TickCount.Value() - Session.Chat.at(i)->Chat.LastTime > 360) {
+        if (SystemTicks() - Session.Chat.at(i)->Chat.LastTime > 360) {
           delete Session.Chat.at(i);
           Session.Chat.Delete(Session.Chat.at(i));
-        } else if (TickCount.Value() - Session.Chat.at(i)->Chat.LastTime >
-                       300 &&
+        } else if (SystemTicks() - Session.Chat.at(i)->Chat.LastTime > 300 &&
                    Session.Chat.at(i)->Chat.LastChance == 0) {
           base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
                           sizeof(Session.GPacket));
@@ -2975,8 +2975,8 @@ static int Net_Join_Dialog() {
     //.....................................................................
     const int j =
         std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 60);
-    starttime = TickCount.Value();
-    while (TickCount.Value() - starttime < static_cast<int64_t>(j)) {
+    starttime = SystemTicks();
+    while (SystemTicks() - starttime < static_cast<int64_t>(j)) {
       Ipx.Service();
     }
   }
@@ -3449,7 +3449,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         //...............................................................
         //	If name was found, update the node's time stamp & IsOpen flag.
         //...............................................................
-        Session.Games.at(i)->Game.LastTime = TickCount.Value();
+        Session.Games.at(i)->Game.LastTime = SystemTicks();
         if (Session.Games.at(i)->Game.IsOpen !=
             Session.GPacket.GameInfo.IsOpen) {
           if (Session.GPacket.GameInfo.IsOpen) {
@@ -3510,7 +3510,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       port::SafeCopy(who->Name, Session.GPacket.Name);
       who->Address = Session.GAddress;
       who->Game.IsOpen = Session.GPacket.GameInfo.IsOpen;
-      who->Game.LastTime = TickCount.Value();
+      who->Game.LastTime = SystemTicks();
       Session.Games.Add(who);
 
       //..................................................................
@@ -3951,7 +3951,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       for (i = 0; i < Session.Chat.Count(); i++) {
         if (Session.Chat.at(i)->Address == Session.GAddress) {
           port::SafeCopy(Session.Chat.at(i)->Name, Session.GPacket.Name);
-          Session.Chat.at(i)->Chat.LastTime = TickCount.Value();
+          Session.Chat.at(i)->Chat.LastTime = SystemTicks();
           Session.Chat.at(i)->Chat.LastChance = 0;
           Session.Chat.at(i)->Chat.Color = Session.GPacket.Chat.Color;
           found = 1;
@@ -3966,7 +3966,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       who = new NodeNameType;
       port::SafeCopy(who->Name, Session.GPacket.Name);
       who->Address = Session.GAddress;
-      who->Chat.LastTime = TickCount.Value();
+      who->Chat.LastTime = SystemTicks();
       who->Chat.LastChance = 0;
       who->Chat.Color = Session.GPacket.Chat.Color;
       Session.Chat.Add(who);
@@ -4752,7 +4752,7 @@ static int Net_New_Dialog() {
         //	a chance to know about this new guy)
         //...............................................................
         i = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 60);
-        while (TickCount.Value() - ok_timer < i) {
+        while (SystemTicks() - ok_timer < i) {
           Ipx.Service();
         }
 
@@ -4921,7 +4921,7 @@ static int Net_New_Dialog() {
     //.....................................................................
     whahoppa = Get_NewGame_Responses(&playerlist, color_used);
     if (whahoppa == EV_NEW_PLAYER) {
-      ok_timer = TickCount.Value();
+      ok_timer = SystemTicks();
       aiplayersgauge.Set_Maximum(TheRules().MaxPlayers -
                                  static_cast<int>(Session.Players.Count()));
       Session.Options.AIPlayers = aiplayersgauge.Get_Value();
@@ -5027,7 +5027,7 @@ static int Net_New_Dialog() {
     // measure 	the connection response time.  Don't ping myself (index
     // 0).
     //.....................................................................
-    if (TickCount.Value() - ping_timer > 15) {
+    if (SystemTicks() - ping_timer > 15) {
       base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
                       sizeof(Session.GPacket));
       Session.GPacket.Command = NET_PING;
@@ -5036,7 +5036,7 @@ static int Net_New_Dialog() {
                                 sizeof(GlobalPacketType), 1,
                                 &Session.Players.at(i)->Address);
       }
-      ping_timer = TickCount.Value();
+      ping_timer = SystemTicks();
     }
 
     //.....................................................................
@@ -7333,7 +7333,7 @@ int Update_WWChat() {
   //------------------------------------------------------------------------
   const int j = sizeof(WWPersons) / sizeof(struct WWPerson);
   const int i = Random_Pick(0, j - 1);
-  if (TickCount.Value() - base::At(WWPersons, i).LastTime < 1800 &&
+  if (SystemTicks() - base::At(WWPersons, i).LastTime < 1800 &&
       base::At(WWPersons, i).LastTime != 0) {
     return 0;
   }
@@ -7341,7 +7341,7 @@ int Update_WWChat() {
   Session.Messages.Add_Message(base::At(WWPersons, i).Name, 0,
                                base::At(WWPersons, i).Phrase,
                                base::At(WWPersons, i).Color, kTpfText, -1);
-  base::At(WWPersons, i).LastTime = TickCount.Value();
+  base::At(WWPersons, i).LastTime = SystemTicks();
 
   return 1;
 

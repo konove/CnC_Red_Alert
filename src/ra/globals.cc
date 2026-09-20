@@ -98,11 +98,6 @@ bool InMovie = false;  // Are we currently playing a VQ movie?
 bool GameInFocus = false;
 
 /***************************************************************************
-**	Encryption keys.
-*/
-PKey FastKey;
-
-/***************************************************************************
 **	This is where the name overrides for the units will reside.
 */
 const char* NameOverride[25];
@@ -127,12 +122,6 @@ int NameIDOverride[25];
 **	keyboard class pointer.
 */
 KeyboardClass* Keyboard;
-
-// Source of random numbers for events that must NOT affect game logic, such as
-// cosmetic animations and one-machine-only effects. Because it never influences
-// the simulation, it does not need to stay in sync across networked machines.
-// For sync-critical randomness use Scen.sync_rng_.
-RandomClass local_rng;
 
 /***************************************************************************
 **	This is a list of all selected objects (for this map). The support
@@ -390,10 +379,6 @@ int RequiredCD = -1;
 int CurrentCD = -1;
 bool MouseInstalled;
 
-/***************************************************************************
-** Tick Count global timer object.
-*/
-Stopwatch<SystemTickSource> TickCount;
 
 /***************************************************************************
 **  Win32 specific globals

@@ -328,16 +328,19 @@ bool Force_CD_Available(int cd_desired)  // ajw
     delete archives.score;
     delete archives.main;
 
-    archives.main = MixArchive::Register("MAIN.MIX", &FastKey);
+    archives.main = MixArchive::Register("MAIN.MIX", &TheAssets().mix_key());
     DCHECK(archives.main != nullptr);
     if (GameFile("MOVIES1.MIX").IsAvailable()) {
-      archives.movies = MixArchive::Register("MOVIES1.MIX", &FastKey);
+      archives.movies =
+          MixArchive::Register("MOVIES1.MIX", &TheAssets().mix_key());
     } else {
-      archives.movies = MixArchive::Register("MOVIES2.MIX", &FastKey);
+      archives.movies =
+          MixArchive::Register("MOVIES2.MIX", &TheAssets().mix_key());
     }
     DCHECK(archives.movies != nullptr);
-    archives.general = MixArchive::Register("GENERAL.MIX", &FastKey);
-    archives.score = MixArchive::Register("SCORES.MIX", &FastKey);
+    archives.general =
+        MixArchive::Register("GENERAL.MIX", &TheAssets().mix_key());
+    archives.score = MixArchive::Register("SCORES.MIX", &TheAssets().mix_key());
     ThemeClass::Scan();
   }
 

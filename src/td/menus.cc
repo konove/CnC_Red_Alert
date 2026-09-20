@@ -748,7 +748,7 @@ int Main_Menu(int timeout) {
   */
   Set_Logic_Page(TheScreen().visible_view());
   Keyboard::Clear();
-  starttime = TickCount.Time();
+  starttime = SystemTicks();
 
   /*
   **	Create the list
@@ -829,7 +829,7 @@ int Main_Menu(int timeout) {
     /*
     **	If timeout expires, bail
     */
-    if (timeout && TickCount.Time() - starttime > timeout) {
+    if (timeout && SystemTicks() - starttime > timeout) {
       retval = -1;
       process = false;
     }

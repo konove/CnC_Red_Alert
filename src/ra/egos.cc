@@ -73,6 +73,7 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/memflag.h"
+#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
@@ -716,7 +717,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Init misc timing variables.
   */
-  const int time = static_cast<int>(TickCount.Value());
+  const int time = static_cast<int>(SystemTicks());
   int frame = 0;
   int picture_frame = 0;
   int slide_number = 0;
@@ -798,7 +799,8 @@ void Show_Who_Was_Responsible() {
     /*
     ** Kill any spare time before blitting the hid page forward.
     */
-    while (TickCount.Value() - time < static_cast<int64_t>(frame) * speed && !Keyboard->Check()) {
+    while (SystemTicks() - time < static_cast<int64_t>(frame) * speed &&
+           !Keyboard->Check()) {
     }
 
     /*
@@ -857,7 +859,8 @@ void Show_Who_Was_Responsible() {
       /*
       ** Kill any spare time
       */
-      while (TickCount.Value() - time < static_cast<int64_t>(frame) * speed && !Keyboard->Check()) {
+      while (SystemTicks() - time < static_cast<int64_t>(frame) * speed &&
+             !Keyboard->Check()) {
       }
     }
   }

@@ -362,7 +362,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
   if (timeout == -1) {
     txtlabel->UserData = 0;
   } else {
-    txtlabel->UserData = TickCount.Time() + timeout;
+    txtlabel->UserData = SystemTicks() + timeout;
   }
 
   /*------------------------------------------------------------------------
@@ -536,7 +536,7 @@ int MessageListClass::Manage() {
     /*.....................................................................
     If this message's time is up, remove it from the list
     .....................................................................*/
-    if (txtlabel->UserData != 0 && TickCount.Time() > txtlabel->UserData) {
+    if (txtlabel->UserData != 0 && SystemTicks() > txtlabel->UserData) {
       /*..................................................................
       If we're about to delete the edit message, clear our edit message
       values.

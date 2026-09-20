@@ -16,6 +16,7 @@
 #include "port/bytes_of.h"
 #include "ra/externs.h"
 #include "sdllib/gbuffer.h"
+#include "sdllib/timer.h"
 #include "sdllib/ww_win.h"
 #include "tech/ftimer.h"
 #include "tech/rgb.h"
@@ -33,12 +34,12 @@ void PaletteClass::Set(int fade, void (*callback)()) {
   }
 
   if (fade) {
-    const auto start_time = TickCount.Value();
+    const auto start_time = SystemTicks();
 
     PaletteClass fade_palette;
 
     while (true) {
-      const int64_t now = TickCount.Value();
+      const int64_t now = SystemTicks();
       const int cur_time =
           static_cast<int>(std::min<int64_t>(now - start_time, fade));
 
@@ -69,7 +70,7 @@ void PaletteClass::Set(int fade, void (*callback)()) {
       // The blend only changes when the tick does, so presenting again
       // before then redraws an identical frame. Unpaced, this loop presented
       // over a thousand times a second and kept a core busy for the fade.
-      while (TickCount.Value() == now) {
+      while (SystemTicks() == now) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
       }
     }

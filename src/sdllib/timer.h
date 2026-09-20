@@ -147,4 +147,11 @@ void InitTickTimer(int tick_rate = 60);
 // already shut down.
 void ShutdownTickTimer();
 
+// Returns the tick timer's count, 60 ticks per second, or 0 before
+// InitTickTimer(). The zero point means nothing on its own: callers compare
+// two readings to measure how much time has passed.
+inline int64_t SystemTicks() {
+  return g_tick_timer == nullptr ? 0 : g_tick_timer->TickCount();
+}
+
 #endif  // CNC_RED_ALERT_SDLLIB_TIMER_H_

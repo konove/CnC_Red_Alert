@@ -67,6 +67,7 @@
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
@@ -774,13 +775,13 @@ int MapEditClass::Team_Members(HousesType house) {
     */
     if (lheld) {
       /*
-      **	The first time in, TickCount - heldtime will be larger than
+      **	The first time in, the elapsed time will be larger than
       **	tdelay[2], so we increment the count immediately; then, we
       *decrement *	tindex to go to the next time delay, which is longer;
       *then, decr. *	again to go to the 1st time delay which is the shortest.
       */
-      if (TickCount.Value() - heldtime > base::At(tdelay, tindex)) {
-        heldtime = TickCount.Value();
+      if (SystemTicks() - heldtime > base::At(tdelay, tindex)) {
+        heldtime = SystemTicks();
         if (tindex) {
           tindex--;
         }
@@ -808,16 +809,16 @@ int MapEditClass::Team_Members(HousesType house) {
 
     } else {
       /*
-      **	The first time in, TickCount - heldtime will be larger than
+      **	The first time in, the elapsed time will be larger than
       **	tdelay[2], so we increment the count immediately; then, we
       *decrement *	tindex to go to the next time delay, which is longer;
       *then, decr. *	again to go to the 1st time delay which is the shortest.
       */
-      if (rheld && (TickCount.Value() - heldtime > base::At(tdelay, tindex))) {
+      if (rheld && (SystemTicks() - heldtime > base::At(tdelay, tindex))) {
         if (tindex) {
           tindex--;
         }
-        heldtime = TickCount.Value();
+        heldtime = SystemTicks();
 
         if (base::At(teamcount, curclass) > 0) {
           base::At(teamcount, curclass)--;

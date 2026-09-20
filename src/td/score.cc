@@ -1120,7 +1120,7 @@ void ScoreClass::Presentation() {
 void Cycle_Wait_Click() {
   int counter = 0;
   int minclicks = 20;
-  int64_t timingtime = TickCount.Time();
+  int64_t timingtime = SystemTicks();
   SerialPacketType sendpacket{.Command = SERIAL_SCORE_SCREEN,
                               .Name = {},
                               .Version = 0,
@@ -1169,7 +1169,7 @@ void Cycle_Wait_Click() {
       //
       // send a timing packet if enough time has gone by.
       //
-      if (TickCount.Time() - timingtime > PACKET_TIMING_TIMEOUT) {
+      if (SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
         sendpacket.Command = SERIAL_SCORE_SCREEN;
         sendpacket.ResponseTime =
             static_cast<uint32_t>(NullModem.Response_Time());
@@ -1177,7 +1177,7 @@ void Cycle_Wait_Click() {
 
         NullModem.Send_Message(base::ObjectBytes(sendpacket),
                                sizeof(sendpacket), 0);
-        timingtime = TickCount.Time();
+        timingtime = SystemTicks();
       }
 
       if (NullModem.Get_Message(base::ObjectBytes(receivepacket), &packetlen) >

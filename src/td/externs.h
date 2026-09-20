@@ -263,7 +263,6 @@ void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
                        std::span<unsigned char> palette);
 
 extern TheaterType LastTheater;
-extern TimerClass TickCount;
 
 bool Do_The_Internet_Menu_Thang();
 bool Spawn_WChat(bool can_launch);

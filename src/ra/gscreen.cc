@@ -69,6 +69,7 @@
 #include "ra/world.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 
@@ -449,7 +450,7 @@ void Shake_The_Screen(int shakes) {
   while (shakes-- != 0) {
     // Hold each offset for exactly one tick, so the shake runs at game speed
     // rather than as fast as the machine can blit.
-    const int64_t x = TickCount.Value();
+    const int64_t x = SystemTicks();
     // Never repeat the previous offset, so every tick visibly moves the screen.
     int new_y_off = 0;
     do {
@@ -469,7 +470,7 @@ void Shake_The_Screen(int shakes) {
         TheScreen().hidden_view().Blit(TheScreen().visible_view());
         break;
     }
-    while (x == TickCount.Value()) {
+    while (x == SystemTicks()) {
       Video_End_Frame();
     }
   }

@@ -18,13 +18,13 @@ void Fade_Palette_To(std::span<const unsigned char> palette, int fade,
   CHECK_GE(palette.size(), sizeof(CurrentPalette));
   if (fade > 0) {
     // fade to new palette
-    const auto start_time = TickCount.Time();
+    const auto start_time = SystemTicks();
 
     unsigned char fade_palette[256 * 3];
 
     while (true) {
       const int cur_time =
-          std::min<int>(static_cast<int>(TickCount.Time() - start_time), fade);
+          std::min<int>(static_cast<int>(SystemTicks() - start_time), fade);
 
       for (std::size_t c = 0; c < palette.size() && c < sizeof(CurrentPalette);
            ++c) {

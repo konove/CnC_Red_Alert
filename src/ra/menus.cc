@@ -681,7 +681,7 @@ int Main_Menu(int32_t /*unused*/) {
     /*
     **	If timeout expires, bail
     */
-    //		if (timeout && TickCount - starttime > timeout) {
+    //		if (timeout && SystemTicks() - starttime > timeout) {
     //			retval = -1;
     //			process = false;
     //		}

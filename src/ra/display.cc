@@ -123,6 +123,7 @@
 #include "base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
+#include "ra/assets.h"
 #include "ra/audio.h"
 #include "ra/building.h"
 #include "ra/ccini.h"
@@ -404,7 +405,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   if (TheScenario().Theater != TheWorld().last_theater()) {
     delete theater_data;
 
-    theater_data = MixArchive::Register(fullname, &FastKey);
+    theater_data = MixArchive::Register(fullname, &TheAssets().mix_key());
 
     if (!theater_data->Cache()) {
       // A theater the scenario names but whose art cannot be read leaves the

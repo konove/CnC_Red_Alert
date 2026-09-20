@@ -76,6 +76,7 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
+#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/audio_mixer.h"
@@ -697,7 +698,7 @@ void Cycle_Wait_Click(bool cycle) {
   int counter = 0;
   // Ticks left during which input is thrown away.
   int minclicks = 20;
-  int64_t timingtime = TickCount.Value();
+  int64_t timingtime = SystemTicks();
   SerialPacketType sendpacket{
       .Command = SERIAL_SCORE_SCREEN, .Name = {}, .ID = 0, .ScenarioInfo = {}};
   SerialPacketType receivepacket{
@@ -709,7 +710,7 @@ void Cycle_Wait_Click(bool cycle) {
     if (Session.Type == GAME_NULL_MODEM || Session.Type == GAME_MODEM) {
       // Send a timing packet if enough time has gone by, so the other machine
       // keeps measuring the link while both sit on this screen.
-      if (TickCount.Value() - timingtime > PACKET_TIMING_TIMEOUT) {
+      if (SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
         base::FillBytes(base::ObjectBytes(sendpacket), 0,
                         sizeof(SerialPacketType));
         sendpacket.Command = SERIAL_SCORE_SCREEN;
@@ -718,7 +719,7 @@ void Cycle_Wait_Click(bool cycle) {
 
         NullModem.Send_Message(base::ObjectBytes(sendpacket),
                                sizeof(sendpacket), 0);
-        timingtime = TickCount.Value();
+        timingtime = SystemTicks();
       }
 
       if (NullModem.Get_Message(base::ObjectBytes(receivepacket), &packetlen) >

@@ -641,5 +641,4 @@ bool ConnectionLost;
 
 TheaterType LastTheater = THEATER_NONE;
 
-TimerClass TickCount;
 WWKeyboardClass* ActiveKeyboard = &Kbd;

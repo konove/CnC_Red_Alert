@@ -13,6 +13,7 @@
 #include "base/enum_array.h"
 #include "base/installed.h"
 #include "ra/defines.h"
+#include "tech/pk.h"
 
 class MixArchive;
 
@@ -131,6 +132,12 @@ class Assets {
     return disc_archives_;
   }
 
+  // The public key the encrypted MIX archives are unlocked with, and whose
+  // raw bytes also serve as the saved game's Blowfish key. Zero until
+  // Init_Keys() reads it out of the built-in key table.
+  const PKey& mix_key() const ABSL_ATTRIBUTE_LIFETIME_BOUND { return mix_key_; }
+  void set_mix_key(const PKey& key) { mix_key_ = key; }
+
  private:
   base::EnumArray<FontType, std::span<const std::byte>> fonts_{};
   std::span<const std::byte> system_strings_;
@@ -143,6 +150,7 @@ class Assets {
 
   std::array<SpeechSlot, kSpeechSlotCount> speech_slots_;
   DiscArchives disc_archives_;
+  PKey mix_key_;
 };
 
 // Returns the Assets that Game installed. CHECK-fails outside a Game's
