@@ -56,10 +56,10 @@
 #include "absl/log/check.h"
 #include "base/buffer.h"
 #include "port/safe_string.h"
-#include "ra/_wsproto.h"
 #include "ra/connect.h"
 #include "ra/ipx.h"
 #include "ra/ipxaddr.h"
+#include "ra/network.h"
 #include "ra/wsproto.h"
 
 /*
@@ -255,7 +255,7 @@ bool IPXConnClass::Start_Listening() {
   /*
   ** start listening on the socket.
   */
-  if (PacketTransport->Start_Listening()) {
+  if (TheNetwork().packet_transport()->Start_Listening()) {
     Listening = 1;
     return true;
   }
@@ -283,8 +283,8 @@ bool IPXConnClass::Start_Listening() {
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXConnClass::Stop_Listening() {
-  if (PacketTransport) {
-    PacketTransport->Stop_Listening();
+  if (TheNetwork().packet_transport()) {
+    TheNetwork().packet_transport()->Stop_Listening();
   }
   Listening = 0;
 
@@ -347,7 +347,7 @@ int IPXConnClass::Send(std::span<const std::byte> buf, int buflen,
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
 int IPXConnClass::Open_Socket(uint16_t socket) {
-  const bool rc = PacketTransport->Open_Socket(socket);
+  const bool rc = TheNetwork().packet_transport()->Open_Socket(socket);
 
   SocketOpen = rc;
   return rc ? 1 : 0;
@@ -374,7 +374,7 @@ int IPXConnClass::Open_Socket(uint16_t socket) {
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
 void IPXConnClass::Close_Socket(uint16_t /*socket*/) {
-  PacketTransport->Close_Socket();
+  TheNetwork().packet_transport()->Close_Socket();
   SocketOpen = false;
 } /* end of Close_Socket */
 
@@ -415,7 +415,7 @@ int IPXConnClass::Send_To(std::span<const std::byte> buf, int buflen,
                           IPXAddressClass* address,
                           [[maybe_unused]] const NetNodeType immed) {
   DCHECK(immed == nullptr);
-  PacketTransport->WriteTo(buf, buflen, *address);
+  TheNetwork().packet_transport()->WriteTo(buf, buflen, *address);
   return 1;
 
 } /* end of Send_To */
@@ -440,7 +440,7 @@ int IPXConnClass::Send_To(std::span<const std::byte> buf, int buflen,
  *   12/16/1994 BR : Created.                                              *
  *=========================================================================*/
 bool IPXConnClass::Broadcast(std::span<const std::byte> buf, int buflen) {
-  PacketTransport->Broadcast(buf, buflen);
+  TheNetwork().packet_transport()->Broadcast(buf, buflen);
   return true;
 } /* end of Broadcast */
 

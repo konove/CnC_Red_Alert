@@ -59,6 +59,7 @@
 #include "ra/movie.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
+#include "ra/network.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/queue.h"
@@ -467,7 +468,7 @@ void GameOptionsClass::Process() {
             LoadOptionsClass(LoadOptionsClass::SAVE).Process();
 
           } else {
-            OutList.Add(EventClass(EventClass::SAVEGAME));
+            TheNetwork().out_list().Add(EventClass(EventClass::SAVEGAME));
             process = false;
           }
           break;
@@ -476,7 +477,7 @@ void GameOptionsClass::Process() {
           display = true;
           if (Session.Type != GAME_NORMAL) {
             if (Surrender_Dialog(TXT_SURRENDER)) {
-              OutList.Add(EventClass(EventClass::DESTRUCT));
+              TheNetwork().out_list().Add(EventClass(EventClass::DESTRUCT));
             }
             process = false;
           } else {
@@ -522,13 +523,14 @@ void GameOptionsClass::Process() {
         case kButtonDraw:
           if (TheScenario().bLocalProposesDraw) {
             //	Retract draw offer.
-            OutList.Add(EventClass(EventClass::RETRACT_DRAW));
+            TheNetwork().out_list().Add(EventClass(EventClass::RETRACT_DRAW));
             process = false;
           } else {
             if (!TheScenario().bOtherProposesDraw) {
               //	Propose a draw?
               if (Surrender_Dialog(TXT_WOL_PROPOSE_DRAW_CONFIRM)) {
-                OutList.Add(EventClass(EventClass::PROPOSE_DRAW));
+                TheNetwork().out_list().Add(
+                    EventClass(EventClass::PROPOSE_DRAW));
                 process = false;
               } else {
                 display = true;
@@ -536,7 +538,8 @@ void GameOptionsClass::Process() {
             } else {
               //	Accept a draw?
               if (Surrender_Dialog(TXT_WOL_ACCEPT_DRAW_CONFIRM)) {
-                OutList.Add(EventClass(EventClass::PROPOSE_DRAW));
+                TheNetwork().out_list().Add(
+                    EventClass(EventClass::PROPOSE_DRAW));
                 process = false;
               } else {
                 display = true;

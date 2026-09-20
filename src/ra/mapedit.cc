@@ -124,7 +124,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
-#include "tech/ftimer.h"
 #include "tech/mix_archive.h"
 
 char MapEditClass::HealthBuf[20];

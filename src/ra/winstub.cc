@@ -50,6 +50,7 @@
 #include "WSProto.h"
 #include "ra/config.h"
 #include "ra/function.h"
+#include "ra/network.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
 
@@ -145,9 +146,11 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
   /*
   ** Pass on any messages intended for the winsock message handler.
   */
-  if (PacketTransport) {
-    if (message == (UINT)PacketTransport->Protocol_Event_Message()) {
-      if (PacketTransport->Message_Handler(hwnd, message, wParam, lParam)) {
+  if (TheNetwork().packet_transport()) {
+    if (message ==
+        (UINT)TheNetwork().packet_transport()->Protocol_Event_Message()) {
+      if (TheNetwork().packet_transport()->Message_Handler(hwnd, message,
+                                                           wParam, lParam)) {
         return (DefWindowProc(hwnd, message, wParam, lParam));
       } else {
         return (0);

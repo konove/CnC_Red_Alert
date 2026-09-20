@@ -38,21 +38,14 @@
 
 #include "ra/globals.h"
 
-#include <algorithm>
 #include <cstdint>
 
 #include "ra/compat.h"
-#include "ra/connect.h"
 #include "ra/credits.h"
 #include "ra/defines.h"
-#include "ra/event.h"
 #include "ra/externs.h"
 #include "ra/goptions.h"
-#include "ra/ipxgconn.h"
-#include "ra/ipxmgr.h"
 #include "ra/jshell.h"
-#include "ra/nullmgr.h"
-#include "ra/queue.h"
 #include "ra/session.h"
 #include "ra/special.h"
 #include "ra/theme.h"
@@ -60,9 +53,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/audio_mixer.h"
-#include "tech/ftimer.h"
-#include "tech/pk.h"
-#include "tech/random.h"
 #include "winvq/vqa32/vqaplay.h"
 
 
@@ -241,8 +231,6 @@ int32_t LParam;
 *for incoming events *	that need to be executed when the correct frame has been
 *reached.
 */
-QueueClass<EventClass, kMaxEvents> OutList;
-QueueClass<EventClass, kMaxEvents * 64> DoList;
 
 /***************************************************************************
 **	These are arrays/lists of trigger pointers for each cell & the houses.
@@ -268,58 +256,10 @@ QueueClass<EventClass, kMaxEvents * 64> DoList;
 */
 SessionClass Session;
 
-//
-// These values store the min & max frame #'s for when MaxAhead >>increases<<.
-// If MaxAhead increases, and the other systems free-run to the new MaxAhead
-// value, they may miss an event generated after the MaxAhead event was sent,
-// but before it executed, since it will have been scheduled with the older,
-// shorter MaxAhead value.  This will cause a Packet_Received_Too_Late error.
-// The frames from the point where the new MaxAhead takes effect, up to that
-// frame Plus the new MaxAhead, represent a "period of vulnerability"; any
-// events received that are scheduled to execute during this period should
-// be re-scheduled for after that period.
-//
-int NewMaxAheadFrame1;
-int NewMaxAheadFrame2;
-
 bool bAftermathMultiplayer;  //	Is multiplayer game being played with Aftermath
                              // rules?
 
-/***************************************************************************
-**	This is the null modem manager class.  Declaring this class doesn't
-** perform any allocations;
-*/
-NullModemClass NullModem(16,  // number of send entries
-                         16,  // number of receive entries
-                         (MAX_SERIAL_PACKET_SIZE / sizeof(EventClass) *
-                          sizeof(EventClass)) +
-                             sizeof(CommHeaderType),
-                         0x1234);  // Magic number must have each digit unique
-                                   // and different from the queue magic number
 
-/***************************************************************************
-**	This is the network IPX manager class.  It handles multiple remote
-** connections.  Declaring this class doesn't perform any allocations;
-** the class itself is 140 bytes.
-*/
-// IPXManagerClass Ipx (
-//	std::max (sizeof (GlobalPacketType), sizeof(RemoteFileTransferType)),
-//// size of Global Channel packets
-//	((546 - sizeof(CommHeaderType)) / sizeof(EventClass) ) *
-// sizeof(EventClass), 	10,
-//// # entries in Global Queue 	8,
-//// # entries in Private Queues 	VIRGIN_SOCKET,
-//// Socket ID # 	IPXGlobalConnClass::kCommandAndConquer0);// Product ID
-/// #
-
-IPXManagerClass Ipx(
-    std::max(sizeof(GlobalPacketType),
-             sizeof(RemoteFileTransferType)),  // size of Global Channel packets
-    (546 - sizeof(CommHeaderType)) / sizeof(EventClass) * sizeof(EventClass),
-    160,                                       // # entries in Global Queue
-    32,                                        // # entries in Private Queues
-    VIRGIN_SOCKET,                             // Socket ID #
-    IPXGlobalConnClass::kCommandAndConquer0);  // Product ID #
 
 int WindowList[][8] = {
     /* xbyte, ypixel, bytewid, pixelht, cursor color, bkgd color,	cursor
@@ -347,7 +287,6 @@ int WindowList[][8] = {
 
 
 bool SoundOn;
-Timer<SystemTickSource> CountDownTimer;
 
 
 /***************************************************************************

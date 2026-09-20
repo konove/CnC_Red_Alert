@@ -183,6 +183,7 @@
 #include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/msglist.h"
+#include "ra/network.h"
 #include "ra/object.h"
 #include "ra/object_heaps.h"
 #include "ra/palettes.h"
@@ -3573,9 +3574,9 @@ void HouseClass::MPlayer_Defeated() {
     */
     if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
       i = 0;
-      while (Ipx.Num_Connections() && i++ < 1000) {
-        const int id = Ipx.Connection_ID(0);
-        Ipx.Delete_Connection(id);
+      while (TheNetwork().ipx().Num_Connections() && i++ < 1000) {
+        const int id = TheNetwork().ipx().Connection_ID(0);
+        TheNetwork().ipx().Delete_Connection(id);
       }
       Session.NumPlayers = 0;
     }

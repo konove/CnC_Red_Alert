@@ -276,8 +276,8 @@ class IPXManagerClass : public ConnManClass {
   Misc variables
   .....................................................................*/
   bool IPXStatus : 1;      // 0 = no IPX, 1 = IPX found
-  bool Listening : 1;      // 1 = Listening is on
-  bool RealMemAllocd : 1;  // 1 = Real-mode memory has been alloc'd
+  bool Listening : 1 = false;      // 1 = Listening is on
+  bool RealMemAllocd : 1 = false;  // 1 = Real-mode memory has been alloc'd
 
   /*.....................................................................
   Packet Sizes, used for allocating real-mode memory
@@ -297,26 +297,26 @@ class IPXManagerClass : public ConnManClass {
   The Socket ID, and local Novell Connection Number
   .....................................................................*/
   uint16_t Socket;        // Our socket ID for sending/receiving
-  int ConnectionNum;      // local connection #, 0=not logged in
+  int ConnectionNum = 0;  // local connection #, 0=not logged in
 
   /*.....................................................................
   Array of connection queues
   .....................................................................*/
   IPXConnClass* Connection[CONNECT_MAX]{};  // array of connection object ptrs
-  int NumConnections;                     // # connection objects in use
-  IPXGlobalConnClass* GlobalChannel;      // the Global Channel
+  int NumConnections = 0;                   // # connection objects in use
+  IPXGlobalConnClass* GlobalChannel = nullptr;  // the Global Channel
 
   /*.....................................................................
   Current queue for polling for received packets
   .....................................................................*/
-  int CurConnection;
+  int CurConnection = 0;
 
   /*.....................................................................
   Timing parameters for all connections
   .....................................................................*/
-  int32_t RetryDelta;
-  int32_t MaxRetries;  // -1 means no limit
-  int32_t Timeout;     // -1 means no limit
+  int32_t RetryDelta = 2;   // ticks between retries
+  int32_t MaxRetries = -1;  // -1 means no limit
+  int32_t Timeout = 60;     // -1 means no limit; 60 ticks is one second
 
   /*---------------------------------------------------------------------
   Real-mode memory pointers and such
@@ -385,7 +385,7 @@ class IPXManagerClass : public ConnManClass {
   /*.....................................................................
   Various Statistics
   .....................................................................*/
-  int BadConnection;
+  int BadConnection = kConnectionNone;
 };
 
 #endif  // CNC_RED_ALERT_RA_IPXMGR_H_

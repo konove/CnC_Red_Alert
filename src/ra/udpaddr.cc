@@ -20,7 +20,6 @@
 #include <string>
 
 #include "absl/strings/str_format.h"
-#include "ra/_wsproto.h"
 #include "ra/ccini.h"
 #include "ra/colrlist.h"
 #include "ra/config.h"
@@ -30,6 +29,7 @@
 #include "ra/gadget.h"
 #include "ra/init.h"
 #include "ra/jshell.h"
+#include "ra/network.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
@@ -250,7 +250,7 @@ bool Get_Broadcast_Addresses() {
     if (hash_pos != std::string::npos) {
       addr.resize(hash_pos);
     }
-    PacketTransport->Set_Broadcast_Address(addr.data());
+    TheNetwork().packet_transport()->Set_Broadcast_Address(addr.data());
   }
 
   return true;

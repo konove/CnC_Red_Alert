@@ -91,6 +91,7 @@
 #include "ra/jshell.h"
 #include "ra/map.h"
 #include "ra/mission_id.h"
+#include "ra/network.h"
 #include "ra/object_heaps.h"
 #include "ra/palettes.h"
 #include "ra/queue.h"
@@ -313,8 +314,9 @@ int SessionClass::Create_Connections() {
     if (absl::EqualsIgnoreCase(
             Players.at(i)->Name,
             HouseClass::As_Pointer(Players.at(i)->Player.ID)->IniName)) {
-      Ipx.Create_Connection(static_cast<int>(Players.at(i)->Player.ID),
-                            Players.at(i)->Name, &Players.at(i)->Address);
+      TheNetwork().ipx().Create_Connection(
+          static_cast<int>(Players.at(i)->Player.ID), Players.at(i)->Name,
+          &Players.at(i)->Address);
       Players.at(i)->Player.ProcessTime = -1;
     } else {
       return 0;

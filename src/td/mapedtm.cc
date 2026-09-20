@@ -71,7 +71,6 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/edit.h"
-#include "td/externs.h"
 #include "td/gadget.h"
 #include "td/goptions.h"
 #include "td/heap.h"

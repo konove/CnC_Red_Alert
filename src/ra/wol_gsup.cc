@@ -45,11 +45,11 @@
 #include "ra/defines.h"
 #include "ra/dib.h"
 #include "ra/externs.h"
-#include "ra/globals.h"
 #include "ra/iconlist.h"
 #include "ra/installation.h"
 #include "ra/ipx.h"
 #include "ra/mission_id.h"
+#include "ra/network.h"
 #include "ra/palettes.h"
 #include "ra/rawolapi.h"
 #include "ra/rules.h"
@@ -78,7 +78,6 @@ static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 #include "absl/log/check.h"
 #include "port/safe_string.h"
 #include "port/sleep.h"
-#include "ra/_wsproto.h"
 #include "ra/audio.h"
 #include "ra/cheklist.h"
 #include "ra/dialog.h"
@@ -87,7 +86,6 @@ static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 #include "ra/gadget.h"
 #include "ra/gauge.h"
 #include "ra/inline.h"
-#include "ra/internet.h"
 #include "ra/jshell.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
@@ -3544,16 +3542,17 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
     TheRules().UnitBuildPenalty = 100;
   }
 
-  // PlanetWestwoodGameID = WWGetPrivateProfileInt("Internet", "GameID", 0,
-  // buffer);
-  PlanetWestwoodGameID = static_cast<uint32_t>(pWO->pChatSink->iGameID);
+  // TheNetwork().westwood_game_id() = WWGetPrivateProfileInt("Internet",
+  // "GameID", 0, buffer);
+  TheNetwork().westwood_game_id() =
+      static_cast<uint32_t>(pWO->pChatSink->iGameID);
 
   //	Reset ChatSink's iGameID.
   pWO->pChatSink->iGameID = 0;
 
-  // PlanetWestwoodStartTime = WWGetPrivateProfileInt ("Internet", "StartTime",
-  // 0, buffer);
-  PlanetWestwoodStartTime = static_cast<uint32_t>(time(nullptr));
+  // TheNetwork().westwood_start_time() = WWGetPrivateProfileInt ("Internet",
+  // "StartTime", 0, buffer);
+  TheNetwork().westwood_start_time() = static_cast<uint32_t>(time(nullptr));
   // WChatHWND = (HWND) WWGetPrivateProfileInt("Internet", "HWND",
   // (int)FindWindow("OWL_Window", "Westwood Chat"), buffer);
 
@@ -3726,23 +3725,23 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
 
   //	From Init...
   //	debugprint( "About to call Open_Socket().\n");
-  PacketTransport->Open_Socket(0);
+  TheNetwork().packet_transport()->Open_Socket(0);
 
   //	debugprint( "RA95 - About to call Start_Listening.\n" );
-  PacketTransport->Start_Listening();
+  TheNetwork().packet_transport()->Start_Listening();
 
   /*
   ** Flush out any pending packets from a previous game.
   */
-  PacketTransport->Discard_In_Buffers();
-  PacketTransport->Discard_Out_Buffers();
+  TheNetwork().packet_transport()->Discard_In_Buffers();
+  TheNetwork().packet_transport()->Discard_Out_Buffers();
 
   WWDebugString("RA95 - About to call Init_Network.\n");
   Init_Network();
 
-  Ipx.Set_Timing(30,    // retry 2 times per second
-                 -1,    // ignore max retries
-                 600);  // give up after 10 seconds
+  TheNetwork().ipx().Set_Timing(30,    // retry 2 times per second
+                                -1,    // ignore max retries
+                                600);  // give up after 10 seconds
 
   //	debugprint( "Session.ScenarioFileName is %s.\n",
   // Session.ScenarioFileName );
@@ -3843,7 +3842,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
 
   pWO->GameInfoCurrent.iPlayerCount = static_cast<int>(Session.Players.Count());
 
-  Ipx.Set_Timing(25, -1, 1000);
+  TheNetwork().ipx().Set_Timing(25, -1, 1000);
 
   if (bHost) {
     if (Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Official() &&
@@ -3863,7 +3862,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   }
 
   Session.CommProtocol = COMM_PROTOCOL_MULTI_E_COMP;
-  Ipx.Set_Timing(30, -1, 600);
+  TheNetwork().ipx().Set_Timing(30, -1, 600);
 
   pWO->bEnableNewAftermathUnits = bAftermathUnits;
   bAftermathMultiplayer = bAftermathUnits;

@@ -151,6 +151,7 @@
 #include "ra/map.h"
 #include "ra/mapedit.h"
 #include "ra/msglist.h"
+#include "ra/network.h"
 #include "ra/object_heaps.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
@@ -3517,8 +3518,8 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
     **	Try to place the pending object onto the map.
     */
     if (ProximityCheck) {
-      OutList.Add(EventClass(EventClass::PLACE, PendingObjectPtr->What_Am_I(),
-                             cell + ZoneOffset));
+      TheNetwork().out_list().Add(EventClass(
+          EventClass::PLACE, PendingObjectPtr->What_Am_I(), cell + ZoneOffset));
     } else {
       Speak(VOX_DEPLOY);
     }
@@ -3718,13 +3719,15 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
 
         if (object != nullptr && action == ACTION_REPAIR &&
             object->What_Am_I() == RTTI_BUILDING) {
-          OutList.Add(EventClass(EventClass::REPAIR, TargetClass(object)));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::REPAIR, TargetClass(object)));
         }
         if (action == ACTION_SELL_UNIT && object) {
           switch (object->What_Am_I()) {
             case RTTI_AIRCRAFT:
             case RTTI_UNIT:
-              OutList.Add(EventClass(EventClass::SELL, TargetClass(object)));
+              TheNetwork().out_list().Add(
+                  EventClass(EventClass::SELL, TargetClass(object)));
               break;
 
             case RTTIType::RTTI_NONE:
@@ -3763,42 +3766,49 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         }
         if (action == ACTION_SELL) {
           if (object) {
-            OutList.Add(EventClass(EventClass::SELL, TargetClass(object)));
+            TheNetwork().out_list().Add(
+                EventClass(EventClass::SELL, TargetClass(object)));
           } else {
-            OutList.Add(EventClass(EventClass::SELLCELL, cell));
-            //						OutList.Add(EventClass(EventClass::SELL,
+            TheNetwork().out_list().Add(EventClass(EventClass::SELLCELL, cell));
+            //						TheNetwork().out_list().Add(EventClass(EventClass::SELL,
             //::As_Target(cell)));
           }
         }
 
         if (action == ACTION_NUKE_BOMB) {
-          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
-                                 static_cast<int>(SPC_NUCLEAR_BOMB), cell));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::SPECIAL_PLACE,
+                         static_cast<int>(SPC_NUCLEAR_BOMB), cell));
         }
 
         if (action == ACTION_PARA_BOMB) {
-          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
-                                 static_cast<int>(SPC_PARA_BOMB), cell));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::SPECIAL_PLACE,
+                         static_cast<int>(SPC_PARA_BOMB), cell));
         }
         if (action == ACTION_PARA_INFANTRY) {
-          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
-                                 static_cast<int>(SPC_PARA_INFANTRY), cell));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::SPECIAL_PLACE,
+                         static_cast<int>(SPC_PARA_INFANTRY), cell));
         }
         if (action == ACTION_SPY_MISSION) {
-          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
-                                 static_cast<int>(SPC_SPY_MISSION), cell));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::SPECIAL_PLACE,
+                         static_cast<int>(SPC_SPY_MISSION), cell));
         }
         if (action == ACTION_IRON_CURTAIN) {
-          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
-                                 static_cast<int>(SPC_IRON_CURTAIN), cell));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::SPECIAL_PLACE,
+                         static_cast<int>(SPC_IRON_CURTAIN), cell));
         }
         if (action == ACTION_CHRONOSPHERE) {
-          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
-                                 static_cast<int>(SPC_CHRONOSPHERE), cell));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::SPECIAL_PLACE,
+                         static_cast<int>(SPC_CHRONOSPHERE), cell));
         }
         if (action == ACTION_CHRONO2) {
-          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
-                                 static_cast<int>(kSpcChrono2), cell));
+          TheNetwork().out_list().Add(EventClass(
+              EventClass::SPECIAL_PLACE, static_cast<int>(kSpcChrono2), cell));
         }
       }
 

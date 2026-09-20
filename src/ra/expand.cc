@@ -54,7 +54,6 @@
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/init.h"
 #include "ra/inline.h"

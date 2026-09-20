@@ -162,6 +162,7 @@
 #include "ra/keyframe.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
+#include "ra/network.h"
 #include "ra/object.h"
 #include "ra/object_heaps.h"
 #include "ra/overlay.h"
@@ -2264,7 +2265,8 @@ void BuildingClass::Active_Click_With(ActionType action, ObjectClass* object) {
   }
 
   if (action == ACTION_SELF && Class->Is_Factory()) {
-    OutList.Add(EventClass(EventClass::PRIMARY, TargetClass(this)));
+    TheNetwork().out_list().Add(
+        EventClass(EventClass::PRIMARY, TargetClass(this)));
   }
 }
 
@@ -2294,9 +2296,10 @@ void BuildingClass::Active_Click_With(ActionType action, CELL cell) {
   }
 
   if (action == ACTION_MOVE && *this == STRUCT_CONST) {
-    OutList.Add(
+    TheNetwork().out_list().Add(
         EventClass(EventClass::ARCHIVE, TargetClass(this), TargetClass(cell)));
-    OutList.Add(EventClass(EventClass::SELL, TargetClass(this)));
+    TheNetwork().out_list().Add(
+        EventClass(EventClass::SELL, TargetClass(this)));
   }
 }
 

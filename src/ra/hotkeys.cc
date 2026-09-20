@@ -45,6 +45,7 @@
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/mapedit.h"
+#include "ra/network.h"
 #include "ra/object.h"
 #include "ra/object_heaps.h"
 #include "ra/queue.h"
@@ -215,7 +216,8 @@ void Keyboard_Process(KeyNumType& input) {
         if (tech != nullptr &&
             (tech->Can_Player_Move() ||
              (tech->Can_Player_Fire() && tech->What_Am_I() != RTTI_BUILDING))) {
-          OutList.Add(EventClass(EventClass::IDLE, TargetClass(tech)));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::IDLE, TargetClass(tech)));
         }
       }
     }
@@ -231,7 +233,8 @@ void Keyboard_Process(KeyNumType& input) {
 
         if (tech != nullptr && tech->Can_Player_Move() &&
             tech->Can_Player_Fire()) {
-          OutList.Add(EventClass(TargetClass(tech), MISSION_GUARD_AREA));
+          TheNetwork().out_list().Add(
+              EventClass(TargetClass(tech), MISSION_GUARD_AREA));
         }
       }
     }
@@ -246,7 +249,8 @@ void Keyboard_Process(KeyNumType& input) {
         const ObjectClass* tech = TheWorld().current_object().at(index);
 
         if (tech != nullptr && tech->Can_Player_Move()) {
-          OutList.Add(EventClass(EventClass::SCATTER, TargetClass(tech)));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::SCATTER, TargetClass(tech)));
         }
       }
     }
@@ -330,7 +334,7 @@ void Keyboard_Process(KeyNumType& input) {
         (TheWorld().current_object().Count() && !ThePlayer()->IsDefeated) &&
         (TheWorld().current_object().at(0)->Owner() !=
          ThePlayer()->Class->House)) {
-      OutList.Add(EventClass(
+      TheNetwork().out_list().Add(EventClass(
           EventClass::ALLY,
           static_cast<int>(TheWorld().current_object().at(0)->Owner())));
     }

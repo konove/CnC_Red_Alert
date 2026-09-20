@@ -73,7 +73,6 @@
 #include "ra/audio.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/jshell.h"
 #include "ra/palettes.h"
@@ -86,7 +85,6 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/ftimer.h"
 
 /**************************** Globals **************************************/
 

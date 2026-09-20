@@ -105,6 +105,7 @@
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
 #include "ra/netdlg.h"
+#include "ra/network.h"
 #include "ra/nullmgr.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
@@ -142,9 +143,6 @@
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 #include "tech/search_paths.h"
-
-ModemRegistryEntryClass* ModemRegistry = nullptr;  // Ptr to modem registry data
-
 
 // #include "WolDebug.h"
 
@@ -207,9 +205,9 @@ static SerialSettingsType* DialSettings;
  *   8/2/96      ST : Win32 support added                                  *
  *=========================================================================*/
 bool Init_Null_Modem(SerialSettingsType* settings) {
-  return NullModem.Init(settings->Port, settings->IRQ, settings->ModemName,
-                        settings->Baud, 0, 8, 1,
-                        settings->HardwareFlowControl ? 1 : 0) != 0;
+  return TheNetwork().null_modem().Init(
+             settings->Port, settings->IRQ, settings->ModemName, settings->Baud,
+             0, 8, 1, settings->HardwareFlowControl ? 1 : 0) != 0;
 }
 
 /***************************************************************************
@@ -232,7 +230,7 @@ bool Init_Null_Modem(SerialSettingsType* settings) {
  *=========================================================================*/
 void Shutdown_Modem() {
   if ((!Session.Play) && (Session.Type == GAME_MODEM)) {
-    NullModem.Hangup_Modem();
+    TheNetwork().null_modem().Hangup_Modem();
   }
 
   NullModemClass::Change_IRQ_Priority(0);  // reset priority of interrupts
@@ -240,7 +238,7 @@ void Shutdown_Modem() {
   //
   // close port
   //
-  NullModem.Shutdown();
+  TheNetwork().null_modem().Shutdown();
 }
 
 /***************************************************************************
@@ -270,12 +268,14 @@ void Modem_Signoff() {
     ** Send a sign-off packet
     */
     event.Type = EventClass::EXIT;
-    NullModem.Send_Message(base::ObjectBytes(event), sizeof(EventClass), 0);
-    NullModem.Send_Message(base::ObjectBytes(event), sizeof(EventClass), 0);
+    TheNetwork().null_modem().Send_Message(base::ObjectBytes(event),
+                                           sizeof(EventClass), 0);
+    TheNetwork().null_modem().Send_Message(base::ObjectBytes(event),
+                                           sizeof(EventClass), 0);
 
     const int64_t starttime = SystemTicks();
     while (SystemTicks() - starttime < 30) {
-      NullModem.Service();
+      TheNetwork().null_modem().Service();
     }
   }
 }
@@ -385,13 +385,13 @@ int Test_Null_Modem() {
   */
   int64_t starttime = SystemTicks();
   while (SystemTicks() - starttime < 80) {
-    NullModem.Service();
-    if ((NullModem.Get_Message(base::ObjectBytes(ReceivePacket), &packetlen) >
-         0) &&
+    TheNetwork().null_modem().Service();
+    if ((TheNetwork().null_modem().Get_Message(base::ObjectBytes(ReceivePacket),
+                                               &packetlen) > 0) &&
         (ReceivePacket.Command == SERIAL_CONNECT)) {
       starttime = SystemTicks();
       while (SystemTicks() - starttime < 30) {
-        NullModem.Service();
+        TheNetwork().null_modem().Service();
       }
       process = false;
       retval = 2;
@@ -413,18 +413,18 @@ int Test_Null_Modem() {
     SendPacket.ID = static_cast<unsigned char>(std::bit_cast<uintptr_t>(
         &buffer[0]));  // address of buffer for more uniqueness.
 
-    NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
-                           1);
+    TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                           sizeof(SendPacket), 1);
 
     starttime = SystemTicks();
     while (SystemTicks() - starttime < 80) {
-      NullModem.Service();
-      if ((NullModem.Get_Message(base::ObjectBytes(ReceivePacket), &packetlen) >
-           0) &&
+      TheNetwork().null_modem().Service();
+      if ((TheNetwork().null_modem().Get_Message(
+               base::ObjectBytes(ReceivePacket), &packetlen) > 0) &&
           (ReceivePacket.Command == SERIAL_CONNECT)) {
         starttime = SystemTicks();
         while (SystemTicks() - starttime < 30) {
-          NullModem.Service();
+          TheNetwork().null_modem().Service();
         }
 
         //
@@ -493,14 +493,14 @@ int Test_Null_Modem() {
     /*
     ** Service the connection.
     */
-    NullModem.Service();
-    if (NullModem.Num_Send() == 0) {
-      if (NullModem.Get_Message(base::ObjectBytes(ReceivePacket), &packetlen) >
-          0) {
+    TheNetwork().null_modem().Service();
+    if (TheNetwork().null_modem().Num_Send() == 0) {
+      if (TheNetwork().null_modem().Get_Message(
+              base::ObjectBytes(ReceivePacket), &packetlen) > 0) {
         if (ReceivePacket.Command == SERIAL_CONNECT) {
           starttime = SystemTicks();
           while (SystemTicks() - starttime < 30) {
-            NullModem.Service();
+            TheNetwork().null_modem().Service();
           }
 
           //
@@ -728,7 +728,7 @@ static int Reconnect_Null_Modem() {
     /*
     ** Service the connection.
     */
-    NullModem.Service();
+    TheNetwork().null_modem().Service();
 
     /*
     ** Resend our message if it's time
@@ -739,15 +739,15 @@ static int Reconnect_Null_Modem() {
                       sizeof(SerialPacketType));
       SendPacket.Command = SERIAL_CONNECT;
       SendPacket.ID = static_cast<unsigned char>(Session.ColorIdx);
-      NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
-                             0);
+      TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                             sizeof(SendPacket), 0);
     }
 
     /*
     ** Check for an incoming message
     */
-    if (NullModem.Get_Message(base::ObjectBytes(ReceivePacket), &packetlen) >
-        0) {
+    if (TheNetwork().null_modem().Get_Message(base::ObjectBytes(ReceivePacket),
+                                              &packetlen) > 0) {
       lastmsgtime = SystemTicks();
 
       if (ReceivePacket.Command == SERIAL_CONNECT) {
@@ -767,11 +767,11 @@ static int Reconnect_Null_Modem() {
                         sizeof(SerialPacketType));
         SendPacket.Command = SERIAL_CONNECT;
         SendPacket.ID = static_cast<unsigned char>(Session.ColorIdx);
-        NullModem.Send_Message(base::ObjectBytes(SendPacket),
-                               sizeof(SendPacket), 1);
+        TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                               sizeof(SendPacket), 1);
         starttime = SystemTicks();
         while (SystemTicks() - starttime < 60) {
-          NullModem.Service();
+          TheNetwork().null_modem().Service();
         }
         retval = 1;
         process = false;
@@ -842,7 +842,7 @@ void Destroy_Null_Connection(int id, int error) {
       break;
 
     case -1:
-      NullModem.Delete_Connection();
+      TheNetwork().null_modem().Delete_Connection();
       break;
     default:
       break;
@@ -1890,21 +1890,20 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   *its just
   ** tough luck if the user has more than 10 modems attached!
   */
-  delete ModemRegistry;
+  delete TheNetwork().modem_registry();
 
   int modems_found = 0;
   for (int i = 0; i < 10; i++) {
-    ModemRegistry = new ModemRegistryEntryClass(i);
-    if (ModemRegistry->Get_Modem_Name()) {
+    TheNetwork().modem_registry() = new ModemRegistryEntryClass(i);
+    if (TheNetwork().modem_registry()->Get_Modem_Name()) {
       port::SafeCopy(base::At(modemnames, modems_found),
-                     ModemRegistry->Get_Modem_Name());
+                     TheNetwork().modem_registry()->Get_Modem_Name());
       portlist.Add_Item(base::At(modemnames, modems_found++));
       port_custom_index++;
     }
-    delete ModemRegistry;
+    delete TheNetwork().modem_registry();
   }
-  ModemRegistry = nullptr;
-
+  TheNetwork().modem_registry() = nullptr;
 
   portlist.Add_Item(custom_port);
 
@@ -3105,22 +3104,23 @@ int Com_Scenario_Dialog(bool skirmish) {
   Load_Title_Page(true);
   ThePalettes().title_palette().Set();
 
-  if (std::string_view(ModemRXString).size() > 36) {
-    ModemRXString[36] = 0;
+  if (TheNetwork().modem_response().size() > 36) {
+    TheNetwork().modem_response().resize(36);
   }
 
-  if (!std::string_view(ModemRXString).empty()) {
-    Session.Messages.Add_Message(nullptr, 0, ModemRXString, PCOLOR_BROWN,
-                                 kTpfText, -1);
+  if (!TheNetwork().modem_response().empty()) {
+    Session.Messages.Add_Message(nullptr, 0,
+                                 TheNetwork().modem_response().c_str(),
+                                 PCOLOR_BROWN, kTpfText, -1);
   }
 
-  ModemRXString[0] = '\0';
+  TheNetwork().modem_response().clear();
 
   /*
   ---------------------------- Processing loop -----------------------------
   */
   if (!skirmish) {
-    NullModem.Reset_Response_Time();  // clear response time
+    TheNetwork().null_modem().Reset_Response_Time();  // clear response time
   }
   theirresponsetime = 10000;  // initialize to an invalid value
   timingtime = lastmsgtime = lastredrawtime = SystemTicks();
@@ -3679,9 +3679,9 @@ int Com_Scenario_Dialog(bool skirmish) {
               Send the message
               ..................................................................*/
               if (!skirmish) {
-                NullModem.Send_Message(base::ObjectBytes(SendPacket),
-                                       sizeof(SendPacket), 1);
-                NullModem.Service();
+                TheNetwork().null_modem().Send_Message(
+                    base::ObjectBytes(SendPacket), sizeof(SendPacket), 1);
+                TheNetwork().null_modem().Service();
               }
               /*..................................................................
               Add the message to our own screen
@@ -3771,8 +3771,8 @@ int Com_Scenario_Dialog(bool skirmish) {
             Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Digest());
         SendPacket.ScenarioInfo.OfficialScenario =
             Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Official();
-        NullModem.Send_Message(base::ObjectBytes(SendPacket),
-                               sizeof(SendPacket), 1);
+        TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                               sizeof(SendPacket), 1);
 
         transmittime = SystemTicks();
         transmit = false;
@@ -3812,19 +3812,20 @@ int Com_Scenario_Dialog(bool skirmish) {
       if (!skirmish && SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
         base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
         SendPacket.Command = SERIAL_TIMING;
-        SendPacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
+        SendPacket.ScenarioInfo.ResponseTime =
+            TheNetwork().null_modem().Response_Time();
         SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
 
-        NullModem.Send_Message(base::ObjectBytes(SendPacket),
-                               sizeof(SendPacket), 0);
+        TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                               sizeof(SendPacket), 0);
         timingtime = SystemTicks();
       }
 
       /*---------------------------------------------------------------------
       Check for an incoming message
       ---------------------------------------------------------------------*/
-      if (!skirmish && NullModem.Get_Message(base::ObjectBytes(ReceivePacket),
-                                             &packetlen) > 0) {
+      if (!skirmish && TheNetwork().null_modem().Get_Message(
+                           base::ObjectBytes(ReceivePacket), &packetlen) > 0) {
         lastmsgtime = SystemTicks();
         msg_timeout = 600;  // reset timeout value to 10 seconds
                             // (only the 1st time through is 20 seconds)
@@ -3864,7 +3865,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             case SERIAL_SIGN_OFF:
               starttime = SystemTicks();
               while (SystemTicks() - starttime < 60) {
-                NullModem.Service();
+                TheNetwork().null_modem().Service();
               }
               WWMessageBox().Process(TXT_USER_SIGNED_OFF);
 
@@ -4076,7 +4077,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       Service the connection
       ---------------------------------------------------------------------*/
       if (!skirmish) {
-        NullModem.Service();
+        TheNetwork().null_modem().Service();
       }
     }
 
@@ -4174,7 +4175,8 @@ int Com_Scenario_Dialog(bool skirmish) {
       }
 
       if (!skirmish) {
-        SendPacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
+        SendPacket.ScenarioInfo.ResponseTime =
+            TheNetwork().null_modem().Response_Time();
         if (theirresponsetime != 10000) {
           SendPacket.ScenarioInfo.ResponseTime =
               std::max(SendPacket.ScenarioInfo.ResponseTime, theirresponsetime);
@@ -4200,13 +4202,13 @@ int Com_Scenario_Dialog(bool skirmish) {
       SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
 
       if (!skirmish) {
-        NullModem.Send_Message(base::ObjectBytes(SendPacket),
-                               sizeof(SendPacket), 1);
+        TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                               sizeof(SendPacket), 1);
         starttime = SystemTicks();
-        while ((NullModem.Num_Send() &&
+        while ((TheNetwork().null_modem().Num_Send() &&
                 SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) ||
                SystemTicks() - starttime < 60) {
-          NullModem.Service();
+          TheNetwork().null_modem().Service();
         }
 
         /*
@@ -4217,10 +4219,10 @@ int Com_Scenario_Dialog(bool skirmish) {
         */
         WWDebugString("RA95 - About to wait for 'GO' response.\n");
         do {
-          NullModem.Service();
+          TheNetwork().null_modem().Service();
 
-          if (NullModem.Get_Message(base::ObjectBytes(ReceivePacket),
-                                    &packetlen) > 0) {
+          if (TheNetwork().null_modem().Get_Message(
+                  base::ObjectBytes(ReceivePacket), &packetlen) > 0) {
             if (ReceivePacket.Command == SERIAL_READY_TO_GO) {
               if (Session.Scenarios.at(Session.Options.ScenarioIndex)
                       ->Get_Official() &&
@@ -4261,7 +4263,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         } while (!Keyboard->Check() && !retry_setup);
 
         // clear queue to keep from doing any resends
-        NullModem.Init_Send_Queue();
+        TheNetwork().null_modem().Init_Send_Queue();
       }
 
       if (retry_setup) {
@@ -4278,15 +4280,15 @@ int Com_Scenario_Dialog(bool skirmish) {
         SendPacket.Command = SERIAL_SIGN_OFF;
         SendPacket.ScenarioInfo.Color = Session.ColorIdx;  // use Color for ID
         SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
-        NullModem.Send_Message(base::ObjectBytes(SendPacket),
-                               sizeof(SendPacket), 1);
+        TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                               sizeof(SendPacket), 1);
 
         starttime = SystemTicks();
-        while ((NullModem.Num_Send() &&
+        while ((TheNetwork().null_modem().Num_Send() &&
                 SystemTicks() - starttime < PACKET_CANCEL_TIMEOUT) ||
                SystemTicks() - starttime < 60) {
-          if ((NullModem.Get_Message(base::ObjectBytes(ReceivePacket),
-                                     &packetlen) > 0) &&
+          if ((TheNetwork().null_modem().Get_Message(
+                   base::ObjectBytes(ReceivePacket), &packetlen) > 0) &&
               (ReceivePacket.Command == SERIAL_SIGN_OFF &&
                ReceivePacket.ID ==
                    static_cast<unsigned char>(Session.ModemType)))
@@ -4297,7 +4299,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             break;
           }
 
-          NullModem.Service();
+          TheNetwork().null_modem().Service();
         }
       }
 
@@ -4868,21 +4870,22 @@ int Com_Show_Scenario_Dialog() {
   ThePalettes().title_palette().Set();
 
   // TODO(konove): This is ugly and just for printing a message.
-  if (std::string_view(ModemRXString).size() > 36) {
-    ModemRXString[36] = 0;
+  if (TheNetwork().modem_response().size() > 36) {
+    TheNetwork().modem_response().resize(36);
   }
 
-  if (!std::string_view(ModemRXString).empty()) {
-    Session.Messages.Add_Message(nullptr, 0, ModemRXString, PCOLOR_BROWN,
-                                 kTpfText, -1);
+  if (!TheNetwork().modem_response().empty()) {
+    Session.Messages.Add_Message(nullptr, 0,
+                                 TheNetwork().modem_response().c_str(),
+                                 PCOLOR_BROWN, kTpfText, -1);
   }
 
-  ModemRXString[0] = '\0';
+  TheNetwork().modem_response().clear();
 
   /*
   ---------------------------- Processing loop -----------------------------
   */
-  NullModem.Reset_Response_Time();  // clear response time
+  TheNetwork().null_modem().Reset_Response_Time();  // clear response time
   timingtime = lastmsgtime = lastredrawtime = SystemTicks();
 
   bool process = true;  // process while true
@@ -5284,9 +5287,9 @@ int Com_Show_Scenario_Dialog() {
           /*..................................................................
           Send the message
           ..................................................................*/
-          NullModem.Send_Message(base::ObjectBytes(SendPacket),
-                                 sizeof(SendPacket), 1);
-          NullModem.Service();
+          TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                                 sizeof(SendPacket), 1);
+          TheNetwork().null_modem().Service();
 
           /*..................................................................
           Add the message to our own screen
@@ -5329,8 +5332,8 @@ int Com_Show_Scenario_Dialog() {
       SendPacket.ScenarioInfo.Color = Session.ColorIdx;
       SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
 
-      NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
-                             1);
+      TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                             sizeof(SendPacket), 1);
 
       transmittime = SystemTicks();
       transmit = false;
@@ -5370,19 +5373,20 @@ int Com_Show_Scenario_Dialog() {
     if (SystemTicks() - timingtime > PACKET_TIMING_TIMEOUT) {
       base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
       SendPacket.Command = SERIAL_TIMING;
-      SendPacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
+      SendPacket.ScenarioInfo.ResponseTime =
+          TheNetwork().null_modem().Response_Time();
       SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
 
-      NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
-                             0);
+      TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                             sizeof(SendPacket), 0);
       timingtime = SystemTicks();
     }
 
     /*---------------------------------------------------------------------
     Check for an incoming message
     ---------------------------------------------------------------------*/
-    if (NullModem.Get_Message(base::ObjectBytes(ReceivePacket), &packetlen) >
-        0) {
+    if (TheNetwork().null_modem().Get_Message(base::ObjectBytes(ReceivePacket),
+                                              &packetlen) > 0) {
       lastmsgtime = SystemTicks();
 
       msg_timeout = 600;
@@ -5421,7 +5425,7 @@ int Com_Show_Scenario_Dialog() {
           case SERIAL_SIGN_OFF:
             starttime = SystemTicks();
             while (SystemTicks() - starttime < 60) {
-              NullModem.Service();
+              TheNetwork().null_modem().Service();
             }
             WWMessageBox().Process(TXT_USER_SIGNED_OFF);
 
@@ -5729,15 +5733,15 @@ int Com_Show_Scenario_Dialog() {
                     base::FillBytes(base::ObjectBytes(SendPacket), 0,
                                     sizeof(SendPacket));
                     SendPacket.Command = SERIAL_READY_TO_GO;
-                    NullModem.Send_Message(base::ObjectBytes(SendPacket),
-                                           sizeof(SendPacket), 1);
+                    TheNetwork().null_modem().Send_Message(
+                        base::ObjectBytes(SendPacket), sizeof(SendPacket), 1);
 
                     starttime = SystemTicks();
                     while (
-                        (NullModem.Num_Send() &&
+                        (TheNetwork().null_modem().Num_Send() &&
                          SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) ||
                         SystemTicks() - starttime < 60) {
-                      NullModem.Service();
+                      TheNetwork().null_modem().Service();
                     }
                     ready_packet_was_sent = true;
 
@@ -5777,14 +5781,14 @@ int Com_Show_Scenario_Dialog() {
                   base::FillBytes(base::ObjectBytes(SendPacket), 0,
                                   sizeof(SendPacket));
                   SendPacket.Command = SERIAL_READY_TO_GO;
-                  NullModem.Send_Message(base::ObjectBytes(SendPacket),
-                                         sizeof(SendPacket), 1);
+                  TheNetwork().null_modem().Send_Message(
+                      base::ObjectBytes(SendPacket), sizeof(SendPacket), 1);
                   starttime = SystemTicks();
 
-                  while ((NullModem.Num_Send() &&
+                  while ((TheNetwork().null_modem().Num_Send() &&
                           SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) ||
                          SystemTicks() - starttime < 60) {
-                    NullModem.Service();
+                    TheNetwork().null_modem().Service();
                   }
                 }
               } else {
@@ -5810,14 +5814,14 @@ int Com_Show_Scenario_Dialog() {
               base::FillBytes(base::ObjectBytes(SendPacket), 0,
                               sizeof(SendPacket));
               SendPacket.Command = SERIAL_READY_TO_GO;
-              NullModem.Send_Message(base::ObjectBytes(SendPacket),
-                                     sizeof(SendPacket), 1);
+              TheNetwork().null_modem().Send_Message(
+                  base::ObjectBytes(SendPacket), sizeof(SendPacket), 1);
               starttime = SystemTicks();
 
-              while ((NullModem.Num_Send() &&
+              while ((TheNetwork().null_modem().Num_Send() &&
                       SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) ||
                      SystemTicks() - starttime < 60) {
-                NullModem.Service();
+                TheNetwork().null_modem().Service();
               }
             }
 
@@ -5916,7 +5920,7 @@ int Com_Show_Scenario_Dialog() {
     /*---------------------------------------------------------------------
     Service the connection
     ---------------------------------------------------------------------*/
-    NullModem.Service();
+    TheNetwork().null_modem().Service();
   }
 
   /*------------------------------------------------------------------------
@@ -5957,14 +5961,14 @@ int Com_Show_Scenario_Dialog() {
     Session.Players.Add(who);
 
     starttime = SystemTicks();
-    while ((NullModem.Num_Send() &&
+    while ((TheNetwork().null_modem().Num_Send() &&
             SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) ||
            SystemTicks() - starttime < 60) {
-      NullModem.Service();
+      TheNetwork().null_modem().Service();
     }
 
     // clear queue to keep from doing any resends
-    NullModem.Init_Send_Queue();
+    TheNetwork().null_modem().Init_Send_Queue();
 
   } else {
     if (!recsignedoff) {
@@ -5975,15 +5979,15 @@ int Com_Show_Scenario_Dialog() {
       SendPacket.Command = SERIAL_SIGN_OFF;
       SendPacket.ScenarioInfo.Color = Session.ColorIdx;  // use Color for ID
       SendPacket.ID = static_cast<unsigned char>(Session.ModemType);
-      NullModem.Send_Message(base::ObjectBytes(SendPacket), sizeof(SendPacket),
-                             1);
+      TheNetwork().null_modem().Send_Message(base::ObjectBytes(SendPacket),
+                                             sizeof(SendPacket), 1);
 
       starttime = SystemTicks();
-      while ((NullModem.Num_Send() &&
+      while ((TheNetwork().null_modem().Num_Send() &&
               SystemTicks() - starttime < PACKET_CANCEL_TIMEOUT) ||
              SystemTicks() - starttime < 60) {
-        if ((NullModem.Get_Message(base::ObjectBytes(ReceivePacket),
-                                   &packetlen) > 0) &&
+        if ((TheNetwork().null_modem().Get_Message(
+                 base::ObjectBytes(ReceivePacket), &packetlen) > 0) &&
             (ReceivePacket.Command == SERIAL_SIGN_OFF &&
              ReceivePacket.ID == static_cast<unsigned char>(Session.ModemType)))
         // are we getting our own packets back??
@@ -5993,7 +5997,7 @@ int Com_Show_Scenario_Dialog() {
           break;
         }
 
-        NullModem.Service();
+        TheNetwork().null_modem().Service();
       }
     }
 
@@ -6924,17 +6928,17 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
       return connected;
     }
   } else if (carrier & kCdSet) {
-    NullModem.Hangup_Modem();
+    TheNetwork().null_modem().Hangup_Modem();
     Session.ModemService = false;
   }
 
   NullModemClass::Setup_Modem_Echo(Modem_Echo);
 
-  int modemstatus = NullModem.Detect_Modem(settings, reconnect);
+  int modemstatus = TheNetwork().null_modem().Detect_Modem(settings, reconnect);
   if (!modemstatus) {
     NullModemClass::Remove_Modem_Echo();
     NullModemClass::Print_EchoBuf();
-    NullModem.Reset_EchoBuf();
+    TheNetwork().null_modem().Reset_EchoBuf();
     /*
     ** If our first attempt to detect the modem failed, and we're at
     ** 14400 or 28800, bump up to the next baud rate & try again.
@@ -6945,11 +6949,12 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
         Shutdown_Modem();
         Init_Null_Modem(settings);
         NullModemClass::Setup_Modem_Echo(Modem_Echo);
-        modemstatus = NullModem.Detect_Modem(settings, reconnect);
+        modemstatus =
+            TheNetwork().null_modem().Detect_Modem(settings, reconnect);
         if (!modemstatus) {
           NullModemClass::Remove_Modem_Echo();
           NullModemClass::Print_EchoBuf();
-          NullModem.Reset_EchoBuf();
+          TheNetwork().null_modem().Reset_EchoBuf();
           WWMessageBox().Process(TXT_UNABLE_FIND_MODEM);
           Session.ModemService = true;
           return connected;
@@ -6961,11 +6966,12 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
         Shutdown_Modem();
         Init_Null_Modem(settings);
         NullModemClass::Setup_Modem_Echo(Modem_Echo);
-        modemstatus = NullModem.Detect_Modem(settings, reconnect);
+        modemstatus =
+            TheNetwork().null_modem().Detect_Modem(settings, reconnect);
         if (!modemstatus) {
           NullModemClass::Remove_Modem_Echo();
           NullModemClass::Print_EchoBuf();
-          NullModem.Reset_EchoBuf();
+          TheNetwork().null_modem().Reset_EchoBuf();
           WWMessageBox().Process(TXT_UNABLE_FIND_MODEM);
           Session.ModemService = true;
           return connected;
@@ -6981,7 +6987,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   } else if (modemstatus == -1) {
     NullModemClass::Remove_Modem_Echo();
     NullModemClass::Print_EchoBuf();
-    NullModem.Reset_EchoBuf();
+    TheNetwork().null_modem().Reset_EchoBuf();
     WWMessageBox().Process(TXT_ERROR_IN_INITSTRING);
     //		WWMessageBox().Process( "Error in the InitString." );
     Session.ModemService = true;
@@ -7012,8 +7018,8 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     SoundOn = false;
   }
 
-  const DialStatusType dialstatus =
-      NullModem.Dial_Modem(DialString.c_str(), settings->DialMethod, reconnect);
+  const DialStatusType dialstatus = TheNetwork().null_modem().Dial_Modem(
+      DialString.c_str(), settings->DialMethod, reconnect);
 
   if (reconnect) {
     /*
@@ -7050,7 +7056,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
       break;
 
     case DIAL_CANCELED:
-      NullModem.Hangup_Modem();
+      TheNetwork().null_modem().Hangup_Modem();
       Session.ModemService = false;
       WWMessageBox().Process(TXT_DIALING_CANCELED);
       connected = false;
@@ -7061,7 +7067,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
 
   NullModemClass::Remove_Modem_Echo();
   NullModemClass::Print_EchoBuf();
-  NullModem.Reset_EchoBuf();
+  TheNetwork().null_modem().Reset_EchoBuf();
 
   /*
   ** Restore audio capability
@@ -7096,17 +7102,17 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
       return connected;
     }
   } else if (carrier & kCdSet) {
-    NullModem.Hangup_Modem();
+    TheNetwork().null_modem().Hangup_Modem();
     Session.ModemService = false;
   }
 
   NullModemClass::Setup_Modem_Echo(Modem_Echo);
 
-  int modemstatus = NullModem.Detect_Modem(settings, reconnect);
+  int modemstatus = TheNetwork().null_modem().Detect_Modem(settings, reconnect);
   if (!modemstatus) {
     NullModemClass::Remove_Modem_Echo();
     NullModemClass::Print_EchoBuf();
-    NullModem.Reset_EchoBuf();
+    TheNetwork().null_modem().Reset_EchoBuf();
     /*
     ** If our first attempt to detect the modem failed, and we're at
     ** 14400 or 28800, bump up to the next baud rate & try again.
@@ -7117,11 +7123,12 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
         Shutdown_Modem();
         Init_Null_Modem(settings);
         NullModemClass::Setup_Modem_Echo(Modem_Echo);
-        modemstatus = NullModem.Detect_Modem(settings, reconnect);
+        modemstatus =
+            TheNetwork().null_modem().Detect_Modem(settings, reconnect);
         if (!modemstatus) {
           NullModemClass::Remove_Modem_Echo();
           NullModemClass::Print_EchoBuf();
-          NullModem.Reset_EchoBuf();
+          TheNetwork().null_modem().Reset_EchoBuf();
           WWMessageBox().Process(TXT_UNABLE_FIND_MODEM);
           Session.ModemService = true;
           return connected;
@@ -7133,11 +7140,12 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
         Shutdown_Modem();
         Init_Null_Modem(settings);
         NullModemClass::Setup_Modem_Echo(Modem_Echo);
-        modemstatus = NullModem.Detect_Modem(settings, reconnect);
+        modemstatus =
+            TheNetwork().null_modem().Detect_Modem(settings, reconnect);
         if (!modemstatus) {
           NullModemClass::Remove_Modem_Echo();
           NullModemClass::Print_EchoBuf();
-          NullModem.Reset_EchoBuf();
+          TheNetwork().null_modem().Reset_EchoBuf();
           WWMessageBox().Process(TXT_UNABLE_FIND_MODEM);
           Session.ModemService = true;
           return connected;
@@ -7152,7 +7160,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   } else if (modemstatus == -1) {
     NullModemClass::Remove_Modem_Echo();
     NullModemClass::Print_EchoBuf();
-    NullModem.Reset_EchoBuf();
+    TheNetwork().null_modem().Reset_EchoBuf();
     WWMessageBox().Process(TXT_ERROR_IN_INITSTRING);
     Session.ModemService = true;
     return connected;
@@ -7182,7 +7190,8 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     SoundOn = false;
   }
 
-  const DialStatusType dialstatus = NullModem.Answer_Modem(reconnect);
+  const DialStatusType dialstatus =
+      TheNetwork().null_modem().Answer_Modem(reconnect);
 
   switch (dialstatus) {
     case DIAL_CONNECTED:
@@ -7216,7 +7225,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
 
   NullModemClass::Remove_Modem_Echo();
   NullModemClass::Print_EchoBuf();
-  NullModem.Reset_EchoBuf();
+  TheNetwork().null_modem().Reset_EchoBuf();
 
   /*
   ** Restore audio capability
@@ -7232,10 +7241,13 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
 } /* end of Answer_Modem */
 
 static void Modem_Echo(char c) {
-  if (NullModem.EchoCount < NullModem.EchoSize - 1) {
-    NullModem.EchoBuf.at(base::ToSize(NullModem.EchoCount)) = c;
-    NullModem.EchoBuf.at(base::ToSize(NullModem.EchoCount + 1)) = 0;
-    NullModem.EchoCount++;
+  if (TheNetwork().null_modem().EchoCount <
+      TheNetwork().null_modem().EchoSize - 1) {
+    TheNetwork().null_modem().EchoBuf.at(
+        base::ToSize(TheNetwork().null_modem().EchoCount)) = c;
+    TheNetwork().null_modem().EchoBuf.at(
+        base::ToSize(TheNetwork().null_modem().EchoCount + 1)) = 0;
+    TheNetwork().null_modem().EchoCount++;
   }
 
 } /* end of Modem_Echo */

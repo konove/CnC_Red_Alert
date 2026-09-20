@@ -41,6 +41,7 @@
 #include "ra/mapedit.h"
 #include "ra/msglist.h"
 #include "ra/netdlg.h"
+#include "ra/network.h"
 #include "ra/nullmgr.h"
 #include "ra/rawolapi.h"
 #include "ra/rules.h"
@@ -62,11 +63,12 @@ constexpr KeyNumType kPageRespondKey = KN_RETURN;  // KN_COMMA
 //
 // Only reachable when config::kWolapiEnabled; the caller gates it with
 // `if constexpr` so the whole page-respond path folds away with the toggle.
-// The caller has already checked that pWolapi is live. Marked maybe_unused
-// because the only call site sits in a discarded `if constexpr` branch when
-// the toggle is off, which clang otherwise reports as an unneeded static.
+// The caller has already checked that TheNetwork().wolapi() is live. Marked
+// maybe_unused because the only call site sits in a discarded `if constexpr`
+// branch when the toggle is off, which clang otherwise reports as an unneeded
+// static.
 [[maybe_unused]] static void Start_External_Page_Reply() {
-  if (*pWolapi->szExternalPager == '\0') {
+  if (*TheNetwork().wolapi()->szExternalPager == '\0') {
     Session.Messages.Add_Message(
         nullptr, 0, TXT_WOL_NOTPAGED, PCOLOR_GOLD,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -83,16 +85,18 @@ constexpr KeyNumType kPageRespondKey = KN_RETURN;  // KN_COMMA
   base::FillBytes(base::ObjectBytes(blop), 0, sizeof(blop));
   Session.MessageAddress = IPXAddressClass(blip, blop);
 
-  // Tell pWolapi not to reset szExternalPager while the reply is being typed.
-  pWolapi->bFreezeExternalPager = true;
+  // Tell TheNetwork().wolapi() not to reset szExternalPager while the reply is
+  // being typed.
+  TheNetwork().wolapi()->bFreezeExternalPager = true;
 
   char txt[MAX_MESSAGE_LENGTH + 32] = {};
   // TXT_TO comes from the localized string table, so verify the translation
   // still takes exactly one %s before using it.
   const auto format = absl::ParsedFormat<'s'>::New(Text_String(TXT_TO));
   if (format != nullptr) {
-    port::SafeCopy(txt,
-                   absl::StrFormat(*format, pWolapi->szExternalPager).c_str());
+    port::SafeCopy(
+        txt, absl::StrFormat(*format, TheNetwork().wolapi()->szExternalPager)
+                 .c_str());
   }
 
   Session.Messages.Add_Edit(Session.ColorIdx,
@@ -134,19 +138,20 @@ static void Send_Network_Chat_Message(const int rc) {
       *ptr = 'X';  // force it to an odd hack so we know it was broadcast.
       Enable_Secret_Units();
     }
-    for (int i = 0; i < Ipx.Num_Connections(); ++i) {
-      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                              sizeof(GlobalPacketType), 1,
-                              Ipx.Connection_Address(Ipx.Connection_ID(i)));
-      Ipx.Service();
+    for (int i = 0; i < TheNetwork().ipx().Num_Connections(); ++i) {
+      TheNetwork().ipx().Send_Global_Message(
+          base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 1,
+          TheNetwork().ipx().Connection_Address(
+              TheNetwork().ipx().Connection_ID(i)));
+      TheNetwork().ipx().Service();
     }
   } else {
     // Otherwise, MessageAddress contains the exact address to send to.
     // Send to that address only.
-    Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                            sizeof(GlobalPacketType), 1,
-                            &Session.MessageAddress);
-    Ipx.Service();
+    TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                           sizeof(GlobalPacketType), 1,
+                                           &Session.MessageAddress);
+    TheNetwork().ipx().Service();
   }
 
   // Store this message in our LastMessage buffer; the computer may send us a
@@ -169,8 +174,8 @@ void Message_Input(KeyNumType& input) {
   // only when Westwood Online is on.
   if constexpr (config::kWolapiEnabled) {
     if (input == kPageRespondKey && Session.Type == GAME_INTERNET &&
-        !Session.Messages.Is_Edit() && pWolapi != nullptr &&
-        !pWolapi->bConnectionDown) {
+        !Session.Messages.Is_Edit() && TheNetwork().wolapi() != nullptr &&
+        !TheNetwork().wolapi()->bConnectionDown) {
       Start_External_Page_Reply();
     }
   }
@@ -207,15 +212,18 @@ void Message_Input(KeyNumType& input) {
 
         TheMap().Flag_To_Redraw(false);
 
-      } else if (input - KN_F1 < Ipx.Num_Connections() && !Session.ObiWan) {
-        const int id = Ipx.Connection_ID(input - KN_F1);
-        Session.MessageAddress = *Ipx.Connection_Address(id);
+      } else if (input - KN_F1 < TheNetwork().ipx().Num_Connections() &&
+                 !Session.ObiWan) {
+        const int id = TheNetwork().ipx().Connection_ID(input - KN_F1);
+        Session.MessageAddress = *TheNetwork().ipx().Connection_Address(id);
         // TXT_TO comes from the localized string table, so verify the
         // translation still takes exactly one %s before using it.
         const auto format = absl::ParsedFormat<'s'>::New(Text_String(TXT_TO));
         if (format != nullptr) {
           port::SafeCopy(
-              txt, absl::StrFormat(*format, Ipx.Connection_Name(id)).c_str());
+              txt,
+              absl::StrFormat(*format, TheNetwork().ipx().Connection_Name(id))
+                  .c_str());
         }
 
         Session.Messages.Add_Edit(
@@ -245,10 +253,10 @@ void Message_Input(KeyNumType& input) {
     if (copy_input == KN_ESC) {
       TheMap().Flag_To_Redraw(true);
       if constexpr (config::kWolapiEnabled) {
-        if (pWolapi) {
+        if (TheNetwork().wolapi()) {
           // Just in case user was responding to a page from outside the
           // game, and we had frozen the "szExternalPager".
-          pWolapi->bFreezeExternalPager = false;
+          TheNetwork().wolapi()->bFreezeExternalPager = false;
         }
       }
     } else {
@@ -282,8 +290,8 @@ void Message_Input(KeyNumType& input) {
 
       // Send the message, and store this message in our LastMessage
       // buffer; the computer may send us a version of it later.
-      NullModem.Send_Message(base::ObjectBytes(packet_storage),
-                             sizeof(SerialPacketType), 1);
+      TheNetwork().null_modem().Send_Message(base::ObjectBytes(packet_storage),
+                                             sizeof(SerialPacketType), 1);
 
       // A chat message is how the secret units get switched on for everyone
       // at once: both ends recognize the phrase and enable them locally, so
@@ -308,13 +316,14 @@ void Message_Input(KeyNumType& input) {
             0;
         if (reply_to_external_page) {
           // (As connection may have gone down.)
-          if (pWolapi && !pWolapi->bConnectionDown) {
+          if (TheNetwork().wolapi() &&
+              !TheNetwork().wolapi()->bConnectionDown) {
             // The HRESULT carries nothing here: asked not to wait for a
             // result, Page returns 0 whether or not the request went out.
-            static_cast<void>(pWolapi->Page(pWolapi->szExternalPager,
-                                            Session.Messages.Get_Edit_Buf(),
-                                            false));
-            pWolapi->bFreezeExternalPager = false;
+            static_cast<void>(TheNetwork().wolapi()->Page(
+                TheNetwork().wolapi()->szExternalPager,
+                Session.Messages.Get_Edit_Buf(), false));
+            TheNetwork().wolapi()->bFreezeExternalPager = false;
           }
         } else {
           Send_Network_Chat_Message(rc);
@@ -331,14 +340,14 @@ void Message_Input(KeyNumType& input) {
 }
 
 void IPX_Call_Back() {
-  Ipx.Service();
+  TheNetwork().ipx().Service();
 
   // Read packets only if the game is "closed", so we don't steal global
   // messages from the connection dialogs.
   if ((!Session.NetOpen) &&
-      Ipx.Get_Global_Message(base::ObjectBytes(Session.GPacket),
-                             &Session.GPacketlen, &Session.GAddress,
-                             &Session.GProductID) &&
+      TheNetwork().ipx().Get_Global_Message(
+          base::ObjectBytes(Session.GPacket), &Session.GPacketlen,
+          &Session.GAddress, &Session.GProductID) &&
       (Session.GProductID == IPXGlobalConnClass::kCommandAndConquer0))
 
   {
@@ -346,10 +355,10 @@ void IPX_Call_Back() {
     // mark that player's house as non-human, so the computer will take
     // it over.
     if (Session.GPacket.Command == NET_SIGN_OFF) {
-      for (int i = 0; i < Ipx.Num_Connections(); i++) {
-        const int id = Ipx.Connection_ID(i);
+      for (int i = 0; i < TheNetwork().ipx().Num_Connections(); i++) {
+        const int id = TheNetwork().ipx().Connection_ID(i);
 
-        if (Session.GAddress == *Ipx.Connection_Address(id)) {
+        if (Session.GAddress == *TheNetwork().ipx().Connection_Address(id)) {
           Destroy_Connection(id, 0);
         }
       }

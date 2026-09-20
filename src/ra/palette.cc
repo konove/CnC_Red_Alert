@@ -14,11 +14,9 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "port/bytes_of.h"
-#include "ra/externs.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_win.h"
-#include "tech/ftimer.h"
 #include "tech/rgb.h"
 
 PaletteClass PaletteClass::CurrentPalette;

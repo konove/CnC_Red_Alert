@@ -112,6 +112,7 @@
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
+#include "ra/network.h"
 #include "ra/object.h"
 #include "ra/queue.h"
 #include "ra/radio.h"
@@ -1268,7 +1269,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
       if (AllowVoice) {
         const COORDINATE coord =
             TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y());
-        OutList.Add(
+        TheNetwork().out_list().Add(
             EventClass(ANIM_MOVE_FLASH, ThePlayer()->Class->House, coord));
       }
       [[fallthrough]];

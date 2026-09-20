@@ -53,6 +53,7 @@
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/msgbox.h"
+#include "ra/network.h"
 #include "ra/options.h"
 #include "ra/queue.h"
 #include "ra/screen.h"
@@ -134,8 +135,9 @@ void GameControlsClass::Process() {
   const int d_wol_h = d_sound_h;
 
   //	The Westwood Online options button only appears while connected.
-  const bool bShowWolapi =
-      config::kWolapiEnabled && pWolapi != nullptr && !pWolapi->bConnectionDown;
+  const bool bShowWolapi = config::kWolapiEnabled &&
+                           TheNetwork().wolapi() != nullptr &&
+                           !TheNetwork().wolapi()->bConnectionDown;
   if (bShowWolapi) {
     //	Enlarge dialog and shift ok button down.
     d_dialog_h += d_wol_h + d_margin1;
@@ -441,7 +443,8 @@ void GameControlsClass::Process() {
       if (gamespeed !=
           OptionsClass::kMaxSpeedSetting - 1 - gspeed_btn.Get_Value()) {
         gamespeed = OptionsClass::kMaxSpeedSetting - 1 - gspeed_btn.Get_Value();
-        OutList.Add(EventClass(EventClass::GAMESPEED, gamespeed));
+        TheNetwork().out_list().Add(
+            EventClass(EventClass::GAMESPEED, gamespeed));
       }
 
       if (scrollrate !=
@@ -494,7 +497,7 @@ void GameControlsClass::Process() {
           break;
 
         case kButtonWolapi:
-          if (WOL_Options_Dialog(pWolapi, true)) {
+          if (WOL_Options_Dialog(TheNetwork().wolapi(), true)) {
             //	The game ended while in this dialog.
             process = false;
           } else {

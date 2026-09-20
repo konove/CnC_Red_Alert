@@ -85,7 +85,6 @@
 #include "td/defines.h"
 #include "td/dial8.h"
 #include "td/dialog.h"
-#include "td/externs.h"
 #include "td/facing.h"
 #include "td/gadget.h"
 #include "td/game_clock.h"

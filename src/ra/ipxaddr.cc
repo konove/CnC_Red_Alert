@@ -37,7 +37,6 @@
  *   IPXAddressClass::IPXAddressClass -- class constructor form 2
  ** IPXAddressClass::IPXAddressClass -- class constructor form 3
  ** IPXAddressClass::Set_Address -- sets the IPX address values        	*
- *   IPXAddressClass::Set_Address -- sets the IPX values from a header *
  *   IPXAddressClass::Get_Address -- retrieves the IPX address values      *
  *   IPXAddressClass::Get_Address -- copies address into an IPX header *
  *   IPXAddressClass::Is_Broadcast -- tells if this is a broadcast address *
@@ -50,9 +49,7 @@
 #include <cstring>
 
 #include "base/buffer.h"
-#include "ra/_wsproto.h"
 #include "ra/ipx.h"
-#include "ra/wsproto.h"
 
 /***************************************************************************
  * IPXAddressClass::IPXAddressClass -- class constructor                   *
@@ -170,57 +167,6 @@ void IPXAddressClass::Set_Address(const NetNumType& net,
                                   const NetNodeType& node) {
   base::CopyBytes(base::ObjectBytes(NetworkNumber), base::ObjectBytes(net), 4);
   base::CopyBytes(base::ObjectBytes(NodeAddress), base::ObjectBytes(node), 6);
-
-} /* end of Set_Address */
-
-/***************************************************************************
- * IPXAddressClass::Set_Address -- sets the IPX values from a header
- **
- *                                                                         *
- * This routine extracts the source addresses from the given IPX header.
- **
- *                                                                         *
- * INPUT:                                                                  *
- *		net		Network Number for this address
- ** node		Node Address for this address
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		none.
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   12/19/1994 BR : Created.                                              *
- *=========================================================================*/
-void IPXAddressClass::Set_Address(IPXHeaderType* header) {
-  ProtocolEnum protocol = PROTOCOL_IPX;
-  if (PacketTransport) {
-    protocol = PacketTransport->Get_Protocol();
-  }
-
-  switch (protocol) {
-    case PROTOCOL_IPX:
-      base::CopyBytes(base::ObjectBytes(NetworkNumber),
-                      base::ObjectBytes(header->SourceNetworkNumber), 4);
-      base::CopyBytes(base::ObjectBytes(NodeAddress),
-                      base::ObjectBytes(header->SourceNetworkNode), 6);
-      break;
-
-    case PROTOCOL_UDP: {
-      const auto addr = base::ObjectBytes(*header);
-      base::FillBytes(base::ObjectBytes(NodeAddress), 0, 6);
-      base::CopyBytes(base::ObjectBytes(NodeAddress), addr, 4);
-      base::FillBytes(base::ObjectBytes(NetworkNumber), 0, 4);
-      break;
-    }
-    case ProtocolEnum::PROTOCOL_NONE:
-    default:
-      break;
-  }
 
 } /* end of Set_Address */
 

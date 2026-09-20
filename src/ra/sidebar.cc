@@ -122,6 +122,7 @@
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
+#include "ra/network.h"
 #include "ra/object.h"
 #include "ra/object_heaps.h"
 #include "ra/palette.h"
@@ -1508,7 +1509,7 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
                 case RTTI_VESSEL:
                 case RTTI_UNIT:
                 case RTTI_AIRCRAFT:
-                  OutList.Add(
+                  TheNetwork().out_list().Add(
                       EventClass(EventClass::PLACE, pending->What_Am_I(), -1));
                   Speak(VOX_UNIT_READY);
                   break;
@@ -1518,7 +1519,7 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
                   break;
 
                 case RTTI_INFANTRY:
-                  OutList.Add(
+                  TheNetwork().out_list().Add(
                       EventClass(EventClass::PLACE, pending->What_Am_I(), -1));
                   Speak(VOX_UNIT_READY);
                   break;
@@ -2027,8 +2028,8 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
           Unselect_All();
           Speak(VOX_SELECT_TARGET);
         } else {
-          OutList.Add(EventClass(EventClass::SPECIAL_PLACE,
-                                 static_cast<int>(SPC_SONAR_PULSE), 0));
+          TheNetwork().out_list().Add(EventClass(
+              EventClass::SPECIAL_PLACE, static_cast<int>(SPC_SONAR_PULSE), 0));
         }
       } else {
         ThePlayer()->SuperWeapon.at(spc).Impatient_Click();
@@ -2070,10 +2071,12 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
 
         if (!factory->Is_Building()) {
           Speak(VOX_CANCELED);
-          OutList.Add(EventClass(EventClass::ABANDON, otype, oid));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::ABANDON, otype, oid));
         } else {
           Speak(VOX_SUSPENDED);
-          OutList.Add(EventClass(EventClass::SUSPEND, otype, oid));
+          TheNetwork().out_list().Add(
+              EventClass(EventClass::SUSPEND, otype, oid));
           base::At(TheMap().Column, 0).IsToRedraw = true;
           base::At(TheMap().Column, 1).IsToRedraw = true;
         }
@@ -2112,7 +2115,8 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                 BuildingClass* builder =
                     pending->Who_Can_Build_Me(false, false);
                 if (!builder) {
-                  OutList.Add(EventClass(EventClass::ABANDON, otype, oid));
+                  TheNetwork().out_list().Add(
+                      EventClass(EventClass::ABANDON, otype, oid));
                   Speak(VOX_NO_FACTORY);
                 } else {
                   /*
@@ -2130,7 +2134,8 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                     **	power, queue this event and process through normal house
                     **	production channels.
                     */
-                    OutList.Add(EventClass(EventClass::PLACE, otype, -1));
+                    TheNetwork().out_list().Add(
+                        EventClass(EventClass::PLACE, otype, -1));
                   }
                 }
               }
@@ -2147,7 +2152,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                 } else {
                   Speak(VOX_BUILDING);
                 }
-                OutList.Add(
+                TheNetwork().out_list().Add(
                     EventClass(EventClass::PRODUCE,
                                base::At(Strip->Buildables, index).BuildableType,
                                base::At(Strip->Buildables, index).BuildableID));
@@ -2168,7 +2173,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
             } else {
               Speak(VOX_BUILDING);
             }
-            OutList.Add(
+            TheNetwork().out_list().Add(
                 EventClass(EventClass::PRODUCE,
                            base::At(Strip->Buildables, index).BuildableType,
                            base::At(Strip->Buildables, index).BuildableID));

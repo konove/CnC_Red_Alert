@@ -84,6 +84,7 @@
 #include "ra/mapedit.h"
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
+#include "ra/network.h"
 #include "ra/object.h"
 #include "ra/object_heaps.h"
 #include "ra/rules.h"
@@ -983,8 +984,8 @@ void EventClass::Execute() {
       // can reschedule these events to execute after it's over.
       //
       if (std::cmp_greater(Data.Timing.MaxAhead, Session.MaxAhead)) {
-        NewMaxAheadFrame1 = Frame;
-        NewMaxAheadFrame2 = Frame + Data.Timing.MaxAhead;
+        TheNetwork().new_max_ahead_frame1() = Frame;
+        TheNetwork().new_max_ahead_frame2() = Frame + Data.Timing.MaxAhead;
       }
       Session.DesiredFrameRate = Data.Timing.DesiredFrameRate;
       Session.MaxAhead = Data.Timing.MaxAhead;

@@ -62,6 +62,7 @@
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/ipx.h"
+#include "ra/network.h"
 #include "ra/object_heaps.h"
 #include "ra/scenario.h"
 #include "ra/session.h"
@@ -179,7 +180,6 @@ extern "C" char CPUType;
 
 static TimerClass GameTimer;
 static int32_t GameEndTime;
-void* PacketLater = nullptr;
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -197,7 +197,6 @@ void* PacketLater = nullptr;
 #include "port/inet_text.h"
 #include "port/safe_string.h"
 #include "ra/config.h"
-#include "ra/internet.h"
 #include "ra/wolapiob.h"
 
 /***********************************************************************************************
@@ -218,7 +217,7 @@ void* PacketLater = nullptr;
 void Send_Statistics_Packet() {
 //	debugprint( "Stats: Send_Statistics_Packet() called.\n" );
   if constexpr (config::kWolapiEnabled) {
-    if (!pWolapi) {  //	Should no longer ever happen.
+    if (!TheNetwork().wolapi()) {  //	Should no longer ever happen.
       return;
     }
   }
@@ -254,16 +253,17 @@ void Send_Statistics_Packet() {
       "SPA", "GRE", "USS", "ENG", "ITA", "GER", "FRA", "TKY", "GUD", "BAD",
       "CIV", "JP ", "M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08"};
 
-  if (!PacketLater) {
+  if (!TheNetwork().packet_later()) {
     /*
     ** Field to identify this as C&C 95 internet game statistics packet
     */
     if constexpr (config::kWolapiEnabled) {
       //	Reversed meaning of this for Neal.
       stats.Add_Field(FIELD_HOSTORNOT,
-                      static_cast<unsigned char>(pWolapi->bGameServer ? 0 : 1));
+                      static_cast<unsigned char>(
+                          TheNetwork().wolapi()->bGameServer ? 0 : 1));
     } else {
-      stats.Add_Field(FIELD_PACKET_TYPE, PlanetWestwoodIsHost
+      stats.Add_Field(FIELD_PACKET_TYPE, TheNetwork().westwood_is_host()
                                              ? kPacketTypeHostGameInfo
                                              : kPacketTypeGuestGameInfo);
     }
@@ -271,15 +271,15 @@ void Send_Statistics_Packet() {
     /*
     ** Game ID. A unique game identifier assigned by WChat.
     */
-    stats.Add_Field(FIELD_GAME_ID, PlanetWestwoodGameID);
+    stats.Add_Field(FIELD_GAME_ID, TheNetwork().westwood_game_id());
 
     if constexpr (config::kWolapiEnabled) {
       //	Number of players initially in game.
-      stats.Add_Field(
-          FIELD_NUM_INITIAL_PLAYERS,
-          static_cast<uint32_t>(pWolapi->GameInfoCurrent.iPlayerCount));
+      stats.Add_Field(FIELD_NUM_INITIAL_PLAYERS,
+                      static_cast<uint32_t>(
+                          TheNetwork().wolapi()->GameInfoCurrent.iPlayerCount));
       // debugprint( "Stats: number of initial players is %i\n",
-      // pWolapi->GameInfoCurrent.iPlayerCount );
+      // TheNetwork().wolapi()->GameInfoCurrent.iPlayerCount );
 
       //	Number of players remaining in game. Not sure of what use this
       // will be
@@ -290,9 +290,10 @@ void Send_Statistics_Packet() {
       // Session.Players.Count() );
 
       //	Whether or not this was a tournament game.
-      stats.Add_Field(FIELD_TOURNAMENT,
-                      static_cast<unsigned char>(
-                          pWolapi->GameInfoCurrent.bTournament ? 1 : 0));
+      stats.Add_Field(
+          FIELD_TOURNAMENT,
+          static_cast<unsigned char>(
+              TheNetwork().wolapi()->GameInfoCurrent.bTournament ? 1 : 0));
 
       //	ajw This is now in WOLAPI...
       //		//	A unique value that identifies the machine that
@@ -364,7 +365,8 @@ void Send_Statistics_Packet() {
 
     //	Completion status is set for Tournament games only - ajw.
     if (!config::kWolapiEnabled ||
-        (pWolapi != nullptr && pWolapi->GameInfoCurrent.bTournament)) {
+        (TheNetwork().wolapi() != nullptr &&
+         TheNetwork().wolapi()->GameInfoCurrent.bTournament)) {
       /*
       ** Game completion status.
       **
@@ -466,9 +468,9 @@ void Send_Statistics_Packet() {
             TheScenario().bOtherProposesDraw) {
           completion = kCompletionWash;
         } else {
-          if (ConnectionLost) {
+          if (TheNetwork().connection_lost()) {
             if constexpr (config::kWolapiEnabled) {
-              if (bReconnectDialogCancelled) {
+              if (TheNetwork().reconnect_cancelled()) {
                 if (Session.Players.at(0)->Player.ID == HOUSE_MULTI1) {
                   //	I am player1.
                   completion = kCompletionPlayer2WonByDisconnection;
@@ -477,10 +479,11 @@ void Send_Statistics_Packet() {
                 }
               } else {
                 completion = kCompletionConnectionLost;
-                if (pWolapi->bDisconnectPingingCompleted) {
+                if (TheNetwork().wolapi()->bDisconnectPingingCompleted) {
                   char szPingResult[8];  //	Format is "x/y a/b", e.g., "3/5
                                          // 4/5"
-                  pWolapi->DisconnectPingResultsString(szPingResult);
+                  TheNetwork().wolapi()->DisconnectPingResultsString(
+                      szPingResult);
                   stats.Add_Field(FIELD_DISCONNECT_PINGS, szPingResult);
                 }
                 //						else
@@ -543,7 +546,7 @@ void Send_Statistics_Packet() {
     ** Passed from WChat
     */
     stats.Add_Field(FIELD_START_TIME,
-                    static_cast<int32_t>(PlanetWestwoodStartTime));
+                    static_cast<int32_t>(TheNetwork().westwood_start_time()));
 
     /*
     ** Game duration (seconds).
@@ -827,7 +830,7 @@ void Send_Statistics_Packet() {
     */
     packet = stats.Create_Comms_Packet(packet_size);
 
-    //	ajw - 'PacketLater' is no longer ever used.
+    //	ajw - 'TheNetwork().packet_later()' is no longer ever used.
     /*
     ** If a player disconnected then dont send the packet at this time - save it
     *for later
@@ -835,17 +838,17 @@ void Send_Statistics_Packet() {
     if (!config::kWolapiEnabled &&
         (completion == kCompletionPlayer1WonByDisconnection ||
          completion == kCompletionPlayer2WonByDisconnection)) {
-      PacketLater = packet;
+      TheNetwork().packet_later() = packet;
       return;
     }
 
-  } else {  // else for if (!PacketLater)
+  } else {  // else for if (!TheNetwork().packet_later())
 
     /*
     ** Send the packet we calculated earlier when the disconnect occurred
     */
-    packet = PacketLater;
-    PacketLater = nullptr;
+    packet = TheNetwork().packet_later();
+    TheNetwork().packet_later() = nullptr;
   }
 
   if constexpr (config::kWolapiEnabled) {
@@ -854,16 +857,17 @@ void Send_Statistics_Packet() {
     */
     const char* szGameResServer = nullptr;
     int iPort = 0;
-    if (pWolapi->GameInfoCurrent.GameKind == CREATEGAMEINFO::AMGAME) {
-      szGameResServer = pWolapi->szGameResServerHost2;
-      iPort = pWolapi->iGameResServerPort2;
+    if (TheNetwork().wolapi()->GameInfoCurrent.GameKind ==
+        CREATEGAMEINFO::AMGAME) {
+      szGameResServer = TheNetwork().wolapi()->szGameResServerHost2;
+      iPort = TheNetwork().wolapi()->iGameResServerPort2;
     } else {
-      szGameResServer = pWolapi->szGameResServerHost1;
-      iPort = pWolapi->iGameResServerPort1;
+      szGameResServer = TheNetwork().wolapi()->szGameResServerHost1;
+      iPort = TheNetwork().wolapi()->iGameResServerPort1;
     }
 
     if ((*szGameResServer) &&
-        (pWolapi->pNetUtil->RequestGameresSend(
+        (TheNetwork().wolapi()->pNetUtil->RequestGameresSend(
              szGameResServer, iPort, static_cast<unsigned char*>(packet),
              packet_size) != S_OK)) {
       // debugprint( "RequestGameresSend( %s, %i ) failed!!!\n",
@@ -883,7 +887,7 @@ void Send_Statistics_Packet() {
   */
   delete[] static_cast<char*>(packet);
 
-  GameStatisticsPacketSent = true;
+  TheNetwork().statistics_sent() = true;
 }
 
 void Register_Game_Start_Time() {

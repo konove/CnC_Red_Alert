@@ -55,7 +55,6 @@
 /*
 ** Ugly hack: this string stores the string received from the modem
 */
-inline char ModemRXString[80] = {};
 
 /*
 ***************************** Class Declaration *****************************

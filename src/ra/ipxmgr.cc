@@ -83,7 +83,6 @@
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
-#include "ra/_wsproto.h"
 #include "ra/combuf.h"
 #include "ra/connect.h"
 #include "ra/defines.h"
@@ -94,6 +93,7 @@
 #include "ra/ipxaddr.h"
 #include "ra/ipxconn.h"
 #include "ra/ipxgconn.h"
+#include "ra/network.h"
 #include "ra/session.h"
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
@@ -123,74 +123,24 @@
  *=========================================================================*/
 IPXManagerClass::IPXManagerClass(int glb_maxlen, int pvt_maxlen,
                                  int glb_num_packets, int pvt_num_packets,
-                                 uint16_t socket, uint16_t product_id) {
+                                 uint16_t socket, uint16_t product_id)
+    : Glb_MaxPacketLen(glb_maxlen),
+      Glb_NumPackets(glb_num_packets),
+      Pvt_MaxPacketLen(pvt_maxlen),
+      Pvt_NumPackets(pvt_num_packets),
+      ProductID(product_id),
+      // IPX wants the socket ID stored high byte first.
+      Socket(static_cast<uint16_t>(
+          (static_cast<uint32_t>(socket) & 0x00ff) << 8 |
+          (static_cast<uint32_t>(socket) & 0xff00) >> 8)) {
   /*
-  ** Find out if Packet protocol services are available through Winsock.
+  ** Find out if Packet protocol services are available through Winsock. The
+  ** probe is a local: the interface this manager sends through is opened
+  ** later, by Init(), and the constructor must not reach for Network while
+  ** Network is still building this very member.
   */
-  if (PacketTransport) {
-    delete PacketTransport;
-    PacketTransport = nullptr;
-  }
-  PacketTransport = new WinsockInterfaceClass;
-  DCHECK(PacketTransport != nullptr);
-
-  IPXStatus = PacketTransport->Init();
-  delete PacketTransport;
-  PacketTransport = nullptr;
-
-  //........................................................................
-  //	Set listening state flag to off
-  //........................................................................
-  Listening = false;
-
-  //........................................................................
-  //	No memory has been alloc'd yet
-  //........................................................................
-  RealMemAllocd = false;
-
-  //........................................................................
-  //	Set max packet sizes, for allocating real-mode memory
-  //........................................................................
-  Glb_MaxPacketLen = glb_maxlen;
-  Glb_NumPackets = glb_num_packets;
-  Pvt_MaxPacketLen = pvt_maxlen;
-  Pvt_NumPackets = pvt_num_packets;
-
-  //........................................................................
-  //	Save the app's product ID
-  //........................................................................
-  ProductID = product_id;
-
-  //........................................................................
-  //	Save our socket ID number
-  //........................................................................
-  Socket = static_cast<uint16_t>((static_cast<uint32_t>(socket) & 0x00ff) << 8 |
-                                 (static_cast<uint32_t>(socket) & 0xff00) >> 8);
-
-  //------------------------------------------------------------------------
-  //	Get the user's IPX local connection number
-  //------------------------------------------------------------------------
-  ConnectionNum = 0;
-
-  //------------------------------------------------------------------------
-  //	Init connection states
-  //------------------------------------------------------------------------
-  NumConnections = 0;
-  CurConnection = 0;
-  for (auto& i : Connection) {
-    i = nullptr;
-  }
-  GlobalChannel = nullptr;
-
-  BadConnection = kConnectionNone;
-
-  //------------------------------------------------------------------------
-  //	Init timing parameters
-  //------------------------------------------------------------------------
-  RetryDelta = 2;   // 2 ticks between retries
-  MaxRetries = -1;  // disregard # retries
-  Timeout = 60;     // report bad connection after 1 second
-
+  WinsockInterfaceClass probe;
+  IPXStatus = probe.Init();
 } /* end of IPXManagerClass */
 
 /***************************************************************************
@@ -981,11 +931,11 @@ int IPXManagerClass::Service() {
   // object holding a pointer into this frame's stack after Service() returned.
   std::span<std::byte> cur_data_buf;
 
-  if (PacketTransport) {
+  if (TheNetwork().packet_transport()) {
     do {
       int temp_receive_buffer_len = sizeof(temp_receive_buffer);
       int temp_address_len = sizeof(temp_address);
-      packetlen = PacketTransport->Read(
+      packetlen = TheNetwork().packet_transport()->Read(
           base::ObjectBytes(temp_receive_buffer), temp_receive_buffer_len,
           base::ObjectBytes(temp_address), temp_address_len);
       if (packetlen) {

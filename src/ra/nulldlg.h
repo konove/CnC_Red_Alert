@@ -13,7 +13,4 @@ GameType Select_Serial_Dialog();
 int Com_Scenario_Dialog(bool skirmish = false);
 int Com_Show_Scenario_Dialog();
 
-class ModemRegistryEntryClass;
-extern ModemRegistryEntryClass* ModemRegistry;
-
 #endif  // CNC_RED_ALERT_RA_NULLDLG_H_

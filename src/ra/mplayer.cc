@@ -62,6 +62,7 @@
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/mapedit.h"
+#include "ra/network.h"
 #include "ra/nulldlg.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
@@ -144,7 +145,7 @@ GameType Select_MPlayer_Game() {
 
   // Sampled once: the button list, its length and the cancel-button fixup
   // below all have to agree on how many buttons this dialog has.
-  const bool has_ipx = Ipx.Is_IPX();
+  const bool has_ipx = TheNetwork().ipx().Is_IPX();
   //	The IPX and Westwood Online buttons are each present or not; the count
   //	drives keyboard navigation, so it has to match what was actually built.
   const int num_of_buttons =
@@ -175,7 +176,7 @@ GameType Select_MPlayer_Game() {
   //------------------------------------------------------------------------
   // If IPX not active then do only the modem serial dialog
   //------------------------------------------------------------------------
-  //	if ( !Ipx.Is_IPX() ) {
+  //	if ( !TheNetwork().ipx().Is_IPX() ) {
   //		return( Select_Serial_Dialog() );
   //	}
 

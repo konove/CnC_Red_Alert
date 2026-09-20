@@ -177,6 +177,10 @@ static void Create_Units(bool official);
 static CELL Clip_Scatter(CELL cell, int maxdist);
 static CELL Clip_Move(CELL cell, FacingType facing, int dist);
 
+// Paces the mission briefing: each line is left up for three seconds, or
+// until the speech playing over it finishes. Only this file shows briefings.
+static Timer<SystemTickSource> speech_timer;
+
 static int build_tech[11] = {
     2, 2,  // Tech level 0 and 1 are the same (tech 0 is never used).
     4, 5, 7, 8, 9, 10, 11, 12, 13};
@@ -836,11 +840,11 @@ void Do_Win() {
     Fancy_Text_Print(TXT_SCENARIO_WON, x, 180,
                      &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                      TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
-    CountDownTimer.Set(int64_t{kTimerSecond} * 3);
+    speech_timer.Set(int64_t{kTimerSecond} * 3);
     while (IsSpeaking()) {
     }
     Speak(VOX_ACCOMPLISHED);
-    while (CountDownTimer.HasTimeLeft() || IsSpeaking()) {
+    while (speech_timer.HasTimeLeft() || IsSpeaking()) {
       ServiceRealTime();
     }
   }
@@ -1049,11 +1053,11 @@ void Do_Lose() {
   Fancy_Text_Print(TXT_SCENARIO_LOST, x, 180,
                    &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
-  CountDownTimer.Set(int64_t{kTimerSecond} * 3);
+  speech_timer.Set(int64_t{kTimerSecond} * 3);
   while (IsSpeaking()) {
   }
   Speak(VOX_FAIL);
-  while (CountDownTimer.HasTimeLeft() || IsSpeaking()) {
+  while (speech_timer.HasTimeLeft() || IsSpeaking()) {
     ServiceRealTime();
   }
 
@@ -1140,11 +1144,11 @@ void Do_Draw() {
   Fancy_Text_Print(TXT_WOL_DRAW, x, 180,
                    &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
-  CountDownTimer.Set(int64_t{kTimerSecond} * 3);
+  speech_timer.Set(int64_t{kTimerSecond} * 3);
   while (IsSpeaking()) {
   }
   Speak(VOX_CONTROL_EXIT);
-  while (CountDownTimer.HasTimeLeft() || IsSpeaking()) {
+  while (speech_timer.HasTimeLeft() || IsSpeaking()) {
     ServiceRealTime();
   }
 

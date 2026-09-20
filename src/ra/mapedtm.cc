@@ -49,7 +49,6 @@
 #include "ra/debug.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/heap.h"
 #include "ra/jshell.h"
@@ -71,7 +70,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
-#include "tech/ftimer.h"
 #include "tech/mix_archive.h"
 
 /***************************************************************************

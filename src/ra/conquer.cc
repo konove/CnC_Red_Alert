@@ -63,7 +63,6 @@
 #include "ra/house.h"
 #include "ra/infantry.h"  // IWYU pragma: keep
 #include "ra/init.h"
-#include "ra/internet.h"
 #include "ra/interpal.h"
 #include "ra/jshell.h"
 #include "ra/language.h"
@@ -73,6 +72,7 @@
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
 #include "ra/netdlg.h"
+#include "ra/network.h"
 #include "ra/nulldlg.h"
 #include "ra/nullmgr.h"
 #include "ra/object.h"
@@ -216,7 +216,7 @@ static void RunPendingDialog() {
         if constexpr (config::kScenarioEditorEnabled) {
           ThePlayer()->Flag_To_Lose();
         } else {
-          OutList.Add(EventClass(EventClass::DESTRUCT));
+          TheNetwork().out_list().Add(EventClass(EventClass::DESTRUCT));
         }
       }
       break;
@@ -251,9 +251,9 @@ static void BeginScenario() {
 
   if (Session.Type == GAME_INTERNET) {
     Register_Game_Start_Time();
-    GameStatisticsPacketSent = false;
-    PacketLater = nullptr;
-    ConnectionLost = false;
+    TheNetwork().statistics_sent() = false;
+    TheNetwork().packet_later() = nullptr;
+    TheNetwork().connection_lost() = false;
   }
 }
 
@@ -285,8 +285,9 @@ static void RunScenario() {
 // selecting them again in Select_Game() restarts them from a known state.
 // Playback never initialized either, so it skips this.
 static void EndScenario() {
-  if (!GameStatisticsPacketSent && PacketLater) {
-    Send_Statistics_Packet();  // After game sending if PacketLater set.
+  if (!TheNetwork().statistics_sent() && TheNetwork().packet_later()) {
+    Send_Statistics_Packet();  // After game sending if
+                               // TheNetwork().packet_later() set.
   }
 
   ThePalettes().black_palette().Set(kFadePaletteSlow);
@@ -336,35 +337,39 @@ void RunGame() {
 //
 // Both PumpMessages HRESULT's are dropped on purpose: a lost connection is
 // reported through the callbacks they fire, which set
-// pWolapi->bConnectionDown (rawolapi.cc), and every caller tests that flag
-// instead. Only reachable when config::kWolapiEnabled, hence maybe_unused.
+// TheNetwork().wolapi()->bConnectionDown (rawolapi.cc), and every caller tests
+// that flag instead. Only reachable when config::kWolapiEnabled, hence
+// maybe_unused.
 [[maybe_unused]] static void PumpWolapiMessages() {
-  static_cast<void>(pWolapi->pChat->PumpMessages());
-  static_cast<void>(pWolapi->pNetUtil->PumpMessages());
+  static_cast<void>(TheNetwork().wolapi()->pChat->PumpMessages());
+  static_cast<void>(TheNetwork().wolapi()->pNetUtil->PumpMessages());
 }
 
 // Keeps the Westwood Online connection serviced. In a game it pumps more
 // slowly and announces a dropped connection; outside one it pumps only while a
 // modal dialog over the chat screen has asked for it.
 [[maybe_unused]] static void ServiceWolapi() {
-  if (!pWolapi || Get_Time_Ms() <= pWolapi->dwTimeNextWolapiPump) {
+  if (!TheNetwork().wolapi() ||
+      Get_Time_Ms() <= TheNetwork().wolapi()->dwTimeNextWolapiPump) {
     return;
   }
 
-  if (!pWolapi->bInGame) {
-    if (pWolapi->bPump_In_Call_Back) {
+  if (!TheNetwork().wolapi()->bInGame) {
+    if (TheNetwork().wolapi()->bPump_In_Call_Back) {
       PumpWolapiMessages();
-      pWolapi->dwTimeNextWolapiPump = Get_Time_Ms() + WOLAPIPUMPWAIT;
+      TheNetwork().wolapi()->dwTimeNextWolapiPump =
+          Get_Time_Ms() + WOLAPIPUMPWAIT;
     }
     return;
   }
 
-  if (pWolapi->bConnectionDown) {
+  if (TheNetwork().wolapi()->bConnectionDown) {
     return;
   }
   PumpWolapiMessages();
-  pWolapi->dwTimeNextWolapiPump = Get_Time_Ms() + WOLAPIPUMPWAIT + 700;
-  if (pWolapi->bConnectionDown) {
+  TheNetwork().wolapi()->dwTimeNextWolapiPump =
+      Get_Time_Ms() + WOLAPIPUMPWAIT + 700;
+  if (TheNetwork().wolapi()->bConnectionDown) {
     // The Wolapi object is kept rather than deleted, so that the game results
     // can still be sent.
     Session.Messages.Add_Message(
@@ -403,7 +408,7 @@ void ServiceBackgroundTasks() {
   // Serial game maintenance.
   if (Session.Type == GAME_NULL_MODEM ||
       (Session.Type == GAME_MODEM && Session.ModemService)) {
-    NullModem.Service();
+    TheNetwork().null_modem().Service();
   }
 
   if constexpr (config::kWolapiEnabled) {
@@ -498,7 +503,7 @@ static bool FinishScenarioIfDecided() {
   }
 
   if (outcome != ScenarioOutcome::kRestart && Session.Type == GAME_INTERNET &&
-      !GameStatisticsPacketSent) {
+      !TheNetwork().statistics_sent()) {
     Register_Game_End_Time();
     Send_Statistics_Packet();
   }

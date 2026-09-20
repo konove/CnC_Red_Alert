@@ -64,8 +64,8 @@
 #include "port/socket_bytes.h"
 #include "port/unaligned.h"
 #include "ra/externs.h"
-#include "ra/internet.h"
 #include "ra/jshell.h"
+#include "ra/network.h"
 #include "ra/wsproto.h"
 #include "sdllib/net_select.h"
 
@@ -186,7 +186,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
   ** Bind our UDP socket to our UDP port number
   */
   addr.sin_family = AF_INET;
-  addr.sin_port = htons(static_cast<uint16_t>(PlanetWestwoodPortNumber));
+  addr.sin_port = htons(static_cast<uint16_t>(TheNetwork().westwood_port()));
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   if (bind(Socket, SocketAddress(addr), sizeof(addr)) == SOCKET_ERROR) {
@@ -391,7 +391,8 @@ void UDPInterfaceClass::Event_Handler(int /*socket*/, SocketEvent event) {
       ** Set up the address structure of the outgoing packet
       */
       addr.sin_family = AF_INET;
-      addr.sin_port = htons(static_cast<uint16_t>(PlanetWestwoodPortNumber));
+      addr.sin_port =
+          htons(static_cast<uint16_t>(TheNetwork().westwood_port()));
       base::CopyBytes(base::ObjectBytes(addr.sin_addr.s_addr),
                       base::ObjectBytes(packet->Address).subspan(4), 4);
 

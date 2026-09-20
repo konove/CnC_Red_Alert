@@ -55,7 +55,6 @@
 #include "ra/event.h"
 #include "ra/goptions.h"
 #include "ra/infantry.h"
-#include "ra/internet.h"
 #include "ra/ipxmgr.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
@@ -121,8 +120,6 @@ extern SpecialClass Special;
 **	Game object allocation and tracking classes.
 */
 
-extern QueueClass<EventClass, kMaxEvents> OutList;
-extern QueueClass<EventClass, kMaxEvents * 64> DoList;
 
 
 
@@ -144,14 +141,8 @@ extern bool bAutoSonarPulse;
 
 class SessionClass;
 extern SessionClass Session;
-class NullModemClass;
-extern NullModemClass NullModem;
-extern IPXManagerClass Ipx;
 
-extern int NewMaxAheadFrame1;
-extern int NewMaxAheadFrame2;
 
-extern Timer<SystemTickSource> CountDownTimer;
 
 extern SpecialDialogType SpecialDialog;
 
@@ -175,7 +166,6 @@ void Check_VQ_Palette_Set();  // Applies a palette change queued by a movie
 /*************************************************************
 ** Internet specific externs
 */
-extern void* PacketLater;
 void Register_Game_Start_Time();
 void Register_Game_End_Time();
 void Send_Statistics_Packet();

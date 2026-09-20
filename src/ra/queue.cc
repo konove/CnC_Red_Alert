@@ -46,8 +46,8 @@
  ** Wait_For_Players -- Waits for other systems to come on-line           *
  *   Generate_Timing_Event -- computes & queues a RESPONSE_TIME event      *
  *   Process_Send_Period -- timing for sending packets every 'n' frames    *
- *   Send_Packets -- sends out events from the OutList                     *
- *   Send_FrameSync -- Sends a FRAMESYNC packet                            *
+ *   Send_Packets -- sends out events from the TheNetwork().out_list()
+ *           * Send_FrameSync -- Sends a FRAMESYNC packet      *
  *   Process_Receive_Packet -- processes an incoming packet                *
  *   Process_Serial_Packet -- Handles an incoming serial packet            *
  *   Can_Advance -- determines if it's OK to advance to the next frame     *
@@ -64,11 +64,12 @@
  ** Extract_Uncompressed_Events -- extracts events from a packet
  ** Extract_Compressed_Events -- extracts events from a packet            *
  *                                                                         *
- * DoList Management:
- ** Execute_DoList -- Executes commands from the DoList                   *
- *   Clean_DoList -- Cleans out old events from the DoList                 *
- *   Queue_Record -- Records the DoList to disk                            *
- *   Queue_Playback -- plays back queue entries from a record file         *
+ * TheNetwork().do_list() Management:
+ ** Execute_DoList -- Executes commands from the TheNetwork().do_list()
+ *          * Clean_DoList -- Cleans out old events from the
+ * TheNetwork().do_list()                 * Queue_Record -- Records the
+ * TheNetwork().do_list() to disk                            * Queue_Playback --
+ * plays back queue entries from a record file         *
  *                                                                         *
  * Debugging:
  ** Compute_Game_CRC -- Computes a CRC value of the entire game.
@@ -117,7 +118,6 @@
 #include "ra/house.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
-#include "ra/internet.h"
 #include "ra/jshell.h"
 #include "ra/layer.h"
 #include "ra/logic.h"
@@ -127,6 +127,7 @@
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
 #include "ra/netdlg.h"
+#include "ra/network.h"
 #include "ra/nulldlg.h"
 #include "ra/nullmgr.h"
 #include "ra/object.h"
@@ -181,7 +182,7 @@ enum class RetcodeType {
   RC_NORMAL,             // no news is good news
   RC_PLAYER_READY,       // a new player has been heard from
   RC_SCENARIO_MISMATCH,  // scenario mismatch
-  RC_DOLIST_FULL,        // DoList is full
+  RC_DOLIST_FULL,        // TheNetwork().do_list() is full
   RC_SERIAL_PROCESSED,   // modem: SERIAL packet was processed
   RC_PLAYER_LEFT,        // modem: other player left the game
   RC_HUNG_UP,            // modem has hung up
@@ -244,7 +245,7 @@ static int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
 static int Breakup_Receive_Packet(std::span<const std::byte> buf, int bufsize);
 
 //...........................................................................
-// DoList management:
+// TheNetwork().do_list() management:
 //...........................................................................
 static int Execute_DoList(
     int max_houses, HousesType base_house, ConnManClass* net,
@@ -296,7 +297,7 @@ static void Dump_Packet_Too_Late_Stuff(const EventClass* event,
  *=========================================================================*/
 bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
                    TARGET destination) {
-  return OutList.Add(
+  return TheNetwork().out_list().Add(
       EventClass(whom, mission, TargetClass(target), TargetClass(destination)));
 }
 
@@ -331,8 +332,9 @@ bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
  *=============================================================================================*/
 bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
                    TARGET destination, SpeedType speed, MPHType maxspeed) {
-  return OutList.Add(EventClass(whom, mission, TargetClass(target),
-                                TargetClass(destination), speed, maxspeed));
+  return TheNetwork().out_list().Add(
+      EventClass(whom, mission, TargetClass(target), TargetClass(destination),
+                 speed, maxspeed));
 }
 
 /***************************************************************************
@@ -353,7 +355,7 @@ bool Queue_Mission(TargetClass whom, MissionType mission, TARGET target,
  *   09/21/1995 JLB : Created.                                             *
  *=========================================================================*/
 bool Queue_Options() {
-  return OutList.Add(EventClass(EventClass::OPTIONS));
+  return TheNetwork().out_list().Add(EventClass(EventClass::OPTIONS));
 
 } /* end of Queue_Options */
 
@@ -375,7 +377,7 @@ bool Queue_Options() {
  *   09/21/1995 JLB : Created.                                             *
  *=========================================================================*/
 bool Queue_Exit() {
-  return OutList.Add(EventClass(EventClass::EXIT));
+  return TheNetwork().out_list().Add(EventClass(EventClass::EXIT));
 } /* end of Queue_Exit */
 
 /***************************************************************************
@@ -427,12 +429,13 @@ void Queue_AI() {
  * This is the "normal" version of the queue management routine.  It does * the
  *following:
  **
- * - Transfers items in the OutList to the DoList
+ * - Transfers items in the TheNetwork().out_list() to the
+ * TheNetwork().do_list()
  **
- * - Executes any commands in the DoList that are supposed to be done on * this
- * frame #
+ * - Executes any commands in the TheNetwork().do_list() that are supposed to be
+ * done on * this frame #
  *											*
- * - Cleans out the DoList
+ * - Cleans out the TheNetwork().do_list()
  **
  *                                                                         *
  * INPUT:                                                                  *
@@ -452,25 +455,25 @@ void Queue_AI() {
  *=========================================================================*/
 static void Queue_AI_Normal() {
   //------------------------------------------------------------------------
-  //	Move events from the OutList (events generated by this player) into the
-  //	DoList (the list of events to execute).
+  //	Move events from the TheNetwork().out_list() (events generated by this
+  // player) into the 	TheNetwork().do_list() (the list of events to execute).
   //------------------------------------------------------------------------
-  while (OutList.Count()) {
-    OutList.First().IsExecuted = false;
-    if (!DoList.Add(OutList.First())) {
+  while (TheNetwork().out_list().Count()) {
+    TheNetwork().out_list().First().IsExecuted = false;
+    if (!TheNetwork().do_list().Add(TheNetwork().out_list().First())) {
     }
-    OutList.Next();
+    TheNetwork().out_list().Next();
   }
 
   //------------------------------------------------------------------------
-  // Save the DoList to disk, if we're in "Record" mode
+  // Save the TheNetwork().do_list() to disk, if we're in "Record" mode
   //------------------------------------------------------------------------
   if (Session.Record) {
     Queue_Record();
   }
 
   //------------------------------------------------------------------------
-  // Execute the DoList; if an error occurs, bail out.
+  // Execute the TheNetwork().do_list(); if an error occurs, bail out.
   //------------------------------------------------------------------------
   if (!Execute_DoList(1, ThePlayer()->Class->House, nullptr, nullptr, {}, {},
                       {})) {
@@ -479,7 +482,7 @@ static void Queue_AI_Normal() {
   }
 
   //------------------------------------------------------------------------
-  //	Clean out the DoList
+  //	Clean out the TheNetwork().do_list()
   //------------------------------------------------------------------------
   Clean_DoList();
 
@@ -500,7 +503,7 @@ static void Queue_AI_Normal() {
  **
  * - Frame-syncs to the other systems (see below)
  **
- * - Executes & cleans out the DoList
+ * - Executes & cleans out the TheNetwork().do_list()
  **
  *                                                                         *
  * The Frame-Sync'ing logic is the heart & soul of network play.  It works
@@ -671,14 +674,14 @@ static void Queue_AI_Multiplayer() {
   //	Initialize the packet buffer pointer & its max size
   //------------------------------------------------------------------------
   if (Session.Type == GAME_MODEM || Session.Type == GAME_NULL_MODEM) {
-    multi_packet_buf = NullModem.BuildBuf;
-    multi_packet_max =
-        NullModem.MaxLen - static_cast<int>(sizeof(CommHeaderType));
-    net = &NullModem;
+    multi_packet_buf = TheNetwork().null_modem().BuildBuf;
+    multi_packet_max = TheNetwork().null_modem().MaxLen -
+                       static_cast<int>(sizeof(CommHeaderType));
+    net = &TheNetwork().null_modem();
   } else if (Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) {
     multi_packet_buf = base::ObjectBytes(Session.MetaPacket);
     multi_packet_max = Session.MetaSize;
-    net = &Ipx;
+    net = &TheNetwork().ipx();
   }
 
   //------------------------------------------------------------------------
@@ -849,7 +852,8 @@ static void Queue_AI_Multiplayer() {
   //	Shortened resync timeout for non-2 player games.
   const int iFramesyncTimeout =
       (config::kWolapiEnabled && Session.Type == GAME_INTERNET &&
-       pWolapi != nullptr && pWolapi->GameInfoCurrent.iPlayerCount > 2)
+       TheNetwork().wolapi() != nullptr &&
+       TheNetwork().wolapi()->GameInfoCurrent.iPlayerCount > 2)
           ? 5 * 60  //	One minute.
           : kFramesyncTimeout;
 
@@ -864,7 +868,7 @@ static void Queue_AI_Multiplayer() {
     if (Session.Type == GAME_INTERNET) {
       Register_Game_End_Time();
       // New rule - if you cancel a waiting to reconnect dialog, you lose.
-      bReconnectDialogCancelled = (rc == RC_CANCEL);
+      TheNetwork().reconnect_cancelled() = (rc == RC_CANCEL);
     }
     if (rc == RC_NOT_RESPONDING) {
       WWMessageBox().Process(TXT_SYSTEM_NOT_RESPONDING);
@@ -878,14 +882,14 @@ static void Queue_AI_Multiplayer() {
   }
 
   //------------------------------------------------------------------------
-  //	Save the DoList to disk, if we're in "Record" mode
+  //	Save the TheNetwork().do_list() to disk, if we're in "Record" mode
   //------------------------------------------------------------------------
   if (Session.Record) {
     Queue_Record();
   }
 
   //------------------------------------------------------------------------
-  // Execute the DoList; if an error occurs, bail out.
+  // Execute the TheNetwork().do_list(); if an error occurs, bail out.
   //------------------------------------------------------------------------
   if (!Execute_DoList(Session.MaxPlayers, HOUSE_MULTI1, net, &skip_crc,
                       their_frame, their_sent, their_recv)) {
@@ -897,7 +901,7 @@ static void Queue_AI_Multiplayer() {
   }
 
   //------------------------------------------------------------------------
-  //	Clean out the DoList
+  //	Clean out the TheNetwork().do_list()
   //------------------------------------------------------------------------
   Clean_DoList();
 
@@ -931,7 +935,7 @@ static void Queue_AI_Multiplayer() {
  *user hit 'Cancel' at the timeout countdown dlg	* RC_NOT_RESPONDING
  *other player(s) not responding * RC_SCENARIO_MISMATCH	scenario's don't match
  *(first_time only)			* RC_DOLIST_FULL
- *DoList was full
+ *TheNetwork().do_list() was full
  **
  *                                                                         *
  * WARNINGS:                                                               *
@@ -1033,8 +1037,9 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
         // At this point, begin wolapi "disconnect pinging", if
         // appropriate.
         if (config::kWolapiEnabled && Session.Type == GAME_INTERNET &&
-            pWolapi != nullptr && pWolapi->GameInfoCurrent.bTournament) {
-          pWolapi->Init_DisconnectPinging();
+            TheNetwork().wolapi() != nullptr &&
+            TheNetwork().wolapi()->GameInfoCurrent.bTournament) {
+          TheNetwork().wolapi()->Init_DisconnectPinging();
         }
       }
 
@@ -1048,8 +1053,9 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
 
       //	Continue wolapi "disconnect pinging", if appropriate.
       if (config::kWolapiEnabled && Session.Type == GAME_INTERNET &&
-          pWolapi != nullptr && pWolapi->bDoingDisconnectPinging) {
-        pWolapi->Pump_DisconnectPinging();
+          TheNetwork().wolapi() != nullptr &&
+          TheNetwork().wolapi()->bDoingDisconnectPinging) {
+        TheNetwork().wolapi()->Pump_DisconnectPinging();
       }
     }
 
@@ -1184,7 +1190,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
         return RC_SCENARIO_MISMATCH;
       }
       //..................................................................
-      // DoList was full
+      // TheNetwork().do_list() was full
       //..................................................................
       else if (rc == RC_DOLIST_FULL) {
         return RC_DOLIST_FULL;
@@ -1325,7 +1331,7 @@ static void Generate_Timing_Event(ConnManClass* net, int my_sent) {
               resp_time / 8, NETWORK_MIN_MAX_AHEAD));
         }
       }
-      OutList.Add(ev);
+      TheNetwork().out_list().Add(ev);
     }
   }
 
@@ -1433,7 +1439,7 @@ static void Generate_Real_Timing_Event(ConnManClass* net, int my_sent) {
       static_cast<uint16_t>(Session.DesiredFrameRate);
   ev.Data.Timing.MaxAhead = static_cast<uint16_t>(maxahead);
 
-  OutList.Add(ev);
+  TheNetwork().out_list().Add(ev);
 
   //
   //	Adjust my connection retry timing.  These values set the retry timeout
@@ -1496,7 +1502,7 @@ static void Generate_Process_Time_Event(ConnManClass* net) {
 
   ev.Type = EventClass::PROCESS_TIME;
   ev.Data.ProcessTime.AverageTicks = static_cast<uint16_t>(avgticks);
-  OutList.Add(ev);
+  TheNetwork().out_list().Add(ev);
 
   Session.ProcessTicks = 0;
   Session.ProcessFrames = 0;
@@ -1540,7 +1546,8 @@ static int Process_Send_Period(ConnManClass* net)  //, int init)
 }  // end of Process_Send_Period
 
 /***************************************************************************
- * Send_Packets -- sends out events from the OutList                       *
+ * Send_Packets -- sends out events from the TheNetwork().out_list()
+ *           *
  *                                                                         *
  * This routine computes how many events can be sent this frame, and then
  ** builds the "meta-packet" & sends it.
@@ -1600,29 +1607,31 @@ static int Send_Packets(ConnManClass* net,
 
   }
   //........................................................................
-  // Otherwise, just send all events in the OutList
+  // Otherwise, just send all events in the TheNetwork().out_list()
   //........................................................................
   else {
-    cap = OutList.Count();
+    cap = TheNetwork().out_list().Count();
     do_once = 0;
   }
 
   //........................................................................
-  // Make sure we aren't sending more events than are in the OutList
+  // Make sure we aren't sending more events than are in the
+  // TheNetwork().out_list()
   //........................................................................
-  cap = std::min(cap, OutList.Count());
+  cap = std::min(cap, TheNetwork().out_list().Count());
 
   //........................................................................
-  // Make sure we don't send so many events that our DoList fills up
+  // Make sure we don't send so many events that our TheNetwork().do_list()
+  // fills up
   //........................................................................
-  cap = std::min(cap, (kMaxEvents * 64) - DoList.Count());
+  cap = std::min(cap, (kMaxEvents * 64) - TheNetwork().do_list().Count());
 
   //
   // 10/21/96 5:12PM - ST
   //
   if (Session.Type == GAME_INTERNET || Session.Type == GAME_MODEM ||
       Session.Type == GAME_NULL_MODEM) {
-    cap = OutList.Count();
+    cap = TheNetwork().out_list().Count();
     do_once = 0;
   }
 
@@ -1638,7 +1647,8 @@ static int Send_Packets(ConnManClass* net,
     // Session.NumPlayers; no ACK is needed if we're just sending to someone
     // who's left the game.
     //.....................................................................
-    if (cap == 0 || OutList.Count() == 0 || Session.NumPlayers == 1) {
+    if (cap == 0 || TheNetwork().out_list().Count() == 0 ||
+        Session.NumPlayers == 1) {
       ack_req = 0;
     } else {
       ack_req = 1;
@@ -1661,7 +1671,7 @@ static int Send_Packets(ConnManClass* net,
     //	Stop if there's no more data to send, or if our send queue is
     // filling up.
     //.....................................................................
-    if (OutList.Count() == 0 || do_once) {
+    if (TheNetwork().out_list().Count() == 0 || do_once) {
       break;
     }
   }
@@ -1732,7 +1742,8 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
  * Process_Receive_Packet -- processes an incoming packet                  *
  *                                                                         *
  * This routine receives a packet from another system, adds it to our *
- * execution queue (the DoList), and updates my arrays of their frame #,
+ * execution queue (the TheNetwork().do_list()), and updates my arrays of their
+ * frame #,
  ** their commands-sent, and their commands-received.
  **
  *                                                                         *
@@ -1755,7 +1766,7 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
  ** RC_SCENARIO_MISMATCH:	FRAMEINFO scenario CRC doesn't match;
  ** normally only applies after loading a new 	* scenario or save-game
  ** RC_DOLIST_FULL:			fatal error; unable to add events to
- *DoList	*
+ *TheNetwork().do_list()	*
  *                                                                         *
  * WARNINGS:                                                               *
  *		none.
@@ -1856,7 +1867,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
 
   //------------------------------------------------------------------------
   //	If this packet was not a FRAMESYNC packet:
-  //	- Add the events in it to our DoList
+  //	- Add the events in it to our TheNetwork().do_list()
   //	- Increment our commands-received counter by the number of non-
   //	  FRAMEINFO packets received
   //------------------------------------------------------------------------
@@ -2275,9 +2286,9 @@ static int Handle_Timeout(ConnManClass* net, std::span<int64_t> their_frame,
     ** Send the game statistics packet now if the game is effectivly over
     */
     if (Session.Players.Count() == 2 && Session.Type == GAME_INTERNET &&
-        !GameStatisticsPacketSent) {
+        !TheNetwork().statistics_sent()) {
       Register_Game_End_Time();
-      ConnectionLost = true;
+      TheNetwork().connection_lost() = true;
       Send_Statistics_Packet();  //	Disconnect, and I'll be the only one
                                  // left.
     }
@@ -2329,7 +2340,7 @@ static void Stop_Game() {
   Session.EmergencySave = false;
   GameActive = false;
   if (Session.Type == GAME_INTERNET) {
-    ConnectionLost = true;
+    TheNetwork().connection_lost() = true;
     Send_Statistics_Packet();  //	Stop_Game()
   }
 }  // end of Stop_Game
@@ -2338,9 +2349,10 @@ static void Stop_Game() {
  * Build_Send_Packet -- Builds a big packet from a bunch of little ones.
  **
  *                                                                         *
- * This routine takes events from the OutList, and puts them into a
+ * This routine takes events from the TheNetwork().out_list(), and puts them
+ * into a
  ** "meta-packet", which is transmitted to all systems we're connected to.
- ** Also, these events are added to our own DoList.
+ ** Also, these events are added to our own TheNetwork().do_list().
  **
  *                                                                         *
  * Every Meta-Packet we send uses a FRAMEINFO packet as a header; this * tells
@@ -2413,8 +2425,8 @@ static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
   }
 
   //------------------------------------------------------------------------
-  //	Transfer all events from the OutList into the DoList, building our
-  //	packet while we go.
+  //	Transfer all events from the TheNetwork().out_list() into the
+  // TheNetwork().do_list(), building our 	packet while we go.
   //------------------------------------------------------------------------
   switch (Session.CommProtocol) {
     //.....................................................................
@@ -2482,12 +2494,13 @@ int Add_Uncompressed_Events(std::span<std::byte> buf, int bufsize,
   // Loop until there are no more events, or we've processed our max # of
   // events, or the buffer is full.
   //------------------------------------------------------------------------
-  while (OutList.Count() && num < cap) {
+  while (TheNetwork().out_list().Count() && num < cap) {
     Keyboard->Check();
 
-    if (OutList.First().Type == EventClass::ADDPLAYER) {
-      ev_size = static_cast<int>(sizeof(EventClass) +
-                                 OutList.First().Data.Variable.Size);
+    if (TheNetwork().out_list().First().Type == EventClass::ADDPLAYER) {
+      ev_size =
+          static_cast<int>(sizeof(EventClass) +
+                           TheNetwork().out_list().First().Data.Variable.Size);
     } else {
       ev_size = sizeof(EventClass);
     }
@@ -2501,36 +2514,40 @@ int Add_Uncompressed_Events(std::span<std::byte> buf, int bufsize,
     //.....................................................................
     // Set the event's frame delay
     //.....................................................................
-    OutList.First().Frame = static_cast<unsigned>(CurrentFrame() + frame_delay);
+    TheNetwork().out_list().First().Frame =
+        static_cast<unsigned>(CurrentFrame() + frame_delay);
 
     //.....................................................................
     // Set the event's ID
     //.....................................................................
-    OutList.First().ID = static_cast<unsigned>(ThePlayer()->ID);
+    TheNetwork().out_list().First().ID = static_cast<unsigned>(ThePlayer()->ID);
 
     //.....................................................................
-    // Transfer the event in OutList to DoList, un-queue the OutList
-    // event.  If the DoList is full, stop transferring immediately.
+    // Transfer the event in TheNetwork().out_list() to TheNetwork().do_list(),
+    // un-queue the TheNetwork().out_list() event.  If the
+    // TheNetwork().do_list() is full, stop transferring immediately.
     //.....................................................................
-    OutList.First().IsExecuted = 0;
-    if (!DoList.Add(OutList.First())) {
+    TheNetwork().out_list().First().IsExecuted = 0;
+    if (!TheNetwork().do_list().Add(TheNetwork().out_list().First())) {
       return size;
     }
 
     //.....................................................................
     // Add event to the send packet
     //.....................................................................
-    if (OutList.First().Type == EventClass::ADDPLAYER) {
+    if (TheNetwork().out_list().First().Type == EventClass::ADDPLAYER) {
       base::CopyBytes(buf.subspan(base::ToSize(size)),
-                      base::ObjectBytes(OutList.First()), sizeof(EventClass));
+                      base::ObjectBytes(TheNetwork().out_list().First()),
+                      sizeof(EventClass));
       size += sizeof(EventClass);
       base::CopyBytes(buf.subspan(base::ToSize(size)),
-                      OutList.First().variable_bytes(),
-                      OutList.First().Data.Variable.Size);
-      size += OutList.First().Data.Variable.Size;
+                      TheNetwork().out_list().First().variable_bytes(),
+                      TheNetwork().out_list().First().Data.Variable.Size);
+      size += TheNetwork().out_list().First().Data.Variable.Size;
     } else {
       base::CopyBytes(buf.subspan(base::ToSize(size)),
-                      base::ObjectBytes(OutList.First()), sizeof(EventClass));
+                      base::ObjectBytes(TheNetwork().out_list().First()),
+                      sizeof(EventClass));
       size += sizeof(EventClass);
     }
 
@@ -2538,7 +2555,7 @@ int Add_Uncompressed_Events(std::span<std::byte> buf, int bufsize,
     // Increment our event counter; delete the last event from the queue
     //.....................................................................
     num++;
-    OutList.Next();
+    TheNetwork().out_list().Next();
   }
 
   return size;
@@ -2588,11 +2605,11 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
   // Loop until there are no more events, we've processed our max # of
   // events, or the buffer is full.
   //------------------------------------------------------------------------
-  while (OutList.Count() && num < cap) {
+  while (TheNetwork().out_list().Count() && num < cap) {
     Keyboard->Check();
 
     const EventClass::EventType eventtype =
-        OutList.First().Type;  // type of event being compressed
+        TheNetwork().out_list().First().Type;  // type of event being compressed
     int datasize =
         EventClass::EventLength.at(eventtype);  // size of element plucked from
                                                 // event union
@@ -2603,8 +2620,9 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
     // in the packet header.)
     //.....................................................................
     if (eventtype == EventClass::ADDPLAYER) {
-      storedsize = datasize + kEventTypeSize +
-                   static_cast<int>(OutList.First().Data.Variable.Size);
+      storedsize =
+          datasize + kEventTypeSize +
+          static_cast<int>(TheNetwork().out_list().First().Data.Variable.Size);
     } else {
       storedsize = datasize + kEventTypeSize;
     }
@@ -2633,11 +2651,11 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
         // - increment the MegaMission rep count
         // - set the MegaMission rep flag
         //...............................................................
-        if (OutList.First().Data.MegaMission.Mission ==
+        if (TheNetwork().out_list().First().Data.MegaMission.Mission ==
                 prevevent.Data.MegaMission.Mission &&
-            OutList.First().Data.MegaMission.Target ==
+            TheNetwork().out_list().First().Data.MegaMission.Target ==
                 prevevent.Data.MegaMission.Target &&
-            OutList.First().Data.MegaMission.Destination ==
+            TheNetwork().out_list().First().Data.MegaMission.Destination ==
                 prevevent.Data.MegaMission.Destination) {
           if (TheDebugState().print_events()) {
             absl::PrintF(
@@ -2645,21 +2663,33 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
                 "(%x)\n",
                 static_cast<unsigned int>(
 
-                    OutList.First().Data.MegaMission.Whom.As_TARGET()),
+                    TheNetwork()
+                        .out_list()
+                        .First()
+                        .Data.MegaMission.Whom.As_TARGET()),
 
-                OutList.First().Data.MegaMission.Whom.Value(),
+                TheNetwork().out_list().First().Data.MegaMission.Whom.Value(),
                 MissionClass::Mission_Name(
-                    OutList.First().Data.MegaMission.Mission),
+                    TheNetwork().out_list().First().Data.MegaMission.Mission),
                 static_cast<unsigned int>(
 
-                    OutList.First().Data.MegaMission.Target.As_TARGET()),
+                    TheNetwork()
+                        .out_list()
+                        .First()
+                        .Data.MegaMission.Target.As_TARGET()),
 
-                OutList.First().Data.MegaMission.Target.Value(),
+                TheNetwork().out_list().First().Data.MegaMission.Target.Value(),
                 static_cast<unsigned int>(
 
-                    OutList.First().Data.MegaMission.Destination.As_TARGET()),
+                    TheNetwork()
+                        .out_list()
+                        .First()
+                        .Data.MegaMission.Destination.As_TARGET()),
 
-                OutList.First().Data.MegaMission.Destination.Value());
+                TheNetwork()
+                    .out_list()
+                    .First()
+                    .Data.MegaMission.Destination.Value());
           }
 
           datasize = sizeof(prevevent.Data.MegaMission.Whom);
@@ -2740,25 +2770,26 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
     // Set the event's frame delay (this is protocol-dependent)
     //.....................................................................
     if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-      OutList.First().Frame = static_cast<unsigned>(
+      TheNetwork().out_list().First().Frame = static_cast<unsigned>(
           (CurrentFrame() + frame_delay + (Session.FrameSendRate - 1)) /
           (Session.FrameSendRate * Session.FrameSendRate));
     } else {
-      OutList.First().Frame =
+      TheNetwork().out_list().First().Frame =
           static_cast<unsigned>(CurrentFrame() + frame_delay);
     }
 
     //.....................................................................
     // Set the event's ID
     //.....................................................................
-    OutList.First().ID = static_cast<unsigned>(ThePlayer()->ID);
+    TheNetwork().out_list().First().ID = static_cast<unsigned>(ThePlayer()->ID);
 
     //.....................................................................
-    // Transfer the event in OutList to DoList, un-queue the OutList event.
-    // If the DoList is full, stop transferring immediately.
+    // Transfer the event in TheNetwork().out_list() to TheNetwork().do_list(),
+    // un-queue the TheNetwork().out_list() event. If the TheNetwork().do_list()
+    // is full, stop transferring immediately.
     //.....................................................................
-    OutList.First().IsExecuted = 0;
-    if (!DoList.Add(OutList.First())) {
+    TheNetwork().out_list().First().IsExecuted = 0;
+    if (!TheNetwork().do_list().Add(TheNetwork().out_list().First())) {
       break;
     }
 
@@ -2775,7 +2806,8 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
 
         base::CopyBytes(
             buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
-            base::ObjectBytes(OutList.First().Data.FrameInfo.Delay),
+            base::ObjectBytes(
+                TheNetwork().out_list().First().Data.FrameInfo.Delay),
             base::ToSize(datasize));
 
         size += datasize + kEventTypeSize;
@@ -2798,7 +2830,8 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
 
           base::CopyBytes(
               buf.subspan(base::ToSize(size)),
-              base::ObjectBytes(OutList.First().Data.MegaMission.Whom),
+              base::ObjectBytes(
+                  TheNetwork().out_list().First().Data.MegaMission.Whom),
               base::ToSize(datasize));
 
           size += datasize;
@@ -2820,7 +2853,8 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
           base::CopyBytes(
               buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType) +
                           sizeof(numunits)),
-              base::ObjectBytes(OutList.First().Data.MegaMission),
+              base::ObjectBytes(
+                  TheNetwork().out_list().First().Data.MegaMission),
               base::ToSize(datasize));
 
           size += datasize + kEventTypeSize + static_cast<int>(sizeof(numunits));
@@ -2835,14 +2869,15 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
 
         base::CopyBytes(
             buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
-            base::ObjectBytes(OutList.First().Data.Variable.Size),
+            base::ObjectBytes(
+                TheNetwork().out_list().First().Data.Variable.Size),
             base::ToSize(datasize));
         size += datasize + kEventTypeSize;
 
         base::CopyBytes(buf.subspan(base::ToSize(size)),
-                        OutList.First().variable_bytes(),
-                        OutList.First().Data.Variable.Size);
-        size += OutList.First().Data.Variable.Size;
+                        TheNetwork().out_list().First().variable_bytes(),
+                        TheNetwork().out_list().First().Data.Variable.Size);
+        size += TheNetwork().out_list().First().Data.Variable.Size;
 
         break;
 
@@ -2885,7 +2920,8 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
 
         base::CopyBytes(
             buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
-            base::ObjectBytes(OutList.First().Data), base::ToSize(datasize));
+            base::ObjectBytes(TheNetwork().out_list().First().Data),
+            base::ToSize(datasize));
 
         size += datasize + kEventTypeSize;
 
@@ -2901,12 +2937,13 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
     // Update 'prevevent'
     //---------------------------------------------------------------------
     base::CopyBytes(base::ObjectBytes(prevevent),
-                    base::ObjectBytes(OutList.First()), sizeof(EventClass));
+                    base::ObjectBytes(TheNetwork().out_list().First()),
+                    sizeof(EventClass));
 
     //---------------------------------------------------------------------
     // Go to the next event to process
     //---------------------------------------------------------------------
-    OutList.Next();
+    TheNetwork().out_list().Next();
   }
 
   if (TheDebugState().print_events()) {
@@ -2995,7 +3032,7 @@ int Extract_Uncompressed_Events(std::span<const std::byte> buf, int bufsize) {
         port::ReadUnaligned<EventClass>(buf.subspan(base::ToSize(pos)));
 
     //.....................................................................
-    // add event to the DoList, only if it's not a FRAMESYNC
+    // add event to the TheNetwork().do_list(), only if it's not a FRAMESYNC
     // (but FRAMEINFO's do get added.)
     //.....................................................................
     if (event->Type != EventClass::FRAMESYNC) {
@@ -3018,7 +3055,7 @@ int Extract_Uncompressed_Events(std::span<const std::byte> buf, int bufsize) {
         leftover -= event->Data.Variable.Size;
       }
 
-      if (!DoList.Add(*event)) {
+      if (!TheNetwork().do_list().Add(*event)) {
         if (event->Type == EventClass::ADDPLAYER) {
           delete[] static_cast<char*>(event->Data.Variable.Pointer);
         }
@@ -3102,7 +3139,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
     Keyboard->Check();
 
     //.....................................................................
-    // add event to the DoList, only if it's not a FRAMESYNC
+    // add event to the TheNetwork().do_list(), only if it's not a FRAMESYNC
     // (but FRAMEINFO's do get added.)
     //.....................................................................
     if (event_type != EventClass::FRAMESYNC) {
@@ -3198,7 +3235,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
             while (numunits) {
               Keyboard->Check();
 
-              if (!DoList.Add(eventdata)) {
+              if (!TheNetwork().do_list().Add(eventdata)) {
                 return -1;
               }
 
@@ -3263,7 +3300,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
           break;
       }
 
-      if (!DoList.Add(eventdata)) {
+      if (!TheNetwork().do_list().Add(eventdata)) {
         if (eventdata.Type == EventClass::ADDPLAYER) {
           delete[] static_cast<char*>(eventdata.Data.Variable.Pointer);
         }
@@ -3329,9 +3366,11 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
 }  // end of Extract_Compressed_Events
 
 /***************************************************************************
- * Execute_DoList -- Executes commands from the DoList                     *
+ * Execute_DoList -- Executes commands from the TheNetwork().do_list()
+ *           *
  *                                                                         *
- * This routine executes any events in the DoList that need to be executed
+ * This routine executes any events in the TheNetwork().do_list() that need to
+ * be executed
  ** on the current game frame.  The events must be executed in a special
  ** order, so that all systems execute all events in exactly the same
  ** order.
@@ -3384,18 +3423,21 @@ static int Execute_DoList(int max_houses, HousesType base_house,
   // that are scheduled to execute during this "period of vulnerability",
   // and re-schedule for the end of that period.
   //
-  for (int j = 0; j < DoList.Count(); j++) {
-    if (DoList.at(j).Type != EventClass::FRAMEINFO &&
-        std::cmp_greater(DoList.at(j).Frame, NewMaxAheadFrame1) &&
-        std::cmp_less(DoList.at(j).Frame, NewMaxAheadFrame2)) {
-      DoList.at(j).Frame = static_cast<unsigned>(NewMaxAheadFrame2);
+  for (int j = 0; j < TheNetwork().do_list().Count(); j++) {
+    if (TheNetwork().do_list().at(j).Type != EventClass::FRAMEINFO &&
+        std::cmp_greater(TheNetwork().do_list().at(j).Frame,
+                         TheNetwork().new_max_ahead_frame1()) &&
+        std::cmp_less(TheNetwork().do_list().at(j).Frame,
+                      TheNetwork().new_max_ahead_frame2())) {
+      TheNetwork().do_list().at(j).Frame =
+          static_cast<unsigned>(TheNetwork().new_max_ahead_frame2());
     }
   }
 
   //------------------------------------------------------------------------
-  //	Execute the DoList.  Events must be executed in the same order on all
-  //	systems; so, execute them in the order of the HouseClass array.  This
-  //	array is stored in the same order on all systems.
+  //	Execute the TheNetwork().do_list().  Events must be executed in the same
+  // order on all 	systems; so, execute them in the order of the HouseClass
+  // array. This 	array is stored in the same order on all systems.
   //------------------------------------------------------------------------
   for (int i = 0; i < max_houses; i++) {
     //.....................................................................
@@ -3424,23 +3466,25 @@ static int Execute_DoList(int max_houses, HousesType base_house,
     //.....................................................................
     //	Loop through all events
     //.....................................................................
-    for (int j = 0; j < DoList.Count(); j++) {
+    for (int j = 0; j < TheNetwork().do_list().Count(); j++) {
       //..................................................................
       //	If this event was from the currently-executing player ID, and
       // it's 	time to execute it, execute it.
       //..................................................................
-      if (std::cmp_equal(DoList.at(j).ID, hptr->ID) &&
-          std::cmp_greater_equal(CurrentFrame(), DoList.at(j).Frame) &&
-          !DoList.at(j).IsExecuted) {
+      if (std::cmp_equal(TheNetwork().do_list().at(j).ID, hptr->ID) &&
+          std::cmp_greater_equal(CurrentFrame(),
+                                 TheNetwork().do_list().at(j).Frame) &&
+          !TheNetwork().do_list().at(j).IsExecuted) {
         //...............................................................
         //	Error if it's too late to execute this packet!
         // (Hack: disable this check for solo or skirmish mode.)
         //...............................................................
-        if (std::cmp_greater(CurrentFrame(), DoList.at(j).Frame) &&
-            DoList.at(j).Type != EventClass::FRAMEINFO &&
+        if (std::cmp_greater(CurrentFrame(),
+                             TheNetwork().do_list().at(j).Frame) &&
+            TheNetwork().do_list().at(j).Type != EventClass::FRAMEINFO &&
             Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH) {
-          Dump_Packet_Too_Late_Stuff(&DoList.at(j), net, their_frame,
-                                     their_sent, their_recv);
+          Dump_Packet_Too_Late_Stuff(&TheNetwork().do_list().at(j), net,
+                                     their_frame, their_sent, their_recv);
           WWMessageBox().Process(TXT_PACKET_TOO_LATE);
           return 0;
         }
@@ -3448,9 +3492,9 @@ static int Execute_DoList(int max_houses, HousesType base_house,
         //...............................................................
         //	Only execute EXIT & OPTIONS commands if they're from myself.
         //...............................................................
-        if (DoList.at(j).Type == EventClass::EXIT ||
-            DoList.at(j).Type == EventClass::OPTIONS) {
-          if (DoList.at(j).Type == EventClass::EXIT) {
+        if (TheNetwork().do_list().at(j).Type == EventClass::EXIT ||
+            TheNetwork().do_list().at(j).Type == EventClass::OPTIONS) {
+          if (TheNetwork().do_list().at(j).Type == EventClass::EXIT) {
             /*
             ** Flag that this house lost because it quit.
             */
@@ -3462,7 +3506,8 @@ static int Execute_DoList(int max_houses, HousesType base_house,
               if (!quithptr) {
                 continue;
               }
-              if (std::cmp_equal(quithptr->ID, DoList.at(j).ID)) {
+              if (std::cmp_equal(quithptr->ID,
+                                 TheNetwork().do_list().at(j).ID)) {
                 quithptr->IsGiverUpper = true;
                 break;
               }
@@ -3473,7 +3518,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             *over
             */
             if (Session.Players.Count() == 2 && Session.Type == GAME_INTERNET &&
-                !GameStatisticsPacketSent) {
+                !TheNetwork().statistics_sent()) {
               Register_Game_End_Time();
               Send_Statistics_Packet();  //	Event - player aborted, and
                                          // there were only 2 left.
@@ -3481,18 +3526,20 @@ static int Execute_DoList(int max_houses, HousesType base_house,
           }
 
           if (TheDebugState().print_events() &&
-              (DoList.at(j).Type == EventClass::EXIT)) {
+              (TheNetwork().do_list().at(j).Type == EventClass::EXIT)) {
             absl::PrintF(
                 "(%" PRId64 ") Executing EXIT, ID:%d (%s), EvFrame:%d\\n",
-                CurrentFrame(), DoList.at(j).ID,
-                HouseClass::As_Pointer(static_cast<HousesType>(DoList.at(j).ID))
+                CurrentFrame(), TheNetwork().do_list().at(j).ID,
+                HouseClass::As_Pointer(
+                    static_cast<HousesType>(TheNetwork().do_list().at(j).ID))
                     ->IniName,
-                DoList.at(j).Frame);
+                TheNetwork().do_list().at(j).Frame);
           }
 
-          if (std::cmp_equal(DoList.at(j).ID, ThePlayer()->ID)) {
-            DoList.at(j).Execute();
-          } else if (DoList.at(j).Type == EventClass::EXIT) {
+          if (std::cmp_equal(TheNetwork().do_list().at(j).ID,
+                             ThePlayer()->ID)) {
+            TheNetwork().do_list().at(j).Execute();
+          } else if (TheNetwork().do_list().at(j).Type == EventClass::EXIT) {
             //............................................................
             //	If this EXIT event isn't from myself, destroy the connection
             //	for that player.  The HousesType for this event is the
@@ -3522,7 +3569,8 @@ static int Execute_DoList(int max_houses, HousesType base_house,
             // Special case for recording playback: turn the house over
             // to the computer.
             //
-            if (Session.Play && DoList.at(j).Type == EventClass::EXIT) {
+            if (Session.Play &&
+                TheNetwork().do_list().at(j).Type == EventClass::EXIT) {
               hptr->IsHuman = false;
               hptr->IQ = TheRules().MaxIQ;
               HouseClass::Computer_Paranoid();
@@ -3535,7 +3583,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
         //...............................................................
         //	For a FRAMEINFO event, check the CRC value.
         //...............................................................
-        else if (DoList.at(j).Type == EventClass::FRAMEINFO) {
+        else if (TheNetwork().do_list().at(j).Type == EventClass::FRAMEINFO) {
           //............................................................
           // Skip the CRC check if we're less than 32 frames into the game;
           // this will prevent a newly-loaded modem game from instantly
@@ -3547,15 +3595,18 @@ static int Execute_DoList(int max_houses, HousesType base_house,
           } else {
             check_crc = 0;
           }
-          if (check_crc && std::cmp_equal(DoList.at(j).Frame, CurrentFrame()) &&
-              DoList.at(j).Data.FrameInfo.Delay < 32) {
+          if (check_crc &&
+              std::cmp_equal(TheNetwork().do_list().at(j).Frame,
+                             CurrentFrame()) &&
+              TheNetwork().do_list().at(j).Data.FrameInfo.Delay < 32) {
             // The delay is below 32, so adding a full turn keeps the
             // difference non-negative before wrapping onto the CRC ring.
-            index =
-                (DoList.at(j).Frame - DoList.at(j).Data.FrameInfo.Delay + 32) %
-                32;
-            if (base::At(CRC, index) != DoList.at(j).Data.FrameInfo.CRC) {
-              Print_CRCs(&DoList.at(j));
+            index = (TheNetwork().do_list().at(j).Frame -
+                     TheNetwork().do_list().at(j).Data.FrameInfo.Delay + 32) %
+                    32;
+            if (base::At(CRC, index) !=
+                TheNetwork().do_list().at(j).Data.FrameInfo.CRC) {
+              Print_CRCs(&TheNetwork().do_list().at(j));
 
               if (WWMessageBox().Process(TXT_OUT_OF_SYNC, TXT_CONTINUE,
                                          TXT_STOP) == 0) {
@@ -3584,13 +3635,13 @@ static int Execute_DoList(int max_houses, HousesType base_house,
         //	Execute other commands
         //...............................................................
         else {
-          DoList.at(j).Execute();
+          TheNetwork().do_list().at(j).Execute();
         }
 
         //...............................................................
         //	Mark this event as executed.
         //...............................................................
-        DoList.at(j).IsExecuted = 1;
+        TheNetwork().do_list().at(j).IsExecuted = 1;
       }
     }
   }
@@ -3600,12 +3651,14 @@ static int Execute_DoList(int max_houses, HousesType base_house,
 }  // end of Execute_DoList
 
 /***************************************************************************
- * Clean_DoList -- Cleans out old events from the DoList                   *
+ * Clean_DoList -- Cleans out old events from the TheNetwork().do_list()
+ *           *
  *                                                                         *
- * Currently, an event can only be removed from the DoList if it's at the
+ * Currently, an event can only be removed from the TheNetwork().do_list() if
+ * it's at the
  ** head of the list; and event can't be removed from the middle.  So, * this
- *routine loops as long as the next event in the DoList has been * executed,
- *it's removed.
+ *routine loops as long as the next event in the TheNetwork().do_list() has been
+ * * executed, it's removed.
  **
  *                                                                         *
  * INPUT:                                                                  *
@@ -3624,7 +3677,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
  *   11/21/1995 BRR : Created.                                             *
  *=========================================================================*/
 static void Clean_DoList() {
-  while (DoList.Count()) {
+  while (TheNetwork().do_list().Count()) {
     Keyboard->Check();
 
     //.....................................................................
@@ -3633,9 +3686,10 @@ static void Clean_DoList() {
     //	events lying around in my queue.  They won't have been "executed",
     //	because his IPX connection was destroyed.)
     //.....................................................................
-    if (DoList.First().IsExecuted ||
-        std::cmp_greater(CurrentFrame(), DoList.First().Frame)) {
-      DoList.Next();
+    if (TheNetwork().do_list().First().IsExecuted ||
+        std::cmp_greater(CurrentFrame(),
+                         TheNetwork().do_list().First().Frame)) {
+      TheNetwork().do_list().Next();
     } else {
       break;
     }
@@ -3644,9 +3698,10 @@ static void Clean_DoList() {
 }  // end of Clean_DoList
 
 /***************************************************************************
- * Queue_Record -- Records the DoList to disk                              *
+ * Queue_Record -- Records the TheNetwork().do_list() to disk            *
  *                                                                         *
- * This routine just saves any events in the DoList to disk; we can later
+ * This routine just saves any events in the TheNetwork().do_list() to disk; we
+ * can later
  ** "play back" the recording just be pulling events from disk rather than
  ** from the network!
  **
@@ -3672,9 +3727,9 @@ static void Queue_Record() {
   //	Compute # of events to save this frame
   //------------------------------------------------------------------------
   int j = 0;
-  for (int i = 0; i < DoList.Count(); i++) {
-    if (std::cmp_equal(CurrentFrame(), DoList.at(i).Frame) &&
-        !DoList.at(i).IsExecuted) {
+  for (int i = 0; i < TheNetwork().do_list().Count(); i++) {
+    if (std::cmp_equal(CurrentFrame(), TheNetwork().do_list().at(i).Frame) &&
+        !TheNetwork().do_list().at(i).IsExecuted) {
       j++;
     }
   }
@@ -3683,10 +3738,10 @@ static void Queue_Record() {
   //	Save the # of events, then all events.
   //------------------------------------------------------------------------
   Session.RecordFile.WriteObject(j);
-  for (int i = 0; i < DoList.Count(); i++) {
-    if (std::cmp_equal(CurrentFrame(), DoList.at(i).Frame) &&
-        !DoList.at(i).IsExecuted) {
-      Session.RecordFile.WriteObject(DoList.at(i));
+  for (int i = 0; i < TheNetwork().do_list().Count(); i++) {
+    if (std::cmp_equal(CurrentFrame(), TheNetwork().do_list().at(i).Frame) &&
+        !TheNetwork().do_list().at(i).IsExecuted) {
+      Session.RecordFile.WriteObject(TheNetwork().do_list().at(i));
       j--;
     }
   }
@@ -3696,9 +3751,10 @@ static void Queue_Record() {
 /***************************************************************************
  * Queue_Playback -- plays back queue entries from a record file           *
  *                                                                         *
- * This routine reads events from disk, putting them into the DoList; * it then
- *executes the DoList just like the network version does.  The		* result
- *is that the game "plays back" like a recording.
+ * This routine reads events from disk, putting them into the
+ * TheNetwork().do_list(); * it then executes the TheNetwork().do_list() just
+ * like the network version does.  The		* result is that the game "plays
+ * back" like a recording.
  **
  *																									*
  * This routine detects mouse motion and stops playback, so it can work * like
@@ -3788,14 +3844,14 @@ static void Queue_Playback() {
   }
 
   //------------------------------------------------------------------------
-  //	Read the DoList from disk
+  //	Read the TheNetwork().do_list() from disk
   //------------------------------------------------------------------------
   int ok = 1;
   if (Session.RecordFile.ReadObject(numevents)) {
     for (int i = 0; i < numevents; i++) {
       if (Session.RecordFile.ReadObject(event)) {
         event.IsExecuted = 0;
-        DoList.Add(event);
+        TheNetwork().do_list().Add(event);
       } else {
         ok = 0;
         break;
@@ -3811,7 +3867,7 @@ static void Queue_Playback() {
   }
 
   //------------------------------------------------------------------------
-  // Execute the DoList; if an error occurs, bail out.
+  // Execute the TheNetwork().do_list(); if an error occurs, bail out.
   //------------------------------------------------------------------------
   if (Session.Type == GAME_NORMAL) {
     max_houses = 1;
@@ -3826,7 +3882,7 @@ static void Queue_Playback() {
   }
 
   //------------------------------------------------------------------------
-  //	Clean out the DoList
+  //	Clean out the TheNetwork().do_list()
   //------------------------------------------------------------------------
   Clean_DoList();
 

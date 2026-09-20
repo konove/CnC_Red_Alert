@@ -66,6 +66,7 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
+#include "ra/network.h"
 #include "ra/palettes.h"
 #include "ra/queue.h"
 #include "ra/rules.h"
@@ -227,7 +228,7 @@ void Special_Dialog(bool simple) {
           }
         }
         if (!simple) {
-          OutList.Add(EventClass(oldspecial));
+          TheNetwork().out_list().Add(EventClass(oldspecial));
         } else {
           Special = oldspecial;
         }

@@ -144,7 +144,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "port/random_seed.h"
 #include "port/safe_string.h"
-#include "ra/_wsproto.h"  // IWYU pragma: keep - used by an DCHECK() below.
 #include "ra/audio.h"
 #include "ra/ccini.h"
 #include "ra/cheklist.h"
@@ -161,7 +160,6 @@
 #include "ra/gadget.h"
 #include "ra/game_clock.h"
 #include "ra/gauge.h"
-#include "ra/globals.h"
 #include "ra/goptions.h"
 #include "ra/house.h"
 #include "ra/init.h"
@@ -177,6 +175,7 @@
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
+#include "ra/network.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/queue.h"
@@ -983,13 +982,13 @@ static int Update_WWChat();
 bool Init_Network() {
   NetNumType net;
   NetNodeType node;
-  DCHECK(PacketTransport != nullptr);
+  DCHECK(TheNetwork().packet_transport() != nullptr);
 
   //------------------------------------------------------------------------
   //	This call allocates all necessary queue buffers, allocates Real-mode
   //	memory, and commands IPX to start listening on the Global Channel.
   //------------------------------------------------------------------------
-  if (!Ipx.Init()) {
+  if (!TheNetwork().ipx().Init()) {
     return false;
   }
 
@@ -998,7 +997,7 @@ bool Init_Network() {
   //------------------------------------------------------------------------
   if ((Session.Type != GAME_INTERNET) && Session.IsBridge) {
     Session.BridgeNet.Get_Address(net, node);
-    Ipx.Set_Bridge(net);
+    TheNetwork().ipx().Set_Bridge(net);
   }
 
   return true;
@@ -1093,8 +1092,8 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
       port::SafeCopy(mypacket.Name, Session.GameName);
       mypacket.GameInfo.IsOpen = Session.NetOpen;
 
-      Ipx.Send_Global_Message(base::ObjectBytes(mypacket),
-                              sizeof(GlobalPacketType), 1, address);
+      TheNetwork().ipx().Send_Global_Message(
+          base::ObjectBytes(mypacket), sizeof(GlobalPacketType), 1, address);
     }
     return true;
   }
@@ -1114,8 +1113,8 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
     mypacket.PlayerInfo.Color = Session.ColorIdx;
     mypacket.PlayerInfo.NameCRC = Compute_Name_CRC(Session.GameName);
 
-    Ipx.Send_Global_Message(base::ObjectBytes(mypacket),
-                            sizeof(GlobalPacketType), 1, address);
+    TheNetwork().ipx().Send_Global_Message(
+        base::ObjectBytes(mypacket), sizeof(GlobalPacketType), 1, address);
     return true;
   }
 
@@ -1191,7 +1190,7 @@ void Destroy_Connection(int id, int error) {
   //------------------------------------------------------------------------
   //	Delete the IPX connection
   //------------------------------------------------------------------------
-  Ipx.Delete_Connection(id);
+  TheNetwork().ipx().Delete_Connection(id);
 
   //------------------------------------------------------------------------
   //	Turn the player's house over to the computer's AI
@@ -1235,9 +1234,9 @@ bool Remote_Connect() {
   //	Init network timing parameters; these values should work for both a
   // "real" network, and a simulated modem network (ie Kali)
   //------------------------------------------------------------------------
-  Ipx.Set_Timing(30,    // retry 2 times per second
-                 -1,    // ignore max retries
-                 600);  // give up after 10 seconds
+  TheNetwork().ipx().Set_Timing(30,    // retry 2 times per second
+                                -1,    // ignore max retries
+                                600);  // give up after 10 seconds
 
   //------------------------------------------------------------------------
   //	Save the original value of the NetStealth flag, so we can turn stealth
@@ -2297,24 +2296,26 @@ static int Net_Join_Dialog() {
           Session.GPacket.Command = NET_SIGN_OFF;
           port::SafeCopy(Session.GPacket.Name, namebuf);
           for (i = 1; i < Session.Chat.Count(); i++) {
-            Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                    sizeof(GlobalPacketType), 1,
-                                    &Session.Chat.at(i)->Address);
-            Ipx.Service();
+            TheNetwork().ipx().Send_Global_Message(
+                base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 1,
+                &Session.Chat.at(i)->Address);
+            TheNetwork().ipx().Service();
           }
 
           //............................................................
           //	Now broadcast a SIGN_OFF just to be thorough
           //............................................................
-          Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                  sizeof(GlobalPacketType), 0, nullptr);
+          TheNetwork().ipx().Send_Global_Message(
+              base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 0,
+              nullptr);
           if (Session.IsBridge) {
-            Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                    sizeof(GlobalPacketType), 0,
-                                    &Session.BridgeNet);
+            TheNetwork().ipx().Send_Global_Message(
+                base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 0,
+                &Session.BridgeNet);
           }
 
-          while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+          while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+                 TheNetwork().ipx().Service() != 0) {
           }
 
           //............................................................
@@ -2426,20 +2427,20 @@ static int Net_Join_Dialog() {
           //............................................................
           if (joinstate == JOIN_CONFIRMED) {
             for (i = 1; i < Session.Players.Count(); i++) {
-              Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                      sizeof(GlobalPacketType), 1,
-                                      &Session.Players.at(i)->Address);
-              Ipx.Service();
+              TheNetwork().ipx().Send_Global_Message(
+                  base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType),
+                  1, &Session.Players.at(i)->Address);
+              TheNetwork().ipx().Service();
             }
           } else {
             //............................................................
             // Otherwise, send the message to all players in our chat list.
             //............................................................
             for (i = 1; i < Session.Chat.Count(); i++) {
-              Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                      sizeof(GlobalPacketType), 1,
-                                      &Session.Chat.at(i)->Address);
-              Ipx.Service();
+              TheNetwork().ipx().Send_Global_Message(
+                  base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType),
+                  1, &Session.Chat.at(i)->Address);
+              TheNetwork().ipx().Service();
             }
             if (HashKeyPhrase(Session.GPacket.Message.Buf) ==
                 kWestwoodChatCode) {
@@ -2541,10 +2542,11 @@ static int Net_Join_Dialog() {
               base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
                               sizeof(Session.GPacket));
               Session.GPacket.Command = NET_READY_TO_GO;
-              Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                      sizeof(GlobalPacketType), 1,
-                                      &Session.HostAddress);
-              while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+              TheNetwork().ipx().Send_Global_Message(
+                  base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType),
+                  1, &Session.HostAddress);
+              while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+                     TheNetwork().ipx().Service() != 0) {
               }
               ready_packet_was_sent = true;
 
@@ -2568,7 +2570,7 @@ static int Net_Join_Dialog() {
         *scenario locally then *	we need to fix up the file name so we
         *load the right one.
         */
-        Ipx.Set_Timing(25, -1, 1000);
+        TheNetwork().ipx().Set_Timing(25, -1, 1000);
         if (Find_Local_Scenario(
                 Session.Options.ScenarioDescription, Session.ScenarioFileName,
                 Session.ScenarioFileLength, Session.ScenarioDigest,
@@ -2583,11 +2585,12 @@ static int Net_Join_Dialog() {
             base::FillBytes(base::ObjectBytes(Session.GPacket), 0,
                             sizeof(Session.GPacket));
             Session.GPacket.Command = NET_READY_TO_GO;
-            Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                    sizeof(GlobalPacketType), 1,
-                                    &Session.HostAddress);
+            TheNetwork().ipx().Send_Global_Message(
+                base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 1,
+                &Session.HostAddress);
 
-            while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+            while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+                   TheNetwork().ipx().Service() != 0) {
             }
           }
         } else {
@@ -2607,7 +2610,7 @@ static int Net_Join_Dialog() {
            */
         }
 
-        Ipx.Set_Timing(30, -1, 600);
+        TheNetwork().ipx().Set_Timing(30, -1, 600);
         port::SafeCopy(TheScenario().ScenarioName, Session.ScenarioFileName);
         rc = 0;
         process = false;
@@ -2778,9 +2781,9 @@ static int Net_Join_Dialog() {
     }
 
     //.....................................................................
-    //	Service the Ipx connections
+    //	Service the TheNetwork().ipx() connections
     //.....................................................................
-    Ipx.Service();
+    TheNetwork().ipx().Service();
 
     if (process) {
       //.....................................................................
@@ -2840,10 +2843,10 @@ static int Net_Join_Dialog() {
                           sizeof(Session.GPacket));
           Session.GPacket.Name[0] = 0;
           Session.GPacket.Command = NET_CHAT_REQUEST;
-          Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                  sizeof(GlobalPacketType), 0,
-                                  &Session.Chat.at(i)->Address);
-          Ipx.Service();
+          TheNetwork().ipx().Send_Global_Message(
+              base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 0,
+              &Session.Chat.at(i)->Address);
+          TheNetwork().ipx().Service();
           Session.Chat.at(i)->Chat.LastChance = 1;
         }
       }
@@ -2933,27 +2936,30 @@ static int Net_Join_Dialog() {
       // Don't send myself the message.
       //..................................................................
       for (int j = 1; j < Session.Players.Count(); j++) {
-        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                sizeof(GlobalPacketType), 1,
-                                &Session.Players.at(j)->Address);
-        Ipx.Service();
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 1,
+            &Session.Players.at(j)->Address);
+        TheNetwork().ipx().Service();
       }
 
-      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                              sizeof(GlobalPacketType), 0, nullptr);
-      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                              sizeof(GlobalPacketType), 0, nullptr);
+      TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                             sizeof(GlobalPacketType), 0,
+                                             nullptr);
+      TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                             sizeof(GlobalPacketType), 0,
+                                             nullptr);
 
       if (Session.IsBridge) {
-        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                sizeof(GlobalPacketType), 0,
-                                &Session.BridgeNet);
-        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                sizeof(GlobalPacketType), 0,
-                                &Session.BridgeNet);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 0,
+            &Session.BridgeNet);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 0,
+            &Session.BridgeNet);
       }
 
-      while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+      while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+             TheNetwork().ipx().Service() != 0) {
       }
 
       rc = -1;
@@ -2973,11 +2979,11 @@ static int Net_Join_Dialog() {
     //	a chance to get to the other system.  If he doesn't get our ACK,
     // he'll be waiting the whole time we load MIX files.
     //.....................................................................
-    const int j =
-        std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 60);
+    const int j = std::max<int>(
+        static_cast<int>(TheNetwork().ipx().Global_Response_Time()) * 2, 60);
     starttime = SystemTicks();
     while (SystemTicks() - starttime < static_cast<int64_t>(j)) {
-      Ipx.Service();
+      TheNetwork().ipx().Service();
     }
   }
 
@@ -2985,10 +2991,11 @@ static int Net_Join_Dialog() {
   //	Init network timing values, using previous response times as a measure
   //	of what our retry delta & timeout should be.
   //------------------------------------------------------------------------
-  //	Ipx.Set_Timing (Ipx.Global_Response_Time() + 2, -1,
-  //		Ipx.Global_Response_Time() * 4);
-  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, -1,
-                 std::max(120, Ipx.Global_Response_Time() * 8));
+  //	TheNetwork().ipx().Set_Timing (TheNetwork().ipx().Global_Response_Time()
+  //+ 2, -1, 		TheNetwork().ipx().Global_Response_Time() * 4);
+  TheNetwork().ipx().Set_Timing(
+      TheNetwork().ipx().Global_Response_Time() + 2, -1,
+      std::max(120, TheNetwork().ipx().Global_Response_Time() * 8));
 
   //------------------------------------------------------------------------
   //	Clear all lists, but NOT the Games & Players vectors.
@@ -3120,9 +3127,9 @@ static bool Request_To_Join(const char* playername, int join_index,
   Session.GPacket.PlayerInfo.MaxVersion = VersionClass::Max_Version();
   Session.GPacket.PlayerInfo.CheatCheck = TheRules().rule_ini().Get_Unique_ID();
 
-  Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                          sizeof(GlobalPacketType), 1,
-                          &Session.Games.at(join_index)->Address);
+  TheNetwork().ipx().Send_Global_Message(
+      base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 1,
+      &Session.Games.at(join_index)->Address);
 
   return true;
 
@@ -3172,16 +3179,16 @@ static void Unjoin_Game(char* namebuf, JoinStateType joinstate,
   //	packet.  Don't send this to myself (index 0).
   //------------------------------------------------------------------------
   for (int i = 1; i < Session.Players.Count(); i++) {
-    Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                            sizeof(GlobalPacketType), 1,
-                            &Session.Players.at(i)->Address);
-    Ipx.Service();
+    TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                           sizeof(GlobalPacketType), 1,
+                                           &Session.Players.at(i)->Address);
+    TheNetwork().ipx().Service();
   }
 
   if (joinstate == JOIN_WAIT_CONFIRM || joinstate == JOIN_CONFIRMED) {
-    Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                            sizeof(GlobalPacketType), 1,
-                            &Session.Games.at(game_index)->Address);
+    TheNetwork().ipx().Send_Global_Message(
+        base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 1,
+        &Session.Games.at(game_index)->Address);
   }
 
   //------------------------------------------------------------------------
@@ -3290,16 +3297,18 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
 
     Session.GPacket.Command = NET_QUERY_GAME;
 
-    Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                            sizeof(GlobalPacketType), 0, nullptr);
+    TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                           sizeof(GlobalPacketType), 0,
+                                           nullptr);
 
     //.....................................................................
     //	If the user specified a remote server address, broadcast over
     // that 	network, too.
     //.....................................................................
     if (Session.IsBridge) {
-      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                              sizeof(GlobalPacketType), 0, &Session.BridgeNet);
+      TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                             sizeof(GlobalPacketType), 0,
+                                             &Session.BridgeNet);
     }
   }
 
@@ -3319,16 +3328,18 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
     Session.GPacket.Command = NET_QUERY_PLAYER;
     port::SafeCopy(Session.GPacket.Name, Session.Games.at(curgame)->Name);
 
-    Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                            sizeof(GlobalPacketType), 0, nullptr);
+    TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                           sizeof(GlobalPacketType), 0,
+                                           nullptr);
 
     //.....................................................................
     //	If the user specified a remote server address, broadcast over
     // that 	network, too.
     //.....................................................................
     if (Session.IsBridge) {
-      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                              sizeof(GlobalPacketType), 0, &Session.BridgeNet);
+      TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                             sizeof(GlobalPacketType), 0,
+                                             &Session.BridgeNet);
     }
   }
 
@@ -3346,12 +3357,14 @@ static void Send_Join_Queries(int curgame, JoinStateType joinstate, int gamenow,
     Session.GPacket.Chat.ID = static_cast<uint32_t>(Session.UniqueID);
     Session.GPacket.Chat.Color = Session.ColorIdx;
 
-    Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                            sizeof(GlobalPacketType), 0, nullptr);
+    TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                           sizeof(GlobalPacketType), 0,
+                                           nullptr);
 
     if (Session.IsBridge) {
-      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                              sizeof(GlobalPacketType), 0, &Session.BridgeNet);
+      TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                             sizeof(GlobalPacketType), 0,
+                                             &Session.BridgeNet);
     }
   }
 
@@ -3416,9 +3429,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   //------------------------------------------------------------------------
   //	If there is no incoming packet, just return
   //------------------------------------------------------------------------
-  const int rc = Ipx.Get_Global_Message(base::ObjectBytes(Session.GPacket),
-                                        &Session.GPacketlen, &Session.GAddress,
-                                        &Session.GProductID);
+  const int rc = TheNetwork().ipx().Get_Global_Message(
+      base::ObjectBytes(Session.GPacket), &Session.GPacketlen,
+      &Session.GAddress, &Session.GProductID);
   if (!rc || Session.GProductID != IPXGlobalConnClass::kCommandAndConquer0) {
     return EV_NONE;
   }
@@ -3702,21 +3715,23 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       port::SafeCopy(Session.GPacket.Name, my_name);
 
       for (i = 1; i < Session.Players.Count(); i++) {
-        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                sizeof(GlobalPacketType), 1,
-                                &Session.Players.at(i)->Address);
-        Ipx.Service();
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 1,
+            &Session.Players.at(i)->Address);
+        TheNetwork().ipx().Service();
       }
 
-      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                              sizeof(GlobalPacketType), 0, nullptr);
+      TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                             sizeof(GlobalPacketType), 0,
+                                             nullptr);
       if (Session.IsBridge) {
-        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                sizeof(GlobalPacketType), 0,
-                                &Session.BridgeNet);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 0,
+            &Session.BridgeNet);
       }
 
-      while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+      while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+             TheNetwork().ipx().Service() != 0) {
       }
 
       Session.GameName[0] = 0;
@@ -3987,10 +4002,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       Session.GPacket.Chat.ID = static_cast<uint32_t>(Session.UniqueID);
       Session.GPacket.Chat.Color = Session.ColorIdx;
 
-      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                              sizeof(GlobalPacketType), 1, &Session.GAddress);
+      TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                             sizeof(GlobalPacketType), 1,
+                                             &Session.GAddress);
 
-      Ipx.Service();
+      TheNetwork().ipx().Service();
     }
   }
 
@@ -4640,9 +4656,9 @@ static int Net_New_Dialog() {
 
         Session.GPacket.Command = NET_REJECT_JOIN;
 
-        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                sizeof(GlobalPacketType), 1,
-                                &Session.Players.at(index)->Address);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 1,
+            &Session.Players.at(index)->Address);
         break;
 
       //..................................................................
@@ -4751,9 +4767,11 @@ static int Net_New_Dialog() {
         //	an OK; force a wait longer than 1 second (to give all players
         //	a chance to know about this new guy)
         //...............................................................
-        i = std::max<int>(static_cast<int>(Ipx.Global_Response_Time()) * 2, 60);
+        i = std::max<int>(
+            static_cast<int>(TheNetwork().ipx().Global_Response_Time()) * 2,
+            60);
         while (SystemTicks() - ok_timer < i) {
-          Ipx.Service();
+          TheNetwork().ipx().Service();
         }
 
         //...............................................................
@@ -4792,25 +4810,29 @@ static int Net_New_Dialog() {
         //...............................................................
         //	Broadcast my sign-off over my network
         //...............................................................
-        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                sizeof(GlobalPacketType), 0, nullptr);
-        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                sizeof(GlobalPacketType), 0, nullptr);
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 0,
+            nullptr);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 0,
+            nullptr);
+        while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+               TheNetwork().ipx().Service() != 0) {
         }
 
         //...............................................................
         //	Broadcast my sign-off over a bridged network if there is one
         //...............................................................
         if (Session.IsBridge) {
-          Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                  sizeof(GlobalPacketType), 0,
-                                  &Session.BridgeNet);
-          Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                  sizeof(GlobalPacketType), 0,
-                                  &Session.BridgeNet);
+          TheNetwork().ipx().Send_Global_Message(
+              base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 0,
+              &Session.BridgeNet);
+          TheNetwork().ipx().Send_Global_Message(
+              base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 0,
+              &Session.BridgeNet);
         }
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+               TheNetwork().ipx().Service() != 0) {
         }
 
         //...............................................................
@@ -4823,12 +4845,13 @@ static int Net_New_Dialog() {
         // Don't send this message to myself.
         //...............................................................
         for (i = 1; i < Session.Players.Count(); i++) {
-          Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                  sizeof(GlobalPacketType), 1,
-                                  &Session.Players.at(i)->Address);
-          Ipx.Service();
+          TheNetwork().ipx().Send_Global_Message(
+              base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 1,
+              &Session.Players.at(i)->Address);
+          TheNetwork().ipx().Service();
         }
-        while (Ipx.Global_Num_Send() > 0 && Ipx.Service() != 0) {
+        while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+               TheNetwork().ipx().Service() != 0) {
         }
         Session.GameName[0] = 0;
         process = false;
@@ -4883,10 +4906,10 @@ static int Net_New_Dialog() {
           // myself.
           //............................................................
           for (i = 1; i < Session.Players.Count(); i++) {
-            Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                    sizeof(GlobalPacketType), 1,
-                                    &Session.Players.at(i)->Address);
-            Ipx.Service();
+            TheNetwork().ipx().Send_Global_Message(
+                base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 1,
+                &Session.Players.at(i)->Address);
+            TheNetwork().ipx().Service();
           }
 
           //............................................................
@@ -5014,9 +5037,9 @@ static int Net_New_Dialog() {
           Session.GPacket.ScenarioInfo.Version = VerNum.Get_Clipped_Version();
         }
 
-        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                sizeof(GlobalPacketType), 1,
-                                &Session.Players.at(i)->Address);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 1,
+            &Session.Players.at(i)->Address);
       }
       PlaySoundEffect(VOC_OPTIONS_CHANGED);
       transmit = 0;
@@ -5032,17 +5055,17 @@ static int Net_New_Dialog() {
                       sizeof(Session.GPacket));
       Session.GPacket.Command = NET_PING;
       for (i = 1; i < Session.Players.Count(); i++) {
-        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                sizeof(GlobalPacketType), 1,
-                                &Session.Players.at(i)->Address);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 1,
+            &Session.Players.at(i)->Address);
       }
       ping_timer = SystemTicks();
     }
 
     //.....................................................................
-    //	Service the Ipx connections
+    //	Service the TheNetwork().ipx() connections
     //.....................................................................
-    Ipx.Service();
+    TheNetwork().ipx().Service();
 
     //.....................................................................
     //	Service the sounds & score; GameActive must be false at this
@@ -5072,16 +5095,17 @@ static int Net_New_Dialog() {
     // 1-way 	  value, 4 more to convert from ticks to frames)
     //.....................................................................
     if (Session.CommProtocol == COMM_PROTOCOL_MULTI_E_COMP) {
-      Session.MaxAhead = static_cast<int>(std::max(
-          ((Ipx.Global_Response_Time() / 8) + (Session.FrameSendRate - 1)) /
-              Session.FrameSendRate * Session.FrameSendRate,
-          Session.FrameSendRate * 2));
+      Session.MaxAhead = static_cast<int>(
+          std::max(((TheNetwork().ipx().Global_Response_Time() / 8) +
+                    (Session.FrameSendRate - 1)) /
+                       Session.FrameSendRate * Session.FrameSendRate,
+                   Session.FrameSendRate * 2));
     } else {
-      Session.MaxAhead =
-          std::max(Ipx.Global_Response_Time() / 8, NETWORK_MIN_MAX_AHEAD);
+      Session.MaxAhead = std::max(TheNetwork().ipx().Global_Response_Time() / 8,
+                                  NETWORK_MIN_MAX_AHEAD);
     }
 
-    Ipx.Set_Timing(25, -1, 1000);
+    TheNetwork().ipx().Set_Timing(25, -1, 1000);
 
     //.....................................................................
     //	Send all players the NET_GO packet.  Wait until all ACK's have
@@ -5096,15 +5120,15 @@ static int Net_New_Dialog() {
     }
     Session.GPacket.ResponseTime.OneWay = Session.MaxAhead;
     for (i = 1; i < Session.Players.Count(); i++) {
-      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                              sizeof(GlobalPacketType), 1,
-                              &Session.Players.at(i)->Address);
+      TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                             sizeof(GlobalPacketType), 1,
+                                             &Session.Players.at(i)->Address);
     }
     //.....................................................................
     //	Wait for all the ACK's to come in.
     //.....................................................................
-    while (Ipx.Global_Num_Send() > 0) {
-      Ipx.Service();
+    while (TheNetwork().ipx().Global_Num_Send() > 0) {
+      TheNetwork().ipx().Service();
     }
 
     /*
@@ -5122,8 +5146,8 @@ static int Net_New_Dialog() {
     const Timer<SystemTickSource> response_timer{static_cast<int64_t>(60) * 10};
 
     do {
-      Ipx.Service();
-      const int retcode = Ipx.Get_Global_Message(
+      TheNetwork().ipx().Service();
+      const int retcode = TheNetwork().ipx().Get_Global_Message(
           base::ObjectBytes(Session.GPacket), &Session.GPacketlen,
           &Session.GAddress, &Session.GProductID);
       if (retcode &&
@@ -5175,10 +5199,11 @@ static int Net_New_Dialog() {
   //	Init network timing values, using previous response times as a measure
   //	of what our retry delta & timeout should be.
   //------------------------------------------------------------------------
-  // Ipx.Set_Timing (Ipx.Global_Response_Time() + 2, -1,
-  // Ipx.Global_Response_Time() * 4);
-  Ipx.Set_Timing(Ipx.Global_Response_Time() + 2, -1,
-                 std::max(120, Ipx.Global_Response_Time() * 8));
+  // TheNetwork().ipx().Set_Timing (TheNetwork().ipx().Global_Response_Time() +
+  // 2, -1, TheNetwork().ipx().Global_Response_Time() * 4);
+  TheNetwork().ipx().Set_Timing(
+      TheNetwork().ipx().Global_Response_Time() + 2, -1,
+      std::max(120, TheNetwork().ipx().Global_Response_Time() * 8));
 
   //------------------------------------------------------------------------
   //	Clear all lists, but NOT the Games or Players vectors.
@@ -5263,9 +5288,9 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
   //------------------------------------------------------------------------
   //	If there is no incoming packet, just return
   //------------------------------------------------------------------------
-  const int rc = Ipx.Get_Global_Message(base::ObjectBytes(Session.GPacket),
-                                        &Session.GPacketlen, &Session.GAddress,
-                                        &Session.GProductID);
+  const int rc = TheNetwork().ipx().Get_Global_Message(
+      base::ObjectBytes(Session.GPacket), &Session.GPacketlen,
+      &Session.GAddress, &Session.GProductID);
   if (!rc || Session.GProductID != IPXGlobalConnClass::kCommandAndConquer0) {
     return EV_NONE;
   }
@@ -5318,8 +5343,9 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
                       sizeof(Session.GPacket));
       Session.GPacket.Command = NET_REJECT_JOIN;
       Session.GPacket.Reject.Why = static_cast<int>(REJECT_DUPLICATE_NAME);
-      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                              sizeof(GlobalPacketType), 1, &Session.GAddress);
+      TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                             sizeof(GlobalPacketType), 1,
+                                             &Session.GAddress);
       return EV_NONE;
     }
 
@@ -5331,8 +5357,9 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
                       sizeof(Session.GPacket));
       Session.GPacket.Command = NET_REJECT_JOIN;
       Session.GPacket.Reject.Why = static_cast<int>(REJECT_GAME_FULL);
-      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                              sizeof(GlobalPacketType), 1, &Session.GAddress);
+      TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                             sizeof(GlobalPacketType), 1,
+                                             &Session.GAddress);
       return EV_NONE;
     }
 
@@ -5347,8 +5374,9 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
                       sizeof(Session.GPacket));
       Session.GPacket.Command = NET_REJECT_JOIN;
       Session.GPacket.Reject.Why = static_cast<int>(REJECT_MISMATCH);
-      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                              sizeof(GlobalPacketType), 1, &Session.GAddress);
+      TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                             sizeof(GlobalPacketType), 1,
+                                             &Session.GAddress);
       return EV_NONE;
     }
 
@@ -5384,8 +5412,9 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
                         sizeof(Session.GPacket));
         Session.GPacket.Command = NET_REJECT_JOIN;
         Session.GPacket.Reject.Why = static_cast<int>(REJECT_VERSION_TOO_OLD);
-        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                sizeof(GlobalPacketType), 1, &Session.GAddress);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 1,
+            &Session.GAddress);
         return EV_NONE;
       }
 
@@ -5397,8 +5426,9 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
                         sizeof(Session.GPacket));
         Session.GPacket.Command = NET_REJECT_JOIN;
         Session.GPacket.Reject.Why = static_cast<int>(REJECT_VERSION_TOO_NEW);
-        Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                                sizeof(GlobalPacketType), 1, &Session.GAddress);
+        TheNetwork().ipx().Send_Global_Message(
+            base::ObjectBytes(Session.GPacket), sizeof(GlobalPacketType), 1,
+            &Session.GAddress);
         return EV_NONE;
       }
       //..................................................................
@@ -5467,8 +5497,9 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
       Session.GPacket.PlayerInfo.House = who->Player.House;
       Session.GPacket.PlayerInfo.Color = who->Player.Color;
 
-      Ipx.Send_Global_Message(base::ObjectBytes(Session.GPacket),
-                              sizeof(GlobalPacketType), 1, &Session.GAddress);
+      TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(Session.GPacket),
+                                             sizeof(GlobalPacketType), 1,
+                                             &Session.GAddress);
 
       //..................................................................
       // Play a special sound.
@@ -5637,10 +5668,10 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
       case GAME_NULL_MODEM:
 
         if (reconn) {
-          const int id = Ipx.Connection_ID(oldest_index);
+          const int id = TheNetwork().ipx().Connection_ID(oldest_index);
           Format_Runtime_Text(buf1, sizeof(buf1),
                               Text_String(TXT_RECONNECTING_TO),
-                              Ipx.Connection_Name(id));
+                              TheNetwork().ipx().Connection_Name(id));
         } else {
           absl::SNPrintF(buf1, sizeof(buf1), "%s",
                          Text_String(TXT_WAITING_FOR_CONNECTIONS));
@@ -5665,7 +5696,8 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                    TXT_WOL_CANCELMEANSFORFEIT);
     const bool bForfeitWarning =
         config::kWolapiEnabled && Session.Type == GAME_INTERNET &&
-        pWolapi != nullptr && pWolapi->GameInfoCurrent.bTournament;
+        TheNetwork().wolapi() != nullptr &&
+        TheNetwork().wolapi()->GameInfoCurrent.bTournament;
     if (bForfeitWarning) {
       w = std::max(String_Pixel_Width(szNewCancelMessage), w);
       //	* 2;		why was it ever multiplied by this!!!?

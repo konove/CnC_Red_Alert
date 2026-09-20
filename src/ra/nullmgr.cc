@@ -67,7 +67,6 @@
 #include <utility>
 
 #include "absl/log/log.h"
-#include "absl/strings/str_format.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/aligned_buffer.h"
@@ -84,8 +83,8 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/msgbox.h"
+#include "ra/network.h"
 #include "ra/nullconn.h"
-#include "ra/nulldlg.h"
 #include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/text_ids.h"
@@ -310,20 +309,21 @@ int NullModemClass::Init(int port, int /*irq*/, char* dev_name, int baud,
       *otherwise use
       ** the device name directly to open the port with.
       */
-      if (ModemRegistry) {
-        delete ModemRegistry;
-        ModemRegistry = nullptr;
+      if (TheNetwork().modem_registry()) {
+        delete TheNetwork().modem_registry();
+        TheNetwork().modem_registry() = nullptr;
       }
       for (int i = 0; i < 10; i++) {
-        ModemRegistry = new ModemRegistryEntryClass(i);
-        if (ModemRegistry->Get_Modem_Name() &&
-            (std::string_view(dev_name) == ModemRegistry->Get_Modem_Name())) {
-          device = ModemRegistry->Get_Modem_Device_Name();
+        TheNetwork().modem_registry() = new ModemRegistryEntryClass(i);
+        if (TheNetwork().modem_registry()->Get_Modem_Name() &&
+            (std::string_view(dev_name) ==
+             TheNetwork().modem_registry()->Get_Modem_Name())) {
+          device = TheNetwork().modem_registry()->Get_Modem_Device_Name();
           break;
         }
 
-        delete ModemRegistry;
-        ModemRegistry = nullptr;
+        delete TheNetwork().modem_registry();
+        TheNetwork().modem_registry() = nullptr;
       }
       break;
 
@@ -492,23 +492,24 @@ DetectPortType NullModemClass::Detect_Port(SerialSettingsType* settings) {
       *otherwise use
       ** the device name directly to open the port with.
       */
-      if (ModemRegistry) {
-        delete ModemRegistry;
-        ModemRegistry = nullptr;
+      if (TheNetwork().modem_registry()) {
+        delete TheNetwork().modem_registry();
+        TheNetwork().modem_registry() = nullptr;
       }
       for (int i = 0; i < 10; i++) {
-        ModemRegistry = new ModemRegistryEntryClass(i);
-        if (ModemRegistry->Get_Modem_Name() &&
-            (std::string_view(device) == ModemRegistry->Get_Modem_Name())) {
+        TheNetwork().modem_registry() = new ModemRegistryEntryClass(i);
+        if (TheNetwork().modem_registry()->Get_Modem_Name() &&
+            (std::string_view(device) ==
+             TheNetwork().modem_registry()->Get_Modem_Name())) {
           /*
           ** Got a match. Break out leaving the registry info intact.
           */
-          device = ModemRegistry->Get_Modem_Device_Name();
+          device = TheNetwork().modem_registry()->Get_Modem_Device_Name();
           break;
         }
 
-        delete ModemRegistry;
-        ModemRegistry = nullptr;
+        delete TheNetwork().modem_registry();
+        TheNetwork().modem_registry() = nullptr;
       }
       break;
 
@@ -1147,7 +1148,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   } else {
   }
 
-  if (settings->Port == 1 && ModemRegistry) {
+  if (settings->Port == 1 && TheNetwork().modem_registry()) {
     // Helper lambda to handle the "Append AT -> Send -> Check Error" pattern.
     // Captures context to access 'buffer' and other necessary variables.
     const auto sendInitCommand = [&](const char* cmdSuffix, int errorMsgId,
@@ -1169,9 +1170,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     };
 
     // 1. Flow Control
-    const char* flowCmd = settings->HardwareFlowControl
-                              ? ModemRegistry->Get_Modem_Hardware_Flow_Control()
-                              : ModemRegistry->Get_Modem_No_Flow_Control();
+    const char* flowCmd =
+        settings->HardwareFlowControl
+            ? TheNetwork().modem_registry()->Get_Modem_Hardware_Flow_Control()
+            : TheNetwork().modem_registry()->Get_Modem_No_Flow_Control();
     const int flowTimeout =
         settings->HardwareFlowControl ? 300 : DEFAULT_TIMEOUT;
 
@@ -1180,9 +1182,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     }
 
     // 2. Compression
-    const char* compCmd = settings->Compression
-                              ? ModemRegistry->Get_Modem_Compression_Enable()
-                              : ModemRegistry->Get_Modem_Compression_Disable();
+    const char* compCmd =
+        settings->Compression
+            ? TheNetwork().modem_registry()->Get_Modem_Compression_Enable()
+            : TheNetwork().modem_registry()->Get_Modem_Compression_Disable();
 
     if (!sendInitCommand(compCmd, TXT_NO_COMPRESSION_RESPONSE)) {
       return 0;
@@ -1191,8 +1194,10 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     // 3. Error Correction
     const char* errCmd =
         settings->ErrorCorrection
-            ? ModemRegistry->Get_Modem_Error_Correction_Enable()
-            : ModemRegistry->Get_Modem_Error_Correction_Disable();
+            ? TheNetwork().modem_registry()->Get_Modem_Error_Correction_Enable()
+            : TheNetwork()
+                  .modem_registry()
+                  ->Get_Modem_Error_Correction_Disable();
 
     if (!sendInitCommand(errCmd, TXT_NO_ERROR_CORRECTION_RESPONSE)) {
       return 0;
@@ -1374,7 +1379,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
 
     if (process) {
       if (buffer.starts_with("CON")) {
-        port::SafeCopy(ModemRXString, buffer.c_str());
+        TheNetwork().modem_response() = buffer;
         dialstatus = DIAL_CONNECTED;
         process = false;
       } else if (buffer.starts_with("BUSY")) {
@@ -1604,8 +1609,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         delay = ModemWaitCarrier;
         display = REDRAW_ALL;
       } else if (std::string_view(comm_buffer).starts_with("CON")) {
-        base::FillBytes(base::ObjectBytes(ModemRXString), 0, 80);
-        port::SafeCopy(ModemRXString, comm_buffer);
+        TheNetwork().modem_response() = comm_buffer;
         dialstatus = DIAL_CONNECTED;
         process = false;
       } else if (std::string_view(comm_buffer).starts_with("BUSY")) {
@@ -1624,8 +1628,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     if (delay <= 0) {
       if (ring) {
         if (SerialPort->Get_Modem_Status() & kCdSet) {
-          absl::SNPrintF(ModemRXString, sizeof(ModemRXString), "%s",
-                         "Connected");
+          TheNetwork().modem_response() = "Connected";
           dialstatus = DIAL_CONNECTED;
         } else {
           dialstatus = DIAL_ERROR;
@@ -1797,19 +1800,21 @@ void NullModemClass::Remove_Modem_Echo() {
  * HISTORY: * 8/2/96 12:51PM ST : Documented *
  *=============================================================================================*/
 void NullModemClass::Print_EchoBuf() {
-  for (int i = 0;
-       std::cmp_less(i, std::string_view(NullModem.EchoBuf.data()).size());
+  for (int i = 0; std::cmp_less(
+           i,
+           std::string_view(TheNetwork().null_modem().EchoBuf.data()).size());
        i++) {
-    if (NullModem.EchoBuf.at(base::ToSize(i)) == '\r') {
-      NullModem.EchoBuf.at(base::ToSize(i)) = 1;
+    if (TheNetwork().null_modem().EchoBuf.at(base::ToSize(i)) == '\r') {
+      TheNetwork().null_modem().EchoBuf.at(base::ToSize(i)) = 1;
     } else {
-      if (NullModem.EchoBuf.at(base::ToSize(i)) == '\n') {
-        NullModem.EchoBuf.at(base::ToSize(i)) = 2;
+      if (TheNetwork().null_modem().EchoBuf.at(base::ToSize(i)) == '\n') {
+        TheNetwork().null_modem().EchoBuf.at(base::ToSize(i)) = 2;
       }
     }
   }
-  //	Smart_Printf( "Echo buffer length %d (%s)\n", NullModem.EchoCount,
-  // NullModem.EchoBuf );
+  //	Smart_Printf( "Echo buffer length %d (%s)\n",
+  // TheNetwork().null_modem().EchoCount,
+  // TheNetwork().null_modem().EchoBuf );
 }
 
 /***********************************************************************************************

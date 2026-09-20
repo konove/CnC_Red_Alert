@@ -9,6 +9,7 @@
 #include "ra/assets.h"
 #include "ra/debug_state.h"
 #include "ra/game_clock.h"
+#include "ra/network.h"
 #include "ra/object_heaps.h"
 #include "ra/palettes.h"
 #include "ra/rules.h"
@@ -68,6 +69,8 @@ class Game {
   base::Installed<RulesClass>::Scope rules_scope_{rules_};
   World world_;
   base::Installed<World>::Scope world_scope_{world_};
+  Network network_;
+  base::Installed<Network>::Scope network_scope_{network_};
   DebugState debug_state_;
   base::Installed<DebugState>::Scope debug_state_scope_{debug_state_};
 };

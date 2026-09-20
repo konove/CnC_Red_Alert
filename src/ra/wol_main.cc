@@ -25,6 +25,7 @@
 #include "port/win32/win32_types.h"
 #include "ra/defines.h"
 #include "ra/installation.h"
+#include "ra/network.h"
 #include "ra/wol_gsup.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
@@ -42,13 +43,15 @@ static void HandleDLLFail();
 #include "ra/theme.h"
 
 //***********************************************************************************************
-//	The first time through, pWolapi is NULL thus wolapi gets set up.
+//	The first time through, TheNetwork().wolapi() is NULL thus wolapi gets
+// set up.
 // WOL_Login_Dialog presents the user 	with the login dialog and attempts to
 // log us on to the server. If the user continues on all the 	way to a game
-// start, we will drop out of here with pWolapi still pointing to a valid
-// WolapiObject, 	and with pWolapi's iLobbyReturnAfterGame set to the
-// number of the lobby to return to automatically 	after the game ends.
-// Init() automatically brings us here if pWolapi is non-null.
+// start, we will drop out of here with TheNetwork().wolapi() still pointing to
+// a valid WolapiObject, 	and with TheNetwork().wolapi()'s
+// iLobbyReturnAfterGame set to the number of the lobby to return to
+// automatically 	after the game ends. Init() automatically brings us here
+// if TheNetwork().wolapi() is non-null.
 //***********************************************************************************************
 int WOL_Main() {
   //	Return values:
@@ -57,7 +60,7 @@ int WOL_Main() {
   //		-1 = patch downloaded, shut down app
   int iReturn = 0;
 
-  if (pWolapi) {
+  if (TheNetwork().wolapi()) {
     //	We have returned from a game started through ww online.
 
     //	Start theme up again.
@@ -66,23 +69,26 @@ int WOL_Main() {
     //	Verify that we are still connected. If we aren't, kill WolapiObject and
     // start over. 	(This will likely occur during the game, if connection
     // is lost. Ensure that it is done here.)
-    pWolapi->pChat->PumpMessages();  //	Causes OnNetStatus() call if no longer
-                                     // connected.
-    if (pWolapi->bConnectionDown) {
-      // debugprint( "Re-entering WOL_Main(), pWolapi->bConnectionDown is true.
-      // Deleting old WolapiObject...\n" );
+    TheNetwork()
+        .wolapi()
+        ->pChat->PumpMessages();  //	Causes OnNetStatus() call if no longer
+                                  // connected.
+    if (TheNetwork().wolapi()->bConnectionDown) {
+      // debugprint( "Re-entering WOL_Main(),
+      // TheNetwork().wolapi()->bConnectionDown is true. Deleting old
+      // WolapiObject...\n" );
       WWMessageBox().Process(TXT_WOL_WOLAPIREINIT);
       //	Kill wolapi.
-      pWolapi->UnsetupCOMStuff();
-      delete pWolapi;
-      pWolapi = nullptr;
+      TheNetwork().wolapi()->UnsetupCOMStuff();
+      delete TheNetwork().wolapi();
+      TheNetwork().wolapi() = nullptr;
     }
   }
 
-  if (!pWolapi) {
+  if (!TheNetwork().wolapi()) {
     //	Start up wolapi.
-    pWolapi = new WolapiObject;
-    if (!pWolapi->bSetupCOMStuff()) {
+    TheNetwork().wolapi() = new WolapiObject;
+    if (!TheNetwork().wolapi()->bSetupCOMStuff()) {
       //	Things are really bad if this happens. A COM call failed.
 
       //	We first assume that their wolapi.dll failed to register during
@@ -94,7 +100,7 @@ int WOL_Main() {
       // reregister wolapi.dll...\n" ); 	Attempt to re-register
       // wolapi.dll...
       if (ReregisterWolapiDLL()) {
-        if (!pWolapi->bSetupCOMStuff()) {
+        if (!TheNetwork().wolapi()->bSetupCOMStuff()) {
           //	Still failed after reregistering seemed to work.
           HandleDLLFail();
           return 0;
@@ -104,21 +110,22 @@ int WOL_Main() {
         return 0;
       }
     }
-    pWolapi->PrepareButtonsAndIcons();
+    TheNetwork().wolapi()->PrepareButtonsAndIcons();
     //	Undocumented hack needed for patch downloading, per Neal.
-    pWolapi->pChat->SetAttributeValue("RegPath", Game_Registry_Key());
+    TheNetwork().wolapi()->pChat->SetAttributeValue("RegPath",
+                                                    Game_Registry_Key());
     //	(Not that anything's really "documented".)
   }
 
-  pWolapi->bInGame = false;
+  TheNetwork().wolapi()->bInGame = false;
 
-  const int iLoginResult = WOL_Login_Dialog(pWolapi);
+  const int iLoginResult = WOL_Login_Dialog(TheNetwork().wolapi());
   if (iLoginResult == 1) {
-    pWolapi->SetOptionDefaults();
+    TheNetwork().wolapi()->SetOptionDefaults();
     bool bKeepGoing = true;
     while (bKeepGoing) {
       bool bCreator = false;  //	True when this player made the channel.
-      switch (WOL_Chat_Dialog(pWolapi)) {
+      switch (WOL_Chat_Dialog(TheNetwork().wolapi())) {
         case -1:
           bKeepGoing = false;
           break;
@@ -134,7 +141,7 @@ int WOL_Main() {
           break;
       }
       if (bKeepGoing) {
-        WOL_GameSetupDialog GSupDlg(pWolapi, bCreator);
+        WOL_GameSetupDialog GSupDlg(TheNetwork().wolapi(), bCreator);
         switch (GSupDlg.Run()) {
           case RESULT_WOLGSUP_LOGOUT:
             //	User logged out.
@@ -149,20 +156,20 @@ int WOL_Main() {
             //	Proceed with game.
             bKeepGoing = false;
             iReturn = 1;
-            pWolapi->bGameServer = true;
+            TheNetwork().wolapi()->bGameServer = true;
             break;
           case RESULT_WOLGSUP_STARTGAME:
             //	Proceed with game.
             bKeepGoing = false;
             iReturn = 1;
-            pWolapi->bGameServer = false;
+            TheNetwork().wolapi()->bGameServer = false;
             break;
           case RESULT_WOLGSUP_FATALERROR:
             //					debugprint(
             //"RESULT_WOLGSUP_FATALERROR from game setup dialog.\n" );
             // Fatal( "RESULT_WOLGSUP_FATALERROR from game setup dialog.\n" );
-            if (pWolapi->pChatSink->bConnected) {
-              pWolapi->Logout();
+            if (TheNetwork().wolapi()->pChatSink->bConnected) {
+              TheNetwork().wolapi()->Logout();
             }
             bKeepGoing = false;
             break;
@@ -175,12 +182,12 @@ int WOL_Main() {
 
   if (iReturn != 1) {
     //	Kill wolapi.
-    pWolapi->UnsetupCOMStuff();
-    delete pWolapi;
-    pWolapi = nullptr;
+    TheNetwork().wolapi()->UnsetupCOMStuff();
+    delete TheNetwork().wolapi();
+    TheNetwork().wolapi() = nullptr;
   } else {
-    pWolapi->bInGame = true;
-    pWolapi->bConnectionDown = false;
+    TheNetwork().wolapi()->bInGame = true;
+    TheNetwork().wolapi()->bConnectionDown = false;
   }
 
   if (iLoginResult == -1) {
@@ -251,7 +258,7 @@ bool ReregisterWolapiDLL() {
 void HandleDLLFail() {
   //	The DLL failed to load. Either we failed to reregister it, or we think
   // we succeeded at this but it 	still is not working. Show an error
-  // message and delete pWolapi.
+  // message and delete TheNetwork().wolapi().
   //
   //	ajw picked between "download IE3" and "call tech support" by finding
   //	oleaut32.dll in the Windows system directory and calling it out of date
@@ -260,6 +267,6 @@ void HandleDLLFail() {
   //	Windows component is the only one that could ever be right.
   WWMessageBox().Process(TXT_WOL_DLLERROR_CALLUS);
 
-  delete pWolapi;
-  pWolapi = nullptr;
+  delete TheNetwork().wolapi();
+  TheNetwork().wolapi() = nullptr;
 }

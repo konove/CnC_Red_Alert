@@ -75,10 +75,12 @@
 #include "ra/jshell.h"
 #include "ra/language.h"
 #include "ra/movie.h"
+#include "ra/network.h"
 #include "ra/nullconn.h"
 #include "ra/session.h"
 #include "ra/special.h"
 #include "ra/startup_options.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/file.h"
 #include "sdllib/ww_mouse.h"
@@ -168,11 +170,11 @@ static void ReadConfigOptions(const INIClass& ini,
   // Socket is an offset into the dynamic IPX socket range 0x4000-0x7FFF,
   // letting several games share a network without seeing each other.
   if (options.socket.has_value()) {
-    Ipx.Set_Socket(*options.socket);
+    TheNetwork().ipx().Set_Socket(*options.socket);
   } else {
     const int socket = ini.Get_Int("Options", "Socket", 0);
     if (socket > 0 && socket < 0x4000) {
-      Ipx.Set_Socket(static_cast<uint16_t>(0x4000 + socket));
+      TheNetwork().ipx().Set_Socket(static_cast<uint16_t>(0x4000 + socket));
     }
   }
 

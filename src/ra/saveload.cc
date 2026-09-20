@@ -79,7 +79,6 @@
 #include "ra/externs.h"
 #include "ra/factory.h"
 #include "ra/game_clock.h"
-#include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"

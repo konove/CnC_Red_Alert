@@ -77,7 +77,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
-#include "tech/ftimer.h"
 #include "tech/game_file.h"
 
 /*

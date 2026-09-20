@@ -58,6 +58,7 @@
 #include "ra/jshell.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
+#include "ra/network.h"
 #include "ra/nullmgr.h"
 #include "ra/object.h"
 #include "ra/palette.h"
@@ -714,21 +715,22 @@ void Cycle_Wait_Click(bool cycle) {
         base::FillBytes(base::ObjectBytes(sendpacket), 0,
                         sizeof(SerialPacketType));
         sendpacket.Command = SERIAL_SCORE_SCREEN;
-        sendpacket.ScenarioInfo.ResponseTime = NullModem.Response_Time();
+        sendpacket.ScenarioInfo.ResponseTime =
+            TheNetwork().null_modem().Response_Time();
         sendpacket.ID = static_cast<unsigned char>(Session.ModemType);
 
-        NullModem.Send_Message(base::ObjectBytes(sendpacket),
-                               sizeof(sendpacket), 0);
+        TheNetwork().null_modem().Send_Message(base::ObjectBytes(sendpacket),
+                                               sizeof(sendpacket), 0);
         timingtime = SystemTicks();
       }
 
-      if (NullModem.Get_Message(base::ObjectBytes(receivepacket), &packetlen) >
-          0) {
+      if (TheNetwork().null_modem().Get_Message(
+              base::ObjectBytes(receivepacket), &packetlen) > 0) {
         // Throw the packet away: the peer's timing packets only need to be
         // drained from the queue.
       }
 
-      NullModem.Service();
+      TheNetwork().null_modem().Service();
     }
 
     TickScoreScreen(1);

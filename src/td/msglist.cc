@@ -65,7 +65,6 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/externs.h"
 #include "td/gadget.h"
 #include "td/jshell.h"
 #include "td/txtlabel.h"

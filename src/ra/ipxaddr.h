@@ -74,7 +74,6 @@ class IPXAddressClass {
   in an IPX packet header.
   .....................................................................*/
   void Set_Address(const NetNumType& net, const NetNodeType& node);
-  void Set_Address(IPXHeaderType* header);
   /*.....................................................................
   Get the address values explicitly, or copy them into the DESTINATION
   values in an IPX packet header.

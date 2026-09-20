@@ -62,6 +62,7 @@
 #include "ra/ipxmgr.h"
 #include "ra/jshell.h"
 #include "ra/mission_id.h"
+#include "ra/network.h"
 #include "ra/nullmgr.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
@@ -94,10 +95,11 @@ namespace {
 //	that stops answering. Keep pumping it while we wait.
 void PumpWolapi() {
   if constexpr (config::kWolapiEnabled) {
-    if (Session.Type == GAME_INTERNET && pWolapi != nullptr &&
-        Get_Time_Ms() > pWolapi->dwTimeNextWolapiPump) {
-      pWolapi->pChat->PumpMessages();
-      pWolapi->dwTimeNextWolapiPump = Get_Time_Ms() + WOLAPIPUMPWAIT;
+    if (Session.Type == GAME_INTERNET && TheNetwork().wolapi() != nullptr &&
+        Get_Time_Ms() > TheNetwork().wolapi()->dwTimeNextWolapiPump) {
+      TheNetwork().wolapi()->pChat->PumpMessages();
+      TheNetwork().wolapi()->dwTimeNextWolapiPump =
+          Get_Time_Ms() + WOLAPIPUMPWAIT;
     }
   }
 }
@@ -145,14 +147,15 @@ bool Get_Scenario_File_From_Host(std::span<char> return_name, size_t dest_size,
   if (!gametype) {
     base::FillBytes(base::ObjectBytes(send_packet), 0, sizeof(send_packet));
     send_packet.Command = SERIAL_REQ_SCENARIO;
-    NullModem.Send_Message(base::ObjectBytes(send_packet), sizeof(send_packet),
-                           1);
+    TheNetwork().null_modem().Send_Message(base::ObjectBytes(send_packet),
+                                           sizeof(send_packet), 1);
   } else {
     base::FillBytes(base::ObjectBytes(net_send_packet), 0,
                     sizeof(net_send_packet));
     net_send_packet.Command = NET_REQ_SCENARIO;
-    Ipx.Send_Global_Message(base::ObjectBytes(net_send_packet),
-                            sizeof(net_send_packet), 1, &Session.HostAddress);
+    TheNetwork().ipx().Send_Global_Message(base::ObjectBytes(net_send_packet),
+                                           sizeof(net_send_packet), 1,
+                                           &Session.HostAddress);
   }
 
   // WWDebugString ("RA95 - Waiting for response from host\n");
@@ -163,10 +166,10 @@ bool Get_Scenario_File_From_Host(std::span<char> return_name, size_t dest_size,
   response_timer.Set(RESPONSE_TIMEOUT);
   if (!gametype) {
     do {
-      NullModem.Service();
+      TheNetwork().null_modem().Service();
 
-      if ((NullModem.Get_Message(base::ObjectBytes(receive_packet),
-                                 &packet_len) > 0) &&
+      if ((TheNetwork().null_modem().Get_Message(
+               base::ObjectBytes(receive_packet), &packet_len) > 0) &&
           (receive_packet.Command == SERIAL_FILE_INFO)) {
         port::SafeCopy(
             return_name.first(std::min(return_name.size(), dest_size)),
@@ -178,11 +181,11 @@ bool Get_Scenario_File_From_Host(std::span<char> return_name, size_t dest_size,
     } while (response_timer.HasTimeLeft());
   } else {
     do {
-      Ipx.Service();
+      TheNetwork().ipx().Service();
       int receive_packet_length = sizeof(net_receive_packet);
-      if (Ipx.Get_Global_Message(base::ObjectBytes(net_receive_packet),
-                                 &receive_packet_length, &sender_address,
-                                 &product_id) &&
+      if (TheNetwork().ipx().Get_Global_Message(
+              base::ObjectBytes(net_receive_packet), &receive_packet_length,
+              &sender_address, &product_id) &&
           (net_receive_packet.Command == NET_FILE_INFO &&
            sender_address == Session.HostAddress))
       // WWDebugString ("RA95 - Got packet from host\n");
@@ -408,10 +411,10 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
     }
 
     if (!gametype) {
-      NullModem.Service();
+      TheNetwork().null_modem().Service();
 
-      if ((NullModem.Get_Message(base::ObjectBytes(receive_packet),
-                                 &packet_len) > 0) &&
+      if ((TheNetwork().null_modem().Get_Message(
+               base::ObjectBytes(receive_packet), &packet_len) > 0) &&
           (receive_packet.Command == SERIAL_FILE_CHUNK) &&
           (receive_packet.BlockNumber == last_received_block + 1)) {
         save_file.Write(receive_packet.RawData, receive_packet.BlockLength);
@@ -434,12 +437,12 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
       }
 
     } else {
-      Ipx.Service();
+      TheNetwork().ipx().Service();
 
       int receive_packet_len = sizeof(receive_packet);
-      if (Ipx.Get_Global_Message(base::ObjectBytes(receive_packet),
-                                 &receive_packet_len, &sender_address,
-                                 &product_id) &&
+      if (TheNetwork().ipx().Get_Global_Message(
+              base::ObjectBytes(receive_packet), &receive_packet_len,
+              &sender_address, &product_id) &&
           (receive_packet.Command == SERIAL_FILE_CHUNK &&
            sender_address == Session.HostAddress) &&
           (receive_packet.BlockNumber == last_received_block + 1))
@@ -625,9 +628,11 @@ bool Send_Remote_File(const char* file_name, int gametype) {
       port::SafeCopy(file_info.ScenarioInfo.ShortFileName, "DOWNLOAD.TMP");
     }
     file_info.ScenarioInfo.FileLength = static_cast<unsigned>(file_length);
-    NullModem.Send_Message(base::ObjectBytes(file_info), sizeof(file_info), 1);
-    while (NullModem.Num_Send() > 0 && response_timer.HasTimeLeft()) {
-      NullModem.Service();
+    TheNetwork().null_modem().Send_Message(base::ObjectBytes(file_info),
+                                           sizeof(file_info), 1);
+    while (TheNetwork().null_modem().Num_Send() > 0 &&
+           response_timer.HasTimeLeft()) {
+      TheNetwork().null_modem().Service();
     }
   } else {
     net_file_info.Command = NET_FILE_INFO;
@@ -642,13 +647,14 @@ bool Send_Remote_File(const char* file_name, int gametype) {
     net_file_info.ScenarioInfo.FileLength = static_cast<unsigned>(file_length);
 
     for (int i = 0; i < Session.RequestCount; i++) {
-      Ipx.Send_Global_Message(
+      TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(net_file_info), sizeof(GlobalPacketType), 1,
           &Session.Players.at(base::At(Session.ScenarioRequests, i))->Address);
     }
 
-    while (Ipx.Global_Num_Send() > 0 && response_timer.HasTimeLeft()) {
-      Ipx.Service();
+    while (TheNetwork().ipx().Global_Num_Send() > 0 &&
+           response_timer.HasTimeLeft()) {
+      TheNetwork().ipx().Service();
     }
   }
 
@@ -714,10 +720,10 @@ bool Send_Remote_File(const char* file_name, int gametype) {
     }
 
     if (!gametype) {
-      NullModem.Service();
+      TheNetwork().null_modem().Service();
 
       if (block_number < total_blocks) {
-        if (NullModem.Num_Send() < 2) {
+        if (TheNetwork().null_modem().Num_Send() < 2) {
           send_packet.Command = SERIAL_FILE_CHUNK;
           send_packet.BlockNumber = static_cast<uint16_t>(block_number);
           send_packet.BlockLength =
@@ -727,8 +733,8 @@ bool Send_Remote_File(const char* file_name, int gametype) {
 
           if (send_file.Read(send_packet.RawData, send_packet.BlockLength) ==
               send_packet.BlockLength) {
-            NullModem.Send_Message(base::ObjectBytes(send_packet),
-                                   sizeof(send_packet), 1);
+            TheNetwork().null_modem().Send_Message(
+                base::ObjectBytes(send_packet), sizeof(send_packet), 1);
           }
 
           block_number++;
@@ -741,7 +747,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
           }
         }
       } else {
-        if (NullModem.Num_Send() == 0) {
+        if (TheNetwork().null_modem().Num_Send() == 0) {
           process = false;
           return_code = true;
           progress_meter.Set_Value(100);
@@ -750,10 +756,10 @@ bool Send_Remote_File(const char* file_name, int gametype) {
       }
 
     } else {
-      Ipx.Service();
+      TheNetwork().ipx().Service();
 
       if (block_number < total_blocks) {
-        if (Ipx.Global_Num_Send() == 0) {
+        if (TheNetwork().ipx().Global_Num_Send() == 0) {
           send_packet.Command = SERIAL_FILE_CHUNK;
           send_packet.BlockNumber = static_cast<uint16_t>(block_number);
           send_packet.BlockLength =
@@ -764,7 +770,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
           if (send_file.Read(send_packet.RawData, send_packet.BlockLength) ==
               send_packet.BlockLength) {
             for (int i = 0; i < Session.RequestCount; i++) {
-              Ipx.Send_Global_Message(
+              TheNetwork().ipx().Send_Global_Message(
                   base::ObjectBytes(send_packet), sizeof(send_packet), 1,
                   &Session.Players.at(base::At(Session.ScenarioRequests, i))
                        ->Address);
@@ -781,7 +787,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
           }
         }
       } else {
-        if (Ipx.Global_Num_Send() == 0) {
+        if (TheNetwork().ipx().Global_Num_Send() == 0) {
           process = false;
           return_code = true;
           progress_meter.Set_Value(100);

@@ -86,7 +86,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "port/platform.h"
 #include "port/random_seed.h"
-#include "ra/_wsproto.h"
 #include "ra/assets.h"
 #include "ra/ccini.h"
 #include "ra/compat.h"
@@ -122,6 +121,7 @@
 #include "ra/msgbox.h"
 #include "ra/msglist.h"
 #include "ra/netdlg.h"
+#include "ra/network.h"
 #include "ra/nulldlg.h"
 #include "ra/nullmgr.h"
 #include "ra/object_heaps.h"
@@ -162,7 +162,6 @@
 #include "tech/memory_file.h"
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
-#include "tech/pk.h"
 #include "tech/random.h"
 #include "tech/rgb.h"
 #include "tech/search_paths.h"
@@ -200,7 +199,6 @@ static bool Save_Recording_Values(GameFile& file);
 #include "ra/config.h"
 #include "ra/expand.h"
 #include "ra/wol_main.h"
-#include "ra/wolapiob.h"
 
 static std::vector<uint8_t> shape_storage;
 
@@ -492,8 +490,8 @@ bool Select_Game(bool /*fade*/) {
   **	[Re]set any globals that need it, in preparation for a new scenario
   */
   GameActive = true;
-  DoList.Init();
-  OutList.Init();
+  TheNetwork().do_list().Init();
+  TheNetwork().out_list().Init();
   TheGameClock().set_frame(0);
   TheScenario().MissionTimer.Set(0);
   TheScenario().MissionTimer.Stop();
@@ -511,8 +509,8 @@ bool Select_Game(bool /*fade*/) {
   Session.ProcessTicks = 0;
   Session.ProcessFrames = 0;
   Session.DesiredFrameRate = 30;
-  NewMaxAheadFrame1 = 0;
-  NewMaxAheadFrame2 = 0;
+  TheNetwork().new_max_ahead_frame1() = 0;
+  TheNetwork().new_max_ahead_frame2() = 0;
 
   /*
   **	Init multiplayer game scores.  Let Wins accumulate; just init the
@@ -600,7 +598,7 @@ bool Select_Game(bool /*fade*/) {
         selection = kSelStartNewGame;
       }
 
-      if (config::kWolapiEnabled && pWolapi != nullptr) {
+      if (config::kWolapiEnabled && TheNetwork().wolapi() != nullptr) {
         selection = kSelMultiplayerGame;  //	We are returning from a game.
       }
 
@@ -813,7 +811,7 @@ bool Select_Game(bool /*fade*/) {
         case kSelMultiplayerGame:
           //	With Westwood Online in charge, coming back here means we are
           //	returning from a game and the menu below is skipped.
-          if (!config::kWolapiEnabled || pWolapi == nullptr) {
+          if (!config::kWolapiEnabled || TheNetwork().wolapi() == nullptr) {
             switch (Session.Type) {
               /*
               **	If 'Session.Type' isn't already set up for a multiplayer
@@ -853,8 +851,8 @@ bool Select_Game(bool /*fade*/) {
               case GAME_NULL_MODEM:
               case GAME_MODEM:
                 if (Session.Type != GAME_SKIRMISH &&
-                    NullModem.Num_Connections()) {
-                  NullModem.Init_Send_Queue();
+                    TheNetwork().null_modem().Num_Connections()) {
+                  TheNetwork().null_modem().Init_Send_Queue();
 
                   if ((Session.Type == GAME_NULL_MODEM &&
                        Session.ModemType == MODEM_NULL_HOST) ||
@@ -897,9 +895,9 @@ bool Select_Game(bool /*fade*/) {
               default:
                 break;
             }
-          }  //	if( !pWolapi )
+          }  //	if( !TheNetwork().wolapi() )
 
-          if (config::kWolapiEnabled && pWolapi != nullptr) {
+          if (config::kWolapiEnabled && TheNetwork().wolapi() != nullptr) {
             Session.Type = GAME_INTERNET;
           }
           // debugprint( "Session.Type = %i\n", Session.Type );
@@ -920,10 +918,10 @@ bool Select_Game(bool /*fade*/) {
             //	cases just before.
             case GAME_INTERNET:
               if constexpr (config::kWolapiEnabled) {
-                delete PacketTransport;
-                PacketTransport = new UDPInterfaceClass;
-                DCHECK(PacketTransport != nullptr);
-                if (PacketTransport->Init()) {
+                delete TheNetwork().packet_transport();
+                TheNetwork().packet_transport() = new UDPInterfaceClass;
+                DCHECK(TheNetwork().packet_transport() != nullptr);
+                if (TheNetwork().packet_transport()->Init()) {
                   switch (WOL_Main()) {
                     case 1:
                       //	Start game.
@@ -936,8 +934,8 @@ bool Select_Game(bool /*fade*/) {
                       Session.Type = GAME_NORMAL;
                       display = true;
                       selection = kSelMultiplayerGame;  // SEL_NONE;
-                      delete PacketTransport;
-                      PacketTransport = nullptr;
+                      delete TheNetwork().packet_transport();
+                      TheNetwork().packet_transport() = nullptr;
                       break;
                     case -1:
                       //	Patch was downloaded. Exit app.
@@ -951,8 +949,8 @@ bool Select_Game(bool /*fade*/) {
                   Session.Type = GAME_NORMAL;
                   display = true;
                   selection = kSelMultiplayerGame;  // SEL_NONE;
-                  delete PacketTransport;
-                  PacketTransport = nullptr;
+                  delete TheNetwork().packet_transport();
+                  TheNetwork().packet_transport() = nullptr;
                 }
               } else {
                 Theme.Fade_Out();
@@ -969,10 +967,11 @@ bool Select_Game(bool /*fade*/) {
               /*
               ** Init network system & remote-connect
               */
-              delete PacketTransport;
+              delete TheNetwork().packet_transport();
               // we don't even have IPX
-              PacketTransport = new UDPInterfaceClass;
-              PacketTransport->Set_Broadcast_Address("255.255.255.255");
+              TheNetwork().packet_transport() = new UDPInterfaceClass;
+              TheNetwork().packet_transport()->Set_Broadcast_Address(
+                  "255.255.255.255");
               WWDebugString("RA95 - About to call Init_Network.\n");
               if (Session.Type == GAME_IPX && Init_Network() &&
                   Remote_Connect()) {
@@ -983,8 +982,8 @@ bool Select_Game(bool /*fade*/) {
                 Session.Type = GAME_NORMAL;
                 display = true;
                 selection = kSelNone;
-                delete PacketTransport;
-                PacketTransport = nullptr;
+                delete TheNetwork().packet_transport();
+                TheNetwork().packet_transport() = nullptr;
               }
               break;
             case GameType::GAME_NORMAL:
@@ -1099,12 +1098,13 @@ bool Select_Game(bool /*fade*/) {
       //= %i\n", NewUnitsEnabled );
       break;
     case GAME_INTERNET:
-      if (!config::kWolapiEnabled || pWolapi == nullptr) {
-        //				debugprint( "pWolapi is null on internet
+      if (!config::kWolapiEnabled || TheNetwork().wolapi() == nullptr) {
+        //				debugprint( "TheNetwork().wolapi() is
+        // null on internet
         // game!" );
-        Fatal("pWolapi is null on internet game!");
+        Fatal("TheNetwork().wolapi() is null on internet game!");
       }
-      // if( pWolapi->bEnableNewAftermathUnits )
+      // if( TheNetwork().wolapi()->bEnableNewAftermathUnits )
       if (bAftermathMultiplayer) {
         TheRules().NewUnitsEnabled = true;
       } else {
