@@ -1156,7 +1156,7 @@ void BuildingClass::AI() {
       *last frame is replaced by the first frame of *	the loop.
       */
       if (Fetch_Stage() == ctrl->Start + ctrl->Count - 1 ||
-          (Special.IsMCVDeploy && *this == STRUCT_CONST &&
+          (TheSpecial().IsMCVDeploy && *this == STRUCT_CONST &&
            Mission == MISSION_DECONSTRUCTION && Fetch_Stage() == 42 - 19)) {
         IsReadyToCommence = true;
       }
@@ -1194,7 +1194,8 @@ void BuildingClass::AI() {
   if (toloop) {
     const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
     if (BState == BSTATE_CONSTRUCTION || BState == BSTATE_IDLE) {
-      Set_Rate(static_cast<unsigned char>(Options.Normalize_Delay(ctrl->Rate)));
+      Set_Rate(
+          static_cast<unsigned char>(TheOptions().Normalize_Delay(ctrl->Rate)));
     } else {
       Set_Rate(static_cast<unsigned char>(ctrl->Rate));
     }
@@ -1259,8 +1260,8 @@ void BuildingClass::AI() {
       BState = QueueBState;
       const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
       if (BState == BSTATE_CONSTRUCTION || BState == BSTATE_IDLE) {
-        Set_Rate(
-            static_cast<unsigned char>(Options.Normalize_Delay(ctrl->Rate)));
+        Set_Rate(static_cast<unsigned char>(
+            TheOptions().Normalize_Delay(ctrl->Rate)));
       } else {
         Set_Rate(static_cast<unsigned char>(ctrl->Rate));
       }
@@ -1959,7 +1960,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
           Class->Primary != WEAPON_NONE &&
           (!Target_Legal(TarCom) || !In_Range(TarCom))) {
         if (source->What_Am_I() != RTTI_AIRCRAFT &&
-            (!House->IsHuman || Special.IsSmartDefense)) {
+            (!House->IsHuman || TheSpecial().IsSmartDefense)) {
           Assign_Target(source->As_Target());
         } else {
           /*
@@ -3437,7 +3438,7 @@ void BuildingClass::Begin_Mode(BStateType bstate) {
 
     int rate = ctrl->Rate;
     if (Class->IsRegulated && bstate != BSTATE_CONSTRUCTION) {
-      rate = Options.Normalize_Delay(rate);
+      rate = TheOptions().Normalize_Delay(rate);
     }
     Set_Rate(static_cast<unsigned char>(rate));
     Set_Stage(ctrl->Start);
@@ -4240,7 +4241,7 @@ int BuildingClass::Mission_Deconstruction() {
         **	members leaving is equal to the unrecovered cost of the building
         **	divided by 100 (the typical cost of a minigunner infantryman).
         */
-        if (!Special.IsMCVDeploy || *this != STRUCT_CONST) {
+        if (!TheSpecial().IsMCVDeploy || *this != STRUCT_CONST) {
           int divisor = 200;
           if (IsCaptured) {
             divisor *= 2;
@@ -4307,7 +4308,8 @@ int BuildingClass::Mission_Deconstruction() {
         **	Construction yards that deconstruct, really just revert back
         **	to an MCV.
         */
-        if (Special.IsMCVDeploy && *this == STRUCT_CONST && House->IsHuman) {
+        if (TheSpecial().IsMCVDeploy && *this == STRUCT_CONST &&
+            House->IsHuman) {
           TheWorld().scenario_init()++;
           auto* unit = new UnitClass(UNIT_MCV, House->Class->House);
           TheWorld().scenario_init()--;
@@ -4617,12 +4619,12 @@ int BuildingClass::Mission_Harvest() {
         /*
         **	Force any bib squaters to scatter.
         */
-        const bool old = Special.IsScatter;
-        Special.IsScatter = true;
+        const bool old = TheSpecial().IsScatter;
+        TheSpecial().IsScatter = true;
         TheMap()
             .at(Adjacent_Cell(Coord_Cell(Center_Coord()), DIR_SW))
             .Incoming(0, true);
-        Special.IsScatter = old;
+        TheSpecial().IsScatter = old;
 
         FootClass* techno = Attached_Object();
         if (techno) {
@@ -5063,12 +5065,12 @@ void BuildingClass::Death_Announcement(const TechnoClass* /*source*/) const {
   Validate();
   if (IsDiscoveredByPlayer || IsOwnedByPlayer) {
     if (House != ThePlayer() && TheSession().type() != GAME_NORMAL) {
-      if (Options.IsDeathAnnounce) {
+      if (TheOptions().IsDeathAnnounce) {
         Speak(VOX_ENEMY_STRUCTURE);
       }
     } else {
-      if (House == ThePlayer() || Options.IsDeathAnnounce) {
-        if (!Options.IsDeathAnnounce) {
+      if (House == ThePlayer() || TheOptions().IsDeathAnnounce) {
+        if (!TheOptions().IsDeathAnnounce) {
           Speak(VOX_STRUCTURE_LOST);
         } else {
           switch (House->ActLike) {

@@ -64,7 +64,6 @@
 #include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/jshell.h"
 #include "td/rand.h"
@@ -197,8 +196,8 @@ const char* ThemeClass::Full_Name(ThemeType theme) {
  *as it is about to play it.                           *
  *=============================================================================================*/
 void ThemeClass::AI() {
-  if (Audio.is_open() && !TheDebugState().quiet()) {
-    if (ScoresPresent && Options.ScoreVolume && !Still_Playing() &&
+  if (TheAudio().is_open() && !TheDebugState().quiet()) {
+    if (ScoresPresent && TheOptions().ScoreVolume && !Still_Playing() &&
         Pending != THEME_NONE) {
       /*
       **	If the pending song needs to be picked, then pick it now.
@@ -214,7 +213,7 @@ void ThemeClass::AI() {
       Play_Song(Pending);
       Pending = THEME_PICK_ANOTHER;
     }
-    Audio.PumpStreams();
+    TheAudio().PumpStreams();
   }
 }
 
@@ -240,8 +239,8 @@ ThemeType ThemeClass::Next_Song(ThemeType theme) {
     theme = Next_Song(THEME_PICK_ANOTHER);
   } else {
     if (theme == THEME_PICK_ANOTHER ||
-        (!_themes.at(theme).Repeat && !Options.IsScoreRepeat)) {
-      if (Options.IsScoreShuffle) {
+        (!_themes.at(theme).Repeat && !TheOptions().IsScoreRepeat)) {
+      if (TheOptions().IsScoreShuffle) {
         /*
         **	Shuffle the theme, but never pick the same theme that was just
         **	playing.
@@ -285,14 +284,14 @@ ThemeType ThemeClass::Next_Song(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 void ThemeClass::Queue_Song(ThemeType theme) {
-  if (ScoresPresent && Audio.is_open() && !TheDebugState().quiet() &&
+  if (ScoresPresent && TheAudio().is_open() && !TheDebugState().quiet() &&
       (Pending == THEME_NONE || Pending == THEME_PICK_ANOTHER)) {
-    if (!Options.ScoreVolume && theme != THEME_NONE) {
+    if (!TheOptions().ScoreVolume && theme != THEME_NONE) {
       return;
     }
 
     Pending = theme;
-    Audio.FadeOut(Current, kThemeDelay);
+    TheAudio().FadeOut(Current, kThemeDelay);
   }
 }
 
@@ -313,8 +312,8 @@ void ThemeClass::Queue_Song(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int ThemeClass::Play_Song(ThemeType theme) {
-  if (ScoresPresent && Audio.is_open() && !TheDebugState().quiet() &&
-      Options.ScoreVolume) {
+  if (ScoresPresent && TheAudio().is_open() && !TheDebugState().quiet() &&
+      TheOptions().ScoreVolume) {
     Stop();
     Score = theme;
     if (theme >= THEME_AIRSTRIKE) {
@@ -322,7 +321,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
       if (_themes[theme].Scenario != 99) {
         GameFile file(Theme_File_Name(theme));
         if (file.IsAvailable()) {
-          Current = Audio.Stream(Theme_File_Name(theme), 0xFF);
+          Current = TheAudio().Stream(Theme_File_Name(theme), 0xFF);
         } else {
           Current = -1;
         }
@@ -330,7 +329,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
         Current = -1;
       }
 #else
-      Current = Audio.Stream(Theme_File_Name(theme), 0xFF);
+      Current = TheAudio().Stream(Theme_File_Name(theme), 0xFF);
 #endif
     }
   }
@@ -357,7 +356,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
  *support.                                                 *
  *=============================================================================================*/
 const char* ThemeClass::Theme_File_Name(ThemeType theme) {
-  if (_themes.at(theme).Variation && Special.IsVariation) {
+  if (_themes.at(theme).Variation && TheSpecial().IsVariation) {
     static auto name = std::filesystem::path(_themes.at(theme).Name)
                            .replace_extension(".VAR")
                            .string();
@@ -412,9 +411,9 @@ int ThemeClass::Track_Length(ThemeType theme) {
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
 void ThemeClass::Stop() {
-  if ((ScoresPresent && Audio.is_open() && !TheDebugState().quiet()) &&
+  if ((ScoresPresent && TheAudio().is_open() && !TheDebugState().quiet()) &&
       (Current != -1)) {
-    Audio.Stop(Current);
+    TheAudio().Stop(Current);
     Current = -1;
     Score = THEME_NONE;
     Pending = THEME_NONE;
@@ -435,9 +434,9 @@ void ThemeClass::Stop() {
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
 bool ThemeClass::Still_Playing() const {
-  if (ScoresPresent && Audio.is_open() && Current != -1 &&
+  if (ScoresPresent && TheAudio().is_open() && Current != -1 &&
       !TheDebugState().quiet()) {
-    return Audio.IsPlaying(Current);
+    return TheAudio().IsPlaying(Current);
   }
   return false;
 }
@@ -477,13 +476,13 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
   return _themes.at(index).Available &&
          (_themes.at(index).Normal ||
           //		(index == THEME_MAP1 && ScenarioInit) ||
-          (Special.IsVariation && _themes.at(index).Variation &&
+          (TheSpecial().IsVariation && _themes.at(index).Variation &&
            index != THEME_WIN1 &&
 #ifndef DEMO
            (TheSession().type() != GAME_NORMAL ||
             _themes.at(index).Scenario <= TheWorld().scenario()) &&
 #endif
-           (index != THEME_J1 || Special.IsJurassic)));
+           (index != THEME_J1 || TheSpecial().IsJurassic)));
 }
 
 /***********************************************************************************************

@@ -286,11 +286,11 @@ bool Init_Game() {
 
   DLOG(INFO) << "C&C95 - About to set palette";
   std::ranges::fill(ThePalettes().black_palette(), 0x01);
-  if (!Special.IsFromInstall) {
+  if (!TheSpecial().IsFromInstall) {
     Set_Palette(ThePalettes().black_palette());
   }
   std::ranges::fill(ThePalettes().black_palette(), 0);
-  if (!Special.IsFromInstall) {
+  if (!TheSpecial().IsFromInstall) {
     Set_Palette(ThePalettes().black_palette());
     DLOG(INFO) << "C&C95 - About to clear visible page";
     TheScreen().visible_page().Clear();
@@ -482,14 +482,14 @@ bool Init_Game() {
   Anim_Init();
 
   if (SpawnedFromWChat) {
-    Special.IsFromWChat = true;
+    TheSpecial().IsFromWChat = true;
   }
 
   /*
   **	Play the introduction movies.
   */
   DLOG(INFO) << "C&C95 - About to play the intro movie";
-  if (!Special.IsFromInstall && !Special.IsFromWChat) {
+  if (!TheSpecial().IsFromInstall && !TheSpecial().IsFromWChat) {
     Play_Intro(true);
   }
 
@@ -502,13 +502,13 @@ bool Init_Game() {
   */
   base::FillBytes(base::ObjectBytes(CurrentPalette), 0x01, 768);
 
-  if (!Special.IsFromInstall) {
+  if (!TheSpecial().IsFromInstall) {
     Load_Title_Page(true);
   }
 
   Hide_Mouse();
   Wait_Vert_Blank();
-  if (!Special.IsFromInstall) {
+  if (!TheSpecial().IsFromInstall) {
     Set_Palette(ThePalettes().title_palette());
     TheScreen().hidden_view().Blit(TheScreen().visible_view());
     Show_Mouse();
@@ -526,9 +526,9 @@ bool Init_Game() {
   **	Cache the main game data. This operation can take a very long time.
   */
   MixArchive::Cache("CONQUER.MIX");
-  if (Audio.is_open() && !TheDebugState().quiet()) {
+  if (TheAudio().is_open() && !TheDebugState().quiet()) {
     MixArchive::Cache("SOUNDS.MIX");
-    if (Special.IsJuvenile) {
+    if (TheSpecial().IsJuvenile) {
       (void)MixArchive::Register("ZOUNDS.MIX");
       MixArchive::Cache("ZOUNDS.MIX");
     }
@@ -555,7 +555,7 @@ bool Init_Game() {
   //	malloc(4);
   TheWorld().logic().One_Time();
   //	malloc(5);
-  Options.One_Time();
+  TheOptions().One_Time();
 
   //	malloc(6);
 
@@ -624,7 +624,7 @@ bool Init_Game() {
   **	Read game options, so the GameSpeed is initialized when multiplayer
   ** dialogs are invoked.  (GameSpeed must be synchronized between systems.)
   */
-  Options.Load_Settings();
+  TheOptions().Load_Settings();
 
   return true;
 }
@@ -632,7 +632,7 @@ bool Init_Game() {
 void Uninit_Game() {
   // The audio thread keeps mixing whatever is playing, straight out of the
   // speech buffer and the MIX archives freed below; stop it first.
-  Audio.Close();
+  TheAudio().Close();
 
   delete MouseClass::ShadowPage;
   MouseClass::ShadowPage = nullptr;
@@ -736,7 +736,7 @@ bool Select_Game(bool fade) {
   DDEServer.Enable();
 #endif
 
-  if (Special.IsFromInstall) {
+  if (TheSpecial().IsFromInstall) {
     {
       display = false;
       Show_Mouse();
@@ -767,7 +767,7 @@ bool Select_Game(bool fade) {
   **   be at least 2 * MPlayerMaxAhead
   */
   TheSession().comm_protocol() = COMM_PROTOCOL_SINGLE_NO_COMP;
-  if (!Special.IsFromWChat) {
+  if (!TheSpecial().IsFromWChat) {
     TheSession().frame_send_rate() = 3;
   }
 
@@ -812,7 +812,7 @@ bool Select_Game(bool fade) {
     **	Menu selection processing loop
     */
     TheWorld().scenario_init()++;
-    Theme.Queue_Song(THEME_MAP1);
+    TheTheme().Queue_Song(THEME_MAP1);
     TheWorld().scenario_init()--;
 
     /*
@@ -824,7 +824,7 @@ bool Select_Game(bool fade) {
       if (TheSession().record_file().Open(FileAccess::kRead)) {
         Load_Recording_Values();
         process = false;
-        Theme.Fade_Out();
+        TheTheme().Fade_Out();
       } else {
         TheSession().playback_game() = false;
       }
@@ -834,10 +834,10 @@ bool Select_Game(bool fade) {
     ** Handle case where we were spawned from Wchat
     */
     if (SpawnedFromWChat) {
-      Special.IsFromInstall =
+      TheSpecial().IsFromInstall =
           false;  // Dont play intro if we were spawned from wchat
       selection = kSelInternet;
-      Theme.Queue_Song(THEME_NONE);
+      TheTheme().Queue_Song(THEME_NONE);
       TheSession().type() = GAME_INTERNET;
       display = false;
       Set_Logic_Page(TheScreen().visible_view());
@@ -925,19 +925,19 @@ bool Select_Game(bool fade) {
       /*
       **	Display menu and fetch selection from player.
       */
-      if (Special.IsFromInstall) {
+      if (TheSpecial().IsFromInstall) {
         selection = kSelStartNewGame;
-        Theme.Queue_Song(THEME_NONE);
+        TheTheme().Queue_Song(THEME_NONE);
       }
 
 #ifdef _WIN32
       /*
       ** Handle case where we were spawned from Wchat
       */
-      if (Special.IsFromWChat && DDEServer.Get_MPlayer_Game_Info()) {
+      if (TheSpecial().IsFromWChat && DDEServer.Get_MPlayer_Game_Info()) {
         Check_From_WChat(NULL);
         selection = kSelMultiplayerGame;
-        Theme.Queue_Song(THEME_NONE);
+        TheTheme().Queue_Song(THEME_NONE);
         TheSession().type() = GAME_INTERNET;
       } else {
         /*
@@ -1000,7 +1000,7 @@ bool Select_Game(bool fade) {
         case kSelNewScenario:
           TheWorld().carry_over_money() = 0;
           if (Expansion_Dialog()) {
-            Theme.Fade_Out();
+            TheTheme().Fade_Out();
             //						Theme.Queue_Song(THEME_AOI);
             TheSession().type() = GAME_NORMAL;
             process = false;
@@ -1035,7 +1035,7 @@ bool Select_Game(bool fade) {
           }
 
           if (Bonus_Dialog()) {
-            Theme.Fade_Out();
+            TheTheme().Fade_Out();
             TheSession().type() = GAME_NORMAL;
             process = false;
           } else {
@@ -1083,7 +1083,7 @@ bool Select_Game(bool fade) {
           TheWorld().whom() = HOUSE_GOOD;
 
 #ifndef DEMO
-          Theme.Fade_Out();
+          TheTheme().Fade_Out();
           Choose_Side();
 #endif
 
@@ -1093,7 +1093,7 @@ bool Select_Game(bool fade) {
           ** GDI or NOD.  Ini.cpp will set the player's ActLike to mirror the
           ** Whom value.
           */
-          if (Special.IsJurassic && AreThingiesEnabled) {
+          if (TheSpecial().IsJurassic && AreThingiesEnabled) {
             TheWorld().scen_player() = SCEN_PLAYER_JP;
             TheWorld().scen_dir() = SCEN_DIR_EAST;
           }
@@ -1108,7 +1108,7 @@ bool Select_Game(bool fade) {
         case kSelLoadMission:
           if (LoadOptionsClass(LoadOptionsClass::LOAD).Process()) {
             // Theme.Fade_Out();
-            Theme.Queue_Song(THEME_AOI);
+            TheTheme().Queue_Song(THEME_AOI);
             process = false;
             gameloaded = true;
           } else {
@@ -1200,7 +1200,7 @@ bool Select_Game(bool fade) {
             */
             case GAME_INTERNET:
               DLOG(INFO) << "C&C95 - case GAME_INTERNET:";
-              if (Special.IsFromWChat) {
+              if (TheSpecial().IsFromWChat) {
                 // MessageBox (NULL, "About to restore focus to C&C95", "C&C95",
                 // MB_OK);
                 DLOG(INFO) << "C&C95 - About to give myself focus.";
@@ -1249,7 +1249,7 @@ bool Select_Game(bool fade) {
                   DLOG(INFO) << "C&C95 - Winsock failed to initialise.";
                   TheSession().type() = GAME_NORMAL;
                   selection = kSelExit;
-                  Special.IsFromWChat = false;
+                  TheSpecial().IsFromWChat = false;
                   break;
                 }
 
@@ -1331,11 +1331,11 @@ bool Select_Game(bool fade) {
             case GAME_MODEM:
             case GAME_NULL_MODEM:
             case GAME_INTERNET:
-              Theme.Fade_Out();
+              TheTheme().Fade_Out();
               TheWorld().scen_player() = SCEN_PLAYER_2PLAYER;
               TheWorld().scen_dir() = SCEN_DIR_EAST;
               process = false;
-              Options.ScoreVolume = 0;
+              TheOptions().ScoreVolume = 0;
               break;
 
             /*
@@ -1346,11 +1346,11 @@ bool Select_Game(bool fade) {
               ** Init network system & remote-connect
               */
               if (Init_Network() && Remote_Connect()) {
-                Options.ScoreVolume = 0;
+                TheOptions().ScoreVolume = 0;
                 TheWorld().scen_player() = SCEN_PLAYER_MPLAYER;
                 TheWorld().scen_dir() = SCEN_DIR_EAST;
                 process = false;
-                Theme.Fade_Out();
+                TheTheme().Fade_Out();
               } else {  // user hit cancel, or init failed
                 TheSession().type() = GAME_NORMAL;
                 display = true;
@@ -1368,8 +1368,8 @@ bool Select_Game(bool fade) {
         **	Play a VQ
         */
         case kSelIntro:
-          Theme.Fade_Out();
-          Theme.Stop();
+          TheTheme().Fade_Out();
+          TheTheme().Stop();
           Call_Back();
 
           Force_CD_Available(-1);
@@ -1477,7 +1477,7 @@ bool Select_Game(bool fade) {
           Show_Mouse();
 
           TheWorld().scenario_init()++;
-          Theme.Play_Song(THEME_MAP1);
+          TheTheme().Play_Song(THEME_MAP1);
           TheWorld().scenario_init()--;
           display = true;
           fade = true;
@@ -1491,7 +1491,7 @@ bool Select_Game(bool fade) {
 #ifdef JAPANESE
           Hide_Mouse();
 #endif
-          Theme.Fade_Out();
+          TheTheme().Fade_Out();
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteSlow,
                           nullptr);
 #ifdef JAPANESE
@@ -1512,7 +1512,7 @@ bool Select_Game(bool fade) {
             if (TheSession().record_file().Open(FileAccess::kRead)) {
               Load_Recording_Values();
               process = false;
-              Theme.Fade_Out();
+              TheTheme().Fade_Out();
             } else {
               TheSession().playback_game() = false;
               selection = kSelNone;
@@ -1532,7 +1532,7 @@ bool Select_Game(bool fade) {
     * on, set to load that scenario
     */
     TheWorld().scenario() = 1;
-    if (Special.IsJurassic && AreThingiesEnabled) {
+    if (TheSpecial().IsJurassic && AreThingiesEnabled) {
       TheWorld().scen_player() = SCEN_PLAYER_JP;
       TheWorld().scen_dir() = SCEN_DIR_EAST;
     }
@@ -1541,7 +1541,7 @@ bool Select_Game(bool fade) {
 #ifdef FORCE_WINSOCK
   if (TheSession().type() == GAME_INTERNET) {
     TheSession().comm_protocol() = COMM_PROTOCOL_MULTI_E_COMP;
-    if (!Special.IsFromWChat) {
+    if (!TheSpecial().IsFromWChat) {
       TheSession().frame_send_rate() = 5;  // 3;
     }
   }
@@ -1623,7 +1623,7 @@ bool Select_Game(bool fade) {
     }
     Show_Mouse();
 
-    Special.IsFromInstall = 0;
+    TheSpecial().IsFromInstall = 0;
     DLOG(INFO) << "C&C95 - Starting scenario.";
     if (!Start_Scenario(TheWorld().scenario_name())) {
       return false;
@@ -1976,7 +1976,7 @@ bool Select_Game(bool fade) {
 #ifdef FORCE_WINSOCK
   if (TheSession().comm_protocol() == COMM_PROTOCOL_MULTI_E_COMP &&
       TheSession().type() != GAME_NORMAL) {
-    if (!Special.IsFromWChat) {
+    if (!TheSpecial().IsFromWChat) {
       TheSession().max_ahead() = TheSession().frame_send_rate() * 3;  // 2;
     } else {
       TheSession().max_ahead() = TheNetwork().chat_max_ahead();
@@ -2120,9 +2120,9 @@ void Anim_Init() {
   // AnimControl.Volume = 0x00FF;
   // AnimControl.AudioRate = 22050;
   //	if (NewConfig.Speed) AnimControl.AudioRate = 11025;
-  AnimControl.AudioDeviceID = Audio.device_id();
-  AnimControl.AudioCallback = Audio.extra_callback_slot();
-  AnimControl.AudioSpec = Audio.output_spec();
+  AnimControl.AudioDeviceID = TheAudio().device_id();
+  AnimControl.AudioCallback = TheAudio().extra_callback_slot();
+  AnimControl.AudioSpec = TheAudio().output_spec();
   // if (!TheDebugState().quiet() && Audio.is_open()) {
   // AnimControl.OptionFlags |= VQAOPTF_AUDIO;
   //}
@@ -2554,7 +2554,7 @@ std::optional<StartupOptions> Parse_Command_Line(
           **	Should human generated sound effects be used?
           */
           case 'J':
-            Special.IsJuvenile = true;
+            TheSpecial().IsJuvenile = true;
             break;
 #endif
 
@@ -2612,7 +2612,7 @@ std::optional<StartupOptions> Parse_Command_Line(
           **	Bonus scenario enable.
           */
           case 'Z':
-            Special.IsJurassic = true;
+            TheSpecial().IsJurassic = true;
             break;
 #endif
 
@@ -2898,8 +2898,8 @@ void Save_Recording_Values() {
   TheSession().record_file().WriteObject(TheWorld().scen_player());
   TheSession().record_file().WriteObject(TheWorld().scen_dir());
   TheSession().record_file().WriteObject(TheWorld().whom());
-  TheSession().record_file().WriteObject(Special);
-  TheSession().record_file().WriteObject(Options);
+  TheSession().record_file().WriteObject(TheSpecial());
+  TheSession().record_file().WriteObject(TheOptions());
   TheSession().record_file().WriteObject(TheSession().frame_send_rate());
   TheSession().record_file().WriteObject(TheSession().comm_protocol());
 
@@ -2948,8 +2948,8 @@ void Load_Recording_Values() {
   TheSession().record_file().ReadObject(TheWorld().scen_player());
   TheSession().record_file().ReadObject(TheWorld().scen_dir());
   TheSession().record_file().ReadObject(TheWorld().whom());
-  TheSession().record_file().ReadObject(Special);
-  TheSession().record_file().ReadObject(Options);
+  TheSession().record_file().ReadObject(TheSpecial());
+  TheSession().record_file().ReadObject(TheOptions());
   TheSession().record_file().ReadObject(TheSession().frame_send_rate());
   TheSession().record_file().ReadObject(TheSession().comm_protocol());
 }

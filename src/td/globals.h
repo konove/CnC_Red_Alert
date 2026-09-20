@@ -9,7 +9,6 @@
 //  True if we are currently in focus windows app
 extern bool GameInFocus;
 extern bool GameActive;
-extern SpecialClass Special;
 extern bool InMovie;
 
 #endif  // CNC_RED_ALERT_TD_GLOBALS_H_

@@ -60,7 +60,6 @@
 #include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/ending.h"
-#include "td/externs.h"
 #include "td/gscreen.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -148,7 +147,7 @@ void Debug_Key(unsigned input) {
       case KN_P:
         Keyboard::Clear();
         while (!Keyboard::Check()) {
-          Audio.PumpStreams();
+          TheAudio().PumpStreams();
         }
         Keyboard::Clear();
         break;
@@ -313,7 +312,7 @@ void Debug_Key(unsigned input) {
 
 #ifdef NEVER
       case (KN_F1 | KN_SHIFT_BIT):
-        Special.IsBarOn = (Special.IsBarOn == false);
+        TheSpecial().IsBarOn = (TheSpecial().IsBarOn == false);
         TheMap().Flag_To_Redraw(true);
         break;
 
@@ -594,7 +593,7 @@ void Debug_Key(unsigned input) {
 
 #ifdef NEVER
       case KN_F5:
-        Special.IsShowPath = (Special.IsShowPath == false);
+        TheSpecial().IsShowPath = (TheSpecial().IsShowPath == false);
         // PlayerPtr->Credits += 1000;
         break;
 

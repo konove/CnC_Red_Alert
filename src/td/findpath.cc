@@ -69,7 +69,6 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/foot.h"
-#include "td/globals.h"
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
@@ -606,7 +605,7 @@ PathType* FootClass::Find_Path(CELL dest, std::span<FacingType> final_moves,
   ** if necessary.
   */
   if (!TheDebugState().trace_path_search()) {
-    DrawPath = IsSelected && Special.IsShowPath;
+    DrawPath = IsSelected && TheSpecial().IsShowPath;
   } else {
     DrawPath = IsSelected;
   }

@@ -710,18 +710,18 @@ void InfantryClass::Per_Cell_Process(bool center) {
   if (center && Mission == MISSION_SABOTAGE) {
     BuildingClass* building = cellptr->Cell_Building();
     if (building && building->As_Target() == NavCom) {
-      const bool temp = Special.IsScatter;
+      const bool temp = TheSpecial().IsScatter;
 
       building->IsGoingToBlow = true;
       building->Clicked_As_Target(20);
       building->CountDown.Set(20);
       building->WhomToRepay = As_Target();
-      Special.IsScatter = true;
+      TheSpecial().IsScatter = true;
       NavCom = kTargetNone;
       Do_Uncloak();
       Arm = static_cast<unsigned char>(Rearm_Delay(true));
       Scatter(building->Center_Coord(), true);  // RUN AWAY!
-      Special.IsScatter = temp;
+      TheSpecial().IsScatter = temp;
       return;
     }
   }
@@ -1067,7 +1067,7 @@ void InfantryClass::AI() {
       *moving *	and the special elite flag is active.
       */
       if (Fear >= FEAR_ANXIOUS && ((!Target_Legal(NavCom) && !IsDriving) ||
-                                   !Special.IsDefenderAdvantage)) {
+                                   !TheSpecial().IsDefenderAdvantage)) {
         Do_Action(DO_LIE_DOWN);
       }
     }
@@ -1890,7 +1890,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   /*
   **	If this unit cannot fire while moving, then bail.
   */
-  if ((IsDriving && Special.IsDefenderAdvantage) ||
+  if ((IsDriving && TheSpecial().IsDefenderAdvantage) ||
       (Doing != DO_NOTHING && !MasterDoControls.at(Doing).Interrupt)) {
     return FIRE_MOVING;
   }
@@ -1898,7 +1898,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
   /*
   ** If we're moving, but not facing the right direction, then exit.
   */
-  if (!Special.IsDefenderAdvantage && IsDriving) {
+  if (!TheSpecial().IsDefenderAdvantage && IsDriving) {
     const int diff = PrimaryFacing.Difference(Direction(TarCom));
     if (std::abs(diff) >= 32) {
       return FIRE_MOVING;
@@ -2108,7 +2108,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced) {
   **	For human players, don't scatter the infantry, if the special
   **	flag has not been enabled that allows infantry scatter.
   */
-  if (!Special.IsScatter && House->IsHuman && !forced && !Team) {
+  if (!TheSpecial().IsScatter && House->IsHuman && !forced && !Team) {
     return;
   }
 
@@ -2172,7 +2172,7 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
     // Mark(MARK_OVERLAP_DOWN);
     if (todo == DO_IDLE1 || todo == DO_IDLE2) {
       Set_Rate(static_cast<unsigned char>(
-          Options.Normalize_Delay(MasterDoControls.at(Doing).Rate)));
+          TheOptions().Normalize_Delay(MasterDoControls.at(Doing).Rate)));
     } else {
       Set_Rate(MasterDoControls.at(Doing).Rate);
     }

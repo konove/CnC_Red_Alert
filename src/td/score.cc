@@ -81,7 +81,6 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/house.h"
 #include "td/interpal.h"
@@ -361,10 +360,10 @@ void ScoreCredsClass::Update() {
     GraphicViewPortClass* oldpage = LogicPage;
     Set_Logic_Page(PseudoSeenBuff);
     if (Stage < 22) {
-      Audio.Play(Clock1, 255, Options.Normalize_Sound(70));
+      TheAudio().Play(Clock1, 255, TheOptions().Normalize_Sound(70));
     } else {
       if (Stage == 24) {
-        Audio.Play(CashTurn, 255, Options.Normalize_Sound(70));
+        TheAudio().Play(CashTurn, 255, TheOptions().Normalize_Sound(70));
       }
     }
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, {},
@@ -700,7 +699,7 @@ void ScoreClass::Presentation() {
     absl::SNPrintF(inter_pal, sizeof(inter_pal), "SNODPAL1.PAL");
   }
 
-  if (Special.IsJurassic && AreThingiesEnabled) {
+  if (TheSpecial().IsJurassic && AreThingiesEnabled) {
     return;
   }
 
@@ -714,7 +713,7 @@ void ScoreClass::Presentation() {
   ControlQ = false;
   FontXSpacing = 0;
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
-  Theme.Queue_Song(THEME_WIN1);
+  TheTheme().Queue_Song(THEME_WIN1);
 
   TheScreen().visible_page().Clear();
   PseudoSeenBuff->Clear();
@@ -818,7 +817,7 @@ void ScoreClass::Presentation() {
   Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), inter_pal);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteFast, Call_Back);
 
-  Audio.Play(country4, 255, Options.Normalize_Sound(90));
+  TheAudio().Play(country4, 255, TheOptions().Normalize_Sound(90));
 
   int frame = 1;
   while (frame < anim.frame_count()) {
@@ -864,7 +863,7 @@ void ScoreClass::Presentation() {
   Alloc_Object(new ScorePrintClass(TXT_SCORE_LEAD, 182, 26, greenpal));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_EFFI, 182, 38, greenpal));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TOTA, 182, 50, greenpal));
-  Audio.Play(sfx4, 255, Options.Normalize_Sound(120));
+  TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(120));
   Call_Back_Delay(13);
 
   max = static_cast<int>(std::max(static_cast<int32_t>(leadership),
@@ -888,7 +887,7 @@ void ScoreClass::Presentation() {
     }
     Print_Minutes(minutes);
     Call_Back_Delay(1);
-    Audio.Play(Beepy6, 255, Options.Normalize_Sound(60));
+    TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Sound(60));
     if (Check_Key() && i < max - 5) {
       i = 158;
       Keyboard::Clear();
@@ -908,7 +907,7 @@ void ScoreClass::Presentation() {
   ** Show stats on # of units killed
   */
   Set_Logic_Page(*PseudoSeenBuff);
-  Audio.Play(sfx4, 255, Options.Normalize_Sound(90));
+  TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_CASU, base::At(_casuax, house),
                                    base::At(_casuay, house), redpal));
   Call_Back_Delay(9);
@@ -935,7 +934,7 @@ void ScoreClass::Presentation() {
   /*
   ** Print out stats on buildings destroyed
   */
-  Audio.Play(sfx4, 255, Options.Normalize_Sound(90));
+  TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
   if (player_house == HOUSE_GOOD) {
     Alloc_Object(new ScorePrintClass(TXT_SCORE_BUIL, 144, 126, greenpal));
     Call_Back_Delay(9);
@@ -976,7 +975,7 @@ void ScoreClass::Presentation() {
   /*
   ** Hall of fame display and processing
   */
-  Audio.Play(sfx4, 255, Options.Normalize_Sound(90));
+  TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TOP, 28, 110, bluepal));
   Call_Back_Delay(9);
 
@@ -1100,7 +1099,7 @@ void ScoreClass::Presentation() {
   Show_Mouse();
   //	Map_Selection();
 
-  Theme.Queue_Song(THEME_NONE);
+  TheTheme().Queue_Song(THEME_NONE);
 
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteFast, nullptr);
   TheScreen().visible_page().Clear();
@@ -1337,7 +1336,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     Count_Up_Print("%d", q, NBKilled, BUILDING_X + 8, BUILDING_Y + 12);
     Count_Up_Print("%d", q, CBKilled, BUILDING_X + 8, BUILDING_Y + 24);
     if (!Check_Key()) {
-      Audio.Play(Beepy6, 255, Options.Normalize_Sound(110));
+      TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Sound(110));
       Call_Back_Delay(1);
     }
   }
@@ -1400,7 +1399,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
 
     Count_Up_Print("%d", i * gkilled / max, gkilled, 297, ypos + 2);
     if (!Check_Key()) {
-      Audio.Play(Beepy6, 255, Options.Normalize_Sound(110));
+      TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Sound(110));
       Call_Back_Delay(2);
     }
   }
@@ -1423,7 +1422,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
 
     Count_Up_Print("%d", i * nkilled / max, nkilled, 297, ypos + 14);
     if (!Check_Key()) {
-      Audio.Play(Beepy6, 255, Options.Normalize_Sound(110));
+      TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Sound(110));
       Call_Back_Delay(2);
     }
   }
@@ -1542,7 +1541,7 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
         Call_Back_Delay(3);
       }
     }
-    Audio.Play(Beepy6, 255, Options.Normalize_Sound(110));
+    TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Sound(110));
   }
   if (Check_Key()) {
     Keyboard::Clear();
@@ -1807,7 +1806,7 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
           base::At(str, base::ToSize(index)) = static_cast<char>(ascii);
           base::At(str, base::ToSize(index + 1)) = 0;
 
-          Audio.Play(keystrok, 255, Options.Normalize_Sound(255));
+          TheAudio().Play(keystrok, 255, TheOptions().Normalize_Sound(255));
           const int objindex = Alloc_Object(
               new ScoreScaleClass(str.subspan(base::ToSize(index)).data(),
                                   xpos + (index * 6), ypos, pal));
@@ -2180,7 +2179,7 @@ void Multi_Score_Presentation() {
 
   FontXSpacing = 0;
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
-  Theme.Queue_Song(THEME_WIN1);
+  TheTheme().Queue_Song(THEME_WIN1);
 
   PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
   TextPrintBuffer =
@@ -2277,7 +2276,7 @@ void Multi_Score_Presentation() {
     }
   }
 
-  Theme.Queue_Song(THEME_NONE);
+  TheTheme().Queue_Song(THEME_NONE);
 
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteFast, nullptr);
   TheScreen().visible_page().Clear();

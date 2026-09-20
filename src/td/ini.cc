@@ -79,7 +79,6 @@
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/ftimer.h"
-#include "td/globals.h"
 #include "td/house.h"
 #include "td/infantry.h"
 #include "td/inline.h"
@@ -401,7 +400,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	Jurassic scenarios are allowed to build the full multiplayer set
   **	of objects.
   */
-  if (Special.IsJurassic && AreThingiesEnabled) {
+  if (TheSpecial().IsJurassic && AreThingiesEnabled) {
     TheWorld().build_level() = 98;
   }
 
@@ -459,7 +458,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     ThePlayer()->Credits += carryover;
     ThePlayer()->InitialCredits += carryover;
 
-    if (Special.IsJurassic) {
+    if (TheSpecial().IsJurassic) {
       ThePlayer()->ActLike = TheWorld().whom();
     }
   } else {
@@ -1227,7 +1226,7 @@ static void Create_Units() {
         if (obj) {
           hptr->FlagHome = 0;
           hptr->FlagLocation = 0;
-          if (Special.IsCaptureTheFlag) {
+          if (TheSpecial().IsCaptureTheFlag) {
             hptr->Flag_Attach(dynamic_cast<UnitClass*>(obj), true);
           }
         }
@@ -1243,7 +1242,7 @@ static void Create_Units() {
           scaleval = 1;
         }
 
-        if (Special.IsCaptureTheFlag) {
+        if (TheSpecial().IsCaptureTheFlag) {
           obj = new UnitClass(UNIT_MHQ, h);
           if ((!obj->Unlimbo(Cell_Coord(centroid), DIR_N)) &&
               (!Scan_Place_Object(obj, centroid))) {
@@ -1261,7 +1260,7 @@ static void Create_Units() {
       capture-the-flag mode.
       ---------------------------------------------------------------------*/
       scaleval = 1;
-      if (Special.IsCaptureTheFlag) {
+      if (TheSpecial().IsCaptureTheFlag) {
         obj = new UnitClass(UNIT_MHQ, h);
         obj->Unlimbo(Cell_Coord(centroid), DIR_N);
         hptr->FlagHome = 0;  // turn house's flag off

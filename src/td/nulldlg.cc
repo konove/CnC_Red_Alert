@@ -89,7 +89,6 @@
 #include "td/externs.h"
 #include "td/gadget.h"
 #include "td/gauge.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/house.h"
 #include "td/init.h"
@@ -3456,7 +3455,7 @@ int Com_Scenario_Dialog() {
     TheSession().tiberium() = 0;
     TheSession().crates() = 0;
     TheSession().ghosts() = 0;
-    Special.IsCaptureTheFlag = 0;
+    TheSpecial().IsCaptureTheFlag = 0;
     TheSession().unit_count() =
         (base::At(TheSession().unit_count_max(), TheSession().bases()) +
          base::At(TheSession().unit_count_min(), TheSession().bases())) /
@@ -3483,7 +3482,7 @@ int Com_Scenario_Dialog() {
     ghostsbtn.Turn_On();
     ghostsbtn.Set_Text(TXT_AI_PLAYERS_ON);
   }
-  if (Special.IsCaptureTheFlag) {
+  if (TheSpecial().IsCaptureTheFlag) {
     TheSession().ghosts() = 0;
     ghostsbtn.Turn_On();
     ghostsbtn.Set_Text(TXT_CAPTURE_THE_FLAG);
@@ -3506,8 +3505,8 @@ int Com_Scenario_Dialog() {
   /*........................................................................
   Init other scenario parameters
   ........................................................................*/
-  Special.IsTGrowth = static_cast<unsigned>(TheSession().tiberium());
-  Special.IsTSpread = static_cast<unsigned>(TheSession().tiberium());
+  TheSpecial().IsTGrowth = static_cast<unsigned>(TheSession().tiberium());
+  TheSpecial().IsTSpread = static_cast<unsigned>(TheSession().tiberium());
   int transmit = 1;  // 1 = re-transmit new game options
 
   /*........................................................................
@@ -3914,14 +3913,14 @@ int Com_Scenario_Dialog() {
         if (!ready_to_go) {
           if (TheSession().tiberium()) {
             TheSession().tiberium() = 0;
-            Special.IsTGrowth = 0;
-            Special.IsTSpread = 0;
+            TheSpecial().IsTGrowth = 0;
+            TheSpecial().IsTSpread = 0;
             tiberiumbtn.Turn_Off();
             tiberiumbtn.Set_Text(TXT_TIBERIUM_OFF);
           } else {
             TheSession().tiberium() = 1;
-            Special.IsTGrowth = 1;
-            Special.IsTSpread = 1;
+            TheSpecial().IsTGrowth = 1;
+            TheSpecial().IsTSpread = 1;
             tiberiumbtn.Turn_On();
             tiberiumbtn.Set_Text(TXT_TIBERIUM_ON);
           }
@@ -3957,19 +3956,19 @@ int Com_Scenario_Dialog() {
       case ButtonKey(kButtonGhosts):
         if (!ready_to_go) {
           if (!TheSession().ghosts() &&
-              !Special.IsCaptureTheFlag) {  // ghosts OFF => ghosts ON
+              !TheSpecial().IsCaptureTheFlag) {  // ghosts OFF => ghosts ON
             TheSession().ghosts() = 1;
-            Special.IsCaptureTheFlag = 0;
+            TheSpecial().IsCaptureTheFlag = 0;
             ghostsbtn.Turn_On();
             ghostsbtn.Set_Text(TXT_AI_PLAYERS_ON);
           } else if (TheSession().ghosts()) {  // ghosts ON => capture-flag
             TheSession().ghosts() = 0;
-            Special.IsCaptureTheFlag = 1;
+            TheSpecial().IsCaptureTheFlag = 1;
             ghostsbtn.Turn_On();
             ghostsbtn.Set_Text(TXT_CAPTURE_THE_FLAG);
-          } else if (Special.IsCaptureTheFlag) {  // capture-flag => AI OFF
+          } else if (TheSpecial().IsCaptureTheFlag) {  // capture-flag => AI OFF
             TheSession().ghosts() = 0;
-            Special.IsCaptureTheFlag = 0;
+            TheSpecial().IsCaptureTheFlag = 0;
             ghostsbtn.Turn_Off();
             ghostsbtn.Set_Text(TXT_AI_PLAYERS_OFF);
           }
@@ -4244,8 +4243,8 @@ int Com_Scenario_Dialog() {
       SendPacket.UnitCount =
           static_cast<unsigned char>(TheSession().unit_count());
       SendPacket.Seed = TheWorld().seed();
-      SendPacket.Special = Special;
-      SendPacket.GameSpeed = Options.GameSpeed;
+      SendPacket.Special = TheSpecial();
+      SendPacket.GameSpeed = TheOptions().GameSpeed;
       SendPacket.ID =
           static_cast<unsigned char>(TheNetwork().modem_game_type());
 
@@ -5128,7 +5127,7 @@ int Com_Show_Scenario_Dialog() {
             /*............................................................
             Capture the flag or AI player ON/OFF
             ............................................................*/
-            if (Special.IsCaptureTheFlag) {
+            if (TheSpecial().IsCaptureTheFlag) {
               port::SafeCopy(txt, Text_String(TXT_CAPTURE_THE_FLAG));
               port::SafeAppend(txt, ":");
               Fancy_Text_Print(
@@ -5579,15 +5578,15 @@ int Com_Show_Scenario_Dialog() {
             TheWorld().build_level() = ReceivePacket.BuildLevel;
             TheSession().unit_count() = ReceivePacket.UnitCount;
             TheWorld().seed() = ReceivePacket.Seed;
-            Special = ReceivePacket.Special;
-            Options.GameSpeed = ReceivePacket.GameSpeed;
+            TheSpecial() = ReceivePacket.Special;
+            TheOptions().GameSpeed = ReceivePacket.GameSpeed;
 
             if (TheSession().tiberium()) {
-              Special.IsTGrowth = 1;
-              Special.IsTSpread = 1;
+              TheSpecial().IsTGrowth = 1;
+              TheSpecial().IsTSpread = 1;
             } else {
-              Special.IsTGrowth = 0;
-              Special.IsTSpread = 0;
+              TheSpecial().IsTGrowth = 0;
+              TheSpecial().IsTSpread = 0;
             }
 
             /*...............................................................
@@ -6891,15 +6890,15 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   */
   ThemeType old_theme = THEME_NONE;
   if (SoundOn) {
-    old_theme = Theme.What_Is_Playing();
-    Theme.Stop();
+    old_theme = TheTheme().What_Is_Playing();
+    TheTheme().Stop();
     CountDownTimerClass wait;
     Call_Back();
     wait.Set(60, true);
     while (wait.Time()) {
       Call_Back();
     }
-    Audio.Close();
+    TheAudio().Close();
     Call_Back();
     wait.Set(60, true);
     while (wait.Time()) {
@@ -6962,9 +6961,9 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Restore audio capability
   */
-  SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
+  SoundOn = TheAudio().Open(11025 * 2, /*stereo=*/false);
   if (SoundOn) {
-    Theme.Play_Song(old_theme);
+    TheTheme().Play_Song(old_theme);
   }
 
   TheNetwork().modem_service() = true;
@@ -7066,15 +7065,15 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   */
   ThemeType old_theme = THEME_NONE;
   if (SoundOn) {
-    old_theme = Theme.What_Is_Playing();
-    Theme.Stop();
+    old_theme = TheTheme().What_Is_Playing();
+    TheTheme().Stop();
     CountDownTimerClass wait;
     Call_Back();
     wait.Set(60, true);
     while (wait.Time()) {
       Call_Back();
     }
-    Audio.Close();
+    TheAudio().Close();
     Call_Back();
     wait.Set(60, true);
     while (wait.Time()) {
@@ -7126,9 +7125,9 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Restore audio capability
   */
-  SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
+  SoundOn = TheAudio().Open(11025 * 2, /*stereo=*/false);
   if (SoundOn) {
-    Theme.Play_Song(old_theme);
+    TheTheme().Play_Song(old_theme);
   }
 
   TheNetwork().modem_service() = true;

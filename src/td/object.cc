@@ -814,7 +814,7 @@ bool ObjectClass::Render(bool forced) {
     **	Draw the path as lines on the map if so directed and the object is one
     *that *	contains a path.
     */
-    if (Special.IsShowPath && IsSelected) {
+    if (TheSpecial().IsShowPath && IsSelected) {
       switch (What_Am_I()) {
         case RTTIType::RTTI_NONE:
         case RTTIType::RTTI_INFANTRYTYPE:

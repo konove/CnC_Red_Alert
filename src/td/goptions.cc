@@ -463,7 +463,7 @@ void GameOptionsClass::Process() {
             std::ranges::fill(ThePalettes().black_palette(), 0x00);
             Set_Palette(ThePalettes().black_palette());
             TheMap().Flag_To_Redraw(true);
-            Theme.Queue_Song(THEME_PICK_ANOTHER);
+            TheTheme().Queue_Song(THEME_PICK_ANOTHER);
             process = false;
           }
           break;

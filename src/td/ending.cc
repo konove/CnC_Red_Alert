@@ -216,15 +216,15 @@ void Nod_Ending() {
                        "SATSELIN.PAL");
 
   Keyboard::Clear();
-  Audio.Play(kanefinl, 255, 128);
-  Audio.Play(loopie6m, 255, 128);
+  TheAudio().Play(kanefinl, 255, 128);
+  TheAudio().Play(loopie6m, 255, 128);
 
   bool mouseshown = false;
   bool done = false;
   int selection = 1;
   bool printedtext = false;
   while (!done) {
-    if (!printedtext && !Audio.IsPlaying(kanefinl.data())) {
+    if (!printedtext && !TheAudio().IsPlaying(kanefinl.data())) {
       printedtext = true;
       Alloc_Object(
           new ScorePrintClass(Text_String(TXT_SEL_TARGET), 0, 180, _tanpal));
@@ -233,11 +233,11 @@ void Nod_Ending() {
     }
     Call_Back_Delay(1);
     if (!Keyboard::Check()) {
-      if (!Audio.IsPlaying(loopie6m.data())) {
-        Audio.Play(loopie6m, 255, 128);
+      if (!TheAudio().IsPlaying(loopie6m.data())) {
+        TheAudio().Play(loopie6m, 255, 128);
       }
     } else {
-      if (Audio.IsPlaying(kanefinl.data())) {
+      if (TheAudio().IsPlaying(kanefinl.data())) {
         Clear_KeyBuffer();
       } else {
         const auto key = static_cast<uint32_t>(Keyboard::Get());
@@ -286,8 +286,8 @@ void Nod_Ending() {
 
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
-  Audio.Stop(kanefinl.data());
-  Audio.Stop(loopie6m.data());
+  TheAudio().Stop(kanefinl.data());
+  TheAudio().Stop(loopie6m.data());
 
   absl::SNPrintF(fname, sizeof(fname), "NODEND%d", selection);
   PreserveVQAScreen = true;

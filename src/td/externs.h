@@ -110,10 +110,7 @@ extern bool PlayerRestarts;
 extern bool PreserveVQAScreen;
 extern bool BreakoutAllowed;
 
-extern GameOptionsClass Options;
 
-extern AudioMixer Audio;
-extern ThemeClass Theme;
 
 /*
 **	Game object allocation and tracking classes.

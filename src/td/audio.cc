@@ -56,7 +56,6 @@
 #include "td/assets.h"
 #include "td/defines.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/inline.h"
 #include "td/jshell.h"
@@ -339,7 +338,8 @@ static base::EnumArray<VocType, SoundEffectEntry, kVocCount> SoundEffectName = {
 void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
   CELL cell_pos = 0;
 
-  if (!Options.Volume || voc == VOC_NONE || !SoundOn || !Audio.is_open()) {
+  if (!TheOptions().Volume || voc == VOC_NONE || !SoundOn ||
+      !TheAudio().is_open()) {
     return;
   }
   if (coord) {
@@ -380,7 +380,8 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
   }
 
   Sound_Effect(
-      voc, static_cast<VolType>(Fixed_To_Cardinal(distance, Options.Volume)),
+      voc,
+      static_cast<VolType>(Fixed_To_Cardinal(distance, TheOptions().Volume)),
       variation, static_cast<int16_t>(pan_value));
 }
 
@@ -404,7 +405,8 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
  *=============================================================================================*/
 int Sound_Effect(VocType voc, VolType volume, int variation,
                  int16_t pan_value) {
-  if (!Options.Volume || voc == VOC_NONE || !SoundOn || !Audio.is_open()) {
+  if (!TheOptions().Volume || voc == VOC_NONE || !SoundOn ||
+      !TheAudio().is_open()) {
     return -1;
   }
 
@@ -413,7 +415,7 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   *appropriate and desired.
   */
   const char* ext = ".AUD";
-  if (Special.IsJuvenile && SoundEffectName.at(voc).Where == IN_JUV) {
+  if (TheSpecial().IsJuvenile && SoundEffectName.at(voc).Where == IN_JUV) {
     ext = ".JUV";
   } else {
     if (SoundEffectName.at(voc).Where == IN_VAR) {
@@ -447,9 +449,9 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   */
   if (!ptr.empty()) {
     const int vol = static_cast<int>(volume);
-    return Audio.Play(ptr,
-                      Fixed_To_Cardinal(SoundEffectName.at(voc).Priority, vol),
-                      vol, pan_value);
+    return TheAudio().Play(
+        ptr, Fixed_To_Cardinal(SoundEffectName.at(voc).Priority, vol), vol,
+        pan_value);
   }
   return -1;
 }
@@ -576,7 +578,7 @@ static VoxType speak_queue = VOX_NONE;
  * HISTORY: * 11/12/1994 JLB : Created. *
  *=============================================================================================*/
 void Speak(VoxType voice) {
-  if (Options.Volume && Audio.is_open() && voice != VOX_NONE &&
+  if (TheOptions().Volume && TheAudio().is_open() && voice != VOX_NONE &&
       voice != speak_queue && voice != CurrentVoice &&
       speak_queue == VOX_NONE) {
     speak_queue = voice;
@@ -600,12 +602,12 @@ void Speak(VoxType voice) {
  *=============================================================================================*/
 void Speak_AI() {
   static VoxType _last = VOX_NONE;
-  if (!Audio.is_open()) {
+  if (!TheAudio().is_open()) {
     return;
   }
 
   std::vector<std::byte>& speech_buffer = TheAssets().speech_buffer();
-  if (!Audio.IsPlaying(speech_buffer.data())) {
+  if (!TheAudio().IsPlaying(speech_buffer.data())) {
     CurrentVoice = VOX_NONE;
     if (speak_queue != VOX_NONE) {
       if (speak_queue != _last) {
@@ -614,11 +616,11 @@ void Speak_AI() {
                               .string();
 
         if (GameFile(name).Read(std::span(speech_buffer), SPEECH_BUFFER_SIZE)) {
-          Audio.Play(speech_buffer, 254, Options.Volume);
+          TheAudio().Play(speech_buffer, 254, TheOptions().Volume);
         }
         _last = speak_queue;
       } else {
-        Audio.Play(speech_buffer, 254, Options.Volume);
+        TheAudio().Play(speech_buffer, 254, TheOptions().Volume);
       }
       speak_queue = VOX_NONE;
     }
@@ -644,8 +646,8 @@ void Stop_Speaking() {
   // Cleared here, not left for the next Speak_AI(), so that Speak() does not
   // drop the voice just stopped as one still being said.
   CurrentVoice = VOX_NONE;
-  if (Audio.is_open()) {
-    Audio.Stop(TheAssets().speech_buffer().data());
+  if (TheAudio().is_open()) {
+    TheAudio().Stop(TheAssets().speech_buffer().data());
   }
 }
 
@@ -666,7 +668,7 @@ void Stop_Speaking() {
  *=============================================================================================*/
 bool Is_Speaking() {
   Speak_AI();
-  return Audio.is_open() &&
+  return TheAudio().is_open() &&
          (speak_queue != VOX_NONE ||
-          Audio.IsPlaying(TheAssets().speech_buffer().data()));
+          TheAudio().IsPlaying(TheAssets().speech_buffer().data()));
 }

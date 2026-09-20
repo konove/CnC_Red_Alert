@@ -74,7 +74,6 @@
 #include "td/config.h"
 #include "td/defines.h"
 #include "td/ftimer.h"
-#include "td/globals.h"
 #include "td/jshell.h"
 
 /***********************************************************************************************
@@ -185,7 +184,7 @@ bool SuperClass::Recharge(bool player) {
     IsSuspended = false;
     OldStage = -1;
     if constexpr (config::kCheatKeysEnabled) {
-      if (Special.IsSpeedBuild) {
+      if (TheSpecial().IsSpeedBuild) {
         Control = 1;
       } else {
         Control = RechargeTime;

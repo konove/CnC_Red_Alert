@@ -463,7 +463,7 @@ void EventClass::Execute() {
     *options have changed.
     */
     case SPECIAL: {
-      Special = Data.Options.Data;
+      TheSpecial() = Data.Options.Data;
       HouseClass* sender = TheObjectHeaps().house().Raw_Ptr(ID);
 
       Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_SPECIAL_WARNING),
@@ -514,7 +514,7 @@ void EventClass::Execute() {
       anim = new AnimClass(Data.Anim.What, Data.Anim.Where);
       if (anim && (Data.Anim.Owner != HOUSE_NONE &&
                    ThePlayer()->Class->House != Data.Anim.Owner &&
-                   !Special.IsVisibleTarget)) {
+                   !TheSpecial().IsVisibleTarget)) {
         anim->Make_Invisible();
       }
 
@@ -635,7 +635,7 @@ void EventClass::Execute() {
         }
 
         if (object &&
-            (ThePlayer()->Is_Ally(techno) || Special.IsVisibleTarget)) {
+            (ThePlayer()->Is_Ally(techno) || TheSpecial().IsVisibleTarget)) {
           object->Clicked_As_Target();
         }
 
@@ -713,7 +713,7 @@ void EventClass::Execute() {
     */
     case EXIT:
       CCDebugString("C&C95 - Exit game packet received\n");
-      Theme.Queue_Song(THEME_NONE);
+      TheTheme().Queue_Song(THEME_NONE);
       Stop_Speaking();
       Speak(VOX_CONTROL_EXIT);
       while (Is_Speaking()) {
@@ -734,7 +734,7 @@ void EventClass::Execute() {
     */
     case GAMESPEED:
       CCDebugString("C&C95 - Game speed packet received\n");
-      Options.GameSpeed = static_cast<unsigned>(Data.General.Value);
+      TheOptions().GameSpeed = static_cast<unsigned>(Data.General.Value);
       break;
 
     /*
@@ -787,7 +787,7 @@ void EventClass::Execute() {
       *not then
       ** deliberately break the max ahead value
       */
-      if (Special.IsFromWChat) {
+      if (TheSpecial().IsFromWChat) {
 #ifdef _WIN32
         TheSession().max_ahead() +=
             DDEServer.Time_Since_Heartbeat() / (70 * 60);

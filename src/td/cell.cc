@@ -113,7 +113,6 @@
 #include "td/foot.h"
 #include "td/ftimer.h"
 #include "td/game_clock.h"
-#include "td/globals.h"
 #include "td/house.h"
 #include "td/infantry.h"
 #include "td/inline.h"
@@ -1823,7 +1822,7 @@ void CellClass::Incoming(COORDINATE threat, bool forced) {
     /*
     **	Special check to make sure that friendly units never scatter.
     */
-    if (Special.IsScatter ||
+    if (TheSpecial().IsScatter ||
         (object->Is_Techno() &&
          !dynamic_cast<TechnoClass*>(object)->House->IsHuman)) {
       object->Scatter(threat, forced);

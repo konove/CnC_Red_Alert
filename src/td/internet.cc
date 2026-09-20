@@ -68,7 +68,6 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/init.h"
 #include "td/jshell.h"
@@ -201,7 +200,7 @@ void Check_From_WChat(const char* wchat_name) {
     UseVirtualSubnetServer =
         WWGetPrivateProfileInt("Internet", "UseVSS", 0, ini_file) != 0;
 
-    Special.IsFromWChat = true;
+    TheSpecial().IsFromWChat = true;
   }
 
   if (wchat_name) {
@@ -289,7 +288,7 @@ int Read_Game_Options(const char* name) {
   TheSession().unit_count() =
       WWGetPrivateProfileInt("Options", "UnitCount", 0, buffer);
   TheWorld().seed() = WWGetPrivateProfileInt("Options", "Seed", 0, buffer);
-  Special.IsCaptureTheFlag = static_cast<unsigned>(
+  TheSpecial().IsCaptureTheFlag = static_cast<unsigned>(
       WWGetPrivateProfileInt("Options", "CaptureTheFlag", 0, buffer));
   // externs.h declares these unsigned long; the INI stores them as ints.
   TheNetwork().westwood_game_id() = static_cast<uint32_t>(
@@ -301,18 +300,18 @@ int Read_Game_Options(const char* name) {
       WWGetPrivateProfileInt("Internet", "MaxPlayers", 2, buffer);
 
   if (TheSession().tiberium()) {
-    Special.IsTGrowth = 1;
-    Special.IsTSpread = 1;
+    TheSpecial().IsTGrowth = 1;
+    TheSpecial().IsTSpread = 1;
   } else {
-    Special.IsTGrowth = 0;
-    Special.IsTSpread = 0;
+    TheSpecial().IsTGrowth = 0;
+    TheSpecial().IsTSpread = 0;
   }
   TheSession().scenario_index() =
       WWGetPrivateProfileInt("Options", "Scenario", 0, buffer);
   TheWorld().scenario() =
       TheSession().scenario_index();  // MPlayerFilenum[ScenarioIdx];
 
-  Options.GameSpeed = 0;
+  TheOptions().GameSpeed = 0;
 
   TheSession().local_id() = static_cast<unsigned char>(
       Build_MPlayerID(TheSession().color_index(), TheSession().house()));
@@ -490,7 +489,7 @@ bool Do_The_Internet_Menu_Thang() {
   const int buffer_len = sizeof(users_name);
   KeyNumType input = KN_NONE;
 
-  if (!Special.IsFromWChat && !SpawnedFromWChat) {
+  if (!TheSpecial().IsFromWChat && !SpawnedFromWChat) {
     /*
     ** If the user is registered with Planet Westwood then spawn WChat.
     */

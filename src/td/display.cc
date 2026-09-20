@@ -465,7 +465,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   /*
   **	Adjust the palette according to the visual control option settings.
   */
-  Options.Fixup_Palette();
+  TheOptions().Fixup_Palette();
 }
 
 /***********************************************************************************************

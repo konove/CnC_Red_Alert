@@ -190,23 +190,23 @@ static void ApplyStartupOptions(const StartupOptions& options) {
   debug_state.set_check_map(options.check_map);
 
   if (options.easy) {
-    Special.IsHealthBar = true;
-    Special.IsEasy = true;
-    Special.IsDifficult = false;
+    TheSpecial().IsHealthBar = true;
+    TheSpecial().IsEasy = true;
+    TheSpecial().IsDifficult = false;
   }
   if (options.hard) {
-    Special.IsHealthBar = false;
-    Special.IsEasy = false;
-    Special.IsDifficult = true;
+    TheSpecial().IsHealthBar = false;
+    TheSpecial().IsEasy = false;
+    TheSpecial().IsDifficult = true;
   }
   if (options.jurassic) {
-    Special.IsJurassic = true;
+    TheSpecial().IsJurassic = true;
     AreThingiesEnabled = true;
   }
-  Special.IsFromInstall = options.from_install;
-  Special.IsInert = options.inert_weapons;
-  Special.IsSpeedBuild = options.speed_build;
-  Special.IsVisibleTarget = options.visible_target;
+  TheSpecial().IsFromInstall = options.from_install;
+  TheSpecial().IsInert = options.inert_weapons;
+  TheSpecial().IsSpeedBuild = options.speed_build;
+  TheSpecial().IsVisibleTarget = options.visible_target;
 
   TheSession().record_game() = options.record;
   TheSession().playback_game() = options.playback;
@@ -310,7 +310,7 @@ int main(int argc, char* argv[])
   TheWorld().scen_player() = SCEN_PLAYER_GDI;
   TheWorld().scen_dir() = SCEN_DIR_EAST;
   TheWorld().whom() = HOUSE_GOOD;
-  Special.Init();
+  TheSpecial().Init();
 
   const std::optional<StartupOptions> options = Parse_Command_Line(arguments);
   if (options.has_value()) {
@@ -349,7 +349,7 @@ int main(int argc, char* argv[])
       Create_Main_Window(nullptr, 0, Screen::kWidth, TheScreen().mode_height());
       CCDebugString("C&C95 - Initialising audio.\n");
 
-      SoundOn = Audio.Open(11025 * 2, /*stereo=*/false);
+      SoundOn = TheAudio().Open(11025 * 2, /*stereo=*/false);
 
       ThePalettes().title_palette().assign(768, 0);
 
@@ -361,7 +361,7 @@ int main(int argc, char* argv[])
       }
 
       CCDebugString("C&C95 - Adjusting variables for resolution.\n");
-      Options.Adjust_Variables_For_Resolution();
+      TheOptions().Adjust_Variables_For_Resolution();
 
       CCDebugString("C&C95 - Setting palette.\n");
       /////////Set_Palette(Palette);
@@ -396,7 +396,7 @@ int main(int argc, char* argv[])
       WWGetPrivateProfileString(
           "Intro", "PlayIntro", "Yes",
           std::span(tempbuff).first(static_cast<std::size_t>(4)), buffer);
-      Special.IsFromInstall =
+      TheSpecial().IsFromInstall =
           !absl::EqualsIgnoreCase(tempbuff, "No") && !SpawnedFromWChat;
       ThePalettes().set_slow_palette(
           WWGetPrivateProfileInt("Options", "SlowPalette", 1, buffer) != 0);
@@ -435,7 +435,7 @@ int main(int argc, char* argv[])
       **	If the intro is being run for the first time, then don't
       **	allow breaking out of it with the <ESC> key.
       */
-      if (Special.IsFromInstall) {
+      if (TheSpecial().IsFromInstall) {
         BreakoutAllowed = false;
       }
 
@@ -504,7 +504,7 @@ void __cdecl Prog_End() {
   }
 #endif
   CCDebugString("C&C95 - About to call CloseAudio.\n");
-  Audio.Close();
+  TheAudio().Close();
   CCDebugString("C&C95 - Returned from CloseAudio.\n");
   if (WWMouse) {
     CCDebugString("C&C95 - Deleting mouse object.\n");
@@ -529,6 +529,13 @@ void Print_Error_Exit(char* string) {
 }
 
 void ShutDown() {
+  // Everything Prog_End() takes down belongs to the Game, so there is
+  // nothing to do before one is built or after one is gone. A test that
+  // reaches an error exit without a Game gets here too.
+  if (game == nullptr) {
+    return;
+  }
+
   // Nothing is left for an allocation failure from here on to clean up.
   Memory_Error_Exit = Print_Error_Exit;
   Prog_End();

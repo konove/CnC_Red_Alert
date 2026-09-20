@@ -108,7 +108,6 @@
 #include "td/display.h"
 #include "td/externs.h"
 #include "td/gadget.h"
-#include "td/globals.h"
 #include "td/house.h"
 #include "td/infantry.h"
 #include "td/inline.h"
@@ -381,7 +380,7 @@ void RadarClass::Draw_It(bool forced) {
   if (ThePlayer()->ActLike != _house) {
     std::string name;
 
-    if (Special.IsJurassic && AreThingiesEnabled) {
+    if (TheSpecial().IsJurassic && AreThingiesEnabled) {
       name = "RADAR.JP";
     } else {
       name = std::filesystem::path("RADAR")

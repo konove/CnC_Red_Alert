@@ -1,3 +1,5 @@
+
+#include "base/installed.h"
 /*
 **	Command & Conquer(tm)
 **	Copyright 2025 Electronic Arts Inc.
@@ -243,5 +245,11 @@ class SpecialClass {
 };
 
 void Special_Dialog();
+
+// Returns the special command overrides that Game installed. CHECK-fails
+// outside a Game's lifetime unless a test installed its own.
+inline SpecialClass& TheSpecial() {
+  return base::Installed<SpecialClass>::Get();
+}
 
 #endif  // CNC_RED_ALERT_TD_SPECIAL_H_

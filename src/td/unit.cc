@@ -462,10 +462,11 @@ void UnitClass::AI() {
   ** for Jurassic objects, animate them if they're walking
   */
   // Only animate if they're walking
-  if ((Class->IsPieceOfEight && Special.IsJurassic && AreThingiesEnabled) &&
+  if ((Class->IsPieceOfEight && TheSpecial().IsJurassic &&
+       AreThingiesEnabled) &&
       (IsDriving || IsFiring)) {
     if (!Fetch_Rate()) {
-      Set_Rate(static_cast<unsigned char>(Options.Normalize_Delay(2)));
+      Set_Rate(static_cast<unsigned char>(TheOptions().Normalize_Delay(2)));
       Set_Stage(0);
     }
     Graphic_Logic();
@@ -512,7 +513,7 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
   */
   if ((cf == FIRE_OK) && Class->IsFireAnim) {
     if (!IsFiring) {
-      Set_Rate(static_cast<unsigned char>(Options.Normalize_Delay(2)));
+      Set_Rate(static_cast<unsigned char>(TheOptions().Normalize_Delay(2)));
       Set_Stage(0);
       IsFiring = true;
       cf = FIRE_BUSY;
@@ -971,7 +972,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
     **	typically is the only one that will qualify here.
     */
     if (!Team && source && !IsTethered && !House->Is_Ally(source) &&
-        (!House->IsHuman || Special.IsSmartDefense)) {
+        (!House->IsHuman || TheSpecial().IsSmartDefense)) {
       /*
       **	Try to crush the attacker if it can be crushed by this unit and
       *this unit is *	not equipped with a flame type weapon. If this unit has
@@ -984,8 +985,8 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
             BulletTypeClass::As_Reference(Weapons.at(Class->Primary).Fires)
                     .Warhead != WARHEAD_FIRE)) &&
           (TheSession().type() != GAME_NORMAL || *this != UNIT_HARVESTER ||
-           TheWorld().build_level() > 8 || Special.IsDifficult) &&
-          !Special.IsEasy && Class->IsCrusher && source->Is_Techno() &&
+           TheWorld().build_level() > 8 || TheSpecial().IsDifficult) &&
+          !TheSpecial().IsEasy && Class->IsCrusher && source->Is_Techno() &&
           source->Class_Of().IsCrushable) {
         Assign_Destination(source->As_Target());
         Assign_Mission(MISSION_MOVE);
@@ -1122,7 +1123,7 @@ UnitClass::UnitClass(UnitType classid, HousesType house)
   Ammo = Class->MaxAmmo;
   IsCloakable = Class->IsCloakable;
   if (Class->IsAnimating) {
-    Set_Rate(static_cast<unsigned char>(Options.Normalize_Delay(3)));
+    Set_Rate(static_cast<unsigned char>(TheOptions().Normalize_Delay(3)));
   }
 
   /*
@@ -1828,7 +1829,7 @@ void UnitClass::Per_Cell_Process(bool center) {
   /*
   **	Certain units require some setup time after they come to a halt.
   */
-  if (Special.IsDefenderAdvantage && /*center &&*/ !Target_Legal(NavCom) &&
+  if (TheSpecial().IsDefenderAdvantage && /*center &&*/ !Target_Legal(NavCom) &&
       base::At(Path, 0) == FACING_NONE) {
     if (*this == UNIT_MLRS || *this == UNIT_ARTY || *this == UNIT_MSAM) {
       Arm = static_cast<unsigned char>(Rearm_Delay(false) * 2);

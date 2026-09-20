@@ -42,6 +42,7 @@
 #define CNC_RED_ALERT_TD_THEME_H_
 
 #include "base/enum_array.h"
+#include "base/installed.h"
 #include "td/defines.h"
 
 class ThemeClass {
@@ -86,5 +87,9 @@ class ThemeClass {
   [[nodiscard]] static bool Is_Allowed(ThemeType index);
   static void Scan();
 };
+
+// Returns the music player that Game installed. CHECK-fails outside a
+// Game's lifetime unless a test installed its own.
+inline ThemeClass& TheTheme() { return base::Installed<ThemeClass>::Get(); }
 
 #endif  // CNC_RED_ALERT_TD_THEME_H_

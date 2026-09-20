@@ -70,7 +70,6 @@
 #include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -1943,8 +1942,8 @@ BuildingClass* InfantryTypeClass::Who_Can_Build_Me(bool intheory, bool legal,
  * HISTORY: * 06/29/1995 JLB : Created. *
  *=============================================================================================*/
 int InfantryTypeClass::Full_Name() const {
-  if (TheDebugState().map_editor_active() || !IsNominal || Special.IsNamed ||
-      Type == INFANTRY_C10 || Type == INFANTRY_DELPHI ||
+  if (TheDebugState().map_editor_active() || !IsNominal ||
+      TheSpecial().IsNamed || Type == INFANTRY_C10 || Type == INFANTRY_DELPHI ||
       Type == INFANTRY_MOEBIUS) {
     return TechnoTypeClass::Full_Name();
   }

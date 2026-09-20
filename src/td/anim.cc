@@ -77,7 +77,6 @@
 #include "td/conquer.h"
 #include "td/coord.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/globals.h"
 #include "td/goptions.h"
 #include "td/heap.h"
@@ -736,7 +735,8 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
                      unsigned char timedelay, unsigned char loop, bool alt)
     : Class(&AnimTypeClass::As_Reference(animnum)) {
   if (Class->IsNormalized) {
-    Set_Rate(static_cast<unsigned char>(Options.Normalize_Delay(Class->Delay)));
+    Set_Rate(
+        static_cast<unsigned char>(TheOptions().Normalize_Delay(Class->Delay)));
   } else {
     Set_Rate(Class->Delay);
   }
@@ -970,7 +970,7 @@ void AnimClass::AI() {
 
             if (Class->IsNormalized) {
               Set_Rate(static_cast<unsigned char>(
-                  Options.Normalize_Delay(Class->Delay)));
+                  TheOptions().Normalize_Delay(Class->Delay)));
             } else {
               Set_Rate(Class->Delay);
             }

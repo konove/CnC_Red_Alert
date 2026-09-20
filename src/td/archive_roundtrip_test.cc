@@ -49,6 +49,10 @@ const base::Installed<World>::Scope world_scope(world);
 // parser reports through the message list it owns.
 SessionClass session;
 const base::Installed<SessionClass>::Scope session_scope(session);
+// Object validation reports through the debug switches, which read the
+// command overrides.
+SpecialClass special{};
+const base::Installed<SpecialClass>::Scope special_scope(special);
 // NOLINTEND(bugprone-throwing-static-initialization)
 }  // namespace
 

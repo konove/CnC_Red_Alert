@@ -83,7 +83,6 @@
 #include "td/defines.h"
 #include "td/display_constants.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/inline.h"
@@ -4172,13 +4171,13 @@ std::span<const int16_t> BuildingTypeClass::Occupy_List(bool placement) const {
   CELL cell = 0;
 
   if ((placement && Bib_And_Offset(bib, cell)) ||
-      (Special.IsRoad &&
+      (TheSpecial().IsRoad &&
        (*this == STRUCT_BARRACKS || (placement && *this == STRUCT_REFINERY)))) {
     /*
     **	The barracks is always considered to have a bib under it for placement
     *reasons even *	if the bib logic is turned off.
     */
-    if (Special.IsRoad && *this == STRUCT_BARRACKS) {
+    if (TheSpecial().IsRoad && *this == STRUCT_BARRACKS) {
       bib = SMUDGE_BIB3;
       cell = 0;
     }
@@ -4187,7 +4186,7 @@ std::span<const int16_t> BuildingTypeClass::Occupy_List(bool placement) const {
     **	If bibs are disabled, then always ensure that the refinery bib is marked
     **	as occupied.
     */
-    if (Special.IsRoad && *this == STRUCT_REFINERY) {
+    if (TheSpecial().IsRoad && *this == STRUCT_REFINERY) {
       bib = SMUDGE_BIB2;
       cell = MAP_CELL_W;
     }
@@ -4353,7 +4352,7 @@ int BuildingTypeClass::Repair_Step() const { return kRepairStep; }
 bool BuildingTypeClass::Bib_And_Offset(SmudgeType& bib, CELL& cell) const {
   bib = SMUDGE_NONE;
 
-  if (IsBibbed && !Special.IsRoad) {
+  if (IsBibbed && !TheSpecial().IsRoad) {
     switch (Width()) {
       case 2:
         bib = SMUDGE_BIB3;
@@ -4419,7 +4418,7 @@ int BuildingTypeClass::Full_Name() const {
   if (TheWorld().scenario() == 3 && Type == STRUCT_MISSION) {
     return TXT_PRISON;
   }
-  if (!IsNominal || Special.IsNamed || IsWall ||
+  if (!IsNominal || TheSpecial().IsNamed || IsWall ||
       TheDebugState().map_editor_active() || Type == STRUCT_V23 ||
       Type == STRUCT_V30 || Type == STRUCT_MISSION || Type == STRUCT_BIO_LAB) {
     return TechnoTypeClass::Full_Name();
@@ -4450,7 +4449,7 @@ int BuildingTypeClass::Raw_Cost() const {
 }
 
 int BuildingTypeClass::Cost_Of() const {
-  if (Special.IsSeparate && Type == STRUCT_HELIPAD) {
+  if (TheSpecial().IsSeparate && Type == STRUCT_HELIPAD) {
     return Raw_Cost();
   }
 

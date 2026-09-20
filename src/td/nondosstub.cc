@@ -67,11 +67,11 @@ static ThemeType OldTheme = THEME_NONE;
 
 void Focus_Loss() {
   if (SoundOn && (OldTheme == THEME_NONE)) {
-    OldTheme = Theme.What_Is_Playing();
+    OldTheme = TheTheme().What_Is_Playing();
   }
 
-  Theme.Stop();
-  Audio.Pause();
+  TheTheme().Stop();
+  TheAudio().Pause();
   if (WWMouse) {
     WWMouseClass::Clear_Cursor_Clip();
   }
@@ -80,10 +80,10 @@ void Focus_Loss() {
 void Focus_Restore() {
   Restore_Cached_Icons();
   TheMap().Flag_To_Redraw(true);
-  Audio.Resume();
+  TheAudio().Resume();
 
   if (!InMovie) {
-    Theme.Queue_Song(OldTheme);
+    TheTheme().Queue_Song(OldTheme);
     OldTheme = THEME_NONE;
   }
 

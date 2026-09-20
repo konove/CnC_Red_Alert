@@ -82,7 +82,6 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/house.h"
 #include "td/ini.h"
@@ -461,7 +460,7 @@ void Read_MultiPlayer_Settings() {
                 .first(ShapeBufferBytes.size() - 1));
   file.Close();
 
-  if (!Special.IsFromWChat) {
+  if (!TheSpecial().IsFromWChat) {
     /*------------------------------------------------------------------------
     Get the player's last-used Handle
     ------------------------------------------------------------------------*/

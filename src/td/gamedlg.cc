@@ -51,7 +51,6 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/event.h"
-#include "td/externs.h"
 #include "td/gadget.h"
 #include "td/goptions.h"
 #include "td/jshell.h"
@@ -138,8 +137,8 @@ void GameControlsClass::Process() {
   **	Dialog variables
   */
 
-  int gamespeed = static_cast<int>(Options.GameSpeed);
-  int scrollrate = Options.ScrollRate;
+  int gamespeed = static_cast<int>(TheOptions().GameSpeed);
+  int scrollrate = TheOptions().ScrollRate;
   int selection = 0;
   bool pressed = false;
   int curbutton = 0;
@@ -416,7 +415,7 @@ void GameControlsClass::Process() {
           OptionsClass::kMaxScrollSetting - 1 - scrate_btn.Get_Value()) {
         scrollrate =
             OptionsClass::kMaxScrollSetting - 1 - scrate_btn.Get_Value();
-        Options.ScrollRate = scrollrate;
+        TheOptions().ScrollRate = scrollrate;
       }
       process = false;
 
@@ -426,10 +425,10 @@ void GameControlsClass::Process() {
       *don't
       ** go out of sync.
       */
-      const auto old = Options.GameSpeed;  // save orig value
-      Options.GameSpeed = static_cast<unsigned int>(gamespeed);
-      Options.Save_Settings();  // save new value
-      Options.GameSpeed = old;  // restore old value
+      const auto old = TheOptions().GameSpeed;  // save orig value
+      TheOptions().GameSpeed = static_cast<unsigned int>(gamespeed);
+      TheOptions().Save_Settings();  // save new value
+      TheOptions().GameSpeed = old;  // restore old value
 
       /*
       **	Possibly launch into another dialog if so directed.
@@ -443,7 +442,7 @@ void GameControlsClass::Process() {
           break;
 
         case kButtonSound:
-          if (!Audio.is_open()) {
+          if (!TheAudio().is_open()) {
             CCMessageBox().Process(Text_String(TXT_NO_SOUND_CARD));
             process = true;
             display = true;

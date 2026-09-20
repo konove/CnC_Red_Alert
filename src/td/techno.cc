@@ -197,7 +197,6 @@
 #include "td/facing.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
-#include "td/globals.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -355,9 +354,9 @@ int TechnoTypeClass::Time_To_Build(HousesType house) const {
   **	For computer controlled buildings, slow down production on
   **	cheaper buildings.
   */
-  if (!Special.IsDifficult && TheSession().type() == GAME_NORMAL &&
+  if (!TheSpecial().IsDifficult && TheSession().type() == GAME_NORMAL &&
       What_Am_I() == RTTI_BUILDINGTYPE && ThePlayer()->Class->House != house) {
-    cost = (cost + (Special.IsEasy ? 4000 : 2000)) / 2;
+    cost = (cost + (TheSpecial().IsEasy ? 4000 : 2000)) / 2;
   }
 
   /*
@@ -886,7 +885,7 @@ void TechnoClass::Per_Cell_Process(bool /*unused*/) {
  *=============================================================================================*/
 void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
   Clear_Redraw_Flag();
-  if (IsSelected || Special.IsBarOn) {
+  if (IsSelected || TheSpecial().IsBarOn) {
     GraphicViewPortClass draw_window(
         LogicPage->Get_Graphic_Buffer(),
         (base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) *
@@ -920,7 +919,7 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
     int height = 0;
     Class_Of().Dimensions(width, height);
 
-    if (Strength && (House->Is_Ally(ThePlayer()) || Special.IsHealthBar)) {
+    if (Strength && (House->Is_Ally(ThePlayer()) || TheSpecial().IsHealthBar)) {
       const int ratio = Health_Ratio();
 
       const int xx = x - (width / 2);
@@ -962,7 +961,7 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
       const int dx = width / 5;
       const int dy = height / 5;
       const int fudge =
-          House->Is_Ally(ThePlayer()) || Special.IsHealthBar ? 4 : 0;
+          House->Is_Ally(ThePlayer()) || TheSpecial().IsHealthBar ? 4 : 0;
 
       // Upper left corner.
       draw_window.Draw_Line(x - lx, fudge + y - ly, x - lx + dx, fudge + y - ly,
@@ -2144,7 +2143,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     **	If this is firing from a moving platform, then the projectile is
     *inaccurate.
     */
-    if (Special.IsDefenderAdvantage && What_Am_I() != RTTI_BUILDING &&
+    if (TheSpecial().IsDefenderAdvantage && What_Am_I() != RTTI_BUILDING &&
         dynamic_cast<const FootClass*>(this)->IsDriving) {
       bullet->IsInaccurate = true;
     }
@@ -2413,7 +2412,8 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
     */
     if ((IsOwnedByPlayer && (ctrldown || !House->Is_Ally(object)) &&
          (ctrldown || object->Class_Of().IsLegalTarget ||
-          (Special.IsTreeTarget && object->What_Am_I() == RTTI_TERRAIN))) &&
+          (TheSpecial().IsTreeTarget &&
+           object->What_Am_I() == RTTI_TERRAIN))) &&
         (Can_Player_Move() || In_Range(object, 0))) {
       return ACTION_ATTACK;
     }

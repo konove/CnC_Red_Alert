@@ -32,12 +32,14 @@
 #include "tech/span_sink.h"
 #include "tech/span_source.h"
 
-// The value tests need a frame source, but no game session.
+// The value tests need a frame source and the command overrides the
+// serializers read, but no game session.
 namespace {
 GameClock game_clock;
 const base::Installed<GameClock>::Scope game_clock_scope(game_clock);
+SpecialClass special{};
+const base::Installed<SpecialClass>::Scope special_scope(special);
 }  // namespace
-SpecialClass Special{};
 void Speak(VoxType /*unused*/) {}
 // Linking the legacy byte RNG also pulls in the SDL event pump.
 void SDL_Event_Handler(SDL_Event* /*unused*/) {}

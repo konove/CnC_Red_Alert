@@ -44,14 +44,10 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
-#include "td/credits.h"
 #include "td/defines.h"
 #include "td/externs.h"
 #include "td/ftimer.h"
-#include "td/goptions.h"
 #include "td/special.h"
-#include "td/theme.h"
-#include "tech/audio_mixer.h"
 #include "winvq/vqa32/vqaplay.h"
 
 #ifdef JAPANESE
@@ -161,7 +157,6 @@ bool GameInFocus;
 **	This is the options control class. The options control such things as
 **	game speed, visual controls, and other user settings.
 */
-GameOptionsClass Options;
 
 /***************************************************************************
 **	Logic processing is controlled by this element. It handles both graphic
@@ -170,12 +165,10 @@ GameOptionsClass Options;
 
 // The sound device and its four channels. Defined ahead of Theme, which
 // plays through it.
-AudioMixer Audio;
 
 /***************************************************************************
 **	This handles the background music.
 */
-ThemeClass Theme;
 
 /***************************************************************************
 **	This is the main control class for the map.
@@ -189,13 +182,11 @@ ThemeClass Theme;
 **	The running credit display is controlled by this class (and member
 **	functions.
 */
-static CreditClass CreditDisplay;
 
 /**************************************************************************
 ** This class records the special command override options that C&C
 **	supports.
 */
-SpecialClass Special;
 
 /***************************************************************************
 **	This is the scenario data for the currently loaded scenario.

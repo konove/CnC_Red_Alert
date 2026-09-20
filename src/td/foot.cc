@@ -1159,7 +1159,7 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
                Weapons.at(Techno_Type_Class()->Primary).Fires)
                .IsAntiAircraft) &&
           (!Target_Legal(TarCom) ||
-           ((!House->IsHuman || Special.IsSmartDefense) &&
+           ((!House->IsHuman || TheSpecial().IsSmartDefense) &&
             (!tweap || !In_Range(TarCom)))) &&
           //				!Target_Legal(NavCom) &&
           (Mission == MISSION_AMBUSH || Mission == MISSION_GUARD ||
@@ -1190,7 +1190,7 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
             **	Simple retaliation cannot occur because the source of the damage
             **	is too far away. If scatter logic is enabled, then scatter now.
             */
-            if (Special.IsScatter) {
+            if (TheSpecial().IsScatter) {
               Scatter(0, true);
             }
           }
@@ -1200,7 +1200,7 @@ ResultType FootClass::Take_Damage(int& damage, int distance,
         **	If this object isn't doing anything important, then scatter.
         */
         if (!IsDriving && !Target_Legal(TarCom) && !Target_Legal(NavCom) &&
-            Special.IsScatter && What_Am_I() != RTTI_AIRCRAFT) {
+            TheSpecial().IsScatter && What_Am_I() != RTTI_AIRCRAFT) {
           Scatter(0, true);
         }
       }
@@ -1800,17 +1800,17 @@ void FootClass::Death_Announcement(const TechnoClass* source) const {
       if (What_Am_I() == RTTI_INFANTRY &&
           dynamic_cast<const InfantryTypeClass&>(Class_Of()).IsCivilian &&
           !dynamic_cast<const InfantryClass*>(this)->IsTechnician) {
-        if (Options.IsDeathAnnounce) {
+        if (TheOptions().IsDeathAnnounce) {
           Speak(VOX_DEAD_CIV);
         }
       } else {
         if (House != ThePlayer() && TheSession().type() != GAME_NORMAL) {
-          if (Options.IsDeathAnnounce) {
+          if (TheOptions().IsDeathAnnounce) {
             Speak(VOX_ENEMY_UNIT);
           }
         } else {
-          if (House == ThePlayer() || Options.IsDeathAnnounce) {
-            if (!Options.IsDeathAnnounce) {
+          if (House == ThePlayer() || TheOptions().IsDeathAnnounce) {
+            if (!TheOptions().IsDeathAnnounce) {
               Speak(VOX_UNIT_LOST);
             } else {
               switch (House->ActLike) {

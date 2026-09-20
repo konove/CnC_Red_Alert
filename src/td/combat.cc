@@ -50,7 +50,6 @@
 #include "td/const.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
-#include "td/globals.h"
 #include "td/inline.h"
 #include "td/jshell.h"
 #include "td/object.h"
@@ -92,7 +91,7 @@ int Modify_Damage(int damage, WarheadType warhead, ArmorType armor,
   **	If there is no raw damage value to start with, then
   **	there can be no modified damage either.
   */
-  if (Special.IsInert || !damage || warhead == WARHEAD_NONE) {
+  if (TheSpecial().IsInert || !damage || warhead == WARHEAD_NONE) {
     return 0;
   }
 
@@ -153,7 +152,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   ObjectClass* objects[32];  // Maximum number of objects that can be damaged.
   int distance = 0;          // Distance to unit.
 
-  if (!strength || Special.IsInert || warhead == WARHEAD_NONE) {
+  if (!strength || TheSpecial().IsInert || warhead == WARHEAD_NONE) {
     return;
   }
 

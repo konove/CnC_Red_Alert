@@ -50,9 +50,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/face.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/help.h"
 #include "td/inline.h"
@@ -116,7 +114,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
     **	Special check to not scroll within the special no-scroll regions.
     */
     bool noscroll = false;
-    if (Special.IsScrollMod && y == 0 &&
+    if (TheSpecial().IsScrollMod && y == 0 &&
         ((x > 3 && x < EVA_WIDTH) ||
          (x > TheScreen().visible_view().Get_Width() - EVA_WIDTH &&
           x < TheScreen().visible_view().Get_Width() - 3))) {
@@ -177,8 +175,8 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
 
         int rate = 8 - Inertia;
 
-        if (rate < Options.ScrollRate + 1) {
-          rate = Options.ScrollRate + 1;
+        if (rate < TheOptions().ScrollRate + 1) {
+          rate = TheOptions().ScrollRate + 1;
           Inertia = 8 - rate;
         }
 
@@ -199,7 +197,7 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
         **	one of the 8 facings, then adjust the direction value
         **	accordingly.
         */
-        if (!Options.IsFreeScroll) {
+        if (!TheOptions().IsFreeScroll) {
           direction = Facing_Dir(Dir_Facing(direction));
         }
 

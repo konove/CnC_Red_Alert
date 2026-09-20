@@ -187,7 +187,7 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
 
 #ifdef OBSOLETE
     Control.Set_Stage(0);
-    int rate = Options.Normalize_Delay(control->FrameRate);
+    int rate = TheOptions().Normalize_Delay(control->FrameRate);
     Control.Set_Rate(std::max(rate, 1));
 #endif
     baseshp = wwsmall ? control->SmallFrame : control->StartFrame;

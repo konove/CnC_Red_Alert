@@ -81,7 +81,6 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/jshell.h"
 #include "td/palette.h"
 #include "td/palettes.h"
@@ -136,7 +135,7 @@ OptionsClass::OptionsClass()
  *=============================================================================================*/
 // Not const: applies the score volume to the audio system.
 // NOLINTNEXTLINE(readability-make-member-function-const)
-void OptionsClass::One_Time() { Audio.SetScoreVolume(ScoreVolume); }
+void OptionsClass::One_Time() { TheAudio().SetScoreVolume(ScoreVolume); }
 
 /***********************************************************************************************
  * OptionsClass::Set_Shuffle -- Controls the play shuffle setting. *
@@ -189,7 +188,7 @@ void OptionsClass::Set_Repeat(int on) { IsScoreRepeat = on != 0; }
 void OptionsClass::Set_Score_Volume(int volume) {
   volume = Bound(volume, 0, 255);
   ScoreVolume = static_cast<unsigned char>(volume);
-  Audio.SetScoreVolume(ScoreVolume);
+  TheAudio().SetScoreVolume(ScoreVolume);
 }
 
 /***********************************************************************************************
@@ -532,7 +531,7 @@ void OptionsClass::Load_Settings() {
   */
   WWGetPrivateProfileString("Options", "TrueNames", "", workbuf, buffer);
   if (HashKeyPhrase(workbuf) == PARM_TRUENAME) {
-    Special.IsNamed = true;
+    TheSpecial().IsNamed = true;
   }
 
   /*
@@ -548,7 +547,7 @@ void OptionsClass::Load_Settings() {
   */
   WWGetPrivateProfileString("Options", "Rotation", "", workbuf, buffer);
   if (HashKeyPhrase(workbuf) == PARM_3POINT) {
-    Special.IsThreePoint = true;
+    TheSpecial().IsThreePoint = true;
   }
 
   /*
@@ -556,7 +555,7 @@ void OptionsClass::Load_Settings() {
   */
   WWGetPrivateProfileString("Options", "Helipad", "", workbuf, buffer);
   if (HashKeyPhrase(workbuf) == PARM_HELIPAD) {
-    Special.IsSeparate = true;
+    TheSpecial().IsSeparate = true;
   }
 
   /*
@@ -564,7 +563,7 @@ void OptionsClass::Load_Settings() {
   */
   WWGetPrivateProfileString("Options", "MCV", "", workbuf, buffer);
   if (HashKeyPhrase(workbuf) == PARM_MCV) {
-    Special.IsMCVDeploy = true;
+    TheSpecial().IsMCVDeploy = true;
   }
 
   /*
@@ -573,7 +572,7 @@ void OptionsClass::Load_Settings() {
   */
   WWGetPrivateProfileString("Options", "Bibs", "", workbuf, buffer);
   if (HashKeyPhrase(workbuf) == PARM_BIB) {
-    Special.IsRoad = true;
+    TheSpecial().IsRoad = true;
   }
 
   /*
@@ -581,7 +580,7 @@ void OptionsClass::Load_Settings() {
   */
   WWGetPrivateProfileString("Options", "TreeTarget", "", workbuf, buffer);
   if (HashKeyPhrase(workbuf) == PARM_TREETARGET) {
-    Special.IsTreeTarget = true;
+    TheSpecial().IsTreeTarget = true;
   }
 
   /*
@@ -590,7 +589,7 @@ void OptionsClass::Load_Settings() {
   */
   WWGetPrivateProfileString("Options", "Combat", "", workbuf, buffer);
   if (HashKeyPhrase(workbuf) == PARM_COMBAT) {
-    Special.IsDefenderAdvantage = false;
+    TheSpecial().IsDefenderAdvantage = false;
   }
 
   /*
@@ -598,7 +597,7 @@ void OptionsClass::Load_Settings() {
   */
   WWGetPrivateProfileString("Options", "Scores", "", workbuf, buffer);
   if (HashKeyPhrase(workbuf) == PARM_SCORE) {
-    Special.IsVariation = true;
+    TheSpecial().IsVariation = true;
   }
 
   /*
@@ -609,8 +608,8 @@ void OptionsClass::Load_Settings() {
   */
   WWGetPrivateProfileString("Options", "CombatIQ", "", workbuf, buffer);
   if (HashKeyPhrase(workbuf) == PARM_IQ) {
-    Special.IsSmartDefense = true;
-    Special.IsScatter = true;
+    TheSpecial().IsSmartDefense = true;
+    TheSpecial().IsScatter = true;
   }
 
   /*
@@ -618,7 +617,7 @@ void OptionsClass::Load_Settings() {
   */
   WWGetPrivateProfileString("Options", "Overrun", "", workbuf, buffer);
   if (HashKeyPhrase(workbuf) == PARM_SQUISH) {
-    Special.IsGross = true;
+    TheSpecial().IsGross = true;
   }
 
   /*
@@ -626,7 +625,7 @@ void OptionsClass::Load_Settings() {
   */
   WWGetPrivateProfileString("Options", "Sounds", "", workbuf, buffer);
   if (HashKeyPhrase(workbuf) == PARM_HUMAN) {
-    Special.IsJuvenile = true;
+    TheSpecial().IsJuvenile = true;
   }
 
   /*
@@ -634,7 +633,7 @@ void OptionsClass::Load_Settings() {
   */
   WWGetPrivateProfileString("Options", "Scrolling", "", workbuf, buffer);
   if (HashKeyPhrase(workbuf) == PARM_SCROLLING) {
-    Special.IsScrollMod = true;
+    TheSpecial().IsScrollMod = true;
   }
 }
 

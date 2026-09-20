@@ -162,7 +162,6 @@
 #include "td/foot.h"
 #include "td/ftimer.h"
 #include "td/game_clock.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/infantry.h"
@@ -441,7 +440,7 @@ HouseClass::HouseClass(HousesType house)
   BrightColor = Class->BrightColor;
   // Give the special units their own radar color; otherwise they would be the
   // same color as the player.
-  if (house == HOUSE_JP && Special.IsJurassic && AreThingiesEnabled) {
+  if (house == HOUSE_JP && TheSpecial().IsJurassic && AreThingiesEnabled) {
     const HouseTypeClass& bad = HouseTypeClass::As_Reference(HOUSE_BAD);
     Color = bad.Color;
     BrightColor = bad.BrightColor;
@@ -562,7 +561,7 @@ bool HouseClass::Can_Build(const TechnoTypeClass* type,
   **	Multiplayer game uses a different legality check for building.
   */
   if (TheSession().type() != GAME_NORMAL ||
-      (Special.IsJurassic && AreThingiesEnabled)) {
+      (TheSpecial().IsJurassic && AreThingiesEnabled)) {
     return (pre & flags) == pre &&
            std::cmp_less_equal(type->Level, TheWorld().build_level());
   }
@@ -926,10 +925,10 @@ void HouseClass::AI() {
         TheWorld().scenario_init()--;
       }
     }
-    if (Special.IsDifficult) {
+    if (TheSpecial().IsDifficult) {
       AlertTime = kTicksPerMinute * Random_Pick(4, 10);
     } else {
-      if (Special.IsEasy) {
+      if (TheSpecial().IsEasy) {
         AlertTime = kTicksPerMinute * Random_Pick(16, 40);
       } else {
         AlertTime = kTicksPerMinute * Random_Pick(5, 20);
@@ -953,7 +952,7 @@ void HouseClass::AI() {
     **	someone sitting on it.  If so, make the scatter.  If they
     *refuse, *	blow them up.
     */
-    if (Special.IsCaptureTheFlag && TheSession().type() != GAME_NORMAL &&
+    if (TheSpecial().IsCaptureTheFlag && TheSession().type() != GAME_NORMAL &&
         FlagHome) {
       TechnoClass* techno = TheMap().at(FlagHome).Cell_Techno();
       if (techno) {
@@ -993,7 +992,7 @@ void HouseClass::AI() {
     if (TheSession().type() != GAME_NORMAL && Class->House == HOUSE_JP) {
       int rlimit = 0;
 
-      if (Special.IsJurassic && AreThingiesEnabled) {
+      if (TheSpecial().IsJurassic && AreThingiesEnabled) {
         rlimit = 450;
       } else {
         rlimit = 1000;
@@ -1002,7 +1001,7 @@ void HouseClass::AI() {
       if (GameRandomRange(0, rlimit) == 0) {
         UnitClass* obj = nullptr;
 
-        if (Special.IsJurassic && AreThingiesEnabled) {
+        if (TheSpecial().IsJurassic && AreThingiesEnabled) {
           obj = new UnitClass(Random_Pick(UNIT_TRIC, UNIT_STEG), HOUSE_JP);
         } else {
           if ((TheWorld().build_level() >= 7) && (!(UScan & kUnitFlagVice))) {
@@ -1090,13 +1089,13 @@ void HouseClass::AI() {
       if (Capacity - Tiberium < 300 && Capacity > 500 &&
           BScan & (kStructFlagRefinery | kStructFlagConst)) {
         Speak(VOX_NEED_MO_CAPACITY);
-        SpeakMaxedDelay.Set(Options.Normalize_Delay(kSpeakDelay));
+        SpeakMaxedDelay.Set(TheOptions().Normalize_Delay(kSpeakDelay));
       }
     }
     if (SpeakPowerDelay.Expired() && Power_Fraction() < 0x0100 &&
         (BScan & kStructFlagConst) != 0) {
       Speak(VOX_LOW_POWER);
-      SpeakPowerDelay.Set(Options.Normalize_Delay(kSpeakDelay));
+      SpeakPowerDelay.Set(TheOptions().Normalize_Delay(kSpeakDelay));
     }
   }
 
@@ -1489,7 +1488,7 @@ void HouseClass::Attacked() {
   Validate();
   if (SpeakAttackDelay.Expired() && ThePlayer()->Class->House == Class->House) {
     Speak(VOX_BASE_UNDER_ATTACK);
-    SpeakAttackDelay.Set(Options.Normalize_Delay(kSpeakDelay));
+    SpeakAttackDelay.Set(TheOptions().Normalize_Delay(kSpeakDelay));
 
     /*
     **	If there is a trigger event associated with being attacked, process it
@@ -3277,7 +3276,8 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
         **	harvester if possible. Never replace harvesters if the game
         **	is in easy mode.
         */
-        if (!Special.IsEasy && !IsHuman && ActiveBScan & kStructFlagRefinery &&
+        if (!TheSpecial().IsEasy && !IsHuman &&
+            ActiveBScan & kStructFlagRefinery &&
             !(UScan & kUnitFlagHarvester)) {
           techno = &UnitTypeClass::As_Reference(UNIT_HARVESTER);
           if (std::cmp_less_equal(techno->Scenario, TheWorld().build_level())) {
@@ -3804,7 +3804,7 @@ void HouseClass::MPlayer_Defeated() {
   /*------------------------------------------------------------------------
   Remove this house's flag & flag home cell
   ------------------------------------------------------------------------*/
-  if (Special.IsCaptureTheFlag) {
+  if (TheSpecial().IsCaptureTheFlag) {
     if (FlagLocation) {
       Flag_Remove(FlagLocation, true);
     } else {

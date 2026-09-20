@@ -88,7 +88,6 @@
 #include "td/facing.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
-#include "td/globals.h"
 #include "td/house.h"
 #include "td/inline.h"
 #include "td/jshell.h"
@@ -128,7 +127,7 @@ void DriveClass::Do_Turn(DirType dir) {
     **	Special rotation track is needed for units that
     **	cannot rotate in place.
     */
-    if (Special.IsThreePoint && TrackNumber == -1 &&
+    if (TheSpecial().IsThreePoint && TrackNumber == -1 &&
         Class->Speed == SPEED_WHEEL) {
       // Signed difference between current and desired facing, in eighths;
       // the shift floors negative differences as the original did.
@@ -149,7 +148,7 @@ void DriveClass::Do_Turn(DirType dir) {
       }
     } else {
       PrimaryFacing.Set_Desired(dir);
-      if (Special.IsJurassic && AreThingiesEnabled &&
+      if (TheSpecial().IsJurassic && AreThingiesEnabled &&
           What_Am_I() == RTTI_UNIT && this->Class->IsPieceOfEight) {
         PrimaryFacing.Set_Current(dir);
       }
@@ -279,9 +278,9 @@ void DriveClass::Overrun_Square(CELL cell, bool threaten) {
       *vehicle tries *	drive over them. Have the infantry run away instead.
       */
       if ((cellptr->Flag.Composite & 0x1F) &&
-          ((Special.IsDifficult || Special.IsScatter ||
+          ((TheSpecial().IsDifficult || TheSpecial().IsScatter ||
             TheWorld().scenario() > 8) &&
-           !Special.IsEasy))
+           !TheSpecial().IsEasy))
       /*
       **	Scattering is controlled by the game difficulty level.
       */
@@ -714,10 +713,10 @@ bool DriveClass::While_Moving() {
 
               case MOVE_TEMP:
                 if (*this == UNIT_HARVESTER || !House->IsHuman) {
-                  const bool old = Special.IsScatter;
-                  Special.IsScatter = true;
+                  const bool old = TheSpecial().IsScatter;
+                  TheSpecial().IsScatter = true;
                   TheMap().at(Coord_Cell(c)).Incoming(0, true);
-                  Special.IsScatter = old;
+                  TheSpecial().IsScatter = old;
                 }
                 break;
               case MoveType::MOVE_MOVING_BLOCK:
@@ -910,10 +909,10 @@ bool DriveClass::Start_Of_Move() {
           CellClass* cellptr = &TheMap().at(cell);
           const TechnoClass* blockage = cellptr->Cell_Techno();
           if (blockage && House->Is_Ally(blockage)) {
-            const bool old = Special.IsScatter;
-            Special.IsScatter = true;
+            const bool old = TheSpecial().IsScatter;
+            TheSpecial().IsScatter = true;
             cellptr->Incoming(0, true);
-            Special.IsScatter = old;
+            TheSpecial().IsScatter = old;
           }
         }
 
@@ -944,10 +943,10 @@ bool DriveClass::Start_Of_Move() {
       CellClass* cellptr = &TheMap().at(cell);
       const TechnoClass* blockage = cellptr->Cell_Techno();
       if (blockage && House->Is_Ally(blockage)) {
-        const bool old = Special.IsScatter;
-        Special.IsScatter = true;
+        const bool old = TheSpecial().IsScatter;
+        TheSpecial().IsScatter = true;
         cellptr->Incoming(0, true);
-        Special.IsScatter = old;
+        TheSpecial().IsScatter = old;
       }
     }
 
@@ -1011,10 +1010,10 @@ bool DriveClass::Start_Of_Move() {
     *it to *	get out of the way.
     */
     if (cando == MOVE_TEMP) {
-      const bool old = Special.IsScatter;
-      Special.IsScatter = true;
+      const bool old = TheSpecial().IsScatter;
+      TheSpecial().IsScatter = true;
       TheMap().at(destcell).Incoming(0, true);
-      Special.IsScatter = old;
+      TheSpecial().IsScatter = old;
     }
 
     /*
@@ -1134,10 +1133,10 @@ bool DriveClass::Start_Of_Move() {
         *it to *	get out of the way.
         */
         if (cando == MOVE_TEMP) {
-          const bool old = Special.IsScatter;
-          Special.IsScatter = true;
+          const bool old = TheSpecial().IsScatter;
+          TheSpecial().IsScatter = true;
           TheMap().at(destcell).Incoming(0, true);
-          Special.IsScatter = old;
+          TheSpecial().IsScatter = old;
         }
 
         /*
@@ -1247,7 +1246,7 @@ void DriveClass::AI() {
     */
     if ((Class->Speed == SPEED_FLOAT || Class->Speed == SPEED_HOVER ||
          Class->Speed == SPEED_TRACK ||
-         (Class->Speed == SPEED_WHEEL && !Special.IsThreePoint)) &&
+         (Class->Speed == SPEED_WHEEL && !TheSpecial().IsThreePoint)) &&
         PrimaryFacing.Is_Rotating()) {
       if (PrimaryFacing.Rotation_Adjust(Class->ROT)) {
         Mark(MARK_CHANGE);
@@ -1344,7 +1343,7 @@ void DriveClass::Fixup_Path(PathType* path) {
   /*
   **	Only wheeled vehicles need a path fixup -- to avoid 3 point turns.
   */
-  if (!Special.IsThreePoint || Class->Speed != SPEED_WHEEL) {
+  if (!TheSpecial().IsThreePoint || Class->Speed != SPEED_WHEEL) {
     return;
   }
 

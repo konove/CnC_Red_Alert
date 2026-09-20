@@ -64,7 +64,6 @@
 #include "td/const.h"
 #include "td/defines.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/heap.h"
 #include "td/inline.h"
 #include "td/object_heaps.h"
@@ -270,7 +269,7 @@ bool OverlayClass::Mark(MarkType mark) {
           /*
           **	Don't show the squish unless the gross flag is active.
           */
-          if (!Special.IsGross && Class->Type != OVERLAY_SQUISH) {
+          if (!TheSpecial().IsGross && Class->Type != OVERLAY_SQUISH) {
             cellptr->Overlay = Class->Type;
             cellptr->OverlayData = 0;
           }

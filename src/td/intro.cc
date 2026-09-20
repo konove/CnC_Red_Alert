@@ -57,7 +57,6 @@
 #include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/palette.h"
@@ -78,7 +77,7 @@
 // Opens a movie on the given player without playing it. The io object must
 // stay alive until the player is closed. Returns true if the movie opened.
 static bool Open_Movie(VqaPlayer& player, GameFileVqaIo& io, const char* name) {
-  if (!TheDebugState().quiet() && Audio.is_open()) {
+  if (!TheDebugState().quiet() && TheAudio().is_open()) {
     AnimControl.OptionFlags |= VQAOPTF_AUDIO;
   } else {
     AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
@@ -149,7 +148,7 @@ void Choose_Side() {
   //	speechg = MixArchive::RetrieveData("GDI_SLCT.AUD");
   //	speechn = MixArchive::RetrieveData("NOD_SLCT.AUD");
 
-  if (Special.IsFromInstall) {
+  if (TheSpecial().IsFromInstall) {
     {
       TheScreen().visible_page().Clear();
       PreserveVQAScreen = true;
@@ -177,7 +176,7 @@ void Choose_Side() {
   // setpalette = 1;
   //}
 
-  int statichandle = Audio.Play(staticaud, 255, 64);
+  int statichandle = TheAudio().Play(staticaud, 255, 64);
   CountDownTimerClass sample_timer;
   sample_timer.Set(0x3f);
   Alloc_Object(new ScorePrintClass(TXT_GDI_NAME, 0, 180, yellowpal));
@@ -202,7 +201,7 @@ void Choose_Side() {
   }
 
   while (endframe != frame ||
-         (speechplaying && Audio.IsPlaying(speech.data()))) {
+         (speechplaying && TheAudio().IsPlaying(speech.data()))) {
     anim.DrawFrame(TheScreen().sys_mem_page(), frame++);
     if (setpalette) {
       Wait_Vert_Blank();
@@ -214,9 +213,9 @@ void Choose_Side() {
     /*
     ** If the sample has stopped or is about to then restart it
     */
-    if (!Audio.IsPlaying(staticaud.data()) || !sample_timer.Time()) {
-      Audio.Stop(statichandle);
-      statichandle = Audio.Play(staticaud, 255, 64);
+    if (!TheAudio().IsPlaying(staticaud.data()) || !sample_timer.Time()) {
+      TheAudio().Stop(statichandle);
+      statichandle = TheAudio().Play(staticaud, 255, 64);
       sample_timer.Set(0x3f);
     }
     Call_Back_Delay(3);  // delay only if haven't clicked
@@ -244,7 +243,7 @@ void Choose_Side() {
         TheWorld().whom() = HOUSE_GOOD;
         TheWorld().scen_player() = SCEN_PLAYER_GDI;
         endframe = 0;
-        Audio.Play(speechg);
+        TheAudio().Play(speechg);
         speechplaying = true;
         speech = speechg;
 
@@ -254,7 +253,7 @@ void Choose_Side() {
         endframe = 14;
         TheWorld().whom() = HOUSE_BAD;
         TheWorld().scen_player() = SCEN_PLAYER_NOD;
-        Audio.Play(speechn);
+        TheAudio().Play(speechn);
         speechplaying = true;
         speech = speechn;
       }
@@ -276,7 +275,7 @@ void Choose_Side() {
   /*
   ** Skip the briefings if we're in special mode.
   */
-  if (Special.IsJurassic && AreThingiesEnabled) {
+  if (TheSpecial().IsJurassic && AreThingiesEnabled) {
     if (nodbrief) {
       nodbrief_player.Close();
       nodbrief = false;
@@ -325,7 +324,7 @@ void Choose_Side() {
   } else {
     PreserveVQAScreen = true;
   }
-  Audio.Stop(statichandle);
+  TheAudio().Stop(statichandle);
   delete[] port::CharBytes(std::span(staticaud)).data();
   delete[] port::CharBytes(std::span(speechg)).data();
   delete[] port::CharBytes(std::span(speechn)).data();

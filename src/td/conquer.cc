@@ -334,7 +334,7 @@ void Main_Game() {
               case SDLG_OPTIONS:
                 TheMap().Help_Text(TXT_NONE);
                 TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
-                Options.Process();
+                TheOptions().Process();
                 TheMap().Revert_Mouse_Shape();
                 SpecialDialog = SDLG_NONE;
                 break;
@@ -395,7 +395,7 @@ void Main_Game() {
             case SDLG_OPTIONS:
               TheMap().Help_Text(TXT_NONE);
               TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
-              Options.Process();
+              TheOptions().Process();
               TheMap().Revert_Mouse_Shape();
               SpecialDialog = SDLG_NONE;
               break;
@@ -483,10 +483,10 @@ void Main_Game() {
     *menu after all
     */
 #ifdef FORCE_WINSOCK
-    if (Special.IsFromWChat) {
+    if (TheSpecial().IsFromWChat) {
       Shutdown_Network();  // Clear up the pseudo IPX stuff
       Winsock.Close();
-      Special.IsFromWChat = false;
+      TheSpecial().IsFromWChat = false;
       SpawnedFromWChat = false;
 #ifdef _WIN32
       DDEServer.Delete_MPlayer_Game_Info();  // Make sure we dont use the same
@@ -678,7 +678,8 @@ void Keyboard_Process(KeyNumType& input) {
     */
     case VK_F:
       if constexpr (config::kCheatKeysEnabled) {
-        Options.IsFreeScroll = !static_cast<bool>(Options.IsFreeScroll);
+        TheOptions().IsFreeScroll =
+            !static_cast<bool>(TheOptions().IsFreeScroll);
       }
       break;
 
@@ -1311,8 +1312,8 @@ void Call_Back() {
   /*
   **	Score maintenance
   */
-  if (Audio.is_open()) {
-    Theme.AI();
+  if (TheAudio().is_open()) {
+    TheTheme().AI();
     Speak_AI();
   }
 
@@ -1673,8 +1674,8 @@ bool Main_Loop() {
   *start one *	playing. This is usually the symptom of there being no
   *transition score.
   */
-  if (Audio.is_open() && Theme.What_Is_Playing() == THEME_NONE) {
-    Theme.Queue_Song(THEME_PICK_ANOTHER);
+  if (TheAudio().is_open() && TheTheme().What_Is_Playing() == THEME_NONE) {
+    TheTheme().Queue_Song(THEME_PICK_ANOTHER);
   }
 
   /*
@@ -1686,7 +1687,7 @@ bool Main_Loop() {
     const int framedelay = 60 / TheSession().desired_frame_rate();
     frame_timer.Set(framedelay);
   } else {
-    frame_timer.Set(Options.GameSpeed);
+    frame_timer.Set(TheOptions().GameSpeed);
   }
 
   /*
@@ -2145,7 +2146,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     Hide_Mouse();
     // Theme.Stop();
     // Theme.AI();
-    Theme.Queue_Song(theme);
+    TheTheme().Queue_Song(theme);
     if (!PreserveVQAScreen) {
       Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                       Call_Back);
@@ -2161,7 +2162,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     GameFileVqaIo movie_io;  // Must outlive the open movie.
     player.SetIo(&movie_io);
 
-    if (!TheDebugState().quiet() && Audio.is_open()) {
+    if (!TheDebugState().quiet() && TheAudio().is_open()) {
       AnimControl.OptionFlags |= VQAOPTF_AUDIO;
     } else {
       AnimControl.OptionFlags &= ~VQAOPTF_AUDIO;
@@ -3032,8 +3033,8 @@ bool Force_CD_Available(int cd) {
   /*
   ** Flag that we will have to restart the theme
   */
-  theme_playing = Theme.What_Is_Playing();
-  Theme.Stop();
+  theme_playing = TheTheme().What_Is_Playing();
+  TheTheme().Stop();
 
   if (!new_cd_drive) {
     /*
@@ -3090,7 +3091,7 @@ bool Force_CD_Available(int cd) {
           Set_Logic_Page(TheScreen().visible_view());
       // The theme was already stopped above, and the only way out of this
       // loop is the cancel below, so there is nothing to remember here.
-      Theme.Stop();
+      TheTheme().Stop();
       int hidden = Get_Mouse_State();
       font = FontPtr;
       std::ranges::copy(CurrentPalette, std::begin(_palette));
@@ -3143,7 +3144,7 @@ bool Force_CD_Available(int cd) {
   if (cd > -1 && _last != cd) {
     _last = cd;
 
-    Theme.Stop();
+    TheTheme().Stop();
 
     Assets::DiscArchives& archives = TheAssets().disc_archives();
     delete archives.movies;
@@ -3158,7 +3159,7 @@ bool Force_CD_Available(int cd) {
 #endif
 
   if (theme_playing != THEME_NONE) {
-    Theme.Queue_Song(theme_playing);
+    TheTheme().Queue_Song(theme_playing);
   }
 
   return true;

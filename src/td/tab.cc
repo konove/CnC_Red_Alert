@@ -56,7 +56,6 @@
 #include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/globals.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/queue.h"
@@ -191,9 +190,9 @@ void TabClass::AI(KeyNumType& input, int x, int y) {
     **	in certain areas. If the special scroll modification is not active, then
     **	the tabs never work when the mouse is at the top of the screen.
     */
-    if (y > 0 ||
-        (Special.IsScrollMod && ((x > 3 && x < Eva_Width) ||
-                                 (x < width - 3 && x > width - Eva_Width)))) {
+    if (y > 0 || (TheSpecial().IsScrollMod &&
+                  ((x > 3 && x < Eva_Width) ||
+                   (x < width - 3 && x > width - Eva_Width)))) {
       ok = true;
     }
 

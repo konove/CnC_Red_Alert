@@ -110,6 +110,13 @@
 static Game* game = nullptr;
 
 void ShutDown() {
+  // Everything Prog_End() takes down belongs to the Game, so there is
+  // nothing to do before one is built or after one is gone. A test that
+  // reaches an error exit without a Game gets here too.
+  if (game == nullptr) {
+    return;
+  }
+
   // Nothing is left for an allocation failure from here on to clean up.
   Memory_Error_Exit = ExitWithError;
   Prog_End();

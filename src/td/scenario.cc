@@ -142,7 +142,7 @@ bool Start_Scenario(char* root, bool briefing) {
     Play_Movie(BriefMovie);
     Play_Movie(ActionMovie, TheWorld().transit_theme());
   }
-  Theme.Queue_Song(THEME_AOI);
+  TheTheme().Queue_Song(THEME_AOI);
 
 #else
 
@@ -152,7 +152,7 @@ bool Start_Scenario(char* root, bool briefing) {
   ** we don't want a briefing movie on GDI scenario 1.
   */
   if (TheWorld().scenario() < 20 &&
-      (!Special.IsJurassic || !AreThingiesEnabled)) {
+      (!TheSpecial().IsJurassic || !AreThingiesEnabled)) {
     if (TheWorld().scenario() != 1 || TheWorld().whom() == HOUSE_GOOD) {
       Play_Movie(TheWorld().intro_movie());
     }
@@ -164,7 +164,7 @@ bool Start_Scenario(char* root, bool briefing) {
     }
     Play_Movie(TheWorld().action_movie(), TheWorld().transit_theme());
     if (TheWorld().transit_theme() == THEME_NONE) {
-      Theme.Queue_Song(THEME_AOI);
+      TheTheme().Queue_Song(THEME_AOI);
     }
   } else {
     Play_Movie(TheWorld().brief_movie());
@@ -191,7 +191,7 @@ bool Start_Scenario(char* root, bool briefing) {
       InMainLoop = oldinmain;
       //			Hide_Mouse();
       if (TheWorld().transit_theme() == THEME_NONE) {
-        Theme.Queue_Song(THEME_AOI);
+        TheTheme().Queue_Song(THEME_AOI);
       }
     }
 
@@ -204,7 +204,7 @@ bool Start_Scenario(char* root, bool briefing) {
   *Read_Scenario
   */
   CCDebugString("C&C95 - About to call Options.Set.\n");
-  Options.Set();
+  TheOptions().Set();
   CCDebugString("C&C95 - About to return from Start_Scenario.\n");
   return true;
 }
@@ -495,13 +495,13 @@ void Do_Win() {
       return;
     }
 
-    if (Special.IsJurassic && AreThingiesEnabled &&
+    if (TheSpecial().IsJurassic && AreThingiesEnabled &&
         TheWorld().scenario() == 5) {
       ShutDown();
       exit(0);
     }
 
-    if (!Special.IsJurassic || !AreThingiesEnabled) {
+    if (!TheSpecial().IsJurassic || !AreThingiesEnabled) {
       Keyboard::Clear();
       TheWorld().score().Presentation();
 

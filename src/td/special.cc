@@ -54,7 +54,6 @@
 #include "td/dialog.h"
 #include "td/event.h"
 #include "td/gadget.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
@@ -71,7 +70,7 @@
 #define kOptionY ((200 - kOptionHeight) / 2)
 
 void Special_Dialog() {
-  SpecialClass oldspecial = Special;
+  SpecialClass oldspecial = TheSpecial();
   GadgetClass* buttons = nullptr;
   static struct {
     int Description;
@@ -111,55 +110,55 @@ void Special_Dialog() {
       bool value = false;
       switch (base::At(_options, index).Description) {
         case TXT_SEPARATE_HELIPAD:
-          value = Special.IsSeparate;
+          value = TheSpecial().IsSeparate;
           break;
 
         case TXT_SHOW_NAMES:
-          value = Special.IsNamed;
+          value = TheSpecial().IsNamed;
           break;
 
         case TXT_DEFENDER_ADVANTAGE:
-          value = Special.IsDefenderAdvantage;
+          value = TheSpecial().IsDefenderAdvantage;
           break;
 
         case TXT_VISIBLE_TARGET:
-          value = Special.IsVisibleTarget;
+          value = TheSpecial().IsVisibleTarget;
           break;
 
         case TXT_TREE_TARGET:
-          value = Special.IsTreeTarget;
+          value = TheSpecial().IsTreeTarget;
           break;
 
         case TXT_MCV_DEPLOY:
-          value = Special.IsMCVDeploy;
+          value = TheSpecial().IsMCVDeploy;
           break;
 
         case TXT_SMART_DEFENCE:
-          value = Special.IsSmartDefense;
+          value = TheSpecial().IsSmartDefense;
           break;
 
         case TXT_THREE_POINT:
-          value = Special.IsThreePoint;
+          value = TheSpecial().IsThreePoint;
           break;
 
         case TXT_TIBERIUM_GROWTH:
-          value = Special.IsTGrowth;
+          value = TheSpecial().IsTGrowth;
           break;
 
         case TXT_TIBERIUM_SPREAD:
-          value = Special.IsTSpread;
+          value = TheSpecial().IsTSpread;
           break;
 
         case TXT_TIBERIUM_FAST:
-          value = Special.IsTFast;
+          value = TheSpecial().IsTFast;
           break;
 
         case TXT_ROAD_PIECES:
-          value = Special.IsRoad;
+          value = TheSpecial().IsRoad;
           break;
 
         case TXT_SCATTER:
-          value = Special.IsScatter;
+          value = TheSpecial().IsScatter;
           break;
         default:
           break;

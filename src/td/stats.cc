@@ -59,7 +59,6 @@
 #include "td/expand.h"
 #include "td/externs.h"
 #include "td/game_clock.h"
-#include "td/globals.h"
 #include "td/goptions.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -253,7 +252,7 @@ void Send_Statistics_Packet() {
     */
     stats.Add_Field(FIELD_AI_PLAYERS, TheSession().ghosts() ? "ON" : "OFF");
     stats.Add_Field(FIELD_CAPTURE_THE_FLAG,
-                    Special.IsCaptureTheFlag ? "ON" : "OFF");
+                    TheSpecial().IsCaptureTheFlag ? "ON" : "OFF");
 
     /*
     ** Start unit count
@@ -391,7 +390,8 @@ void Send_Statistics_Packet() {
     /*
     ** Game speed setting.
     */
-    stats.Add_Field(FIELD_SPEED_SETTING, static_cast<char>(Options.GameSpeed));
+    stats.Add_Field(FIELD_SPEED_SETTING,
+                    static_cast<char>(TheOptions().GameSpeed));
 
     /*
     ** Covert installed? (Yes/No)

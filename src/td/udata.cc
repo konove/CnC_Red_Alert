@@ -66,7 +66,6 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/externs.h"
-#include "td/globals.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/inline.h"
@@ -1465,7 +1464,8 @@ void UnitTypeClass::One_Time() {
     /*
     **	Fetch a pointer to the unit's shape data.
     */
-    if (!uclass.IsPieceOfEight || (Special.IsJurassic && AreThingiesEnabled)) {
+    if (!uclass.IsPieceOfEight ||
+        (TheSpecial().IsJurassic && AreThingiesEnabled)) {
       const auto fullname = std::filesystem::path(uclass.IniName)
                                 .replace_extension(".SHP")
                                 .string();
