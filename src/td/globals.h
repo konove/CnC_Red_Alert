@@ -9,7 +9,6 @@
 //  True if we are currently in focus windows app
 extern bool GameInFocus;
 extern bool GameActive;
-extern int32_t LParam;
 extern SpecialClass Special;
 extern bool InMovie;
 

@@ -48,7 +48,6 @@
 #include "absl/log/check.h"
 #include "base/enum_array.h"
 #include "ra/defines.h"
-#include "ra/globals.h"
 #include "ra/mission.h"
 #include "ra/techno.h"  // IWYU pragma: keep
 
@@ -256,9 +255,10 @@ bool RadioClass::Limbo() {
  **
  *                                                                                             *
  *    This routine will transmit the specified message to the object. This
- *routine differs     * from the normal Transmit_Message in that the LParam
- *value is "faked" into the            * parameter list. It is presumed that the
- *message sent with this function does not         * require the LParam. *
+ *routine differs     * from the normal Transmit_Message in that the discarded
+ * parameter value is "faked" into the            * parameter list. It is
+ * presumed that the message sent with this function does not         * require
+ * the discarded parameter. *
  *                                                                                             *
  * INPUT:   message  -- The message to transmit. *
  *                                                                                             *
@@ -274,5 +274,5 @@ RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
                                               RadioClass* to) {
   DCHECK(IsActive);
 
-  return Transmit_Message(message, LParam, to);
+  return Transmit_Message(message, DiscardedParam(), to);
 }

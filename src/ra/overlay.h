@@ -47,7 +47,6 @@
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/game_state.h"
-#include "ra/globals.h"
 #include "ra/object.h"
 #include "ra/type.h"
 

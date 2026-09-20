@@ -59,7 +59,6 @@
 #include "port/format.h"
 #include "ra/compat.h"
 #include "ra/game_clock.h"
-#include "ra/globals.h"
 #include "ra/palette.h"
 #include "sdllib/buffer.h"
 #include "sdllib/iff.h"

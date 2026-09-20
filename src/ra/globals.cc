@@ -36,9 +36,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#include "ra/globals.h"
 
-#include <cstdint>
 
 #include "ra/credits.h"
 
@@ -182,7 +180,6 @@ static CreditClass CreditDisplay;
 **	a long, but the value wasn't supplied to a function. This is used
 **	specifically for the default reference value. As such, it is not stable.
 */
-int32_t LParam;
 
 /***************************************************************************
 ** The currently-selected cell for the Scenario Editor

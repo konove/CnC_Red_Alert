@@ -44,7 +44,6 @@
 
 #include "base/enum_array.h"
 #include "ra/defines.h"
-#include "ra/globals.h"
 #include "ra/mission.h"
 #include "ra/object.h"
 
@@ -105,11 +104,18 @@ class RadioClass : public MissionClass {
   // there is no contact.
   [[nodiscard]] TechnoClass* Contact_With_Whom() const;
 
+  // A throwaway lvalue for the messages that carry no parameter. Its value
+  // means nothing, and every caller that leaves the parameter out shares it.
+  static int32_t& DiscardedParam() {
+    static int32_t discarded = 0;
+    return discarded;
+  }
+
   // Inherited from base class(es).
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
   virtual RadioMessageType Transmit_Message(RadioMessageType message,
-                                            int32_t& param = LParam,
+                                            int32_t& param = DiscardedParam(),
                                             RadioClass* to = nullptr);
   virtual RadioMessageType Transmit_Message(RadioMessageType message,
                                             RadioClass* to);

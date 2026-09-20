@@ -48,7 +48,6 @@
 #include <cstdint>
 
 #include "td/defines.h"
-#include "td/globals.h"
 #include "td/mission.h"
 #include "td/techno.h"  // IWYU pragma: keep
 
@@ -202,5 +201,5 @@ bool RadioClass::Limbo() {
 
 RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
                                               RadioClass* to) {
-  return Transmit_Message(message, LParam, to);
+  return Transmit_Message(message, DiscardedParam(), to);
 };
