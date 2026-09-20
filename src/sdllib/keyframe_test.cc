@@ -19,7 +19,6 @@
 
 // The SDL event loop delegates to the application; these decoder tests do not
 // pump events or draw into game windows.
-int WindowList[7][8]{};
 void SDL_Event_Handler(SDL_Event* /*event*/) {}
 
 namespace {

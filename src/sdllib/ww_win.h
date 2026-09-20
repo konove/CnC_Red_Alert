@@ -70,7 +70,11 @@ inline constexpr int kWindowCursorY =
     7;  // Current cursor Y position (in lines).
 inline constexpr int kWindowPadding = 0x1000;
 
-extern int WindowList[7][8];
+// How many windows the games describe. The first two rows are the screen
+// and the error window and the system needs them where they are.
+inline constexpr int kWindowCount = 7;
+
+extern int WindowList[kWindowCount][8];
 extern int WindowColumns;
 extern int WindowLines;
 extern int WindowWidth;

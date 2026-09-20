@@ -44,7 +44,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 #include "td/credits.h"
 #include "td/defines.h"
 #include "td/externs.h"
@@ -396,30 +395,6 @@ int TrapCheckHeap = 0;                  // start checking the Heap
 ** multiplayer games.
 */
 
-int WindowList[][8] = {
-    /* xbyte, ypixel, bytewid, pixelht, cursor color, bkgd color, cursor x,
-       cursor y */
-
-    /* do not change the first 2 entries!! they are necc. to the system */
-    {0, 0, 40, 200, kWhite, kBlack, 0, 0},  /* screen window */
-    {1, 75, 38, 100, kWhite, kBlack, 0, 0}, /* DOS Error window */
-
-    // Tactical map.
-    {0, 0, 40, 200, kWhite, kLtGrey, 0, 0},
-
-    // Initial menu window.
-    {12, 199 - 42, 16, 42, kLtGrey, kGrey, 0, 0},
-
-    // Sidebar clipping window.
-    {0, 0, 0, 0, 0, 0, 0, 0},
-
-    // Scenario editor window.
-    {5, 30, 30, 140, 0, 0, 0, 0},
-
-    // Custom window.
-    {0, 0, 0, 0, 0, 0, 0, 0},
-
-};
 
 bool SoundOn;
 static CountDownTimerClass DebugTimer{0L};

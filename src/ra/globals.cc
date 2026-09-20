@@ -40,10 +40,7 @@
 
 #include <cstdint>
 
-#include "ra/compat.h"
 #include "ra/credits.h"
-#include "sdllib/ww_win.h"
-#include "sdllib/wwstd.h"
 
 
 
@@ -224,29 +221,6 @@ int32_t LParam;
 
 
 
-int WindowList[][8] = {
-    /* xbyte, ypixel, bytewid, pixelht, cursor color, bkgd color,	cursor
-       x, cursor y */
-
-    /* do not change the first 2 entries!! they are necc. to the system */
-
-    {0, 0, 40 * 16, 400, kWhite, kBlack, 0, 0},     /* screen window */
-    {1 * 8, 75, 38 * 8, 100, kWhite, kBlack, 0, 0}, /* DOS Error window */
-
-    // Tactical map.
-    {0, 0, 40 * 16, 400, kWhite, kLtGrey, 0, 0},
-
-    // Initial menu window.
-    {12 * 8, 199 - 42, 16 * 8, 42, kLtGrey, DKGREY, 0, 0},
-
-    // Sidebar clipping window.
-    {0, 0, 0, 0, 0, 0, 0, 0},
-
-    // Scenario editor window.
-    {5 * 8, 30, 30 * 8, 140, 0, 0, 0, 0},
-
-    // Partial object draw sub-window.
-    {0, 0, 0, 0, kWhite, kBlack, 0, 0}};
 
 
 

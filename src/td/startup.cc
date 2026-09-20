@@ -92,6 +92,7 @@
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
+#include "sdllib/wwstd.h"
 #include "td/conquer.h"
 #include "td/debug_state.h"
 #include "td/goptions.h"
@@ -157,6 +158,24 @@ static Game* game = nullptr;
 // Hands what the command line asked for to whatever owns it. The screen
 // mode, the IPX socket, the bridge network and the 1.07 compatibility flag
 // wait for Read_Setup_Options(), because the config file asks for them too.
+// Fills in the window rows sdllib holds the storage for. The first two are
+// the screen and the error window, and the system needs them where they
+// are.
+static void InitWindowList() {
+  static constexpr int kRows[kWindowCount][8] = {
+      // xbyte, ypixel, bytewid, pixelht, fg, bg, cursor x, cursor y
+      {0, 0, 40, 200, kWhite, kBlack, 0, 0},         // Screen.
+      {1, 75, 38, 100, kWhite, kBlack, 0, 0},        // Error message.
+      {0, 0, 40, 200, kWhite, kLtGrey, 0, 0},        // Tactical map.
+      {12, 199 - 42, 16, 42, kLtGrey, kGrey, 0, 0},  // Initial menu.
+      {0, 0, 0, 0, 0, 0, 0, 0},                      // Sidebar clipping.
+      {5, 30, 30, 140, 0, 0, 0, 0},                  // Scenario editor.
+      {0, 0, 0, 0, 0, 0, 0, 0},                      // Custom.
+  };
+  base::CopyBytes(base::ObjectBytes(WindowList), base::ObjectBytes(kRows),
+                  sizeof(WindowList));
+}
+
 static void ApplyStartupOptions(const StartupOptions& options) {
   for (const std::string& path : options.search_paths) {
     SearchPaths::Add(path);
@@ -295,6 +314,7 @@ int main(int argc, char* argv[])
 
   const std::optional<StartupOptions> options = Parse_Command_Line(arguments);
   if (options.has_value()) {
+    InitWindowList();
     game->set_startup_options(*options);
     ApplyStartupOptions(*options);
 

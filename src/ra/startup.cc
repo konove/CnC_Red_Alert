@@ -56,6 +56,7 @@
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
 #include "base/array.h"
+#include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/bytes_of.h"
 #include "port/win32/win32_registry.h"
@@ -85,6 +86,7 @@
 #include "sdllib/file.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
+#include "sdllib/wwstd.h"
 #include "tech/disk_file.h"
 #include "tech/search_paths.h"
 #endif  // RA_NO_ENTRY_POINT
@@ -122,6 +124,24 @@ void ShutDown() {
 // Hands what the command line asked for to whatever owns it. The screen
 // mode, the IPX socket and the bridge network wait for ReadConfigOptions(),
 // because the config file asks for them too.
+// Fills in the window rows sdllib holds the storage for. The first two are
+// the screen and the error window, and the system needs them where they
+// are.
+static void InitWindowList() {
+  static constexpr int kRows[kWindowCount][8] = {
+      // xbyte, ypixel, bytewid, pixelht, fg, bg, cursor x, cursor y
+      {0, 0, 40 * 16, 400, kWhite, kBlack, 0, 0},            // Screen.
+      {1 * 8, 75, 38 * 8, 100, kWhite, kBlack, 0, 0},        // Error message.
+      {0, 0, 40 * 16, 400, kWhite, kLtGrey, 0, 0},           // Tactical map.
+      {12 * 8, 199 - 42, 16 * 8, 42, kLtGrey, kGrey, 0, 0},  // Initial menu.
+      {0, 0, 0, 0, 0, 0, 0, 0},              // Sidebar clipping.
+      {5 * 8, 30, 30 * 8, 140, 0, 0, 0, 0},  // Scenario editor.
+      {0, 0, 0, 0, kWhite, kBlack, 0, 0},    // Partial object draw.
+  };
+  base::CopyBytes(base::ObjectBytes(WindowList), base::ObjectBytes(kRows),
+                  sizeof(WindowList));
+}
+
 static void ApplyStartupOptions(const StartupOptions& options) {
   for (const std::string& path : options.search_paths) {
     SearchPaths::Add(path);
@@ -295,6 +315,7 @@ int main(const int argc, char* argv[])
     ShutDown();
     return EXIT_SUCCESS;
   }
+  InitWindowList();
   game->set_startup_options(*options);
   ApplyStartupOptions(*options);
 

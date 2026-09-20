@@ -23,12 +23,6 @@ constexpr int kHeight = 4;
 
 }  // namespace
 
-// The real table lives in ra/globals.cc, which would drag the whole game in.
-// One window, covering the whole buffer, is all these tests need.
-int WindowList[7][8] = {
-    {0, 0, kWidth, kHeight, 0, 0, 0, 0},
-};
-
 // sdllib leaves this to the application. No test here pumps the event loop.
 void SDL_Event_Handler(SDL_Event* /*event*/) {}
 
@@ -38,10 +32,17 @@ namespace {
 // length of one test and taken out again afterwards.
 class TestScreen {
  public:
+  // sdllib holds the window rows and the game fills them in; one window
+  // covering the whole buffer is all these tests need.
   TestScreen()
       : pixels_(std::size_t{kWidth} * kHeight, 0),
         buffer_(kWidth, kHeight, pixels_),
-        previous_(Set_Logic_Page(&buffer_)) {}
+        previous_(Set_Logic_Page(&buffer_)) {
+    WindowList[0][kWindowX] = 0;
+    WindowList[0][kWindowY] = 0;
+    WindowList[0][kWindowWidth] = kWidth;
+    WindowList[0][kWindowHeight] = kHeight;
+  }
 
   TestScreen(const TestScreen&) = delete;
   TestScreen& operator=(const TestScreen&) = delete;
