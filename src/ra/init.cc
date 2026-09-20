@@ -480,7 +480,7 @@ bool Select_Game(bool /*fade*/) {
 
   Show_Mouse();
 
-  NewUnitsEnabled = SecretUnitsEnabled =
+  Rule.NewUnitsEnabled = Rule.SecretUnitsEnabled =
       false;  // Assume new units disabled, unless specifically .INI enabled or
               // multiplayer negotiations enable it.
 
@@ -1086,9 +1086,9 @@ bool Select_Game(bool /*fade*/) {
     case GAME_NULL_MODEM:
     case GAME_IPX:
       if (!bAftermathMultiplayer) {
-        NewUnitsEnabled = SecretUnitsEnabled = false;
+        Rule.NewUnitsEnabled = Rule.SecretUnitsEnabled = false;
       } else {
-        NewUnitsEnabled = true;
+        Rule.NewUnitsEnabled = true;
       }
       //			debugprint( "Non Internet game: NewUnitsEnabled
       //= %i\n", NewUnitsEnabled );
@@ -1101,9 +1101,9 @@ bool Select_Game(bool /*fade*/) {
       }
       // if( pWolapi->bEnableNewAftermathUnits )
       if (bAftermathMultiplayer) {
-        NewUnitsEnabled = true;
+        Rule.NewUnitsEnabled = true;
       } else {
-        NewUnitsEnabled = SecretUnitsEnabled = false;
+        Rule.NewUnitsEnabled = Rule.SecretUnitsEnabled = false;
       }
       //			debugprint( "Internet game: NewUnitsEnabled =
       //%i\n", NewUnitsEnabled );
@@ -1174,7 +1174,7 @@ bool Select_Game(bool /*fade*/) {
   *value
   */
   if (Session.Type != GAME_INTERNET) {
-    UnitBuildPenalty = 100;
+    Rule.UnitBuildPenalty = 100;
   }
 
   /*

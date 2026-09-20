@@ -2721,7 +2721,7 @@ int UnitClass::Mission_Unload() {
       if (!Gems && !IsDumping) {
         Gems = 1;
         Gold = 0;
-        Arm.Set(QuakeDelay * House->ROFBias);
+        Arm.Set(Rule.QuakeDelay * House->ROFBias);
         if constexpr (config::kIsEnglish) {
           Speak(VOX_MADTANK_DEPLOYED);  // Only the English speech set has it.
         } else {
@@ -3971,7 +3971,7 @@ int UnitClass::Pip_Count() const {
   }
 
   if (*this == UNIT_CHRONOTANK) {
-    const int fulldur = ChronoTankDuration * kTicksPerMinute;
+    const int fulldur = Rule.ChronoTankDuration * kTicksPerMinute;
     return (fulldur - static_cast<int>(MoebiusCountDown.Value())) / (fulldur / 5);
   }
   return 0;

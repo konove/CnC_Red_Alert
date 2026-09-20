@@ -637,7 +637,8 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
               iscapturable =
                   dynamic_cast<BuildingClass*>(tech)->Class->IsCaptureable;
             }
-            if (tech->Health_Ratio() <= EngineerCaptureLevel && iscapturable) {
+            if (tech->Health_Ratio() <= Rule.EngineerCaptureLevel &&
+                iscapturable) {
               if (tech->Trigger.Is_Valid()) {
                 tech->Trigger->Spring(TEVENT_PLAYER_ENTERED, this);
               }
@@ -645,7 +646,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
               tech->Captured(House);
             } else {
               int damage = std::min(
-                  tech->Techno_Type_Class()->MaxStrength * EngineerDamage,
+                  tech->Techno_Type_Class()->MaxStrength * Rule.EngineerDamage,
                   tech->Strength - 1);
               tech->Take_Damage(damage, 0, WARHEAD_HE, this, true);
             }
@@ -2758,7 +2759,7 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
         return ACTION_GREPAIR;
       }
       if (bldg->Class->IsCaptureable) {
-        if (bldg->Health_Ratio() <= EngineerCaptureLevel) {
+        if (bldg->Health_Ratio() <= Rule.EngineerCaptureLevel) {
           return ACTION_CAPTURE;
         }
         return ACTION_DAMAGE;

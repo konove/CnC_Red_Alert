@@ -198,19 +198,11 @@ RulesClass::RulesClass()
       C4Delay(fixed::FromString(".03")),
 
       PathDelay(fixed::FromString(".016")),
-      MovieTime(fixed(1, 4)) {
-  NewUnitsEnabled = SecretUnitsEnabled = false;
-  MTankDistance = 30;
-  QuakeUnitDamage = fixed::_1_2;
-  QuakeBuildingDamage = fixed::_1_4;
-  QuakeInfantryDamage = 0;
-  QuakeDelay = 120;
-  ChronoTankDuration = fixed(3);
-  EngineerDamage = fixed::_1_3;  // Amount of damage an engineer does
-  EngineerCaptureLevel =
-      ConditionRed;  // Building damage level before engineer can capture
-  CarrierLaunchDelay = 60;
-}
+      MovieTime(fixed(1, 4)),
+      // Declared after ConditionRed, so it picks up that rule's default.
+      // Reading a different ConditionRed from the rules file does not move
+      // it, which is how it has always behaved.
+      EngineerCaptureLevel(ConditionRed) {}
 
 /***********************************************************************************************
  * Difficulty_Get -- Fetch the difficulty bias values. *

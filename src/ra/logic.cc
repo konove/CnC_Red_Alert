@@ -181,13 +181,14 @@ void LogicClass::AI() {
     if (TimeQuake && obj->IsActive && !obj->IsInLimbo && obj->Strength) {
       int damage = obj->Class_Of().MaxStrength * Rule.QuakeDamagePercent;
       if (TimeQuakeCenter) {
-        if (Distance(obj->As_Target(), TimeQuakeCenter) / 256 < MTankDistance) {
+        if (Distance(obj->As_Target(), TimeQuakeCenter) / 256 <
+            Rule.MTankDistance) {
           switch (obj->What_Am_I()) {
             case RTTI_INFANTRY:
-              damage = QuakeInfantryDamage;
+              damage = Rule.QuakeInfantryDamage;
               break;
             case RTTI_BUILDING:
-              damage = QuakeBuildingDamage * obj->Class_Of().MaxStrength;
+              damage = Rule.QuakeBuildingDamage * obj->Class_Of().MaxStrength;
               break;
             case RTTIType::RTTI_NONE:
             case RTTIType::RTTI_AIRCRAFT:
@@ -220,7 +221,7 @@ void LogicClass::AI() {
             case RTTIType::RTTI_VESSEL:
             case RTTIType::RTTI_VESSELTYPE:
             default:
-              damage = QuakeUnitDamage * obj->Class_Of().MaxStrength;
+              damage = Rule.QuakeUnitDamage * obj->Class_Of().MaxStrength;
               break;
           }
           if (damage) {

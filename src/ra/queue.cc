@@ -1980,7 +1980,7 @@ static RetcodeType Process_Serial_Packet(
                                          Rule.MessageDelay * kTicksPerMinute)) {
       const char* ptr = &base::At(serial_packet->Message.Message, 0);
       if (std::string_view(ptr).starts_with("SECRET UNITS ON ") &&
-          NewUnitsEnabled) {
+          Rule.NewUnitsEnabled) {
         Enable_Secret_Units();
       }
       Session.Messages.Add_Message(

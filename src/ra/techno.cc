@@ -707,7 +707,7 @@ int TechnoClass::Time_To_Build() const {
       val *= House->BuildSpeedBias;
     } else {
       val *= House->BuildSpeedBias *
-             fixed(UnitBuildPenalty, 100);  // UNIT_BUILD_BIAS;
+             fixed(Rule.UnitBuildPenalty, 100);  // UNIT_BUILD_BIAS;
     }
   }
 
@@ -731,7 +731,7 @@ int TechnoClass::Time_To_Build() const {
   if (divisor != 0) {
     // Hack: allow the multiple-factory bonus, but only up to two factories if
     //			this is an AM<->AM game.
-    if (NewUnitsEnabled) {
+    if (Rule.NewUnitsEnabled) {
       val /= std::min(divisor, 2);
     } else {
       val /= divisor;

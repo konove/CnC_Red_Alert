@@ -900,6 +900,44 @@ class RulesClass {
   */
   LEPTON TiberiumShortScan{0x0600};
   LEPTON TiberiumLongScan{0x2000};
+
+  /*
+  **	The Aftermath tunables. These have no entry in RULES.INI: the
+  **	expansion's AFTERMATH section switches the units on, and the rest are
+  **	fixed here.
+  */
+  // Whether the Aftermath units can be built, and whether the two secret
+  // units (the demolition truck and the phase transport) join them. The
+  // scenario and the multiplayer setup turn these on as well as the rules.
+  bool NewUnitsEnabled{false};
+  bool SecretUnitsEnabled{false};
+
+  // How far (in cells) the mobile gap generator shrouds around itself.
+  int MTankDistance{30};
+
+  // What a time quake does to each kind of target, and how many frames one
+  // lasts.
+  fixed QuakeUnitDamage{fixed::_1_2};
+  fixed QuakeBuildingDamage{fixed::_1_4};
+  int QuakeInfantryDamage{0};
+  int QuakeDelay{120};
+
+  // How long (in minutes) a chrono tank stays at its destination before it
+  // is pulled back.
+  fixed ChronoTankDuration{3};
+
+  // What fraction of a building's strength an engineer takes off, and the
+  // damage level a building must be at before one can capture it instead.
+  // EngineerCaptureLevel starts at ConditionRed's default.
+  fixed EngineerDamage{fixed::_1_3};
+  fixed EngineerCaptureLevel;
+
+  // The delay (in frames) between a carrier's aircraft launches.
+  int CarrierLaunchDelay{60};
+
+  // Build times are scaled by this percentage. The WOL lobby raises it to
+  // slow the game down; nothing else changes it.
+  int UnitBuildPenalty{100};
 };
 
 #endif  // CNC_RED_ALERT_RA_RULES_H_

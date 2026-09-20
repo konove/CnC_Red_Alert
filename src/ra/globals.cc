@@ -93,7 +93,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/audio_mixer.h"
-#include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/pk.h"
 #include "tech/random.h"
@@ -209,25 +208,12 @@ bool SaveTanya;
 
 bool AntsEnabled = false;
 
-bool NewUnitsEnabled = false;
-bool SecretUnitsEnabled = false;
-int MTankDistance = 15;
-int CarrierLaunchDelay = 60;
-
 int NewINIFormat = 0;
 
 bool TimeQuake;
 
 bool PendingTimeQuake;
 TARGET TimeQuakeCenter;
-fixed QuakeUnitDamage = fixed(3);
-fixed QuakeBuildingDamage = fixed(3);
-int QuakeInfantryDamage = 25;
-int QuakeDelay;
-fixed ChronoTankDuration = fixed(3);  // chrono override for chrono tanks
-fixed EngineerDamage = fixed::_1_3;   // Amount of damage an engineer does
-fixed EngineerCaptureLevel(
-    0x40);  // Building damage level before engineer can capture
 
 WWMouseClass* WWMouse = nullptr;
 bool InMovie = false;  // Are we currently playing a VQ movie?
@@ -564,6 +550,5 @@ Stopwatch<SystemTickSource> TickCount;
 */
 
 
-int UnitBuildPenalty = 100;
 
 bool bAutoSonarPulse = false;

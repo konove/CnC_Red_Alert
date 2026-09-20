@@ -1722,7 +1722,8 @@ void TeamClass::Coordinate_Attack() {
               *dynamic_cast<UnitClass*>(unit) == UNIT_CHRONOTANK) {
             auto* tank = dynamic_cast<UnitClass*>(unit);
             tank->Teleport_To(As_Cell(Target));
-            tank->MoebiusCountDown.Set(ChronoTankDuration * kTicksPerMinute);
+            tank->MoebiusCountDown.Set(Rule.ChronoTankDuration *
+                                       kTicksPerMinute);
             Scen.Do_BW_Fade();
             PlaySoundEffectAt(VOC_CHRONOTANK1, unit->Coord);
             tank->Assign_Target(kTargetNone);

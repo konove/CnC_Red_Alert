@@ -2313,7 +2313,7 @@ BulletClass* VesselClass::Fire_At(TARGET target, int which) {
   DCHECK(IsActive);
 
   if (*this == VESSEL_CARRIER) {
-    Arm.Set(CarrierLaunchDelay);
+    Arm.Set(Rule.CarrierLaunchDelay);
     FootClass* passenger = Detach_Object();
     if (passenger != nullptr) {
       ScenarioInit++;

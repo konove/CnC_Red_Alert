@@ -3531,9 +3531,9 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   //	UnitBuildPenalty = WWGetPrivateProfileInt ("Options", "BuildRate", 100,
   // buffer);
   if (bSlowUnitBuildRate) {
-    UnitBuildPenalty = 250;
+    Rule.UnitBuildPenalty = 250;
   } else {
-    UnitBuildPenalty = 100;
+    Rule.UnitBuildPenalty = 100;
   }
 
   // PlanetWestwoodGameID = WWGetPrivateProfileInt("Internet", "GameID", 0,

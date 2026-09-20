@@ -92,10 +92,6 @@ extern int NewINIFormat;
 
 extern bool AntsEnabled;
 
-extern bool NewUnitsEnabled;
-extern bool SecretUnitsEnabled;
-extern int MTankDistance;
-extern int CarrierLaunchDelay;
 
 extern const char* NameOverride[25];
 extern int NameIDOverride[25];
@@ -197,14 +193,6 @@ extern bool TimeQuake;
 
 extern bool PendingTimeQuake;
 extern TARGET TimeQuakeCenter;
-extern fixed QuakeUnitDamage;
-extern fixed QuakeBuildingDamage;
-extern int QuakeInfantryDamage;
-extern int QuakeDelay;
-extern fixed ChronoTankDuration;  // chrono override for chrono tanks
-extern fixed EngineerDamage;      // Amount of damage an engineer does
-extern fixed
-    EngineerCaptureLevel;  // Building damage level before engineer can capture
 
 /*
 **	Miscellaneous globals.
@@ -263,7 +251,6 @@ extern void* PacketLater;
 void Register_Game_Start_Time();
 void Register_Game_End_Time();
 void Send_Statistics_Packet();
-extern int UnitBuildPenalty;
 
 /*
 ** From SENDFILE.CPP - externs for scenario file transfers

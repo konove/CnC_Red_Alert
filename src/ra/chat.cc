@@ -129,7 +129,7 @@ static void Send_Network_Chat_Message(const int rc) {
   if (Session.MessageAddress.Is_Broadcast()) {
     char* ptr = &Session.GPacket.Message.Buf[0];
     if (std::string_view(ptr).starts_with("SECRET UNITS ON ") &&
-        NewUnitsEnabled) {
+        Rule.NewUnitsEnabled) {
       *ptr = 'X';  // force it to an odd hack so we know it was broadcast.
       Enable_Secret_Units();
     }
@@ -289,7 +289,7 @@ void Message_Input(KeyNumType& input) {
       // the setting stays in step without a new packet type.
       const char* ptr = &serial_packet->Message.Message[0];
       if (std::string_view(ptr).starts_with("SECRET UNITS ON ") &&
-          NewUnitsEnabled) {
+          Rule.NewUnitsEnabled) {
         Enable_Secret_Units();
       }
       port::SafeCopy(Session.LastMessage, serial_packet->Message.Message);
@@ -372,8 +372,9 @@ void IPX_Call_Back() {
                   static_cast<int>(Session.GPacket.Message.Color),
                   Session.GPacket.Message.Buf,
                   Rule.MessageDelay * kTicksPerMinute)) {
-            if (NewUnitsEnabled && std::string_view(Session.GPacket.Message.Buf)
-                                       .starts_with("XECRET UNITS ON ")) {
+            if (Rule.NewUnitsEnabled &&
+                std::string_view(Session.GPacket.Message.Buf)
+                    .starts_with("XECRET UNITS ON ")) {
               Session.GPacket.Message.Buf[0] = 'S';
               Enable_Secret_Units();
             }

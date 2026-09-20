@@ -635,7 +635,7 @@ bool HouseClass::Can_Build(const ObjectTypeClass* type,
   ** game in 'downshifted' mode against CounterStrike or Red Alert, then
   ** don't allow building this unit.
   */
-  if (!NewUnitsEnabled) {
+  if (!Rule.NewUnitsEnabled) {
     // The saved quantity arrays assume the Aftermath types are exactly those
     // past the kOriginal*Count boundaries; the data flags must agree.
     switch (type->What_Am_I()) {
@@ -2701,7 +2701,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
           drive.MoebiusCountDown.Set(Rule.ChronoDuration * kTicksPerMinute);
           if (tech->What_Am_I() == RTTI_UNIT &&
               dynamic_cast<UnitClass&>(*tech) == UNIT_CHRONOTANK) {
-            drive.MoebiusCountDown.Set(ChronoTankDuration * kTicksPerMinute);
+            drive.MoebiusCountDown.Set(Rule.ChronoTankDuration *
+                                       kTicksPerMinute);
           }
           Scen.Do_BW_Fade();
           PlaySoundEffectAt(VOC_CHRONO, drive.Coord);

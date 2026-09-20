@@ -2242,7 +2242,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	Return with flag saying that the scenario file was read.
   */
   if (Is_Aftermath_Installed() && (Session.Type == GAME_SKIRMISH)) {
-    bAftermathMultiplayer = NewUnitsEnabled = true;
+    bAftermathMultiplayer = Rule.NewUnitsEnabled = true;
   }
 
   ScenarioInit--;
