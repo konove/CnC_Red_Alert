@@ -79,6 +79,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <span>
 #include <utility>
 
 #include "absl/log/check.h"
@@ -114,6 +115,7 @@
 #include "ra/unit.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
+#include "ra/world.h"
 #include "tech/fixed.h"
 
 /***********************************************************************************************
@@ -150,7 +152,7 @@ static inline bool Is_It_Breathing(const FootClass* object) {
   *members are considered active because they need to *	be given special orders
   *and treatment.
   */
-  if (!ScenarioInit && object->IsInLimbo) {
+  if (!TheWorld().scenario_init() && object->IsInLimbo) {
     return false;
   }
 
@@ -332,7 +334,7 @@ TeamClass::TeamClass(TeamTypeClass* type, HouseClass* owner)
   }
 
   if (Class->Origin != -1) {
-    Zone = ::As_Target(base::At(Scen.Waypoint, Class->Origin));
+    Zone = ::As_Target(base::At(TheScenario().Waypoint, Class->Origin));
   }
   Class->Number++;
 
@@ -506,11 +508,12 @@ void TeamClass::AI() {
         *should be sprung.
         */
         if (IsLeaveMap) {
-          for (int index = 0; index < LogicTriggers.Count(); index++) {
-            TriggerClass* trig = LogicTriggers.at(index);
+          for (int index = 0; index < TheWorld().logic_triggers().Count();
+               index++) {
+            TriggerClass* trig = TheWorld().logic_triggers().at(index);
             if (trig->Spring(TEVENT_LEAVES_MAP)) {
               index--;
-              if (LogicTriggers.Count() == 0) {
+              if (TheWorld().logic_triggers().Count() == 0) {
                 break;
               }
             }
@@ -650,11 +653,12 @@ void TeamClass::AI() {
     *one that *	depends on this team leaving the map should be sprung.
     */
     if (IsLeaveMap) {
-      for (int index = 0; index < LogicTriggers.Count(); index++) {
-        TriggerClass* trig = LogicTriggers.at(index);
+      for (int index = 0; index < TheWorld().logic_triggers().Count();
+           index++) {
+        TriggerClass* trig = TheWorld().logic_triggers().at(index);
         if (trig->Spring(TEVENT_LEAVES_MAP)) {
           index--;
-          if (LogicTriggers.Count() == 0) {
+          if (TheWorld().logic_triggers().Count() == 0) {
             break;
           }
         }
@@ -689,10 +693,11 @@ void TeamClass::AI() {
                   ScenarioClass::kWaypointCount &&
               Member != nullptr) {
             const FootClass* leader = Fetch_A_Leader();
-            CELL movecell = base::At(Scen.Waypoint, mission->Data.Value);
+            CELL movecell =
+                base::At(TheScenario().Waypoint, mission->Data.Value);
             if ((!Is_Leaving_Map()) &&
                 (leader->Can_Enter_Cell(movecell) != MOVE_OK)) {
-              movecell = Map.Nearby_Location(
+              movecell = TheMap().Nearby_Location(
                   movecell, leader->Techno_Type_Class()->Speed);
             }
 
@@ -706,8 +711,8 @@ void TeamClass::AI() {
         case TMISSION_SPY:
           if (static_cast<unsigned>(mission->Data.Value) <
               ScenarioClass::kWaypointCount) {
-            Assign_Mission_Target(
-                ::As_Target(base::At(Scen.Waypoint, mission->Data.Value)));
+            Assign_Mission_Target(::As_Target(
+                base::At(TheScenario().Waypoint, mission->Data.Value)));
           }
           break;
 
@@ -1176,7 +1181,7 @@ int TeamClass::Recruit(int typeindex) {
   COORDINATE center = As_Coord(Zone);
 
   if (Class->Origin != -1) {
-    center = Cell_Coord(base::At(Scen.Waypoint, Class->Origin));
+    center = Cell_Coord(base::At(TheScenario().Waypoint, Class->Origin));
   }
 
   int added = 0;  // Total number added to team.
@@ -1688,7 +1693,7 @@ void TeamClass::Coordinate_Attack() {
   */
   if (Is_Target_Cell(Target) && Member != nullptr &&
       Fetch_A_Leader()->What_Am_I() != RTTI_AIRCRAFT) {
-    const CellClass* cellptr = &Map.at(As_Cell(Target));
+    const CellClass* cellptr = &TheMap().at(As_Cell(Target));
     const TemplateType tt = cellptr->TType;
     if (cellptr->Cell_Object()) {
       Target = cellptr->Cell_Object()->As_Target();
@@ -1735,7 +1740,7 @@ void TeamClass::Coordinate_Attack() {
             tank->Teleport_To(As_Cell(Target));
             tank->MoebiusCountDown.Set(TheRules().ChronoTankDuration *
                                        kTicksPerMinute);
-            Scen.Do_BW_Fade();
+            TheScenario().Do_BW_Fade();
             PlaySoundEffectAt(VOC_CHRONOTANK1, unit->Coord);
             tank->Assign_Target(kTargetNone);
             tank->Assign_Mission(MISSION_GUARD);
@@ -2177,7 +2182,7 @@ int TeamClass::TMission_Unload() {
         *retracting *	the mine layer. During this time, it should not be
         *considered to have *	finished its unload mission.
         */
-        if (Map.at(unit->Center_Coord()).Cell_Building() == nullptr &&
+        if (TheMap().at(unit->Center_Coord()).Cell_Building() == nullptr &&
             unit->Mission != MISSION_UNLOAD) {
           unit->Assign_Destination(kTargetNone);
           unit->Assign_Target(kTargetNone);
@@ -2411,7 +2416,8 @@ bool TeamClass::Is_Leaving_Map() const {
         base::Suffix(Class->MissionList, CurrentMission).data();
 
     if (mission->Mission == TMISSION_MOVE &&
-        !Map.In_Radar(base::At(Scen.Waypoint, mission->Data.Value))) {
+        !TheMap().In_Radar(
+            base::At(TheScenario().Waypoint, mission->Data.Value))) {
       return true;
     }
   }
@@ -2631,8 +2637,8 @@ int TeamClass::TMission_Formation() {
   ** Now calculate the group's movement type and speed
   */
   if (Formation != FORMATION_NONE) {
-    base::At(TeamSpeed, group) = SPEED_WHEEL;
-    base::At(TeamMaxSpeed, group) = MPH_LIGHT_SPEED;
+    base::At(std::span(TheWorld().team_speed()), group) = SPEED_WHEEL;
+    base::At(std::span(TheWorld().team_max_speed()), group) = MPH_LIGHT_SPEED;
     member = Member;
     while (member != nullptr) {
       const RTTIType mytype = member->What_Am_I();
@@ -2657,9 +2663,10 @@ int TeamClass::TMission_Formation() {
         speedcheck = true;
       }
 
-      if (speedcheck && (memmax < base::At(TeamMaxSpeed, group))) {
-        base::At(TeamMaxSpeed, group) = memmax;
-        base::At(TeamSpeed, group) = memspeed;
+      if (speedcheck &&
+          (memmax < base::At(std::span(TheWorld().team_max_speed()), group))) {
+        base::At(std::span(TheWorld().team_max_speed()), group) = memmax;
+        base::At(std::span(TheWorld().team_speed()), group) = memspeed;
       }
 
       member = member->Member;
@@ -2671,8 +2678,10 @@ int TeamClass::TMission_Formation() {
     */
     member = Member;
     while (member != nullptr) {
-      member->FormationSpeed = base::At(TeamSpeed, group);
-      member->FormationMaxSpeed = base::At(TeamMaxSpeed, group);
+      member->FormationSpeed =
+          base::At(std::span(TheWorld().team_speed()), group);
+      member->FormationMaxSpeed =
+          base::At(std::span(TheWorld().team_max_speed()), group);
       if (member->What_Am_I() == RTTI_INFANTRY) {
         member->FormationSpeed = SPEED_FOOT;
         member->FormationMaxSpeed = MPH_SLOW_ISH;
@@ -2792,7 +2801,7 @@ int TeamClass::TMission_Attack() {
 int TeamClass::TMission_Spy() {
   if (Is_Target_Cell(MissionTarget)) {
     const CELL cell = As_Cell(MissionTarget);
-    const CellClass* cellptr = &Map.at(cell);
+    const CellClass* cellptr = &TheMap().at(cell);
     const ObjectClass* bldg = cellptr->Cell_Building();
     if (bldg != nullptr) {
       Assign_Mission_Target(bldg->As_Target());
@@ -2922,7 +2931,7 @@ int TeamClass::TMission_Invulnerable() {
 int TeamClass::TMission_Set_Global() {
   const TeamMissionClass* mission =
       base::Suffix(Class->MissionList, CurrentMission).data();
-  Scen.Set_Global_To(mission->Data.Value, true);
+  TheScenario().Set_Global_To(mission->Data.Value, true);
   IsNextMission = true;
   return 1;
 }
@@ -2956,7 +2965,7 @@ int TeamClass::TMission_Patrol() {
     if (static_cast<unsigned>(mission->Data.Value) <
         ScenarioClass::kWaypointCount) {
       Assign_Mission_Target(
-          ::As_Target(base::At(Scen.Waypoint, mission->Data.Value)));
+          ::As_Target(base::At(TheScenario().Waypoint, mission->Data.Value)));
     }
   }
 
@@ -3019,7 +3028,7 @@ int TeamClass::TMission_Deploy() {
         *retracting *	the mine layer. During this time, it should not be
         *considered to have *	finished its unload mission.
         */
-        if (!Map.at(unit->Center_Coord()).Cell_Building() &&
+        if (!TheMap().at(unit->Center_Coord()).Cell_Building() &&
             unit->Mission != MISSION_UNLOAD) {
           unit->Assign_Destination(kTargetNone);
           unit->Assign_Target(kTargetNone);

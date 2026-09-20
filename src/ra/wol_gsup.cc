@@ -64,6 +64,7 @@
 #include "ra/wolapi/wolapi.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
+#include "ra/world.h"
 #include "ra/wsproto.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/keyboard.h"
@@ -3780,10 +3781,10 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
         port::SafeCopy(szNameOfHostWhoJustBailedOnUs, szHostName);
         return;
       }
-      Scen.Scenario = Session.Options.ScenarioIndex;
+      TheScenario().Scenario = Session.Options.ScenarioIndex;
       //			debugprint( "Scen.Scenario = %i\n",
       // Scen.Scenario );
-      port::SafeCopy(Scen.ScenarioName, Session.ScenarioFileName);
+      port::SafeCopy(TheScenario().ScenarioName, Session.ScenarioFileName);
       //			debugprint( "Scen.ScenarioName = %s\n",
       // Scen.ScenarioName );
     } else {
@@ -3803,21 +3804,21 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       Session.Options.ScenarioIndex =
           ScenarioIndex_From_Filename(Session.ScenarioFileName);
       DCHECK(Session.Options.ScenarioIndex != -1);
-      Scen.Scenario = Session.Options.ScenarioIndex;
+      TheScenario().Scenario = Session.Options.ScenarioIndex;
       //			debugprint( "Scen.Scenario = %i\n",
       // Scen.Scenario );
       port::SafeCopy(
-          Scen.ScenarioName,
+          TheScenario().ScenarioName,
           Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Filename());
       //			debugprint( "Scen.ScenarioName = %s\n",
       // Scen.ScenarioName );
     }
   } else  //	bHost
   {
-    Scen.Scenario = Session.Options.ScenarioIndex;
+    TheScenario().Scenario = Session.Options.ScenarioIndex;
     //		debugprint( "Scen.Scenario = %i\n", Scen.Scenario );
     port::SafeCopy(
-        Scen.ScenarioName,
+        TheScenario().ScenarioName,
         Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Filename());
     //		debugprint( "Scen.ScenarioName = %s\n", Scen.ScenarioName );
     port::SafeCopy(
@@ -3843,7 +3844,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
 
   if (bHost) {
     if (Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Official() &&
-        (!Force_Scenario_Available(Scen.ScenarioName))) {
+        (!Force_Scenario_Available(TheScenario().ScenarioName))) {
       bExitForGameTrigger = false;
       *szTriggerGameStartInfo = 0;
       pWO->bSelfDestruct = true;
@@ -3854,7 +3855,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       //	Send the scenario to any guests that requested a download.
       // debugprint( "Send the scenario to any guests that requested a
       // download.\n" );
-      Send_Remote_File(Scen.ScenarioName, 1);
+      Send_Remote_File(TheScenario().ScenarioName, 1);
     }
   }
 

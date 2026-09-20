@@ -45,7 +45,6 @@
 #include "ra/bullet.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/infantry.h"
@@ -60,6 +59,7 @@
 #include "ra/unit.h"
 #include "ra/vessel.h"
 #include "ra/vortex.h"
+#include "ra/world.h"
 
 /***********************************************************************************************
  * Detach_This_From_All -- Detaches this object from all others. *
@@ -115,11 +115,11 @@ void Detach_This_From_All(TARGET target, bool all) {
       TheObjectHeaps().anim().Ptr(index)->Detach(target, all);
     }
 
-    Map.Detach(target, all);
+    TheMap().Detach(target, all);
 
     LogicClass::Detach(target, all);
 
-    ChronalVortex.Detach(target);
+    TheWorld().chronal_vortex().Detach(target);
 
     /*
     **	Removing a trigger type must also remove all triggers that are dependant

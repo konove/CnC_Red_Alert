@@ -66,7 +66,6 @@
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -80,6 +79,7 @@
 #include "ra/type.h"
 #include "ra/type_heaps.h"
 #include "ra/unit.h"
+#include "ra/world.h"
 #include "sdllib/shape.h"
 #include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "tech/game_file.h"
@@ -1039,7 +1039,7 @@ void UnitTypeClass::Display(int x, int y, WindowNumberType window,
 void UnitTypeClass::Prep_For_Add() {
   for (const UnitType index : magic_enum::enum_values<UnitType>()) {
     if (!As_Reference(index).Get_Image_Data().empty()) {
-      Map.Add_To_List(&As_Reference(index));
+      TheMap().Add_To_List(&As_Reference(index));
     }
   }
 }

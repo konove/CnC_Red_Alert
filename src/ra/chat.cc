@@ -49,6 +49,7 @@
 #include "ra/vector_dynamic.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
+#include "ra/world.h"
 #include "sdllib/keyboard.h"
 #include "tech/fixed.h"
 
@@ -98,7 +99,7 @@ constexpr KeyNumType kPageRespondKey = KN_RETURN;  // KN_COMMA
                             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                             txt, 0, 464);
 
-  Map.Flag_To_Redraw(false);
+  TheMap().Flag_To_Redraw(false);
 
   Keyboard->Clear();
 }
@@ -189,7 +190,7 @@ void Message_Input(KeyNumType& input) {
             Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             txt, 0, 464);
 
-        Map.Flag_To_Redraw(false);
+        TheMap().Flag_To_Redraw(false);
       }
     } else if ((Session.Type == GAME_IPX || Session.Type == GAME_INTERNET) &&
                !Session.Messages.Is_Edit()) {
@@ -204,7 +205,7 @@ void Message_Input(KeyNumType& input) {
             Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             txt, 0, 464);
 
-        Map.Flag_To_Redraw(false);
+        TheMap().Flag_To_Redraw(false);
 
       } else if (input - KN_F1 < Ipx.Num_Connections() && !Session.ObiWan) {
         const int id = Ipx.Connection_ID(input - KN_F1);
@@ -221,7 +222,7 @@ void Message_Input(KeyNumType& input) {
             Session.ColorIdx, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             txt, 0, 464);
 
-        Map.Flag_To_Redraw(false);
+        TheMap().Flag_To_Redraw(false);
       }
     }
   }
@@ -233,7 +234,7 @@ void Message_Input(KeyNumType& input) {
   // If a single character has been added to an edit buffer, update the
   // display.
   if (rc == 1 && Session.Type != GAME_NORMAL) {
-    Map.Flag_To_Redraw(false);
+    TheMap().Flag_To_Redraw(false);
   }
 
   // If backspace was hit, redraw the map.  If the edit message was removed,
@@ -242,7 +243,7 @@ void Message_Input(KeyNumType& input) {
   // by not force-drawing it, but just setting the IsToRedraw bit.
   if (rc == 2 && Session.Type != GAME_NORMAL) {
     if (copy_input == KN_ESC) {
-      Map.Flag_To_Redraw(true);
+      TheMap().Flag_To_Redraw(true);
       if constexpr (config::kWolapiEnabled) {
         if (pWolapi) {
           // Just in case user was responding to a page from outside the
@@ -251,9 +252,9 @@ void Message_Input(KeyNumType& input) {
         }
       }
     } else {
-      Map.Flag_To_Redraw(false);
+      TheMap().Flag_To_Redraw(false);
     }
-    Map.IsDisplayToRedraw = true;
+    TheMap().IsDisplayToRedraw = true;
   }
 
   // Send a message
@@ -325,7 +326,7 @@ void Message_Input(KeyNumType& input) {
 
     // Tell the map to completely update itself, since a message is now
     // missing.
-    Map.Flag_To_Redraw(true);
+    TheMap().Flag_To_Redraw(true);
   }
 }
 
@@ -390,7 +391,7 @@ void IPX_Call_Back() {
 
           // Tell the map to do a partial update (just to force the
           // messages to redraw).
-          Map.Flag_To_Redraw(true);
+          TheMap().Flag_To_Redraw(true);
 
           // Save this message in our last-message buffer
           port::SafeCopy(Session.LastMessage, Session.GPacket.Message.Buf);

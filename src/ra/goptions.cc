@@ -72,6 +72,7 @@
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/wolstrng.h"
+#include "ra/world.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -179,15 +180,15 @@ void GameOptionsClass::Process() {
     if (base::At(_constants, index).ID == kButtonDraw) {
       if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
           Session.Players.Count() == 2) {
-        if (Scen.bLocalProposesDraw) {
-          if (!Scen.bOtherProposesDraw) {
+        if (TheScenario().bLocalProposesDraw) {
+          if (!TheScenario().bOtherProposesDraw) {
             g = new TextButtonClass(kButtonDraw, TXT_WOL_RETRACT_DRAW,
                                     kTpfButton, 0, y);
           } else {
             continue;  //	Game will end now anyway.
           }
         } else {
-          if (!Scen.bOtherProposesDraw) {
+          if (!TheScenario().bOtherProposesDraw) {
             g = new TextButtonClass(kButtonDraw, TXT_WOL_PROPOSE_DRAW,
                                     kTpfButton, 0, y);
           } else {
@@ -301,8 +302,8 @@ void GameOptionsClass::Process() {
       **	Redraw the map.
       */
       TheScreen().hidden_view().Clear();
-      Map.Flag_To_Redraw(true);
-      Map.Render();
+      TheMap().Flag_To_Redraw(true);
+      TheMap().Render();
 
       /*
       **	Reset up the window.  Window x-coords are in bytes not pixels.
@@ -328,7 +329,7 @@ void GameOptionsClass::Process() {
           "%s\rV%s", OptionX + OptionWidth - 50,
           OptionY + OptionHeight - (Session.Type == GAME_NORMAL ? 64 : 48),
           GadgetClass::Get_Color_Scheme(), kTBlack,
-          TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, Scen.ScenarioName,
+          TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, TheScenario().ScenarioName,
           Version_Name());
 
       buttons->Draw_All();
@@ -440,7 +441,7 @@ void GameOptionsClass::Process() {
           display = true;
           if (Restate_Mission() == BriefingAction::kPlayVideo) {
             BreakoutAllowed = true;
-            Play_Movie(Scen.BriefMovie);
+            Play_Movie(TheScenario().BriefMovie);
             Theme.Queue_Song(THEME_PICK_ANOTHER);
           }
           ThePalettes().black_palette().Adjust(0x08,
@@ -449,7 +450,7 @@ void GameOptionsClass::Process() {
           ThePalettes().black_palette().Adjust(0xFF);
           ThePalettes().black_palette().Set();
           ThePalettes().game_palette().Set();
-          Map.Flag_To_Redraw(true);
+          TheMap().Flag_To_Redraw(true);
           process = false;
           break;
 
@@ -519,12 +520,12 @@ void GameOptionsClass::Process() {
           break;
 
         case kButtonDraw:
-          if (Scen.bLocalProposesDraw) {
+          if (TheScenario().bLocalProposesDraw) {
             //	Retract draw offer.
             OutList.Add(EventClass(EventClass::RETRACT_DRAW));
             process = false;
           } else {
-            if (!Scen.bOtherProposesDraw) {
+            if (!TheScenario().bOtherProposesDraw) {
               //	Propose a draw?
               if (Surrender_Dialog(TXT_WOL_PROPOSE_DRAW_CONFIRM)) {
                 OutList.Add(EventClass(EventClass::PROPOSE_DRAW));
@@ -575,8 +576,8 @@ void GameOptionsClass::Process() {
   */
   Keyboard->Clear();
   TheScreen().hidden_view().Clear();
-  Map.Flag_To_Redraw(true);
-  Map.Render();
+  TheMap().Flag_To_Redraw(true);
+  TheMap().Render();
 }
 
 void GameOptionsClass::Adjust_Variables_For_Resolution() {

@@ -69,7 +69,6 @@
 #include "ra/const.h"
 #include "ra/debug_state.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -83,6 +82,7 @@
 #include "ra/text_ids.h"
 #include "ra/type.h"
 #include "ra/type_heaps.h"
+#include "ra/world.h"
 #include "sdllib/shape.h"
 #include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "tech/game_file.h"
@@ -1111,7 +1111,8 @@ ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
 bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   auto* i = new InfantryClass(Type, house);
   if (i != nullptr) {
-    const COORDINATE coord = Map.at(cell).Closest_Free_Spot(Cell_Coord(cell));
+    const COORDINATE coord =
+        TheMap().at(cell).Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
       return i->Unlimbo(coord, DIR_E);
     }
@@ -1200,7 +1201,7 @@ void InfantryTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 void InfantryTypeClass::Prep_For_Add() {
   for (const InfantryType index : magic_enum::enum_values<InfantryType>()) {
-    Map.Add_To_List(&As_Reference(index));
+    TheMap().Add_To_List(&As_Reference(index));
   }
 }
 

@@ -51,7 +51,6 @@
 #include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/palettes.h"
@@ -62,6 +61,7 @@
 #include "ra/shape_draw.h"
 #include "ra/sidebar.h"
 #include "ra/text_ids.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -157,13 +157,13 @@ void TabClass::Draw_Credits_Tab() {
   /*
   ** Use the new sidebar art for 640x400
   */
-  CC_Draw_Shape(TabShape, Map.MoneyFlashTimer.Value() > 1 ? 8 : 6,
+  CC_Draw_Shape(TabShape, TheMap().MoneyFlashTimer.Value() > 1 ? 8 : 6,
                 (320 - EVA_WIDTH) * 2, 0, WINDOW_MAIN, SHAPE_NORMAL);
 
-  if (Scen.MissionTimer.IsRunning()) {
-    const bool light =
-        Scen.MissionTimer.Value() < kTicksPerMinute * TheRules().TimerWarning ||
-        Map.FlasherTimer.HasTimeLeft();
+  if (TheScenario().MissionTimer.IsRunning()) {
+    const bool light = TheScenario().MissionTimer.Value() <
+                           kTicksPerMinute * TheRules().TimerWarning ||
+                       TheMap().FlasherTimer.HasTimeLeft();
     CC_Draw_Shape(TabShape, light ? 4 : 2, 320, 0, WINDOW_MAIN, SHAPE_NORMAL);
   }
 }
@@ -268,7 +268,7 @@ void TabClass::Set_Active(int select) {
       break;
 
     case 1:
-      Map.Activate(-1);
+      TheMap().Activate(-1);
       break;
 
     default:

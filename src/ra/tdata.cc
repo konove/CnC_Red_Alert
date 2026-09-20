@@ -63,7 +63,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/const.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
@@ -75,6 +74,7 @@
 #include "ra/text_ids.h"
 #include "ra/type.h"
 #include "ra/type_heaps.h"
+#include "ra/world.h"
 #include "sdllib/shape.h"
 #include "tech/mix_archive.h"
 
@@ -514,7 +514,7 @@ void TerrainTypeClass::One_Time() {}
  * HISTORY: * 05/16/1994 JLB : Created. *
  *=============================================================================================*/
 void TerrainTypeClass::Init(TheaterType theater) {
-  if (theater != LastTheater) {
+  if (theater != TheWorld().last_theater()) {
     for (const TerrainType index : magic_enum::enum_values<TerrainType>()) {
       TerrainTypeClass& terrain = As_Reference(index);
       /*
@@ -611,7 +611,7 @@ void TerrainTypeClass::Display(int x, int y, WindowNumberType window,
 void TerrainTypeClass::Prep_For_Add() {
   for (const TerrainType index : magic_enum::enum_values<TerrainType>()) {
     if (!As_Reference(index).Get_Image_Data().empty()) {
-      Map.Add_To_List(&As_Reference(index));
+      TheMap().Add_To_List(&As_Reference(index));
     }
   }
 }

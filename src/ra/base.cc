@@ -66,11 +66,11 @@
 #include "ra/cell.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/house.h"
 #include "ra/map.h"
 #include "ra/object.h"
 #include "ra/type.h"
+#include "ra/world.h"
 #include "tech/archive.h"
 #include "tech/number_parse.h"
 
@@ -154,7 +154,7 @@ BuildingClass* BaseClass::Get_Building(int index) const {
   const CELL target_cell = node.Cell;
 
   // Create a reference to the map cell to avoid repeated lookups.
-  const auto& map_cell = Map.at(target_cell);
+  const auto& map_cell = TheMap().at(target_cell);
 
   // Helper lambda to check if a candidate object matches our criteria.
   // Returns the cast pointer if successful, nullptr otherwise.
@@ -334,7 +334,7 @@ void BaseClass::Read_INI(CCINIClass& ini) {
   **	First, determine the house of the human player, and set the Base's house
   **	accordingly.
   */
-  House = ini.Get_HousesType(INI_Name(), "Player", PlayerPtr->Class->House);
+  House = ini.Get_HousesType(INI_Name(), "Player", ThePlayer()->Class->House);
 
   /*
   **	Read the number of buildings that will go into the base node list

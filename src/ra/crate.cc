@@ -45,11 +45,11 @@
 
 #include "ra/cell.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/overlay.h"
 #include "ra/rules.h"
+#include "ra/world.h"
 #include "tech/fixed.h"
 
 /***********************************************************************************************
@@ -125,11 +125,11 @@ bool CrateClass::Create_Crate(CELL cell) {
  *cell so that tracking can occur.                      *
  *=============================================================================================*/
 bool CrateClass::Put_Crate(CELL& cell) {
-  const int old = ScenarioInit;
-  ScenarioInit = 0;
+  const int old = TheWorld().scenario_init();
+  TheWorld().scenario_init() = 0;
 
-  if (Map.In_Radar(cell)) {
-    const CellClass* cellptr = &Map.at(cell);
+  if (TheMap().In_Radar(cell)) {
+    const CellClass* cellptr = &TheMap().at(cell);
 
     while (cellptr->Overlay != OVERLAY_NONE &&
            !cellptr->Is_Clear_To_Build(SPEED_FLOAT) &&
@@ -137,11 +137,11 @@ bool CrateClass::Put_Crate(CELL& cell) {
       cell = MapEditClass::Pick_Random_Location();
 
       if (Percent_Chance(100 * TheRules().WaterCrateChance)) {
-        cell = Map.Nearby_Location(cell, SPEED_FLOAT);
+        cell = TheMap().Nearby_Location(cell, SPEED_FLOAT);
       } else {
-        cell = Map.Nearby_Location(cell, SPEED_TRACK);
+        cell = TheMap().Nearby_Location(cell, SPEED_TRACK);
       }
-      cellptr = &Map.at(cell);
+      cellptr = &TheMap().at(cell);
     }
 
     if (cellptr->Is_Clear_To_Build(SPEED_FLOAT)) {
@@ -149,11 +149,11 @@ bool CrateClass::Put_Crate(CELL& cell) {
     } else {
       new OverlayClass(OVERLAY_WOOD_CRATE, cell);
     }
-    ScenarioInit = old;
+    TheWorld().scenario_init() = old;
     return true;
   }
 
-  ScenarioInit = old;
+  TheWorld().scenario_init() = old;
   return false;
 }
 
@@ -172,8 +172,8 @@ bool CrateClass::Put_Crate(CELL& cell) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 bool CrateClass::Get_Crate(CELL cell) {
-  if (Map.In_Radar(cell)) {
-    CellClass* cellptr = &Map.at(cell);
+  if (TheMap().In_Radar(cell)) {
+    CellClass* cellptr = &TheMap().at(cell);
 
     if (cellptr->Overlay == OVERLAY_WOOD_CRATE ||
         cellptr->Overlay == OVERLAY_STEEL_CRATE ||

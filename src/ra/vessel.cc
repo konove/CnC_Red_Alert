@@ -119,6 +119,7 @@
 #include "ra/type_heaps.h"
 #include "ra/unit.h"
 #include "ra/weapon.h"
+#include "ra/world.h"
 #include "tech/fixed.h"
 #include "tech/number_parse.h"
 
@@ -305,13 +306,14 @@ MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
     return MOVE_NO;
   }
 
-  const CellClass* cellptr = &Map.at(cell);
+  const CellClass* cellptr = &TheMap().at(cell);
 
   /*
   **	Moving off the edge of the map is not allowed unless
   **	this is a loaner vehicle.
   */
-  if (!ScenarioInit && !Map.In_Radar(cell) && !Is_Allowed_To_Leave_Map()) {
+  if (!TheWorld().scenario_init() && !TheMap().In_Radar(cell) &&
+      !Is_Allowed_To_Leave_Map()) {
     return MOVE_NO;
   }
 
@@ -584,7 +586,7 @@ void VesselClass::AI() {
   }
 
 #ifndef CLIPDRAW
-  if (Map.In_View(Coord_Cell(Center_Coord())) &&
+  if (TheMap().In_View(Coord_Cell(Center_Coord())) &&
       Visual_Character() != VISUAL_HIDDEN &&
       Visual_Character() != VISUAL_NORMAL) {
     Mark(MARK_CHANGE);
@@ -689,7 +691,7 @@ void VesselClass::Per_Cell_Process(PCPType why) {
     if (IsToSelfRepair) {
       for (const FacingType face : magic_enum::enum_values<FacingType>()) {
         const CELL cell = Coord_Cell(Adjacent_Cell(Center_Coord(), face));
-        const BuildingClass* whom = Map.at(cell).Cell_Building();
+        const BuildingClass* whom = TheMap().at(cell).Cell_Building();
         if (whom != nullptr &&
             (*whom == STRUCT_SHIP_YARD || *whom == STRUCT_SUB_PEN)) {
           if (IsOwnedByPlayer) {
@@ -752,8 +754,8 @@ ActionType VesselClass::What_Action(ObjectClass* object) {
             break;
           }
           const CELL cellnum = Adjacent_Cell(Coord_Cell(Coord), face);
-          const CellClass* cell = &Map.at(cellnum);
-          if (!Map.In_Radar(cellnum) ||
+          const CellClass* cell = &TheMap().at(cellnum);
+          if (!TheMap().In_Radar(cellnum) ||
               TheRules().ground().at(cell->Land_Type()).Cost.at(SPEED_FOOT) ==
                   0 ||
               cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
@@ -1045,14 +1047,15 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
         int totaldist = ::Distance(coord, obj->Center_Coord());
         while (totaldist > CELL_LEPTON_W) {
           coord = Coord_Move(coord, dir, CELL_LEPTON_W);
-          if ((Map.at(coord).Land_Type() != LAND_WATER) && (!isbridgetarget)) {
+          if ((TheMap().at(coord).Land_Type() != LAND_WATER) &&
+              (!isbridgetarget)) {
             return FIRE_RANGE;
           }
 
           /*
           ** Check for friendly boats in the way.
           */
-          const TechnoClass* tech = Map.at(coord).Cell_Techno();
+          const TechnoClass* tech = TheMap().at(coord).Cell_Techno();
           if (tech != nullptr && tech != this && House->Is_Ally(tech)) {
             return FIRE_RANGE;
           }
@@ -1581,7 +1584,7 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
                   ? 128
                   : -128;
     } else {
-      const CellClass* cell = &Map.at(cellnum);
+      const CellClass* cell = &TheMap().at(cellnum);
       if (TheRules().ground().at(cell->Land_Type()).Cost.at(SPEED_FOOT) == 0 ||
           cell->Flag.Occupy.Building || cell->Flag.Occupy.Vehicle ||
           cell->Flag.Occupy.Monolith ||
@@ -1747,10 +1750,10 @@ int VesselClass::Mission_Unload() {
               const CELL newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
               if (passenger->Can_Enter_Cell(newcell) == MOVE_OK) {
-                ScenarioInit++;
+                TheWorld().scenario_init()++;
                 passenger->Unlimbo(
                     Coord_Move(Coord, newface, CELL_LEPTON_W / 2), newface);
-                ScenarioInit--;
+                TheWorld().scenario_init()--;
                 passenger->Assign_Mission(MISSION_MOVE);
                 passenger->Assign_Destination(::As_Target(newcell));
                 passenger->Commence();
@@ -1776,7 +1779,7 @@ int VesselClass::Mission_Unload() {
               */
               for (const FacingType face :
                    magic_enum::enum_values<FacingType>()) {
-                CellClass* cellptr = &Map.at(Coord).Adjacent_Cell(face);
+                CellClass* cellptr = &TheMap().at(Coord).Adjacent_Cell(face);
                 if (cellptr->Is_Clear_To_Move(SPEED_TRACK, true, true)) {
                   cellptr->Incoming(0, true);
                 }
@@ -1892,7 +1895,7 @@ int VesselClass::Mission_Retreat() {
         //				CELL cell =
         // Map.Calculated_Cell(House->Control.Edge, (Team.Is_Valid()) ?
         // Team->Class->Origin : -1, -1, Class->Speed);
-        const CELL cell = Map.Calculated_Cell(
+        const CELL cell = TheMap().Calculated_Cell(
             House->Control.Edge, Team.Is_Valid() ? Team->Class->Origin : -1,
             Coord_Cell(Center_Coord()), Class->Speed);
         if (Team.Is_Valid()) {
@@ -2115,13 +2118,13 @@ ActionType VesselClass::What_Action(CELL cell) const {
   DCHECK(IsActive);
 
   const ActionType action = DriveClass::What_Action(cell);
-  if (action == ACTION_NOMOVE && Map.at(cell).Land_Type() == LAND_BEACH) {
+  if (action == ACTION_NOMOVE && TheMap().at(cell).Land_Type() == LAND_BEACH) {
     return ACTION_MOVE;
   }
 
   if (action == ACTION_NOMOVE && Class->PrimaryWeapon != nullptr &&
       Class->PrimaryWeapon->Bullet->IsSubSurface &&
-      Map.at(cell).Is_Bridge_Here()) {
+      TheMap().at(cell).Is_Bridge_Here()) {
     return ACTION_ATTACK;
   }
   return action;
@@ -2247,7 +2250,7 @@ void VesselClass::Combat_AI() {
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 bool VesselClass::Edge_Of_World_AI() {
-  if (!IsDriving && !Map.In_Radar(Coord_Cell(Coord)) && IsLocked) {
+  if (!IsDriving && !TheMap().In_Radar(Coord_Cell(Coord)) && IsLocked) {
     if (Team.Is_Valid()) {
       Team->IsLeaveMap = true;
     }
@@ -2321,9 +2324,9 @@ BulletClass* VesselClass::Fire_At(TARGET target, int which) {
     Arm.Set(TheRules().CarrierLaunchDelay);
     FootClass* passenger = Detach_Object();
     if (passenger != nullptr) {
-      ScenarioInit++;
+      TheWorld().scenario_init()++;
       passenger->Unlimbo(Center_Coord());
-      ScenarioInit--;
+      TheWorld().scenario_init()--;
       passenger->Assign_Mission(MISSION_ATTACK);
       passenger->Assign_Target(TarCom);
       passenger->Commence();

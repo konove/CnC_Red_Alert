@@ -171,6 +171,7 @@
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/vortex.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -392,7 +393,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   /*
   ** Save the new theater value
   */
-  Scen.Theater = theater;
+  TheScenario().Theater = theater;
 
   /*
   ** Unload old mixfiles, and cache the new ones
@@ -400,7 +401,7 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   absl::SNPrintF(fullname, sizeof(fullname), "%s.MIX",
                  Theaters.at(theater).Root);
 
-  if (Scen.Theater != LastTheater) {
+  if (TheScenario().Theater != TheWorld().last_theater()) {
     delete theater_data;
 
     theater_data = MixArchive::Register(fullname, &FastKey);
@@ -1501,16 +1502,16 @@ bool DisplayClass::Map_Cell(CELL cell, HouseClass* house) {
   ** First check for the condition where we're spying on a house's radar
   ** facility, to see if his mapping is applicable to us.
   */
-  if (house && house != PlayerPtr) {
-    if (house->RadarSpied & base::Bit<uint32_t>(PlayerPtr->Class->House)) {
-      house = PlayerPtr;
+  if (house && house != ThePlayer()) {
+    if (house->RadarSpied & base::Bit<uint32_t>(ThePlayer()->Class->House)) {
+      house = ThePlayer();
     }
-    if (Session.Type == GAME_NORMAL && house->Is_Ally(PlayerPtr)) {
-      house = PlayerPtr;
+    if (Session.Type == GAME_NORMAL && house->Is_Ally(ThePlayer())) {
+      house = ThePlayer();
     }
   }
 
-  if (house != PlayerPtr || !In_Radar(cell)) {
+  if (house != ThePlayer() || !In_Radar(cell)) {
     return false;
   }
 
@@ -1747,7 +1748,7 @@ void DisplayClass::Draw_It(bool forced) {
     /*
     ** Mark all cells under the vortex to be redrawn
     */
-    ChronalVortex.Set_Redraw();
+    TheWorld().chronal_vortex().Set_Redraw();
 
     /*
     ** If the multiplayer message system is displaying one or more messages,
@@ -1842,9 +1843,9 @@ void DisplayClass::Draw_It(bool forced) {
       /*
       ** Record new map position for future reference.
       */
-      ScenarioInit++;
+      TheWorld().scenario_init()++;
       Set_Tactical_Position(DesiredTacticalCoord);
-      ScenarioInit--;
+      TheWorld().scenario_init()--;
 
       if (!forced) {
         /*
@@ -1999,11 +2000,11 @@ void DisplayClass::Draw_It(bool forced) {
       *has changed but *	not enough to result in any visible map change.
       *This is likely to occur with very *	slow scroll rates.
       */
-      ScenarioInit++;
+      TheWorld().scenario_init()++;
       if (DesiredTacticalCoord != TacticalCoord) {
         Set_Tactical_Position(DesiredTacticalCoord);
       }
-      ScenarioInit--;
+      TheWorld().scenario_init()--;
     }
 
     /*
@@ -2043,7 +2044,7 @@ void DisplayClass::Draw_It(bool forced) {
       /*
       ** Draw the vortex effect over the terrain
       */
-      ChronalVortex.Render();
+      TheWorld().chronal_vortex().Render();
 
       /*
       **	Redraw the game objects layer by layer. The layer drawing occurs
@@ -2471,7 +2472,7 @@ CELL DisplayClass::Calculated_Cell(SourceType dir, WAYPOINT waypoint, CELL cell,
   */
   CELL trycell = -1;
   if (waypoint != -1) {
-    trycell = base::At(Scen.Waypoint, waypoint);
+    trycell = base::At(TheScenario().Waypoint, waypoint);
   }
   if (trycell == -1) {
     trycell = cell;
@@ -2881,25 +2882,26 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   const bool edge = y == 0 || x == 0 ||
                     x == TheScreen().visible_view().Get_Width() - 1 ||
                     y == TheScreen().visible_view().Get_Height() - 1;
-  const COORDINATE coord = Map.Pixel_To_Coord(x, y);
+  const COORDINATE coord = TheMap().Pixel_To_Coord(x, y);
   const CELL cell = Coord_Cell(coord);
   if (coord) {
-    const bool shadow = !Map.at(cell).IsMapped && !TheDebugState().unshroud();
-    x -= Map.TacPixelX;
-    y -= Map.TacPixelY;
+    const bool shadow =
+        !TheMap().at(cell).IsMapped && !TheDebugState().unshroud();
+    x -= TheMap().TacPixelX;
+    y -= TheMap().TacPixelY;
 
     /*
     ** Cause any displayed cursor to move along with the mouse cursor.
     */
-    if (cell != Map.ZoneCell) {
-      Map.Set_Cursor_Pos(cell);
+    if (cell != TheMap().ZoneCell) {
+      TheMap().Set_Cursor_Pos(cell);
     }
 
     /*
     **	Determine the object that the mouse is currently over.
     */
     if (!shadow) {
-      object = Map.Close_Object(coord);
+      object = TheMap().Close_Object(coord);
 
       /*
       **	Special case check to ignore cloaked object if not owned by the
@@ -2919,11 +2921,11 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     **	If there is a currently selected object, then the action to perform if
     **	the left mouse button were clicked must be determined.
     */
-    if (CurrentObject.Count()) {
+    if (TheWorld().current_object().Count()) {
       if (object != nullptr) {
-        action = CurrentObject.at(0)->What_Action(object);
+        action = TheWorld().current_object().at(0)->What_Action(object);
       } else {
-        action = CurrentObject.at(0)->What_Action(cell);
+        action = TheWorld().current_object().at(0)->What_Action(cell);
       }
 
     } else {
@@ -2931,8 +2933,8 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
         action = ACTION_SELECT;
       }
 
-      if (Map.IsRepairMode) {
-        if (object && object->Owner() == PlayerPtr->Class->House &&
+      if (TheMap().IsRepairMode) {
+        if (object && object->Owner() == ThePlayer()->Class->House &&
             object->Can_Repair()) {
           action = ACTION_REPAIR;
         } else {
@@ -2940,8 +2942,8 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
         }
       }
 
-      if (Map.IsSellMode) {
-        if (object && object->Owner() == PlayerPtr->Class->House &&
+      if (TheMap().IsSellMode) {
+        if (object && object->Owner() == ThePlayer()->Class->House &&
             object->Can_Demolish()) {
           if (object->What_Am_I() == RTTI_BUILDING) {
             action = ACTION_SELL;
@@ -2952,9 +2954,10 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
           /*
           **	Check to see if the cursor is over an owned wall.
           */
-          if (Map.at(cell).Overlay != OVERLAY_NONE &&
-              OverlayTypeClass::As_Reference(Map.at(cell).Overlay).IsWall &&
-              Map.at(cell).Owner == PlayerPtr->Class->House) {
+          if (TheMap().at(cell).Overlay != OVERLAY_NONE &&
+              OverlayTypeClass::As_Reference(TheMap().at(cell).Overlay)
+                  .IsWall &&
+              TheMap().at(cell).Owner == ThePlayer()->Class->House) {
             action = ACTION_SELL;
           } else {
             action = ACTION_NO_SELL;
@@ -2962,36 +2965,36 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
         }
       }
 
-      if (Map.IsTargettingMode == SPC_NUCLEAR_BOMB) {
+      if (TheMap().IsTargettingMode == SPC_NUCLEAR_BOMB) {
         action = ACTION_NUKE_BOMB;
       }
 
-      if (Map.IsTargettingMode == SPC_PARA_BOMB) {
+      if (TheMap().IsTargettingMode == SPC_PARA_BOMB) {
         action = ACTION_PARA_BOMB;
       }
 
-      if (Map.IsTargettingMode == SPC_PARA_INFANTRY) {
+      if (TheMap().IsTargettingMode == SPC_PARA_INFANTRY) {
         action = ACTION_PARA_INFANTRY;
       }
 
-      if (Map.IsTargettingMode == SPC_SPY_MISSION) {
+      if (TheMap().IsTargettingMode == SPC_SPY_MISSION) {
         action = ACTION_SPY_MISSION;
       }
 
-      if (Map.IsTargettingMode == SPC_IRON_CURTAIN) {
+      if (TheMap().IsTargettingMode == SPC_IRON_CURTAIN) {
         action = ACTION_IRON_CURTAIN;
       }
 
-      if (Map.IsTargettingMode == SPC_CHRONOSPHERE) {
+      if (TheMap().IsTargettingMode == SPC_CHRONOSPHERE) {
         action = ACTION_CHRONOSPHERE;
       }
 
-      if (Map.IsTargettingMode == kSpcChrono2) {
+      if (TheMap().IsTargettingMode == kSpcChrono2) {
         action = ACTION_CHRONO2;
         if (shadow) {
           action = ACTION_NOMOVE;
         }
-        const ObjectClass* tobject = As_Object(PlayerPtr->UnitToTeleport);
+        const ObjectClass* tobject = As_Object(ThePlayer()->UnitToTeleport);
 
         /*
         **	Determine if the object can be teleported to the destination
@@ -3008,11 +3011,11 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
 
         } else {  // If the object is no longer valid, cancel targetting mode.
           action = ACTION_NOMOVE;
-          Map.IsTargettingMode = SPC_NONE;
+          TheMap().IsTargettingMode = SPC_NONE;
         }
       }
 
-      if (Map.PendingObject) {
+      if (TheMap().PendingObject) {
         action = ACTION_NONE;
       }
     }
@@ -3020,15 +3023,15 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     /*
     **	Move any cursor displayed.
     */
-    if (cell != Map.ZoneCell) {
-      Map.Set_Cursor_Pos(cell);
+    if (cell != TheMap().ZoneCell) {
+      TheMap().Set_Cursor_Pos(cell);
     }
 
     /*
     **	A right mouse button press cancels the current action or selection.
     */
     if (flags & kRightPress) {
-      Map.Mouse_Right_Press();
+      TheMap().Mouse_Right_Press();
     }
 
     /*
@@ -3036,7 +3039,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     *know about it, *	then it must be informed. Do this by faking a mouse
     *release event.
     */
-    if (flags & kLeftUp && Map.IsRubberBand) {
+    if (flags & kLeftUp && TheMap().IsRubberBand) {
       flags |= kLeftRelease;
     }
 
@@ -3046,7 +3049,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     *currently over and what *	object is currently selected.
     */
     if ((!edge) && (flags & kLeftUp)) {
-      Map.Mouse_Left_Up(cell, shadow, object, action);
+      TheMap().Mouse_Left_Up(cell, shadow, object, action);
     }
 
     /*
@@ -3054,7 +3057,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     *is *	intercepted and possible rubber-band mode is flagged.
     */
     if (flags & kLeftRelease) {
-      Map.Mouse_Left_Release(cell, x, y, object, action);
+      TheMap().Mouse_Left_Release(cell, x, y, object, action);
     }
 
     /*
@@ -3064,8 +3067,8 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     **	held down and moved a certain minimum distance.
     */
     if (!edge && flags & kLeftPress) {
-      Map.Mouse_Left_Up(cell, shadow, object, action);
-      Map.Mouse_Left_Press(x, y);
+      TheMap().Mouse_Left_Up(cell, shadow, object, action);
+      TheMap().Mouse_Left_Press(x, y);
     }
 
     /*
@@ -3074,7 +3077,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     **	and flag the map to redraw it.
     */
     if (flags & kLeftHeld) {
-      Map.Mouse_Left_Held(x, y);
+      TheMap().Mouse_Left_Held(x, y);
     }
   }
 
@@ -3121,7 +3124,7 @@ void DisplayClass::Mouse_Right_Press() {
   }
 
   // If it breaks... call 228.
-  Set_Default_Mouse(MOUSE_NORMAL, Map.IsSmall);
+  Set_Default_Mouse(MOUSE_NORMAL, TheMap().IsSmall);
 }
 
 /***********************************************************************************************
@@ -3229,8 +3232,8 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
         break;
 
       case ACTION_NOMOVE:
-        if (CurrentObject.Count() &&
-            CurrentObject.at(0)->What_Am_I() == RTTI_AIRCRAFT) {
+        if (TheWorld().current_object().Count() &&
+            TheWorld().current_object().at(0)->What_Am_I() == RTTI_AIRCRAFT) {
           Set_Default_Mouse(MOUSE_NO_MOVE, wsmall);
           break;
         }
@@ -3291,9 +3294,9 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
         break;
 
       case ACTION_ATTACK:
-        if (Target_Legal(target) && CurrentObject.Count() == 1 &&
-            CurrentObject.at(0)->Is_Techno() &&
-            dynamic_cast<TechnoClass*>(CurrentObject.at(0))
+        if (Target_Legal(target) && TheWorld().current_object().Count() == 1 &&
+            TheWorld().current_object().at(0)->Is_Techno() &&
+            dynamic_cast<TechnoClass*>(TheWorld().current_object().at(0))
                 ->In_Range(target, 0)) {
           Set_Default_Mouse(MOUSE_STAY_ATTACK, wsmall);
           break;
@@ -3401,7 +3404,7 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
       /*
       **	Fetch the appropriate background color for help text.
       */
-      if (PlayerPtr->Is_Ally(object)) {
+      if (ThePlayer()->Is_Ally(object)) {
         color = kGreen;
       } else {
         if (object->Owner() == HOUSE_NONE || object->Owner() == HOUSE_NEUTRAL) {
@@ -3419,7 +3422,7 @@ void DisplayClass::Mouse_Left_Up(CELL cell, bool shadow, ObjectClass* object,
       if ((object->Is_Techno() &&
            !dynamic_cast<const TechnoTypeClass&>(object->Class_Of())
                 .IsNominal) &&
-          (!dynamic_cast<TechnoClass*>(object)->House->Is_Ally(PlayerPtr))) {
+          (!dynamic_cast<TechnoClass*>(object)->House->Is_Ally(ThePlayer()))) {
         //				if (!PlayerPtr->Is_Ally(object)) {
         switch (object->What_Am_I()) {
           case RTTI_INFANTRY:
@@ -3527,16 +3530,17 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
       Set_Default_Mouse(MOUSE_NORMAL, wsmall);
       IsRubberBand = false;
       IsTentative = false;
-      Map.IsDisplayToRedraw = true;
-      Map.Flag_To_Redraw(false);
+      TheMap().IsDisplayToRedraw = true;
+      TheMap().Flag_To_Redraw(false);
 
     } else {
       /*
       **	Toggle the select state of the object.
       */
       if (action == ACTION_TOGGLE_SELECT) {
-        if (!object || !CurrentObject.Count() ||
-            CurrentObject.at(0)->Owner() != PlayerPtr->Class->House) {
+        if (!object || !TheWorld().current_object().Count() ||
+            TheWorld().current_object().at(0)->Owner() !=
+                ThePlayer()->Class->House) {
           action = ACTION_SELECT;
         } else {
           if (object->IsSelected) {
@@ -3572,35 +3576,37 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
         *occurs.
         */
         AllowVoice = true;
-        FormMove = false;
-        FormSpeed = SPEED_WHEEL;
-        FormMaxSpeed = MPH_LIGHT_SPEED;
+        TheWorld().form_move() = false;
+        TheWorld().form_speed() = SPEED_WHEEL;
+        TheWorld().form_max_speed() = MPH_LIGHT_SPEED;
 
         if ((action == ACTION_MOVE || action == ACTION_NOMOVE) &&
-            CurrentObject.Count()) {
+            TheWorld().current_object().Count()) {
           /*
           ** Scan all units.  If any are selected that shouldn't be, or aren't
           ** selected but should be, then this is not a formation move.
           */
           int group = 254;  // init to invalid group #
 
-          if (CurrentObject.at(0)->Is_Foot()) {
-            group = dynamic_cast<FootClass*>(CurrentObject.at(0))->Group;
+          if (TheWorld().current_object().at(0)->Is_Foot()) {
+            group = dynamic_cast<FootClass*>(TheWorld().current_object().at(0))
+                        ->Group;
           }
 
           /*
           **	Presume this is a formation move unless something is detected
           **	that will prevent it.
           */
-          FormMove = true;
+          TheWorld().form_move() = true;
 
           /*
           **	First scan through all the selected units to make sure that they
           **	are all of the same team and have been assigned a particular
           *formation
           */
-          for (int index = 0; index < CurrentObject.Count(); index++) {
-            const ObjectClass* tobject = CurrentObject.at(index);
+          for (int index = 0; index < TheWorld().current_object().Count();
+               index++) {
+            const ObjectClass* tobject = TheWorld().current_object().at(index);
 
             /*
             **	Only moveable (i.e., FootClass) objects can ever be in a
@@ -3608,7 +3614,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
             *type then it can't be *	a formation move.
             */
             if (!tobject->Is_Foot()) {
-              FormMove = false;
+              TheWorld().form_move() = false;
               break;
             }
 
@@ -3620,7 +3626,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
             const auto* foot = dynamic_cast<const FootClass*>(tobject);
             if (std::cmp_not_equal(foot->Group, group) ||
                 foot->XFormOffset == kNoFormationOffset) {
-              FormMove = false;
+              TheWorld().form_move() = false;
               break;
             }
 
@@ -3628,8 +3634,8 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
             **	Determine the formation speed on the presumption that this
             **	will turn out to be a formation move.
             */
-            FormMaxSpeed = foot->Techno_Type_Class()->MaxSpeed;
-            FormSpeed = foot->Techno_Type_Class()->Speed;
+            TheWorld().form_max_speed() = foot->Techno_Type_Class()->MaxSpeed;
+            TheWorld().form_speed() = foot->Techno_Type_Class()->Speed;
           }
 
           /*
@@ -3638,9 +3644,9 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
           *team, but *	are not currently selected themselves, then this will
           *force this move *	to NOT be a formation move.
           */
-          if (FormMove) {
-            for (int index = 0; index < ::Logic.Count(); index++) {
-              const ObjectClass* obj = ::Logic.at(index);
+          if (TheWorld().form_move()) {
+            for (int index = 0; index < TheWorld().logic().Count(); index++) {
+              const ObjectClass* obj = TheWorld().logic().at(index);
 
               /*
               **	If the object is selected, then it has already been
@@ -3672,15 +3678,16 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
               **	place.
               */
               if (std::cmp_equal(foot->Group, group)) {
-                FormMove = false;
+                TheWorld().form_move() = false;
                 break;
               }
             }
           }
         }
 
-        for (int index = 0; index < CurrentObject.Count(); index++) {
-          ObjectClass* tobject = CurrentObject.at(index);
+        for (int index = 0; index < TheWorld().current_object().Count();
+             index++) {
+          ObjectClass* tobject = TheWorld().current_object().at(index);
 
           if (object != nullptr) {
             tobject->Active_Click_With(tobject->What_Action(object), object);
@@ -3695,8 +3702,8 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
             if (action == ACTION_MOVE && tobject->Is_Foot()) {
               auto* foot = dynamic_cast<FootClass*>(tobject);
               const bool oldisform = foot->IsFormationMove;
-              foot->IsFormationMove = FormMove;
-              if (FormMove && foot->Group != kNoGroup) {
+              foot->IsFormationMove = TheWorld().form_move();
+              if (TheWorld().form_move() && foot->Group != kNoGroup) {
                 newmove = foot->Adjust_Dest(cell);
               }
               foot->IsFormationMove = oldisform;
@@ -3706,7 +3713,7 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
           AllowVoice = false;
         }
         AllowVoice = true;
-        FormMove = false;
+        TheWorld().form_move() = false;
 
         if (object != nullptr && action == ACTION_REPAIR &&
             object->What_Am_I() == RTTI_BUILDING) {
@@ -3913,7 +3920,7 @@ void DisplayClass::Set_Tactical_Position(COORDINATE coord) {
   coord = XY_Coord(static_cast<LEPTON>(xx + Cell_To_Lepton(MapCellX)),
                    static_cast<LEPTON>(yy + Cell_To_Lepton(MapCellY)));
 
-  if (ScenarioInit) {
+  if (TheWorld().scenario_init()) {
     TacticalCoord = coord;
   }
   DesiredTacticalCoord = coord;
@@ -4008,13 +4015,13 @@ void DisplayClass::Compute_Start_Pos() {
   x = std::clamp<int32_t>(x, MapCellX + 10, MapCellX + MapCellWidth - 10);
   y = std::clamp<int32_t>(y, MapCellY + 8, MapCellY + MapCellHeight - 8);
 
-  base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) =
-      base::At(Scen.Views, 0) = base::At(Scen.Views, 1) =
-          base::At(Scen.Views, 2) = base::At(Scen.Views, 3) =
+  base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) =
+      base::At(TheScenario().Views, 0) = base::At(TheScenario().Views, 1) =
+          base::At(TheScenario().Views, 2) = base::At(TheScenario().Views, 3) =
               XY_Cell(static_cast<int>(x), static_cast<int>(y));
 
-  Map.Set_Tactical_Position(Coord_Whole(Cell_Coord(
-      static_cast<CELL>(base::At(Scen.Views, 0) - (MAP_CELL_W * 8) - 10))));
+  TheMap().Set_Tactical_Position(Coord_Whole(Cell_Coord(static_cast<CELL>(
+      base::At(TheScenario().Views, 0) - (MAP_CELL_W * 8) - 10))));
   //	Set_Tactical_Position(Cell_Coord(XY_Cell(x, y)));
 }
 
@@ -4053,7 +4060,7 @@ void DisplayClass::Sell_Mode_Control(int control) {
 
   if (mode != IsSellMode && !PendingObject) {
     IsRepairMode = false;
-    if (mode && PlayerPtr->BScan) {
+    if (mode && ThePlayer()->BScan) {
       IsSellMode = true;
       Unselect_All();
     } else {
@@ -4097,7 +4104,7 @@ void DisplayClass::Repair_Mode_Control(int control) {
 
   if (mode != IsRepairMode && !PendingObject) {
     IsSellMode = false;
-    if (mode && PlayerPtr->BScan) {
+    if (mode && ThePlayer()->BScan) {
       IsRepairMode = true;
       Unselect_All();
     } else {
@@ -4167,7 +4174,7 @@ COORDINATE DisplayClass::Closest_Free_Spot(COORDINATE coord, bool any) {
   if (coord & kHighCoordMask) {
     return 0x00800080;
   }
-  return Map.at(coord).Closest_Free_Spot(coord, any);
+  return TheMap().at(coord).Closest_Free_Spot(coord, any);
 }
 
 /***********************************************************************************************
@@ -4192,7 +4199,7 @@ bool DisplayClass::Is_Spot_Free(COORDINATE coord) {
   if (coord & kHighCoordMask) {
     return true;
   }
-  return Map.at(coord).Is_Spot_Free(CellClass::Spot_Index(coord));
+  return TheMap().at(coord).Is_Spot_Free(CellClass::Spot_Index(coord));
 }
 
 /***********************************************************************************************
@@ -4221,16 +4228,17 @@ void DisplayClass::Center_Map(COORDINATE center) {
   //	unsigned y = 0;
   bool centerit = false;
 
-  if (CurrentObject.Count()) {
-    for (int index = 0; index < CurrentObject.Count(); index++) {
-      const COORDINATE coord = CurrentObject.at(index)->Center_Coord();
+  if (TheWorld().current_object().Count()) {
+    for (int index = 0; index < TheWorld().current_object().Count(); index++) {
+      const COORDINATE coord =
+          TheWorld().current_object().at(index)->Center_Coord();
 
       x += Coord_X(coord);
       y += Coord_Y(coord);
     }
 
-    x = static_cast<int>(x / CurrentObject.Count());
-    y = static_cast<int>(y / CurrentObject.Count());
+    x = static_cast<int>(x / TheWorld().current_object().Count());
+    y = static_cast<int>(y / TheWorld().current_object().Count());
     centerit = true;
   }
 
@@ -4322,9 +4330,9 @@ void DisplayClass::Encroach_Shadow() {
  *the new shadow pieces.                                *
  *=============================================================================================*/
 void DisplayClass::Shroud_Cell(CELL cell /*KO, bool shadeit*/) {
-  if (PlayerPtr->IsGPSActive &&
+  if (ThePlayer()->IsGPSActive &&
       ((*this).at(cell).Jammed &
-       base::Bit<uint16_t>(PlayerPtr->Class->House))) {
+       base::Bit<uint16_t>(ThePlayer()->Class->House))) {
     return;
   }
 
@@ -4396,27 +4404,28 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   **	is custom to this data. Load the custom data (as it related to terrain)
   **	at this point.
   */
-  Scen.Theater = ini.Get_TheaterType(name, "Theater", THEATER_TEMPERATE);
+  TheScenario().Theater =
+      ini.Get_TheaterType(name, "Theater", THEATER_TEMPERATE);
 
   /*
   **	Now that the theater is known, init the entire map hierarchy
   */
-  Init(Scen.Theater);
+  Init(TheScenario().Theater);
 
   /*
   **	Special initializations occur when the theater is known.
   */
-  TerrainTypeClass::Init(Scen.Theater);
-  TemplateTypeClass::Init(Scen.Theater);
-  OverlayTypeClass::Init(Scen.Theater);
-  UnitTypeClass::Init(Scen.Theater);
-  InfantryTypeClass::Init(Scen.Theater);
-  BuildingTypeClass::Init(Scen.Theater);
-  BulletTypeClass::Init(Scen.Theater);
-  AnimTypeClass::Init(Scen.Theater);
-  AircraftTypeClass::Init(Scen.Theater);
-  VesselTypeClass::Init(Scen.Theater);
-  SmudgeTypeClass::Init(Scen.Theater);
+  TerrainTypeClass::Init(TheScenario().Theater);
+  TemplateTypeClass::Init(TheScenario().Theater);
+  OverlayTypeClass::Init(TheScenario().Theater);
+  UnitTypeClass::Init(TheScenario().Theater);
+  InfantryTypeClass::Init(TheScenario().Theater);
+  BuildingTypeClass::Init(TheScenario().Theater);
+  BulletTypeClass::Init(TheScenario().Theater);
+  AnimTypeClass::Init(TheScenario().Theater);
+  AircraftTypeClass::Init(TheScenario().Theater);
+  VesselTypeClass::Init(TheScenario().Theater);
+  SmudgeTypeClass::Init(TheScenario().Theater);
 
   /*
   **	Read the Waypoint entries.
@@ -4424,11 +4433,11 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   for (int i = 0; i < ScenarioClass::kWaypointCount; i++) {
     char buf[20];
     absl::SNPrintF(buf, sizeof(buf), "%d", i);
-    base::At(Scen.Waypoint, i) =
+    base::At(TheScenario().Waypoint, i) =
         static_cast<CELL>(ini.Get_Int("Waypoints", buf, -1));
 
-    if (base::At(Scen.Waypoint, i) != -1) {
-      (*this).at(base::At(Scen.Waypoint, i)).IsWaypoint = true;
+    if (base::At(TheScenario().Waypoint, i) != -1) {
+      (*this).at(base::At(TheScenario().Waypoint, i)).IsWaypoint = true;
     }
   }
 
@@ -4436,17 +4445,17 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   **	Set the starting position (do this after Init(), which clears the cells'
   **	IsWaypoint flags).
   */
-  if (base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) == -1) {
-    base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) =
+  if (base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) == -1) {
+    base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) =
         XY_Cell(MapCellX + 10, MapCellY + 8);
   }
 
-  base::At(Scen.Views, 0) = base::At(Scen.Views, 1) = base::At(Scen.Views, 2) =
-      base::At(Scen.Views, 3) =
-          base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint);
-  Set_Tactical_Position(Cell_Coord(
-      static_cast<CELL>(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) -
-                        (MAP_CELL_W * 8) - 10)));
+  base::At(TheScenario().Views, 0) = base::At(TheScenario().Views, 1) =
+      base::At(TheScenario().Views, 2) = base::At(TheScenario().Views, 3) =
+          base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint);
+  Set_Tactical_Position(Cell_Coord(static_cast<CELL>(
+      base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) -
+      (MAP_CELL_W * 8) - 10)));
 
   /*
   **	Loop through all CellTrigger entries.
@@ -4478,9 +4487,9 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
                         sizeof(staging_buffer));
   SpanSource bstraw(
       std::as_bytes(std::span(staging_buffer).first(base::ToSize(len))));
-  Map.Read_Binary(bstraw);
+  TheMap().Read_Binary(bstraw);
 
-  LastTheater = Scen.Theater;
+  TheWorld().last_theater() = TheScenario().Theater;
 }
 
 /***********************************************************************************************
@@ -4506,7 +4515,7 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   */
   static const char* const NAME = "Map";
   ini.Clear(NAME);
-  ini.Put_TheaterType(NAME, "Theater", Scen.Theater);
+  ini.Put_TheaterType(NAME, "Theater", TheScenario().Theater);
   ini.Put_Int(NAME, "X", MapCellX);
   ini.Put_Int(NAME, "Y", MapCellY);
   ini.Put_Int(NAME, "Width", MapCellWidth);
@@ -4518,9 +4527,9 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   static const char* const WAYNAME = "Waypoints";
   ini.Clear(WAYNAME);
   for (int i = 0; i < ScenarioClass::kWaypointCount; i++) {
-    if (base::At(Scen.Waypoint, i) != -1) {
+    if (base::At(TheScenario().Waypoint, i) != -1) {
       absl::SNPrintF(entry, sizeof(entry), "%d", i);
-      ini.Put_Int(WAYNAME, entry, base::At(Scen.Waypoint, i));
+      ini.Put_Int(WAYNAME, entry, base::At(TheScenario().Waypoint, i));
     }
   }
 
@@ -4551,7 +4560,7 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   */
   static const char* const MAPPACK = "MapPack";
   SpanSink bpipe(std::as_writable_bytes(std::span(staging_buffer)));
-  Map.Write_Binary(bpipe);
+  TheMap().Write_Binary(bpipe);
   const auto len = static_cast<int>(bpipe.bytes_written());
   ini.Clear(MAPPACK);
   if (len) {
@@ -4591,7 +4600,7 @@ void DisplayClass::All_To_Look(bool units_only) {
         }
       } else {
         if (tech->What_Am_I() == RTTI_BUILDING && TheRules().IsAllyReveal &&
-            tech->House->Is_Ally(PlayerPtr)) {
+            tech->House->Is_Ally(ThePlayer())) {
           tech->Look();
         }
       }
@@ -4617,7 +4626,7 @@ void DisplayClass::Constrained_Look(COORDINATE center, LEPTON distance) {
         }
       } else {
         if (tech->What_Am_I() == RTTI_BUILDING && TheRules().IsAllyReveal &&
-            tech->House->Is_Ally(PlayerPtr) &&
+            tech->House->Is_Ally(ThePlayer()) &&
             Distance(tech->Center_Coord(), center) <=
                 (tech->Techno_Type_Class()->SightRange * CELL_LEPTON_W) +
                     distance) {

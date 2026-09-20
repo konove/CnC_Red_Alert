@@ -50,6 +50,7 @@
 #include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "ra/type.h"
+#include "ra/world.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
@@ -201,7 +202,7 @@ static int WaitForMissionChoice(PaletteClass& palette, const bool is_soviet) {
 
     // MouseClass animates the pointer only while the game map runs, so step
     // through the crosshair's frames here.
-    const int choice = ChoiceUnderMouse(is_soviet, Scen.Scenario);
+    const int choice = ChoiceUnderMouse(is_soviet, TheScenario().Scenario);
     const MouseClass::MouseStruct& cursor =
         MouseClass::Control(choice != -1 ? MOUSE_CAN_ATTACK : MOUSE_NORMAL);
     if (cursor_timer.IsFinished()) {
@@ -223,13 +224,13 @@ static int WaitForMissionChoice(PaletteClass& palette, const bool is_soviet) {
 }
 
 ScenarioVarType ChooseMissionVariant() {
-  const bool is_soviet = IsSovietHouse(PlayerPtr->Class->House);
+  const bool is_soviet = IsSovietHouse(ThePlayer()->Class->House);
 
   // The animation is MSxY.WSA: x is the side (A=Allied, S=Soviet) and Y the
   // scenario letter (A-N for scenarios 0-13).
   const std::string animation_name =
       std::format("MS{}{}.WSA", is_soviet ? 'S' : 'A',
-                  static_cast<char>('A' + Scen.Scenario));
+                  static_cast<char>('A' + TheScenario().Scenario));
   PaletteClass map_palette;
 
   Theme.Queue_Song(THEME_MAP);

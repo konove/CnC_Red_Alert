@@ -57,6 +57,7 @@
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/vector_dynamic.h"
+#include "ra/world.h"
 #include "sdllib/keyboard.h"
 
 // Records or restores one of the player's tactical-view bookmarks.
@@ -67,17 +68,17 @@
 // columns across from the tactical corner -- so the cell recorded is the middle
 // of what the player was looking at, not its top left corner.
 static void Handle_View(const int view, const int action) {
-  if (static_cast<unsigned>(view) < std::ssize(Scen.Views)) {
+  if (static_cast<unsigned>(view) < std::ssize(TheScenario().Views)) {
     if (action == 0) {
-      Map.Set_Tactical_Position(Coord_Whole(Cell_Coord(static_cast<CELL>(
-          base::At(Scen.Views, view) - (MAP_CELL_W * 8) - 10))));
+      TheMap().Set_Tactical_Position(Coord_Whole(Cell_Coord(static_cast<CELL>(
+          base::At(TheScenario().Views, view) - (MAP_CELL_W * 8) - 10))));
 
       // Win95 scrolling logic cant handle just jumps in screen position so
       // redraw the lot.
-      Map.Flag_To_Redraw(true);
+      TheMap().Flag_To_Redraw(true);
     } else {
-      base::At(Scen.Views, view) = static_cast<CELL>(
-          Coord_Cell(Map.TacticalCoord) + (MAP_CELL_W * 8) + 10);
+      base::At(TheScenario().Views, view) = static_cast<CELL>(
+          Coord_Cell(TheMap().TacticalCoord) + (MAP_CELL_W * 8) + 10);
     }
   }
 }
@@ -131,15 +132,15 @@ void Keyboard_Process(KeyNumType& input) {
     if (TheDebugState().playtest() &&
         static_cast<unsigned>(input) ==
             (static_cast<unsigned>(KN_W) | static_cast<unsigned>(KN_ALT_BIT))) {
-      PlayerPtr->Blockage = 0;
-      PlayerPtr->Flag_To_Win();
+      ThePlayer()->Blockage = 0;
+      ThePlayer()->Flag_To_Win();
     }
 
     if (((TheDebugState().developer_mode() || TheDebugState().playtest()) &&
          plain == KN_F4) &&
         (Session.Type == GAME_NORMAL)) {
       TheDebugState().set_unshroud(!TheDebugState().unshroud());
-      Map.Flag_To_Redraw(true);
+      TheMap().Flag_To_Redraw(true);
     }
 
     if (TheDebugState().developer_mode() && input == KN_SLASH) {
@@ -169,42 +170,47 @@ void Keyboard_Process(KeyNumType& input) {
   // If the "N" key is pressed, then select the next object.
   if (key != 0 && key == Options.KeyNext) {
     if (action) {
-      obj = MapEditClass::Prev_Object(
-          CurrentObject.Count() ? CurrentObject.at(0) : nullptr);
+      obj = MapEditClass::Prev_Object(TheWorld().current_object().Count()
+                                          ? TheWorld().current_object().at(0)
+                                          : nullptr);
     } else {
-      obj = MapEditClass::Next_Object(
-          CurrentObject.Count() ? CurrentObject.at(0) : nullptr);
+      obj = MapEditClass::Next_Object(TheWorld().current_object().Count()
+                                          ? TheWorld().current_object().at(0)
+                                          : nullptr);
     }
     if (obj != nullptr) {
       Unselect_All();
       obj->Select();
-      Map.Center_Map();
-      Map.Flag_To_Redraw(true);
+      TheMap().Center_Map();
+      TheMap().Flag_To_Redraw(true);
     }
     input = KN_NONE;
   }
   if (key != 0 && key == Options.KeyPrevious) {
     if (action) {
-      obj = MapEditClass::Next_Object(
-          CurrentObject.Count() ? CurrentObject.at(0) : nullptr);
+      obj = MapEditClass::Next_Object(TheWorld().current_object().Count()
+                                          ? TheWorld().current_object().at(0)
+                                          : nullptr);
     } else {
-      obj = MapEditClass::Prev_Object(
-          CurrentObject.Count() ? CurrentObject.at(0) : nullptr);
+      obj = MapEditClass::Prev_Object(TheWorld().current_object().Count()
+                                          ? TheWorld().current_object().at(0)
+                                          : nullptr);
     }
     if (obj != nullptr) {
       Unselect_All();
       obj->Select();
-      Map.Center_Map();
-      Map.Flag_To_Redraw(true);
+      TheMap().Center_Map();
+      TheMap().Flag_To_Redraw(true);
     }
     input = KN_NONE;
   }
 
   // All selected units will go into idle mode.
   if (key != 0 && key == Options.KeyStop) {
-    if (CurrentObject.Count()) {
-      for (int index = 0; index < CurrentObject.Count(); index++) {
-        const ObjectClass* tech = CurrentObject.at(index);
+    if (TheWorld().current_object().Count()) {
+      for (int index = 0; index < TheWorld().current_object().Count();
+           index++) {
+        const ObjectClass* tech = TheWorld().current_object().at(index);
 
         if (tech != nullptr &&
             (tech->Can_Player_Move() ||
@@ -218,9 +224,10 @@ void Keyboard_Process(KeyNumType& input) {
 
   // All selected units will attempt to go into guard area mode.
   if (key != 0 && key == Options.KeyGuard) {
-    if (CurrentObject.Count()) {
-      for (int index = 0; index < CurrentObject.Count(); index++) {
-        const ObjectClass* tech = CurrentObject.at(index);
+    if (TheWorld().current_object().Count()) {
+      for (int index = 0; index < TheWorld().current_object().Count();
+           index++) {
+        const ObjectClass* tech = TheWorld().current_object().at(index);
 
         if (tech != nullptr && tech->Can_Player_Move() &&
             tech->Can_Player_Fire()) {
@@ -233,9 +240,10 @@ void Keyboard_Process(KeyNumType& input) {
 
   // All selected units will attempt to scatter.
   if (key != 0 && key == Options.KeyScatter) {
-    if (CurrentObject.Count()) {
-      for (int index = 0; index < CurrentObject.Count(); index++) {
-        const ObjectClass* tech = CurrentObject.at(index);
+    if (TheWorld().current_object().Count()) {
+      for (int index = 0; index < TheWorld().current_object().Count();
+           index++) {
+        const ObjectClass* tech = TheWorld().current_object().at(index);
 
         if (tech != nullptr && tech->Can_Player_Move()) {
           OutList.Add(EventClass(EventClass::SCATTER, TargetClass(tech)));
@@ -248,9 +256,9 @@ void Keyboard_Process(KeyNumType& input) {
   // Center the map around the currently selected objects. If no
   // objects are selected, then fall into the home case.
   if (key != 0 && (key == Options.KeyHome1 || key == Options.KeyHome2)) {
-    if (CurrentObject.Count()) {
-      Map.Center_Map();
-      Map.Flag_To_Redraw(true);
+    if (TheWorld().current_object().Count()) {
+      TheMap().Center_Map();
+      TheMap().Flag_To_Redraw(true);
       input = KN_NONE;
     } else {
       input = Options.KeyBase;
@@ -261,13 +269,13 @@ void Keyboard_Process(KeyNumType& input) {
   // if one is present.
   if (key != 0 && key == Options.KeyBase) {
     Unselect_All();
-    if (PlayerPtr->CurBuildings) {
+    if (ThePlayer()->CurBuildings) {
       for (int index = 0; index < TheObjectHeaps().building().Count();
            index++) {
         BuildingClass* building = TheObjectHeaps().building().Ptr(index);
 
         if (building != nullptr && !building->IsInLimbo &&
-            building->House == PlayerPtr && *building == STRUCT_CONST) {
+            building->House == ThePlayer() && *building == STRUCT_CONST) {
           Unselect_All();
           building->Select();
           if (building->IsLeader) {
@@ -276,11 +284,11 @@ void Keyboard_Process(KeyNumType& input) {
         }
       }
     }
-    if (CurrentObject.Count() == 0 && PlayerPtr->CurUnits) {
+    if (TheWorld().current_object().Count() == 0 && ThePlayer()->CurUnits) {
       for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
         UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
 
-        if (unit != nullptr && !unit->IsInLimbo && unit->House == PlayerPtr &&
+        if (unit != nullptr && !unit->IsInLimbo && unit->House == ThePlayer() &&
             *unit == UNIT_MCV) {
           Unselect_All();
           unit->Select();
@@ -288,14 +296,14 @@ void Keyboard_Process(KeyNumType& input) {
         }
       }
     }
-    if (CurrentObject.Count()) {
-      Map.Center_Map();
+    if (TheWorld().current_object().Count()) {
+      TheMap().Center_Map();
     } else {
-      if (PlayerPtr->Center != 0) {
-        Map.Center_Map(PlayerPtr->Center);
+      if (ThePlayer()->Center != 0) {
+        TheMap().Center_Map(ThePlayer()->Center);
       }
     }
-    Map.Flag_To_Redraw(true);
+    TheMap().Flag_To_Redraw(true);
     input = KN_NONE;
   }
 
@@ -309,7 +317,8 @@ void Keyboard_Process(KeyNumType& input) {
   // player has the mission abort in the options menu instead: surrendering
   // there would only self-destruct the base and lose the mission.
   if (key != 0 && key == Options.KeyResign) {
-    if (Session.Type != GAME_NORMAL && !PlayerLoses && !PlayerPtr->IsDefeated) {
+    if (Session.Type != GAME_NORMAL && !PlayerLoses &&
+        !ThePlayer()->IsDefeated) {
       SpecialDialog = SDLG_SURRENDER;
     }
     input = KN_NONE;
@@ -318,10 +327,12 @@ void Keyboard_Process(KeyNumType& input) {
   // Handle making and breaking alliances.
   if (key != 0 && key == Options.KeyAlliance) {
     if ((Session.Type != GAME_NORMAL || TheDebugState().developer_mode()) &&
-        (CurrentObject.Count() && !PlayerPtr->IsDefeated) &&
-        (CurrentObject.at(0)->Owner() != PlayerPtr->Class->House)) {
-      OutList.Add(EventClass(EventClass::ALLY,
-                             static_cast<int>(CurrentObject.at(0)->Owner())));
+        (TheWorld().current_object().Count() && !ThePlayer()->IsDefeated) &&
+        (TheWorld().current_object().at(0)->Owner() !=
+         ThePlayer()->Class->House)) {
+      OutList.Add(EventClass(
+          EventClass::ALLY,
+          static_cast<int>(TheWorld().current_object().at(0)->Owner())));
     }
 
     input = KN_NONE;
@@ -333,44 +344,44 @@ void Keyboard_Process(KeyNumType& input) {
     // The corners are leptons relative to the tactical view, so 0 is its top
     // left and the size below is its full extent -- a drag select of everything
     // on screen.
-    Map.Select_These(0x00000000,
-                     XY_Coord(Map.TacLeptonWidth, Map.TacLeptonHeight));
+    TheMap().Select_These(0x00000000, XY_Coord(TheMap().TacLeptonWidth,
+                                               TheMap().TacLeptonHeight));
     input = KN_NONE;
   }
 
   // Toggles the repair state similarly to pressing the repair button.
   if (key != 0 && key == Options.KeyRepair) {
-    Map.Repair_Mode_Control(-1);
+    TheMap().Repair_Mode_Control(-1);
     input = KN_NONE;
   }
 
   // Toggles the sell state similarly to pressing the sell button.
   if (key != 0 && key == Options.KeySell) {
-    Map.Sell_Mode_Control(-1);
+    TheMap().Sell_Mode_Control(-1);
     input = KN_NONE;
   }
 
   // Toggles the map zoom mode similarly to pressing the map button.
   if (key != 0 && key == Options.KeyMap) {
-    Map.Zoom_Mode_Control();
+    TheMap().Zoom_Mode_Control();
     input = KN_NONE;
   }
 
   // Scrolls the sidebar up one slot.
   if (key != 0 && key == Options.KeySidebarUp) {
-    Map.Scroll(true, -1);
+    TheMap().Scroll(true, -1);
     input = KN_NONE;
   }
 
   // Scrolls the sidebar down one slot.
   if (key != 0 && key == Options.KeySidebarDown) {
-    Map.Scroll(false, -1);
+    TheMap().Scroll(false, -1);
     input = KN_NONE;
   }
 
   // Brings up the options dialog box.
   if (key != 0 && (key == Options.KeyOption1 || key == Options.KeyOption2)) {
-    Map.Help_Text(TXT_NONE);  // Turns off help text.
+    TheMap().Help_Text(TXT_NONE);  // Turns off help text.
     Queue_Options();
     input = KN_NONE;
   }
@@ -378,19 +389,19 @@ void Keyboard_Process(KeyNumType& input) {
   // Scrolls the tactical map in the direction specified.
   int distance = CELL_LEPTON_W;
   if (key != 0 && key == Options.KeyScrollLeft) {
-    Map.Scroll_Map(DIR_W, distance, true);
+    TheMap().Scroll_Map(DIR_W, distance, true);
     input = KN_NONE;
   }
   if (key != 0 && key == Options.KeyScrollRight) {
-    Map.Scroll_Map(DIR_E, distance, true);
+    TheMap().Scroll_Map(DIR_E, distance, true);
     input = KN_NONE;
   }
   if (key != 0 && key == Options.KeyScrollUp) {
-    Map.Scroll_Map(DIR_N, distance, true);
+    TheMap().Scroll_Map(DIR_N, distance, true);
     input = KN_NONE;
   }
   if (key != 0 && key == Options.KeyScrollDown) {
-    Map.Scroll_Map(DIR_S, distance, true);
+    TheMap().Scroll_Map(DIR_S, distance, true);
     input = KN_NONE;
   }
 

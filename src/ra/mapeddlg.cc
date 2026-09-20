@@ -103,6 +103,7 @@
 #include "ra/trigtype.h"
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -137,14 +138,13 @@ int MapEditClass::New_Scenario() {
   ScenarioPlayerType player = SCEN_PLAYER_NONE;
   ScenarioDirType dir = SCEN_DIR_NONE;
   ScenarioVarType var = SCEN_VAR_NONE;
-  Disect_Scenario_Name(Scen.ScenarioName, scen_num, player, dir, var);
-
+  Disect_Scenario_Name(TheScenario().ScenarioName, scen_num, player, dir, var);
 
   /*
   **	Force the house save value to match the player house.
   */
-  if (PlayerPtr) {
-    switch (PlayerPtr->Class->House) {
+  if (ThePlayer()) {
+    switch (ThePlayer()->Class->House) {
       case HOUSE_SPAIN:
         player = SCEN_PLAYER_SPAIN;
         break;
@@ -186,7 +186,7 @@ int MapEditClass::New_Scenario() {
     return (-1);
   }
 
-  ScenarioInit++;
+  TheWorld().scenario_init()++;
 
   /*
   **	Blow away everything
@@ -200,7 +200,7 @@ int MapEditClass::New_Scenario() {
   //	Scen.ScenPlayer = player;
   //	Scen.ScenDir = dir;
   //	Scen.ScenVar = var;
-  Scen.Set_Scenario_Name(scen_num, player, dir, var);
+  TheScenario().Set_Scenario_Name(scen_num, player, dir, var);
 
   /*
   **	Create houses
@@ -211,29 +211,29 @@ int MapEditClass::New_Scenario() {
 
   switch (player) {
     case SCEN_PLAYER_MPLAYER:
-      PlayerPtr = HouseClass::As_Pointer(HOUSE_MULTI1);
-      PlayerPtr->IsHuman = true;
+      ThePlayer() = HouseClass::As_Pointer(HOUSE_MULTI1);
+      ThePlayer()->IsHuman = true;
       LastHouse = HOUSE_MULTI1;
       break;
 
     case SCEN_PLAYER_USSR:
-      PlayerPtr = HouseClass::As_Pointer(HOUSE_USSR);
-      PlayerPtr->IsHuman = true;
-      Base.House = HOUSE_SPAIN;
+      ThePlayer() = HouseClass::As_Pointer(HOUSE_USSR);
+      ThePlayer()->IsHuman = true;
+      TheWorld().base().House = HOUSE_SPAIN;
       LastHouse = HOUSE_GOOD;
       break;
 
     case SCEN_PLAYER_SPAIN:
-      PlayerPtr = HouseClass::As_Pointer(HOUSE_SPAIN);
-      PlayerPtr->IsHuman = true;
-      Base.House = HOUSE_USSR;
+      ThePlayer() = HouseClass::As_Pointer(HOUSE_SPAIN);
+      ThePlayer()->IsHuman = true;
+      TheWorld().base().House = HOUSE_USSR;
       LastHouse = HOUSE_GOOD;
       break;
 
     case SCEN_PLAYER_GREECE:
-      PlayerPtr = HouseClass::As_Pointer(HOUSE_GREECE);
-      PlayerPtr->IsHuman = true;
-      Base.House = HOUSE_USSR;
+      ThePlayer() = HouseClass::As_Pointer(HOUSE_GREECE);
+      ThePlayer()->IsHuman = true;
+      TheWorld().base().House = HOUSE_USSR;
       LastHouse = HOUSE_GOOD;
       break;
     case ScenarioPlayerType::SCEN_PLAYER_NONE:
@@ -257,17 +257,17 @@ int MapEditClass::New_Scenario() {
   /*
   **	Set the Home & Reinforcement Cells to the center of the map
   */
-  base::At(Scen.Waypoint, ScenarioClass::kReinforcementWaypoint) =
+  base::At(TheScenario().Waypoint, ScenarioClass::kReinforcementWaypoint) =
       XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
-  base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) =
+  base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) =
       XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
   (*this).at(TacticalCoord).IsWaypoint = true;
   Flag_Cell(Coord_Cell(TacticalCoord));
 
-  Set_Tactical_Position(Cell_Coord(
-      static_cast<CELL>(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) -
-                        (MAP_CELL_W * 8) - 10)));
-  ScenarioInit--;
+  Set_Tactical_Position(Cell_Coord(static_cast<CELL>(
+      base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) -
+      (MAP_CELL_W * 8) - 10)));
+  TheWorld().scenario_init()--;
 
   return 0;
 }
@@ -296,8 +296,7 @@ int MapEditClass::Load_Scenario() {
   ScenarioPlayerType player = SCEN_PLAYER_NONE;
   ScenarioDirType dir = SCEN_DIR_NONE;
   ScenarioVarType var = SCEN_VAR_NONE;
-  Disect_Scenario_Name(Scen.ScenarioName, scen_num, player, dir, var);
-
+  Disect_Scenario_Name(TheScenario().ScenarioName, scen_num, player, dir, var);
 
   /*
   **	Prompt for scenario info
@@ -314,7 +313,7 @@ int MapEditClass::Load_Scenario() {
   //	Scen.ScenPlayer = player;
   //	Scen.ScenDir = dir;
   //	Scen.ScenVar = var;
-  Scen.Set_Scenario_Name(scen_num, player, dir, var);
+  TheScenario().Set_Scenario_Name(scen_num, player, dir, var);
 
   /*
   **	Read_Scenario_Ini() must be able to set PlayerPtr to the right house:
@@ -348,10 +347,12 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Read the INI
     */
-    if (!Read_Scenario_INI(Scen.ScenarioName)) {
-      if (Scen.Scenario < 20 && base::At(Scen.ScenarioName, 2) == 'G') {
+    if (!Read_Scenario_INI(TheScenario().ScenarioName)) {
+      if (TheScenario().Scenario < 20 &&
+          base::At(TheScenario().ScenarioName, 2) == 'G') {
         WWMessageBox().Process("Please insert Red Alert CD1");
-      } else if (Scen.Scenario < 20 && base::At(Scen.ScenarioName, 2) == 'U') {
+      } else if (TheScenario().Scenario < 20 &&
+                 base::At(TheScenario().ScenarioName, 2) == 'U') {
         WWMessageBox().Process("Please insert Red Alert CD2");
       } else {
         WWMessageBox().Process("Unable to read scenario!");
@@ -393,7 +394,8 @@ int MapEditClass::Load_Scenario() {
     ScenarioDirType dir = SCEN_DIR_NONE;
     ScenarioVarType var = SCEN_VAR_NONE;
 
-    Disect_Scenario_Name(Scen.ScenarioName, scen_num, player, dir, var);
+    Disect_Scenario_Name(TheScenario().ScenarioName, scen_num, player, dir,
+                         var);
 
     //	FILE * fp;
     //	char fname[13];
@@ -427,29 +429,29 @@ int MapEditClass::Load_Scenario() {
     //	Scen.ScenPlayer = player;
     //	Scen.ScenDir = dir;
     //	Scen.ScenVar = var;
-    Scen.Set_Scenario_Name(scen_num, player, dir, var);
+    TheScenario().Set_Scenario_Name(scen_num, player, dir, var);
 
     /*
     **	Player may have changed from GDI to NOD, so change playerptr accordingly
     */
     switch (player) {
       case SCEN_PLAYER_USSR:
-        PlayerPtr = HouseClass::As_Pointer(HOUSE_USSR);
-        PlayerPtr->IsHuman = true;
+        ThePlayer() = HouseClass::As_Pointer(HOUSE_USSR);
+        ThePlayer()->IsHuman = true;
         //			Base.House = HOUSE_SPAIN;
         LastHouse = HOUSE_GOOD;
         break;
 
       case SCEN_PLAYER_SPAIN:
-        PlayerPtr = HouseClass::As_Pointer(HOUSE_SPAIN);
-        PlayerPtr->IsHuman = true;
+        ThePlayer() = HouseClass::As_Pointer(HOUSE_SPAIN);
+        ThePlayer()->IsHuman = true;
         //			Base.House = HOUSE_USSR;
         LastHouse = HOUSE_GOOD;
         break;
 
       case SCEN_PLAYER_GREECE:
-        PlayerPtr = HouseClass::As_Pointer(HOUSE_GREECE);
-        PlayerPtr->IsHuman = true;
+        ThePlayer() = HouseClass::As_Pointer(HOUSE_GREECE);
+        ThePlayer()->IsHuman = true;
         //			Base.House = HOUSE_USSR;
         LastHouse = HOUSE_GOOD;
         break;
@@ -464,7 +466,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Write the INI
     */
-    Write_Scenario_INI(Scen.ScenarioName);
+    Write_Scenario_INI(TheScenario().ScenarioName);
 
     return 0;
   }
@@ -717,8 +719,8 @@ int MapEditClass::Load_Scenario() {
     if (playerp == SCEN_PLAYER_MPLAYER) {
       playermbtn.Turn_On();
     } else {
-      if (PlayerPtr) {
-        switch (PlayerPtr->Class->House) {
+      if (ThePlayer()) {
+        switch (ThePlayer()->Class->House) {
           case HOUSE_SPAIN:
             gdibtn.Turn_On();
             break;
@@ -752,7 +754,7 @@ int MapEditClass::Load_Scenario() {
             break;
         }
       } else {
-        switch (base::At(Scen.ScenarioName, 2)) {
+        switch (base::At(TheScenario().ScenarioName, 2)) {
           case 'G':
             gdibtn.Turn_On();
             break;
@@ -1332,12 +1334,12 @@ int MapEditClass::Load_Scenario() {
           */
           LogicPage->Put_Pixel(
               kDBordX1 +
-                  Cell_X(
-                      base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)) +
+                  Cell_X(base::At(TheScenario().Waypoint,
+                                  ScenarioClass::kHomeWaypoint)) +
                   1,
               kDBordY1 +
-                  Cell_Y(
-                      base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)) +
+                  Cell_Y(base::At(TheScenario().Waypoint,
+                                  ScenarioClass::kHomeWaypoint)) +
                   1,
               kWhite);
 
@@ -1628,31 +1630,34 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Clip Home Cell to new map size
     */
-    if (Cell_X(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)) <
+    if (Cell_X(base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint)) <
         MapCellX) {
-      base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) = XY_Cell(
-          MapCellX,
-          Cell_Y(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)));
+      base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) =
+          XY_Cell(MapCellX, Cell_Y(base::At(TheScenario().Waypoint,
+                                            ScenarioClass::kHomeWaypoint)));
     }
 
-    if (Cell_X(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)) >
+    if (Cell_X(base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint)) >
         MapCellX + MapCellWidth - 1) {
-      base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) = XY_Cell(
-          MapCellX + MapCellWidth - 1,
-          Cell_Y(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)));
+      base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) =
+          XY_Cell(MapCellX + MapCellWidth - 1,
+                  Cell_Y(base::At(TheScenario().Waypoint,
+                                  ScenarioClass::kHomeWaypoint)));
     }
 
-    if (Cell_Y(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)) <
+    if (Cell_Y(base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint)) <
         MapCellY) {
-      base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) =
-          XY_Cell(Cell_X(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)),
+      base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) =
+          XY_Cell(Cell_X(base::At(TheScenario().Waypoint,
+                                  ScenarioClass::kHomeWaypoint)),
                   MapCellY);
     }
 
-    if (Cell_Y(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)) >
+    if (Cell_Y(base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint)) >
         MapCellY + MapCellHeight - 1) {
-      base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) =
-          XY_Cell(Cell_X(base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint)),
+      base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) =
+          XY_Cell(Cell_X(base::At(TheScenario().Waypoint,
+                                  ScenarioClass::kHomeWaypoint)),
                   MapCellY + MapCellHeight - 1);
     }
 
@@ -1679,8 +1684,8 @@ int MapEditClass::Load_Scenario() {
    *   02/13/1996 JLB : Revamped to new system.                              *
    *=========================================================================*/
   int MapEditClass::Scenario_Dialog() {
-    const TheaterType orig_theater = Scen.Theater;  // original theater
-    HousesType house = PlayerPtr->Class->House;
+    const TheaterType orig_theater = TheScenario().Theater;  // original theater
+    HousesType house = ThePlayer()->Class->House;
     HousesType newhouse = house;
     base::EnumArray<HousesType, HouseStaticClass> hdata;
 
@@ -1766,7 +1771,7 @@ int MapEditClass::Load_Scenario() {
     theaterbtn.Set_Selected_Index(static_cast<int>(orig_theater));
 
     char description[kDescripMax] = "";
-    port::SafeCopy(description, Scen.Description);
+    port::SafeCopy(description, TheScenario().Description);
     EditClass desc(kButtonDescription, description, sizeof(description),
                    TPF_EFNT | TPF_NOSHADOW,
                    theaterbtn.X + theaterbtn.Width + 15, theaterbtn.Y, 160);
@@ -1778,7 +1783,7 @@ int MapEditClass::Load_Scenario() {
     CheckBoxClass inherit(kButtonInherit,
                           theaterbtn.X + theaterbtn.Width + 15 + 250,
                           theaterbtn.Y);
-    if (Scen.IsToInherit) {
+    if (TheScenario().IsToInherit) {
       inherit.Turn_On();
     } else {
       inherit.Turn_Off();
@@ -1788,7 +1793,7 @@ int MapEditClass::Load_Scenario() {
     **	Records scenario disposition into holding slot.
     */
     CheckBoxClass record(kButtonRecord, inherit.X, inherit.Y + 8);
-    if (Scen.IsToCarryOver) {
+    if (TheScenario().IsToCarryOver) {
       record.Turn_On();
     } else {
       record.Turn_Off();
@@ -1798,7 +1803,7 @@ int MapEditClass::Load_Scenario() {
     **	Should Tanya/civilian be automatically evacuated?
     */
     CheckBoxClass tanya(kButtonEvac, record.X, record.Y + 8);
-    if (Scen.IsTanyaEvac) {
+    if (TheScenario().IsTanyaEvac) {
       tanya.Turn_On();
     } else {
       tanya.Turn_Off();
@@ -1808,7 +1813,7 @@ int MapEditClass::Load_Scenario() {
     **	End of game with with scenario?
     */
     CheckBoxClass endofgame(kButtonEndofgame, tanya.X, tanya.Y + 8);
-    if (Scen.IsEndOfGame) {
+    if (TheScenario().IsEndOfGame) {
       endofgame.Turn_On();
     } else {
       endofgame.Turn_Off();
@@ -1818,7 +1823,7 @@ int MapEditClass::Load_Scenario() {
     **	Timer inherit logic.
     */
     CheckBoxClass timercarry(kButtonTimer, endofgame.X, endofgame.Y + 8);
-    if (Scen.IsInheritTimer) {
+    if (TheScenario().IsInheritTimer) {
       timercarry.Turn_On();
     } else {
       timercarry.Turn_Off();
@@ -1828,7 +1833,7 @@ int MapEditClass::Load_Scenario() {
     **	Disable spy plane option?
     */
     CheckBoxClass nospyplane(kButtonNospyplane, timercarry.X, timercarry.Y + 8);
-    if (Scen.IsNoSpyPlane) {
+    if (TheScenario().IsNoSpyPlane) {
       nospyplane.Turn_On();
     } else {
       nospyplane.Turn_Off();
@@ -1838,7 +1843,7 @@ int MapEditClass::Load_Scenario() {
     **	Skip the score screen?
     */
     CheckBoxClass skipscore(kButtonSkipscore, nospyplane.X, nospyplane.Y + 8);
-    if (Scen.IsSkipScore) {
+    if (TheScenario().IsSkipScore) {
       skipscore.Turn_On();
     } else {
       skipscore.Turn_Off();
@@ -1849,7 +1854,7 @@ int MapEditClass::Load_Scenario() {
     **	variation "B"?
     */
     CheckBoxClass nomapsel(kButtonNomapsel, skipscore.X, skipscore.Y + 8);
-    if (Scen.IsNoMapSel) {
+    if (TheScenario().IsNoMapSel) {
       nomapsel.Turn_On();
     } else {
       nomapsel.Turn_Off();
@@ -1859,7 +1864,7 @@ int MapEditClass::Load_Scenario() {
     **	Return to main menu after mission completes?
     */
     CheckBoxClass onetime(kButtonOnetime, nomapsel.X, nomapsel.Y + 8);
-    if (Scen.IsOneTimeOnly) {
+    if (TheScenario().IsOneTimeOnly) {
       onetime.Turn_On();
     } else {
       onetime.Turn_Off();
@@ -1869,7 +1874,7 @@ int MapEditClass::Load_Scenario() {
     **	Trucks carry a wood crate?
     */
     CheckBoxClass truckcrate(kButtonTruckcrate, onetime.X, onetime.Y + 8);
-    if (Scen.IsTruckCrate) {
+    if (TheScenario().IsTruckCrate) {
       truckcrate.Turn_On();
     } else {
       truckcrate.Turn_Off();
@@ -1879,7 +1884,7 @@ int MapEditClass::Load_Scenario() {
     **	Transfer credits into tiberium storage at scenario start?
     */
     CheckBoxClass moneytib(kButtonMoneytib, truckcrate.X, truckcrate.Y + 8);
-    if (Scen.IsMoneyTiberium) {
+    if (TheScenario().IsMoneyTiberium) {
       moneytib.Turn_On();
     } else {
       moneytib.Turn_Off();
@@ -1898,7 +1903,7 @@ int MapEditClass::Load_Scenario() {
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       intro.Add_Item(VQName.at(v));
     }
-    intro.Set_Selected_Index(static_cast<int>(Scen.IntroMovie) + 1);
+    intro.Set_Selected_Index(static_cast<int>(TheScenario().IntroMovie) + 1);
 
     /*
     **	Briefing movie name.
@@ -1913,7 +1918,7 @@ int MapEditClass::Load_Scenario() {
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       briefing.Add_Item(VQName.at(v));
     }
-    briefing.Set_Selected_Index(static_cast<int>(Scen.BriefMovie) + 1);
+    briefing.Set_Selected_Index(static_cast<int>(TheScenario().BriefMovie) + 1);
 
     char actiontext[port::kMaxFname + port::kMaxExt];
     DropListClass action(kButtonAction, actiontext, sizeof(actiontext),
@@ -1925,7 +1930,7 @@ int MapEditClass::Load_Scenario() {
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       action.Add_Item(VQName.at(v));
     }
-    action.Set_Selected_Index(static_cast<int>(Scen.ActionMovie) + 1);
+    action.Set_Selected_Index(static_cast<int>(TheScenario().ActionMovie) + 1);
 
     char wintext[port::kMaxFname + port::kMaxExt];
     DropListClass win(kButtonWin, wintext, sizeof(wintext),
@@ -1937,7 +1942,7 @@ int MapEditClass::Load_Scenario() {
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       win.Add_Item(VQName.at(v));
     }
-    win.Set_Selected_Index(static_cast<int>(Scen.WinMovie) + 1);
+    win.Set_Selected_Index(static_cast<int>(TheScenario().WinMovie) + 1);
 
     char losetext[port::kMaxFname + port::kMaxExt];
     DropListClass lose(kButtonLose, losetext, sizeof(losetext),
@@ -1948,7 +1953,7 @@ int MapEditClass::Load_Scenario() {
     for (const VQType v : magic_enum::enum_values<VQType>()) {
       lose.Add_Item(VQName.at(v));
     }
-    lose.Set_Selected_Index(static_cast<int>(Scen.LoseMovie) + 1);
+    lose.Set_Selected_Index(static_cast<int>(TheScenario().LoseMovie) + 1);
 
     /*
     **	House choice list.
@@ -1960,7 +1965,7 @@ int MapEditClass::Load_Scenario() {
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       housebtn.Add_Item(HouseTypeClass::As_Reference(h).IniName);
     }
-    housebtn.Set_Selected_Index(static_cast<int>(PlayerPtr->Class->House));
+    housebtn.Set_Selected_Index(static_cast<int>(ThePlayer()->Class->House));
 
     /*
     **	Base house choice drop down list.
@@ -1974,8 +1979,8 @@ int MapEditClass::Load_Scenario() {
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
       basebtn.Add_Item(HouseTypeClass::As_Reference(h).IniName);
     }
-    if (Base.House != HOUSE_NONE) {
-      basebtn.Set_Selected_Index(static_cast<int>(Base.House));
+    if (TheWorld().base().House != HOUSE_NONE) {
+      basebtn.Set_Selected_Index(static_cast<int>(TheWorld().base().House));
     }
 
     /*
@@ -1991,8 +1996,9 @@ int MapEditClass::Load_Scenario() {
     for (const ThemeType th : magic_enum::enum_values<ThemeType>()) {
       themebtn.Add_Item(ThemeClass::Full_Name(th));
     }
-    if (Scen.TransitTheme != THEME_NONE) {
-      themebtn.Set_Selected_Index(static_cast<int>(Scen.TransitTheme) + 1);
+    if (TheScenario().TransitTheme != THEME_NONE) {
+      themebtn.Set_Selected_Index(static_cast<int>(TheScenario().TransitTheme) +
+                                  1);
     } else {
       themebtn.Set_Selected_Index(0);
     }
@@ -2411,7 +2417,7 @@ int MapEditClass::Load_Scenario() {
         fetch = false;
         HouseStaticClass* hstatic = &hdata.at(house);
 
-        Base.House = HousesType(basebtn.Current_Index());
+        TheWorld().base().House = HousesType(basebtn.Current_Index());
         hstatic->InitialCredits =
             static_cast<int64_t>(creditbtn.Get_Value()) * 100;
         hstatic->Edge = SourceType(sourcebtn.Current_Index());
@@ -2454,26 +2460,27 @@ int MapEditClass::Load_Scenario() {
         hptr->IsPlayerControl = control.Is_Checked(static_cast<int>(h));
       }
     }
-    PlayerPtr->IsPlayerControl = true;
-    port::SafeCopy(Scen.Description, desc.Get_Text());
-    base::At(Scen.Description, sizeof(Scen.Description) - 1) = '\0';
-    Scen.IntroMovie = VQType(intro.Current_Index() - 1);
-    Scen.BriefMovie = VQType(briefing.Current_Index() - 1);
-    Scen.ActionMovie = VQType(action.Current_Index() - 1);
-    Scen.WinMovie = VQType(win.Current_Index() - 1);
-    Scen.LoseMovie = VQType(lose.Current_Index() - 1);
-    Scen.IsToInherit = inherit.IsOn;
-    Scen.IsToCarryOver = record.IsOn;
-    Scen.IsTanyaEvac = tanya.IsOn;
-    Scen.IsEndOfGame = endofgame.IsOn;
-    Scen.IsInheritTimer = timercarry.IsOn;
-    Scen.IsNoSpyPlane = nospyplane.IsOn;
-    Scen.IsSkipScore = skipscore.IsOn;
-    Scen.IsNoMapSel = nomapsel.IsOn;
-    Scen.IsOneTimeOnly = onetime.IsOn;
-    Scen.IsTruckCrate = truckcrate.IsOn;
-    Scen.IsMoneyTiberium = moneytib.IsOn;
-    Scen.TransitTheme = ThemeType(themebtn.Current_Index() - 1);
+    ThePlayer()->IsPlayerControl = true;
+    port::SafeCopy(TheScenario().Description, desc.Get_Text());
+    base::At(TheScenario().Description, sizeof(TheScenario().Description) - 1) =
+        '\0';
+    TheScenario().IntroMovie = VQType(intro.Current_Index() - 1);
+    TheScenario().BriefMovie = VQType(briefing.Current_Index() - 1);
+    TheScenario().ActionMovie = VQType(action.Current_Index() - 1);
+    TheScenario().WinMovie = VQType(win.Current_Index() - 1);
+    TheScenario().LoseMovie = VQType(lose.Current_Index() - 1);
+    TheScenario().IsToInherit = inherit.IsOn;
+    TheScenario().IsToCarryOver = record.IsOn;
+    TheScenario().IsTanyaEvac = tanya.IsOn;
+    TheScenario().IsEndOfGame = endofgame.IsOn;
+    TheScenario().IsInheritTimer = timercarry.IsOn;
+    TheScenario().IsNoSpyPlane = nospyplane.IsOn;
+    TheScenario().IsSkipScore = skipscore.IsOn;
+    TheScenario().IsNoMapSel = nomapsel.IsOn;
+    TheScenario().IsOneTimeOnly = onetime.IsOn;
+    TheScenario().IsTruckCrate = truckcrate.IsOn;
+    TheScenario().IsMoneyTiberium = moneytib.IsOn;
+    TheScenario().TransitTheme = ThemeType(themebtn.Current_Index() - 1);
 
     /*
     **	Change the theater:
@@ -2520,7 +2527,7 @@ int MapEditClass::Load_Scenario() {
       /*
       ** Force shapes to reload
       */
-      LastTheater = THEATER_NONE;
+      TheWorld().last_theater() = THEATER_NONE;
 
       /*
       **	Re-init the object Type Classes for this theater

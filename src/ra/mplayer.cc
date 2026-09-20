@@ -71,6 +71,7 @@
 #include "ra/textbtn.h"
 #include "ra/vector_dynamic.h"
 #include "ra/wolstrng.h"
+#include "ra/world.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
@@ -672,8 +673,8 @@ int Surrender_Dialog(const char* text) {
   //	Redraw the display
   //------------------------------------------------------------------------
   TheScreen().hidden_view().Clear();
-  Map.Flag_To_Redraw(true);
-  Map.Render();
+  TheMap().Flag_To_Redraw(true);
+  TheMap().Render();
 
   return retcode;
 }
@@ -854,8 +855,8 @@ int Abort_Dialog() {
   //	Redraw the display
   //------------------------------------------------------------------------
   TheScreen().hidden_view().Clear();
-  Map.Flag_To_Redraw(true);
-  Map.Render();
+  TheMap().Flag_To_Redraw(true);
+  TheMap().Render();
 
   return retcode;
 }

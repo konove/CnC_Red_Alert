@@ -75,7 +75,6 @@
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/facing.h"
 #include "ra/fly.h"
@@ -97,6 +96,7 @@
 #include "ra/type_heaps.h"
 #include "ra/unit.h"
 #include "ra/vessel.h"
+#include "ra/world.h"
 #include "sdllib/shape.h"
 
 /***********************************************************************************************
@@ -171,8 +171,8 @@ BulletClass::~BulletClass() {
         // always-MOVE_OK Can_Enter_Cell, so the fallback never runs. The loop
         // below does the real legality check through Unlimbo.
         if (Can_Enter_Cell(Coord_Cell(newcoord)) != MOVE_OK) {
-          newcoord = Cell_Coord(
-              Map.Nearby_Location(Coord_Cell(newcoord), dog->Class->Speed));
+          newcoord = Cell_Coord(TheMap().Nearby_Location(Coord_Cell(newcoord),
+                                                         dog->Class->Speed));
         }
 
         /*
@@ -186,18 +186,18 @@ BulletClass::~BulletClass() {
           if (i != -1) {
             newcoord = Adjacent_Cell(Coord, static_cast<FacingType>(i));
           }
-          ScenarioInit++;
+          TheWorld().scenario_init()++;
           if (dog->Unlimbo(newcoord, dog->PrimaryFacing)) {
             dog->Mark(MARK_DOWN);
             dog->Do_Action(DO_DOG_MAUL, true);
             if (dog->WasSelected) {
               dog->Select();
             }
-            ScenarioInit--;
+            TheWorld().scenario_init()--;
             unlimbo = true;
             break;
           }
-          ScenarioInit--;
+          TheWorld().scenario_init()--;
         }
 
         Payback = nullptr;
@@ -357,7 +357,7 @@ bool BulletClass::Mark(MarkType mark) {
 
   if (ObjectClass::Mark(mark)) {
     if (!Class->IsInvisible) {
-      Map.Refresh_Cells(Coord_Cell(Coord), Occupy_List());
+      TheMap().Refresh_Cells(Coord_Cell(Coord), Occupy_List());
     }
     return true;
   }
@@ -438,14 +438,14 @@ void BulletClass::AI() {
     case IMPACT_EDGE:
       Mark();
       if (Payback != nullptr && Class->Type == BULLET_GPS_SATELLITE) {
-        if (Payback->House == PlayerPtr) {
-          if (!Map.Is_Radar_Active()) {
-            Map.Radar_Activate(1);
+        if (Payback->House == ThePlayer()) {
+          if (!TheMap().Is_Radar_Active()) {
+            TheMap().Radar_Activate(1);
           }
           for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-            Map.Map_Cell(cell, PlayerPtr);
+            TheMap().Map_Cell(cell, ThePlayer());
           }
-          Map.RadarClass::Flag_To_Redraw(true);
+          TheMap().RadarClass::Flag_To_Redraw(true);
         }
         Payback->House->IsGPSActive = true;
         Payback->House->IsVisionary = true;
@@ -923,7 +923,7 @@ LayerType BulletClass::In_Which_Layer() const {
  *=============================================================================================*/
 bool BulletClass::Is_Forced_To_Explode(COORDINATE& coord) const {
   coord = Coord;
-  const CellClass* cellptr = &Map.at(coord);
+  const CellClass* cellptr = &TheMap().at(coord);
 
   /*
   **	Check for impact on a wall or other high obstacle.
@@ -1044,7 +1044,7 @@ void BulletClass::Bullet_Explodes(bool forced) {
   **	Fetch the land type that the explosion will be upon. Special case for
   **	flying aircraft targets, their land type will be LAND_NONE.
   */
-  const CellClass* cellptr = &Map.at(Coord);
+  const CellClass* cellptr = &TheMap().at(Coord);
   LandType land = cellptr->Land_Type();
   if (Is_Target_Aircraft(TarCom) &&
       As_Aircraft(TarCom)->In_Which_Layer() == LAYER_TOP) {
@@ -1085,14 +1085,14 @@ void BulletClass::Bullet_Explodes(bool forced) {
   //				if (Payback && Payback->House == PlayerPtr &&
   // absl::EqualsIgnoreCase(Class->Name(), "GPSSATELLITE")) {
   if (Payback && Class->Type == BULLET_GPS_SATELLITE) {
-    if (Payback->House == PlayerPtr) {
-      if (!Map.Is_Radar_Active()) {
-        Map.Radar_Activate(1);
+    if (Payback->House == ThePlayer()) {
+      if (!TheMap().Is_Radar_Active()) {
+        TheMap().Radar_Activate(1);
       }
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-        Map.Map_Cell(cell, PlayerPtr);
+        TheMap().Map_Cell(cell, ThePlayer());
       }
-      Map.RadarClass::Flag_To_Redraw(true);
+      TheMap().RadarClass::Flag_To_Redraw(true);
     }
     //					Sound_Effect(VOC_SATTACT2);
     Payback->House->IsGPSActive = true;

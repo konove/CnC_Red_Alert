@@ -50,6 +50,7 @@
 #include "ra/house.h"
 #include "ra/inline.h"
 #include "ra/mapedit.h"
+#include "ra/world.h"
 #include "tech/audio_mixer.h"
 #include "tech/fixed.h"
 #include "tech/game_file.h"
@@ -309,14 +310,14 @@ void PlaySoundEffectAt(const VocType voc, const COORDINATE coord,
   // 192 cells away (1.5 map widths). Sub_Saturate() keeps a sliver of 1/256
   // even there.
   fixed volume(1);
-  if (coord && !Map.In_View(cell)) {
+  if (coord && !TheMap().In_View(cell)) {
     // Measured from the centre of the view: TacticalCoord is its upper-left
     // corner, which would make sounds below and right of the screen quieter
     // than those as far above and left.
     const COORDINATE view_center =
-        Coord_Add(Map.TacticalCoord,
-                  XY_Coord(static_cast<LEPTON>(Map.TacLeptonWidth / 2),
-                           static_cast<LEPTON>(Map.TacLeptonHeight / 2)));
+        Coord_Add(TheMap().TacticalCoord,
+                  XY_Coord(static_cast<LEPTON>(TheMap().TacLeptonWidth / 2),
+                           static_cast<LEPTON>(TheMap().TacLeptonHeight / 2)));
     const int distance_cells = Distance(coord, view_center) / CELL_LEPTON_W;
     auto fade = fixed(distance_cells, 128 + 64);
     fade.Sub_Saturate(1);
@@ -353,7 +354,7 @@ int PlaySoundEffect(VocType voc, fixed volume, const int variation,
     // Responses only come from units the player selects or orders, so there
     // is always a player house by then.
     if (house == HOUSE_NONE) {
-      house = PlayerPtr->ActLike;
+      house = ThePlayer()->ActLike;
     }
 
     // Allied houses get the .V?? recordings, all others the Soviet .R?? ones.

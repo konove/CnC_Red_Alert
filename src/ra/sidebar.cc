@@ -136,6 +136,7 @@
 #include "ra/techno.h"
 #include "ra/text_ids.h"
 #include "ra/type.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -424,8 +425,8 @@ void SidebarClass::Reload_Sidebar() {
   };
   int houseloaded = 0;
 
-  if (PlayerPtr) {
-    houseloaded = static_cast<int>(PlayerPtr->ActLike);
+  if (ThePlayer()) {
+    houseloaded = static_cast<int>(ThePlayer()->ActLike);
   }
 
   std::string sidename = base::At(sidebarnames, houseloaded);
@@ -834,7 +835,7 @@ void SidebarClass::AI(KeyNumType& input, int x, int y) {
     **	If there are any buildings in the payer's inventory, then allow the
     *repair *	option.
     */
-    if (PlayerPtr->BScan) {
+    if (ThePlayer()->BScan) {
       Activate_Repair(1);
     } else {
       Activate_Repair(0);
@@ -1167,7 +1168,7 @@ void SidebarClass::StripClass::Init_IO(int id) {
 void SidebarClass::StripClass::Init_Theater(TheaterType theater) {
   Reload_LogoShapes();
 
-  if (theater != THEATER_NONE && theater != LastTheater) {
+  if (theater != THEATER_NONE && theater != TheWorld().last_theater()) {
     static const TLucentType ClockCols[1] = {
         {kGreen, kBlack, 100, 0}  //			{GREEN, LTGREY, 180, 0}
     };
@@ -1213,8 +1214,8 @@ void SidebarClass::StripClass::Reload_LogoShapes() {
   ** Sidebar art is dependent on the side of the player
   */
 
-  if (PlayerPtr) {
-    houseloaded = static_cast<int>(PlayerPtr->ActLike);
+  if (ThePlayer()) {
+    houseloaded = static_cast<int>(ThePlayer()->ActLike);
   }
   LogoShapes = MixArchive::RetrieveData(base::At(stripnames, houseloaded));
 }
@@ -1239,14 +1240,14 @@ void SidebarClass::StripClass::Reload_LogoShapes() {
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void SidebarClass::StripClass::Activate() {
   base::At(UpButton, ID).Zap();
-  Map.Add_A_Button(base::At(UpButton, ID));
+  TheMap().Add_A_Button(base::At(UpButton, ID));
 
   base::At(DownButton, ID).Zap();
-  Map.Add_A_Button(base::At(DownButton, ID));
+  TheMap().Add_A_Button(base::At(DownButton, ID));
 
   for (int index = 0; index < kMaxVisible; index++) {
     base::At(base::At(SelectButton, ID), index).Zap();
-    Map.Add_A_Button(base::At(base::At(SelectButton, ID), index));
+    TheMap().Add_A_Button(base::At(base::At(SelectButton, ID), index));
   }
 }
 
@@ -1269,10 +1270,10 @@ void SidebarClass::StripClass::Activate() {
 // Not const: removes the strip's buttons from the map's gadget list.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void SidebarClass::StripClass::Deactivate() {
-  Map.Remove_A_Button(base::At(UpButton, ID));
-  Map.Remove_A_Button(base::At(DownButton, ID));
+  TheMap().Remove_A_Button(base::At(UpButton, ID));
+  TheMap().Remove_A_Button(base::At(DownButton, ID));
   for (int index = 0; index < kMaxVisible; index++) {
-    Map.Remove_A_Button(base::At(base::At(SelectButton, ID), index));
+    TheMap().Remove_A_Button(base::At(base::At(SelectButton, ID), index));
   }
 }
 
@@ -1300,7 +1301,7 @@ bool SidebarClass::StripClass::Add(RTTIType type, int id) {
         return false;
       }
     }
-    if (!ScenarioInit && type != RTTI_SPECIAL) {
+    if (!TheWorld().scenario_init() && type != RTTI_SPECIAL) {
       Speak(VOX_NEW_CONSTRUCT);
     }
     base::At(Buildables, BuildableCount).BuildableType = type;
@@ -1364,7 +1365,7 @@ bool SidebarClass::StripClass::Scroll(bool up) {
 void SidebarClass::StripClass::Flag_To_Redraw() {
   IsToRedraw = true;
   // Map.SidebarClass::IsToRedraw = true;
-  Map.Flag_To_Redraw(false);
+  TheMap().Flag_To_Redraw(false);
 }
 
 /***********************************************************************************************
@@ -1653,9 +1654,9 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
             *then all *	objects of this type are displays in a disabled state.
             */
             bool isbusy =
-                PlayerPtr->Fetch_Factory(
+                ThePlayer()->Fetch_Factory(
                     base::At(Buildables, index).BuildableType) != nullptr;
-            if (!isbusy && PlayerPtr->Is_Hack_Prevented(
+            if (!isbusy && ThePlayer()->Is_Hack_Prevented(
                                base::At(Buildables, index).BuildableType,
                                base::At(Buildables, index).BuildableID)) {
               isbusy = true;
@@ -1690,7 +1691,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
               darken = isbusy;
             }
           } else {
-            darken = PlayerPtr->Is_Hack_Prevented(
+            darken = ThePlayer()->Is_Hack_Prevented(
                 base::At(Buildables, index).BuildableType,
                 base::At(Buildables, index).BuildableID);
           }
@@ -1708,8 +1709,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           // leave the defaults (not complete, stage zero) in place otherwise.
           if (static_cast<unsigned>(spc) <
               magic_enum::enum_count<SpecialWeaponType>()) {
-            completed = PlayerPtr->SuperWeapon.at(spc).Is_Ready();
-            stage = PlayerPtr->SuperWeapon.at(spc).Anim_Stage();
+            completed = ThePlayer()->SuperWeapon.at(spc).Is_Ready();
+            stage = ThePlayer()->SuperWeapon.at(spc).Anim_Stage();
           }
           darken = false;
         }
@@ -1860,12 +1861,13 @@ bool SidebarClass::StripClass::Recalc() {
         Fetch_Techno_Type(base::At(Buildables, index).BuildableType,
                           base::At(Buildables, index).BuildableID);
     if (tech != nullptr) {
-      ok = tech->Who_Can_Build_Me(true, false, PlayerPtr->Class->House) !=
+      ok = tech->Who_Can_Build_Me(true, false, ThePlayer()->Class->House) !=
            nullptr;
     } else {
       if (static_cast<unsigned>(base::At(Buildables, index).BuildableID) <
           magic_enum::enum_count<SpecialWeaponType>()) {
-        ok = PlayerPtr->SuperWeapon
+        ok = ThePlayer()
+                 ->SuperWeapon
                  .at(static_cast<SpecialWeaponType>(
                      base::At(Buildables, index).BuildableID))
                  .Is_Present();
@@ -1978,9 +1980,9 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
   *that particular *	kind of factory is specified by the "genfactory" value.
   *This can be used to see *	if the factory type is currently busy or not.
   */
-  FactoryClass* factory = PlayerPtr->Fetch_Factory(otype);
+  FactoryClass* factory = ThePlayer()->Fetch_Factory(otype);
 
-  Map.Override_Mouse_Shape(MOUSE_NORMAL);
+  TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
 
   if (index < Strip->BuildableCount) {
     if (otype != RTTI_SPECIAL) {
@@ -1994,7 +1996,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
     }
 
   } else {
-    Map.Help_Text(TXT_NONE);
+    TheMap().Help_Text(TXT_NONE);
   }
 
   if (spc != SPC_NONE) {
@@ -2002,7 +2004,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
     **	Display the help text if the mouse is over the button.
     */
     if (flags & kLeftUp) {
-      Map.Help_Text(SpecialWeaponHelp.at(spc), X, Y, scheme->Color, true);
+      TheMap().Help_Text(SpecialWeaponHelp.at(spc), X, Y, scheme->Color, true);
       flags &= ~kLeftUp;
     }
 
@@ -2011,7 +2013,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
     ** mode then we don't want to be any more.
     */
     if (flags & kRightPress) {
-      Map.IsTargettingMode = SPC_NONE;
+      TheMap().IsTargettingMode = SPC_NONE;
     }
     /*
     **	A left mouse press signal "activate".  If our weapon type is
@@ -2019,9 +2021,9 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
     */
     if ((flags & kLeftPress) && (static_cast<unsigned>(spc) <
                                  magic_enum::enum_count<SpecialWeaponType>())) {
-      if (PlayerPtr->SuperWeapon.at(spc).Is_Ready()) {
+      if (ThePlayer()->SuperWeapon.at(spc).Is_Ready()) {
         if (spc != SPC_SONAR_PULSE) {
-          Map.IsTargettingMode = spc;
+          TheMap().IsTargettingMode = spc;
           Unselect_All();
           Speak(VOX_SELECT_TARGET);
         } else {
@@ -2029,7 +2031,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                                  static_cast<int>(SPC_SONAR_PULSE), 0));
         }
       } else {
-        PlayerPtr->SuperWeapon.at(spc).Impatient_Click();
+        ThePlayer()->SuperWeapon.at(spc).Impatient_Click();
       }
     }
 
@@ -2039,8 +2041,8 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
       **	Display the help text if the mouse is over the button.
       */
       if (flags & kLeftUp) {
-        Map.Help_Text(choice->Full_Name(), X, Y, scheme->Color, true);
-        Map.Set_Cost(choice->Cost_Of() * PlayerPtr->CostBias);
+        TheMap().Help_Text(choice->Full_Name(), X, Y, scheme->Color, true);
+        TheMap().Set_Cost(choice->Cost_Of() * ThePlayer()->CostBias);
         flags &= ~kLeftUp;
       }
 
@@ -2058,11 +2060,12 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
         **	Cancels placement mode if the sidebar factory is abandoned or
         **	suspended.
         */
-        if (Map.PendingObjectPtr && Map.PendingObjectPtr->Is_Techno()) {
-          Map.PendingObjectPtr = nullptr;
-          Map.PendingObject = nullptr;
-          Map.PendingHouse = HOUSE_NONE;
-          Map.Set_Cursor_Shape({});
+        if (TheMap().PendingObjectPtr &&
+            TheMap().PendingObjectPtr->Is_Techno()) {
+          TheMap().PendingObjectPtr = nullptr;
+          TheMap().PendingObject = nullptr;
+          TheMap().PendingHouse = HOUSE_NONE;
+          TheMap().Set_Cursor_Shape({});
         }
 
         if (!factory->Is_Building()) {
@@ -2071,8 +2074,8 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
         } else {
           Speak(VOX_SUSPENDED);
           OutList.Add(EventClass(EventClass::SUSPEND, otype, oid));
-          base::At(Map.Column, 0).IsToRedraw = true;
-          base::At(Map.Column, 1).IsToRedraw = true;
+          base::At(TheMap().Column, 0).IsToRedraw = true;
+          base::At(TheMap().Column, 1).IsToRedraw = true;
         }
       }
 
@@ -2119,7 +2122,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                   **	the building is actually placed down.
                   */
                   if (pending->What_Am_I() == RTTI_BUILDING) {
-                    PlayerPtr->Manual_Place(
+                    ThePlayer()->Manual_Place(
                         builder, dynamic_cast<BuildingClass*>(pending));
                   } else {
                     /*
@@ -2132,7 +2135,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
                 }
               }
             } else {
-              if (PlayerPtr->Is_Hack_Prevented(otype, oid)) {
+              if (ThePlayer()->Is_Hack_Prevented(otype, oid)) {
                 // Eva scolds the player here.
               } else {
                 /*
@@ -2153,7 +2156,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
           }
 
         } else {
-          if (PlayerPtr->Is_Hack_Prevented(otype, oid)) {
+          if (ThePlayer()->Is_Hack_Prevented(otype, oid)) {
             // Eva scolds the player here.
           } else {
             /*
@@ -2201,8 +2204,8 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
  *=============================================================================================*/
 bool SidebarClass::SBGadgetClass::Action(unsigned /*flags*/,
                                          KeyNumType& /*key*/) {
-  Map.Help_Text(TXT_NONE);
-  Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
+  TheMap().Help_Text(TXT_NONE);
+  TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
   return true;
 }
 

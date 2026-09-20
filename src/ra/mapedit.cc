@@ -117,6 +117,7 @@
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/vector_dynamic.h"
+#include "ra/world.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
@@ -152,8 +153,9 @@ MapEditClass::MapEditClass() {
     base::At(NumType, i) = 0;
     base::At(TypeOffset, i) = 0;
   }
-  Scen.Waypoint[ScenarioClass::kHomeWaypoint] = 0;
-  CurrentCell = 0;
+  // The home waypoint and the editor's current cell start at zero. World's
+  // constructor does that now: this one runs while World is still building
+  // its members, so it cannot reach back through TheWorld().
   CurTeam = nullptr;
   CurTrigger = nullptr;
   Changed = false;
@@ -258,7 +260,7 @@ void MapEditClass::One_Time() {
                                  GadgetClass::Get_Color_Scheme(),
                                  TPF_RIGHT | TPF_NOSHADOW | TPF_EFNT);
   BaseGauge->Set_Maximum(100);
-  BaseGauge->Set_Value(Scen.Percent);
+  BaseGauge->Set_Value(TheScenario().Percent);
 }
 
 /***********************************************************************************************
@@ -495,7 +497,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
   if (TheDebugState().developer_mode() &&
       ((input == KN_F2 && Session.Type == GAME_NORMAL) ||
        input == (KN_F2 | KN_CTRL_BIT))) {
-    ScenarioInit = 0;
+    TheWorld().scenario_init() = 0;
 
     /*
     ** If we're in editor mode & Changed is set, prompt for saving changes
@@ -534,7 +536,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       if (!TheDebugState().map_editor_active()) {
         Changed = false;
       }
-      BaseGauge->Set_Value(Scen.Percent);
+      BaseGauge->Set_Value(TheScenario().Percent);
       Go_Editor(!TheDebugState().map_editor_active());
     }
   }
@@ -644,8 +646,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       /*
       **	Unselect object & hide popup controls
       */
-      if (CurrentObject.Count()) {
-        CurrentObject.at(0)->Unselect();
+      if (TheWorld().current_object().Count()) {
+        TheWorld().current_object().at(0)->Unselect();
         Popup_Controls();
       }
       Main_Menu();
@@ -670,8 +672,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         **	Unselect current object, hide popup controls
         */
-        if (CurrentObject.Count()) {
-          CurrentObject.at(0)->Unselect();
+        if (TheWorld().current_object().Count()) {
+          TheWorld().current_object().at(0)->Unselect();
           Popup_Controls();
         }
 
@@ -797,10 +799,10 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         **	Set map position
         */
-        ScenarioInit++;
+        TheWorld().scenario_init()++;
         Set_Tactical_Position(
-            Cell_Coord(Scen.Waypoint[ScenarioClass::kHomeWaypoint]));
-        ScenarioInit--;
+            Cell_Coord(TheScenario().Waypoint[ScenarioClass::kHomeWaypoint]));
+        TheWorld().scenario_init()--;
 
         /*
         **	Force map to redraw
@@ -816,18 +818,18 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     **	SHIFT-HOME: set new Home Cell position
     */
     case (KN_HOME | KN_SHIFT_BIT):
-      if (CurrentCell != 0) {
+      if (TheWorld().current_cell() != 0) {
         /*
         ** Unflag the old Home Cell, if there are no other waypoints
         ** pointing to it
         */
-        cell = Scen.Waypoint[ScenarioClass::kHomeWaypoint];
+        cell = TheScenario().Waypoint[ScenarioClass::kHomeWaypoint];
 
         if (cell != -1) {
           found = 0;
           for (int i = 0; i < ScenarioClass::kWaypointCount; i++) {
             if (i != ScenarioClass::kHomeWaypoint &&
-                base::At(Scen.Waypoint, i) == cell) {
+                base::At(TheScenario().Waypoint, i) == cell) {
               found = 1;
             }
           }
@@ -845,9 +847,10 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         // Coord_Cell(TacticalCoord);
         //			(*this)[TacticalCoord].IsWaypoint = 1;
         //			Flag_Cell(Coord_Cell(TacticalCoord));
-        Scen.Waypoint[ScenarioClass::kHomeWaypoint] = CurrentCell;
-        (*this).at(CurrentCell).IsWaypoint = true;
-        Flag_Cell(CurrentCell);
+        TheScenario().Waypoint[ScenarioClass::kHomeWaypoint] =
+            TheWorld().current_cell();
+        (*this).at(TheWorld().current_cell()).IsWaypoint = true;
+        Flag_Cell(TheWorld().current_cell());
 
         Changed = true;
         input = KN_NONE;
@@ -859,8 +862,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     **	the Reinf. Cell to the same as the Home Cell (for display purposes.)
     */
     case (KN_R | KN_SHIFT_BIT):
-      if (CurrentCell == 0 ||
-          CurrentCell == Scen.Waypoint[ScenarioClass::kHomeWaypoint]) {
+      if (TheWorld().current_cell() == 0 ||
+          TheWorld().current_cell() ==
+              TheScenario().Waypoint[ScenarioClass::kHomeWaypoint]) {
         break;
       }
 
@@ -868,13 +872,13 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       ** Unflag the old Reinforcement Cell, if there are no other waypoints
       ** pointing to it
       */
-      cell = Scen.Waypoint[ScenarioClass::kReinforcementWaypoint];
+      cell = TheScenario().Waypoint[ScenarioClass::kReinforcementWaypoint];
 
       if (cell != -1) {
         found = 0;
         for (int i = 0; i < ScenarioClass::kWaypointCount; i++) {
           if (i != ScenarioClass::kReinforcementWaypoint &&
-              base::At(Scen.Waypoint, i) == cell) {
+              base::At(TheScenario().Waypoint, i) == cell) {
             found = 1;
           }
         }
@@ -887,9 +891,10 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       /*
       ** Now set the new Reinforcement cell
       */
-      Scen.Waypoint[ScenarioClass::kReinforcementWaypoint] = CurrentCell;
-      (*this).at(CurrentCell).IsWaypoint = true;
-      Flag_Cell(CurrentCell);
+      TheScenario().Waypoint[ScenarioClass::kReinforcementWaypoint] =
+          TheWorld().current_cell();
+      (*this).at(TheWorld().current_cell()).IsWaypoint = true;
+      Flag_Cell(TheWorld().current_cell());
       Changed = true;
       input = KN_NONE;
       break;
@@ -923,7 +928,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     case (KN_X | KN_ALT_BIT):
     case (KN_Y | KN_ALT_BIT):
     case (KN_Z | KN_ALT_BIT):
-      if (CurrentCell != 0) {
+      if (TheWorld().current_cell() != 0) {
         const int waypt_idx =
             (input & ~KN_ALT_BIT) - KN_A;  // for labelling a waypoint
         Update_Waypoint(waypt_idx);
@@ -936,7 +941,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     */
     case KN_PERIOD:
     case (KN_PERIOD | KN_ALT_BIT):
-      if (CurrentCell != 0 && Get_Waypoint_Name(wayname)) {
+      if (TheWorld().current_cell() != 0 && Get_Waypoint_Name(wayname)) {
         int waynm = 0;
         if (!std::string_view(wayname).empty()) {
           wayname[0] = static_cast<char>(toupper(wayname[0]));
@@ -959,14 +964,15 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     **	ALT-Space: Remove a waypoint designation
     */
     case (KN_SPACE | KN_ALT_BIT):
-      if (CurrentCell != 0) {
+      if (TheWorld().current_cell() != 0) {
         /*
         **	Loop through letter waypoints; if this cell is one of them,
         **	clear that waypoint.
         */
         for (int i = 0; i < ScenarioClass::kHomeWaypoint; i++) {
-          if (base::At(Scen.Waypoint, i) == CurrentCell) {
-            base::At(Scen.Waypoint, i) = -1;
+          if (base::At(TheScenario().Waypoint, i) ==
+              TheWorld().current_cell()) {
+            base::At(TheScenario().Waypoint, i) = -1;
           }
         }
 
@@ -977,9 +983,10 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         for (int i = 0; i < kMaxPlayers; i++) {
           house = static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + i);
           if (HouseClass::As_Pointer(house) &&
-              CurrentCell == HouseClass::As_Pointer(house)->FlagHome) {
-            HouseClass::As_Pointer(house)->Flag_Remove(As_Target(CurrentCell),
-                                                       true);
+              TheWorld().current_cell() ==
+                  HouseClass::As_Pointer(house)->FlagHome) {
+            HouseClass::As_Pointer(house)->Flag_Remove(
+                As_Target(TheWorld().current_cell()), true);
           }
         }
 
@@ -987,13 +994,14 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         **	If there are no more waypoints on this cell, clear the cell's
         **	waypoint designation.
         */
-        if (Scen.Waypoint[ScenarioClass::kHomeWaypoint] != CurrentCell &&
-            Scen.Waypoint[ScenarioClass::kReinforcementWaypoint] !=
-                CurrentCell) {
-          (*this).at(CurrentCell).IsWaypoint = false;
+        if (TheScenario().Waypoint[ScenarioClass::kHomeWaypoint] !=
+                TheWorld().current_cell() &&
+            TheScenario().Waypoint[ScenarioClass::kReinforcementWaypoint] !=
+                TheWorld().current_cell()) {
+          (*this).at(TheWorld().current_cell()).IsWaypoint = false;
         }
         Changed = true;
-        Flag_Cell(CurrentCell);
+        Flag_Cell(TheWorld().current_cell());
       }
       input = KN_NONE;
       break;
@@ -1049,20 +1057,20 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
             **	Select an object or a cell
             **	Check for double-click
             */
-            if (CurrentObject.Count() &&
+            if (TheWorld().current_object().Count() &&
                 ((TickCount.Value() - LastClickTime) < 15)) {
             } else {
               /*
               **	Single-click: select object
               */
               if (Select_Object() == 0) {
-                CurrentCell = 0;
+                TheWorld().current_cell() = 0;
                 Grab_Object();
               } else {
                 /*
                 **	No object: select the cell
                 */
-                CurrentCell =
+                TheWorld().current_cell() =
                     Click_Cell_Calc(Keyboard->MouseQX, Keyboard->MouseQY);
                 TheScreen().hidden_view().Clear();
                 Flag_To_Redraw(true);
@@ -1090,8 +1098,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     case KN_DOWN | KN_ALT_BIT | KN_SHIFT_BIT:
     case KN_LEFT | KN_ALT_BIT | KN_SHIFT_BIT:
     case KN_RIGHT | KN_ALT_BIT | KN_SHIFT_BIT:
-      if (CurrentObject.Count()) {
-        CurrentObject.at(0)->Move(KN_To_Facing(input));
+      if (TheWorld().current_object().Count()) {
+        TheWorld().current_object().at(0)->Move(KN_To_Facing(input));
         Changed = true;
       }
       input = KN_NONE;
@@ -1105,31 +1113,31 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       /*
       **	Delete currently-selected object's trigger, or the object
       */
-      if (CurrentObject.Count()) {
+      if (TheWorld().current_object().Count()) {
         /*
         **	Delete trigger
         */
-        if (CurrentObject.at(0)->Trigger.Is_Valid()) {
-          CurrentObject.at(0)->Trigger = nullptr;
+        if (TheWorld().current_object().at(0)->Trigger.Is_Valid()) {
+          TheWorld().current_object().at(0)->Trigger = nullptr;
         } else {
           /*
           ** If the current object is part of the AI's Base, remove it
           ** from the Base's Node list.
           */
-          if (CurrentObject.at(0)->What_Am_I() == RTTI_BUILDING) {
-            const auto* building =
-                dynamic_cast<const BuildingClass*>(CurrentObject.at(0));
-            if (Base.Is_Node(building)) {
-              BaseNodeClass* node =
-                  Base.Get_Node(building);  // for removing from an AI Base
-              Base.Nodes.Delete(*node);
+          if (TheWorld().current_object().at(0)->What_Am_I() == RTTI_BUILDING) {
+            const auto* building = dynamic_cast<const BuildingClass*>(
+                TheWorld().current_object().at(0));
+            if (TheWorld().base().Is_Node(building)) {
+              BaseNodeClass* node = TheWorld().base().Get_Node(
+                  building);  // for removing from an AI Base
+              TheWorld().base().Nodes.Delete(*node);
             }
           }
 
           /*
           **	Delete current object
           */
-          delete CurrentObject.at(0);
+          delete TheWorld().current_object().at(0);
 
           /*
           **	Hide the popup controls
@@ -1147,8 +1155,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         **	Remove trigger from current cell
         */
-        if (CurrentCell && (*this).at(CurrentCell).Trigger.Is_Valid()) {
-          (*this).at(CurrentCell).Trigger = nullptr;
+        if (TheWorld().current_cell() &&
+            (*this).at(TheWorld().current_cell()).Trigger.Is_Valid()) {
+          (*this).at(TheWorld().current_cell()).Trigger = nullptr;
           //						CellTriggers[CurrentCell]
           //= NULL;
 
@@ -1186,7 +1195,8 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       /*
       **	If that house doesn't own this object, try to transfer it
       */
-      if ((CurrentObject.at(0)->Owner() != house) && Change_House(house)) {
+      if ((TheWorld().current_object().at(0)->Owner() != house) &&
+          Change_House(house)) {
         Changed = true;
       }
 
@@ -1228,8 +1238,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       // break;
 
     case ButtonKey(kPopupSellable):
-      if (CurrentObject.at(0)->What_Am_I() == RTTI_BUILDING) {
-        auto* building = dynamic_cast<BuildingClass*>(CurrentObject.at(0));
+      if (TheWorld().current_object().at(0)->What_Am_I() == RTTI_BUILDING) {
+        auto* building =
+            dynamic_cast<BuildingClass*>(TheWorld().current_object().at(0));
 
         if (building->Class->Level != -1) {
           //				if (building->Class->IsBuildable) {
@@ -1246,8 +1257,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       break;
 
     case ButtonKey(kPopupRebuildable):
-      if (CurrentObject.at(0)->What_Am_I() == RTTI_BUILDING) {
-        auto* building = dynamic_cast<BuildingClass*>(CurrentObject.at(0));
+      if (TheWorld().current_object().at(0)->What_Am_I() == RTTI_BUILDING) {
+        auto* building =
+            dynamic_cast<BuildingClass*>(TheWorld().current_object().at(0));
 
         if (building->Class->Level != -1) {
           //				if (building->Class->IsBuildable) {
@@ -1266,14 +1278,15 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     **	Object-Editing button: Mission
     */
     case ButtonKey(kPopupMissionlist):
-      if (CurrentObject.at(0)->Is_Techno()) {
+      if (TheWorld().current_object().at(0)->Is_Techno()) {
         /*
         **	Set new mission
         */
         const MissionType mission =
             MapEditMissions.at(base::ToSize(MissionList->Current_Index()));
-        if (CurrentObject.at(0)->Get_Mission() != mission) {
-          dynamic_cast<TechnoClass*>(CurrentObject.at(0))->Set_Mission(mission);
+        if (TheWorld().current_object().at(0)->Get_Mission() != mission) {
+          dynamic_cast<TechnoClass*>(TheWorld().current_object().at(0))
+              ->Set_Mission(mission);
           Changed = true;
           Buttons->Flag_List_To_Redraw();
           Flag_To_Redraw(true);
@@ -1286,12 +1299,13 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     **	Object-Editing button: Health
     */
     case ButtonKey(kPopupHealthgauge):
-      if (CurrentObject.at(0)->Is_Techno()) {
+      if (TheWorld().current_object().at(0)->Is_Techno()) {
         /*
         **	Derive strength from current gauge reading
         */
-        int strength = CurrentObject.at(0)->Class_Of().MaxStrength *
-                       fixed(HealthGauge->Get_Value(), 256);
+        int strength =
+            TheWorld().current_object().at(0)->Class_Of().MaxStrength *
+            fixed(HealthGauge->Get_Value(), 256);
         //				strength =
         // Fixed_To_Cardinal((unsigned)CurrentObject[0]->Class_Of().MaxStrength,
         //(unsigned)HealthGauge->Get_Value());
@@ -1306,8 +1320,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         **	Set new strength
         */
-        if (strength != CurrentObject.at(0)->Strength) {
-          CurrentObject.at(0)->Strength = static_cast<int16_t>(strength);
+        if (strength != TheWorld().current_object().at(0)->Strength) {
+          TheWorld().current_object().at(0)->Strength =
+              static_cast<int16_t>(strength);
           TheScreen().hidden_view().Clear();
           Flag_To_Redraw(true);
           Changed = true;
@@ -1325,8 +1340,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     **	Object-Editing button: Facing
     */
     case ButtonKey(kPopupFacingdial):
-      if (CurrentObject.at(0)->Is_Techno()) {
-        auto* techno = dynamic_cast<TechnoClass*>(CurrentObject.at(0));
+      if (TheWorld().current_object().at(0)->Is_Techno()) {
+        auto* techno =
+            dynamic_cast<TechnoClass*>(TheWorld().current_object().at(0));
         if (FacingDial->direction() != techno->PrimaryFacing.Get()) {
           /*
           **	Set body's facing
@@ -1354,9 +1370,9 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     **	Object-Editing button: Facing
     */
     case ButtonKey(kPopupBasepercent):
-      if (BaseGauge->Get_Value() != Scen.Percent) {
-        Scen.Percent = BaseGauge->Get_Value();
-        Build_Base_To(Scen.Percent);
+      if (BaseGauge->Get_Value() != TheScenario().Percent) {
+        TheScenario().Percent = BaseGauge->Get_Value();
+        Build_Base_To(TheScenario().Percent);
         TheScreen().hidden_view().Clear();
         Flag_To_Redraw(true);
       }
@@ -1416,14 +1432,15 @@ void MapEditClass::Draw_It(bool forced) {
   /*
   **	Update the text labels
   */
-  if (forced && CurrentObject.Count()) {
+  if (forced && TheWorld().current_object().Count()) {
     /*
     **	Display the object's name & ID
     */
-    const char* label = Text_String(CurrentObject.at(0)->Full_Name());
+    const char* label =
+        Text_String(TheWorld().current_object().at(0)->Full_Name());
     const char* tptr = label;
     absl::SNPrintF(buf, sizeof(buf), "%s (%d)", tptr,
-                   CurrentObject.at(0)->As_Target());
+                   TheWorld().current_object().at(0)->As_Target());
 
     /*
     **	print the label
@@ -1578,7 +1595,7 @@ void MapEditClass::Main_Menu() {
           }
         }
         if (New_Scenario() == 0) {
-          Scen.CarryOverMoney = 0;
+          TheScenario().CarryOverMoney = 0;
           Changed = true;
         }
         process = false;
@@ -1601,7 +1618,7 @@ void MapEditClass::Main_Menu() {
           }
         }
         if (Load_Scenario() == 0) {
-          Scen.CarryOverMoney = 0;
+          TheScenario().CarryOverMoney = 0;
           Changed = false;
         }
         process = false;
@@ -1677,7 +1694,7 @@ void MapEditClass::Main_Menu() {
         }
         Changed = false;
         TheDebugState().set_map_editor_active(false);
-        Start_Scenario(Scen.ScenarioName);
+        Start_Scenario(TheScenario().ScenarioName);
         return;
       default:
         break;
@@ -2052,7 +2069,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
     }
   }
 
-  Map.Flag_To_Redraw(true);
+  TheMap().Flag_To_Redraw(true);
   return !cancel;
 }
 
@@ -2061,18 +2078,18 @@ void MapEditClass::Update_Waypoint(int waypt_idx) {
   /*
   **	Unflag cell for this waypoint if there is one
   */
-  CELL const cell = base::At(Scen.Waypoint, waypt_idx);
+  CELL const cell = base::At(TheScenario().Waypoint, waypt_idx);
   if (cell != -1) {
-    if (Scen.Waypoint[ScenarioClass::kHomeWaypoint] != cell &&
-        Scen.Waypoint[ScenarioClass::kReinforcementWaypoint] != cell) {
+    if (TheScenario().Waypoint[ScenarioClass::kHomeWaypoint] != cell &&
+        TheScenario().Waypoint[ScenarioClass::kReinforcementWaypoint] != cell) {
       (*this).at(cell).IsWaypoint = false;
     }
     Flag_Cell(cell);
   }
-  base::At(Scen.Waypoint, waypt_idx) = CurrentCell;
-  (*this).at(CurrentCell).IsWaypoint = true;
+  base::At(TheScenario().Waypoint, waypt_idx) = TheWorld().current_cell();
+  (*this).at(TheWorld().current_cell()).IsWaypoint = true;
   Changed = true;
-  Flag_Cell(CurrentCell);
+  Flag_Cell(TheWorld().current_cell());
 }
 
 /***************************************************************************
@@ -2097,7 +2114,7 @@ void MapEditClass::Read_INI(CCINIClass& ini) {
   DLOG(INFO) << "Map editor reading scenario INI";
 
   MouseClass::Read_INI(ini);
-  BaseGauge->Set_Value(Scen.Percent);
+  BaseGauge->Set_Value(TheScenario().Percent);
 }
 
 void Go_Editor(const bool flag) {
@@ -2110,15 +2127,15 @@ void Go_Editor(const bool flag) {
     Unselect_All();
 
     // Turn off the sidebar if it's on
-    Map.Activate(0);
+    TheMap().Activate(0);
 
     // Reset the map's Button list for the new mode
-    Map.Init_IO();
+    TheMap().Init_IO();
 
     // Force a complete redraw of the screen
     TheScreen().hidden_page().Clear();
-    Map.Flag_To_Redraw(true);
-    Map.Render();
+    TheMap().Flag_To_Redraw(true);
+    TheMap().Render();
 
   } else {
     // Go into normal game mode
@@ -2129,11 +2146,11 @@ void Go_Editor(const bool flag) {
     Unselect_All();
 
     // Reset the map's Button list for the new mode
-    Map.Init_IO();
+    TheMap().Init_IO();
 
     // Force a complete redraw of the screen
     TheScreen().hidden_view().Clear();
-    Map.Flag_To_Redraw(true);
-    Map.Render();
+    TheMap().Flag_To_Redraw(true);
+    TheMap().Render();
   }
 }

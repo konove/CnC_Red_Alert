@@ -194,6 +194,7 @@
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/wol_main.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -1172,7 +1173,7 @@ void Destroy_Connection(int id, int error) {
   if (!std::string_view(txt).empty()) {
     Session.Messages.Add_Message(nullptr, 0, txt, housep->RemapColor, kTpfText,
                                  TheRules().MessageDelay * kTicksPerMinute);
-    Map.Flag_To_Redraw(false);
+    TheMap().Flag_To_Redraw(false);
   }
 
   //------------------------------------------------------------------------
@@ -1207,7 +1208,7 @@ void Destroy_Connection(int id, int error) {
     absl::SNPrintF(txt, sizeof(txt), "%s", Text_String(TXT_JUST_YOU_AND_ME));
     Session.Messages.Add_Message(nullptr, 0, txt, housep->RemapColor, kTpfText,
                                  TheRules().MessageDelay * kTicksPerMinute);
-    Map.Flag_To_Redraw(false);
+    TheMap().Flag_To_Redraw(false);
   }
 
 } /* end of Destroy_Connection */
@@ -2606,7 +2607,7 @@ static int Net_Join_Dialog() {
         }
 
         Ipx.Set_Timing(30, -1, 600);
-        port::SafeCopy(Scen.ScenarioName, Session.ScenarioFileName);
+        port::SafeCopy(TheScenario().ScenarioName, Session.ScenarioFileName);
         rc = 0;
         process = false;
       } else if (joinstate == JOIN_CONFIRMED) {
@@ -5060,9 +5061,9 @@ static int Net_New_Dialog() {
     //.....................................................................
     Session.NumPlayers = static_cast<int>(Session.Players.Count());
 
-    Scen.Scenario = Session.Options.ScenarioIndex;
+    TheScenario().Scenario = Session.Options.ScenarioIndex;
     port::SafeCopy(
-        Scen.ScenarioName,
+        TheScenario().ScenarioName,
         Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Filename());
 
     //.....................................................................
@@ -5148,7 +5149,7 @@ static int Net_New_Dialog() {
              response_timer.HasTimeLeft());
 
     if (Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Official() &&
-        (!Force_Scenario_Available(Scen.ScenarioName))) {
+        (!Force_Scenario_Available(TheScenario().ScenarioName))) {
       EmergencyExit(EXIT_FAILURE);
     }
 
@@ -5166,7 +5167,7 @@ static int Net_New_Dialog() {
               static_cast<char>(i);
         }
       }
-      Send_Remote_File(Scen.ScenarioName, 1);
+      Send_Remote_File(TheScenario().ScenarioName, 1);
     }
   }
 
@@ -7239,7 +7240,7 @@ void Start_WWChat(ColorListClass* playerlist) {
   //------------------------------------------------------------------------
   // Ensure a different sequence each time
   //------------------------------------------------------------------------
-  Scen.sync_rng_.set_seed(static_cast<uint32_t>(port::RandomSeed()));
+  TheScenario().sync_rng_.set_seed(static_cast<uint32_t>(port::RandomSeed()));
 
   //------------------------------------------------------------------------
   // Add myself to the player list

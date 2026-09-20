@@ -88,7 +88,6 @@
 #include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/foot.h"
 #include "ra/heap.h"
@@ -105,6 +104,7 @@
 #include "ra/text_ids.h"
 #include "ra/type.h"
 #include "ra/type_heaps.h"
+#include "ra/world.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
 #include "tech/mix_archive.h"
@@ -3248,7 +3248,7 @@ void BuildingTypeClass::Display(int x, int y, WindowNumberType window,
 void BuildingTypeClass::Prep_For_Add() {
   for (const StructType index : magic_enum::enum_values<StructType>()) {
     if (!As_Reference(index).Get_Image_Data().empty()) {
-      Map.Add_To_List(&As_Reference(index));
+      TheMap().Add_To_List(&As_Reference(index));
     }
   }
 }
@@ -3350,7 +3350,7 @@ void BuildingTypeClass::Init_Anim(BStateType state, int start, int count,
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingTypeClass::Init(TheaterType theater) {
-  if (theater != LastTheater) {
+  if (theater != TheWorld().last_theater()) {
     for (const StructType sindex : magic_enum::enum_values<StructType>()) {
       BuildingTypeClass* classptr = &As_Reference(sindex);
 
@@ -3704,13 +3704,13 @@ bool BuildingTypeClass::Flush_For_Placement(CELL cell,
     while (list.front() != kRefreshEol) {
       const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
 
-      if (Map.In_Radar(newcell)) {
-        TechnoClass* occupier = Map.at(newcell).Cell_Techno();
+      if (TheMap().In_Radar(newcell)) {
+        TechnoClass* occupier = TheMap().at(newcell).Cell_Techno();
         if (occupier != nullptr) {
           again = true;
           if (occupier->House->Is_Ally(house) && occupier->Is_Foot() &&
               !Target_Legal(dynamic_cast<FootClass*>(occupier)->NavCom)) {
-            Map.at(newcell).Incoming(0, true);
+            TheMap().at(newcell).Incoming(0, true);
           } else {
             //						Base_Is_Attacked(occupier);
           }

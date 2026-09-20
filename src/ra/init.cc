@@ -140,6 +140,7 @@
 #include "ra/theme.h"
 #include "ra/type.h"
 #include "ra/type_heaps.h"
+#include "ra/world.h"
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
 #include "sdllib/file.h"
@@ -494,18 +495,18 @@ bool Select_Game(bool /*fade*/) {
   DoList.Init();
   OutList.Init();
   TheGameClock().set_frame(0);
-  Scen.MissionTimer.Set(0);
-  Scen.MissionTimer.Stop();
-  Scen.CDifficulty = DIFF_NORMAL;
-  Scen.Difficulty = DIFF_NORMAL;
+  TheScenario().MissionTimer.Set(0);
+  TheScenario().MissionTimer.Stop();
+  TheScenario().CDifficulty = DIFF_NORMAL;
+  TheScenario().Difficulty = DIFF_NORMAL;
   PlayerWins = false;
   PlayerLoses = false;
   Session.ObiWan = false;
   TheDebugState().set_unshroud(false);
-  Map.Set_Cursor_Shape({});
-  Map.PendingObjectPtr = nullptr;
-  Map.PendingObject = nullptr;
-  Map.PendingHouse = HOUSE_NONE;
+  TheMap().Set_Cursor_Shape({});
+  TheMap().PendingObjectPtr = nullptr;
+  TheMap().PendingObject = nullptr;
+  TheMap().PendingHouse = HOUSE_NONE;
 
   Session.ProcessTicks = 0;
   Session.ProcessFrames = 0;
@@ -525,7 +526,7 @@ bool Select_Game(bool /*fade*/) {
   /*
   **	Set default mouse shape
   */
-  Map.Set_Default_Mouse(MOUSE_NORMAL, false);
+  TheMap().Set_Default_Mouse(MOUSE_NORMAL, false);
 
   /*
   **	If the last game we played was a multiplayer game, jump right to that
@@ -609,14 +610,14 @@ bool Select_Game(bool /*fade*/) {
       // display.
       if (selection == kSelNone && !startup_game_started &&
           !options.new_game.empty()) {
-        Scen.CDifficulty = DIFF_NORMAL;
-        Scen.Difficulty = DIFF_NORMAL;
-        Scen.CarryOverMoney = 0;
+        TheScenario().CDifficulty = DIFF_NORMAL;
+        TheScenario().Difficulty = DIFF_NORMAL;
+        TheScenario().CarryOverMoney = 0;
         BuildLevel = 10;
-        IsTanyaDead = false;
-        SaveTanya = false;
+        TheWorld().is_tanya_dead() = false;
+        TheWorld().save_tanya() = false;
         Whom = HOUSE_GOOD;
-        Scen.Set_Scenario_Name((options.new_game + ".INI").c_str());
+        TheScenario().Set_Scenario_Name((options.new_game + ".INI").c_str());
         startup_game_started = true;
         Session.Type = GAME_NORMAL;
         process = false;
@@ -650,9 +651,9 @@ bool Select_Game(bool /*fade*/) {
         */
         case kSelNewScenarioCs:
         case kSelNewScenarioAm:
-          Scen.CarryOverMoney = 0;
-          IsTanyaDead = false;
-          SaveTanya = false;
+          TheScenario().CarryOverMoney = 0;
+          TheWorld().is_tanya_dead() = false;
+          TheWorld().save_tanya() = false;
 
           if (selection == kSelNewScenarioCs) {
             if (!Force_CD_Available(2)) {
@@ -676,35 +677,36 @@ bool Select_Game(bool /*fade*/) {
 
           switch (Fetch_Difficulty(cdcheck >= 3)) {
             case 0:
-              Scen.CDifficulty = DIFF_HARD;
-              Scen.Difficulty = DIFF_EASY;
+              TheScenario().CDifficulty = DIFF_HARD;
+              TheScenario().Difficulty = DIFF_EASY;
               break;
 
             case 1:
-              Scen.CDifficulty = DIFF_HARD;
-              Scen.Difficulty = DIFF_NORMAL;
+              TheScenario().CDifficulty = DIFF_HARD;
+              TheScenario().Difficulty = DIFF_NORMAL;
               break;
 
             case 2:
-              Scen.CDifficulty = DIFF_NORMAL;
-              Scen.Difficulty = DIFF_NORMAL;
+              TheScenario().CDifficulty = DIFF_NORMAL;
+              TheScenario().Difficulty = DIFF_NORMAL;
               break;
 
             case 3:
-              Scen.CDifficulty = DIFF_EASY;
-              Scen.Difficulty = DIFF_NORMAL;
+              TheScenario().CDifficulty = DIFF_EASY;
+              TheScenario().Difficulty = DIFF_NORMAL;
               break;
 
             case 4:
-              Scen.CDifficulty = DIFF_EASY;
-              Scen.Difficulty = DIFF_HARD;
+              TheScenario().CDifficulty = DIFF_EASY;
+              TheScenario().Difficulty = DIFF_HARD;
               break;
             default:
               break;
           }
           DLOG(INFO) << "Difficulty: player "
-                     << magic_enum::enum_name(Scen.Difficulty) << ", computer "
-                     << magic_enum::enum_name(Scen.CDifficulty);
+                     << magic_enum::enum_name(TheScenario().Difficulty)
+                     << ", computer "
+                     << magic_enum::enum_name(TheScenario().CDifficulty);
 
           Theme.Fade_Out();
           Theme.Queue_Song(magic_enum::enum_values<ThemeType>().front());
@@ -717,58 +719,58 @@ bool Select_Game(bool /*fade*/) {
         */
         case kSelStartNewGame:
           if (Special.IsFromInstall) {
-            Scen.CDifficulty = DIFF_NORMAL;
-            Scen.Difficulty = DIFF_NORMAL;
+            TheScenario().CDifficulty = DIFF_NORMAL;
+            TheScenario().Difficulty = DIFF_NORMAL;
           } else {
             switch (Fetch_Difficulty()) {
               case 0:
-                Scen.CDifficulty = DIFF_HARD;
-                Scen.Difficulty = DIFF_EASY;
+                TheScenario().CDifficulty = DIFF_HARD;
+                TheScenario().Difficulty = DIFF_EASY;
                 break;
 
               case 1:
-                Scen.CDifficulty = DIFF_HARD;
-                Scen.Difficulty = DIFF_NORMAL;
+                TheScenario().CDifficulty = DIFF_HARD;
+                TheScenario().Difficulty = DIFF_NORMAL;
                 break;
 
               case 2:
-                Scen.CDifficulty = DIFF_NORMAL;
-                Scen.Difficulty = DIFF_NORMAL;
+                TheScenario().CDifficulty = DIFF_NORMAL;
+                TheScenario().Difficulty = DIFF_NORMAL;
                 break;
 
               case 3:
-                Scen.CDifficulty = DIFF_EASY;
-                Scen.Difficulty = DIFF_NORMAL;
+                TheScenario().CDifficulty = DIFF_EASY;
+                TheScenario().Difficulty = DIFF_NORMAL;
                 break;
 
               case 4:
-                Scen.CDifficulty = DIFF_EASY;
-                Scen.Difficulty = DIFF_HARD;
+                TheScenario().CDifficulty = DIFF_EASY;
+                TheScenario().Difficulty = DIFF_HARD;
                 break;
               default:
                 break;
             }
           }
-          Scen.CarryOverMoney = 0;
+          TheScenario().CarryOverMoney = 0;
           BuildLevel = 10;
-          IsTanyaDead = false;
-          SaveTanya = false;
+          TheWorld().is_tanya_dead() = false;
+          TheWorld().save_tanya() = false;
           Whom = HOUSE_GOOD;
 
           if (!Special.IsFromInstall) {
             if (AntsEnabled) {
-              Scen.Set_Scenario_Name("SCA01EA.INI");
+              TheScenario().Set_Scenario_Name("SCA01EA.INI");
             } else {
               switch (WWMessageBox().Process(TXT_CHOOSE, TXT_ALLIES, TXT_CANCEL,
                                              TXT_SOVIET)) {
                 case 2:
-                  Scen.Set_Scenario_Name("SCU01EA.INI");
+                  TheScenario().Set_Scenario_Name("SCU01EA.INI");
                   break;
                 default:
                   selection = kSelNone;
                   continue;
                 case 0:
-                  Scen.Set_Scenario_Name("SCG01EA.INI");
+                  TheScenario().Set_Scenario_Name("SCG01EA.INI");
                   break;
               }
             }
@@ -780,9 +782,9 @@ bool Select_Game(bool /*fade*/) {
                                  TheScreen().visible_view());
             Hide_Mouse();
             if (CurrentCD == 0) {
-              Scen.Set_Scenario_Name("SCG01EA.INI");
+              TheScenario().Set_Scenario_Name("SCG01EA.INI");
             } else {
-              Scen.Set_Scenario_Name("SCU01EA.INI");
+              TheScenario().Set_Scenario_Name("SCU01EA.INI");
             }
           }
 
@@ -840,7 +842,7 @@ bool Select_Game(bool /*fade*/) {
                   // aftermath units require AM CD.
                   bAftermathMultiplayer =
                       Is_Aftermath_Installed() &&
-                      !IsMissionCounterstrike(Scen.ScenarioName);
+                      !IsMissionCounterstrike(TheScenario().ScenarioName);
                   //	ajw I'll bet this was needed before also...
                   Session.ScenarioIsOfficial =
                       Session.Scenarios.at(Session.Options.ScenarioIndex)
@@ -1060,7 +1062,7 @@ bool Select_Game(bool /*fade*/) {
     /*
     ** For TheDebugState().map_editor_active() (editor) mode to load scenario
     */
-    Scen.Set_Scenario_Name("SCG01EA.INI");
+    TheScenario().Set_Scenario_Name("SCG01EA.INI");
   }
 
   /*
@@ -1141,7 +1143,7 @@ bool Select_Game(bool /*fade*/) {
       TheScreen().visible_page().Clear();
     }
     Show_Mouse();
-    if (!Start_Scenario(Scen.ScenarioName)) {
+    if (!Start_Scenario(TheScenario().ScenarioName)) {
       return false;
     }
     if (Special.IsFromInstall) {
@@ -1156,16 +1158,16 @@ bool Select_Game(bool /*fade*/) {
   **	properly set.
   */
   Session.Messages.Init(
-      Map.TacPixelX, Map.TacPixelY,  // x,y for messages
-      6,                             // max # msgs
-      MAX_MESSAGE_LENGTH - 14,       // max msg length
-      14,                            // font height in pixels
-      -1, -1,                        // x,y for edit line (appears above msgs)
-      0,                             // BG		1,
-                                     // // enable edit overflow
-      20,                            // min,
-      MAX_MESSAGE_LENGTH - 14,       //    max for trimming overflow
-      Lepton_To_Pixel(Map.TacLeptonWidth));  // Width in pixels of buffer
+      TheMap().TacPixelX, TheMap().TacPixelY,  // x,y for messages
+      6,                                       // max # msgs
+      MAX_MESSAGE_LENGTH - 14,                 // max msg length
+      14,                                      // font height in pixels
+      -1, -1,                   // x,y for edit line (appears above msgs)
+      0,                        // BG		1,
+                                // // enable edit overflow
+      20,                       // min,
+      MAX_MESSAGE_LENGTH - 14,  //    max for trimming overflow
+      Lepton_To_Pixel(TheMap().TacLeptonWidth));  // Width in pixels of buffer
 
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
       !Session.Play) {
@@ -1198,11 +1200,11 @@ bool Select_Game(bool /*fade*/) {
   ** Sidebar is always active in hi-res.
   */
   if (!TheDebugState().map_editor_active()) {
-    Map.Activate(1);
+    TheMap().Activate(1);
   }
-  Map.Flag_To_Redraw();
+  TheMap().Flag_To_Redraw();
   ServiceRealTime();
-  Map.Render();
+  TheMap().Render();
 
   return true;
 }
@@ -1666,7 +1668,7 @@ void Init_Random() {
   //
   if (Session.Play) {
     RandNumb = Seed;
-    Scen.sync_rng_.set_seed(static_cast<uint32_t>(Seed));
+    TheScenario().sync_rng_.set_seed(static_cast<uint32_t>(Seed));
     return;
   }
 
@@ -1692,7 +1694,7 @@ void Init_Random() {
   /*
   **	Initialize the random-number generators
   */
-  Scen.sync_rng_.set_seed(static_cast<uint32_t>(Seed));
+  TheScenario().sync_rng_.set_seed(static_cast<uint32_t>(Seed));
   RandNumb = Seed;
 }
 
@@ -1974,8 +1976,8 @@ static void Init_Expansion_Files() {
  *=============================================================================================*/
 static void Init_One_Time_Systems() {
   ServiceRealTime();
-  Map.One_Time();
-  Logic.One_Time();
+  TheMap().One_Time();
+  TheWorld().logic().One_Time();
   Options.One_Time();
   Session.One_Time();
 
@@ -2422,7 +2424,7 @@ static void Init_Mouse() {
     EmergencyExit(1);
   }
 
-  Map.Set_Default_Mouse(MOUSE_NORMAL, false);
+  TheMap().Set_Default_Mouse(MOUSE_NORMAL, false);
   Show_Mouse();
   while (Get_Mouse_State() > 1) {
     Show_Mouse();
@@ -2535,11 +2537,11 @@ static void SerializeRecording(Archive& ar) {
   Session.SerializePlayers(ar);
   // The switch keeps its place in the record, so a local stands in for it.
   bool unshroud = TheDebugState().unshroud();
-  ar(BuildLevel, unshroud, Seed, Scen.Scenario, Scen.ScenarioName, Whom,
-     Special, Options);
+  ar(BuildLevel, unshroud, Seed, TheScenario().Scenario,
+     TheScenario().ScenarioName, Whom, Special, Options);
   if constexpr (Archive::kIsReading) {
     TheDebugState().set_unshroud(unshroud);
-    Scen.ScenarioName[sizeof(Scen.ScenarioName) - 1] = '\0';
+    TheScenario().ScenarioName[sizeof(TheScenario().ScenarioName) - 1] = '\0';
   }
 }
 

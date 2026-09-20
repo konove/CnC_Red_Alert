@@ -122,6 +122,7 @@
 #include "ra/text_ids.h"
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -228,7 +229,7 @@ void RadarClass::Init_Clear() {
   */
   if (MapCellWidth || MapCellHeight) {
     IsZoomed = false;
-    Zoom_Mode(Coord_Cell(Map.TacticalCoord));
+    Zoom_Mode(Coord_Cell(TheMap().TacticalCoord));
   }
 }
 
@@ -269,7 +270,7 @@ bool RadarClass::Radar_Activate(int control) {
     ** Turn the radar map off properly.
     */
     case 0:
-      if (Map.IsSidebarActive) {
+      if (TheMap().IsSidebarActive) {
         if (IsRadarActive && !IsRadarDeactivating) {
           PlaySoundEffect(VOC_RADAR_OFF);
           IsRadarDeactivating = true;
@@ -286,7 +287,7 @@ bool RadarClass::Radar_Activate(int control) {
       return old;
 
     case 1:
-      if (Map.IsSidebarActive) {
+      if (TheMap().IsSidebarActive) {
         if (!IsRadarActivating && !IsRadarActive) {
           PlaySoundEffect(VOC_RADAR_ON);
           IsRadarActivating = true;
@@ -399,13 +400,13 @@ void RadarClass::Draw_It(bool forced) {
 
   static HousesType _house = HOUSE_NONE;
 
-  if (PlayerPtr->ActLike != _house) {
+  if (ThePlayer()->ActLike != _house) {
     RadarAnim = MixArchive::RetrieveData(
-        base::At(_hiresradarnames, static_cast<int>(PlayerPtr->ActLike)));
+        base::At(_hiresradarnames, static_cast<int>(ThePlayer()->ActLike)));
     RadarPulse = MixArchive::RetrieveData("PULSE.SHP");
     RadarFrame = MixArchive::RetrieveData(
-        base::At(_frames, static_cast<int>(PlayerPtr->ActLike)));
-    _house = PlayerPtr->ActLike;
+        base::At(_frames, static_cast<int>(ThePlayer()->ActLike)));
+    _house = ThePlayer()->ActLike;
   }
 
   /*
@@ -436,7 +437,7 @@ void RadarClass::Draw_It(bool forced) {
     return;
   }
 
-  if (Map.IsSidebarActive) {
+  if (TheMap().IsSidebarActive) {
     if (IsRadarActive) {
       /*
       **	If only a few of the radar pixels need to be redrawn, then find
@@ -567,9 +568,9 @@ void RadarClass::Draw_It(bool forced) {
       if (Session.Type != GAME_NORMAL) {
         Fancy_Text_Print(
             Text_String(
-                HouseTypeClass::As_Reference(PlayerPtr->ActLike).Full_Name()),
+                HouseTypeClass::As_Reference(ThePlayer()->ActLike).Full_Name()),
             RadX + (RadWidth / 2), RadY + RadHeight - 20,
-            &ThePalettes().color_remaps().at(PlayerPtr->RemapColor), kTBlack,
+            &ThePalettes().color_remaps().at(ThePlayer()->RemapColor), kTBlack,
             TPF_CENTER | kTpfText | TPF_DROPSHADOW);
       }
 
@@ -596,7 +597,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   TerrainClass* list[4] = {nullptr, nullptr, nullptr, nullptr};
   int listidx = 0;
 
-  ObjectClass* obj = Map.at(cell).Cell_Occupier();
+  ObjectClass* obj = TheMap().at(cell).Cell_Occupier();
 
   /*
   ** If the cell is occupied by a terrain type, add it to the sortable
@@ -610,8 +611,8 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** Now loop through all the occupiers and add them to the list if they
   ** are terrain type.
   */
-  for (int lp = 0; lp < std::ssize(Map.at(cell).Overlappers); lp++) {
-    obj = base::At(Map.at(cell).Overlappers, lp);
+  for (int lp = 0; lp < std::ssize(TheMap().at(cell).Overlappers); lp++) {
+    obj = base::At(TheMap().at(cell).Overlappers, lp);
     if (obj && obj->What_Am_I() == RTTI_TERRAIN) {
       base::At(list, listidx++) = dynamic_cast<TerrainClass*>(obj);
     }
@@ -683,7 +684,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
  * HISTORY: * 08/17/1995 JLB : Created. *
  *=============================================================================================*/
 void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
-  ObjectClass* obj = Map.at(cell).Cell_Occupier();
+  ObjectClass* obj = TheMap().at(cell).Cell_Occupier();
   while (obj) {
     if (obj->Is_Techno() &&
         dynamic_cast<TechnoClass*>(obj)->Is_Visible_On_Radar()) {
@@ -712,7 +713,8 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
           *color
           */
           if (*dynamic_cast<InfantryClass*>(obj) == INFANTRY_SPY) {
-            color = ThePalettes().color_remaps().at(PlayerPtr->RemapColor).Bar;
+            color =
+                ThePalettes().color_remaps().at(ThePlayer()->RemapColor).Bar;
           }
           LogicPage->Fill_Rect(x + xoff, y + yoff, x + xoff + (subsize - 1),
                                y + yoff + (subsize - 1), color);
@@ -980,7 +982,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
     **	Determine what (if any) vehicle or unit should be rendered in this blip.
     */
     int color = kTBlack;  // Color of the pixel to plot.
-    const auto housebit = base::Bit<uint16_t>(PlayerPtr->Class->House);
+    const auto housebit = base::Bit<uint16_t>(ThePlayer()->Class->House);
     const uint16_t celljammed = (*this).at(cell).Jammed;
     const auto jammed =
         static_cast<uint16_t>(celljammed & static_cast<uint16_t>(~housebit));
@@ -1091,7 +1093,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
  *function.                                            *
  *=============================================================================================*/
 void RadarClass::Radar_Pixel(CELL cell) {
-  if (IsRadarActive && Map.IsSidebarActive && Cell_On_Radar(cell)) {
+  if (IsRadarActive && TheMap().IsSidebarActive && Cell_On_Radar(cell)) {
     IsRadarToRedraw = true;
     (*this).at(cell).IsPlot = true;
     if (PixelPtr < kPixelstack) {
@@ -1128,7 +1130,7 @@ int RadarClass::Click_In_Radar(int& ptr_x, int& ptr_y, bool change) const {
   /*
   ** If radar is not active the click could have been on a radar point
   */
-  if (!IsRadarActive || !Map.IsSidebarActive) {
+  if (!IsRadarActive || !TheMap().IsSidebarActive) {
     return 0;
   }
 
@@ -1327,7 +1329,7 @@ void RadarClass::Cell_XY_To_Radar_Pixel(int cellx, int celly, int& x,
 bool RadarClass::Jam_Cell(CELL cell, HouseClass* house /*KO, bool shadeit*/) {
   const auto jam = base::Bit<uint16_t>(house->Class->House);
   (*this).at(cell).Jammed |= jam;
-  if (house != PlayerPtr) {
+  if (house != ThePlayer()) {
     Shroud_Cell(cell /*KO, shadeit*/);
   }
   Radar_Pixel(cell);
@@ -1514,7 +1516,7 @@ void RadarClass::Radar_Anim() {
     return;
   }
 
-  if (!Map.IsSidebarActive) {
+  if (!TheMap().IsSidebarActive) {
     return;
   }
 
@@ -1555,7 +1557,7 @@ void RadarClass::AI(KeyNumType& input, int x, int y) {
   /*
   ** Check to see if we need to animate the radar cursor
   */
-  if (IsRadarActive && Map.IsSidebarActive && SpecialRadarFrame) {
+  if (IsRadarActive && TheMap().IsSidebarActive && SpecialRadarFrame) {
     SpecialRadarFrame--;
     RadarCursorRedraw = true;
     IsRadarToRedraw = true;
@@ -1657,13 +1659,13 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
   **	Force any help label to disappear when the mouse is held over the
   **	radar map.
   */
-  if (Map.IsSidebarActive) {
-    Map.Help_Text(TXT_NONE);
+  if (TheMap().IsSidebarActive) {
+    TheMap().Help_Text(TXT_NONE);
   }
 
-  if (!Map.IsRadarActive) {
-    if (Map.IsSidebarActive) {
-      Map.Override_Mouse_Shape(MOUSE_NORMAL);
+  if (!TheMap().IsRadarActive) {
+    if (TheMap().IsSidebarActive) {
+      TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
       //			Map.Override_Mouse_Shape(MOUSE_NORMAL, true);
     }
     return false;
@@ -1672,7 +1674,7 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
   /*
   ** Disable processing if the player names are up
   */
-  if (Map.Is_Player_Names()) {
+  if (TheMap().Is_Player_Names()) {
     GadgetClass::Action(0, key);
     return true;
   }
@@ -1696,20 +1698,22 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
   **	mouse is overridden to be the normal cursor and no other
   **	action is performed.
   */
-  if (x < Map.RadX + Map.RadOffX || x >= Map.RadX + Map.RadIWidth ||
-      y < Map.RadY + Map.RadOffY || y >= Map.RadY + Map.RadIHeight) {
-    Map.Override_Mouse_Shape(MOUSE_NORMAL);
+  if (x < TheMap().RadX + TheMap().RadOffX ||
+      x >= TheMap().RadX + TheMap().RadIWidth ||
+      y < TheMap().RadY + TheMap().RadOffY ||
+      y >= TheMap().RadY + TheMap().RadIHeight) {
+    TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
     return false;
   }
 
-  const int result = Map.Click_In_Radar(x, y, false);
+  const int result = TheMap().Click_In_Radar(x, y, false);
 
   if (result == 1) {
-    CELL cell =
-        Map.RadarClass::Click_Cell_Calc(x, y);  // cell num click happened over
-    if (cell != -1 && Map.In_Radar(cell)) {
+    CELL cell = TheMap().RadarClass::Click_Cell_Calc(
+        x, y);  // cell num click happened over
+    if (cell != -1 && TheMap().In_Radar(cell)) {
       const bool shadow =
-          !Map.at(cell).IsMapped &&
+          !TheMap().at(cell).IsMapped &&
           !TheDebugState().unshroud();  // is the cell in shadow or not
       //			shadow	= (!Map[cell].IsVisible &&
       //! TheDebugState().unshroud());
@@ -1720,18 +1724,18 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
       **	Determine the object that the mouse is currently over.
       */
       if (!shadow) {
-        object = Map.Cell_Object(cell, cellx, celly);
+        object = TheMap().Cell_Object(cell, cellx, celly);
       }
 
       /*
       **	If there is a currently selected object, then the action to
       *perform if *	the left mouse button were clicked must be determined.
       */
-      if (CurrentObject.Count()) {
+      if (TheWorld().current_object().Count()) {
         if (object) {
-          action = CurrentObject.at(0)->What_Action(object);
+          action = TheWorld().current_object().at(0)->What_Action(object);
         } else {
-          action = CurrentObject.at(0)->What_Action(cell);
+          action = TheWorld().current_object().at(0)->What_Action(cell);
         }
 
         /*
@@ -1796,7 +1800,7 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
         **	A right mouse button press toggles the zoom mode.
         */
         if (flags & kRightPress) {
-          Map.Mouse_Right_Press();
+          TheMap().Mouse_Right_Press();
         }
 
         /*
@@ -1805,7 +1809,7 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
         *mouse is currently over and what *	object is currently selected.
         */
         if (flags & kLeftUp) {
-          Map.Mouse_Left_Up(-1, shadow, object, action, true);
+          TheMap().Mouse_Left_Up(-1, shadow, object, action, true);
         }
 
         /*
@@ -1814,27 +1818,27 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
         *flagged.
         */
         if (flags & kLeftPress) {
-          Map.Mouse_Left_Release(cell, cellx, celly, object, action, true);
+          TheMap().Mouse_Left_Release(cell, cellx, celly, object, action, true);
         }
 
       } else {
-        Map.Set_Default_Mouse(MOUSE_RADAR_CURSOR, !Map.IsZoomed);
+        TheMap().Set_Default_Mouse(MOUSE_RADAR_CURSOR, !TheMap().IsZoomed);
 
         if (flags & kLeftPress) {
-          cell = Map.RadarClass::Click_Cell_Calc(x, y);
+          cell = TheMap().RadarClass::Click_Cell_Calc(x, y);
           if (cell != -1) {
             int cell_x = Cell_X(cell);
             int cell_y = Cell_Y(cell);
-            cell_x -= Lepton_To_Cell(Map.TacLeptonWidth) / 2;
-            cell_x = std::max(cell_x, Map.MapCellX);
-            cell_y -= Lepton_To_Cell(Map.TacLeptonHeight) / 2;
-            cell_y = std::max(cell_y, Map.MapCellY);
+            cell_x -= Lepton_To_Cell(TheMap().TacLeptonWidth) / 2;
+            cell_x = std::max(cell_x, TheMap().MapCellX);
+            cell_y -= Lepton_To_Cell(TheMap().TacLeptonHeight) / 2;
+            cell_y = std::max(cell_y, TheMap().MapCellY);
             cell = XY_Cell(cell_x, cell_y);
-            Map.Set_Tactical_Position(Cell_Coord(cell));
-            cell = Coord_Cell(Map.DesiredTacticalCoord);
-            Map.IsDisplayToRedraw = true;
-            Map.Flag_To_Redraw(true);
-            Map.SpecialRadarFrame = 4;
+            TheMap().Set_Tactical_Position(Cell_Coord(cell));
+            cell = Coord_Cell(TheMap().DesiredTacticalCoord);
+            TheMap().IsDisplayToRedraw = true;
+            TheMap().Flag_To_Redraw(true);
+            TheMap().SpecialRadarFrame = 4;
           }
         }
 
@@ -1842,13 +1846,13 @@ bool RadarClass::RTacticalClass::Action(unsigned flags, KeyNumType& key) {
         **	A right mouse button press toggles the zoom mode.
         */
         if (flags & kRightPress) {
-          Map.Zoom_Mode(cell);
+          TheMap().Zoom_Mode(cell);
         }
       }
     }
   }
   if (result == -1) {
-    Map.Override_Mouse_Shape(MOUSE_NORMAL, true);
+    TheMap().Override_Mouse_Shape(MOUSE_NORMAL, true);
   }
   GadgetClass::Action(0, key);
   return true;
@@ -1932,7 +1936,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
     RadarY = newy;
     RadarCell = newcell;
 
-    if (Map.IsSidebarActive && Map.IsRadarActive) {
+    if (TheMap().IsSidebarActive && TheMap().IsRadarActive) {
       const int radw = RadarCellWidth - std::abs(radx);   // Replicable width.
       const int radh = RadarCellHeight - std::abs(rady);  // Replicable height.
 
@@ -2160,7 +2164,7 @@ void RadarClass::Player_Names(bool on) {
  *=============================================================================================*/
 bool RadarClass::Spy_Next_House() {
   bool tospy = false;
-  const auto spiedby = base::Bit<uint32_t>(PlayerPtr->Class->House);
+  const auto spiedby = base::Bit<uint32_t>(ThePlayer()->Class->House);
 
   IsPlayerNames = false;
   IsRadarToRedraw = true;
@@ -2187,7 +2191,7 @@ bool RadarClass::Spy_Next_House() {
 
   while (static_cast<int>(house) < maxhouse && !tospy) {
     const HouseClass* hptr = HouseClass::As_Pointer(house);
-    if ((hptr && hptr->IsActive && hptr != PlayerPtr) &&
+    if ((hptr && hptr->IsActive && hptr != ThePlayer()) &&
         (hptr->RadarSpied & spiedby)) {
       tospy = true;
       SpyingOn = house;
@@ -2220,7 +2224,7 @@ bool RadarClass::Draw_House_Info() {
   /*
   ** Do nothing if the sidebar isn't there
   */
-  if (!Map.IsSidebarActive) {
+  if (!TheMap().IsSidebarActive) {
     return false;
   }
   CC_Draw_Shape(RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
@@ -2237,7 +2241,7 @@ bool RadarClass::Draw_House_Info() {
   y += 14;
 
   HouseClass* ptr = HouseClass::As_Pointer(SpyingOn);
-  if (ptr && ptr->RadarSpied & base::Bit<uint32_t>(PlayerPtr->Class->House)) {
+  if (ptr && ptr->RadarSpied & base::Bit<uint32_t>(ThePlayer()->Class->House)) {
     const PlayerColorType c_idx = ptr->RemapColor;
     RemapControlType* color = &ThePalettes().color_remaps().at(c_idx);
     const TextPrintType style = TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW;
@@ -2309,7 +2313,7 @@ void RadarClass::Draw_Names() const {
   /*
   ** Do nothing if the sidebar isn't there
   */
-  if (!Map.IsSidebarActive) {
+  if (!TheMap().IsSidebarActive) {
     return;
   }
 
@@ -2395,7 +2399,7 @@ void RadarClass::Draw_Names() const {
 }
 
 void RadarClass::Activate_Pulse() {
-  if (IsRadarActive || PlayerPtr->IsGPSActive) {
+  if (IsRadarActive || ThePlayer()->IsGPSActive) {
     IsPulseActive = true;
     RadarPulseFrame = 0;
   }
@@ -2416,7 +2420,7 @@ void RadarClass::Activate_Pulse() {
  * HISTORY: * 08/12/1996 JLB : Created. *
  *=============================================================================================*/
 bool RadarClass::Is_Radar_Active() const {
-  return IsRadarActive || PlayerPtr->IsGPSActive;
+  return IsRadarActive || ThePlayer()->IsGPSActive;
   //	return IsRadarActive || PlayerPtr->IsGPSActive;
 }
 
@@ -2435,7 +2439,7 @@ bool RadarClass::Is_Radar_Active() const {
  * HISTORY: * 08/12/1996 JLB : Created. *
  *=============================================================================================*/
 bool RadarClass::Is_Radar_Existing() const {
-  return DoesRadarExist || PlayerPtr->IsGPSActive;
+  return DoesRadarExist || ThePlayer()->IsGPSActive;
 }
 
 /***********************************************************************************************
@@ -2453,7 +2457,7 @@ bool RadarClass::Is_Radar_Existing() const {
  * HISTORY: * 08/12/1996 JLB : Created. *
  *=============================================================================================*/
 bool RadarClass::Get_Jammed() const {
-  if (PlayerPtr->IsGPSActive) {
+  if (ThePlayer()->IsGPSActive) {
     return false;
   }
   return IsRadarJammed;

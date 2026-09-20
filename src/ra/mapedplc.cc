@@ -91,6 +91,7 @@
 #include "ra/trigtype.h"
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -743,7 +744,7 @@ void MapEditClass::Start_Placement() {
   } else {
     LastChoice = std::clamp(LastChoice, TypeOffset[7], ObjCount - 1);
     PendingObject = base::At(Objects, LastChoice);
-    PendingHouse = LastHouse = Base.House;
+    PendingHouse = LastHouse = TheWorld().base().House;
     PendingObjectPtr =
         PendingObject->Create_One_Of(HouseClass::As_Pointer(LastHouse));
   }
@@ -999,7 +1000,7 @@ int MapEditClass::Place_Object() {
       //			node.Type = ((BuildingTypeClass
       //*)PendingObject)->Type; 			node.Cell =
       // Coord_Cell(PendingObjectPtr->Coord);
-      Base.Nodes.Add(BaseNodeClass(
+      TheWorld().base().Nodes.Add(BaseNodeClass(
           dynamic_cast<const BuildingTypeClass*>(PendingObject)->Type,
           Coord_Cell(PendingObjectPtr->Coord)));
     }
@@ -1647,7 +1648,7 @@ void MapEditClass::Place_Trigger() {
     */
     if (base::Any(a1 & ATTACH_CELL) && CurTrigger) {
       TriggerClass* tt = Find_Or_Make(CurTrigger);
-      Map.at(cell).Trigger = tt;
+      TheMap().at(cell).Trigger = tt;
     }
     //			CellTriggers[cell] = CurTrigger;
   }
@@ -1712,7 +1713,7 @@ void MapEditClass::Cancel_Base_Building() {
   /*
   ** Build the base to the proper amount
   */
-  Build_Base_To(Scen.Percent);
+  Build_Base_To(TheScenario().Percent);
 
   /*
   ** Cancel placement mode
@@ -1750,9 +1751,9 @@ void MapEditClass::Build_Base_To(int percent) {
   /*
   ** Completely dismantle the base, so we start at a known point
   */
-  for (int i = 0; i < Base.Nodes.Count(); i++) {
-    if (Base.Is_Built(i)) {
-      obj = Base.Get_Building(i);
+  for (int i = 0; i < TheWorld().base().Nodes.Count(); i++) {
+    if (TheWorld().base().Is_Built(i)) {
+      obj = TheWorld().base().Get_Building(i);
       delete obj;
     }
   }
@@ -1761,7 +1762,7 @@ void MapEditClass::Build_Base_To(int percent) {
   ** Compute number of buildings to build
   */
   const int num_buildings =
-      (static_cast<int>(Base.Nodes.Count()) * percent) / 100;
+      (static_cast<int>(TheWorld().base().Nodes.Count()) * percent) / 100;
 
   /*
   ** Build the base to the desired amount
@@ -1771,21 +1772,21 @@ void MapEditClass::Build_Base_To(int percent) {
     ** Get a ptr to the type of building to build, create one, and unlimbo it.
     */
     const BuildingTypeClass* objtype =
-        &BuildingTypeClass::As_Reference(Base.Nodes.at(i).Type);
-    obj = dynamic_cast<BuildingClass*>(
-        objtype->Create_One_Of(HouseClass::As_Pointer(Base.House)));
+        &BuildingTypeClass::As_Reference(TheWorld().base().Nodes.at(i).Type);
+    obj = dynamic_cast<BuildingClass*>(objtype->Create_One_Of(
+        HouseClass::As_Pointer(TheWorld().base().House)));
 
     /*
     ** If unlimbo fails, error out
     */
-    ScenarioInit++;
-    if (!obj->Unlimbo(Cell_Coord(Base.Nodes.at(i).Cell))) {
+    TheWorld().scenario_init()++;
+    if (!obj->Unlimbo(Cell_Coord(TheWorld().base().Nodes.at(i).Cell))) {
       delete obj;
       WWMessageBox().Process("Unable to build base!");
-      ScenarioInit--;
+      TheWorld().scenario_init()--;
       return;
     }
-    ScenarioInit--;
+    TheWorld().scenario_init()--;
   }
 
   // ScenarioInit--;

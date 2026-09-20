@@ -60,7 +60,6 @@
 
 #include "absl/strings/match.h"
 #include "base/array.h"
-#include "externs.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/const.h"
 #include "ra/defines.h"
@@ -76,6 +75,7 @@
 #include "ra/text_ids.h"
 #include "ra/type.h"
 #include "ra/type_heaps.h"
+#include "ra/world.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_win.h"
 #include "tech/mix_archive.h"
@@ -347,7 +347,7 @@ std::span<const int16_t> SmudgeTypeClass::Occupy_List(
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 void SmudgeTypeClass::Init(TheaterType theater) {
-  if (theater != LastTheater) {
+  if (theater != TheWorld().last_theater()) {
     for (const SmudgeType index : magic_enum::enum_values<SmudgeType>()) {
       SmudgeTypeClass& smudge = As_Reference(index);
       // Fully constructed smudge data set name.
@@ -413,7 +413,7 @@ void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
 void SmudgeTypeClass::Prep_For_Add() {
   for (const SmudgeType index : magic_enum::enum_values<SmudgeType>()) {
     if (!As_Reference(index).Get_Image_Data().empty()) {
-      Map.Add_To_List(&As_Reference(index));
+      TheMap().Add_To_List(&As_Reference(index));
     }
   }
 }

@@ -31,7 +31,6 @@
 #include "ra/credits.h"
 #include "ra/defines.h"
 #include "ra/display.h"
-#include "ra/externs.h"
 #include "ra/gscreen.h"
 #include "ra/help.h"
 #include "ra/map.h"
@@ -46,6 +45,7 @@
 #include "ra/tab.h"
 #include "ra/text_ids.h"
 #include "ra/type.h"
+#include "ra/world.h"
 #include "sdllib/wwstd.h"
 #include "tech/archive.h"
 #include "tech/byte_sink.h"
@@ -334,19 +334,19 @@ void MouseClass::ResetTransientUiState() {
 template <class Archive>
 void MouseClass::Serialize(Archive& ar) {
   if constexpr (Archive::kIsReading) {
-    LastTheater = THEATER_NONE;
-    Init_Theater(Scen.Theater);
-    TerrainTypeClass::Init(Scen.Theater);
-    TemplateTypeClass::Init(Scen.Theater);
-    OverlayTypeClass::Init(Scen.Theater);
-    UnitTypeClass::Init(Scen.Theater);
-    InfantryTypeClass::Init(Scen.Theater);
-    BuildingTypeClass::Init(Scen.Theater);
-    BulletTypeClass::Init(Scen.Theater);
-    AnimTypeClass::Init(Scen.Theater);
-    AircraftTypeClass::Init(Scen.Theater);
-    VesselTypeClass::Init(Scen.Theater);
-    SmudgeTypeClass::Init(Scen.Theater);
+    TheWorld().last_theater() = THEATER_NONE;
+    Init_Theater(TheScenario().Theater);
+    TerrainTypeClass::Init(TheScenario().Theater);
+    TemplateTypeClass::Init(TheScenario().Theater);
+    OverlayTypeClass::Init(TheScenario().Theater);
+    UnitTypeClass::Init(TheScenario().Theater);
+    InfantryTypeClass::Init(TheScenario().Theater);
+    BuildingTypeClass::Init(TheScenario().Theater);
+    BulletTypeClass::Init(TheScenario().Theater);
+    AnimTypeClass::Init(TheScenario().Theater);
+    AircraftTypeClass::Init(TheScenario().Theater);
+    VesselTypeClass::Init(TheScenario().Theater);
+    SmudgeTypeClass::Init(TheScenario().Theater);
     // Init_Cells also clears TotalValue, so do this before reading map state.
     Init_Cells();
   }
@@ -386,7 +386,7 @@ void MouseClass::Serialize(Archive& ar) {
       }
       previous = cell;
     }
-    LastTheater = Scen.Theater;
+    TheWorld().last_theater() = TheScenario().Theater;
   } else {
     for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
       if ((*this).at(cell).Should_Save()) {

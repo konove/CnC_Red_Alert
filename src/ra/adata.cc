@@ -53,12 +53,12 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/const.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/jshell.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "ra/text_ids.h"
 #include "ra/type.h"
 #include "ra/type_heaps.h"
+#include "ra/world.h"
 #include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "tech/fixed.h"
 #include "tech/mix_archive.h"
@@ -2208,7 +2208,7 @@ void AnimTypeClass::One_Time() {
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
 void AnimTypeClass::Init(TheaterType theater) {
-  if (theater != LastTheater) {
+  if (theater != TheWorld().last_theater()) {
     for (const AnimType index : magic_enum::enum_values<AnimType>()) {
       AnimTypeClass& anim = As_Reference(index);
 

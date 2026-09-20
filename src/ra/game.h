@@ -15,6 +15,7 @@
 #include "ra/screen.h"
 #include "ra/startup_options.h"
 #include "ra/type_heaps.h"
+#include "ra/world.h"
 
 // Owns the game's subsystems and so fixes the order they are built and torn
 // down in. Members are declared in dependency order, which C++ constructs
@@ -65,6 +66,8 @@ class Game {
   base::Installed<ObjectHeaps>::Scope object_heaps_scope_{object_heaps_};
   RulesClass rules_;
   base::Installed<RulesClass>::Scope rules_scope_{rules_};
+  World world_;
+  base::Installed<World>::Scope world_scope_{world_};
   DebugState debug_state_;
   base::Installed<DebugState>::Scope debug_state_scope_{debug_state_};
 };

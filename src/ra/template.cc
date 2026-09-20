@@ -55,13 +55,13 @@
 #include "ra/cell.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/object_heaps.h"
 #include "ra/type_heaps.h"
+#include "ra/world.h"
 #include "sdllib/tile.h"
 
 /***********************************************************************************************
@@ -108,8 +108,8 @@ bool TemplateClass::Mark(MarkType mark) {
       for (int x = 0; std::cmp_less(x, Class->Width); x++) {
         const CELL cell =
             static_cast<CELL>(Coord_Cell(Coord) + (y * MAP_CELL_W) + x);
-        if (Map.In_Radar(cell)) {
-          CellClass* cellptr = &Map.at(cell);
+        if (TheMap().In_Radar(cell)) {
+          CellClass* cellptr = &TheMap().at(cell);
           const int number = (y * Class->Width) + x;
 
           /*

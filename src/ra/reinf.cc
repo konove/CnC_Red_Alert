@@ -56,7 +56,6 @@
 #include "ra/ccptr.h"
 #include "ra/cell.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/foot.h"
 #include "ra/heap.h"
@@ -70,6 +69,7 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "ra/unit.h"
+#include "ra/world.h"
 
 /***********************************************************************************************
  * _Pop_Group_Out_Of_Object -- Process popping the group out of the object. *
@@ -246,19 +246,19 @@ static FootClass* Create_Group(TeamTypeClass* teamtype) {
 
     for (int sub = 0; sub < base::At(teamtype->Members, index).Quantity;
          sub++) {
-      ScenarioInit++;
+      TheWorld().scenario_init()++;
       auto* temp = dynamic_cast<FootClass*>(
           tclass->Create_One_Of(HouseClass::As_Pointer(teamtype->House)));
-      ScenarioInit--;
+      TheWorld().scenario_init()--;
 
       if (temp != nullptr) {
         /*
         **	Add the member to the team.
         */
         if (team != nullptr) {
-          ScenarioInit++;
+          TheWorld().scenario_init()++;
           team->Add(temp);
-          ScenarioInit--;
+          TheWorld().scenario_init()--;
           temp->IsInitiated = true;
         }
 
@@ -379,7 +379,7 @@ static bool Consists_Only_Of_Infantry(const FootClass* first) {
  * HISTORY: * 06/25/1996 JLB : Created. *
  *=============================================================================================*/
 static TechnoClass* Who_Can_Pop_Out_Of(CELL origin) {
-  CellClass* cellptr = &Map.at(origin);
+  CellClass* cellptr = &TheMap().at(origin);
   TechnoClass* candidate = nullptr;
 
   for (int f = -1; f < 8; f++) {
@@ -462,7 +462,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
     **	Search for an object that these infantry can pop out of.
     */
     TechnoClass* candidate =
-        Who_Can_Pop_Out_Of(base::At(Scen.Waypoint, teamtype->Origin));
+        Who_Can_Pop_Out_Of(base::At(TheScenario().Waypoint, teamtype->Origin));
 
     if (candidate != nullptr) {
       return Pop_Group_Out_Of_Object(object, candidate);
@@ -486,16 +486,16 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   const auto eface = static_cast<FacingType>(static_cast<int>(source) *
                                              2);  // Facing to enter map.
 
-  CELL cell = Map.Calculated_Cell(source, teamtype->Origin, -1,
-                                  object->Techno_Type_Class()->Speed);
+  CELL cell = TheMap().Calculated_Cell(source, teamtype->Origin, -1,
+                                       object->Techno_Type_Class()->Speed);
   /*
   **	For the ants, they will pop out of the ant hill directly.
   */
   const auto* unit = dynamic_cast<UnitClass*>(object);
   if (teamtype->Origin != -1 && unit != nullptr &&
       (*unit == UNIT_ANT1 || *unit == UNIT_ANT2 || *unit == UNIT_ANT3)) {
-    const CELL newcell = base::At(Scen.Waypoint, teamtype->Origin);
-    if ((newcell != -1) && (Map.at(newcell).TType == TEMPLATE_HILL01)) {
+    const CELL newcell = base::At(TheScenario().Waypoint, teamtype->Origin);
+    if ((newcell != -1) && (TheMap().at(newcell).TType == TEMPLATE_HILL01)) {
       cell = newcell;
     }
   }
@@ -511,7 +511,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
       desiredfacing = Random_Pick(DIR_N, DIR_MAX);
     }
 
-    ScenarioInit++;
+    TheWorld().scenario_init()++;
     if (object->Unlimbo(Cell_Coord(newcell), desiredfacing)) {
       okvoice = true;
 
@@ -534,7 +534,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
       bool found = false;
       for (const FacingType adj : magic_enum::enum_values<FacingType>()) {
         const CELL trycell = Adjacent_Cell(newcell, adj);
-        if (!Map.In_Radar(trycell) &&
+        if (!TheMap().In_Radar(trycell) &&
             object->Can_Enter_Cell(trycell, adj) == MOVE_OK) {
           newcell = trycell;
           found = true;
@@ -546,7 +546,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
       }
       newcell = -1;
     }
-    ScenarioInit--;
+    TheWorld().scenario_init()--;
 
     object = o;
     if (object != nullptr) {
@@ -571,7 +571,7 @@ bool Do_Reinforcements(TeamTypeClass* teamtype) {
   /*
   **	Announce when the reinforcements have arrived.
   */
-  if (okvoice && teamtype->House == PlayerPtr->Class->House) {
+  if (okvoice && teamtype->House == ThePlayer()->Class->House) {
     Speak(VOX_REINFORCEMENTS);
   }
 
@@ -622,7 +622,7 @@ bool Create_Special_Reinforcement(const HouseClass* house,
       */
       if (!another && mission == TMISSION_NONE) {
         mission = TMISSION_MOVECELL;
-        argument = Map.Calculated_Cell(house->Control.Edge);
+        argument = TheMap().Calculated_Cell(house->Control.Edge);
       }
 
       /*
@@ -702,7 +702,7 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
   /*
   ** Abort the airstrike if Tanya is the passenger and she's dead.
   */
-  if (passenger == INFANTRY_TANYA && IsTanyaDead) {
+  if (passenger == INFANTRY_TANYA && TheWorld().is_tanya_dead()) {
     number = 0;
   }
 
@@ -716,9 +716,9 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
     ** Create one of the required objects.  If this fails we could have
     ** a real problem.
     */
-    ScenarioInit++;
+    TheWorld().scenario_init()++;
     auto* obj = dynamic_cast<TechnoClass*>(type->Create_One_Of(house));
-    ScenarioInit--;
+    TheWorld().scenario_init()--;
     if (!obj) {
       return sub;
     }
@@ -746,14 +746,14 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
         source = SOURCE_NORTH;
         break;
     }
-    const CELL newcell = Map.Calculated_Cell(source, -1, -1, SPEED_WINGED);
+    const CELL newcell = TheMap().Calculated_Cell(source, -1, -1, SPEED_WINGED);
 
     /*
     ** Try and place the object onto the map.
     */
-    ScenarioInit++;
+    TheWorld().scenario_init()++;
     const bool placed = obj->Unlimbo(Cell_Coord(newcell), DIR_N);
-    ScenarioInit--;
+    TheWorld().scenario_init()--;
     if (placed) {
       /*
       ** If we succeeded in placing the obj onto the map then

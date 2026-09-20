@@ -148,6 +148,7 @@
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/vessel.h"
+#include "ra/world.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/fixed.h"
@@ -471,7 +472,7 @@ static void Queue_AI_Normal() {
   //------------------------------------------------------------------------
   // Execute the DoList; if an error occurs, bail out.
   //------------------------------------------------------------------------
-  if (!Execute_DoList(1, PlayerPtr->Class->House, nullptr, nullptr, {}, {},
+  if (!Execute_DoList(1, ThePlayer()->Class->House, nullptr, nullptr, {}, {},
                       {})) {
     GameActive = false;
     return;
@@ -723,9 +724,9 @@ static void Queue_AI_Multiplayer() {
     //.....................................................................
     if (Session.LoadGame) {
       if (Session.EmergencySave) {
-        ScenarioCRC = 0;
+        TheWorld().scenario_crc() = 0;
       } else {
-        ScenarioCRC = GameCRC;
+        TheWorld().scenario_crc() = GameCRC;
       }
     }
 
@@ -1068,8 +1069,8 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
       // network must deal with a timeout differently.
       //..................................................................
       if (Handle_Timeout(net, their_frame, their_sent, their_recv)) {
-        Map.Flag_To_Redraw(true);  // erase modem reconnect dialog
-        Map.Render();
+        TheMap().Flag_To_Redraw(true);  // erase modem reconnect dialog
+        TheMap().Render();
         retry_timer.Set(resend_delta);
         dialog_timer.Set(dialog_time);
         timeout_timer.Set(timeout);
@@ -1229,11 +1230,11 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     ServiceRealTime();
     if (!first_time && SpecialDialog == SDLG_NONE && reconnect_dlg == 0) {
       WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
-      Map.Input(input, x, y);
+      TheMap().Input(input, x, y);
       if (input) {
         Keyboard_Process(input);
       }
-      Map.Render();
+      TheMap().Render();
     }
 
   } /* end of while */
@@ -1242,8 +1243,8 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   //	If the reconnect dialog was shown, force the map to redraw.
   //------------------------------------------------------------------------
   if (reconnect_dlg) {
-    Map.Flag_To_Redraw(true);
-    Map.Render();
+    TheMap().Flag_To_Redraw(true);
+    TheMap().Render();
   }
 
   return RC_NORMAL;
@@ -1709,8 +1710,9 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
   } else {
     packet.Frame = static_cast<unsigned>(CurrentFrame() + Session.MaxAhead);
   }
-  packet.ID = static_cast<unsigned>(PlayerPtr->ID);
-  packet.Data.FrameInfo.CRC = static_cast<std::uint32_t>(ScenarioCRC);
+  packet.ID = static_cast<unsigned>(ThePlayer()->ID);
+  packet.Data.FrameInfo.CRC =
+      static_cast<std::uint32_t>(TheWorld().scenario_crc());
   packet.Data.FrameInfo.CommandCount = static_cast<uint16_t>(cmd_count);
   packet.Data.FrameInfo.Delay = static_cast<unsigned char>(Session.MaxAhead);
 
@@ -1882,7 +1884,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
   //	If the event was a FRAMESYNC packet, there will be no commands to add,
   //	but we must check the ScenarioCRC value.
   //------------------------------------------------------------------------
-  else if (event->Data.FrameInfo.CRC != ScenarioCRC) {
+  else if (event->Data.FrameInfo.CRC != TheWorld().scenario_crc()) {
     return RC_SCENARIO_MISMATCH;
   }
 
@@ -2008,7 +2010,7 @@ static RetcodeType Process_Serial_Packet(
     // messages to redraw).
     //.....................................................................
     // Map.Flag_To_Redraw(false);
-    Map.Flag_To_Redraw(true);
+    TheMap().Flag_To_Redraw(true);
     return RC_SERIAL_PROCESSED;
   }
 
@@ -2040,7 +2042,7 @@ static RetcodeType Process_Serial_Packet(
     return RC_SERIAL_PROCESSED;
   }
 
-  if (std::cmp_equal(event->ID, PlayerPtr->ID)) {
+  if (std::cmp_equal(event->ID, ThePlayer()->ID)) {
     return RC_HUNG_UP;
   }
 
@@ -2392,7 +2394,7 @@ static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
   //........................................................................
   // Fill in the rest of the event
   //........................................................................
-  finfo->ID = static_cast<unsigned>(PlayerPtr->ID);
+  finfo->ID = static_cast<unsigned>(ThePlayer()->ID);
   finfo->Data.FrameInfo.CRC = GameCRC;
   finfo->Data.FrameInfo.CommandCount = static_cast<uint16_t>(num_cmds);
   finfo->Data.FrameInfo.Delay = static_cast<unsigned char>(frame_delay);
@@ -2504,7 +2506,7 @@ int Add_Uncompressed_Events(std::span<std::byte> buf, int bufsize,
     //.....................................................................
     // Set the event's ID
     //.....................................................................
-    OutList.First().ID = static_cast<unsigned>(PlayerPtr->ID);
+    OutList.First().ID = static_cast<unsigned>(ThePlayer()->ID);
 
     //.....................................................................
     // Transfer the event in OutList to DoList, un-queue the OutList
@@ -2749,7 +2751,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
     //.....................................................................
     // Set the event's ID
     //.....................................................................
-    OutList.First().ID = static_cast<unsigned>(PlayerPtr->ID);
+    OutList.First().ID = static_cast<unsigned>(ThePlayer()->ID);
 
     //.....................................................................
     // Transfer the event in OutList to DoList, un-queue the OutList event.
@@ -3488,7 +3490,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
                 DoList.at(j).Frame);
           }
 
-          if (std::cmp_equal(DoList.at(j).ID, PlayerPtr->ID)) {
+          if (std::cmp_equal(DoList.at(j).ID, ThePlayer()->ID)) {
             DoList.at(j).Execute();
           } else if (DoList.at(j).Type == EventClass::EXIT) {
             //............................................................
@@ -3570,7 +3572,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
                     Destroy_Connection(net->Connection_ID(0), -1);
                   }
                 }
-                Map.Flag_To_Redraw(true);
+                TheMap().Flag_To_Redraw(true);
               } else {
                 return 0;
               }
@@ -3813,7 +3815,7 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   if (Session.Type == GAME_NORMAL) {
     max_houses = 1;
-    base_house = PlayerPtr->Class->House;
+    base_house = ThePlayer()->Class->House;
   } else {
     max_houses = Session.MaxPlayers;
     base_house = HOUSE_MULTI1;
@@ -3932,8 +3934,8 @@ static void Compute_Game_CRC() {
   //------------------------------------------------------------------------
   //	Logic Layers
   //------------------------------------------------------------------------
-  for (int i = 0; i < Logic.Count(); i++) {
-    objp = Logic.at(i);
+  for (int i = 0; i < TheWorld().logic().Count(); i++) {
+    objp = TheWorld().logic().at(i);
     Add_CRC(&GameCRC,
             static_cast<uint32_t>(static_cast<int>(objp->Coord) +
                                   static_cast<int>(objp->What_Am_I())));
@@ -3943,7 +3945,7 @@ static void Compute_Game_CRC() {
   //	A random #
   //------------------------------------------------------------------------
   //	Add_CRC(&GameCRC, Scen.RandomNumber.Seed);
-  Add_CRC(&GameCRC, static_cast<uint32_t>(Scen.sync_rng_.Next()));
+  Add_CRC(&GameCRC, static_cast<uint32_t>(TheScenario().sync_rng_.Next()));
 
 } /* end of Compute_Game_CRC */
 
@@ -4249,8 +4251,8 @@ static void Print_CRCs(const EventClass* ev) {
   //------------------------------------------------------------------------
   GameCRC = 0;
   absl::FPrintF(fp, ">>>> LOGIC LAYER <<<<\n");
-  for (int i = 0; i < Logic.Count(); i++) {
-    objp = Logic.at(i);
+  for (int i = 0; i < TheWorld().logic().Count(); i++) {
+    objp = TheWorld().logic().at(i);
     Add_CRC(&GameCRC,
             static_cast<uint32_t>(static_cast<int>(objp->Coord) +
                                   static_cast<int>(objp->What_Am_I())));
@@ -4312,10 +4314,10 @@ static void Print_CRCs(const EventClass* ev) {
   //------------------------------------------------------------------------
 #ifdef RANDOM_COUNT
   absl::FPrintF(fp, "\nRandom Number:%x (Count1:%d, Count2:%d)\n",
-                Scen.sync_rng_.seed(), Scen.sync_rng_.Count1,
-                Scen.sync_rng_.Count2);
+                TheScenario().sync_rng_.seed(), TheScenario().sync_rng_.Count1,
+                TheScenario().sync_rng_.Count2);
 #else
-  absl::FPrintF(fp, "\nRandom Number:%x\n", Scen.sync_rng_.seed());
+  absl::FPrintF(fp, "\nRandom Number:%x\n", TheScenario().sync_rng_.seed());
 #endif
 
   absl::FPrintF(fp, "My Frame:%" PRId64 "\n", CurrentFrame());

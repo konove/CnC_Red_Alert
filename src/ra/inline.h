@@ -96,6 +96,7 @@
 #include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/scenario.h"
+#include "ra/world.h"
 #include "sdllib/string_table.h"
 #include "tech/random.h"
 
@@ -907,7 +908,8 @@ inline const char* Text_String(int index) {
  *=============================================================================================*/
 template <class T>
 T Random_Pick(T a, T b) {
-  return T(Scen.sync_rng_.InRange(static_cast<int>(a), static_cast<int>(b)));
+  return T(TheScenario().sync_rng_.InRange(static_cast<int>(a),
+                                           static_cast<int>(b)));
 };
 
 /***********************************************************************************************
@@ -930,7 +932,7 @@ T Random_Pick(T a, T b) {
  * HISTORY: * 08/26/1996 JLB : Created. *
  *=============================================================================================*/
 inline bool Percent_Chance(int percent) {
-  return Scen.sync_rng_.InRange(0, 99) < percent;
+  return TheScenario().sync_rng_.InRange(0, 99) < percent;
 }
 
 /***********************************************************************************************

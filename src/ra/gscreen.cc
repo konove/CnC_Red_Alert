@@ -66,6 +66,7 @@
 #include "ra/msglist.h"
 #include "ra/screen.h"
 #include "ra/session.h"
+#include "ra/world.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
@@ -400,7 +401,7 @@ void GScreenClass::Render() {
     ** This way, they'll Blit along with the rest of the map.
     */
     if (Session.Messages.Num_Messages() > 0) {
-      Session.Messages.Set_Width(Lepton_To_Cell(Map.TacLeptonWidth) *
+      Session.Messages.Set_Width(Lepton_To_Cell(TheMap().TacLeptonWidth) *
                                  ICON_PIXEL_W);
     }
     Session.Messages.Draw();

@@ -101,6 +101,7 @@
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/wolstrng.h"
+#include "ra/world.h"
 #include "sdllib/gbuffer.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
@@ -180,7 +181,7 @@ base::EnumArray<EventClass::EventType, const char*,
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(SpecialClass data) : EventClass() {
-  ID = static_cast<unsigned>(PlayerPtr->ID);
+  ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = SPECIAL;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -204,7 +205,7 @@ EventClass::EventClass(SpecialClass data) : EventClass() {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, TargetClass target) : EventClass() {
-  ID = static_cast<unsigned>(PlayerPtr->ID);
+  ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -212,7 +213,7 @@ EventClass::EventClass(EventType type, TargetClass target) : EventClass() {
 }
 
 EventClass::EventClass(EventType type, CELL cell) : EventClass() {
-  ID = static_cast<unsigned>(PlayerPtr->ID);
+  ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -234,7 +235,7 @@ EventClass::EventClass(EventType type, CELL cell) : EventClass() {
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type) : EventClass() {
-  ID = static_cast<unsigned>(PlayerPtr->ID);
+  ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -252,7 +253,7 @@ EventClass::EventClass(EventType type) : EventClass() {
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, int val) : EventClass() {
-  ID = static_cast<unsigned>(PlayerPtr->ID);
+  ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
   Data.General.Value = val;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -279,7 +280,7 @@ EventClass::EventClass(EventType type, int val) : EventClass() {
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, TargetClass src, TargetClass dest) : EventClass() {
-  ID = static_cast<unsigned>(PlayerPtr->ID);
+  ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -304,7 +305,7 @@ EventClass::EventClass(EventType type, TargetClass src, TargetClass dest) : Even
  * HISTORY: * 05/19/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(AnimType anim, HousesType owner, COORDINATE coord) : EventClass() {
-  ID = static_cast<unsigned>(PlayerPtr->ID);
+  ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = ANIMATION;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -335,7 +336,7 @@ EventClass::EventClass(AnimType anim, HousesType owner, COORDINATE coord) : Even
  *=============================================================================================*/
 EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
                        TargetClass destination) : EventClass() {
-  ID = static_cast<unsigned>(PlayerPtr->ID);
+  ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = MEGAMISSION;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -373,7 +374,7 @@ EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
 EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
                        TargetClass destination, SpeedType speed,
                        MPHType maxspeed) : EventClass() {
-  ID = static_cast<unsigned>(PlayerPtr->ID);
+  ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = MEGAMISSION_F;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -404,7 +405,7 @@ EventClass::EventClass(TargetClass src, MissionType mission, TargetClass target,
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, RTTIType object, int id) : EventClass() {
-  ID = static_cast<unsigned>(PlayerPtr->ID);
+  ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -434,7 +435,7 @@ EventClass::EventClass(EventType type, RTTIType object, int id) : EventClass() {
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, RTTIType object, CELL cell) : EventClass() {
-  ID = static_cast<unsigned>(PlayerPtr->ID);
+  ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -461,7 +462,7 @@ EventClass::EventClass(EventType type, RTTIType object, CELL cell) : EventClass(
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, int id, CELL cell) : EventClass() {
-  ID = static_cast<unsigned>(PlayerPtr->ID);
+  ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -493,7 +494,7 @@ std::span<std::byte> EventClass::variable_bytes() const {
 
 EventClass::EventClass(EventType type, std::span<std::byte> payload)
     : EventClass() {
-  ID = static_cast<unsigned>(PlayerPtr->ID);
+  ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -585,7 +586,7 @@ void EventClass::Execute() {
       } else {
         DLOG(WARNING) << "TXT_SPECIAL_WARNING is not a single-%s format string";
       }
-      Map.Flag_To_Redraw(false);
+      TheMap().Flag_To_Redraw(false);
     } break;
 
     /*
@@ -609,7 +610,7 @@ void EventClass::Execute() {
           techno->House == TheObjectHeaps().house().Raw_Ptr(ID)) {
         if (techno->What_Am_I() == RTTI_BUILDING ||
             (techno->What_Am_I() == RTTI_UNIT &&
-             Map.at(techno->Center_Coord()).Cell_Building() != nullptr)) {
+             TheMap().at(techno->Center_Coord()).Cell_Building() != nullptr)) {
           techno->Sell_Back(-1);
         }
       } else {
@@ -634,7 +635,7 @@ void EventClass::Execute() {
     case ANIMATION:
       anim = new AnimClass(Data.Anim.What, Data.Anim.Where);
       if (anim && (Data.Anim.Owner != HOUSE_NONE &&
-                   PlayerPtr->Class->House != Data.Anim.Owner)) {
+                   ThePlayer()->Class->House != Data.Anim.Owner)) {
         anim->Make_Invisible();
       }
 
@@ -702,9 +703,9 @@ void EventClass::Execute() {
         foot_class->IsFormationMove = true;
         foot_class->FormationSpeed = Data.MegaMission_F.Speed;
         foot_class->FormationMaxSpeed = Data.MegaMission_F.MaxSpeed;
-        FormMove = true;
-        FormSpeed = Data.MegaMission_F.Speed;
-        FormMaxSpeed = Data.MegaMission_F.MaxSpeed;
+        TheWorld().form_move() = true;
+        TheWorld().form_speed() = Data.MegaMission_F.Speed;
+        TheWorld().form_max_speed() = Data.MegaMission_F.MaxSpeed;
         formation = true;
       }
       [[fallthrough]];
@@ -768,7 +769,7 @@ void EventClass::Execute() {
           }
         }
 
-        if ((object != nullptr) && PlayerPtr->Is_Ally(techno)) {
+        if ((object != nullptr) && ThePlayer()->Is_Ally(techno)) {
           object->Clicked_As_Target();
         }
 
@@ -943,8 +944,8 @@ void EventClass::Execute() {
         }
 
         TheScreen().hidden_view().Clear();
-        Map.Flag_To_Redraw(true);
-        Map.Render();
+        TheMap().Flag_To_Redraw(true);
+        TheMap().Render();
       } else {
         Save_Game(-1, Text_String(TXT_MULTIPLAYER_GAME));
       }
@@ -963,7 +964,7 @@ void EventClass::Execute() {
         absl::PrintF("%d\n", std::to_integer<char>(
                                  base::At(variable_bytes(), base::ToSize(i))));
       }
-      if (std::cmp_not_equal(ID, PlayerPtr->ID)) {
+      if (std::cmp_not_equal(ID, ThePlayer()->ID)) {
         delete[] static_cast<char*>(Data.Variable.Pointer);
       }
       break;
@@ -1011,21 +1012,21 @@ void EventClass::Execute() {
       break;
 
     case PROPOSE_DRAW:
-      if (std::cmp_equal(ID, PlayerPtr->ID)) {
-        if (Scen.bOtherProposesDraw) {
+      if (std::cmp_equal(ID, ThePlayer()->ID)) {
+        if (TheScenario().bOtherProposesDraw) {
           //	Both sides agree to draw. Game will end in a tie.
-          Scen.bLocalProposesDraw = true;
+          TheScenario().bLocalProposesDraw = true;
           break;
         }
-        Scen.bLocalProposesDraw = true;
+        TheScenario().bLocalProposesDraw = true;
         Session.Messages.Add_Message(
             nullptr, 0, TXT_WOL_DRAW_PROPOSED_LOCAL, PCOLOR_GOLD,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
             TheRules().MessageDelay * kTicksPerMinute);
       } else {
-        if (Scen.bLocalProposesDraw) {
+        if (TheScenario().bLocalProposesDraw) {
           //	Both sides agree to draw. Game will end in a tie.
-          Scen.bOtherProposesDraw = true;
+          TheScenario().bOtherProposesDraw = true;
           break;
         }
         std::string message;
@@ -1041,7 +1042,7 @@ void EventClass::Execute() {
             break;
           }
         }
-        Scen.bOtherProposesDraw = true;
+        TheScenario().bOtherProposesDraw = true;
         if (!message.empty()) {
           Session.Messages.Add_Message(
               nullptr, 0, message.c_str(), PCOLOR_GOLD,
@@ -1053,8 +1054,8 @@ void EventClass::Execute() {
       break;
 
     case RETRACT_DRAW:
-      if (std::cmp_equal(ID, PlayerPtr->ID)) {
-        Scen.bLocalProposesDraw = false;
+      if (std::cmp_equal(ID, ThePlayer()->ID)) {
+        TheScenario().bLocalProposesDraw = false;
         Session.Messages.Add_Message(
             nullptr, 0, TXT_WOL_DRAW_RETRACTED_LOCAL, PCOLOR_GOLD,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
@@ -1073,7 +1074,7 @@ void EventClass::Execute() {
             break;
           }
         }
-        Scen.bOtherProposesDraw = false;
+        TheScenario().bOtherProposesDraw = false;
         if (!message.empty()) {
           Session.Messages.Add_Message(
               nullptr, 0, message.c_str(), PCOLOR_GOLD,

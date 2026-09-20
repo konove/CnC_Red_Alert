@@ -78,7 +78,6 @@
 #include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/display.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/game_clock.h"
 #include "ra/globals.h"
@@ -95,6 +94,7 @@
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/type_heaps.h"
+#include "ra/world.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
 #include "tech/number_parse.h"
@@ -282,11 +282,11 @@ bool TerrainClass::Mark(MarkType mark) {
 
     switch (mark) {
       case MARK_UP:
-        Map.Pick_Up(cell, this);
+        TheMap().Pick_Up(cell, this);
         break;
 
       case MARK_DOWN:
-        Map.Place_Down(cell, this);
+        TheMap().Place_Down(cell, this);
         break;
 
       case MarkType::MARK_CHANGE:
@@ -294,8 +294,8 @@ bool TerrainClass::Mark(MarkType mark) {
       case MarkType::MARK_OVERLAP_DOWN:
       case MarkType::MARK_OVERLAP_UP:
       default:
-        Map.Refresh_Cells(cell, Overlap_List(true));
-        Map.Refresh_Cells(cell, Occupy_List());
+        TheMap().Refresh_Cells(cell, Overlap_List(true));
+        TheMap().Refresh_Cells(cell, Occupy_List());
         break;
     }
     return true;
@@ -405,12 +405,14 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
       Occupy_List();  // Pointer to cell offset list.
   while (offset.front() != kRefreshEol) {
     if (Class->IsWaterBased) {
-      if (!Map.at(static_cast<CELL>(cell + base::ConsumeFront(offset)))
+      if (!TheMap()
+               .at(static_cast<CELL>(cell + base::ConsumeFront(offset)))
                .Is_Clear_To_Build(SPEED_FLOAT)) {
         return MOVE_NO;
       }
     } else {
-      if (!Map.at(static_cast<CELL>(cell + base::ConsumeFront(offset)))
+      if (!TheMap()
+               .at(static_cast<CELL>(cell + base::ConsumeFront(offset)))
                .Is_Clear_To_Build()) {
         return MOVE_NO;
       }
@@ -509,7 +511,7 @@ void TerrainClass::AI() {
 
   if (*this == TERRAIN_MINE &&
       CurrentFrame() % (TheRules().GrowthRate * kTicksPerMinute) == 0) {
-    Map.at(As_Cell(As_Target())).Spread_Tiberium(true);
+    TheMap().at(As_Cell(As_Target())).Spread_Tiberium(true);
   }
   if (Graphic_Logic()) {
     Mark();
@@ -522,7 +524,8 @@ void TerrainClass::AI() {
         Fetch_Stage() == Get_Build_Frame_Count(Class->Get_Image_Data()) - 1) {
       delete this;
 
-      Map.Zone_Reset(kZoneFlagNormal | kZoneFlagCrusher | kZoneFlagDestroyer);
+      TheMap().Zone_Reset(kZoneFlagNormal | kZoneFlagCrusher |
+                          kZoneFlagDestroyer);
     }
   }
 }
@@ -553,7 +556,7 @@ bool TerrainClass::Unlimbo(COORDINATE coord, DirType dir) {
   DCHECK(TheObjectHeaps().terrain().ID(this) == ID);
   DCHECK(IsActive);
 
-  if (Class->Theater & base::Bit<uint32_t>(Scen.Theater)) {
+  if (Class->Theater & base::Bit<uint32_t>(TheScenario().Theater)) {
     return ObjectClass::Unlimbo(coord, dir);
   }
   return false;
@@ -605,7 +608,7 @@ bool TerrainClass::Limbo() {
 
   if (!IsInLimbo) {
     const CELL cell = Coord_Cell(Coord);
-    Map.at(cell).Flag.Occupy.Monolith = false;
+    TheMap().at(cell).Flag.Occupy.Monolith = false;
   }
   return ObjectClass::Limbo();
 }

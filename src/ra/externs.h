@@ -88,7 +88,6 @@ inline char staging_buffer[32000];
 
 
 
-extern int NewINIFormat;
 
 extern bool AntsEnabled;
 
@@ -103,13 +102,9 @@ extern WWMouseClass* WWMouse;
 /*
 **	Dynamic global variables (these change or are initialized at run time).
 */
-extern int MapTriggerID;
-extern int LogicTriggerID;
 extern PKey FastKey;
 extern KeyboardClass* Keyboard;
 extern RandomClass local_rng;
-extern std::vector<CarryoverClass> Carryover;
-extern ScenarioClass Scen;
 extern VersionClass VerNum;
 extern bool ScoresPresent;
 extern bool AllowVoice;
@@ -120,9 +115,6 @@ extern bool BreakoutAllowed;
 
 extern GameOptionsClass Options;
 
-extern LogicClass Logic;
-extern MapEditClass Map;
-extern ScoreClass Score;
 extern AudioMixer Audio;
 extern ThemeClass Theme;
 extern SpecialClass Special;
@@ -134,47 +126,26 @@ extern SpecialClass Special;
 extern QueueClass<EventClass, kMaxEvents> OutList;
 extern QueueClass<EventClass, kMaxEvents * 64> DoList;
 
-extern DynamicVectorClass<ObjectClass*> CurrentObject;
-extern DynamicVectorClass<TriggerClass*> LogicTriggers;
-extern DynamicVectorClass<TriggerClass*> MapTriggers;
-extern base::EnumArray<HousesType, DynamicVectorClass<TriggerClass*>>
-    HouseTriggers;
 
-extern BaseClass Base;
 
 /* These variables are used to keep track of the slowest speed of a team */
-extern MPHType TeamMaxSpeed[10];
-extern SpeedType TeamSpeed[10];
-extern bool FormMove;
-extern SpeedType FormSpeed;
-extern MPHType FormMaxSpeed;
 
-extern bool IsTanyaDead;
-extern bool SaveTanya;
 
-extern bool TimeQuake;
 
-extern bool PendingTimeQuake;
-extern TARGET TimeQuakeCenter;
 
 /*
 **	Miscellaneous globals.
 */
-extern ChronalVortexClass ChronalVortex;
 extern Stopwatch<SystemTickSource> TickCount;
 extern HousesType Whom;
 extern VQAConfig AnimControl;
-extern int ScenarioInit;
-extern HouseClass* PlayerPtr;
 extern int BuildLevel;
-extern uint32_t ScenarioCRC;
 
 extern bool bAftermathMultiplayer;  //	Is multiplayer game being played with
                                     // Aftermath rules?
 
 extern bool bAutoSonarPulse;
 
-extern CELL CurrentCell;
 
 class SessionClass;
 extern SessionClass Session;
@@ -196,7 +167,6 @@ extern bool MouseInstalled;
 
 
 
-extern TheaterType LastTheater;
 
 void Do_Vortex(int x, int y, int frame);
 

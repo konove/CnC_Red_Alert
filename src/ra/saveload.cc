@@ -117,6 +117,7 @@
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/vortex.h"
+#include "ra/world.h"
 #include "sdllib/file_access.h"
 #include "tech/archive.h"
 #include "tech/block_codec.h"
@@ -192,33 +193,33 @@ static void SerializeTriggerList(Archive& ar, DynamicVectorClass<TriggerClass*>&
 
 template <class Archive>
 static void SerializeTriggerLists(Archive& ar) {
-  SerializeTriggerList(ar, MapTriggers);
-  SerializeTriggerList(ar, LogicTriggers);
+  SerializeTriggerList(ar, TheWorld().map_triggers());
+  SerializeTriggerList(ar, TheWorld().logic_triggers());
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
-    SerializeTriggerList(ar, HouseTriggers.at(house));
+    SerializeTriggerList(ar, TheWorld().house_triggers().at(house));
   }
 }
 
 template <class Archive>
 static void SerializeCarryover(Archive& ar) {
-  auto count = static_cast<int32_t>(Carryover.size());
+  auto count = static_cast<int32_t>(TheWorld().carryover().size());
   ar(count);
   if constexpr (Archive::kIsReading) {
     if (!ar.ok() || count < 0 || count > MAP_CELL_TOTAL) {
       ar.Fail("invalid carryover count");
       return;
     }
-    Carryover.clear();
+    TheWorld().carryover().clear();
     for (int i = 0; i < count; ++i) {
       CarryoverClass object;
       ar(object);
       if (!ar.ok()) {
         return;
       }
-      Carryover.push_back(object);
+      TheWorld().carryover().push_back(object);
     }
   } else {
-    for (auto& object : Carryover) {
+    for (auto& object : TheWorld().carryover()) {
       ar(object);
     }
   }
@@ -252,7 +253,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
   **	Save the scenario global information.
   */
   Put_Section(pipe, FourCC("SCEN"));
-  writer(Scen);
+  writer(TheScenario());
 
   /*
   **	Save the map.  The map must be saved first, since it saves the Theater.
@@ -261,7 +262,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
     ServiceBackgroundTasks();
   }
   Put_Section(pipe, FourCC("MAP_"));
-  Map.Save(pipe);
+  TheMap().Save(pipe);
 
   if (!save_net) {
     ServiceBackgroundTasks();
@@ -364,7 +365,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
   **	Save the Logic & Map layers
   */
   Put_Section(pipe, FourCC("LOGC"));
-  writer(Logic);
+  writer(TheWorld().logic());
 
   Put_Section(pipe, FourCC("TRGV"));
   SerializeTriggerLists(writer);
@@ -385,7 +386,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
   **	Save the Score
   */
   Put_Section(pipe, FourCC("SCOR"));
-  writer(Score);
+  writer(TheWorld().score());
   if (!save_net) {
     ServiceBackgroundTasks();
   }
@@ -394,7 +395,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
   **	Save the AI Base
   */
   Put_Section(pipe, FourCC("BASE"));
-  writer(Base);
+  writer(TheWorld().base());
   if (!save_net) {
     ServiceBackgroundTasks();
   }
@@ -469,8 +470,8 @@ bool Save_Game(int id, const std::string_view descr, bool /*unused*/) {
   char name[port::kMaxFname + port::kMaxExt];
   int save_net = 0;  // 1 = save network/modem game
 
-  const int scenario = Scen.Scenario;          // get current scenario #
-  HousesType house = PlayerPtr->Class->House;  // get current house
+  const int scenario = TheScenario().Scenario;   // get current scenario #
+  HousesType house = ThePlayer()->Class->House;  // get current house
 
   /*
   **	Generate the filename to save.  If 'id' is -1, it means save a
@@ -733,7 +734,7 @@ bool Load_Game(int id) {
   if (!Get_Section(straw, FourCC("SCEN"))) {
     return false;
   }
-  reader(Scen);
+  reader(TheScenario());
   if (!reader.ok()) {
     return false;
   }
@@ -743,10 +744,10 @@ bool Load_Game(int id) {
   ** CD to request later
   */
   if (load_net) {
-    GameFile scenario_file(Scen.ScenarioName);
+    GameFile scenario_file(TheScenario().ScenarioName);
     if (!scenario_file.IsAvailable()) {
       int cd = -1;
-      if (IsMissionCounterstrike(Scen.ScenarioName)) {
+      if (IsMissionCounterstrike(TheScenario().ScenarioName)) {
         cd = 2;
         if (Expansion_AM_Present()) {
           const int current_drive = SearchPaths::current_cd_drive();
@@ -756,7 +757,7 @@ bool Load_Game(int id) {
           }
         }
       }
-      if (IsMissionAftermath(Scen.ScenarioName)) {
+      if (IsMissionAftermath(TheScenario().ScenarioName)) {
         cd = 3;
 #ifdef BOGUSCD
         cd = -1;
@@ -791,7 +792,7 @@ bool Load_Game(int id) {
   if (!Get_Section(straw, FourCC("MAP_"))) {
     return false;
   }
-  if (!Map.Load(straw)) {
+  if (!TheMap().Load(straw)) {
     return false;
   }
 
@@ -878,7 +879,7 @@ bool Load_Game(int id) {
   if (!Get_Section(straw, FourCC("LOGC"))) {
     return false;
   }
-  reader(Logic);
+  reader(TheWorld().logic());
   if (!reader.ok()) {
     return false;
   }
@@ -909,7 +910,7 @@ bool Load_Game(int id) {
   if (!Get_Section(straw, FourCC("SCOR"))) {
     return false;
   }
-  reader(Score);
+  reader(TheWorld().score());
   if (!reader.ok()) {
     return false;
   }
@@ -920,7 +921,7 @@ bool Load_Game(int id) {
   if (!Get_Section(straw, FourCC("BASE"))) {
     return false;
   }
-  reader(Base);
+  reader(TheWorld().base());
   if (!reader.ok()) {
     return false;
   }
@@ -957,20 +958,20 @@ bool Load_Game(int id) {
   }
 
   file.Close();
-  Whom = PlayerPtr->Class->House;
-  if (Map.PendingObjectPtr) {
-    Map.PendingObject = &Map.PendingObjectPtr->Class_Of();
-    DCHECK(Map.PendingObject != nullptr);
-    Map.Set_Cursor_Shape(Map.PendingObject->Occupy_List(true));
+  Whom = ThePlayer()->Class->House;
+  if (TheMap().PendingObjectPtr) {
+    TheMap().PendingObject = &TheMap().PendingObjectPtr->Class_Of();
+    DCHECK(TheMap().PendingObject != nullptr);
+    TheMap().Set_Cursor_Shape(TheMap().PendingObject->Occupy_List(true));
 #ifdef BG
-    Map.Set_Placement_List(Map.PendingObject->Placement_List(true));
+    TheMap().Set_Placement_List(TheMap().PendingObject->Placement_List(true));
 #endif
   } else {
-    Map.PendingObject = nullptr;
-    Map.Set_Cursor_Shape({});
+    TheMap().PendingObject = nullptr;
+    TheMap().Set_Cursor_Shape({});
   }
-  Map.Init_IO();
-  Map.Flag_To_Redraw(true);
+  TheMap().Init_IO();
+  TheMap().Flag_To_Redraw(true);
 
   /*
   **	Fixup any expediency data that can be inferred from the physical
@@ -990,26 +991,26 @@ bool Load_Game(int id) {
     *different from *	a regular mission, examining of the scenario name is the
     *only way to tell.
     */
-    AntsEnabled = toupper(Scen.ScenarioName[0]) == 'S' &&
-                  toupper(Scen.ScenarioName[1]) == 'C' &&
-                  toupper(Scen.ScenarioName[2]) == 'A' &&
-                  toupper(Scen.ScenarioName[3]) == '0' &&
-                  toupper(Scen.ScenarioName[5]) == 'E' &&
-                  toupper(Scen.ScenarioName[6]) == 'A';
+    AntsEnabled = toupper(TheScenario().ScenarioName[0]) == 'S' &&
+                  toupper(TheScenario().ScenarioName[1]) == 'C' &&
+                  toupper(TheScenario().ScenarioName[2]) == 'A' &&
+                  toupper(TheScenario().ScenarioName[3]) == '0' &&
+                  toupper(TheScenario().ScenarioName[5]) == 'E' &&
+                  toupper(TheScenario().ScenarioName[6]) == 'A';
 
-    if (Scen.Scenario == 1) {
+    if (TheScenario().Scenario == 1) {
       RequiredCD = -1;
     } else {
-      if (Scen.Scenario > 19 || AntsEnabled) {
+      if (TheScenario().Scenario > 19 || AntsEnabled) {
         RequiredCD = 2;
-        if (Scen.Scenario >= 36) {
+        if (TheScenario().Scenario >= 36) {
           RequiredCD = 3;
 #ifdef BOGUSCD
           RequiredCD = -1;
 #endif
         }
       } else {
-        if (!IsSovietHouse(PlayerPtr->Class->House)) {
+        if (!IsSovietHouse(ThePlayer()->Class->House)) {
           RequiredCD = 0;
         } else {
           RequiredCD = 1;
@@ -1019,19 +1020,20 @@ bool Load_Game(int id) {
 
   } else {
     if (load_net) {
-      GameFile scenario_file(Scen.ScenarioName);
+      GameFile scenario_file(TheScenario().ScenarioName);
 
       /*
       ** Fix up the session class variables
       */
       for (int s = 0; s < Session.Scenarios.Count(); s++) {
-        if (Session.Scenarios.at(s)->Description() == Scen.Description) {
+        if (Session.Scenarios.at(s)->Description() ==
+            TheScenario().Description) {
           base::CopyBytes(
               base::ObjectBytes(Session.Options.ScenarioDescription),
-              base::ObjectBytes(Scen.Description),
+              base::ObjectBytes(TheScenario().Description),
               sizeof(Session.Options.ScenarioDescription));
           base::CopyBytes(base::ObjectBytes(Session.ScenarioFileName),
-                          base::ObjectBytes(Scen.ScenarioName),
+                          base::ObjectBytes(TheScenario().ScenarioName),
                           sizeof(Session.ScenarioFileName));
           Session.ScenarioFileLength =
               static_cast<decltype(Session.ScenarioFileLength)>(
@@ -1041,7 +1043,7 @@ bool Load_Game(int id) {
               std::as_bytes(Session.Scenarios.at(s)->Get_Digest_Bytes()),
               sizeof(Session.ScenarioDigest));
           Session.ScenarioIsOfficial = Session.Scenarios.at(s)->Get_Official();
-          Scen.Scenario = s;
+          TheScenario().Scenario = s;
           Session.Options.ScenarioIndex = s;
           break;
         }
@@ -1054,7 +1056,7 @@ bool Load_Game(int id) {
     EmergencyExit(EXIT_FAILURE);
   }
 
-  ScenarioInit = 0;
+  TheWorld().scenario_init() = 0;
 
   if (load_net) {
     if (!Reconcile_Players()) {  // (must do after Decode pointers)
@@ -1070,7 +1072,7 @@ bool Load_Game(int id) {
   **	Rescan the scenario file for any rules updates.
   */
   CCINIClass ini;
-  GameFile fc(Scen.ScenarioName);
+  GameFile fc(TheScenario().ScenarioName);
   ini.Load(fc, true);
 
   /*
@@ -1151,10 +1153,10 @@ bool Load_Game(int id) {
       }
     }
   }
-  if (Scen.TransitTheme == THEME_NONE) {
+  if (TheScenario().TransitTheme == THEME_NONE) {
     Theme.Queue_Song(magic_enum::enum_values<ThemeType>().front());
   } else {
-    Theme.Queue_Song(Scen.TransitTheme);
+    Theme.Queue_Song(TheScenario().TransitTheme);
   }
   return true;
 }
@@ -1179,7 +1181,7 @@ template <class Archive>
 static void SerializeMisc(Archive& ar) {
   HousesType house = HOUSE_NONE;
   if constexpr (!Archive::kIsReading) {
-    house = PlayerPtr->Class->House;
+    house = ThePlayer()->Class->House;
   }
   ar(house);
   if constexpr (Archive::kIsReading) {
@@ -1187,14 +1189,15 @@ static void SerializeMisc(Archive& ar) {
       ar.Fail("invalid player house");
       return;
     }
-    PlayerPtr = HouseClass::As_Pointer(house);
-    if (PlayerPtr == nullptr) {
+    ThePlayer() = HouseClass::As_Pointer(house);
+    if (ThePlayer() == nullptr) {
       ar.Fail("player house is absent");
       return;
     }
   }
-  SerializeObjectList(ar, CurrentObject);
-  ar(ChronalVortex, IsTanyaDead, SaveTanya);
+  SerializeObjectList(ar, TheWorld().current_object());
+  ar(TheWorld().chronal_vortex(), TheWorld().is_tanya_dead(),
+     TheWorld().save_tanya());
 }
 
 template <class Archive>

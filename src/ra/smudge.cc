@@ -59,13 +59,13 @@
 #include "ra/cell.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/object_heaps.h"
 #include "ra/type_heaps.h"
+#include "ra/world.h"
 #include "tech/number_parse.h"
 
 HousesType SmudgeClass::ToOwn = HOUSE_NONE;
@@ -189,8 +189,8 @@ bool SmudgeClass::Mark(MarkType mark) {
     for (int w = 0; w < Class->Width; w++) {
       for (int h = 0; h < Class->Height; h++) {
         const CELL newcell = static_cast<CELL>(origin + w + (h * MAP_CELL_W));
-        if (Map.In_Radar(newcell)) {
-          CellClass* cell = &Map.at(newcell);
+        if (TheMap().In_Radar(newcell)) {
+          CellClass* cell = &TheMap().at(newcell);
 
           if (Class->IsBib) {
             cell->Smudge = Class->Type;
@@ -237,7 +237,7 @@ bool SmudgeClass::Mark(MarkType mark) {
     *object. It isn't *	needed once the map has been updated with the
     *proper smudge data. Fake this object *	as if it were never placed down!
     */
-    Map.Overlap_Up(Coord_Cell(Coord), this);
+    TheMap().Overlap_Up(Coord_Cell(Coord), this);
     IsDown = false;
     IsInLimbo = true;
     delete this;
@@ -272,7 +272,7 @@ void SmudgeClass::Disown(CELL cell) {
     for (int w = 0; w < Class->Width; w++) {
       for (int h = 0; h < Class->Height; h++) {
         CellClass& cellptr =
-            Map.at(static_cast<CELL>(cell + w + (h * MAP_CELL_W)));
+            TheMap().at(static_cast<CELL>(cell + w + (h * MAP_CELL_W)));
 
         if (cellptr.Overlay == OVERLAY_NONE ||
             !OverlayTypeClass::As_Reference(cellptr.Overlay).IsWall) {
@@ -324,8 +324,8 @@ void SmudgeClass::Read_INI(CCINIClass& ini) {
           data = tech::ParseIntegerOr<int>(ptr, 0);
         }
         new SmudgeClass(smudge, Cell_Coord(cell));
-        if (Map.at(cell).Smudge == smudge && data != 0) {
-          Map.at(cell).SmudgeData = static_cast<unsigned char>(data);
+        if (TheMap().at(cell).Smudge == smudge && data != 0) {
+          TheMap().at(cell).SmudgeData = static_cast<unsigned char>(data);
         }
       }
     }
@@ -355,7 +355,7 @@ void SmudgeClass::Write_INI(CCINIClass& ini) {
   **	Find all templates and write them to the file.
   */
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
-    CellClass* ptr = &Map.at(index);
+    CellClass* ptr = &TheMap().at(index);
     if (ptr->Smudge != SMUDGE_NONE) {
       const SmudgeTypeClass* stype =
           &SmudgeTypeClass::As_Reference(ptr->Smudge);

@@ -148,6 +148,7 @@
 #include "ra/vessel.h"
 #include "ra/warhead.h"
 #include "ra/weapon.h"
+#include "ra/world.h"
 #include "tech/fixed.h"
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
@@ -369,7 +370,7 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
 
   if (res == RESULT_DESTROYED) {
     if (*this == INFANTRY_TANYA) {
-      IsTanyaDead = true;
+      TheWorld().is_tanya_dead() = true;
     }
     Death_Announcement(source);
     Stop_Driver();
@@ -609,7 +610,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
   DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
   DCHECK(IsActive);
 
-  CellClass* cellptr = &Map.at(Coord);
+  CellClass* cellptr = &TheMap().at(Coord);
 
   if (why == PCP_END) {
     /*
@@ -685,8 +686,8 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
                 House->SuperWeapon.at(SPC_SONAR_PULSE)
                     .Enable(false, true, false);
                 if (IsOwnedByPlayer) {
-                  Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_SONAR_PULSE));
-                  base::At(Map.Column, 1).Flag_To_Redraw();
+                  TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_SONAR_PULSE));
+                  base::At(TheMap().Column, 1).Flag_To_Redraw();
                 }
               }
             }
@@ -721,7 +722,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
       }
       if (!Target_Legal(NavCom)) {
         Enter_Idle_Mode();
-        if (Map.at(Coord).Cell_Building()) {
+        if (TheMap().at(Coord).Cell_Building()) {
           Scatter(0, true);
         }
       }
@@ -770,7 +771,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
         Assign_Mission(MISSION_MOVE);
 
         if (!Target_Legal(NavCom) ||
-            Map.at(As_Cell(NavCom)).Land_Type() == LAND_WATER) {
+            TheMap().at(As_Cell(NavCom)).Land_Type() == LAND_WATER) {
           Mark(MARK_DOWN);  // Needed only so that Tanya will get destroyed by
                             // the explosion.
         }
@@ -861,7 +862,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
     *move. In such a case the unit should have been destroyed *	anyway, so blow
     *it up now.
     */
-    const LandType land = Map.at(Coord).Land_Type();
+    const LandType land = TheMap().at(Coord).Land_Type();
     if (!IsDriving && !Class->IsBomber &&
         (land == LAND_ROCK || land == LAND_WATER || land == LAND_RIVER)) {
       int damage = Strength;
@@ -950,7 +951,7 @@ void InfantryClass::Assign_Destination(TARGET target) {
   *immediately.
   */
   if (IsDriving && !IsFormationMove && Target_Legal(target) &&
-      Map.at(Center_Coord()).Is_Clear_To_Move(Class->Speed, true, false)) {
+      TheMap().at(Center_Coord()).Is_Clear_To_Move(Class->Speed, true, false)) {
     Stop_Driver();
   }
 
@@ -1180,11 +1181,12 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
   /*
   **	If moving off the edge of the map, then consider that an illegal move.
   */
-  if (!ScenarioInit && !Map.In_Radar(cell) && !Is_Allowed_To_Leave_Map()) {
+  if (!TheWorld().scenario_init() && !TheMap().In_Radar(cell) &&
+      !Is_Allowed_To_Leave_Map()) {
     return MOVE_NO;
   }
 
-  const CellClass* cellptr = &Map.at(cell);
+  const CellClass* cellptr = &TheMap().at(cell);
 
   /*
   **	Walls are considered impassable for infantry UNLESS the wall has a hole
@@ -1292,7 +1294,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
       **	Allied objects block movement using different rules than for
       *enemy *	objects.
       */
-      if (House->Is_Ally(obj) || ScenarioInit) {
+      if (House->Is_Ally(obj) || TheWorld().scenario_init()) {
         switch (obj->What_Am_I()) {
           /*
           **	A unit blocks as either a moving blockage or a stationary temp
@@ -1837,11 +1839,11 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
       const FacingType newface = toface + face;
       newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
-      if (Map.In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
+      if (TheMap().In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
         if (altcell == 0) {
           altcell = newcell;
         }
-        if (!Map.at(newcell).Is_Bridge_Here()) {
+        if (!TheMap().at(newcell).Is_Bridge_Here()) {
           found = true;
           break;
         }
@@ -2037,10 +2039,10 @@ bool InfantryClass::Start_Driver(COORDINATE& headto) {
   /*
   **	Convert the head to coordinate to a legal sub-position location.
   */
-  headto = Map.at(headto).Closest_Free_Spot(
+  headto = TheMap().at(headto).Closest_Free_Spot(
       Coord_Move(headto, Direction(headto) + DIR_S, 0x007C));
   if (!headto && Can_Enter_Cell(Coord_Cell(old)) == MOVE_OK) {
-    headto = Map.at(old).Closest_Free_Spot(
+    headto = TheMap().at(old).Closest_Free_Spot(
         Coord_Move(old, Direction(headto) + DIR_S, 0x0080), true);
   }
 
@@ -2163,7 +2165,8 @@ bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
   /*
   **	Make sure that the infantry start in a legal position on the map.
   */
-  coord = Map.at(coord).Closest_Free_Spot(coord, ScenarioInit != 0);
+  coord = TheMap().at(coord).Closest_Free_Spot(coord,
+                                               TheWorld().scenario_init() != 0);
   if (coord == 0) {
     return false;
   }
@@ -2341,7 +2344,7 @@ void InfantryClass::Response_Select() {
 
     int size = 0;
     std::span<const VocType> response;
-    HousesType house = PlayerPtr->ActLike;
+    HousesType house = ThePlayer()->ActLike;
     switch (Class->Type) {
       case INFANTRY_GENERAL:
         if (house != HOUSE_USSR && house != HOUSE_BAD) {
@@ -2483,7 +2486,7 @@ void InfantryClass::Response_Move() {
 
     int size = 0;
     std::span<const VocType> response;
-    HousesType house = PlayerPtr->ActLike;
+    HousesType house = ThePlayer()->ActLike;
     switch (Class->Type) {
       case INFANTRY_GENERAL:
         if (house != HOUSE_USSR && house != HOUSE_BAD) {
@@ -2630,7 +2633,7 @@ void InfantryClass::Response_Attack() {
 
     int size = 0;
     std::span<const VocType> response;
-    HousesType house = PlayerPtr->ActLike;
+    HousesType house = ThePlayer()->ActLike;
     switch (Class->Type) {
       case INFANTRY_GENERAL:
         if (house != HOUSE_USSR && house != HOUSE_BAD) {
@@ -2928,7 +2931,7 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
         if (object->What_Am_I() == RTTI_BUILDING) {
           const CELL cell = As_Cell(object->As_Target());
           const int targzone =
-              Map.at(As_Cell(As_Target())).Zones.at(Class->MZone);
+              TheMap().at(As_Cell(As_Target())).Zones.at(Class->MZone);
           std::span<const int16_t> list =
               dynamic_cast<const BuildingClass*>(object)->Class->Occupy_List(
                   false);
@@ -2937,9 +2940,10 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
             const CELL newcell =
                 static_cast<CELL>(cell + base::ConsumeFront(list));
             for (const FacingType i : magic_enum::enum_values<FacingType>()) {
-              if (std::cmp_equal(
-                      Map.at(Adjacent_Cell(newcell, i)).Zones.at(Class->MZone),
-                      targzone)) {
+              if (std::cmp_equal(TheMap()
+                                     .at(Adjacent_Cell(newcell, i))
+                                     .Zones.at(Class->MZone),
+                                 targzone)) {
                 found = true;
                 break;
               }
@@ -3057,12 +3061,12 @@ void InfantryClass::Set_Occupy_Bit(CELL cell, int spot_index) {
   /*
   ** Set the occupy position for the spot that we passed in
   */
-  Map.at(cell).Flag.Composite |= base::Bit<uint8_t>(spot_index);
+  TheMap().at(cell).Flag.Composite |= base::Bit<uint8_t>(spot_index);
 
   /*
   ** Record the type of infantry that now owns the cell
   */
-  Map.at(cell).InfType = Owner();
+  TheMap().at(cell).InfType = Owner();
 }
 
 /***************************************************************************
@@ -3084,15 +3088,15 @@ void InfantryClass::Clear_Occupy_Bit(CELL cell, int spot_index) {
   /*
   ** Clear the occupy bit for the infantry in that cell
   */
-  Map.at(cell).Flag.Composite &=
+  TheMap().at(cell).Flag.Composite &=
       static_cast<uint8_t>(~base::Bit<uint8_t>(spot_index));
 
   /*
   ** If he was the last infantry recorded in the cell then
   ** remove the infantry ownership flag.
   */
-  if (!(Map.at(cell).Flag.Composite & 0x1F)) {
-    Map.at(cell).InfType = HOUSE_NONE;
+  if (!(TheMap().at(cell).Flag.Composite & 0x1F)) {
+    TheMap().at(cell).InfType = HOUSE_NONE;
   }
 }
 
@@ -3214,7 +3218,7 @@ ActionType InfantryClass::What_Action(CELL cell) const {
   **	Demolitioners may destroy a bridge
   */
   if (Class->IsBomber && action == ACTION_MOVE && !Special.IsCaptureTheFlag) {
-    const TemplateType bridge_type = Map.at(cell).TType;
+    const TemplateType bridge_type = TheMap().at(cell).TType;
     if (bridge_type == TEMPLATE_BRIDGE1 || bridge_type == TEMPLATE_BRIDGE2 ||
         bridge_type == TEMPLATE_BRIDGE1H || bridge_type == TEMPLATE_BRIDGE2H ||
         bridge_type == TEMPLATE_BRIDGE_1A ||
@@ -3507,7 +3511,7 @@ bool InfantryClass::Edge_Of_World_AI() {
   }
 
   if (!Team.Is_Valid() && Mission == MISSION_GUARD &&
-      !Map.In_Radar(Coord_Cell(Coord))) {
+      !TheMap().In_Radar(Coord_Cell(Coord))) {
     Stun();
     delete this;
     return true;
@@ -3616,7 +3620,7 @@ void InfantryClass::Firing_AI() {
       **	Run away from slowly approaching projectiles.
       */
       if (Class->PrimaryWeapon->MaxSpeed < TheRules().Incoming) {
-        Map.at(As_Cell(TarCom)).Incoming(Coord, true);
+        TheMap().at(As_Cell(TarCom)).Incoming(Coord, true);
       }
 
       /*
@@ -3624,9 +3628,9 @@ void InfantryClass::Firing_AI() {
       */
       if (Class->IsDog) {
         WasSelected = IsSelected;
-        ScenarioInit++;
+        TheWorld().scenario_init()++;
         Limbo();
-        ScenarioInit--;
+        TheWorld().scenario_init()--;
       }
     }
   } else {
@@ -3786,8 +3790,8 @@ void InfantryClass::Movement_AI() {
       */
       if (((!IsZoneCheat || Can_Enter_Cell(Coord_Cell(Coord)) != MOVE_NO) &&
            !IsDriving && !IsTethered && Target_Legal(NavCom) && IsLocked &&
-           Map.at(Coord).Zones.at(Class->MZone) !=
-               Map.at(As_Cell(NavCom)).Zones.at(Class->MZone)) &&
+           TheMap().at(Coord).Zones.at(Class->MZone) !=
+               TheMap().at(As_Cell(NavCom)).Zones.at(Class->MZone)) &&
           (!Class->IsCapture && Mission != MISSION_ENTER))
       // hack: if it's tanya, spy, or engineer, let 'em move there anyway.
       {
@@ -3878,13 +3882,13 @@ void InfantryClass::Movement_AI() {
                   if ((!IsZoneCheat ||
                        Can_Enter_Cell(Coord_Cell(Coord)) != MOVE_NO) &&
                       IsLocked && Target_Legal(NavCom) &&
-                      Map.at(As_Cell(NavCom)).Zones.at(Class->MZone) !=
-                          Map.at(Coord).Zones.at(Class->MZone)) {
+                      TheMap().at(As_Cell(NavCom)).Zones.at(Class->MZone) !=
+                          TheMap().at(Coord).Zones.at(Class->MZone)) {
                     Assign_Destination(kTargetNone);
                   }
                   if (IsLocked && Target_Legal(TarCom) &&
-                      Map.at(As_Cell(TarCom)).Zones.at(Class->MZone) !=
-                          Map.at(Coord).Zones.at(Class->MZone)) {
+                      TheMap().at(As_Cell(TarCom)).Zones.at(Class->MZone) !=
+                          TheMap().at(Coord).Zones.at(Class->MZone)) {
                     Assign_Target(kTargetNone);
                   }
                 }
@@ -3914,15 +3918,16 @@ void InfantryClass::Movement_AI() {
             ** try again next tick.
             */
             if (Can_Enter_Cell(acell) == MOVE_DESTROYABLE) {
-              if (Map.at(acell).Cell_Object()) {
-                if (!House->Is_Ally(Map.at(acell).Cell_Object())) {
-                  Override_Mission(MISSION_ATTACK,
-                                   Map.at(acell).Cell_Object()->As_Target(),
-                                   kTargetNone);
+              if (TheMap().at(acell).Cell_Object()) {
+                if (!House->Is_Ally(TheMap().at(acell).Cell_Object())) {
+                  Override_Mission(
+                      MISSION_ATTACK,
+                      TheMap().at(acell).Cell_Object()->As_Target(),
+                      kTargetNone);
                 }
               } else {
-                if (Map.at(acell).Overlay != OVERLAY_NONE &&
-                    OverlayTypeClass::As_Reference(Map.at(acell).Overlay)
+                if (TheMap().at(acell).Overlay != OVERLAY_NONE &&
+                    OverlayTypeClass::As_Reference(TheMap().at(acell).Overlay)
                         .IsWall) {
                   Override_Mission(MISSION_ATTACK, ::As_Target(acell),
                                    kTargetNone);
@@ -3947,7 +3952,7 @@ void InfantryClass::Movement_AI() {
             if (IsFormationMove) {
               Set_Speed(TheRules()
                             .ground()
-                            .at(Map.at(Coord).Land_Type())
+                            .at(TheMap().at(Coord).Land_Type())
                             .Cost.at(FormationSpeed) *
                         256);
             } else {

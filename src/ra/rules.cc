@@ -69,7 +69,6 @@
 #include "ra/const.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/mission.h"
 #include "ra/theme.h"
@@ -78,6 +77,7 @@
 #include "ra/vortex.h"
 #include "ra/warhead.h"
 #include "ra/weapon.h"
+#include "ra/world.h"
 #include "tech/number_parse.h"
 #include "tech/readline.h"
 
@@ -432,9 +432,9 @@ bool RulesClass::General(CCINIClass& ini) {
     VortexDamage = ini.Get_Int(GENERAL, "VortexDamage", VortexDamage);
     VortexChance = ini.Get_Fixed(GENERAL, "VortexChance", VortexChance);
 
-    ChronalVortex.Set_Range(VortexRange / CELL_LEPTON_W);
-    ChronalVortex.Set_Speed(static_cast<int>(VortexSpeed));
-    ChronalVortex.Set_Damage(VortexDamage);
+    TheWorld().chronal_vortex().Set_Range(VortexRange / CELL_LEPTON_W);
+    TheWorld().chronal_vortex().Set_Speed(static_cast<int>(VortexSpeed));
+    TheWorld().chronal_vortex().Set_Damage(VortexDamage);
 
     // ChronalVortex.Set_Range ( ini.Get_Int (GENERAL, "VortexRange",
     // ChronalVortex.Get_Range() ) ); ChronalVortex.Set_Speed ( ini.Get_Int

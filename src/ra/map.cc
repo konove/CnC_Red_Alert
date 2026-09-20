@@ -104,6 +104,7 @@
 #include "ra/tracker.h"
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
+#include "ra/world.h"
 #include "sdllib/memflag.h"
 #include "sdllib/tile.h"
 #include "tech/block_codec.h"
@@ -648,7 +649,7 @@ void MapClass::Sight_From(CELL cell, int sightrange, HouseClass* house,
     **	the cell itself.
     */
     if (!(*this).at(newcell).IsMapped) {
-      Map.Map_Cell(newcell, house);
+      TheMap().Map_Cell(newcell, house);
     }
   }
 }
@@ -723,7 +724,7 @@ void MapClass::Jam_From(CELL cell, int jamrange, HouseClass* house) {
     **	adjacent cells as well. For full scans, just update
     **	the cell itself.
     */
-    Map.Jam_Cell(newcell, house /*KO, false*/);
+    TheMap().Jam_Cell(newcell, house /*KO, false*/);
   }
 
   //	PlayerPtr->IsToLook = true;
@@ -805,7 +806,7 @@ void MapClass::UnJam_From(CELL cell, int jamrange, HouseClass* house) {
     **	adjacent cells as well. For full scans, just update
     **	the cell itself.
     */
-    Map.UnJam_Cell(newcell, house);
+    TheMap().UnJam_Cell(newcell, house);
   }
 }
 
@@ -1117,7 +1118,7 @@ bool MapClass::Write_Binary(ByteSink& pipe) {
 bool MapClass::Read_Binary(ByteSource& straw) {
   LcwSource decomp(CodecMode::kDecompress, straw);
 
-  switch (NewINIFormat) {
+  switch (TheWorld().new_ini_format()) {
     default:
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
         decomp.ReadObject(Array.at(cell).TType);
@@ -1263,7 +1264,7 @@ void MapClass::Logic() {
     */
     if (TiberiumSpreadCount) {
       for (int i = 0; i < TiberiumSpreadCount; i++) {
-        Map.at(base::At(TiberiumSpread, i)).Spread_Tiberium();
+        TheMap().at(base::At(TiberiumSpread, i)).Spread_Tiberium();
       }
     }
     TiberiumSpreadCount = 0;
@@ -1304,10 +1305,11 @@ int MapClass::Cell_Region(CELL cell) {
  *   04/25/1995 PWG : Created.                                             *
  *=========================================================================*/
 int MapClass::Cell_Threat(CELL cell, HousesType house) {
-  int threat = base::At(HouseClass::As_Pointer(house)->Regions,
-                        MapEditClass::Cell_Region(Map.at(cell).Cell_Number()))
-                   .Threat_Value();
-  if (!threat && Map.at(cell).IsVisible) {
+  int threat =
+      base::At(HouseClass::As_Pointer(house)->Regions,
+               MapEditClass::Cell_Region(TheMap().at(cell).Cell_Number()))
+          .Threat_Value();
+  if (!threat && TheMap().at(cell).IsVisible) {
     threat = 1;
   }
   return threat;
@@ -1843,8 +1845,8 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
     for (int x = -radius; x <= radius; x++) {
       if (x >= -left && radius <= top) {
         newcell = XY_Cell(xx + x, yy - radius);
-        cellptr = &Map.at(newcell);
-        if (Map.In_Radar(newcell) &&
+        cellptr = &TheMap().at(newcell);
+        if (TheMap().In_Radar(newcell) &&
             cellptr->Is_Clear_To_Move(speed, false, false, zone, check)) {
           base::At(topten, count++) = newcell;
         }
@@ -1855,8 +1857,8 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
 
       if (x <= right && radius <= bottom) {
         newcell = XY_Cell(xx + x, yy + radius);
-        cellptr = &Map.at(newcell);
-        if (Map.In_Radar(newcell) &&
+        cellptr = &TheMap().at(newcell);
+        if (TheMap().In_Radar(newcell) &&
             cellptr->Is_Clear_To_Move(speed, false, false, zone, check)) {
           base::At(topten, count++) = newcell;
         }
@@ -1876,8 +1878,8 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
     for (int y = -(radius - 1); y <= radius - 1; y++) {
       if (y >= -top && radius <= left) {
         newcell = XY_Cell(xx - radius, yy + y);
-        cellptr = &Map.at(newcell);
-        if (Map.In_Radar(newcell) &&
+        cellptr = &TheMap().at(newcell);
+        if (TheMap().In_Radar(newcell) &&
             cellptr->Is_Clear_To_Move(speed, false, false, zone, check)) {
           base::At(topten, count++) = newcell;
         }
@@ -1888,8 +1890,8 @@ CELL MapClass::Nearby_Location(CELL cell, SpeedType speed, int zone,
 
       if (y <= bottom && radius <= right) {
         newcell = XY_Cell(xx + radius, yy + y);
-        cellptr = &Map.at(newcell);
-        if (Map.In_Radar(newcell) &&
+        cellptr = &TheMap().at(newcell);
+        if (TheMap().In_Radar(newcell) &&
             cellptr->Is_Clear_To_Move(speed, false, false, zone, check)) {
           base::At(topten, count++) = newcell;
         }
@@ -2003,12 +2005,12 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
         new TemplateClass(TEMPLATE_BRIDGE2D, cell);
       }
 
-      Scen.BridgeCount--;
-      Scen.IsBridgeChanged = true;
+      TheScenario().BridgeCount--;
+      TheScenario().IsBridgeChanged = true;
       new AnimClass(ANIM_NAPALM3,
                     Cell_Coord(static_cast<CELL>(cell + (bridge_w / 2) +
                                                  (bridge_h / 2 * MAP_CELL_W))));
-      Map.Zone_Reset(kZoneFlagAll);
+      TheMap().Zone_Reset(kZoneFlagAll);
 
       /*
       ** Now, loop through all the bridge cells and find anyone standing
@@ -2094,7 +2096,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
           new TemplateClass(static_cast<TemplateType>(TEMPLATE_BRIDGE_3D),
                             cell2);
         }
-        Map.Zone_Reset(kZoneFlagAll);
+        TheMap().Zone_Reset(kZoneFlagAll);
       }
 
       /*
@@ -2102,8 +2104,8 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
       ** be the proper shape.
       */
       if (cellptr->TType == TEMPLATE_BRIDGE_1C) {
-        Scen.BridgeCount--;
-        Scen.IsBridgeChanged = true;
+        TheScenario().BridgeCount--;
+        TheScenario().IsBridgeChanged = true;
 
         // Point to the template below us, x-1, y+2
         const CELL cell2 = static_cast<CELL>(cell + (MAP_CELL_W * 2) - 1);
@@ -2162,7 +2164,7 @@ bool MapClass::Destroy_Bridge_At(CELL cell) {
           cell += MAP_CELL_W;
         }
         Shake_The_Screen(3);
-        Map.Zone_Reset(kZoneFlagAll);
+        TheMap().Zone_Reset(kZoneFlagAll);
         return true;
       }
       Shake_The_Screen(3);
@@ -2191,9 +2193,9 @@ void MapClass::Detach(TARGET target, bool /*unused*/) {
   **	Remove this trigger from the map zone/line tracking list.
   */
   if (Is_Target_Trigger(target)) {
-    for (int index = 0; index < MapTriggers.Count(); index++) {
-      if (MapTriggers.at(index) == As_Trigger(target)) {
-        MapTriggers.Delete(index);
+    for (int index = 0; index < TheWorld().map_triggers().Count(); index++) {
+      if (TheWorld().map_triggers().at(index) == As_Trigger(target)) {
+        TheWorld().map_triggers().Delete(index);
         break;
       }
     }
@@ -2257,8 +2259,8 @@ int MapClass::Intact_Bridge_Count() const {
  * HISTORY: * 09/25/1996 JLB : Created. *
  *=============================================================================================*/
 CELL MapClass::Pick_Random_Location() {
-  const int x = Map.MapCellX + Random_Pick(0, Map.MapCellWidth - 1);
-  const int y = Map.MapCellY + Random_Pick(0, Map.MapCellHeight - 1);
+  const int x = TheMap().MapCellX + Random_Pick(0, TheMap().MapCellWidth - 1);
+  const int y = TheMap().MapCellY + Random_Pick(0, TheMap().MapCellHeight - 1);
 
   return XY_Cell(x, y);
 }
@@ -2277,7 +2279,7 @@ CELL MapClass::Pick_Random_Location() {
  *=============================================================================================*/
 void MapClass::Shroud_The_Map() {
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    CellClass* cellptr = &Map.at(cell);
+    CellClass* cellptr = &TheMap().at(cell);
     if (cellptr->IsMapped || cellptr->IsVisible) {
       cellptr->Redraw_Objects();
       /*
@@ -2285,8 +2287,10 @@ void MapClass::Shroud_The_Map() {
       */
       const int x = Cell_X(cell);
       const int y = Cell_Y(cell);
-      if (x >= Map.MapCellX && x < Map.MapCellX + Map.MapCellWidth &&
-          y >= Map.MapCellY && y < Map.MapCellY + Map.MapCellHeight) {
+      if (x >= TheMap().MapCellX &&
+          x < TheMap().MapCellX + TheMap().MapCellWidth &&
+          y >= TheMap().MapCellY &&
+          y < TheMap().MapCellY + TheMap().MapCellHeight) {
         cellptr->IsMapped = false;
         cellptr->IsVisible = false;
       }
@@ -2297,7 +2301,7 @@ void MapClass::Shroud_The_Map() {
     ObjectClass* layer_object =
         DisplayClass::Layer.at(LAYER_GROUND).at(obj_index);
     if (layer_object && layer_object->Is_Techno() &&
-        dynamic_cast<TechnoClass*>(layer_object)->House == PlayerPtr) {
+        dynamic_cast<TechnoClass*>(layer_object)->House == ThePlayer()) {
       layer_object->Look();
     }
   }

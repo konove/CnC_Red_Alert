@@ -61,6 +61,7 @@
 #include "ra/special.h"
 #include "ra/type.h"
 #include "ra/warhead.h"
+#include "ra/world.h"
 #include "tech/fixed.h"
 
 /***********************************************************************************************
@@ -202,7 +203,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
     return;
   }
 
-  CellClass* cellptr = &Map.at(cell);
+  CellClass* cellptr = &TheMap().at(cell);
   const ObjectClass* impacto = cellptr->Cell_Occupier();
 
   /*
@@ -220,7 +221,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
     **	further than one cell away.
     */
     if (i != FACING_NONE) {
-      cellptr = &Map.at(cell).Adjacent_Cell(i);
+      cellptr = &TheMap().at(cell).Adjacent_Cell(i);
     }
 
     /*
@@ -271,7 +272,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   **	If there is a wall present at this location, it may be destroyed. Check
   *to *	make sure that the warhead is of the kind that can destroy walls.
   */
-  cellptr = &Map.at(cell);
+  cellptr = &TheMap().at(cell);
   if (cellptr->Overlay != OVERLAY_NONE) {
     const OverlayTypeClass* optr =
         &OverlayTypeClass::As_Reference(cellptr->Overlay);
@@ -281,7 +282,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
     }
     if (optr->IsWall && (whead->IsWallDestroyer ||
                          (whead->IsWoodDestroyer && optr->IsWooden))) {
-      Map.at(cell).Reduce_Wall(strength);
+      TheMap().at(cell).Reduce_Wall(strength);
     }
   }
 
@@ -301,7 +302,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
        cellptr->TType == TEMPLATE_BRIDGE_3B) &&
       ((warhead == WARHEAD_AP || warhead == WARHEAD_HE) &&
        Random_Pick(1, TheRules().BridgeStrength) < strength)) {
-    Map.Destroy_Bridge_At(cell);
+    TheMap().Destroy_Bridge_At(cell);
   }
 }
 
@@ -465,7 +466,7 @@ void Wide_Area_Damage(COORDINATE coord, LEPTON radius, int rawdamage,
         continue;
       }
       const CELL tcell = XY_Cell(xpos, ypos);
-      if (!Map.In_Radar(tcell)) {
+      if (!TheMap().In_Radar(tcell)) {
         continue;
       }
 

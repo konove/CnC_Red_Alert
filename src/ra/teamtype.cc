@@ -95,7 +95,6 @@
 #include "ra/dialog.h"
 #include "ra/drop.h"
 #include "ra/edit.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -114,6 +113,7 @@
 #include "ra/textbtn.h"
 #include "ra/trigtype.h"
 #include "ra/type.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -359,7 +359,7 @@ void TeamTypeClass::operator delete(void* ptr) {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 TeamClass* TeamTypeClass::Create_One_Of() {
-  if (ScenarioInit || std::cmp_less(Number, MaxAllowed)) {
+  if (TheWorld().scenario_init() || std::cmp_less(Number, MaxAllowed)) {
     //	if (ScenarioInit || TeamClass::Number[ID] < MaxAllowed) {
     return new TeamClass(this, HouseClass::As_Pointer(House));
   }
@@ -1396,7 +1396,7 @@ bool TeamTypeClass::Edit() {
         /*
         **	Invoke the dialog
         */
-        Map.Team_Members(HousesType(housebtn.Current_Index()));
+        TheMap().Team_Members(HousesType(housebtn.Current_Index()));
 
         /*
         **	Redraw
@@ -1794,7 +1794,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
   House = static_cast<HousesType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
 
   uint32_t code = 0;
-  switch (NewINIFormat) {
+  switch (TheWorld().new_ini_format()) {
     default:
       code = tech::ParseIntegerOr<uint32_t>(tokens.Next(), 0);
       IsRoundAbout = (code & 0x0001) != 0;
@@ -1821,7 +1821,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
       static_cast<unsigned char>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
   Origin = tech::ParseIntegerOr<int>(tokens.Next(), 0);
 
-  switch (NewINIFormat) {
+  switch (TheWorld().new_ini_format()) {
     default:
       Trigger.Set_Raw(tech::ParseIntegerOr<int>(tokens.Next(), 0));
       break;
@@ -1914,7 +1914,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
         tech::ParseIntegerOr<int>(tokens.Next(",:"), 0);
   }
 
-  if (NewINIFormat < 2) {
+  if (TheWorld().new_ini_format() < 2) {
     /*
     **	Fetch the trigger ID.
     */

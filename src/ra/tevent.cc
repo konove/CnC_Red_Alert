@@ -62,7 +62,6 @@
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -73,6 +72,7 @@
 #include "ra/scenario.h"
 #include "ra/team.h"
 #include "ra/teamtype.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/wwstd.h"
@@ -278,13 +278,14 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   */
   switch (Event) {
     case TEVENT_GLOBAL_SET:
-      return base::At(Scen.GlobalFlags, Data.Value);
+      return base::At(TheScenario().GlobalFlags, Data.Value);
 
     case TEVENT_GLOBAL_CLEAR:
-      return !base::At(Scen.GlobalFlags, Data.Value);
+      return !base::At(TheScenario().GlobalFlags, Data.Value);
 
     case TEVENT_MISSION_TIMER_EXPIRED:
-      return Scen.MissionTimer.IsRunning() && Scen.MissionTimer.IsFinished();
+      return TheScenario().MissionTimer.IsRunning() &&
+             TheScenario().MissionTimer.IsFinished();
 
     case TEVENT_TIME:
       return td.EventTimer.IsFinished();
@@ -363,7 +364,7 @@ bool TEventClass::operator()(TDEventClass& td, TEventType event,
   **	Check for all bridges destroyed condition.
   */
   if (Event == TEVENT_ALL_BRIDGES_DESTROYED) {
-    if (Scen.BridgeCount) {
+    if (TheScenario().BridgeCount) {
       return false;
     }
     td.IsTripped = true;
@@ -666,7 +667,7 @@ void TEventClass::Build_INI_Entry(std::string& buffer) const {
  *=============================================================================================*/
 void TEventClass::Read_INI(port::Tokenizer& tokens) {
   const char* token = nullptr;
-  switch (NewINIFormat) {
+  switch (TheWorld().new_ini_format()) {
     default:
       Event =
           static_cast<TEventType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));

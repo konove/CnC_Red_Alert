@@ -150,6 +150,7 @@
 #include "ra/trigtype.h"
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
+#include "ra/world.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "session.h"
@@ -297,9 +298,9 @@ void ObjectClass::AI() {
 
       if (Class_Of().IsFootprint) {
         if (In_Which_Layer() == LAYER_GROUND) {
-          Map.Place_Down(Coord_Cell(Center_Coord()), this);
+          TheMap().Place_Down(Coord_Cell(Center_Coord()), this);
         } else {
-          Map.Pick_Up(Coord_Cell(Center_Coord()), this);
+          TheMap().Pick_Up(Coord_Cell(Center_Coord()), this);
         }
       }
     }
@@ -1039,7 +1040,7 @@ void ObjectClass::Unselect() {
   DCHECK(IsActive);
 
   if (IsSelected) {
-    CurrentObject.Delete(this);
+    TheWorld().current_object().Delete(this);
     if (In_Which_Layer() == LAYER_GROUND) {
       Mark(MARK_OVERLAP_UP);
     }
@@ -1091,7 +1092,7 @@ bool ObjectClass::Select() {
   /*
   **	Don't allow selection of object when in building placement mode.
   */
-  if (Map.PendingObject) {
+  if (TheMap().PendingObject) {
     return false;
   }
 
@@ -1099,10 +1100,10 @@ bool ObjectClass::Select() {
   **	If selecting an object of a different house than the player's, make sure
   *that *	the entire selection list is cleared.
   */
-  if (CurrentObject.Count() > 0) {
+  if (TheWorld().current_object().Count() > 0) {
     const HouseClass* tryhptr = HouseClass::As_Pointer(Owner());
     const HouseClass* oldhptr =
-        HouseClass::As_Pointer(CurrentObject.at(0)->Owner());
+        HouseClass::As_Pointer(TheWorld().current_object().at(0)->Owner());
     //		if (Owner() != CurrentObject[0]->Owner() ||
     // CurrentObject[0]->Owner() != PlayerPtr->Class->House) {
     if (oldhptr->IsPlayerControl != tryhptr->IsPlayerControl ||
@@ -1111,9 +1112,9 @@ bool ObjectClass::Select() {
     }
   }
   if (dynamic_cast<const TechnoTypeClass&>(Class_Of()).IsLeader) {
-    CurrentObject.Add_Head(this);
+    TheWorld().current_object().Add_Head(this);
   } else {
-    CurrentObject.Add(this);
+    TheWorld().current_object().Add(this);
   }
 
   if (In_Which_Layer() == LAYER_GROUND) {
@@ -1154,7 +1155,7 @@ bool ObjectClass::Render(bool forced)  // const
       ((forced || IsToDisplay) && IsDown && !IsInLimbo)) {
     IsToDisplay = false;
 
-    if (Map.Coord_To_Pixel(coord, x, y)) {
+    if (TheMap().Coord_To_Pixel(coord, x, y)) {
       /*
       **	Draw the object itself
       */
@@ -1209,7 +1210,7 @@ void ObjectClass::Mark_For_Redraw() {
     *the *	rendering function. In the rendering function, it will sort out
     *what gets *	rendered and what doesn't.
     */
-    Map.Flag_To_Redraw(false);
+    TheMap().Flag_To_Redraw(false);
   }
 }
 
@@ -1246,7 +1247,7 @@ bool ObjectClass::Limbo() {
     **	Remove the object from the logic processing list.
     */
     if (Class_Of().IsSentient) {
-      Logic.Delete(this);
+      TheWorld().logic().Delete(this);
     }
 
     Hidden();
@@ -1278,7 +1279,7 @@ bool ObjectClass::Limbo() {
 bool ObjectClass::Unlimbo(COORDINATE coord, DirType /*unused*/) {
   DCHECK(IsActive);
   if ((GameActive && IsInLimbo && !IsDown) &&
-      (ScenarioInit ||
+      (TheWorld().scenario_init() ||
        Can_Enter_Cell(Coord_Cell(coord), FACING_NONE) == MOVE_OK)) {
     IsInLimbo = false;
     IsToDisplay = false;
@@ -1295,7 +1296,7 @@ bool ObjectClass::Unlimbo(COORDINATE coord, DirType /*unused*/) {
         }
 
         if (Class_Of().IsSentient) {
-          Logic.Submit(this);
+          TheWorld().logic().Submit(this);
         }
       }
       return true;
@@ -1352,11 +1353,11 @@ void ObjectClass::Detach_All(bool all) {
   /*
   **	Unselect this object if it was selected.
   */
-  if (all || Owner() != PlayerPtr->Class->House) {
+  if (all || Owner() != ThePlayer()->Class->House) {
     Unselect();
   }
 
-  Map.Detach(this);
+  TheMap().Detach(this);
 
   /*
   **	Remove from targeting computers.
@@ -1600,7 +1601,7 @@ bool ObjectClass::Mark(MarkType mark) {
     */
     if ((mark == MARK_OVERLAP_UP) && (static_cast<bool>(IsDown))) {
       if (Class_Of().IsFootprint) {
-        Map.Overlap_Up(Coord_Cell(Coord), this);
+        TheMap().Overlap_Up(Coord_Cell(Coord), this);
       }
       Mark_For_Redraw();
       return true;
@@ -1608,7 +1609,7 @@ bool ObjectClass::Mark(MarkType mark) {
 
     if ((mark == MARK_OVERLAP_DOWN) && (static_cast<bool>(IsDown))) {
       if (Class_Of().IsFootprint) {
-        Map.Overlap_Down(Coord_Cell(Coord), this);
+        TheMap().Overlap_Down(Coord_Cell(Coord), this);
       }
       Mark_For_Redraw();
       return true;
@@ -1638,7 +1639,7 @@ bool ObjectClass::Mark(MarkType mark) {
     if (mark == MARK_DOWN && !IsDown) {
       if (tech && Session.Type == GAME_NORMAL &&
           In_Which_Layer() == LAYER_GROUND) {
-        Map.at(cell).Adjust_Threat(house, threat);
+        TheMap().at(cell).Adjust_Threat(house, threat);
       }
       IsDown = true;
       Mark_For_Redraw();
@@ -1652,7 +1653,7 @@ bool ObjectClass::Mark(MarkType mark) {
     if (mark == MARK_UP && IsDown) {
       if (tech && Session.Type == GAME_NORMAL &&
           In_Which_Layer() == LAYER_GROUND) {
-        Map.at(cell).Adjust_Threat(house, -threat);
+        TheMap().at(cell).Adjust_Threat(house, -threat);
       }
       IsDown = false;
       return true;
@@ -1675,7 +1676,7 @@ bool ObjectClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
-void ObjectClass::Init() { CurrentObject.Clear(); }
+void ObjectClass::Init() { TheWorld().current_object().Clear(); }
 
 /***********************************************************************************************
  * ObjectClass::Revealed -- Reveals this object to the house specified. *

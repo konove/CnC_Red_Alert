@@ -40,12 +40,7 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <vector>
 
-#include "base/enum_array.h"
-#include "ra/base.h"
-#include "ra/carry.h"
-#include "ra/ccptr.h"
 #include "ra/compat.h"
 #include "ra/connect.h"
 #include "ra/credits.h"
@@ -53,22 +48,14 @@
 #include "ra/event.h"
 #include "ra/externs.h"
 #include "ra/goptions.h"
-#include "ra/house.h"
 #include "ra/ipxgconn.h"
 #include "ra/ipxmgr.h"
 #include "ra/jshell.h"
-#include "ra/logic.h"
-#include "ra/mapedit.h"
 #include "ra/nullmgr.h"
-#include "ra/object.h"
 #include "ra/queue.h"
-#include "ra/scenario.h"
-#include "ra/score.h"
 #include "ra/session.h"
 #include "ra/special.h"
 #include "ra/theme.h"
-#include "ra/trigger.h"
-#include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -90,27 +77,16 @@
 
 
 /* These variables are used to keep track of the slowest speed of a team */
-MPHType TeamMaxSpeed[10];
-SpeedType TeamSpeed[10];
-bool FormMove;
-SpeedType FormSpeed;
-MPHType FormMaxSpeed;
 
 /*
 ** Global flag for the life of Tanya.  If this flag is set, she is
 ** no longer available.
 */
-bool IsTanyaDead;
-bool SaveTanya;
 
 bool AntsEnabled = false;
 
-int NewINIFormat = 0;
 
-bool TimeQuake;
 
-bool PendingTimeQuake;
-TARGET TimeQuakeCenter;
 
 WWMouseClass* WWMouse = nullptr;
 bool InMovie = false;  // Are we currently playing a VQ movie?
@@ -163,7 +139,6 @@ RandomClass local_rng;
 *functions *	are used to control access to this list. Do not modify it
 *directly.
 */
-DynamicVectorClass<ObjectClass*> CurrentObject;
 
 /***************************************************************************
 **	This is the game version.
@@ -182,7 +157,6 @@ bool BreakoutAllowed = true;  // "true" if aborting of movies is allowed.
 **	These are the movie names to use for mission briefing, winning, and
 *losing *	sequences. They are read from the INI file.
 */
-ScenarioClass Scen;
 
 /***************************************************************************
 **	This records if the score (music) file is present. If not, then much of
@@ -222,7 +196,6 @@ GameOptionsClass Options;
 **	Logic processing is controlled by this element. It handles both graphic
 **	and AI logic.
 */
-LogicClass Logic;
 
 // The sound device and its four channels. Defined ahead of Theme, which
 // plays through it.
@@ -236,12 +209,10 @@ ThemeClass Theme;
 /***************************************************************************
 **	This is the main control class for the map.
 */
-MapEditClass Map;
 
 /**************************************************************************
 **	The running game score is handled by this class (and member functions).
 */
-ScoreClass Score;
 
 /***************************************************************************
 **	The running credit display is controlled by this class (and member
@@ -260,7 +231,6 @@ SpecialClass Special;
 ** These variables should all be set together.
 */
 HousesType Whom;  // Initial command line house choice.
-int ScenarioInit;
 
 /***************************************************************************
 ** This value tells the sidebar what items it's allowed to add.  The
@@ -285,12 +255,10 @@ int32_t LParam;
 /***************************************************************************
 ** The currently-selected cell for the Scenario Editor
 */
-CELL CurrentCell = 0;
 
 /***************************************************************************
 **	This is the house that the human player is currently playing.
 */
-HouseClass* PlayerPtr;
 
 /***************************************************************************
 **	These are the event queues. One is for holding events until they are
@@ -304,29 +272,21 @@ QueueClass<EventClass, kMaxEvents * 64> DoList;
 /***************************************************************************
 **	These are arrays/lists of trigger pointers for each cell & the houses.
 */
-base::EnumArray<HousesType, DynamicVectorClass<TriggerClass*>> HouseTriggers;
-DynamicVectorClass<TriggerClass*> MapTriggers;
-int MapTriggerID;
-DynamicVectorClass<TriggerClass*> LogicTriggers;
-int LogicTriggerID;
 
 /***************************************************************************
 **	This is the list of BuildingTypes that define the AI's base.
 */
-BaseClass Base;
 
 /***************************************************************************
 **	This is the list of carry over objects. These objects are part of the
 **	pseudo saved game that might be carried along with the current saved
 **	game.
 */
-std::vector<CarryoverClass> Carryover;
 
 /***************************************************************************
 ** This value is computed every time a new scenario is loaded; it's a
 ** CRC of the INI and binary map files.
 */
-uint32_t ScenarioCRC;
 
 /***************************************************************************
 ** This class manages data specific to multiplayer games.
@@ -420,8 +380,6 @@ int WindowList[][8] = {
 bool SoundOn;
 Timer<SystemTickSource> CountDownTimer;
 
-TheaterType LastTheater =
-    THEATER_NONE;  // Lets us know when theater type changes.
 
 /***************************************************************************
 **	This flag is for popping up dialogs that call the main loop.

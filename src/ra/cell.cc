@@ -146,6 +146,7 @@
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/vortex.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -172,7 +173,7 @@
  *list.                                                   *
  *=============================================================================================*/
 CellClass::CellClass()
-    : ID(static_cast<int16_t>(Map.ID(this))),
+    : ID(static_cast<int16_t>(TheMap().ID(this))),
 
       Trigger(nullptr) {
   for (const MZoneType zone : magic_enum::enum_values<MZoneType>()) {
@@ -212,7 +213,7 @@ int CellClass::Cell_Color(bool override) const {
   if (override) {
     return kTBlack;
   }
-  if (LastTheater == THEATER_SNOW) {
+  if (TheWorld().last_theater() == THEATER_SNOW) {
     return SnowColor.at(Land_Type());
   }
   return GroundColor.at(Land_Type());
@@ -406,11 +407,12 @@ void CellClass::Redraw_Objects(bool forced) {
 
   const CELL cell = Cell_Number();
 
-  if (Map.In_View(cell) && (forced || !MapEditClass::Is_Cell_Flagged(cell))) {
+  if (TheMap().In_View(cell) &&
+      (forced || !MapEditClass::Is_Cell_Flagged(cell))) {
     /*
     **	Flag the icon to be redrawn.
     */
-    Map.Flag_Cell(cell);
+    TheMap().Flag_Cell(cell);
 
     /*
     **	Flag the main object in the cell to be redrawn.
@@ -489,7 +491,7 @@ bool CellClass::Is_Clear_To_Build(SpeedType loco) const {
   /*
   **	During scenario initialization, passability is always guaranteed.
   */
-  if (ScenarioInit) {
+  if (TheWorld().scenario_init()) {
     return true;
   }
 
@@ -566,7 +568,7 @@ void CellClass::Recalc_Attributes() {
   **	Special override for interior terrain set so that a non-template or a
   *clear template *	is equivalent to impassable rock.
   */
-  if ((LastTheater == THEATER_INTERIOR) &&
+  if ((TheWorld().last_theater() == THEATER_INTERIOR) &&
       (TType == TEMPLATE_NONE || TType == TEMPLATE_CLEAR1)) {
     Land = LAND_ROCK;
     return;
@@ -639,14 +641,14 @@ void CellClass::Occupy_Down(ObjectClass* object) {
     object->Next = Cell_Occupier();
     OccupierPtr = object;
   }
-  Map.Radar_Pixel(Cell_Number());
+  TheMap().Radar_Pixel(Cell_Number());
 
   /*
   **	If being placed down on a visible square, then flag this
   **	techno object as being revealed to the player.
   */
   if (IsMapped || Session.Type != GAME_NORMAL) {
-    object->Revealed(PlayerPtr);
+    object->Revealed(ThePlayer());
   }
 
   /*
@@ -740,7 +742,7 @@ void CellClass::Occupy_Up(ObjectClass* object) {
       optr = optr->Next;
     }
   }
-  Map.Radar_Pixel(Cell_Number());
+  TheMap().Radar_Pixel(Cell_Number());
 
   /*
   **	Special occupy bit clear.
@@ -886,7 +888,7 @@ void CellClass::Overlap_Down(ObjectClass* object) {
   **	techno object as being revealed to the player.
   */
   if (IsMapped) {
-    object->Revealed(PlayerPtr);
+    object->Revealed(ThePlayer());
   }
 }
 
@@ -1094,14 +1096,15 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       **	Draw debug cell visualization instead of normal terrain.
       */
       const CELL cell = Cell_Number();
-      LogicPage->Fill_Rect(Map.TacPixelX + x, Map.TacPixelY + y,
-                           Map.TacPixelX + x + ICON_PIXEL_W - 1,
-                           Map.TacPixelY + y + ICON_PIXEL_H - 1,
+      LogicPage->Fill_Rect(TheMap().TacPixelX + x, TheMap().TacPixelY + y,
+                           TheMap().TacPixelX + x + ICON_PIXEL_W - 1,
+                           TheMap().TacPixelY + y + ICON_PIXEL_H - 1,
                            static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
       FontXSpacing -= 2;
       Fancy_Text_Print(
-          "%02X%02X\r%d%d%d\r%d %d", Map.TacPixelX + x + (ICON_PIXEL_W >> 1),
-          Map.TacPixelY + y, &ThePalettes().grey_scheme(), kTBlack,
+          "%02X%02X\r%d%d%d\r%d %d",
+          TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1), TheMap().TacPixelY + y,
+          &ThePalettes().grey_scheme(), kTBlack,
           TPF_EFNT | TPF_CENTER | TPF_BRIGHT_COLOR | TPF_FULLSHADOW,
           Cell_Y(cell), Cell_X(cell), Zones.at(MZONE_NORMAL),
           Zones.at(MZONE_CRUSHER), Zones.at(MZONE_DESTROYER), Overlay,
@@ -1136,8 +1139,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         LogicPage->Draw_Stamp(ttype->Get_Image_Data(), icon, x, y, {},
                               static_cast<int>(WINDOW_TACTICAL));
         if (!remap.empty()) {
-          LogicPage->Remap(x + Map.TacPixelX, y + Map.TacPixelY, ICON_PIXEL_W,
-                           ICON_PIXEL_H, remap);
+          LogicPage->Remap(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
+                           ICON_PIXEL_W, ICON_PIXEL_H, remap);
         }
       }
 
@@ -1149,10 +1152,11 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         * the *	cell.
         */
         if (TheDebugState().map_editor_active() &&
-            CurrentCell == Cell_Number()) {
-          LogicPage->Draw_Rect(x + Map.TacPixelX, y + Map.TacPixelY,
-                               Map.TacPixelX + x + CELL_PIXEL_W - 1,
-                               Map.TacPixelY + y + CELL_PIXEL_H - 1, kYellow);
+            TheWorld().current_cell() == Cell_Number()) {
+          LogicPage->Draw_Rect(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
+                               TheMap().TacPixelX + x + CELL_PIXEL_W - 1,
+                               TheMap().TacPixelY + y + CELL_PIXEL_H - 1,
+                               kYellow);
         }
       }
 
@@ -1185,8 +1189,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
           **	Draw the cell's Trigger mnemonic, if it has a trigger
           */
           if (Trigger.Is_Valid()) {
-            Fancy_Text_Print(Trigger->Class->IniName, x + Map.TacPixelX,
-                             y + Map.TacPixelY,
+            Fancy_Text_Print(Trigger->Class->IniName, x + TheMap().TacPixelX,
+                             y + TheMap().TacPixelY,
                              &ThePalettes().color_remaps().at(PCOLOR_RED),
                              kTBlack, TPF_EFNT | TPF_FULLSHADOW);
           }
@@ -1197,7 +1201,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
           if (IsWaypoint) {
             char waypt[3];
             for (int i = 0; i < ScenarioClass::kHomeWaypoint; i++) {
-              if (base::At(Scen.Waypoint, i) == Cell_Number()) {
+              if (base::At(TheScenario().Waypoint, i) == Cell_Number()) {
                 if (i < 26) {
                   base::At(waypt, 0) = static_cast<char>('A' + i);
                   base::At(waypt, 1) = 0;
@@ -1206,26 +1210,26 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                   base::At(waypt, 1) = static_cast<char>('A' + (i % 26));
                   base::At(waypt, 2) = 0;
                 }
-                Fancy_Text_Print(waypt, Map.TacPixelX + x + (CELL_PIXEL_W / 2),
-                                 Map.TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
-                                 &ThePalettes().color_remaps().at(PCOLOR_RED),
-                                 kTBlack,
-                                 TPF_EFNT | TPF_CENTER | TPF_FULLSHADOW);
+                Fancy_Text_Print(
+                    waypt, TheMap().TacPixelX + x + (CELL_PIXEL_W / 2),
+                    TheMap().TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
+                    &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
+                    TPF_EFNT | TPF_CENTER | TPF_FULLSHADOW);
                 break;
               }
             }
-            if (base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) ==
-                Cell_Number()) {
-              Fancy_Text_Print("Home", Map.TacPixelX + x,
-                               Map.TacPixelY + y + (CELL_PIXEL_H)-7,
+            if (base::At(TheScenario().Waypoint,
+                         ScenarioClass::kHomeWaypoint) == Cell_Number()) {
+              Fancy_Text_Print("Home", TheMap().TacPixelX + x,
+                               TheMap().TacPixelY + y + (CELL_PIXEL_H)-7,
                                &ThePalettes().color_remaps().at(PCOLOR_GREY),
                                kTBlack, TPF_EFNT | TPF_FULLSHADOW);
             }
-            if (base::At(Scen.Waypoint,
+            if (base::At(TheScenario().Waypoint,
                          ScenarioClass::kReinforcementWaypoint) ==
                 Cell_Number()) {
-              Fancy_Text_Print("Reinf", Map.TacPixelX + x,
-                               Map.TacPixelY + y + (CELL_PIXEL_H)-7,
+              Fancy_Text_Print("Reinf", TheMap().TacPixelX + x,
+                               TheMap().TacPixelY + y + (CELL_PIXEL_H)-7,
                                &ThePalettes().color_remaps().at(PCOLOR_GREY),
                                kTBlack, TPF_EFNT | TPF_FULLSHADOW);
             }
@@ -1243,16 +1247,17 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       */
       if (IsCursorHere) {
         SpeedType loco = SPEED_NONE;
-        if (Map.PendingObjectPtr &&
-            (Map.PendingObjectPtr->What_Am_I() == RTTI_BUILDING)) {
-          const auto* obj = dynamic_cast<BuildingClass*>(Map.PendingObjectPtr);
+        if (TheMap().PendingObjectPtr &&
+            (TheMap().PendingObjectPtr->What_Am_I() == RTTI_BUILDING)) {
+          const auto* obj =
+              dynamic_cast<BuildingClass*>(TheMap().PendingObjectPtr);
           loco = obj->Class->Speed;
         }
 
         /*
         **	Draw the hash-mark cursor:
         */
-        if (Map.ProximityCheck && Is_Clear_To_Build(loco)) {
+        if (TheMap().ProximityCheck && Is_Clear_To_Build(loco)) {
           LogicPage->Draw_Stamp(DisplayClass::TransIconset, 0, x, y, {},
                                 static_cast<int>(WINDOW_TACTICAL));
         } else {
@@ -1261,8 +1266,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         }
 
         if constexpr (config::kScenarioEditorEnabled) {
-          if (TheDebugState().map_editor_active() && Map.PendingObject) {
-            switch (Map.PendingObject->What_Am_I()) {
+          if (TheDebugState().map_editor_active() && TheMap().PendingObject) {
+            switch (TheMap().PendingObject->What_Am_I()) {
               /*
               **	Draw a template:
               **	- Compute the icon offset of this cell for this
@@ -1271,14 +1276,16 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
               * the icon
               */
               case RTTI_TEMPLATETYPE: {
-                const auto* tptr =
-                    dynamic_cast<const TemplateTypeClass*>(Map.PendingObject);
+                const auto* tptr = dynamic_cast<const TemplateTypeClass*>(
+                    TheMap().PendingObject);
                 if (!tptr->Get_Image_Data().empty()) {
                   const CELL cell = Cell_Number();
-                  icon = (Cell_X(cell) - Cell_X(static_cast<CELL>(
-                                             Map.ZoneCell + Map.ZoneOffset))) +
-                         ((Cell_Y(cell) - Cell_Y(static_cast<CELL>(
-                                              Map.ZoneCell + Map.ZoneOffset))) *
+                  icon = (Cell_X(cell) -
+                          Cell_X(static_cast<CELL>(TheMap().ZoneCell +
+                                                   TheMap().ZoneOffset))) +
+                         ((Cell_Y(cell) -
+                           Cell_Y(static_cast<CELL>(TheMap().ZoneCell +
+                                                    TheMap().ZoneOffset))) *
                           tptr->Width);
                   LogicPage->Draw_Stamp(tptr->Get_Image_Data(), icon, x, y, {},
                                         static_cast<int>(WINDOW_TACTICAL));
@@ -1292,7 +1299,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
               */
               case RTTI_OVERLAYTYPE:
                 OverlayTypeClass::As_Reference(
-                    dynamic_cast<const OverlayTypeClass*>(Map.PendingObject)
+                    dynamic_cast<const OverlayTypeClass*>(
+                        TheMap().PendingObject)
                         ->Type)
                     .Draw_It(x, y, OverlayData);
                 break;
@@ -1302,7 +1310,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
               */
               case RTTI_SMUDGETYPE:
                 SmudgeTypeClass::As_Reference(
-                    dynamic_cast<const SmudgeTypeClass*>(Map.PendingObject)
+                    dynamic_cast<const SmudgeTypeClass*>(TheMap().PendingObject)
                         ->Type)
                     .Draw_It(x, y, 0);
                 break;
@@ -1452,7 +1460,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
              (!object->Is_Techno() ||
               dynamic_cast<const TechnoClass*>(object)->Visual_Character() ==
                   VISUAL_NORMAL) &&
-             Map.Coord_To_Pixel(object->Render_Coord(), xx, yy)) &&
+             TheMap().Coord_To_Pixel(object->Render_Coord(), xx, yy)) &&
             Calc_Partial_Window(x, y, xx, yy)) {
           object->Draw_It(xx, yy, WINDOW_PARTIAL);
           // IsToDisplay clearing moved to frame end in DisplayClass::Draw_It
@@ -1684,9 +1692,9 @@ bool CellClass::Reduce_Wall(int damage) {
           *sensitive *	travellers.
           */
           if (wall.IsCrushable) {
-            Map.Zone_Reset(kZoneFlagNormal);
+            TheMap().Zone_Reset(kZoneFlagNormal);
           } else {
-            Map.Zone_Reset(kZoneFlagCrusher | kZoneFlagNormal);
+            TheMap().Zone_Reset(kZoneFlagCrusher | kZoneFlagNormal);
           }
           return true;
         }
@@ -2210,8 +2218,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
           if (Session.Type != GAME_NORMAL) {
             int minunits = 1000;
             bool found_spot = false;
-            const int64_t minutes =
-                std::min<int64_t>(Score.ElapsedTime / kTimerMinute, 100);
+            const int64_t minutes = std::min<int64_t>(
+                TheWorld().score().ElapsedTime / kTimerMinute, 100);
             if (Random_Pick(0, 100 - static_cast<int>(minutes)) == 0) {
               for (int i = 0;
                    i < Session.Players.Count() + Session.Options.AIPlayers;
@@ -2344,11 +2352,11 @@ bool CellClass::Goodie_Check(FootClass* object) {
     /*
     **	Remove the crate from the map.
     */
-    Map.Remove_Crate(Cell_Number());
+    TheMap().Remove_Crate(Cell_Number());
     //		Map[Cell_Number()].Overlay = OVERLAY_NONE;
 
     if (Session.Type != GAME_NORMAL && TheRules().IsMPCrates) {
-      Map.Place_Random_Crate();
+      TheMap().Place_Random_Crate();
     }
 
     /*
@@ -2373,7 +2381,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
     };
     switch (powerup) {
       case CRATE_TIMEQUAKE:
-        TimeQuake = true;
+        TheWorld().time_quake() = true;
         break;
 
       /*
@@ -2387,8 +2395,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
       **	Shroud the world in blackness.
       */
       case CRATE_DARKNESS:
-        if (object->House == PlayerPtr) {
-          Map.Shroud_The_Map();
+        if (object->House == ThePlayer()) {
+          TheMap().Shroud_The_Map();
         }
         break;
 
@@ -2397,11 +2405,11 @@ bool CellClass::Goodie_Check(FootClass* object) {
       */
       case CRATE_REVEAL:
         object->House->IsVisionary = true;
-        if (object->House == PlayerPtr) {
+        if (object->House == ThePlayer()) {
           for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-            Map.Map_Cell(cell, PlayerPtr);
+            TheMap().Map_Cell(cell, ThePlayer());
           }
-          Map.Flag_To_Redraw(true);
+          TheMap().Flag_To_Redraw(true);
         }
         break;
 
@@ -2467,8 +2475,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
             **	Try to place the object into a nearby cell if something is
             *preventing *	placement at the crate location.
             */
-            const CELL cell =
-                Map.Nearby_Location(Cell_Number(), goodie_unit->Class->Speed);
+            const CELL cell = TheMap().Nearby_Location(
+                Cell_Number(), goodie_unit->Class->Speed);
             if (goodie_unit->Unlimbo(::Cell_Coord(cell))) {
               return false;
             }
@@ -2504,8 +2512,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
       case CRATE_PARA_BOMB:
         if (object->House->SuperWeapon.at(SPC_PARA_BOMB).Enable(true) &&
             object->IsOwnedByPlayer) {
-          Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_PARA_BOMB));
-          base::At(Map.Column, 1).Flag_To_Redraw();
+          TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_PARA_BOMB));
+          base::At(TheMap().Column, 1).Flag_To_Redraw();
         }
 
         break;
@@ -2516,8 +2524,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
       case CRATE_SONAR:
         if (object->House->SuperWeapon.at(SPC_SONAR_PULSE).Enable(true) &&
             object->IsOwnedByPlayer) {
-          Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_SONAR_PULSE));
-          base::At(Map.Column, 1).Flag_To_Redraw();
+          TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_SONAR_PULSE));
+          base::At(TheMap().Column, 1).Flag_To_Redraw();
         }
 
         break;
@@ -2577,8 +2585,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
         if (object->IsOwnedByPlayer) {
           PlaySoundEffectAt(VOC_HEAL, object->Center_Coord());
         }
-        for (int index = 0; index < Logic.Count(); index++) {
-          ObjectClass* obj = Logic.at(index);
+        for (int index = 0; index < TheWorld().logic().Count(); index++) {
+          ObjectClass* obj = TheWorld().logic().at(index);
 
           if (obj && object->Is_Techno() &&
               object->House->Class->House == obj->Owner()) {
@@ -2590,8 +2598,8 @@ bool CellClass::Goodie_Check(FootClass* object) {
       case CRATE_ICBM:
         if (object->House->SuperWeapon.at(SPC_NUCLEAR_BOMB).Enable(true) &&
             object->IsOwnedByPlayer) {
-          Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_NUCLEAR_BOMB));
-          base::At(Map.Column, 1).Flag_To_Redraw();
+          TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_NUCLEAR_BOMB));
+          base::At(TheMap().Column, 1).Flag_To_Redraw();
         }
 
         break;
@@ -2609,7 +2617,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
                 dynamic_cast<TechnoClass*>(obj)->ArmorBias *
                 fixed(TheRules().crate_data().at(powerup), 256).Inverse();
             dynamic_cast<TechnoClass*>(obj)->ArmorBias = val;
-            if (obj->Owner() == PlayerPtr->Class->House) {
+            if (obj->Owner() == ThePlayer()->Class->House) {
               tospeak = true;
             }
           }
@@ -2656,7 +2664,7 @@ bool CellClass::Goodie_Check(FootClass* object) {
             const fixed val = dynamic_cast<TechnoClass*>(obj)->FirepowerBias *
                               fixed(TheRules().crate_data().at(powerup), 256);
             dynamic_cast<TechnoClass*>(obj)->FirepowerBias = val;
-            if (obj->Owner() == PlayerPtr->Class->House) {
+            if (obj->Owner() == ThePlayer()->Class->House) {
               tospeak = true;
             }
           }
@@ -2686,9 +2694,9 @@ bool CellClass::Goodie_Check(FootClass* object) {
       ** A chronal vortex appears targetted at the triggering object.
       */
       case CRATE_VORTEX:
-        if (!ChronalVortex.Is_Active()) {
-          ChronalVortex.Appear(Cell_Coord());
-          ChronalVortex.Set_Target(object);
+        if (!TheWorld().chronal_vortex().Is_Active()) {
+          TheWorld().chronal_vortex().Appear(Cell_Coord());
+          TheWorld().chronal_vortex().Set_Target(object);
           PlaySoundEffectAt(VOC_TESLA_ZAP, object->Center_Coord());
         }
         break;
@@ -3078,7 +3086,7 @@ bool CellClass::Spread_Tiberium(bool forced) {
  * HISTORY: * 08/14/1996 JLB : Created. *
  *=============================================================================================*/
 bool CellClass::Can_Tiberium_Germinate() const {
-  if (!Map.In_Radar(Cell_Number())) {
+  if (!TheMap().In_Radar(Cell_Number())) {
     return false;
   }
 
@@ -3110,11 +3118,11 @@ bool CellClass::Can_Tiberium_Germinate() const {
 CellClass& CellClass::Adjacent_Cell(FacingType face) {
   const int offset = Adjacent_Offset(face);
   return offset == 0 ? *this
-                     : Map.at(static_cast<CELL>(Cell_Number() + offset));
+                     : TheMap().at(static_cast<CELL>(Cell_Number() + offset));
 }
 
 const CellClass& CellClass::Adjacent_Cell(FacingType face) const {
   const int offset = Adjacent_Offset(face);
   return offset == 0 ? *this
-                     : Map.at(static_cast<CELL>(Cell_Number() + offset));
+                     : TheMap().at(static_cast<CELL>(Cell_Number() + offset));
 }

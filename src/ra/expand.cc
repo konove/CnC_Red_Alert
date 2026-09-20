@@ -69,6 +69,7 @@
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/wolstrng.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -374,8 +375,8 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
 
     port::SafeAppend(buffer, ".INI");
     port::SafeAppend(buffer2, ".INI");
-    Scen.Set_Scenario_Name(buffer);
-    Scen.Scenario = index;
+    TheScenario().Set_Scenario_Name(buffer);
+    TheScenario().Scenario = index;
     file.SetName(buffer);
     bool bOk = false;
     if (index < 36) {
@@ -478,8 +479,9 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     switch (static_cast<int>(input)) {
       case ButtonKey(200):
         Whom = list.Current_Object().House;
-        Scen.Scenario = list.Current_Object().Scenario;
-        port::SafeCopy(Scen.ScenarioName, list.Current_Object().FullName);
+        TheScenario().Scenario = list.Current_Object().Scenario;
+        port::SafeCopy(TheScenario().ScenarioName,
+                       list.Current_Object().FullName);
         process = false;
         okval = true;
         break;
@@ -492,8 +494,9 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
 
       case KN_RETURN:
         Whom = list.Current_Object().House;
-        Scen.Scenario = list.Current_Object().Scenario;
-        port::SafeCopy(Scen.ScenarioName, list.Current_Object().FullName);
+        TheScenario().Scenario = list.Current_Object().Scenario;
+        port::SafeCopy(TheScenario().ScenarioName,
+                       list.Current_Object().FullName);
         process = false;
         okval = true;
         break;

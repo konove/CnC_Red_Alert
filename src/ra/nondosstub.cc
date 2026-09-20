@@ -38,6 +38,7 @@
 #include "ra/mapedit.h"
 #include "ra/palette.h"
 #include "ra/theme.h"
+#include "ra/world.h"
 #include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/iconcach.h"
@@ -70,7 +71,7 @@ void Focus_Loss() {
 
 void Focus_Restore() {
   Restore_Cached_Icons();
-  Map.Flag_To_Redraw(true);
+  TheMap().Flag_To_Redraw(true);
   Audio.Resume();
   if (WWMouse) {
     WWMouseClass::Set_Cursor_Clip();

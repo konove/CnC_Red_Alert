@@ -69,6 +69,7 @@
 #include "ra/theme.h"
 #include "ra/version.h"
 #include "ra/wolstrng.h"
+#include "ra/world.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -481,7 +482,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   // WindowList[static_cast<int>(WINDOW_MAIN)][2] =
   // visible_view.Get_Width();//BG
   Change_Window(static_cast<int>(WINDOW_MAIN));
-  Map.Flag_To_Redraw(true);
+  TheMap().Flag_To_Redraw(true);
   return selection;
 }
 

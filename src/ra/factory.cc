@@ -66,7 +66,6 @@
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/globals.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -75,6 +74,7 @@
 #include "ra/rules.h"
 #include "ra/techno.h"
 #include "ra/type.h"
+#include "ra/world.h"
 #include "tech/fixed.h"
 
 /***********************************************************************************************
@@ -478,10 +478,10 @@ bool FactoryClass::Abandon() {
       /*
       **	Delete the object under construction.
       */
-      ScenarioInit++;
+      TheWorld().scenario_init()++;
       delete Object;
       Object = nullptr;
-      ScenarioInit--;
+      TheWorld().scenario_init()--;
     }
     if (SpecialItem != SPC_NONE) {
       SpecialItem = SPC_NONE;

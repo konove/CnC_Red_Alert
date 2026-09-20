@@ -68,7 +68,6 @@
 #include "ra/const.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
@@ -81,6 +80,7 @@
 #include "ra/text_ids.h"
 #include "ra/type.h"
 #include "ra/type_heaps.h"
+#include "ra/world.h"
 #include "sdllib/shape.h"
 #include "tech/mix_archive.h"
 
@@ -785,7 +785,7 @@ void OverlayTypeClass::Prep_For_Add() {
     if (!overlay.Get_Image_Data().empty() && !overlay.IsWall &&
         (!overlay.IsTiberium || index == OVERLAY_GOLD1 ||
          index == OVERLAY_GEMS1)) {
-      Map.Add_To_List(&overlay);
+      TheMap().Add_To_List(&overlay);
     }
   }
 }
@@ -852,10 +852,10 @@ ObjectClass* OverlayTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
  *=============================================================================================*/
 void OverlayTypeClass::Draw_It(int x, int y, int data) const {
   IsTheaterShape = IsTheater;
-  CC_Draw_Shape(Get_Image_Data(), data, Map.TacPixelX + x + (CELL_PIXEL_W >> 1),
-                Map.TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
-                SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
-                MouseClass::UnitShadow);
+  CC_Draw_Shape(
+      Get_Image_Data(), data, TheMap().TacPixelX + x + (CELL_PIXEL_W >> 1),
+      TheMap().TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
+      SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {}, MouseClass::UnitShadow);
   IsTheaterShape = false;
 }
 
@@ -875,7 +875,7 @@ void OverlayTypeClass::Draw_It(int x, int y, int data) const {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 void OverlayTypeClass::Init(TheaterType theater) {
-  if (theater != LastTheater) {
+  if (theater != TheWorld().last_theater()) {
     for (const OverlayType index : magic_enum::enum_values<OverlayType>()) {
       OverlayTypeClass& overlay = As_Reference(index);
       std::string fullname;  // Fully constructed iconset name.

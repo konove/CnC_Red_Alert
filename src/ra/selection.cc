@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <span>
 #include <utility>
 
 #include "base/array.h"
@@ -45,12 +46,13 @@
 #include "ra/unit.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
+#include "ra/world.h"
 
 // Unselect() removes the object from CurrentObject, so index 0 is always the
 // next one to drop and the count shrinks on every pass.
 void Unselect_All() {
-  while (CurrentObject.Count()) {
-    CurrentObject.at(0)->Unselect();
+  while (TheWorld().current_object().Count()) {
+    TheWorld().current_object().at(0)->Unselect();
   }
 }
 
@@ -83,12 +85,14 @@ void Toggle_Formation() {
   // group takes its speed from whichever type is found first.
   for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
     const UnitClass* obj = TheObjectHeaps().unit().Ptr(index);
-    if (obj && !obj->IsInLimbo && obj->House == PlayerPtr && obj->IsSelected) {
+    if (obj && !obj->IsInLimbo && obj->House == ThePlayer() &&
+        obj->IsSelected) {
       team = obj->Group;
       if (std::cmp_not_equal(team, kNoGroup)) {
         set_form = obj->XFormOffset == kNoFormationOffset;
-        base::At(TeamSpeed, team) = SPEED_WHEEL;
-        base::At(TeamMaxSpeed, team) = MPH_LIGHT_SPEED;
+        base::At(std::span(TheWorld().team_speed()), team) = SPEED_WHEEL;
+        base::At(std::span(TheWorld().team_max_speed()), team) =
+            MPH_LIGHT_SPEED;
         break;
       }
     }
@@ -96,13 +100,14 @@ void Toggle_Formation() {
   if (std::cmp_equal(team, kNoGroup)) {
     for (int index = 0; index < TheObjectHeaps().infantry().Count(); index++) {
       const InfantryClass* obj = TheObjectHeaps().infantry().Ptr(index);
-      if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
+      if (obj && !obj->IsInLimbo && obj->House == ThePlayer() &&
           obj->IsSelected) {
         team = obj->Group;
         if (std::cmp_not_equal(team, kNoGroup)) {
           set_form = obj->XFormOffset == kNoFormationOffset;
-          base::At(TeamSpeed, team) = SPEED_WHEEL;
-          base::At(TeamMaxSpeed, team) = MPH_LIGHT_SPEED;
+          base::At(std::span(TheWorld().team_speed()), team) = SPEED_WHEEL;
+          base::At(std::span(TheWorld().team_max_speed()), team) =
+              MPH_LIGHT_SPEED;
           break;
         }
       }
@@ -112,13 +117,14 @@ void Toggle_Formation() {
   if (std::cmp_equal(team, kNoGroup)) {
     for (int index = 0; index < TheObjectHeaps().vessel().Count(); index++) {
       const VesselClass* obj = TheObjectHeaps().vessel().Ptr(index);
-      if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
+      if (obj && !obj->IsInLimbo && obj->House == ThePlayer() &&
           obj->IsSelected) {
         team = obj->Group;
         if (std::cmp_not_equal(team, kNoGroup)) {
           set_form = obj->XFormOffset == kNoFormationOffset;
-          base::At(TeamSpeed, team) = SPEED_WHEEL;
-          base::At(TeamMaxSpeed, team) = MPH_LIGHT_SPEED;
+          base::At(std::span(TheWorld().team_speed()), team) = SPEED_WHEEL;
+          base::At(std::span(TheWorld().team_max_speed()), team) =
+              MPH_LIGHT_SPEED;
           break;
         }
       }
@@ -131,7 +137,7 @@ void Toggle_Formation() {
   // Now that we have a team, let's go set (or clear) the formation offsets.
   for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
     UnitClass* obj = TheObjectHeaps().unit().Ptr(i);
-    if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
+    if (obj && !obj->IsInLimbo && obj->House == ThePlayer() &&
         std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
       if (set_form) {
@@ -141,9 +147,12 @@ void Toggle_Formation() {
         maxx = std::max(xc, maxx);
         miny = std::min(yc, miny);
         maxy = std::max(yc, maxy);
-        if (obj->Class->MaxSpeed < base::At(TeamMaxSpeed, team)) {
-          base::At(TeamMaxSpeed, team) = obj->Class->MaxSpeed;
-          base::At(TeamSpeed, team) = obj->Class->Speed;
+        if (obj->Class->MaxSpeed <
+            base::At(std::span(TheWorld().team_max_speed()), team)) {
+          base::At(std::span(TheWorld().team_max_speed()), team) =
+              obj->Class->MaxSpeed;
+          base::At(std::span(TheWorld().team_speed()), team) =
+              obj->Class->Speed;
         }
       } else {
         obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
@@ -153,7 +162,7 @@ void Toggle_Formation() {
 
   for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
     InfantryClass* obj = TheObjectHeaps().infantry().Ptr(i);
-    if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
+    if (obj && !obj->IsInLimbo && obj->House == ThePlayer() &&
         std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
       if (set_form) {
@@ -163,8 +172,9 @@ void Toggle_Formation() {
         maxx = std::max(xc, maxx);
         miny = std::min(yc, miny);
         maxy = std::max(yc, maxy);
-        base::At(TeamMaxSpeed, team) =
-            std::min(obj->Class->MaxSpeed, base::At(TeamMaxSpeed, team));
+        base::At(std::span(TheWorld().team_max_speed()), team) =
+            std::min(obj->Class->MaxSpeed,
+                     base::At(std::span(TheWorld().team_max_speed()), team));
       } else {
         obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
       }
@@ -173,7 +183,7 @@ void Toggle_Formation() {
 
   for (int i = 0; i < TheObjectHeaps().vessel().Count(); i++) {
     VesselClass* obj = TheObjectHeaps().vessel().Ptr(i);
-    if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
+    if (obj && !obj->IsInLimbo && obj->House == ThePlayer() &&
         std::cmp_equal(obj->Group, team)) {
       obj->Mark(MARK_CHANGE);
       if (set_form) {
@@ -183,8 +193,9 @@ void Toggle_Formation() {
         maxx = std::max(xc, maxx);
         miny = std::min(yc, miny);
         maxy = std::max(yc, maxy);
-        base::At(TeamMaxSpeed, team) =
-            std::min(obj->Class->MaxSpeed, base::At(TeamMaxSpeed, team));
+        base::At(std::span(TheWorld().team_max_speed()), team) =
+            std::min(obj->Class->MaxSpeed,
+                     base::At(std::span(TheWorld().team_max_speed()), team));
       } else {
         obj->XFormOffset = obj->YFormOffset = kNoFormationOffset;
       }
@@ -203,7 +214,7 @@ void Toggle_Formation() {
 
     for (int i = 0; i < TheObjectHeaps().unit().Count(); i++) {
       UnitClass* obj = TheObjectHeaps().unit().Ptr(i);
-      if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
+      if (obj && !obj->IsInLimbo && obj->House == ThePlayer() &&
           std::cmp_equal(obj->Group, team)) {
         const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
@@ -215,7 +226,7 @@ void Toggle_Formation() {
 
     for (int i = 0; i < TheObjectHeaps().infantry().Count(); i++) {
       InfantryClass* obj = TheObjectHeaps().infantry().Ptr(i);
-      if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
+      if (obj && !obj->IsInLimbo && obj->House == ThePlayer() &&
           std::cmp_equal(obj->Group, team)) {
         const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
@@ -227,7 +238,7 @@ void Toggle_Formation() {
 
     for (int i = 0; i < TheObjectHeaps().vessel().Count(); i++) {
       VesselClass* obj = TheObjectHeaps().vessel().Ptr(i);
-      if (obj && !obj->IsInLimbo && obj->House == PlayerPtr &&
+      if (obj && !obj->IsInLimbo && obj->House == ThePlayer() &&
           std::cmp_equal(obj->Group, team)) {
         const int32_t xc = Cell_X(Coord_Cell(obj->Center_Coord()));
         const int32_t yc = Cell_Y(Coord_Cell(obj->Center_Coord()));
@@ -260,10 +271,12 @@ void Handle_Team(const int team, const int action) {
 
       // If a non team member is currently selected, then deselect all
       // objects before selecting this team.
-      if (CurrentObject.Count() &&
-          (CurrentObject.at(0)->Is_Foot() &&
+      if (TheWorld().current_object().Count() &&
+          (TheWorld().current_object().at(0)->Is_Foot() &&
            std::cmp_not_equal(
-               dynamic_cast<FootClass*>(CurrentObject.at(0))->Group, team))) {
+               dynamic_cast<FootClass*>(TheWorld().current_object().at(0))
+                   ->Group,
+               team))) {
         Unselect_All();
       }
 
@@ -308,8 +321,8 @@ void Handle_Team(const int team, const int action) {
 
       // Center the map around the team if the ALT key was pressed too.
       if (action == 3) {
-        Map.Center_Map();
-        Map.Flag_To_Redraw(true);
+        TheMap().Center_Map();
+        TheMap().Flag_To_Redraw(true);
       }
       break;
 
@@ -362,8 +375,8 @@ void Handle_Team(const int team, const int action) {
       int32_t miny = 0x7FFFFFFFL;
       int32_t maxx = 0;
       int32_t maxy = 0;
-      base::At(TeamSpeed, team) = SPEED_WHEEL;
-      base::At(TeamMaxSpeed, team) = MPH_LIGHT_SPEED;
+      base::At(std::span(TheWorld().team_speed()), team) = SPEED_WHEEL;
+      base::At(std::span(TheWorld().team_max_speed()), team) = MPH_LIGHT_SPEED;
       for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
         UnitClass* obj = TheObjectHeaps().unit().Ptr(index);
         if (obj && !obj->IsInLimbo && obj->House->IsPlayerControl) {
@@ -379,9 +392,12 @@ void Handle_Team(const int team, const int action) {
             maxx = std::max(xc, maxx);
             miny = std::min(yc, miny);
             maxy = std::max(yc, maxy);
-            if (obj->Class->MaxSpeed < base::At(TeamMaxSpeed, team)) {
-              base::At(TeamMaxSpeed, team) = obj->Class->MaxSpeed;
-              base::At(TeamSpeed, team) = obj->Class->Speed;
+            if (obj->Class->MaxSpeed <
+                base::At(std::span(TheWorld().team_max_speed()), team)) {
+              base::At(std::span(TheWorld().team_max_speed()), team) =
+                  obj->Class->MaxSpeed;
+              base::At(std::span(TheWorld().team_speed()), team) =
+                  obj->Class->Speed;
             }
           }
         }
@@ -402,9 +418,12 @@ void Handle_Team(const int team, const int action) {
             maxx = std::max(xc, maxx);
             miny = std::min(yc, miny);
             maxy = std::max(yc, maxy);
-            if (obj->Class->MaxSpeed < base::At(TeamMaxSpeed, team)) {
-              base::At(TeamMaxSpeed, team) = obj->Class->MaxSpeed;
-              base::At(TeamSpeed, team) = obj->Class->Speed;
+            if (obj->Class->MaxSpeed <
+                base::At(std::span(TheWorld().team_max_speed()), team)) {
+              base::At(std::span(TheWorld().team_max_speed()), team) =
+                  obj->Class->MaxSpeed;
+              base::At(std::span(TheWorld().team_speed()), team) =
+                  obj->Class->Speed;
             }
           }
         }
@@ -426,8 +445,9 @@ void Handle_Team(const int team, const int action) {
             maxx = std::max(xc, maxx);
             miny = std::min(yc, miny);
             maxy = std::max(yc, maxy);
-            base::At(TeamMaxSpeed, team) =
-                std::min(obj->Class->MaxSpeed, base::At(TeamMaxSpeed, team));
+            base::At(std::span(TheWorld().team_max_speed()), team) = std::min(
+                obj->Class->MaxSpeed,
+                base::At(std::span(TheWorld().team_max_speed()), team));
           }
         }
       }

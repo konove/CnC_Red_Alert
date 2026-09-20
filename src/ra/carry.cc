@@ -47,13 +47,13 @@
 #include "ra/ccptr.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/vessel.h"
+#include "ra/world.h"
 
 /***********************************************************************************************
  * CarryoverClass::CarryoverClass -- Constructor for carry over objects. *
@@ -197,14 +197,14 @@ bool CarryoverClass::Create() const {
   }
 
   if (techno) {
-    const int oldscen = ScenarioInit;
+    const int oldscen = TheWorld().scenario_init();
     techno->Strength = static_cast<int16_t>(Strength);
     if (RTTI == RTTI_INFANTRY) {
-      ScenarioInit = 0;
+      TheWorld().scenario_init() = 0;
     }
     techno->Unlimbo(Cell_Coord(Cell));
     if (RTTI == RTTI_INFANTRY) {
-      ScenarioInit = oldscen;
+      TheWorld().scenario_init() = oldscen;
     }
   }
 

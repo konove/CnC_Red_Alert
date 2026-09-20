@@ -98,6 +98,7 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "ra/type_heaps.h"
+#include "ra/world.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
 
@@ -245,7 +246,7 @@ bool AnimClass::Render(bool forced)  // const
   if (Delay) {
     return false;
   }
-  if (Map.at(Center_Coord()).IsVisible) {
+  if (TheMap().at(Center_Coord()).IsVisible) {
     IsToDisplay = true;
   }
   return ObjectClass::Render(forced);
@@ -333,7 +334,7 @@ bool AnimClass::Mark(MarkType mark) {
   DCHECK(IsActive);
 
   if (ObjectClass::Mark(mark)) {
-    Map.Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
+    TheMap().Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
     //		ObjectClass::Mark(mark);
     return true;
   }
@@ -518,8 +519,9 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
   **	Drop zone smoke always reveals the map around itself.
   */
   if (*this == ANIM_LZ_SMOKE) {
-    Map.Sight_From(Coord_Cell(coord), TheRules().DropZoneRadius / CELL_LEPTON_W,
-                   PlayerPtr, false);
+    TheMap().Sight_From(Coord_Cell(coord),
+                        TheRules().DropZoneRadius / CELL_LEPTON_W, ThePlayer(),
+                        false);
   }
 
   Loops = static_cast<unsigned char>(std::max(static_cast<int>(loop), 1) *
@@ -624,13 +626,14 @@ void AnimClass::AI() {
   **	For ground level based animations (ones that can run slowly as well as
   **	occur behind other ground objects) always cause the cell to be redrawn.
   */
-  Map.Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
+  TheMap().Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
 
   /*
   **	Special case check to make sure that building on top of a smoke marker
   **	causes the smoke marker to vanish.
   */
-  if (Class->Type == ANIM_LZ_SMOKE && Map.at(Center_Coord()).Cell_Building()) {
+  if (Class->Type == ANIM_LZ_SMOKE &&
+      TheMap().at(Center_Coord()).Cell_Building()) {
     IsToDelete = true;
   }
 
@@ -897,7 +900,7 @@ void AnimClass::Middle() {
   DCHECK(IsActive);
 
   const CELL cell = Coord_Cell(Center_Coord());
-  CellClass* cellptr = &Map.at(cell);
+  CellClass* cellptr = &TheMap().at(cell);
 
   if (Class->Type == ANIM_ATOM_BLAST) {
     Do_Atom_Damage(OwnerHouse, cell);
@@ -1106,8 +1109,8 @@ void AnimClass::Do_Atom_Damage(HousesType ownerhouse, CELL cell) {
   BuildingClass* building = nullptr;
   TechnoClass* backup = nullptr;
   if (ownerhouse != HOUSE_NONE) {
-    for (int index = 0; index < Logic.Count(); index++) {
-      ObjectClass* obj = Logic.at(index);
+    for (int index = 0; index < TheWorld().logic().Count(); index++) {
+      ObjectClass* obj = TheWorld().logic().at(index);
 
       if (obj != nullptr && obj->Is_Techno() && obj->Owner() == ownerhouse) {
         backup = dynamic_cast<TechnoClass*>(obj);

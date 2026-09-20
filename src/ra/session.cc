@@ -95,6 +95,7 @@
 #include "ra/palettes.h"
 #include "ra/queue.h"
 #include "ra/unit.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/file.h"
 #include "sdllib/gbuffer.h"
@@ -353,7 +354,7 @@ bool SessionClass::Am_I_Master() {
         static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + i);
     HouseClass* hptr = HouseClass::As_Pointer(house);
     if (hptr->IsHuman) {
-      return PlayerPtr == hptr;
+      return ThePlayer() == hptr;
     }
   }
 
@@ -822,7 +823,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
     ini.Get_String("SyncBug", "Cell", "0", buf, 80);
     CELL const cell = tech::ParseIntegerOr<CELL>(buf, 0);
     if (cell) {
-      TrapCell = &Map.at(cell);
+      TrapCell = &TheMap().at(cell);
     }
 
     TrapPrintCRC = ini.Get_Int("SyncBug", "PrintCRC", 0x7fffffff);

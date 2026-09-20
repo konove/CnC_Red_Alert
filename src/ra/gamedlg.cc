@@ -63,6 +63,7 @@
 #include "ra/wol_main.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
+#include "ra/world.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -265,8 +266,8 @@ void GameControlsClass::Process() {
     if (display) {
       Hide_Mouse();
 
-      Map.Flag_To_Redraw(true);
-      Map.Render();
+      TheMap().Flag_To_Redraw(true);
+      TheMap().Render();
 
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       Draw_Caption(TXT_GAME_CONTROLS, d_dialog_x, d_dialog_y, d_dialog_w);

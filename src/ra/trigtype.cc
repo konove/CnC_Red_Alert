@@ -88,7 +88,6 @@
 #include "ra/dialog.h"
 #include "ra/drop.h"
 #include "ra/edit.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
@@ -103,6 +102,7 @@
 #include "ra/textbtn.h"
 #include "ra/theme.h"
 #include "ra/type.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -2053,7 +2053,7 @@ void TriggerTypeClass::Read_INI(CCINIClass& ini) {
     trigger->Fill_In(entry, buf);
   }
 
-  if (NewINIFormat < 2) {
+  if (TheWorld().new_ini_format() < 2) {
     /*
     **	Fix up the self-referential trigger pointers.
     */

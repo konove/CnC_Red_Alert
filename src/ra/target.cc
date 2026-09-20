@@ -74,7 +74,6 @@
 #include "ra/cell.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/infantry.h"
 #include "ra/inline.h"
@@ -89,6 +88,7 @@
 #include "ra/type.h"
 #include "ra/unit.h"
 #include "ra/vessel.h"
+#include "ra/world.h"
 
 TargetClass::TargetClass(TARGET target) : xTargetClass() { Target.Target = target; }
 
@@ -121,7 +121,7 @@ TargetClass::TargetClass(const CellClass* ptr) : xTargetClass() {
 
 CellClass* xTargetClass::As_Cell() const {
   if (Target.Sub.Exponent == static_cast<unsigned>(RTTI_CELL)) {
-    return &Map.at(static_cast<CELL>(Target.Sub.Mantissa));
+    return &TheMap().at(static_cast<CELL>(Target.Sub.Mantissa));
   }
   return nullptr;
 }

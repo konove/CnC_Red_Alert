@@ -101,6 +101,7 @@
 #include "ra/trigger.h"
 #include "ra/type.h"
 #include "ra/unit.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/ww_mouse.h"
@@ -310,7 +311,7 @@ void TActionClass::Build_INI_Entry(std::string& buffer) const {
  * HISTORY: * 02/22/1996 JLB : Created. *
  *=============================================================================================*/
 void TActionClass::Read_INI(port::Tokenizer& tokens) {
-  switch (NewINIFormat) {
+  switch (TheWorld().new_ini_format()) {
     default: {
       Action =
           static_cast<TActionType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
@@ -457,30 +458,30 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Cause the shadow to creep back one step.
     */
     case TACTION_CREEP_SHADOW:
-      Map.Encroach_Shadow();
+      TheMap().Encroach_Shadow();
       break;
 
     /*
     **	Set a scenario global.
     */
     case TACTION_SET_GLOBAL:
-      Scen.Set_Global_To(Data.Value, true);
+      TheScenario().Set_Global_To(Data.Value, true);
       break;
 
     /*
     **	Clear a scenario global.
     */
     case TACTION_CLEAR_GLOBAL:
-      Scen.Set_Global_To(Data.Value, false);
+      TheScenario().Set_Global_To(Data.Value, false);
       break;
 
     /*
     **	Reveal the map around the area specified.
     */
     case TACTION_REVEAL_SOME:
-      if (!PlayerPtr->IsVisionary) {
-        Map.Sight_From(base::At(Scen.Waypoint, Data.Value),
-                       TheRules().GapShroudRadius, PlayerPtr, false);
+      if (!ThePlayer()->IsVisionary) {
+        TheMap().Sight_From(base::At(TheScenario().Waypoint, Data.Value),
+                            TheRules().GapShroudRadius, ThePlayer(), false);
       }
       break;
 
@@ -489,13 +490,15 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	in. This can be used to reveal whole islands or bodies of water
     */
     case TACTION_REVEAL_ZONE:
-      if (!PlayerPtr->IsVisionary) {
-        const int zone =
-            Map.at(base::At(Scen.Waypoint, Data.Value)).Zones.at(MZONE_CRUSHER);
+      if (!ThePlayer()->IsVisionary) {
+        const int zone = TheMap()
+                             .at(base::At(TheScenario().Waypoint, Data.Value))
+                             .Zones.at(MZONE_CRUSHER);
 
         for (CELL map_cell = 0; map_cell < MAP_CELL_TOTAL; map_cell++) {
-          if (std::cmp_equal(Map.at(map_cell).Zones.at(MZONE_CRUSHER), zone)) {
-            Map.Map_Cell(map_cell, PlayerPtr);
+          if (std::cmp_equal(TheMap().at(map_cell).Zones.at(MZONE_CRUSHER),
+                             zone)) {
+            TheMap().Map_Cell(map_cell, ThePlayer());
           }
         }
       }
@@ -505,10 +508,10 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Reveal the entire map.
     */
     case TACTION_REVEAL_ALL:
-      if (!PlayerPtr->IsVisionary) {
-        PlayerPtr->IsVisionary = true;
+      if (!ThePlayer()->IsVisionary) {
+        ThePlayer()->IsVisionary = true;
         for (CELL map_cell = 0; map_cell < MAP_CELL_TOTAL; map_cell++) {
-          Map.Map_Cell(map_cell, PlayerPtr);
+          TheMap().Map_Cell(map_cell, ThePlayer());
         }
       }
       break;
@@ -517,9 +520,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Star the mission timer.
     */
     case TACTION_START_TIMER:
-      if (!Scen.MissionTimer.IsRunning()) {
-        Scen.MissionTimer.Start();
-        Map.Redraw_Tab();
+      if (!TheScenario().MissionTimer.IsRunning()) {
+        TheScenario().MissionTimer.Start();
+        TheMap().Redraw_Tab();
       }
       break;
 
@@ -528,9 +531,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	suspend the timer.
     */
     case TACTION_STOP_TIMER:
-      if (Scen.MissionTimer.IsRunning()) {
-        Scen.MissionTimer.Stop();
-        Map.Redraw_Tab();
+      if (TheScenario().MissionTimer.IsRunning()) {
+        TheScenario().MissionTimer.Stop();
+        TheMap().Redraw_Tab();
       }
       break;
 
@@ -538,31 +541,32 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Add time to the mission timer.
     */
     case TACTION_ADD_TIMER:
-      Scen.MissionTimer.Set(Scen.MissionTimer.Value() +
-                            (Data.Value * (kTicksPerMinute / 10)));
-      Map.Redraw_Tab();
+      TheScenario().MissionTimer.Set(TheScenario().MissionTimer.Value() +
+                                     (Data.Value * (kTicksPerMinute / 10)));
+      TheMap().Redraw_Tab();
       break;
 
     /*
     **	Remove time from the mission timer.
     */
     case TACTION_SUB_TIMER:
-      if (Scen.MissionTimer.Value() <= Data.Value * (kTicksPerMinute / 10)) {
-        Scen.MissionTimer.Set(0);
+      if (TheScenario().MissionTimer.Value() <=
+          Data.Value * (kTicksPerMinute / 10)) {
+        TheScenario().MissionTimer.Set(0);
       } else {
-        Scen.MissionTimer.Set(Scen.MissionTimer.Value() -
-                              (Data.Value * (kTicksPerMinute / 10)));
+        TheScenario().MissionTimer.Set(TheScenario().MissionTimer.Value() -
+                                       (Data.Value * (kTicksPerMinute / 10)));
       }
-      Map.Redraw_Tab();
+      TheMap().Redraw_Tab();
       break;
 
     /*
     **	Set the mission timer to the value specified.
     */
     case TACTION_SET_TIMER:
-      Scen.MissionTimer.Set(Data.Value * (kTicksPerMinute / 10));
-      Scen.MissionTimer.Start();
-      Map.Redraw_Tab();
+      TheScenario().MissionTimer.Set(Data.Value * (kTicksPerMinute / 10));
+      TheScenario().MissionTimer.Start();
+      TheMap().Redraw_Tab();
       break;
 
     /*
@@ -574,7 +578,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
       TheScreen().visible_view().Clear();
       Play_Movie(Data.Movie, THEME_NONE, true);
       ThePalettes().game_palette().Set();
-      Map.Flag_To_Redraw(true);
+      TheMap().Flag_To_Redraw(true);
       Show_Mouse();
       break;
 
@@ -609,9 +613,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
       //			hptr->SuperWeapon[Data.Special].Forced_Charge(PlayerPtr
       //== hptr);
 
-      if (PlayerPtr == hptr) {
-        Map.Add(RTTI_SPECIAL, static_cast<int>(Data.Special));
-        Map.Column[1].Flag_To_Redraw();
+      if (ThePlayer() == hptr) {
+        TheMap().Add(RTTI_SPECIAL, static_cast<int>(Data.Special));
+        TheMap().Column[1].Flag_To_Redraw();
       }
       break;
 
@@ -648,7 +652,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     */
     case TACTION_DZ:
       new AnimClass(ANIM_LZ_SMOKE,
-                    Cell_Coord(base::At(Scen.Waypoint, Data.Value)));
+                    Cell_Coord(base::At(TheScenario().Waypoint, Data.Value)));
       break;
 
     /*
@@ -656,10 +660,10 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	is only used to determine if it is the player or the computer.
     */
     case TACTION_WIN:
-      if (Data.House == PlayerPtr->Class->House) {
-        PlayerPtr->Flag_To_Win();
+      if (Data.House == ThePlayer()->Class->House) {
+        ThePlayer()->Flag_To_Win();
       } else {
-        PlayerPtr->Flag_To_Lose();
+        ThePlayer()->Flag_To_Lose();
       }
       break;
 
@@ -668,10 +672,10 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	used to determine if it refers to the player or the computer.
     */
     case TACTION_LOSE:
-      if (Data.House != PlayerPtr->Class->House) {
-        PlayerPtr->Flag_To_Win();
+      if (Data.House != ThePlayer()->Class->House) {
+        ThePlayer()->Flag_To_Win();
       } else {
-        PlayerPtr->Flag_To_Lose();
+        ThePlayer()->Flag_To_Lose();
       }
       break;
 
@@ -710,9 +714,9 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Manually create the team specified.
     */
     case TACTION_CREATE_TEAM:
-      ScenarioInit++;
+      TheWorld().scenario_init()++;
       Team->Create_One_Of();
-      ScenarioInit--;
+      TheWorld().scenario_init()--;
       break;
 
     /*
@@ -755,7 +759,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
       **	forced or natural spring event.
       */
       if (cell != 0) {
-        Map.Destroy_Bridge_At(cell);
+        TheMap().Destroy_Bridge_At(cell);
       }
 
       /*

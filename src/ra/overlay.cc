@@ -64,6 +64,7 @@
 #include "ra/object_heaps.h"
 #include "ra/session.h"
 #include "ra/type_heaps.h"
+#include "ra/world.h"
 #include "tech/block_codec.h"
 #include "tech/lcw_sink.h"
 #include "tech/lcw_source.h"
@@ -181,7 +182,7 @@ bool OverlayClass::Mark(MarkType mark) {
 
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
     const CELL cell = Coord_Cell(Coord);
-    CellClass* cellptr = &Map.at(cell);
+    CellClass* cellptr = &TheMap().at(cell);
 
     /*
     **	Walls have special logic when they are marked down.
@@ -195,8 +196,9 @@ bool OverlayClass::Mark(MarkType mark) {
         // The original OR'd the MZONE_ enumerators (0 | 1), which only ever
         // named the normal zone; the crusher zone is what an uncrushable
         // overlay changes.
-        Map.Zone_Reset(Class->IsCrushable ? kZoneFlagNormal
-                                          : kZoneFlagNormal | kZoneFlagCrusher);
+        TheMap().Zone_Reset(Class->IsCrushable
+                                ? kZoneFlagNormal
+                                : kZoneFlagNormal | kZoneFlagCrusher);
 
         /*
         **	Flag ownership of the cell if the 'global' ownership flag
@@ -212,7 +214,7 @@ bool OverlayClass::Mark(MarkType mark) {
       }
     } else {
       bool clear = false;
-      if (!ScenarioInit) {
+      if (!TheWorld().scenario_init()) {
         if (Class->Type == OVERLAY_WATER_CRATE) {
           clear = cellptr->Is_Clear_To_Move(SPEED_FLOAT, false, false);
         } else {
@@ -227,7 +229,8 @@ bool OverlayClass::Mark(MarkType mark) {
         clear = true;
       }
 
-      if ((ScenarioInit || cellptr->Overlay == OVERLAY_NONE) && clear) {
+      if ((TheWorld().scenario_init() || cellptr->Overlay == OVERLAY_NONE) &&
+          clear) {
         cellptr->Overlay = Class->Type;
         cellptr->OverlayData = 0;
 
@@ -248,7 +251,7 @@ bool OverlayClass::Mark(MarkType mark) {
     **	Remove the overlay and make sure the system thinks it was never
     *placed down!
     */
-    Map.Overlap_Up(Coord_Cell(Coord), this);
+    TheMap().Overlap_Up(Coord_Cell(Coord), this);
     IsDown = false;
     IsInLimbo = true;
 
@@ -275,7 +278,7 @@ bool OverlayClass::Mark(MarkType mark) {
  *crates in multiplayer scenarios.              *
  *=============================================================================================*/
 void OverlayClass::Read_INI(CCINIClass& ini) {
-  if (NewINIFormat > 1) {
+  if (TheWorld().new_ini_format() > 1) {
     const int len =
         ini.Get_UUBlock("OverlayPack", base::ObjectBytes(staging_buffer),
                         sizeof(staging_buffer));
@@ -317,14 +320,14 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
                 owner = building->Owner();
               }
             }
-            Map.at(cell).Owner = owner;
+            TheMap().at(cell).Owner = owner;
           }
         }
       }
     }
   }
 
-  if (NewINIFormat < 2 || ini.Is_Present("Overlay")) {
+  if (TheWorld().new_ini_format() < 2 || ini.Is_Present("Overlay")) {
     const int len = ini.Entry_Count(INI_Name());
     for (int index = 0; index < len; index++) {
       const char* entry = ini.Get_Entry(INI_Name(), index);
@@ -359,7 +362,7 @@ void OverlayClass::Read_INI(CCINIClass& ini) {
               owner = building->Owner();
             }
           }
-          Map.at(cell).Owner = owner;
+          TheMap().at(cell).Owner = owner;
         }
       }
     }
@@ -377,7 +380,7 @@ void OverlayClass::Write_INI(CCINIClass& ini) {
   LcwSink comppipe(CodecMode::kCompress, bpipe);
 
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
-    comppipe.WriteObject(Map.at(index).Overlay);
+    comppipe.WriteObject(TheMap().at(index).Overlay);
   }
   comppipe.Finish();
   if (bpipe.bytes_written() > 0) {

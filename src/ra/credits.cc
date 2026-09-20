@@ -49,7 +49,6 @@
 #include "ra/audio.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/game_clock.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
@@ -59,6 +58,7 @@
 #include "ra/screen.h"
 #include "ra/tab.h"
 #include "ra/text_ids.h"
+#include "ra/world.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
@@ -126,8 +126,8 @@ void CreditClass::Graphic_Logic(bool forced) {
     Fancy_Text_Print("%ld", xx, 0, &ThePalettes().metal_scheme(), kTBlack,
                      TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL, Current);
 
-    if (Scen.MissionTimer.IsRunning()) {
-      int64_t secs = Scen.MissionTimer.Value() / kTicksPerSecond;
+    if (TheScenario().MissionTimer.IsRunning()) {
+      int64_t secs = TheScenario().MissionTimer.Value() / kTicksPerSecond;
       int64_t mins = secs / 60;
       const int64_t hours = mins / 60;
       secs %= 60;
@@ -137,36 +137,36 @@ void CreditClass::Graphic_Logic(bool forced) {
       **	Speak mission timer reminders.
       */
       VoxType vox = VOX_NONE;
-      if (Scen.MissionTimer.Value() == 1 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Value() == 1 * kTicksPerMinute) {
         vox = VOX_TIME_1;
       }
-      if (Scen.MissionTimer.Value() == 2 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Value() == 2 * kTicksPerMinute) {
         vox = VOX_TIME_2;
       }
-      if (Scen.MissionTimer.Value() == 3 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Value() == 3 * kTicksPerMinute) {
         vox = VOX_TIME_3;
       }
-      if (Scen.MissionTimer.Value() == 4 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Value() == 4 * kTicksPerMinute) {
         vox = VOX_TIME_4;
       }
-      if (Scen.MissionTimer.Value() == 5 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Value() == 5 * kTicksPerMinute) {
         vox = VOX_TIME_5;
       }
-      if (Scen.MissionTimer.Value() == 10 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Value() == 10 * kTicksPerMinute) {
         vox = VOX_TIME_10;
       }
-      if (Scen.MissionTimer.Value() == 20 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Value() == 20 * kTicksPerMinute) {
         vox = VOX_TIME_20;
       }
-      if (Scen.MissionTimer.Value() == 30 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Value() == 30 * kTicksPerMinute) {
         vox = VOX_TIME_30;
       }
-      if (Scen.MissionTimer.Value() == 40 * kTicksPerMinute) {
+      if (TheScenario().MissionTimer.Value() == 40 * kTicksPerMinute) {
         vox = VOX_TIME_40;
       }
       if (vox != VOX_NONE) {
         Speak(vox);
-        Map.FlasherTimer.Set(7);
+        TheMap().FlasherTimer.Set(7);
       }
 
       if (hours) {
@@ -211,16 +211,17 @@ void CreditClass::AI(bool forced) {
   }
   _last = static_cast<int>(CurrentFrame());
 
-  Credits = PlayerPtr->Available_Money();
+  Credits = ThePlayer()->Available_Money();
 
   /*
   **	Make sure that the credit counter doesn't drop below zero.
   */
   Credits = std::max(Credits, int64_t{0});
 
-  if (Scen.MissionTimer.IsRunning() || Scen.MissionTimer.HasTimeLeft()) {
+  if (TheScenario().MissionTimer.IsRunning() ||
+      TheScenario().MissionTimer.HasTimeLeft()) {
     IsToRedraw = true;
-    Map.Flag_To_Redraw(false);
+    TheMap().Flag_To_Redraw(false);
   }
 
   if (Current == Credits) {
@@ -265,5 +266,5 @@ void CreditClass::AI(bool forced) {
     }
   }
   IsToRedraw = true;
-  Map.Flag_To_Redraw(false);
+  TheMap().Flag_To_Redraw(false);
 }

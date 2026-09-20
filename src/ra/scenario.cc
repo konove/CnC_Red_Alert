@@ -158,6 +158,7 @@
 #include "ra/vessel.h"
 #include "ra/weapon.h"
 #include "ra/wolstrng.h"
+#include "ra/world.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -305,7 +306,7 @@ void ScenarioClass::Do_Fade_AI() {
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
 bool ScenarioClass::Set_Global_To(int global, bool value) {
-  if (static_cast<unsigned>(global) < std::ssize(Scen.GlobalFlags)) {
+  if (static_cast<unsigned>(global) < std::ssize(TheScenario().GlobalFlags)) {
     const bool previous = base::At(GlobalFlags, global);
     if (previous != value) {
       base::At(GlobalFlags, global) = value;
@@ -355,7 +356,7 @@ bool ScenarioClass::Set_Global_To(int global, bool value) {
  *=============================================================================================*/
 bool Start_Scenario(char* name, bool briefing) {
   Theme.Stop();
-  IsTanyaDead = SaveTanya;
+  TheWorld().is_tanya_dead() = TheWorld().save_tanya();
   if (!Read_Scenario(name)) {
     return false;
   }
@@ -385,20 +386,20 @@ bool Start_Scenario(char* name, bool briefing) {
     Hide_Mouse();
     TheScreen().visible_page().Clear();
     Show_Mouse();
-    Play_Movie(Scen.IntroMovie);
-    Play_Movie(Scen.BriefMovie);
+    Play_Movie(TheScenario().IntroMovie);
+    Play_Movie(TheScenario().BriefMovie);
   }
 
   /*
   ** If there's no briefing movie, restate the mission at the beginning.
   */
   char buffer[25];
-  if (Scen.BriefMovie != VQ_NONE) {
+  if (TheScenario().BriefMovie != VQ_NONE) {
     absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA",
-                   VQName.at(Scen.BriefMovie));
+                   VQName.at(TheScenario().BriefMovie));
   }
-  if (Session.Type == GAME_NORMAL &&
-      (Scen.BriefMovie == VQ_NONE || !GameFile(buffer).IsAvailable())) {
+  if (Session.Type == GAME_NORMAL && (TheScenario().BriefMovie == VQ_NONE ||
+                                      !GameFile(buffer).IsAvailable())) {
     /*
     ** Make sure the mouse is visible before showing the restatement.
     */
@@ -412,10 +413,10 @@ bool Start_Scenario(char* name, bool briefing) {
     Hide_Mouse();
     TheScreen().visible_page().Clear();
     Show_Mouse();
-    Play_Movie(Scen.ActionMovie, Scen.TransitTheme);
+    Play_Movie(TheScenario().ActionMovie, TheScenario().TransitTheme);
   }
 
-  if (Scen.TransitTheme == THEME_NONE) {
+  if (TheScenario().TransitTheme == THEME_NONE) {
     Theme.Queue_Song(magic_enum::enum_values<ThemeType>().front());
   }
 
@@ -450,7 +451,7 @@ bool Start_Scenario(char* name, bool briefing) {
  *=============================================================================================*/
 bool Read_Scenario(char* name) {
   Clear_Scenario();
-  ScenarioInit++;
+  TheWorld().scenario_init()++;
   if (Read_Scenario_INI(name)) {
     bool readini = false;
     switch (Session.Type) {
@@ -502,7 +503,7 @@ bool Read_Scenario(char* name) {
     Hide_Mouse();
     return false;
   }
-  ScenarioInit--;
+  TheWorld().scenario_init()--;
   return true;
 }
 
@@ -525,31 +526,31 @@ void Fill_In_Data() {
   **	The basic scenario data load does not contain the full set of
   **	game data. We now must fill in the missing pieces.
   */
-  ScenarioInit++;
+  TheWorld().scenario_init()++;
 
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
     TheObjectHeaps().building().Ptr(index)->Update_Buildables();
   }
 
-  Map.Flag_To_Redraw(true);
+  TheMap().Flag_To_Redraw(true);
 
   /*
   **	Reset the movement zones according to the terrain passability.
   */
-  Map.Zone_Reset(kZoneFlagAll);
+  TheMap().Zone_Reset(kZoneFlagAll);
 
   /*
   **	Since the sidebar starts up activated, adjust the home start position so
   *that *	the right edge of the map will still be visible.
   */
   if (!TheDebugState().map_editor_active()) {
-    Map.Activate(1);
+    TheMap().Activate(1);
     //		if (Session.Type == GAME_NORMAL) {
-    base::At(Scen.Views, 0) = base::At(Scen.Views, 1) =
-        base::At(Scen.Views, 2) = base::At(Scen.Views, 3) =
-            base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint);
-    Map.Set_Tactical_Position(Cell_Coord(static_cast<CELL>(
-        base::At(Scen.Waypoint, ScenarioClass::kHomeWaypoint) -
+    base::At(TheScenario().Views, 0) = base::At(TheScenario().Views, 1) =
+        base::At(TheScenario().Views, 2) = base::At(TheScenario().Views, 3) =
+            base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint);
+    TheMap().Set_Tactical_Position(Cell_Coord(static_cast<CELL>(
+        base::At(TheScenario().Waypoint, ScenarioClass::kHomeWaypoint) -
         (MAP_CELL_W * 8) - 10)));
     //		}
   }
@@ -568,42 +569,52 @@ void Fill_In_Data() {
     DCHECK(tp != nullptr);
 
     if (base::Any(tp->Attaches_To() & ATTACH_MAP)) {
-      MapTriggers.Add(Find_Or_Make(tp));
+      TheWorld().map_triggers().Add(Find_Or_Make(tp));
     }
     if (base::Any(tp->Attaches_To() & ATTACH_GENERAL)) {
-      LogicTriggers.Add(Find_Or_Make(tp));
+      TheWorld().logic_triggers().Add(Find_Or_Make(tp));
     }
     if (base::Any(tp->Attaches_To() & ATTACH_HOUSE)) {
-      HouseTriggers.at(tp->House).Add(Find_Or_Make(tp));
+      TheWorld().house_triggers().at(tp->House).Add(Find_Or_Make(tp));
     }
   }
 
-  ScenarioInit--;
+  TheWorld().scenario_init()--;
 
   /*
   ** Now go through and set all the cells ringing the map to be visible, so
   ** we won't get the wall of shadow at the edge of the map.
   */
-  for (int x = Map.MapCellX - 1; x < Map.MapCellX + Map.MapCellWidth + 1; x++) {
-    Map.at(XY_Cell(x, Map.MapCellY - 1)).IsVisible =
-        Map.at(XY_Cell(x, Map.MapCellY - 1)).IsMapped = true;
+  for (int x = TheMap().MapCellX - 1;
+       x < TheMap().MapCellX + TheMap().MapCellWidth + 1; x++) {
+    TheMap().at(XY_Cell(x, TheMap().MapCellY - 1)).IsVisible =
+        TheMap().at(XY_Cell(x, TheMap().MapCellY - 1)).IsMapped = true;
 
-    Map.at(XY_Cell(x, Map.MapCellY + Map.MapCellHeight)).IsVisible =
-        Map.at(XY_Cell(x, Map.MapCellY + Map.MapCellHeight)).IsMapped = true;
+    TheMap()
+        .at(XY_Cell(x, TheMap().MapCellY + TheMap().MapCellHeight))
+        .IsVisible =
+        TheMap()
+            .at(XY_Cell(x, TheMap().MapCellY + TheMap().MapCellHeight))
+            .IsMapped = true;
   }
-  for (int y = Map.MapCellY; y < Map.MapCellY + Map.MapCellHeight; y++) {
-    Map.at(XY_Cell(Map.MapCellX - 1, y)).IsVisible =
-        Map.at(XY_Cell(Map.MapCellX - 1, y)).IsMapped = true;
-    Map.at(XY_Cell(Map.MapCellX + Map.MapCellWidth, y)).IsVisible =
-        Map.at(XY_Cell(Map.MapCellX + Map.MapCellWidth, y)).IsMapped = true;
+  for (int y = TheMap().MapCellY;
+       y < TheMap().MapCellY + TheMap().MapCellHeight; y++) {
+    TheMap().at(XY_Cell(TheMap().MapCellX - 1, y)).IsVisible =
+        TheMap().at(XY_Cell(TheMap().MapCellX - 1, y)).IsMapped = true;
+    TheMap()
+        .at(XY_Cell(TheMap().MapCellX + TheMap().MapCellWidth, y))
+        .IsVisible =
+        TheMap()
+            .at(XY_Cell(TheMap().MapCellX + TheMap().MapCellWidth, y))
+            .IsMapped = true;
   }
 
   /*
   **	If inheriting from a previous scenario was indicated, then create the
   *carry over *	objects at this time.
   */
-  if (Scen.IsToInherit) {
-    for (const auto& object : Carryover) {
+  if (TheScenario().IsToInherit) {
+    for (const auto& object : TheWorld().carryover()) {
       object.Create();
     }
   }
@@ -625,7 +636,7 @@ void Fill_In_Data() {
   /*
   **	Move available money to silos, if the scenario flag so indicates.
   */
-  if (Scen.IsMoneyTiberium) {
+  if (TheScenario().IsMoneyTiberium) {
     for (const HousesType house : magic_enum::enum_values<HousesType>()) {
       HouseClass* hptr = HouseClass::As_Pointer(house);
       if (hptr != nullptr) {
@@ -639,7 +650,7 @@ void Fill_In_Data() {
   /*
   **	Count all non-destroyed bridges on the map.
   */
-  Scen.BridgeCount = Map.Intact_Bridge_Count();
+  TheScenario().BridgeCount = TheMap().Intact_Bridge_Count();
 
   MapEditClass::All_To_Look(true);
 }
@@ -667,10 +678,10 @@ void Post_Load_Game(int load_multi) {
   // saved on different frame #'s.
   //
   if (!load_multi) {
-    Map.Overpass();
+    TheMap().Overpass();
   }
-  Scen.BridgeCount = Map.Intact_Bridge_Count();
-  Map.Zone_Reset(kZoneFlagAll);
+  TheScenario().BridgeCount = TheMap().Intact_Bridge_Count();
+  TheMap().Zone_Reset(kZoneFlagAll);
 }
 
 /***********************************************************************************************
@@ -693,38 +704,38 @@ void Post_Load_Game(int load_multi) {
 void Clear_Scenario() {
   // TCTCTC -- possibly just use in-place new of scenario object?
 
-  Scen.MissionTimer.Set(0);
-  Scen.MissionTimer.Stop();
-  Scen.ElapsedTime.Reset();
-  Scen.ShroudTimer.Set(0);
-  Scen.IntroMovie = VQ_NONE;
-  Scen.BriefMovie = VQ_NONE;
-  Scen.WinMovie = VQ_NONE;
-  Scen.LoseMovie = VQ_NONE;
-  Scen.ActionMovie = VQ_NONE;
-  Scen.IsNoSpyPlane = false;
-  Scen.IsTanyaEvac = false;
-  Scen.IsEndOfGame = false;
-  Scen.IsInheritTimer = false;
-  Scen.IsToCarryOver = false;
-  Scen.IsSkipScore = false;
-  Scen.IsOneTimeOnly = false;
-  Scen.IsTruckCrate = false;
-  Scen.IsMoneyTiberium = false;
-  Scen.IsNoMapSel = false;
-  Scen.CarryOverCap = 0;
-  Scen.CarryOverPercent = fixed(0);
-  Scen.TransitTheme = THEME_NONE;
-  Scen.Percent = 0;
+  TheScenario().MissionTimer.Set(0);
+  TheScenario().MissionTimer.Stop();
+  TheScenario().ElapsedTime.Reset();
+  TheScenario().ShroudTimer.Set(0);
+  TheScenario().IntroMovie = VQ_NONE;
+  TheScenario().BriefMovie = VQ_NONE;
+  TheScenario().WinMovie = VQ_NONE;
+  TheScenario().LoseMovie = VQ_NONE;
+  TheScenario().ActionMovie = VQ_NONE;
+  TheScenario().IsNoSpyPlane = false;
+  TheScenario().IsTanyaEvac = false;
+  TheScenario().IsEndOfGame = false;
+  TheScenario().IsInheritTimer = false;
+  TheScenario().IsToCarryOver = false;
+  TheScenario().IsSkipScore = false;
+  TheScenario().IsOneTimeOnly = false;
+  TheScenario().IsTruckCrate = false;
+  TheScenario().IsMoneyTiberium = false;
+  TheScenario().IsNoMapSel = false;
+  TheScenario().CarryOverCap = 0;
+  TheScenario().CarryOverPercent = fixed(0);
+  TheScenario().TransitTheme = THEME_NONE;
+  TheScenario().Percent = 0;
 
-  base::FillBytes(base::ObjectBytes(Scen.GlobalFlags), 0,
-                  sizeof(Scen.GlobalFlags));
+  base::FillBytes(base::ObjectBytes(TheScenario().GlobalFlags), 0,
+                  sizeof(TheScenario().GlobalFlags));
 
-  MapTriggers.Clear();
-  LogicTriggers.Clear();
+  TheWorld().map_triggers().Clear();
+  TheWorld().logic_triggers().Clear();
 
   for (const HousesType house : magic_enum::enum_values<HousesType>()) {
-    HouseTriggers.at(house).Clear();
+    TheWorld().house_triggers().at(house).Clear();
   }
 
   /*
@@ -734,9 +745,9 @@ void Clear_Scenario() {
   ** would reload MixFiles, which isn't desired.  Display::Read_INI calls its
   ** own Init, which will Init the entire Map hierarchy.
   */
-  Map.Init_Clear();
-  Score.Init();
-  Logic.Init();
+  TheMap().Init_Clear();
+  TheWorld().score().Init();
+  TheWorld().logic().Init();
 
   HouseClass::Init();
   ObjectClass::Init();
@@ -758,11 +769,11 @@ void Clear_Scenario() {
 
   FactoryClass::Init();
 
-  Base.Init();
+  TheWorld().base().Init();
 
-  CurrentObject.Clear();
+  TheWorld().current_object().Clear();
 
-  for (int16_t& index : Scen.Waypoint) {
+  for (int16_t& index : TheScenario().Waypoint) {
     index = -1;
   }
 
@@ -770,8 +781,8 @@ void Clear_Scenario() {
   bAutoSonarPulse = false;
 
   // Stalemate games.
-  Scen.bLocalProposesDraw = false;
-  Scen.bOtherProposesDraw = false;
+  TheScenario().bLocalProposesDraw = false;
+  TheScenario().bOtherProposesDraw = false;
 }
 
 /***********************************************************************************************
@@ -791,7 +802,7 @@ void Clear_Scenario() {
  *into next scenario.                                *
  *=============================================================================================*/
 void Do_Win() {
-  Map.Set_Default_Mouse(MOUSE_NORMAL);
+  TheMap().Set_Default_Mouse(MOUSE_NORMAL);
   Hide_Mouse();
   Theme.Queue_Song(THEME_QUIET);
 
@@ -806,20 +817,22 @@ void Do_Win() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  const int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
+  const int x =
+      TheMap().TacPixelX + (Lepton_To_Pixel(TheMap().TacLeptonWidth) / 2);
 
   /*
   ** Hack section.  If it's allied scenario 10, variation A, then skip the
   ** score and map selection, don't increment scenario, and set it to
   ** variation B.
   */
-  if (Session.Type != GAME_NORMAL || !Scen.IsSkipScore || AntsEnabled) {
+  if (Session.Type != GAME_NORMAL || !TheScenario().IsSkipScore ||
+      AntsEnabled) {
     /*
     **	Announce win to player.
     */
     Set_Logic_Page(TheScreen().visible_view());
-    Map.Flag_To_Redraw(true);
-    Map.Render();
+    TheMap().Flag_To_Redraw(true);
+    TheMap().Render();
     Fancy_Text_Print(TXT_SCENARIO_WON, x, 180,
                      &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                      TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
@@ -852,12 +865,13 @@ void Do_Win() {
   Hide_Mouse();
   TheScreen().visible_page().Clear();
   Show_Mouse();
-  Play_Movie(Scen.WinMovie);
+  Play_Movie(TheScenario().WinMovie);
 
   Keyboard->Clear();
 
-  SaveTanya = IsTanyaDead;
-  Scen.CarryOverTimer = static_cast<int>(Scen.MissionTimer.Value());
+  TheWorld().save_tanya() = TheWorld().is_tanya_dead();
+  TheScenario().CarryOverTimer =
+      static_cast<int>(TheScenario().MissionTimer.Value());
   //	int timer = Scen.MissionTimer;
 
   /*
@@ -869,11 +883,11 @@ void Do_Win() {
     **	so now.
     */
     Keyboard->Clear();
-    if (!Scen.IsSkipScore) {
-      Score.Presentation();
+    if (!TheScenario().IsSkipScore) {
+      TheWorld().score().Presentation();
     }
 
-    if (Scen.IsOneTimeOnly) {
+    if (TheScenario().IsOneTimeOnly) {
       GameActive = false;
       Show_Mouse();
       AntsEnabled = false;
@@ -884,8 +898,8 @@ void Do_Win() {
     ** If this scenario is flagged as ending the game then print the credits and
     *exit.
     */
-    if (Scen.IsEndOfGame) {
-      if (PlayerPtr->ActLike == HOUSE_USSR) {
+    if (TheScenario().IsEndOfGame) {
+      if (ThePlayer()->ActLike == HOUSE_USSR) {
         Play_Movie(VQ_SOVFINAL);
       } else {
         Play_Movie(VQ_ALLYEND);
@@ -904,30 +918,30 @@ void Do_Win() {
     */
     if (AntsEnabled) {
       // The ant campaign has neither a mission map nor variants.
-      Scen.AdvanceToNextScenario();
-    } else if (Scen.IsNoMapSel) {
+      TheScenario().AdvanceToNextScenario();
+    } else if (TheScenario().IsNoMapSel) {
       // force it to play the second half of scenario 10
-      Scen.SetScenarioVariant(SCEN_VAR_B);
+      TheScenario().SetScenarioVariant(SCEN_VAR_B);
     } else {
-      Scen.AdvanceToNextScenario(ChooseMissionVariant());
+      TheScenario().AdvanceToNextScenario(ChooseMissionVariant());
     }
 
     Keyboard->Clear();
   }
 
-  Scen.CarryOverMoney = static_cast<int>(PlayerPtr->Credits);
+  TheScenario().CarryOverMoney = static_cast<int>(ThePlayer()->Credits);
 
   /*
   **	If requested, record the scenario's objects in the carry over list
   **	for possible use in a future scenario.
   */
-  if (Scen.IsToCarryOver) {
+  if (TheScenario().IsToCarryOver) {
     /*
     **	First delete any existing carry over list. Any old list will be
     **	blasted over by the new list -- there is only one logic carryover
     **	list to be maintained.
     */
-    Carryover.clear();
+    TheWorld().carryover().clear();
 
     /*
     **	Record all objects, that are to be part of the carry over set, into
@@ -939,7 +953,7 @@ void Do_Win() {
       BuildingClass* building = TheObjectHeaps().building().Ptr(building_index);
 
       if (building && !building->IsInLimbo && building->Strength > 0) {
-        Carryover.emplace_back(building);
+        TheWorld().carryover().emplace_back(building);
       }
     }
     for (int unit_index = 0; unit_index < TheObjectHeaps().unit().Count();
@@ -947,7 +961,7 @@ void Do_Win() {
       UnitClass* unit = TheObjectHeaps().unit().Ptr(unit_index);
 
       if (unit && !unit->IsInLimbo && unit->Strength > 0) {
-        Carryover.emplace_back(unit);
+        TheWorld().carryover().emplace_back(unit);
       }
     }
     for (int infantry_index = 0;
@@ -956,7 +970,7 @@ void Do_Win() {
       InfantryClass* infantry = TheObjectHeaps().infantry().Ptr(infantry_index);
 
       if (infantry && !infantry->IsInLimbo && infantry->Strength > 0) {
-        Carryover.emplace_back(infantry);
+        TheWorld().carryover().emplace_back(infantry);
       }
     }
     for (int vessel_index = 0; vessel_index < TheObjectHeaps().vessel().Count();
@@ -964,7 +978,7 @@ void Do_Win() {
       VesselClass* vessel = TheObjectHeaps().vessel().Ptr(vessel_index);
 
       if (vessel && !vessel->IsInLimbo && vessel->Strength > 0) {
-        Carryover.emplace_back(vessel);
+        TheWorld().carryover().emplace_back(vessel);
       }
     }
   }
@@ -974,20 +988,20 @@ void Do_Win() {
   */
   //	Scen.Set_Scenario_Name(Scen.Scenario, Scen.ScenPlayer, Scen.ScenDir,
   // Scen.ScenVar);
-  Start_Scenario(Scen.ScenarioName);
+  Start_Scenario(TheScenario().ScenarioName);
 
   /*
   **	If the mission timer is to be inheriteded from the previous scenario
   *then do it now.
   */
-  if (Scen.IsInheritTimer) {
-    Scen.MissionTimer.Set(Scen.CarryOverTimer);
-    Scen.MissionTimer.Start();
+  if (TheScenario().IsInheritTimer) {
+    TheScenario().MissionTimer.Set(TheScenario().CarryOverTimer);
+    TheScenario().MissionTimer.Start();
   }
 
   //	PlayerPtr->NukePieces = nukes;
 
-  Map.Render();
+  TheMap().Render();
   ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
   //	Fade_Palette_To(GamePalette, kFadePaletteFast, ServiceRealTime);
   Show_Mouse();
@@ -1009,7 +1023,7 @@ void Do_Win() {
  * HISTORY: * 08/05/1992 JLB : Created. *
  *=============================================================================================*/
 void Do_Lose() {
-  Map.Set_Default_Mouse(MOUSE_NORMAL);
+  TheMap().Set_Default_Mouse(MOUSE_NORMAL);
   Hide_Mouse();
 
   Theme.Queue_Song(THEME_QUIET);
@@ -1025,7 +1039,8 @@ void Do_Lose() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  const int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
+  const int x =
+      TheMap().TacPixelX + (Lepton_To_Pixel(TheMap().TacLeptonWidth) / 2);
 
   /*
   **	Announce win to player.
@@ -1063,7 +1078,7 @@ void Do_Lose() {
   TheScreen().visible_page().Clear();
   Show_Mouse();
   DLOG(INFO) << "Trying to play lose movie";
-  Play_Movie(Scen.LoseMovie);
+  Play_Movie(TheScenario().LoseMovie);
 
   /*
   ** Start same scenario again
@@ -1074,17 +1089,17 @@ void Do_Lose() {
       !WWMessageBox().Process(TXT_TO_REPLAY, TXT_YES, TXT_NO)) {
     Hide_Mouse();
     Keyboard->Clear();
-    Start_Scenario(Scen.ScenarioName, false);
+    Start_Scenario(TheScenario().ScenarioName, false);
 
     /*
     **	Start the scenario timer with the carried over value if necessary.
     */
-    if (Scen.IsInheritTimer) {
-      Scen.MissionTimer.Set(Scen.CarryOverTimer);
-      Scen.MissionTimer.Start();
+    if (TheScenario().IsInheritTimer) {
+      TheScenario().MissionTimer.Set(TheScenario().CarryOverTimer);
+      TheScenario().MissionTimer.Start();
     }
 
-    Map.Render();
+    TheMap().Render();
   } else {
     Hide_Mouse();
     GameActive = false;
@@ -1099,7 +1114,7 @@ void Do_Lose() {
  *draw.
  *=============================================================================================*/
 void Do_Draw() {
-  Map.Set_Default_Mouse(MOUSE_NORMAL);
+  TheMap().Set_Default_Mouse(MOUSE_NORMAL);
   Hide_Mouse();
 
   Theme.Queue_Song(THEME_QUIET);
@@ -1115,7 +1130,8 @@ void Do_Draw() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  const int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
+  const int x =
+      TheMap().TacPixelX + (Lepton_To_Pixel(TheMap().TacLeptonWidth) / 2);
 
   /*
   **	Announce win to player.
@@ -1173,16 +1189,16 @@ void Do_Restart() {
 
   WWMessageBox().Process(TXT_RESTARTING, TXT_NONE);
 
-  Map.Set_Default_Mouse(MOUSE_NORMAL);
+  TheMap().Set_Default_Mouse(MOUSE_NORMAL);
   Keyboard->Clear();
-  Start_Scenario(Scen.ScenarioName, false);
+  Start_Scenario(TheScenario().ScenarioName, false);
 
   /*
   **	Start the scenario timer with the carried over value if necessary.
   */
-  if (Scen.IsInheritTimer) {
-    Scen.MissionTimer.Set(Scen.CarryOverTimer);
-    Scen.MissionTimer.Start();
+  if (TheScenario().IsInheritTimer) {
+    TheScenario().MissionTimer.Set(TheScenario().CarryOverTimer);
+    TheScenario().MissionTimer.Start();
   }
 
   /*
@@ -1193,20 +1209,20 @@ void Do_Restart() {
   }
   Keyboard->Clear();
 
-  Map.Render();
+  TheMap().Render();
 }
 
 BriefingAction Restate_Mission() {
-  if (std::string_view(Scen.ScenarioName).empty() ||
-      std::string_view(Scen.BriefingText).empty()) {
+  if (std::string_view(TheScenario().ScenarioName).empty() ||
+      std::string_view(TheScenario().BriefingText).empty()) {
     return BriefingAction::kResume;
   }
 
   // Check if briefing video is available.
   bool has_video = false;
-  if (Scen.BriefMovie != VQ_NONE) {
+  if (TheScenario().BriefMovie != VQ_NONE) {
     const auto video_filename =
-        std::string(VQName.at(Scen.BriefMovie)) + ".VQA";
+        std::string(VQName.at(TheScenario().BriefMovie)) + ".VQA";
     has_video = GameFile(video_filename).IsAvailable();
   }
 
@@ -1216,7 +1232,7 @@ BriefingAction Restate_Mission() {
 
   // Display mission briefing.
   const int clicked =
-      ShowBriefingMessageBox(Scen.BriefingText, resume_btn, video_btn);
+      ShowBriefingMessageBox(TheScenario().BriefingText, resume_btn, video_btn);
   if (clicked == video_btn && has_video) {
     return BriefingAction::kPlayVideo;
   }
@@ -1426,7 +1442,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   PaletteClass temp;
   const char* filename = "SOVPAPER.PCX";
-  if (!IsSovietHouse(PlayerPtr->Class->House)) {
+  if (!IsSovietHouse(ThePlayer()->Class->House)) {
     filename = "ALIPAPER.PCX";
   }
   Load_Title_Screen(filename, &TheScreen().hidden_view(), temp);
@@ -1859,7 +1875,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   //INI
   // filename
 
-  ScenarioInit++;
+  TheWorld().scenario_init()++;
 
   Clear_Scenario();
 
@@ -1872,12 +1888,13 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   */
   // Avoid CD check if official scenario was downloaded.
   if ((Session.Type == GAME_NORMAL || Session.ScenarioIsOfficial) &&
-      !absl::EqualsIgnoreCase(Scen.ScenarioName, "download.tmp")) {
+      !absl::EqualsIgnoreCase(TheScenario().ScenarioName, "download.tmp")) {
     /*
     ** If this is scenario 1 then it should be on all CDs unless its an ant
     *scenario
     */
-    if (Scen.Scenario == 1 && base::At(Scen.ScenarioName, 2) != 'A') {
+    if (TheScenario().Scenario == 1 &&
+        base::At(TheScenario().ScenarioName, 2) != 'A') {
       RequiredCD = -1;
     } else {
       /*
@@ -1893,14 +1910,14 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
         // the Aftermath CD is already in the drive, in which case, leave it
         // there. Note, this works because this section only tests for
         // multiplayer scenarios.
-        if (IsMissionCounterstrike(Scen.ScenarioName)) {
+        if (IsMissionCounterstrike(TheScenario().ScenarioName)) {
           RequiredCD = 2;
           if (Is_Aftermath_Installed() ||
               Get_CD_Index(SearchPaths::current_cd_drive(), 1 * 60) == 3) {
             RequiredCD = 3;
           }
         }
-        if (IsMissionAftermath(Scen.ScenarioName)) {
+        if (IsMissionAftermath(TheScenario().ScenarioName)) {
           RequiredCD = 3;
         }
       } else {
@@ -1909,9 +1926,11 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
         *mission
         ** then we need the counterstrike CD (2)
         */
-        if (Scen.Scenario >= 20 || base::At(Scen.ScenarioName, 2) == 'A') {
+        if (TheScenario().Scenario >= 20 ||
+            base::At(TheScenario().ScenarioName, 2) == 'A') {
           RequiredCD = 2;
-          if (Scen.Scenario >= 36 && base::At(Scen.ScenarioName, 2) != 'A') {
+          if (TheScenario().Scenario >= 36 &&
+              base::At(TheScenario().ScenarioName, 2) != 'A') {
             RequiredCD = 3;
 #ifdef BOGUSCD
             RequiredCD = -1;
@@ -1923,10 +1942,10 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
           *Soviet or
           ** allied CD depending on the scenario name.
           */
-          if (base::At(Scen.ScenarioName, 2) == 'U') {
+          if (base::At(TheScenario().ScenarioName, 2) == 'U') {
             RequiredCD = 1;
           } else {
-            if (base::At(Scen.ScenarioName, 2) == 'G') {
+            if (base::At(TheScenario().ScenarioName, 2) == 'G') {
               RequiredCD = 0;
             }
           }
@@ -2044,38 +2063,53 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   /*
   ** Init the Scenario CRC value
   */
-  ScenarioCRC = 0;
+  TheWorld().scenario_crc() = 0;
 
   /*
   **	Fetch the appropriate movie names from the INI file.
   */
   const char* const BASIC = "Basic";
-  ini.Get_String(BASIC, "Name", "<none>", Scen.Description,
-                 sizeof(Scen.Description));
-  Scen.IntroMovie = ini.Get_VQType(BASIC, "Intro", Scen.IntroMovie);
-  Scen.BriefMovie = ini.Get_VQType(BASIC, "Brief", Scen.BriefMovie);
-  Scen.WinMovie = ini.Get_VQType(BASIC, "Win", Scen.WinMovie);
-  Scen.LoseMovie = ini.Get_VQType(BASIC, "Lose", Scen.LoseMovie);
-  Scen.ActionMovie = ini.Get_VQType(BASIC, "Action", Scen.ActionMovie);
-  Scen.IsToCarryOver = ini.Get_Bool(BASIC, "ToCarryOver", Scen.IsToCarryOver);
-  Scen.IsToInherit = ini.Get_Bool(BASIC, "ToInherit", Scen.IsToInherit);
-  Scen.IsInheritTimer =
-      ini.Get_Bool(BASIC, "TimerInherit", Scen.IsInheritTimer);
-  Scen.IsEndOfGame = ini.Get_Bool(BASIC, "EndOfGame", Scen.IsEndOfGame);
-  Scen.IsTanyaEvac = ini.Get_Bool(BASIC, "CivEvac", Scen.IsTanyaEvac);
-  Scen.TransitTheme = ini.Get_ThemeType(BASIC, "Theme", THEME_NONE);
-  NewINIFormat = ini.Get_Int(BASIC, "NewINIFormat", 0);
-  Scen.CarryOverPercent =
-      ini.Get_Fixed(BASIC, "CarryOverMoney", Scen.CarryOverPercent);
-  Scen.CarryOverPercent.Saturate(1);
-  Scen.CarryOverCap = ini.Get_Int(BASIC, "CarryOverCap", Scen.CarryOverCap);
-  Scen.IsNoSpyPlane = ini.Get_Bool(BASIC, "NoSpyPlane", Scen.IsNoSpyPlane);
-  Scen.IsSkipScore = ini.Get_Bool(BASIC, "SkipScore", Scen.IsSkipScore);
-  Scen.IsOneTimeOnly = ini.Get_Bool(BASIC, "OneTimeOnly", Scen.IsOneTimeOnly);
-  Scen.IsNoMapSel = ini.Get_Bool(BASIC, "SkipMapSelect", Scen.IsNoMapSel);
-  Scen.IsTruckCrate = ini.Get_Bool(BASIC, "TruckCrate", Scen.IsTruckCrate);
-  Scen.IsMoneyTiberium = ini.Get_Bool(BASIC, "FillSilos", Scen.IsMoneyTiberium);
-  Scen.Percent = ini.Get_Int(BASIC, "Percent", Scen.Percent);
+  ini.Get_String(BASIC, "Name", "<none>", TheScenario().Description,
+                 sizeof(TheScenario().Description));
+  TheScenario().IntroMovie =
+      ini.Get_VQType(BASIC, "Intro", TheScenario().IntroMovie);
+  TheScenario().BriefMovie =
+      ini.Get_VQType(BASIC, "Brief", TheScenario().BriefMovie);
+  TheScenario().WinMovie = ini.Get_VQType(BASIC, "Win", TheScenario().WinMovie);
+  TheScenario().LoseMovie =
+      ini.Get_VQType(BASIC, "Lose", TheScenario().LoseMovie);
+  TheScenario().ActionMovie =
+      ini.Get_VQType(BASIC, "Action", TheScenario().ActionMovie);
+  TheScenario().IsToCarryOver =
+      ini.Get_Bool(BASIC, "ToCarryOver", TheScenario().IsToCarryOver);
+  TheScenario().IsToInherit =
+      ini.Get_Bool(BASIC, "ToInherit", TheScenario().IsToInherit);
+  TheScenario().IsInheritTimer =
+      ini.Get_Bool(BASIC, "TimerInherit", TheScenario().IsInheritTimer);
+  TheScenario().IsEndOfGame =
+      ini.Get_Bool(BASIC, "EndOfGame", TheScenario().IsEndOfGame);
+  TheScenario().IsTanyaEvac =
+      ini.Get_Bool(BASIC, "CivEvac", TheScenario().IsTanyaEvac);
+  TheScenario().TransitTheme = ini.Get_ThemeType(BASIC, "Theme", THEME_NONE);
+  TheWorld().new_ini_format() = ini.Get_Int(BASIC, "NewINIFormat", 0);
+  TheScenario().CarryOverPercent =
+      ini.Get_Fixed(BASIC, "CarryOverMoney", TheScenario().CarryOverPercent);
+  TheScenario().CarryOverPercent.Saturate(1);
+  TheScenario().CarryOverCap =
+      ini.Get_Int(BASIC, "CarryOverCap", TheScenario().CarryOverCap);
+  TheScenario().IsNoSpyPlane =
+      ini.Get_Bool(BASIC, "NoSpyPlane", TheScenario().IsNoSpyPlane);
+  TheScenario().IsSkipScore =
+      ini.Get_Bool(BASIC, "SkipScore", TheScenario().IsSkipScore);
+  TheScenario().IsOneTimeOnly =
+      ini.Get_Bool(BASIC, "OneTimeOnly", TheScenario().IsOneTimeOnly);
+  TheScenario().IsNoMapSel =
+      ini.Get_Bool(BASIC, "SkipMapSelect", TheScenario().IsNoMapSel);
+  TheScenario().IsTruckCrate =
+      ini.Get_Bool(BASIC, "TruckCrate", TheScenario().IsTruckCrate);
+  TheScenario().IsMoneyTiberium =
+      ini.Get_Bool(BASIC, "FillSilos", TheScenario().IsMoneyTiberium);
+  TheScenario().Percent = ini.Get_Int(BASIC, "Percent", TheScenario().Percent);
 
   /*
   **	Read in the specific information for each of the house types.  This
@@ -2096,23 +2130,24 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	Must be done before any TechnoClass objects are created.
   */
   if (Session.Type == GAME_NORMAL) {
-    PlayerPtr = HouseClass::As_Pointer(
+    ThePlayer() = HouseClass::As_Pointer(
         ini.Get_HousesType(BASIC, "Player", HOUSE_GREECE));
-    PlayerPtr->Assign_Handicap(Scen.Difficulty);
+    ThePlayer()->Assign_Handicap(TheScenario().Difficulty);
     int carryover = 0;
-    if (Scen.CarryOverCap != -1) {
-      carryover = std::min(Scen.CarryOverMoney * Scen.CarryOverPercent,
-                           Scen.CarryOverCap);
+    if (TheScenario().CarryOverCap != -1) {
+      carryover = std::min(
+          TheScenario().CarryOverMoney * TheScenario().CarryOverPercent,
+          TheScenario().CarryOverCap);
     } else {
-      carryover = Scen.CarryOverMoney * Scen.CarryOverPercent;
+      carryover = TheScenario().CarryOverMoney * TheScenario().CarryOverPercent;
     }
-    PlayerPtr->Credits += carryover;
-    PlayerPtr->Control.InitialCredits += carryover;
+    ThePlayer()->Credits += carryover;
+    ThePlayer()->Control.InitialCredits += carryover;
   } else {
     Assign_Houses();
   }
-  PlayerPtr->IsHuman = true;
-  PlayerPtr->IsPlayerControl = true;
+  ThePlayer()->IsHuman = true;
+  ThePlayer()->IsPlayerControl = true;
 
   /*
   **	Read in the trigger data. The triggers must be created before any other
@@ -2125,7 +2160,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	Read in the map control values. This includes dimensions
   **	as well as theater information.
   */
-  Map.Read_INI(ini);
+  TheMap().Read_INI(ini);
   ServiceRealTime();
 
   //	if (NewINIFormat < 2 || !ini.Is_Present("MapPack")) {
@@ -2161,7 +2196,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   /*
   **	Read in the AI's base information.
   */
-  Base.Read_INI(ini);
+  TheWorld().base().Read_INI(ini);
   ServiceRealTime();
 
   /*
@@ -2183,19 +2218,21 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   INIClass mini;
   GameFile fc("MISSION.INI");
   mini.Load(fc);
-  mini.Get_TextBlock(fname, Scen.BriefingText, sizeof(Scen.BriefingText));
+  mini.Get_TextBlock(fname, TheScenario().BriefingText,
+                     sizeof(TheScenario().BriefingText));
 
   /*
   **	Read in any briefing text.
   */
-  if (base::At(Scen.BriefingText, 0) == '\0') {
-    ini.Get_TextBlock("Briefing", Scen.BriefingText, sizeof(Scen.BriefingText));
+  if (base::At(TheScenario().BriefingText, 0) == '\0') {
+    ini.Get_TextBlock("Briefing", TheScenario().BriefingText,
+                      sizeof(TheScenario().BriefingText));
   }
   /*
   **	Perform a final overpass of the map. This handles smoothing of certain
   **	types of terrain (tiberium).
   */
-  Map.Overpass();
+  TheMap().Overpass();
   ServiceRealTime();
 
   /*
@@ -2223,10 +2260,11 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     *units *	to create.
     */
     if (!TheDebugState().map_editor_active()) {
-      const int save_init = ScenarioInit;  // turn ScenarioInit off
-      ScenarioInit = 0;
+      const int save_init =
+          TheWorld().scenario_init();  // turn ScenarioInit off
+      TheWorld().scenario_init() = 0;
       Create_Units(ini.Get_Bool("Basic", "Official", false));
-      ScenarioInit = save_init;  // turn ScenarioInit back on
+      TheWorld().scenario_init() = save_init;  // turn ScenarioInit back on
     }
 
     /*
@@ -2237,14 +2275,14 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
       int count = std::max(TheRules().CrateMinimum, Session.NumPlayers);
       count = std::min(count, TheRules().CrateMaximum);
       for (int index = 0; index < count; index++) {
-        Map.Place_Random_Crate();
+        TheMap().Place_Random_Crate();
       }
     }
 
     /*
     **	Compute my starting location as the average Coord of all my stuff.
     */
-    Map.Compute_Start_Pos();
+    TheMap().Compute_Start_Pos();
   }
 
   ServiceRealTime();
@@ -2256,7 +2294,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
     bAftermathMultiplayer = TheRules().NewUnitsEnabled = true;
   }
 
-  ScenarioInit--;
+  TheWorld().scenario_init()--;
   return true;
 }
 
@@ -2289,46 +2327,46 @@ void Write_Scenario_INI(const char* fname) {
 
     static const char* const BASIC = "Basic";
     ini.Clear(BASIC);
-    ini.Put_String(BASIC, "Name", Scen.Description);
-    ini.Put_VQType(BASIC, "Intro", Scen.IntroMovie);
-    ini.Put_VQType(BASIC, "Brief", Scen.BriefMovie);
-    ini.Put_VQType(BASIC, "Win", Scen.WinMovie);
-    ini.Put_VQType(BASIC, "Lose", Scen.LoseMovie);
-    ini.Put_VQType(BASIC, "Action", Scen.ActionMovie);
-    ini.Put_HousesType(BASIC, "Player", PlayerPtr->Class->House);
-    ini.Put_ThemeType(BASIC, "Theme", Scen.TransitTheme);
-    ini.Put_Fixed(BASIC, "CarryOverMoney", Scen.CarryOverPercent);
-    ini.Put_Bool(BASIC, "ToCarryOver", Scen.IsToCarryOver);
-    ini.Put_Bool(BASIC, "ToInherit", Scen.IsToInherit);
-    ini.Put_Bool(BASIC, "TimerInherit", Scen.IsInheritTimer);
-    ini.Put_Bool(BASIC, "CivEvac", Scen.IsTanyaEvac);
+    ini.Put_String(BASIC, "Name", TheScenario().Description);
+    ini.Put_VQType(BASIC, "Intro", TheScenario().IntroMovie);
+    ini.Put_VQType(BASIC, "Brief", TheScenario().BriefMovie);
+    ini.Put_VQType(BASIC, "Win", TheScenario().WinMovie);
+    ini.Put_VQType(BASIC, "Lose", TheScenario().LoseMovie);
+    ini.Put_VQType(BASIC, "Action", TheScenario().ActionMovie);
+    ini.Put_HousesType(BASIC, "Player", ThePlayer()->Class->House);
+    ini.Put_ThemeType(BASIC, "Theme", TheScenario().TransitTheme);
+    ini.Put_Fixed(BASIC, "CarryOverMoney", TheScenario().CarryOverPercent);
+    ini.Put_Bool(BASIC, "ToCarryOver", TheScenario().IsToCarryOver);
+    ini.Put_Bool(BASIC, "ToInherit", TheScenario().IsToInherit);
+    ini.Put_Bool(BASIC, "TimerInherit", TheScenario().IsInheritTimer);
+    ini.Put_Bool(BASIC, "CivEvac", TheScenario().IsTanyaEvac);
     ini.Put_Int(BASIC, "NewINIFormat", 3);
-    ini.Put_Int(BASIC, "CarryOverCap", Scen.CarryOverCap / 100);
-    ini.Put_Bool(BASIC, "EndOfGame", Scen.IsEndOfGame);
-    ini.Put_Bool(BASIC, "NoSpyPlane", Scen.IsNoSpyPlane);
-    ini.Put_Bool(BASIC, "SkipScore", Scen.IsSkipScore);
-    ini.Put_Bool(BASIC, "OneTimeOnly", Scen.IsOneTimeOnly);
-    ini.Put_Bool(BASIC, "SkipMapSelect", Scen.IsNoMapSel);
+    ini.Put_Int(BASIC, "CarryOverCap", TheScenario().CarryOverCap / 100);
+    ini.Put_Bool(BASIC, "EndOfGame", TheScenario().IsEndOfGame);
+    ini.Put_Bool(BASIC, "NoSpyPlane", TheScenario().IsNoSpyPlane);
+    ini.Put_Bool(BASIC, "SkipScore", TheScenario().IsSkipScore);
+    ini.Put_Bool(BASIC, "OneTimeOnly", TheScenario().IsOneTimeOnly);
+    ini.Put_Bool(BASIC, "SkipMapSelect", TheScenario().IsNoMapSel);
     ini.Put_Bool(BASIC, "Official", true);
-    ini.Put_Bool(BASIC, "FillSilos", Scen.IsMoneyTiberium);
-    ini.Put_Bool(BASIC, "TruckCrate", Scen.IsTruckCrate);
-    ini.Put_Int(BASIC, "Percent", Scen.Percent);
+    ini.Put_Bool(BASIC, "FillSilos", TheScenario().IsMoneyTiberium);
+    ini.Put_Bool(BASIC, "TruckCrate", TheScenario().IsTruckCrate);
+    ini.Put_Int(BASIC, "Percent", TheScenario().Percent);
 
     HouseClass::Write_INI(ini);
     TeamTypeClass::Write_INI(ini);
     TriggerTypeClass::Write_INI(ini);
-    Map.Write_INI(ini);
+    TheMap().Write_INI(ini);
     TerrainClass::Write_INI(ini);
     UnitClass::Write_INI(ini);
     VesselClass::Write_INI(ini);
     InfantryClass::Write_INI(ini);
     BuildingClass::Write_INI(ini);
-    Base.Write_INI(ini);
+    TheWorld().base().Write_INI(ini);
     OverlayClass::Write_INI(ini);
     SmudgeClass::Write_INI(ini);
 
-    if (!std::string_view(Scen.BriefingText).empty()) {
-      ini.Put_TextBlock("Briefing", Scen.BriefingText);
+    if (!std::string_view(TheScenario().BriefingText).empty()) {
+      ini.Put_TextBlock("Briefing", TheScenario().BriefingText);
     }
     //	absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);
     DiskFile rawfile(fname);
@@ -2419,7 +2457,7 @@ void Assign_Houses() {
                       Session.Players.at(index)->Player.House,
                       Session.Options.Credits);
     if (index == 0) {
-      PlayerPtr = housep;
+      ThePlayer() = housep;
     }
     /*
     **	Convert the build level into an actual tech level to assign to the
@@ -2427,7 +2465,7 @@ void Assign_Houses() {
     */
     housep->Control.TechLevel = base::At(build_tech, BuildLevel);
 
-    housep->Assign_Handicap(Scen.Difficulty);
+    housep->Assign_Handicap(TheScenario().Difficulty);
 
     //.....................................................................
     // Record where we placed this player
@@ -2480,7 +2518,7 @@ void Assign_Houses() {
     housep->Control.TechLevel = base::At(build_tech, BuildLevel);
     //		housep->Control.TechLevel = BuildLevel;
 
-    DiffType difficulty = Scen.CDifficulty;
+    DiffType difficulty = TheScenario().CDifficulty;
 
     if (Session.Players.Count() > 1 && TheRules().IsCompEasyBonus &&
         difficulty > DIFF_EASY) {
@@ -2590,12 +2628,12 @@ static void Create_Units(bool official) {
   **	For the current BuildLevel, find the max allowable index into the tables
   */
   for (int i = 0; i < std::ssize(utable); i++) {
-    if (PlayerPtr->Control.TechLevel >= base::At(utable, i).MinLevel) {
+    if (ThePlayer()->Control.TechLevel >= base::At(utable, i).MinLevel) {
       u_limit = i + 1;
     }
   }
   for (int i = 0; i < std::ssize(itable); i++) {
-    if (PlayerPtr->Control.TechLevel >= base::At(itable, i).MinLevel) {
+    if (ThePlayer()->Control.TechLevel >= base::At(itable, i).MinLevel) {
       i_limit = i + 1;
     }
   }
@@ -2681,8 +2719,8 @@ static void Create_Units(bool official) {
   for (int waycount = 0; waycount < look_for; waycount++) {
     //	for (int waycount = 0; waycount < max(4,
     // Session.Players.Count()+Session.Options.AIPlayers); waycount++) {
-    if (base::At(Scen.Waypoint, waycount) != -1) {
-      base::At(waypts, num_waypts) = base::At(Scen.Waypoint, waycount);
+    if (base::At(TheScenario().Waypoint, waycount) != -1) {
+      base::At(waypts, num_waypts) = base::At(TheScenario().Waypoint, waycount);
       base::At(taken, num_waypts) = false;
       num_waypts++;
     }
@@ -2697,11 +2735,11 @@ static void Create_Units(bool official) {
   // num_waypts;
   if (deficiency > 0) {
     for (int index = 0; index < deficiency; index++) {
-      CELL trycell =
-          XY_Cell(Map.MapCellX + Random_Pick(0, Map.MapCellWidth - 1),
-                  Map.MapCellY + Random_Pick(0, Map.MapCellHeight - 1));
+      CELL trycell = XY_Cell(
+          TheMap().MapCellX + Random_Pick(0, TheMap().MapCellWidth - 1),
+          TheMap().MapCellY + Random_Pick(0, TheMap().MapCellHeight - 1));
 
-      trycell = Map.Nearby_Location(trycell, SPEED_TRACK);
+      trycell = TheMap().Nearby_Location(trycell, SPEED_TRACK);
       base::At(waypts, num_waypts) = trycell;
       base::At(taken, num_waypts) = false;
       num_waypts++;
@@ -2947,8 +2985,8 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
   /*
   **	First try to unlimbo the object in the given cell.
   */
-  if (Map.In_Radar(cell)) {
-    techno = Map.at(cell).Cell_Techno();
+  if (TheMap().In_Radar(cell)) {
+    techno = TheMap().at(cell).Cell_Techno();
     if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                      obj->What_Am_I() == RTTI_INFANTRY)) &&
         obj->Unlimbo(Cell_Coord(cell), DIR_N)) {
@@ -3007,7 +3045,7 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
           **	- there is no techno in the cell
           **	- the techno in the cell & the object are both infantry
           */
-          techno = Map.at(newcell).Cell_Techno();
+          techno = TheMap().at(newcell).Cell_Techno();
           if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                            obj->What_Am_I() == RTTI_INFANTRY)) &&
               obj->Unlimbo(Cell_Coord(newcell), DIR_N)) {
@@ -3048,10 +3086,10 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
   /*
   **	Compute our x & y limits
   */
-  const int xmin = Map.MapCellX;
-  const int xmax = xmin + Map.MapCellWidth - 1;
-  const int ymin = Map.MapCellY;
-  const int ymax = ymin + Map.MapCellHeight - 1;
+  const int xmin = TheMap().MapCellX;
+  const int xmax = xmin + TheMap().MapCellWidth - 1;
+  const int ymin = TheMap().MapCellY;
+  const int ymax = ymin + TheMap().MapCellHeight - 1;
 
   /*
   **	Adjust the x-coordinate
@@ -3103,10 +3141,10 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
   /*
   **	Compute our x & y limits
   */
-  const int xmin = Map.MapCellX;
-  const int xmax = xmin + Map.MapCellWidth - 1;
-  const int ymin = Map.MapCellY;
-  const int ymax = ymin + Map.MapCellHeight - 1;
+  const int xmin = TheMap().MapCellX;
+  const int xmax = xmin + TheMap().MapCellWidth - 1;
+  const int ymin = TheMap().MapCellY;
+  const int ymax = ymin + TheMap().MapCellHeight - 1;
 
   /*
   **	Adjust the x-coordinate

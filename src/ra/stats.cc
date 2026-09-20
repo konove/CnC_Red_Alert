@@ -72,6 +72,7 @@
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/vessel.h"
+#include "ra/world.h"
 #include "sdllib/timer.h"
 #include "tech/packet.h"
 
@@ -460,7 +461,8 @@ void Send_Statistics_Packet() {
           stats.Add_Field(FIELD_PLAYER2_IP, szIPAddress);
         }
         // Stalemate games.
-        if (Scen.bLocalProposesDraw && Scen.bOtherProposesDraw) {
+        if (TheScenario().bLocalProposesDraw &&
+            TheScenario().bOtherProposesDraw) {
           completion = kCompletionWash;
         } else {
           if (ConnectionLost) {

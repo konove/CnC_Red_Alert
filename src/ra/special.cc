@@ -74,6 +74,7 @@
 #include "ra/slider.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
+#include "ra/world.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -176,7 +177,7 @@ void Special_Dialog(bool simple) {
     }
   }
 
-  Map.Override_Mouse_Shape(MOUSE_NORMAL);
+  TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
   Set_Logic_Page(TheScreen().visible_view());
   bool display = true;
   bool process = true;
@@ -251,10 +252,10 @@ void Special_Dialog(bool simple) {
   }
 
   if (!simple) {
-    Map.Revert_Mouse_Shape();
+    TheMap().Revert_Mouse_Shape();
     TheScreen().hidden_view().Clear();
-    Map.Flag_To_Redraw(true);
-    Map.Render();
+    TheMap().Flag_To_Redraw(true);
+    TheMap().Render();
   }
 }
 

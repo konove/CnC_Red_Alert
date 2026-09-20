@@ -124,6 +124,7 @@
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "ra/wol_main.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
@@ -853,7 +854,7 @@ void Destroy_Null_Connection(int id, int error) {
         housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                  : housep->RemapColor,
         kTpfText, TheRules().MessageDelay * kTicksPerMinute);
-    Map.Flag_To_Redraw(false);
+    TheMap().Flag_To_Redraw(false);
   }
 
   /*
@@ -887,7 +888,7 @@ void Destroy_Null_Connection(int id, int error) {
         housep->RemapColor == PCOLOR_DIALOG_BLUE ? PCOLOR_REALLY_BLUE
                                                  : housep->RemapColor,
         kTpfText, TheRules().MessageDelay * kTicksPerMinute);
-    Map.Flag_To_Redraw(false);
+    TheMap().Flag_To_Redraw(false);
   }
 }
 
@@ -4085,9 +4086,9 @@ int Com_Scenario_Dialog(bool skirmish) {
     if (rc) {
       Session.NumPlayers = skirmish ? 1 : 2;
 
-      Scen.Scenario = Session.Options.ScenarioIndex;
+      TheScenario().Scenario = Session.Options.ScenarioIndex;
       port::SafeCopy(
-          Scen.ScenarioName,
+          TheScenario().ScenarioName,
           Session.Scenarios.at(Session.Options.ScenarioIndex)->Get_Filename());
 
       /*.....................................................................
@@ -4109,35 +4110,35 @@ int Com_Scenario_Dialog(bool skirmish) {
             difficulty.Get_Value() * (TheRules().IsFineDifficulty ? 1 : 2);
         switch (diff) {
           case 0:
-            Scen.CDifficulty = DIFF_HARD;
-            Scen.Difficulty = DIFF_EASY;
+            TheScenario().CDifficulty = DIFF_HARD;
+            TheScenario().Difficulty = DIFF_EASY;
             break;
 
           case 1:
-            Scen.CDifficulty = DIFF_HARD;
-            Scen.Difficulty = DIFF_NORMAL;
+            TheScenario().CDifficulty = DIFF_HARD;
+            TheScenario().Difficulty = DIFF_NORMAL;
             break;
 
           case 2:
-            Scen.CDifficulty = DIFF_NORMAL;
-            Scen.Difficulty = DIFF_NORMAL;
+            TheScenario().CDifficulty = DIFF_NORMAL;
+            TheScenario().Difficulty = DIFF_NORMAL;
             break;
 
           case 3:
-            Scen.CDifficulty = DIFF_EASY;
-            Scen.Difficulty = DIFF_NORMAL;
+            TheScenario().CDifficulty = DIFF_EASY;
+            TheScenario().Difficulty = DIFF_NORMAL;
             break;
 
           case 4:
-            Scen.CDifficulty = DIFF_EASY;
-            Scen.Difficulty = DIFF_HARD;
+            TheScenario().CDifficulty = DIFF_EASY;
+            TheScenario().Difficulty = DIFF_HARD;
             break;
           default:
             break;
         }
       } else {
-        Scen.CDifficulty = DIFF_NORMAL;
-        Scen.Difficulty = DIFF_NORMAL;
+        TheScenario().CDifficulty = DIFF_NORMAL;
+        TheScenario().Difficulty = DIFF_NORMAL;
       }
 
       if (!skirmish) {
@@ -4224,7 +4225,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             if (ReceivePacket.Command == SERIAL_READY_TO_GO) {
               if (Session.Scenarios.at(Session.Options.ScenarioIndex)
                       ->Get_Official() &&
-                  (!Force_Scenario_Available(Scen.ScenarioName))) {
+                  (!Force_Scenario_Available(TheScenario().ScenarioName))) {
                 EmergencyExit(EXIT_FAILURE);
               }
 
@@ -4248,11 +4249,11 @@ int Com_Scenario_Dialog(bool skirmish) {
 
               if (Session.Scenarios.at(Session.Options.ScenarioIndex)
                       ->Get_Official() &&
-                  (!Force_Scenario_Available(Scen.ScenarioName))) {
+                  (!Force_Scenario_Available(TheScenario().ScenarioName))) {
                 EmergencyExit(EXIT_FAILURE);
               }
 
-              Send_Remote_File(Scen.ScenarioName, 0);
+              Send_Remote_File(TheScenario().ScenarioName, 0);
 
               break;
             }
@@ -5826,7 +5827,8 @@ int Com_Show_Scenario_Dialog() {
             /*
             ** Fall through here...
             */
-            port::SafeCopy(Scen.ScenarioName, Session.ScenarioFileName);
+            port::SafeCopy(TheScenario().ScenarioName,
+                           Session.ScenarioFileName);
             //
             // calculated one way delay for a packet and overall delay
             // to execute a packet
@@ -7023,8 +7025,8 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     --------------------------- Redraw the display ---------------------------
     */
     TheScreen().hidden_view().Clear();
-    Map.Flag_To_Redraw(true);
-    Map.Render();
+    TheMap().Flag_To_Redraw(true);
+    TheMap().Render();
   }
 
   switch (dialstatus) {

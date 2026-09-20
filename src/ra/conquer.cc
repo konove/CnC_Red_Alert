@@ -99,6 +99,7 @@
 #include "ra/vortex.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -169,7 +170,7 @@ static void ProcessInput() {
   KeyNumType input = KN_NONE;
   int x = 0;
   int y = 0;
-  Map.Input(input, x, y);
+  TheMap().Input(input, x, y);
   if (input != KN_NONE) {
     Keyboard_Process(input);
   }
@@ -181,7 +182,7 @@ static void ProcessInput() {
 //
 // Returns true when the game should end.
 static bool RunMapEditorFrame() {
-  Map.Render();
+  TheMap().Render();
   ProcessInput();
 
   ServiceRealTime();  // maintains Theme.AI() for music
@@ -199,8 +200,8 @@ static void RunPendingDialog() {
     return;
   }
 
-  Map.Help_Text(TXT_NONE);
-  Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
+  TheMap().Help_Text(TXT_NONE);
+  TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
   switch (dialog) {
     case SDLG_SPECIAL:
       Special_Dialog();
@@ -213,7 +214,7 @@ static void RunPendingDialog() {
     case SDLG_SURRENDER:
       if (Surrender_Dialog(TXT_SURRENDER)) {
         if constexpr (config::kScenarioEditorEnabled) {
-          PlayerPtr->Flag_To_Lose();
+          ThePlayer()->Flag_To_Lose();
         } else {
           OutList.Add(EventClass(EventClass::DESTRUCT));
         }
@@ -225,16 +226,16 @@ static void RunPendingDialog() {
       break;
   }
   SpecialDialog = SDLG_NONE;
-  Map.Revert_Mouse_Shape();
+  TheMap().Revert_Mouse_Shape();
 }
 
 // Per-scenario setup that Select_Game() leaves to the caller: vortex remap
 // tables, the palette, and the mouse and statistics state for the session type.
 static void BeginScenario() {
-  ScenarioInit = 0;
+  TheWorld().scenario_init() = 0;
 
-  ChronalVortex.Stop();
-  ChronalVortex.Setup_Remap_Tables(Scen.Theater);
+  TheWorld().chronal_vortex().Stop();
+  TheWorld().chronal_vortex().Setup_Remap_Tables(TheScenario().Theater);
 
   // This PRESUMES that Select_Game() has told the map to draw itself.
   ThePalettes().game_palette().Set(kFadePaletteMedium);
@@ -268,8 +269,8 @@ static void RunScenario() {
       continue;
     }
 
-    TimeQuake = PendingTimeQuake;
-    PendingTimeQuake = false;
+    TheWorld().time_quake() = TheWorld().pending_time_quake();
+    TheWorld().pending_time_quake() = false;
     if (RunFrame()) {
       return;
     }
@@ -427,7 +428,7 @@ static void WaitForNextFrame() {
 
     if (SpecialDialog == SDLG_NONE) {
       ProcessInput();
-      Map.Render();
+      TheMap().Render();
     }
   }
   CyclePalette();
@@ -456,9 +457,9 @@ static void StartFrameTimer() {
   }
 
   int delay = static_cast<int>(Options.GameSpeed);
-  if (PlayerPtr->Difficulty == DIFF_EASY) {
+  if (ThePlayer()->Difficulty == DIFF_EASY) {
     delay++;
-  } else if (PlayerPtr->Difficulty == DIFF_HARD && delay > 0) {
+  } else if (ThePlayer()->Difficulty == DIFF_HARD && delay > 0) {
     delay--;
   }
   frame_timer.Set(delay);
@@ -480,8 +481,8 @@ static ScenarioOutcome PendingOutcome() {
     return ScenarioOutcome::kRestart;
   }
   if (Session.Type != GAME_NORMAL && Session.Type != GAME_SKIRMISH &&
-      Session.Players.Count() == 2 && Scen.bLocalProposesDraw &&
-      Scen.bOtherProposesDraw) {
+      Session.Players.Count() == 2 && TheScenario().bLocalProposesDraw &&
+      TheScenario().bOtherProposesDraw) {
     return ScenarioOutcome::kDraw;
   }
   return ScenarioOutcome::kNone;
@@ -506,7 +507,7 @@ static bool FinishScenarioIfDecided() {
   PlayerWins = false;
   PlayerLoses = false;
   PlayerRestarts = false;
-  Map.Help_Text(TXT_NONE);
+  TheMap().Help_Text(TXT_NONE);
 
   switch (outcome) {
     case ScenarioOutcome::kWin:
@@ -661,7 +662,7 @@ bool RunFrame() {
   // position.
   if (!Session.Play && SpecialDialog == SDLG_NONE && GameInFocus) {
     ProcessInput();
-    Map.Render();
+    TheMap().Render();
   }
 
   // Save map's position & selected objects, if we're recording the game.
@@ -679,10 +680,10 @@ bool RunFrame() {
   }
 
   // AI logic operations are performed here.
-  Logic.AI();
-  TimeQuake = false;
-  if (!PendingTimeQuake) {
-    TimeQuakeCenter = 0;
+  TheWorld().logic().AI();
+  TheWorld().time_quake() = false;
+  if (!TheWorld().pending_time_quake()) {
+    TheWorld().time_quake_center() = 0;
   }
 
   // Manage the inter-player message list.  If Manage() returns true, it
@@ -690,7 +691,7 @@ bool RunFrame() {
   // updated.
   if (Session.Messages.Manage()) {
     TheScreen().hidden_page().Clear();
-    Map.Flag_To_Redraw(true);
+    TheMap().Flag_To_Redraw(true);
   }
 
   // Measure how long it took to process the AI
@@ -704,7 +705,7 @@ bool RunFrame() {
   Queue_AI();
 
   // Keep track of elapsed time in the game.
-  Score.ElapsedTime += kTimerSecond / kTicksPerSecond;
+  TheWorld().score().ElapsedTime += kTimerSecond / kTicksPerSecond;
 
   ServiceRealTime();
 
@@ -719,12 +720,12 @@ bool RunFrame() {
   }
 
   // Is there a memory trasher altering the map??
-  if (TheDebugState().check_map() && (!Map.Validate())) {
+  if (TheDebugState().check_map() && (!TheMap().Validate())) {
     if (WWMessageBox().Process(kLanguageText.map_error, kLanguageText.stop,
                                kLanguageText.continue_button) == 0) {
       GameActive = false;
     }
-    Map.Validate();  // give debugger a chance to catch it
+    TheMap().Validate();  // give debugger a chance to catch it
   }
 
   if (TheDebugState().motion_capture()) {

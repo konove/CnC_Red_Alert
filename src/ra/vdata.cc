@@ -66,7 +66,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/heap.h"
 #include "ra/house.h"
@@ -78,6 +77,7 @@
 #include "ra/type.h"
 #include "ra/type_heaps.h"
 #include "ra/vessel.h"
+#include "ra/world.h"
 #include "sdllib/shape.h"
 #include "tech/mix_archive.h"
 
@@ -396,7 +396,7 @@ void VesselTypeClass::Display(int x, int y, WindowNumberType window,
 void VesselTypeClass::Prep_For_Add() {
   for (const VesselType index : magic_enum::enum_values<VesselType>()) {
     if (!As_Reference(index).Get_Image_Data().empty()) {
-      Map.Add_To_List(&As_Reference(index));
+      TheMap().Add_To_List(&As_Reference(index));
     }
   }
 }

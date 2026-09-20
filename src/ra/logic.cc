@@ -66,6 +66,7 @@
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vortex.h"
+#include "ra/world.h"
 #include "session.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
@@ -90,19 +91,21 @@ void LogicClass::AI() {
   /*
   ** Fading to B&W or color due to the chronosphere is handled here.
   */
-  Scen.Do_Fade_AI();
+  TheScenario().Do_Fade_AI();
 
   /*
   **	Handle any general timer trigger events.
   */
-  for (LogicTriggerID = 0; LogicTriggerID < LogicTriggers.Count();
-       LogicTriggerID++) {
-    TriggerClass* trig = LogicTriggers.at(LogicTriggerID);
+  for (TheWorld().logic_trigger_id() = 0;
+       TheWorld().logic_trigger_id() < TheWorld().logic_triggers().Count();
+       TheWorld().logic_trigger_id()++) {
+    TriggerClass* trig =
+        TheWorld().logic_triggers().at(TheWorld().logic_trigger_id());
 
     /*
     **	Global changed trigger event might be triggered.
     */
-    if (Scen.IsGlobalChanged) {
+    if (TheScenario().IsGlobalChanged) {
       if (trig->Spring(TEVENT_GLOBAL_SET)) {
         continue;
       }
@@ -114,7 +117,8 @@ void LogicClass::AI() {
     /*
     **	Bridge change event.
     */
-    if (Scen.IsBridgeChanged && trig->Spring(TEVENT_ALL_BRIDGES_DESTROYED)) {
+    if (TheScenario().IsBridgeChanged &&
+        trig->Spring(TEVENT_ALL_BRIDGES_DESTROYED)) {
       continue;
     }
 
@@ -129,7 +133,8 @@ void LogicClass::AI() {
     **	The mission timer expiration trigger event might spring if the timer is
     *active *	but at a value of zero.
     */
-    if ((Scen.MissionTimer.IsRunning() && Scen.MissionTimer.IsFinished()) &&
+    if ((TheScenario().MissionTimer.IsRunning() &&
+         TheScenario().MissionTimer.IsFinished()) &&
         trig->Spring(TEVENT_MISSION_TIMER_EXPIRED)) {
       continue;
     }
@@ -139,20 +144,21 @@ void LogicClass::AI() {
   **	Clean up any status values that were maintained only for logic trigger
   **	purposes.
   */
-  if (Scen.MissionTimer.IsRunning() && Scen.MissionTimer.IsFinished()) {
-    Scen.MissionTimer.Stop();
-    Map.Flag_To_Redraw(
+  if (TheScenario().MissionTimer.IsRunning() &&
+      TheScenario().MissionTimer.IsFinished()) {
+    TheScenario().MissionTimer.Stop();
+    TheMap().Flag_To_Redraw(
         true);  // Used only to cause tabs to redraw in new state.
   }
-  Scen.IsGlobalChanged = false;
-  Scen.IsBridgeChanged = false;
+  TheScenario().IsGlobalChanged = false;
+  TheScenario().IsBridgeChanged = false;
   /*
   **	Shadow creeping back over time is handled here.
   */
   if (Special.IsShadowGrow && TheRules().ShroudRate != 0 &&
-      Scen.ShroudTimer.IsFinished()) {
-    Scen.ShroudTimer.Set(kTicksPerMinute * TheRules().ShroudRate);
-    Map.Encroach_Shadow();
+      TheScenario().ShroudTimer.IsFinished()) {
+    TheScenario().ShroudTimer.Set(kTicksPerMinute * TheRules().ShroudRate);
+    TheMap().Encroach_Shadow();
   }
 
   /*
@@ -165,12 +171,12 @@ void LogicClass::AI() {
   /*
   ** If there's a time quake, handle it here.
   */
-  if (TimeQuake) {
+  if (TheWorld().time_quake()) {
     PlaySoundEffect(VOC_KABOOM15);
     Shake_The_Screen(8);
   }
 
-  ChronalVortex.AI();
+  TheWorld().chronal_vortex().AI();
   /*
   **	AI for all sentient objects is processed.
   */
@@ -179,10 +185,11 @@ void LogicClass::AI() {
 
     obj->AI();
 
-    if (TimeQuake && obj->IsActive && !obj->IsInLimbo && obj->Strength) {
+    if (TheWorld().time_quake() && obj->IsActive && !obj->IsInLimbo &&
+        obj->Strength) {
       int damage = obj->Class_Of().MaxStrength * TheRules().QuakeDamagePercent;
-      if (TimeQuakeCenter) {
-        if (Distance(obj->As_Target(), TimeQuakeCenter) / 256 <
+      if (TheWorld().time_quake_center()) {
+        if (Distance(obj->As_Target(), TheWorld().time_quake_center()) / 256 <
             TheRules().MTankDistance) {
           switch (obj->What_Am_I()) {
             case RTTI_INFANTRY:
@@ -249,7 +256,7 @@ void LogicClass::AI() {
   /*
   **	Map related logic is performed.
   */
-  Map.Logic();
+  TheMap().Logic();
 
   /*
   **	Factory processing is performed.
@@ -280,13 +287,14 @@ void LogicClass::AI() {
     }
   }
 
-  if (Session.Type != GAME_NORMAL && Scen.AutoSonarTimer.IsFinished()) {
+  if (Session.Type != GAME_NORMAL &&
+      TheScenario().AutoSonarTimer.IsFinished()) {
     if (bAutoSonarPulse) {
-      Map.Activate_Pulse();
+      TheMap().Activate_Pulse();
       PlaySoundEffect(VOC_SONAR);
       bAutoSonarPulse = false;
     }
-    Scen.AutoSonarTimer.Set(int64_t{kTicksPerSecond} * 40);
+    TheScenario().AutoSonarTimer.Set(int64_t{kTicksPerSecond} * 40);
   }
 }
 
@@ -312,9 +320,9 @@ void LogicClass::Detach(TARGET target, bool /*unused*/) {
   **	Remove any triggers from the logic trigger list.
   */
   if (Is_Target_Trigger(target)) {
-    for (int index = 0; index < LogicTriggers.Count(); index++) {
-      if (As_Trigger(target) == LogicTriggers.at(index)) {
-        LogicTriggers.Delete(index);
+    for (int index = 0; index < TheWorld().logic_triggers().Count(); index++) {
+      if (As_Trigger(target) == TheWorld().logic_triggers().at(index)) {
+        TheWorld().logic_triggers().Delete(index);
         index--;
       }
     }

@@ -80,7 +80,6 @@
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/display_constants.h"
-#include "ra/externs.h"
 #include "ra/game_clock.h"
 #include "ra/inline.h"
 #include "ra/keyframe.h"
@@ -95,6 +94,7 @@
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/type.h"
+#include "ra/world.h"
 #include "sdllib/buffer.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
@@ -108,7 +108,6 @@
 /*
 ** Instance of chronal vortex class. This must be the only instance.
 */
-ChronalVortexClass ChronalVortex;
 
 /***********************************************************************************************
  * CVC::ChronalVortexClass -- vortex class constructor *
@@ -319,7 +318,7 @@ void ChronalVortexClass::Serialize(Archive& ar) {
     RenderBuffer = nullptr;
     if (ar.ok()) {
       Theater = THEATER_NONE;
-      Setup_Remap_Tables(Scen.Theater);
+      Setup_Remap_Tables(TheScenario().Theater);
     }
   }
 }
@@ -462,28 +461,28 @@ void ChronalVortexClass::Movement() {
   /*
   ** Reverse the direction of the vortex if its drifting off the map.
   */
-  if (x > CELL_LEPTON_W * (Map.MapCellX + Map.MapCellWidth - 4)) {
+  if (x > CELL_LEPTON_W * (TheMap().MapCellX + TheMap().MapCellWidth - 4)) {
     newpick = false;
     if (DesiredXDir > 0) {
       DesiredXDir = -DesiredXDir;
     }
   }
 
-  if (y > CELL_LEPTON_H * (Map.MapCellY + Map.MapCellHeight - 4)) {
+  if (y > CELL_LEPTON_H * (TheMap().MapCellY + TheMap().MapCellHeight - 4)) {
     newpick = false;
     if (DesiredYDir > 0) {
       DesiredYDir = -DesiredYDir;
     }
   }
 
-  if (x < (CELL_LEPTON_W * Map.MapCellX) + (2 * CELL_LEPTON_W)) {
+  if (x < (CELL_LEPTON_W * TheMap().MapCellX) + (2 * CELL_LEPTON_W)) {
     newpick = false;
     if (DesiredXDir < 0) {
       DesiredXDir = -DesiredXDir;
     }
   }
 
-  if (y < (CELL_LEPTON_H * Map.MapCellY) + (2 * CELL_LEPTON_W)) {
+  if (y < (CELL_LEPTON_H * TheMap().MapCellY) + (2 * CELL_LEPTON_W)) {
     newpick = false;
     if (DesiredYDir < 0) {
       DesiredYDir = -DesiredYDir;
@@ -691,7 +690,7 @@ void ChronalVortexClass::Zap_Target() {
       /*
       ** Flag the whole map to redraw to cover the lightning.
       */
-      Map.Flag_To_Redraw(true);
+      TheMap().Flag_To_Redraw(true);
 
       /*
       ** Zap the target 3 times but only do damage on the last frame.
@@ -855,7 +854,7 @@ void ChronalVortexClass::Render() {
           CELL const cell = XY_Cell(xc + x, yc + y);
           if (cell != -1) {
             // cellptr = &Map[ Coord_Whole (Cell_Coord(cell)) ];
-            CellClass* cellptr = &Map.at(cell);
+            CellClass* cellptr = &TheMap().at(cell);
 
             /*
             **	Fetch a pointer to the template type associated with this cell.
@@ -941,12 +940,12 @@ void ChronalVortexClass::Render() {
                    static_cast<LEPTON>(yc * CELL_LEPTON_H));
 
       const int xtac =
-          Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(Map.TacticalCoord)));
+          Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(TheMap().TacticalCoord)));
       int xoff = Pixel_To_Lepton(Lepton_To_Pixel(Coord_X(render_pos)));
       xoff -= xtac;
 
       const int ytac =
-          Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(Map.TacticalCoord)));
+          Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(TheMap().TacticalCoord)));
       int yoff = Pixel_To_Lepton(Lepton_To_Pixel(Coord_Y(render_pos)));
       yoff -= ytac;
 
@@ -955,8 +954,8 @@ void ChronalVortexClass::Render() {
       */
       GraphicViewPortClass target(LogicPage->Get_Graphic_Buffer(), 0,
                                   16 + LogicPage->Get_YPos(),
-                                  Lepton_To_Pixel(Map.TacLeptonWidth),
-                                  Lepton_To_Pixel(Map.TacLeptonHeight));
+                                  Lepton_To_Pixel(TheMap().TacLeptonWidth),
+                                  Lepton_To_Pixel(TheMap().TacLeptonHeight));
 
       /*
       ** Do some clipping since the library clipping gets it wrong.
@@ -1032,7 +1031,7 @@ void ChronalVortexClass::Set_Redraw() {
       for (int x = std::max(0, xc - 1); x < xc + 4; x++) {
         CELL const cell = XY_Cell(x, y);
         if (cell != -1) {
-          Map.at(cell).Redraw_Objects();
+          TheMap().at(cell).Redraw_Objects();
         }
       }
     }

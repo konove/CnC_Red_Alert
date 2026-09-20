@@ -73,6 +73,7 @@
 #include "ra/jshell.h"
 #include "ra/scenario.h"
 #include "ra/text_ids.h"
+#include "ra/world.h"
 #include "session.h"
 #include "tech/audio_mixer.h"
 #include "tech/fixed.h"
@@ -515,8 +516,8 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
   *don't allow *	it. If the player's house hasn't yet been determined,
   *then presume this test *	passes.
   */
-  if (PlayerPtr != nullptr && (base::Bit<uint32_t>(PlayerPtr->ActLike) &
-                               _themes.at(index).Owner) == 0) {
+  if (ThePlayer() != nullptr && (base::Bit<uint32_t>(ThePlayer()->ActLike) &
+                                 _themes.at(index).Owner) == 0) {
     return false;
   }
 
@@ -525,7 +526,7 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
   *flag. The *	scenario check only makes sense for solo play.
   */
   if (Session.Type == GAME_NORMAL &&
-      Scen.Scenario < _themes.at(index).Scenario) {
+      TheScenario().Scenario < _themes.at(index).Scenario) {
     return false;
   }
 

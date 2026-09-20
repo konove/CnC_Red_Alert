@@ -69,6 +69,7 @@
 #include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "ra/type.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/file_access.h"
 #include "sdllib/font.h"
@@ -345,11 +346,11 @@ void ScoreClass::Presentation() {
 
   GameFile file(kFameFileName);
   const int oldfontxspacing = FontXSpacing;
-  const int house = IsSovietHouse(PlayerPtr->Class->House) ? 1 : 0;  // 0 or 1
+  const int house = IsSovietHouse(ThePlayer()->Class->House) ? 1 : 0;  // 0 or 1
 
   ControlQ = false;
   FontXSpacing = 0;
-  Map.Override_Mouse_Shape(MOUSE_NORMAL);
+  TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
   Theme.Queue_Song(THEME_SCORE);
 
   TheScreen().visible_page().Clear();
@@ -412,8 +413,8 @@ void ScoreClass::Presentation() {
   // Determine leadership rating: the share of the player's side that survived.
   // First count what is left on the map...
   int leadership = 0;
-  for (int index = 0; index < Logic.Count(); index++) {
-    const ObjectClass* object = Logic.at(index);
+  for (int index = 0; index < TheWorld().logic().Count(); index++) {
+    const ObjectClass* object = TheWorld().logic().at(index);
     const HousesType owner = object->Owner();
     if (house && (IsSovietHouse(owner) || owner == HOUSE_BAD)) {
       leadership++;
@@ -436,7 +437,7 @@ void ScoreClass::Presentation() {
       GKilled += hows->UnitsLost;
       GBKilled += hows->BuildingsLost;
     }
-    if (PlayerPtr->Is_Ally(hous)) {
+    if (ThePlayer()->Is_Ally(hous)) {
       uspoints += hows->PointTotal;
     }
   }
@@ -444,7 +445,7 @@ void ScoreClass::Presentation() {
   // Bias the base score upward according to the difficulty level. (BG once
   // tried a flat 1000-point bonus for winning, and flooring the points at zero,
   // here; both were disabled, so a negative base score is possible.)
-  switch (PlayerPtr->Difficulty) {
+  switch (ThePlayer()->Difficulty) {
     case DIFF_EASY:
       uspoints += 500;
       break;
@@ -476,10 +477,10 @@ void ScoreClass::Presentation() {
   // at 150%.
   int economy =
       100 *
-      fixed(static_cast<int>(PlayerPtr->Available_Money()) + 1 +
-                PlayerPtr->StolenBuildingsCredits,
-            PlayerPtr->HarvestedCredits +
-                static_cast<int>(PlayerPtr->Control.InitialCredits) + 1);
+      fixed(static_cast<int>(ThePlayer()->Available_Money()) + 1 +
+                ThePlayer()->StolenBuildingsCredits,
+            ThePlayer()->HarvestedCredits +
+                static_cast<int>(ThePlayer()->Control.InitialCredits) + 1);
   economy = std::min(economy, 150);
 
   // Clamped to what fits the five-character "%5d" field.
@@ -610,7 +611,8 @@ void ScoreClass::Presentation() {
 
   // If the player's score is good enough to bump someone off the list, make
   // room for it. index is where their info goes, or -1 if they didn't make it.
-  const int index = InsertFameScore(hallfame, total, Scen.Scenario, house);
+  const int index =
+      InsertFameScore(hallfame, total, TheScenario().Scenario, house);
 
   // Now display the hall of fame. The printers view their strings, so each row
   // gets its own 32-byte slice of `maststr` that stays valid while it types:
@@ -755,7 +757,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
                               int nkilled, int ypos) {
   // Left edge of both bars, 320x200.
   const int xpos = 174;
-  const int house = IsSovietHouse(PlayerPtr->Class->House) ? 1 : 0;  // 0 or 1
+  const int house = IsSovietHouse(ThePlayer()->Class->House) ? 1 : 0;  // 0 or 1
   // A Soviet player's own losses go on top, so swap the counts and the bar
   // colours. From here on "gdi"/"g" means the top bar and "nod"/"n" the bottom.
   if (house) {
@@ -859,7 +861,7 @@ void ScoreClass::Show_Credits(int house, std::span<const uint8_t> pal) {
       base::At(_credsx, house), base::At(_credsy, house), credshape, 32, 2));
   // Smallest step: bounds the count-up to about 100 steps however rich the
   // player is.
-  const int minval = static_cast<int>(PlayerPtr->Available_Money() / 100);
+  const int minval = static_cast<int>(ThePlayer()->Available_Money() / 100);
 
   // Print out total credits left at end of scenario. The counter starts below
   // zero, which holds the display at 0 for a moment, and the step grows with
@@ -868,14 +870,14 @@ void ScoreClass::Show_Credits(int house, std::span<const uint8_t> pal) {
 
   do {
     int add = 5;
-    if (PlayerPtr->Available_Money() - i > 100) {
+    if (ThePlayer()->Available_Money() - i > 100) {
       add += 15;
     }
-    if (PlayerPtr->Available_Money() - i > 500) {
+    if (ThePlayer()->Available_Money() - i > 500) {
       add += 30;
     }
-    if (PlayerPtr->Available_Money() - i > 1000) {
-      add = static_cast<int>(add + (PlayerPtr->Available_Money() / 40));
+    if (ThePlayer()->Available_Money() - i > 1000) {
+      add = static_cast<int>(add + (ThePlayer()->Available_Money() / 40));
     }
     add = std::max(add, minval);
     i += add;
@@ -883,10 +885,10 @@ void ScoreClass::Show_Credits(int house, std::span<const uint8_t> pal) {
     i = std::max(i, 0);
 
     Set_Font_Palette(pal);
-    Count_Up_Print("%d", i, static_cast<int>(PlayerPtr->Available_Money()),
+    Count_Up_Print("%d", i, static_cast<int>(ThePlayer()->Available_Money()),
                    base::At(_credpx, house), base::At(_credpy, house));
     TickScoreScreen(2);
-  } while (i < PlayerPtr->Available_Money());
+  } while (i < ThePlayer()->Available_Money());
 
   // The credits animation loops forever, so stop it by hand.
   delete base::At(score_objects, credobj);
@@ -1088,7 +1090,7 @@ void Multi_Score_Presentation() {
   const int oldfontxspacing = FontXSpacing;
 
   FontXSpacing = 0;
-  Map.Override_Mouse_Shape(MOUSE_NORMAL);
+  TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
 
   ThePalettes().black_palette().Set();
   TheScreen().visible_view().Clear();

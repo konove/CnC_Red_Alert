@@ -210,6 +210,7 @@
 #include "ra/vessel.h"
 #include "ra/warhead.h"
 #include "ra/weapon.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -397,7 +398,7 @@ bool TechnoClass::Can_Teleport_Here(CELL cell) const {
   /*
   **	The destination cell must be on the playfield.
   */
-  if (!Map.In_Radar(cell)) {
+  if (!TheMap().In_Radar(cell)) {
     return false;
   }
 
@@ -406,7 +407,7 @@ bool TechnoClass::Can_Teleport_Here(CELL cell) const {
   *the *	requirement that entering that location must proceed under
   *normal channels.
   */
-  if (Map.at(cell).Overlay == OVERLAY_FLAG_SPOT) {
+  if (TheMap().at(cell).Overlay == OVERLAY_FLAG_SPOT) {
     return false;
   }
 
@@ -415,7 +416,7 @@ bool TechnoClass::Can_Teleport_Here(CELL cell) const {
   **	cell is impassable, then it can't be teleported there.
   */
   const TechnoTypeClass* ttype = Techno_Type_Class();
-  return Map.at(cell).Is_Clear_To_Move(
+  return TheMap().at(cell).Is_Clear_To_Move(
       ttype->Speed, true, true, -1,
       ttype->Speed == SPEED_FLOAT ? MZONE_WATER : MZONE_NORMAL);
 }
@@ -671,7 +672,7 @@ TechnoClass::TechnoClass(RTTIType rtti, int id, HousesType house)
       Arm(0),
       Ammo(-1),
       PurchasePrice(0) {
-  IsOwnedByPlayer = PlayerPtr == House;
+  IsOwnedByPlayer = ThePlayer() == House;
 }
 
 /***********************************************************************************************
@@ -767,13 +768,13 @@ bool TechnoClass::Is_Visible_On_Radar() const {
   */
   if (What_Am_I() == RTTI_UNIT) {
     if (*dynamic_cast<const UnitClass*>(this) == UNIT_MRJ) {
-      if (!House->Is_Ally(PlayerPtr)) {
+      if (!House->Is_Ally(ThePlayer())) {
         return false;
       }
     }
   }
   if (!Techno_Type_Class()->IsInvisible &&
-      (Cloak != CLOAKED || House->Is_Ally(PlayerPtr))) {
+      (Cloak != CLOAKED || House->Is_Ally(ThePlayer()))) {
     return true;
   }
   return false;
@@ -800,10 +801,10 @@ bool TechnoClass::Is_Visible_On_Radar() const {
 bool TechnoClass::Revealed(HouseClass* house) {
   DCHECK(IsActive);
 
-  if (house == PlayerPtr && IsDiscoveredByPlayer) {
+  if (house == ThePlayer() && IsDiscoveredByPlayer) {
     return false;
   }
-  if (house != PlayerPtr) {
+  if (house != ThePlayer()) {
     if (IsDiscoveredByComputer) {
       return false;
     }
@@ -819,7 +820,7 @@ bool TechnoClass::Revealed(HouseClass* house) {
       Assign_Mission(MISSION_HUNT);
     }
 
-    if (house == PlayerPtr) {
+    if (house == ThePlayer()) {
       IsDiscoveredByPlayer = true;
 
       if (!IsOwnedByPlayer) {
@@ -827,7 +828,7 @@ bool TechnoClass::Revealed(HouseClass* house) {
         **	If there is a trigger event associated with this object, then
         *process *	it for discovery purposes.
         */
-        if (!ScenarioInit && Trigger.Is_Valid()) {
+        if (!TheWorld().scenario_init() && Trigger.Is_Valid()) {
           Trigger->Spring(TEVENT_DISCOVERED, this);
         }
 
@@ -1117,7 +1118,7 @@ void TechnoClass::Per_Cell_Process(PCPType why) {
     **	When enemy units enter the proper map area from off map, they are
     **	flagged so that they won't travel back off the map again.
     */
-    if (!IsLocked && Map.In_Radar(cell)) {
+    if (!IsLocked && TheMap().In_Radar(cell)) {
       IsLocked = true;
     }
 
@@ -1125,8 +1126,8 @@ void TechnoClass::Per_Cell_Process(PCPType why) {
     **	If this object somehow moves into mapped terrain, but is not yet
     **	discovered, then flag it to be discovered.
     */
-    if (!IsDiscoveredByPlayer && Map.at(cell).IsVisible) {
-      Revealed(PlayerPtr);
+    if (!IsDiscoveredByPlayer && TheMap().at(cell).IsVisible) {
+      Revealed(ThePlayer());
     }
   }
 }
@@ -1189,7 +1190,7 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
     int height = 0;
     Class_Of().Dimensions(width, height);
 
-    if (Strength && (House->Is_Ally(PlayerPtr) || TheRules().IsHealthBar)) {
+    if (Strength && (House->Is_Ally(ThePlayer()) || TheRules().IsHealthBar)) {
       const fixed ratio = Health_Ratio();
 
       const int xx = x - (width / 2);
@@ -1230,7 +1231,7 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
       const int dx = width / 5;
       const int dy = height / 5;
       const int fudge =
-          House->Is_Ally(PlayerPtr) || TheRules().IsHealthBar ? 4 : 0;
+          House->Is_Ally(ThePlayer()) || TheRules().IsHealthBar ? 4 : 0;
       if (What_Am_I() == RTTI_VESSEL) {
         lx = width / 2;
       }
@@ -1254,8 +1255,8 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
       // Lower left corner.
       draw_window.Draw_Line(x - lx, y + ly, x - lx + dx, y + ly, kWhite);
       draw_window.Draw_Line(x - lx, y + ly, x - lx, y + ly - dy, kWhite);
-      if (House->Is_Ally(PlayerPtr) ||
-          SpiedBy & base::Bit<uint32_t>(PlayerPtr->Class->House)) {
+      if (House->Is_Ally(ThePlayer()) ||
+          SpiedBy & base::Bit<uint32_t>(ThePlayer()->Class->House)) {
         Draw_Pips(x - lx + 5, y + ly - 3, window);
       }
     }
@@ -1287,7 +1288,7 @@ bool TechnoClass::Unlimbo(COORDINATE coord, DirType dir) {
     Enter_Idle_Mode(true);
     Commence();
 
-    IsLocked = Map.In_Radar(Coord_Cell(coord));
+    IsLocked = TheMap().In_Radar(Coord_Cell(coord));
     return true;
   }
   return false;
@@ -1432,24 +1433,24 @@ fixed TechnoClass::Area_Modify(CELL cell) const {
     for (int x = -radius; x <= radius; x++) {
       CELL newcell = 0;
 
-      if (Cell_X(cell) + x < Map.MapCellX) {
+      if (Cell_X(cell) + x < TheMap().MapCellX) {
         continue;
       }
-      if (Cell_X(cell) + x >= Map.MapCellX + Map.MapCellWidth) {
+      if (Cell_X(cell) + x >= TheMap().MapCellX + TheMap().MapCellWidth) {
         continue;
       }
 
-      if (Cell_Y(cell) - radius >= Map.MapCellY) {
+      if (Cell_Y(cell) - radius >= TheMap().MapCellY) {
         newcell = XY_Cell(Cell_X(cell) + x, Cell_Y(cell) - radius);
-        const BuildingClass* building = Map.at(newcell).Cell_Building();
+        const BuildingClass* building = TheMap().at(newcell).Cell_Building();
         if (building != nullptr && House->Is_Ally(building)) {
           odds /= 2;
         }
       }
 
-      if (Cell_Y(cell) + radius < Map.MapCellY + Map.MapCellHeight) {
+      if (Cell_Y(cell) + radius < TheMap().MapCellY + TheMap().MapCellHeight) {
         newcell = XY_Cell(Cell_X(cell) + x, Cell_Y(cell) + radius);
-        const BuildingClass* building = Map.at(newcell).Cell_Building();
+        const BuildingClass* building = TheMap().at(newcell).Cell_Building();
         if (building != nullptr && House->Is_Ally(building)) {
           odds /= 2;
         }
@@ -1462,24 +1463,24 @@ fixed TechnoClass::Area_Modify(CELL cell) const {
     for (int y = -(radius - 1); y < radius; y++) {
       CELL newcell = 0;
 
-      if (Cell_Y(cell) + y < Map.MapCellY) {
+      if (Cell_Y(cell) + y < TheMap().MapCellY) {
         continue;
       }
-      if (Cell_Y(cell) + y >= Map.MapCellY + Map.MapCellHeight) {
+      if (Cell_Y(cell) + y >= TheMap().MapCellY + TheMap().MapCellHeight) {
         continue;
       }
 
-      if (Cell_X(cell) - radius >= Map.MapCellX) {
+      if (Cell_X(cell) - radius >= TheMap().MapCellX) {
         newcell = XY_Cell(Cell_X(cell) - radius, Cell_Y(cell) + y);
-        const BuildingClass* building = Map.at(newcell).Cell_Building();
+        const BuildingClass* building = TheMap().at(newcell).Cell_Building();
         if (building != nullptr && House->Is_Ally(building)) {
           odds /= 2;
         }
       }
 
-      if (Cell_X(cell) + radius < Map.MapCellX + Map.MapCellWidth) {
+      if (Cell_X(cell) + radius < TheMap().MapCellX + TheMap().MapCellWidth) {
         newcell = XY_Cell(Cell_X(cell) + radius, Cell_Y(cell) + y);
-        const BuildingClass* building = Map.at(newcell).Cell_Building();
+        const BuildingClass* building = TheMap().at(newcell).Cell_Building();
         if (building != nullptr && House->Is_Ally(building)) {
           odds /= 2;
         }
@@ -1567,7 +1568,8 @@ bool TechnoClass::Evaluate_Object(ThreatType method, uint32_t mask, int range,
   const COORDINATE objectcoord = object->Center_Coord();
   if (zone != -1 &&
       std::cmp_not_equal(
-          Map.at(objectcoord).Zones.at(Techno_Type_Class()->MZone), zone)) {
+          TheMap().at(objectcoord).Zones.at(Techno_Type_Class()->MZone),
+          zone)) {
     return false;
   }
 
@@ -1995,7 +1997,7 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
   if (static_cast<unsigned>(cell) > MAP_CELL_TOTAL) {
     return false;
   }
-  if (!Map.In_Radar(cell)) {
+  if (!TheMap().In_Radar(cell)) {
     return false;
   }
 
@@ -2003,7 +2005,7 @@ bool TechnoClass::Evaluate_Cell(ThreatType method, uint32_t mask, CELL cell,
   **	Fetch the techno object from the cell. If there is no
   **	techno object there, then bail.
   */
-  const CellClass* cellptr = &Map.at(cell);
+  const CellClass* cellptr = &TheMap().at(cell);
 
   /*
   **	Don't consider for evaluation a cell that is not within the same zone.
@@ -2087,7 +2089,7 @@ int TechnoClass::Evaluate_Just_Cell(CELL cell) const {
   /*
   **	Determine if, in fact, a wall is located at this cell location.
   */
-  const CellClass* cellptr = &Map.at(cell);
+  const CellClass* cellptr = &TheMap().at(cell);
   if (cellptr->Overlay == OVERLAY_NONE ||
       !OverlayTypeClass::As_Reference(cellptr->Overlay).IsWall) {
     return 0;
@@ -2182,7 +2184,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
   */
   if (!base::Any(method & THREAT_RANGE) && What_Am_I() != RTTI_VESSEL &&
       What_Am_I() != RTTI_BUILDING && What_Am_I() != RTTI_AIRCRAFT) {
-    zone = Map.at(Center_Coord()).Zones.at(Techno_Type_Class()->MZone);
+    zone = TheMap().at(Center_Coord()).Zones.at(Techno_Type_Class()->MZone);
   }
 
   /*
@@ -2307,14 +2309,14 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
       for (int x = -radius; x <= radius; x++) {
         CELL newcell = 0;
 
-        if (Cell_X(cell) + x < Map.MapCellX) {
+        if (Cell_X(cell) + x < TheMap().MapCellX) {
           continue;
         }
-        if (Cell_X(cell) + x >= Map.MapCellX + Map.MapCellWidth) {
+        if (Cell_X(cell) + x >= TheMap().MapCellX + TheMap().MapCellWidth) {
           continue;
         }
 
-        if (Cell_Y(cell) - radius >= Map.MapCellY) {
+        if (Cell_Y(cell) - radius >= TheMap().MapCellY) {
           newcell = XY_Cell(Cell_X(cell) + x, Cell_Y(cell) - radius);
           if (Evaluate_Cell(method, mask, newcell, range, &object, value,
                             zone) &&
@@ -2331,7 +2333,8 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
           }
         }
 
-        if (Cell_Y(cell) + radius < Map.MapCellY + Map.MapCellHeight) {
+        if (Cell_Y(cell) + radius <
+            TheMap().MapCellY + TheMap().MapCellHeight) {
           newcell = XY_Cell(Cell_X(cell) + x, Cell_Y(cell) + radius);
           if (Evaluate_Cell(method, mask, newcell, range, &object, value,
                             zone) &&
@@ -2355,14 +2358,14 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
       for (int y = -(radius - 1); y < radius; y++) {
         CELL newcell = 0;
 
-        if (Cell_Y(cell) + y < Map.MapCellY) {
+        if (Cell_Y(cell) + y < TheMap().MapCellY) {
           continue;
         }
-        if (Cell_Y(cell) + y >= Map.MapCellY + Map.MapCellHeight) {
+        if (Cell_Y(cell) + y >= TheMap().MapCellY + TheMap().MapCellHeight) {
           continue;
         }
 
-        if (Cell_X(cell) - radius >= Map.MapCellX) {
+        if (Cell_X(cell) - radius >= TheMap().MapCellX) {
           newcell = XY_Cell(Cell_X(cell) - radius, Cell_Y(cell) + y);
           if (Evaluate_Cell(method, mask, newcell, range, &object, value,
                             zone) &&
@@ -2379,7 +2382,7 @@ TARGET TechnoClass::Greatest_Threat(ThreatType method)  // const
           }
         }
 
-        if (Cell_X(cell) + radius < Map.MapCellX + Map.MapCellWidth) {
+        if (Cell_X(cell) + radius < TheMap().MapCellX + TheMap().MapCellWidth) {
           newcell = XY_Cell(Cell_X(cell) + radius, Cell_Y(cell) + y);
           if (Evaluate_Cell(method, mask, newcell, range, &object, value,
                             zone) &&
@@ -2701,8 +2704,8 @@ void TechnoClass::Cloaking_AI() {
               CloakingDevice.Set_Stage(0);
               Mark(MARK_CHANGE);
 
-              Map.at(Center_Coord()).Redraw_Objects(true);
-              Map.RadarClass::Flag_To_Redraw(true);
+              TheMap().at(Center_Coord()).Redraw_Objects(true);
+              TheMap().RadarClass::Flag_To_Redraw(true);
 
               /*
               **	Special check to ensure that if the unit is carrying a
@@ -3124,13 +3127,13 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
   }
   bool gonnadraw = false;
 
-  if (Map.Push_Onto_TacMap(source, dest) && SpecialDialog == SDLG_NONE) {
-    Map.Coord_To_Pixel(source, x, y);
-    Map.Coord_To_Pixel(dest, x1, y1);
-    x += Map.TacPixelX;
-    x1 += Map.TacPixelX;
-    y += Map.TacPixelY;
-    y1 += Map.TacPixelY;
+  if (TheMap().Push_Onto_TacMap(source, dest) && SpecialDialog == SDLG_NONE) {
+    TheMap().Coord_To_Pixel(source, x, y);
+    TheMap().Coord_To_Pixel(dest, x1, y1);
+    x += TheMap().TacPixelX;
+    x1 += TheMap().TacPixelX;
+    y += TheMap().TacPixelY;
+    y1 += TheMap().TacPixelY;
     Set_Logic_Page(TheScreen().visible_view());
     gonnadraw = true;
   }
@@ -3467,7 +3470,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
 
       Delay(1);  // Make sure line is visible briefly
       if (gonnadraw) {
-        Map.Flag_To_Redraw(true);
+        TheMap().Flag_To_Redraw(true);
       }
     }
 
@@ -3491,17 +3494,18 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
     ** local player.
     */
     if ((!IsOwnedByPlayer && !IsDiscoveredByPlayer) ||
-        (!Map.at(Center_Coord()).IsMapped &&
+        (!TheMap().at(Center_Coord()).IsMapped &&
          (What_Am_I() != RTTI_AIRCRAFT || !IsOwnedByPlayer))) {
       if (Session.Type == GAME_NORMAL) {
-        Map.Sight_From(Coord_Cell(Center_Coord()), 2, PlayerPtr, false);
+        TheMap().Sight_From(Coord_Cell(Center_Coord()), 2, ThePlayer(), false);
       } else {
         const ObjectClass* obj = As_Object(target);
         if (obj != nullptr) {
           const HousesType tgt_owner = obj->Owner();
 
-          if (PlayerPtr->Class->House == tgt_owner) {
-            Map.Sight_From(Coord_Cell(Center_Coord()), 2, PlayerPtr, false);
+          if (ThePlayer()->Class->House == tgt_owner) {
+            TheMap().Sight_From(Coord_Cell(Center_Coord()), 2, ThePlayer(),
+                                false);
           }
         }
       }
@@ -3547,9 +3551,9 @@ void TechnoClass::Player_Assign_Mission(MissionType mission, TARGET target,
     }
   }
 
-  if (FormMove) {
-    Queue_Mission(TargetClass(this), mission, target, destination, FormSpeed,
-                  FormMaxSpeed);
+  if (TheWorld().form_move()) {
+    Queue_Mission(TargetClass(this), mission, target, destination,
+                  TheWorld().form_speed(), TheWorld().form_max_speed());
   } else {
     /*
     **	Cooerce the movement mission into a queued movement mission if
@@ -3593,7 +3597,7 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
     *this *	object cannot do anything special with itself, then just return
     *with *	the no action flag.
     */
-    if (object == this && CurrentObject.Count() == 1 &&
+    if (object == this && TheWorld().current_object().Count() == 1 &&
         House->IsPlayerControl) {
       return ACTION_SELF;
     }
@@ -3639,7 +3643,7 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
     const TechnoTypeClass* ttype = Techno_Type_Class();
     if (Is_Weapon_Equipped() && ttype->PrimaryWeapon->Bullet != nullptr &&
         ttype->PrimaryWeapon->Bullet->IsSubSurface &&
-        Map.at(object->Target_Coord()).Land_Type() != LAND_WATER) {
+        TheMap().at(object->Target_Coord()).Land_Type() != LAND_WATER) {
       // Do nothing.
 
     } else {
@@ -3715,7 +3719,7 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
 ActionType TechnoClass::What_Action(CELL cell) const {
   DCHECK(IsActive);
 
-  const CellClass* cellptr = &Map.at(cell);
+  const CellClass* cellptr = &TheMap().at(cell);
   const OverlayTypeClass* optr = nullptr;
 
   bool ctrldown = KeyboardClass::Down(Options.KeyForceAttack1) ||
@@ -4100,7 +4104,7 @@ bool TechnoClass::Captured(HouseClass* newowner) {
     **	Change ownership now.
     */
     House = newowner;
-    IsOwnedByPlayer = House == PlayerPtr;
+    IsOwnedByPlayer = House == ThePlayer();
 
     return true;
   }
@@ -4165,7 +4169,7 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
 
         const int explosion_damage = Techno_Type_Class()->MaxStrength;
         new AnimClass(Combat_Anim(explosion_damage, wh,
-                                  Map.at(Center_Coord()).Land_Type()),
+                                  TheMap().at(Center_Coord()).Land_Type()),
                       Center_Coord());
         const int radius = explosion_damage * TheRules().ExplosionSpread;
         //				int radius = damage/2;
@@ -4176,14 +4180,14 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
       if (this ==
           dynamic_cast<TechnoClass*>(As_Object(House->UnitToTeleport))) {
         House->UnitToTeleport = 0;
-        if (!Scen.IsFadingColor) {
-          Scen.IsFadingBW = false;
-          Scen.IsFadingColor = true;
-          Scen.FadeTimer.Set(kGrayFadeTime);
+        if (!TheScenario().IsFadingColor) {
+          TheScenario().IsFadingBW = false;
+          TheScenario().IsFadingColor = true;
+          TheScenario().FadeTimer.Set(kGrayFadeTime);
         }
-        if (Map.IsTargettingMode == kSpcChrono2) {
+        if (TheMap().IsTargettingMode == kSpcChrono2) {
           KeyNumType input = KN_RMOUSE;
-          Map.AI(input, 0, 0);
+          TheMap().AI(input, 0, 0);
         }
       }
       break;
@@ -4259,9 +4263,9 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
   }
   // Hack check: if they were trying to teleport this unit when it died, take
   //	the map mode out of teleportation mode.
-  if (IsOwnedByPlayer && Map.IsTargettingMode == kSpcChrono2 &&
+  if (IsOwnedByPlayer && TheMap().IsTargettingMode == kSpcChrono2 &&
       House->UnitToTeleport == As_Target()) {
-    Map.IsTargettingMode = SPC_NONE;
+    TheMap().IsTargettingMode = SPC_NONE;
   }
   switch (What_Am_I()) {
     case RTTI_BUILDING: {
@@ -4285,8 +4289,8 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
         ** If the map is displaying the multiplayer player names & their
         ** # of kills, tell it to redraw.
         */
-        if (Map.Is_Player_Names()) {
-          Map.Player_Names(true);
+        if (TheMap().Is_Player_Names()) {
+          TheMap().Player_Names(true);
         }
       }
       break;
@@ -4330,8 +4334,8 @@ void TechnoClass::Record_The_Kill(TechnoClass* source) {
       ** If the map is displaying the multiplayer player names & their
       ** # of kills, tell it to redraw.
       */
-      if (Map.Is_Player_Names()) {
-        Map.Player_Names(true);
+      if (TheMap().Is_Player_Names()) {
+        TheMap().Player_Names(true);
       }
       break;
 
@@ -4405,9 +4409,9 @@ CELL TechnoClass::Nearby_Location(const TechnoClass* techno) const {
     cell = Coord_Cell(Center_Coord());
   }
 
-  return Map.Nearby_Location(cell, speed,
-                             Map.at(cell).Zones.at(Techno_Type_Class()->MZone),
-                             Techno_Type_Class()->MZone);
+  return TheMap().Nearby_Location(
+      cell, speed, TheMap().at(cell).Zones.at(Techno_Type_Class()->MZone),
+      Techno_Type_Class()->MZone);
 }
 
 /***********************************************************************************************
@@ -4428,7 +4432,7 @@ void TechnoClass::Do_Uncloak() {
 
   if (IsCloakable && (Cloak == CLOAKED || Cloak == CLOAKING)) {
     if (Cloak == CLOAKED) {
-      Map.RadarClass::Flag_To_Redraw(true);
+      TheMap().RadarClass::Flag_To_Redraw(true);
     }
     Cloak = UNCLOAKING;
     CloakingDevice.Set_Stage(0);
@@ -4461,7 +4465,7 @@ void TechnoClass::Do_Cloak() {
     Detach_All(false);
 
     if (Cloak == UNCLOAKED) {
-      Map.RadarClass::Flag_To_Redraw(true);
+      TheMap().RadarClass::Flag_To_Redraw(true);
     }
 
     Cloak = CLOAKING;
@@ -4612,7 +4616,7 @@ void TechnoClass::Techno_Draw_Object(std::span<const std::byte> shapefile,
       const auto* infantry = dynamic_cast<const InfantryClass*>(this);
       if (!IsOwnedByPlayer) {
         if (*infantry == INFANTRY_SPY) {
-          remap = PlayerPtr->Remap_Table();
+          remap = ThePlayer()->Remap_Table();
         }
       }
       if (infantry->Class->IsRemapOverride) {
@@ -4630,7 +4634,7 @@ void TechnoClass::Techno_Draw_Object(std::span<const std::byte> shapefile,
         CC_Draw_Shape(
             shapefile, shapenum, x, y, window,
             SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_PREDATOR, {},
-            Map.FadingShade, rotation, scale);
+            TheMap().FadingShade, rotation, scale);
       } else {
         CC_Draw_Shape(shapefile, shapenum, x, y, window,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_GHOST,
@@ -4640,7 +4644,7 @@ void TechnoClass::Techno_Draw_Object(std::span<const std::byte> shapefile,
         CC_Draw_Shape(
             shapefile, shapenum, x, y, window,
             SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, remap,
-            Map.FadingShade, rotation, scale);
+            TheMap().FadingShade, rotation, scale);
       }
     }
     if (visual != VISUAL_NORMAL && visual != VISUAL_HIDDEN) {
@@ -4929,7 +4933,8 @@ int TechnoClass::Threat_Range(int control) const {
  *=============================================================================================*/
 bool TechnoClass::Is_In_Same_Zone(CELL cell) const {
   const MZoneType zone = Techno_Type_Class()->MZone;
-  return Map.at(cell).Zones.at(zone) == Map.at(Center_Coord()).Zones.at(zone);
+  return TheMap().at(cell).Zones.at(zone) ==
+         TheMap().at(Center_Coord()).Zones.at(zone);
 }
 
 /***********************************************************************************************
@@ -5041,8 +5046,10 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       /*
       **	Don't try to help if the building is on another planet.
       */
-      if (Map.at(infantry->Center_Coord()).Zones.at(infantry->Class->MZone) !=
-          Map.at(Center_Coord()).Zones.at(infantry->Class->MZone)) {
+      if (TheMap()
+              .at(infantry->Center_Coord())
+              .Zones.at(infantry->Class->MZone) !=
+          TheMap().at(Center_Coord()).Zones.at(infantry->Class->MZone)) {
         continue;
       }
 
@@ -5131,8 +5138,8 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
       /*
       **	Don't try to help if the building is on another planet.
       */
-      if (Map.at(unit->Center_Coord()).Zones.at(unit->Class->MZone) !=
-          Map.at(Center_Coord()).Zones.at(unit->Class->MZone)) {
+      if (TheMap().at(unit->Center_Coord()).Zones.at(unit->Class->MZone) !=
+          TheMap().at(Center_Coord()).Zones.at(unit->Class->MZone)) {
         continue;
       }
 
@@ -5940,7 +5947,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
   ** factory-producing item or whatever.
   */
   if (What_Am_I() == RTTI_BUILDING) {
-    unsigned spiedby = SpiedBy & base::Bit<uint32_t>(PlayerPtr->Class->House);
+    unsigned spiedby = SpiedBy & base::Bit<uint32_t>(ThePlayer()->Class->House);
 
     /*
     ** If it's an ore refinery or other such storage-capable building,
@@ -5952,8 +5959,8 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
            index++) {
         const BuildingClass* building = TheObjectHeaps().building().Ptr(index);
         if (building->House == House && building->Class->Capacity) {
-          spiedby |=
-              building->SpiedBy & base::Bit<uint32_t>(PlayerPtr->Class->House);
+          spiedby |= building->SpiedBy &
+                     base::Bit<uint32_t>(ThePlayer()->Class->House);
         }
       }
     }
@@ -6049,9 +6056,11 @@ BuildingClass* TechnoClass::Find_Docking_Bay(StructType b, bool friendly) {
                     : building->House == House) &&
           !building->IsInLimbo && *building == b &&
           (What_Am_I() == RTTI_AIRCRAFT ||
-           Map.at(building->Center_Coord())
+           TheMap().at(building->Center_Coord())
                    .Zones.at(Techno_Type_Class()->MZone) ==
-               Map.at(Center_Coord()).Zones.at(Techno_Type_Class()->MZone)) &&
+               TheMap()
+                   .at(Center_Coord())
+                   .Zones.at(Techno_Type_Class()->MZone)) &&
           Transmit_Message(RADIO_CAN_LOAD, building) == RADIO_ROGER) {
         /*
         **	If the building qualifies and this building is better than the
@@ -6271,7 +6280,7 @@ void TechnoClass::Look(bool incremental) {
   const int sight_range = Techno_Type_Class()->SightRange;
 
   if (sight_range) {
-    Map.Sight_From(Coord_Cell(Coord), sight_range, House, incremental);
+    TheMap().Sight_From(Coord_Cell(Coord), sight_range, House, incremental);
   }
 }
 
@@ -6633,15 +6642,15 @@ bool TechnoTypeClass::Legal_Placement(CELL pos) const {
 
   while (!offset.empty() && offset.front() != kRefreshEol) {
     const CELL cell = static_cast<CELL>(pos + base::ConsumeFront(offset));
-    if (!Map.In_Radar(cell)) {
+    if (!TheMap().In_Radar(cell)) {
       return false;
     }
     if (build) {
-      if (!Map.at(cell).Is_Clear_To_Build(Speed)) {
+      if (!TheMap().at(cell).Is_Clear_To_Build(Speed)) {
         return false;
       }
     } else {
-      if (!Map.at(cell).Is_Clear_To_Move(Speed, false, false)) {
+      if (!TheMap().at(cell).Is_Clear_To_Move(Speed, false, false)) {
         return false;
       }
     }

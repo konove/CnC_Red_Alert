@@ -66,7 +66,6 @@
 #include "ra/aircraft.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/mapedit.h"
@@ -75,6 +74,7 @@
 #include "ra/text_ids.h"
 #include "ra/type.h"
 #include "ra/type_heaps.h"
+#include "ra/world.h"
 #include "sdllib/shape.h"
 #include "tech/mix_archive.h"
 
@@ -442,7 +442,7 @@ ObjectClass* AircraftTypeClass::Create_One_Of(HouseClass* house) const {
 void AircraftTypeClass::Prep_For_Add() {
   for (const AircraftType index : magic_enum::enum_values<AircraftType>()) {
     if (!As_Reference(index).Get_Image_Data().empty()) {
-      Map.Add_To_List(&As_Reference(index));
+      TheMap().Add_To_List(&As_Reference(index));
     }
   }
 }

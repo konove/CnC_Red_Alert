@@ -54,7 +54,6 @@
 
 #include "base/array.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
@@ -62,6 +61,7 @@
 #include "ra/radar.h"
 #include "ra/shape_draw.h"
 #include "ra/text_ids.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/keyboard.h"
@@ -167,7 +167,7 @@ void PowerClass::Draw_It(bool complete) {
   static const int _modtable[] = {0, -1, 0, 1, 0, -1, -2, -1, 0, 1, 2, 1, 0};
 
   if ((complete || IsPowerToRedraw) && LogicPage->Lock()) {
-    if (Map.IsSidebarActive) {
+    if (TheMap().IsSidebarActive) {
       IsPowerToRedraw = false;
       ShapeFlags_Type flags = SHAPE_NORMAL;
       std::span<const unsigned char> remap;
@@ -211,11 +211,11 @@ void PowerClass::Draw_It(bool complete) {
         int color1 = 3;
         int color2 = 4;
 
-        if (PlayerPtr->Drain > PlayerPtr->Power) {
+        if (ThePlayer()->Drain > ThePlayer()->Power) {
           color1 = 214;
           color2 = 211;
         }
-        if (PlayerPtr->Drain > PlayerPtr->Power * 2) {
+        if (ThePlayer()->Drain > ThePlayer()->Power * 2) {
           color1 = 235;
           color2 = 230;
         }
@@ -268,7 +268,7 @@ void PowerClass::Draw_It(bool complete) {
  *parameters.                                        *
  *=============================================================================================*/
 void PowerClass::AI(KeyNumType& input, int x, int y) {
-  if (Map.IsSidebarActive /*IsActive*/) {
+  if (TheMap().IsSidebarActive /*IsActive*/) {
     const int olddrain = DrainHeight;
     const int oldpower = PowerHeight;
 
@@ -276,9 +276,9 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
     ** If the recorded power value has changed we need to adjust for
     ** it.
     */
-    if (PlayerPtr->Power != RecordedPower) {
-      DesiredPowerHeight = Power_Height(PlayerPtr->Power);
-      RecordedPower = PlayerPtr->Power;
+    if (ThePlayer()->Power != RecordedPower) {
+      DesiredPowerHeight = Power_Height(ThePlayer()->Power);
+      RecordedPower = ThePlayer()->Power;
       PowerBounce = 12;
       if (PowerHeight > DesiredPowerHeight) {
         PowerDir = -1;
@@ -293,9 +293,9 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
     ** If the recorded drain value has changed we need to adjust for
     ** it.
     */
-    if (PlayerPtr->Drain != RecordedDrain) {
-      DesiredDrainHeight = Power_Height(PlayerPtr->Drain);
-      RecordedDrain = PlayerPtr->Drain;
+    if (ThePlayer()->Drain != RecordedDrain) {
+      DesiredDrainHeight = Power_Height(ThePlayer()->Drain);
+      RecordedDrain = ThePlayer()->Drain;
       DrainBounce = 12;
       if (DrainHeight > DesiredDrainHeight) {
         DrainDir = -1;
@@ -434,7 +434,7 @@ int PowerClass::Power_Height(int value) {
  * HISTORY: * 08/07/1995 JLB : Created. *
  *=============================================================================================*/
 bool PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
-  if (!Map.IsSidebarActive) {
+  if (!TheMap().IsSidebarActive) {
     return false;
   }
 
@@ -442,11 +442,11 @@ bool PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
   **	Force any help label to disappear when the mouse is held over the
   **	radar map.
   */
-  Map.Override_Mouse_Shape(MOUSE_NORMAL);
-  if (PlayerPtr->Power_Fraction() < 1 && PlayerPtr->Power > 0) {
-    Map.Help_Text(TXT_POWER_OUTPUT_LOW, -1, -1, Get_Color_Scheme()->Color);
+  TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
+  if (ThePlayer()->Power_Fraction() < 1 && ThePlayer()->Power > 0) {
+    TheMap().Help_Text(TXT_POWER_OUTPUT_LOW, -1, -1, Get_Color_Scheme()->Color);
   } else {
-    Map.Help_Text(TXT_POWER_OUTPUT, -1, -1, Get_Color_Scheme()->Color);
+    TheMap().Help_Text(TXT_POWER_OUTPUT, -1, -1, Get_Color_Scheme()->Color);
   }
   GadgetClass::Action(flags, key);
   return true;

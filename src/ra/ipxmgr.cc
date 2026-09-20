@@ -96,6 +96,7 @@
 #include "ra/ipxgconn.h"
 #include "ra/session.h"
 #include "ra/vector_dynamic.h"
+#include "ra/world.h"
 #include "ra/wsproto.h"
 
 /***************************************************************************
@@ -1053,7 +1054,7 @@ int IPXManagerClass::Service() {
               if (event->Type == EventClass::FRAMESYNC) {
                 const int id = event->ID;
 
-                DCHECK(id != PlayerPtr->ID);
+                DCHECK(id != ThePlayer()->ID);
                 for (int k = 1; k < Session.Players.Count(); k++) {
                   if (Session.Players.at(k)->Player.ID ==
                       static_cast<HousesType>(id)) {

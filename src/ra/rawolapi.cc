@@ -63,6 +63,7 @@
 #include "ra/wolapi/wolapi.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
+#include "ra/world.h"
 #include "sdllib/timer.h"
 #include "tech/base64.h"
 #include "tech/number_parse.h"
@@ -269,7 +270,7 @@ STDMETHODIMP RAChatEventSink::OnPaged(HRESULT /*res*/, User* pUser,
     if (!pOwner->bFreezeExternalPager) {
       port::SafeCopy(pOwner->szExternalPager, WolText(pUser->name));
     }
-    Map.Flag_To_Redraw(true);
+    TheMap().Flag_To_Redraw(true);
   }
 
   PlaySoundEffect(WOLSOUND_ONPAGE);

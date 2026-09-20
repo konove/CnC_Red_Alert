@@ -60,7 +60,6 @@
 #include "ra/config.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/globals.h"
 #include "ra/heap.h"
@@ -75,6 +74,7 @@
 #include "ra/tracker.h"
 #include "ra/trigtype.h"
 #include "ra/vector_dynamic.h"
+#include "ra/world.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/wwstd.h"
@@ -182,19 +182,21 @@ TriggerClass::TriggerClass()
 TriggerClass::~TriggerClass() {
   if ((GameActive && Class.Is_Valid() &&
        base::Any(Class->Attaches_To() & ATTACH_GENERAL)) &&
-      (LogicTriggerID >= LogicTriggers.ID(this))) {
-    LogicTriggerID--;
-    if (LogicTriggerID < 0 && LogicTriggers.Count() == 0) {
-      LogicTriggerID = 0;
+      (TheWorld().logic_trigger_id() >= TheWorld().logic_triggers().ID(this))) {
+    TheWorld().logic_trigger_id()--;
+    if (TheWorld().logic_trigger_id() < 0 &&
+        TheWorld().logic_triggers().Count() == 0) {
+      TheWorld().logic_trigger_id() = 0;
     }
   }
 
   if ((GameActive && Class.Is_Valid() &&
        base::Any(Class->Attaches_To() & ATTACH_MAP)) &&
-      (MapTriggerID >= MapTriggers.ID(this))) {
-    MapTriggerID--;
-    if (MapTriggerID < 0 && MapTriggers.Count() == 0) {
-      MapTriggerID = 0;
+      (TheWorld().map_trigger_id() >= TheWorld().map_triggers().ID(this))) {
+    TheWorld().map_trigger_id()--;
+    if (TheWorld().map_trigger_id() < 0 &&
+        TheWorld().map_triggers().Count() == 0) {
+      TheWorld().map_trigger_id() = 0;
     }
   }
 
@@ -307,7 +309,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
         obj->Trigger = nullptr;
       }
       if (cell) {
-        Map.at(cell).Trigger = nullptr;
+        TheMap().at(cell).Trigger = nullptr;
       }
 
       /*
