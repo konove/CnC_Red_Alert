@@ -30,9 +30,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
-#include <iterator>
 #include <span>
-#include <string>
 
 #include "absl/log/log.h"
 #include "absl/strings/match.h"
@@ -40,6 +38,7 @@
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
+#include "ra/assets.h"
 #include "ra/config.h"
 #include "ra/coord.h"
 #include "ra/debug_state.h"
@@ -566,31 +565,32 @@ void ServiceSpeech() {
     return;
   }
 
-  if (!Audio.IsPlaying(base::At(SpeechBuffer, playing_buffer).data())) {
+  const std::span<Assets::SpeechSlot> slots = TheAssets().speech_slots();
+  if (!Audio.IsPlaying(base::At(slots, playing_buffer).buffer.data())) {
     current_voice = VOX_NONE;
     if (speak_queue != VOX_NONE) {
       // Try to find a previously loaded copy of the EVA speech in one of the
       // speech buffers.
       std::span<const std::byte> speech;
-      for (size_t buffer_index = 0; buffer_index < std::size(SpeechRecord);
+      for (int buffer_index = 0; buffer_index < std::ssize(slots);
            buffer_index++) {
-        if (base::At(SpeechRecord, buffer_index) == speak_queue) {
+        if (base::At(slots, buffer_index).voice == speak_queue) {
           // playing_buffer tracks the buffer being played, so move it to the
           // cached one -- the poll at the top of this routine watches that
           // buffer to decide when the voice has finished.
-          playing_buffer = static_cast<int>(buffer_index);
-          speech = base::At(SpeechBuffer, buffer_index);
+          playing_buffer = buffer_index;
+          speech = base::At(slots, buffer_index).buffer;
           break;
         }
       }
 
       // If a previous copy could not be located, then load the requested
       // voice into the oldest buffer available. A voice longer than the
-      // buffer (kSpeechBufferSize) is cut short. SpeechRecord is only updated
+      // buffer (kSpeechBufferSize) is cut short. The slot's voice is only set
       // on success, so a failed load leaves the old voice cached.
       if (speech.empty()) {
         playing_buffer =
-            static_cast<int>((playing_buffer + 1) % std::ssize(SpeechRecord));
+            static_cast<int>((playing_buffer + 1) % std::ssize(slots));
 
         const auto file_name =
             std::filesystem::path(kSpeechFiles.at(speak_queue))
@@ -599,9 +599,9 @@ void ServiceSpeech() {
 
         GameFile file(file_name);
         if (file.IsAvailable() &&
-            file.Read(base::At(SpeechBuffer, playing_buffer))) {
-          speech = base::At(SpeechBuffer, playing_buffer);
-          base::At(SpeechRecord, playing_buffer) = speak_queue;
+            file.Read(base::At(slots, playing_buffer).buffer)) {
+          speech = base::At(slots, playing_buffer).buffer;
+          base::At(slots, playing_buffer).voice = speak_queue;
         }
       }
 
@@ -625,8 +625,8 @@ void StopSpeaking() {
   // Cleared here, not left for the next ServiceSpeech(), so that Speak() does
   // not drop the voice just stopped as one still being said.
   current_voice = VOX_NONE;
-  for (auto& buffer : SpeechBuffer) {
-    Audio.Stop(buffer.data());
+  for (const Assets::SpeechSlot& slot : TheAssets().speech_slots()) {
+    Audio.Stop(slot.buffer.data());
   }
 }
 
@@ -636,7 +636,8 @@ bool IsSpeaking() {
   ServiceSpeech();
   return !TheDebugState().quiet() && Audio.is_open() &&
          (speak_queue != VOX_NONE ||
-          std::ranges::any_of(SpeechBuffer, [](const auto& buffer) {
-            return Audio.IsPlaying(buffer.data());
-          }));
+          std::ranges::any_of(TheAssets().speech_slots(),
+                              [](const Assets::SpeechSlot& slot) {
+                                return Audio.IsPlaying(slot.buffer.data());
+                              }));
 }

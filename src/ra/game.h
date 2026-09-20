@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/installed.h"
+#include "ra/assets.h"
 #include "ra/debug_state.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
@@ -50,6 +51,8 @@ class Game {
   base::Installed<Screen>::Scope screen_scope_{screen_};
   Palettes palettes_;
   base::Installed<Palettes>::Scope palettes_scope_{palettes_};
+  Assets assets_;
+  base::Installed<Assets>::Scope assets_scope_{assets_};
   DebugState debug_state_;
   base::Installed<DebugState>::Scope debug_state_scope_{debug_state_};
 };

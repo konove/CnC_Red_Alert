@@ -66,6 +66,7 @@
 #include "port/tokenizer.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
+#include "ra/assets.h"
 #include "ra/audio.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -411,12 +412,7 @@ bool TActionClass::operator()(HousesType house, ObjectClass* object, int id,
     **	Display a text message overlayed onto the tactical map.
     */
     case TACTION_TEXT_TRIGGER: {
-      const char* message =
-          base::At(TutorialTextOffsets, Data.Value) == 0xFFFF
-              ? nullptr
-              : std::span(TutorialTextData)
-                    .subspan(base::At(TutorialTextOffsets, Data.Value))
-                    .data();
+      const char* message = TheAssets().tutorial_text(Data.Value);
       Session.Messages.Add_Message(
           nullptr, 0, message, PCOLOR_GREEN,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,

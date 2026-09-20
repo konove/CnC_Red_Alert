@@ -88,6 +88,7 @@
 #include <iterator>
 
 #include "base/array.h"
+#include "ra/assets.h"
 #include "ra/const.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
@@ -882,9 +883,9 @@ inline const char* Text_String(int index) {
   }
 
   if (index < 1000) {
-    return Extract_String(SystemStrings, index).data();
+    return Extract_String(TheAssets().system_strings(), index).data();
   }
-  return Extract_String(DebugStrings, index - 1000).data();
+  return Extract_String(TheAssets().debug_strings(), index - 1000).data();
 }
 
 /***********************************************************************************************

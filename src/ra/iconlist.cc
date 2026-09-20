@@ -48,10 +48,10 @@
 #include "base/types.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
+#include "ra/assets.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/dib.h"
-#include "ra/externs.h"
 #include "ra/inline.h"
 #include "ra/list.h"
 #include "ra/shape_draw.h"
@@ -201,7 +201,8 @@ int IconListClass::Add_Item(
       int iHeight = 0;
       //	Stupid usage of globals for font stuff... <grumble>
       if (TextFlags == TPF_TYPE) {
-        const std::span<const std::byte> pFontBefore = Set_Font(TypeFontPtr);
+        const std::span<const std::byte> pFontBefore =
+            Set_Font(TheAssets().font(FontType::kType));
         const int FontXSpacingBefore = FontXSpacing;
         FontXSpacing = -2;
 

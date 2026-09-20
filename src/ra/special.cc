@@ -53,6 +53,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "port/safe_string.h"
+#include "ra/assets.h"
 #include "ra/checkbox.h"
 #include "ra/conquer.h"
 #include "ra/debug.h"
@@ -295,7 +296,7 @@ void PWEditClass::Draw_Text(const char* text) {
   base::FillBytes(base::ObjectBytes(buffer), '*',
                   std::min(std::string_view(text).size(), sizeof(buffer) - 1));
 
-  if (FontPtr.data() == GradFont6Ptr.data()) {
+  if (FontPtr.data() == TheAssets().font(FontType::k6PointGradient).data()) {
     const TextPrintType flags =
         Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 

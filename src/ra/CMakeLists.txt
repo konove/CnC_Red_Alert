@@ -113,10 +113,17 @@ add_gtest(
 
 add_gtest(
     NAME ra_game_test
-    SOURCES game_test.cc screen.cc
-    LIBS base sdllib tech magic_enum::magic_enum
+    SOURCES game_test.cc assets.cc ini.cc screen.cc
+    LIBS base port sdllib tech magic_enum::magic_enum absl::strings absl::check absl::log
 )
 apply_language_setting(ra_game_test)
+
+add_gtest(
+    NAME ra_assets_test
+    SOURCES assets_test.cc assets.cc ini.cc
+    LIBS base port sdllib tech magic_enum::magic_enum absl::strings absl::check absl::log
+)
+apply_language_setting(ra_assets_test)
 
 add_gtest(
     NAME ra_debug_state_test

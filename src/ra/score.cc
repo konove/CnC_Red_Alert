@@ -42,6 +42,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "ra/assets.h"
 #include "ra/ccptr.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
@@ -369,7 +370,8 @@ void ScoreClass::Presentation() {
   const auto redptr = MixArchive::RetrieveData("BAR3RHR.SHP");
 
   // Change to the score screen font; restored on the way out.
-  const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);
+  const std::span<const std::byte> oldfont =
+      Set_Font(TheAssets().font(FontType::kScore));
   ServiceRealTime();
 
   // Load this side's background onto the hidden page, brighten its palette,
@@ -1109,7 +1111,8 @@ void Multi_Score_Presentation() {
   anim.Close();
 
   // Change to the score screen font; restored on the way out.
-  const std::span<const std::byte> oldfont = Set_Font(ScoreFontPtr);
+  const std::span<const std::byte> oldfont =
+      Set_Font(TheAssets().font(FontType::kScore));
   ServiceRealTime();
 
   Set_Logic_Page(TheScreen().visible_view());

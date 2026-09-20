@@ -87,7 +87,6 @@ inline char staging_buffer[32000];
 
 
 
-extern std::span<const std::byte> LightningShapes;
 
 extern int NewINIFormat;
 
@@ -109,8 +108,6 @@ extern WWMouseClass* WWMouse;
 **	Dynamic global variables (these change or are initialized at run time).
 */
 extern base::EnumArray<MissionType, MissionControlClass> MissionControl;
-extern std::vector<char> TutorialTextData;
-extern uint16_t TutorialTextOffsets[225];
 extern CCINIClass RuleINI;
 extern CCINIClass AftermathINI;
 extern int MapTriggerID;
@@ -127,8 +124,6 @@ extern bool AllowVoice;
 extern bool PlayerWins;
 extern bool PlayerLoses;
 extern bool PlayerRestarts;
-extern VoxType SpeechRecord[2];
-extern std::vector<std::byte> SpeechBuffer[2];
 extern bool BreakoutAllowed;
 
 extern GameOptionsClass Options;
@@ -136,10 +131,6 @@ extern GameOptionsClass Options;
 extern LogicClass Logic;
 extern MapEditClass Map;
 extern ScoreClass Score;
-extern MixArchive* MoviesMix;
-extern MixArchive* GeneralMix;
-extern MixArchive* ScoreMix;
-extern MixArchive* MainMix;
 extern AudioMixer Audio;
 extern ThemeClass Theme;
 extern SpecialClass Special;
@@ -214,28 +205,6 @@ extern fixed ChronoTankDuration;  // chrono override for chrono tanks
 extern fixed EngineerDamage;      // Amount of damage an engineer does
 extern fixed
     EngineerCaptureLevel;  // Building damage level before engineer can capture
-
-/*
-**	Loaded data file pointers.
-*/
-extern std::span<const std::byte> Metal12FontPtr;
-extern std::span<const std::byte> MapFontPtr;
-extern std::span<const std::byte> VCRFontPtr;
-extern std::span<const std::byte> TypeFontPtr;
-extern std::span<const std::byte> Font3Ptr;
-extern std::span<const std::byte> Font6Ptr;
-extern std::span<const std::byte> EditorFont;
-extern std::span<const std::byte> Font8Ptr;
-extern std::span<const std::byte> FontLEDPtr;
-extern std::span<const std::byte> ScoreFontPtr;
-extern std::span<const std::byte> GradFont6Ptr;
-// Tutorial prompts, dialog text, and other UI strings loaded from the mix file.
-// Accessed via Text_String() for indices 0–999.
-extern std::span<const std::byte> SystemStrings;
-
-// Debug/developer strings loaded from DEBUG.ENG. Accessed via Text_String()
-// for indices >= 1000 (offset by 1000 into this table).
-extern std::span<const std::byte> DebugStrings;
 
 /*
 **	Miscellaneous globals.

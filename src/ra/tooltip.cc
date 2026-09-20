@@ -26,9 +26,9 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/safe_string.h"
+#include "ra/assets.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/iconlist.h"
 #include "ra/text_ids.h"
@@ -66,7 +66,7 @@ ToolTipClass::ToolTipClass(GadgetClass* gadget, const char* szText, int x_show,
     port::SafeCopy(szTip, szText != nullptr ? szText : "");
   }
 
-  Set_Font(TypeFontPtr);
+  Set_Font(TheAssets().font(FontType::kType));
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_TYPE);  //	Required before String_Pixel_Width()
                                // call, for god's sake.
@@ -133,7 +133,7 @@ void ToolTipClass::Move(int x_show, int y_show) {
 //***********************************************************************************************
 void ToolTipClass::Show() {
   if (!bShowing) {
-    Set_Font(TypeFontPtr);
+    Set_Font(TheAssets().font(FontType::kType));
     int xShowUse = xShow;
     int yShowUse = 0;
     int wShowUse = 0;

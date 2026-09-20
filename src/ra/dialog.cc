@@ -64,6 +64,7 @@
 #include "base/numeric.h"
 #include "port/format.h"
 #include "port/safe_string.h"
+#include "ra/assets.h"
 #include "ra/config.h"
 #include "ra/debug_state.h"
 #include "ra/defines.h"
@@ -465,61 +466,62 @@ void Simple_Text_Print(const char* text, int x, int y,
   xspace = 1;
   yspace = 0;
 
+  const Assets& assets = TheAssets();
   switch (point) {
     case TPF_SCORE:
-      font = ScoreFontPtr;
+      font = assets.font(FontType::kScore);
       break;
 
     case TPF_METAL12:
-      font = Metal12FontPtr;
+      font = assets.font(FontType::kMetal12);
       // xspace += 1;
       break;
 
     case TPF_MAP:
-      font = MapFontPtr;
+      font = assets.font(FontType::kMap);
       xspace -= 1;
       break;
 
     case TPF_VCR:
-      font = VCRFontPtr;
+      font = assets.font(FontType::kVcr);
       break;
 
     case TPF_6PT_GRAD:
-      font = GradFont6Ptr;
+      font = assets.font(FontType::k6PointGradient);
       xspace -= 1;
       break;
 
     case TPF_3POINT:
       xspace += 1;
-      font = Font3Ptr;
+      font = assets.font(FontType::k3Point);
       flag = flag & ~(TPF_DROPSHADOW | TPF_FULLSHADOW | TPF_NOSHADOW);
       break;
 
     case TPF_6POINT:
-      font = Font6Ptr;
+      font = assets.font(FontType::k6Point);
       xspace -= 1;
       break;
 
     case TPF_EFNT:
-      font = EditorFont;
+      font = assets.font(FontType::kEditor);
       yspace += 1;
       xspace -= 1;
       xspace -= 1;
       break;
 
     case TPF_8POINT:
-      font = Font8Ptr;
+      font = assets.font(FontType::k8Point);
       xspace -= 2;
       yspace -= 4;
       break;
 
     case TPF_LED:
       xspace -= 4;
-      font = FontLEDPtr;
+      font = assets.font(FontType::kLed);
       break;
 
     case TPF_TYPE:
-      font = TypeFontPtr;
+      font = assets.font(FontType::kType);
       xspace -= 1;
 
       if constexpr (config::kWolapiEnabled) {

@@ -68,7 +68,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <iterator>
 #include <optional>
 #include <span>
 #include <string>
@@ -88,6 +87,7 @@
 #include "port/platform.h"
 #include "port/random_seed.h"
 #include "ra/_wsproto.h"
+#include "ra/assets.h"
 #include "ra/ccini.h"
 #include "ra/compat.h"
 #include "ra/config.h"
@@ -141,7 +141,6 @@
 #include "ra/wspudp.h"
 #include "sdllib/file.h"
 #include "sdllib/file_access.h"
-#include "sdllib/font.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/iff.h"
 #include "sdllib/misc.h"
@@ -1914,16 +1913,6 @@ static void Init_Heaps() {
   TriggerTypes.Set_Heap(Rule.TrigTypeMax);
   //	Weapons.Set_Heap(Rule.WeaponMax);
 
-  /*
-  **	Speech holding tank buffer. Since speech does not mix, it can be placed
-  **	into a custom holding tank only as large as the largest speech file to
-  **	be played.
-  */
-  for (int index = 0; index < std::ssize(SpeechBuffer); index++) {
-    base::At(SpeechBuffer, index).resize(kSpeechBufferSize);
-    base::At(SpeechRecord, index) = VOX_NONE;
-    DCHECK(!base::At(SpeechBuffer, index).empty());
-  }
 }
 
 /***********************************************************************************************
@@ -2019,22 +2008,7 @@ static void Init_One_Time_Systems() {
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-static void Init_Fonts() {
-  Metal12FontPtr = MixArchive::RetrieveData("12METFNT.FNT");
-  MapFontPtr = MixArchive::RetrieveData("HELP.FNT");
-  Font6Ptr = MixArchive::RetrieveData("6POINT.FNT");
-  GradFont6Ptr = MixArchive::RetrieveData("GRAD6FNT.FNT");
-  EditorFont = MixArchive::RetrieveData("EDITFNT.FNT");
-  Font8Ptr = MixArchive::RetrieveData("8POINT.FNT");
-  FontPtr = Font8Ptr;
-  Set_Font(FontPtr);
-  Font3Ptr = MixArchive::RetrieveData("3POINT.FNT");
-  ScoreFontPtr = MixArchive::RetrieveData("SCOREFNT.FNT");
-  FontLEDPtr = MixArchive::RetrieveData("LED.FNT");
-  VCRFontPtr = MixArchive::RetrieveData("VCR.FNT");
-  TypeFontPtr =
-      MixArchive::RetrieveData("8POINT.FNT");  //("TYPE.FNT"); //VG 10/17/96
-}
+static void Init_Fonts() { TheAssets().LoadFonts(); }
 
 /***********************************************************************************************
  * Init_CDROM_Access -- Initialize the CD-ROM access handler. *
@@ -2220,6 +2194,8 @@ static void Init_Bootstrap_Mixfiles() {
 static void Extract(const char* filename, const char* outname);
 
 static void Init_Secondary_Mixfiles() {
+  Assets::DiscArchives& archives = TheAssets().disc_archives();
+
   if (GameFile("MAIN1.MIX").IsAvailable()) {
     // MAIN1-4 from steam
 
@@ -2249,8 +2225,8 @@ static void Init_Secondary_Mixfiles() {
     MixArchive::Register("GENERAL3.MIX", &FastKey);
   } else {
     // assume regular/TFD files
-    MainMix = MixArchive::Register("MAIN.MIX", &FastKey);
-    DCHECK(MainMix != nullptr);
+    archives.main = MixArchive::Register("MAIN.MIX", &FastKey);
+    DCHECK(archives.main != nullptr);
   }
 
 // Denzil extract mixfile
@@ -2275,25 +2251,27 @@ static void Init_Secondary_Mixfiles() {
   MixArchive::Register("CONQUER.MIX", &FastKey);  // Cached.
   //	MixArchive::Register("TRANSIT.MIX", &FastKey);
 
-  if (GeneralMix == nullptr) {
-    GeneralMix =
+  if (archives.general == nullptr) {
+    archives.general =
         MixArchive::Register("GENERAL.MIX", &FastKey);  // Never cached.
   }
 
   if (GameFile("MOVIES1.MIX").IsAvailable()) {
-    MoviesMix = MixArchive::Register("MOVIES1.MIX", &FastKey);  // Never cached.
+    archives.movies =
+        MixArchive::Register("MOVIES1.MIX", &FastKey);  // Never cached.
   }
   // load both sets of movies if possible
   if (GameFile("MOVIES2.MIX").IsAvailable()) {
-    MoviesMix = MixArchive::Register("MOVIES2.MIX", &FastKey);  // Never cached.
+    archives.movies =
+        MixArchive::Register("MOVIES2.MIX", &FastKey);  // Never cached.
   }
-  DCHECK(MoviesMix != nullptr);
+  DCHECK(archives.movies != nullptr);
 
   /*
   **	Register the score mixfile.
   */
   ScoresPresent = true;
-  ScoreMix = MixArchive::Register("SCORES.MIX", &FastKey);
+  archives.score = MixArchive::Register("SCORES.MIX", &FastKey);
   ThemeClass::Scan();
 
   /*
@@ -2368,10 +2346,7 @@ static void Bootstrap() {
   shape_storage.resize(kShapeBufferSize);
   Set_Shape_Buffer(shape_storage);
 
-  // The .ENG suffix is the same in every language build: localized releases
-  // ship a translated CONQUER.ENG under the same name.
-  SystemStrings = MixArchive::RetrieveData("CONQUER.ENG");
-  DebugStrings = MixArchive::RetrieveData("DEBUG.ENG");
+  TheAssets().LoadStrings();
 
   /*
   **	Default palette initialization.
@@ -2483,26 +2458,7 @@ static void Init_Bulk_Data() {
   /*
   **	Fetch the tutorial message data.
   */
-  INIClass ini;
-  GameFile fc("TUTORIAL.INI");
-  ini.Load(fc);
-  TutorialTextData.clear();
-  for (int index = 0; index < std::ssize(TutorialTextOffsets); ++index) {
-    base::At(TutorialTextOffsets, index) = 0xFFFF;
-    char buffer[128];
-    char num[10];
-    absl::SNPrintF(num, sizeof(num), "%d", index);
-    if (ini.Get_String("Tutorial", num, "", buffer, sizeof(buffer))) {
-      const auto text = std::string_view(buffer);
-      if (TutorialTextData.size() + text.size() + 1 > 0xFFFF) {
-        break;
-      }
-      base::At(TutorialTextOffsets, index) =
-          static_cast<uint16_t>(TutorialTextData.size());
-      TutorialTextData.insert(TutorialTextData.end(), text.begin(), text.end());
-      TutorialTextData.push_back('\0');
-    }
-  }
+  TheAssets().LoadTutorialText();
 
   /*
   **	Perform one-time game system initializations.

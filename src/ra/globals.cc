@@ -39,9 +39,7 @@
 #include "ra/globals.h"
 
 #include <algorithm>
-#include <cstddef>
 #include <cstdint>
-#include <span>
 #include <vector>
 
 #include "base/enum_array.h"
@@ -97,7 +95,6 @@
 #include "tech/audio_mixer.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
-#include "tech/mix_archive.h"
 #include "tech/pk.h"
 #include "tech/random.h"
 #include "winvq/vqa32/vqaplay.h"
@@ -259,13 +256,6 @@ int NameIDOverride[25];
 base::EnumArray<MissionType, MissionControlClass> MissionControl;
 
 /***************************************************************************
-**	There are various tutorial messages that can appear in the game. These
-**	are called upon by number and pointed to by this array.
-*/
-std::vector<char> TutorialTextData;
-uint16_t TutorialTextOffsets[225];
-
-/***************************************************************************
 **	This holds the rules database. The rules database won't change during
 *the *	program's run, but may need to be referenced intermitently.
 */
@@ -345,23 +335,6 @@ bool PlayerLoses;
 bool PlayerRestarts;
 
 /***************************************************************************
-**	This is the pointer for the speech staging buffer. This buffer is used
-**	to hold the currently speaking voice data. Since only one speech sample
-**	is played at a time, this buffer is only as big as the largest speech
-**	sample that can be played.
-*/
-std::vector<std::byte> SpeechBuffer[2];
-VoxType SpeechRecord[2];
-
-/***************************************************************************
-**	This holds the theater specific mixfiles.
-*/
-MixArchive* MoviesMix = nullptr;
-MixArchive* GeneralMix = nullptr;
-MixArchive* ScoreMix = nullptr;
-MixArchive* MainMix = nullptr;
-
-/***************************************************************************
 **	This is the options control class. The options control such things as
 **	game speed, visual controls, and other user settings.
 */
@@ -419,9 +392,6 @@ int ScenarioInit;
 */
 int BuildLevel = 10;  // Buildable level (1 = simplest)
 
-std::span<const std::byte> SystemStrings;
-std::span<const std::byte> DebugStrings;
-
 /***************************************************************************
 **	The game plays as long as this var is true.
 */
@@ -438,25 +408,6 @@ int32_t LParam;
 ** The currently-selected cell for the Scenario Editor
 */
 CELL CurrentCell = 0;
-
-/***************************************************************************
-**	Most of the text in the game will use the six point font. These are the
-**	pointers to the fonts. If it is NULL, then the font hasn't been loaded
-**	yet.
-*/
-std::span<const std::byte>
-    Metal12FontPtr;                     // Font for use on in-game tabs in hires
-std::span<const std::byte> MapFontPtr;  // Standard very small font.
-std::span<const std::byte> TypeFontPtr;  // Teletype font for mission briefings.
-std::span<const std::byte> Font3Ptr;     // Standard very small font.
-std::span<const std::byte> Font6Ptr;     // Standard small font.
-std::span<const std::byte> EditorFont;   // Font used for scenario editor.
-std::span<const std::byte> Font8Ptr;     // 8 point proportional.
-std::span<const std::byte> FontLEDPtr;   // LED fixed point font.
-std::span<const std::byte> VCRFontPtr;   // VCR font pointer.
-std::span<const std::byte>
-    ScoreFontPtr;  // font for score & map selection screens
-std::span<const std::byte> GradFont6Ptr;  // gradient 6 point font pointer.
 
 /***************************************************************************
 **	This is the house that the human player is currently playing.

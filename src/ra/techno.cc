@@ -160,6 +160,7 @@
 #include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
+#include "ra/assets.h"
 #include "ra/audio.h"
 #include "ra/building.h"
 #include "ra/cargo.h"
@@ -3185,12 +3186,12 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
         x += base::At(base::At(_xadd, facing), lastfacing);
         y += base::At(base::At(_yadd, facing), lastfacing);
         if (!remap.empty()) {
-          CC_Draw_Shape(LightningShapes,
+          CC_Draw_Shape(TheAssets().lightning_shapes(),
                         base::At(_shape, facing) + (shots ? 4 : 0), x, y,
                         WINDOW_TACTICAL,
                         SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL, remap);
         } else {
-          CC_Draw_Shape(LightningShapes,
+          CC_Draw_Shape(TheAssets().lightning_shapes(),
                         base::At(_shape, facing) + (shots ? 4 : 0), x, y,
                         WINDOW_TACTICAL, SHAPE_CENTER | SHAPE_WIN_REL);
         }

@@ -32,6 +32,7 @@
 #include "port/platform.h"
 #include "port/safe_string.h"
 #include "port/win32/win32_registry.h"
+#include "ra/assets.h"
 #include "ra/config.h"
 #include "ra/externs.h"
 #include "ra/inline.h"
@@ -321,21 +322,22 @@ bool Force_CD_Available(int cd_desired)  // ajw
 
     Theme.Stop();
 
-    delete MoviesMix;
-    delete GeneralMix;
-    delete ScoreMix;
-    delete MainMix;
+    Assets::DiscArchives& archives = TheAssets().disc_archives();
+    delete archives.movies;
+    delete archives.general;
+    delete archives.score;
+    delete archives.main;
 
-    MainMix = MixArchive::Register("MAIN.MIX", &FastKey);
-    DCHECK(MainMix != nullptr);
+    archives.main = MixArchive::Register("MAIN.MIX", &FastKey);
+    DCHECK(archives.main != nullptr);
     if (GameFile("MOVIES1.MIX").IsAvailable()) {
-      MoviesMix = MixArchive::Register("MOVIES1.MIX", &FastKey);
+      archives.movies = MixArchive::Register("MOVIES1.MIX", &FastKey);
     } else {
-      MoviesMix = MixArchive::Register("MOVIES2.MIX", &FastKey);
+      archives.movies = MixArchive::Register("MOVIES2.MIX", &FastKey);
     }
-    DCHECK(MoviesMix != nullptr);
-    GeneralMix = MixArchive::Register("GENERAL.MIX", &FastKey);
-    ScoreMix = MixArchive::Register("SCORES.MIX", &FastKey);
+    DCHECK(archives.movies != nullptr);
+    archives.general = MixArchive::Register("GENERAL.MIX", &FastKey);
+    archives.score = MixArchive::Register("SCORES.MIX", &FastKey);
     ThemeClass::Scan();
   }
 

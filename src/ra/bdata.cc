@@ -79,6 +79,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "magic_enum/magic_enum.hpp"
+#include "ra/assets.h"
 #include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -2821,7 +2822,6 @@ static const BuildingTypeClass ClassLarva2(
     {}                // OVERLAPLIST:List of overlap cell offset.
 );
 std::span<const std::byte> BuildingTypeClass::WarFactoryOverlay;
-std::span<const std::byte> LightningShapes;
 
 /***********************************************************************************************
  * BuildingTypeClass::BuildingTypeClass -- This is the constructor for the
@@ -3160,7 +3160,7 @@ void BuildingTypeClass::One_Time() {
   WarFactoryOverlay = MixArchive::RetrieveData(fullname);
   fullname =
       std::filesystem::path("LITNING").replace_extension(".SHP").string();
-  LightningShapes = MixArchive::RetrieveData(fullname);
+  TheAssets().set_lightning_shapes(MixArchive::RetrieveData(fullname));
 
   /*
   **	Install all the special animation sequences for the different building
