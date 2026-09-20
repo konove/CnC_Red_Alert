@@ -56,7 +56,6 @@
 #include "ra/cell.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/heap.h"
 #include "ra/inline.h"
 #include "ra/mapedit.h"
@@ -71,6 +70,9 @@
 #include "tech/number_parse.h"
 #include "tech/span_sink.h"
 #include "tech/span_source.h"
+
+// Scratch space for packing and unpacking the OverlayPack INI block.
+static char overlay_pack_buffer[32000];
 
 HousesType OverlayClass::ToOwn = HOUSE_NONE;
 
@@ -280,12 +282,12 @@ bool OverlayClass::Mark(MarkType mark) {
 void OverlayClass::Read_INI(CCINIClass& ini) {
   if (TheWorld().new_ini_format() > 1) {
     const int len =
-        ini.Get_UUBlock("OverlayPack", base::ObjectBytes(staging_buffer),
-                        sizeof(staging_buffer));
+        ini.Get_UUBlock("OverlayPack", base::ObjectBytes(overlay_pack_buffer),
+                        sizeof(overlay_pack_buffer));
 
     if (len > 0) {
-      SpanSource bpipe(
-          std::as_bytes(std::span(staging_buffer).first(base::ToSize(len))));
+      SpanSource bpipe(std::as_bytes(
+          std::span(overlay_pack_buffer).first(base::ToSize(len))));
       LcwSource uncomp(CodecMode::kDecompress, bpipe);
 
       for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
@@ -376,7 +378,7 @@ void OverlayClass::Write_INI(CCINIClass& ini) {
   ini.Clear(INI_Name());
   ini.Clear("OverlayPack");
 
-  SpanSink bpipe(std::as_writable_bytes(std::span(staging_buffer)));
+  SpanSink bpipe(std::as_writable_bytes(std::span(overlay_pack_buffer)));
   LcwSink comppipe(CodecMode::kCompress, bpipe);
 
   for (CELL index = 0; index < MAP_CELL_TOTAL; index++) {
@@ -384,7 +386,7 @@ void OverlayClass::Write_INI(CCINIClass& ini) {
   }
   comppipe.Finish();
   if (bpipe.bytes_written() > 0) {
-    ini.Put_UUBlock("OverlayPack", base::ObjectBytes(staging_buffer),
+    ini.Put_UUBlock("OverlayPack", base::ObjectBytes(overlay_pack_buffer),
                     static_cast<int>(bpipe.bytes_written()));
   }
 

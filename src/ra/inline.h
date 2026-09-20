@@ -93,7 +93,6 @@
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/scenario.h"
 #include "ra/world.h"

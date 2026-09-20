@@ -31,7 +31,6 @@
 #include "absl/base/attributes.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
-#include "ra/externs.h"
 #include "ra/filepcx.h"
 #include "ra/graphics_loader.h"
 #include "ra/input.h"
@@ -39,6 +38,7 @@
 #include "ra/mapedit.h"
 #include "ra/palette.h"
 #include "ra/theme.h"
+#include "ra/winstub.h"
 #include "ra/world.h"
 #include "sdllib/file_access.h"
 #include "sdllib/gbuffer.h"
@@ -46,6 +46,7 @@
 #include "sdllib/ww_mouse.h"
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
+#include "winvq/vqa32/vqaplay.h"
 
 /***********************************************************************************************
  * Focus_Loss -- this function is called when a library function detects focus

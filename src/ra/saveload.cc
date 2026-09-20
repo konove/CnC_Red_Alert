@@ -41,6 +41,7 @@
 #include <algorithm>
 #include <array>
 #include <cctype>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -76,7 +77,6 @@
 #include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/expand.h"
-#include "ra/externs.h"
 #include "ra/factory.h"
 #include "ra/game_clock.h"
 #include "ra/game_state.h"
@@ -682,9 +682,9 @@ bool Load_Game(int id) {
   Sha1Digest actual{};
   {
     Sha1Source sha(fstraw);
+    std::array<std::byte, 4096> chunk{};
     for (;;) {
-      if (sha.Read(std::as_writable_bytes(std::span(staging_buffer))) !=
-          std::ssize(staging_buffer)) {
+      if (sha.Read(chunk) != std::ssize(chunk)) {
         break;
       }
     }

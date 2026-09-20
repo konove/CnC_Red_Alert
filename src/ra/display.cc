@@ -137,7 +137,6 @@
 #include "ra/defines.h"
 #include "ra/display_constants.h"
 #include "ra/event.h"
-#include "ra/externs.h"
 #include "ra/face.h"
 #include "ra/foot.h"
 #include "ra/gadget.h"
@@ -190,6 +189,9 @@
 #include "tech/number_parse.h"
 #include "tech/span_sink.h"
 #include "tech/span_source.h"
+
+// Scratch space for packing and unpacking the MapPack INI block.
+static char map_pack_buffer[32000];
 
 /*
 **	These layer control elements are used to group the displayable objects
@@ -4496,10 +4498,10 @@ void DisplayClass::Read_INI(CCINIClass& ini) {
   **	Read the map template data.
   */
   static const char* const MAPPACK = "MapPack";
-  len = ini.Get_UUBlock(MAPPACK, base::ObjectBytes(staging_buffer),
-                        sizeof(staging_buffer));
+  len = ini.Get_UUBlock(MAPPACK, base::ObjectBytes(map_pack_buffer),
+                        sizeof(map_pack_buffer));
   SpanSource bstraw(
-      std::as_bytes(std::span(staging_buffer).first(base::ToSize(len))));
+      std::as_bytes(std::span(map_pack_buffer).first(base::ToSize(len))));
   TheMap().Read_Binary(bstraw);
 
   TheWorld().last_theater() = TheScenario().Theater;
@@ -4572,12 +4574,12 @@ void DisplayClass::Write_INI(CCINIClass& ini) {
   **	Write the map template data out to the ini file.
   */
   static const char* const MAPPACK = "MapPack";
-  SpanSink bpipe(std::as_writable_bytes(std::span(staging_buffer)));
+  SpanSink bpipe(std::as_writable_bytes(std::span(map_pack_buffer)));
   TheMap().Write_Binary(bpipe);
   const auto len = static_cast<int>(bpipe.bytes_written());
   ini.Clear(MAPPACK);
   if (len) {
-    ini.Put_UUBlock(MAPPACK, base::ObjectBytes(staging_buffer), len);
+    ini.Put_UUBlock(MAPPACK, base::ObjectBytes(map_pack_buffer), len);
   }
 }
 

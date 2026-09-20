@@ -53,7 +53,6 @@
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/event.h"
-#include "ra/externs.h"
 #include "ra/filepcx.h"
 #include "ra/game_clock.h"
 #include "ra/game_state.h"
@@ -91,6 +90,7 @@
 #include "ra/session.h"
 #include "ra/special.h"
 #include "ra/startup_options.h"
+#include "ra/stats.h"
 #include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "ra/unit.h"  // IWYU pragma: keep
@@ -98,6 +98,7 @@
 #include "ra/version.h"
 #include "ra/vessel.h"  // IWYU pragma: keep
 #include "ra/vortex.h"
+#include "ra/winstub.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"

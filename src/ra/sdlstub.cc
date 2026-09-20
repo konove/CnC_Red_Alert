@@ -6,7 +6,6 @@
 #include <cstdlib>
 
 #include "ra/config.h"
-#include "ra/externs.h"
 #include "ra/game_state.h"
 #include "ra/input.h"
 #include "ra/jshell.h"
@@ -17,6 +16,7 @@
 #include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/startup.h"
+#include "ra/winstub.h"
 #include "sdllib/gbuffer.h"
 #include "sdllib/misc.h"
 #include "sdllib/ww_mouse.h"

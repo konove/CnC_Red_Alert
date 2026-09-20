@@ -63,10 +63,10 @@
 #include "base/numeric.h"
 #include "port/socket_bytes.h"
 #include "port/unaligned.h"
-#include "ra/externs.h"
 #include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/network.h"
+#include "ra/winstub.h"
 #include "ra/wsproto.h"
 #include "sdllib/net_select.h"
 

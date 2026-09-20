@@ -41,6 +41,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "ra/stats.h"
+
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -55,7 +57,6 @@
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
-#include "ra/externs.h"
 #include "ra/game_clock.h"
 #include "ra/goptions.h"
 #include "ra/heap.h"

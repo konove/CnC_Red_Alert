@@ -47,6 +47,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "ra/winstub.h"
+
 #include "WSProto.h"
 #include "ra/config.h"
 #include "ra/function.h"

@@ -42,6 +42,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - */
 
+#include "ra/sendfile.h"
+
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
@@ -53,7 +55,6 @@
 #include "port/safe_string.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
-#include "ra/externs.h"
 #include "ra/gadget.h"
 #include "ra/gauge.h"
 #include "ra/init.h"
