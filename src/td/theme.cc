@@ -70,6 +70,7 @@
 #include "td/rand.h"
 #include "td/special.h"
 #include "td/text.h"
+#include "td/world.h"
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
 
@@ -479,7 +480,7 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
            index != THEME_WIN1 &&
 #ifndef DEMO
            (GameToPlay != GAME_NORMAL ||
-            _themes.at(index).Scenario <= Scenario) &&
+            _themes.at(index).Scenario <= TheWorld().scenario()) &&
 #endif
            (index != THEME_J1 || Special.IsJurassic)));
 }

@@ -72,7 +72,6 @@
 #include "td/config.h"
 #include "td/conquer.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/heap.h"
 #include "td/house.h"
 #include "td/object_heaps.h"
@@ -81,6 +80,7 @@
 #include "td/team.h"
 #include "td/trigger.h"
 #include "td/type.h"
+#include "td/world.h"
 #include "tech/number_parse.h"
 
 /*
@@ -837,7 +837,7 @@ void TeamTypeClass::operator delete(void* ptr) {
 }
 
 TeamClass* TeamTypeClass::Create_One_Of() const {
-  if (ScenarioInit ||
+  if (TheWorld().scenario_init() ||
       base::At(TeamClass::Number, TheObjectHeaps().team_type().ID(this)) <
           MaxAllowed) {
     return new TeamClass(this, HouseClass::As_Pointer(House));

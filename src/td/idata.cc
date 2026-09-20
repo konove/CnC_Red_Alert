@@ -82,6 +82,7 @@
 #include "td/special.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
 
@@ -1669,7 +1670,8 @@ ObjectClass* InfantryTypeClass::Create_One_Of(HouseClass* house) const {
 bool InfantryTypeClass::Create_And_Place(CELL cell, HousesType house) const {
   auto* i = new InfantryClass(Type, house);
   if (i) {
-    const COORDINATE coord = Map.at(cell).Closest_Free_Spot(Cell_Coord(cell));
+    const COORDINATE coord =
+        TheMap().at(cell).Closest_Free_Spot(Cell_Coord(cell));
     if (coord) {
       return i->Unlimbo(coord, DIR_E);
     }
@@ -1758,7 +1760,7 @@ void InfantryTypeClass::Display(int x, int y, WindowNumberType window,
  *=============================================================================================*/
 void InfantryTypeClass::Prep_For_Add() {
   for (InfantryType index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
-    Map.Add_To_List(&As_Reference(index));
+    TheMap().Add_To_List(&As_Reference(index));
   }
 }
 

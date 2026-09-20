@@ -138,6 +138,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "td/world.h"
 
 /***********************************************************************************************
  * FootClass::FootClass -- Default constructor for foot class objects. *
@@ -300,19 +301,19 @@ bool FootClass::Mark(MarkType mark) {
     */
     switch (mark) {
       case MARK_UP:
-        Map.Pick_Up(cell, this);
+        TheMap().Pick_Up(cell, this);
         break;
 
       case MARK_DOWN:
-        Map.Place_Down(cell, this);
+        TheMap().Place_Down(cell, this);
         break;
 
       case MarkType::MARK_CHANGE:
       case MarkType::MARK_OVERLAP_DOWN:
       case MarkType::MARK_OVERLAP_UP:
       default:
-        Map.Refresh_Cells(cell, Overlap_List());
-        Map.Refresh_Cells(cell, Occupy_List());
+        TheMap().Refresh_Cells(cell, Overlap_List());
+        TheMap().Refresh_Cells(cell, Occupy_List());
         break;
     }
     return true;
@@ -372,7 +373,7 @@ bool FootClass::Basic_Path() {
     if (What_Am_I() == RTTI_INFANTRY) {
       CELL mycell = Coord_Cell(Center_Coord());
       //			Mark(MARK_UP);
-      ObjectClass* obj = Map[mycell].Cell_Occupier();
+      ObjectClass* obj = TheMap()[mycell].Cell_Occupier();
       while (obj) {
         if (obj != this && obj->What_Am_I() == RTTI_INFANTRY) {
           InfantryClass* inf = (InfantryClass*)obj;
@@ -579,7 +580,7 @@ int FootClass::Mission_Move() {
 int FootClass::Mission_Capture() {
   if (!Target_Legal(NavCom) && !In_Radio_Contact()) {
     Enter_Idle_Mode();
-    if (Map.at(Coord_Cell(Center_Coord())).Cell_Building()) {
+    if (TheMap().at(Coord_Cell(Center_Coord())).Cell_Building()) {
       Scatter(0, true);
     }
   }
@@ -776,7 +777,7 @@ bool FootClass::Start_Driver(COORDINATE& headto) {
     /*
     **	Check for crate goodie finder here.
     */
-    if (Map.at(Coord_Cell(headto)).Goodie_Check(this)) {
+    if (TheMap().at(Coord_Cell(headto)).Goodie_Check(this)) {
       return true;
     }
 
@@ -922,7 +923,7 @@ void FootClass::Approach_Target() {
           if (::Distance(trycoord, tcoord) < range) {
             trycell = Coord_Cell(trycoord);
             if (Can_Enter_Cell(trycell) <= MOVE_CLOAK &&
-                Map.In_Radar(trycell)) {
+                TheMap().In_Radar(trycell)) {
               found = true;
               break;
             }
@@ -1311,14 +1312,14 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
     case ACTION_MOVE:
       if (AllowVoice) {
         const COORDINATE coord =
-            Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y());
+            TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y());
         OutList.Add(
-            EventClass(ANIM_MOVE_FLASH, PlayerPtr->Class->House, coord));
+            EventClass(ANIM_MOVE_FLASH, ThePlayer()->Class->House, coord));
       }
       [[fallthrough]];
 
     case ACTION_NOMOVE:
-      if (What_Am_I() != RTTI_AIRCRAFT || Map.at(cell).IsVisible) {
+      if (What_Am_I() != RTTI_AIRCRAFT || TheMap().at(cell).IsVisible) {
         Player_Assign_Mission(MISSION_MOVE, kTargetNone, ::As_Target(cell));
       }
       break;
@@ -1384,8 +1385,8 @@ void FootClass::Per_Cell_Process(bool center) {
     for (FacingType face = FACING_N; face < FACING_COUNT; face++) {
       const CELL cell = Adjacent_Cell(Coord_Cell(Coord), face);
 
-      if (Map.In_Radar(cell)) {
-        const TechnoClass* techno = Map.at(cell).Cell_Techno();
+      if (TheMap().In_Radar(cell)) {
+        const TechnoClass* techno = TheMap().at(cell).Cell_Techno();
 
         if (techno && !House->Is_Ally(techno) &&
             techno->Techno_Type_Class()->IsScanner) {
@@ -1421,7 +1422,7 @@ void FootClass::Per_Cell_Process(bool center) {
   /*
   **	Trigger event associated with the player entering the cell.
   */
-  TriggerClass* trigger = Map.at(Coord_Cell(Coord)).Get_Trigger();
+  TriggerClass* trigger = TheMap().at(Coord_Cell(Coord)).Get_Trigger();
   if (Cloak != CLOAKED && trigger && trigger->House == Owner()) {
     trigger->Spring(EVENT_PLAYER_ENTERED, Coord_Cell(Coord));
   }
@@ -1800,12 +1801,12 @@ void FootClass::Death_Announcement(const TechnoClass* source) const {
           Speak(VOX_DEAD_CIV);
         }
       } else {
-        if (House != PlayerPtr && GameToPlay != GAME_NORMAL) {
+        if (House != ThePlayer() && GameToPlay != GAME_NORMAL) {
           if (Options.IsDeathAnnounce) {
             Speak(VOX_ENEMY_UNIT);
           }
         } else {
-          if (House == PlayerPtr || Options.IsDeathAnnounce) {
+          if (House == ThePlayer() || Options.IsDeathAnnounce) {
             if (!Options.IsDeathAnnounce) {
               Speak(VOX_UNIT_LOST);
             } else {
@@ -2049,7 +2050,7 @@ bool FootClass::Can_Demolish() const {
  *=============================================================================================*/
 void FootClass::Sell_Back(int control) {
   if (control != 0) {
-    if (House == PlayerPtr) {
+    if (House == ThePlayer()) {
       Sound_Effect(VOC_CASHTURN);
     }
     House->Refund_Money(Refund_Amount());

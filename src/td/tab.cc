@@ -56,7 +56,6 @@
 #include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/externs.h"
 #include "td/globals.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
@@ -64,6 +63,7 @@
 #include "td/screen.h"
 #include "td/sidebar.h"
 #include "td/special.h"
+#include "td/world.h"
 
 std::span<const std::byte> TabClass::TabShape = {};
 
@@ -243,7 +243,7 @@ void TabClass::Set_Active(int select) {
       break;
 
     case 1:
-      Map.Activate(-1);
+      TheMap().Activate(-1);
       break;
 
     default:

@@ -84,7 +84,6 @@
 #include "td/config.h"
 #include "td/conquer.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/ftimer.h"
 #include "td/globals.h"
 #include "td/heap.h"
@@ -105,6 +104,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/number_parse.h"
 
 static void Do_All_To_Hunt();
@@ -460,27 +460,27 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
     case ACTION_NUKE:
       HouseClass::As_Pointer(HOUSE_BAD)->NukeStrike.Enable(true, false);
       HouseClass::As_Pointer(HOUSE_BAD)->NukeStrike.Forced_Charge(
-          PlayerPtr->Class->House == HOUSE_BAD);
+          ThePlayer()->Class->House == HOUSE_BAD);
       break;
 
     case ACTION_ION:
       HouseClass::As_Pointer(HOUSE_GOOD)->IonCannon.Enable(true, false);
       HouseClass::As_Pointer(HOUSE_GOOD)
-          ->IonCannon.Forced_Charge(PlayerPtr->Class->House == HOUSE_GOOD);
+          ->IonCannon.Forced_Charge(ThePlayer()->Class->House == HOUSE_GOOD);
       break;
 
     case ACTION_WINLOSE:
       switch (event) {
         case EVENT_DESTROYED:
-          if (!PlayerPtr->IsToWin || PlayerPtr->Blockage > 0) {
-            PlayerPtr->Flag_To_Lose();
+          if (!ThePlayer()->IsToWin || ThePlayer()->Blockage > 0) {
+            ThePlayer()->Flag_To_Lose();
           }
           success = true;
           break;
 
         case EVENT_PLAYER_ENTERED:
-          if (!PlayerPtr->IsToLose) {
-            PlayerPtr->Flag_To_Win();
+          if (!ThePlayer()->IsToLose) {
+            ThePlayer()->Flag_To_Win();
           }
           success = true;
           break;
@@ -532,23 +532,24 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
       break;
 
     case ACTION_AIRSTRIKE:
-      PlayerPtr->IsAirstrikePending = true;
+      ThePlayer()->IsAirstrikePending = true;
       //			PlayerPtr->Make_Air_Strike_Available(true);
       break;
 
     case ACTION_DZ:
-      new AnimClass(ANIM_LZ_SMOKE, Cell_Coord(base::At(Waypoint, 25)));
+      new AnimClass(ANIM_LZ_SMOKE,
+                    Cell_Coord(base::At(TheWorld().waypoint(), 25)));
       break;
 
     case ACTION_NONE:
       break;
 
     case ACTION_WIN:
-      PlayerPtr->Flag_To_Win();
+      ThePlayer()->Flag_To_Win();
       break;
 
     case ACTION_LOSE:
-      PlayerPtr->Flag_To_Lose();
+      ThePlayer()->Flag_To_Lose();
       break;
 
     case ACTION_BEGIN_PRODUCTION:
@@ -563,9 +564,9 @@ bool TriggerClass::Spring(EventType event, ObjectClass* obj) {
 
     case ACTION_CREATE_TEAM:
       if (Team) {
-        ScenarioInit++;
+        TheWorld().scenario_init()++;
         Team->Create_One_Of();
-        ScenarioInit--;
+        TheWorld().scenario_init()--;
       }
       break;
 
@@ -647,7 +648,7 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
     /*
     ** Detach ourselves from the cell
     */
-    Map.at(cell).IsTrigger = false;
+    TheMap().at(cell).IsTrigger = false;
 
     /*
     ** Decrement our attachment counter
@@ -674,13 +675,13 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
     case ACTION_NUKE:
       HouseClass::As_Pointer(HOUSE_BAD)->NukeStrike.Enable(true, false);
       HouseClass::As_Pointer(HOUSE_BAD)->NukeStrike.Forced_Charge(
-          PlayerPtr->Class->House == HOUSE_BAD);
+          ThePlayer()->Class->House == HOUSE_BAD);
       break;
 
     case ACTION_ION:
       HouseClass::As_Pointer(HOUSE_GOOD)->IonCannon.Enable(true, false);
       HouseClass::As_Pointer(HOUSE_GOOD)
-          ->IonCannon.Forced_Charge(PlayerPtr->Class->House == HOUSE_GOOD);
+          ->IonCannon.Forced_Charge(ThePlayer()->Class->House == HOUSE_GOOD);
       break;
 
     case ACTION_AUTOCREATE:
@@ -715,31 +716,32 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
 
     case ACTION_AIRSTRIKE:
       HouseClass::As_Pointer(House)->AirStrike.Enable(false, true);
-      if (House == PlayerPtr->Class->House) {
-        PlayerPtr->AirStrike.Forced_Charge(true);
-        Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
-        base::At(Map.Column, 1).Flag_To_Redraw();
+      if (House == ThePlayer()->Class->House) {
+        ThePlayer()->AirStrike.Forced_Charge(true);
+        TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
+        base::At(TheMap().Column, 1).Flag_To_Redraw();
       }
       //			PlayerPtr->Make_Air_Strike_Available(true);
       break;
 
     case ACTION_DZ:
-      new AnimClass(ANIM_LZ_SMOKE, Cell_Coord(base::At(Waypoint, 25)));
+      new AnimClass(ANIM_LZ_SMOKE,
+                    Cell_Coord(base::At(TheWorld().waypoint(), 25)));
       break;
 
     case ACTION_NONE:
       break;
 
     case ACTION_WIN:
-      PlayerPtr->Flag_To_Win();
+      ThePlayer()->Flag_To_Win();
       break;
 
     case ACTION_LOSE:
-      PlayerPtr->Flag_To_Lose();
+      ThePlayer()->Flag_To_Lose();
       break;
 
     case ACTION_BEGIN_PRODUCTION:
-      if (PlayerPtr->Class->House == HOUSE_GOOD) {
+      if (ThePlayer()->Class->House == HOUSE_GOOD) {
         HouseClass::As_Pointer(HOUSE_BAD)->Begin_Production();
       } else {
         HouseClass::As_Pointer(HOUSE_GOOD)->Begin_Production();
@@ -748,9 +750,9 @@ bool TriggerClass::Spring(EventType event, CELL cell) {
 
     case ACTION_CREATE_TEAM:
       if (Team) {
-        ScenarioInit++;
+        TheWorld().scenario_init()++;
         Team->Create_One_Of();
-        ScenarioInit--;
+        TheWorld().scenario_init()--;
       }
       break;
 
@@ -864,13 +866,13 @@ bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
     case ACTION_NUKE:
       HouseClass::As_Pointer(HOUSE_BAD)->NukeStrike.Enable(true, false);
       HouseClass::As_Pointer(HOUSE_BAD)->NukeStrike.Forced_Charge(
-          PlayerPtr->Class->House == HOUSE_BAD);
+          ThePlayer()->Class->House == HOUSE_BAD);
       break;
 
     case ACTION_ION:
       HouseClass::As_Pointer(HOUSE_GOOD)->IonCannon.Enable(true, false);
       HouseClass::As_Pointer(HOUSE_GOOD)
-          ->IonCannon.Forced_Charge(PlayerPtr->Class->House == HOUSE_GOOD);
+          ->IonCannon.Forced_Charge(ThePlayer()->Class->House == HOUSE_GOOD);
       break;
 
     /*
@@ -910,11 +912,11 @@ bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
       break;
 
     case ACTION_AIRSTRIKE:
-      PlayerPtr->AirStrike.Enable(false, true);
-      if (House == PlayerPtr->Class->House) {
-        PlayerPtr->AirStrike.Forced_Charge(true);
-        Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
-        base::At(Map.Column, 1).Flag_To_Redraw();
+      ThePlayer()->AirStrike.Enable(false, true);
+      if (House == ThePlayer()->Class->House) {
+        ThePlayer()->AirStrike.Forced_Charge(true);
+        TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
+        base::At(TheMap().Column, 1).Flag_To_Redraw();
       }
       break;
 
@@ -922,15 +924,16 @@ bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
       break;
 
     case ACTION_DZ:
-      new AnimClass(ANIM_LZ_SMOKE, Cell_Coord(base::At(Waypoint, 25)));
+      new AnimClass(ANIM_LZ_SMOKE,
+                    Cell_Coord(base::At(TheWorld().waypoint(), 25)));
       break;
 
     case ACTION_WIN:
-      PlayerPtr->Flag_To_Win();
+      ThePlayer()->Flag_To_Win();
       break;
 
     case ACTION_LOSE:
-      PlayerPtr->Flag_To_Lose();
+      ThePlayer()->Flag_To_Lose();
       break;
 
     case ACTION_BEGIN_PRODUCTION:
@@ -939,9 +942,9 @@ bool TriggerClass::Spring(EventType event, HousesType house, int64_t data) {
 
     case ACTION_CREATE_TEAM:
       if (Team) {
-        ScenarioInit++;
+        TheWorld().scenario_init()++;
         Team->Create_One_Of();
-        ScenarioInit--;
+        TheWorld().scenario_init()--;
       }
       break;
 
@@ -999,9 +1002,10 @@ bool TriggerClass::Remove() {
   **	Loop through all cells; remove any reference to this trigger
   */
   for (CELL cell = 0; cell < MAP_CELL_TOTAL; cell++) {
-    if (Map.at(cell).IsTrigger && (CellTriggers.at(cell) == this)) {
-      Map.at(cell).IsTrigger = false;
-      CellTriggers.at(cell) = nullptr;
+    if (TheMap().at(cell).IsTrigger &&
+        (TheWorld().cell_triggers().at(cell) == this)) {
+      TheMap().at(cell).IsTrigger = false;
+      TheWorld().cell_triggers().at(cell) = nullptr;
     }
   }
 
@@ -1035,7 +1039,7 @@ bool TriggerClass::Remove() {
   **	be on the safe side.
   */
   for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
-    HouseTriggers.at(h).Delete(this);
+    TheWorld().house_triggers().at(h).Delete(this);
   }
 
   delete this;
@@ -1127,7 +1131,7 @@ void TriggerClass::Read_INI(char* buffer) {
       if (trigger->Action == ACTION_ALLOWWIN) {
         HouseClass::As_Pointer(trigger->House)->Blockage++;
       }
-      HouseTriggers.at(trigger->House).Add(trigger);
+      TheWorld().house_triggers().at(trigger->House).Add(trigger);
       trigger->AttachCount++;
     }
 
@@ -1190,7 +1194,7 @@ void TriggerClass::Fill_In(char* name, char* entry) {
   */
   House = HouseTypeClass::From_Name(tokens.Next());
   if (House == HOUSE_NONE && Event == EVENT_PLAYER_ENTERED) {
-    House = PlayerPtr->Class->House;
+    House = ThePlayer()->Class->House;
   }
 
   /*

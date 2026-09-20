@@ -71,7 +71,6 @@
 #include "td/conquer.h"
 #include "td/coord.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/facing.h"
 #include "td/fly.h"
 #include "td/game_clock.h"
@@ -86,6 +85,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "td/world.h"
 
 #define GRAVITY 3
 
@@ -295,7 +295,7 @@ bool BulletClass::Mark(MarkType mark) {
   Validate();
   if (ObjectClass::Mark(mark)) {
     if (!Class->IsInvisible) {
-      Map.Refresh_Cells(Coord_Cell(Coord), Occupy_List());
+      TheMap().Refresh_Cells(Coord_Cell(Coord), Occupy_List());
     }
     return true;
   }
@@ -400,7 +400,7 @@ void BulletClass::AI() {
       Mark();
       //			IsLocked = true;
       if (!Class->IsHigh) {
-        const CellClass* cellptr = &Map.at(Coord_Cell(coord));
+        const CellClass* cellptr = &TheMap().at(Coord_Cell(coord));
         if (cellptr->Overlay != OVERLAY_NONE &&
             OverlayTypeClass::As_Reference(cellptr->Overlay).IsHigh) {
           forced = true;

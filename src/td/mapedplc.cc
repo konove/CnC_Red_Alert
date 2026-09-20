@@ -75,7 +75,6 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/display_constants.h"
-#include "td/externs.h"
 #include "td/gadget.h"
 #include "td/goptions.h"
 #include "td/house.h"
@@ -91,6 +90,7 @@
 #include "td/trigger.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "td/world.h"
 
 /***************************************************************************
  * MapEditClass::Placement_Dialog -- adds an object to the scenario        *
@@ -438,7 +438,7 @@ int MapEditClass::Placement_Dialog() {
                                       // object to choose
 
   ControlClass* commands = &neutbtn;
-  if (ScenPlayer == SCEN_PLAYER_MPLAYER) {
+  if (TheWorld().scen_player() == SCEN_PLAYER_MPLAYER) {
     multi1btn.Add_Tail(*commands);
     multi2btn.Add_Tail(*commands);
     multi3btn.Add_Tail(*commands);
@@ -941,7 +941,7 @@ void MapEditClass::Start_Placement() {
   } else {
     LastChoice = std::clamp(LastChoice, base::At(TypeOffset, 7), ObjCount - 1);
     PendingObject = base::At(Objects, LastChoice);
-    PendingHouse = LastHouse = Base.House;
+    PendingHouse = LastHouse = TheWorld().base().House;
     PendingObjectPtr =
         PendingObject->Create_One_Of(HouseClass::As_Pointer(LastHouse));
   }
@@ -1194,7 +1194,7 @@ int MapEditClass::Place_Object() {
     if (BaseBuilding && PendingObject->What_Am_I() == RTTI_BUILDINGTYPE) {
       node.Type = dynamic_cast<const BuildingTypeClass*>(PendingObject)->Type;
       node.Coord = PendingObjectPtr->Coord;
-      Base.Nodes.Add(node);
+      TheWorld().base().Nodes.Add(node);
     }
 
     PendingObjectPtr = nullptr;
@@ -1872,8 +1872,8 @@ void MapEditClass::Place_Trigger() {
     ------------------------ Assign trigger to a cell ------------------------
     */
     if (CurTrigger->Event <= EVENT_OBJECTFIRST) {
-      Map.at(cell).IsTrigger = true;
-      CellTriggers.at(cell) = CurTrigger;
+      TheMap().at(cell).IsTrigger = true;
+      TheWorld().cell_triggers().at(cell) = CurTrigger;
     }
   }
 
@@ -1975,9 +1975,9 @@ void MapEditClass::Build_Base_To(int percent) {
   /*
   ** Completely dismantle the base, so we start at a known point
   */
-  for (int i = 0; i < Base.Nodes.Count(); i++) {
-    if (Base.Is_Built(i)) {
-      obj = Base.Get_Building(i);
+  for (int i = 0; i < TheWorld().base().Nodes.Count(); i++) {
+    if (TheWorld().base().Is_Built(i)) {
+      obj = TheWorld().base().Get_Building(i);
       delete obj;
     }
   }
@@ -1986,7 +1986,7 @@ void MapEditClass::Build_Base_To(int percent) {
   ** Compute number of buildings to build
   */
   const int num_buildings =
-      (static_cast<int>(Base.Nodes.Count()) * percent) / 100;
+      (static_cast<int>(TheWorld().base().Nodes.Count()) * percent) / 100;
 
   /*
   ** Build the base to the desired amount
@@ -1996,13 +1996,13 @@ void MapEditClass::Build_Base_To(int percent) {
     ** Get a ptr to the type of building to build, create one, and unlimbo it.
     */
     const BuildingTypeClass* objtype =
-        &BuildingTypeClass::As_Reference(Base.Nodes.at(i).Type);
-    obj = dynamic_cast<BuildingClass*>(
-        objtype->Create_One_Of(HouseClass::As_Pointer(Base.House)));
+        &BuildingTypeClass::As_Reference(TheWorld().base().Nodes.at(i).Type);
+    obj = dynamic_cast<BuildingClass*>(objtype->Create_One_Of(
+        HouseClass::As_Pointer(TheWorld().base().House)));
     /*
     ** If unlimbo fails, error out
     */
-    if (!obj->Unlimbo(Base.Nodes.at(i).Coord)) {
+    if (!obj->Unlimbo(TheWorld().base().Nodes.at(i).Coord)) {
       delete obj;
       CCMessageBox().Process("Unable to build base!");
       return;

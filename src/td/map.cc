@@ -93,6 +93,7 @@
 #include "td/terrain.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/game_file.h"
 
 #define MCW MAP_CELL_W
@@ -443,7 +444,7 @@ void MapClass::One_Time() {
   /*
   **	Init the CellTriggers array to the required size.
   */
-  CellTriggers.Resize(MAP_CELL_TOTAL);
+  TheWorld().cell_triggers().Resize(MAP_CELL_TOTAL);
 }
 
 /***********************************************************************************************
@@ -532,7 +533,7 @@ void MapClass::Init_Cells() {
 #else
   // Reset all cells to their default initial state.
   for (base::ssize index = 0; index < MAP_CELL_TOTAL; index++) {
-    Map.at(index).Reset();
+    TheMap().at(index).Reset();
   }
 #endif
 }
@@ -646,7 +647,7 @@ void MapClass::Sight_From(CELL cell, int sightrange, bool incremental) {
     **	the cell itself.
     */
     if (!(*this).at(newcell).IsMapped) {
-      Map.Map_Cell(newcell, PlayerPtr);
+      TheMap().Map_Cell(newcell, ThePlayer());
     }
   }
 }
@@ -943,7 +944,7 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
   **	Loop through all cells.
   */
   for (i = 0; i < MAP_CELL_TOTAL; i++) {
-    CellClass* cellptr = &Map.at(static_cast<CELL>(i));
+    CellClass* cellptr = &TheMap().at(static_cast<CELL>(i));
     struct {
       TemplateType TType;   // Template type.
       unsigned char TIcon;  // Template icon number.
@@ -1025,7 +1026,7 @@ bool MapClass::Write_Binary(const char* root) {
     /*
     **	Save TType.
     */
-    if (!file->WriteObject(Map.at(i).TType)) {
+    if (!file->WriteObject(TheMap().at(i).TType)) {
       file->Close();
       delete file;
       return false;
@@ -1034,7 +1035,7 @@ bool MapClass::Write_Binary(const char* root) {
     /*
     **	Save TIcon.
     */
-    if (!file->WriteObject(Map.at(i).TIcon)) {
+    if (!file->WriteObject(TheMap().at(i).TIcon)) {
       file->Close();
       delete file;
       return false;
@@ -1159,7 +1160,7 @@ void MapClass::Logic() {
         **	Find a pseudo-random adjacent cell that doesn't contain any
         *tiberium.
         */
-        if (Map.In_Radar(cell)) {
+        if (TheMap().In_Radar(cell)) {
           const FacingType offset = Random_Pick(FACING_N, FACING_NW);
           for (FacingType j = FACING_N; j < FACING_COUNT; j++) {
             CellClass* newcell = &(*this).at(cell).Adjacent_Cell(j + offset);
@@ -1225,10 +1226,11 @@ int MapClass::Cell_Region(CELL cell) {
  *   04/25/1995 PWG : Created.                                             *
  *=========================================================================*/
 int MapClass::Cell_Threat(CELL cell, HousesType house) {
-  int threat = base::At(HouseClass::As_Pointer(house)->Regions,
-                        MapEditClass::Cell_Region(Map.at(cell).Cell_Number()))
-                   .Threat_Value();
-  if (!threat && Map.at(cell).IsVisible) {
+  int threat =
+      base::At(HouseClass::As_Pointer(house)->Regions,
+               MapEditClass::Cell_Region(TheMap().at(cell).Cell_Number()))
+          .Threat_Value();
+  if (!threat && TheMap().at(cell).IsVisible) {
     threat = 1;
   }
   return threat;
@@ -1250,8 +1252,8 @@ int MapClass::Cell_Threat(CELL cell, HousesType house) {
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
 bool MapClass::Place_Random_Crate() {
-  const int old = ScenarioInit;
-  ScenarioInit = 0;
+  const int old = TheWorld().scenario_init();
+  TheWorld().scenario_init() = 0;
   for (int index = 0; index < 100; index++) {
     const int x = Random_Pick(0, MapCellWidth - 1);
     const int y = Random_Pick(0, MapCellHeight - 1);
@@ -1262,11 +1264,11 @@ bool MapClass::Place_Random_Crate() {
       ptr->Overlay = OVERLAY_WOOD_CRATE;
       ptr->OverlayData = 0;
       ptr->Redraw_Objects();
-      ScenarioInit = old;
+      TheWorld().scenario_init() = old;
       return true;
     }
   }
-  ScenarioInit = old;
+  TheWorld().scenario_init() = old;
   return false;
 }
 

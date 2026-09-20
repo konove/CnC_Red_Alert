@@ -72,7 +72,6 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
-#include "td/externs.h"
 #include "td/foot.h"
 #include "td/ftimer.h"
 #include "td/globals.h"
@@ -90,6 +89,7 @@
 #include "td/techno.h"
 #include "td/type.h"
 #include "td/unit.h"
+#include "td/world.h"
 
 /*
 **	This array records the number of teams in existance of each type.
@@ -478,7 +478,7 @@ void TeamClass::AI() {
         case TMISSION_MOVE:
         case TMISSION_UNLOAD:
           Assign_Mission_Target(
-              ::As_Target(base::At(Waypoint, mission->Argument)));
+              ::As_Target(base::At(TheWorld().waypoint(), mission->Argument)));
           break;
 
         case TMISSION_ATTACKTARCOM:
@@ -667,7 +667,8 @@ bool TeamClass::Add(FootClass* obj, int typeindex) {
   //		return(false);
   //	}
 
-  if (!obj || !obj->Strength || (obj->IsInLimbo && !ScenarioInit) ||
+  if (!obj || !obj->Strength ||
+      (obj->IsInLimbo && !TheWorld().scenario_init()) ||
       obj->In_Radio_Contact() || obj->House != House) {
     return false;
   }

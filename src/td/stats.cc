@@ -71,6 +71,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/utracker.h"
+#include "td/world.h"
 #include "tech/game_file.h"
 #include "tech/packet.h"
 
@@ -271,7 +272,7 @@ void Send_Statistics_Packet() {
     char namebuffer[40];
     char* abuffer = ShapeBuffer;
     std::ranges::fill(ShapeBufferBytes, 0);
-    absl::SNPrintF(fname, sizeof(fname), "%s.INI", ScenarioName);
+    absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
     GameFile fileo;
     fileo.SetName(fname);
     fileo.Read(ShapeBufferBytes.first(ShapeBufferBytes.size() - 1));

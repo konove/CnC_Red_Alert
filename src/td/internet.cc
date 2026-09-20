@@ -82,6 +82,7 @@
 #include "td/tcpip.h"
 #include "td/text.h"
 #include "td/textbtn.h"
+#include "td/world.h"
 #include "tech/disk_file.h"
 #include "tech/game_file.h"
 #include "tech/number_parse.h"
@@ -309,7 +310,7 @@ int Read_Game_Options(const char* name) {
     Special.IsTSpread = 0;
   }
   ScenarioIdx = WWGetPrivateProfileInt("Options", "Scenario", 0, buffer);
-  Scenario = ScenarioIdx;  // MPlayerFilenum[ScenarioIdx];
+  TheWorld().scenario() = ScenarioIdx;  // MPlayerFilenum[ScenarioIdx];
 
   Options.GameSpeed = 0;
 

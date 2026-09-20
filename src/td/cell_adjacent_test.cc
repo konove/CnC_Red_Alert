@@ -1,21 +1,32 @@
 // Checks CellClass::Adjacent_Cell's map-edge handling on a real cell array.
+#include "base/installed.h"
 #include "gtest/gtest.h"
 #include "td/cell.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/inline.h"
+#include "td/world.h"
 
 namespace {
+
+// The map these tests walk; Game owns the World that holds it in the real
+// game.
+// NOLINTBEGIN(bugprone-throwing-static-initialization): a test binary
+// that runs out of memory building the world has nothing to report.
+World world;
+const base::Installed<World>::Scope world_scope(world);
+// NOLINTEND(bugprone-throwing-static-initialization)
 
 class TdAdjacentCellTest : public testing::Test {
  protected:
   static void SetUpTestSuite() {
-    Map.Resize(MAP_CELL_TOTAL);
-    Map.Init_Cells();
+    TheMap().Resize(MAP_CELL_TOTAL);
+    TheMap().Init_Cells();
   }
-  static void TearDownTestSuite() { Map.Clear(); }
+  static void TearDownTestSuite() { TheMap().Clear(); }
 
-  static const CellClass& Cell(int x, int y) { return Map.at(XY_Cell(x, y)); }
+  static const CellClass& Cell(int x, int y) {
+    return TheMap().at(XY_Cell(x, y));
+  }
 };
 
 TEST_F(TdAdjacentCellTest, InteriorCellReturnsEachNeighbour) {
@@ -39,13 +50,13 @@ TEST_F(TdAdjacentCellTest, StepOffTopOfArrayReturnsSelf) {
 }
 
 TEST_F(TdAdjacentCellTest, StepOffBottomOfArrayReturnsSelf) {
-  const CellClass& last = Map.at(static_cast<CELL>(MAP_CELL_TOTAL - 1));
+  const CellClass& last = TheMap().at(static_cast<CELL>(MAP_CELL_TOTAL - 1));
   EXPECT_EQ(&last.Adjacent_Cell(FACING_S), &last);
   EXPECT_EQ(&last.Adjacent_Cell(FACING_SE), &last);
   EXPECT_EQ(&last.Adjacent_Cell(FACING_SW), &last);
   EXPECT_EQ(&last.Adjacent_Cell(FACING_E), &last);
   EXPECT_EQ(&last.Adjacent_Cell(FACING_W),
-            &Map.at(static_cast<CELL>(MAP_CELL_TOTAL - 2)));
+            &TheMap().at(static_cast<CELL>(MAP_CELL_TOTAL - 2)));
 }
 
 TEST_F(TdAdjacentCellTest, FirstCellStepWestReturnsSelf) {

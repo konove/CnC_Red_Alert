@@ -72,6 +72,7 @@
 #include "td/screen.h"
 #include "td/text.h"
 #include "td/textblit.h"
+#include "td/world.h"
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
 
@@ -88,15 +89,15 @@ void GDI_Ending() {
   TheScreen().visible_page().Clear();
 
 #else
-  if (TempleIoned) {
+  if (TheWorld().temple_ioned()) {
     Play_Movie("GDIFINB");
   } else {
     Play_Movie("GDIFINA");
   }
 
-  Score.Presentation();
+  TheWorld().score().Presentation();
 
-  if (TempleIoned) {
+  if (TheWorld().temple_ioned()) {
     Play_Movie("GDIEND2");
   } else {
     Play_Movie("GDIEND1");
@@ -166,7 +167,7 @@ void Nod_Ending() {
 #endif  // NOT_FOR_WIN95
   const int oldfontxspacing = FontXSpacing;
 
-  Score.Presentation();
+  TheWorld().score().Presentation();
 
   const std::span<const std::byte> oldfont =
       Set_Font(TheAssets().font(FontType::kScore));

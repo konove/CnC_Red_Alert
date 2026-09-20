@@ -66,6 +66,7 @@
 #include "td/screen.h"
 #include "td/special.h"
 #include "td/textblit.h"
+#include "td/world.h"
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
 #include "tech/game_file_vqa_io.h"
@@ -241,7 +242,7 @@ void Choose_Side() {
       if (ActiveKeyboard->MouseQX > 36 && ActiveKeyboard->MouseQX < 296) {
         // Chose GDI
         Whom = HOUSE_GOOD;
-        ScenPlayer = SCEN_PLAYER_GDI;
+        TheWorld().scen_player() = SCEN_PLAYER_GDI;
         endframe = 0;
         Audio.Play(speechg);
         speechplaying = true;
@@ -252,7 +253,7 @@ void Choose_Side() {
         // Chose Nod
         endframe = 14;
         Whom = HOUSE_BAD;
-        ScenPlayer = SCEN_PLAYER_NOD;
+        TheWorld().scen_player() = SCEN_PLAYER_NOD;
         Audio.Play(speechn);
         speechplaying = true;
         speech = speechn;

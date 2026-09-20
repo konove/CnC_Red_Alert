@@ -95,6 +95,7 @@
 #include "td/special.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/mix_archive.h"
 
 #define MCW MAP_CELL_W
@@ -3837,7 +3838,7 @@ void BuildingTypeClass::Display(int x, int y, WindowNumberType window,
 void BuildingTypeClass::Prep_For_Add() {
   for (StructType index = STRUCT_WEAP; index < STRUCT_COUNT; index++) {
     if (!As_Reference(index).Get_Image_Data().empty()) {
-      Map.Add_To_List(&As_Reference(index));
+      TheMap().Add_To_List(&As_Reference(index));
     }
   }
 }
@@ -3962,7 +3963,7 @@ bool BuildingTypeClass::Legal_Placement(CELL pos) const {
   if (Type == STRUCT_CONCRETE_NOD || Type == STRUCT_CONCRETE_GDI) {
     offset = Occupy_List();
     while (offset.front() != REFRESH_EOL) {
-      if (!Map.Cell_Template(pos + (CELL)base::ConsumeFront(offset))) {
+      if (!TheMap().Cell_Template(pos + (CELL)base::ConsumeFront(offset))) {
         return (true);
       }
     }
@@ -3983,10 +3984,10 @@ bool BuildingTypeClass::Legal_Placement(CELL pos) const {
   offset = Occupy_List(true);
   while (offset.front() != REFRESH_EOL) {
     const CELL cell = static_cast<CELL>(pos + base::ConsumeFront(offset));
-    if (!Map.In_Radar(cell)) {
+    if (!TheMap().In_Radar(cell)) {
       return false;
     }
-    if (!Map.at(cell).Is_Generally_Clear()) {
+    if (!TheMap().at(cell).Is_Generally_Clear()) {
       return false;
     }
   }
@@ -4414,7 +4415,7 @@ int BuildingTypeClass::Max_Pips() const { return Bound(Capacity / 100, 0, 10); }
  *always have their name displayed.                     *
  *=============================================================================================*/
 int BuildingTypeClass::Full_Name() const {
-  if (::Scenario == 3 && Type == STRUCT_MISSION) {
+  if (TheWorld().scenario() == 3 && Type == STRUCT_MISSION) {
     return TXT_PRISON;
   }
   if (!IsNominal || Special.IsNamed || IsWall ||

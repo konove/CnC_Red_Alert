@@ -108,6 +108,7 @@
 #include "td/techno.h"
 #include "td/trigger.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/number_parse.h"
 
 #define BARNACLE_STAGE 22
@@ -340,19 +341,19 @@ bool TerrainClass::Mark(MarkType mark) {
 
     switch (mark) {
       case MARK_UP:
-        Map.Pick_Up(cell, this);
+        TheMap().Pick_Up(cell, this);
         break;
 
       case MARK_DOWN:
-        Map.Place_Down(cell, this);
+        TheMap().Place_Down(cell, this);
         break;
 
       case MarkType::MARK_CHANGE:
       case MarkType::MARK_OVERLAP_DOWN:
       case MarkType::MARK_OVERLAP_UP:
       default:
-        Map.Refresh_Cells(cell, overlap);
-        Map.Refresh_Cells(cell, occupy);
+        TheMap().Refresh_Cells(cell, overlap);
+        TheMap().Refresh_Cells(cell, occupy);
         break;
     }
     return true;
@@ -456,7 +457,8 @@ MoveType TerrainClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   std::span<const int16_t> offset =
       Occupy_List();  // Pointer to cell offset list.
   while (offset.front() != REFRESH_EOL) {
-    if (!Map.at(static_cast<CELL>(cell + base::ConsumeFront(offset)))
+    if (!TheMap()
+             .at(static_cast<CELL>(cell + base::ConsumeFront(offset)))
              .Is_Generally_Clear()) {
       return MOVE_NO;
     }
@@ -626,7 +628,7 @@ void TerrainClass::AI() {
  *=============================================================================================*/
 bool TerrainClass::Unlimbo(COORDINATE coord, DirType dir) {
   Validate();
-  if ((Class->Theater & base::Bit<uint8_t>(Map.Theater)) != 0) {
+  if ((Class->Theater & base::Bit<uint8_t>(TheMap().Theater)) != 0) {
     return ObjectClass::Unlimbo(coord, dir);
   }
   return false;
@@ -674,7 +676,7 @@ bool TerrainClass::Limbo() {
   Validate();
   if (!IsInLimbo) {
     const CELL cell = Coord_Cell(Coord);
-    Map.at(cell).Flag.Occupy.Monolith = false;
+    TheMap().at(cell).Flag.Occupy.Monolith = false;
   }
   return ObjectClass::Limbo();
 }

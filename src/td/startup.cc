@@ -95,6 +95,7 @@
 #include "td/goptions.h"
 #include "td/jshell.h"
 #include "td/special.h"
+#include "td/world.h"
 #include "tech/search_paths.h"
 #endif  // TD_NO_ENTRY_POINT
 
@@ -281,12 +282,12 @@ int main(int argc, char* argv[])
   // The parser writes no game state, so these defaults come first and
   // ApplyStartupOptions() lays the command line over them.
 #ifdef DEMO
-  Scenario = 3;
+  TheWorld().scenario() = 3;
 #else
-  Scenario = 1;
+  TheWorld().scenario() = 1;
 #endif
-  ScenPlayer = SCEN_PLAYER_GDI;
-  ScenDir = SCEN_DIR_EAST;
+  TheWorld().scen_player() = SCEN_PLAYER_GDI;
+  TheWorld().scen_dir() = SCEN_DIR_EAST;
   Whom = HOUSE_GOOD;
   Special.Init();
 

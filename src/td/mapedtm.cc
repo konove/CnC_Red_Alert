@@ -84,6 +84,7 @@
 #include "td/teamtype.h"
 #include "td/textbtn.h"
 #include "td/type.h"
+#include "td/world.h"
 #include "tech/number_parse.h"
 
 /***************************************************************************
@@ -1685,7 +1686,7 @@ int MapEditClass::Team_Members(HousesType house) {
   */
   if (house != HOUSE_GOOD && house != HOUSE_BAD && house != HOUSE_MULTI1 &&
       house != HOUSE_MULTI2 && house != HOUSE_MULTI3 && house != HOUSE_MULTI4) {
-    if (ScenPlayer == SCEN_PLAYER_MPLAYER) {
+    if (TheWorld().scen_player() == SCEN_PLAYER_MPLAYER) {
       house = HOUSE_MULTI1;
     } else {
       house = HOUSE_GOOD;

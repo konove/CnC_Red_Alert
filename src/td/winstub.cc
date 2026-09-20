@@ -90,7 +90,7 @@ void Focus_Loss() {
 
 void Focus_Restore() {
   Restore_Cached_Icons();
-  Map.Flag_To_Redraw(true);
+  TheMap().Flag_To_Redraw(true);
   Audio.Resume();
   if (WWMouse) {
     WWMouse->Set_Cursor_Clip();
@@ -594,6 +594,7 @@ void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
 }
 
 #include "ra/filepcx.h"
+#include "td/world.h"
 
 /***************************************************************************
  * READ_PCX_FILE -- read a pcx file into a Graphic Buffer                  *

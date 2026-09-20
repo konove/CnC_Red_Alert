@@ -80,6 +80,7 @@
 #include "td/support.h"
 #include "td/team.h"
 #include "td/teamtype.h"
+#include "td/world.h"
 
 /*
 **	When an edge search is started, it can be performed CLOCKwise or
@@ -140,7 +141,7 @@ static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
       int x = 0;
       int y = 0;
 
-      if (Map.Coord_To_Pixel(Cell_Coord(cell), x, y)) {
+      if (TheMap().Coord_To_Pixel(Cell_Coord(cell), x, y)) {
         if (threat_stage > 2) {
           TheScreen().visible_view().Put_Pixel(x, y,
                                                passable ? kLtGreen : kRed);
@@ -947,7 +948,7 @@ end_of_list:
     base::At(path.Command, base::ToSize(path.Length++)) = END;
   }
   if (TheDebugState().trace_path_search() && DrawPath) {
-    Map.Flag_To_Redraw(true);
+    TheMap().Flag_To_Redraw(true);
   }
 /*
 **	Optimize the move list but only necessary if
@@ -1438,8 +1439,8 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
       if (Debug_ShowPath) {
         int x, y, x1, y1;
 
-        if (Map.Coord_To_Pixel(Cell_Coord(cell), x, y)) {
-          Map.Coord_To_Pixel(
+        if (TheMap().Coord_To_Pixel(Cell_Coord(cell), x, y)) {
+          TheMap().Coord_To_Pixel(
               Cell_Coord(Adjacent_Cell(cell, path->Command[cmd2])), x1, y1);
           Set_Logic_Page(TheScreen().visible_view());
           LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, kGrey);
@@ -1555,7 +1556,7 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
 
 #ifdef NEVER
   if ((!(MoveMask & MOVEF_MOVING_BLOCK)) &&
-      Map.Cell_Distance(StartLocation, cell) > 2) {
+      TheMap().Cell_Distance(StartLocation, cell) > 2) {
     temp_move_mask |= MOVEF_MOVING_BLOCK;
   }
 #endif
@@ -1577,8 +1578,8 @@ int FootClass::Passable_Cell(CELL cell, FacingType face, int threat,
   }
 
   if (threat != -1) {
-    if (Map.Cell_Distance(cell, DestLocation) > THREAT_THRESHOLD) {
-      if (Map.Cell_Threat(cell, Owner()) > threat) {
+    if (TheMap().Cell_Distance(cell, DestLocation) > THREAT_THRESHOLD) {
+      if (TheMap().Cell_Threat(cell, Owner()) > threat) {
         return (0);
       }
     }

@@ -70,6 +70,7 @@
 #include "td/screen.h"
 #include "td/text.h"
 #include "td/textbtn.h"
+#include "td/world.h"
 #include "tech/game_file.h"
 
 #ifdef NEWMENU
@@ -250,23 +251,23 @@ bool Expansion_Dialog() {
       case KN_RETURN:
       case ButtonKey(200):
         if (list.Current_Item()[0] == 'G') {
-          ScenPlayer = SCEN_PLAYER_GDI;
+          TheWorld().scen_player() = SCEN_PLAYER_GDI;
         } else {
-          ScenPlayer = SCEN_PLAYER_NOD;
+          TheWorld().scen_player() = SCEN_PLAYER_NOD;
         }
-        ScenDir = SCEN_DIR_EAST;
+        TheWorld().scen_dir() = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
-        Scenario = list.Current_Scenario();
+        TheWorld().scenario() = list.Current_Scenario();
         process = false;
         okval = true;
         break;
 
       case KN_ESC:
       case ButtonKey(201):
-        ScenPlayer = SCEN_PLAYER_GDI;
-        ScenDir = SCEN_DIR_EAST;
+        TheWorld().scen_player() = SCEN_PLAYER_GDI;
+        TheWorld().scen_dir() = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
-        Scenario = list.Current_Scenario();
+        TheWorld().scenario() = list.Current_Scenario();
         process = false;
         okval = false;
         break;
@@ -404,23 +405,23 @@ bool Bonus_Dialog() {
       case KN_RETURN:
       case ButtonKey(200):
         if (list.Current_Item()[0] == 'G') {
-          ScenPlayer = SCEN_PLAYER_GDI;
+          TheWorld().scen_player() = SCEN_PLAYER_GDI;
         } else {
-          ScenPlayer = SCEN_PLAYER_NOD;
+          TheWorld().scen_player() = SCEN_PLAYER_NOD;
         }
-        ScenDir = SCEN_DIR_EAST;
+        TheWorld().scen_dir() = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
-        Scenario = list.Current_Scenario();
+        TheWorld().scenario() = list.Current_Scenario();
         process = false;
         okval = true;
         break;
 
       case KN_ESC:
       case ButtonKey(201):
-        ScenPlayer = SCEN_PLAYER_GDI;
-        ScenDir = SCEN_DIR_EAST;
+        TheWorld().scen_player() = SCEN_PLAYER_GDI;
+        TheWorld().scen_dir() = SCEN_DIR_EAST;
         Whom = HOUSE_GOOD;
-        Scenario = list.Current_Scenario();
+        TheWorld().scenario() = list.Current_Scenario();
         process = false;
         okval = false;
         break;

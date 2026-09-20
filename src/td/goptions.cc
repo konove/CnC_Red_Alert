@@ -82,6 +82,7 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/theme.h"
+#include "td/world.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
 
@@ -272,8 +273,8 @@ void GameOptionsClass::Process() {
       **	Redraw the map.
       */
       TheScreen().hidden_page().Clear();
-      Map.Flag_To_Redraw(true);
-      Map.Render();
+      TheMap().Flag_To_Redraw(true);
+      TheMap().Render();
 
       /*
       **	Reset up the window.  Window x-coords are in bytes not pixels.
@@ -324,8 +325,8 @@ void GameOptionsClass::Process() {
               base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
                        kWindowHeight) -
               (GameToPlay == GAME_NORMAL ? 32 * resfactor : 24 * resfactor),
-          kGrey, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT, ScenarioName,
-          Version_Number(), VersionText);
+          kGrey, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_RIGHT,
+          TheWorld().scenario_name(), Version_Number(), VersionText);
 #endif
 
       buttons->Draw_All();
@@ -440,22 +441,24 @@ void GameOptionsClass::Process() {
           if (!Restate_Mission(ScenarioName, TXT_VIDEO,
                                TXT_TAB_BUTTON_CONTROLS)) {
 #else
-          if (!Restate_Mission(ScenarioName, TXT_VIDEO, TXT_OPTIONS)) {
+          if (!Restate_Mission(TheWorld().scenario_name(), TXT_VIDEO,
+                               TXT_OPTIONS)) {
 #endif
             BreakoutAllowed = true;
             char buffer[25];
-            absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA", BriefMovie);
+            absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA",
+                           TheWorld().brief_movie());
             if (GameFile(buffer).IsAvailable()) {
-              Play_Movie(BriefMovie);
+              Play_Movie(TheWorld().brief_movie());
             } else {
-              Play_Movie(ActionMovie);
+              Play_Movie(TheWorld().action_movie());
             }
             // BreakoutAllowed = false;
             std::ranges::fill(ThePalettes().black_palette(), 0x01);
             Set_Palette(ThePalettes().black_palette());
             std::ranges::fill(ThePalettes().black_palette(), 0x00);
             Set_Palette(ThePalettes().black_palette());
-            Map.Flag_To_Redraw(true);
+            TheMap().Flag_To_Redraw(true);
             Theme.Queue_Song(THEME_PICK_ANOTHER);
             process = false;
           }
@@ -555,8 +558,8 @@ void GameOptionsClass::Process() {
   Call_Back();
   TheScreen().hidden_page().Clear();
   Call_Back();
-  Map.Flag_To_Redraw(true);
-  Map.Render();
+  TheMap().Flag_To_Redraw(true);
+  TheMap().Render();
 }
 
 /***********************************************************************************************

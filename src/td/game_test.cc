@@ -11,6 +11,7 @@
 #include "td/object_heaps.h"
 #include "td/palettes.h"
 #include "td/screen.h"
+#include "td/world.h"
 
 namespace {
 
@@ -29,17 +30,20 @@ TEST(GameTest, InstallsItsSubsystemsForItsLifetime) {
   EXPECT_FALSE(base::Installed<Palettes>::IsInstalled());
   EXPECT_FALSE(base::Installed<Assets>::IsInstalled());
   EXPECT_FALSE(base::Installed<ObjectHeaps>::IsInstalled());
+  EXPECT_FALSE(base::Installed<World>::IsInstalled());
   {
-    const Game game;
+    const Game game{};
     EXPECT_TRUE(base::Installed<Screen>::IsInstalled());
     EXPECT_TRUE(base::Installed<Palettes>::IsInstalled());
     EXPECT_TRUE(base::Installed<Assets>::IsInstalled());
     EXPECT_TRUE(base::Installed<ObjectHeaps>::IsInstalled());
+    EXPECT_TRUE(base::Installed<World>::IsInstalled());
   }
   EXPECT_FALSE(base::Installed<Screen>::IsInstalled());
   EXPECT_FALSE(base::Installed<Palettes>::IsInstalled());
   EXPECT_FALSE(base::Installed<Assets>::IsInstalled());
   EXPECT_FALSE(base::Installed<ObjectHeaps>::IsInstalled());
+  EXPECT_FALSE(base::Installed<World>::IsInstalled());
 }
 
 }  // namespace

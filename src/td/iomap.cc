@@ -41,6 +41,7 @@
 #include "td/sidebar.h"
 #include "td/tab.h"
 #include "td/type.h"
+#include "td/world.h"
 #include "tech/archive.h"
 
 template <class Archive>
@@ -82,7 +83,7 @@ void CellClass::Serialize(Archive& ar) {
       ar.Fail("invalid saved cell attributes");
     }
   }
-  auto& trigger = CellTriggers.at(Cell_Number());
+  auto& trigger = TheWorld().cell_triggers().at(Cell_Number());
   if (IsTrigger) {
     ar(TriggerPtr(trigger));
     if constexpr (Archive::kIsReading) {
@@ -326,7 +327,7 @@ void MouseClass::Serialize(Archive& ar) {
     // Init_Cells clears TotalValue, so it must precede the member reads.
     Init_Cells();
     for (CELL cell = 0; cell < MAP_CELL_TOTAL; ++cell) {
-      CellTriggers.at(cell) = nullptr;
+      TheWorld().cell_triggers().at(cell) = nullptr;
     }
   }
   SidebarClass::Serialize(ar);

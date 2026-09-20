@@ -64,13 +64,13 @@
 #include "sdllib/ww_win.h"
 #include "td/conquer.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/gadget.h"
 #include "td/house.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/radar.h"
 #include "td/screen.h"
+#include "td/world.h"
 #include "tech/mix_archive.h"
 
 std::span<const std::byte> PowerClass::PowerShape;
@@ -143,8 +143,8 @@ void PowerClass::One_Time() {
 
   const int factor = Get_Resolution_Factor();
   const int scale = static_cast<int>(base::Bit<uint32_t>(factor));
-  PowX = TheScreen().visible_view().Get_Width() - Map.RadWidth;
-  PowY = Map.RadY + Map.RadHeight + (13 * scale);
+  PowX = TheScreen().visible_view().Get_Width() - TheMap().RadWidth;
+  PowY = TheMap().RadY + TheMap().RadHeight + (13 * scale);
   PowWidth = 8 * scale;
   PowHeight = TheScreen().visible_view().Get_Height() - PowY;
   PowLineSpace = 5 * scale;
@@ -180,7 +180,7 @@ void PowerClass::Draw_It(bool complete) {
   //		PowX = TacPixelX + TacWidth*ICON_PIXEL_W;	// X position of
   // upper left corner of power bar.
   if ((complete || IsPowerToRedraw) && LogicPage->Lock()) {
-    if (Map.IsSidebarActive) {
+    if (TheMap().IsSidebarActive) {
       IsPowerToRedraw = false;
 
       /*
@@ -234,10 +234,10 @@ void PowerClass::Draw_It(bool complete) {
       if (power_height) {
         int power_color = 0;  // green
 
-        if (PlayerPtr->Drain > PlayerPtr->Power) {
+        if (ThePlayer()->Drain > ThePlayer()->Power) {
           power_color = 2;
         }
-        if (PlayerPtr->Drain > PlayerPtr->Power * 2) {
+        if (ThePlayer()->Drain > ThePlayer()->Power * 2) {
           power_color = 4;
         }
 
@@ -296,7 +296,7 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
   //		Flag_To_Redraw(false);
   //	}
 
-  if (Map.IsSidebarActive /*IsActive*/) {
+  if (TheMap().IsSidebarActive /*IsActive*/) {
     const int olddrain = DrainHeight;
     const int oldpower = PowerHeight;
 
@@ -304,9 +304,9 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
     ** If the recorded power value has changed we need to adjust for
     ** it.
     */
-    if (PlayerPtr->Power != RecordedPower) {
-      DesiredPowerHeight = Power_Height(PlayerPtr->Power);
-      RecordedPower = PlayerPtr->Power;
+    if (ThePlayer()->Power != RecordedPower) {
+      DesiredPowerHeight = Power_Height(ThePlayer()->Power);
+      RecordedPower = ThePlayer()->Power;
       PowerBounce = 12;
       if (PowerHeight > DesiredPowerHeight) {
         PowerDir = -1;
@@ -321,9 +321,9 @@ void PowerClass::AI(KeyNumType& input, int x, int y) {
     ** If the recorded drain value has changed we need to adjust for
     ** it.
     */
-    if (PlayerPtr->Drain != RecordedDrain) {
-      DesiredDrainHeight = Power_Height(PlayerPtr->Drain);
-      RecordedDrain = PlayerPtr->Drain;
+    if (ThePlayer()->Drain != RecordedDrain) {
+      DesiredDrainHeight = Power_Height(ThePlayer()->Drain);
+      RecordedDrain = ThePlayer()->Drain;
       DrainBounce = 12;
       if (DrainHeight > DesiredDrainHeight) {
         DrainDir = -1;
@@ -453,7 +453,7 @@ int PowerClass::Power_Height(int value) const {
  * HISTORY: * 08/07/1995 JLB : Created. *
  *=============================================================================================*/
 bool PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
-  if (!Map.IsSidebarActive) {
+  if (!TheMap().IsSidebarActive) {
     return false;
   }
 
@@ -461,11 +461,11 @@ bool PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
   **	Force any help label to disappear when the mouse is held over the
   **	radar map.
   */
-  Map.Override_Mouse_Shape(MOUSE_NORMAL);
-  if (PlayerPtr->Power_Fraction() < 0x0100 && PlayerPtr->Power > 0) {
-    Map.Help_Text(TXT_POWER_OUTPUT_LOW, -1, -1, kCcGreen);
+  TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
+  if (ThePlayer()->Power_Fraction() < 0x0100 && ThePlayer()->Power > 0) {
+    TheMap().Help_Text(TXT_POWER_OUTPUT_LOW, -1, -1, kCcGreen);
   } else {
-    Map.Help_Text(TXT_POWER_OUTPUT, -1, -1, kCcGreen);
+    TheMap().Help_Text(TXT_POWER_OUTPUT, -1, -1, kCcGreen);
   }
   GadgetClass::Action(flags, key);
   return true;

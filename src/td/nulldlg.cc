@@ -110,6 +110,7 @@
 #include "td/textbtn.h"
 #include "td/theme.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/audio_mixer.h"
 #include "tech/crc.h"
 #include "tech/number_parse.h"
@@ -872,7 +873,7 @@ void Destroy_Null_Connection(int id, int error) {
         base::At(MPlayerTColors, static_cast<int>(MPlayerID_To_ColorIndex(
                                      static_cast<unsigned char>(id)))),
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
-    Map.Flag_To_Redraw(false);
+    TheMap().Flag_To_Redraw(false);
   }
 
   for (int i = 0; i < MPlayerCount; i++) {
@@ -909,7 +910,7 @@ void Destroy_Null_Connection(int id, int error) {
         base::At(MPlayerTColors, static_cast<int>(MPlayerID_To_ColorIndex(
                                      static_cast<unsigned char>(id)))),
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
-    Map.Flag_To_Redraw(false);
+    TheMap().Flag_To_Redraw(false);
   }
 
 } /* end of Destroy_Null_Connection */
@@ -4474,7 +4475,7 @@ int Com_Scenario_Dialog() {
     /*.....................................................................
     Get the scenario filename
     .....................................................................*/
-    Scenario = MPlayerFilenum.at(ScenarioIdx);
+    TheWorld().scenario() = MPlayerFilenum.at(ScenarioIdx);
 
     /*.....................................................................
     Send all players the GO packet.
@@ -5692,7 +5693,7 @@ int Com_Show_Scenario_Dialog() {
     /*.....................................................................
     Get the scenario filename
     .....................................................................*/
-    Scenario = MPlayerFilenum.at(ScenarioIdx);
+    TheWorld().scenario() = MPlayerFilenum.at(ScenarioIdx);
 
     starttime = TickCount.Time();
     while (NullModem.Num_Send() &&
@@ -6807,8 +6808,8 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     --------------------------- Redraw the display ---------------------------
     */
     TheScreen().hidden_page().Clear();
-    Map.Flag_To_Redraw(true);
-    Map.Render();
+    TheMap().Flag_To_Redraw(true);
+    TheMap().Render();
   }
 
   switch (dialstatus) {

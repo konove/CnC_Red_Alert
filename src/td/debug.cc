@@ -74,6 +74,7 @@
 #include "td/techno.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/audio_mixer.h"
 #include "tech/pcx_file.h"
 
@@ -152,10 +153,11 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_O: {
-        auto* air = new AircraftClass(AIRCRAFT_ORCA, PlayerPtr->Class->House);
+        auto* air = new AircraftClass(AIRCRAFT_ORCA, ThePlayer()->Class->House);
         if (air) {
           air->Altitude = 0;
-          air->Unlimbo(Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()), DIR_N);
+          air->Unlimbo(TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()),
+                       DIR_N);
         }
       } break;
 
@@ -164,27 +166,29 @@ void Debug_Key(unsigned input) {
       } break;
       case KN_B: {
         auto* air =
-            new AircraftClass(AIRCRAFT_HELICOPTER, PlayerPtr->Class->House);
+            new AircraftClass(AIRCRAFT_HELICOPTER, ThePlayer()->Class->House);
         if (air) {
           air->Altitude = 0;
-          air->Unlimbo(Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()), DIR_N);
+          air->Unlimbo(TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()),
+                       DIR_N);
         }
       } break;
 
       case KN_T: {
         auto* air =
-            new AircraftClass(AIRCRAFT_TRANSPORT, PlayerPtr->Class->House);
+            new AircraftClass(AIRCRAFT_TRANSPORT, ThePlayer()->Class->House);
         if (air) {
           air->Altitude = 0;
-          air->Unlimbo(Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()), DIR_N);
+          air->Unlimbo(TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()),
+                       DIR_N);
         }
       } break;
 
       case KN_GRAVE:
         new AnimClass(ANIM_ART_EXP1,
-                      Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()));
-        Explosion_Damage(Map.Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()), 250,
-                         nullptr, WARHEAD_HE);
+                      TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()));
+        Explosion_Damage(TheMap().Pixel_To_Coord(Get_Mouse_X(), Get_Mouse_Y()),
+                         250, nullptr, WARHEAD_HE);
         break;
 
       case KN_Z:
@@ -195,17 +199,17 @@ void Debug_Key(unsigned input) {
 
       case KN_C:
         TheDebugState().set_build_anything(!TheDebugState().build_anything());
-        PlayerPtr->IsRecalcNeeded = true;
-        PlayerPtr->Add_Nuke_Piece();
-        PlayerPtr->Add_Nuke_Piece();
-        PlayerPtr->Add_Nuke_Piece();
+        ThePlayer()->IsRecalcNeeded = true;
+        ThePlayer()->Add_Nuke_Piece();
+        ThePlayer()->Add_Nuke_Piece();
+        ThePlayer()->Add_Nuke_Piece();
 
         /*
         **	This placement might affect any prerequisite requirements for
         *construction *	lists. Update the buildable options accordingly.
         */
-        if (!ScenarioInit) {
-          Map.Recalc();
+        if (!TheWorld().scenario_init()) {
+          TheMap().Recalc();
           for (int index = 0; index < TheObjectHeaps().building().Count();
                index++) {
             TheObjectHeaps().building().Ptr(index)->Update_Buildables();
@@ -215,19 +219,19 @@ void Debug_Key(unsigned input) {
 
       case KN_Z | KN_ALT_BIT:
         if (map_x == -1) {
-          map_x = Map.MapCellX;
-          map_y = Map.MapCellY;
-          map_width = Map.MapCellWidth;
-          map_height = Map.MapCellHeight;
-          Map.MapCellX = 1;
-          Map.MapCellY = 1;
-          Map.MapCellWidth = 62;
-          Map.MapCellHeight = 62;
+          map_x = TheMap().MapCellX;
+          map_y = TheMap().MapCellY;
+          map_width = TheMap().MapCellWidth;
+          map_height = TheMap().MapCellHeight;
+          TheMap().MapCellX = 1;
+          TheMap().MapCellY = 1;
+          TheMap().MapCellWidth = 62;
+          TheMap().MapCellHeight = 62;
         } else {
-          Map.MapCellX = map_x;
-          Map.MapCellY = map_y;
-          Map.MapCellWidth = map_width;
-          Map.MapCellHeight = map_height;
+          TheMap().MapCellX = map_x;
+          TheMap().MapCellY = map_y;
+          TheMap().MapCellWidth = map_width;
+          TheMap().MapCellHeight = map_height;
           map_x = -1;
           map_y = -1;
           map_width = -1;
@@ -238,27 +242,29 @@ void Debug_Key(unsigned input) {
 #ifdef NEVER
       case KN_G:
         HouseClass::As_Pointer(HOUSE_GOOD)
-            ->Flag_Attach(Map.Click_Cell_Calc(Get_Mouse_X(), Get_Mouse_Y()));
+            ->Flag_Attach(
+                TheMap().Click_Cell_Calc(Get_Mouse_X(), Get_Mouse_Y()));
         break;
 
       case KN_N:
         HouseClass::As_Pointer(HOUSE_BAD)->Flag_Attach(
-            Map.Click_Cell_Calc(Get_Mouse_X(), Get_Mouse_Y()));
+            TheMap().Click_Cell_Calc(Get_Mouse_X(), Get_Mouse_Y()));
         break;
 #endif
 
       case KN_R:
-        if (CurrentObject.Count()) {
-          dynamic_cast<TechnoClass*>(CurrentObject.at(0))->IsCloakable = true;
+        if (TheWorld().current_object().Count()) {
+          dynamic_cast<TechnoClass*>(TheWorld().current_object().at(0))
+              ->IsCloakable = true;
         }
         break;
 
       case KN_W | KN_ALT_BIT:
-        PlayerPtr->Flag_To_Win();
+        ThePlayer()->Flag_To_Win();
         break;
 
       case KN_L | KN_ALT_BIT:
-        PlayerPtr->Flag_To_Lose();
+        ThePlayer()->Flag_To_Lose();
         break;
 
       case KN_F:
@@ -267,10 +273,10 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_DELETE:
-        if (CurrentObject.Count()) {
-          Map.Recalc();
+        if (TheWorld().current_object().Count()) {
+          TheMap().Recalc();
           // CurrentObject[0]->Detach_All();
-          delete CurrentObject.at(0);
+          delete TheWorld().current_object().at(0);
         }
         break;
 
@@ -281,23 +287,24 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_DELETE | KN_SHIFT_BIT:
-        if (CurrentObject.Count()) {
-          Map.Recalc();
+        if (TheWorld().current_object().Count()) {
+          TheMap().Recalc();
           int damage = 50;
-          CurrentObject.at(0)->Take_Damage(damage, 0, WARHEAD_SA);
+          TheWorld().current_object().at(0)->Take_Damage(damage, 0, WARHEAD_SA);
         }
         break;
 
       case KN_INSERT:
-        if (CurrentObject.Count()) {
-          Map.PendingObject = &CurrentObject.at(0)->Class_Of();
-          if (Map.PendingObject) {
-            Map.PendingHouse = CurrentObject.at(0)->Owner();
-            Map.PendingObjectPtr = Map.PendingObject->Create_One_Of(
-                HouseClass::As_Pointer(Map.PendingHouse));
-            if (Map.PendingObjectPtr) {
-              Map.Set_Cursor_Pos();
-              Map.Set_Cursor_Shape(Map.PendingObject->Occupy_List());
+        if (TheWorld().current_object().Count()) {
+          TheMap().PendingObject =
+              &TheWorld().current_object().at(0)->Class_Of();
+          if (TheMap().PendingObject) {
+            TheMap().PendingHouse = TheWorld().current_object().at(0)->Owner();
+            TheMap().PendingObjectPtr = TheMap().PendingObject->Create_One_Of(
+                HouseClass::As_Pointer(TheMap().PendingHouse));
+            if (TheMap().PendingObjectPtr) {
+              TheMap().Set_Cursor_Pos();
+              TheMap().Set_Cursor_Shape(TheMap().PendingObject->Occupy_List());
             }
           }
         }
@@ -306,7 +313,7 @@ void Debug_Key(unsigned input) {
 #ifdef NEVER
       case (KN_F1 | KN_SHIFT_BIT):
         Special.IsBarOn = (Special.IsBarOn == false);
-        Map.Flag_To_Redraw(true);
+        TheMap().Flag_To_Redraw(true);
         break;
 
       case (KN_F1 | KN_SHIFT_BIT):  // quick load/save for debugging
@@ -419,7 +426,7 @@ void Debug_Key(unsigned input) {
           }
         }
 
-        Map.Flag_To_Redraw(true);
+        TheMap().Flag_To_Redraw(true);
 #endif
 #ifdef NEVER
         FILE* fh;
@@ -511,14 +518,14 @@ void Debug_Key(unsigned input) {
 #ifdef NEVER
       case (KN_F3 | KN_ALT_BIT):  // quick load/save for debugging
         TheDebugState().set_show_threat(!TheDebugState().show_threat());
-        Map.Flag_To_Redraw(true);
+        TheMap().Flag_To_Redraw(true);
         break;
 
 #endif
 
       case KN_F3:
         TheDebugState().set_show_cell_info(!TheDebugState().show_cell_info());
-        Map.Flag_To_Redraw(true);
+        TheMap().Flag_To_Redraw(true);
         break;
 
       /*
@@ -527,7 +534,7 @@ void Debug_Key(unsigned input) {
       case KN_F4:
         if (GameToPlay == GAME_NORMAL) {
           TheDebugState().set_unshroud(!TheDebugState().unshroud());
-          Map.Flag_To_Redraw(true);
+          TheMap().Flag_To_Redraw(true);
         }
         break;
 
@@ -537,17 +544,20 @@ void Debug_Key(unsigned input) {
       *red circle is for *	fire range.
       */
       case KN_F7:
-        if (CurrentObject.Count() && CurrentObject.at(0)->Is_Techno()) {
+        if (TheWorld().current_object().Count() &&
+            TheWorld().current_object().at(0)->Is_Techno()) {
           const auto& ttype = dynamic_cast<const TechnoTypeClass&>(
-              CurrentObject.at(0)->Class_Of());
+              TheWorld().current_object().at(0)->Class_Of());
           const int sight = ttype.SightRange * 256;
           int weapon = 0;
           if (ttype.Primary != WEAPON_NONE) {
             weapon = Weapons.at(ttype.Primary).Range;
           }
           Set_Logic_Page(TheScreen().visible_view());
-          const COORDINATE center = CurrentObject.at(0)->Center_Coord();
-          const COORDINATE center2 = CurrentObject.at(0)->Fire_Coord(0);
+          const COORDINATE center =
+              TheWorld().current_object().at(0)->Center_Coord();
+          const COORDINATE center2 =
+              TheWorld().current_object().at(0)->Fire_Coord(0);
 
           for (int r = 0; r < 255; r += 10) {
             int x = 0;
@@ -557,17 +567,17 @@ void Debug_Key(unsigned input) {
             const DirType r1 = AsDirection(r);
             const DirType r2 = AsDirection(r + 10);
 
-            if (Map.Coord_To_Pixel(
+            if (TheMap().Coord_To_Pixel(
                     Coord_Move(center, r1, static_cast<uint16_t>(sight)), x,
                     y)) {
-              Map.Coord_To_Pixel(
+              TheMap().Coord_To_Pixel(
                   Coord_Move(center, r2, static_cast<uint16_t>(sight)), x1, y1);
               LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, kWhite);
             }
-            if (Map.Coord_To_Pixel(
+            if (TheMap().Coord_To_Pixel(
                     Coord_Move(center2, r1, static_cast<uint16_t>(weapon)), x,
                     y)) {
-              Map.Coord_To_Pixel(
+              TheMap().Coord_To_Pixel(
                   Coord_Move(center2, r2, static_cast<uint16_t>(weapon)), x1,
                   y1);
               LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, kRed);
@@ -578,7 +588,7 @@ void Debug_Key(unsigned input) {
 
       case (KN_F4 | KN_CTRL_BIT):
         TheDebugState().set_unshroud(!TheDebugState().unshroud());
-        Map.Flag_To_Redraw(true);
+        TheMap().Flag_To_Redraw(true);
         break;
 
 #ifdef NEVER

@@ -41,6 +41,7 @@
 #include "td/object.h"
 #include "td/object_heaps.h"
 #include "td/type.h"
+#include "td/world.h"
 #include "tech/mix_archive.h"
 
 std::span<const std::byte> AircraftTypeClass::LRotorData = {};
@@ -324,7 +325,7 @@ void AircraftTypeClass::Prep_For_Add() {
   for (AircraftType index = AIRCRAFT_TRANSPORT; index < AIRCRAFT_COUNT;
        ++index) {
     if (!As_Reference(index).Get_Image_Data().empty()) {
-      Map.Add_To_List(&As_Reference(index));
+      TheMap().Add_To_List(&As_Reference(index));
     }
   }
 }

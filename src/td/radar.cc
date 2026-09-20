@@ -126,6 +126,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "td/world.h"
 
 // void const * RadarClass::CoverShape;
 RadarClass::TacticalClass RadarClass::RadarButton;
@@ -179,7 +180,7 @@ void RadarClass::One_Time() {
   RadWidth = 80 * scale;
   RadHeight = 70 * scale;
   RadX = TheScreen().visible_view().Get_Width() - RadWidth;
-  RadY = Map.Get_Tab_Height() - scale;
+  RadY = TheMap().Get_Tab_Height() - scale;
   RadPWidth = 64 * scale;
   RadPHeight = 64 * scale;
   if (factor) {
@@ -233,7 +234,7 @@ void RadarClass::Init_Clear() {
   */
   if (MapCellWidth || MapCellHeight) {
     IsZoomed = false;
-    Zoom_Mode(Coord_Cell(Map.TacticalCoord));
+    Zoom_Mode(Coord_Cell(TheMap().TacticalCoord));
   }
 }
 
@@ -274,7 +275,7 @@ bool RadarClass::Radar_Activate(int control) {
     ** Turn the radar map off properly.
     */
     case 0:
-      if (Map.IsSidebarActive) {
+      if (TheMap().IsSidebarActive) {
         if (IsRadarActive && !IsRadarDeactivating) {
           Sound_Effect(VOC_RADAR_OFF);
           IsRadarDeactivating = true;
@@ -291,7 +292,7 @@ bool RadarClass::Radar_Activate(int control) {
       return old;
 
     case 1:
-      if (Map.IsSidebarActive) {
+      if (TheMap().IsSidebarActive) {
         if (!IsRadarActivating && !IsRadarActive) {
           Sound_Effect(VOC_RADAR_ON);
           IsRadarActivating = true;
@@ -376,7 +377,7 @@ void RadarClass::Draw_It(bool forced) {
   }
 
   static HousesType _house = HOUSE_NONE;
-  if (PlayerPtr->ActLike != _house) {
+  if (ThePlayer()->ActLike != _house) {
     std::string name;
 
     if (Special.IsJurassic && AreThingiesEnabled) {
@@ -384,11 +385,11 @@ void RadarClass::Draw_It(bool forced) {
     } else {
       name = std::filesystem::path("RADAR")
                  .replace_extension(
-                     HouseTypeClass::As_Reference(PlayerPtr->ActLike).Suffix)
+                     HouseTypeClass::As_Reference(ThePlayer()->ActLike).Suffix)
                  .string();
     }
     RadarAnim = Hires_Retrieve(name.c_str());
-    _house = PlayerPtr->ActLike;
+    _house = ThePlayer()->ActLike;
   }
 
   /*
@@ -406,7 +407,7 @@ void RadarClass::Draw_It(bool forced) {
     return;
   }
 
-  if (Map.IsSidebarActive) {
+  if (TheMap().IsSidebarActive) {
     if (IsRadarActive) {
       // HidPage.Lock();
       // ST 8/13/96 2:24PM
@@ -533,7 +534,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   TerrainClass* list[4];
   int listidx = 0;
 
-  ObjectClass* obj = Map.at(cell).Cell_Occupier();
+  ObjectClass* obj = TheMap().at(cell).Cell_Occupier();
 
   /*
   ** If the cell is occupied by a terrain type, add it to the sortable
@@ -547,7 +548,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** Now loop through all the occupiers and add them to the list if they
   ** are terrain type.
   */
-  for (auto& Overlapper : Map.at(cell).Overlappers) {
+  for (auto& Overlapper : TheMap().at(cell).Overlappers) {
     obj = Overlapper;
     if (obj && obj->IsActive && obj->What_Am_I() == RTTI_TERRAIN) {
       base::At(list, listidx++) = dynamic_cast<TerrainClass*>(obj);
@@ -623,11 +624,11 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) const {
   int xoff = 0;
   int yoff = 0;
 
-  ObjectClass* obj = Map.at(cell).Cell_Occupier();
+  ObjectClass* obj = TheMap().at(cell).Cell_Occupier();
   while (obj) {
     if (obj->Is_Techno() &&
         (dynamic_cast<TechnoClass*>(obj)->Cloak != CLOAKED ||
-         dynamic_cast<TechnoClass*>(obj)->House->Is_Ally(PlayerPtr))) {
+         dynamic_cast<TechnoClass*>(obj)->House->Is_Ally(ThePlayer()))) {
       switch (obj->What_Am_I()) {
         case RTTI_INFANTRY: {
           // int divisor = 255 / ZoomFactor;
@@ -947,7 +948,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
  *function.                                            *
  *=============================================================================================*/
 void RadarClass::Radar_Pixel(CELL cell) {
-  if (IsRadarActive && Map.IsSidebarActive && Cell_On_Radar(cell)) {
+  if (IsRadarActive && TheMap().IsSidebarActive && Cell_On_Radar(cell)) {
     IsRadarToRedraw = true;
     (*this).at(cell).IsPlot = true;
     if (PixelPtr < kPixelstack) {
@@ -984,7 +985,7 @@ int RadarClass::Click_In_Radar(int& ptr_x, int& ptr_y, bool change) const {
   /*
   ** If radar is not active the click could have been on a radar point
   */
-  if (!IsRadarActive || !Map.IsSidebarActive) {
+  if (!IsRadarActive || !TheMap().IsSidebarActive) {
     return 0;
   }
 
@@ -1313,7 +1314,7 @@ void RadarClass::Radar_Anim() {
     return;
   }
 
-  if (!Map.IsSidebarActive) {
+  if (!TheMap().IsSidebarActive) {
     return;
   }
 
@@ -1356,7 +1357,7 @@ void RadarClass::AI(KeyNumType& input, int x, int y) {
   /*
   ** Check to see if we need to animate the radar cursor
   */
-  if (IsRadarActive && Map.IsSidebarActive && SpecialRadarFrame) {
+  if (IsRadarActive && TheMap().IsSidebarActive && SpecialRadarFrame) {
     SpecialRadarFrame--;
     RadarCursorRedraw = true;
     IsRadarToRedraw = true;
@@ -1427,13 +1428,13 @@ bool RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   **	Force any help label to disappear when the mouse is held over the
   **	radar map.
   */
-  if (Map.IsSidebarActive) {
-    Map.Help_Text(TXT_NONE);
+  if (TheMap().IsSidebarActive) {
+    TheMap().Help_Text(TXT_NONE);
   }
 
-  if (!Map.IsRadarActive) {
-    if (Map.IsSidebarActive) {
-      Map.Override_Mouse_Shape(MOUSE_NORMAL, true);
+  if (!TheMap().IsRadarActive) {
+    if (TheMap().IsSidebarActive) {
+      TheMap().Override_Mouse_Shape(MOUSE_NORMAL, true);
     }
     return false;
   }
@@ -1441,7 +1442,7 @@ bool RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
   /*
   ** Disable processing if the player names are up
   */
-  if (Map.Is_Player_Names()) {
+  if (TheMap().Is_Player_Names()) {
     GadgetClass::Action(0, key);
     return true;
   }
@@ -1459,14 +1460,14 @@ bool RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     y = Get_Mouse_Y();
   }
 
-  const int result = Map.Click_In_Radar(x, y, false);
+  const int result = TheMap().Click_In_Radar(x, y, false);
 
   if (result == 1) {
-    CELL cell =
-        Map.RadarClass::Click_Cell_Calc(x, y);  // cell num click happened over
-    if (cell != -1 && Map.In_Radar(cell)) {
+    CELL cell = TheMap().RadarClass::Click_Cell_Calc(
+        x, y);  // cell num click happened over
+    if (cell != -1 && TheMap().In_Radar(cell)) {
       const bool shadow =
-          !Map.at(cell).IsVisible &&
+          !TheMap().at(cell).IsVisible &&
           !TheDebugState().unshroud();  // is the cell in shadow or not
       const int cellx = 12;
       const int celly = 12;  // Sub cell pixel coordinates.
@@ -1475,18 +1476,18 @@ bool RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
       **	Determine the object that the mouse is currently over.
       */
       if (!shadow) {
-        object = Map.Cell_Object(cell, cellx, celly);
+        object = TheMap().Cell_Object(cell, cellx, celly);
       }
 
       /*
       **	If there is a currently selected object, then the action to
       *perform if *	the left mouse button were clicked must be determined.
       */
-      if (CurrentObject.Count()) {
+      if (TheWorld().current_object().Count()) {
         if (object) {
-          action = CurrentObject.at(0)->What_Action(object);
+          action = TheWorld().current_object().at(0)->What_Action(object);
         } else {
-          action = CurrentObject.at(0)->What_Action(cell);
+          action = TheWorld().current_object().at(0)->What_Action(cell);
         }
 
         /*
@@ -1540,7 +1541,7 @@ bool RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
         **	A right mouse button press toggles the zoom mode.
         */
         if (flags & kRightPress) {
-          Map.Mouse_Right_Press();
+          TheMap().Mouse_Right_Press();
         }
 
         /*
@@ -1549,7 +1550,7 @@ bool RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
         *mouse is currently over and what *	object is currently selected.
         */
         if (flags & kLeftUp) {
-          Map.Mouse_Left_Up(shadow, object, action, true);
+          TheMap().Mouse_Left_Up(shadow, object, action, true);
         }
 
         /*
@@ -1558,27 +1559,27 @@ bool RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
         *flagged.
         */
         if (flags & kLeftPress) {
-          Map.Mouse_Left_Release(cell, cellx, celly, object, action, true);
+          TheMap().Mouse_Left_Release(cell, cellx, celly, object, action, true);
         }
 
       } else {
-        Map.Set_Default_Mouse(MOUSE_RADAR_CURSOR, !Map.IsZoomed);
+        TheMap().Set_Default_Mouse(MOUSE_RADAR_CURSOR, !TheMap().IsZoomed);
 
         if (flags & kLeftPress) {
-          cell = Map.RadarClass::Click_Cell_Calc(x, y);
+          cell = TheMap().RadarClass::Click_Cell_Calc(x, y);
           if (cell != -1) {
             int cell_x = Cell_X(cell);
             int cell_y = Cell_Y(cell);
-            cell_x -= Lepton_To_Cell(Map.TacLeptonWidth) / 2;
-            cell_x = std::max(cell_x, Map.MapCellX);
-            cell_y -= Lepton_To_Cell(Map.TacLeptonHeight) / 2;
-            cell_y = std::max(cell_y, Map.MapCellY);
+            cell_x -= Lepton_To_Cell(TheMap().TacLeptonWidth) / 2;
+            cell_x = std::max(cell_x, TheMap().MapCellX);
+            cell_y -= Lepton_To_Cell(TheMap().TacLeptonHeight) / 2;
+            cell_y = std::max(cell_y, TheMap().MapCellY);
             cell = XY_Cell(cell_x, cell_y);
-            Map.Set_Tactical_Position(Cell_Coord(cell));
-            cell = Coord_Cell(Map.DesiredTacticalCoord);
-            Map.IsDisplayToRedraw = true;
-            Map.Flag_To_Redraw(true);
-            Map.SpecialRadarFrame = 4;
+            TheMap().Set_Tactical_Position(Cell_Coord(cell));
+            cell = Coord_Cell(TheMap().DesiredTacticalCoord);
+            TheMap().IsDisplayToRedraw = true;
+            TheMap().Flag_To_Redraw(true);
+            TheMap().SpecialRadarFrame = 4;
           }
         }
 
@@ -1586,13 +1587,13 @@ bool RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
         **	A right mouse button press toggles the zoom mode.
         */
         if (flags & kRightPress) {
-          Map.Zoom_Mode(cell);
+          TheMap().Zoom_Mode(cell);
         }
       }
     }
   }
   if (result == -1) {
-    Map.Override_Mouse_Shape(MOUSE_NORMAL, true);
+    TheMap().Override_Mouse_Shape(MOUSE_NORMAL, true);
   }
   GadgetClass::Action(0, key);
   return true;
@@ -1676,7 +1677,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
     RadarY = newy;
     RadarCell = newcell;
 
-    if (Map.IsSidebarActive && Map.IsRadarActive) {
+    if (TheMap().IsSidebarActive && TheMap().IsRadarActive) {
       const int radw = RadarCellWidth - std::abs(radx);   // Replicable width.
       const int radh = RadarCellHeight - std::abs(rady);  // Replicable height.
 
@@ -1900,7 +1901,7 @@ void RadarClass::Draw_Names() const {
   /*
   ** Do nothing if the sidebar isn't there
   */
-  if (!Map.IsSidebarActive) {
+  if (!TheMap().IsSidebarActive) {
     return;
   }
 

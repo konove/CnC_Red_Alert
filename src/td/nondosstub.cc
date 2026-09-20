@@ -33,6 +33,7 @@
 #include "sdllib/file_access.h"
 #include "td/defines.h"
 #include "td/externs.h"
+#include "td/world.h"
 #include "tech/game_file.h"
 // #include "ra/filepcx.h"
 #include "sdllib/gbuffer.h"
@@ -78,7 +79,7 @@ void Focus_Loss() {
 
 void Focus_Restore() {
   Restore_Cached_Icons();
-  Map.Flag_To_Redraw(true);
+  TheMap().Flag_To_Redraw(true);
   Audio.Resume();
 
   if (!InMovie) {

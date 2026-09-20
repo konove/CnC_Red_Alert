@@ -85,6 +85,7 @@
 #include "td/text.h"
 #include "td/theme.h"
 #include "td/type.h"
+#include "td/world.h"
 
 #ifdef _WIN32
 #include "td/ccdde.h"
@@ -148,7 +149,7 @@ base::EnumArray<EventClass::EventType, const char*,
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(SpecialClass data) : EventClass() {
-  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(PlayerPtr));
+  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = SPECIAL;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -172,7 +173,7 @@ EventClass::EventClass(SpecialClass data) : EventClass() {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, TARGET target) : EventClass() {
-  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(PlayerPtr));
+  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -194,7 +195,7 @@ EventClass::EventClass(EventType type, TARGET target) : EventClass() {
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type) : EventClass() {
-  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(PlayerPtr));
+  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -212,7 +213,7 @@ EventClass::EventClass(EventType type) : EventClass() {
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, int val) : EventClass() {
-  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(PlayerPtr));
+  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = type;
   Data.General.Value = val;
   // Frame is a 26-bit field in the packet; the global counter is long.
@@ -239,7 +240,7 @@ EventClass::EventClass(EventType type, int val) : EventClass() {
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, TARGET src, TARGET dest) : EventClass() {
-  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(PlayerPtr));
+  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -264,7 +265,7 @@ EventClass::EventClass(EventType type, TARGET src, TARGET dest) : EventClass() {
  * HISTORY: * 05/19/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(AnimType anim, HousesType owner, COORDINATE coord) : EventClass() {
-  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(PlayerPtr));
+  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = ANIMATION;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -295,7 +296,7 @@ EventClass::EventClass(AnimType anim, HousesType owner, COORDINATE coord) : Even
  *=============================================================================================*/
 EventClass::EventClass(TARGET src, MissionType mission, TARGET target,
                        TARGET destination) : EventClass() {
-  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(PlayerPtr));
+  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = MEGAMISSION;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -324,7 +325,7 @@ EventClass::EventClass(TARGET src, MissionType mission, TARGET target,
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, RTTIType object, int id) : EventClass() {
-  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(PlayerPtr));
+  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -354,7 +355,7 @@ EventClass::EventClass(EventType type, RTTIType object, int id) : EventClass() {
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, RTTIType object, CELL cell) : EventClass() {
-  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(PlayerPtr));
+  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -381,7 +382,7 @@ EventClass::EventClass(EventType type, RTTIType object, CELL cell) : EventClass(
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
 EventClass::EventClass(EventType type, int id, CELL cell) : EventClass() {
-  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(PlayerPtr));
+  ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
@@ -468,7 +469,7 @@ void EventClass::Execute() {
       Messages.Add_Message(
           txt, base::At(MPlayerTColors, static_cast<int>(sender->RemapColor)),
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, 0, 0);
-      Map.Flag_To_Redraw(false);
+      TheMap().Flag_To_Redraw(false);
     } break;
 
     /*
@@ -508,7 +509,7 @@ void EventClass::Execute() {
     case ANIMATION:
       anim = new AnimClass(Data.Anim.What, Data.Anim.Where);
       if (anim && (Data.Anim.Owner != HOUSE_NONE &&
-                   PlayerPtr->Class->House != Data.Anim.Owner &&
+                   ThePlayer()->Class->House != Data.Anim.Owner &&
                    !Special.IsVisibleTarget)) {
         anim->Make_Invisible();
       }
@@ -629,7 +630,8 @@ void EventClass::Execute() {
             break;
         }
 
-        if (object && (PlayerPtr->Is_Ally(techno) || Special.IsVisibleTarget)) {
+        if (object &&
+            (ThePlayer()->Is_Ally(techno) || Special.IsVisibleTarget)) {
           object->Clicked_As_Target();
         }
 

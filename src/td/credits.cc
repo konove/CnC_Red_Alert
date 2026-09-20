@@ -69,12 +69,12 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"
-#include "td/externs.h"
 #include "td/house.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/screen.h"
 #include "td/tab.h"
+#include "td/world.h"
 
 CreditClass::CreditClass() = default;
 
@@ -146,7 +146,7 @@ void CreditClass::Graphic_Logic(bool forced) {
  * HISTORY: * 03/13/1995 JLB : Created. *
  *=============================================================================================*/
 void CreditClass::AI(bool forced) {
-  Credits = PlayerPtr->Available_Money();
+  Credits = ThePlayer()->Available_Money();
 
   /*
   **	Make sure that the credit counter doesn't drop below zero.
@@ -188,5 +188,5 @@ void CreditClass::AI(bool forced) {
     }
   }
   IsToRedraw = true;
-  Map.Flag_To_Redraw(false);
+  TheMap().Flag_To_Redraw(false);
 }

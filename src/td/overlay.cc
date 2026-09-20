@@ -72,6 +72,7 @@
 #include "td/special.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/number_parse.h"
 
 HousesType OverlayClass::ToOwn = HOUSE_NONE;
@@ -211,7 +212,7 @@ bool OverlayClass::Mark(MarkType mark) {
   Validate();
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
     const CELL cell = Coord_Cell(Coord);
-    CellClass* cellptr = &Map.at(cell);
+    CellClass* cellptr = &TheMap().at(cell);
 
     /*
     **	Road placement occurs in two steps. First the foundation is
@@ -296,7 +297,7 @@ bool OverlayClass::Mark(MarkType mark) {
               } else {
                 newcell = Adjacent_Cell(cellptr->Cell_Number(), FACING_E);
               }
-              if (Map.at(newcell).Overlay != OVERLAY_CONCRETE) {
+              if (TheMap().at(newcell).Overlay != OVERLAY_CONCRETE) {
                 Class->Create_And_Place(newcell);
               }
 
@@ -416,7 +417,7 @@ void OverlayClass::Write_INI(std::span<char> buffer) {
   **	Write the unit data out.
   */
   for (int index = 0; index < MAP_CELL_TOTAL; index++) {
-    const CellClass* cellptr = &Map.at(index);
+    const CellClass* cellptr = &TheMap().at(index);
 
     if (cellptr->Overlay != OVERLAY_NONE) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);

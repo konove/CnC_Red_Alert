@@ -124,6 +124,7 @@
 #include "td/text.h"
 #include "td/type.h"
 #include "td/unit.h"
+#include "td/world.h"
 #include "tech/game_file.h"
 
 /********************************** Globals *********************************/
@@ -423,7 +424,7 @@ static void Queue_AI_Normal() {
   //------------------------------------------------------------------------
   // Execute the DoList
   //------------------------------------------------------------------------
-  if (!Execute_DoList(1, PlayerPtr->Class->House, nullptr, nullptr, {}, {},
+  if (!Execute_DoList(1, ThePlayer()->Class->House, nullptr, nullptr, {}, {},
                       {})) {
     GameActive = false;
     return;
@@ -931,8 +932,8 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
       // network must deal with a timeout differently.
       //..................................................................
       if (Handle_Timeout(net, their_frame, their_sent, their_recv)) {
-        Map.Flag_To_Redraw(true);  // erase modem reconnect dialog
-        Map.Render();
+        TheMap().Flag_To_Redraw(true);  // erase modem reconnect dialog
+        TheMap().Render();
         retry_timer.Set(resend_delta, true);
         dialog_timer.Set(dialog_time, true);
         timeout_timer.Set(timeout, true);
@@ -1055,11 +1056,11 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
     Call_Back();
     if (!first_time && SpecialDialog == SDLG_NONE && reconnect_dlg == 0) {
       WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
-      Map.Input(input, x, y);
+      TheMap().Input(input, x, y);
       if (input) {
         Keyboard_Process(input);
       }
-      Map.Render();
+      TheMap().Render();
     }
 
   } /* end of while */
@@ -1068,8 +1069,8 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   //	If the reconnect dialog was shown, force the map to redraw.
   //------------------------------------------------------------------------
   if (reconnect_dlg) {
-    Map.Flag_To_Redraw(true);
-    Map.Render();
+    TheMap().Flag_To_Redraw(true);
+    TheMap().Render();
   }
 
   return RC_NORMAL;
@@ -1530,9 +1531,9 @@ static void Send_FrameSync(ConnManClass* net, int cmd_count) {
   } else {
     packet.Frame = static_cast<unsigned>(CurrentFrame() + MPlayerMaxAhead);
   }
-  packet.ID = static_cast<unsigned>(TheObjectHeaps().house().ID(PlayerPtr));
+  packet.ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   packet.MPlayerID = MPlayerLocalID;
-  packet.Data.FrameInfo.CRC = ScenarioCRC;
+  packet.Data.FrameInfo.CRC = TheWorld().scenario_crc();
   packet.Data.FrameInfo.CommandCount = static_cast<uint16_t>(cmd_count);
   packet.Data.FrameInfo.Delay = static_cast<unsigned char>(MPlayerMaxAhead);
 
@@ -1667,7 +1668,7 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
   //	If the event was a FRAMESYNC packet, there will be no commands to add,
   //	but we must check the ScenarioCRC value.
   //------------------------------------------------------------------------
-  else if (event->Data.FrameInfo.CRC != ScenarioCRC) {
+  else if (event->Data.FrameInfo.CRC != TheWorld().scenario_crc()) {
     return RC_SCENARIO_MISMATCH;
   }
 
@@ -1807,7 +1808,7 @@ static RetcodeType Process_Serial_Packet(
     //	Tell the map to do a partial update (just to force the
     // messages to redraw).
     //.....................................................................
-    Map.Flag_To_Redraw(false);
+    TheMap().Flag_To_Redraw(false);
     return RC_SERIAL_PROCESSED;
   }
 
@@ -1831,7 +1832,7 @@ static RetcodeType Process_Serial_Packet(
   base::CopyBytes(
       base::ObjectBytes(event_storage), multi_packet_buf,
       offsetof(EventClass, Data) + sizeof(event_storage.Data.FrameInfo));
-  if (event->ID == TheObjectHeaps().house().ID(PlayerPtr)) {
+  if (event->ID == TheObjectHeaps().house().ID(ThePlayer())) {
     return RC_HUNG_UP;
   }
 
@@ -2192,7 +2193,7 @@ static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
   //........................................................................
   // Fill in the rest of the event
   //........................................................................
-  finfo->ID = static_cast<unsigned>(TheObjectHeaps().house().ID(PlayerPtr));
+  finfo->ID = static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
   finfo->MPlayerID = MPlayerLocalID;
   finfo->Data.FrameInfo.CRC = GameCRC;
   finfo->Data.FrameInfo.CommandCount = static_cast<uint16_t>(num_cmds);
@@ -2297,7 +2298,7 @@ int Add_Uncompressed_Events(std::span<std::byte> buf, int bufsize,
     // Set the event's ID
     //.....................................................................
     OutList.First().ID =
-        static_cast<unsigned>(TheObjectHeaps().house().ID(PlayerPtr));
+        static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
     OutList.First().MPlayerID = MPlayerLocalID;
 
     //.....................................................................
@@ -2491,7 +2492,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
     // Set the event's ID
     //.....................................................................
     OutList.First().ID =
-        static_cast<unsigned>(TheObjectHeaps().house().ID(PlayerPtr));
+        static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
     OutList.First().MPlayerID = MPlayerLocalID;
 
     //.....................................................................
@@ -3152,7 +3153,7 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
             }
           }
 
-          if (DoList.at(j).ID == TheObjectHeaps().house().ID(PlayerPtr)) {
+          if (DoList.at(j).ID == TheObjectHeaps().house().ID(ThePlayer())) {
             DoList.at(j).Execute();
           }
 
@@ -3219,7 +3220,7 @@ static int Execute_DoList(int /*unused*/, HousesType /*unused*/,
                     Destroy_Connection(net->Connection_ID(0), -1);
                   }
                 }
-                Map.Flag_To_Redraw(true);
+                TheMap().Flag_To_Redraw(true);
               } else {
                 return 0;
               }
@@ -3458,7 +3459,7 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   if (GameToPlay == GAME_NORMAL) {
     max_houses = 1;
-    base_house = PlayerPtr->Class->House;
+    base_house = ThePlayer()->Class->House;
   } else {
     max_houses = MPlayerMax;
     base_house = HOUSE_MULTI1;

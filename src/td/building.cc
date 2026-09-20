@@ -201,6 +201,7 @@
 #include "td/unit.h"
 #include "td/utracker.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/number_parse.h"
 
 constexpr int kSamUnderground =
@@ -300,7 +301,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
     case RADIO_CAN_LOAD:
       TechnoClass::Receive_Message(from, message, param);
       if (BState == BSTATE_CONSTRUCTION ||
-          (!ScenarioInit && In_Radio_Contact())) {
+          (!TheWorld().scenario_init() && In_Radio_Contact())) {
         return RADIO_NEGATIVE;
       }
       switch (Class->Type) {
@@ -329,7 +330,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
         case STRUCT_REFINERY:
           if (from->What_Am_I() == RTTI_UNIT &&
               *dynamic_cast<UnitClass*>(from) == UNIT_HARVESTER &&
-              (ScenarioInit || !Is_Something_Attached())) {
+              (TheWorld().scenario_init() || !Is_Something_Attached())) {
             return RADIO_ROGER;
           }
           break;
@@ -423,9 +424,9 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
           return RADIO_ROGER;
 
         case STRUCT_REFINERY:
-          ScenarioInit++;
+          TheWorld().scenario_init()++;
           Begin_Mode(BSTATE_ACTIVE);
-          ScenarioInit--;
+          TheWorld().scenario_init()--;
           Mark(MARK_CHANGE);
           Assign_Mission(MISSION_HARVEST);
           return RADIO_ATTACH;
@@ -874,7 +875,7 @@ bool BuildingClass::Mark(MarkType mark) {
 
     switch (mark) {
       case MARK_UP:
-        Map.Pick_Up(cell, this);
+        TheMap().Pick_Up(cell, this);
         if (Class->Bib_And_Offset(bib, cell)) {
           auto* smudge = new SmudgeClass(bib);
           if (smudge) {
@@ -992,7 +993,7 @@ bool BuildingClass::Mark(MarkType mark) {
               new SmudgeClass(bib, Cell_Coord(newcell), House->Class->House);
             }
 
-            Map.Place_Down(cell, this);
+            TheMap().Place_Down(cell, this);
           } else {
             return false;
           }
@@ -1003,8 +1004,8 @@ bool BuildingClass::Mark(MarkType mark) {
       case MarkType::MARK_OVERLAP_DOWN:
       case MarkType::MARK_OVERLAP_UP:
       default:
-        Map.Refresh_Cells(cell, offset);
-        Map.Refresh_Cells(cell, occupy);
+        TheMap().Refresh_Cells(cell, offset);
+        TheMap().Refresh_Cells(cell, occupy);
         break;
     }
     return true;
@@ -1073,20 +1074,20 @@ BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
           Set_Stage(0);
           Set_Rate(0);
 
-          if (Map.Push_Onto_TacMap(source, dest) &&
+          if (TheMap().Push_Onto_TacMap(source, dest) &&
               SpecialDialog == SDLG_NONE) {
-            Map.Coord_To_Pixel(source, x, y);
-            Map.Coord_To_Pixel(dest, x1, y1);
-            x += Map.TacPixelX;
-            x1 += Map.TacPixelX;
-            y += Map.TacPixelY;
-            y1 += Map.TacPixelY;
+            TheMap().Coord_To_Pixel(source, x, y);
+            TheMap().Coord_To_Pixel(dest, x1, y1);
+            x += TheMap().TacPixelX;
+            x1 += TheMap().TacPixelX;
+            y += TheMap().TacPixelY;
+            y1 += TheMap().TacPixelY;
             Set_Logic_Page(TheScreen().visible_view());
             LogicPage->Draw_Line(x + 1, y, x1, y1, 0x7D);
             LogicPage->Draw_Line(x - 1, y, x1, y1, 0x7D);
             LogicPage->Draw_Line(x, y, x1, y1, 0x7F);
             Delay(1);  // Make sure line is visible briefly
-            Map.Flag_To_Redraw(true);
+            TheMap().Flag_To_Redraw(true);
           }
           new SmudgeClass(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
                           As_Coord(target));
@@ -1394,10 +1395,10 @@ void BuildingClass::AI() {
     **	Possibly start repair process if the building is below half strength.
     */
     int ratio = 0x0040;
-    if (Scenario > 6) {
+    if (TheWorld().scenario() > 6) {
       ratio = 0x0080;
     }
-    if (Scenario > 10) {
+    if (TheWorld().scenario() > 10) {
       ratio = 0x00C0;
     }
     if (Class->IsRepairable &&
@@ -1405,8 +1406,8 @@ void BuildingClass::AI() {
       if (House->Available_Money() >= REPAIR_THRESHHOLD) {
         Repair(1);
       } else {
-        if (IsTickedOff && Scenario > 2 && Random_Pick(0, 50) < Scenario &&
-            !Trigger) {
+        if (IsTickedOff && TheWorld().scenario() > 2 &&
+            Random_Pick(0, 50) < TheWorld().scenario() && !Trigger) {
           Sell_Back(1);
         }
       }
@@ -1464,7 +1465,7 @@ void BuildingClass::AI() {
   *explodes.
   */
   if (IsGoingToBlow && CountDown.Expired()) {
-    SabotagedType = Class->Type;
+    TheWorld().sabotaged_type() = Class->Type;
     int damage = 5000;
     Take_Damage(damage, 0, WARHEAD_FIRE, As_Techno(WhomToRepay));
     Mark(MARK_CHANGE);
@@ -1637,7 +1638,7 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
         ObjectClass* o =
             OverlayTypeClass::As_Reference(otype).Create_One_Of(House);
         if (o && o->Unlimbo(coord)) {
-          Map.at(Coord_Cell(coord)).Owner = House->Class->House;
+          TheMap().at(Coord_Cell(coord)).Owner = House->Class->House;
           Transmit_Message(RADIO_OVER_OUT);
           delete this;
           return true;
@@ -1709,17 +1710,17 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
     House->IsRecalcNeeded = true;
     LastStrength = 0;
 
-    if ((!IsDiscoveredByPlayer && Map.at(Coord_Cell(coord)).IsVisible) ||
+    if ((!IsDiscoveredByPlayer && TheMap().at(Coord_Cell(coord)).IsVisible) ||
         GameToPlay != GAME_NORMAL) {
-      Revealed(PlayerPtr);
+      Revealed(ThePlayer());
     }
     if (!House->IsHuman) {
       Revealed(House);
     }
 
     if (IsOwnedByPlayer) {
-      Map.PowerClass::IsPowerToRedraw = true;
-      Map.Flag_To_Redraw(false);
+      TheMap().PowerClass::IsPowerToRedraw = true;
+      TheMap().Flag_To_Redraw(false);
     }
     return true;
   }
@@ -1851,7 +1852,8 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
         **	remembering of this fact. The finale uses this information to
         **	play the correct movie.
         */
-        TempleIoned = *this == STRUCT_TEMPLE && warhead == WARHEAD_PB;
+        TheWorld().temple_ioned() =
+            *this == STRUCT_TEMPLE && warhead == WARHEAD_PB;
         break;
 
       case RESULT_HALF:
@@ -1991,7 +1993,7 @@ ResultType BuildingClass::Take_Damage(int& damage, int distance,
 void BuildingClass::Look(bool /*unused*/) {
   Validate();
   if (IsOwnedByPlayer || IsDiscoveredByPlayer) {
-    Map.Sight_From(Coord_Cell(Center_Coord()), Class->SightRange, false);
+    TheMap().Sight_From(Coord_Cell(Center_Coord()), Class->SightRange, false);
   }
 }
 
@@ -2147,22 +2149,22 @@ void BuildingClass::Drop_Debris(TARGET source) {
   **	building.
   */
   if (GameToPlay == GAME_NORMAL && *this == STRUCT_MISSION &&
-      PlayerPtr->ActLike == HOUSE_BAD && Scenario == 10) {
+      ThePlayer()->ActLike == HOUSE_BAD && TheWorld().scenario() == 10) {
     auto* i = new InfantryClass(INFANTRY_CHAN, House->Class->House);
 
-    ScenarioInit++;
+    TheWorld().scenario_init()++;
     if (i->Unlimbo(Center_Coord(), DIR_N)) {
       i->Trigger = TriggerClass::As_Pointer("CHAN");
       i->Strength = static_cast<int16_t>(
           Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
-      ScenarioInit--;
+      TheWorld().scenario_init()--;
       i->Scatter(0, true);
-      ScenarioInit++;
+      TheWorld().scenario_init()++;
       i->Assign_Mission(MISSION_GUARD_AREA);
     } else {
       delete i;
     }
-    ScenarioInit--;
+    TheWorld().scenario_init()--;
   }
 
   /*
@@ -2192,7 +2194,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
           if (!Class->Get_Buildup_Data().empty() && i->Class->IsNominal) {
             i->IsTechnician = true;
           }
-          ScenarioInit++;
+          TheWorld().scenario_init()++;
           if (i->Unlimbo(Cell_Coord(newcell), DIR_N)) {
             i->Strength = static_cast<int16_t>(
                 Random_Pick(5, static_cast<int>(i->Class->MaxStrength)));
@@ -2210,7 +2212,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
           } else {
             delete i;
           }
-          ScenarioInit--;
+          TheWorld().scenario_init()--;
         }
       }
     }
@@ -2388,34 +2390,36 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         auto* air = dynamic_cast<AircraftClass*>(base);
 
         air->Altitude = 0;
-        ScenarioInit++;
+        TheWorld().scenario_init()++;
         if (air->Unlimbo(Docking_Coord(), air->Pose_Dir())) {
           Transmit_Message(RADIO_HELLO, air);
           Transmit_Message(RADIO_TETHER);
-          ScenarioInit--;
+          TheWorld().scenario_init()--;
           return 2;
         }
-        ScenarioInit--;
+        TheWorld().scenario_init()--;
       } else {
         auto* air = dynamic_cast<AircraftClass*>(base);
 
         CELL cell = 0;
-        if (Cell_X(Coord_Cell(Center_Coord())) - Map.MapCellX <
-            Map.MapCellWidth / 2) {
-          cell = XY_Cell(Map.MapCellX - 1,
-                         Random_Pick(0, Map.MapCellHeight - 1) + Map.MapCellY);
+        if (Cell_X(Coord_Cell(Center_Coord())) - TheMap().MapCellX <
+            TheMap().MapCellWidth / 2) {
+          cell = XY_Cell(
+              TheMap().MapCellX - 1,
+              Random_Pick(0, TheMap().MapCellHeight - 1) + TheMap().MapCellY);
         } else {
-          cell = XY_Cell(Map.MapCellX + Map.MapCellWidth,
-                         Random_Pick(0, Map.MapCellHeight - 1) + Map.MapCellY);
+          cell = XY_Cell(
+              TheMap().MapCellX + TheMap().MapCellWidth,
+              Random_Pick(0, TheMap().MapCellHeight - 1) + TheMap().MapCellY);
         }
-        ScenarioInit++;
+        TheWorld().scenario_init()++;
         if (air->Unlimbo(Cell_Coord(cell), DIR_N)) {
           air->Assign_Destination(::As_Target(Nearby_Location(air)));
           air->Assign_Mission(MISSION_MOVE);
-          ScenarioInit--;
+          TheWorld().scenario_init()--;
           return 2;
         }
-        ScenarioInit--;
+        TheWorld().scenario_init()--;
       }
       break;
 
@@ -2493,7 +2497,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             auto* unit = dynamic_cast<UnitClass*>(base);
 
             cell = Adjacent_Cell(cell, FACING_SW);
-            ScenarioInit++;
+            TheWorld().scenario_init()++;
             if (unit->Unlimbo(Coord_Add(unit->Coord, 0x00550060L), DIR_SW_X2)) {
               unit->PrimaryFacing = DIR_SW_X2;
               Transmit_Message(RADIO_HELLO, unit);
@@ -2502,7 +2506,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
               unit->Force_Track(DriveClass::kOutOfRefinery, Cell_Coord(cell));
               unit->Set_Speed(128);
             }
-            ScenarioInit--;
+            TheWorld().scenario_init()--;
           } else {
             base->  // The original passed `true` as the threat coordinate; that
                     // value (1) is kept.
@@ -2520,7 +2524,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
           return 0;
 
         case STRUCT_WEAP:
-          ScenarioInit++;
+          TheWorld().scenario_init()++;
           if (base->Unlimbo(Coord_Add(Coord, Class->ExitPoint), DIR_SW)) {
             //						base->Assign_Mission(MISSION_MOVE);
             //						base->Assign_Destination(::As_Target(As_Cell(Coord)+MAP_CELL_W*2));
@@ -2530,10 +2534,10 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             Transmit_Message(RADIO_HELLO, base);
             Transmit_Message(RADIO_TETHER);
             Assign_Mission(MISSION_UNLOAD);
-            ScenarioInit--;
+            TheWorld().scenario_init()--;
             return 2;
           }
-          ScenarioInit--;
+          TheWorld().scenario_init()--;
           break;
 
         case STRUCT_BARRACKS:
@@ -2563,7 +2567,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
             const DirType dir = Direction(cell);
             const COORDINATE start = Coord_Add(Coord, Class->ExitPoint);
 
-            ScenarioInit++;
+            TheWorld().scenario_init()++;
             if (base->Unlimbo(start, dir)) {
               base->Assign_Mission(MISSION_MOVE);
               base->Assign_Destination(::As_Target(cell));
@@ -2575,10 +2579,10 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
               if (Transmit_Message(RADIO_HELLO, base) == RADIO_ROGER) {
                 Transmit_Message(RADIO_UNLOAD);
               }
-              ScenarioInit--;
+              TheWorld().scenario_init()--;
               return 2;
             }
-            ScenarioInit--;
+            TheWorld().scenario_init()--;
           }
           break;
       }
@@ -2594,7 +2598,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
         *calling routine will probably abandon this *	building in preference
         *to building another.
         */
-        const BaseNodeClass* node = Base.Next_Buildable(
+        const BaseNodeClass* node = TheWorld().base().Next_Buildable(
             dynamic_cast<BuildingClass*>(base)->Class->Type);
         if (node) {
           if (Flush_For_Placement(base, Coord_Cell(node->Coord))) {
@@ -2655,15 +2659,15 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
  *=============================================================================================*/
 void BuildingClass::Update_Buildables() {
   Validate();
-  if (House == PlayerPtr && !IsInLimbo && IsDiscoveredByPlayer) {
+  if (House == ThePlayer() && !IsInLimbo && IsDiscoveredByPlayer) {
     switch (Class->ToBuild) {
       case RTTI_BUILDINGTYPE:
         for (StructType i = STRUCT_WEAP; i < STRUCT_COUNT; i++) {
-          if (PlayerPtr->Can_Build(i, ActLike)) {
+          if (ThePlayer()->Can_Build(i, ActLike)) {
             //						if
             //(BuildingTypeClass::As_Reference(i).Who_Can_Build_Me(true, true,
             // ActLike)) {
-            Map.Add(RTTI_BUILDINGTYPE, static_cast<int>(i));
+            TheMap().Add(RTTI_BUILDINGTYPE, static_cast<int>(i));
             //						}
           }
         }
@@ -2671,11 +2675,11 @@ void BuildingClass::Update_Buildables() {
 
       case RTTI_UNITTYPE:
         for (UnitType u = UNIT_HTANK; u < UNIT_COUNT; u++) {
-          if (PlayerPtr->Can_Build(u, ActLike)) {
+          if (ThePlayer()->Can_Build(u, ActLike)) {
             //						if
             //(UnitTypeClass::As_Reference(u).Who_Can_Build_Me(true, true,
             // ActLike)) {
-            Map.Add(RTTI_UNITTYPE, static_cast<int>(u));
+            TheMap().Add(RTTI_UNITTYPE, static_cast<int>(u));
             //						}
           }
         }
@@ -2683,11 +2687,11 @@ void BuildingClass::Update_Buildables() {
 
       case RTTI_INFANTRYTYPE:
         for (InfantryType f = INFANTRY_E1; f < INFANTRY_COUNT; f++) {
-          if (PlayerPtr->Can_Build(f, ActLike)) {
+          if (ThePlayer()->Can_Build(f, ActLike)) {
             //						if
             //(InfantryTypeClass::As_Reference(f).Who_Can_Build_Me(true, true,
             // ActLike)) {
-            Map.Add(RTTI_INFANTRYTYPE, static_cast<int>(f));
+            TheMap().Add(RTTI_INFANTRYTYPE, static_cast<int>(f));
             //						}
           }
         }
@@ -2695,11 +2699,11 @@ void BuildingClass::Update_Buildables() {
 
       case RTTI_AIRCRAFTTYPE:
         for (AircraftType a = AIRCRAFT_TRANSPORT; a < AIRCRAFT_COUNT; a++) {
-          if (PlayerPtr->Can_Build(a, ActLike)) {
+          if (ThePlayer()->Can_Build(a, ActLike)) {
             //						if
             //(AircraftTypeClass::As_Reference(a).Who_Can_Build_Me(true, true,
             // ActLike)) {
-            Map.Add(RTTI_AIRCRAFTTYPE, static_cast<int>(a));
+            TheMap().Add(RTTI_AIRCRAFTTYPE, static_cast<int>(a));
             //						}
           }
         }
@@ -2829,9 +2833,9 @@ bool BuildingClass::Limbo() {
     House->Adjust_Power(-Power_Output());
     House->Adjust_Drain(-Class->Drain);
     House->Adjust_Capacity(-Class->Capacity, true);
-    if (House == PlayerPtr) {
-      Map.PowerClass::IsPowerToRedraw = true;
-      Map.Flag_To_Redraw(false);
+    if (House == ThePlayer()) {
+      TheMap().PowerClass::IsPowerToRedraw = true;
+      TheMap().Flag_To_Redraw(false);
     }
 
 #ifdef OBSOLETE
@@ -2905,9 +2909,9 @@ bool BuildingClass::Limbo() {
     *works.
     ** Otherwise, the sidebar won't properly remove non-available buildables.
     */
-    if (IsOwnedByPlayer && !ScenarioInit) {
+    if (IsOwnedByPlayer && !TheWorld().scenario_init()) {
       IsInLimbo = true;
-      Map.Recalc();
+      TheMap().Recalc();
       IsInLimbo = false;
     }
   }
@@ -3096,7 +3100,7 @@ void BuildingClass::Grand_Opening(bool captured) {
   **	Refineries get a free harvester. Add a harvester to the reinforcement
   *list *	at this time.
   */
-  if (*this == STRUCT_REFINERY && !ScenarioInit && !captured &&
+  if (*this == STRUCT_REFINERY && !TheWorld().scenario_init() && !captured &&
       !TheDebugState().map_editor_active() &&
       (!House->IsHuman || PurchasePrice == 0 ||
        PurchasePrice > Class->Raw_Cost())) {
@@ -3137,7 +3141,7 @@ void BuildingClass::Grand_Opening(bool captured) {
   if (*this == STRUCT_HELIPAD && !captured &&
       (!House->IsHuman || PurchasePrice == 0 ||
        PurchasePrice > Class->Raw_Cost())) {
-    ScenarioInit++;
+    TheWorld().scenario_init()++;
     AircraftClass* air = nullptr;
     if (House->ActLike == HOUSE_GOOD) {
       air = new AircraftClass(AIRCRAFT_ORCA, House->Class->House);
@@ -3152,7 +3156,7 @@ void BuildingClass::Grand_Opening(bool captured) {
         Transmit_Message(RADIO_TETHER);
       }
     }
-    ScenarioInit--;
+    TheWorld().scenario_init()--;
   }
 }
 
@@ -3302,7 +3306,7 @@ ActionType BuildingClass::What_Action(ObjectClass* object) {
   ActionType action = TechnoClass::What_Action(object);
 
   if (action == ACTION_SELF) {
-    if (Class->IsFactory && PlayerPtr == House) {
+    if (Class->IsFactory && ThePlayer() == House) {
       switch (Class->ToBuild) {
         case RTTI_AIRCRAFTTYPE:
           if (House->AircraftFactories < 2) {
@@ -3423,7 +3427,8 @@ ActionType BuildingClass::What_Action(CELL cell) const {
 void BuildingClass::Begin_Mode(BStateType bstate) {
   Validate();
   QueueBState = bstate;
-  if (BState == BSTATE_NONE || bstate == BSTATE_CONSTRUCTION || ScenarioInit) {
+  if (BState == BSTATE_NONE || bstate == BSTATE_CONSTRUCTION ||
+      TheWorld().scenario_init()) {
     BState = bstate;
     QueueBState = BSTATE_NONE;
     const BuildingTypeClass::AnimControlType* ctrl = Fetch_Anim_Control();
@@ -3733,7 +3738,7 @@ bool BuildingClass::Toggle_Primary() {
       }
     }
     IsLeader = true;
-    if (House == PlayerPtr) {
+    if (House == ThePlayer()) {
       Speak(VOX_PRIMARY_SELECTED);
     }
   }
@@ -3784,9 +3789,9 @@ bool BuildingClass::Captured(HouseClass* newowner) {
         break;
     }
 
-    if (House == PlayerPtr) {
-      Map.PowerClass::IsPowerToRedraw = true;
-      Map.Flag_To_Redraw(false);
+    if (House == ThePlayer()) {
+      TheMap().PowerClass::IsPowerToRedraw = true;
+      TheMap().Flag_To_Redraw(false);
     }
 
     /*
@@ -3873,8 +3878,8 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     }
 
 #ifdef NEVER
-    if (IsOwnedByPlayer && !ScenarioInit) {
-      Map.Recalc();
+    if (IsOwnedByPlayer && !TheWorld().scenario_init()) {
+      TheMap().Recalc();
     }
 #endif
 
@@ -3954,7 +3959,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
     **	Perform a look operation when catpured if it was the player
     **	that performed the capture.
     */
-    if (House == PlayerPtr) {
+    if (House == ThePlayer()) {
       Look(false);
     }
 
@@ -4257,23 +4262,25 @@ int BuildingClass::Mission_Deconstruction() {
 
             auto* infantry = new InfantryClass(typ, House->Class->House);
             if (infantry) {
-              ScenarioInit++;
+              TheWorld().scenario_init()++;
               COORDINATE coord =
                   Coord_Add(Center_Coord(), Pixel_Offset_Coord(0, -12));
-              coord = Map.at(Coord_Cell(coord)).Closest_Free_Spot(coord, false);
+              coord = TheMap()
+                          .at(Coord_Cell(coord))
+                          .Closest_Free_Spot(coord, false);
 
               if (infantry->Unlimbo(coord, DIR_N)) {
                 if (infantry->Class->IsNominal) {
                   infantry->IsTechnician = true;
                 }
-                ScenarioInit--;
+                TheWorld().scenario_init()--;
                 infantry->Scatter(0, true);
-                ScenarioInit++;
+                TheWorld().scenario_init()++;
                 infantry->Assign_Mission(MISSION_GUARD_AREA);
               } else {
                 delete infantry;
               }
-              ScenarioInit--;
+              TheWorld().scenario_init()--;
             }
             count--;
           }
@@ -4299,9 +4306,9 @@ int BuildingClass::Mission_Deconstruction() {
         **	to an MCV.
         */
         if (Special.IsMCVDeploy && *this == STRUCT_CONST && House->IsHuman) {
-          ScenarioInit++;
+          TheWorld().scenario_init()++;
           auto* unit = new UnitClass(UNIT_MCV, House->Class->House);
-          ScenarioInit--;
+          TheWorld().scenario_init()--;
           if (unit) {
             /*
             **	Unlimbo the MCV onto the map. The MCV should start in the same
@@ -4610,7 +4617,8 @@ int BuildingClass::Mission_Harvest() {
         */
         const bool old = Special.IsScatter;
         Special.IsScatter = true;
-        Map.at(Adjacent_Cell(Coord_Cell(Center_Coord()), DIR_SW))
+        TheMap()
+            .at(Adjacent_Cell(Coord_Cell(Center_Coord()), DIR_SW))
             .Incoming(0, true);
         Special.IsScatter = old;
 
@@ -4878,7 +4886,7 @@ int BuildingClass::Mission_Missile() {
           } else {
             bullet->PrimaryFacing.Set_Current(DIR_N);
             Sound_Effect(VOC_NUKE_FIRE, launch);
-            if (House == PlayerPtr) {
+            if (House == ThePlayer()) {
               Speak(VOX_NUKE_LAUNCHED);
             }
           }
@@ -4958,7 +4966,7 @@ int BuildingClass::Mission_Missile() {
 bool BuildingClass::Revealed(HouseClass* house) {
   Validate();
   if (TechnoClass::Revealed(house)) {
-    if (!ScenarioInit) {
+    if (!TheWorld().scenario_init()) {
       House->JustBuilt = Class->Type;
     }
     House->IsRecalcNeeded = true;
@@ -5002,7 +5010,8 @@ void BuildingClass::Enter_Idle_Mode(bool initial) {
   *during game play and thus it must start in *	the "construction" mission.
   */
   MissionType mission = MISSION_GUARD;
-  if (!initial || ScenarioInit || TheDebugState().map_editor_active()) {
+  if (!initial || TheWorld().scenario_init() ||
+      TheDebugState().map_editor_active()) {
     Begin_Mode(BSTATE_IDLE);
     mission = MISSION_GUARD;
   } else {
@@ -5050,12 +5059,12 @@ int BuildingClass::Pip_Count() const {
 void BuildingClass::Death_Announcement(const TechnoClass* /*source*/) const {
   Validate();
   if (IsDiscoveredByPlayer || IsOwnedByPlayer) {
-    if (House != PlayerPtr && GameToPlay != GAME_NORMAL) {
+    if (House != ThePlayer() && GameToPlay != GAME_NORMAL) {
       if (Options.IsDeathAnnounce) {
         Speak(VOX_ENEMY_STRUCTURE);
       }
     } else {
-      if (House == PlayerPtr || Options.IsDeathAnnounce) {
+      if (House == ThePlayer() || Options.IsDeathAnnounce) {
         if (!Options.IsDeathAnnounce) {
           Speak(VOX_STRUCTURE_LOST);
         } else {
@@ -5520,12 +5529,12 @@ bool BuildingClass::Flush_For_Placement(TechnoClass* techno, CELL cell) {
     while (list.front() != REFRESH_EOL) {
       const CELL newcell = static_cast<CELL>(cell + base::ConsumeFront(list));
 
-      if (Map.In_Radar(newcell)) {
-        TechnoClass* occupier = Map.at(newcell).Cell_Techno();
+      if (TheMap().In_Radar(newcell)) {
+        TechnoClass* occupier = TheMap().at(newcell).Cell_Techno();
         if (occupier) {
           again = true;
           if (occupier->House->Is_Ally(this)) {
-            Map.at(newcell).Incoming(0, true);
+            TheMap().at(newcell).Incoming(0, true);
           } else {
             Base_Is_Attacked(occupier);
           }
@@ -5550,7 +5559,7 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
   if (!ptr.empty()) {
     while (ptr.front() != REFRESH_EOL) {
       const CELL cell = static_cast<CELL>(origin + base::ConsumeFront(ptr));
-      if (Map.In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
+      if (TheMap().In_Radar(cell) && techno->Can_Enter_Cell(cell) == MOVE_OK) {
         return cell;
       }
     }
@@ -5598,21 +5607,21 @@ bool BuildingClass::Passes_Proximity_Check(CELL homecell) {
   while (ptr.front() != REFRESH_EOL) {
     const CELL cell = static_cast<CELL>(homecell + base::ConsumeFront(ptr));
 
-    if (!Map.In_Radar(cell)) {
+    if (!TheMap().In_Radar(cell)) {
       return false;
     }
 
     for (FacingType facing = FACING_N; facing < FACING_COUNT; facing++) {
       const CELL newcell = Adjacent_Cell(cell, facing);
 
-      const TechnoClass* base = Map.at(newcell).Cell_Techno();
+      const TechnoClass* base = TheMap().at(newcell).Cell_Techno();
 
       /*
       **	The special cell ownership flag allows building adjacent
       **	to friendly walls and bibs even though there is no official
       **	building located there.
       */
-      if (Map.at(newcell).Owner == House->Class->House) {
+      if (TheMap().at(newcell).Owner == House->Class->House) {
         return true;
       }
 

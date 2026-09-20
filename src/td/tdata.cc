@@ -65,6 +65,7 @@
 #include "td/object.h"
 #include "td/terrain.h"
 #include "td/type.h"
+#include "td/world.h"
 #include "tech/mix_archive.h"
 
 #define TREE_NORMAL 600
@@ -748,7 +749,7 @@ void TerrainTypeClass::Display(int x, int y, WindowNumberType window,
 void TerrainTypeClass::Prep_For_Add() {
   for (TerrainType index = TERRAIN_TREE1; index < TERRAIN_COUNT; index++) {
     if (!As_Reference(index).Get_Image_Data().empty()) {
-      Map.Add_To_List(&As_Reference(index));
+      TheMap().Add_To_List(&As_Reference(index));
     }
   }
 }

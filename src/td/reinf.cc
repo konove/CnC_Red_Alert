@@ -64,6 +64,7 @@
 #include "td/techno.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "td/world.h"
 
 /***********************************************************************************************
  * Do_Reinforcements -- Create and place a reinforcement team. *
@@ -176,10 +177,10 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
 
     for (int sub = 0; std::cmp_less(sub, base::At(teamtype->DesiredNum, index));
          sub++) {
-      ScenarioInit++;
+      TheWorld().scenario_init()++;
       auto* temp = dynamic_cast<FootClass*>(
           tclass->Create_One_Of(HouseClass::As_Pointer(teamtype->House)));
-      ScenarioInit--;
+      TheWorld().scenario_init()--;
 
       if (temp) {
         /*
@@ -189,9 +190,9 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
         */
         const auto* unit = dynamic_cast<UnitClass*>(temp);
         if (team && (unit == nullptr || *unit != UNIT_HOVER)) {
-          ScenarioInit++;
+          TheWorld().scenario_init()++;
           team->Add(temp);
-          ScenarioInit--;
+          TheWorld().scenario_init()--;
         }
 
         /*
@@ -272,12 +273,12 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   CELL cell = 0;
   switch (source) {
     case SOURCE_SHIPPING:
-      cell = Map.Calculated_Cell(source, teamtype->House);
+      cell = TheMap().Calculated_Cell(source, teamtype->House);
       object->IsALoaner = true;
       if (object->Unlimbo(Cell_Coord(cell), DIR_W)) {
         object->Assign_Mission(MISSION_GUARD);
         object->Assign_Destination(As_Target(
-            XY_Cell(Map.MapCellX - 1, Cell_Y(Coord_Cell(object->Coord)))));
+            XY_Cell(TheMap().MapCellX - 1, Cell_Y(Coord_Cell(object->Coord)))));
       } else {
         delete team;
         delete object;
@@ -293,11 +294,11 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
                                                  2);  // Facing to enter map.
 
       if (airtransport) {
-        ScenarioInit++;
+        TheWorld().scenario_init()++;
       }
-      cell = Map.Calculated_Cell(source, teamtype->House);
+      cell = TheMap().Calculated_Cell(source, teamtype->House);
       if (airtransport) {
-        ScenarioInit--;
+        TheWorld().scenario_init()--;
       }
       CELL newcell = cell;
 
@@ -340,7 +341,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
           FacingType adj = FACING_NONE;
           for (adj = FACING_N; adj < FACING_COUNT; adj++) {
             const CELL trycell = Adjacent_Cell(newcell, adj);
-            if (!Map.In_Radar(trycell) &&
+            if (!TheMap().In_Radar(trycell) &&
                 object->Can_Enter_Cell(trycell, adj) == MOVE_OK) {
               newcell = trycell;
               break;
@@ -387,23 +388,23 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
         *find a cell that *	exactly lines up with the airfield they will
         *unload at.
         */
-        ScenarioInit++;
-        CELL newcell = Map.Calculated_Cell(
+        TheWorld().scenario_init()++;
+        CELL newcell = TheMap().Calculated_Cell(
             HouseClass::As_Pointer(teamtype->House)->Edge, teamtype->House);
-        ScenarioInit--;
+        TheWorld().scenario_init()--;
         if (*thisone == AIRCRAFT_CARGO) {
           const BuildingClass* building =
               thisone->Find_Docking_Bay(STRUCT_AIRSTRIP, false);
           if (building) {
-            newcell = XY_Cell(Map.MapCellX + Map.MapCellWidth,
+            newcell = XY_Cell(TheMap().MapCellX + TheMap().MapCellWidth,
                               Coord_YCell(building->Docking_Coord() + 2));
           }
         }
         thisone->Next = nullptr;
 
-        ScenarioInit++;
+        TheWorld().scenario_init()++;
         placed = thisone->Unlimbo(Cell_Coord(newcell), DIR_W);
-        ScenarioInit--;
+        TheWorld().scenario_init()--;
         if (placed) {
           if (!team) {
             if (thisone->Class->IsFixedWing) {
@@ -416,7 +417,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
                 thisone->Assign_Mission(MISSION_MOVE);
               }
               thisone->Assign_Destination(
-                  As_Target(Map.Calculated_Cell(source, teamtype->House)));
+                  As_Target(TheMap().Calculated_Cell(source, teamtype->House)));
             }
             thisone->Commence();
           }
@@ -443,10 +444,10 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
 
     case SOURCE_OCEAN:
     case SOURCE_BEACH:
-      cell = Map.Calculated_Cell(SOURCE_BEACH, teamtype->House);
+      cell = TheMap().Calculated_Cell(SOURCE_BEACH, teamtype->House);
       if (cell) {
         const CELL edge =
-            XY_Cell(Cell_X(cell), Map.MapCellY + Map.MapCellHeight);
+            XY_Cell(Cell_X(cell), TheMap().MapCellY + TheMap().MapCellHeight);
 
         placed = object->Unlimbo(Cell_Coord(edge), DIR_N);
         if (placed) {
@@ -476,7 +477,7 @@ bool Do_Reinforcements(const TeamTypeClass* teamtype) {
   /*
   **	Announce when the reinforcements have arrived.
   */
-  if (okvoice && teamtype->House == PlayerPtr->Class->House) {
+  if (okvoice && teamtype->House == ThePlayer()->Class->House) {
     Speak(VOX_REINFORCEMENTS);
   }
 
@@ -531,11 +532,12 @@ bool Create_Special_Reinforcement(const HouseClass* house,
         */
         if (house->Edge == SOURCE_SOUTH) {
           bool found = false;
-          for (int index = Map.MapCellX;
-               index < Map.MapCellX + Map.MapCellWidth - 1; index++) {
-            const CELL cell = XY_Cell(index, Map.MapCellY + Map.MapCellHeight);
-            if (Map.at(cell).Is_Generally_Clear() &&
-                Map.at(cell - MAP_CELL_W).Is_Generally_Clear()) {
+          for (int index = TheMap().MapCellX;
+               index < TheMap().MapCellX + TheMap().MapCellWidth - 1; index++) {
+            const CELL cell =
+                XY_Cell(index, TheMap().MapCellY + TheMap().MapCellHeight);
+            if (TheMap().at(cell).Is_Generally_Clear() &&
+                TheMap().at(cell - MAP_CELL_W).Is_Generally_Clear()) {
               found = true;
               break;
             }
@@ -555,7 +557,7 @@ bool Create_Special_Reinforcement(const HouseClass* house,
 
         if (!another) {
           mission = TMISSION_MOVECELL;
-          argument = Map.Calculated_Cell(SOURCE_AIR, house->Class->House);
+          argument = TheMap().Calculated_Cell(SOURCE_AIR, house->Class->House);
         }
       }
 
@@ -566,7 +568,7 @@ bool Create_Special_Reinforcement(const HouseClass* house,
       */
       if (!another && mission == TMISSION_NONE) {
         mission = TMISSION_MOVECELL;
-        argument = Map.Calculated_Cell(SOURCE_AIR, house->Class->House);
+        argument = TheMap().Calculated_Cell(SOURCE_AIR, house->Class->House);
       }
 
       /*
@@ -651,9 +653,9 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
     ** Create one of the required objects.  If this fails we could have
     ** a real problem.
     */
-    ScenarioInit++;
+    TheWorld().scenario_init()++;
     auto* obj = dynamic_cast<TechnoClass*>(type->Create_One_Of(house));
-    ScenarioInit--;
+    TheWorld().scenario_init()--;
     if (!obj) {
       return sub;
     }
@@ -688,14 +690,14 @@ int Create_Air_Reinforcement(HouseClass* house, AircraftType air, int number,
         source = SOURCE_NORTH;
         break;
     }
-    const CELL newcell = Map.Calculated_Cell(source, house->Class->House);
+    const CELL newcell = TheMap().Calculated_Cell(source, house->Class->House);
 
     /*
     ** Try and place the object onto the map.
     */
-    ScenarioInit++;
+    TheWorld().scenario_init()++;
     const bool placed = obj->Unlimbo(Cell_Coord(newcell), DIR_N);
-    ScenarioInit--;
+    TheWorld().scenario_init()--;
     if (placed) {
       /*
       ** If we suceeded in placing the obj onto the map then

@@ -181,6 +181,7 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/crc.h"
 #include "tech/number_parse.h"
 
@@ -451,7 +452,7 @@ void Destroy_Connection(int id, int error) {
         base::At(MPlayerTColors, static_cast<int>(MPlayerID_To_ColorIndex(
                                      static_cast<unsigned char>(id)))),
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
-    Map.Flag_To_Redraw(false);
+    TheMap().Flag_To_Redraw(false);
   }
 
   /*------------------------------------------------------------------------
@@ -494,7 +495,7 @@ void Destroy_Connection(int id, int error) {
         base::At(MPlayerTColors, static_cast<int>(MPlayerID_To_ColorIndex(
                                      static_cast<unsigned char>(id)))),
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
-    Map.Flag_To_Redraw(false);
+    TheMap().Flag_To_Redraw(false);
   }
 
 } /* end of Destroy_Connection */
@@ -1900,7 +1901,7 @@ static int Net_Join_Dialog() {
       /*..................................................................
       Get the scenario number
       ..................................................................*/
-      Scenario = MPlayerFilenum.at(ScenarioIdx);
+      TheWorld().scenario() = MPlayerFilenum.at(ScenarioIdx);
 
       /*..................................................................
       Form connections with all other players.  Form the IPX Connection ID
@@ -3787,7 +3788,7 @@ static int Net_New_Dialog() {
     /*.....................................................................
     Get the scenario filename
     .....................................................................*/
-    Scenario = MPlayerFilenum.at(ScenarioIdx);
+    TheWorld().scenario() = MPlayerFilenum.at(ScenarioIdx);
 
     /*.....................................................................
     Compute frame delay value for packet transmissions:
@@ -4743,8 +4744,9 @@ static int Net_Fake_New_Dialog() {
     /*.....................................................................
     Get the scenario filename
     .....................................................................*/
-    Scenario = ScenarioIdx;  // PlayerFilenum[ScenarioIdx]; We are passed actual
-                             // number now from wchat not index from
+    TheWorld().scenario() =
+        ScenarioIdx;  // PlayerFilenum[ScenarioIdx]; We are passed actual
+                      // number now from wchat not index from
     // Scenario = MPlayerFilenum[ScenarioIdx];
 
     /*.....................................................................
@@ -5434,8 +5436,9 @@ static int Net_Fake_Join_Dialog() {
       /*..................................................................
       Get the scenario number
       ..................................................................*/
-      Scenario = ScenarioIdx;  // PlayerFilenum[ScenarioIdx]; We are passed
-                               // actual number now from wchat not index from
+      TheWorld().scenario() =
+          ScenarioIdx;  // PlayerFilenum[ScenarioIdx]; We are passed
+                        // actual number now from wchat not index from
 
       /*..................................................................
       Form connections with all other players.  Form the IPX Connection ID

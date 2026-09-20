@@ -59,6 +59,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "td/world.h"
 
 /***********************************************************************************************
  * LogicClass::AI -- Handles AI logic processing for game objects. *
@@ -81,7 +82,7 @@ void LogicClass::AI() {
   **	Crate regeneration is handled here.
   */
   if (GameToPlay != GAME_NORMAL && CrateMaker && CrateTimer.Expired()) {
-    Map.Place_Random_Crate();
+    TheMap().Place_Random_Crate();
     CrateTimer = kTicksPerMinute * Random_Pick(7, 15);
   }
 
@@ -174,7 +175,7 @@ void LogicClass::AI() {
   /*
   **	Map related logic is performed.
   */
-  Map.Logic();
+  TheMap().Logic();
 
   //	Heap_Dump_Check( "After Map.Logic" );
 

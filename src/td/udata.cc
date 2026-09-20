@@ -79,6 +79,7 @@
 #include "td/special.h"
 #include "td/type.h"
 #include "td/unit.h"
+#include "td/world.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
 
@@ -1417,7 +1418,7 @@ void UnitTypeClass::Display(int x, int y, WindowNumberType window,
 void UnitTypeClass::Prep_For_Add() {
   for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
     if (!As_Reference(index).Get_Image_Data().empty()) {
-      Map.Add_To_List(&As_Reference(index));
+      TheMap().Add_To_List(&As_Reference(index));
     }
   }
 }

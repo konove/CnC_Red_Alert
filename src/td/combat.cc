@@ -50,7 +50,6 @@
 #include "td/const.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
-#include "td/externs.h"
 #include "td/globals.h"
 #include "td/inline.h"
 #include "td/jshell.h"
@@ -58,6 +57,7 @@
 #include "td/special.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "td/world.h"
 
 int Modify_Damage(int damage, WarheadType warhead, ArmorType armor);
 
@@ -166,7 +166,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   }
   //	if (!Map.In_Radar(cell)) return;
 
-  CellClass* cellptr = &Map.at(cell);
+  CellClass* cellptr = &TheMap().at(cell);
   const ObjectClass* impacto = cellptr->Cell_Occupier();
 
   /*
@@ -182,7 +182,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
     **	further than one cell away.
     */
     if (i != FACING_NONE) {
-      cellptr = &Map.at(cell).Adjacent_Cell(i);
+      cellptr = &TheMap().at(cell).Adjacent_Cell(i);
     }
 
     /*
@@ -244,7 +244,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
   **	If there is a wall present at this location, it may be destroyed. Check
   *to *	make sure that the warhead is of the kind that can destroy walls.
   */
-  cellptr = &Map.at(cell);
+  cellptr = &TheMap().at(cell);
   cellptr->Reduce_Tiberium(strength / 10);
   if (cellptr->Overlay != OVERLAY_NONE) {
     const OverlayTypeClass* optr =
@@ -252,7 +252,7 @@ void Explosion_Damage(COORDINATE coord, int strength, TechnoClass* source,
 
     if (optr->IsWall && (whead->IsWallDestroyer ||
                          (whead->IsWoodDestroyer && optr->IsWooden))) {
-      Map.at(cell).Reduce_Wall(strength);
+      TheMap().at(cell).Reduce_Wall(strength);
     }
   }
 }

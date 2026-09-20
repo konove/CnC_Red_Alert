@@ -72,6 +72,7 @@
 #include "td/menus.h"
 #include "td/screen.h"
 #include "td/textbtn.h"
+#include "td/world.h"
 
 static bool Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
                                   int iny2);
@@ -508,7 +509,7 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
 
   TheScreen().hidden_view().Blit(TheScreen().visible_view());
   Change_Window(static_cast<int>(WINDOW_MAIN));
-  Map.Flag_To_Redraw(true);
+  TheMap().Flag_To_Redraw(true);
   return selection;
 }
 

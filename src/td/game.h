@@ -13,6 +13,7 @@
 #include "td/palettes.h"
 #include "td/screen.h"
 #include "td/startup_options.h"
+#include "td/world.h"
 
 // Owns the game's subsystems and so fixes the order they are built and torn
 // down in. Members are declared in dependency order, which C++ constructs
@@ -59,6 +60,8 @@ class Game {
   base::Installed<Assets>::Scope assets_scope_{assets_};
   ObjectHeaps object_heaps_;
   base::Installed<ObjectHeaps>::Scope object_heaps_scope_{object_heaps_};
+  World world_;
+  base::Installed<World>::Scope world_scope_{world_};
   DebugState debug_state_;
   base::Installed<DebugState>::Scope debug_state_scope_{debug_state_};
 };

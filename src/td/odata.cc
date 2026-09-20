@@ -74,6 +74,7 @@
 #include "td/object.h"
 #include "td/overlay.h"
 #include "td/type.h"
+#include "td/world.h"
 #include "tech/mix_archive.h"
 
 static const OverlayTypeClass Road(
@@ -799,7 +800,7 @@ void OverlayTypeClass::Prep_For_Add() {
     const OverlayTypeClass& overlay = As_Reference(index);
     if (!overlay.Get_Image_Data().empty() && !overlay.IsWall &&
         (!overlay.IsTiberium || index == OVERLAY_TIBERIUM1)) {
-      Map.Add_To_List(&overlay);
+      TheMap().Add_To_List(&overlay);
     }
   }
 }
@@ -865,10 +866,10 @@ ObjectClass* OverlayTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 void OverlayTypeClass::Draw_It(int x, int y, int data) const {
-  CC_Draw_Shape(Get_Image_Data(), data, Map.TacPixelX + x + (CELL_PIXEL_W >> 1),
-                Map.TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
-                SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
-                MouseClass::UnitShadow);
+  CC_Draw_Shape(
+      Get_Image_Data(), data, TheMap().TacPixelX + x + (CELL_PIXEL_W >> 1),
+      TheMap().TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
+      SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {}, MouseClass::UnitShadow);
 }
 
 /***********************************************************************************************

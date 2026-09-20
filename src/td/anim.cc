@@ -96,6 +96,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "td/world.h"
 
 /***********************************************************************************************
  * AnimClass::Validate -- validates anim pointer
@@ -405,7 +406,7 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
 bool AnimClass::Mark(MarkType mark) {
   Validate();
   if (ObjectClass::Mark(mark)) {
-    Map.Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
+    TheMap().Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
     ObjectClass::Mark(mark);
     return true;
   }
@@ -748,7 +749,7 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
   **	Drop zone smoke always reveals the map around itself.
   */
   if (*this == ANIM_LZ_SMOKE) {
-    Map.Sight_From(Coord_Cell(coord), 4, false);
+    TheMap().Sight_From(Coord_Cell(coord), 4, false);
   }
 
   /*
@@ -853,7 +854,7 @@ void AnimClass::AI() {
   **	occur behind other ground objects) always cause the cell to be redrawn.
   */
   if (!Delay && Class->IsGroundLayer) {
-    Map.Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
+    TheMap().Refresh_Cells(Coord_Cell(Center_Coord()), Overlap_List());
   }
 
   /*
@@ -861,7 +862,7 @@ void AnimClass::AI() {
   **	causes the smoke marker to vanish.
   */
   if (Class->Type == ANIM_LZ_SMOKE &&
-      Map.at(Coord_Cell(Center_Coord())).Cell_Building()) {
+      TheMap().at(Coord_Cell(Center_Coord())).Cell_Building()) {
     IsToDelete = true;
   }
 
@@ -1079,8 +1080,8 @@ void AnimClass::Start() {
   *the same *	location, then attach the animation to the object. If the
   *animation is already *	attached, then do nothing.
   */
-  if (!Object && Class->IsSticky && Map.In_Radar(cell)) {
-    UnitClass* unit = Map.at(cell).Cell_Unit();
+  if (!Object && Class->IsSticky && TheMap().In_Radar(cell)) {
+    UnitClass* unit = TheMap().at(cell).Cell_Unit();
 
     if (unit && *unit == UNIT_GUNBOAT) {
       Attach_To(unit);
@@ -1106,7 +1107,7 @@ void AnimClass::Start() {
 void AnimClass::Middle() {
   Validate();
   const CELL cell = Coord_Cell(Center_Coord());
-  CellClass* cellptr = &Map.at(cell);
+  CellClass* cellptr = &TheMap().at(cell);
 
   if (Class->Type == ANIM_ATOM_BLAST) {
     /*
@@ -1117,8 +1118,8 @@ void AnimClass::Middle() {
     BuildingClass* building = nullptr;
     TechnoClass* backup = nullptr;
     if (Owner != HOUSE_NONE) {
-      for (int index = 0; index < Logic.Count(); index++) {
-        ObjectClass* obj = Logic.at(index);
+      for (int index = 0; index < TheWorld().logic().Count(); index++) {
+        ObjectClass* obj = TheWorld().logic().at(index);
 
         if (obj && obj->Is_Techno() && obj->Owner() == Owner) {
           backup = dynamic_cast<TechnoClass*>(obj);
@@ -1159,7 +1160,7 @@ void AnimClass::Middle() {
           continue;
         }
         const CELL tcell = XY_Cell(xpos, ypos);
-        if (!Map.In_Radar(tcell)) {
+        if (!TheMap().In_Radar(tcell)) {
           continue;
         }
 
@@ -1211,7 +1212,7 @@ void AnimClass::Middle() {
         Facing_Dir(static_cast<FacingType>(static_cast<int>(Class->Type) -
                                            static_cast<int>(ANIM_FLAME_N))),
         0x00E0);
-    const COORDINATE c3 = Map.Closest_Free_Spot(
+    const COORDINATE c3 = TheMap().Closest_Free_Spot(
         Coord_Move(
             Center_Coord(),
             Facing_Dir(static_cast<FacingType>(static_cast<int>(Class->Type) -
@@ -1219,20 +1220,20 @@ void AnimClass::Middle() {
             0x0140),
         true);
 
-    c2 = Map.Closest_Free_Spot(c2, true);
+    c2 = TheMap().Closest_Free_Spot(c2, true);
     if ((c3 && Random_Pick(0, 1) == 1) &&
-        (!Map.at(Coord_Cell(c3)).Cell_Terrain())) {
+        (!TheMap().at(Coord_Cell(c3)).Cell_Terrain())) {
       new AnimClass(ANIM_FIRE_SMALL, c3, 0, 2);
     }
 
     if ((c2 && Random_Pick(0, 1) == 1) &&
-        (!Map.at(Coord_Cell(c2)).Cell_Terrain())) {
+        (!TheMap().at(Coord_Cell(c2)).Cell_Terrain())) {
       new AnimClass(ANIM_FIRE_SMALL, c2, 0, 2);
     }
 
     new SmudgeClass(SMUDGE_SCORCH1, c2);
     if ((c3 && Random_Pick(0, 1) == 1) &&
-        (!Map.at(Coord_Cell(c3)).Cell_Terrain())) {
+        (!TheMap().at(Coord_Cell(c3)).Cell_Terrain())) {
       new AnimClass(ANIM_SMOKE_M, c3);
     }
   }
@@ -1248,8 +1249,8 @@ void AnimClass::Middle() {
       BuildingClass* building = nullptr;
       TechnoClass* backup = nullptr;
       if (Owner != HOUSE_NONE) {
-        for (int index = 0; index < Logic.Count(); index++) {
-          ObjectClass* obj = Logic.at(index);
+        for (int index = 0; index < TheWorld().logic().Count(); index++) {
+          ObjectClass* obj = TheWorld().logic().at(index);
 
           if (obj && obj->Is_Techno() && obj->Owner() == Owner &&
               !obj->IsInLimbo) {
@@ -1272,21 +1273,21 @@ void AnimClass::Middle() {
     case ANIM_NAPALM1:
     case ANIM_NAPALM2:
     case ANIM_NAPALM3:
-      new AnimClass(
-          ANIM_FIRE_SMALL,
-          Map.Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x0040), true), 0,
-          Random_Pick(0, 1) == 1 ? 1 : 2);
+      new AnimClass(ANIM_FIRE_SMALL,
+                    TheMap().Closest_Free_Spot(
+                        Coord_Scatter(Center_Coord(), 0x0040), true),
+                    0, Random_Pick(0, 1) == 1 ? 1 : 2);
       if (Random_Pick(0, 1) == 1) {
-        new AnimClass(
-            ANIM_FIRE_SMALL,
-            Map.Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x00A0), true),
-            0, Random_Pick(0, 1) == 1 ? 1 : 2);
+        new AnimClass(ANIM_FIRE_SMALL,
+                      TheMap().Closest_Free_Spot(
+                          Coord_Scatter(Center_Coord(), 0x00A0), true),
+                      0, Random_Pick(0, 1) == 1 ? 1 : 2);
       }
       if (Random_Pick(0, 1) == 1) {
-        new AnimClass(
-            ANIM_FIRE_MED,
-            Map.Closest_Free_Spot(Coord_Scatter(Center_Coord(), 0x0070), true),
-            0, Random_Pick(0, 1) == 1 ? 1 : 2);
+        new AnimClass(ANIM_FIRE_MED,
+                      TheMap().Closest_Free_Spot(
+                          Coord_Scatter(Center_Coord(), 0x0070), true),
+                      0, Random_Pick(0, 1) == 1 ? 1 : 2);
       }
       break;
 

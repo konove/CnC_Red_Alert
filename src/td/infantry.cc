@@ -165,6 +165,7 @@
 #include "td/unit.h"
 #include "td/utracker.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/number_parse.h"
 
 const int InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
@@ -663,7 +664,7 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
  *=============================================================================================*/
 void InfantryClass::Per_Cell_Process(bool center) {
   Validate();
-  CellClass* cellptr = &Map.at(Coord_Cell(Coord));
+  CellClass* cellptr = &TheMap().at(Coord_Cell(Coord));
 
   /*
   **	If the infantry unit is entering a cell that contains the building it is
@@ -679,7 +680,7 @@ void InfantryClass::Per_Cell_Process(bool center) {
     // #ifdef NEVER
     if (!Target_Legal(NavCom)) {
       Enter_Idle_Mode();
-      if (Map.at(Coord_Cell(Coord)).Cell_Building()) {
+      if (TheMap().at(Coord_Cell(Coord)).Cell_Building()) {
         Scatter(0, true);
       }
     }
@@ -864,7 +865,7 @@ void InfantryClass::Look(bool incremental) {
     const int sight = Class->SightRange;  // Number of cells to sight.
 
     if (sight) {
-      Map.Sight_From(Coord_Cell(Coord), sight, incremental);
+      TheMap().Sight_From(Coord_Cell(Coord), sight, incremental);
     }
   }
 }
@@ -977,7 +978,7 @@ void InfantryClass::Assign_Target(TARGET target) {
     const BuildingClass* building = As_Building(target);
     if (building && building->Class->IsCaptureable &&
         (GameToPlay != GAME_NORMAL ||
-         (*building != STRUCT_EYE && Scenario < 13))) {
+         (*building != STRUCT_EYE && TheWorld().scenario() < 13))) {
       Assign_Destination(target);
     }
   }
@@ -1018,7 +1019,8 @@ void InfantryClass::AI() {
   **	Delete this unit if it finds itself off the edge of the map and it is in
   **	guard or other static mission mode.
   */
-  if (!Team && Mission == MISSION_GUARD && !Map.In_Radar(Coord_Cell(Coord))) {
+  if (!Team && Mission == MISSION_GUARD &&
+      !TheMap().In_Radar(Coord_Cell(Coord))) {
     Stun();
     delete this;
     return;
@@ -1202,7 +1204,7 @@ void InfantryClass::AI() {
     Fire_At(TarCom, 0);
 
     if (Class->Primary == WEAPON_GRENADE) {
-      Map.at(As_Cell(TarCom)).Incoming(Coord, true);
+      TheMap().at(As_Cell(TarCom)).Incoming(Coord, true);
     }
   }
 
@@ -1387,15 +1389,15 @@ void InfantryClass::AI() {
           ** try again next tick.
           */
           if (Can_Enter_Cell(acell) == MOVE_DESTROYABLE) {
-            if (Map.at(acell).Cell_Object()) {
-              if (!House->Is_Ally(Map.at(acell).Cell_Object())) {
+            if (TheMap().at(acell).Cell_Object()) {
+              if (!House->Is_Ally(TheMap().at(acell).Cell_Object())) {
                 Override_Mission(MISSION_ATTACK,
-                                 Map.at(acell).Cell_Object()->As_Target(),
+                                 TheMap().at(acell).Cell_Object()->As_Target(),
                                  kTargetNone);
               }
             } else {
-              if (Map.at(acell).Overlay != OVERLAY_NONE &&
-                  OverlayTypeClass::As_Reference(Map.at(acell).Overlay)
+              if (TheMap().at(acell).Overlay != OVERLAY_NONE &&
+                  OverlayTypeClass::As_Reference(TheMap().at(acell).Overlay)
                       .IsWall) {
                 Override_Mission(MISSION_ATTACK, ::As_Target(acell),
                                  kTargetNone);
@@ -1508,7 +1510,7 @@ MoveBitType InfantryClass::Blocking_Object(const TechnoClass* techno,
   bool inf = (techno->What_Am_I() == RTTI_INFANTRY);
   bool unit = (techno->What_Am_I() == RTTI_UNIT) || inf;
 
-  const CellClass* cellptr = &Map[cell];
+  const CellClass* cellptr = &TheMap()[cell];
 
   if (House->Is_Ally(techno)) {
     /*
@@ -1594,10 +1596,11 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
   /*
   **	If moving off the edge of the map, then consider that an illegal move.
   */
-  if (IsLocked && !IsALoaner && !ScenarioInit && !Map.In_Radar(cell)) {
+  if (IsLocked && !IsALoaner && !TheWorld().scenario_init() &&
+      !TheMap().In_Radar(cell)) {
     return MOVE_NO;
   }
-  const CellClass* cellptr = &Map.at(cell);
+  const CellClass* cellptr = &TheMap().at(cell);
 
   /*
   **	Walls are considered impassable for infantry UNLESS the wall has a hole
@@ -2130,7 +2133,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced) {
       const FacingType newface = toface + face;
       CELL const newcell = Adjacent_Cell(Coord_Cell(Coord), newface);
 
-      if (Map.In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
+      if (TheMap().In_Radar(newcell) && Can_Enter_Cell(newcell) == MOVE_OK) {
         Assign_Mission(MISSION_MOVE);
         Assign_Destination(::As_Target(newcell));
       }
@@ -2315,11 +2318,13 @@ bool InfantryClass::Start_Driver(COORDINATE& headto) {
   /*
   **	Convert the head to coordinate to a legal sub-position location.
   */
-  headto = Map.at(Coord_Cell(headto))
+  headto = TheMap()
+               .at(Coord_Cell(headto))
                .Closest_Free_Spot(
                    Coord_Move(headto, Direction(headto) + DIR_S, 0x007C));
   if (!headto && Can_Enter_Cell(Coord_Cell(old)) == MOVE_OK) {
-    headto = Map.at(Coord_Cell(old))
+    headto = TheMap()
+                 .at(Coord_Cell(old))
                  .Closest_Free_Spot(
                      Coord_Move(old, Direction(headto) + DIR_S, 0x0080), true);
   }
@@ -2492,7 +2497,9 @@ bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
   /*
   **	Make sure that the infantry start in a legal position on the map.
   */
-  coord = Map.at(Coord_Cell(coord)).Closest_Free_Spot(coord, ScenarioInit != 0);
+  coord = TheMap()
+              .at(Coord_Cell(coord))
+              .Closest_Free_Spot(coord, TheWorld().scenario_init() != 0);
   if (coord == 0) {
     return false;
   }
@@ -3029,7 +3036,7 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
           dynamic_cast<BuildingClass*>(object)->Class->IsCaptureable &&
           (GameToPlay != GAME_NORMAL ||
            *dynamic_cast<BuildingClass*>(object) != STRUCT_EYE ||
-           Scenario < 13)))) {
+           TheWorld().scenario() < 13)))) {
       action = ACTION_CAPTURE;
     } else {
       if (Class->Primary == WEAPON_NONE) {
@@ -3307,12 +3314,12 @@ void InfantryClass::Set_Occupy_Bit(CELL cell, int spot_index) {
   /*
   ** Set the occupy postion for the spot that we passed in
   */
-  Map.at(cell).Flag.Composite |= base::Bit<uint8_t>(spot_index);
+  TheMap().at(cell).Flag.Composite |= base::Bit<uint8_t>(spot_index);
 
   /*
   ** Record the type of infantry that now owns the cell
   */
-  Map.at(cell).InfType = Owner();
+  TheMap().at(cell).InfType = Owner();
 }
 
 /***************************************************************************
@@ -3334,15 +3341,15 @@ void InfantryClass::Clear_Occupy_Bit(CELL cell, int spot_index) {
   /*
   ** Clear the occupy bit for the infantry in that cell
   */
-  Map.at(cell).Flag.Composite &=
+  TheMap().at(cell).Flag.Composite &=
       static_cast<uint8_t>(~base::Bit<uint8_t>(spot_index));
 
   /*
   ** If he was the last infantry recorded in the cell then
   ** remove the infantry ownership flag.
   */
-  if (!(Map.at(cell).Flag.Composite & 0x1F)) {
-    Map.at(cell).InfType = HOUSE_NONE;
+  if (!(TheMap().at(cell).Flag.Composite & 0x1F)) {
+    TheMap().at(cell).InfType = HOUSE_NONE;
   }
 }
 

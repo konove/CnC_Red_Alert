@@ -62,6 +62,7 @@
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/special.h"
+#include "td/world.h"
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
@@ -347,13 +348,13 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
 
   int distance = 0xFF;
   int pan_value = 0;
-  if (coord && !Map.In_View(cell_pos)) {
+  if (coord && !TheMap().In_View(cell_pos)) {
     // Measured from the centre of the view: TacticalCoord is its upper-left
     // corner, which would make sounds below and right of the screen quieter
     // than those as far above and left.
-    const COORDINATE view_center =
-        Coord_Add(Map.TacticalCoord,
-                  XY_Coord(Map.TacLeptonWidth / 2, Map.TacLeptonHeight / 2));
+    const COORDINATE view_center = Coord_Add(
+        TheMap().TacticalCoord,
+        XY_Coord(TheMap().TacLeptonWidth / 2, TheMap().TacLeptonHeight / 2));
     distance = MapEditClass::Cell_Distance(cell_pos, Coord_Cell(view_center));
     distance = std::min<int>(distance, MAP_CELL_W);
     distance = Cardinal_To_Fixed(MAP_CELL_W, distance);
@@ -364,9 +365,9 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
     distance = std::max(distance, 25);
 
     pan_value = Cell_X(cell_pos);
-    pan_value -= Coord_XCell(Map.TacticalCoord) +
-                 (Lepton_To_Cell(Map.TacLeptonWidth) / 2);
-    if (std::abs(pan_value) > Lepton_To_Cell(Map.TacLeptonWidth / 2)) {
+    pan_value -= Coord_XCell(TheMap().TacticalCoord) +
+                 (Lepton_To_Cell(TheMap().TacLeptonWidth) / 2);
+    if (std::abs(pan_value) > Lepton_To_Cell(TheMap().TacLeptonWidth / 2)) {
       pan_value *= 0x8000;
       pan_value /= MAP_CELL_W / 4;
       pan_value = Bound(pan_value, -0x7FFF, 0x7FFF);

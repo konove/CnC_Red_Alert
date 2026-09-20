@@ -196,6 +196,7 @@
 #include "td/unit.h"
 #include "td/utracker.h"
 #include "td/vector.h"
+#include "td/world.h"
 
 /***********************************************************************************************
  * HouseClass::Validate -- validates house pointer
@@ -406,7 +407,7 @@ HouseClass::HouseClass(HousesType house)
   FlagHome = 0;
   FlagLocation = kTargetNone;
   HarvestedCredits = 0;
-  HouseTriggers.at(house).Clear();
+  TheWorld().house_triggers().at(house).Clear();
   IGaveUp = false;
   InfantryFactories = 0;
   InfantryFactory = -1;
@@ -565,7 +566,7 @@ bool HouseClass::Can_Build(const TechnoTypeClass* type,
 #ifdef NEWMENU
   int level = BuildLevel;
 #else
-  int level = Scenario;
+  int level = TheWorld().scenario();
 #endif
 
   /*
@@ -813,7 +814,7 @@ void HouseClass::Init() {
   TheObjectHeaps().house().Free_All();
 
   for (HousesType index = HOUSE_FIRST; index < HOUSE_COUNT; index++) {
-    HouseTriggers.at(index).Clear();
+    TheWorld().house_triggers().at(index).Clear();
   }
 }
 
@@ -862,7 +863,7 @@ void HouseClass::AI() {
   if (GameToPlay == GAME_NORMAL && IsToWin && BorrowedTime.Expired() &&
       Blockage <= 0) {
     IsToWin = false;
-    if (this == PlayerPtr) {
+    if (this == ThePlayer()) {
       PlayerWins = true;
     } else {
       PlayerLoses = true;
@@ -874,7 +875,7 @@ void HouseClass::AI() {
   */
   if (GameToPlay == GAME_NORMAL && IsToLose && BorrowedTime.Expired()) {
     IsToLose = false;
-    if (this == PlayerPtr) {
+    if (this == ThePlayer()) {
       PlayerLoses = true;
     } else {
       PlayerWins = true;
@@ -915,9 +916,9 @@ void HouseClass::AI() {
     for (int index = 0; index < maxteams; index++) {
       const TeamTypeClass* ttype = Suggested_New_Team(true);
       if (ttype) {
-        ScenarioInit++;
+        TheWorld().scenario_init()++;
         ttype->Create_One_Of();
-        ScenarioInit--;
+        TheWorld().scenario_init()--;
       }
     }
     if (Special.IsDifficult) {
@@ -948,7 +949,7 @@ void HouseClass::AI() {
     *refuse, *	blow them up.
     */
     if (Special.IsCaptureTheFlag && GameToPlay != GAME_NORMAL && FlagHome) {
-      TechnoClass* techno = Map.at(FlagHome).Cell_Techno();
+      TechnoClass* techno = TheMap().at(FlagHome).Cell_Techno();
       if (techno) {
         bool moving = false;
         techno->Scatter(0, true);
@@ -1004,9 +1005,9 @@ void HouseClass::AI() {
         }
 
         if (obj) {
-          CELL const cell =
-              XY_Cell(Map.MapCellX + Random_Pick(0, Map.MapCellWidth - 1),
-                      Map.MapCellY + Random_Pick(0, Map.MapCellHeight - 1));
+          CELL const cell = XY_Cell(
+              TheMap().MapCellX + Random_Pick(0, TheMap().MapCellWidth - 1),
+              TheMap().MapCellY + Random_Pick(0, TheMap().MapCellHeight - 1));
           if (!Scan_Place_Object(obj, cell)) {
             delete obj;
           }
@@ -1070,14 +1071,14 @@ void HouseClass::AI() {
   **	If there are no more buildings to sell, then automatically cancel the
   **	sell mode.
   */
-  if (PlayerPtr == this && !BScan && Map.IsSellMode) {
-    Map.Sell_Mode_Control(0);
+  if (ThePlayer() == this && !BScan && TheMap().IsSellMode) {
+    TheMap().Sell_Mode_Control(0);
   }
 
   /*
   **	Various base conditions may be announced to the player.
   */
-  if (PlayerPtr == this) {
+  if (ThePlayer() == this) {
     if (SpeakMaxedDelay.Expired() && IsMaxedOut) {
       IsMaxedOut = false;
       if (Capacity - Tiberium < 300 && Capacity > 500 &&
@@ -1103,7 +1104,7 @@ void HouseClass::AI() {
       unit->Mark(MARK_CHANGE);
     } else {
       const CELL cell = As_Cell(FlagLocation);
-      Map.at(cell).Redraw_Objects();
+      TheMap().at(cell).Redraw_Objects();
     }
   }
 
@@ -1131,8 +1132,8 @@ void HouseClass::AI() {
       *cannon.
       */
       if (IonCannon.Remove()) {
-        if (this == PlayerPtr) {
-          base::At(Map.Column, 1).Flag_To_Redraw();
+        if (this == ThePlayer()) {
+          base::At(TheMap().Column, 1).Flag_To_Redraw();
         }
         IsRecalcNeeded = true;
       }
@@ -1148,8 +1149,8 @@ void HouseClass::AI() {
       **	Process the ion cannon AI and if something changed that would
       *affect *	the sidebar, then flag the sidebar to be redrawn.
       */
-      if (IonCannon.AI(this == PlayerPtr) && (this == PlayerPtr)) {
-        base::At(Map.Column, 1).Flag_To_Redraw();
+      if (IonCannon.AI(this == ThePlayer()) && (this == ThePlayer())) {
+        base::At(TheMap().Column, 1).Flag_To_Redraw();
       }
     }
 
@@ -1168,14 +1169,14 @@ void HouseClass::AI() {
     if (ActiveBScan & kStructFlagEye &&
         (ActLike == HOUSE_GOOD || GameToPlay != GAME_NORMAL) &&
         (IsHuman || GameToPlay != GAME_NORMAL)) {
-      IonCannon.Enable(false, this == PlayerPtr, Power_Fraction() < 0x0100);
+      IonCannon.Enable(false, this == ThePlayer(), Power_Fraction() < 0x0100);
 
       /*
       **	Flag the sidebar to be redrawn if necessary.
       */
-      if (this == PlayerPtr) {
-        Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_ION_CANNON));
-        base::At(Map.Column, 1).Flag_To_Redraw();
+      if (this == ThePlayer()) {
+        TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_ION_CANNON));
+        base::At(TheMap().Column, 1).Flag_To_Redraw();
       }
     }
   }
@@ -1194,8 +1195,8 @@ void HouseClass::AI() {
       */
       if (NukeStrike.Remove(true)) {
         IsRecalcNeeded = true;
-        if (this == PlayerPtr) {
-          base::At(Map.Column, 1).Flag_To_Redraw();
+        if (this == ThePlayer()) {
+          base::At(TheMap().Column, 1).Flag_To_Redraw();
         }
       }
     } else {
@@ -1210,8 +1211,8 @@ void HouseClass::AI() {
       **	Process the nuke strike AI and if something changed that would
       *affect *	the sidebar, then flag the sidebar to be redrawn.
       */
-      if (NukeStrike.AI(this == PlayerPtr) && (this == PlayerPtr)) {
-        base::At(Map.Column, 1).Flag_To_Redraw();
+      if (NukeStrike.AI(this == ThePlayer()) && (this == ThePlayer())) {
+        base::At(TheMap().Column, 1).Flag_To_Redraw();
       }
     }
 
@@ -1228,14 +1229,14 @@ void HouseClass::AI() {
     **	available, then make the nuke strike strike available.
     */
     if (ActiveBScan & kStructFlagTemple && Has_Nuke_Device() && IsHuman) {
-      NukeStrike.Enable(GameToPlay == GAME_NORMAL, this == PlayerPtr);
+      NukeStrike.Enable(GameToPlay == GAME_NORMAL, this == ThePlayer());
 
       /*
       **	Flag the sidebar to be redrawn if necessary.
       */
-      if (this == PlayerPtr) {
-        Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_NUCLEAR_BOMB));
-        base::At(Map.Column, 1).Flag_To_Redraw();
+      if (this == ThePlayer()) {
+        TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_NUCLEAR_BOMB));
+        base::At(TheMap().Column, 1).Flag_To_Redraw();
       }
     }
   }
@@ -1245,8 +1246,8 @@ void HouseClass::AI() {
   **	the sidebar, then flag the sidebar to be redrawn.
   */
   if (AirStrike.Is_Present()) {
-    if (AirStrike.AI(this == PlayerPtr) && (this == PlayerPtr)) {
-      base::At(Map.Column, 1).Flag_To_Redraw();
+    if (AirStrike.AI(this == ThePlayer()) && (this == ThePlayer())) {
+      base::At(TheMap().Column, 1).Flag_To_Redraw();
     }
 
     /*
@@ -1262,11 +1263,11 @@ void HouseClass::AI() {
   */
   if (IsAirstrikePending) {
     IsAirstrikePending = false;
-    if (AirStrike.Enable(false, this == PlayerPtr)) {
-      AirStrike.Forced_Charge(this == PlayerPtr);
-      if (this == PlayerPtr) {
-        Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
-        base::At(Map.Column, 1).Flag_To_Redraw();
+    if (AirStrike.Enable(false, this == ThePlayer())) {
+      AirStrike.Forced_Charge(this == ThePlayer());
+      if (this == ThePlayer()) {
+        TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
+        base::At(TheMap().Column, 1).Flag_To_Redraw();
       }
     }
   }
@@ -1294,8 +1295,9 @@ void HouseClass::AI() {
     MPlayer_Defeated();
   }
 
-  for (int index = 0; index < HouseTriggers.at(Class->House).Count(); index++) {
-    TriggerClass* t = HouseTriggers.at(Class->House).at(index);
+  for (int index = 0;
+       index < TheWorld().house_triggers().at(Class->House).Count(); index++) {
+    TriggerClass* t = TheWorld().house_triggers().at(Class->House).at(index);
 
     /*
     **	Check for just built the building trigger event.
@@ -1339,7 +1341,7 @@ void HouseClass::AI() {
     **	The "all destroyed" triggers are only processed after a certain
     **	amount of safety time has expired.
     */
-    if (!EndCountDown) {
+    if (!TheWorld().end_count_down()) {
       // Gunboats and unarmed aircraft do not count as surviving forces.
       constexpr uint64_t kGunboatFlag = kUnitFlagGunboat;
       constexpr uint64_t kUnarmedAircraftFlags =
@@ -1400,23 +1402,23 @@ void HouseClass::AI() {
   *the radar off. *	The radar also is turned off when the power gets below
   *100% capacity.
   */
-  if (PlayerPtr == this) {
-    if (Map.Is_Radar_Active()) {
+  if (ThePlayer() == this) {
+    if (TheMap().Is_Radar_Active()) {
       if (BScan & (kStructFlagRadar | kStructFlagEye)) {
         if (Power_Fraction() < 0x0100) {
-          Map.Radar_Activate(0);
+          TheMap().Radar_Activate(0);
         }
       } else {
-        Map.Radar_Activate(0);
+        TheMap().Radar_Activate(0);
       }
     } else {
       if (BScan & (kStructFlagRadar | kStructFlagEye)) {
         if (Power_Fraction() >= 0x0100) {
-          Map.Radar_Activate(1);
+          TheMap().Radar_Activate(1);
         }
       } else {
-        if (Map.Is_Radar_Existing()) {
-          Map.Radar_Activate(4);
+        if (TheMap().Is_Radar_Existing()) {
+          TheMap().Radar_Activate(4);
         }
       }
     }
@@ -1426,9 +1428,9 @@ void HouseClass::AI() {
   **	If the production possibilities need to be recalculated, then do so now.
   *This must *	occur after the scan bits have been properly updated.
   */
-  if (PlayerPtr == this && IsRecalcNeeded) {
+  if (ThePlayer() == this && IsRecalcNeeded) {
     IsRecalcNeeded = false;
-    Map.Recalc();
+    TheMap().Recalc();
 
 #ifdef NEVER
     /*
@@ -1453,7 +1455,7 @@ void HouseClass::AI() {
     for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
       BuildingClass* building = TheObjectHeaps().building().Ptr(index);
       if (building && building->Owner() == Class->House &&
-          PlayerPtr == building->House) {
+          ThePlayer() == building->House) {
         building->Update_Buildables();
       }
     }
@@ -1478,7 +1480,7 @@ void HouseClass::AI() {
  *=============================================================================================*/
 void HouseClass::Attacked() {
   Validate();
-  if (SpeakAttackDelay.Expired() && PlayerPtr->Class->House == Class->House) {
+  if (SpeakAttackDelay.Expired() && ThePlayer()->Class->House == Class->House) {
     Speak(VOX_BASE_UNDER_ATTACK);
     SpeakAttackDelay.Set(Options.Normalize_Delay(kSpeakDelay));
 
@@ -1486,9 +1488,12 @@ void HouseClass::Attacked() {
     **	If there is a trigger event associated with being attacked, process it
     **	now.
     */
-    for (int index = 0; index < HouseTriggers.at(Class->House).Count();
+    for (int index = 0;
+         index < TheWorld().house_triggers().at(Class->House).Count();
          index++) {
-      HouseTriggers.at(Class->House)
+      TheWorld()
+          .house_triggers()
+          .at(Class->House)
           .at(index)
           ->Spring(EVENT_ATTACKED, Class->House);
     }
@@ -1890,7 +1895,7 @@ void HouseClass::Make_Ally(HousesType house) {
     **	If in normal game play but the house is defeated, then don't allow the
     *ally *	key to work.
     */
-    if (!ScenarioInit && (IsDefeated || house == HOUSE_JP)) {
+    if (!TheWorld().scenario_init() && (IsDefeated || house == HOUSE_JP)) {
       return;
     }
 
@@ -1906,7 +1911,7 @@ void HouseClass::Make_Ally(HousesType house) {
     }
 
     if ((TheDebugState().developer_mode() || GameToPlay != GAME_NORMAL) &&
-        !ScenarioInit) {
+        !TheWorld().scenario_init()) {
       char buffer[80];
 
       /*
@@ -1914,8 +1919,8 @@ void HouseClass::Make_Ally(HousesType house) {
       *clear to ensure *	that fighting will most likely stop when the
       *cease fire begins.
       */
-      for (int index = 0; index < Logic.Count(); index++) {
-        ObjectClass* object = Logic.at(index);
+      for (int index = 0; index < TheWorld().logic().Count(); index++) {
+        ObjectClass* object = TheWorld().logic().at(index);
 
         if (object && !object->IsInLimbo && object->Owner() == Class->House) {
           const TARGET target = dynamic_cast<TechnoClass*>(object)->TarCom;
@@ -1931,7 +1936,7 @@ void HouseClass::Make_Ally(HousesType house) {
       Messages.Add_Message(
           buffer, base::At(MPlayerTColors, static_cast<int>(RemapColor)),
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 1200, 0, 0);
-      Map.Flag_To_Redraw(false);
+      TheMap().Flag_To_Redraw(false);
     }
   }
 }
@@ -1962,7 +1967,7 @@ void HouseClass::Make_Enemy(HousesType house) {
 
     if (enemy &&
         (TheDebugState().developer_mode() || GameToPlay != GAME_NORMAL) &&
-        !ScenarioInit) {
+        !TheWorld().scenario_init()) {
       char buffer[80];
 
       Format_Runtime_Text(buffer, sizeof(buffer), Text_String(TXT_AT_WAR), Name,
@@ -1970,7 +1975,7 @@ void HouseClass::Make_Enemy(HousesType house) {
       Messages.Add_Message(
           buffer, base::At(MPlayerTColors, static_cast<int>(RemapColor)),
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
-      Map.Flag_To_Redraw(false);
+      TheMap().Flag_To_Redraw(false);
     }
   }
 }
@@ -2186,8 +2191,8 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
     **	Link this factory to the sidebar so that proper graphic feedback
     **	can take place.
     */
-    if (PlayerPtr == this) {
-      Map.Factory_Link(*factory, type, id);
+    if (ThePlayer() == this) {
+      TheMap().Factory_Link(*factory, type, id);
     }
 
     return PROD_OK;
@@ -2291,11 +2296,11 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
   /*
   **	Tell the sidebar that it needs to be redrawn because of this.
   */
-  if (PlayerPtr == this) {
-    Map.SidebarClass::IsSidebarToRedraw = true;
-    base::At(Map.Column, 0).IsToRedraw = true;
-    base::At(Map.Column, 1).IsToRedraw = true;
-    Map.Flag_To_Redraw(false);
+  if (ThePlayer() == this) {
+    TheMap().SidebarClass::IsSidebarToRedraw = true;
+    base::At(TheMap().Column, 0).IsToRedraw = true;
+    base::At(TheMap().Column, 1).IsToRedraw = true;
+    TheMap().Flag_To_Redraw(false);
   }
 
   return PROD_OK;
@@ -2390,14 +2395,14 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
   /*
   **	Tell the sidebar that it needs to be redrawn because of this.
   */
-  if (PlayerPtr == this) {
-    Map.Abandon_Production(type, *factory);
+  if (ThePlayer() == this) {
+    TheMap().Abandon_Production(type, *factory);
 
     if (type == RTTI_BUILDINGTYPE || type == RTTI_BUILDING) {
-      Map.PendingObjectPtr = nullptr;
-      Map.PendingObject = nullptr;
-      Map.PendingHouse = HOUSE_NONE;
-      Map.Set_Cursor_Shape({});
+      TheMap().PendingObjectPtr = nullptr;
+      TheMap().PendingObject = nullptr;
+      TheMap().PendingHouse = HOUSE_NONE;
+      TheMap().Set_Cursor_Shape({});
     }
   }
 
@@ -2486,10 +2491,10 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         if (anim) {
           anim->Owner = Class->House;
         }
-        if (this == PlayerPtr) {
-          Map.IsTargettingMode = 0;
+        if (this == ThePlayer()) {
+          TheMap().IsTargettingMode = 0;
         }
-        IonCannon.Discharged(PlayerPtr == this);
+        IonCannon.Discharged(ThePlayer() == this);
         IsRecalcNeeded = true;
       }
       break;
@@ -2503,7 +2508,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         for (;;) {
           CELL newcell =
               Adjacent_Cell(cell, Random_Pick(FACING_N, FACING_COUNT));
-          if (Map.In_Radar(newcell)) {
+          if (TheMap().In_Radar(newcell)) {
             cell = newcell;
             break;
           }
@@ -2559,10 +2564,10 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
             Sound_Effect(VOC_NUKE_FIRE, start);
           }
         }
-        if (this == PlayerPtr) {
-          Map.IsTargettingMode = 0;
+        if (this == ThePlayer()) {
+          TheMap().IsTargettingMode = 0;
         }
-        NukeStrike.Discharged(this == PlayerPtr);
+        NukeStrike.Discharged(this == ThePlayer());
         IsRecalcNeeded = true;
       }
       break;
@@ -2577,10 +2582,10 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         }
         Create_Air_Reinforcement(this, AIRCRAFT_A10, strike, MISSION_HUNT,
                                  As_Target(cell), kTargetNone);
-        if (this == PlayerPtr) {
-          Map.IsTargettingMode = 0;
+        if (this == ThePlayer()) {
+          TheMap().IsTargettingMode = 0;
         }
-        AirStrike.Discharged(this == PlayerPtr);
+        AirStrike.Discharged(this == ThePlayer());
         IsRecalcNeeded = true;
       }
       break;
@@ -2714,16 +2719,16 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
             factory->Completed();
             Abandon_Production(type);
 
-            if (PlayerPtr == this) {
+            if (ThePlayer() == this) {
               Sound_Effect(VOC_SLAM);
-              Map.Set_Cursor_Shape({});
-              Map.PendingObjectPtr = nullptr;
-              Map.PendingObject = nullptr;
-              Map.PendingHouse = HOUSE_NONE;
+              TheMap().Set_Cursor_Shape({});
+              TheMap().PendingObjectPtr = nullptr;
+              TheMap().PendingObject = nullptr;
+              TheMap().PendingHouse = HOUSE_NONE;
             }
             return true;
           }
-          if (this == PlayerPtr) {
+          if (this == ThePlayer()) {
             Speak(VOX_DEPLOY);
           }
           builder->Transmit_Message(RADIO_OVER_OUT);
@@ -2762,22 +2767,22 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
  *=============================================================================================*/
 bool HouseClass::Manual_Place(BuildingClass* builder, BuildingClass* object) {
   Validate();
-  if (this == PlayerPtr && !Map.PendingObject && builder && object) {
+  if (this == ThePlayer() && !TheMap().PendingObject && builder && object) {
     /*
     **	Ensures that object selection doesn't remain when
     **	building placement takes place.
     */
     Unselect_All();
 
-    Map.Repair_Mode_Control(0);
-    Map.Sell_Mode_Control(0);
+    TheMap().Repair_Mode_Control(0);
+    TheMap().Sell_Mode_Control(0);
 
-    Map.PendingObject = object->Class;
-    Map.PendingObjectPtr = object;
-    Map.PendingHouse = Class->House;
+    TheMap().PendingObject = object->Class;
+    TheMap().PendingObjectPtr = object;
+    TheMap().PendingHouse = Class->House;
 
-    Map.Set_Cursor_Shape(object->Occupy_List(true));
-    Map.Set_Cursor_Pos(Coord_Cell(builder->Coord));
+    TheMap().Set_Cursor_Shape(object->Occupy_List(true));
+    TheMap().Set_Cursor_Pos(Coord_Cell(builder->Coord));
     builder->Mark(MARK_CHANGE);
     return true;
   }
@@ -2808,9 +2813,9 @@ void HouseClass::Init_Ion_Cannon(SpecialControlType control) {
       if (IonCannonPresent) {
         IonOldStage = -1;
         IonControl.Set(ION_CANNON_GONE_TIME);
-        if (PlayerPtr == this) {
-          Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_ION_CANNON));
-          if (!ScenarioInit) {
+        if (ThePlayer() == this) {
+          TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_ION_CANNON));
+          if (!TheWorld().scenario_init()) {
             Speak(VOX_ION_CHARGING);
           }
         }
@@ -2848,18 +2853,18 @@ void HouseClass::Init_Ion_Cannon(SpecialControlType control) {
   if (!(first_time && IonCannonPresent)) {
     if (IonCannonPresent && IonOneTimeFlag) {
       IonOneTimeFlag = false;
-      if (this == PlayerPtr) {
-        Map.Recalc();
+      if (this == ThePlayer()) {
+        TheMap().Recalc();
       }
       return;
     }
 
-    if (first_time && this == PlayerPtr) {
-      Map.Add(RTTI_SPECIAL, SPC_ION_CANNON);
+    if (first_time && this == ThePlayer()) {
+      TheMap().Add(RTTI_SPECIAL, SPC_ION_CANNON);
     }
 
-    if (!ScenarioInit) {
-      if (this == PlayerPtr) {
+    if (!TheWorld().scenario_init()) {
+      if (this == ThePlayer()) {
         Speak(VOX_ION_CHARGING);
       }
     }
@@ -2881,18 +2886,18 @@ void HouseClass::Init_Ion_Cannon(bool first_time, bool one_time_effect) {
   if (!(first_time && IonCannonPresent)) {
     if (IonCannonPresent && IonOneTimeFlag) {
       IonOneTimeFlag = false;
-      if (this == PlayerPtr) {
-        Map.Recalc();
+      if (this == ThePlayer()) {
+        TheMap().Recalc();
       }
       return;
     }
 
-    if (first_time && this == PlayerPtr) {
-      Map.Add(RTTI_SPECIAL, SPC_ION_CANNON);
+    if (first_time && this == ThePlayer()) {
+      TheMap().Add(RTTI_SPECIAL, SPC_ION_CANNON);
     }
 
-    if (!ScenarioInit) {
-      if (this == PlayerPtr) {
+    if (!TheWorld().scenario_init()) {
+      if (this == ThePlayer()) {
         Speak(VOX_ION_CHARGING);
       }
     }
@@ -3018,14 +3023,14 @@ void HouseClass::Init_Nuke_Bomb(bool first_time, bool one_time_effect) {
   if (!first_time || !NukePresent) {
     if (NukePresent && NukeOneTimeFlag) {
       NukeOneTimeFlag = false;
-      if (this == PlayerPtr) {
-        Map.Recalc();
+      if (this == ThePlayer()) {
+        TheMap().Recalc();
       }
       return;
     }
 
-    if (first_time && this == PlayerPtr) {
-      Map.Add(RTTI_SPECIAL, SPC_NUCLEAR_BOMB);
+    if (first_time && this == ThePlayer()) {
+      TheMap().Add(RTTI_SPECIAL, SPC_NUCLEAR_BOMB);
     }
 
     NukeControl.Set(NUKE_GONE_TIME);
@@ -3089,13 +3094,13 @@ void HouseClass::Init_Air_Strike(bool first_time, bool one_time_effect) {
     if (AirPresent && AirOneTimeFlag) {
       AirOneTimeFlag = false;
       AirPresent = false;
-      Map.Recalc();
+      TheMap().Recalc();
       return;
     }
 
     if (first_time) {
-      if (PlayerPtr == this) {
-        Map.Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
+      if (ThePlayer() == this) {
+        TheMap().Add(RTTI_SPECIAL, static_cast<int>(SPC_AIR_STRIKE));
       }
       AirControl.Set(0);
     } else {
@@ -3514,7 +3519,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(
     case RTTI_BUILDING:
     case RTTI_BUILDINGTYPE:
       if (CurBuildings < MaxBuilding) {
-        const BaseNodeClass* node = Base.Next_Buildable();
+        const BaseNodeClass* node = TheWorld().base().Next_Buildable();
         if (node) {
           techno = &BuildingTypeClass::As_Reference(node->Type);
         }
@@ -3583,8 +3588,8 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
       **	Remove the flag from a cell
       */
       const CELL cell = As_Cell(target);
-      if (Map.In_Radar(cell)) {
-        rc = Map.at(cell).Flag_Remove();
+      if (TheMap().In_Radar(cell)) {
+        rc = TheMap().at(cell).Flag_Remove();
         if (rc && FlagLocation == target) {
           FlagLocation = kTargetNone;
         }
@@ -3596,8 +3601,8 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
     **	If 'set_home' is set, clear the home value & the cell's overlay
     */
     if (set_home && FlagHome) {
-      Map.at(FlagHome).Overlay = OVERLAY_NONE;
-      Map.Flag_Cell(FlagHome);
+      TheMap().at(FlagHome).Overlay = OVERLAY_NONE;
+      TheMap().Flag_Cell(FlagHome);
       FlagHome = 0;
     }
 
@@ -3638,7 +3643,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
   /*
   **	Only continue if this cell is a legal placement cell.
   */
-  if (Map.In_Radar(cell)) {
+  if (TheMap().In_Radar(cell)) {
     /*
     **	If the flag already exists, then it must be removed from the object
     **	it is attached to.
@@ -3650,7 +3655,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
     **	a nearby cell where it can be placed.
     */
     CELL newcell = cell;
-    bool rc = Map.at(newcell).Flag_Place(Class->House);
+    bool rc = TheMap().at(newcell).Flag_Place(Class->House);
     if (!rc) {
       /*
       **	Loop for increasing distance from the desired cell.
@@ -3668,8 +3673,8 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
                fcounter++) {
             newcell = Coord_Cell(Coord_Move(Cell_Coord(cell), Facing_Dir(rot),
                                             static_cast<uint16_t>(dist * 256)));
-            if (Map.In_Radar(newcell) &&
-                Map.at(newcell).Flag_Place(Class->House)) {
+            if (TheMap().In_Radar(newcell) &&
+                TheMap().at(newcell).Flag_Place(Class->House)) {
               dist = 32;
               rc = true;
               break;
@@ -3688,8 +3693,8 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
                fcounter--) {
             newcell = Coord_Cell(Coord_Move(Cell_Coord(cell), Facing_Dir(rot),
                                             static_cast<uint16_t>(dist * 256)));
-            if (Map.In_Radar(newcell) &&
-                Map.at(newcell).Flag_Place(Class->House)) {
+            if (TheMap().In_Radar(newcell) &&
+                TheMap().at(newcell).Flag_Place(Class->House)) {
               dist = 32;
               rc = true;
               break;
@@ -3712,7 +3717,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
       FlagLocation = As_Target(newcell);
 
       if (set_home || FlagHome == 0) {
-        Map.at(newcell).Overlay = OVERLAY_FLAG_SPOT;
+        TheMap().at(newcell).Overlay = OVERLAY_FLAG_SPOT;
         FlagHome = newcell;
       }
     }
@@ -3804,11 +3809,11 @@ void HouseClass::MPlayer_Defeated() {
   - Reveal the map
   - Add my defeat message
   ------------------------------------------------------------------------*/
-  if (PlayerPtr == this) {
+  if (ThePlayer() == this) {
     MPlayerObiWan = true;
     TheDebugState().set_unshroud(true);
     TheScreen().hidden_page().Clear();
-    Map.Flag_To_Redraw(true);
+    TheMap().Flag_To_Redraw(true);
 
     /*.....................................................................
     Pop up a message showing that I was defeated
@@ -3818,7 +3823,7 @@ void HouseClass::MPlayer_Defeated() {
     Messages.Add_Message(txt, base::At(MPlayerTColors, MPlayerColorIdx),
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600,
                          0, 0);
-    Map.Flag_To_Redraw(false);
+    TheMap().Flag_To_Redraw(false);
 
   } else {
     /*------------------------------------------------------------------------
@@ -3843,7 +3848,7 @@ void HouseClass::MPlayer_Defeated() {
           base::At(MPlayerTColors,
                    static_cast<int>(MPlayerID_To_ColorIndex(id))),
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, 600, 0, 0);
-      Map.Flag_To_Redraw(false);
+      TheMap().Flag_To_Redraw(false);
     }
   }
 
@@ -3912,7 +3917,7 @@ void HouseClass::MPlayer_Defeated() {
   - Tally up scores for this game
   ------------------------------------------------------------------------*/
   if (num_alive == 1 || num_humans == 0) {
-    if (PlayerPtr->IsDefeated) {
+    if (ThePlayer()->IsDefeated) {
       PlayerLoses = true;
     } else {
       PlayerWins = true;
@@ -4040,7 +4045,7 @@ void HouseClass::MPlayer_Defeated() {
   /*------------------------------------------------------------------------
   Be sure our messages get displayed, even if we're about to exit.
   ------------------------------------------------------------------------*/
-  Map.Render();
+  TheMap().Render();
 }
 
 /***************************************************************************
@@ -4404,9 +4409,9 @@ bool HouseClass::Has_Nuke_Device() const {
 void HouseClass::Sell_Wall(CELL cell) {
   Validate();
   if (static_cast<unsigned>(cell) > 0) {
-    const OverlayType overlay = Map.at(cell).Overlay;
+    const OverlayType overlay = TheMap().at(cell).Overlay;
 
-    if (overlay != OVERLAY_NONE && Map.at(cell).Owner == Class->House) {
+    if (overlay != OVERLAY_NONE && TheMap().at(cell).Owner == Class->House) {
       const OverlayTypeClass& optr = OverlayTypeClass::As_Reference(overlay);
 
       if (optr.IsWall) {
@@ -4467,12 +4472,12 @@ void HouseClass::Sell_Wall(CELL cell) {
             break;
         }
         Refund_Money(cost / 2);
-        Map.at(cell).Overlay = OVERLAY_NONE;
-        Map.at(cell).OverlayData = 0;
-        Map.at(cell).Owner = HOUSE_NONE;
-        Map.at(cell).Wall_Update();
-        Map.at(cell).Recalc_Attributes();
-        Map.at(cell).Redraw_Objects();
+        TheMap().at(cell).Overlay = OVERLAY_NONE;
+        TheMap().at(cell).OverlayData = 0;
+        TheMap().at(cell).Owner = HOUSE_NONE;
+        TheMap().at(cell).Wall_Update();
+        TheMap().at(cell).Recalc_Attributes();
+        TheMap().at(cell).Redraw_Objects();
         ObjectClass::Detach_This_From_All(As_Target(cell), true);
       }
     }

@@ -62,6 +62,7 @@
 #include "td/queue.h"
 #include "td/screen.h"
 #include "td/textbtn.h"
+#include "td/world.h"
 
 #define kOptionWidth 236
 #define kOptionHeight 162
@@ -172,7 +173,7 @@ void Special_Dialog() {
     }
   }
 
-  Map.Override_Mouse_Shape(MOUSE_NORMAL);
+  TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
   Set_Logic_Page(TheScreen().visible_view());
   bool display = true;
   bool process = true;
@@ -299,8 +300,8 @@ void Special_Dialog() {
     }
   }
 
-  Map.Revert_Mouse_Shape();
+  TheMap().Revert_Mouse_Shape();
   TheScreen().hidden_page().Clear();
-  Map.Flag_To_Redraw(true);
-  Map.Render();
+  TheMap().Flag_To_Redraw(true);
+  TheMap().Render();
 }

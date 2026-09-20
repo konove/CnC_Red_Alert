@@ -140,6 +140,7 @@
 #include "td/trigger.h"
 #include "td/type.h"
 #include "td/unit.h"
+#include "td/world.h"
 #include "tech/audio_mixer.h"
 #include "tech/disk_file.h"
 #include "tech/game_file.h"
@@ -220,7 +221,8 @@ bool Init_Game() {
   **	Initialize all the waypoints to invalid values.
   */
   DLOG(INFO) << "C&C95 - About to clear waypoints";
-  base::FillBytes(base::ObjectBytes(Waypoint), 0xFF, sizeof(Waypoint));
+  base::FillBytes(base::ObjectBytes(TheWorld().waypoint()), 0xFF,
+                  sizeof(TheWorld().waypoint()));
 
   /*
   **	Setup the keyboard processor in preparation for the game.
@@ -547,9 +549,9 @@ bool Init_Game() {
   */
   Call_Back();
   //	malloc(3);
-  Map.One_Time();
+  TheMap().One_Time();
   //	malloc(4);
-  Logic.One_Time();
+  TheWorld().logic().One_Time();
   //	malloc(5);
   Options.One_Time();
 
@@ -576,7 +578,7 @@ bool Init_Game() {
   **	WWLIB bug: MouseState is in some undefined state; show the mouse until
   **	it really shows.
   */
-  Map.Set_Default_Mouse(MOUSE_NORMAL, false);
+  TheMap().Set_Default_Mouse(MOUSE_NORMAL, false);
   Show_Mouse();
   // #ifdef FIX_ME_LATER
   while (Get_Mouse_State() > 0) {
@@ -632,7 +634,7 @@ void Uninit_Game() {
 
   delete MouseClass::ShadowPage;
   MouseClass::ShadowPage = nullptr;
-  Map.Free_Cells();
+  TheMap().Free_Cells();
 
   SearchPaths::Clear();
   MixArchive::Free_All();
@@ -750,10 +752,10 @@ bool Select_Game(bool fade) {
   PlayerLoses = false;
   MPlayerObiWan = false;
   TheDebugState().set_unshroud(false);
-  Map.Set_Cursor_Shape({});
-  Map.PendingObjectPtr = nullptr;
-  Map.PendingObject = nullptr;
-  Map.PendingHouse = HOUSE_NONE;
+  TheMap().Set_Cursor_Shape({});
+  TheMap().PendingObjectPtr = nullptr;
+  TheMap().PendingObject = nullptr;
+  TheMap().PendingHouse = HOUSE_NONE;
 
   /*
   ** Initialize multiplayer-protocol-specific variables:
@@ -787,7 +789,7 @@ bool Select_Game(bool fade) {
   /*
   **	Set default mouse shape
   */
-  Map.Set_Default_Mouse(MOUSE_NORMAL, false);
+  TheMap().Set_Default_Mouse(MOUSE_NORMAL, false);
 
   /*
   **	If the last game we played was a multiplayer game, jump right to that
@@ -806,9 +808,9 @@ bool Select_Game(bool fade) {
     /*
     **	Menu selection processing loop
     */
-    ScenarioInit++;
+    TheWorld().scenario_init()++;
     Theme.Queue_Song(THEME_MAP1);
-    ScenarioInit--;
+    TheWorld().scenario_init()--;
 
     /*
     ** If we're playing back a recording, load all pertinant values & skip
@@ -839,11 +841,12 @@ bool Select_Game(bool fade) {
 
     while (process) {
       if (!startup_game_started && options.new_game.size() >= 5) {
-        Scenario = tech::ParseIntegerOr<int>(
+        TheWorld().scenario() = tech::ParseIntegerOr<int>(
             std::string_view{options.new_game}.substr(3, 2), 0);
-        ScenPlayer =
+        TheWorld().scen_player() =
             options.new_game.at(2) == 'B' ? SCEN_PLAYER_NOD : SCEN_PLAYER_GDI;
-        Whom = ScenPlayer == SCEN_PLAYER_NOD ? HOUSE_BAD : HOUSE_GOOD;
+        Whom = TheWorld().scen_player() == SCEN_PLAYER_NOD ? HOUSE_BAD
+                                                           : HOUSE_GOOD;
         GameToPlay = GAME_NORMAL;
         process = false;
         continue;
@@ -990,7 +993,7 @@ bool Select_Game(bool fade) {
         **	Pick an expansion scenario.
         */
         case kSelNewScenario:
-          CarryOverMoney = 0;
+          TheWorld().carry_over_money() = 0;
           if (Expansion_Dialog()) {
             Theme.Fade_Out();
             //						Theme.Queue_Song(THEME_AOI);
@@ -1008,7 +1011,7 @@ bool Select_Game(bool fade) {
         **	User selected to play a bonus scenario.
         */
         case kSelBonusMissions:
-          CarryOverMoney = 0;
+          TheWorld().carry_over_money() = 0;
 
           /*
           ** Ensure that CD1 or CD2 is in the drive. These missions
@@ -1044,7 +1047,7 @@ bool Select_Game(bool fade) {
         **	SEL_START_NEW_GAME: Play the game
         */
         case kSelStartNewGame:
-          CarryOverMoney = 0;
+          TheWorld().carry_over_money() = 0;
 
 #ifdef DEMO
           Hide_Mouse();
@@ -1064,14 +1067,14 @@ bool Select_Game(bool fade) {
                           Call_Back);
           Show_Mouse();
 
-          Scenario = 1;
+          TheWorld().scenario() = 1;
           BuildLevel = 1;
 #else
-          Scenario = 1;
+          TheWorld().scenario() = 1;
           BuildLevel = 1;
 #endif
-          ScenPlayer = SCEN_PLAYER_GDI;
-          ScenDir = SCEN_DIR_EAST;
+          TheWorld().scen_player() = SCEN_PLAYER_GDI;
+          TheWorld().scen_dir() = SCEN_DIR_EAST;
           Whom = HOUSE_GOOD;
 
 #ifndef DEMO
@@ -1086,8 +1089,8 @@ bool Select_Game(bool fade) {
           ** Whom value.
           */
           if (Special.IsJurassic && AreThingiesEnabled) {
-            ScenPlayer = SCEN_PLAYER_JP;
-            ScenDir = SCEN_DIR_EAST;
+            TheWorld().scen_player() = SCEN_PLAYER_JP;
+            TheWorld().scen_dir() = SCEN_DIR_EAST;
           }
 
           GameToPlay = GAME_NORMAL;
@@ -1322,8 +1325,8 @@ bool Select_Game(bool fade) {
             case GAME_NULL_MODEM:
             case GAME_INTERNET:
               Theme.Fade_Out();
-              ScenPlayer = SCEN_PLAYER_2PLAYER;
-              ScenDir = SCEN_DIR_EAST;
+              TheWorld().scen_player() = SCEN_PLAYER_2PLAYER;
+              TheWorld().scen_dir() = SCEN_DIR_EAST;
               process = false;
               Options.ScoreVolume = 0;
               break;
@@ -1337,8 +1340,8 @@ bool Select_Game(bool fade) {
               */
               if (Init_Network() && Remote_Connect()) {
                 Options.ScoreVolume = 0;
-                ScenPlayer = SCEN_PLAYER_MPLAYER;
-                ScenDir = SCEN_DIR_EAST;
+                TheWorld().scen_player() = SCEN_PLAYER_MPLAYER;
+                TheWorld().scen_dir() = SCEN_DIR_EAST;
                 process = false;
                 Theme.Fade_Out();
               } else {  // user hit cancel, or init failed
@@ -1466,9 +1469,9 @@ bool Select_Game(bool fade) {
           Play_Movie("CC2TEASE");
           Show_Mouse();
 
-          ScenarioInit++;
+          TheWorld().scenario_init()++;
           Theme.Play_Song(THEME_MAP1);
-          ScenarioInit--;
+          TheWorld().scenario_init()--;
           display = true;
           fade = true;
           selection = kSelNone;
@@ -1520,10 +1523,10 @@ bool Select_Game(bool fade) {
     ** For TheDebugState().map_editor_active() (editor) mode, if JP option is
     * on, set to load that scenario
     */
-    Scenario = 1;
+    TheWorld().scenario() = 1;
     if (Special.IsJurassic && AreThingiesEnabled) {
-      ScenPlayer = SCEN_PLAYER_JP;
-      ScenDir = SCEN_DIR_EAST;
+      TheWorld().scen_player() = SCEN_PLAYER_JP;
+      TheWorld().scen_dir() = SCEN_DIR_EAST;
     }
   }
   DLOG(INFO) << "C&C95 - About to start game initialisation.";
@@ -1586,13 +1589,16 @@ bool Select_Game(bool fade) {
   */
   if (!gameloaded) {
     if (!startup_game_started && TheStartupOptions().new_game.size() >= 5) {
-      port::SafeCopy(ScenarioName, TheStartupOptions().new_game.c_str());
+      port::SafeCopy(TheWorld().scenario_name(),
+                     TheStartupOptions().new_game.c_str());
       startup_game_started = true;
     } else if (TheDebugState().map_editor_active()) {
-      Set_Scenario_Name(ScenarioName, Scenario, ScenPlayer, ScenDir,
+      Set_Scenario_Name(TheWorld().scenario_name(), TheWorld().scenario(),
+                        TheWorld().scen_player(), TheWorld().scen_dir(),
                         SCEN_VAR_A);
     } else {
-      Set_Scenario_Name(ScenarioName, Scenario, ScenPlayer, ScenDir);
+      Set_Scenario_Name(TheWorld().scenario_name(), TheWorld().scenario(),
+                        TheWorld().scen_player(), TheWorld().scen_dir());
     }
 
     /*
@@ -1611,81 +1617,89 @@ bool Select_Game(bool fade) {
 
     Special.IsFromInstall = 0;
     DLOG(INFO) << "C&C95 - Starting scenario.";
-    if (!Start_Scenario(ScenarioName)) {
+    if (!Start_Scenario(TheWorld().scenario_name())) {
       return false;
     }
     DLOG(INFO) << "C&C95 - Scenario started OK.";
     if (TheStartupOptions().globals_test) {
-      Score.Score = 101;
-      Score.NKilled = 2; Score.GKilled = 3; Score.CKilled = 4;
-      Score.NBKilled = 5; Score.GBKilled = 6; Score.CBKilled = 7;
-      Score.NHarvested = 8; Score.GHarvested = 9; Score.CHarvested = 10;
-      Score.ElapsedTime = static_cast<int64_t>(uint64_t{1} << 40);
-      Base.House = HOUSE_GOOD;
-      Base.Nodes.Clear();
+      TheWorld().score().Score = 101;
+      TheWorld().score().NKilled = 2;
+      TheWorld().score().GKilled = 3;
+      TheWorld().score().CKilled = 4;
+      TheWorld().score().NBKilled = 5;
+      TheWorld().score().GBKilled = 6;
+      TheWorld().score().CBKilled = 7;
+      TheWorld().score().NHarvested = 8;
+      TheWorld().score().GHarvested = 9;
+      TheWorld().score().CHarvested = 10;
+      TheWorld().score().ElapsedTime = static_cast<int64_t>(uint64_t{1} << 40);
+      TheWorld().base().House = HOUSE_GOOD;
+      TheWorld().base().Nodes.Clear();
       BaseNodeClass node;
       node.Type = STRUCT_POWER;
       node.Coord = Cell_Coord(1000);
-      Base.Nodes.Add(node);
+      TheWorld().base().Nodes.Add(node);
       node.Type = STRUCT_REFINERY;
       node.Coord = Cell_Coord(1200);
-      Base.Nodes.Add(node);
-      CurrentObject.Clear();
+      TheWorld().base().Nodes.Add(node);
+      TheWorld().current_object().Clear();
       if (TheObjectHeaps().unit().Count() < 2) {
         return false;
       }
-      CurrentObject.Add(TheObjectHeaps().unit().Ptr(1));
-      CurrentObject.Add(TheObjectHeaps().unit().Ptr(0));
-      base::At(Waypoint, 20) = 1234;
-      CarryOverMoney = 13579;
-      CarryOverPercent = 42;
-      base::At(Views, 3) = 2345;
-      EndCountDown = 700;
+      TheWorld().current_object().Add(TheObjectHeaps().unit().Ptr(1));
+      TheWorld().current_object().Add(TheObjectHeaps().unit().Ptr(0));
+      base::At(TheWorld().waypoint(), 20) = 1234;
+      TheWorld().carry_over_money() = 13579;
+      TheWorld().carry_over_percent() = 42;
+      base::At(TheWorld().views(), 3) = 2345;
+      TheWorld().end_count_down() = 700;
     }
     if (TheStartupOptions().map_test) {
       for (CELL cell = 0; cell < 16; ++cell) {
-        if (Map.In_Radar(cell)) {
+        if (TheMap().In_Radar(cell)) {
           LOG(ERROR) << "-MAPTEST: fixture cells must be outside the playable map";
           return false;
         }
-        Map.at(cell).Reset();
+        TheMap().at(cell).Reset();
       }
       // Isolate fields formerly omitted by the sparse-cell predicate.
-      Map.at(0).IsPlot = true;
-      Map.at(1).IsCursorHere = true;
-      Map.at(2).IsWaypoint = true;
-      Map.at(3).IsRadarCursor = true;
-      Map.at(4).IsFlagged = true;
-      Map.at(5).TIcon = 7;
-      Map.at(6).OverlayData = 3;
-      Map.at(7).SmudgeData = 2;
-      Map.at(8).Owner = HOUSE_GOOD;
-      Map.at(9).InfType = HOUSE_BAD;
-      Map.at(10).Overlay = OVERLAY_BRICK_WALL;
-      Map.at(10).Recalc_Attributes();
-      Map.at(10).Overlay = OVERLAY_NONE;
+      TheMap().at(0).IsPlot = true;
+      TheMap().at(1).IsCursorHere = true;
+      TheMap().at(2).IsWaypoint = true;
+      TheMap().at(3).IsRadarCursor = true;
+      TheMap().at(4).IsFlagged = true;
+      TheMap().at(5).TIcon = 7;
+      TheMap().at(6).OverlayData = 3;
+      TheMap().at(7).SmudgeData = 2;
+      TheMap().at(8).Owner = HOUSE_GOOD;
+      TheMap().at(9).InfType = HOUSE_BAD;
+      TheMap().at(10).Overlay = OVERLAY_BRICK_WALL;
+      TheMap().at(10).Recalc_Attributes();
+      TheMap().at(10).Overlay = OVERLAY_NONE;
       auto* trigger = new TriggerClass;
       if (!trigger || TheObjectHeaps().unit().Count() == 0) {
         return false;
       }
       trigger->AttachCount = 2;
-      Map.at(11).IsTrigger = Map.at(12).IsTrigger = true;
-      CellTriggers.at(11) = CellTriggers.at(12) = trigger;
-      Map.at(13).OccupierPtr = TheObjectHeaps().unit().Ptr(0);
-      base::At(Map.at(14).Overlappers, 2) = TheObjectHeaps().unit().Ptr(0);
-      Map.at(15).Flag.Composite = 2;
-      Map.TotalValue = static_cast<int64_t>(uint64_t{1} << 35);
-      auto* pending = new BuildingClass(STRUCT_POWER, PlayerPtr->Class->House);
+      TheMap().at(11).IsTrigger = TheMap().at(12).IsTrigger = true;
+      TheWorld().cell_triggers().at(11) = TheWorld().cell_triggers().at(12) =
+          trigger;
+      TheMap().at(13).OccupierPtr = TheObjectHeaps().unit().Ptr(0);
+      base::At(TheMap().at(14).Overlappers, 2) = TheObjectHeaps().unit().Ptr(0);
+      TheMap().at(15).Flag.Composite = 2;
+      TheMap().TotalValue = static_cast<int64_t>(uint64_t{1} << 35);
+      auto* pending =
+          new BuildingClass(STRUCT_POWER, ThePlayer()->Class->House);
       if (!pending) {
         return false;
       }
-      Map.PendingObjectPtr = pending;
-      Map.PendingObject = &pending->Class_Of();
-      Map.PendingHouse = PlayerPtr->Class->House;
-      Map.Set_Cursor_Shape(Map.PendingObject->Occupy_List(true));
+      TheMap().PendingObjectPtr = pending;
+      TheMap().PendingObject = &pending->Class_Of();
+      TheMap().PendingHouse = ThePlayer()->Class->House;
+      TheMap().Set_Cursor_Shape(TheMap().PendingObject->Occupy_List(true));
     }
     if (TheStartupOptions().mobile_test) {
-      const HousesType house = PlayerPtr->Class->House;
+      const HousesType house = ThePlayer()->Class->House;
       auto* vehicle = new UnitClass(UNIT_APC, house);
       auto* passenger = new InfantryClass(INFANTRY_E1, house);
       auto* plane = new AircraftClass(AIRCRAFT_ORCA, house);
@@ -1737,7 +1751,7 @@ bool Select_Game(bool fade) {
         const CELL start = Coord_Cell(TheObjectHeaps().unit().Ptr(0)->Coord);
         for (int offset = 1; offset <= 16; ++offset) {
           const CELL cell = static_cast<CELL>(start + offset);
-          if (cell < MAP_CELL_TOTAL && Map.In_Radar(cell) &&
+          if (cell < MAP_CELL_TOTAL && TheMap().In_Radar(cell) &&
               plane->Unlimbo(Cell_Coord(cell), DIR_E)) {
             launched = true;
             break;
@@ -1753,7 +1767,7 @@ bool Select_Game(bool fade) {
       plane->Set_Speed(123);
     }
     if (TheStartupOptions().building_test) {
-      const HousesType house = PlayerPtr->Class->House;
+      const HousesType house = ThePlayer()->Class->House;
       // Limbo fixtures preserve non-default fields without building AI replacing
       // them before the save. Campaign buildings exercise normal AI separately.
       auto* building = new BuildingClass(STRUCT_WEAP, house);
@@ -1761,7 +1775,7 @@ bool Select_Game(bool fade) {
       auto* passenger = new InfantryClass(INFANTRY_E1, house);
       auto* factory = new FactoryClass;
       if (!building || !peer || !passenger || !factory ||
-          !factory->Set(UnitTypeClass::As_Reference(UNIT_JEEP), *PlayerPtr) ||
+          !factory->Set(UnitTypeClass::As_Reference(UNIT_JEEP), *ThePlayer()) ||
           !factory->Start() ||
           building->Transmit_Message(RADIO_HELLO, peer) != RADIO_ROGER) {
         LOG(ERROR) << "-BUILDINGTEST: could not create linked fixtures";
@@ -1870,7 +1884,7 @@ bool Select_Game(bool fade) {
     if (TheStartupOptions().team_test) {
       UnitClass* member = nullptr;
       for (int i = 0; i < TheObjectHeaps().unit().Count(); ++i) {
-        if (TheObjectHeaps().unit().Ptr(i)->House == PlayerPtr &&
+        if (TheObjectHeaps().unit().Ptr(i)->House == ThePlayer() &&
             !TheObjectHeaps().unit().Ptr(i)->IsInLimbo) {
           member = TheObjectHeaps().unit().Ptr(i);
           break;
@@ -1882,7 +1896,7 @@ bool Select_Game(bool fade) {
         return false;
       }
       type->Set_Name("saveteam");
-      type->House = PlayerPtr->Class->House;
+      type->House = ThePlayer()->Class->House;
       type->MaxAllowed = 1;
       type->ClassCount = 1;
       base::At(type->Class, 0) = member->Class;
@@ -1901,7 +1915,7 @@ bool Select_Game(bool fade) {
     if (TheStartupOptions().factory_test) {
       auto* factory = new FactoryClass;
       if (factory == nullptr ||
-          !factory->Set(UnitTypeClass::As_Reference(UNIT_JEEP), *PlayerPtr) ||
+          !factory->Set(UnitTypeClass::As_Reference(UNIT_JEEP), *ThePlayer()) ||
           !factory->Start()) {
         LOG(ERROR) << "-FACTORYTEST: could not start production";
         return false;
@@ -1916,7 +1930,7 @@ bool Select_Game(bool fade) {
   */
   DLOG(INFO) << "C&C95 - Initialising message system.";
   const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
-  Messages.Init(Map.TacPixelX, Map.TacPixelY, 6, MAX_MESSAGE_LENGTH,
+  Messages.Init(TheMap().TacPixelX, TheMap().TacPixelY, 6, MAX_MESSAGE_LENGTH,
                 (6 * factor) + 1);
 
   /*
@@ -1942,9 +1956,9 @@ bool Select_Game(bool fade) {
   TheScreen().hidden_page().Clear();
   TheScreen().visible_page().Clear();
   Set_Logic_Page(TheScreen().visible_view());
-  Map.Flag_To_Redraw();
+  TheMap().Flag_To_Redraw();
   Call_Back();
-  Map.Render();
+  TheMap().Render();
   // Show_Mouse();
 
   /*
@@ -2871,9 +2885,9 @@ void Save_Recording_Values() {
   RecordFile.WriteObject(MPlayerID);
   RecordFile.WriteObject(MPlayerHouses);
   RecordFile.WriteObject(Seed);
-  RecordFile.WriteObject(Scenario);
-  RecordFile.WriteObject(ScenPlayer);
-  RecordFile.WriteObject(ScenDir);
+  RecordFile.WriteObject(TheWorld().scenario());
+  RecordFile.WriteObject(TheWorld().scen_player());
+  RecordFile.WriteObject(TheWorld().scen_dir());
   RecordFile.WriteObject(Whom);
   RecordFile.WriteObject(Special);
   RecordFile.WriteObject(Options);
@@ -2921,9 +2935,9 @@ void Load_Recording_Values() {
   RecordFile.ReadObject(MPlayerID);
   RecordFile.ReadObject(MPlayerHouses);
   RecordFile.ReadObject(Seed);
-  RecordFile.ReadObject(Scenario);
-  RecordFile.ReadObject(ScenPlayer);
-  RecordFile.ReadObject(ScenDir);
+  RecordFile.ReadObject(TheWorld().scenario());
+  RecordFile.ReadObject(TheWorld().scen_player());
+  RecordFile.ReadObject(TheWorld().scen_dir());
   RecordFile.ReadObject(Whom);
   RecordFile.ReadObject(Special);
   RecordFile.ReadObject(Options);

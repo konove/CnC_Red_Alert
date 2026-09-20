@@ -59,7 +59,6 @@
 #include "td/defines.h"
 #include "td/dial8.h"
 #include "td/display_constants.h"
-#include "td/externs.h"
 #include "td/gauge.h"
 #include "td/house.h"
 #include "td/infantry.h"
@@ -71,6 +70,7 @@
 #include "td/techno.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "td/world.h"
 
 /***************************************************************************
  * Select_Object -- selects an object for processing                       *
@@ -117,7 +117,7 @@ int MapEditClass::Select_Object() {
   ----------------- If no object, unselect the current one -----------------
   */
   if (!object) {
-    if (CurrentObject.Count()) {
+    if (TheWorld().current_object().Count()) {
       /*
       ................... Unselect all current objects ...................
       */
@@ -133,8 +133,9 @@ int MapEditClass::Select_Object() {
     /*
     ------------------ Select object only if it's different ------------------
     */
-    if (!CurrentObject.Count() ||
-        (CurrentObject.Count() && object != CurrentObject.at(0))) {
+    if (!TheWorld().current_object().Count() ||
+        (TheWorld().current_object().Count() &&
+         object != TheWorld().current_object().at(0))) {
       /*
       ..................... Unselect all current objects ....................
       */
@@ -183,7 +184,8 @@ void MapEditClass::Select_Next() {
   /*
   ----------------------- Get next object on the map -----------------------
   */
-  ObjectClass* obj = MapEditClass::Next_Object(CurrentObject.at(0));
+  ObjectClass* obj =
+      MapEditClass::Next_Object(TheWorld().current_object().at(0));
 
   if (obj) {
     /*
@@ -222,7 +224,7 @@ void MapEditClass::Select_Next() {
   /*
   ...................... compute x,y of object's cell ......................
   */
-  CELL const obj_cell = Coord_Cell(CurrentObject.at(0)->Coord);
+  CELL const obj_cell = Coord_Cell(TheWorld().current_object().at(0)->Coord);
   const int cell_x = Cell_X(obj_cell);       // cell-x of next object
   const int cell_y = Cell_Y(obj_cell);       // cell-y of next object
   int tcell_x = Coord_XCell(TacticalCoord);  // cell-x of TacticalCell
@@ -247,10 +249,10 @@ void MapEditClass::Select_Next() {
     }
   }
 
-  ScenarioInit++;
+  TheWorld().scenario_init()++;
   Set_Tactical_Position(
       XY_Coord(Cell_To_Lepton(tcell_x), Cell_To_Lepton(tcell_y)));
-  ScenarioInit--;
+  TheWorld().scenario_init()--;
 
   /*
   -------------------------- Force map to redraw ---------------------------
@@ -308,7 +310,7 @@ void MapEditClass::Popup_Controls() {
   /*
   ------------------ If no current object, hide the list -------------------
   */
-  if (!CurrentObject.Count()) {
+  if (!TheWorld().current_object().Count()) {
     Add_A_Button(*BaseGauge);
     Add_A_Button(*BaseLabel);
     Add_A_Button(*MapArea);
@@ -318,62 +320,74 @@ void MapEditClass::Popup_Controls() {
   /*
   --------------- If not Techno, no need for editing buttons ---------------
   */
-  if (!CurrentObject.at(0)->Is_Techno()) {
+  if (!TheWorld().current_object().at(0)->Is_Techno()) {
     Add_A_Button(*BaseGauge);
     Add_A_Button(*BaseLabel);
     Add_A_Button(*MapArea);
     return;
   }
 
-  objtype =
-      dynamic_cast<const TechnoTypeClass*>(&CurrentObject.at(0)->Class_Of());
-  const auto* techno = dynamic_cast<const TechnoClass*>(CurrentObject.at(0));
+  objtype = dynamic_cast<const TechnoTypeClass*>(
+      &TheWorld().current_object().at(0)->Class_Of());
+  const auto* techno =
+      dynamic_cast<const TechnoClass*>(TheWorld().current_object().at(0));
 
   /*
   ---------------------- Get object's current values -----------------------
   */
   const HousesType owner =
-      CurrentObject.at(0)->Owner();  // object's current owner
+      TheWorld().current_object().at(0)->Owner();  // object's current owner
   int mission_index = 0;  // object's current mission
   // Not std::views::enumerate: Apple's libc++ does not ship it yet.
   // Distance rather than an iterator variable: std::array's iterator is a
   // pointer in libstdc++ and libc++ but a class in MSVC's STL.
   const auto index = std::ranges::distance(
       MapEditMissions.begin(),
-      std::ranges::find(MapEditMissions, CurrentObject.at(0)->Get_Mission()));
+      std::ranges::find(MapEditMissions,
+                        TheWorld().current_object().at(0)->Get_Mission()));
   if (index < std::ssize(MapEditMissions)) {
     mission_index = static_cast<int>(index);
   }
-  const int strength =
-      CurrentObject.at(0)->Health_Ratio();  // object's 0-255 strength value
+  const int strength = TheWorld()
+                           .current_object()
+                           .at(0)
+                           ->Health_Ratio();  // object's 0-255 strength value
 
   /*
   ----------------------------- House buttons ------------------------------
   */
-  if (ScenPlayer == SCEN_PLAYER_MPLAYER) {
-    if (Verify_House(HOUSE_NEUTRAL, &CurrentObject.at(0)->Class_Of())) {
+  if (TheWorld().scen_player() == SCEN_PLAYER_MPLAYER) {
+    if (Verify_House(HOUSE_NEUTRAL,
+                     &TheWorld().current_object().at(0)->Class_Of())) {
       Add_A_Button(*NeutralButton);
     }
-    if (Verify_House(HOUSE_MULTI1, &CurrentObject.at(0)->Class_Of())) {
+    if (Verify_House(HOUSE_MULTI1,
+                     &TheWorld().current_object().at(0)->Class_Of())) {
       Add_A_Button(*Multi1Button);
     }
-    if (Verify_House(HOUSE_MULTI2, &CurrentObject.at(0)->Class_Of())) {
+    if (Verify_House(HOUSE_MULTI2,
+                     &TheWorld().current_object().at(0)->Class_Of())) {
       Add_A_Button(*Multi2Button);
     }
-    if (Verify_House(HOUSE_MULTI3, &CurrentObject.at(0)->Class_Of())) {
+    if (Verify_House(HOUSE_MULTI3,
+                     &TheWorld().current_object().at(0)->Class_Of())) {
       Add_A_Button(*Multi3Button);
     }
-    if (Verify_House(HOUSE_MULTI4, &CurrentObject.at(0)->Class_Of())) {
+    if (Verify_House(HOUSE_MULTI4,
+                     &TheWorld().current_object().at(0)->Class_Of())) {
       Add_A_Button(*Multi4Button);
     }
   } else {
-    if (Verify_House(HOUSE_NEUTRAL, &CurrentObject.at(0)->Class_Of())) {
+    if (Verify_House(HOUSE_NEUTRAL,
+                     &TheWorld().current_object().at(0)->Class_Of())) {
       Add_A_Button(*NeutralButton);
     }
-    if (Verify_House(HOUSE_BAD, &CurrentObject.at(0)->Class_Of())) {
+    if (Verify_House(HOUSE_BAD,
+                     &TheWorld().current_object().at(0)->Class_Of())) {
       Add_A_Button(*NODButton);
     }
-    if (Verify_House(HOUSE_GOOD, &CurrentObject.at(0)->Class_Of())) {
+    if (Verify_House(HOUSE_GOOD,
+                     &TheWorld().current_object().at(0)->Class_Of())) {
       Add_A_Button(*GDIButton);
     }
   }
@@ -392,7 +406,7 @@ void MapEditClass::Popup_Controls() {
       MissionList->Set_Selected_Index(mission_index);
       HealthGauge->Set_Value(strength);
       absl::SNPrintF(HealthBuf, sizeof(HealthBuf), "%d",
-                     CurrentObject.at(0)->Strength);
+                     TheWorld().current_object().at(0)->Strength);
       FacingDial->Set_Direction(techno->PrimaryFacing);
 
       /*
@@ -407,7 +421,7 @@ void MapEditClass::Popup_Controls() {
     case RTTI_BUILDINGTYPE:
       HealthGauge->Set_Value(strength);
       absl::SNPrintF(HealthBuf, sizeof(HealthBuf), "%d",
-                     CurrentObject.at(0)->Strength);
+                     TheWorld().current_object().at(0)->Strength);
       Add_A_Button(*HealthGauge);
       Add_A_Button(*HealthText);
 
@@ -466,9 +480,8 @@ void MapEditClass::Popup_Controls() {
  *   11/07/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Grab_Object() {
-
-  if (CurrentObject.Count()) {
-    GrabbedObject = CurrentObject.at(0);
+  if (TheWorld().current_object().Count()) {
+    GrabbedObject = TheWorld().current_object().at(0);
 
     /*------------------------------------------------------------------------
     Find out which cell 'ZoneCell' is in relation to the object's current cell
@@ -546,8 +559,8 @@ int MapEditClass::Move_Grabbed_Object() {
     ** in the Base's Node list.
     */
     if (GrabbedObject->What_Am_I() == RTTI_BUILDING) {
-      BaseNodeClass* node =
-          Base.Get_Node(dynamic_cast<BuildingClass*>(GrabbedObject));
+      BaseNodeClass* node = TheWorld().base().Get_Node(
+          dynamic_cast<BuildingClass*>(GrabbedObject));
       if (node != nullptr) {
         node->Coord = new_coord;
       }
@@ -598,22 +611,23 @@ bool MapEditClass::Change_House(HousesType newhouse) {
   /*------------------------------------------------------------------------
   Return if no current object
   ------------------------------------------------------------------------*/
-  if (!CurrentObject.Count()) {
+  if (!TheWorld().current_object().Count()) {
     return false;
   }
 
   /*------------------------------------------------------------------------
   Only techno objects can be owned by a house; return if not a techno
   ------------------------------------------------------------------------*/
-  if (!CurrentObject.at(0)->Is_Techno()) {
+  if (!TheWorld().current_object().at(0)->Is_Techno()) {
     return false;
   }
 
   /*------------------------------------------------------------------------
   You can't change the house if the object is part of the AI's Base.
   ------------------------------------------------------------------------*/
-  if (CurrentObject.at(0)->What_Am_I() == RTTI_BUILDING &&
-      Base.Is_Node(dynamic_cast<BuildingClass*>(CurrentObject.at(0)))) {
+  if (TheWorld().current_object().at(0)->What_Am_I() == RTTI_BUILDING &&
+      TheWorld().base().Is_Node(
+          dynamic_cast<BuildingClass*>(TheWorld().current_object().at(0)))) {
     return false;
   }
 
@@ -627,14 +641,14 @@ bool MapEditClass::Change_House(HousesType newhouse) {
   /*------------------------------------------------------------------------
   Verify that this is a valid owner
   ------------------------------------------------------------------------*/
-  if (!Verify_House(newhouse, &CurrentObject.at(0)->Class_Of())) {
+  if (!Verify_House(newhouse, &TheWorld().current_object().at(0)->Class_Of())) {
     return false;
   }
 
   /*------------------------------------------------------------------------
   Change the house
   ------------------------------------------------------------------------*/
-  auto* tp = dynamic_cast<TechnoClass*>(CurrentObject.at(0));
+  auto* tp = dynamic_cast<TechnoClass*>(TheWorld().current_object().at(0));
   tp->House = HouseClass::As_Pointer(newhouse);
 
   return true;

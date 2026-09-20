@@ -83,6 +83,7 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/vector.h"
+#include "td/world.h"
 
 #ifdef _WIN32
 #include <io.h>  // for unlink
@@ -328,8 +329,8 @@ bool LoadOptionsClass::Process() {
       */
       if (InMainLoop) {
         TheScreen().hidden_page().Clear();
-        Map.Flag_To_Redraw(true);
-        Map.Render();
+        TheMap().Flag_To_Redraw(true);
+        TheMap().Render();
       } else {
         TheScreen().hidden_page().Clear();
         Load_Title_Page(true);

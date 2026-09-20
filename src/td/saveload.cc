@@ -87,6 +87,7 @@
 #include "td/trigger.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/archive.h"
 #include "tech/disk_file.h"
 #include "tech/file_sink.h"
@@ -103,8 +104,8 @@ bool Save_Game(int id, const char* descr) {
   int32_t version = 0;
   char descr_buf[kDescripMax]{};
 
-  const int scenario = Scenario;                     // get current scenario #
-  const HousesType house = PlayerPtr->Class->House;  // get current house
+  const int scenario = TheWorld().scenario();          // get current scenario #
+  const HousesType house = ThePlayer()->Class->House;  // get current house
 
   /*
   **	Generate the filename to save
@@ -168,7 +169,7 @@ bool Save_Game(int id, const char* descr) {
     /*
     **	Save the map.  The map must be saved first, since it saves the Theater.
     */
-    if (!Map.Save(writer)) {
+    if (!TheMap().Save(writer)) {
       return false;
     }
 
@@ -199,7 +200,7 @@ bool Save_Game(int id, const char* descr) {
     /*
     **	Save the Logic & Map layers
     */
-    Logic.Serialize(writer);
+    TheWorld().logic().Serialize(writer);
     if (!writer.ok()) {
       return false;
     }
@@ -214,7 +215,7 @@ bool Save_Game(int id, const char* descr) {
     /*
     **	Save the Score
     */
-    Score.Serialize(writer);
+    TheWorld().score().Serialize(writer);
     if (!writer.ok()) {
       return false;
     }
@@ -222,7 +223,7 @@ bool Save_Game(int id, const char* descr) {
     /*
     **	Save the AI Base
     */
-    Base.Serialize(writer);
+    TheWorld().base().Serialize(writer);
     if (!writer.ok()) {
       return false;
     }
@@ -352,7 +353,7 @@ bool Load_Game(int id) {
   *them *	what the Theater is; this must be done before any objects are
   *created, so *	they'll be properly created.
   */
-  if (!Map.Load(reader)) {
+  if (!TheMap().Load(reader)) {
     DLOG(ERROR) << "Cannot load saved map: " << reader.error();
     return false;
   }
@@ -395,7 +396,7 @@ bool Load_Game(int id) {
   for (int j = 0; j < TheObjectHeaps().trigger().Count(); j++) {
     TriggerClass* trig = TheObjectHeaps().trigger().Ptr(j);
     if (trig->House != HOUSE_NONE) {
-      HouseTriggers.at(trig->House).Add(trig);
+      TheWorld().house_triggers().at(trig->House).Add(trig);
     }
   }
 
@@ -403,7 +404,7 @@ bool Load_Game(int id) {
   /*
   **	Load the Logic & Map Layers
   */
-  Logic.Serialize(reader);
+  TheWorld().logic().Serialize(reader);
   if (!reader.ok()) {
     DLOG(ERROR) << "Cannot load saved state: " << reader.error();
     file.Close();
@@ -421,7 +422,7 @@ bool Load_Game(int id) {
   /*
   **	Load the Score
   */
-  Score.Serialize(reader);
+  TheWorld().score().Serialize(reader);
   if (!reader.ok()) {
     DLOG(ERROR) << "Cannot load saved state: " << reader.error();
     file.Close();
@@ -431,7 +432,7 @@ bool Load_Game(int id) {
   /*
   **	Load the AI Base
   */
-  Base.Serialize(reader);
+  TheWorld().base().Serialize(reader);
   if (!reader.ok()) {
     DLOG(ERROR) << "Cannot load saved state: " << reader.error();
     file.Close();
@@ -448,11 +449,17 @@ bool Load_Game(int id) {
   }
 
   file.Close();
-  Whom = PlayerPtr->Class->House;
+  Whom = ThePlayer()->Class->House;
   switch (Whom) {
-    case HOUSE_GOOD: ScenPlayer = SCEN_PLAYER_GDI; break;
-    case HOUSE_BAD: ScenPlayer = SCEN_PLAYER_NOD; break;
-    case HOUSE_JP: ScenPlayer = SCEN_PLAYER_JP; break;
+    case HOUSE_GOOD:
+      TheWorld().scen_player() = SCEN_PLAYER_GDI;
+      break;
+    case HOUSE_BAD:
+      TheWorld().scen_player() = SCEN_PLAYER_NOD;
+      break;
+    case HOUSE_JP:
+      TheWorld().scen_player() = SCEN_PLAYER_JP;
+      break;
     case HousesType::HOUSE_NONE:
     case HousesType::HOUSE_NEUTRAL:
     case HousesType::HOUSE_MULTI1:
@@ -464,22 +471,24 @@ bool Load_Game(int id) {
     case HousesType::HOUSE_COUNT:
     default: break;
   }
-  Set_Scenario_Name(ScenarioName, Scenario, ScenPlayer, ScenDir, ScenVar);
+  Set_Scenario_Name(TheWorld().scenario_name(), TheWorld().scenario(),
+                    TheWorld().scen_player(), TheWorld().scen_dir(), ScenVar);
   // Placement type resources need every object heap to be loaded first.
-  if (Map.PendingObjectPtr) {
-    Map.PendingObject = &Map.PendingObjectPtr->Class_Of();
-    Map.Set_Cursor_Shape(Map.PendingObject->Occupy_List(true));
+  if (TheMap().PendingObjectPtr) {
+    TheMap().PendingObject = &TheMap().PendingObjectPtr->Class_Of();
+    TheMap().Set_Cursor_Shape(TheMap().PendingObject->Occupy_List(true));
   } else {
-    Map.PendingObject = nullptr;
-    Map.Set_Cursor_Shape({});
+    TheMap().PendingObject = nullptr;
+    TheMap().Set_Cursor_Shape({});
   }
-  Map.Init_IO();
-  Map.Flag_To_Redraw(true);
+  TheMap().Init_IO();
+  TheMap().Flag_To_Redraw(true);
 
-  ScenarioInit = 0;
+  TheWorld().scenario_init() = 0;
 
 #ifdef DEMO
-  if (Scenario != 10 && Scenario != 1 && Scenario != 6) {
+  if (TheWorld().scenario() != 10 && TheWorld().scenario() != 1 &&
+      TheWorld().scenario() != 6) {
     return (false);
   }
 #endif
@@ -491,37 +500,44 @@ bool Load_Game(int id) {
 template <class Archive>
 static void Serialize_Misc_Values(Archive& ar) {
   ar.Section(FourCC("MISC"));
-  ar(HousePtr(PlayerPtr), Scenario, WinMovie, LoseMovie);
+  ar(HousePtr(ThePlayer()), TheWorld().scenario(), TheWorld().win_movie(),
+     TheWorld().lose_movie());
   if constexpr (Archive::kIsReading) {
     bool player_loaded = false;
     for (int32_t i = 0; i < TheObjectHeaps().house().Count(); ++i) {
-      player_loaded |= PlayerPtr == TheObjectHeaps().house().Ptr(i);
+      player_loaded |= ThePlayer() == TheObjectHeaps().house().Ptr(i);
     }
     if (!ar.ok() || !player_loaded) {
       ar.Fail("invalid saved player house");
       return;
     }
   }
-  SerializeObjectList(ar, CurrentObject);
-  ar(Waypoint, ScenDir, ScenVar, CarryOverMoney, CarryOverPercent, BuildLevel,
-     BriefMovie, Views, EndCountDown, BriefingText, ActionMovie);
+  SerializeObjectList(ar, TheWorld().current_object());
+  ar(TheWorld().waypoint(), TheWorld().scen_dir(), ScenVar,
+     TheWorld().carry_over_money(), TheWorld().carry_over_percent(), BuildLevel,
+     TheWorld().brief_movie(), TheWorld().views(), TheWorld().end_count_down(),
+     TheWorld().briefing_text(), TheWorld().action_movie());
   if constexpr (Archive::kIsReading) {
-    base::At(WinMovie, sizeof(WinMovie) - 1) = '\0';
-    base::At(LoseMovie, sizeof(LoseMovie) - 1) = '\0';
-    base::At(BriefMovie, sizeof(BriefMovie) - 1) = '\0';
-    base::At(ActionMovie, sizeof(ActionMovie) - 1) = '\0';
-    base::At(BriefingText, sizeof(BriefingText) - 1) = '\0';
-    if (ScenDir < SCEN_DIR_EAST || ScenDir >= SCEN_DIR_COUNT ||
-        ScenVar < SCEN_VAR_A ||
+    base::At(TheWorld().win_movie(), sizeof(TheWorld().win_movie()) - 1) = '\0';
+    base::At(TheWorld().lose_movie(), sizeof(TheWorld().lose_movie()) - 1) =
+        '\0';
+    base::At(TheWorld().brief_movie(), sizeof(TheWorld().brief_movie()) - 1) =
+        '\0';
+    base::At(TheWorld().action_movie(), sizeof(TheWorld().action_movie()) - 1) =
+        '\0';
+    base::At(TheWorld().briefing_text(),
+             sizeof(TheWorld().briefing_text()) - 1) = '\0';
+    if (TheWorld().scen_dir() < SCEN_DIR_EAST ||
+        TheWorld().scen_dir() >= SCEN_DIR_COUNT || ScenVar < SCEN_VAR_A ||
         (ScenVar >= SCEN_VAR_COUNT && ScenVar != SCEN_VAR_LOSE)) {
       ar.Fail("invalid saved scenario direction or variant");
     }
-    for (const CELL cell : Waypoint) {
+    for (const CELL cell : TheWorld().waypoint()) {
       if (cell < -1 || cell >= MAP_CELL_TOTAL) {
         ar.Fail("invalid saved waypoint");
       }
     }
-    for (const CELL cell : Views) {
+    for (const CELL cell : TheWorld().views()) {
       if (cell < -1 || cell >= MAP_CELL_TOTAL) {
         ar.Fail("invalid saved view");
       }

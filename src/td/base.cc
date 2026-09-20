@@ -74,12 +74,12 @@
 #include "td/building.h"
 #include "td/cell.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/inline.h"
 #include "td/object.h"
 #include "td/profile.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/number_parse.h"
 
 bool BaseNodeClass::operator==(const BaseNodeClass& node) const {
@@ -270,10 +270,10 @@ BuildingClass* BaseClass::Get_Building(int index) {
   */
   const CELL cell = Coord_Cell(Nodes.at(index).Coord);
 
-  base::At(obj, 0) = Map.at(cell).Cell_Building();
-  base::At(obj, 1) = base::At(Map.at(cell).Overlappers, 0);
-  base::At(obj, 2) = base::At(Map.at(cell).Overlappers, 1);
-  base::At(obj, 3) = base::At(Map.at(cell).Overlappers, 2);
+  base::At(obj, 0) = TheMap().at(cell).Cell_Building();
+  base::At(obj, 1) = base::At(TheMap().at(cell).Overlappers, 0);
+  base::At(obj, 2) = base::At(TheMap().at(cell).Overlappers, 1);
+  base::At(obj, 3) = base::At(TheMap().at(cell).Overlappers, 2);
 
   BuildingClass* bldg = nullptr;
   for (auto& i : obj) {

@@ -71,6 +71,7 @@
 #include "td/object.h"
 #include "td/smudge.h"
 #include "td/type.h"
+#include "td/world.h"
 #include "tech/mix_archive.h"
 
 static const SmudgeTypeClass Crater1(
@@ -353,7 +354,7 @@ void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
 void SmudgeTypeClass::Prep_For_Add() {
   for (SmudgeType index = SMUDGE_CRATER1; index < SMUDGE_COUNT; index++) {
     if (!As_Reference(index).Get_Image_Data().empty()) {
-      Map.Add_To_List(&As_Reference(index));
+      TheMap().Add_To_List(&As_Reference(index));
     }
   }
 }

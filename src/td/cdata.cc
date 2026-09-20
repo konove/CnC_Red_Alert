@@ -67,7 +67,6 @@
 #include "td/const.h"
 #include "td/defines.h"
 #include "td/display_constants.h"
-#include "td/externs.h"
 #include "td/house.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
@@ -75,6 +74,7 @@
 #include "td/screen.h"
 #include "td/template.h"
 #include "td/type.h"
+#include "td/world.h"
 #include "tech/mix_archive.h"
 
 static const char slope00000001[] = {7, -1};
@@ -1477,7 +1477,7 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
 void TemplateTypeClass::Prep_For_Add() {
   for (TemplateType index = TEMPLATE_CLEAR1; index < TEMPLATE_COUNT; index++) {
     if (!As_Reference(index).Get_Image_Data().empty()) {
-      Map.Add_To_List(&As_Reference(index));
+      TheMap().Add_To_List(&As_Reference(index));
     }
   }
 }

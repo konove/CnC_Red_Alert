@@ -84,7 +84,6 @@
 #include "td/conquer.h"
 #include "td/debug_state.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/globals.h"
 #include "td/heap.h"
 #include "td/house.h"
@@ -93,6 +92,7 @@
 #include "td/object_heaps.h"
 #include "td/techno.h"
 #include "td/type.h"
+#include "td/world.h"
 
 int FactoryClass::Validate() const {
   if constexpr (config::kCheatKeysEnabled) {
@@ -571,10 +571,10 @@ bool FactoryClass::Abandon() {
       /*
       **	Delete the object under construction.
       */
-      ScenarioInit++;
+      TheWorld().scenario_init()++;
       delete Object;
       Object = nullptr;
-      ScenarioInit--;
+      TheWorld().scenario_init()--;
     }
     if (SpecialItem != SPC_NONE) {
       SpecialItem = SPC_NONE;

@@ -79,6 +79,7 @@
 #include "td/textblit.h"
 #include "td/theme.h"
 #include "td/type.h"
+#include "td/world.h"
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
@@ -486,7 +487,7 @@ struct nodstats {
 void Map_Selection() {
   unsigned char localpalette[768]{};
   bool lastscenario = false;
-  const HousesType house = PlayerPtr->Class->House;
+  const HousesType house = ThePlayer()->Class->House;
   int attackxcoord = 0;
 
   static const int _countryx[] = {195, 217, 115, 167, 244, 97, 130, 142, 171,
@@ -517,22 +518,22 @@ void Map_Selection() {
   Set_Font_Palette(_regpal);
   Set_Palette(ThePalettes().black_palette());
 
-  const int scenario = Scenario + (house == HOUSE_GOOD ? 0 : 14);
+  const int scenario = TheWorld().scenario() + (house == HOUSE_GOOD ? 0 : 14);
   if (house == HOUSE_GOOD) {
-    lastscenario = Scenario == 14;
-    if (Scenario == 15) {
+    lastscenario = TheWorld().scenario() == 14;
+    if (TheWorld().scenario() == 15) {
       return;
     }
   } else {
-    lastscenario = Scenario == 12;
-    if (Scenario == 13) {
+    lastscenario = TheWorld().scenario() == 12;
+    if (TheWorld().scenario() == 13) {
       return;
     }
   }
 
   // Check if they're even entitled to map selection this time
   if (base::At(base::At(CountryArray, scenario).Choices,
-               static_cast<int>(ScenDir)) == 0) {
+               static_cast<int>(TheWorld().scen_dir())) == 0) {
     return;
   }
 
@@ -796,7 +797,7 @@ void Map_Selection() {
   ** Now show territories as they existed last scenario
   */
   int startframe = base::At(base::At(CountryArray, scenario).Start,
-                            static_cast<int>(ScenDir));
+                            static_cast<int>(TheWorld().scen_dir()));
   if (startframe) {
     progress.DrawFrame(TheScreen().sys_mem_page(), startframe);
     TheScreen().sys_mem_page().Blit(*PseudoSeenBuff);
@@ -873,7 +874,7 @@ void Map_Selection() {
   Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), {});
 
   startframe = base::At(base::At(CountryArray, scenario).ContAnim,
-                        static_cast<int>(ScenDir));
+                        static_cast<int>(TheWorld().scen_dir()));
 
   /*
   ** Now print the text over the page
@@ -1068,7 +1069,7 @@ void Map_Selection() {
     if (Keyboard::Check() && KeyCode(Keyboard::Get()) == KN_LMOUSE) {
       for (selection = 0;
            selection < base::At(base::At(CountryArray, scenario).Choices,
-                                static_cast<int>(ScenDir));
+                                static_cast<int>(TheWorld().scen_dir()));
            selection++) {
         color = TheScreen().sys_mem_page().Get_Pixel(Get_Mouse_X() / 2,
                                                      Get_Mouse_Y() / 2);
@@ -1077,14 +1078,14 @@ void Map_Selection() {
         ** Special hack for Egypt the second time through
         */
         if ((base::At(base::At(base::At(CountryArray, scenario).CountryColor,
-                               static_cast<int>(ScenDir)),
+                               static_cast<int>(TheWorld().scen_dir())),
                       selection) == 0xA0) &&
             (color == 0x80 || color == 0x81)) {
           color = 0xA0;
         }
 
         if (base::At(base::At(base::At(CountryArray, scenario).CountryColor,
-                              static_cast<int>(ScenDir)),
+                              static_cast<int>(TheWorld().scen_dir())),
                      selection) == color) {
           Audio.Play(world2, 255, Options.Normalize_Sound(90));
           done = 1;
@@ -1095,11 +1096,12 @@ void Map_Selection() {
     }
   }
   ScenVar = base::At(base::At(base::At(CountryArray, scenario).CountryVariant,
-                              static_cast<int>(ScenDir)),
+                              static_cast<int>(TheWorld().scen_dir())),
                      selection);
-  ScenDir = base::At(base::At(base::At(CountryArray, scenario).CountryDir,
-                              static_cast<int>(ScenDir)),
-                     selection);
+  TheWorld().scen_dir() =
+      base::At(base::At(base::At(CountryArray, scenario).CountryDir,
+                        static_cast<int>(TheWorld().scen_dir())),
+               selection);
 
   if (!lastscenario) {
     progress.Close();
@@ -1132,7 +1134,7 @@ void Map_Selection() {
     europe->Blit(TheScreen().sys_mem_page());
     const int shape =
         base::At(base::At(base::At(CountryArray, scenario).CountryShape,
-                          static_cast<int>(ScenDir)),
+                          static_cast<int>(TheWorld().scen_dir())),
                  selection);
     const int xshuffled_rows = shape + (house == HOUSE_GOOD ? 0 : 18);
     CC_Draw_Shape(countryshape, shape, base::At(_countryx, xshuffled_rows),
@@ -1264,7 +1266,7 @@ void Print_Statistics(int country, int xpos, int ypos) {
   xpos = xpos > 128 ? 8 : 136;
 #endif
   ypos = ypos > 100 ? 8 : 104 - 6;
-  if (PlayerPtr->Class->House == HOUSE_GOOD) {
+  if (ThePlayer()->Class->House == HOUSE_GOOD) {
     Alloc_Object(new ScorePrintClass(
         base::At(_countryname, base::At(GDIStats, country).nameindex), xpos,
         ypos, greenpal));

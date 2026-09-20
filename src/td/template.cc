@@ -72,7 +72,6 @@
 #include "td/config.h"
 #include "td/conquer.h"
 #include "td/defines.h"
-#include "td/externs.h"
 #include "td/heap.h"
 #include "td/inline.h"
 #include "td/mapedit.h"
@@ -81,6 +80,7 @@
 #include "td/target.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/number_parse.h"
 
 /***********************************************************************************************
@@ -186,7 +186,7 @@ void TemplateClass::Write_INI(std::span<char> buffer) {
   **	Find all templates and write them to the file.
   */
   for (int index = 0; index < MAP_CELL_TOTAL; index++) {
-    CellClass* ptr = &Map.at(index);
+    CellClass* ptr = &TheMap().at(index);
     if (ptr->TType != TEMPLATE_NONE && ptr->TIcon == 0) {
       absl::SNPrintF(uname, sizeof(uname), "%03d", index);
       absl::SNPrintF(buf, sizeof(buf), "%s",
@@ -277,8 +277,8 @@ bool TemplateClass::Mark(MarkType mark) {
       for (int x = 0; std::cmp_less(x, Class->Width); x++) {
         const CELL cell =
             static_cast<CELL>(Coord_Cell(Coord) + (y * MAP_CELL_W) + x);
-        if (Map.In_Radar(cell)) {
-          CellClass* cellptr = &Map.at(cell);
+        if (TheMap().In_Radar(cell)) {
+          CellClass* cellptr = &TheMap().at(cell);
           const int number = (y * Class->Width) + x;
 
           /*

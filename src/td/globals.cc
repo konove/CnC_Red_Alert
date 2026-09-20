@@ -43,13 +43,10 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/enum_array.h"
-#include "port/platform.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "td/base.h"
 #include "td/connect.h"
 #include "td/credits.h"
 #include "td/defines.h"
@@ -57,22 +54,16 @@
 #include "td/externs.h"
 #include "td/ftimer.h"
 #include "td/goptions.h"
-#include "td/house.h"
 #include "td/ipxaddr.h"
 #include "td/ipxgconn.h"
 #include "td/ipxmgr.h"
-#include "td/logic.h"
-#include "td/mapedit.h"
 #include "td/msglist.h"
 #include "td/nodename.h"
 #include "td/nullmgr.h"
-#include "td/object.h"
 #include "td/phone.h"
 #include "td/queue.h"
-#include "td/score.h"
 #include "td/special.h"
 #include "td/theme.h"
-#include "td/trigger.h"
 #include "td/vector.h"
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
@@ -98,7 +89,6 @@ char OverridePath[128] = ".";
 *functions *	are used to control access to this list. Do not modify it
 *directly.
 */
-DynamicVectorClass<ObjectClass*> CurrentObject;
 
 /***************************************************************************
 **	This holds the custom version text that is fetched from the version
@@ -119,19 +109,11 @@ bool BreakoutAllowed = true;  // "true" if aborting of movies is allowed.
 **	These are the movie names to use for mission briefing, winning, and
 *losing *	sequences. They are read from the INI file.
 */
-char IntroMovie[port::kMaxFname + port::kMaxExt];
-char BriefMovie[port::kMaxFname + port::kMaxExt];
-char WinMovie[port::kMaxFname + port::kMaxExt];
-char LoseMovie[port::kMaxFname + port::kMaxExt];
-char ActionMovie[port::kMaxFname + port::kMaxExt];
-char BriefingText[512];
-ThemeType TransitTheme = THEME_NONE;
 
 /***************************************************************************
 **	This records the view hotspots for the player. These are the cell
 *numbers *	of the upper left corner for the view position.
 */
-CELL Views[4];
 
 /***************************************************************************
 **	This records if the score (music) file is present. If not, then much of
@@ -173,19 +155,16 @@ bool PlayerRestarts;
 **	This is a special scenario count down value. End of game condition will
 **	not be checked until this value reaches zero.
 */
-int EndCountDown;
 
 /***************************************************************************
 **	When the player sabotages a building (scenario #6 GDI only) then when
 **	the next scenario starts, that building will already be destroyed.
 */
-StructType SabotagedType;
 
 /***************************************************************************
 **	If the Nod temple was destroyed by the ion cannon, then this flag will
 **	be set to true.
 */
-bool TempleIoned = false;
 
 /***************************************************************************
 **	This is true if the game is the currently in focus windows app
@@ -203,7 +182,6 @@ GameOptionsClass Options;
 **	Logic processing is controlled by this element. It handles both graphic
 **	and AI logic.
 */
-LogicClass Logic;
 
 // The sound device and its four channels. Defined ahead of Theme, which
 // plays through it.
@@ -217,12 +195,10 @@ ThemeClass Theme;
 /***************************************************************************
 **	This is the main control class for the map.
 */
-MapEditClass Map;
 
 /**************************************************************************
 **	The running game score is handled by this class (and member functions).
 */
-ScoreClass Score;
 
 /***************************************************************************
 **	The running credit display is controlled by this class (and member
@@ -241,14 +217,7 @@ SpecialClass Special;
 ** These variables should all be set together.
 */
 HousesType Whom;                           // Initial command line house choice.
-int Scenario;                              // Scenario #
-ScenarioPlayerType ScenPlayer;             // GDI, NOD, 2-Player, Multi-Player
-ScenarioDirType ScenDir;                   // East/West
 ScenarioVarType ScenVar;                   // variation A/B/C
-char ScenarioName[port::kMaxFname + port::kMaxExt];  // name of scenario
-int CarryOverMoney;    // Carry over money from last scenario.
-int CarryOverPercent;  // Carry over money percentage control.
-int ScenarioInit;
 bool SpecialFlag = false;
 
 /***************************************************************************
@@ -261,7 +230,6 @@ int BuildLevel = 3;  // Buildable level (1 = simplest)
 ** This value is computed every time a new scenario is loaded; it's a
 ** CRC of the INI and binary map files.
 */
-uint32_t ScenarioCRC;
 
 /***************************************************************************
 **	The game plays as long as this var is true.
@@ -278,12 +246,10 @@ int32_t LParam;
 /***************************************************************************
 ** The currently-selected cell for the Scenario Editor
 */
-CELL CurrentCell = 0;
 
 /***************************************************************************
 **	This is the house that the human player is currently playing.
 */
-HouseClass* PlayerPtr;
 
 /***************************************************************************
 **	These are the event queues. One is for holding events until they are
@@ -297,9 +263,6 @@ QueueClass<EventClass, MAX_EVENTS * 8> DoList;
 /***************************************************************************
 **	These are arrays/lists of trigger pointers for each cell & the houses.
 */
-DynamicVectorClass<TriggerClass*> CellTriggers;
-base::EnumArray<HousesType, DynamicVectorClass<TriggerClass*>, kHouseCount>
-    HouseTriggers;
 
 /***************************************************************************
 **	This is an array of waypoints; each waypoint corresponds to a letter of
@@ -309,12 +272,10 @@ base::EnumArray<HousesType, DynamicVectorClass<TriggerClass*>, kHouseCount>
 ** shouldn't be needed often; usually, you know the waypoint & you want the
 *CELL.
 */
-CELL Waypoint[kWayptCount];
 
 /***************************************************************************
 **	This is the list of BuildingTypes that define the AI's base.
 */
-BaseClass Base;
 
 /***************************************************************************
 **	This value tells what type of multiplayer game we're playing.

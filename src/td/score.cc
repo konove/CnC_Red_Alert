@@ -100,6 +100,7 @@
 #include "td/theme.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
@@ -684,7 +685,7 @@ void ScoreClass::Presentation() {
   GameFile file("HALLFAME.DAT");
   struct Fame hallfame[NUMFAMENAMES];
   const int oldfontxspacing = FontXSpacing;
-  const HousesType player_house = PlayerPtr->Class->House;
+  const HousesType player_house = ThePlayer()->Class->House;
   const int house = static_cast<int>(player_house);  // 0 or 1
   char inter_pal[15];
 
@@ -710,7 +711,7 @@ void ScoreClass::Presentation() {
 
   ControlQ = false;
   FontXSpacing = 0;
-  Map.Override_Mouse_Shape(MOUSE_NORMAL);
+  TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
   Theme.Queue_Song(THEME_WIN1);
 
   TheScreen().visible_page().Clear();
@@ -738,8 +739,8 @@ void ScoreClass::Presentation() {
   **	Determine leadership rating.
   */
   int leadership = 0;
-  for (int index = 0; index < Logic.Count(); index++) {
-    const ObjectClass* object = Logic.at(index);
+  for (int index = 0; index < TheWorld().logic().Count(); index++) {
+    const ObjectClass* object = TheWorld().logic().at(index);
     if (object->Owner() == player_house) {
       leadership++;
     }
@@ -778,8 +779,8 @@ void ScoreClass::Presentation() {
   */
   int efficiency =
       Cardinal_To_Fixed((player_house == HOUSE_GOOD ? GHarvested : NHarvested) +
-                            static_cast<int>(PlayerPtr->InitialCredits) + 1,
-                        static_cast<int>(PlayerPtr->Available_Money()) + 1);
+                            static_cast<int>(ThePlayer()->InitialCredits) + 1,
+                        static_cast<int>(ThePlayer()->Available_Money()) + 1);
   if (!efficiency) {
     efficiency++;
   }
@@ -1017,7 +1018,7 @@ void ScoreClass::Presentation() {
         }
       }
       base::At(hallfame, index).score = total;
-      base::At(hallfame, index).level = Scenario;
+      base::At(hallfame, index).level = TheWorld().scenario();
       //			hallfame[index].level = BuildLevel;
       // hallfame[index].name[0] = 0;	// blank out the name
       base::FillBytes(base::ObjectBytes(base::At(hallfame, index).name), ' ',
@@ -1592,7 +1593,7 @@ void ScoreClass::Show_Credits(int house, std::span<const unsigned char> pal) {
 
   const int credobj = Alloc_Object(new ScoreCredsClass(
       base::At(_credsx, house), base::At(_credsy, house), credshape, 32, 2));
-  const int min = static_cast<int>(PlayerPtr->Available_Money() / 100);
+  const int min = static_cast<int>(ThePlayer()->Available_Money() / 100);
 
   /*
   ** Print out total credits left at end of scenario
@@ -1605,10 +1606,10 @@ void ScoreClass::Show_Credits(int house, std::span<const unsigned char> pal) {
 
   do {
     int add = 5;
-    if (PlayerPtr->Available_Money() - i > 100) {
+    if (ThePlayer()->Available_Money() - i > 100) {
       add += 15;
     }
-    if (PlayerPtr->Available_Money() - i > 1000) {
+    if (ThePlayer()->Available_Money() - i > 1000) {
       add += 30;
     }
     add = std::max(add, min);
@@ -1617,14 +1618,14 @@ void ScoreClass::Show_Credits(int house, std::span<const unsigned char> pal) {
     i = std::max(i, 0);
 
     Set_Font_Palette(pal);
-    Count_Up_Print("%d", i, static_cast<int>(PlayerPtr->Available_Money()),
+    Count_Up_Print("%d", i, static_cast<int>(ThePlayer()->Available_Money()),
                    base::At(_credpx, house), base::At(_credpy, house));
     Call_Back_Delay(2);
     if (Check_Key()) {
-      i = static_cast<int>(PlayerPtr->Available_Money() - 5);
+      i = static_cast<int>(ThePlayer()->Available_Money() - 5);
       Keyboard::Clear();
     }
-  } while (i < PlayerPtr->Available_Money());
+  } while (i < ThePlayer()->Available_Money());
 
   // Make sure the credits object doesn't freeze on the white stage
   while (base::At(ScoreObjs, credobj)->Stage >= 20 && !ControlQ) {
@@ -2174,7 +2175,7 @@ void Multi_Score_Presentation() {
   const int oldfontxspacing = FontXSpacing;
 
   FontXSpacing = 0;
-  Map.Override_Mouse_Shape(MOUSE_NORMAL);
+  TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
   Theme.Queue_Song(THEME_WIN1);
 
   PseudoSeenBuff = new GraphicBufferClass(320, 200, {});

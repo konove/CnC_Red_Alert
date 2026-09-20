@@ -105,6 +105,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/game_file.h"
 
 // The most money a scenario lets the player carry over from the last one,
@@ -283,7 +284,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   int rndmin = 0;
   unsigned char val = 0;
 
-  ScenarioInit++;
+  TheWorld().scenario_init()++;
 
   /*
   **	Fetch working pointer to the INI staging buffer. Make sure that the
@@ -303,14 +304,15 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   ** then make sure the correct disk is in the drive.
   */
   if (RequiredCD != -2) {
-    if (Scenario >= 20 && Scenario < 60 && GameToPlay == GAME_NORMAL) {
+    if (TheWorld().scenario() >= 20 && TheWorld().scenario() < 60 &&
+        GameToPlay == GAME_NORMAL) {
       RequiredCD = 2;
     } else {
-      if (Scenario != 1) {
-        if (Scenario >= 60) {
+      if (TheWorld().scenario() != 1) {
+        if (TheWorld().scenario() >= 60) {
           RequiredCD = -1;
         } else {
-          switch (ScenPlayer) {
+          switch (TheWorld().scen_player()) {
             case SCEN_PLAYER_GDI:
               RequiredCD = 0;
               break;
@@ -352,24 +354,29 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   /*
   ** Init the Scenario CRC value
   */
-  ScenarioCRC = 0;
+  TheWorld().scenario_crc() = 0;
   const int len = static_cast<int>(std::string_view(buffer).size());
   for (int i = 0; i < len; i++) {
     val = static_cast<unsigned char>(
         std::string_view(buffer).at(base::ToSize(i)));
 #ifndef DEMO
-    Add_CRC(&ScenarioCRC, val);
+    Add_CRC(&TheWorld().scenario_crc(), val);
 #endif
   }
 
   /*
   **	Fetch the appropriate movie names from the INI file.
   */
-  WWGetPrivateProfileString("Basic", "Intro", "x", IntroMovie, buffer);
-  WWGetPrivateProfileString("Basic", "Brief", "x", BriefMovie, buffer);
-  WWGetPrivateProfileString("Basic", "Win", "x", WinMovie, buffer);
-  WWGetPrivateProfileString("Basic", "Lose", "x", LoseMovie, buffer);
-  WWGetPrivateProfileString("Basic", "Action", "x", ActionMovie, buffer);
+  WWGetPrivateProfileString("Basic", "Intro", "x", TheWorld().intro_movie(),
+                            buffer);
+  WWGetPrivateProfileString("Basic", "Brief", "x", TheWorld().brief_movie(),
+                            buffer);
+  WWGetPrivateProfileString("Basic", "Win", "x", TheWorld().win_movie(),
+                            buffer);
+  WWGetPrivateProfileString("Basic", "Lose", "x", TheWorld().lose_movie(),
+                            buffer);
+  WWGetPrivateProfileString("Basic", "Action", "x", TheWorld().action_movie(),
+                            buffer);
 
   /*
   **	For single-player scenarios, 'BuildLevel' is the scenario number.
@@ -378,14 +385,14 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   */
   if (GameToPlay == GAME_NORMAL) {
 #ifdef NEWMENU
-    if (Scenario <= 15) {
-      BuildLevel = Scenario;
+    if (TheWorld().scenario() <= 15) {
+      BuildLevel = TheWorld().scenario();
     } else {
-      BuildLevel =
-          WWGetPrivateProfileInt("Basic", "BuildLevel", Scenario, buffer);
+      BuildLevel = WWGetPrivateProfileInt("Basic", "BuildLevel",
+                                          TheWorld().scenario(), buffer);
     }
 #else
-    BuildLevel = Scenario;
+    BuildLevel = TheWorld().scenario();
 #endif
   }
 
@@ -400,9 +407,9 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   /*
   **	Fetch the transition theme for this scenario.
   */
-  TransitTheme = THEME_NONE;
+  TheWorld().transit_theme() = THEME_NONE;
   WWGetPrivateProfileString("Basic", "Theme", "No Theme", buf, buffer);
-  TransitTheme = ThemeClass::From_Name(buf);
+  TheWorld().transit_theme() = ThemeClass::From_Name(buf);
 
   /*
   **	Read in the team-type data. The team types must be created before any
@@ -428,37 +435,41 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     WWGetPrivateProfileString(
         "Basic", "Player", "GoodGuy",
         std::span(buf).first(static_cast<std::size_t>(127)), buffer);
-    CarryOverPercent =
+    TheWorld().carry_over_percent() =
         WWGetPrivateProfileInt("Basic", "CarryOverMoney", 100, buffer);
-    CarryOverPercent = Cardinal_To_Fixed(100, CarryOverPercent);
+    TheWorld().carry_over_percent() =
+        Cardinal_To_Fixed(100, TheWorld().carry_over_percent());
     carry_over_cap =
         WWGetPrivateProfileInt("Basic", "carry_over_cap", -1, buffer);
 
-    PlayerPtr = HouseClass::As_Pointer(HouseTypeClass::From_Name(buf));
-    PlayerPtr->IsHuman = true;
+    ThePlayer() = HouseClass::As_Pointer(HouseTypeClass::From_Name(buf));
+    ThePlayer()->IsHuman = true;
     int carryover = 0;
     // Any negative cap, not just the -1 default, means uncapped; the original
     // compared the cap as unsigned.
     if (carry_over_cap >= 0) {
-      carryover = std::min(Fixed_To_Cardinal(CarryOverMoney, CarryOverPercent),
+      carryover = std::min(Fixed_To_Cardinal(TheWorld().carry_over_money(),
+                                             TheWorld().carry_over_percent()),
                            carry_over_cap);
     } else {
-      carryover = Fixed_To_Cardinal(CarryOverMoney, CarryOverPercent);
+      carryover = Fixed_To_Cardinal(TheWorld().carry_over_money(),
+                                    TheWorld().carry_over_percent());
     }
-    PlayerPtr->Credits += carryover;
-    PlayerPtr->InitialCredits += carryover;
+    ThePlayer()->Credits += carryover;
+    ThePlayer()->InitialCredits += carryover;
 
     if (Special.IsJurassic) {
-      PlayerPtr->ActLike = Whom;
+      ThePlayer()->ActLike = Whom;
     }
   } else {
 #ifdef OBSOLETE
-    if (GameToPlay == GAME_NORMAL && ScenPlayer == SCEN_PLAYER_JP) {
-      PlayerPtr = HouseClass::As_Pointer(HOUSE_MULTI4);
-      PlayerPtr->IsHuman = true;
-      PlayerPtr->Credits += CarryOverMoney;
-      PlayerPtr->InitialCredits += CarryOverMoney;
-      PlayerPtr->ActLike = Whom;
+    if (GameToPlay == GAME_NORMAL &&
+        TheWorld().scen_player() == SCEN_PLAYER_JP) {
+      ThePlayer() = HouseClass::As_Pointer(HOUSE_MULTI4);
+      ThePlayer()->IsHuman = true;
+      ThePlayer()->Credits += TheWorld().carry_over_money();
+      ThePlayer()->InitialCredits += TheWorld().carry_over_money();
+      ThePlayer()->ActLike = Whom;
     } else {
       Assign_Houses();
     }
@@ -477,14 +488,14 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	Read in the map control values. This includes dimensions
   **	as well as theater information.
   */
-  Map.Read_INI(buffer);
+  TheMap().Read_INI(buffer);
   Call_Back();
 
   /*
   **	Attempt to read the map's binary image file; if fails, read the
   **	template data from the INI, for backward compatibility
   */
-  if (fresh && (!MapEditClass::Read_Binary(root, &ScenarioCRC))) {
+  if (fresh && (!MapEditClass::Read_Binary(root, &TheWorld().scenario_crc()))) {
     TemplateClass::Read_INI(buffer);
   }
 
@@ -517,7 +528,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   /*
   **	Read in the AI's base information.
   */
-  Base.Read_INI(buffer);
+  TheWorld().base().Read_INI(buffer);
   Call_Back();
 
   /*
@@ -535,7 +546,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   /*
   **	Read in any briefing text.
   */
-  std::span<char> stage(BriefingText);
+  std::span<char> stage(TheWorld().briefing_text());
   stage.front() = '\0';
   int index = 1;
 
@@ -562,13 +573,13 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	If the briefing text could not be found in the INI file, then search
   **	the mission.ini file.
   */
-  if (base::At(BriefingText, 0) == '\0') {
+  if (base::At(TheWorld().briefing_text(), 0) == '\0') {
     std::ranges::fill(ShapeBufferBytes, 0);
     GameFile("MISSION.INI")
         .Read(std::as_writable_bytes(ShapeBufferBytes)
                   .first(ShapeBufferBytes.size() - 1));
 
-    std::span<char> work(BriefingText);
+    std::span<char> work(TheWorld().briefing_text());
     int player_index = 1;
 
     /*
@@ -595,7 +606,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	Perform a final overpass of the map. This handles smoothing of certain
   **	types of terrain (tiberium).
   */
-  Map.Overpass();
+  TheMap().Overpass();
   Call_Back();
 
   /*
@@ -606,8 +617,9 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   **	- Remove any flag spot overlays lying around
   **	- If capture-the-flag is enabled, assign flags to cells.
   */
-  if (GameToPlay != GAME_NORMAL || ScenPlayer == SCEN_PLAYER_2PLAYER ||
-      ScenPlayer == SCEN_PLAYER_MPLAYER) {
+  if (GameToPlay != GAME_NORMAL ||
+      TheWorld().scen_player() == SCEN_PLAYER_2PLAYER ||
+      TheWorld().scen_player() == SCEN_PLAYER_MPLAYER) {
     /*
     **	If Ghosts are disabled and we're not editing, remove computer players
     **	(Must be done after all objects are read in from the INI)
@@ -644,10 +656,11 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     **	to create.
     */
     if (!TheDebugState().map_editor_active()) {
-      const int save_init = ScenarioInit;  // turn ScenarioInit off
-      ScenarioInit = 0;
+      const int save_init =
+          TheWorld().scenario_init();  // turn ScenarioInit off
+      TheWorld().scenario_init() = 0;
       Create_Units();
-      ScenarioInit = save_init;  // turn ScenarioInit back on
+      TheWorld().scenario_init() = save_init;  // turn ScenarioInit back on
     }
 
     /*
@@ -655,14 +668,14 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     */
     if (MPlayerGoodies) {
       for (int player_index = 0; player_index < MPlayerCount; player_index++) {
-        Map.Place_Random_Crate();
+        TheMap().Place_Random_Crate();
       }
     }
 
     /*
     **	Compute my starting location as the average Coord of all my stuff.
     */
-    Map.Compute_Start_Pos();
+    TheMap().Compute_Start_Pos();
   }
 
   Call_Back();
@@ -670,7 +683,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   /*
   **	Return with flag saying that the scenario file was read.
   */
-  ScenarioInit--;
+  TheWorld().scenario_init()--;
   return true;
 }
 
@@ -698,7 +711,7 @@ void Write_Scenario_Ini(const char* root) {
     char* buffer = ShapeBuffer;  // Scenario.ini staging buffer pointer.
     std::ranges::fill(ShapeBufferBytes, 0);
 
-    switch (ScenPlayer) {
+    switch (TheWorld().scen_player()) {
       case SCEN_PLAYER_GDI:
         house = HOUSE_GOOD;
         break;
@@ -732,36 +745,38 @@ void Write_Scenario_Ini(const char* root) {
       //		file.Close();
     } else {
       absl::SNPrintF(buffer, base::ToSize(ShapeBufferSize),
-                     "; Scenario %d control for house %s.\r\n", Scenario,
+                     "; Scenario %d control for house %s.\r\n",
+                     TheWorld().scenario(),
                      HouseTypeClass::As_Reference(house).IniName);
     }
 
-    WWWritePrivateProfileString("Basic", "Intro", IntroMovie,
+    WWWritePrivateProfileString("Basic", "Intro", TheWorld().intro_movie(),
                                 port::CharBytes(ShapeBufferBytes));
-    WWWritePrivateProfileString("Basic", "Brief", BriefMovie,
+    WWWritePrivateProfileString("Basic", "Brief", TheWorld().brief_movie(),
                                 port::CharBytes(ShapeBufferBytes));
-    WWWritePrivateProfileString("Basic", "Win", WinMovie,
+    WWWritePrivateProfileString("Basic", "Win", TheWorld().win_movie(),
                                 port::CharBytes(ShapeBufferBytes));
-    WWWritePrivateProfileString("Basic", "Lose", LoseMovie,
+    WWWritePrivateProfileString("Basic", "Lose", TheWorld().lose_movie(),
                                 port::CharBytes(ShapeBufferBytes));
-    WWWritePrivateProfileString("Basic", "Action", ActionMovie,
+    WWWritePrivateProfileString("Basic", "Action", TheWorld().action_movie(),
                                 port::CharBytes(ShapeBufferBytes));
-    WWWritePrivateProfileString("Basic", "Player", PlayerPtr->Class->IniName,
+    WWWritePrivateProfileString("Basic", "Player", ThePlayer()->Class->IniName,
                                 port::CharBytes(ShapeBufferBytes));
-    WWWritePrivateProfileString("Basic", "Theme",
-                                ThemeClass::Base_Name(TransitTheme),
-                                port::CharBytes(ShapeBufferBytes));
+    WWWritePrivateProfileString(
+        "Basic", "Theme", ThemeClass::Base_Name(TheWorld().transit_theme()),
+        port::CharBytes(ShapeBufferBytes));
     WWWritePrivateProfileInt("Basic", "BuildLevel", BuildLevel,
                              port::CharBytes(ShapeBufferBytes));
-    WWWritePrivateProfileInt("Basic", "CarryOverMoney",
-                             Fixed_To_Cardinal(100, CarryOverPercent),
-                             port::CharBytes(ShapeBufferBytes));
+    WWWritePrivateProfileInt(
+        "Basic", "CarryOverMoney",
+        Fixed_To_Cardinal(100, TheWorld().carry_over_percent()),
+        port::CharBytes(ShapeBufferBytes));
     WWWritePrivateProfileInt("Basic", "carry_over_cap", carry_over_cap,
                              port::CharBytes(ShapeBufferBytes));
 
     TeamTypeClass::Write_INI(port::CharBytes(ShapeBufferBytes), true);
     TriggerClass::Write_INI(port::CharBytes(ShapeBufferBytes), true);
-    Map.Write_INI(port::CharBytes(ShapeBufferBytes));
+    TheMap().Write_INI(port::CharBytes(ShapeBufferBytes));
     MapEditClass::Write_Binary(root);
     HouseClass::Write_INI(port::CharBytes(ShapeBufferBytes));
     UnitClass::Write_INI(port::CharBytes(ShapeBufferBytes));
@@ -771,7 +786,7 @@ void Write_Scenario_Ini(const char* root) {
     OverlayClass::Write_INI(port::CharBytes(ShapeBufferBytes));
     SmudgeClass::Write_INI(port::CharBytes(ShapeBufferBytes));
 
-    Base.Write_INI(port::CharBytes(ShapeBufferBytes));
+    TheWorld().base().Write_INI(port::CharBytes(ShapeBufferBytes));
 
     /*
     **	Write the scenario data out to a file.
@@ -886,7 +901,7 @@ static void Assign_Houses() {
     **	If this ID is for myself, set up PlayerPtr
     */
     if (base::At(MPlayerID, i) == MPlayerLocalID) {
-      PlayerPtr = housep;
+      ThePlayer() = housep;
     }
   }
 
@@ -1129,8 +1144,8 @@ static void Create_Units() {
   First, copy all valid waytpoints into my 'waypts' array
   ........................................................................*/
   for (int i = 0; i < 26; i++) {
-    if (base::At(Waypoint, i) != -1) {
-      base::At(waypts, num_waypts) = base::At(Waypoint, i);
+    if (base::At(TheWorld().waypoint(), i) != -1) {
+      base::At(waypts, num_waypts) = base::At(TheWorld().waypoint(), i);
       num_waypts++;
     }
   }
@@ -1178,7 +1193,7 @@ static void Create_Units() {
       if (try_count > 200) {
         while (true) {
           centroid = static_cast<CELL>(GameRandomRange(0, MAP_CELL_TOTAL - 1));
-          if (Map.In_Radar(centroid)) {
+          if (TheMap().In_Radar(centroid)) {
             break;
           }
         }
@@ -1366,8 +1381,8 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
   /*------------------------------------------------------------------------
   First try to unlimbo the object in the given cell.
   ------------------------------------------------------------------------*/
-  if (Map.In_Radar(cell)) {
-    techno = Map.at(cell).Cell_Techno();
+  if (TheMap().In_Radar(cell)) {
+    techno = TheMap().at(cell).Cell_Techno();
     if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                      obj->What_Am_I() == RTTI_INFANTRY)) &&
         obj->Unlimbo(Cell_Coord(cell), DIR_N)) {
@@ -1424,7 +1439,7 @@ bool Scan_Place_Object(ObjectClass* obj, CELL cell) {
           - there is no techno in the cell
           - the techno in the cell & the object are both infantry
           ............................................................*/
-          techno = Map.at(newcell).Cell_Techno();
+          techno = TheMap().at(newcell).Cell_Techno();
           if ((!techno || (techno->What_Am_I() == RTTI_INFANTRY &&
                            obj->What_Am_I() == RTTI_INFANTRY)) &&
               obj->Unlimbo(Cell_Coord(newcell), DIR_N)) {
@@ -1569,10 +1584,10 @@ static CELL Clip_Scatter(CELL cell, int maxdist) {
   /*------------------------------------------------------------------------
   Compute our x & y limits
   ------------------------------------------------------------------------*/
-  const int xmin = Map.MapCellX;
-  const int xmax = xmin + Map.MapCellWidth - 1;
-  const int ymin = Map.MapCellY;
-  const int ymax = ymin + Map.MapCellHeight - 1;
+  const int xmin = TheMap().MapCellX;
+  const int xmax = xmin + TheMap().MapCellWidth - 1;
+  const int ymin = TheMap().MapCellY;
+  const int ymax = ymin + TheMap().MapCellHeight - 1;
 
   /*------------------------------------------------------------------------
   Adjust the x-coordinate
@@ -1624,10 +1639,10 @@ static CELL Clip_Move(CELL cell, FacingType facing, int dist) {
   /*------------------------------------------------------------------------
   Compute our x & y limits
   ------------------------------------------------------------------------*/
-  const int xmin = Map.MapCellX;
-  const int xmax = xmin + Map.MapCellWidth - 1;
-  const int ymin = Map.MapCellY;
-  const int ymax = ymin + Map.MapCellHeight - 1;
+  const int xmin = TheMap().MapCellX;
+  const int xmax = xmin + TheMap().MapCellWidth - 1;
+  const int ymin = TheMap().MapCellY;
+  const int ymax = ymin + TheMap().MapCellHeight - 1;
 
   /*------------------------------------------------------------------------
   Adjust the x-coordinate

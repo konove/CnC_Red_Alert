@@ -162,6 +162,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/2keyfbuf.h"
 #include "tech/archive.h"
 #include "tech/audio_mixer.h"
@@ -266,8 +267,9 @@ void Main_Game() {
   **		until they indicate that the user wants to exit the scenario.
   */
   while (Select_Game(fade)) {
-    ScenarioInit = 0;  // Kludge.
-                       //		Theme.Queue_Song(THEME_PICK_ANOTHER);
+    TheWorld().scenario_init() =
+        0;  // Kludge.
+            //		Theme.Queue_Song(THEME_PICK_ANOTHER);
 
     fade = true;
 
@@ -320,29 +322,29 @@ void Main_Game() {
             // Stop_Profiler();
             switch (SpecialDialog) {
               case SDLG_SPECIAL:
-                Map.Help_Text(TXT_NONE);
-                Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
+                TheMap().Help_Text(TXT_NONE);
+                TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
                 Special_Dialog();
-                Map.Revert_Mouse_Shape();
+                TheMap().Revert_Mouse_Shape();
                 SpecialDialog = SDLG_NONE;
                 break;
 
               case SDLG_OPTIONS:
-                Map.Help_Text(TXT_NONE);
-                Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
+                TheMap().Help_Text(TXT_NONE);
+                TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
                 Options.Process();
-                Map.Revert_Mouse_Shape();
+                TheMap().Revert_Mouse_Shape();
                 SpecialDialog = SDLG_NONE;
                 break;
 
               case SDLG_SURRENDER:
-                Map.Help_Text(TXT_NONE);
-                Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
+                TheMap().Help_Text(TXT_NONE);
+                TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
                 if (Surrender_Dialog()) {
                   OutList.Add(EventClass(EventClass::DESTRUCT));
                 }
                 SpecialDialog = SDLG_NONE;
-                Map.Revert_Mouse_Shape();
+                TheMap().Revert_Mouse_Shape();
                 break;
 
               case SpecialDialogType::SDLG_NONE:
@@ -381,29 +383,29 @@ void Main_Game() {
           // Stop_Profiler();
           switch (SpecialDialog) {
             case SDLG_SPECIAL:
-              Map.Help_Text(TXT_NONE);
-              Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
+              TheMap().Help_Text(TXT_NONE);
+              TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
               Special_Dialog();
-              Map.Revert_Mouse_Shape();
+              TheMap().Revert_Mouse_Shape();
               SpecialDialog = SDLG_NONE;
               break;
 
             case SDLG_OPTIONS:
-              Map.Help_Text(TXT_NONE);
-              Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
+              TheMap().Help_Text(TXT_NONE);
+              TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
               Options.Process();
-              Map.Revert_Mouse_Shape();
+              TheMap().Revert_Mouse_Shape();
               SpecialDialog = SDLG_NONE;
               break;
 
             case SDLG_SURRENDER:
-              Map.Help_Text(TXT_NONE);
-              Map.Override_Mouse_Shape(MOUSE_NORMAL, false);
+              TheMap().Help_Text(TXT_NONE);
+              TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
               if (Surrender_Dialog()) {
                 OutList.Add(EventClass(EventClass::DESTRUCT));
               }
               SpecialDialog = SDLG_NONE;
-              Map.Revert_Mouse_Shape();
+              TheMap().Revert_Mouse_Shape();
               break;
 
             case SpecialDialogType::SDLG_NONE:
@@ -567,7 +569,7 @@ void Keyboard_Process(KeyNumType& input) {
         case KN_M | KN_SHIFT_BIT:
         case KN_M | KN_ALT_BIT:
         case KN_M | KN_CTRL_BIT:
-          PlayerPtr->Credits += 10000;
+          ThePlayer()->Credits += 10000;
           break;
 
         default:
@@ -578,15 +580,15 @@ void Keyboard_Process(KeyNumType& input) {
 
   if constexpr (config::kVirginCheatKeysEnabled) {
     if (TheDebugState().playtest() && input == (KN_W | KN_ALT_BIT)) {
-      PlayerPtr->Blockage = 0;
-      PlayerPtr->Flag_To_Win();
+      ThePlayer()->Blockage = 0;
+      ThePlayer()->Flag_To_Win();
     }
   }
 
   // #ifdef CHEAT_KEYS
   if (/*TheDebugState().playtest() && */ input == (KN_W | KN_ALT_BIT)) {
-    PlayerPtr->Blockage = 0;
-    PlayerPtr->Flag_To_Win();
+    ThePlayer()->Blockage = 0;
+    ThePlayer()->Flag_To_Win();
   }
 
   if (TheDebugState().developer_mode() && input == KN_SLASH) {
@@ -603,7 +605,7 @@ void Keyboard_Process(KeyNumType& input) {
   **	If the options key(s) were pressed, then bring up the options screen.
   */
   if (input == KN_SPACE || input == KN_ESC) {
-    Map.Help_Text(TXT_NONE);  // Turns off help text.
+    TheMap().Help_Text(TXT_NONE);  // Turns off help text.
     Queue_Options();
     input = KN_NONE;
     // DebugColour++;
@@ -632,9 +634,9 @@ void Keyboard_Process(KeyNumType& input) {
     **	objects are selected, then fall into the home case.
     */
     case VK_HOME:
-      if (CurrentObject.Count()) {
-        Map.Center_Map();
-        Map.Flag_To_Redraw(true);
+      if (TheWorld().current_object().Count()) {
+        TheMap().Center_Map();
+        TheMap().Flag_To_Redraw(true);
         break;
       }
       [[fallthrough]];
@@ -647,7 +649,7 @@ void Keyboard_Process(KeyNumType& input) {
       for (index = 0; index < TheObjectHeaps().unit().Count(); index++) {
         UnitClass* unit = TheObjectHeaps().unit().Ptr(index);
 
-        if (unit && !unit->IsInLimbo && unit->House == PlayerPtr &&
+        if (unit && !unit->IsInLimbo && unit->House == ThePlayer() &&
             *unit == UNIT_MCV) {
           Unselect_All();
           unit->Select();
@@ -657,15 +659,15 @@ void Keyboard_Process(KeyNumType& input) {
       for (index = 0; index < TheObjectHeaps().building().Count(); index++) {
         BuildingClass* building = TheObjectHeaps().building().Ptr(index);
 
-        if (building && !building->IsInLimbo && building->House == PlayerPtr &&
-            *building == STRUCT_CONST) {
+        if (building && !building->IsInLimbo &&
+            building->House == ThePlayer() && *building == STRUCT_CONST) {
           Unselect_All();
           building->Select();
           break;
         }
       }
-      Map.Center_Map();
-      Map.Flag_To_Redraw(true);
+      TheMap().Center_Map();
+      TheMap().Flag_To_Redraw(true);
       break;
 
     /*
@@ -682,17 +684,19 @@ void Keyboard_Process(KeyNumType& input) {
     */
     case VK_N:
       if (action) {
-        obj = MapEditClass::Prev_Object(
-            CurrentObject.Count() ? CurrentObject.at(0) : nullptr);
+        obj = MapEditClass::Prev_Object(TheWorld().current_object().Count()
+                                            ? TheWorld().current_object().at(0)
+                                            : nullptr);
       } else {
-        obj = MapEditClass::Next_Object(
-            CurrentObject.Count() ? CurrentObject.at(0) : nullptr);
+        obj = MapEditClass::Next_Object(TheWorld().current_object().Count()
+                                            ? TheWorld().current_object().at(0)
+                                            : nullptr);
       }
       if (obj) {
         Unselect_All();
         obj->Select();
-        Map.Center_Map();
-        Map.Flag_To_Redraw(true);
+        TheMap().Center_Map();
+        TheMap().Flag_To_Redraw(true);
       }
       break;
 
@@ -700,7 +704,7 @@ void Keyboard_Process(KeyNumType& input) {
     ** For multiplayer, 'R' pops up the surrender dialog.
     */
     case VK_R:
-      if (/*GameToPlay != GAME_NORMAL &&*/ !PlayerPtr->IsDefeated) {
+      if (/*GameToPlay != GAME_NORMAL &&*/ !ThePlayer()->IsDefeated) {
         SpecialDialog = SDLG_SURRENDER;
         input = KN_NONE;
       }
@@ -711,10 +715,12 @@ void Keyboard_Process(KeyNumType& input) {
     */
     case VK_A:
       if ((GameToPlay != GAME_NORMAL || TheDebugState().developer_mode()) &&
-          (CurrentObject.Count() && !PlayerPtr->IsDefeated) &&
-          (CurrentObject.at(0)->Owner() != PlayerPtr->Class->House)) {
-        OutList.Add(EventClass(EventClass::ALLY,
-                               static_cast<int>(CurrentObject.at(0)->Owner())));
+          (TheWorld().current_object().Count() && !ThePlayer()->IsDefeated) &&
+          (TheWorld().current_object().at(0)->Owner() !=
+           ThePlayer()->Class->House)) {
+        OutList.Add(EventClass(
+            EventClass::ALLY,
+            static_cast<int>(TheWorld().current_object().at(0)->Owner())));
       }
 
       break;
@@ -751,9 +757,9 @@ void Keyboard_Process(KeyNumType& input) {
     **	All selected units will go into idle mode.
     */
     case VK_S:
-      if (CurrentObject.Count()) {
-        for (int j = 0; j < CurrentObject.Count(); j++) {
-          const ObjectClass* tech = CurrentObject.at(j);
+      if (TheWorld().current_object().Count()) {
+        for (int j = 0; j < TheWorld().current_object().Count(); j++) {
+          const ObjectClass* tech = TheWorld().current_object().at(j);
 
           if (tech && (tech->Can_Player_Move() ||
                        (tech->Can_Player_Fire() &&
@@ -768,9 +774,9 @@ void Keyboard_Process(KeyNumType& input) {
     **	All selected units will attempt to scatter.
     */
     case VK_X:
-      if (CurrentObject.Count()) {
-        for (int j = 0; j < CurrentObject.Count(); j++) {
-          const ObjectClass* tech = CurrentObject.at(j);
+      if (TheWorld().current_object().Count()) {
+        for (int j = 0; j < TheWorld().current_object().Count(); j++) {
+          const ObjectClass* tech = TheWorld().current_object().at(j);
 
           if (tech && tech->Can_Player_Move()) {
             OutList.Add(EventClass(EventClass::SCATTER, tech->As_Target()));
@@ -783,9 +789,9 @@ void Keyboard_Process(KeyNumType& input) {
     **	All selected units will attempt to go into guard area mode.
     */
     case VK_G:
-      if (CurrentObject.Count()) {
-        for (int j = 0; j < CurrentObject.Count(); j++) {
-          const ObjectClass* tech = CurrentObject.at(j);
+      if (TheWorld().current_object().Count()) {
+        for (int j = 0; j < TheWorld().current_object().Count(); j++) {
+          const ObjectClass* tech = TheWorld().current_object().at(j);
 
           if (tech && tech->Can_Player_Move() && tech->Can_Player_Fire()) {
             OutList.Add(EventClass(tech->As_Target(), MISSION_GUARD_AREA));
@@ -805,7 +811,7 @@ void Keyboard_Process(KeyNumType& input) {
   **	Scroll the map according to the cursor key pressed.
   */
   if (facing != FACING_NONE) {
-    Map.Scroll_Map(facing);
+    TheMap().Scroll_Map(facing);
     input = 0;
     facing = FACING_NONE;
   }
@@ -816,7 +822,7 @@ void Keyboard_Process(KeyNumType& input) {
   **	If the <TAB> key is pressed, then select the next object.
   */
   if (input == KN_TAB) {
-    ObjectClass* obj = Map.Next_Object(CurrentObject);
+    ObjectClass* obj = TheMap().Next_Object(CurrentObject);
     if (obj) {
       if (CurrentObject) {
         CurrentObject->Unselect();
@@ -888,7 +894,7 @@ static void Message_Input(KeyNumType& input) {
                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW, txt,
                           180 * factor);
 
-        Map.Flag_To_Redraw(false);
+        TheMap().Flag_To_Redraw(false);
       }
     } else {
       /*
@@ -906,7 +912,7 @@ static void Message_Input(KeyNumType& input) {
                             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                             txt, 180 * factor);
 
-          Map.Flag_To_Redraw(false);
+          TheMap().Flag_To_Redraw(false);
         } else {
           if ((Messages.Get_Edit_Buf() == nullptr) &&
               (input - KN_F1 < Ipx.Num_Connections() && !MPlayerObiWan)) {
@@ -919,7 +925,7 @@ static void Message_Input(KeyNumType& input) {
                               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
                               txt, 180 * factor);
 
-            Map.Flag_To_Redraw(false);
+            TheMap().Flag_To_Redraw(false);
           }
         }
       }
@@ -946,7 +952,7 @@ static void Message_Input(KeyNumType& input) {
   *display.
   */
   if (rc == 1) {
-    Map.Flag_To_Redraw(false);
+    TheMap().Flag_To_Redraw(false);
   }
 
   /*
@@ -956,8 +962,8 @@ static void Message_Input(KeyNumType& input) {
   *that it needs to *	redraw.
   */
   if (rc == 2) {
-    Map.Flag_To_Redraw(false);
-    Map.IsDisplayToRedraw = true;
+    TheMap().Flag_To_Redraw(false);
+    TheMap().IsDisplayToRedraw = true;
   }
 
   /*
@@ -1153,7 +1159,7 @@ static void Message_Input(KeyNumType& input) {
     **	Tell the map to completely update itself, since a message is now
     *missing.
     */
-    Map.Flag_To_Redraw(true);
+    TheMap().Flag_To_Redraw(true);
   }
 }
 #endif
@@ -1355,7 +1361,7 @@ void Call_Back() {
             **	Tell the map to do a partial update (just to force the
             *messages *	to redraw).
             */
-            Map.Flag_To_Redraw(false);
+            TheMap().Flag_To_Redraw(false);
 
             /*
             **	Save this message in our last-message buffer
@@ -1564,11 +1570,11 @@ static void Sync_Delay() {
       int x = 0;
       int y = 0;
       WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
-      Map.Input(input, x, y);
+      TheMap().Input(input, x, y);
       if (input) {
         Keyboard_Process(input);
       }
-      Map.Render();
+      TheMap().Render();
     }
   }
   Color_Cycle();
@@ -1653,12 +1659,12 @@ bool Main_Loop() {
   */
   if ((!PlaybackGame) && (SpecialDialog == SDLG_NONE && GameInFocus)) {
     WWMouse->Erase_Mouse(&TheScreen().hidden_view(), true);
-    Map.Input(input, x, y);
+    TheMap().Input(input, x, y);
     if (input) {
       Keyboard_Process(input);
     }
     //			HidPage.Lock();
-    Map.Render();
+    TheMap().Render();
     //			HidPage.Unlock();
   }
 
@@ -1683,7 +1689,7 @@ bool Main_Loop() {
   /*
   **	AI logic operations are performed here.
   */
-  Logic.AI();
+  TheWorld().logic().AI();
 
   //	Heap_Dump_Check( "After Logic.AI" );
 
@@ -1694,7 +1700,7 @@ bool Main_Loop() {
   */
   if (Messages.Manage()) {
     TheScreen().hidden_page().Clear();
-    Map.Flag_To_Redraw(true);
+    TheMap().Flag_To_Redraw(true);
   }
 
   //
@@ -1715,7 +1721,7 @@ bool Main_Loop() {
   /*
   **	Keep track of elapsed time in the game.
   */
-  Score.ElapsedTime += kTimerSecond / kTicksPerSecond;
+  TheWorld().score().ElapsedTime += kTimerSecond / kTicksPerSecond;
 
   Call_Back();
 
@@ -1724,8 +1730,8 @@ bool Main_Loop() {
   /*
   **	Perform any win/lose code as indicated by the global control flags.
   */
-  if (EndCountDown) {
-    EndCountDown--;
+  if (TheWorld().end_count_down()) {
+    TheWorld().end_count_down()--;
   }
 
   /*
@@ -1742,7 +1748,7 @@ bool Main_Loop() {
     PlayerLoses = false;
     PlayerWins = false;
     PlayerRestarts = false;
-    Map.Help_Text(TXT_NONE);
+    TheMap().Help_Text(TXT_NONE);
     Do_Win();
   }
   if (PlayerLoses) {
@@ -1755,7 +1761,7 @@ bool Main_Loop() {
     PlayerWins = false;
     PlayerLoses = false;
     PlayerRestarts = false;
-    Map.Help_Text(TXT_NONE);
+    TheMap().Help_Text(TXT_NONE);
     Do_Lose();
   }
   if (PlayerRestarts) {
@@ -1763,7 +1769,7 @@ bool Main_Loop() {
     PlayerWins = false;
     PlayerLoses = false;
     PlayerRestarts = false;
-    Map.Help_Text(TXT_NONE);
+    TheMap().Help_Text(TXT_NONE);
     Do_Restart();
   }
 
@@ -1847,13 +1853,13 @@ bool Main_Loop() {
       }
     } map_sink;
     ArchiveWriter map_writer(map_sink);
-    Map.Serialize(map_writer);
+    TheMap().Serialize(map_writer);
     LOG(INFO) << "frame " << CurrentFrame() << " mapstate " << map_sink.hash;
     MapHashSink globals_sink;
     ArchiveWriter globals_writer(globals_sink);
-    Score.Serialize(globals_writer);
-    Base.Serialize(globals_writer);
-    Logic.Serialize(globals_writer);
+    TheWorld().score().Serialize(globals_writer);
+    TheWorld().base().Serialize(globals_writer);
+    TheWorld().logic().Serialize(globals_writer);
     for (auto& layer : MouseClass::Layer) {
       layer.Serialize(globals_writer);
     }
@@ -1899,7 +1905,7 @@ bool Main_Loop() {
   /*
   ** Is there a memory trasher altering the map??
   */
-  if (TheDebugState().check_map() && (!Map.Validate())) {
+  if (TheDebugState().check_map() && (!TheMap().Validate())) {
     const char* error_msg = nullptr;
     const char* stop_msg = nullptr;
     const char* continue_msg = nullptr;
@@ -1920,7 +1926,7 @@ bool Main_Loop() {
     if (CCMessageBox().Process(error_msg, stop_msg, continue_msg) == 0) {
       GameActive = false;
     }
-    Map.Validate();  // give debugger a chance to catch it
+    TheMap().Validate();  // give debugger a chance to catch it
   }
 
   Sync_Delay();
@@ -1944,7 +1950,7 @@ bool Map_Edit_Loop() {
   /*
   **	Redraw the map.
   */
-  Map.Render();
+  TheMap().Render();
 
   /*
   **	Get user input (keys, mouse clicks).
@@ -1953,7 +1959,7 @@ bool Map_Edit_Loop() {
 
   int x = 0;
   int y = 0;
-  Map.Input(input, x, y);
+  TheMap().Input(input, x, y);
 
   /*
   **	Process keypress.
@@ -2003,19 +2009,19 @@ void Go_Editor(bool flag) {
     /*
     ** Turn off the sidebar if it's on
     */
-    Map.Activate(0);
+    TheMap().Activate(0);
 
     /*
     ** Reset the map's Button list for the new mode
     */
-    Map.Init_IO();
+    TheMap().Init_IO();
 
     /*
     ** Force a complete redraw of the screen
     */
     TheScreen().hidden_page().Clear();
-    Map.Flag_To_Redraw(true);
-    Map.Render();
+    TheMap().Flag_To_Redraw(true);
+    TheMap().Render();
 
   } else {
     /*
@@ -2032,14 +2038,14 @@ void Go_Editor(bool flag) {
     /*
     ** Reset the map's Button list for the new mode
     */
-    Map.Init_IO();
+    TheMap().Init_IO();
 
     /*
     ** Force a complete redraw of the screen
     */
     TheScreen().hidden_page().Clear();
-    Map.Flag_To_Redraw(true);
-    Map.Render();
+    TheMap().Flag_To_Redraw(true);
+    TheMap().Render();
   }
 }
 
@@ -2174,8 +2180,8 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void Unselect_All() {
-  while (CurrentObject.Count()) {
-    CurrentObject.at(0)->Unselect();
+  while (TheWorld().current_object().Count()) {
+    TheWorld().current_object().at(0)->Unselect();
   }
 }
 
@@ -2708,13 +2714,14 @@ void Handle_Team(int team, int action) {
       **	If a non team member is currently selected, then deselect all
       *objects *	before selecting this team.
       */
-      if (CurrentObject.Count()) {
-        switch (CurrentObject.at(0)->What_Am_I()) {
+      if (TheWorld().current_object().Count()) {
+        switch (TheWorld().current_object().at(0)->What_Am_I()) {
           case RTTI_UNIT:
           case RTTI_INFANTRY:
           case RTTI_AIRCRAFT:
             if (std::cmp_not_equal(
-                    dynamic_cast<FootClass*>(CurrentObject.at(0))->Group,
+                    dynamic_cast<FootClass*>(TheWorld().current_object().at(0))
+                        ->Group,
                     team)) {
               Unselect_All();
             }
@@ -2748,7 +2755,7 @@ void Handle_Team(int team, int action) {
       for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
         UnitClass* obj = TheObjectHeaps().unit().Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-             obj->House == PlayerPtr) &&
+             obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
           obj->Select();
           AllowVoice = false;
@@ -2758,7 +2765,7 @@ void Handle_Team(int team, int action) {
            index++) {
         InfantryClass* obj = TheObjectHeaps().infantry().Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-             obj->House == PlayerPtr) &&
+             obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
           obj->Select();
           AllowVoice = false;
@@ -2768,7 +2775,7 @@ void Handle_Team(int team, int action) {
            index++) {
         AircraftClass* obj = TheObjectHeaps().aircraft().Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-             obj->House == PlayerPtr) &&
+             obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
           obj->Select();
           AllowVoice = false;
@@ -2779,8 +2786,8 @@ void Handle_Team(int team, int action) {
       **	Center the map around the team if the ALT key was pressed too.
       */
       if (action == 3) {
-        Map.Center_Map();
-        Map.Flag_To_Redraw(true);
+        TheMap().Center_Map();
+        TheMap().Flag_To_Redraw(true);
       }
       break;
 
@@ -2791,7 +2798,7 @@ void Handle_Team(int team, int action) {
       for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
         UnitClass* obj = TheObjectHeaps().unit().Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-             obj->House == PlayerPtr) &&
+             obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
           obj->Select();
           AllowVoice = false;
@@ -2801,7 +2808,7 @@ void Handle_Team(int team, int action) {
            index++) {
         InfantryClass* obj = TheObjectHeaps().infantry().Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-             obj->House == PlayerPtr) &&
+             obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
           obj->Select();
           AllowVoice = false;
@@ -2811,7 +2818,7 @@ void Handle_Team(int team, int action) {
            index++) {
         AircraftClass* obj = TheObjectHeaps().aircraft().Ptr(index);
         if ((obj && !obj->IsInLimbo && std::cmp_equal(obj->Group, team) &&
-             obj->House == PlayerPtr) &&
+             obj->House == ThePlayer()) &&
             (!obj->IsSelected)) {
           obj->Select();
           AllowVoice = false;
@@ -2825,7 +2832,7 @@ void Handle_Team(int team, int action) {
     case 2:
       for (int index = 0; index < TheObjectHeaps().unit().Count(); index++) {
         UnitClass* obj = TheObjectHeaps().unit().Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
+        if (obj && !obj->IsInLimbo && obj->House == ThePlayer()) {
           if (std::cmp_equal(obj->Group, team)) {
             obj->Group = 0xFF;  // No team.
           }
@@ -2837,7 +2844,7 @@ void Handle_Team(int team, int action) {
       for (int index = 0; index < TheObjectHeaps().infantry().Count();
            index++) {
         InfantryClass* obj = TheObjectHeaps().infantry().Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
+        if (obj && !obj->IsInLimbo && obj->House == ThePlayer()) {
           if (std::cmp_equal(obj->Group, team)) {
             obj->Group = 0xFF;  // No team.
           }
@@ -2849,7 +2856,7 @@ void Handle_Team(int team, int action) {
       for (int index = 0; index < TheObjectHeaps().aircraft().Count();
            index++) {
         AircraftClass* obj = TheObjectHeaps().aircraft().Ptr(index);
-        if (obj && !obj->IsInLimbo && obj->House == PlayerPtr) {
+        if (obj && !obj->IsInLimbo && obj->House == ThePlayer()) {
           if (std::cmp_equal(obj->Group, team)) {
             obj->Group = 0xFF;  // No team.
           }
@@ -2884,13 +2891,13 @@ void Handle_Team(int team, int action) {
  *=============================================================================================*/
 void Handle_View(int view, int action) {
   if (static_cast<unsigned>(view) <
-      sizeof(Views) / sizeof(base::At(Views, 0))) {
+      sizeof(TheWorld().views()) / sizeof(base::At(TheWorld().views(), 0))) {
     if (action == 0) {
-      Map.Set_Tactical_Position(Cell_Coord(base::At(Views, view)) &
-                                0xFF00FF00L);
-      Map.Flag_To_Redraw(true);
+      TheMap().Set_Tactical_Position(
+          Cell_Coord(base::At(TheWorld().views(), view)) & 0xFF00FF00L);
+      TheMap().Flag_To_Redraw(true);
     } else {
-      base::At(Views, view) = Coord_Cell(Map.TacticalCoord);
+      base::At(TheWorld().views(), view) = Coord_Cell(TheMap().TacticalCoord);
     }
   }
 }
@@ -3177,12 +3184,12 @@ static void Do_Record_Playback() {
     /*.....................................................................
     Save the map's location
     .....................................................................*/
-    RecordFile.WriteObject(Map.DesiredTacticalCoord);
+    RecordFile.WriteObject(TheMap().DesiredTacticalCoord);
 
     /*.....................................................................
     Save the current object list count
     .....................................................................*/
-    count = static_cast<int>(CurrentObject.Count());
+    count = static_cast<int>(TheWorld().current_object().Count());
     RecordFile.WriteObject(count);
 
     /*.....................................................................
@@ -3190,7 +3197,8 @@ static void Do_Record_Playback() {
     .....................................................................*/
     sum = 0;
     for (int i = 0; i < count; i++) {
-      ltgt = static_cast<uint32_t>(CurrentObject.at(i)->As_Target());
+      ltgt =
+          static_cast<uint32_t>(TheWorld().current_object().at(i)->As_Target());
       sum += ltgt;
     }
     RecordFile.WriteObject(sum);
@@ -3199,7 +3207,7 @@ static void Do_Record_Playback() {
     Save all selected objects.
     .....................................................................*/
     for (int i = 0; i < count; i++) {
-      tgt = CurrentObject.at(i)->As_Target();
+      tgt = TheWorld().current_object().at(i)->As_Target();
       RecordFile.WriteObject(tgt);
     }
 
@@ -3218,8 +3226,9 @@ static void Do_Record_Playback() {
     /*.....................................................................
     Read & set the map's location.
     .....................................................................*/
-    if (RecordFile.ReadObject(coord) && coord != Map.DesiredTacticalCoord) {
-      Map.Set_Tactical_Position(coord);
+    if (RecordFile.ReadObject(coord) &&
+        coord != TheMap().DesiredTacticalCoord) {
+      TheMap().Set_Tactical_Position(coord);
     }
 
     if (RecordFile.ReadObject(count)) {
@@ -3227,8 +3236,9 @@ static void Do_Record_Playback() {
       Compute a CRC of the current object-selection list.
       ..................................................................*/
       sum = 0;
-      for (int i = 0; i < CurrentObject.Count(); i++) {
-        ltgt = static_cast<uint32_t>(CurrentObject.at(i)->As_Target());
+      for (int i = 0; i < TheWorld().current_object().Count(); i++) {
+        ltgt = static_cast<uint32_t>(
+            TheWorld().current_object().at(i)->As_Target());
         sum += ltgt;
       }
 
@@ -3259,7 +3269,7 @@ static void Do_Record_Playback() {
     /*.....................................................................
     The map isn't drawn in playback mode, so draw it here.
     .....................................................................*/
-    Map.Render();
+    TheMap().Render();
   }
 }
 /***************************************************************************

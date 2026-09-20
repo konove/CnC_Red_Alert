@@ -103,6 +103,7 @@
 #include "td/trigger.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/game_file.h"
 #include "tech/number_parse.h"
 
@@ -128,9 +129,9 @@
  *   10/21/1994 BR : Created.                                              *
  *=========================================================================*/
 int MapEditClass::New_Scenario() {
-  int scen_num = Scenario;
-  ScenarioPlayerType player = ScenPlayer;
-  ScenarioDirType dir = ScenDir;
+  int scen_num = TheWorld().scenario();
+  ScenarioPlayerType player = TheWorld().scen_player();
+  ScenarioDirType dir = TheWorld().scen_dir();
   ScenarioVarType var = ScenVar;
 
   /*
@@ -150,11 +151,11 @@ int MapEditClass::New_Scenario() {
   /*
   ----------------------------- Set parameters -----------------------------
   */
-  Scenario = scen_num;
-  ScenPlayer = player;
-  ScenDir = dir;
+  TheWorld().scenario() = scen_num;
+  TheWorld().scen_player() = player;
+  TheWorld().scen_dir() = dir;
   ScenVar = var;
-  Set_Scenario_Name(ScenarioName, scen_num, player, dir, var);
+  Set_Scenario_Name(TheWorld().scenario_name(), scen_num, player, dir, var);
 
   /*
   ----------------------------- Create houses ------------------------------
@@ -163,24 +164,24 @@ int MapEditClass::New_Scenario() {
     new HouseClass(house);
   }
 
-  if (ScenPlayer == SCEN_PLAYER_MPLAYER) {
-    PlayerPtr = HouseClass::As_Pointer(HOUSE_MULTI1);
-    PlayerPtr->IsHuman = true;
+  if (TheWorld().scen_player() == SCEN_PLAYER_MPLAYER) {
+    ThePlayer() = HouseClass::As_Pointer(HOUSE_MULTI1);
+    ThePlayer()->IsHuman = true;
     LastHouse = HOUSE_MULTI1;
   } else {
     if (player == SCEN_PLAYER_GDI) {
-      PlayerPtr = HouseClass::As_Pointer(HOUSE_GOOD);
-      PlayerPtr->IsHuman = true;
-      Base.House = HOUSE_BAD;
+      ThePlayer() = HouseClass::As_Pointer(HOUSE_GOOD);
+      ThePlayer()->IsHuman = true;
+      TheWorld().base().House = HOUSE_BAD;
     } else {
       if (player == SCEN_PLAYER_NOD) {
-        PlayerPtr = HouseClass::As_Pointer(HOUSE_BAD);
-        PlayerPtr->IsHuman = true;
-        Base.House = HOUSE_GOOD;
+        ThePlayer() = HouseClass::As_Pointer(HOUSE_BAD);
+        ThePlayer()->IsHuman = true;
+        TheWorld().base().House = HOUSE_GOOD;
       } else {
-        PlayerPtr = HouseClass::As_Pointer(HOUSE_MULTI4);
-        PlayerPtr->IsHuman = true;
-        Base.House = HOUSE_MULTI4;
+        ThePlayer() = HouseClass::As_Pointer(HOUSE_MULTI4);
+        ThePlayer()->IsHuman = true;
+        TheWorld().base().House = HOUSE_MULTI4;
       }
     }
     LastHouse = HOUSE_GOOD;
@@ -200,16 +201,17 @@ int MapEditClass::New_Scenario() {
   /*
   ------ Set the Home & Reinforcement Cells to the center of the map -------
   */
-  base::At(Waypoint, kWayptReinf) =
+  base::At(TheWorld().waypoint(), kWayptReinf) =
       XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
-  base::At(Waypoint, kWayptHome) =
+  base::At(TheWorld().waypoint(), kWayptHome) =
       XY_Cell(MapCellX + (MapCellWidth / 2), MapCellY + (MapCellHeight / 2));
   (*this).at(Coord_Cell(TacticalCoord)).IsWaypoint = true;
   Flag_Cell(Coord_Cell(TacticalCoord));
 
-  ScenarioInit++;
-  Set_Tactical_Position(Cell_Coord(base::At(Waypoint, kWayptHome)));
-  ScenarioInit--;
+  TheWorld().scenario_init()++;
+  Set_Tactical_Position(
+      Cell_Coord(base::At(TheWorld().waypoint(), kWayptHome)));
+  TheWorld().scenario_init()--;
 
   return 0;
 }
@@ -234,9 +236,9 @@ int MapEditClass::New_Scenario() {
  *   10/21/1994 BR : Created.                                              *
  *=========================================================================*/
 int MapEditClass::Load_Scenario() {
-  int scen_num = Scenario;
-  ScenarioPlayerType player = ScenPlayer;
-  ScenarioDirType dir = ScenDir;
+  int scen_num = TheWorld().scenario();
+  ScenarioPlayerType player = TheWorld().scen_player();
+  ScenarioDirType dir = TheWorld().scen_dir();
   ScenarioVarType var = ScenVar;
 
   /*
@@ -251,11 +253,11 @@ int MapEditClass::Load_Scenario() {
   /*
   ----------------------------- Set parameters -----------------------------
   */
-  Scenario = scen_num;
-  ScenPlayer = player;
-  ScenDir = dir;
+  TheWorld().scenario() = scen_num;
+  TheWorld().scen_player() = player;
+  TheWorld().scen_dir() = dir;
   ScenVar = var;
-  Set_Scenario_Name(ScenarioName, scen_num, player, dir, var);
+  Set_Scenario_Name(TheWorld().scenario_name(), scen_num, player, dir, var);
 
   /*------------------------------------------------------------------------
   Read_Scenario_Ini() must be able to set PlayerPtr to the right house:
@@ -266,14 +268,14 @@ int MapEditClass::Load_Scenario() {
     to set various multiplayer variables to fool the Assign_Houses() routine
     into working properly.
   ------------------------------------------------------------------------*/
-  if (ScenPlayer == SCEN_PLAYER_MPLAYER) {
+  if (TheWorld().scen_player() == SCEN_PLAYER_MPLAYER) {
     MPlayerLocalID = static_cast<unsigned char>(Build_MPlayerID(2, HOUSE_GOOD));
     MPlayerCount = 1;
     LastHouse = HOUSE_MULTI1;
-  } else if (ScenPlayer == SCEN_PLAYER_JP) {
-    PlayerPtr = HouseClass::As_Pointer(HOUSE_MULTI4);
-    PlayerPtr->IsHuman = true;
-    Base.House = HOUSE_MULTI4;
+  } else if (TheWorld().scen_player() == SCEN_PLAYER_JP) {
+    ThePlayer() = HouseClass::As_Pointer(HOUSE_MULTI4);
+    ThePlayer()->IsHuman = true;
+    TheWorld().base().House = HOUSE_MULTI4;
   } else {
     LastHouse = HOUSE_GOOD;
   }
@@ -286,7 +288,7 @@ int MapEditClass::Load_Scenario() {
   /*
   ------------------------------ Read the INI ------------------------------
   */
-  if (!Read_Scenario_Ini(ScenarioName)) {
+  if (!Read_Scenario_Ini(TheWorld().scenario_name())) {
     CCMessageBox().Process("Unable to read scenario!");
     TheScreen().hidden_page().Clear();
     Flag_To_Redraw(true);
@@ -319,9 +321,9 @@ int MapEditClass::Load_Scenario() {
  *   10/21/1994 BR : Created.                                              *
  *=========================================================================*/
 int MapEditClass::Save_Scenario() {
-  int scen_num = Scenario;
-  ScenarioPlayerType player = ScenPlayer;
-  ScenarioDirType dir = ScenDir;
+  int scen_num = TheWorld().scenario();
+  ScenarioPlayerType player = TheWorld().scen_player();
+  ScenarioDirType dir = TheWorld().scen_dir();
   ScenarioVarType var = ScenVar;
   char fname[13];
 
@@ -352,29 +354,30 @@ int MapEditClass::Save_Scenario() {
   /*
   ----------------------------- Set parameters -----------------------------
   */
-  Scenario = scen_num;
-  ScenPlayer = player;
-  ScenDir = dir;
+  TheWorld().scenario() = scen_num;
+  TheWorld().scen_player() = player;
+  TheWorld().scen_dir() = dir;
   ScenVar = var;
-  Set_Scenario_Name(ScenarioName, scen_num, player, dir, var);
+  Set_Scenario_Name(TheWorld().scenario_name(), scen_num, player, dir, var);
 
   /*------------------------------------------------------------------------
   Player may have changed from GDI to NOD, so change playerptr accordingly
   ------------------------------------------------------------------------*/
-  if (ScenPlayer == SCEN_PLAYER_GDI || ScenPlayer == SCEN_PLAYER_NOD) {
-    if (ScenPlayer == SCEN_PLAYER_GDI) {
-      PlayerPtr = HouseClass::As_Pointer(HOUSE_GOOD);
-      PlayerPtr->IsHuman = true;
-      Base.House = HOUSE_BAD;
+  if (TheWorld().scen_player() == SCEN_PLAYER_GDI ||
+      TheWorld().scen_player() == SCEN_PLAYER_NOD) {
+    if (TheWorld().scen_player() == SCEN_PLAYER_GDI) {
+      ThePlayer() = HouseClass::As_Pointer(HOUSE_GOOD);
+      ThePlayer()->IsHuman = true;
+      TheWorld().base().House = HOUSE_BAD;
     } else {
-      if (ScenPlayer == SCEN_PLAYER_NOD) {
-        PlayerPtr = HouseClass::As_Pointer(HOUSE_BAD);
-        PlayerPtr->IsHuman = true;
-        Base.House = HOUSE_GOOD;
+      if (TheWorld().scen_player() == SCEN_PLAYER_NOD) {
+        ThePlayer() = HouseClass::As_Pointer(HOUSE_BAD);
+        ThePlayer()->IsHuman = true;
+        TheWorld().base().House = HOUSE_GOOD;
       } else {
-        PlayerPtr = HouseClass::As_Pointer(HOUSE_MULTI4);
-        PlayerPtr->IsHuman = true;
-        Base.House = HOUSE_MULTI4;
+        ThePlayer() = HouseClass::As_Pointer(HOUSE_MULTI4);
+        ThePlayer()->IsHuman = true;
+        TheWorld().base().House = HOUSE_MULTI4;
       }
     }
     LastHouse = HOUSE_GOOD;
@@ -383,7 +386,7 @@ int MapEditClass::Save_Scenario() {
   /*
   ----------------------------- Write the INI ------------------------------
   */
-  Write_Scenario_Ini(ScenarioName);
+  Write_Scenario_Ini(TheWorld().scenario_name());
 
   return 0;
 }
@@ -1214,8 +1217,9 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         ...................... Draw Home location .......................
         */
         LogicPage->Put_Pixel(
-            kBordX1 + Cell_X(base::At(Waypoint, kWayptHome)) + 1,
-            kBordY1 + Cell_Y(base::At(Waypoint, kWayptHome)) + 1, kWhite);
+            kBordX1 + Cell_X(base::At(TheWorld().waypoint(), kWayptHome)) + 1,
+            kBordY1 + Cell_Y(base::At(TheWorld().waypoint(), kWayptHome)) + 1,
+            kWhite);
 
         /*
         ..................... Erase old coordinates .....................
@@ -1462,24 +1466,28 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   /*
   --------------------- Clip Home Cell to new map size ---------------------
   */
-  if (Cell_X(base::At(Waypoint, kWayptHome)) < MapCellX) {
-    base::At(Waypoint, kWayptHome) =
-        XY_Cell(MapCellX, Cell_Y(base::At(Waypoint, kWayptHome)));
+  if (Cell_X(base::At(TheWorld().waypoint(), kWayptHome)) < MapCellX) {
+    base::At(TheWorld().waypoint(), kWayptHome) =
+        XY_Cell(MapCellX, Cell_Y(base::At(TheWorld().waypoint(), kWayptHome)));
   }
 
-  if (Cell_X(base::At(Waypoint, kWayptHome)) > MapCellX + MapCellWidth - 1) {
-    base::At(Waypoint, kWayptHome) = XY_Cell(
-        MapCellX + MapCellWidth - 1, Cell_Y(base::At(Waypoint, kWayptHome)));
+  if (Cell_X(base::At(TheWorld().waypoint(), kWayptHome)) >
+      MapCellX + MapCellWidth - 1) {
+    base::At(TheWorld().waypoint(), kWayptHome) =
+        XY_Cell(MapCellX + MapCellWidth - 1,
+                Cell_Y(base::At(TheWorld().waypoint(), kWayptHome)));
   }
 
-  if (Cell_Y(base::At(Waypoint, kWayptHome)) < MapCellY) {
-    base::At(Waypoint, kWayptHome) =
-        XY_Cell(Cell_X(base::At(Waypoint, kWayptHome)), MapCellY);
+  if (Cell_Y(base::At(TheWorld().waypoint(), kWayptHome)) < MapCellY) {
+    base::At(TheWorld().waypoint(), kWayptHome) =
+        XY_Cell(Cell_X(base::At(TheWorld().waypoint(), kWayptHome)), MapCellY);
   }
 
-  if (Cell_Y(base::At(Waypoint, kWayptHome)) > MapCellY + MapCellHeight - 1) {
-    base::At(Waypoint, kWayptHome) = XY_Cell(
-        Cell_X(base::At(Waypoint, kWayptHome)), MapCellY + MapCellHeight - 1);
+  if (Cell_Y(base::At(TheWorld().waypoint(), kWayptHome)) >
+      MapCellY + MapCellHeight - 1) {
+    base::At(TheWorld().waypoint(), kWayptHome) =
+        XY_Cell(Cell_X(base::At(TheWorld().waypoint(), kWayptHome)),
+                MapCellY + MapCellHeight - 1);
   }
 
   return 0;
@@ -1738,7 +1746,7 @@ int MapEditClass::Scenario_Dialog() {
   ............................ Init parameters .............................
   */
   const TheaterType orig_theater = Theater;  // original theater
-  if (ScenPlayer != SCEN_PLAYER_MPLAYER) {
+  if (TheWorld().scen_player() != SCEN_PLAYER_MPLAYER) {
     gdi_credits = HouseClass::As_Pointer(HOUSE_GOOD)->Credits / 1000L;
     nod_credits = HouseClass::As_Pointer(HOUSE_BAD)->Credits / 1000L;
     neut_credits = HouseClass::As_Pointer(HOUSE_NEUTRAL)->Credits / 1000L;
@@ -2021,7 +2029,7 @@ int MapEditClass::Scenario_Dialog() {
   /*
   ------------------------ Save selections & return ------------------------
   */
-  if (ScenPlayer != SCEN_PLAYER_MPLAYER) {
+  if (TheWorld().scen_player() != SCEN_PLAYER_MPLAYER) {
     /*
     .............................. Credits ................................
     */
@@ -3460,7 +3468,7 @@ int MapEditClass::Import_Triggers() {
         trigger->Fill_In(tbuffer, buf);
 
         if (trigger->House != HOUSE_NONE) {
-          HouseTriggers.at(trigger->House).Add(trigger);
+          TheWorld().house_triggers().at(trigger->House).Add(trigger);
         }
       }
 

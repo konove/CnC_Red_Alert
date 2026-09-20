@@ -14,7 +14,6 @@
 #include "td/debug_state.h"
 #include "td/defines.h"
 #include "td/event.h"
-#include "td/externs.h"
 #include "td/factory.h"
 #include "td/game_clock.h"
 #include "td/globals.h"
@@ -29,6 +28,7 @@
 #include "td/team.h"
 #include "td/trigger.h"
 #include "td/unit.h"
+#include "td/world.h"
 #include "tech/archive.h"
 #include "tech/span_sink.h"
 #include "tech/span_source.h"
@@ -40,6 +40,11 @@ GameClock game_clock;
 const base::Installed<GameClock>::Scope game_clock_scope(game_clock);
 ObjectHeaps object_heaps;
 const base::Installed<ObjectHeaps>::Scope object_heaps_scope(object_heaps);
+// NOLINTBEGIN(bugprone-throwing-static-initialization): a test binary
+// that runs out of memory building the world has nothing to report.
+World world;
+const base::Installed<World>::Scope world_scope(world);
+// NOLINTEND(bugprone-throwing-static-initialization)
 }  // namespace
 
 namespace {
@@ -78,23 +83,23 @@ class TdArchiveRoundTripTest : public testing::Test {
     TheObjectHeaps().trigger().Set_Heap(8);
     TheObjectHeaps().factory().Set_Heap(8);
     TheObjectHeaps().team().Set_Heap(8);
-    Map.Resize(MAP_CELL_TOTAL);
-    CellTriggers.Resize(MAP_CELL_TOTAL);
-    Map.Init_Cells();
-    PlayerPtr = new HouseClass(HOUSE_GOOD);
+    TheMap().Resize(MAP_CELL_TOTAL);
+    TheWorld().cell_triggers().Resize(MAP_CELL_TOTAL);
+    TheMap().Init_Cells();
+    ThePlayer() = new HouseClass(HOUSE_GOOD);
   }
   static void TearDownTestSuite() {
-    Map.Init_Cells();
-    CellTriggers.Clear();
+    TheMap().Init_Cells();
+    TheWorld().cell_triggers().Clear();
     while (TheObjectHeaps().unit().Count() != 0) {
       delete TheObjectHeaps().unit().Ptr(0);
     }
     while (TheObjectHeaps().trigger().Count() != 0) {
       delete TheObjectHeaps().trigger().Ptr(0);
     }
-    delete PlayerPtr;
-    PlayerPtr = nullptr;
-    Map.Clear();
+    delete ThePlayer();
+    ThePlayer() = nullptr;
+    TheMap().Clear();
     delete debug_state_scope_;
     debug_state_scope_ = nullptr;
   }
@@ -123,7 +128,8 @@ TEST_F(TdArchiveRoundTripTest, TriggerIniPreserves64BitDataAndRejectsOverflow) {
 TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireBytes) {
   const auto check = [](auto configure, auto... args) {
     EventClass expected;
-    expected.ID = static_cast<unsigned>(TheObjectHeaps().house().ID(PlayerPtr));
+    expected.ID =
+        static_cast<unsigned>(TheObjectHeaps().house().ID(ThePlayer()));
     expected.Frame = static_cast<unsigned>(CurrentFrame());
     configure(expected);
     alignas(EventClass) std::array<unsigned char, sizeof(EventClass)> storage{};
@@ -189,7 +195,7 @@ TEST_F(TdArchiveRoundTripTest, EventConstructorsClearExecutionFlagAndUnusedWireB
 TEST_F(TdArchiveRoundTripTest, CellRestoresFlagsAndGappedObjectAndTriggerReferences) {
   auto* unit = new UnitClass(UNIT_LTANK, HOUSE_GOOD);
   auto* trigger = new TriggerClass;
-  auto& cell = Map.at(100);
+  auto& cell = TheMap().at(100);
   cell.Reset();
   cell.IsPlot = cell.IsCursorHere = cell.IsWaypoint = true;
   cell.IsRadarCursor = cell.IsFlagged = cell.IsTrigger = true;
@@ -202,10 +208,10 @@ TEST_F(TdArchiveRoundTripTest, CellRestoresFlagsAndGappedObjectAndTriggerReferen
   cell.OccupierPtr = unit;
   cell.Overlappers[2] = unit;
   cell.Flag.Composite = 2;
-  CellTriggers.at(100) = trigger;
+  TheWorld().cell_triggers().at(100) = trigger;
   const auto bytes = Save(cell);
   cell.Reset();
-  CellTriggers.at(100) = nullptr;
+  TheWorld().cell_triggers().at(100) = nullptr;
   ASSERT_TRUE(Restore(cell, bytes));
   EXPECT_TRUE(cell.IsMapped && cell.IsVisible && cell.IsTrigger && cell.IsFlagged);
   EXPECT_TRUE(cell.IsPlot && cell.IsCursorHere && cell.IsWaypoint && cell.IsRadarCursor);
@@ -216,7 +222,7 @@ TEST_F(TdArchiveRoundTripTest, CellRestoresFlagsAndGappedObjectAndTriggerReferen
   EXPECT_EQ(cell.Overlappers[0], nullptr);
   EXPECT_EQ(cell.Overlappers[1], nullptr);
   EXPECT_EQ(cell.Overlappers[2], unit);
-  EXPECT_EQ(CellTriggers.at(100), trigger);
+  EXPECT_EQ(TheWorld().cell_triggers().at(100), trigger);
   EXPECT_EQ(Save(cell), bytes);
 }
 
@@ -244,7 +250,7 @@ std::vector<uint8_t> MapFields(int32_t growth_count = 2) {
 }
 
 TEST_F(TdArchiveRoundTripTest, MapMembersPreserveWideValueAndPopulatedScanLists) {
-  MapClass& map = Map;
+  MapClass& map = TheMap();
   map.MapClass::Init_Clear();
   const auto bytes = MapFields();
   ASSERT_TRUE(Restore(map, bytes));
@@ -257,7 +263,7 @@ TEST_F(TdArchiveRoundTripTest, MapMembersPreserveWideValueAndPopulatedScanLists)
 }
 
 TEST_F(TdArchiveRoundTripTest, MapRejectsOversizedScanListBeforeReadingEntries) {
-  MapClass& map = Map;
+  MapClass& map = TheMap();
   map.MapClass::Init_Clear();
   const auto bytes = MapFields(51);
   SpanSource source(std::as_bytes(std::span(bytes)));
@@ -267,7 +273,7 @@ TEST_F(TdArchiveRoundTripTest, MapRejectsOversizedScanListBeforeReadingEntries) 
 }
 
 TEST_F(TdArchiveRoundTripTest, HouseRestoresEconomyFlagsTimersAndTypeIdentity) {
-  auto& house = *PlayerPtr;
+  auto& house = *ThePlayer();
   house.Credits = (int64_t{1} * 1024 * 1024 * 1024 * 1024) + 123;
   house.InitialCredits = (int64_t{1} * 512 * 1024 * 1024 * 1024) + 456;
   house.IsHuman = true;
@@ -303,7 +309,7 @@ TEST_F(TdArchiveRoundTripTest, UnitRestoresBaseFieldsReferencesTimersAndPathTail
   auto* restored = new UnitClass;
   ASSERT_TRUE(Restore(*restored, bytes));
   EXPECT_EQ(restored->Class, unit->Class);
-  EXPECT_EQ(restored->House, PlayerPtr);
+  EXPECT_EQ(restored->House, ThePlayer());
   EXPECT_EQ(restored->Coord, unit->Coord);
   EXPECT_EQ(restored->Strength, 123);
   EXPECT_EQ(restored->NavCom, unit->NavCom);
@@ -324,8 +330,8 @@ TEST_F(TdArchiveRoundTripTest, TruncatedCellHouseAndUnitRecordsFail) {
     object.Serialize(reader);
     EXPECT_FALSE(reader.ok());
   };
-  check(Map.at(200));
-  check(*PlayerPtr);
+  check(TheMap().at(200));
+  check(*ThePlayer());
   auto* unit = new UnitClass(UNIT_LTANK, HOUSE_GOOD);
   check(*unit);
 }

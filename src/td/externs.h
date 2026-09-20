@@ -102,29 +102,16 @@ extern bool ScoresPresent;
 extern int CrateCount;
 extern TCountDownTimerClass CrateTimer;
 extern bool CrateMaker;
-extern ThemeType TransitTheme;
 extern bool AllowVoice;
 extern NewConfigType NewConfig;
-extern char BriefingText[512];
-extern char IntroMovie[port::kMaxFname + port::kMaxExt];
-extern char ActionMovie[port::kMaxFname + port::kMaxExt];
-extern char BriefMovie[port::kMaxFname + port::kMaxExt];
-extern char WinMovie[port::kMaxFname + port::kMaxExt];
-extern char LoseMovie[port::kMaxFname + port::kMaxExt];
 extern bool PlayerWins;
 extern bool PlayerLoses;
 extern bool PlayerRestarts;
-extern StructType SabotagedType;
-extern bool TempleIoned;
 extern bool PreserveVQAScreen;
 extern bool BreakoutAllowed;
-extern CELL Views[4];
 
 extern GameOptionsClass Options;
 
-extern LogicClass Logic;
-extern MapEditClass Map;
-extern ScoreClass Score;
 extern AudioMixer Audio;
 extern ThemeClass Theme;
 
@@ -135,15 +122,8 @@ extern ThemeClass Theme;
 extern QueueClass<EventClass, MAX_EVENTS> OutList;
 extern QueueClass<EventClass, MAX_EVENTS * 8> DoList;
 
-extern DynamicVectorClass<ObjectClass*> CurrentObject;
-extern DynamicVectorClass<TriggerClass*> CellTriggers;
-extern base::EnumArray<HousesType, DynamicVectorClass<TriggerClass*>,
-                       kHouseCount>
-    HouseTriggers;
 
-extern CELL Waypoint[kWayptCount];
 
-extern BaseClass Base;
 
 /*
 **	Loaded data file pointers.
@@ -154,21 +134,10 @@ extern BaseClass Base;
 */
 extern HousesType Whom;
 extern VQAConfig AnimControl;
-extern int EndCountDown;
 extern bool SpecialFlag;
-extern int ScenarioInit;
-extern HouseClass* PlayerPtr;
-extern int Scenario;
-extern ScenarioPlayerType ScenPlayer;
-extern ScenarioDirType ScenDir;
 extern ScenarioVarType ScenVar;
-extern int CarryOverMoney;
-extern int CarryOverPercent;
-extern char ScenarioName[port::kMaxFname + port::kMaxExt];
 extern int BuildLevel;
-extern uint32_t ScenarioCRC;
 
-extern CELL CurrentCell;
 
 extern GameType GameToPlay;
 

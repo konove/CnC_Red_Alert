@@ -101,6 +101,7 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/game_file.h"
 #include "tech/number_parse.h"
 
@@ -958,9 +959,9 @@ void Read_Scenario_Descriptions() {
   its number to the FileNum list.
   ------------------------------------------------------------------------*/
   for (int i = 0; i < 100; i++) {
-    Set_Scenario_Name(ScenarioName, i, SCEN_PLAYER_MPLAYER, SCEN_DIR_EAST,
-                      SCEN_VAR_A);
-    absl::SNPrintF(fname, sizeof(fname), "%s.INI", ScenarioName);
+    Set_Scenario_Name(TheWorld().scenario_name(), i, SCEN_PLAYER_MPLAYER,
+                      SCEN_DIR_EAST, SCEN_VAR_A);
+    absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
     file.SetName(fname);
 
     if (file.IsAvailable()) {
@@ -983,9 +984,9 @@ void Read_Scenario_Descriptions() {
     /*.....................................................................
     Create filename and read the file.
     .....................................................................*/
-    Set_Scenario_Name(ScenarioName, MPlayerFilenum.at(i), SCEN_PLAYER_MPLAYER,
-                      SCEN_DIR_EAST, SCEN_VAR_A);
-    absl::SNPrintF(fname, sizeof(fname), "%s.INI", ScenarioName);
+    Set_Scenario_Name(TheWorld().scenario_name(), MPlayerFilenum.at(i),
+                      SCEN_PLAYER_MPLAYER, SCEN_DIR_EAST, SCEN_VAR_A);
+    absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
     file.SetName(fname);
     file.Read(std::as_writable_bytes(ShapeBufferBytes)
                   .first(ShapeBufferBytes.size() - 1));
@@ -1359,8 +1360,8 @@ int Surrender_Dialog() {
   --------------------------- Redraw the display ---------------------------
   */
   TheScreen().hidden_page().Clear();
-  Map.Flag_To_Redraw(true);
-  Map.Render();
+  TheMap().Flag_To_Redraw(true);
+  TheMap().Render();
 
   return retcode;
 }

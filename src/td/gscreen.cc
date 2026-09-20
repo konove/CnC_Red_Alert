@@ -73,6 +73,7 @@
 #include "td/msglist.h"
 #include "td/palette.h"
 #include "td/screen.h"
+#include "td/world.h"
 #include "tech/pcx_file.h"
 
 GadgetClass* GScreenClass::Buttons = nullptr;
@@ -412,7 +413,8 @@ void GScreenClass::Render() {
     ** This way, they'll Blit along with the rest of the map.
     */
     if (Messages.Num_Messages() > 0) {
-      Messages.Set_Width(Lepton_To_Cell(Map.TacLeptonWidth) * ICON_PIXEL_W);
+      Messages.Set_Width(Lepton_To_Cell(TheMap().TacLeptonWidth) *
+                         ICON_PIXEL_W);
     }
     Messages.Draw();
 

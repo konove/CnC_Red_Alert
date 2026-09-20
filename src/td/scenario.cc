@@ -107,6 +107,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "td/world.h"
 #include "tech/game_file.h"
 
 /***********************************************************************************************
@@ -138,7 +139,7 @@ bool Start_Scenario(char* root, bool briefing) {
 
   if (briefing) {
     Play_Movie(BriefMovie);
-    Play_Movie(ActionMovie, TransitTheme);
+    Play_Movie(ActionMovie, TheWorld().transit_theme());
   }
   Theme.Queue_Song(THEME_AOI);
 
@@ -149,27 +150,28 @@ bool Start_Scenario(char* root, bool briefing) {
   ** sides introduction.  We don't want an intro movie on scenario 1, and
   ** we don't want a briefing movie on GDI scenario 1.
   */
-  if (Scenario < 20 && (!Special.IsJurassic || !AreThingiesEnabled)) {
-    if (Scenario != 1 || Whom == HOUSE_GOOD) {
-      Play_Movie(IntroMovie);
+  if (TheWorld().scenario() < 20 &&
+      (!Special.IsJurassic || !AreThingiesEnabled)) {
+    if (TheWorld().scenario() != 1 || Whom == HOUSE_GOOD) {
+      Play_Movie(TheWorld().intro_movie());
     }
 
-    if ((Scenario > 1 || Whom == HOUSE_BAD) && briefing) {
-      PreserveVQAScreen = Scenario == 1;
-      Play_Movie(BriefMovie);
+    if ((TheWorld().scenario() > 1 || Whom == HOUSE_BAD) && briefing) {
+      PreserveVQAScreen = TheWorld().scenario() == 1;
+      Play_Movie(TheWorld().brief_movie());
     }
-    Play_Movie(ActionMovie, TransitTheme);
-    if (TransitTheme == THEME_NONE) {
+    Play_Movie(TheWorld().action_movie(), TheWorld().transit_theme());
+    if (TheWorld().transit_theme() == THEME_NONE) {
       Theme.Queue_Song(THEME_AOI);
     }
   } else {
-    Play_Movie(BriefMovie);
-    Play_Movie(ActionMovie, TransitTheme);
+    Play_Movie(TheWorld().brief_movie());
+    Play_Movie(TheWorld().action_movie(), TheWorld().transit_theme());
 
 #ifdef NEWMENU
 
     char buffer[25];
-    absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA", BriefMovie);
+    absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA", TheWorld().brief_movie());
     GameFile file(buffer);
 
     if (GameToPlay == GAME_NORMAL && !file.IsAvailable()) {
@@ -183,10 +185,10 @@ bool Start_Scenario(char* root, bool briefing) {
       */
       const bool oldinmain = InMainLoop;
       InMainLoop = true;
-      Restate_Mission(ScenarioName, TXT_OK, TXT_NONE);
+      Restate_Mission(TheWorld().scenario_name(), TXT_OK, TXT_NONE);
       InMainLoop = oldinmain;
       //			Hide_Mouse();
-      if (TransitTheme == THEME_NONE) {
+      if (TheWorld().transit_theme() == THEME_NONE) {
         Theme.Queue_Song(THEME_AOI);
       }
     }
@@ -228,7 +230,7 @@ bool Start_Scenario(char* root, bool briefing) {
 bool Read_Scenario(char* root) {
   CCDebugString("C&C95 - In Read_Scenario.\n");
   Clear_Scenario();
-  ScenarioInit++;
+  TheWorld().scenario_init()++;
   if (Read_Scenario_Ini(root)) {
     Fill_In_Data();
   } else {
@@ -238,7 +240,7 @@ bool Read_Scenario(char* root) {
     Hide_Mouse();
     return false;
   }
-  ScenarioInit--;
+  TheWorld().scenario_init()--;
   CCDebugString("C&C95 - Leaving Read_Scenario.\n");
   return true;
 }
@@ -262,23 +264,23 @@ void Fill_In_Data() {
   **	The basic scenario data load does not contain the full set of
   **	game data. We now must fill in the missing pieces.
   */
-  ScenarioInit++;
+  TheWorld().scenario_init()++;
 
   for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
     TheObjectHeaps().building().Ptr(index)->Update_Buildables();
   }
 
-  Map.Flag_To_Redraw(true);
+  TheMap().Flag_To_Redraw(true);
 
   /*
   **	Bring up the score display on the radar map when starting a multiplayer
   **	game.
   */
   if (GameToPlay != GAME_NORMAL) {
-    Map.Player_Names(true);
+    TheMap().Player_Names(true);
   }
 
-  ScenarioInit--;
+  TheWorld().scenario_init()--;
 }
 
 /***********************************************************************************************
@@ -299,7 +301,7 @@ void Fill_In_Data() {
  *End count down moved here.                                               *
  *=============================================================================================*/
 void Clear_Scenario() {
-  EndCountDown = kTicksPerSecond * 30;
+  TheWorld().end_count_down() = kTicksPerSecond * 30;
   CrateCount = 0;
   CrateTimer = 0;
   CrateMaker = false;
@@ -311,9 +313,9 @@ void Clear_Scenario() {
   ** would reload MixFiles, which isn't desired.  Display::Read_INI calls its
   ** own Init, which will Init the entire Map hierarchy.
   */
-  Map.Init_Clear();
-  Score.Init();
-  Logic.Init();
+  TheMap().Init_Clear();
+  TheWorld().score().Init();
+  TheWorld().logic().Init();
 
   HouseClass::Init();
   ObjectClass::Init();
@@ -333,9 +335,9 @@ void Clear_Scenario() {
 
   FactoryClass::Init();
 
-  Base.Init();
+  TheWorld().base().Init();
 
-  CurrentObject.Clear();
+  TheWorld().current_object().Clear();
 }
 
 /***********************************************************************************************
@@ -353,7 +355,7 @@ void Clear_Scenario() {
  *into next scenario.                                *
  *=============================================================================================*/
 void Do_Win() {
-  Map.Set_Default_Mouse(MOUSE_NORMAL);
+  TheMap().Set_Default_Mouse(MOUSE_NORMAL);
   Hide_Mouse();
 
   /*
@@ -367,8 +369,10 @@ void Do_Win() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  const int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
-  const int y = Map.TacPixelY + (Lepton_To_Pixel(Map.TacLeptonHeight) / 2) - 32;
+  const int x =
+      TheMap().TacPixelX + (Lepton_To_Pixel(TheMap().TacLeptonWidth) / 2);
+  const int y =
+      TheMap().TacPixelY + (Lepton_To_Pixel(TheMap().TacLeptonHeight) / 2) - 32;
 
   /*
   **	Announce win to player.
@@ -407,13 +411,14 @@ void Do_Win() {
   **	Play the winning movie and then start the next scenario.
   */
   if (RequiredCD != -2) {
-    if (Scenario >= 20 && Scenario < 60 && GameToPlay == GAME_NORMAL) {
+    if (TheWorld().scenario() >= 20 && TheWorld().scenario() < 60 &&
+        GameToPlay == GAME_NORMAL) {
       RequiredCD = 2;
     } else {
-      if (Scenario >= 60) {
+      if (TheWorld().scenario() >= 60) {
         RequiredCD = -1;
       } else {
-        if (PlayerPtr->Class->House == HOUSE_GOOD) {
+        if (ThePlayer()->Class->House == HOUSE_GOOD) {
           RequiredCD = 0;
         } else {
           RequiredCD = 1;
@@ -423,7 +428,7 @@ void Do_Win() {
   }
 
 #ifndef DEMO
-  Play_Movie(WinMovie);
+  Play_Movie(TheWorld().win_movie());
 #endif
 
   Keyboard::Clear();
@@ -434,19 +439,19 @@ void Do_Win() {
   if (!PlaybackGame) {
 #ifdef DEMO
 
-    switch (Scenario) {
+    switch (TheWorld().scenario()) {
       case 1:
-        Score.Presentation();
-        Scenario = 10;
+        TheWorld().score().Presentation();
+        TheWorld().scenario() = 10;
         break;
 
       case 10:
-        Score.Presentation();
-        Scenario = 6;
+        TheWorld().score().Presentation();
+        TheWorld().scenario() = 6;
         break;
 
       default:
-        Score.Presentation();
+        TheWorld().score().Presentation();
         GDI_Ending();
         GameActive = false;
         Show_Mouse();
@@ -459,16 +464,16 @@ void Do_Win() {
 #else
 
 #ifdef NEWMENU
-    if (Scenario >= 20) {
+    if (TheWorld().scenario() >= 20) {
       Keyboard::Clear();
-      Score.Presentation();
+      TheWorld().score().Presentation();
       GameActive = false;
       Show_Mouse();
       return;
     }
 #endif
 
-    if (PlayerPtr->Class->House == HOUSE_BAD && Scenario == 13) {
+    if (ThePlayer()->Class->House == HOUSE_BAD && TheWorld().scenario() == 13) {
       Nod_Ending();
       // Prog_End();
       // exit(0);
@@ -477,7 +482,8 @@ void Do_Win() {
       GameActive = false;
       return;
     }
-    if (PlayerPtr->Class->House == HOUSE_GOOD && Scenario == 15) {
+    if (ThePlayer()->Class->House == HOUSE_GOOD &&
+        TheWorld().scenario() == 15) {
       GDI_Ending();
       // Prog_End();
       // exit(0);
@@ -487,53 +493,56 @@ void Do_Win() {
       return;
     }
 
-    if (Special.IsJurassic && AreThingiesEnabled && Scenario == 5) {
+    if (Special.IsJurassic && AreThingiesEnabled &&
+        TheWorld().scenario() == 5) {
       ShutDown();
       exit(0);
     }
 
     if (!Special.IsJurassic || !AreThingiesEnabled) {
       Keyboard::Clear();
-      Score.Presentation();
+      TheWorld().score().Presentation();
 
       /*
       **	Skip scenario #7 if the airfield was blown up.
       */
-      if (Scenario == 6 && PlayerPtr->Class->House == HOUSE_GOOD &&
-          SabotagedType == STRUCT_AIRSTRIP) {
-        Scenario++;
+      if (TheWorld().scenario() == 6 &&
+          ThePlayer()->Class->House == HOUSE_GOOD &&
+          TheWorld().sabotaged_type() == STRUCT_AIRSTRIP) {
+        TheWorld().scenario()++;
       }
 
       Map_Selection();
     }
-    Scenario++;
+    TheWorld().scenario()++;
 #endif
     Keyboard::Clear();
   }
 
-  CarryOverMoney = static_cast<int>(PlayerPtr->Credits);
+  TheWorld().carry_over_money() = static_cast<int>(ThePlayer()->Credits);
 
-  const unsigned pieces = PlayerPtr->NukePieces;
+  const unsigned pieces = ThePlayer()->NukePieces;
 
   /*
   ** Generate a new scenario filename
   */
-  Set_Scenario_Name(ScenarioName, Scenario, ScenPlayer, ScenDir, ScenVar);
-  Start_Scenario(ScenarioName);
+  Set_Scenario_Name(TheWorld().scenario_name(), TheWorld().scenario(),
+                    TheWorld().scen_player(), TheWorld().scen_dir(), ScenVar);
+  Start_Scenario(TheWorld().scenario_name());
 
-  PlayerPtr->NukePieces = static_cast<uint8_t>(pieces);
+  ThePlayer()->NukePieces = static_cast<uint8_t>(pieces);
 
   /*
   **	Destroy the building that was sabotaged in the previous scenario. This
   *only *	applies to GDI mission #7.
   */
-  if (SabotagedType != STRUCT_NONE && Scenario == 7 &&
-      PlayerPtr->Class->House == HOUSE_GOOD) {
+  if (TheWorld().sabotaged_type() != STRUCT_NONE &&
+      TheWorld().scenario() == 7 && ThePlayer()->Class->House == HOUSE_GOOD) {
     for (int index = 0; index < TheObjectHeaps().building().Count(); index++) {
       BuildingClass* building = TheObjectHeaps().building().Ptr(index);
 
-      if (building && !building->IsInLimbo && building->House != PlayerPtr &&
-          building->Class->Type == SabotagedType) {
+      if (building && !building->IsInLimbo && building->House != ThePlayer() &&
+          building->Class->Type == TheWorld().sabotaged_type()) {
         building->Limbo();
         delete building;
         break;
@@ -543,18 +552,18 @@ void Do_Win() {
     /*
     **	Remove the building from the prebuild list.
     */
-    for (int index = 0; index < Base.Nodes.Count(); index++) {
-      const BaseNodeClass* node = Base.Get_Node(index);
+    for (int index = 0; index < TheWorld().base().Nodes.Count(); index++) {
+      const BaseNodeClass* node = TheWorld().base().Get_Node(index);
 
-      if (node && node->Type == SabotagedType) {
-        Base.Nodes.Delete(index);
+      if (node && node->Type == TheWorld().sabotaged_type()) {
+        TheWorld().base().Nodes.Delete(index);
         break;
       }
     }
   }
-  SabotagedType = STRUCT_NONE;
+  TheWorld().sabotaged_type() = STRUCT_NONE;
 
-  Map.Render();
+  TheMap().Render();
   Fade_Palette_To(ThePalettes().game_palette(), kFadePaletteFast, Call_Back);
   Show_Mouse();
 }
@@ -573,7 +582,7 @@ void Do_Win() {
  * HISTORY: * 08/05/1992 JLB : Created. *
  *=============================================================================================*/
 void Do_Lose() {
-  Map.Set_Default_Mouse(MOUSE_NORMAL);
+  TheMap().Set_Default_Mouse(MOUSE_NORMAL);
   Hide_Mouse();
 
   /*
@@ -587,8 +596,10 @@ void Do_Lose() {
   /*
   **	Determine a cosmetic center point for the text.
   */
-  const int x = Map.TacPixelX + (Lepton_To_Pixel(Map.TacLeptonWidth) / 2);
-  const int y = Map.TacPixelY + (Lepton_To_Pixel(Map.TacLeptonHeight) / 2) - 32;
+  const int x =
+      TheMap().TacPixelX + (Lepton_To_Pixel(TheMap().TacLeptonWidth) / 2);
+  const int y =
+      TheMap().TacPixelY + (Lepton_To_Pixel(TheMap().TacLeptonHeight) / 2) - 32;
 
   /*
   **	Announce win to player.
@@ -629,7 +640,7 @@ void Do_Lose() {
     return;
   }
 
-  Play_Movie(LoseMovie);
+  Play_Movie(TheWorld().lose_movie());
 
   /*
   ** Start same scenario again
@@ -640,8 +651,8 @@ void Do_Lose() {
       !CCMessageBox().Process(TXT_TO_REPLAY, TXT_YES, TXT_NO)) {
     Hide_Mouse();
     Keyboard::Clear();
-    Start_Scenario(ScenarioName, false);
-    Map.Render();
+    Start_Scenario(TheWorld().scenario_name(), false);
+    TheMap().Render();
   } else {
     Hide_Mouse();
     GameActive = false;
@@ -674,14 +685,14 @@ void Do_Restart() {
     Show_Mouse();
   }
   CCMessageBox().Process(TXT_RESTARTING, TXT_NONE);
-  Map.Set_Default_Mouse(MOUSE_NORMAL);
+  TheMap().Set_Default_Mouse(MOUSE_NORMAL);
   Keyboard::Clear();
-  Start_Scenario(ScenarioName, false);
+  Start_Scenario(TheWorld().scenario_name(), false);
   if (hidden) {
     Hide_Mouse();
   }
   Keyboard::Clear();
-  Map.Render();
+  TheMap().Render();
 }
 
 /***********************************************************************************************
@@ -722,8 +733,9 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
 #ifdef NEWMENU
     char buffer[25];
     char buffer1[25];
-    absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA", BriefMovie);
-    absl::SNPrintF(buffer1, sizeof(buffer1), "%s.VQA", ActionMovie);
+    absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA", TheWorld().brief_movie());
+    absl::SNPrintF(buffer1, sizeof(buffer1), "%s.VQA",
+                   TheWorld().action_movie());
     GameFile file1(buffer);
     GameFile file2(buffer1);
     if (!file1.IsAvailable() && !file2.IsAvailable()) {
@@ -736,10 +748,10 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
     /*
     **	If mission object text was found, then display it.
     */
-    if (!std::string_view(BriefingText).empty()) {
+    if (!std::string_view(TheWorld().briefing_text()).empty()) {
       static char _buff[512];
 
-      port::SafeCopy(_buff, BriefingText);
+      port::SafeCopy(_buff, TheWorld().briefing_text());
       // port::SafeCopy(_ShapeBuffer, BriefingText);
 
       const bool hidden = Get_Mouse_State() != 0;
