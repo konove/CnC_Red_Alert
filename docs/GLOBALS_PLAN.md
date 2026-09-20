@@ -382,3 +382,29 @@ only where the two games' layouts already match.
   ASan `-QUITFRAME` exits cleanly in both games with only the leaks phases 1 and 3 recorded (RA's
   type-class vectors, phase 5; TD's `HouseClass` trackers, phase 6). Still to do, as for phases 1-3:
   run Red Alert on a real display into a mission and through a movie.
+- 2026-09-20: phase 5 done for both games (4a22639a..bde649e6). Red Alert's rules moved in three
+  steps. First the twelve loose tunables that only `RulesClass`'s constructor set became members of
+  it (`NewUnitsEnabled`, `MTankDistance`, the time quake values, `ChronoTankDuration`,
+  `EngineerDamage`, `EngineerCaptureLevel`, `CarrierLaunchDelay`, `UnitBuildPenalty`); their
+  definitions in `globals.cc` carried defaults that never took effect, because `Rule` is defined
+  later in the same file and its constructor overwrote them all. Then `RulesClass` itself became the
+  subsystem -- it also holds `RuleINI`, `AftermathINI`, `Ground`, `MissionControl` and the three
+  crate tables -- so `Rule.X` reads `TheRules().X`, and `const.cc`, which held only those tables, is
+  gone. Finally the twelve type heaps and the weapon and warhead heaps became `TypeHeaps`
+  (`ra/type_heaps.h`), which binds the `CCPtr<T>::Heap` pointers in its constructor; `CCPtr` gained
+  `BindHeap()` because `Heap` is private. Deviations: `AntsEnabled`, `bAftermathMultiplayer` and
+  `bAutoSonarPulse` stay for phases 6 and 7 -- nothing in `rules.cc` writes them -- and the type
+  heaps are their own class rather than part of `RulesClass`, because they need the type headers and
+  the rules do not. The lifetime audit found one thing: the static `Scen` seeded its `ShroudTimer`
+  from `Rule.ShroudRate` during static initialization, which worked only because `globals.cc`
+  happens to define `Rule` first; it starts at zero now, which is what `Clear_Scenario()` sets at
+  the start of every scenario anyway. Red Alert's build gained an `ra_engine` object library, like
+  Tiberian Dawn's `td_engine`, so `ra_game_test` can link the engine and build a real `Game`;
+  `startup.cc` keeps `main()` behind `RA_NO_ENTRY_POINT`. Tiberian Dawn's phase 5 is one line: it
+  has no `RulesClass`, no rules files and no type heaps, and its only phase 5 global, `Ground`, is
+  never written, so it became `const`. Still open: moving the release of the type objects'
+  `DimensionData` and `RadarIcon` from `Prog_End()` into `~TypeHeaps` did not clear the 26 KB
+  LeakSanitizer reports. The loop runs with the right counts, and
+  `__lsan_do_recoverable_leak_check()` reports nothing leaked at that point, but the vectors'
+  capacity is unchanged after the loop assigns an empty vector over them, and the final total is the
+  same whether the loop runs or not. A TODO in `type_heaps.cc` records it.
