@@ -1703,9 +1703,9 @@ void WolapiObject::DoFindPage() {
   //	User presses find/page button.
 
   //	Ask user for user desired.
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
-                   kTpfText);  //	Required before String_Pixel_Width()
-                               // call, for god's sake.
+  Select_Text_Font(kTpfText, nullptr,
+                   kTBlack);  //	Required before String_Pixel_Width()
+                              // call, for god's sake.
   auto* pFindPageDlg = new SimpleEditDlgClass(
       400, TXT_WOL_PAGELOCATE, TXT_WOL_USERNAMEPROMPT, WOL_NAME_LEN_MAX);
   pFindPageDlg->SetButtons(TXT_WOL_LOCATE, Text_String(TXT_CANCEL),

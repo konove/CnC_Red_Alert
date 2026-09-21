@@ -54,7 +54,7 @@ class StaticButtonClass final : public GadgetClass {
   StaticButtonClass(unsigned id, const char* text, TextPrintType style, int x,
                     int y, int w = -1, int h = -1);
   bool Draw_Me(PixelView& view, bool forced = false) override;
-  void Set_Text(const char* text, bool resize = false);
+  void Set_Text(const char* text);
 
  protected:
   void Draw_Background(PixelView& view);

@@ -54,7 +54,6 @@
 #include "ra/gadget.h"
 #include "ra/jshell.h"
 #include "ra/screen.h"
-#include "ra/text_ids.h"
 #include "sdllib/font.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
@@ -95,10 +94,10 @@ StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
   /*
   **	Make a duplicate of the string to display.
   */
-  Set_Text(text, false);
+  Set_Text(text);
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, PrintFlags);
+    Select_Text_Font(PrintFlags, nullptr, kTBlack);
     if (w == -1) {
       Width = String_Pixel_Width(String);
     }
@@ -182,7 +181,7 @@ bool StaticButtonClass::Draw_Me(PixelView& view, bool forced) {
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-void StaticButtonClass::Set_Text(const char* text, bool resize) {
+void StaticButtonClass::Set_Text(const char* text) {
   if (String != nullptr) {
     delete[] String;
     String = nullptr;
@@ -191,13 +190,6 @@ void StaticButtonClass::Set_Text(const char* text, bool resize) {
   String = port::CloneString(text);
 
   Flag_To_Redraw();
-  if (resize && String != nullptr) {
-    Draw_Background(*LogicPage);
-    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, PrintFlags);
-    Width = String_Pixel_Width(String);
-    Height = FontHeight + FontYSpacing;
-    Background.clear();
-  }
 }
 
 /***********************************************************************************************

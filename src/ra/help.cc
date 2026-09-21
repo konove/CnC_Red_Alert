@@ -314,7 +314,7 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
 void HelpClass::Set_Text(int text) {
   if (text != TXT_NONE) {
     Text = text;
-    Plain_Text_Print(*LogicPage, TXT_NONE, 0, 0, 0, 0, TPF_MAP | TPF_NOSHADOW);
+    Select_Text_Font(TPF_MAP | TPF_NOSHADOW, 0, 0);
     Width = String_Pixel_Width(Text_String(Text));
     if (IsRight) {
       DrawX = X - Width;

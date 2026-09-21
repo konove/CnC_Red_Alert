@@ -63,7 +63,6 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/gadget.h"
@@ -804,8 +803,7 @@ int MessageListClass::Input(KeyNumType& input) {
           ** Verify that the additional character would not overrun the on
           *screen edit box.
           */
-          Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, EditLabel->Color,
-                           kTBlack, EditLabel->Style);
+          Select_Text_Font(EditLabel->Style, EditLabel->Color, kTBlack);
           const int width = String_Pixel_Width(EditBuf.data());
           if (width >= Width) {
             --EditCurPos;

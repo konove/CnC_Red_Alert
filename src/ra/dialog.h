@@ -72,6 +72,20 @@ void Fancy_Text_Print(PixelView& view, int text, int x, int y,
   Fancy_Text_Print(view, text, x, y, fore, back, flag,
                    absl::MakeConstSpan(packed));
 }
+// The font state a text print needs beyond the glyphs themselves.
+struct TextStyle {
+  TextPrintType flag;  // The flags after the chosen font's own fixups.
+  int forecolor;       // Palette index the glyphs print in.
+};
+
+// Selects the font, spacing and font palette that `flag` asks for, and returns
+// the style a print of that text would use. Draws nothing, so code that only
+// needs String_Pixel_Width() or FontHeight to be right calls this and ignores
+// the result.
+TextStyle Select_Text_Font(TextPrintType flag, RemapControlType* fore = nullptr,
+                           int back = kTBlack);
+// Same, for the single-color scheme Plain_Text_Print builds.
+TextStyle Select_Text_Font(TextPrintType flag, int fore, int back);
 void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
                        RemapControlType* fore, int back, TextPrintType flag);
 // Fancy_Text_Print with a single palette color in place of the color scheme.

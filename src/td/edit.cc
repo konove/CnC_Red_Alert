@@ -62,7 +62,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "td/assets.h"
-#include "td/conquer.h"
 #include "td/control.h"
 #include "td/defines.h"
 #include "td/dialog.h"
@@ -116,7 +115,7 @@ EditClass::EditClass(int id, std::span<char> text, int max_len,
   EditClass::Set_Text(text, max_len);
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack, TextFlags);
+    Select_Text_Font(TextFlags, kTBlack, kTBlack);
 
     if (h == -1) {
       Height = FontHeight + 2;

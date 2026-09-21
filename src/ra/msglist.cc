@@ -77,7 +77,6 @@
 #include "ra/jshell.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
-#include "ra/text_ids.h"
 #include "ra/txtlabel.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
@@ -343,8 +342,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   //------------------------------------------------------------------------
 
   int print_this_pass = 0;
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0,
-                   &ThePalettes().color_remaps().at(color), kTBlack, style);
+  Select_Text_Font(style, &ThePalettes().color_remaps().at(color), kTBlack);
   int wid = String_Pixel_Width(message);
   if (wid >= Width - 8) {
     //------------------------------------------------------------------------
@@ -623,8 +621,7 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
     // We need to trim the message if there is no room to draw it
     //---------------------------------------------------------------------
     std::vector<char> concat_test(base::ToSize(MaxChars + 1));
-    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, tlabel->Color, kTBlack,
-                     tlabel->Style);
+    Select_Text_Font(tlabel->Style, tlabel->Color, kTBlack);
     const int name_width =
         String_Pixel_Width(tlabel->Text) - String_Pixel_Width(msg.data());
 
@@ -1192,8 +1189,7 @@ int MessageListClass::Input(KeyNumType& input) {
             ** Verify that the additional character would not overrun the on
             *screen edit box.
             */
-            Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, EditLabel->Color,
-                             kTBlack, EditLabel->Style);
+            Select_Text_Font(EditLabel->Style, EditLabel->Color, kTBlack);
             const int width = String_Pixel_Width(EditBuf);
             if (width >= Width - 10) {
               overflowed = true;

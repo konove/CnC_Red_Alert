@@ -356,10 +356,9 @@ void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style) {
  * HISTORY: * 12/24/1991 JLB : Created. * 10/26/94   JLB : Handles font X
  *spacing in a more friendly manner.                        *
  *=============================================================================================*/
-void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
-                       int fore, int back, TextPrintType flag) {
-  static int yspace = 0;       // Y spacing adjustment for font.
-  static int xspace = 0;       // Spacing adjustment for font.
+TextStyle Select_Text_Font(TextPrintType flag, int fore, int back) {
+  int yspace = 0;                        // Y spacing adjustment for font.
+  int xspace = 0;                        // Spacing adjustment for font.
   std::span<const std::byte> font = {};  // Font to use.
 
   ////////////////#if (0)
@@ -407,16 +406,6 @@ void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
     base::At(fontpalette, 14) = 204;
     base::At(fontpalette, 15) = 205;
   }
-
-  std::string filtered;
-  if (text) {
-    for (const char character : std::string_view(text)) {
-      if (static_cast<unsigned char>(character) != 0xff) {
-        filtered.push_back(character);
-      }
-    }
-  }
-  const char* tempstr = text ? filtered.c_str() : nullptr;
 
   /*
   **	A gradient font always requires special fixups for the palette.
@@ -602,6 +591,22 @@ void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
   FontYSpacing = yspace;
   Set_Font(font);
   Set_Font_Palette(fontpalette);
+  return {.flag = flag, .forecolor = fore};
+}
+
+void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
+                       int fore, int back, TextPrintType flag) {
+  std::string filtered;
+  if (text) {
+    for (const char character : std::string_view(text)) {
+      if (static_cast<unsigned char>(character) != 0xff) {
+        filtered.push_back(character);
+      }
+    }
+  }
+  const char* tempstr = text ? filtered.c_str() : nullptr;
+
+  flag = Select_Text_Font(flag, fore, back).flag;
 
   /*
   **	Display the (centered) message if there is one.

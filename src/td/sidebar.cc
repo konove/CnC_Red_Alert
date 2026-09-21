@@ -326,8 +326,7 @@ void SidebarClass::Init_IO() {
     oldfont = Set_Font(TheAssets().font(FontType::k6Point));
     oldx = FontXSpacing;
     FontXSpacing = -1;
-    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
-                     TPF_6POINT | TPF_NOSHADOW);
+    Select_Text_Font(TPF_6POINT | TPF_NOSHADOW, kTBlack, kTBlack);
 
     int maxwidth = String_Pixel_Width(Text_String(TXT_REPAIR_BUTTON)) + 8;
     maxwidth = std::max<int>(

@@ -36,7 +36,6 @@
 #include "ra/gadget.h"
 #include "ra/jshell.h"
 #include "ra/screen.h"
-#include "ra/text_ids.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
@@ -67,7 +66,7 @@ EditClass::EditClass(const int id, std::span<char> text, const int max_len,
   GadgetClass::Flag_To_Redraw();
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, TextFlags);
+    Select_Text_Font(TextFlags, nullptr, kTBlack);
 
     if (h == -1) {
       Height = FontHeight + 1;

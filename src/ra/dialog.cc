@@ -399,10 +399,10 @@ void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style) {
  * HISTORY: * 12/24/1991 JLB : Created. * 10/26/94   JLB : Handles font X
  *spacing in a more friendly manner.                        *
  *=============================================================================================*/
-void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
-                       RemapControlType* fore, int back, TextPrintType flag) {
-  static int yspace = 0;          // Y spacing adjustment for font.
-  static int xspace = 0;          // Spacing adjustment for font.
+TextStyle Select_Text_Font(TextPrintType flag, RemapControlType* fore,
+                           int back) {
+  int yspace = 0;                        // Y spacing adjustment for font.
+  int xspace = 0;                        // Spacing adjustment for font.
   std::span<const std::byte> font = {};  // Font to use.
   unsigned char fontpalette[16];  // Working font palette array.
 
@@ -632,6 +632,13 @@ void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
   FontYSpacing = yspace;
   Set_Font(font);
   Set_Font_Palette(fontpalette);
+  return {.flag = flag, .forecolor = forecolor};
+}
+
+void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
+                       RemapControlType* fore, int back, TextPrintType flag) {
+  const auto [style_flag, forecolor] = Select_Text_Font(flag, fore, back);
+  flag = style_flag;
 
   /*
   **	Display the (centered) message if there is one.
@@ -828,6 +835,31 @@ void Conquer_Clip_Text_Print(PixelView& view, const char* text, int x, int y,
   }
 }
 
+namespace {
+
+// The color scheme Plain_Text_Print paints with: every slot the same palette
+// index, so the text comes out in one flat color.
+RemapControlType Plain_Scheme(const int fore) {
+  RemapControlType scheme{};
+
+  base::FillBytes(std::as_writable_bytes(base::Suffix(scheme.FontRemap, 4)),
+                  fore, 12);
+
+  scheme.BrightColor = static_cast<unsigned char>(fore);
+  scheme.Color = static_cast<unsigned char>(fore);
+  scheme.Shadow = static_cast<unsigned char>(fore);
+  scheme.Background = static_cast<unsigned char>(fore);
+  scheme.Corners = static_cast<unsigned char>(fore);
+  scheme.Highlight = static_cast<unsigned char>(fore);
+  scheme.Box = static_cast<unsigned char>(fore);
+  scheme.Bright = static_cast<unsigned char>(fore);
+  scheme.Underline = static_cast<unsigned char>(fore);
+  scheme.Bar = static_cast<unsigned char>(fore);
+  return scheme;
+}
+
+}  // namespace
+
 /***************************************************************************
  * Plain_Text_Print -- Prints text without using a color scheme            *
  *                                                                         *
@@ -856,21 +888,7 @@ void Conquer_Clip_Text_Print(PixelView& view, const char* text, int x, int y,
 void Plain_Text_Print(PixelView& view, const int text, const int x, const int y,
                       const int fore, const int back, const TextPrintType flag,
                       const absl::Span<const absl::FormatArg> args) {
-  RemapControlType scheme{};
-
-  base::FillBytes(std::as_writable_bytes(base::Suffix(scheme.FontRemap, 4)),
-                  fore, 12);
-
-  scheme.BrightColor = static_cast<unsigned char>(fore);
-  scheme.Color = static_cast<unsigned char>(fore);
-  scheme.Shadow = static_cast<unsigned char>(fore);
-  scheme.Background = static_cast<unsigned char>(fore);
-  scheme.Corners = static_cast<unsigned char>(fore);
-  scheme.Highlight = static_cast<unsigned char>(fore);
-  scheme.Box = static_cast<unsigned char>(fore);
-  scheme.Bright = static_cast<unsigned char>(fore);
-  scheme.Underline = static_cast<unsigned char>(fore);
-  scheme.Bar = static_cast<unsigned char>(fore);
+  RemapControlType scheme = Plain_Scheme(fore);
 
   Fancy_Text_Print(view, text, x, y, &scheme, back, flag, args);
 }
@@ -900,25 +918,17 @@ void Plain_Text_Print(PixelView& view, const int text, const int x, const int y,
  * HISTORY:                                                                *
  *   01/05/1996 BRR : Created.                                             *
  *=========================================================================*/
+TextStyle Select_Text_Font(const TextPrintType flag, const int fore,
+                           const int back) {
+  RemapControlType scheme = Plain_Scheme(fore);
+  return Select_Text_Font(flag, &scheme, back);
+}
+
 void Plain_Text_Print(PixelView& view, const char* text, const int x,
                       const int y, const int fore, const int back,
                       const TextPrintType flag,
                       const absl::Span<const absl::FormatArg> args) {
-  RemapControlType scheme{};
-
-  base::FillBytes(std::as_writable_bytes(base::Suffix(scheme.FontRemap, 4)),
-                  fore, 12);
-
-  scheme.BrightColor = static_cast<unsigned char>(fore);
-  scheme.Color = static_cast<unsigned char>(fore);
-  scheme.Shadow = static_cast<unsigned char>(fore);
-  scheme.Background = static_cast<unsigned char>(fore);
-  scheme.Corners = static_cast<unsigned char>(fore);
-  scheme.Highlight = static_cast<unsigned char>(fore);
-  scheme.Box = static_cast<unsigned char>(fore);
-  scheme.Bright = static_cast<unsigned char>(fore);
-  scheme.Underline = static_cast<unsigned char>(fore);
-  scheme.Bar = static_cast<unsigned char>(fore);
+  RemapControlType scheme = Plain_Scheme(fore);
 
   Fancy_Text_Print(view, text, x, y, &scheme, back, flag, args);
 }

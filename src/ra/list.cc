@@ -130,7 +130,7 @@ ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
   **	Set the list box to a default state.
   */
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, TextFlags);
+  Select_Text_Font(TextFlags, nullptr, kTBlack);
 }
 
 void ListClass::Set_Position(int x, int y) {

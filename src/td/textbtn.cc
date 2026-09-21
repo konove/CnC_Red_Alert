@@ -89,7 +89,7 @@ TextButtonClass::TextButtonClass(unsigned id, const char* text,
       String(text),
       PrintFlags(style) {
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack, PrintFlags);
+    Select_Text_Font(PrintFlags, kTBlack, kTBlack);
     if (w == -1) {
       Width = String_Pixel_Width(String) + 8;
       //			if (SeenBuff.width() != 320) Width *= 2;
@@ -160,7 +160,7 @@ TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
   Set_Text(text);
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack, PrintFlags);
+    Select_Text_Font(PrintFlags, kTBlack, kTBlack);
     if (w == -1) {
       Width = String_Pixel_Width(String) + 8;
       //			if (SeenBuff.width() != 320) Width *= 2;
@@ -236,7 +236,7 @@ void TextButtonClass::Set_Text(const char* text, bool resize) {
   String = text;
   Flag_To_Redraw();
   if (resize && String) {
-    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack, PrintFlags);
+    Select_Text_Font(PrintFlags, kTBlack, kTBlack);
     Width = String_Pixel_Width(String) + 8;
     Height = FontHeight + FontYSpacing + 2;
   }
