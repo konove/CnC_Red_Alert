@@ -161,8 +161,27 @@ A full re-analysis of `build-strict` at `-j14`, compiles from ccache: 168–185 
 CPU-s of clang-tidy, against ≈ 3290 CPU-s of tidy plus 950 of IWYU before. With the 1100 CPU-s of
 compiling, a full pass is now ≈ 3400 CPU-s instead of ≈ 5340.
 
-Open: step 7 (CLion profile), then the cross-dir hit check against `cmake-build-strict-ra-clang`,
-and the deep CI lint job on the next push.
+## Re-verification (2026-09-21)
+
+Same harness, run against the tree at `405812bc`. The whole-tree number holds: clang-tidy over the
+530 project TUs costs 2135 CPU-s (155 s wall at `-j14`), against the 2220–2400 measured in
+September. Per TU, alone from the compile database: `ra/ioobj.cc` 8.5 s, `ra/techno.cc` 8.8 s,
+`ra/iomap.cc` 4.9 s, `tech/fixed_test.cc` 1.8 s — all within noise of the table above. A one-line
+edit to `ra/techno.cc` rebuilt through `build-strict` is 13.4 s, and a no-op build 0.03 s.
+
+Step 7 is done: `cmake-build-strict-ra-clang` is on RelWithDebInfo with `ENABLE_IWYU=OFF`, and its
+clang-tidy command matches `build-strict`'s (same `CLANG_TIDY_CONFIG_HASH`, same `CTCACHE_DIR`)
+except for its own `CTCACHE_STRIP` prefix.
+
+One regression, fixed in `37242913` and `405812bc`: the command-line commits (`2f928d69`,
+`910a5bef`), which landed two hours after step 5, put `std::optional` back inside both
+`Parse_Command_Line()`s — the `-DESTNET` and `-SOCKET` branches called `has_value()` on the helpers'
+results. `bugprone-unchecked-optional-access` was walking those functions again, 8.9 s of
+`ra/init.cc` and 8.3 s of `td/init.cc`. Consuming the optionals in file-local helpers took the TUs
+from 16.0 s to 7.4 s and from 14.6 s to 6.4 s.
+
+The lesson for the next such change: extracting the _helper_ is not enough. The check fires on any
+function that touches an optional, so the call site has to be outside the giant function too.
 
 ## Not in this plan
 
@@ -190,3 +209,5 @@ and the deep CI lint job on the next push.
   `CMAKE_COLOR_DIAGNOSTICS=ON`) produced a byte-identical ctcache hash dump for `ra/drop.cc`; a
   deliberate violation failed in both dirs. CLion's strict dir is on `Release`, which skips `.env`
   (`INTERNAL_VERSION`) and so cannot share until step 7.
+- 2026-09-21: re-verified; step 7 confirmed done. Tree-wide cost unchanged; the two
+  `Parse_Command_Line()`s had regressed and were fixed (37242913, 405812bc).
