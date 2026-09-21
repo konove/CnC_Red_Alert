@@ -176,8 +176,6 @@ void PowerClass::Draw_It(bool complete) {
         remap = FadingRed;
       }
 
-      //				LogicPage->FillRect(kPowerX, kPowerY,
-      // kPowerX+kPowerWidth-1, kPowerY+kPowerHeight-1, LTGREY);
       CC_Draw_Shape(PowerBarShape, 0, 480, 176, WINDOW_MAIN,
                     flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
 

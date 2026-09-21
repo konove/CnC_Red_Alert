@@ -1974,10 +1974,6 @@ static int Net_Join_Dialog() {
         //...............................................................
         // Scenario title
         //...............................................................
-        //				LogicPage->FillRect(d_dialog_x + 16
-        //*2, d_name_y, d_dialog_x + d_dialog_w - 16 *2,
-        // d_name_y + d_txt6_h, BLACK);
-
         p = Text_String(TXT_SCENARIO_COLON);
         if (TheSession().Options.ScenarioDescription[0]) {
           // EW - Scenario language translation goes here!!!!!!!! VG
@@ -2016,10 +2012,6 @@ static int Net_Join_Dialog() {
         //...............................................................
         // Unit count, tech level, credits, ai players
         //...............................................................
-        //				LogicPage->FillRect(d_count_x +
-        // d_count_w + 2 *2, d_count_y, d_count_x + d_count_w + 35
-        //*2, d_aiplayers_y + d_aiplayers_h+2, BLACK);
-
         Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y, scheme, kTBlack,
                          kTpfText | TPF_RIGHT);
 
@@ -4630,10 +4622,6 @@ static int Net_New_Dialog() {
       // Update game parameter labels
       //..................................................................
       if (display >= REDRAW_PARMS) {
-        //				LogicPage->FillRect(d_count_x +
-        // d_count_w + 2*2, d_count_y, d_count_x + d_count_w +
-        // 35*2, d_aiplayers_y + d_aiplayers_h+2, BLACK);
-
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.UnitCount);
         staticunit.Set_Text(txt);
         staticunit.Draw_Me();

@@ -124,8 +124,6 @@ void TabClass::Draw_It(bool complete) {
     const int tab_height = TAB_HEIGHT * 2;
 
     LogicPage->FillRect(0, 0, rightx, tab_height - 1, kBlack);
-    //		LogicPage->FillRect(0, 0, rightx, tab_height-(2 * 2),
-    // BLACK);
 
     /*
     ** Use the new sidebar art for 640x400

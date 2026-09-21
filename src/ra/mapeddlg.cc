@@ -1158,18 +1158,6 @@ int MapEditClass::Load_Scenario() {
           if (LogicPage->Lock()) {
             LogicPage->DrawRect(kDBordX1, kDBordY1, kDBordX2, kDBordY2,
                                 scheme->Shadow);
-            //					for (index = D_BORD_X1; index <
-            // D_BORD_X2; 						index +=
-            // (320/ICON_PIXEL_W)) {
-            // LogicPage->PutPixel(index, D_BORD_Y1-1, scheme->Shadow);
-            // LogicPage->PutPixel(index, D_BORD_Y2+1, scheme->Shadow);
-            //					}
-            //					for (index = D_BORD_Y1; index <
-            // D_BORD_Y2-8; 						index +=
-            // (200/ICON_PIXEL_H)) {
-            // LogicPage->PutPixel(D_BORD_X1-1, index, scheme->Shadow);
-            // LogicPage->PutPixel(D_BORD_X2+1, index, scheme->Shadow);
-            //					}
 
             /*
             **	Draw the map "key"
@@ -1341,15 +1329,6 @@ int MapEditClass::Load_Scenario() {
                                   ScenarioClass::kHomeWaypoint)) +
                   1,
               kWhite);
-
-          /*
-          **	Erase old coordinates
-          */
-          //					LogicPage->FillRect( D_DIALOG_X
-          //+ 7, 						D_DIALOG_Y +
-          // D_DIALOG_H - D_OK_H - 22,
-          // D_DIALOG_X + D_DIALOG_W - 7,
-          // D_DIALOG_Y + D_DIALOG_H - D_OK_H - 22 + 10, BLACK);
 
           /*
           **	Draw the coordinates
@@ -2149,7 +2128,6 @@ int MapEditClass::Load_Scenario() {
     bool cancel = false;  // true = user cancels
     bool dotext = true;   // display the text.
     bool fetch = false;   // Fetch data from dialog into tracking structure.
-    // SetLogicPage(visible_view);
     while (process) {
       /*
       **	Invoke game callback
@@ -2814,7 +2792,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Refresh display if requested.
       */
-      if (display /*&& LogicPage->Lock()*/) {
+      if (display) {
         Hide_Mouse();
         Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
         Draw_Caption(TXT_TRIGGER_EDITOR, kDDialogX, kDDialogY, kDDialogW);
@@ -2822,7 +2800,6 @@ int MapEditClass::Load_Scenario() {
         commands->Draw_All();
         Show_Mouse();
         display = false;
-        //			LogicPage->Unlock();
       }
 
       /*

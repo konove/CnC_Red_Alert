@@ -1112,7 +1112,7 @@ bool TriggerTypeClass::Edit() {
     /*
     **	Refresh display if needed
     */
-    if (display /*&& LogicPage->Lock()*/) {
+    if (display) {
       /*
       **	Display the dialog box
       */
@@ -1510,7 +1510,6 @@ bool TriggerTypeClass::Edit() {
       commands->Flag_List_To_Redraw();
       Show_Mouse();
       display = false;
-      //			LogicPage->Unlock();
     }
 
     /*

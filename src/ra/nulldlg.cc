@@ -3302,10 +3302,6 @@ int Com_Scenario_Dialog(bool skirmish) {
         // Update game parameter labels
         //..................................................................
         if (display >= REDRAW_PARMS) {
-          //				LogicPage->FillRect(d_count_x +
-          // d_count_w + 2, d_count_y, d_count_x + d_count_w + 35 * 2,
-          // d_aiplayers_y + d_aiplayers_h+2, BLACK);
-
           absl::SNPrintF(staticcountbuff, sizeof(staticcountbuff), "%d",
                          TheSession().Options.UnitCount);
           staticcount.Set_Text(staticcountbuff);
@@ -5069,10 +5065,6 @@ int Com_Show_Scenario_Dialog() {
             /*............................................................
             Scenario description
             ............................................................*/
-            // LogicPage->FillRect(d_dialog_x + 16*2, d_scenario_y,
-            //	d_dialog_x + d_dialog_w - 16*2, d_scenario_y + d_txt6_h,
-            // BLACK);
-
             p = Text_String(TXT_SCENARIO_COLON);
             if (TheSession().Options.ScenarioDescription[0]) {
               //							sprintf(txt,"%s
@@ -5113,11 +5105,6 @@ int Com_Show_Scenario_Dialog() {
             //.........................................................
             // Unit count, tech level, credits
             //.........................................................
-            // LogicPage->FillRect(d_count_x + d_count_w + 2 * 2,
-            // d_count_y, 	d_count_x + d_count_w + 35 * 2,
-            // d_aiplayers_y
-            //+ d_aiplayers_h+2, 	BLACK);
-
             absl::SNPrintF(staticcountbuff, sizeof(staticcountbuff), "%d",
                            TheSession().Options.UnitCount);
             staticcount.Set_Text(staticcountbuff);

@@ -321,14 +321,13 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     /*
     **	Refresh display if needed
     */
-    if (display /*&& LogicPage->Lock()*/) {
+    if (display) {
       Hide_Mouse();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
       Draw_Caption(TXT_TEAM_EDIT, kDialogX, kDialogY, kDialogW);
       commands->Draw_All();
       Show_Mouse();
       display = false;
-      //			LogicPage->Unlock();
     }
 
     /*

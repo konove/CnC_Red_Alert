@@ -629,7 +629,6 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   */
   if (size == 1) {
     LogicPage->PutPixel(x, y, 21);
-    //		LogicPage->PutPixel(x, y, 60);
     return;
   }
 
@@ -789,16 +788,10 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
         if (size == 1) {
           LogicPage->PutPixel(x, y, DKGREY);
 
-          //					_IconStage.Scale(*LogicPage, 0,
-          // 0, x, y, 3, 3, size, size, true, (char *)&FadingShade[0]);
         } else {
           IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
                           FadingYellow);
         }
-        //				_IconStage.Scale(*LogicPage, 0, 0, x, y,
-        // 3, 3, size, size, true, (char *)&FadingGreen[0]);
-        // } else { 				_IconStage.Scale(*LogicPage, 0,
-        // 0, x, y, 3, 3, size, size, true, (char *)&FadingBrighten[0]);
       }
 
     }
@@ -1051,15 +1044,12 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
                         true);
       } else {
-        //				LogicPage->FillRect(x, y,
-        // x+ZoomFactor-1, y+ZoomFactor-1, cellptr->Cell_Color(false));
         /*BG*/ LogicPage->PutPixel(
             x, y, static_cast<unsigned char>(cellptr->Cell_Color(false)));
       }
     } else {
       LogicPage->FillRect(x, y, x + ZoomFactor - 1, y + ZoomFactor - 1,
                           static_cast<unsigned char>(color));
-      ///*BG*/		LogicPage->PutPixel(x, y, color);
     }
     if (color != kBlack) {
       Render_Overlay(cell, x, y, ZoomFactor);

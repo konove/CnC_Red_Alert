@@ -187,9 +187,6 @@ void ToolTipClass::Show() {
     Simple_Text_Print(szTipUse, xShowUse, yShowUse,
                       GadgetClass::Get_Color_Scheme(), kBlack,
                       TPF_TYPE);  // TPF_DROPSHADOW );
-    //	Draw bounding rect.
-    //		LogicPage->DrawRect( xShowUse, yShowUse, xShowUse + wShowUse -
-    // 1, yShowUse + hShow - 1, ColorRemaps[ PCOLOR_GOLD ].Color );
     Draw_Box(xShowUse, yShowUse, wShowUse, hShow, BOXSTYLE_BOX, false);
     Show_Mouse();
     bShowing = true;

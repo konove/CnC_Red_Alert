@@ -668,7 +668,6 @@ void Simple_Text_Print(const char* text, int x, int y,
 
     if (x < LogicPage->width() && y < LogicPage->height()) {
       LogicPage->Print(text, x, y, forecolor, back);
-      //			LogicPage->Print(text, x, y, fore->Color, back);
     }
   }
 }
