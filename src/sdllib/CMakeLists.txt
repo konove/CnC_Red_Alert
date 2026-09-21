@@ -48,6 +48,12 @@ add_gtest(
         LIBS sdllib
 )
 
+add_gtest(
+        NAME sdllib_gbuffer_test
+        SOURCES gbuffer_test.cc
+        LIBS sdllib
+)
+
 # optional serial port support
 find_library(LIBSERIALPORT_LIBRARIES serialport)
 find_path(LIBSERIALPORT_INCLUDE_DIR libserialport.h)

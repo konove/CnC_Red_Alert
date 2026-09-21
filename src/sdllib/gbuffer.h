@@ -197,8 +197,9 @@ class GraphicViewPortClass {
   // Locks the buffer's surface so its pixels can be read or written, and
   // reattaches this viewport to them, since locking can move them. Locks
   // nest: the surface is only really locked and unlocked by the outermost
-  // pair. Lock() returns false if the surface could not be locked, in which
-  // case the matching Unlock() must not be called.
+  // pair. Lock() returns false if the viewport has no buffer, or if the
+  // surface could not be locked, in which case the matching Unlock() must
+  // not be called.
   inline bool Lock();
   inline bool Unlock();
   [[nodiscard]] inline int Get_LockCount() const;
@@ -354,6 +355,10 @@ inline bool GraphicViewPortClass::Get_IsDirectDraw() {
 }
 
 inline bool GraphicViewPortClass::Lock() {
+  if (GraphicBuff == nullptr) {
+    return false;
+  }
+
   const bool lock = GraphicBuff->Lock_Surface();
   if (!lock) {
     return false;
@@ -366,7 +371,7 @@ inline bool GraphicViewPortClass::Lock() {
 }
 
 inline bool GraphicViewPortClass::Unlock() {
-  return GraphicBuff->Unlock_Surface();
+  return GraphicBuff == nullptr || GraphicBuff->Unlock_Surface();
 }
 
 inline std::uint8_t* GraphicViewPortClass::Get_Offset() { return Offset; }
@@ -419,16 +424,16 @@ inline int GraphicViewPortClass::Get_Pixel(int x, int y) {
 
   if (Lock()) {
     return_code = Buffer_Get_Pixel(this, x, y);
+    Unlock();
   }
-  Unlock();
   return return_code;
 }
 
 inline void GraphicViewPortClass::Clear(unsigned char color) {
   if (Lock()) {
     Buffer_Clear(this, color);
+    Unlock();
   }
-  Unlock();
 }
 
 inline int32_t GraphicViewPortClass::To_Buffer(int x, int y, int w, int h,
@@ -437,8 +442,8 @@ inline int32_t GraphicViewPortClass::To_Buffer(int x, int y, int w, int h,
   int32_t return_code = 0;
   if (Lock()) {
     return_code = Buffer_To_Buffer(this, x, y, w, h, buff, size);
+    Unlock();
   }
-  Unlock();
   return return_code;
 }
 
@@ -462,10 +467,10 @@ inline bool GraphicViewPortClass::Blit(GraphicViewPortClass& dest, int x_pixel,
       return_code =
           Linear_Blit_To_Linear(this, &dest, x_pixel, y_pixel, dx_pixel,
                                 dy_pixel, pixel_width, pixel_height, trans);
+      dest.Unlock();
     }
-    dest.Unlock();
+    Unlock();
   }
-  Unlock();
 
   return return_code;
 }
@@ -490,10 +495,10 @@ inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, int src_x,
       return_code =
           Linear_Scale_To_Linear(this, &dest, src_x, src_y, dst_x, dst_y, src_w,
                                  src_h, dst_w, dst_h, trans, remap);
+      dest.Unlock();
     }
-    dest.Unlock();
+    Unlock();
   }
-  Unlock();
   return return_code;
 }
 
@@ -553,16 +558,16 @@ inline void GraphicViewPortClass::Draw_Stamp(
         base::At(base::At(WindowList, clip_window), kWindowWidth),
         base::At(base::At(WindowList, clip_window), kWindowHeight));
 #endif
+    Unlock();
   }
-  Unlock();
 }
 
 inline void GraphicViewPortClass::Draw_Line(int sx, int sy, int dx, int dy,
                                             unsigned char color) {
   if (Lock()) {
     Buffer_Draw_Line(this, sx, sy, dx, dy, color);
+    Unlock();
   }
-  Unlock();
 }
 
 inline void GraphicViewPortClass::Fill_Rect(int sx, int sy, int dx, int dy,
@@ -577,8 +582,8 @@ inline void GraphicViewPortClass::Remap(int sx, int sy, int width, int height,
                                         std::span<const uint8_t> remap) {
   if (Lock()) {
     Buffer_Remap(this, sx, sy, width, height, remap);
+    Unlock();
   }
-  Unlock();
 }
 
 inline void GraphicViewPortClass::Remap(std::span<const uint8_t> remap) {
@@ -597,8 +602,8 @@ inline int32_t Buffer_To_Page(int x, int y, int w, int h,
   int32_t return_code = 0;
   if (view.Lock()) {
     return_code = Buffer_To_Page(x, y, w, h, Buffer, &view);
+    view.Unlock();
   }
-  view.Unlock();
   return return_code;
 }
 
@@ -613,8 +618,8 @@ inline int32_t BufferClass::To_Page(int x, int y, int w, int h,
   int32_t return_code = 0;
   if (view.Lock()) {
     return_code = Buffer_To_Page(x, y, w, h, Get_Bytes(), &view);
+    view.Unlock();
   }
-  view.Unlock();
   return return_code;
 }
 
