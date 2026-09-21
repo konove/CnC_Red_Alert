@@ -1694,10 +1694,6 @@ void ScoreClass::Count_Up_Print(const char* str, int percent, int max, int xpos,
                       percent <= max ? percent : max);
   const int width = static_cast<int>(std::string_view(destbuf).size()) * 7;
 
-  //	HidPage.Blit(HidPage, xpos, ypos, 0, 0, width, 8);
-  //	SetLogicPage(HidPage);
-  //	LogicPage->Print(	destbuf, 0, 0, WHITE, TBLACK);
-  //	HidPage.Blit(SeenBuff, 0, 0, xpos, ypos, width, 8);
 
   TextPrintBuffer->FillRect(xpos * 2, ypos * 2, (xpos + width) * 2,
                             (ypos + 7) * 2, kBlack);

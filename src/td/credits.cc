@@ -117,8 +117,6 @@ void CreditClass::Graphic_Logic(bool forced) {
     /*
     **	Display the new current value.
     */
-    // LogicPage->FillRect(xx-(20 << factor), 1 << factor, xx+(20 << factor), 6
-    // << factor, LTGREY);
     TabClass::Draw_Credits_Tab();
     Fancy_Text_Print("%ld", xx, 0, 11, kTBlack,
                      TPF_GREEN12_GRAD | TPF_CENTER | TPF_USE_GRAD_PAL, Current);

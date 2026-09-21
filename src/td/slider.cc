@@ -339,18 +339,6 @@ bool SliderClass::Draw_Me(bool forced) {
     =========== Draw the body & set text color ===============
     */
     Draw_Box(X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
-    //			if (IsHorizontal) {
-    //				LogicPage->FillRect(X, Y+1, X+Width-1,
-    // Y+Height-2, 141); 				LogicPage->DrawLine(X,
-    // Y, X+Width-1, Y,  140);  // top
-    // LogicPage->DrawLine(X, Y+Height, X+Width, Y+Height, 159); // bottom
-    // }
-    // else { 				LogicPage->FillRect(X+1, Y,
-    // X+Width-2, Y+Height-1, 141);
-    // LogicPage->DrawLine(X, Y, X, Y+Height, 140);  // left
-    //				LogicPage->DrawLine(X+Width-1,  Y,
-    // X+Width-1, Y+Height, 159);	// right
-    //			}
     Draw_Thumb();
 
     /*

@@ -741,12 +741,6 @@ void SidebarClass::Draw_It(bool complete) {
       // Repair.Draw_Me(true);
       // Upgrade.Draw_Me(true);
       // Zoom.Draw_Me(true);
-      //	} else {
-      //		if (IsToRedraw || complete) {
-      //			LogicPage->FillRect(TacPixelX +
-      // Lepton_To_Pixel(TacLeptonWidth), SIDE_Y, 319, SIDE_Y+TOP_HEIGHT,
-      // BLACK);
-      //		}
 
       LogicPage->Unlock();
     }
