@@ -41,8 +41,7 @@ int Buffer_Get_Pixel(void* thisptr, int x, int y) {
     return 0;
   }
 
-  const base::ssize dst_area =
-      vp_dst->x_add() + vp_dst->width() + vp_dst->pitch();
+  const base::ssize dst_area = vp_dst->stride();
   const auto dst_offset = vp_dst->pixels().begin() + x + (y * dst_area);
 
   return *dst_offset;
@@ -51,8 +50,7 @@ int Buffer_Get_Pixel(void* thisptr, int x, int y) {
 void Buffer_Clear(void* thisptr, unsigned char color) {
   auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
 
-  const base::ssize dst_area =
-      vp_dst->x_add() + vp_dst->width() + vp_dst->pitch();
+  const base::ssize dst_area = vp_dst->stride();
   auto dst_offset = vp_dst->pixels().begin();
 
   const int pixel_count = vp_dst->width();
@@ -107,8 +105,7 @@ int32_t Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel,
     }
   }
 
-  const base::ssize src_area =
-      vp_src->x_add() + vp_src->width() + vp_src->pitch();
+  const base::ssize src_area = vp_src->stride();
   auto src_offset = vp_src->pixels().begin() + src_x0 + (src_y0 * src_area);
 
   auto dst_offset =
@@ -180,8 +177,7 @@ int32_t Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
   auto src_offset = Buffer.begin() + src_x0 +
                     (static_cast<base::ssize>(src_y0) * pixel_width);
 
-  const base::ssize dst_area =
-      vp_dst->x_add() + vp_dst->width() + vp_dst->pitch();
+  const base::ssize dst_area = vp_dst->stride();
   auto dst_offset = vp_dst->pixels().begin() + dst_x0 + (dst_y0 * dst_area);
 
   if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
@@ -280,12 +276,10 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
     }
   }
 
-  const base::ssize src_area =
-      vp_src->x_add() + vp_src->width() + vp_src->pitch();
+  const base::ssize src_area = vp_src->stride();
   auto src_offset = vp_src->pixels().begin() + src_x0 + (src_y0 * src_area);
 
-  const base::ssize dst_area =
-      vp_dst->x_add() + vp_dst->width() + vp_dst->pitch();
+  const base::ssize dst_area = vp_dst->stride();
   auto dst_offset = vp_dst->pixels().begin() + dst_x0 + (dst_y0 * dst_area);
 
   if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
@@ -447,13 +441,11 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
   }
 
   // do scale
-  const base::ssize src_win_width =
-      vp_src->x_add() + vp_src->width() + vp_src->pitch();
+  const base::ssize src_win_width = vp_src->stride();
   auto src_offset =
       vp_src->pixels().begin() + src_x0 + (src_y0 * src_win_width);
 
-  const base::ssize dst_win_width =
-      vp_dst->x_add() + vp_dst->width() + vp_dst->pitch();
+  const base::ssize dst_win_width = vp_dst->stride();
   auto dst_offset =
       vp_dst->pixels().begin() + dst_x0 + (dst_y0 * dst_win_width);
 
@@ -587,8 +579,7 @@ void Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
   const int start_x = x;
   const int viewport_width = viewport->width();
   const int viewport_height = viewport->height();
-  const base::ssize buffer_stride =
-      viewport_width + viewport->x_add() + viewport->pitch();
+  const base::ssize buffer_stride = viewport->stride();
   auto line_start = viewport->pixels().begin() + (buffer_stride * y);
 
   const int max_glyph_height = font.MaxHeight();
@@ -781,7 +772,7 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
     }
   }
 
-  const base::ssize bpr = vp_dst->x_add() + vp_dst->width() + vp_dst->pitch();
+  const base::ssize bpr = vp_dst->stride();
 
   int y_dist = dy - sy;
 
@@ -889,8 +880,7 @@ void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
     return;
   }
 
-  const base::ssize dst_area =
-      vp_dst->x_add() + vp_dst->width() + vp_dst->pitch();
+  const base::ssize dst_area = vp_dst->stride();
   auto dst_offset = vp_dst->pixels().begin() + sx + (sy * dst_area);
 
   const int pixel_count = dx - sx + 1;
@@ -943,8 +933,7 @@ void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
     }
   }
 
-  const base::ssize dst_area =
-      vp_dst->x_add() + vp_dst->width() + vp_dst->pitch();
+  const base::ssize dst_area = vp_dst->stride();
   auto dst_offset = vp_dst->pixels().begin() + dst_x0 + (dst_y0 * dst_area);
 
   if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
@@ -1042,15 +1031,12 @@ void GraphicViewPortClass::Attach(GraphicBufferClass* graphic_buff, int x,
     return;
   }
 
-  // clamp bounds
-  x = std::max(x, 0);
-  if (x >= graphic_buff->width()) {
-    x = graphic_buff->width() - 1;
-  }
-  y = std::max(y, 0);
-  if (y >= graphic_buff->height()) {
-    y = graphic_buff->height() - 1;
-  }
+  // Clamp the corner into the buffer. A buffer that Init() has not sized yet
+  // has no last pixel to clamp to, so the corner stays at the origin and the
+  // width and height below come out zero; Screen builds its views against
+  // such pages and attaches them again once the video mode is known.
+  x = std::clamp(x, 0, std::max(graphic_buff->width() - 1, 0));
+  y = std::clamp(y, 0, std::max(graphic_buff->height() - 1, 0));
 
   if (x + w > graphic_buff->width()) {
     w = graphic_buff->width() - x;

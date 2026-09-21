@@ -38,6 +38,24 @@ TEST(GraphicViewPortLockTest, DrawingToAnUnattachedViewportDoesNothing) {
   EXPECT_EQ(view.GetPixel(0, 0), 0);
 }
 
+// Screen constructs its views against pages that Init() has not sized yet,
+// so Attach() has to cope with a buffer that has no pixels. It used to clamp
+// the viewport's corner to width() - 1, that is to -1, and pixels() then
+// subspanned an empty span by a negative offset.
+TEST(GraphicViewPortLockTest, AttachingToAnEmptyBufferGivesAnEmptyViewport) {
+  GraphicBufferClass page;
+  GraphicViewPortClass view(&page, 0, 0, 640, 480);
+
+  EXPECT_EQ(view.width(), 0);
+  EXPECT_EQ(view.height(), 0);
+  EXPECT_EQ(view.x_pos(), 0);
+  EXPECT_EQ(view.y_pos(), 0);
+  EXPECT_TRUE(view.pixels().empty());
+
+  view.Clear();
+  view.PutPixel(0, 0, 1);
+}
+
 // A plain memory buffer has no surface to lock, so Lock() succeeds without
 // SDL and the nesting count still tracks the calls.
 TEST(GraphicViewPortLockTest, MemoryBufferLocksNest) {
