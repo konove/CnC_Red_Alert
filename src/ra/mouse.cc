@@ -57,7 +57,7 @@
 #include "ra/defines.h"
 #include "ra/jshell.h"
 #include "ra/scroll.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"

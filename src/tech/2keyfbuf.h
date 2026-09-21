@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <span>
 
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/shape.h"
 
 // The tables and counts behind the drawing effects a SHAPE_* flag selects.

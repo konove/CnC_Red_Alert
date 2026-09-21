@@ -45,7 +45,7 @@
 #include "ra/filepcx.h"
 #include "ra/palette.h"
 #include "sdllib/file_access.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "tech/file.h"
 
 static void Write_Pcx_ScanLine(File& file, int scansize,

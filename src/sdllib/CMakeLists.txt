@@ -49,8 +49,8 @@ add_gtest(
 )
 
 add_gtest(
-        NAME sdllib_gbuffer_test
-        SOURCES gbuffer_test.cc
+        NAME sdllib_graphic_buffer_test
+        SOURCES graphic_buffer_test.cc
         LIBS sdllib
 )
 

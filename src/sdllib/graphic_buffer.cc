@@ -20,7 +20,7 @@
 // rest of the class lives in drawbuff.cc, and the SDL half in
 // drawbuff_sdl.cc.
 
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 
 #include <cmath>
 #include <cstdint>

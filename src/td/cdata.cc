@@ -58,7 +58,7 @@
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "sdllib/drawbuff.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/iconcach.h"
 #include "sdllib/memflag.h"
 #include "sdllib/tile.h"

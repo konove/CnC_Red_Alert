@@ -71,7 +71,7 @@
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/fixed.h"
 

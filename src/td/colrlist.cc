@@ -69,7 +69,7 @@
 
 #include "base/numeric.h"
 #include "sdllib/drawbuff.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/wwstd.h"
 #include "td/conquer.h"
 #include "td/defines.h"

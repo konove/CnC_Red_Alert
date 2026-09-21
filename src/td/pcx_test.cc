@@ -11,7 +11,7 @@
 
 #include "base/array.h"
 #include "gtest/gtest.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "tech/pcx_file.h"
 
 namespace {

@@ -54,7 +54,7 @@
 #include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/screen.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
 #include "tech/ftimer.h"
 

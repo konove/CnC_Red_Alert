@@ -34,7 +34,7 @@
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/memflag.h"
 #include "sdllib/misc.h"
 #include "sdllib/timer.h"

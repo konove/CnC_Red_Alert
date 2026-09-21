@@ -63,7 +63,7 @@
 #include <cstdlib>
 
 #include "base/numeric.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/wwstd.h"
 #include "td/audio.h"
 #include "td/conquer.h"

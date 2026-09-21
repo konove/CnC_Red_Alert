@@ -39,7 +39,7 @@
 #include "ra/textbtn.h"
 #include "ra/woledit.h"
 #include "sdllib/font.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"

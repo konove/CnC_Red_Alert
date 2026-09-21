@@ -45,7 +45,7 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "sdllib/file_access.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "tech/file.h"
 #include "tech/game_file.h"
 

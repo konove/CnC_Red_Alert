@@ -38,7 +38,7 @@
 #include "td/world.h"
 #include "tech/game_file.h"
 // #include "ra/filepcx.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/iconcach.h"
 #include "sdllib/ww_mouse.h"
 #include "td/interpal.h"

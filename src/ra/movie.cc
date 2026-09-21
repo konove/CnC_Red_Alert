@@ -42,7 +42,7 @@
 #include "ra/session.h"
 #include "ra/theme.h"
 #include "ra/winstub.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"

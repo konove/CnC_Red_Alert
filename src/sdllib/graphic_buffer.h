@@ -31,8 +31,8 @@
 // them and to supply the defaults ("the whole viewport") for the shorter
 // overloads.
 
-#ifndef CNC_RED_ALERT_SDLLIB_GBUFFER_H_
-#define CNC_RED_ALERT_SDLLIB_GBUFFER_H_
+#ifndef CNC_RED_ALERT_SDLLIB_GRAPHIC_BUFFER_H_
+#define CNC_RED_ALERT_SDLLIB_GRAPHIC_BUFFER_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -603,4 +603,4 @@ inline int32_t BufferClass::To_Page(int x, int y, int w, int h,
   return Buffer_To_Page(x, y, w, h, Get_Bytes(), view);
 }
 
-#endif  // CNC_RED_ALERT_SDLLIB_GBUFFER_H_
+#endif  // CNC_RED_ALERT_SDLLIB_GRAPHIC_BUFFER_H_

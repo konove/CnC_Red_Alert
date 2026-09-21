@@ -46,7 +46,7 @@ Buff);
 #include <span>
 
 #include "sdllib/buffer.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 
 struct RGB {
   char red;

@@ -72,7 +72,7 @@
 #include "port/unaligned.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/modemreg.h"

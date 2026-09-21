@@ -62,7 +62,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/wwstd.h"
 #include "td/debug_state.h"

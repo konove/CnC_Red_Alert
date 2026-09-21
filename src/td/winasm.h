@@ -1,7 +1,7 @@
 #ifndef CNC_RED_ALERT_TD_WINASM_H_
 #define CNC_RED_ALERT_TD_WINASM_H_
 
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 
 extern "C" void ModeX_Blit(GraphicBufferClass* source);
 

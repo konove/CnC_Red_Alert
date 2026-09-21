@@ -15,7 +15,7 @@
 #include "base/seek_origin.h"
 #include "base/types.h"
 #include "port/unaligned.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/iff.h"
 #include "sdllib/xor_delta.h"
 #include "tech/file.h"

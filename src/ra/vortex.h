@@ -48,7 +48,7 @@
 #include "ra/defines.h"
 #include "ra/object.h"
 #include "ra/palette.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 
 class ChronalVortexClass {
  public:

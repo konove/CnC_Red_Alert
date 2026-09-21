@@ -119,7 +119,7 @@
 #include "ra/unit.h"
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"

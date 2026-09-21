@@ -141,7 +141,7 @@
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/audio.h"

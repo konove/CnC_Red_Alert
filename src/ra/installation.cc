@@ -49,7 +49,7 @@
 #include "ra/theme.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"

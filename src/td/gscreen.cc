@@ -58,7 +58,7 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "td/config.h"

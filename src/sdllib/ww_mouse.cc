@@ -22,7 +22,7 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/iff.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_win.h"

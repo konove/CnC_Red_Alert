@@ -1,5 +1,3 @@
-#include "base/flags.h"
-
 #include "sdllib/drawbuff.h"
 
 #include <algorithm>
@@ -12,10 +10,11 @@
 
 #include "absl/log/check.h"
 #include "base/array.h"
+#include "base/flags.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/font.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/misc.h"
 #include "sdllib/ww_win.h"
 

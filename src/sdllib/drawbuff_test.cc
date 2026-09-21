@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "gtest/gtest.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/ww_win.h"
 
-// ww_win.cc, pulled in through gbuffer, dispatches events to the app.
+// ww_win.cc, pulled in through graphic_buffer, dispatches events to the app.
 void SDL_Event_Handler(SDL_Event* /*event*/) {}
 
 namespace {

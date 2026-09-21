@@ -42,7 +42,7 @@
 
 #include "ra/defines.h"
 #include "ra/gadget.h"
-#include "sdllib/gbuffer.h"
+#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
 
 class GScreenClass {
