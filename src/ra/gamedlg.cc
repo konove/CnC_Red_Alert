@@ -272,7 +272,8 @@ void GameControlsClass::Process() {
       TheMap().Render();
 
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-      Draw_Caption(TXT_GAME_CONTROLS, d_dialog_x, d_dialog_y, d_dialog_w);
+      Draw_Caption(*LogicPage, TXT_GAME_CONTROLS, d_dialog_x, d_dialog_y,
+                   d_dialog_w);
       Show_Mouse();
       display = false;
       refresh = true;
@@ -288,12 +289,12 @@ void GameControlsClass::Process() {
       if (curbutton == kButtonSpeed - kButtonFirst) {
         style = style | TPF_BRIGHT_COLOR;
       }
-      Fancy_Text_Print(TXT_SPEED, d_speed_x, d_speed_y - d_txt6_h, scheme,
-                       kTBlack, style);
+      Fancy_Text_Print(*LogicPage, TXT_SPEED, d_speed_x, d_speed_y - d_txt6_h,
+                       scheme, kTBlack, style);
 
-      Fancy_Text_Print(TXT_SLOWER, d_speed_x, d_speed_y + d_speed_h + 2, scheme,
-                       kTBlack, kTpfText);
-      Fancy_Text_Print(TXT_FASTER, d_speed_x + d_speed_w,
+      Fancy_Text_Print(*LogicPage, TXT_SLOWER, d_speed_x,
+                       d_speed_y + d_speed_h + 2, scheme, kTBlack, kTpfText);
+      Fancy_Text_Print(*LogicPage, TXT_FASTER, d_speed_x + d_speed_w,
                        d_speed_y + d_speed_h + 2, scheme, kTBlack,
                        kTpfText | TPF_RIGHT);
 
@@ -304,12 +305,12 @@ void GameControlsClass::Process() {
       if (curbutton == kButtonScrollrate - kButtonFirst) {
         style = style | TPF_BRIGHT_COLOR;
       }
-      Fancy_Text_Print(TXT_SCROLLRATE, d_scroll_x, d_scroll_y - d_txt6_h,
-                       scheme, kTBlack, style);
+      Fancy_Text_Print(*LogicPage, TXT_SCROLLRATE, d_scroll_x,
+                       d_scroll_y - d_txt6_h, scheme, kTBlack, style);
 
-      Fancy_Text_Print(TXT_SLOWER, d_scroll_x, d_scroll_y + d_scroll_h + 2,
-                       scheme, kTBlack, kTpfText);
-      Fancy_Text_Print(TXT_FASTER, d_scroll_x + d_scroll_w,
+      Fancy_Text_Print(*LogicPage, TXT_SLOWER, d_scroll_x,
+                       d_scroll_y + d_scroll_h + 2, scheme, kTBlack, kTpfText);
+      Fancy_Text_Print(*LogicPage, TXT_FASTER, d_scroll_x + d_scroll_w,
                        d_scroll_y + d_scroll_h + 2, scheme, kTBlack,
                        kTpfText | TPF_RIGHT);
 

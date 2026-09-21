@@ -343,8 +343,8 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   //------------------------------------------------------------------------
 
   int print_this_pass = 0;
-  Fancy_Text_Print(TXT_NONE, 0, 0, &ThePalettes().color_remaps().at(color),
-                   kTBlack, style);
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0,
+                   &ThePalettes().color_remaps().at(color), kTBlack, style);
   int wid = String_Pixel_Width(message);
   if (wid >= Width - 8) {
     //------------------------------------------------------------------------
@@ -623,7 +623,8 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
     // We need to trim the message if there is no room to draw it
     //---------------------------------------------------------------------
     std::vector<char> concat_test(base::ToSize(MaxChars + 1));
-    Fancy_Text_Print(TXT_NONE, 0, 0, tlabel->Color, kTBlack, tlabel->Style);
+    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, tlabel->Color, kTBlack,
+                     tlabel->Style);
     const int name_width =
         String_Pixel_Width(tlabel->Text) - String_Pixel_Width(msg.data());
 
@@ -1191,8 +1192,8 @@ int MessageListClass::Input(KeyNumType& input) {
             ** Verify that the additional character would not overrun the on
             *screen edit box.
             */
-            Fancy_Text_Print(TXT_NONE, 0, 0, EditLabel->Color, kTBlack,
-                             EditLabel->Style);
+            Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, EditLabel->Color,
+                             kTBlack, EditLabel->Style);
             const int width = String_Pixel_Width(EditBuf);
             if (width >= Width - 10) {
               overflowed = true;
@@ -1258,9 +1259,9 @@ void MessageListClass::Draw() {
     if (CursorChar && EditCurPos - EditInitPos < MaxChars - 1 &&
         EditLabel->Has_Focus()) {
       txt[0] = CursorChar;
-      Fancy_Text_Print(txt, EditLabel->X + String_Pixel_Width(EditLabel->Text),
-                       EditLabel->Y, EditLabel->Color, kTBlack,
-                       EditLabel->Style);
+      Fancy_Text_Print(
+          *LogicPage, txt, EditLabel->X + String_Pixel_Width(EditLabel->Text),
+          EditLabel->Y, EditLabel->Color, kTBlack, EditLabel->Style);
     }
 
     if (TheScreen().IsVisible(LogicPage)) {

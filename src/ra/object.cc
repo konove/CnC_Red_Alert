@@ -150,6 +150,7 @@
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "session.h"
@@ -1166,8 +1167,9 @@ bool ObjectClass::Render(bool forced)  // const
         **	relative, so add the window's x-coord to 'x'.
         */
         if (TheDebugState().map_editor_active() && Trigger.Is_Valid()) {
-          Fancy_Text_Print(Trigger->Class->IniName, x + static_cast<int>(WinX),
-                           y, &ThePalettes().color_remaps().at(PCOLOR_RED),
+          Fancy_Text_Print(*LogicPage, Trigger->Class->IniName,
+                           x + static_cast<int>(WinX), y,
+                           &ThePalettes().color_remaps().at(PCOLOR_RED),
                            kTBlack, TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
         }
       }

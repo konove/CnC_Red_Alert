@@ -273,7 +273,8 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   // rather than the shared string table.
   std::string info_string(Text_String(TXT_RECEIVING_SCENARIO));
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+                   kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   Format_Window_String(std::span(info_string),
@@ -302,7 +303,8 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   GaugeClass progress_meter(kButtonProgress, d_progress_x, d_progress_y,
                             d_progress_w, d_progress_h);
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+                   kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   enum class RedrawType {
@@ -391,11 +393,11 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
         /*
         ** Dialog & Field labels
         */
-        Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
+        Draw_Caption(*LogicPage, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(info_string.c_str(), d_dialog_cx - (width / 2),
-                         d_dialog_y + 50, GadgetClass::Get_Color_Scheme(),
-                         kTBlack,
+        Fancy_Text_Print(*LogicPage, info_string.c_str(),
+                         d_dialog_cx - (width / 2), d_dialog_y + 50,
+                         GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Show_Mouse();
@@ -553,7 +555,8 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   Timer<SystemTickSource>
       response_timer;  // timeout timer for waiting for responses
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+                   kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   Format_Window_String(std::span(info_string),
@@ -582,7 +585,8 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   GaugeClass progress_meter(kButtonProgress, d_progress_x, d_progress_y,
                             d_progress_w, d_progress_h);
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+                   kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   enum class RedrawType {
@@ -702,10 +706,10 @@ bool Send_Remote_File(const char* file_name, int gametype) {
         /*
         ** Dialog & Field labels
         */
-        Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
+        Draw_Caption(*LogicPage, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(info_string.c_str(), d_dialog_cx - (width / 2),
-                         d_dialog_y + (25 * factor),
+        Fancy_Text_Print(*LogicPage, info_string.c_str(),
+                         d_dialog_cx - (width / 2), d_dialog_y + (25 * factor),
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 

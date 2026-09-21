@@ -329,7 +329,7 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
     }
   }
 
-  Conquer_Clip_Text_Print(buffer, x + 100, y, scheme, kTBlack,
+  Conquer_Clip_Text_Print(*LogicPage, buffer, x + 100, y, scheme, kTBlack,
                           flags & ~TPF_CENTER, width, Tabs);
 }
 
@@ -465,9 +465,11 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
 
       Dialog_Box(kOptionX, kOptionY, kOptionWidth, kOptionHeight);
       if (bCounterstrike) {
-        Draw_Caption(TXT_WOL_CS_MISSIONS, kOptionX, kOptionY, kOptionWidth);
+        Draw_Caption(*LogicPage, TXT_WOL_CS_MISSIONS, kOptionX, kOptionY,
+                     kOptionWidth);
       } else {
-        Draw_Caption(TXT_WOL_AM_MISSIONS, kOptionX, kOptionY, kOptionWidth);
+        Draw_Caption(*LogicPage, TXT_WOL_AM_MISSIONS, kOptionX, kOptionY,
+                     kOptionWidth);
       }
       buttons->Draw_All();
       Show_Mouse();

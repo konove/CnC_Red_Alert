@@ -98,7 +98,7 @@ StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
   Set_Text(text, false);
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, PrintFlags);
+    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, PrintFlags);
     if (w == -1) {
       Width = String_Pixel_Width(String);
     }
@@ -193,7 +193,7 @@ void StaticButtonClass::Set_Text(const char* text, bool resize) {
   Flag_To_Redraw();
   if (resize && String != nullptr) {
     Draw_Background();
-    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, PrintFlags);
+    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, PrintFlags);
     Width = String_Pixel_Width(String);
     Height = FontHeight + FontYSpacing;
     Background.clear();
@@ -269,6 +269,7 @@ void StaticButtonClass::Draw_Text(const char* text) {
       x += Width - 1;
     }
 
-    Fancy_Text_Print(text, x, Y, Get_Color_Scheme(), kTBlack, PrintFlags);
+    Fancy_Text_Print(*LogicPage, text, x, Y, Get_Color_Scheme(), kTBlack,
+                     PrintFlags);
   }
 }

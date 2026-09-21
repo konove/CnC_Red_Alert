@@ -27,19 +27,20 @@
 
 #include "ra/defines.h"
 #include "ra/face.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "tech/rect.h"
 
-// Draws a shape to the current logical page. Every shape draw in the game goes
-// through here.
+// Draws a shape into `view`. Every shape draw in the game goes through here.
 //
 // x,y are pixel coordinates, interpreted according to flags, and window is the
-// clipping window to draw within. fadingdata is required by SHAPE_FADING and
-// ghostdata by SHAPE_GHOST; if either is omitted the display class's default
-// table is substituted. rotation and scale (24.8 fixed point) take the slower
-// rotate-and-scale path when either differs from its default.
-void CC_Draw_Shape(std::span<const std::byte> shapefile, int shape_num, int x,
-                   int y, WindowNumberType window, ShapeFlags_Type flags,
+// clipping window within `view` to draw inside. fadingdata is required by
+// SHAPE_FADING and ghostdata by SHAPE_GHOST; if either is omitted the display
+// class's default table is substituted. rotation and scale (24.8 fixed point)
+// take the slower rotate-and-scale path when either differs from its default.
+void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
+                   int shape_num, int x, int y, WindowNumberType window,
+                   ShapeFlags_Type flags,
                    std::span<const uint8_t> fading_data = {},
                    std::span<const uint8_t> ghostdata = {},
                    DirType rotation = DIR_N, int32_t scale = 0x0100);

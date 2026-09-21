@@ -105,6 +105,7 @@
 #include "ra/type.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
 #include "tech/mix_archive.h"
@@ -3226,7 +3227,7 @@ void BuildingTypeClass::Display(int x, int y, WindowNumberType window,
     IsTheaterShape = IsTheater;
     ptr = Get_Image_Data();
   }
-  CC_Draw_Shape(ptr, 0, x, y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+  CC_Draw_Shape(*LogicPage, ptr, 0, x, y, window, SHAPE_CENTER | SHAPE_WIN_REL);
   IsTheaterShape = false;
 }
 

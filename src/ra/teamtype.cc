@@ -157,11 +157,11 @@ void TeamTypeClass::Draw_It(int /*unused*/, int x, int y, int width, int height,
         }
       }
 
-      Conquer_Clip_Text_Print(Description(), x, y, scheme, kTBlack, flags,
-                              width, _tabs);
+      Conquer_Clip_Text_Print(*LogicPage, Description(), x, y, scheme, kTBlack,
+                              flags, width, _tabs);
     } else {
       Conquer_Clip_Text_Print(
-          Description(), x, y,
+          *LogicPage, Description(), x, y,
           (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                     : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
           kTBlack, flags, width, _tabs);
@@ -601,11 +601,11 @@ void TeamMissionClass::Draw_It(int index, int x, int y, int width, int height,
       }
     }
 
-    Conquer_Clip_Text_Print(Description(index), x, y, scheme, kTBlack, flags,
-                            width, _tabs);
+    Conquer_Clip_Text_Print(*LogicPage, Description(index), x, y, scheme,
+                            kTBlack, flags, width, _tabs);
   } else {
     Conquer_Clip_Text_Print(
-        Description(index), x, y,
+        *LogicPage, Description(index), x, y,
         (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                   : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
         kTBlack, flags, width, _tabs);
@@ -1035,45 +1035,52 @@ bool TeamTypeClass::Edit() {
       Hide_Mouse();
       Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
 
-      Draw_Caption(TXT_TEAM_EDIT, kDDialogX, kDDialogY, kDDialogW);
+      Draw_Caption(*LogicPage, TXT_TEAM_EDIT, kDDialogX, kDDialogY, kDDialogW);
 
       /*
       **	Draw the captions
       */
-      Fancy_Text_Print("Name:", name_edt.X, name_edt.Y - 7, scheme, kTBlack,
-                       TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("House:", housebtn.X, housebtn.Y - 7, scheme, kTBlack,
-                       TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("Pri:", recr_edt.X, recr_edt.Y - 7, scheme, kTBlack,
-                       TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("Max:", maxnum_edt.X, maxnum_edt.Y - 7, scheme, kTBlack,
-                       TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("Num:", initnum_edt.X, initnum_edt.Y - 7, scheme,
+      Fancy_Text_Print(*LogicPage, "Name:", name_edt.X, name_edt.Y - 7, scheme,
                        kTBlack, TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("Loc:", originbtn.X, originbtn.Y - 7, scheme, kTBlack,
-                       TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("#  Team Mission", missionlist2.X, missionlist2.Y - 7,
+      Fancy_Text_Print(*LogicPage, "House:", housebtn.X, housebtn.Y - 7, scheme,
+                       kTBlack, TPF_EFNT | TPF_NOSHADOW);
+      Fancy_Text_Print(*LogicPage, "Pri:", recr_edt.X, recr_edt.Y - 7, scheme,
+                       kTBlack, TPF_EFNT | TPF_NOSHADOW);
+      Fancy_Text_Print(*LogicPage, "Max:", maxnum_edt.X, maxnum_edt.Y - 7,
                        scheme, kTBlack, TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("Trigger:", triggerbtn.X - 4, triggerbtn.Y + 1, scheme,
-                       kTBlack, TPF_RIGHT | TPF_EFNT | TPF_NOSHADOW);
+      Fancy_Text_Print(*LogicPage, "Num:", initnum_edt.X, initnum_edt.Y - 7,
+                       scheme, kTBlack, TPF_EFNT | TPF_NOSHADOW);
+      Fancy_Text_Print(*LogicPage, "Loc:", originbtn.X, originbtn.Y - 7, scheme,
+                       kTBlack, TPF_EFNT | TPF_NOSHADOW);
+      Fancy_Text_Print(*LogicPage, "#  Team Mission", missionlist2.X,
+                       missionlist2.Y - 7, scheme, kTBlack,
+                       TPF_EFNT | TPF_NOSHADOW);
+      Fancy_Text_Print(*LogicPage, "Trigger:", triggerbtn.X - 4,
+                       triggerbtn.Y + 1, scheme, kTBlack,
+                       TPF_RIGHT | TPF_EFNT | TPF_NOSHADOW);
 
-      Fancy_Text_Print(Member_Description(),
+      Fancy_Text_Print(*LogicPage, Member_Description(),
                        membersbtn.X + membersbtn.Width + 3, membersbtn.Y + 1,
                        scheme, kTBlack, TPF_EFNT | TPF_NOSHADOW);
 
-      Fancy_Text_Print("Use safest, possibly longer, route to target?",
+      Fancy_Text_Print(*LogicPage,
+                       "Use safest, possibly longer, route to target?",
                        roundbtn.X + kCbSpacingX, roundbtn.Y, scheme, kTBlack,
                        TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("Charge toward target ignoring distractions?",
+      Fancy_Text_Print(*LogicPage,
+                       "Charge toward target ignoring distractions?",
                        suicidebtn.X + kCbSpacingX, suicidebtn.Y, scheme,
                        kTBlack, TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("Only 'Autocreate A.I.' uses this team type?",
+      Fancy_Text_Print(*LogicPage,
+                       "Only 'Autocreate A.I.' uses this team type?",
                        autocreatebtn.X + kCbSpacingX, autocreatebtn.Y, scheme,
                        kTBlack, TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("Prebuild team members before team is created?",
+      Fancy_Text_Print(*LogicPage,
+                       "Prebuild team members before team is created?",
                        prebuildbtn.X + kCbSpacingX, prebuildbtn.Y, scheme,
                        kTBlack, TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("Automatically reinforce team whenever possible?",
+      Fancy_Text_Print(*LogicPage,
+                       "Automatically reinforce team whenever possible?",
                        reinforcebtn.X + kCbSpacingX, reinforcebtn.Y, scheme,
                        kTBlack, TPF_EFNT | TPF_NOSHADOW);
 

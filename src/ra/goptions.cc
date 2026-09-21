@@ -267,8 +267,8 @@ void GameOptionsClass::Process() {
 
   TheKeyboard().Clear();
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
-                   TPF_CENTER | kTpfText);
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+                   kTBlack, TPF_CENTER | kTpfText);
 
   /*
   **	Main Processing Loop.
@@ -325,13 +325,13 @@ void GameOptionsClass::Process() {
       /*
       **	Draw the arrows border if requested.
       */
-      Draw_Caption(TXT_OPTIONS, OptionX, OptionY, OptionWidth);
+      Draw_Caption(*LogicPage, TXT_OPTIONS, OptionX, OptionY, OptionWidth);
 
       /*
       **	Display the version number at the bottom of the dialog box.
       */
       Fancy_Text_Print(
-          "%s\rV%s", OptionX + OptionWidth - 50,
+          *LogicPage, "%s\rV%s", OptionX + OptionWidth - 50,
           OptionY + OptionHeight - (TheSession().Type == GAME_NORMAL ? 64 : 48),
           GadgetClass::Get_Color_Scheme(), kTBlack,
           TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, TheScenario().ScenarioName,

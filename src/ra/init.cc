@@ -384,7 +384,7 @@ bool Init_Game() {
     Load_Title_Page(true);
 
     Hide_Mouse();
-    Fancy_Text_Print(TXT_STAND_BY, 320, 240,
+    Fancy_Text_Print(*LogicPage, TXT_STAND_BY, 320, 240,
                      &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE),
                      kTBlack, TPF_CENTER | kTpfText | TPF_DROPSHADOW);
     Show_Mouse();

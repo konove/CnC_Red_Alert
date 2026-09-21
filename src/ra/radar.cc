@@ -493,7 +493,7 @@ void RadarClass::Draw_It(bool forced) {
       } else {
         PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
 
-        CC_Draw_Shape(RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
+        CC_Draw_Shape(*LogicPage, RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
                       SHAPE_NORMAL);
         if (BaseX || BaseY) {
           if (!IsZoomed && BaseX && BaseY && RadarWidth < RadIWidth - 1 &&
@@ -524,8 +524,8 @@ void RadarClass::Draw_It(bool forced) {
             }
           }
           if (IsPulseActive) {
-            CC_Draw_Shape(RadarPulse, RadarPulseFrame++, RadX + RadOffX,
-                          RadY + 2, WINDOW_MAIN, SHAPE_NORMAL);
+            CC_Draw_Shape(*LogicPage, RadarPulse, RadarPulseFrame++,
+                          RadX + RadOffX, RadY + 2, WINDOW_MAIN, SHAPE_NORMAL);
           }
           LogicPage->Unlock();
         }
@@ -554,7 +554,7 @@ void RadarClass::Draw_It(bool forced) {
       *forced to do so.
       */
       const int val = DoesRadarExist ? kMaxRadarFrames : 0;
-      CC_Draw_Shape(RadarAnim, val, RadX, RadY + 2, WINDOW_MAIN,
+      CC_Draw_Shape(*LogicPage, RadarAnim, val, RadX, RadY + 2, WINDOW_MAIN,
                     SHAPE_NORMAL);
       FullRedraw = false;
       IsRadarToRedraw = false;
@@ -565,6 +565,7 @@ void RadarClass::Draw_It(bool forced) {
       */
       if (TheSession().Type != GAME_NORMAL) {
         Fancy_Text_Print(
+            *LogicPage,
             Text_String(
                 HouseTypeClass::As_Reference(ThePlayer()->ActLike).Full_Name()),
             RadX + (RadWidth / 2), RadY + RadHeight - 20,
@@ -1511,10 +1512,10 @@ void RadarClass::Radar_Anim() {
   PixelView draw_window(
       LogicPage->buffer(), RadX + RadOffX + LogicPage->x_pos(),
       RadY + RadOffY + LogicPage->y_pos(), RadIWidth, RadIHeight);
-  Draw_Box(RadX + RadOffX - 1, RadY + RadOffY - 1, RadIWidth + 2,
+  Draw_Box(*LogicPage, RadX + RadOffX - 1, RadY + RadOffY - 1, RadIWidth + 2,
            RadIHeight + 2, BOXSTYLE_RAISED, true);
   draw_window.Clear();
-  CC_Draw_Shape(RadarAnim, RadarAnimFrame, RadX, RadY + 2,
+  CC_Draw_Shape(*LogicPage, RadarAnim, RadarAnimFrame, RadX, RadY + 2,
                 WINDOW_MAIN, SHAPE_NORMAL);
   Flag_To_Redraw(false);
   SetLogicPage(oldpage);
@@ -2212,7 +2213,7 @@ bool RadarClass::Draw_House_Info() {
   if (!TheMap().IsSidebarActive) {
     return false;
   }
-  CC_Draw_Shape(RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
+  CC_Draw_Shape(*LogicPage, RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
                 SHAPE_NORMAL);
   int y = RadY + RadOffY + 4;
 
@@ -2220,7 +2221,7 @@ bool RadarClass::Draw_House_Info() {
   MouseClass::Upgrade.Draw_Me(true);
   MouseClass::Zoom.Draw_Me(true);
 
-  Fancy_Text_Print(TXT_SPY_INFO, RadX + RadOffX + 12, y,
+  Fancy_Text_Print(*LogicPage, TXT_SPY_INFO, RadX + RadOffX + 12, y,
                    &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   y += 14;
@@ -2244,38 +2245,42 @@ bool RadarClass::Draw_House_Info() {
         txt[9] = '.';
         txt[10] = '\0';
       }
-      Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, kBlack, style);
+      Fancy_Text_Print(*LogicPage, txt, RadX + RadOffX + 12, y, color, kBlack,
+                       style);
     } else {
       port::SafeCopy(txt, "________");
     }
     y += 12 + 1;
 
-    Fancy_Text_Print(TXT_BUILDNGS, RadX + RadOffX + 12, y,
+    Fancy_Text_Print(*LogicPage, TXT_BUILDNGS, RadX + RadOffX + 12, y,
                      &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
 
     // count & print buildings
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurBuildings);
-    Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, kBlack, style);
+    Fancy_Text_Print(*LogicPage, txt, RadX + RadOffX + 12, y, color, kBlack,
+                     style);
     y += 12 + 1;
 
-    Fancy_Text_Print(TXT_UNITS, RadX + RadOffX + 12, y,
+    Fancy_Text_Print(*LogicPage, TXT_UNITS, RadX + RadOffX + 12, y,
                      &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
     // count & print units
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurUnits);
-    Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, kBlack, style);
+    Fancy_Text_Print(*LogicPage, txt, RadX + RadOffX + 12, y, color, kBlack,
+                     style);
     y += 12 + 1;
 
-    Fancy_Text_Print(TXT_INFANTRY, RadX + RadOffX + 12, y,
+    Fancy_Text_Print(*LogicPage, TXT_INFANTRY, RadX + RadOffX + 12, y,
                      &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
     // count & print infantry
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurInfantry);
-    Fancy_Text_Print(txt, RadX + RadOffX + 12, y, color, kBlack, style);
+    Fancy_Text_Print(*LogicPage, txt, RadX + RadOffX + 12, y, color, kBlack,
+                     style);
     return true;
   }
   return false;
@@ -2304,16 +2309,16 @@ void RadarClass::Draw_Names() const {
 
   //	CC_Draw_Shape(RadarAnim, kRadarActivatedFrame, RADAR_X, RADAR_Y+1,
   //		WINDOW_MAIN, SHAPE_NORMAL);
-  CC_Draw_Shape(RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
+  CC_Draw_Shape(*LogicPage, RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
                 SHAPE_NORMAL);
 
   int y = RadY + RadOffY + 4;
 
-  Fancy_Text_Print(TXT_NAME_COLON, RadX + RadOffX, y,
+  Fancy_Text_Print(*LogicPage, TXT_NAME_COLON, RadX + RadOffX, y,
                    &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Fancy_Text_Print(TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2, y,
-                   &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2,
+                   y, &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                    TPF_RIGHT | TPF_6PT_GRAD | TPF_NOSHADOW);
   y += 12 + 1;
 
@@ -2364,7 +2369,7 @@ void RadarClass::Draw_Names() const {
       txt[9] = '.';
       txt[10] = '\0';
     }
-    Fancy_Text_Print(txt, RadX + RadOffX, y, color, kTBlack, style);
+    Fancy_Text_Print(*LogicPage, txt, RadX + RadOffX, y, color, kTBlack, style);
 
     int kills = 0;
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
@@ -2372,8 +2377,8 @@ void RadarClass::Draw_Names() const {
       kills += ptr->BuildingsKilled.at(h);
     }
     absl::SNPrintF(txt, sizeof(txt), "%2d", kills);
-    Fancy_Text_Print(txt, RadX + RadOffX + RadIWidth - 2, y, color, kTBlack,
-                     style | TPF_RIGHT);
+    Fancy_Text_Print(*LogicPage, txt, RadX + RadOffX + RadIWidth - 2, y, color,
+                     kTBlack, style | TPF_RIGHT);
 
     y += 12 + 1;
   }

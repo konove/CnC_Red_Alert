@@ -95,6 +95,7 @@
 #include "ra/techno.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
 #include "tech/number_parse.h"
@@ -353,7 +354,7 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) const {
     **Terrain is always theater specific so flag it as such for Build_Frame
     */
     IsTheaterShape = true;
-    CC_Draw_Shape(shapedata, shapenum, x, y, window,
+    CC_Draw_Shape(*LogicPage, shapedata, shapenum, x, y, window,
                   flags | SHAPE_WIN_REL | SHAPE_GHOST, MouseClass::FadingLight,
                   MouseClass::UnitShadow);
     IsTheaterShape = false;

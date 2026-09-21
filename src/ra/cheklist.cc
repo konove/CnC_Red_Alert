@@ -144,5 +144,6 @@ void CheckListClass::Draw_Entry(int index, int x, int y, int width,
     }
   }
 
-  Conquer_Clip_Text_Print(buffer, x, y, scheme, kTBlack, flags, width, Tabs);
+  Conquer_Clip_Text_Print(*LogicPage, buffer, x, y, scheme, kTBlack, flags,
+                          width, Tabs);
 }

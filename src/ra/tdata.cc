@@ -75,6 +75,7 @@
 #include "ra/type.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "tech/mix_archive.h"
 
@@ -588,7 +589,7 @@ TerrainType TerrainTypeClass::From_Name(const char* name) {
 void TerrainTypeClass::Display(int x, int y, WindowNumberType window,
                                HousesType /*unused*/) const {
   IsTheaterShape = true;
-  CC_Draw_Shape(Get_Image_Data(), 0, x, y, window,
+  CC_Draw_Shape(*LogicPage, Get_Image_Data(), 0, x, y, window,
                 SHAPE_NORMAL | SHAPE_CENTER | SHAPE_WIN_REL);
   IsTheaterShape = false;
 }

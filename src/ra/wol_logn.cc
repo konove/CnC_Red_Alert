@@ -172,8 +172,8 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
 
   //	Just making sure globals are set right before String_Pixel_Width()
   // call... sigh
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
-                   TPF_6PT_GRAD | TPF_NOSHADOW);
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+                   kTBlack, TPF_6PT_GRAD | TPF_NOSHADOW);
   const int iSaveTextWidth =
       String_Pixel_Width(TXT_WOL_SAVELOGIN) + BIGCHECK_OFFSETX;
   BigCheckBoxClass SaveCheckBox(kButtonSavecheck, d_save_x, d_save_y,
@@ -246,18 +246,20 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       //			Hide_Mouse();
 
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-      Draw_Caption(TXT_WOL_LOGINDIALOG, d_dialog_x, d_dialog_y, d_dialog_w);
+      Draw_Caption(*LogicPage, TXT_WOL_LOGINDIALOG, d_dialog_x, d_dialog_y,
+                   d_dialog_w);
 
       /*
       **	Redraw the buttons.
       */
       {
-        Fancy_Text_Print(TXT_WOL_NAME, d_name_x + (d_name_w / 2), d_name_y - 14,
+        Fancy_Text_Print(*LogicPage, TXT_WOL_NAME, d_name_x + (d_name_w / 2),
+                         d_name_y - 14, GadgetClass::Get_Color_Scheme(),
+                         kTBlack, kTpfText | TPF_CENTER);
+        Fancy_Text_Print(*LogicPage, TXT_WOL_PASSWORD,
+                         d_pass_x + (d_pass_w / 2), d_pass_y - 14,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          kTpfText | TPF_CENTER);
-        Fancy_Text_Print(TXT_WOL_PASSWORD, d_pass_x + (d_pass_w / 2),
-                         d_pass_y - 14, GadgetClass::Get_Color_Scheme(),
-                         kTBlack, kTpfText | TPF_CENTER);
         commands->Flag_List_To_Redraw();
       }
       Show_Mouse();

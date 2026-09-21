@@ -160,7 +160,8 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
       */
       Hide_Mouse();
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-      Draw_Caption(TXT_WOL_OPTTITLE, d_dialog_x, d_dialog_y, d_dialog_w);
+      Draw_Caption(*LogicPage, TXT_WOL_OPTTITLE, d_dialog_x, d_dialog_y,
+                   d_dialog_w);
       commands->Flag_List_To_Redraw();
       Show_Mouse();
       display = false;

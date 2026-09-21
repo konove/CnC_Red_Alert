@@ -43,6 +43,7 @@
 
 #include "ra/function.h"
 #include "ra/screen.h"
+#include "sdllib/pixel_buffer.h"
 
 bool ConfirmationClass::Process(int text) { return Process(Text_String(text)); }
 
@@ -76,7 +77,7 @@ bool ConfirmationClass::Process(const char* string) {
   **	Set up the window.  Window x-coords are in bytes not pixels.
   */
   strcpy(buffer, string);
-  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, 200, width, height);
   width += 60;
@@ -151,9 +152,10 @@ bool ConfirmationClass::Process(const char* string) {
       **	Draw the background.
       */
       Dialog_Box(x, y, width, height);
-      Draw_Caption(TXT_CONFIRMATION, x, y, width);
-      Fancy_Text_Print(buffer, x + 20, y + 30, GadgetClass::Get_Color_Scheme(),
-                       kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+      Draw_Caption(*LogicPage, TXT_CONFIRMATION, x, y, width);
+      Fancy_Text_Print(*LogicPage, buffer, x + 20, y + 30,
+                       GadgetClass::Get_Color_Scheme(), kTBlack,
+                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
       /*
       **	Draw the titles.

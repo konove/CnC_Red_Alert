@@ -1118,21 +1118,24 @@ bool TriggerTypeClass::Edit() {
       */
       Hide_Mouse();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
-      Draw_Caption(TXT_TRIGGER_EDITOR, kDialogX, kDialogY, kDialogW);
+      Draw_Caption(*LogicPage, TXT_TRIGGER_EDITOR, kDialogX, kDialogY,
+                   kDialogW);
 
       /*
       **	Draw the captions
       */
-      Fancy_Text_Print("Trigger Event:", event1list.X, event1list.Y - 7, scheme,
+      Fancy_Text_Print(*LogicPage, "Trigger Event:", event1list.X,
+                       event1list.Y - 7, scheme, kTBlack,
+                       TPF_EFNT | TPF_NOSHADOW);
+      Fancy_Text_Print(*LogicPage, "Action to Perform:", action1list.X,
+                       action1list.Y - 7, scheme, kTBlack,
+                       TPF_EFNT | TPF_NOSHADOW);
+      Fancy_Text_Print(*LogicPage, "House:", housebtn.X, housebtn.Y - 7, scheme,
                        kTBlack, TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("Action to Perform:", action1list.X, action1list.Y - 7,
+      Fancy_Text_Print(*LogicPage, "Name:", name_edt.X, name_edt.Y - 7, scheme,
+                       kTBlack, TPF_EFNT | TPF_NOSHADOW);
+      Fancy_Text_Print(*LogicPage, "Persistence:", persbtn.X, persbtn.Y - 7,
                        scheme, kTBlack, TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("House:", housebtn.X, housebtn.Y - 7, scheme, kTBlack,
-                       TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("Name:", name_edt.X, name_edt.Y - 7, scheme, kTBlack,
-                       TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print("Persistence:", persbtn.X, persbtn.Y - 7, scheme,
-                       kTBlack, TPF_EFNT | TPF_NOSHADOW);
 
       if (eventflag == 3) {
         LogicPage->DrawLine(event1list.X - 1, event1list.Y + 3,
@@ -2238,11 +2241,11 @@ void TriggerTypeClass::Draw_It(int /*unused*/, int x, int y, int width,
         }
       }
 
-      Conquer_Clip_Text_Print(Description(), x, y, scheme, kTBlack, flags,
-                              width, _tabs);
+      Conquer_Clip_Text_Print(*LogicPage, Description(), x, y, scheme, kTBlack,
+                              flags, width, _tabs);
     } else {
       Conquer_Clip_Text_Print(
-          Description(), x, y,
+          *LogicPage, Description(), x, y,
           (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                     : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
           kTBlack, flags, width, _tabs);

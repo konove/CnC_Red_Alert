@@ -221,7 +221,8 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
       */
       Hide_Mouse();
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-      Draw_Caption(TXT_WOL_CG_TITLE, d_dialog_x, d_dialog_y, d_dialog_w);
+      Draw_Caption(*LogicPage, TXT_WOL_CG_TITLE, d_dialog_x, d_dialog_y,
+                   d_dialog_w);
       //			Fancy_Text_Print( TXT_WOL_CG_PLAYERS,
       // d_gaugeplayers_x - 2*2, d_gaugeplayers_y,
       //								GadgetClass::Get_Color_Scheme(),
@@ -347,7 +348,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
 
   if (cgiReturn.bCreateGame && cgiReturn.bPrivate) {
     //	Get a password for the channel.
-    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
+    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
                      kTpfText);  //	Required before String_Pixel_Width()
                                  // call, for god's sake.
     auto* pEditDlg =

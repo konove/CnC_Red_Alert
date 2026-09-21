@@ -80,6 +80,7 @@
 #include "ra/type_heaps.h"
 #include "ra/unit.h"
 #include "ra/world.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "tech/game_file.h"
@@ -1018,7 +1019,8 @@ void UnitTypeClass::Display(int x, int y, WindowNumberType window,
     ptr = Get_Image_Data();
     shape = Rotation / 6;
   }
-  CC_Draw_Shape(ptr, shape, x, y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+  CC_Draw_Shape(*LogicPage, ptr, shape, x, y, window,
+                SHAPE_CENTER | SHAPE_WIN_REL);
 }
 
 /***********************************************************************************************

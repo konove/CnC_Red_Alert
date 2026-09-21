@@ -202,10 +202,10 @@ const dib::Image* IconImage(
 // artwork comes down from the server, so a missing icon is a state the lobby
 // has to survive rather than an error.
 template <typename IconInfo>
-void DrawDibIfLoaded(const IconInfo& Info, int xDest, int yDest, int iWidth,
-                     WindowNumberType window) {
+void DrawDibIfLoaded(PixelView& view, const IconInfo& Info, int xDest,
+                     int yDest, int iWidth, WindowNumberType window) {
   if (Info.Icon.has_value()) {
-    DrawDib(*Info.Icon, xDest, yDest, iWidth, window);
+    DrawDib(view, *Info.Icon, xDest, yDest, iWidth, window);
   }
 }
 

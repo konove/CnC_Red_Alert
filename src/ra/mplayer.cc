@@ -238,8 +238,8 @@ GameType Select_MPlayer_Game() {
 
   TheKeyboard().Clear();
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
-                   TPF_CENTER | kTpfText);
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+                   kTBlack, TPF_CENTER | kTpfText);
 
   //------------------------------------------------------------------------
   //	Main Processing Loop
@@ -269,8 +269,8 @@ GameType Select_MPlayer_Game() {
         //	Draw the background
         //...............................................................
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-        Draw_Caption(TXT_SELECT_MPLAYER_GAME, d_dialog_x, d_dialog_y,
-                     d_dialog_w);
+        Draw_Caption(*LogicPage, TXT_SELECT_MPLAYER_GAME, d_dialog_x,
+                     d_dialog_y, d_dialog_w);
       }
 
       //..................................................................
@@ -598,13 +598,13 @@ int Surrender_Dialog(const char* text) {
       //..................................................................
       Hide_Mouse();
       Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
-      Draw_Caption(TXT_NONE, kDDialogX, kDDialogY, kDDialogW);
+      Draw_Caption(*LogicPage, TXT_NONE, kDDialogX, kDDialogY, kDDialogW);
 
       //...............................................................
       //	Draw the captions
       //...............................................................
       // Stalemate games.
-      Fancy_Text_Print(text, kDDialogCx, kDDialogY + kDTopmargin,
+      Fancy_Text_Print(*LogicPage, text, kDDialogCx, kDDialogY + kDTopmargin,
                        GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_CENTER | kTpfText);
 
@@ -781,12 +781,12 @@ int Abort_Dialog() {
       //..................................................................
       Hide_Mouse();
       Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
-      Draw_Caption(TXT_NONE, kDDialogX, kDDialogY, kDDialogW);
+      Draw_Caption(*LogicPage, TXT_NONE, kDDialogX, kDDialogY, kDDialogW);
 
       //...............................................................
       //	Draw the captions
       //...............................................................
-      Fancy_Text_Print(Text_String(TXT_CONFIRM_EXIT), kDDialogCx,
+      Fancy_Text_Print(*LogicPage, Text_String(TXT_CONFIRM_EXIT), kDDialogCx,
                        kDDialogY + kDTopmargin, GadgetClass::Get_Color_Scheme(),
                        kTBlack, TPF_CENTER | kTpfText);
 

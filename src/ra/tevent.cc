@@ -194,11 +194,11 @@ void EventChoiceClass::Draw_It(int /*unused*/, int x, int y, int width,
       }
     }
 
-    Conquer_Clip_Text_Print(Description(), x, y, scheme, kTBlack, flags, width,
-                            _tabs);
+    Conquer_Clip_Text_Print(*LogicPage, Description(), x, y, scheme, kTBlack,
+                            flags, width, _tabs);
   } else {
     Conquer_Clip_Text_Print(
-        Description(), x, y,
+        *LogicPage, Description(), x, y,
         selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                  : &ThePalettes().color_remaps().at(PCOLOR_GREY),
         kTBlack, flags, width, _tabs);

@@ -471,24 +471,24 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
     // one tab will now break this.)
     if (!Tabs.empty()) {
       const int tab[] = {Tabs.front() - (xText - x)};
-      Conquer_Clip_Text_Print(Get_Item(index), xText, y, pRemap, kTBlack, flags,
-                              width, tab);
+      Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), xText, y, pRemap,
+                              kTBlack, flags, width, tab);
     } else {
-      Conquer_Clip_Text_Print(Get_Item(index), xText, y, pRemap, kTBlack, flags,
-                              width, {});
+      Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), xText, y, pRemap,
+                              kTBlack, flags, width, {});
     }
   }
 
   //	Draw fixed position icon.
   if (pExtras->FixedIcon.pIcon) {
     if (pExtras->FixedIcon.IconKind == ICON_SHAPE) {
-      CC_Draw_Shape(pExtras->FixedIcon.pIcon.shape, 0,
+      CC_Draw_Shape(*LogicPage, pExtras->FixedIcon.pIcon.shape, 0,
                     x + pExtras->FixedIcon.xOffset,
                     y + pExtras->FixedIcon.yOffset, WINDOW_MAIN, SHAPE_NORMAL);
     }
     //	Put similar code in here for shapes if used...
     else {
-      DrawDib(AsImage(pExtras->FixedIcon.pIcon.image),
+      DrawDib(*LogicPage, AsImage(pExtras->FixedIcon.pIcon.image),
               x + pExtras->FixedIcon.xOffset, y + pExtras->FixedIcon.yOffset,
               pExtras->FixedIcon.iWidth, WINDOW_MAIN);
     }
@@ -499,13 +499,13 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
     if (base::At(pExtras->pIcon, iIcon)) {
       x += PREICONGAP;
       if (base::At(pExtras->IconKind, iIcon) == ICON_SHAPE) {
-        CC_Draw_Shape(base::At(pExtras->pIcon, iIcon).shape, 0, x, y,
-                      WINDOW_MAIN, SHAPE_NORMAL);
+        CC_Draw_Shape(*LogicPage, base::At(pExtras->pIcon, iIcon).shape, 0, x,
+                      y, WINDOW_MAIN, SHAPE_NORMAL);
       }
       //	Put similar code in here for shapes if used...
       else {
         const dib::Image& icon = AsImage(base::At(pExtras->pIcon, iIcon).image);
-        DrawDib(icon, x, y, kNoIconWidthLimit, WINDOW_MAIN);
+        DrawDib(*LogicPage, icon, x, y, kNoIconWidthLimit, WINDOW_MAIN);
         x += icon.Width();
       }
     }

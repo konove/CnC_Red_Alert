@@ -164,6 +164,7 @@
 #include "ra/warhead.h"
 #include "ra/weapon.h"
 #include "ra/world.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
@@ -2165,7 +2166,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
   */
   if (Flagged != HOUSE_NONE) {
     CC_Draw_Shape(
-        MixArchive::RetrieveData("FLAGFLY.SHP"),
+        *LogicPage, MixArchive::RetrieveData("FLAGFLY.SHP"),
         static_cast<int>(CurrentFrame() % 14), x, y, window,
         SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
         HouseClass::As_Pointer(Flagged)->Remap_Table(false, Class->Remap),

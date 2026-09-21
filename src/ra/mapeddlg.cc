@@ -796,8 +796,8 @@ int MapEditClass::Load_Scenario() {
       if (display) {
         Hide_Mouse();
         Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
-        Draw_Caption(caption, kDDialogX, kDDialogY, kDDialogW);
-        Fancy_Text_Print("Scenario", kDDialogCx - 5, kDScenY,
+        Draw_Caption(*LogicPage, caption, kDDialogX, kDDialogY, kDDialogW);
+        Fancy_Text_Print(*LogicPage, "Scenario", kDDialogCx - 5, kDScenY,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_RIGHT | TPF_EFNT | TPF_NOSHADOW);
         commands->Draw_All();
@@ -1150,7 +1150,8 @@ int MapEditClass::Load_Scenario() {
           **	Background
           */
           Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
-          Draw_Caption(TXT_SIZE_MAP, kDDialogX, kDDialogY, kDDialogW);
+          Draw_Caption(*LogicPage, TXT_SIZE_MAP, kDDialogX, kDDialogY,
+                       kDDialogW);
 
           /*
           **	Draw the map border
@@ -1164,31 +1165,37 @@ int MapEditClass::Load_Scenario() {
             */
             txt_x = kDBordX2 + 15;
             txt_y = kDBordY1;
-            Plain_Text_Print("Clear Terrain", txt_x, txt_y,
+            Plain_Text_Print(*LogicPage, "Clear Terrain", txt_x, txt_y,
                              GroundColor.at(LAND_CLEAR), kTBlack,
                              TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
-            Plain_Text_Print("Water", txt_x, txt_y, GroundColor.at(LAND_WATER),
-                             kTBlack, TPF_DROPSHADOW | TPF_EFNT);
+            Plain_Text_Print(*LogicPage, "Water", txt_x, txt_y,
+                             GroundColor.at(LAND_WATER), kTBlack,
+                             TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
-            Plain_Text_Print("Tiberium", txt_x, txt_y,
+            Plain_Text_Print(*LogicPage, "Tiberium", txt_x, txt_y,
                              GroundColor.at(LAND_TIBERIUM), kTBlack,
                              TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
-            Plain_Text_Print("Rock", txt_x, txt_y, GroundColor.at(LAND_ROCK),
-                             kTBlack, TPF_DROPSHADOW | TPF_EFNT);
+            Plain_Text_Print(*LogicPage, "Rock", txt_x, txt_y,
+                             GroundColor.at(LAND_ROCK), kTBlack,
+                             TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
-            Plain_Text_Print("Wall", txt_x, txt_y, GroundColor.at(LAND_WALL),
-                             kTBlack, TPF_DROPSHADOW | TPF_EFNT);
+            Plain_Text_Print(*LogicPage, "Wall", txt_x, txt_y,
+                             GroundColor.at(LAND_WALL), kTBlack,
+                             TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
-            Plain_Text_Print("Beach", txt_x, txt_y, GroundColor.at(LAND_BEACH),
-                             kTBlack, TPF_DROPSHADOW | TPF_EFNT);
+            Plain_Text_Print(*LogicPage, "Beach", txt_x, txt_y,
+                             GroundColor.at(LAND_BEACH), kTBlack,
+                             TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
-            Plain_Text_Print("Rough", txt_x, txt_y, GroundColor.at(LAND_ROUGH),
-                             kTBlack, TPF_DROPSHADOW | TPF_EFNT);
+            Plain_Text_Print(*LogicPage, "Rough", txt_x, txt_y,
+                             GroundColor.at(LAND_ROUGH), kTBlack,
+                             TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
-            Plain_Text_Print("River", txt_x, txt_y, GroundColor.at(LAND_RIVER),
-                             kTBlack, TPF_DROPSHADOW | TPF_EFNT);
+            Plain_Text_Print(*LogicPage, "River", txt_x, txt_y,
+                             GroundColor.at(LAND_RIVER), kTBlack,
+                             TPF_DROPSHADOW | TPF_EFNT);
             //					txt_y += 8;
             //					Plain_Text_Print("GDI Unit",
             // txt_x, txt_y, YELLOW, TBLACK, TPF_DROPSHADOW | TPF_EFNT);
@@ -1199,33 +1206,33 @@ int MapEditClass::Load_Scenario() {
             // Plain_Text_Print("Neutral Unit", txt_x, txt_y, PURPLE, TBLACK,
             // TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
-            Plain_Text_Print("Terrain Object", txt_x, txt_y, DKGREEN, kTBlack,
-                             TPF_DROPSHADOW | TPF_EFNT);
+            Plain_Text_Print(*LogicPage, "Terrain Object", txt_x, txt_y,
+                             DKGREEN, kTBlack, TPF_DROPSHADOW | TPF_EFNT);
             txt_y += 8;
-            Plain_Text_Print("Starting Cell", txt_x, txt_y, kWhite, kTBlack,
-                             TPF_DROPSHADOW | TPF_EFNT);
+            Plain_Text_Print(*LogicPage, "Starting Cell", txt_x, txt_y, kWhite,
+                             kTBlack, TPF_DROPSHADOW | TPF_EFNT);
 
             /*
             **	Draw the coordinate labels
             */
             txt_x = kDDialogX + (kDDialogW / 8);
             txt_y = kDDialogY + kDDialogH - kDOkH - 43;
-            Fancy_Text_Print("  X", txt_x, txt_y,
+            Fancy_Text_Print(*LogicPage, "  X", txt_x, txt_y,
                              GadgetClass::Get_Color_Scheme(), kTBlack,
                              TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
 
             txt_x += (kDDialogW - 20) / 4;
-            Fancy_Text_Print("  Y", txt_x, txt_y,
+            Fancy_Text_Print(*LogicPage, "  Y", txt_x, txt_y,
                              GadgetClass::Get_Color_Scheme(), kTBlack,
                              TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
 
             txt_x += (kDDialogW - 20) / 4;
-            Fancy_Text_Print(" Width", txt_x, txt_y,
+            Fancy_Text_Print(*LogicPage, " Width", txt_x, txt_y,
                              GadgetClass::Get_Color_Scheme(), kTBlack,
                              TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
 
             txt_x += (kDDialogW - 20) / 4;
-            Fancy_Text_Print(" Height", txt_x, txt_y,
+            Fancy_Text_Print(*LogicPage, " Height", txt_x, txt_y,
                              GadgetClass::Get_Color_Scheme(), kTBlack,
                              TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
 
@@ -1335,23 +1342,27 @@ int MapEditClass::Load_Scenario() {
           */
           txt_x = kDDialogX + (kDDialogW / 8);
           txt_y = kDDialogY + kDDialogH - kDOkH - 32;
-          Fancy_Text_Print("%5d", txt_x, txt_y, GadgetClass::Get_Color_Scheme(),
-                           kBlack, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
+          Fancy_Text_Print(*LogicPage, "%5d", txt_x, txt_y,
+                           GadgetClass::Get_Color_Scheme(), kBlack,
+                           TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
                            map_x1 - kDBordX1 - 1);
 
           txt_x += (kDDialogW - 20) / 4;
-          Fancy_Text_Print("%5d", txt_x, txt_y, GadgetClass::Get_Color_Scheme(),
-                           kBlack, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
+          Fancy_Text_Print(*LogicPage, "%5d", txt_x, txt_y,
+                           GadgetClass::Get_Color_Scheme(), kBlack,
+                           TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
                            map_y1 - kDBordY1 - 1);
 
           txt_x += (kDDialogW - 20) / 4;
-          Fancy_Text_Print("%5d", txt_x, txt_y, GadgetClass::Get_Color_Scheme(),
-                           kBlack, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
+          Fancy_Text_Print(*LogicPage, "%5d", txt_x, txt_y,
+                           GadgetClass::Get_Color_Scheme(), kBlack,
+                           TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
                            map_x2 - map_x1 + 1);
 
           txt_x += (kDDialogW - 20) / 4;
-          Fancy_Text_Print("%5d", txt_x, txt_y, GadgetClass::Get_Color_Scheme(),
-                           kBlack, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
+          Fancy_Text_Print(*LogicPage, "%5d", txt_x, txt_y,
+                           GadgetClass::Get_Color_Scheme(), kBlack,
+                           TPF_CENTER | TPF_EFNT | TPF_NOSHADOW,
                            map_y2 - map_y1 + 1);
 
           LogicPage->Unlock();
@@ -2166,96 +2177,99 @@ int MapEditClass::Load_Scenario() {
         **	Draw the background
         */
         Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
-        Draw_Caption(TXT_SCENARIO_OPTIONS, kDDialogX, kDDialogY, kDDialogW);
+        Draw_Caption(*LogicPage, TXT_SCENARIO_OPTIONS, kDDialogX, kDDialogY,
+                     kDDialogW);
 
         /*
         **	Display the text that doesn't need drawing except when the
         *entire dialog *	needs to be redrawn.
         */
-        Fancy_Text_Print("Tech Level =", techlevel.X, techlevel.Y - 7,
+        Fancy_Text_Print(*LogicPage, "Tech Level =", techlevel.X,
+                         techlevel.Y - 7, GadgetClass::Get_Color_Scheme(),
+                         kTBlack, TPF_EFNT | TPF_NOSHADOW);
+        Fancy_Text_Print(*LogicPage, "Credits =", creditbtn.X, creditbtn.Y - 7,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Credits =", creditbtn.X, creditbtn.Y - 7,
+        Fancy_Text_Print(*LogicPage, "Unit Max =", maxunit.X, maxunit.Y - 7,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Unit Max =", maxunit.X, maxunit.Y - 7,
+        Fancy_Text_Print(*LogicPage, "IQ =", smarties.X, smarties.Y - 7,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("IQ =", smarties.X, smarties.Y - 7,
+        Fancy_Text_Print(*LogicPage, "Prebuild Base:", basebtn.X, basebtn.Y - 7,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Prebuild Base:", basebtn.X, basebtn.Y - 7,
+        Fancy_Text_Print(*LogicPage, "Theater:", theaterbtn.X, theaterbtn.Y - 7,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Theater:", theaterbtn.X, theaterbtn.Y - 7,
+        Fancy_Text_Print(*LogicPage, "Scenario Name:", desc.X, desc.Y - 7,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Scenario Name:", desc.X, desc.Y - 7,
+        Fancy_Text_Print(*LogicPage, "Country:", housebtn.X, housebtn.Y - 7,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Country:", housebtn.X, housebtn.Y - 7,
+        Fancy_Text_Print(*LogicPage, "Home Edge:", sourcebtn.X, sourcebtn.Y - 7,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Home Edge:", sourcebtn.X, sourcebtn.Y - 7,
+        Fancy_Text_Print(*LogicPage, "Allies:", allies.X, allies.Y - 7,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Allies:", allies.X, allies.Y - 7,
+        Fancy_Text_Print(*LogicPage, "Plyr Control:", control.X, control.Y - 7,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Plyr Control:", control.X, control.Y - 7,
+        Fancy_Text_Print(*LogicPage, "Theme:", themebtn.X, themebtn.Y - 7,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Theme:", themebtn.X, themebtn.Y - 7,
+        Fancy_Text_Print(*LogicPage, "Intro:", intro.X, intro.Y - 7,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Intro:", intro.X, intro.Y - 7,
+        Fancy_Text_Print(*LogicPage, "Briefing:", briefing.X, briefing.Y - 7,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Briefing:", briefing.X, briefing.Y - 7,
+        Fancy_Text_Print(*LogicPage, "Action:", action.X, action.Y - 7,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Action:", action.X, action.Y - 7,
+        Fancy_Text_Print(*LogicPage, "Win:", win.X, win.Y - 7,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Win:", win.X, win.Y - 7,
+        Fancy_Text_Print(*LogicPage, "Lose:", lose.X, lose.Y - 7,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Lose:", lose.X, lose.Y - 7,
+        Fancy_Text_Print(*LogicPage, "Store scenario?", record.X + 10, record.Y,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Store scenario?", record.X + 10, record.Y,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
+        Fancy_Text_Print(*LogicPage, "Inherit stored scenario?", inherit.X + 10,
+                         inherit.Y, GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Inherit stored scenario?", inherit.X + 10, inherit.Y,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
+        Fancy_Text_Print(*LogicPage, "Auto evac. Tanya (civilian)?",
+                         tanya.X + 10, tanya.Y, GadgetClass::Get_Color_Scheme(),
+                         kTBlack, TPF_EFNT | TPF_NOSHADOW);
+        Fancy_Text_Print(*LogicPage, "Last mission of game?", endofgame.X + 10,
+                         endofgame.Y, GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Auto evac. Tanya (civilian)?", tanya.X + 10, tanya.Y,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
+        Fancy_Text_Print(
+            *LogicPage, "Inherit mission timer from last scenario?",
+            timercarry.X + 10, timercarry.Y, GadgetClass::Get_Color_Scheme(),
+            kTBlack, TPF_EFNT | TPF_NOSHADOW);
+        Fancy_Text_Print(*LogicPage, "Disable spy plane?", nospyplane.X + 10,
+                         nospyplane.Y, GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Last mission of game?", endofgame.X + 10, endofgame.Y,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Inherit mission timer from last scenario?",
-                         timercarry.X + 10, timercarry.Y,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Disable spy plane?", nospyplane.X + 10, nospyplane.Y,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Skip the score screen?", skipscore.X + 10,
+        Fancy_Text_Print(*LogicPage, "Skip the score screen?", skipscore.X + 10,
                          skipscore.Y, GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("No map selection (force var 'B')?", nomapsel.X + 10,
-                         nomapsel.Y, GadgetClass::Get_Color_Scheme(), kTBlack,
-                         TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Return to main menu after scenario finishes?",
-                         onetime.X + 10, onetime.Y,
+        Fancy_Text_Print(*LogicPage, "No map selection (force var 'B')?",
+                         nomapsel.X + 10, nomapsel.Y,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Truck carries wood crate?", truckcrate.X + 10,
-                         truckcrate.Y, GadgetClass::Get_Color_Scheme(), kTBlack,
+        Fancy_Text_Print(
+            *LogicPage, "Return to main menu after scenario finishes?",
+            onetime.X + 10, onetime.Y, GadgetClass::Get_Color_Scheme(), kTBlack,
+            TPF_EFNT | TPF_NOSHADOW);
+        Fancy_Text_Print(*LogicPage, "Truck carries wood crate?",
+                         truckcrate.X + 10, truckcrate.Y,
+                         GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
-        Fancy_Text_Print("Initial money is transferred to silos?",
+        Fancy_Text_Print(*LogicPage, "Initial money is transferred to silos?",
                          moneytib.X + 10, moneytib.Y,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_EFNT | TPF_NOSHADOW);
@@ -2795,7 +2809,8 @@ int MapEditClass::Load_Scenario() {
       if (display) {
         Hide_Mouse();
         Dialog_Box(kDDialogX, kDDialogY, kDDialogW, kDDialogH);
-        Draw_Caption(TXT_TRIGGER_EDITOR, kDDialogX, kDDialogY, kDDialogW);
+        Draw_Caption(*LogicPage, TXT_TRIGGER_EDITOR, kDDialogX, kDDialogY,
+                     kDDialogW);
         commands->Flag_List_To_Redraw();
         commands->Draw_All();
         Show_Mouse();

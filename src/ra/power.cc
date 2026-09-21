@@ -176,14 +176,14 @@ void PowerClass::Draw_It(bool complete) {
         remap = FadingRed;
       }
 
-      CC_Draw_Shape(PowerBarShape, 0, 480, 176, WINDOW_MAIN,
+      CC_Draw_Shape(*LogicPage, PowerBarShape, 0, 480, 176, WINDOW_MAIN,
                     flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
 
       /*
       ** Hires power strip is too big to fit into a shape so it is in two
       *parts
       */
-      CC_Draw_Shape(PowerBarShape, 1, 480, 176 + 112, WINDOW_MAIN,
+      CC_Draw_Shape(*LogicPage, PowerBarShape, 1, 480, 176 + 112, WINDOW_MAIN,
                     flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
       /*
       **	Determine how much the power production exceeds or falls short
@@ -237,7 +237,7 @@ void PowerClass::Draw_It(bool complete) {
       /*
       **	Draw the power drain threshold marker.
       */
-      CC_Draw_Shape(PowerShape, 0, (kPowerX * 2) + 2,
+      CC_Draw_Shape(*LogicPage, PowerShape, 0, (kPowerX * 2) + 2,
                     bottom - (drain_height + 4), WINDOW_MAIN,
                     flags | SHAPE_NORMAL, remap);
     }

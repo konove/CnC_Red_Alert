@@ -27,6 +27,7 @@
 #include "ra/shape_draw.h"
 #include "ra/toggle.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -39,19 +40,19 @@ bool BigCheckBoxClass::Draw_Me(bool forced) {
 
     if (!IsOn) {
       if (!IsDisabled) {
-        CC_Draw_Shape(MixArchive::RetrieveData("bigcheck.shp"), 0, X, Y,
-                      WINDOW_MAIN, SHAPE_NORMAL);
+        CC_Draw_Shape(*LogicPage, MixArchive::RetrieveData("bigcheck.shp"), 0,
+                      X, Y, WINDOW_MAIN, SHAPE_NORMAL);
       } else {
-        CC_Draw_Shape(MixArchive::RetrieveData("bigcheck.shp"), 2, X, Y,
-                      WINDOW_MAIN, SHAPE_NORMAL);
+        CC_Draw_Shape(*LogicPage, MixArchive::RetrieveData("bigcheck.shp"), 2,
+                      X, Y, WINDOW_MAIN, SHAPE_NORMAL);
       }
     } else {
       if (!IsDisabled) {
-        CC_Draw_Shape(MixArchive::RetrieveData("bigcheck.shp"), 1, X, Y,
-                      WINDOW_MAIN, SHAPE_NORMAL);
+        CC_Draw_Shape(*LogicPage, MixArchive::RetrieveData("bigcheck.shp"), 1,
+                      X, Y, WINDOW_MAIN, SHAPE_NORMAL);
       } else {
-        CC_Draw_Shape(MixArchive::RetrieveData("bigcheck.shp"), 3, X, Y,
-                      WINDOW_MAIN, SHAPE_NORMAL);
+        CC_Draw_Shape(*LogicPage, MixArchive::RetrieveData("bigcheck.shp"), 3,
+                      X, Y, WINDOW_MAIN, SHAPE_NORMAL);
       }
     }
 
@@ -66,7 +67,7 @@ bool BigCheckBoxClass::Draw_Me(bool forced) {
     //			flags = flags | TPF_MEDIUM_COLOR;
     //		}
 
-    Conquer_Clip_Text_Print(szCaption.c_str(), X + BIGCHECK_OFFSETX,
+    Conquer_Clip_Text_Print(*LogicPage, szCaption.c_str(), X + BIGCHECK_OFFSETX,
                             Y + BIGCHECK_OFFSETY, pScheme, kTBlack, flags,
                             Width, {});
 

@@ -347,22 +347,24 @@ void SoundControlsClass::Process() {
       */
       Dialog_Box(option_x, option_y, option_width, option_height);
 
-      Draw_Caption(TXT_SOUND_CONTROLS, option_x, option_y, option_width);
+      Draw_Caption(*LogicPage, TXT_SOUND_CONTROLS, option_x, option_y,
+                   option_width);
 
       /*
       ** Draw the Music, Speech & Sound titles.
       */
-      Fancy_Text_Print(TXT_MUSIC_VOLUME, option_x + mslider_x - 10,
+      Fancy_Text_Print(*LogicPage, TXT_MUSIC_VOLUME, option_x + mslider_x - 10,
                        option_y + mslider_y - 4, scheme, kTBlack,
                        kTpfText | TPF_RIGHT);
-      Fancy_Text_Print(TXT_SOUND_VOLUME, option_x + fxslider_x - 10,
+      Fancy_Text_Print(*LogicPage, TXT_SOUND_VOLUME, option_x + fxslider_x - 10,
                        option_y + fxslider_y - 4, scheme, kTBlack,
                        kTpfText | TPF_RIGHT);
 
-      Fancy_Text_Print(
-          TXT_SHUFFLE, option_x + shuffle_x - 10 + (config::kIsEnglish ? 0 : 4),
-          option_y + shuffle_y + 2, scheme, kTBlack, kTpfText | TPF_RIGHT);
-      Fancy_Text_Print(TXT_REPEAT, option_x + repeat_x - 10,
+      Fancy_Text_Print(*LogicPage, TXT_SHUFFLE,
+                       option_x + shuffle_x - 10 + (config::kIsEnglish ? 0 : 4),
+                       option_y + shuffle_y + 2, scheme, kTBlack,
+                       kTpfText | TPF_RIGHT);
+      Fancy_Text_Print(*LogicPage, TXT_REPEAT, option_x + repeat_x - 10,
                        option_y + repeat_y + 2, scheme, kTBlack,
                        kTpfText | TPF_RIGHT);
 
@@ -493,12 +495,12 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
       }
     }
 
-    Conquer_Clip_Text_Print(Get_Item(index), x, y, scheme, kTBlack, flags,
-                            width, Tabs);
+    Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y, scheme, kTBlack,
+                            flags, width, Tabs);
 
   } else {
     Conquer_Clip_Text_Print(
-        Get_Item(index), x, y,
+        *LogicPage, Get_Item(index), x, y,
         selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                  : &ThePalettes().color_remaps().at(PCOLOR_GREY),
         kTBlack, TextFlags, width, Tabs);

@@ -217,8 +217,8 @@ bool EgoClass::Scroll(int distance) {
  *=============================================================================================*/
 void EgoClass::Render() const {
   if (YPos < LogicPage->height() && YPos > -16) {
-    Fancy_Text_Print(Text, XPos, YPos, GadgetClass::Get_Color_Scheme(), kTBlack,
-                     Flags);
+    Fancy_Text_Print(*LogicPage, Text, XPos, YPos,
+                     GadgetClass::Get_Color_Scheme(), kTBlack, Flags);
   }
 }
 
@@ -431,7 +431,8 @@ void Show_Who_Was_Responsible() {
   ** Initialise the text printing system.
   */
   GadgetClass::Set_Color_Scheme(&ThePalettes().color_remaps().at(PCOLOR_GREEN));
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+                   kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*

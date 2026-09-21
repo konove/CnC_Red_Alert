@@ -156,9 +156,11 @@ static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
                        int hfgc, int bgc) {
   for (int loop = 0; loop < 3; loop++) {
     Hide_Mouse();
-    Plain_Text_Print(text, xpix, ypix, hfgc, bgc, TPF_8POINT | TPF_DROPSHADOW);
+    Plain_Text_Print(*LogicPage, text, xpix, ypix, hfgc, bgc,
+                     TPF_8POINT | TPF_DROPSHADOW);
     Delay(2);
-    Plain_Text_Print(text, xpix, ypix, nfgc, bgc, TPF_8POINT | TPF_DROPSHADOW);
+    Plain_Text_Print(*LogicPage, text, xpix, ypix, nfgc, bgc,
+                     TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse();
     Delay(2);
   }
@@ -212,13 +214,14 @@ void Setup_Menu(int menu, std::span<const char* const> text, uint32_t field,
   const int item = Select_To_Entry(base::At(menuptr, kMselected), field, index);
   const int num = base::At(menuptr, kItemshigh);
 
-  Plain_Text_Print(0, 0, 0, kTBlack, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+  Plain_Text_Print(*LogicPage, 0, 0, 0, kTBlack, kTBlack,
+                   TPF_8POINT | TPF_DROPSHADOW);
   Hide_Mouse();
   for (int lp = 0; lp < num; lp++) {
     const int idx = Select_To_Entry(lp, field, index);
     const int drawy = menuy + (lp * FontHeight) + (lp * skip);
     Plain_Text_Print(
-        base::At(text, base::ToSize(idx)), menux, drawy,
+        *LogicPage, base::At(text, base::ToSize(idx)), menux, drawy,
         base::At(menuptr, idx == item && MenuUpdate ? kHilite : kNormcol),
         kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     //		if ((idx==item) && (MenuUpdate ))
@@ -367,12 +370,12 @@ int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
     Hide_Mouse();
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
-    Plain_Text_Print(base::At(text, base::ToSize(idx)), menux, drawy, normcol,
-                     kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+    Plain_Text_Print(*LogicPage, base::At(text, base::ToSize(idx)), menux,
+                     drawy, normcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
-    Plain_Text_Print(base::At(text, base::ToSize(idx)), menux, drawy, litcol,
-                     kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+    Plain_Text_Print(*LogicPage, base::At(text, base::ToSize(idx)), menux,
+                     drawy, litcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse(); /* resurrect the mouse	*/
   }
 
@@ -436,7 +439,8 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   **	Determine the width of the menu by finding the length of the
   **	longest menu entry.
   */
-  Plain_Text_Print(TXT_NONE, 0, 0, 0, 0, TPF_8POINT | TPF_DROPSHADOW);
+  Plain_Text_Print(*LogicPage, TXT_NONE, 0, 0, 0, 0,
+                   TPF_8POINT | TPF_DROPSHADOW);
   int length = 0;  // The width of the menu (in pixels).
   for (const char* text : strings) {
     length = std::max(length, String_Pixel_Width(text));
@@ -462,7 +466,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   */
   Change_Window(static_cast<int>(WINDOW_MENU));
   Show_Mouse();
-  Window_Box(WINDOW_MENU, BOXSTYLE_RAISED);
+  Window_Box(*LogicPage, WINDOW_MENU, BOXSTYLE_RAISED);
   Setup_Menu(0, strings, 0xFFFFL, 0, 0);
 
   TheKeyboard().Clear();
@@ -653,7 +657,8 @@ int Main_Menu(int32_t /*unused*/) {
 
   TheKeyboard().Clear();
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+                   kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   const fixed oldvolume = TheOptions().ScoreVolume;
@@ -709,7 +714,7 @@ int Main_Menu(int32_t /*unused*/) {
       // d_dialog_h); 			Draw_Caption (TXT_NONE, d_dialog_x,
       // d_dialog_y, d_dialog_w);
       commands->Draw_All();
-      Fancy_Text_Print("V%s", d_dialog_x + d_dialog_w - 36,
+      Fancy_Text_Print(*LogicPage, "V%s", d_dialog_x + d_dialog_w - 36,
                        d_dialog_y + d_dialog_h - 10,
                        GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, Version_Name());

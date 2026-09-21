@@ -247,8 +247,9 @@ ScenarioVarType ChooseMissionVariant() {
 
   TheKeyboard().Clear();
 
-  Fancy_Text_Print(TXT_STAND_BY, 320, 380, GadgetClass::Get_Color_Scheme(),
-                   kTBlack, TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
+  Fancy_Text_Print(*LogicPage, TXT_STAND_BY, 320, 380,
+                   GadgetClass::Get_Color_Scheme(), kTBlack,
+                   TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
   TheTheme().Fade_Out();
 
   return base::At(kChoiceVariants, choice);

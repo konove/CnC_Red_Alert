@@ -1573,7 +1573,7 @@ static int Net_Join_Dialog() {
   TextButtonClass nodbtn(kButtonNod, TXT_SOVIET, kTpfButton, d_nod_x, d_nod_y,
                          d_nod_w);
 #else
-  Fancy_Text_Print("", 0, 0, nullptr, 0, kTpfText);
+  Fancy_Text_Print(*LogicPage, "", 0, 0, nullptr, 0, kTpfText);
   DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext), kTpfText,
                          d_house_x, d_house_y, d_house_w, d_house_h,
                          MixArchive::RetrieveData("BTN-UP.SHP"),
@@ -1695,7 +1695,7 @@ static int Net_Join_Dialog() {
   aiplayersgauge.Set_Maximum(TheSession().Options.AIPlayers);
   aiplayersgauge.Set_Value(TheSession().Options.AIPlayers);
 
-  Fancy_Text_Print("", 0, 0, scheme, kTBlack, kTpfText);
+  Fancy_Text_Print(*LogicPage, "", 0, 0, scheme, kTBlack, kTpfText);
 
   TheSession().Messages.Init(
       d_message1_x + 2, d_message1_y + 2, 14, MAX_MESSAGE_LENGTH, d_txt6_h,
@@ -1797,34 +1797,34 @@ static int Net_Join_Dialog() {
         //...............................................................
         //	Dialog & Field labels
         //...............................................................
-        Fancy_Text_Print(TXT_CHANNEL_GAMES, d_gamelist_x + (d_gamelist_w / 2),
-                         d_gamelist_y - d_txt6_h, scheme, kTBlack,
-                         TPF_CENTER | kTpfText);
-        Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
-                         d_playerlist_y - d_txt6_h, scheme, kTBlack,
-                         TPF_CENTER | kTpfText);
+        Fancy_Text_Print(
+            *LogicPage, TXT_CHANNEL_GAMES, d_gamelist_x + (d_gamelist_w / 2),
+            d_gamelist_y - d_txt6_h, scheme, kTBlack, TPF_CENTER | kTpfText);
+        Fancy_Text_Print(
+            *LogicPage, TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
+            d_playerlist_y - d_txt6_h, scheme, kTBlack, TPF_CENTER | kTpfText);
 
         //...............................................................
         // For game-browsing, label the name, side, & color buttons:
         //...............................................................
         if (joinstate < JOIN_CONFIRMED) {
-          Fancy_Text_Print(TXT_YOUR_NAME, d_name_x + (d_name_w / 2),
+          Fancy_Text_Print(*LogicPage, TXT_YOUR_NAME, d_name_x + (d_name_w / 2),
                            d_name_y - d_txt6_h, scheme, kTBlack,
                            TPF_CENTER | kTpfText);
 
 #ifdef OLDWAY
-          Fancy_Text_Print(TXT_SIDE_COLON, d_gdi_x + d_gdi_w,
+          Fancy_Text_Print(*LogicPage, TXT_SIDE_COLON, d_gdi_x + d_gdi_w,
                            d_gdi_y - d_txt6_h, scheme, kTBlack,
                            TPF_CENTER | kTpfText);
 #else
-          Fancy_Text_Print(TXT_SIDE_COLON, d_house_x + (d_house_w / 2),
-                           d_house_y - d_txt6_h, scheme, kTBlack,
-                           TPF_CENTER | kTpfText);
+          Fancy_Text_Print(*LogicPage, TXT_SIDE_COLON,
+                           d_house_x + (d_house_w / 2), d_house_y - d_txt6_h,
+                           scheme, kTBlack, TPF_CENTER | kTpfText);
 #endif
 
-          Fancy_Text_Print(TXT_COLOR_COLON, d_dialog_x + (d_dialog_w / 4 * 3),
-                           d_color_y - d_txt6_h, scheme, kTBlack,
-                           TPF_CENTER | kTpfText);
+          Fancy_Text_Print(
+              *LogicPage, TXT_COLOR_COLON, d_dialog_x + (d_dialog_w / 4 * 3),
+              d_color_y - d_txt6_h, scheme, kTBlack, TPF_CENTER | kTpfText);
         } else {
           //...............................................................
           // If we're joined to a game, just print the player's name & side.
@@ -1846,7 +1846,7 @@ static int Net_Join_Dialog() {
                               .Full_Name()));
 #endif  // OLDWAY
           Fancy_Text_Print(
-              txt, d_dialog_cx, d_dialog_y + d_margin2 + 2,
+              *LogicPage, txt, d_dialog_cx, d_dialog_y + d_margin2 + 2,
               TheSession().ColorIdx == PCOLOR_DIALOG_BLUE
                   ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
                   : &ThePalettes().color_remaps().at(TheSession().ColorIdx),
@@ -1942,11 +1942,11 @@ static int Net_Join_Dialog() {
           // ColorRemaps[i].Box);
 
           if (static_cast<PlayerColorType>(i) == TheSession().ColorIdx) {
-            Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
-                     BOXSTYLE_DOWN, false);
+            Draw_Box(*LogicPage, base::At(cbox_x, i), d_color_y, d_color_w,
+                     d_color_h, BOXSTYLE_DOWN, false);
           } else {
-            Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
-                     BOXSTYLE_RAISED, false);
+            Draw_Box(*LogicPage, base::At(cbox_x, i), d_color_y, d_color_w,
+                     d_color_h, BOXSTYLE_RAISED, false);
           }
         }
       }
@@ -1956,13 +1956,14 @@ static int Net_Join_Dialog() {
       //..................................................................
       if (display >= REDRAW_MESSAGE) {
         if (joinstate == JOIN_CONFIRMED) {
-          Draw_Box(d_message2_x, d_message2_y, d_message2_w, d_message2_h,
-                   BOXSTYLE_BOX, true);
+          Draw_Box(*LogicPage, d_message2_x, d_message2_y, d_message2_w,
+                   d_message2_h, BOXSTYLE_BOX, true);
         } else {
-          Draw_Box(d_message1_x, d_message1_y, d_message1_w, d_message1_h,
-                   BOXSTYLE_BOX, true);
+          Draw_Box(*LogicPage, d_message1_x, d_message1_y, d_message1_w,
+                   d_message1_h, BOXSTYLE_BOX, true);
         }
-        Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX, true);
+        Draw_Box(*LogicPage, d_send_x, d_send_y, d_send_w, d_send_h,
+                 BOXSTYLE_BOX, true);
         TheSession().Messages.Draw();
       }
 
@@ -2012,8 +2013,8 @@ static int Net_Join_Dialog() {
         //...............................................................
         // Unit count, tech level, credits, ai players
         //...............................................................
-        Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y, scheme, kTBlack,
-                         kTpfText | TPF_RIGHT);
+        Fancy_Text_Print(*LogicPage, TXT_COUNT, d_count_x - 4, d_count_y,
+                         scheme, kTBlack, kTpfText | TPF_RIGHT);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.UnitCount);
         staticcount.Set_Text(txt);
@@ -2021,8 +2022,8 @@ static int Net_Join_Dialog() {
         //				Fancy_Text_Print(txt, d_count_x +
         // d_count_w + 2 *2, d_count_y, scheme, BLACK, kTpfText);
 
-        Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y, scheme, kTBlack,
-                         kTpfText | TPF_RIGHT);
+        Fancy_Text_Print(*LogicPage, TXT_LEVEL, d_level_x - 4, d_level_y,
+                         scheme, kTBlack, kTpfText | TPF_RIGHT);
         if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
           absl::SNPrintF(txt, sizeof(txt), "%d", TheWorld().build_level());
         } else {
@@ -2033,16 +2034,16 @@ static int Net_Join_Dialog() {
         //				Fancy_Text_Print(txt, d_level_x +
         // d_level_w + 2 *2, d_level_y, scheme, BLACK, kTpfText);
 
-        Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 4, d_credits_y,
-                         scheme, kTBlack, kTpfText | TPF_RIGHT);
+        Fancy_Text_Print(*LogicPage, TXT_CREDITS_COLON, d_credits_x - 4,
+                         d_credits_y, scheme, kTBlack, kTpfText | TPF_RIGHT);
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.Credits);
         staticcredits.Set_Text(txt);
         staticcredits.Draw_Me();
         //				Fancy_Text_Print(txt, d_credits_x +
         // d_credits_w + 2 *2, d_credits_y, scheme, BLACK, kTpfText);
 
-        Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4, d_aiplayers_y,
-                         scheme, kTBlack, kTpfText | TPF_RIGHT);
+        Fancy_Text_Print(*LogicPage, TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
+                         d_aiplayers_y, scheme, kTBlack, kTpfText | TPF_RIGHT);
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.AIPlayers);
         staticaiplayers.Set_Text(txt);
         staticaiplayers.Draw_Me();
@@ -2408,7 +2409,8 @@ static int Net_Join_Dialog() {
         //...............................................................
         if (i == 1 || i == 2) {
           Hide_Mouse();
-          Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX, true);
+          Draw_Box(*LogicPage, d_send_x, d_send_y, d_send_w, d_send_h,
+                   BOXSTYLE_BOX, true);
           TheSession().Messages.Draw();
           Show_Mouse();
         } else if (i == 3 || i == 4) {
@@ -4541,21 +4543,21 @@ static int Net_New_Dialog() {
         //...............................................................
         //	Dialog & Field labels
         //...............................................................
-        Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
-                         d_playerlist_y - d_txt6_h, scheme, kTBlack,
-                         kTpfText | TPF_CENTER);
-        Fancy_Text_Print(TXT_SCENARIOS,
+        Fancy_Text_Print(
+            *LogicPage, TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
+            d_playerlist_y - d_txt6_h, scheme, kTBlack, kTpfText | TPF_CENTER);
+        Fancy_Text_Print(*LogicPage, TXT_SCENARIOS,
                          d_scenariolist_x + (d_scenariolist_w / 2),
                          d_scenariolist_y - d_txt6_h, scheme, kTBlack,
                          kTpfText | TPF_CENTER);
-        Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y, scheme, kTBlack,
-                         kTpfText | TPF_RIGHT);
-        Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y, scheme, kTBlack,
-                         kTpfText | TPF_RIGHT);
-        Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 4, d_credits_y,
+        Fancy_Text_Print(*LogicPage, TXT_COUNT, d_count_x - 4, d_count_y,
                          scheme, kTBlack, kTpfText | TPF_RIGHT);
-        Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4, d_aiplayers_y,
+        Fancy_Text_Print(*LogicPage, TXT_LEVEL, d_level_x - 4, d_level_y,
                          scheme, kTBlack, kTpfText | TPF_RIGHT);
+        Fancy_Text_Print(*LogicPage, TXT_CREDITS_COLON, d_credits_x - 4,
+                         d_credits_y, scheme, kTBlack, kTpfText | TPF_RIGHT);
+        Fancy_Text_Print(*LogicPage, TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
+                         d_aiplayers_y, scheme, kTBlack, kTpfText | TPF_RIGHT);
       }
 
       //..................................................................
@@ -4612,9 +4614,10 @@ static int Net_New_Dialog() {
       //	- If we've been rejected from a game, print that message
       //..................................................................
       if (display >= REDRAW_MESSAGE) {
-        Draw_Box(d_message_x, d_message_y, d_message_w, d_message_h,
+        Draw_Box(*LogicPage, d_message_x, d_message_y, d_message_w, d_message_h,
                  BOXSTYLE_BOX, true);
-        Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX, true);
+        Draw_Box(*LogicPage, d_send_x, d_send_y, d_send_w, d_send_h,
+                 BOXSTYLE_BOX, true);
         TheSession().Messages.Draw();
       }
 
@@ -4935,7 +4938,8 @@ static int Net_New_Dialog() {
         //...............................................................
         if (i == 1 || i == 2) {
           Hide_Mouse();
-          Draw_Box(d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
+          Draw_Box(*LogicPage, d_send_x, d_send_y, d_send_w, d_send_h,
+                   BOXSTYLE_BOX,
                    true);  // (erase the cursor)
           TheSession().Messages.Draw();
           Show_Mouse();
@@ -5742,7 +5746,8 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   //	Draw the dialog from scratch
   //------------------------------------------------------------------------
   if (fresh) {
-    Fancy_Text_Print("", 0, 0, scheme, kTBlack, TPF_CENTER | kTpfText);
+    Fancy_Text_Print(*LogicPage, "", 0, 0, scheme, kTBlack,
+                     TPF_CENTER | kTpfText);
 
     switch (TheSession().Type) {
       case GAME_IPX:
@@ -5798,15 +5803,16 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     SetLogicPage(TheScreen().visible_view());
     Dialog_Box(x, y, w, h);
 
-    Fancy_Text_Print(buf1, 320, y + (d_margin * 2), scheme, kTBlack,
+    Fancy_Text_Print(*LogicPage, buf1, 320, y + (d_margin * 2), scheme, kTBlack,
                      TPF_CENTER | kTpfText);
 
-    Fancy_Text_Print(buf2, 320, y + (d_margin * 2) + d_txt6_h + d_margin,
-                     scheme, kTBlack, TPF_CENTER | kTpfText);
+    Fancy_Text_Print(*LogicPage, buf2, 320,
+                     y + (d_margin * 2) + d_txt6_h + d_margin, scheme, kTBlack,
+                     TPF_CENTER | kTpfText);
 
-    Fancy_Text_Print(bForfeitWarning ? szNewCancelMessage : buf3, 320,
-                     y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2), scheme,
-                     kTBlack, TPF_CENTER | kTpfText);
+    Fancy_Text_Print(*LogicPage, bForfeitWarning ? szNewCancelMessage : buf3,
+                     320, y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2),
+                     scheme, kTBlack, TPF_CENTER | kTpfText);
 
     Show_Mouse();
   }
@@ -5826,8 +5832,9 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                         y + (d_margin * 2) + d_txt6_h + d_margin + d_txt6_h + 2,
                         kBlack);
 
-    Fancy_Text_Print(buf2, 320, y + (d_margin * 2) + d_txt6_h + d_margin,
-                     scheme, kBlack, TPF_CENTER | kTpfText);
+    Fancy_Text_Print(*LogicPage, buf2, 320,
+                     y + (d_margin * 2) + d_txt6_h + d_margin, scheme, kBlack,
+                     TPF_CENTER | kTpfText);
 
     Show_Mouse();
   }

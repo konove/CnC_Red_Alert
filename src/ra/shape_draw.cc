@@ -45,7 +45,7 @@
 #include "tech/2keyfbuf.h"
 #include "tech/rect.h"
 
-void CC_Draw_Shape(const std::span<const std::byte> shapefile,
+void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
                    const int shape_num, const int x, const int y,
                    const WindowNumberType window, ShapeFlags_Type flags,
                    std::span<const uint8_t> fading_data,
@@ -73,11 +73,11 @@ void CC_Draw_Shape(const std::span<const std::byte> shapefile,
         shapefile, static_cast<uint16_t>(shape_num), ShapeBufferBytes);
     if (!shape_pointer.empty()) {
       PixelView draw_window(
-          LogicPage->buffer(),
+          view.buffer(),
           base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) +
-              LogicPage->x_pos(),
+              view.x_pos(),
           base::At(base::At(WindowList, static_cast<int>(window)), kWindowY) +
-              LogicPage->y_pos(),
+              view.y_pos(),
           base::At(base::At(WindowList, static_cast<int>(window)),
                    kWindowWidth),
           base::At(base::At(WindowList, static_cast<int>(window)),

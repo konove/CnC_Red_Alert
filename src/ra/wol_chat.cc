@@ -55,6 +55,7 @@
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -624,24 +625,24 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         commands->Draw_All();
 
         //	Draw title bar above channel list.
-        Draw_Box(d_chanlist_x, d_chanlist_y - 15, d_chanlist_w, 16,
+        Draw_Box(*LogicPage, d_chanlist_x, d_chanlist_y - 15, d_chanlist_w, 16,
                  BOXSTYLE_BOX, false);
         switch (lesCurrent) {
           case LES_CHANNELS_EXPANDED:
             //	Draw users title bar at bottom.
-            Draw_Box(d_userlist_x, d_userlist_y + d_userlist_h - 16,
+            Draw_Box(*LogicPage, d_userlist_x, d_userlist_y + d_userlist_h - 16,
                      d_userlist_w, 16, BOXSTYLE_BOX, false);
             break;
           case LES_USERS_EXPANDED:
             //	Draw users title bar at top.
-            Draw_Box(d_chanlist_x, d_chanlist_y, d_chanlist_w, 16, BOXSTYLE_BOX,
-                     false);
+            Draw_Box(*LogicPage, d_chanlist_x, d_chanlist_y, d_chanlist_w, 16,
+                     BOXSTYLE_BOX, false);
             break;
           case LIST_EXPAND_STATE::LES_NORMAL:
           default:
             //	Draw users title bar in middle.
-            Draw_Box(d_userlist_x, d_userlist_y - 15, d_userlist_w, 16,
-                     BOXSTYLE_BOX, false);
+            Draw_Box(*LogicPage, d_userlist_x, d_userlist_y - 15, d_userlist_w,
+                     16, BOXSTYLE_BOX, false);
             break;
         }
       }
@@ -1227,7 +1228,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
     hRes = pWO->ChannelJoin(pChannel);
     switch (hRes) {
       case CHAT_E_BADCHANNELPASSWORD: {
-        Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
+        Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
                          kTpfText);  //	Required before String_Pixel_Width()
                                      // call, for god's sake.
         auto* pEditDlg = new SimpleEditDlgClass(
@@ -1364,7 +1365,7 @@ void CreateChatChannel(WolapiObject* pWO) {
           else
   */
   {
-    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
+    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
                      kTpfText);  //	Required before String_Pixel_Width()
                                  // call, for god's sake.
     pEditDlg = new SimpleEditDlgClass(

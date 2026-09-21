@@ -895,12 +895,12 @@ void ChronalVortexClass::Render() {
               IsTheaterShape = static_cast<bool>(
                   otype.IsTheater);  // Tell Build_Frame if this overlay is
                                      // theater specific
-              CC_Draw_Shape(otype.Get_Image_Data(), cellptr->OverlayData,
-                            (x * CELL_PIXEL_W) + (CELL_PIXEL_W >> 1),
-                            (y * CELL_PIXEL_H) + (CELL_PIXEL_H >> 1),
-                            WINDOW_TACTICAL,
-                            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
-                            DisplayClass::UnitShadow);
+              CC_Draw_Shape(
+                  *LogicPage, otype.Get_Image_Data(), cellptr->OverlayData,
+                  (x * CELL_PIXEL_W) + (CELL_PIXEL_W >> 1),
+                  (y * CELL_PIXEL_H) + (CELL_PIXEL_H >> 1), WINDOW_TACTICAL,
+                  SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
+                  DisplayClass::UnitShadow);
 
               IsTheaterShape = false;
             }

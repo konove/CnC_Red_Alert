@@ -105,7 +105,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   /*
   **	Always draw to the hidpage and then blit forward.
   */
-  PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
+  PixelView& view = TheScreen().hidden_view();
 
   /*
   **	Draw the background block.
@@ -113,18 +113,20 @@ void Dialog_Box(int x, int y, int w, int h) {
   const int cx = w / 2;
   const int cy = h / 2;
   auto shapedata = MixArchive::RetrieveData("DD-BKGND.SHP");
-  CC_Draw_Shape(shapedata, 0, cx - 312, cy - 192, WINDOW_PARTIAL,
+  CC_Draw_Shape(view, shapedata, 0, cx - 312, cy - 192, WINDOW_PARTIAL,
                 SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 1, cx, cy - 192, WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 2, cx - 312, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 3, cx, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 1, cx, cy - 192, WINDOW_PARTIAL,
+                SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 2, cx - 312, cy, WINDOW_PARTIAL,
+                SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 3, cx, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
   /*
   **	Draw the side strips.
   */
   shapedata = MixArchive::RetrieveData("DD-EDGE.SHP");
   for (int yy = 0; yy < h; yy += 6) {
-    CC_Draw_Shape(shapedata, 0, 14, yy, WINDOW_PARTIAL, SHAPE_WIN_REL);
-    CC_Draw_Shape(shapedata, 1, w - ((7 + 8) * 2), yy, WINDOW_PARTIAL,
+    CC_Draw_Shape(view, shapedata, 0, 14, yy, WINDOW_PARTIAL, SHAPE_WIN_REL);
+    CC_Draw_Shape(view, shapedata, 1, w - ((7 + 8) * 2), yy, WINDOW_PARTIAL,
                   SHAPE_WIN_REL);
   }
 
@@ -132,57 +134,59 @@ void Dialog_Box(int x, int y, int w, int h) {
   **	Draw the border bars.
   */
   shapedata = MixArchive::RetrieveData("DD-LEFT.SHP");
-  CC_Draw_Shape(shapedata, 0, 0, cy - 200, WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 0, 0, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 0, 0, cy - 200, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 0, 0, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
   shapedata = MixArchive::RetrieveData("DD-RIGHT.SHP");
   const int rightx = w - 14;
-  CC_Draw_Shape(shapedata, 0, rightx, cy - 200, WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 0, rightx, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 0, rightx, cy - 200, WINDOW_PARTIAL,
+                SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 0, rightx, cy, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
   shapedata = MixArchive::RetrieveData("DD-BOTM.SHP");
-  CC_Draw_Shape(shapedata, 0, cx - 320, h - 16, WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 0, cx, h - 16, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 0, cx - 320, h - 16, WINDOW_PARTIAL,
+                SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 0, cx, h - 16, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
   shapedata = MixArchive::RetrieveData("DD-TOP.SHP");
-  CC_Draw_Shape(shapedata, 0, cx - 320, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 0, cx, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 0, cx - 320, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 0, cx, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
 
   /*
   **	Draw the corner caps.
   */
   shapedata = MixArchive::RetrieveData("DD-CRNR.SHP");
-  CC_Draw_Shape(shapedata, 0, 0, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 1, w - 23, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 2, 0, h - 24, WINDOW_PARTIAL, SHAPE_WIN_REL);
-  CC_Draw_Shape(shapedata, 3, w - 23, h - 24, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 0, 0, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 1, w - 23, 0, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 2, 0, h - 24, WINDOW_PARTIAL, SHAPE_WIN_REL);
+  CC_Draw_Shape(view, shapedata, 3, w - 23, h - 24, WINDOW_PARTIAL,
+                SHAPE_WIN_REL);
 
   TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
   TheScreen().hidden_view().Blit(TheScreen().visible_view(), x, y, x, y, w, h,
                                  false);
   TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), false);
-  SetLogicPage(oldpage);
 }
 
 // Draws the beveled edges shared by the button box styles: "Shadow" along the
 // bottom and right, "Highlight" along the top and left, and "Corner" on the two
 // pixels where they meet. Swapping shadow and highlight is what turns a raised
 // button into a depressed one. All coordinates are inclusive.
-static void Draw_Beveled_Box(const int left, const int top, const int right,
-                             const int bottom, const bool filled,
-                             const BoxStyleType& colors) {
+static void Draw_Beveled_Box(PixelView& view, const int left, const int top,
+                             const int right, const int bottom,
+                             const bool filled, const BoxStyleType& colors) {
   if (filled) {
-    LogicPage->FillRect(left, top, right, bottom, colors.Filler);
+    view.FillRect(left, top, right, bottom, colors.Filler);
   }
 
-  LogicPage->DrawLine(left, bottom, right, bottom, colors.Shadow);
-  LogicPage->DrawLine(right, top, right, bottom, colors.Shadow);
+  view.DrawLine(left, bottom, right, bottom, colors.Shadow);
+  view.DrawLine(right, top, right, bottom, colors.Shadow);
 
-  LogicPage->DrawLine(left, top, right, top, colors.Highlight);
-  LogicPage->DrawLine(left, top, left, bottom, colors.Highlight);
+  view.DrawLine(left, top, right, top, colors.Highlight);
+  view.DrawLine(left, top, left, bottom, colors.Highlight);
 
-  LogicPage->PutPixel(left, bottom, colors.Corner);
-  LogicPage->PutPixel(right, top, colors.Corner);
+  view.PutPixel(left, bottom, colors.Corner);
+  view.PutPixel(right, top, colors.Corner);
 }
 
 // Draw_Box -- Displays a highlighted box.
@@ -190,8 +194,8 @@ static void Draw_Beveled_Box(const int left, const int top, const int right,
 // HISTORY: 05/28/1991 JLB : Created.
 //          05/30/1992 JLB : Embedded color codes.
 //          07/31/1992 JLB : Depressed option added.
-void Draw_Box(const int x, const int y, const int w, const int h,
-              const BoxStyleEnum up, const bool filled) {
+void Draw_Box(PixelView& view, const int x, const int y, const int w,
+              const int h, const BoxStyleEnum up, const bool filled) {
   const RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   // The draw calls below take inclusive corner coordinates, so a box "w" pixels
@@ -203,22 +207,22 @@ void Draw_Box(const int x, const int y, const int w, const int h,
     // Flat outline drawn on the box edge itself.
     case BOXSTYLE_BOX:
       if (filled) {
-        LogicPage->FillRect(x, y, right, bottom, kBlack);
+        view.FillRect(x, y, right, bottom, kBlack);
       }
-      LogicPage->DrawRect(x, y, right, bottom, scheme->Box);
+      view.DrawRect(x, y, right, bottom, scheme->Box);
       break;
 
     // Same outline, inset one pixel, which leaves a filled margin around the
     // frame of a dialog.
     case BOXSTYLE_BORDER:
       if (filled) {
-        LogicPage->FillRect(x, y, right, bottom, kBlack);
+        view.FillRect(x, y, right, bottom, kBlack);
       }
-      LogicPage->DrawRect(x + 1, y + 1, right - 1, bottom - 1, scheme->Box);
+      view.DrawRect(x + 1, y + 1, right - 1, bottom - 1, scheme->Box);
       break;
 
     case BOXSTYLE_DOWN:
-      Draw_Beveled_Box(x, y, right, bottom, filled,
+      Draw_Beveled_Box(view, x, y, right, bottom, filled,
                        {
                            .Filler = scheme->Background,
                            .Shadow = scheme->Highlight,
@@ -229,7 +233,7 @@ void Draw_Box(const int x, const int y, const int w, const int h,
 
     // The disabled styles use fixed greys rather than the color scheme.
     case BOXSTYLE_DIS_DOWN:
-      Draw_Beveled_Box(x, y, right, bottom, filled,
+      Draw_Beveled_Box(view, x, y, right, bottom, filled,
                        {
                            .Filler = kGrey,
                            .Shadow = kWhite,
@@ -239,7 +243,7 @@ void Draw_Box(const int x, const int y, const int w, const int h,
       break;
 
     case BOXSTYLE_DIS_RAISED:
-      Draw_Beveled_Box(x, y, right, bottom, filled,
+      Draw_Beveled_Box(view, x, y, right, bottom, filled,
                        {
                            .Filler = kGrey,
                            .Shadow = kBlack,
@@ -251,7 +255,7 @@ void Draw_Box(const int x, const int y, const int w, const int h,
     // A raised button is also the fallback for an unrecognized style.
     case BOXSTYLE_RAISED:
     default:
-      Draw_Beveled_Box(x, y, right, bottom, filled,
+      Draw_Beveled_Box(view, x, y, right, bottom, filled,
                        {
                            .Filler = scheme->Background,
                            .Shadow = scheme->Shadow,
@@ -325,13 +329,13 @@ int Format_Window_String(std::span<char> string, int max_line_len, int& width,
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   The rendering is done to the LogicPage. *
+ * WARNINGS:   The rendering is done to `view`. *
  *                                                                                             *
  * HISTORY: * 03/03/1992 JLB : Created. * 07/31/1992 JLB : Cool raised border
  *effect.                                               * 06/08/1994 JLB : Takes
  *appropriate enumeration parameters.                                *
  *=============================================================================================*/
-void Window_Box(WindowNumberType window, BoxStyleEnum style) {
+void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style) {
   const int x =
       base::At(base::At(WindowList, static_cast<int>(window)), kWindowX);
   const int y =
@@ -345,16 +349,16 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
   **	If it is to be rendered to the seenpage, then
   **	hide the mouse.
   */
-  if (TheScreen().IsVisible(LogicPage)) {
+  if (TheScreen().IsVisible(&view)) {
     Conditional_Hide_Mouse(x, y, x + w, y + h);
   }
 
-  Draw_Box(x, y, w, h, style, true);
+  Draw_Box(view, x, y, w, h, style, true);
 
   /*
   **	Restore the mouse if it has been hidden and return.
   */
-  if (TheScreen().IsVisible(LogicPage)) {
+  if (TheScreen().IsVisible(&view)) {
     Conditional_Show_Mouse();
   }
 }
@@ -395,9 +399,8 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
  * HISTORY: * 12/24/1991 JLB : Created. * 10/26/94   JLB : Handles font X
  *spacing in a more friendly manner.                        *
  *=============================================================================================*/
-void Simple_Text_Print(const char* text, int x, int y,
-                       RemapControlType* fore, int back,
-                       TextPrintType flag) {
+void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
+                       RemapControlType* fore, int back, TextPrintType flag) {
   static int yspace = 0;          // Y spacing adjustment for font.
   static int xspace = 0;          // Spacing adjustment for font.
   std::span<const std::byte> font = {};  // Font to use.
@@ -666,8 +669,8 @@ void Simple_Text_Print(const char* text, int x, int y,
         break;
     }
 
-    if (x < LogicPage->width() && y < LogicPage->height()) {
-      LogicPage->Print(text, x, y, forecolor, back);
+    if (x < view.width() && y < view.height()) {
+      view.Print(text, x, y, forecolor, back);
     }
   }
 }
@@ -696,17 +699,17 @@ void Simple_Text_Print(const char* text, int x, int y,
  *                                                                                             *
  * HISTORY: * 11/29/1994 JLB : Created *
  *=============================================================================================*/
-void Fancy_Text_Print(const int text, const int x, const int y,
+void Fancy_Text_Print(PixelView& view, const int text, const int x, const int y,
                       RemapControlType* fore, const int back,
                       const TextPrintType flag,
                       const absl::Span<const absl::FormatArg> args) {
   if (text != TXT_NONE) {
-    Fancy_Text_Print(Text_String(text), x, y, fore, back, flag, args);
+    Fancy_Text_Print(view, Text_String(text), x, y, fore, back, flag, args);
   } else {
     /*
     **	Just the flags are to be changed, since the text number is TXT_NONE.
     */
-    Simple_Text_Print(nullptr, x, y, fore, back, flag);
+    Simple_Text_Print(view, nullptr, x, y, fore, back, flag);
   }
 }
 
@@ -736,19 +739,19 @@ void Fancy_Text_Print(const int text, const int x, const int y,
  *spacing in a more friendly manner.                        * 11/29/1994 JLB :
  *Separated actual draw action.                                            *
  *=============================================================================================*/
-void Fancy_Text_Print(const char* text, const int x, const int y,
-                      RemapControlType* fore, const int back,
+void Fancy_Text_Print(PixelView& view, const char* text, const int x,
+                      const int y, RemapControlType* fore, const int back,
                       const TextPrintType flag,
                       const absl::Span<const absl::FormatArg> args) {
   if (text) {
     const std::string formatted = port::FormatRuntime(text, args);
-    Simple_Text_Print(formatted.c_str(), x, y, fore, back, flag);
+    Simple_Text_Print(view, formatted.c_str(), x, y, fore, back, flag);
   } else {
     /*
     **	Just the flags are desired to be changed, so call the simple print
     *routine with *	a nullptr text pointer.
     */
-    Simple_Text_Print(nullptr, x, y, fore, back, flag);
+    Simple_Text_Print(view, nullptr, x, y, fore, back, flag);
   }
 }
 
@@ -781,7 +784,7 @@ void Fancy_Text_Print(const char* text, const int x, const int y,
  *                                                                                             *
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-void Conquer_Clip_Text_Print(const char* text, int x, int y,
+void Conquer_Clip_Text_Print(PixelView& view, const char* text, int x, int y,
                              RemapControlType* fore, int back,
                              TextPrintType flag, int width,
                              std::span<const int> tabs) {
@@ -790,7 +793,7 @@ void Conquer_Clip_Text_Print(const char* text, int x, int y,
   }
   char buffer[512];
   port::SafeCopy(buffer, text);
-  Simple_Text_Print(nullptr, 0, 0, nullptr, kTBlack, flag);
+  Simple_Text_Print(view, nullptr, 0, 0, nullptr, kTBlack, flag);
   std::span<char> source(buffer);
   int offset = 0;
   while (offset < width && !source.empty() && source.front() != '\0') {
@@ -808,7 +811,7 @@ void Conquer_Clip_Text_Print(const char* text, int x, int y,
       ++visible;
     }
     base::At(source, visible) = '\0';
-    Simple_Text_Print(source.data(), x + offset, y, fore, back, flag);
+    Simple_Text_Print(view, source.data(), x + offset, y, fore, back, flag);
     offset += line_width;
     if (visible < count || tab == std::string_view::npos) {
       break;
@@ -850,8 +853,8 @@ void Conquer_Clip_Text_Print(const char* text, int x, int y,
  * HISTORY:                                                                *
  *   01/05/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Plain_Text_Print(const int text, const int x, const int y, const int fore,
-                      const int back, const TextPrintType flag,
+void Plain_Text_Print(PixelView& view, const int text, const int x, const int y,
+                      const int fore, const int back, const TextPrintType flag,
                       const absl::Span<const absl::FormatArg> args) {
   RemapControlType scheme{};
 
@@ -869,7 +872,7 @@ void Plain_Text_Print(const int text, const int x, const int y, const int fore,
   scheme.Underline = static_cast<unsigned char>(fore);
   scheme.Bar = static_cast<unsigned char>(fore);
 
-  Fancy_Text_Print(text, x, y, &scheme, back, flag, args);
+  Fancy_Text_Print(view, text, x, y, &scheme, back, flag, args);
 }
 
 /***************************************************************************
@@ -897,8 +900,9 @@ void Plain_Text_Print(const int text, const int x, const int y, const int fore,
  * HISTORY:                                                                *
  *   01/05/1996 BRR : Created.                                             *
  *=========================================================================*/
-void Plain_Text_Print(const char* text, const int x, const int y,
-                      const int fore, const int back, const TextPrintType flag,
+void Plain_Text_Print(PixelView& view, const char* text, const int x,
+                      const int y, const int fore, const int back,
+                      const TextPrintType flag,
                       const absl::Span<const absl::FormatArg> args) {
   RemapControlType scheme{};
 
@@ -916,7 +920,7 @@ void Plain_Text_Print(const char* text, const int x, const int y,
   scheme.Underline = static_cast<unsigned char>(fore);
   scheme.Bar = static_cast<unsigned char>(fore);
 
-  Fancy_Text_Print(text, x, y, &scheme, back, flag, args);
+  Fancy_Text_Print(view, text, x, y, &scheme, back, flag, args);
 }
 
 /***********************************************************************************************
@@ -938,25 +942,25 @@ void Plain_Text_Print(const char* text, const int x, const int y,
  *                                                                                             *
  * HISTORY: * 06/23/1995 JLB : Created. *
  *=============================================================================================*/
-void Draw_Caption(int text, int x, int y, int w) {
-  Draw_Caption(Text_String(text), x, y, w);
+void Draw_Caption(PixelView& view, int text, int x, int y, int w) {
+  Draw_Caption(view, Text_String(text), x, y, w);
 }
 
-void Draw_Caption(const char* text, int x, int y, int w) {
+void Draw_Caption(PixelView& view, const char* text, int x, int y, int w) {
   /*
   **	Draw the caption.
   */
   if (text != nullptr && *text != '\0') {
     if (TheDebugState().map_editor_active()) {
-      Fancy_Text_Print(text, (w / 2) + x, 4 + y,
+      Fancy_Text_Print(view, text, (w / 2) + x, 4 + y,
                        GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_CENTER | TPF_EFNT | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
     } else {
-      Fancy_Text_Print(text, (w / 2) + x, 16 + y,
+      Fancy_Text_Print(view, text, (w / 2) + x, 16 + y,
                        GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_CENTER | kTpfText);
       const int length = String_Pixel_Width(text);
-      LogicPage->DrawLine(
+      view.DrawLine(
           x + (w / 2) - (length / 2), y + FontHeight + FontYSpacing + 16,
           x + (w / 2) + (length / 2), y + FontHeight + FontYSpacing + 16,
           GadgetClass::Get_Color_Scheme()->Box);

@@ -81,6 +81,7 @@
 #include "ra/type.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "tech/mix_archive.h"
 
@@ -758,7 +759,7 @@ void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
     }
 
     IsTheaterShape = IsTheater;
-    CC_Draw_Shape(Get_Image_Data(), frame, x, y, window,
+    CC_Draw_Shape(*LogicPage, Get_Image_Data(), frame, x, y, window,
                   SHAPE_NORMAL | SHAPE_CENTER | SHAPE_WIN_REL);
     IsTheaterShape = false;
   }
@@ -852,10 +853,11 @@ ObjectClass* OverlayTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
  *=============================================================================================*/
 void OverlayTypeClass::Draw_It(int x, int y, int data) const {
   IsTheaterShape = IsTheater;
-  CC_Draw_Shape(
-      Get_Image_Data(), data, TheMap().TacPixelX + x + (CELL_PIXEL_W >> 1),
-      TheMap().TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
-      SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {}, MouseClass::UnitShadow);
+  CC_Draw_Shape(*LogicPage, Get_Image_Data(), data,
+                TheMap().TacPixelX + x + (CELL_PIXEL_W >> 1),
+                TheMap().TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
+                SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
+                MouseClass::UnitShadow);
   IsTheaterShape = false;
 }
 

@@ -1100,7 +1100,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                           static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
       FontXSpacing -= 2;
       Fancy_Text_Print(
-          "%02X%02X\r%d%d%d\r%d %d",
+          *LogicPage, "%02X%02X\r%d%d%d\r%d %d",
           TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1), TheMap().TacPixelY + y,
           &ThePalettes().grey_scheme(), kTBlack,
           TPF_EFNT | TPF_CENTER | TPF_BRIGHT_COLOR | TPF_FULLSHADOW,
@@ -1173,7 +1173,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         IsTheaterShape =
             static_cast<bool>(otype.IsTheater);  // Tell Build_Frame if this
                                                  // overlay is theater specific
-        CC_Draw_Shape(otype.Get_Image_Data(), OverlayData,
+        CC_Draw_Shape(*LogicPage, otype.Get_Image_Data(), OverlayData,
                       x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
                       WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
@@ -1187,8 +1187,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
           **	Draw the cell's Trigger mnemonic, if it has a trigger
           */
           if (Trigger.Is_Valid()) {
-            Fancy_Text_Print(Trigger->Class->IniName, x + TheMap().TacPixelX,
-                             y + TheMap().TacPixelY,
+            Fancy_Text_Print(*LogicPage, Trigger->Class->IniName,
+                             x + TheMap().TacPixelX, y + TheMap().TacPixelY,
                              &ThePalettes().color_remaps().at(PCOLOR_RED),
                              kTBlack, TPF_EFNT | TPF_FULLSHADOW);
           }
@@ -1209,7 +1209,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                   base::At(waypt, 2) = 0;
                 }
                 Fancy_Text_Print(
-                    waypt, TheMap().TacPixelX + x + (CELL_PIXEL_W / 2),
+                    *LogicPage, waypt,
+                    TheMap().TacPixelX + x + (CELL_PIXEL_W / 2),
                     TheMap().TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
                     &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                     TPF_EFNT | TPF_CENTER | TPF_FULLSHADOW);
@@ -1218,7 +1219,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
             }
             if (base::At(TheScenario().Waypoint,
                          ScenarioClass::kHomeWaypoint) == Cell_Number()) {
-              Fancy_Text_Print("Home", TheMap().TacPixelX + x,
+              Fancy_Text_Print(*LogicPage, "Home", TheMap().TacPixelX + x,
                                TheMap().TacPixelY + y + (CELL_PIXEL_H)-7,
                                &ThePalettes().color_remaps().at(PCOLOR_GREY),
                                kTBlack, TPF_EFNT | TPF_FULLSHADOW);
@@ -1226,7 +1227,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
             if (base::At(TheScenario().Waypoint,
                          ScenarioClass::kReinforcementWaypoint) ==
                 Cell_Number()) {
-              Fancy_Text_Print("Reinf", TheMap().TacPixelX + x,
+              Fancy_Text_Print(*LogicPage, "Reinf", TheMap().TacPixelX + x,
                                TheMap().TacPixelY + y + (CELL_PIXEL_H)-7,
                                &ThePalettes().color_remaps().at(PCOLOR_GREY),
                                kTBlack, TPF_EFNT | TPF_FULLSHADOW);
@@ -1355,7 +1356,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       if (IsFlagged) {
         const auto flag_remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, REMAP_NORMAL);
-        CC_Draw_Shape(MixArchive::RetrieveData("FLAGFLY.SHP"),
+        CC_Draw_Shape(*LogicPage, MixArchive::RetrieveData("FLAGFLY.SHP"),
                       static_cast<int>(CurrentFrame() % 14),
                       x + (ICON_PIXEL_W / 2), y + (ICON_PIXEL_H / 2),
                       WINDOW_TACTICAL,

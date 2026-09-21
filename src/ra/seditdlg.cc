@@ -224,17 +224,19 @@ const char* SimpleEditDlgClass::Show() {
       Hide_Mouse();
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       if (!szTitle.empty()) {
-        Draw_Caption(szTitle.c_str(), d_dialog_x, d_dialog_y, d_dialog_w);
+        Draw_Caption(*LogicPage, szTitle.c_str(), d_dialog_x, d_dialog_y,
+                     d_dialog_w);
       }
 
       /*
       **	Redraw the buttons.
       */
-      Fancy_Text_Print(szPrompt.c_str(), d_prompt_x, d_prompt_y,
+      Fancy_Text_Print(*LogicPage, szPrompt.c_str(), d_prompt_x, d_prompt_y,
                        GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
       if (!szPrompt2.empty()) {
-        Fancy_Text_Print(szPrompt2.c_str(), d_prompt2_x, d_prompt2_y,
-                         GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
+        Fancy_Text_Print(*LogicPage, szPrompt2.c_str(), d_prompt2_x,
+                         d_prompt2_y, GadgetClass::Get_Color_Scheme(), kTBlack,
+                         kTpfText);
       }
       commands->Flag_List_To_Redraw();
       Show_Mouse();

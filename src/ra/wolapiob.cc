@@ -46,6 +46,7 @@
 #include "ra/wolapi/wolapi.h"
 #include "sdllib/display.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
@@ -1702,7 +1703,7 @@ void WolapiObject::DoFindPage() {
   //	User presses find/page button.
 
   //	Ask user for user desired.
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
                    kTpfText);  //	Required before String_Pixel_Width()
                                // call, for god's sake.
   auto* pFindPageDlg = new SimpleEditDlgClass(

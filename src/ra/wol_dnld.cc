@@ -43,6 +43,7 @@
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -84,7 +85,8 @@ bool WOL_Download_Dialog(IDownload* pDownload,
   //	int	height;
   //	char* info_string = (char*)szTitle;
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(), kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+                   kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   //	Format_Window_String( info_string, visible_view.height(), width,
@@ -168,7 +170,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
         /*
         ** Dialog & Field labels
         */
-        Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
+        Draw_Caption(*LogicPage, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
         //				Fancy_Text_Print(info_string,
         // d_dialog_cx-width/2, d_dialog_y + 25*2,

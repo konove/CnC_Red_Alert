@@ -83,6 +83,7 @@
 #include "ra/type.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "tech/game_file.h"
@@ -1179,7 +1180,7 @@ void InfantryTypeClass::Display(int x, int y, WindowNumberType window,
       shape = 2;
     }
 
-    CC_Draw_Shape(ptr, shape, x, y, window,
+    CC_Draw_Shape(*LogicPage, ptr, shape, x, y, window,
                   SHAPE_NORMAL | SHAPE_CENTER | SHAPE_WIN_REL);
   }
 }

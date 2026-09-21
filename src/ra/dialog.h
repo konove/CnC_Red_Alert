@@ -7,10 +7,11 @@
 #include "absl/types/span.h"
 #include "port/format.h"
 #include "ra/defines.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
 
-void Draw_Caption(int text, int x, int y, int w);
-void Draw_Caption(const char* text, int x, int y, int w);
+void Draw_Caption(PixelView& view, int text, int x, int y, int w);
+void Draw_Caption(PixelView& view, const char* text, int x, int y, int w);
 // Word wraps "string" in place so that no line exceeds "max_line_len" pixels
 // when rendered with the current font.
 //
@@ -26,12 +27,12 @@ void Draw_Caption(const char* text, int x, int y, int w);
 int Format_Window_String(std::span<char> string, int max_line_len, int& width,
                          int& height);
 extern void Dialog_Box(int x, int y, int w, int h);
-void Conquer_Clip_Text_Print(const char* /*text*/, int x, int y,
-                             RemapControlType* fore, int back = kTBlack,
+void Conquer_Clip_Text_Print(PixelView& view, const char* /*text*/, int x,
+                             int y, RemapControlType* fore, int back = kTBlack,
                              TextPrintType flag = static_cast<TextPrintType>(
                                  TPF_8POINT | TPF_DROPSHADOW),
                              int width = -1, std::span<const int> tabs = {});
-// Draws a bordered box to the current LogicPage.
+// Draws a bordered box into `view`.
 //
 // "x,y" is the upper left corner and "w,h" the size, both in pixels. "up"
 // selects the border style, which also picks the color set used for the fill,
@@ -39,56 +40,62 @@ void Conquer_Clip_Text_Print(const char* /*text*/, int x, int y,
 //
 // This is a low level routine: it draws with raw palette indices and does no
 // color adjustment for the current graphic mode.
-void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled);
-void Window_Box(WindowNumberType window, BoxStyleEnum style);
+void Draw_Box(PixelView& view, int x, int y, int w, int h, BoxStyleEnum up,
+              bool filled);
+void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style);
 // Prints `text`, formatted with `args` as printf would, in the color scheme
 // with a drop shadow. A text that is not a format for `args` prints verbatim
 // (see port::FormatRuntime); a nullptr text only applies the flags.
-void Fancy_Text_Print(const char* text, int x, int y, RemapControlType* fore,
-                      int back, TextPrintType flag,
+void Fancy_Text_Print(PixelView& view, const char* text, int x, int y,
+                      RemapControlType* fore, int back, TextPrintType flag,
                       absl::Span<const absl::FormatArg> args = {});
 // Same, with the text looked up by string-table number; TXT_NONE only applies
 // the flags.
-void Fancy_Text_Print(int text, int x, int y, RemapControlType* fore, int back,
-                      TextPrintType flag,
+void Fancy_Text_Print(PixelView& view, int text, int x, int y,
+                      RemapControlType* fore, int back, TextPrintType flag,
                       absl::Span<const absl::FormatArg> args = {});
 template <typename... Args>
   requires(sizeof...(Args) > 0)
-void Fancy_Text_Print(const char* text, int x, int y, RemapControlType* fore,
+void Fancy_Text_Print(PixelView& view, const char* text, int x, int y,
+                      RemapControlType* fore, int back, TextPrintType flag,
+                      const Args&... args) {
+  const auto packed = port::MakeFormatArgs(args...);
+  Fancy_Text_Print(view, text, x, y, fore, back, flag,
+                   absl::MakeConstSpan(packed));
+}
+template <typename... Args>
+  requires(sizeof...(Args) > 0)
+void Fancy_Text_Print(PixelView& view, int text, int x, int y,
+                      RemapControlType* fore, int back, TextPrintType flag,
+                      const Args&... args) {
+  const auto packed = port::MakeFormatArgs(args...);
+  Fancy_Text_Print(view, text, x, y, fore, back, flag,
+                   absl::MakeConstSpan(packed));
+}
+void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
+                       RemapControlType* fore, int back, TextPrintType flag);
+// Fancy_Text_Print with a single palette color in place of the color scheme.
+void Plain_Text_Print(PixelView& view, int text, int x, int y, int fore,
+                      int back, TextPrintType flag,
+                      absl::Span<const absl::FormatArg> args = {});
+void Plain_Text_Print(PixelView& view, const char* text, int x, int y, int fore,
+                      int back, TextPrintType flag,
+                      absl::Span<const absl::FormatArg> args = {});
+template <typename... Args>
+  requires(sizeof...(Args) > 0)
+void Plain_Text_Print(PixelView& view, int text, int x, int y, int fore,
                       int back, TextPrintType flag, const Args&... args) {
   const auto packed = port::MakeFormatArgs(args...);
-  Fancy_Text_Print(text, x, y, fore, back, flag, absl::MakeConstSpan(packed));
+  Plain_Text_Print(view, text, x, y, fore, back, flag,
+                   absl::MakeConstSpan(packed));
 }
 template <typename... Args>
   requires(sizeof...(Args) > 0)
-void Fancy_Text_Print(int text, int x, int y, RemapControlType* fore, int back,
-                      TextPrintType flag, const Args&... args) {
+void Plain_Text_Print(PixelView& view, const char* text, int x, int y, int fore,
+                      int back, TextPrintType flag, const Args&... args) {
   const auto packed = port::MakeFormatArgs(args...);
-  Fancy_Text_Print(text, x, y, fore, back, flag, absl::MakeConstSpan(packed));
-}
-void Simple_Text_Print(const char* text, int x, int y,
-                       RemapControlType* fore, int back,
-                       TextPrintType flag);
-// Fancy_Text_Print with a single palette color in place of the color scheme.
-void Plain_Text_Print(int text, int x, int y, int fore, int back,
-                      TextPrintType flag,
-                      absl::Span<const absl::FormatArg> args = {});
-void Plain_Text_Print(const char* text, int x, int y, int fore, int back,
-                      TextPrintType flag,
-                      absl::Span<const absl::FormatArg> args = {});
-template <typename... Args>
-  requires(sizeof...(Args) > 0)
-void Plain_Text_Print(int text, int x, int y, int fore, int back,
-                      TextPrintType flag, const Args&... args) {
-  const auto packed = port::MakeFormatArgs(args...);
-  Plain_Text_Print(text, x, y, fore, back, flag, absl::MakeConstSpan(packed));
-}
-template <typename... Args>
-  requires(sizeof...(Args) > 0)
-void Plain_Text_Print(const char* text, int x, int y, int fore, int back,
-                      TextPrintType flag, const Args&... args) {
-  const auto packed = port::MakeFormatArgs(args...);
-  Plain_Text_Print(text, x, y, fore, back, flag, absl::MakeConstSpan(packed));
+  Plain_Text_Print(view, text, x, y, fore, back, flag,
+                   absl::MakeConstSpan(packed));
 }
 
 #endif  // CNC_RED_ALERT_RA_DIALOG_H_

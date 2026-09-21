@@ -840,7 +840,7 @@ void Do_Win() {
     SetLogicPage(TheScreen().visible_view());
     TheMap().Flag_To_Redraw(true);
     TheMap().Render();
-    Fancy_Text_Print(TXT_SCENARIO_WON, x, 180,
+    Fancy_Text_Print(*LogicPage, TXT_SCENARIO_WON, x, 180,
                      &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                      TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
     speech_timer.Set(int64_t{kTimerSecond} * 3);
@@ -1053,7 +1053,7 @@ void Do_Lose() {
   **	Announce win to player.
   */
   SetLogicPage(TheScreen().visible_view());
-  Fancy_Text_Print(TXT_SCENARIO_LOST, x, 180,
+  Fancy_Text_Print(*LogicPage, TXT_SCENARIO_LOST, x, 180,
                    &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   speech_timer.Set(int64_t{kTimerSecond} * 3);
@@ -1144,7 +1144,7 @@ void Do_Draw() {
   **	Announce win to player.
   */
   SetLogicPage(TheScreen().visible_view());
-  Fancy_Text_Print(TXT_WOL_DRAW, x, 180,
+  Fancy_Text_Print(*LogicPage, TXT_WOL_DRAW, x, 180,
                    &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   speech_timer.Set(int64_t{kTimerSecond} * 3);
@@ -1328,7 +1328,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     b3txt = nullptr;
   }
 
-  Fancy_Text_Print(TXT_NONE, 0, 0,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0,
                    &ThePalettes().color_remaps().at(PCOLOR_TYPE), kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   /*
@@ -1384,7 +1384,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   // Copy to mutable buffer for Format_Window_String (which inserts newlines).
   page_text.copy(buffer, page_text.size());
   base::At(buffer, page_text.size()) = '\0';
-  Fancy_Text_Print(TXT_NONE, 0, 0,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0,
                    &ThePalettes().color_remaps().at(PCOLOR_TYPE), kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   int width = 0;

@@ -123,7 +123,7 @@ TEST(WinBitsTest, SaveAndRestoreRoundTripsARectangle) {
   }
 
   std::uint8_t saved[2 * 3] = {};
-  ASSERT_TRUE(SaveSurfaceRect(2, 1, 2, 3, saved, WINDOW_MAIN));
+  ASSERT_TRUE(SaveSurfaceRect(*LogicPage, 2, 1, 2, 3, saved, WINDOW_MAIN));
 
   // Top-down, no padding: the first row saved is the one at y == 1.
   EXPECT_EQ(saved[0], screen.Pixel(2, 1));
@@ -134,7 +134,7 @@ TEST(WinBitsTest, SaveAndRestoreRoundTripsARectangle) {
     screen.SetPixel(2, y, 0xFF);
     screen.SetPixel(3, y, 0xFF);
   }
-  ASSERT_TRUE(RestoreSurfaceRect(2, 1, 2, 3, saved, WINDOW_MAIN));
+  ASSERT_TRUE(RestoreSurfaceRect(*LogicPage, 2, 1, 2, 3, saved, WINDOW_MAIN));
 
   EXPECT_EQ(screen.Pixel(2, 1), (2 * 1) + 8 + 1);
   EXPECT_EQ(screen.Pixel(3, 3), (3 * 8) + 3 + 1);
@@ -147,7 +147,7 @@ TEST(WinBitsTest, DrawDibTurnsTheImageRightWayUp) {
   const auto image = dib::Image::FromBmp(MakeBmp(2, 2, 10));
   ASSERT_TRUE(image.has_value());
 
-  DrawDib(*image, 1, 1, 100, WINDOW_MAIN);
+  DrawDib(*LogicPage, *image, 1, 1, 100, WINDOW_MAIN);
 
   // Row 0 of the image is its bottom row, so it lands on the lower line.
   EXPECT_EQ(screen.Pixel(1, 2), 10);
@@ -162,7 +162,7 @@ TEST(WinBitsTest, DrawDibClipsEachRowToTheGivenWidth) {
   const auto image = dib::Image::FromBmp(MakeBmp(3, 1, 20));
   ASSERT_TRUE(image.has_value());
 
-  DrawDib(*image, 0, 0, 2, WINDOW_MAIN);
+  DrawDib(*LogicPage, *image, 0, 0, 2, WINDOW_MAIN);
 
   EXPECT_EQ(screen.Pixel(0, 0), 20);
   EXPECT_EQ(screen.Pixel(1, 0), 21);
@@ -174,7 +174,7 @@ TEST(WinBitsTest, DrawDibDrawsNothingForANegativeWidth) {
   const auto image = dib::Image::FromBmp(MakeBmp(2, 2, 30));
   ASSERT_TRUE(image.has_value());
 
-  DrawDib(*image, 0, 0, -1, WINDOW_MAIN);
+  DrawDib(*LogicPage, *image, 0, 0, -1, WINDOW_MAIN);
 
   EXPECT_EQ(screen.Pixel(0, 0), 0);
   EXPECT_EQ(screen.Pixel(1, 1), 0);
@@ -185,10 +185,14 @@ TEST(WinBitsTest, DrawDibDrawsNothingForANegativeWidth) {
 TEST(WinBitsTest, RejectsShortBuffersAndOutOfWindowRectangles) {
   const TestScreen screen;
   std::uint8_t short_buffer[3] = {1, 2, 3};
-  EXPECT_FALSE(SaveSurfaceRect(0, 0, 2, 2, short_buffer, WINDOW_MAIN));
-  EXPECT_FALSE(RestoreSurfaceRect(0, 0, 2, 2, short_buffer, WINDOW_MAIN));
-  EXPECT_FALSE(SaveSurfaceRect(-1, 0, 1, 1, short_buffer, WINDOW_MAIN));
-  EXPECT_FALSE(RestoreSurfaceRect(kWidth, 0, 1, 1, short_buffer, WINDOW_MAIN));
+  EXPECT_FALSE(
+      SaveSurfaceRect(*LogicPage, 0, 0, 2, 2, short_buffer, WINDOW_MAIN));
+  EXPECT_FALSE(
+      RestoreSurfaceRect(*LogicPage, 0, 0, 2, 2, short_buffer, WINDOW_MAIN));
+  EXPECT_FALSE(
+      SaveSurfaceRect(*LogicPage, -1, 0, 1, 1, short_buffer, WINDOW_MAIN));
+  EXPECT_FALSE(RestoreSurfaceRect(*LogicPage, kWidth, 0, 1, 1, short_buffer,
+                                  WINDOW_MAIN));
   EXPECT_EQ(short_buffer[0], 1);
   EXPECT_EQ(screen.Pixel(0, 0), 0);
 }

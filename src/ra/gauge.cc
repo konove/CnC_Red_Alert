@@ -221,7 +221,7 @@ bool GaugeClass::Draw_Me(bool forced) {
     /*
     **	Draw the body & set text color
     */
-    Draw_Box(X, Y, Width, Height, BOXSTYLE_DOWN, true);
+    Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_DOWN, true);
 
     /*
     **	Colourize the inside of the gauge if indicated.
@@ -367,9 +367,9 @@ void GaugeClass::Draw_Thumb() {
   x = std::max(x, X);
 
   if (IsHorizontal) {
-    Draw_Box(x, Y, 4, Height, BOXSTYLE_RAISED, true);
+    Draw_Box(*LogicPage, x, Y, 4, Height, BOXSTYLE_RAISED, true);
   } else {
-    Draw_Box(X, x, Width, 4, BOXSTYLE_RAISED, true);
+    Draw_Box(*LogicPage, X, x, Width, 4, BOXSTYLE_RAISED, true);
   }
 }
 
@@ -469,8 +469,8 @@ bool TriColorGaugeClass::Draw_Me(bool forced) {
     /*
     **	Draw the body & set text color
     */
-    Draw_Box(X, Y, Width, Height, IsDisabled ? BOXSTYLE_RAISED : BOXSTYLE_DOWN,
-             true);
+    Draw_Box(*LogicPage, X, Y, Width, Height,
+             IsDisabled ? BOXSTYLE_RAISED : BOXSTYLE_DOWN, true);
 
     /*
     **	Colourize the inside of the gauge if indicated.

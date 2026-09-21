@@ -128,18 +128,18 @@ void TabClass::Draw_It(bool complete) {
     /*
     ** Use the new sidebar art for 640x400
     */
-    CC_Draw_Shape(TabShape, 0, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
+    CC_Draw_Shape(*LogicPage, TabShape, 0, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
     Draw_Credits_Tab();
     LogicPage->DrawLine(0, tab_height - 2, rightx, tab_height - 2, kBlack);
-    Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
+    Fancy_Text_Print(*LogicPage, TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
                      &ThePalettes().metal_scheme(), kTBlack,
                      TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
     if (IsSidebarActive) {
     } else {
-      CC_Draw_Shape(TabShape, 0, width - (EVA_WIDTH * 2), 0, WINDOW_MAIN,
-                    SHAPE_NORMAL);
+      CC_Draw_Shape(*LogicPage, TabShape, 0, width - (EVA_WIDTH * 2), 0,
+                    WINDOW_MAIN, SHAPE_NORMAL);
       Fancy_Text_Print(
-          TXT_TAB_SIDEBAR, width - EVA_WIDTH, 0,
+          *LogicPage, TXT_TAB_SIDEBAR, width - EVA_WIDTH, 0,
           &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
           TPF_METAL12 | TPF_NOSHADOW | TPF_CENTER | TPF_BRIGHT_COLOR);
     }
@@ -154,14 +154,16 @@ void TabClass::Draw_Credits_Tab() {
   /*
   ** Use the new sidebar art for 640x400
   */
-  CC_Draw_Shape(TabShape, TheMap().MoneyFlashTimer.Value() > 1 ? 8 : 6,
+  CC_Draw_Shape(*LogicPage, TabShape,
+                TheMap().MoneyFlashTimer.Value() > 1 ? 8 : 6,
                 (320 - EVA_WIDTH) * 2, 0, WINDOW_MAIN, SHAPE_NORMAL);
 
   if (TheScenario().MissionTimer.IsRunning()) {
     const bool light = TheScenario().MissionTimer.Value() <
                            kTicksPerMinute * TheRules().TimerWarning ||
                        TheMap().FlasherTimer.HasTimeLeft();
-    CC_Draw_Shape(TabShape, light ? 4 : 2, 320, 0, WINDOW_MAIN, SHAPE_NORMAL);
+    CC_Draw_Shape(*LogicPage, TabShape, light ? 4 : 2, 320, 0, WINDOW_MAIN,
+                  SHAPE_NORMAL);
   }
 }
 
@@ -175,9 +177,9 @@ void TabClass::Hilite_Tab(int tab) {
   /*
   ** Use the new sidebar art for 640x400
   */
-  CC_Draw_Shape(TabShape, 1, xpos, 0, WINDOW_MAIN, SHAPE_NORMAL);
+  CC_Draw_Shape(*LogicPage, TabShape, 1, xpos, 0, WINDOW_MAIN, SHAPE_NORMAL);
   ThePalettes().metal_scheme().Color = 128 + 6;
-  Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
+  Fancy_Text_Print(*LogicPage, TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
                    &ThePalettes().metal_scheme(), kTBlack,
                    TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
   ThePalettes().metal_scheme().Color = 128;

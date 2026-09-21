@@ -99,7 +99,7 @@ bool Get_Broadcast_Addresses() {
 
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   // Format_Window_String rewrites the buffer in place, so the title cannot
   // be a string literal.
@@ -121,7 +121,8 @@ bool Get_Broadcast_Addresses() {
 
   ip_address_list.Set_Selected_Style(ColorListClass::SELECT_NORMAL);
 
-  Fancy_Text_Print("", 0, 0, scheme, kTBlack, TPF_CENTER | kTpfText);
+  Fancy_Text_Print(*LogicPage, "", 0, 0, scheme, kTBlack,
+                   TPF_CENTER | kTpfText);
 
   Load_Title_Page(true);
   ThePalettes().title_palette().Set();  // GamePalette.Set();
@@ -185,7 +186,7 @@ bool Get_Broadcast_Addresses() {
         //...............................................................
         //	Dialog & Field labels
         //...............................................................
-        Fancy_Text_Print("IP Addresses", d_dialog_cx - (width / 2),
+        Fancy_Text_Print(*LogicPage, "IP Addresses", d_dialog_cx - (width / 2),
                          d_dialog_y + 50, scheme, kTBlack, kTpfText);
 
         //...............................................................

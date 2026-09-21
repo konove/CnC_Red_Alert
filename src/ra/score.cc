@@ -163,8 +163,8 @@ void ScoreTimeClass::Update() {
     }
     PixelView* oldpage = LogicPage;
     SetLogicPage(TheScreen().visible_view());
-    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, {},
-                  {});
+    CC_Draw_Shape(*LogicPage, DataPtr, Stage, XPos, YPos, WINDOW_MAIN,
+                  SHAPE_WIN_REL, {}, {});
     SetLogicPage(oldpage);
   }
 }
@@ -187,8 +187,8 @@ void ScoreCredsClass::Update() {
     SetLogicPage(TheScreen().visible_view());
     // One tick of sound per frame of the spinning credits symbol.
     TheAudio().Play(Clock1, 255, TheOptions().Normalize_Volume(130));
-    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, {},
-                  {});
+    CC_Draw_Shape(*LogicPage, DataPtr, Stage, XPos, YPos, WINDOW_MAIN,
+                  SHAPE_WIN_REL, {}, {});
     SetLogicPage(oldpage);
   }
 }
@@ -794,13 +794,14 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   // then replaced by the final coloured frame.
   SetLogicPage(TheScreen().hidden_view());
   TheScreen().hidden_view().FillRect(0, 0, 248, 18, kTBlack);
-  CC_Draw_Shape(redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
+  CC_Draw_Shape(*LogicPage, redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {},
+                {});
   SetLogicPage(TheScreen().visible_view());
   Set_Font_Palette(house ? redpal : bluepal);
 
   for (int i = 1; i <= gdikilled; i++) {
     if (i != gdikilled) {
-      CC_Draw_Shape(yellowptr, i, xpos * 2, ypos * 2, WINDOW_MAIN,
+      CC_Draw_Shape(*LogicPage, yellowptr, i, xpos * 2, ypos * 2, WINDOW_MAIN,
                     SHAPE_WIN_REL, {}, {});
     } else {
       TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 0, xpos * 2,
@@ -812,16 +813,16 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
     TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Volume(150));
     TickScoreScreen(2);
   }
-  CC_Draw_Shape(yellowptr, gdikilled, xpos * 2, ypos * 2, WINDOW_MAIN,
-                SHAPE_WIN_REL, {}, {});
+  CC_Draw_Shape(*LogicPage, yellowptr, gdikilled, xpos * 2, ypos * 2,
+                WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
   Count_Up_Print("%d", gkilled, gkilled, 297, ypos + 2);
   /*BG	if (!TheKeyboard().Check()) */ TickScoreScreen(40);
 
   Set_Font_Palette(house ? bluepal : redpal);
   for (int i = 1; i <= nodkilled; i++) {
     if (i != nodkilled) {
-      CC_Draw_Shape(redptr, i, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
-                    SHAPE_WIN_REL, {}, {});
+      CC_Draw_Shape(*LogicPage, redptr, i, xpos * 2, (ypos + 12) * 2,
+                    WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
     } else {
       TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 0, xpos * 2,
                                      (ypos + 12) * 2, (3 + nodkilled) * 2, 16);
@@ -835,8 +836,8 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
 
   // Make sure accurate count is printed at end: with no losses the loop above
   // never runs.
-  CC_Draw_Shape(redptr, nodkilled, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
-                SHAPE_WIN_REL, {}, {});
+  CC_Draw_Shape(*LogicPage, redptr, nodkilled, xpos * 2, (ypos + 12) * 2,
+                WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
   Count_Up_Print("%d", nkilled, nkilled, 297, ypos + 14);
   /*BG	if (!TheKeyboard().Check()) */ TickScoreScreen(40);
 }

@@ -3196,12 +3196,12 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
         x += base::At(base::At(_xadd, facing), lastfacing);
         y += base::At(base::At(_yadd, facing), lastfacing);
         if (!remap.empty()) {
-          CC_Draw_Shape(TheAssets().lightning_shapes(),
+          CC_Draw_Shape(*LogicPage, TheAssets().lightning_shapes(),
                         base::At(_shape, facing) + (shots ? 4 : 0), x, y,
                         WINDOW_TACTICAL,
                         SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL, remap);
         } else {
-          CC_Draw_Shape(TheAssets().lightning_shapes(),
+          CC_Draw_Shape(*LogicPage, TheAssets().lightning_shapes(),
                         base::At(_shape, facing) + (shots ? 4 : 0), x, y,
                         WINDOW_TACTICAL, SHAPE_CENTER | SHAPE_WIN_REL);
         }
@@ -4634,37 +4634,37 @@ void TechnoClass::Techno_Draw_Object(std::span<const std::byte> shapefile,
     if (visual != VISUAL_HIDDEN && visual != VISUAL_RIPPLE) {
       if (visual == VISUAL_SHADOWY) {
         CC_Draw_Shape(
-            shapefile, shapenum, x, y, window,
+            *LogicPage, shapefile, shapenum, x, y, window,
             SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_PREDATOR, {},
             TheMap().FadingShade, rotation, scale);
       } else {
-        CC_Draw_Shape(shapefile, shapenum, x, y, window,
+        CC_Draw_Shape(*LogicPage, shapefile, shapenum, x, y, window,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_GHOST,
                       remap, shadow, rotation, scale);
       }
       if (visual == VISUAL_DARKEN) {
         CC_Draw_Shape(
-            shapefile, shapenum, x, y, window,
+            *LogicPage, shapefile, shapenum, x, y, window,
             SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, remap,
             TheMap().FadingShade, rotation, scale);
       }
     }
     if (visual != VISUAL_NORMAL && visual != VISUAL_HIDDEN) {
-      CC_Draw_Shape(shapefile, shapenum, x, y, window,
+      CC_Draw_Shape(*LogicPage, shapefile, shapenum, x, y, window,
                     SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL, {}, {},
                     rotation, scale);
     }
 #else
     switch (visual) {
       case VISUAL_NORMAL:
-        CC_Draw_Shape(shapefile, shapenum, x, y, window,
+        CC_Draw_Shape(*LogicPage, shapefile, shapenum, x, y, window,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_GHOST,
                       remap, shadow, rotation, scale);
         break;
 
       case VISUAL_INDISTINCT:
       case VISUAL_DARKEN:
-        CC_Draw_Shape(shapefile, shapenum, x, y, window,
+        CC_Draw_Shape(*LogicPage, shapefile, shapenum, x, y, window,
                       SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL, remap,
                       MouseClass::FadingShade, rotation, scale);
         break;
@@ -4672,7 +4672,7 @@ void TechnoClass::Techno_Draw_Object(std::span<const std::byte> shapefile,
       case VISUAL_SHADOWY:
       case VISUAL_RIPPLE:
         CC_Draw_Shape(
-            shapefile, shapenum, x, y, window,
+            *LogicPage, shapefile, shapenum, x, y, window,
             SHAPE_PREDATOR | SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL, {},
             MouseClass::FadingShade, rotation, scale);
         break;
@@ -5775,8 +5775,9 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
         }
         object = object->Next;
       }
-      CC_Draw_Shape(ObjectTypeClass::PipShapes, static_cast<int>(pip),
-                    x + (index * 3), y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+      CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
+                    static_cast<int>(pip), x + (index * 3), y, window,
+                    SHAPE_CENTER | SHAPE_WIN_REL);
     }
 
   } else {
@@ -5818,8 +5819,9 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
             graypips--;
           }
         }
-        CC_Draw_Shape(ObjectTypeClass::PipShapes, static_cast<int>(shape),
-                      x + (index * 3), y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+        CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
+                      static_cast<int>(shape), x + (index * 3), y, window,
+                      SHAPE_CENTER | SHAPE_WIN_REL);
       }
     }
     /*
@@ -5848,8 +5850,9 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
               break;
           }
         }
-        CC_Draw_Shape(ObjectTypeClass::PipShapes, static_cast<int>(shape),
-                      x + (index * 3), y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+        CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
+                      static_cast<int>(shape), x + (index * 3), y, window,
+                      SHAPE_CENTER | SHAPE_WIN_REL);
       }
     } else {
       bool building = false;
@@ -5871,10 +5874,11 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
       for (int index = 0; index < (building ? 5 : Class_Of().Max_Pips());
            index++) {
         if (building) {
-          CC_Draw_Shape(ObjectTypeClass::PipShapes, static_cast<int>(pip), x,
-                        y - (index * 3), window, SHAPE_CENTER | SHAPE_WIN_REL);
+          CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
+                        static_cast<int>(pip), x, y - (index * 3), window,
+                        SHAPE_CENTER | SHAPE_WIN_REL);
         } else {
-          CC_Draw_Shape(ObjectTypeClass::PipShapes,
+          CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
                         static_cast<int>(index < pips ? PIP_FULL : PIP_EMPTY),
                         x + (index * 3), y, window,
                         SHAPE_CENTER | SHAPE_WIN_REL);
@@ -5893,8 +5897,9 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
   **	Special hack to display a red pip on the medic.
   */
   if (What_Am_I() == RTTI_INFANTRY && Combat_Damage() < 0) {
-    CC_Draw_Shape(ObjectTypeClass::PipShapes, static_cast<int>(PIP_MEDIC),
-                  x + 8, y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+    CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
+                  static_cast<int>(PIP_MEDIC), x + 8, y, window,
+                  SHAPE_CENTER | SHAPE_WIN_REL);
   }
 
   /*
@@ -5908,8 +5913,8 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
         prishape = PIP_PRI;
       }
     }
-    CC_Draw_Shape(ObjectTypeClass::PipShapes, static_cast<int>(prishape), x - 2,
-                  y - 3, window,
+    CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
+                  static_cast<int>(prishape), x - 2, y - 3, window,
                   /*SHAPE_CENTER|*/ SHAPE_WIN_REL);
   }
 
@@ -5929,7 +5934,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
       group = 0;
     }
 
-    CC_Draw_Shape(ObjectTypeClass::PipShapes,
+    CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
                   static_cast<int>(PIP_NUMBERS) + group, x + 2, y + yval,
                   window, SHAPE_CENTER | SHAPE_WIN_REL);
 
@@ -5939,8 +5944,9 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
     */
     if (dynamic_cast<const FootClass*>(this)->XFormOffset !=
         kNoFormationOffset) {
-      CC_Draw_Shape(ObjectTypeClass::PipShapes, static_cast<int>(PIP_LETTERF),
-                    x + 8, y + yval, window, SHAPE_CENTER | SHAPE_WIN_REL);
+      CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
+                    static_cast<int>(PIP_LETTERF), x + 8, y + yval, window,
+                    SHAPE_CENTER | SHAPE_WIN_REL);
     }
   }
 
@@ -5972,8 +5978,9 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
     */
     if (dynamic_cast<const BuildingClass*>(this)->Class->IsFake &&
         (spiedby || IsOwnedByPlayer)) {
-      CC_Draw_Shape(ObjectTypeClass::PipShapes, static_cast<int>(PIP_DECOY), x,
-                    y - 16, window, SHAPE_WIN_REL);
+      CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
+                    static_cast<int>(PIP_DECOY), x, y - 16, window,
+                    SHAPE_WIN_REL);
     }
 
     /*
@@ -5999,7 +6006,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) const {
       while (money) {
         const int xdigit = static_cast<int>(money % 10);
         money /= 10;
-        CC_Draw_Shape(ObjectTypeClass::PipShapes,
+        CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
                       static_cast<int>(PIP_NUMBERS) + xdigit, startx, y - 6,
                       window, SHAPE_CENTER | SHAPE_WIN_REL);
         startx -= 6;

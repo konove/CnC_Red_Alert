@@ -317,7 +317,7 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h,
   /*
   **	Set the list box to a default state.
   */
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, TextFlags);
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, TextFlags);
 }
 
 template <class T>
@@ -476,7 +476,7 @@ bool TListClass<T>::Draw_Me(bool forced) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
-    Draw_Box(X, Y, Width, Height, BOXSTYLE_BOX, true);
+    Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_BOX, true);
 
     /*
     **	Draw List.

@@ -42,6 +42,7 @@
 
 #include "ra/function.h"
 #include "ra/screen.h"
+#include "sdllib/pixel_buffer.h"
 
 /***********************************************************************************************
  * DescriptionClass::Process -- Handles all the options graphic interface. *
@@ -110,8 +111,10 @@ void DescriptionClass::Process(char* string) {
       /*
       **	Draw the background
       */
-      Window_Box(WINDOW_EDITOR, BOXSTYLE_BORDER);  // has border, raised up
-      Draw_Caption(TXT_MISSION_DESCRIPTION, kOptionX, kOptionY, kOptionWidth);
+      Window_Box(*LogicPage, WINDOW_EDITOR,
+                 BOXSTYLE_BORDER);  // has border, raised up
+      Draw_Caption(*LogicPage, TXT_MISSION_DESCRIPTION, kOptionX, kOptionY,
+                   kOptionWidth);
 
       /*
       **	Draw the titles

@@ -34,6 +34,7 @@
 #include "ra/text_ids.h"
 #include "ra/winbits.h"
 #include "sdllib/font.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 
@@ -67,7 +68,7 @@ ToolTipClass::ToolTipClass(GadgetClass* gadget, const char* szText, int x_show,
   }
 
   Set_Font(TheAssets().font(FontType::kType));
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_TYPE);  //	Required before String_Pixel_Width()
                                // call, for god's sake.
   wShow = String_Pixel_Width(szTip) + 2;
@@ -162,7 +163,7 @@ void ToolTipClass::Show() {
         bLastShowNoText = true;
         return;
       }
-      Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
+      Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
                        TPF_TYPE);  //	Required before String_Pixel_Width()
                                    // call, for god's sake.
       wShowUse = String_Pixel_Width(szTipUse) + 2;
@@ -178,16 +179,17 @@ void ToolTipClass::Show() {
 
     //	Save rect about to be corrupted.
     Hide_Mouse();
-    SaveSurfaceRect(xShowUse, yShowUse, wShowUse, hShow, pSaveRect,
+    SaveSurfaceRect(*LogicPage, xShowUse, yShowUse, wShowUse, hShow, pSaveRect,
                     WINDOW_MAIN);
     //	Draw text.
     // Simple_Text_Print( szTipUse, xShowUse, yShowUse,
     // GadgetClass::Get_Color_Scheme(), ColorRemaps[ PCOLOR_BROWN ].Color,
     // TPF_TYPE ); //TPF_DROPSHADOW );
-    Simple_Text_Print(szTipUse, xShowUse, yShowUse,
+    Simple_Text_Print(*LogicPage, szTipUse, xShowUse, yShowUse,
                       GadgetClass::Get_Color_Scheme(), kBlack,
                       TPF_TYPE);  // TPF_DROPSHADOW );
-    Draw_Box(xShowUse, yShowUse, wShowUse, hShow, BOXSTYLE_BOX, false);
+    Draw_Box(*LogicPage, xShowUse, yShowUse, wShowUse, hShow, BOXSTYLE_BOX,
+             false);
     Show_Mouse();
     bShowing = true;
   }
@@ -230,8 +232,8 @@ void ToolTipClass::Unshow() {
       wShowUse = wLastShow;
     }
     Hide_Mouse();
-    RestoreSurfaceRect(xShowUse, yShowUse, wShowUse, hShow, pSaveRect,
-                       WINDOW_MAIN);
+    RestoreSurfaceRect(*LogicPage, xShowUse, yShowUse, wShowUse, hShow,
+                       pSaveRect, WINDOW_MAIN);
     Show_Mouse();
     bShowing = false;
   }

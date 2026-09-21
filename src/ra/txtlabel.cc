@@ -43,6 +43,7 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
 
 /***********************************************************************************************
@@ -82,11 +83,12 @@ TextLabelClass::TextLabelClass(char* txt, int x, int y, RemapControlType* color,
 bool TextLabelClass::Draw_Me(bool forced) {
   if (GadgetClass::Draw_Me(forced)) {
     if (PixWidth == -1) {
-      Simple_Text_Print(Text, X, Y, Color, kTBlack, Style);
+      Simple_Text_Print(*LogicPage, Text, X, Y, Color, kTBlack, Style);
       //			Fancy_Text_Print(Text, X, Y, Color, TBLACK,
       // Style);
     } else {
-      Conquer_Clip_Text_Print(Text, X, Y, Color, kTBlack, Style, PixWidth);
+      Conquer_Clip_Text_Print(*LogicPage, Text, X, Y, Color, kTBlack, Style,
+                              PixWidth);
     }
     return true;
   }

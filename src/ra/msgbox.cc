@@ -109,7 +109,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     b3txt = nullptr;
   }
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
 
   /*
   **	Examine the optional button parameters. Fetch the width and starting
@@ -144,7 +144,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   buffer[BUFFSIZE - 1] = 0;
   port::SafeCopy(buffer, msg);
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
   int width = 0;
   int height = 0;
   const int lines = Format_Window_String(buffer, 510, width, height);
@@ -235,13 +235,13 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         x, y, width, height, back, static_cast<int32_t>(width) * height);
   }
   Dialog_Box(x, y, width, height);
-  Draw_Caption(Caption, x, y, width);
+  Draw_Caption(*LogicPage, Caption, x, y, width);
 
   /*
   **	Draw the body of the message.
   */
-  Fancy_Text_Print(buffer, printx, y + 40, GadgetClass::Get_Color_Scheme(),
-                   kTBlack, tpf);
+  Fancy_Text_Print(*LogicPage, buffer, printx, y + 40,
+                   GadgetClass::Get_Color_Scheme(), kTBlack, tpf);
 
   /*
   **	Redraw the buttons.
@@ -264,12 +264,12 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
 
         Hide_Mouse();
         Dialog_Box(x, y, width, height);
-        Draw_Caption(Caption, x, y, width);
+        Draw_Caption(*LogicPage, Caption, x, y, width);
 
         /*
         **	Draw the body of the message.
         */
-        Fancy_Text_Print(buffer, printx, y + 40,
+        Fancy_Text_Print(*LogicPage, buffer, printx, y + 40,
                          GadgetClass::Get_Color_Scheme(), kTBlack, tpf);
 
         /*

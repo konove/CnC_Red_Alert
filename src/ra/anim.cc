@@ -98,6 +98,7 @@
 #include "ra/type.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
 
@@ -307,7 +308,7 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
       /*
       **	Draw the animation shape.
       */
-      CC_Draw_Shape(shapefile, shapenum, x, y, window, flags, remap,
+      CC_Draw_Shape(*LogicPage, shapefile, shapenum, x, y, window, flags, remap,
                     transtable);
     }
     IsTheaterShape = false;

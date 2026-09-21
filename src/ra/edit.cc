@@ -67,7 +67,7 @@ EditClass::EditClass(const int id, std::span<char> text, const int max_len,
   GadgetClass::Flag_To_Redraw();
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, TextFlags);
+    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, TextFlags);
 
     if (h == -1) {
       Height = FontHeight + 1;
@@ -170,20 +170,20 @@ bool EditClass::Action(unsigned flags, KeyNumType& key) {
 }
 
 void EditClass::Draw_Background() {
-  Draw_Box(X, Y, Width, Height, BOXSTYLE_BOX, true);
+  Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_BOX, true);
 }
 
 void EditClass::Draw_Text(const char* text) {
   const TextPrintType flags =
       Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
-  Conquer_Clip_Text_Print(text, X + 1, Y + 1, Color, kTBlack, TextFlags | flags,
-                          Width - 2);
+  Conquer_Clip_Text_Print(*LogicPage, text, X + 1, Y + 1, Color, kTBlack,
+                          TextFlags | flags, Width - 2);
 
   if (Has_Focus() && std::cmp_less(std::string_view(text).size(), MaxLength) &&
       String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
-    Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(text), Y + 1, Color,
-                            kTBlack, TextFlags | flags);
+    Conquer_Clip_Text_Print(*LogicPage, "_", X + 1 + String_Pixel_Width(text),
+                            Y + 1, Color, kTBlack, TextFlags | flags);
   }
 }
 

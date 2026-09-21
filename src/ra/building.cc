@@ -185,6 +185,7 @@
 #include "ra/vessel.h"
 #include "ra/weapon.h"
 #include "ra/world.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
 #include "tech/number_parse.h"
@@ -843,8 +844,8 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
     **	Draw any repair feedback graphic required.
     */
     if (IsRepairing && IsWrenchVisible) {
-      CC_Draw_Shape(ObjectTypeClass::SelectShapes, kSelectWrench, x, y, window,
-                    SHAPE_CENTER | SHAPE_WIN_REL);
+      CC_Draw_Shape(*LogicPage, ObjectTypeClass::SelectShapes, kSelectWrench, x,
+                    y, window, SHAPE_CENTER | SHAPE_WIN_REL);
     }
   }
 
@@ -875,8 +876,9 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
     if (factory != nullptr) {
       const TechnoClass* obj = factory->Get_Object();
       if (obj != nullptr) {
-        CC_Draw_Shape(obj->Techno_Type_Class()->Get_Cameo_Data(), 0, x, y,
-                      window, SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_NORMAL, {});
+        CC_Draw_Shape(*LogicPage, obj->Techno_Type_Class()->Get_Cameo_Data(), 0,
+                      x, y, window, SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_NORMAL,
+                      {});
       }
     }
   }

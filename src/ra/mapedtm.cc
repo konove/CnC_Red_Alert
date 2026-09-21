@@ -324,7 +324,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     if (display) {
       Hide_Mouse();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
-      Draw_Caption(TXT_TEAM_EDIT, kDialogX, kDialogY, kDialogW);
+      Draw_Caption(*LogicPage, TXT_TEAM_EDIT, kDialogX, kDialogY, kDialogW);
       commands->Draw_All();
       Show_Mouse();
       display = false;
@@ -647,7 +647,7 @@ int MapEditClass::Team_Members(HousesType house) {
         **	Display the constant background of this dialog.
         */
         Dialog_Box(kDialogX, dlg_y, kDialogW, dlg_h);
-        Draw_Caption(TXT_TEAM_MEMBERS, kDialogX, dlg_y, kDialogW);
+        Draw_Caption(*LogicPage, TXT_TEAM_MEMBERS, kDialogX, dlg_y, kDialogW);
 
         /*
         **	Draw the objects.
@@ -660,7 +660,8 @@ int MapEditClass::Team_Members(HousesType house) {
         }
 
         if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
-          Fancy_Text_Print(base::At(teamclass, curclass)->Full_Name(),
+          Fancy_Text_Print(*LogicPage,
+                           base::At(teamclass, curclass)->Full_Name(),
                            kDialogX + (kDialogW / 2), msg_y,
                            &ThePalettes().color_remaps().at(PCOLOR_BROWN),
                            kTBlack, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
@@ -749,7 +750,8 @@ int MapEditClass::Team_Members(HousesType house) {
                               msg_y + kTxt6H, kBlack);
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
-            Fancy_Text_Print(base::At(teamclass, curclass)->Full_Name(),
+            Fancy_Text_Print(*LogicPage,
+                             base::At(teamclass, curclass)->Full_Name(),
                              kDialogX + (kDialogW / 2), msg_y, scheme, kTBlack,
                              TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
           }
@@ -909,10 +911,10 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
   Change_Window(static_cast<int>(WINDOW_EDITOR));
 
   Hide_Mouse();
-  Draw_Box(x, y, kPictureW, kPictureH, BOXSTYLE_DOWN, true);
+  Draw_Box(*LogicPage, x, y, kPictureW, kPictureH, BOXSTYLE_DOWN, true);
   ptr->Display(Screen::kWidth / 2, Screen::kHeight / 2, WINDOW_EDITOR, house);
   if (quant > 0) {
-    Fancy_Text_Print("%d", x + 1, y + 1, scheme, kTBlack,
+    Fancy_Text_Print(*LogicPage, "%d", x + 1, y + 1, scheme, kTBlack,
                      TPF_8POINT | TPF_DROPSHADOW, quant);
     //		Fancy_Text_Print("%d", x+1, y+kPictureH-8, scheme, TBLACK,
     // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_DROPSHADOW, quant);

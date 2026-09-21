@@ -195,12 +195,13 @@ void Special_Dialog(bool simple) {
 
       Hide_Mouse();
       Dialog_Box(kOptionX, kOptionY, kOptionWidth, kOptionHeight);
-      Draw_Caption(TXT_SPECIAL_OPTIONS, kOptionX, kOptionY, kOptionWidth);
+      Draw_Caption(*LogicPage, TXT_SPECIAL_OPTIONS, kOptionX, kOptionY,
+                   kOptionWidth);
 
       for (const auto& _option : _options) {
-        Fancy_Text_Print(_option.Description, _option.Button->X + 20,
-                         _option.Button->Y, GadgetClass::Get_Color_Scheme(),
-                         kTBlack,
+        Fancy_Text_Print(*LogicPage, _option.Description,
+                         _option.Button->X + 20, _option.Button->Y,
+                         GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       buttons->Draw_All();
@@ -301,17 +302,18 @@ void PWEditClass::Draw_Text(const char* text) {
     const TextPrintType flags =
         Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
-    Conquer_Clip_Text_Print(buffer, X + 1, Y + 1, Color, kTBlack,
+    Conquer_Clip_Text_Print(*LogicPage, buffer, X + 1, Y + 1, Color, kTBlack,
                             TextFlags | flags, Width - 2);
 
     if (Has_Focus() &&
         std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
-      Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(buffer), Y + 1,
-                              Color, kTBlack, TextFlags | flags);
+      Conquer_Clip_Text_Print(*LogicPage, "_",
+                              X + 1 + String_Pixel_Width(buffer), Y + 1, Color,
+                              kTBlack, TextFlags | flags);
     }
   } else {
     Conquer_Clip_Text_Print(
-        buffer, X + 1, Y + 1,
+        *LogicPage, buffer, X + 1, Y + 1,
         Has_Focus() ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                     : &ThePalettes().color_remaps().at(PCOLOR_GREY),
         kTBlack, TextFlags, Width - 2);
@@ -319,7 +321,7 @@ void PWEditClass::Draw_Text(const char* text) {
     if (Has_Focus() &&
         std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
       Conquer_Clip_Text_Print(
-          "_", X + 1 + String_Pixel_Width(buffer), Y + 1,
+          *LogicPage, "_", X + 1 + String_Pixel_Width(buffer), Y + 1,
           &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE), kTBlack,
           TextFlags);
     }
@@ -354,7 +356,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
     btext = TXT_OK;
   }
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
 
   /*
@@ -374,7 +376,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	These dimensions will control how the dialog box looks.
   */
   port::SafeCopy(buffer, Text_String(message));
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   int width = 0;
   int height = 0;
@@ -414,13 +416,14 @@ const char* Fetch_Password(int caption, int message, int btext) {
   Hide_Mouse();
   SetLogicPage(TheScreen().visible_view());
   Dialog_Box(x, y, width, height);
-  Draw_Caption(caption, x, y, width);
+  Draw_Caption(*LogicPage, caption, x, y, width);
 
   /*
   **	Draw the body of the message box.
   */
-  Fancy_Text_Print(buffer, x + 40, y + 50, GadgetClass::Get_Color_Scheme(),
-                   kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+  Fancy_Text_Print(*LogicPage, buffer, x + 40, y + 50,
+                   GadgetClass::Get_Color_Scheme(), kTBlack,
+                   TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*
   **	Redraw the buttons.
@@ -513,7 +516,7 @@ int Fetch_Difficulty(bool amath) {
       base::At(buffer, index + 1) = 0;
     }
   }
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   int width = 0;
   int height = 0;
@@ -561,20 +564,21 @@ int Fetch_Difficulty(bool amath) {
       //			Fancy_Text_Print(buffer, x + 20*2, y +
       // 15*2, GadgetClass::Get_Color_Scheme(), TBLACK,
       // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_NOSHADOW);
-      Fancy_Text_Print(buffer, x + 40, y + 30, GadgetClass::Get_Color_Scheme(),
-                       kTBlack, TPF_6PT_GRAD | TPF_NOSHADOW);
+      Fancy_Text_Print(*LogicPage, buffer, x + 40, y + 30,
+                       GadgetClass::Get_Color_Scheme(), kTBlack,
+                       TPF_6PT_GRAD | TPF_NOSHADOW);
 
       /*
       **	Display the descripton of the slider range.
       */
-      Fancy_Text_Print(TXT_HARD, slider.X + slider.Width, slider.Y - 18,
-                       GadgetClass::Get_Color_Scheme(), kTBlack,
+      Fancy_Text_Print(*LogicPage, TXT_HARD, slider.X + slider.Width,
+                       slider.Y - 18, GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_RIGHT | TPF_6PT_GRAD | TPF_DROPSHADOW);
-      Fancy_Text_Print(TXT_EASY, slider.X, slider.Y - 18,
+      Fancy_Text_Print(*LogicPage, TXT_EASY, slider.X, slider.Y - 18,
                        GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_6PT_GRAD | TPF_DROPSHADOW);
-      Fancy_Text_Print(TXT_NORMAL, slider.X + (slider.Width / 2), slider.Y - 18,
-                       GadgetClass::Get_Color_Scheme(), kTBlack,
+      Fancy_Text_Print(*LogicPage, TXT_NORMAL, slider.X + (slider.Width / 2),
+                       slider.Y - 18, GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
 
       /*

@@ -1414,8 +1414,9 @@ void MapEditClass::Draw_It(bool forced) {
   /*
   **	Display the total value of all Tiberium on the map.
   */
-  Fancy_Text_Print("Tiberium=%ld   ", 0, 0, GadgetClass::Get_Color_Scheme(),
-                   kBlack, TPF_EFNT | TPF_NOSHADOW, TotalValue);
+  Fancy_Text_Print(*LogicPage, "Tiberium=%ld   ", 0, 0,
+                   GadgetClass::Get_Color_Scheme(), kBlack,
+                   TPF_EFNT | TPF_NOSHADOW, TotalValue);
 
   /*
   **	If there are no object controls displayed, just invoke parent's Redraw
@@ -1446,7 +1447,7 @@ void MapEditClass::Draw_It(bool forced) {
     /*
     **	print the label
     */
-    Fancy_Text_Print(buf, 160, 0,
+    Fancy_Text_Print(*LogicPage, buf, 160, 0,
                      &ThePalettes().color_remaps().at(PCOLOR_BROWN), kTBlack,
                      TPF_CENTER | TPF_NOSHADOW | TPF_EFNT);
   }

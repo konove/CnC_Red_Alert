@@ -455,7 +455,7 @@ void WOL_GameSetupDialog::Initialize() {
   pStaticAIPlayers = new StaticButtonClass(
       0, "   ", kTpfText, d_aiplayers_x + d_aiplayers_w + 4, d_aiplayers_y);
 
-  Fancy_Text_Print("", 0, 0, nullptr, 0, kTpfText);
+  Fancy_Text_Print(*LogicPage, "", 0, 0, nullptr, 0, kTpfText);
   pDropListHouse = new DropListClass(
       kButtonHouse, szHouseBuffer, sizeof(szHouseBuffer), kTpfText, d_house_x,
       d_house_y, d_house_w, d_house_h, MixArchive::RetrieveData("BTN-UP.SHP"),
@@ -995,34 +995,34 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         //...............................................................
         //	Dialog & Field labels
         //...............................................................
-        Fancy_Text_Print(TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
-                         d_playerlist_y - d_txt6_h, scheme, kTBlack,
-                         kTpfText | TPF_CENTER);
+        Fancy_Text_Print(
+            *LogicPage, TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
+            d_playerlist_y - d_txt6_h, scheme, kTBlack, kTpfText | TPF_CENTER);
         if (bHost) {
-          Fancy_Text_Print(TXT_SCENARIOS, d_scenariolist_x + d_scenariolist_w,
-                           d_scenariolist_y - 12, scheme, kTBlack,
-                           TPF_TYPE | TPF_RIGHT);
+          Fancy_Text_Print(
+              *LogicPage, TXT_SCENARIOS, d_scenariolist_x + d_scenariolist_w,
+              d_scenariolist_y - 12, scheme, kTBlack, TPF_TYPE | TPF_RIGHT);
         }
         //				else
         //					Fancy_Text_Print(
         // TXT_SCENARIO_COLON, d_scenariolist_x + (d_scenariolist_w / 2),
         // d_scenariolist_y - d_txt6_h, scheme, TBLACK, kTpfText | TPF_CENTER);
-        Fancy_Text_Print(TXT_COUNT, d_count_x - 4, d_count_y, scheme, kTBlack,
-                         kTpfText | TPF_RIGHT);
-        Fancy_Text_Print(TXT_LEVEL, d_level_x - 4, d_level_y, scheme, kTBlack,
-                         kTpfText | TPF_RIGHT);
-        Fancy_Text_Print(TXT_CREDITS_COLON, d_credits_x - 4, d_credits_y,
+        Fancy_Text_Print(*LogicPage, TXT_COUNT, d_count_x - 4, d_count_y,
                          scheme, kTBlack, kTpfText | TPF_RIGHT);
-        Fancy_Text_Print(TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4, d_aiplayers_y,
+        Fancy_Text_Print(*LogicPage, TXT_LEVEL, d_level_x - 4, d_level_y,
                          scheme, kTBlack, kTpfText | TPF_RIGHT);
+        Fancy_Text_Print(*LogicPage, TXT_CREDITS_COLON, d_credits_x - 4,
+                         d_credits_y, scheme, kTBlack, kTpfText | TPF_RIGHT);
+        Fancy_Text_Print(*LogicPage, TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
+                         d_aiplayers_y, scheme, kTBlack, kTpfText | TPF_RIGHT);
         Fancy_Text_Print(
-            TXT_SIDE_COLON,
+            *LogicPage, TXT_SIDE_COLON,
             //					d_house_x + (d_house_w / 2),
             d_house_x + ((d_house_w + 16) / 2), d_house_y - d_txt6_h, scheme,
             kTBlack, TPF_CENTER | kTpfText);
-        Fancy_Text_Print(TXT_COLOR_COLON, d_color_x + (d_color_w * 4),
-                         d_color_y - d_txt6_h, scheme, kTBlack,
-                         TPF_CENTER | kTpfText);
+        Fancy_Text_Print(*LogicPage, TXT_COLOR_COLON,
+                         d_color_x + (d_color_w * 4), d_color_y - d_txt6_h,
+                         scheme, kTBlack, TPF_CENTER | kTpfText);
 
         const char* szGameKind = nullptr;
         const dib::Image* pIcon = nullptr;
@@ -1052,24 +1052,24 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         const int iGameInfoSpacingY = 14;
         const int iGameInfoSecondColumnX = 0;  // 170;
         //	Game kind.
-        Fancy_Text_Print(szGameKind, d_gamekind_x,
+        Fancy_Text_Print(*LogicPage, szGameKind, d_gamekind_x,
                          d_gamekind_y - (iGameInfoSpacingY * 1), scheme,
                          kTBlack, TPF_TYPE);
         //	Game kind icon.
         if (pIcon != nullptr) {
-          DrawDib(*pIcon, d_gamekind_x - 16,
+          DrawDib(*LogicPage, *pIcon, d_gamekind_x - 16,
                   d_gamekind_y - (iGameInfoSpacingY * 1) - 2, 100, WINDOW_MAIN);
         }
         //	"Tournament."
         if (pWO->GameInfoCurrent.bTournament) {
-          Fancy_Text_Print(TXT_WOL_CG_TOURNAMENT,
+          Fancy_Text_Print(*LogicPage, TXT_WOL_CG_TOURNAMENT,
                            d_gamekind_x + iGameInfoSecondColumnX,
                            d_gamekind_y + (iGameInfoSpacingY * 1), scheme,
                            kTBlack, TPF_TYPE);
-          DrawDibIfLoaded(base::At(pWO->DibIconInfos, kDibiconTournament),
-                          d_gamekind_x + iGameInfoSecondColumnX - 16,
-                          d_gamekind_y + (iGameInfoSpacingY * 1) - 2, 100,
-                          WINDOW_MAIN);
+          DrawDibIfLoaded(
+              *LogicPage, base::At(pWO->DibIconInfos, kDibiconTournament),
+              d_gamekind_x + iGameInfoSecondColumnX - 16,
+              d_gamekind_y + (iGameInfoSpacingY * 1) - 2, 100, WINDOW_MAIN);
         }
         //	"Password: ..."
         if (pWO->GameInfoCurrent.bPrivate) {
@@ -1077,14 +1077,14 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           Format_Runtime_Text(szPrivatePassword, sizeof(szPrivatePassword),
                               TXT_WOL_PRIVATEPASSWORD,
                               pWO->GameInfoCurrent.szPassword);
-          Fancy_Text_Print(szPrivatePassword,
+          Fancy_Text_Print(*LogicPage, szPrivatePassword,
                            d_gamekind_x + iGameInfoSecondColumnX,
                            d_gamekind_y + (iGameInfoSpacingY * 2), scheme,
                            kTBlack, TPF_TYPE);
-          DrawDibIfLoaded(base::At(pWO->DibIconInfos, kDibiconPrivate),
-                          d_gamekind_x + iGameInfoSecondColumnX - 16,
-                          d_gamekind_y + (iGameInfoSpacingY * 2) - 2, 100,
-                          WINDOW_MAIN);
+          DrawDibIfLoaded(
+              *LogicPage, base::At(pWO->DibIconInfos, kDibiconPrivate),
+              d_gamekind_x + iGameInfoSecondColumnX - 16,
+              d_gamekind_y + (iGameInfoSpacingY * 2) - 2, 100, WINDOW_MAIN);
         }
         //	"Scenario:" - scenario name is drawn separately.
         // Fancy_Text_Print( TXT_SCENARIO_COLON, d_gamekind_x, d_gamekind_y -
@@ -1112,11 +1112,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                                   .Box);
 
           if (static_cast<PlayerColorType>(i) == TheSession().ColorIdx) {
-            Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
-                     BOXSTYLE_DOWN, false);
+            Draw_Box(*LogicPage, base::At(cbox_x, i), d_color_y, d_color_w,
+                     d_color_h, BOXSTYLE_DOWN, false);
           } else {
-            Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
-                     BOXSTYLE_RAISED, false);
+            Draw_Box(*LogicPage, base::At(cbox_x, i), d_color_y, d_color_w,
+                     d_color_h, BOXSTYLE_RAISED, false);
           }
         }
       }
@@ -1208,7 +1208,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         }
 
         //	Print scenario name.
-        Conquer_Clip_Text_Print(szScenarioNameDisplay, d_gamekind_x,
+        Conquer_Clip_Text_Print(*LogicPage, szScenarioNameDisplay, d_gamekind_x,
                                 d_gamekind_y, scheme, kTBlack, TPF_TYPE,
                                 d_gamekind_w);
         //				pStaticDescrip->Draw_Me();
@@ -2000,7 +2000,8 @@ bool WOL_GameSetupDialog::ExitGameChannel() {
 void WOL_GameSetupDialog::DrawScenarioDescripIcon(
     const dib::Image* pIcon) const {
   if (pIcon != nullptr) {
-    DrawDib(*pIcon, d_gamekind_x - 16, d_gamekind_y - 2, 100, WINDOW_MAIN);
+    DrawDib(*LogicPage, *pIcon, d_gamekind_x - 16, d_gamekind_y - 2, 100,
+            WINDOW_MAIN);
   }
 }
 

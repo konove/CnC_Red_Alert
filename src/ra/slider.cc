@@ -323,9 +323,11 @@ bool SliderClass::Step(bool up) {
  *=============================================================================================*/
 void SliderClass::Draw_Thumb() {
   if (IsHorizontal) {
-    Draw_Box(X + ThumbStart, Y, ThumbSize, Height, BOXSTYLE_RAISED, true);
+    Draw_Box(*LogicPage, X + ThumbStart, Y, ThumbSize, Height, BOXSTYLE_RAISED,
+             true);
   } else {
-    Draw_Box(X, Y + ThumbStart, Width, ThumbSize, BOXSTYLE_RAISED, true);
+    Draw_Box(*LogicPage, X, Y + ThumbStart, Width, ThumbSize, BOXSTYLE_RAISED,
+             true);
   }
 }
 
@@ -353,7 +355,7 @@ bool SliderClass::Draw_Me(bool forced) {
     /*
     **	Draw the body & set text color.
     */
-    Draw_Box(X, Y, Width, Height, BOXSTYLE_DOWN, true);
+    Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_DOWN, true);
     Draw_Thumb();
 
     /*

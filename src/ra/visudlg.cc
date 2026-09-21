@@ -229,7 +229,8 @@ void VisualControlsClass::Process() {
     if (display) {
       Hide_Mouse();
       Dialog_Box(option_x, option_y, option_width, option_height);
-      Draw_Caption(TXT_VISUAL_CONTROLS, option_x, option_y, option_width);
+      Draw_Caption(*LogicPage, TXT_VISUAL_CONTROLS, option_x, option_y,
+                   option_width);
       Show_Mouse();
       display = false;
       partial = true;
@@ -245,7 +246,7 @@ void VisualControlsClass::Process() {
       **	Draw the titles.
       */
       for (int i = 0; i < std::ssize(_titles); i++) {
-        Fancy_Text_Print(base::At(_titles, i), slider_x - 16,
+        Fancy_Text_Print(*LogicPage, base::At(_titles, i), slider_x - 16,
                          text_y + (i * slider_y_spacing),
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          kTpfText | TPF_RIGHT |

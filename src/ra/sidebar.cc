@@ -763,12 +763,12 @@ void SidebarClass::Draw_It(bool complete) {
       ** The sidebar shape is too big in 640x400 so it needs to be drawn in
       *three chunks.
       */
-      CC_Draw_Shape(SidebarShape, 0, kSideX * 2, 16, WINDOW_MAIN,
+      CC_Draw_Shape(*LogicPage, SidebarShape, 0, kSideX * 2, 16, WINDOW_MAIN,
                     SHAPE_WIN_REL);
-      CC_Draw_Shape(SidebarMiddleShape, shape, kSideX * 2, (8 + 80) * 2,
-                    WINDOW_MAIN, SHAPE_WIN_REL);
-      CC_Draw_Shape(SidebarBottomShape, shape, kSideX * 2, (8 + 80 + 50) * 2,
-                    WINDOW_MAIN, SHAPE_WIN_REL);
+      CC_Draw_Shape(*LogicPage, SidebarMiddleShape, shape, kSideX * 2,
+                    (8 + 80) * 2, WINDOW_MAIN, SHAPE_WIN_REL);
+      CC_Draw_Shape(*LogicPage, SidebarBottomShape, shape, kSideX * 2,
+                    (8 + 80 + 50) * 2, WINDOW_MAIN, SHAPE_WIN_REL);
 
       Repair.Draw_Me(true);
       Upgrade.Draw_Me(true);
@@ -1598,7 +1598,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
     ** New sidebar needs to be drawn not filled
     */
     if (BuildableCount < kMaxVisible) {
-      CC_Draw_Shape(LogoShapes, ID, X + 4, Y, WINDOW_MAIN,
+      CC_Draw_Shape(*LogicPage, LogoShapes, ID, X + 4, Y, WINDOW_MAIN,
                     SHAPE_WIN_REL | SHAPE_NORMAL, {});
     }
 
@@ -1735,7 +1735,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       *6:01PM
       */
       if (shapenum != kSbBlank || shapefile.data() != LogoShapes.data()) {
-        CC_Draw_Shape(shapefile, shapenum,
+        CC_Draw_Shape(*LogicPage, shapefile, shapenum,
                       x -
                           base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
                                    kWindowX) +
@@ -1753,7 +1753,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         */
         if (darken) {
           CC_Draw_Shape(
-              ClockShapes, 0,
+              *LogicPage, ClockShapes, 0,
               x -
                   base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
                            kWindowX) +
@@ -1776,7 +1776,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           **	Display text showing that the object is ready to place.
           */
           CC_Draw_Shape(
-              ObjectTypeClass::PipShapes, static_cast<int>(PIP_READY),
+              *LogicPage, ObjectTypeClass::PipShapes,
+              static_cast<int>(PIP_READY),
               x -
                   base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
                            kWindowX) +
@@ -1788,7 +1789,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
               WINDOW_SIDEBAR, SHAPE_CENTER);
         } else {
           CC_Draw_Shape(
-              ClockShapes, stage + 1,
+              *LogicPage, ClockShapes, stage + 1,
               x -
                   base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
                            kWindowX) +
@@ -1804,7 +1805,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           */
           if (factory && !factory->Is_Building()) {
             CC_Draw_Shape(
-                ObjectTypeClass::PipShapes, static_cast<int>(PIP_HOLDING),
+                *LogicPage, ObjectTypeClass::PipShapes,
+                static_cast<int>(PIP_HOLDING),
                 x -
                     base::At(WindowList[static_cast<int>(WINDOW_SIDEBAR)],
                              kWindowX) +

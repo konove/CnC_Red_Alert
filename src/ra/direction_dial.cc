@@ -122,9 +122,10 @@ bool DirectionDial::Draw_Me(const bool forced) {
   }
 
   // Draw the background and the eight decorations.
-  Draw_Box(X, Y, Width, Height, BOXSTYLE_DOWN, true);
+  Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_DOWN, true);
   for (const auto& point : decoration_points_) {
-    Draw_Box(point[0] - 1, point[1] - 1, 3, 3, BOXSTYLE_RAISED, false);
+    Draw_Box(*LogicPage, point[0] - 1, point[1] - 1, 3, 3, BOXSTYLE_RAISED,
+             false);
   }
 
   // Draw the hand's shadow one pixel down and right, then the hand.

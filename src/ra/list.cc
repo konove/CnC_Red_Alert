@@ -130,7 +130,7 @@ ListClass::ListClass(int id, int x, int y, int w, int h, TextPrintType flags,
   **	Set the list box to a default state.
   */
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, TextFlags);
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, TextFlags);
 }
 
 void ListClass::Set_Position(int x, int y) {
@@ -362,7 +362,7 @@ bool ListClass::Draw_Me(bool forced) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
-    Draw_Box(X, Y, Width, Height, BOXSTYLE_BOX, true);
+    Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_BOX, true);
 
     /*
     **	Draw List.
@@ -708,8 +708,8 @@ void ListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
     }
   }
 
-  Conquer_Clip_Text_Print(List.at(base::ToSize(index)).c_str(), x, y, scheme,
-                          kTBlack, flags, width, Tabs);
+  Conquer_Clip_Text_Print(*LogicPage, List.at(base::ToSize(index)).c_str(), x,
+                          y, scheme, kTBlack, flags, width, Tabs);
 }
 
 /***********************************************************************************************

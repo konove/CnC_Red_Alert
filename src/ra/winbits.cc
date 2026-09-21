@@ -12,12 +12,12 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_win.h"
 
-LockedWindow::LockedWindow(WindowNumberType window)
-    : view_(LogicPage->buffer(),
+LockedWindow::LockedWindow(PixelView& view, WindowNumberType window)
+    : view_(view.buffer(),
             base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) +
-                LogicPage->x_pos(),
+                view.x_pos(),
             base::At(base::At(WindowList, static_cast<int>(window)), kWindowY) +
-                LogicPage->y_pos(),
+                view.y_pos(),
             base::At(base::At(WindowList, static_cast<int>(window)),
                      kWindowWidth),
             base::At(base::At(WindowList, static_cast<int>(window)),
@@ -36,9 +36,10 @@ LockedWindow::~LockedWindow() {
   }
 }
 
-bool SaveSurfaceRect(int xRect, int yRect, int wRect, int hRect,
-                     std::span<std::uint8_t> bits, WindowNumberType window) {
-  const LockedWindow window_bits(window);
+bool SaveSurfaceRect(PixelView& view, int xRect, int yRect, int wRect,
+                     int hRect, std::span<std::uint8_t> bits,
+                     WindowNumberType window) {
+  const LockedWindow window_bits(view, window);
   if (!window_bits.bLocked() ||
       !window_bits.Contains(xRect, yRect, wRect, hRect) ||
       static_cast<size_t>(wRect) * static_cast<size_t>(hRect) > bits.size()) {
@@ -54,10 +55,10 @@ bool SaveSurfaceRect(int xRect, int yRect, int wRect, int hRect,
   return true;
 }
 
-bool RestoreSurfaceRect(int xRect, int yRect, int wRect, int hRect,
-                        std::span<const std::uint8_t> bits,
+bool RestoreSurfaceRect(PixelView& view, int xRect, int yRect, int wRect,
+                        int hRect, std::span<const std::uint8_t> bits,
                         WindowNumberType window) {
-  const LockedWindow window_bits(window);
+  const LockedWindow window_bits(view, window);
   if (!window_bits.bLocked() ||
       !window_bits.Contains(xRect, yRect, wRect, hRect) ||
       static_cast<size_t>(wRect) * static_cast<size_t>(hRect) > bits.size()) {
@@ -73,15 +74,15 @@ bool RestoreSurfaceRect(int xRect, int yRect, int wRect, int hRect,
   return true;
 }
 
-void DrawDib(const dib::Image& image, int xDest, int yDest, int iWidth,
-             WindowNumberType window) {
+void DrawDib(PixelView& view, const dib::Image& image, int xDest, int yDest,
+             int iWidth, WindowNumberType window) {
   if (iWidth < 0) {
     return;
   }
   const base::ssize copy_width =
       iWidth > image.Width() ? image.Width() : base::ssize{iWidth};
 
-  const LockedWindow window_bits(window);
+  const LockedWindow window_bits(view, window);
   if (!window_bits.bLocked() ||
       !window_bits.Contains(xDest, yDest, static_cast<int>(copy_width),
                             image.Height())) {

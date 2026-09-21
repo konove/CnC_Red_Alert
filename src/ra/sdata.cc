@@ -76,6 +76,7 @@
 #include "ra/type.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_win.h"
 #include "tech/mix_archive.h"
@@ -386,7 +387,7 @@ void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
   if (!ptr.empty()) {
     for (int w = 0; w < Width; w++) {
       for (int h = 0; h < Height; h++) {
-        CC_Draw_Shape(ptr, w + (h * Width), x + (w * ICON_PIXEL_W),
+        CC_Draw_Shape(*LogicPage, ptr, w + (h * Width), x + (w * ICON_PIXEL_W),
                       y + (h * ICON_PIXEL_H), WINDOW_TACTICAL, SHAPE_WIN_REL);
       }
     }
@@ -482,7 +483,7 @@ void SmudgeTypeClass::Draw_It(int x, int y, int data) const {
   const auto ptr = Get_Image_Data();
   if (!ptr.empty()) {
     IsTheaterShape = true;  // Smudges are theater specific
-    CC_Draw_Shape(ptr, data, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);
+    CC_Draw_Shape(*LogicPage, ptr, data, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);
     IsTheaterShape = false;
   }
 }

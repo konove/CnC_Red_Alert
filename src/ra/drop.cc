@@ -54,6 +54,7 @@
 #include "ra/link.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 
 DropListClass::DropListClass(int id, std::span<char> text, int max_len,
                              TextPrintType flags, int x, int y, int w, int h,
@@ -64,7 +65,7 @@ DropListClass::DropListClass(int id, std::span<char> text, int max_len,
       DropButton(0, down, x + w, y),
       List(0, x, y + Get_Build_Frame_Height(down),
            w + Get_Build_Frame_Width(down), h, flags, up, down) {
-  Fancy_Text_Print("", 0, 0, nullptr, 0, flags);
+  Fancy_Text_Print(*LogicPage, "", 0, 0, nullptr, 0, flags);
   Height = FontHeight + 1;
   List.Make_Peer(*this);
   DropButton.Make_Peer(*this);

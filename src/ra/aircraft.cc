@@ -164,6 +164,7 @@
 #include "ra/vessel.h"
 #include "ra/weapon.h"
 #include "ra/world.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "tech/fixed.h"
 #include "tech/number_parse.h"
@@ -513,7 +514,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   **	Special manual shadow draw code.
   */
   if (Visual_Character() <= VISUAL_DARKEN) {
-    CC_Draw_Shape(shapefile, shapenum, x + 1, y + 2, window,
+    CC_Draw_Shape(*LogicPage, shapefile, shapenum, x + 1, y + 2, window,
                   SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
                   DisplayClass::FadingShade, {});
   }
@@ -582,20 +583,20 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
     const FacingType face = Dir_Facing(SecondaryFacing);
     base::MovePoint(xx, yy, static_cast<uint8_t>(SecondaryFacing.Current()),
                     static_cast<int16_t>(_stretch.at(face)));
-    CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
-                  flags, {}, DisplayClass::UnitShadow);
+    CC_Draw_Shape(*LogicPage, AircraftTypeClass::RRotorData, shapenum, xx,
+                  yy - 2, window, flags, {}, DisplayClass::UnitShadow);
 
     base::MovePoint(xx, yy,
                     static_cast<uint8_t>(SecondaryFacing.Current() + DIR_S),
                     static_cast<int16_t>(_stretch.at(face) * 2));
-    CC_Draw_Shape(AircraftTypeClass::LRotorData, shapenum, xx, yy - 2, window,
-                  flags, {}, DisplayClass::UnitShadow);
+    CC_Draw_Shape(*LogicPage, AircraftTypeClass::LRotorData, shapenum, xx,
+                  yy - 2, window, flags, {}, DisplayClass::UnitShadow);
 
   } else {
     /*
     **	Single rotor centered about shape.
     */
-    CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, x,
+    CC_Draw_Shape(*LogicPage, AircraftTypeClass::RRotorData, shapenum, x,
                   y - Lepton_To_Pixel(static_cast<LEPTON>(Height)) - 2, window,
                   flags, {}, DisplayClass::UnitShadow);
   }
