@@ -179,23 +179,23 @@ base::EnumArray<TEventType, EventChoiceClass, static_cast<int>(TEVENT_COUNT)>
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-void EventChoiceClass::Draw_It(int /*unused*/, int x, int y, int width,
-                               int height, bool selected,
+void EventChoiceClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
+                               int width, int height, bool selected,
                                TextPrintType flags) const {
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   static const int _tabs[] = {13, 40};
   if (Is_Font(flags, TPF_6PT_GRAD) || Is_Font(flags, TPF_EFNT)) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
+      view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;
       }
     }
 
-    Conquer_Clip_Text_Print(*LogicPage, Description(), x, y, scheme, kTBlack,
-                            flags, width, _tabs);
+    Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, flags,
+                            width, _tabs);
   } else {
     Conquer_Clip_Text_Print(
         *LogicPage, Description(), x, y,

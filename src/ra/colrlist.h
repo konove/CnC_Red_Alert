@@ -46,6 +46,7 @@
 #include "ra/defines.h"
 #include "ra/list.h"
 #include "ra/vector_dynamic.h"
+#include "sdllib/pixel_buffer.h"
 
 /***************************************************************************
 ** This class adds the ability for every list item to have a different color.
@@ -90,7 +91,8 @@ class ColorListClass : public ListClass {
   DynamicVectorClass<RemapControlType*> Colors;
 
  protected:
-  void Draw_Entry(int index, int x, int y, int width, bool selected) override;
+  void Draw_Entry(PixelView& view, int index, int x, int y, int width,
+                  bool selected) override;
 
   /*
   **	This tells how to draw the selected item.

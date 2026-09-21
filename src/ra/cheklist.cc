@@ -120,8 +120,8 @@ bool CheckListClass::Action(unsigned flags, KeyNumType& key) {
   return rc;
 }
 
-void CheckListClass::Draw_Entry(int index, int x, int y, int width,
-                                bool selected) {
+void CheckListClass::Draw_Entry(PixelView& view, int index, int x, int y,
+                                int width, bool selected) {
   if (index >= Count()) {
     return;
   }
@@ -136,14 +136,13 @@ void CheckListClass::Draw_Entry(int index, int x, int y, int width,
 
   if (selected) {
     flags = flags | TPF_BRIGHT_COLOR;
-    LogicPage->FillRect(x, y, x + width - 1, y + LineHeight - 1,
-                        scheme->Shadow);
+    view.FillRect(x, y, x + width - 1, y + LineHeight - 1, scheme->Shadow);
   } else {
     if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
       flags = flags | TPF_MEDIUM_COLOR;
     }
   }
 
-  Conquer_Clip_Text_Print(*LogicPage, buffer, x, y, scheme, kTBlack, flags,
-                          width, Tabs);
+  Conquer_Clip_Text_Print(view, buffer, x, y, scheme, kTBlack, flags, width,
+                          Tabs);
 }

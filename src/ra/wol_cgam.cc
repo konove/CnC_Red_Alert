@@ -243,7 +243,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     /*
     **	Get user input.
     */
-    KeyNumType input = commands->Input();
+    KeyNumType input = commands->Input(*LogicPage);
 
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on
@@ -285,7 +285,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
         Format_Runtime_Text(szPlayerCount, sizeof(szPlayerCount),
                             TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax);
         PlayerCountStatic.Set_Text(szPlayerCount);
-        PlayerCountStatic.Draw_Me();
+        PlayerCountStatic.Draw_Me(*LogicPage);
         break;
 
       case ButtonKey(kCheckTournament):
@@ -297,7 +297,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
           Format_Runtime_Text(szPlayerCount, sizeof(szPlayerCount),
                               TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax);
           PlayerCountStatic.Set_Text(szPlayerCount);
-          PlayerCountStatic.Draw_Me();
+          PlayerCountStatic.Draw_Me(*LogicPage);
         }
         //				else
         //					PlayerCountGauge.Enable();

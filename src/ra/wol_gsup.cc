@@ -1095,7 +1095,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //	Redraw buttons
       //..................................................................
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
       }
 
       //..................................................................
@@ -1215,7 +1215,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.UnitCount);
         pStaticUnit->Set_Text(txt);
-        pStaticUnit->Draw_Me();
+        pStaticUnit->Draw_Me(*LogicPage);
 
         if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
           absl::SNPrintF(txt, sizeof(txt), "%d", TheWorld().build_level());
@@ -1223,15 +1223,15 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
         pStaticLevel->Set_Text(txt);
-        pStaticLevel->Draw_Me();
+        pStaticLevel->Draw_Me(*LogicPage);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.Credits);
         pStaticCredits->Set_Text(txt);
-        pStaticCredits->Draw_Me();
+        pStaticCredits->Draw_Me(*LogicPage);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.AIPlayers);
         pStaticAIPlayers->Set_Text(txt);
-        pStaticAIPlayers->Draw_Me();
+        pStaticAIPlayers->Draw_Me(*LogicPage);
       }
 
       Show_Mouse();
@@ -1256,12 +1256,12 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       }
     }
 
-    input = commands->Input();
+    input = commands->Input(*LogicPage);
 
     if (bHackFocus) {
       pEditSend->Set_Focus();
       pEditSend->Flag_To_Redraw();
-      input = commands->Input();
+      input = commands->Input(*LogicPage);
       bHackFocus = false;
     }
 

@@ -42,6 +42,7 @@
 
 #include "ra/gadget.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 
 /***************************************************************************
  * ControlClass -- Region tracking class
@@ -77,7 +78,7 @@ class ControlClass : public GadgetClass {
   /*
   **	Render support function.
   */
-  bool Draw_Me(bool forced = false) override;
+  bool Draw_Me(PixelView& view, bool forced = false) override;
 
   /*
   **	This is the ID number for this control gadget. This number is used to

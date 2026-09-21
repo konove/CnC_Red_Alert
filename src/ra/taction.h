@@ -52,6 +52,7 @@
 #include "ra/defines.h"
 #include "ra/object.h"
 #include "ra/teamtype.h"
+#include "sdllib/pixel_buffer.h"
 
 enum class TActionType {
   TACTION_NONE,
@@ -188,8 +189,8 @@ class ActionChoiceClass {
   [[nodiscard]] const char* Description() const {
     return Name_From_Action(Action);
   }
-  void Draw_It(int index, int x, int y, int width, int height, bool selected,
-               TextPrintType flags) const;
+  void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
+               bool selected, TextPrintType flags) const;
 
   TActionType Action;
 };

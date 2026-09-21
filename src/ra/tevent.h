@@ -54,6 +54,7 @@
 #include "ra/jshell.h"
 #include "ra/object.h"
 #include "ra/teamtype.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/ftimer.h"
 
 /*
@@ -224,8 +225,8 @@ class EventChoiceClass {
   [[nodiscard]] const char* Description() const {
     return Name_From_Event(Event);
   }
-  void Draw_It(int index, int x, int y, int width, int height, bool selected,
-               TextPrintType flags) const;
+  void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
+               bool selected, TextPrintType flags) const;
 
   TEventType Event;
 };

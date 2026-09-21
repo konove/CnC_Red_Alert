@@ -188,12 +188,12 @@ TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
  *                                                                                             *
  * HISTORY: * 01/03/1995 MML : Created. * 01/16/1995 JLB : Modified *
  *=============================================================================================*/
-bool TextButtonClass::Draw_Me(bool forced) {
-  if (ControlClass::Draw_Me(forced)) {
+bool TextButtonClass::Draw_Me(PixelView& view, bool forced) {
+  if (ControlClass::Draw_Me(view, forced)) {
     /*
     **	Hide the mouse.
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Hide_Mouse(X, Y, X + Width - 1, Y + Height - 1);
     }
 
@@ -201,13 +201,13 @@ bool TextButtonClass::Draw_Me(bool forced) {
     **	Draw the background and overlaying text. These are virtual function
     **	calls so that they may be overridden.
     */
-    Draw_Background();
-    Draw_Text(String);
+    Draw_Background(view);
+    Draw_Text(view, String);
 
     /*
     **	Display the mouse.
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Show_Mouse();
     }
     return true;
@@ -283,12 +283,12 @@ void TextButtonClass::Set_Text(int text, bool resize) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void TextButtonClass::Draw_Background() {
+void TextButtonClass::Draw_Background(PixelView& view) {
   /*
   **	Draw a border if selected style.
   */
   if (IsBlackBorder) {
-    LogicPage->DrawRect(X - 1, Y - 1, X + Width + 2, Y + Height + 2, kBlack);
+    view.DrawRect(X - 1, Y - 1, X + Width + 2, Y + Height + 2, kBlack);
   }
 
   /*
@@ -301,7 +301,7 @@ void TextButtonClass::Draw_Background() {
     return IsPressed ? BOXSTYLE_DOWN : BOXSTYLE_RAISED;
   }();
 
-  Draw_Box(*LogicPage, X, Y, Width, Height, style, true);
+  Draw_Box(view, X, Y, Width, Height, style, true);
 }
 
 /***********************************************************************************************
@@ -320,7 +320,7 @@ void TextButtonClass::Draw_Background() {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void TextButtonClass::Draw_Text(const char* text) {
+void TextButtonClass::Draw_Text(PixelView& view, const char* text) {
   RemapControlType* scheme = Get_Color_Scheme();
 
   /*
@@ -335,7 +335,7 @@ void TextButtonClass::Draw_Text(const char* text) {
                                : TPF_USE_GRAD_PAL | TPF_MEDIUM_COLOR;
     }();
 
-    Fancy_Text_Print(*LogicPage, text, X + (Width / 2) - 1, Y + 1, scheme,
-                     kTBlack, PrintFlags | flags | TPF_CENTER);
+    Fancy_Text_Print(view, text, X + (Width / 2) - 1, Y + 1, scheme, kTBlack,
+                     PrintFlags | flags | TPF_CENTER);
   }
 }

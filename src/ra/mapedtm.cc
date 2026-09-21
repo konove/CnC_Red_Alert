@@ -325,7 +325,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
       Hide_Mouse();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
       Draw_Caption(*LogicPage, TXT_TEAM_EDIT, kDialogX, kDialogY, kDialogW);
-      commands->Draw_All();
+      commands->Draw_All(*LogicPage);
       Show_Mouse();
       display = false;
     }
@@ -333,7 +333,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     /*
     **	Get user input
     */
-    const KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input(*LogicPage);
 
     /*
     **	Process input
@@ -672,7 +672,7 @@ int MapEditClass::Team_Members(HousesType house) {
       **	Redraw the buttons.
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
       }
       Show_Mouse();
       display = REDRAW_NONE;
@@ -681,7 +681,7 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Get user input.
     */
-    const KeyNumType input = commands->Input();  // user input
+    const KeyNumType input = commands->Input(*LogicPage);  // user input
 
     /*
     **	Process input.

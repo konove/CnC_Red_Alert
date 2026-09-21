@@ -98,16 +98,16 @@ void EditClass::Set_Text(std::span<char> text, const int max_len) {
   Flag_To_Redraw();
 }
 
-bool EditClass::Draw_Me(const bool forced) {
-  if (ControlClass::Draw_Me(forced)) {
-    if (TheScreen().IsVisible(LogicPage)) {
+bool EditClass::Draw_Me(PixelView& view, const bool forced) {
+  if (ControlClass::Draw_Me(view, forced)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
-    Draw_Background();
-    Draw_Text(String.data());
+    Draw_Background(view);
+    Draw_Text(view, String.data());
 
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Show_Mouse();
     }
 
@@ -169,21 +169,21 @@ bool EditClass::Action(unsigned flags, KeyNumType& key) {
   return ControlClass::Action(flags, key);
 }
 
-void EditClass::Draw_Background() {
-  Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_BOX, true);
+void EditClass::Draw_Background(PixelView& view) {
+  Draw_Box(view, X, Y, Width, Height, BOXSTYLE_BOX, true);
 }
 
-void EditClass::Draw_Text(const char* text) {
+void EditClass::Draw_Text(PixelView& view, const char* text) {
   const TextPrintType flags =
       Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
-  Conquer_Clip_Text_Print(*LogicPage, text, X + 1, Y + 1, Color, kTBlack,
+  Conquer_Clip_Text_Print(view, text, X + 1, Y + 1, Color, kTBlack,
                           TextFlags | flags, Width - 2);
 
   if (Has_Focus() && std::cmp_less(std::string_view(text).size(), MaxLength) &&
       String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
-    Conquer_Clip_Text_Print(*LogicPage, "_", X + 1 + String_Pixel_Width(text),
-                            Y + 1, Color, kTBlack, TextFlags | flags);
+    Conquer_Clip_Text_Print(view, "_", X + 1 + String_Pixel_Width(text), Y + 1,
+                            Color, kTBlack, TextFlags | flags);
   }
 }
 

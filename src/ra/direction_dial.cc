@@ -107,32 +107,31 @@ bool DirectionDial::Action(const unsigned flags, KeyNumType& key) {
   return ControlClass::Action(0, key);
 }
 
-bool DirectionDial::Draw_Me(const bool forced) {
+bool DirectionDial::Draw_Me(PixelView& view, const bool forced) {
   // Redraw only if the parent says a redraw is needed.
-  if (!ControlClass::Draw_Me(forced)) {
+  if (!ControlClass::Draw_Me(view, forced)) {
     return false;
   }
   const RemapControlType* scheme = Get_Color_Scheme();
 
   // Hide the mouse while drawing on the visible page, so the software cursor
   // does not save and restore pixels the drawing is changing.
-  const bool on_screen = TheScreen().IsVisible(LogicPage);
+  const bool on_screen = TheScreen().IsVisible(&view);
   if (on_screen) {
     Hide_Mouse();
   }
 
   // Draw the background and the eight decorations.
-  Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_DOWN, true);
+  Draw_Box(view, X, Y, Width, Height, BOXSTYLE_DOWN, true);
   for (const auto& point : decoration_points_) {
-    Draw_Box(*LogicPage, point[0] - 1, point[1] - 1, 3, 3, BOXSTYLE_RAISED,
-             false);
+    Draw_Box(view, point[0] - 1, point[1] - 1, 3, 3, BOXSTYLE_RAISED, false);
   }
 
   // Draw the hand's shadow one pixel down and right, then the hand.
   const auto& tip = base::At(hand_tips_, static_cast<int>(facing_));
-  LogicPage->DrawLine(center_x_ + 1, center_y_ + 1, tip[0] + 1, tip[1] + 1,
-                      scheme->Shadow);
-  LogicPage->DrawLine(center_x_, center_y_, tip[0], tip[1], scheme->Highlight);
+  view.DrawLine(center_x_ + 1, center_y_ + 1, tip[0] + 1, tip[1] + 1,
+                scheme->Shadow);
+  view.DrawLine(center_x_, center_y_, tip[0], tip[1], scheme->Highlight);
 
   if (on_screen) {
     Show_Mouse();

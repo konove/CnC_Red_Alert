@@ -47,6 +47,7 @@
 
 #include "ra/gadget.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 
 /***********************************************************************************************
  * ControlClass::ControlClass -- Constructor for control class objects. *
@@ -186,9 +187,9 @@ unsigned ControlClass::Get_ID() const { return ID; }
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-bool ControlClass::Draw_Me(bool forced) {
+bool ControlClass::Draw_Me(PixelView& view, bool forced) {
   if (Peer) {
-    Peer->Draw_Me();
+    Peer->Draw_Me(view);
   }
-  return GadgetClass::Draw_Me(forced);
+  return GadgetClass::Draw_Me(view, forced);
 }

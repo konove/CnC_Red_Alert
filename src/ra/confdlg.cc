@@ -160,7 +160,7 @@ bool ConfirmationClass::Process(const char* string) {
       /*
       **	Draw the titles.
       */
-      yesbtn.Draw_All();
+      yesbtn.Draw_All(*LogicPage);
       Show_Mouse();
       display = false;
     }
@@ -168,7 +168,7 @@ bool ConfirmationClass::Process(const char* string) {
     /*
     **	Get user input.
     */
-    KeyNumType input = yesbtn.Input();
+    KeyNumType input = yesbtn.Input(*LogicPage);
 
     /*
     **	Process Input.

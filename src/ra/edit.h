@@ -21,10 +21,12 @@
 #ifndef CNC_RED_ALERT_RA_EDIT_H_
 #define CNC_RED_ALERT_RA_EDIT_H_
 #include <span>
+
 #include "absl/base/attributes.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 
 // A text editing gadget that accepts keyboard input and displays the result.
 // Supports filtering by character type (alpha, numeric, misc) and optional
@@ -72,7 +74,7 @@ class EditClass : public ControlClass {
   EditClass& operator=(EditClass&&) = delete;
 
   void Set_Focus() override;
-  bool Draw_Me(bool forced) override;
+  bool Draw_Me(PixelView& view, bool forced) override;
 
   // Changes the text buffer and maximum length. Does not copy; |text| must
   // outlive this gadget.
@@ -100,11 +102,11 @@ class EditClass : public ControlClass {
   bool Action(unsigned flags, KeyNumType& key) override;
 
   // Draws the gadget background. Called with the mouse hidden.
-  virtual void Draw_Background();
+  virtual void Draw_Background(PixelView& view);
 
   // Draws the text content and cursor. Called after Draw_Background with
   // the mouse hidden.
-  virtual void Draw_Text(const char* text);
+  virtual void Draw_Text(PixelView& view, const char* text);
 
   // Processes a single keyboard character. Returns false if the RETURN key
   // was pressed (allowing the gadget ID to propagate), true otherwise.

@@ -278,7 +278,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     **	Get user input.
     */
     TheGameState().tab_key_pressed() = false;
-    const KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input(*LogicPage);
 
     /*
     **	The first time through the processing loop, set the edit

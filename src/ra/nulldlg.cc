@@ -373,7 +373,7 @@ int Test_Null_Modem() {
   Fancy_Text_Print(*LogicPage, buffer, x + 40, y + 50, scheme, kTBlack,
                    kTpfText);
 
-  commands->Draw_All();
+  commands->Draw_All(*LogicPage);
   while (Get_Mouse_State() > 0) {
     Show_Mouse();
   }
@@ -467,7 +467,7 @@ int Test_Null_Modem() {
     */
     if (AllSurfaces.SurfacesRestored) {
       AllSurfaces.SurfacesRestored = false;
-      commands->Draw_All();
+      commands->Draw_All(*LogicPage);
     }
     /*
     ** Invoke game callback
@@ -477,7 +477,7 @@ int Test_Null_Modem() {
     /*
     ** Get user input
     */
-    const KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input(*LogicPage);
 
     /*
     ** Process input
@@ -688,7 +688,7 @@ static int Reconnect_Null_Modem() {
   Fancy_Text_Print(*LogicPage, buffer, x + 40, y + 50, scheme, kTBlack,
                    kTpfText);
 
-  commands->Draw_All();
+  commands->Draw_All(*LogicPage);
   Show_Mouse();
 
   /*
@@ -703,7 +703,7 @@ static int Reconnect_Null_Modem() {
     */
     if (AllSurfaces.SurfacesRestored) {
       AllSurfaces.SurfacesRestored = false;
-      commands->Draw_All();
+      commands->Draw_All(*LogicPage);
     }
     /*
     ** Invoke game callback
@@ -713,7 +713,7 @@ static int Reconnect_Null_Modem() {
     /*
     ** Get user input
     */
-    const KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input(*LogicPage);
 
     /*
     ** Process input
@@ -1090,7 +1090,7 @@ GameType Select_Serial_Dialog() {
         Draw_Caption(*LogicPage, TXT_SELECT_SERIAL_GAME, d_dialog_x, d_dialog_y,
                      d_dialog_w);
       }
-      commands->Draw_All();
+      commands->Draw_All(*LogicPage);
       Show_Mouse();
       display = REDRAW_NONE;
     }
@@ -1098,7 +1098,7 @@ GameType Select_Serial_Dialog() {
     /*
     ** Get user input
     */
-    const KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input(*LogicPage);
 
     /*
     ** Process input
@@ -1170,7 +1170,7 @@ GameType Select_Serial_Dialog() {
       curbutton = selection - kButtonDial;
       base::At(buttons, curbutton)->Turn_On();
       base::At(buttons, curbutton)->IsPressed = true;
-      base::At(buttons, curbutton)->Draw_Me(true);
+      base::At(buttons, curbutton)->Draw_Me(*LogicPage, true);
 
       switch (selection) {
         case kButtonDial:
@@ -1544,7 +1544,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input(*LogicPage);
 
     /*
     ---------------------------- Process input ----------------------------
@@ -2161,12 +2161,12 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     /*
     ** Get user input
     */
-    KeyNumType input = commands->Input();
+    KeyNumType input = commands->Input(*LogicPage);
 
     if (firsttime) {
       //			port_edt.Set_Focus();
       port_edt.Flag_To_Redraw();
-      input = commands->Input();
+      input = commands->Input(*LogicPage);
       firsttime = false;
     }
 
@@ -3311,7 +3311,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           absl::SNPrintF(staticcountbuff, sizeof(staticcountbuff), "%d",
                          TheSession().Options.UnitCount);
           staticcount.Set_Text(staticcountbuff);
-          staticcount.Draw_Me();
+          staticcount.Draw_Me(*LogicPage);
           //				Fancy_Text_Print("%d ", d_count_x +
           // d_count_w + 3 * 2, d_count_y, scheme, BLACK, kTpfText,
           // Session.Options.UnitCount);
@@ -3323,14 +3323,14 @@ int Com_Scenario_Dialog(bool skirmish) {
             absl::SNPrintF(staticlevelbuff, sizeof(staticlevelbuff), "**");
           }
           staticlevel.Set_Text(staticlevelbuff);
-          staticlevel.Draw_Me();
+          staticlevel.Draw_Me(*LogicPage);
           //				Fancy_Text_Print(txt, d_level_x +
           // d_level_w + 3 * 2, d_level_y, scheme, BLACK, kTpfText);
 
           absl::SNPrintF(staticcreditsbuff, sizeof(staticcreditsbuff), "%d",
                          TheSession().Options.Credits);
           staticcredits.Set_Text(staticcreditsbuff);
-          staticcredits.Draw_Me();
+          staticcredits.Draw_Me(*LogicPage);
           //				Fancy_Text_Print("%d", d_credits_x +
           // d_credits_w + 2 * 2, d_credits_y, scheme, BLACK, kTpfText,
           // Session.Options.Credits);
@@ -3338,7 +3338,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           absl::SNPrintF(staticaibuff, sizeof(staticaibuff), "%d",
                          TheSession().Options.AIPlayers);
           staticai.Set_Text(staticaibuff);
-          staticai.Draw_Me();
+          staticai.Draw_Me(*LogicPage);
           //				Fancy_Text_Print("%d", d_aiplayers_x +
           // d_aiplayers_w + 2*2, d_aiplayers_y, scheme, BLACK,
           // kTpfText, Session.Options.AIPlayers);
@@ -3349,7 +3349,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         */
         if (display >= REDRAW_BUTTONS) {
           commands->Flag_List_To_Redraw();
-          commands->Draw_All();
+          commands->Draw_All(*LogicPage);
         }
 
         Show_Mouse();
@@ -3361,7 +3361,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       */
       messages_have_focus = TheSession().Messages.Has_Edit_Focus();
       const bool droplist_is_dropped = housebtn.IsDropped;
-      input = commands->Input();
+      input = commands->Input(*LogicPage);
 
       /*
       ** Sort out the input focus between the name edit box and the message
@@ -5117,7 +5117,7 @@ int Com_Show_Scenario_Dialog() {
             absl::SNPrintF(staticcountbuff, sizeof(staticcountbuff), "%d",
                            TheSession().Options.UnitCount);
             staticcount.Set_Text(staticcountbuff);
-            staticcount.Draw_Me();
+            staticcount.Draw_Me(*LogicPage);
             if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
               absl::SNPrintF(staticlevelbuff, sizeof(staticlevelbuff), "%d ",
                              TheWorld().build_level());
@@ -5125,17 +5125,17 @@ int Com_Show_Scenario_Dialog() {
               absl::SNPrintF(staticlevelbuff, sizeof(staticlevelbuff), "**");
             }
             staticlevel.Set_Text(staticlevelbuff);
-            staticlevel.Draw_Me();
+            staticlevel.Draw_Me(*LogicPage);
 
             absl::SNPrintF(staticcreditsbuff, sizeof(staticcreditsbuff), "%d",
                            TheSession().Options.Credits);
             staticcredits.Set_Text(staticcreditsbuff);
-            staticcredits.Draw_Me();
+            staticcredits.Draw_Me(*LogicPage);
 
             absl::SNPrintF(staticaibuff, sizeof(staticaibuff), "%d",
                            TheSession().Options.AIPlayers);
             staticai.Set_Text(staticaibuff);
-            staticai.Draw_Me();
+            staticai.Draw_Me(*LogicPage);
           }
         }
       }
@@ -5155,7 +5155,7 @@ int Com_Show_Scenario_Dialog() {
     */
     messages_have_focus = TheSession().Messages.Has_Edit_Focus();
     const bool droplist_is_dropped = housebtn.IsDropped;
-    KeyNumType input = commands->Input();
+    KeyNumType input = commands->Input(*LogicPage);
 
     /*
     ** Sort out the input focus between the name edit box and the message system
@@ -6305,7 +6305,7 @@ static int Phone_Dialog() {
         ...............................................................*/
         Draw_Caption(*LogicPage, TXT_PHONE_LIST, d_dialog_x, d_dialog_y,
                      d_dialog_w);
-        phonelist.Draw_Me(true);
+        phonelist.Draw_Me(*LogicPage, true);
       }
       /*
       .......................... Redraw buttons ..........................
@@ -6325,12 +6325,12 @@ static int Phone_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    KeyNumType input = commands->Input();
+    KeyNumType input = commands->Input(*LogicPage);
 
     if (firsttime) {
       numedit.Set_Focus();
       numedit.Flag_To_Redraw();
-      input = commands->Input();
+      input = commands->Input(*LogicPage);
       firsttime = false;
     }
 
@@ -6483,7 +6483,7 @@ static int Phone_Dialog() {
       ------------------------------------------------------------------*/
       case KN_RETURN:
         dialbtn.IsPressed = true;
-        dialbtn.Draw_Me(true);
+        dialbtn.Draw_Me(*LogicPage, true);
         [[fallthrough]];
 
       case ButtonKey(kButtonDial):
@@ -6882,12 +6882,12 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     /*
     ........................... Get user input ............................
     */
-    KeyNumType input = commands->Input();
+    KeyNumType input = commands->Input(*LogicPage);
 
     if (firsttime) {
       nameedit.Set_Focus();
       nameedit.Flag_To_Redraw();
-      input = commands->Input();
+      input = commands->Input(*LogicPage);
       firsttime = false;
     }
 

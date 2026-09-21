@@ -1254,7 +1254,7 @@ void MessageListClass::Draw(PixelView& view) {
     if (TheScreen().IsVisible(&view)) {
       Hide_Mouse();
     }
-    EditLabel->Draw_Me(true);
+    EditLabel->Draw_Me(view, true);
 
     if (CursorChar && EditCurPos - EditInitPos < MaxChars - 1 &&
         EditLabel->Has_Focus()) {
@@ -1272,7 +1272,7 @@ void MessageListClass::Draw(PixelView& view) {
     if (TheScreen().IsVisible(&view)) {
       Hide_Mouse();
     }
-    MessageList->Draw_All();
+    MessageList->Draw_All(view);
     if (TheScreen().IsVisible(&view)) {
       Show_Mouse();
     }

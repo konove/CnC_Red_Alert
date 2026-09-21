@@ -342,7 +342,7 @@ bool LoadOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    KeyNumType input = commands->Input();
+    KeyNumType input = commands->Input(*LogicPage);
 
     /*
     **	The first time through the processing loop, set the edit
@@ -405,7 +405,7 @@ bool LoadOptionsClass::Process() {
           break;
       }
       Hide_Mouse();
-      commands->Draw_All(true);
+      commands->Draw_All(*LogicPage, true);
       Show_Mouse();
     }
 

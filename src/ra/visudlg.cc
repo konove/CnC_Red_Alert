@@ -252,7 +252,7 @@ void VisualControlsClass::Process() {
                          kTpfText | TPF_RIGHT |
                              (curbutton == i ? TPF_BRIGHT_COLOR : kTpfText));
       }
-      optionsbtn.Draw_All();
+      optionsbtn.Draw_All(*LogicPage);
       Show_Mouse();
       partial = false;
     }
@@ -260,7 +260,7 @@ void VisualControlsClass::Process() {
     /*
     **	Get and process player input.
     */
-    const KeyNumType input = optionsbtn.Input();
+    const KeyNumType input = optionsbtn.Input(*LogicPage);
     switch (static_cast<int>(input)) {
       case ButtonKey(kButtonBrightness):
         TheOptions().Set_Brightness(fixed(brightness.Get_Value(), 256));

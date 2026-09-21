@@ -178,7 +178,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     /*
     **	Get user input.
     */
-    KeyNumType input = commands->Input();
+    KeyNumType input = commands->Input(*LogicPage);
 
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on

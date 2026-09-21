@@ -246,7 +246,7 @@ const char* SimpleEditDlgClass::Show() {
     /*
     **	Get user input.
     */
-    KeyNumType input = commands->Input();
+    KeyNumType input = commands->Input(*LogicPage);
 
     /*
     **	The first time through the processing loop, set the edit
@@ -289,18 +289,18 @@ const char* SimpleEditDlgClass::Show() {
       //	These do not actually draw. I am actually clearing the "draw"
       // flag! 	Problem is Disable sets them to redraw, and I don't want to, and
       // there is no Flag_To_Redraw( false ).
-      EditBox.GadgetClass::Draw_Me(true);
+      EditBox.GadgetClass::Draw_Me(*LogicPage, true);
       if (!szPrompt2.empty()) {
         EditBox2.Disable();
-        EditBox2.GadgetClass::Draw_Me(true);
+        EditBox2.GadgetClass::Draw_Me(*LogicPage, true);
       }
       OkBtn.Disable();
-      OkBtn.GadgetClass::Draw_Me(true);
+      OkBtn.GadgetClass::Draw_Me(*LogicPage, true);
       CancelBtn.Disable();
-      CancelBtn.GadgetClass::Draw_Me(true);
+      CancelBtn.GadgetClass::Draw_Me(*LogicPage, true);
       if (szMiddleButton) {
         MiddleBtn.Disable();
-        MiddleBtn.GadgetClass::Draw_Me(true);
+        MiddleBtn.GadgetClass::Draw_Me(*LogicPage, true);
       }
     }
 

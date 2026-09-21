@@ -37,20 +37,20 @@
 #include "sdllib/wwstd.h"
 
 //***********************************************************************************************
-void WOLEditClass::Draw_Text(const char* text) {
+void WOLEditClass::Draw_Text(PixelView& view, const char* text) {
   //	Only difference between this and EditClass: cursor shows up when
   //	string is at MaxLength.
 
   const TextPrintType flags =
       Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
-  Conquer_Clip_Text_Print(*LogicPage, text, X + 1, Y + 1, Color, kTBlack,
+  Conquer_Clip_Text_Print(view, text, X + 1, Y + 1, Color, kTBlack,
                           TextFlags | flags, Width - 2);
 
   const int text_width = String_Pixel_Width(text);
   if (Has_Focus() &&  //	strlen(text) < MaxLength &&
       text_width + String_Pixel_Width("_") < Width - 2) {
-    Conquer_Clip_Text_Print(*LogicPage, "_", X + 1 + text_width, Y + 1, Color,
+    Conquer_Clip_Text_Print(view, "_", X + 1 + text_width, Y + 1, Color,
                             kTBlack, TextFlags | flags);
   }
 }

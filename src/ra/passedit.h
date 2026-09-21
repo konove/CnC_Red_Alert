@@ -34,7 +34,7 @@ class PassEditClass : public WOLEditClass {
   void Set_Focus() override;
 
  protected:
-  void Draw_Text(const char* text) override;
+  void Draw_Text(PixelView& view, const char* text) override;
 };
 
 #endif  // CNC_RED_ALERT_RA_PASSEDIT_H_

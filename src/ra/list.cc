@@ -348,21 +348,21 @@ bool ListClass::Action(unsigned flags, KeyNumType& key) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-bool ListClass::Draw_Me(bool forced) {
+bool ListClass::Draw_Me(PixelView& view, bool forced) {
   // ControlClass::Draw_Me redraws the peer gadget. A list's peer is the drop
   // list that owns it, so going through ControlClass would have the list ask
   // its owner to redraw in the middle of its own draw. Events still reach the
   // peer through ControlClass::Action.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-  if (GadgetClass::Draw_Me(forced)) {
+  if (GadgetClass::Draw_Me(view, forced)) {
     /*
     **	Turn off the mouse.
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
-    Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_BOX, true);
+    Draw_Box(view, X, Y, Width, Height, BOXSTYLE_BOX, true);
 
     /*
     **	Draw List.
@@ -375,7 +375,7 @@ bool ListClass::Draw_Me(bool forced) {
           /*
           **	Prints the text and handles right edge clipping and tabs.
           */
-          Draw_Entry(line, X + 1, Y + (LineHeight * index) + 1, Width - 2,
+          Draw_Entry(view, line, X + 1, Y + (LineHeight * index) + 1, Width - 2,
                      line == SelectedIndex);
         }
       }
@@ -384,7 +384,7 @@ bool ListClass::Draw_Me(bool forced) {
     /*
     **	Turn on the mouse.
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Show_Mouse();
     }
     return true;
@@ -694,22 +694,22 @@ void ListClass::Set_Tabs(std::span<const int> tabs) { Tabs = tabs; }
  *                                                                                             *
  * OUTPUT:  none * WARNINGS:   none * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-void ListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
+void ListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
+                           bool selected) {
   TextPrintType flags = TextFlags;
   RemapControlType* scheme = Get_Color_Scheme();
 
   if (selected) {
     flags = flags | TPF_BRIGHT_COLOR;
-    LogicPage->FillRect(x, y, x + width - 1, y + LineHeight - 1,
-                        scheme->Shadow);
+    view.FillRect(x, y, x + width - 1, y + LineHeight - 1, scheme->Shadow);
   } else {
     if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
       flags = flags | TPF_MEDIUM_COLOR;
     }
   }
 
-  Conquer_Clip_Text_Print(*LogicPage, List.at(base::ToSize(index)).c_str(), x,
-                          y, scheme, kTBlack, flags, width, Tabs);
+  Conquer_Clip_Text_Print(view, List.at(base::ToSize(index)).c_str(), x, y,
+                          scheme, kTBlack, flags, width, Tabs);
 }
 
 /***********************************************************************************************

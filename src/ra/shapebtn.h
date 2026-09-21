@@ -42,13 +42,15 @@
 
 #include <cstddef>
 #include <span>
+
 #include "ra/toggle.h"
+#include "sdllib/pixel_buffer.h"
 
 class ShapeButtonClass final : public ToggleClass {
  public:
   ShapeButtonClass() noexcept;
   ShapeButtonClass(unsigned id, std::span<const std::byte> shapes, int x, int y);
-  bool Draw_Me(bool forced = false) override;
+  bool Draw_Me(PixelView& view, bool forced = false) override;
   void Set_Shape(std::span<const std::byte> data);
   std::span<const std::byte> Get_Shape_Data() { return ShapeData; }
 

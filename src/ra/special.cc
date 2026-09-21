@@ -204,11 +204,11 @@ void Special_Dialog(bool simple) {
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
-      buttons->Draw_All();
+      buttons->Draw_All(*LogicPage);
       Show_Mouse();
     }
 
-    const KeyNumType input = buttons->Input();
+    const KeyNumType input = buttons->Input(*LogicPage);
     switch (static_cast<int>(input)) {
       case KN_ESC:
       case ButtonKey(200):
@@ -272,7 +272,7 @@ class PWEditClass : public EditClass {
       : EditClass(id, text, max_len, flags, x, y, w, h, kAlphanumeric) {}
 
  protected:
-  void Draw_Text(const char* text) override;
+  void Draw_Text(PixelView& view, const char* text) override;
 };
 
 /***********************************************************************************************
@@ -291,7 +291,7 @@ class PWEditClass : public EditClass {
  *                                                                                             *
  * HISTORY: * 10/27/1995 JLB : Created. *
  *=============================================================================================*/
-void PWEditClass::Draw_Text(const char* text) {
+void PWEditClass::Draw_Text(PixelView& view, const char* text) {
   char buffer[80];
 
   base::FillBytes(base::ObjectBytes(buffer), '\0', sizeof(buffer));
@@ -302,14 +302,13 @@ void PWEditClass::Draw_Text(const char* text) {
     const TextPrintType flags =
         Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
-    Conquer_Clip_Text_Print(*LogicPage, buffer, X + 1, Y + 1, Color, kTBlack,
+    Conquer_Clip_Text_Print(view, buffer, X + 1, Y + 1, Color, kTBlack,
                             TextFlags | flags, Width - 2);
 
     if (Has_Focus() &&
         std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
-      Conquer_Clip_Text_Print(*LogicPage, "_",
-                              X + 1 + String_Pixel_Width(buffer), Y + 1, Color,
-                              kTBlack, TextFlags | flags);
+      Conquer_Clip_Text_Print(view, "_", X + 1 + String_Pixel_Width(buffer),
+                              Y + 1, Color, kTBlack, TextFlags | flags);
     }
   } else {
     Conquer_Clip_Text_Print(
@@ -429,7 +428,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	Redraw the buttons.
   */
   if (buttonlist) {
-    buttonlist->Draw_All();
+    buttonlist->Draw_All(*LogicPage);
   }
   Show_Mouse();
 
@@ -455,7 +454,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
     /*
     **	Fetch and process input.
     */
-    const KeyNumType input = buttonlist->Input();  // user input
+    const KeyNumType input = buttonlist->Input(*LogicPage);  // user input
     if (first) {
       button2.Set_Focus();
       button2.Flag_To_Redraw();
@@ -585,7 +584,7 @@ int Fetch_Difficulty(bool amath) {
       **	Redraw the buttons.
       */
       if (buttonlist) {
-        buttonlist->Draw_All();
+        buttonlist->Draw_All(*LogicPage);
       }
       Show_Mouse();
     }
@@ -607,7 +606,7 @@ int Fetch_Difficulty(bool amath) {
     /*
     **	Fetch and process input.
     */
-    const KeyNumType input = buttonlist->Input();
+    const KeyNumType input = buttonlist->Input(*LogicPage);
 
     switch (static_cast<int>(input)) {
       case KN_RETURN:

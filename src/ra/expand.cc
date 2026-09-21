@@ -277,7 +277,8 @@ class EListClass : public ListClass {
   }
 
  protected:
-  void Draw_Entry(int index, int x, int y, int width, bool selected) override;
+  void Draw_Entry(PixelView& view, int index, int x, int y, int width,
+                  bool selected) override;
 
  private:
   // One per item, parallel to List.
@@ -305,7 +306,8 @@ class EListClass : public ListClass {
  *                                                                                             *
  * HISTORY: * 11/17/1995 JLB : Created. *
  *=============================================================================================*/
-void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
+void EListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
+                            bool selected) {
   char buffer[128];
   RemapControlType* scheme = Get_Color_Scheme();
 
@@ -329,7 +331,7 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
     }
   }
 
-  Conquer_Clip_Text_Print(*LogicPage, buffer, x + 100, y, scheme, kTBlack,
+  Conquer_Clip_Text_Print(view, buffer, x + 100, y, scheme, kTBlack,
                           flags & ~TPF_CENTER, width, Tabs);
 }
 
@@ -471,11 +473,11 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
         Draw_Caption(*LogicPage, TXT_WOL_AM_MISSIONS, kOptionX, kOptionY,
                      kOptionWidth);
       }
-      buttons->Draw_All();
+      buttons->Draw_All(*LogicPage);
       Show_Mouse();
     }
 
-    const KeyNumType input = buttons->Input();
+    const KeyNumType input = buttons->Input(*LogicPage);
     switch (static_cast<int>(input)) {
       case ButtonKey(200):
         TheWorld().whom() = list.Current_Object().House;

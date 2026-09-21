@@ -50,6 +50,7 @@
 #include "ra/defines.h"
 #include "ra/list.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 
 // A list box whose items each carry a check mark the user can toggle by
 // clicking. The checked state lives next to the text, not in it: Get_Item
@@ -91,7 +92,8 @@ class CheckListClass : public ListClass {
 
  protected:
   bool Action(unsigned flags, KeyNumType& key) override;
-  void Draw_Entry(int index, int x, int y, int width, bool selected) override;
+  void Draw_Entry(PixelView& view, int index, int x, int y, int width,
+                  bool selected) override;
 
  private:
   // Checked state of each item, parallel to List.

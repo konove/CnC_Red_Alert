@@ -119,7 +119,7 @@ void DescriptionClass::Process(char* string) {
       /*
       **	Draw the titles
       */
-      optionsbtn.Draw_All();
+      optionsbtn.Draw_All(*LogicPage);
       Window_Show_Mouse();
       display = false;
     }
@@ -127,7 +127,7 @@ void DescriptionClass::Process(char* string) {
     /*
     **	Get user input
     */
-    KeyNumType input = optionsbtn.Input();
+    KeyNumType input = optionsbtn.Input(*LogicPage);
 
     /*
     **	Process Input

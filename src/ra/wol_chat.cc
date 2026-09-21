@@ -622,7 +622,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         //	Dialog & Field labels
         //...............................................................
 
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
 
         //	Draw title bar above channel list.
         Draw_Box(*LogicPage, d_chanlist_x, d_chanlist_y - 15, d_chanlist_w, 16,
@@ -677,7 +677,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       pToolTipHitLast->Unshow();
     }
 
-    input = commands->Input();
+    input = commands->Input(*LogicPage);
 
     //	This hack, used elsewhere in this form, appears to be the standard dodge
     // around GadgetClass::Input's 	tendency to remove any focus the first
@@ -688,7 +688,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     if (bHackFocus) {
       sendedit.Set_Focus();
       sendedit.Flag_To_Redraw();
-      input = commands->Input();
+      input = commands->Input(*LogicPage);
       bHackFocus = false;
     }
 

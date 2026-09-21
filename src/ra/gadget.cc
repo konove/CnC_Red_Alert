@@ -406,7 +406,7 @@ bool GadgetClass::Action(unsigned flags, KeyNumType& /*unused*/) {
  *                                                                                             *
  * HISTORY: * 01/14/1995 JLB : Created. *
  *=============================================================================================*/
-bool GadgetClass::Draw_Me(bool forced) {
+bool GadgetClass::Draw_Me(PixelView& /*view*/, bool forced) {
   if (forced || IsToRepaint) {
     IsToRepaint = false;
     return true;
@@ -428,11 +428,11 @@ bool GadgetClass::Draw_Me(bool forced) {
  *                                                                                             *
  * HISTORY: * 01/03/1995 MML : Created. *
  *=============================================================================================*/
-void GadgetClass::Draw_All(bool forced) {
+void GadgetClass::Draw_All(PixelView& view, bool forced) {
   GadgetClass* gadget = this;
 
   while (gadget != nullptr) {
-    gadget->Draw_Me(forced);
+    gadget->Draw_Me(view, forced);
     gadget = gadget->Get_Next();
   }
 }
@@ -448,7 +448,7 @@ void GadgetClass::Draw_All(bool forced) {
  *                                                                         *
  * HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
-KeyNumType GadgetClass::Input() {
+KeyNumType GadgetClass::Input(PixelView& view) {
   int mousex = 0;
   int mousey = 0;
   bool forced = false;
@@ -575,13 +575,13 @@ KeyNumType GadgetClass::Input() {
   **	If "sticky" processing is active, then only process the stuck gadget.
   */
   if (StuckOn) {
-    StuckOn->Draw_Me(false);
+    StuckOn->Draw_Me(view, false);
     GadgetClass* oldstuck = StuckOn;
     StuckOn->Clicked_On(key, flags, mousex, mousey);
     if (StuckOn) {
-      StuckOn->Draw_Me(false);
+      StuckOn->Draw_Me(view, false);
     } else {
-      oldstuck->Draw_Me(false);
+      oldstuck->Draw_Me(view, false);
     }
   } else {
     /*
@@ -589,10 +589,10 @@ KeyNumType GadgetClass::Input() {
     *keyboard *	events to it.
     */
     if (Focused && flags & kKeyboard) {
-      Focused->Draw_Me(false);
+      Focused->Draw_Me(view, false);
       Focused->Clicked_On(key, flags, mousex, mousey);
       if (Focused) {
-        Focused->Draw_Me(false);
+        Focused->Draw_Me(view, false);
       }
     } else {
       /*
@@ -609,7 +609,7 @@ KeyNumType GadgetClass::Input() {
         **	Maybe redraw the button if it needs to or is being forced to
         *redraw.
         */
-        next_button->Draw_Me(forced);
+        next_button->Draw_Me(view, forced);
 
         /*
         **	Process this button. If the button was recognized and action was
@@ -621,7 +621,7 @@ KeyNumType GadgetClass::Input() {
           **	Some buttons will require repainting when they perform some
           *action. *	Do so at this time.
           */
-          next_button->Draw_Me(false);
+          next_button->Draw_Me(view, false);
           break;
         }
 

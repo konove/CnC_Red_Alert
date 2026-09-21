@@ -112,8 +112,9 @@ const char* TriggerClass::Description() const { return Class->Description(); }
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void TriggerClass::Draw_It(int /*unused*/, int x, int y, int width, int height,
-                           bool selected, TextPrintType flags) const {
+void TriggerClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
+                           int width, int height, bool selected,
+                           TextPrintType flags) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
     static const int _tabs[] = {13, 40};
@@ -122,16 +123,15 @@ void TriggerClass::Draw_It(int /*unused*/, int x, int y, int width, int height,
         font == static_cast<uint32_t>(TPF_EFNT)) {
       if (selected) {
         flags = flags | TPF_BRIGHT_COLOR;
-        LogicPage->FillRect(x, y, x + width - 1, y + height - 1,
-                            scheme->Shadow);
+        view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
       } else {
         if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
           flags = flags | TPF_MEDIUM_COLOR;
         }
       }
 
-      Conquer_Clip_Text_Print(*LogicPage, Description(), x, y, scheme, kTBlack,
-                              flags, width, _tabs);
+      Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, flags,
+                              width, _tabs);
     } else {
       Conquer_Clip_Text_Print(
           *LogicPage, Description(), x, y,

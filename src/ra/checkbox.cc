@@ -64,14 +64,13 @@
  *                                                                                             *
  * HISTORY: * 07/01/1995 JLB : Created. *
  *=============================================================================================*/
-bool CheckBoxClass::Draw_Me(bool forced) {
-  if (ToggleClass::Draw_Me(forced)) {
+bool CheckBoxClass::Draw_Me(PixelView& view, bool forced) {
+  if (ToggleClass::Draw_Me(view, forced)) {
     Hide_Mouse();
-    Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_DOWN, false);
-    LogicPage->FillRect(X + 1, Y + 1, X + Width - 2, Y + Height - 2, DKGREY);
+    Draw_Box(view, X, Y, Width, Height, BOXSTYLE_DOWN, false);
+    view.FillRect(X + 1, Y + 1, X + Width - 2, Y + Height - 2, DKGREY);
     if (IsOn) {
-      LogicPage->FillRect(X + 1, Y + 1, X + Width - 2, Y + Height - 2,
-                          kLtGreen);
+      view.FillRect(X + 1, Y + 1, X + Width - 2, Y + Height - 2, kLtGreen);
     }
     Show_Mouse();
     return true;

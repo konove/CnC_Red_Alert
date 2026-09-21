@@ -42,12 +42,13 @@
 
 #include "ra/toggle.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 
 class CheckBoxClass : public ToggleClass {
  public:
   CheckBoxClass(unsigned id, int x, int y) : ToggleClass(id, x, y, 7, 7) {}
 
-  bool Draw_Me(bool forced = false) override;
+  bool Draw_Me(PixelView& view, bool forced = false) override;
 
  protected:
   bool Action(unsigned flags, KeyNumType& key) override;

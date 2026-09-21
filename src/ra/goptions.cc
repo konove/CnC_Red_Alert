@@ -337,7 +337,7 @@ void GameOptionsClass::Process() {
           TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, TheScenario().ScenarioName,
           Version_Name());
 
-      buttons->Draw_All();
+      buttons->Draw_All(*LogicPage);
       TabClass::Hilite_Tab(*LogicPage, 0);
       Show_Mouse();
       display = false;
@@ -347,7 +347,7 @@ void GameOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    const KeyNumType input = buttons->Input();
+    const KeyNumType input = buttons->Input(*LogicPage);
 
     /*
     **	Process Input.
@@ -424,7 +424,7 @@ void GameOptionsClass::Process() {
 
       case KN_RETURN:
         base::At(buttonsel, curbutton - 1)->IsPressed = true;
-        base::At(buttonsel, curbutton - 1)->Draw_Me(true);
+        base::At(buttonsel, curbutton - 1)->Draw_Me(*LogicPage, true);
         selection = curbutton;
         pressed = true;
         TheKeyboard().Clear();

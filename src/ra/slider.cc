@@ -321,13 +321,11 @@ bool SliderClass::Step(bool up) {
  *hidden when this routine is called.               * HISTORY:    01/16/1995 JLB
  *: Created.                                                       *
  *=============================================================================================*/
-void SliderClass::Draw_Thumb() {
+void SliderClass::Draw_Thumb(PixelView& view) {
   if (IsHorizontal) {
-    Draw_Box(*LogicPage, X + ThumbStart, Y, ThumbSize, Height, BOXSTYLE_RAISED,
-             true);
+    Draw_Box(view, X + ThumbStart, Y, ThumbSize, Height, BOXSTYLE_RAISED, true);
   } else {
-    Draw_Box(*LogicPage, X, Y + ThumbStart, Width, ThumbSize, BOXSTYLE_RAISED,
-             true);
+    Draw_Box(view, X, Y + ThumbStart, Width, ThumbSize, BOXSTYLE_RAISED, true);
   }
 }
 
@@ -340,28 +338,28 @@ void SliderClass::Draw_Thumb() {
  *redraw flag?     * OUTPUT:  bool; Was the gauge redrawn? * WARNINGS:   none *
  * HISTORY:    01/16/1995 JLB : Created. *
  *=============================================================================================*/
-bool SliderClass::Draw_Me(bool forced) {
+bool SliderClass::Draw_Me(PixelView& view, bool forced) {
   // A list-attached slider draws a thumb instead of a gauge body; the
   // stand-alone case still goes through GaugeClass below.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-  if (BelongToList && ControlClass::Draw_Me(forced)) {
+  if (BelongToList && ControlClass::Draw_Me(view, forced)) {
     /*
     **	Hide the mouse.
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
     /*
     **	Draw the body & set text color.
     */
-    Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_DOWN, true);
-    Draw_Thumb();
+    Draw_Box(view, X, Y, Width, Height, BOXSTYLE_DOWN, true);
+    Draw_Thumb(view);
 
     /*
     **	Display the mouse.
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Show_Mouse();
     }
     return true;
@@ -370,7 +368,7 @@ bool SliderClass::Draw_Me(bool forced) {
   /*
   **	If it does not belong to a listbox...
   */
-  return GaugeClass::Draw_Me(forced);
+  return GaugeClass::Draw_Me(view, forced);
 }
 
 /***********************************************************************************************

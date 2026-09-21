@@ -800,7 +800,7 @@ int MapEditClass::Load_Scenario() {
         Fancy_Text_Print(*LogicPage, "Scenario", kDDialogCx - 5, kDScenY,
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_RIGHT | TPF_EFNT | TPF_NOSHADOW);
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
         Show_Mouse();
 
         display = false;
@@ -809,7 +809,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Get user input
       */
-      const KeyNumType input = commands->Input();
+      const KeyNumType input = commands->Input(*LogicPage);
 
       /*
       **	Process input
@@ -1375,7 +1375,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Process user input
       */
-      const KeyNumType input = commands->Input();  // user input
+      const KeyNumType input = commands->Input(*LogicPage);  // user input
 
       /*
       **	Normal button processing: This is done when the mouse button is
@@ -2282,7 +2282,7 @@ int MapEditClass::Load_Scenario() {
         win.Collapse();
         lose.Collapse();
         basebtn.Collapse();
-        commands->Draw_All(true);
+        commands->Draw_All(*LogicPage, true);
         Show_Mouse();
         display = false;
         dotext = true;
@@ -2299,22 +2299,22 @@ int MapEditClass::Load_Scenario() {
         absl::SNPrintF(statictechbuff, sizeof(statictechbuff), "%2d",
                        techlevel.Get_Value());
         techstatic.Set_Text(statictechbuff);
-        techstatic.Draw_Me();
+        techstatic.Draw_Me(*LogicPage);
 
         absl::SNPrintF(staticcreditbuff, sizeof(staticcreditbuff), "$%-7d",
                        creditbtn.Get_Value() * 100);
         creditstatic.Set_Text(staticcreditbuff);
-        creditstatic.Draw_Me();
+        creditstatic.Draw_Me(*LogicPage);
 
         absl::SNPrintF(staticmaxunitbuff, sizeof(staticmaxunitbuff), "%4d",
                        maxunit.Get_Value());
         maxunitstatic.Set_Text(staticmaxunitbuff);
-        maxunitstatic.Draw_Me();
+        maxunitstatic.Draw_Me(*LogicPage);
 
         absl::SNPrintF(staticsmartiesbuff, sizeof(staticsmartiesbuff), "%2d",
                        smarties.Get_Value());
         smartiesstatic.Set_Text(staticsmartiesbuff);
-        smartiesstatic.Draw_Me();
+        smartiesstatic.Draw_Me(*LogicPage);
 
         Show_Mouse();
       }
@@ -2322,7 +2322,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Get user input
       */
-      const KeyNumType input = commands->Input();
+      const KeyNumType input = commands->Input(*LogicPage);
 
       /*
       **	Process input
@@ -2812,7 +2812,7 @@ int MapEditClass::Load_Scenario() {
         Draw_Caption(*LogicPage, TXT_TRIGGER_EDITOR, kDDialogX, kDDialogY,
                      kDDialogW);
         commands->Flag_List_To_Redraw();
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
         Show_Mouse();
         display = false;
       }
@@ -2820,7 +2820,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Get user input
       */
-      const KeyNumType input = commands->Input();
+      const KeyNumType input = commands->Input(*LogicPage);
 
       /*
       **	Process input

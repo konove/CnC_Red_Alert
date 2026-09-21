@@ -2015,7 +2015,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
     /*
     **	Get user input.
     */
-    KeyNumType input = commands->Input();
+    KeyNumType input = commands->Input(*LogicPage);
 
     /*
     **	The first time through the processing loop, set the edit

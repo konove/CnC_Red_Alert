@@ -47,6 +47,7 @@
 #include "absl/base/attributes.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"
+#include "sdllib/pixel_buffer.h"
 
 class TextLabelClass : public GadgetClass {
  public:
@@ -60,7 +61,7 @@ class TextLabelClass : public GadgetClass {
   /*
   ** Overloaded draw routine
   */
-  bool Draw_Me(bool forced = false) override;
+  bool Draw_Me(PixelView& view, bool forced = false) override;
 
   /*
   ** Sets the displayed text of the label

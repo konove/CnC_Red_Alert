@@ -86,7 +86,7 @@ class ChronalVortexClass {
   /*
   ** Render the vortex
   */
-  void Render();
+  void Render(PixelView& view);
 
   /*
   ** Flags cells under the vortex to be redrawn

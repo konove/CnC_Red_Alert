@@ -2047,7 +2047,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
       /*
       ** Draw the vortex effect over the terrain
       */
-      TheWorld().chronal_vortex().Render();
+      TheWorld().chronal_vortex().Render(view);
 
       /*
       **	Redraw the game objects layer by layer. The layer drawing occurs

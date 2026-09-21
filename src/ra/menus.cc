@@ -713,7 +713,7 @@ int Main_Menu(int32_t /*unused*/) {
       //			Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w,
       // d_dialog_h); 			Draw_Caption (TXT_NONE, d_dialog_x,
       // d_dialog_y, d_dialog_w);
-      commands->Draw_All();
+      commands->Draw_All(*LogicPage);
       Fancy_Text_Print(*LogicPage, "V%s", d_dialog_x + d_dialog_w - 36,
                        d_dialog_y + d_dialog_h - 10,
                        GadgetClass::Get_Color_Scheme(), kTBlack,
@@ -733,7 +733,7 @@ int Main_Menu(int32_t /*unused*/) {
     /*
     **	Get and process player input.
     */
-    const KeyNumType input = commands->Input();  // input from user
+    const KeyNumType input = commands->Input(*LogicPage);  // input from user
 
     /*
     **	Dispatch the input to be processed.
@@ -800,7 +800,7 @@ int Main_Menu(int32_t /*unused*/) {
 
       case KN_RETURN:
         base::At(buttons, curbutton)->IsPressed = true;
-        base::At(buttons, curbutton)->Draw_Me(true);
+        base::At(buttons, curbutton)->Draw_Me(*LogicPage, true);
         retval = curbutton;
         process = false;
         break;

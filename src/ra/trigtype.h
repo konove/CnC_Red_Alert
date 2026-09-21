@@ -50,6 +50,7 @@
 #include "ra/taction.h"
 #include "ra/tevent.h"
 #include "ra/type.h"
+#include "sdllib/pixel_buffer.h"
 
 /*
 **	There can be multiple trigger events and trigger actions. This
@@ -160,8 +161,8 @@ class TriggerTypeClass : public AbstractTypeClass {
   // legacy C interfaces take the object where a pointer or name is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator const char*() const { return Description(); }
-  void Draw_It(int index, int x, int y, int width, int height, bool selected,
-               TextPrintType flags) const;
+  void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
+               bool selected, TextPrintType flags) const;
 };
 
 class ArchiveReader;

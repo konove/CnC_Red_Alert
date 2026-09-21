@@ -210,15 +210,15 @@ void ColorListClass::Set_Selected_Style(SelectStyleType style,
  * HISTORY:                                                                *
  *   04/19/1995 BRR : Created.                                             *
  *=========================================================================*/
-void ColorListClass::Draw_Entry(int index, int x, int y, int width,
-                                bool selected) {
+void ColorListClass::Draw_Entry(PixelView& view, int index, int x, int y,
+                                int width, bool selected) {
   RemapControlType* color = nullptr;
 
   /*
   ** Draw a non-selected item in its color
   */
   if (!selected) {
-    Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y, Colors.at(index),
+    Conquer_Clip_Text_Print(view, Get_Item(index), x, y, Colors.at(index),
                             kTBlack, TextFlags, width, Tabs);
     return;
   }
@@ -237,9 +237,8 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     **	NONE: Just print the string in its native color
     */
     case SELECT_NORMAL:
-      Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y,
-                              Colors.at(index), kTBlack, TextFlags, width,
-                              Tabs);
+      Conquer_Clip_Text_Print(view, Get_Item(index), x, y, Colors.at(index),
+                              kTBlack, TextFlags, width, Tabs);
       break;
 
     /*
@@ -248,12 +247,11 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     */
     case SELECT_HIGHLIGHT:
       if (base::Any(TextFlags & TPF_6PT_GRAD)) {
-        Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y, color,
-                                kTBlack, TextFlags | TPF_BRIGHT_COLOR, width,
-                                Tabs);
+        Conquer_Clip_Text_Print(view, Get_Item(index), x, y, color, kTBlack,
+                                TextFlags | TPF_BRIGHT_COLOR, width, Tabs);
       } else {
-        Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y, color,
-                                kTBlack, TextFlags, width, Tabs);
+        Conquer_Clip_Text_Print(view, Get_Item(index), x, y, color, kTBlack,
+                                TextFlags, width, Tabs);
       }
       break;
 
@@ -261,11 +259,9 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     **	BOX: Draw a box around the item in the current select color
     */
     case SELECT_BOX:
-      LogicPage->DrawRect(x, y, x + width - 2, y + LineHeight - 2,
-                          color->Color);
-      Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y,
-                              Colors.at(index), kTBlack, TextFlags, width,
-                              Tabs);
+      view.DrawRect(x, y, x + width - 2, y + LineHeight - 2, color->Color);
+      Conquer_Clip_Text_Print(view, Get_Item(index), x, y, Colors.at(index),
+                              kTBlack, TextFlags, width, Tabs);
       break;
 
     /*
@@ -273,17 +269,14 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     */
     case SELECT_BAR:
       if (base::Any(TextFlags & TPF_6PT_GRAD)) {
-        LogicPage->FillRect(x, y, x + width - 1, y + LineHeight - 1,
-                            color->Color);
-        Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y,
-                                Colors.at(index), kTBlack,
-                                TextFlags | TPF_BRIGHT_COLOR, width, Tabs);
-      } else {
-        LogicPage->FillRect(x, y, x + width - 2, y + LineHeight - 2,
-                            color->Color);
-        Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y,
-                                Colors.at(index), kTBlack, TextFlags, width,
+        view.FillRect(x, y, x + width - 1, y + LineHeight - 1, color->Color);
+        Conquer_Clip_Text_Print(view, Get_Item(index), x, y, Colors.at(index),
+                                kTBlack, TextFlags | TPF_BRIGHT_COLOR, width,
                                 Tabs);
+      } else {
+        view.FillRect(x, y, x + width - 2, y + LineHeight - 2, color->Color);
+        Conquer_Clip_Text_Print(view, Get_Item(index), x, y, Colors.at(index),
+                                kTBlack, TextFlags, width, Tabs);
       }
       break;
 
@@ -291,8 +284,8 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     **	INVERT: Draw text as the background color on foreground color
     */
     case SELECT_INVERT:
-      LogicPage->FillRect(x, y, x + width - 1, y + LineHeight - 1,
-                          Colors.at(index)->Color);
+      view.FillRect(x, y, x + width - 1, y + LineHeight - 1,
+                    Colors.at(index)->Color);
       break;
     default:
       break;

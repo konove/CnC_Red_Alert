@@ -383,8 +383,8 @@ void IconListClass::Remove_Item(int index) {
 #define PREICONGAP 1
 #define ICONTEXTGAP 2
 
-void IconListClass::Draw_Entry(int index, int x, int y, int width,
-                               bool selected) {
+void IconListClass::Draw_Entry(PixelView& view, int index, int x, int y,
+                               int width, bool selected) {
   const IconList_ItemExtras* pExtras = ExtrasList.at(index);
 
   int xText = x;
@@ -423,14 +423,15 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
       case 0:
         //	Don't draw any items selected (even if they are, really, in
         // ListClass).
-        ListClass::Draw_Entry(index, xText, y, width, false);
+        ListClass::Draw_Entry(view, index, xText, y, width, false);
         break;
       case 1:
-        ListClass::Draw_Entry(index, xText, y, width, selected);
+        ListClass::Draw_Entry(view, index, xText, y, width, selected);
         break;
       case 2:
         //	Ignore 'selected' parameter. We use our own records.
-        ListClass::Draw_Entry(index, xText, y, width, pExtras->bMultiSelected);
+        ListClass::Draw_Entry(view, index, xText, y, width,
+                              pExtras->bMultiSelected);
         break;
       default:
         break;
@@ -459,8 +460,8 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
 
     if (bShowSelected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->FillRect(xText, y, xText + width - 1, y + LineHeight - 1,
-                          pRemap->Shadow);
+      view.FillRect(xText, y, xText + width - 1, y + LineHeight - 1,
+                    pRemap->Shadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;
@@ -471,24 +472,24 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
     // one tab will now break this.)
     if (!Tabs.empty()) {
       const int tab[] = {Tabs.front() - (xText - x)};
-      Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), xText, y, pRemap,
-                              kTBlack, flags, width, tab);
+      Conquer_Clip_Text_Print(view, Get_Item(index), xText, y, pRemap, kTBlack,
+                              flags, width, tab);
     } else {
-      Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), xText, y, pRemap,
-                              kTBlack, flags, width, {});
+      Conquer_Clip_Text_Print(view, Get_Item(index), xText, y, pRemap, kTBlack,
+                              flags, width, {});
     }
   }
 
   //	Draw fixed position icon.
   if (pExtras->FixedIcon.pIcon) {
     if (pExtras->FixedIcon.IconKind == ICON_SHAPE) {
-      CC_Draw_Shape(*LogicPage, pExtras->FixedIcon.pIcon.shape, 0,
+      CC_Draw_Shape(view, pExtras->FixedIcon.pIcon.shape, 0,
                     x + pExtras->FixedIcon.xOffset,
                     y + pExtras->FixedIcon.yOffset, WINDOW_MAIN, SHAPE_NORMAL);
     }
     //	Put similar code in here for shapes if used...
     else {
-      DrawDib(*LogicPage, AsImage(pExtras->FixedIcon.pIcon.image),
+      DrawDib(view, AsImage(pExtras->FixedIcon.pIcon.image),
               x + pExtras->FixedIcon.xOffset, y + pExtras->FixedIcon.yOffset,
               pExtras->FixedIcon.iWidth, WINDOW_MAIN);
     }
@@ -499,13 +500,13 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
     if (base::At(pExtras->pIcon, iIcon)) {
       x += PREICONGAP;
       if (base::At(pExtras->IconKind, iIcon) == ICON_SHAPE) {
-        CC_Draw_Shape(*LogicPage, base::At(pExtras->pIcon, iIcon).shape, 0, x,
-                      y, WINDOW_MAIN, SHAPE_NORMAL);
+        CC_Draw_Shape(view, base::At(pExtras->pIcon, iIcon).shape, 0, x, y,
+                      WINDOW_MAIN, SHAPE_NORMAL);
       }
       //	Put similar code in here for shapes if used...
       else {
         const dib::Image& icon = AsImage(base::At(pExtras->pIcon, iIcon).image);
-        DrawDib(*LogicPage, icon, x, y, kNoIconWidthLimit, WINDOW_MAIN);
+        DrawDib(view, icon, x, y, kNoIconWidthLimit, WINDOW_MAIN);
         x += icon.Width();
       }
     }

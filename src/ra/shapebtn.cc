@@ -139,12 +139,12 @@ void ShapeButtonClass::Set_Shape(std::span<const std::byte> data) {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-bool ShapeButtonClass::Draw_Me(bool forced) {
-  if (ControlClass::Draw_Me(forced) && !ShapeData.empty()) {
+bool ShapeButtonClass::Draw_Me(PixelView& view, bool forced) {
+  if (ControlClass::Draw_Me(view, forced) && !ShapeData.empty()) {
     /*
     **	Hide the mouse.
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Hide_Mouse(X, Y, X + Width - 1, Y + Height - 1);
     }
 
@@ -165,12 +165,11 @@ bool ShapeButtonClass::Draw_Me(bool forced) {
         shapenum = IsOn;
       }
     }
-    CC_Draw_Shape(*LogicPage, ShapeData, shapenum, X, Y, WINDOW_MAIN,
-                  SHAPE_NORMAL);
+    CC_Draw_Shape(view, ShapeData, shapenum, X, Y, WINDOW_MAIN, SHAPE_NORMAL);
     /*
     **	Display the mouse.
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Show_Mouse();
     }
     return true;

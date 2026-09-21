@@ -182,18 +182,18 @@ bool WOL_Download_Dialog(IDownload* pDownload,
       }
 
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
       }
 
       if (display >= REDRAW_PROGRESS) {
-        progress_meter.Draw_Me(true);
+        progress_meter.Draw_Me(*LogicPage, true);
       }
 
       display = REDRAW_NONE;
     }
 
     if (process) {
-      const KeyNumType input = cancelbtn.Input();
+      const KeyNumType input = cancelbtn.Input(*LogicPage);
       switch (static_cast<int>(input)) {
         /*
         ** Cancel. Just return to the main menu

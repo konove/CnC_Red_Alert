@@ -41,12 +41,13 @@
 #define CNC_RED_ALERT_RA_GAUGE_H_
 #include "ra/control.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 
 class GaugeClass : public ControlClass {
  public:
   GaugeClass(unsigned id, int x, int y, int w, int h);
 
-  bool Draw_Me(bool forced = false) override;
+  bool Draw_Me(PixelView& view, bool forced = false) override;
   virtual bool Set_Maximum(int value);
   virtual bool Set_Value(int value);
   [[nodiscard]] virtual int Get_Value() const { return CurValue; }
@@ -82,7 +83,7 @@ class GaugeClass : public ControlClass {
   */
   int ClickDiff{0};
 
-  virtual void Draw_Thumb();
+  virtual void Draw_Thumb(PixelView& view);
   bool Action(unsigned flags, KeyNumType& key) override;
   virtual int Pixel_To_Value(int pixel);
   virtual int Value_To_Pixel(int value);
@@ -91,7 +92,7 @@ class GaugeClass : public ControlClass {
 class TriColorGaugeClass : public GaugeClass {
  public:
   TriColorGaugeClass(unsigned id, int x, int y, int w, int h);
-  bool Draw_Me(bool forced) override;
+  bool Draw_Me(PixelView& view, bool forced) override;
   virtual bool Set_Red_Limit(int value);
   virtual bool Set_Yellow_Limit(int value);
 

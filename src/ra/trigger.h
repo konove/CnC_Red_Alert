@@ -49,6 +49,7 @@
 #include "ra/object.h"
 #include "ra/tevent.h"
 #include "ra/trigtype.h"
+#include "sdllib/pixel_buffer.h"
 
 class TriggerClass {
  public:
@@ -97,8 +98,8 @@ class TriggerClass {
   */
   [[nodiscard]] TARGET As_Target() const;
   [[nodiscard]] const char* Description() const;
-  void Draw_It(int /*unused*/, int x, int y, int width, int height,
-               bool selected, TextPrintType flags) const;
+  void Draw_It(PixelView& view, int /*unused*/, int x, int y, int width,
+               int height, bool selected, TextPrintType flags) const;
   [[nodiscard]] const char* Name() const { return Class->Name(); }
 
   /*

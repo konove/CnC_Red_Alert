@@ -45,6 +45,7 @@
 
 #include "ra/defines.h"
 #include "ra/gadget.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/buff.h"
 
 class StaticButtonClass final : public GadgetClass {
@@ -52,12 +53,12 @@ class StaticButtonClass final : public GadgetClass {
   StaticButtonClass();
   StaticButtonClass(unsigned id, const char* text, TextPrintType style, int x,
                     int y, int w = -1, int h = -1);
-  bool Draw_Me(bool forced = false) override;
+  bool Draw_Me(PixelView& view, bool forced = false) override;
   void Set_Text(const char* text, bool resize = false);
 
  protected:
-  void Draw_Background();
-  void Draw_Text(const char* text);
+  void Draw_Background(PixelView& view);
+  void Draw_Text(PixelView& view, const char* text);
 
   /*
   **	If a background is to be preserved for this button, then this will point

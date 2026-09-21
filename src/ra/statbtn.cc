@@ -137,12 +137,12 @@ StaticButtonClass::StaticButtonClass()
  *                                                                                             *
  * HISTORY: * 01/03/1995 MML : Created. * 01/16/1995 JLB : Modified *
  *=============================================================================================*/
-bool StaticButtonClass::Draw_Me(bool forced) {
-  if (GadgetClass::Draw_Me(forced)) {
+bool StaticButtonClass::Draw_Me(PixelView& view, bool forced) {
+  if (GadgetClass::Draw_Me(view, forced)) {
     /*
     **	Hide the mouse.
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Hide_Mouse(X, Y, X + Width - 1, Y + Height - 1);
     }
 
@@ -150,13 +150,13 @@ bool StaticButtonClass::Draw_Me(bool forced) {
     **	Draw the background and overlaying text. These are virtual function
     **	calls so that they may be overridden.
     */
-    Draw_Background();
-    Draw_Text(String);
+    Draw_Background(view);
+    Draw_Text(view, String);
 
     /*
     **	Display the mouse.
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Show_Mouse();
     }
     return true;
@@ -192,7 +192,7 @@ void StaticButtonClass::Set_Text(const char* text, bool resize) {
 
   Flag_To_Redraw();
   if (resize && String != nullptr) {
-    Draw_Background();
+    Draw_Background(*LogicPage);
     Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, PrintFlags);
     Width = String_Pixel_Width(String);
     Height = FontHeight + FontYSpacing;
@@ -217,7 +217,7 @@ void StaticButtonClass::Set_Text(const char* text, bool resize) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void StaticButtonClass::Draw_Background() {
+void StaticButtonClass::Draw_Background(PixelView& view) {
   /*
   **	If the background hasn't been recorded from the buffer, then
   **	allocate and record the background image now.
@@ -225,8 +225,8 @@ void StaticButtonClass::Draw_Background() {
   if (Background.empty() && Width > 0 && Height > 0) {
     Background.resize(base::ToSize(Width) * base::ToSize(Height));
     if (!Background.empty()) {
-      LogicPage->CopyToBuffer(X, Y, Width, Height, Background,
-                              static_cast<int32_t>(Background.size()));
+      view.CopyToBuffer(X, Y, Width, Height, Background,
+                        static_cast<int32_t>(Background.size()));
     }
   }
 
@@ -235,7 +235,7 @@ void StaticButtonClass::Draw_Background() {
   *now.
   */
   if (!Background.empty()) {
-    LogicPage->CopyFromBuffer(X, Y, Width, Height, Background);
+    view.CopyFromBuffer(X, Y, Width, Height, Background);
   }
 }
 
@@ -255,7 +255,7 @@ void StaticButtonClass::Draw_Background() {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void StaticButtonClass::Draw_Text(const char* text) {
+void StaticButtonClass::Draw_Text(PixelView& view, const char* text) {
   /*
   **	Display the text.
   */
@@ -269,7 +269,6 @@ void StaticButtonClass::Draw_Text(const char* text) {
       x += Width - 1;
     }
 
-    Fancy_Text_Print(*LogicPage, text, x, Y, Get_Color_Scheme(), kTBlack,
-                     PrintFlags);
+    Fancy_Text_Print(view, text, x, Y, Get_Color_Scheme(), kTBlack, PrintFlags);
   }
 }

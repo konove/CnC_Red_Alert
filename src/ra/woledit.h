@@ -42,7 +42,8 @@ class WOLEditClass : public EditClass {
 
  protected:
   bool Action(unsigned flags, KeyNumType& key) override;  //	Override of base
-  void Draw_Text(const char* text) override;  //	Override of base
+  void Draw_Text(PixelView& view,
+                 const char* text) override;  //	Override of base
 };
 
 #endif  // CNC_RED_ALERT_RA_WOLEDIT_H_

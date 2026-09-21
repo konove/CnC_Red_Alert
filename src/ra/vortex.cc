@@ -772,7 +772,7 @@ void ChronalVortexClass::Coordinate_Remap(
  *                                                                                             *
  * HISTORY: * 8/29/96 4:49PM ST : Created *
  *=============================================================================================*/
-void ChronalVortexClass::Render() {
+void ChronalVortexClass::Render(PixelView& view) {
   if (Active && !Hidden) {
     char fname[80];
 
@@ -950,7 +950,7 @@ void ChronalVortexClass::Render() {
       /*
       ** Create a view port to blit to
       */
-      PixelView target(LogicPage->buffer(), 0, 16 + LogicPage->y_pos(),
+      PixelView target(view.buffer(), 0, 16 + view.y_pos(),
                        Lepton_To_Pixel(TheMap().TacLeptonWidth),
                        Lepton_To_Pixel(TheMap().TacLeptonHeight));
 

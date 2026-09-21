@@ -1922,7 +1922,7 @@ static int Net_Join_Dialog() {
               TheRules().MaxPlayers -
               static_cast<int>(TheSession().Players.Count()));
         }
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
       }
 
       //..................................................................
@@ -2018,7 +2018,7 @@ static int Net_Join_Dialog() {
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.UnitCount);
         staticcount.Set_Text(txt);
-        staticcount.Draw_Me();
+        staticcount.Draw_Me(*LogicPage);
         //				Fancy_Text_Print(txt, d_count_x +
         // d_count_w + 2 *2, d_count_y, scheme, BLACK, kTpfText);
 
@@ -2030,7 +2030,7 @@ static int Net_Join_Dialog() {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
         staticlevel.Set_Text(txt);
-        staticlevel.Draw_Me();
+        staticlevel.Draw_Me(*LogicPage);
         //				Fancy_Text_Print(txt, d_level_x +
         // d_level_w + 2 *2, d_level_y, scheme, BLACK, kTpfText);
 
@@ -2038,7 +2038,7 @@ static int Net_Join_Dialog() {
                          d_credits_y, scheme, kTBlack, kTpfText | TPF_RIGHT);
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.Credits);
         staticcredits.Set_Text(txt);
-        staticcredits.Draw_Me();
+        staticcredits.Draw_Me(*LogicPage);
         //				Fancy_Text_Print(txt, d_credits_x +
         // d_credits_w + 2 *2, d_credits_y, scheme, BLACK, kTpfText);
 
@@ -2046,7 +2046,7 @@ static int Net_Join_Dialog() {
                          d_aiplayers_y, scheme, kTBlack, kTpfText | TPF_RIGHT);
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.AIPlayers);
         staticaiplayers.Set_Text(txt);
-        staticaiplayers.Draw_Me();
+        staticaiplayers.Draw_Me(*LogicPage);
         //				Fancy_Text_Print(txt, d_aiplayers_x +
         // d_aiplayers_w + 2 *2, d_aiplayers_y, scheme, BLACK,
         // kTpfText);
@@ -2059,7 +2059,7 @@ static int Net_Join_Dialog() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    input = commands->Input();
+    input = commands->Input(*LogicPage);
 
     if (input & KN_BUTTON) {
       housebtn.Collapse();
@@ -4603,7 +4603,7 @@ static int Net_New_Dialog() {
         if (loadfile.IsAvailable()) {
           loadbtn.Add_Tail(*commands);
         }
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
       }
 
       //..................................................................
@@ -4627,7 +4627,7 @@ static int Net_New_Dialog() {
       if (display >= REDRAW_PARMS) {
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.UnitCount);
         staticunit.Set_Text(txt);
-        staticunit.Draw_Me();
+        staticunit.Draw_Me(*LogicPage);
         //				Fancy_Text_Print(txt, d_count_x +
         // d_count_w + 2*2, d_count_y, scheme, BLACK, kTpfText);
 
@@ -4637,19 +4637,19 @@ static int Net_New_Dialog() {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
         staticlevel.Set_Text(txt);
-        staticlevel.Draw_Me();
+        staticlevel.Draw_Me(*LogicPage);
         //				Fancy_Text_Print(txt, d_level_x +
         // d_level_w + 2*2, d_level_y, scheme, BLACK, kTpfText);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.Credits);
         staticcredits.Set_Text(txt);
-        staticcredits.Draw_Me();
+        staticcredits.Draw_Me(*LogicPage);
         //				Fancy_Text_Print(txt, d_credits_x +
         // d_credits_w + 2*2, d_credits_y, scheme, BLACK, kTpfText);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.AIPlayers);
         staticaiplayers.Set_Text(txt);
-        staticaiplayers.Draw_Me();
+        staticaiplayers.Draw_Me(*LogicPage);
         //				Fancy_Text_Print(txt, d_aiplayers_x +
         // d_aiplayers_w + 2*2, d_aiplayers_y, scheme, BLACK,
         // kTpfText);
@@ -4662,7 +4662,7 @@ static int Net_New_Dialog() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    input = commands->Input();
+    input = commands->Input(*LogicPage);
 
     //.....................................................................
     //	Process input

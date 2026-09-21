@@ -56,6 +56,7 @@
 #include "ra/target.h"
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/byte_sink.h"
 #include "tech/byte_source.h"
 #include "tech/game_file.h"
@@ -456,8 +457,8 @@ class MultiMission {
   void Set_Digest(const char* digest);
   void Set_Official(bool official);
   void Set_Expansion(bool expansion);
-  void Draw_It(int index, int x, int y, int width, int height, bool selected,
-               TextPrintType flags) const;
+  void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
+               bool selected, TextPrintType flags) const;
   [[nodiscard]] const char* Description() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return ScenarioDescription;
   }

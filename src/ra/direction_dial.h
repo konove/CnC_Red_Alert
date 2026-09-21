@@ -27,6 +27,7 @@
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 
 // A round dial with eight decorations and a hand that the player turns by
 // clicking or dragging with the left mouse button. The hand snaps to the eight
@@ -49,7 +50,7 @@ class DirectionDial : public ControlClass {
 
   // Draws the dial and its hand if a redraw is pending or `forced` is true.
   // Returns true if it drew.
-  bool Draw_Me(bool forced = false) override;
+  bool Draw_Me(PixelView& view, bool forced = false) override;
 
  protected:
   // Turns the dial to follow the mouse while the left button is held after a

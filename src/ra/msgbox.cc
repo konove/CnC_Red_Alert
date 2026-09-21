@@ -247,7 +247,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   **	Redraw the buttons.
   */
   if (buttonlist) {
-    buttonlist->Draw_All();
+    buttonlist->Draw_All(*LogicPage);
   }
   Show_Mouse();
 
@@ -276,7 +276,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         **	Redraw the buttons.
         */
         if (buttonlist) {
-          buttonlist->Draw_All();
+          buttonlist->Draw_All(*LogicPage);
         }
         Show_Mouse();
       }
@@ -289,7 +289,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       /*
       **	Fetch and process input.
       */
-      KeyNumType input = buttonlist->Input();
+      KeyNumType input = buttonlist->Input(*LogicPage);
       //	I really hate to do this, but...      ajw
       if (TheGameState().cancel_msgbox()) {
         TheGameState().cancel_msgbox() = false;
@@ -400,7 +400,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           }
         }
         Hide_Mouse();
-        buttonlist->Draw_All(true);
+        buttonlist->Draw_All(*LogicPage, true);
         Show_Mouse();
 
         switch (selection) {

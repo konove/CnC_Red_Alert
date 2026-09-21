@@ -1364,23 +1364,24 @@ MultiMission::MultiMission(const char* filename, const char* description,
   Set_Expansion(expansion);
 }
 
-void MultiMission::Draw_It(int /*unused*/, int x, int y, int width, int height,
-                           bool selected, TextPrintType flags) const {
+void MultiMission::Draw_It(PixelView& view, int /*unused*/, int x, int y,
+                           int width, int height, bool selected,
+                           TextPrintType flags) const {
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   static const int _tabs[] = {35, 60, 80, 100};
   const TextPrintType point = flags & static_cast<TextPrintType>(0x0F);
   if (point == TPF_6PT_GRAD || point == TPF_EFNT) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
+      view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;
       }
     }
 
-    Conquer_Clip_Text_Print(*LogicPage, ScenarioDescription, x, y, scheme,
-                            kTBlack, flags, width, _tabs);
+    Conquer_Clip_Text_Print(view, ScenarioDescription, x, y, scheme, kTBlack,
+                            flags, width, _tabs);
   } else {
     Conquer_Clip_Text_Print(
         *LogicPage, ScenarioDescription, x, y,

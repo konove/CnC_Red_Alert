@@ -1506,7 +1506,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
         Hide_Mouse();
         // Redraw the buttons.
-        buttonlist->Draw_All();
+        buttonlist->Draw_All(*LogicPage);
         Show_Mouse();
       }
 
@@ -1514,7 +1514,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       ServiceRealTime();
 
       // Fetch and process input.
-      const KeyNumType input = buttonlist->Input();  // user input
+      const KeyNumType input = buttonlist->Input(*LogicPage);  // user input
       switch (static_cast<uint32_t>(input)) {
         case kBriefingButtonFlag | uint32_t{kButton1}:
           selection = base::At(realval, 0);

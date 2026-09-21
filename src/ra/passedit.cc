@@ -7,6 +7,7 @@
 
 #include "base/array.h"
 #include "ra/woledit.h"
+#include "sdllib/pixel_buffer.h"
 
 void PassEditClass::Set_Focus() {
   if (bClearOnNextSetFocus) {
@@ -21,8 +22,8 @@ void PassEditClass::Set_Focus() {
   WOLEditClass::Set_Focus();
 }
 
-void PassEditClass::Draw_Text(const char* text) {
+void PassEditClass::Draw_Text(PixelView& view, const char* text) {
   const std::string mask(text != nullptr ? std::string_view(text).size() : 0,
                          '*');
-  WOLEditClass::Draw_Text(mask.c_str());
+  WOLEditClass::Draw_Text(view, mask.c_str());
 }

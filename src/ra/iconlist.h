@@ -39,6 +39,7 @@
 #include "absl/base/attributes.h"
 #include "ra/list.h"
 #include "ra/vector.h"
+#include "sdllib/pixel_buffer.h"
 
 enum class ICONKIND {
   ICON_SHAPE = 0,  //	pIcon points to a shape.
@@ -229,7 +230,8 @@ class IconListClass : public ListClass {
 
  protected:
   bool Action(unsigned flags, KeyNumType& key) override;
-  void Draw_Entry(int index, int x, int y, int width, bool selected) override;
+  void Draw_Entry(PixelView& view, int index, int x, int y, int width,
+                  bool selected) override;
 
   virtual int Add_Item_Detail(const char* szToken, const char* szHelp,
                               IconListIcon pIcon0, ICONKIND IconKind0,

@@ -205,7 +205,7 @@ bool Get_Broadcast_Addresses() {
       //	Redraw buttons
       //..................................................................
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
       }
 
       Show_Mouse();
@@ -215,7 +215,7 @@ bool Get_Broadcast_Addresses() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    const KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input(*LogicPage);
 
     //.....................................................................
     //	Process input

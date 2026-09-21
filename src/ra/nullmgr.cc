@@ -1321,7 +1321,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
                    (TheScreen().visible_view().width() / 2) - (text_width / 2),
                    y + 50, GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
 
-  Commands->Draw_All();
+  Commands->Draw_All(*LogicPage);
   Show_Mouse();
 
   /*
@@ -1356,7 +1356,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
     */
     if (AllSurfaces.SurfacesRestored) {
       AllSurfaces.SurfacesRestored = false;
-      Commands->Draw_All();
+      Commands->Draw_All(*LogicPage);
     }
 
     delay = SerialPort->Get_Modem_Result(delay, buffer.c_str(), 81);
@@ -1557,7 +1557,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
             (TheScreen().visible_view().width() / 2) - (text_width / 2), y + 50,
             GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
 
-        Commands->Draw_All();
+        Commands->Draw_All(*LogicPage);
       }
       Show_Mouse();
       display = REDRAW_NONE;
@@ -1569,7 +1569,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     Process input
     .....................................................................*/
     if (!Input) {
-      Input = Commands->Input();
+      Input = Commands->Input(*LogicPage);
     }
     switch (static_cast<int>(Input)) {
       case KN_ESC:
@@ -1861,7 +1861,7 @@ int NullModemClass::Abort_Modem() {
   /*
   ** Get user input
   */
-  Input = Commands->Input();
+  Input = Commands->Input(*LogicPage);
 
   switch (static_cast<int>(Input)) {
     case KN_ESC:

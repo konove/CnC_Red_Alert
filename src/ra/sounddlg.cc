@@ -102,7 +102,8 @@ class MusicListClass : public ListClass {
   }
 
  protected:
-  void Draw_Entry(int index, int x, int y, int width, bool selected) override;
+  void Draw_Entry(PixelView& view, int index, int x, int y, int width,
+                  bool selected) override;
 
  private:
   // One per item, parallel to List.
@@ -368,7 +369,7 @@ void SoundControlsClass::Process() {
                        option_y + repeat_y + 2, scheme, kTBlack,
                        kTpfText | TPF_RIGHT);
 
-      optionsbtn->Draw_All();
+      optionsbtn->Draw_All(*LogicPage);
       Show_Mouse();
       display = false;
     }
@@ -376,7 +377,7 @@ void SoundControlsClass::Process() {
     /*
     **	Get user input.
     */
-    const KeyNumType input = optionsbtn->Input();
+    const KeyNumType input = optionsbtn->Input(*LogicPage);
 
     /*
     **	Process Input.
@@ -478,8 +479,8 @@ void SoundControlsClass::Process() {
  *                                                                                             *
  * HISTORY: * 09/22/1995 JLB : Created. *
  *=============================================================================================*/
-void MusicListClass::Draw_Entry(int index, int x, int y, int width,
-                                bool selected) {
+void MusicListClass::Draw_Entry(PixelView& view, int index, int x, int y,
+                                int width, bool selected) {
   RemapControlType* scheme = Get_Color_Scheme();
 
   if (base::Any(TextFlags & TPF_6PT_GRAD)) {
@@ -487,16 +488,16 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
 
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->FillRect(x, y, x + width - 1, y + LineHeight - 1,
-                          Get_Color_Scheme()->Shadow);
+      view.FillRect(x, y, x + width - 1, y + LineHeight - 1,
+                    Get_Color_Scheme()->Shadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;
       }
     }
 
-    Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y, scheme, kTBlack,
-                            flags, width, Tabs);
+    Conquer_Clip_Text_Print(view, Get_Item(index), x, y, scheme, kTBlack, flags,
+                            width, Tabs);
 
   } else {
     Conquer_Clip_Text_Print(

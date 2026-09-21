@@ -101,7 +101,7 @@ class ListClass : public ControlClass {
   // The selected item's text, or nullptr when the list is empty.
   [[nodiscard]] virtual const char* Current_Item() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  bool Draw_Me(bool forced) override;
+  bool Draw_Me(PixelView& view, bool forced) override;
   // The item's text, or nullptr when the list is empty. An out-of-range
   // index is clamped to the nearest item.
   [[nodiscard]] virtual const char* Get_Item(int index) const
@@ -140,7 +140,8 @@ class ListClass : public ControlClass {
 
  protected:
   bool Action(unsigned flags, KeyNumType& key) override;
-  virtual void Draw_Entry(int index, int x, int y, int width, bool selected);
+  virtual void Draw_Entry(PixelView& view, int index, int x, int y, int width,
+                          bool selected);
 
   /*
   **	This controls what the text looks like. It uses the basic TPF_ flags
@@ -212,7 +213,7 @@ class TListClass final : public ControlClass {
   [[nodiscard]] int Count() const { return static_cast<int>(List.Count()); }
   [[nodiscard]] int Current_Index() const;
   T Current_Item() const;
-  bool Draw_Me(bool forced) override;
+  bool Draw_Me(PixelView& view, bool forced) override;
   int Step_Selected_Index(int step);
   void Flag_To_Redraw() override;
   [[nodiscard]] T Get_Item(int index) const { return List.at(index); }
@@ -464,19 +465,19 @@ bool TListClass<T>::Action(unsigned flags, KeyNumType& key) {
 }
 
 template <class T>
-bool TListClass<T>::Draw_Me(bool forced) {
+bool TListClass<T>::Draw_Me(PixelView& view, bool forced) {
   // As in ListClass::Draw_Me: skipping ControlClass avoids asking the peer
   // drop list to redraw from inside the list's own draw.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-  if (GadgetClass::Draw_Me(forced)) {
+  if (GadgetClass::Draw_Me(view, forced)) {
     /*
     **	Turn off the mouse.
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
-    Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_BOX, true);
+    Draw_Box(view, X, Y, Width, Height, BOXSTYLE_BOX, true);
 
     /*
     **	Draw List.
@@ -489,9 +490,9 @@ bool TListClass<T>::Draw_Me(bool forced) {
           /*
           **	Prints the text and handles right edge clipping and tabs.
           */
-          List.at(line)->Draw_It(line, X + 1, Y + (LineHeight * index) + 1,
-                                 Width - 2, LineHeight, (line == SelectedIndex),
-                                 TextFlags);
+          List.at(line)->Draw_It(
+              view, line, X + 1, Y + (LineHeight * index) + 1, Width - 2,
+              LineHeight, (line == SelectedIndex), TextFlags);
           //					List[index].Draw_It(line, X+1,
           // Y+(LineHeight*index)+1, Width-2, LineHeight, (line ==
           // SelectedIndex), TextFlags);
@@ -504,7 +505,7 @@ bool TListClass<T>::Draw_Me(bool forced) {
     /*
     **	Turn on the mouse.
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Show_Mouse();
     }
     return true;

@@ -139,8 +139,9 @@ static int atoh(const char* str);
  *                                                                                             *
  * HISTORY: * 07/30/1996 JLB : Created. *
  *=============================================================================================*/
-void TeamTypeClass::Draw_It(int /*unused*/, int x, int y, int width, int height,
-                            bool selected, TextPrintType flags) const {
+void TeamTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
+                            int width, int height, bool selected,
+                            TextPrintType flags) const {
   if constexpr (config::kCheatKeysEnabled || config::kScenarioEditorEnabled) {
     RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
     static const int _tabs[] = {35, 60, 80, 100};
@@ -149,16 +150,15 @@ void TeamTypeClass::Draw_It(int /*unused*/, int x, int y, int width, int height,
         font == static_cast<uint32_t>(TPF_EFNT)) {
       if (selected) {
         flags = flags | TPF_BRIGHT_COLOR;
-        LogicPage->FillRect(x, y, x + width - 1, y + height - 1,
-                            scheme->Shadow);
+        view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
       } else {
         if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
           flags = flags | TPF_MEDIUM_COLOR;
         }
       }
 
-      Conquer_Clip_Text_Print(*LogicPage, Description(), x, y, scheme, kTBlack,
-                              flags, width, _tabs);
+      Conquer_Clip_Text_Print(view, Description(), x, y, scheme, kTBlack, flags,
+                              width, _tabs);
     } else {
       Conquer_Clip_Text_Print(
           *LogicPage, Description(), x, y,
@@ -585,8 +585,9 @@ NeedType TeamMission_Needs(TeamMissionType tmtype) {
  *                                                                                             *
  * HISTORY: * 01/05/1996 JLB : Created. *
  *=============================================================================================*/
-void TeamMissionClass::Draw_It(int index, int x, int y, int width, int height,
-                               bool selected, TextPrintType flags) const {
+void TeamMissionClass::Draw_It(PixelView& view, int index, int x, int y,
+                               int width, int height, bool selected,
+                               TextPrintType flags) const {
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   static const int _tabs[] = {13, 40};
   const uint32_t font = static_cast<uint32_t>(flags) & 0x0FU;
@@ -594,15 +595,15 @@ void TeamMissionClass::Draw_It(int index, int x, int y, int width, int height,
       font == static_cast<uint32_t>(TPF_EFNT)) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
+      view.FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;
       }
     }
 
-    Conquer_Clip_Text_Print(*LogicPage, Description(index), x, y, scheme,
-                            kTBlack, flags, width, _tabs);
+    Conquer_Clip_Text_Print(view, Description(index), x, y, scheme, kTBlack,
+                            flags, width, _tabs);
   } else {
     Conquer_Clip_Text_Print(
         *LogicPage, Description(index), x, y,
@@ -1087,7 +1088,7 @@ bool TeamTypeClass::Edit() {
       /*
       **	Redraw the buttons
       */
-      commands->Draw_All();
+      commands->Draw_All(*LogicPage);
       Show_Mouse();
 
       display = false;
@@ -1096,7 +1097,7 @@ bool TeamTypeClass::Edit() {
     /*
     **	Get user input
     */
-    const KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input(*LogicPage);
 
     /*
     **	Process input

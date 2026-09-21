@@ -40,9 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_TEAMTYPE_H_
 #define CNC_RED_ALERT_RA_TEAMTYPE_H_
 
-#include <string>
-
 #include <cstddef>
+#include <string>
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
@@ -52,6 +51,7 @@
 #include "ra/house.h"
 #include "ra/target.h"
 #include "ra/type.h"
+#include "sdllib/pixel_buffer.h"
 
 /*
 **	TeamMissionType: the various missions that a team can have.
@@ -95,8 +95,8 @@ class TeamMissionClass {
   // legacy C interfaces take the object where a pointer or name is expected.
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator const char*() const { return Description(0); }
-  void Draw_It(int index, int x, int y, int width, int height, bool selected,
-               TextPrintType flags) const;
+  void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
+               bool selected, TextPrintType flags) const;
 
   TeamMissionType Mission;  // Mission type.
   union {
@@ -180,8 +180,8 @@ class TeamTypeClass : public AbstractTypeClass {
   /*
   **	Utility routines
   */
-  void Draw_It(int index, int x, int y, int width, int height, bool selected,
-               TextPrintType flags) const;
+  void Draw_It(PixelView& view, int index, int x, int y, int width, int height,
+               bool selected, TextPrintType flags) const;
   static const char* Name_From_Mission(TeamMissionType order);
   static TeamMissionType Mission_From_Name(const char* name);
   static TeamTypeClass* Suggested_New_Team(HouseClass* house,

@@ -429,9 +429,9 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
 
   if (IsRadarActivating || IsRadarDeactivating || IsRadarJammed) {
     Radar_Anim(view);
-    MouseClass::Repair.Draw_Me(true);
-    MouseClass::Upgrade.Draw_Me(true);
-    MouseClass::Zoom.Draw_Me(true);
+    MouseClass::Repair.Draw_Me(view, true);
+    MouseClass::Upgrade.Draw_Me(view, true);
+    MouseClass::Zoom.Draw_Me(view, true);
     IsRadarToRedraw = false;
     return;
   }
@@ -491,10 +491,6 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
         Radar_Cursor(view, RadarCursorRedraw);
 
       } else {
-        // The Draw_Me() calls below still find their page through the global;
-        // the save and restore pair goes when they take a view of their own.
-        PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
-
         CC_Draw_Shape(view, RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
                       SHAPE_NORMAL);
         if (BaseX || BaseY) {
@@ -536,18 +532,16 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
         FullRedraw = false;
         IsRadarToRedraw = false;
 
-        MouseClass::Repair.Draw_Me(true);
-        MouseClass::Upgrade.Draw_Me(true);
-        MouseClass::Zoom.Draw_Me(true);
+        MouseClass::Repair.Draw_Me(view, true);
+        MouseClass::Upgrade.Draw_Me(view, true);
+        MouseClass::Zoom.Draw_Me(view, true);
 
-        if (oldpage == &TheScreen().visible_view()) {
+        if (TheScreen().IsVisible(&view)) {
           Hide_Mouse();
           view.Blit(TheScreen().visible_view(), RadX, RadY, RadX, RadY,
                     RadWidth, RadHeight);
           Show_Mouse();
         }
-
-        SetLogicPage(oldpage);
       }
 
     } else {
@@ -575,9 +569,9 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
             TPF_CENTER | kTpfText | TPF_DROPSHADOW);
       }
 
-      MouseClass::Repair.Draw_Me(true);
-      MouseClass::Upgrade.Draw_Me(true);
-      MouseClass::Zoom.Draw_Me(true);
+      MouseClass::Repair.Draw_Me(view, true);
+      MouseClass::Upgrade.Draw_Me(view, true);
+      MouseClass::Zoom.Draw_Me(view, true);
     }
   }
 }
@@ -2215,9 +2209,9 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
   CC_Draw_Shape(view, RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN, SHAPE_NORMAL);
   int y = RadY + RadOffY + 4;
 
-  MouseClass::Repair.Draw_Me(true);
-  MouseClass::Upgrade.Draw_Me(true);
-  MouseClass::Zoom.Draw_Me(true);
+  MouseClass::Repair.Draw_Me(view, true);
+  MouseClass::Upgrade.Draw_Me(view, true);
+  MouseClass::Zoom.Draw_Me(view, true);
 
   Fancy_Text_Print(view, TXT_SPY_INFO, RadX + RadOffX + 12, y,
                    &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
@@ -2375,9 +2369,9 @@ void RadarClass::Draw_Names(PixelView& view) const {
     y += 12 + 1;
   }
 
-  MouseClass::Repair.Draw_Me(true);
-  MouseClass::Upgrade.Draw_Me(true);
-  MouseClass::Zoom.Draw_Me(true);
+  MouseClass::Repair.Draw_Me(view, true);
+  MouseClass::Upgrade.Draw_Me(view, true);
+  MouseClass::Zoom.Draw_Me(view, true);
 }
 
 void RadarClass::Activate_Pulse() {

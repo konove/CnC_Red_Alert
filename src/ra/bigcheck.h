@@ -25,6 +25,7 @@
 #include <string>
 
 #include "ra/toggle.h"
+#include "sdllib/pixel_buffer.h"
 
 #define BIGCHECK_OFFSETX 20
 #define BIGCHECK_OFFSETY 0
@@ -44,7 +45,7 @@ class BigCheckBoxClass : public ToggleClass {
     IsToggleType = true;
   }
 
-  bool Draw_Me(bool forced = false) override;
+  bool Draw_Me(PixelView& view, bool forced = false) override;
 
   bool Toggle() {
     if (IsOn) {
