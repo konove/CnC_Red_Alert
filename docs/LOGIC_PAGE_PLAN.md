@@ -317,3 +317,29 @@ reset in `~PixelView` (`:60-64`) and the declarations at `src/sdllib/pixel_buffe
   allocations, all `MapEditClass::One_Time()`); Tiberian Dawn's 215 allocations are the
   `HouseClass::Init_Trackers()` leaks phase 6 of the globals plan recorded. Still to do: run Red
   Alert on a real display into a mission and through a movie.
+
+- 2026-09-21: phase 1 done. `src/ra/bar.*` deleted (`ProgressBarClass` had no caller and compiled
+  only because the directory is globbed), and the 35 commented-out `LogicPage->` fragments in both
+  games are gone, including the three `if (display /*&& LogicPage->Lock()*/)` conditions.
+
+  `src/td/radar.cc` now restores the page it borrows: `oldpage` is a plain `PixelView*` again and
+  `SetLogicPage(oldpage)` runs after the blit, matching `src/ra/radar.cc:548`. The unbalanced
+  `LogicPage->Unlock()` that the commented-out `Lock()` left behind is harmless --
+  `PixelBuffer::UnlockSurface()` returns early when `lock_count_` is zero -- and stays until phase
+  3a threads the view through.
+
+  The `"C&C95 - Logic page invalid"` repair code in `src/td/netdlg.cc` is deleted, and the leak it
+  compensated for is fixed at the source: `Map_Selection()` (`src/td/mapsel.cc`) sets the page to
+  `sys_mem_page()` to draw the country shape and then falls into the same teardown block both score
+  presentations use -- except that `ScoreClass::Presentation()` (`src/td/score.cc:1111`) and
+  `Multi_Score_Presentation()` (`:2283`) each call `SetLogicPage(TheScreen().visible_view())` right
+  before deleting `PseudoSeenBuff`, and `Map_Selection()` did not. It returned to the main menu with
+  the global still on the system memory page, which is the third page the netdlg guard tested for;
+  the same omission was one `delete` away from the latent crash noted above. `Map_Selection()` now
+  restores the visible view before the deletes.
+
+  Verification: both build dirs clean, `tools/strict_tu.py` clean on all 18 touched TUs, 689 tests
+  pass, both save/load smoke scripts pass, and ASan `-NEWGAME -QUITFRAME` reports no memory errors
+  in either game with leak totals unchanged from the phase 0 baseline (RA 29,199 bytes in 68
+  allocations, TD 215 allocations). Still to do: a real-display run of the TD radar full redraw,
+  which is the behaviour the restore changes and which headless cannot exercise.

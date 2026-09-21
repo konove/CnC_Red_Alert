@@ -4649,12 +4649,6 @@ static int Net_Fake_New_Dialog() {
   Set_Palette(ThePalettes().title_palette());
   CCDebugString("C&C95 - Palette was set OK.\n");
 
-  if (!TheScreen().IsVisible(LogicPage) &&
-      LogicPage != &TheScreen().hidden_view()) {
-    CCDebugString("C&C95 - Logic page invalid");
-    SetLogicPage(TheScreen().visible_view());
-  }
-
   char a_buffer[128];
   absl::SNPrintF(a_buffer, sizeof(a_buffer), "Number of players:%d",
                  static_cast<int>(TheNetwork().players().Count()));
@@ -5267,12 +5261,6 @@ static int Net_Fake_Join_Dialog() {
   CCDebugString("C&C95 - About to set the palette.\n");
   Set_Palette(ThePalettes().title_palette());
   CCDebugString("C&C95 - Palette was set OK.\n");
-
-  if (!TheScreen().IsVisible(LogicPage) &&
-      LogicPage != &TheScreen().hidden_view()) {
-    CCDebugString("C&C95 - Logic page invalid\n");
-    SetLogicPage(TheScreen().visible_view());
-  }
 
   char a_buffer[128];
   absl::SNPrintF(a_buffer, sizeof(a_buffer), "C&C95 - Number of players:%d\n",

@@ -1188,6 +1188,10 @@ void Map_Selection() {
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, nullptr);
   delete europe;
 
+  // Point the logic page back at the screen before the pages this screen drew
+  // to go away; the branch above leaves it on the system memory page.
+  SetLogicPage(TheScreen().visible_view());
+
   delete PseudoSeenBuff;
   PseudoSeenBuff = nullptr;
   delete TextPrintBuffer;
