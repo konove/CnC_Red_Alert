@@ -5,6 +5,7 @@
 #include <span>
 #include <vector>
 
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "ra/queue.h"
 #include "ra/search.h"
@@ -95,6 +96,56 @@ std::vector<uint8_t> Save(const TFixedIHeapClass<Widget>& heap) {
 bool Load(TFixedIHeapClass<Widget>& heap, const std::vector<uint8_t>& bytes) {
   SpanSource straw(std::as_bytes(std::span(bytes)));
   return heap.Load(straw);
+}
+
+TEST(HeapDiagnosticsTest, OwnsOnlySlotStartsInsideTheBuffer) {
+  TFixedIHeapClass<Widget> heap;
+  heap.Set_Heap(4);
+  const Widget* first = Allocate(heap, 1);
+  const Widget* second = Allocate(heap, 2);
+
+  EXPECT_TRUE(heap.Owns(first));
+  EXPECT_TRUE(heap.Owns(second));
+  // Inside the buffer, but not where a slot begins.
+  EXPECT_FALSE(heap.Owns(&first->value));
+  // ID() happily turns both of these into plausible-looking indices.
+  const Widget stack_widget;
+  EXPECT_FALSE(heap.Owns(&stack_widget));
+  EXPECT_FALSE(heap.Owns(nullptr));
+}
+
+TEST(HeapDiagnosticsTest, DescribeTellsTheWaysAPointerCanBeWrong) {
+  TFixedIHeapClass<Widget> heap;
+  heap.Set_Heap(4);
+  const Widget* live = Allocate(heap, 1);
+  Widget* freed = Allocate(heap, 2);
+  heap.Free(freed);
+
+  EXPECT_THAT(heap.Describe(live), testing::HasSubstr("slot=0 taken"));
+  EXPECT_THAT(heap.Describe(live), testing::HasSubstr("listed=yes"));
+  EXPECT_THAT(heap.Describe(freed), testing::HasSubstr("slot=1 FREE"));
+  EXPECT_THAT(heap.Describe(freed), testing::HasSubstr("listed=no"));
+  EXPECT_THAT(heap.Describe(&live->value),
+              testing::HasSubstr("bytes past the boundary"));
+
+  const Widget stack_widget;
+  EXPECT_THAT(heap.Describe(&stack_widget),
+              testing::HasSubstr("outside the buffer"));
+
+  const TFixedIHeapClass<Widget> unsized;
+  EXPECT_THAT(unsized.Describe(live), testing::HasSubstr("heap has no buffer"));
+}
+
+TEST(HeapDiagnosticsTest, ValidateReportsAStaleId) {
+  TFixedIHeapClass<Widget> heap;
+  heap.Set_Heap(4);
+  Allocate(heap, 1);
+  Widget* second = Allocate(heap, 2);
+  EXPECT_EQ(heap.Validate(), "");
+
+  second->ID = 7;
+  EXPECT_THAT(heap.Validate(), testing::HasSubstr("stale ID 7"));
+  EXPECT_THAT(heap.Validate(), testing::HasSubstr("slot=1"));
 }
 
 TEST(HeapSerializeTest, SparseSlotsRoundTripIntoTheSameSlots) {

@@ -43,11 +43,14 @@
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <new>
 #include <span>
+#include <string>
 #include <vector>
 
 #include "absl/log/check.h"
+#include "absl/strings/str_cat.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "ra/vector.h"
@@ -98,6 +101,21 @@ class FixedHeapClass {
   virtual void Clear();
   virtual bool Free(void* pointer);
   virtual bool Free_All();
+
+  // How far into the buffer `pointer` lies, or -1 when it lies outside it.
+  [[nodiscard]] base::ssize Offset_Of(const void* pointer) const;
+
+  // Whether `pointer` is the start of one of this heap's slots. ID() cannot
+  // answer that: it subtracts and divides whatever it is handed, so a pointer
+  // from somewhere else still comes back as a plausible index.
+  [[nodiscard]] bool Owns(const void* pointer) const;
+
+  // Everything known about the slot `pointer` claims to be, for the DCHECKs
+  // that guard heap objects and for Validate(). The four ways a pointer can
+  // be wrong look different here: outside the buffer, inside but not on a
+  // slot boundary, on a boundary whose free flag is clear (use after free),
+  // or sound, which leaves the object's own ID field as the corrupted one.
+  [[nodiscard]] virtual std::string Describe(const void* pointer) const;
 
   // Returns a storage slot; index must be in [0, Length()).
   void* at(int index) {
@@ -178,6 +196,15 @@ class FixedIHeapClass : public FixedHeapClass {
     return Logical_ID((*this).at(id));
   }
 
+  // Adds whether ActivePointers lists the slot, which is what tells a live
+  // object apart from one the layer lists but the heap has let go.
+  [[nodiscard]] std::string Describe(const void* pointer) const override;
+
+  // Describes the first disagreement between ActivePointers, FreeFlag and the
+  // slot buffer, or "" when the heap is sound. Walks every active pointer, so
+  // it is for the once-a-frame -CHECKHEAPS sweep, not for the inner loop.
+  [[nodiscard]] virtual std::string Validate() const;
+
   virtual void* Active_Ptr(int index) { return ActivePointers.at(index); }
   [[nodiscard]] virtual const void* Active_Ptr(int index) const {
     return ActivePointers.at(index);
@@ -190,6 +217,15 @@ class FixedIHeapClass : public FixedHeapClass {
   *sorting can be *	performed.
   */
   DynamicVectorClass<void*> ActivePointers;
+};
+
+// Whether T caches its own slot index in a public `ID` field, the way
+// everything descended from AbstractClass does. Spelled as a requirement
+// rather than `std::derived_from<AbstractClass>` so that heap.h stays below
+// the game's object hierarchy.
+template <class T>
+concept HasHeapId = requires(const T& object) {
+  { object.ID } -> std::convertible_to<int>;
 };
 
 // Type-safe wrapper around FixedIHeapClass with automatic type conversion.
@@ -223,6 +259,22 @@ class TFixedIHeapClass : public FixedIHeapClass {
   [[nodiscard]] int Logical_ID(int id) const override {
     return FixedIHeapClass::Logical_ID(id);
   }
+  // Adds the check the untyped heap cannot make: that each object's cached ID
+  // still names the slot it occupies.
+  [[nodiscard]] std::string Validate() const override {
+    std::string trouble = FixedIHeapClass::Validate();
+    if constexpr (HasHeapId<T>) {
+      for (int i = 0; trouble.empty() && i < ActiveCount; i++) {
+        const T* object = Ptr(i);
+        if (FixedIHeapClass::ID(object) != int{object->ID}) {
+          trouble = absl::StrCat("stale ID ", int{object->ID}, ": ",
+                                 Describe(object));
+        }
+      }
+    }
+    return trouble;
+  }
+
   virtual T* Alloc() { return static_cast<T*>(FixedIHeapClass::Allocate()); }
   virtual bool Free(T* pointer) { return FixedIHeapClass::Free(pointer); }
   bool Free(void* pointer) override { return FixedIHeapClass::Free(pointer); }
@@ -288,5 +340,21 @@ bool TFixedIHeapClass<T>::Load(ByteSource& file)
   }
   return reader.ok();
 }
+
+// Verifies that `object` still sits in the heap slot its own ID field names,
+// and dumps the slot's state when it does not. This is the invariant every
+// heap object's methods assume, so the check guards most of them; it is a
+// macro because only a macro can stream context into a DCHECK and still
+// compile away in a release build.
+//
+// Example:
+//   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
+#define DCHECK_HEAP_SLOT(heap, object) \
+  DCHECK_EQ((heap).ID(object), int{(object)->ID}) << (heap).Describe(object)
+
+// CHECK_HEAP_SLOT is the same test kept in a release build, for the heaps
+// whose corruption the game cannot survive.
+#define CHECK_HEAP_SLOT(heap, object) \
+  CHECK_EQ((heap).ID(object), int{(object)->ID}) << (heap).Describe(object)
 
 #endif  // CNC_RED_ALERT_RA_HEAP_H_

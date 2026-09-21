@@ -54,11 +54,16 @@
 
 #include <cstdint>
 #include <cstring>
+#include <functional>
 #include <span>
+#include <string>
 
+#include "absl/strings/str_cat.h"
+#include "absl/strings/str_format.h"
 #include "base/algorithm.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "base/types.h"
 
 /***********************************************************************************************
  * FixedHeapClass::FixedHeapClass -- Normal constructor for heap management
@@ -241,6 +246,54 @@ int FixedHeapClass::ID(const void* pointer) const {
         (static_cast<const char*>(pointer) - Buffer.data()) / Size);
   }
   return -1;
+}
+
+// Returns how far into the buffer `pointer` lies, or -1 when it lies outside
+// it. Ordering pointers into different objects is only defined through
+// std::less, which is why the comparison does not simply use `<`.
+base::ssize FixedHeapClass::Offset_Of(const void* pointer) const {
+  if (pointer == nullptr || Buffer.empty()) {
+    return -1;
+  }
+  const char* address = static_cast<const char*>(pointer);
+  const std::less<> before;
+  if (before(address, Buffer.data()) ||
+      !before(address, Buffer.subspan(Buffer.size()).data())) {
+    return -1;
+  }
+  return address - Buffer.data();
+}
+
+bool FixedHeapClass::Owns(const void* pointer) const {
+  const base::ssize offset = Offset_Of(pointer);
+  return Size > 0 && offset >= 0 && offset % Size == 0;
+}
+
+std::string FixedHeapClass::Describe(const void* pointer) const {
+  std::string description = absl::StrFormat(
+      "heap=%p slots=%d/%d size=%d buffer=[%p,%p) ptr=%p", this, ActiveCount,
+      TotalCount, Size, static_cast<const void*>(Buffer.data()),
+      static_cast<const void*>(
+          Buffer.empty() ? nullptr : Buffer.subspan(Buffer.size()).data()),
+      pointer);
+
+  const base::ssize offset = Offset_Of(pointer);
+  if (Buffer.empty()) {
+    absl::StrAppend(&description, " (heap has no buffer)");
+  } else if (pointer != nullptr && offset < 0) {
+    absl::StrAppend(&description, " (outside the buffer)");
+  } else if (pointer != nullptr) {
+    const auto slot = static_cast<int>(offset / Size);
+    const auto slack = static_cast<int>(offset % Size);
+    absl::StrAppend(&description, " slot=", slot);
+    if (slack != 0) {
+      absl::StrAppend(&description, " (", slack, " bytes past the boundary)");
+    } else {
+      absl::StrAppend(&description,
+                      FreeFlag.at(base::ToSize(slot)) ? " taken" : " FREE");
+    }
+  }
+  return description;
 }
 
 /***********************************************************************************************
@@ -453,4 +506,29 @@ int FixedIHeapClass::Logical_ID(const void* pointer) const {
     }
   }
   return -1;
+}
+
+std::string FixedIHeapClass::Describe(const void* pointer) const {
+  return absl::StrCat(FixedHeapClass::Describe(pointer),
+                      " listed=", Logical_ID(pointer) >= 0 ? "yes" : "no");
+}
+
+std::string FixedIHeapClass::Validate() const {
+  if (ActivePointers.Count() != ActiveCount) {
+    return absl::StrCat("ActivePointers holds ", ActivePointers.Count(), " of ",
+                        ActiveCount, " active objects");
+  }
+
+  for (int index = 0; index < ActiveCount; index++) {
+    const void* pointer = Active_Ptr(index);
+    if (!Owns(pointer)) {
+      return absl::StrCat("active pointer ", index, " is not a slot: ",
+                          FixedHeapClass::Describe(pointer));
+    }
+    if (!FreeFlag.at(base::ToSize(FixedHeapClass::ID(pointer)))) {
+      return absl::StrCat("active pointer ", index,
+                          " was freed: ", FixedHeapClass::Describe(pointer));
+    }
+  }
+  return {};
 }

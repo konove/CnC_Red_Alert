@@ -191,7 +191,7 @@ apply_language_setting(ra_winbits_test)
 add_gtest(
     NAME ra_heap_test
     SOURCES heap_test.cc heap.cc
-    LIBS base tech absl::check absl::log magic_enum::magic_enum
+    LIBS base tech absl::check absl::log absl::strings magic_enum::magic_enum
 )
 apply_language_setting(ra_heap_test)
 
