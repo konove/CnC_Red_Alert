@@ -1964,7 +1964,7 @@ static int Net_Join_Dialog() {
         }
         Draw_Box(*LogicPage, d_send_x, d_send_y, d_send_w, d_send_h,
                  BOXSTYLE_BOX, true);
-        TheSession().Messages.Draw();
+        TheSession().Messages.Draw(*LogicPage);
       }
 
       //..................................................................
@@ -2411,7 +2411,7 @@ static int Net_Join_Dialog() {
           Hide_Mouse();
           Draw_Box(*LogicPage, d_send_x, d_send_y, d_send_w, d_send_h,
                    BOXSTYLE_BOX, true);
-          TheSession().Messages.Draw();
+          TheSession().Messages.Draw(*LogicPage);
           Show_Mouse();
         } else if (i == 3 || i == 4) {
           //...............................................................
@@ -4618,7 +4618,7 @@ static int Net_New_Dialog() {
                  BOXSTYLE_BOX, true);
         Draw_Box(*LogicPage, d_send_x, d_send_y, d_send_w, d_send_h,
                  BOXSTYLE_BOX, true);
-        TheSession().Messages.Draw();
+        TheSession().Messages.Draw(*LogicPage);
       }
 
       //..................................................................
@@ -4941,7 +4941,7 @@ static int Net_New_Dialog() {
           Draw_Box(*LogicPage, d_send_x, d_send_y, d_send_w, d_send_h,
                    BOXSTYLE_BOX,
                    true);  // (erase the cursor)
-          TheSession().Messages.Draw();
+          TheSession().Messages.Draw(*LogicPage);
           Show_Mouse();
         } else if (i == 3 || i == 4) {
           //...............................................................

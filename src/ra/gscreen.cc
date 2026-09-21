@@ -381,9 +381,13 @@ void GScreenClass::Render() {
   // }
 
   if (IsToUpdate || IsScreenToRedraw) {
-    PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
+    PixelView& view = TheScreen().hidden_view();
 
-    Draw_It(IsScreenToRedraw);
+    // The gadget draws below still find their page through the global; the
+    // save and restore pair goes when Draw_Me() takes a view of its own.
+    PixelView* oldpage = SetLogicPage(view);
+
+    Draw_It(view, IsScreenToRedraw);
 
     if (Buttons) {
       Buttons->Draw_All(false);
@@ -405,7 +409,7 @@ void GScreenClass::Render() {
       TheSession().Messages.Set_Width(Lepton_To_Cell(TheMap().TacLeptonWidth) *
                                       ICON_PIXEL_W);
     }
-    TheSession().Messages.Draw();
+    TheSession().Messages.Draw(view);
 
     Blit_Display();
     IsToUpdate = false;

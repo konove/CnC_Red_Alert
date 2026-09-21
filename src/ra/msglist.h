@@ -176,7 +176,7 @@ class MessageListClass {
   //.....................................................................
   int Manage();
   int Input(KeyNumType& input);
-  void Draw();
+  void Draw(PixelView& view);
   int Num_Messages();
   void Set_Width(int width);
   void Set_Edit_Focus();

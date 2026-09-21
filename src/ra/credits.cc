@@ -122,7 +122,7 @@ void CreditClass::Graphic_Logic(bool forced) {
     /*
     **	Display the new current value.
     */
-    TabClass::Draw_Credits_Tab();
+    TabClass::Draw_Credits_Tab(*LogicPage);
     Fancy_Text_Print(*LogicPage, "%ld", xx, 0, &ThePalettes().metal_scheme(),
                      kTBlack, TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL,
                      Current);

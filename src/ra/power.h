@@ -65,7 +65,7 @@ class PowerClass : public RadarClass {
   void One_Time() override;  // One-time inits
 
   void Init_Clear() override;  // Clears all to known state
-  void Draw_It(bool complete = false) override;
+  void Draw_It(PixelView& view, bool complete = false) override;
   void AI(KeyNumType& input, int x, int y) override;
   void Refresh_Cells(CELL cell, std::span<const int16_t> list) override;
   void Flash_Power();

@@ -162,10 +162,10 @@ void PowerClass::One_Time() {
  * HISTORY: * 12/20/1994 JLB : Created. * 12/27/1994 JLB : Changes power bar
  *color depending on amount of power.                    *
  *=============================================================================================*/
-void PowerClass::Draw_It(bool complete) {
+void PowerClass::Draw_It(PixelView& view, bool complete) {
   static const int _modtable[] = {0, -1, 0, 1, 0, -1, -2, -1, 0, 1, 2, 1, 0};
 
-  if ((complete || IsPowerToRedraw) && LogicPage->Lock()) {
+  if ((complete || IsPowerToRedraw) && view.Lock()) {
     if (TheMap().IsSidebarActive) {
       IsPowerToRedraw = false;
       ShapeFlags_Type flags = SHAPE_NORMAL;
@@ -176,14 +176,14 @@ void PowerClass::Draw_It(bool complete) {
         remap = FadingRed;
       }
 
-      CC_Draw_Shape(*LogicPage, PowerBarShape, 0, 480, 176, WINDOW_MAIN,
+      CC_Draw_Shape(view, PowerBarShape, 0, 480, 176, WINDOW_MAIN,
                     flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
 
       /*
       ** Hires power strip is too big to fit into a shape so it is in two
       *parts
       */
-      CC_Draw_Shape(*LogicPage, PowerBarShape, 1, 480, 176 + 112, WINDOW_MAIN,
+      CC_Draw_Shape(view, PowerBarShape, 1, 480, 176 + 112, WINDOW_MAIN,
                     flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
       /*
       **	Determine how much the power production exceeds or falls short
@@ -228,22 +228,22 @@ void PowerClass::Draw_It(bool complete) {
         drain_height = drain_height * (152 + 1) / (106 + 1);
         bottom = 350 + 1;
 
-        LogicPage->FillRect(490, bottom - power_height, 490 + 1, bottom,
-                            static_cast<unsigned char>(color2));
-        LogicPage->FillRect(492, bottom - power_height, 492 + 1, bottom,
-                            static_cast<unsigned char>(color1));
+        view.FillRect(490, bottom - power_height, 490 + 1, bottom,
+                      static_cast<unsigned char>(color2));
+        view.FillRect(492, bottom - power_height, 492 + 1, bottom,
+                      static_cast<unsigned char>(color1));
       }
 
       /*
       **	Draw the power drain threshold marker.
       */
-      CC_Draw_Shape(*LogicPage, PowerShape, 0, (kPowerX * 2) + 2,
+      CC_Draw_Shape(view, PowerShape, 0, (kPowerX * 2) + 2,
                     bottom - (drain_height + 4), WINDOW_MAIN,
                     flags | SHAPE_NORMAL, remap);
     }
-    LogicPage->Unlock();
+    view.Unlock();
   }
-  RadarClass::Draw_It(complete);
+  RadarClass::Draw_It(view, complete);
 }
 
 /***********************************************************************************************

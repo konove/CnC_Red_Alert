@@ -266,32 +266,32 @@ void HelpClass::Help_Text(int text, int x, int y, int /*color*/, bool quick) {
  *                                                                                             *
  * HISTORY: * 11/18/1994 JLB : Created. *
  *=============================================================================================*/
-void HelpClass::Draw_It(bool forced) {
-  TabClass::Draw_It(forced);
+void HelpClass::Draw_It(PixelView& view, bool forced) {
+  TabClass::Draw_It(view, forced);
 
   forced = false;  // TCTCTCTC
   if ((Text != TXT_NONE && (forced || CountDownTimer.IsFinished())) &&
-      LogicPage->Lock()) {
-    Plain_Text_Print(*LogicPage, Text, DrawX, DrawY, Color, kBlack,
+      view.Lock()) {
+    Plain_Text_Print(view, Text, DrawX, DrawY, Color, kBlack,
                      TPF_MAP | TPF_NOSHADOW);
-    LogicPage->DrawRect(DrawX - 1, DrawY - 1, DrawX + Width + 1,
-                        DrawY + FontHeight, static_cast<unsigned char>(Color));
+    view.DrawRect(DrawX - 1, DrawY - 1, DrawX + Width + 1, DrawY + FontHeight,
+                  static_cast<unsigned char>(Color));
 
     if (Cost) {
       char buffer[15];
       absl::SNPrintF(buffer, sizeof(buffer), "$%d", Cost);
       const int width = String_Pixel_Width(buffer);
 
-      Plain_Text_Print(*LogicPage, buffer, DrawX, DrawY + FontHeight, Color,
-                       kBlack, TPF_MAP | TPF_NOSHADOW);
-      LogicPage->DrawRect(DrawX - 1, DrawY + FontHeight, DrawX + width + 1,
-                          DrawY + FontHeight + FontHeight - 1,
-                          static_cast<unsigned char>(Color));
-      LogicPage->DrawLine(DrawX, DrawY + FontHeight,
-                          DrawX + std::min(width + 1, Width) - 1,
-                          DrawY + FontHeight, kBlack);
+      Plain_Text_Print(view, buffer, DrawX, DrawY + FontHeight, Color, kBlack,
+                       TPF_MAP | TPF_NOSHADOW);
+      view.DrawRect(DrawX - 1, DrawY + FontHeight, DrawX + width + 1,
+                    DrawY + FontHeight + FontHeight - 1,
+                    static_cast<unsigned char>(Color));
+      view.DrawLine(DrawX, DrawY + FontHeight,
+                    DrawX + std::min(width + 1, Width) - 1, DrawY + FontHeight,
+                    kBlack);
     }
-    LogicPage->Unlock();
+    view.Unlock();
   }
 }
 

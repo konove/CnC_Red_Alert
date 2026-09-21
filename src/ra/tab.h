@@ -57,9 +57,9 @@ class TabClass : public SidebarClass {
   TabClass();
 
   void AI(KeyNumType& input, int x, int y) override;
-  void Draw_It(bool complete = false) override;
-  static void Draw_Credits_Tab();
-  static void Hilite_Tab(int tab);
+  void Draw_It(PixelView& view, bool complete = false) override;
+  static void Draw_Credits_Tab(PixelView& view);
+  static void Hilite_Tab(PixelView& view, int tab);
   void Flash_Money();
 
   void One_Time() override;  // One-time inits

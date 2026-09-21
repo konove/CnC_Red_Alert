@@ -1402,10 +1402,10 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
  * HISTORY:                                                                *
  *   11/17/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Draw_It(bool forced) {
+void MapEditClass::Draw_It(PixelView& view, bool forced) {
   char buf[40];
 
-  MouseClass::Draw_It(forced);
+  MouseClass::Draw_It(view, forced);
 
   if (!TheDebugState().map_editor_active()) {
     return;
@@ -1414,7 +1414,7 @@ void MapEditClass::Draw_It(bool forced) {
   /*
   **	Display the total value of all Tiberium on the map.
   */
-  Fancy_Text_Print(*LogicPage, "Tiberium=%ld   ", 0, 0,
+  Fancy_Text_Print(view, "Tiberium=%ld   ", 0, 0,
                    GadgetClass::Get_Color_Scheme(), kBlack,
                    TPF_EFNT | TPF_NOSHADOW, TotalValue);
 
@@ -1447,7 +1447,7 @@ void MapEditClass::Draw_It(bool forced) {
     /*
     **	print the label
     */
-    Fancy_Text_Print(*LogicPage, buf, 160, 0,
+    Fancy_Text_Print(view, buf, 160, 0,
                      &ThePalettes().color_remaps().at(PCOLOR_BROWN), kTBlack,
                      TPF_CENTER | TPF_NOSHADOW | TPF_EFNT);
   }

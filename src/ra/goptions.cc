@@ -338,7 +338,7 @@ void GameOptionsClass::Process() {
           Version_Name());
 
       buttons->Draw_All();
-      TabClass::Hilite_Tab(0);
+      TabClass::Hilite_Tab(*LogicPage, 0);
       Show_Mouse();
       display = false;
       TheGameState().redraw_options_menu() = false;

@@ -107,8 +107,8 @@ TabClass::TabClass() : FlasherTimer(0), MoneyFlashTimer(0) {}
  *=============================================================================================*/
 #define EVA_WIDTH 80
 #define TAB_HEIGHT 8
-void TabClass::Draw_It(bool complete) {
-  SidebarClass::Draw_It(complete);
+void TabClass::Draw_It(PixelView& view, bool complete) {
+  SidebarClass::Draw_It(view, complete);
 
   if (TheDebugState().map_editor_active()) {
     return;
@@ -118,56 +118,55 @@ void TabClass::Draw_It(bool complete) {
   **	Redraw the top bar imagery if flagged to do so or if the entire display
   *needs *	to be redrawn.
   */
-  if ((complete || IsTabToRedraw) && LogicPage->Lock()) {
+  if ((complete || IsTabToRedraw) && view.Lock()) {
     const int width = TheScreen().visible_view().width();
     const int rightx = width - 1;
     const int tab_height = TAB_HEIGHT * 2;
 
-    LogicPage->FillRect(0, 0, rightx, tab_height - 1, kBlack);
+    view.FillRect(0, 0, rightx, tab_height - 1, kBlack);
 
     /*
     ** Use the new sidebar art for 640x400
     */
-    CC_Draw_Shape(*LogicPage, TabShape, 0, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
-    Draw_Credits_Tab();
-    LogicPage->DrawLine(0, tab_height - 2, rightx, tab_height - 2, kBlack);
-    Fancy_Text_Print(*LogicPage, TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
+    CC_Draw_Shape(view, TabShape, 0, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
+    Draw_Credits_Tab(view);
+    view.DrawLine(0, tab_height - 2, rightx, tab_height - 2, kBlack);
+    Fancy_Text_Print(view, TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
                      &ThePalettes().metal_scheme(), kTBlack,
                      TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
     if (IsSidebarActive) {
     } else {
-      CC_Draw_Shape(*LogicPage, TabShape, 0, width - (EVA_WIDTH * 2), 0,
-                    WINDOW_MAIN, SHAPE_NORMAL);
+      CC_Draw_Shape(view, TabShape, 0, width - (EVA_WIDTH * 2), 0, WINDOW_MAIN,
+                    SHAPE_NORMAL);
       Fancy_Text_Print(
-          *LogicPage, TXT_TAB_SIDEBAR, width - EVA_WIDTH, 0,
+          view, TXT_TAB_SIDEBAR, width - EVA_WIDTH, 0,
           &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
           TPF_METAL12 | TPF_NOSHADOW | TPF_CENTER | TPF_BRIGHT_COLOR);
     }
 
-    LogicPage->Unlock();
+    view.Unlock();
   }
   Credits.Graphic_Logic(complete || IsTabToRedraw);
   IsTabToRedraw = false;
 }
 
-void TabClass::Draw_Credits_Tab() {
+void TabClass::Draw_Credits_Tab(PixelView& view) {
   /*
   ** Use the new sidebar art for 640x400
   */
-  CC_Draw_Shape(*LogicPage, TabShape,
-                TheMap().MoneyFlashTimer.Value() > 1 ? 8 : 6,
+  CC_Draw_Shape(view, TabShape, TheMap().MoneyFlashTimer.Value() > 1 ? 8 : 6,
                 (320 - EVA_WIDTH) * 2, 0, WINDOW_MAIN, SHAPE_NORMAL);
 
   if (TheScenario().MissionTimer.IsRunning()) {
     const bool light = TheScenario().MissionTimer.Value() <
                            kTicksPerMinute * TheRules().TimerWarning ||
                        TheMap().FlasherTimer.HasTimeLeft();
-    CC_Draw_Shape(*LogicPage, TabShape, light ? 4 : 2, 320, 0, WINDOW_MAIN,
+    CC_Draw_Shape(view, TabShape, light ? 4 : 2, 320, 0, WINDOW_MAIN,
                   SHAPE_NORMAL);
   }
 }
 
-void TabClass::Hilite_Tab(int tab) {
+void TabClass::Hilite_Tab(PixelView& view, int tab) {
   int xpos = 0;
 
   if (tab) {
@@ -177,9 +176,9 @@ void TabClass::Hilite_Tab(int tab) {
   /*
   ** Use the new sidebar art for 640x400
   */
-  CC_Draw_Shape(*LogicPage, TabShape, 1, xpos, 0, WINDOW_MAIN, SHAPE_NORMAL);
+  CC_Draw_Shape(view, TabShape, 1, xpos, 0, WINDOW_MAIN, SHAPE_NORMAL);
   ThePalettes().metal_scheme().Color = 128 + 6;
-  Fancy_Text_Print(*LogicPage, TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
+  Fancy_Text_Print(view, TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
                    &ThePalettes().metal_scheme(), kTBlack,
                    TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
   ThePalettes().metal_scheme().Color = 128;

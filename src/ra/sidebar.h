@@ -95,7 +95,7 @@ class SidebarClass : public PowerClass {
   static void Reload_Sidebar();  // Loads house-specific sidebar art
 
   void AI(KeyNumType& input, int x, int y) override;
-  void Draw_It(bool complete) override;
+  void Draw_It(PixelView& view, bool complete) override;
   void Refresh_Cells(CELL cell, std::span<const int16_t> list) override;
 
   void Zoom_Mode_Control();
@@ -132,7 +132,7 @@ class SidebarClass : public PowerClass {
     bool Abandon_Production(int factory);
     bool Scroll(bool up);
     bool AI(KeyNumType& input, int x, int y);
-    void Draw_It(bool complete);
+    void Draw_It(PixelView& view, bool complete);
     static void One_Time(int id);
     void Init_Clear();
     void Init_IO(int id);

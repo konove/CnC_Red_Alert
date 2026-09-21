@@ -1247,11 +1247,11 @@ int MessageListClass::Input(KeyNumType& input) {
  * HISTORY:                                                                *
  *   05/22/1995 BRR : Created.                                             *
  *=========================================================================*/
-void MessageListClass::Draw() {
+void MessageListClass::Draw(PixelView& view) {
   char txt[2] = {0, 0};
 
   if (IsEdit) {
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Hide_Mouse();
     }
     EditLabel->Draw_Me(true);
@@ -1260,20 +1260,20 @@ void MessageListClass::Draw() {
         EditLabel->Has_Focus()) {
       txt[0] = CursorChar;
       Fancy_Text_Print(
-          *LogicPage, txt, EditLabel->X + String_Pixel_Width(EditLabel->Text),
+          view, txt, EditLabel->X + String_Pixel_Width(EditLabel->Text),
           EditLabel->Y, EditLabel->Color, kTBlack, EditLabel->Style);
     }
 
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Show_Mouse();
     }
   }
   if (MessageList) {
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Hide_Mouse();
     }
     MessageList->Draw_All();
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Show_Mouse();
     }
   }

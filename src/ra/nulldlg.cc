@@ -3301,7 +3301,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                    d_message_h, BOXSTYLE_BOX, true);
           Draw_Box(*LogicPage, d_send_x, d_send_y, d_send_w, d_send_h,
                    BOXSTYLE_BOX, true);
-          TheSession().Messages.Draw();
+          TheSession().Messages.Draw(*LogicPage);
         }
 
         //..................................................................
@@ -3692,7 +3692,7 @@ int Com_Scenario_Dialog(bool skirmish) {
               Hide_Mouse();
               Draw_Box(*LogicPage, d_send_x, d_send_y, d_send_w, d_send_h,
                        BOXSTYLE_BOX, true);
-              TheSession().Messages.Draw();
+              TheSession().Messages.Draw(*LogicPage);
               Show_Mouse();
             } else if (i == 3 || i == 4) {
               /*...............................................................
@@ -5058,7 +5058,7 @@ int Com_Show_Scenario_Dialog() {
                  BOXSTYLE_BOX, true);
         Draw_Box(*LogicPage, d_send_x, d_send_y, d_send_w, d_send_h,
                  BOXSTYLE_BOX, true);
-        TheSession().Messages.Draw();
+        TheSession().Messages.Draw(*LogicPage);
 
         //..................................................................
         // Redraw the game options
@@ -5317,7 +5317,7 @@ int Com_Show_Scenario_Dialog() {
           Hide_Mouse();
           Draw_Box(*LogicPage, d_send_x, d_send_y, d_send_w, d_send_h,
                    BOXSTYLE_BOX, true);
-          TheSession().Messages.Draw();
+          TheSession().Messages.Draw(*LogicPage);
           Show_Mouse();
         } else if (i == 3 || i == 4) {
           /*...............................................................

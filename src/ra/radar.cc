@@ -362,8 +362,8 @@ bool RadarClass::Radar_Activate(int control) {
  * HISTORY: * 04/24/1991 JLB : Created. * 05/08/1994 JLB : Converted to member
  *function.                                            *
  *=============================================================================================*/
-void RadarClass::Draw_It(bool forced) {
-  DisplayClass::Draw_It(forced);
+void RadarClass::Draw_It(PixelView& view, bool forced) {
+  DisplayClass::Draw_It(view, forced);
 
   static const char* _hiresradarnames[] = {
       "natoradr.shp",  // HOUSE_SPAIN,
@@ -412,7 +412,7 @@ void RadarClass::Draw_It(bool forced) {
   ** If in player name mode, just draw player names
   */
   if (IsPlayerNames) {
-    Draw_Names();
+    Draw_Names(view);
     IsRadarToRedraw = false;
     return;
   }
@@ -422,13 +422,13 @@ void RadarClass::Draw_It(bool forced) {
   */
   if (IsHouseSpy) {
     IsRadarToRedraw = false;
-    if (Draw_House_Info()) {
+    if (Draw_House_Info(view)) {
       return;
     }
   }
 
   if (IsRadarActivating || IsRadarDeactivating || IsRadarJammed) {
-    Radar_Anim();
+    Radar_Anim(view);
     MouseClass::Repair.Draw_Me(true);
     MouseClass::Upgrade.Draw_Me(true);
     MouseClass::Zoom.Draw_Me(true);
@@ -449,16 +449,16 @@ void RadarClass::Draw_It(bool forced) {
           /*
           **	Render all pixels in the "to redraw" stack.
           */
-          if (LogicPage->Lock()) {
+          if (view.Lock()) {
             for (int index = 0; index < PixelPtr; index++) {
               const CELL cell = base::At(PixelStack, index);
               if (Cell_On_Radar(cell)) {
                 (*this).at(cell).IsPlot = false;
-                Plot_Radar_Pixel(cell);
+                Plot_Radar_Pixel(view, cell);
                 RadarCursorRedraw |= (*this).at(cell).IsRadarCursor;
               }
             }
-            LogicPage->Unlock();
+            view.Unlock();
           }
 
           /*
@@ -488,17 +488,19 @@ void RadarClass::Draw_It(bool forced) {
           }
         }
 
-        Radar_Cursor(RadarCursorRedraw);
+        Radar_Cursor(view, RadarCursorRedraw);
 
       } else {
+        // The Draw_Me() calls below still find their page through the global;
+        // the save and restore pair goes when they take a view of their own.
         PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
 
-        CC_Draw_Shape(*LogicPage, RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
+        CC_Draw_Shape(view, RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
                       SHAPE_NORMAL);
         if (BaseX || BaseY) {
           if (!IsZoomed && BaseX && BaseY && RadarWidth < RadIWidth - 1 &&
               RadarHeight < RadIHeight - 1) {
-            LogicPage->DrawRect(
+            view.DrawRect(
                 RadX + RadOffX + BaseX - 1, RadY + RadOffY + BaseY - 1,
                 RadX + RadOffX + BaseX + RadarWidth,
                 //													RadX
@@ -509,28 +511,28 @@ void RadarClass::Draw_It(bool forced) {
                 kWhite);
           }
         } else {
-          LogicPage->FillRect(RadX + RadOffX, RadY + RadOffY,
-                              RadX + RadOffX + RadIWidth - 1,
-                              RadY + RadOffY + RadIHeight - 1, kBlack);
+          view.FillRect(RadX + RadOffX, RadY + RadOffY,
+                        RadX + RadOffX + RadIWidth - 1,
+                        RadY + RadOffY + RadIHeight - 1, kBlack);
         }
 
         /*
         ** Draw the entire radar map.
         */
-        if (LogicPage->Lock()) {
+        if (view.Lock()) {
           for (int index = 0; index < MAP_CELL_TOTAL; index++) {
             if (In_Radar(static_cast<CELL>(index)) && Cell_On_Radar(static_cast<CELL>(index))) {
-              Plot_Radar_Pixel(static_cast<CELL>(index));
+              Plot_Radar_Pixel(view, static_cast<CELL>(index));
             }
           }
           if (IsPulseActive) {
-            CC_Draw_Shape(*LogicPage, RadarPulse, RadarPulseFrame++,
-                          RadX + RadOffX, RadY + 2, WINDOW_MAIN, SHAPE_NORMAL);
+            CC_Draw_Shape(view, RadarPulse, RadarPulseFrame++, RadX + RadOffX,
+                          RadY + 2, WINDOW_MAIN, SHAPE_NORMAL);
           }
-          LogicPage->Unlock();
+          view.Unlock();
         }
 
-        Radar_Cursor(true);
+        Radar_Cursor(view, true);
         FullRedraw = false;
         IsRadarToRedraw = false;
 
@@ -540,8 +542,8 @@ void RadarClass::Draw_It(bool forced) {
 
         if (oldpage == &TheScreen().visible_view()) {
           Hide_Mouse();
-          LogicPage->Blit(TheScreen().visible_view(), RadX, RadY, RadX, RadY,
-                          RadWidth, RadHeight);
+          view.Blit(TheScreen().visible_view(), RadX, RadY, RadX, RadY,
+                    RadWidth, RadHeight);
           Show_Mouse();
         }
 
@@ -554,7 +556,7 @@ void RadarClass::Draw_It(bool forced) {
       *forced to do so.
       */
       const int val = DoesRadarExist ? kMaxRadarFrames : 0;
-      CC_Draw_Shape(*LogicPage, RadarAnim, val, RadX, RadY + 2, WINDOW_MAIN,
+      CC_Draw_Shape(view, RadarAnim, val, RadX, RadY + 2, WINDOW_MAIN,
                     SHAPE_NORMAL);
       FullRedraw = false;
       IsRadarToRedraw = false;
@@ -565,7 +567,7 @@ void RadarClass::Draw_It(bool forced) {
       */
       if (TheSession().Type != GAME_NORMAL) {
         Fancy_Text_Print(
-            *LogicPage,
+            view,
             Text_String(
                 HouseTypeClass::As_Reference(ThePlayer()->ActLike).Full_Name()),
             RadX + (RadWidth / 2), RadY + RadHeight - 20,
@@ -592,7 +594,8 @@ void RadarClass::Draw_It(bool forced) {
  * HISTORY:                                                                *
  *   04/12/1995 PWG : Created.                                             *
  *=========================================================================*/
-void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
+void RadarClass::Render_Terrain(PixelView& view, CELL cell, int x, int y,
+                                int size) const {
   TerrainClass* list[4] = {nullptr, nullptr, nullptr, nullptr};
   int listidx = 0;
 
@@ -629,7 +632,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** represent it.
   */
   if (size == 1) {
-    LogicPage->PutPixel(x, y, 21);
+    view.PutPixel(x, y, 21);
     return;
   }
 
@@ -656,7 +659,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
       continue;
     }
     IconStage.CopyFromBuffer(0, 0, 3, 3, icon);
-    IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
+    IconStage.Scale(view, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
                     FadingBrighten);
   }
 }
@@ -681,7 +684,8 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
  *                                                                                             *
  * HISTORY: * 08/17/1995 JLB : Created. *
  *=============================================================================================*/
-void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
+void RadarClass::Render_Infantry(PixelView& view, CELL cell, int x, int y,
+                                 int size) {
   ObjectClass* obj = TheMap().at(cell).Cell_Occupier();
   while (obj) {
     if (obj->Is_Techno() &&
@@ -714,14 +718,14 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
             color =
                 ThePalettes().color_remaps().at(ThePlayer()->RemapColor).Bar;
           }
-          LogicPage->FillRect(x + xoff, y + yoff, x + xoff + (subsize - 1),
-                              y + yoff + (subsize - 1), color);
+          view.FillRect(x + xoff, y + yoff, x + xoff + (subsize - 1),
+                        y + yoff + (subsize - 1), color);
           break;
 
         case RTTI_UNIT:
         case RTTI_VESSEL:
         case RTTI_AIRCRAFT:
-          LogicPage->FillRect(x, y, x + size - 1, y + size - 1, color);
+          view.FillRect(x, y, x + size - 1, y + size - 1, color);
           break;
 
         case RTTIType::RTTI_NONE:
@@ -772,7 +776,8 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
  * HISTORY:                                                                *
  *   04/18/1995 PWG : Created.                                             *
  *=========================================================================*/
-void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
+void RadarClass::Render_Overlay(PixelView& view, CELL cell, int x, int y,
+                                int size) {
   // int lpx,lpy;
 
   const OverlayType overlay = (*this).at(cell).Overlay;
@@ -787,10 +792,10 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
       IconStage.CopyFromBuffer(0, 0, 3, 3, icon);
       if (otype->IsTiberium) {
         if (size == 1) {
-          LogicPage->PutPixel(x, y, DKGREY);
+          view.PutPixel(x, y, DKGREY);
 
         } else {
-          IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
+          IconStage.Scale(view, 0, 0, x, y, 3, 3, size, size, true,
                           FadingYellow);
         }
       }
@@ -936,7 +941,7 @@ bool RadarClass::Is_Zoomable() const {
  *Revamped.                                                                *
  *   04/17/1995 PWG : Created. * 04/18/1995 PWG : Created. *
  *=============================================================================================*/
-void RadarClass::Plot_Radar_Pixel(CELL cell) {
+void RadarClass::Plot_Radar_Pixel(PixelView& view, CELL cell) {
   if (cell == -1) {
     cell = 1;
   }
@@ -965,7 +970,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
   }
 
   bool usjamming = false;
-  if (LogicPage->Lock()) {
+  if (view.Lock()) {
     const CellClass* cellptr = &(*this).at(cell);
     x = RadX + RadOffX + BaseX + (x * ZoomFactor);
     y = RadY + RadOffY + BaseY + (y * ZoomFactor);
@@ -1029,7 +1034,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         icon %= 256;
         const auto iconmap = iconset.Map_Data();
         if (icon < 0 || static_cast<size_t>(icon) >= iconmap.size()) {
-          LogicPage->Unlock();
+          view.Unlock();
           return;
         }
         icon = base::At(iconmap, static_cast<size_t>(icon));
@@ -1037,31 +1042,30 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         const size_t offset = static_cast<size_t>(icon) * 24 * 24;
         if (offset > icondata.size() ||
             icondata.size() - offset < size_t{24} * 24) {
-          LogicPage->Unlock();
+          view.Unlock();
           return;
         }
         const auto data = icondata.subspan(offset, size_t{24} * 24);
         TileStage.CopyFromBuffer(0, 0, 24, 24, data);
-        TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
-                        true);
+        TileStage.Scale(view, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor, true);
       } else {
-        /*BG*/ LogicPage->PutPixel(
+        /*BG*/ view.PutPixel(
             x, y, static_cast<unsigned char>(cellptr->Cell_Color(false)));
       }
     } else {
-      LogicPage->FillRect(x, y, x + ZoomFactor - 1, y + ZoomFactor - 1,
-                          static_cast<unsigned char>(color));
+      view.FillRect(x, y, x + ZoomFactor - 1, y + ZoomFactor - 1,
+                    static_cast<unsigned char>(color));
     }
     if (color != kBlack) {
-      Render_Overlay(cell, x, y, ZoomFactor);
-      Render_Terrain(cell, x, y, ZoomFactor);
-      Render_Infantry(cell, x, y, ZoomFactor);
+      Render_Overlay(view, cell, x, y, ZoomFactor);
+      Render_Terrain(view, cell, x, y, ZoomFactor);
+      Render_Infantry(view, cell, x, y, ZoomFactor);
     } else {
       if (usjamming) {
-        Render_Infantry(cell, x, y, ZoomFactor);
+        Render_Infantry(view, cell, x, y, ZoomFactor);
       }
     }
-    LogicPage->Unlock();
+    view.Unlock();
   }
 }
 
@@ -1205,7 +1209,7 @@ bool RadarClass::Map_Cell(CELL cell, HouseClass* house) {
   return false;
 }
 
-void RadarClass::Cursor_Cell(CELL cell, bool value) {
+void RadarClass::Cursor_Cell(PixelView& view, CELL cell, bool value) {
   /*
   ** If this cell is not on the radar don't bother doing anything.
   */
@@ -1222,14 +1226,14 @@ void RadarClass::Cursor_Cell(CELL cell, bool value) {
       **	If we are erasing then erase the cell.
       */
       if (!value) {
-        Plot_Radar_Pixel(cell);
+        Plot_Radar_Pixel(view, cell);
       }
     }
   }
 }
 
-void RadarClass::Mark_Radar(int x1, int y1, int x2, int y2, bool value,
-                            int barlen) {
+void RadarClass::Mark_Radar(PixelView& view, int x1, int y1, int x2, int y2,
+                            bool value, int barlen) {
   /*
   ** First step is to convert pixel coordinates back to a CellX and CellY.
   */
@@ -1251,27 +1255,27 @@ void RadarClass::Mark_Radar(int x1, int y1, int x2, int y2, bool value,
     ** Do Horizontal action to upper and lower left corners.
     */
     int x = x1 + lp;
-    Cursor_Cell(XY_Cell(x, y1), value);
-    Cursor_Cell(XY_Cell(x, y2), value);
+    Cursor_Cell(view, XY_Cell(x, y1), value);
+    Cursor_Cell(view, XY_Cell(x, y2), value);
     /*
     ** Do Horizontal Action to upper and lower right corners
     */
     x = x2 - lp;
-    Cursor_Cell(XY_Cell(x, y1), value);
-    Cursor_Cell(XY_Cell(x, y2), value);
+    Cursor_Cell(view, XY_Cell(x, y1), value);
+    Cursor_Cell(view, XY_Cell(x, y2), value);
     /*
     ** Do Vertical Action to left and right upper corners
     */
     int y = y1 + lp;
-    Cursor_Cell(XY_Cell(x1, y), value);
-    Cursor_Cell(XY_Cell(x2, y), value);
+    Cursor_Cell(view, XY_Cell(x1, y), value);
+    Cursor_Cell(view, XY_Cell(x2, y), value);
 
     /*
     ** Do Vertical action to left and right lower corners.
     */
     y = y2 - lp;
-    Cursor_Cell(XY_Cell(x1, y), value);
-    Cursor_Cell(XY_Cell(x2, y), value);
+    Cursor_Cell(view, XY_Cell(x1, y), value);
+    Cursor_Cell(view, XY_Cell(x2, y), value);
   }
 }
 
@@ -1366,7 +1370,7 @@ bool RadarClass::UnJam_Cell(CELL cell, HouseClass* house) {
  *                                                                                             *
  * HISTORY: * 05/22/1991 JLB : Created. * 11/17/1995 PWG : Created. *
  *=============================================================================================*/
-void RadarClass::Radar_Cursor(bool forced) {
+void RadarClass::Radar_Cursor(PixelView& view, bool forced) {
   static int _last_pos = -1;
   static int _last_frame = -1;
   int x1 = 0;
@@ -1427,7 +1431,7 @@ void RadarClass::Radar_Cursor(bool forced) {
     ** Finally mark the map (actually remove the marks that indicate the radar
     *cursor was there
     */
-    Mark_Radar(x1, y1, x2, y2, false, barlen);
+    Mark_Radar(view, x1, y1, x2, y2, false, barlen);
   }
 
   /*
@@ -1450,16 +1454,15 @@ void RadarClass::Radar_Cursor(bool forced) {
   x2 += SpecialRadarFrame;
   y2 += SpecialRadarFrame;
 
-  Mark_Radar(x1, y1, x2, y2, true, barlen);
+  Mark_Radar(view, x1, y1, x2, y2, true, barlen);
 
   /*
   ** setup a graphic view port class so we can write all the pixels relative
   ** to 0,0 rather than relative to full screen coordinates.
   */
-  PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
-  PixelView draw_window(
-      LogicPage->buffer(), RadX + RadOffX + BaseX + LogicPage->x_pos(),
-      RadY + RadOffY + BaseY + LogicPage->y_pos(), RadarWidth, RadarHeight);
+  PixelView draw_window(view.buffer(), RadX + RadOffX + BaseX + view.x_pos(),
+                        RadY + RadOffY + BaseY + view.y_pos(), RadarWidth,
+                        RadarHeight);
 
   draw_window.DrawLine(x1, y1, x1 + barlen, y1, kLtGreen);
   draw_window.DrawLine(x1, y1, x1, y1 + barlen, kLtGreen);
@@ -1476,7 +1479,6 @@ void RadarClass::Radar_Cursor(bool forced) {
   draw_window.DrawLine(x2, y2 - barlen, x2, y2, kLtGreen);
   draw_window.DrawLine(x2 - barlen, y2, x2, y2, kLtGreen);
 
-  SetLogicPage(oldpage);
   _last_pos = tac_cell;
   _last_frame = SpecialRadarFrame;
   RadarCursorRedraw = false;
@@ -1496,7 +1498,7 @@ void RadarClass::Radar_Cursor(bool forced) {
  * HISTORY:                                                                *
  *   04/19/1995 PWG : Created.                                             *
  *=========================================================================*/
-void RadarClass::Radar_Anim() {
+void RadarClass::Radar_Anim(PixelView& view) {
   /*
   ** Do nothing if we're in player-name mode
   */
@@ -1508,17 +1510,14 @@ void RadarClass::Radar_Anim() {
     return;
   }
 
-  PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
-  PixelView draw_window(
-      LogicPage->buffer(), RadX + RadOffX + LogicPage->x_pos(),
-      RadY + RadOffY + LogicPage->y_pos(), RadIWidth, RadIHeight);
-  Draw_Box(*LogicPage, RadX + RadOffX - 1, RadY + RadOffY - 1, RadIWidth + 2,
+  PixelView draw_window(view.buffer(), RadX + RadOffX + view.x_pos(),
+                        RadY + RadOffY + view.y_pos(), RadIWidth, RadIHeight);
+  Draw_Box(view, RadX + RadOffX - 1, RadY + RadOffY - 1, RadIWidth + 2,
            RadIHeight + 2, BOXSTYLE_RAISED, true);
   draw_window.Clear();
-  CC_Draw_Shape(*LogicPage, RadarAnim, RadarAnimFrame, RadX, RadY + 2,
-                WINDOW_MAIN, SHAPE_NORMAL);
+  CC_Draw_Shape(view, RadarAnim, RadarAnimFrame, RadX, RadY + 2, WINDOW_MAIN,
+                SHAPE_NORMAL);
   Flag_To_Redraw(false);
-  SetLogicPage(oldpage);
 }
 
 /***********************************************************************************************
@@ -2205,7 +2204,7 @@ bool RadarClass::Spy_Next_House() {
  *                                                                                             *
  * HISTORY: * 03/20/1996 BWG : Created. *
  *=============================================================================================*/
-bool RadarClass::Draw_House_Info() {
+bool RadarClass::Draw_House_Info(PixelView& view) {
   char txt[40];
   /*
   ** Do nothing if the sidebar isn't there
@@ -2213,15 +2212,14 @@ bool RadarClass::Draw_House_Info() {
   if (!TheMap().IsSidebarActive) {
     return false;
   }
-  CC_Draw_Shape(*LogicPage, RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
-                SHAPE_NORMAL);
+  CC_Draw_Shape(view, RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN, SHAPE_NORMAL);
   int y = RadY + RadOffY + 4;
 
   MouseClass::Repair.Draw_Me(true);
   MouseClass::Upgrade.Draw_Me(true);
   MouseClass::Zoom.Draw_Me(true);
 
-  Fancy_Text_Print(*LogicPage, TXT_SPY_INFO, RadX + RadOffX + 12, y,
+  Fancy_Text_Print(view, TXT_SPY_INFO, RadX + RadOffX + 12, y,
                    &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   y += 14;
@@ -2245,42 +2243,38 @@ bool RadarClass::Draw_House_Info() {
         txt[9] = '.';
         txt[10] = '\0';
       }
-      Fancy_Text_Print(*LogicPage, txt, RadX + RadOffX + 12, y, color, kBlack,
-                       style);
+      Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, style);
     } else {
       port::SafeCopy(txt, "________");
     }
     y += 12 + 1;
 
-    Fancy_Text_Print(*LogicPage, TXT_BUILDNGS, RadX + RadOffX + 12, y,
+    Fancy_Text_Print(view, TXT_BUILDNGS, RadX + RadOffX + 12, y,
                      &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
 
     // count & print buildings
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurBuildings);
-    Fancy_Text_Print(*LogicPage, txt, RadX + RadOffX + 12, y, color, kBlack,
-                     style);
+    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, style);
     y += 12 + 1;
 
-    Fancy_Text_Print(*LogicPage, TXT_UNITS, RadX + RadOffX + 12, y,
+    Fancy_Text_Print(view, TXT_UNITS, RadX + RadOffX + 12, y,
                      &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
     // count & print units
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurUnits);
-    Fancy_Text_Print(*LogicPage, txt, RadX + RadOffX + 12, y, color, kBlack,
-                     style);
+    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, style);
     y += 12 + 1;
 
-    Fancy_Text_Print(*LogicPage, TXT_INFANTRY, RadX + RadOffX + 12, y,
+    Fancy_Text_Print(view, TXT_INFANTRY, RadX + RadOffX + 12, y,
                      &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                      TPF_6PT_GRAD | TPF_NOSHADOW);
     y += 12 + 1;
     // count & print infantry
     absl::SNPrintF(txt, sizeof(txt), "%i", ptr->CurInfantry);
-    Fancy_Text_Print(*LogicPage, txt, RadX + RadOffX + 12, y, color, kBlack,
-                     style);
+    Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, style);
     return true;
   }
   return false;
@@ -2297,7 +2291,7 @@ bool RadarClass::Draw_House_Info() {
  *                                                                                             *
  * HISTORY: * 06/07/1995 BRR : Created. *
  *=============================================================================================*/
-void RadarClass::Draw_Names() const {
+void RadarClass::Draw_Names(PixelView& view) const {
   char txt[40];
   RemapControlType* color = nullptr;
   /*
@@ -2309,21 +2303,19 @@ void RadarClass::Draw_Names() const {
 
   //	CC_Draw_Shape(RadarAnim, kRadarActivatedFrame, RADAR_X, RADAR_Y+1,
   //		WINDOW_MAIN, SHAPE_NORMAL);
-  CC_Draw_Shape(*LogicPage, RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
-                SHAPE_NORMAL);
+  CC_Draw_Shape(view, RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN, SHAPE_NORMAL);
 
   int y = RadY + RadOffY + 4;
 
-  Fancy_Text_Print(*LogicPage, TXT_NAME_COLON, RadX + RadOffX, y,
+  Fancy_Text_Print(view, TXT_NAME_COLON, RadX + RadOffX, y,
                    &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Fancy_Text_Print(*LogicPage, TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2,
-                   y, &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
+  Fancy_Text_Print(view, TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2, y,
+                   &ThePalettes().color_remaps().at(PCOLOR_GREY), kTBlack,
                    TPF_RIGHT | TPF_6PT_GRAD | TPF_NOSHADOW);
   y += 12 + 1;
 
-  LogicPage->DrawLine(RadX + RadOffX, y, RadX + RadOffX + RadIWidth - 1, y,
-                      kLtGrey);
+  view.DrawLine(RadX + RadOffX, y, RadX + RadOffX + RadIWidth - 1, y, kLtGrey);
   y += 4;
 
   for (HousesType house = HOUSE_MULTI1;
@@ -2369,7 +2361,7 @@ void RadarClass::Draw_Names() const {
       txt[9] = '.';
       txt[10] = '\0';
     }
-    Fancy_Text_Print(*LogicPage, txt, RadX + RadOffX, y, color, kTBlack, style);
+    Fancy_Text_Print(view, txt, RadX + RadOffX, y, color, kTBlack, style);
 
     int kills = 0;
     for (const HousesType h : magic_enum::enum_values<HousesType>()) {
@@ -2377,7 +2369,7 @@ void RadarClass::Draw_Names() const {
       kills += ptr->BuildingsKilled.at(h);
     }
     absl::SNPrintF(txt, sizeof(txt), "%2d", kills);
-    Fancy_Text_Print(*LogicPage, txt, RadX + RadOffX + RadIWidth - 2, y, color,
+    Fancy_Text_Print(view, txt, RadX + RadOffX + RadIWidth - 2, y, color,
                      kTBlack, style | TPF_RIGHT);
 
     y += 12 + 1;

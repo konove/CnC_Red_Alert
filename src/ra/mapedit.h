@@ -184,7 +184,7 @@ class MapEditClass : public MouseClass {
   void One_Time() override;  // One-time init
   void Init_IO() override;   // Inits button list
   void AI(KeyNumType& input, int x, int y) override;
-  void Draw_It(bool forced = true) override;
+  void Draw_It(PixelView& view, bool forced = true) override;
   bool Scroll_Map(DirType facing, int& distance, bool really = true) override;
   void Read_INI(CCINIClass& ini) override;
   void Detach(ObjectClass* object) override;
