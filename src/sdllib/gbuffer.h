@@ -152,8 +152,6 @@ using enum GBC_Enum;
 template <>
 inline constexpr bool base::kIsFlagEnum<GBC_Enum> = true;
 
-#define NOT_LOCKED NULL
-
 /*=========================================================================*/
 /* Define the screen width and height to make portability to other modules
  */
