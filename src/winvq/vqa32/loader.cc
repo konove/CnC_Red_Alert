@@ -81,7 +81,6 @@
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
-#include "sdllib/ww_win.h"
 #include "winvq/vqa32/vqafile.h"
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqa32/vqaplayp.h"
@@ -383,7 +382,7 @@ int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
     VQAAudio* audio = &vqap->data->Audio;
 
     /* Open HMI audio resource for playback. */
-    if (VQA_OpenAudio(vqap, MainWindow)) {
+    if (VQA_OpenAudio(vqap)) {
       VQA_Close(vqa);
       return VQAERR_AUDIO;
     }

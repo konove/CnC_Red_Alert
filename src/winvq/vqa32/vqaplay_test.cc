@@ -27,8 +27,6 @@
 
 // Link-time stubs for symbols normally provided by the game or sdllib. The
 // tests never draw frames or decode palettes, so these are never called.
-extern void* MainWindow;  // Declared by the Windows viewer as an HWND.
-void* MainWindow = nullptr;
 
 int32_t LCW_Uncompress(std::span<const unsigned char> /*source*/,
                        std::span<unsigned char> /*dest*/) {

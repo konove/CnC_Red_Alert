@@ -508,7 +508,7 @@ int64_t VQA_GetTime(VQAHandle* vqap);
 int32_t VQA_TimerMethod();
 
 /* Audio system. */
-int32_t VQA_OpenAudio(VQAHandle* vqap, void* window);
+int32_t VQA_OpenAudio(VQAHandle* vqap);
 void VQA_CloseAudio(VQAHandle* vqap);
 int32_t VQA_StartAudio(VQAHandle* vqap);
 void VQA_StopAudio(const VQAHandle* vqap);

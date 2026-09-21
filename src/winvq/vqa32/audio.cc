@@ -269,8 +269,7 @@ void VQA_StopTimerInt(VQAHandle* /*vqap*/) {
 
 static int OpenCount = 0;
 
-int32_t VQA_OpenAudio(VQAHandle* vqap, void* /*window*/) {
-
+int32_t VQA_OpenAudio(VQAHandle* vqap) {
   /* Dereference data memebers for quicker access. */
   VQAConfig* config = &vqap->config;
   VQAData* vqabuf = vqap->data;
