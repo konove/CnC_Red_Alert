@@ -227,7 +227,10 @@ class InfantryClass final : public FootClass {
   int Mission_Attack() override;
   bool Edge_Of_World_AI();
   void Firing_AI();
-  void Doing_AI();
+  // Advances the animation sequence and starts whatever comes next.
+  // Returns true when a death sequence finished and the object deleted
+  // itself, in which case the caller must not touch it again.
+  [[nodiscard]] bool Doing_AI();
   void Movement_AI();
 
   /*

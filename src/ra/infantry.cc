@@ -1142,9 +1142,12 @@ void InfantryClass::AI() {
   Firing_AI();
 
   /*
-  **	Handle the completion of the animation sequence.
+  **	Handle the completion of the animation sequence. A finished death
+  **	sequence deletes the infantry, so nothing below may run afterwards.
   */
-  Doing_AI();
+  if (Doing_AI()) {
+    return;
+  }
 
   /*
   **	Perform movement operations at this time.
@@ -3654,14 +3657,14 @@ void InfantryClass::Firing_AI() {
  *                                                                                             *
  * INPUT:   none *
  *                                                                                             *
- * OUTPUT:  none *
+ * OUTPUT:  Did the infantry delete itself? See the declaration. *
  *                                                                                             *
  * WARNINGS:   Only call this routine once per infantry unit per game logic
  *loop.              *
  *                                                                                             *
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
-void InfantryClass::Doing_AI() {
+bool InfantryClass::Doing_AI() {
   if (Doing == DO_NOTHING ||
       Fetch_Stage() >=
           base::At(Class->DoControls, base::ToSize(static_cast<int>(Doing)))
@@ -3742,10 +3745,11 @@ void InfantryClass::Doing_AI() {
             new AnimClass(ANIM_CORPSE2, Center_Coord());
           }
           delete this;
-          return;
+          return true;
         }
     }
   }
+  return false;
 }
 
 /***********************************************************************************************
