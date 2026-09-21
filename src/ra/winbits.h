@@ -18,7 +18,7 @@
 #include "base/types.h"
 #include "ra/defines.h"
 #include "ra/dib.h"
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 
 // A window's pixels, locked from construction until destruction.
 //

@@ -32,7 +32,7 @@
 #include <span>
 #include <vector>
 
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 
 class SDL_Cursor;
 class SDL_Surface;

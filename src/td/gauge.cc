@@ -61,8 +61,8 @@
 #include "td/gauge.h"
 
 #include "sdllib/drawbuff.h"
-#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "td/control.h"

@@ -76,8 +76,8 @@
 #include "ra/link.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
-#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/disk_file.h"
 

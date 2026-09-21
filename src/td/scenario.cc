@@ -59,7 +59,7 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "port/safe_string.h"
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"

@@ -51,7 +51,7 @@ class ArchiveWriter;
 
 #include "absl/base/attributes.h"
 #include "base/buffer.h"
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/wwstd.h"
 #include "tech/file.h"

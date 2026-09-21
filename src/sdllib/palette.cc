@@ -1,7 +1,7 @@
 #include <cstdint>
 #include <span>
 
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 
 void SetScreenPalette(std::span<const uint8_t> palette) {

@@ -55,7 +55,7 @@
 #include "ra/list.h"
 #include "ra/text_ids.h"
 #include "sdllib/drawbuff.h"
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
 
 /***************************************************************************

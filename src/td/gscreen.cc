@@ -58,8 +58,8 @@
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
-#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "td/config.h"
 #include "td/debug_state.h"

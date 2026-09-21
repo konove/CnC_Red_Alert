@@ -41,7 +41,7 @@
 #include <string_view>
 #include <vector>
 
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/file.h"
 
 // A .WSA animation held in memory, in the manner of std::ifstream: the

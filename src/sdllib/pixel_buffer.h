@@ -31,8 +31,8 @@
 // The inline members here exist to lock the surface around a call to one of
 // them and to fill in "the whole view" for the shorter overloads.
 
-#ifndef CNC_RED_ALERT_SDLLIB_GRAPHIC_BUFFER_H_
-#define CNC_RED_ALERT_SDLLIB_GRAPHIC_BUFFER_H_
+#ifndef CNC_RED_ALERT_SDLLIB_PIXEL_BUFFER_H_
+#define CNC_RED_ALERT_SDLLIB_PIXEL_BUFFER_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -590,4 +590,4 @@ inline int32_t BufferClass::To_Page(int x, int y, int width, int height,
   return Buffer_To_Page(x, y, width, height, Get_Bytes(), view);
 }
 
-#endif  // CNC_RED_ALERT_SDLLIB_GRAPHIC_BUFFER_H_
+#endif  // CNC_RED_ALERT_SDLLIB_PIXEL_BUFFER_H_

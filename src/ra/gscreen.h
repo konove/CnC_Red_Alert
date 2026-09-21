@@ -42,8 +42,8 @@
 
 #include "ra/defines.h"
 #include "ra/gadget.h"
-#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 
 class GScreenClass {
  public:

@@ -61,8 +61,8 @@
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "sdllib/drawbuff.h"
-#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
 
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,

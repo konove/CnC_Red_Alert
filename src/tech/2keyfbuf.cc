@@ -14,7 +14,7 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/unaligned.h"
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 
 // should match 2keyfram.cpp

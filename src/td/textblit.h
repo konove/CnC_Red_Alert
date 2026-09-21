@@ -19,7 +19,7 @@
 #define CNC_RED_ALERT_TD_TEXTBLIT_H_
 
 #define MAX_ENTRIES 128
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 
 class TextBlitClass {
  public:

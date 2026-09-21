@@ -78,8 +78,8 @@
 #include "ra/type_heaps.h"
 #include "ra/world.h"
 #include "sdllib/drawbuff.h"
-#include "sdllib/graphic_buffer.h"
 #include "sdllib/iconcach.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_win.h"
 #include "tech/mix_archive.h"
 

@@ -72,10 +72,10 @@
 #include "port/unaligned.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
-#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/modemreg.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/wincomm.h"
 #include "sdllib/ww_mouse.h"
@@ -116,7 +116,6 @@
 #include "tech/audio_mixer.h"
 #include "tech/crc.h"
 #include "tech/number_parse.h"
-
 
 // Whether Smart_Print() echoes to stdout; on while a serial game runs.
 static bool smart_print_enabled = false;

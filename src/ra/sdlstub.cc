@@ -17,12 +17,11 @@
 #include "ra/screen.h"
 #include "ra/startup.h"
 #include "ra/winstub.h"
-#include "sdllib/graphic_buffer.h"
 #include "sdllib/misc.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "winvq/vqa32/vqaplay.h"
-
 
 void WWDebugString(const char* /*string*/) {}
 

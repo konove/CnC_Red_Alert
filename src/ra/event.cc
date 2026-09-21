@@ -102,7 +102,7 @@
 #include "ra/vessel.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 

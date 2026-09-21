@@ -14,7 +14,7 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "port/bytes_of.h"
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_win.h"
 #include "tech/rgb.h"

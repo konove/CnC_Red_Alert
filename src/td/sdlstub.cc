@@ -6,9 +6,9 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"

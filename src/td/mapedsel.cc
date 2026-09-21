@@ -50,8 +50,8 @@
 #include <iterator>
 
 #include "absl/strings/str_format.h"
-#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "td/base.h"
 #include "td/building.h"

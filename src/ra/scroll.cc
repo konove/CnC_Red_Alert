@@ -54,8 +54,8 @@
 #include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/screen.h"
-#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/ftimer.h"
 
 #define SCROLL_DELAY 1

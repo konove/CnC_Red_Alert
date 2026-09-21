@@ -11,7 +11,7 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/drawbuff.h"
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/tile.h"
 
 static const void* LastIconset = nullptr;

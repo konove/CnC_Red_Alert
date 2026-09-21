@@ -2,8 +2,8 @@
 
 #include "ra/screen.h"
 
-#include "sdllib/graphic_buffer.h"
 #include "sdllib/misc.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_win.h"
 
 // The views start out covering a 640x480 page that does not exist yet, as the

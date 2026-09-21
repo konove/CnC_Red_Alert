@@ -49,7 +49,7 @@
 
 #include "absl/log/check.h"
 #include "base/array.h"
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 
 /***********************************************************************************************
  * Increase_Palette_Luminance -- increase contrast of colours in a palette *

@@ -45,7 +45,7 @@ Buff);
 
 #include "ra/palette.h"
 #include "sdllib/buffer.h"
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/file.h"
 
 struct RGB {

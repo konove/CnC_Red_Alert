@@ -14,8 +14,8 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/font.h"
-#include "sdllib/graphic_buffer.h"
 #include "sdllib/misc.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_win.h"
 
 void* MainWindow;

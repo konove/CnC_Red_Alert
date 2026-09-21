@@ -90,7 +90,7 @@
 #include "absl/log/initialize.h"
 #include "absl/strings/match.h"
 #include "sdllib/file.h"
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"

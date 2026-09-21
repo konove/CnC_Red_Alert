@@ -78,7 +78,7 @@
 #include "ra/text_ids.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"

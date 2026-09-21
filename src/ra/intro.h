@@ -21,7 +21,7 @@
 #ifndef CNC_RED_ALERT_RA_INTRO_H_
 #define CNC_RED_ALERT_RA_INTRO_H_
 
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 
 // Plays the introduction movie. Select_Game() calls this when it starts the
 // campaign on the first launch after installing (Special.IsFromInstall).

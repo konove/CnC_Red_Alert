@@ -41,8 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_GSCREEN_H_
 #define CNC_RED_ALERT_TD_GSCREEN_H_
 
-#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/cell.h"
 #include "td/defines.h"
 #include "td/gadget.h"

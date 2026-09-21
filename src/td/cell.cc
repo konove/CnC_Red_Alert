@@ -94,7 +94,7 @@
 #include "base/numeric.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/wwstd.h"
 #include "td/anim.h"

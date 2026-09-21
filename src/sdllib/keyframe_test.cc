@@ -14,7 +14,7 @@
 
 #include "gtest/gtest.h"
 #include "port/unaligned.h"
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_win.h"
 
 // The SDL event loop delegates to the application; these decoder tests do not

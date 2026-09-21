@@ -12,7 +12,7 @@
 
 #include "base/array.h"
 #include "base/numeric.h"
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_win.h"
 
 static Uint32 Force_Redraw_Timer(Uint32 /*interval*/, void* /*unused*/) {

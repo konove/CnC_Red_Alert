@@ -193,7 +193,7 @@ Chromium-style paths relative to the `src/` include root (configured via
 
 ```cpp
 #include "ra/object.h"           // Correct
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "object.h"              // WRONG - no relative paths
 #include "src/ra/object.h"       // WRONG - src/ is the include root, don't repeat it
 ```
@@ -365,7 +365,7 @@ Omit the `std::` prefix on fixed-width types. See `docs/TYPE_MIGRATION.md` for f
 | Build config | `CMakeLists.txt`, `ra/CMakeLists.txt`, `td/CMakeLists.txt` |
 | Global state | `ra/externs.h`                                             |
 | Streams      | `tech/byte_sink.h`, `tech/byte_source.h`                   |
-| Graphics     | `sdllib/graphic_buffer.h`, `sdllib/drawbuff.h`             |
+| Graphics     | `sdllib/pixel_buffer.h`, `sdllib/drawbuff.h`               |
 | Video        | `winvq/vqa32/vqaplay.h`                                    |
 
 ## Platform Notes

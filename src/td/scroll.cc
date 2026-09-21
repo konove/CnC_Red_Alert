@@ -46,8 +46,8 @@
 #include <iterator>
 
 #include "base/array.h"
-#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "td/defines.h"
 #include "td/face.h"

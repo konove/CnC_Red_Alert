@@ -16,11 +16,10 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// File: The one PixelBuffer member that needs floating point. The
-// rest of the class lives in drawbuff.cc, and the SDL half in
-// drawbuff_sdl.cc.
+// File: The one PixelBuffer member that needs floating point. The rest of the
+// class lives in drawbuff.cc, and the SDL half in drawbuff_sdl.cc.
 
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 
 #include <cmath>
 #include <cstdint>

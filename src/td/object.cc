@@ -115,7 +115,7 @@
 
 #include "base/array.h"
 #include "sdllib/drawbuff.h"
-#include "sdllib/graphic_buffer.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "td/aircraft.h"

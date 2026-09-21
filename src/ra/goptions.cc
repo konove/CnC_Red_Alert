@@ -75,9 +75,9 @@
 #include "ra/version.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"
-#include "sdllib/graphic_buffer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 
