@@ -43,6 +43,7 @@
 #include "ra/msgbox.h"
 #include "ra/palettes.h"
 #include "ra/rawolapi.h"
+#include "ra/screen.h"
 #include "ra/seditdlg.h"
 #include "ra/shapebtn.h"
 #include "ra/statbtn.h"
@@ -109,6 +110,7 @@ static int d_userlist_y;
 
 //***********************************************************************************************
 int WOL_Chat_Dialog(WolapiObject* pWO) {
+  PixelView& view = TheScreen().visible_view();
   int rc = 0;  //	What Run() returns: 0 is "back to the main menu".
   bool bFirsttime = true;
   bool bHackFocus = true;
@@ -447,10 +449,10 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       /*
                               //	Lame hack. Problem is draws that occur
          in callbacks. if( pToolTipHitLast && pToolTipHitLast->bShowing ) {
-                                      pToolTipHitLast->Unshow();
+                                      pToolTipHitLast->Unshow(view);
                                       pWO->pChat->PumpMessages();
                                       pWO->pNetUtil->PumpMessages();
-                                      pToolTipHitLast->Show();
+                                      pToolTipHitLast->Show(view);
                               }
                               else
                               {
@@ -613,7 +615,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       //..................................................................
       if (display >= REDRAW_BACKGROUND) {
         if (pToolTipHitLast && pToolTipHitLast->bShowing) {
-          pToolTipHitLast->Unshow();
+          pToolTipHitLast->Unshow(view);
         }
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
@@ -622,27 +624,27 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         //	Dialog & Field labels
         //...............................................................
 
-        commands->Draw_All(*LogicPage);
+        commands->Draw_All(view);
 
         //	Draw title bar above channel list.
-        Draw_Box(*LogicPage, d_chanlist_x, d_chanlist_y - 15, d_chanlist_w, 16,
+        Draw_Box(view, d_chanlist_x, d_chanlist_y - 15, d_chanlist_w, 16,
                  BOXSTYLE_BOX, false);
         switch (lesCurrent) {
           case LES_CHANNELS_EXPANDED:
             //	Draw users title bar at bottom.
-            Draw_Box(*LogicPage, d_userlist_x, d_userlist_y + d_userlist_h - 16,
+            Draw_Box(view, d_userlist_x, d_userlist_y + d_userlist_h - 16,
                      d_userlist_w, 16, BOXSTYLE_BOX, false);
             break;
           case LES_USERS_EXPANDED:
             //	Draw users title bar at top.
-            Draw_Box(*LogicPage, d_chanlist_x, d_chanlist_y, d_chanlist_w, 16,
+            Draw_Box(view, d_chanlist_x, d_chanlist_y, d_chanlist_w, 16,
                      BOXSTYLE_BOX, false);
             break;
           case LIST_EXPAND_STATE::LES_NORMAL:
           default:
             //	Draw users title bar in middle.
-            Draw_Box(*LogicPage, d_userlist_x, d_userlist_y - 15, d_userlist_w,
-                     16, BOXSTYLE_BOX, false);
+            Draw_Box(view, d_userlist_x, d_userlist_y - 15, d_userlist_w, 16,
+                     BOXSTYLE_BOX, false);
             break;
         }
       }
@@ -666,7 +668,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       //	Mouse button is down.
       timeToolTipAppear = Get_Time_Ms() + TOOLTIPDELAY;
       if (pToolTipHitLast && pToolTipHitLast->bShowing) {
-        pToolTipHitLast->Unshow();
+        pToolTipHitLast->Unshow(view);
       }
     }
 
@@ -674,10 +676,10 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     // tooltip.
     if (pToolTipHitLast && pToolTipHitLast->bShowing &&
         commands->Is_List_To_Redraw()) {
-      pToolTipHitLast->Unshow();
+      pToolTipHitLast->Unshow(view);
     }
 
-    input = commands->Input(*LogicPage);
+    input = commands->Input(view);
 
     //	This hack, used elsewhere in this form, appears to be the standard dodge
     // around GadgetClass::Input's 	tendency to remove any focus the first
@@ -688,7 +690,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     if (bHackFocus) {
       sendedit.Set_Focus();
       sendedit.Flag_To_Redraw();
-      input = commands->Input(*LogicPage);
+      input = commands->Input(view);
       bHackFocus = false;
     }
 
@@ -703,16 +705,16 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           if (!pToolTipHit->bShowing && Get_Time_Ms() > timeToolTipAppear &&
               !(KeyboardClass::Down(KN_LMOUSE) ||
                 KeyboardClass::Down(KN_RMOUSE))) {
-            pToolTipHit->Show();
+            pToolTipHit->Show(view);
           } else if (pToolTipHit->bIconList &&
                      pToolTipHit->bOverDifferentLine()) {
-            pToolTipHit->Unshow();
-            pToolTipHit->Show();
+            pToolTipHit->Unshow(view);
+            pToolTipHit->Show(view);
           }
         }
       } else {
         if (pToolTipHitLast && pToolTipHitLast->bShowing) {
-          pToolTipHitLast->Unshow();
+          pToolTipHitLast->Unshow(view);
         }
         pToolTipHitLast = pToolTipHit;
         timeToolTipAppear = Get_Time_Ms() + TOOLTIPDELAY;
@@ -759,7 +761,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           //	Move userlist expand button.
           ExpandUserBtn.Set_Position(ExpandUserBtn.X,
                                      chanlist.Y + chanlist.Height);
-          TTipUserExpand.Move(ExpandUserBtn.X + 8, ExpandUserBtn.Y - 16);
+          TTipUserExpand.Move(view, ExpandUserBtn.X + 8, ExpandUserBtn.Y - 16);
           userlistTitle.Set_Position(userlistTitle.X,
                                      chanlist.Y + chanlist.Height + 2);
           //	Set buttons.
@@ -772,7 +774,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           }
           //	Move userlist expand button.
           ExpandUserBtn.Set_Position(ExpandUserBtn.X, userlist.Y - 14);
-          TTipUserExpand.Move(ExpandUserBtn.X + 8, ExpandUserBtn.Y - 16);
+          TTipUserExpand.Move(view, ExpandUserBtn.X + 8, ExpandUserBtn.Y - 16);
           userlistTitle.Set_Position(userlistTitle.X, userlist.Y - 16 + 4);
           //	Set buttons.
           ExpandChanBtn.Set_Shape(pShpExpand);
@@ -781,8 +783,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         //	Move rank buttons.
         RankRABtn.Set_Position(RankRABtn.X, ExpandUserBtn.Y);
         RankAMBtn.Set_Position(RankAMBtn.X, ExpandUserBtn.Y);
-        TTipRankRA.Move(RankRABtn.X + 8, RankRABtn.Y - 16);
-        TTipRankAM.Move(RankAMBtn.X + 8, RankAMBtn.Y - 16);
+        TTipRankRA.Move(view, RankRABtn.X + 8, RankRABtn.Y - 16);
+        TTipRankAM.Move(view, RankAMBtn.X + 8, RankAMBtn.Y - 16);
         display = REDRAW_ALL;
         break;
 
@@ -810,13 +812,13 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
         //	Move userlist expand button.
         ExpandUserBtn.Set_Position(ExpandUserBtn.X, userlist.Y - 14);
-        TTipUserExpand.Move(ExpandUserBtn.X + 8, ExpandUserBtn.Y - 16);
+        TTipUserExpand.Move(view, ExpandUserBtn.X + 8, ExpandUserBtn.Y - 16);
         userlistTitle.Set_Position(userlistTitle.X, userlist.Y - 16 + 4);
         //	Move rank buttons.
         RankRABtn.Set_Position(RankRABtn.X, ExpandUserBtn.Y);
         RankAMBtn.Set_Position(RankAMBtn.X, ExpandUserBtn.Y);
-        TTipRankRA.Move(RankRABtn.X + 8, RankRABtn.Y - 16);
-        TTipRankAM.Move(RankAMBtn.X + 8, RankAMBtn.Y - 16);
+        TTipRankRA.Move(view, RankRABtn.X + 8, RankRABtn.Y - 16);
+        TTipRankAM.Move(view, RankAMBtn.X + 8, RankAMBtn.Y - 16);
         display = REDRAW_ALL;
         break;
 
@@ -1034,7 +1036,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   }  // end of while
 
   if (pToolTipHitLast && pToolTipHitLast->bShowing) {
-    pToolTipHitLast->Unshow();
+    pToolTipHitLast->Unshow(view);
   }
 
   /*
@@ -1228,9 +1230,9 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
     hRes = pWO->ChannelJoin(pChannel);
     switch (hRes) {
       case CHAT_E_BADCHANNELPASSWORD: {
-        Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
-                         kTpfText);  //	Required before String_Pixel_Width()
-                                     // call, for god's sake.
+        Select_Text_Font(kTpfText, nullptr,
+                         kTBlack);  //	Required before String_Pixel_Width()
+                                    // call, for god's sake.
         auto* pEditDlg = new SimpleEditDlgClass(
             [] {
               if (config::kIsEnglish) {
@@ -1365,9 +1367,9 @@ void CreateChatChannel(WolapiObject* pWO) {
           else
   */
   {
-    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
-                     kTpfText);  //	Required before String_Pixel_Width()
-                                 // call, for god's sake.
+    Select_Text_Font(kTpfText, nullptr,
+                     kTBlack);  //	Required before String_Pixel_Width()
+                                // call, for god's sake.
     pEditDlg = new SimpleEditDlgClass(
         350, TXT_WOL_CREATECHANNELTITLE, TXT_WOL_CREATECHANNELPROMPT,
         WOL_CHANNAME_LEN_MAX, TXT_WOL_OPTIONALPASSPROMPT, WOL_CHANKEY_LEN_MAX);

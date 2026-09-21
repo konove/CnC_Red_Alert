@@ -85,7 +85,9 @@ bool WOL_Download_Dialog(IDownload* pDownload,
   //	int	height;
   //	char* info_string = (char*)szTitle;
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+  PixelView& view = TheScreen().visible_view();
+
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
                    kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -170,7 +172,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
         /*
         ** Dialog & Field labels
         */
-        Draw_Caption(*LogicPage, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
+        Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
         //				Fancy_Text_Print(info_string,
         // d_dialog_cx-width/2, d_dialog_y + 25*2,
@@ -182,18 +184,18 @@ bool WOL_Download_Dialog(IDownload* pDownload,
       }
 
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(*LogicPage);
+        commands->Draw_All(view);
       }
 
       if (display >= REDRAW_PROGRESS) {
-        progress_meter.Draw_Me(*LogicPage, true);
+        progress_meter.Draw_Me(view, true);
       }
 
       display = REDRAW_NONE;
     }
 
     if (process) {
-      const KeyNumType input = cancelbtn.Input(*LogicPage);
+      const KeyNumType input = cancelbtn.Input(view);
       switch (static_cast<int>(input)) {
         /*
         ** Cancel. Just return to the main menu

@@ -1082,7 +1082,7 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Initialize
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   **	Build the button list
@@ -1117,39 +1117,37 @@ bool TriggerTypeClass::Edit() {
       */
       Hide_Mouse();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
-      Draw_Caption(*LogicPage, TXT_TRIGGER_EDITOR, kDialogX, kDialogY,
-                   kDialogW);
+      Draw_Caption(view, TXT_TRIGGER_EDITOR, kDialogX, kDialogY, kDialogW);
 
       /*
       **	Draw the captions
       */
-      Fancy_Text_Print(*LogicPage, "Trigger Event:", event1list.X,
-                       event1list.Y - 7, scheme, kTBlack,
-                       TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print(*LogicPage, "Action to Perform:", action1list.X,
+      Fancy_Text_Print(view, "Trigger Event:", event1list.X, event1list.Y - 7,
+                       scheme, kTBlack, TPF_EFNT | TPF_NOSHADOW);
+      Fancy_Text_Print(view, "Action to Perform:", action1list.X,
                        action1list.Y - 7, scheme, kTBlack,
                        TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print(*LogicPage, "House:", housebtn.X, housebtn.Y - 7, scheme,
+      Fancy_Text_Print(view, "House:", housebtn.X, housebtn.Y - 7, scheme,
                        kTBlack, TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print(*LogicPage, "Name:", name_edt.X, name_edt.Y - 7, scheme,
+      Fancy_Text_Print(view, "Name:", name_edt.X, name_edt.Y - 7, scheme,
                        kTBlack, TPF_EFNT | TPF_NOSHADOW);
-      Fancy_Text_Print(*LogicPage, "Persistence:", persbtn.X, persbtn.Y - 7,
-                       scheme, kTBlack, TPF_EFNT | TPF_NOSHADOW);
+      Fancy_Text_Print(view, "Persistence:", persbtn.X, persbtn.Y - 7, scheme,
+                       kTBlack, TPF_EFNT | TPF_NOSHADOW);
 
       if (eventflag == 3) {
-        LogicPage->DrawLine(event1list.X - 1, event1list.Y + 3,
-                            event1list.X - 4, event1list.Y + 3, kWhite);
-        LogicPage->DrawLine(event1list.X - 4, event1list.Y + 3,
-                            action1list.X - 4, action1list.Y + 3, kWhite);
-        LogicPage->DrawLine(action1list.X - 1, action1list.Y + 3,
-                            action1list.X - 4, action1list.Y + 3, kWhite);
+        view.DrawLine(event1list.X - 1, event1list.Y + 3, event1list.X - 4,
+                      event1list.Y + 3, kWhite);
+        view.DrawLine(event1list.X - 4, event1list.Y + 3, action1list.X - 4,
+                      action1list.Y + 3, kWhite);
+        view.DrawLine(action1list.X - 1, action1list.Y + 3, action1list.X - 4,
+                      action1list.Y + 3, kWhite);
 
-        LogicPage->DrawLine(event2list.X - 1, event2list.Y + 3,
-                            event2list.X - 10, event2list.Y + 3, kWhite);
-        LogicPage->DrawLine(event2list.X - 10, event2list.Y + 3,
-                            action2list.X - 10, action2list.Y + 3, kWhite);
-        LogicPage->DrawLine(action2list.X - 1, action2list.Y + 3,
-                            action2list.X - 10, action2list.Y + 3, kWhite);
+        view.DrawLine(event2list.X - 1, event2list.Y + 3, event2list.X - 10,
+                      event2list.Y + 3, kWhite);
+        view.DrawLine(event2list.X - 10, event2list.Y + 3, action2list.X - 10,
+                      action2list.Y + 3, kWhite);
+        view.DrawLine(action2list.X - 1, action2list.Y + 3, action2list.X - 10,
+                      action2list.Y + 3, kWhite);
       }
 
       /*
@@ -1517,7 +1515,7 @@ bool TriggerTypeClass::Edit() {
     /*
     **	Get user input
     */
-    const KeyNumType input = commands->Input(*LogicPage);
+    const KeyNumType input = commands->Input(view);
 
     /*
     **	Process input

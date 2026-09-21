@@ -259,7 +259,7 @@ bool LoadOptionsClass::Process() {
   /*
   **	Initialize.
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   Fill_List(&listbtn);
 
@@ -323,10 +323,10 @@ bool LoadOptionsClass::Process() {
       */
       Hide_Mouse();
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-      Draw_Caption(*LogicPage, caption, d_dialog_x, d_dialog_y, d_dialog_w);
+      Draw_Caption(view, caption, d_dialog_x, d_dialog_y, d_dialog_w);
 
       if (Style == SAVE) {
-        Fancy_Text_Print(*LogicPage, TXT_MISSION_DESCRIPTION, d_dialog_cx,
+        Fancy_Text_Print(view, TXT_MISSION_DESCRIPTION, d_dialog_cx,
                          d_edit_y - d_txt8_h, GadgetClass::Get_Color_Scheme(),
                          kTBlack, kTpfText | TPF_CENTER);
       }
@@ -342,7 +342,7 @@ bool LoadOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    KeyNumType input = commands->Input(*LogicPage);
+    KeyNumType input = commands->Input(view);
 
     /*
     **	The first time through the processing loop, set the edit
@@ -405,7 +405,7 @@ bool LoadOptionsClass::Process() {
           break;
       }
       Hide_Mouse();
-      commands->Draw_All(*LogicPage, true);
+      commands->Draw_All(view, true);
       Show_Mouse();
     }
 

@@ -321,6 +321,7 @@ int Test_Null_Modem() {
   int height = 0;  // dialog dimensions
   char buffer[80 * 3];
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  PixelView& view = TheScreen().visible_view();
 
   /*
   ** Buttons
@@ -331,7 +332,7 @@ int Test_Null_Modem() {
   **	These dimensions will control how the dialog box looks.
   */
   port::SafeCopy(buffer, Text_String(TXT_WAITING_CONNECT));
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, TheScreen().visible_view().height(), width,
                        height);
@@ -348,10 +349,6 @@ int Test_Null_Modem() {
       x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) / 2),
       y + height - (FontHeight + FontYSpacing + 4) - 20);
 
-  /*
-  ** Initialize
-  */
-  SetLogicPage(TheScreen().visible_view());
   process = true;
 
   /*
@@ -368,12 +365,11 @@ int Test_Null_Modem() {
   Load_Title_Page(true);
 
   Dialog_Box(x, y, width, height);
-  Draw_Caption(*LogicPage, TXT_NONE, x, y, width);
+  Draw_Caption(view, TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(*LogicPage, buffer, x + 40, y + 50, scheme, kTBlack,
-                   kTpfText);
+  Fancy_Text_Print(view, buffer, x + 40, y + 50, scheme, kTBlack, kTpfText);
 
-  commands->Draw_All(*LogicPage);
+  commands->Draw_All(view);
   while (Get_Mouse_State() > 0) {
     Show_Mouse();
   }
@@ -467,7 +463,7 @@ int Test_Null_Modem() {
     */
     if (AllSurfaces.SurfacesRestored) {
       AllSurfaces.SurfacesRestored = false;
-      commands->Draw_All(*LogicPage);
+      commands->Draw_All(view);
     }
     /*
     ** Invoke game callback
@@ -477,7 +473,7 @@ int Test_Null_Modem() {
     /*
     ** Get user input
     */
-    const KeyNumType input = commands->Input(*LogicPage);
+    const KeyNumType input = commands->Input(view);
 
     /*
     ** Process input
@@ -637,6 +633,7 @@ static int Reconnect_Null_Modem() {
   int width = 0;
   int height = 0;  // dialog dimensions
   char buffer[80 * 3];
+  PixelView& view = TheScreen().visible_view();
 
   /*
   ** Buttons
@@ -647,7 +644,7 @@ static int Reconnect_Null_Modem() {
   **	These dimensions will control how the dialog box looks.
   */
   port::SafeCopy(buffer, Text_String(TXT_NULL_CONNERR_CHECK_CABLES));
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, TheScreen().visible_view().height(), width,
                        height);
@@ -664,10 +661,6 @@ static int Reconnect_Null_Modem() {
       x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) / 2),
       y + height - (FontHeight + FontYSpacing + 4) - 20);
 
-  /*
-  ** Initialize
-  */
-  SetLogicPage(TheScreen().visible_view());
   process = true;
 
   /*
@@ -683,12 +676,11 @@ static int Reconnect_Null_Modem() {
   Hide_Mouse();
 
   Dialog_Box(x, y, width, height);
-  Draw_Caption(*LogicPage, TXT_NONE, x, y, width);
+  Draw_Caption(view, TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(*LogicPage, buffer, x + 40, y + 50, scheme, kTBlack,
-                   kTpfText);
+  Fancy_Text_Print(view, buffer, x + 40, y + 50, scheme, kTBlack, kTpfText);
 
-  commands->Draw_All(*LogicPage);
+  commands->Draw_All(view);
   Show_Mouse();
 
   /*
@@ -703,7 +695,7 @@ static int Reconnect_Null_Modem() {
     */
     if (AllSurfaces.SurfacesRestored) {
       AllSurfaces.SurfacesRestored = false;
-      commands->Draw_All(*LogicPage);
+      commands->Draw_All(view);
     }
     /*
     ** Invoke game callback
@@ -713,7 +705,7 @@ static int Reconnect_Null_Modem() {
     /*
     ** Get user input
     */
-    const KeyNumType input = commands->Input(*LogicPage);
+    const KeyNumType input = commands->Input(view);
 
     /*
     ** Process input
@@ -1011,10 +1003,7 @@ GameType Select_Serial_Dialog() {
   TextButtonClass cancelbtn(kButtonCancel, TXT_CANCEL, kTpfButton, d_cancel_x,
                             d_cancel_y, d_cancel_w, d_cancel_h);
 
-  /*
-  ** Initialize
-  */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   if (TheSession().SerialDefaults.Port == 0 ||
       TheSession().SerialDefaults.IRQ == -1 ||
@@ -1045,7 +1034,7 @@ GameType Select_Serial_Dialog() {
 
   TheKeyboard().Clear();
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, scheme, kTBlack,
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, scheme, kTBlack,
                    TPF_CENTER | kTpfText);
 
   /*
@@ -1087,10 +1076,10 @@ GameType Select_Serial_Dialog() {
         /*
         ** Draw the labels
         */
-        Draw_Caption(*LogicPage, TXT_SELECT_SERIAL_GAME, d_dialog_x, d_dialog_y,
+        Draw_Caption(view, TXT_SELECT_SERIAL_GAME, d_dialog_x, d_dialog_y,
                      d_dialog_w);
       }
-      commands->Draw_All(*LogicPage);
+      commands->Draw_All(view);
       Show_Mouse();
       display = REDRAW_NONE;
     }
@@ -1098,7 +1087,7 @@ GameType Select_Serial_Dialog() {
     /*
     ** Get user input
     */
-    const KeyNumType input = commands->Input(*LogicPage);
+    const KeyNumType input = commands->Input(view);
 
     /*
     ** Process input
@@ -1170,7 +1159,7 @@ GameType Select_Serial_Dialog() {
       curbutton = selection - kButtonDial;
       base::At(buttons, curbutton)->Turn_On();
       base::At(buttons, curbutton)->IsPressed = true;
-      base::At(buttons, curbutton)->Draw_Me(*LogicPage, true);
+      base::At(buttons, curbutton)->Draw_Me(view, true);
 
       switch (selection) {
         case kButtonDial:
@@ -1361,6 +1350,8 @@ GameType Select_Serial_Dialog() {
  * HISTORY: * 12/16/96 2:29PM ST : Created *
  *=============================================================================================*/
 static void Advanced_Modem_Settings(SerialSettingsType* settings) {
+  PixelView& view = TheScreen().visible_view();
+
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -1507,24 +1498,24 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
 
         // init font variables
 
-        Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, scheme, kTBlack, kTpfText);
+        Fancy_Text_Print(view, TXT_NONE, 0, 0, scheme, kTBlack, kTpfText);
 
         /*...............................................................
         Dialog & Field labels
         ...............................................................*/
-        Draw_Caption(*LogicPage, TXT_MODEM_INITIALISATION, d_dialog_x,
-                     d_dialog_y, d_dialog_w);
+        Draw_Caption(view, TXT_MODEM_INITIALISATION, d_dialog_x, d_dialog_y,
+                     d_dialog_w);
 
-        Fancy_Text_Print(*LogicPage, TXT_DATA_COMPRESSION, d_compression_x - 26,
+        Fancy_Text_Print(view, TXT_DATA_COMPRESSION, d_compression_x - 26,
                          d_compression_y + 2, scheme, kTBlack,
                          kTpfText | TPF_RIGHT);
 
-        Fancy_Text_Print(*LogicPage, TXT_ERROR_CORRECTION,
-                         d_errorcorrection_x - 26, d_errorcorrection_y + 2,
-                         scheme, kTBlack, kTpfText | TPF_RIGHT);
+        Fancy_Text_Print(view, TXT_ERROR_CORRECTION, d_errorcorrection_x - 26,
+                         d_errorcorrection_y + 2, scheme, kTBlack,
+                         kTpfText | TPF_RIGHT);
 
         Fancy_Text_Print(
-            *LogicPage, TXT_HARDWARE_FLOW_CONTROL, d_hardwareflowcontrol_x - 26,
+            view, TXT_HARDWARE_FLOW_CONTROL, d_hardwareflowcontrol_x - 26,
             d_hardwareflowcontrol_y + 2, scheme, kTBlack, kTpfText | TPF_RIGHT);
       }
 
@@ -1544,7 +1535,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input(*LogicPage);
+    const KeyNumType input = commands->Input(view);
 
     /*
     ---------------------------- Process input ----------------------------
@@ -1652,6 +1643,8 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Com_Settings_Dialog(SerialSettingsType* settings) {
+  PixelView& view = TheScreen().visible_view();
+
   /*
   ** Dialog & button dimensions
   */
@@ -2111,24 +2104,23 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
         // init font variables
 
-        Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
+        Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
                          TPF_CENTER | kTpfText);
 
         /*
         ** Dialog & Field labels
         */
-        Draw_Caption(*LogicPage, TXT_SETTINGS, d_dialog_x, d_dialog_y,
-                     d_dialog_w);
+        Draw_Caption(view, TXT_SETTINGS, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(*LogicPage, TXT_PORT_COLON, d_port_x - 6, d_port_y + 2,
+        Fancy_Text_Print(view, TXT_PORT_COLON, d_port_x - 6, d_port_y + 2,
                          scheme, kTBlack, TPF_RIGHT | kTpfText);
-        Fancy_Text_Print(*LogicPage, TXT_BAUD_COLON, d_baud_x - 6, d_baud_y + 2,
+        Fancy_Text_Print(view, TXT_BAUD_COLON, d_baud_x - 6, d_baud_y + 2,
                          scheme, kTBlack, TPF_RIGHT | kTpfText);
 
-        Fancy_Text_Print(*LogicPage, TXT_INIT_STRING, d_initstr_x,
+        Fancy_Text_Print(view, TXT_INIT_STRING, d_initstr_x,
                          d_initstr_y - d_txt6_h - 6, scheme, kTBlack, kTpfText);
 
-        Fancy_Text_Print(*LogicPage, TXT_CWAIT_STRING, d_cwaitstr_x,
+        Fancy_Text_Print(view, TXT_CWAIT_STRING, d_cwaitstr_x,
                          d_cwaitstr_y - d_txt6_h - 6, scheme, kTBlack,
                          kTpfText);
       }
@@ -2161,12 +2153,12 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     /*
     ** Get user input
     */
-    KeyNumType input = commands->Input(*LogicPage);
+    KeyNumType input = commands->Input(view);
 
     if (firsttime) {
       //			port_edt.Set_Focus();
       port_edt.Flag_To_Redraw();
-      input = commands->Input(*LogicPage);
+      input = commands->Input(view);
       firsttime = false;
     }
 
@@ -2828,7 +2820,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   bool messages_have_focus = true;  // Gadget focus starts on the message system
 
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   Timer<SystemTickSource> kludge_timer;  // Timer to allow a wait after client
                                          // joins game before game can start
@@ -2849,7 +2841,7 @@ int Com_Scenario_Dialog(bool skirmish) {
                          d_nod_w, d_nod_h);
 #else
   char housetext[25] = "";
-  Fancy_Text_Print(*LogicPage, "", 0, 0, nullptr, 0, kTpfText);
+  Fancy_Text_Print(view, "", 0, 0, nullptr, 0, kTpfText);
   DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext), kTpfText,
                          d_house_x, d_house_y, d_house_w, d_house_h,
                          MixArchive::RetrieveData("BTN-UP.SHP"),
@@ -3216,53 +3208,53 @@ int Com_Scenario_Dialog(bool skirmish) {
 
           // init font variables
 
-          Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
+          Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
                            TPF_CENTER | kTpfText);
 
           /*...............................................................
           Dialog & Field labels
           ...............................................................*/
-          Fancy_Text_Print(*LogicPage, TXT_YOUR_NAME, d_name_x + (d_name_w / 2),
+          Fancy_Text_Print(view, TXT_YOUR_NAME, d_name_x + (d_name_w / 2),
                            d_name_y - d_txt6_h, scheme, kTBlack,
                            TPF_CENTER | kTpfText);
 #ifdef OLDWAY
-          Fancy_Text_Print(*LogicPage, TXT_SIDE_COLON, d_gdi_x + d_gdi_w,
+          Fancy_Text_Print(view, TXT_SIDE_COLON, d_gdi_x + d_gdi_w,
                            d_gdi_y - d_txt6_h, scheme, kTBlack,
                            TPF_CENTER | kTpfText);
 #else
-          Fancy_Text_Print(*LogicPage, TXT_SIDE_COLON,
-                           d_house_x + (d_house_w / 2), d_house_y - d_txt6_h,
-                           scheme, kTBlack, TPF_CENTER | kTpfText);
+          Fancy_Text_Print(view, TXT_SIDE_COLON, d_house_x + (d_house_w / 2),
+                           d_house_y - d_txt6_h, scheme, kTBlack,
+                           TPF_CENTER | kTpfText);
 #endif
           Fancy_Text_Print(
-              *LogicPage, TXT_COLOR_COLON, d_dialog_x + (d_dialog_w / 4 * 3),
+              view, TXT_COLOR_COLON, d_dialog_x + (d_dialog_w / 4 * 3),
               d_color_y - d_txt6_h, scheme, kTBlack, TPF_CENTER | kTpfText);
           if (!skirmish) {
-            Fancy_Text_Print(*LogicPage, TXT_PLAYERS,
+            Fancy_Text_Print(view, TXT_PLAYERS,
                              d_playerlist_x + (d_playerlist_w / 2),
                              d_playerlist_y - d_txt6_h, scheme, kTBlack,
                              TPF_CENTER | kTpfText);
           } else {
-            Fancy_Text_Print(*LogicPage, TXT_EASY, difficulty.X,
-                             difficulty.Y - 16, scheme, kTBlack, kTpfText);
-            Fancy_Text_Print(*LogicPage, TXT_HARD,
-                             difficulty.X + difficulty.Width, difficulty.Y - 16,
-                             scheme, kTBlack, TPF_RIGHT | kTpfText);
+            Fancy_Text_Print(view, TXT_EASY, difficulty.X, difficulty.Y - 16,
+                             scheme, kTBlack, kTpfText);
+            Fancy_Text_Print(view, TXT_HARD, difficulty.X + difficulty.Width,
+                             difficulty.Y - 16, scheme, kTBlack,
+                             TPF_RIGHT | kTpfText);
             Fancy_Text_Print(
-                *LogicPage, TXT_NORMAL, difficulty.X + (difficulty.Width / 2),
+                view, TXT_NORMAL, difficulty.X + (difficulty.Width / 2),
                 difficulty.Y - 16, scheme, kTBlack, TPF_CENTER | kTpfText);
           }
-          Fancy_Text_Print(*LogicPage, TXT_SCENARIOS,
+          Fancy_Text_Print(view, TXT_SCENARIOS,
                            d_scenariolist_x + (d_scenariolist_w / 2),
                            d_scenariolist_y - d_txt6_h, scheme, kTBlack,
                            TPF_CENTER | kTpfText);
-          Fancy_Text_Print(*LogicPage, TXT_COUNT, d_count_x - 2, d_count_y,
-                           scheme, kTBlack, kTpfText | TPF_RIGHT);
-          Fancy_Text_Print(*LogicPage, TXT_LEVEL, d_level_x - 2, d_level_y,
-                           scheme, kTBlack, kTpfText | TPF_RIGHT);
-          Fancy_Text_Print(*LogicPage, TXT_CREDITS_COLON, d_credits_x - 2,
+          Fancy_Text_Print(view, TXT_COUNT, d_count_x - 2, d_count_y, scheme,
+                           kTBlack, kTpfText | TPF_RIGHT);
+          Fancy_Text_Print(view, TXT_LEVEL, d_level_x - 2, d_level_y, scheme,
+                           kTBlack, kTpfText | TPF_RIGHT);
+          Fancy_Text_Print(view, TXT_CREDITS_COLON, d_credits_x - 2,
                            d_credits_y, scheme, kTBlack, kTpfText | TPF_RIGHT);
-          Fancy_Text_Print(*LogicPage, TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
+          Fancy_Text_Print(view, TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
                            d_aiplayers_y, scheme, kTBlack,
                            kTpfText | TPF_RIGHT);
         }
@@ -3272,22 +3264,22 @@ int Com_Scenario_Dialog(bool skirmish) {
         ..................................................................*/
         if (display >= REDRAW_COLORS) {
           for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-            LogicPage->FillRect(base::At(cbox_x, i) + 1, d_color_y + 1,
-                                base::At(cbox_x, i) + 1 + d_color_w - 2,
-                                d_color_y + 1 + d_color_h - 2,
-                                ThePalettes()
-                                    .color_remaps()
-                                    .at(static_cast<PlayerColorType>(i))
-                                    .Box);
+            view.FillRect(base::At(cbox_x, i) + 1, d_color_y + 1,
+                          base::At(cbox_x, i) + 1 + d_color_w - 2,
+                          d_color_y + 1 + d_color_h - 2,
+                          ThePalettes()
+                              .color_remaps()
+                              .at(static_cast<PlayerColorType>(i))
+                              .Box);
             //						(i ==
             // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
             // ColorRemaps[static_cast<PlayerColorType>(i)].Box);
 
             if (static_cast<PlayerColorType>(i) == TheSession().ColorIdx) {
-              Draw_Box(*LogicPage, base::At(cbox_x, i), d_color_y, d_color_w,
+              Draw_Box(view, base::At(cbox_x, i), d_color_y, d_color_w,
                        d_color_h, BOXSTYLE_DOWN, false);
             } else {
-              Draw_Box(*LogicPage, base::At(cbox_x, i), d_color_y, d_color_w,
+              Draw_Box(view, base::At(cbox_x, i), d_color_y, d_color_w,
                        d_color_h, BOXSTYLE_RAISED, false);
             }
           }
@@ -3297,11 +3289,11 @@ int Com_Scenario_Dialog(bool skirmish) {
         Draw the message system; erase old messages first
         ..................................................................*/
         if (display >= REDRAW_MESSAGE && !skirmish) {
-          Draw_Box(*LogicPage, d_message_x, d_message_y, d_message_w,
-                   d_message_h, BOXSTYLE_BOX, true);
-          Draw_Box(*LogicPage, d_send_x, d_send_y, d_send_w, d_send_h,
+          Draw_Box(view, d_message_x, d_message_y, d_message_w, d_message_h,
                    BOXSTYLE_BOX, true);
-          TheSession().Messages.Draw(*LogicPage);
+          Draw_Box(view, d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
+                   true);
+          TheSession().Messages.Draw(view);
         }
 
         //..................................................................
@@ -3311,7 +3303,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           absl::SNPrintF(staticcountbuff, sizeof(staticcountbuff), "%d",
                          TheSession().Options.UnitCount);
           staticcount.Set_Text(staticcountbuff);
-          staticcount.Draw_Me(*LogicPage);
+          staticcount.Draw_Me(view);
           //				Fancy_Text_Print("%d ", d_count_x +
           // d_count_w + 3 * 2, d_count_y, scheme, BLACK, kTpfText,
           // Session.Options.UnitCount);
@@ -3323,14 +3315,14 @@ int Com_Scenario_Dialog(bool skirmish) {
             absl::SNPrintF(staticlevelbuff, sizeof(staticlevelbuff), "**");
           }
           staticlevel.Set_Text(staticlevelbuff);
-          staticlevel.Draw_Me(*LogicPage);
+          staticlevel.Draw_Me(view);
           //				Fancy_Text_Print(txt, d_level_x +
           // d_level_w + 3 * 2, d_level_y, scheme, BLACK, kTpfText);
 
           absl::SNPrintF(staticcreditsbuff, sizeof(staticcreditsbuff), "%d",
                          TheSession().Options.Credits);
           staticcredits.Set_Text(staticcreditsbuff);
-          staticcredits.Draw_Me(*LogicPage);
+          staticcredits.Draw_Me(view);
           //				Fancy_Text_Print("%d", d_credits_x +
           // d_credits_w + 2 * 2, d_credits_y, scheme, BLACK, kTpfText,
           // Session.Options.Credits);
@@ -3338,7 +3330,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           absl::SNPrintF(staticaibuff, sizeof(staticaibuff), "%d",
                          TheSession().Options.AIPlayers);
           staticai.Set_Text(staticaibuff);
-          staticai.Draw_Me(*LogicPage);
+          staticai.Draw_Me(view);
           //				Fancy_Text_Print("%d", d_aiplayers_x +
           // d_aiplayers_w + 2*2, d_aiplayers_y, scheme, BLACK,
           // kTpfText, Session.Options.AIPlayers);
@@ -3349,7 +3341,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         */
         if (display >= REDRAW_BUTTONS) {
           commands->Flag_List_To_Redraw();
-          commands->Draw_All(*LogicPage);
+          commands->Draw_All(view);
         }
 
         Show_Mouse();
@@ -3361,7 +3353,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       */
       messages_have_focus = TheSession().Messages.Has_Edit_Focus();
       const bool droplist_is_dropped = housebtn.IsDropped;
-      input = commands->Input(*LogicPage);
+      input = commands->Input(view);
 
       /*
       ** Sort out the input focus between the name edit box and the message
@@ -3690,9 +3682,9 @@ int Com_Scenario_Dialog(bool skirmish) {
             ...............................................................*/
             if (i == 1 || i == 2) {
               Hide_Mouse();
-              Draw_Box(*LogicPage, d_send_x, d_send_y, d_send_w, d_send_h,
+              Draw_Box(view, d_send_x, d_send_y, d_send_w, d_send_h,
                        BOXSTYLE_BOX, true);
-              TheSession().Messages.Draw(*LogicPage);
+              TheSession().Messages.Draw(view);
               Show_Mouse();
             } else if (i == 3 || i == 4) {
               /*...............................................................
@@ -4553,6 +4545,8 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 int Com_Show_Scenario_Dialog() {
+  PixelView& view = TheScreen().visible_view();
+
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -4748,7 +4742,7 @@ int Com_Show_Scenario_Dialog() {
                          d_nod_w, d_nod_h);
 #else   // OLDWAY
   char housetext[25] = "";
-  Fancy_Text_Print(*LogicPage, "", 0, 0, nullptr, 0, kTpfText);
+  Fancy_Text_Print(view, "", 0, 0, nullptr, 0, kTpfText);
   DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext), kTpfText,
                          d_house_x, d_house_y, d_house_w, d_house_h,
                          MixArchive::RetrieveData("BTN-UP.SHP"),
@@ -4893,8 +4887,7 @@ int Com_Show_Scenario_Dialog() {
   aiplayersgauge.Set_Maximum(TheRules().MaxPlayers - 2);
   aiplayersgauge.Set_Value(TheSession().Options.AIPlayers);
 
-  Fancy_Text_Print(*LogicPage, "", 0, 0, scheme, kTBlack,
-                   TPF_CENTER | kTpfText);
+  Fancy_Text_Print(view, "", 0, 0, scheme, kTBlack, TPF_CENTER | kTpfText);
 
   transmit = true;
   first = true;
@@ -4994,33 +4987,33 @@ int Com_Show_Scenario_Dialog() {
         Dialog & Field labels
         ...............................................................*/
         Fancy_Text_Print(
-            *LogicPage, TXT_CHANNEL_GAMES, d_gamelist_x + (d_gamelist_w / 2),
+            view, TXT_CHANNEL_GAMES, d_gamelist_x + (d_gamelist_w / 2),
             d_gamelist_y - d_txt6_h, scheme, kTBlack, TPF_CENTER | kTpfText);
         Fancy_Text_Print(
-            *LogicPage, TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
+            view, TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
             d_playerlist_y - d_txt6_h, scheme, kTBlack, TPF_CENTER | kTpfText);
-        Fancy_Text_Print(*LogicPage, TXT_YOUR_NAME, d_name_x + (d_name_w / 2),
+        Fancy_Text_Print(view, TXT_YOUR_NAME, d_name_x + (d_name_w / 2),
                          d_name_y - d_txt6_h, scheme, kTBlack,
                          TPF_CENTER | kTpfText);
 #ifdef OLDWAY
-        Fancy_Text_Print(*LogicPage, TXT_SIDE_COLON, d_gdi_x + d_gdi_w,
+        Fancy_Text_Print(view, TXT_SIDE_COLON, d_gdi_x + d_gdi_w,
                          d_gdi_y - d_txt6_h, scheme, kTBlack,
                          TPF_CENTER | kTpfText);
 #else
-        Fancy_Text_Print(*LogicPage, TXT_SIDE_COLON,
-                         d_house_x + (d_house_w / 2), d_house_y - d_txt6_h,
-                         scheme, kTBlack, TPF_CENTER | kTpfText);
+        Fancy_Text_Print(view, TXT_SIDE_COLON, d_house_x + (d_house_w / 2),
+                         d_house_y - d_txt6_h, scheme, kTBlack,
+                         TPF_CENTER | kTpfText);
 #endif
         Fancy_Text_Print(
-            *LogicPage, TXT_COLOR_COLON, d_dialog_x + (d_dialog_w / 4 * 3),
+            view, TXT_COLOR_COLON, d_dialog_x + (d_dialog_w / 4 * 3),
             d_color_y - d_txt6_h, scheme, kTBlack, TPF_CENTER | kTpfText);
-        Fancy_Text_Print(*LogicPage, TXT_COUNT, d_count_x - 4, d_count_y,
+        Fancy_Text_Print(view, TXT_COUNT, d_count_x - 4, d_count_y, scheme,
+                         kTBlack, kTpfText | TPF_RIGHT);
+        Fancy_Text_Print(view, TXT_LEVEL, d_level_x - 4, d_level_y, scheme,
+                         kTBlack, kTpfText | TPF_RIGHT);
+        Fancy_Text_Print(view, TXT_CREDITS_COLON, d_credits_x - 4, d_credits_y,
                          scheme, kTBlack, kTpfText | TPF_RIGHT);
-        Fancy_Text_Print(*LogicPage, TXT_LEVEL, d_level_x - 4, d_level_y,
-                         scheme, kTBlack, kTpfText | TPF_RIGHT);
-        Fancy_Text_Print(*LogicPage, TXT_CREDITS_COLON, d_credits_x - 4,
-                         d_credits_y, scheme, kTBlack, kTpfText | TPF_RIGHT);
-        Fancy_Text_Print(*LogicPage, TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
+        Fancy_Text_Print(view, TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
                          d_aiplayers_y, scheme, kTBlack, kTpfText | TPF_RIGHT);
       }
 
@@ -5029,23 +5022,23 @@ int Com_Show_Scenario_Dialog() {
       ..................................................................*/
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          LogicPage->FillRect(base::At(cbox_x, i) + 2, d_color_y + 2,
-                              base::At(cbox_x, i) + 2 + d_color_w - 4,
-                              d_color_y + 2 + d_color_h - 4,
-                              ThePalettes()
-                                  .color_remaps()
-                                  .at(static_cast<PlayerColorType>(i))
-                                  .Box);
+          view.FillRect(base::At(cbox_x, i) + 2, d_color_y + 2,
+                        base::At(cbox_x, i) + 2 + d_color_w - 4,
+                        d_color_y + 2 + d_color_h - 4,
+                        ThePalettes()
+                            .color_remaps()
+                            .at(static_cast<PlayerColorType>(i))
+                            .Box);
           //						(i ==
           // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
           // ColorRemaps[static_cast<PlayerColorType>(i)].Box);
 
           if (static_cast<PlayerColorType>(i) == TheSession().ColorIdx) {
-            Draw_Box(*LogicPage, base::At(cbox_x, i), d_color_y, d_color_w,
-                     d_color_h, BOXSTYLE_DOWN, false);
+            Draw_Box(view, base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
+                     BOXSTYLE_DOWN, false);
           } else {
-            Draw_Box(*LogicPage, base::At(cbox_x, i), d_color_y, d_color_w,
-                     d_color_h, BOXSTYLE_RAISED, false);
+            Draw_Box(view, base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
+                     BOXSTYLE_RAISED, false);
           }
         }
       }
@@ -5054,11 +5047,11 @@ int Com_Show_Scenario_Dialog() {
       Draw the message system; erase old messages first
       ..................................................................*/
       if (display >= REDRAW_MESSAGE) {
-        Draw_Box(*LogicPage, d_message_x, d_message_y, d_message_w, d_message_h,
+        Draw_Box(view, d_message_x, d_message_y, d_message_w, d_message_h,
                  BOXSTYLE_BOX, true);
-        Draw_Box(*LogicPage, d_send_x, d_send_y, d_send_w, d_send_h,
-                 BOXSTYLE_BOX, true);
-        TheSession().Messages.Draw(*LogicPage);
+        Draw_Box(view, d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
+                 true);
+        TheSession().Messages.Draw(view);
 
         //..................................................................
         // Redraw the game options
@@ -5068,7 +5061,7 @@ int Com_Show_Scenario_Dialog() {
             absl::SNPrintF(txt, sizeof(txt), "%s",
                            Text_String(TXT_WAITING_FOR_OPPONENT));
 
-            Fancy_Text_Print(*LogicPage, txt, d_dialog_cx, d_scenario_y, scheme,
+            Fancy_Text_Print(view, txt, d_dialog_cx, d_scenario_y, scheme,
                              kTBlack, TPF_CENTER | kTpfText);
           } else {
             /*............................................................
@@ -5099,14 +5092,14 @@ int Com_Show_Scenario_Dialog() {
                 absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
                                TheSession().Options.ScenarioDescription);
               }
-              Fancy_Text_Print(*LogicPage, txt, d_dialog_cx, d_scenario_y,
-                               scheme, kTBlack, kTpfText | TPF_CENTER);
+              Fancy_Text_Print(view, txt, d_dialog_cx, d_scenario_y, scheme,
+                               kTBlack, kTpfText | TPF_CENTER);
 
             } else {
               absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
                              Text_String(TXT_NOT_FOUND));
 
-              Fancy_Text_Print(*LogicPage, txt, d_dialog_cx, d_scenario_y,
+              Fancy_Text_Print(view, txt, d_dialog_cx, d_scenario_y,
                                &ThePalettes().color_remaps().at(PCOLOR_RED),
                                kTBlack, kTpfText | TPF_CENTER);
             }
@@ -5117,7 +5110,7 @@ int Com_Show_Scenario_Dialog() {
             absl::SNPrintF(staticcountbuff, sizeof(staticcountbuff), "%d",
                            TheSession().Options.UnitCount);
             staticcount.Set_Text(staticcountbuff);
-            staticcount.Draw_Me(*LogicPage);
+            staticcount.Draw_Me(view);
             if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
               absl::SNPrintF(staticlevelbuff, sizeof(staticlevelbuff), "%d ",
                              TheWorld().build_level());
@@ -5125,17 +5118,17 @@ int Com_Show_Scenario_Dialog() {
               absl::SNPrintF(staticlevelbuff, sizeof(staticlevelbuff), "**");
             }
             staticlevel.Set_Text(staticlevelbuff);
-            staticlevel.Draw_Me(*LogicPage);
+            staticlevel.Draw_Me(view);
 
             absl::SNPrintF(staticcreditsbuff, sizeof(staticcreditsbuff), "%d",
                            TheSession().Options.Credits);
             staticcredits.Set_Text(staticcreditsbuff);
-            staticcredits.Draw_Me(*LogicPage);
+            staticcredits.Draw_Me(view);
 
             absl::SNPrintF(staticaibuff, sizeof(staticaibuff), "%d",
                            TheSession().Options.AIPlayers);
             staticai.Set_Text(staticaibuff);
-            staticai.Draw_Me(*LogicPage);
+            staticai.Draw_Me(view);
           }
         }
       }
@@ -5155,7 +5148,7 @@ int Com_Show_Scenario_Dialog() {
     */
     messages_have_focus = TheSession().Messages.Has_Edit_Focus();
     const bool droplist_is_dropped = housebtn.IsDropped;
-    KeyNumType input = commands->Input(*LogicPage);
+    KeyNumType input = commands->Input(view);
 
     /*
     ** Sort out the input focus between the name edit box and the message system
@@ -5315,9 +5308,9 @@ int Com_Show_Scenario_Dialog() {
         ...............................................................*/
         if (i == 1 || i == 2) {
           Hide_Mouse();
-          Draw_Box(*LogicPage, d_send_x, d_send_y, d_send_w, d_send_h,
-                   BOXSTYLE_BOX, true);
-          TheSession().Messages.Draw(*LogicPage);
+          Draw_Box(view, d_send_x, d_send_y, d_send_w, d_send_h, BOXSTYLE_BOX,
+                   true);
+          TheSession().Messages.Draw(view);
           Show_Mouse();
         } else if (i == 3 || i == 4) {
           /*...............................................................
@@ -6132,6 +6125,8 @@ int Com_Show_Scenario_Dialog() {
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Phone_Dialog() {
+  PixelView& view = TheScreen().visible_view();
+
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -6297,15 +6292,14 @@ static int Phone_Dialog() {
 
         // init font variables
 
-        Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
+        Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
                          TPF_CENTER | kTpfText);
 
         /*...............................................................
         Dialog & Field labels
         ...............................................................*/
-        Draw_Caption(*LogicPage, TXT_PHONE_LIST, d_dialog_x, d_dialog_y,
-                     d_dialog_w);
-        phonelist.Draw_Me(*LogicPage, true);
+        Draw_Caption(view, TXT_PHONE_LIST, d_dialog_x, d_dialog_y, d_dialog_w);
+        phonelist.Draw_Me(view, true);
       }
       /*
       .......................... Redraw buttons ..........................
@@ -6325,12 +6319,12 @@ static int Phone_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    KeyNumType input = commands->Input(*LogicPage);
+    KeyNumType input = commands->Input(view);
 
     if (firsttime) {
       numedit.Set_Focus();
       numedit.Flag_To_Redraw();
-      input = commands->Input(*LogicPage);
+      input = commands->Input(view);
       firsttime = false;
     }
 
@@ -6483,7 +6477,7 @@ static int Phone_Dialog() {
       ------------------------------------------------------------------*/
       case KN_RETURN:
         dialbtn.IsPressed = true;
-        dialbtn.Draw_Me(*LogicPage, true);
+        dialbtn.Draw_Me(view, true);
         [[fallthrough]];
 
       case ButtonKey(kButtonDial):
@@ -6694,6 +6688,8 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
+  PixelView& view = TheScreen().visible_view();
+
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -6858,15 +6854,15 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
         ThePalettes().title_palette().Set();
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-        Draw_Caption(*LogicPage, TXT_PHONE_LISTING, d_dialog_x, d_dialog_y,
+        Draw_Caption(view, TXT_PHONE_LISTING, d_dialog_x, d_dialog_y,
                      d_dialog_w);
 
         /*...............................................................
         Dialog & Field labels
         ...............................................................*/
-        Fancy_Text_Print(*LogicPage, TXT_NAME_COLON, d_name_x - 10,
-                         d_name_y + 2, scheme, kTBlack, TPF_RIGHT | kTpfText);
-        Fancy_Text_Print(*LogicPage, TXT_NUMBER_COLON, d_number_x - 10,
+        Fancy_Text_Print(view, TXT_NAME_COLON, d_name_x - 10, d_name_y + 2,
+                         scheme, kTBlack, TPF_RIGHT | kTpfText);
+        Fancy_Text_Print(view, TXT_NUMBER_COLON, d_number_x - 10,
                          d_number_y + 2, scheme, kTBlack, TPF_RIGHT | kTpfText);
       }
       /*
@@ -6882,12 +6878,12 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     /*
     ........................... Get user input ............................
     */
-    KeyNumType input = commands->Input(*LogicPage);
+    KeyNumType input = commands->Input(view);
 
     if (firsttime) {
       nameedit.Set_Focus();
       nameedit.Flag_To_Redraw();
-      input = commands->Input(*LogicPage);
+      input = commands->Input(view);
       firsttime = false;
     }
 

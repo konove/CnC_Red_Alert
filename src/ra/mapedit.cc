@@ -1965,7 +1965,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
   /*
   **	Initialize.
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   **	Create the button list.
@@ -2015,7 +2015,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
     /*
     **	Get user input.
     */
-    KeyNumType input = commands->Input(*LogicPage);
+    KeyNumType input = commands->Input(view);
 
     /*
     **	The first time through the processing loop, set the edit

@@ -243,6 +243,7 @@ bool Get_Scenario_File_From_Host(std::span<char> return_name, size_t dest_size,
  *=============================================================================================*/
 bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   // WWDebugString ("RA95 - In Receive_Remote_File\n");
+  PixelView& view = TheScreen().visible_view();
   uint16_t product_id = 0;
   IPXAddressClass sender_address;
 
@@ -262,8 +263,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
 
   const int d_progress_w = 200;
   const int d_progress_h = 20;
-  const int d_progress_x =
-      (TheScreen().visible_view().width() / 2) - (d_progress_w / 2);
+  const int d_progress_x = (view.width() / 2) - (d_progress_w / 2);
   const int d_progress_y = d_dialog_y + 90;
 
   int width = 0;
@@ -273,12 +273,11 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   // rather than the shared string table.
   std::string info_string(Text_String(TXT_RECEIVING_SCENARIO));
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
                    kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  Format_Window_String(std::span(info_string),
-                       TheScreen().visible_view().height(), width, height);
+  Format_Window_String(std::span(info_string), view.height(), width, height);
 
   /*
   ** Button Enumerations
@@ -303,7 +302,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   GaugeClass progress_meter(kButtonProgress, d_progress_x, d_progress_y,
                             d_progress_w, d_progress_h);
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
                    kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -393,22 +392,22 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
         /*
         ** Dialog & Field labels
         */
-        Draw_Caption(*LogicPage, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
+        Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(*LogicPage, info_string.c_str(),
-                         d_dialog_cx - (width / 2), d_dialog_y + 50,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
+        Fancy_Text_Print(view, info_string.c_str(), d_dialog_cx - (width / 2),
+                         d_dialog_y + 50, GadgetClass::Get_Color_Scheme(),
+                         kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Show_Mouse();
       }
 
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(*LogicPage);
+        commands->Draw_All(view);
       }
 
       if (display >= REDRAW_PROGRESS) {
-        progress_meter.Draw_Me(*LogicPage, true);
+        progress_meter.Draw_Me(view, true);
       }
 
       display = REDRAW_NONE;
@@ -436,7 +435,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
           process = false;
           return_code = true;
           progress_meter.Set_Value(100);
-          progress_meter.Draw_Me(*LogicPage, true);
+          progress_meter.Draw_Me(view, true);
         }
       }
 
@@ -467,13 +466,13 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
           process = false;
           return_code = true;
           progress_meter.Set_Value(100);
-          progress_meter.Draw_Me(*LogicPage, true);
+          progress_meter.Draw_Me(view, true);
         }
       }
     }
 
     if (process) {
-      const KeyNumType input = cancelbtn.Input(*LogicPage);
+      const KeyNumType input = cancelbtn.Input(view);
 
       /*
       ---------------------------- Process input ----------------------------
@@ -522,11 +521,12 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
  *=============================================================================================*/
 bool Send_Remote_File(const char* file_name, int gametype) {
   // WWDebugString ("RA95 - In Send_Remote_File\n");
+  PixelView& view = TheScreen().visible_view();
 
   /*
   ** Dialog & button dimensions
   */
-  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
+  const int factor = view.width() == 320 ? 1 : 2;
 
   const int d_dialog_w = 240 * factor;                       // dialog width
   const int d_dialog_h = 90 * factor;                        // dialog height
@@ -541,8 +541,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
 
   const int d_progress_w = 100 * factor;
   const int d_progress_h = 10 * factor;
-  const int d_progress_x =
-      (TheScreen().visible_view().width() / 2) - (d_progress_w / 2);
+  const int d_progress_x = (view.width() / 2) - (d_progress_w / 2);
   const int d_progress_y = d_dialog_y + (45 * factor);
 
   int width = 0;
@@ -555,12 +554,11 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   Timer<SystemTickSource>
       response_timer;  // timeout timer for waiting for responses
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
                    kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  Format_Window_String(std::span(info_string),
-                       TheScreen().visible_view().height(), width, height);
+  Format_Window_String(std::span(info_string), view.height(), width, height);
 
   /*
   ** Button Enumerations
@@ -585,7 +583,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   GaugeClass progress_meter(kButtonProgress, d_progress_x, d_progress_y,
                             d_progress_w, d_progress_h);
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
                    kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -706,10 +704,10 @@ bool Send_Remote_File(const char* file_name, int gametype) {
         /*
         ** Dialog & Field labels
         */
-        Draw_Caption(*LogicPage, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
+        Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(*LogicPage, info_string.c_str(),
-                         d_dialog_cx - (width / 2), d_dialog_y + (25 * factor),
+        Fancy_Text_Print(view, info_string.c_str(), d_dialog_cx - (width / 2),
+                         d_dialog_y + (25 * factor),
                          GadgetClass::Get_Color_Scheme(), kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -717,11 +715,11 @@ bool Send_Remote_File(const char* file_name, int gametype) {
       }
 
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(*LogicPage);
+        commands->Draw_All(view);
       }
 
       if (display >= REDRAW_PROGRESS) {
-        progress_meter.Draw_Me(*LogicPage, true);
+        progress_meter.Draw_Me(view, true);
       }
 
       display = REDRAW_NONE;
@@ -759,7 +757,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
           process = false;
           return_code = true;
           progress_meter.Set_Value(100);
-          progress_meter.Draw_Me(*LogicPage, true);
+          progress_meter.Draw_Me(view, true);
         }
       }
 
@@ -800,13 +798,13 @@ bool Send_Remote_File(const char* file_name, int gametype) {
           process = false;
           return_code = true;
           progress_meter.Set_Value(100);
-          progress_meter.Draw_Me(*LogicPage, true);
+          progress_meter.Draw_Me(view, true);
         }
       }
     }
 
     if (process) {
-      const KeyNumType input = cancelbtn.Input(*LogicPage);
+      const KeyNumType input = cancelbtn.Input(view);
 
       /*
       ---------------------------- Process input ----------------------------

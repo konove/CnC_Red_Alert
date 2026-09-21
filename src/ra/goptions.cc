@@ -137,7 +137,7 @@ void GameOptionsClass::Process() {
     }
   }
 
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   **	Build the button list for all of the buttons for this dialog.
@@ -267,7 +267,7 @@ void GameOptionsClass::Process() {
 
   TheKeyboard().Clear();
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
                    kTBlack, TPF_CENTER | kTpfText);
 
   /*
@@ -325,20 +325,20 @@ void GameOptionsClass::Process() {
       /*
       **	Draw the arrows border if requested.
       */
-      Draw_Caption(*LogicPage, TXT_OPTIONS, OptionX, OptionY, OptionWidth);
+      Draw_Caption(view, TXT_OPTIONS, OptionX, OptionY, OptionWidth);
 
       /*
       **	Display the version number at the bottom of the dialog box.
       */
       Fancy_Text_Print(
-          *LogicPage, "%s\rV%s", OptionX + OptionWidth - 50,
+          view, "%s\rV%s", OptionX + OptionWidth - 50,
           OptionY + OptionHeight - (TheSession().Type == GAME_NORMAL ? 64 : 48),
           GadgetClass::Get_Color_Scheme(), kTBlack,
           TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, TheScenario().ScenarioName,
           Version_Name());
 
-      buttons->Draw_All(*LogicPage);
-      TabClass::Hilite_Tab(*LogicPage, 0);
+      buttons->Draw_All(view);
+      TabClass::Hilite_Tab(view, 0);
       Show_Mouse();
       display = false;
       TheGameState().redraw_options_menu() = false;
@@ -347,7 +347,7 @@ void GameOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    const KeyNumType input = buttons->Input(*LogicPage);
+    const KeyNumType input = buttons->Input(view);
 
     /*
     **	Process Input.
@@ -424,7 +424,7 @@ void GameOptionsClass::Process() {
 
       case KN_RETURN:
         base::At(buttonsel, curbutton - 1)->IsPressed = true;
-        base::At(buttonsel, curbutton - 1)->Draw_Me(*LogicPage, true);
+        base::At(buttonsel, curbutton - 1)->Draw_Me(view, true);
         selection = curbutton;
         pressed = true;
         TheKeyboard().Clear();

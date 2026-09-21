@@ -27,6 +27,8 @@
 #include "absl/base/attributes.h"
 #include "ra/gadget.h"
 
+class PixelView;
+
 #define TOOLTIPTEXT_MAX_LEN 100
 
 #define TOOLTIPDELAY 400  //	Milliseconds
@@ -43,9 +45,9 @@ class ToolTipClass {
   ToolTipClass& operator=(ToolTipClass&&) = delete;
 
   ToolTipClass* GetToolTipHit() ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  void Show();
-  void Unshow();
-  void Move(int x_show, int y_show);
+  void Show(PixelView& view);
+  void Unshow(PixelView& view);
+  void Move(PixelView& view, int x_show, int y_show);
   [[nodiscard]] bool bOverDifferentLine() const;
 
   ToolTipClass* next{

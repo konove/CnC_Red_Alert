@@ -178,7 +178,7 @@ void Special_Dialog(bool simple) {
   }
 
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
   bool display = true;
   bool process = true;
   while (process) {
@@ -195,20 +195,19 @@ void Special_Dialog(bool simple) {
 
       Hide_Mouse();
       Dialog_Box(kOptionX, kOptionY, kOptionWidth, kOptionHeight);
-      Draw_Caption(*LogicPage, TXT_SPECIAL_OPTIONS, kOptionX, kOptionY,
-                   kOptionWidth);
+      Draw_Caption(view, TXT_SPECIAL_OPTIONS, kOptionX, kOptionY, kOptionWidth);
 
       for (const auto& _option : _options) {
-        Fancy_Text_Print(*LogicPage, _option.Description,
-                         _option.Button->X + 20, _option.Button->Y,
-                         GadgetClass::Get_Color_Scheme(), kTBlack,
+        Fancy_Text_Print(view, _option.Description, _option.Button->X + 20,
+                         _option.Button->Y, GadgetClass::Get_Color_Scheme(),
+                         kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
-      buttons->Draw_All(*LogicPage);
+      buttons->Draw_All(view);
       Show_Mouse();
     }
 
-    const KeyNumType input = buttons->Input(*LogicPage);
+    const KeyNumType input = buttons->Input(view);
     switch (static_cast<int>(input)) {
       case KN_ESC:
       case ButtonKey(200):
@@ -355,7 +354,8 @@ const char* Fetch_Password(int caption, int message, int btext) {
     btext = TXT_OK;
   }
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
+  PixelView& view = TheScreen().visible_view();
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
 
   /*
@@ -375,7 +375,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	These dimensions will control how the dialog box looks.
   */
   port::SafeCopy(buffer, Text_String(message));
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   int width = 0;
   int height = 0;
@@ -413,14 +413,13 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	Draw the background of the dialog.
   */
   Hide_Mouse();
-  SetLogicPage(TheScreen().visible_view());
   Dialog_Box(x, y, width, height);
-  Draw_Caption(*LogicPage, caption, x, y, width);
+  Draw_Caption(view, caption, x, y, width);
 
   /*
   **	Draw the body of the message box.
   */
-  Fancy_Text_Print(*LogicPage, buffer, x + 40, y + 50,
+  Fancy_Text_Print(view, buffer, x + 40, y + 50,
                    GadgetClass::Get_Color_Scheme(), kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -428,7 +427,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	Redraw the buttons.
   */
   if (buttonlist) {
-    buttonlist->Draw_All(*LogicPage);
+    buttonlist->Draw_All(view);
   }
   Show_Mouse();
 
@@ -454,7 +453,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
     /*
     **	Fetch and process input.
     */
-    const KeyNumType input = buttonlist->Input(*LogicPage);  // user input
+    const KeyNumType input = buttonlist->Input(view);  // user input
     if (first) {
       button2.Set_Focus();
       button2.Flag_To_Redraw();
@@ -515,7 +514,8 @@ int Fetch_Difficulty(bool amath) {
       base::At(buffer, index + 1) = 0;
     }
   }
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
+  PixelView& view = TheScreen().visible_view();
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   int width = 0;
   int height = 0;
@@ -544,7 +544,6 @@ int Fetch_Difficulty(bool amath) {
   /*
   **	Main Processing Loop.
   */
-  SetLogicPage(TheScreen().visible_view());
   bool redraw = true;
   bool process = true;
   while (process) {
@@ -563,20 +562,20 @@ int Fetch_Difficulty(bool amath) {
       //			Fancy_Text_Print(buffer, x + 20*2, y +
       // 15*2, GadgetClass::Get_Color_Scheme(), TBLACK,
       // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_NOSHADOW);
-      Fancy_Text_Print(*LogicPage, buffer, x + 40, y + 30,
+      Fancy_Text_Print(view, buffer, x + 40, y + 30,
                        GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_6PT_GRAD | TPF_NOSHADOW);
 
       /*
       **	Display the descripton of the slider range.
       */
-      Fancy_Text_Print(*LogicPage, TXT_HARD, slider.X + slider.Width,
-                       slider.Y - 18, GadgetClass::Get_Color_Scheme(), kTBlack,
+      Fancy_Text_Print(view, TXT_HARD, slider.X + slider.Width, slider.Y - 18,
+                       GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_RIGHT | TPF_6PT_GRAD | TPF_DROPSHADOW);
-      Fancy_Text_Print(*LogicPage, TXT_EASY, slider.X, slider.Y - 18,
+      Fancy_Text_Print(view, TXT_EASY, slider.X, slider.Y - 18,
                        GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_6PT_GRAD | TPF_DROPSHADOW);
-      Fancy_Text_Print(*LogicPage, TXT_NORMAL, slider.X + (slider.Width / 2),
+      Fancy_Text_Print(view, TXT_NORMAL, slider.X + (slider.Width / 2),
                        slider.Y - 18, GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_CENTER | TPF_6PT_GRAD | TPF_DROPSHADOW);
 
@@ -584,7 +583,7 @@ int Fetch_Difficulty(bool amath) {
       **	Redraw the buttons.
       */
       if (buttonlist) {
-        buttonlist->Draw_All(*LogicPage);
+        buttonlist->Draw_All(view);
       }
       Show_Mouse();
     }
@@ -606,7 +605,7 @@ int Fetch_Difficulty(bool amath) {
     /*
     **	Fetch and process input.
     */
-    const KeyNumType input = buttonlist->Input(*LogicPage);
+    const KeyNumType input = buttonlist->Input(view);
 
     switch (static_cast<int>(input)) {
       case KN_RETURN:

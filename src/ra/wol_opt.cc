@@ -119,7 +119,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
   /*
   **	Initialize.
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   **	Create the button list.
@@ -160,8 +160,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
       */
       Hide_Mouse();
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-      Draw_Caption(*LogicPage, TXT_WOL_OPTTITLE, d_dialog_x, d_dialog_y,
-                   d_dialog_w);
+      Draw_Caption(view, TXT_WOL_OPTTITLE, d_dialog_x, d_dialog_y, d_dialog_w);
       commands->Flag_List_To_Redraw();
       Show_Mouse();
       display = false;
@@ -178,7 +177,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     /*
     **	Get user input.
     */
-    KeyNumType input = commands->Input(*LogicPage);
+    KeyNumType input = commands->Input(view);
 
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on

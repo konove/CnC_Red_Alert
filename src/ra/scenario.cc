@@ -837,10 +837,10 @@ void Do_Win() {
     /*
     **	Announce win to player.
     */
-    SetLogicPage(TheScreen().visible_view());
+    PixelView& view = TheScreen().visible_view();
     TheMap().Flag_To_Redraw(true);
     TheMap().Render();
-    Fancy_Text_Print(*LogicPage, TXT_SCENARIO_WON, x, 180,
+    Fancy_Text_Print(view, TXT_SCENARIO_WON, x, 180,
                      &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                      TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
     speech_timer.Set(int64_t{kTimerSecond} * 3);
@@ -1052,8 +1052,8 @@ void Do_Lose() {
   /*
   **	Announce win to player.
   */
-  SetLogicPage(TheScreen().visible_view());
-  Fancy_Text_Print(*LogicPage, TXT_SCENARIO_LOST, x, 180,
+  PixelView& view = TheScreen().visible_view();
+  Fancy_Text_Print(view, TXT_SCENARIO_LOST, x, 180,
                    &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   speech_timer.Set(int64_t{kTimerSecond} * 3);
@@ -1143,8 +1143,8 @@ void Do_Draw() {
   /*
   **	Announce win to player.
   */
-  SetLogicPage(TheScreen().visible_view());
-  Fancy_Text_Print(*LogicPage, TXT_WOL_DRAW, x, 180,
+  PixelView& view = TheScreen().visible_view();
+  Fancy_Text_Print(view, TXT_WOL_DRAW, x, 180,
                    &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
   speech_timer.Set(int64_t{kTimerSecond} * 3);
@@ -1328,7 +1328,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     b3txt = nullptr;
   }
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0,
+  PixelView& view = TheScreen().visible_view();
+  Fancy_Text_Print(view, TXT_NONE, 0, 0,
                    &ThePalettes().color_remaps().at(PCOLOR_TYPE), kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   /*
@@ -1384,7 +1385,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   // Copy to mutable buffer for Format_Window_String (which inserts newlines).
   page_text.copy(buffer, page_text.size());
   base::At(buffer, page_text.size()) = '\0';
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0,
+  Fancy_Text_Print(view, TXT_NONE, 0, 0,
                    &ThePalettes().color_remaps().at(PCOLOR_TYPE), kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   int width = 0;
@@ -1392,13 +1393,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   Format_Window_String(buffer, 300, width, height);
   height += numbuttons == 0 ? 30 : 60;
 
-  const int x = (TheScreen().visible_view().width() - width) / 2;
-  const int y = (TheScreen().visible_view().height() - height) / 2;
-
-  /*
-  **	Other inits.
-  */
-  SetLogicPage(TheScreen().visible_view());
+  const int x = (view.width() - width) / 2;
+  const int y = (view.height() - height) / 2;
 
   /*
   **	Initialize the button structures. All are initialized, even though one
@@ -1506,7 +1502,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
         Hide_Mouse();
         // Redraw the buttons.
-        buttonlist->Draw_All(*LogicPage);
+        buttonlist->Draw_All(view);
         Show_Mouse();
       }
 
@@ -1514,7 +1510,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       ServiceRealTime();
 
       // Fetch and process input.
-      const KeyNumType input = buttonlist->Input(*LogicPage);  // user input
+      const KeyNumType input = buttonlist->Input(view);  // user input
       switch (static_cast<uint32_t>(input)) {
         case kBriefingButtonFlag | uint32_t{kButton1}:
           selection = base::At(realval, 0);

@@ -267,7 +267,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   /*
   **	Initialize
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   **	Fill in team names
@@ -324,8 +324,8 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     if (display) {
       Hide_Mouse();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
-      Draw_Caption(*LogicPage, TXT_TEAM_EDIT, kDialogX, kDialogY, kDialogW);
-      commands->Draw_All(*LogicPage);
+      Draw_Caption(view, TXT_TEAM_EDIT, kDialogX, kDialogY, kDialogW);
+      commands->Draw_All(view);
       Show_Mouse();
       display = false;
     }
@@ -333,7 +333,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     /*
     **	Get user input
     */
-    const KeyNumType input = commands->Input(*LogicPage);
+    const KeyNumType input = commands->Input(view);
 
     /*
     **	Process input
@@ -604,7 +604,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Draw to visible_view.
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   **	Make sure 'house' is valid.
@@ -647,7 +647,7 @@ int MapEditClass::Team_Members(HousesType house) {
         **	Display the constant background of this dialog.
         */
         Dialog_Box(kDialogX, dlg_y, kDialogW, dlg_h);
-        Draw_Caption(*LogicPage, TXT_TEAM_MEMBERS, kDialogX, dlg_y, kDialogW);
+        Draw_Caption(view, TXT_TEAM_MEMBERS, kDialogX, dlg_y, kDialogW);
 
         /*
         **	Draw the objects.
@@ -656,12 +656,12 @@ int MapEditClass::Team_Members(HousesType house) {
           /*
           **	Display the object along with any count value for it.
           */
-          Draw_Member(base::At(teamclass, i), i, base::At(teamcount, i), house);
+          Draw_Member(view, base::At(teamclass, i), i, base::At(teamcount, i),
+                      house);
         }
 
         if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
-          Fancy_Text_Print(*LogicPage,
-                           base::At(teamclass, curclass)->Full_Name(),
+          Fancy_Text_Print(view, base::At(teamclass, curclass)->Full_Name(),
                            kDialogX + (kDialogW / 2), msg_y,
                            &ThePalettes().color_remaps().at(PCOLOR_BROWN),
                            kTBlack, TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
@@ -672,7 +672,7 @@ int MapEditClass::Team_Members(HousesType house) {
       **	Redraw the buttons.
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(*LogicPage);
+        commands->Draw_All(view);
       }
       Show_Mouse();
       display = REDRAW_NONE;
@@ -681,7 +681,7 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Get user input.
     */
-    const KeyNumType input = commands->Input(*LogicPage);  // user input
+    const KeyNumType input = commands->Input(view);  // user input
 
     /*
     **	Process input.
@@ -746,12 +746,11 @@ int MapEditClass::Team_Members(HousesType house) {
           **	Clear out the previously printed name of the item.
           */
           Hide_Mouse();
-          LogicPage->FillRect(kDialogX + 32, msg_y, kDialogX + kDialogW - 64,
-                              msg_y + kTxt6H, kBlack);
+          view.FillRect(kDialogX + 32, msg_y, kDialogX + kDialogW - 64,
+                        msg_y + kTxt6H, kBlack);
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
-            Fancy_Text_Print(*LogicPage,
-                             base::At(teamclass, curclass)->Full_Name(),
+            Fancy_Text_Print(view, base::At(teamclass, curclass)->Full_Name(),
                              kDialogX + (kDialogW / 2), msg_y, scheme, kTBlack,
                              TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
           }
@@ -801,7 +800,7 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Update number label.
         */
-        Draw_Member(base::At(teamclass, curclass), curclass,
+        Draw_Member(view, base::At(teamclass, curclass), curclass,
                     base::At(teamcount, curclass), house);
       }
 
@@ -832,7 +831,7 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Update number label.
         */
-        Draw_Member(base::At(teamclass, curclass), curclass,
+        Draw_Member(view, base::At(teamclass, curclass), curclass,
                     base::At(teamcount, curclass), house);
       }
     }
@@ -889,8 +888,8 @@ int MapEditClass::Team_Members(HousesType house) {
  *                                                                                             *
  * HISTORY: * 07/02/1995 JLB : Created. *
  *=============================================================================================*/
-void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
-                               HousesType house) {
+void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
+                               int index, int quant, HousesType house) {
   const int numcols = (kDialogW - 64) / kPictureW;
   const int col = index % numcols;
   const int row = index / numcols;
@@ -911,11 +910,11 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
   Change_Window(static_cast<int>(WINDOW_EDITOR));
 
   Hide_Mouse();
-  Draw_Box(*LogicPage, x, y, kPictureW, kPictureH, BOXSTYLE_DOWN, true);
-  ptr->Display(*LogicPage, Screen::kWidth / 2, Screen::kHeight / 2,
-               WINDOW_EDITOR, house);
+  Draw_Box(view, x, y, kPictureW, kPictureH, BOXSTYLE_DOWN, true);
+  ptr->Display(view, Screen::kWidth / 2, Screen::kHeight / 2, WINDOW_EDITOR,
+               house);
   if (quant > 0) {
-    Fancy_Text_Print(*LogicPage, "%d", x + 1, y + 1, scheme, kTBlack,
+    Fancy_Text_Print(view, "%d", x + 1, y + 1, scheme, kTBlack,
                      TPF_8POINT | TPF_DROPSHADOW, quant);
     //		Fancy_Text_Print("%d", x+1, y+kPictureH-8, scheme, TBLACK,
     // TPF_6PT_GRAD|TPF_USE_GRAD_PAL|TPF_DROPSHADOW, quant);

@@ -320,7 +320,7 @@ int MapEditClass::Placement_Dialog() {
   /*
   **	Initialize
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
   if (LastChoice >= ObjCount) {
     LastChoice = 0;
   }
@@ -369,7 +369,7 @@ int MapEditClass::Placement_Dialog() {
       */
       Hide_Mouse();
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
-      Draw_Caption(*LogicPage, TXT_PLACE_OBJECT, kDialogX, kDialogY, kDialogW);
+      Draw_Caption(view, TXT_PLACE_OBJECT, kDialogX, kDialogY, kDialogW);
 
       /*
       **	Display the current object:
@@ -387,9 +387,9 @@ int MapEditClass::Placement_Dialog() {
       base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowHeight) =
           kPictureH;
       Change_Window(static_cast<int>(WINDOW_EDITOR));
-      Draw_Box(*LogicPage, kPictureX, kPictureY, kPictureW, kPictureH,
-               BOXSTYLE_DOWN, false);
-      curobj->Display(*LogicPage, Screen::kWidth / 2, Screen::kHeight / 2,
+      Draw_Box(view, kPictureX, kPictureY, kPictureW, kPictureH, BOXSTYLE_DOWN,
+               false);
+      curobj->Display(view, Screen::kWidth / 2, Screen::kHeight / 2,
                       WINDOW_EDITOR, LastHouse);
       //			curobj->Display(WinW<<2, WinH>>1, WINDOW_EDITOR,
       // LastHouse);
@@ -397,9 +397,9 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	Erase the grid
       */
-      LogicPage->FillRect(kGridX - (kGridblockW * 2), kGridY,
-                          kGridX + (kGridsize * kGridblockW),
-                          kGridY + (kGridsize * kGridblockH), kBlack);
+      view.FillRect(kGridX - (kGridblockW * 2), kGridY,
+                    kGridX + (kGridsize * kGridblockW),
+                    kGridY + (kGridsize * kGridblockH), kBlack);
 
       /*
       **	Draw a box for every cell occupied
@@ -411,8 +411,8 @@ int MapEditClass::Placement_Dialog() {
         occupy = occupy.subspan(1);
         x = kGridX + ((cell % MAP_CELL_W) * kGridblockW);
         y = kGridY + ((cell / MAP_CELL_W) * kGridblockH);
-        LogicPage->FillRect(x, y, x + kGridblockW - 1, y + kGridblockH - 1,
-                            scheme->Bright);
+        view.FillRect(x, y, x + kGridblockW - 1, y + kGridblockH - 1,
+                      scheme->Bright);
       }
 
       /*
@@ -420,13 +420,13 @@ int MapEditClass::Placement_Dialog() {
       */
       for (y = 0; y <= kGridsize; y++) {
         for (x = 0; x <= kGridsize; x++) {
-          LogicPage->DrawLine(
-              kGridX + (x * kGridblockW), kGridY, kGridX + (x * kGridblockW),
-              kGridY + (kGridsize * kGridblockH), scheme->Shadow);
+          view.DrawLine(kGridX + (x * kGridblockW), kGridY,
+                        kGridX + (x * kGridblockW),
+                        kGridY + (kGridsize * kGridblockH), scheme->Shadow);
         }
-        LogicPage->DrawLine(kGridX, kGridY + (y * kGridblockH),
-                            kGridX + (kGridsize * kGridblockW),
-                            kGridY + (y * kGridblockH), scheme->Shadow);
+        view.DrawLine(kGridX, kGridY + (y * kGridblockH),
+                      kGridX + (kGridsize * kGridblockW),
+                      kGridY + (y * kGridblockH), scheme->Shadow);
       }
 
       /*
@@ -434,7 +434,7 @@ int MapEditClass::Placement_Dialog() {
       **	Warning: Text_String returns an EMS pointer, so standard string
       **	functions won't work!
       */
-      Fancy_Text_Print(*LogicPage, curobj->Full_Name(), kPictureCx,
+      Fancy_Text_Print(view, curobj->Full_Name(), kPictureCx,
                        kPictureY + kMargin, scheme, kTBlack,
                        TPF_CENTER | TPF_EFNT | TPF_NOSHADOW);
 
@@ -503,7 +503,7 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	Redraw buttons
       */
-      commands->Draw_All(*LogicPage);
+      commands->Draw_All(view);
       Show_Mouse();
       display = false;
     }
@@ -511,7 +511,7 @@ int MapEditClass::Placement_Dialog() {
     /*
     **	Get user input
     */
-    const KeyNumType input = commands->Input(*LogicPage);  // user input
+    const KeyNumType input = commands->Input(view);  // user input
 
     /*
     **	Process user input

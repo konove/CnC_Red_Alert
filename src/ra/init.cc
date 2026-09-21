@@ -371,10 +371,7 @@ bool Init_Game() {
   //	Init_Authorization();
   //	Show_Mouse();
 
-  /*
-  **	Set the logic page to the seenpage.
-  */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   **	If not automatically launching into the intro, then display the title
@@ -384,7 +381,7 @@ bool Init_Game() {
     Load_Title_Page(true);
 
     Hide_Mouse();
-    Fancy_Text_Print(*LogicPage, TXT_STAND_BY, 320, 240,
+    Fancy_Text_Print(view, TXT_STAND_BY, 320, 240,
                      &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE),
                      kTBlack, TPF_CENTER | kTpfText | TPF_DROPSHADOW);
     Show_Mouse();
@@ -588,7 +585,6 @@ bool Select_Game(bool /*fade*/) {
         ThePalettes().title_palette().Set();
         //				}
 
-        SetLogicPage(TheScreen().visible_view());
         display = false;
         Show_Mouse();
       }
@@ -1201,7 +1197,6 @@ bool Select_Game(bool /*fade*/) {
   TheScreen().hidden_page().Clear();
   TheScreen().visible_page().Clear();
   Show_Mouse();
-  SetLogicPage(TheScreen().visible_view());
   /*
   ** Sidebar is always active in hi-res.
   */

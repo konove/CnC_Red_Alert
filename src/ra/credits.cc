@@ -98,7 +98,7 @@ CreditClass::CreditClass() = default;
  *                                                                                             *
  * HISTORY: * 03/13/1995 JLB : Created. *
  *=============================================================================================*/
-void CreditClass::Graphic_Logic(bool forced) {
+void CreditClass::Graphic_Logic(PixelView& view, bool forced) {
   if (forced || IsToRedraw) {
     int xx = TheScreen().visible_view().width() - 240;
 
@@ -122,10 +122,9 @@ void CreditClass::Graphic_Logic(bool forced) {
     /*
     **	Display the new current value.
     */
-    TabClass::Draw_Credits_Tab(*LogicPage);
-    Fancy_Text_Print(*LogicPage, "%ld", xx, 0, &ThePalettes().metal_scheme(),
-                     kTBlack, TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL,
-                     Current);
+    TabClass::Draw_Credits_Tab(view);
+    Fancy_Text_Print(view, "%ld", xx, 0, &ThePalettes().metal_scheme(), kTBlack,
+                     TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL, Current);
 
     if (TheScenario().MissionTimer.IsRunning()) {
       int64_t secs = TheScenario().MissionTimer.Value() / kTicksPerSecond;
@@ -171,12 +170,12 @@ void CreditClass::Graphic_Logic(bool forced) {
       }
 
       if (hours) {
-        Fancy_Text_Print(*LogicPage, TXT_TIME_FORMAT_HOURS, 400, 0,
+        Fancy_Text_Print(view, TXT_TIME_FORMAT_HOURS, 400, 0,
                          &ThePalettes().metal_scheme(), kTBlack,
                          TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL, hours,
                          mins, secs);
       } else {
-        Fancy_Text_Print(*LogicPage, TXT_TIME_FORMAT_NO_HOURS, 400, 0,
+        Fancy_Text_Print(view, TXT_TIME_FORMAT_NO_HOURS, 400, 0,
                          &ThePalettes().metal_scheme(), kTBlack,
                          TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL, mins,
                          secs);

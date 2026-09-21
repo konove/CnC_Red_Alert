@@ -249,8 +249,8 @@ class MapEditClass : public MouseClass {
   /*
   **	mapedtm.cpp
   */
-  static void Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
-                          HousesType house);
+  static void Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
+                          int index, int quant, HousesType house);
   void Handle_Teams(const char* caption);
   int Select_Team(const char* caption);
   int Team_Members(HousesType house);

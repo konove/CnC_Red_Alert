@@ -56,6 +56,7 @@
 #include "ra/palettes.h"
 #include "ra/rawolapi.h"
 #include "ra/rules.h"
+#include "ra/screen.h"
 #include "ra/sendfile.h"
 #include "ra/session.h"
 #include "ra/special.h"
@@ -455,7 +456,7 @@ void WOL_GameSetupDialog::Initialize() {
   pStaticAIPlayers = new StaticButtonClass(
       0, "   ", kTpfText, d_aiplayers_x + d_aiplayers_w + 4, d_aiplayers_y);
 
-  Fancy_Text_Print(*LogicPage, "", 0, 0, nullptr, 0, kTpfText);
+  Select_Text_Font(kTpfText, nullptr, 0);
   pDropListHouse = new DropListClass(
       kButtonHouse, szHouseBuffer, sizeof(szHouseBuffer), kTpfText, d_house_x,
       d_house_y, d_house_w, d_house_h, MixArchive::RetrieveData("BTN-UP.SHP"),
@@ -532,6 +533,8 @@ void WOL_GameSetupDialog::Initialize() {
 //***********************************************************************************************
 RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   //	Returns: -1 == return to chat dialog.
+
+  PixelView& view = TheScreen().visible_view();
 
   //------------------------------------------------------------------------
   //	Dialog variables
@@ -983,7 +986,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //..................................................................
       if (display >= REDRAW_BACKGROUND) {
         if (pToolTipHitLast && pToolTipHitLast->bShowing) {
-          pToolTipHitLast->Unshow();
+          pToolTipHitLast->Unshow(view);
         }
 
         if (pDropListHouse->IsDropped) {
@@ -996,33 +999,33 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         //	Dialog & Field labels
         //...............................................................
         Fancy_Text_Print(
-            *LogicPage, TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
+            view, TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
             d_playerlist_y - d_txt6_h, scheme, kTBlack, kTpfText | TPF_CENTER);
         if (bHost) {
           Fancy_Text_Print(
-              *LogicPage, TXT_SCENARIOS, d_scenariolist_x + d_scenariolist_w,
+              view, TXT_SCENARIOS, d_scenariolist_x + d_scenariolist_w,
               d_scenariolist_y - 12, scheme, kTBlack, TPF_TYPE | TPF_RIGHT);
         }
         //				else
         //					Fancy_Text_Print(
         // TXT_SCENARIO_COLON, d_scenariolist_x + (d_scenariolist_w / 2),
         // d_scenariolist_y - d_txt6_h, scheme, TBLACK, kTpfText | TPF_CENTER);
-        Fancy_Text_Print(*LogicPage, TXT_COUNT, d_count_x - 4, d_count_y,
+        Fancy_Text_Print(view, TXT_COUNT, d_count_x - 4, d_count_y, scheme,
+                         kTBlack, kTpfText | TPF_RIGHT);
+        Fancy_Text_Print(view, TXT_LEVEL, d_level_x - 4, d_level_y, scheme,
+                         kTBlack, kTpfText | TPF_RIGHT);
+        Fancy_Text_Print(view, TXT_CREDITS_COLON, d_credits_x - 4, d_credits_y,
                          scheme, kTBlack, kTpfText | TPF_RIGHT);
-        Fancy_Text_Print(*LogicPage, TXT_LEVEL, d_level_x - 4, d_level_y,
-                         scheme, kTBlack, kTpfText | TPF_RIGHT);
-        Fancy_Text_Print(*LogicPage, TXT_CREDITS_COLON, d_credits_x - 4,
-                         d_credits_y, scheme, kTBlack, kTpfText | TPF_RIGHT);
-        Fancy_Text_Print(*LogicPage, TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
+        Fancy_Text_Print(view, TXT_AI_PLAYERS_COLON, d_aiplayers_x - 4,
                          d_aiplayers_y, scheme, kTBlack, kTpfText | TPF_RIGHT);
         Fancy_Text_Print(
-            *LogicPage, TXT_SIDE_COLON,
+            view, TXT_SIDE_COLON,
             //					d_house_x + (d_house_w / 2),
             d_house_x + ((d_house_w + 16) / 2), d_house_y - d_txt6_h, scheme,
             kTBlack, TPF_CENTER | kTpfText);
-        Fancy_Text_Print(*LogicPage, TXT_COLOR_COLON,
-                         d_color_x + (d_color_w * 4), d_color_y - d_txt6_h,
-                         scheme, kTBlack, TPF_CENTER | kTpfText);
+        Fancy_Text_Print(view, TXT_COLOR_COLON, d_color_x + (d_color_w * 4),
+                         d_color_y - d_txt6_h, scheme, kTBlack,
+                         TPF_CENTER | kTpfText);
 
         const char* szGameKind = nullptr;
         const dib::Image* pIcon = nullptr;
@@ -1052,24 +1055,24 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         const int iGameInfoSpacingY = 14;
         const int iGameInfoSecondColumnX = 0;  // 170;
         //	Game kind.
-        Fancy_Text_Print(*LogicPage, szGameKind, d_gamekind_x,
+        Fancy_Text_Print(view, szGameKind, d_gamekind_x,
                          d_gamekind_y - (iGameInfoSpacingY * 1), scheme,
                          kTBlack, TPF_TYPE);
         //	Game kind icon.
         if (pIcon != nullptr) {
-          DrawDib(*LogicPage, *pIcon, d_gamekind_x - 16,
+          DrawDib(view, *pIcon, d_gamekind_x - 16,
                   d_gamekind_y - (iGameInfoSpacingY * 1) - 2, 100, WINDOW_MAIN);
         }
         //	"Tournament."
         if (pWO->GameInfoCurrent.bTournament) {
-          Fancy_Text_Print(*LogicPage, TXT_WOL_CG_TOURNAMENT,
+          Fancy_Text_Print(view, TXT_WOL_CG_TOURNAMENT,
                            d_gamekind_x + iGameInfoSecondColumnX,
                            d_gamekind_y + (iGameInfoSpacingY * 1), scheme,
                            kTBlack, TPF_TYPE);
-          DrawDibIfLoaded(
-              *LogicPage, base::At(pWO->DibIconInfos, kDibiconTournament),
-              d_gamekind_x + iGameInfoSecondColumnX - 16,
-              d_gamekind_y + (iGameInfoSpacingY * 1) - 2, 100, WINDOW_MAIN);
+          DrawDibIfLoaded(view, base::At(pWO->DibIconInfos, kDibiconTournament),
+                          d_gamekind_x + iGameInfoSecondColumnX - 16,
+                          d_gamekind_y + (iGameInfoSpacingY * 1) - 2, 100,
+                          WINDOW_MAIN);
         }
         //	"Password: ..."
         if (pWO->GameInfoCurrent.bPrivate) {
@@ -1077,14 +1080,14 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           Format_Runtime_Text(szPrivatePassword, sizeof(szPrivatePassword),
                               TXT_WOL_PRIVATEPASSWORD,
                               pWO->GameInfoCurrent.szPassword);
-          Fancy_Text_Print(*LogicPage, szPrivatePassword,
+          Fancy_Text_Print(view, szPrivatePassword,
                            d_gamekind_x + iGameInfoSecondColumnX,
                            d_gamekind_y + (iGameInfoSpacingY * 2), scheme,
                            kTBlack, TPF_TYPE);
-          DrawDibIfLoaded(
-              *LogicPage, base::At(pWO->DibIconInfos, kDibiconPrivate),
-              d_gamekind_x + iGameInfoSecondColumnX - 16,
-              d_gamekind_y + (iGameInfoSpacingY * 2) - 2, 100, WINDOW_MAIN);
+          DrawDibIfLoaded(view, base::At(pWO->DibIconInfos, kDibiconPrivate),
+                          d_gamekind_x + iGameInfoSecondColumnX - 16,
+                          d_gamekind_y + (iGameInfoSpacingY * 2) - 2, 100,
+                          WINDOW_MAIN);
         }
         //	"Scenario:" - scenario name is drawn separately.
         // Fancy_Text_Print( TXT_SCENARIO_COLON, d_gamekind_x, d_gamekind_y -
@@ -1095,7 +1098,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //	Redraw buttons
       //..................................................................
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(*LogicPage);
+        commands->Draw_All(view);
       }
 
       //..................................................................
@@ -1103,20 +1106,20 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //..................................................................
       if (display >= REDRAW_COLORS) {
         for (int i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          LogicPage->FillRect(base::At(cbox_x, i) + 1, d_color_y + 1,
-                              base::At(cbox_x, i) + 1 + d_color_w - 4,
-                              d_color_y + 1 + d_color_h - 2,
-                              ThePalettes()
-                                  .color_remaps()
-                                  .at(static_cast<PlayerColorType>(i))
-                                  .Box);
+          view.FillRect(base::At(cbox_x, i) + 1, d_color_y + 1,
+                        base::At(cbox_x, i) + 1 + d_color_w - 4,
+                        d_color_y + 1 + d_color_h - 2,
+                        ThePalettes()
+                            .color_remaps()
+                            .at(static_cast<PlayerColorType>(i))
+                            .Box);
 
           if (static_cast<PlayerColorType>(i) == TheSession().ColorIdx) {
-            Draw_Box(*LogicPage, base::At(cbox_x, i), d_color_y, d_color_w,
-                     d_color_h, BOXSTYLE_DOWN, false);
+            Draw_Box(view, base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
+                     BOXSTYLE_DOWN, false);
           } else {
-            Draw_Box(*LogicPage, base::At(cbox_x, i), d_color_y, d_color_w,
-                     d_color_h, BOXSTYLE_RAISED, false);
+            Draw_Box(view, base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
+                     BOXSTYLE_RAISED, false);
           }
         }
       }
@@ -1197,7 +1200,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             pIcon = IconImage(base::At(pWO->DibIconInfos, kDibiconUser));
           }
 
-          DrawScenarioDescripIcon(pIcon);
+          DrawScenarioDescripIcon(view, pIcon);
         } else {
           // absl::SNPrintF(txt, sizeof(txt), "%s %s",
           // Text_String(TXT_SCENARIO_COLON), Text_String(TXT_NOT_FOUND));
@@ -1208,14 +1211,14 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         }
 
         //	Print scenario name.
-        Conquer_Clip_Text_Print(*LogicPage, szScenarioNameDisplay, d_gamekind_x,
+        Conquer_Clip_Text_Print(view, szScenarioNameDisplay, d_gamekind_x,
                                 d_gamekind_y, scheme, kTBlack, TPF_TYPE,
                                 d_gamekind_w);
         //				pStaticDescrip->Draw_Me();
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.UnitCount);
         pStaticUnit->Set_Text(txt);
-        pStaticUnit->Draw_Me(*LogicPage);
+        pStaticUnit->Draw_Me(view);
 
         if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
           absl::SNPrintF(txt, sizeof(txt), "%d", TheWorld().build_level());
@@ -1223,15 +1226,15 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
         pStaticLevel->Set_Text(txt);
-        pStaticLevel->Draw_Me(*LogicPage);
+        pStaticLevel->Draw_Me(view);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.Credits);
         pStaticCredits->Set_Text(txt);
-        pStaticCredits->Draw_Me(*LogicPage);
+        pStaticCredits->Draw_Me(view);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().Options.AIPlayers);
         pStaticAIPlayers->Set_Text(txt);
-        pStaticAIPlayers->Draw_Me(*LogicPage);
+        pStaticAIPlayers->Draw_Me(view);
       }
 
       Show_Mouse();
@@ -1252,16 +1255,16 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     if (KeyboardClass::Down(KN_LMOUSE) || KeyboardClass::Down(KN_RMOUSE)) {
       timeToolTipAppear = Get_Time_Ms() + TOOLTIPDELAY;
       if (pToolTipHitLast && pToolTipHitLast->bShowing) {
-        pToolTipHitLast->Unshow();
+        pToolTipHitLast->Unshow(view);
       }
     }
 
-    input = commands->Input(*LogicPage);
+    input = commands->Input(view);
 
     if (bHackFocus) {
       pEditSend->Set_Focus();
       pEditSend->Flag_To_Redraw();
-      input = commands->Input(*LogicPage);
+      input = commands->Input(view);
       bHackFocus = false;
     }
 
@@ -1273,11 +1276,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             Get_Time_Ms() > timeToolTipAppear &&
             !(KeyboardClass::Down(KN_LMOUSE) ||
               KeyboardClass::Down(KN_RMOUSE))) {
-          pToolTipHit->Show();
+          pToolTipHit->Show(view);
         }
       } else {
         if (pToolTipHitLast && pToolTipHitLast->bShowing) {
-          pToolTipHitLast->Unshow();
+          pToolTipHitLast->Unshow(view);
         }
         pToolTipHitLast = pToolTipHit;
         timeToolTipAppear = Get_Time_Ms() + TOOLTIPDELAY;
@@ -1620,7 +1623,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             // unaccepted state on the server. 	Upshot - We can ignore messages
             // from the server telling us that we, ourself, accepted.
             if (pToolTipHitLast && pToolTipHitLast->bShowing) {
-              pToolTipHitLast->Unshow();
+              pToolTipHitLast->Unshow(view);
             }
             pTextBtnAcceptStart->Disable();
             if (SetPlayerAccepted(
@@ -1709,7 +1712,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   }
 
   if (pToolTipHitLast && pToolTipHitLast->bShowing) {
-    pToolTipHitLast->Unshow();
+    pToolTipHitLast->Unshow(view);
   }
 
   pWO->ClearListPtrs();
@@ -1998,9 +2001,9 @@ bool WOL_GameSetupDialog::ExitGameChannel() {
 
 //***********************************************************************************************
 void WOL_GameSetupDialog::DrawScenarioDescripIcon(
-    const dib::Image* pIcon) const {
+    PixelView& view, const dib::Image* pIcon) const {
   if (pIcon != nullptr) {
-    DrawDib(*LogicPage, *pIcon, d_gamekind_x - 16, d_gamekind_y - 2, 100,
+    DrawDib(view, *pIcon, d_gamekind_x - 16, d_gamekind_y - 2, 100,
             WINDOW_MAIN);
   }
 }
@@ -2170,6 +2173,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
   if (request_data == nullptr) {
     return;
   }
+  PixelView& view = TheScreen().visible_view();
   std::string_view szRequest(request_data);
   //	Game host processes a request that arrived as a privategameopt from one
   // of the guests. 	WOL_GAMEOPT_REQCOLOR format: 	2
@@ -2237,7 +2241,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
         //	We may be ready to start a game now.
         if (bAllGuestsAccept()) {
           if (pToolTipHitLast && pToolTipHitLast->bShowing) {
-            pToolTipHitLast->Unshow();
+            pToolTipHitLast->Unshow(view);
           }
           pTextBtnAcceptStart->Enable();
         }
@@ -3342,6 +3346,7 @@ void WOL_GameSetupDialog::OnGuestLeave(User* pUser) {
 void WOL_GameSetupDialog::ClearAllAccepts() {
   //	Clears all "player has accepted" marks.
   // debugprint( "ClearAllAccepts()\n" );
+  PixelView& view = TheScreen().visible_view();
   for (int i = 0; i < pILPlayers->Count(); i++) {
     const User* pUser =
         static_cast<const User*>(pILPlayers->Get_Item_ExtraDataPtr(i));
@@ -3354,7 +3359,7 @@ void WOL_GameSetupDialog::ClearAllAccepts() {
   }
 
   if (pToolTipHitLast && pToolTipHitLast->bShowing) {
-    pToolTipHitLast->Unshow();
+    pToolTipHitLast->Unshow(view);
   }
 
   if (bHost) {

@@ -271,7 +271,7 @@ void SoundControlsClass::Process() {
   /*
   **	Set up the window.  Window x-coords are in bytes not pixels.
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   **	Create Buttons.
@@ -348,28 +348,27 @@ void SoundControlsClass::Process() {
       */
       Dialog_Box(option_x, option_y, option_width, option_height);
 
-      Draw_Caption(*LogicPage, TXT_SOUND_CONTROLS, option_x, option_y,
-                   option_width);
+      Draw_Caption(view, TXT_SOUND_CONTROLS, option_x, option_y, option_width);
 
       /*
       ** Draw the Music, Speech & Sound titles.
       */
-      Fancy_Text_Print(*LogicPage, TXT_MUSIC_VOLUME, option_x + mslider_x - 10,
+      Fancy_Text_Print(view, TXT_MUSIC_VOLUME, option_x + mslider_x - 10,
                        option_y + mslider_y - 4, scheme, kTBlack,
                        kTpfText | TPF_RIGHT);
-      Fancy_Text_Print(*LogicPage, TXT_SOUND_VOLUME, option_x + fxslider_x - 10,
+      Fancy_Text_Print(view, TXT_SOUND_VOLUME, option_x + fxslider_x - 10,
                        option_y + fxslider_y - 4, scheme, kTBlack,
                        kTpfText | TPF_RIGHT);
 
-      Fancy_Text_Print(*LogicPage, TXT_SHUFFLE,
+      Fancy_Text_Print(view, TXT_SHUFFLE,
                        option_x + shuffle_x - 10 + (config::kIsEnglish ? 0 : 4),
                        option_y + shuffle_y + 2, scheme, kTBlack,
                        kTpfText | TPF_RIGHT);
-      Fancy_Text_Print(*LogicPage, TXT_REPEAT, option_x + repeat_x - 10,
+      Fancy_Text_Print(view, TXT_REPEAT, option_x + repeat_x - 10,
                        option_y + repeat_y + 2, scheme, kTBlack,
                        kTpfText | TPF_RIGHT);
 
-      optionsbtn->Draw_All(*LogicPage);
+      optionsbtn->Draw_All(view);
       Show_Mouse();
       display = false;
     }
@@ -377,7 +376,7 @@ void SoundControlsClass::Process() {
     /*
     **	Get user input.
     */
-    const KeyNumType input = optionsbtn->Input(*LogicPage);
+    const KeyNumType input = optionsbtn->Input(view);
 
     /*
     **	Process Input.

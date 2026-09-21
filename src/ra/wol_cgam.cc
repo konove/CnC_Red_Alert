@@ -180,7 +180,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   /*
   **	Initialize.
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   **	Create the button list.
@@ -221,8 +221,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
       */
       Hide_Mouse();
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-      Draw_Caption(*LogicPage, TXT_WOL_CG_TITLE, d_dialog_x, d_dialog_y,
-                   d_dialog_w);
+      Draw_Caption(view, TXT_WOL_CG_TITLE, d_dialog_x, d_dialog_y, d_dialog_w);
       //			Fancy_Text_Print( TXT_WOL_CG_PLAYERS,
       // d_gaugeplayers_x - 2*2, d_gaugeplayers_y,
       //								GadgetClass::Get_Color_Scheme(),
@@ -243,7 +242,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     /*
     **	Get user input.
     */
-    KeyNumType input = commands->Input(*LogicPage);
+    KeyNumType input = commands->Input(view);
 
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on
@@ -285,7 +284,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
         Format_Runtime_Text(szPlayerCount, sizeof(szPlayerCount),
                             TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax);
         PlayerCountStatic.Set_Text(szPlayerCount);
-        PlayerCountStatic.Draw_Me(*LogicPage);
+        PlayerCountStatic.Draw_Me(view);
         break;
 
       case ButtonKey(kCheckTournament):
@@ -297,7 +296,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
           Format_Runtime_Text(szPlayerCount, sizeof(szPlayerCount),
                               TXT_WOL_CG_PLAYERS, cgiReturn.iPlayerMax);
           PlayerCountStatic.Set_Text(szPlayerCount);
-          PlayerCountStatic.Draw_Me(*LogicPage);
+          PlayerCountStatic.Draw_Me(view);
         }
         //				else
         //					PlayerCountGauge.Enable();
@@ -348,7 +347,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
 
   if (cgiReturn.bCreateGame && cgiReturn.bPrivate) {
     //	Get a password for the channel.
-    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
+    Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
                      kTpfText);  //	Required before String_Pixel_Width()
                                  // call, for god's sake.
     auto* pEditDlg =

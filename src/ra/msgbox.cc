@@ -109,7 +109,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     b3txt = nullptr;
   }
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
+  PixelView& view = TheScreen().visible_view();
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
 
   /*
   **	Examine the optional button parameters. Fetch the width and starting
@@ -144,7 +145,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   buffer[BUFFSIZE - 1] = 0;
   port::SafeCopy(buffer, msg);
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
   int width = 0;
   int height = 0;
   const int lines = Format_Window_String(buffer, 510, width, height);
@@ -168,11 +169,6 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     printx = x + (width / 2);
     tpf = tpf | TPF_CENTER;
   }
-
-  /*
-  **	Other inits.
-  */
-  SetLogicPage(TheScreen().visible_view());
 
   /*
   **	Initialize the button structures. All are initialized, even though one
@@ -235,19 +231,19 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         x, y, width, height, back, static_cast<int32_t>(width) * height);
   }
   Dialog_Box(x, y, width, height);
-  Draw_Caption(*LogicPage, Caption, x, y, width);
+  Draw_Caption(view, Caption, x, y, width);
 
   /*
   **	Draw the body of the message.
   */
-  Fancy_Text_Print(*LogicPage, buffer, printx, y + 40,
+  Fancy_Text_Print(view, buffer, printx, y + 40,
                    GadgetClass::Get_Color_Scheme(), kTBlack, tpf);
 
   /*
   **	Redraw the buttons.
   */
   if (buttonlist) {
-    buttonlist->Draw_All(*LogicPage);
+    buttonlist->Draw_All(view);
   }
   Show_Mouse();
 
@@ -264,19 +260,19 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
 
         Hide_Mouse();
         Dialog_Box(x, y, width, height);
-        Draw_Caption(*LogicPage, Caption, x, y, width);
+        Draw_Caption(view, Caption, x, y, width);
 
         /*
         **	Draw the body of the message.
         */
-        Fancy_Text_Print(*LogicPage, buffer, printx, y + 40,
+        Fancy_Text_Print(view, buffer, printx, y + 40,
                          GadgetClass::Get_Color_Scheme(), kTBlack, tpf);
 
         /*
         **	Redraw the buttons.
         */
         if (buttonlist) {
-          buttonlist->Draw_All(*LogicPage);
+          buttonlist->Draw_All(view);
         }
         Show_Mouse();
       }
@@ -289,7 +285,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       /*
       **	Fetch and process input.
       */
-      KeyNumType input = buttonlist->Input(*LogicPage);
+      KeyNumType input = buttonlist->Input(view);
       //	I really hate to do this, but...      ajw
       if (TheGameState().cancel_msgbox()) {
         TheGameState().cancel_msgbox() = false;
@@ -400,7 +396,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           }
         }
         Hide_Mouse();
-        buttonlist->Draw_All(*LogicPage, true);
+        buttonlist->Draw_All(view, true);
         Show_Mouse();
 
         switch (selection) {

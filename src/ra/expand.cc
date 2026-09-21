@@ -436,7 +436,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     }
   }
 
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
   bool display = true;
   bool process = true;
   bool okval = true;
@@ -467,17 +467,17 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
 
       Dialog_Box(kOptionX, kOptionY, kOptionWidth, kOptionHeight);
       if (bCounterstrike) {
-        Draw_Caption(*LogicPage, TXT_WOL_CS_MISSIONS, kOptionX, kOptionY,
+        Draw_Caption(view, TXT_WOL_CS_MISSIONS, kOptionX, kOptionY,
                      kOptionWidth);
       } else {
-        Draw_Caption(*LogicPage, TXT_WOL_AM_MISSIONS, kOptionX, kOptionY,
+        Draw_Caption(view, TXT_WOL_AM_MISSIONS, kOptionX, kOptionY,
                      kOptionWidth);
       }
-      buttons->Draw_All(*LogicPage);
+      buttons->Draw_All(view);
       Show_Mouse();
     }
 
-    const KeyNumType input = buttons->Input(*LogicPage);
+    const KeyNumType input = buttons->Input(view);
     switch (static_cast<int>(input)) {
       case ButtonKey(200):
         TheWorld().whom() = list.Current_Object().House;

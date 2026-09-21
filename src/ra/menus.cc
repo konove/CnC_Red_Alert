@@ -88,9 +88,8 @@ static bool Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
                                   int iny2);
 static int Select_To_Entry(int selection, uint32_t enabled_mask,
                            int start_bit);
-static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
-                       int hfgc, int bgc);
-
+static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
+                       int nfgc, int hfgc, int bgc);
 
 // X, Y, item width, items high, selected, normal color, selected color, zero.
 static int menu_list[][8] = {
@@ -152,14 +151,14 @@ static int Select_To_Entry(int selection, const uint32_t enabled_mask,
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
-                       int hfgc, int bgc) {
+static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
+                       int nfgc, int hfgc, int bgc) {
   for (int loop = 0; loop < 3; loop++) {
     Hide_Mouse();
-    Plain_Text_Print(*LogicPage, text, xpix, ypix, hfgc, bgc,
+    Plain_Text_Print(view, text, xpix, ypix, hfgc, bgc,
                      TPF_8POINT | TPF_DROPSHADOW);
     Delay(2);
-    Plain_Text_Print(*LogicPage, text, xpix, ypix, nfgc, bgc,
+    Plain_Text_Print(view, text, xpix, ypix, nfgc, bgc,
                      TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse();
     Delay(2);
@@ -203,8 +202,8 @@ static bool Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-void Setup_Menu(int menu, std::span<const char* const> text, uint32_t field,
-                int index, int skip) {
+void Setup_Menu(PixelView& view, int menu, std::span<const char* const> text,
+                uint32_t field, int index, int skip) {
   const auto menuptr =
       std::span(base::At(menu_list, menu)); /* get pointer to menu	*/
   const int menuy =
@@ -214,14 +213,14 @@ void Setup_Menu(int menu, std::span<const char* const> text, uint32_t field,
   const int item = Select_To_Entry(base::At(menuptr, kMselected), field, index);
   const int num = base::At(menuptr, kItemshigh);
 
-  Plain_Text_Print(*LogicPage, 0, 0, 0, kTBlack, kTBlack,
+  Plain_Text_Print(view, 0, 0, 0, kTBlack, kTBlack,
                    TPF_8POINT | TPF_DROPSHADOW);
   Hide_Mouse();
   for (int lp = 0; lp < num; lp++) {
     const int idx = Select_To_Entry(lp, field, index);
     const int drawy = menuy + (lp * FontHeight) + (lp * skip);
     Plain_Text_Print(
-        *LogicPage, base::At(text, base::ToSize(idx)), menux, drawy,
+        view, base::At(text, base::ToSize(idx)), menux, drawy,
         base::At(menuptr, idx == item && MenuUpdate ? kHilite : kNormcol),
         kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     //		if ((idx==item) && (MenuUpdate ))
@@ -234,8 +233,8 @@ void Setup_Menu(int menu, std::span<const char* const> text, uint32_t field,
   TheKeyboard().Clear();
 }
 
-int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
-               uint32_t field, int index) {
+int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
+               char* /*unused*/, uint32_t field, int index) {
   int drawy = 0;
   int item = 0;
   int idx = 0;
@@ -370,12 +369,12 @@ int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
     Hide_Mouse();
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
-    Plain_Text_Print(*LogicPage, base::At(text, base::ToSize(idx)), menux,
-                     drawy, normcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+    Plain_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
+                     normcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
-    Plain_Text_Print(*LogicPage, base::At(text, base::ToSize(idx)), menux,
-                     drawy, litcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+    Plain_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
+                     litcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse(); /* resurrect the mouse	*/
   }
 
@@ -383,8 +382,8 @@ int Check_Menu(int menu, std::span<const char* const> text, char* /*unused*/,
     idx = Select_To_Entry(select, field, index);
     Hide_Mouse(); /* get rid of the mouse	*/
     drawy = menuy + (newitem * menuskip);
-    Flash_Line(base::At(text, base::ToSize(idx)), menux, drawy, normcol, litcol,
-               kTBlack);
+    Flash_Line(view, base::At(text, base::ToSize(idx)), menux, drawy, normcol,
+               litcol, kTBlack);
     Show_Mouse();
     select = idx;
   }
@@ -421,7 +420,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   if (strings.empty()) {
     return -1;
   }
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
   TheKeyboard().Clear();
 
   /*
@@ -439,8 +438,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   **	Determine the width of the menu by finding the length of the
   **	longest menu entry.
   */
-  Plain_Text_Print(*LogicPage, TXT_NONE, 0, 0, 0, 0,
-                   TPF_8POINT | TPF_DROPSHADOW);
+  Plain_Text_Print(view, TXT_NONE, 0, 0, 0, 0, TPF_8POINT | TPF_DROPSHADOW);
   int length = 0;  // The width of the menu (in pixels).
   for (const char* text : strings) {
     length = std::max(length, String_Pixel_Width(text));
@@ -466,15 +464,15 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   */
   Change_Window(static_cast<int>(WINDOW_MENU));
   Show_Mouse();
-  Window_Box(*LogicPage, WINDOW_MENU, BOXSTYLE_RAISED);
-  Setup_Menu(0, strings, 0xFFFFL, 0, 0);
+  Window_Box(view, WINDOW_MENU, BOXSTYLE_RAISED);
+  Setup_Menu(view, 0, strings, 0xFFFFL, 0, 0);
 
   TheKeyboard().Clear();
   int selection = -1;  // Selection from user.
   TheGameState().unknown_key() = 0;
   while (selection == -1) {
     ServiceRealTime();
-    selection = Check_Menu(0, strings, nullptr, 0xFFL, 0);
+    selection = Check_Menu(view, 0, strings, nullptr, 0xFFL, 0);
     if (TheGameState().unknown_key() != 0) {
       break;
     }
@@ -616,7 +614,7 @@ int Main_Menu(int32_t /*unused*/) {
     TheGameState().required_cd() = -1;
     Force_CD_Available(TheGameState().required_cd());
   }
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
   TheKeyboard().Clear();
 
   /*
@@ -657,7 +655,7 @@ int Main_Menu(int32_t /*unused*/) {
 
   TheKeyboard().Clear();
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
                    kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -709,12 +707,12 @@ int Main_Menu(int32_t /*unused*/) {
       /*
       **	Display the title and text overlay for the menu.
       */
-      SetLogicPage(TheScreen().hidden_view());
+      PixelView& hidden = TheScreen().hidden_view();
       //			Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w,
       // d_dialog_h); 			Draw_Caption (TXT_NONE, d_dialog_x,
       // d_dialog_y, d_dialog_w);
-      commands->Draw_All(*LogicPage);
-      Fancy_Text_Print(*LogicPage, "V%s", d_dialog_x + d_dialog_w - 36,
+      commands->Draw_All(hidden);
+      Fancy_Text_Print(hidden, "V%s", d_dialog_x + d_dialog_w - 36,
                        d_dialog_y + d_dialog_h - 10,
                        GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_EFNT | TPF_NOSHADOW | TPF_RIGHT, Version_Name());
@@ -723,17 +721,16 @@ int Main_Menu(int32_t /*unused*/) {
       **	Copy the menu to the visible page.
       */
       Hide_Mouse();
-      TheScreen().hidden_view().Blit(TheScreen().visible_view());
+      hidden.Blit(view);
       Show_Mouse();
 
-      SetLogicPage(TheScreen().visible_view());
       display = false;
     }
 
     /*
     **	Get and process player input.
     */
-    const KeyNumType input = commands->Input(*LogicPage);  // input from user
+    const KeyNumType input = commands->Input(view);  // input from user
 
     /*
     **	Dispatch the input to be processed.
@@ -800,7 +797,7 @@ int Main_Menu(int32_t /*unused*/) {
 
       case KN_RETURN:
         base::At(buttons, curbutton)->IsPressed = true;
-        base::At(buttons, curbutton)->Draw_Me(*LogicPage, true);
+        base::At(buttons, curbutton)->Draw_Me(view, true);
         retval = curbutton;
         process = false;
         break;

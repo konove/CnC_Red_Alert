@@ -43,6 +43,7 @@ class StaticButtonClass;
 class DropListClass;
 class ShapeButtonClass;
 class BigCheckBoxClass;
+class PixelView;
 class ToolTipClass;
 
 //***********************************************************************************************
@@ -98,7 +99,7 @@ class WOL_GameSetupDialog {
   void SetSpecialControlStates();
   void BindControls(bool bBind);
   bool ExitGameChannel();
-  void DrawScenarioDescripIcon(const dib::Image* pIcon) const;
+  void DrawScenarioDescripIcon(PixelView& view, const dib::Image* pIcon) const;
   void SetPlayerColor(const char* szName, PlayerColorType Color);
   PlayerColorType GetPlayerColor(const char* szName);
   void SetPlayerHouse(const char* szName, HousesType House);

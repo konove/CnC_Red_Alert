@@ -185,7 +185,7 @@ const char* SimpleEditDlgClass::Show() {
   /*
   **	Initialize.
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   **	Create the button list.
@@ -224,19 +224,17 @@ const char* SimpleEditDlgClass::Show() {
       Hide_Mouse();
       Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
       if (!szTitle.empty()) {
-        Draw_Caption(*LogicPage, szTitle.c_str(), d_dialog_x, d_dialog_y,
-                     d_dialog_w);
+        Draw_Caption(view, szTitle.c_str(), d_dialog_x, d_dialog_y, d_dialog_w);
       }
 
       /*
       **	Redraw the buttons.
       */
-      Fancy_Text_Print(*LogicPage, szPrompt.c_str(), d_prompt_x, d_prompt_y,
+      Fancy_Text_Print(view, szPrompt.c_str(), d_prompt_x, d_prompt_y,
                        GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
       if (!szPrompt2.empty()) {
-        Fancy_Text_Print(*LogicPage, szPrompt2.c_str(), d_prompt2_x,
-                         d_prompt2_y, GadgetClass::Get_Color_Scheme(), kTBlack,
-                         kTpfText);
+        Fancy_Text_Print(view, szPrompt2.c_str(), d_prompt2_x, d_prompt2_y,
+                         GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
       }
       commands->Flag_List_To_Redraw();
       Show_Mouse();
@@ -246,7 +244,7 @@ const char* SimpleEditDlgClass::Show() {
     /*
     **	Get user input.
     */
-    KeyNumType input = commands->Input(*LogicPage);
+    KeyNumType input = commands->Input(view);
 
     /*
     **	The first time through the processing loop, set the edit
@@ -289,18 +287,18 @@ const char* SimpleEditDlgClass::Show() {
       //	These do not actually draw. I am actually clearing the "draw"
       // flag! 	Problem is Disable sets them to redraw, and I don't want to, and
       // there is no Flag_To_Redraw( false ).
-      EditBox.GadgetClass::Draw_Me(*LogicPage, true);
+      EditBox.GadgetClass::Draw_Me(view, true);
       if (!szPrompt2.empty()) {
         EditBox2.Disable();
-        EditBox2.GadgetClass::Draw_Me(*LogicPage, true);
+        EditBox2.GadgetClass::Draw_Me(view, true);
       }
       OkBtn.Disable();
-      OkBtn.GadgetClass::Draw_Me(*LogicPage, true);
+      OkBtn.GadgetClass::Draw_Me(view, true);
       CancelBtn.Disable();
-      CancelBtn.GadgetClass::Draw_Me(*LogicPage, true);
+      CancelBtn.GadgetClass::Draw_Me(view, true);
       if (szMiddleButton) {
         MiddleBtn.Disable();
-        MiddleBtn.GadgetClass::Draw_Me(*LogicPage, true);
+        MiddleBtn.GadgetClass::Draw_Me(view, true);
       }
     }
 

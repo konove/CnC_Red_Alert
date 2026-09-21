@@ -215,10 +215,10 @@ bool EgoClass::Scroll(int distance) {
  *                                                                                             *
  * HISTORY: * 9/9/96 11:57PM ST : Created *
  *=============================================================================================*/
-void EgoClass::Render() const {
-  if (YPos < LogicPage->height() && YPos > -16) {
-    Fancy_Text_Print(*LogicPage, Text, XPos, YPos,
-                     GadgetClass::Get_Color_Scheme(), kTBlack, Flags);
+void EgoClass::Render(PixelView& view) const {
+  if (YPos < view.height() && YPos > -16) {
+    Fancy_Text_Print(view, Text, XPos, YPos, GadgetClass::Get_Color_Scheme(),
+                     kTBlack, Flags);
   }
 }
 
@@ -235,7 +235,7 @@ void EgoClass::Render() const {
  *                                                                                             *
  * HISTORY: * 9/9/96 11:58PM ST : Created *
  *=============================================================================================*/
-void EgoClass::Wipe(PixelBuffer* background) const {
+void EgoClass::Wipe(PixelView& view, PixelBuffer* background) const {
   const int width = String_Pixel_Width(Text);
   int x = XPos;
 
@@ -247,8 +247,7 @@ void EgoClass::Wipe(PixelBuffer* background) const {
     }
   }
 
-  background->Blit(*LogicPage, x - 1, YPos, x - 1, YPos, width + 2,
-                   14 + 1, false);
+  background->Blit(view, x - 1, YPos, x - 1, YPos, width + 2, 14 + 1, false);
 }
 
 /***********************************************************************************************
@@ -431,7 +430,11 @@ void Show_Who_Was_Responsible() {
   ** Initialise the text printing system.
   */
   GadgetClass::Set_Color_Scheme(&ThePalettes().color_remaps().at(PCOLOR_GREEN));
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
+
+  // The credits are drawn to the hidden page and blitted forward a frame at a
+  // time, so that the text never appears half-scrolled on screen.
+  PixelView& view = TheScreen().hidden_view();
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
                    kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -701,8 +704,6 @@ void Show_Who_Was_Responsible() {
   */
   TheKeyboard().Clear();
 
-  SetLogicPage(TheScreen().hidden_view());
-
   /*
   ** Start any old song.
   */
@@ -767,7 +768,7 @@ void Show_Who_Was_Responsible() {
     ** Scroll the text. If any text goes off the top then delete that object.
     */
     for (base::ssize i = EgoList.Count() - 1; i >= 0; i--) {
-      EgoList.at(i)->Wipe(BackgroundPage);
+      EgoList.at(i)->Wipe(view, BackgroundPage);
       if (EgoList.at(i)->Scroll(1)) {
         EgoList.Delete(i);
         break;
@@ -777,11 +778,11 @@ void Show_Who_Was_Responsible() {
     /*
     ** Render all the text strings in their new positions.
     */
-    if (LogicPage->Lock()) {
+    if (view.Lock()) {
       for (base::ssize i = EgoList.Count() - 1; i >= 0; i--) {
-        EgoList.at(i)->Render();
+        EgoList.at(i)->Render(view);
       }
-      LogicPage->Unlock();
+      view.Unlock();
     }
 
     if (frame > 1000 && !TheTheme().Still_Playing()) {
