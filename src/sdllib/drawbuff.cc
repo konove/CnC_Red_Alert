@@ -1069,7 +1069,7 @@ void PixelView::Attach(PixelBuffer* graphic_buff, int x, int y, int w, int h) {
 
 PixelBuffer::PixelBuffer(int w, int h, std::span<uint8_t> buffer, int32_t size)
     : PixelBuffer() {
-  Init(w, h, buffer, size, GBC_NONE);
+  Init(w, h, buffer, size, BUFFER_NONE);
 }
 
 PixelBuffer::PixelBuffer(int w, int h, std::span<uint8_t> buffer)
@@ -1090,7 +1090,7 @@ void PixelBuffer::Init(int w, int h, std::span<uint8_t> buffer, int32_t size,
   CHECK_GE(h, 0);
   CHECK_GE(size, 0);
   const auto pixel_count = base::ToSize(w) * base::ToSize(h);
-  if (!base::Any(flags & GBC_VISIBLE)) {
+  if (!base::Any(flags & BUFFER_VISIBLE)) {
     CHECK_LE(pixel_count, buffer.empty()
                               ? (size == 0 ? pixel_count : base::ToSize(size))
                               : buffer.size());
@@ -1102,7 +1102,7 @@ void PixelBuffer::Init(int w, int h, std::span<uint8_t> buffer, int32_t size,
   x_add_ = 0;
   x_pos_ = y_pos_ = 0;
 
-  if (base::Any(flags & GBC_VISIBLE)) {
+  if (base::Any(flags & BUFFER_VISIBLE)) {
     CreateDisplaySurface();
 
     WindowBuffer = this;

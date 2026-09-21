@@ -25,8 +25,8 @@ bool Screen::Init() {
     return false;
   }
 
-  visible_page_.Init(kWidth, mode_height_, {}, 0, GBC_VISIBLE | GBC_VIDEOMEM);
-  hidden_page_.Init(kWidth, mode_height_, {}, 0, GBC_NONE);
+  visible_page_.Init(kWidth, mode_height_, {}, 0, BUFFER_VISIBLE);
+  hidden_page_.Init(kWidth, mode_height_, {}, 0, BUFFER_NONE);
 
   // A 480-line mode letterboxes the 400-line game area in the middle.
   const int letterbox_top = (mode_height_ - kHeight) / 2;

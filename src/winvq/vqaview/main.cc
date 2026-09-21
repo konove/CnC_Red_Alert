@@ -104,9 +104,8 @@ int WINAPI WinMain(Handle instance_handle, Handle prev_instance_handle,
     //
     // Create the PixelBuffer that will be the screen buffer
     //
-    Screen_Buffer =
-        new PixelBuffer(VIDEO_MODE_WIDTH, VIDEO_MODE_HEIGHT,
-                        (PixelBufferFlags)(GBC_VIDEOMEM | GBC_VISIBLE));
+    Screen_Buffer = new PixelBuffer(VIDEO_MODE_WIDTH, VIDEO_MODE_HEIGHT,
+                                    (PixelBufferFlags)(BUFFER_VISIBLE));
 
     //
     // Initialize Movie system.

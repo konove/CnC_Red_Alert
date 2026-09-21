@@ -105,7 +105,7 @@ int Initialize_Movie_System() {
   Draw_Page = new PixelBuffer(MOVIE_WIDTH, MOVIE_HEIGHT);
   Back_Page = new PixelBuffer(VIDEO_MODE_WIDTH, VIDEO_MODE_HEIGHT);
   Hid_Page = new PixelBuffer(VIDEO_MODE_WIDTH, VIDEO_MODE_HEIGHT,
-                             (PixelBufferFlags)(GBC_VIDEOMEM));
+                             (PixelBufferFlags)(BUFFER_NONE));
 #endif
 
   //

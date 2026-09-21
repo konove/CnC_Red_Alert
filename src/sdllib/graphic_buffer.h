@@ -53,15 +53,11 @@
 
 // How PixelBuffer::Init() should back the buffer.
 enum class CNC_FLAG_ENUM PixelBufferFlags {
-  GBC_NONE = 0,
-  // Kept for the call sites the DOS and DirectDraw versions used to
-  // distinguish; SDL gives no say in where a surface lives, so Init()
-  // ignores it.
-  GBC_VIDEOMEM = 1,
+  BUFFER_NONE = 0,
   // The buffer is the one the window shows. Init() creates an SDL surface
   // and texture for it instead of allocating memory, and records it in
   // WindowBuffer.
-  GBC_VISIBLE = 2,
+  BUFFER_VISIBLE = 2,
 };
 using enum PixelBufferFlags;
 template <>
@@ -235,7 +231,7 @@ class PixelView {
 // the frame is composed on, and the staging pages movies decode into.
 //
 // The pixels come from one of three places, chosen by Init(): a span the
-// caller owns, a new[] block the buffer owns, or - with GBC_VISIBLE - an SDL
+// caller owns, a new[] block the buffer owns, or - with BUFFER_VISIBLE - an SDL
 // surface, whose pixels only exist between LockSurface() and
 // UnlockSurface().
 //
@@ -260,7 +256,7 @@ class PixelBuffer : public PixelView, public BufferClass {
   PixelBuffer& operator=(PixelBuffer&&) = delete;
 
   // Gives the buffer its pixels, replacing whatever it had. With
-  // GBC_VISIBLE it creates the window's surface and texture and records
+  // BUFFER_VISIBLE it creates the window's surface and texture and records
   // itself in WindowBuffer; otherwise it takes `buffer`, or allocates
   // `size` bytes when `buffer` is empty. CHECK-fails if a caller-supplied
   // buffer is too small for w * h.
@@ -286,7 +282,7 @@ class PixelBuffer : public PixelView, public BufferClass {
                          int32_t scale, uint8_t angle);
 
   // Whether this is the buffer the window shows, that is whether it was
-  // initialized with GBC_VISIBLE.
+  // initialized with BUFFER_VISIBLE.
   [[nodiscard]] bool IsWindowSurface() const {
     return window_texture_ != nullptr;
   }
