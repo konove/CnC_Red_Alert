@@ -35,8 +35,9 @@
 // mapped back through the inverse transform to the bitmap pixel it came
 // from. Walking the source instead would scatter its pixels and leave holes
 // wherever the scale stretches the image.
-void PixelBuffer::DrawScaledRotated(const BitmapClass& bmp, const TPoint2D& pt,
-                                    const int32_t scale, const uint8_t angle) {
+void PixelBuffer::DrawScaledRotated(const BitmapClass& bitmap,
+                                    const TPoint2D& center, const int32_t scale,
+                                    const uint8_t angle) {
   if (scale == 0) {
     return;
   }
@@ -49,18 +50,18 @@ void PixelBuffer::DrawScaledRotated(const BitmapClass& bmp, const TPoint2D& pt,
   // scale is 24.8 fixed point, so 256 / scale is its reciprocal, which is
   // what the destination-to-source direction needs.
   const double inv_S = 256.0 / scale;
-  const double cx_bmp = bmp.Width / 2.0;
-  const double cy_bmp = bmp.Height / 2.0;
+  const double cx_bmp = bitmap.Width / 2.0;
+  const double cy_bmp = bitmap.Height / 2.0;
 
   // Rows in this buffer are width_ apart: DrawScaledRotated is a member of the
   // buffer rather than of a view, and Init() leaves x_add_ and pitch_ zero
   // for every buffer the games allocate.
   const auto dst_buf = Get_Bytes();
 
-  for (int dy = 0; dy < height_; dy++) {
-    for (int dx = 0; dx < width_; dx++) {
-      const double rx = dx - pt.x;
-      const double ry = dy - pt.y;
+  for (int y2 = 0; y2 < height_; y2++) {
+    for (int x2 = 0; x2 < width_; x2++) {
+      const double rx = x2 - center.x;
+      const double ry = y2 - center.y;
 
       // The matrix is [[sin, cos], [-cos, sin]], a rotation by angle minus a
       // quarter turn; the caller adds that quarter turn back when it converts
@@ -73,11 +74,11 @@ void PixelBuffer::DrawScaledRotated(const BitmapClass& bmp, const TPoint2D& pt,
 
       // Destination pixels that map outside the bitmap keep what was there,
       // as does pixel 0, which is the transparent index.
-      if (bx >= 0 && bx < bmp.Width && by >= 0 && by < bmp.Height) {
+      if (bx >= 0 && bx < bitmap.Width && by >= 0 && by < bitmap.Height) {
         const uint8_t pixel =
-            base::At(bmp.Data, base::ToSize((by * bmp.Width) + bx));
+            base::At(bitmap.Data, base::ToSize((by * bitmap.Width) + bx));
         if (pixel != 0) {
-          base::At(dst_buf, base::ToSize((dy * width_) + dx)) = pixel;
+          base::At(dst_buf, base::ToSize((y2 * width_) + x2)) = pixel;
         }
       }
     }

@@ -26,11 +26,11 @@ bool OverlappedVideoBlits = true;
 
 PixelBuffer* WindowBuffer = nullptr;
 
-// Cohen-Sutherland outcode of (x, y) against a w by h window: bits for
+// Cohen-Sutherland outcode of (x, y) against a width by height window: bits for
 // left, right, top and bottom.
-static inline uint32_t Make_Code(int x, int y, int w, int h) {
-  return (x < 0 ? 0b1000U : 0U) | (x >= w ? 0b0100U : 0U) |
-         (y < 0 ? 0b0010U : 0U) | (y >= h ? 0b0001U : 0U);
+static inline uint32_t Make_Code(int x, int y, int width, int height) {
+  return (x < 0 ? 0b1000U : 0U) | (x >= width ? 0b0100U : 0U) |
+         (y < 0 ? 0b0010U : 0U) | (y >= height ? 0b0001U : 0U);
 }
 
 int Buffer_Get_Pixel(void* thisptr, int x, int y) {
@@ -62,19 +62,18 @@ void Buffer_Clear(void* thisptr, unsigned char color) {
   } while (--line_count);
 }
 
-int32_t Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel,
-                         int pixel_width, int pixel_height,
-                         std::span<uint8_t> buff, int32_t /*size*/) {
+int32_t Buffer_To_Buffer(void* thisptr, int x, int y, int width, int height,
+                         std::span<uint8_t> dest, int32_t /*size*/) {
   auto* vp_src = static_cast<PixelView*>(thisptr);
 
   int dst_x0 = 0;
   int dst_y0 = 0;
 
   // clip src
-  int src_x0 = x_pixel;
-  int src_y0 = y_pixel;
-  int src_x1 = x_pixel + pixel_width;
-  int src_y1 = y_pixel + pixel_height;
+  int src_x0 = x;
+  int src_y0 = y;
+  int src_x1 = x + width;
+  int src_y1 = y + height;
 
   const uint32_t code0 =
       Make_Code(src_x0, src_y0, vp_src->width(), vp_src->height());
@@ -108,7 +107,7 @@ int32_t Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel,
   auto src_offset = vp_src->pixels().begin() + src_x0 + (src_y0 * src_area);
 
   auto dst_offset =
-      buff.begin() + dst_x0 + (static_cast<base::ssize>(dst_y0) * pixel_width);
+      dest.begin() + dst_x0 + (static_cast<base::ssize>(dst_y0) * width);
 
   if (src_x1 <= src_x0 || src_y1 <= src_y0) {
     return 1;
@@ -125,25 +124,24 @@ int32_t Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel,
   do {
     std::copy_n(src_offset, pixel_count, dst_offset);
     src_offset += src_area;
-    dst_offset += pixel_width;
+    dst_offset += width;
   } while (--line_count);
 
   return 0;
 }
 
-int32_t Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
-                       int pixel_height, std::span<const uint8_t> Buffer,
-                       void* view) {
+int32_t Buffer_To_Page(int dst_x, int dst_y, int width, int height,
+                       std::span<const uint8_t> source, void* view) {
   auto* vp_dst = static_cast<PixelView*>(view);
 
   int src_x0 = 0;
   int src_y0 = 0;
 
   // clip dest
-  int dst_x0 = dx_pixel;
-  int dst_y0 = dy_pixel;
-  int dst_x1 = dx_pixel + pixel_width;
-  int dst_y1 = dy_pixel + pixel_height;
+  int dst_x0 = dst_x;
+  int dst_y0 = dst_y;
+  int dst_x1 = dst_x + width;
+  int dst_y1 = dst_y + height;
 
   const uint32_t code0 =
       Make_Code(dst_x0, dst_y0, vp_dst->width(), vp_dst->height());
@@ -173,8 +171,8 @@ int32_t Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
     }
   }
 
-  auto src_offset = Buffer.begin() + src_x0 +
-                    (static_cast<base::ssize>(src_y0) * pixel_width);
+  auto src_offset =
+      source.begin() + src_x0 + (static_cast<base::ssize>(src_y0) * width);
 
   const base::ssize dst_area = vp_dst->stride();
   auto dst_offset = vp_dst->pixels().begin() + dst_x0 + (dst_y0 * dst_area);
@@ -193,26 +191,26 @@ int32_t Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
   // copy lines
   do {
     std::copy_n(src_offset, pixel_count, dst_offset);
-    src_offset += pixel_width;
+    src_offset += width;
     dst_offset += dst_area;
   } while (--line_count);
 
   return 0;
 }
 
-bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
-                           int dx_pixel, int dy_pixel, int pixel_width,
-                           int pixel_height, bool trans) {
-  // trans seems to only be used by TD
+bool Linear_Blit_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
+                           int dst_x, int dst_y, int width, int height,
+                           bool transparent) {
+  // Only Tiberian Dawn asks for a transparent blit.
 
   auto* vp_src = static_cast<PixelView*>(thisptr);
   auto* vp_dst = static_cast<PixelView*>(dest);
 
   // clip source
-  int src_x0 = x_pixel;
-  int src_y0 = y_pixel;
-  int src_x1 = x_pixel + pixel_width;
-  int src_y1 = y_pixel + pixel_height;
+  int src_x0 = src_x;
+  int src_y0 = src_y;
+  int src_x1 = src_x + width;
+  int src_y1 = src_y + height;
 
   uint32_t code0 = Make_Code(src_x0, src_y0, vp_src->width(), vp_src->height());
   uint32_t code1 =
@@ -242,8 +240,8 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
   // clip dest
   // Whatever the source clip took off the top and left moves the destination
   // by as much, so the remaining pixels keep their place.
-  int dst_x0 = dx_pixel + (src_x0 - x_pixel);
-  int dst_y0 = dy_pixel + (src_y0 - y_pixel);
+  int dst_x0 = dst_x + (src_x0 - src_x);
+  int dst_y0 = dst_y + (src_y0 - src_y);
   int dst_x1 = dst_x0 + (src_x1 - src_x0);
   int dst_y1 = dst_y0 + (src_y1 - src_y0);
 
@@ -294,7 +292,7 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
 
   if (src_offset < dst_offset) {
     // backward (bottom -> top)
-    if (trans) {
+    if (transparent) {
       // copy transparent lines backwards
       src_offset += src_area * (line_count - 1);
       dst_offset += dst_area * (line_count - 1);
@@ -328,7 +326,7 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
     }
   } else {
     // forward (top-> bottom)
-    if (trans) {
+    if (transparent) {
       // copy transparent lines
       do {
         for (int x = 0; x < pixel_count; x++) {
@@ -362,11 +360,11 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
 }
 
 bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
-                            int dst_x, int dst_y, int src_w, int src_h,
-                            int dst_w, int dst_h, bool trans,
-                            std::span<const uint8_t> remap) {
+                            int dst_x, int dst_y, int src_width, int src_height,
+                            int dst_width, int dst_height, bool transparent,
+                            std::span<const uint8_t> remap_table) {
   // Check for scale error when to or from size 0,0
-  if (dst_w == 0 || dst_h == 0 || src_w == 0 || src_h == 0) {
+  if (dst_width == 0 || dst_height == 0 || src_width == 0 || src_height == 0) {
     return true;
   }
 
@@ -375,13 +373,13 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
 
   int src_x0 = src_x;
   int src_y0 = src_y;
-  int src_x1 = src_x + src_w;
-  int src_y1 = src_y + src_h;
+  int src_x1 = src_x + src_width;
+  int src_y1 = src_y + src_height;
 
   int dst_x0 = dst_x;
   int dst_y0 = dst_y;
-  int dst_x1 = dst_x + dst_w;
-  int dst_y1 = dst_y + dst_h;
+  int dst_x1 = dst_x + dst_width;
+  int dst_y1 = dst_y + dst_height;
 
   // clip source
   uint32_t code0 = Make_Code(src_x0, src_y0, vp_src->width(), vp_src->height());
@@ -397,19 +395,19 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
     // apply clip
     if (code0 & 0b1000) {
       src_x0 = 0;
-      dst_x0 = dst_x + ((src_x0 - src_x) * dst_w / src_w);
+      dst_x0 = dst_x + ((src_x0 - src_x) * dst_width / src_width);
     }
     if (code1 & 0b0100) {
       src_x1 = vp_src->width();
-      dst_x1 = dst_x + ((src_x1 - src_x) * dst_w / src_w);
+      dst_x1 = dst_x + ((src_x1 - src_x) * dst_width / src_width);
     }
     if (code0 & 0b0010) {
       src_y0 = 0;
-      dst_y0 = dst_y + ((src_y0 - src_y) * dst_h / src_h);
+      dst_y0 = dst_y + ((src_y0 - src_y) * dst_height / src_height);
     }
     if (code1 & 0b0001) {
       src_y1 = vp_src->height();
-      dst_y1 = dst_y + ((src_y1 - src_y) * dst_h / src_h);
+      dst_y1 = dst_y + ((src_y1 - src_y) * dst_height / src_height);
     }
   }
 
@@ -426,13 +424,13 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
     // apply clip
     if (code0 & 0b1000) {
       dst_x0 = 0;
-      src_x0 = src_x + ((dst_x0 - dst_x) * src_w / dst_w);
+      src_x0 = src_x + ((dst_x0 - dst_x) * src_width / dst_width);
     }
     if (code1 & 0b0100) {
       dst_x1 = vp_dst->width();
     }
     if (code0 & 0b0010) {
-      src_y0 = src_y + ((dst_y0 - dst_y) * src_h / dst_h);
+      src_y0 = src_y + ((dst_y0 - dst_y) * src_height / dst_height);
     }
     if (code1 & 0b0001) {
       dst_y1 = vp_dst->height();
@@ -448,11 +446,11 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
   auto dst_offset =
       vp_dst->pixels().begin() + dst_x0 + (dst_y0 * dst_win_width);
 
-  const int dy_intr = static_cast<int>(src_h / dst_h * src_win_width);
-  const int dy_frac = src_h % dst_h;
-  int dy_acc = -dst_h;
+  const int dy_intr = static_cast<int>(src_height / dst_height * src_win_width);
+  const int dy_frac = src_height % dst_height;
+  int dy_acc = -dst_height;
 
-  const int dx_frac = (src_w * 65536) / dst_w;
+  const int dx_frac = (src_width * 65536) / dst_width;
 
   if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
     return true;
@@ -461,7 +459,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
   int counter_y = dst_y1 - dst_y0;
   const int pixel_count = dst_x1 - dst_x0;
 
-  if (trans && !remap.empty()) {
+  if (transparent && !remap_table.empty()) {
     do {
       int counter_x = pixel_count;
       int x = 0;
@@ -472,7 +470,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
                      (src_offset - vp_src->pixels().begin()) + (x / 65536));
 
         if (pixel) {
-          *out = base::At(remap, pixel);
+          *out = base::At(remap_table, pixel);
         }
 
         x += dx_frac;
@@ -485,10 +483,10 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       dy_acc += dy_frac;
       if (dy_acc > 0) {
         src_offset += src_win_width;
-        dy_acc -= dst_h;
+        dy_acc -= dst_height;
       }
     } while (--counter_y);
-  } else if (trans) {
+  } else if (transparent) {
     // normal scale with transparency
     do {
       int counter_x = pixel_count;
@@ -513,18 +511,18 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       dy_acc += dy_frac;
       if (dy_acc > 0) {
         src_offset += src_win_width;
-        dy_acc -= dst_h;
+        dy_acc -= dst_height;
       }
     } while (--counter_y);
-  } else if (!remap.empty()) {
-    // normal scale with remap
+  } else if (!remap_table.empty()) {
+    // normal scale with remap_table
     do {
       int counter_x = pixel_count;
       int x = 0;
       auto out = dst_offset;
       do {
         *out++ = base::At(
-            remap,
+            remap_table,
             base::At(vp_src->pixels(),
                      (src_offset - vp_src->pixels().begin()) + (x / 65536)));
         x += dx_frac;
@@ -536,7 +534,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       dy_acc += dy_frac;
       if (dy_acc > 0) {
         src_offset += src_win_width;
-        dy_acc -= dst_h;
+        dy_acc -= dst_height;
       }
     } while (--counter_y);
   } else {
@@ -558,7 +556,7 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
       dy_acc += dy_frac;
       if (dy_acc > 0) {
         src_offset += src_win_width;
-        dy_acc -= dst_h;
+        dy_acc -= dst_height;
       }
     } while (--counter_y);
   }
@@ -566,9 +564,9 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
   return true;
 }
 
-void Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
-                  int bcolor) {
-  if (!str || FontPtr.empty()) {
+void Buffer_Print(void* thisptr, const char* text, int x, int y, int fore_color,
+                  int back_color) {
+  if (!text || FontPtr.empty()) {
     return;
   }
 
@@ -590,13 +588,13 @@ void Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
   // Glyph pixels are palette indices into FontPalette: entry 0 is the
   // background (0 also means transparent) and entry 1 the foreground;
   // multi-colour fonts fill entries 2-15 via Set_Font_Palette_Range().
-  const auto background = static_cast<uint8_t>(bcolor);
-  FontPalette[1] = static_cast<uint8_t>(fcolor);
+  const auto background = static_cast<uint8_t>(back_color);
+  FontPalette[1] = static_cast<uint8_t>(fore_color);
   FontPalette[0] = background;
 
   auto next_glyph_start = line_start + x;
 
-  for (const char character : std::string_view(str)) {
+  for (const char character : std::string_view(text)) {
     // Unsigned so characters >= 128 index the metric tables correctly.
     const auto ch = static_cast<uint8_t>(character);
     if (ch == '\0') {
@@ -696,7 +694,7 @@ void Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
   }
 }
 
-void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
+void Buffer_Draw_Line(void* thisptr, int x1, int y1, int x2, int y2,
                       unsigned char color) {
   auto* vp_dst = static_cast<PixelView*>(thisptr);
 
@@ -704,8 +702,8 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
   const int height = vp_dst->height();
 
   // this is different to the original asm, but reused from blits
-  const uint32_t code0 = Make_Code(sx, sy, width, height);
-  const uint32_t code1 = Make_Code(dx, dy, width, height);
+  const uint32_t code0 = Make_Code(x1, y1, width, height);
+  const uint32_t code1 = Make_Code(x2, y2, width, height);
 
   if (code0 & code1) {
     return;
@@ -714,105 +712,105 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
   if (code0) {
     if (code0 & 0b1000)  // left
     {
-      if (dx != sx) {
-        sy += -sx * (dy - sy) / (dx - sx);
+      if (x2 != x1) {
+        y1 += -x1 * (y2 - y1) / (x2 - x1);
       }
-      sx = 0;
+      x1 = 0;
     } else if (code0 & 0b0100)  // right
     {
-      if (dx != sx) {
-        sy += (width - 1 - sx) * (dy - sy) / (dx - sx);
+      if (x2 != x1) {
+        y1 += (width - 1 - x1) * (y2 - y1) / (x2 - x1);
       }
-      sx = width - 1;
+      x1 = width - 1;
     }
 
     if (code0 & 0b0010)  // top
     {
-      if (dy != sy) {
-        sx = sx + (-sy * (dx - sx) / (dy - sy));
+      if (y2 != y1) {
+        x1 = x1 + (-y1 * (x2 - x1) / (y2 - y1));
       }
-      sy = 0;
+      y1 = 0;
     } else if (code0 & 0b0001)  // bottom
     {
-      if (dy != sy) {
-        sx = sx + ((height - 1 - sy) * (dx - sx) / (dy - sy));
+      if (y2 != y1) {
+        x1 = x1 + ((height - 1 - y1) * (x2 - x1) / (y2 - y1));
       }
-      sy = height - 1;
+      y1 = height - 1;
     }
   }
 
   if (code1) {
     if (code1 & 0b1000)  // left
     {
-      if (sx != dx) {
-        dy = dy + (-dx * (sy - dy) / (sx - dx));
+      if (x1 != x2) {
+        y2 = y2 + (-x2 * (y1 - y2) / (x1 - x2));
       }
-      dx = 0;
+      x2 = 0;
     } else if (code1 & 0b0100)  // right
     {
-      if (sx != dx) {
-        dy = dy + ((width - 1 - dx) * (sy - dy) / (sx - dx));
+      if (x1 != x2) {
+        y2 = y2 + ((width - 1 - x2) * (y1 - y2) / (x1 - x2));
       }
-      dx = width - 1;
+      x2 = width - 1;
     }
 
     if (code1 & 0b0010)  // top
     {
-      if (sy != dy) {
-        dx = dx + (-dy * (sx - dx) / (sy - dy));
+      if (y1 != y2) {
+        x2 = x2 + (-y2 * (x1 - x2) / (y1 - y2));
       }
-      dy = 0;
+      y2 = 0;
     } else if (code1 & 0b0001)  // bottom
     {
-      if (sy != dy) {
-        dx = dx + ((height - 1 - dy) * (sx - dx) / (sy - dy));
+      if (y1 != y2) {
+        x2 = x2 + ((height - 1 - y2) * (x1 - x2) / (y1 - y2));
       }
-      dy = height - 1;
+      y2 = height - 1;
     }
   }
 
   const base::ssize bpr = vp_dst->stride();
 
-  int y_dist = dy - sy;
+  int y_dist = y2 - y1;
 
   if (y_dist == 0) {
     // horizontal
-    if (dx < sx) {
-      std::swap(dx, sx);
+    if (x2 < x1) {
+      std::swap(x2, x1);
     }
 
-    const int count = dx - sx + 1;
-    const auto ptr = vp_dst->pixels().begin() + sx + (bpr * sy);
-    std::fill_n(ptr, count, color);
+    const int count = x2 - x1 + 1;
+    const auto page = vp_dst->pixels().begin() + x1 + (bpr * y1);
+    std::fill_n(page, count, color);
 
     return;
   }
 
   // not horizontal
-  if (y_dist == 0 || dy < sy) {
-    sy = sy + y_dist;
+  if (y_dist == 0 || y2 < y1) {
+    y1 = y1 + y_dist;
     y_dist = -y_dist;
 
-    std::swap(dx, sx);
+    std::swap(x2, x1);
   }
 
-  auto ptr = vp_dst->pixels().begin() + sx + (bpr * sy);
+  auto page = vp_dst->pixels().begin() + x1 + (bpr * y1);
 
   int step = 1;
-  int x_dist = dx - sx;
+  int x_dist = x2 - x1;
 
   if (x_dist == 0) {
     // vertical
     int count = y_dist + 1;
     do {
-      *ptr = color;
-      ptr = ptr + bpr;
+      *page = color;
+      page = page + bpr;
     } while (--count);
     return;
   }
 
   // not vertical
-  if (x_dist == 0 || dx < sx) {
+  if (x_dist == 0 || x2 < x1) {
     x_dist = -x_dist;
     step = -1;
   }
@@ -821,69 +819,69 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
     int count = y_dist;
     int accum = y_dist / 2;
     while (true) {
-      *ptr = color;
+      *page = color;
       if (--count == 0) {
         break;
       }
-      ptr += bpr;
+      page += bpr;
 
       accum -= x_dist;
       if (accum < 0) {
         accum += y_dist;
-        ptr += step;
+        page += step;
       }
     }
   } else {
     int count = x_dist;
     int accum = x_dist / 2;
     while (true) {
-      *ptr = color;
+      *page = color;
       if (--count == 0) {
         break;
       }
-      ptr = ptr + step;
+      page = page + step;
 
       accum -= y_dist;
       if (accum < 0) {
         accum += x_dist;
-        ptr += bpr;
+        page += bpr;
       }
     }
   }
 }
 
-void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
+void Buffer_Fill_Rect(void* thisptr, int x1, int y1, int x2, int y2,
                       unsigned char color) {
   auto* vp_dst = static_cast<PixelView*>(thisptr);
 
-  if (sx > dx) {
-    std::swap(sx, dx);
+  if (x1 > x2) {
+    std::swap(x1, x2);
   }
-  if (sy > dy) {
-    std::swap(sy, dy);
+  if (y1 > y2) {
+    std::swap(y1, y2);
   }
 
   // clamp to bounds
-  sx = std::max(sx, 0);
-  sy = std::max(sy, 0);
+  x1 = std::max(x1, 0);
+  y1 = std::max(y1, 0);
 
-  if (dx >= vp_dst->width()) {
-    dx = vp_dst->width() - 1;
+  if (x2 >= vp_dst->width()) {
+    x2 = vp_dst->width() - 1;
   }
-  if (dy >= vp_dst->height()) {
-    dy = vp_dst->height() - 1;
+  if (y2 >= vp_dst->height()) {
+    y2 = vp_dst->height() - 1;
   }
 
   // nothing to fill
-  if (dx < sx || dy < sy) {
+  if (x2 < x1 || y2 < y1) {
     return;
   }
 
   const base::ssize dst_area = vp_dst->stride();
-  auto dst_offset = vp_dst->pixels().begin() + sx + (sy * dst_area);
+  auto dst_offset = vp_dst->pixels().begin() + x1 + (y1 * dst_area);
 
-  const int pixel_count = dx - sx + 1;
-  int line_count = dy - sy + 1;
+  const int pixel_count = x2 - x1 + 1;
+  int line_count = y2 - y1 + 1;
 
   // fill lines
   do {
@@ -892,19 +890,19 @@ void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
   } while (--line_count);
 }
 
-void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
-                  std::span<const uint8_t> remap) {
-  if (remap.empty()) {
+void Buffer_Remap(void* thisptr, int x1, int y1, int width, int height,
+                  std::span<const uint8_t> remap_table) {
+  if (remap_table.empty()) {
     return;
   }
 
   auto* vp_dst = static_cast<PixelView*>(thisptr);
 
   // clip
-  int dst_x0 = sx;
-  int dst_y0 = sy;
-  int dst_x1 = sx + width;
-  int dst_y1 = sy + height;
+  int dst_x0 = x1;
+  int dst_y0 = y1;
+  int dst_x1 = x1 + width;
+  int dst_y1 = y1 + height;
 
   const uint32_t code0 =
       Make_Code(dst_x0, dst_y0, vp_dst->width(), vp_dst->height());
@@ -944,10 +942,10 @@ void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
 
   const int skip = static_cast<int>(dst_area - pixel_count);
 
-  // remap lines
+  // Remap one row at a time.
   do {
     for (int x = 0; x < pixel_count; x++) {
-      const auto v = base::At(remap, *dst_offset);
+      const auto v = base::At(remap_table, *dst_offset);
       *dst_offset++ = v;
     }
     dst_offset += skip;
@@ -1000,28 +998,29 @@ PixelView::~PixelView() {
   }
 }
 
-PixelView* SetLogicPage(PixelView* ptr) {
-  std::swap(LogicPage, ptr);
-  return ptr;
+PixelView* SetLogicPage(PixelView* page) {
+  std::swap(LogicPage, page);
+  return page;
 }
 
-PixelView* SetLogicPage(PixelView& ptr) { return SetLogicPage(&ptr); }
+PixelView* SetLogicPage(PixelView& page) { return SetLogicPage(&page); }
 
-PixelView::PixelView(PixelBuffer* graphic_buff, int x, int y, int w, int h) {
-  Attach(graphic_buff, x, y, w, h);
+PixelView::PixelView(PixelBuffer* buffer, int x, int y, int width, int height) {
+  Attach(buffer, x, y, width, height);
 }
 
-void PixelView::DrawRect(int sx, int sy, int dx, int dy, uint8_t color) {
+void PixelView::DrawRect(int x1, int y1, int x2, int y2, uint8_t color) {
   Lock();
-  DrawLine(sx, sy, dx, sy, color);
-  DrawLine(sx, dy, dx, dy, color);
-  DrawLine(sx, sy, sx, dy, color);
-  DrawLine(dx, sy, dx, dy, color);
+  DrawLine(x1, y1, x2, y1, color);
+  DrawLine(x1, y2, x2, y2, color);
+  DrawLine(x1, y1, x1, y2, color);
+  DrawLine(x2, y1, x2, y2, color);
   Unlock();
 }
 
-void PixelView::Attach(PixelBuffer* graphic_buff, int x, int y, int w, int h) {
-  if (this == buffer()) {
+void PixelView::Attach(PixelBuffer* buffer, int x, int y, int width,
+                       int height) {
+  if (this == buffer_) {
     return;
   }
 
@@ -1029,30 +1028,30 @@ void PixelView::Attach(PixelBuffer* graphic_buff, int x, int y, int w, int h) {
   // has no last pixel to clamp to, so the corner stays at the origin and the
   // width and height below come out zero; Screen builds its views against
   // such pages and attaches them again once the video mode is known.
-  x = std::clamp(x, 0, std::max(graphic_buff->width() - 1, 0));
-  y = std::clamp(y, 0, std::max(graphic_buff->height() - 1, 0));
+  x = std::clamp(x, 0, std::max(buffer->width() - 1, 0));
+  y = std::clamp(y, 0, std::max(buffer->height() - 1, 0));
 
-  if (x + w > graphic_buff->width()) {
-    w = graphic_buff->width() - x;
+  if (x + width > buffer->width()) {
+    width = buffer->width() - x;
   }
 
-  if (y + h > graphic_buff->height()) {
-    h = graphic_buff->height() - y;
+  if (y + height > buffer->height()) {
+    height = buffer->height() - y;
   }
 
   /*======================================================================*/
   /* Get a pointer to the top left edge of the buffer.
    */
   /*======================================================================*/
-  offset_ = graphic_buff->Get_Bytes().empty()
-                ? nullptr
-                : graphic_buff->Get_Bytes()
-                      .subspan(base::ToSize(
-                          (static_cast<base::ssize>(graphic_buff->width() +
-                                                    graphic_buff->pitch()) *
-                           y) +
-                          x))
-                      .data();
+  offset_ =
+      buffer->Get_Bytes().empty()
+          ? nullptr
+          : buffer->Get_Bytes()
+                .subspan(base::ToSize((static_cast<base::ssize>(
+                                           buffer->width() + buffer->pitch()) *
+                                       y) +
+                                      x))
+                .data();
 
   /*======================================================================*/
   /* Copy over all of the variables that we need to store.
@@ -1060,20 +1059,21 @@ void PixelView::Attach(PixelBuffer* graphic_buff, int x, int y, int w, int h) {
   /*======================================================================*/
   x_pos_ = x;
   y_pos_ = y;
-  x_add_ = graphic_buff->width() - w;
-  width_ = w;
-  height_ = h;
-  pitch_ = graphic_buff->pitch();
-  buffer_ = graphic_buff;
+  x_add_ = buffer->width() - width;
+  width_ = width;
+  height_ = height;
+  pitch_ = buffer->pitch();
+  buffer_ = buffer;
 }
 
-PixelBuffer::PixelBuffer(int w, int h, std::span<uint8_t> buffer, int32_t size)
+PixelBuffer::PixelBuffer(int width, int height, std::span<uint8_t> buffer,
+                         int32_t byte_count)
     : PixelBuffer() {
-  Init(w, h, buffer, size, BUFFER_NONE);
+  Init(width, height, buffer, byte_count, BUFFER_NONE);
 }
 
-PixelBuffer::PixelBuffer(int w, int h, std::span<uint8_t> buffer)
-    : PixelBuffer(w, h, buffer, w * h) {}
+PixelBuffer::PixelBuffer(int width, int height, std::span<uint8_t> buffer)
+    : PixelBuffer(width, height, buffer, width * height) {}
 
 PixelBuffer::PixelBuffer() { buffer_ = this; }
 
@@ -1084,20 +1084,21 @@ PixelBuffer::~PixelBuffer() {
   }
 }
 
-void PixelBuffer::Init(int w, int h, std::span<uint8_t> buffer, int32_t size,
-                       PixelBufferFlags flags) {
-  CHECK_GE(w, 0);
-  CHECK_GE(h, 0);
-  CHECK_GE(size, 0);
-  const auto pixel_count = base::ToSize(w) * base::ToSize(h);
+void PixelBuffer::Init(int width, int height, std::span<uint8_t> buffer,
+                       int32_t byte_count, PixelBufferFlags flags) {
+  CHECK_GE(width, 0);
+  CHECK_GE(height, 0);
+  CHECK_GE(byte_count, 0);
+  const auto pixel_count = base::ToSize(width) * base::ToSize(height);
   if (!base::Any(flags & BUFFER_VISIBLE)) {
-    CHECK_LE(pixel_count, buffer.empty()
-                              ? (size == 0 ? pixel_count : base::ToSize(size))
-                              : buffer.size());
+    CHECK_LE(pixel_count,
+             buffer.empty()
+                 ? (byte_count == 0 ? pixel_count : base::ToSize(byte_count))
+                 : buffer.size());
   }
-  Size = size;
-  width_ = w;
-  height_ = h;
+  Size = byte_count;
+  width_ = width;
+  height_ = height;
   pitch_ = 0;
   x_add_ = 0;
   x_pos_ = y_pos_ = 0;
@@ -1113,10 +1114,10 @@ void PixelBuffer::Init(int w, int h, std::span<uint8_t> buffer, int32_t size,
     Buffer = buffer.data();
 
     if (buffer.empty()) {
-      if (size == 0) {
-        Size = w * h;
+      if (byte_count == 0) {
+        Size = width * height;
       } else {
-        Size = size;
+        Size = byte_count;
       }
       Buffer = new uint8_t[base::ToSize(Size)];
       // This allocation contains exactly Size bytes.

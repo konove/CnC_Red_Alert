@@ -70,10 +70,10 @@ inline constexpr int kDefaultScreenHeight = 200;
 
 class PixelBuffer;
 
-// Makes `ptr` the page the drawing code writes to, and returns the previous
+// Makes `page` the page the drawing code writes to, and returns the previous
 // one so the caller can put it back.
-PixelView* SetLogicPage(PixelView* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND);
-PixelView* SetLogicPage(PixelView& ptr ABSL_ATTRIBUTE_LIFETIME_BOUND);
+PixelView* SetLogicPage(PixelView* page ABSL_ATTRIBUTE_LIFETIME_BOUND);
+PixelView* SetLogicPage(PixelView& page ABSL_ATTRIBUTE_LIFETIME_BOUND);
 
 // A rectangular window onto a PixelBuffer. Coordinates passed to the
 // drawing members are relative to the window's top left corner and are
@@ -90,9 +90,9 @@ PixelView* SetLogicPage(PixelView& ptr ABSL_ATTRIBUTE_LIFETIME_BOUND);
 //   view.Blit(TheScreen().visible_view());
 class PixelView {
  public:
-  // Attaches the view to `graphic_buff` at x,y with the given size; see
+  // Attaches the view to `buffer` at x,y with the given size; see
   // Attach() for how the rectangle is clamped to the buffer.
-  PixelView(PixelBuffer* graphic_buff, int x, int y, int w, int h);
+  PixelView(PixelBuffer* buffer, int x, int y, int width, int height);
   PixelView() = default;
   // Resets LogicPage if it points here, so that nothing draws into a
   // view that is gone.
@@ -137,54 +137,55 @@ class PixelView {
 
   // Copies a rectangle of the view out to plain memory, packed with no
   // padding, and returns the number of bytes written. The rectangle is
-  // clipped to the view first, and nothing is written if `buff` is
+  // clipped to the view first, and nothing is written if `dest` is
   // smaller than what is left.
-  int32_t CopyToBuffer(int x, int y, int w, int h, std::span<uint8_t> buff,
-                       int32_t size);
+  int32_t CopyToBuffer(int x, int y, int width, int height,
+                       std::span<uint8_t> dest, int32_t dest_size);
 
-  // Copies pixel_width x pixel_height pixels from x_pixel,y_pixel in this
-  // view to dx_pixel,dy_pixel in `dest`, clipping to both. With `trans`,
+  // Copies width x height pixels from src_x,src_y in this view to
+  // dst_x,dst_y in `dest`, clipping to both. With `transparent`,
   // pixel 0 is left alone in the destination instead of being copied.
   // Returns false if either view could not be locked.
-  bool Blit(PixelView& dest, int x_pixel, int y_pixel, int dx_pixel,
-            int dy_pixel, int pixel_width, int pixel_height,
-            bool trans = false);
-  bool Blit(PixelView& dest, int dx, int dy, bool trans = false);
-  bool Blit(PixelView& dest, bool trans = false);
+  bool Blit(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
+            int width, int height, bool transparent = false);
+  bool Blit(PixelView& dest, int dst_x, int dst_y, bool transparent = false);
+  bool Blit(PixelView& dest, bool transparent = false);
 
   bool Scale(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
-             int src_w, int src_h, int dst_w, int dst_h, bool trans = false,
-             std::span<const uint8_t> remap = {});
+             int src_width, int src_height, int dst_width, int dst_height,
+             bool transparent = false,
+             std::span<const uint8_t> remap_table = {});
   bool Scale(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
-             int src_w, int src_h, int dst_w, int dst_h,
-             std::span<const uint8_t> remap);
-  bool Scale(PixelView& dest, bool trans = false,
-             std::span<const uint8_t> remap = {});
-  bool Scale(PixelView& dest, std::span<const uint8_t> remap);
+             int src_width, int src_height, int dst_width, int dst_height,
+             std::span<const uint8_t> remap_table);
+  bool Scale(PixelView& dest, bool transparent = false,
+             std::span<const uint8_t> remap_table = {});
+  bool Scale(PixelView& dest, std::span<const uint8_t> remap_table);
 
-  // Draws text in the current font at x_pixel,y_pixel. `fcolor` and `bcolor`
+  // Draws text in the current font at x,y. `fore_color` and `back_color`
   // are palette indices; the integer overload prints the number in decimal.
-  void Print(const char* string, int x_pixel, int y_pixel, int fcolor,
-             int bcolor);
-  void Print(int num, int x_pixel, int y_pixel, int fcolor, int bcolor);
+  void Print(const char* text, int x, int y, int fore_color, int back_color);
+  void Print(int value, int x, int y, int fore_color, int back_color);
 
-  // sx,sy and dx,dy are the two corners, both inclusive, so DrawRect and
-  // FillRect cover dx - sx + 1 pixels per row.
-  void DrawLine(int sx, int sy, int dx, int dy, uint8_t color);
-  void DrawRect(int sx, int sy, int dx, int dy, uint8_t color);
-  void FillRect(int sx, int sy, int dx, int dy, uint8_t color);
+  // x1,y1 and x2,y2 are the two corners, both inclusive, so DrawRect and
+  // FillRect cover x2 - x1 + 1 pixels per row.
+  void DrawLine(int x1, int y1, int x2, int y2, uint8_t color);
+  void DrawRect(int x1, int y1, int x2, int y2, uint8_t color);
+  void FillRect(int x1, int y1, int x2, int y2, uint8_t color);
 
-  // Replaces every pixel in the rectangle with remap[pixel]. `remap` is a
-  // 256-entry table; the shorter overload covers the whole view.
-  void Remap(int sx, int sy, int width, int height,
-             std::span<const uint8_t> remap);
-  void Remap(std::span<const uint8_t> remap);
+  // Replaces every pixel in the rectangle with remap_table[pixel].
+  // `remap_table` is a 256-entry table; the shorter overload covers the whole
+  // view.
+  void Remap(int x1, int y1, int width, int height,
+             std::span<const uint8_t> remap_table);
+  void Remap(std::span<const uint8_t> remap_table);
 
-  // Draws tile `icon` of an icon set at x_pixel,y_pixel, clipped to the
+  // Draws tile `icon` of an icon set at x,y, clipped to the
   // WindowList entry `clip_window` rather than to the view - the map
-  // draws its terrain through this. `remap` may be empty for no remapping.
-  void DrawStamp(std::span<const std::byte> icondata, int icon, int x_pixel,
-                 int y_pixel, std::span<const uint8_t> remap, int clip_window);
+  // draws its terrain through this. `remap_table` may be empty for no
+  // remapping.
+  void DrawStamp(std::span<const std::byte> icon_data, int icon, int x, int y,
+                 std::span<const uint8_t> remap_table, int clip_window);
 
   // Locks the buffer's surface so its pixels can be read or written, and
   // reattaches this view to them, since locking can move them. Locks
@@ -196,10 +197,10 @@ class PixelView {
   inline bool Unlock();
   [[nodiscard]] inline int lock_count() const;
 
-  // Binds the view to the given rectangle of `graphic_buff`, clamping it
+  // Binds the view to the given rectangle of `buffer`, clamping it
   // to the buffer's bounds. Has no effect on a PixelBuffer, which is
   // permanently the view covering itself.
-  void Attach(PixelBuffer* graphic_buff, int x, int y, int w, int h);
+  void Attach(PixelBuffer* buffer, int x, int y, int width, int height);
 
  protected:
   // The view's top left pixel within the buffer. Null while the buffer
@@ -241,9 +242,10 @@ class PixelView {
 class PixelBuffer : public PixelView, public BufferClass {
  public:
   // Sizes the buffer and gives it `buffer`'s pixels, or allocates `size`
-  // bytes (w * h when `size` is zero) if `buffer` is empty.
-  PixelBuffer(int w, int h, std::span<uint8_t> buffer, int32_t size);
-  PixelBuffer(int w, int h, std::span<uint8_t> buffer = {});
+  // bytes (width * height when `byte_count` is zero) if `buffer` is empty.
+  PixelBuffer(int width, int height, std::span<uint8_t> buffer,
+              int32_t byte_count);
+  PixelBuffer(int width, int height, std::span<uint8_t> buffer = {});
   // Leaves the buffer empty; Init() gives it pixels later. Screen's pages
   // are built this way, before there is a window to size them against.
   PixelBuffer();
@@ -258,10 +260,11 @@ class PixelBuffer : public PixelView, public BufferClass {
   // Gives the buffer its pixels, replacing whatever it had. With
   // BUFFER_VISIBLE it creates the window's surface and texture and records
   // itself in WindowBuffer; otherwise it takes `buffer`, or allocates
-  // `size` bytes when `buffer` is empty. CHECK-fails if a caller-supplied
-  // buffer is too small for w * h.
-  void Init(int w, int h, std::span<uint8_t> buffer, int32_t size,
-            PixelBufferFlags flags);
+  // `byte_count` bytes when `buffer` is empty. CHECK-fails if a
+  // caller-supplied
+  // buffer is too small for width * height.
+  void Init(int width, int height, std::span<uint8_t> buffer,
+            int32_t byte_count, PixelBufferFlags flags);
   // Releases the window texture and surfaces Init() created for a visible
   // buffer, and cancels its pending redraw. The destructor calls it; calling
   // it again does nothing.
@@ -273,12 +276,12 @@ class PixelBuffer : public PixelView, public BufferClass {
   bool LockSurface();
   bool UnlockSurface();
 
-  // Draws `bmp` onto this buffer with its centre landing on `pt`, scaled and
-  // rotated. `scale` is 24.8 fixed point (0x100 = 1.0) and is ignored when
+  // Draws `bitmap` onto this buffer with its centre landing on `center`, scaled
+  // and rotated. `scale` is 24.8 fixed point (0x100 = 1.0) and is ignored when
   // zero; `angle` is 0-255 over the full circle. Pixel 0 is transparent.
   // Whatever falls outside the buffer is dropped, so a bitmap that does not
   // fit is silently cropped.
-  void DrawScaledRotated(const BitmapClass& bmp, const TPoint2D& pt,
+  void DrawScaledRotated(const BitmapClass& bitmap, const TPoint2D& center,
                          int32_t scale, uint8_t angle);
 
   // Whether this is the buffer the window shows, that is whether it was
@@ -299,13 +302,13 @@ class PixelBuffer : public PixelView, public BufferClass {
   // no SDL header.
   [[nodiscard]] const void* palette() const;
 
-  // Presents `paletted_data`, `width` x `height` pixels, stretched to the
+  // Presents `frame`, `width` x `height` pixels, stretched to the
   // window by SDL rather than by the game - this is how a 320x200 movie
   // fills a 640x400 screen without the game scaling every frame itself.
   // Uses the palette already set via UpdatePalette. The frame stays on screen,
   // following later UpdatePalette() calls the way a VGA screen would, until
   // something is drawn to the display surface.
-  void PresentScaledFrame(std::span<const uint8_t> paletted_data, int width,
+  void PresentScaledFrame(std::span<const uint8_t> frame, int width,
                           int height);
   // Drops the scaling texture, so the next present shows the display
   // surface again. UnlockSurface() calls it as soon as anything draws.
@@ -426,26 +429,26 @@ inline void PixelView::Clear(uint8_t color) {
   }
 }
 
-inline int32_t PixelView::CopyToBuffer(int x, int y, int w, int h,
-                                       std::span<uint8_t> buff, int32_t size) {
+inline int32_t PixelView::CopyToBuffer(int x, int y, int width, int height,
+                                       std::span<uint8_t> dest,
+                                       int32_t dest_size) {
   int32_t return_code = 0;
   if (Lock()) {
-    return_code = Buffer_To_Buffer(this, x, y, w, h, buff, size);
+    return_code = Buffer_To_Buffer(this, x, y, width, height, dest, dest_size);
     Unlock();
   }
   return return_code;
 }
 
-inline bool PixelView::Blit(PixelView& dest, int x_pixel, int y_pixel,
-                            int dx_pixel, int dy_pixel, int pixel_width,
-                            int pixel_height, bool trans) {
+inline bool PixelView::Blit(PixelView& dest, int src_x, int src_y, int dst_x,
+                            int dst_y, int width, int height,
+                            bool transparent) {
   bool return_code = false;
 
   if (Lock()) {
     if (dest.Lock()) {
-      return_code =
-          Linear_Blit_To_Linear(this, &dest, x_pixel, y_pixel, dx_pixel,
-                                dy_pixel, pixel_width, pixel_height, trans);
+      return_code = Linear_Blit_To_Linear(this, &dest, src_x, src_y, dst_x,
+                                          dst_y, width, height, transparent);
       dest.Unlock();
     }
     Unlock();
@@ -454,24 +457,25 @@ inline bool PixelView::Blit(PixelView& dest, int x_pixel, int y_pixel,
   return return_code;
 }
 
-inline bool PixelView::Blit(PixelView& dest, int dx, int dy, bool trans) {
-  return Blit(dest, 0, 0, dx, dy, width_, height_, trans);
+inline bool PixelView::Blit(PixelView& dest, int dst_x, int dst_y,
+                            bool transparent) {
+  return Blit(dest, 0, 0, dst_x, dst_y, width_, height_, transparent);
 }
 
-inline bool PixelView::Blit(PixelView& dest, bool trans) {
-  return Blit(dest, 0, 0, trans);
+inline bool PixelView::Blit(PixelView& dest, bool transparent) {
+  return Blit(dest, 0, 0, transparent);
 }
 
 inline bool PixelView::Scale(PixelView& dest, int src_x, int src_y, int dst_x,
-                             int dst_y, int src_w, int src_h, int dst_w,
-                             int dst_h, bool trans,
-                             std::span<const uint8_t> remap) {
+                             int dst_y, int src_width, int src_height,
+                             int dst_width, int dst_height, bool transparent,
+                             std::span<const uint8_t> remap_table) {
   bool return_code = false;
   if (Lock()) {
     if (dest.Lock()) {
-      return_code =
-          Linear_Scale_To_Linear(this, &dest, src_x, src_y, dst_x, dst_y, src_w,
-                                 src_h, dst_w, dst_h, trans, remap);
+      return_code = Linear_Scale_To_Linear(
+          this, &dest, src_x, src_y, dst_x, dst_y, src_width, src_height,
+          dst_width, dst_height, transparent, remap_table);
       dest.Unlock();
     }
     Unlock();
@@ -480,39 +484,41 @@ inline bool PixelView::Scale(PixelView& dest, int src_x, int src_y, int dst_x,
 }
 
 inline bool PixelView::Scale(PixelView& dest, int src_x, int src_y, int dst_x,
-                             int dst_y, int src_w, int src_h, int dst_w,
-                             int dst_h, std::span<const uint8_t> remap) {
-  return Scale(dest, src_x, src_y, dst_x, dst_y, src_w, src_h, dst_w, dst_h,
-               false, remap);
+                             int dst_y, int src_width, int src_height,
+                             int dst_width, int dst_height,
+                             std::span<const uint8_t> remap_table) {
+  return Scale(dest, src_x, src_y, dst_x, dst_y, src_width, src_height,
+               dst_width, dst_height, false, remap_table);
 }
 
-inline bool PixelView::Scale(PixelView& dest, bool trans,
-                             std::span<const uint8_t> remap) {
+inline bool PixelView::Scale(PixelView& dest, bool transparent,
+                             std::span<const uint8_t> remap_table) {
   return Scale(dest, 0, 0, 0, 0, width_, height_, dest.width(), dest.height(),
-               trans, remap);
+               transparent, remap_table);
 }
 
-inline bool PixelView::Scale(PixelView& dest, std::span<const uint8_t> remap) {
-  return Scale(dest, false, remap);
+inline bool PixelView::Scale(PixelView& dest,
+                             std::span<const uint8_t> remap_table) {
+  return Scale(dest, false, remap_table);
 }
 
-inline void PixelView::Print(const char* string, int x_pixel, int y_pixel,
-                             int fcolor, int bcolor) {
+inline void PixelView::Print(const char* text, int x, int y, int fore_color,
+                             int back_color) {
   if (!Lock()) {
     return;
   }
-  Buffer_Print(this, string, x_pixel, y_pixel, fcolor, bcolor);
+  Buffer_Print(this, text, x, y, fore_color, back_color);
   Unlock();
 }
 
-inline void PixelView::Print(int num, int x_pixel, int y_pixel, int fcolor,
-                             int bcolor) {
-  Print(absl::StrCat(num).c_str(), x_pixel, y_pixel, fcolor, bcolor);
+inline void PixelView::Print(int value, int x, int y, int fore_color,
+                             int back_color) {
+  Print(absl::StrCat(value).c_str(), x, y, fore_color, back_color);
 }
 
-inline void PixelView::DrawStamp(std::span<const std::byte> icondata, int icon,
-                                 int x_pixel, int y_pixel,
-                                 const std::span<const uint8_t> remap,
+inline void PixelView::DrawStamp(std::span<const std::byte> icon_data, int icon,
+                                 int x, int y,
+                                 const std::span<const uint8_t> remap_table,
                                  int clip_window) {
   // Tiberian Dawn stores a window's x and width in units of eight pixels;
   // Red Alert stores them in pixels.
@@ -523,7 +529,7 @@ inline void PixelView::DrawStamp(std::span<const std::byte> icondata, int icon,
 #endif
   if (Lock()) {
     Buffer_Draw_Stamp_Clip(
-        this, icondata, icon, x_pixel, y_pixel, remap,
+        this, icon_data, icon, x, y, remap_table,
         base::At(base::At(WindowList, clip_window), kWindowX) * kWindowUnit,
         base::At(base::At(WindowList, clip_window), kWindowY),
         base::At(base::At(WindowList, clip_window), kWindowWidth) * kWindowUnit,
@@ -532,56 +538,56 @@ inline void PixelView::DrawStamp(std::span<const std::byte> icondata, int icon,
   }
 }
 
-inline void PixelView::DrawLine(int sx, int sy, int dx, int dy, uint8_t color) {
+inline void PixelView::DrawLine(int x1, int y1, int x2, int y2, uint8_t color) {
   if (Lock()) {
-    Buffer_Draw_Line(this, sx, sy, dx, dy, color);
+    Buffer_Draw_Line(this, x1, y1, x2, y2, color);
     Unlock();
   }
 }
 
-inline void PixelView::FillRect(int sx, int sy, int dx, int dy, uint8_t color) {
+inline void PixelView::FillRect(int x1, int y1, int x2, int y2, uint8_t color) {
   if (Lock()) {
-    Buffer_Fill_Rect(this, sx, sy, dx, dy, color);
+    Buffer_Fill_Rect(this, x1, y1, x2, y2, color);
     Unlock();
   }
 }
 
-inline void PixelView::Remap(int sx, int sy, int width, int height,
-                             std::span<const uint8_t> remap) {
+inline void PixelView::Remap(int x1, int y1, int width, int height,
+                             std::span<const uint8_t> remap_table) {
   if (Lock()) {
-    Buffer_Remap(this, sx, sy, width, height, remap);
+    Buffer_Remap(this, x1, y1, width, height, remap_table);
     Unlock();
   }
 }
 
-inline void PixelView::Remap(std::span<const uint8_t> remap) {
-  Remap(0, 0, width_, height_, remap);
+inline void PixelView::Remap(std::span<const uint8_t> remap_table) {
+  Remap(0, 0, width_, height_, remap_table);
 }
 
 inline int PixelView::pitch() const { return pitch_; }
 // BufferClass's copies to a page live here rather than in buffer.h because
 // they need the complete PixelView.
 
-inline int32_t Buffer_To_Page(int x, int y, int w, int h,
+inline int32_t Buffer_To_Page(int x, int y, int width, int height,
                               std::span<const uint8_t> Buffer,
                               PixelView& view) {
   int32_t return_code = 0;
   if (view.Lock()) {
-    return_code = Buffer_To_Page(x, y, w, h, Buffer, &view);
+    return_code = Buffer_To_Page(x, y, width, height, Buffer, &view);
     view.Unlock();
   }
   return return_code;
 }
 
-inline int32_t BufferClass::To_Page(int w, int h, PixelView& view) {
-  return To_Page(0, 0, w, h, view);
+inline int32_t BufferClass::To_Page(int width, int height, PixelView& view) {
+  return To_Page(0, 0, width, height, view);
 }
 inline int32_t BufferClass::To_Page(PixelView& view) {
   return To_Page(0, 0, view.width(), view.height(), view);
 }
-inline int32_t BufferClass::To_Page(int x, int y, int w, int h,
+inline int32_t BufferClass::To_Page(int x, int y, int width, int height,
                                     PixelView& view) {
-  return Buffer_To_Page(x, y, w, h, Get_Bytes(), view);
+  return Buffer_To_Page(x, y, width, height, Get_Bytes(), view);
 }
 
 #endif  // CNC_RED_ALERT_SDLLIB_GRAPHIC_BUFFER_H_

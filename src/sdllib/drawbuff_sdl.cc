@@ -36,7 +36,8 @@ bool PixelBuffer::LockSurface() {
     }
     const auto* surface = static_cast<SDL_Surface*>(palette_surface_);
     offset_ = static_cast<uint8_t*>(surface->pixels);
-    // SDL_LockSurface exposes pitch bytes for each of h rows until unlock.
+    // SDL_LockSurface exposes pitch bytes for each of the surface's rows until
+    // it is unlocked.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
     bytes_ = std::span(offset_,
                        base::ToSize(surface->pitch) * base::ToSize(surface->h));
@@ -190,14 +191,14 @@ void PixelBuffer::DestroyDisplaySurface() {
     palette_surface_ = nullptr;
   }
 }
-void PixelBuffer::PresentScaledFrame(std::span<const uint8_t> paletted_data,
-                                     int width, int height) {
+void PixelBuffer::PresentScaledFrame(std::span<const uint8_t> frame, int width,
+                                     int height) {
   if (width <= 0 || height <= 0) {
     return;
   }
   const auto frame_width = base::ToSize(width);
   const auto frame_height = base::ToSize(height);
-  if (frame_width > paletted_data.size() / frame_height || !palette_surface_) {
+  if (frame_width > frame.size() / frame_height || !palette_surface_) {
     return;
   }
   // Cancel any pending redraw timer
@@ -221,9 +222,9 @@ void PixelBuffer::PresentScaledFrame(std::span<const uint8_t> paletted_data,
     scaled_frame_height_ = height;
   }
 
-  scaled_frame_.assign(paletted_data.begin(),
-                       paletted_data.begin() + static_cast<std::ptrdiff_t>(
-                                                   frame_width * frame_height));
+  scaled_frame_.assign(
+      frame.begin(),
+      frame.begin() + static_cast<std::ptrdiff_t>(frame_width * frame_height));
   if (!UploadScaledFrame()) {
     return;
   }

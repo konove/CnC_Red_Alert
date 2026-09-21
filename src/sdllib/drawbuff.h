@@ -32,41 +32,41 @@ class PixelView;
 /*======================================================================*/
 int Buffer_Get_Pixel(void* thisptr, int x, int y);
 void Buffer_Clear(void* thisptr, unsigned char color);
-int32_t Buffer_To_Buffer(void* thisptr, int x, int y, int pixel_width,
-                         int pixel_height, std::span<uint8_t> buff,
-                         int32_t size);
-int32_t Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
-                       int pixel_height, std::span<const uint8_t> Buffer,
-                       void* view);
-bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
-                           int dx_pixel, int dy_pixel, int pixel_width,
-                           int pixel_height, bool trans);
+int32_t Buffer_To_Buffer(void* thisptr, int x, int y, int width, int height,
+                         std::span<uint8_t> dest, int32_t dest_size);
+int32_t Buffer_To_Page(int dst_x, int dst_y, int width, int height,
+                       std::span<const uint8_t> source, void* view);
+bool Linear_Blit_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
+                           int dst_x, int dst_y, int width, int height,
+                           bool transparent);
 bool Linear_Scale_To_Linear(void* /*thisptr*/, void* /*dest*/, int /*src_x*/,
                             int /*src_y*/, int /*dst_x*/, int /*dst_y*/,
-                            int /*src_w*/, int /*src_h*/, int /*dst_w*/,
-                            int /*dst_h*/, bool /*trans*/,
-                            std::span<const uint8_t> /*remap*/);
+                            int /*src_width*/, int /*src_height*/,
+                            int /*dst_width*/, int /*dst_height*/,
+                            bool /*transparent*/,
+                            std::span<const uint8_t> /*remap_table*/);
 
-// Draws text onto the viewport using the current global font (FontPtr).
-// Wraps to a new line when text exceeds the viewport width. A bcolor of 0
-// means a transparent background. Does nothing if str or FontPtr is null.
-void Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
-                  int bcolor);
+// Draws text onto the view using the current global font (FontPtr).
+// Wraps to a new line when text exceeds the view's width. A back_color of 0
+// means a transparent background. Does nothing if text or FontPtr is null.
+void Buffer_Print(void* thisptr, const char* text, int x, int y, int fore_color,
+                  int back_color);
 
 /*======================================================================*/
 /* Externs for all the graphic buffer class only functions */
 /*======================================================================*/
-void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
+// x1,y1 and x2,y2 are the two corners, both inclusive.
+void Buffer_Draw_Line(void* thisptr, int x1, int y1, int x2, int y2,
                       unsigned char color);
-void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
+void Buffer_Fill_Rect(void* thisptr, int x1, int y1, int x2, int y2,
                       unsigned char color);
-void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
-                  std::span<const uint8_t> remap);
-void Buffer_Draw_Stamp_Clip(PixelView* viewport,
-                            std::span<const std::byte> icondata, int icon,
-                            int x_pixel, int y_pixel,
-                            std::span<const uint8_t> remap, int /*min_x*/,
-                            int /*min_y*/, int /*max_x*/, int /*max_y*/);
+void Buffer_Remap(void* thisptr, int x, int y, int width, int height,
+                  std::span<const uint8_t> remap_table);
+void Buffer_Draw_Stamp_Clip(PixelView* view,
+                            std::span<const std::byte> icon_data, int icon,
+                            int x, int y, std::span<const uint8_t> remap_table,
+                            int /*min_x*/, int /*min_y*/, int /*max_x*/,
+                            int /*max_y*/);
 
 extern PixelView* LogicPage;
 extern bool AllowHardwareBlitFills;
