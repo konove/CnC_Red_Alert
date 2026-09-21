@@ -837,8 +837,8 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
     **	Draw any repair feedback graphic required.
     */
     if (IsRepairing && IsWrenchVisible) {
-      CC_Draw_Shape(ObjectTypeClass::SelectShapes, kSelectWrench, x, y, window,
-                    SHAPE_CENTER | SHAPE_WIN_REL);
+      CC_Draw_Shape(*LogicPage, ObjectTypeClass::SelectShapes, kSelectWrench, x,
+                    y, window, SHAPE_CENTER | SHAPE_WIN_REL);
     }
   }
 

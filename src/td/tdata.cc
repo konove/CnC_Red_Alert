@@ -53,6 +53,7 @@
 #include "absl/strings/match.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/conquer.h"
 #include "td/const.h"
@@ -726,7 +727,7 @@ TerrainType TerrainTypeClass::From_Name(const char* name) {
  *=============================================================================================*/
 void TerrainTypeClass::Display(int x, int y, WindowNumberType window,
                                HousesType /*unused*/) const {
-  CC_Draw_Shape(Get_Image_Data(), 0, x, y, window,
+  CC_Draw_Shape(*LogicPage, Get_Image_Data(), 0, x, y, window,
                 SHAPE_NORMAL | SHAPE_CENTER | SHAPE_WIN_REL);
 }
 

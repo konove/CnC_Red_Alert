@@ -1039,7 +1039,7 @@ static int Net_Join_Dialog() {
     nodbtn.Turn_On();
   }
 
-  Fancy_Text_Print("", 0, 0, kCcGreen, kTBlack,
+  Fancy_Text_Print(*LogicPage, "", 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   TheSession().messages().Init(d_message_x + 2, d_message_y + 2, 4,
@@ -1083,33 +1083,36 @@ static int Net_Join_Dialog() {
         Load_Title_Page(true);
         Set_Palette(ThePalettes().title_palette());
 
-        Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+        Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
         /*...............................................................
         Dialog & Field labels
         ...............................................................*/
-        Draw_Caption(TXT_JOIN_NETWORK_GAME, d_dialog_x, d_dialog_y, d_dialog_w);
+        Draw_Caption(*LogicPage, TXT_JOIN_NETWORK_GAME, d_dialog_x, d_dialog_y,
+                     d_dialog_w);
 
         Fancy_Text_Print(
-            TXT_YOUR_NAME, d_name_x - 5, d_name_y + 1, kCcGreen, kTBlack,
-            TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
-
-        Fancy_Text_Print(
-            TXT_SIDE_COLON, d_gdi_x - 5, d_gdi_y + 1, kCcGreen, kTBlack,
-            TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
-
-        Fancy_Text_Print(
-            TXT_COLOR_COLON, base::At(cbox_x, 0) - 5, d_color_y + 1, kCcGreen,
+            *LogicPage, TXT_YOUR_NAME, d_name_x - 5, d_name_y + 1, kCcGreen,
             kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            TXT_GAMES, d_gamelist_x + (d_gamelist_w / 2),
+            *LogicPage, TXT_SIDE_COLON, d_gdi_x - 5, d_gdi_y + 1, kCcGreen,
+            kTBlack,
+            TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+
+        Fancy_Text_Print(
+            *LogicPage, TXT_COLOR_COLON, base::At(cbox_x, 0) - 5, d_color_y + 1,
+            kCcGreen, kTBlack,
+            TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+
+        Fancy_Text_Print(
+            *LogicPage, TXT_GAMES, d_gamelist_x + (d_gamelist_w / 2),
             d_gamelist_y - d_txt6_h, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
+            *LogicPage, TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
             d_playerlist_y - d_txt6_h, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -1117,13 +1120,16 @@ static int Net_Join_Dialog() {
         Join-state-specific labels:
         ...............................................................*/
         if (joinstate > JOIN_NOTHING) {
-          Fancy_Text_Print(namebuf, d_name_x, d_name_y + 1, kCcGreen, kTBlack,
+          Fancy_Text_Print(*LogicPage, namebuf, d_name_x, d_name_y + 1,
+                           kCcGreen, kTBlack,
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           if (TheSession().house() == HOUSE_GOOD) {
-            Fancy_Text_Print(TXT_G_D_I, d_gdi_x, d_gdi_y + 1, kCcGreen, kTBlack,
+            Fancy_Text_Print(*LogicPage, TXT_G_D_I, d_gdi_x, d_gdi_y + 1,
+                             kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           } else {
-            Fancy_Text_Print(TXT_N_O_D, d_gdi_x, d_gdi_y + 1, kCcGreen, kTBlack,
+            Fancy_Text_Print(*LogicPage, TXT_N_O_D, d_gdi_x, d_gdi_y + 1,
+                             kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
         }
@@ -1178,11 +1184,11 @@ static int Net_Join_Dialog() {
                                   base::At(TheSession().graphic_colors(), i)));
 
           if (i == TheSession().color_index()) {
-            Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
-                     BOXSTYLE_GREEN_DOWN, false);
+            Draw_Box(*LogicPage, base::At(cbox_x, i), d_color_y, d_color_w,
+                     d_color_h, BOXSTYLE_GREEN_DOWN, false);
           } else {
-            Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
-                     BOXSTYLE_GREEN_RAISED, false);
+            Draw_Box(*LogicPage, base::At(cbox_x, i), d_color_y, d_color_w,
+                     d_color_h, BOXSTYLE_GREEN_RAISED, false);
           }
         }
       }
@@ -1195,7 +1201,7 @@ static int Net_Join_Dialog() {
       - If we've been rejected from a game, print that message
       ..................................................................*/
       if (display >= REDRAW_MESSAGE) {
-        Draw_Box(d_message_x, d_message_y, d_message_w, d_message_h,
+        Draw_Box(*LogicPage, d_message_x, d_message_y, d_message_w, d_message_h,
                  BOXSTYLE_GREEN_BORDER, true);
         TheSession().messages().Draw();
 
@@ -1214,14 +1220,14 @@ static int Net_Join_Dialog() {
                 TheSession().scenarios().at(TheSession().scenario_index()));
 
             Fancy_Text_Print(
-                txt, d_dialog_cx, d_msg1_y, kCcGreen, kTBlack,
+                *LogicPage, txt, d_dialog_cx, d_msg1_y, kCcGreen, kTBlack,
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_CENTER);
           } else {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
                            Text_String(TXT_NOT_FOUND));
 
             Fancy_Text_Print(
-                txt, d_dialog_cx, d_msg1_y, kCcNodColor, kTBlack,
+                *LogicPage, txt, d_dialog_cx, d_msg1_y, kCcNodColor, kTBlack,
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_CENTER);
           }
 
@@ -1231,7 +1237,7 @@ static int Net_Join_Dialog() {
           p = Text_String(TXT_START_CREDITS_COLON);
           absl::SNPrintF(txt, sizeof(txt), "%s %d", p, TheSession().credits());
           Fancy_Text_Print(
-              txt, d_dialog_cx, d_msg2_y, kCcGreen, kTBlack,
+              *LogicPage, txt, d_dialog_cx, d_msg2_y, kCcGreen, kTBlack,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_CENTER);
 
           /*............................................................
@@ -1241,8 +1247,9 @@ static int Net_Join_Dialog() {
           absl::SNPrintF(txt, sizeof(txt), "%s %d", p,
                          TheSession().unit_count());
           Fancy_Text_Print(
-              txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
-              d_msg3_y, kCcGreen, kTBlack,
+              *LogicPage, txt,
+              d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p), d_msg3_y,
+              kCcGreen, kTBlack,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           p = Text_String(TXT_LEVEL);
@@ -1252,7 +1259,7 @@ static int Net_Join_Dialog() {
           } else {
             absl::SNPrintF(txt, sizeof(txt), "%s **", p);
           }
-          Fancy_Text_Print(txt,
+          Fancy_Text_Print(*LogicPage, txt,
                            d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
                                String_Pixel_Width(p),
                            d_msg3_y, kCcGreen, kTBlack,
@@ -1268,8 +1275,9 @@ static int Net_Join_Dialog() {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_OFF));
           }
           Fancy_Text_Print(
-              txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
-              d_msg4_y, kCcGreen, kTBlack,
+              *LogicPage, txt,
+              d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p), d_msg4_y,
+              kCcGreen, kTBlack,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
@@ -1283,8 +1291,9 @@ static int Net_Join_Dialog() {
           }
 
           Fancy_Text_Print(
-              txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
-              d_msg5_y, kCcGreen, kTBlack,
+              *LogicPage, txt,
+              d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p), d_msg5_y,
+              kCcGreen, kTBlack,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
@@ -1297,7 +1306,7 @@ static int Net_Join_Dialog() {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_OFF));
           }
 
-          Fancy_Text_Print(txt,
+          Fancy_Text_Print(*LogicPage, txt,
                            d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
                                String_Pixel_Width(p),
                            d_msg4_y, kCcGreen, kTBlack,
@@ -1318,7 +1327,7 @@ static int Net_Join_Dialog() {
                              Text_String(TXT_OFF));
             }
           }
-          Fancy_Text_Print(txt,
+          Fancy_Text_Print(*LogicPage, txt,
                            d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
                                String_Pixel_Width(p),
                            d_msg5_y, kCcGreen, kTBlack,
@@ -1330,7 +1339,8 @@ static int Net_Join_Dialog() {
           ...............................................................*/
           if (joinstate == JOIN_REJECTED) {
             Fancy_Text_Print(
-                TXT_REQUEST_DENIED, d_dialog_cx, d_msg3_y, kCcGreen, kTBlack,
+                *LogicPage, TXT_REQUEST_DENIED, d_dialog_cx, d_msg3_y, kCcGreen,
+                kTBlack,
                 TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
         }
@@ -3275,8 +3285,8 @@ static int Net_New_Dialog() {
                           d_count_x + d_count_w + (2 * factor) + 20,
                           d_count_y + 12, 0);
       absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
-      Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
-                       kCcGreen, kTBlack,
+      Fancy_Text_Print(*LogicPage, txt, d_count_x + d_count_w + (2 * factor),
+                       d_count_y, kCcGreen, kTBlack,
                        TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
       display = REDRAW_NONE;
     }
@@ -3293,34 +3303,38 @@ static int Net_New_Dialog() {
         Load_Title_Page(true);
         Set_Palette(ThePalettes().title_palette());
 
-        Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+        Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
         /*...............................................................
         Dialog & Field labels
         ...............................................................*/
-        Draw_Caption(TXT_NETGAME_SETUP, d_dialog_x, d_dialog_y, d_dialog_w);
+        Draw_Caption(*LogicPage, TXT_NETGAME_SETUP, d_dialog_x, d_dialog_y,
+                     d_dialog_w);
 
         Fancy_Text_Print(
-            TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
+            *LogicPage, TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
             d_playerlist_y - d_txt6_h, kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_CENTER);
 
         Fancy_Text_Print(
-            TXT_SCENARIOS, d_scenariolist_x + (d_scenariolist_w / 2),
+            *LogicPage, TXT_SCENARIOS,
+            d_scenariolist_x + (d_scenariolist_w / 2),
             d_scenariolist_y - d_txt6_h, kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_CENTER);
 
         Fancy_Text_Print(
-            TXT_COUNT, d_count_x - (2 * factor), d_count_y, kCcGreen, kTBlack,
+            *LogicPage, TXT_COUNT, d_count_x - (2 * factor), d_count_y,
+            kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
-        Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
-                         kCcGreen, kTBlack,
+        Fancy_Text_Print(*LogicPage, txt, d_count_x + d_count_w + (2 * factor),
+                         d_count_y, kCcGreen, kTBlack,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
 
         Fancy_Text_Print(
-            TXT_LEVEL, d_level_x - (2 * factor), d_level_y, kCcGreen, kTBlack,
+            *LogicPage, TXT_LEVEL, d_level_x - (2 * factor), d_level_y,
+            kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
 
         if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
@@ -3328,12 +3342,12 @@ static int Net_New_Dialog() {
         } else {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
-        Fancy_Text_Print(txt, d_level_x + d_level_w + (2 * factor), d_level_y,
-                         kCcGreen, kTBlack,
+        Fancy_Text_Print(*LogicPage, txt, d_level_x + d_level_w + (2 * factor),
+                         d_level_y, kCcGreen, kTBlack,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
 
         Fancy_Text_Print(
-            TXT_START_CREDITS_COLON, d_credits_x - (5 * factor),
+            *LogicPage, TXT_START_CREDITS_COLON, d_credits_x - (5 * factor),
             d_credits_y + (1 * factor), kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
       }
@@ -3353,7 +3367,7 @@ static int Net_New_Dialog() {
       - If we've been rejected from a game, print that message
       ..................................................................*/
       if (display >= REDRAW_MESSAGE) {
-        Draw_Box(d_message_x, d_message_y, d_message_w, d_message_h,
+        Draw_Box(*LogicPage, d_message_x, d_message_y, d_message_w, d_message_h,
                  BOXSTYLE_GREEN_BORDER, true);
         TheSession().messages().Draw();
       }
@@ -3423,8 +3437,8 @@ static int Net_New_Dialog() {
                             d_count_y + (6 * factor), kBlack);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
-        Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
-                         kCcGreen, kTBlack,
+        Fancy_Text_Print(*LogicPage, txt, d_count_x + d_count_w + (2 * factor),
+                         d_count_y, kCcGreen, kTBlack,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
         Show_Mouse();
 
@@ -3448,8 +3462,8 @@ static int Net_New_Dialog() {
         } else {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
-        Fancy_Text_Print(txt, d_level_x + d_level_w + (2 * factor), d_level_y,
-                         kCcGreen, kTBlack,
+        Fancy_Text_Print(*LogicPage, txt, d_level_x + d_level_w + (2 * factor),
+                         d_level_y, kCcGreen, kTBlack,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
         Show_Mouse();
 
@@ -4353,7 +4367,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   ------------------------------------------------------------------------*/
   if (fresh) {
     Fancy_Text_Print(
-        "", 0, 0, kCcGreen, kTBlack,
+        *LogicPage, "", 0, 0, kCcGreen, kTBlack,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
     if (reconn) {
       const int id = TheNetwork().ipx().Connection_ID(oldest_index);
@@ -4376,19 +4390,20 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
 
     Hide_Mouse();
     SetLogicPage(TheScreen().visible_view());
-    Dialog_Box(x, y, w, h);
+    Dialog_Box(*LogicPage, x, y, w, h);
 
     Fancy_Text_Print(
-        buf1, 160 * factor, y + (d_margin * 2), kCcGreen, kBlack,
+        *LogicPage, buf1, 160 * factor, y + (d_margin * 2), kCcGreen, kBlack,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     Fancy_Text_Print(
-        buf2, 160 * factor, y + (d_margin * 2) + d_txt6_h + d_margin, kCcGreen,
-        kBlack, TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        *LogicPage, buf2, 160 * factor,
+        y + (d_margin * 2) + d_txt6_h + d_margin, kCcGreen, kBlack,
+        TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     Fancy_Text_Print(
-        buf3, 160 * factor, y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2),
-        kCcGreen, kBlack,
+        *LogicPage, buf3, 160 * factor,
+        y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2), kCcGreen, kBlack,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     Show_Mouse();
@@ -4409,8 +4424,9 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                         y + (d_margin * 2) + (d_txt6_h * 2) + d_margin,
                         kTBlack);
     Fancy_Text_Print(
-        buf2, 160 * factor, y + (d_margin * 2) + d_txt6_h + d_margin, kCcGreen,
-        kBlack, TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        *LogicPage, buf2, 160 * factor,
+        y + (d_margin * 2) + d_txt6_h + d_margin, kCcGreen, kBlack,
+        TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     Show_Mouse();
   }
@@ -4506,7 +4522,7 @@ static int Net_Fake_New_Dialog() {
   // than the shared string table.
   char buffer[80 * 3];
   port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
-  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, TheScreen().visible_view().height(), width,
                        height);
@@ -4699,14 +4715,14 @@ static int Net_Fake_New_Dialog() {
         Load_Title_Page(true);
         Set_Palette(ThePalettes().title_palette());
 
-        Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+        Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
         /*...............................................................
         Dialog & Field labels
         ...............................................................*/
-        Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
+        Draw_Caption(*LogicPage, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(buffer, d_dialog_cx - (width / 2),
+        Fancy_Text_Print(*LogicPage, buffer, d_dialog_cx - (width / 2),
                          d_dialog_y + (25 * factor), kCcGreen, kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
@@ -5147,7 +5163,7 @@ static int Net_Fake_Join_Dialog() {
   // than the shared string table.
   char buffer[80 * 3];
   port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
-  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, TheScreen().visible_view().height(), width,
                        height);
@@ -5245,7 +5261,7 @@ static int Net_Fake_Join_Dialog() {
 
   playerlist.Set_Selected_Style(ColorListClass::SELECT_NONE);
 
-  Fancy_Text_Print("", 0, 0, kCcGreen, kTBlack,
+  Fancy_Text_Print(*LogicPage, "", 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*
@@ -5299,14 +5315,14 @@ static int Net_Fake_Join_Dialog() {
         Load_Title_Page(true);
         Set_Palette(ThePalettes().title_palette());
 
-        Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+        Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
         /*...............................................................
         Dialog & Field labels
         ...............................................................*/
-        Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
+        Draw_Caption(*LogicPage, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(buffer, d_dialog_cx - (width / 2),
+        Fancy_Text_Print(*LogicPage, buffer, d_dialog_cx - (width / 2),
                          d_dialog_y + (25 * factor), kCcGreen, kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 

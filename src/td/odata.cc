@@ -60,6 +60,7 @@
 #include "absl/strings/match.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/conquer.h"
 #include "td/const.h"
@@ -774,7 +775,7 @@ void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
       frame = 7;
     }
 
-    CC_Draw_Shape(Get_Image_Data(), frame, x, y, window,
+    CC_Draw_Shape(*LogicPage, Get_Image_Data(), frame, x, y, window,
                   SHAPE_NORMAL | SHAPE_CENTER | SHAPE_WIN_REL);
   }
 }
@@ -865,10 +866,11 @@ ObjectClass* OverlayTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 void OverlayTypeClass::Draw_It(int x, int y, int data) const {
-  CC_Draw_Shape(
-      Get_Image_Data(), data, TheMap().TacPixelX + x + (CELL_PIXEL_W >> 1),
-      TheMap().TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
-      SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {}, MouseClass::UnitShadow);
+  CC_Draw_Shape(*LogicPage, Get_Image_Data(), data,
+                TheMap().TacPixelX + x + (CELL_PIXEL_W >> 1),
+                TheMap().TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
+                SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
+                MouseClass::UnitShadow);
 }
 
 /***********************************************************************************************

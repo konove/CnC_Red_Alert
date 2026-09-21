@@ -86,6 +86,7 @@
 #include "port/tokenizer.h"
 #include "rand.h"
 #include "sdllib/misc.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/anim.h"
 #include "td/cell.h"
@@ -406,7 +407,7 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) {
     }
 
     IsTheaterShape = true;
-    CC_Draw_Shape(shapedata, shapenum, x, y, window,
+    CC_Draw_Shape(*LogicPage, shapedata, shapenum, x, y, window,
                   flags | SHAPE_WIN_REL | SHAPE_GHOST, MouseClass::FadingLight,
                   MouseClass::UnitShadow);
     IsTheaterShape = false;

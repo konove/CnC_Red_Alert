@@ -13,8 +13,7 @@
 std::span<uint8_t> Conquer_Build_Fading_Table(
     std::span<const uint8_t> palette,
     std::span<uint8_t> dest ABSL_ATTRIBUTE_LIFETIME_BOUND, int color, int frac);
-void Fat_Put_Pixel(int x, int y, std::uint8_t color, int size,
-                   PixelView& /*gpage*/);
+void Fat_Put_Pixel(PixelView& view, int x, int y, std::uint8_t color, int size);
 void strtrim(char* buffer);
 
 // Null pointer check that fires only in cheat-key builds.

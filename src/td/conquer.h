@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/defines.h"
 #include "winvq/vqa32/vqaplay.h"
@@ -822,8 +823,9 @@ const char* Name_From_Source(SourceType source);
 FacingType KN_To_Facing(int input);
 std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
                                     int shapenum, int frames, int zoomfactor);
-void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
-                   int y, WindowNumberType window, ShapeFlags_Type flags,
+void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
+                   int shapenum, int x, int y, WindowNumberType window,
+                   ShapeFlags_Type flags,
                    std::span<const uint8_t> fadingdata = {},
                    std::span<const uint8_t> ghostdata = {});
 void Go_Editor(bool flag);
@@ -845,8 +847,8 @@ int Get_Resolution_Factor();
 
 // Processes the tactical map input codes.
 void Keyboard_Process(KeyNumType& input);
-// Tiles `shapefile`'s frame `shapenum` over the given rectangle.
-void CC_Texture_Fill(std::span<const std::byte> shapefile, int shapenum,
-                     int xpos, int ypos, int width, int height);
+// Tiles `shapefile`'s frame `shapenum` over the given rectangle of `view`.
+void CC_Texture_Fill(PixelView& view, std::span<const std::byte> shapefile,
+                     int shapenum, int xpos, int ypos, int width, int height);
 
 #endif  // CNC_RED_ALERT_TD_CONQUER_H_

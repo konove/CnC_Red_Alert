@@ -62,6 +62,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/building.h"
 #include "td/cell.h"
@@ -1736,7 +1737,7 @@ void InfantryTypeClass::Display(int x, int y, WindowNumberType window,
       shape = 2;
     }
 
-    CC_Draw_Shape(ptr, shape, x, y, window,
+    CC_Draw_Shape(*LogicPage, ptr, shape, x, y, window,
                   SHAPE_NORMAL | SHAPE_CENTER | SHAPE_WIN_REL);
   }
 }

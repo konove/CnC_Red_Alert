@@ -129,7 +129,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   **	Examine the optional button parameters. Fetch the width and starting
   **	characters for each.
   */
-  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   int bwidth = 0;   // button width
   int bheight = 0;  // button height
@@ -255,14 +255,15 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     TheScreen().sys_mem_page().Blit(TheScreen().visible_view(), 160, 100);
   } else {
 #endif
-    Dialog_Box(x, y, width, height);
-    Draw_Caption(Caption, x, y, width);
+    Dialog_Box(*LogicPage, x, y, width, height);
+    Draw_Caption(*LogicPage, Caption, x, y, width);
 
     /*
     **	Draw the caption.
     */
-    Fancy_Text_Print(buffer, x + (20 * factor), y + (25 * factor), kCcGreen,
-                     kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+    Fancy_Text_Print(*LogicPage, buffer, x + (20 * factor), y + (25 * factor),
+                     kCcGreen, kTBlack,
+                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 #ifdef JAPANESE
   }
 #endif
@@ -304,14 +305,14 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           TheScreen().sys_mem_page().Blit(TheScreen().visible_view(), 160, 100);
         } else {
 #endif
-          Dialog_Box(x, y, width, height);
-          Draw_Caption(Caption, x, y, width);
+          Dialog_Box(*LogicPage, x, y, width, height);
+          Draw_Caption(*LogicPage, Caption, x, y, width);
 
           /*
           **	Draw the caption.
           */
-          Fancy_Text_Print(buffer, x + (20 * factor), y + (25 * factor),
-                           kCcGreen, kTBlack,
+          Fancy_Text_Print(*LogicPage, buffer, x + (20 * factor),
+                           y + (25 * factor), kCcGreen, kTBlack,
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 #ifdef JAPANESE
         }

@@ -241,8 +241,9 @@ void GameControlsClass::Process() {
     */
     if (display) {
       Hide_Mouse();
-      Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-      Draw_Caption(TXT_GAME_CONTROLS, d_dialog_x, d_dialog_y, d_dialog_w);
+      Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+      Draw_Caption(*LogicPage, TXT_GAME_CONTROLS, d_dialog_x, d_dialog_y,
+                   d_dialog_w);
       Show_Mouse();
       display = false;
       refresh = true;
@@ -258,15 +259,15 @@ void GameControlsClass::Process() {
       if (curbutton == kButtonSpeed - kButtonFirst) {
         style = style | TPF_BRIGHT_COLOR;
       }
-      Fancy_Text_Print(TXT_SPEED, d_speed_x, d_speed_y - d_txt6_h, kCcGreen,
-                       kTBlack, style);
+      Fancy_Text_Print(*LogicPage, TXT_SPEED, d_speed_x, d_speed_y - d_txt6_h,
+                       kCcGreen, kTBlack, style);
 
-      Fancy_Text_Print(TXT_SLOWER, d_speed_x, d_speed_y + d_speed_h + 1,
-                       kCcGreen, kTBlack,
+      Fancy_Text_Print(*LogicPage, TXT_SLOWER, d_speed_x,
+                       d_speed_y + d_speed_h + 1, kCcGreen, kTBlack,
                        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       Fancy_Text_Print(
-          TXT_FASTER, d_speed_x + d_speed_w, d_speed_y + d_speed_h + 1,
-          kCcGreen, kTBlack,
+          *LogicPage, TXT_FASTER, d_speed_x + d_speed_w,
+          d_speed_y + d_speed_h + 1, kCcGreen, kTBlack,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
 
       /*
@@ -276,15 +277,15 @@ void GameControlsClass::Process() {
       if (curbutton == kButtonScrollrate - kButtonFirst) {
         style = style | TPF_BRIGHT_COLOR;
       }
-      Fancy_Text_Print(TXT_SCROLLRATE, d_scroll_x, d_scroll_y - d_txt6_h,
-                       kCcGreen, kTBlack, style);
+      Fancy_Text_Print(*LogicPage, TXT_SCROLLRATE, d_scroll_x,
+                       d_scroll_y - d_txt6_h, kCcGreen, kTBlack, style);
 
-      Fancy_Text_Print(TXT_SLOWER, d_scroll_x, d_scroll_y + d_scroll_h + 1,
-                       kCcGreen, kTBlack,
+      Fancy_Text_Print(*LogicPage, TXT_SLOWER, d_scroll_x,
+                       d_scroll_y + d_scroll_h + 1, kCcGreen, kTBlack,
                        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       Fancy_Text_Print(
-          TXT_FASTER, d_scroll_x + d_scroll_w, d_scroll_y + d_scroll_h + 1,
-          kCcGreen, kTBlack,
+          *LogicPage, TXT_FASTER, d_scroll_x + d_scroll_w,
+          d_scroll_y + d_scroll_h + 1, kCcGreen, kTBlack,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
 
       commands->Draw_All();

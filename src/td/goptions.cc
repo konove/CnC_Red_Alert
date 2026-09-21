@@ -236,7 +236,7 @@ void GameOptionsClass::Process() {
 
   Keyboard::Clear();
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, kCcGreen, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*
@@ -288,13 +288,13 @@ void GameOptionsClass::Process() {
       /*
       **	Draw the background.
       */
-      Window_Box(WINDOW_EDITOR,
+      Window_Box(*LogicPage, WINDOW_EDITOR,
                  BOXSTYLE_GREEN_BORDER);  // has border, raised up
 
       /*
       **	Draw the arrows border if requested.
       */
-      Draw_Caption(TXT_OPTIONS, OptionX, OptionY, OptionWidth);
+      Draw_Caption(*LogicPage, TXT_OPTIONS, OptionX, OptionY, OptionWidth);
 
       /*
       **	Display the version number at the bottom of the dialog box.
@@ -302,7 +302,7 @@ void GameOptionsClass::Process() {
 #ifdef DEMO
       Version_Number();
       Fancy_Text_Print(
-          "DEMO%s",
+          *LogicPage, "DEMO%s",
           ((WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowX] +
             WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowWidth])
            << 3) -
@@ -315,7 +315,7 @@ void GameOptionsClass::Process() {
           TheGameState().version_text());
 #else
       Fancy_Text_Print(
-          "%s\rV.%d%s",
+          *LogicPage, "%s\rV.%d%s",
           ((base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
                      kWindowX) +
             base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
@@ -585,7 +585,7 @@ void GameOptionsClass::Process() {
  *                                                                                             *
  * HISTORY: * 06/23/1995 JLB : Created. *
  *=============================================================================================*/
-void Draw_Caption(int text, int x, int y, int w) {
+void Draw_Caption(PixelView& view, int text, int x, int y, int w) {
   OptionControlType option = OPTION_NONE;
   const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
@@ -647,10 +647,10 @@ void Draw_Caption(int text, int x, int y, int w) {
   **	Draw the filigree at the corners of the dialog.
   */
   if (option != OPTION_NONE) {
-    CC_Draw_Shape(MixArchive::RetrieveData("OPTIONS.SHP"),
+    CC_Draw_Shape(view, MixArchive::RetrieveData("OPTIONS.SHP"),
                   static_cast<int>(option), x + 12, y + 11, WINDOW_MAIN,
                   SHAPE_CENTER);
-    CC_Draw_Shape(MixArchive::RetrieveData("OPTIONS.SHP"),
+    CC_Draw_Shape(view, MixArchive::RetrieveData("OPTIONS.SHP"),
                   static_cast<int>(option) + 1, x + w - 14, y + 11, WINDOW_MAIN,
                   SHAPE_CENTER);
   }
@@ -660,13 +660,13 @@ void Draw_Caption(int text, int x, int y, int w) {
   */
   if (text != TXT_NONE) {
     Fancy_Text_Print(
-        text, (w / 2) + x, (5 * factor) + y, kCcGreen, kTBlack,
+        view, text, (w / 2) + x, (5 * factor) + y, kCcGreen, kTBlack,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     const int length = String_Pixel_Width(Text_String(text));
-    LogicPage->DrawLine(x + (w / 2) - (length / 2),
-                        y + FontHeight + FontYSpacing + (5 * factor),
-                        x + (w / 2) + (length / 2),
-                        y + FontHeight + FontYSpacing + (5 * factor), kCcGreen);
+    view.DrawLine(x + (w / 2) - (length / 2),
+                  y + FontHeight + FontYSpacing + (5 * factor),
+                  x + (w / 2) + (length / 2),
+                  y + FontHeight + FontYSpacing + (5 * factor), kCcGreen);
   }
 }

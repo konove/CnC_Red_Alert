@@ -434,14 +434,15 @@ int MapEditClass::Select_Team(const char* caption) {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
 
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            caption, kDialogCx, kDialogY + kMargin, kCcGreen, kTBlack,
+            *LogicPage, caption, kDialogCx, kDialogY + kMargin, kCcGreen,
+            kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       /*
@@ -1056,34 +1057,36 @@ int MapEditClass::Edit_Team() {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
+        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
 
-        Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            "Team Edit", kDialogCx, kDialogY + kMargin, kCcGreen, kTBlack,
+            *LogicPage, "Team Edit", kDialogCx, kDialogY + kMargin, kCcGreen,
+            kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Name", kNameX - 5, kNameY, kCcGreen, kTBlack,
+            *LogicPage, "Name", kNameX - 5, kNameY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Priority", kPriorityX - 5, kPriorityY, kCcGreen, kTBlack,
+            *LogicPage, "Priority", kPriorityX - 5, kPriorityY, kCcGreen,
+            kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Max Num", kMaxnumX - 5, kMaxnumY, kCcGreen, kTBlack,
+            *LogicPage, "Max Num", kMaxnumX - 5, kMaxnumY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Init Num", kInitnumX - 5, kInitnumY, kCcGreen, kTBlack,
+            *LogicPage, "Init Num", kInitnumX - 5, kInitnumY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Fear", kFearX - 5, kFearY, kCcGreen, kTBlack,
+            *LogicPage, "Fear", kFearX - 5, kFearY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       /*
@@ -1730,10 +1733,11 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Display the constant background of this dialog.
         */
-        Dialog_Box(kDialogX, dlg_y, kDialogW, dlg_h);
-        Draw_Caption(TXT_NONE, kDialogX, dlg_y, kDialogW);
+        Dialog_Box(*LogicPage, kDialogX, dlg_y, kDialogW, dlg_h);
+        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, dlg_y, kDialogW);
         Fancy_Text_Print(
-            "Team Members", kDialogCx, dlg_y + kMargin, kCcGreen, kTBlack,
+            *LogicPage, "Team Members", kDialogCx, dlg_y + kMargin, kCcGreen,
+            kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         //
@@ -1750,7 +1754,7 @@ int MapEditClass::Team_Members(HousesType house) {
 
         if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
           Fancy_Text_Print(
-              teamclass.at(base::ToSize(curclass))->Full_Name(),
+              *LogicPage, teamclass.at(base::ToSize(curclass))->Full_Name(),
               kDialogX + (kDialogW / 2), msg_y, kCcTan, kTBlack,
               TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
         }
@@ -1839,7 +1843,7 @@ int MapEditClass::Team_Members(HousesType house) {
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
             Fancy_Text_Print(
-                teamclass.at(base::ToSize(curclass))->Full_Name(),
+                *LogicPage, teamclass.at(base::ToSize(curclass))->Full_Name(),
                 kDialogX + (kDialogW / 2), msg_y, kCcGreen, kTBlack,
                 TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
@@ -1998,13 +2002,14 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
   Change_Window(static_cast<int>(WINDOW_EDITOR));
 
   Hide_Mouse();
-  Draw_Box(x, y, kPictureW, kPictureH, BOXSTYLE_GREEN_DOWN, true);
+  Draw_Box(*LogicPage, x, y, kPictureW, kPictureH, BOXSTYLE_GREEN_DOWN, true);
 
   ptr->Display(x + (kPictureW / 2), y + (kPictureH / 2), WINDOW_EDITOR, house);
 
   if (quant > 0) {
-    Fancy_Text_Print("%d", x + 1, y + kPictureH - 16, kCcGreen, kTBlack,
-                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_DROPSHADOW, quant);
+    Fancy_Text_Print(*LogicPage, "%d", x + 1, y + kPictureH - 16, kCcGreen,
+                     kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_DROPSHADOW,
+                     quant);
   }
 
   Show_Mouse();

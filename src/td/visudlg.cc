@@ -226,8 +226,9 @@ void VisualControlsClass::Process() {
     */
     if (display) {
       Hide_Mouse();
-      Dialog_Box(option_x, option_y, option_width, option_height);
-      Draw_Caption(TXT_VISUAL_CONTROLS, option_x, option_y, option_width);
+      Dialog_Box(*LogicPage, option_x, option_y, option_width, option_height);
+      Draw_Caption(*LogicPage, TXT_VISUAL_CONTROLS, option_x, option_y,
+                   option_width);
       Show_Mouse();
       display = false;
       partial = true;
@@ -244,7 +245,7 @@ void VisualControlsClass::Process() {
       */
       for (int i = 0; i < std::ssize(_titles); i++) {
         Fancy_Text_Print(
-            base::At(_titles, i), slider_x - 16,
+            *LogicPage, base::At(_titles, i), slider_x - 16,
             text_y + (i * slider_y_spacing), kCcGreen, kTBlack,
             TPF_6PT_GRAD | TPF_RIGHT | TPF_NOSHADOW |
                 (curbutton == i ? TPF_BRIGHT_COLOR : TPF_USE_GRAD_PAL));

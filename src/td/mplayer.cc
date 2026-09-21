@@ -247,7 +247,7 @@ GameType Select_MPlayer_Game() {
 
   Keyboard::Clear();
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, kCcGreen, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*
@@ -284,9 +284,9 @@ GameType Select_MPlayer_Game() {
         /*
         ..................... Draw the background .......................
         */
-        Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-        Draw_Caption(TXT_SELECT_MPLAYER_GAME, d_dialog_x, d_dialog_y,
-                     d_dialog_w);
+        Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+        Draw_Caption(*LogicPage, TXT_SELECT_MPLAYER_GAME, d_dialog_x,
+                     d_dialog_y, d_dialog_w);
       }
       /*
       .......................... Redraw buttons ..........................
@@ -1334,15 +1334,15 @@ int Surrender_Dialog() {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-        Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
+        Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+        Draw_Caption(*LogicPage, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            Text_String(TXT_SURRENDER), d_dialog_cx, d_dialog_y + d_topmargin,
-            kCcGreen, kTBlack,
+            *LogicPage, Text_String(TXT_SURRENDER), d_dialog_cx,
+            d_dialog_y + d_topmargin, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 

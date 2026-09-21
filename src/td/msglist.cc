@@ -59,6 +59,7 @@
 #include "port/safe_string.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -803,8 +804,8 @@ int MessageListClass::Input(KeyNumType& input) {
           ** Verify that the additional character would not overrun the on
           *screen edit box.
           */
-          Fancy_Text_Print(TXT_NONE, 0, 0, EditLabel->Color, kTBlack,
-                           EditLabel->Style);
+          Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, EditLabel->Color,
+                           kTBlack, EditLabel->Style);
           const int width = String_Pixel_Width(EditBuf.data());
           if (width >= Width) {
             --EditCurPos;

@@ -106,9 +106,9 @@ std::span<uint8_t> Conquer_Build_Fading_Table(std::span<const uint8_t> palette,
   return dest;
 }
 
-void Fat_Put_Pixel(int x, int y, std::uint8_t color, int size,
-                   PixelView& gpage) {
-  gpage.FillRect(x, y, x + size - 1, y + size - 1, color);
+void Fat_Put_Pixel(PixelView& view, int x, int y, std::uint8_t color,
+                   int size) {
+  view.FillRect(x, y, x + size - 1, y + size - 1, color);
 }
 
 // from RA readline.cpp

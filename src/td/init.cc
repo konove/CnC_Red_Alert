@@ -900,20 +900,22 @@ bool Select_Game(bool fade) {
 
         SetLogicPage(TheScreen().visible_view());
         if constexpr (config::kVirginCheatKeysEnabled) {
-          Fancy_Text_Print("V.%d%s", TheScreen().visible_view().width() - 1,
-                           TheScreen().visible_view().height() - 10, kGrey,
-                           kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
-                           Version_Number(), TheGameState().version_text(),
-                           FOREIGN_VERSION_NUMBER);
+          Fancy_Text_Print(
+              *LogicPage, "V.%d%s", TheScreen().visible_view().width() - 1,
+              TheScreen().visible_view().height() - 10, kGrey, kTBlack,
+              TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT, Version_Number(),
+              TheGameState().version_text(), FOREIGN_VERSION_NUMBER);
         } else {
 #ifdef DEMO
           Version_Number();
-          Fancy_Text_Print("DEMO V%s", TheScreen().visible_view().width() - 1,
+          Fancy_Text_Print(*LogicPage, "DEMO V%s",
+                           TheScreen().visible_view().width() - 1,
                            TheScreen().visible_view().height() - 10, kGrey,
                            kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                            TheGameState().version_text());
 #else
-          Fancy_Text_Print("V.%d%s", TheScreen().visible_view().width() - 1,
+          Fancy_Text_Print(*LogicPage, "V.%d%s",
+                           TheScreen().visible_view().width() - 1,
                            TheScreen().visible_view().height() - 10, kGrey,
                            kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                            Version_Number(), TheGameState().version_text());

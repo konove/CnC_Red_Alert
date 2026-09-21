@@ -501,8 +501,8 @@ int MapEditClass::Placement_Dialog() {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
       }
 
       /*------------------------------------------------------------------
@@ -522,7 +522,7 @@ int MapEditClass::Placement_Dialog() {
         base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
                  kWindowHeight) = kPictureH;
         Change_Window(static_cast<int>(WINDOW_EDITOR));
-        Draw_Box(kPictureX, kPictureY, kPictureW, kPictureH,
+        Draw_Box(*LogicPage, kPictureX, kPictureY, kPictureW, kPictureH,
                  BOXSTYLE_GREEN_DOWN, true);
         curobj->Display(Screen::kWidth * 4, Screen::kHeight / 2, WINDOW_EDITOR,
                         LastHouse);
@@ -568,8 +568,8 @@ int MapEditClass::Placement_Dialog() {
         functions won't work!
         ...............................................................*/
         Fancy_Text_Print(
-            curobj->Full_Name(), kPictureCx, kPictureY + kMargin, kCcGreen,
-            kTBlack,
+            *LogicPage, curobj->Full_Name(), kPictureCx, kPictureY + kMargin,
+            kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 

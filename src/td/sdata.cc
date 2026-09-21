@@ -57,6 +57,7 @@
 #include "absl/strings/match.h"
 #include "base/array.h"
 #include "base/enum_array.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_win.h"
 #include "td/conquer.h"
@@ -325,8 +326,8 @@ void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
   if (!ptr.empty()) {
     for (int w = 0; w < Width; w++) {
       for (int h = 0; h < Height; h++) {
-        CC_Draw_Shape(ptr, 0, x + (w * ICON_PIXEL_W), y + (h * ICON_PIXEL_H),
-                      WINDOW_TACTICAL, SHAPE_WIN_REL);
+        CC_Draw_Shape(*LogicPage, ptr, 0, x + (w * ICON_PIXEL_W),
+                      y + (h * ICON_PIXEL_H), WINDOW_TACTICAL, SHAPE_WIN_REL);
       }
     }
   }
@@ -420,7 +421,7 @@ void SmudgeTypeClass::Draw_It(int x, int y, int data) const {
   const auto ptr = Get_Image_Data();
   if (!ptr.empty()) {
     IsTheaterShape = true;  // Smudges are theater specific
-    CC_Draw_Shape(ptr, data, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);
+    CC_Draw_Shape(*LogicPage, ptr, data, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);
     IsTheaterShape = false;
   }
 }

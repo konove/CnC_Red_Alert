@@ -118,7 +118,7 @@ void CreditClass::Graphic_Logic(bool forced) {
     **	Display the new current value.
     */
     TabClass::Draw_Credits_Tab();
-    Fancy_Text_Print("%ld", xx, 0, 11, kTBlack,
+    Fancy_Text_Print(*LogicPage, "%ld", xx, 0, 11, kTBlack,
                      TPF_GREEN12_GRAD | TPF_CENTER | TPF_USE_GRAD_PAL, Current);
 
     IsToRedraw = false;

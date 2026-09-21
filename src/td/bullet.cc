@@ -62,6 +62,7 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "rand.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
@@ -551,7 +552,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
   *body *	render position.
   */
   if (Altitude) {
-    CC_Draw_Shape(shapeptr, shapenum, x, y, window,
+    CC_Draw_Shape(*LogicPage, shapeptr, shapenum, x, y, window,
                   SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
                   {}, MouseClass::FadingShade);
     y -= Lepton_To_Pixel(Altitude);
@@ -564,7 +565,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
   if (Class->IsTranslucent) {
     flags = SHAPE_GHOST;
   }
-  CC_Draw_Shape(shapeptr, shapenum, x, y, window,
+  CC_Draw_Shape(*LogicPage, shapeptr, shapenum, x, y, window,
                 flags | SHAPE_CENTER | SHAPE_WIN_REL, {},
                 MouseClass::UnitShadow);
 }

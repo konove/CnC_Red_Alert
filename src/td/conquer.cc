@@ -2332,8 +2332,8 @@ std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
   return result;
 }
 
-void CC_Texture_Fill(std::span<const std::byte> shapefile, int shapenum,
-                     int xpos, int ypos, int width, int height) {
+void CC_Texture_Fill(PixelView& view, std::span<const std::byte> shapefile,
+                     int shapenum, int xpos, int ypos, int width, int height) {
   if (shapefile.empty() || shapenum < 0) {
     return;
   }
@@ -2342,18 +2342,18 @@ void CC_Texture_Fill(std::span<const std::byte> shapefile, int shapenum,
   const int source_width = Get_Build_Frame_Width(shapefile);
   const int source_height = Get_Build_Frame_Height(shapefile);
   if (pixels.empty() || source_width == 0 || source_height == 0 ||
-      !LogicPage->Lock()) {
+      !view.Lock()) {
     return;
   }
   for (int y = 0; y < height; ++y) {
     for (int x = 0; x < width; ++x) {
-      LogicPage->PutPixel(
+      view.PutPixel(
           xpos + x, ypos + y,
           base::At(pixels, base::ToSize(((y % source_height) * source_width) +
                                         (x % source_width))));
     }
   }
-  LogicPage->Unlock();
+  view.Unlock();
 }
 
 /***********************************************************************************************
@@ -2388,9 +2388,9 @@ void CC_Texture_Fill(std::span<const std::byte> shapefile, int shapenum,
  *                                                                                             *
  * HISTORY: * 02/21/1995 JLB : Created. *
  *=============================================================================================*/
-void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
-                   int y, WindowNumberType window, ShapeFlags_Type flags,
-                   std::span<const uint8_t> fadingdata,
+void CC_Draw_Shape(PixelView& view, std::span<const std::byte> shapefile,
+                   int shapenum, int x, int y, WindowNumberType window,
+                   ShapeFlags_Type flags, std::span<const uint8_t> fadingdata,
                    std::span<const uint8_t> ghostdata) {
   if (!shapefile.empty() && shapenum >= 0) {
     /*
@@ -2405,12 +2405,12 @@ void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
 
     if (!shape_size.empty()) {
       PixelView draw_window(
-          LogicPage->buffer(),
+          view.buffer(),
           (base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) *
            8) +
-              LogicPage->x_pos(),
+              view.x_pos(),
           base::At(base::At(WindowList, static_cast<int>(window)), kWindowY) +
-              LogicPage->y_pos(),
+              view.y_pos(),
           base::At(base::At(WindowList, static_cast<int>(window)),
                    kWindowWidth) *
               8,

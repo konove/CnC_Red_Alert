@@ -880,7 +880,7 @@ bool ObjectClass::Render(bool forced) {
         **	relative, so add the window's x-coord to 'x'.
         */
         if (TheDebugState().map_editor_active() && Trigger) {
-          Fancy_Text_Print(Trigger->Get_Name(),
+          Fancy_Text_Print(*LogicPage, Trigger->Get_Name(),
                            x + (static_cast<int>(WinX) * 8), y, kPink, kTBlack,
                            TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
         }

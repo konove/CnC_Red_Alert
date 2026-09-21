@@ -27,6 +27,7 @@
 #include "absl/strings/match.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/aircraft.h"
 #include "td/building.h"
@@ -338,7 +339,7 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
     ptr = Get_Image_Data();
     shape = 5;
   }
-  CC_Draw_Shape(ptr, shape, x, y, window,
+  CC_Draw_Shape(*LogicPage, ptr, shape, x, y, window,
                 SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
                 HouseClass::As_Pointer(house)->Remap_Table(false, true));
 }

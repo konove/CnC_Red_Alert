@@ -278,7 +278,8 @@ void HelpClass::Draw_It(bool forced) {
 
   if ((Text != TXT_NONE && (forced || !CountDownTimer.Time())) &&
       LogicPage->Lock()) {
-    Fancy_Text_Print(Text, DrawX, DrawY, Color, kBlack, TPF_MAP | TPF_NOSHADOW);
+    Fancy_Text_Print(*LogicPage, Text, DrawX, DrawY, Color, kBlack,
+                     TPF_MAP | TPF_NOSHADOW);
     LogicPage->DrawRect(DrawX - 1, DrawY - 1, DrawX + Width + 1,
                         DrawY + FontHeight, static_cast<unsigned char>(Color));
 
@@ -286,8 +287,8 @@ void HelpClass::Draw_It(bool forced) {
       char buffer[15];
       absl::SNPrintF(buffer, sizeof(buffer), "$%d", Cost);
       const int width = String_Pixel_Width(buffer);
-      Fancy_Text_Print(buffer, DrawX, DrawY + FontHeight, Color, kBlack,
-                       TPF_MAP | TPF_NOSHADOW);
+      Fancy_Text_Print(*LogicPage, buffer, DrawX, DrawY + FontHeight, Color,
+                       kBlack, TPF_MAP | TPF_NOSHADOW);
       LogicPage->DrawRect(DrawX - 1, DrawY + FontHeight, DrawX + width + 1,
                           DrawY + FontHeight + FontHeight - 1,
                           static_cast<unsigned char>(Color));
@@ -321,7 +322,7 @@ void HelpClass::Draw_It(bool forced) {
 void HelpClass::Set_Text(int text) {
   if (text != TXT_NONE) {
     Text = text;
-    Fancy_Text_Print(TXT_NONE, 0, 0, 0, 0, TPF_MAP | TPF_NOSHADOW);
+    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, 0, 0, TPF_MAP | TPF_NOSHADOW);
     Width = String_Pixel_Width(Text_String(Text));
     if (IsRight) {
       DrawX = X - Width;

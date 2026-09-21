@@ -366,29 +366,30 @@ void SoundControlsClass::Process() {
       /*
       **	Draw the background.
       */
-      Dialog_Box(Option_X, Option_Y, Option_Width, Option_Height);
+      Dialog_Box(*LogicPage, Option_X, Option_Y, Option_Width, Option_Height);
 
-      Draw_Caption(TXT_SOUND_CONTROLS, Option_X, Option_Y, Option_Width);
+      Draw_Caption(*LogicPage, TXT_SOUND_CONTROLS, Option_X, Option_Y,
+                   Option_Width);
 
       /*
       ** Draw the Music, Speech & Sound titles.
       */
       Fancy_Text_Print(
-          TXT_MUSIC_VOLUME, Option_X + MSlider_X - 5, Option_Y + MSlider_Y - 2,
-          kCcGreen, kTBlack,
+          *LogicPage, TXT_MUSIC_VOLUME, Option_X + MSlider_X - 5,
+          Option_Y + MSlider_Y - 2, kCcGreen, kTBlack,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
       Fancy_Text_Print(
-          TXT_SOUND_VOLUME, Option_X + FXSlider_X - 5,
+          *LogicPage, TXT_SOUND_VOLUME, Option_X + FXSlider_X - 5,
           Option_Y + FXSlider_Y - 2, kCcGreen, kTBlack,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
 
       Fancy_Text_Print(
-          TXT_SHUFFLE, Option_X + Shuffle_X - 5, Option_Y + Shuffle_Y + 1,
-          kCcGreen, kTBlack,
+          *LogicPage, TXT_SHUFFLE, Option_X + Shuffle_X - 5,
+          Option_Y + Shuffle_Y + 1, kCcGreen, kTBlack,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
       Fancy_Text_Print(
-          TXT_REPEAT, Option_X + Repeat_X - 5, Option_Y + Repeat_Y + 1,
-          kCcGreen, kTBlack,
+          *LogicPage, TXT_REPEAT, Option_X + Repeat_X - 5,
+          Option_Y + Repeat_Y + 1, kCcGreen, kTBlack,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
 
       optionsbtn->Draw_All();
@@ -497,11 +498,12 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
       }
     }
 
-    Conquer_Clip_Text_Print(Get_Item(index), x, y, kCcGreen, kTBlack, flags,
-                            width, Tabs);
+    Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y, kCcGreen,
+                            kTBlack, flags, width, Tabs);
 
   } else {
-    Conquer_Clip_Text_Print(Get_Item(index), x, y, selected ? kBlue : kWhite,
-                            kTBlack, TextFlags, width, Tabs);
+    Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y,
+                            selected ? kBlue : kWhite, kTBlack, TextFlags,
+                            width, Tabs);
   }
 }

@@ -42,6 +42,7 @@
 #define CNC_RED_ALERT_TD_GOPTIONS_H_
 
 #include "base/installed.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/options.h"
 
 class GameOptionsClass : public OptionsClass {
@@ -74,7 +75,7 @@ class GameOptionsClass : public OptionsClass {
   int ButtonResumeY = 0;
 };
 
-void Draw_Caption(int text, int x, int y, int w);
+void Draw_Caption(PixelView& view, int text, int x, int y, int w);
 
 // Returns the game options that Game installed. CHECK-fails outside a
 // Game's lifetime unless a test installed its own.

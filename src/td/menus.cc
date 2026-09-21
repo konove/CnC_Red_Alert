@@ -152,9 +152,11 @@ static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
                        int hfgc, int bgc) {
   for (int loop = 0; loop < 3; loop++) {
     Hide_Mouse();
-    Fancy_Text_Print(text, xpix, ypix, hfgc, bgc, TPF_8POINT | TPF_DROPSHADOW);
+    Fancy_Text_Print(*LogicPage, text, xpix, ypix, hfgc, bgc,
+                     TPF_8POINT | TPF_DROPSHADOW);
     Delay(2);
-    Fancy_Text_Print(text, xpix, ypix, nfgc, bgc, TPF_8POINT | TPF_DROPSHADOW);
+    Fancy_Text_Print(*LogicPage, text, xpix, ypix, nfgc, bgc,
+                     TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse();
     Delay(2);
   }
@@ -246,16 +248,17 @@ void Setup_Menu(const MenuConfig& menu, std::span<const char* const> labels,
       Select_To_Entry(menu.selected, visible_items, bit_offset);
   const int item_count = menu.item_count;
 
-  Fancy_Text_Print(0, 0, 0, kTBlack, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+  Fancy_Text_Print(*LogicPage, 0, 0, 0, kTBlack, kTBlack,
+                   TPF_8POINT | TPF_DROPSHADOW);
   Hide_Mouse();
   for (int i = 0; i < item_count; i++) {
     const int text_index = Select_To_Entry(i, visible_items, bit_offset);
     const int draw_y = menu_y + (i * FontHeight) + (i * line_spacing);
-    Fancy_Text_Print(base::At(labels, base::ToSize(text_index)), menu_x, draw_y,
-                     text_index == selected_entry && MenuUpdate
-                         ? menu.highlight_color
-                         : menu.normal_color,
-                     kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+    Fancy_Text_Print(
+        *LogicPage, base::At(labels, base::ToSize(text_index)), menu_x, draw_y,
+        text_index == selected_entry && MenuUpdate ? menu.highlight_color
+                                                   : menu.normal_color,
+        kTBlack, TPF_8POINT | TPF_DROPSHADOW);
   }
   MenuSkip = line_spacing;
   Show_Mouse();
@@ -396,12 +399,12 @@ int Check_Menu(MenuConfig& menu, std::span<const char* const> text,
     Hide_Mouse();
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
-    Fancy_Text_Print(base::At(text, base::ToSize(idx)), menux, drawy, normcol,
-                     kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+    Fancy_Text_Print(*LogicPage, base::At(text, base::ToSize(idx)), menux,
+                     drawy, normcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
-    Fancy_Text_Print(base::At(text, base::ToSize(idx)), menux, drawy, litcol,
-                     kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+    Fancy_Text_Print(*LogicPage, base::At(text, base::ToSize(idx)), menux,
+                     drawy, litcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse(); /* resurrect the mouse	*/
   }
 
@@ -462,7 +465,8 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   **	Determine the width of the menu by finding the length of the
   **	longest menu entry.
   */
-  Fancy_Text_Print(TXT_NONE, 0, 0, 0, 0, TPF_8POINT | TPF_DROPSHADOW);
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, 0, 0,
+                   TPF_8POINT | TPF_DROPSHADOW);
   int length = 0;  // The width of the menu (in pixels).
   for (const char* text : strings) {
     length = std::max(length, String_Pixel_Width(text));
@@ -488,7 +492,8 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   */
   Change_Window(static_cast<int>(WINDOW_MENU));
   Show_Mouse();
-  Window_Box(WINDOW_MENU, blue ? BOXSTYLE_BLUE_UP : BOXSTYLE_RAISED);
+  Window_Box(*LogicPage, WINDOW_MENU,
+             blue ? BOXSTYLE_BLUE_UP : BOXSTYLE_RAISED);
   Setup_Menu(menu_config, strings, 0xFFFFL, 0, 0);
 
   Keyboard::Clear();
@@ -804,7 +809,7 @@ int Main_Menu(int timeout) {
 
   Keyboard::Clear();
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, kCcGreen, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
   while (Get_Mouse_State() > 0) {
     Show_Mouse();
@@ -852,20 +857,21 @@ int Main_Menu(int timeout) {
       **	Display the title and text overlay for the menu.
       */
       SetLogicPage(TheScreen().hidden_view());
-      Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
-      Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
+      Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
+      Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
       if constexpr (config::kVirginCheatKeysEnabled) {
 #ifdef DEMO
         Version_Number();
-        Fancy_Text_Print("Demo%s", kDialogX + kDialogW - 10,
+        Fancy_Text_Print(*LogicPage, "Demo%s", kDialogX + kDialogW - 10,
                          kDialogY + kDialogH - 20, kGrey, kTBlack,
                          TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                          TheGameState().version_text());
 #else
-        Fancy_Text_Print(
-            "V.%d%s", kDialogX + kDialogW - 10, kDialogY + kDialogH - 20, kGrey,
-            kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT, Version_Number(),
-            TheGameState().version_text(), FOREIGN_VERSION_NUMBER);
+        Fancy_Text_Print(*LogicPage, "V.%d%s", kDialogX + kDialogW - 10,
+                         kDialogY + kDialogH - 20, kGrey, kTBlack,
+                         TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
+                         Version_Number(), TheGameState().version_text(),
+                         FOREIGN_VERSION_NUMBER);
 #endif
         //			Fancy_Text_Print("V.%d%s%02d",
         // D_DIALOG_X+D_DIALOG_W-5,
@@ -875,12 +881,12 @@ int Main_Menu(int timeout) {
       } else {
 #ifdef DEMO
         Version_Number();
-        Fancy_Text_Print("Demo%s", kDialogX + kDialogW - 10,
+        Fancy_Text_Print(*LogicPage, "Demo%s", kDialogX + kDialogW - 10,
                          kDialogY + kDialogH - 20, kGrey, kTBlack,
                          TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                          TheGameState().version_text());
 #else
-        Fancy_Text_Print("V.%d%s", kDialogX + kDialogW - 10,
+        Fancy_Text_Print(*LogicPage, "V.%d%s", kDialogX + kDialogW - 10,
                          kDialogY + kDialogH - 20, kGrey, kTBlack,
                          TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                          Version_Number(), TheGameState().version_text());

@@ -73,6 +73,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/assets.h"
 #include "td/building.h"
@@ -3814,7 +3815,7 @@ void BuildingTypeClass::Display(int x, int y, WindowNumberType window,
   if (ptr.empty()) {
     ptr = Get_Image_Data();
   }
-  CC_Draw_Shape(ptr, 0, x, y, window,
+  CC_Draw_Shape(*LogicPage, ptr, 0, x, y, window,
                 SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,
                 HouseTypeClass::As_Reference(house).RemapTable);
 }

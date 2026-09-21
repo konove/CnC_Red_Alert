@@ -68,6 +68,7 @@
 #include "base/array.h"
 #include "rand.h"
 #include "sdllib/misc.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/audio.h"
 #include "td/building.h"
@@ -383,7 +384,7 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
       /*
       **	Draw the animation shape.
       */
-      CC_Draw_Shape(shapefile, shapenum, x, y, window, flags, remap,
+      CC_Draw_Shape(*LogicPage, shapefile, shapenum, x, y, window, flags, remap,
                     transtable);
     }
   }

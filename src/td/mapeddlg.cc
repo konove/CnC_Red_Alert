@@ -725,18 +725,19 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
 
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            caption, kDialogCx, kDialogY + kMargin, kCcGreen, kTBlack,
+            *LogicPage, caption, kDialogCx, kDialogY + kMargin, kCcGreen,
+            kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Scenario", kDialogCx - 5, kScenY, kCcGreen, kTBlack,
+            *LogicPage, "Scenario", kDialogCx - 5, kScenY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -1052,8 +1053,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         .......................... Background ...........................
         */
-        Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
 
         /*
         ..................... Draw the map border .......................
@@ -1076,54 +1077,54 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         ...............................................................*/
         txt_x = kDialogCx;
         txt_y = kDialogY + 8;
-        Fancy_Text_Print("Clear Terrain", txt_x, txt_y, kLtGrey, kTBlack,
+        Fancy_Text_Print(*LogicPage, "Clear Terrain", txt_x, txt_y, kLtGrey,
+                         kTBlack, TPF_DROPSHADOW | TPF_6POINT);
+        txt_y += 16;
+        Fancy_Text_Print(*LogicPage, "Water", txt_x, txt_y, kBlue, kTBlack,
                          TPF_DROPSHADOW | TPF_6POINT);
         txt_y += 16;
-        Fancy_Text_Print("Water", txt_x, txt_y, kBlue, kTBlack,
+        Fancy_Text_Print(*LogicPage, "Tiberium", txt_x, txt_y, kGrey, kTBlack,
                          TPF_DROPSHADOW | TPF_6POINT);
         txt_y += 16;
-        Fancy_Text_Print("Tiberium", txt_x, txt_y, kGrey, kTBlack,
+        Fancy_Text_Print(*LogicPage, "Rock/Wall/Road", txt_x, txt_y, kBrown,
+                         kTBlack, TPF_DROPSHADOW | TPF_6POINT);
+        txt_y += 16;
+        Fancy_Text_Print(*LogicPage, "GDI Unit", txt_x, txt_y, kYellow, kTBlack,
                          TPF_DROPSHADOW | TPF_6POINT);
         txt_y += 16;
-        Fancy_Text_Print("Rock/Wall/Road", txt_x, txt_y, kBrown, kTBlack,
+        Fancy_Text_Print(*LogicPage, "Nod Unit", txt_x, txt_y, kRed, kTBlack,
                          TPF_DROPSHADOW | TPF_6POINT);
         txt_y += 16;
-        Fancy_Text_Print("GDI Unit", txt_x, txt_y, kYellow, kTBlack,
-                         TPF_DROPSHADOW | TPF_6POINT);
+        Fancy_Text_Print(*LogicPage, "Neutral Unit", txt_x, txt_y, kPurple,
+                         kTBlack, TPF_DROPSHADOW | TPF_6POINT);
         txt_y += 16;
-        Fancy_Text_Print("Nod Unit", txt_x, txt_y, kRed, kTBlack,
-                         TPF_DROPSHADOW | TPF_6POINT);
+        Fancy_Text_Print(*LogicPage, "Terrain Object", txt_x, txt_y, kGreen,
+                         kTBlack, TPF_DROPSHADOW | TPF_6POINT);
         txt_y += 16;
-        Fancy_Text_Print("Neutral Unit", txt_x, txt_y, kPurple, kTBlack,
-                         TPF_DROPSHADOW | TPF_6POINT);
-        txt_y += 16;
-        Fancy_Text_Print("Terrain Object", txt_x, txt_y, kGreen, kTBlack,
-                         TPF_DROPSHADOW | TPF_6POINT);
-        txt_y += 16;
-        Fancy_Text_Print("Starting Cell", txt_x, txt_y, kWhite, kTBlack,
-                         TPF_DROPSHADOW | TPF_6POINT);
+        Fancy_Text_Print(*LogicPage, "Starting Cell", txt_x, txt_y, kWhite,
+                         kTBlack, TPF_DROPSHADOW | TPF_6POINT);
         /*
         .................. Draw the coordinate labels ...................
         */
         txt_x = kDialogX + (kDialogW / 8);
         txt_y = kDialogY + kDialogH - kOkH - 10 - 33;
         Fancy_Text_Print(
-            "X", txt_x, txt_y, kCcGreen, kTBlack,
+            *LogicPage, "X", txt_x, txt_y, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
         Fancy_Text_Print(
-            "Y", txt_x, txt_y, kCcGreen, kTBlack,
+            *LogicPage, "Y", txt_x, txt_y, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
         Fancy_Text_Print(
-            "Width", txt_x, txt_y, kCcGreen, kTBlack,
+            *LogicPage, "Width", txt_x, txt_y, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
         Fancy_Text_Print(
-            "Height", txt_x, txt_y, kCcGreen, kTBlack,
+            *LogicPage, "Height", txt_x, txt_y, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         LogicPage->Unlock();
@@ -1234,25 +1235,25 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         txt_y = kDialogY + kDialogH - kOkH - 10 - 22;
         absl::SNPrintF(txt, sizeof(txt), "%d", map_x1 - kBordX1 - 1);
         Fancy_Text_Print(
-            txt, txt_x, txt_y, kCcGreen, kTBlack,
+            *LogicPage, txt, txt_x, txt_y, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
         absl::SNPrintF(txt, sizeof(txt), "%d", map_y1 - kBordY1 - 1);
         Fancy_Text_Print(
-            txt, txt_x, txt_y, kCcGreen, kTBlack,
+            *LogicPage, txt, txt_x, txt_y, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
         absl::SNPrintF(txt, sizeof(txt), "%d", map_x2 - map_x1 + 1);
         Fancy_Text_Print(
-            txt, txt_x, txt_y, kCcGreen, kTBlack,
+            *LogicPage, txt, txt_x, txt_y, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
         absl::SNPrintF(txt, sizeof(txt), "%d", map_y2 - map_y1 + 1);
         Fancy_Text_Print(
-            txt, txt_x, txt_y, kCcGreen, kTBlack,
+            *LogicPage, txt, txt_x, txt_y, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -1858,49 +1859,52 @@ int MapEditClass::Scenario_Dialog() {
         /*
         ..................... Draw the background .......................
         */
-        Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
 
         /*
         ....................... Draw the labels .........................
         */
         Fancy_Text_Print(
-            "Theater", kTheaterX + (kTheaterW / 2), kTheaterY - kTxt8H,
-            kCcGreen, kTBlack,
+            *LogicPage, "Theater", kTheaterX + (kTheaterW / 2),
+            kTheaterY - kTxt8H, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Build Level", kLevelX, kLevelY, kCcGreen, kTBlack,
+            *LogicPage, "Build Level", kLevelX, kLevelY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Credits/1000", kGdicredX + (kGdicredW / 2), kGdicredY - kTxt8H,
-            kCcGreen, kTBlack,
+            *LogicPage, "Credits/1000", kGdicredX + (kGdicredW / 2),
+            kGdicredY - kTxt8H, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "GDI", kGdicredX - 5, kGdicredY, kCcGreen, kTBlack,
+            *LogicPage, "GDI", kGdicredX - 5, kGdicredY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "NOD", kNodcredX - 5, kNodcredY, kCcGreen, kTBlack,
+            *LogicPage, "NOD", kNodcredX - 5, kNodcredY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Neutral", kNeutcredX - 5, kNeutcredY, kCcGreen, kTBlack,
+            *LogicPage, "Neutral", kNeutcredX - 5, kNeutcredY, kCcGreen,
+            kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Reinforcements", kDialogCx, kLevelY + kLevelH + kMargin, kCcGreen,
+            *LogicPage, "Reinforcements", kDialogCx,
+            kLevelY + kLevelH + kMargin, kCcGreen, kTBlack,
+            TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+
+        Fancy_Text_Print(
+            *LogicPage, "GDI", kGdinX + (kGdinW / 2), kGdinY - kTxt8H, kCcGreen,
             kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "GDI", kGdinX + (kGdinW / 2), kGdinY - kTxt8H, kCcGreen, kTBlack,
-            TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
-
-        Fancy_Text_Print(
-            "NOD", kNodnX + (kNodnW / 2), kNodnY - kTxt8H, kCcGreen, kTBlack,
+            *LogicPage, "NOD", kNodnX + (kNodnW / 2), kNodnY - kTxt8H, kCcGreen,
+            kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       Show_Mouse();
@@ -2465,14 +2469,15 @@ int MapEditClass::Select_Trigger() {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
 
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            "Triggers", kDialogCx, kDialogY + kMargin, kCcGreen, kTBlack,
+            *LogicPage, "Triggers", kDialogCx, kDialogY + kMargin, kCcGreen,
+            kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -2909,51 +2914,52 @@ int MapEditClass::Edit_Trigger() {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
 
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            "Trigger Editor", kDialogCx, kDialogY + kMargin, kCcGreen, kTBlack,
+            *LogicPage, "Trigger Editor", kDialogCx, kDialogY + kMargin,
+            kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Events", kEventX + (kEventW / 2), kEventY - kTxt8H, kCcGreen,
-            kTBlack,
+            *LogicPage, "Events", kEventX + (kEventW / 2), kEventY - kTxt8H,
+            kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Actions", kActionX + (kActionW / 2), kActionY - kTxt8H, kCcGreen,
-            kTBlack,
+            *LogicPage, "Actions", kActionX + (kActionW / 2), kActionY - kTxt8H,
+            kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            "Name", kNameX - 5, kNameY, kCcGreen, kTBlack,
+            *LogicPage, "Name", kNameX - 5, kNameY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         if (event_idx == EVENT_CREDITS) {  // use 'Data' for Credits
           Fancy_Text_Print(
-              "Credits", kDataX - 5, kDataY, kCcGreen, kTBlack,
+              *LogicPage, "Credits", kDataX - 5, kDataY, kCcGreen, kTBlack,
               TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         } else {
           if (event_idx == EVENT_TIME) {  // use 'Data' for Time
             Fancy_Text_Print(
-                "1/10 Min", kDataX - 5, kDataY, kCcGreen, kTBlack,
+                *LogicPage, "1/10 Min", kDataX - 5, kDataY, kCcGreen, kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
         }
 
         if (TriggerClass::Action_Need_Team(action_idx)) {
           if (CurTrigger->Team) {
-            Fancy_Text_Print(CurTrigger->Team->IniName, kTeamX + kTeamW + 5,
-                             kTeamY, kCcGreen, kTBlack,
+            Fancy_Text_Print(*LogicPage, CurTrigger->Team->IniName,
+                             kTeamX + kTeamW + 5, kTeamY, kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           } else {
-            Fancy_Text_Print("!!!", kTeamX + kTeamW + 5, kTeamY, kCcGreen,
-                             kTBlack,
+            Fancy_Text_Print(*LogicPage, "!!!", kTeamX + kTeamW + 5, kTeamY,
+                             kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
         }
@@ -3391,13 +3397,14 @@ int MapEditClass::Import_Triggers() {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            "Import Triggers", kDialogCx, kDialogY + kMargin, kCcGreen, kTBlack,
+            *LogicPage, "Import Triggers", kDialogCx, kDialogY + kMargin,
+            kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       /*
@@ -3720,13 +3727,14 @@ int MapEditClass::Import_Teams() {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            "Import Teams", kDialogCx, kDialogY + kMargin, kCcGreen, kTBlack,
+            *LogicPage, "Import Teams", kDialogCx, kDialogY + kMargin, kCcGreen,
+            kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       /*

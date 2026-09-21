@@ -1049,7 +1049,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   */
   port::SafeCopy(buffer, Text_String(TXT_INITIALIZING_MODEM));
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, TheScreen().visible_view().height(), width,
                        height);
@@ -1074,11 +1074,12 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     Load_Title_Page(true);
   }
 
-  Dialog_Box(x, y, width, height);
-  Draw_Caption(TXT_NONE, x, y, width);
+  Dialog_Box(*LogicPage, x, y, width, height);
+  Draw_Caption(*LogicPage, TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(buffer, x + (20 * factor), y + (25 * factor), kCcGreen,
-                   kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+  Fancy_Text_Print(*LogicPage, buffer, x + (20 * factor), y + (25 * factor),
+                   kCcGreen, kTBlack,
+                   TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   Show_Mouse();
 
@@ -1353,7 +1354,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
 
   // Timer_Test(__LINE__, __FILE__);
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, TheScreen().visible_view().height(), width,
                        height);
@@ -1402,12 +1403,12 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
 
   // Timer_Test(__LINE__, __FILE__);
 
-  Dialog_Box(x, y, width, height);
-  Draw_Caption(TXT_NONE, x, y, width);
+  Dialog_Box(*LogicPage, x, y, width, height);
+  Draw_Caption(*LogicPage, TXT_NONE, x, y, width);
 
   // Timer_Test(__LINE__, __FILE__);
 
-  Fancy_Text_Print(buffer,
+  Fancy_Text_Print(*LogicPage, buffer,
                    (TheScreen().visible_view().width() / 2) - (text_width / 2),
                    y + (25 * factor), kCcGreen, kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
@@ -1602,7 +1603,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     port::SafeCopy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
   }
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(text_buffer, TheScreen().visible_view().height(), width,
                        height);
@@ -1681,14 +1682,14 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         /*
         ..................... Draw the background .......................
         */
-        Dialog_Box(x, y, width, height);
+        Dialog_Box(*LogicPage, x, y, width, height);
         /*
         ....................... Draw the labels .........................
         */
-        Draw_Caption(TXT_NONE, x, y, width);
+        Draw_Caption(*LogicPage, TXT_NONE, x, y, width);
 
         Fancy_Text_Print(
-            text_buffer,
+            *LogicPage, text_buffer,
             (TheScreen().visible_view().width() / 2) - (text_width / 2),
             y + (25 * factor), kCcGreen, kTBlack,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
@@ -1724,7 +1725,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
       if (std::string_view(comm_buffer).starts_with("RING")) {
         port::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
 
-        Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+        Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
                          TPF_6PT_GRAD | TPF_NOSHADOW);
         Format_Window_String(text_buffer, TheScreen().visible_view().height(),
                              width, height);

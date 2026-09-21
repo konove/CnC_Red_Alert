@@ -126,12 +126,13 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
       }
     }
 
-    Conquer_Clip_Text_Print(Get_Item(index), x, y, kCcGreen, kTBlack, flags,
-                            width, Tabs);
+    Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y, kCcGreen,
+                            kTBlack, flags, width, Tabs);
 
   } else {
-    Conquer_Clip_Text_Print(Get_Item(index), x, y, selected ? kBlue : kWhite,
-                            kTBlack, TextFlags, width, Tabs);
+    Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y,
+                            selected ? kBlue : kWhite, kTBlack, TextFlags,
+                            width, Tabs);
   }
 }
 
@@ -239,8 +240,9 @@ bool Expansion_Dialog() {
       */
       Load_Title_Page(true);
 
-      Dialog_Box(option_x, option_y, option_width, option_height);
-      Draw_Caption(TXT_MISSION_DESCRIPTION, option_x, option_y, option_width);
+      Dialog_Box(*LogicPage, option_x, option_y, option_width, option_height);
+      Draw_Caption(*LogicPage, TXT_MISSION_DESCRIPTION, option_x, option_y,
+                   option_width);
       buttons->Draw_All();
       Show_Mouse();
     }
@@ -393,8 +395,9 @@ bool Bonus_Dialog() {
       */
       Load_Title_Page(true);
 
-      Dialog_Box(option_x, option_y, option_width, option_height);
-      Draw_Caption(TXT_BONUS_MISSIONS, option_x, option_y, option_width);
+      Dialog_Box(*LogicPage, option_x, option_y, option_width, option_height);
+      Draw_Caption(*LogicPage, TXT_BONUS_MISSIONS, option_x, option_y,
+                   option_width);
       buttons->Draw_All();
       Show_Mouse();
     }

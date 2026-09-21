@@ -381,9 +381,10 @@ void Do_Win() {
   */
   SetLogicPage(TheScreen().visible_view());
 #if !(defined(GERMAN) || defined(FRENCH))
-  Fancy_Text_Print(TXT_MISSION, x, y, kWhite, kTBlack, TPF_CENTER | TPF_VCR);
+  Fancy_Text_Print(*LogicPage, TXT_MISSION, x, y, kWhite, kTBlack,
+                   TPF_CENTER | TPF_VCR);
 #endif
-  Fancy_Text_Print(TXT_SCENARIO_WON, x, y + 30, kWhite, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_SCENARIO_WON, x, y + 30, kWhite, kTBlack,
                    TPF_CENTER | TPF_VCR);
   TheGameState().speech_timer().Set(int64_t{kTimerSecond} * 3);
   Stop_Speaking();
@@ -608,8 +609,9 @@ void Do_Lose() {
   **	Announce win to player.
   */
   SetLogicPage(TheScreen().visible_view());
-  Fancy_Text_Print(TXT_MISSION, x, y, kWhite, kTBlack, TPF_CENTER | TPF_VCR);
-  Fancy_Text_Print(TXT_SCENARIO_LOST, x, y + 30, kWhite, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_MISSION, x, y, kWhite, kTBlack,
+                   TPF_CENTER | TPF_VCR);
+  Fancy_Text_Print(*LogicPage, TXT_SCENARIO_LOST, x, y + 30, kWhite, kTBlack,
                    TPF_CENTER | TPF_VCR);
   TheGameState().speech_timer().Set(int64_t{kTimerSecond} * 3);
   Stop_Speaking();

@@ -326,7 +326,7 @@ void SidebarClass::Init_IO() {
     oldfont = Set_Font(TheAssets().font(FontType::k6Point));
     oldx = FontXSpacing;
     FontXSpacing = -1;
-    Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
                      TPF_6POINT | TPF_NOSHADOW);
 
     int maxwidth = String_Pixel_Width(Text_String(TXT_REPAIR_BUTTON)) + 8;
@@ -734,8 +734,9 @@ void SidebarClass::Draw_It(bool complete) {
       // 158+118, WINDOW_MAIN, SHAPE_WIN_REL);
       LogicPage->DrawLine(SideX, 157, TheScreen().visible_view().width() - 1,
                           157, 0);
-      CC_Draw_Shape(SidebarShape1, 0, SideX, 158, WINDOW_MAIN, SHAPE_WIN_REL);
-      CC_Draw_Shape(SidebarShape2, 0, SideX, 158 + 118, WINDOW_MAIN,
+      CC_Draw_Shape(*LogicPage, SidebarShape1, 0, SideX, 158, WINDOW_MAIN,
+                    SHAPE_WIN_REL);
+      CC_Draw_Shape(*LogicPage, SidebarShape2, 0, SideX, 158 + 118, WINDOW_MAIN,
                     SHAPE_WIN_REL);
 
       // Repair.Draw_Me(true);
@@ -1686,7 +1687,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
     ** has a full complement of icons.	ST - 10/7/96 6:03PM
     */
     if (BuildableCount < kMaxVisible) {
-      CC_Draw_Shape(LogoShapes, ID, X + 3, Y - 1, WINDOW_MAIN,
+      CC_Draw_Shape(*LogicPage, LogoShapes, ID, X + 3, Y - 1, WINDOW_MAIN,
                     SHAPE_WIN_REL | SHAPE_NORMAL, {});
     }
 
@@ -1852,7 +1853,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       if (shapenum != kSbBlank || shapefile.data() != LogoShapes.data()) {
         IsTheaterShape = true;  // This shape is theater specific
         CC_Draw_Shape(
-            shapefile, shapenum,
+            *LogicPage, shapefile, shapenum,
             x -
                 (base::At(
                      base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
@@ -1873,7 +1874,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         */
         if (darken) {
           CC_Draw_Shape(
-              ClockShapes, 0,
+              *LogicPage, ClockShapes, 0,
               x -
                   (base::At(
                        base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
@@ -1899,7 +1900,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           **	Display text showing that the object is ready to place.
           */
           CC_Draw_Shape(
-              ObjectTypeClass::PipShapes, static_cast<int>(PIP_READY),
+              *LogicPage, ObjectTypeClass::PipShapes,
+              static_cast<int>(PIP_READY),
               x -
                   (base::At(
                        base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
@@ -1918,7 +1920,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           // TPF_6POINT|TPF_CENTER|TPF_NOSHADOW);
         } else {
           CC_Draw_Shape(
-              ClockShapes, stage + 1,
+              *LogicPage, ClockShapes, stage + 1,
               x -
                   (base::At(
                        base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
@@ -1936,7 +1938,8 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           */
           if (factory && !factory->Is_Building()) {
             CC_Draw_Shape(
-                ObjectTypeClass::PipShapes, static_cast<int>(PIP_HOLDING),
+                *LogicPage, ObjectTypeClass::PipShapes,
+                static_cast<int>(PIP_HOLDING),
                 x -
                     (base::At(
                          base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),

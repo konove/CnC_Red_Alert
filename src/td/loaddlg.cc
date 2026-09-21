@@ -338,13 +338,13 @@ bool LoadOptionsClass::Process() {
       /*
       **	Display the dialog box.
       */
-      Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-      Draw_Caption(caption, d_dialog_x, d_dialog_y, d_dialog_w);
+      Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+      Draw_Caption(*LogicPage, caption, d_dialog_x, d_dialog_y, d_dialog_w);
 
       if (Style == SAVE) {
         Fancy_Text_Print(
-            TXT_MISSION_DESCRIPTION, d_dialog_cx, d_edit_y - d_txt8_h, kCcGreen,
-            kTBlack,
+            *LogicPage, TXT_MISSION_DESCRIPTION, d_dialog_cx,
+            d_edit_y - d_txt8_h, kCcGreen, kTBlack,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_CENTER | TPF_NOSHADOW);
       }
 

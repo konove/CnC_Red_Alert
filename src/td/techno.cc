@@ -3270,23 +3270,23 @@ void TechnoClass::Techno_Draw_Object(std::span<const std::byte> shapefile,
     if (visual != VISUAL_HIDDEN && visual != VISUAL_RIPPLE) {
       if (visual == VISUAL_SHADOWY) {
         CC_Draw_Shape(
-            shapefile, shapenum, x, y, window,
+            *LogicPage, shapefile, shapenum, x, y, window,
             SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_PREDATOR, {},
             MouseClass::FadingShade);
       } else {
-        CC_Draw_Shape(shapefile, shapenum, x, y, window,
+        CC_Draw_Shape(*LogicPage, shapefile, shapenum, x, y, window,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_GHOST,
                       remap, MouseClass::UnitShadow);
       }
       if (visual == VISUAL_DARKEN) {
         CC_Draw_Shape(
-            shapefile, shapenum, x, y, window,
+            *LogicPage, shapefile, shapenum, x, y, window,
             SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, remap,
             MouseClass::FadingShade);
       }
     }
     if (visual != VISUAL_NORMAL && visual != VISUAL_HIDDEN) {
-      CC_Draw_Shape(shapefile, shapenum, x, y, window,
+      CC_Draw_Shape(*LogicPage, shapefile, shapenum, x, y, window,
                     SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL);
     }
   }
@@ -4085,8 +4085,9 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
         }
         object = object->Next;
       }
-      CC_Draw_Shape(ObjectTypeClass::PipShapes, static_cast<int>(pip),
-                    x + (index * 3), y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+      CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
+                    static_cast<int>(pip), x + (index * 3), y, window,
+                    SHAPE_CENTER | SHAPE_WIN_REL);
     }
 
   } else {
@@ -4096,7 +4097,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
     */
     const int pips = Pip_Count();
     for (int index = 0; index < Class_Of().Max_Pips(); index++) {
-      CC_Draw_Shape(ObjectTypeClass::PipShapes,
+      CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
                     static_cast<int>(index < pips ? PIP_FULL : PIP_EMPTY),
                     x + (index * 3), y, window, SHAPE_CENTER | SHAPE_WIN_REL);
     }
@@ -4106,8 +4107,8 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
   **	Display whether this unit is a leader unit or not.
   */
   if (IsLeader) {
-    CC_Draw_Shape(ObjectTypeClass::PipShapes, static_cast<int>(PIP_PRIMARY),
-                  x - 2, y - 3, window,
+    CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
+                  static_cast<int>(PIP_PRIMARY), x - 2, y - 3, window,
                   /*SHAPE_CENTER|*/ SHAPE_WIN_REL);
   }
 }

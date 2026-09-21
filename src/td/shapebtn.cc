@@ -155,7 +155,8 @@ bool ShapeButtonClass::Draw_Me(bool forced) {
         shapenum = IsOn;
       }
     }
-    CC_Draw_Shape(ShapeData, shapenum, X, Y, WINDOW_MAIN, SHAPE_NORMAL);
+    CC_Draw_Shape(*LogicPage, ShapeData, shapenum, X, Y, WINDOW_MAIN,
+                  SHAPE_NORMAL);
 
     /*
     **	Display the mouse.

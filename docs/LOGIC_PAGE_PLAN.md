@@ -343,3 +343,33 @@ reset in `~PixelView` (`:60-64`) and the declarations at `src/sdllib/pixel_buffe
   in either game with leak totals unchanged from the phase 0 baseline (RA 29,199 bytes in 68
   allocations, TD 215 allocations). Still to do: a real-display run of the TD radar full redraw,
   which is the behaviour the restore changes and which headless cannot exercise.
+
+- 2026-09-21: phase 2 done. The leaf primitives take a leading `PixelView& view` and read it instead
+  of the global: `CC_Draw_Shape`, `Simple_Text_Print` and its `Fancy_Text_Print` /
+  `Conquer_Clip_Text_Print` / `Plain_Text_Print` wrappers, `Draw_Box`, `Draw_Beveled_Box`,
+  `Draw_Caption`, `Window_Box`, TD's `CC_Texture_Fill` and `Fat_Put_Pixel`, and RA's `LockedWindow`
+  with `SaveSurfaceRect`, `RestoreSurfaceRect`, `DrawDib` and `DrawDibIfLoaded`. 960 call sites now
+  pass `*LogicPage` explicitly; the hidden reads inside the primitives are gone.
+  `TheScreen() .IsVisible(LogicPage)` inside `Window_Box` and TD's `Draw_Box` became
+  `IsVisible(&view)`.
+
+  Two deviations from the plan above. RA's `Dialog_Box` gained no parameter: it always draws to the
+  hidden page and blits forward, so it names `TheScreen().hidden_view()` locally and its
+  `SetLogicPage` save/restore pair is deleted -- the endpoint rule rather than a threaded argument,
+  and its 53 call sites are untouched. TD's `Dialog_Box` is a one-line forward to `Draw_Box` and did
+  take the parameter. `Fat_Put_Pixel` already had a `PixelView&`, as its last parameter; it moved to
+  the front to match the rest.
+
+  The sweep was scripted (insert `*LogicPage, ` after the call's open paren, skipping comment lines
+  and any site whose first argument already reads `PixelView`), then compiler-checked. The strict
+  build caught two classes of fallout the plain build did not: `misc-include-cleaner` wanted
+  `sdllib/pixel_buffer.h` included directly in the 39 files that now name `LogicPage` themselves,
+  and `misc-unused-parameters` caught the forwarding calls _inside_ `Conquer_Clip_Text_Print` and
+  `Plain_Text_Print` that the script had pointed back at the global instead of at their own `view`.
+
+  Verification: both build dirs clean, 689 tests pass, both save/load smoke scripts pass, and ASan
+  `-NEWGAMESCG01EA -QUITFRAME100` reports no memory errors in either game. Red Alert's leak total is
+  byte-identical to a stash-and-rebuild baseline of the same commit (29,823 bytes in 73 allocations:
+  `MapEditClass::One_Time()` plus the known `DimensionData` cache); Tiberian Dawn's 215 allocations
+  match the phase 0/1 figure. Still to do: a real-display run, which phases 3a, 3b and 4 need as
+  well.

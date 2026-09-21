@@ -116,7 +116,7 @@ EditClass::EditClass(int id, std::span<char> text, int max_len,
   EditClass::Set_Text(text, max_len);
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack, TextFlags);
+    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack, TextFlags);
 
     if (h == -1) {
       Height = FontHeight + 2;
@@ -326,7 +326,7 @@ bool EditClass::Action(unsigned flags, KeyNumType& key) {
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
 void EditClass::Draw_Background() {
-  Draw_Box(X, Y, Width, Height, BOXSTYLE_GREEN_BOX, true);
+  Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_GREEN_BOX, true);
 }
 
 /***********************************************************************************************
@@ -349,24 +349,25 @@ void EditClass::Draw_Text(const char* text) {
     const TextPrintType flags =
         Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
-    Conquer_Clip_Text_Print(text, X + 1, Y + 1, Color, kTBlack,
+    Conquer_Clip_Text_Print(*LogicPage, text, X + 1, Y + 1, Color, kTBlack,
                             TextFlags | flags, Width - 2);
 
     if (Has_Focus() &&
         std::cmp_less(std::string_view(text).size(), MaxLength) &&
         String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
-      Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(text), Y + 1,
-                              Color, kTBlack, TextFlags | flags);
+      Conquer_Clip_Text_Print(*LogicPage, "_", X + 1 + String_Pixel_Width(text),
+                              Y + 1, Color, kTBlack, TextFlags | flags);
     }
   } else {
-    Conquer_Clip_Text_Print(text, X + 1, Y + 1, Has_Focus() ? kBlue : kWhite,
-                            kTBlack, TextFlags, Width - 2);
+    Conquer_Clip_Text_Print(*LogicPage, text, X + 1, Y + 1,
+                            Has_Focus() ? kBlue : kWhite, kTBlack, TextFlags,
+                            Width - 2);
 
     if (Has_Focus() &&
         std::cmp_less(std::string_view(text).size(), MaxLength) &&
         String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
-      Conquer_Clip_Text_Print("_", X + 1 + String_Pixel_Width(text), Y + 1,
-                              kBlue, kTBlack, TextFlags);
+      Conquer_Clip_Text_Print(*LogicPage, "_", X + 1 + String_Pixel_Width(text),
+                              Y + 1, kBlue, kTBlack, TextFlags);
     }
   }
 }

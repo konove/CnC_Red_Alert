@@ -91,8 +91,8 @@
  *                                                                                             *
  * HISTORY: * 01/26/1995 BR : Created. *
  *=============================================================================================*/
-void Dialog_Box(int x, int y, int w, int h) {
-  Draw_Box(x, y, w, h, BOXSTYLE_GREEN_BORDER, true);
+void Dialog_Box(PixelView& view, int x, int y, int w, int h) {
+  Draw_Box(view, x, y, w, h, BOXSTYLE_GREEN_BORDER, true);
 }
 
 /***********************************************************************************************
@@ -118,7 +118,8 @@ void Dialog_Box(int x, int y, int w, int h) {
  ** 07/31/1992 JLB : Depressed option added. *
  *=============================================================================================*/
 
-void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
+void Draw_Box(PixelView& view, int x, int y, int w, int h, BoxStyleEnum up,
+              bool filled) {
   static const base::EnumArray<BoxStyleEnum, BoxStyleType, kBoxstyleCount>
       ButtonColors = {{
 
@@ -152,23 +153,23 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
 
   if (filled) {
     if (style.Filler == kCcGreenBkgd) {
-      CC_Texture_Fill(MixArchive::RetrieveData("BTEXTURE.SHP"),
+      CC_Texture_Fill(view, MixArchive::RetrieveData("BTEXTURE.SHP"),
                       TheGameState().in_main_loop() ? 1 : 0, x, y, w, h);
     } else {
-      LogicPage->FillRect(x, y, x + w, y + h,
-                          static_cast<unsigned char>(style.Filler));
+      view.FillRect(x, y, x + w, y + h,
+                    static_cast<unsigned char>(style.Filler));
     }
   }
 
   switch (up) {
     case BOXSTYLE_GREEN_BOX:
-      LogicPage->DrawRect(x, y, x + w, y + h,
-                          static_cast<unsigned char>(style.Highlight));
+      view.DrawRect(x, y, x + w, y + h,
+                    static_cast<unsigned char>(style.Highlight));
       break;
 
     case BOXSTYLE_GREEN_BORDER:
-      LogicPage->DrawRect(x + 1, y + 1, x + w - 1, y + h - 1,
-                          static_cast<unsigned char>(style.Highlight));
+      view.DrawRect(x + 1, y + 1, x + w - 1, y + h - 1,
+                    static_cast<unsigned char>(style.Highlight));
       break;
 
     case BoxStyleEnum::BOXSTYLE_DOWN:
@@ -183,18 +184,18 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
     case BoxStyleEnum::BOXSTYLE_GREEN_DIS_RAISED:
     case BoxStyleEnum::BOXSTYLE_COUNT:
     default:
-      LogicPage->DrawLine(x, y + h, x + w, y + h,
-                          static_cast<unsigned char>(style.Shadow));
-      LogicPage->DrawLine(x + w, y, x + w, y + h,
-                          static_cast<unsigned char>(style.Shadow));
+      view.DrawLine(x, y + h, x + w, y + h,
+                    static_cast<unsigned char>(style.Shadow));
+      view.DrawLine(x + w, y, x + w, y + h,
+                    static_cast<unsigned char>(style.Shadow));
 
-      LogicPage->DrawLine(x, y, x + w, y,
-                          static_cast<unsigned char>(style.Highlight));
-      LogicPage->DrawLine(x, y, x, y + h,
-                          static_cast<unsigned char>(style.Highlight));
+      view.DrawLine(x, y, x + w, y,
+                    static_cast<unsigned char>(style.Highlight));
+      view.DrawLine(x, y, x, y + h,
+                    static_cast<unsigned char>(style.Highlight));
 
-      LogicPage->PutPixel(x, y + h, static_cast<unsigned char>(style.Corner));
-      LogicPage->PutPixel(x + w, y, static_cast<unsigned char>(style.Corner));
+      view.PutPixel(x, y + h, static_cast<unsigned char>(style.Corner));
+      view.PutPixel(x + w, y, static_cast<unsigned char>(style.Corner));
       break;
   }
 }
@@ -273,13 +274,13 @@ int Format_Window_String(std::span<char> string, int max_line_len, int& width,
  *                                                                                             *
  * OUTPUT:  none *
  *                                                                                             *
- * WARNINGS:   The rendering is done to the LogicPage. *
+ * WARNINGS:   The rendering is done to `view`. *
  *                                                                                             *
  * HISTORY: * 03/03/1992 JLB : Created. * 07/31/1992 JLB : Cool raised border
  *effect.                                               * 06/08/1994 JLB : Takes
  *appropriate enumeration parameters.                                *
  *=============================================================================================*/
-void Window_Box(WindowNumberType window, BoxStyleEnum style) {
+void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style) {
   static const base::EnumArray<BoxStyleEnum, int[2], kBoxstyleCount> _border = {
       {
           {0, 0},   // 0 Simple beveled edge.
@@ -309,25 +310,25 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
   **	If it is to be rendered to the seenpage, then
   **	hide the mouse.
   */
-  if (TheScreen().IsVisible(LogicPage)) {
+  if (TheScreen().IsVisible(&view)) {
     Conditional_Hide_Mouse(x, y, x + w, y + h);
   }
 
-  Draw_Box(x, y, w, h, style, true);
+  Draw_Box(view, x, y, w, h, style, true);
   const int border = base::At(_border.at(style), 1);  // Width of border.
 
   /*
   **	Draw the second border if requested.
   */
   if (border) {
-    Draw_Box(x + border, y + border, w - (border * 2), h - (border * 2), style,
-             false);
+    Draw_Box(view, x + border, y + border, w - (border * 2), h - (border * 2),
+             style, false);
   }
 
   /*
   **	Restore the mouse if it has been hidden and return.
   */
-  if (TheScreen().IsVisible(LogicPage)) {
+  if (TheScreen().IsVisible(&view)) {
     Conditional_Show_Mouse();
   }
 }
@@ -355,8 +356,8 @@ void Window_Box(WindowNumberType window, BoxStyleEnum style) {
  * HISTORY: * 12/24/1991 JLB : Created. * 10/26/94   JLB : Handles font X
  *spacing in a more friendly manner.                        *
  *=============================================================================================*/
-void Simple_Text_Print(const char* text, int x, int y, int fore,
-                       int back, TextPrintType flag) {
+void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
+                       int fore, int back, TextPrintType flag) {
   static int yspace = 0;       // Y spacing adjustment for font.
   static int xspace = 0;       // Spacing adjustment for font.
   std::span<const std::byte> font = {};  // Font to use.
@@ -638,7 +639,7 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
 
     if (x < TheScreen().visible_view().width() &&
         y < TheScreen().visible_view().height()) {
-      LogicPage->Print(tempstr, x, y, fore, back);
+      view.Print(tempstr, x, y, fore, back);
     }
   }
 }
@@ -667,16 +668,16 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
  *                                                                                             *
  * HISTORY: * 11/29/1994 JLB : Created *
  *=============================================================================================*/
-void Fancy_Text_Print(const int text, const int x, const int y, const int fore,
-                      const int back, const TextPrintType flag,
+void Fancy_Text_Print(PixelView& view, const int text, const int x, const int y,
+                      const int fore, const int back, const TextPrintType flag,
                       const absl::Span<const absl::FormatArg> args) {
   if (text != TXT_NONE) {
-    Fancy_Text_Print(Text_String(text), x, y, fore, back, flag, args);
+    Fancy_Text_Print(view, Text_String(text), x, y, fore, back, flag, args);
   } else {
     /*
     **	Just the flags are to be changed, since the text number is TXT_NONE.
     */
-    Simple_Text_Print(nullptr, x, y, fore, back, flag);
+    Simple_Text_Print(view, nullptr, x, y, fore, back, flag);
   }
 }
 
@@ -706,18 +707,19 @@ void Fancy_Text_Print(const int text, const int x, const int y, const int fore,
  *spacing in a more friendly manner.                        * 11/29/1994 JLB :
  *Separated actual draw action.                                            *
  *=============================================================================================*/
-void Fancy_Text_Print(const char* text, const int x, const int y,
-                      const int fore, const int back, const TextPrintType flag,
+void Fancy_Text_Print(PixelView& view, const char* text, const int x,
+                      const int y, const int fore, const int back,
+                      const TextPrintType flag,
                       const absl::Span<const absl::FormatArg> args) {
   if (text) {
     const std::string formatted = port::FormatRuntime(text, args);
-    Simple_Text_Print(formatted.c_str(), x, y, fore, back, flag);
+    Simple_Text_Print(view, formatted.c_str(), x, y, fore, back, flag);
   } else {
     /*
     **	Just the flags are desired to be changed, so call the simple print
     *routine with *	a NULL text pointer.
     */
-    Simple_Text_Print(nullptr, x, y, fore, back, flag);
+    Simple_Text_Print(view, nullptr, x, y, fore, back, flag);
   }
 }
 
@@ -750,15 +752,15 @@ void Fancy_Text_Print(const char* text, const int x, const int y,
  *                                                                                             *
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-void Conquer_Clip_Text_Print(const char* text, int x, int y, int fore, int back,
-                             TextPrintType flag, int width,
+void Conquer_Clip_Text_Print(PixelView& view, const char* text, int x, int y,
+                             int fore, int back, TextPrintType flag, int width,
                              std::span<const int> tabs) {
   if (text == nullptr) {
     return;
   }
   char buffer[512];
   port::SafeCopy(buffer, text);
-  Simple_Text_Print(nullptr, 0, 0, kTBlack, kTBlack, flag);
+  Simple_Text_Print(view, nullptr, 0, 0, kTBlack, kTBlack, flag);
   std::span<char> source(buffer);
   int offset = 0;
   while (offset < width && !source.empty() && source.front() != '\0') {
@@ -776,7 +778,7 @@ void Conquer_Clip_Text_Print(const char* text, int x, int y, int fore, int back,
       ++visible;
     }
     base::At(source, visible) = '\0';
-    Simple_Text_Print(source.data(), x + offset, y, fore, back, flag);
+    Simple_Text_Print(view, source.data(), x + offset, y, fore, back, flag);
     offset += line_width;
     if (visible < count || tab == std::string_view::npos) {
       break;

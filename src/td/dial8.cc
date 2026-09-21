@@ -249,9 +249,9 @@ bool Dial8Class::Draw_Me(bool forced) {
     /*
     **	Draw background & decorations.
     */
-    Draw_Box(X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
+    Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
     for (const auto& i : FacePoint) {
-      Draw_Box(base::At(i, 0) - 1, base::At(i, 1) - 1, 3, 3,
+      Draw_Box(*LogicPage, base::At(i, 0) - 1, base::At(i, 1) - 1, 3, 3,
                BOXSTYLE_GREEN_RAISED, false);
     }
 

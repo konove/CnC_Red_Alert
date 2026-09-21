@@ -448,7 +448,7 @@ bool Do_The_Internet_Menu_Thang() {
   // than the shared string table.
   char buffer[80 * 3];
   port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
-  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, TheScreen().visible_view().height(), width,
                        height);
@@ -481,7 +481,7 @@ bool Do_The_Internet_Menu_Thang() {
 
   // buttons = &cancelbtn;
 
-  Fancy_Text_Print(TXT_NONE, 0, 0, kCcGreen, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   char users_name[256];
@@ -548,14 +548,14 @@ bool Do_The_Internet_Menu_Thang() {
       Load_Title_Page(true);
       Set_Palette(ThePalettes().title_palette());
 
-      Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+      Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
       /*
       ** Dialog & Field labels
       */
-      Draw_Caption(TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
+      Draw_Caption(*LogicPage, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-      Fancy_Text_Print(buffer, d_dialog_cx - (width / 2),
+      Fancy_Text_Print(*LogicPage, buffer, d_dialog_cx - (width / 2),
                        d_dialog_y + (25 * factor), kCcGreen, kTBlack,
                        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 

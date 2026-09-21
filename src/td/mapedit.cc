@@ -1417,7 +1417,7 @@ void MapEditClass::Draw_It(bool forced) {
   /*
   **	Display the total value of all Tiberium on the map.
   */
-  Fancy_Text_Print("Tiberium=%ld   ", 0, 0, kCcGreen, kBlack,
+  Fancy_Text_Print(*LogicPage, "Tiberium=%ld   ", 0, 0, kCcGreen, kBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, TotalValue);
 
   /*------------------------------------------------------------------------
@@ -1451,7 +1451,7 @@ void MapEditClass::Draw_It(bool forced) {
     ......................... print the label ..........................
     */
     Fancy_Text_Print(
-        buf, 320, 0, kCcTan, kTBlack,
+        *LogicPage, buf, 320, 0, kCcTan, kTBlack,
         TPF_CENTER | TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   }
 }

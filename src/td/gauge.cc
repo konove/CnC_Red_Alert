@@ -220,7 +220,7 @@ bool GaugeClass::Draw_Me(bool forced) {
     /*
     =========== Draw the body & set text color ===============
     */
-    Draw_Box(X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
+    Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
 
     /*
     **	Colorize the inside of the gauge if indicated.
@@ -369,10 +369,10 @@ void GaugeClass::Draw_Thumb() {
   }
 
   if (IsHorizontal) {
-    Draw_Box(x, Y, 4, Height, BOXSTYLE_GREEN_RAISED, true);
+    Draw_Box(*LogicPage, x, Y, 4, Height, BOXSTYLE_GREEN_RAISED, true);
     // Draw_Box(x, Y, 8, Height, BOXSTYLE_GREEN_RAISED, true);
   } else {
-    Draw_Box(X, x, Width, 4, BOXSTYLE_GREEN_RAISED, true);
+    Draw_Box(*LogicPage, X, x, Width, 4, BOXSTYLE_GREEN_RAISED, true);
     // Draw_Box(X, x, Width, 8,  BOXSTYLE_GREEN_RAISED, true);
   }
 }
@@ -472,7 +472,7 @@ bool TriColorGaugeClass::Draw_Me(bool forced) {
     /*
     =========== Draw the body & set text color ===============
     */
-    Draw_Box(X, Y, Width, Height,
+    Draw_Box(*LogicPage, X, Y, Width, Height,
              IsDisabled ? BOXSTYLE_GREEN_RAISED : BOXSTYLE_GREEN_DOWN, true);
 
     /*

@@ -334,8 +334,8 @@ void ScoreTimeClass::Update() {
     }
     PixelView* oldpage = LogicPage;
     SetLogicPage(PseudoSeenBuff);
-    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, {},
-                  {});
+    CC_Draw_Shape(*LogicPage, DataPtr, Stage, XPos, YPos, WINDOW_MAIN,
+                  SHAPE_WIN_REL, {}, {});
     SetLogicPage(oldpage);
   }
 }
@@ -366,8 +366,8 @@ void ScoreCredsClass::Update() {
         TheAudio().Play(CashTurn, 255, TheOptions().Normalize_Sound(70));
       }
     }
-    CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, {},
-                  {});
+    CC_Draw_Shape(*LogicPage, DataPtr, Stage, XPos, YPos, WINDOW_MAIN,
+                  SHAPE_WIN_REL, {}, {});
     SetLogicPage(oldpage);
   }
 }
@@ -846,7 +846,8 @@ void ScoreClass::Presentation() {
     ** load the logo
     */
     const auto logoptr = MixArchive::RetrieveData("LOGOS.SHP");
-    CC_Draw_Shape(logoptr, 1, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
+    CC_Draw_Shape(*LogicPage, logoptr, 1, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {},
+                  {});
 
     Bit_It_In(0, 0, 128, 104 - 16, &TheScreen().sys_mem_page(), PseudoSeenBuff,
               1);
@@ -1272,7 +1273,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     ** Draw the building before Rambo
     */
     if (i < 68) {
-      CC_Draw_Shape(factptr, shapenum, 0, 0, WINDOW_MAIN,
+      CC_Draw_Shape(*LogicPage, factptr, shapenum, 0, 0, WINDOW_MAIN,
                     SHAPE_FADING | SHAPE_WIN_REL, ScoreRemapBldg,
                     MouseClass::UnitShadow);
     }
@@ -1285,7 +1286,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
       int shapeindex = (i - 61) / 2;
       if (shapeindex < firecount) {
         CC_Draw_Shape(
-            fball1ptr, shapeindex, 10, 10, WINDOW_MAIN,
+            *LogicPage, fball1ptr, shapeindex, 10, 10, WINDOW_MAIN,
             SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,
             ScoreRemapFBall, {});
       }
@@ -1293,7 +1294,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
         shapeindex = (i - 64) / 2;
         if (shapeindex < firecount) {
           CC_Draw_Shape(
-              fball1ptr, shapeindex, 50, 30, WINDOW_MAIN,
+              *LogicPage, fball1ptr, shapeindex, 50, 30, WINDOW_MAIN,
               SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,
               ScoreRemapFBall, {});
         }
@@ -1302,7 +1303,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     /*
     ** Draw the Rambo character running away from the building
     */
-    CC_Draw_Shape(rmboptr,
+    CC_Draw_Shape(*LogicPage, rmboptr,
                   ramboclass->DoControls.at(DO_WALK).Frame +
                       (ramboclass->DoControls.at(DO_WALK).Jump * 6) +
                       ((i / 2) % ramboclass->DoControls.at(DO_WALK).Count),
@@ -1382,15 +1383,16 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   // Draw the white-flash shape on the hidpage
   SetLogicPage(TheScreen().sys_mem_page());
   TheScreen().sys_mem_page().FillRect(0, 0, 124, 9, kTBlack);
-  CC_Draw_Shape(redptr, 120, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
+  CC_Draw_Shape(*LogicPage, redptr, 120, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {},
+                {});
   SetLogicPage(PseudoSeenBuff);
 
   BlitList.Add(594, 2 * (ypos + 2), 594, 2 * (ypos + 2), 5 * 12, 12);
 
   for (int i = 1; i <= gdikilled; i++) {
     if (i != gdikilled) {
-      CC_Draw_Shape(yellowptr, i, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL, {},
-                    {});
+      CC_Draw_Shape(*LogicPage, yellowptr, i, 172, ypos, WINDOW_MAIN,
+                    SHAPE_WIN_REL, {}, {});
     } else {
       TheScreen().sys_mem_page().Blit(*PseudoSeenBuff, 0, 0, 172, ypos,
                                       3 + gdikilled, 9);
@@ -1402,8 +1404,8 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
       Call_Back_Delay(2);
     }
   }
-  CC_Draw_Shape(yellowptr, gdikilled, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL, {},
-                {});
+  CC_Draw_Shape(*LogicPage, yellowptr, gdikilled, 172, ypos, WINDOW_MAIN,
+                SHAPE_WIN_REL, {}, {});
   Count_Up_Print("%d", gkilled, gkilled, 297, ypos + 2);
   if (!Check_Key()) {
     Call_Back_Delay(40);
@@ -1412,8 +1414,8 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   BlitList.Add(594, 2 * (ypos + 14), 594, 2 * (ypos + 14), 5 * 12, 12);
   for (int i = 1; i <= nodkilled; i++) {
     if (i != nodkilled) {
-      CC_Draw_Shape(redptr, i, 172, ypos + 12, WINDOW_MAIN, SHAPE_WIN_REL, {},
-                    {});
+      CC_Draw_Shape(*LogicPage, redptr, i, 172, ypos + 12, WINDOW_MAIN,
+                    SHAPE_WIN_REL, {}, {});
     } else {
       TheScreen().sys_mem_page().Blit(*PseudoSeenBuff, 0, 0, 172, ypos + 12,
                                       3 + nodkilled, 9);
@@ -1431,8 +1433,8 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   /*
   ** Make sure accurate count is printed at end
   */
-  CC_Draw_Shape(redptr, nodkilled, 172, ypos + 12, WINDOW_MAIN, SHAPE_WIN_REL,
-                {}, {});
+  CC_Draw_Shape(*LogicPage, redptr, nodkilled, 172, ypos + 12, WINDOW_MAIN,
+                SHAPE_WIN_REL, {}, {});
   Count_Up_Print("%d", nkilled, nkilled, 297, ypos + 14);
   if (!Check_Key()) {
     Call_Back_Delay(40);
@@ -1920,7 +1922,7 @@ void Draw_InfantryMan(int index) {
           .at(static_cast<DoType>(base::At(InfantryMan, index).anim))
           .Frame;
 
-  CC_Draw_Shape(base::At(InfantryMan, index).shapefile, stage,
+  CC_Draw_Shape(*LogicPage, base::At(InfantryMan, index).shapefile, stage,
                 base::At(InfantryMan, index).xpos,
                 base::At(InfantryMan, index).ypos, WINDOW_MAIN,
                 SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,

@@ -800,13 +800,16 @@ PathType* FootClass::Find_Path(CELL dest, std::span<FacingType> final_moves,
         ** did.
         */
         if (TheDebugState().trace_path_search() && DrawPath) {
-          Fancy_Text_Print("   Left", 0, 92, kWhite, kBlack, TPF_6POINT);
-          Fancy_Text_Print("Total Steps", 0, 100, kWhite, kBlack, TPF_6POINT);
+          Fancy_Text_Print(*LogicPage, "   Left", 0, 92, kWhite, kBlack,
+                           TPF_6POINT);
+          Fancy_Text_Print(*LogicPage, "Total Steps", 0, 100, kWhite, kBlack,
+                           TPF_6POINT);
           if (left) {
-            Fancy_Text_Print("    %d", 0, 108, kWhite, kBlack, TPF_6POINT,
-                             pleft.Length);
+            Fancy_Text_Print(*LogicPage, "    %d", 0, 108, kWhite, kBlack,
+                             TPF_6POINT, pleft.Length);
           } else {
-            Fancy_Text_Print("   FAIL", 0, 108, kWhite, kBlack, TPF_6POINT);
+            Fancy_Text_Print(*LogicPage, "   FAIL", 0, 108, kWhite, kBlack,
+                             TPF_6POINT);
           }
         }
 
@@ -829,13 +832,16 @@ PathType* FootClass::Find_Path(CELL dest, std::span<FacingType> final_moves,
         ** did.
         */
         if (TheDebugState().trace_path_search() && DrawPath) {
-          Fancy_Text_Print("  Right", 0, 92, kWhite, kBlack, TPF_6POINT);
-          Fancy_Text_Print("Total Steps", 0, 100, kWhite, kBlack, TPF_6POINT);
+          Fancy_Text_Print(*LogicPage, "  Right", 0, 92, kWhite, kBlack,
+                           TPF_6POINT);
+          Fancy_Text_Print(*LogicPage, "Total Steps", 0, 100, kWhite, kBlack,
+                           TPF_6POINT);
           if (right) {
-            Fancy_Text_Print("    %d", 0, 108, kWhite, kBlack, TPF_6POINT,
-                             pright.Length);
+            Fancy_Text_Print(*LogicPage, "    %d", 0, 108, kWhite, kBlack,
+                             TPF_6POINT, pright.Length);
           } else {
-            Fancy_Text_Print("   FAIL", 0, 108, kWhite, kBlack, TPF_6POINT);
+            Fancy_Text_Print(*LogicPage, "   FAIL", 0, 108, kWhite, kBlack,
+                             TPF_6POINT);
           }
         }
 
@@ -1599,7 +1605,8 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
   PixelView* page = SetLogicPage(TheScreen().visible_view());
 
   TheScreen().visible_page().Clear();
-  Fancy_Text_Print(txt, 160, 0, kWhite, kBlack, TPF_8POINT | TPF_CENTER);
+  Fancy_Text_Print(*LogicPage, txt, 160, 0, kWhite, kBlack,
+                   TPF_8POINT | TPF_CENTER);
   for (int x = 0; x < 64; x++) {
     for (int y = 0; y < 64; y++) {
       int color = 0;
@@ -1631,8 +1638,8 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
       if (XY_Cell(x, y) == dest) {
         color = kBlue;
       }
-      Fat_Put_Pixel(64 + (x * 3), 8 + (y * 3), static_cast<uint8_t>(color), 3,
-                    TheScreen().visible_view());
+      Fat_Put_Pixel(TheScreen().visible_view(), 64 + (x * 3), 8 + (y * 3),
+                    static_cast<uint8_t>(color), 3);
     }
   }
   SetLogicPage(page);

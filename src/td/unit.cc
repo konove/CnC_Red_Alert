@@ -134,6 +134,7 @@
 #include "base/enum_array.h"
 #include "port/tokenizer.h"
 #include "sdllib/misc.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/anim.h"
 #include "td/audio.h"
@@ -1956,7 +1957,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
             break;
         }
 
-        CC_Draw_Shape(UnitTypeClass::WakeShapes,
+        CC_Draw_Shape(*LogicPage, UnitTypeClass::WakeShapes,
                       shapestart + (Fetch_Stage() % 6), xx - 1, yy + 3, window,
                       SHAPE_CENTER | SHAPE_WIN_REL);
 
@@ -2127,7 +2128,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
   *else.
   */
   if (Flagged != HOUSE_NONE) {
-    CC_Draw_Shape(MixArchive::RetrieveData("FLAGFLY.SHP"),
+    CC_Draw_Shape(*LogicPage, MixArchive::RetrieveData("FLAGFLY.SHP"),
                   static_cast<int>(CurrentFrame() % 14), x, y, window,
                   SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
                   HouseClass::As_Pointer(Flagged)->Remap_Table(false, false),

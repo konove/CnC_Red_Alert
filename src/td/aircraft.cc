@@ -119,6 +119,7 @@
 #include "base/enum_array.h"
 #include "base/trig.h"
 #include "port/tokenizer.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/anim.h"
 #include "td/audio.h"
@@ -422,7 +423,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
   **	Special manual shadow draw code.
   */
   if (Visual_Character() <= VISUAL_DARKEN) {
-    CC_Draw_Shape(shapefile, shapenum, x + 1, y + 2, window,
+    CC_Draw_Shape(*LogicPage, shapefile, shapenum, x + 1, y + 2, window,
                   SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
                   MouseClass::FadingShade, {});
   }
@@ -467,20 +468,20 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) {
       const FacingType face = Dir_Facing(SecondaryFacing);
       base::MovePoint(xx, yy, static_cast<uint8_t>(SecondaryFacing.Current()),
                       static_cast<int16_t>(_stretch.at(face)));
-      CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, xx, yy - 2, window,
-                    flags, {}, MouseClass::UnitShadow);
+      CC_Draw_Shape(*LogicPage, AircraftTypeClass::RRotorData, shapenum, xx,
+                    yy - 2, window, flags, {}, MouseClass::UnitShadow);
 
       base::MovePoint(xx, yy,
                       static_cast<uint8_t>(SecondaryFacing.Current() + DIR_S),
                       static_cast<int16_t>(_stretch.at(face) * 2));
-      CC_Draw_Shape(AircraftTypeClass::LRotorData, shapenum, xx, yy - 2, window,
-                    flags, {}, MouseClass::UnitShadow);
+      CC_Draw_Shape(*LogicPage, AircraftTypeClass::LRotorData, shapenum, xx,
+                    yy - 2, window, flags, {}, MouseClass::UnitShadow);
 
     } else {
       /*
       **	Single rotor centered about shape.
       */
-      CC_Draw_Shape(AircraftTypeClass::RRotorData, shapenum, x,
+      CC_Draw_Shape(*LogicPage, AircraftTypeClass::RRotorData, shapenum, x,
                     y - Altitude - 2, window, flags, {},
                     MouseClass::UnitShadow);
     }

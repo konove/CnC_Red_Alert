@@ -943,10 +943,10 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
                         static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
     FontXSpacing -= 2;
     Fancy_Text_Print(
-        "%d\r%2X%c\r%02X.%02X", TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1),
-        TheMap().TacPixelY + y, kWhite, kTBlack,
-        TPF_6POINT | TPF_NOSHADOW | TPF_CENTER, cell, Flag.Composite,
-        Cell_Occupier() ? '*' : ' ', Overlay, OverlayData);
+        *LogicPage, "%d\r%2X%c\r%02X.%02X",
+        TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1), TheMap().TacPixelY + y,
+        kWhite, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_CENTER, cell,
+        Flag.Composite, Cell_Occupier() ? '*' : ' ', Overlay, OverlayData);
     FontXSpacing += 2;
   } else {
     if (!draw_type || draw_type == CELL_BLIT_ONLY) {
@@ -1024,15 +1024,18 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
 #ifdef NEVER
       switch (Smudge) {
         case SMUDGE_BIB1:
-          CC_Draw_Shape(Bib1, SmudgeData, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);
+          CC_Draw_Shape(*LogicPage, Bib1, SmudgeData, x, y, WINDOW_TACTICAL,
+                        SHAPE_WIN_REL);
           break;
 
         case SMUDGE_BIB2:
-          CC_Draw_Shape(Bib2, SmudgeData, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);
+          CC_Draw_Shape(*LogicPage, Bib2, SmudgeData, x, y, WINDOW_TACTICAL,
+                        SHAPE_WIN_REL);
           break;
 
         case SMUDGE_BIB3:
-          CC_Draw_Shape(Bib3, SmudgeData, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);
+          CC_Draw_Shape(*LogicPage, Bib3, SmudgeData, x, y, WINDOW_TACTICAL,
+                        SHAPE_WIN_REL);
           break;
       }
 #endif
@@ -1046,7 +1049,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       if (Overlay != OVERLAY_NONE) {
         const OverlayTypeClass& otype = OverlayTypeClass::As_Reference(Overlay);
         IsTheaterShape = static_cast<bool>(otype.IsTheater);
-        CC_Draw_Shape(otype.Get_Image_Data(), OverlayData,
+        CC_Draw_Shape(*LogicPage, otype.Get_Image_Data(), OverlayData,
                       x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
                       WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
@@ -1061,9 +1064,9 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
           */
           if (IsTrigger) {
             trig = Get_Trigger();
-            Fancy_Text_Print(trig->Get_Name(), x + TheMap().TacPixelX,
-                             y + TheMap().TacPixelY, kPink, kTBlack,
-                             TPF_NOSHADOW | TPF_6POINT);
+            Fancy_Text_Print(*LogicPage, trig->Get_Name(),
+                             x + TheMap().TacPixelX, y + TheMap().TacPixelY,
+                             kPink, kTBlack, TPF_NOSHADOW | TPF_6POINT);
           }
 
           /*
@@ -1075,19 +1078,20 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
                 base::At(waypt, 0) = static_cast<char>('A' + i);
                 base::At(waypt, 1) = 0;
                 Fancy_Text_Print(
-                    waypt, TheMap().TacPixelX + x + (CELL_PIXEL_W / 2),
+                    *LogicPage, waypt,
+                    TheMap().TacPixelX + x + (CELL_PIXEL_W / 2),
                     TheMap().TacPixelY + y + (CELL_PIXEL_H / 2) - 3, kYellow,
                     kTBlack, TPF_NOSHADOW | TPF_6POINT | TPF_CENTER);
                 break;
               }
             }
             if (base::At(TheWorld().waypoint(), kWayptHome) == Cell_Number()) {
-              Fancy_Text_Print("Home", TheMap().TacPixelX + x,
+              Fancy_Text_Print(*LogicPage, "Home", TheMap().TacPixelX + x,
                                TheMap().TacPixelY + y + CELL_PIXEL_H - 7,
                                kWhite, kTBlack, TPF_NOSHADOW | TPF_6POINT);
             }
             if (base::At(TheWorld().waypoint(), kWayptReinf) == Cell_Number()) {
-              Fancy_Text_Print("Reinf", TheMap().TacPixelX + x,
+              Fancy_Text_Print(*LogicPage, "Reinf", TheMap().TacPixelX + x,
                                TheMap().TacPixelY + y + CELL_PIXEL_H - 7,
                                kWhite, kTBlack, TPF_NOSHADOW | TPF_6POINT);
             }
@@ -1197,7 +1201,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       if (IsFlagged) {
         const auto const_remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, false);
-        CC_Draw_Shape(MixArchive::RetrieveData("FLAGFLY.SHP"),
+        CC_Draw_Shape(*LogicPage, MixArchive::RetrieveData("FLAGFLY.SHP"),
                       static_cast<int>(CurrentFrame() % 14),
                       x + (ICON_PIXEL_W / 2), y + (ICON_PIXEL_H / 2),
                       WINDOW_TACTICAL,

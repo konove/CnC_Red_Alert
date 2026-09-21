@@ -463,8 +463,8 @@ void RadarClass::Draw_It(bool forced) {
 
       } else {
         PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
-        CC_Draw_Shape(RadarAnim, kRadarActivatedFrame, RadX, RadY + 1,
-                      WINDOW_MAIN, SHAPE_NORMAL);
+        CC_Draw_Shape(*LogicPage, RadarAnim, kRadarActivatedFrame, RadX,
+                      RadY + 1, WINDOW_MAIN, SHAPE_NORMAL);
         if (BaseX || BaseY) {
           LogicPage->FillRect(RadX + RadOffX, RadY + RadOffY,
                               RadX + RadOffX + RadIWidth - 1,
@@ -502,7 +502,8 @@ void RadarClass::Draw_It(bool forced) {
       */
       //			if (forced) {
       const int val = DoesRadarExist ? kMaxRadarFrames : 0;
-      CC_Draw_Shape(RadarAnim, val, RadX, RadY + 1, WINDOW_MAIN, SHAPE_NORMAL);
+      CC_Draw_Shape(*LogicPage, RadarAnim, val, RadX, RadY + 1, WINDOW_MAIN,
+                    SHAPE_NORMAL);
       FullRedraw = false;
       IsRadarToRedraw = false;
       //			}
@@ -646,8 +647,9 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) const {
 
         case RTTI_UNIT:
         case RTTI_AIRCRAFT:
-          Fat_Put_Pixel(x, y, dynamic_cast<UnitClass*>(obj)->House->BrightColor,
-                        size, *LogicPage);
+          Fat_Put_Pixel(*LogicPage, x, y,
+                        dynamic_cast<UnitClass*>(obj)->House->BrightColor,
+                        size);
           break;
         case RTTIType::RTTI_NONE:
         case RTTIType::RTTI_INFANTRYTYPE:
@@ -899,11 +901,12 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         }
 
       } else {
-        Fat_Put_Pixel(x, y, static_cast<uint8_t>(cellptr->Cell_Color(false)),
-                      ZoomFactor, *LogicPage);
+        Fat_Put_Pixel(*LogicPage, x, y,
+                      static_cast<uint8_t>(cellptr->Cell_Color(false)),
+                      ZoomFactor);
       }
     } else {
-      Fat_Put_Pixel(x, y, static_cast<uint8_t>(color), ZoomFactor, *LogicPage);
+      Fat_Put_Pixel(*LogicPage, x, y, static_cast<uint8_t>(color), ZoomFactor);
     }
     if (color != kBlack) {
       Render_Overlay(cell, x, y, ZoomFactor);
@@ -1305,11 +1308,11 @@ void RadarClass::Radar_Anim() {
       LogicPage->buffer(), RadX + RadOffX + LogicPage->x_pos(),
       RadY + RadOffY + LogicPage->y_pos(), RadIWidth, RadIHeight);
 
-  Draw_Box(RadX + RadOffX - 1, RadY + RadOffY - 1, RadIWidth + 2,
+  Draw_Box(*LogicPage, RadX + RadOffX - 1, RadY + RadOffY - 1, RadIWidth + 2,
            RadIHeight + 2, BOXSTYLE_RAISED, true);
   draw_window.Clear();
-  CC_Draw_Shape(RadarAnim, RadarAnimFrame, RadX, RadY + 1, WINDOW_MAIN,
-                SHAPE_NORMAL);
+  CC_Draw_Shape(*LogicPage, RadarAnim, RadarAnimFrame, RadX, RadY + 1,
+                WINDOW_MAIN, SHAPE_NORMAL);
 
   Flag_To_Redraw(false);
   SetLogicPage(oldpage);
@@ -1885,19 +1888,19 @@ void RadarClass::Draw_Names() const {
     return;
   }
 
-  CC_Draw_Shape(RadarAnim, kRadarActivatedFrame, RadX, RadY + 1, WINDOW_MAIN,
-                SHAPE_NORMAL);
+  CC_Draw_Shape(*LogicPage, RadarAnim, kRadarActivatedFrame, RadX, RadY + 1,
+                WINDOW_MAIN, SHAPE_NORMAL);
   LogicPage->FillRect(RadX + RadOffX, RadY + RadOffY,
                       RadX + RadOffX + RadIWidth - 1,
                       RadY + RadOffY + RadIHeight - 1, kBlack);
 
   int y = RadY + RadOffY;
 
-  Fancy_Text_Print(TXT_NAME_COLON, RadX + RadOffX, y, kLtGrey, kTBlack,
-                   TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+  Fancy_Text_Print(*LogicPage, TXT_NAME_COLON, RadX + RadOffX, y, kLtGrey,
+                   kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  Fancy_Text_Print(TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2, y, kLtGrey,
-                   kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_KILLS_COLON, RadX + RadOffX + RadIWidth - 2,
+                   y, kLtGrey, kTBlack,
                    TPF_RIGHT | TPF_6PT_GRAD | TPF_NOSHADOW | TPF_USE_GRAD_PAL);
 
   y += (6 * factor) + 1;
@@ -1964,7 +1967,8 @@ void RadarClass::Draw_Names() const {
         base::At(txt, 9) = '.';
         base::At(txt, 10) = '\0';
       }
-      Fancy_Text_Print(txt, RadX + RadOffX, y, color, kBlack, style);
+      Fancy_Text_Print(*LogicPage, txt, RadX + RadOffX, y, color, kBlack,
+                       style);
 
       int kills = 0;
       for (HousesType h = HOUSE_FIRST; h < HOUSE_COUNT; h++) {
@@ -1972,8 +1976,8 @@ void RadarClass::Draw_Names() const {
         kills += ptr->BuildingsKilled.at(h);
       }
       absl::SNPrintF(txt, sizeof(txt), "%2d", kills);
-      Fancy_Text_Print(txt, RadX + RadOffX + RadIWidth - 2, y, color, kBlack,
-                       style | TPF_RIGHT);
+      Fancy_Text_Print(*LogicPage, txt, RadX + RadOffX + RadIWidth - 2, y,
+                       color, kBlack, style | TPF_RIGHT);
 
       y += (6 * factor) + 1;
     }

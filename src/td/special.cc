@@ -200,12 +200,14 @@ void Special_Dialog() {
       display = false;
 
       Hide_Mouse();
-      Dialog_Box(kOptionX, kOptionY, kOptionWidth, kOptionHeight);
-      Draw_Caption(TXT_SPECIAL_OPTIONS, kOptionX, kOptionY, kOptionWidth);
+      Dialog_Box(*LogicPage, kOptionX, kOptionY, kOptionWidth, kOptionHeight);
+      Draw_Caption(*LogicPage, TXT_SPECIAL_OPTIONS, kOptionX, kOptionY,
+                   kOptionWidth);
 
       for (const auto& _option : _options) {
-        Fancy_Text_Print(_option.Description, _option.Button->X + 10,
-                         _option.Button->Y, kCcGreen, kTBlack,
+        Fancy_Text_Print(*LogicPage, _option.Description,
+                         _option.Button->X + 10, _option.Button->Y, kCcGreen,
+                         kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       buttons->Draw_All();

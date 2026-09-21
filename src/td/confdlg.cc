@@ -89,7 +89,7 @@ bool ConfirmationClass::Process(const char* string) {
   **	Set up the window.  Window x-coords are in bytes not pixels.
   */
   port::SafeCopy(buffer, string);
-  Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
+  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, 200 * factor, width, height);
   width += 60 * factor;
@@ -177,10 +177,11 @@ bool ConfirmationClass::Process(const char* string) {
       /*
       **	Draw the background.
       */
-      Dialog_Box(x, y, width, height);
-      Draw_Caption(TXT_CONFIRMATION, x, y, width);
-      Fancy_Text_Print(buffer, x + (20 * factor), y + (30 * factor), kCcGreen,
-                       kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+      Dialog_Box(*LogicPage, x, y, width, height);
+      Draw_Caption(*LogicPage, TXT_CONFIRMATION, x, y, width);
+      Fancy_Text_Print(*LogicPage, buffer, x + (20 * factor), y + (30 * factor),
+                       kCcGreen, kTBlack,
+                       TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
       /*
       **	Draw the titles.

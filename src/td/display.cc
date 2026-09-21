@@ -2166,7 +2166,7 @@ void DisplayClass::Redraw_Shadow() {
             if ((!cellptr->IsMapped) && cellptr->IsVisible) {
               const int shadow = Cell_Shadow(cell);
               if (shadow >= 0) {
-                CC_Draw_Shape(ShadowShapes, shadow, xpixel, ypixel,
+                CC_Draw_Shape(*LogicPage, ShadowShapes, shadow, xpixel, ypixel,
                               WINDOW_TACTICAL, SHAPE_GHOST, {}, ShadowTrans);
               }
             }

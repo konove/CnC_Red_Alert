@@ -89,7 +89,7 @@ TextButtonClass::TextButtonClass(unsigned id, const char* text,
       String(text),
       PrintFlags(style) {
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack, PrintFlags);
+    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack, PrintFlags);
     if (w == -1) {
       Width = String_Pixel_Width(String) + 8;
       //			if (SeenBuff.width() != 320) Width *= 2;
@@ -160,7 +160,7 @@ TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
   Set_Text(text);
 
   if (w == -1 || h == -1) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack, PrintFlags);
+    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack, PrintFlags);
     if (w == -1) {
       Width = String_Pixel_Width(String) + 8;
       //			if (SeenBuff.width() != 320) Width *= 2;
@@ -236,7 +236,7 @@ void TextButtonClass::Set_Text(const char* text, bool resize) {
   String = text;
   Flag_To_Redraw();
   if (resize && String) {
-    Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack, PrintFlags);
+    Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack, PrintFlags);
     Width = String_Pixel_Width(String) + 8;
     Height = FontHeight + FontYSpacing + 2;
   }
@@ -307,7 +307,7 @@ void TextButtonClass::Draw_Background() {
     }
     return IsPressed ? BOXSTYLE_DOWN : BOXSTYLE_RAISED;
   }();
-  Draw_Box(X, Y, Width, Height, style, true);
+  Draw_Box(*LogicPage, X, Y, Width, Height, style, true);
 }
 
 /***********************************************************************************************
@@ -345,8 +345,8 @@ void TextButtonClass::Draw_Text(const char* text) {
                                  : TPF_USE_GRAD_PAL | TPF_MEDIUM_COLOR;
       }();
 
-      Fancy_Text_Print(text, X + (Width / 2) - 1, Y + 1, color, kTBlack,
-                       PrintFlags | flags | TPF_CENTER);
+      Fancy_Text_Print(*LogicPage, text, X + (Width / 2) - 1, Y + 1, color,
+                       kTBlack, PrintFlags | flags | TPF_CENTER);
     } else {
       if (IsDisabled) {
         //				color = DKGREY;
@@ -363,8 +363,8 @@ void TextButtonClass::Draw_Text(const char* text) {
         }
       }
 
-      Fancy_Text_Print(text, X + (Width / 2) - 1, Y + 1, IsOn ? kRed : color,
-                       kTBlack, PrintFlags | TPF_CENTER);
+      Fancy_Text_Print(*LogicPage, text, X + (Width / 2) - 1, Y + 1,
+                       IsOn ? kRed : color, kTBlack, PrintFlags | TPF_CENTER);
     }
   }
 }
