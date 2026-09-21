@@ -131,6 +131,13 @@ dirs on `RelWithDebInfo`. `clang-tidy-cache --show-stats` reports on its server 
 cache; to check that two dirs agree, compare `CTCACHE_DUMP=1 CTCACHE_DUMP_DIR=<dir>` dumps of one
 TU.
 
+**To check one file without re-analyzing the tree,** run `tools/strict_tu.py <files>`. It builds
+only the objects those sources produce, with the strict directory's own flags, caches and ninja —
+seconds, against the four minutes a change to a header with a 372-TU fan-out (`pixel_buffer.h`)
+costs at `-j14`. A header is checked through its sibling `.cc`. It proves nothing about the other
+includers of a changed header, so it is for the edit loop; the full strict build still gates the
+commit.
+
 Editing `.clang-tidy` re-checks the whole tree on the next build — its hash rides along in the
 clang-tidy command line, so a config change makes every object stale. No `clean` needed (and `clean`
 is expensive: it throws away objects ccache can restore for free, but nothing can restore the

@@ -154,11 +154,13 @@ Keep what the code relies on:
 - `git clang-format -f -- <touched files>`.
 - `cmake --build build --parallel 22 && ctest --test-dir build --output-on-failure`; both games if a
   shared directory changed.
-- `cmake --build build-strict --parallel 14`, in the foreground as its own command. New
-  `std::string` members and spans are where `misc-include-cleaner`, the bounds checks and lifetime
-  warnings speak up. Changing a header re-analyzes every file that includes it, which can surface an
-  unused include that was there before (`init.cc`'s `base/numeric.h` when `init.h` gained
-  `<string_view>`); removing it is part of the change.
+- The strict checks on the files you touched: `tools/strict_tu.py <touched files>` when a
+  multi-stage run has deferred the full pass, otherwise `cmake --build build-strict --parallel 14`,
+  in the foreground as its own command. New `std::string` members and spans are where
+  `misc-include-cleaner`, the bounds checks and lifetime warnings speak up. Changing a header
+  re-analyzes every file that includes it, which can surface an unused include that was there before
+  (`init.cc`'s `base/numeric.h` when `init.h` gained `<string_view>`); removing it is part of the
+  change.
 - If anything a save touches changed despite section 0, run `tools/ra_saveload_smoke.sh` (or `td_`)
   against the build.
 

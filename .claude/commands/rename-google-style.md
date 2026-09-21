@@ -232,10 +232,12 @@ it, in its own commit, and say so.
 - `git clang-format -f -- <every touched file>`: longer names re-wrap lines. Never
   `clang-format -i`, which reflows the untouched legacy code in the same files.
 - `cmake --build build --parallel 22 && ctest --test-dir build`.
-- `cmake --build build-strict --parallel 14`, in the foreground as its own command. This is where a
-  new shadowing warning or a missed clang-only call site shows up. A file rename makes CMake re-run
-  its globs, which re-populates `_deps` in that directory: if the build then reports hundreds of
-  `absl/...` or `gtest/...` "file not found" errors, build once more before believing any of them.
+- The strict checks on the files you touched: `tools/strict_tu.py <touched files>` when a
+  multi-stage run has deferred the full pass, otherwise `cmake --build build-strict --parallel 14`,
+  in the foreground as its own command. This is where a new shadowing warning or a missed clang-only
+  call site shows up. A file rename makes CMake re-run its globs, which re-populates `_deps` in that
+  directory: if the build then reports hundreds of `absl/...` or `gtest/...` "file not found"
+  errors, build once more before believing any of them.
 - `git grep -n '<old basename>'` comes back empty apart from historical records, and `git status`
   shows the renamed files as `R`, not as a delete and an add.
 - Skim `git diff --stat` for files that should not be there, and grep the diff for changes inside

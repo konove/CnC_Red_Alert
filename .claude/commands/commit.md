@@ -39,6 +39,10 @@ user says they built or tested it themselves ("built it, works, commit"), take t
 | Build + tests | `cmake --build build --parallel 22 && ctest --test-dir build` | It compiles with GCC and the tests pass. `build/` has `STRICT_CHECKS=OFF` (`-w`), so this says nothing about warnings.                    |
 | Strict        | `cmake --build build-strict --parallel 14`                    | clang, `-Weverything` and clang-tidy as errors. This is what the IDE and CI enforce, and the only place a bad `absl` format string fails. |
 
+Format before the strict build, never after: `git clang-format` on a widely included header changes
+what every includer preprocesses to, which misses the clang-tidy cache and re-analyzes the fan-out a
+second time.
+
 Scale the work to the change:
 
 - Documentation or `.claude/` only: nothing to build.
@@ -48,6 +52,11 @@ Scale the work to the change:
 - `.clang-tidy` or a widely included header: the strict build re-analyzes most of the tree. Run it
   as `timeout 590 cmake --build build-strict --parallel 14 -- -k 0` and repeat until ninja reports
   no work; it resumes where it stopped.
+- Mid-run of a multi-stage command that says the full pass is deferred (`/modernize-file`): run
+  `tools/strict_tu.py <touched files>` instead of the full strict build. It runs the same clang-tidy
+  pass and clang compile on the objects those files build, and nothing else - seconds instead of the
+  four minutes a `sdllib/pixel_buffer.h` fan-out costs. Only the command that deferred it may do
+  this, and only because it runs the full pass before its own last commit.
 
 Things that look like failures but are not, and the reverse:
 

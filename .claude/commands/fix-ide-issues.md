@@ -66,9 +66,10 @@ in this diff; the user usually wants them next, as a separate change.
    code).
 2. `cmake --build build --parallel 22 && ctest --test-dir build`, or only the game's target when
    nothing shared changed.
-3. `cmake --build build-strict --parallel 14`, in the foreground as its own command. Top-level
-   `const` and `auto` are where `misc-const-correctness` and `modernize-*` disagree with the IDE, if
-   they are going to.
+3. The strict checks on the files you touched: `tools/strict_tu.py <touched files>` when a
+   multi-stage run has deferred the full pass, otherwise `cmake --build build-strict --parallel 14`,
+   in the foreground as its own command. Top-level `const` and `auto` are where
+   `misc-const-correctness` and `modernize-*` disagree with the IDE, if they are going to.
 4. Call `getDiagnostics` again on each file. CLion re-analyzes after the save, which can take a few
    seconds; if the list still shows fixed lines, wait briefly and ask again. What remains should be
    exactly the findings you skipped on purpose.

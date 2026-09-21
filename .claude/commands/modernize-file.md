@@ -50,6 +50,20 @@ not been verified, splits RA and TD, and writes the message). A stage that finds
 commit and one line in the final report. Do not stop between stages to ask; the user asked for the
 whole run.
 
+**The full strict build runs once, not once per stage.** A run edits the same header six times, and
+each edit re-analyzes everything that includes it - four minutes for a `sdllib/pixel_buffer.h`-sized
+fan-out, half an hour over a run. So during the stages, verify with
+`tools/strict_tu.py <touched files>` (the same clang-tidy pass and clang compile, on the objects
+those files build, in seconds) and tell `/commit` the full pass is deferred. The plain
+`cmake --build build --parallel 22` still runs every stage: it is what catches a rename that missed
+a call site anywhere in the tree.
+
+Then run `cmake --build build-strict --parallel 14` once, in the foreground, after stage 6 and
+before stage 7's commit - the last point where the code is final. What it reports is fixed there and
+then: amend the stage commit it belongs to if that commit is still the tip, otherwise give the fix
+its own commit naming the stage it came from. Do not start stage 7 with findings outstanding, and do
+not end a run without that pass having been clean.
+
 **1. Dead code** - `/remove-dead-code <files>` in sweep mode. Unused parameters it notices go on the
 ledger's **noticed** list for stage 5; removing them changes callers across the tree and belongs
 with the other interface clean-ups.
@@ -89,12 +103,13 @@ confirm against the callers, failing test first where the code is reachable from
 twin fixed separately.
 
 If a stage cannot be made to build or pass the strict checks, stop there: report what was committed,
-what is left in the tree, and the error.
+what is left in the tree, and the error. That includes the full strict pass before stage 7: a run
+that ends with it unclean is a failed run, however many stages committed.
 
 ## Report
 
 - One line per stage: the commit(s) it made (`git log --oneline <base>..HEAD`), or why there was
-  none.
+  none, and what the full strict pass before stage 7 turned up.
 - Bugs fixed, each with its commit and whether the twin got it.
 - **For the user**: behaviour-changing fixes not applied (what would play differently), names you
   were unsure of with the alternative, anything skipped (e.g. the IDE never answered).
