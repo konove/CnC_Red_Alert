@@ -197,6 +197,22 @@ ObjectClass::ObjectClass(RTTIType rtti, int id)
       Trigger(nullptr),
       Strength(255) {}
 
+// Limbo() is what takes an object out of the layers, and the derived
+// destructor is what calls it. Catching a leftover here aborts at the delete
+// that skipped it, with the stack trace that names it; otherwise the object
+// is only noticed frames later, when the logic layer walks freed memory and
+// the trace points at the innocent caller that stepped on it.
+//
+// The derived destructors deliberately skip Limbo() while the game is
+// shutting down, because Clear_Scenario() empties the layers wholesale, so
+// only an active game can expect the object to be gone from them by now.
+ObjectClass::~ObjectClass() {
+  if (TheGameState().active()) {
+    DCHECK_EQ(TheWorld().logic().ID(this), -1);
+  }
+  Next = nullptr;
+}
+
 /***********************************************************************************************
  * ObjectClass::Get_Image_Data -- Fetches the image data to use for this object.
  **

@@ -632,6 +632,21 @@ static void CaptureMotionFrame() {
   captured_count = 0;
 }
 
+// Reports any logic layer entry whose object has already been freed. The
+// object heaps cannot see this: they stay perfectly consistent while a stale
+// pointer sits in a layer, which is why -CHECKHEAPS looks here too. operator
+// delete clears IsActive, so an entry without it outlived its object.
+static void ValidateLogicLayer() {
+  for (int index = 0; index < TheWorld().logic().Count(); index++) {
+    const ObjectClass* object = TheWorld().logic().at(index);
+    if (object == nullptr || !object->IsActive) {
+      LOG(ERROR) << "Logic layer entry " << index << " of "
+                 << TheWorld().logic().Count() << " was freed, on frame "
+                 << TheGameClock().frame();
+    }
+  }
+}
+
 // Runs one frame of the game. See the declaration in conquer.h.
 //
 // Nothing that affects game state may be skipped here on the grounds that it is
@@ -744,6 +759,7 @@ bool RunFrame() {
       LOG(ERROR) << "Object heap corrupted on frame " << TheGameClock().frame()
                  << ": " << trouble;
     }
+    ValidateLogicLayer();
   }
 
   if (TheDebugState().motion_capture()) {

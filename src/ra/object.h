@@ -165,7 +165,7 @@ class ObjectClass : public AbstractClass {
         Strength(255) {}
 
  public:
-  ~ObjectClass() override { Next = nullptr; }
+  ~ObjectClass() override;
   ObjectClass(const ObjectClass&) = delete;
   ObjectClass& operator=(const ObjectClass&) = delete;
   ObjectClass(ObjectClass&&) = delete;
