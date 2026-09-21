@@ -5,10 +5,17 @@ description: Rename the identifiers a file declares to the Google C++ naming sch
 Rename the identifiers declared in: $ARGUMENTS
 
 Two jobs in one pass: put every name the file owns into the Google scheme, and make each name say
-what the thing is or does - including the name of the file itself. The second job is the one that
-gets skipped. The first time this was done on `conquer.cc`, `Main_Loop` became `MainLoop` and the
-user had to come back with "since you are renaming anyway, use better names" - after which it became
-`RunFrame`. A transliteration is only right when the old name was already good.
+what the thing is or does. The second job is the one that gets skipped. The first time this was done
+on `conquer.cc`, `Main_Loop` became `MainLoop` and the user had to come back with "since you are
+renaming anyway, use better names" - after which it became `RunFrame`. A transliteration is only
+right when the old name was already good.
+
+**Every** identifier the file declares gets the second job, not only the ones whose case is wrong:
+the types, the functions, the members, the constants, the **parameters**, the locals, and the file
+name itself. Parameters and type names are the two that keep getting left behind, and both cost more
+to come back for than to do now - a type name decides the file name, and a parameter name is what a
+caller reads at every call site. Do the whole set in this pass; a second pass over the same file is
+the failure mode this command exists to prevent.
 
 ## 1. Scope: what the file owns
 
@@ -25,9 +32,27 @@ _use_ belong to some other file's pass.
 | Text inside string literals                             | INI keys, file names and scenario codes look like identifiers and are not.                                                                                                                                             |
 | Tiberian Dawn's copy of an RA function, and the reverse | `src/ra` and `src/td` are separate targets that share many names. Rename within the game the file belongs to. Files under `sdllib`, `tech`, `port`, `base`, `winvq` are shared, so their callers are in all of `src/`. |
 
-Dropping a legacy `Class` / `Type` suffix from a type (`FileClass` -> `File`) is welcome, but it is
-a wide change with real collision risk. Do it when the type is declared in scope, check the new name
-is free, and keep it apart from the rest (its own commit later).
+**Types declared in scope are renamed in this pass, not a later one.** A legacy `Class` / `Type`
+suffix (`FileClass` -> `File`) says nothing, so it goes - but dropping the suffix is only half of
+it. Ask the same "what is this?" question as for a function: `GraphicBufferClass` and
+`GraphicViewPortClass` became `PixelBuffer` and `PixelView`, which say that one owns the pixels and
+the other borrows a clipped rectangle of them, where `GraphicBuffer` and `GraphicView` would only
+have dropped the noise. The rename is wide (a few hundred sites is normal) and scripted, so the cost
+is in checking, not in typing:
+
+- The new name must be free tree-wide (`grep -rnw '<new>' src/`), and must not be a word the tree
+  already uses for something else (`Surface` was taken).
+- A type used by both games lives in a shared directory; both targets change together and the commit
+  cannot be split by game without breaking the build in between.
+- **`.clang-tidy` names types in its check options.** `bugprone-throwing-static-initialization`'s
+  `AllowedTypes` listed both of the types above, so renaming them silently un-suppressed two static
+  objects in `radar.cc` and the strict build failed in a file the rename had barely touched. Grep
+  `.clang-tidy`, `.iwyu_mappings` and `cmake/` for the old type name before believing the rename is
+  done. Editing `.clang-tidy` re-analyzes the whole tree on the next strict build, which is slow but
+  correct.
+- Because the file is named after its type, the type name has to be settled **before** the file name
+  (section 5, step 7). Renaming the file first and the type second means renaming the file twice.
+- It is still its own commit, made in this pass, before the file rename.
 
 ## 2. The scheme
 
@@ -41,7 +66,9 @@ is free, and keep it apart from the rest (its own commit later).
   `snake_case` names, which usually means they need a real name too (`pulse_timer`, `pulse_rising`).
 - An abbreviation is a word: `PumpWolapiMessages`, `StartRpc`, not `PumpWOLAPIMessages`.
 - A parameter is spelled the same in the declaration, the definition and the comment that mentions
-  it.
+  it. `readability-inconsistent-declaration-parameter-name` is an error in the strict build, so
+  renaming a parameter in a `.cc` definition means editing the declaration in **whichever** header
+  holds it, even one outside the pass's scope.
 
 ## 3. Better names
 
@@ -86,6 +113,24 @@ codebase is often not what the 1996 name says.
 - No abbreviations a newcomer would have to ask about (`cnt`, `idx`, `buf`, `ptr`, `num` are out;
   `id`, `max`, `min`, `src`/`dst` in blit code are fine).
 
+**Parameters are the names a caller reads, so they get the same care.** They are invisible in
+`grep -rnw` counts and cost nothing to change, which is exactly why they get skipped. Read what the
+body does with each one:
+
+| Old                                             | New                                          | What made the old one wrong                                                                           |
+| ----------------------------------------------- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `DrawLine(sx, sy, dx, dy)`                      | `DrawLine(x1, y1, x2, y2)`                   | They are two inclusive corners; `sx`/`dx` read as a source and a delta, which is neither.             |
+| `Blit(x_pixel, y_pixel, dx_pixel, ...)`         | `Blit(src_x, src_y, dst_x, dst_y, ...)`      | The two ends of one copy were spelled in different styles, and `_pixel` is the type, not the meaning. |
+| `Init(..., int32_t size)`                       | `Init(..., int32_t byte_count)`              | The body already distinguished it from a pixel count; the name did not.                               |
+| `DrawScaledRotated(bmp, pt, ...)`               | `DrawScaledRotated(bitmap, center, ...)`     | `pt` is the point the bitmap's centre lands on - the name can say which point it is.                  |
+| `Blit(..., bool trans)`                         | `Blit(..., bool transparent)`                | An abbreviation that is not a word.                                                                   |
+| `Attach(GraphicBufferClass* graphic_buff, ...)` | `Attach(PixelBuffer* buffer, ...)`           | Repeated the type; the abbreviation bought nothing.                                                   |
+| `Print(..., int fcolor, int bcolor)`            | `Print(..., int fore_color, int back_color)` | Same.                                                                                                 |
+
+- Sibling parameters are spelled alike: if one end is `dst_x`, the other is `src_x`, never `x`.
+- An unnamed or `/*commented*/` parameter is dead code, not a naming problem; list it for
+  `/remove-dead-code`.
+
 **Keep the game's own vocabulary.** Techno, house, theater, cell, coord, lepton, facing, mission,
 shape, mix, remap are the project's terms of art, and replacing them with generic words makes the
 code harder to search and to match against the original source. For any concept, look at what the
@@ -123,6 +168,13 @@ for anything beyond a case change a few words on why. Then, for each row:
 - **Collision:** `grep -rnw '<new>' <scope>`. Look for an existing function, macro or member with
   that name, a local that would now shadow a function or member (`-Wshadow` is an error in the
   strict build), and an accessor that would collide with its own member.
+- **Collision with the accessors this same pass creates.** Renaming `Get_Width()` to `width()` and
+  then a parameter to `width` is right, but inside a member body an unqualified `width()` call now
+  resolves to the parameter: `'width' cannot be used as a function`. It is a compile error, never
+  silent, and the fix is to use the member (`width_`) or to name the parameter for its role
+  (`dst_width`). The reverse also bites: renaming a parameter to something short like `x` collides
+  with the `for (int x = ...)` loop in its own body, which `-Wshadow` rejects - give the loop a name
+  that says what it walks (`column`).
 
 Do not stop to get the table approved; the user asked for the rename. Proceed, and put the table in
 the final report, where a name they dislike is a one-line fix.
@@ -133,7 +185,11 @@ Work from the narrowest scope outwards.
 
 1. **Locals and parameters:** edit inside the one function. A plain English word (`size`, `first`,
    `changed`) must never be replaced file-wide - it will hit comments ("the first frame"), other
-   functions' locals and members of unrelated types.
+   functions' locals and members of unrelated types. A **one- or two-letter** name is worse still:
+   `\bh\b` matches the `h` of `"absl/base/attributes.h"` and of `surface->h`, so a scripted `h` ->
+   `height` rewrites the include paths to `attributes.height`. Either restrict the pattern to the
+   function's text, or require the declaration context (`int h` -> `int height`) and fix the uses by
+   hand.
 2. **File-local functions and statics:** replace within the file.
 3. **Names visible to other files, unique spelling** (`Main_Loop`): a scripted replace over the
    scope is safe, including in comments, which should keep referring to the right function. Split
@@ -149,7 +205,9 @@ Work from the narrowest scope outwards.
    function.
 6. **Everything that mentions the old name in prose:** the header's file comment, tests,
    `docs/*.md`, `CLAUDE.md` (its Key Files and examples name real functions), `TODO.md`.
-7. **The file rename, last.** `git mv` the `.h`, the `.cc` and the `_test.cc` together, then:
+7. **The file rename, last** - after the type rename of section 1, since the file is named after its
+   type and doing it the other way round means renaming the file twice. `git mv` the `.h`, the `.cc`
+   and the `_test.cc` together, then:
    - Rewrite the path-qualified includes over the whole scope of section 1 (`#include "ra/old.h"` ->
      `"ra/new.h"`); for a shared directory that is all of `src/`. The shell is zsh, which does not
      word-split `$files`, so pipe the list:
@@ -165,7 +223,9 @@ Work from the narrowest scope outwards.
 This pass changes names only. Unused parameters, a parameter every caller passes the same value for,
 dead code and outright bugs will turn up while reading closely; the user nearly always wants them
 dealt with next, so list them in the report, but keep them out of this diff so it stays reviewable
-as a pure rename.
+as a pure rename. The one exception is a name whose meaning is gone: a `GBC_VIDEOMEM` flag that
+nothing reads cannot be given a better name, because there is nothing left for it to mean. Delete
+it, in its own commit, and say so.
 
 ## 6. Verify
 
@@ -188,8 +248,8 @@ message that names the renames worth knowing about the way `615ce9a1` does.
 
 ## 7. Report
 
-- The rename table, non-mechanical rows first, each with its reason. The file rename is a row too,
-  or a line saying why the file keeps its name.
+- The rename table, non-mechanical rows first, each with its reason. The type renames, the parameter
+  renames and the file rename are rows too, or a line each saying why they were left.
 - Names deliberately left alone, and why (section 1, or "already accurate").
 - Names you were unsure of, with the alternative you considered.
 - What you noticed but did not change: unused or constant parameters, functions doing two jobs, dead

@@ -63,9 +63,12 @@ behaviour are not applied: they go to **for the user**.
 then fix it at the end of this stage.
 
 **4. Names** - `/rename-google-style <files>`, **identifiers only**: stop before its file-rename
-step, which is stage 7. Leave out of the table anything the ledger already marks as going in stage 5
-(a derivable member, a static that belongs elsewhere); renaming what is about to be deleted is churn
-in two commits. Its "noticed" and "unsure" lists go on the ledger.
+step, which is stage 7. Identifiers means all of them - the types the files declare (including
+dropping a `Class` suffix and picking a better name than the one under it), the parameters, and the
+locals, not just the functions and members. Settling the type name here is what lets stage 7 name
+the file once instead of twice. Leave out of the table anything the ledger already marks as going in
+stage 5 (a derivable member, a static that belongs elsewhere); renaming what is about to be deleted
+is churn in two commits. Its "noticed" and "unsure" lists go on the ledger.
 
 **5. Simplify** - first work through the ledger's **noticed** list: dead or constant parameters
 through `/remove-dead-code <claim>`, the rest by hand, each only if it keeps behaviour. Then run
