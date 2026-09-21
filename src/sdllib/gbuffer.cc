@@ -16,6 +16,10 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+// File: The one GraphicBufferClass member that needs floating point. The
+// rest of the class lives in drawbuff.cc, and the SDL half in
+// drawbuff_sdl.cc.
+
 #include "sdllib/gbuffer.h"
 
 #include <cmath>
@@ -27,8 +31,10 @@
 #include "base/numeric.h"
 #include "sdllib/bitmap.h"
 
-// Uses inverse mapping: for each destination pixel, applies the inverse
-// rotation and scale to find the corresponding source pixel.
+// Walks the destination rather than the source: every destination pixel is
+// mapped back through the inverse transform to the bitmap pixel it came
+// from. Walking the source instead would scatter its pixels and leave holes
+// wherever the scale stretches the image.
 void GraphicBufferClass::Scale_Rotate(const BitmapClass& bmp,
                                       const TPoint2D& pt, const int32_t scale,
                                       const uint8_t angle) {
@@ -36,14 +42,20 @@ void GraphicBufferClass::Scale_Rotate(const BitmapClass& bmp,
     return;
   }
 
+  // The game measures angles in 256ths of a circle, like DirType.
   const double radians = angle * 2.0 * std::numbers::pi / 256.0;
   const double cos_a = std::cos(radians);
   const double sin_a = std::sin(radians);
 
+  // scale is 24.8 fixed point, so 256 / scale is its reciprocal, which is
+  // what the destination-to-source direction needs.
   const double inv_S = 256.0 / scale;
   const double cx_bmp = bmp.Width / 2.0;
   const double cy_bmp = bmp.Height / 2.0;
 
+  // Rows in this buffer are Width apart: Scale_Rotate is a member of the
+  // buffer rather than of a viewport, and Init() leaves XAdd and Pitch zero
+  // for every buffer the games allocate.
   const auto dst_buf = Get_Bytes();
 
   for (int dy = 0; dy < Height; dy++) {
@@ -51,12 +63,17 @@ void GraphicBufferClass::Scale_Rotate(const BitmapClass& bmp,
       const double rx = dx - pt.x;
       const double ry = dy - pt.y;
 
-      // Inverse transform: undo rotation, then undo scale.
+      // The matrix is [[sin, cos], [-cos, sin]], a rotation by angle minus a
+      // quarter turn; the caller adds that quarter turn back when it converts
+      // its facing. Its determinant is 1, so undoing the scale is the single
+      // multiply by inv_S.
       const int bx =
           static_cast<int>((((sin_a * rx) + (cos_a * ry)) * inv_S) + cx_bmp);
       const int by =
           static_cast<int>((((-cos_a * rx) + (sin_a * ry)) * inv_S) + cy_bmp);
 
+      // Destination pixels that map outside the bitmap keep what was there,
+      // as does pixel 0, which is the transparent index.
       if (bx >= 0 && bx < bmp.Width && by >= 0 && by < bmp.Height) {
         const uint8_t pixel =
             base::At(bmp.Data, base::ToSize((by * bmp.Width) + bx));

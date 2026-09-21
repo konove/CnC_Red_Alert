@@ -44,7 +44,10 @@ class BufferClass {
     }
   }
 
-  // Define functions which work with the buffer class.
+  // Copies the buffer's bytes into `view` as w x h pixels with their top
+  // left corner at x,y in the viewport, and returns the number of bytes
+  // read. The overloads default x,y to the viewport's corner and w,h to its
+  // size. Defined in gbuffer.h, which has the complete viewport type.
   int32_t To_Page(GraphicViewPortClass& view);
   int32_t To_Page(int w, int h, GraphicViewPortClass& view);
   int32_t To_Page(int x, int y, int w, int h, GraphicViewPortClass& view);
