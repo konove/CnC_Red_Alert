@@ -69,7 +69,6 @@
 #include <string_view>
 #include <utility>
 
-#include "absl/log/check.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "base/numeric.h"
@@ -2096,7 +2095,7 @@ void TriggerTypeClass::Read_INI(CCINIClass& ini) {
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
 void TriggerTypeClass::Fill_In(const char* name, char* entry) {
-  DCHECK(TheObjectHeaps().trigger_type().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().trigger_type(), this);
 
   /*
   **	Set its name.

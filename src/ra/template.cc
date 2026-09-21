@@ -96,7 +96,7 @@ void TemplateClass::Init() { TheObjectHeaps().tmplate().Free_All(); }
  *legality before processing.                           *
  *=============================================================================================*/
 bool TemplateClass::Mark(MarkType mark) {
-  DCHECK(TheObjectHeaps().tmplate().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().tmplate(), this);
   DCHECK(IsActive);
 
   static bool noup = false;

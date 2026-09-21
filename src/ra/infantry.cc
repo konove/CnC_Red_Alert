@@ -331,7 +331,7 @@ void InfantryClass::operator delete(void* ptr) {
 ResultType InfantryClass::Take_Damage(int& damage, int distance,
                                       WarheadType warhead, TechnoClass* source,
                                       bool forced) {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   ResultType res = RESULT_NONE;
@@ -563,7 +563,7 @@ int InfantryClass::Shape_Number() const {
  *=============================================================================================*/
 void InfantryClass::Draw_It(PixelView& view, int x, int y,
                             WindowNumberType window) const {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   /*
@@ -608,7 +608,7 @@ void InfantryClass::Draw_It(PixelView& view, int x, int y,
  *Capture is always successful now.                                        *
  *=============================================================================================*/
 void InfantryClass::Per_Cell_Process(PCPType why) {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   CellClass* cellptr = &TheMap().at(Coord);
@@ -900,7 +900,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Detach(TARGET target, bool all) {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   if (TarCom == target) {
@@ -944,7 +944,7 @@ void InfantryClass::Init() { TheObjectHeaps().infantry().Free_All(); }
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Assign_Destination(TARGET target) {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   /*
@@ -1025,7 +1025,7 @@ void InfantryClass::Assign_Destination(TARGET target) {
  *target if possible.                                     *
  *=============================================================================================*/
 void InfantryClass::Assign_Target(TARGET target) {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   base::At(Path, 0) = FACING_NONE;
@@ -1064,7 +1064,7 @@ void InfantryClass::Assign_Target(TARGET target) {
  * HISTORY: * 09/08/1994 JLB : Created. * 08/14/1996 JLB : Simplified. *
  *=============================================================================================*/
 void InfantryClass::AI() {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   FootClass::AI();
@@ -1169,7 +1169,7 @@ void InfantryClass::AI() {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   /*
@@ -1496,7 +1496,7 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 std::span<const int16_t> InfantryClass::Overlap_List(bool /*redraw*/) const {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   if (Class->IsDog) {
@@ -1533,7 +1533,7 @@ std::span<const int16_t> InfantryClass::Overlap_List(bool /*redraw*/) const {
  *fire while prone now.                                  *
  *=============================================================================================*/
 FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   /*
@@ -1581,7 +1581,7 @@ FireErrorType InfantryClass::Can_Fire(TARGET target, int which) const {
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Enter_Idle_Mode(bool /*initial*/) {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   MissionType order = MISSION_GUARD;
@@ -1658,7 +1658,7 @@ void InfantryClass::Enter_Idle_Mode(bool /*initial*/) {
  *Nikoomba special effects.                                                *
  *=============================================================================================*/
 bool InfantryClass::Random_Animate() {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   if (Is_Ready_To_Random_Animate()) {
@@ -1773,7 +1773,7 @@ bool InfantryClass::Random_Animate() {
  *Added the nokidding parameter                                            *
  *=============================================================================================*/
 void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   /*
@@ -1886,7 +1886,7 @@ void InfantryClass::Scatter(COORDINATE threat, bool forced, bool nokidding) {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool InfantryClass::Do_Action(DoType todo, bool force) {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   if (todo == DO_NOTHING ||
@@ -1979,7 +1979,7 @@ bool InfantryClass::Do_Action(DoType todo, bool force) {
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool InfantryClass::Stop_Driver() {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   if (Head_To_Coord()) {
@@ -2032,7 +2032,7 @@ bool InfantryClass::Stop_Driver() {
  *Uses closest spot if moving onto transport.                              *
  *=============================================================================================*/
 bool InfantryClass::Start_Driver(COORDINATE& headto) {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   const COORDINATE old = headto;
@@ -2085,7 +2085,7 @@ bool InfantryClass::Start_Driver(COORDINATE& headto) {
  * HISTORY: * 12/22/1994 JLB : Created. *
  *=============================================================================================*/
 bool InfantryClass::Limbo() {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   if (!IsInLimbo) {
@@ -2117,7 +2117,7 @@ bool InfantryClass::Limbo() {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 BulletClass* InfantryClass::Fire_At(TARGET target, int which) {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   Mark(MARK_OVERLAP_UP);
@@ -2160,7 +2160,7 @@ BulletClass* InfantryClass::Fire_At(TARGET target, int which) {
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
 bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   /*
@@ -2215,7 +2215,7 @@ bool InfantryClass::Unlimbo(COORDINATE coord, DirType facing) {
  *=============================================================================================*/
 TARGET InfantryClass::Greatest_Threat(ThreatType threat)  // const
 {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   /*
@@ -2308,7 +2308,7 @@ TARGET InfantryClass::Greatest_Threat(ThreatType threat)  // const
  *added.                                              *
  *=============================================================================================*/
 void InfantryClass::Response_Select() {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   if (!TheGameState().allow_voice()) {
@@ -2450,7 +2450,7 @@ void InfantryClass::Response_Select() {
  *added.                                              *
  *=============================================================================================*/
 void InfantryClass::Response_Move() {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   if (!TheGameState().allow_voice()) {
@@ -2596,7 +2596,7 @@ void InfantryClass::Response_Move() {
  *added.                                              *
  *=============================================================================================*/
 void InfantryClass::Response_Attack() {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   if (!TheGameState().allow_voice()) {
@@ -2744,7 +2744,7 @@ void InfantryClass::Response_Attack() {
  * HISTORY: * 03/01/1995 JLB : Created. *
  *=============================================================================================*/
 ActionType InfantryClass::What_Action(ObjectClass* object) {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
   DCHECK(object != nullptr);
 
@@ -2993,7 +2993,7 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 void InfantryClass::Active_Click_With(ActionType action, ObjectClass* object) {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   action = What_Action(object);
@@ -3056,7 +3056,7 @@ void InfantryClass::Active_Click_With(ActionType action, ObjectClass* object) {
  * HISTORY: * 06/08/1995 PWG : Created. *
  *=============================================================================================*/
 void InfantryClass::Set_Occupy_Bit(CELL cell, int spot_index) {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   /*
@@ -3083,7 +3083,7 @@ void InfantryClass::Set_Occupy_Bit(CELL cell, int spot_index) {
  *   06/08/1995 PWG : Created.                                             *
  *=========================================================================*/
 void InfantryClass::Clear_Occupy_Bit(CELL cell, int spot_index) {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   /*
@@ -3120,7 +3120,7 @@ void InfantryClass::Clear_Occupy_Bit(CELL cell, int spot_index) {
  *soldier" text name.                                   *
  *=============================================================================================*/
 int InfantryClass::Full_Name() const {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   if (IsTechnician) {
@@ -3155,7 +3155,7 @@ int InfantryClass::Full_Name() const {
  *Engineers can now damage/capture enemy buildings.                        *
  *=============================================================================================*/
 int InfantryClass::Mission_Attack() {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   if (Class->IsBomber && As_Building(TarCom)) {
@@ -3194,7 +3194,7 @@ int InfantryClass::Mission_Attack() {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 ActionType InfantryClass::What_Action(CELL cell) const {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   ActionType action = FootClass::What_Action(cell);
@@ -3251,7 +3251,7 @@ ActionType InfantryClass::What_Action(CELL cell) const {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 const ObjectTypeClass& InfantryClass::Class_Of() const {
-  DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
   return *Class;

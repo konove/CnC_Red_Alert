@@ -180,7 +180,7 @@ void Shorten_Attached_Anims(const ObjectClass* obj) {
  *(infantry decay anims).                               *
  *=============================================================================================*/
 COORDINATE AnimClass::Sort_Y() const {
-  DCHECK(TheObjectHeaps().anim().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
   if (xObject != kTargetNone) {
@@ -215,7 +215,7 @@ COORDINATE AnimClass::Sort_Y() const {
  *visual center of object.                             *
  *=============================================================================================*/
 COORDINATE AnimClass::Center_Coord() const {
-  DCHECK(TheObjectHeaps().anim().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
   if (xObject != kTargetNone) {
@@ -240,7 +240,7 @@ COORDINATE AnimClass::Center_Coord() const {
  *=============================================================================================*/
 bool AnimClass::Render(PixelView& view, bool forced)  // const
 {
-  DCHECK(TheObjectHeaps().anim().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
   if (Delay) {
@@ -271,7 +271,7 @@ bool AnimClass::Render(PixelView& view, bool forced)  // const
  *=============================================================================================*/
 void AnimClass::Draw_It(PixelView& view, int x, int y,
                         WindowNumberType window) const {
-  DCHECK(TheObjectHeaps().anim().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
   if (!IsInvisible) {
@@ -331,7 +331,7 @@ void AnimClass::Draw_It(PixelView& view, int x, int y,
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 bool AnimClass::Mark(MarkType mark) {
-  DCHECK(TheObjectHeaps().anim().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
   if (ObjectClass::Mark(mark)) {
@@ -358,7 +358,7 @@ bool AnimClass::Mark(MarkType mark) {
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
 std::span<const int16_t> AnimClass::Overlap_List(bool /*redraw*/) const {
-  DCHECK(TheObjectHeaps().anim().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
   static const int16_t OverlapAtom[] = {
       (-MAP_CELL_W * 2) - 1, (-MAP_CELL_W * 2),
@@ -398,7 +398,7 @@ std::span<const int16_t> AnimClass::Overlap_List(bool /*redraw*/) const {
  * HISTORY: * 03/19/1995 JLB : Created. *
  *=============================================================================================*/
 std::span<const int16_t> AnimClass::Occupy_List(bool /*placement*/) const {
-  DCHECK(TheObjectHeaps().anim().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
   static const int16_t _simple[] = {kRefreshEol};
@@ -554,7 +554,7 @@ AnimClass::AnimClass(AnimType animnum, COORDINATE coord,
  * HISTORY: * 11/29/1994 JLB : Created. *
  *=============================================================================================*/
 AnimClass::~AnimClass() {
-  DCHECK(TheObjectHeaps().anim().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
   if (TheGameState().active()) {
     /*
@@ -620,7 +620,7 @@ AnimClass::~AnimClass() {
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
 void AnimClass::AI() {
-  DCHECK(TheObjectHeaps().anim().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
   /*
@@ -796,7 +796,7 @@ void AnimClass::AI() {
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 void AnimClass::Attach_To(ObjectClass* obj) {
-  DCHECK(TheObjectHeaps().anim().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
   if (obj == nullptr) {
@@ -830,7 +830,7 @@ void AnimClass::Attach_To(ObjectClass* obj) {
  * HISTORY: * 12/25/1994 JLB : Created. *
  *=============================================================================================*/
 LayerType AnimClass::In_Which_Layer() const {
-  DCHECK(TheObjectHeaps().anim().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
   if (Class->Type >= ANIM_CORPSE1 && Class->Type <= ANIM_CORPSE3) {
@@ -861,7 +861,7 @@ LayerType AnimClass::In_Which_Layer() const {
  * HISTORY: * 06/30/1995 JLB : Created. *
  *=============================================================================================*/
 void AnimClass::Start() {
-  DCHECK(TheObjectHeaps().anim().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
   Mark();
@@ -897,7 +897,7 @@ void AnimClass::Start() {
  * HISTORY: * 06/30/1995 JLB : Created. * 10/17/1995 JLB : Ion camera added. *
  *=============================================================================================*/
 void AnimClass::Middle() {
-  DCHECK(TheObjectHeaps().anim().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
   const CELL cell = Coord_Cell(Center_Coord());
@@ -1073,7 +1073,7 @@ void AnimClass::Middle() {
  *to animation destruction.                          *
  *=============================================================================================*/
 void AnimClass::Detach(TARGET target, bool all) {
-  DCHECK(TheObjectHeaps().anim().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().anim(), this);
   DCHECK(IsActive);
 
   if (xObject == target && all) {

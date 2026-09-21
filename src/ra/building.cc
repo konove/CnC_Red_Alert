@@ -236,7 +236,7 @@ const base::EnumArray<BSizeType, COORDINATE> BuildingClass::CenterOffset = {
 RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
                                                 RadioMessageType message,
                                                 int32_t& param) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   switch (message) {
@@ -786,7 +786,7 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
  *=============================================================================================*/
 void BuildingClass::Draw_It(PixelView& view, int x, int y,
                             WindowNumberType window) const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   /*
@@ -900,7 +900,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
  * HISTORY: * 07/29/1996 JLB : Created. *
  *=============================================================================================*/
 int BuildingClass::Shape_Number() const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   int shapenum = Fetch_Stage();
@@ -1045,7 +1045,7 @@ int BuildingClass::Shape_Number() const {
  *: Special road spacer template added.                                      *
  *=============================================================================================*/
 bool BuildingClass::Mark(MarkType mark) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (TechnoClass::Mark(mark)) {
@@ -1239,7 +1239,7 @@ bool BuildingClass::Mark(MarkType mark) {
  *   06/11/1995 JLB : Revamped. *
  *=============================================================================================*/
 void BuildingClass::AI() {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   /*
@@ -1456,7 +1456,7 @@ void BuildingClass::AI() {
  *   06/18/1995 JLB : Checks for wall legality before placing down. *
  *=============================================================================================*/
 bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   /*
@@ -1681,7 +1681,7 @@ bool BuildingClass::Unlimbo(COORDINATE coord, DirType dir) {
 ResultType BuildingClass::Take_Damage(int& damage, int distance,
                                       WarheadType warhead, TechnoClass* source,
                                       bool forced) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   ResultType res = RESULT_NONE;
@@ -2145,7 +2145,7 @@ BuildingClass::~BuildingClass() {
  *Survival rate depends on if captured or sabotaged.                       *
  *=============================================================================================*/
 void BuildingClass::Drop_Debris(TARGET source) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   /*
@@ -2258,7 +2258,7 @@ void BuildingClass::Drop_Debris(TARGET source) {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Active_Click_With(ActionType action, ObjectClass* object) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (action == ACTION_ATTACK && object != nullptr) {
@@ -2289,7 +2289,7 @@ void BuildingClass::Active_Click_With(ActionType action, ObjectClass* object) {
  *yard undeploy to move logic.                        *
  *=============================================================================================*/
 void BuildingClass::Active_Click_With(ActionType action, CELL cell) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (action == ACTION_ATTACK) {
@@ -2322,7 +2322,7 @@ void BuildingClass::Active_Click_With(ActionType action, CELL cell) {
  *before assigning target.                                *
  *=============================================================================================*/
 void BuildingClass::Assign_Target(TARGET target) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (*this != STRUCT_SAM && *this != STRUCT_AAGUN && !In_Range(target, 0)) {
@@ -2375,7 +2375,7 @@ void BuildingClass::Init() { TheObjectHeaps().building().Free_All(); }
  *Handles refinery exit.                                                   *
  *=============================================================================================*/
 int BuildingClass::Exit_Object(TechnoClass* base) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (!base) {
@@ -2838,7 +2838,7 @@ int BuildingClass::Exit_Object(TechnoClass* base) {
  *PLAYER buildings.                                       *
  *=============================================================================================*/
 void BuildingClass::Update_Buildables() {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (House == ThePlayer() && !IsInLimbo && IsDiscoveredByPlayer) {
@@ -2946,7 +2946,7 @@ void BuildingClass::Update_Buildables() {
  * HISTORY: * 11/30/1994 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Fire_Out() {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 }
 
@@ -2967,7 +2967,7 @@ void BuildingClass::Fire_Out() {
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
 bool BuildingClass::Limbo() {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (!IsInLimbo) {
@@ -3049,7 +3049,7 @@ DirType BuildingClass::Turret_Facing() const {
  *=============================================================================================*/
 TARGET BuildingClass::Greatest_Threat(ThreatType threat)  // const
 {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (Class->PrimaryWeapon != nullptr) {
@@ -3092,7 +3092,7 @@ TARGET BuildingClass::Greatest_Threat(ThreatType threat)  // const
  * HISTORY: * 01/08/1995 JLB : Created. * 06/13/1995 JLB : Added helipad. *
  *=============================================================================================*/
 void BuildingClass::Grand_Opening(bool captured) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (!HasOpened || captured) {
@@ -3186,7 +3186,7 @@ void BuildingClass::Grand_Opening(bool captured) {
  * HISTORY: * 01/08/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Repair(int control) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   switch (control) {
@@ -3252,7 +3252,7 @@ void BuildingClass::Repair(int control) {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Sell_Back(int control) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (!Class->Get_Buildup_Data().empty()) {
@@ -3320,7 +3320,7 @@ void BuildingClass::Sell_Back(int control) {
  * HISTORY: * 01/18/1995 JLB : Created. *
  *=============================================================================================*/
 ActionType BuildingClass::What_Action(ObjectClass* object) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   ActionType action = TechnoClass::What_Action(object);
@@ -3434,7 +3434,7 @@ ActionType BuildingClass::What_Action(ObjectClass* object) {
  * HISTORY: * 01/18/1995 JLB : Created. *
  *=============================================================================================*/
 ActionType BuildingClass::What_Action(CELL cell) const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   ActionType action = TechnoClass::What_Action(cell);
@@ -3475,7 +3475,7 @@ ActionType BuildingClass::What_Action(CELL cell) const {
  *animation rate where applicable.                          *
  *=============================================================================================*/
 void BuildingClass::Begin_Mode(BStateType bstate) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   QueueBState = bstate;
@@ -3510,7 +3510,7 @@ void BuildingClass::Begin_Mode(BStateType bstate) {
  * HISTORY: * 03/10/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE BuildingClass::Center_Coord() const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   return Coord_Add(Coord, CenterOffset.at(Class->Size));
@@ -3535,7 +3535,7 @@ COORDINATE BuildingClass::Center_Coord() const {
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE BuildingClass::Docking_Coord() const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (*this == STRUCT_HELIPAD) {
@@ -3567,7 +3567,7 @@ COORDINATE BuildingClass::Docking_Coord() const {
  * HISTORY: * 05/03/1995 JLB : Created. *
  *=============================================================================================*/
 FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   const FireErrorType canfire = TechnoClass::Can_Fire(target, which);
@@ -3628,7 +3628,7 @@ FireErrorType BuildingClass::Can_Fire(TARGET target, int which) const {
  * HISTORY: * 05/03/1995 JLB : Created. *
  *=============================================================================================*/
 bool BuildingClass::Toggle_Primary() {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (IsLeader) {
@@ -3680,7 +3680,7 @@ bool BuildingClass::Toggle_Primary() {
  *problem with capturing enemy buildings.                 *
  *=============================================================================================*/
 bool BuildingClass::Captured(HouseClass* newowner) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (Class->IsCaptureable && newowner != House) {
@@ -3854,7 +3854,7 @@ bool BuildingClass::Captured(HouseClass* newowner) {
  *that come with bibs built-in.                          *
  *=============================================================================================*/
 COORDINATE BuildingClass::Sort_Y() const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (*this == STRUCT_REPAIR) {
@@ -3896,7 +3896,7 @@ COORDINATE BuildingClass::Sort_Y() const {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (*this == STRUCT_CONST && IsDown) {
@@ -3932,7 +3932,7 @@ MoveType BuildingClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
  *Cannot sell a refinery that has a harvester attached.                    *
  *=============================================================================================*/
 bool BuildingClass::Can_Demolish() const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (Class->IsUnsellable) {
@@ -3964,7 +3964,7 @@ bool BuildingClass::Can_Demolish() const {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingClass::Mission_Guard() {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   /*
@@ -4054,7 +4054,7 @@ int BuildingClass::Mission_Guard() {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingClass::Mission_Construction() {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   constexpr int kInitial = 0;
@@ -4110,7 +4110,7 @@ int BuildingClass::Mission_Construction() {
  *Scatters infantry from scattered starting points.                        *
  *=============================================================================================*/
 int BuildingClass::Mission_Deconstruction() {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   /*
@@ -4336,7 +4336,7 @@ int BuildingClass::Mission_Deconstruction() {
  *back into ground.                                      *
  *=============================================================================================*/
 int BuildingClass::Mission_Attack() {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (*this == STRUCT_SAM) {
@@ -4465,7 +4465,7 @@ int BuildingClass::Mission_Attack() {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingClass::Mission_Harvest() {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   constexpr int kInitial = 0;
@@ -4545,7 +4545,7 @@ int BuildingClass::Mission_Harvest() {
  *Repair rate is controlled by power rating.                               *
  *=============================================================================================*/
 int BuildingClass::Mission_Repair() {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (*this == STRUCT_CONST) {
@@ -4817,7 +4817,7 @@ int BuildingClass::Mission_Repair() {
  * HISTORY: * 07/04/1995 JLB : Commented. *
  *=============================================================================================*/
 int BuildingClass::Mission_Missile() {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (*this == STRUCT_ADVANCED_TECH) {
@@ -5001,7 +5001,7 @@ int BuildingClass::Mission_Missile() {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 bool BuildingClass::Revealed(HouseClass* house) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (TechnoClass::Revealed(house)) {
@@ -5047,7 +5047,7 @@ bool BuildingClass::Revealed(HouseClass* house) {
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Enter_Idle_Mode(bool initial) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   /*
@@ -5084,7 +5084,7 @@ void BuildingClass::Enter_Idle_Mode(bool initial) {
  * HISTORY: * 06/28/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingClass::Pip_Count() const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   return Class->Max_Pips() * House->Tiberium_Fraction();
@@ -5107,7 +5107,7 @@ int BuildingClass::Pip_Count() const {
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Death_Announcement(const TechnoClass* source) const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (source != nullptr && House->IsPlayerControl) {
@@ -5132,7 +5132,7 @@ void BuildingClass::Death_Announcement(const TechnoClass* source) const {
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
 DirType BuildingClass::Fire_Direction() const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (Class->IsTurretEquipped) {
@@ -5158,7 +5158,7 @@ DirType BuildingClass::Fire_Direction() const {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingClass::Mission_Unload() {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (*this == STRUCT_WEAP) {
@@ -5292,7 +5292,7 @@ int BuildingClass::Mission_Unload() {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 int BuildingClass::Power_Output() const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (Class->Power) {
@@ -5319,7 +5319,7 @@ int BuildingClass::Power_Output() const {
  * HISTORY: * 07/29/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Detach(TARGET target, bool all) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   TechnoClass::Detach(target, all);
@@ -5349,7 +5349,7 @@ void BuildingClass::Detach(TARGET target, bool all) {
  * HISTORY: * 08/05/1995 JLB : Created. *
  *=============================================================================================*/
 InfantryType BuildingClass::Crew_Type() const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   switch (Class->Type) {
@@ -5481,7 +5481,7 @@ InfantryType BuildingClass::Crew_Type() const {
  * HISTORY: * 08/05/1995 JLB : Created. *
  *=============================================================================================*/
 void BuildingClass::Detach_All(bool all) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   /*
@@ -5541,7 +5541,7 @@ void BuildingClass::Detach_All(bool all) {
  *class function.                                      *
  *=============================================================================================*/
 bool BuildingClass::Flush_For_Placement(TechnoClass* techno, CELL cell) {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (techno) {
@@ -5572,7 +5572,7 @@ bool BuildingClass::Flush_For_Placement(TechnoClass* techno, CELL cell) {
  *for exit cell calculation.                            *
  *=============================================================================================*/
 CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   const CELL origin = Coord_Cell(Coord);
@@ -5634,7 +5634,7 @@ CELL BuildingClass::Find_Exit_Cell(const TechnoClass* techno) const {
  * HISTORY: * 10/04/1995 JLB : Created. *
  *=============================================================================================*/
 bool BuildingClass::Can_Player_Move() const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   return *this == STRUCT_CONST;
@@ -5656,7 +5656,7 @@ bool BuildingClass::Can_Player_Move() const {
  * HISTORY: * 02/20/1996 JLB : Created. *
  *=============================================================================================*/
 COORDINATE BuildingClass::Exit_Coord() const {
-  DCHECK(TheObjectHeaps().building().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().building(), this);
   DCHECK(IsActive);
 
   if (Class->ExitCoordinate) {

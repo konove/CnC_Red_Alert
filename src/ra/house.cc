@@ -236,7 +236,7 @@ TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
  * HISTORY: * 01/23/1995 JLB : Created. *
  *=============================================================================================*/
 HouseClass::operator HousesType() const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   return Class->House;
 }
@@ -629,7 +629,7 @@ HouseStaticClass::HouseStaticClass()
  *=============================================================================================*/
 bool HouseClass::Can_Build(const ObjectTypeClass* type,
                            HousesType house) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
   CHECK_NE(type, nullptr);
 
   /*
@@ -818,7 +818,7 @@ void HouseClass::Init() {
  *unless the player can do something.                  *
  *=============================================================================================*/
 void HouseClass::AI() {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   /*
   **	If base building has been turned on by a trigger, then force the house
@@ -1675,7 +1675,7 @@ void HouseClass::Super_Weapon_Handler() {
  * HISTORY: * 12/27/1994 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Attacked() {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (SpeakAttackDelay.IsFinished() &&
       ((TheSession().Type == GAME_NORMAL && IsPlayerControl) ||
@@ -1718,7 +1718,7 @@ void HouseClass::Attacked() {
  * HISTORY: * 01/25/1995 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Harvested(int tiberium) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
   DCHECK(tiberium >= 0);
 
   const int64_t oldtib = Tiberium;
@@ -1751,7 +1751,7 @@ void HouseClass::Harvested(int tiberium) {
  * HISTORY: * 09/05/1996 BWG : Created. *
  *=============================================================================================*/
 void HouseClass::Stole(int worth) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   StolenBuildingsCredits += worth;
 }
@@ -1772,7 +1772,7 @@ void HouseClass::Stole(int worth) {
  * HISTORY: * 01/25/1995 JLB : Created. *
  *=============================================================================================*/
 int64_t HouseClass::Available_Money() const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   return Tiberium + Credits;
 }
@@ -1795,7 +1795,7 @@ int64_t HouseClass::Available_Money() const {
  *before spending cash.                                    *
  *=============================================================================================*/
 void HouseClass::Spend_Money(int money) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
   DCHECK(money >= 0);
 
   const int64_t oldtib = Tiberium;
@@ -1829,7 +1829,7 @@ void HouseClass::Spend_Money(int money) {
  *never lost                                             *
  *=============================================================================================*/
 void HouseClass::Refund_Money(int money) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
   DCHECK(money >= 0);
 
   Credits += money;
@@ -1854,7 +1854,7 @@ void HouseClass::Refund_Money(int money) {
  * HISTORY: * 01/25/1995 JLB : Created. *
  *=============================================================================================*/
 int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   const int64_t oldcap = Capacity;
   int retval = 0;
@@ -1894,7 +1894,7 @@ int HouseClass::Adjust_Capacity(int adjust, bool inanger) {
  * HISTORY: * 02/02/1995 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Silo_Redraw_Check(int64_t oldtib, int64_t oldcap) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   int oldratio = 0;
   if (oldcap) {
@@ -1930,7 +1930,7 @@ void HouseClass::Silo_Redraw_Check(int64_t oldtib, int64_t oldcap) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Is_Ally(HousesType house) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (house != HOUSE_NONE) {
     return (base::Bit<uint32_t>(house) & Allies) != 0;
@@ -1954,7 +1954,7 @@ bool HouseClass::Is_Ally(HousesType house) const {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Is_Ally(const HouseClass* house) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (house) {
     return Is_Ally(house->Class->House);
@@ -1977,7 +1977,7 @@ bool HouseClass::Is_Ally(const HouseClass* house) const {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Is_Ally(const ObjectClass* object) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (object) {
     return Is_Ally(object->Owner());
@@ -2002,7 +2002,7 @@ bool HouseClass::Is_Ally(const ObjectClass* object) const {
  *Added reveal base when allied.                                           *
  *=============================================================================================*/
 void HouseClass::Make_Ally(HousesType house) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (Is_Allowed_To_Ally(house)) {
     Allies |= base::Bit<uint32_t>(house);
@@ -2106,7 +2106,7 @@ void HouseClass::Make_Ally(HousesType house) {
  *bilateral action.                                        *
  *=============================================================================================*/
 void HouseClass::Make_Enemy(HousesType house) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (house != HOUSE_NONE && Is_Ally(house)) {
     HouseClass* enemy = As_Pointer(house);
@@ -2173,7 +2173,7 @@ void HouseClass::Make_Enemy(HousesType house) {
  *=============================================================================================*/
 std::span<const unsigned char> HouseClass::Remap_Table(bool blushing,
                                                        RemapType remap) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (blushing) {
     return MouseClass::FadingLight;
@@ -2203,7 +2203,7 @@ std::span<const unsigned char> HouseClass::Remap_Table(bool blushing,
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 TeamTypeClass* HouseClass::Suggested_New_Team(bool alertcheck) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   return TeamTypeClass::Suggested_New_Team(this, AScan, UScan, IScan, VScan,
                                            alertcheck);
@@ -2226,7 +2226,7 @@ TeamTypeClass* HouseClass::Suggested_New_Team(bool alertcheck) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Adjust_Threat(int region, int threat) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   static const int _val[] = {
       -kMapRegionWidth - 1, -kMapRegionWidth, -kMapRegionWidth + 1, -1, 0, 1,
@@ -2269,7 +2269,7 @@ void HouseClass::Adjust_Threat(int region, int threat) {
  *case.                                                 *
  *=============================================================================================*/
 ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
   bool result = true;
   const TechnoTypeClass* tech = Fetch_Techno_Type(type, id);
 
@@ -2326,7 +2326,7 @@ ProdFailType HouseClass::Begin_Production(RTTIType type, int id) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 ProdFailType HouseClass::Suspend_Production(RTTIType type) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   FactoryClass* fptr = Fetch_Factory(type);
 
@@ -2371,7 +2371,7 @@ ProdFailType HouseClass::Suspend_Production(RTTIType type) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 ProdFailType HouseClass::Abandon_Production(RTTIType type) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   FactoryClass* fptr = Fetch_Factory(type);
 
@@ -2421,7 +2421,7 @@ ProdFailType HouseClass::Abandon_Production(RTTIType type) {
  * HISTORY: * 06/24/1995 PWG : Created. *
  *=============================================================================================*/
 void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   /*
   ** Loop through all of the building objects on the map
@@ -2471,7 +2471,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
  *Revamped to use super weapon class controller.                           *
  *=============================================================================================*/
 bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   BuildingClass* launchsite = nullptr;
   switch (id) {
@@ -2814,7 +2814,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Place_Object(RTTIType type, CELL cell) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   TechnoClass* tech = nullptr;
   FactoryClass* factory = Fetch_Factory(type);
@@ -2977,7 +2977,7 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
  *Bib_And_Offset() function to determine bib size.                *
  *=============================================================================================*/
 bool HouseClass::Manual_Place(BuildingClass* builder, BuildingClass* object) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (this == ThePlayer() && !TheMap().PendingObject && builder && object) {
     /*
@@ -3020,7 +3020,7 @@ bool HouseClass::Manual_Place(BuildingClass* builder, BuildingClass* object) {
  *   06/09/1995 JLB : Handles aircraft.                                    *
  *=========================================================================*/
 void HouseClass::Clobber_All() {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   for (int i = 0; i < TheObjectHeaps().aircraft().Count(); i++) {
     if (TheObjectHeaps().aircraft().Ptr(i)->House == this) {
@@ -3094,7 +3094,7 @@ void HouseClass::Clobber_All() {
  * HISTORY: * 05/18/1995 JLB : commented *
  *=============================================================================================*/
 void HouseClass::Detach(TARGET target, bool /*unused*/) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (ToCapture == target) {
     ToCapture = kTargetNone;
@@ -3124,7 +3124,7 @@ void HouseClass::Detach(TARGET target, bool /*unused*/) {
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   const auto bflag = ScanBit(static_cast<int>(btype));
   return std::ranges::any_of(
@@ -3158,7 +3158,7 @@ bool HouseClass::Does_Enemy_Building_Exist(StructType btype) const {
  *=============================================================================================*/
 const TechnoTypeClass* HouseClass::Suggest_New_Object(RTTIType objecttype,
                                                       bool kennel) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   const TechnoTypeClass* techno = nullptr;
 
@@ -3261,7 +3261,7 @@ const TechnoTypeClass* HouseClass::Suggest_New_Object(RTTIType objecttype,
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   bool rc = false;
 
@@ -3325,7 +3325,7 @@ bool HouseClass::Flag_Remove(TARGET target, bool set_home) {
  *scanning handler.                                   *
  *=============================================================================================*/
 bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   /*
   **	Only continue if this cell is a legal placement cell.
@@ -3389,7 +3389,7 @@ bool HouseClass::Flag_Attach(CELL cell, bool set_home) {
  * HISTORY: * 05/23/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Flag_Attach(UnitClass* object, bool set_home) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (object && !object->IsInLimbo) {
     Flag_Remove(FlagLocation, set_home);
@@ -3420,7 +3420,7 @@ bool HouseClass::Flag_Attach(UnitClass* object, bool set_home) {
  *   05/25/1995 BRR : Created.                                             *
  *=========================================================================*/
 void HouseClass::MPlayer_Defeated() {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   char txt[80];
   int i = 0;
@@ -3733,7 +3733,7 @@ void HouseClass::Tally_Score() {
  *   05/07/1996 JLB : Handles ships.                                       *
  *=========================================================================*/
 void HouseClass::Blowup_All() {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   int damage = 0;
   int count = 0;
@@ -3866,7 +3866,7 @@ void HouseClass::Blowup_All() {
  * HISTORY: * 06/20/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Flag_To_Die() {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToDie = true;
@@ -3890,7 +3890,7 @@ bool HouseClass::Flag_To_Die() {
  * HISTORY: * 06/20/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Flag_To_Win() {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (!IsToWin && !IsToDie && !IsToLose) {
     IsToWin = true;
@@ -3916,7 +3916,7 @@ bool HouseClass::Flag_To_Win() {
  * HISTORY: * 06/12/1995 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::Flag_To_Lose() {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   IsToWin = false;
   if (!IsToDie && !IsToLose) {
@@ -3948,7 +3948,7 @@ bool HouseClass::Flag_To_Lose() {
  *=============================================================================================*/
 void HouseClass::Init_Data(PlayerColorType color, HousesType house,
                            int credits) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   Credits = Control.InitialCredits = credits;
   RemapColor = color;
@@ -3970,7 +3970,7 @@ void HouseClass::Init_Data(PlayerColorType color, HousesType house,
  * HISTORY: * 07/22/1995 JLB : Created. *
  *=============================================================================================*/
 fixed HouseClass::Power_Fraction() const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (Power >= Drain || Drain == 0) {
     return fixed(1);
@@ -3998,7 +3998,7 @@ fixed HouseClass::Power_Fraction() const {
  *for wall type.                                     *
  *=============================================================================================*/
 void HouseClass::Sell_Wall(CELL cell) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (static_cast<unsigned>(cell) > 0) {
     const OverlayType overlay = TheMap().at(cell).Overlay;
@@ -4099,7 +4099,7 @@ void HouseClass::Sell_Wall(CELL cell) {
  * HISTORY: * 09/27/1995 JLB : Created. *
  *=============================================================================================*/
 const BuildingTypeClass* HouseClass::Suggest_New_Building() const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (BuildStructure != STRUCT_NONE) {
     return &BuildingTypeClass::As_Reference(BuildStructure);
@@ -4128,7 +4128,7 @@ const BuildingTypeClass* HouseClass::Suggest_New_Building() const {
  *specifics.                                               *
  *=============================================================================================*/
 BuildingClass* HouseClass::Find_Building(StructType type, ZoneType zone) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   /*
   **	Only scan if we KNOW there is at least one building of the type
@@ -4167,7 +4167,7 @@ BuildingClass* HouseClass::Find_Building(StructType type, ZoneType zone) const {
  * HISTORY: * 09/27/1995 JLB : Created. *
  *=============================================================================================*/
 COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   base::EnumArray<ZoneType, int> zonerating = {};
   struct {
@@ -4295,7 +4295,7 @@ COORDINATE HouseClass::Find_Build_Location(BuildingClass* building) const {
  * HISTORY: * 09/28/1995 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Recalc_Center() {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   /*
   **	First presume that there is no base. If there is a base, then these
@@ -4413,7 +4413,7 @@ void HouseClass::Recalc_Center() {
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
 int HouseClass::Expert_AI() {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   /*
   **	If the current enemy no longer has a base or is defeated, then don't
@@ -4684,7 +4684,7 @@ int HouseClass::Expert_AI() {
 }
 
 UrgencyType HouseClass::Check_Build_Power() const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   const fixed frac = Power_Fraction();
   UrgencyType urgency = URGENCY_NONE;
@@ -4712,7 +4712,7 @@ UrgencyType HouseClass::Check_Build_Power() const {
 }
 
 UrgencyType HouseClass::Check_Build_Defense() const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   /*
   **	This routine determines what urgency level that base defense
@@ -4723,7 +4723,7 @@ UrgencyType HouseClass::Check_Build_Defense() const {
 }
 
 UrgencyType HouseClass::Check_Build_Offense() const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   /*
   **	This routine determines what urgency level that offensive
@@ -4738,7 +4738,7 @@ UrgencyType HouseClass::Check_Build_Offense() const {
 **	the greater the immediate threat to base defense is.
 */
 UrgencyType HouseClass::Check_Attack() const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (CurrentFrame() > kTicksPerMinute && Attack.IsFinished()) {
     if (State == STATE_ATTACKED) {
@@ -4750,7 +4750,7 @@ UrgencyType HouseClass::Check_Attack() const {
 }
 
 UrgencyType HouseClass::Check_Build_Income() const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   /*
   **	This routine should determine if income processing buildings
@@ -4762,7 +4762,7 @@ UrgencyType HouseClass::Check_Build_Income() const {
 }
 
 UrgencyType HouseClass::Check_Fire_Sale() const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   /*
   **	If there are no more factories at all, then sell everything off because
@@ -4778,7 +4778,7 @@ UrgencyType HouseClass::Check_Fire_Sale() const {
 }
 
 UrgencyType HouseClass::Check_Build_Engineer() const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   /*
   **	This routine should check to see what urgency that the production of
@@ -4793,7 +4793,7 @@ UrgencyType HouseClass::Check_Build_Engineer() const {
 **	to immediately raise cash.
 */
 UrgencyType HouseClass::Check_Raise_Money() const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   UrgencyType urgency = URGENCY_NONE;
   if (Available_Money() < 100) {
@@ -4811,7 +4811,7 @@ UrgencyType HouseClass::Check_Raise_Money() const {
 **	build more power is returned.
 */
 UrgencyType HouseClass::Check_Lower_Power() const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (Power > Drain + 300) {
     return URGENCY_LOW;
@@ -4827,7 +4827,7 @@ UrgencyType HouseClass::Check_Lower_Power() const {
 **	enough.
 */
 UrgencyType HouseClass::Check_Raise_Power() const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   UrgencyType urgency = URGENCY_NONE;
 
@@ -4845,7 +4845,7 @@ UrgencyType HouseClass::Check_Raise_Power() const {
 }
 
 bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   const bool shuffle =
       (CurrentFrame() <= kTicksPerMinute || CurBuildings != 0) &&
@@ -4910,7 +4910,7 @@ bool HouseClass::AI_Attack(UrgencyType /*unused*/) {
 **	this need.
 */
 bool HouseClass::AI_Build_Power(UrgencyType /*unused*/) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   return false;
 }
@@ -4920,7 +4920,7 @@ bool HouseClass::AI_Build_Power(UrgencyType /*unused*/) const {
 **	according to need and according to existing base disposition.
 */
 bool HouseClass::AI_Build_Defense(UrgencyType /*unused*/) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   return false;
 }
@@ -4930,7 +4930,7 @@ bool HouseClass::AI_Build_Defense(UrgencyType /*unused*/) const {
 **	to need and according to the opponents base defenses.
 */
 bool HouseClass::AI_Build_Offense(UrgencyType /*unused*/) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   return false;
 }
@@ -4940,13 +4940,13 @@ bool HouseClass::AI_Build_Offense(UrgencyType /*unused*/) const {
 **	structures according to need.
 */
 bool HouseClass::AI_Build_Income(UrgencyType /*unused*/) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   return false;
 }
 
 bool HouseClass::AI_Fire_Sale(UrgencyType urgency) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (CurBuildings && urgency == URGENCY_CRITICAL) {
     Fire_Sale();
@@ -4960,7 +4960,7 @@ bool HouseClass::AI_Fire_Sale(UrgencyType urgency) {
 **	Given the specified urgency, build an engineer.
 */
 bool HouseClass::AI_Build_Engineer(UrgencyType /*unused*/) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   return false;
 }
@@ -4970,7 +4970,7 @@ bool HouseClass::AI_Build_Engineer(UrgencyType /*unused*/) const {
 **	there appears to be excess.
 */
 bool HouseClass::AI_Lower_Power(UrgencyType /*unused*/) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   BuildingClass* b = Find_Building(STRUCT_POWER);
   if (b != nullptr) {
@@ -5004,7 +5004,7 @@ bool HouseClass::AI_Lower_Power(UrgencyType /*unused*/) const {
  * HISTORY: * 11/02/1996 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::AI_Raise_Power(UrgencyType urgency) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   /*
   **	Sell off structures in this order.
@@ -5058,7 +5058,7 @@ bool HouseClass::AI_Raise_Power(UrgencyType urgency) const {
  * HISTORY: * 11/02/1996 JLB : Created. *
  *=============================================================================================*/
 bool HouseClass::AI_Raise_Money(UrgencyType urgency) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   /*
   **	Sell off structures in this order.
@@ -5117,7 +5117,7 @@ bool HouseClass::AI_Raise_Money(UrgencyType urgency) const {
  *aircraft of enemy                                         *
  *=============================================================================================*/
 int HouseClass::AI_Building() {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (BuildStructure != STRUCT_NONE) {
     return kTicksPerSecond;
@@ -5513,7 +5513,7 @@ int HouseClass::AI_Building() {
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
 int HouseClass::AI_Unit() {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (BuildUnit != UNIT_NONE) {
     return kTicksPerSecond;
@@ -5660,7 +5660,7 @@ int HouseClass::AI_Unit() {
 }
 
 int HouseClass::AI_Vessel() {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
   if (BuildVessel != VESSEL_NONE) {
     return kTicksPerSecond;
   }
@@ -5797,7 +5797,7 @@ int HouseClass::AI_Vessel() {
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
 int HouseClass::AI_Infantry() {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (BuildInfantry != INFANTRY_NONE) {
     return kTicksPerSecond;
@@ -6042,7 +6042,7 @@ int HouseClass::AI_Infantry() {
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
 int HouseClass::AI_Aircraft() {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (!IsHuman && IQ >= TheRules().IQAircraft) {
     if (BuildAircraft != AIRCRAFT_NONE) {
@@ -6110,7 +6110,7 @@ int HouseClass::AI_Aircraft() {
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Production_Begun(const TechnoClass* product) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (product != nullptr) {
     switch (product->What_Am_I()) {
@@ -6194,7 +6194,7 @@ void HouseClass::Production_Begun(const TechnoClass* product) {
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Tracking_Remove(const TechnoClass* techno) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   int type = 0;
 
@@ -6292,7 +6292,7 @@ void HouseClass::Tracking_Remove(const TechnoClass* techno) {
  * HISTORY: * 09/29/1995 JLB : Created. *
  *=============================================================================================*/
 void HouseClass::Tracking_Add(const TechnoClass* techno) {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   StructType building = STRUCT_NONE;
   AircraftType aircraft = AIRCRAFT_NONE;
@@ -6563,7 +6563,7 @@ void HouseClass::Active_Add(const TechnoClass* techno) {
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
 ZoneType HouseClass::Which_Zone(COORDINATE coord) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (coord == 0) {
     return ZONE_NONE;
@@ -6607,7 +6607,7 @@ ZoneType HouseClass::Which_Zone(COORDINATE coord) const {
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
 ZoneType HouseClass::Which_Zone(const ObjectClass* object) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   if (!object) {
     return ZONE_NONE;
@@ -6632,7 +6632,7 @@ ZoneType HouseClass::Which_Zone(const ObjectClass* object) const {
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
 ZoneType HouseClass::Which_Zone(CELL cell) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   return Which_Zone(Cell_Coord(cell));
 }
@@ -6762,7 +6762,7 @@ void HouseClass::Recalc_Attributes() {
  * HISTORY: * 10/02/1995 JLB : Created. *
  *=============================================================================================*/
 CELL HouseClass::Zone_Cell(ZoneType zone) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   switch (zone) {
     case ZONE_CORE:
@@ -6808,7 +6808,7 @@ CELL HouseClass::Zone_Cell(ZoneType zone) const {
  *helper functions                                       *
  *=============================================================================================*/
 CELL HouseClass::Where_To_Go(const FootClass* object) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
   CHECK_NE(object, nullptr);
 
   // The zone that the object should go to.
@@ -6842,7 +6842,7 @@ CELL HouseClass::Where_To_Go(const FootClass* object) const {
  * HISTORY: * 10/12/1995 JLB : Created. *
  *=============================================================================================*/
 TARGET HouseClass::Find_Juicy_Target(COORDINATE coord) const {
-  CHECK_EQ(TheObjectHeaps().house().ID(this), ID);
+  CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   const UnitClass* best = nullptr;
   int value = 0;

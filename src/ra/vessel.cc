@@ -299,7 +299,7 @@ const ObjectTypeClass& VesselClass::Class_Of() const {
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
 MoveType VesselClass::Can_Enter_Cell(CELL cell, FacingType /*from*/) const {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   if (static_cast<unsigned>(cell) >= MAP_CELL_TOTAL) {
@@ -427,7 +427,7 @@ int VesselClass::Shape_Number() const {
  *=============================================================================================*/
 void VesselClass::Draw_It(PixelView& view, int x, int y,
                           WindowNumberType window) const {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   /*
@@ -539,7 +539,7 @@ void VesselClass::Draw_It(PixelView& view, int x, int y,
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
 std::span<const int16_t> VesselClass::Overlap_List(bool /*redraw*/) const {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   return Coord_Spillage_List(Coord, 56).subspan(1);
@@ -563,7 +563,7 @@ std::span<const int16_t> VesselClass::Overlap_List(bool /*redraw*/) const {
  *weapons if firing on subs.                              *
  *=============================================================================================*/
 void VesselClass::AI() {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   if (Mission == MISSION_NONE && MissionQueue == MISSION_NONE) {
@@ -676,7 +676,7 @@ void VesselClass::AI() {
  * HISTORY: * 03/19/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselClass::Per_Cell_Process(PCPType why) {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   if (why == PCP_END) {
@@ -738,7 +738,7 @@ void VesselClass::Per_Cell_Process(PCPType why) {
  * HISTORY: * 04/16/1996 BWG : Created. *
  *=============================================================================================*/
 ActionType VesselClass::What_Action(ObjectClass* object) {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   ActionType action = DriveClass::What_Action(object);
@@ -820,7 +820,7 @@ ActionType VesselClass::What_Action(ObjectClass* object) {
  * HISTORY: * 04/16/1996 BWG : Created. *
  *=============================================================================================*/
 void VesselClass::Active_Click_With(ActionType action, ObjectClass* object) {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   //	if (action != What_Action(object)) {
@@ -866,7 +866,7 @@ void VesselClass::Active_Click_With(ActionType action, ObjectClass* object) {
  * HISTORY: * 04/16/1996 BWG : Created. *
  *=============================================================================================*/
 void VesselClass::Active_Click_With(ActionType action, CELL cell) {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   // BRR 10/18/96 IsToSelfRepair = false;
@@ -910,7 +910,7 @@ void VesselClass::Active_Click_With(ActionType action, CELL cell) {
 ResultType VesselClass::Take_Damage(int& damage, int distance,
                                     WarheadType warhead, TechnoClass* source,
                                     bool forced) {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   ResultType res = RESULT_NONE;
@@ -994,7 +994,7 @@ ResultType VesselClass::Take_Damage(int& damage, int distance,
  * HISTORY: * 05/13/1996 JLB : Created. *
  *=============================================================================================*/
 FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   int diff = 0;
@@ -1138,7 +1138,7 @@ FireErrorType VesselClass::Can_Fire(TARGET target, int which) const {
  * HISTORY: * 05/13/1996 JLB : Created. *
  *=============================================================================================*/
 COORDINATE VesselClass::Fire_Coord(int which) const {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   COORDINATE coord = Center_Coord();
@@ -1250,7 +1250,7 @@ TARGET VesselClass::Greatest_Threat(ThreatType threat)  // const
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 void VesselClass::Enter_Idle_Mode(bool /*initial*/) {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   MissionType order = MISSION_GUARD;
@@ -1323,7 +1323,7 @@ void VesselClass::Enter_Idle_Mode(bool /*initial*/) {
 RadioMessageType VesselClass::Receive_Message(RadioClass* from,
                                               RadioMessageType message,
                                               int32_t& param) {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   switch (message) {
@@ -1561,7 +1561,7 @@ RadioMessageType VesselClass::Receive_Message(RadioClass* from,
  *=============================================================================================*/
 DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
                                       CELL& moveto) const {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   /*
@@ -1642,7 +1642,7 @@ DirType VesselClass::Desired_Load_Dir(ObjectClass* passenger,
  * HISTORY: * 06/01/1996 BWG : Created. *
  *=============================================================================================*/
 void VesselClass::LST_Open_Door() {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   if (!IsDriving && !IsRotating) {
@@ -1664,7 +1664,7 @@ void VesselClass::LST_Open_Door() {
  * HISTORY: * 06/01/1996 BWG : Created. *
  *=============================================================================================*/
 void VesselClass::LST_Close_Door() {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   Close_Door(5, 6);
@@ -1685,7 +1685,7 @@ void VesselClass::LST_Close_Door() {
  * HISTORY: * 06/01/1996 BWG : Created. *
  *=============================================================================================*/
 int VesselClass::Mission_Unload() {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   constexpr int kInitialCheck = 0;
@@ -1884,7 +1884,7 @@ void VesselClass::Assign_Destination(TARGET target) {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 int VesselClass::Mission_Retreat() {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   constexpr int kPickRetreatPoint = 0;
@@ -2087,7 +2087,7 @@ void VesselClass::Write_INI(CCINIClass& ini) {
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
 bool VesselClass::Start_Driver(COORDINATE& headto) {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   if (DriveClass::Start_Driver(headto) &&
@@ -2115,7 +2115,7 @@ bool VesselClass::Start_Driver(COORDINATE& headto) {
  * HISTORY: * 07/11/1996 BWG : Created. *
  *=============================================================================================*/
 ActionType VesselClass::What_Action(CELL cell) const {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   const ActionType action = DriveClass::What_Action(cell);
@@ -2318,7 +2318,7 @@ void VesselClass::Repair_AI() {
  * HISTORY: * 04/26/1994 JLB : Created. *
  *=============================================================================================*/
 BulletClass* VesselClass::Fire_At(TARGET target, int which) {
-  DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
   if (*this == VESSEL_CARRIER) {

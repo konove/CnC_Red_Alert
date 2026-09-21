@@ -250,7 +250,7 @@ void TriggerClass::Init() { TheObjectHeaps().trigger().Free_All(); }
  *=============================================================================================*/
 bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
                           bool forced) {
-  DCHECK(TheObjectHeaps().trigger().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().trigger(), this);
 
   const bool e1 = Class->Event1(Event1, event, Class->House, obj, forced);
   bool e2 = false;
@@ -435,7 +435,7 @@ void TriggerClass::operator delete(void* pointer) {
  * HISTORY: * 09/19/1994 JLB : Created. *
  *=============================================================================================*/
 TARGET TriggerClass::As_Target() const {
-  DCHECK(TheObjectHeaps().trigger().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().trigger(), this);
 
   return Build_Target(RTTI_TRIGGER, ID);
 }

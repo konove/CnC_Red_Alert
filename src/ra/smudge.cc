@@ -180,7 +180,7 @@ void SmudgeClass::Init() { TheObjectHeaps().smudge().Free_All(); }
  *legality before proceeding.                             *
  *=============================================================================================*/
 bool SmudgeClass::Mark(MarkType mark) {
-  DCHECK(TheObjectHeaps().smudge().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().smudge(), this);
   DCHECK(IsActive);
 
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
@@ -265,7 +265,7 @@ bool SmudgeClass::Mark(MarkType mark) {
  * HISTORY: * 07/04/1995 JLB : Created. *
  *=============================================================================================*/
 void SmudgeClass::Disown(CELL cell) {
-  DCHECK(TheObjectHeaps().smudge().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().smudge(), this);
   DCHECK(IsActive);
 
   if (Class->IsBib) {

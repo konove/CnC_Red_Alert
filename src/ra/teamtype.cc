@@ -1790,7 +1790,7 @@ void TeamTypeClass::Read_INI(CCINIClass& ini) {
  *team class.                                          *
  *=============================================================================================*/
 void TeamTypeClass::Fill_In(const char* name, char* entry) {
-  DCHECK(TheObjectHeaps().team_type().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().team_type(), this);
 
   /*
   **	Set its name

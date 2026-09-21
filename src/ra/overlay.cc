@@ -179,7 +179,7 @@ OverlayClass::OverlayClass(OverlayType type, CELL pos, HousesType house)
  *legality before proceeding.                             *
  *=============================================================================================*/
 bool OverlayClass::Mark(MarkType mark) {
-  DCHECK(TheObjectHeaps().overlay().ID(this) == ID);
+  DCHECK_HEAP_SLOT(TheObjectHeaps().overlay(), this);
   DCHECK(IsActive);
 
   if (ObjectClass::Mark(mark) && (mark == MARK_DOWN)) {
