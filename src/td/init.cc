@@ -2177,6 +2177,28 @@ static std::optional<uint16_t> ParseSocketArgument(
   return static_cast<uint16_t>(*offset + 0x4000);
 }
 
+// The two helpers below exist for the same reason ParseDestNet() does: an
+// optional touched anywhere in Parse_Command_Line() makes clang-tidy run its
+// optional-access dataflow over that whole function, which costs ~8 seconds of
+// analysis on this file.
+static void ApplyDestNet(const std::string_view address,
+                         StartupOptions& options) {
+  // A malformed address leaves any earlier one alone.
+  const std::optional<IPXAddressClass> bridge_net = ParseDestNet(address);
+  if (bridge_net.has_value()) {
+    options.bridge_net = bridge_net;
+  }
+}
+
+static void ApplySocket(const std::string_view offset_text,
+                        StartupOptions& options) {
+  // An out-of-range offset leaves any earlier one alone.
+  const std::optional<uint16_t> socket = ParseSocketArgument(offset_text);
+  if (socket.has_value()) {
+    options.socket = socket;
+  }
+}
+
 std::optional<StartupOptions> Parse_Command_Line(
     const std::span<const std::string_view> arguments) {
   StartupOptions options;
@@ -2439,12 +2461,7 @@ std::optional<StartupOptions> Parse_Command_Line(
     **	Specify destination connection for network play
     */
     if (string.contains("-DESTNET")) {
-      // A malformed address leaves any earlier one alone.
-      const std::optional<IPXAddressClass> bridge_net =
-          ParseDestNet(std::string_view(string).substr(8));
-      if (bridge_net.has_value()) {
-        options.bridge_net = bridge_net;
-      }
+      ApplyDestNet(std::string_view(string).substr(8), options);
       continue;
     }
 
@@ -2452,12 +2469,9 @@ std::optional<StartupOptions> Parse_Command_Line(
     **	Specify socket ID, as an offset from 0x4000.
     */
     if (string.contains("-SOCKET")) {
-      // An out-of-range offset leaves any earlier one alone.
-      const std::optional<uint16_t> socket = ParseSocketArgument(
-          std::string_view(string).substr(std::string_view("-SOCKET").size()));
-      if (socket.has_value()) {
-        options.socket = socket;
-      }
+      ApplySocket(
+          std::string_view(string).substr(std::string_view("-SOCKET").size()),
+          options);
       continue;
     }
 
