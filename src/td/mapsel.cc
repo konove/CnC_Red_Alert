@@ -89,7 +89,7 @@
 #ifndef DEMO
 
 void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
-                      GraphicBufferClass* src, GraphicBufferClass* dest);
+                      PixelBuffer* src, PixelBuffer* dest);
 static void Print_Statistics(int country, int xpos, int ypos);
 static void Cycle_Call_Back_Delay(int time, std::span<unsigned char> pal);
 [[maybe_unused]] static int LowMedHiStr(int percentage);
@@ -509,7 +509,7 @@ void Map_Selection() {
       0x26, 0x26, 0x26, 0x26, 0x26, 0x26, 0x26, 0x26};
   static const unsigned char _regpal[] = {0, 1, 2,  3,  4,  5,  6,  7,
                                           8, 9, 10, 11, 12, 13, 14, 15};
-  GraphicBufferClass backpage(20 * 6, 8);
+  PixelBuffer backpage(20 * 6, 8);
 
   std::array<unsigned char, 768> grey2palette{};
   std::array<unsigned char, 768> progresspalette{};
@@ -540,14 +540,13 @@ void Map_Selection() {
 
   TheTheme().Queue_Song(THEME_MAP1);
 
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
+  PseudoSeenBuff = new PixelBuffer(320, 200, {});
 
   /*
   ** Extra graphic buffer to draw text into
   */
-  TextPrintBuffer =
-      new GraphicBufferClass(TheScreen().visible_view().width(),
-                             TheScreen().visible_view().height(), {});
+  TextPrintBuffer = new PixelBuffer(TheScreen().visible_view().width(),
+                                    TheScreen().visible_view().height(), {});
   TextPrintBuffer->Clear();
   BlitList.Clear();
 
@@ -789,8 +788,8 @@ void Map_Selection() {
 
   Increase_Palette_Luminance(progresspalette, 30, 30, 30, 63);
 
-  auto* europe = new GraphicBufferClass(TheScreen().sys_mem_page().width(),
-                                        TheScreen().sys_mem_page().height());
+  auto* europe = new PixelBuffer(TheScreen().sys_mem_page().width(),
+                                 TheScreen().sys_mem_page().height());
   TheScreen().sys_mem_page().Blit(*europe);
 
   /*
@@ -1472,7 +1471,7 @@ void Print_Statistics(int country, int xpos, int ypos) {
  **
  *=========================================================================*/
 void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
-                      GraphicBufferClass* src, GraphicBufferClass* dest) {
+                      PixelBuffer* src, PixelBuffer* dest) {
   unsigned int shuffled_cols,  // Working array index var.
       shuffled_rows;           // Working y index var.
   unsigned int x, y;           // Extraction position indexes.
@@ -1610,8 +1609,8 @@ int LowMedHiStr(int percentage) {
  *   04/17/1995 BWG : Adapted to C++ library.                              *
  *=========================================================================*/
 void Bit_It_In(const int x, const int y, const int w, const int h,
-               GraphicBufferClass* src, GraphicBufferClass* dest,
-               const int delay, const bool dagger) {
+               PixelBuffer* src, PixelBuffer* dest, const int delay,
+               const bool dagger) {
   // Build shuffled coordinate tables so pixels are copied in random order,
   // creating a dissolve transition where the new image materializes from
   // scattered dots rather than appearing all at once.

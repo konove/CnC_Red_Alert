@@ -163,7 +163,7 @@ static void Do_Old_Blit(int line_count, int pixel_count,
 }
 
 void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
-                          std::span<std::byte> src, GraphicViewPortClass& dest,
+                          std::span<std::byte> src, PixelView& dest,
                           ShapeFlags_Type flags, const ShapeEffects& effects) {
   if (src.empty() || w <= 0 || h <= 0) {
     return;

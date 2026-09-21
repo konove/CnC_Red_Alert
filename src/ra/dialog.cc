@@ -106,7 +106,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   /*
   **	Always draw to the hidpage and then blit forward.
   */
-  GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().hidden_view());
+  PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
 
   /*
   **	Draw the background block.

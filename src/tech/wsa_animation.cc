@@ -193,8 +193,7 @@ void WsaAnimation::Load(File& file, const std::span<uint8_t> palette) {
   LCW_Uncompress(compressed_delta, delta_buffer);
 }
 
-bool WsaAnimation::DrawFrame(GraphicViewPortClass& view,
-                             const int frame_number) {
+bool WsaAnimation::DrawFrame(PixelView& view, const int frame_number) {
   // A closed animation has no frames, so every frame number is out of range.
   if (frame_number < 0 || total_frames_ <= frame_number) {
     return false;

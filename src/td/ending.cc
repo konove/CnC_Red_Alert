@@ -172,10 +172,9 @@ void Nod_Ending() {
 
   const std::span<const std::byte> oldfont =
       Set_Font(TheAssets().font(FontType::kScore));
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
-  TextPrintBuffer =
-      new GraphicBufferClass(TheScreen().visible_view().width(),
-                             TheScreen().visible_view().height(), {});
+  PseudoSeenBuff = new PixelBuffer(320, 200, {});
+  TextPrintBuffer = new PixelBuffer(TheScreen().visible_view().width(),
+                                    TheScreen().visible_view().height(), {});
   TextPrintBuffer->Clear();
   BlitList.Clear();
   TheScreen().visible_view().Clear();

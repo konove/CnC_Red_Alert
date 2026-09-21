@@ -2404,8 +2404,8 @@ void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
     }
 
     if (!shape_size.empty()) {
-      GraphicViewPortClass draw_window(
-          LogicPage->graphic_buffer(),
+      PixelView draw_window(
+          LogicPage->buffer(),
           (base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) *
            8) +
               LogicPage->x_pos(),
@@ -3106,7 +3106,7 @@ bool Force_CD_Available(int cd) {
                               base::At(_volid, cd));
         }
       }
-      GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().visible_view());
+      PixelView* oldpage = SetLogicPage(TheScreen().visible_view());
       // The theme was already stopped above, and the only way out of this
       // loop is the cancel below, so there is nothing to remember here.
       TheTheme().Stop();

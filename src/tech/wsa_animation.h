@@ -80,7 +80,7 @@ class WsaAnimation {
   // the frame does not fit the view. Also returns false if a delta on the way
   // is corrupt; `view` then shows the last frame that could be reached, and a
   // later call carries on from there.
-  bool DrawFrame(GraphicViewPortClass& view, int frame_number);
+  bool DrawFrame(PixelView& view, int frame_number);
 
   // The number of frames, 0 if the animation is closed. Negative for an Amiga
   // animation, which sets the high bit of the file's 16-bit frame count.

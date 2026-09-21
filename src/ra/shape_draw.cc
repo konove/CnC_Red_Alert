@@ -73,8 +73,8 @@ void CC_Draw_Shape(const std::span<const std::byte> shapefile,
     const auto shape_pointer = Build_Frame(
         shapefile, static_cast<uint16_t>(shape_num), ShapeBufferBytes);
     if (!shape_pointer.empty()) {
-      GraphicViewPortClass draw_window(
-          LogicPage->graphic_buffer(),
+      PixelView draw_window(
+          LogicPage->buffer(),
           base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) +
               LogicPage->x_pos(),
           base::At(base::At(WindowList, static_cast<int>(window)), kWindowY) +
@@ -98,7 +98,7 @@ void CC_Draw_Shape(const std::span<const std::byte> shapefile,
         width *= 2;
         height *= 2;
         std::ranges::fill(x_buffer, uint8_t{0});
-        GraphicBufferClass gb(width, height, x_buffer);
+        PixelBuffer gb(width, height, x_buffer);
         const TPoint2D pt(width / 2, height / 2);
 
         gb.DrawScaledRotated(

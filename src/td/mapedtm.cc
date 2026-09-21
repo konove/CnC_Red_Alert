@@ -319,7 +319,7 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     ................... Generate string for this team .....................
     */
-    // teamtext[i] = (char *)HidPage.graphic_buffer()->Get_Buffer() +
+    // teamtext[i] = (char *)HidPage.buffer()->Get_Buffer() +
     // TEAMTXT_LEN * i;
     constexpr int kTeamNameSize = 255;
     base::At(teamtext, i) = new char[kTeamNameSize];

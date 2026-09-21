@@ -47,8 +47,8 @@
 #include <span>
 
 // Forward declarations
-class GraphicBufferClass;
-class GraphicViewPortClass;
+class PixelBuffer;
+class PixelView;
 
 // Constants
 #define SIZE_OF_PALETTE 256
@@ -57,8 +57,7 @@ class GraphicViewPortClass;
 void Increase_Palette_Luminance(std::span<unsigned char> palette,
                                 int red_percentage, int green_percentage,
                                 int blue_percentage, int cap);
-void Interpolate_2X_Scale(GraphicBufferClass* source,
-                          GraphicViewPortClass* dest,
+void Interpolate_2X_Scale(PixelBuffer* source, PixelView* dest,
                           const char* palette_file_name);
 
 #endif  // CNC_RED_ALERT_TD_INTERPAL_H_

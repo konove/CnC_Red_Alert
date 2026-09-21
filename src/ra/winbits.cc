@@ -14,7 +14,7 @@
 #include "sdllib/ww_win.h"
 
 LockedWindow::LockedWindow(WindowNumberType window)
-    : view_(LogicPage->graphic_buffer(),
+    : view_(LogicPage->buffer(),
             base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) +
                 LogicPage->x_pos(),
             base::At(base::At(WindowList, static_cast<int>(window)), kWindowY) +

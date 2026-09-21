@@ -111,8 +111,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   bool display = false;  // display level
   int realval[5];
 
-  GraphicBufferClass seen_buff_save(TheScreen().visible_page().width(),
-                                    TheScreen().visible_page().height(), {});
+  PixelBuffer seen_buff_save(TheScreen().visible_page().width(),
+                             TheScreen().visible_page().height(), {});
 
   const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 

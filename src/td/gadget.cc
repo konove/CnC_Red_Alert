@@ -448,7 +448,7 @@ KeyNumType GadgetClass::Input() {
       /*
       ** time to create a screen shot using the PCX code (if it works)
       */
-      GraphicBufferClass temp_page(
+      PixelBuffer temp_page(
           TheScreen().visible_view().width(),
           TheScreen().visible_view().height(), {},
           static_cast<int32_t>(TheScreen().visible_view().width()) *

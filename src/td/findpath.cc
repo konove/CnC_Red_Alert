@@ -1596,7 +1596,7 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
   if (pause) {
     Get_Key_Num();
   }
-  GraphicViewPortClass* page = SetLogicPage(TheScreen().visible_view());
+  PixelView* page = SetLogicPage(TheScreen().visible_view());
 
   TheScreen().visible_page().Clear();
   Fancy_Text_Print(txt, 160, 0, kWhite, kBlack, TPF_8POINT | TPF_CENTER);

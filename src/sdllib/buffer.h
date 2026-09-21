@@ -24,7 +24,7 @@
 
 #include "base/numeric.h"
 
-class GraphicViewPortClass;
+class PixelView;
 
 // BufferClass - A base class which holds buffer information including a pointer
 // and the size of the buffer.
@@ -45,12 +45,12 @@ class BufferClass {
   }
 
   // Copies the buffer's bytes into `view` as w x h pixels with their top
-  // left corner at x,y in the viewport, and returns the number of bytes
-  // read. The overloads default x,y to the viewport's corner and w,h to its
-  // size. Defined in graphic_buffer.h, which has the complete viewport type.
-  int32_t To_Page(GraphicViewPortClass& view);
-  int32_t To_Page(int w, int h, GraphicViewPortClass& view);
-  int32_t To_Page(int x, int y, int w, int h, GraphicViewPortClass& view);
+  // left corner at x,y in the view, and returns the number of bytes
+  // read. The overloads default x,y to the view's corner and w,h to its
+  // size. Defined in graphic_buffer.h, which has the complete PixelView type.
+  int32_t To_Page(PixelView& view);
+  int32_t To_Page(int w, int h, PixelView& view);
+  int32_t To_Page(int x, int y, int w, int h, PixelView& view);
 
   // define functions to get at the protected data members
   void* Get_Buffer() { return Buffer; }

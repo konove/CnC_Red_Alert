@@ -594,7 +594,7 @@ static void CaptureMotionFrame() {
   }
 
   // Leaked for the same reason as frames above.
-  static auto& frame_page = *new GraphicBufferClass(
+  static auto& frame_page = *new PixelBuffer(
       TheScreen().visible_view().width(), TheScreen().visible_view().height(),
       {},
       TheScreen().visible_view().width() * TheScreen().visible_view().height());

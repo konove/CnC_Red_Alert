@@ -73,7 +73,7 @@
 *objects.
 */
 // lint
-// -esym(1509,GraphicBufferClass,GraphicViewPortClass,BufferClass,VideoViewPortClass)
+// -esym(1509,PixelBuffer,PixelView,BufferClass,VideoViewPortClass)
 // lint
 // -esym(1509,Ticker,FlyClass,FuseClass,StageClass,FlasherClass,CargoClass,DoorClass)
 // lint -esym(1509,AbstractTypeClass)

@@ -51,8 +51,8 @@ class PcxFile {
   PcxFile& operator=(PcxFile&&) = delete;
 
   // Load without a palette so EOF is exactly the end of the encoded pixels.
-  [[nodiscard]] std::unique_ptr<GraphicBufferClass> Load() const {
-    return std::unique_ptr<GraphicBufferClass>(
+  [[nodiscard]] std::unique_ptr<PixelBuffer> Load() const {
+    return std::unique_ptr<PixelBuffer>(
         Read_PCX_File(path_.string().c_str(), {}, {}, 0));
   }
 
@@ -103,7 +103,7 @@ TEST(PcxTest, WrittenFileReadsBack) {
   const std::filesystem::path path = std::filesystem::temp_directory_path() /
                                      "cnc_pcx_WrittenFileReadsBack.pcx";
   constexpr int kWidth = 70;
-  GraphicBufferClass picture(kWidth, 2);
+  PixelBuffer picture(kWidth, 2);
   const auto pixels = picture.Get_Bytes();
   for (int x = 0; x < kWidth; x++) {
     base::At(pixels, x) = 9;  // One run, longer than a count can hold.
@@ -116,7 +116,7 @@ TEST(PcxTest, WrittenFileReadsBack) {
   Write_PCX_File(path.string().c_str(), picture, palette);
 
   std::array<uint8_t, 768> loaded_palette{};
-  const std::unique_ptr<GraphicBufferClass> loaded(
+  const std::unique_ptr<PixelBuffer> loaded(
       Read_PCX_File(path.string().c_str(), loaded_palette, {}, 0));
   std::error_code ignored;
   std::filesystem::remove(path, ignored);

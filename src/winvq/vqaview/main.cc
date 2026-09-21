@@ -60,12 +60,12 @@ extern void VQA_Test(char* filename);
 // Public data
 //==========================================================================
 
-GraphicBufferClass* Screen_Buffer = NULL;
+PixelBuffer* Screen_Buffer = NULL;
 int ScreenWidth = VIDEO_MODE_WIDTH;
 
 BOOL GameInFocus = TRUE;
-void Block_Mouse(GraphicBufferClass*) {}
-void Unblock_Mouse(GraphicBufferClass*) {}
+void Block_Mouse(PixelBuffer*) {}
+void Unblock_Mouse(PixelBuffer*) {}
 
 /***********************************************************************************************
  * WinMain -- Program entry point *
@@ -102,11 +102,11 @@ int WINAPI WinMain(Handle instance_handle, Handle prev_instance_handle,
     Main_Window.Display_Window();
 
     //
-    // Create the GraphicBufferClass that will be the screen buffer
+    // Create the PixelBuffer that will be the screen buffer
     //
     Screen_Buffer =
-        new GraphicBufferClass(VIDEO_MODE_WIDTH, VIDEO_MODE_HEIGHT,
-                               (GBC_Enum)(GBC_VIDEOMEM | GBC_VISIBLE));
+        new PixelBuffer(VIDEO_MODE_WIDTH, VIDEO_MODE_HEIGHT,
+                        (PixelBufferFlags)(GBC_VIDEOMEM | GBC_VISIBLE));
 
     //
     // Initialize Movie system.

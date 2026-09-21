@@ -87,7 +87,7 @@ void Update_Full_Palette(unsigned char* palette) {
   Mem_Copy(palette, CurrentPalette, SIZE_OF_PALETTE * 3);
 
   DirectDrawObject->CreatePalette(DDPCAPS_8BIT, &pe[0], &PalettePtr, NULL);
-  Screen_Buffer->graphic_buffer()->Get_DD_Surface()->SetPalette(PalettePtr);
+  Screen_Buffer->buffer()->Get_DD_Surface()->SetPalette(PalettePtr);
   PalettePtr->SetEntries(DDPSETPAL_VSYNC, 0, SIZE_OF_PALETTE, &pe[0]);
 }
 

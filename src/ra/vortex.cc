@@ -729,7 +729,7 @@ void ChronalVortexClass::Zap_Target() {
  * HISTORY: * 8/29/96 4:48PM ST : Created *
  *=============================================================================================*/
 void ChronalVortexClass::Coordinate_Remap(
-    GraphicViewPortClass* inbuffer, int x, int y, int width, int height,
+    PixelView* inbuffer, int x, int y, int width, int height,
     std::span<const uint8_t> remap_table) {
   if (width <= 0 || height <= 0 || x < 0 || y < 0) {
     return;
@@ -814,15 +814,14 @@ void ChronalVortexClass::Render() {
       ** the image from the hidpage.
       */
       if (!RenderBuffer) {
-        RenderBuffer =
-            new GraphicBufferClass(CELL_PIXEL_W * 4, CELL_PIXEL_H * 4, {});
+        RenderBuffer = new PixelBuffer(CELL_PIXEL_W * 4, CELL_PIXEL_H * 4, {});
       }
       const CELL xc = Coord_XCell(Position);
       const CELL yc = Coord_YCell(Position);
       const TemplateTypeClass* ttype = nullptr;
       int icon = 0;  // The icon number to use from the template set.
 
-      GraphicViewPortClass* oldpage = SetLogicPage(RenderBuffer);
+      PixelView* oldpage = SetLogicPage(RenderBuffer);
 
       /*
       ** Temporarily modify the tactical window so it works with our offscreen
@@ -952,10 +951,9 @@ void ChronalVortexClass::Render() {
       /*
       ** Create a view port to blit to
       */
-      GraphicViewPortClass target(LogicPage->graphic_buffer(), 0,
-                                  16 + LogicPage->y_pos(),
-                                  Lepton_To_Pixel(TheMap().TacLeptonWidth),
-                                  Lepton_To_Pixel(TheMap().TacLeptonHeight));
+      PixelView target(LogicPage->buffer(), 0, 16 + LogicPage->y_pos(),
+                       Lepton_To_Pixel(TheMap().TacLeptonWidth),
+                       Lepton_To_Pixel(TheMap().TacLeptonHeight));
 
       /*
       ** Do some clipping since the library clipping gets it wrong.

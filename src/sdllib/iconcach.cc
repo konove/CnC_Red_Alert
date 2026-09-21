@@ -95,7 +95,7 @@ static void Init_Stamps(std::span<const std::byte> icon_ptr) {
   }
 }
 
-void Buffer_Draw_Stamp_Clip(GraphicViewPortClass* viewport,
+void Buffer_Draw_Stamp_Clip(PixelView* viewport,
                             std::span<const std::byte> icondata, int icon,
                             int x_pixel, int y_pixel,
                             std::span<const uint8_t> remap, int min_x,
@@ -188,7 +188,7 @@ void Buffer_Draw_Stamp_Clip(GraphicViewPortClass* viewport,
   }
 
   // Get pointer to position to render icon.
-  GraphicViewPortClass* vp_dst = viewport;
+  PixelView* vp_dst = viewport;
   const base::ssize dst_area =
       vp_dst->x_add() + vp_dst->width() + vp_dst->pitch();
   auto dst_offset = vp_dst->pixels().begin() + x_pixel + (y_pixel * dst_area);

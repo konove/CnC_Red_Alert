@@ -260,7 +260,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
         }
       }
 
-      GraphicViewPortClass* old_page = SetLogicPage(TheScreen().visible_view());
+      PixelView* old_page = SetLogicPage(TheScreen().visible_view());
       TheTheme().Stop();
       int hidden = Get_Mouse_State();
       font = FontPtr;

@@ -36,8 +36,8 @@ TEST(ScreenTest, OnlyTheVisibleViewIsVisible) {
 
 TEST(ScreenTest, ViewsBelongToTheirPages) {
   Screen screen;
-  EXPECT_EQ(screen.visible_view().graphic_buffer(), &screen.visible_page());
-  EXPECT_EQ(screen.hidden_view().graphic_buffer(), &screen.hidden_page());
+  EXPECT_EQ(screen.visible_view().buffer(), &screen.visible_page());
+  EXPECT_EQ(screen.hidden_view().buffer(), &screen.hidden_page());
 }
 
 TEST(ScreenTest, TheScreenReturnsTheInstalledScreen) {

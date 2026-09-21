@@ -100,7 +100,7 @@ void Increase_Palette_Luminance(std::span<unsigned char> palette,
  * Renders a 320x200 paletted frame to the screen using SDL texture        *
  * scaling with bilinear filtering.                                        *
  *                                                                         *
- * INPUT:    source - GraphicBufferClass containing 320x200 paletted data  *
+ * INPUT:    source - PixelBuffer containing 320x200 paletted data  *
  *           dest - unused (kept for API compatibility)                    *
  *           palette_file_name - unused (kept for API compatibility)       *
  *                                                                         *
@@ -110,8 +110,7 @@ void Increase_Palette_Luminance(std::span<unsigned char> palette,
  *   12/06/1995  MG : Created.                                             *
  *   01/2026     : Replaced with SDL texture scaling.                      *
  *=========================================================================*/
-void Interpolate_2X_Scale(GraphicBufferClass* source,
-                          GraphicViewPortClass* /*unused*/,
+void Interpolate_2X_Scale(PixelBuffer* source, PixelView* /*unused*/,
                           const char* /*unused*/) {
   // Render using SDL scaling - palette already set via UpdatePalette
   source->Lock();

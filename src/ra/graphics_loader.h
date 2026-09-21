@@ -27,12 +27,12 @@
 #include <string_view>
 
 // Forward declarations to avoid pulling in heavy headers
-class GraphicViewPortClass;
+class PixelView;
 
 // Loads a PCX title screen image into a graphics viewport.
 // Reads the PCX file, extracts the palette, and blits the image to the
 // viewport. The palette parameter is updated with the image's palette data.
-void Load_Title_Screen(std::string_view name, GraphicViewPortClass* video_page,
+void Load_Title_Screen(std::string_view name, PixelView* video_page,
                        std::span<uint8_t> palette);
 
 #endif  // CNC_RED_ALERT_RA_GRAPHICS_LOADER_H_

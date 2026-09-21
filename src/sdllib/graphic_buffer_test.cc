@@ -19,7 +19,7 @@ namespace {
 // views this way and attaches them once the video mode is known, so anything
 // that draws in between meets one.
 TEST(GraphicViewPortLockTest, AnUnattachedViewportDoesNotLock) {
-  GraphicViewPortClass view;
+  PixelView view;
 
   EXPECT_FALSE(view.Lock());
   EXPECT_EQ(view.lock_count(), 0);
@@ -28,7 +28,7 @@ TEST(GraphicViewPortLockTest, AnUnattachedViewportDoesNotLock) {
 // The drawing members all call the primitive only when Lock() succeeded, so
 // an unattached viewport has to be a silent no-op rather than a crash.
 TEST(GraphicViewPortLockTest, DrawingToAnUnattachedViewportDoesNothing) {
-  GraphicViewPortClass view;
+  PixelView view;
 
   view.Clear();
   view.PutPixel(0, 0, 1);
@@ -43,8 +43,8 @@ TEST(GraphicViewPortLockTest, DrawingToAnUnattachedViewportDoesNothing) {
 // the viewport's corner to width() - 1, that is to -1, and pixels() then
 // subspanned an empty span by a negative offset.
 TEST(GraphicViewPortLockTest, AttachingToAnEmptyBufferGivesAnEmptyViewport) {
-  GraphicBufferClass page;
-  GraphicViewPortClass view(&page, 0, 0, 640, 480);
+  PixelBuffer page;
+  PixelView view(&page, 0, 0, 640, 480);
 
   EXPECT_EQ(view.width(), 0);
   EXPECT_EQ(view.height(), 0);
@@ -60,8 +60,8 @@ TEST(GraphicViewPortLockTest, AttachingToAnEmptyBufferGivesAnEmptyViewport) {
 // SDL and the nesting count still tracks the calls.
 TEST(GraphicViewPortLockTest, MemoryBufferLocksNest) {
   std::vector<uint8_t> pixels(size_t{4} * 4, 0);
-  GraphicBufferClass page(4, 4, pixels);
-  GraphicViewPortClass view(&page, 1, 1, 2, 2);
+  PixelBuffer page(4, 4, pixels);
+  PixelView view(&page, 1, 1, 2, 2);
 
   ASSERT_TRUE(view.Lock());
   ASSERT_TRUE(view.Lock());

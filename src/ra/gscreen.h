@@ -138,7 +138,7 @@ class GScreenClass {
   *to speed *	display rendering by using an only-update-changed-pixels
   *algorithm.
   */
-  static GraphicBufferClass* ShadowPage;
+  static PixelBuffer* ShadowPage;
 };
 
 // Jolts the screen up and down the given number of times, for explosions and

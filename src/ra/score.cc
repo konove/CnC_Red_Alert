@@ -162,7 +162,7 @@ void ScoreTimeClass::Update() {
     if (++Stage >= MaxStage) {
       Stage = 0;
     }
-    GraphicViewPortClass* oldpage = LogicPage;
+    PixelView* oldpage = LogicPage;
     SetLogicPage(TheScreen().visible_view());
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, {},
                   {});
@@ -184,7 +184,7 @@ void ScoreCredsClass::Update() {
     if (++Stage >= MaxStage) {
       Stage = 0;
     }
-    GraphicViewPortClass* oldpage = LogicPage;
+    PixelView* oldpage = LogicPage;
     SetLogicPage(TheScreen().visible_view());
     // One tick of sound per frame of the spinning credits symbol.
     TheAudio().Play(Clock1, 255, TheOptions().Normalize_Volume(130));
@@ -1089,7 +1089,7 @@ void Multi_Score_Presentation() {
   unsigned char remap[16];
   // The background animation is 320x200; each frame is decoded here and then
   // doubled onto the visible page.
-  GraphicBufferClass pseudoseenbuff(320, 200);
+  PixelBuffer pseudoseenbuff(320, 200);
 
   const int oldfontxspacing = FontXSpacing;
 

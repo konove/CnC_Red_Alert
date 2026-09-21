@@ -2350,7 +2350,7 @@ int MapEditClass::Select_Trigger() {
     - House is 3 characters
     - Team name is up to 11 characters
     .....................................................................*/
-    // trigtext[i] = (char *)HidPage.graphic_buffer()->Get_Buffer() + 60 *
+    // trigtext[i] = (char *)HidPage.buffer()->Get_Buffer() + 60 *
     // i;
     constexpr int kTrigTextSize = 255;
     base::At(trigtext, i) = new char[kTrigTextSize];

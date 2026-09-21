@@ -79,7 +79,7 @@
 
 GadgetClass* GScreenClass::Buttons = nullptr;
 
-GraphicBufferClass* GScreenClass::ShadowPage = nullptr;
+PixelBuffer* GScreenClass::ShadowPage = nullptr;
 
 /***********************************************************************************************
  * GScreenClass::GScreenClass -- Default constructor for GScreenClass. *
@@ -130,7 +130,7 @@ void GScreenClass::One_Time() {
   *SEENPAGE is.
   */
   Buttons = nullptr;
-  ShadowPage = new GraphicBufferClass(320, 200);
+  ShadowPage = new PixelBuffer(320, 200);
   if (ShadowPage) {
     ShadowPage->Clear();
     TheScreen().hidden_page().Clear();
@@ -288,7 +288,7 @@ void GScreenClass::Input(KeyNumType& key, int& x, int& y) {
       Flag_To_Redraw(false);
     }
 
-    GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().hidden_view());
+    PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
 
     key = Buttons->Input();
 
@@ -388,7 +388,7 @@ void GScreenClass::Render() {
 
   if (IsToUpdate || IsScreenToRedraw) {
     // TheMouse()->Erase_Mouse(&HidPage, true);
-    GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().hidden_view());
+    PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
 
     // if (IsToRedraw) {
     //	Hide_Mouse();
@@ -429,17 +429,17 @@ void GScreenClass::Render() {
 
 #define MAX_SCREENS_SAVED (30 * 15)  // Enough for 30 seconds @ 15 fps
 
-static GraphicBufferClass* ScreenList[MAX_SCREENS_SAVED];
+static PixelBuffer* ScreenList[MAX_SCREENS_SAVED];
 static int CurrentScreen = 0;
 bool ScreenRecording = false;
 
 static void Add_Current_Screen() {
   if (ScreenRecording) {
-    base::At(ScreenList, CurrentScreen) = new GraphicBufferClass;
+    base::At(ScreenList, CurrentScreen) = new PixelBuffer;
     base::At(ScreenList, CurrentScreen)
         ->Init(TheScreen().visible_view().width(),
                TheScreen().visible_view().height(), {}, 0,
-               static_cast<GBC_Enum>(0));
+               static_cast<PixelBufferFlags>(0));
     TheScreen().visible_view().Blit(*base::At(ScreenList, CurrentScreen));
 
     CurrentScreen++;

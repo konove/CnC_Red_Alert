@@ -99,8 +99,8 @@ static int Get_Display_Scale() {
   return scale;
 }
 
-WWMouseClass::WWMouseClass([[maybe_unused]] GraphicViewPortClass* scr,
-                           int max_width, int max_height)
+WWMouseClass::WWMouseClass([[maybe_unused]] PixelView* scr, int max_width,
+                           int max_height)
     : MouseCursor(
           base::ToSize(static_cast<base::ssize>(max_width) * max_height)),
       MaxWidth(max_width),
@@ -264,12 +264,11 @@ int WWMouseClass::Get_Mouse_X() const { return LastX; }
 
 int WWMouseClass::Get_Mouse_Y() const { return LastY; }
 
-void WWMouseClass::Draw_Mouse(GraphicViewPortClass* /*scr*/) {
+void WWMouseClass::Draw_Mouse(PixelView* /*scr*/) {
   // No-op: SDL hardware cursor is drawn by the OS, not by us.
 }
 
-void WWMouseClass::Erase_Mouse(GraphicViewPortClass* /*scr*/, bool /*forced*/) {
-}
+void WWMouseClass::Erase_Mouse(PixelView* /*scr*/, bool /*forced*/) {}
 
 void WWMouseClass::Set_Cursor_Clip() {
   if (!NoMouseGrab) {

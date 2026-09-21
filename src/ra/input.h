@@ -9,7 +9,7 @@
 #include "base/installed.h"
 #include "ra/jshell.h"
 
-class GraphicViewPortClass;
+class PixelView;
 class WWMouseClass;
 
 // The two devices the player plays with. The keyboard exists for the whole
@@ -48,7 +48,7 @@ class Input {
 
   // Creates the cursor over the given page. Called once the video mode is
   // set; calling it again replaces the cursor.
-  void InstallMouse(GraphicViewPortClass& page);
+  void InstallMouse(PixelView& page);
 
   // Destroys the cursor. Prog_End() calls this before the video pages go.
   void RemoveMouse();

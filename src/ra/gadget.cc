@@ -479,7 +479,7 @@ KeyNumType GadgetClass::Input() {
     if ((key == KN_K && !TheDebugState().map_editor_active() &&
          (TheDebugState().developer_mode() || TheDebugState().playtest())) &&
         (!TheDebugState().motion_capture())) {
-      GraphicBufferClass temp_page(
+      PixelBuffer temp_page(
           TheScreen().visible_view().width(),
           TheScreen().visible_view().height(), {},
           static_cast<int32_t>(TheScreen().visible_view().width()) *

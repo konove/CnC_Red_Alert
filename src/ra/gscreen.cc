@@ -75,7 +75,7 @@
 
 GadgetClass* GScreenClass::Buttons = nullptr;
 
-GraphicBufferClass* GScreenClass::ShadowPage = nullptr;
+PixelBuffer* GScreenClass::ShadowPage = nullptr;
 
 /***********************************************************************************************
  * GScreenClass::GScreenClass -- Default constructor for GScreenClass. *
@@ -280,7 +280,7 @@ void GScreenClass::Input(KeyNumType& key, int& x, int& y) {
       Flag_To_Redraw(false);
     }
 
-    GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().hidden_view());
+    PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
 
     key = Buttons->Input();
 
@@ -381,7 +381,7 @@ void GScreenClass::Render() {
   // }
 
   if (IsToUpdate || IsScreenToRedraw) {
-    GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().hidden_view());
+    PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
 
     Draw_It(IsScreenToRedraw);
 

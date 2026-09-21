@@ -5,7 +5,7 @@
 
 #include <span>
 
-class GraphicViewPortClass;
+class PixelView;
 
 // Reports that an allocation failed and does not return. Set as the memory
 // system's error handler.
@@ -23,7 +23,7 @@ void Create_Main_Window(void* instance, int command_show, int width,
                         int height);
 
 // Reads a title screen picture into the given page and its palette.
-void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
+void Load_Title_Screen(const char* name, PixelView* video_page,
                        std::span<unsigned char> palette);
 
 // Applies a palette change a movie queued from its own thread, or drops one

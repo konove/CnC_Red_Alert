@@ -193,8 +193,8 @@ void MouseClass::Mouse_Small(bool wsmall) {
  *function.                                               * 12/24/1994 JLB :
  *Added small control parameter.                                           *
  *=============================================================================================*/
-void Block_Mouse(GraphicBufferClass* buffer);
-void Unblock_Mouse(GraphicBufferClass* buffer);
+void Block_Mouse(PixelBuffer* buffer);
+void Unblock_Mouse(PixelBuffer* buffer);
 
 bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wsmall) {
   DCHECK(static_cast<unsigned>(mouse) < magic_enum::enum_count<MouseType>());

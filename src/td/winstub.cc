@@ -568,8 +568,8 @@ void Memory_Error_Handler() {
   ExitProcess(0);
 }
 
-GraphicBufferClass* Read_PCX_File(const char* name, unsigned char* Palette,
-                                  void* Buff, long Size);
+PixelBuffer* Read_PCX_File(const char* name, unsigned char* Palette, void* Buff,
+                           long Size);
 
 /***********************************************************************************************
  * Load_Title_Screen -- loads the title screen into the given video buffer *
@@ -585,9 +585,9 @@ GraphicBufferClass* Read_PCX_File(const char* name, unsigned char* Palette,
  * HISTORY: * 7/5/96 11:30AM ST : Created *
  *=============================================================================================*/
 
-void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
+void Load_Title_Screen(const char* name, PixelView* video_page,
                        unsigned char* palette) {
-  GraphicBufferClass* load_buffer;
+  PixelBuffer* load_buffer;
 
   load_buffer = Read_PCX_File(name, palette, NULL, 0);
 
@@ -603,7 +603,7 @@ void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
 /***************************************************************************
  * READ_PCX_FILE -- read a pcx file into a Graphic Buffer                  *
  *                                                                         *
- *	GraphicBufferClass* Read_PCX_File (char* name, char* palette ,void
+ *	PixelBuffer* Read_PCX_File (char* name, char* palette ,void
  **Buff, long size );	*
  *  																								*
  *                                                                         *
@@ -617,7 +617,7 @@ void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
  *			* Size is the size in bytes of the memory block pointed
  * by Buff		* is also optional;
  *                                                                         *
- * OUTPUT: on succes a pointer to a GraphicBufferClass cointaining the     *
+ * OUTPUT: on succes a pointer to a PixelBuffer cointaining the     *
  *         pcx file, NULL othewise.                                        *
  *																									*
  * WARNINGS:                                                               *
@@ -636,8 +636,8 @@ void Load_Title_Screen(const char* name, GraphicViewPortClass* video_page,
     file_ptr = pool;                   \
   }
 
-GraphicBufferClass* Read_PCX_File(const char* name, unsigned char* palette,
-                                  void* Buff, long Size) {
+PixelBuffer* Read_PCX_File(const char* name, unsigned char* palette, void* Buff,
+                           long Size) {
   unsigned i, j;
   unsigned rle;
   unsigned color;
@@ -649,7 +649,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, unsigned char* palette,
   PCX_HEADER header;
   RGB* pal;
   char pool[POOL_SIZE];
-  GraphicBufferClass* pic;
+  PixelBuffer* pic;
 
   GameFile file_handle(name);
 
@@ -672,12 +672,12 @@ GraphicBufferClass* Read_PCX_File(const char* name, unsigned char* palette,
     buffer = static_cast<char*>(Buff);
     i = Size / width;
     height = std::min(i - 1, height);
-    pic = new GraphicBufferClass(width, height, buffer, Size);
+    pic = new PixelBuffer(width, height, buffer, Size);
     if (!(pic && pic->Get_Buffer())) {
       return NULL;
     }
   } else {
-    pic = new GraphicBufferClass(width, height, NULL, width * (height + 4));
+    pic = new PixelBuffer(width, height, NULL, width * (height + 4));
     if (!(pic && pic->Get_Buffer())) {
       return NULL;
     }

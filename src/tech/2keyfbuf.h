@@ -30,7 +30,7 @@ struct ShapeEffects {
 // `flags` and the tables in `effects` those flags call for. A nullptr src
 // draws nothing.
 void Buffer_Frame_To_Page(int x, int y, int w, int h, std::span<std::byte> src,
-                          GraphicViewPortClass& dest, ShapeFlags_Type flags,
+                          PixelView& dest, ShapeFlags_Type flags,
                           const ShapeEffects& effects = {});
 
 // Returns the drawing-effect bits of `flags` that a cached shape header is

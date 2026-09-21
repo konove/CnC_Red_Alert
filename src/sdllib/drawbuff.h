@@ -24,7 +24,7 @@
 #include <cstdint>
 #include <span>
 
-class GraphicViewPortClass;
+class PixelView;
 
 /*======================================================================*/
 /* Externs for all the common functions between the video buffer */
@@ -62,13 +62,13 @@ void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
                       unsigned char color);
 void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
                   std::span<const uint8_t> remap);
-void Buffer_Draw_Stamp_Clip(GraphicViewPortClass* viewport,
+void Buffer_Draw_Stamp_Clip(PixelView* viewport,
                             std::span<const std::byte> icondata, int icon,
                             int x_pixel, int y_pixel,
                             std::span<const uint8_t> remap, int /*min_x*/,
                             int /*min_y*/, int /*max_x*/, int /*max_y*/);
 
-extern GraphicViewPortClass* LogicPage;
+extern PixelView* LogicPage;
 extern bool AllowHardwareBlitFills;
 
 #endif  // CNC_RED_ALERT_SDLLIB_DRAWBUFF_H_

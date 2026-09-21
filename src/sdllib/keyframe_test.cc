@@ -67,7 +67,7 @@ TEST(KeyFrameBoundsTest, RejectsSmallDestinationsAndInvalidOffsets) {
 }
 // Invalid frames must return before touching a pending timer or SDL surface.
 // A plain surface record suffices because rejected frames never access it.
-class RejectedFrameBuffer : public GraphicBufferClass {
+class RejectedFrameBuffer : public PixelBuffer {
  public:
   explicit RejectedFrameBuffer(bool have_surface) {
     palette_surface_ = have_surface ? &surface_ : nullptr;
@@ -118,7 +118,7 @@ TEST(GraphicBufferRenderTest, RejectsMissingDisplaySurfaceBeforeSdlAccess) {
 // colors that reach the screen can be read back without a window.
 class ScaledFrameTest : public ::testing::Test {
  protected:
-  class Buffer : public GraphicBufferClass {
+  class Buffer : public PixelBuffer {
    public:
     // The base destructor frees the surface and the scaled-frame texture.
     Buffer() {

@@ -19,7 +19,7 @@ Input::Input() : keyboard_(std::make_unique<KeyboardClass>()) {
 
 Input::~Input() { ActiveKeyboard = nullptr; }
 
-void Input::InstallMouse(GraphicViewPortClass& page) {
+void Input::InstallMouse(PixelView& page) {
   mouse_ = std::make_unique<WWMouseClass>(&page, kCursorWidth, kCursorHeight);
 }
 

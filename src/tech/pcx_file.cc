@@ -32,7 +32,7 @@
  *                                                                         *
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
- * int Save_PCX_File (char* name, GraphicViewPortClass& pic, char* palette)*
+ * int Save_PCX_File (char* name, PixelView& pic, char* palette)*
  *= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
 #include "tech/pcx_file.h"
@@ -57,8 +57,8 @@ static void Write_Pcx_ScanLine(File& file, std::span<const uint8_t> pixels);
  *                                                                         *
  *                                                                         *
  * INPUT:  name is a NULL terminated string of the fromat [xxxx.pcx]
- ** pic	 is a pointer to a GraphicViewPortClass or to a
- ** GraphicBufferClass holding the picture.
+ ** pic	 is a pointer to a PixelView or to a
+ ** PixelBuffer holding the picture.
  ** palette is a pointer the the memry block holding the color 		*
  ** palette of the picture.                                    *
  *                                                                         *
@@ -70,7 +70,7 @@ static void Write_Pcx_ScanLine(File& file, std::span<const uint8_t> pixels);
  *   05/04/1995 JRJ : Created.                                             *
  *   08/01/1995 SKB : Copy the palette so it is not modified.              *
  *=========================================================================*/
-int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
+int Write_PCX_File(const char* name, PixelView& pic,
                    std::span<const unsigned char> palette) {
   unsigned char palcopy[256 * 3];
   unsigned i = 0;
@@ -88,7 +88,7 @@ int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
   file.WriteObject(header);
 
   const int VP_Scan_Line = pic.width() + pic.x_add();
-  GraphicBufferClass* Graphic_Buffer = pic.graphic_buffer();
+  PixelBuffer* Graphic_Buffer = pic.buffer();
   const auto pixels = Graphic_Buffer->Get_Bytes().subspan(
       base::ToSize((pic.y_pos() * VP_Scan_Line) + pic.x_pos()));
   for (i = 0; i < static_cast<unsigned>(header.height) + 1; i++) {

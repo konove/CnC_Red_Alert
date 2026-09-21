@@ -25,7 +25,7 @@ static Uint32 Force_Redraw_Timer(Uint32 /*interval*/, void* /*unused*/) {
   return 0;
 }
 
-bool GraphicBufferClass::LockSurface() {
+bool PixelBuffer::LockSurface() {
   if (!palette_surface_) {
     return true;
   }
@@ -46,7 +46,7 @@ bool GraphicBufferClass::LockSurface() {
   return true;
 }
 
-bool GraphicBufferClass::UnlockSurface() {
+bool PixelBuffer::UnlockSurface() {
   if (!palette_surface_ || !lock_count_) {
     return true;
   }
@@ -68,7 +68,7 @@ bool GraphicBufferClass::UnlockSurface() {
   return true;
 }
 
-void GraphicBufferClass::Present(bool end_frame) {
+void PixelBuffer::Present(bool end_frame) {
   // If VQA texture exists, keep presenting it (for animations like map select
   // that need to preserve the last frame indefinitely)
   if (scaled_frame_texture_) {
@@ -120,7 +120,7 @@ void GraphicBufferClass::Present(bool end_frame) {
   // update the event loop here too for now
   SDL_Event_Loop();
 }
-void GraphicBufferClass::UpdatePalette(std::span<const uint8_t> palette) {
+void PixelBuffer::UpdatePalette(std::span<const uint8_t> palette) {
   auto* sdl_pal = static_cast<SDL_Surface*>(palette_surface_)->format->palette;
   if (palette.size() / 3 < base::ToSize(sdl_pal->ncolors)) {
     return;
@@ -164,18 +164,18 @@ void GraphicBufferClass::UpdatePalette(std::span<const uint8_t> palette) {
   Present(false);
 }
 
-const void* GraphicBufferClass::palette() const {
+const void* PixelBuffer::palette() const {
   return static_cast<SDL_Surface*>(palette_surface_)->format->palette;
 }
 
-void GraphicBufferClass::CreateDisplaySurface() {
+void PixelBuffer::CreateDisplaySurface() {
   window_texture_ =
       SDL_CreateTexture(SDLRenderer, SDL_PIXELFORMAT_RGB888,
                         SDL_TEXTUREACCESS_STREAMING, width_, height_);
   palette_surface_ = SDL_CreateRGBSurface(0, width_, height_, 8, 0, 0, 0, 0);
 }
 
-void GraphicBufferClass::DestroyDisplaySurface() {
+void PixelBuffer::DestroyDisplaySurface() {
   if (redraw_timer_) {
     SDL_RemoveTimer(redraw_timer_);
     redraw_timer_ = 0;
@@ -190,8 +190,8 @@ void GraphicBufferClass::DestroyDisplaySurface() {
     palette_surface_ = nullptr;
   }
 }
-void GraphicBufferClass::PresentScaledFrame(
-    std::span<const uint8_t> paletted_data, int width, int height) {
+void PixelBuffer::PresentScaledFrame(std::span<const uint8_t> paletted_data,
+                                     int width, int height) {
   if (width <= 0 || height <= 0) {
     return;
   }
@@ -232,7 +232,7 @@ void GraphicBufferClass::PresentScaledFrame(
   Present(true);
 }
 
-bool GraphicBufferClass::UploadScaledFrame() {
+bool PixelBuffer::UploadScaledFrame() {
   const auto frame_width = base::ToSize(scaled_frame_width_);
   const std::span<const uint8_t> frame = scaled_frame_;
 
@@ -273,7 +273,7 @@ bool GraphicBufferClass::UploadScaledFrame() {
   return true;
 }
 
-void GraphicBufferClass::DropScaledFrame() {
+void PixelBuffer::DropScaledFrame() {
   if (scaled_frame_texture_) {
     SDL_DestroyTexture(static_cast<SDL_Texture*>(scaled_frame_texture_));
     scaled_frame_texture_ = nullptr;

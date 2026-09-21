@@ -1160,8 +1160,8 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) const {
   Clear_Redraw_Flag();
 
   if (IsSelected) {
-    GraphicViewPortClass draw_window(
-        LogicPage->graphic_buffer(),
+    PixelView draw_window(
+        LogicPage->buffer(),
         base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) +
             LogicPage->x_pos(),
         base::At(base::At(WindowList, static_cast<int>(window)), kWindowY) +

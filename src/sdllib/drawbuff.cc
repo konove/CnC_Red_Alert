@@ -20,11 +20,11 @@
 
 void* MainWindow;
 
-GraphicViewPortClass* LogicPage;
+PixelView* LogicPage;
 bool AllowHardwareBlitFills = true;
 bool OverlappedVideoBlits = true;
 
-GraphicBufferClass* WindowBuffer = nullptr;
+PixelBuffer* WindowBuffer = nullptr;
 
 // Cohen-Sutherland outcode of (x, y) against a w by h window: bits for
 // left, right, top and bottom.
@@ -34,7 +34,7 @@ static inline uint32_t Make_Code(int x, int y, int w, int h) {
 }
 
 int Buffer_Get_Pixel(void* thisptr, int x, int y) {
-  auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
+  auto* vp_dst = static_cast<PixelView*>(thisptr);
 
   if (x < 0 || y < 0 || x >= vp_dst->width() || y >= vp_dst->height()) {
     return 0;
@@ -47,7 +47,7 @@ int Buffer_Get_Pixel(void* thisptr, int x, int y) {
 }
 
 void Buffer_Clear(void* thisptr, unsigned char color) {
-  auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
+  auto* vp_dst = static_cast<PixelView*>(thisptr);
 
   const base::ssize dst_area = vp_dst->stride();
   auto dst_offset = vp_dst->pixels().begin();
@@ -65,7 +65,7 @@ void Buffer_Clear(void* thisptr, unsigned char color) {
 int32_t Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel,
                          int pixel_width, int pixel_height,
                          std::span<uint8_t> buff, int32_t /*size*/) {
-  auto* vp_src = static_cast<GraphicViewPortClass*>(thisptr);
+  auto* vp_src = static_cast<PixelView*>(thisptr);
 
   int dst_x0 = 0;
   int dst_y0 = 0;
@@ -134,7 +134,7 @@ int32_t Buffer_To_Buffer(void* thisptr, int x_pixel, int y_pixel,
 int32_t Buffer_To_Page(int dx_pixel, int dy_pixel, int pixel_width,
                        int pixel_height, std::span<const uint8_t> Buffer,
                        void* view) {
-  auto* vp_dst = static_cast<GraphicViewPortClass*>(view);
+  auto* vp_dst = static_cast<PixelView*>(view);
 
   int src_x0 = 0;
   int src_y0 = 0;
@@ -205,8 +205,8 @@ bool Linear_Blit_To_Linear(void* thisptr, void* dest, int x_pixel, int y_pixel,
                            int pixel_height, bool trans) {
   // trans seems to only be used by TD
 
-  auto* vp_src = static_cast<GraphicViewPortClass*>(thisptr);
-  auto* vp_dst = static_cast<GraphicViewPortClass*>(dest);
+  auto* vp_src = static_cast<PixelView*>(thisptr);
+  auto* vp_dst = static_cast<PixelView*>(dest);
 
   // clip source
   int src_x0 = x_pixel;
@@ -370,8 +370,8 @@ bool Linear_Scale_To_Linear(void* thisptr, void* dest, int src_x, int src_y,
     return true;
   }
 
-  auto* vp_src = static_cast<GraphicViewPortClass*>(thisptr);
-  auto* vp_dst = static_cast<GraphicViewPortClass*>(dest);
+  auto* vp_src = static_cast<PixelView*>(thisptr);
+  auto* vp_dst = static_cast<PixelView*>(dest);
 
   int src_x0 = src_x;
   int src_y0 = src_y;
@@ -572,7 +572,7 @@ void Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
     return;
   }
 
-  auto* viewport = static_cast<GraphicViewPortClass*>(thisptr);
+  auto* viewport = static_cast<PixelView*>(thisptr);
   const FontView font(FontPtr);
 
   const int start_x = x;
@@ -698,7 +698,7 @@ void Buffer_Print(void* thisptr, const char* str, int x, int y, int fcolor,
 
 void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
                       unsigned char color) {
-  auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
+  auto* vp_dst = static_cast<PixelView*>(thisptr);
 
   const int width = vp_dst->width();
   const int height = vp_dst->height();
@@ -854,7 +854,7 @@ void Buffer_Draw_Line(void* thisptr, int sx, int sy, int dx, int dy,
 
 void Buffer_Fill_Rect(void* thisptr, int sx, int sy, int dx, int dy,
                       unsigned char color) {
-  auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
+  auto* vp_dst = static_cast<PixelView*>(thisptr);
 
   if (sx > dx) {
     std::swap(sx, dx);
@@ -898,7 +898,7 @@ void Buffer_Remap(void* thisptr, int sx, int sy, int width, int height,
     return;
   }
 
-  auto* vp_dst = static_cast<GraphicViewPortClass*>(thisptr);
+  auto* vp_dst = static_cast<PixelView*>(thisptr);
 
   // clip
   int dst_x0 = sx;
@@ -994,28 +994,24 @@ int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height) {
   return 0;
 }
 
-GraphicViewPortClass::~GraphicViewPortClass() {
+PixelView::~PixelView() {
   if (LogicPage == this) {
     LogicPage = nullptr;
   }
 }
 
-GraphicViewPortClass* SetLogicPage(GraphicViewPortClass* ptr) {
+PixelView* SetLogicPage(PixelView* ptr) {
   std::swap(LogicPage, ptr);
   return ptr;
 }
 
-GraphicViewPortClass* SetLogicPage(GraphicViewPortClass& ptr) {
-  return SetLogicPage(&ptr);
-}
+PixelView* SetLogicPage(PixelView& ptr) { return SetLogicPage(&ptr); }
 
-GraphicViewPortClass::GraphicViewPortClass(GraphicBufferClass* graphic_buff,
-                                           int x, int y, int w, int h) {
+PixelView::PixelView(PixelBuffer* graphic_buff, int x, int y, int w, int h) {
   Attach(graphic_buff, x, y, w, h);
 }
 
-void GraphicViewPortClass::DrawRect(int sx, int sy, int dx, int dy,
-                                    uint8_t color) {
+void PixelView::DrawRect(int sx, int sy, int dx, int dy, uint8_t color) {
   Lock();
   DrawLine(sx, sy, dx, sy, color);
   DrawLine(sx, dy, dx, dy, color);
@@ -1024,9 +1020,8 @@ void GraphicViewPortClass::DrawRect(int sx, int sy, int dx, int dy,
   Unlock();
 }
 
-void GraphicViewPortClass::Attach(GraphicBufferClass* graphic_buff, int x,
-                                  int y, int w, int h) {
-  if (this == graphic_buffer()) {
+void PixelView::Attach(PixelBuffer* graphic_buff, int x, int y, int w, int h) {
+  if (this == buffer()) {
     return;
   }
 
@@ -1069,29 +1064,28 @@ void GraphicViewPortClass::Attach(GraphicBufferClass* graphic_buff, int x,
   width_ = w;
   height_ = h;
   pitch_ = graphic_buff->pitch();
-  graphic_buffer_ = graphic_buff;
+  buffer_ = graphic_buff;
 }
 
-GraphicBufferClass::GraphicBufferClass(int w, int h, std::span<uint8_t> buffer,
-                                       int32_t size)
-    : GraphicBufferClass() {
+PixelBuffer::PixelBuffer(int w, int h, std::span<uint8_t> buffer, int32_t size)
+    : PixelBuffer() {
   Init(w, h, buffer, size, GBC_NONE);
 }
 
-GraphicBufferClass::GraphicBufferClass(int w, int h, std::span<uint8_t> buffer)
-    : GraphicBufferClass(w, h, buffer, w * h) {}
+PixelBuffer::PixelBuffer(int w, int h, std::span<uint8_t> buffer)
+    : PixelBuffer(w, h, buffer, w * h) {}
 
-GraphicBufferClass::GraphicBufferClass() { graphic_buffer_ = this; }
+PixelBuffer::PixelBuffer() { buffer_ = this; }
 
-GraphicBufferClass::~GraphicBufferClass() {
+PixelBuffer::~PixelBuffer() {
   ReleaseSurfaces();
   if (WindowBuffer == this) {
     WindowBuffer = nullptr;
   }
 }
 
-void GraphicBufferClass::Init(int w, int h, std::span<uint8_t> buffer,
-                              int32_t size, GBC_Enum flags) {
+void PixelBuffer::Init(int w, int h, std::span<uint8_t> buffer, int32_t size,
+                       PixelBufferFlags flags) {
   CHECK_GE(w, 0);
   CHECK_GE(h, 0);
   CHECK_GE(size, 0);
@@ -1134,7 +1128,7 @@ void GraphicBufferClass::Init(int w, int h, std::span<uint8_t> buffer,
   }
 }
 
-void GraphicBufferClass::ReleaseSurfaces() { DestroyDisplaySurface(); }
+void PixelBuffer::ReleaseSurfaces() { DestroyDisplaySurface(); }
 
 void Video_End_Frame() {
   if (WindowBuffer) {

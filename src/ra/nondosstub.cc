@@ -117,9 +117,9 @@ void __cdecl SetPalette(std::span<uint8_t> palette, int32_t /*unused*/,
   Set_Palette(palette);
 }
 
-void Load_Title_Screen(std::string_view name, GraphicViewPortClass* video_page,
+void Load_Title_Screen(std::string_view name, PixelView* video_page,
                        std::span<uint8_t> palette) {
-  GraphicBufferClass* load_buffer =
+  PixelBuffer* load_buffer =
       Read_PCX_File(std::string(name).c_str(), palette, {}, 0);
 
   if (load_buffer) {
@@ -131,7 +131,7 @@ void Load_Title_Screen(std::string_view name, GraphicViewPortClass* video_page,
 /***************************************************************************
  * READ_PCX_FILE -- read a pcx file into a Graphic Buffer                  *
  *                                                                         *
- *	GraphicBufferClass* Read_PCX_File (char* name, char* palette ,void
+ *	PixelBuffer* Read_PCX_File (char* name, char* palette ,void
  **Buff, long size );	*
  *  																								*
  *                                                                         *
@@ -145,7 +145,7 @@ void Load_Title_Screen(std::string_view name, GraphicViewPortClass* video_page,
  ** Size is the size in bytes of the memory block pointed by Buff * is also
  *optional;
  **                                                                         *
- * OUTPUT: on success a pointer to a GraphicBufferClass containing the     *
+ * OUTPUT: on success a pointer to a PixelBuffer containing the     *
  *         pcx file, NULL otherwise.                                       *
  *																									*
  * WARNINGS:                                                               *
@@ -199,8 +199,8 @@ class BufferedFileReader {
   size_t bytes_in_buffer_ = 0;
 };
 
-GraphicBufferClass* Read_PCX_File(const char* name, std::span<uint8_t> palette,
-                                  std::span<uint8_t> backing, int32_t size) {
+PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
+                           std::span<uint8_t> backing, int32_t size) {
   GameFile file_handle(name);
   if (!file_handle.IsAvailable() || !file_handle.Open(FileAccess::kRead)) {
     return nullptr;
@@ -230,7 +230,7 @@ GraphicBufferClass* Read_PCX_File(const char* name, std::span<uint8_t> palette,
       return nullptr;
     }
   }
-  auto pic = std::make_unique<GraphicBufferClass>(width, height, backing);
+  auto pic = std::make_unique<PixelBuffer>(width, height, backing);
   const auto pixels = pic->Get_Bytes();
   BufferedFileReader reader(file_handle);
   for (int row = 0; row < height; ++row) {

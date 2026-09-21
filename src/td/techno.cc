@@ -886,8 +886,8 @@ void TechnoClass::Per_Cell_Process(bool /*unused*/) {
 void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
   Clear_Redraw_Flag();
   if (IsSelected || TheSpecial().IsBarOn) {
-    GraphicViewPortClass draw_window(
-        LogicPage->graphic_buffer(),
+    PixelView draw_window(
+        LogicPage->buffer(),
         (base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) *
          8) +
             LogicPage->x_pos(),

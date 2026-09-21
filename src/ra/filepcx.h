@@ -32,11 +32,11 @@
 ;*                                                                         *
 ;*-------------------------------------------------------------------------*
 ;* Functions:                                                              *
-;* GraphicBufferClass* Read_PCX_File (char* name, BYTE* palette,void *buff, long
+;* PixelBuffer* Read_PCX_File (char* name, BYTE* palette,void *buff, long
 size);
-;* GraphicBufferClass* Read_PCX_File (char* name, BYTE* palette, BufferClass&
+;* PixelBuffer* Read_PCX_File (char* name, BYTE* palette, BufferClass&
 Buff);
-;* int Write_PCX_File (char* name, GraphicViewPortClass& pic, BYTE* palette );*
+;* int Write_PCX_File (char* name, PixelView& pic, BYTE* palette );*
 ;*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 #ifndef CNC_RED_ALERT_RA_FILEPCX_H_
 #define CNC_RED_ALERT_RA_FILEPCX_H_
@@ -73,12 +73,11 @@ struct PCX_HEADER {
   char filler[58];
 };
 
-GraphicBufferClass* Read_PCX_File(const char* name, std::span<uint8_t> palette,
-                                  std::span<uint8_t> backing, int32_t size);
-GraphicBufferClass* Read_PCX_File(const char* name, BufferClass& Buff,
-                                  char* palette = nullptr);
+PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
+                           std::span<uint8_t> backing, int32_t size);
+PixelBuffer* Read_PCX_File(const char* name, BufferClass& Buff,
+                           char* palette = nullptr);
 
-int Write_PCX_File(File& file, GraphicBufferClass& pic,
-                   const PaletteClass* palette);
+int Write_PCX_File(File& file, PixelBuffer& pic, const PaletteClass* palette);
 
 #endif  // CNC_RED_ALERT_RA_FILEPCX_H_

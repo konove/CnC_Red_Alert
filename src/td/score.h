@@ -218,11 +218,11 @@ extern ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 void Multi_Score_Presentation();
 
 void Map_Selection();
-void Bit_It_In(int x, int y, int w, int h, GraphicBufferClass* src,
-               GraphicBufferClass* dest, int delay = 0, bool dagger = false);
+void Bit_It_In(int x, int y, int w, int h, PixelBuffer* src, PixelBuffer* dest,
+               int delay = 0, bool dagger = false);
 void Call_Back_Delay(int time);
 int Alloc_Object(ScoreAnimClass* obj);
-extern GraphicBufferClass* PseudoSeenBuff;
+extern PixelBuffer* PseudoSeenBuff;
 
 extern template void ScoreClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void ScoreClass::Serialize<ArchiveReader>(ArchiveReader&);

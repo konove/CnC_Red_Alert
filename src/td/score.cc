@@ -150,8 +150,8 @@ bool ControlQ;  // cheat key to skip past score/mapsel screens
 
 static bool StillUpdating;
 
-GraphicBufferClass* PseudoSeenBuff;
-GraphicBufferClass* TextPrintBuffer;
+PixelBuffer* PseudoSeenBuff;
+PixelBuffer* TextPrintBuffer;
 
 static unsigned char RemapCiv[256] = {
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B,
@@ -333,7 +333,7 @@ void ScoreTimeClass::Update() {
     if (++Stage >= MaxStage) {
       Stage = 0;
     }
-    GraphicViewPortClass* oldpage = LogicPage;
+    PixelView* oldpage = LogicPage;
     SetLogicPage(PseudoSeenBuff);
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, {},
                   {});
@@ -358,7 +358,7 @@ void ScoreCredsClass::Update() {
     if (++Stage >= MaxStage) {
       Stage = 0;
     }
-    GraphicViewPortClass* oldpage = LogicPage;
+    PixelView* oldpage = LogicPage;
     SetLogicPage(PseudoSeenBuff);
     if (Stage < 22) {
       TheAudio().Play(Clock1, 255, TheOptions().Normalize_Sound(70));
@@ -704,10 +704,9 @@ void ScoreClass::Presentation() {
     return;
   }
 
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
-  TextPrintBuffer =
-      new GraphicBufferClass(TheScreen().visible_view().width(),
-                             TheScreen().visible_view().height(), {});
+  PseudoSeenBuff = new PixelBuffer(320, 200, {});
+  TextPrintBuffer = new PixelBuffer(TheScreen().visible_view().width(),
+                                    TheScreen().visible_view().height(), {});
   TextPrintBuffer->Clear();
   BlitList.Clear();
 
@@ -2182,10 +2181,9 @@ void Multi_Score_Presentation() {
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
   TheTheme().Queue_Song(THEME_WIN1);
 
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
-  TextPrintBuffer =
-      new GraphicBufferClass(TheScreen().visible_view().width(),
-                             TheScreen().visible_view().height(), {});
+  PseudoSeenBuff = new PixelBuffer(320, 200, {});
+  TextPrintBuffer = new PixelBuffer(TheScreen().visible_view().width(),
+                                    TheScreen().visible_view().height(), {});
   BlitList.Clear();
 
   TheScreen().sys_mem_page().Clear();

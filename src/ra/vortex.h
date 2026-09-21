@@ -148,7 +148,7 @@ class ChronalVortexClass {
   */
   static void Build_Fading_Table(const PaletteClass& palette,
                                  std::span<uint8_t> dest, int color, int frac);
-  void Coordinate_Remap(GraphicViewPortClass* inbuffer, int x, int y, int width,
+  void Coordinate_Remap(PixelView* inbuffer, int x, int y, int width,
                         int height, std::span<const uint8_t> remap_table);
 
   /*
@@ -277,7 +277,7 @@ class ChronalVortexClass {
   ** Offscreen buffer to render vortex into. This is needed so we can handle
   *clipping.
   */
-  GraphicBufferClass* RenderBuffer{
+  PixelBuffer* RenderBuffer{
       nullptr};  // We havn't allocated it yet. It will be allocated as needed.
 };
 

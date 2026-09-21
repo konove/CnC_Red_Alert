@@ -52,7 +52,7 @@
 
 void VQA_Test(char* filename);
 void Create_Palette_Interpolation_Table();
-void Interpolate_2X_Scale(GraphicBufferClass* source, GraphicBufferClass* dest);
+void Interpolate_2X_Scale(PixelBuffer* source, PixelBuffer* dest);
 
 //==========================================================================
 // PRIVATE GLOBALS
@@ -73,9 +73,9 @@ unsigned char* InterpolationPalette;
 VQAClass* TestVqa;
 
 #if (!DRAW_TO_VIDEO)
-GraphicBufferClass* Draw_Page = NULL;
-GraphicBufferClass* Back_Page = NULL;
-GraphicBufferClass* Hid_Page = NULL;
+PixelBuffer* Draw_Page = NULL;
+PixelBuffer* Back_Page = NULL;
+PixelBuffer* Hid_Page = NULL;
 #endif
 
 /***************************************************************************
@@ -102,10 +102,10 @@ int Initialize_Movie_System() {
   // Hid_Page - the page in video RAM that the scaled image is copied to before
   // copy to screen.
   //
-  Draw_Page = new GraphicBufferClass(MOVIE_WIDTH, MOVIE_HEIGHT);
-  Back_Page = new GraphicBufferClass(VIDEO_MODE_WIDTH, VIDEO_MODE_HEIGHT);
-  Hid_Page = new GraphicBufferClass(VIDEO_MODE_WIDTH, VIDEO_MODE_HEIGHT,
-                                    (GBC_Enum)(GBC_VIDEOMEM));
+  Draw_Page = new PixelBuffer(MOVIE_WIDTH, MOVIE_HEIGHT);
+  Back_Page = new PixelBuffer(VIDEO_MODE_WIDTH, VIDEO_MODE_HEIGHT);
+  Hid_Page = new PixelBuffer(VIDEO_MODE_WIDTH, VIDEO_MODE_HEIGHT,
+                             (PixelBufferFlags)(GBC_VIDEOMEM));
 #endif
 
   //
@@ -239,7 +239,7 @@ void VQA_Test(char* filename) {
   char* temp_ptr;
   int i;
   char* draw_surface_ptr;
-  GraphicBufferClass* draw_buffer_ptr;
+  PixelBuffer* draw_buffer_ptr;
   long (*callback_function_ptr)(unsigned char*, long);
 
   //
@@ -485,8 +485,7 @@ void Create_Palette_Interpolation_Table() {
  * HISTORY:                                                                *
  *   12/06/1995  MG : Created.                                             *
  *=========================================================================*/
-void Interpolate_2X_Scale(GraphicBufferClass* source,
-                          GraphicBufferClass* dest) {
+void Interpolate_2X_Scale(PixelBuffer* source, PixelBuffer* dest) {
   unsigned char* src_ptr;
   unsigned char* dest_ptr;
   unsigned char* last_dest_ptr;

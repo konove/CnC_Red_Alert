@@ -73,8 +73,8 @@ class IntroTest : public testing::Test {
       std::vector<uint8_t>(size_t{kWidth} * kHeight);
   std::vector<uint8_t> seen_pixels_ =
       std::vector<uint8_t>(size_t{kWidth} * kHeight);
-  GraphicBufferClass hidden_{kWidth, kHeight, hidden_pixels_};
-  GraphicBufferClass seen_{kWidth, kHeight, seen_pixels_};
+  PixelBuffer hidden_{kWidth, kHeight, hidden_pixels_};
+  PixelBuffer seen_{kWidth, kHeight, seen_pixels_};
   Palettes palettes_;
   base::Installed<Palettes>::Scope palettes_scope_{palettes_};
 };

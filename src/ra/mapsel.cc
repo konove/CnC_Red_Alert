@@ -163,7 +163,7 @@ static void PlayMapReveal(const std::string& animation_name,
                                             {60, "BLEEP17.AUD"}};
 
   // The artwork is drawn at this size and scaled up to the screen.
-  GraphicBufferClass page(320, 200);
+  PixelBuffer page(320, 200);
   page.Clear();
   WsaAnimation animation(animation_name, palette);
 

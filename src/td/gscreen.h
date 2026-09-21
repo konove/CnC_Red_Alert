@@ -139,7 +139,7 @@ class GScreenClass : public VectorClass<CellClass> {
   *algorithm.
   */
  public:
-  static GraphicBufferClass* ShadowPage;
+  static PixelBuffer* ShadowPage;
 
  private:
 };

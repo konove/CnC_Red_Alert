@@ -31,7 +31,7 @@ TEST(BufferToPageTest, ClipsRowsAndColumnsOffTheTopLeft) {
   // 5 6
   const std::vector<uint8_t> image = NumberedPixels(2 * 3);
   std::vector<uint8_t> page(size_t{4} * 4, 0);
-  GraphicBufferClass view(4, 4, page);
+  PixelBuffer view(4, 4, page);
 
   Buffer_To_Page(-1, -1, 2, 3, image, &view);
 
@@ -46,7 +46,7 @@ TEST(BufferToBufferTest, ClipsRowsAndColumnsOffTheTopLeft) {
   //  5  6  7  8
   //  ...
   std::vector<uint8_t> page = NumberedPixels(4 * 4);
-  GraphicBufferClass view(4, 4, page);
+  PixelBuffer view(4, 4, page);
   std::array<uint8_t, 9> out{};
   out.fill(0xff);
 
@@ -63,9 +63,9 @@ TEST(LinearBlitTest, ClipsRowsAndColumnsOffTheTopLeft) {
   // 4 5 6
   // 7 8 9
   std::vector<uint8_t> image = NumberedPixels(3 * 3);
-  GraphicBufferClass source(3, 3, image);
+  PixelBuffer source(3, 3, image);
   std::vector<uint8_t> page(size_t{4} * 4, 0);
-  GraphicBufferClass view(4, 4, page);
+  PixelBuffer view(4, 4, page);
 
   Linear_Blit_To_Linear(&source, &view, 0, 0, -1, -1, 3, 3, false);
 
@@ -77,9 +77,9 @@ TEST(LinearBlitTest, ClipsRowsAndColumnsOffTheTopLeft) {
 
 TEST(LinearBlitTest, SourceClippedAtTopLeftKeepsItsPlaceInTheDestination) {
   std::vector<uint8_t> image = NumberedPixels(3 * 3);
-  GraphicBufferClass source(3, 3, image);
+  PixelBuffer source(3, 3, image);
   std::vector<uint8_t> page(size_t{4} * 4, 0);
-  GraphicBufferClass view(4, 4, page);
+  PixelBuffer view(4, 4, page);
 
   // The rectangle's first row and column lie off the source, so the pixels
   // that do exist belong one row down and one column right of (1, 1).
@@ -93,9 +93,9 @@ TEST(LinearBlitTest, SourceClippedAtTopLeftKeepsItsPlaceInTheDestination) {
 
 TEST(LinearBlitTest, ClipsRowsAndColumnsOffTheBottomRight) {
   std::vector<uint8_t> image = NumberedPixels(3 * 3);
-  GraphicBufferClass source(3, 3, image);
+  PixelBuffer source(3, 3, image);
   std::vector<uint8_t> page(size_t{4} * 4, 0);
-  GraphicBufferClass view(4, 4, page);
+  PixelBuffer view(4, 4, page);
 
   Linear_Blit_To_Linear(&source, &view, 0, 0, 2, 2, 3, 3, false);
 
@@ -110,8 +110,8 @@ TEST(LinearBlitTest, ClipsRowsAndColumnsOffTheBottomRight) {
 TEST(LifetimeTest, DestroyingTheLogicPageClearsLogicPage) {
   std::vector<uint8_t> pixels(size_t{4} * 4);
   {
-    GraphicBufferClass buffer(4, 4, pixels);
-    GraphicViewPortClass view(&buffer, 0, 0, 2, 2);
+    PixelBuffer buffer(4, 4, pixels);
+    PixelView view(&buffer, 0, 0, 2, 2);
     SetLogicPage(view);
   }
   EXPECT_EQ(LogicPage, nullptr);
@@ -119,10 +119,10 @@ TEST(LifetimeTest, DestroyingTheLogicPageClearsLogicPage) {
 
 TEST(LifetimeTest, DestroyingAnotherViewKeepsLogicPage) {
   std::vector<uint8_t> pixels(size_t{4} * 4);
-  GraphicBufferClass buffer(4, 4, pixels);
+  PixelBuffer buffer(4, 4, pixels);
   SetLogicPage(buffer);
   {
-    const GraphicViewPortClass view(&buffer, 0, 0, 2, 2);
+    const PixelView view(&buffer, 0, 0, 2, 2);
   }
   EXPECT_EQ(LogicPage, &buffer);
   SetLogicPage(nullptr);
@@ -131,7 +131,7 @@ TEST(LifetimeTest, DestroyingAnotherViewKeepsLogicPage) {
 TEST(LifetimeTest, DestroyingTheWindowBufferClearsWindowBuffer) {
   std::vector<uint8_t> pixels(size_t{4} * 4);
   {
-    GraphicBufferClass buffer(4, 4, pixels);
+    PixelBuffer buffer(4, 4, pixels);
     // Escaping the scope is the point: the destructor must clear it.
     // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-use-after-scope)
     WindowBuffer = &buffer;

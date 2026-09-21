@@ -34,7 +34,6 @@
 //
 // `hidden` is the back buffer the title page is loaded into, and `visible` the
 // view on screen that the dialog is drawn on.
-void PlayFirstLaunchIntro(GraphicViewPortClass& hidden,
-                          GraphicViewPortClass& visible);
+void PlayFirstLaunchIntro(PixelView& hidden, PixelView& visible);
 
 #endif  // CNC_RED_ALERT_RA_INTRO_H_

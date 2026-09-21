@@ -137,8 +137,8 @@ static bool FullRedraw = false;
 
 // #define _MAX_NAME 13
 
-static GraphicBufferClass IconStage(3, 3);
-static GraphicBufferClass TileStage(24, 24);
+static PixelBuffer IconStage(3, 3);
+static PixelBuffer TileStage(24, 24);
 
 /***********************************************************************************************
  * RadarClass::RadarClass -- Default constructor for RadarClass object. *
@@ -463,8 +463,7 @@ void RadarClass::Draw_It(bool forced) {
         Radar_Cursor(RadarCursorRedraw);
 
       } else {
-        const GraphicViewPortClass* oldpage =
-            SetLogicPage(TheScreen().hidden_view());
+        const PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
         //				if (LogicPage->Lock()) {
         CC_Draw_Shape(RadarAnim, kRadarActivatedFrame, RadX, RadY + 1,
                       WINDOW_MAIN, SHAPE_NORMAL);
@@ -1265,9 +1264,9 @@ void RadarClass::Radar_Cursor(bool forced) {
   ** setup a graphic view port class so we can write all the pixels relative
   ** to 0,0 rather than relative to full screen coordinates.
   */
-  GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().hidden_view());
-  GraphicViewPortClass draw_window(
-      LogicPage->graphic_buffer(), RadX + RadOffX + BaseX + LogicPage->x_pos(),
+  PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
+  PixelView draw_window(
+      LogicPage->buffer(), RadX + RadOffX + BaseX + LogicPage->x_pos(),
       RadY + RadOffY + BaseY + LogicPage->y_pos(), RadarWidth, RadarHeight);
 
   draw_window.DrawLine(x1, y1, x1 + barlen, y1, kLtGreen);
@@ -1317,9 +1316,9 @@ void RadarClass::Radar_Anim() {
     return;
   }
 
-  GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().hidden_view());
-  GraphicViewPortClass draw_window(
-      LogicPage->graphic_buffer(), RadX + RadOffX + LogicPage->x_pos(),
+  PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
+  PixelView draw_window(
+      LogicPage->buffer(), RadX + RadOffX + LogicPage->x_pos(),
       RadY + RadOffY + LogicPage->y_pos(), RadIWidth, RadIHeight);
 
   Draw_Box(RadX + RadOffX - 1, RadY + RadOffY - 1, RadIWidth + 2,
@@ -1704,7 +1703,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           ** System does not support overlapped blitting of video surfaces.
           ** Blit it in 2 stages using an intermediate buffer.
           */
-          GraphicBufferClass temp_surface;
+          PixelBuffer temp_surface;
           temp_surface.Init(((RadarWidth + 16) / 16) * 16,
                             ((RadarHeight + 16) / 16) * 16, {}, 0,
                             GBC_VIDEOMEM);

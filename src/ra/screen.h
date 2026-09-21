@@ -40,27 +40,27 @@ class Screen {
 
   // The page on screen and the back buffer the game draws into before
   // blitting. Both are the size of the whole video mode.
-  GraphicBufferClass& visible_page() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  PixelBuffer& visible_page() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return visible_page_;
   }
-  GraphicBufferClass& hidden_page() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  PixelBuffer& hidden_page() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return hidden_page_;
   }
 
   // The kWidth x kHeight game area within each page.
-  GraphicViewPortClass& visible_view() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  PixelView& visible_view() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return visible_view_;
   }
-  GraphicViewPortClass& hidden_view() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  PixelView& hidden_view() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return hidden_view_;
   }
 
   // The 320x200 page low-resolution movies decode into, and the 640x400 page
   // for the one high-resolution movie, the Red Alert intro.
-  GraphicBufferClass& sys_mem_page() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  PixelBuffer& sys_mem_page() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return sys_mem_page_;
   }
-  GraphicBufferClass& vq640() ABSL_ATTRIBUTE_LIFETIME_BOUND { return vq640_; }
+  PixelBuffer& vq640() ABSL_ATTRIBUTE_LIFETIME_BOUND { return vq640_; }
 
   // Whether the movie playing, or about to play, is the high-resolution one
   // that decodes into vq640().
@@ -74,7 +74,7 @@ class Screen {
 
   // Returns whether `view` is visible_view(), the view drawing to the
   // screen directly.
-  [[nodiscard]] bool IsVisible(const GraphicViewPortClass* view) const {
+  [[nodiscard]] bool IsVisible(const PixelView* view) const {
     return view == &visible_view_;
   }
 
@@ -84,12 +84,12 @@ class Screen {
 
   // The pages come before the views attached to them, so that the views go
   // first on destruction.
-  GraphicBufferClass visible_page_;
-  GraphicBufferClass hidden_page_;
-  GraphicViewPortClass visible_view_;
-  GraphicViewPortClass hidden_view_;
-  GraphicBufferClass sys_mem_page_;
-  GraphicBufferClass vq640_;
+  PixelBuffer visible_page_;
+  PixelBuffer hidden_page_;
+  PixelView visible_view_;
+  PixelView hidden_view_;
+  PixelBuffer sys_mem_page_;
+  PixelBuffer vq640_;
 };
 
 // Returns the Screen that Game installed. CHECK-fails outside a Game's

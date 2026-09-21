@@ -50,6 +50,6 @@
 // PUBLIC DATA
 //==========================================================================
 
-extern GraphicBufferClass* Screen_Buffer;
+extern PixelBuffer* Screen_Buffer;
 
 #endif  // CNC_RED_ALERT_WINVQ_VQAVIEW_MAIN_H_

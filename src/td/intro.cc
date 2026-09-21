@@ -121,12 +121,11 @@ void Choose_Side() {
   const int oldfontxspacing = FontXSpacing;
   int setpalette = 0;
 
-  TextPrintBuffer =
-      new GraphicBufferClass(TheScreen().visible_view().width(),
-                             TheScreen().visible_view().height(), {});
+  TextPrintBuffer = new PixelBuffer(TheScreen().visible_view().width(),
+                                    TheScreen().visible_view().height(), {});
   TextPrintBuffer->Clear();
   BlitList.Clear();
-  PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
+  PseudoSeenBuff = new PixelBuffer(320, 200, {});
   int frame = 0;
   int endframe = 255;
   bool lettersdone = false;

@@ -65,7 +65,7 @@ class LockedWindow {
   }
 
  private:
-  GraphicViewPortClass view_;
+  PixelView view_;
   std::span<std::uint8_t> bits_;
   base::ssize stride_{0};
   bool locked_;

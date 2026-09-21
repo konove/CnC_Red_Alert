@@ -33,7 +33,7 @@
  *                                                                         *
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
- * int Save_PCX_File (char* name, GraphicViewPortClass& pic, char* palette)*
+ * int Save_PCX_File (char* name, PixelView& pic, char* palette)*
  *= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
 #include <cstdint>
@@ -57,8 +57,8 @@ static void Write_Pcx_ScanLine(File& file, int scansize,
  *                                                                         *
  *                                                                         *
  * INPUT:  name is a NULL terminated string of the format [xxxx.pcx]
- ** pic	 is a pointer to a GraphicViewPortClass or to a
- ** GraphicBufferClass holding the picture.
+ ** pic	 is a pointer to a PixelView or to a
+ ** PixelBuffer holding the picture.
  ** palette is a pointer the the memory block holding the color * palette of the
  *picture.                                    *
  *                                                                         *
@@ -98,8 +98,7 @@ static const unsigned char rle_full_run =
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-int Write_PCX_File(File& file, GraphicBufferClass& pic,
-                   const PaletteClass* palette) {
+int Write_PCX_File(File& file, PixelBuffer& pic, const PaletteClass* palette) {
   unsigned char palcopy[256 * sizeof(RGB)];
   const PCX_HEADER header = {10,
                              5,

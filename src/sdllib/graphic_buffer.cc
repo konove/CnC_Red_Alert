@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// File: The one GraphicBufferClass member that needs floating point. The
+// File: The one PixelBuffer member that needs floating point. The
 // rest of the class lives in drawbuff.cc, and the SDL half in
 // drawbuff_sdl.cc.
 
@@ -35,10 +35,8 @@
 // mapped back through the inverse transform to the bitmap pixel it came
 // from. Walking the source instead would scatter its pixels and leave holes
 // wherever the scale stretches the image.
-void GraphicBufferClass::DrawScaledRotated(const BitmapClass& bmp,
-                                           const TPoint2D& pt,
-                                           const int32_t scale,
-                                           const uint8_t angle) {
+void PixelBuffer::DrawScaledRotated(const BitmapClass& bmp, const TPoint2D& pt,
+                                    const int32_t scale, const uint8_t angle) {
   if (scale == 0) {
     return;
   }
@@ -55,7 +53,7 @@ void GraphicBufferClass::DrawScaledRotated(const BitmapClass& bmp,
   const double cy_bmp = bmp.Height / 2.0;
 
   // Rows in this buffer are width_ apart: DrawScaledRotated is a member of the
-  // buffer rather than of a viewport, and Init() leaves x_add_ and pitch_ zero
+  // buffer rather than of a view, and Init() leaves x_add_ and pitch_ zero
   // for every buffer the games allocate.
   const auto dst_buf = Get_Bytes();
 

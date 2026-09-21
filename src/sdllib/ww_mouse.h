@@ -58,7 +58,7 @@ using SDLSurfacePtr = std::unique_ptr<SDL_Surface, SDLSurfaceDeleter>;
 // Hide/Show operations are reference-counted to support nested hide/show pairs.
 class WWMouseClass {
  public:
-  WWMouseClass(GraphicViewPortClass* scr, int max_width, int max_height);
+  WWMouseClass(PixelView* scr, int max_width, int max_height);
   WWMouseClass(const WWMouseClass&) = delete;
   WWMouseClass& operator=(const WWMouseClass&) = delete;
   WWMouseClass(WWMouseClass&&) = delete;
@@ -88,8 +88,8 @@ class WWMouseClass {
 
   // No-ops for hardware cursor. Kept for API compatibility with legacy code
   // that expected software cursor rendering.
-  void Draw_Mouse(GraphicViewPortClass* scr);
-  void Erase_Mouse(GraphicViewPortClass* scr, bool forced = false);
+  void Draw_Mouse(PixelView* scr);
+  void Erase_Mouse(PixelView* scr, bool forced = false);
 
   // Controls mouse confinement to the game window.
   static void Set_Cursor_Clip();

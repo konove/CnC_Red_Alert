@@ -57,7 +57,7 @@ class EgoClass {
 
   bool Scroll(int distance);
   void Render() const;
-  void Wipe(GraphicBufferClass* background) const;
+  void Wipe(PixelBuffer* background) const;
 
   char* Text;
   int XPos;

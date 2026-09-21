@@ -120,12 +120,12 @@ static unsigned char SlidePals[NUM_SLIDES][256 * 3];
 /*
 ** Array of graphic buffers containing the slides
 */
-static GraphicBufferClass* SlideBuffers[NUM_SLIDES];
+static PixelBuffer* SlideBuffers[NUM_SLIDES];
 
 /*
 ** Original copy of slide (pref in video mem) that we use to undraw the text
 */
-static GraphicBufferClass* BackgroundPage;
+static PixelBuffer* BackgroundPage;
 
 /*
 **  This palette contains both the font palette entries and the slide
@@ -236,7 +236,7 @@ void EgoClass::Render() const {
  *                                                                                             *
  * HISTORY: * 9/9/96 11:58PM ST : Created *
  *=============================================================================================*/
-void EgoClass::Wipe(GraphicBufferClass* background) const {
+void EgoClass::Wipe(PixelBuffer* background) const {
   const int width = String_Pixel_Width(Text);
   int x = XPos;
 
@@ -678,7 +678,7 @@ void Show_Who_Was_Responsible() {
   ** Loop through and load up all the slideshow pictures
   */
   for (int index = 0; index < NUM_SLIDES; index++) {
-    base::At(SlideBuffers, index) = new GraphicBufferClass;
+    base::At(SlideBuffers, index) = new PixelBuffer;
     base::At(SlideBuffers, index)
         ->Init(TheScreen().visible_view().width(),
                TheScreen().visible_view().height(), {}, 0, GBC_NONE);
@@ -690,7 +690,7 @@ void Show_Who_Was_Responsible() {
   // Create a new graphic buffer to restore the background from. Initialize it
   // to black so we can start scrolling before the first slideshow picture is
   // blitted.
-  BackgroundPage = new GraphicBufferClass;
+  BackgroundPage = new PixelBuffer;
   BackgroundPage->Init(TheScreen().visible_view().width(),
                        TheScreen().visible_view().height(), {}, 0,
                        GBC_VIDEOMEM);

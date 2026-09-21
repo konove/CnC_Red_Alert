@@ -28,7 +28,7 @@ void SDL_Event_Handler(SDL_Event* /*event*/) {}
 
 namespace {
 
-// A GraphicBufferClass over plain memory, installed as LogicPage for the
+// A PixelBuffer over plain memory, installed as LogicPage for the
 // length of one test and taken out again afterwards.
 class TestScreen {
  public:
@@ -64,8 +64,8 @@ class TestScreen {
   }
 
   std::vector<std::uint8_t> pixels_;
-  GraphicBufferClass buffer_;
-  GraphicViewPortClass* previous_;
+  PixelBuffer buffer_;
+  PixelView* previous_;
 };
 
 // An 8-bit BMP whose pixel at column x of the bottom-up row y is
