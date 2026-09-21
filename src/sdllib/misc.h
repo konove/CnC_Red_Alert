@@ -41,7 +41,7 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "sdllib/ww_win.h"
+#include "sdllib/display.h"
 
 /*========================= C++ Routines ==================================*/
 
@@ -49,7 +49,7 @@
 /* The following prototypes are for the file: DDRAW.CPP
  */
 /*=========================================================================*/
-bool Set_Video_Mode(void* hwnd, int w, int h, int bits_per_pixel);
+bool Set_Video_Mode(int w, int h, int bits_per_pixel);
 void Wait_Blit();
 
 /*
@@ -89,7 +89,7 @@ void Delay(int duration);
 std::uint8_t Random();
 
 void Shake_Screen(int shakes);
-inline void Wait_Vert_Blank() { Video_End_Frame(); }
+inline void Wait_Vert_Blank() { TheDisplay().EndFrame(); }
 
 void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
                         unsigned int* h, unsigned int* s, unsigned int* v);

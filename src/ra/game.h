@@ -24,6 +24,7 @@
 #include "ra/type_heaps.h"
 #include "ra/version.h"
 #include "ra/world.h"
+#include "sdllib/display.h"
 #include "tech/audio_mixer.h"
 
 // Owns the game's subsystems and so fixes the order they are built and torn
@@ -63,6 +64,9 @@ class Game {
       startup_options_};
   GameClock game_clock_;
   base::Installed<GameClock>::Scope game_clock_scope_{game_clock_};
+  // Before Screen, which attaches its visible page to the window.
+  Display display_;
+  base::Installed<Display>::Scope display_scope_{display_};
   Screen screen_;
   base::Installed<Screen>::Scope screen_scope_{screen_};
   Palettes palettes_;

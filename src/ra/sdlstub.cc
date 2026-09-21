@@ -17,6 +17,7 @@
 #include "ra/screen.h"
 #include "ra/startup.h"
 #include "ra/winstub.h"
+#include "sdllib/display.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
@@ -57,7 +58,7 @@ static constexpr const char* kWindowName = [] {
 
 void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
                         int height) {
-  SDL_Create_Main_Window(kWindowName, width, height);
+  TheDisplay().Init(kWindowName, width, height);
 
   // Audio_Focus_Loss_Function = &Focus_Loss;
   Misc_Focus_Loss_Function = &Focus_Loss;

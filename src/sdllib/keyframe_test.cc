@@ -9,11 +9,14 @@
 #include <cstddef>
 #include <cstdint>
 #include <limits>
+#include <optional>
 #include <span>
 #include <vector>
 
+#include "base/installed.h"
 #include "gtest/gtest.h"
 #include "port/unaligned.h"
+#include "sdllib/display.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_win.h"
 
@@ -130,13 +133,18 @@ class ScaledFrameTest : public ::testing::Test {
     target_ =
         SDL_CreateRGBSurfaceWithFormat(0, 2, 2, 32, SDL_PIXELFORMAT_RGBA32);
     ASSERT_NE(target_, nullptr);
-    SDLRenderer = SDL_CreateSoftwareRenderer(target_);
-    ASSERT_NE(SDLRenderer, nullptr);
+    renderer_ = SDL_CreateSoftwareRenderer(target_);
+    ASSERT_NE(renderer_, nullptr);
+    // The Display borrows the renderer; TearDown() still owns it.
+    display_.emplace(nullptr, renderer_);
+    display_scope_.emplace(*display_);
   }
 
   void TearDown() override {
-    SDL_DestroyRenderer(SDLRenderer);
-    SDLRenderer = nullptr;
+    display_scope_.reset();
+    display_.reset();
+    SDL_DestroyRenderer(renderer_);
+    renderer_ = nullptr;
     SDL_FreeSurface(target_);
   }
 
@@ -153,13 +161,20 @@ class ScaledFrameTest : public ::testing::Test {
   // Returns the top-left pixel on screen as {red, green, blue}.
   [[nodiscard]] static std::array<uint8_t, 3> ScreenColor() {
     std::array<uint8_t, 16> pixels{};
-    EXPECT_EQ(SDL_RenderReadPixels(SDLRenderer, nullptr, SDL_PIXELFORMAT_RGBA32,
-                                   pixels.data(), 8),
+    EXPECT_EQ(SDL_RenderReadPixels(
+                  static_cast<SDL_Renderer*>(TheDisplay().renderer()), nullptr,
+                  SDL_PIXELFORMAT_RGBA32, pixels.data(), 8),
               0);
     return {pixels.at(0), pixels.at(1), pixels.at(2)};
   }
 
   SDL_Surface* target_ = nullptr;
+
+  SDL_Renderer* renderer_ = nullptr;
+
+  std::optional<Display> display_;
+
+  std::optional<base::Installed<Display>::Scope> display_scope_;
 };
 
 TEST_F(ScaledFrameTest, ShowsTheFrameInTheCurrentPalette) {

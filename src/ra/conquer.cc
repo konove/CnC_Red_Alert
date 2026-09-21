@@ -102,11 +102,11 @@
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"
+#include "sdllib/display.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "tech/audio_mixer.h"
 #include "tech/disk_file.h"
@@ -384,7 +384,7 @@ void RunGame() {
 
 void ServiceRealTime() {
   ServiceBackgroundTasks();
-  Video_End_Frame();
+  TheDisplay().EndFrame();
 }
 
 void ServiceRealTimeFor(const int ticks) {

@@ -27,7 +27,6 @@
 
 #include "sdllib/pixel_buffer.h"
 
-#include <SDL_events.h>
 #include <SDL_pixels.h>
 #include <SDL_render.h>
 #include <SDL_stdinc.h>
@@ -50,11 +49,11 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/bitmap.h"
+#include "sdllib/display.h"
 #include "sdllib/font.h"
 #include "sdllib/misc.h"
 #include "sdllib/ww_win.h"
 
-PixelBuffer* WindowBuffer = nullptr;
 PixelView* LogicPage = nullptr;
 
 PixelView::~PixelView() {
@@ -1067,8 +1066,8 @@ PixelBuffer::PixelBuffer() { buffer_ = this; }
 
 PixelBuffer::~PixelBuffer() {
   ReleaseSurfaces();
-  if (WindowBuffer == this) {
-    WindowBuffer = nullptr;
+  if (HasDisplay() && TheDisplay().window_page() == this) {
+    TheDisplay().DetachWindowPage();
   }
 }
 
@@ -1096,8 +1095,6 @@ void PixelBuffer::Init(int width, int height, std::span<uint8_t> buffer,
     owned_pixels_.reset();
     bytes_ = {};
     CreateDisplaySurface();
-
-    WindowBuffer = this;
   } else if (buffer.empty()) {
     const auto size = byte_count == 0 ? pixel_count : base::ToSize(byte_count);
     owned_pixels_ = std::make_unique<uint8_t[]>(size);
@@ -1114,12 +1111,19 @@ void PixelBuffer::Init(int width, int height, std::span<uint8_t> buffer,
 
 void PixelBuffer::ReleaseSurfaces() { DestroyDisplaySurface(); }
 
+namespace {
+
+// The renderer, which every texture and present in this file needs.
+SDL_Renderer* Renderer() {
+  return static_cast<SDL_Renderer*>(TheDisplay().renderer());
+}
+
+}  // namespace
+
 static Uint32 Force_Redraw_Timer(Uint32 /*interval*/, void* /*unused*/) {
   // something has been draw and not displayed for 33ms
   // go tell the main thread it should probably display that
-  SDL_Event ev;
-  ev.type = ForceRenderEventID;
-  SDL_PushEvent(&ev);
+  TheDisplay().PostRedrawEvent();
 
   return 0;
 }
@@ -1182,11 +1186,10 @@ void PixelBuffer::Present(bool end_frame) {
     }
 
     // Present the VQA frame
-    SDL_RenderClear(SDLRenderer);
-    SDL_RenderCopy(SDLRenderer,
-                   static_cast<SDL_Texture*>(scaled_frame_texture_), nullptr,
-                   nullptr);
-    PresentFrame();
+    SDL_RenderClear(Renderer());
+    SDL_RenderCopy(Renderer(), static_cast<SDL_Texture*>(scaled_frame_texture_),
+                   nullptr, nullptr);
+    TheDisplay().PresentFrame();
     SDL_Event_Loop();
     return;
   }
@@ -1213,9 +1216,9 @@ void PixelBuffer::Present(bool end_frame) {
   SDL_UnlockTexture(window_tex);
 
   // copy to screen
-  SDL_RenderClear(SDLRenderer);
-  SDL_RenderCopy(SDLRenderer, window_tex, nullptr, nullptr);
-  PresentFrame();
+  SDL_RenderClear(Renderer());
+  SDL_RenderCopy(Renderer(), window_tex, nullptr, nullptr);
+  TheDisplay().PresentFrame();
 
   // update the event loop here too for now
   SDL_Event_Loop();
@@ -1271,7 +1274,7 @@ const void* PixelBuffer::palette() const {
 
 void PixelBuffer::CreateDisplaySurface() {
   window_texture_ =
-      SDL_CreateTexture(SDLRenderer, SDL_PIXELFORMAT_RGB888,
+      SDL_CreateTexture(Renderer(), SDL_PIXELFORMAT_RGB888,
                         SDL_TEXTUREACCESS_STREAMING, width_, height_);
   palette_surface_ = SDL_CreateRGBSurface(0, width_, height_, 8, 0, 0, 0, 0);
 }
@@ -1315,7 +1318,7 @@ void PixelBuffer::PresentScaledFrame(std::span<const uint8_t> frame, int width,
       SDL_DestroyTexture(static_cast<SDL_Texture*>(scaled_frame_texture_));
     }
     scaled_frame_texture_ =
-        SDL_CreateTexture(SDLRenderer, SDL_PIXELFORMAT_RGBA32,
+        SDL_CreateTexture(Renderer(), SDL_PIXELFORMAT_RGBA32,
                           SDL_TEXTUREACCESS_STREAMING, width, height);
     SDL_SetTextureScaleMode(static_cast<SDL_Texture*>(scaled_frame_texture_),
                             SDL_ScaleModeBest);
@@ -1439,8 +1442,3 @@ void PixelBuffer::DrawScaledRotated(const BitmapClass& bitmap,
   }
 }
 
-void Video_End_Frame() {
-  if (WindowBuffer) {
-    WindowBuffer->Present(true);
-  }
-}

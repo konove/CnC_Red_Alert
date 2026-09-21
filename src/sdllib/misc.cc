@@ -11,8 +11,8 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/hsv.h"
+#include "sdllib/display.h"
 #include "sdllib/timer.h"
-#include "sdllib/ww_win.h"
 
 SurfaceMonitorClass AllSurfaces;
 
@@ -24,8 +24,7 @@ int RandNumb;
 void (*Misc_Focus_Loss_Function)();
 void (*Misc_Focus_Restore_Function)();
 
-bool Set_Video_Mode(void* /*hwnd*/, int /*w*/, int /*h*/,
-                    int /*bits_per_pixel*/) {
+bool Set_Video_Mode(int /*w*/, int /*h*/, int /*bits_per_pixel*/) {
   absl::PrintF("%s\n", __func__);
   return true;
 }
@@ -38,7 +37,7 @@ void Delay(int duration) {
   const auto target = g_tick_timer->TickCount() + duration;
 
   while (g_tick_timer->TickCount() < target) {
-    Video_End_Frame();
+    TheDisplay().EndFrame();
   }
 }
 

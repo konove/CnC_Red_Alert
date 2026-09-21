@@ -129,16 +129,18 @@ class Display {
 };
 ```
 
-`Display` exposes no SDL handle. The window is only needed for four things, all of which become
-methods: creating the renderer, `SDL_GetWindowDisplayIndex` (`src/sdllib/ww_mouse.cc:77-79`),
-`SDL_SetWindowGrab` (`:275,280`) and setting the video mode.
+The window handle never escapes `Display`: every use becomes a method -- creating the renderer,
+`SDL_GetWindowDisplayIndex` (`src/sdllib/ww_mouse.cc:77-79`), `SDL_SetWindowGrab` (`:275,280`), and
+the restore/raise and focus test that `src/ra/wolapiob.cc:110-117` needs. The renderer does escape,
+as a `void*`: `pixel_buffer.cc` creates textures and presents with it in six places, so `renderer()`
+is public and documented as being for sdllib's own drawing code.
 
 Two parameters that take the handle today ignore it and lose it: `Set_Video_Mode(void* hwnd, ...)`
 (`src/sdllib/misc.cc:27`) and `VQA_OpenAudio(VQAHandle*, void* window)`
 (`src/winvq/vqa32/audio.cc:272`). Dropping the second also ends winvq's link seam on `MainWindow`,
 so `src/winvq/vqa32/vqaplay_test.cc:30-31` stops defining its own copy. The eight remaining
-`MainWindow` mentions are comments or live in files the build excludes (`winstub.cc` via
-`src/ra/CMakeLists.txt:44`; `wolapiob.cc` is in no CMakeLists).
+`MainWindow` mentions are comments or live in `winstub.cc`, which `src/ra/CMakeLists.txt:44`
+excludes from the build.
 
 `Screen` keeps owning the page. `Screen::Init()` (`src/ra/screen.cc:29`, `src/td/screen.cc:28`)
 calls `TheDisplay().AttachWindowPage(visible_page_)` right after `Init(..., BUFFER_VISIBLE)`, which
@@ -146,6 +148,12 @@ deletes the self-registration at `src/sdllib/pixel_buffer.cc:1100` and the destr
 `:1070`. `Display` is a `Game` member declared before `Screen`, and `Init()` is called where
 `Create_Main_Window()` is today (`src/ra/startup.cc:361`, `src/td/startup.cc:346`), which already
 runs before `TheScreen().Init()`.
+
+`Display::SetPalette()` lives in its own translation unit, `src/sdllib/display_palette.cc`. It calls
+`Update_Mouse_Palette()`, and with that reference in `display.cc` every test that touches a
+`Display` links `ww_mouse.cc`: `ra_intro_test`, which stubs `Hide_Mouse`/`Show_Mouse`, then fails on
+duplicate symbols, and `ra_screen_test` needs the LCW decoder the cursor decompresses with. The
+deleted `palette.cc` was keeping exactly that separation.
 
 Call sites: `Video_End_Frame()` to `TheDisplay().EndFrame()` (11, including `Wait_Vert_Blank()` at
 `src/sdllib/misc.h:92` and the event loop at `src/sdllib/ww_win.cc:108`); `SetScreenPalette()` to
@@ -293,4 +301,19 @@ reset in `~PixelView` (`:60-64`) and the declarations at `src/sdllib/pixel_buffe
 
 ## Progress
 
-Nothing started.
+- 2026-09-21: phase 0 done for both games. `Display` (`src/sdllib/display.h/.cc`) owns the window,
+  the renderer, the redraw event, the present cadence and the window page, and is a `Game` member
+  declared before `Screen`. `WindowBuffer`, `MainWindow`, `SDLRenderer` and `ForceRenderEventID` are
+  gone, as is the self-registration in `PixelBuffer::Init()`; `Screen::Init()` attaches its visible
+  page and `~PixelBuffer` detaches one that dies attached. `Set_Video_Mode()` and `VQA_OpenAudio()`
+  lost the window parameters they ignored, which ended winvq's link seam on `MainWindow`. Deviations
+  from the plan above, corrected in it: `wolapiob.cc` is built after all and needed two more methods
+  (`Restore()`, `HasInputFocus()`); `renderer()` had to stay public for `pixel_buffer.cc`; and
+  `SetPalette()` needed its own translation unit to keep the mouse out of the tests that stub it.
+
+  Verification: both build dirs clean, 689 tests pass (5 of them new `DisplayTest` cases), both
+  save/load smoke scripts pass, and ASan `-NEWGAME -QUITFRAME` reports no memory errors in either
+  game. Red Alert's leak total is byte-identical to a pre-change baseline (29,199 bytes in 68
+  allocations, all `MapEditClass::One_Time()`); Tiberian Dawn's 215 allocations are the
+  `HouseClass::Init_Trackers()` leaks phase 6 of the globals plan recorded. Still to do: run Red
+  Alert on a real display into a mission and through a movie.

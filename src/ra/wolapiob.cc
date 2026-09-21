@@ -44,6 +44,7 @@
 #include "ra/type.h"
 #include "ra/wolapi/chatdefs.h"
 #include "ra/wolapi/wolapi.h"
+#include "sdllib/display.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/wwstd.h"
 #include "tech/mix_archive.h"
@@ -56,7 +57,6 @@
 #include <arpa/inet.h>
 #endif
 
-#include <SDL_video.h>
 
 #include <algorithm>
 #include <array>
@@ -96,28 +96,9 @@
 #include "ra/wolstrng.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/ww_win.h"
 
 static void HostNameFromGameChannelName(std::span<char> szNameToSet,
                                         const char* szChannelName);
-
-namespace {
-
-// MainWindow is the SDL window, not an HWND, so the Win32 ShowWindow and
-// SetForegroundWindow calls the browser launch used cannot take it on any
-// platform. SDL does the same job.
-SDL_Window* GameWindow() { return static_cast<SDL_Window*>(MainWindow); }
-
-void Restore_Game_Window() {
-  SDL_RestoreWindow(GameWindow());
-  SDL_RaiseWindow(GameWindow());
-}
-
-bool Game_Window_Has_Focus() {
-  return (SDL_GetWindowFlags(GameWindow()) & SDL_WINDOW_INPUT_FOCUS) != 0;
-}
-
-}  // namespace
 
 //***********************************************************************************************
 WolapiObject::WolapiObject()
@@ -2162,11 +2143,11 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
           //	Either user closed the browser app, or game is starting and we
           // should return focus to game.
           TheGameState().cancel_msgbox() = false;
-          Restore_Game_Window();
+          TheDisplay().Restore();
           break;
         }
-        if (Game_Window_Has_Focus()) {
-          Restore_Game_Window();  //	In case it was topmost but minimized.
+        if (TheDisplay().HasInputFocus()) {
+          TheDisplay().Restore();  //	In case it was topmost but minimized.
           break;
         }
       }
@@ -2183,7 +2164,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
       //			debugprint( "ShellExecute\n" );
       //	ShellExecute failed as well. Just print a message instead.
       ThePalettes().game_palette().Set();
-      Restore_Game_Window();
+      TheDisplay().Restore();
       char szError[300];
       Format_Runtime_Text(szError, sizeof(szError), TXT_WOL_CANTLAUNCHBROWSER,
                           szURL);

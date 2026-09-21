@@ -42,10 +42,10 @@
 #include "ra/session.h"
 #include "ra/theme.h"
 #include "ra/winstub.h"
+#include "sdllib/display.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/ww_win.h"
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
 #include "tech/game_file_vqa_io.h"
@@ -190,7 +190,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
       Check_For_Focus_Loss();
     }
   }
-  Video_End_Frame();
+  TheDisplay().EndFrame();
   return 0;
 }
 
@@ -198,7 +198,7 @@ int32_t VQ_Event_Handler(const uint32_t event, void* /*buffer*/,
                          int32_t /*n_bytes*/) {
   // vsync while waiting for frame
   if (event == VQAEVENT_SYNC) {
-    Video_End_Frame();
+    TheDisplay().EndFrame();
   }
   return 0;
 }

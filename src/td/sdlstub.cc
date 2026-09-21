@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "sdllib/display.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
@@ -51,7 +52,7 @@ void Memory_Error_Handler() {
 
 void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
                         int height) {
-  SDL_Create_Main_Window(WINDOW_NAME, width, height);
+  TheDisplay().Init(WINDOW_NAME, width, height);
 
   // Audio_Focus_Loss_Function = &Focus_Loss;
   Misc_Focus_Loss_Function = &Focus_Loss;
@@ -121,7 +122,7 @@ void Shake_Screen(int shakes) {
         break;
     }
     while (x == SystemTicks()) {
-      Video_End_Frame();
+      TheDisplay().EndFrame();
     }
   }
 

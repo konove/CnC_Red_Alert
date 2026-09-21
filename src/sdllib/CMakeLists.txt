@@ -48,6 +48,14 @@ add_gtest(
         LIBS sdllib
 )
 
+# SetPalette() reaches the mouse cursor, which decompresses its shape; tech
+# depends on sdllib, so the decoder is compiled in directly.
+add_gtest(
+        NAME sdllib_display_test
+        SOURCES display_test.cc ../tech/lcwuncmp.cc
+        LIBS sdllib
+)
+
 # optional serial port support
 find_library(LIBSERIALPORT_LIBRARIES serialport)
 find_path(LIBSERIALPORT_INCLUDE_DIR libserialport.h)

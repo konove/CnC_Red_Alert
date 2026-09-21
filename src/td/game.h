@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/installed.h"
+#include "sdllib/display.h"
 #include "td/assets.h"
 #include "td/debug_state.h"
 #include "td/game_clock.h"
@@ -60,6 +61,9 @@ class Game {
       startup_options_};
   GameClock game_clock_;
   base::Installed<GameClock>::Scope game_clock_scope_{game_clock_};
+  // Before Screen, which attaches its visible page to the window.
+  Display display_;
+  base::Installed<Display>::Scope display_scope_{display_};
   Screen screen_;
   base::Installed<Screen>::Scope screen_scope_{screen_};
   Palettes palettes_;

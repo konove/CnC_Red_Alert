@@ -183,15 +183,4 @@ TEST(LifetimeTest, DestroyingAnotherViewKeepsLogicPage) {
   SetLogicPage(nullptr);
 }
 
-TEST(LifetimeTest, DestroyingTheWindowBufferClearsWindowBuffer) {
-  std::vector<uint8_t> pixels(size_t{4} * 4);
-  {
-    PixelBuffer buffer(4, 4, pixels);
-    // Escaping the scope is the point: the destructor must clear it.
-    // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-use-after-scope)
-    WindowBuffer = &buffer;
-  }
-  EXPECT_EQ(WindowBuffer, nullptr);
-}
-
 }  // namespace

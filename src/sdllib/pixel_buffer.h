@@ -56,8 +56,7 @@
 enum class CNC_FLAG_ENUM PixelBufferFlags {
   BUFFER_NONE = 0,
   // The buffer is the one the window shows. Init() creates an SDL surface
-  // and texture for it instead of allocating memory, and records it in
-  // WindowBuffer.
+  // and texture for it instead of allocating memory.
   BUFFER_VISIBLE = 2,
 };
 using enum PixelBufferFlags;
@@ -290,7 +289,7 @@ class PixelBuffer : public PixelView {
   // Leaves the buffer empty; Init() gives it pixels later. Screen's pages
   // are built this way, before there is a window to size them against.
   PixelBuffer();
-  // Also resets WindowBuffer if this buffer is the window's surface.
+  // Detaches this buffer from the Display if it is the window's page.
   ~PixelBuffer();
 
   PixelBuffer(const PixelBuffer&) = delete;
@@ -299,8 +298,8 @@ class PixelBuffer : public PixelView {
   PixelBuffer& operator=(PixelBuffer&&) = delete;
 
   // Gives the buffer its pixels, replacing whatever it had. With
-  // BUFFER_VISIBLE it creates the window's surface and texture and records
-  // itself in WindowBuffer; otherwise it takes `buffer`, or allocates
+  // BUFFER_VISIBLE it creates the window's surface and texture;
+  // otherwise it takes `buffer`, or allocates
   // `byte_count` bytes when `buffer` is empty. CHECK-fails if a
   // caller-supplied
   // buffer is too small for width * height.
@@ -332,7 +331,7 @@ class PixelBuffer : public PixelView {
   }
   // Presents the buffer's current contents. UnlockSurface() calls it with
   // `end_frame` false, which only arms a timer to redraw if nothing else
-  // presents within the next frame; Video_End_Frame() passes true to present
+  // presents within the next frame; Display::EndFrame() passes true to present
   // immediately.
   void Present(bool end_frame);
   // Sets the 256 RGB triples the paletted pixels are shown through, and
@@ -388,10 +387,6 @@ class PixelBuffer : public PixelView {
   // null when the pixels are the caller's or the SDL surface's.
   std::unique_ptr<uint8_t[]> owned_pixels_;
 };
-
-extern PixelBuffer* WindowBuffer;
-
-void SetScreenPalette(std::span<const uint8_t> palette);
 
 inline int PixelView::lock_count() const { return lock_count_; }
 

@@ -47,11 +47,9 @@ union SDL_Event;
 /*=========================================================================*/
 int Change_Window(int windnum);
 
-void SDL_Create_Main_Window(const char* title, int width, int height);
 void SDL_Event_Loop();
 void SDL_Event_Handler(SDL_Event* event);  // implemented in app
 void SDL_Send_Quit();
-void Video_End_Frame();
 
 /*
 **	The WindowList[][8] array contains the following elements.  Use these
@@ -92,21 +90,5 @@ extern int MoreOn;
 extern char* TXT_MoreText;
 
 extern void (*Window_More_Ptr)(const char*, int, int, int);
-
-// Handle to the program's main SDL window (SDL_Window* cast to void* for
-// portability). Created by SDL_Create_Main_Window() and used throughout the
-// windowing system.
-extern void* MainWindow;
-
-struct SDL_Renderer;
-extern SDL_Renderer* SDLRenderer;
-extern uint32_t ForceRenderEventID;
-
-// Presents SDLRenderer, at most 70 times a second. With working vsync the
-// present itself waits for the display refresh and this never sleeps.
-// Without it (SDL's software renderer, used by the dummy video driver, reports
-// vsync but does not wait) this sleeps out the rest of the interval, so the
-// many loops that present while waiting for input do not spin a core.
-void PresentFrame();
 
 #endif  // CNC_RED_ALERT_SDLLIB_WW_WIN_H_

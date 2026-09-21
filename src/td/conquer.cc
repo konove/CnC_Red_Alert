@@ -90,6 +90,7 @@
 #include "port/platform.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
+#include "sdllib/display.h"
 #include "sdllib/file_access.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
@@ -1423,7 +1424,7 @@ void Call_Back() {
   }
 #endif
 
-  Video_End_Frame();
+  TheDisplay().EndFrame();
 }
 
 /***********************************************************************************************
@@ -2724,7 +2725,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
     }
   }
 
-  Video_End_Frame();
+  TheDisplay().EndFrame();
 
   return 0;
 }
@@ -2732,7 +2733,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
 int32_t VQ_Event_Handler(uint32_t event, void* /*buffer*/, int32_t /*nbytes*/) {
   // vsync while waiting for frame
   if (event == VQAEVENT_SYNC) {
-    Video_End_Frame();
+    TheDisplay().EndFrame();
   }
   return 0;
 }

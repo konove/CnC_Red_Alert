@@ -6,9 +6,8 @@
 
 #include "absl/log/check.h"
 #include "base/array.h"
-#include "sdllib/pixel_buffer.h"
+#include "sdllib/display.h"
 #include "sdllib/timer.h"
-#include "sdllib/ww_win.h"
 
 unsigned char CurrentPalette[3 * 256];
 
@@ -33,12 +32,12 @@ void Fade_Palette_To(std::span<const unsigned char> palette, int fade,
             old_val + ((new_val - old_val) * cur_time / fade));
       }
 
-      SetScreenPalette(fade_palette);
+      TheDisplay().SetPalette(fade_palette);
       if (callback) {
         callback();
       }
       else {  // make sure we actually display the fade
-        Video_End_Frame();
+        TheDisplay().EndFrame();
       }
 
       if (cur_time == fade) {
@@ -54,5 +53,5 @@ void Set_Palette(std::span<const unsigned char> palette) {
   CHECK_GE(palette.size(), sizeof(CurrentPalette));
   std::ranges::copy(palette.first(sizeof(CurrentPalette)),
                     std::span(CurrentPalette).begin());
-  SetScreenPalette(palette);
+  TheDisplay().SetPalette(palette);
 }

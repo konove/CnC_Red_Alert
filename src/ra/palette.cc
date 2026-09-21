@@ -14,9 +14,8 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "port/bytes_of.h"
-#include "sdllib/pixel_buffer.h"
+#include "sdllib/display.h"
 #include "sdllib/timer.h"
-#include "sdllib/ww_win.h"
 #include "tech/rgb.h"
 
 PaletteClass PaletteClass::CurrentPalette;
@@ -53,12 +52,12 @@ void PaletteClass::Set(int fade, void (*callback)()) {
                                        ((new_val - old_val) * cur_time / fade));
       }
 
-      SetScreenPalette(fade_palette);
+      TheDisplay().SetPalette(fade_palette);
       if (callback) {
         callback();
       } else {
         // make sure we actually display the fade
-        Video_End_Frame();
+        TheDisplay().EndFrame();
       }
 
       if (cur_time == fade) {
@@ -75,7 +74,7 @@ void PaletteClass::Set(int fade, void (*callback)()) {
   }
 
   CurrentPalette = *this;
-  SetScreenPalette(*this);
+  TheDisplay().SetPalette(*this);
 }
 
 // the only code that uses these two (Play_Movie and OptionsClass::Proccess)
@@ -131,5 +130,5 @@ void Set_Palette(std::span<const unsigned char> palette) {
   }
   base::CopyBytes(std::as_writable_bytes(PaletteClass::CurrentPalette.bytes()),
                   std::as_bytes(palette), PaletteClass::COLOR_COUNT * 3);
-  SetScreenPalette(palette);
+  TheDisplay().SetPalette(palette);
 }

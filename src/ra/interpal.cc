@@ -49,6 +49,7 @@
 
 #include "absl/log/check.h"
 #include "base/array.h"
+#include "sdllib/display.h"
 #include "sdllib/pixel_buffer.h"
 
 /***********************************************************************************************
@@ -114,7 +115,7 @@ void Interpolate_2X_Scale(PixelBuffer* source, PixelView* /*unused*/,
                           const char* /*unused*/) {
   // Render using SDL scaling - palette already set via UpdatePalette
   source->Lock();
-  WindowBuffer->PresentScaledFrame(source->bytes(), source->width(),
-                                   source->height());
+  TheDisplay().window_page()->PresentScaledFrame(
+      source->bytes(), source->width(), source->height());
   source->Unlock();
 }

@@ -2,9 +2,9 @@
 
 #include "ra/screen.h"
 
+#include "sdllib/display.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
-#include "sdllib/ww_win.h"
 
 // The views start out covering a 640x480 page that does not exist yet, as the
 // original globals did; Init() attaches them to the real game area.
@@ -15,9 +15,9 @@ Screen::Screen()
       vq640_(kWidth, kHeight) {}
 
 bool Screen::Init() {
-  bool mode_set = Set_Video_Mode(MainWindow, kWidth, mode_height_, 8);
+  bool mode_set = Set_Video_Mode(kWidth, mode_height_, 8);
   if (!mode_set && mode_height_ == kHeight) {
-    mode_set = Set_Video_Mode(MainWindow, kWidth, 480, 8);
+    mode_set = Set_Video_Mode(kWidth, 480, 8);
     if (mode_set) {
       mode_height_ = 480;
     }
@@ -27,6 +27,7 @@ bool Screen::Init() {
   }
 
   visible_page_.Init(kWidth, mode_height_, {}, 0, BUFFER_VISIBLE);
+  TheDisplay().AttachWindowPage(visible_page_);
   hidden_page_.Init(kWidth, mode_height_, {}, 0, BUFFER_NONE);
 
   // A 480-line mode letterboxes the 400-line game area in the middle.

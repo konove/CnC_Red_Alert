@@ -67,11 +67,11 @@
 #include "ra/screen.h"
 #include "ra/session.h"
 #include "ra/world.h"
+#include "sdllib/display.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/ww_win.h"
 
 GadgetClass* GScreenClass::Buttons = nullptr;
 
@@ -471,7 +471,7 @@ void Shake_The_Screen(int shakes) {
         break;
     }
     while (x == SystemTicks()) {
-      Video_End_Frame();
+      TheDisplay().EndFrame();
     }
   }
   TheScreen().hidden_view().Blit(TheScreen().visible_view());
