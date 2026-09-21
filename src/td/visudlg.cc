@@ -102,7 +102,7 @@ void VisualControlsClass::Process() {
   TextButtonClass* buttons[kNumOfButtons];
   SliderClass* buttonsliders[kNumOfButtons];
 
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   **	Create Buttons.  Button coords are in pixels, but are window-relative.
@@ -226,9 +226,8 @@ void VisualControlsClass::Process() {
     */
     if (display) {
       Hide_Mouse();
-      Dialog_Box(*LogicPage, option_x, option_y, option_width, option_height);
-      Draw_Caption(*LogicPage, TXT_VISUAL_CONTROLS, option_x, option_y,
-                   option_width);
+      Dialog_Box(view, option_x, option_y, option_width, option_height);
+      Draw_Caption(view, TXT_VISUAL_CONTROLS, option_x, option_y, option_width);
       Show_Mouse();
       display = false;
       partial = true;
@@ -245,12 +244,12 @@ void VisualControlsClass::Process() {
       */
       for (int i = 0; i < std::ssize(_titles); i++) {
         Fancy_Text_Print(
-            *LogicPage, base::At(_titles, i), slider_x - 16,
+            view, base::At(_titles, i), slider_x - 16,
             text_y + (i * slider_y_spacing), kCcGreen, kTBlack,
             TPF_6PT_GRAD | TPF_RIGHT | TPF_NOSHADOW |
                 (curbutton == i ? TPF_BRIGHT_COLOR : TPF_USE_GRAD_PAL));
       }
-      optionsbtn.Draw_All(*LogicPage);
+      optionsbtn.Draw_All(view);
       Show_Mouse();
       partial = false;
     }
@@ -258,7 +257,7 @@ void VisualControlsClass::Process() {
     /*
     **	Get and process player input.
     */
-    const KeyNumType input = optionsbtn.Input(*LogicPage);
+    const KeyNumType input = optionsbtn.Input(view);
     switch (static_cast<int>(input)) {
       case ButtonKey(kButtonBrightness):
         TheOptions().Set_Brightness(brightness.Get_Value());

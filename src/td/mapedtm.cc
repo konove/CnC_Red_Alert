@@ -305,10 +305,7 @@ int MapEditClass::Select_Team(const char* caption) {
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
       kOkW, kOkH);
 
-  /*
-  ------------------------------- Initialize -------------------------------
-  */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   ........................... Fill in team names ...........................
@@ -434,22 +431,21 @@ int MapEditClass::Select_Team(const char* caption) {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
 
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            *LogicPage, caption, kDialogCx, kDialogY + kMargin, kCcGreen,
-            kTBlack,
+            view, caption, kDialogCx, kDialogY + kMargin, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       /*
       ........................ Redraw the buttons ........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(*LogicPage);
+        commands->Draw_All(view);
       }
       Show_Mouse();
       display = REDRAW_NONE;
@@ -458,7 +454,7 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input(*LogicPage);  // user input
+    const KeyNumType input = commands->Input(view);  // user input
 
     /*
     ............................ Process input ............................
@@ -912,10 +908,7 @@ int MapEditClass::Edit_Team() {
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
       kCancelY, kCancelW, kCancelH);
 
-  /*
-  ------------------------------- Initialize -------------------------------
-  */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   ........................... Copy team's state ............................
@@ -1057,43 +1050,41 @@ int MapEditClass::Edit_Team() {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
+        Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
 
-        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            *LogicPage, "Team Edit", kDialogCx, kDialogY + kMargin, kCcGreen,
-            kTBlack,
+            view, "Team Edit", kDialogCx, kDialogY + kMargin, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, "Name", kNameX - 5, kNameY, kCcGreen, kTBlack,
+            view, "Name", kNameX - 5, kNameY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, "Priority", kPriorityX - 5, kPriorityY, kCcGreen,
-            kTBlack,
+            view, "Priority", kPriorityX - 5, kPriorityY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, "Max Num", kMaxnumX - 5, kMaxnumY, kCcGreen, kTBlack,
+            view, "Max Num", kMaxnumX - 5, kMaxnumY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, "Init Num", kInitnumX - 5, kInitnumY, kCcGreen, kTBlack,
+            view, "Init Num", kInitnumX - 5, kInitnumY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, "Fear", kFearX - 5, kFearY, kCcGreen, kTBlack,
+            view, "Fear", kFearX - 5, kFearY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       /*
       ........................ Redraw the buttons ........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(*LogicPage);
+        commands->Draw_All(view);
       }
       Show_Mouse();
       display = REDRAW_NONE;
@@ -1102,7 +1093,7 @@ int MapEditClass::Edit_Team() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input(*LogicPage);
+    const KeyNumType input = commands->Input(view);
 
     /*
     ............................ Process input ............................
@@ -1680,7 +1671,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Draw to SeenBuff.
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   **	Make sure 'house' is valid.
@@ -1733,11 +1724,10 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Display the constant background of this dialog.
         */
-        Dialog_Box(*LogicPage, kDialogX, dlg_y, kDialogW, dlg_h);
-        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, dlg_y, kDialogW);
+        Dialog_Box(view, kDialogX, dlg_y, kDialogW, dlg_h);
+        Draw_Caption(view, TXT_NONE, kDialogX, dlg_y, kDialogW);
         Fancy_Text_Print(
-            *LogicPage, "Team Members", kDialogCx, dlg_y + kMargin, kCcGreen,
-            kTBlack,
+            view, "Team Members", kDialogCx, dlg_y + kMargin, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         //
@@ -1747,14 +1737,14 @@ int MapEditClass::Team_Members(HousesType house) {
           //
           //	Display the object along with any count value for it.
           //
-          Draw_Member(teamclass.at(base::ToSize(i)), i,
+          Draw_Member(view, teamclass.at(base::ToSize(i)), i,
                       teamcount.at(base::ToSize(i)), house, kDialogX + 16,
                       dlg_picture_top);
         }
 
         if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
           Fancy_Text_Print(
-              *LogicPage, teamclass.at(base::ToSize(curclass))->Full_Name(),
+              view, teamclass.at(base::ToSize(curclass))->Full_Name(),
               kDialogX + (kDialogW / 2), msg_y, kCcTan, kTBlack,
               TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
         }
@@ -1764,7 +1754,7 @@ int MapEditClass::Team_Members(HousesType house) {
       **	Redraw the buttons.
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(*LogicPage);
+        commands->Draw_All(view);
       }
       Show_Mouse();
       display = REDRAW_NONE;
@@ -1773,7 +1763,7 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Get user input.
     */
-    const KeyNumType input = commands->Input(*LogicPage);  // user input
+    const KeyNumType input = commands->Input(view);  // user input
 
     /*
     **	Process input.
@@ -1838,12 +1828,12 @@ int MapEditClass::Team_Members(HousesType house) {
           **	Clear out the previously printed name of the item.
           */
           Hide_Mouse();
-          LogicPage->FillRect(kDialogX + 8, msg_y, kDialogX + kDialogW - 9,
-                              msg_y + kTxt6H, kBlack);
+          view.FillRect(kDialogX + 8, msg_y, kDialogX + kDialogW - 9,
+                        msg_y + kTxt6H, kBlack);
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
             Fancy_Text_Print(
-                *LogicPage, teamclass.at(base::ToSize(curclass))->Full_Name(),
+                view, teamclass.at(base::ToSize(curclass))->Full_Name(),
                 kDialogX + (kDialogW / 2), msg_y, kCcGreen, kTBlack,
                 TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
@@ -1893,7 +1883,7 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Update number label.
         */
-        Draw_Member(teamclass.at(base::ToSize(curclass)), curclass,
+        Draw_Member(view, teamclass.at(base::ToSize(curclass)), curclass,
                     teamcount.at(base::ToSize(curclass)), house, kDialogX + 16,
                     dlg_picture_top);
       }
@@ -1925,7 +1915,7 @@ int MapEditClass::Team_Members(HousesType house) {
         /*
         **	Update number label.
         */
-        Draw_Member(teamclass.at(base::ToSize(curclass)), curclass,
+        Draw_Member(view, teamclass.at(base::ToSize(curclass)), curclass,
                     teamcount.at(base::ToSize(curclass)), house, kDialogX + 16,
                     dlg_picture_top);
       }
@@ -1985,8 +1975,9 @@ int MapEditClass::Team_Members(HousesType house) {
  *                                                                                             *
  * HISTORY: * 07/02/1995 JLB : Created. *
  *=============================================================================================*/
-void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
-                               HousesType house, int pic_x, int pic_y) {
+void MapEditClass::Draw_Member(PixelView& view, const TechnoTypeClass* ptr,
+                               int index, int quant, HousesType house,
+                               int pic_x, int pic_y) {
   const int numcols = (kDialogW - 32) / kPictureW;
   const int col = index % numcols;
   const int row = index / numcols;
@@ -2002,15 +1993,14 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
   Change_Window(static_cast<int>(WINDOW_EDITOR));
 
   Hide_Mouse();
-  Draw_Box(*LogicPage, x, y, kPictureW, kPictureH, BOXSTYLE_GREEN_DOWN, true);
+  Draw_Box(view, x, y, kPictureW, kPictureH, BOXSTYLE_GREEN_DOWN, true);
 
-  ptr->Display(*LogicPage, x + (kPictureW / 2), y + (kPictureH / 2),
-               WINDOW_EDITOR, house);
+  ptr->Display(view, x + (kPictureW / 2), y + (kPictureH / 2), WINDOW_EDITOR,
+               house);
 
   if (quant > 0) {
-    Fancy_Text_Print(*LogicPage, "%d", x + 1, y + kPictureH - 16, kCcGreen,
-                     kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_DROPSHADOW,
-                     quant);
+    Fancy_Text_Print(view, "%d", x + 1, y + kPictureH - 16, kCcGreen, kTBlack,
+                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_DROPSHADOW, quant);
   }
 
   Show_Mouse();

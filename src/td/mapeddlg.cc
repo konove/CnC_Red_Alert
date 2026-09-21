@@ -606,7 +606,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   /*
   ------------------------------- Initialize -------------------------------
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   absl::SNPrintF(scen_buf, sizeof(scen_buf), "%d",
                  (*scen_nump));  // init edit buffer
@@ -725,19 +725,18 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
 
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            *LogicPage, caption, kDialogCx, kDialogY + kMargin, kCcGreen,
-            kTBlack,
+            view, caption, kDialogCx, kDialogY + kMargin, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, "Scenario", kDialogCx - 5, kScenY, kCcGreen, kTBlack,
+            view, "Scenario", kDialogCx - 5, kScenY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -745,7 +744,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
       ........................ Redraw the buttons ........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(*LogicPage);
+        commands->Draw_All(view);
       }
       Show_Mouse();
       display = REDRAW_NONE;
@@ -754,7 +753,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input(*LogicPage);
+    const KeyNumType input = commands->Input(view);
 
     /*
     ............................ Process input ............................
@@ -991,10 +990,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
       kCancelY, kCancelW, kCancelH);
 
-  /*
-  ------------------------------- Initialize -------------------------------
-  */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*........................................................................
   Set up the actual map area relative to the map's border coords
@@ -1053,23 +1049,23 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         .......................... Background ...........................
         */
-        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
 
         /*
         ..................... Draw the map border .......................
         */
-        LogicPage->Lock();
-        LogicPage->DrawRect(kBordX1, kBordY1, kBordX2, kBordY2, kCcGreenShadow);
+        view.Lock();
+        view.DrawRect(kBordX1, kBordY1, kBordX2, kBordY2, kCcGreenShadow);
         for (int index = kBordX1; index < kBordX2;
              index += (320 / ICON_PIXEL_W)) {
-          LogicPage->PutPixel(index, kBordY1 - 1, kCcGreenShadow);
-          LogicPage->PutPixel(index, kBordY2 + 1, kCcGreenShadow);
+          view.PutPixel(index, kBordY1 - 1, kCcGreenShadow);
+          view.PutPixel(index, kBordY2 + 1, kCcGreenShadow);
         }
         for (int index = kBordY1; index < kBordY2 - 8;
              index += (200 / ICON_PIXEL_H)) {
-          LogicPage->PutPixel(kBordX1 - 1, index, kCcGreenShadow);
-          LogicPage->PutPixel(kBordX2 + 1, index, kCcGreenShadow);
+          view.PutPixel(kBordX1 - 1, index, kCcGreenShadow);
+          view.PutPixel(kBordX2 + 1, index, kCcGreenShadow);
         }
 
         /*...............................................................
@@ -1077,57 +1073,57 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         ...............................................................*/
         txt_x = kDialogCx;
         txt_y = kDialogY + 8;
-        Fancy_Text_Print(*LogicPage, "Clear Terrain", txt_x, txt_y, kLtGrey,
-                         kTBlack, TPF_DROPSHADOW | TPF_6POINT);
-        txt_y += 16;
-        Fancy_Text_Print(*LogicPage, "Water", txt_x, txt_y, kBlue, kTBlack,
+        Fancy_Text_Print(view, "Clear Terrain", txt_x, txt_y, kLtGrey, kTBlack,
                          TPF_DROPSHADOW | TPF_6POINT);
         txt_y += 16;
-        Fancy_Text_Print(*LogicPage, "Tiberium", txt_x, txt_y, kGrey, kTBlack,
+        Fancy_Text_Print(view, "Water", txt_x, txt_y, kBlue, kTBlack,
                          TPF_DROPSHADOW | TPF_6POINT);
         txt_y += 16;
-        Fancy_Text_Print(*LogicPage, "Rock/Wall/Road", txt_x, txt_y, kBrown,
-                         kTBlack, TPF_DROPSHADOW | TPF_6POINT);
-        txt_y += 16;
-        Fancy_Text_Print(*LogicPage, "GDI Unit", txt_x, txt_y, kYellow, kTBlack,
+        Fancy_Text_Print(view, "Tiberium", txt_x, txt_y, kGrey, kTBlack,
                          TPF_DROPSHADOW | TPF_6POINT);
         txt_y += 16;
-        Fancy_Text_Print(*LogicPage, "Nod Unit", txt_x, txt_y, kRed, kTBlack,
+        Fancy_Text_Print(view, "Rock/Wall/Road", txt_x, txt_y, kBrown, kTBlack,
                          TPF_DROPSHADOW | TPF_6POINT);
         txt_y += 16;
-        Fancy_Text_Print(*LogicPage, "Neutral Unit", txt_x, txt_y, kPurple,
-                         kTBlack, TPF_DROPSHADOW | TPF_6POINT);
+        Fancy_Text_Print(view, "GDI Unit", txt_x, txt_y, kYellow, kTBlack,
+                         TPF_DROPSHADOW | TPF_6POINT);
         txt_y += 16;
-        Fancy_Text_Print(*LogicPage, "Terrain Object", txt_x, txt_y, kGreen,
-                         kTBlack, TPF_DROPSHADOW | TPF_6POINT);
+        Fancy_Text_Print(view, "Nod Unit", txt_x, txt_y, kRed, kTBlack,
+                         TPF_DROPSHADOW | TPF_6POINT);
         txt_y += 16;
-        Fancy_Text_Print(*LogicPage, "Starting Cell", txt_x, txt_y, kWhite,
-                         kTBlack, TPF_DROPSHADOW | TPF_6POINT);
+        Fancy_Text_Print(view, "Neutral Unit", txt_x, txt_y, kPurple, kTBlack,
+                         TPF_DROPSHADOW | TPF_6POINT);
+        txt_y += 16;
+        Fancy_Text_Print(view, "Terrain Object", txt_x, txt_y, kGreen, kTBlack,
+                         TPF_DROPSHADOW | TPF_6POINT);
+        txt_y += 16;
+        Fancy_Text_Print(view, "Starting Cell", txt_x, txt_y, kWhite, kTBlack,
+                         TPF_DROPSHADOW | TPF_6POINT);
         /*
         .................. Draw the coordinate labels ...................
         */
         txt_x = kDialogX + (kDialogW / 8);
         txt_y = kDialogY + kDialogH - kOkH - 10 - 33;
         Fancy_Text_Print(
-            *LogicPage, "X", txt_x, txt_y, kCcGreen, kTBlack,
+            view, "X", txt_x, txt_y, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
         Fancy_Text_Print(
-            *LogicPage, "Y", txt_x, txt_y, kCcGreen, kTBlack,
+            view, "Y", txt_x, txt_y, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
         Fancy_Text_Print(
-            *LogicPage, "Width", txt_x, txt_y, kCcGreen, kTBlack,
+            view, "Width", txt_x, txt_y, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
         Fancy_Text_Print(
-            *LogicPage, "Height", txt_x, txt_y, kCcGreen, kTBlack,
+            view, "Height", txt_x, txt_y, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-        LogicPage->Unlock();
+        view.Unlock();
 
         /*
         ...................... Redraw the buttons .......................
@@ -1139,13 +1135,13 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
       Redraw the map symbology & location
       ------------------------------------------------------------------*/
       if (display >= REDRAW_MAP) {
-        LogicPage->Lock();
+        view.Lock();
 
         /*
         .................... Erase the map interior .....................
         */
-        LogicPage->FillRect(kBordX1 + 1, kBordY1 + 1, kBordX2 - 1, kBordY2 - 1,
-                            kBlack);
+        view.FillRect(kBordX1 + 1, kBordY1 + 1, kBordX2 - 1, kBordY2 - 1,
+                      kBlack);
 
         /*...............................................................
         Draw Land map symbols (use color according to Ground[] array).
@@ -1154,41 +1150,41 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           occupier = (*this).at(cell).Cell_Occupier();
           if (occupier == nullptr) {
             color = Ground.at((*this).at(cell).Land_Type()).Color;
-            LogicPage->PutPixel(kBordX1 + Cell_X(cell) + 1,
-                                kBordY1 + Cell_Y(cell) + 1,
-                                static_cast<unsigned char>(color));
+            view.PutPixel(kBordX1 + Cell_X(cell) + 1,
+                          kBordY1 + Cell_Y(cell) + 1,
+                          static_cast<unsigned char>(color));
           }
         }
 
-        LogicPage->Unlock();
+        view.Unlock();
 
         /*
         ................. Draw the actual map location ..................
         */
-        LogicPage->DrawRect(map_x1, map_y1, map_x2, map_y2, kWhite);
+        view.DrawRect(map_x1, map_y1, map_x2, map_y2, kWhite);
         switch (grabbed) {
           case 1:
-            LogicPage->DrawLine(map_x1, map_y1, map_x1 + 5, map_y1, kBlue);
-            LogicPage->DrawLine(map_x1, map_y1, map_x1, map_y1 + 5, kBlue);
+            view.DrawLine(map_x1, map_y1, map_x1 + 5, map_y1, kBlue);
+            view.DrawLine(map_x1, map_y1, map_x1, map_y1 + 5, kBlue);
             break;
 
           case 2:
-            LogicPage->DrawLine(map_x2, map_y1, map_x2 - 5, map_y1, kBlue);
-            LogicPage->DrawLine(map_x2, map_y1, map_x2, map_y1 + 5, kBlue);
+            view.DrawLine(map_x2, map_y1, map_x2 - 5, map_y1, kBlue);
+            view.DrawLine(map_x2, map_y1, map_x2, map_y1 + 5, kBlue);
             break;
 
           case 3:
-            LogicPage->DrawLine(map_x2, map_y2, map_x2 - 5, map_y2, kBlue);
-            LogicPage->DrawLine(map_x2, map_y2, map_x2, map_y2 - 5, kBlue);
+            view.DrawLine(map_x2, map_y2, map_x2 - 5, map_y2, kBlue);
+            view.DrawLine(map_x2, map_y2, map_x2, map_y2 - 5, kBlue);
             break;
 
           case 4:
-            LogicPage->DrawLine(map_x1, map_y2, map_x1 + 5, map_y2, kBlue);
-            LogicPage->DrawLine(map_x1, map_y2, map_x1, map_y2 - 5, kBlue);
+            view.DrawLine(map_x1, map_y2, map_x1 + 5, map_y2, kBlue);
+            view.DrawLine(map_x1, map_y2, map_x1, map_y2 - 5, kBlue);
             break;
 
           case 5:
-            LogicPage->DrawRect(map_x1, map_y1, map_x2, map_y2, kBlue);
+            view.DrawRect(map_x1, map_y1, map_x2, map_y2, kBlue);
             break;
 
           default:
@@ -1207,16 +1203,16 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
             if (occupier && occupier->Owner() != HOUSE_NONE) {
               color = HouseClass::As_Pointer(occupier->Owner())->Color;
             }
-            LogicPage->PutPixel(kBordX1 + Cell_X(cell) + 1,
-                                kBordY1 + Cell_Y(cell) + 1,
-                                static_cast<unsigned char>(color));
+            view.PutPixel(kBordX1 + Cell_X(cell) + 1,
+                          kBordY1 + Cell_Y(cell) + 1,
+                          static_cast<unsigned char>(color));
           }
         }
 
         /*
         ...................... Draw Home location .......................
         */
-        LogicPage->PutPixel(
+        view.PutPixel(
             kBordX1 + Cell_X(base::At(TheWorld().waypoint(), kWayptHome)) + 1,
             kBordY1 + Cell_Y(base::At(TheWorld().waypoint(), kWayptHome)) + 1,
             kWhite);
@@ -1224,9 +1220,9 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         ..................... Erase old coordinates .....................
         */
-        LogicPage->FillRect(kDialogX + 7, kDialogY + kDialogH - kOkH - 10 - 22,
-                            kDialogX + kDialogW - 7,
-                            kDialogY + kDialogH - kOkH - 10 - 22 + 10, kBlack);
+        view.FillRect(kDialogX + 7, kDialogY + kDialogH - kOkH - 10 - 22,
+                      kDialogX + kDialogW - 7,
+                      kDialogY + kDialogH - kOkH - 10 - 22 + 10, kBlack);
 
         /*
         ..................... Draw the coordinates ......................
@@ -1235,25 +1231,25 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         txt_y = kDialogY + kDialogH - kOkH - 10 - 22;
         absl::SNPrintF(txt, sizeof(txt), "%d", map_x1 - kBordX1 - 1);
         Fancy_Text_Print(
-            *LogicPage, txt, txt_x, txt_y, kCcGreen, kTBlack,
+            view, txt, txt_x, txt_y, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
         absl::SNPrintF(txt, sizeof(txt), "%d", map_y1 - kBordY1 - 1);
         Fancy_Text_Print(
-            *LogicPage, txt, txt_x, txt_y, kCcGreen, kTBlack,
+            view, txt, txt_x, txt_y, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
         absl::SNPrintF(txt, sizeof(txt), "%d", map_x2 - map_x1 + 1);
         Fancy_Text_Print(
-            *LogicPage, txt, txt_x, txt_y, kCcGreen, kTBlack,
+            view, txt, txt_x, txt_y, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         txt_x += (kDialogW - 20) / 4;
         absl::SNPrintF(txt, sizeof(txt), "%d", map_y2 - map_y1 + 1);
         Fancy_Text_Print(
-            *LogicPage, txt, txt_x, txt_y, kCcGreen, kTBlack,
+            view, txt, txt_x, txt_y, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -1264,7 +1260,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
     /*
     ------------------------- Process user input --------------------------
     */
-    const KeyNumType input = commands->Input(*LogicPage);  // user input
+    const KeyNumType input = commands->Input(view);  // user input
     /*.....................................................................
     Normal button processing: This is done when the mouse button is NOT
     being held down ('grabbed' is 0).
@@ -1729,10 +1725,7 @@ int MapEditClass::Scenario_Dialog() {
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
       kCancelY, kCancelW, kCancelH);
 
-  /*
-  ------------------------------- Initialize -------------------------------
-  */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   .......................... Fill in theater items .........................
@@ -1859,51 +1852,50 @@ int MapEditClass::Scenario_Dialog() {
         /*
         ..................... Draw the background .......................
         */
-        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
 
         /*
         ....................... Draw the labels .........................
         */
         Fancy_Text_Print(
-            *LogicPage, "Theater", kTheaterX + (kTheaterW / 2),
-            kTheaterY - kTxt8H, kCcGreen, kTBlack,
+            view, "Theater", kTheaterX + (kTheaterW / 2), kTheaterY - kTxt8H,
+            kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, "Build Level", kLevelX, kLevelY, kCcGreen, kTBlack,
+            view, "Build Level", kLevelX, kLevelY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, "Credits/1000", kGdicredX + (kGdicredW / 2),
+            view, "Credits/1000", kGdicredX + (kGdicredW / 2),
             kGdicredY - kTxt8H, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, "GDI", kGdicredX - 5, kGdicredY, kCcGreen, kTBlack,
+            view, "GDI", kGdicredX - 5, kGdicredY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, "NOD", kNodcredX - 5, kNodcredY, kCcGreen, kTBlack,
+            view, "NOD", kNodcredX - 5, kNodcredY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, "Neutral", kNeutcredX - 5, kNeutcredY, kCcGreen,
-            kTBlack,
+            view, "Neutral", kNeutcredX - 5, kNeutcredY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, "Reinforcements", kDialogCx,
-            kLevelY + kLevelH + kMargin, kCcGreen, kTBlack,
+            view, "Reinforcements", kDialogCx, kLevelY + kLevelH + kMargin,
+            kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, "GDI", kGdinX + (kGdinW / 2), kGdinY - kTxt8H, kCcGreen,
+            view, "GDI", kGdinX + (kGdinW / 2), kGdinY - kTxt8H, kCcGreen,
             kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, "NOD", kNodnX + (kNodnW / 2), kNodnY - kTxt8H, kCcGreen,
+            view, "NOD", kNodnX + (kNodnW / 2), kNodnY - kTxt8H, kCcGreen,
             kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
@@ -1914,7 +1906,7 @@ int MapEditClass::Scenario_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input(*LogicPage);  // input from user
+    const KeyNumType input = commands->Input(view);  // input from user
 
     /*
     ............................ Process input ............................
@@ -2335,10 +2327,7 @@ int MapEditClass::Select_Trigger() {
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kOkX, kOkY,
       kOkW, kOkH);
 
-  /*
-  ------------------------------- Initialize -------------------------------
-  */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   ......................... Fill in trigger names ..........................
@@ -2469,15 +2458,14 @@ int MapEditClass::Select_Trigger() {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
 
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            *LogicPage, "Triggers", kDialogCx, kDialogY + kMargin, kCcGreen,
-            kTBlack,
+            view, "Triggers", kDialogCx, kDialogY + kMargin, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
 
@@ -2485,7 +2473,7 @@ int MapEditClass::Select_Trigger() {
       ........................ Redraw the buttons ........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(*LogicPage);
+        commands->Draw_All(view);
       }
       Show_Mouse();
       display = REDRAW_NONE;
@@ -2494,7 +2482,7 @@ int MapEditClass::Select_Trigger() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input(*LogicPage);  // user input
+    const KeyNumType input = commands->Input(view);  // user input
 
     /*
     ............................ Process input ............................
@@ -2814,10 +2802,7 @@ int MapEditClass::Edit_Trigger() {
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
       kCancelY, kCancelW, kCancelH);
 
-  /*
-  ------------------------------- Initialize -------------------------------
-  */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   ....................... Set default button states ........................
@@ -2914,52 +2899,52 @@ int MapEditClass::Edit_Trigger() {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
 
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            *LogicPage, "Trigger Editor", kDialogCx, kDialogY + kMargin,
+            view, "Trigger Editor", kDialogCx, kDialogY + kMargin, kCcGreen,
+            kTBlack,
+            TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+
+        Fancy_Text_Print(
+            view, "Events", kEventX + (kEventW / 2), kEventY - kTxt8H, kCcGreen,
+            kTBlack,
+            TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+
+        Fancy_Text_Print(
+            view, "Actions", kActionX + (kActionW / 2), kActionY - kTxt8H,
             kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, "Events", kEventX + (kEventW / 2), kEventY - kTxt8H,
-            kCcGreen, kTBlack,
-            TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
-
-        Fancy_Text_Print(
-            *LogicPage, "Actions", kActionX + (kActionW / 2), kActionY - kTxt8H,
-            kCcGreen, kTBlack,
-            TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
-
-        Fancy_Text_Print(
-            *LogicPage, "Name", kNameX - 5, kNameY, kCcGreen, kTBlack,
+            view, "Name", kNameX - 5, kNameY, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         if (event_idx == EVENT_CREDITS) {  // use 'Data' for Credits
           Fancy_Text_Print(
-              *LogicPage, "Credits", kDataX - 5, kDataY, kCcGreen, kTBlack,
+              view, "Credits", kDataX - 5, kDataY, kCcGreen, kTBlack,
               TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         } else {
           if (event_idx == EVENT_TIME) {  // use 'Data' for Time
             Fancy_Text_Print(
-                *LogicPage, "1/10 Min", kDataX - 5, kDataY, kCcGreen, kTBlack,
+                view, "1/10 Min", kDataX - 5, kDataY, kCcGreen, kTBlack,
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
         }
 
         if (TriggerClass::Action_Need_Team(action_idx)) {
           if (CurTrigger->Team) {
-            Fancy_Text_Print(*LogicPage, CurTrigger->Team->IniName,
+            Fancy_Text_Print(view, CurTrigger->Team->IniName,
                              kTeamX + kTeamW + 5, kTeamY, kCcGreen, kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           } else {
-            Fancy_Text_Print(*LogicPage, "!!!", kTeamX + kTeamW + 5, kTeamY,
-                             kCcGreen, kTBlack,
+            Fancy_Text_Print(view, "!!!", kTeamX + kTeamW + 5, kTeamY, kCcGreen,
+                             kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
         }
@@ -3018,7 +3003,7 @@ int MapEditClass::Edit_Trigger() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input(*LogicPage);  // user input
+    const KeyNumType input = commands->Input(view);  // user input
 
     /*
     ............................ Process input ............................
@@ -3270,7 +3255,7 @@ int MapEditClass::Import_Triggers() {
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
       kCancelY, kCancelW, kCancelH);
 
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*------------------------------------------------------------------------
   Read the MASTER.INI file
@@ -3397,14 +3382,14 @@ int MapEditClass::Import_Triggers() {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            *LogicPage, "Import Triggers", kDialogCx, kDialogY + kMargin,
-            kCcGreen, kTBlack,
+            view, "Import Triggers", kDialogCx, kDialogY + kMargin, kCcGreen,
+            kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
       /*
@@ -3420,7 +3405,7 @@ int MapEditClass::Import_Triggers() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input(*LogicPage);  // user input
+    const KeyNumType input = commands->Input(view);  // user input
 
     /*
     ............................ Process input ............................
@@ -3598,7 +3583,7 @@ int MapEditClass::Import_Teams() {
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
       kCancelY, kCancelW, kCancelH);
 
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*------------------------------------------------------------------------
   Read the MASTER.INI file
@@ -3727,13 +3712,13 @@ int MapEditClass::Import_Teams() {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            *LogicPage, "Import Teams", kDialogCx, kDialogY + kMargin, kCcGreen,
+            view, "Import Teams", kDialogCx, kDialogY + kMargin, kCcGreen,
             kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
@@ -3750,7 +3735,7 @@ int MapEditClass::Import_Teams() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input(*LogicPage);  // user input
+    const KeyNumType input = commands->Input(view);  // user input
 
     /*
     ............................ Process input ............................

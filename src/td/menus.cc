@@ -77,9 +77,8 @@
 static bool Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
                                   int iny2);
 static int Select_To_Entry(int select, uint32_t bitfield, int index);
-static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
-                       int hfgc, int bgc);
-
+static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
+                       int nfgc, int hfgc, int bgc);
 
 static MenuConfig menu_config;
 
@@ -148,14 +147,14 @@ static int Select_To_Entry(int select, uint32_t bitfield, int index) {
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-static void Flash_Line(const char* text, int xpix, int ypix, int nfgc,
-                       int hfgc, int bgc) {
+static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
+                       int nfgc, int hfgc, int bgc) {
   for (int loop = 0; loop < 3; loop++) {
     Hide_Mouse();
-    Fancy_Text_Print(*LogicPage, text, xpix, ypix, hfgc, bgc,
+    Fancy_Text_Print(view, text, xpix, ypix, hfgc, bgc,
                      TPF_8POINT | TPF_DROPSHADOW);
     Delay(2);
-    Fancy_Text_Print(*LogicPage, text, xpix, ypix, nfgc, bgc,
+    Fancy_Text_Print(view, text, xpix, ypix, nfgc, bgc,
                      TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse();
     Delay(2);
@@ -238,7 +237,8 @@ int Find_Menu_Items(int maxitems, unsigned long field, char index) {
 /*	RETURNS:	none
  */
 /*=========================================================================*/
-void Setup_Menu(const MenuConfig& menu, std::span<const char* const> labels,
+void Setup_Menu(PixelView& view, const MenuConfig& menu,
+                std::span<const char* const> labels,
                 const uint32_t visible_items, const int bit_offset,
                 const int line_spacing) {
   const int menu_x = (static_cast<int>(WinX) + menu.x) * 8;
@@ -248,14 +248,14 @@ void Setup_Menu(const MenuConfig& menu, std::span<const char* const> labels,
       Select_To_Entry(menu.selected, visible_items, bit_offset);
   const int item_count = menu.item_count;
 
-  Fancy_Text_Print(*LogicPage, 0, 0, 0, kTBlack, kTBlack,
+  Fancy_Text_Print(view, 0, 0, 0, kTBlack, kTBlack,
                    TPF_8POINT | TPF_DROPSHADOW);
   Hide_Mouse();
   for (int i = 0; i < item_count; i++) {
     const int text_index = Select_To_Entry(i, visible_items, bit_offset);
     const int draw_y = menu_y + (i * FontHeight) + (i * line_spacing);
     Fancy_Text_Print(
-        *LogicPage, base::At(labels, base::ToSize(text_index)), menu_x, draw_y,
+        view, base::At(labels, base::ToSize(text_index)), menu_x, draw_y,
         text_index == selected_entry && MenuUpdate ? menu.highlight_color
                                                    : menu.normal_color,
         kTBlack, TPF_8POINT | TPF_DROPSHADOW);
@@ -276,8 +276,8 @@ void Setup_Menu(const MenuConfig& menu, std::span<const char* const> labels,
 /*	RETURNS:
  */
 /*=========================================================================*/
-int Check_Menu(MenuConfig& menu, std::span<const char* const> text,
-               uint32_t field, int index) {
+int Check_Menu(PixelView& view, MenuConfig& menu,
+               std::span<const char* const> text, uint32_t field, int index) {
   int drawy = 0;
   int item = 0;
   int idx = 0;
@@ -399,12 +399,12 @@ int Check_Menu(MenuConfig& menu, std::span<const char* const> text,
     Hide_Mouse();
     idx = Select_To_Entry(item, field, index);
     drawy = menuy + (item * menuskip);
-    Fancy_Text_Print(*LogicPage, base::At(text, base::ToSize(idx)), menux,
-                     drawy, normcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+    Fancy_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
+                     normcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     idx = Select_To_Entry(newitem, field, index);
     drawy = menuy + (newitem * menuskip);
-    Fancy_Text_Print(*LogicPage, base::At(text, base::ToSize(idx)), menux,
-                     drawy, litcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
+    Fancy_Text_Print(view, base::At(text, base::ToSize(idx)), menux, drawy,
+                     litcol, kTBlack, TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse(); /* resurrect the mouse	*/
   }
 
@@ -412,8 +412,8 @@ int Check_Menu(MenuConfig& menu, std::span<const char* const> text,
     idx = Select_To_Entry(select, field, index);
     Hide_Mouse(); /* get rid of the mouse	*/
     drawy = menuy + (newitem * menuskip);
-    Flash_Line(base::At(text, base::ToSize(idx)), menux, drawy, normcol, litcol,
-               kTBlack);
+    Flash_Line(view, base::At(text, base::ToSize(idx)), menux, drawy, normcol,
+               litcol, kTBlack);
     Show_Mouse();
     select = idx;
   }
@@ -450,7 +450,7 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   if (strings.empty()) {
     return (-1);
   }
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
   Keyboard::Clear();
 
   /*
@@ -465,8 +465,7 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   **	Determine the width of the menu by finding the length of the
   **	longest menu entry.
   */
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, 0, 0,
-                   TPF_8POINT | TPF_DROPSHADOW);
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, 0, 0, TPF_8POINT | TPF_DROPSHADOW);
   int length = 0;  // The width of the menu (in pixels).
   for (const char* text : strings) {
     length = std::max(length, String_Pixel_Width(text));
@@ -492,16 +491,15 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   */
   Change_Window(static_cast<int>(WINDOW_MENU));
   Show_Mouse();
-  Window_Box(*LogicPage, WINDOW_MENU,
-             blue ? BOXSTYLE_BLUE_UP : BOXSTYLE_RAISED);
-  Setup_Menu(menu_config, strings, 0xFFFFL, 0, 0);
+  Window_Box(view, WINDOW_MENU, blue ? BOXSTYLE_BLUE_UP : BOXSTYLE_RAISED);
+  Setup_Menu(view, menu_config, strings, 0xFFFFL, 0, 0);
 
   Keyboard::Clear();
   int selection = -1;  // Selection from user.
   TheGameState().unknown_key() = 0;
   while (selection == -1) {
     Call_Back();
-    selection = Check_Menu(menu_config, strings, 0xFFL, 0);
+    selection = Check_Menu(view, menu_config, strings, 0xFFL, 0);
     // The KN_ESC/KN_LMOUSE/KN_RMOUSE tests were unreachable: any of them
     // already satisfies the != 0 in front of them, so the loop has always
     // exited on the first unrecognized key of any kind.
@@ -751,7 +749,7 @@ int Main_Menu(int timeout) {
   /*
   **	Initialize
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
   Keyboard::Clear();
   starttime = SystemTicks();
 
@@ -809,7 +807,7 @@ int Main_Menu(int timeout) {
 
   Keyboard::Clear();
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kCcGreen, kTBlack,
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
   while (Get_Mouse_State() > 0) {
     Show_Mouse();
@@ -856,18 +854,18 @@ int Main_Menu(int timeout) {
       /*
       **	Display the title and text overlay for the menu.
       */
-      SetLogicPage(TheScreen().hidden_view());
-      Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
-      Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
+      PixelView& hidden = TheScreen().hidden_view();
+      Dialog_Box(hidden, kDialogX, kDialogY, kDialogW, kDialogH);
+      Draw_Caption(hidden, TXT_NONE, kDialogX, kDialogY, kDialogW);
       if constexpr (config::kVirginCheatKeysEnabled) {
 #ifdef DEMO
         Version_Number();
-        Fancy_Text_Print(*LogicPage, "Demo%s", kDialogX + kDialogW - 10,
+        Fancy_Text_Print(hidden, "Demo%s", kDialogX + kDialogW - 10,
                          kDialogY + kDialogH - 20, kGrey, kTBlack,
                          TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                          TheGameState().version_text());
 #else
-        Fancy_Text_Print(*LogicPage, "V.%d%s", kDialogX + kDialogW - 10,
+        Fancy_Text_Print(hidden, "V.%d%s", kDialogX + kDialogW - 10,
                          kDialogY + kDialogH - 20, kGrey, kTBlack,
                          TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                          Version_Number(), TheGameState().version_text(),
@@ -881,12 +879,12 @@ int Main_Menu(int timeout) {
       } else {
 #ifdef DEMO
         Version_Number();
-        Fancy_Text_Print(*LogicPage, "Demo%s", kDialogX + kDialogW - 10,
+        Fancy_Text_Print(hidden, "Demo%s", kDialogX + kDialogW - 10,
                          kDialogY + kDialogH - 20, kGrey, kTBlack,
                          TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                          TheGameState().version_text());
 #else
-        Fancy_Text_Print(*LogicPage, "V.%d%s", kDialogX + kDialogW - 10,
+        Fancy_Text_Print(hidden, "V.%d%s", kDialogX + kDialogW - 10,
                          kDialogY + kDialogH - 20, kGrey, kTBlack,
                          TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                          Version_Number(), TheGameState().version_text());
@@ -900,15 +898,14 @@ int Main_Menu(int timeout) {
       TheScreen().hidden_view().Blit(TheScreen().visible_view());
       Show_Mouse();
 
-      SetLogicPage(TheScreen().visible_view());
-      startbtn.Draw_All(*LogicPage);
+      startbtn.Draw_All(view);
       display = false;
     }
 
     /*
     **	Get and process player input.
     */
-    input = commands->Input(*LogicPage);
+    input = commands->Input(view);
     switch (static_cast<int>(input)) {
 #ifdef NEWMENU
       case ButtonKey(kButtonExpand):
@@ -980,7 +977,7 @@ int Main_Menu(int timeout) {
 
       case KN_RETURN:
         base::At(buttons, curbutton)->IsPressed = true;
-        base::At(buttons, curbutton)->Draw_Me(*LogicPage, true);
+        base::At(buttons, curbutton)->Draw_Me(view, true);
         retval = curbutton;
         process = false;
         break;

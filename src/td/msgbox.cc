@@ -125,11 +125,13 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     b3txt = nullptr;
   }
 
+  PixelView& view = TheScreen().visible_view();
+
   /*
   **	Examine the optional button parameters. Fetch the width and starting
   **	characters for each.
   */
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   int bwidth = 0;   // button width
   int bheight = 0;  // button height
@@ -189,7 +191,6 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   /*
   **	Other inits.
   */
-  SetLogicPage(TheScreen().visible_view());
   TheScreen().visible_page().Blit(seen_buff_save);
 
   /*
@@ -255,13 +256,13 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     TheScreen().sys_mem_page().Blit(TheScreen().visible_view(), 160, 100);
   } else {
 #endif
-    Dialog_Box(*LogicPage, x, y, width, height);
-    Draw_Caption(*LogicPage, Caption, x, y, width);
+    Dialog_Box(view, x, y, width, height);
+    Draw_Caption(view, Caption, x, y, width);
 
     /*
     **	Draw the caption.
     */
-    Fancy_Text_Print(*LogicPage, buffer, x + (20 * factor), y + (25 * factor),
+    Fancy_Text_Print(view, buffer, x + (20 * factor), y + (25 * factor),
                      kCcGreen, kTBlack,
                      TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 #ifdef JAPANESE
@@ -271,7 +272,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   **	Redraw the buttons.
   */
   if (buttonlist) {
-    buttonlist->Draw_All(*LogicPage);
+    buttonlist->Draw_All(view);
   }
   Show_Mouse();
 
@@ -305,14 +306,14 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
           TheScreen().sys_mem_page().Blit(TheScreen().visible_view(), 160, 100);
         } else {
 #endif
-          Dialog_Box(*LogicPage, x, y, width, height);
-          Draw_Caption(*LogicPage, Caption, x, y, width);
+          Dialog_Box(view, x, y, width, height);
+          Draw_Caption(view, Caption, x, y, width);
 
           /*
           **	Draw the caption.
           */
-          Fancy_Text_Print(*LogicPage, buffer, x + (20 * factor),
-                           y + (25 * factor), kCcGreen, kTBlack,
+          Fancy_Text_Print(view, buffer, x + (20 * factor), y + (25 * factor),
+                           kCcGreen, kTBlack,
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 #ifdef JAPANESE
         }
@@ -321,7 +322,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         **	Redraw the buttons.
         */
         if (buttonlist) {
-          buttonlist->Draw_All(*LogicPage);
+          buttonlist->Draw_All(view);
         }
         Show_Mouse();
       }
@@ -334,7 +335,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       /*
       **	Fetch and process input.
       */
-      input = buttonlist->Input(*LogicPage);
+      input = buttonlist->Input(view);
       switch (static_cast<int>(input)) {
         case BUTTON_1 | BUTTON_FLAG:
           selection = base::At(realval, 0);

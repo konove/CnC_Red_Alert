@@ -147,7 +147,7 @@ void GameOptionsClass::Process() {
   TextButtonClass*
       buttonsel[sizeof(_constants) / sizeof(base::At(_constants, 0))];
 
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   **	Build the button list for all of the buttons for this dialog.
@@ -236,7 +236,7 @@ void GameOptionsClass::Process() {
 
   Keyboard::Clear();
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kCcGreen, kTBlack,
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*
@@ -288,13 +288,13 @@ void GameOptionsClass::Process() {
       /*
       **	Draw the background.
       */
-      Window_Box(*LogicPage, WINDOW_EDITOR,
+      Window_Box(view, WINDOW_EDITOR,
                  BOXSTYLE_GREEN_BORDER);  // has border, raised up
 
       /*
       **	Draw the arrows border if requested.
       */
-      Draw_Caption(*LogicPage, TXT_OPTIONS, OptionX, OptionY, OptionWidth);
+      Draw_Caption(view, TXT_OPTIONS, OptionX, OptionY, OptionWidth);
 
       /*
       **	Display the version number at the bottom of the dialog box.
@@ -302,7 +302,7 @@ void GameOptionsClass::Process() {
 #ifdef DEMO
       Version_Number();
       Fancy_Text_Print(
-          *LogicPage, "DEMO%s",
+          view, "DEMO%s",
           ((WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowX] +
             WindowList[static_cast<int>(WINDOW_EDITOR)][kWindowWidth])
            << 3) -
@@ -315,7 +315,7 @@ void GameOptionsClass::Process() {
           TheGameState().version_text());
 #else
       Fancy_Text_Print(
-          *LogicPage, "%s\rV.%d%s",
+          view, "%s\rV.%d%s",
           ((base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
                      kWindowX) +
             base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
@@ -333,8 +333,8 @@ void GameOptionsClass::Process() {
           TheGameState().version_text());
 #endif
 
-      buttons->Draw_All(*LogicPage);
-      TabClass::Hilite_Tab(*LogicPage, 0);
+      buttons->Draw_All(view);
+      TabClass::Hilite_Tab(view, 0);
       Show_Mouse();
       display = false;
     }
@@ -342,7 +342,7 @@ void GameOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    const KeyNumType input = buttons->Input(*LogicPage);
+    const KeyNumType input = buttons->Input(view);
 
     /*
     **	Process Input.
@@ -422,7 +422,7 @@ void GameOptionsClass::Process() {
 
       case KN_RETURN:
         base::At(buttonsel, curbutton - 1)->IsPressed = true;
-        base::At(buttonsel, curbutton - 1)->Draw_Me(*LogicPage, true);
+        base::At(buttonsel, curbutton - 1)->Draw_Me(view, true);
         selection = curbutton;
         pressed = true;
         break;

@@ -801,7 +801,8 @@ bool Client_Remote_Connect() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 static int Net_Join_Dialog() {
-  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
+  PixelView& view = TheScreen().visible_view();
+  const int factor = view.width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -1039,7 +1040,7 @@ static int Net_Join_Dialog() {
     nodbtn.Turn_On();
   }
 
-  Fancy_Text_Print(*LogicPage, "", 0, 0, kCcGreen, kTBlack,
+  Fancy_Text_Print(view, "", 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   TheSession().messages().Init(d_message_x + 2, d_message_y + 2, 4,
@@ -1083,36 +1084,34 @@ static int Net_Join_Dialog() {
         Load_Title_Page(true);
         Set_Palette(ThePalettes().title_palette());
 
-        Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+        Dialog_Box(view, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
         /*...............................................................
         Dialog & Field labels
         ...............................................................*/
-        Draw_Caption(*LogicPage, TXT_JOIN_NETWORK_GAME, d_dialog_x, d_dialog_y,
+        Draw_Caption(view, TXT_JOIN_NETWORK_GAME, d_dialog_x, d_dialog_y,
                      d_dialog_w);
 
         Fancy_Text_Print(
-            *LogicPage, TXT_YOUR_NAME, d_name_x - 5, d_name_y + 1, kCcGreen,
-            kTBlack,
+            view, TXT_YOUR_NAME, d_name_x - 5, d_name_y + 1, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, TXT_SIDE_COLON, d_gdi_x - 5, d_gdi_y + 1, kCcGreen,
-            kTBlack,
+            view, TXT_SIDE_COLON, d_gdi_x - 5, d_gdi_y + 1, kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, TXT_COLOR_COLON, base::At(cbox_x, 0) - 5, d_color_y + 1,
+            view, TXT_COLOR_COLON, base::At(cbox_x, 0) - 5, d_color_y + 1,
             kCcGreen, kTBlack,
             TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, TXT_GAMES, d_gamelist_x + (d_gamelist_w / 2),
+            view, TXT_GAMES, d_gamelist_x + (d_gamelist_w / 2),
             d_gamelist_y - d_txt6_h, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         Fancy_Text_Print(
-            *LogicPage, TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
+            view, TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
             d_playerlist_y - d_txt6_h, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -1120,16 +1119,16 @@ static int Net_Join_Dialog() {
         Join-state-specific labels:
         ...............................................................*/
         if (joinstate > JOIN_NOTHING) {
-          Fancy_Text_Print(*LogicPage, namebuf, d_name_x, d_name_y + 1,
-                           kCcGreen, kTBlack,
+          Fancy_Text_Print(view, namebuf, d_name_x, d_name_y + 1, kCcGreen,
+                           kTBlack,
                            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           if (TheSession().house() == HOUSE_GOOD) {
-            Fancy_Text_Print(*LogicPage, TXT_G_D_I, d_gdi_x, d_gdi_y + 1,
-                             kCcGreen, kTBlack,
+            Fancy_Text_Print(view, TXT_G_D_I, d_gdi_x, d_gdi_y + 1, kCcGreen,
+                             kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           } else {
-            Fancy_Text_Print(*LogicPage, TXT_N_O_D, d_gdi_x, d_gdi_y + 1,
-                             kCcGreen, kTBlack,
+            Fancy_Text_Print(view, TXT_N_O_D, d_gdi_x, d_gdi_y + 1, kCcGreen,
+                             kTBlack,
                              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
         }
@@ -1169,7 +1168,7 @@ static int Net_Join_Dialog() {
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(*LogicPage);
+        commands->Draw_All(view);
       }
 
       /*..................................................................
@@ -1177,18 +1176,18 @@ static int Net_Join_Dialog() {
       ..................................................................*/
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          LogicPage->FillRect(base::At(cbox_x, i) + 1, d_color_y + 1,
-                              base::At(cbox_x, i) + 1 + d_color_w - 2,
-                              d_color_y + 1 + d_color_h - 2,
-                              static_cast<unsigned char>(
-                                  base::At(TheSession().graphic_colors(), i)));
+          view.FillRect(base::At(cbox_x, i) + 1, d_color_y + 1,
+                        base::At(cbox_x, i) + 1 + d_color_w - 2,
+                        d_color_y + 1 + d_color_h - 2,
+                        static_cast<unsigned char>(
+                            base::At(TheSession().graphic_colors(), i)));
 
           if (i == TheSession().color_index()) {
-            Draw_Box(*LogicPage, base::At(cbox_x, i), d_color_y, d_color_w,
-                     d_color_h, BOXSTYLE_GREEN_DOWN, false);
+            Draw_Box(view, base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
+                     BOXSTYLE_GREEN_DOWN, false);
           } else {
-            Draw_Box(*LogicPage, base::At(cbox_x, i), d_color_y, d_color_w,
-                     d_color_h, BOXSTYLE_GREEN_RAISED, false);
+            Draw_Box(view, base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
+                     BOXSTYLE_GREEN_RAISED, false);
           }
         }
       }
@@ -1201,13 +1200,12 @@ static int Net_Join_Dialog() {
       - If we've been rejected from a game, print that message
       ..................................................................*/
       if (display >= REDRAW_MESSAGE) {
-        Draw_Box(*LogicPage, d_message_x, d_message_y, d_message_w, d_message_h,
+        Draw_Box(view, d_message_x, d_message_y, d_message_w, d_message_h,
                  BOXSTYLE_GREEN_BORDER, true);
-        TheSession().messages().Draw(*LogicPage);
+        TheSession().messages().Draw(view);
 
-        LogicPage->FillRect(d_dialog_x + 2, d_msg1_y,
-                            d_dialog_x + d_dialog_w - 4, d_msg5_y + d_txt6_h,
-                            kBlack);
+        view.FillRect(d_dialog_x + 2, d_msg1_y, d_dialog_x + d_dialog_w - 4,
+                      d_msg5_y + d_txt6_h, kBlack);
 
         if (joinstate == JOIN_CONFIRMED && parms_received) {
           /*............................................................
@@ -1220,14 +1218,14 @@ static int Net_Join_Dialog() {
                 TheSession().scenarios().at(TheSession().scenario_index()));
 
             Fancy_Text_Print(
-                *LogicPage, txt, d_dialog_cx, d_msg1_y, kCcGreen, kTBlack,
+                view, txt, d_dialog_cx, d_msg1_y, kCcGreen, kTBlack,
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_CENTER);
           } else {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p,
                            Text_String(TXT_NOT_FOUND));
 
             Fancy_Text_Print(
-                *LogicPage, txt, d_dialog_cx, d_msg1_y, kCcNodColor, kTBlack,
+                view, txt, d_dialog_cx, d_msg1_y, kCcNodColor, kTBlack,
                 TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_CENTER);
           }
 
@@ -1237,7 +1235,7 @@ static int Net_Join_Dialog() {
           p = Text_String(TXT_START_CREDITS_COLON);
           absl::SNPrintF(txt, sizeof(txt), "%s %d", p, TheSession().credits());
           Fancy_Text_Print(
-              *LogicPage, txt, d_dialog_cx, d_msg2_y, kCcGreen, kTBlack,
+              view, txt, d_dialog_cx, d_msg2_y, kCcGreen, kTBlack,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_CENTER);
 
           /*............................................................
@@ -1247,9 +1245,8 @@ static int Net_Join_Dialog() {
           absl::SNPrintF(txt, sizeof(txt), "%s %d", p,
                          TheSession().unit_count());
           Fancy_Text_Print(
-              *LogicPage, txt,
-              d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p), d_msg3_y,
-              kCcGreen, kTBlack,
+              view, txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
+              d_msg3_y, kCcGreen, kTBlack,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           p = Text_String(TXT_LEVEL);
@@ -1259,7 +1256,7 @@ static int Net_Join_Dialog() {
           } else {
             absl::SNPrintF(txt, sizeof(txt), "%s **", p);
           }
-          Fancy_Text_Print(*LogicPage, txt,
+          Fancy_Text_Print(view, txt,
                            d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
                                String_Pixel_Width(p),
                            d_msg3_y, kCcGreen, kTBlack,
@@ -1275,9 +1272,8 @@ static int Net_Join_Dialog() {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_OFF));
           }
           Fancy_Text_Print(
-              *LogicPage, txt,
-              d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p), d_msg4_y,
-              kCcGreen, kTBlack,
+              view, txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
+              d_msg4_y, kCcGreen, kTBlack,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
@@ -1291,9 +1287,8 @@ static int Net_Join_Dialog() {
           }
 
           Fancy_Text_Print(
-              *LogicPage, txt,
-              d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p), d_msg5_y,
-              kCcGreen, kTBlack,
+              view, txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
+              d_msg5_y, kCcGreen, kTBlack,
               TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
@@ -1306,7 +1301,7 @@ static int Net_Join_Dialog() {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_OFF));
           }
 
-          Fancy_Text_Print(*LogicPage, txt,
+          Fancy_Text_Print(view, txt,
                            d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
                                String_Pixel_Width(p),
                            d_msg4_y, kCcGreen, kTBlack,
@@ -1327,7 +1322,7 @@ static int Net_Join_Dialog() {
                              Text_String(TXT_OFF));
             }
           }
-          Fancy_Text_Print(*LogicPage, txt,
+          Fancy_Text_Print(view, txt,
                            d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
                                String_Pixel_Width(p),
                            d_msg5_y, kCcGreen, kTBlack,
@@ -1339,7 +1334,7 @@ static int Net_Join_Dialog() {
           ...............................................................*/
           if (joinstate == JOIN_REJECTED) {
             Fancy_Text_Print(
-                *LogicPage, TXT_REQUEST_DENIED, d_dialog_cx, d_msg3_y, kCcGreen,
+                view, TXT_REQUEST_DENIED, d_dialog_cx, d_msg3_y, kCcGreen,
                 kTBlack,
                 TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
           }
@@ -1353,7 +1348,7 @@ static int Net_Join_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input(*LogicPage);
+    input = commands->Input(view);
 
     /*
     ---------------------------- Process input ----------------------------
@@ -1619,7 +1614,7 @@ static int Net_Join_Dialog() {
         If 'Input' returned 1, it means refresh the message display.
         ...............................................................*/
         if (i == 1) {
-          TheSession().messages().Draw(*LogicPage);
+          TheSession().messages().Draw(view);
         } else {
           /*...............................................................
           If 'Input' returned 2, it means redraw the message display.
@@ -2855,8 +2850,9 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 static int Net_New_Dialog() {
+  PixelView& view = TheScreen().visible_view();
   /* ###Change collision detected! C:\PROJECTS\CODE\NETDLG.CPP... */
-  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
+  const int factor = view.width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -3281,11 +3277,11 @@ static int Net_New_Dialog() {
       /*
       ** Wipe the background behind the unit count then reprint it
       */
-      LogicPage->FillRect(d_count_x + d_count_w + (2 * factor), d_count_y,
-                          d_count_x + d_count_w + (2 * factor) + 20,
-                          d_count_y + 12, 0);
+      view.FillRect(d_count_x + d_count_w + (2 * factor), d_count_y,
+                    d_count_x + d_count_w + (2 * factor) + 20, d_count_y + 12,
+                    0);
       absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
-      Fancy_Text_Print(*LogicPage, txt, d_count_x + d_count_w + (2 * factor),
+      Fancy_Text_Print(view, txt, d_count_x + d_count_w + (2 * factor),
                        d_count_y, kCcGreen, kTBlack,
                        TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
       display = REDRAW_NONE;
@@ -3303,38 +3299,37 @@ static int Net_New_Dialog() {
         Load_Title_Page(true);
         Set_Palette(ThePalettes().title_palette());
 
-        Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+        Dialog_Box(view, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
         /*...............................................................
         Dialog & Field labels
         ...............................................................*/
-        Draw_Caption(*LogicPage, TXT_NETGAME_SETUP, d_dialog_x, d_dialog_y,
+        Draw_Caption(view, TXT_NETGAME_SETUP, d_dialog_x, d_dialog_y,
                      d_dialog_w);
 
         Fancy_Text_Print(
-            *LogicPage, TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
+            view, TXT_PLAYERS, d_playerlist_x + (d_playerlist_w / 2),
             d_playerlist_y - d_txt6_h, kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_CENTER);
 
         Fancy_Text_Print(
-            *LogicPage, TXT_SCENARIOS,
-            d_scenariolist_x + (d_scenariolist_w / 2),
+            view, TXT_SCENARIOS, d_scenariolist_x + (d_scenariolist_w / 2),
             d_scenariolist_y - d_txt6_h, kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_CENTER);
 
         Fancy_Text_Print(
-            *LogicPage, TXT_COUNT, d_count_x - (2 * factor), d_count_y,
-            kCcGreen, kTBlack,
+            view, TXT_COUNT, d_count_x - (2 * factor), d_count_y, kCcGreen,
+            kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
-        Fancy_Text_Print(*LogicPage, txt, d_count_x + d_count_w + (2 * factor),
+        Fancy_Text_Print(view, txt, d_count_x + d_count_w + (2 * factor),
                          d_count_y, kCcGreen, kTBlack,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
 
         Fancy_Text_Print(
-            *LogicPage, TXT_LEVEL, d_level_x - (2 * factor), d_level_y,
-            kCcGreen, kTBlack,
+            view, TXT_LEVEL, d_level_x - (2 * factor), d_level_y, kCcGreen,
+            kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
 
         if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
@@ -3342,12 +3337,12 @@ static int Net_New_Dialog() {
         } else {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
-        Fancy_Text_Print(*LogicPage, txt, d_level_x + d_level_w + (2 * factor),
+        Fancy_Text_Print(view, txt, d_level_x + d_level_w + (2 * factor),
                          d_level_y, kCcGreen, kTBlack,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
 
         Fancy_Text_Print(
-            *LogicPage, TXT_START_CREDITS_COLON, d_credits_x - (5 * factor),
+            view, TXT_START_CREDITS_COLON, d_credits_x - (5 * factor),
             d_credits_y + (1 * factor), kCcGreen, kTBlack,
             TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_RIGHT);
       }
@@ -3356,7 +3351,7 @@ static int Net_New_Dialog() {
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(*LogicPage);
+        commands->Draw_All(view);
       }
 
       /*..................................................................
@@ -3367,9 +3362,9 @@ static int Net_New_Dialog() {
       - If we've been rejected from a game, print that message
       ..................................................................*/
       if (display >= REDRAW_MESSAGE) {
-        Draw_Box(*LogicPage, d_message_x, d_message_y, d_message_w, d_message_h,
+        Draw_Box(view, d_message_x, d_message_y, d_message_w, d_message_h,
                  BOXSTYLE_GREEN_BORDER, true);
-        TheSession().messages().Draw(*LogicPage);
+        TheSession().messages().Draw(view);
       }
 
       Show_Mouse();
@@ -3379,7 +3374,7 @@ static int Net_New_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input(*LogicPage);
+    input = commands->Input(view);
 
     /*
     ---------------------------- Process input ----------------------------
@@ -3432,12 +3427,12 @@ static int Net_New_Dialog() {
             base::At(TheSession().unit_count_min(), TheSession().bases());
 
         Hide_Mouse();
-        LogicPage->FillRect(d_count_x + d_count_w + (2 * factor), d_count_y,
-                            d_count_x + d_count_w + (14 * factor),
-                            d_count_y + (6 * factor), kBlack);
+        view.FillRect(d_count_x + d_count_w + (2 * factor), d_count_y,
+                      d_count_x + d_count_w + (14 * factor),
+                      d_count_y + (6 * factor), kBlack);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
-        Fancy_Text_Print(*LogicPage, txt, d_count_x + d_count_w + (2 * factor),
+        Fancy_Text_Print(view, txt, d_count_x + d_count_w + (2 * factor),
                          d_count_y, kCcGreen, kTBlack,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
         Show_Mouse();
@@ -3453,16 +3448,16 @@ static int Net_New_Dialog() {
             std::min(levelgauge.Get_Value() + 1, MPLAYER_BUILD_LEVEL_MAX);
 
         Hide_Mouse();
-        LogicPage->FillRect(d_level_x + d_level_w + (2 * factor), d_level_y,
-                            d_level_x + d_level_w + (14 * factor),
-                            d_level_y + (6 * factor), kBlack);
+        view.FillRect(d_level_x + d_level_w + (2 * factor), d_level_y,
+                      d_level_x + d_level_w + (14 * factor),
+                      d_level_y + (6 * factor), kBlack);
 
         if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
           absl::SNPrintF(txt, sizeof(txt), "%d", TheWorld().build_level());
         } else {
           absl::SNPrintF(txt, sizeof(txt), "**");
         }
-        Fancy_Text_Print(*LogicPage, txt, d_level_x + d_level_w + (2 * factor),
+        Fancy_Text_Print(view, txt, d_level_x + d_level_w + (2 * factor),
                          d_level_y, kCcGreen, kTBlack,
                          TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
         Show_Mouse();
@@ -3747,7 +3742,7 @@ static int Net_New_Dialog() {
         If 'Input' returned 1, it means refresh the message display.
         ...............................................................*/
         if (i == 1) {
-          TheSession().messages().Draw(*LogicPage);
+          TheSession().messages().Draw(view);
         }
 
         /*...............................................................
@@ -4483,7 +4478,8 @@ static void Wait_For_Focus() {
  * HISTORY: * 5/24/96 10:34AM ST : Created *
  *=============================================================================================*/
 static int Net_Fake_New_Dialog() {
-  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
+  PixelView& view = TheScreen().visible_view();
+  const int factor = view.width() == 320 ? 1 : 2;
 
   const int d_dialog_w = 120 * factor;                       // dialog width
   const int d_dialog_h = 80 * factor;                        // dialog height
@@ -4522,10 +4518,9 @@ static int Net_Fake_New_Dialog() {
   // than the shared string table.
   char buffer[80 * 3];
   port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, TheScreen().visible_view().height(), width,
-                       height);
+  Format_Window_String(buffer, view.height(), width, height);
 
 #if (defined(GERMAN) || defined(FRENCH))
   d_dialog_w = width + 25 * factor;
@@ -4715,14 +4710,14 @@ static int Net_Fake_New_Dialog() {
         Load_Title_Page(true);
         Set_Palette(ThePalettes().title_palette());
 
-        Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+        Dialog_Box(view, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
         /*...............................................................
         Dialog & Field labels
         ...............................................................*/
-        Draw_Caption(*LogicPage, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
+        Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(*LogicPage, buffer, d_dialog_cx - (width / 2),
+        Fancy_Text_Print(view, buffer, d_dialog_cx - (width / 2),
                          d_dialog_y + (25 * factor), kCcGreen, kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
@@ -4731,7 +4726,7 @@ static int Net_Fake_New_Dialog() {
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(*LogicPage);
+        commands->Draw_All(view);
       }
 
       Show_Mouse();
@@ -4741,7 +4736,7 @@ static int Net_Fake_New_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input(*LogicPage);
+    input = commands->Input(view);
 
     /*
     ---------------------------- Process input ----------------------------
@@ -5119,7 +5114,8 @@ static int Net_Fake_New_Dialog() {
  *=============================================================================================*/
 
 static int Net_Fake_Join_Dialog() {
-  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
+  PixelView& view = TheScreen().visible_view();
+  const int factor = view.width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -5163,10 +5159,9 @@ static int Net_Fake_Join_Dialog() {
   // than the shared string table.
   char buffer[80 * 3];
   port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, TheScreen().visible_view().height(), width,
-                       height);
+  Format_Window_String(buffer, view.height(), width, height);
 
 #if (defined(GERMAN) || defined(FRENCH))
   d_dialog_w = width + 25 * factor;
@@ -5261,7 +5256,7 @@ static int Net_Fake_Join_Dialog() {
 
   playerlist.Set_Selected_Style(ColorListClass::SELECT_NONE);
 
-  Fancy_Text_Print(*LogicPage, "", 0, 0, kCcGreen, kTBlack,
+  Fancy_Text_Print(view, "", 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*
@@ -5315,14 +5310,14 @@ static int Net_Fake_Join_Dialog() {
         Load_Title_Page(true);
         Set_Palette(ThePalettes().title_palette());
 
-        Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+        Dialog_Box(view, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
         /*...............................................................
         Dialog & Field labels
         ...............................................................*/
-        Draw_Caption(*LogicPage, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
+        Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-        Fancy_Text_Print(*LogicPage, buffer, d_dialog_cx - (width / 2),
+        Fancy_Text_Print(view, buffer, d_dialog_cx - (width / 2),
                          d_dialog_y + (25 * factor), kCcGreen, kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -5341,7 +5336,7 @@ static int Net_Fake_Join_Dialog() {
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All(*LogicPage);
+        commands->Draw_All(view);
       }
 
       Show_Mouse();
@@ -5351,7 +5346,7 @@ static int Net_Fake_Join_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input(*LogicPage);
+    input = commands->Input(view);
 
     /*
     ---------------------------- Process input ----------------------------

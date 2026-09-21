@@ -97,7 +97,7 @@ CreditClass::CreditClass() = default;
  *=============================================================================================*/
 // #define XX (320 - 120)
 // #define WW 50
-void CreditClass::Graphic_Logic(bool forced) {
+void CreditClass::Graphic_Logic(PixelView& view, bool forced) {
   const int scale =
       static_cast<int>(base::Bit<uint32_t>(Get_Resolution_Factor()));
   const int xx = TheScreen().visible_view().width() - (120 * scale);
@@ -117,8 +117,8 @@ void CreditClass::Graphic_Logic(bool forced) {
     /*
     **	Display the new current value.
     */
-    TabClass::Draw_Credits_Tab(*LogicPage);
-    Fancy_Text_Print(*LogicPage, "%ld", xx, 0, 11, kTBlack,
+    TabClass::Draw_Credits_Tab(view);
+    Fancy_Text_Print(view, "%ld", xx, 0, 11, kTBlack,
                      TPF_GREEN12_GRAD | TPF_CENTER | TPF_USE_GRAD_PAL, Current);
 
     IsToRedraw = false;

@@ -132,7 +132,7 @@ void TabClass::Draw_It(PixelView& view, bool complete) {
     view.Unlock();
   }
 
-  Credits.Graphic_Logic(complete || IsTabToRedraw);
+  Credits.Graphic_Logic(view, complete || IsTabToRedraw);
   IsTabToRedraw = false;
 }
 

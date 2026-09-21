@@ -428,7 +428,7 @@ int MapEditClass::Placement_Dialog() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
   if (LastChoice >= ObjCount) {
     LastChoice = 0;
   }
@@ -501,8 +501,8 @@ int MapEditClass::Placement_Dialog() {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(*LogicPage, kDialogX, kDialogY, kDialogW, kDialogH);
-        Draw_Caption(*LogicPage, TXT_NONE, kDialogX, kDialogY, kDialogW);
+        Dialog_Box(view, kDialogX, kDialogY, kDialogW, kDialogH);
+        Draw_Caption(view, TXT_NONE, kDialogX, kDialogY, kDialogW);
       }
 
       /*------------------------------------------------------------------
@@ -522,17 +522,17 @@ int MapEditClass::Placement_Dialog() {
         base::At(base::At(WindowList, static_cast<int>(WINDOW_EDITOR)),
                  kWindowHeight) = kPictureH;
         Change_Window(static_cast<int>(WINDOW_EDITOR));
-        Draw_Box(*LogicPage, kPictureX, kPictureY, kPictureW, kPictureH,
+        Draw_Box(view, kPictureX, kPictureY, kPictureW, kPictureH,
                  BOXSTYLE_GREEN_DOWN, true);
-        curobj->Display(*LogicPage, Screen::kWidth * 4, Screen::kHeight / 2,
+        curobj->Display(view, Screen::kWidth * 4, Screen::kHeight / 2,
                         WINDOW_EDITOR, LastHouse);
 
         /*
         ........................ Erase the grid .........................
         */
-        LogicPage->FillRect(kGridX - (kGridblockW * 2), kGridY,
-                            kGridX + (kGridsize * kGridblockW),
-                            kGridY + (kGridsize * kGridblockH), kBlack);
+        view.FillRect(kGridX - (kGridblockW * 2), kGridY,
+                      kGridX + (kGridsize * kGridblockW),
+                      kGridY + (kGridsize * kGridblockH), kBlack);
 
         /*
         .............. Draw a box for every cell occupied ...............
@@ -544,8 +544,8 @@ int MapEditClass::Placement_Dialog() {
           occupy = occupy.subspan(1);
           x = kGridX + ((cell % MAP_CELL_W) * kGridblockW);
           y = kGridY + ((cell / MAP_CELL_W) * kGridblockH);
-          LogicPage->FillRect(x, y, x + kGridblockW - 1, y + kGridblockH - 1,
-                              kCcBrightGreen);
+          view.FillRect(x, y, x + kGridblockW - 1, y + kGridblockH - 1,
+                        kCcBrightGreen);
         }
 
         /*
@@ -553,13 +553,13 @@ int MapEditClass::Placement_Dialog() {
         */
         for (y = 0; y <= kGridsize; y++) {
           for (x = 0; x <= kGridsize; x++) {
-            LogicPage->DrawLine(
-                kGridX + (x * kGridblockW), kGridY, kGridX + (x * kGridblockW),
-                kGridY + (kGridsize * kGridblockH), kCcGreenShadow);
+            view.DrawLine(kGridX + (x * kGridblockW), kGridY,
+                          kGridX + (x * kGridblockW),
+                          kGridY + (kGridsize * kGridblockH), kCcGreenShadow);
           }
-          LogicPage->DrawLine(kGridX, kGridY + (y * kGridblockH),
-                              kGridX + (kGridsize * kGridblockW),
-                              kGridY + (y * kGridblockH), kCcGreenShadow);
+          view.DrawLine(kGridX, kGridY + (y * kGridblockH),
+                        kGridX + (kGridsize * kGridblockW),
+                        kGridY + (y * kGridblockH), kCcGreenShadow);
         }
 
         /*...............................................................
@@ -568,7 +568,7 @@ int MapEditClass::Placement_Dialog() {
         functions won't work!
         ...............................................................*/
         Fancy_Text_Print(
-            *LogicPage, curobj->Full_Name(), kPictureCx, kPictureY + kMargin,
+            view, curobj->Full_Name(), kPictureCx, kPictureY + kMargin,
             kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
@@ -637,7 +637,7 @@ int MapEditClass::Placement_Dialog() {
       /*
       .......................... Redraw buttons ..........................
       */
-      commands->Draw_All(*LogicPage);
+      commands->Draw_All(view);
       Show_Mouse();
       display = REDRAW_NONE;
     }
@@ -645,7 +645,7 @@ int MapEditClass::Placement_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input(*LogicPage);  // user input
+    const KeyNumType input = commands->Input(view);  // user input
 
     /*
     ------------------------- Process user input --------------------------

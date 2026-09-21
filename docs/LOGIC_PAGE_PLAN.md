@@ -471,3 +471,51 @@ reset in `~PixelView` (`:60-64`) and the declarations at `src/sdllib/pixel_buffe
   `-NEWGAMESCG01EA -QUITFRAME100` reports no memory errors with leak totals byte-identical to phases
   2, 3a and 3b in both games (RA 29,823 bytes in 73 allocations, TD 17,272 in 215). The real-display
   run now covers phases 0 through 4.
+
+- 2026-09-21: phase 5 done for both games. Every modal dialog that set the page one way now names
+  the view it draws to, and so does every dialog that silently inherited one: `Net_Join_Dialog`,
+  `Net_New_Dialog`, both `Net_Fake_*_Dialog`s and the nine null-modem dialogs never set the page at
+  all, they read whatever their caller left behind. About 340 reads in Red Alert and 400 in Tiberian
+  Dawn became a local `PixelView& view = TheScreen().visible_view();` and the argument the leaf
+  primitives have taken since phase 2. Both `Main_Menu`s name two pages, since they draw the menu to
+  the hidden page and blit it forward; RA's `Show_Who_Was_Responsible` names the hidden view. Nine
+  helpers below these dialogs took a leading `PixelView&` instead: `Flash_Line`, `Setup_Menu`,
+  `Check_Menu`, `MapEditClass::Draw_Member`, `CreditClass::Graphic_Logic`, `EgoClass::Render` and
+  `Wipe`, and `ToolTipClass::Show`, `Unshow` and `Move`.
+
+  Three things the plan did not anticipate, all of them now done:
+  - **The plan's own phase 5 count was short.** It listed 54 RA and 61 TD one-way sets, but the
+    dialogs that _inherit_ a page are the same work and were not counted; `src/ra/nulldlg.cc` alone
+    has five of them, and TD's `Net_Fake_New_Dialog` and `Net_Fake_Join_Dialog` were missed by the
+    scripted survey entirely -- `#ifdef VIRTUAL_SUBNET_SERVER` opens a brace in both branches, so a
+    brace-depth scan of `src/td/netdlg.cc` never closes another function after line 4810. A sweep
+    like this needs two assertions, not better parsing: the scan must end a file at depth zero, and
+    every mention must fall inside exactly one function it emitted. `src/td/netdlg.cc` was the only
+    file in the tree that failed the first.
+  - **Eighteen calls needed a font, not a page** (c59f78d7).
+    `Fancy_Text_Print(view, TXT_NONE, 0, 0, ...)` draws nothing -- `Simple_Text_Print` picks the
+    font, spacing and palette before it looks at the text and only draws inside `if (text && *text)`
+    -- so these calls existed to set up the `String_Pixel_Width` on the next line. Most are in
+    gadget constructors, which run before a dialog has a page at all. That half of
+    `Simple_Text_Print` is now `Select_Text_Font()`, which takes no view. Without it, removing the
+    last sets would have left those constructors dereferencing a global nothing sets.
+  - **`src/ra/confdlg.*` and `src/ra/descdlg.*` are deleted** (97a17d47). `src/ra/CMakeLists.txt`
+    excludes all four, so they have never been compiled by this build, and nothing refers to
+    `ConfirmationClass` or `DescriptionClass` in `src/`. The `ra/bar.cc` case from phase 1, only
+    clearer.
+
+  Deviations worth recording: phase 4's sweep had left nine `Draw_Entry` / `Draw_It` bodies drawing
+  to `view` in one branch and to the global in the other, fixed first in 40c620dc;
+  `ToolTipClass::Show` and `Unshow` pulled two of winbits' 29 call sites forward out of phase 6; and
+  `WOL_GameSetupDialog::ProcessGuestRequest` and `ClearAllAccepts` name the visible view locally
+  rather than take a parameter, which would have cascaded into `rawolapi.cc`.
+
+  Verification: both build dirs clean, 692 tests pass, both save/load smoke scripts pass (RA 240
+  object positions, TD 5,742 game states identical across save/load), and ASan
+  `-NEWGAMESCG01EA -QUITFRAME100` reports no memory errors with leak totals byte-identical to phases
+  2 through 4 in both games (RA 29,823 bytes in 73 allocations, TD 17,272 in 215). The real-display
+  run now covers phases 0 through 5 and is still outstanding.
+
+  What is left for phase 6 is exactly what the plan named, plus two items it did not: the five
+  `LogicPage` reads in `src/td/debug.cc` sit inside an `#ifdef NEVER` block that compiles in no
+  configuration, and `src/td/findpath.cc`'s debug path holds a save/restore pair of its own.

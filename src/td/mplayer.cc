@@ -219,7 +219,7 @@ GameType Select_MPlayer_Game() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   ............................ Create the list .............................
@@ -247,7 +247,7 @@ GameType Select_MPlayer_Game() {
 
   Keyboard::Clear();
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kCcGreen, kTBlack,
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, kCcGreen, kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*
@@ -284,9 +284,9 @@ GameType Select_MPlayer_Game() {
         /*
         ..................... Draw the background .......................
         */
-        Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-        Draw_Caption(*LogicPage, TXT_SELECT_MPLAYER_GAME, d_dialog_x,
-                     d_dialog_y, d_dialog_w);
+        Dialog_Box(view, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+        Draw_Caption(view, TXT_SELECT_MPLAYER_GAME, d_dialog_x, d_dialog_y,
+                     d_dialog_w);
       }
       /*
       .......................... Redraw buttons ..........................
@@ -301,7 +301,7 @@ GameType Select_MPlayer_Game() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input(*LogicPage);  // input from user
+    const KeyNumType input = commands->Input(view);  // input from user
 
     /*
     ............................ Process input ............................
@@ -371,7 +371,7 @@ GameType Select_MPlayer_Game() {
       base::At(buttons, curbutton)->Turn_On();
       //			buttons[curbutton]->Flag_To_Redraw();
       base::At(buttons, curbutton)->IsPressed = true;
-      base::At(buttons, curbutton)->Draw_Me(*LogicPage, true);
+      base::At(buttons, curbutton)->Draw_Me(view, true);
 
       switch (selection) {
         case kButtonModemserial:
@@ -1293,7 +1293,7 @@ int Surrender_Dialog() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   ......................... Create the button list .........................
@@ -1334,14 +1334,14 @@ int Surrender_Dialog() {
       */
       Hide_Mouse();
       if (display >= REDRAW_BACKGROUND) {
-        Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-        Draw_Caption(*LogicPage, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
+        Dialog_Box(view, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+        Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
         /*
         ....................... Draw the captions .......................
         */
         Fancy_Text_Print(
-            *LogicPage, Text_String(TXT_SURRENDER), d_dialog_cx,
+            view, Text_String(TXT_SURRENDER), d_dialog_cx,
             d_dialog_y + d_topmargin, kCcGreen, kTBlack,
             TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
@@ -1359,7 +1359,7 @@ int Surrender_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input(*LogicPage);
+    const KeyNumType input = commands->Input(view);
 
     /*
     ............................ Process input ............................

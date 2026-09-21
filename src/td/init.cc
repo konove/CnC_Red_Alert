@@ -841,7 +841,6 @@ bool Select_Game(bool fade) {
       TheTheme().Queue_Song(THEME_NONE);
       TheSession().type() = GAME_INTERNET;
       display = false;
-      SetLogicPage(TheScreen().visible_view());
     }
 
     while (process) {
@@ -898,23 +897,23 @@ bool Select_Game(bool fade) {
           fade = false;
         }
 
-        SetLogicPage(TheScreen().visible_view());
+        PixelView& view = TheScreen().visible_view();
         if constexpr (config::kVirginCheatKeysEnabled) {
           Fancy_Text_Print(
-              *LogicPage, "V.%d%s", TheScreen().visible_view().width() - 1,
+              view, "V.%d%s", TheScreen().visible_view().width() - 1,
               TheScreen().visible_view().height() - 10, kGrey, kTBlack,
               TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT, Version_Number(),
               TheGameState().version_text(), FOREIGN_VERSION_NUMBER);
         } else {
 #ifdef DEMO
           Version_Number();
-          Fancy_Text_Print(*LogicPage, "DEMO V%s",
+          Fancy_Text_Print(view, "DEMO V%s",
                            TheScreen().visible_view().width() - 1,
                            TheScreen().visible_view().height() - 10, kGrey,
                            kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                            TheGameState().version_text());
 #else
-          Fancy_Text_Print(*LogicPage, "V.%d%s",
+          Fancy_Text_Print(view, "V.%d%s",
                            TheScreen().visible_view().width() - 1,
                            TheScreen().visible_view().height() - 10, kGrey,
                            kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
@@ -1967,7 +1966,6 @@ bool Select_Game(bool fade) {
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
   TheScreen().hidden_page().Clear();
   TheScreen().visible_page().Clear();
-  SetLogicPage(TheScreen().visible_view());
   TheMap().Flag_To_Redraw();
   Call_Back();
   TheMap().Render();

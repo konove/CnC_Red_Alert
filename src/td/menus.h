@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <span>
 
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
 
 struct MenuConfig {
@@ -16,10 +17,11 @@ struct MenuConfig {
   int highlight_color = kPink;
 };
 
-void Setup_Menu(const MenuConfig& menu, std::span<const char* const> labels,
-                uint32_t visible_items, int bit_offset, int line_spacing);
-int Check_Menu(MenuConfig& menu, std::span<const char* const> text,
-               uint32_t field, int index);
+void Setup_Menu(PixelView& view, const MenuConfig& menu,
+                std::span<const char* const> labels, uint32_t visible_items,
+                int bit_offset, int line_spacing);
+int Check_Menu(PixelView& view, MenuConfig& menu,
+               std::span<const char* const> text, uint32_t field, int index);
 int Do_Menu(std::span<const char* const> strings, bool blue);
 int Main_Menu(int timeout);
 

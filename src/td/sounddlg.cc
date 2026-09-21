@@ -291,7 +291,7 @@ void SoundControlsClass::Process() {
   /*
   **	Set up the window.  Window x-coords are in bytes not pixels.
   */
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   /*
   **	Create Buttons.
@@ -367,33 +367,32 @@ void SoundControlsClass::Process() {
       /*
       **	Draw the background.
       */
-      Dialog_Box(*LogicPage, Option_X, Option_Y, Option_Width, Option_Height);
+      Dialog_Box(view, Option_X, Option_Y, Option_Width, Option_Height);
 
-      Draw_Caption(*LogicPage, TXT_SOUND_CONTROLS, Option_X, Option_Y,
-                   Option_Width);
+      Draw_Caption(view, TXT_SOUND_CONTROLS, Option_X, Option_Y, Option_Width);
 
       /*
       ** Draw the Music, Speech & Sound titles.
       */
       Fancy_Text_Print(
-          *LogicPage, TXT_MUSIC_VOLUME, Option_X + MSlider_X - 5,
+          view, TXT_MUSIC_VOLUME, Option_X + MSlider_X - 5,
           Option_Y + MSlider_Y - 2, kCcGreen, kTBlack,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
       Fancy_Text_Print(
-          *LogicPage, TXT_SOUND_VOLUME, Option_X + FXSlider_X - 5,
+          view, TXT_SOUND_VOLUME, Option_X + FXSlider_X - 5,
           Option_Y + FXSlider_Y - 2, kCcGreen, kTBlack,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
 
       Fancy_Text_Print(
-          *LogicPage, TXT_SHUFFLE, Option_X + Shuffle_X - 5,
-          Option_Y + Shuffle_Y + 1, kCcGreen, kTBlack,
+          view, TXT_SHUFFLE, Option_X + Shuffle_X - 5, Option_Y + Shuffle_Y + 1,
+          kCcGreen, kTBlack,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
       Fancy_Text_Print(
-          *LogicPage, TXT_REPEAT, Option_X + Repeat_X - 5,
-          Option_Y + Repeat_Y + 1, kCcGreen, kTBlack,
+          view, TXT_REPEAT, Option_X + Repeat_X - 5, Option_Y + Repeat_Y + 1,
+          kCcGreen, kTBlack,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
 
-      optionsbtn->Draw_All(*LogicPage);
+      optionsbtn->Draw_All(view);
       Show_Mouse();
       display = false;
     }
@@ -401,7 +400,7 @@ void SoundControlsClass::Process() {
     /*
     **	Get user input.
     */
-    const KeyNumType input = optionsbtn->Input(*LogicPage);
+    const KeyNumType input = optionsbtn->Input(view);
 
     /*
     **	Process Input.

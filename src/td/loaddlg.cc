@@ -262,10 +262,11 @@ bool LoadOptionsClass::Process() {
                     TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_edit_x,
                     d_edit_y, d_edit_w, -1, EditClass::ALPHANUMERIC);
 
+  PixelView& view = TheScreen().visible_view();
+
   /*
   **	Initialize.
   */
-  SetLogicPage(TheScreen().visible_view());
 
   Fill_List(&listbtn);
 
@@ -338,13 +339,13 @@ bool LoadOptionsClass::Process() {
       /*
       **	Display the dialog box.
       */
-      Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
-      Draw_Caption(*LogicPage, caption, d_dialog_x, d_dialog_y, d_dialog_w);
+      Dialog_Box(view, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+      Draw_Caption(view, caption, d_dialog_x, d_dialog_y, d_dialog_w);
 
       if (Style == SAVE) {
         Fancy_Text_Print(
-            *LogicPage, TXT_MISSION_DESCRIPTION, d_dialog_cx,
-            d_edit_y - d_txt8_h, kCcGreen, kTBlack,
+            view, TXT_MISSION_DESCRIPTION, d_dialog_cx, d_edit_y - d_txt8_h,
+            kCcGreen, kTBlack,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_CENTER | TPF_NOSHADOW);
       }
 
@@ -359,7 +360,7 @@ bool LoadOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    KeyNumType input = commands->Input(*LogicPage);
+    KeyNumType input = commands->Input(view);
 
     /*
     **	The first time through the processing loop, set the edit

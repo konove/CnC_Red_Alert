@@ -174,7 +174,7 @@ void Special_Dialog() {
   }
 
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
   bool display = true;
   bool process = true;
   while (process) {
@@ -200,21 +200,19 @@ void Special_Dialog() {
       display = false;
 
       Hide_Mouse();
-      Dialog_Box(*LogicPage, kOptionX, kOptionY, kOptionWidth, kOptionHeight);
-      Draw_Caption(*LogicPage, TXT_SPECIAL_OPTIONS, kOptionX, kOptionY,
-                   kOptionWidth);
+      Dialog_Box(view, kOptionX, kOptionY, kOptionWidth, kOptionHeight);
+      Draw_Caption(view, TXT_SPECIAL_OPTIONS, kOptionX, kOptionY, kOptionWidth);
 
       for (const auto& _option : _options) {
-        Fancy_Text_Print(*LogicPage, _option.Description,
-                         _option.Button->X + 10, _option.Button->Y, kCcGreen,
-                         kTBlack,
+        Fancy_Text_Print(view, _option.Description, _option.Button->X + 10,
+                         _option.Button->Y, kCcGreen, kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
-      buttons->Draw_All(*LogicPage);
+      buttons->Draw_All(view);
       Show_Mouse();
     }
 
-    const KeyNumType input = buttons->Input(*LogicPage);
+    const KeyNumType input = buttons->Input(view);
     switch (static_cast<int>(input)) {
       case KN_ESC:
       case ButtonKey(200):

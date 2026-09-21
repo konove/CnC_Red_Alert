@@ -43,6 +43,8 @@
 
 #include <cstdint>
 
+#include "sdllib/pixel_buffer.h"
+
 /****************************************************************************
 **	The animating credit counter display is controlled by this class.
 */
@@ -60,7 +62,7 @@ class CreditClass {
   */
   void Update(bool forced = false, bool redraw = false);
 
-  void Graphic_Logic(bool forced = false);
+  void Graphic_Logic(PixelView& view, bool forced = false);
   void AI(bool forced = false);
 
   int64_t Current{0};  // Credit value currently displayed.

@@ -214,7 +214,7 @@ bool Expansion_Dialog() {
     }
   }
 
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
   bool display = true;
   bool process = true;
   bool okval = true;
@@ -241,14 +241,14 @@ bool Expansion_Dialog() {
       */
       Load_Title_Page(true);
 
-      Dialog_Box(*LogicPage, option_x, option_y, option_width, option_height);
-      Draw_Caption(*LogicPage, TXT_MISSION_DESCRIPTION, option_x, option_y,
+      Dialog_Box(view, option_x, option_y, option_width, option_height);
+      Draw_Caption(view, TXT_MISSION_DESCRIPTION, option_x, option_y,
                    option_width);
-      buttons->Draw_All(*LogicPage);
+      buttons->Draw_All(view);
       Show_Mouse();
     }
 
-    const KeyNumType input = buttons->Input(*LogicPage);
+    const KeyNumType input = buttons->Input(view);
     switch (static_cast<int>(input)) {
       case KN_RETURN:
       case ButtonKey(200):
@@ -369,7 +369,7 @@ bool Bonus_Dialog() {
     }
   }
 
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
   bool display = true;
   bool process = true;
   bool okval = true;
@@ -396,14 +396,13 @@ bool Bonus_Dialog() {
       */
       Load_Title_Page(true);
 
-      Dialog_Box(*LogicPage, option_x, option_y, option_width, option_height);
-      Draw_Caption(*LogicPage, TXT_BONUS_MISSIONS, option_x, option_y,
-                   option_width);
-      buttons->Draw_All(*LogicPage);
+      Dialog_Box(view, option_x, option_y, option_width, option_height);
+      Draw_Caption(view, TXT_BONUS_MISSIONS, option_x, option_y, option_width);
+      buttons->Draw_All(view);
       Show_Mouse();
     }
 
-    const KeyNumType input = buttons->Input(*LogicPage);
+    const KeyNumType input = buttons->Input(view);
     switch (static_cast<int>(input)) {
       case KN_RETURN:
       case ButtonKey(200):

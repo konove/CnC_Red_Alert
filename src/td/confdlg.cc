@@ -85,19 +85,19 @@ bool ConfirmationClass::Process(const char* string) {
   int selection = 0;
   TextButtonClass* buttons[kNumOfButtons];
 
+  PixelView& view = TheScreen().visible_view();
+
   /*
   **	Set up the window.  Window x-coords are in bytes not pixels.
   */
   port::SafeCopy(buffer, string);
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(buffer, 200 * factor, width, height);
   width += 60 * factor;
   height += 60 * factor;
   const int x = ((320 * factor) - width) / 2;
   const int y = ((200 * factor) - height) / 2;
-
-  SetLogicPage(TheScreen().visible_view());
 
   /*
   **	Create Buttons.  Button coords are in pixels, but are window-relative.
@@ -177,16 +177,16 @@ bool ConfirmationClass::Process(const char* string) {
       /*
       **	Draw the background.
       */
-      Dialog_Box(*LogicPage, x, y, width, height);
-      Draw_Caption(*LogicPage, TXT_CONFIRMATION, x, y, width);
-      Fancy_Text_Print(*LogicPage, buffer, x + (20 * factor), y + (30 * factor),
+      Dialog_Box(view, x, y, width, height);
+      Draw_Caption(view, TXT_CONFIRMATION, x, y, width);
+      Fancy_Text_Print(view, buffer, x + (20 * factor), y + (30 * factor),
                        kCcGreen, kTBlack,
                        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
       /*
       **	Draw the titles.
       */
-      yesbtn.Draw_All(*LogicPage);
+      yesbtn.Draw_All(view);
       Show_Mouse();
       display = false;
     }
@@ -194,7 +194,7 @@ bool ConfirmationClass::Process(const char* string) {
     /*
     **	Get user input.
     */
-    const KeyNumType input = yesbtn.Input(*LogicPage);
+    const KeyNumType input = yesbtn.Input(view);
 
     /*
     **	Process Input.
