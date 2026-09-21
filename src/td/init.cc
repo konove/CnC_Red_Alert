@@ -1385,8 +1385,8 @@ bool Select_Game(bool fade) {
             TheScreen().visible_page().Clear();
             if (GameFile("ATTRACT2.CPS").IsAvailable()) {
               GameFile f("ATTRACT2.CPS");
-              Load_Uncompress(f, TheScreen().sys_mem_page(),
-                              TheScreen().sys_mem_page(),
+              Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
+                              TheScreen().sys_mem_page().bytes(),
                               ThePalettes().title_palette());
               TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0,
                                                0, 0, 320, 199, 640, 398);
@@ -1410,8 +1410,8 @@ bool Select_Game(bool fade) {
             TheScreen().visible_page().Clear();
             if (GameFile("ATTRACT2.CPS").IsAvailable()) {
               GameFile f("ATTRACT2.CPS");
-              Load_Uncompress(f, TheScreen().sys_mem_page(),
-                              TheScreen().sys_mem_page(),
+              Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
+                              TheScreen().sys_mem_page().bytes(),
                               ThePalettes().title_palette());
               TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0,
                                                0, 0, 320, 199, 640, 398);
@@ -1435,8 +1435,8 @@ bool Select_Game(bool fade) {
             TheScreen().visible_page().Clear();
             if (GameFile("ATTRACT2.CPS").IsAvailable()) {
               GameFile f("ATTRACT2.CPS");
-              Load_Uncompress(f, TheScreen().sys_mem_page(),
-                              TheScreen().sys_mem_page(),
+              Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
+                              TheScreen().sys_mem_page().bytes(),
                               ThePalettes().title_palette());
               TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0,
                                                0, 0, 320, 199, 640, 398);
@@ -1459,8 +1459,8 @@ bool Select_Game(bool fade) {
           TheScreen().visible_page().Clear();
           if (GameFile("ATTRACT2.CPS").IsAvailable()) {
             GameFile f("ATTRACT2.CPS");
-            Load_Uncompress(f, TheScreen().sys_mem_page(),
-                            TheScreen().sys_mem_page(),
+            Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
+                            TheScreen().sys_mem_page().bytes(),
                             ThePalettes().title_palette());
             TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0,
                                              0, 0, 320, 199, 640, 398);
@@ -2106,8 +2106,7 @@ void Anim_Init() {
   TheGameState().anim_control().ImageWidth = 320;
   TheGameState().anim_control().ImageHeight = 200;
   TheGameState().anim_control().Vmode = 0;
-  TheGameState().anim_control().ImageBuf =
-      TheScreen().sys_mem_page().Get_Bytes();
+  TheGameState().anim_control().ImageBuf = TheScreen().sys_mem_page().bytes();
   // AnimControl.VBIBit = VertBlank;
   // AnimControl.DrawFlags |= VQACFGF_TOPLEFT;
   TheGameState().anim_control().OptionFlags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;

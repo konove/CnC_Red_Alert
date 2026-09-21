@@ -109,7 +109,8 @@ void GDI_Ending() {
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                     Call_Back);
     GameFile f("ATTRACT2.CPS");
-    Load_Uncompress(f, TheScreen().sys_mem_page(), TheScreen().sys_mem_page(),
+    Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
+                    TheScreen().sys_mem_page().bytes(),
                     ThePalettes().title_palette());
     TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0, 0, 0,
                                      320, 199, 640, 398);
@@ -128,7 +129,8 @@ void GDI_Ending() {
 
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
   GameFile f("ATTRACT2.CPS");
-  Load_Uncompress(f, TheScreen().sys_mem_page(), TheScreen().sys_mem_page(),
+  Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
+                  TheScreen().sys_mem_page().bytes(),
                   ThePalettes().title_palette());
   TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0, 0, 0, 320,
                                    199, 640, 398);
@@ -184,11 +186,11 @@ void Nod_Ending() {
   GameFile f("SATSEL.PAL");
   const auto localpal = Load_Alloc_Data(f);
   f.Open("SATSEL.CPS");
-  Load_Uncompress(f, TheScreen().sys_mem_page(), TheScreen().sys_mem_page(),
-                  {});
+  Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
+                  TheScreen().sys_mem_page().bytes(), {});
 #ifdef NOT_FOR_WIN95
   base::CopyBytes(std::as_writable_bytes(std::span(satpic)),
-                  std::as_bytes(TheScreen().hidden_view().Get_Bytes()),
+                  std::as_bytes(TheScreen().hidden_view().bytes()),
                   satpic.size());
 #else
   TheScreen().sys_mem_page().Blit(*PseudoSeenBuff);
@@ -205,9 +207,8 @@ void Nod_Ending() {
   Wait_Vert_Blank();
   Set_Palette(port::UnsignedBytes(localpal));
 #ifdef NOT_FOR_WIN95
-  base::CopyBytes(
-      std::as_writable_bytes(TheScreen().visible_view().Get_Bytes()),
-      std::as_writable_bytes(std::span(satpic)), satpic.size());
+  base::CopyBytes(std::as_writable_bytes(TheScreen().visible_view().bytes()),
+                  std::as_writable_bytes(std::span(satpic)), satpic.size());
 #endif  // NOT_FOR_WIN95
   Show_Mouse();
 
@@ -298,8 +299,9 @@ void Nod_Ending() {
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                     Call_Back);
     GameFile attract_file("ATTRACT2.CPS");
-    Load_Uncompress(attract_file, TheScreen().sys_mem_page(),
-                    TheScreen().sys_mem_page(), ThePalettes().title_palette());
+    Load_Uncompress(attract_file, TheScreen().sys_mem_page().bytes(),
+                    TheScreen().sys_mem_page().bytes(),
+                    ThePalettes().title_palette());
     TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0, 0, 0,
                                      320, 199, 640, 398);
     Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
@@ -317,7 +319,8 @@ void Nod_Ending() {
 
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
   GameFile f2("ATTRACT2.CPS");
-  Load_Uncompress(f2, TheScreen().sys_mem_page(), TheScreen().sys_mem_page(),
+  Load_Uncompress(f2, TheScreen().sys_mem_page().bytes(),
+                  TheScreen().sys_mem_page().bytes(),
                   ThePalettes().title_palette());
   TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0, 0, 0, 320,
                                    199, 640, 398);

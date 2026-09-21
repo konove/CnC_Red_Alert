@@ -114,7 +114,7 @@ void Interpolate_2X_Scale(PixelBuffer* source, PixelView* /*unused*/,
                           const char* /*unused*/) {
   // Render using SDL scaling - palette already set via UpdatePalette
   source->Lock();
-  WindowBuffer->PresentScaledFrame(source->Get_Bytes(), source->width(),
+  WindowBuffer->PresentScaledFrame(source->bytes(), source->width(),
                                    source->height());
   source->Unlock();
 }

@@ -57,7 +57,6 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/format.h"
-#include "sdllib/buffer.h"
 #include "sdllib/iff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
@@ -209,8 +208,8 @@ struct TLucentType {
   unsigned char reserved;
 };
 
-int Load_Picture(const char* filename, BufferClass& scratchbuf,
-                 BufferClass& destbuf, std::span<unsigned char> palette,
+int Load_Picture(const char* filename, std::span<uint8_t> scratchbuf,
+                 std::span<uint8_t> destbuf, std::span<unsigned char> palette,
                  PicturePlaneType format);
 std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
                                           int iconnum);
@@ -221,8 +220,8 @@ std::span<std::byte> Load_Alloc_Data(File& file);
 
 // Reads a file into owned byte storage.
 std::vector<std::byte> LoadAllocData(File& file);
-int32_t Load_Uncompress(File& file, BufferClass& uncomp_buff,
-                        BufferClass& dest_buff,
+int32_t Load_Uncompress(File& file, std::span<uint8_t> uncomp_buff,
+                        std::span<uint8_t> dest_buff,
                         std::span<unsigned char> reserved_data);
 int32_t Translucent_Table_Size(int count);
 std::span<unsigned char> Build_Translucent_Table(

@@ -252,7 +252,7 @@ PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
     }
   }
   auto pic = std::make_unique<PixelBuffer>(width, height, buff);
-  const auto pixels = pic->Get_Bytes();
+  const auto pixels = pic->bytes();
   BufferedFileReader reader(file_handle);
   for (int row = 0; row < height; ++row) {
     int column = 0;

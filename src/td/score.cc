@@ -1039,7 +1039,7 @@ void ScoreClass::Presentation() {
     Alloc_Object(new ScorePrintClass(base::At(hallfame, j).name, HALLFAME_X,
                                      HALLFAME_Y + (j * 8), bluepal));
     if (base::At(hallfame, j).score) {
-      const auto str = port::CharBytes(TheScreen().sys_mem_page().Get_Bytes())
+      const auto str = port::CharBytes(TheScreen().sys_mem_page().bytes())
                            .subspan(base::ToSize(j) * 32, 32);
       absl::SNPrintF(str.data(), 16, "%d", base::At(hallfame, j).score);
       Alloc_Object(new ScorePrintClass(str.data(), HALLFAME_X + (6 * 15),

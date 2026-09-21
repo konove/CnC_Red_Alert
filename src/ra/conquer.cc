@@ -610,7 +610,7 @@ static void CaptureMotionFrame() {
     TheScreen().visible_view().Blit(frame_page);
     base::CopyBytes(std::as_writable_bytes(
                         std::span(frames.at(base::ToSize(captured_count)))),
-                    std::as_bytes(frame_page.Get_Bytes()), frame_bytes);
+                    std::as_bytes(frame_page.bytes()), frame_bytes);
     captured_count++;
     return;
   }
@@ -619,7 +619,7 @@ static void CaptureMotionFrame() {
 
   DiskFile file;
   for (base::ssize index = 0; index < captured_count; index++) {
-    base::CopyBytes(std::as_writable_bytes(frame_page.Get_Bytes()),
+    base::CopyBytes(std::as_writable_bytes(frame_page.bytes()),
                     std::as_bytes(std::span(frames.at(base::ToSize(index)))),
                     frame_bytes);
     file.SetName(absl::StrFormat("cap%04d.pcx", index));

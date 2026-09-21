@@ -104,12 +104,12 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     if (TheScreen().is_vq640()) {
       TheGameState().anim_control().ImageWidth = 640;
       TheGameState().anim_control().ImageHeight = 400;
-      TheGameState().anim_control().ImageBuf = TheScreen().vq640().Get_Bytes();
+      TheGameState().anim_control().ImageBuf = TheScreen().vq640().bytes();
     } else {
       TheGameState().anim_control().ImageWidth = 320;
       TheGameState().anim_control().ImageHeight = 200;
       TheGameState().anim_control().ImageBuf =
-          TheScreen().sys_mem_page().Get_Bytes();
+          TheScreen().sys_mem_page().bytes();
     }
 
     if (!TheDebugState().quiet() && TheAudio().is_open()) {

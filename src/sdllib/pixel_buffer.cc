@@ -35,6 +35,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <numbers>
 #include <span>
 #include <utility>
@@ -102,9 +103,9 @@ void PixelView::Attach(PixelBuffer* buffer, int x, int y, int width,
    */
   /*======================================================================*/
   offset_ =
-      buffer->Get_Bytes().empty()
+      buffer->bytes().empty()
           ? nullptr
-          : buffer->Get_Bytes()
+          : buffer->bytes()
                 .subspan(base::ToSize((static_cast<base::ssize>(
                                            buffer->width() + buffer->pitch()) *
                                        y) +
@@ -154,7 +155,6 @@ void PixelBuffer::Init(int width, int height, std::span<uint8_t> buffer,
                  ? (byte_count == 0 ? pixel_count : base::ToSize(byte_count))
                  : buffer.size());
   }
-  Size = byte_count;
   width_ = width;
   height_ = height;
   pitch_ = 0;
@@ -162,28 +162,24 @@ void PixelBuffer::Init(int width, int height, std::span<uint8_t> buffer,
   x_pos_ = y_pos_ = 0;
 
   if (base::Any(flags & BUFFER_VISIBLE)) {
+    // The pixels are the SDL surface's; bytes_ points at them only between
+    // LockSurface() and UnlockSurface().
+    owned_pixels_.reset();
+    bytes_ = {};
     CreateDisplaySurface();
 
     WindowBuffer = this;
+  } else if (buffer.empty()) {
+    const auto size = byte_count == 0 ? pixel_count : base::ToSize(byte_count);
+    owned_pixels_ = std::make_unique<uint8_t[]>(size);
+    // The allocation above holds exactly `size` bytes.
+    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
+    bytes_ = std::span(owned_pixels_.get(), size);
+    offset_ = bytes_.data();
   } else {
-    // regular allocation
-    Allocated = buffer.empty();
+    owned_pixels_.reset();
     bytes_ = buffer;
-    Buffer = buffer.data();
-
-    if (buffer.empty()) {
-      if (byte_count == 0) {
-        Size = width * height;
-      } else {
-        Size = byte_count;
-      }
-      Buffer = new uint8_t[base::ToSize(Size)];
-      // This allocation contains exactly Size bytes.
-      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-      bytes_ = std::span(static_cast<uint8_t*>(Buffer), base::ToSize(Size));
-    }
-
-    offset_ = static_cast<uint8_t*>(Buffer);
+    offset_ = bytes_.data();
   }
 }
 
@@ -485,7 +481,7 @@ void PixelBuffer::DrawScaledRotated(const BitmapClass& bitmap,
   // Rows in this buffer are width_ apart: DrawScaledRotated is a member of the
   // buffer rather than of a view, and Init() leaves x_add_ and pitch_ zero
   // for every buffer the games allocate.
-  const auto dst_buf = Get_Bytes();
+  const auto dst_buf = bytes();
 
   for (int y2 = 0; y2 < height_; y2++) {
     for (int x2 = 0; x2 < width_; x2++) {

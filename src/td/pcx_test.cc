@@ -104,7 +104,7 @@ TEST(PcxTest, WrittenFileReadsBack) {
                                      "cnc_pcx_WrittenFileReadsBack.pcx";
   constexpr int kWidth = 70;
   PixelBuffer picture(kWidth, 2);
-  const auto pixels = picture.Get_Bytes();
+  const auto pixels = picture.bytes();
   for (int x = 0; x < kWidth; x++) {
     base::At(pixels, x) = 9;  // One run, longer than a count can hold.
     base::At(pixels, kWidth + x) =
@@ -124,7 +124,7 @@ TEST(PcxTest, WrittenFileReadsBack) {
   ASSERT_NE(loaded, nullptr);
   ASSERT_EQ(loaded->width(), kWidth);
   ASSERT_EQ(loaded->height(), 2);
-  const auto loaded_pixels = loaded->Get_Bytes();
+  const auto loaded_pixels = loaded->bytes();
   for (int i = 0; i < 2 * kWidth; i++) {
     ASSERT_EQ(base::At(loaded_pixels, i), base::At(pixels, i)) << i;
   }
@@ -137,7 +137,7 @@ TEST(PcxTest, DecodesLiteralPixels) {
     const auto image =
         PcxFile(std::span(pixels).first(padded ? 4 : 2), padded).Load();
     ASSERT_NE(image, nullptr);
-    const auto decoded = image->Get_Bytes();
+    const auto decoded = image->bytes();
     EXPECT_EQ(base::At(decoded, 0), 7);
     EXPECT_EQ(base::At(decoded, 1), 8);
   }
@@ -149,7 +149,7 @@ TEST(PcxTest, DecodesRepeatedPixels) {
     const auto image =
         PcxFile(std::span(pixels).first(padded ? 4 : 2), padded).Load();
     ASSERT_NE(image, nullptr);
-    const auto decoded = image->Get_Bytes();
+    const auto decoded = image->bytes();
     EXPECT_EQ(base::At(decoded, 0), 7);
     EXPECT_EQ(base::At(decoded, 1), 7);
   }

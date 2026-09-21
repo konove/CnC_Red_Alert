@@ -68,6 +68,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <span>
+#include <vector>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -95,7 +96,6 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "ra/world.h"
-#include "sdllib/buffer.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
@@ -738,8 +738,8 @@ void ChronalVortexClass::Coordinate_Remap(
   if (count > remap_table.size() / 3 || !inbuffer->Lock()) {
     return;
   }
-  BufferClass destbuf(static_cast<int32_t>(count));
-  const auto output = destbuf.Get_Bytes();
+  std::vector<uint8_t> destbuf(count);
+  const std::span<uint8_t> output(destbuf);
   const auto input = inbuffer->pixels();
   const auto stride =
       base::ToSize(inbuffer->pitch() + inbuffer->x_add() + inbuffer->width());
@@ -756,7 +756,7 @@ void ChronalVortexClass::Coordinate_Remap(
     base::At(output, i) = base::At(base::At(VortexRemapTables, remap_color),
                                    base::At(input, source));
   }
-  destbuf.To_Page(x, y, width, height, *inbuffer);
+  Buffer_To_Page(x, y, width, height, output, *inbuffer);
   inbuffer->Unlock();
 }
 

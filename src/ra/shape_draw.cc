@@ -283,7 +283,7 @@ std::vector<unsigned char> Get_Radar_Icon(
     // next frame.
     const auto ptr =
         Build_Frame(shapefile, static_cast<uint16_t>(shape_num + frame_num),
-                    TheScreen().sys_mem_page().Get_Bytes());
+                    TheScreen().sys_mem_page().bytes());
     if (!ptr.empty()) {
       // Loop through the icon width and the icon height building icons
       // into the buffer pointer.  When the getx or gety falls outside of

@@ -47,7 +47,6 @@
 
 #include "base/buffer.h"
 
-#define BuffType BufferClass
 // #define movmem(a,b,c) memmove(b,a,c)
 
 /*=========================================================================*/

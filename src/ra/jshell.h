@@ -60,7 +60,6 @@
 #include "ra/compat.h"
 #include "ra/game_clock.h"
 #include "ra/palette.h"
-#include "sdllib/buffer.h"
 #include "sdllib/iff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
@@ -270,8 +269,8 @@ struct TLucentType {
   unsigned char reserved;
 };
 
-int Load_Picture(const char* filename, BufferClass& scratchbuf,
-                 BufferClass& destbuf, std::span<unsigned char> palette,
+int Load_Picture(const char* filename, std::span<uint8_t> scratchbuf,
+                 std::span<uint8_t> destbuf, std::span<unsigned char> palette,
                  PicturePlaneType format);
 std::span<unsigned char> Conquer_Build_Fading_Table(
     const PaletteClass& palette,
@@ -280,7 +279,8 @@ std::span<unsigned char> Conquer_Build_Fading_Table(
 std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
                                           int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
-int32_t Load_Uncompress(File& file, BuffType& uncomp_buff, BuffType& dest_buff,
+int32_t Load_Uncompress(File& file, std::span<uint8_t> uncomp_buff,
+                        std::span<uint8_t> dest_buff,
                         std::span<unsigned char> reserved_data);
 int32_t Translucent_Table_Size(int count);
 std::span<unsigned char> Build_Translucent_Table(

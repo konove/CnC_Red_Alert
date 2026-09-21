@@ -1324,12 +1324,11 @@ void Anim_Init() {
   TheGameState().anim_control().EventHandler = VQ_Event_Handler;
   TheGameState().anim_control().ImageWidth = 320;
   TheGameState().anim_control().ImageHeight = 200;
-  TheGameState().anim_control().ImageBuf =
-      TheScreen().sys_mem_page().Get_Bytes();
+  TheGameState().anim_control().ImageBuf = TheScreen().sys_mem_page().bytes();
   if (TheScreen().is_vq640()) {
     TheGameState().anim_control().ImageWidth = 640;
     TheGameState().anim_control().ImageHeight = 400;
-    TheGameState().anim_control().ImageBuf = TheScreen().vq640().Get_Bytes();
+    TheGameState().anim_control().ImageBuf = TheScreen().vq640().bytes();
   }
   TheGameState().anim_control().Vmode = 0;
   TheGameState().anim_control().OptionFlags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
@@ -1769,8 +1768,8 @@ static void Init_Color_Remaps() {
   */
 
   TheScreen().sys_mem_page().Clear();
-  Load_Picture("PALETTE.CPS", TheScreen().sys_mem_page(),
-               TheScreen().sys_mem_page(), {}, BM_DEFAULT);
+  Load_Picture("PALETTE.CPS", TheScreen().sys_mem_page().bytes(),
+               TheScreen().sys_mem_page().bytes(), {}, BM_DEFAULT);
   TheScreen().sys_mem_page().Blit(TheScreen().hidden_view());
   for (const PlayerColorType pcolor :
        magic_enum::enum_values<PlayerColorType>()) {

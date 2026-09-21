@@ -251,8 +251,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   // display = true;
 #ifdef JAPANESE
   if (IsPicture) {
-    Load_Uncompress(GameFile(msg), TheScreen().sys_mem_page(),
-                    TheScreen().sys_mem_page());
+    Load_Uncompress(GameFile(msg), TheScreen().sys_mem_page().bytes(),
+                    TheScreen().sys_mem_page().bytes());
     TheScreen().sys_mem_page().Blit(TheScreen().visible_view(), 160, 100);
   } else {
 #endif
@@ -300,8 +300,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
 
 #ifdef JAPANESE
         if (IsPicture) {
-          Load_Uncompress(GameFile(msg), TheScreen().sys_mem_page(),
-                          TheScreen().sys_mem_page());
+          Load_Uncompress(GameFile(msg), TheScreen().sys_mem_page().bytes(),
+                          TheScreen().sys_mem_page().bytes());
           TheScreen().sys_mem_page().Blit(TheScreen().visible_view(), 160, 100);
         } else {
 #endif

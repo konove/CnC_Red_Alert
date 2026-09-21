@@ -36,6 +36,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <span>
 #include <vector>
 
@@ -47,7 +48,6 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/bitmap.h"
-#include "sdllib/buffer.h"
 #include "sdllib/drawbuff.h"
 #include "sdllib/ww_win.h"
 
@@ -232,14 +232,14 @@ class PixelView {
 // the frame is composed on, and the staging pages movies decode into.
 //
 // The pixels come from one of three places, chosen by Init(): a span the
-// caller owns, a new[] block the buffer owns, or - with BUFFER_VISIBLE - an SDL
-// surface, whose pixels only exist between LockSurface() and
-// UnlockSurface().
+// caller owns, a block the buffer allocates and owns, or - with
+// BUFFER_VISIBLE - an SDL surface, whose pixels only exist between
+// LockSurface() and UnlockSurface().
 //
 // Example:
 //   PixelBuffer page(320, 200);
 //   page.Clear();
-class PixelBuffer : public PixelView, public BufferClass {
+class PixelBuffer : public PixelView {
  public:
   // Sizes the buffer and gives it `buffer`'s pixels, or allocates `size`
   // bytes (width * height when `byte_count` is zero) if `buffer` is empty.
@@ -314,6 +314,10 @@ class PixelBuffer : public PixelView, public BufferClass {
   // surface again. UnlockSurface() calls it as soon as anything draws.
   void DropScaledFrame();
 
+  // The buffer's whole allocation. Empty before Init(), and empty for the
+  // window's buffer while its surface is unlocked.
+  [[nodiscard]] std::span<uint8_t> bytes() { return bytes_; }
+
  protected:
   void CreateDisplaySurface();
   void DestroyDisplaySurface();
@@ -335,6 +339,13 @@ class PixelBuffer : public PixelView, public BufferClass {
   // scaled_frame_height_. The texture holds baked colors, so a palette change
   // has to convert these again. Empty while there is no texture.
   std::vector<uint8_t> scaled_frame_;
+
+  // The pixels, wherever they came from: owned_pixels_, the caller's span, or
+  // the locked SDL surface. Empty when the window's surface is unlocked.
+  std::span<uint8_t> bytes_;
+  // The allocation behind bytes_ when the buffer allocated its own pixels;
+  // null when the pixels are the caller's or the SDL surface's.
+  std::unique_ptr<uint8_t[]> owned_pixels_;
 };
 
 extern PixelBuffer* WindowBuffer;
@@ -376,10 +387,9 @@ inline std::span<uint8_t> PixelView::pixels() {
     return {};
   }
   if (this == buffer_) {
-    return buffer_->Get_Bytes();
+    return buffer_->bytes();
   }
-  return buffer_->Get_Bytes().subspan(
-      base::ToSize((y_pos_ * stride()) + x_pos_));
+  return buffer_->bytes().subspan(base::ToSize((y_pos_ * stride()) + x_pos_));
 }
 
 inline int PixelView::height() const { return height_; }
@@ -565,9 +575,9 @@ inline void PixelView::Remap(std::span<const uint8_t> remap_table) {
 }
 
 inline int PixelView::pitch() const { return pitch_; }
-// BufferClass::To_Page lives here rather than in buffer.h because it needs the
-// complete PixelView.
 
+// Locks `view` around the drawbuff.h primitive of the same name, which needs
+// the pixels already locked.
 inline int32_t Buffer_To_Page(int x, int y, int width, int height,
                               std::span<const uint8_t> Buffer,
                               PixelView& view) {
@@ -577,11 +587,6 @@ inline int32_t Buffer_To_Page(int x, int y, int width, int height,
     view.Unlock();
   }
   return return_code;
-}
-
-inline int32_t BufferClass::To_Page(int x, int y, int width, int height,
-                                    PixelView& view) {
-  return Buffer_To_Page(x, y, width, height, Get_Bytes(), view);
 }
 
 #endif  // CNC_RED_ALERT_SDLLIB_PIXEL_BUFFER_H_

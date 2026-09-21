@@ -89,7 +89,7 @@ int Write_PCX_File(const char* name, PixelView& pic,
 
   const int VP_Scan_Line = pic.width() + pic.x_add();
   PixelBuffer* Graphic_Buffer = pic.buffer();
-  const auto pixels = Graphic_Buffer->Get_Bytes().subspan(
+  const auto pixels = Graphic_Buffer->bytes().subspan(
       base::ToSize((pic.y_pos() * VP_Scan_Line) + pic.x_pos()));
   for (i = 0; i < static_cast<unsigned>(header.height) + 1; i++) {
     Write_Pcx_ScanLine(

@@ -69,7 +69,6 @@
 #include "port/format.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
-#include "sdllib/buffer.h"
 #include "sdllib/iff.h"
 #include "sdllib/misc.h"
 #include "sdllib/tile.h"
@@ -213,8 +212,8 @@ void File_Fatal(const char* message) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t Load_Uncompress(File& file, BufferClass& uncomp_buff,
-                        BufferClass& dest_buff,
+int32_t Load_Uncompress(File& file, std::span<uint8_t> uncomp_buff,
+                        std::span<uint8_t> dest_buff,
                         std::span<unsigned char> reserved_data) {
   const bool opened = !file.IsOpen();
   if (opened && !file.Open()) {
@@ -244,8 +243,8 @@ int32_t Load_Uncompress(File& file, BufferClass& uncomp_buff,
       }
       header.Skip = 0;
     }
-    auto source = uncomp_buff.Get_Bytes();
-    const auto dest = dest_buff.Get_Bytes();
+    auto source = uncomp_buff;
+    const auto dest = dest_buff;
     const auto packet_size = size + sizeof(header);
     if (packet_size > source.size()) {
       return 0;
@@ -270,8 +269,8 @@ int32_t Load_Uncompress(File& file, BufferClass& uncomp_buff,
   return result;
 }
 
-int Load_Picture(const char* filename, BufferClass& scratchbuf,
-                 BufferClass& destbuf, std::span<unsigned char> palette,
+int Load_Picture(const char* filename, std::span<uint8_t> scratchbuf,
+                 std::span<uint8_t> destbuf, std::span<unsigned char> palette,
                  PicturePlaneType /*unused*/) {
   GameFile fc(filename);
   return Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000;

@@ -2293,7 +2293,7 @@ std::vector<uint8_t> Get_Radar_Icon(std::span<const std::byte> shapefile,
   for (int frame = 0; frame < frames; ++frame) {
     const auto pixels =
         Build_Frame(shapefile, static_cast<uint16_t>(shapenum + frame),
-                    TheScreen().sys_mem_page().Get_Bytes());
+                    TheScreen().sys_mem_page().bytes());
     if (pixels.empty()) {
       out += frame_pixels;
       continue;
