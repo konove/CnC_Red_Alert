@@ -1384,7 +1384,7 @@ void MultiMission::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                             flags, width, _tabs);
   } else {
     Conquer_Clip_Text_Print(
-        *LogicPage, ScenarioDescription, x, y,
+        view, ScenarioDescription, x, y,
         selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                  : &ThePalettes().color_remaps().at(PCOLOR_GREY),
         kTBlack, flags, width, _tabs);

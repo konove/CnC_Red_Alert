@@ -134,7 +134,7 @@ void TriggerClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                               width, _tabs);
     } else {
       Conquer_Clip_Text_Print(
-          *LogicPage, Description(), x, y,
+          view, Description(), x, y,
           (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                     : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
           kTBlack, flags, width, _tabs);

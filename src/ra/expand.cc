@@ -324,7 +324,7 @@ void EListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
 
   if (selected) {
     flags = flags | TPF_BRIGHT_COLOR;
-    LogicPage->FillRect(x, y, x + width - 1, y + LineHeight - 1, 1);
+    view.FillRect(x, y, x + width - 1, y + LineHeight - 1, 1);
   } else {
     if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
       flags = flags | TPF_MEDIUM_COLOR;

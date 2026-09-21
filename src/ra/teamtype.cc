@@ -161,7 +161,7 @@ void TeamTypeClass::Draw_It(PixelView& view, int /*unused*/, int x, int y,
                               width, _tabs);
     } else {
       Conquer_Clip_Text_Print(
-          *LogicPage, Description(), x, y,
+          view, Description(), x, y,
           (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                     : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
           kTBlack, flags, width, _tabs);
@@ -606,7 +606,7 @@ void TeamMissionClass::Draw_It(PixelView& view, int index, int x, int y,
                             flags, width, _tabs);
   } else {
     Conquer_Clip_Text_Print(
-        *LogicPage, Description(index), x, y,
+        view, Description(index), x, y,
         (selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                   : &ThePalettes().color_remaps().at(PCOLOR_GREY)),
         kTBlack, flags, width, _tabs);

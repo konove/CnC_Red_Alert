@@ -501,7 +501,7 @@ void MusicListClass::Draw_Entry(PixelView& view, int index, int x, int y,
 
   } else {
     Conquer_Clip_Text_Print(
-        *LogicPage, Get_Item(index), x, y,
+        view, Get_Item(index), x, y,
         selected ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                  : &ThePalettes().color_remaps().at(PCOLOR_GREY),
         kTBlack, TextFlags, width, Tabs);

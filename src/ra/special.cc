@@ -312,7 +312,7 @@ void PWEditClass::Draw_Text(PixelView& view, const char* text) {
     }
   } else {
     Conquer_Clip_Text_Print(
-        *LogicPage, buffer, X + 1, Y + 1,
+        view, buffer, X + 1, Y + 1,
         Has_Focus() ? &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE)
                     : &ThePalettes().color_remaps().at(PCOLOR_GREY),
         kTBlack, TextFlags, Width - 2);
@@ -320,7 +320,7 @@ void PWEditClass::Draw_Text(PixelView& view, const char* text) {
     if (Has_Focus() &&
         std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
       Conquer_Clip_Text_Print(
-          *LogicPage, "_", X + 1 + String_Pixel_Width(buffer), Y + 1,
+          view, "_", X + 1 + String_Pixel_Width(buffer), Y + 1,
           &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE), kTBlack,
           TextFlags);
     }
