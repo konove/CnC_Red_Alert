@@ -16,6 +16,7 @@ TEST(DebugStateTest, EverySwitchStartsOff) {
   EXPECT_FALSE(debug_state.quiet());
   EXPECT_FALSE(debug_state.print_events());
   EXPECT_FALSE(debug_state.check_map());
+  EXPECT_FALSE(debug_state.check_heaps());
   EXPECT_FALSE(debug_state.build_anything());
   EXPECT_FALSE(debug_state.show_cell_info());
   EXPECT_FALSE(debug_state.show_passability());

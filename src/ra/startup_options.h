@@ -32,7 +32,8 @@ struct StartupOptions {
   // -INSTALL: the installer runs the game once to play the intro.
   bool from_install = false;
 
-  // The debug switches a cheat phrase, -PLAYTEST, -CHECKMAP or -X turns on.
+  // The debug switches a cheat phrase, -PLAYTEST, -CHECKMAP, -CHECKHEAPS or
+  // -X turns on.
   // See DebugState, which owns them once the game is running.
   bool developer_mode = false;
   bool playtest = false;
@@ -41,6 +42,7 @@ struct StartupOptions {
   bool quiet = false;         // -XQ
   bool print_events = false;  // -XP
   bool check_map = false;     // -CHECKMAP
+  bool check_heaps = false;   // -CHECKHEAPS
 
   // -XI and -XH: SpecialClass flags that the options dialog can change later.
   bool inert_weapons = false;

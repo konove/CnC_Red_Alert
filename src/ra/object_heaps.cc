@@ -2,6 +2,10 @@
 
 #include "ra/object_heaps.h"
 
+#include <string>
+#include <utility>
+
+#include "absl/strings/str_cat.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/building.h"
@@ -99,4 +103,35 @@ ObjectHeaps::~ObjectHeaps() {
   CCPtr<UnitClass>::BindHeap(nullptr);
   CCPtr<VesselClass>::BindHeap(nullptr);
   CCPtr<TriggerTypeClass>::BindHeap(nullptr);
+}
+
+std::string ObjectHeaps::Validate() const {
+  // Listed in the order the save file walks them, so a report reads the same
+  // way as a save game does.
+  const std::pair<const char*, std::string> reports[] = {
+      {"aircraft", aircraft_.Validate()},
+      {"anim", anim_.Validate()},
+      {"building", building_.Validate()},
+      {"bullet", bullet_.Validate()},
+      {"factory", factory_.Validate()},
+      {"house", house_.Validate()},
+      {"infantry", infantry_.Validate()},
+      {"overlay", overlay_.Validate()},
+      {"smudge", smudge_.Validate()},
+      {"team", team_.Validate()},
+      {"team_type", team_type_.Validate()},
+      {"tmplate", tmplate_.Validate()},
+      {"terrain", terrain_.Validate()},
+      {"trigger", trigger_.Validate()},
+      {"unit", unit_.Validate()},
+      {"vessel", vessel_.Validate()},
+      {"trigger_type", trigger_type_.Validate()},
+  };
+
+  for (const auto& [name, trouble] : reports) {
+    if (!trouble.empty()) {
+      return absl::StrCat(name, ": ", trouble);
+    }
+  }
+  return {};
 }

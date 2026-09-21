@@ -735,6 +735,17 @@ bool RunFrame() {
     TheMap().Validate();  // give debugger a chance to catch it
   }
 
+  // Is an object out of step with the heap slot it sits in? Reporting it here
+  // names the frame it went wrong in, which the DCHECKs on the objects
+  // themselves cannot: they only fire once something walks the damaged object.
+  if (TheDebugState().check_heaps()) {
+    const std::string trouble = TheObjectHeaps().Validate();
+    if (!trouble.empty()) {
+      LOG(ERROR) << "Object heap corrupted on frame " << TheGameClock().frame()
+                 << ": " << trouble;
+    }
+  }
+
   if (TheDebugState().motion_capture()) {
     CaptureMotionFrame();
   }

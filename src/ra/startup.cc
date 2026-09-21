@@ -161,6 +161,7 @@ static void ApplyStartupOptions(const StartupOptions& options) {
   debug_state.set_quiet(options.quiet);
   debug_state.set_print_events(options.print_events);
   debug_state.set_check_map(options.check_map);
+  debug_state.set_check_heaps(options.check_heaps);
 
   TheSpecial().IsFromInstall = options.from_install;
   TheSpecial().IsInert = options.inert_weapons;

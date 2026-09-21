@@ -62,6 +62,12 @@ class DebugState {
   [[nodiscard]] bool check_map() const { return check_map_; }
   void set_check_map(bool on) { check_map_ = on; }
 
+  // Whether every object heap is validated once a frame (-CHECKHEAPS), which
+  // reports the frame an object first stops matching the slot it sits in.
+  // Walks every live object, so it is off unless asked for.
+  [[nodiscard]] bool check_heaps() const { return check_heaps_; }
+  void set_check_heaps(bool on) { check_heaps_ = on; }
+
   // Whether the player can build everything: tech level 98 and no
   // prerequisites.
   [[nodiscard]] bool build_anything() const { return build_anything_; }
@@ -89,6 +95,7 @@ class DebugState {
   bool quiet_ = false;
   bool print_events_ = false;
   bool check_map_ = false;
+  bool check_heaps_ = false;
   bool build_anything_ = false;
   bool show_cell_info_ = false;
   bool show_passability_ = false;

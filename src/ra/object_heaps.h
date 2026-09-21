@@ -3,6 +3,8 @@
 #ifndef CNC_RED_ALERT_RA_OBJECT_HEAPS_H_
 #define CNC_RED_ALERT_RA_OBJECT_HEAPS_H_
 
+#include <string>
+
 #include "absl/base/attributes.h"
 #include "base/installed.h"
 #include "ra/aircraft.h"
@@ -96,6 +98,12 @@ class ObjectHeaps {
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return trigger_type_;
   }
+
+  // Names the first heap that disagrees with itself and says how, or returns
+  // "" when all of them are sound. -CHECKHEAPS calls this once a frame to
+  // catch the frame corruption appears in, rather than the later frame whose
+  // DCHECK_HEAP_SLOT happens to step on the damaged object.
+  [[nodiscard]] std::string Validate() const;
 
  private:
   TFixedIHeapClass<AircraftClass> aircraft_;

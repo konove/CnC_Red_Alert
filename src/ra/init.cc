@@ -1509,6 +1509,14 @@ std::optional<StartupOptions> Parse_Command_Line(
         options.check_map = true;
         continue;
       }
+
+      /*
+      **	Object heap validation
+      */
+      if (absl::EqualsIgnoreCase(string, "-CHECKHEAPS")) {
+        options.check_heaps = true;
+        continue;
+      }
     }
 
     /*
@@ -1937,6 +1945,11 @@ static void Init_Heaps() {
   TheObjectHeaps().trigger_type().Set_Heap(TheRules().TrigTypeMax);
   //	Weapons.Set_Heap(Rule.WeaponMax);
 
+  // An object caches the slot index it was built in, so it is only ever valid
+  // against the heaps that were installed at the time. Recording which
+  // ObjectHeaps those were makes a mismatch reported later (see
+  // DCHECK_HEAP_SLOT) tell a stale object apart from a second Game's heaps.
+  DLOG(INFO) << "Sized the object heaps of " << &TheObjectHeaps();
 }
 
 /***********************************************************************************************
