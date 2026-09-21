@@ -457,11 +457,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   if (preserve) {
     Hide_Mouse();
-    if (TheScreen().visible_view().Lock()) {
-      TheScreen().visible_view().CopyFromBufferLocked(x, y, width, height,
-                                                      std::span(back));
-    }
-    TheScreen().visible_view().Unlock();
+    TheScreen().visible_view().CopyFromBuffer(x, y, width, height,
+                                              std::span(back));
     back.clear();
     Show_Mouse();
   }

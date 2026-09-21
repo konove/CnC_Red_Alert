@@ -435,11 +435,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   if (preserve) {
     Hide_Mouse();
-    if (TheScreen().visible_view().Lock()) {
-      TheScreen().visible_view().CopyFromBufferLocked(x, y, width, height,
-                                                      back);
-    }
-    TheScreen().visible_view().Unlock();
+    TheScreen().visible_view().CopyFromBuffer(x, y, width, height, back);
 
     back.clear();
 

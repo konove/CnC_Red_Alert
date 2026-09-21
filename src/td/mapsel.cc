@@ -1642,40 +1642,45 @@ void Bit_It_In(const int x, const int y, const int w, const int h,
       Call_Back();
     }
 
-    if (src->Lock() && dest->Lock()) {
-      // Each pixel uses a shuffled x and a wrapping y offset, so pixels
-      // scatter across the entire image rather than filling row by row.
-      for (int col = 0; col < w; col++) {
-        const int px = x + base::At(shuffled_cols, col);
-        const int py = y + base::At(shuffled_rows, row_offset);
-        row_offset++;
-        if (row_offset >= h) {
-          row_offset = 0;
-        }
+    // Both views stay locked for the whole scatter: the destination is the
+    // window's surface, so locking it per pixel would lock and unlock an SDL
+    // surface thousands of times a frame.
+    if (src->Lock()) {
+      if (dest->Lock()) {
+        // Each pixel uses a shuffled x and a wrapping y offset, so pixels
+        // scatter across the entire image rather than filling row by row.
+        for (int col = 0; col < w; col++) {
+          const int px = x + base::At(shuffled_cols, col);
+          const int py = y + base::At(shuffled_rows, row_offset);
+          row_offset++;
+          if (row_offset >= h) {
+            row_offset = 0;
+          }
 
-        dest->PutPixelLocked(
-            px, py, static_cast<unsigned char>(src->GetPixelLocked(px, py)));
-      }
-      if (dagger) {
-        // Overlay a downward-pointing wedge from screen center (x=160),
-        // expanding one pixel wider per row. This adds a dagger-shaped
-        // reveal on top of the random dissolve.
-        // NOTE: Ignores x/y/w/h and assumes a full 320-wide screen.
-        // Only used with full-screen (0,0,320,200) dissolves.
-        for (int row = line; row >= 0; row--) {
-          const int offset = line - row;
-          const int x_left = 160 - offset;
-          const int x_right = 160 + offset;
           dest->PutPixelLocked(
-              x_left, row,
-              static_cast<unsigned char>(src->GetPixelLocked(x_left, row)));
-          dest->PutPixelLocked(
-              x_right, row,
-              static_cast<unsigned char>(src->GetPixelLocked(x_right, row)));
+              px, py, static_cast<unsigned char>(src->GetPixelLocked(px, py)));
         }
+        if (dagger) {
+          // Overlay a downward-pointing wedge from screen center (x=160),
+          // expanding one pixel wider per row. This adds a dagger-shaped
+          // reveal on top of the random dissolve.
+          // NOTE: Ignores x/y/w/h and assumes a full 320-wide screen.
+          // Only used with full-screen (0,0,320,200) dissolves.
+          for (int row = line; row >= 0; row--) {
+            const int offset = line - row;
+            const int x_left = 160 - offset;
+            const int x_right = 160 + offset;
+            dest->PutPixelLocked(
+                x_left, row,
+                static_cast<unsigned char>(src->GetPixelLocked(x_left, row)));
+            dest->PutPixelLocked(
+                x_right, row,
+                static_cast<unsigned char>(src->GetPixelLocked(x_right, row)));
+          }
+        }
+        dest->Unlock();
       }
+      src->Unlock();
     }
-    src->Unlock();
-    dest->Unlock();
   }
 }

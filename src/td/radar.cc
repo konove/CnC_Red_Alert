@@ -906,18 +906,11 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         }
 
       } else {
-        if (LogicPage->Lock()) {
-          Fat_Put_Pixel(x, y, static_cast<uint8_t>(cellptr->Cell_Color(false)),
-                        ZoomFactor, *LogicPage);
-          LogicPage->Unlock();
-        }
+        Fat_Put_Pixel(x, y, static_cast<uint8_t>(cellptr->Cell_Color(false)),
+                      ZoomFactor, *LogicPage);
       }
     } else {
-      if (LogicPage->Lock()) {
-        Fat_Put_Pixel(x, y, static_cast<uint8_t>(color), ZoomFactor,
-                      *LogicPage);
-        LogicPage->Unlock();
-      }
+      Fat_Put_Pixel(x, y, static_cast<uint8_t>(color), ZoomFactor, *LogicPage);
     }
     if (color != kBlack) {
       Render_Overlay(cell, x, y, ZoomFactor);

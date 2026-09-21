@@ -234,9 +234,8 @@ void StaticButtonClass::Draw_Background() {
   **	If there is a background image present, then restore it to the buffer
   *now.
   */
-  if (!Background.empty() && LogicPage->Lock()) {
-    LogicPage->CopyFromBufferLocked(X, Y, Width, Height, Background);
-    LogicPage->Unlock();
+  if (!Background.empty()) {
+    LogicPage->CopyFromBuffer(X, Y, Width, Height, Background);
   }
 }
 
