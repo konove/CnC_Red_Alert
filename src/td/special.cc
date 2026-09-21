@@ -210,11 +210,11 @@ void Special_Dialog() {
                          kTBlack,
                          TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
       }
-      buttons->Draw_All();
+      buttons->Draw_All(*LogicPage);
       Show_Mouse();
     }
 
-    const KeyNumType input = buttons->Input();
+    const KeyNumType input = buttons->Input(*LogicPage);
     switch (static_cast<int>(input)) {
       case KN_ESC:
       case ButtonKey(200):

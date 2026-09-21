@@ -185,29 +185,29 @@ void EditClass::Set_Text(std::span<char> text, int max_len) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-bool EditClass::Draw_Me(bool forced) {
-  if (ControlClass::Draw_Me(forced)) {
+bool EditClass::Draw_Me(PixelView& view, bool forced) {
+  if (ControlClass::Draw_Me(view, forced)) {
     /*
     **	Hide the mouse.
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
     /*
     **	Draw the body & set text color.
     */
-    Draw_Background();
+    Draw_Background(view);
 
     /*
     **	Display the text.
     */
-    Draw_Text(String.data());
+    Draw_Text(view, String.data());
 
     /*
     **	Display the mouse.
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Show_Mouse();
     }
 
@@ -325,8 +325,8 @@ bool EditClass::Action(unsigned flags, KeyNumType& key) {
  *                                                                                             *
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-void EditClass::Draw_Background() {
-  Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_GREEN_BOX, true);
+void EditClass::Draw_Background(PixelView& view) {
+  Draw_Box(view, X, Y, Width, Height, BOXSTYLE_GREEN_BOX, true);
 }
 
 /***********************************************************************************************
@@ -344,29 +344,29 @@ void EditClass::Draw_Background() {
  *                                                                                             *
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-void EditClass::Draw_Text(const char* text) {
+void EditClass::Draw_Text(PixelView& view, const char* text) {
   if (FontPtr.data() == TheAssets().font(FontType::k6PointGradient).data()) {
     const TextPrintType flags =
         Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
-    Conquer_Clip_Text_Print(*LogicPage, text, X + 1, Y + 1, Color, kTBlack,
+    Conquer_Clip_Text_Print(view, text, X + 1, Y + 1, Color, kTBlack,
                             TextFlags | flags, Width - 2);
 
     if (Has_Focus() &&
         std::cmp_less(std::string_view(text).size(), MaxLength) &&
         String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
-      Conquer_Clip_Text_Print(*LogicPage, "_", X + 1 + String_Pixel_Width(text),
+      Conquer_Clip_Text_Print(view, "_", X + 1 + String_Pixel_Width(text),
                               Y + 1, Color, kTBlack, TextFlags | flags);
     }
   } else {
-    Conquer_Clip_Text_Print(*LogicPage, text, X + 1, Y + 1,
+    Conquer_Clip_Text_Print(view, text, X + 1, Y + 1,
                             Has_Focus() ? kBlue : kWhite, kTBlack, TextFlags,
                             Width - 2);
 
     if (Has_Focus() &&
         std::cmp_less(std::string_view(text).size(), MaxLength) &&
         String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
-      Conquer_Clip_Text_Print(*LogicPage, "_", X + 1 + String_Pixel_Width(text),
+      Conquer_Clip_Text_Print(view, "_", X + 1 + String_Pixel_Width(text),
                               Y + 1, kBlue, kTBlack, TextFlags);
     }
   }

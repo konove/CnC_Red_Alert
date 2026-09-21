@@ -42,6 +42,7 @@
 #define CNC_RED_ALERT_TD_DIAL8_H_
 
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/control.h"
 #include "td/defines.h"
 
@@ -61,7 +62,7 @@ class Dial8Class : public ControlClass {
   /*
   ** Overloaded draw routine
   */
-  bool Draw_Me(bool forced = false) override;
+  bool Draw_Me(PixelView& view, bool forced = false) override;
 
  protected:
   /*

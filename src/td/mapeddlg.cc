@@ -745,7 +745,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
       ........................ Redraw the buttons ........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
       }
       Show_Mouse();
       display = REDRAW_NONE;
@@ -754,7 +754,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input(*LogicPage);
 
     /*
     ............................ Process input ............................
@@ -1264,7 +1264,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
     /*
     ------------------------- Process user input --------------------------
     */
-    const KeyNumType input = commands->Input();  // user input
+    const KeyNumType input = commands->Input(*LogicPage);  // user input
     /*.....................................................................
     Normal button processing: This is done when the mouse button is NOT
     being held down ('grabbed' is 0).
@@ -1914,7 +1914,7 @@ int MapEditClass::Scenario_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input();  // input from user
+    const KeyNumType input = commands->Input(*LogicPage);  // input from user
 
     /*
     ............................ Process input ............................
@@ -2485,7 +2485,7 @@ int MapEditClass::Select_Trigger() {
       ........................ Redraw the buttons ........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
       }
       Show_Mouse();
       display = REDRAW_NONE;
@@ -2494,7 +2494,7 @@ int MapEditClass::Select_Trigger() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input();  // user input
+    const KeyNumType input = commands->Input(*LogicPage);  // user input
 
     /*
     ............................ Process input ............................
@@ -3018,7 +3018,7 @@ int MapEditClass::Edit_Trigger() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input();  // user input
+    const KeyNumType input = commands->Input(*LogicPage);  // user input
 
     /*
     ............................ Process input ............................
@@ -3420,7 +3420,7 @@ int MapEditClass::Import_Triggers() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input();  // user input
+    const KeyNumType input = commands->Input(*LogicPage);  // user input
 
     /*
     ............................ Process input ............................
@@ -3750,7 +3750,7 @@ int MapEditClass::Import_Teams() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input();  // user input
+    const KeyNumType input = commands->Input(*LogicPage);  // user input
 
     /*
     ............................ Process input ............................

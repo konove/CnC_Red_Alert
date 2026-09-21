@@ -449,7 +449,7 @@ int MapEditClass::Select_Team(const char* caption) {
       ........................ Redraw the buttons ........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
       }
       Show_Mouse();
       display = REDRAW_NONE;
@@ -458,7 +458,7 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input();  // user input
+    const KeyNumType input = commands->Input(*LogicPage);  // user input
 
     /*
     ............................ Process input ............................
@@ -1093,7 +1093,7 @@ int MapEditClass::Edit_Team() {
       ........................ Redraw the buttons ........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
       }
       Show_Mouse();
       display = REDRAW_NONE;
@@ -1102,7 +1102,7 @@ int MapEditClass::Edit_Team() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input(*LogicPage);
 
     /*
     ............................ Process input ............................
@@ -1764,7 +1764,7 @@ int MapEditClass::Team_Members(HousesType house) {
       **	Redraw the buttons.
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
       }
       Show_Mouse();
       display = REDRAW_NONE;
@@ -1773,7 +1773,7 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Get user input.
     */
-    const KeyNumType input = commands->Input();  // user input
+    const KeyNumType input = commands->Input(*LogicPage);  // user input
 
     /*
     **	Process input.

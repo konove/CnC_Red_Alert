@@ -87,6 +87,7 @@
 
 #include "base/attributes.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/link.h"
 
 class ControlClass;
@@ -125,8 +126,8 @@ class GadgetClass : public LinkClass {
   /*
   **	Gadget list management functions.
   */
-  virtual KeyNumType Input();
-  virtual void Draw_All(bool forced = true);
+  virtual KeyNumType Input(PixelView& view);
+  virtual void Draw_All(PixelView& view, bool forced = true);
   virtual void Delete_List();
   virtual ControlClass* Extract_Gadget(unsigned id);
   virtual void Flag_List_To_Redraw() { LastList = nullptr; }
@@ -151,7 +152,7 @@ class GadgetClass : public LinkClass {
   /*
   **	General render function.
   */
-  virtual bool Draw_Me(bool forced = false);
+  virtual bool Draw_Me(PixelView& view, bool forced = false);
 
   /*
   **	This is the coordinates and dimensions of the gadget region. These are

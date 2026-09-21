@@ -837,10 +837,10 @@ int MessageListClass::Input(KeyNumType& input) {
  * HISTORY:                                                                *
  *   05/22/1995 BRR : Created.                                             *
  *=========================================================================*/
-void MessageListClass::Draw() {
+void MessageListClass::Draw(PixelView& view) {
   if (MessageList) {
     Hide_Mouse();
-    MessageList->Draw_All();
+    MessageList->Draw_All(view);
     Show_Mouse();
   }
 }

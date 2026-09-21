@@ -42,6 +42,7 @@
 #define CNC_RED_ALERT_TD_SLIDER_H_
 
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/control.h"
 #include "td/gauge.h"
 #include "td/shapebtn.h"
@@ -78,7 +79,7 @@ class SliderClass final : public GaugeClass {
   bool Set_Value(int /*value*/) override;
   bool Bump(bool up);
   bool Step(bool up);
-  bool Draw_Me(bool forced) override;
+  bool Draw_Me(PixelView& view, bool forced) override;
   void Peer_To_Peer(unsigned flags, KeyNumType& key,
                     ControlClass& whom) override;
 
@@ -112,7 +113,7 @@ class SliderClass final : public GaugeClass {
   int ThumbStart = 0;  // x or y position for the thumb
 
   bool Action(unsigned flags, KeyNumType& key) override;
-  void Draw_Thumb() override;
+  void Draw_Thumb(PixelView& view) override;
 
  private:
   void Recalc_Thumb();

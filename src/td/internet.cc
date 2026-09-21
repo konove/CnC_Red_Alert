@@ -566,7 +566,7 @@ bool Do_The_Internet_Menu_Thang() {
       .................... Rebuild the button list ....................
       */
       // buttons->Draw_All();
-      cancelbtn.Draw_Me(true);
+      cancelbtn.Draw_Me(*LogicPage, true);
 
       Show_Mouse();
       display = false;
@@ -585,7 +585,7 @@ bool Do_The_Internet_Menu_Thang() {
 #endif
 
     // input = buttons->Input();
-    input = cancelbtn.Input();
+    input = cancelbtn.Input(*LogicPage);
 
     /*
     ---------------------------- Process input ----------------------------

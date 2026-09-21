@@ -49,6 +49,7 @@
 
 #include "absl/base/attributes.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/control.h"
 #include "td/defines.h"
 #include "td/gadget.h"
@@ -102,7 +103,7 @@ class ListClass : public ControlClass {
   // The selected item's text, or nullptr when the list is empty.
   [[nodiscard]] virtual const char* Current_Item() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  bool Draw_Me(bool forced) override;
+  bool Draw_Me(PixelView& view, bool forced) override;
   // The item's text, or nullptr when the list is empty. An out-of-range
   // index is clamped to the nearest item.
   [[nodiscard]] virtual const char* Get_Item(int index) const
@@ -138,7 +139,8 @@ class ListClass : public ControlClass {
 
  protected:
   bool Action(unsigned flags, KeyNumType& key) override;
-  virtual void Draw_Entry(int index, int x, int y, int width, bool selected);
+  virtual void Draw_Entry(PixelView& view, int index, int x, int y, int width,
+                          bool selected);
 
   /*
   **	This controls what the text looks like. It uses the basic TPF_ flags

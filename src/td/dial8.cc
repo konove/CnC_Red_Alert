@@ -233,45 +233,44 @@ bool Dial8Class::Action(unsigned flags, KeyNumType& key) {
  * HISTORY:                                                                *
  *   02/06/1995 BR : Created.                                              *
  *=========================================================================*/
-bool Dial8Class::Draw_Me(bool forced) {
+bool Dial8Class::Draw_Me(PixelView& view, bool forced) {
   /*
   **	Redraw if parent indicates a redraw is needed
   */
-  if (ControlClass::Draw_Me(forced)) {
+  if (ControlClass::Draw_Me(view, forced)) {
     /*
     **	Hide the mouse.
     */
 
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Hide_Mouse();
     }
 
     /*
     **	Draw background & decorations.
     */
-    Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
+    Draw_Box(view, X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
     for (const auto& i : FacePoint) {
-      Draw_Box(*LogicPage, base::At(i, 0) - 1, base::At(i, 1) - 1, 3, 3,
+      Draw_Box(view, base::At(i, 0) - 1, base::At(i, 1) - 1, 3, 3,
                BOXSTYLE_GREEN_RAISED, false);
     }
 
     /*
     **	Draw the hand & its shadow.
     */
-    LogicPage->DrawLine(
-        FaceX + 1, FaceY + 1,
-        base::At(base::At(FaceLine, static_cast<int>(Facing)), 0) + 1,
-        base::At(base::At(FaceLine, static_cast<int>(Facing)), 1) + 1,
-        kCcGreenShadow);
-    LogicPage->DrawLine(
-        FaceX, FaceY, base::At(base::At(FaceLine, static_cast<int>(Facing)), 0),
-        base::At(base::At(FaceLine, static_cast<int>(Facing)), 1),
-        kCcLightGreen);
+    view.DrawLine(FaceX + 1, FaceY + 1,
+                  base::At(base::At(FaceLine, static_cast<int>(Facing)), 0) + 1,
+                  base::At(base::At(FaceLine, static_cast<int>(Facing)), 1) + 1,
+                  kCcGreenShadow);
+    view.DrawLine(FaceX, FaceY,
+                  base::At(base::At(FaceLine, static_cast<int>(Facing)), 0),
+                  base::At(base::At(FaceLine, static_cast<int>(Facing)), 1),
+                  kCcLightGreen);
 
     /*
     **	Restore the mouse.
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Show_Mouse();
     }
 

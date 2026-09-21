@@ -346,7 +346,7 @@ int Test_Null_Modem() {
                    kCcGreen, kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  commands->Draw_All();
+  commands->Draw_All(*LogicPage);
   while (Get_Mouse_State() > 0) {
     Show_Mouse();
   }
@@ -479,7 +479,7 @@ int Test_Null_Modem() {
     */
     if (AllSurfaces.SurfacesRestored) {
       AllSurfaces.SurfacesRestored = false;
-      commands->Draw_All();
+      commands->Draw_All(*LogicPage);
     }
 
     /*
@@ -490,7 +490,7 @@ int Test_Null_Modem() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    input = commands->Input(*LogicPage);
 
     /*
     ............................ Process input ............................
@@ -709,7 +709,7 @@ static int Reconnect_Null_Modem() {
   Fancy_Text_Print(*LogicPage, buffer, x + 20, y + 25, kCcGreen, kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  commands->Draw_All();
+  commands->Draw_All(*LogicPage);
   Show_Mouse();
 
   /*
@@ -724,7 +724,7 @@ static int Reconnect_Null_Modem() {
     */
     if (AllSurfaces.SurfacesRestored) {
       AllSurfaces.SurfacesRestored = false;
-      commands->Draw_All();
+      commands->Draw_All(*LogicPage);
     }
 
     /*
@@ -735,7 +735,7 @@ static int Reconnect_Null_Modem() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input(*LogicPage);
 
     /*
     ............................ Process input ............................
@@ -1151,7 +1151,7 @@ GameType Select_Serial_Dialog() {
         /*
         ..................... Redraw the buttons .......................
         */
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
         /*
         ....................... Draw the labels .........................
         */
@@ -1165,7 +1165,7 @@ GameType Select_Serial_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input(*LogicPage);
 
     /*
     ............................ Process input ............................
@@ -1237,7 +1237,7 @@ GameType Select_Serial_Dialog() {
       curbutton = selection - kButtonDial;
       base::At(buttons, curbutton)->Turn_On();
       base::At(buttons, curbutton)->IsPressed = true;
-      base::At(buttons, curbutton)->Draw_Me(true);
+      base::At(buttons, curbutton)->Draw_Me(*LogicPage, true);
 
       switch (selection) {
         case kButtonDial:
@@ -1631,7 +1631,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input(*LogicPage);
 
     /*
     ---------------------------- Process input ----------------------------
@@ -2486,12 +2486,12 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    input = commands->Input(*LogicPage);
 
     if (firsttime) {
       port_edt.Set_Focus();
       port_edt.Flag_To_Redraw();
-      input = commands->Input();
+      input = commands->Input(*LogicPage);
       firsttime = 0;
     }
 
@@ -3677,7 +3677,7 @@ int Com_Scenario_Dialog() {
       if (display >= REDRAW_MESSAGE) {
         Draw_Box(*LogicPage, d_message_x, d_message_y, d_message_w, d_message_h,
                  BOXSTYLE_GREEN_BORDER, true);
-        TheSession().messages().Draw();
+        TheSession().messages().Draw(*LogicPage);
 
         LogicPage->FillRect(d_dialog_x + (2 * factor), d_opponent_y,
                             d_dialog_x + d_dialog_w - (4 * factor),
@@ -3743,7 +3743,7 @@ int Com_Scenario_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    input = commands->Input(*LogicPage);
 
     /*
     ---------------------------- Process input ----------------------------
@@ -4098,7 +4098,7 @@ int Com_Scenario_Dialog() {
         If 'Input' returned 1, it means refresh the message display.
         ...............................................................*/
         if (i == 1) {
-          TheSession().messages().Draw();
+          TheSession().messages().Draw(*LogicPage);
         }
 
         /*...............................................................
@@ -4980,7 +4980,7 @@ int Com_Show_Scenario_Dialog() {
       if (display >= REDRAW_MESSAGE) {
         Draw_Box(*LogicPage, d_message_x, d_message_y, d_message_w, d_message_h,
                  BOXSTYLE_GREEN_BORDER, true);
-        TheSession().messages().Draw();
+        TheSession().messages().Draw(*LogicPage);
 
         LogicPage->FillRect(d_dialog_x + (2 * factor), d_opponent_y,
                             d_dialog_x + d_dialog_w - (4 * factor),
@@ -5188,7 +5188,7 @@ int Com_Show_Scenario_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    input = commands->Input(*LogicPage);
 
     /*
     ---------------------------- Process input ----------------------------
@@ -5334,7 +5334,7 @@ int Com_Show_Scenario_Dialog() {
           If 'Input' returned 1, it means refresh the message display.
           ...............................................................*/
           if (i == 1) {
-            TheSession().messages().Draw();
+            TheSession().messages().Draw(*LogicPage);
           } else {
             /*...............................................................
             If 'Input' returned 2, it means redraw the message display.
@@ -6112,12 +6112,12 @@ static int Phone_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    KeyNumType input = commands->Input();
+    KeyNumType input = commands->Input(*LogicPage);
 
     if (firsttime) {
       numedit.Set_Focus();
       numedit.Flag_To_Redraw();
-      input = commands->Input();
+      input = commands->Input(*LogicPage);
       firsttime = 0;
     }
 
@@ -6276,7 +6276,7 @@ static int Phone_Dialog() {
       ------------------------------------------------------------------*/
       case KN_RETURN:
         dialbtn.IsPressed = true;
-        dialbtn.Draw_Me(true);
+        dialbtn.Draw_Me(*LogicPage, true);
         [[fallthrough]];
 
       case ButtonKey(kButtonDial):
@@ -6720,12 +6720,12 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     /*
     ........................... Get user input ............................
     */
-    KeyNumType input = commands->Input();
+    KeyNumType input = commands->Input(*LogicPage);
 
     if (firsttime) {
       nameedit.Set_Focus();
       nameedit.Flag_To_Redraw();
-      input = commands->Input();
+      input = commands->Input(*LogicPage);
       firsttime = 0;
     }
 

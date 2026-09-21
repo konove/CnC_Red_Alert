@@ -271,7 +271,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   **	Redraw the buttons.
   */
   if (buttonlist) {
-    buttonlist->Draw_All();
+    buttonlist->Draw_All(*LogicPage);
   }
   Show_Mouse();
 
@@ -321,7 +321,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         **	Redraw the buttons.
         */
         if (buttonlist) {
-          buttonlist->Draw_All();
+          buttonlist->Draw_All(*LogicPage);
         }
         Show_Mouse();
       }
@@ -334,7 +334,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       /*
       **	Fetch and process input.
       */
-      input = buttonlist->Input();
+      input = buttonlist->Input(*LogicPage);
       switch (static_cast<int>(input)) {
         case BUTTON_1 | BUTTON_FLAG:
           selection = base::At(realval, 0);

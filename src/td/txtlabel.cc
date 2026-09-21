@@ -80,12 +80,12 @@ TextLabelClass::TextLabelClass(char* txt, int x, int y, int color,
  *                                                                                             *
  * HISTORY: * 03/24/1995 BRR : Created. *
  *=============================================================================================*/
-bool TextLabelClass::Draw_Me(bool forced) {
-  if (GadgetClass::Draw_Me(forced)) {
+bool TextLabelClass::Draw_Me(PixelView& view, bool forced) {
+  if (GadgetClass::Draw_Me(view, forced)) {
     if (PixWidth == -1) {
-      Fancy_Text_Print(*LogicPage, "%s", X, Y, Color, kTBlack, Style, Text);
+      Fancy_Text_Print(view, "%s", X, Y, Color, kTBlack, Style, Text);
     } else {
-      Conquer_Clip_Text_Print(*LogicPage, Text, X, Y, Color, kTBlack, Style,
+      Conquer_Clip_Text_Print(view, Text, X, Y, Color, kTBlack, Style,
                               PixWidth);
     }
     return true;

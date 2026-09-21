@@ -47,6 +47,7 @@
 #include "absl/base/attributes.h"
 #include "base/attributes.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/control.h"
 #include "td/defines.h"
 
@@ -70,7 +71,7 @@ class EditClass : public ControlClass {
   EditClass(EditClass&&) = delete;
   EditClass& operator=(EditClass&&) = delete;
 
-  bool Draw_Me(bool forced) override;
+  bool Draw_Me(PixelView& view, bool forced) override;
   virtual void Set_Text(std::span<char> text, int max_len);
   void Set_Color(int color) { Color = color; }
 
@@ -107,8 +108,8 @@ class EditClass : public ControlClass {
   int Color{kCcGreen};
 
   bool Action(unsigned flags, KeyNumType& key) override;
-  virtual void Draw_Background();
-  virtual void Draw_Text(const char* text);
+  virtual void Draw_Background(PixelView& view);
+  virtual void Draw_Text(PixelView& view, const char* text);
   virtual bool Handle_Key(KeyASCIIType ascii);
 
  private:

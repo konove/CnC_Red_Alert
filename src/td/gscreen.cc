@@ -288,11 +288,7 @@ void GScreenClass::Input(KeyNumType& key, int& x, int& y) {
       Flag_To_Redraw(false);
     }
 
-    PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
-
-    key = Buttons->Input();
-
-    SetLogicPage(oldpage);
+    key = Buttons->Input(TheScreen().hidden_view());
 
   } else {
     if (key) {
@@ -368,7 +364,7 @@ void GScreenClass::Remove_A_Button(GadgetClass& gadget) {
  *                                                                                             *
  *    This routine should be called in the main game loop (once every game
  *frame). It will     * call the Draw_It() function if necessary. All rendering
- *is performed to the LogicPage    * which is set to the HIDPAGE. After
+ *is performed to the hidden page. After
  *rendering has been performed, the HIDPAGE is          * copied to the visible
  *page.                                                              *
  *                                                                                             *
@@ -390,10 +386,6 @@ void GScreenClass::Render() {
     // TheMouse()->Erase_Mouse(&HidPage, true);
     PixelView& view = TheScreen().hidden_view();
 
-    // The gadget draws below still find their page through the global; the
-    // save and restore pair goes when Draw_Me() takes a view of its own.
-    PixelView* oldpage = SetLogicPage(view);
-
     // if (IsToRedraw) {
     //	Hide_Mouse();
     //	SeenBuff.CopyToBuffer(0, 0, 320, 200, ShadowPage);
@@ -402,7 +394,7 @@ void GScreenClass::Render() {
     Draw_It(view, IsScreenToRedraw);
 
     if (Buttons) {
-      Buttons->Draw_All(false);
+      Buttons->Draw_All(view, false);
     }
 
     if constexpr (config::kScenarioEditorEnabled) {
@@ -410,7 +402,7 @@ void GScreenClass::Render() {
       ** Draw the Editor's buttons
       */
       if (TheDebugState().map_editor_active() && Buttons) {
-        Buttons->Draw_All();
+        Buttons->Draw_All(view);
       }
     }
     /*
@@ -421,13 +413,11 @@ void GScreenClass::Render() {
       TheSession().messages().Set_Width(
           Lepton_To_Cell(TheMap().TacLeptonWidth) * ICON_PIXEL_W);
     }
-    TheSession().messages().Draw();
+    TheSession().messages().Draw(view);
 
     Blit_Display();
     IsToUpdate = false;
     IsScreenToRedraw = false;
-
-    SetLogicPage(oldpage);
   }
 }
 

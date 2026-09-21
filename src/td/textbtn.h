@@ -42,6 +42,7 @@
 #define CNC_RED_ALERT_TD_TEXTBTN_H_
 
 #include "absl/base/attributes.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/defines.h"
 #include "td/toggle.h"
 
@@ -53,14 +54,14 @@ class TextButtonClass final : public ToggleClass {
                   bool blackborder = false);
   TextButtonClass(unsigned id, int text, TextPrintType style, int x, int y,
                   int w = -1, int h = -1, bool blackborder = false);
-  bool Draw_Me(bool forced = false) override;
+  bool Draw_Me(PixelView& view, bool forced = false) override;
   void Set_Text(const char* text, bool resize = false);
   void Set_Text(int text, bool resize = false);
   void Set_Style(TextPrintType style) { PrintFlags = style; }
 
  protected:
-  void Draw_Background();
-  void Draw_Text(const char* text);
+  void Draw_Background(PixelView& view);
+  void Draw_Text(PixelView& view, const char* text);
 
   bool IsBlackBorder : 1;
 

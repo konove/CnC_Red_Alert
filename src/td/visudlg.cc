@@ -250,7 +250,7 @@ void VisualControlsClass::Process() {
             TPF_6PT_GRAD | TPF_RIGHT | TPF_NOSHADOW |
                 (curbutton == i ? TPF_BRIGHT_COLOR : TPF_USE_GRAD_PAL));
       }
-      optionsbtn.Draw_All();
+      optionsbtn.Draw_All(*LogicPage);
       Show_Mouse();
       partial = false;
     }
@@ -258,7 +258,7 @@ void VisualControlsClass::Process() {
     /*
     **	Get and process player input.
     */
-    const KeyNumType input = optionsbtn.Input();
+    const KeyNumType input = optionsbtn.Input(*LogicPage);
     switch (static_cast<int>(input)) {
       case ButtonKey(kButtonBrightness):
         TheOptions().Set_Brightness(brightness.Get_Value());

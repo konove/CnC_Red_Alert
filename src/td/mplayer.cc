@@ -301,7 +301,7 @@ GameType Select_MPlayer_Game() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input();  // input from user
+    const KeyNumType input = commands->Input(*LogicPage);  // input from user
 
     /*
     ............................ Process input ............................
@@ -371,7 +371,7 @@ GameType Select_MPlayer_Game() {
       base::At(buttons, curbutton)->Turn_On();
       //			buttons[curbutton]->Flag_To_Redraw();
       base::At(buttons, curbutton)->IsPressed = true;
-      base::At(buttons, curbutton)->Draw_Me(true);
+      base::At(buttons, curbutton)->Draw_Me(*LogicPage, true);
 
       switch (selection) {
         case kButtonModemserial:
@@ -1359,7 +1359,7 @@ int Surrender_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input(*LogicPage);
 
     /*
     ............................ Process input ............................

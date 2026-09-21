@@ -429,3 +429,45 @@ reset in `~PixelView` (`:60-64`) and the declarations at `src/sdllib/pixel_buffe
   leak totals are byte-identical to phases 2 and 3a in both games (RA 29,823 bytes in 73
   allocations, TD 17,272 in 215) with no memory errors. The real-display run now covers phases 0
   through 3b.
+
+- 2026-09-21: phase 4 done. The gadget hierarchy takes the view:
+  `GadgetClass::Draw_Me(PixelView&, bool)` through all 14 RA and 11 TD overrides,
+  `GadgetClass::Draw_All`, `GadgetClass::Input`, `ListClass::Draw_Entry` with its 5 RA and 3 TD
+  overrides, and the non-virtual leaves `Draw_Background`, `Draw_Text` and `Draw_Thumb`. RA's
+  duck-typed `Draw_It` protocol at `src/ra/list.h:492` and its 7 implementations changed in lockstep
+  with the template. The 19 RA / 16 TD `TheScreen().IsVisible(LogicPage)` predicates are now
+  `IsVisible(&view)`, and `LogicPage->` reads are down from 78 to 41 in RA and 90 to 62 in TD.
+
+  Three leaves were not in the plan's list and had to join it. `Draw_Text` and `Draw_Thumb` are
+  siblings of `Draw_Background` -- leaf drawing helpers a `Draw_Me` calls -- and `EditClass`'s
+  `Draw_Text` is virtual, so `WOLEditClass`, `PassEditClass` and `PWEditClass` moved with it.
+
+  All three save/restore pairs the render chain still carried are gone: both `GScreenClass::Input`s,
+  which existed only so the gadget draws landed on the hidden page and now pass
+  `TheScreen().hidden_view()` directly, both `GScreenClass::Render`s, and RA's
+  `RadarClass::Draw_It`, whose `oldpage == &TheScreen().visible_view()` test became
+  `TheScreen().IsVisible(&view)` as TD's did in phase 3a.
+
+  Removing `Render()`'s pair exposed two readers below it that the global had been feeding
+  implicitly, both fixed here rather than left to phase 6: `ChronalVortexClass::Render`, which
+  builds its blit target from `LogicPage->buffer()` (`src/ra/vortex.cc:953`) and is called from
+  `DisplayClass::Draw_It`, and TD's `MessageListClass::Draw`, which phase 3a had deliberately left
+  without a parameter. Both now take the view. The vortex's own `RenderBuffer` save/restore pair is
+  self-contained and stays for phase 6. The remaining
+  `Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, ...)` calls in the draw path set the font for a
+  following `String_Pixel_Width` and draw nothing, so they are page-independent and were left alone.
+
+  The sweep was scripted the way phase 2's was, and two scripting hazards are worth recording. A
+  brace-depth tracker that decides which function bodies have a `view` in scope must not end the
+  body at the first nested block when the scope came from a local `PixelView& view = ...`, must not
+  end it on a multi-line signature before the body opens, and must not start one on a declaration
+  that ends in `;` -- each mistake silently leaves correct-looking `*LogicPage` behind or leaks
+  `view` into the next function. Skipping comment lines by their first character also misses
+  continuation lines inside `/* ... */` blocks; two in `src/td/netdlg.cc` and one in
+  `src/ra/wol_logn.cc` had to be reverted by hand.
+
+  Verification: both build dirs clean, 689 tests pass, both save/load smoke scripts pass (RA 240
+  object positions, TD 5,742 game states identical across save/load), and ASan
+  `-NEWGAMESCG01EA -QUITFRAME100` reports no memory errors with leak totals byte-identical to phases
+  2, 3a and 3b in both games (RA 29,823 bytes in 73 allocations, TD 17,272 in 215). The real-display
+  run now covers phases 0 through 4.

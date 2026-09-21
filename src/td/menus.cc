@@ -901,14 +901,14 @@ int Main_Menu(int timeout) {
       Show_Mouse();
 
       SetLogicPage(TheScreen().visible_view());
-      startbtn.Draw_All();
+      startbtn.Draw_All(*LogicPage);
       display = false;
     }
 
     /*
     **	Get and process player input.
     */
-    input = commands->Input();
+    input = commands->Input(*LogicPage);
     switch (static_cast<int>(input)) {
 #ifdef NEWMENU
       case ButtonKey(kButtonExpand):
@@ -980,7 +980,7 @@ int Main_Menu(int timeout) {
 
       case KN_RETURN:
         base::At(buttons, curbutton)->IsPressed = true;
-        base::At(buttons, curbutton)->Draw_Me(true);
+        base::At(buttons, curbutton)->Draw_Me(*LogicPage, true);
         retval = curbutton;
         process = false;
         break;

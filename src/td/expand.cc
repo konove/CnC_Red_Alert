@@ -105,32 +105,33 @@ class EListClass : public ListClass {
   }
 
  protected:
-  void Draw_Entry(int index, int x, int y, int width, bool selected) override;
+  void Draw_Entry(PixelView& view, int index, int x, int y, int width,
+                  bool selected) override;
 
  private:
   // One per item, parallel to List.
   std::vector<int> Scenarios;
 };
 
-void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
+void EListClass::Draw_Entry(PixelView& view, int index, int x, int y, int width,
+                            bool selected) {
   if (base::Any(TextFlags & TPF_6PT_GRAD)) {
     TextPrintType flags = TextFlags;
 
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->FillRect(x, y, x + width - 1, y + LineHeight - 1,
-                          kCcGreenShadow);
+      view.FillRect(x, y, x + width - 1, y + LineHeight - 1, kCcGreenShadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;
       }
     }
 
-    Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y, kCcGreen,
-                            kTBlack, flags, width, Tabs);
+    Conquer_Clip_Text_Print(view, Get_Item(index), x, y, kCcGreen, kTBlack,
+                            flags, width, Tabs);
 
   } else {
-    Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y,
+    Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
                             selected ? kBlue : kWhite, kTBlack, TextFlags,
                             width, Tabs);
   }
@@ -243,11 +244,11 @@ bool Expansion_Dialog() {
       Dialog_Box(*LogicPage, option_x, option_y, option_width, option_height);
       Draw_Caption(*LogicPage, TXT_MISSION_DESCRIPTION, option_x, option_y,
                    option_width);
-      buttons->Draw_All();
+      buttons->Draw_All(*LogicPage);
       Show_Mouse();
     }
 
-    const KeyNumType input = buttons->Input();
+    const KeyNumType input = buttons->Input(*LogicPage);
     switch (static_cast<int>(input)) {
       case KN_RETURN:
       case ButtonKey(200):
@@ -398,11 +399,11 @@ bool Bonus_Dialog() {
       Dialog_Box(*LogicPage, option_x, option_y, option_width, option_height);
       Draw_Caption(*LogicPage, TXT_BONUS_MISSIONS, option_x, option_y,
                    option_width);
-      buttons->Draw_All();
+      buttons->Draw_All(*LogicPage);
       Show_Mouse();
     }
 
-    const KeyNumType input = buttons->Input();
+    const KeyNumType input = buttons->Input(*LogicPage);
     switch (static_cast<int>(input)) {
       case KN_RETURN:
       case ButtonKey(200):

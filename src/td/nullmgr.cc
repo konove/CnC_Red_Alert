@@ -1416,7 +1416,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   // Timer_Test(__LINE__, __FILE__);
 
   CCDebugString("C&C95 - About to draw buttons.\n");
-  Commands->Draw_All();
+  Commands->Draw_All(*LogicPage);
   CCDebugString("C&C95 - About to show mouse.\n");
   Show_Mouse();
 
@@ -1467,7 +1467,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
     if (AllSurfaces.SurfacesRestored) {
       CCDebugString("C&C95 - About to restore video surfaces.\n");
       AllSurfaces.SurfacesRestored = false;
-      Commands->Draw_All();
+      Commands->Draw_All(*LogicPage);
     }
 
     // Timer_Test(__LINE__, __FILE__);
@@ -1488,7 +1488,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
     */
     CCDebugString("C&C95 - About to check for keyboard input.\n");
     if (!Input) {
-      Input = Commands->Input();
+      Input = Commands->Input(*LogicPage);
     }
 
     switch (static_cast<int>(Input)) {
@@ -1694,7 +1694,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
             y + (25 * factor), kCcGreen, kTBlack,
             TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-        Commands->Draw_All();
+        Commands->Draw_All(*LogicPage);
       }
       Show_Mouse();
       display = REDRAW_NONE;
@@ -1707,7 +1707,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     ............................ Process input ............................
     */
     if (!Input) {
-      Input = Commands->Input();
+      Input = Commands->Input(*LogicPage);
     }
     switch (static_cast<int>(Input)) {
       case KN_ESC:
@@ -2006,7 +2006,7 @@ int NullModemClass::Abort_Modem()
   /*
   ........................... Get user input ............................
   */
-  Input = Commands->Input();
+  Input = Commands->Input(*LogicPage);
 
   switch (static_cast<int>(Input)) {
     case KN_ESC:

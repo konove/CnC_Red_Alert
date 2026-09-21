@@ -288,7 +288,7 @@ void GameControlsClass::Process() {
           d_scroll_y + d_scroll_h + 1, kCcGreen, kTBlack,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
 
-      commands->Draw_All();
+      commands->Draw_All(*LogicPage);
 
       Show_Mouse();
       refresh = false;
@@ -297,7 +297,7 @@ void GameControlsClass::Process() {
     /*
     **	Get user input.
     */
-    const KeyNumType input = commands->Input();
+    const KeyNumType input = commands->Input(*LogicPage);
 
     /*
     **	Process input.

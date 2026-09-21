@@ -46,6 +46,7 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/defines.h"
 #include "td/gadget.h"
 
@@ -60,7 +61,7 @@ class TextLabelClass : public GadgetClass {
   /*
   ** Overloaded draw routine
   */
-  bool Draw_Me(bool forced = false) override;
+  bool Draw_Me(PixelView& view, bool forced = false) override;
 
   /*
   ** Sets the displayed text of the label

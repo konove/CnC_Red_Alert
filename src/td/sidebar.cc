@@ -751,9 +751,9 @@ void SidebarClass::Draw_It(PixelView& view, bool complete) {
   if (IsSidebarActive) {
     base::At(Column, 0).Draw_It(view, complete);
     base::At(Column, 1).Draw_It(view, complete);
-    Repair.Draw_Me(true);
-    Upgrade.Draw_Me(true);
-    Zoom.Draw_Me(true);
+    Repair.Draw_Me(view, true);
+    Upgrade.Draw_Me(view, true);
+    Zoom.Draw_Me(view, true);
   }
 
   IsSidebarToRedraw = false;
@@ -1693,8 +1693,8 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
     /*
     **	Redraw the scroll buttons.
     */
-    base::At(UpButton, ID).Draw_Me(true);
-    base::At(DownButton, ID).Draw_Me(true);
+    base::At(UpButton, ID).Draw_Me(view, true);
+    base::At(DownButton, ID).Draw_Me(view, true);
 
     /*
     **	Loop through all the buildable objects that are visible in the strip and

@@ -100,7 +100,8 @@ class MusicListClass : public ListClass {
   }
 
  protected:
-  void Draw_Entry(int index, int x, int y, int width, bool selected) override;
+  void Draw_Entry(PixelView& view, int index, int x, int y, int width,
+                  bool selected) override;
 
  private:
   // One per item, parallel to List.
@@ -392,7 +393,7 @@ void SoundControlsClass::Process() {
           Option_Y + Repeat_Y + 1, kCcGreen, kTBlack,
           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW | TPF_RIGHT);
 
-      optionsbtn->Draw_All();
+      optionsbtn->Draw_All(*LogicPage);
       Show_Mouse();
       display = false;
     }
@@ -400,7 +401,7 @@ void SoundControlsClass::Process() {
     /*
     **	Get user input.
     */
-    const KeyNumType input = optionsbtn->Input();
+    const KeyNumType input = optionsbtn->Input(*LogicPage);
 
     /*
     **	Process Input.
@@ -483,26 +484,25 @@ void SoundControlsClass::Process() {
   */
 }
 
-void MusicListClass::Draw_Entry(int index, int x, int y, int width,
-                                bool selected) {
+void MusicListClass::Draw_Entry(PixelView& view, int index, int x, int y,
+                                int width, bool selected) {
   if (base::Any(TextFlags & TPF_6PT_GRAD)) {
     TextPrintType flags = TextFlags;
 
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->FillRect(x, y, x + width - 1, y + LineHeight - 1,
-                          kCcGreenShadow);
+      view.FillRect(x, y, x + width - 1, y + LineHeight - 1, kCcGreenShadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;
       }
     }
 
-    Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y, kCcGreen,
-                            kTBlack, flags, width, Tabs);
+    Conquer_Clip_Text_Print(view, Get_Item(index), x, y, kCcGreen, kTBlack,
+                            flags, width, Tabs);
 
   } else {
-    Conquer_Clip_Text_Print(*LogicPage, Get_Item(index), x, y,
+    Conquer_Clip_Text_Print(view, Get_Item(index), x, y,
                             selected ? kBlue : kWhite, kTBlack, TextFlags,
                             width, Tabs);
   }

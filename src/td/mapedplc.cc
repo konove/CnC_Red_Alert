@@ -637,7 +637,7 @@ int MapEditClass::Placement_Dialog() {
       /*
       .......................... Redraw buttons ..........................
       */
-      commands->Draw_All();
+      commands->Draw_All(*LogicPage);
       Show_Mouse();
       display = REDRAW_NONE;
     }
@@ -645,7 +645,7 @@ int MapEditClass::Placement_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input();  // user input
+    const KeyNumType input = commands->Input(*LogicPage);  // user input
 
     /*
     ------------------------- Process user input --------------------------

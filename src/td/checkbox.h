@@ -19,6 +19,7 @@
 #ifndef CNC_RED_ALERT_TD_CHECKBOX_H_
 #define CNC_RED_ALERT_TD_CHECKBOX_H_
 
+#include "sdllib/pixel_buffer.h"
 #include "td/toggle.h"
 
 // A small 7x7 checkbox gadget that draws an X when toggled on.
@@ -29,7 +30,7 @@ class CheckBoxClass : public ToggleClass {
 
   // Draws the checkbox as a filled or empty box.
   // Returns true if the checkbox was actually rendered.
-  bool Draw_Me(bool forced = false) override;
+  bool Draw_Me(PixelView& view, bool forced = false) override;
 };
 
 #endif  // CNC_RED_ALERT_TD_CHECKBOX_H_

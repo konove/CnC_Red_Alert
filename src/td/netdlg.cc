@@ -1169,7 +1169,7 @@ static int Net_Join_Dialog() {
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
       }
 
       /*..................................................................
@@ -1203,7 +1203,7 @@ static int Net_Join_Dialog() {
       if (display >= REDRAW_MESSAGE) {
         Draw_Box(*LogicPage, d_message_x, d_message_y, d_message_w, d_message_h,
                  BOXSTYLE_GREEN_BORDER, true);
-        TheSession().messages().Draw();
+        TheSession().messages().Draw(*LogicPage);
 
         LogicPage->FillRect(d_dialog_x + 2, d_msg1_y,
                             d_dialog_x + d_dialog_w - 4, d_msg5_y + d_txt6_h,
@@ -1353,7 +1353,7 @@ static int Net_Join_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    input = commands->Input(*LogicPage);
 
     /*
     ---------------------------- Process input ----------------------------
@@ -1596,8 +1596,8 @@ static int Net_Join_Dialog() {
 
           /*...............................................................
           If we're already editing a message and the user clicks on
-          'Send', translate our input to a Return so Messages.Input() will
-          work properly.
+          'Send', translate our input to a Return so Messages.Input()
+          will work properly.
           ...............................................................*/
           if (input == ButtonKey(kButtonSend)) {
             input = KN_RETURN;
@@ -1619,7 +1619,7 @@ static int Net_Join_Dialog() {
         If 'Input' returned 1, it means refresh the message display.
         ...............................................................*/
         if (i == 1) {
-          TheSession().messages().Draw();
+          TheSession().messages().Draw(*LogicPage);
         } else {
           /*...............................................................
           If 'Input' returned 2, it means redraw the message display.
@@ -3356,7 +3356,7 @@ static int Net_New_Dialog() {
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
       }
 
       /*..................................................................
@@ -3369,7 +3369,7 @@ static int Net_New_Dialog() {
       if (display >= REDRAW_MESSAGE) {
         Draw_Box(*LogicPage, d_message_x, d_message_y, d_message_w, d_message_h,
                  BOXSTYLE_GREEN_BORDER, true);
-        TheSession().messages().Draw();
+        TheSession().messages().Draw(*LogicPage);
       }
 
       Show_Mouse();
@@ -3379,7 +3379,7 @@ static int Net_New_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    input = commands->Input(*LogicPage);
 
     /*
     ---------------------------- Process input ----------------------------
@@ -3722,8 +3722,8 @@ static int Net_New_Dialog() {
         } else {
           /*...............................................................
           If we're already editing a message and the user clicks on
-          'Send', translate our input to a Return so Messages.Input() will
-          work properly.
+          'Send', translate our input to a Return so Messages.Input()
+          will work properly.
           ...............................................................*/
           if (input == ButtonKey(kButtonSend)) {
             input = KN_RETURN;
@@ -3747,7 +3747,7 @@ static int Net_New_Dialog() {
         If 'Input' returned 1, it means refresh the message display.
         ...............................................................*/
         if (i == 1) {
-          TheSession().messages().Draw();
+          TheSession().messages().Draw(*LogicPage);
         }
 
         /*...............................................................
@@ -4731,7 +4731,7 @@ static int Net_Fake_New_Dialog() {
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
       }
 
       Show_Mouse();
@@ -4741,7 +4741,7 @@ static int Net_Fake_New_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    input = commands->Input(*LogicPage);
 
     /*
     ---------------------------- Process input ----------------------------
@@ -5341,7 +5341,7 @@ static int Net_Fake_Join_Dialog() {
       .......................... Redraw buttons ..........................
       */
       if (display >= REDRAW_BUTTONS) {
-        commands->Draw_All();
+        commands->Draw_All(*LogicPage);
       }
 
       Show_Mouse();
@@ -5351,7 +5351,7 @@ static int Net_Fake_Join_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input();
+    input = commands->Input(*LogicPage);
 
     /*
     ---------------------------- Process input ----------------------------

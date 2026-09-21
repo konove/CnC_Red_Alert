@@ -208,19 +208,19 @@ int GaugeClass::Value_To_Pixel(int value) {
  *                                                                                             *
  * HISTORY:    01/16/1995 JLB : Created. *
  *=============================================================================================*/
-bool GaugeClass::Draw_Me(bool forced) {
-  if (ControlClass::Draw_Me(forced)) {
+bool GaugeClass::Draw_Me(PixelView& view, bool forced) {
+  if (ControlClass::Draw_Me(view, forced)) {
     /*
     ===================== Hide the mouse =====================
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
 
     /*
     =========== Draw the body & set text color ===============
     */
-    Draw_Box(*LogicPage, X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
+    Draw_Box(view, X, Y, Width, Height, BOXSTYLE_GREEN_DOWN, true);
 
     /*
     **	Colorize the inside of the gauge if indicated.
@@ -230,25 +230,25 @@ bool GaugeClass::Draw_Me(bool forced) {
       const int color = kCcBrightGreen;
       if (IsHorizontal) {
         if (middle >= X + 1) {
-          LogicPage->FillRect(X + 1, Y + 1, middle, Y + Height - 2,
-                              static_cast<unsigned char>(color));
+          view.FillRect(X + 1, Y + 1, middle, Y + Height - 2,
+                        static_cast<unsigned char>(color));
         }
       } else {
         if (middle >= Y + 1) {
-          LogicPage->FillRect(X + 1, Y + 1, X + Width - 2, middle,
-                              static_cast<unsigned char>(color));
+          view.FillRect(X + 1, Y + 1, X + Width - 2, middle,
+                        static_cast<unsigned char>(color));
         }
       }
     }
 
     if (HasThumb) {
-      Draw_Thumb();
+      Draw_Thumb(view);
     }
 
     /*
     =================== Display the mouse ===================
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Show_Mouse();
     }
     return true;
@@ -360,7 +360,7 @@ bool GaugeClass::Action(unsigned flags, KeyNumType& key) {
  *                                                                                             *
  * HISTORY:    01/16/1995 MML : Created. *
  *=============================================================================================*/
-void GaugeClass::Draw_Thumb() {
+void GaugeClass::Draw_Thumb(PixelView& view) {
   int x = Value_To_Pixel(CurValue);
 
   //	if ((x + 8) > Value_To_Pixel(MaxValue)) {
@@ -369,10 +369,10 @@ void GaugeClass::Draw_Thumb() {
   }
 
   if (IsHorizontal) {
-    Draw_Box(*LogicPage, x, Y, 4, Height, BOXSTYLE_GREEN_RAISED, true);
+    Draw_Box(view, x, Y, 4, Height, BOXSTYLE_GREEN_RAISED, true);
     // Draw_Box(x, Y, 8, Height, BOXSTYLE_GREEN_RAISED, true);
   } else {
-    Draw_Box(*LogicPage, X, x, Width, 4, BOXSTYLE_GREEN_RAISED, true);
+    Draw_Box(view, X, x, Width, 4, BOXSTYLE_GREEN_RAISED, true);
     // Draw_Box(X, x, Width, 8,  BOXSTYLE_GREEN_RAISED, true);
   }
 }
@@ -458,21 +458,21 @@ bool TriColorGaugeClass::Set_Yellow_Limit(int value) {
  *                                                                                             *
  * HISTORY:    01/16/1995 MML : Created. *
  *=============================================================================================*/
-bool TriColorGaugeClass::Draw_Me(bool forced) {
+bool TriColorGaugeClass::Draw_Me(PixelView& view, bool forced) {
   // The tri-colour body below replaces GaugeClass's single-colour one, so this
   // takes only the repaint-flag and peer handling from ControlClass.
   // NOLINTNEXTLINE(bugprone-parent-virtual-call)
-  if (ControlClass::Draw_Me(forced)) {
+  if (ControlClass::Draw_Me(view, forced)) {
     /*
     ===================== Hide the mouse =====================
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Hide_Mouse(X, Y, X + Width, Y + Height);
     }
     /*
     =========== Draw the body & set text color ===============
     */
-    Draw_Box(*LogicPage, X, Y, Width, Height,
+    Draw_Box(view, X, Y, Width, Height,
              IsDisabled ? BOXSTYLE_GREEN_RAISED : BOXSTYLE_GREEN_DOWN, true);
 
     /*
@@ -484,38 +484,38 @@ bool TriColorGaugeClass::Draw_Me(bool forced) {
 
     if (CurValue <= RedLimit) {
       if (IsHorizontal) {
-        LogicPage->FillRect(X + 1, Y + 1, middle, Y + Height - 2, kPink);
+        view.FillRect(X + 1, Y + 1, middle, Y + Height - 2, kPink);
       } else {
-        LogicPage->FillRect(X + 1, Y + 1, X + Width - 2, middle, kPink);
+        view.FillRect(X + 1, Y + 1, X + Width - 2, middle, kPink);
       }
     } else if (CurValue > RedLimit && CurValue <= YellowLimit) {
       if (IsHorizontal) {
-        LogicPage->FillRect(X + 1, Y + 1, red, Y + Height - 2, kPink);
-        LogicPage->FillRect(red, Y + 1, middle, Y + Height - 2, kYellow);
+        view.FillRect(X + 1, Y + 1, red, Y + Height - 2, kPink);
+        view.FillRect(red, Y + 1, middle, Y + Height - 2, kYellow);
       } else {
-        LogicPage->FillRect(X + 1, Y + 1, X + Width - 2, red, kPink);
-        LogicPage->FillRect(X + 1, red, X + Width - 2, middle, kYellow);
+        view.FillRect(X + 1, Y + 1, X + Width - 2, red, kPink);
+        view.FillRect(X + 1, red, X + Width - 2, middle, kYellow);
       }
     } else if (CurValue > YellowLimit && CurValue <= MaxValue) {
       if (IsHorizontal) {
-        LogicPage->FillRect(X + 1, Y + 1, red, Y + Height - 2, kPink);
-        LogicPage->FillRect(red, Y + 1, yellow, Y + Height - 2, kYellow);
-        LogicPage->FillRect(yellow, Y + 1, middle, Y + Height - 2, kGreen);
+        view.FillRect(X + 1, Y + 1, red, Y + Height - 2, kPink);
+        view.FillRect(red, Y + 1, yellow, Y + Height - 2, kYellow);
+        view.FillRect(yellow, Y + 1, middle, Y + Height - 2, kGreen);
       } else {
-        LogicPage->FillRect(X + 1, Y + 1, X + Width - 2, red, kPink);
-        LogicPage->FillRect(X + 1, red, X + Width - 2, yellow, kYellow);
-        LogicPage->FillRect(X + 1, yellow, X + Width - 2, middle, kGreen);
+        view.FillRect(X + 1, Y + 1, X + Width - 2, red, kPink);
+        view.FillRect(X + 1, red, X + Width - 2, yellow, kYellow);
+        view.FillRect(X + 1, yellow, X + Width - 2, middle, kGreen);
       }
     }
 
     if (HasThumb) {
-      Draw_Thumb();
+      Draw_Thumb(view);
     }
 
     /*
     =================== Display the mouse ===================
     */
-    if (TheScreen().IsVisible(LogicPage)) {
+    if (TheScreen().IsVisible(&view)) {
       Conditional_Show_Mouse();
     }
     return true;

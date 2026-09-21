@@ -44,6 +44,7 @@
 #include <cstddef>
 #include <span>
 
+#include "sdllib/pixel_buffer.h"
 #include "td/toggle.h"
 
 class ShapeButtonClass final : public ToggleClass {
@@ -51,7 +52,7 @@ class ShapeButtonClass final : public ToggleClass {
   ShapeButtonClass() noexcept;
   ShapeButtonClass(unsigned id, std::span<const std::byte> shapes, int x,
                    int y);
-  bool Draw_Me(bool forced = false) override;
+  bool Draw_Me(PixelView& view, bool forced = false) override;
   void Set_Shape(std::span<const std::byte> data);
 
   static constexpr int kUpShape = 0;    // Shape to use when button is "up".

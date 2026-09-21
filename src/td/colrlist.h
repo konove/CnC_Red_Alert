@@ -44,6 +44,7 @@
 #include <cstddef>
 #include <span>
 
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
 #include "td/defines.h"
 #include "td/list.h"
@@ -90,7 +91,8 @@ class ColorListClass : public ListClass {
   DynamicVectorClass<char> Colors;
 
  protected:
-  void Draw_Entry(int index, int x, int y, int width, bool selected) override;
+  void Draw_Entry(PixelView& view, int index, int x, int y, int width,
+                  bool selected) override;
 
   /*
   **	This tells how to draw the selected item.
