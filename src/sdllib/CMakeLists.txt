@@ -20,7 +20,7 @@ target_link_libraries(sdllib base SDL2::SDL2 absl::check absl::log absl::strings
 
 # The fading-table builder and the per-frame window blit loop over every
 # palette entry or pixel.
-optimize_in_debug(misc.cc drawbuff_sdl.cc)
+optimize_in_debug(misc.cc pixel_buffer.cc)
 if (WIN32)
     # net_select.cc calls select() through Winsock.
     target_link_libraries(sdllib wsock32)

@@ -8,10 +8,7 @@
 #include <string_view>
 #include <utility>
 
-#include "absl/log/check.h"
 #include "base/array.h"
-#include "base/flags.h"
-#include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/font.h"
 #include "sdllib/misc.h"
@@ -23,8 +20,6 @@ void* MainWindow;
 PixelView* LogicPage;
 bool AllowHardwareBlitFills = true;
 bool OverlappedVideoBlits = true;
-
-PixelBuffer* WindowBuffer = nullptr;
 
 // Cohen-Sutherland outcode of (x, y) against a width by height window: bits for
 // left, right, top and bottom.
@@ -990,149 +985,4 @@ int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height) {
   }
 
   return 0;
-}
-
-PixelView::~PixelView() {
-  if (LogicPage == this) {
-    LogicPage = nullptr;
-  }
-}
-
-PixelView* SetLogicPage(PixelView* page) {
-  std::swap(LogicPage, page);
-  return page;
-}
-
-PixelView* SetLogicPage(PixelView& page) { return SetLogicPage(&page); }
-
-PixelView::PixelView(PixelBuffer* buffer, int x, int y, int width, int height) {
-  Attach(buffer, x, y, width, height);
-}
-
-void PixelView::DrawRect(int x1, int y1, int x2, int y2, uint8_t color) {
-  Lock();
-  DrawLine(x1, y1, x2, y1, color);
-  DrawLine(x1, y2, x2, y2, color);
-  DrawLine(x1, y1, x1, y2, color);
-  DrawLine(x2, y1, x2, y2, color);
-  Unlock();
-}
-
-void PixelView::Attach(PixelBuffer* buffer, int x, int y, int width,
-                       int height) {
-  if (this == buffer_) {
-    return;
-  }
-
-  // Clamp the corner into the buffer. A buffer that Init() has not sized yet
-  // has no last pixel to clamp to, so the corner stays at the origin and the
-  // width and height below come out zero; Screen builds its views against
-  // such pages and attaches them again once the video mode is known.
-  x = std::clamp(x, 0, std::max(buffer->width() - 1, 0));
-  y = std::clamp(y, 0, std::max(buffer->height() - 1, 0));
-
-  if (x + width > buffer->width()) {
-    width = buffer->width() - x;
-  }
-
-  if (y + height > buffer->height()) {
-    height = buffer->height() - y;
-  }
-
-  /*======================================================================*/
-  /* Get a pointer to the top left edge of the buffer.
-   */
-  /*======================================================================*/
-  offset_ =
-      buffer->Get_Bytes().empty()
-          ? nullptr
-          : buffer->Get_Bytes()
-                .subspan(base::ToSize((static_cast<base::ssize>(
-                                           buffer->width() + buffer->pitch()) *
-                                       y) +
-                                      x))
-                .data();
-
-  /*======================================================================*/
-  /* Copy over all of the variables that we need to store.
-   */
-  /*======================================================================*/
-  x_pos_ = x;
-  y_pos_ = y;
-  x_add_ = buffer->width() - width;
-  width_ = width;
-  height_ = height;
-  pitch_ = buffer->pitch();
-  buffer_ = buffer;
-}
-
-PixelBuffer::PixelBuffer(int width, int height, std::span<uint8_t> buffer,
-                         int32_t byte_count)
-    : PixelBuffer() {
-  Init(width, height, buffer, byte_count, BUFFER_NONE);
-}
-
-PixelBuffer::PixelBuffer(int width, int height, std::span<uint8_t> buffer)
-    : PixelBuffer(width, height, buffer, width * height) {}
-
-PixelBuffer::PixelBuffer() { buffer_ = this; }
-
-PixelBuffer::~PixelBuffer() {
-  ReleaseSurfaces();
-  if (WindowBuffer == this) {
-    WindowBuffer = nullptr;
-  }
-}
-
-void PixelBuffer::Init(int width, int height, std::span<uint8_t> buffer,
-                       int32_t byte_count, PixelBufferFlags flags) {
-  CHECK_GE(width, 0);
-  CHECK_GE(height, 0);
-  CHECK_GE(byte_count, 0);
-  const auto pixel_count = base::ToSize(width) * base::ToSize(height);
-  if (!base::Any(flags & BUFFER_VISIBLE)) {
-    CHECK_LE(pixel_count,
-             buffer.empty()
-                 ? (byte_count == 0 ? pixel_count : base::ToSize(byte_count))
-                 : buffer.size());
-  }
-  Size = byte_count;
-  width_ = width;
-  height_ = height;
-  pitch_ = 0;
-  x_add_ = 0;
-  x_pos_ = y_pos_ = 0;
-
-  if (base::Any(flags & BUFFER_VISIBLE)) {
-    CreateDisplaySurface();
-
-    WindowBuffer = this;
-  } else {
-    // regular allocation
-    Allocated = buffer.empty();
-    bytes_ = buffer;
-    Buffer = buffer.data();
-
-    if (buffer.empty()) {
-      if (byte_count == 0) {
-        Size = width * height;
-      } else {
-        Size = byte_count;
-      }
-      Buffer = new uint8_t[base::ToSize(Size)];
-      // This allocation contains exactly Size bytes.
-      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-      bytes_ = std::span(static_cast<uint8_t*>(Buffer), base::ToSize(Size));
-    }
-
-    offset_ = static_cast<uint8_t*>(Buffer);
-  }
-}
-
-void PixelBuffer::ReleaseSurfaces() { DestroyDisplaySurface(); }
-
-void Video_End_Frame() {
-  if (WindowBuffer) {
-    WindowBuffer->Present(true);
-  }
 }
