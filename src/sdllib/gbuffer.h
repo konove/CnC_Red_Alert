@@ -111,7 +111,7 @@ class GraphicViewPortClass {
 
   // A raw pointer to the viewport's top left pixel, valid only while the
   // buffer is locked. Prefer Get_Pixels().
-  std::uint8_t* Get_Offset();
+  uint8_t* Get_Offset();
   // The buffer's pixels from this viewport's top left corner to the end of
   // the buffer. Rows are Get_Width() + Get_XAdd() + Get_Pitch() bytes apart.
   // Empty if the viewport is not attached to a buffer.
@@ -135,11 +135,11 @@ class GraphicViewPortClass {
   // Sets one pixel, ignoring coordinates outside the viewport.
   // Buffer_Put_Pixel is the same without the lock, for callers that hold one
   // already.
-  void Put_Pixel(int x, int y, unsigned char color);
-  void Buffer_Put_Pixel(int x, int y, unsigned char color);
+  void Put_Pixel(int x, int y, uint8_t color);
+  void Buffer_Put_Pixel(int x, int y, uint8_t color);
   // Returns the palette index at x,y, or 0 outside the viewport.
   int Get_Pixel(int x, int y);
-  void Clear(unsigned char color = 0);
+  void Clear(uint8_t color = 0);
 
   // Copies a rectangle of the viewport out to plain memory, packed with no
   // padding, and returns the number of bytes written. The rectangle is
@@ -178,9 +178,9 @@ class GraphicViewPortClass {
 
   // sx,sy and dx,dy are the two corners, both inclusive, so Draw_Rect and
   // Fill_Rect cover dx - sx + 1 pixels per row.
-  void Draw_Line(int sx, int sy, int dx, int dy, unsigned char color);
-  void Draw_Rect(int sx, int sy, int dx, int dy, unsigned char color);
-  void Fill_Rect(int sx, int sy, int dx, int dy, unsigned char color);
+  void Draw_Line(int sx, int sy, int dx, int dy, uint8_t color);
+  void Draw_Rect(int sx, int sy, int dx, int dy, uint8_t color);
+  void Fill_Rect(int sx, int sy, int dx, int dy, uint8_t color);
 
   // Replaces every pixel in the rectangle with remap[pixel]. `remap` is a
   // 256-entry table; the shorter overload covers the whole viewport.
@@ -212,7 +212,7 @@ class GraphicViewPortClass {
  protected:
   // The viewport's top left pixel within the buffer. Null while the buffer
   // is a surface that is not currently locked.
-  std::uint8_t* Offset = nullptr;
+  uint8_t* Offset = nullptr;
   int Width = 0;
   int Height = 0;
   // The bytes of the buffer's row that fall outside the viewport, that is
@@ -224,7 +224,7 @@ class GraphicViewPortClass {
   int YPos = 0;
   // Padding the buffer keeps past the end of every row, beyond XAdd. Copied
   // from the buffer, and zero for every buffer the games create.
-  int32_t Pitch = 0;
+  int Pitch = 0;
   // The buffer this viewport draws into; null until Attach(). A
   // GraphicBufferClass points at itself.
   GraphicBufferClass* GraphicBuff = nullptr;
@@ -374,7 +374,7 @@ inline bool GraphicViewPortClass::Unlock() {
   return GraphicBuff == nullptr || GraphicBuff->Unlock_Surface();
 }
 
-inline std::uint8_t* GraphicViewPortClass::Get_Offset() { return Offset; }
+inline uint8_t* GraphicViewPortClass::Get_Offset() { return Offset; }
 inline std::span<uint8_t> GraphicViewPortClass::Get_Pixels() {
   if (GraphicBuff == nullptr) {
     return {};
@@ -401,7 +401,7 @@ inline GraphicBufferClass* GraphicViewPortClass::Get_Graphic_Buffer() {
   return GraphicBuff;
 }
 
-inline void GraphicViewPortClass::Put_Pixel(int x, int y, unsigned char color) {
+inline void GraphicViewPortClass::Put_Pixel(int x, int y, uint8_t color) {
   if (!Lock()) {
     return;
   }
@@ -412,7 +412,7 @@ inline void GraphicViewPortClass::Put_Pixel(int x, int y, unsigned char color) {
 }
 
 inline void GraphicViewPortClass::Buffer_Put_Pixel(const int x, const int y,
-                                                   const unsigned char color) {
+                                                   const uint8_t color) {
   if (x >= 0 && y >= 0 && x < Get_Width() && y < Get_Height()) {
     const base::ssize pitch = Get_XAdd() + Get_Width() + Get_Pitch();
     base::At(Get_Pixels(), base::ToSize(x + (y * pitch))) = color;
@@ -429,7 +429,7 @@ inline int GraphicViewPortClass::Get_Pixel(int x, int y) {
   return return_code;
 }
 
-inline void GraphicViewPortClass::Clear(unsigned char color) {
+inline void GraphicViewPortClass::Clear(uint8_t color) {
   if (Lock()) {
     Buffer_Clear(this, color);
     Unlock();
@@ -563,7 +563,7 @@ inline void GraphicViewPortClass::Draw_Stamp(
 }
 
 inline void GraphicViewPortClass::Draw_Line(int sx, int sy, int dx, int dy,
-                                            unsigned char color) {
+                                            uint8_t color) {
   if (Lock()) {
     Buffer_Draw_Line(this, sx, sy, dx, dy, color);
     Unlock();
@@ -571,7 +571,7 @@ inline void GraphicViewPortClass::Draw_Line(int sx, int sy, int dx, int dy,
 }
 
 inline void GraphicViewPortClass::Fill_Rect(int sx, int sy, int dx, int dy,
-                                            unsigned char color) {
+                                            uint8_t color) {
   if (Lock()) {
     Buffer_Fill_Rect(this, sx, sy, dx, dy, color);
     Unlock();
@@ -590,9 +590,7 @@ inline void GraphicViewPortClass::Remap(std::span<const uint8_t> remap) {
   Remap(0, 0, Width, Height, remap);
 }
 
-inline int GraphicViewPortClass::Get_Pitch() const {
-  return static_cast<int>(Pitch);
-}
+inline int GraphicViewPortClass::Get_Pitch() const { return Pitch; }
 // BufferClass's copies to a page live here rather than in buffer.h because
 // they need the complete GraphicViewPortClass.
 

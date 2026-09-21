@@ -1032,7 +1032,7 @@ GraphicViewPortClass::GraphicViewPortClass(GraphicBufferClass* graphic_buff,
 }
 
 void GraphicViewPortClass::Draw_Rect(int sx, int sy, int dx, int dy,
-                                     unsigned char color) {
+                                     uint8_t color) {
   Lock();
   Draw_Line(sx, sy, dx, sy, color);
   Draw_Line(sx, dy, dx, dy, color);
