@@ -1,0 +1,296 @@
+# sdllib Display and `LogicPage` Removal Plan
+
+## Findings
+
+The globals plan (`docs/GLOBALS_PLAN.md`) moved both games' state into `Game`-owned subsystems and
+deliberately left sdllib's own globals alone -- its closing note lists `IsTheaterShape` and
+`CurrentPalette` as belonging to sdllib. Two more were left for the same reason, and phase 1 only
+taught their destructors to null them so a destroyed `Screen` could not leave them dangling:
+
+```cpp
+PixelBuffer* WindowBuffer = nullptr;   // src/sdllib/pixel_buffer.cc:57
+PixelView* LogicPage = nullptr;        // src/sdllib/pixel_buffer.cc:58
+```
+
+They are unrelated problems that happen to share a file.
+
+**`WindowBuffer` is a genuine process singleton.** All 20 uses mean "the one `PixelBuffer` backed by
+the SDL window", of which there is exactly one. It self-registers: `PixelBuffer::Init()` assigns
+`WindowBuffer = this` when passed `BUFFER_VISIBLE` (`src/sdllib/pixel_buffer.cc:1100`) and
+`~PixelBuffer` clears it (`:1070`). Its readers are free functions with no natural owner --
+`SetScreenPalette()` (`src/sdllib/palette.cc:7`), `Video_End_Frame()`
+(`src/sdllib/pixel_buffer.cc:1442`), `WWMouseClass::Update_Palette()` (`src/sdllib/ww_mouse.cc:286`)
+and each game's `interpal.cc`. It does not want to be threaded away; it wants an owner.
+
+It also does not sit alone. `src/sdllib/ww_win.cc` holds the rest of the same concern: `MainWindow`
+(`:25`), `SDLRenderer` (`:31`), `ForceRenderEventID` (`:32`) and the present cadence hidden in a
+function-static inside `PresentFrame()` (`:75`). Nothing destroys the window or the renderer today.
+
+**`LogicPage` is an implicit parameter.** sdllib never draws through it; it is purely a convention
+between the two games, naming the view the next draw lands on. Live counts:
+
+| form                               | RA      | TD      |
+| ---------------------------------- | ------- | ------- |
+| `LogicPage->...` reads             | 158     | 150     |
+| `TheScreen().IsVisible(LogicPage)` | 25      | 20      |
+| `*LogicPage` passed by reference   | 6       | 9       |
+| `PixelView* old = LogicPage;`      | 2       | 2       |
+| **total live reads**               | **191** | **181** |
+| `SetLogicPage(...)`                | 83      | 79      |
+
+Of the reads, 25 RA / 17 TD are `Lock()`/`Unlock()` rather than draws: the global also names the
+surface whose lock is held, and those locks nest across translation units.
+
+Three facts shape the work:
+
+- **The cost is the fan-out, not the reads.** `Fancy_Text_Print` reaches the global through two
+  lines of `Simple_Text_Print` (`src/ra/dialog.cc:669-670`) and has 298 RA call sites in 49 files
+  (255/37 in TD). `CC_Draw_Shape` is 106/29 (77/27), `Dialog_Box` 53/31 (44/19), `Draw_Box` 49/19
+  (34/15), `Draw_Caption` 48/27 (48/19). Giving the leaf primitives a view parameter touches roughly
+  1,100 call sites across both games.
+- **Six hierarchies carry the target implicitly.** `GadgetClass::Draw_Me` (`src/ra/gadget.h:155`, 14
+  RA + 11 TD overrides), `GScreenClass::Draw_It` (`src/ra/gscreen.h:93`, 7 + 7),
+  `ObjectClass::Draw_It` (`src/ra/object.h:246`, 12 overrides, `const` in RA and non-`const` in TD),
+  `ObjectTypeClass::Display` (`src/ra/type.h:350`, 9 overrides), `ListClass::Draw_Entry`
+  (`src/ra/list.h:143`, 5 + 3), and a duck-typed `Draw_It` required by `TListClass<T>` at
+  `src/ra/list.h:492` and implemented by 7 unrelated RA classes with no base class, so a signature
+  change there gets no compiler help until instantiation.
+- **The global is load-bearing across translation units.** `GScreenClass::Render()`
+  (`src/ra/gscreen.cc:384`) sets the hidden view and the entire map renderer below it reads the
+  global from other TUs. `GScreenClass::Input()` (`:283`) does the same for nine TUs of `Draw_Me`.
+  About 115 one-way `SetLogicPage(TheScreen().visible_view())` calls sit at the top of modal dialog
+  functions purely so that gadget draws elsewhere land correctly; several of those functions never
+  read the global themselves at all.
+
+**A latent crash.** `~PixelView` (`src/sdllib/pixel_buffer.cc:60-64`) nulls the global when the
+dying view is the logic page, and `delete RenderBuffer` (`src/ra/vortex.cc:140,316`) and
+`delete PseudoSeenBuff` (`src/td/ending.cc:270`) can trigger exactly that. Nothing in either game
+null-checks `LogicPage` before dereferencing it.
+
+**Scope.** `WindowBuffer`, `LogicPage` and the `ww_win.cc` window globals. sdllib's other leftovers
+are out of scope and stay: `WindowList` (180 uses) is the legacy text-window table, `IsTheaterShape`
+(52) is a shape-decoding flag and `CurrentPalette` (36) is palette state -- none is display state,
+and each deserves its own decision.
+
+**What this plan does not claim.** Phase 0 replaces a global pointer with a subsystem reachable
+through `TheDisplay()`; that is still process-wide state. The gains are an explicit lifetime, a
+window and renderer that are destroyed, and no self-registration from a constructor. Only phases 1-7
+remove state outright.
+
+## Pattern
+
+**Phase 0** follows the globals plan's subsystem pattern: a class with Google-style members in a new
+`sdllib/display.h/.cc`, a constructor that does no I/O, an `Init()` that opens the window later, a
+`base::Installed<Display>::Scope` in each game's `Game`, and a `TheDisplay()` accessor.
+`tech/audio_mixer.h`'s `AudioMixer` is the precedent for a subsystem that lives in a shared library
+and is installed by each game.
+
+**Phases 1-7** use one mechanism throughout. A leaf primitive gains a leading `PixelView& view`
+parameter and uses it instead of the global; every call site that has no view in hand passes
+`*LogicPage` explicitly. Textual mentions of the global go up while hidden reads go to zero. That is
+the point: the dependency becomes visible and greppable, the compiler enforces every call site, and
+each later phase is a local edit turning one `*LogicPage` argument into a real view. The tree builds
+and behaves identically at every step.
+
+**The endpoint rule.** A threaded parameter is not always the answer. A leaf primitive called from
+many contexts takes a parameter. A dialog that always draws to the visible view names it locally:
+
+```cpp
+PixelView& view = TheScreen().visible_view();
+```
+
+The goal is that the drawing target is named where it is used, not that everything becomes a
+parameter.
+
+## Phases
+
+### 0. `Display`
+
+New `src/sdllib/display.h/.cc`. The class absorbs `MainWindow`, `SDLRenderer`, `ForceRenderEventID`,
+the present cadence and the `WindowBuffer` pointer. SDL types stay `void*` in the header with the
+casts in the `.cc`, as `PixelBuffer` already does.
+
+```cpp
+class Display {
+  Display();                                       // no window yet, like Screen
+  explicit Display(void* window, void* renderer);  // tests adopt an existing pair
+  bool Init(const char* title, int width, int height);  // was SDL_Create_Main_Window
+  ~Display();                                      // destroys renderer and window
+
+  void AttachWindowPage(PixelBuffer& page);
+  PixelBuffer* window_page();                      // nullable, as WindowBuffer is today
+
+  void EndFrame();                                 // was Video_End_Frame()
+  void SetPalette(std::span<const uint8_t> palette);  // was SetScreenPalette()
+  bool SetVideoMode(int width, int height, int bits_per_pixel);
+
+  int DisplayIndex();                              // for the mouse
+  void SetMouseGrab(bool grab);
+};
+```
+
+`Display` exposes no SDL handle. The window is only needed for four things, all of which become
+methods: creating the renderer, `SDL_GetWindowDisplayIndex` (`src/sdllib/ww_mouse.cc:77-79`),
+`SDL_SetWindowGrab` (`:275,280`) and setting the video mode.
+
+Two parameters that take the handle today ignore it and lose it: `Set_Video_Mode(void* hwnd, ...)`
+(`src/sdllib/misc.cc:27`) and `VQA_OpenAudio(VQAHandle*, void* window)`
+(`src/winvq/vqa32/audio.cc:272`). Dropping the second also ends winvq's link seam on `MainWindow`,
+so `src/winvq/vqa32/vqaplay_test.cc:30-31` stops defining its own copy. The eight remaining
+`MainWindow` mentions are comments or live in files the build excludes (`winstub.cc` via
+`src/ra/CMakeLists.txt:44`; `wolapiob.cc` is in no CMakeLists).
+
+`Screen` keeps owning the page. `Screen::Init()` (`src/ra/screen.cc:29`, `src/td/screen.cc:28`)
+calls `TheDisplay().AttachWindowPage(visible_page_)` right after `Init(..., BUFFER_VISIBLE)`, which
+deletes the self-registration at `src/sdllib/pixel_buffer.cc:1100` and the destructor reset at
+`:1070`. `Display` is a `Game` member declared before `Screen`, and `Init()` is called where
+`Create_Main_Window()` is today (`src/ra/startup.cc:361`, `src/td/startup.cc:346`), which already
+runs before `TheScreen().Init()`.
+
+Call sites: `Video_End_Frame()` to `TheDisplay().EndFrame()` (11, including `Wait_Vert_Blank()` at
+`src/sdllib/misc.h:92` and the event loop at `src/sdllib/ww_win.cc:108`); `SetScreenPalette()` to
+`TheDisplay().SetPalette()` (15); `WindowBuffer` to `TheDisplay().window_page()` (20). Code that can
+run outside a `Game` tests `base::Installed<Display>::IsInstalled()`, the pattern
+`src/ra/game_clock.h:51` already uses, which preserves the null checks at `src/sdllib/palette.cc:8`
+and `src/sdllib/pixel_buffer.cc:1443`. `WWMouseClass::Update_Palette()` stops reading the global and
+has the palette pushed in from `Display::SetPalette()`.
+
+Tests: `src/sdllib/keyframe_test.cc:133` assigns `SDLRenderer` a software renderer directly and
+instead installs a `Display` built with the adopting constructor. The two `WindowBuffer` assertions
+in `src/sdllib/pixel_buffer_test.cc:192-194` move to the installed `Display`.
+
+Deferred deliberately: moving the `BUFFER_VISIBLE` surface machinery (`window_texture_`,
+`palette_surface_`, `redraw_timer_`, the scaled-frame texture, `CreateDisplaySurface()`) out of
+`PixelBuffer` into `Display`, which would delete the `BUFFER_VISIBLE` special case entirely. It is
+the cleaner end state, it is not needed to remove the global, and it re-opens code that 3c99c784 and
+4be9d904 just consolidated.
+
+### 1. Free deletions and latent bugs
+
+- Delete `src/ra/bar.cc` and its header. `ProgressBarClass` has no constructor call and no caller
+  anywhere in `src/` -- `ProgressBarClass` has zero mentions outside `src/ra/bar.*` -- and it
+  compiles only because `src/ra/CMakeLists.txt:22-24` globs the directory. TD has no counterpart.
+  Removes 8 reads.
+- Delete the 21 RA and 14 TD commented-out `LogicPage->` lines.
+- Fix `src/td/radar.cc:465`. The save is `const PixelView* oldpage = SetLogicPage(...)`, so it
+  cannot be passed back, and the restore at `:496` is commented out; the variable's only remaining
+  use is the behavioural test at `:489`. RA restores correctly at `src/ra/radar.cc:548`. Restoring
+  TD's is a deliberate behaviour change and needs its own smoke run.
+- Resolve the repair code at `src/td/netdlg.cc:4652-4656` and `:5271-5275`, which logs
+  `"C&C95 - Logic page invalid"` and forces the page back to the visible view. Something in the
+  network path leaves the global pointing at a third page; find it before the global can go.
+
+### 2. Leaf primitives take a view
+
+Each gains a leading `PixelView& view`; callers without one pass `*LogicPage`.
+
+`Simple_Text_Print` (`src/ra/dialog.cc:398`) and its wrappers `Fancy_Text_Print`,
+`Conquer_Clip_Text_Print` and `Plain_Text_Print`; `CC_Draw_Shape` (`src/ra/shape_draw.cc:48`,
+`src/td/conquer.cc:2390`); `CC_Texture_Fill` (`src/td/conquer.cc:2334`, TD only); `Draw_Box`,
+`Draw_Beveled_Box`, `Draw_Caption` and `Window_Box` (`src/ra/dialog.cc`); `Dialog_Box`
+(`src/ra/dialog.cc:108`, which then stops touching the global at all); `LockedWindow` and its
+`SaveSurfaceRect` / `RestoreSurfaceRect` / `DrawDib` entry points (`src/ra/winbits.cc:15`, RA only);
+`Fat_Put_Pixel` (TD only).
+
+About 1,100 call sites, mechanical and compiler-enforced. Disjoint files, so it parallelizes across
+fork agents with a shared recipe.
+
+### 3a. The GScreen render chain
+
+`GScreenClass::Draw_It(bool)` becomes `Draw_It(PixelView&, bool)` through all 7 overrides in each
+game (`display.h:131`, `radar.h:91`, `power.h:68`, `sidebar.h:98`, `tab.h:60`, `help.h:69`,
+`mapedit.h:187` in RA), with every override forwarding the argument to its base call. The satellites
+in the same chain follow: `DisplayClass::Redraw_Shadow()`, `SidebarClass::StripClass::Draw_It()`,
+`RadarClass::Radar_Cursor` / `Radar_Anim` / `Plot_Radar_Pixel` / `Render_*` / `Draw_Names`, and
+`MessageListClass::Draw` (called from `src/ra/gscreen.cc:404`).
+
+`GScreenClass::Render()` (`:384`) then passes the hidden view instead of setting the global, and its
+save/restore pair at `:384`/`:414` goes.
+
+### 3b. The map object chain
+
+`CellClass::Draw_It` (`src/ra/cell.cc:1067`, non-virtual), then `ObjectClass::Draw_It` and its 12
+overrides, then `ObjectTypeClass::Display` (9 overrides) and the two `ObjectTypeClass::Draw_It`
+declarations (`src/ra/type.h:1921,1994`). RA's `ObjectClass::Draw_It` is `const` and TD's is not, so
+the two games need separate patches. TD additionally has `ObjectClass::Render(bool)`
+(`src/td/object.cc:861`) reading the global directly.
+
+### 4. The gadget hierarchy
+
+`GadgetClass::Draw_Me(bool)` becomes `Draw_Me(PixelView&, bool)` across 14 RA and 11 TD overrides,
+along with `GadgetClass::Draw_All()` and the non-virtual helpers
+`StaticButtonClass::Draw_Background` and `TextButtonClass::Draw_Background`. The load-bearing change
+is `GadgetClass::Input()` (`src/ra/gadget.cc:451`), which calls `Draw_Me` seven times and has no
+page argument at all; it is the entry point every modal dialog loop uses.
+
+`ListClass::Draw_Entry` (5 RA + 3 TD overrides) follows. The RA-only duck-typed protocol at
+`src/ra/list.h:492` needs its 7 implementations (`session.h:459`, `taction.h:191`, `teamtype.h:98`,
+`teamtype.h:183`, `tevent.h:227`, `trigger.h:100`, `trigtype.h:163`) edited in lockstep with the
+template, with no diagnostic until instantiation.
+
+The 25 RA / 20 TD `TheScreen().IsVisible(LogicPage)` predicates become `IsVisible(&view)`. They ask
+an identity question -- "am I drawing straight to the screen, so hide the mouse?" -- which is why
+every gadget draw needs the real view rather than any view of the same pixels.
+
+### 5. Modal dialogs
+
+The roughly 54 RA and 61 TD one-way sets each become one named local, passed to the `Input()`,
+`Draw_All()` and leaf-primitive calls below them, and the `SetLogicPage` line is deleted. This is
+where the `*LogicPage` arguments introduced in phase 2 turn into real views. The functions are
+independent of each other, so this parallelizes as phase 2 does.
+
+### 6. The residue
+
+- `ScoreTimeClass::Update` and `ScoreCredsClass::Update` (`src/ra/score.cc:158,180`,
+  `src/td/score.cc:329,354`), which save the global because they are called from a generic anim tick
+  loop, and TD's `PseudoSeenBuff` (`src/td/score.h:225`), a third page `new`-ed in
+  `src/td/ending.cc:177` and `delete`-d at `:270`.
+- RA's `winbits` (29 call sites, none of which set the page) and `src/ra/winbits_test.cc:30-49`,
+  whose `TestScreen` RAII guard becomes a plain view.
+- `ChronalVortexClass::Render` (`src/ra/vortex.cc:823-953`) and its own `RenderBuffer`, the only
+  non-screen `SetLogicPage` target in RA.
+- The two simulation-path sets, `TechnoClass::Electric_Zap` (`src/ra/techno.cc:3139`, virtual,
+  called from `src/ra/vortex.cc:686`) and `BuildingClass::Fire_At` (`src/td/building.cc:1087`). Both
+  reach into the visible page mid-frame and never restore, and game logic has no view in hand to
+  convert into a parameter. They name `TheScreen().visible_view()` at the point of use, which is
+  exactly the page they set today.
+- The modem and network paths: `src/ra/nullmgr.cc:1058,1300,1498`, `src/ra/netdlg.cc:5810,5830`,
+  `src/td/netdlg.cc:4378,4401`, and `src/td/internet.cc:498,506,542`.
+
+### 7. Delete
+
+Remove `LogicPage` (`src/sdllib/pixel_buffer.cc:58`), both `SetLogicPage` overloads (`:66,71`), the
+reset in `~PixelView` (`:60-64`) and the declarations at `src/sdllib/pixel_buffer.h:76-83`. The two
+`pixel_buffer_test.cc` cases that assert on the global (`:165-183`) go with it.
+
+## Constraints
+
+- **Lock nesting crosses translation units.** `PowerClass::Draw_It` takes `LogicPage->Lock()`
+  (`src/ra/power.cc:168`) and drops it at `:246`, and in between `CC_Draw_Shape` builds a second
+  view on `LogicPage->buffer()`. The same shape appears at `src/ra/tab.cc:121`,
+  `src/ra/sidebar.cc:756`, `src/ra/radar.cc:452,520`, `src/ra/help.cc:274`, `src/ra/egos.cc:779` and
+  `src/ra/mapeddlg.cc:1158,1256`. Threading is safe because `lock_count_` belongs to the
+  `PixelBuffer`, not the view (`src/sdllib/pixel_buffer.h:268`) -- but only while the view passed
+  down is a view of the same buffer. Getting this wrong leaks a lock rather than failing a test.
+- **Save/restore pairs are not exception-safe.** Only `src/ra/winbits_test.cc:39` is RAII. Every
+  production pair is a bare local and a manual restore; `src/ra/installation.cc:262-294` already
+  duplicates its restore to cover an early return, inside a loop where a future `continue` would
+  leak. Phases that keep a pair alive should not add control flow between set and restore.
+- **TD's page set is four-valued** (`visible_view`, `hidden_view`, `sys_mem_page`, `PseudoSeenBuff`)
+  where RA's is effectively three (`visible_view`, `hidden_view`, `vortex`'s `RenderBuffer`).
+- **The two games diverge** enough that most phases need separate patches: TD has no `bar.cc`, no
+  `TListClass`, no `winbits`, no `vortex`, and its `CC_Draw_Shape` lives in `conquer.cc`.
+
+## Verification (per phase)
+
+- Both build directories clean, including the strict one; `tools/strict_tu.py` during the edit loop.
+- Full test suite.
+- `tools/ra_saveload_smoke.sh` and `tools/td_saveload_smoke.sh`.
+- ASan `-NEWGAME -QUITFRAME` in both games, which also confirms phase 0's window and renderer
+  teardown.
+- Phases 0, 3a, 3b and 4 additionally need a real-display run into a mission and through a movie.
+  Headless never loads palettes, so a rendering regression there is invisible to the smoke scripts.
+
+## Progress
+
+Nothing started.
