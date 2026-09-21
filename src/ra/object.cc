@@ -295,7 +295,9 @@ void ObjectClass::AI() {
     if (Height <= 0) {
       Height = 0;
       IsFalling = false;
-      Per_Cell_Process(PCP_END);
+      if (Per_Cell_Process(PCP_END)) {
+        return;
+      }
 
       Shorten_Attached_Anims(this);
     }

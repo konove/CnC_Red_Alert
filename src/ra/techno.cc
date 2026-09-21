@@ -1108,7 +1108,7 @@ RadioMessageType TechnoClass::Receive_Message(RadioClass* from,
  *units.                                                   * 12/27/1994 JLB :
  *Checks for an processes any trigger in cell.                             *
  *=============================================================================================*/
-void TechnoClass::Per_Cell_Process(PCPType why) {
+bool TechnoClass::Per_Cell_Process(PCPType why) {
   DCHECK(IsActive);
 
   if (why == PCP_END) {
@@ -1130,6 +1130,7 @@ void TechnoClass::Per_Cell_Process(PCPType why) {
       Revealed(ThePlayer());
     }
   }
+  return false;
 }
 
 /***********************************************************************************************

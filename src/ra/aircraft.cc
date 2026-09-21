@@ -4387,8 +4387,8 @@ void AircraftClass::Rotation_AI() {
  *                                                                                             *
  * HISTORY: * 09/15/1996 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Per_Cell_Process(PCPType why) {
-  FootClass::Per_Cell_Process(why);
+bool AircraftClass::Per_Cell_Process(PCPType why) {
+  return FootClass::Per_Cell_Process(why);
 }
 
 /***********************************************************************************************

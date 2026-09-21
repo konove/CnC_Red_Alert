@@ -126,7 +126,7 @@ class DriveClass : public FootClass {
   void Do_Turn(DirType dir);
   virtual void Overrun_Square(CELL /*unused*/, bool /*unused*/ = true) {}
   void Assign_Destination(TARGET target) override;
-  void Per_Cell_Process(PCPType why) override;
+  [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   virtual bool Ok_To_Move(DirType /*unused*/);
   void AI() override;
   void Force_Track(int track, COORDINATE coord);

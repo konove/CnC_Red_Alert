@@ -1628,7 +1628,7 @@ bool UnitClass::Try_To_Deploy() {
  *building says "NO!"                                    * 06/30/1995 JLB :
  *Gunboats head back and forth now.                                        *
  *=============================================================================================*/
-void UnitClass::Per_Cell_Process(PCPType why) {
+bool UnitClass::Per_Cell_Process(PCPType why) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().unit(), this);
   DCHECK(IsActive);
 
@@ -1642,7 +1642,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
   if ((why == PCP_END || why == PCP_ROTATION) && IsDeploying) {
     Try_To_Deploy();
     if (!IsActive) {
-      return;  // Unit no longer exists -- bail.
+      return true;  // Unit no longer exists -- bail.
     }
   }
 
@@ -1711,7 +1711,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
         Limbo();
         techno->Attach(this);
       }
-      return;
+      return false;
     }
 
     /*
@@ -1773,7 +1773,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
     *should not be eliminated.
     */
     if (Edge_Of_World_AI()) {
-      return;
+      return true;
     }
 
     /*
@@ -1880,7 +1880,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
         }
         delete bldng;
         if (!IsActive) {
-          return;
+          return true;
         }
       }
     }
@@ -1898,7 +1898,7 @@ void UnitClass::Per_Cell_Process(PCPType why) {
       new AnimClass(Combat_Anim(Strength, WARHEAD_AP, land), Coord);
       int damage = Strength;
       Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
-      return;
+      return !IsActive;
     }
   }
 
@@ -1927,9 +1927,9 @@ void UnitClass::Per_Cell_Process(PCPType why) {
   Overrun_Square(Coord_Cell(Coord), false);
 
   if (!IsActive) {
-    return;
+    return true;
   }
-  DriveClass::Per_Cell_Process(why);
+  return DriveClass::Per_Cell_Process(why);
 }
 
 /***********************************************************************************************

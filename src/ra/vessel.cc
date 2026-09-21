@@ -675,7 +675,7 @@ void VesselClass::AI() {
  *                                                                                             *
  * HISTORY: * 03/19/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselClass::Per_Cell_Process(PCPType why) {
+bool VesselClass::Per_Cell_Process(PCPType why) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().vessel(), this);
   DCHECK(IsActive);
 
@@ -710,13 +710,14 @@ void VesselClass::Per_Cell_Process(PCPType why) {
     **	map, then it gets eliminated.
     */
     if (Edge_Of_World_AI()) {
-      return;
+      return true;
     }
   }
 
-  if (IsActive) {
-    DriveClass::Per_Cell_Process(why);
+  if (!IsActive) {
+    return true;
   }
+  return DriveClass::Per_Cell_Process(why);
 }
 
 /***********************************************************************************************

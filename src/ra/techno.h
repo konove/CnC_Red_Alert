@@ -455,7 +455,7 @@ class TechnoClass : public RadioClass,
   [[nodiscard]] virtual bool Is_Ready_To_Random_Animate() const;
   virtual bool Random_Animate() { return false; }
   virtual void Assign_Destination(TARGET target);
-  void Per_Cell_Process(PCPType why) override;
+  [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   virtual void Enter_Idle_Mode(bool initial = false);
   void Look(bool incremental = false) override;
 

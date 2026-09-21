@@ -141,7 +141,7 @@ class VesselClass : public DriveClass {
   RadioMessageType Receive_Message(RadioClass* from, RadioMessageType message,
                                    int32_t& param) override;
   void AI() override;
-  void Per_Cell_Process(PCPType why) override;
+  [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   void Assign_Destination(TARGET target) override;
 
   ResultType Take_Damage(int& damage, int distance, WarheadType warhead,

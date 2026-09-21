@@ -283,7 +283,12 @@ class ObjectClass : public AbstractClass {
   /*
   **	AI.
   */
-  virtual void Per_Cell_Process(PCPType /*unused*/) {}
+  // Acts on the object having reached, crossed or turned in a cell.
+  // Returns true when the object deleted itself doing so, in which case
+  // the caller must not touch it again.
+  [[nodiscard]] virtual bool Per_Cell_Process(PCPType /*unused*/) {
+    return false;
+  }
   [[nodiscard]] virtual BuildingClass* Who_Can_Build_Me(bool intheory,
                                                         bool legal) const;
   virtual RadioMessageType Receive_Message(RadioClass* from,

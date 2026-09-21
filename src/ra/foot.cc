@@ -1369,7 +1369,7 @@ void FootClass::Active_Click_With(ActionType action, CELL cell) {
  *trigger event.                                     * 07/16/1995 JLB : If next
  *to a scanner and cloaked, then shimmer.                          *
  *=============================================================================================*/
-void FootClass::Per_Cell_Process(PCPType why) {
+bool FootClass::Per_Cell_Process(PCPType why) {
   DCHECK(IsActive);
 
   if (why == PCP_END) {
@@ -1431,7 +1431,7 @@ void FootClass::Per_Cell_Process(PCPType why) {
       if (trigger != nullptr) {
         trigger->Spring(TEVENT_PLAYER_ENTERED, this, Coord_Cell(Coord));
         if (!IsActive) {
-          return;
+          return true;
         }
       }
 
@@ -1448,7 +1448,7 @@ void FootClass::Per_Cell_Process(PCPType why) {
               trigger->Class->Event2.Event == TEVENT_CROSS_HORIZONTAL))) {
           trigger->Spring(TEVENT_CROSS_HORIZONTAL, this, Coord_Cell(Coord));
           if (!IsActive) {
-            return;
+            return true;
           }
         }
       }
@@ -1464,7 +1464,7 @@ void FootClass::Per_Cell_Process(PCPType why) {
               trigger->Class->Event2.Event == TEVENT_CROSS_VERTICAL))) {
           trigger->Spring(TEVENT_CROSS_VERTICAL, this, Coord_Cell(Coord));
           if (!IsActive) {
-            return;
+            return true;
           }
         }
       }
@@ -1483,7 +1483,7 @@ void FootClass::Per_Cell_Process(PCPType why) {
              TheMap().at(Coord).Zones.at(Techno_Type_Class()->MZone))) {
           trigger->Spring(TEVENT_ENTERS_ZONE, this, Coord_Cell(Coord));
           if (!IsActive) {
-            return;
+            return true;
           }
         }
       }
@@ -1493,13 +1493,13 @@ void FootClass::Per_Cell_Process(PCPType why) {
       **	stop all further processing for this unit.
       */
       if (!IsActive) {
-        return;
+        return true;
       }
     }
 
   }
 
-  TechnoClass::Per_Cell_Process(why);
+  return TechnoClass::Per_Cell_Process(why);
 }
 
 /***************************************************************************

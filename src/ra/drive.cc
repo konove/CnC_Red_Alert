@@ -657,8 +657,7 @@ bool DriveClass::While_Moving() {
         if (TrackIndex &&
             base::At(RawTracks, tracknum - 1).Cell == TrackIndex) {
           Mark(MARK_DOWN);
-          Per_Cell_Process(PCP_DURING);
-          if (!IsActive) {
+          if (Per_Cell_Process(PCP_DURING)) {
             return false;
           }
           Mark(MARK_UP);
@@ -699,11 +698,10 @@ bool DriveClass::While_Moving() {
 
                 Stop_Driver();
                 IsDriving = true;
-                Per_Cell_Process(PCP_END);
-                IsDriving = false;
-                if (!IsActive) {
+                if (Per_Cell_Process(PCP_END)) {
                   return false;
                 }
+                IsDriving = false;
                 if (Start_Driver(c)) {
                   Set_Speed(oldspeed);
                   base::MoveBytes(std::as_writable_bytes(base::Suffix(Path, 0)),
@@ -747,8 +745,7 @@ bool DriveClass::While_Moving() {
         **	Perform "per cell" activities.
         */
         Mark(MARK_DOWN);
-        Per_Cell_Process(PCP_END);
-        if (!IsActive) {
+        if (Per_Cell_Process(PCP_END)) {
           return false;
         }
         Mark(MARK_UP);
@@ -791,7 +788,7 @@ bool DriveClass::While_Moving() {
  *   06/18/1994 JLB : Converted to virtual function. * 06/18/1994 JLB :
  *Distinguishes between center and near-center conditions.                 *
  *=============================================================================================*/
-void DriveClass::Per_Cell_Process(PCPType why) {
+bool DriveClass::Per_Cell_Process(PCPType why) {
   DCHECK(IsActive);
 
   if (why == PCP_END) {
@@ -810,7 +807,7 @@ void DriveClass::Per_Cell_Process(PCPType why) {
     Lay_Track();
   }
 
-  FootClass::Per_Cell_Process(why);
+  return FootClass::Per_Cell_Process(why);
 }
 
 /***********************************************************************************************
@@ -1301,11 +1298,8 @@ void DriveClass::AI() {
                                         House->GroundspeedBias)) {
         Mark(MARK_CHANGE_REDRAW);
       }
-      if (!IsRotating) {
-        Per_Cell_Process(PCP_ROTATION);
-        if (!IsActive) {
-          return;
-        }
+      if (!IsRotating && Per_Cell_Process(PCP_ROTATION)) {
+        return;
       }
 
     } else {

@@ -405,7 +405,7 @@ class FootClass : public TechnoClass {
   void Handle_Navigation_List();
   void Queue_Navigation_List(TARGET target);
   void Clear_Navigation_List();
-  void Per_Cell_Process(PCPType why) override;
+  [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   virtual void Approach_Target();
   virtual void Set_Speed(int speed);
   [[nodiscard]] MoveType Can_Enter_Cell(

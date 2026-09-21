@@ -269,7 +269,7 @@ class UnitClass final : public DriveClass {
   void Enter_Idle_Mode(bool initial = false) override;
   [[nodiscard]] MoveType Can_Enter_Cell(
       CELL cell, FacingType facing = FACING_NONE) const override;
-  void Per_Cell_Process(PCPType why) override;
+  [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   void Exit_Repair();
   void Shroud_Regen();
 

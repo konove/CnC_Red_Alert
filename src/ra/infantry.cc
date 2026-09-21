@@ -607,7 +607,7 @@ void InfantryClass::Draw_It(PixelView& view, int x, int y,
  *options.                                                * 05/31/1995 JLB :
  *Capture is always successful now.                                        *
  *=============================================================================================*/
-void InfantryClass::Per_Cell_Process(PCPType why) {
+bool InfantryClass::Per_Cell_Process(PCPType why) {
   DCHECK_HEAP_SLOT(TheObjectHeaps().infantry(), this);
   DCHECK(IsActive);
 
@@ -655,7 +655,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
               tech->Take_Damage(damage, 0, WARHEAD_HE, this, true);
             }
             delete this;
-            return;
+            return true;
           }
 
         } else {
@@ -719,7 +719,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
           }
         }
         delete this;
-        return;
+        return true;
       }
       if (!Target_Legal(NavCom)) {
         Enter_Idle_Mode();
@@ -741,7 +741,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
         Limbo();
         techno->Attach(this);
       }
-      return;
+      return false;
     }
 
     /*
@@ -762,7 +762,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
         Do_Uncloak();
         Arm.Set(Rearm_Delay(true));
         Scatter(building->Center_Coord(), true, true);  // RUN AWAY!
-        return;
+        return false;
       }
       if (::As_Target(Coord_Cell(Center_Coord())) == NavCom) {
         Explosion_Damage(Coord, TheRules().BridgeStrength, this, WARHEAD_HE);
@@ -779,7 +779,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
         Explosion_Damage(Coord, TheRules().BridgeStrength, nullptr, WARHEAD_HE);
         Explosion_Damage(Coord, TheRules().BridgeStrength, nullptr, WARHEAD_HE);
         if (!IsActive) {
-          return;
+          return true;
         }
 
         Mark(MARK_DOWN);
@@ -851,7 +851,7 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
         }
       }
       if (!IsActive) {
-        return;
+        return true;
       }
     }
     Look(true);
@@ -868,13 +868,14 @@ void InfantryClass::Per_Cell_Process(PCPType why) {
         (land == LAND_ROCK || land == LAND_WATER || land == LAND_RIVER)) {
       int damage = Strength;
       Take_Damage(damage, 0, WARHEAD_AP, nullptr, true);
-      return;
+      return !IsActive;
     }
   }
 
-  if (IsActive) {
-    FootClass::Per_Cell_Process(why);
+  if (!IsActive) {
+    return true;
   }
+  return FootClass::Per_Cell_Process(why);
 }
 
 /***********************************************************************************************
@@ -4001,7 +4002,9 @@ void InfantryClass::Movement_AI() {
         base::At(Path, (sizeof(Path) / sizeof(base::At(Path, 0))) - 1) =
             FACING_NONE;
         Coord = Head_To_Coord();
-        Per_Cell_Process(PCP_END);
+        if (Per_Cell_Process(PCP_END)) {
+          return;
+        }
         if (!IsActive || IsInLimbo) {
           return;
         }

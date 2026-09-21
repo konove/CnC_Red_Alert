@@ -137,7 +137,7 @@ class AircraftClass : public FootClass, public FlyClass {
   /*
   **	Landing zone support functionality.
   */
-  void Per_Cell_Process(PCPType why) override;
+  [[nodiscard]] bool Per_Cell_Process(PCPType why) override;
   [[nodiscard]] bool Is_LZ_Clear(TARGET target) const;
   [[nodiscard]] TARGET New_LZ(TARGET oldlz) const;
 
