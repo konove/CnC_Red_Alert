@@ -29,8 +29,6 @@ list(REMOVE_ITEM RA_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/alloc.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/bmp8.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/cominit.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/confdlg.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/descdlg.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/dtable.cc"  # ADPCM tables for adpcm.cc
         "${CMAKE_CURRENT_SOURCE_DIR}/dpmi.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/ipx95.cc"
@@ -50,9 +48,7 @@ file(GLOB_RECURSE RA_HEADERS
 list(REMOVE_ITEM RA_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/bmp8.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/cominit.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/confdlg.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/crew.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/descdlg.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/dpmi.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/externs.h" # Removed since it is crashing IWYU.
         "${CMAKE_CURRENT_SOURCE_DIR}/ipx95.h"
