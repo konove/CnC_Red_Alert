@@ -108,7 +108,6 @@
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "base/types.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"

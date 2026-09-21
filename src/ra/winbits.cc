@@ -9,7 +9,6 @@
 #include "base/types.h"
 #include "ra/defines.h"
 #include "ra/dib.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_win.h"
 

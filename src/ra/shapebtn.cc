@@ -51,7 +51,7 @@
 #include "ra/screen.h"
 #include "ra/shape_draw.h"
 #include "ra/toggle.h"
-#include "sdllib/drawbuff.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 

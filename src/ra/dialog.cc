@@ -76,7 +76,6 @@
 #include "ra/screen.h"
 #include "ra/shape_draw.h"
 #include "ra/text_ids.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"

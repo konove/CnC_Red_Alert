@@ -91,7 +91,6 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "port/unaligned.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
@@ -593,7 +592,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
       continue;
     }
 
-    Buffer_To_Page(0, 0, 3, 3, icon, IconStage);
+    IconStage.CopyFromBuffer(0, 0, 3, 3, icon);
     IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
                     FadingBrighten);
   }
@@ -709,7 +708,7 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
       if (icon.empty()) {
         return;
       }
-      Buffer_To_Page(0, 0, 3, 3, icon, IconStage);
+      IconStage.CopyFromBuffer(0, 0, 3, 3, icon);
       if (otype->IsTiberium) {
         IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, size, size, true,
                         FadingGreen);
@@ -897,10 +896,9 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
                                (icon * std::size_t{24} * 24);
             if (start <= data.size() &&
                 data.size() - start >= std::size_t{24} * 24) {
-              Buffer_To_Page(0, 0, 24, 24,
-                             base::UnsignedBytes(
-                                 data.subspan(start, std::size_t{24} * 24)),
-                             TileStage);
+              TileStage.CopyFromBuffer(0, 0, 24, 24,
+                                       base::UnsignedBytes(data.subspan(
+                                           start, std::size_t{24} * 24)));
               TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor,
                               ZoomFactor, true);
             }

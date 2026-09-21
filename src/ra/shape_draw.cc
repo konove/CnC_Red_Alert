@@ -38,7 +38,6 @@
 #include "ra/keyframe.h"
 #include "ra/screen.h"
 #include "sdllib/bitmap.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_win.h"

@@ -67,7 +67,6 @@
 #include "ra/vortex.h"
 #include "ra/weapon.h"
 #include "ra/world.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"

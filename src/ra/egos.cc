@@ -68,7 +68,6 @@
 #include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "ra/vector_dynamic.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/memflag.h"

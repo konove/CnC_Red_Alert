@@ -123,7 +123,6 @@
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
@@ -656,7 +655,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
     if (icon.empty()) {
       continue;
     }
-    Buffer_To_Page(0, 0, 3, 3, icon, IconStage);
+    IconStage.CopyFromBuffer(0, 0, 3, 3, icon);
     IconStage.Scale(*LogicPage, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
                     FadingBrighten);
   }
@@ -785,7 +784,7 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
       if (icon.empty()) {
         return;
       }
-      Buffer_To_Page(0, 0, 3, 3, icon, IconStage);
+      IconStage.CopyFromBuffer(0, 0, 3, 3, icon);
       if (otype->IsTiberium) {
         if (size == 1) {
           LogicPage->PutPixel(x, y, DKGREY);
@@ -1048,7 +1047,7 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
           return;
         }
         const auto data = icondata.subspan(offset, size_t{24} * 24);
-        Buffer_To_Page(0, 0, 24, 24, data, TileStage);
+        TileStage.CopyFromBuffer(0, 0, 24, 24, data);
         TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
                         true);
       } else {

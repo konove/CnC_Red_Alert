@@ -10,7 +10,6 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/tile.h"
 
@@ -95,10 +94,10 @@ static void Init_Stamps(std::span<const std::byte> icon_ptr) {
   }
 }
 
-void Buffer_Draw_Stamp_Clip(PixelView* view,
-                            std::span<const std::byte> icon_data, int icon,
-                            int x, int y, std::span<const uint8_t> remap_table,
-                            int min_x, int min_y, int max_x, int max_y) {
+void PixelView::DrawStampLocked(std::span<const std::byte> icon_data, int icon,
+                                int x, int y,
+                                std::span<const uint8_t> remap_table, int min_x,
+                                int min_y, int max_x, int max_y) {
   if (icon_data.empty()) {
     return;
   }
@@ -187,10 +186,8 @@ void Buffer_Draw_Stamp_Clip(PixelView* view,
   }
 
   // Get pointer to position to render icon.
-  PixelView* vp_dst = view;
-  const base::ssize dst_area =
-      vp_dst->x_add() + vp_dst->width() + vp_dst->pitch();
-  auto dst_offset = vp_dst->pixels().begin() + x + (y * dst_area);
+  const base::ssize dst_area = stride();
+  auto dst_offset = pixels().begin() + x + (y * dst_area);
 
   // Determine row modulo for advancing to next line.
   const base::ssize modulo = dst_area - iwidth;

@@ -59,7 +59,6 @@
 #include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
@@ -437,7 +436,8 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   if (preserve) {
     Hide_Mouse();
     if (TheScreen().visible_view().Lock()) {
-      Buffer_To_Page(x, y, width, height, back, &TheScreen().visible_view());
+      TheScreen().visible_view().CopyFromBufferLocked(x, y, width, height,
+                                                      back);
     }
     TheScreen().visible_view().Unlock();
 

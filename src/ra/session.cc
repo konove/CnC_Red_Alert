@@ -96,7 +96,6 @@
 #include "ra/queue.h"
 #include "ra/unit.h"
 #include "ra/world.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/file.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"

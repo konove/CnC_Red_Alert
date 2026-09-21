@@ -45,7 +45,6 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/toggle.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"

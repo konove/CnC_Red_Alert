@@ -55,7 +55,6 @@
 #include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/toggle.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"

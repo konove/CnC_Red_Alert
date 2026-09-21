@@ -60,7 +60,6 @@
 #include <span>
 
 #include "base/array.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"

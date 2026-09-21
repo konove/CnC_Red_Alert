@@ -62,7 +62,6 @@
 #include "ra/shape_draw.h"
 #include "ra/text_ids.h"
 #include "ra/world.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"

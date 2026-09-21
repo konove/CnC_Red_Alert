@@ -70,7 +70,6 @@
 #include "port/random_seed.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"

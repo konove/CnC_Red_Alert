@@ -22,6 +22,8 @@
 // game and every test that links sdllib defining this array for itself.
 int WindowList[kWindowCount][8]{};
 
+void* MainWindow;
+
 unsigned int WinX;
 unsigned int WinY;
 unsigned int Window;

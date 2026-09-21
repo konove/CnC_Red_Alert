@@ -71,7 +71,6 @@
 #include "ra/theme.h"
 #include "ra/type.h"
 #include "ra/world.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/file_access.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"

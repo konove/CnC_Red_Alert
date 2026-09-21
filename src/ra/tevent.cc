@@ -73,7 +73,6 @@
 #include "ra/team.h"
 #include "ra/teamtype.h"
 #include "ra/world.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"

@@ -16,6 +16,9 @@
 
 SurfaceMonitorClass AllSurfaces;
 
+bool OverlappedVideoBlits = true;
+bool AllowHardwareBlitFills = true;
+
 int RandNumb;
 
 void (*Misc_Focus_Loss_Function)();

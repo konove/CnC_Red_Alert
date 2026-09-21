@@ -96,7 +96,6 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "ra/world.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_win.h"
@@ -756,7 +755,7 @@ void ChronalVortexClass::Coordinate_Remap(
     base::At(output, i) = base::At(base::At(VortexRemapTables, remap_color),
                                    base::At(input, source));
   }
-  Buffer_To_Page(x, y, width, height, output, *inbuffer);
+  inbuffer->CopyFromBufferLocked(x, y, width, height, output);
   inbuffer->Unlock();
 }
 

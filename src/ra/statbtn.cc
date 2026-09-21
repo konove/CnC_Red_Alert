@@ -55,7 +55,6 @@
 #include "ra/jshell.h"
 #include "ra/screen.h"
 #include "ra/text_ids.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
@@ -236,7 +235,7 @@ void StaticButtonClass::Draw_Background() {
   *now.
   */
   if (!Background.empty() && LogicPage->Lock()) {
-    Buffer_To_Page(X, Y, Width, Height, Background, *LogicPage);
+    LogicPage->CopyFromBufferLocked(X, Y, Width, Height, Background);
     LogicPage->Unlock();
   }
 }

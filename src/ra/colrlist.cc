@@ -54,7 +54,6 @@
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/text_ids.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
 

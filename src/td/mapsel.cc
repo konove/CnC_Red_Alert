@@ -53,7 +53,6 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/numeric.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -1655,7 +1654,7 @@ void Bit_It_In(const int x, const int y, const int w, const int h,
         }
 
         dest->PutPixelLocked(
-            px, py, static_cast<unsigned char>(Buffer_Get_Pixel(src, px, py)));
+            px, py, static_cast<unsigned char>(src->GetPixelLocked(px, py)));
       }
       if (dagger) {
         // Overlay a downward-pointing wedge from screen center (x=160),
@@ -1669,10 +1668,10 @@ void Bit_It_In(const int x, const int y, const int w, const int h,
           const int x_right = 160 + offset;
           dest->PutPixelLocked(
               x_left, row,
-              static_cast<unsigned char>(Buffer_Get_Pixel(src, x_left, row)));
+              static_cast<unsigned char>(src->GetPixelLocked(x_left, row)));
           dest->PutPixelLocked(
               x_right, row,
-              static_cast<unsigned char>(Buffer_Get_Pixel(src, x_right, row)));
+              static_cast<unsigned char>(src->GetPixelLocked(x_right, row)));
         }
       }
     }

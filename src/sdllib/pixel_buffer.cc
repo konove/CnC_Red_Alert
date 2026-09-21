@@ -17,10 +17,13 @@
 */
 
 // File: The out-of-line members of PixelView and PixelBuffer: attaching a view
-// to a page, giving a page its pixels, and - for the one page the window shows
-// - the SDL surface and textures behind it and the presenting done through
-// them. The drawing primitives themselves are the free Buffer_* functions in
-// drawbuff.cc.
+// to a page, the drawing primitives that work on the locked pixels, giving a
+// page its pixels, and - for the one page the window shows - the SDL surface
+// and textures behind it and the presenting done through them.
+//
+// The primitives all clip with Cohen-Sutherland outcodes (Make_Code below)
+// and then walk whole rows, which is why Clip_Rect, the one piece of clipping
+// the map code does for itself, lives here too.
 
 #include "sdllib/pixel_buffer.h"
 
@@ -38,6 +41,7 @@
 #include <memory>
 #include <numbers>
 #include <span>
+#include <string_view>
 #include <utility>
 
 #include "absl/log/check.h"
@@ -46,10 +50,12 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/bitmap.h"
-#include "sdllib/drawbuff.h"
+#include "sdllib/font.h"
+#include "sdllib/misc.h"
 #include "sdllib/ww_win.h"
 
 PixelBuffer* WindowBuffer = nullptr;
+PixelView* LogicPage = nullptr;
 
 PixelView::~PixelView() {
   if (LogicPage == this) {
@@ -69,11 +75,13 @@ PixelView::PixelView(PixelBuffer* buffer, int x, int y, int width, int height) {
 }
 
 void PixelView::DrawRect(int x1, int y1, int x2, int y2, uint8_t color) {
-  Lock();
-  DrawLine(x1, y1, x2, y1, color);
-  DrawLine(x1, y2, x2, y2, color);
-  DrawLine(x1, y1, x1, y2, color);
-  DrawLine(x2, y1, x2, y2, color);
+  if (!Lock()) {
+    return;
+  }
+  DrawLineLocked(x1, y1, x2, y1, color);
+  DrawLineLocked(x1, y2, x2, y2, color);
+  DrawLineLocked(x1, y1, x1, y2, color);
+  DrawLineLocked(x2, y1, x2, y2, color);
   Unlock();
 }
 
@@ -123,6 +131,927 @@ void PixelView::Attach(PixelBuffer* buffer, int x, int y, int width,
   height_ = height;
   pitch_ = buffer->pitch();
   buffer_ = buffer;
+}
+
+// Cohen-Sutherland outcode of (x, y) against a width by height window: bits for
+// left, right, top and bottom.
+static inline uint32_t Make_Code(int x, int y, int width, int height) {
+  return (x < 0 ? 0b1000U : 0U) | (x >= width ? 0b0100U : 0U) |
+         (y < 0 ? 0b0010U : 0U) | (y >= height ? 0b0001U : 0U);
+}
+
+int PixelView::GetPixelLocked(int x, int y) {
+  if (x < 0 || y < 0 || x >= width() || y >= height()) {
+    return 0;
+  }
+
+  const base::ssize dst_area = stride();
+  const auto dst_offset = pixels().begin() + x + (y * dst_area);
+
+  return *dst_offset;
+}
+
+void PixelView::ClearLocked(uint8_t color) {
+  const base::ssize dst_area = stride();
+  auto dst_offset = pixels().begin();
+
+  const int pixel_count = width();
+  int line_count = height();
+
+  // fill lines
+  do {
+    std::fill_n(dst_offset, pixel_count, color);
+    dst_offset += dst_area;
+  } while (--line_count);
+}
+
+int32_t PixelView::CopyToBufferLocked(int x, int y, int width, int height,
+                                      std::span<uint8_t> dest,
+                                      int32_t /*dest_size*/) {
+  int dst_x0 = 0;
+  int dst_y0 = 0;
+
+  // clip src
+  int src_x0 = x;
+  int src_y0 = y;
+  int src_x1 = x + width;
+  int src_y1 = y + height;
+
+  const uint32_t code0 = Make_Code(src_x0, src_y0, width_, height_);
+  const uint32_t code1 = Make_Code(src_x1, src_y1, width_ + 1, height_ + 1);
+
+  // outside
+  if (code0 & code1) {
+    return 0;  // i'm not sure this actually has a return value...
+  }
+
+  if (code0 | code1) {
+    // apply clip
+    if (code0 & 0b1000) {
+      dst_x0 -= src_x0;
+      src_x0 = 0;
+    }
+    if (code1 & 0b0100) {
+      src_x1 = width_;
+    }
+    if (code0 & 0b0010) {
+      dst_y0 -= src_y0;
+      src_y0 = 0;
+    }
+    if (code1 & 0b0001) {
+      src_y1 = height_;
+    }
+  }
+
+  const base::ssize src_area = stride();
+  auto src_offset = pixels().begin() + src_x0 + (src_y0 * src_area);
+
+  auto dst_offset =
+      dest.begin() + dst_x0 + (static_cast<base::ssize>(dst_y0) * width);
+
+  if (src_x1 <= src_x0 || src_y1 <= src_y0) {
+    return 1;
+  }
+
+  if (std::to_address(src_offset) == std::to_address(dst_offset)) {
+    return 1;
+  }
+
+  const int pixel_count = src_x1 - src_x0;
+  int line_count = src_y1 - src_y0;
+
+  // copy lines
+  do {
+    std::copy_n(src_offset, pixel_count, dst_offset);
+    src_offset += src_area;
+    dst_offset += width;
+  } while (--line_count);
+
+  return 0;
+}
+
+int32_t PixelView::CopyFromBufferLocked(int dst_x, int dst_y, int width,
+                                        int height,
+                                        std::span<const uint8_t> source) {
+  int src_x0 = 0;
+  int src_y0 = 0;
+
+  // clip dest
+  int dst_x0 = dst_x;
+  int dst_y0 = dst_y;
+  int dst_x1 = dst_x + width;
+  int dst_y1 = dst_y + height;
+
+  const uint32_t code0 = Make_Code(dst_x0, dst_y0, width_, height_);
+  const uint32_t code1 = Make_Code(dst_x1, dst_y1, width_ + 1, height_ + 1);
+
+  // outside
+  if (code0 & code1) {
+    return 0;  // i'm not sure this actually has a return value...
+  }
+
+  if (code0 | code1) {
+    // apply clip
+    if (code0 & 0b1000) {
+      src_x0 -= dst_x0;
+      dst_x0 = 0;
+    }
+    if (code1 & 0b0100) {
+      dst_x1 = width_;
+    }
+    if (code0 & 0b0010) {
+      src_y0 -= dst_y0;
+      dst_y0 = 0;
+    }
+    if (code1 & 0b0001) {
+      dst_y1 = height_;
+    }
+  }
+
+  auto src_offset =
+      source.begin() + src_x0 + (static_cast<base::ssize>(src_y0) * width);
+
+  const base::ssize dst_area = stride();
+  auto dst_offset = pixels().begin() + dst_x0 + (dst_y0 * dst_area);
+
+  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
+    return 1;
+  }
+
+  if (std::to_address(src_offset) == std::to_address(dst_offset)) {
+    return 1;
+  }
+
+  const int pixel_count = dst_x1 - dst_x0;
+  int line_count = dst_y1 - dst_y0;
+
+  // copy lines
+  do {
+    std::copy_n(src_offset, pixel_count, dst_offset);
+    src_offset += width;
+    dst_offset += dst_area;
+  } while (--line_count);
+
+  return 0;
+}
+
+bool PixelView::BlitLocked(PixelView& dest, int src_x, int src_y, int dst_x,
+                           int dst_y, int width, int height, bool transparent) {
+  // Only Tiberian Dawn asks for a transparent blit.
+
+  // clip source
+  int src_x0 = src_x;
+  int src_y0 = src_y;
+  int src_x1 = src_x + width;
+  int src_y1 = src_y + height;
+
+  uint32_t code0 = Make_Code(src_x0, src_y0, width_, height_);
+  uint32_t code1 = Make_Code(src_x1, src_y1, width_ + 1, height_ + 1);
+
+  // outside
+  if (code0 & code1) {
+    return true;
+  }
+
+  if (code0 | code1) {
+    // apply clip
+    if (code0 & 0b1000) {
+      src_x0 = 0;
+    }
+    if (code1 & 0b0100) {
+      src_x1 = width_;
+    }
+    if (code0 & 0b0010) {
+      src_y0 = 0;
+    }
+    if (code1 & 0b0001) {
+      src_y1 = height_;
+    }
+  }
+
+  // clip dest
+  // Whatever the source clip took off the top and left moves the destination
+  // by as much, so the remaining pixels keep their place.
+  int dst_x0 = dst_x + (src_x0 - src_x);
+  int dst_y0 = dst_y + (src_y0 - src_y);
+  int dst_x1 = dst_x0 + (src_x1 - src_x0);
+  int dst_y1 = dst_y0 + (src_y1 - src_y0);
+
+  code0 = Make_Code(dst_x0, dst_y0, dest.width(), dest.height());
+  code1 = Make_Code(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
+
+  // outside
+  if (code0 & code1) {
+    return true;  // i'm not sure this actually has a return value...
+  }
+
+  if (code0 | code1) {
+    // apply clip
+    if (code0 & 0b1000) {
+      src_x0 -= dst_x0;
+      dst_x0 = 0;
+    }
+    if (code1 & 0b0100) {
+      src_x1 -= dst_x1 - dest.width();
+      dst_x1 = dest.width();
+    }
+    if (code0 & 0b0010) {
+      src_y0 -= dst_y0;
+      dst_y0 = 0;
+    }
+    if (code1 & 0b0001) {
+      src_y1 -= dst_y1 - dest.height();
+      dst_y1 = dest.height();
+    }
+  }
+
+  const base::ssize src_area = stride();
+  auto src_offset = pixels().begin() + src_x0 + (src_y0 * src_area);
+
+  const base::ssize dst_area = dest.stride();
+  auto dst_offset = dest.pixels().begin() + dst_x0 + (dst_y0 * dst_area);
+
+  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
+    return true;
+  }
+
+  if (std::to_address(src_offset) == std::to_address(dst_offset)) {
+    return true;
+  }
+
+  const int pixel_count = src_x1 - src_x0;
+  int line_count = src_y1 - src_y0;
+
+  if (src_offset < dst_offset) {
+    // backward (bottom -> top)
+    if (transparent) {
+      // copy transparent lines backwards
+      src_offset += src_area * (line_count - 1);
+      dst_offset += dst_area * (line_count - 1);
+      do {
+        for (int x = 0; x < pixel_count; x++) {
+          if (base::At(pixels(), (src_offset - pixels().begin()) + x)) {
+            base::At(dest.pixels(), (dst_offset - dest.pixels().begin()) + x) =
+                base::At(pixels(), (src_offset - pixels().begin()) + x);
+          }
+        }
+        src_offset -= src_area;
+        dst_offset -= dst_area;
+      } while (--line_count);
+    } else {
+      // copy lines backwards
+      src_offset += src_area * (line_count - 1);
+      dst_offset += dst_area * (line_count - 1);
+      do {
+        if (src_offset < dst_offset && dst_offset < src_offset + pixel_count) {
+          std::copy_backward(src_offset, src_offset + pixel_count,
+                             dst_offset + pixel_count);
+        } else {
+          std::copy_n(src_offset, pixel_count, dst_offset);
+        }
+        src_offset -= src_area;
+        dst_offset -= dst_area;
+      } while (--line_count);
+    }
+  } else {
+    // forward (top-> bottom)
+    if (transparent) {
+      // copy transparent lines
+      do {
+        for (int x = 0; x < pixel_count; x++) {
+          if (base::At(pixels(), (src_offset - pixels().begin()) + x)) {
+            base::At(dest.pixels(), (dst_offset - dest.pixels().begin()) + x) =
+                base::At(pixels(), (src_offset - pixels().begin()) + x);
+          }
+        }
+        src_offset += src_area;
+        dst_offset += dst_area;
+      } while (--line_count);
+    } else {
+      // copy lines
+      do {
+        if (src_offset < dst_offset && dst_offset < src_offset + pixel_count) {
+          std::copy_backward(src_offset, src_offset + pixel_count,
+                             dst_offset + pixel_count);
+        } else {
+          std::copy_n(src_offset, pixel_count, dst_offset);
+        }
+        src_offset += src_area;
+        dst_offset += dst_area;
+      } while (--line_count);
+    }
+  }
+
+  return true;
+}
+
+bool PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
+                            int dst_y, int src_width, int src_height,
+                            int dst_width, int dst_height, bool transparent,
+                            std::span<const uint8_t> remap_table) {
+  // Check for scale error when to or from size 0,0
+  if (dst_width == 0 || dst_height == 0 || src_width == 0 || src_height == 0) {
+    return true;
+  }
+
+  int src_x0 = src_x;
+  int src_y0 = src_y;
+  int src_x1 = src_x + src_width;
+  int src_y1 = src_y + src_height;
+
+  int dst_x0 = dst_x;
+  int dst_y0 = dst_y;
+  int dst_x1 = dst_x + dst_width;
+  int dst_y1 = dst_y + dst_height;
+
+  // clip source
+  uint32_t code0 = Make_Code(src_x0, src_y0, width_, height_);
+  uint32_t code1 = Make_Code(src_x1, src_y1, width_ + 1, height_ + 1);
+
+  // outside
+  if (code0 & code1) {
+    return true;
+  }
+
+  if (code0 | code1) {
+    // apply clip
+    if (code0 & 0b1000) {
+      src_x0 = 0;
+      dst_x0 = dst_x + ((src_x0 - src_x) * dst_width / src_width);
+    }
+    if (code1 & 0b0100) {
+      src_x1 = width_;
+      dst_x1 = dst_x + ((src_x1 - src_x) * dst_width / src_width);
+    }
+    if (code0 & 0b0010) {
+      src_y0 = 0;
+      dst_y0 = dst_y + ((src_y0 - src_y) * dst_height / src_height);
+    }
+    if (code1 & 0b0001) {
+      src_y1 = height_;
+      dst_y1 = dst_y + ((src_y1 - src_y) * dst_height / src_height);
+    }
+  }
+
+  // clip dest
+  code0 = Make_Code(dst_x0, dst_y0, dest.width(), dest.height());
+  code1 = Make_Code(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
+
+  // outside
+  if (code0 & code1) {
+    return true;
+  }
+
+  if (code0 | code1) {
+    // apply clip
+    if (code0 & 0b1000) {
+      dst_x0 = 0;
+      src_x0 = src_x + ((dst_x0 - dst_x) * src_width / dst_width);
+    }
+    if (code1 & 0b0100) {
+      dst_x1 = dest.width();
+    }
+    if (code0 & 0b0010) {
+      src_y0 = src_y + ((dst_y0 - dst_y) * src_height / dst_height);
+    }
+    if (code1 & 0b0001) {
+      dst_y1 = dest.height();
+    }
+  }
+
+  // do scale
+  const base::ssize src_win_width = stride();
+  auto src_offset = pixels().begin() + src_x0 + (src_y0 * src_win_width);
+
+  const base::ssize dst_win_width = dest.stride();
+  auto dst_offset = dest.pixels().begin() + dst_x0 + (dst_y0 * dst_win_width);
+
+  const int dy_intr = static_cast<int>(src_height / dst_height * src_win_width);
+  const int dy_frac = src_height % dst_height;
+  int dy_acc = -dst_height;
+
+  const int dx_frac = (src_width * 65536) / dst_width;
+
+  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
+    return true;
+  }
+
+  int counter_y = dst_y1 - dst_y0;
+  const int pixel_count = dst_x1 - dst_x0;
+
+  if (transparent && !remap_table.empty()) {
+    do {
+      int counter_x = pixel_count;
+      int x = 0;
+      auto out = dst_offset;
+      do {
+        const uint8_t pixel =
+            base::At(pixels(), (src_offset - pixels().begin()) + (x / 65536));
+
+        if (pixel) {
+          *out = base::At(remap_table, pixel);
+        }
+
+        x += dx_frac;
+        out++;
+      } while (--counter_x);
+
+      src_offset += dy_intr;
+      dst_offset += dst_win_width;
+
+      dy_acc += dy_frac;
+      if (dy_acc > 0) {
+        src_offset += src_win_width;
+        dy_acc -= dst_height;
+      }
+    } while (--counter_y);
+  } else if (transparent) {
+    // normal scale with transparency
+    do {
+      int counter_x = pixel_count;
+      int x = 0;
+      auto out = dst_offset;
+      do {
+        const uint8_t pixel =
+            base::At(pixels(), (src_offset - pixels().begin()) + (x / 65536));
+
+        if (pixel) {
+          *out = pixel;
+        }
+
+        x += dx_frac;
+        out++;
+      } while (--counter_x);
+
+      src_offset += dy_intr;
+      dst_offset += dst_win_width;
+
+      dy_acc += dy_frac;
+      if (dy_acc > 0) {
+        src_offset += src_win_width;
+        dy_acc -= dst_height;
+      }
+    } while (--counter_y);
+  } else if (!remap_table.empty()) {
+    // normal scale with remap_table
+    do {
+      int counter_x = pixel_count;
+      int x = 0;
+      auto out = dst_offset;
+      do {
+        *out++ = base::At(
+            remap_table,
+            base::At(pixels(), (src_offset - pixels().begin()) + (x / 65536)));
+        x += dx_frac;
+      } while (--counter_x);
+
+      src_offset += dy_intr;
+      dst_offset += dst_win_width;
+
+      dy_acc += dy_frac;
+      if (dy_acc > 0) {
+        src_offset += src_win_width;
+        dy_acc -= dst_height;
+      }
+    } while (--counter_y);
+  } else {
+    // normal scale
+    do {
+      int counter_x = pixel_count;
+      int x = 0;
+      auto out = dst_offset;
+      do {
+        *out++ =
+            base::At(pixels(), (src_offset - pixels().begin()) + (x / 65536));
+        x += dx_frac;
+      } while (--counter_x);
+
+      src_offset += dy_intr;
+      dst_offset += dst_win_width;
+
+      dy_acc += dy_frac;
+      if (dy_acc > 0) {
+        src_offset += src_win_width;
+        dy_acc -= dst_height;
+      }
+    } while (--counter_y);
+  }
+
+  return true;
+}
+
+void PixelView::PrintLocked(const char* text, int x, int y, int fore_color,
+                            int back_color) {
+  if (!text || FontPtr.empty()) {
+    return;
+  }
+
+  const FontView font(FontPtr);
+
+  const int start_x = x;
+  const base::ssize buffer_stride = stride();
+  auto line_start = pixels().begin() + (buffer_stride * y);
+
+  const int max_glyph_height = font.MaxHeight();
+  y += max_glyph_height;
+  if (y > height_) {
+    return;
+  }
+
+  // Glyph pixels are palette indices into FontPalette: entry 0 is the
+  // background (0 also means transparent) and entry 1 the foreground;
+  // multi-colour fonts fill entries 2-15 via Set_Font_Palette_Range().
+  const auto background = static_cast<uint8_t>(back_color);
+  FontPalette[1] = static_cast<uint8_t>(fore_color);
+  FontPalette[0] = background;
+
+  auto next_glyph_start = line_start + x;
+
+  for (const char character : std::string_view(text)) {
+    // Unsigned so characters >= 128 index the metric tables correctly.
+    const auto ch = static_cast<uint8_t>(character);
+    if (ch == '\0') {
+      return;
+    }
+
+    auto draw_ptr = next_glyph_start;
+    const int glyph_width = font.GlyphWidth(ch);
+
+    if (ch == '\n' || ch == '\r' || x + glyph_width + FontXSpacing > width_) {
+      // Advance to the next line: '\n' returns to the viewport edge, '\r'
+      // and auto-wrap return to the starting column.
+      const int line_height = max_glyph_height + FontYSpacing;
+      if (height_ < y + line_height) {
+        return;  // No room for another line.
+      }
+
+      line_start += buffer_stride * line_height;
+      y += line_height;
+      x = ch == '\n' ? 0 : start_x;
+      next_glyph_start = line_start + x;
+
+      if (ch == '\n' || ch == '\r') {
+        continue;
+      }
+      draw_ptr = next_glyph_start;  // The wrapped glyph draws on the new line.
+    }
+
+    x += glyph_width + FontXSpacing;
+    next_glyph_start = draw_ptr + FontXSpacing + glyph_width;
+
+    // Distance from the end of a glyph row to the start of the next one.
+    const int row_skip = static_cast<int>(buffer_stride - glyph_width);
+    const int glyph_height = font.GlyphHeight(ch);
+    const int blank_rows_above = font.GlyphBlankRowsAbove(ch);
+    const int blank_rows_below =
+        max_glyph_height - (glyph_height + blank_rows_above);
+
+    // Fill the blank rows above the glyph, or skip them if transparent.
+    if (blank_rows_above != 0) {
+      if (background == 0) {
+        draw_ptr += blank_rows_above * buffer_stride;
+      } else {
+        for (int row = 0; row < blank_rows_above; ++row) {
+          for (int col = 0; col < glyph_width; ++col) {
+            *draw_ptr++ = background;
+          }
+          draw_ptr += row_skip;
+        }
+      }
+    }
+
+    if (glyph_height != 0) {
+      // Each glyph byte packs two 4-bit palette indices, low nibble first.
+      // Index 0 is transparent unless a background color is set, in which
+      // case FontPalette[0] already paints it.
+      const auto glyph = font.GlyphData(ch);
+      if (glyph.empty()) {
+        return;
+      }
+      auto glyph_data = glyph.begin();
+      for (int row = 0; row < glyph_height; ++row) {
+        int cols_left = glyph_width;
+        while (cols_left > 0) {
+          const auto pixel_pair = std::to_integer<uint8_t>(*glyph_data++);
+
+          const uint8_t left = base::At(FontPalette, pixel_pair & 0x0F);
+          if (left != 0) {
+            *draw_ptr = left;
+          }
+          ++draw_ptr;
+          --cols_left;
+
+          if (cols_left > 0) {
+            const uint8_t right = base::At(FontPalette, pixel_pair >> 4);
+            if (right != 0) {
+              *draw_ptr = right;
+            }
+            ++draw_ptr;
+            --cols_left;
+          }
+        }
+        draw_ptr += row_skip;
+      }
+
+      // Fill the blank rows below the glyph unless transparent.
+      if (blank_rows_below != 0 && background != 0) {
+        for (int row = 0; row < blank_rows_below; ++row) {
+          for (int col = 0; col < glyph_width; ++col) {
+            *draw_ptr++ = background;
+          }
+          draw_ptr += row_skip;
+        }
+      }
+    }
+  }
+}
+
+void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2, uint8_t color) {
+  const int width = width_;
+  const int height = height_;
+
+  // this is different to the original asm, but reused from blits
+  const uint32_t code0 = Make_Code(x1, y1, width, height);
+  const uint32_t code1 = Make_Code(x2, y2, width, height);
+
+  if (code0 & code1) {
+    return;
+  }
+
+  if (code0) {
+    if (code0 & 0b1000)  // left
+    {
+      if (x2 != x1) {
+        y1 += -x1 * (y2 - y1) / (x2 - x1);
+      }
+      x1 = 0;
+    } else if (code0 & 0b0100)  // right
+    {
+      if (x2 != x1) {
+        y1 += (width - 1 - x1) * (y2 - y1) / (x2 - x1);
+      }
+      x1 = width - 1;
+    }
+
+    if (code0 & 0b0010)  // top
+    {
+      if (y2 != y1) {
+        x1 = x1 + (-y1 * (x2 - x1) / (y2 - y1));
+      }
+      y1 = 0;
+    } else if (code0 & 0b0001)  // bottom
+    {
+      if (y2 != y1) {
+        x1 = x1 + ((height - 1 - y1) * (x2 - x1) / (y2 - y1));
+      }
+      y1 = height - 1;
+    }
+  }
+
+  if (code1) {
+    if (code1 & 0b1000)  // left
+    {
+      if (x1 != x2) {
+        y2 = y2 + (-x2 * (y1 - y2) / (x1 - x2));
+      }
+      x2 = 0;
+    } else if (code1 & 0b0100)  // right
+    {
+      if (x1 != x2) {
+        y2 = y2 + ((width - 1 - x2) * (y1 - y2) / (x1 - x2));
+      }
+      x2 = width - 1;
+    }
+
+    if (code1 & 0b0010)  // top
+    {
+      if (y1 != y2) {
+        x2 = x2 + (-y2 * (x1 - x2) / (y1 - y2));
+      }
+      y2 = 0;
+    } else if (code1 & 0b0001)  // bottom
+    {
+      if (y1 != y2) {
+        x2 = x2 + ((height - 1 - y2) * (x1 - x2) / (y1 - y2));
+      }
+      y2 = height - 1;
+    }
+  }
+
+  const base::ssize bpr = stride();
+
+  int y_dist = y2 - y1;
+
+  if (y_dist == 0) {
+    // horizontal
+    if (x2 < x1) {
+      std::swap(x2, x1);
+    }
+
+    const int count = x2 - x1 + 1;
+    const auto page = pixels().begin() + x1 + (bpr * y1);
+    std::fill_n(page, count, color);
+
+    return;
+  }
+
+  // not horizontal
+  if (y_dist == 0 || y2 < y1) {
+    y1 = y1 + y_dist;
+    y_dist = -y_dist;
+
+    std::swap(x2, x1);
+  }
+
+  auto page = pixels().begin() + x1 + (bpr * y1);
+
+  int step = 1;
+  int x_dist = x2 - x1;
+
+  if (x_dist == 0) {
+    // vertical
+    int count = y_dist + 1;
+    do {
+      *page = color;
+      page = page + bpr;
+    } while (--count);
+    return;
+  }
+
+  // not vertical
+  if (x_dist == 0 || x2 < x1) {
+    x_dist = -x_dist;
+    step = -1;
+  }
+
+  if (x_dist < y_dist) {
+    int count = y_dist;
+    int accum = y_dist / 2;
+    while (true) {
+      *page = color;
+      if (--count == 0) {
+        break;
+      }
+      page += bpr;
+
+      accum -= x_dist;
+      if (accum < 0) {
+        accum += y_dist;
+        page += step;
+      }
+    }
+  } else {
+    int count = x_dist;
+    int accum = x_dist / 2;
+    while (true) {
+      *page = color;
+      if (--count == 0) {
+        break;
+      }
+      page = page + step;
+
+      accum -= y_dist;
+      if (accum < 0) {
+        accum += x_dist;
+        page += bpr;
+      }
+    }
+  }
+}
+
+void PixelView::FillRectLocked(int x1, int y1, int x2, int y2, uint8_t color) {
+  if (x1 > x2) {
+    std::swap(x1, x2);
+  }
+  if (y1 > y2) {
+    std::swap(y1, y2);
+  }
+
+  // clamp to bounds
+  x1 = std::max(x1, 0);
+  y1 = std::max(y1, 0);
+
+  if (x2 >= width_) {
+    x2 = width_ - 1;
+  }
+  if (y2 >= height_) {
+    y2 = height_ - 1;
+  }
+
+  // nothing to fill
+  if (x2 < x1 || y2 < y1) {
+    return;
+  }
+
+  const base::ssize dst_area = stride();
+  auto dst_offset = pixels().begin() + x1 + (y1 * dst_area);
+
+  const int pixel_count = x2 - x1 + 1;
+  int line_count = y2 - y1 + 1;
+
+  // fill lines
+  do {
+    std::fill_n(dst_offset, pixel_count, color);
+    dst_offset += dst_area;
+  } while (--line_count);
+}
+
+void PixelView::RemapLocked(int x1, int y1, int width, int height,
+                            std::span<const uint8_t> remap_table) {
+  if (remap_table.empty()) {
+    return;
+  }
+
+  // clip
+  int dst_x0 = x1;
+  int dst_y0 = y1;
+  int dst_x1 = x1 + width;
+  int dst_y1 = y1 + height;
+
+  const uint32_t code0 = Make_Code(dst_x0, dst_y0, width_, height_);
+  const uint32_t code1 = Make_Code(dst_x1, dst_y1, width_ + 1, height_ + 1);
+
+  // outside
+  if (code0 & code1) {
+    return;
+  }
+
+  if (code0 | code1) {
+    // apply clip
+    if (code0 & 0b1000) {
+      dst_x0 = 0;
+    }
+    if (code1 & 0b0100) {
+      dst_x1 = width_;
+    }
+    if (code0 & 0b0010) {
+      dst_y0 = 0;
+    }
+    if (code1 & 0b0001) {
+      dst_y1 = height_;
+    }
+  }
+
+  const base::ssize dst_area = stride();
+  auto dst_offset = pixels().begin() + dst_x0 + (dst_y0 * dst_area);
+
+  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
+    return;
+  }
+
+  const int pixel_count = dst_x1 - dst_x0;
+  int line_count = dst_y1 - dst_y0;
+
+  const int skip = static_cast<int>(dst_area - pixel_count);
+
+  // Remap one row at a time.
+  do {
+    for (int x = 0; x < pixel_count; x++) {
+      const auto v = base::At(remap_table, *dst_offset);
+      *dst_offset++ = v;
+    }
+    dst_offset += skip;
+  } while (--line_count);
+}
+
+// Declared in misc.h, defined here to share Make_Code with the primitives.
+int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height) {
+  int x0 = *x;
+  int y0 = *y;
+  int x1 = *x + *dw;
+  int y1 = *y + *dh;
+
+  const uint32_t code0 = Make_Code(x0, y0, width, height);
+  const uint32_t code1 = Make_Code(x1, y1, width + 1, height + 1);
+
+  // outside
+  if (code0 & code1) {
+    return -1;
+  }
+
+  if (code0 | code1) {
+    // apply clip
+    if (code0 & 0b1000) {
+      x0 = 0;
+    }
+    if (code1 & 0b0100) {
+      x1 = width;
+    }
+    if (code0 & 0b0010) {
+      y0 = 0;
+    }
+    if (code1 & 0b0001) {
+      y1 = height;
+    }
+
+    *x = x0;
+    *y = y0;
+    *dw = x1 - x0;
+    *dh = y1 - y0;
+    return 1;
+  }
+
+  return 0;
 }
 
 PixelBuffer::PixelBuffer(int width, int height, std::span<uint8_t> buffer,

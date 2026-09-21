@@ -90,7 +90,6 @@
 #include "port/platform.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/file_access.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"

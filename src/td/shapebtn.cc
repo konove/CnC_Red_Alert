@@ -45,7 +45,7 @@
 #include <cstddef>
 #include <span>
 
-#include "sdllib/drawbuff.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 #include "td/conquer.h"

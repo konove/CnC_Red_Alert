@@ -60,9 +60,9 @@
 #include "ra/slider.h"
 #include "ra/text_ids.h"
 #include "ra/vector_dynamic.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 

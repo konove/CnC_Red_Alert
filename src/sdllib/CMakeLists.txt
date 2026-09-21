@@ -43,12 +43,6 @@ add_gtest(
 )
 
 add_gtest(
-        NAME sdllib_drawbuff_test
-        SOURCES drawbuff_test.cc
-        LIBS sdllib
-)
-
-add_gtest(
         NAME sdllib_pixel_buffer_test
         SOURCES pixel_buffer_test.cc
         LIBS sdllib

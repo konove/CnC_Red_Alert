@@ -150,7 +150,6 @@
 #include "port/tokenizer.h"
 #include "rand.h"
 #include "reinf.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"

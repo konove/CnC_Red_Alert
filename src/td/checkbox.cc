@@ -40,7 +40,6 @@
 
 #include "td/checkbox.h"
 
-#include "sdllib/drawbuff.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"

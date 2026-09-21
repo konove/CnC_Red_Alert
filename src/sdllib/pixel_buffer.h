@@ -27,9 +27,11 @@
 // behind it. A PixelBuffer is also the view covering the whole of itself,
 // which is why it derives from PixelView.
 //
-// The primitives themselves are the free Buffer_* functions in drawbuff.h.
-// The inline members here exist to lock the surface around a call to one of
-// them and to fill in "the whole view" for the shorter overloads.
+// Every drawing primitive comes in two forms: a public one that locks the
+// buffer around the work, and a `…Locked` one that does the work and expects
+// the caller to hold the lock already. The locking form is a one-line inline
+// wrapper, so a caller that draws many times can take the lock once and call
+// the locked form in a loop.
 
 #ifndef CNC_RED_ALERT_SDLLIB_PIXEL_BUFFER_H_
 #define CNC_RED_ALERT_SDLLIB_PIXEL_BUFFER_H_
@@ -48,7 +50,6 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/bitmap.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/ww_win.h"
 
 // How PixelBuffer::Init() should back the buffer.
@@ -69,6 +70,12 @@ inline constexpr int kDefaultScreenWidth = 320;
 inline constexpr int kDefaultScreenHeight = 200;
 
 class PixelBuffer;
+class PixelView;
+
+// The page the drawing code writes to when a caller does not name one.
+// Set it through SetLogicPage(); a view that is destroyed while it is the
+// logic page clears this.
+extern PixelView* LogicPage;
 
 // Makes `page` the page the drawing code writes to, and returns the previous
 // one so the caller can put it back.
@@ -122,25 +129,38 @@ class PixelView {
   inline bool NeedsLock();
   PixelBuffer* buffer();
 
-  // The drawing primitives. Each locks the buffer, calls the matching
-  // Buffer_* function from drawbuff.h, and unlocks it; the short overloads
+  // The drawing primitives. Each comes as a pair: the plain name locks the
+  // buffer, does the work and unlocks it, while the `…Locked` name does only
+  // the work and requires the caller to hold the lock. The short overloads
   // fill in "the whole view" for the missing rectangle.
 
   // Sets one pixel, ignoring coordinates outside the view.
-  // PutPixelLocked is the same without the lock, for callers that hold one
-  // already.
   void PutPixel(int x, int y, uint8_t color);
   void PutPixelLocked(int x, int y, uint8_t color);
+
   // Returns the palette index at x,y, or 0 outside the view.
   int GetPixel(int x, int y);
+  int GetPixelLocked(int x, int y);
+
   void Clear(uint8_t color = 0);
+  void ClearLocked(uint8_t color);
 
   // Copies a rectangle of the view out to plain memory, packed with no
-  // padding, and returns the number of bytes written. The rectangle is
-  // clipped to the view first, and nothing is written if `dest` is
-  // smaller than what is left.
+  // padding. The rectangle is clipped to the view first. Returns 0 once
+  // pixels have been copied, and non-zero when the clip left nothing to do.
   int32_t CopyToBuffer(int x, int y, int width, int height,
                        std::span<uint8_t> dest, int32_t dest_size);
+  int32_t CopyToBufferLocked(int x, int y, int width, int height,
+                             std::span<uint8_t> dest, int32_t dest_size);
+
+  // The other direction: copies a width x height image from plain memory
+  // into the view at x,y, clipping it to the view. `source` is packed with
+  // no padding. Returns 0 once pixels have been copied, and non-zero when
+  // the clip left nothing to do.
+  int32_t CopyFromBuffer(int x, int y, int width, int height,
+                         std::span<const uint8_t> source);
+  int32_t CopyFromBufferLocked(int x, int y, int width, int height,
+                               std::span<const uint8_t> source);
 
   // Copies width x height pixels from src_x,src_y in this view to
   // dst_x,dst_y in `dest`, clipping to both. With `transparent`,
@@ -150,6 +170,10 @@ class PixelView {
             int width, int height, bool transparent = false);
   bool Blit(PixelView& dest, int dst_x, int dst_y, bool transparent = false);
   bool Blit(PixelView& dest, bool transparent = false);
+  // Both views must be locked. Overlapping source and destination are
+  // handled, so this also serves as a scroll within one view.
+  bool BlitLocked(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
+                  int width, int height, bool transparent);
 
   bool Scale(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
              int src_width, int src_height, int dst_width, int dst_height,
@@ -161,17 +185,27 @@ class PixelView {
   bool Scale(PixelView& dest, bool transparent = false,
              std::span<const uint8_t> remap_table = {});
   bool Scale(PixelView& dest, std::span<const uint8_t> remap_table);
+  bool ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
+                   int src_width, int src_height, int dst_width, int dst_height,
+                   bool transparent, std::span<const uint8_t> remap_table);
 
-  // Draws text in the current font at x,y. `fore_color` and `back_color`
-  // are palette indices; the integer overload prints the number in decimal.
+  // Draws text in the current font (FontPtr) at x,y, wrapping to a new line
+  // when the text runs past the view's width. `fore_color` and `back_color`
+  // are palette indices, and a `back_color` of 0 leaves the background
+  // untouched; the integer overload prints the number in decimal. Does
+  // nothing if `text` is null or no font is set.
   void Print(const char* text, int x, int y, int fore_color, int back_color);
   void Print(int value, int x, int y, int fore_color, int back_color);
+  void PrintLocked(const char* text, int x, int y, int fore_color,
+                   int back_color);
 
   // x1,y1 and x2,y2 are the two corners, both inclusive, so DrawRect and
   // FillRect cover x2 - x1 + 1 pixels per row.
   void DrawLine(int x1, int y1, int x2, int y2, uint8_t color);
   void DrawRect(int x1, int y1, int x2, int y2, uint8_t color);
   void FillRect(int x1, int y1, int x2, int y2, uint8_t color);
+  void DrawLineLocked(int x1, int y1, int x2, int y2, uint8_t color);
+  void FillRectLocked(int x1, int y1, int x2, int y2, uint8_t color);
 
   // Replaces every pixel in the rectangle with remap_table[pixel].
   // `remap_table` is a 256-entry table; the shorter overload covers the whole
@@ -179,6 +213,8 @@ class PixelView {
   void Remap(int x1, int y1, int width, int height,
              std::span<const uint8_t> remap_table);
   void Remap(std::span<const uint8_t> remap_table);
+  void RemapLocked(int x1, int y1, int width, int height,
+                   std::span<const uint8_t> remap_table);
 
   // Draws tile `icon` of an icon set at x,y, clipped to the
   // WindowList entry `clip_window` rather than to the view - the map
@@ -186,6 +222,11 @@ class PixelView {
   // remapping.
   void DrawStamp(std::span<const std::byte> icon_data, int icon, int x, int y,
                  std::span<const uint8_t> remap_table, int clip_window);
+  // Clipped to the rectangle given in view coordinates rather than to a
+  // WindowList entry.
+  void DrawStampLocked(std::span<const std::byte> icon_data, int icon, int x,
+                       int y, std::span<const uint8_t> remap_table, int min_x,
+                       int min_y, int max_x, int max_y);
 
   // Locks the buffer's surface so its pixels can be read or written, and
   // reattaches this view to them, since locking can move them. Locks
@@ -426,7 +467,7 @@ inline int PixelView::GetPixel(int x, int y) {
   int return_code = 0;
 
   if (Lock()) {
-    return_code = Buffer_Get_Pixel(this, x, y);
+    return_code = GetPixelLocked(x, y);
     Unlock();
   }
   return return_code;
@@ -434,7 +475,7 @@ inline int PixelView::GetPixel(int x, int y) {
 
 inline void PixelView::Clear(uint8_t color) {
   if (Lock()) {
-    Buffer_Clear(this, color);
+    ClearLocked(color);
     Unlock();
   }
 }
@@ -444,7 +485,17 @@ inline int32_t PixelView::CopyToBuffer(int x, int y, int width, int height,
                                        int32_t dest_size) {
   int32_t return_code = 0;
   if (Lock()) {
-    return_code = Buffer_To_Buffer(this, x, y, width, height, dest, dest_size);
+    return_code = CopyToBufferLocked(x, y, width, height, dest, dest_size);
+    Unlock();
+  }
+  return return_code;
+}
+
+inline int32_t PixelView::CopyFromBuffer(int x, int y, int width, int height,
+                                         std::span<const uint8_t> source) {
+  int32_t return_code = 0;
+  if (Lock()) {
+    return_code = CopyFromBufferLocked(x, y, width, height, source);
     Unlock();
   }
   return return_code;
@@ -457,8 +508,8 @@ inline bool PixelView::Blit(PixelView& dest, int src_x, int src_y, int dst_x,
 
   if (Lock()) {
     if (dest.Lock()) {
-      return_code = Linear_Blit_To_Linear(this, &dest, src_x, src_y, dst_x,
-                                          dst_y, width, height, transparent);
+      return_code = BlitLocked(dest, src_x, src_y, dst_x, dst_y, width, height,
+                               transparent);
       dest.Unlock();
     }
     Unlock();
@@ -483,9 +534,9 @@ inline bool PixelView::Scale(PixelView& dest, int src_x, int src_y, int dst_x,
   bool return_code = false;
   if (Lock()) {
     if (dest.Lock()) {
-      return_code = Linear_Scale_To_Linear(
-          this, &dest, src_x, src_y, dst_x, dst_y, src_width, src_height,
-          dst_width, dst_height, transparent, remap_table);
+      return_code =
+          ScaleLocked(dest, src_x, src_y, dst_x, dst_y, src_width, src_height,
+                      dst_width, dst_height, transparent, remap_table);
       dest.Unlock();
     }
     Unlock();
@@ -517,7 +568,7 @@ inline void PixelView::Print(const char* text, int x, int y, int fore_color,
   if (!Lock()) {
     return;
   }
-  Buffer_Print(this, text, x, y, fore_color, back_color);
+  PrintLocked(text, x, y, fore_color, back_color);
   Unlock();
 }
 
@@ -538,8 +589,8 @@ inline void PixelView::DrawStamp(std::span<const std::byte> icon_data, int icon,
   constexpr int kWindowUnit = 1;
 #endif
   if (Lock()) {
-    Buffer_Draw_Stamp_Clip(
-        this, icon_data, icon, x, y, remap_table,
+    DrawStampLocked(
+        icon_data, icon, x, y, remap_table,
         base::At(base::At(WindowList, clip_window), kWindowX) * kWindowUnit,
         base::At(base::At(WindowList, clip_window), kWindowY),
         base::At(base::At(WindowList, clip_window), kWindowWidth) * kWindowUnit,
@@ -550,14 +601,14 @@ inline void PixelView::DrawStamp(std::span<const std::byte> icon_data, int icon,
 
 inline void PixelView::DrawLine(int x1, int y1, int x2, int y2, uint8_t color) {
   if (Lock()) {
-    Buffer_Draw_Line(this, x1, y1, x2, y2, color);
+    DrawLineLocked(x1, y1, x2, y2, color);
     Unlock();
   }
 }
 
 inline void PixelView::FillRect(int x1, int y1, int x2, int y2, uint8_t color) {
   if (Lock()) {
-    Buffer_Fill_Rect(this, x1, y1, x2, y2, color);
+    FillRectLocked(x1, y1, x2, y2, color);
     Unlock();
   }
 }
@@ -565,7 +616,7 @@ inline void PixelView::FillRect(int x1, int y1, int x2, int y2, uint8_t color) {
 inline void PixelView::Remap(int x1, int y1, int width, int height,
                              std::span<const uint8_t> remap_table) {
   if (Lock()) {
-    Buffer_Remap(this, x1, y1, width, height, remap_table);
+    RemapLocked(x1, y1, width, height, remap_table);
     Unlock();
   }
 }
@@ -575,18 +626,5 @@ inline void PixelView::Remap(std::span<const uint8_t> remap_table) {
 }
 
 inline int PixelView::pitch() const { return pitch_; }
-
-// Locks `view` around the drawbuff.h primitive of the same name, which needs
-// the pixels already locked.
-inline int32_t Buffer_To_Page(int x, int y, int width, int height,
-                              std::span<const uint8_t> Buffer,
-                              PixelView& view) {
-  int32_t return_code = 0;
-  if (view.Lock()) {
-    return_code = Buffer_To_Page(x, y, width, height, Buffer, &view);
-    view.Unlock();
-  }
-  return return_code;
-}
 
 #endif  // CNC_RED_ALERT_SDLLIB_PIXEL_BUFFER_H_

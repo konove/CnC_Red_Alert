@@ -63,7 +63,6 @@
 #include "ra/textbtn.h"
 #include "ra/tracker.h"
 #include "ra/type.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"

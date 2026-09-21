@@ -198,7 +198,6 @@
 #include "ra/winstub.h"
 #include "ra/wol_main.h"
 #include "ra/world.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"

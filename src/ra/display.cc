@@ -175,7 +175,6 @@
 #include "ra/vessel.h"
 #include "ra/vortex.h"
 #include "ra/world.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"

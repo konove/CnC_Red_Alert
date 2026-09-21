@@ -82,7 +82,6 @@
 #include "ra/startup_options.h"
 #include "ra/winstub.h"
 #include "ra/world.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/file.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"

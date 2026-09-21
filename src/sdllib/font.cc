@@ -15,7 +15,7 @@ char FontHeight;
 std::span<const std::byte> FontPtr;
 
 // Maps 4-bit glyph pixel values to screen colors. Defaults to the identity
-// mapping; Buffer_Print installs the fore/background per call and
+// mapping; PixelView::PrintLocked installs the fore/background per call and
 // Set_Font_Palette_Range() installs multi-colour font palettes.
 uint8_t FontPalette[16]{
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,

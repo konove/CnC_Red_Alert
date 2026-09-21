@@ -66,7 +66,6 @@
 #include "ra/inline.h"
 #include "ra/tab.h"
 #include "ra/text_ids.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"

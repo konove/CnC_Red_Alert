@@ -54,7 +54,6 @@
 #include "absl/strings/str_format.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/memflag.h"
 #include "sdllib/misc.h"

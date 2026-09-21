@@ -50,7 +50,6 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "port/safe_string.h"
-#include "sdllib/drawbuff.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -459,8 +458,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   if (preserve) {
     Hide_Mouse();
     if (TheScreen().visible_view().Lock()) {
-      Buffer_To_Page(x, y, width, height, std::span(back),
-                     &TheScreen().visible_view());
+      TheScreen().visible_view().CopyFromBufferLocked(x, y, width, height,
+                                                      std::span(back));
     }
     TheScreen().visible_view().Unlock();
     back.clear();
