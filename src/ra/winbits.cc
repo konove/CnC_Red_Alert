@@ -26,9 +26,7 @@ LockedWindow::LockedWindow(WindowNumberType window)
 
       locked_(view_.Lock()) {
   if (locked_) {
-    // GraphicViewPortClass calls the end-of-line skip the "pitch", so the
-    // distance between rows is that plus the visible width.
-    stride_ = view_.pitch() + view_.width();
+    stride_ = view_.stride();
     bits_ = view_.pixels();
   }
 }

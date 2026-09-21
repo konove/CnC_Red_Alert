@@ -70,7 +70,7 @@ inline constexpr bool base::kIsFlagEnum<GBC_Enum> = true;
 // The VGA mode the games were written for. Both still decode their
 // low-resolution movies at this size, whatever video mode is set.
 inline constexpr int kDefaultScreenWidth = 320;
-constexpr int kDefaultScreenHeight = 200;
+inline constexpr int kDefaultScreenHeight = 200;
 
 class GraphicBufferClass;
 
@@ -119,14 +119,15 @@ class GraphicViewPortClass {
   [[nodiscard]] int height() const;
   [[nodiscard]] int width() const;
   [[nodiscard]] int x_add() const;
+  // Bytes from the start of one row of the viewport to the start of the
+  // next: the viewport's width plus everything the buffer keeps past it.
+  [[nodiscard]] int stride() const;
   [[nodiscard]] int x_pos() const;
   [[nodiscard]] int y_pos() const;
   [[nodiscard]] int pitch() const;
   // Whether drawing to this viewport has to lock a surface first.
   inline bool NeedsLock();
   GraphicBufferClass* graphic_buffer();
-
-  bool Change(int x, int y, int w, int h);
 
   // The drawing primitives. Each locks the buffer, calls the matching
   // Buffer_* function from drawbuff.h, and unlocks it; the short overloads
@@ -147,8 +148,6 @@ class GraphicViewPortClass {
   // smaller than what is left.
   int32_t CopyToBuffer(int x, int y, int w, int h, std::span<uint8_t> buff,
                        int32_t size);
-  int32_t CopyToBuffer(int x, int y, int w, int h, BufferClass* buff);
-  int32_t CopyToBuffer(BufferClass* buff);
 
   // Copies pixel_width x pixel_height pixels from x_pixel,y_pixel in this
   // viewport to dx_pixel,dy_pixel in `dest`, clipping to both. With `trans`,
@@ -380,14 +379,11 @@ inline std::span<uint8_t> GraphicViewPortClass::pixels() {
   if (graphic_buffer_ == nullptr) {
     return {};
   }
-  const auto pixels = graphic_buffer_->Get_Bytes();
   if (this == graphic_buffer_) {
     return graphic_buffer_->Get_Bytes();
   }
-  // width_ + x_add_ is the buffer's width by construction in Attach(), so this
-  // is the usual row-stride times y plus x.
-  return pixels.subspan(
-      base::ToSize((y_pos_ * (width_ + x_add_ + pitch_)) + x_pos_));
+  return graphic_buffer_->Get_Bytes().subspan(
+      base::ToSize((y_pos_ * stride()) + x_pos_));
 }
 
 inline int GraphicViewPortClass::height() const { return height_; }
@@ -395,6 +391,10 @@ inline int GraphicViewPortClass::height() const { return height_; }
 inline int GraphicViewPortClass::width() const { return width_; }
 
 inline int GraphicViewPortClass::x_add() const { return x_add_; }
+
+inline int GraphicViewPortClass::stride() const {
+  return width_ + x_add_ + pitch_;
+}
 inline int GraphicViewPortClass::x_pos() const { return x_pos_; }
 
 inline int GraphicViewPortClass::y_pos() const { return y_pos_; }
@@ -416,8 +416,7 @@ inline void GraphicViewPortClass::PutPixel(int x, int y, uint8_t color) {
 inline void GraphicViewPortClass::PutPixelLocked(const int x, const int y,
                                                  const uint8_t color) {
   if (x >= 0 && y >= 0 && x < width() && y < height()) {
-    const base::ssize stride = x_add() + width() + pitch();
-    base::At(pixels(), base::ToSize(x + (y * stride))) = color;
+    base::At(pixels(), base::ToSize(x + (y * stride()))) = color;
   }
 }
 
@@ -449,16 +448,6 @@ inline int32_t GraphicViewPortClass::CopyToBuffer(int x, int y, int w, int h,
   return return_code;
 }
 
-inline int32_t GraphicViewPortClass::CopyToBuffer(int x, int y, int w, int h,
-                                                  BufferClass* buff) {
-  return CopyToBuffer(x, y, w, h, buff->Get_Bytes(), buff->Get_Size());
-}
-
-inline int32_t GraphicViewPortClass::CopyToBuffer(BufferClass* buff) {
-  return CopyToBuffer(0, 0, width_, height_, buff->Get_Bytes(),
-                      buff->Get_Size());
-}
-
 inline bool GraphicViewPortClass::Blit(GraphicViewPortClass& dest, int x_pixel,
                                        int y_pixel, int dx_pixel, int dy_pixel,
                                        int pixel_width, int pixel_height,
@@ -484,7 +473,7 @@ inline bool GraphicViewPortClass::Blit(GraphicViewPortClass& dest, int dx,
 }
 
 inline bool GraphicViewPortClass::Blit(GraphicViewPortClass& dest, bool trans) {
-  return Blit(dest, 0, 0, 0, 0, width_, height_, trans);
+  return Blit(dest, 0, 0, trans);
 }
 
 inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, int src_x,
@@ -522,8 +511,7 @@ inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, bool trans,
 
 inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest,
                                         std::span<const uint8_t> remap) {
-  return Scale(dest, 0, 0, 0, 0, width_, height_, dest.width(), dest.height(),
-               false, remap);
+  return Scale(dest, false, remap);
 }
 
 inline void GraphicViewPortClass::Print(const char* string, int x_pixel,
@@ -543,24 +531,20 @@ inline void GraphicViewPortClass::Print(int num, int x_pixel, int y_pixel,
 inline void GraphicViewPortClass::DrawStamp(
     std::span<const std::byte> icondata, int icon, int x_pixel, int y_pixel,
     const std::span<const uint8_t> remap, int clip_window) {
-  if (Lock()) {
-    // Tiberian Dawn stores a window's x and width in units of eight pixels;
-    // Red Alert stores them in pixels.
+  // Tiberian Dawn stores a window's x and width in units of eight pixels;
+  // Red Alert stores them in pixels.
 #ifdef TD
-    Buffer_Draw_Stamp_Clip(
-        this, icondata, icon, x_pixel, y_pixel, remap,
-        base::At(base::At(WindowList, clip_window), kWindowX) * 8,
-        base::At(base::At(WindowList, clip_window), kWindowY),
-        base::At(base::At(WindowList, clip_window), kWindowWidth) * 8,
-        base::At(base::At(WindowList, clip_window), kWindowHeight));
+  constexpr int kWindowUnit = 8;
 #else
+  constexpr int kWindowUnit = 1;
+#endif
+  if (Lock()) {
     Buffer_Draw_Stamp_Clip(
         this, icondata, icon, x_pixel, y_pixel, remap,
-        base::At(base::At(WindowList, clip_window), kWindowX),
+        base::At(base::At(WindowList, clip_window), kWindowX) * kWindowUnit,
         base::At(base::At(WindowList, clip_window), kWindowY),
-        base::At(base::At(WindowList, clip_window), kWindowWidth),
+        base::At(base::At(WindowList, clip_window), kWindowWidth) * kWindowUnit,
         base::At(base::At(WindowList, clip_window), kWindowHeight));
-#endif
     Unlock();
   }
 }
@@ -616,12 +600,7 @@ inline int32_t BufferClass::To_Page(GraphicViewPortClass& view) {
 }
 inline int32_t BufferClass::To_Page(int x, int y, int w, int h,
                                     GraphicViewPortClass& view) {
-  int32_t return_code = 0;
-  if (view.Lock()) {
-    return_code = Buffer_To_Page(x, y, w, h, Get_Bytes(), &view);
-    view.Unlock();
-  }
-  return return_code;
+  return Buffer_To_Page(x, y, w, h, Get_Bytes(), view);
 }
 
 #endif  // CNC_RED_ALERT_SDLLIB_GBUFFER_H_

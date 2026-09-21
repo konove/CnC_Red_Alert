@@ -11,7 +11,7 @@
 Screen::Screen()
     : visible_view_(&visible_page_, 0, 0, kWidth, 480),
       hidden_view_(&hidden_page_, 0, 0, kWidth, 480),
-      sys_mem_page_(kDefaultScreenWidth, 200) {}
+      sys_mem_page_(kDefaultScreenWidth, kDefaultScreenHeight) {}
 
 bool Screen::Init() {
   bool mode_set = Set_Video_Mode(MainWindow, kWidth, mode_height_, 8);
