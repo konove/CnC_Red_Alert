@@ -52,6 +52,7 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "port/safe_string.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/defines.h"
 #include "td/object.h"
 
@@ -397,7 +398,7 @@ class ObjectTypeClass : public AbstractTypeClass {
     RadarIcon = std::move(icon);
   }
 
-  virtual void Display(int /*unused*/, int /*unused*/,
+  virtual void Display(PixelView& /*view*/, int /*unused*/, int /*unused*/,
                        WindowNumberType /*unused*/,
                        HousesType /*unused*/) const {}
 
@@ -788,7 +789,7 @@ class BuildingTypeClass : public TechnoTypeClass {
   [[nodiscard]] int Repair_Step() const override;
   bool Bib_And_Offset(SmudgeType& bib, CELL& cell) const;
 
-  void Display(int x, int y, WindowNumberType window,
+  void Display(PixelView& view, int x, int y, WindowNumberType window,
                HousesType house) const override;
 
  private:
@@ -1001,7 +1002,7 @@ class UnitTypeClass : public TechnoTypeClass {
   [[nodiscard]] int Repair_Cost() const override;
   [[nodiscard]] int Repair_Step() const override;
 
-  void Display(int x, int y, WindowNumberType window,
+  void Display(PixelView& view, int x, int y, WindowNumberType window,
                HousesType house) const override;
 
   /*
@@ -1118,7 +1119,7 @@ class InfantryTypeClass : public TechnoTypeClass {
       bool intheory, bool legal, HousesType house) const override;
   [[nodiscard]] int Full_Name() const override;
 
-  void Display(int x, int y, WindowNumberType window,
+  void Display(PixelView& view, int x, int y, WindowNumberType window,
                HousesType house) const override;
 };
 
@@ -1360,7 +1361,7 @@ class TerrainTypeClass : public ObjectTypeClass {
       bool placement = false) const override;
   [[nodiscard]] std::span<const int16_t> Overlap_List() const override;
 
-  void Display(int x, int y, WindowNumberType window,
+  void Display(PixelView& view, int x, int y, WindowNumberType window,
                HousesType house = HOUSE_NONE) const override;
 
  private:
@@ -1439,7 +1440,7 @@ class TemplateTypeClass : public ObjectTypeClass {
   [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool placement = false) const override;
 
-  void Display(int x, int y, WindowNumberType window,
+  void Display(PixelView& view, int x, int y, WindowNumberType window,
                HousesType house = HOUSE_NONE) const override;
 
  private:
@@ -1711,7 +1712,7 @@ class AircraftTypeClass : public TechnoTypeClass {
   // Returns max passengers for transports, 5 for armed aircraft, 0 otherwise.
   [[nodiscard]] int Max_Pips() const override;
 
-  void Display(int x, int y, WindowNumberType window,
+  void Display(PixelView& view, int x, int y, WindowNumberType window,
                HousesType house) const override;
 
   static std::span<const std::byte> LRotorData;
@@ -1828,10 +1829,10 @@ class OverlayTypeClass : public ObjectTypeClass {
   ObjectClass* Create_One_Of(HouseClass* /*unused*/) const override;
   [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool placement = false) const override;
-  virtual void Draw_It(int x, int y, int data) const;
+  virtual void Draw_It(PixelView& view, int x, int y, int data) const;
   [[nodiscard]] virtual std::span<const uint8_t> Radar_Icon(int data) const;
 
-  void Display(int x, int y, WindowNumberType window,
+  void Display(PixelView& view, int x, int y, WindowNumberType window,
                HousesType house = HOUSE_NONE) const override;
 
  private:
@@ -1901,9 +1902,9 @@ class SmudgeTypeClass : public ObjectTypeClass {
   [[nodiscard]] std::span<const int16_t> Overlap_List() const override {
     return Occupy_List();
   }
-  virtual void Draw_It(int x, int y, int data) const;
+  virtual void Draw_It(PixelView& view, int x, int y, int data) const;
 
-  void Display(int x, int y, WindowNumberType window,
+  void Display(PixelView& view, int x, int y, WindowNumberType window,
                HousesType house = HOUSE_NONE) const override;
 
  private:

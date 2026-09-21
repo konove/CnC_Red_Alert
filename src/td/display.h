@@ -49,6 +49,7 @@
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
 #include "td/defines.h"
 #include "td/gadget.h"
@@ -323,7 +324,7 @@ class DisplayClass : public MapClass {
   static std::span<const std::byte> ShadowShapes;
   static unsigned char ShadowTrans[(SHADOW_COL_COUNT + 1) * 256];
 
-  void Redraw_Icons(int draw_flags = 0);
+  void Redraw_Icons(PixelView& view, int draw_flags = 0);
   void Redraw_Shadow(PixelView& view);
   void Redraw_Shadow_Rects(PixelView& view);
 

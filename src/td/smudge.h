@@ -48,6 +48,7 @@ class ArchiveWriter;
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/defines.h"
 #include "td/game_state.h"
 #include "td/object.h"
@@ -103,7 +104,8 @@ class SmudgeClass : public ObjectClass {
     return *Class;
   }
   bool Mark(MarkType /*mark*/ /*unused*/) override;
-  void Draw_It(int /*x*/, int /*y*/, WindowNumberType /*unused*/) override {}
+  void Draw_It(PixelView& /*view*/, int /*x*/, int /*y*/,
+               WindowNumberType /*unused*/) override {}
 
   void Disown(CELL cell);
 

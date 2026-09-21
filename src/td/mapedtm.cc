@@ -2004,7 +2004,8 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
   Hide_Mouse();
   Draw_Box(*LogicPage, x, y, kPictureW, kPictureH, BOXSTYLE_GREEN_DOWN, true);
 
-  ptr->Display(x + (kPictureW / 2), y + (kPictureH / 2), WINDOW_EDITOR, house);
+  ptr->Display(*LogicPage, x + (kPictureW / 2), y + (kPictureH / 2),
+               WINDOW_EDITOR, house);
 
   if (quant > 0) {
     Fancy_Text_Print(*LogicPage, "%d", x + 1, y + kPictureH - 16, kCcGreen,

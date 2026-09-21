@@ -882,16 +882,17 @@ void TechnoClass::Per_Cell_Process(bool /*unused*/) {
  *Clips health bar against map edge.                                       *
  *   01/23/1995 JLB : Dynamic selected object rectangle. *
  *=============================================================================================*/
-void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
+void TechnoClass::Draw_It(PixelView& view, int x, int y,
+                          WindowNumberType window) {
   Clear_Redraw_Flag();
   if (IsSelected || TheSpecial().IsBarOn) {
     PixelView draw_window(
-        LogicPage->buffer(),
+        view.buffer(),
         (base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) *
          8) +
-            LogicPage->x_pos(),
+            view.x_pos(),
         base::At(base::At(WindowList, static_cast<int>(window)), kWindowY) +
-            LogicPage->y_pos(),
+            view.y_pos(),
         base::At(base::At(WindowList, static_cast<int>(window)), kWindowWidth) *
             8,
         base::At(base::At(WindowList, static_cast<int>(window)),
@@ -983,7 +984,7 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
       draw_window.DrawLine(x - lx, y + ly, x - lx, y + ly - dy, kWhite);
 
       if (House->Is_Ally(ThePlayer())) {
-        Draw_Pips(x - lx + 5, y + ly - 3, window);
+        Draw_Pips(view, x - lx + 5, y + ly - 3, window);
       }
     }
   }
@@ -3260,7 +3261,8 @@ VisualType TechnoClass::Visual_Character(bool raw) const {
  *                                                                                             *
  * HISTORY: * 07/08/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Techno_Draw_Object(std::span<const std::byte> shapefile,
+void TechnoClass::Techno_Draw_Object(PixelView& view,
+                                     std::span<const std::byte> shapefile,
                                      int shapenum, int x, int y,
                                      WindowNumberType window) {
   if (!shapefile.empty()) {
@@ -3270,23 +3272,23 @@ void TechnoClass::Techno_Draw_Object(std::span<const std::byte> shapefile,
     if (visual != VISUAL_HIDDEN && visual != VISUAL_RIPPLE) {
       if (visual == VISUAL_SHADOWY) {
         CC_Draw_Shape(
-            *LogicPage, shapefile, shapenum, x, y, window,
+            view, shapefile, shapenum, x, y, window,
             SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_PREDATOR, {},
             MouseClass::FadingShade);
       } else {
-        CC_Draw_Shape(*LogicPage, shapefile, shapenum, x, y, window,
+        CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING | SHAPE_GHOST,
                       remap, MouseClass::UnitShadow);
       }
       if (visual == VISUAL_DARKEN) {
         CC_Draw_Shape(
-            *LogicPage, shapefile, shapenum, x, y, window,
+            view, shapefile, shapenum, x, y, window,
             SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, remap,
             MouseClass::FadingShade);
       }
     }
     if (visual != VISUAL_NORMAL && visual != VISUAL_HIDDEN) {
-      CC_Draw_Shape(*LogicPage, shapefile, shapenum, x, y, window,
+      CC_Draw_Shape(view, shapefile, shapenum, x, y, window,
                     SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL);
     }
   }
@@ -4059,7 +4061,8 @@ void TechnoClass::Enter_Idle_Mode(bool /*unused*/) {}
  *                                                                                             *
  * HISTORY: * 08/08/1995 JLB : Created. *
  *=============================================================================================*/
-void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
+void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
+                            WindowNumberType window) {
   /*
   **	Transporter type objects have a different graphic representation for the
   *pips. The *	pip color represents the type of occupant.
@@ -4085,9 +4088,8 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
         }
         object = object->Next;
       }
-      CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
-                    static_cast<int>(pip), x + (index * 3), y, window,
-                    SHAPE_CENTER | SHAPE_WIN_REL);
+      CC_Draw_Shape(view, ObjectTypeClass::PipShapes, static_cast<int>(pip),
+                    x + (index * 3), y, window, SHAPE_CENTER | SHAPE_WIN_REL);
     }
 
   } else {
@@ -4097,7 +4099,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
     */
     const int pips = Pip_Count();
     for (int index = 0; index < Class_Of().Max_Pips(); index++) {
-      CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
+      CC_Draw_Shape(view, ObjectTypeClass::PipShapes,
                     static_cast<int>(index < pips ? PIP_FULL : PIP_EMPTY),
                     x + (index * 3), y, window, SHAPE_CENTER | SHAPE_WIN_REL);
     }
@@ -4107,7 +4109,7 @@ void TechnoClass::Draw_Pips(int x, int y, WindowNumberType window) {
   **	Display whether this unit is a leader unit or not.
   */
   if (IsLeader) {
-    CC_Draw_Shape(*LogicPage, ObjectTypeClass::PipShapes,
+    CC_Draw_Shape(view, ObjectTypeClass::PipShapes,
                   static_cast<int>(PIP_PRIMARY), x - 2, y - 3, window,
                   /*SHAPE_CENTER|*/ SHAPE_WIN_REL);
   }

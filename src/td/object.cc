@@ -800,7 +800,7 @@ bool ObjectClass::Select() {
  *                                                                                             *
  * HISTORY: * 06/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Render(bool forced) {
+bool ObjectClass::Render(PixelView& view, bool forced) {
   int x = 0;
   int y = 0;
   const COORDINATE coord = Render_Coord();
@@ -858,7 +858,7 @@ bool ObjectClass::Render(bool forced) {
               }
               cell = Adjacent_Cell(cell, index);
               if (TheMap().Coord_To_Pixel(Cell_Coord(cell), x, y)) {
-                LogicPage->DrawLine(oldx, 8 + oldy, x, 8 + y, kBlack);
+                view.DrawLine(oldx, 8 + oldy, x, 8 + y, kBlack);
               }
               oldx = x;
               oldy = y;
@@ -872,7 +872,7 @@ bool ObjectClass::Render(bool forced) {
       /*
       **	Draw the object itself
       */
-      Draw_It(x, y, WINDOW_TACTICAL);
+      Draw_It(view, x, y, WINDOW_TACTICAL);
 
       if constexpr (config::kScenarioEditorEnabled) {
         /*
@@ -880,7 +880,7 @@ bool ObjectClass::Render(bool forced) {
         **	relative, so add the window's x-coord to 'x'.
         */
         if (TheDebugState().map_editor_active() && Trigger) {
-          Fancy_Text_Print(*LogicPage, Trigger->Get_Name(),
+          Fancy_Text_Print(view, Trigger->Get_Name(),
                            x + (static_cast<int>(WinX) * 8), y, kPink, kTBlack,
                            TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);
         }

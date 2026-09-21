@@ -404,3 +404,28 @@ reset in `~PixelView` (`:60-64`) and the declarations at `src/sdllib/pixel_buffe
   `-NEWGAMESCG01EA -QUITFRAME100` reports no memory errors and leak totals byte-identical to the
   phase 2 run in both games (RA 29,823 bytes in 73 allocations, TD 17,272 in 215). The real-display
   run is still outstanding, and now covers phases 0 through 3a.
+
+- 2026-09-21: phase 3b done. The map object chain takes the view: `CellClass::Draw_It`,
+  `ObjectClass::Draw_It` and its 12 overrides (RA's `const`, TD's not, so the two games needed
+  separate patches), `ObjectClass::Render(bool)` in both games rather than only TD's,
+  `ObjectTypeClass::Display` with its 9 RA and 8 TD overrides, both
+  `ObjectTypeClass::Draw_It(int, int, int)` declarations, and the satellites
+  `TechnoClass::Techno_Draw_Object`, `TechnoClass::Draw_Pips` and RA's `AircraftClass::Draw_Rotors`.
+  `LogicPage->` reads are down from 88 to 78 in RA and 102 to 90 in TD.
+
+  `DisplayClass::Redraw_Icons` and RA's `Redraw_OIcons` joined the list: they sit between
+  `DisplayClass::Draw_It` and `CellClass::Draw_It` and had no page argument. RA's `Render(bool)` was
+  not in the plan, which named only TD's, but it reaches `Draw_It` the same way.
+
+  `TechnoClass::Electric_Zap` and `ChronalVortexClass::Render` keep reading the global, as phase 6
+  says; the vortex's `SmudgeTypeClass::Draw_It` call passes `*LogicPage`, which is the
+  `RenderBuffer` the vortex set. The map editor's two `Display()` call sites in each game pass
+  `*LogicPage` too.
+
+  The strict build wanted `sdllib/pixel_buffer.h` included directly in 53 more files, and flagged
+  two `(view)` parentheses the mechanical rewrite left behind in `cdata.cc`.
+
+  Verification: both build dirs clean, 689 tests pass, both save/load smoke scripts pass, and ASan
+  leak totals are byte-identical to phases 2 and 3a in both games (RA 29,823 bytes in 73
+  allocations, TD 17,272 in 215) with no memory errors. The real-display run now covers phases 0
+  through 3b.

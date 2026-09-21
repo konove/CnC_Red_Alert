@@ -45,6 +45,7 @@
 #include <span>
 
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/wwstd.h"
 #include "td/conquer.h"

@@ -2008,7 +2008,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
     *are *	flagged to be redrawn.
     */
     // Redraw_Icons(CELL_BLIT_ONLY);
-    Redraw_Icons(0);
+    Redraw_Icons(view, 0);
     if (TheScreen().hidden_view().Lock()) {
       // Redraw_Icons(CELL_DRAW_ONLY);
 
@@ -2019,7 +2019,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
       */
       for (LayerType layer = LAYER_GROUND; layer < LAYER_COUNT; layer++) {
         for (int index = 0; index < Layer.at(layer).Count(); index++) {
-          Layer.at(layer).at(index)->Render(forced);
+          Layer.at(layer).at(index)->Render(view, forced);
         }
       }
 
@@ -2060,7 +2060,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
       if (TheDebugState().map_editor_active() && PendingObjectPtr) {
         PendingObjectPtr->Coord = PendingObjectPtr->Class_Of().Coord_Fixup(
             Cell_Coord(static_cast<CELL>(ZoneCell + ZoneOffset)));
-        PendingObjectPtr->Render(true);
+        PendingObjectPtr->Render(view, true);
       }
     }
   }
@@ -2085,7 +2085,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
  *   12/24/1994 JLB : Uses the cell bit flag array to determine what to redraw.
  **
  *=============================================================================================*/
-void DisplayClass::Redraw_Icons(int draw_flags) {
+void DisplayClass::Redraw_Icons(PixelView& view, int draw_flags) {
   IsShadowPresent = false;
   for (int y = -Coord_YLepton(TacticalCoord); y <= TacLeptonHeight;
        y += CELL_LEPTON_H) {
@@ -2110,7 +2110,7 @@ void DisplayClass::Redraw_Icons(int draw_flags) {
           *visible, *	then draw it.  Also draw the cell if the shroud is off.
           */
           if (cellptr->IsVisible || TheDebugState().unshroud()) {
-            cellptr->Draw_It(xpixel, ypixel, draw_flags);
+            cellptr->Draw_It(view, xpixel, ypixel, draw_flags);
           }
 
           /*

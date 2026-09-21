@@ -44,6 +44,7 @@
 #include <cstdint>
 #include <span>
 
+#include "sdllib/pixel_buffer.h"
 #include "td/abstract.h"
 #include "td/defines.h"
 
@@ -199,12 +200,12 @@ class ObjectClass : public AbstractClass {
   */
   virtual void Do_Shimmer();
   virtual int Exit_Object(TechnoClass* /*unused*/);
-  virtual bool Render(bool forced);
+  virtual bool Render(PixelView& view, bool forced);
   [[nodiscard]] virtual std::span<const int16_t> Occupy_List(
       bool placement = false) const;
   [[nodiscard]] virtual std::span<const int16_t> Overlap_List() const;
   [[nodiscard]] virtual int Health_Ratio() const;
-  virtual void Draw_It(int x, int y, WindowNumberType) = 0;
+  virtual void Draw_It(PixelView& view, int x, int y, WindowNumberType) = 0;
   virtual void Hidden();
   virtual void Look(bool /*unused*/ = false);
   virtual bool Mark(MarkType /*mark*/);

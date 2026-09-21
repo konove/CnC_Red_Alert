@@ -45,6 +45,7 @@
 #include <span>
 
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/credits.h"
 #include "td/sidebar.h"
 

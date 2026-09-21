@@ -316,7 +316,8 @@ void SmudgeTypeClass::Init(TheaterType theater) {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
+void SmudgeTypeClass::Display(PixelView& view, int x, int y,
+                              WindowNumberType window,
                               HousesType /*unused*/) const {
   const auto ptr = Get_Image_Data();
 
@@ -326,7 +327,7 @@ void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
   if (!ptr.empty()) {
     for (int w = 0; w < Width; w++) {
       for (int h = 0; h < Height; h++) {
-        CC_Draw_Shape(*LogicPage, ptr, 0, x + (w * ICON_PIXEL_W),
+        CC_Draw_Shape(view, ptr, 0, x + (w * ICON_PIXEL_W),
                       y + (h * ICON_PIXEL_H), WINDOW_TACTICAL, SHAPE_WIN_REL);
       }
     }
@@ -417,11 +418,11 @@ ObjectClass* SmudgeTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-void SmudgeTypeClass::Draw_It(int x, int y, int data) const {
+void SmudgeTypeClass::Draw_It(PixelView& view, int x, int y, int data) const {
   const auto ptr = Get_Image_Data();
   if (!ptr.empty()) {
     IsTheaterShape = true;  // Smudges are theater specific
-    CC_Draw_Shape(*LogicPage, ptr, data, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);
+    CC_Draw_Shape(view, ptr, data, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);
     IsTheaterShape = false;
   }
 }

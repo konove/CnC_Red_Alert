@@ -1894,7 +1894,8 @@ void UnitClass::Per_Cell_Process(bool center) {
  *   01/07/1995 JLB : Harvester animation support. * 07/08/1995 JLB : Uses
  *general purpose draw routine.                                       *
  *=============================================================================================*/
-void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
+void UnitClass::Draw_It(PixelView& view, int x, int y,
+                        WindowNumberType window) {
   Validate();
   int shapenum = 0;  // Working shape number.
   int facing = Facing_To_32(PrimaryFacing.Current());
@@ -1957,7 +1958,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
             break;
         }
 
-        CC_Draw_Shape(*LogicPage, UnitTypeClass::WakeShapes,
+        CC_Draw_Shape(view, UnitTypeClass::WakeShapes,
                       shapestart + (Fetch_Stage() % 6), xx - 1, yy + 3, window,
                       SHAPE_CENTER | SHAPE_WIN_REL);
 
@@ -2036,14 +2037,14 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
     **	Actually perform the draw. Overlay an optional shimmer effect as
     *necessary.
     */
-    Techno_Draw_Object(shapefile, shapenum, x, y, window);
+    Techno_Draw_Object(view, shapefile, shapenum, x, y, window);
 
     /*
     **	If there is a rotating radar dish, draw it now.
     */
     if (Class->IsRadarEquipped) {
       shapenum = static_cast<int>(32 + (CurrentFrame() % 32));
-      Techno_Draw_Object(shapefile, shapenum, x, y - 5, window);
+      Techno_Draw_Object(view, shapefile, shapenum, x, y - 5, window);
     }
 
     /*
@@ -2095,7 +2096,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
       **	Actually perform the draw. Overlay an optional shimmer effect as
       *necessary.
       */
-      Techno_Draw_Object(shapefile, shapenum, x1, y1, window);
+      Techno_Draw_Object(view, shapefile, shapenum, x1, y1, window);
     }
 
     /*
@@ -2113,7 +2114,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
                 Coord_Add(Coord_Add(Coord, 0xFF80FF80L),
                           base::At(StoppingCoordAbs, counter++)),
                 x1, y1)) {
-          u->Draw_It(x1, y1, WINDOW_TACTICAL);
+          u->Draw_It(view, x1, y1, WINDOW_TACTICAL);
         }
         if (!u->Next) {
           break;
@@ -2128,14 +2129,14 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) {
   *else.
   */
   if (Flagged != HOUSE_NONE) {
-    CC_Draw_Shape(*LogicPage, MixArchive::RetrieveData("FLAGFLY.SHP"),
+    CC_Draw_Shape(view, MixArchive::RetrieveData("FLAGFLY.SHP"),
                   static_cast<int>(CurrentFrame() % 14), x, y, window,
                   SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
                   HouseClass::As_Pointer(Flagged)->Remap_Table(false, false),
                   MouseClass::UnitShadow);
   }
 
-  TarComClass::Draw_It(x, y, window);
+  TarComClass::Draw_It(view, x, y, window);
 }
 
 /***********************************************************************************************

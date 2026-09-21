@@ -3809,13 +3809,14 @@ StructType BuildingTypeClass::From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-void BuildingTypeClass::Display(int x, int y, WindowNumberType window,
+void BuildingTypeClass::Display(PixelView& view, int x, int y,
+                                WindowNumberType window,
                                 HousesType house) const {
   auto ptr = Get_Cameo_Data();
   if (ptr.empty()) {
     ptr = Get_Image_Data();
   }
-  CC_Draw_Shape(*LogicPage, ptr, 0, x, y, window,
+  CC_Draw_Shape(view, ptr, 0, x, y, window,
                 SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,
                 HouseTypeClass::As_Reference(house).RemapTable);
 }

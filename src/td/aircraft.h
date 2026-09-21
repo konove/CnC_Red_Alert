@@ -27,6 +27,7 @@ class ArchiveWriter;
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/bullet.h"
 #include "td/defines.h"
 #include "td/facing.h"
@@ -115,7 +116,7 @@ class AircraftClass : public FootClass, public FlyClass {
   int Exit_Object(TechnoClass* /*unit*/ /*unused*/) override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   std::span<const int16_t> Overlap_List() const override;
-  void Draw_It(int x, int y, WindowNumberType window) override;
+  void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;
   void Set_Speed(int speed) override;
 
   /*

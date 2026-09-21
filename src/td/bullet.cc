@@ -505,7 +505,8 @@ void BulletClass::AI() {
  *clipping parameter.                                       * 01/08/1995 JLB :
  *Handles translucent colors if necessary.                                 *
  *=============================================================================================*/
-void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
+void BulletClass::Draw_It(PixelView& view, int x, int y,
+                          WindowNumberType window) {
   Validate();
   const int facing = Facing_To_32(PrimaryFacing);
 
@@ -552,7 +553,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
   *body *	render position.
   */
   if (Altitude) {
-    CC_Draw_Shape(*LogicPage, shapeptr, shapenum, x, y, window,
+    CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
                   SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
                   {}, MouseClass::FadingShade);
     y -= Lepton_To_Pixel(Altitude);
@@ -565,7 +566,7 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) {
   if (Class->IsTranslucent) {
     flags = SHAPE_GHOST;
   }
-  CC_Draw_Shape(*LogicPage, shapeptr, shapenum, x, y, window,
+  CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
                 flags | SHAPE_CENTER | SHAPE_WIN_REL, {},
                 MouseClass::UnitShadow);
 }

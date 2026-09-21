@@ -126,6 +126,7 @@
 #include "base/enum_array.h"
 #include "base/numeric.h"
 #include "port/tokenizer.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/audio.h"
@@ -587,7 +588,8 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
  *parameter.                                                * 08/15/1994 JLB :
  *Converted to infantry support.                                           *
  *=============================================================================================*/
-void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
+void InfantryClass::Draw_It(PixelView& view, int x, int y,
+                            WindowNumberType window) {
   Validate();
   const int facing = Facing_To_32(PrimaryFacing.Current());
 
@@ -636,12 +638,12 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) {
   /*
   **	Actually draw the root body of the unit.
   */
-  Techno_Draw_Object(shapefile, shapenum, x, y, window);
+  Techno_Draw_Object(view, shapefile, shapenum, x, y, window);
   //	CC_Draw_Shape(shapefile, shapenum, x, y, window,
   // SHAPE_FADING|SHAPE_CENTER|SHAPE_WIN_REL|SHAPE_GHOST,
   // House->Remap_Table(IsBlushing, true), Map.UnitShadow);
 
-  FootClass::Draw_It(x, y, window);
+  FootClass::Draw_It(view, x, y, window);
 }
 
 /***********************************************************************************************

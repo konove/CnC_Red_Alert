@@ -50,6 +50,7 @@ class ArchiveWriter;
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/bullet.h"
 #include "td/cell.h"
 #include "td/defines.h"
@@ -183,7 +184,7 @@ class InfantryClass final : public FootClass {
   **	object interacts with the map and thus indirectly controls rendering.
   */
   std::span<const int16_t> Overlap_List() const override;
-  void Draw_It(int x, int y, WindowNumberType window) override;
+  void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;
   void Look(bool incremental = false) override;
 
   /*

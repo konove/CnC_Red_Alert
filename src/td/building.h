@@ -50,6 +50,7 @@ class ArchiveWriter;
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/bullet.h"
 #include "td/defines.h"
 #include "td/factory.h"
@@ -253,7 +254,7 @@ class BuildingClass final : public TechnoClass {
   */
   std::span<const unsigned char> Remap_Table() override;
   int Exit_Object(TechnoClass* base) override;
-  void Draw_It(int x, int y, WindowNumberType window) override;
+  void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;
   bool Mark(MarkType mark) override;
   void Look(bool incremental = false) override;
   void Fire_Out() override;

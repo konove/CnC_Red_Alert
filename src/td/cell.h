@@ -48,6 +48,7 @@ class ArchiveWriter;
 
 #include "absl/base/attributes.h"
 #include "base/numeric.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/building.h"
 #include "td/defines.h"
 #include "td/foot.h"
@@ -263,7 +264,7 @@ class CellClass {
   /*
   **	Display and rendering controls.
   */
-  void Draw_It(int x, int y, int draw_type = 0) const;
+  void Draw_It(PixelView& view, int x, int y, int draw_type = 0) const;
   void Redraw_Objects(bool forced = false);
   void Shimmer();
 

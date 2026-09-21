@@ -330,7 +330,8 @@ void AircraftTypeClass::Prep_For_Add() {
   }
 }
 
-void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
+void AircraftTypeClass::Display(PixelView& view, int x, int y,
+                                WindowNumberType window,
                                 HousesType house) const {
   int shape = 0;
   auto ptr = Get_Cameo_Data();
@@ -339,7 +340,7 @@ void AircraftTypeClass::Display(int x, int y, WindowNumberType window,
     ptr = Get_Image_Data();
     shape = 5;
   }
-  CC_Draw_Shape(*LogicPage, ptr, shape, x, y, window,
+  CC_Draw_Shape(view, ptr, shape, x, y, window,
                 SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
                 HouseClass::As_Pointer(house)->Remap_Table(false, true));
 }

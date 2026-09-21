@@ -49,6 +49,7 @@ class ArchiveWriter;
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/defines.h"
 #include "td/facing.h"
 #include "td/fly.h"
@@ -117,7 +118,7 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
     return *Class;
   }
   void Detach(TARGET target, bool all) override;
-  void Draw_It(int x, int y, WindowNumberType window) override;
+  void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   void AI() override;
   [[nodiscard]] std::span<const int16_t> Occupy_List(

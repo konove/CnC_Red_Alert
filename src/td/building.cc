@@ -666,7 +666,8 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
  *window parameter.                                       * 07/06/1995 JLB :
  *Handles damaged silos correctly.                                         *
  *=============================================================================================*/
-void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
+void BuildingClass::Draw_It(PixelView& view, int x, int y,
+                            WindowNumberType window) {
   Validate();
   std::span<const std::byte> shapefile;  // Pointer to loaded shape file.
 
@@ -804,7 +805,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
   **	Actually draw the building shape.
   */
   IsTheaterShape = Class->IsTheater;
-  Techno_Draw_Object(shapefile, shapenum, x, y, window);
+  Techno_Draw_Object(view, shapefile, shapenum, x, y, window);
   IsTheaterShape = false;
 
   /*
@@ -818,7 +819,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
     **	A Tethered object is always rendered AFTER the building.
     */
     if (IsTethered && In_Radio_Contact() && !Contact_With_Whom()->IsInLimbo) {
-      Contact_With_Whom()->Render(true);
+      Contact_With_Whom()->Render(view, true);
     }
 
     /*
@@ -829,20 +830,20 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) {
       if (Health_Ratio() < 0x0080) {
         shapenum += 10;
       }
-      Techno_Draw_Object(TheAssets().war_factory_overlay(), shapenum, x, y,
-                         window);
+      Techno_Draw_Object(view, TheAssets().war_factory_overlay(), shapenum, x,
+                         y, window);
     }
 
     /*
     **	Draw any repair feedback graphic required.
     */
     if (IsRepairing && IsWrenchVisible) {
-      CC_Draw_Shape(*LogicPage, ObjectTypeClass::SelectShapes, kSelectWrench, x,
-                    y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+      CC_Draw_Shape(view, ObjectTypeClass::SelectShapes, kSelectWrench, x, y,
+                    window, SHAPE_CENTER | SHAPE_WIN_REL);
     }
   }
 
-  TechnoClass::Draw_It(x, y, window);
+  TechnoClass::Draw_It(view, x, y, window);
 }
 
 /***********************************************************************************************

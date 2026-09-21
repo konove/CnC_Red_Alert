@@ -49,6 +49,7 @@ class ArchiveWriter;
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/defines.h"
 #include "td/object.h"
 #include "td/stage.h"
@@ -92,7 +93,7 @@ class AnimClass final : public ObjectClass, private StageClass {
     return true;
   }
   bool Mark(MarkType mark = MARK_CHANGE) override;
-  bool Render(bool forced) override;
+  bool Render(PixelView& view, bool forced) override;
   [[nodiscard]] COORDINATE Center_Coord() const override;
   [[nodiscard]] COORDINATE Sort_Y() const override;
   [[nodiscard]] LayerType In_Which_Layer() const override;
@@ -102,7 +103,7 @@ class AnimClass final : public ObjectClass, private StageClass {
   [[nodiscard]] std::span<const int16_t> Occupy_List(
       bool /*placement*/ = false) const override;
   [[nodiscard]] std::span<const int16_t> Overlap_List() const override;
-  void Draw_It(int x, int y, WindowNumberType window) override;
+  void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;
   void AI() override;
   [[nodiscard]] TARGET As_Target() const override;
   void Detach(TARGET target, bool all) override;

@@ -48,6 +48,7 @@ class ArchiveWriter;
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/defines.h"
 #include "td/inline.h"
 #include "td/object.h"
@@ -124,7 +125,7 @@ class TerrainClass final : public ObjectClass, public StageClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  void Draw_It(int x, int y, WindowNumberType window) override;
+  void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   std::span<const uint8_t> Radar_Icon(CELL cell);
 

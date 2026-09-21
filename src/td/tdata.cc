@@ -725,9 +725,10 @@ TerrainType TerrainTypeClass::From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 05/16/1994 JLB : Created. *
  *=============================================================================================*/
-void TerrainTypeClass::Display(int x, int y, WindowNumberType window,
+void TerrainTypeClass::Display(PixelView& view, int x, int y,
+                               WindowNumberType window,
                                HousesType /*unused*/) const {
-  CC_Draw_Shape(*LogicPage, Get_Image_Data(), 0, x, y, window,
+  CC_Draw_Shape(view, Get_Image_Data(), 0, x, y, window,
                 SHAPE_NORMAL | SHAPE_CENTER | SHAPE_WIN_REL);
 }
 

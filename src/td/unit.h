@@ -49,6 +49,7 @@ class ArchiveWriter;
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/defines.h"
 #include "td/object.h"
 #include "td/radio.h"
@@ -134,7 +135,7 @@ class UnitClass final : public TarComClass {
   std::span<const unsigned char> Remap_Table() override;
   void Look(bool incremental = false) override;
   std::span<const int16_t> Overlap_List() const override;
-  void Draw_It(int x, int y, WindowNumberType window) override;
+  void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;
 
   /*
   **	User I/O.

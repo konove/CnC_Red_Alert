@@ -48,6 +48,7 @@ class ArchiveWriter;
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "sdllib/pixel_buffer.h"
 #include "td/defines.h"
 #include "td/game_state.h"
 #include "td/object.h"
@@ -105,7 +106,8 @@ class OverlayClass : public ObjectClass {
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  void Draw_It(int /*x*/, int /*y*/, WindowNumberType /*unused*/) override {}
+  void Draw_It(PixelView& /*view*/, int /*x*/, int /*y*/,
+               WindowNumberType /*unused*/) override {}
 
   /*
   **	Dee-buggin' support.

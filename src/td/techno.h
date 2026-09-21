@@ -45,6 +45,7 @@
 #include <cstdint>
 #include <span>
 
+#include "sdllib/pixel_buffer.h"
 #include "td/bullet.h"
 #include "td/cargo.h"
 #include "td/crew.h"
@@ -308,10 +309,11 @@ class TechnoClass : public RadioClass,
   */
   virtual std::span<const unsigned char> Remap_Table();
   [[nodiscard]] VisualType Visual_Character(bool raw = false) const;
-  void Techno_Draw_Object(std::span<const std::byte> shapefile, int shapenum,
-                          int x, int y, WindowNumberType window);
-  void Draw_It(int x, int y, WindowNumberType window) override;
-  virtual void Draw_Pips(int x, int y, WindowNumberType window);
+  void Techno_Draw_Object(PixelView& view, std::span<const std::byte> shapefile,
+                          int shapenum, int x, int y, WindowNumberType window);
+  void Draw_It(PixelView& view, int x, int y, WindowNumberType window) override;
+  virtual void Draw_Pips(PixelView& view, int x, int y,
+                         WindowNumberType window);
   void Hidden() override;
   bool Mark(MarkType mark) override;
   int Exit_Object(TechnoClass* /*unused*/) override;

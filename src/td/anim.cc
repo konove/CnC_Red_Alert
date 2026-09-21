@@ -228,13 +228,13 @@ COORDINATE AnimClass::Center_Coord() const {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-bool AnimClass::Render(bool forced) {
+bool AnimClass::Render(PixelView& view, bool forced) {
   Validate();
   if (Delay) {
     return false;
   }
   IsToDisplay = true;
-  return ObjectClass::Render(forced);
+  return ObjectClass::Render(view, forced);
 }
 
 /***********************************************************************************************
@@ -254,7 +254,8 @@ bool AnimClass::Render(bool forced) {
  * HISTORY: * 09/24/1994 JLB : Created. * 05/19/1995 JLB : Added white
  *translucent effect.                                          *
  *=============================================================================================*/
-void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
+void AnimClass::Draw_It(PixelView& view, int x, int y,
+                        WindowNumberType window) {
   Validate();
   if (!IsInvisible) {
     const auto shapefile = Class->Get_Image_Data();
@@ -384,7 +385,7 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) {
       /*
       **	Draw the animation shape.
       */
-      CC_Draw_Shape(*LogicPage, shapefile, shapenum, x, y, window, flags, remap,
+      CC_Draw_Shape(view, shapefile, shapenum, x, y, window, flags, remap,
                     transtable);
     }
   }

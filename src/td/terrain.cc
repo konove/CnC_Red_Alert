@@ -382,7 +382,8 @@ bool TerrainClass::Mark(MarkType mark) {
  * HISTORY: * 06/27/1994 JLB : Created. * 11/09/1994 JLB : Changed selected
  *terrain highlight method.                               *
  *=============================================================================================*/
-void TerrainClass::Draw_It(int x, int y, WindowNumberType window) {
+void TerrainClass::Draw_It(PixelView& view, int x, int y,
+                           WindowNumberType window) {
   Validate();
 
   const auto shapedata = Class->Get_Image_Data();
@@ -407,7 +408,7 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) {
     }
 
     IsTheaterShape = true;
-    CC_Draw_Shape(*LogicPage, shapedata, shapenum, x, y, window,
+    CC_Draw_Shape(view, shapedata, shapenum, x, y, window,
                   flags | SHAPE_WIN_REL | SHAPE_GHOST, MouseClass::FadingLight,
                   MouseClass::UnitShadow);
     IsTheaterShape = false;

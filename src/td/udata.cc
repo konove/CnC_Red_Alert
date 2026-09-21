@@ -1387,15 +1387,15 @@ UnitType UnitTypeClass::From_Name(const char* name) {
  * HISTORY: * 05/14/1994 JLB : Created. * 11/08/1994 JLB : Handles chunky type
  *vehicles now.                                        *
  *=============================================================================================*/
-void UnitTypeClass::Display(int x, int y, WindowNumberType window,
-                            HousesType house) const {
+void UnitTypeClass::Display(PixelView& view, int x, int y,
+                            WindowNumberType window, HousesType house) const {
   int shape = 0;
   auto ptr = Get_Cameo_Data();
   if (ptr.empty()) {
     ptr = Get_Image_Data();
     shape = IsChunkyShape ? 0 : 5;
   }
-  CC_Draw_Shape(*LogicPage, ptr, shape, x, y, window,
+  CC_Draw_Shape(view, ptr, shape, x, y, window,
                 SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,
                 HouseTypeClass::As_Reference(house).RemapTable);
 }
