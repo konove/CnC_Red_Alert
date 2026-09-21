@@ -58,6 +58,7 @@
 #include "ra/object.h"
 #include "ra/techno.h"
 #include "ra/type.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/ftimer.h"
 
 class InfantryClass final : public FootClass {
@@ -175,7 +176,8 @@ class InfantryClass final : public FootClass {
   */
   [[nodiscard]] std::span<const int16_t> Overlap_List(
       bool redraw = false) const override;
-  void Draw_It(int x, int y, WindowNumberType window) const override;
+  void Draw_It(PixelView& view, int x, int y,
+               WindowNumberType window) const override;
 
   /*
   **	User I/O.

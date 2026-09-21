@@ -53,6 +53,7 @@
 #include "ra/fuse.h"
 #include "ra/object.h"
 #include "ra/type.h"
+#include "sdllib/pixel_buffer.h"
 
 class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
  public:
@@ -113,7 +114,8 @@ class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
     return *Class;
   }
   void Detach(TARGET target, bool all) override;
-  void Draw_It(int x, int y, WindowNumberType window) const override;
+  void Draw_It(PixelView& view, int x, int y,
+               WindowNumberType window) const override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   void AI() override;
   [[nodiscard]] std::span<const int16_t> Occupy_List(

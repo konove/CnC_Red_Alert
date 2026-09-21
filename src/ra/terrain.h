@@ -52,6 +52,7 @@
 #include "ra/stage.h"
 #include "ra/techno.h"
 #include "ra/type.h"
+#include "sdllib/pixel_buffer.h"
 
 /****************************************************************************
 **	Each type of terrain has certain pieces of static information associated
@@ -121,7 +122,8 @@ class TerrainClass final : public ObjectClass, public StageClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  void Draw_It(int x, int y, WindowNumberType window) const override;
+  void Draw_It(PixelView& view, int x, int y,
+               WindowNumberType window) const override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   std::span<const unsigned char> Radar_Icon(CELL cell);
 

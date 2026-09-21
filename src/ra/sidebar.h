@@ -52,6 +52,7 @@
 #include "ra/shapebtn.h"
 #include "ra/stage.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 
 class InitClass {};
 

@@ -745,7 +745,8 @@ std::span<const unsigned char> OverlayTypeClass::Radar_Icon(int data) const {
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
+void OverlayTypeClass::Display(PixelView& view, int x, int y,
+                               WindowNumberType window,
                                HousesType /*unused*/) const {
   if (!Get_Image_Data().empty()) {
     int frame = 0;
@@ -759,7 +760,7 @@ void OverlayTypeClass::Display(int x, int y, WindowNumberType window,
     }
 
     IsTheaterShape = IsTheater;
-    CC_Draw_Shape(*LogicPage, Get_Image_Data(), frame, x, y, window,
+    CC_Draw_Shape(view, Get_Image_Data(), frame, x, y, window,
                   SHAPE_NORMAL | SHAPE_CENTER | SHAPE_WIN_REL);
     IsTheaterShape = false;
   }
@@ -851,9 +852,9 @@ ObjectClass* OverlayTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
  *                                                                                             *
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
-void OverlayTypeClass::Draw_It(int x, int y, int data) const {
+void OverlayTypeClass::Draw_It(PixelView& view, int x, int y, int data) const {
   IsTheaterShape = IsTheater;
-  CC_Draw_Shape(*LogicPage, Get_Image_Data(), data,
+  CC_Draw_Shape(view, Get_Image_Data(), data,
                 TheMap().TacPixelX + x + (CELL_PIXEL_W >> 1),
                 TheMap().TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
                 SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},

@@ -54,6 +54,7 @@
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/unit.h"
+#include "sdllib/pixel_buffer.h"
 
 /****************************************************************************
 **	Each cell on the map is controlled by the following structure.
@@ -295,7 +296,7 @@ class CellClass {
   /*
   **	Display and rendering controls.
   */
-  void Draw_It(int x, int y, bool objects = false) const;
+  void Draw_It(PixelView& view, int x, int y, bool objects = false) const;
   void Redraw_Objects(bool forced = false);
   void Shimmer();
 

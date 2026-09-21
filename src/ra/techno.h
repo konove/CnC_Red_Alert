@@ -41,8 +41,8 @@
 #define CNC_RED_ALERT_RA_TECHNO_H_
 
 #include <cstddef>
-#include <span>
 #include <cstdint>
+#include <span>
 
 #include "absl/base/attributes.h"
 #include "ra/bullet.h"
@@ -60,6 +60,7 @@
 #include "ra/radio.h"
 #include "ra/stage.h"
 #include "ra/type.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 
@@ -433,12 +434,14 @@ class TechnoClass : public RadioClass,
   // iron curtain visual overlay, and cloaking transparency stages. The
   // `shapefile` must match the type class image data for dimension caching to
   // work correctly. `scale` uses 24.8 fixed point (0x0100 = 1x).
-  void Techno_Draw_Object(std::span<const std::byte> shapefile, int shapenum, int x, int y,
-                          WindowNumberType window, DirType rotation = DIR_N,
-                          int scale = 0x0100) const;
+  void Techno_Draw_Object(PixelView& view, std::span<const std::byte> shapefile,
+                          int shapenum, int x, int y, WindowNumberType window,
+                          DirType rotation = DIR_N, int scale = 0x0100) const;
 
-  void Draw_It(int x, int y, WindowNumberType window) const override;
-  virtual void Draw_Pips(int x, int y, WindowNumberType window) const;
+  void Draw_It(PixelView& view, int x, int y,
+               WindowNumberType window) const override;
+  virtual void Draw_Pips(PixelView& view, int x, int y,
+                         WindowNumberType window) const;
   void Hidden() override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   int Exit_Object(TechnoClass* /*unused*/) override;

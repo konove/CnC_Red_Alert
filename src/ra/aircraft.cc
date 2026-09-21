@@ -475,7 +475,8 @@ int AircraftClass::Shape_Number() const {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
+void AircraftClass::Draw_It(PixelView& view, int x, int y,
+                            WindowNumberType window) const {
   DCHECK_EQ(TheObjectHeaps().aircraft().ID(this), ID);
   DCHECK(IsActive);
 
@@ -514,7 +515,7 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   **	Special manual shadow draw code.
   */
   if (Visual_Character() <= VISUAL_DARKEN) {
-    CC_Draw_Shape(*LogicPage, shapefile, shapenum, x + 1, y + 2, window,
+    CC_Draw_Shape(view, shapefile, shapenum, x + 1, y + 2, window,
                   SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
                   DisplayClass::FadingShade, {});
   }
@@ -522,20 +523,21 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
   /*
   **	Actually draw the root body of the unit.
   */
-  Techno_Draw_Object(shapefile, shapenum, x, y + jitter, window, rotation);
+  Techno_Draw_Object(view, shapefile, shapenum, x, y + jitter, window,
+                     rotation);
 
   /*
   **	If this aircraft is equipped with rotor blades, then draw them at this
   *time.
   */
   if (Class->IsRotorEquipped) {
-    Draw_Rotors(x, y + jitter, window);
+    Draw_Rotors(view, x, y + jitter, window);
   }
 
   /*
   **	This draws any overlay graphics on the aircraft.
   */
-  FootClass::Draw_It(x, y - Lepton_To_Pixel(static_cast<LEPTON>(Height)),
+  FootClass::Draw_It(view, x, y - Lepton_To_Pixel(static_cast<LEPTON>(Height)),
                      window);
 }
 
@@ -554,7 +556,8 @@ void AircraftClass::Draw_It(int x, int y, WindowNumberType window) const {
  *                                                                                             *
  * HISTORY: * 07/26/1996 JLB : Created. *
  *=============================================================================================*/
-void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
+void AircraftClass::Draw_Rotors(PixelView& view, int x, int y,
+                                WindowNumberType window) const {
   ShapeFlags_Type flags = SHAPE_CENTER | SHAPE_WIN_REL;
   int shapenum = 0;
 
@@ -583,20 +586,20 @@ void AircraftClass::Draw_Rotors(int x, int y, WindowNumberType window) const {
     const FacingType face = Dir_Facing(SecondaryFacing);
     base::MovePoint(xx, yy, static_cast<uint8_t>(SecondaryFacing.Current()),
                     static_cast<int16_t>(_stretch.at(face)));
-    CC_Draw_Shape(*LogicPage, AircraftTypeClass::RRotorData, shapenum, xx,
-                  yy - 2, window, flags, {}, DisplayClass::UnitShadow);
+    CC_Draw_Shape(view, AircraftTypeClass::RRotorData, shapenum, xx, yy - 2,
+                  window, flags, {}, DisplayClass::UnitShadow);
 
     base::MovePoint(xx, yy,
                     static_cast<uint8_t>(SecondaryFacing.Current() + DIR_S),
                     static_cast<int16_t>(_stretch.at(face) * 2));
-    CC_Draw_Shape(*LogicPage, AircraftTypeClass::LRotorData, shapenum, xx,
-                  yy - 2, window, flags, {}, DisplayClass::UnitShadow);
+    CC_Draw_Shape(view, AircraftTypeClass::LRotorData, shapenum, xx, yy - 2,
+                  window, flags, {}, DisplayClass::UnitShadow);
 
   } else {
     /*
     **	Single rotor centered about shape.
     */
-    CC_Draw_Shape(*LogicPage, AircraftTypeClass::RRotorData, shapenum, x,
+    CC_Draw_Shape(view, AircraftTypeClass::RRotorData, shapenum, x,
                   y - Lepton_To_Pixel(static_cast<LEPTON>(Height)) - 2, window,
                   flags, {}, DisplayClass::UnitShadow);
   }

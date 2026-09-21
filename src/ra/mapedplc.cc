@@ -389,8 +389,8 @@ int MapEditClass::Placement_Dialog() {
       Change_Window(static_cast<int>(WINDOW_EDITOR));
       Draw_Box(*LogicPage, kPictureX, kPictureY, kPictureW, kPictureH,
                BOXSTYLE_DOWN, false);
-      curobj->Display(Screen::kWidth / 2, Screen::kHeight / 2, WINDOW_EDITOR,
-                      LastHouse);
+      curobj->Display(*LogicPage, Screen::kWidth / 2, Screen::kHeight / 2,
+                      WINDOW_EDITOR, LastHouse);
       //			curobj->Display(WinW<<2, WinH>>1, WINDOW_EDITOR,
       // LastHouse);
 

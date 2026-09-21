@@ -325,7 +325,8 @@ bool TerrainClass::Mark(MarkType mark) {
  * HISTORY: * 06/27/1994 JLB : Created. * 11/09/1994 JLB : Changed selected
  *terrain highlight method.                               *
  *=============================================================================================*/
-void TerrainClass::Draw_It(int x, int y, WindowNumberType window) const {
+void TerrainClass::Draw_It(PixelView& view, int x, int y,
+                           WindowNumberType window) const {
   DCHECK(TheObjectHeaps().terrain().ID(this) == ID);
   DCHECK(IsActive);
 
@@ -354,7 +355,7 @@ void TerrainClass::Draw_It(int x, int y, WindowNumberType window) const {
     **Terrain is always theater specific so flag it as such for Build_Frame
     */
     IsTheaterShape = true;
-    CC_Draw_Shape(*LogicPage, shapedata, shapenum, x, y, window,
+    CC_Draw_Shape(view, shapedata, shapenum, x, y, window,
                   flags | SHAPE_WIN_REL | SHAPE_GHOST, MouseClass::FadingLight,
                   MouseClass::UnitShadow);
     IsTheaterShape = false;

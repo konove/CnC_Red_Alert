@@ -49,6 +49,7 @@
 #include "ra/game_state.h"
 #include "ra/object.h"
 #include "ra/type.h"
+#include "sdllib/pixel_buffer.h"
 
 /******************************************************************************
 **	This class controls the overlay object. Overlay objects function
@@ -110,7 +111,7 @@ class OverlayClass : public ObjectClass {
   [[nodiscard]] const ObjectTypeClass& Class_Of() const override {
     return *Class;
   }
-  void Draw_It(int /*x*/, int /*y*/,
+  void Draw_It(PixelView& /*view*/, int /*x*/, int /*y*/,
                WindowNumberType /*unused*/) const override {}
 
  private:

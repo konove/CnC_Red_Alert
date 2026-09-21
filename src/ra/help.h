@@ -49,6 +49,7 @@
 #include "ra/tab.h"
 #include "ra/text_ids.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
 #include "tech/ftimer.h"
 

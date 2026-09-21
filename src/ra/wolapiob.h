@@ -40,6 +40,7 @@
 #include "ra/iconlist.h"
 #include "ra/rawolapi.h"
 #include "ra/winbits.h"
+#include "sdllib/pixel_buffer.h"
 
 //***********************************************************************************************
 class IconListClass;

@@ -101,6 +101,7 @@
 #include "base/array.h"
 #include "ra/defines.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 
 //***************************************************************************
 // Defines

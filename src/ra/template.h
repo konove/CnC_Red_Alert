@@ -48,6 +48,7 @@
 #include "ra/game_state.h"
 #include "ra/object.h"
 #include "ra/type.h"
+#include "sdllib/pixel_buffer.h"
 
 /******************************************************************************
 **	This class controls the template object. Template objects function
@@ -103,7 +104,7 @@ class TemplateClass : public ObjectClass {
   **	Display and rendering support functionality. Supports imagery and how
   **	object interacts with the map and thus indirectly controls rendering.
   */
-  void Draw_It(int /*x*/, int /*y*/,
+  void Draw_It(PixelView& /*view*/, int /*x*/, int /*y*/,
                WindowNumberType /*unused*/) const override {}
   bool Mark(MarkType mark) override;
 

@@ -119,6 +119,7 @@
 #include "ra/unit.h"
 #include "ra/weapon.h"
 #include "ra/world.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/fixed.h"
 #include "tech/number_parse.h"
 
@@ -424,7 +425,8 @@ int VesselClass::Shape_Number() const {
  *                                                                                             *
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
+void VesselClass::Draw_It(PixelView& view, int x, int y,
+                          WindowNumberType window) const {
   DCHECK(TheObjectHeaps().vessel().ID(this) == ID);
   DCHECK(IsActive);
 
@@ -448,7 +450,7 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
     **	Actually perform the draw. Overlay an optional shimmer effect as
     *necessary.
     */
-    Techno_Draw_Object(shapefile, Shape_Number(), x, y, window, rotation,
+    Techno_Draw_Object(view, shapefile, Shape_Number(), x, y, window, rotation,
                        scale);
 
     /*
@@ -471,7 +473,7 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
           shapefile = TechnoTypeClass::TurretShapes;
           shapenum = base::At(BodyShape, Dir_To_32(SecondaryFacing));
           Class->Turret_Adjust(turdir, xx, yy);
-          Techno_Draw_Object(shapefile, shapenum, xx, yy, window);
+          Techno_Draw_Object(view, shapefile, shapenum, xx, yy, window);
           xx = x;
           yy = y;
           turdir = static_cast<DirType>(Dir_To_16(PrimaryFacing + DIR_S) * 16);
@@ -505,11 +507,11 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
       **	Actually perform the draw. Overlay an optional shimmer effect as
       *necessary.
       */
-      Techno_Draw_Object(shapefile, shapenum, xx, yy, window);
+      Techno_Draw_Object(view, shapefile, shapenum, xx, yy, window);
     }
   }
 
-  DriveClass::Draw_It(x, y, window);
+  DriveClass::Draw_It(view, x, y, window);
 
   /*
   ** Patch so the transport will draw its passengers on top of itself.
@@ -517,7 +519,7 @@ void VesselClass::Draw_It(int x, int y, WindowNumberType window) const {
   if (!Is_Door_Closed() && IsTethered && In_Radio_Contact() &&
       !Contact_With_Whom()->IsInLimbo) {
     DCHECK(Contact_With_Whom()->IsActive);
-    Contact_With_Whom()->Render(true);
+    Contact_With_Whom()->Render(view, true);
   }
 }
 

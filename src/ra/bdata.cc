@@ -3220,14 +3220,15 @@ StructType BuildingTypeClass::From_Name(const char* name) {
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-void BuildingTypeClass::Display(int x, int y, WindowNumberType window,
+void BuildingTypeClass::Display(PixelView& view, int x, int y,
+                                WindowNumberType window,
                                 HousesType /*unused*/) const {
   auto ptr = Get_Cameo_Data();
   if (ptr.empty()) {
     IsTheaterShape = IsTheater;
     ptr = Get_Image_Data();
   }
-  CC_Draw_Shape(*LogicPage, ptr, 0, x, y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+  CC_Draw_Shape(view, ptr, 0, x, y, window, SHAPE_CENTER | SHAPE_WIN_REL);
   IsTheaterShape = false;
 }
 

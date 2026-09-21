@@ -49,6 +49,7 @@
 #include "ra/game_state.h"
 #include "ra/object.h"
 #include "ra/type.h"
+#include "sdllib/pixel_buffer.h"
 
 /******************************************************************************
 **	This is the transitory form for smudges. They exist as independent
@@ -108,7 +109,7 @@ class SmudgeClass : public ObjectClass {
     return *Class;
   }
   bool Mark(MarkType /*mark*/ /*unused*/) override;
-  void Draw_It(int /*x*/, int /*y*/,
+  void Draw_It(PixelView& /*view*/, int /*x*/, int /*y*/,
                WindowNumberType /*unused*/) const override {}
 
   void Disown(CELL cell);

@@ -1883,7 +1883,8 @@ void TemplateTypeClass::Init(TheaterType theater) {
  *                                                                                             *
  * HISTORY: * 05/23/1994 JLB : Created. *
  *=============================================================================================*/
-void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
+void TemplateTypeClass::Display(PixelView& view, int x, int y,
+                                WindowNumberType window,
                                 HousesType /*unused*/) const {
   const int w = Bound(static_cast<int>(Width), 1, 13);
   const int h = Bound(static_cast<int>(Height), 1, 8);
@@ -1908,14 +1909,14 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
                                           static_cast<int>(WINDOW_MAIN));
       if (scale) {
         TheScreen().hidden_view().Scale(
-            (*LogicPage), 0, 0, x + ((index % w) * (ICON_PIXEL_W / 2)),
+            view, 0, 0, x + ((index % w) * (ICON_PIXEL_W / 2)),
             y + ((index / w) * (ICON_PIXEL_H / 2)), ICON_PIXEL_W, ICON_PIXEL_H,
             ICON_PIXEL_W / 2, ICON_PIXEL_H / 2,
             std::span<const unsigned char>{});
 
       } else {
         TheScreen().hidden_view().Blit(
-            (*LogicPage), 0, 0, x + ((index % w) * (ICON_PIXEL_W)),
+            view, 0, 0, x + ((index % w) * (ICON_PIXEL_W)),
             y + ((index / w) * (ICON_PIXEL_H)), ICON_PIXEL_W, ICON_PIXEL_H);
       }
     }

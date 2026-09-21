@@ -8,6 +8,7 @@
 #include "absl/base/attributes.h"
 #include "base/installed.h"
 #include "ra/jshell.h"
+#include "sdllib/pixel_buffer.h"
 
 class PixelView;
 class WWMouseClass;

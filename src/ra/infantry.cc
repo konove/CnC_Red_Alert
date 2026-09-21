@@ -148,6 +148,7 @@
 #include "ra/warhead.h"
 #include "ra/weapon.h"
 #include "ra/world.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/fixed.h"
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
@@ -560,7 +561,8 @@ int InfantryClass::Shape_Number() const {
  *Converted to infantry support.                                           *
  *   08/14/1996 JLB : Simplified. *
  *=============================================================================================*/
-void InfantryClass::Draw_It(int x, int y, WindowNumberType window) const {
+void InfantryClass::Draw_It(PixelView& view, int x, int y,
+                            WindowNumberType window) const {
   DCHECK(TheObjectHeaps().infantry().ID(this) == ID);
   DCHECK(IsActive);
 
@@ -581,9 +583,9 @@ void InfantryClass::Draw_It(int x, int y, WindowNumberType window) const {
   /*
   **	Actually draw the root body of the unit.
   */
-  Techno_Draw_Object(shapefile, Shape_Number(), x, y, window);
+  Techno_Draw_Object(view, shapefile, Shape_Number(), x, y, window);
 
-  FootClass::Draw_It(x, y, window);
+  FootClass::Draw_It(view, x, y, window);
 }
 
 /***********************************************************************************************

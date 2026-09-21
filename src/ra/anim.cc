@@ -238,7 +238,7 @@ COORDINATE AnimClass::Center_Coord() const {
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-bool AnimClass::Render(bool forced)  // const
+bool AnimClass::Render(PixelView& view, bool forced)  // const
 {
   DCHECK(TheObjectHeaps().anim().ID(this) == ID);
   DCHECK(IsActive);
@@ -249,7 +249,7 @@ bool AnimClass::Render(bool forced)  // const
   if (TheMap().at(Center_Coord()).IsVisible) {
     IsToDisplay = true;
   }
-  return ObjectClass::Render(forced);
+  return ObjectClass::Render(view, forced);
 }
 
 /***********************************************************************************************
@@ -269,7 +269,8 @@ bool AnimClass::Render(bool forced)  // const
  * HISTORY: * 09/24/1994 JLB : Created. * 05/19/1995 JLB : Added white
  *translucent effect.                                          *
  *=============================================================================================*/
-void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
+void AnimClass::Draw_It(PixelView& view, int x, int y,
+                        WindowNumberType window) const {
   DCHECK(TheObjectHeaps().anim().ID(this) == ID);
   DCHECK(IsActive);
 
@@ -308,7 +309,7 @@ void AnimClass::Draw_It(int x, int y, WindowNumberType window) const {
       /*
       **	Draw the animation shape.
       */
-      CC_Draw_Shape(*LogicPage, shapefile, shapenum, x, y, window, flags, remap,
+      CC_Draw_Shape(view, shapefile, shapenum, x, y, window, flags, remap,
                     transtable);
     }
     IsTheaterShape = false;

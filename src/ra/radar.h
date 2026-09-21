@@ -50,6 +50,7 @@
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 
 class RadarClass : public DisplayClass {
  public:

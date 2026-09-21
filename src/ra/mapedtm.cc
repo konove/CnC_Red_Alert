@@ -912,7 +912,8 @@ void MapEditClass::Draw_Member(const TechnoTypeClass* ptr, int index, int quant,
 
   Hide_Mouse();
   Draw_Box(*LogicPage, x, y, kPictureW, kPictureH, BOXSTYLE_DOWN, true);
-  ptr->Display(Screen::kWidth / 2, Screen::kHeight / 2, WINDOW_EDITOR, house);
+  ptr->Display(*LogicPage, Screen::kWidth / 2, Screen::kHeight / 2,
+               WINDOW_EDITOR, house);
   if (quant > 0) {
     Fancy_Text_Print(*LogicPage, "%d", x + 1, y + 1, scheme, kTBlack,
                      TPF_8POINT | TPF_DROPSHADOW, quant);

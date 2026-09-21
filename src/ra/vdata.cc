@@ -367,7 +367,8 @@ VesselTypeClass& VesselTypeClass::As_Reference(VesselType type) {
  *                                                                                             *
  * HISTORY: * 03/20/1996 JLB : Created. *
  *=============================================================================================*/
-void VesselTypeClass::Display(int x, int y, WindowNumberType window,
+void VesselTypeClass::Display(PixelView& view, int x, int y,
+                              WindowNumberType window,
                               HousesType /*unused*/) const {
   int shape = 0;
   auto ptr = Get_Cameo_Data();
@@ -375,8 +376,7 @@ void VesselTypeClass::Display(int x, int y, WindowNumberType window,
     ptr = Get_Image_Data();
     shape = Rotation / 6;
   }
-  CC_Draw_Shape(*LogicPage, ptr, shape, x, y, window,
-                SHAPE_CENTER | SHAPE_WIN_REL);
+  CC_Draw_Shape(view, ptr, shape, x, y, window, SHAPE_CENTER | SHAPE_WIN_REL);
 }
 
 /***********************************************************************************************

@@ -882,7 +882,7 @@ void ChronalVortexClass::Render() {
             */
             if (cellptr->Smudge != SMUDGE_NONE) {
               SmudgeTypeClass::As_Reference(cellptr->Smudge)
-                  .Draw_It(x * CELL_PIXEL_W, y * CELL_PIXEL_H,
+                  .Draw_It(*LogicPage, x * CELL_PIXEL_W, y * CELL_PIXEL_H,
                            cellptr->SmudgeData);
             }
 

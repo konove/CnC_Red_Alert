@@ -2023,7 +2023,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
     *are *	flagged to be redrawn.
     */
     if (TheScreen().hidden_view().Lock()) {
-      Redraw_Icons();
+      Redraw_Icons(view);
 
       /*
       **	Draw the infantry bodies in this special layer.
@@ -2037,7 +2037,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
       //			}
 
       if constexpr (config::kSortDrawEnabled) {
-        Redraw_OIcons();
+        Redraw_OIcons(view);
       }
 
       TheScreen().hidden_view().Unlock();
@@ -2076,7 +2076,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
           }
 
           DCHECK(ptr->IsActive);
-          ptr->Render(forced);
+          ptr->Render(view, forced);
         }
       }
 
@@ -2126,7 +2126,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
       if (TheDebugState().map_editor_active() && PendingObjectPtr) {
         PendingObjectPtr->Coord = PendingObjectPtr->Class_Of().Coord_Fixup(
             Cell_Coord(static_cast<CELL>(ZoneCell + ZoneOffset)));
-        PendingObjectPtr->Render(true);
+        PendingObjectPtr->Render(view, true);
       }
     }
   }
@@ -2151,7 +2151,7 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
  *   12/24/1994 JLB : Uses the cell bit flag array to determine what to redraw.
  **
  *=============================================================================================*/
-void DisplayClass::Redraw_Icons() {
+void DisplayClass::Redraw_Icons(PixelView& view) {
   IsShadowPresent = false;
   for (int y = -Coord_YLepton(TacticalCoord);
        std::cmp_less_equal(y, TacLeptonHeight); y += CELL_LEPTON_H) {
@@ -2178,7 +2178,7 @@ void DisplayClass::Redraw_Icons() {
           *visible, *	then draw it.  Also draw the cell if the shroud is off.
           */
           if (cellptr->IsMapped || TheDebugState().unshroud()) {
-            cellptr->Draw_It(xpixel, ypixel);
+            cellptr->Draw_It(view, xpixel, ypixel);
           }
 
           /*
@@ -2195,7 +2195,7 @@ void DisplayClass::Redraw_Icons() {
   }
 }
 
-void DisplayClass::Redraw_OIcons() {
+void DisplayClass::Redraw_OIcons(PixelView& view) {
   for (int y = -Coord_YLepton(TacticalCoord);
        std::cmp_less_equal(y, TacLeptonHeight); y += CELL_LEPTON_H) {
     for (int x = -Coord_XLepton(TacticalCoord);
@@ -2221,7 +2221,7 @@ void DisplayClass::Redraw_OIcons() {
           *visible, *	then draw it.  Also draw the cell if the shroud is off.
           */
           if (cellptr->IsMapped || TheDebugState().unshroud()) {
-            cellptr->Draw_It(xpixel, ypixel, true);
+            cellptr->Draw_It(view, xpixel, ypixel, true);
           }
         }
       }

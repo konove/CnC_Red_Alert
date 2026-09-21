@@ -57,6 +57,7 @@
 #include "ra/radio.h"
 #include "ra/techno.h"
 #include "ra/type.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/ftimer.h"
 
 #define MAX_DOOR_STAGE 18  // # of frames of door opening on weapons factory
@@ -310,7 +311,8 @@ class BuildingClass : public TechnoClass {
   **	object interacts with the map and thus indirectly controls rendering.
   */
   int Exit_Object(TechnoClass* base) override;
-  void Draw_It(int x, int y, WindowNumberType window) const override;
+  void Draw_It(PixelView& view, int x, int y,
+               WindowNumberType window) const override;
   bool Mark(MarkType mark = MARK_CHANGE) override;
   void Fire_Out() override;
   void Begin_Mode(BStateType bstate);

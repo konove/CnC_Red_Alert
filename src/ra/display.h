@@ -39,6 +39,7 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
 
 #define SIDE_BAR_TAC_WIDTH 10
@@ -323,8 +324,8 @@ class DisplayClass : public MapClass {
   static std::span<const std::byte> ShadowShapes;
   static unsigned char ShadowTrans[(kShadowColorCount + 1) * 256];
 
-  void Redraw_Icons();
-  void Redraw_OIcons();
+  void Redraw_Icons(PixelView& view);
+  void Redraw_OIcons(PixelView& view);
   void Redraw_Shadow(PixelView& view);
 
   /*

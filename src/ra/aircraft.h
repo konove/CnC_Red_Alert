@@ -58,6 +58,7 @@
 #include "ra/radio.h"
 #include "ra/techno.h"
 #include "ra/type.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/ftimer.h"
 
 /*
@@ -156,11 +157,13 @@ class AircraftClass : public FootClass, public FlyClass {
   **	object interacts with the map and thus indirectly controls rendering.
   */
   void Look(bool incremental = false) override;
-  void Draw_Rotors(int x, int y, WindowNumberType window) const;
+  void Draw_Rotors(PixelView& view, int x, int y,
+                   WindowNumberType window) const;
   int Exit_Object(TechnoClass* /*unit*/ /*unused*/) override;
   [[nodiscard]] std::span<const int16_t> Overlap_List(
       bool redraw = false) const override;
-  void Draw_It(int x, int y, WindowNumberType window) const override;
+  void Draw_It(PixelView& view, int x, int y,
+               WindowNumberType window) const override;
   void Set_Speed(int speed) override;
 
   /*

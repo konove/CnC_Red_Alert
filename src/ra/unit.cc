@@ -2071,7 +2071,8 @@ int UnitClass::Shape_Number() const {
  *   01/07/1995 JLB : Harvester animation support. * 07/08/1995 JLB : Uses
  *general purpose draw routine.                                       *
  *=============================================================================================*/
-void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
+void UnitClass::Draw_It(PixelView& view, int x, int y,
+                        WindowNumberType window) const {
   DCHECK(TheObjectHeaps().unit().ID(this) == ID);
   DCHECK(IsActive);
 
@@ -2105,7 +2106,8 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
     **	Actually perform the draw. Overlay an optional shimmer effect as
     *necessary.
     */
-    Techno_Draw_Object(shapefile, shapenum, x, y, window, rotation, scale);
+    Techno_Draw_Object(view, shapefile, shapenum, x, y, window, rotation,
+                       scale);
 
     /*
     **	If there is a rotating radar dish, draw it now.
@@ -2116,13 +2118,13 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
         int y2 = y;
         shapenum = static_cast<int>(32 + (CurrentFrame() % 8));
         Class->Turret_Adjust(PrimaryFacing, x2, y2);
-        Techno_Draw_Object(shapefile, shapenum, x2, y2, window);
+        Techno_Draw_Object(view, shapefile, shapenum, x2, y2, window);
       } else {
         shapenum = static_cast<int>(32 + (CurrentFrame() % 32));
         if (*this == UNIT_TESLATANK) {
-          Techno_Draw_Object(shapefile, shapenum, x, y, window);
+          Techno_Draw_Object(view, shapefile, shapenum, x, y, window);
         } else {
-          Techno_Draw_Object(shapefile, shapenum, x, y - 5, window);
+          Techno_Draw_Object(view, shapefile, shapenum, x, y - 5, window);
         }
       }
     }
@@ -2156,7 +2158,7 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
       **	Actually perform the draw. Overlay an optional shimmer effect as
       *necessary.
       */
-      Techno_Draw_Object(shapefile, shapenum, xx, yy, window);
+      Techno_Draw_Object(view, shapefile, shapenum, xx, yy, window);
     }
   }
 
@@ -2166,14 +2168,14 @@ void UnitClass::Draw_It(int x, int y, WindowNumberType window) const {
   */
   if (Flagged != HOUSE_NONE) {
     CC_Draw_Shape(
-        *LogicPage, MixArchive::RetrieveData("FLAGFLY.SHP"),
+        view, MixArchive::RetrieveData("FLAGFLY.SHP"),
         static_cast<int>(CurrentFrame() % 14), x, y, window,
         SHAPE_CENTER | SHAPE_FADING | SHAPE_GHOST,
         HouseClass::As_Pointer(Flagged)->Remap_Table(false, Class->Remap),
         MouseClass::UnitShadow);
   }
 
-  DriveClass::Draw_It(x, y, window);
+  DriveClass::Draw_It(view, x, y, window);
 }
 
 /***********************************************************************************************

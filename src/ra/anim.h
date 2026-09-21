@@ -50,6 +50,7 @@
 #include "ra/object.h"
 #include "ra/stage.h"
 #include "ra/type.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/file.h"
 #include "tech/fixed.h"
 
@@ -97,7 +98,7 @@ class AnimClass final : public ObjectClass, public StageClass {
     return true;
   }
   bool Mark(MarkType mark = MARK_CHANGE) override;
-  bool Render(bool forced) override;  // const;
+  bool Render(PixelView& view, bool forced) override;  // const;
   [[nodiscard]] COORDINATE Center_Coord() const override;
   [[nodiscard]] COORDINATE Sort_Y() const override;
   [[nodiscard]] LayerType In_Which_Layer() const override;
@@ -108,7 +109,8 @@ class AnimClass final : public ObjectClass, public StageClass {
       bool /*placement*/ = false) const override;
   [[nodiscard]] std::span<const int16_t> Overlap_List(
       bool /*redraw*/ = false) const override;
-  void Draw_It(int x, int y, WindowNumberType window) const override;
+  void Draw_It(PixelView& view, int x, int y,
+               WindowNumberType window) const override;
   void AI() override;
   void Detach(TARGET target, bool all) override;
 

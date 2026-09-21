@@ -551,7 +551,8 @@ int BulletClass::Shape_Number() const {
  *clipping parameter.                                       * 01/08/1995 JLB :
  *Handles translucent colors if necessary.                                 *
  *=============================================================================================*/
-void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
+void BulletClass::Draw_It(PixelView& view, int x, int y,
+                          WindowNumberType window) const {
   DCHECK(TheObjectHeaps().bullet().ID(this) == ID);
   DCHECK(IsActive);
 
@@ -585,14 +586,13 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
   if (Height > 0 && Class->IsShadow) {
     if (Class->IsParachuted) {
       CC_Draw_Shape(
-          *LogicPage,
-          AnimTypeClass::As_Reference(ANIM_PARA_BOMB).Get_Image_Data(), 1,
+          view, AnimTypeClass::As_Reference(ANIM_PARA_BOMB).Get_Image_Data(), 1,
           x + Lepton_To_Pixel(static_cast<LEPTON>(Height / 2)), y + 10, window,
           SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, {},
           DisplayClass::UnitShadow);
     } else {
       CC_Draw_Shape(
-          *LogicPage, shapeptr, shapenum, x, y, window,
+          view, shapeptr, shapenum, x, y, window,
           SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING, {},
           DisplayClass::UnitShadow);
     }
@@ -608,11 +608,11 @@ void BulletClass::Draw_It(int x, int y, WindowNumberType window) const {
   }
   if (Class->IsSubSurface) {
     CC_Draw_Shape(
-        *LogicPage, shapeptr, shapenum, x, y, window,
+        view, shapeptr, shapenum, x, y, window,
         flags | SHAPE_PREDATOR | SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_FADING,
         {}, DisplayClass::FadingShade);
   } else {
-    CC_Draw_Shape(*LogicPage, shapeptr, shapenum, x, y, window,
+    CC_Draw_Shape(view, shapeptr, shapenum, x, y, window,
                   flags | SHAPE_CENTER | SHAPE_WIN_REL, {},
                   DisplayClass::UnitShadow);
   }

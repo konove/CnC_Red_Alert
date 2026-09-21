@@ -1143,7 +1143,7 @@ bool ObjectClass::Select() {
  *                                                                                             *
  * HISTORY: * 06/19/1994 JLB : Created. *
  *=============================================================================================*/
-bool ObjectClass::Render(bool forced)  // const
+bool ObjectClass::Render(PixelView& view, bool forced)  // const
 {
   DCHECK(IsActive);
 
@@ -1159,7 +1159,7 @@ bool ObjectClass::Render(bool forced)  // const
       /*
       **	Draw the object itself
       */
-      Draw_It(x, y, WINDOW_TACTICAL);
+      Draw_It(view, x, y, WINDOW_TACTICAL);
 
       if constexpr (config::kScenarioEditorEnabled) {
         /*
@@ -1167,7 +1167,7 @@ bool ObjectClass::Render(bool forced)  // const
         **	relative, so add the window's x-coord to 'x'.
         */
         if (TheDebugState().map_editor_active() && Trigger.Is_Valid()) {
-          Fancy_Text_Print(*LogicPage, Trigger->Class->IniName,
+          Fancy_Text_Print(view, Trigger->Class->IniName,
                            x + static_cast<int>(WinX), y,
                            &ThePalettes().color_remaps().at(PCOLOR_RED),
                            kTBlack, TPF_CENTER | TPF_NOSHADOW | TPF_6POINT);

@@ -57,6 +57,7 @@
 #include "ra/radio.h"
 #include "ra/techno.h"
 #include "ra/type.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 
@@ -209,7 +210,8 @@ class UnitClass final : public DriveClass {
   */
   [[nodiscard]] std::span<const int16_t> Overlap_List(
       bool redraw = false) const override;
-  void Draw_It(int x, int y, WindowNumberType window) const override;
+  void Draw_It(PixelView& view, int x, int y,
+               WindowNumberType window) const override;
 
   /*
   **	User I/O.

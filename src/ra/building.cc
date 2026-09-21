@@ -784,7 +784,8 @@ RadioMessageType BuildingClass::Receive_Message(RadioClass* from,
  *window parameter.                                       * 07/06/1995 JLB :
  *Handles damaged silos correctly.                                         *
  *=============================================================================================*/
-void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
+void BuildingClass::Draw_It(PixelView& view, int x, int y,
+                            WindowNumberType window) const {
   DCHECK(TheObjectHeaps().building().ID(this) == ID);
   DCHECK(IsActive);
 
@@ -802,7 +803,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
   */
   IsTheaterShape = Class->IsTheater;  // Let Build_Frame know if this is a
                                       // theater specific shape
-  Techno_Draw_Object(shapefile, Shape_Number(), x, y, window);
+  Techno_Draw_Object(view, shapefile, Shape_Number(), x, y, window);
   IsTheaterShape = false;
 
   /*
@@ -824,7 +825,7 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
                            Lepton_To_Pixel(Coord_X(Render_Coord())));
       const int yyy = y + (Lepton_To_Pixel(Coord_Y(contact->Render_Coord())) -
                            Lepton_To_Pixel(Coord_Y(Render_Coord())));
-      contact->Draw_It(xxx, yyy, window);
+      contact->Draw_It(view, xxx, yyy, window);
       contact->IsToDisplay = false;
     }
 
@@ -836,20 +837,20 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
       if (Health_Ratio() <= TheRules().ConditionYellow) {
         shapenum += 4;
       }
-      Techno_Draw_Object(BuildingTypeClass::WarFactoryOverlay, shapenum, x, y,
-                         window);
+      Techno_Draw_Object(view, BuildingTypeClass::WarFactoryOverlay, shapenum,
+                         x, y, window);
     }
 
     /*
     **	Draw any repair feedback graphic required.
     */
     if (IsRepairing && IsWrenchVisible) {
-      CC_Draw_Shape(*LogicPage, ObjectTypeClass::SelectShapes, kSelectWrench, x,
-                    y, window, SHAPE_CENTER | SHAPE_WIN_REL);
+      CC_Draw_Shape(view, ObjectTypeClass::SelectShapes, kSelectWrench, x, y,
+                    window, SHAPE_CENTER | SHAPE_WIN_REL);
     }
   }
 
-  TechnoClass::Draw_It(x, y, window);
+  TechnoClass::Draw_It(view, x, y, window);
 
   /*
   ** If this is a factory that we're spying on, show what it's producing
@@ -876,9 +877,8 @@ void BuildingClass::Draw_It(int x, int y, WindowNumberType window) const {
     if (factory != nullptr) {
       const TechnoClass* obj = factory->Get_Object();
       if (obj != nullptr) {
-        CC_Draw_Shape(*LogicPage, obj->Techno_Type_Class()->Get_Cameo_Data(), 0,
-                      x, y, window, SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_NORMAL,
-                      {});
+        CC_Draw_Shape(view, obj->Techno_Type_Class()->Get_Cameo_Data(), 0, x, y,
+                      window, SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_NORMAL, {});
       }
     }
   }

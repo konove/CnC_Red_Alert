@@ -1011,7 +1011,8 @@ UnitType UnitTypeClass::From_Name(const char* name) {
  * HISTORY: * 05/14/1994 JLB : Created. * 11/08/1994 JLB : Handles chunky type
  *vehicles now.                                        *
  *=============================================================================================*/
-void UnitTypeClass::Display(int x, int y, WindowNumberType window,
+void UnitTypeClass::Display(PixelView& view, int x, int y,
+                            WindowNumberType window,
                             HousesType /*unused*/) const {
   int shape = 0;
   auto ptr = Get_Cameo_Data();
@@ -1019,8 +1020,7 @@ void UnitTypeClass::Display(int x, int y, WindowNumberType window,
     ptr = Get_Image_Data();
     shape = Rotation / 6;
   }
-  CC_Draw_Shape(*LogicPage, ptr, shape, x, y, window,
-                SHAPE_CENTER | SHAPE_WIN_REL);
+  CC_Draw_Shape(view, ptr, shape, x, y, window, SHAPE_CENTER | SHAPE_WIN_REL);
 }
 
 /***********************************************************************************************

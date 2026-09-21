@@ -70,6 +70,7 @@
 #include "ra/txtlabel.h"
 #include "ra/type.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 
 /*
 **	This is the maximum # of ObjectTypeClasses the editor has to deal with.

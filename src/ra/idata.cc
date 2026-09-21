@@ -1170,7 +1170,8 @@ std::span<const int16_t> InfantryTypeClass::Occupy_List(
  *                                                                                             *
  * HISTORY: * 09/24/1994 JLB : Created. *
  *=============================================================================================*/
-void InfantryTypeClass::Display(int x, int y, WindowNumberType window,
+void InfantryTypeClass::Display(PixelView& view, int x, int y,
+                                WindowNumberType window,
                                 HousesType house) const {
   if (house != HOUSE_NONE) {
     int shape = 0;
@@ -1180,7 +1181,7 @@ void InfantryTypeClass::Display(int x, int y, WindowNumberType window,
       shape = 2;
     }
 
-    CC_Draw_Shape(*LogicPage, ptr, shape, x, y, window,
+    CC_Draw_Shape(view, ptr, shape, x, y, window,
                   SHAPE_NORMAL | SHAPE_CENTER | SHAPE_WIN_REL);
   }
 }

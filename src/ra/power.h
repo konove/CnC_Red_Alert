@@ -50,6 +50,7 @@
 #include "ra/jshell.h"
 #include "ra/radar.h"
 #include "sdllib/keyboard.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/ftimer.h"
 
 class PowerClass : public RadarClass {

@@ -1064,7 +1064,7 @@ InfantryClass* CellClass::Cell_Infantry() const {
  *BELOW overlays.                                            * 07/22/1996 JLB :
  *Objects added to draw process.                                           *
  *=============================================================================================*/
-void CellClass::Draw_It(int x, int y, bool objects) const {
+void CellClass::Draw_It(PixelView& view, int x, int y, bool objects) const {
   DCHECK(static_cast<unsigned>(Cell_Number()) <= MAP_CELL_TOTAL);
 
   if (!objects) {
@@ -1094,13 +1094,13 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       **	Draw debug cell visualization instead of normal terrain.
       */
       const CELL cell = Cell_Number();
-      LogicPage->FillRect(TheMap().TacPixelX + x, TheMap().TacPixelY + y,
-                          TheMap().TacPixelX + x + ICON_PIXEL_W - 1,
-                          TheMap().TacPixelY + y + ICON_PIXEL_H - 1,
-                          static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
+      view.FillRect(TheMap().TacPixelX + x, TheMap().TacPixelY + y,
+                    TheMap().TacPixelX + x + ICON_PIXEL_W - 1,
+                    TheMap().TacPixelY + y + ICON_PIXEL_H - 1,
+                    static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
       FontXSpacing -= 2;
       Fancy_Text_Print(
-          *LogicPage, "%02X%02X\r%d%d%d\r%d %d",
+          view, "%02X%02X\r%d%d%d\r%d %d",
           TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1), TheMap().TacPixelY + y,
           &ThePalettes().grey_scheme(), kTBlack,
           TPF_EFNT | TPF_CENTER | TPF_BRIGHT_COLOR | TPF_FULLSHADOW,
@@ -1134,11 +1134,11 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       **	This is the underlying terrain icon.
       */
       if (!ttype->Get_Image_Data().empty()) {
-        LogicPage->DrawStamp(ttype->Get_Image_Data(), icon, x, y, {},
-                             static_cast<int>(WINDOW_TACTICAL));
+        view.DrawStamp(ttype->Get_Image_Data(), icon, x, y, {},
+                       static_cast<int>(WINDOW_TACTICAL));
         if (!remap.empty()) {
-          LogicPage->Remap(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
-                           ICON_PIXEL_W, ICON_PIXEL_H, remap);
+          view.Remap(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
+                     ICON_PIXEL_W, ICON_PIXEL_H, remap);
         }
       }
 
@@ -1151,10 +1151,9 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         */
         if (TheDebugState().map_editor_active() &&
             TheWorld().current_cell() == Cell_Number()) {
-          LogicPage->DrawRect(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
-                              TheMap().TacPixelX + x + CELL_PIXEL_W - 1,
-                              TheMap().TacPixelY + y + CELL_PIXEL_H - 1,
-                              kYellow);
+          view.DrawRect(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
+                        TheMap().TacPixelX + x + CELL_PIXEL_W - 1,
+                        TheMap().TacPixelY + y + CELL_PIXEL_H - 1, kYellow);
         }
       }
 
@@ -1162,7 +1161,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       **	Redraw any smudge.
       */
       if (Smudge != SMUDGE_NONE) {
-        SmudgeTypeClass::As_Reference(Smudge).Draw_It(x, y, SmudgeData);
+        SmudgeTypeClass::As_Reference(Smudge).Draw_It(view, x, y, SmudgeData);
       }
 
       /*
@@ -1173,7 +1172,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         IsTheaterShape =
             static_cast<bool>(otype.IsTheater);  // Tell Build_Frame if this
                                                  // overlay is theater specific
-        CC_Draw_Shape(*LogicPage, otype.Get_Image_Data(), OverlayData,
+        CC_Draw_Shape(view, otype.Get_Image_Data(), OverlayData,
                       x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
                       WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
@@ -1187,7 +1186,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
           **	Draw the cell's Trigger mnemonic, if it has a trigger
           */
           if (Trigger.Is_Valid()) {
-            Fancy_Text_Print(*LogicPage, Trigger->Class->IniName,
+            Fancy_Text_Print(view, Trigger->Class->IniName,
                              x + TheMap().TacPixelX, y + TheMap().TacPixelY,
                              &ThePalettes().color_remaps().at(PCOLOR_RED),
                              kTBlack, TPF_EFNT | TPF_FULLSHADOW);
@@ -1209,8 +1208,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                   base::At(waypt, 2) = 0;
                 }
                 Fancy_Text_Print(
-                    *LogicPage, waypt,
-                    TheMap().TacPixelX + x + (CELL_PIXEL_W / 2),
+                    view, waypt, TheMap().TacPixelX + x + (CELL_PIXEL_W / 2),
                     TheMap().TacPixelY + y + (CELL_PIXEL_H / 2) - 3,
                     &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                     TPF_EFNT | TPF_CENTER | TPF_FULLSHADOW);
@@ -1219,7 +1217,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
             }
             if (base::At(TheScenario().Waypoint,
                          ScenarioClass::kHomeWaypoint) == Cell_Number()) {
-              Fancy_Text_Print(*LogicPage, "Home", TheMap().TacPixelX + x,
+              Fancy_Text_Print(view, "Home", TheMap().TacPixelX + x,
                                TheMap().TacPixelY + y + (CELL_PIXEL_H)-7,
                                &ThePalettes().color_remaps().at(PCOLOR_GREY),
                                kTBlack, TPF_EFNT | TPF_FULLSHADOW);
@@ -1227,7 +1225,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
             if (base::At(TheScenario().Waypoint,
                          ScenarioClass::kReinforcementWaypoint) ==
                 Cell_Number()) {
-              Fancy_Text_Print(*LogicPage, "Reinf", TheMap().TacPixelX + x,
+              Fancy_Text_Print(view, "Reinf", TheMap().TacPixelX + x,
                                TheMap().TacPixelY + y + (CELL_PIXEL_H)-7,
                                &ThePalettes().color_remaps().at(PCOLOR_GREY),
                                kTBlack, TPF_EFNT | TPF_FULLSHADOW);
@@ -1257,11 +1255,11 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         **	Draw the hash-mark cursor:
         */
         if (TheMap().ProximityCheck && Is_Clear_To_Build(loco)) {
-          LogicPage->DrawStamp(DisplayClass::TransIconset, 0, x, y, {},
-                               static_cast<int>(WINDOW_TACTICAL));
+          view.DrawStamp(DisplayClass::TransIconset, 0, x, y, {},
+                         static_cast<int>(WINDOW_TACTICAL));
         } else {
-          LogicPage->DrawStamp(DisplayClass::TransIconset, 2, x, y, {},
-                               static_cast<int>(WINDOW_TACTICAL));
+          view.DrawStamp(DisplayClass::TransIconset, 2, x, y, {},
+                         static_cast<int>(WINDOW_TACTICAL));
         }
 
         if constexpr (config::kScenarioEditorEnabled) {
@@ -1286,8 +1284,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                            Cell_Y(static_cast<CELL>(TheMap().ZoneCell +
                                                     TheMap().ZoneOffset))) *
                           tptr->Width);
-                  LogicPage->DrawStamp(tptr->Get_Image_Data(), icon, x, y, {},
-                                       static_cast<int>(WINDOW_TACTICAL));
+                  view.DrawStamp(tptr->Get_Image_Data(), icon, x, y, {},
+                                 static_cast<int>(WINDOW_TACTICAL));
                 }
                 break;
               }
@@ -1301,7 +1299,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                     dynamic_cast<const OverlayTypeClass*>(
                         TheMap().PendingObject)
                         ->Type)
-                    .Draw_It(x, y, OverlayData);
+                    .Draw_It(view, x, y, OverlayData);
                 break;
 
               /*
@@ -1311,7 +1309,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                 SmudgeTypeClass::As_Reference(
                     dynamic_cast<const SmudgeTypeClass*>(TheMap().PendingObject)
                         ->Type)
-                    .Draw_It(x, y, 0);
+                    .Draw_It(view, x, y, 0);
                 break;
 
               case RTTIType::RTTI_NONE:
@@ -1356,7 +1354,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       if (IsFlagged) {
         const auto flag_remap =
             HouseClass::As_Pointer(Owner)->Remap_Table(false, REMAP_NORMAL);
-        CC_Draw_Shape(*LogicPage, MixArchive::RetrieveData("FLAGFLY.SHP"),
+        CC_Draw_Shape(view, MixArchive::RetrieveData("FLAGFLY.SHP"),
                       static_cast<int>(CurrentFrame() % 14),
                       x + (ICON_PIXEL_W / 2), y + (ICON_PIXEL_H / 2),
                       WINDOW_TACTICAL,
@@ -1461,7 +1459,7 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                   VISUAL_NORMAL) &&
              TheMap().Coord_To_Pixel(object->Render_Coord(), xx, yy)) &&
             Calc_Partial_Window(x, y, xx, yy)) {
-          object->Draw_It(xx, yy, WINDOW_PARTIAL);
+          object->Draw_It(view, xx, yy, WINDOW_PARTIAL);
           // IsToDisplay clearing moved to frame end in DisplayClass::Draw_It
           // to prevent flickering when render rate exceeds logic tick rate.
           if (TheDebugState().map_editor_active()) {

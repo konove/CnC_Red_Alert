@@ -57,6 +57,7 @@
 #include "ra/radio.h"
 #include "ra/techno.h"
 #include "ra/type.h"
+#include "sdllib/pixel_buffer.h"
 #include "tech/ftimer.h"
 
 class VesselClass : public DriveClass {
@@ -132,7 +133,8 @@ class VesselClass : public DriveClass {
   [[nodiscard]] COORDINATE Fire_Coord(int which) const override;
   [[nodiscard]] MoveType Can_Enter_Cell(
       CELL cell, FacingType from = FACING_NONE) const override;
-  void Draw_It(int x, int y, WindowNumberType window) const override;
+  void Draw_It(PixelView& view, int x, int y,
+               WindowNumberType window) const override;
   [[nodiscard]] std::span<const int16_t> Overlap_List(
       bool redraw = false) const override;
   DirType Desired_Load_Dir(ObjectClass* passenger, CELL& moveto) const override;
