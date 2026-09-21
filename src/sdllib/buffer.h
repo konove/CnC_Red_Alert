@@ -46,10 +46,7 @@ class BufferClass {
 
   // Copies the buffer's bytes into `view` as width x height pixels with their
   // top left corner at x,y in the view, and returns the number of bytes read.
-  // The overloads default x,y to the view's corner and width,height to its
-  // size. Defined in pixel_buffer.h, which has the complete PixelView type.
-  int32_t To_Page(PixelView& view);
-  int32_t To_Page(int width, int height, PixelView& view);
+  // Defined in pixel_buffer.h, which has the complete PixelView type.
   int32_t To_Page(int x, int y, int width, int height, PixelView& view);
 
   // define functions to get at the protected data members

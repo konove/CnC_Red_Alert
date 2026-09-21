@@ -565,8 +565,8 @@ inline void PixelView::Remap(std::span<const uint8_t> remap_table) {
 }
 
 inline int PixelView::pitch() const { return pitch_; }
-// BufferClass's copies to a page live here rather than in buffer.h because
-// they need the complete PixelView.
+// BufferClass::To_Page lives here rather than in buffer.h because it needs the
+// complete PixelView.
 
 inline int32_t Buffer_To_Page(int x, int y, int width, int height,
                               std::span<const uint8_t> Buffer,
@@ -579,12 +579,6 @@ inline int32_t Buffer_To_Page(int x, int y, int width, int height,
   return return_code;
 }
 
-inline int32_t BufferClass::To_Page(int width, int height, PixelView& view) {
-  return To_Page(0, 0, width, height, view);
-}
-inline int32_t BufferClass::To_Page(PixelView& view) {
-  return To_Page(0, 0, view.width(), view.height(), view);
-}
 inline int32_t BufferClass::To_Page(int x, int y, int width, int height,
                                     PixelView& view) {
   return Buffer_To_Page(x, y, width, height, Get_Bytes(), view);
