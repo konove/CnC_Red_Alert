@@ -462,8 +462,7 @@ void RadarClass::Draw_It(bool forced) {
         Radar_Cursor(RadarCursorRedraw);
 
       } else {
-        const PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
-        //				if (LogicPage->Lock()) {
+        PixelView* oldpage = SetLogicPage(TheScreen().hidden_view());
         CC_Draw_Shape(RadarAnim, kRadarActivatedFrame, RadX, RadY + 1,
                       WINDOW_MAIN, SHAPE_NORMAL);
         if (BaseX || BaseY) {
@@ -493,9 +492,7 @@ void RadarClass::Draw_It(bool forced) {
           Show_Mouse();
         }
 
-        //					SetLogicPage(oldpage);
-
-        //				}
+        SetLogicPage(oldpage);
       }
 
     } else {
@@ -649,12 +646,8 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) const {
 
         case RTTI_UNIT:
         case RTTI_AIRCRAFT:
-          // PWG: Slowdown?
-          // if (LogicPage->Lock()){
           Fat_Put_Pixel(x, y, dynamic_cast<UnitClass*>(obj)->House->BrightColor,
                         size, *LogicPage);
-          // LogicPage->Unlock();
-          //}
           break;
         case RTTIType::RTTI_NONE:
         case RTTIType::RTTI_INFANTRYTYPE:
