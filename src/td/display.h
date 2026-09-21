@@ -145,7 +145,7 @@ class DisplayClass : public MapClass {
   **	General display/map/interface support functionality.
   */
   void AI(KeyNumType& input, int x, int y) override;
-  void Draw_It(bool forced = false) override;
+  void Draw_It(PixelView& view, bool forced = false) override;
 
   /*
   **	Added functionality.
@@ -324,8 +324,8 @@ class DisplayClass : public MapClass {
   static unsigned char ShadowTrans[(SHADOW_COL_COUNT + 1) * 256];
 
   void Redraw_Icons(int draw_flags = 0);
-  void Redraw_Shadow();
-  void Redraw_Shadow_Rects();
+  void Redraw_Shadow(PixelView& view);
+  void Redraw_Shadow_Rects(PixelView& view);
 
   /*
   **	This bit array is used to flag cells to be redrawn. If the icon needs to

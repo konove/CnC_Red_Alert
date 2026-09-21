@@ -61,7 +61,7 @@ class HelpClass : public TabClass {
   */
   void Init_Clear() override;  // Clears all to known state
 
-  void Draw_It(bool forced = false) override;
+  void Draw_It(PixelView& view, bool forced = false) override;
   void AI(KeyNumType& key, int x, int y) override;
   bool Scroll_Map(DirType facing, int& distance, bool really) override;
   void Set_Tactical_Position(COORDINATE coord) override;

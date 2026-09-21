@@ -373,3 +373,34 @@ reset in `~PixelView` (`:60-64`) and the declarations at `src/sdllib/pixel_buffe
   `MapEditClass::One_Time()` plus the known `DimensionData` cache); Tiberian Dawn's 215 allocations
   match the phase 0/1 figure. Still to do: a real-display run, which phases 3a, 3b and 4 need as
   well.
+
+- 2026-09-21: phase 3a done. `GScreenClass::Draw_It(bool)` is `Draw_It(PixelView&, bool)` through
+  all 7 overrides in each game, and the satellites below it take the view too:
+  `DisplayClass::Redraw_Shadow` (and TD's `Redraw_Shadow_Rects`),
+  `SidebarClass::StripClass::Draw_It`, `TabClass::Draw_Credits_Tab` and `Hilite_Tab`, and the
+  radar's `Plot_Radar_Pixel`, `Cursor_Cell`, `Mark_Radar`, `Radar_Cursor`, `Radar_Anim`,
+  `Render_Terrain`, `Render_Infantry`, `Render_Overlay`, `Draw_Names` and RA's `Draw_House_Info`.
+  RA's `MessageListClass::Draw` takes one as well. `GScreenClass::Render()` names the hidden view
+  once and passes it down; `LogicPage->` reads are down from 127 to 88 in RA and 133 to 102 in TD.
+
+  `Cursor_Cell` and `Mark_Radar` were not in the plan's satellite list but had to join it:
+  `Radar_Cursor` reaches `Plot_Radar_Pixel` through them.
+
+  Four of the seven `SetLogicPage` save/restore pairs in the chain are gone -- both radar helpers in
+  each game, plus TD's `RadarClass::Draw_It`, whose `oldpage == &TheScreen().visible_view()` test
+  became `TheScreen().IsVisible(&view)` and whose stray unbalanced `Unlock()` (noted in phase 1)
+  went with it. Three pairs stay, against the plan's expectation that `Render()`'s would go here:
+  both `Render()`s and RA's `RadarClass::Draw_It` still call `GadgetClass::Draw_All` or `Draw_Me`,
+  which find their page through the global until phase 4. Each carries a comment saying so. Removing
+  them now would have left those gadget draws pointing at whatever page the caller happened to leave
+  behind.
+
+  The strict build again caught what the plain build did not: the empty `GScreenClass::Draw_It` base
+  and TD's `MessageListClass::Draw` had an unused `view`. The base is now `PixelView& /*view*/`;
+  TD's `Draw()` gave the parameter back, since unlike RA's it only forwards to `Draw_All()` and has
+  nothing of its own to draw. It gets one in phase 4.
+
+  Verification: both build dirs clean, 689 tests pass, both save/load smoke scripts pass, and ASan
+  `-NEWGAMESCG01EA -QUITFRAME100` reports no memory errors and leak totals byte-identical to the
+  phase 2 run in both games (RA 29,823 bytes in 73 allocations, TD 17,272 in 215). The real-display
+  run is still outstanding, and now covers phases 0 through 3a.

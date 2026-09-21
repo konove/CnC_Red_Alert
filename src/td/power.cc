@@ -173,12 +173,12 @@ void PowerClass::One_Time() {
  * HISTORY: * 12/20/1994 JLB : Created. * 12/27/1994 JLB : Changes power bar
  *color depending on amount of power.                    *
  *=============================================================================================*/
-void PowerClass::Draw_It(bool complete) {
+void PowerClass::Draw_It(PixelView& view, bool complete) {
   static const int _modtable[] = {0, -1, 0, 1, 0, -1, -2, -1, 0, 1, 2, 1, 0};
 
   //		PowX = TacPixelX + TacWidth*ICON_PIXEL_W;	// X position of
   // upper left corner of power bar.
-  if ((complete || IsPowerToRedraw) && LogicPage->Lock()) {
+  if ((complete || IsPowerToRedraw) && view.Lock()) {
     if (TheMap().IsSidebarActive) {
       IsPowerToRedraw = false;
 
@@ -212,10 +212,10 @@ void PowerClass::Draw_It(bool complete) {
       /*
       ** Draw the unfilled section
       */
-      CC_Draw_Shape(*LogicPage, PowerBarShape, 0, PowX, PowY, WINDOW_CUSTOM,
+      CC_Draw_Shape(view, PowerBarShape, 0, PowX, PowY, WINDOW_CUSTOM,
                     SHAPE_WIN_REL);
-      CC_Draw_Shape(*LogicPage, PowerBarShape, 1, PowX, PowY + 100,
-                    WINDOW_CUSTOM, SHAPE_WIN_REL);
+      CC_Draw_Shape(view, PowerBarShape, 1, PowX, PowY + 100, WINDOW_CUSTOM,
+                    SHAPE_WIN_REL);
 
       /*
       ** Set up the clip region for the filled section
@@ -244,14 +244,14 @@ void PowerClass::Draw_It(bool complete) {
         /*
         ** Draw the filled section
         */
-        CC_Draw_Shape(*LogicPage, PowerBarShape, 2 + power_color, PowX,
+        CC_Draw_Shape(view, PowerBarShape, 2 + power_color, PowX,
                       PowY - base::At(base::At(WindowList,
                                                static_cast<int>(WINDOW_CUSTOM)),
                                       kWindowY),
                       WINDOW_CUSTOM, SHAPE_WIN_REL);
 
         CC_Draw_Shape(
-            *LogicPage, PowerBarShape, 3 + power_color, PowX,
+            view, PowerBarShape, 3 + power_color, PowX,
             PowY -
                 base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
                          kWindowY) +
@@ -262,13 +262,13 @@ void PowerClass::Draw_It(bool complete) {
       /*
       **	Draw the power drain threshold marker.
       */
-      CC_Draw_Shape(*LogicPage, PowerShape, 0, PowX, bottom - drain_height + 1,
+      CC_Draw_Shape(view, PowerShape, 0, PowX, bottom - drain_height + 1,
                     WINDOW_MAIN, SHAPE_NORMAL);
     }
-    LogicPage->Unlock();
+    view.Unlock();
   }
 
-  RadarClass::Draw_It(complete);
+  RadarClass::Draw_It(view, complete);
 }
 
 /***********************************************************************************************

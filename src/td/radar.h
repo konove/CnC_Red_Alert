@@ -81,7 +81,7 @@ class RadarClass : public DisplayClass {
   bool Map_Cell(CELL cell, HouseClass* house) override;
   CELL Click_Cell_Calc(int x, int y) override;
   void AI(KeyNumType& input, int x, int y) override;
-  void Draw_It(bool forced = false) override;
+  void Draw_It(PixelView& view, bool forced = false) override;
   void Refresh_Cells(CELL cell, std::span<const int16_t> list) override;
   void Set_Map_Dimensions(int x, int y, int w, int h) override;
   //		virtual void Set_Tactical_Position(int x, int y, int leptonx=0,
@@ -94,17 +94,19 @@ class RadarClass : public DisplayClass {
   void Set_Radar_Position(CELL cell);
   [[nodiscard]] CELL Radar_Position() const;
   bool Radar_Activate(int control);
-  void Plot_Radar_Pixel(CELL cell);
+  void Plot_Radar_Pixel(PixelView& view, CELL cell);
   void Radar_Pixel(CELL cell);
   void Coord_To_Radar_Pixel(COORDINATE coord, int& x, int& y);
-  void Cursor_Cell(CELL cell, bool value);
-  void Mark_Radar(int x1, int y1, int x2, int y2, bool value, int barlen);
-  void Radar_Cursor(bool forced = false);
-  void Render_Terrain(CELL cell, int x, int y, int size) const;
+  void Cursor_Cell(PixelView& view, CELL cell, bool value);
+  void Mark_Radar(PixelView& view, int x1, int y1, int x2, int y2, bool value,
+                  int barlen);
+  void Radar_Cursor(PixelView& view, bool forced = false);
+  void Render_Terrain(PixelView& view, CELL cell, int x, int y, int size) const;
   [[nodiscard]] bool Cell_On_Radar(CELL cell) const;
-  void Render_Infantry(CELL cell, int x, int y, int size) const;
-  void Render_Overlay(CELL cell, int x, int y, int size);
-  void Radar_Anim();
+  void Render_Infantry(PixelView& view, CELL cell, int x, int y,
+                       int size) const;
+  void Render_Overlay(PixelView& view, CELL cell, int x, int y, int size);
+  void Radar_Anim(PixelView& view);
   [[nodiscard]] bool Is_Radar_Active() const { return IsRadarActive; }
   [[nodiscard]] bool Is_Radar_Existing() const { return DoesRadarExist; }
 
@@ -117,7 +119,7 @@ class RadarClass : public DisplayClass {
   */
   void Player_Names(bool on);
   [[nodiscard]] int Is_Player_Names() const { return IsPlayerNames; }
-  void Draw_Names() const;
+  void Draw_Names(PixelView& view) const;
   [[nodiscard]] int Is_Zoomed() const { return IsZoomed; }
 
  protected:

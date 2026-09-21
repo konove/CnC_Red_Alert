@@ -334,7 +334,7 @@ void GameOptionsClass::Process() {
 #endif
 
       buttons->Draw_All();
-      TabClass::Hilite_Tab(0);
+      TabClass::Hilite_Tab(*LogicPage, 0);
       Show_Mouse();
       display = false;
     }

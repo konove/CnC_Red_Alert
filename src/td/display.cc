@@ -1730,9 +1730,8 @@ ObjectClass* DisplayClass::Cell_Object(CELL cell, int x, int y) {
  *Refresh_Map() function.                                * 01/10/1995 JLB :
  *Rubber band drawing.                                                     *
  *=============================================================================================*/
-void DisplayClass::Draw_It(bool forced) {
-
-  MapClass::Draw_It(forced);
+void DisplayClass::Draw_It(PixelView& view, bool forced) {
+  MapClass::Draw_It(view, forced);
 
   if (IsDisplayToRedraw || forced) {
     IsDisplayToRedraw = false;
@@ -2028,10 +2027,10 @@ void DisplayClass::Draw_It(bool forced) {
       **	Finally, redraw the shadow overlay as necessary.
       */
       // Colour_Debug(5);
-      Redraw_Shadow();
+      Redraw_Shadow(view);
     }
 
-    Redraw_Shadow_Rects();
+    Redraw_Shadow_Rects(view);
 
     TheScreen().hidden_view().Unlock();
 
@@ -2040,8 +2039,8 @@ void DisplayClass::Draw_It(bool forced) {
     **	Draw the rubber band over the top of it all.
     */
     if (IsRubberBand) {
-      LogicPage->DrawRect(BandX + TacPixelX, BandY + TacPixelY,
-                          NewX + TacPixelX, NewY + TacPixelY, kWhite);
+      view.DrawRect(BandX + TacPixelX, BandY + TacPixelY, NewX + TacPixelX,
+                    NewY + TacPixelY, kWhite);
     }
     /*
     **	Clear the redraw flags so that normal redraw flag setting can resume.
@@ -2143,7 +2142,7 @@ void DisplayClass::Redraw_Icons(int draw_flags) {
  * HISTORY: * 01/01/1995 JLB : Created. * 08/06/1995 JLB : Clips the fill rect
  *if necessary.                                        *
  *=============================================================================================*/
-void DisplayClass::Redraw_Shadow() {
+void DisplayClass::Redraw_Shadow(PixelView& view) {
   if (IsShadowPresent) {
     for (int y = -Coord_YLepton(TacticalCoord); y <= TacLeptonHeight;
          y += CELL_LEPTON_H) {
@@ -2166,7 +2165,7 @@ void DisplayClass::Redraw_Shadow() {
             if ((!cellptr->IsMapped) && cellptr->IsVisible) {
               const int shadow = Cell_Shadow(cell);
               if (shadow >= 0) {
-                CC_Draw_Shape(*LogicPage, ShadowShapes, shadow, xpixel, ypixel,
+                CC_Draw_Shape(view, ShadowShapes, shadow, xpixel, ypixel,
                               WINDOW_TACTICAL, SHAPE_GHOST, {}, ShadowTrans);
               }
             }
@@ -2192,7 +2191,7 @@ void DisplayClass::Redraw_Shadow() {
  * HISTORY: * 01/01/1995 JLB : Created. * 08/06/1995 JLB : Clips the fill rect
  *if necessary.                                        *
  *=============================================================================================*/
-void DisplayClass::Redraw_Shadow_Rects() {
+void DisplayClass::Redraw_Shadow_Rects(PixelView& view) {
   if (IsShadowPresent) {
     for (int y = -Coord_YLepton(TacticalCoord); y <= TacLeptonHeight;
          y += CELL_LEPTON_H) {
@@ -2219,9 +2218,9 @@ void DisplayClass::Redraw_Shadow_Rects() {
               if (Clip_Rect(&xpixel, &ypixel, &ww, &hh,
                             Lepton_To_Pixel(TacLeptonWidth),
                             Lepton_To_Pixel(TacLeptonHeight)) >= 0) {
-                LogicPage->FillRect(TacPixelX + xpixel, TacPixelY + ypixel,
-                                    TacPixelX + xpixel + ww - 1,
-                                    TacPixelY + ypixel + hh - 1, kBlack);
+                view.FillRect(TacPixelX + xpixel, TacPixelY + ypixel,
+                              TacPixelX + xpixel + ww - 1,
+                              TacPixelY + ypixel + hh - 1, kBlack);
               }
             }
           }

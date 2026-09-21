@@ -86,7 +86,7 @@ class GScreenClass : public VectorClass<CellClass> {
   **	Is called when actual drawing is required. This is the function to
   **	override in derived classes.
   */
-  virtual void Draw_It(bool /*unused*/ = false) {}
+  virtual void Draw_It(PixelView& /*view*/, bool /*unused*/ = false) {}
 
   /*
   **	This moves the hidpage up to the seenpage.

@@ -98,7 +98,7 @@ class SidebarClass : public PowerClass {
   void Init_Theater(TheaterType theater) override;  // Theater-specific inits
 
   void AI(KeyNumType& input, int x, int y) override;
-  void Draw_It(bool complete) override;
+  void Draw_It(PixelView& view, bool complete) override;
   void Refresh_Cells(CELL cell, std::span<const int16_t> list) override;
 
   bool Abandon_Production(RTTIType type, int factory);
@@ -143,7 +143,7 @@ class SidebarClass : public PowerClass {
     bool Abandon_Production(int factory);
     bool Scroll(bool up);
     bool AI(KeyNumType& input, int x, int y);
-    void Draw_It(bool complete);
+    void Draw_It(PixelView& view, bool complete);
     void One_Time(int id);
     void Init_Clear();
     void Init_IO(int id);

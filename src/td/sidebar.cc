@@ -717,14 +717,14 @@ bool SidebarClass::Scroll(bool up, int column) {
  * HISTORY: * 10/28/94   JLB : Created. * 12/31/1994 JLB : Split rendering off
  *into the sidebar strip class.                        *
  *=============================================================================================*/
-void SidebarClass::Draw_It(bool complete) {
-  PowerClass::Draw_It(complete);
+void SidebarClass::Draw_It(PixelView& view, bool complete) {
+  PowerClass::Draw_It(view, complete);
 
   if (IsSidebarActive && (IsSidebarToRedraw || complete) &&
       !TheDebugState().map_editor_active()) {
     IsSidebarToRedraw = false;
 
-    if (LogicPage->Lock()) {
+    if (view.Lock()) {
       /*
       **	Draw the outline box around the sidebar buttons.
       */
@@ -732,26 +732,25 @@ void SidebarClass::Draw_It(bool complete) {
       // CC_Draw_Shape(SidebarShape1, (int)complete, SideX, 158, WINDOW_MAIN,
       // SHAPE_WIN_REL); CC_Draw_Shape(SidebarShape2, (int)complete, SideX,
       // 158+118, WINDOW_MAIN, SHAPE_WIN_REL);
-      LogicPage->DrawLine(SideX, 157, TheScreen().visible_view().width() - 1,
-                          157, 0);
-      CC_Draw_Shape(*LogicPage, SidebarShape1, 0, SideX, 158, WINDOW_MAIN,
+      view.DrawLine(SideX, 157, TheScreen().visible_view().width() - 1, 157, 0);
+      CC_Draw_Shape(view, SidebarShape1, 0, SideX, 158, WINDOW_MAIN,
                     SHAPE_WIN_REL);
-      CC_Draw_Shape(*LogicPage, SidebarShape2, 0, SideX, 158 + 118, WINDOW_MAIN,
+      CC_Draw_Shape(view, SidebarShape2, 0, SideX, 158 + 118, WINDOW_MAIN,
                     SHAPE_WIN_REL);
 
       // Repair.Draw_Me(true);
       // Upgrade.Draw_Me(true);
       // Zoom.Draw_Me(true);
 
-      LogicPage->Unlock();
+      view.Unlock();
     }
   }
   /*
   **	Draw the side strip elements by calling their respective draw functions.
   */
   if (IsSidebarActive) {
-    base::At(Column, 0).Draw_It(complete);
-    base::At(Column, 1).Draw_It(complete);
+    base::At(Column, 0).Draw_It(view, complete);
+    base::At(Column, 1).Draw_It(view, complete);
     Repair.Draw_Me(true);
     Upgrade.Draw_Me(true);
     Zoom.Draw_Me(true);
@@ -1677,7 +1676,7 @@ bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
  * HISTORY: * 12/31/1994 JLB : Created. * 08/06/1995 JLB : Handles multi factory
  *tracking in same strip.                            *
  *=============================================================================================*/
-void SidebarClass::StripClass::Draw_It(bool complete) {
+void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
   if (IsToRedraw || complete) {
     IsToRedraw = false;
 
@@ -1687,7 +1686,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
     ** has a full complement of icons.	ST - 10/7/96 6:03PM
     */
     if (BuildableCount < kMaxVisible) {
-      CC_Draw_Shape(*LogicPage, LogoShapes, ID, X + 3, Y - 1, WINDOW_MAIN,
+      CC_Draw_Shape(view, LogoShapes, ID, X + 3, Y - 1, WINDOW_MAIN,
                     SHAPE_WIN_REL | SHAPE_NORMAL, {});
     }
 
@@ -1853,7 +1852,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
       if (shapenum != kSbBlank || shapefile.data() != LogoShapes.data()) {
         IsTheaterShape = true;  // This shape is theater specific
         CC_Draw_Shape(
-            *LogicPage, shapefile, shapenum,
+            view, shapefile, shapenum,
             x -
                 (base::At(
                      base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
@@ -1874,7 +1873,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
         */
         if (darken) {
           CC_Draw_Shape(
-              *LogicPage, ClockShapes, 0,
+              view, ClockShapes, 0,
               x -
                   (base::At(
                        base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
@@ -1900,8 +1899,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           **	Display text showing that the object is ready to place.
           */
           CC_Draw_Shape(
-              *LogicPage, ObjectTypeClass::PipShapes,
-              static_cast<int>(PIP_READY),
+              view, ObjectTypeClass::PipShapes, static_cast<int>(PIP_READY),
               x -
                   (base::At(
                        base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
@@ -1920,7 +1918,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           // TPF_6POINT|TPF_CENTER|TPF_NOSHADOW);
         } else {
           CC_Draw_Shape(
-              *LogicPage, ClockShapes, stage + 1,
+              view, ClockShapes, stage + 1,
               x -
                   (base::At(
                        base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),
@@ -1938,8 +1936,7 @@ void SidebarClass::StripClass::Draw_It(bool complete) {
           */
           if (factory && !factory->Is_Building()) {
             CC_Draw_Shape(
-                *LogicPage, ObjectTypeClass::PipShapes,
-                static_cast<int>(PIP_HOLDING),
+                view, ObjectTypeClass::PipShapes, static_cast<int>(PIP_HOLDING),
                 x -
                     (base::At(
                          base::At(WindowList, static_cast<int>(WINDOW_SIDEBAR)),

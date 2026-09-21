@@ -1400,10 +1400,10 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
  * HISTORY:                                                                *
  *   11/17/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::Draw_It(bool forced) {
+void MapEditClass::Draw_It(PixelView& view, bool forced) {
   char buf[40];
 
-  MouseClass::Draw_It(forced);
+  MouseClass::Draw_It(view, forced);
 
   if (!TheDebugState().map_editor_active()) {
     return;
@@ -1412,12 +1412,12 @@ void MapEditClass::Draw_It(bool forced) {
   //
   // Erase scrags at top of screen
   //
-  LogicPage->FillRect(0, 0, 640, 16, kBlack);
+  view.FillRect(0, 0, 640, 16, kBlack);
 
   /*
   **	Display the total value of all Tiberium on the map.
   */
-  Fancy_Text_Print(*LogicPage, "Tiberium=%ld   ", 0, 0, kCcGreen, kBlack,
+  Fancy_Text_Print(view, "Tiberium=%ld   ", 0, 0, kCcGreen, kBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, TotalValue);
 
   /*------------------------------------------------------------------------
@@ -1451,7 +1451,7 @@ void MapEditClass::Draw_It(bool forced) {
     ......................... print the label ..........................
     */
     Fancy_Text_Print(
-        *LogicPage, buf, 320, 0, kCcTan, kTBlack,
+        view, buf, 320, 0, kCcTan, kTBlack,
         TPF_CENTER | TPF_NOSHADOW | TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   }
 }
