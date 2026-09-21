@@ -69,8 +69,8 @@ void Focus_Loss();
 void Focus_Restore();
 
 BOOL Any_Locked() {
-  if (TheScreen().visible_view().Get_LockCount() ||
-      TheScreen().hidden_view().Get_LockCount()) {
+  if (TheScreen().visible_view().lock_count() ||
+      TheScreen().hidden_view().lock_count()) {
     return (true);
   } else {
     return (false);
@@ -193,8 +193,8 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
     case WM_DESTROY:
       Prog_End();
       Invalidate_Cached_Icons();
-      TheScreen().visible_page().Un_Init();
-      TheScreen().hidden_page().Un_Init();
+      TheScreen().visible_page().ReleaseSurfaces();
+      TheScreen().hidden_page().ReleaseSurfaces();
       AllSurfaces.Release();
       Reset_Video_Mode();
       Stop_Profiler();

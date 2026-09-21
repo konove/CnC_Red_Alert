@@ -374,14 +374,12 @@ int main(const int argc, char* argv[])
 
   // The full-screen and editor windows cover the visible viewport, whose
   // size is only known now that the video mode is set.
-  base::At(WindowList[0], kWindowWidth) =
-      TheScreen().visible_view().Get_Width();
-  base::At(WindowList[0], kWindowHeight) =
-      TheScreen().visible_view().Get_Height();
+  base::At(WindowList[0], kWindowWidth) = TheScreen().visible_view().width();
+  base::At(WindowList[0], kWindowHeight) = TheScreen().visible_view().height();
   base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowWidth) =
-      TheScreen().visible_view().Get_Width();
+      TheScreen().visible_view().width();
   base::At(WindowList[static_cast<int>(WINDOW_EDITOR)], kWindowHeight) =
-      TheScreen().visible_view().Get_Height();
+      TheScreen().visible_view().height();
 
   TheInput().InstallMouse(TheScreen().visible_view());
 

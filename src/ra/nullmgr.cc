@@ -1033,7 +1033,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Get resolution factor
   */
-  //	int	factor = visible_view.Get_Width()/320;
+  //	int	factor = visible_view.width()/320;
 
   /*------------------------------------------------------------------------
   Determine the dimensions of the text to be used for the dialog box.
@@ -1043,19 +1043,19 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
   const int lines = Format_Window_String(
-      buffer, TheScreen().visible_view().Get_Height(), width, height);
+      buffer, TheScreen().visible_view().height(), width, height);
 
   width = std::max(width, 180);
   width += 80;
   height += 80;
 
-  const int x = (TheScreen().visible_view().Get_Width() - width) / 2;
-  const int y = (TheScreen().visible_view().Get_Height() - height) / 2;
+  const int x = (TheScreen().visible_view().width() - width) / 2;
+  const int y = (TheScreen().visible_view().height() - height) / 2;
 
   /*------------------------------------------------------------------------
   Initialize
   ------------------------------------------------------------------------*/
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*------------------------------------------------------------------------
   Draw the dialog
@@ -1253,7 +1253,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   /*
   ** Get the resolution factor
   */
-  //	int factor = visible_view.Get_Width()/320;
+  //	int factor = visible_view.width()/320;
 
   /*------------------------------------------------------------------------
   Button Enumerations
@@ -1278,16 +1278,16 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   std::string buffer(buffer_const);
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
-  Format_Window_String(std::span(buffer),
-                       TheScreen().visible_view().Get_Height(), width, height);
+  Format_Window_String(std::span(buffer), TheScreen().visible_view().height(),
+                       width, height);
 
   const int text_width = width;
   width = std::max(width, 180);
   width += 80;
   height += 120;
 
-  const int x = (TheScreen().visible_view().Get_Width() - width) / 2;
-  const int y = (TheScreen().visible_view().Get_Height() - height) / 2;
+  const int x = (TheScreen().visible_view().width() - width) / 2;
+  const int y = (TheScreen().visible_view().height() - height) / 2;
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
@@ -1297,7 +1297,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   /*------------------------------------------------------------------------
   Initialize
   ------------------------------------------------------------------------*/
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*------------------------------------------------------------------------
   Create the list
@@ -1317,10 +1317,9 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   Dialog_Box(x, y, width, height);
   Draw_Caption(TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(
-      buffer.c_str(),
-      (TheScreen().visible_view().Get_Width() / 2) - (text_width / 2), y + 50,
-      GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
+  Fancy_Text_Print(buffer.c_str(),
+                   (TheScreen().visible_view().width() / 2) - (text_width / 2),
+                   y + 50, GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
 
   Commands->Draw_All();
   Show_Mouse();
@@ -1435,7 +1434,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   /*
   ** Get the resolution factor
   */
-  //	int factor 		= (visible_view.Get_Width() == 320) ? 1 : 2;
+  //	int factor 		= (visible_view.width() == 320) ? 1 : 2;
 
   /*------------------------------------------------------------------------
   Button Enumerations
@@ -1477,16 +1476,16 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   }
 
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
-  Format_Window_String(text_buffer, TheScreen().visible_view().Get_Height(),
-                       width, height);
+  Format_Window_String(text_buffer, TheScreen().visible_view().height(), width,
+                       height);
 
   int text_width = width;
   width = std::max(width, 180);
   width += 80;
   height += 120;
 
-  int x = (TheScreen().visible_view().Get_Width() - width) / 2;
-  int y = (TheScreen().visible_view().Get_Height() - height) / 2;
+  int x = (TheScreen().visible_view().width() - width) / 2;
+  int y = (TheScreen().visible_view().height() - height) / 2;
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
@@ -1496,7 +1495,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   /*------------------------------------------------------------------------
   Initialize
   ------------------------------------------------------------------------*/
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   Load_Title_Page(true);
 
   Input = KN_NONE;
@@ -1555,8 +1554,8 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
         Fancy_Text_Print(
             text_buffer,
-            (TheScreen().visible_view().Get_Width() / 2) - (text_width / 2),
-            y + 50, GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
+            (TheScreen().visible_view().width() / 2) - (text_width / 2), y + 50,
+            GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
 
         Commands->Draw_All();
       }
@@ -1588,17 +1587,16 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         port::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
 
         Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
-        Format_Window_String(text_buffer,
-                             TheScreen().visible_view().Get_Height(), width,
-                             height);
+        Format_Window_String(text_buffer, TheScreen().visible_view().height(),
+                             width, height);
 
         text_width = width;
         width = std::max(width, 180);
         width += 80;
         height += 120;
 
-        x = (TheScreen().visible_view().Get_Width() - width) / 2;
-        y = (TheScreen().visible_view().Get_Height() - height) / 2;
+        x = (TheScreen().visible_view().width() - width) / 2;
+        y = (TheScreen().visible_view().height() - height) / 2;
 
         static constexpr unsigned char kAnswerCommand[] = {'A', 'T', 'A', '\r'};
         SerialPort->Write_To_Serial_Port(

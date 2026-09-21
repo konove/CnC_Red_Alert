@@ -70,20 +70,20 @@ TEST(KeyFrameBoundsTest, RejectsSmallDestinationsAndInvalidOffsets) {
 class RejectedFrameBuffer : public GraphicBufferClass {
  public:
   explicit RejectedFrameBuffer(bool have_surface) {
-    PaletteSurface = have_surface ? &surface_ : nullptr;
-    RedrawTimer = 1;
+    palette_surface_ = have_surface ? &surface_ : nullptr;
+    redraw_timer_ = 1;
   }
   // The surface and timer are fakes; the base destructor must not release
   // them.
   ~RejectedFrameBuffer() {
-    PaletteSurface = nullptr;
-    RedrawTimer = 0;
+    palette_surface_ = nullptr;
+    redraw_timer_ = 0;
   }
   RejectedFrameBuffer(const RejectedFrameBuffer&) = delete;
   RejectedFrameBuffer& operator=(const RejectedFrameBuffer&) = delete;
   RejectedFrameBuffer(RejectedFrameBuffer&&) = delete;
   RejectedFrameBuffer& operator=(RejectedFrameBuffer&&) = delete;
-  [[nodiscard]] int PendingTimer() const { return RedrawTimer; }
+  [[nodiscard]] int PendingTimer() const { return redraw_timer_; }
 
  private:
   SDL_Surface surface_{};
@@ -92,26 +92,26 @@ class RejectedFrameBuffer : public GraphicBufferClass {
 TEST(GraphicBufferRenderTest, RejectsInvalidDimensionsBeforeSdlAccess) {
   RejectedFrameBuffer buffer(true);
   const std::array<uint8_t, 4> pixels{};
-  buffer.Render_Scaled_Frame(pixels, 0, 2);
-  buffer.Render_Scaled_Frame(pixels, 2, 0);
-  buffer.Render_Scaled_Frame(pixels, -1, 2);
-  buffer.Render_Scaled_Frame(pixels, 2, -1);
+  buffer.PresentScaledFrame(pixels, 0, 2);
+  buffer.PresentScaledFrame(pixels, 2, 0);
+  buffer.PresentScaledFrame(pixels, -1, 2);
+  buffer.PresentScaledFrame(pixels, 2, -1);
   EXPECT_EQ(buffer.PendingTimer(), 1);
 }
 
 TEST(GraphicBufferRenderTest, RejectsShortFramesAndDimensionOverflow) {
   RejectedFrameBuffer buffer(true);
   const std::array<uint8_t, 3> pixels{};
-  buffer.Render_Scaled_Frame(pixels, 2, 2);
-  buffer.Render_Scaled_Frame(pixels, std::numeric_limits<int>::max(),
-                             std::numeric_limits<int>::max());
+  buffer.PresentScaledFrame(pixels, 2, 2);
+  buffer.PresentScaledFrame(pixels, std::numeric_limits<int>::max(),
+                            std::numeric_limits<int>::max());
   EXPECT_EQ(buffer.PendingTimer(), 1);
 }
 
 TEST(GraphicBufferRenderTest, RejectsMissingDisplaySurfaceBeforeSdlAccess) {
   RejectedFrameBuffer buffer(false);
   const std::array<uint8_t, 4> pixels{};
-  buffer.Render_Scaled_Frame(pixels, 2, 2);
+  buffer.PresentScaledFrame(pixels, 2, 2);
   EXPECT_EQ(buffer.PendingTimer(), 1);
 }
 // Draws scaled frames through a software renderer onto a 2x2 target, so the
@@ -121,7 +121,9 @@ class ScaledFrameTest : public ::testing::Test {
   class Buffer : public GraphicBufferClass {
    public:
     // The base destructor frees the surface and the scaled-frame texture.
-    Buffer() { PaletteSurface = SDL_CreateRGBSurface(0, 2, 2, 8, 0, 0, 0, 0); }
+    Buffer() {
+      palette_surface_ = SDL_CreateRGBSurface(0, 2, 2, 8, 0, 0, 0, 0);
+    }
   };
 
   void SetUp() override {
@@ -162,8 +164,8 @@ class ScaledFrameTest : public ::testing::Test {
 
 TEST_F(ScaledFrameTest, ShowsTheFrameInTheCurrentPalette) {
   Buffer buffer;
-  buffer.Update_Palette(PaletteWith(1, 63, 0, 0));
-  buffer.Render_Scaled_Frame(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
+  buffer.UpdatePalette(PaletteWith(1, 63, 0, 0));
+  buffer.PresentScaledFrame(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
   EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{255, 0, 0}));
 }
 
@@ -171,11 +173,11 @@ TEST_F(ScaledFrameTest, ShowsTheFrameInTheCurrentPalette) {
 // map's pulsing hotspots) depends on a palette change converting them again.
 TEST_F(ScaledFrameTest, FollowsALaterPaletteChange) {
   Buffer buffer;
-  buffer.Update_Palette(PaletteWith(1, 63, 0, 0));
-  buffer.Render_Scaled_Frame(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
+  buffer.UpdatePalette(PaletteWith(1, 63, 0, 0));
+  buffer.PresentScaledFrame(std::array<uint8_t, 4>{1, 1, 1, 1}, 2, 2);
 
-  buffer.Update_Palette(PaletteWith(1, 0, 63, 0));
-  buffer.Update_Window_Surface(/*end_frame=*/true);
+  buffer.UpdatePalette(PaletteWith(1, 0, 63, 0));
+  buffer.Present(/*end_frame=*/true);
   EXPECT_EQ(ScreenColor(), (std::array<uint8_t, 3>{0, 255, 0}));
 }
 }  // namespace

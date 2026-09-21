@@ -272,7 +272,7 @@ void Debug_Key(unsigned input) {
           if (ttype.PrimaryWeapon != nullptr) {
             weapon = ttype.PrimaryWeapon->Range;
           }
-          Set_Logic_Page(TheScreen().visible_view());
+          SetLogicPage(TheScreen().visible_view());
           const COORDINATE center =
               TheWorld().current_object().at(0)->Center_Coord();
           const COORDINATE center2 =
@@ -291,7 +291,7 @@ void Debug_Key(unsigned input) {
                     y)) {
               TheMap().Coord_To_Pixel(
                   Coord_Move(center, r2, static_cast<uint16_t>(sight)), x1, y1);
-              LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, kWhite);
+              LogicPage->DrawLine(x, y + 8, x1, y1 + 8, kWhite);
             }
             if (TheMap().Coord_To_Pixel(
                     Coord_Move(center2, r1, static_cast<uint16_t>(weapon)), x,
@@ -299,7 +299,7 @@ void Debug_Key(unsigned input) {
               TheMap().Coord_To_Pixel(
                   Coord_Move(center2, r2, static_cast<uint16_t>(weapon)), x1,
                   y1);
-              LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, kRed);
+              LogicPage->DrawLine(x, y + 8, x1, y1 + 8, kRed);
             }
           }
         }

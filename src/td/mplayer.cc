@@ -132,7 +132,7 @@ void Show_Internet_Connection_Progress();
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 GameType Select_MPlayer_Game() {
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
   bool ipx_avail = false;
   /*........................................................................
   Dialog & button dimensions
@@ -219,7 +219,7 @@ GameType Select_MPlayer_Game() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   ............................ Create the list .............................
@@ -1229,7 +1229,7 @@ static void Garble_Message(std::span<char> buf) {
  *   07/05/1995 BRR : Created.                                             *
  *=========================================================================*/
 int Surrender_Dialog() {
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -1293,7 +1293,7 @@ int Surrender_Dialog() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   ......................... Create the button list .........................

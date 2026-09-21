@@ -112,7 +112,7 @@ TEST(LifetimeTest, DestroyingTheLogicPageClearsLogicPage) {
   {
     GraphicBufferClass buffer(4, 4, pixels);
     GraphicViewPortClass view(&buffer, 0, 0, 2, 2);
-    Set_Logic_Page(view);
+    SetLogicPage(view);
   }
   EXPECT_EQ(LogicPage, nullptr);
 }
@@ -120,12 +120,12 @@ TEST(LifetimeTest, DestroyingTheLogicPageClearsLogicPage) {
 TEST(LifetimeTest, DestroyingAnotherViewKeepsLogicPage) {
   std::vector<uint8_t> pixels(size_t{4} * 4);
   GraphicBufferClass buffer(4, 4, pixels);
-  Set_Logic_Page(buffer);
+  SetLogicPage(buffer);
   {
     const GraphicViewPortClass view(&buffer, 0, 0, 2, 2);
   }
   EXPECT_EQ(LogicPage, &buffer);
-  Set_Logic_Page(nullptr);
+  SetLogicPage(nullptr);
 }
 
 TEST(LifetimeTest, DestroyingTheWindowBufferClearsWindowBuffer) {

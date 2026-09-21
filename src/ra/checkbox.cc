@@ -69,10 +69,10 @@ bool CheckBoxClass::Draw_Me(bool forced) {
   if (ToggleClass::Draw_Me(forced)) {
     Hide_Mouse();
     Draw_Box(X, Y, Width, Height, BOXSTYLE_DOWN, false);
-    LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, Y + Height - 2, DKGREY);
+    LogicPage->FillRect(X + 1, Y + 1, X + Width - 2, Y + Height - 2, DKGREY);
     if (IsOn) {
-      LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, Y + Height - 2,
-                           kLtGreen);
+      LogicPage->FillRect(X + 1, Y + 1, X + Width - 2, Y + Height - 2,
+                          kLtGreen);
     }
     Show_Mouse();
     return true;

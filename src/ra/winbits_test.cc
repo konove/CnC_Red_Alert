@@ -37,7 +37,7 @@ class TestScreen {
   TestScreen()
       : pixels_(std::size_t{kWidth} * kHeight, 0),
         buffer_(kWidth, kHeight, pixels_),
-        previous_(Set_Logic_Page(&buffer_)) {
+        previous_(SetLogicPage(&buffer_)) {
     WindowList[0][kWindowX] = 0;
     WindowList[0][kWindowY] = 0;
     WindowList[0][kWindowWidth] = kWidth;
@@ -47,7 +47,7 @@ class TestScreen {
   TestScreen(const TestScreen&) = delete;
   TestScreen& operator=(const TestScreen&) = delete;
 
-  ~TestScreen() { Set_Logic_Page(previous_); }
+  ~TestScreen() { SetLogicPage(previous_); }
   TestScreen(TestScreen&&) = delete;
   TestScreen& operator=(TestScreen&&) = delete;
 

@@ -289,7 +289,7 @@ void TextButtonClass::Draw_Background() {
   **	Draw a border if selected style.
   */
   if (IsBlackBorder) {
-    LogicPage->Draw_Rect(X - 1, Y - 1, X + Width + 2, Y + Height + 2, kBlack);
+    LogicPage->DrawRect(X - 1, Y - 1, X + Width + 2, Y + Height + 2, kBlack);
   }
 
   /*

@@ -119,8 +119,8 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
 
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
-                           kCcGreenShadow);
+      LogicPage->FillRect(x, y, x + width - 1, y + LineHeight - 1,
+                          kCcGreenShadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;
@@ -137,7 +137,7 @@ void EListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
 }
 
 bool Expansion_Dialog() {
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
   const int option_width = 236 * factor;
   const int option_height = 162 * factor;
@@ -213,7 +213,7 @@ bool Expansion_Dialog() {
     }
   }
 
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   bool display = true;
   bool process = true;
   bool okval = true;
@@ -295,7 +295,7 @@ bool Expansion_Dialog() {
  * HISTORY: * 3/26/97 11:07AM ST : Created *
  *=============================================================================================*/
 bool Bonus_Dialog() {
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
   const int option_width = 236 * factor;
   const int option_height = 162 * factor;
@@ -367,7 +367,7 @@ bool Bonus_Dialog() {
     }
   }
 
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   bool display = true;
   bool process = true;
   bool okval = true;

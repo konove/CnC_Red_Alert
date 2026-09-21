@@ -106,7 +106,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   /*
   **	Always draw to the hidpage and then blit forward.
   */
-  GraphicViewPortClass* oldpage = Set_Logic_Page(TheScreen().hidden_view());
+  GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().hidden_view());
 
   /*
   **	Draw the background block.
@@ -162,7 +162,7 @@ void Dialog_Box(int x, int y, int w, int h) {
   TheScreen().hidden_view().Blit(TheScreen().visible_view(), x, y, x, y, w, h,
                                  false);
   TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), false);
-  Set_Logic_Page(oldpage);
+  SetLogicPage(oldpage);
 }
 
 // Draws the beveled edges shared by the button box styles: "Shadow" along the
@@ -173,17 +173,17 @@ static void Draw_Beveled_Box(const int left, const int top, const int right,
                              const int bottom, const bool filled,
                              const BoxStyleType& colors) {
   if (filled) {
-    LogicPage->Fill_Rect(left, top, right, bottom, colors.Filler);
+    LogicPage->FillRect(left, top, right, bottom, colors.Filler);
   }
 
-  LogicPage->Draw_Line(left, bottom, right, bottom, colors.Shadow);
-  LogicPage->Draw_Line(right, top, right, bottom, colors.Shadow);
+  LogicPage->DrawLine(left, bottom, right, bottom, colors.Shadow);
+  LogicPage->DrawLine(right, top, right, bottom, colors.Shadow);
 
-  LogicPage->Draw_Line(left, top, right, top, colors.Highlight);
-  LogicPage->Draw_Line(left, top, left, bottom, colors.Highlight);
+  LogicPage->DrawLine(left, top, right, top, colors.Highlight);
+  LogicPage->DrawLine(left, top, left, bottom, colors.Highlight);
 
-  LogicPage->Put_Pixel(left, bottom, colors.Corner);
-  LogicPage->Put_Pixel(right, top, colors.Corner);
+  LogicPage->PutPixel(left, bottom, colors.Corner);
+  LogicPage->PutPixel(right, top, colors.Corner);
 }
 
 // Draw_Box -- Displays a highlighted box.
@@ -204,18 +204,18 @@ void Draw_Box(const int x, const int y, const int w, const int h,
     // Flat outline drawn on the box edge itself.
     case BOXSTYLE_BOX:
       if (filled) {
-        LogicPage->Fill_Rect(x, y, right, bottom, kBlack);
+        LogicPage->FillRect(x, y, right, bottom, kBlack);
       }
-      LogicPage->Draw_Rect(x, y, right, bottom, scheme->Box);
+      LogicPage->DrawRect(x, y, right, bottom, scheme->Box);
       break;
 
     // Same outline, inset one pixel, which leaves a filled margin around the
     // frame of a dialog.
     case BOXSTYLE_BORDER:
       if (filled) {
-        LogicPage->Fill_Rect(x, y, right, bottom, kBlack);
+        LogicPage->FillRect(x, y, right, bottom, kBlack);
       }
-      LogicPage->Draw_Rect(x + 1, y + 1, right - 1, bottom - 1, scheme->Box);
+      LogicPage->DrawRect(x + 1, y + 1, right - 1, bottom - 1, scheme->Box);
       break;
 
     case BOXSTYLE_DOWN:
@@ -667,7 +667,7 @@ void Simple_Text_Print(const char* text, int x, int y,
         break;
     }
 
-    if (x < LogicPage->Get_Width() && y < LogicPage->Get_Height()) {
+    if (x < LogicPage->width() && y < LogicPage->height()) {
       LogicPage->Print(text, x, y, forecolor, back);
       //			LogicPage->Print(text, x, y, fore->Color, back);
     }
@@ -958,7 +958,7 @@ void Draw_Caption(const char* text, int x, int y, int w) {
                        GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_CENTER | kTpfText);
       const int length = String_Pixel_Width(text);
-      LogicPage->Draw_Line(
+      LogicPage->DrawLine(
           x + (w / 2) - (length / 2), y + FontHeight + FontYSpacing + 16,
           x + (w / 2) + (length / 2), y + FontHeight + FontYSpacing + 16,
           GadgetClass::Get_Color_Scheme()->Box);

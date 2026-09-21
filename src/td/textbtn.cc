@@ -93,11 +93,11 @@ TextButtonClass::TextButtonClass(unsigned id, const char* text,
     Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack, PrintFlags);
     if (w == -1) {
       Width = String_Pixel_Width(String) + 8;
-      //			if (SeenBuff.Get_Width() != 320) Width *= 2;
+      //			if (SeenBuff.width() != 320) Width *= 2;
     }
     if (h == -1) {
       Height = FontHeight + FontYSpacing + 2;
-      //			if (SeenBuff.Get_Height() != 200) Height *= 2;
+      //			if (SeenBuff.height() != 200) Height *= 2;
     }
   }
 }
@@ -164,11 +164,11 @@ TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
     Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack, PrintFlags);
     if (w == -1) {
       Width = String_Pixel_Width(String) + 8;
-      //			if (SeenBuff.Get_Width() != 320) Width *= 2;
+      //			if (SeenBuff.width() != 320) Width *= 2;
     }
     if (h == -1) {
       Height = FontHeight + FontYSpacing + 2;
-      //			if (SeenBuff.Get_Height() != 200) Height *= 2;
+      //			if (SeenBuff.height() != 200) Height *= 2;
     }
   }
 }
@@ -288,7 +288,7 @@ void TextButtonClass::Draw_Background() {
   **	Draw a border if selected style.
   */
   if (IsBlackBorder) {
-    LogicPage->Draw_Rect(X - 1, Y - 1, X + Width + 2, Y + Height + 2, kBlack);
+    LogicPage->DrawRect(X - 1, Y - 1, X + Width + 2, Y + Height + 2, kBlack);
   }
 
   /*

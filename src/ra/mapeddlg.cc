@@ -648,7 +648,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Initialize
     */
-    Set_Logic_Page(TheScreen().visible_view());
+    SetLogicPage(TheScreen().visible_view());
 
     if (scen_nump < 100) {
       absl::SNPrintF(scen_buf, sizeof(scen_buf), "%d",
@@ -1100,7 +1100,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Initialize
     */
-    Set_Logic_Page(TheScreen().visible_view());
+    SetLogicPage(TheScreen().visible_view());
 
     /*
     **	Set up the actual map area relative to the map's border coords
@@ -1157,19 +1157,19 @@ int MapEditClass::Load_Scenario() {
           **	Draw the map border
           */
           if (LogicPage->Lock()) {
-            LogicPage->Draw_Rect(kDBordX1, kDBordY1, kDBordX2, kDBordY2,
-                                 scheme->Shadow);
+            LogicPage->DrawRect(kDBordX1, kDBordY1, kDBordX2, kDBordY2,
+                                scheme->Shadow);
             //					for (index = D_BORD_X1; index <
             // D_BORD_X2; 						index +=
             // (320/ICON_PIXEL_W)) {
-            // LogicPage->Put_Pixel(index, D_BORD_Y1-1, scheme->Shadow);
-            // LogicPage->Put_Pixel(index, D_BORD_Y2+1, scheme->Shadow);
+            // LogicPage->PutPixel(index, D_BORD_Y1-1, scheme->Shadow);
+            // LogicPage->PutPixel(index, D_BORD_Y2+1, scheme->Shadow);
             //					}
             //					for (index = D_BORD_Y1; index <
             // D_BORD_Y2-8; 						index +=
             // (200/ICON_PIXEL_H)) {
-            // LogicPage->Put_Pixel(D_BORD_X1-1, index, scheme->Shadow);
-            // LogicPage->Put_Pixel(D_BORD_X2+1, index, scheme->Shadow);
+            // LogicPage->PutPixel(D_BORD_X1-1, index, scheme->Shadow);
+            // LogicPage->PutPixel(D_BORD_X2+1, index, scheme->Shadow);
             //					}
 
             /*
@@ -1258,8 +1258,8 @@ int MapEditClass::Load_Scenario() {
           /*
           **	Erase the map interior
           */
-          LogicPage->Fill_Rect(kDBordX1 + 1, kDBordY1 + 1, kDBordX2 - 1,
-                               kDBordY2 - 1, kBlack);
+          LogicPage->FillRect(kDBordX1 + 1, kDBordY1 + 1, kDBordX2 - 1,
+                              kDBordY2 - 1, kBlack);
 
           /*
           **	Draw Land map symbols (use color according to Ground[] array).
@@ -1268,39 +1268,39 @@ int MapEditClass::Load_Scenario() {
             occupier = (*this).at(cell).Cell_Occupier();
             if (occupier == nullptr) {
               color = GroundColor.at((*this).at(cell).Land_Type());
-              LogicPage->Put_Pixel(kDBordX1 + Cell_X(cell) + 1,
-                                   kDBordY1 + Cell_Y(cell) + 1,
-                                   static_cast<unsigned char>(color));
+              LogicPage->PutPixel(kDBordX1 + Cell_X(cell) + 1,
+                                  kDBordY1 + Cell_Y(cell) + 1,
+                                  static_cast<unsigned char>(color));
             }
           }
 
           /*
           **	Draw the actual map location
           */
-          LogicPage->Draw_Rect(map_x1, map_y1, map_x2, map_y2, kWhite);
+          LogicPage->DrawRect(map_x1, map_y1, map_x2, map_y2, kWhite);
           switch (grabbed) {
             case 1:
-              LogicPage->Draw_Line(map_x1, map_y1, map_x1 + 5, map_y1, kBlue);
-              LogicPage->Draw_Line(map_x1, map_y1, map_x1, map_y1 + 5, kBlue);
+              LogicPage->DrawLine(map_x1, map_y1, map_x1 + 5, map_y1, kBlue);
+              LogicPage->DrawLine(map_x1, map_y1, map_x1, map_y1 + 5, kBlue);
               break;
 
             case 2:
-              LogicPage->Draw_Line(map_x2, map_y1, map_x2 - 5, map_y1, kBlue);
-              LogicPage->Draw_Line(map_x2, map_y1, map_x2, map_y1 + 5, kBlue);
+              LogicPage->DrawLine(map_x2, map_y1, map_x2 - 5, map_y1, kBlue);
+              LogicPage->DrawLine(map_x2, map_y1, map_x2, map_y1 + 5, kBlue);
               break;
 
             case 3:
-              LogicPage->Draw_Line(map_x2, map_y2, map_x2 - 5, map_y2, kBlue);
-              LogicPage->Draw_Line(map_x2, map_y2, map_x2, map_y2 - 5, kBlue);
+              LogicPage->DrawLine(map_x2, map_y2, map_x2 - 5, map_y2, kBlue);
+              LogicPage->DrawLine(map_x2, map_y2, map_x2, map_y2 - 5, kBlue);
               break;
 
             case 4:
-              LogicPage->Draw_Line(map_x1, map_y2, map_x1 + 5, map_y2, kBlue);
-              LogicPage->Draw_Line(map_x1, map_y2, map_x1, map_y2 - 5, kBlue);
+              LogicPage->DrawLine(map_x1, map_y2, map_x1 + 5, map_y2, kBlue);
+              LogicPage->DrawLine(map_x1, map_y2, map_x1, map_y2 - 5, kBlue);
               break;
 
             case 5:
-              LogicPage->Draw_Rect(map_x1, map_y1, map_x2, map_y2, kBlue);
+              LogicPage->DrawRect(map_x1, map_y1, map_x2, map_y2, kBlue);
               break;
 
             default:
@@ -1323,16 +1323,16 @@ int MapEditClass::Load_Scenario() {
                                     ->RemapColor)
                             .Color;
               }
-              LogicPage->Put_Pixel(kDBordX1 + Cell_X(cell) + 1,
-                                   kDBordY1 + Cell_Y(cell) + 1,
-                                   static_cast<unsigned char>(color));
+              LogicPage->PutPixel(kDBordX1 + Cell_X(cell) + 1,
+                                  kDBordY1 + Cell_Y(cell) + 1,
+                                  static_cast<unsigned char>(color));
             }
           }
 
           /*
           **	Draw Home location
           */
-          LogicPage->Put_Pixel(
+          LogicPage->PutPixel(
               kDBordX1 +
                   Cell_X(base::At(TheScenario().Waypoint,
                                   ScenarioClass::kHomeWaypoint)) +
@@ -1346,7 +1346,7 @@ int MapEditClass::Load_Scenario() {
           /*
           **	Erase old coordinates
           */
-          //					LogicPage->Fill_Rect( D_DIALOG_X
+          //					LogicPage->FillRect( D_DIALOG_X
           //+ 7, 						D_DIALOG_Y +
           // D_DIALOG_H - D_OK_H - 22,
           // D_DIALOG_X + D_DIALOG_W - 7,
@@ -1752,7 +1752,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Initialize
     */
-    Set_Logic_Page(TheScreen().visible_view());
+    SetLogicPage(TheScreen().visible_view());
 
     ControlClass* commands = nullptr;  // the button list
 
@@ -2150,7 +2150,7 @@ int MapEditClass::Load_Scenario() {
     bool cancel = false;  // true = user cancels
     bool dotext = true;   // display the text.
     bool fetch = false;   // Fetch data from dialog into tracking structure.
-    // Set_Logic_Page(visible_view);
+    // SetLogicPage(visible_view);
     while (process) {
       /*
       **	Invoke game callback
@@ -2762,7 +2762,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Initialize
     */
-    Set_Logic_Page(TheScreen().visible_view());
+    SetLogicPage(TheScreen().visible_view());
 
     /*
     **	Fill in the list box

@@ -190,9 +190,8 @@ void Buffer_Draw_Stamp_Clip(GraphicViewPortClass* viewport,
   // Get pointer to position to render icon.
   GraphicViewPortClass* vp_dst = viewport;
   const base::ssize dst_area =
-      vp_dst->Get_XAdd() + vp_dst->Get_Width() + vp_dst->Get_Pitch();
-  auto dst_offset =
-      vp_dst->Get_Pixels().begin() + x_pixel + (y_pixel * dst_area);
+      vp_dst->x_add() + vp_dst->width() + vp_dst->pitch();
+  auto dst_offset = vp_dst->pixels().begin() + x_pixel + (y_pixel * dst_area);
 
   // Determine row modulo for advancing to next line.
   const base::ssize modulo = dst_area - iwidth;

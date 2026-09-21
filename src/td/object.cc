@@ -859,7 +859,7 @@ bool ObjectClass::Render(bool forced) {
               }
               cell = Adjacent_Cell(cell, index);
               if (TheMap().Coord_To_Pixel(Cell_Coord(cell), x, y)) {
-                LogicPage->Draw_Line(oldx, 8 + oldy, x, 8 + y, kBlack);
+                LogicPage->DrawLine(oldx, 8 + oldy, x, 8 + y, kBlack);
               }
               oldx = x;
               oldy = y;

@@ -259,12 +259,12 @@ bool Dial8Class::Draw_Me(bool forced) {
     /*
     **	Draw the hand & its shadow.
     */
-    LogicPage->Draw_Line(
+    LogicPage->DrawLine(
         FaceX + 1, FaceY + 1,
         base::At(base::At(FaceLine, static_cast<int>(Facing)), 0) + 1,
         base::At(base::At(FaceLine, static_cast<int>(Facing)), 1) + 1,
         kCcGreenShadow);
-    LogicPage->Draw_Line(
+    LogicPage->DrawLine(
         FaceX, FaceY, base::At(base::At(FaceLine, static_cast<int>(Facing)), 0),
         base::At(base::At(FaceLine, static_cast<int>(Facing)), 1),
         kCcLightGreen);

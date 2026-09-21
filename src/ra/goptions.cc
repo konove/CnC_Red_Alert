@@ -137,7 +137,7 @@ void GameOptionsClass::Process() {
     }
   }
 
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   **	Build the button list for all of the buttons for this dialog.
@@ -173,8 +173,8 @@ void GameOptionsClass::Process() {
     }
 
     if (index < 6) {
-      y = ((TheScreen().visible_view().Get_Height() - OptionHeight) / 2) +
-          ButtonY + ((OButtonHeight + 2) * index);
+      y = ((TheScreen().visible_view().height() - OptionHeight) / 2) + ButtonY +
+          ((OButtonHeight + 2) * index);
     } else {
       y = OptionY + ButtonResumeY;
     }
@@ -260,8 +260,8 @@ void GameOptionsClass::Process() {
   **	This cause a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to game button.
   */
-  (new ControlClass(kButtonResume, 0, 0, TheScreen().visible_view().Get_Width(),
-                    TheScreen().visible_view().Get_Height(),
+  (new ControlClass(kButtonResume, 0, 0, TheScreen().visible_view().width(),
+                    TheScreen().visible_view().height(),
                     GadgetClass::kLeftPress | GadgetClass::kRightPress))
       ->Add_Tail(*buttons);
 
@@ -590,8 +590,8 @@ void GameOptionsClass::Process() {
 void GameOptionsClass::Adjust_Variables_For_Resolution() {
   OptionWidth = (216 + 8) * 2;
   OptionHeight = 222;
-  OptionX = (TheScreen().visible_view().Get_Width() - OptionWidth) / 2;
-  OptionY = (TheScreen().visible_view().Get_Height() - OptionHeight) / 2;
+  OptionX = (TheScreen().visible_view().width() - OptionWidth) / 2;
+  OptionY = (TheScreen().visible_view().height() - OptionHeight) / 2;
   ButtonWidth = 260;
   OButtonHeight = 18;
   CaptionYPos = 10;

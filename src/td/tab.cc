@@ -111,17 +111,17 @@ void TabClass::Draw_It(bool complete) {
   **	Redraw the top bar imagery if flagged to do so or if the entire display
   *needs *	to be redrawn.
   */
-  const int width = TheScreen().visible_view().Get_Width();
+  const int width = TheScreen().visible_view().width();
   const int rightx = width - 1;
 
   if (complete || IsTabToRedraw) {
     if (LogicPage->Lock()) {
-      LogicPage->Fill_Rect(0, 0, rightx, Tab_Height - 2, kBlack);
+      LogicPage->FillRect(0, 0, rightx, Tab_Height - 2, kBlack);
       CC_Draw_Shape(TabShape, 0, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
       CC_Draw_Shape(TabShape, 0, width - Eva_Width, 0, WINDOW_MAIN,
                     SHAPE_NORMAL);
       Draw_Credits_Tab();
-      LogicPage->Draw_Line(0, Tab_Height - 1, rightx, Tab_Height - 1, kBlack);
+      LogicPage->DrawLine(0, Tab_Height - 1, rightx, Tab_Height - 1, kBlack);
 
       Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, Eva_Width / 2, 0, 11, kTBlack,
                        TPF_GREEN12_GRAD | TPF_CENTER | TPF_USE_GRAD_PAL);
@@ -180,10 +180,10 @@ void TabClass::Hilite_Tab(int /*tab*/) {
  *JLB : Handles new scrolling option. *
  *=============================================================================================*/
 void TabClass::AI(KeyNumType& input, int x, int y) {
-  if (y >= 0 && y < Tab_Height &&
-      x < TheScreen().visible_view().Get_Width() - 1 && x > 0) {
+  if (y >= 0 && y < Tab_Height && x < TheScreen().visible_view().width() - 1 &&
+      x > 0) {
     bool ok = false;
-    const int width = TheScreen().visible_view().Get_Width();
+    const int width = TheScreen().visible_view().width();
 
     /*
     **	If the mouse is at the top of the screen, then the tab bars only work
@@ -251,7 +251,7 @@ void TabClass::Set_Active(int select) {
 }
 
 void TabClass::One_Time() {
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
   Eva_Width = 80 * factor;
   Tab_Height = 8 * factor;
 

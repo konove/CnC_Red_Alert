@@ -263,7 +263,7 @@ void VQA_Test(char* filename) {
   // Get the draw buffer.
   //
   draw_buffer_ptr->Lock();
-  draw_surface_ptr = (char*)draw_buffer_ptr->Get_Offset();
+  draw_surface_ptr = (char*)draw_buffer_ptr->offset();
   draw_buffer_ptr->Unlock();
 
   //
@@ -500,13 +500,13 @@ void Interpolate_2X_Scale(GraphicBufferClass* source,
   /*
   ** Lock video surfaces if requred
   */
-  if (source->Get_IsDirectDraw()) {
+  if (source->NeedsLock()) {
     if (!source->Lock()) {
       return;
     }
     source_locked = TRUE;
   }
-  if (dest->Get_IsDirectDraw()) {
+  if (dest->NeedsLock()) {
     if (!dest->Lock()) {
       if (source_locked) {
         source->Unlock();
@@ -519,19 +519,18 @@ void Interpolate_2X_Scale(GraphicBufferClass* source,
   //
   // Get pointers to the source and destination buffers.
   //
-  src_ptr = (unsigned char*)source->Get_Offset();
-  dest_ptr = (unsigned char*)dest->Get_Offset();
-  end_of_source = src_ptr + (source->Get_Width() * source->Get_Height());
+  src_ptr = (unsigned char*)source->offset();
+  dest_ptr = (unsigned char*)dest->offset();
+  end_of_source = src_ptr + (source->width() * source->height());
 
   //
   // Get width of source and dest buffers.
   //
-  src_width = source->Get_Width();
-  dest_width = 2 * (dest->Get_Width() + dest->Get_XAdd() + dest->Get_Pitch());
+  src_width = source->width();
+  dest_width = 2 * (dest->width() + dest->x_add() + dest->pitch());
   last_dest_ptr = dest_ptr;
 
-  Asm_Interpolate(src_ptr, dest_ptr, source->Get_Height(), src_width,
-                  dest_width);
+  Asm_Interpolate(src_ptr, dest_ptr, source->height(), src_width, dest_width);
 
   if (source_locked) {
     source->Unlock();

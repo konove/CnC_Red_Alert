@@ -74,7 +74,7 @@ bool ConfirmationClass::Process(int text) { return Process(Text_String(text)); }
  *none * HISTORY:    12/31/1994 MML : Created. *
  *=============================================================================================*/
 bool ConfirmationClass::Process(const char* string) {
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
   constexpr int kNumOfButtons = 2;
 
@@ -97,7 +97,7 @@ bool ConfirmationClass::Process(const char* string) {
   const int x = ((320 * factor) - width) / 2;
   const int y = ((200 * factor) - height) / 2;
 
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   **	Create Buttons.  Button coords are in pixels, but are window-relative.
@@ -134,9 +134,8 @@ bool ConfirmationClass::Process(const char* string) {
   **	This causes a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to options dialog.
   */
-  ControlClass background(kButtonNo, 0, 0,
-                          TheScreen().visible_view().Get_Width(),
-                          TheScreen().visible_view().Get_Height(),
+  ControlClass background(kButtonNo, 0, 0, TheScreen().visible_view().width(),
+                          TheScreen().visible_view().height(),
                           GadgetClass::kLeftPress | GadgetClass::kRightPress);
   background.Add_Tail(yesbtn);
 

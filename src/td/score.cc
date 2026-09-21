@@ -334,10 +334,10 @@ void ScoreTimeClass::Update() {
       Stage = 0;
     }
     GraphicViewPortClass* oldpage = LogicPage;
-    Set_Logic_Page(PseudoSeenBuff);
+    SetLogicPage(PseudoSeenBuff);
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, {},
                   {});
-    Set_Logic_Page(oldpage);
+    SetLogicPage(oldpage);
   }
 }
 
@@ -359,7 +359,7 @@ void ScoreCredsClass::Update() {
       Stage = 0;
     }
     GraphicViewPortClass* oldpage = LogicPage;
-    Set_Logic_Page(PseudoSeenBuff);
+    SetLogicPage(PseudoSeenBuff);
     if (Stage < 22) {
       TheAudio().Play(Clock1, 255, TheOptions().Normalize_Sound(70));
     } else {
@@ -369,7 +369,7 @@ void ScoreCredsClass::Update() {
     }
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, {},
                   {});
-    Set_Logic_Page(oldpage);
+    SetLogicPage(oldpage);
   }
 }
 
@@ -560,14 +560,14 @@ void ScoreScaleClass::Update() {
     }
     if (Stage) {
       Set_Font_Palette(Palette);
-      TextPrintBuffer->Fill_Rect(0, 0, 14, 14, kTBlack);
+      TextPrintBuffer->FillRect(0, 0, 14, 14, kTBlack);
       TextPrintBuffer->Print(Text(), 0, 0, kTBlack, kTBlack);
       TextPrintBuffer->Scale(TheScreen().hidden_view(), 0, 0,
                              base::At(_destx, Stage) * 2, YPos * 2, 10, 10,
                              base::At(_destw, Stage) * 2,
                              base::At(_destw, Stage) * 2, true);
 
-      // SysMemPage.Fill_Rect(0,0, 7,7, TBLACK);
+      // SysMemPage.FillRect(0,0, 7,7, TBLACK);
       // SysMemPage.Print((char *)DataPtr, 0,0,   TBLACK, TBLACK);
       // SysMemPage.Scale(*PseudoSeenBuff, 0,0, _destx[Stage], YPos, 5,5,
       // _destw[Stage], _destw[Stage], true);
@@ -706,8 +706,8 @@ void ScoreClass::Presentation() {
 
   PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
   TextPrintBuffer =
-      new GraphicBufferClass(TheScreen().visible_view().Get_Width(),
-                             TheScreen().visible_view().Get_Height(), {});
+      new GraphicBufferClass(TheScreen().visible_view().width(),
+                             TheScreen().visible_view().height(), {});
   TextPrintBuffer->Clear();
   BlitList.Clear();
 
@@ -723,7 +723,7 @@ void ScoreClass::Presentation() {
   TheScreen().hidden_page().Clear();
   Set_Palette(ThePalettes().black_palette());
 
-  Set_Logic_Page(TheScreen().sys_mem_page());
+  SetLogicPage(TheScreen().sys_mem_page());
 
   const auto country4 = MixArchive::RetrieveData("COUNTRY4.AUD");
   const auto sfx4 = MixArchive::RetrieveData("SFX4.AUD");
@@ -854,7 +854,7 @@ void ScoreClass::Presentation() {
               1);
   }
 
-  Set_Logic_Page(PseudoSeenBuff);
+  SetLogicPage(PseudoSeenBuff);
 
 #ifdef FRENCH
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TIME, 200, 3, greenpal));
@@ -907,7 +907,7 @@ void ScoreClass::Presentation() {
   /*
   ** Show stats on # of units killed
   */
-  Set_Logic_Page(*PseudoSeenBuff);
+  SetLogicPage(*PseudoSeenBuff);
   TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_CASU, base::At(_casuax, house),
                                    base::At(_casuay, house), redpal));
@@ -930,7 +930,7 @@ void ScoreClass::Presentation() {
     Do_GDI_Graph(yellowptr, redptr, GKilled + CKilled, NKilled, 88);
   }
 
-  Set_Logic_Page(*PseudoSeenBuff);
+  SetLogicPage(*PseudoSeenBuff);
 
   /*
   ** Print out stats on buildings destroyed
@@ -1034,7 +1034,7 @@ void ScoreClass::Presentation() {
   /*
   ** Now display the hall of fame
   */
-  Set_Logic_Page(*PseudoSeenBuff);
+  SetLogicPage(*PseudoSeenBuff);
 
   for (int j = 0; j < NUMFAMENAMES; j++) {
     Alloc_Object(new ScorePrintClass(base::At(hallfame, j).name, HALLFAME_X,
@@ -1110,7 +1110,7 @@ void ScoreClass::Presentation() {
   FontXSpacing = oldfontxspacing;
   ControlQ = false;
 
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   delete PseudoSeenBuff;
   PseudoSeenBuff = nullptr;
@@ -1236,7 +1236,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
   ** Print the # of buildings on the hidpage so we only need to do it once
   */
   PseudoSeenBuff->Blit(TheScreen().sys_mem_page());
-  Set_Logic_Page(TheScreen().sys_mem_page());
+  SetLogicPage(TheScreen().sys_mem_page());
   Call_Back_Delay(30);
   BlitList.Add(2 * (BUILDING_X + 8), 2 * BUILDING_Y, 2 * (BUILDING_X + 8),
                2 * BUILDING_Y, 5 * 12, 12);
@@ -1382,10 +1382,10 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   }
 
   // Draw the white-flash shape on the hidpage
-  Set_Logic_Page(TheScreen().sys_mem_page());
-  TheScreen().sys_mem_page().Fill_Rect(0, 0, 124, 9, kTBlack);
+  SetLogicPage(TheScreen().sys_mem_page());
+  TheScreen().sys_mem_page().FillRect(0, 0, 124, 9, kTBlack);
   CC_Draw_Shape(redptr, 120, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
-  Set_Logic_Page(PseudoSeenBuff);
+  SetLogicPage(PseudoSeenBuff);
 
   BlitList.Add(594, 2 * (ypos + 2), 594, 2 * (ypos + 2), 5 * 12, 12);
 
@@ -1697,12 +1697,12 @@ void ScoreClass::Count_Up_Print(const char* str, int percent, int max, int xpos,
   const int width = static_cast<int>(std::string_view(destbuf).size()) * 7;
 
   //	HidPage.Blit(HidPage, xpos, ypos, 0, 0, width, 8);
-  //	Set_Logic_Page(HidPage);
+  //	SetLogicPage(HidPage);
   //	LogicPage->Print(	destbuf, 0, 0, WHITE, TBLACK);
   //	HidPage.Blit(SeenBuff, 0, 0, xpos, ypos, width, 8);
 
-  TextPrintBuffer->Fill_Rect(xpos * 2, ypos * 2, (xpos + width) * 2,
-                             (ypos + 7) * 2, kBlack);
+  TextPrintBuffer->FillRect(xpos * 2, ypos * 2, (xpos + width) * 2,
+                            (ypos + 7) * 2, kBlack);
   TextPrintBuffer->Print(destbuf, xpos * 2, ypos * 2, kWhite, kTBlack);
 
   // TextPrintBuffer->Blit(*TextPrintBuffer, xpos * 2, ypos * 2,
@@ -1779,13 +1779,13 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
 
           const int xposindex6 = xpos + (index * 6);
 
-          PseudoSeenBuff->Fill_Rect(xposindex6, ypos, xposindex6 + 6, ypos + 6,
-                                    kTBlack);
-          TheScreen().sys_mem_page().Fill_Rect(xposindex6, ypos, xposindex6 + 6,
-                                               ypos + 6, kTBlack);
-          TextPrintBuffer->Fill_Rect(xposindex6 * 2, ypos * 2,
-                                     (xposindex6 + 6) * 2, (ypos + 6) * 2,
-                                     kBlack);
+          PseudoSeenBuff->FillRect(xposindex6, ypos, xposindex6 + 6, ypos + 6,
+                                   kTBlack);
+          TheScreen().sys_mem_page().FillRect(xposindex6, ypos, xposindex6 + 6,
+                                              ypos + 6, kTBlack);
+          TextPrintBuffer->FillRect(xposindex6 * 2, ypos * 2,
+                                    (xposindex6 + 6) * 2, (ypos + 6) * 2,
+                                    kBlack);
         }
 
       } else if (key != KA_RETURN) {  // else if (key != KN_RETURN &&
@@ -1796,14 +1796,14 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
         }
         // if (ascii >='A' && ascii<='Z' || ascii == ' ') {
         if ((ascii >= '!' && ascii <= KA_TILDA) || ascii == ' ') {
-          PseudoSeenBuff->Fill_Rect(xpos + (index * 6), ypos,
-                                    xpos + (index * 6) + 6, ypos + 5, kTBlack);
-          TheScreen().sys_mem_page().Fill_Rect(xpos + (index * 6), ypos,
-                                               xpos + (index * 6) + 6, ypos + 5,
-                                               kTBlack);
-          TextPrintBuffer->Fill_Rect(2 * (xpos + (index * 6)), ypos * 2,
-                                     2 * (xpos + (index * 6) + 6),
-                                     2 * (ypos + 6), kBlack);
+          PseudoSeenBuff->FillRect(xpos + (index * 6), ypos,
+                                   xpos + (index * 6) + 6, ypos + 5, kTBlack);
+          TheScreen().sys_mem_page().FillRect(xpos + (index * 6), ypos,
+                                              xpos + (index * 6) + 6, ypos + 5,
+                                              kTBlack);
+          TextPrintBuffer->FillRect(2 * (xpos + (index * 6)), ypos * 2,
+                                    2 * (xpos + (index * 6) + 6),
+                                    2 * (ypos + 6), kBlack);
           base::At(str, base::ToSize(index)) = static_cast<char>(ascii);
           base::At(str, base::ToSize(index + 1)) = 0;
 
@@ -1836,21 +1836,21 @@ void Animate_Cursor(int pos, int ypos) {
   // If they moved the cursor, erase old one and force state=0, to make green
   // draw right away
   if (pos != _lastpos) {
-    PseudoSeenBuff->Draw_Line(HALLFAME_X + (_lastpos * 6), ypos,
-                              HALLFAME_X + (_lastpos * 6) + 5, ypos, kTBlack);
-    TextPrintBuffer->Fill_Rect(2 * (HALLFAME_X + (_lastpos * 6)), 2 * ypos,
-                               2 * (HALLFAME_X + (_lastpos * 6) + 5),
-                               (2 * ypos) + 1, kBlack);
+    PseudoSeenBuff->DrawLine(HALLFAME_X + (_lastpos * 6), ypos,
+                             HALLFAME_X + (_lastpos * 6) + 5, ypos, kTBlack);
+    TextPrintBuffer->FillRect(2 * (HALLFAME_X + (_lastpos * 6)), 2 * ypos,
+                              2 * (HALLFAME_X + (_lastpos * 6) + 5),
+                              (2 * ypos) + 1, kBlack);
     _lastpos = pos;
     _state = false;
   }
 
-  PseudoSeenBuff->Draw_Line(HALLFAME_X + (pos * 6), ypos,
-                            HALLFAME_X + (pos * 6) + 5, ypos,
-                            _state ? kLtBlue : kTBlack);
-  TextPrintBuffer->Fill_Rect(2 * (HALLFAME_X + (pos * 6)), 2 * ypos,
-                             2 * (HALLFAME_X + (pos * 6) + 5), (2 * ypos) + 1,
-                             _state ? kLtBlue : kBlack);
+  PseudoSeenBuff->DrawLine(HALLFAME_X + (pos * 6), ypos,
+                           HALLFAME_X + (pos * 6) + 5, ypos,
+                           _state ? kLtBlue : kTBlack);
+  TextPrintBuffer->FillRect(2 * (HALLFAME_X + (pos * 6)), 2 * ypos,
+                            2 * (HALLFAME_X + (pos * 6) + 5), (2 * ypos) + 1,
+                            _state ? kLtBlue : kBlack);
 
   /*
   ** Toggle the color of the cursor, green or black, if it's time to do so.
@@ -1885,7 +1885,7 @@ void Draw_InfantryMen() {
   */
   TheScreen().sys_mem_page().Blit(TheScreen().sys_mem_page(), BARGRAPH_X,
                                   CASUALTY_Y, 0, 0, 320 - BARGRAPH_X, 34);
-  Set_Logic_Page(TheScreen().sys_mem_page());
+  SetLogicPage(TheScreen().sys_mem_page());
 
   /*
   ** Then draw all the infantrymen on the clean SysMemPage
@@ -1996,11 +1996,11 @@ void New_Infantry_Anim(int index, int anim) {
  *=========================================================================*/
 void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
   if (gkilled) {
-    LogicPage->Fill_Rect(0, 0 + 4, 0 + std::min(i, gkilled), 0 + 5, kLtCyan);
-    LogicPage->Draw_Line(0 + 1, 0 + 6, 0 + std::min(i, gkilled) + 1, 0 + 6,
-                         kTBlack);
-    LogicPage->Draw_Line(0 + std::min(i, gkilled) + 1, 0 + 5,
-                         0 + std::min(i, gkilled) + 1, 0 + 5, kTBlack);
+    LogicPage->FillRect(0, 0 + 4, 0 + std::min(i, gkilled), 0 + 5, kLtCyan);
+    LogicPage->DrawLine(0 + 1, 0 + 6, 0 + std::min(i, gkilled) + 1, 0 + 6,
+                        kTBlack);
+    LogicPage->DrawLine(0 + std::min(i, gkilled) + 1, 0 + 5,
+                        0 + std::min(i, gkilled) + 1, 0 + 5, kTBlack);
     if (i <= gkilled) {
       const int anim = base::At(InfantryMan, i / 11).anim;
       if (anim != -1 && anim < static_cast<int>(DO_GUN_DEATH)) {
@@ -2016,11 +2016,11 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
     }
   }
   if (nkilled) {
-    LogicPage->Fill_Rect(0, 0 + 16, 0 + std::min(i, nkilled), 0 + 17, kRed);
-    LogicPage->Draw_Line(0 + 1, 0 + 18, 0 + std::min(i, nkilled) + 1, 0 + 18,
-                         kTBlack);
-    LogicPage->Draw_Line(0 + std::min(i, nkilled) + 1, 0 + 17,
-                         0 + std::min(i, nkilled) + 1, 0 + 17, kTBlack);
+    LogicPage->FillRect(0, 0 + 16, 0 + std::min(i, nkilled), 0 + 17, kRed);
+    LogicPage->DrawLine(0 + 1, 0 + 18, 0 + std::min(i, nkilled) + 1, 0 + 18,
+                        kTBlack);
+    LogicPage->DrawLine(0 + std::min(i, nkilled) + 1, 0 + 17,
+                        0 + std::min(i, nkilled) + 1, 0 + 17, kTBlack);
     if (i <= nkilled) {
       const int anim =
           base::At(InfantryMan, (NUMINFANTRYMEN / 3) + (i / 11)).anim;
@@ -2039,11 +2039,11 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
   }
 
   if (ckilled) {
-    LogicPage->Fill_Rect(0, 0 + 28, 0 + std::min(i, ckilled), 0 + 29, kRed);
-    LogicPage->Draw_Line(0 + 1, 0 + 30, 0 + std::min(i, ckilled) + 1, 0 + 30,
-                         kTBlack);
-    LogicPage->Draw_Line(0 + std::min(i, ckilled) + 1, 0 + 29,
-                         0 + std::min(i, ckilled) + 1, 0 + 29, kTBlack);
+    LogicPage->FillRect(0, 0 + 28, 0 + std::min(i, ckilled), 0 + 29, kRed);
+    LogicPage->DrawLine(0 + 1, 0 + 30, 0 + std::min(i, ckilled) + 1, 0 + 30,
+                        kTBlack);
+    LogicPage->DrawLine(0 + std::min(i, ckilled) + 1, 0 + 29,
+                        0 + std::min(i, ckilled) + 1, 0 + 29, kTBlack);
     if (i <= ckilled) {
       const int anim =
           base::At(InfantryMan, (NUMINFANTRYMEN * 2 / 3) + (i / 11)).anim;
@@ -2184,8 +2184,8 @@ void Multi_Score_Presentation() {
 
   PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
   TextPrintBuffer =
-      new GraphicBufferClass(TheScreen().visible_view().Get_Width(),
-                             TheScreen().visible_view().Get_Height(), {});
+      new GraphicBufferClass(TheScreen().visible_view().width(),
+                             TheScreen().visible_view().height(), {});
   BlitList.Clear();
 
   TheScreen().sys_mem_page().Clear();
@@ -2220,7 +2220,7 @@ void Multi_Score_Presentation() {
       Set_Font(TheAssets().font(FontType::kScore));
   Call_Back();
 
-  Set_Logic_Page(*PseudoSeenBuff);
+  SetLogicPage(*PseudoSeenBuff);
 
   /*
   ** Move all the scores over a notch if there's more games than can be
@@ -2283,7 +2283,7 @@ void Multi_Score_Presentation() {
   TheScreen().visible_page().Clear();
   Set_Palette(ThePalettes().game_palette());
 
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   delete PseudoSeenBuff;
   PseudoSeenBuff = nullptr;

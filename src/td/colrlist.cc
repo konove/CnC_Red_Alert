@@ -258,8 +258,8 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     **	BOX: Draw a box around the item in the current select color
     */
     case SELECT_BOX:
-      LogicPage->Draw_Rect(x, y, x + width - 2, y + LineHeight - 2,
-                           static_cast<unsigned char>(color));
+      LogicPage->DrawRect(x, y, x + width - 2, y + LineHeight - 2,
+                          static_cast<unsigned char>(color));
       Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors.at(index), kTBlack,
                               TextFlags, width, Tabs);
       break;
@@ -269,14 +269,14 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     */
     case SELECT_BAR:
       if (base::Any(TextFlags & TPF_6PT_GRAD)) {
-        LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
-                             static_cast<unsigned char>(SelectColor));
+        LogicPage->FillRect(x, y, x + width - 1, y + LineHeight - 1,
+                            static_cast<unsigned char>(SelectColor));
         Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors.at(index),
                                 kTBlack, TextFlags | TPF_BRIGHT_COLOR, width,
                                 Tabs);
       } else {
-        LogicPage->Fill_Rect(x, y, x + width - 2, y + LineHeight - 2,
-                             static_cast<unsigned char>(SelectColor));
+        LogicPage->FillRect(x, y, x + width - 2, y + LineHeight - 2,
+                            static_cast<unsigned char>(SelectColor));
         Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors.at(index),
                                 kTBlack, TextFlags, width, Tabs);
       }
@@ -287,15 +287,15 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     */
     case SELECT_INVERT:
       if (base::Any(TextFlags & TPF_6PT_GRAD)) {
-        LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
-                             static_cast<unsigned char>(Colors.at(index)));
+        LogicPage->FillRect(x, y, x + width - 1, y + LineHeight - 1,
+                            static_cast<unsigned char>(Colors.at(index)));
         // Black text on the transparent color; the names only look swapped.
         // NOLINTNEXTLINE(readability-suspicious-call-argument)
         Conquer_Clip_Text_Print(Get_Item(index), x, y, kBlack, kTBlack,
                                 TextFlags, width, Tabs);
       } else {
-        LogicPage->Fill_Rect(x, y, x + width - 2, y + LineHeight - 2,
-                             static_cast<unsigned char>(Colors.at(index)));
+        LogicPage->FillRect(x, y, x + width - 2, y + LineHeight - 2,
+                            static_cast<unsigned char>(Colors.at(index)));
         Conquer_Clip_Text_Print(Get_Item(index), x, y, kLtGrey, kTBlack,
                                 TextFlags, width, Tabs);
       }

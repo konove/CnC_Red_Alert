@@ -309,7 +309,7 @@ int MapEditClass::Select_Team(const char* caption) {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   ........................... Fill in team names ...........................
@@ -319,7 +319,7 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     ................... Generate string for this team .....................
     */
-    // teamtext[i] = (char *)HidPage.Get_Graphic_Buffer()->Get_Buffer() +
+    // teamtext[i] = (char *)HidPage.graphic_buffer()->Get_Buffer() +
     // TEAMTXT_LEN * i;
     constexpr int kTeamNameSize = 255;
     base::At(teamtext, i) = new char[kTeamNameSize];
@@ -915,7 +915,7 @@ int MapEditClass::Edit_Team() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   ........................... Copy team's state ............................
@@ -1678,7 +1678,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Draw to SeenBuff.
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   **	Make sure 'house' is valid.
@@ -1835,8 +1835,8 @@ int MapEditClass::Team_Members(HousesType house) {
           **	Clear out the previously printed name of the item.
           */
           Hide_Mouse();
-          LogicPage->Fill_Rect(kDialogX + 8, msg_y, kDialogX + kDialogW - 9,
-                               msg_y + kTxt6H, kBlack);
+          LogicPage->FillRect(kDialogX + 8, msg_y, kDialogX + kDialogW - 9,
+                              msg_y + kTxt6H, kBlack);
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
             Fancy_Text_Print(

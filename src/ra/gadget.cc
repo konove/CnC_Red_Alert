@@ -480,10 +480,10 @@ KeyNumType GadgetClass::Input() {
          (TheDebugState().developer_mode() || TheDebugState().playtest())) &&
         (!TheDebugState().motion_capture())) {
       GraphicBufferClass temp_page(
-          TheScreen().visible_view().Get_Width(),
-          TheScreen().visible_view().Get_Height(), {},
-          static_cast<int32_t>(TheScreen().visible_view().Get_Width()) *
-              TheScreen().visible_view().Get_Height());
+          TheScreen().visible_view().width(),
+          TheScreen().visible_view().height(), {},
+          static_cast<int32_t>(TheScreen().visible_view().width()) *
+              TheScreen().visible_view().height());
       DiskFile file;
       char filename[30];
 

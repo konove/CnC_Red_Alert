@@ -1413,7 +1413,7 @@ void MapEditClass::Draw_It(bool forced) {
   //
   // Erase scrags at top of screen
   //
-  LogicPage->Fill_Rect(0, 0, 640, 16, kBlack);
+  LogicPage->FillRect(0, 0, 640, 16, kBlack);
 
   /*
   **	Display the total value of all Tiberium on the map.

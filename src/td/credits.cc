@@ -100,7 +100,7 @@ CreditClass::CreditClass() = default;
 void CreditClass::Graphic_Logic(bool forced) {
   const int scale =
       static_cast<int>(base::Bit<uint32_t>(Get_Resolution_Factor()));
-  const int xx = TheScreen().visible_view().Get_Width() - (120 * scale);
+  const int xx = TheScreen().visible_view().width() - (120 * scale);
   if (forced || IsToRedraw) {
     /*
     **	Play a sound effect when the money display changes, but only if a sound
@@ -117,7 +117,7 @@ void CreditClass::Graphic_Logic(bool forced) {
     /*
     **	Display the new current value.
     */
-    // LogicPage->Fill_Rect(xx-(20 << factor), 1 << factor, xx+(20 << factor), 6
+    // LogicPage->FillRect(xx-(20 << factor), 1 << factor, xx+(20 << factor), 6
     // << factor, LTGREY);
     TabClass::Draw_Credits_Tab();
     Fancy_Text_Print("%ld", xx, 0, 11, kTBlack,

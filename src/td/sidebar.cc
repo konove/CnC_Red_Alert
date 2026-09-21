@@ -225,12 +225,12 @@ void SidebarClass::One_Time() {
   ** sidebar.  They are now variables because we need to change them for
   ** variable resolutions.
   */
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
   SideBarWidth = kSidebarwidth * factor;
-  SideX = TheScreen().visible_view().Get_Width() - SideBarWidth;
+  SideX = TheScreen().visible_view().width() - SideBarWidth;
   SideY = TheMap().RadY + TheMap().RadHeight + (factor - 1);
-  SideWidth = TheScreen().visible_view().Get_Width() - SideX;
-  SideHeight = TheScreen().visible_view().Get_Height() - SideY;
+  SideWidth = TheScreen().visible_view().width() - SideX;
+  SideHeight = TheScreen().visible_view().height() - SideY;
   MaxVisible = 4;
   ButtonHeight = 9 * factor;
   TopHeight = ButtonHeight + (4 * factor);
@@ -733,8 +733,8 @@ void SidebarClass::Draw_It(bool complete) {
       // CC_Draw_Shape(SidebarShape1, (int)complete, SideX, 158, WINDOW_MAIN,
       // SHAPE_WIN_REL); CC_Draw_Shape(SidebarShape2, (int)complete, SideX,
       // 158+118, WINDOW_MAIN, SHAPE_WIN_REL);
-      LogicPage->Draw_Line(SideX, 157,
-                           TheScreen().visible_view().Get_Width() - 1, 157, 0);
+      LogicPage->DrawLine(SideX, 157, TheScreen().visible_view().width() - 1,
+                          157, 0);
       CC_Draw_Shape(SidebarShape1, 0, SideX, 158, WINDOW_MAIN, SHAPE_WIN_REL);
       CC_Draw_Shape(SidebarShape2, 0, SideX, 158 + 118, WINDOW_MAIN,
                     SHAPE_WIN_REL);
@@ -744,7 +744,7 @@ void SidebarClass::Draw_It(bool complete) {
       // Zoom.Draw_Me(true);
       //	} else {
       //		if (IsToRedraw || complete) {
-      //			LogicPage->Fill_Rect(TacPixelX +
+      //			LogicPage->FillRect(TacPixelX +
       // Lepton_To_Pixel(TacLeptonWidth), SIDE_Y, 319, SIDE_Y+TOP_HEIGHT,
       // BLACK);
       //		}
@@ -955,8 +955,8 @@ void SidebarClass::Recalc() {
 bool SidebarClass::Activate(int control) {
   const bool old = IsSidebarActive;
 
-  const int sidex = TheScreen().visible_view().Get_Width() - SideBarWidth;
-  const int sidewidth = TheScreen().visible_view().Get_Width() - sidex;
+  const int sidex = TheScreen().visible_view().width() - SideBarWidth;
+  const int sidewidth = TheScreen().visible_view().width() - sidex;
 
   if (TheSession().playback_game()) {
     return old;
@@ -991,7 +991,7 @@ bool SidebarClass::Activate(int control) {
     */
     if (IsSidebarActive /*&& X*/) {
       Set_View_Dimensions(0, TheMap().Get_Tab_Height(),
-                          TheScreen().visible_view().Get_Width() - sidewidth);
+                          TheScreen().visible_view().width() - sidewidth);
       IsSidebarToRedraw = true;
       Help_Text(TXT_NONE);
       Repair.Zap();

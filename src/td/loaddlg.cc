@@ -140,13 +140,11 @@ bool LoadOptionsClass::Process() {
   /*
   **	Dialog & button dimensions
   */
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
   const int d_dialog_w = 250 * factor;
   const int d_dialog_h = 156 * factor;
-  const int d_dialog_x =
-      (TheScreen().visible_view().Get_Width() - d_dialog_w) / 2;
-  const int d_dialog_y =
-      (TheScreen().visible_view().Get_Height() - d_dialog_h) / 2;
+  const int d_dialog_x = (TheScreen().visible_view().width() - d_dialog_w) / 2;
+  const int d_dialog_y = (TheScreen().visible_view().height() - d_dialog_h) / 2;
   const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);
   const int d_txt8_h = 11 * factor;
   const int d_margin = 7 * factor;
@@ -267,7 +265,7 @@ bool LoadOptionsClass::Process() {
   /*
   **	Initialize.
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   Fill_List(&listbtn);
 

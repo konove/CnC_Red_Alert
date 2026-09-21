@@ -202,8 +202,8 @@ bool WsaAnimation::DrawFrame(GraphicViewPortClass& view,
   // Deltas are XORed straight onto the view's pixels. They are clipped to the
   // end of the pixels but not to the view's edges, so a frame that sticks out
   // would wrap onto the next row.
-  if (x_ < 0 || y_ < 0 || x_ + width_ > view.Get_Width() ||
-      y_ + height_ > view.Get_Height()) {
+  if (x_ < 0 || y_ < 0 || x_ + width_ > view.width() ||
+      y_ + height_ > view.height()) {
     return false;
   }
   if (!view.Lock()) {
@@ -213,9 +213,9 @@ bool WsaAnimation::DrawFrame(GraphicViewPortClass& view,
   // The distance between rows of the destination. For a whole page that is its
   // width; a viewport (part of a buffer) also has to step over the rest of the
   // buffer's row and any surface padding.
-  const int dest_stride = view.Get_Width() + view.Get_XAdd() + view.Get_Pitch();
+  const int dest_stride = view.width() + view.x_add() + view.pitch();
   const std::span<uint8_t> frame_buffer =
-      view.Get_Pixels().subspan(base::ToSize((y_ * dest_stride) + x_));
+      view.pixels().subspan(base::ToSize((y_ * dest_stride) + x_));
 
   // Frame 0, which Load() left uncompressed in the delta buffer, comes first.
   // If it is a delta it is XORed onto the picture already there; otherwise it

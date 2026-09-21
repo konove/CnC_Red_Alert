@@ -82,15 +82,15 @@ int Write_PCX_File(const char* name, GraphicViewPortClass& pic,
     return 0;
   }
 
-  header.width = static_cast<int16_t>(pic.Get_Width() - 1);
-  header.height = static_cast<int16_t>(pic.Get_Height() - 1);
-  header.byte_per_line = static_cast<int16_t>(pic.Get_Width());
+  header.width = static_cast<int16_t>(pic.width() - 1);
+  header.height = static_cast<int16_t>(pic.height() - 1);
+  header.byte_per_line = static_cast<int16_t>(pic.width());
   file.WriteObject(header);
 
-  const int VP_Scan_Line = pic.Get_Width() + pic.Get_XAdd();
-  GraphicBufferClass* Graphic_Buffer = pic.Get_Graphic_Buffer();
+  const int VP_Scan_Line = pic.width() + pic.x_add();
+  GraphicBufferClass* Graphic_Buffer = pic.graphic_buffer();
   const auto pixels = Graphic_Buffer->Get_Bytes().subspan(
-      base::ToSize((pic.Get_YPos() * VP_Scan_Line) + pic.Get_XPos()));
+      base::ToSize((pic.y_pos() * VP_Scan_Line) + pic.x_pos()));
   for (i = 0; i < static_cast<unsigned>(header.height) + 1; i++) {
     Write_Pcx_ScanLine(
         file, pixels.subspan(i * static_cast<std::size_t>(VP_Scan_Line),

@@ -36,8 +36,8 @@
  *   Debug_Mono_Message -- Post a line to the monochrome monitor           *
  *   Debug_Window_Message -- One of many ways to pop up a debug msg window *
  *   Debug_Show_Palette -- Display the current 256 color palette           *
- *   Debug_Draw_Line_Test -- Tests Westwood library Draw_Line()            *
- *   Debug_Put_Pixel_Test -- Tests the Westwood library Put_Pixel()        *
+ *   Debug_Draw_Line_Test -- Tests Westwood library DrawLine()            *
+ *   Debug_Put_Pixel_Test -- Tests the Westwood library PutPixel()        *
  *   Debug_Shape_Test -- Tests the Westwood Library Draw_Shape()           *
  *   Debug_Print_Game_Stats -- Code to display player stats w/ text        *
  *   Debug_Rig_Roll -- Pops up dialog to fix the next dice roll            *
@@ -233,7 +233,7 @@ VOID Debug_Show_Palette() {
 }
 
 /***************************************************************************
- * DEBUG_DRAW_LINE_TEST -- Tests Westwood library Draw_Line()              *
+ * DEBUG_DRAW_LINE_TEST -- Tests Westwood library DrawLine()              *
  *                                                                         *
  * INPUT: none                                                             *
  *                                                                         *
@@ -247,7 +247,7 @@ VOID Debug_Draw_Line_Test() {
 }
 
 /***************************************************************************
- * DEBUG_PUT_PIXEL_TEST -- Tests the Westwood library Put_Pixel()          *
+ * DEBUG_PUT_PIXEL_TEST -- Tests the Westwood library PutPixel()          *
  *                                                                         *
  * INPUT: none                                                             *
  *                                                                         *

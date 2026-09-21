@@ -22,7 +22,7 @@ TEST(GraphicViewPortLockTest, AnUnattachedViewportDoesNotLock) {
   GraphicViewPortClass view;
 
   EXPECT_FALSE(view.Lock());
-  EXPECT_EQ(view.Get_LockCount(), 0);
+  EXPECT_EQ(view.lock_count(), 0);
 }
 
 // The drawing members all call the primitive only when Lock() succeeded, so
@@ -31,11 +31,11 @@ TEST(GraphicViewPortLockTest, DrawingToAnUnattachedViewportDoesNothing) {
   GraphicViewPortClass view;
 
   view.Clear();
-  view.Put_Pixel(0, 0, 1);
-  view.Draw_Line(0, 0, 1, 1, 1);
-  view.Fill_Rect(0, 0, 1, 1, 1);
+  view.PutPixel(0, 0, 1);
+  view.DrawLine(0, 0, 1, 1, 1);
+  view.FillRect(0, 0, 1, 1, 1);
 
-  EXPECT_EQ(view.Get_Pixel(0, 0), 0);
+  EXPECT_EQ(view.GetPixel(0, 0), 0);
 }
 
 // A plain memory buffer has no surface to lock, so Lock() succeeds without

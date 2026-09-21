@@ -48,11 +48,11 @@ class LockedWindow {
 
   // The first pixel of row `y`, counting down from the top of the window.
   [[nodiscard]] std::span<std::uint8_t> Row(int y) const {
-    if (y < 0 || y >= view_.Get_Height()) {
+    if (y < 0 || y >= view_.height()) {
       return {};
     }
     const auto offset = static_cast<size_t>(y * stride_);
-    const auto width = static_cast<size_t>(view_.Get_Width());
+    const auto width = static_cast<size_t>(view_.width());
     if (offset > bits_.size() || width > bits_.size() - offset) {
       return {};
     }
@@ -60,8 +60,8 @@ class LockedWindow {
   }
   [[nodiscard]] bool Contains(int x, int y, int width, int height) const {
     return x >= 0 && y >= 0 && width >= 0 && height >= 0 &&
-           x <= view_.Get_Width() && width <= view_.Get_Width() - x &&
-           y <= view_.Get_Height() && height <= view_.Get_Height() - y;
+           x <= view_.width() && width <= view_.width() - x &&
+           y <= view_.height() && height <= view_.height() - y;
   }
 
  private:

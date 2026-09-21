@@ -447,7 +447,7 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   if (strings.empty()) {
     return (-1);
   }
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   Keyboard::Clear();
 
   /*
@@ -746,7 +746,7 @@ int Main_Menu(int timeout) {
   /*
   **	Initialize
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   Keyboard::Clear();
   starttime = SystemTicks();
 
@@ -851,7 +851,7 @@ int Main_Menu(int timeout) {
       /*
       **	Display the title and text overlay for the menu.
       */
-      Set_Logic_Page(TheScreen().hidden_view());
+      SetLogicPage(TheScreen().hidden_view());
       Dialog_Box(kDialogX, kDialogY, kDialogW, kDialogH);
       Draw_Caption(TXT_NONE, kDialogX, kDialogY, kDialogW);
       if constexpr (config::kVirginCheatKeysEnabled) {
@@ -894,7 +894,7 @@ int Main_Menu(int timeout) {
       TheScreen().hidden_view().Blit(TheScreen().visible_view());
       Show_Mouse();
 
-      Set_Logic_Page(TheScreen().visible_view());
+      SetLogicPage(TheScreen().visible_view());
       startbtn.Draw_All();
       display = false;
     }

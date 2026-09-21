@@ -74,11 +74,11 @@ void CC_Draw_Shape(const std::span<const std::byte> shapefile,
         shapefile, static_cast<uint16_t>(shape_num), ShapeBufferBytes);
     if (!shape_pointer.empty()) {
       GraphicViewPortClass draw_window(
-          LogicPage->Get_Graphic_Buffer(),
+          LogicPage->graphic_buffer(),
           base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) +
-              LogicPage->Get_XPos(),
+              LogicPage->x_pos(),
           base::At(base::At(WindowList, static_cast<int>(window)), kWindowY) +
-              LogicPage->Get_YPos(),
+              LogicPage->y_pos(),
           base::At(base::At(WindowList, static_cast<int>(window)),
                    kWindowWidth),
           base::At(base::At(WindowList, static_cast<int>(window)),
@@ -101,7 +101,7 @@ void CC_Draw_Shape(const std::span<const std::byte> shapefile,
         GraphicBufferClass gb(width, height, x_buffer);
         const TPoint2D pt(width / 2, height / 2);
 
-        gb.Scale_Rotate(
+        gb.DrawScaledRotated(
             bm, pt, scale,
             static_cast<uint8_t>(256 - static_cast<int>(rotation) + 64));
         buffer = x_buffer;

@@ -1095,10 +1095,10 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       **	Draw debug cell visualization instead of normal terrain.
       */
       const CELL cell = Cell_Number();
-      LogicPage->Fill_Rect(TheMap().TacPixelX + x, TheMap().TacPixelY + y,
-                           TheMap().TacPixelX + x + ICON_PIXEL_W - 1,
-                           TheMap().TacPixelY + y + ICON_PIXEL_H - 1,
-                           static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
+      LogicPage->FillRect(TheMap().TacPixelX + x, TheMap().TacPixelY + y,
+                          TheMap().TacPixelX + x + ICON_PIXEL_W - 1,
+                          TheMap().TacPixelY + y + ICON_PIXEL_H - 1,
+                          static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
       FontXSpacing -= 2;
       Fancy_Text_Print(
           "%02X%02X\r%d%d%d\r%d %d",
@@ -1135,8 +1135,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
       **	This is the underlying terrain icon.
       */
       if (!ttype->Get_Image_Data().empty()) {
-        LogicPage->Draw_Stamp(ttype->Get_Image_Data(), icon, x, y, {},
-                              static_cast<int>(WINDOW_TACTICAL));
+        LogicPage->DrawStamp(ttype->Get_Image_Data(), icon, x, y, {},
+                             static_cast<int>(WINDOW_TACTICAL));
         if (!remap.empty()) {
           LogicPage->Remap(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
                            ICON_PIXEL_W, ICON_PIXEL_H, remap);
@@ -1152,10 +1152,10 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         */
         if (TheDebugState().map_editor_active() &&
             TheWorld().current_cell() == Cell_Number()) {
-          LogicPage->Draw_Rect(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
-                               TheMap().TacPixelX + x + CELL_PIXEL_W - 1,
-                               TheMap().TacPixelY + y + CELL_PIXEL_H - 1,
-                               kYellow);
+          LogicPage->DrawRect(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
+                              TheMap().TacPixelX + x + CELL_PIXEL_W - 1,
+                              TheMap().TacPixelY + y + CELL_PIXEL_H - 1,
+                              kYellow);
         }
       }
 
@@ -1257,11 +1257,11 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
         **	Draw the hash-mark cursor:
         */
         if (TheMap().ProximityCheck && Is_Clear_To_Build(loco)) {
-          LogicPage->Draw_Stamp(DisplayClass::TransIconset, 0, x, y, {},
-                                static_cast<int>(WINDOW_TACTICAL));
+          LogicPage->DrawStamp(DisplayClass::TransIconset, 0, x, y, {},
+                               static_cast<int>(WINDOW_TACTICAL));
         } else {
-          LogicPage->Draw_Stamp(DisplayClass::TransIconset, 2, x, y, {},
-                                static_cast<int>(WINDOW_TACTICAL));
+          LogicPage->DrawStamp(DisplayClass::TransIconset, 2, x, y, {},
+                               static_cast<int>(WINDOW_TACTICAL));
         }
 
         if constexpr (config::kScenarioEditorEnabled) {
@@ -1286,8 +1286,8 @@ void CellClass::Draw_It(int x, int y, bool objects) const {
                            Cell_Y(static_cast<CELL>(TheMap().ZoneCell +
                                                     TheMap().ZoneOffset))) *
                           tptr->Width);
-                  LogicPage->Draw_Stamp(tptr->Get_Image_Data(), icon, x, y, {},
-                                        static_cast<int>(WINDOW_TACTICAL));
+                  LogicPage->DrawStamp(tptr->Get_Image_Data(), icon, x, y, {},
+                                       static_cast<int>(WINDOW_TACTICAL));
                 }
                 break;
               }

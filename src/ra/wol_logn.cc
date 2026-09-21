@@ -186,7 +186,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   /*
   **	Initialize.
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   //	Get saved nickname/passwords from the registry.
   if (ReadSavedNicks(pWO, NickList, szNameBuffer, szPassBuffer)) {

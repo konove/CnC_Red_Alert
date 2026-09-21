@@ -297,9 +297,9 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
     BFPartialPred = 256;  // init partial to off
 
     for (int off = 0; off < 8; off++) {
-      base::At(BFPredNegTable, off + 8) = static_cast<int16_t>(
-          base::At(BFPredNegTable, off) + dest.Get_Width() + dest.Get_XAdd() +
-          dest.Get_Pitch());
+      base::At(BFPredNegTable, off + 8) =
+          static_cast<int16_t>(base::At(BFPredNegTable, off) + dest.width() +
+                               dest.x_add() + dest.pitch());
     }
   }
 
@@ -317,10 +317,9 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
   int dst_x1 = x + w;
   int dst_y1 = y + h;
 
-  const uint32_t code0 =
-      Make_Code(dst_x0, dst_y0, dest.Get_Width(), dest.Get_Height());
+  const uint32_t code0 = Make_Code(dst_x0, dst_y0, dest.width(), dest.height());
   const uint32_t code1 =
-      Make_Code(dst_x1, dst_y1, dest.Get_Width() + 1, dest.Get_Height() + 1);
+      Make_Code(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
 
   // outside
   if (code0 & code1) {
@@ -338,14 +337,14 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
       dst_x0 = 0;
     }
     if (code1 & 0b0100) {
-      dst_x1 = dest.Get_Width();
+      dst_x1 = dest.width();
     }
     if (code0 & 0b0010) {
       src_y0 -= dst_y0;
       dst_y0 = 0;
     }
     if (code1 & 0b0001) {
-      dst_y1 = dest.Get_Height();
+      dst_y1 = dest.height();
     }
   }
 
@@ -354,10 +353,9 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
       base::ToSize(src_x0 + (static_cast<base::ssize>(src_y0) * w)));
   const int src_adjust_width = w - (dst_x1 - dst_x0);
 
-  const base::ssize dst_area =
-      dest.Get_XAdd() + dest.Get_Width() + dest.Get_Pitch();
+  const base::ssize dst_area = dest.x_add() + dest.width() + dest.pitch();
   auto dst_offset =
-      dest.Get_Pixels().subspan(base::ToSize(dst_x0 + (dst_y0 * dst_area)));
+      dest.pixels().subspan(base::ToSize(dst_x0 + (dst_y0 * dst_area)));
   const int dst_adjust_width = static_cast<int>(dst_area - (dst_x1 - dst_x0));
 
   if (!use_new_draw) {

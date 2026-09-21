@@ -263,7 +263,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   const int d_progress_w = 200;
   const int d_progress_h = 20;
   const int d_progress_x =
-      (TheScreen().visible_view().Get_Width() / 2) - (d_progress_w / 2);
+      (TheScreen().visible_view().width() / 2) - (d_progress_w / 2);
   const int d_progress_y = d_dialog_y + 90;
 
   int width = 0;
@@ -277,7 +277,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   Format_Window_String(std::span(info_string),
-                       TheScreen().visible_view().Get_Height(), width, height);
+                       TheScreen().visible_view().height(), width, height);
 
   /*
   ** Button Enumerations
@@ -524,7 +524,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   /*
   ** Dialog & button dimensions
   */
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
   const int d_dialog_w = 240 * factor;                       // dialog width
   const int d_dialog_h = 90 * factor;                        // dialog height
@@ -540,7 +540,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   const int d_progress_w = 100 * factor;
   const int d_progress_h = 10 * factor;
   const int d_progress_x =
-      (TheScreen().visible_view().Get_Width() / 2) - (d_progress_w / 2);
+      (TheScreen().visible_view().width() / 2) - (d_progress_w / 2);
   const int d_progress_y = d_dialog_y + (45 * factor);
 
   int width = 0;
@@ -557,7 +557,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   Format_Window_String(std::span(info_string),
-                       TheScreen().visible_view().Get_Height(), width, height);
+                       TheScreen().visible_view().height(), width, height);
 
   /*
   ** Button Enumerations

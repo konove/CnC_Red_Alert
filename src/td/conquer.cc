@@ -877,7 +877,7 @@ static void Message_Input(KeyNumType& input) {
   int sent_so_far = 0;
   uint16_t magic_number = 0;
   uint16_t crc = 0;
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
   /*
   **	Check keyboard input for a request to send a message.
@@ -2347,7 +2347,7 @@ void CC_Texture_Fill(std::span<const std::byte> shapefile, int shapenum,
   }
   for (int y = 0; y < height; ++y) {
     for (int x = 0; x < width; ++x) {
-      LogicPage->Put_Pixel(
+      LogicPage->PutPixel(
           xpos + x, ypos + y,
           base::At(pixels, base::ToSize(((y % source_height) * source_width) +
                                         (x % source_width))));
@@ -2405,12 +2405,12 @@ void CC_Draw_Shape(std::span<const std::byte> shapefile, int shapenum, int x,
 
     if (!shape_size.empty()) {
       GraphicViewPortClass draw_window(
-          LogicPage->Get_Graphic_Buffer(),
+          LogicPage->graphic_buffer(),
           (base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) *
            8) +
-              LogicPage->Get_XPos(),
+              LogicPage->x_pos(),
           base::At(base::At(WindowList, static_cast<int>(window)), kWindowY) +
-              LogicPage->Get_YPos(),
+              LogicPage->y_pos(),
           base::At(base::At(WindowList, static_cast<int>(window)),
                    kWindowWidth) *
               8,
@@ -3106,8 +3106,7 @@ bool Force_CD_Available(int cd) {
                               base::At(_volid, cd));
         }
       }
-      GraphicViewPortClass* oldpage =
-          Set_Logic_Page(TheScreen().visible_view());
+      GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().visible_view());
       // The theme was already stopped above, and the only way out of this
       // loop is the cancel below, so there is nothing to remember here.
       TheTheme().Stop();
@@ -3135,7 +3134,7 @@ bool Force_CD_Available(int cd) {
 
       if (CCMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, true) ==
           1) {
-        Set_Logic_Page(oldpage);
+        SetLogicPage(oldpage);
         Hide_Mouse();
         TheGameState().in_main_loop() = old_in_main_loop;
         return false;
@@ -3146,7 +3145,7 @@ bool Force_CD_Available(int cd) {
       Set_Palette(_palette);
       Set_Font(font);
       Set_Font_Palette(_hold);
-      Set_Logic_Page(oldpage);
+      SetLogicPage(oldpage);
       TheGameState().in_main_loop() = old_in_main_loop;
     }
   }

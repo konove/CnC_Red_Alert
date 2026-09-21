@@ -122,8 +122,8 @@ void Choose_Side() {
   int setpalette = 0;
 
   TextPrintBuffer =
-      new GraphicBufferClass(TheScreen().visible_view().Get_Width(),
-                             TheScreen().visible_view().Get_Height(), {});
+      new GraphicBufferClass(TheScreen().visible_view().width(),
+                             TheScreen().visible_view().height(), {});
   TextPrintBuffer->Clear();
   BlitList.Clear();
   PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
@@ -265,8 +265,8 @@ void Choose_Side() {
   anim.Close();
 
   // erase the "choose side" text
-  PseudoSeenBuff->Fill_Rect(0, 180, 319, 199, 0);
-  TheScreen().visible_view().Fill_Rect(0, 180 * 2, 319 * 2, 199 * 2, 0);
+  PseudoSeenBuff->FillRect(0, 180, 319, 199, 0);
+  TheScreen().visible_view().FillRect(0, 180 * 2, 319 * 2, 199 * 2, 0);
   Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),
                        "SIDES.PAL");
   TheScreen().sys_mem_page().Clear();

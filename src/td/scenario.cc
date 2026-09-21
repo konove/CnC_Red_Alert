@@ -379,7 +379,7 @@ void Do_Win() {
   /*
   **	Announce win to player.
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 #if !(defined(GERMAN) || defined(FRENCH))
   Fancy_Text_Print(TXT_MISSION, x, y, kWhite, kTBlack, TPF_CENTER | TPF_VCR);
 #endif
@@ -607,7 +607,7 @@ void Do_Lose() {
   /*
   **	Announce win to player.
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   Fancy_Text_Print(TXT_MISSION, x, y, kWhite, kTBlack, TPF_CENTER | TPF_VCR);
   Fancy_Text_Print(TXT_SCENARIO_LOST, x, y + 30, kWhite, kTBlack,
                    TPF_CENTER | TPF_VCR);

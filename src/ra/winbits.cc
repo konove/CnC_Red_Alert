@@ -14,11 +14,11 @@
 #include "sdllib/ww_win.h"
 
 LockedWindow::LockedWindow(WindowNumberType window)
-    : view_(LogicPage->Get_Graphic_Buffer(),
+    : view_(LogicPage->graphic_buffer(),
             base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) +
-                LogicPage->Get_XPos(),
+                LogicPage->x_pos(),
             base::At(base::At(WindowList, static_cast<int>(window)), kWindowY) +
-                LogicPage->Get_YPos(),
+                LogicPage->y_pos(),
             base::At(base::At(WindowList, static_cast<int>(window)),
                      kWindowWidth),
             base::At(base::At(WindowList, static_cast<int>(window)),
@@ -28,8 +28,8 @@ LockedWindow::LockedWindow(WindowNumberType window)
   if (locked_) {
     // GraphicViewPortClass calls the end-of-line skip the "pitch", so the
     // distance between rows is that plus the visible width.
-    stride_ = view_.Get_Pitch() + view_.Get_Width();
-    bits_ = view_.Get_Pixels();
+    stride_ = view_.pitch() + view_.width();
+    bits_ = view_.pixels();
   }
 }
 

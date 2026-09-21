@@ -149,14 +149,14 @@ bool ProgressBarClass::Update(fixed value) {
  *=============================================================================================*/
 void ProgressBarClass::Outline() const {
   if (Is_Outlined()) {
-    LogicPage->Draw_Line(X, Y, X + Width, Y,
-                         static_cast<unsigned char>(BorderColor));
-    LogicPage->Draw_Line(X, Y, X, Y + Height,
-                         static_cast<unsigned char>(BorderColor));
-    LogicPage->Draw_Line(X, Y + Height, X, Y + Height,
-                         static_cast<unsigned char>(BorderColor));
-    LogicPage->Draw_Line(X + Width, Y, X + Width, Y + Height,
-                         static_cast<unsigned char>(BorderColor));
+    LogicPage->DrawLine(X, Y, X + Width, Y,
+                        static_cast<unsigned char>(BorderColor));
+    LogicPage->DrawLine(X, Y, X, Y + Height,
+                        static_cast<unsigned char>(BorderColor));
+    LogicPage->DrawLine(X, Y + Height, X, Y + Height,
+                        static_cast<unsigned char>(BorderColor));
+    LogicPage->DrawLine(X + Width, Y, X + Width, Y + Height,
+                        static_cast<unsigned char>(BorderColor));
   }
 }
 
@@ -211,11 +211,11 @@ void ProgressBarClass::Redraw() const {
   */
   if (fill > 0) {
     if (Is_Horizontal()) {
-      LogicPage->Fill_Rect(x, y, x + fill, y + h,
-                           static_cast<unsigned char>(BarColor));
+      LogicPage->FillRect(x, y, x + fill, y + h,
+                          static_cast<unsigned char>(BarColor));
     } else {
-      LogicPage->Fill_Rect(x, y + fill, x + w, y + h,
-                           static_cast<unsigned char>(BarColor));
+      LogicPage->FillRect(x, y + fill, x + w, y + h,
+                          static_cast<unsigned char>(BarColor));
     }
   }
 
@@ -225,11 +225,11 @@ void ProgressBarClass::Redraw() const {
   */
   if (w - fill > 0) {
     if (Is_Horizontal()) {
-      LogicPage->Fill_Rect(x + fill, y, x + w, y + h,
-                           static_cast<unsigned char>(BackColor));
+      LogicPage->FillRect(x + fill, y, x + w, y + h,
+                          static_cast<unsigned char>(BackColor));
     } else {
-      LogicPage->Fill_Rect(x, y, x + w, y + fill - 1,
-                           static_cast<unsigned char>(BackColor));
+      LogicPage->FillRect(x, y, x + w, y + fill - 1,
+                          static_cast<unsigned char>(BackColor));
     }
   }
 

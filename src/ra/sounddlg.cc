@@ -234,9 +234,8 @@ void SoundControlsClass::Process() {
   **	Causes right clicks anywhere or left clicks outside of the dialog
   **	box area to be the same a clicking the return to game options button.
   */
-  ControlClass ctrl(kButtonOptions, 0, 0,
-                    TheScreen().visible_view().Get_Width(),
-                    TheScreen().visible_view().Get_Height(),
+  ControlClass ctrl(kButtonOptions, 0, 0, TheScreen().visible_view().width(),
+                    TheScreen().visible_view().height(),
                     GadgetClass::kRightPress | GadgetClass::kLeftPress);
 
   /*
@@ -272,7 +271,7 @@ void SoundControlsClass::Process() {
   /*
   **	Set up the window.  Window x-coords are in bytes not pixels.
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   **	Create Buttons.
@@ -487,8 +486,8 @@ void MusicListClass::Draw_Entry(int index, int x, int y, int width,
 
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
-                           Get_Color_Scheme()->Shadow);
+      LogicPage->FillRect(x, y, x + width - 1, y + LineHeight - 1,
+                          Get_Color_Scheme()->Shadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;

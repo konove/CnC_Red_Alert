@@ -196,8 +196,8 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       CCDebugString("C&C95 - About to Invalidate_Cached_Icons.\n");
       Invalidate_Cached_Icons();
       CCDebugString("C&C95 - About to release the video surfaces.\n");
-      TheScreen().visible_page().Un_Init();
-      TheScreen().hidden_page().Un_Init();
+      TheScreen().visible_page().ReleaseSurfaces();
+      TheScreen().hidden_page().ReleaseSurfaces();
       AllSurfaces.Release();
       if (!InDebugger) {
         CCDebugString("C&C95 - About to reset the video mode.\n");
@@ -409,8 +409,8 @@ void Colour_Debug(int call_number) {
 #pragma on(unreferenced)
 
 BOOL Any_Locked() {
-  if (TheScreen().visible_view().Get_LockCount() ||
-      TheScreen().hidden_view().Get_LockCount()) {
+  if (TheScreen().visible_view().lock_count() ||
+      TheScreen().hidden_view().lock_count()) {
     return true;
   } else {
     return FALSE;

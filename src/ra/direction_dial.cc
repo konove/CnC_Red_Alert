@@ -130,9 +130,9 @@ bool DirectionDial::Draw_Me(const bool forced) {
 
   // Draw the hand's shadow one pixel down and right, then the hand.
   const auto& tip = base::At(hand_tips_, static_cast<int>(facing_));
-  LogicPage->Draw_Line(center_x_ + 1, center_y_ + 1, tip[0] + 1, tip[1] + 1,
-                       scheme->Shadow);
-  LogicPage->Draw_Line(center_x_, center_y_, tip[0], tip[1], scheme->Highlight);
+  LogicPage->DrawLine(center_x_ + 1, center_y_ + 1, tip[0] + 1, tip[1] + 1,
+                      scheme->Shadow);
+  LogicPage->DrawLine(center_x_, center_y_, tip[0], tip[1], scheme->Highlight);
 
   if (on_screen) {
     Show_Mouse();

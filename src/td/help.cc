@@ -280,8 +280,8 @@ void HelpClass::Draw_It(bool forced) {
   if ((Text != TXT_NONE && (forced || !CountDownTimer.Time())) &&
       LogicPage->Lock()) {
     Fancy_Text_Print(Text, DrawX, DrawY, Color, kBlack, TPF_MAP | TPF_NOSHADOW);
-    LogicPage->Draw_Rect(DrawX - 1, DrawY - 1, DrawX + Width + 1,
-                         DrawY + FontHeight, static_cast<unsigned char>(Color));
+    LogicPage->DrawRect(DrawX - 1, DrawY - 1, DrawX + Width + 1,
+                        DrawY + FontHeight, static_cast<unsigned char>(Color));
 
     if (Cost) {
       char buffer[15];
@@ -289,12 +289,12 @@ void HelpClass::Draw_It(bool forced) {
       const int width = String_Pixel_Width(buffer);
       Fancy_Text_Print(buffer, DrawX, DrawY + FontHeight, Color, kBlack,
                        TPF_MAP | TPF_NOSHADOW);
-      LogicPage->Draw_Rect(DrawX - 1, DrawY + FontHeight, DrawX + width + 1,
-                           DrawY + FontHeight + FontHeight - 1,
-                           static_cast<unsigned char>(Color));
-      LogicPage->Draw_Line(DrawX, DrawY + FontHeight,
-                           DrawX + std::min(width + 1, Width) - 1,
-                           DrawY + FontHeight, kBlack);
+      LogicPage->DrawRect(DrawX - 1, DrawY + FontHeight, DrawX + width + 1,
+                          DrawY + FontHeight + FontHeight - 1,
+                          static_cast<unsigned char>(Color));
+      LogicPage->DrawLine(DrawX, DrawY + FontHeight,
+                          DrawX + std::min(width + 1, Width) - 1,
+                          DrawY + FontHeight, kBlack);
     }
 
     LogicPage->Unlock();

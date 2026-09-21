@@ -685,8 +685,8 @@ void ListClass::Draw_Entry(int index, int x, int y, int width, bool selected) {
 
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
-                           kCcGreenShadow);
+      LogicPage->FillRect(x, y, x + width - 1, y + LineHeight - 1,
+                          kCcGreenShadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;

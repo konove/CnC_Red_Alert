@@ -459,8 +459,8 @@ void IconListClass::Draw_Entry(int index, int x, int y, int width,
 
     if (bShowSelected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->Fill_Rect(xText, y, xText + width - 1, y + LineHeight - 1,
-                           pRemap->Shadow);
+      LogicPage->FillRect(xText, y, xText + width - 1, y + LineHeight - 1,
+                          pRemap->Shadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;

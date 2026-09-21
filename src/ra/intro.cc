@@ -47,7 +47,7 @@ void PlayFirstLaunchIntro(GraphicViewPortClass& hidden,
     ThePalettes().game_palette() = ThePalettes().title_palette();
     hidden.Blit(visible);
     ThePalettes().title_palette().Set();
-    Set_Logic_Page(visible);
+    SetLogicPage(visible);
     Show_Mouse();
 
     // Process() returns the index of the button pressed. CurrentCD uses the

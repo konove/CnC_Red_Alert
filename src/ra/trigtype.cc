@@ -1084,7 +1084,7 @@ bool TriggerTypeClass::Edit() {
   /*
   **	Initialize
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   **	Build the button list
@@ -1136,19 +1136,19 @@ bool TriggerTypeClass::Edit() {
                        kTBlack, TPF_EFNT | TPF_NOSHADOW);
 
       if (eventflag == 3) {
-        LogicPage->Draw_Line(event1list.X - 1, event1list.Y + 3,
-                             event1list.X - 4, event1list.Y + 3, kWhite);
-        LogicPage->Draw_Line(event1list.X - 4, event1list.Y + 3,
-                             action1list.X - 4, action1list.Y + 3, kWhite);
-        LogicPage->Draw_Line(action1list.X - 1, action1list.Y + 3,
-                             action1list.X - 4, action1list.Y + 3, kWhite);
+        LogicPage->DrawLine(event1list.X - 1, event1list.Y + 3,
+                            event1list.X - 4, event1list.Y + 3, kWhite);
+        LogicPage->DrawLine(event1list.X - 4, event1list.Y + 3,
+                            action1list.X - 4, action1list.Y + 3, kWhite);
+        LogicPage->DrawLine(action1list.X - 1, action1list.Y + 3,
+                            action1list.X - 4, action1list.Y + 3, kWhite);
 
-        LogicPage->Draw_Line(event2list.X - 1, event2list.Y + 3,
-                             event2list.X - 10, event2list.Y + 3, kWhite);
-        LogicPage->Draw_Line(event2list.X - 10, event2list.Y + 3,
-                             action2list.X - 10, action2list.Y + 3, kWhite);
-        LogicPage->Draw_Line(action2list.X - 1, action2list.Y + 3,
-                             action2list.X - 10, action2list.Y + 3, kWhite);
+        LogicPage->DrawLine(event2list.X - 1, event2list.Y + 3,
+                            event2list.X - 10, event2list.Y + 3, kWhite);
+        LogicPage->DrawLine(event2list.X - 10, event2list.Y + 3,
+                            action2list.X - 10, action2list.Y + 3, kWhite);
+        LogicPage->DrawLine(action2list.X - 1, action2list.Y + 3,
+                            action2list.X - 10, action2list.Y + 3, kWhite);
       }
 
       /*
@@ -2232,8 +2232,8 @@ void TriggerTypeClass::Draw_It(int /*unused*/, int x, int y, int width,
     if (Is_Font(flags, TPF_6PT_GRAD) || Is_Font(flags, TPF_EFNT)) {
       if (selected) {
         flags = flags | TPF_BRIGHT_COLOR;
-        LogicPage->Fill_Rect(x, y, x + width - 1, y + height - 1,
-                             scheme->Shadow);
+        LogicPage->FillRect(x, y, x + width - 1, y + height - 1,
+                            scheme->Shadow);
       } else {
         if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
           flags = flags | TPF_MEDIUM_COLOR;

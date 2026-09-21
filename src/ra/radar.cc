@@ -181,7 +181,7 @@ RadarClass::RadarClass() = default;
 void RadarClass::One_Time() {
   RadWidth = 160;
   RadHeight = 140;
-  RadX = TheScreen().visible_view().Get_Width() - RadWidth;
+  RadX = TheScreen().visible_view().width() - RadWidth;
   RadY = 14;
   RadPWidth = 128;
   RadPHeight = 128;
@@ -492,15 +492,14 @@ void RadarClass::Draw_It(bool forced) {
         Radar_Cursor(RadarCursorRedraw);
 
       } else {
-        GraphicViewPortClass* oldpage =
-            Set_Logic_Page(TheScreen().hidden_view());
+        GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().hidden_view());
 
         CC_Draw_Shape(RadarFrame, 1, RadX, RadY + 2, WINDOW_MAIN,
                       SHAPE_NORMAL);
         if (BaseX || BaseY) {
           if (!IsZoomed && BaseX && BaseY && RadarWidth < RadIWidth - 1 &&
               RadarHeight < RadIHeight - 1) {
-            LogicPage->Draw_Rect(
+            LogicPage->DrawRect(
                 RadX + RadOffX + BaseX - 1, RadY + RadOffY + BaseY - 1,
                 RadX + RadOffX + BaseX + RadarWidth,
                 //													RadX
@@ -511,9 +510,9 @@ void RadarClass::Draw_It(bool forced) {
                 kWhite);
           }
         } else {
-          LogicPage->Fill_Rect(RadX + RadOffX, RadY + RadOffY,
-                               RadX + RadOffX + RadIWidth - 1,
-                               RadY + RadOffY + RadIHeight - 1, kBlack);
+          LogicPage->FillRect(RadX + RadOffX, RadY + RadOffY,
+                              RadX + RadOffX + RadIWidth - 1,
+                              RadY + RadOffY + RadIHeight - 1, kBlack);
         }
 
         /*
@@ -547,7 +546,7 @@ void RadarClass::Draw_It(bool forced) {
           Show_Mouse();
         }
 
-        Set_Logic_Page(oldpage);
+        SetLogicPage(oldpage);
       }
 
     } else {
@@ -630,8 +629,8 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** represent it.
   */
   if (size == 1) {
-    LogicPage->Put_Pixel(x, y, 21);
-    //		LogicPage->Put_Pixel(x, y, 60);
+    LogicPage->PutPixel(x, y, 21);
+    //		LogicPage->PutPixel(x, y, 60);
     return;
   }
 
@@ -716,14 +715,14 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) {
             color =
                 ThePalettes().color_remaps().at(ThePlayer()->RemapColor).Bar;
           }
-          LogicPage->Fill_Rect(x + xoff, y + yoff, x + xoff + (subsize - 1),
-                               y + yoff + (subsize - 1), color);
+          LogicPage->FillRect(x + xoff, y + yoff, x + xoff + (subsize - 1),
+                              y + yoff + (subsize - 1), color);
           break;
 
         case RTTI_UNIT:
         case RTTI_VESSEL:
         case RTTI_AIRCRAFT:
-          LogicPage->Fill_Rect(x, y, x + size - 1, y + size - 1, color);
+          LogicPage->FillRect(x, y, x + size - 1, y + size - 1, color);
           break;
 
         case RTTIType::RTTI_NONE:
@@ -789,7 +788,7 @@ void RadarClass::Render_Overlay(CELL cell, int x, int y, int size) {
       Buffer_To_Page(0, 0, 3, 3, icon, IconStage);
       if (otype->IsTiberium) {
         if (size == 1) {
-          LogicPage->Put_Pixel(x, y, DKGREY);
+          LogicPage->PutPixel(x, y, DKGREY);
 
           //					_IconStage.Scale(*LogicPage, 0,
           // 0, x, y, 3, 3, size, size, true, (char *)&FadingShade[0]);
@@ -1053,15 +1052,15 @@ void RadarClass::Plot_Radar_Pixel(CELL cell) {
         TileStage.Scale(*LogicPage, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
                         true);
       } else {
-        //				LogicPage->Fill_Rect(x, y,
+        //				LogicPage->FillRect(x, y,
         // x+ZoomFactor-1, y+ZoomFactor-1, cellptr->Cell_Color(false));
-        /*BG*/ LogicPage->Put_Pixel(
+        /*BG*/ LogicPage->PutPixel(
             x, y, static_cast<unsigned char>(cellptr->Cell_Color(false)));
       }
     } else {
-      LogicPage->Fill_Rect(x, y, x + ZoomFactor - 1, y + ZoomFactor - 1,
-                           static_cast<unsigned char>(color));
-      ///*BG*/		LogicPage->Put_Pixel(x, y, color);
+      LogicPage->FillRect(x, y, x + ZoomFactor - 1, y + ZoomFactor - 1,
+                          static_cast<unsigned char>(color));
+      ///*BG*/		LogicPage->PutPixel(x, y, color);
     }
     if (color != kBlack) {
       Render_Overlay(cell, x, y, ZoomFactor);
@@ -1467,28 +1466,27 @@ void RadarClass::Radar_Cursor(bool forced) {
   ** setup a graphic view port class so we can write all the pixels relative
   ** to 0,0 rather than relative to full screen coordinates.
   */
-  GraphicViewPortClass* oldpage = Set_Logic_Page(TheScreen().hidden_view());
+  GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().hidden_view());
   GraphicViewPortClass draw_window(
-      LogicPage->Get_Graphic_Buffer(),
-      RadX + RadOffX + BaseX + LogicPage->Get_XPos(),
-      RadY + RadOffY + BaseY + LogicPage->Get_YPos(), RadarWidth, RadarHeight);
+      LogicPage->graphic_buffer(), RadX + RadOffX + BaseX + LogicPage->x_pos(),
+      RadY + RadOffY + BaseY + LogicPage->y_pos(), RadarWidth, RadarHeight);
 
-  draw_window.Draw_Line(x1, y1, x1 + barlen, y1, kLtGreen);
-  draw_window.Draw_Line(x1, y1, x1, y1 + barlen, kLtGreen);
+  draw_window.DrawLine(x1, y1, x1 + barlen, y1, kLtGreen);
+  draw_window.DrawLine(x1, y1, x1, y1 + barlen, kLtGreen);
 
   // Draw upper right hand corner
-  draw_window.Draw_Line(x2 - barlen, y1, x2, y1, kLtGreen);
-  draw_window.Draw_Line(x2, y1, x2, y1 + barlen, kLtGreen);
+  draw_window.DrawLine(x2 - barlen, y1, x2, y1, kLtGreen);
+  draw_window.DrawLine(x2, y1, x2, y1 + barlen, kLtGreen);
 
   // Draw lower left hand corner
-  draw_window.Draw_Line(x1, y2 - barlen, x1, y2, kLtGreen);
-  draw_window.Draw_Line(x1, y2, x1 + barlen, y2, kLtGreen);
+  draw_window.DrawLine(x1, y2 - barlen, x1, y2, kLtGreen);
+  draw_window.DrawLine(x1, y2, x1 + barlen, y2, kLtGreen);
 
   // Draw lower right hand corner
-  draw_window.Draw_Line(x2, y2 - barlen, x2, y2, kLtGreen);
-  draw_window.Draw_Line(x2 - barlen, y2, x2, y2, kLtGreen);
+  draw_window.DrawLine(x2, y2 - barlen, x2, y2, kLtGreen);
+  draw_window.DrawLine(x2 - barlen, y2, x2, y2, kLtGreen);
 
-  Set_Logic_Page(oldpage);
+  SetLogicPage(oldpage);
   _last_pos = tac_cell;
   _last_frame = SpecialRadarFrame;
   RadarCursorRedraw = false;
@@ -1520,17 +1518,17 @@ void RadarClass::Radar_Anim() {
     return;
   }
 
-  GraphicViewPortClass* oldpage = Set_Logic_Page(TheScreen().hidden_view());
+  GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().hidden_view());
   GraphicViewPortClass draw_window(
-      LogicPage->Get_Graphic_Buffer(), RadX + RadOffX + LogicPage->Get_XPos(),
-      RadY + RadOffY + LogicPage->Get_YPos(), RadIWidth, RadIHeight);
+      LogicPage->graphic_buffer(), RadX + RadOffX + LogicPage->x_pos(),
+      RadY + RadOffY + LogicPage->y_pos(), RadIWidth, RadIHeight);
   Draw_Box(RadX + RadOffX - 1, RadY + RadOffY - 1, RadIWidth + 2,
            RadIHeight + 2, BOXSTYLE_RAISED, true);
   draw_window.Clear();
   CC_Draw_Shape(RadarAnim, RadarAnimFrame, RadX, RadY + 2,
                 WINDOW_MAIN, SHAPE_NORMAL);
   Flag_To_Redraw(false);
-  Set_Logic_Page(oldpage);
+  SetLogicPage(oldpage);
 }
 
 /***********************************************************************************************
@@ -1957,8 +1955,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
         ** overlapped blits is done in the library at the time of setting the
         *video mode.
         */
-        if (OverlappedVideoBlits ||
-            !TheScreen().hidden_view().Get_IsDirectDraw()) {
+        if (OverlappedVideoBlits || !TheScreen().hidden_view().NeedsLock()) {
           /*
           ** Overlapped blits are OK or we dont have a video memory hid page so
           *blits are
@@ -2332,8 +2329,8 @@ void RadarClass::Draw_Names() const {
                    TPF_RIGHT | TPF_6PT_GRAD | TPF_NOSHADOW);
   y += 12 + 1;
 
-  LogicPage->Draw_Line(RadX + RadOffX, y, RadX + RadOffX + RadIWidth - 1, y,
-                       kLtGrey);
+  LogicPage->DrawLine(RadX + RadOffX, y, RadX + RadOffX + RadIWidth - 1, y,
+                      kLtGrey);
   y += 4;
 
   for (HousesType house = HOUSE_MULTI1;

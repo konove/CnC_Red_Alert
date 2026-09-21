@@ -179,7 +179,7 @@ void RadarClass::One_Time() {
   const int scale = static_cast<int>(base::Bit<uint32_t>(factor));
   RadWidth = 80 * scale;
   RadHeight = 70 * scale;
-  RadX = TheScreen().visible_view().Get_Width() - RadWidth;
+  RadX = TheScreen().visible_view().width() - RadWidth;
   RadY = TheMap().Get_Tab_Height() - scale;
   RadPWidth = 64 * scale;
   RadPHeight = 64 * scale;
@@ -464,18 +464,18 @@ void RadarClass::Draw_It(bool forced) {
 
       } else {
         const GraphicViewPortClass* oldpage =
-            Set_Logic_Page(TheScreen().hidden_view());
+            SetLogicPage(TheScreen().hidden_view());
         //				if (LogicPage->Lock()) {
         CC_Draw_Shape(RadarAnim, kRadarActivatedFrame, RadX, RadY + 1,
                       WINDOW_MAIN, SHAPE_NORMAL);
         if (BaseX || BaseY) {
-          LogicPage->Fill_Rect(RadX + RadOffX, RadY + RadOffY,
-                               RadX + RadOffX + RadIWidth - 1,
-                               RadY + RadOffY + RadIHeight - 1, kGrey);
+          LogicPage->FillRect(RadX + RadOffX, RadY + RadOffY,
+                              RadX + RadOffX + RadIWidth - 1,
+                              RadY + RadOffY + RadIHeight - 1, kGrey);
         } else {
-          LogicPage->Fill_Rect(RadX + RadOffX, RadY + RadOffY,
-                               RadX + RadOffX + RadIWidth - 1,
-                               RadY + RadOffY + RadIHeight - 1, kBlack);
+          LogicPage->FillRect(RadX + RadOffX, RadY + RadOffY,
+                              RadX + RadOffX + RadIWidth - 1,
+                              RadY + RadOffY + RadIHeight - 1, kBlack);
         }
 
         /*
@@ -495,7 +495,7 @@ void RadarClass::Draw_It(bool forced) {
           Show_Mouse();
         }
 
-        //					Set_Logic_Page(oldpage);
+        //					SetLogicPage(oldpage);
 
         //				}
       }
@@ -567,7 +567,7 @@ void RadarClass::Render_Terrain(CELL cell, int x, int y, int size) const {
   ** represent it.
   */
   if (size == 1) {
-    LogicPage->Put_Pixel(x, y, 60);
+    LogicPage->PutPixel(x, y, 60);
     return;
   }
 
@@ -644,7 +644,7 @@ void RadarClass::Render_Infantry(CELL cell, int x, int y, int size) const {
             xoff = 0;
             yoff = 0;
           }
-          LogicPage->Put_Pixel(
+          LogicPage->PutPixel(
               x + xoff, y + yoff,
               dynamic_cast<InfantryClass*>(obj)->House->BrightColor);
         } break;
@@ -1265,28 +1265,27 @@ void RadarClass::Radar_Cursor(bool forced) {
   ** setup a graphic view port class so we can write all the pixels relative
   ** to 0,0 rather than relative to full screen coordinates.
   */
-  GraphicViewPortClass* oldpage = Set_Logic_Page(TheScreen().hidden_view());
+  GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().hidden_view());
   GraphicViewPortClass draw_window(
-      LogicPage->Get_Graphic_Buffer(),
-      RadX + RadOffX + BaseX + LogicPage->Get_XPos(),
-      RadY + RadOffY + BaseY + LogicPage->Get_YPos(), RadarWidth, RadarHeight);
+      LogicPage->graphic_buffer(), RadX + RadOffX + BaseX + LogicPage->x_pos(),
+      RadY + RadOffY + BaseY + LogicPage->y_pos(), RadarWidth, RadarHeight);
 
-  draw_window.Draw_Line(x1, y1, x1 + barlen, y1, kLtGreen);
-  draw_window.Draw_Line(x1, y1, x1, y1 + barlen, kLtGreen);
+  draw_window.DrawLine(x1, y1, x1 + barlen, y1, kLtGreen);
+  draw_window.DrawLine(x1, y1, x1, y1 + barlen, kLtGreen);
 
   // Draw upper right hand corner
-  draw_window.Draw_Line(x2 - barlen, y1, x2, y1, kLtGreen);
-  draw_window.Draw_Line(x2, y1, x2, y1 + barlen, kLtGreen);
+  draw_window.DrawLine(x2 - barlen, y1, x2, y1, kLtGreen);
+  draw_window.DrawLine(x2, y1, x2, y1 + barlen, kLtGreen);
 
   // Draw lower left hand corner
-  draw_window.Draw_Line(x1, y2 - barlen, x1, y2, kLtGreen);
-  draw_window.Draw_Line(x1, y2, x1 + barlen, y2, kLtGreen);
+  draw_window.DrawLine(x1, y2 - barlen, x1, y2, kLtGreen);
+  draw_window.DrawLine(x1, y2, x1 + barlen, y2, kLtGreen);
 
   // Draw lower right hand corner
-  draw_window.Draw_Line(x2, y2 - barlen, x2, y2, kLtGreen);
-  draw_window.Draw_Line(x2 - barlen, y2, x2, y2, kLtGreen);
+  draw_window.DrawLine(x2, y2 - barlen, x2, y2, kLtGreen);
+  draw_window.DrawLine(x2 - barlen, y2, x2, y2, kLtGreen);
 
-  Set_Logic_Page(oldpage);
+  SetLogicPage(oldpage);
   _last_pos = tac_cell;
   _last_frame = SpecialRadarFrame;
   RadarCursorRedraw = false;
@@ -1318,10 +1317,10 @@ void RadarClass::Radar_Anim() {
     return;
   }
 
-  GraphicViewPortClass* oldpage = Set_Logic_Page(TheScreen().hidden_view());
+  GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().hidden_view());
   GraphicViewPortClass draw_window(
-      LogicPage->Get_Graphic_Buffer(), RadX + RadOffX + LogicPage->Get_XPos(),
-      RadY + RadOffY + LogicPage->Get_YPos(), RadIWidth, RadIHeight);
+      LogicPage->graphic_buffer(), RadX + RadOffX + LogicPage->x_pos(),
+      RadY + RadOffY + LogicPage->y_pos(), RadIWidth, RadIHeight);
 
   Draw_Box(RadX + RadOffX - 1, RadY + RadOffY - 1, RadIWidth + 2,
            RadIHeight + 2, BOXSTYLE_RAISED, true);
@@ -1330,7 +1329,7 @@ void RadarClass::Radar_Anim() {
                 SHAPE_NORMAL);
 
   Flag_To_Redraw(false);
-  Set_Logic_Page(oldpage);
+  SetLogicPage(oldpage);
 }
 
 /***********************************************************************************************
@@ -1692,8 +1691,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
         /*
         ** Blit the section that is actually overlapping.
         */
-        if (OverlappedVideoBlits ||
-            !TheScreen().hidden_view().Get_IsDirectDraw()) {
+        if (OverlappedVideoBlits || !TheScreen().hidden_view().NeedsLock()) {
           TheScreen().hidden_view().Blit(
               TheScreen().hidden_view(),
               ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
@@ -1896,7 +1894,7 @@ void RadarClass::Player_Names(bool on) {
 void RadarClass::Draw_Names() const {
   char txt[40];
   int color = 0;
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
   /*
   ** Do nothing if the sidebar isn't there
@@ -1907,9 +1905,9 @@ void RadarClass::Draw_Names() const {
 
   CC_Draw_Shape(RadarAnim, kRadarActivatedFrame, RadX, RadY + 1, WINDOW_MAIN,
                 SHAPE_NORMAL);
-  LogicPage->Fill_Rect(RadX + RadOffX, RadY + RadOffY,
-                       RadX + RadOffX + RadIWidth - 1,
-                       RadY + RadOffY + RadIHeight - 1, kBlack);
+  LogicPage->FillRect(RadX + RadOffX, RadY + RadOffY,
+                      RadX + RadOffX + RadIWidth - 1,
+                      RadY + RadOffY + RadIHeight - 1, kBlack);
 
   int y = RadY + RadOffY;
 
@@ -1922,8 +1920,8 @@ void RadarClass::Draw_Names() const {
 
   y += (6 * factor) + 1;
 
-  LogicPage->Draw_Line(RadX + RadOffX, y, RadX + RadOffX + RadIWidth - 1, y,
-                       kLtGrey);
+  LogicPage->DrawLine(RadX + RadOffX, y, RadX + RadOffX + RadIWidth - 1, y,
+                      kLtGrey);
 
   y += 2 * factor;
 

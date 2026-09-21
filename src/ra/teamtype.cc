@@ -150,8 +150,8 @@ void TeamTypeClass::Draw_It(int /*unused*/, int x, int y, int width, int height,
         font == static_cast<uint32_t>(TPF_EFNT)) {
       if (selected) {
         flags = flags | TPF_BRIGHT_COLOR;
-        LogicPage->Fill_Rect(x, y, x + width - 1, y + height - 1,
-                             scheme->Shadow);
+        LogicPage->FillRect(x, y, x + width - 1, y + height - 1,
+                            scheme->Shadow);
       } else {
         if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
           flags = flags | TPF_MEDIUM_COLOR;
@@ -595,7 +595,7 @@ void TeamMissionClass::Draw_It(int index, int x, int y, int width, int height,
       font == static_cast<uint32_t>(TPF_EFNT)) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->Fill_Rect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
+      LogicPage->FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;
@@ -957,7 +957,7 @@ bool TeamTypeClass::Edit() {
   /*
   **	Initialize
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   **	Create the list

@@ -85,7 +85,7 @@ class Surface {
   int Get_Size() const { return (Bytes_Per_Line() * Height); }
   int Get_Width() const { return (Width); }
   int Get_Height() const { return (Height); }
-  int Get_Pitch() const { return (Pitch); }
+  int pitch() const { return (Pitch); }
 
  protected:
   int Bytes_Per_Line() const { return (Width + Pitch); }

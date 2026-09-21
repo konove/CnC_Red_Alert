@@ -607,7 +607,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   absl::SNPrintF(scen_buf, sizeof(scen_buf), "%d",
                  (*scen_nump));  // init edit buffer
@@ -994,7 +994,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*........................................................................
   Set up the actual map area relative to the map's border coords
@@ -1060,17 +1060,16 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         ..................... Draw the map border .......................
         */
         LogicPage->Lock();
-        LogicPage->Draw_Rect(kBordX1, kBordY1, kBordX2, kBordY2,
-                             kCcGreenShadow);
+        LogicPage->DrawRect(kBordX1, kBordY1, kBordX2, kBordY2, kCcGreenShadow);
         for (int index = kBordX1; index < kBordX2;
              index += (320 / ICON_PIXEL_W)) {
-          LogicPage->Put_Pixel(index, kBordY1 - 1, kCcGreenShadow);
-          LogicPage->Put_Pixel(index, kBordY2 + 1, kCcGreenShadow);
+          LogicPage->PutPixel(index, kBordY1 - 1, kCcGreenShadow);
+          LogicPage->PutPixel(index, kBordY2 + 1, kCcGreenShadow);
         }
         for (int index = kBordY1; index < kBordY2 - 8;
              index += (200 / ICON_PIXEL_H)) {
-          LogicPage->Put_Pixel(kBordX1 - 1, index, kCcGreenShadow);
-          LogicPage->Put_Pixel(kBordX2 + 1, index, kCcGreenShadow);
+          LogicPage->PutPixel(kBordX1 - 1, index, kCcGreenShadow);
+          LogicPage->PutPixel(kBordX2 + 1, index, kCcGreenShadow);
         }
 
         /*...............................................................
@@ -1145,8 +1144,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         .................... Erase the map interior .....................
         */
-        LogicPage->Fill_Rect(kBordX1 + 1, kBordY1 + 1, kBordX2 - 1, kBordY2 - 1,
-                             kBlack);
+        LogicPage->FillRect(kBordX1 + 1, kBordY1 + 1, kBordX2 - 1, kBordY2 - 1,
+                            kBlack);
 
         /*...............................................................
         Draw Land map symbols (use color according to Ground[] array).
@@ -1155,9 +1154,9 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           occupier = (*this).at(cell).Cell_Occupier();
           if (occupier == nullptr) {
             color = Ground.at((*this).at(cell).Land_Type()).Color;
-            LogicPage->Put_Pixel(kBordX1 + Cell_X(cell) + 1,
-                                 kBordY1 + Cell_Y(cell) + 1,
-                                 static_cast<unsigned char>(color));
+            LogicPage->PutPixel(kBordX1 + Cell_X(cell) + 1,
+                                kBordY1 + Cell_Y(cell) + 1,
+                                static_cast<unsigned char>(color));
           }
         }
 
@@ -1166,30 +1165,30 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         ................. Draw the actual map location ..................
         */
-        LogicPage->Draw_Rect(map_x1, map_y1, map_x2, map_y2, kWhite);
+        LogicPage->DrawRect(map_x1, map_y1, map_x2, map_y2, kWhite);
         switch (grabbed) {
           case 1:
-            LogicPage->Draw_Line(map_x1, map_y1, map_x1 + 5, map_y1, kBlue);
-            LogicPage->Draw_Line(map_x1, map_y1, map_x1, map_y1 + 5, kBlue);
+            LogicPage->DrawLine(map_x1, map_y1, map_x1 + 5, map_y1, kBlue);
+            LogicPage->DrawLine(map_x1, map_y1, map_x1, map_y1 + 5, kBlue);
             break;
 
           case 2:
-            LogicPage->Draw_Line(map_x2, map_y1, map_x2 - 5, map_y1, kBlue);
-            LogicPage->Draw_Line(map_x2, map_y1, map_x2, map_y1 + 5, kBlue);
+            LogicPage->DrawLine(map_x2, map_y1, map_x2 - 5, map_y1, kBlue);
+            LogicPage->DrawLine(map_x2, map_y1, map_x2, map_y1 + 5, kBlue);
             break;
 
           case 3:
-            LogicPage->Draw_Line(map_x2, map_y2, map_x2 - 5, map_y2, kBlue);
-            LogicPage->Draw_Line(map_x2, map_y2, map_x2, map_y2 - 5, kBlue);
+            LogicPage->DrawLine(map_x2, map_y2, map_x2 - 5, map_y2, kBlue);
+            LogicPage->DrawLine(map_x2, map_y2, map_x2, map_y2 - 5, kBlue);
             break;
 
           case 4:
-            LogicPage->Draw_Line(map_x1, map_y2, map_x1 + 5, map_y2, kBlue);
-            LogicPage->Draw_Line(map_x1, map_y2, map_x1, map_y2 - 5, kBlue);
+            LogicPage->DrawLine(map_x1, map_y2, map_x1 + 5, map_y2, kBlue);
+            LogicPage->DrawLine(map_x1, map_y2, map_x1, map_y2 - 5, kBlue);
             break;
 
           case 5:
-            LogicPage->Draw_Rect(map_x1, map_y1, map_x2, map_y2, kBlue);
+            LogicPage->DrawRect(map_x1, map_y1, map_x2, map_y2, kBlue);
             break;
 
           default:
@@ -1208,16 +1207,16 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
             if (occupier && occupier->Owner() != HOUSE_NONE) {
               color = HouseClass::As_Pointer(occupier->Owner())->Color;
             }
-            LogicPage->Put_Pixel(kBordX1 + Cell_X(cell) + 1,
-                                 kBordY1 + Cell_Y(cell) + 1,
-                                 static_cast<unsigned char>(color));
+            LogicPage->PutPixel(kBordX1 + Cell_X(cell) + 1,
+                                kBordY1 + Cell_Y(cell) + 1,
+                                static_cast<unsigned char>(color));
           }
         }
 
         /*
         ...................... Draw Home location .......................
         */
-        LogicPage->Put_Pixel(
+        LogicPage->PutPixel(
             kBordX1 + Cell_X(base::At(TheWorld().waypoint(), kWayptHome)) + 1,
             kBordY1 + Cell_Y(base::At(TheWorld().waypoint(), kWayptHome)) + 1,
             kWhite);
@@ -1225,9 +1224,9 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
         /*
         ..................... Erase old coordinates .....................
         */
-        LogicPage->Fill_Rect(kDialogX + 7, kDialogY + kDialogH - kOkH - 10 - 22,
-                             kDialogX + kDialogW - 7,
-                             kDialogY + kDialogH - kOkH - 10 - 22 + 10, kBlack);
+        LogicPage->FillRect(kDialogX + 7, kDialogY + kDialogH - kOkH - 10 - 22,
+                            kDialogX + kDialogW - 7,
+                            kDialogY + kDialogH - kOkH - 10 - 22 + 10, kBlack);
 
         /*
         ..................... Draw the coordinates ......................
@@ -1733,7 +1732,7 @@ int MapEditClass::Scenario_Dialog() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   .......................... Fill in theater items .........................
@@ -2336,7 +2335,7 @@ int MapEditClass::Select_Trigger() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   ......................... Fill in trigger names ..........................
@@ -2351,7 +2350,7 @@ int MapEditClass::Select_Trigger() {
     - House is 3 characters
     - Team name is up to 11 characters
     .....................................................................*/
-    // trigtext[i] = (char *)HidPage.Get_Graphic_Buffer()->Get_Buffer() + 60 *
+    // trigtext[i] = (char *)HidPage.graphic_buffer()->Get_Buffer() + 60 *
     // i;
     constexpr int kTrigTextSize = 255;
     base::At(trigtext, i) = new char[kTrigTextSize];
@@ -2814,7 +2813,7 @@ int MapEditClass::Edit_Trigger() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   ....................... Set default button states ........................
@@ -3266,7 +3265,7 @@ int MapEditClass::Import_Triggers() {
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
       kCancelY, kCancelW, kCancelH);
 
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*------------------------------------------------------------------------
   Read the MASTER.INI file
@@ -3593,7 +3592,7 @@ int MapEditClass::Import_Teams() {
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCancelX,
       kCancelY, kCancelW, kCancelH);
 
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*------------------------------------------------------------------------
   Read the MASTER.INI file

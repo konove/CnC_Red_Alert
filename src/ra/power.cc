@@ -177,7 +177,7 @@ void PowerClass::Draw_It(bool complete) {
         remap = FadingRed;
       }
 
-      //				LogicPage->Fill_Rect(kPowerX, kPowerY,
+      //				LogicPage->FillRect(kPowerX, kPowerY,
       // kPowerX+kPowerWidth-1, kPowerY+kPowerHeight-1, LTGREY);
       CC_Draw_Shape(PowerBarShape, 0, 480, 176, WINDOW_MAIN,
                     flags | SHAPE_NORMAL | SHAPE_WIN_REL, remap);
@@ -231,10 +231,10 @@ void PowerClass::Draw_It(bool complete) {
         drain_height = drain_height * (152 + 1) / (106 + 1);
         bottom = 350 + 1;
 
-        LogicPage->Fill_Rect(490, bottom - power_height, 490 + 1, bottom,
-                             static_cast<unsigned char>(color2));
-        LogicPage->Fill_Rect(492, bottom - power_height, 492 + 1, bottom,
-                             static_cast<unsigned char>(color1));
+        LogicPage->FillRect(490, bottom - power_height, 490 + 1, bottom,
+                            static_cast<unsigned char>(color2));
+        LogicPage->FillRect(492, bottom - power_height, 492 + 1, bottom,
+                            static_cast<unsigned char>(color1));
       }
 
       /*

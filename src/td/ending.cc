@@ -174,8 +174,8 @@ void Nod_Ending() {
       Set_Font(TheAssets().font(FontType::kScore));
   PseudoSeenBuff = new GraphicBufferClass(320, 200, {});
   TextPrintBuffer =
-      new GraphicBufferClass(TheScreen().visible_view().Get_Width(),
-                             TheScreen().visible_view().Get_Height(), {});
+      new GraphicBufferClass(TheScreen().visible_view().width(),
+                             TheScreen().visible_view().height(), {});
   TextPrintBuffer->Clear();
   BlitList.Clear();
   TheScreen().visible_view().Clear();
@@ -279,8 +279,8 @@ void Nod_Ending() {
     }
   }
   // erase the "choose a target" text
-  TheScreen().visible_view().Fill_Rect(0, 360, 638, 398, 0);
-  TextPrintBuffer->Fill_Rect(0, 360, 638, 398, 0);
+  TheScreen().visible_view().FillRect(0, 360, 638, 398, 0);
+  TextPrintBuffer->FillRect(0, 360, 638, 398, 0);
 
   Hide_Mouse();
   Keyboard::Clear();

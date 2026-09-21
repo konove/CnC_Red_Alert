@@ -837,7 +837,7 @@ void Do_Win() {
     /*
     **	Announce win to player.
     */
-    Set_Logic_Page(TheScreen().visible_view());
+    SetLogicPage(TheScreen().visible_view());
     TheMap().Flag_To_Redraw(true);
     TheMap().Render();
     Fancy_Text_Print(TXT_SCENARIO_WON, x, 180,
@@ -1052,7 +1052,7 @@ void Do_Lose() {
   /*
   **	Announce win to player.
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   Fancy_Text_Print(TXT_SCENARIO_LOST, x, 180,
                    &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
@@ -1143,7 +1143,7 @@ void Do_Draw() {
   /*
   **	Announce win to player.
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   Fancy_Text_Print(TXT_WOL_DRAW, x, 180,
                    &ThePalettes().color_remaps().at(PCOLOR_RED), kTBlack,
                    TPF_CENTER | TPF_VCR | TPF_USE_GRAD_PAL | TPF_DROPSHADOW);
@@ -1392,13 +1392,13 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   Format_Window_String(buffer, 300, width, height);
   height += numbuttons == 0 ? 30 : 60;
 
-  const int x = (TheScreen().visible_view().Get_Width() - width) / 2;
-  const int y = (TheScreen().visible_view().Get_Height() - height) / 2;
+  const int x = (TheScreen().visible_view().width() - width) / 2;
+  const int y = (TheScreen().visible_view().height() - height) / 2;
 
   /*
   **	Other inits.
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   **	Initialize the button structures. All are initialized, even though one

@@ -19,8 +19,8 @@ TEST(ScreenTest, AsksForA400LineModeByDefault) {
 
 TEST(ScreenTest, MoviePageIsSizedBeforeInit) {
   Screen screen;
-  EXPECT_EQ(screen.sys_mem_page().Get_Width(), 320);
-  EXPECT_EQ(screen.sys_mem_page().Get_Height(), 200);
+  EXPECT_EQ(screen.sys_mem_page().width(), 320);
+  EXPECT_EQ(screen.sys_mem_page().height(), 200);
 }
 
 TEST(ScreenTest, OnlyTheVisibleViewIsVisible) {
@@ -33,8 +33,8 @@ TEST(ScreenTest, OnlyTheVisibleViewIsVisible) {
 
 TEST(ScreenTest, ViewsBelongToTheirPages) {
   Screen screen;
-  EXPECT_EQ(screen.visible_view().Get_Graphic_Buffer(), &screen.visible_page());
-  EXPECT_EQ(screen.hidden_view().Get_Graphic_Buffer(), &screen.hidden_page());
+  EXPECT_EQ(screen.visible_view().graphic_buffer(), &screen.visible_page());
+  EXPECT_EQ(screen.hidden_view().graphic_buffer(), &screen.hidden_page());
 }
 
 TEST(ScreenTest, TheScreenReturnsTheInstalledScreen) {

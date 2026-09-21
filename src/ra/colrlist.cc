@@ -260,8 +260,8 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     **	BOX: Draw a box around the item in the current select color
     */
     case SELECT_BOX:
-      LogicPage->Draw_Rect(x, y, x + width - 2, y + LineHeight - 2,
-                           color->Color);
+      LogicPage->DrawRect(x, y, x + width - 2, y + LineHeight - 2,
+                          color->Color);
       Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors.at(index), kTBlack,
                               TextFlags, width, Tabs);
       break;
@@ -271,14 +271,14 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     */
     case SELECT_BAR:
       if (base::Any(TextFlags & TPF_6PT_GRAD)) {
-        LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
-                             color->Color);
+        LogicPage->FillRect(x, y, x + width - 1, y + LineHeight - 1,
+                            color->Color);
         Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors.at(index),
                                 kTBlack, TextFlags | TPF_BRIGHT_COLOR, width,
                                 Tabs);
       } else {
-        LogicPage->Fill_Rect(x, y, x + width - 2, y + LineHeight - 2,
-                             color->Color);
+        LogicPage->FillRect(x, y, x + width - 2, y + LineHeight - 2,
+                            color->Color);
         Conquer_Clip_Text_Print(Get_Item(index), x, y, Colors.at(index),
                                 kTBlack, TextFlags, width, Tabs);
       }
@@ -288,8 +288,8 @@ void ColorListClass::Draw_Entry(int index, int x, int y, int width,
     **	INVERT: Draw text as the background color on foreground color
     */
     case SELECT_INVERT:
-      LogicPage->Fill_Rect(x, y, x + width - 1, y + LineHeight - 1,
-                           Colors.at(index)->Color);
+      LogicPage->FillRect(x, y, x + width - 1, y + LineHeight - 1,
+                          Colors.at(index)->Color);
       break;
     default:
       break;

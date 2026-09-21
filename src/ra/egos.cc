@@ -217,7 +217,7 @@ bool EgoClass::Scroll(int distance) {
  * HISTORY: * 9/9/96 11:57PM ST : Created *
  *=============================================================================================*/
 void EgoClass::Render() const {
-  if (YPos < LogicPage->Get_Height() && YPos > -16) {
+  if (YPos < LogicPage->height() && YPos > -16) {
     Fancy_Text_Print(Text, XPos, YPos, GadgetClass::Get_Color_Scheme(), kTBlack,
                      Flags);
   }
@@ -295,8 +295,8 @@ static void Slide_Show(int slide, int frame) {
     */
     base::At(SlideBuffers, slide)
         ->Blit(*BackgroundPage, 0, (frame - 1) * CHUNK_HEIGHT, 0,
-               (frame - 1) * CHUNK_HEIGHT,
-               TheScreen().visible_view().Get_Width(), CHUNK_HEIGHT, false);
+               (frame - 1) * CHUNK_HEIGHT, TheScreen().visible_view().width(),
+               CHUNK_HEIGHT, false);
     return;
   }
 
@@ -306,7 +306,7 @@ static void Slide_Show(int slide, int frame) {
     */
     BackgroundPage->Blit(
         TheScreen().hidden_view(), 0, (frame - 5) * CHUNK_HEIGHT, 0,
-        (frame - 5) * CHUNK_HEIGHT, TheScreen().visible_view().Get_Width(),
+        (frame - 5) * CHUNK_HEIGHT, TheScreen().visible_view().width(),
         CHUNK_HEIGHT, false);
     return;
   }
@@ -450,7 +450,7 @@ void Show_Who_Was_Responsible() {
   int startcolumn = 0;
   int endcolumn = 0;
   int x = 0;
-  const int y = TheScreen().visible_view().Get_Height() + 2;
+  const int y = TheScreen().visible_view().height() + 2;
   EgoClass* ego = nullptr;
   /*
   ** Search through the text file and extract the strings, using each string to
@@ -558,13 +558,13 @@ void Show_Who_Was_Responsible() {
 
         if (startcolumn < 40 && endcolumn > 40) {
           flags = flags | TPF_CENTER;
-          x = TheScreen().visible_view().Get_Width() / 2;
+          x = TheScreen().visible_view().width() / 2;
         } else {
           if (startcolumn < 40) {
             flags = flags | TPF_RIGHT;
-            x = endcolumn * TheScreen().visible_view().Get_Width() / 80;
+            x = endcolumn * TheScreen().visible_view().width() / 80;
           } else {
-            x = startcolumn * TheScreen().visible_view().Get_Width() / 80;
+            x = startcolumn * TheScreen().visible_view().width() / 80;
           }
         }
 
@@ -680,8 +680,8 @@ void Show_Who_Was_Responsible() {
   for (int index = 0; index < NUM_SLIDES; index++) {
     base::At(SlideBuffers, index) = new GraphicBufferClass;
     base::At(SlideBuffers, index)
-        ->Init(TheScreen().visible_view().Get_Width(),
-               TheScreen().visible_view().Get_Height(), {}, 0, GBC_NONE);
+        ->Init(TheScreen().visible_view().width(),
+               TheScreen().visible_view().height(), {}, 0, GBC_NONE);
     Load_Title_Screen(base::Suffix(base::At(SlideNames, index), 0).data(),
                       base::At(SlideBuffers, index),
                       base::At(SlidePals, index));
@@ -691,8 +691,8 @@ void Show_Who_Was_Responsible() {
   // to black so we can start scrolling before the first slideshow picture is
   // blitted.
   BackgroundPage = new GraphicBufferClass;
-  BackgroundPage->Init(TheScreen().visible_view().Get_Width(),
-                       TheScreen().visible_view().Get_Height(), {}, 0,
+  BackgroundPage->Init(TheScreen().visible_view().width(),
+                       TheScreen().visible_view().height(), {}, 0,
                        GBC_VIDEOMEM);
 
   TheScreen().visible_view().Blit(*BackgroundPage);
@@ -702,7 +702,7 @@ void Show_Who_Was_Responsible() {
   */
   TheKeyboard().Clear();
 
-  Set_Logic_Page(TheScreen().hidden_view());
+  SetLogicPage(TheScreen().hidden_view());
 
   /*
   ** Start any old song.
@@ -808,8 +808,8 @@ void Show_Who_Was_Responsible() {
     ** clip vertically and looks ugly when it suddenly appears and disappears.
     */
     TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 16, 0, 16,
-                                   TheScreen().visible_view().Get_Width(),
-                                   TheScreen().visible_view().Get_Height() - 32,
+                                   TheScreen().visible_view().width(),
+                                   TheScreen().visible_view().height() - 32,
                                    false);
 
     /*
@@ -817,10 +817,10 @@ void Show_Who_Was_Responsible() {
     */
     if (frame) {
       for (int i = slide_number + 1; i < NUM_SLIDES; i++) {
-        if (!base::At(SlideBuffers, i)->Get_IsDirectDraw()) {
-          Force_VM_Page_In(base::At(SlideBuffers, i)->Get_Offset(),
-                           TheScreen().visible_view().Get_Width() *
-                               TheScreen().visible_view().Get_Height());
+        if (!base::At(SlideBuffers, i)->NeedsLock()) {
+          Force_VM_Page_In(base::At(SlideBuffers, i)->offset(),
+                           TheScreen().visible_view().width() *
+                               TheScreen().visible_view().height());
         }
       }
     }

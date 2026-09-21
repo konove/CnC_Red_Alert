@@ -1905,8 +1905,8 @@ void TemplateTypeClass::Display(int x, int y, WindowNumberType window,
   for (int index = 0; index < w * h; index++) {
     if (static_cast<size_t>(index) < map.size() &&
         base::At(map, static_cast<size_t>(index)) != 0xFF) {
-      TheScreen().hidden_view().Draw_Stamp(Get_Image_Data(), index, 0, 0, {},
-                                           static_cast<int>(WINDOW_MAIN));
+      TheScreen().hidden_view().DrawStamp(Get_Image_Data(), index, 0, 0, {},
+                                          static_cast<int>(WINDOW_MAIN));
       if (scale) {
         TheScreen().hidden_view().Scale(
             (*LogicPage), 0, 0, x + ((index % w) * (ICON_PIXEL_W / 2)),

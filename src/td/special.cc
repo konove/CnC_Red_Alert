@@ -174,7 +174,7 @@ void Special_Dialog() {
   }
 
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   bool display = true;
   bool process = true;
   while (process) {

@@ -208,7 +208,7 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot,
   if (WindowBuffer) {
     // Sync cursor palette with game palette. Index 0 is transparent.
     const auto* window_pal =
-        static_cast<const SDL_Palette*>(WindowBuffer->Get_Palette());
+        static_cast<const SDL_Palette*>(WindowBuffer->palette());
     // SDL owns ncolors color entries in this palette.
     SDL_SetPaletteColors(
         sdl_surf->format->palette,
@@ -297,7 +297,7 @@ void WWMouseClass::Update_Palette() {
   PaletteDirty = false;
 
   const auto* window_pal =
-      static_cast<const SDL_Palette*>(WindowBuffer->Get_Palette());
+      static_cast<const SDL_Palette*>(WindowBuffer->palette());
   // SDL owns ncolors entries in the window palette.
   SDL_SetPaletteColors(
       sdl_surface_->format->palette,

@@ -546,8 +546,8 @@ void Map_Selection() {
   ** Extra graphic buffer to draw text into
   */
   TextPrintBuffer =
-      new GraphicBufferClass(TheScreen().visible_view().Get_Width(),
-                             TheScreen().visible_view().Get_Height(), {});
+      new GraphicBufferClass(TheScreen().visible_view().width(),
+                             TheScreen().visible_view().height(), {});
   TextPrintBuffer->Clear();
   BlitList.Clear();
 
@@ -594,8 +594,8 @@ void Map_Selection() {
   greyearth.DrawFrame(TheScreen().sys_mem_page(), 0);
 
   Bit_It_In(0, 0, 320, 200, &TheScreen().sys_mem_page(), PseudoSeenBuff);
-  PseudoSeenBuff->Put_Pixel(237, 92, kTBlack);
-  PseudoSeenBuff->Put_Pixel(237, 93, kTBlack);
+  PseudoSeenBuff->PutPixel(237, 92, kTBlack);
+  PseudoSeenBuff->PutPixel(237, 93, kTBlack);
 
   Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), "MAP1.PAL");
 
@@ -689,13 +689,13 @@ void Map_Selection() {
         break;
 
       case 16:
-        TextPrintBuffer->Fill_Rect(
+        TextPrintBuffer->FillRect(
             0, 20, 2 * String_Pixel_Width(Text_String(TXT_READING_IMAGE_DATA)),
             2 * (10 + 12), kBlack);
         break;
 
       case 17:
-        TextPrintBuffer->Fill_Rect(
+        TextPrintBuffer->FillRect(
             0, 20, 2 * String_Pixel_Width(Text_String(TXT_READING_IMAGE_DATA)),
             2 * (10 + 12), kTBlack);
         Alloc_Object(
@@ -703,13 +703,13 @@ void Map_Selection() {
         break;
 
       case 33:
-        TextPrintBuffer->Fill_Rect(
+        TextPrintBuffer->FillRect(
             0, 20, 2 * String_Pixel_Width(Text_String(TXT_ANALYZING)),
             2 * (10 + 12), kBlack);
         break;
 
       case 34:
-        TextPrintBuffer->Fill_Rect(
+        TextPrintBuffer->FillRect(
             0, 20, 2 * String_Pixel_Width(Text_String(TXT_ANALYZING)),
             2 * (10 + 12), kTBlack);
         Alloc_Object(new MultiStagePrintClass(
@@ -717,14 +717,14 @@ void Map_Selection() {
         break;
 
       case 44:
-        TextPrintBuffer->Fill_Rect(
+        TextPrintBuffer->FillRect(
             0, 20,
             2 * String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE_DATA)),
             2 * (10 + 12), kBlack);
         break;
 
       case 45:
-        TextPrintBuffer->Fill_Rect(
+        TextPrintBuffer->FillRect(
             0, 20,
             2 * String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE_DATA)),
             2 * (10 + 12), kTBlack);
@@ -734,17 +734,17 @@ void Map_Selection() {
         break;
 
       case 70:
-        TextPrintBuffer->Fill_Rect(0, 20,
-                                   2 * String_Pixel_Width(Text_String(
-                                           TXT_ISOLATING_OPERATIONAL_THEATER)),
-                                   2 * (10 + 12), kBlack);
+        TextPrintBuffer->FillRect(0, 20,
+                                  2 * String_Pixel_Width(Text_String(
+                                          TXT_ISOLATING_OPERATIONAL_THEATER)),
+                                  2 * (10 + 12), kBlack);
         break;
 
       case 71:
-        TextPrintBuffer->Fill_Rect(0, 20,
-                                   2 * String_Pixel_Width(Text_String(
-                                           TXT_ISOLATING_OPERATIONAL_THEATER)),
-                                   2 * (10 + 12), kTBlack);
+        TextPrintBuffer->FillRect(0, 20,
+                                  2 * String_Pixel_Width(Text_String(
+                                          TXT_ISOLATING_OPERATIONAL_THEATER)),
+                                  2 * (10 + 12), kTBlack);
         Alloc_Object(new MultiStagePrintClass(
             Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES), 0, 10,
             _othergreenpal));
@@ -762,15 +762,15 @@ void Map_Selection() {
     Call_Back_Delay(/*Keyboard::Check() ? 0 :*/ 3);
   }
 
-  TextPrintBuffer->Fill_Rect(0, 20,
-                             2 * String_Pixel_Width(Text_String(
-                                     TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
-                             2 * (10 + 24), kBlack);
+  TextPrintBuffer->FillRect(0, 20,
+                            2 * String_Pixel_Width(Text_String(
+                                    TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
+                            2 * (10 + 24), kBlack);
   Call_Back_Delay(1);
-  TextPrintBuffer->Fill_Rect(0, 20,
-                             2 * String_Pixel_Width(Text_String(
-                                     TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
-                             2 * (10 + 24), kTBlack);
+  TextPrintBuffer->FillRect(0, 20,
+                            2 * String_Pixel_Width(Text_String(
+                                    TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
+                            2 * (10 + 24), kTBlack);
   Call_Back_Delay(1);
 
   anim.Close();
@@ -789,9 +789,8 @@ void Map_Selection() {
 
   Increase_Palette_Luminance(progresspalette, 30, 30, 30, 63);
 
-  auto* europe =
-      new GraphicBufferClass(TheScreen().sys_mem_page().Get_Width(),
-                             TheScreen().sys_mem_page().Get_Height());
+  auto* europe = new GraphicBufferClass(TheScreen().sys_mem_page().width(),
+                                        TheScreen().sys_mem_page().height());
   TheScreen().sys_mem_page().Blit(*europe);
 
   /*
@@ -831,13 +830,12 @@ void Map_Selection() {
   ** Now dissolve in second advance of territories
   */
 #ifdef FRENCH
-  PseudoSeenBuff->Fill_Rect(xcoord, 0, xcoord + 6 * 16 + 10, 8, kBlack);
-  TextPrintBuffer->Fill_Rect(xcoord * 2, 0, 2 * (xcoord + 6 * 16 + 10), 16,
-                             kBlack);
+  PseudoSeenBuff->FillRect(xcoord, 0, xcoord + 6 * 16 + 10, 8, kBlack);
+  TextPrintBuffer->FillRect(xcoord * 2, 0, 2 * (xcoord + 6 * 16 + 10), 16,
+                            kBlack);
 #else
-  PseudoSeenBuff->Fill_Rect(xcoord, 0, xcoord + (6 * 16), 8, kBlack);
-  TextPrintBuffer->Fill_Rect(2 * xcoord, 0, 2 * (xcoord + (6 * 16)), 16,
-                             kBlack);
+  PseudoSeenBuff->FillRect(xcoord, 0, xcoord + (6 * 16), 8, kBlack);
+  TextPrintBuffer->FillRect(2 * xcoord, 0, 2 * (xcoord + (6 * 16)), 16, kBlack);
 #endif
 
   Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), {});
@@ -863,13 +861,13 @@ void Map_Selection() {
   }
 //	Set_Font(oldfont);
 #ifdef FRENCH
-  PseudoSeenBuff->Fill_Rect(xcoord, 12, xcoord + 6 * 16 + 10, 20, kBlack);
-  TextPrintBuffer->Fill_Rect(2 * xcoord, 24, 2 * (xcoord + 6 * 16 + 10), 40,
-                             kBlack);
+  PseudoSeenBuff->FillRect(xcoord, 12, xcoord + 6 * 16 + 10, 20, kBlack);
+  TextPrintBuffer->FillRect(2 * xcoord, 24, 2 * (xcoord + 6 * 16 + 10), 40,
+                            kBlack);
 #else
-  PseudoSeenBuff->Fill_Rect(xcoord, 12, xcoord + (6 * 16), 20, kBlack);
-  TextPrintBuffer->Fill_Rect(2 * xcoord, 24, 2 * (xcoord + (6 * 16)), 40,
-                             kBlack);
+  PseudoSeenBuff->FillRect(xcoord, 12, xcoord + (6 * 16), 20, kBlack);
+  TextPrintBuffer->FillRect(2 * xcoord, 24, 2 * (xcoord + (6 * 16)), 40,
+                            kBlack);
 #endif
 
   Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), {});
@@ -895,17 +893,17 @@ void Map_Selection() {
   */
   if (lastscenario) {
 #if (defined(GERMAN) || defined(FRENCH))
-    TheScreen().sys_mem_page().Fill_Rect(0, 160, 20 * 6, 186, kTBlack);
-    PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 186, kTBlack);
-    TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 372, kBlack);
-    TheScreen().visible_view().Fill_Rect(0, 320, 40 * 6, 372, kTBlack);
-    TheScreen().hidden_view().Fill_Rect(0, 320, 40 * 6, 372, kTBlack);
+    TheScreen().sys_mem_page().FillRect(0, 160, 20 * 6, 186, kTBlack);
+    PseudoSeenBuff->FillRect(0, 160, 20 * 6, 186, kTBlack);
+    TextPrintBuffer->FillRect(0, 320, 40 * 6, 372, kBlack);
+    TheScreen().visible_view().FillRect(0, 320, 40 * 6, 372, kTBlack);
+    TheScreen().hidden_view().FillRect(0, 320, 40 * 6, 372, kTBlack);
 #else
-    TheScreen().sys_mem_page().Fill_Rect(0, 160, 20 * 6, 176, kTBlack);
-    PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 176, kTBlack);
-    TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 352, kBlack);
-    TheScreen().visible_view().Fill_Rect(0, 320, 40 * 6, 352, kTBlack);
-    TheScreen().hidden_view().Fill_Rect(0, 320, 40 * 6, 352, kTBlack);
+    TheScreen().sys_mem_page().FillRect(0, 160, 20 * 6, 176, kTBlack);
+    PseudoSeenBuff->FillRect(0, 160, 20 * 6, 176, kTBlack);
+    TextPrintBuffer->FillRect(0, 320, 40 * 6, 352, kBlack);
+    TheScreen().visible_view().FillRect(0, 320, 40 * 6, 352, kTBlack);
+    TheScreen().hidden_view().FillRect(0, 320, 40 * 6, 352, kTBlack);
 #endif
     BlitList.Clear();
     Bit_It_In(0, 0, 320, 200, &TheScreen().sys_mem_page(), PseudoSeenBuff);
@@ -958,44 +956,40 @@ void Map_Selection() {
 
         case 35:
           if (house == HOUSE_GOOD) {
-            TextPrintBuffer->Fill_Rect(
+            TextPrintBuffer->FillRect(
                 0, 20, 2 * String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE)),
                 2 * (10 + 12), kBlack);
           } else {
 #ifdef FRENCH
-            TextPrintBuffer->Fill_Rect(
-                360, 20,
-                2 * (180 +
-                     String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE))),
-                2 * (10 + 12), kBlack);
+            TextPrintBuffer->FillRect(360, 20,
+                                      2 * (180 + String_Pixel_Width(Text_String(
+                                                     TXT_ENHANCING_IMAGE))),
+                                      2 * (10 + 12), kBlack);
 #else
-            TextPrintBuffer->Fill_Rect(
-                420, 20,
-                2 * (210 +
-                     String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE))),
-                2 * (10 + 12), kBlack);
+            TextPrintBuffer->FillRect(420, 20,
+                                      2 * (210 + String_Pixel_Width(Text_String(
+                                                     TXT_ENHANCING_IMAGE))),
+                                      2 * (10 + 12), kBlack);
 #endif  //(FRENCH)
           }
           break;
 
         case 36:
           if (house == HOUSE_GOOD) {
-            TextPrintBuffer->Fill_Rect(
+            TextPrintBuffer->FillRect(
                 0, 20, 2 * String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE)),
                 2 * (10 + 12), kTBlack);
           } else {
 #ifdef FRENCH
-            TextPrintBuffer->Fill_Rect(
-                360, 20,
-                2 * (180 +
-                     String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE))),
-                2 * (10 + 12), kTBlack);
+            TextPrintBuffer->FillRect(360, 20,
+                                      2 * (180 + String_Pixel_Width(Text_String(
+                                                     TXT_ENHANCING_IMAGE))),
+                                      2 * (10 + 12), kTBlack);
 #else
-            TextPrintBuffer->Fill_Rect(
-                420, 20,
-                2 * (210 +
-                     String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE))),
-                2 * (10 + 12), kTBlack);
+            TextPrintBuffer->FillRect(420, 20,
+                                      2 * (210 + String_Pixel_Width(Text_String(
+                                                     TXT_ENHANCING_IMAGE))),
+                                      2 * (10 + 12), kTBlack);
 #endif  //(FRENCH)
           }
           break;
@@ -1019,13 +1013,13 @@ void Map_Selection() {
   TheAudio().Play(beepy6, 255, TheOptions().Normalize_Sound(90));
   if (!lastscenario) {
 #if (defined(GERMAN) || defined(FRENCH))
-    TheScreen().sys_mem_page().Fill_Rect(0, 160, 20 * 6, 186, kTBlack);
-    PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 186, kTBlack);
-    TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 372, kBlack);
+    TheScreen().sys_mem_page().FillRect(0, 160, 20 * 6, 186, kTBlack);
+    PseudoSeenBuff->FillRect(0, 160, 20 * 6, 186, kTBlack);
+    TextPrintBuffer->FillRect(0, 320, 40 * 6, 372, kBlack);
 #else
-    TheScreen().sys_mem_page().Fill_Rect(0, 160, 20 * 6, 176, kTBlack);
-    PseudoSeenBuff->Fill_Rect(0, 160, 20 * 6, 176, kTBlack);
-    TextPrintBuffer->Fill_Rect(0, 320, 40 * 6, 352, kBlack);
+    TheScreen().sys_mem_page().FillRect(0, 160, 20 * 6, 176, kTBlack);
+    PseudoSeenBuff->FillRect(0, 160, 20 * 6, 176, kTBlack);
+    TextPrintBuffer->FillRect(0, 320, 40 * 6, 352, kBlack);
 #endif
   }
 
@@ -1072,8 +1066,8 @@ void Map_Selection() {
            selection < base::At(base::At(CountryArray, scenario).Choices,
                                 static_cast<int>(TheWorld().scen_dir()));
            selection++) {
-        color = TheScreen().sys_mem_page().Get_Pixel(Get_Mouse_X() / 2,
-                                                     Get_Mouse_Y() / 2);
+        color = TheScreen().sys_mem_page().GetPixel(Get_Mouse_X() / 2,
+                                                    Get_Mouse_Y() / 2);
 
         /*
         ** Special hack for Egypt the second time through
@@ -1116,15 +1110,15 @@ void Map_Selection() {
 
     Hide_Mouse();
     // erase "Select country to attack"
-    PseudoSeenBuff->Fill_Rect(attackxcoord, 160, attackxcoord + (17 * 6), 178,
-                              kBlack);
-    TextPrintBuffer->Fill_Rect(2 * attackxcoord, 320,
-                               2 * (attackxcoord + (17 * 6)), 2 * 178, kBlack);
+    PseudoSeenBuff->FillRect(attackxcoord, 160, attackxcoord + (17 * 6), 178,
+                             kBlack);
+    TextPrintBuffer->FillRect(2 * attackxcoord, 320,
+                              2 * (attackxcoord + (17 * 6)), 2 * 178, kBlack);
 #if (defined(GERMAN) || defined(FRENCH))
-    PseudoSeenBuff->Fill_Rect(attackxcoord + (17 * 6), 160,
-                              attackxcoord + (21 * 6), 178, kBlack);
-    TextPrintBuffer->Fill_Rect(2 * attackxcoord + (17 * 6 * 2), 320,
-                               2 * (attackxcoord + (21 * 6)), 2 * 178, kBlack);
+    PseudoSeenBuff->FillRect(attackxcoord + (17 * 6), 160,
+                             attackxcoord + (21 * 6), 178, kBlack);
+    TextPrintBuffer->FillRect(2 * attackxcoord + (17 * 6 * 2), 320,
+                              2 * (attackxcoord + (21 * 6)), 2 * 178, kBlack);
 #endif  // GERMAN
 
     Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), {});
@@ -1132,7 +1126,7 @@ void Map_Selection() {
     /*
     ** Draw the country's shape in non-fading colors
     */
-    Set_Logic_Page(TheScreen().sys_mem_page());
+    SetLogicPage(TheScreen().sys_mem_page());
     europe->Blit(TheScreen().sys_mem_page());
     const int shape =
         base::At(base::At(base::At(CountryArray, scenario).CountryShape,
@@ -1172,16 +1166,16 @@ void Map_Selection() {
 
     Hide_Mouse();
 #if (defined(GERMAN) || defined(FRENCH))
-    PseudoSeenBuff->Fill_Rect(attackxcoord, 160, 319, 178,
+    PseudoSeenBuff->FillRect(attackxcoord, 160, 319, 178,
+                             kBlack);  // erase "Select country to attack"
+    TextPrintBuffer->FillRect(2 * attackxcoord, 320, 639, 356,
                               kBlack);  // erase "Select country to attack"
-    TextPrintBuffer->Fill_Rect(2 * attackxcoord, 320, 639, 356,
-                               kBlack);  // erase "Select country to attack"
 #else
-    PseudoSeenBuff->Fill_Rect(attackxcoord, 160, attackxcoord + (17 * 6), 199,
+    PseudoSeenBuff->FillRect(attackxcoord, 160, attackxcoord + (17 * 6), 199,
+                             kBlack);  // erase "Select country to attack"
+    TextPrintBuffer->FillRect(2 * attackxcoord, 320,
+                              2 * (attackxcoord + (17 * 6)), 398,
                               kBlack);  // erase "Select country to attack"
-    TextPrintBuffer->Fill_Rect(2 * attackxcoord, 320,
-                               2 * (attackxcoord + (17 * 6)), 398,
-                               kBlack);  // erase "Select country to attack"
 #endif
     Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(), {});
 
@@ -1661,7 +1655,7 @@ void Bit_It_In(const int x, const int y, const int w, const int h,
           row_offset = 0;
         }
 
-        dest->Buffer_Put_Pixel(
+        dest->PutPixelLocked(
             px, py, static_cast<unsigned char>(Buffer_Get_Pixel(src, px, py)));
       }
       if (dagger) {
@@ -1674,10 +1668,10 @@ void Bit_It_In(const int x, const int y, const int w, const int h,
           const int offset = line - row;
           const int x_left = 160 - offset;
           const int x_right = 160 + offset;
-          dest->Buffer_Put_Pixel(
+          dest->PutPixelLocked(
               x_left, row,
               static_cast<unsigned char>(Buffer_Get_Pixel(src, x_left, row)));
-          dest->Buffer_Put_Pixel(
+          dest->PutPixelLocked(
               x_right, row,
               static_cast<unsigned char>(Buffer_Get_Pixel(src, x_right, row)));
         }

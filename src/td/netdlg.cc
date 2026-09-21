@@ -802,7 +802,7 @@ bool Client_Remote_Connect() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 static int Net_Join_Dialog() {
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -1172,11 +1172,11 @@ static int Net_Join_Dialog() {
       ..................................................................*/
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          LogicPage->Fill_Rect(base::At(cbox_x, i) + 1, d_color_y + 1,
-                               base::At(cbox_x, i) + 1 + d_color_w - 2,
-                               d_color_y + 1 + d_color_h - 2,
-                               static_cast<unsigned char>(
-                                   base::At(TheSession().graphic_colors(), i)));
+          LogicPage->FillRect(base::At(cbox_x, i) + 1, d_color_y + 1,
+                              base::At(cbox_x, i) + 1 + d_color_w - 2,
+                              d_color_y + 1 + d_color_h - 2,
+                              static_cast<unsigned char>(
+                                  base::At(TheSession().graphic_colors(), i)));
 
           if (i == TheSession().color_index()) {
             Draw_Box(base::At(cbox_x, i), d_color_y, d_color_w, d_color_h,
@@ -1200,9 +1200,9 @@ static int Net_Join_Dialog() {
                  BOXSTYLE_GREEN_BORDER, true);
         TheSession().messages().Draw();
 
-        LogicPage->Fill_Rect(d_dialog_x + 2, d_msg1_y,
-                             d_dialog_x + d_dialog_w - 4, d_msg5_y + d_txt6_h,
-                             kBlack);
+        LogicPage->FillRect(d_dialog_x + 2, d_msg1_y,
+                            d_dialog_x + d_dialog_w - 4, d_msg5_y + d_txt6_h,
+                            kBlack);
 
         if (joinstate == JOIN_CONFIRMED && parms_received) {
           /*............................................................
@@ -2847,7 +2847,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
  *=============================================================================================*/
 static int Net_New_Dialog() {
   /* ###Change collision detected! C:\PROJECTS\CODE\NETDLG.CPP... */
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -3272,9 +3272,9 @@ static int Net_New_Dialog() {
       /*
       ** Wipe the background behind the unit count then reprint it
       */
-      LogicPage->Fill_Rect(d_count_x + d_count_w + (2 * factor), d_count_y,
-                           d_count_x + d_count_w + (2 * factor) + 20,
-                           d_count_y + 12, 0);
+      LogicPage->FillRect(d_count_x + d_count_w + (2 * factor), d_count_y,
+                          d_count_x + d_count_w + (2 * factor) + 20,
+                          d_count_y + 12, 0);
       absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
       Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
                        kCcGreen, kTBlack,
@@ -3419,9 +3419,9 @@ static int Net_New_Dialog() {
             base::At(TheSession().unit_count_min(), TheSession().bases());
 
         Hide_Mouse();
-        LogicPage->Fill_Rect(d_count_x + d_count_w + (2 * factor), d_count_y,
-                             d_count_x + d_count_w + (14 * factor),
-                             d_count_y + (6 * factor), kBlack);
+        LogicPage->FillRect(d_count_x + d_count_w + (2 * factor), d_count_y,
+                            d_count_x + d_count_w + (14 * factor),
+                            d_count_y + (6 * factor), kBlack);
 
         absl::SNPrintF(txt, sizeof(txt), "%d", TheSession().unit_count());
         Fancy_Text_Print(txt, d_count_x + d_count_w + (2 * factor), d_count_y,
@@ -3440,9 +3440,9 @@ static int Net_New_Dialog() {
             std::min(levelgauge.Get_Value() + 1, MPLAYER_BUILD_LEVEL_MAX);
 
         Hide_Mouse();
-        LogicPage->Fill_Rect(d_level_x + d_level_w + (2 * factor), d_level_y,
-                             d_level_x + d_level_w + (14 * factor),
-                             d_level_y + (6 * factor), kBlack);
+        LogicPage->FillRect(d_level_x + d_level_w + (2 * factor), d_level_y,
+                            d_level_x + d_level_w + (14 * factor),
+                            d_level_y + (6 * factor), kBlack);
 
         if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
           absl::SNPrintF(txt, sizeof(txt), "%d", TheWorld().build_level());
@@ -4344,7 +4344,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   char buf1[40] = {0};
   char buf2[40] = {0};
 
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
   const int d_txt6_h = (6 * factor) + 1;
   const int d_margin = 5 * factor;
@@ -4376,7 +4376,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     y = (100 * factor) - (h / 2);
 
     Hide_Mouse();
-    Set_Logic_Page(TheScreen().visible_view());
+    SetLogicPage(TheScreen().visible_view());
     Dialog_Box(x, y, w, h);
 
     Fancy_Text_Print(
@@ -4399,16 +4399,16 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     Just update the timeout value on the dialog
     ------------------------------------------------------------------------*/
     Hide_Mouse();
-    Set_Logic_Page(TheScreen().visible_view());
+    SetLogicPage(TheScreen().visible_view());
 
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
                         timeval + 1);
     const int pixwidth = String_Pixel_Width(buf2);
-    LogicPage->Fill_Rect((160 * factor) - (pixwidth / 2) - 12,
-                         y + (d_margin * 2) + d_txt6_h + d_margin,
-                         (160 * factor) + (pixwidth / 2) + 12,
-                         y + (d_margin * 2) + (d_txt6_h * 2) + d_margin,
-                         kTBlack);
+    LogicPage->FillRect((160 * factor) - (pixwidth / 2) - 12,
+                        y + (d_margin * 2) + d_txt6_h + d_margin,
+                        (160 * factor) + (pixwidth / 2) + 12,
+                        y + (d_margin * 2) + (d_txt6_h * 2) + d_margin,
+                        kTBlack);
     Fancy_Text_Print(
         buf2, 160 * factor, y + (d_margin * 2) + d_txt6_h + d_margin, kCcGreen,
         kBlack, TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
@@ -4468,7 +4468,7 @@ static void Wait_For_Focus() {
  * HISTORY: * 5/24/96 10:34AM ST : Created *
  *=============================================================================================*/
 static int Net_Fake_New_Dialog() {
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
   const int d_dialog_w = 120 * factor;                       // dialog width
   const int d_dialog_h = 80 * factor;                        // dialog height
@@ -4509,7 +4509,7 @@ static int Net_Fake_New_Dialog() {
   port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
   Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, TheScreen().visible_view().Get_Height(), width,
+  Format_Window_String(buffer, TheScreen().visible_view().height(), width,
                        height);
 
 #if (defined(GERMAN) || defined(FRENCH))
@@ -4653,7 +4653,7 @@ static int Net_Fake_New_Dialog() {
   if (!TheScreen().IsVisible(LogicPage) &&
       LogicPage != &TheScreen().hidden_view()) {
     CCDebugString("C&C95 - Logic page invalid");
-    Set_Logic_Page(TheScreen().visible_view());
+    SetLogicPage(TheScreen().visible_view());
   }
 
   char a_buffer[128];
@@ -5110,7 +5110,7 @@ static int Net_Fake_New_Dialog() {
  *=============================================================================================*/
 
 static int Net_Fake_Join_Dialog() {
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -5156,7 +5156,7 @@ static int Net_Fake_Join_Dialog() {
   port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
   Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, TheScreen().visible_view().Get_Height(), width,
+  Format_Window_String(buffer, TheScreen().visible_view().height(), width,
                        height);
 
 #if (defined(GERMAN) || defined(FRENCH))
@@ -5272,7 +5272,7 @@ static int Net_Fake_Join_Dialog() {
   if (!TheScreen().IsVisible(LogicPage) &&
       LogicPage != &TheScreen().hidden_view()) {
     CCDebugString("C&C95 - Logic page invalid\n");
-    Set_Logic_Page(TheScreen().visible_view());
+    SetLogicPage(TheScreen().visible_view());
   }
 
   char a_buffer[128];

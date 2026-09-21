@@ -692,7 +692,7 @@ void CellClass::Occupy_Up(ObjectClass* object) {
 #ifdef NEVER
       int x, y;
       if (TheMap().Coord_To_Pixel(Cell_Coord(), x, y)) {
-        TheScreen().visible_view().Put_Pixel(x, y, kBlue);
+        TheScreen().visible_view().PutPixel(x, y, kBlue);
       }
 #endif
       break;
@@ -938,10 +938,10 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
   **	Draw the stamp of the template.
   */
   if (TheDebugState().show_cell_info()) {
-    LogicPage->Fill_Rect(TheMap().TacPixelX + x, TheMap().TacPixelY + y,
-                         TheMap().TacPixelX + x + ICON_PIXEL_W - 1,
-                         TheMap().TacPixelY + y + ICON_PIXEL_H - 1,
-                         static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
+    LogicPage->FillRect(TheMap().TacPixelX + x, TheMap().TacPixelY + y,
+                        TheMap().TacPixelX + x + ICON_PIXEL_W - 1,
+                        TheMap().TacPixelY + y + ICON_PIXEL_H - 1,
+                        static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
     FontXSpacing -= 2;
     Fancy_Text_Print(
         "%d\r%2X%c\r%02X.%02X", TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1),
@@ -979,8 +979,8 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       **	This is the underlying terrain icon.
       */
       if (!ttype->Get_Image_Data().empty()) {
-        LogicPage->Draw_Stamp(ttype->Get_Image_Data(), icon, x, y, {},
-                              static_cast<int>(WINDOW_TACTICAL));
+        LogicPage->DrawStamp(ttype->Get_Image_Data(), icon, x, y, {},
+                             static_cast<int>(WINDOW_TACTICAL));
         if (!remap.empty()) {
           LogicPage->Remap(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
                            ICON_PIXEL_W, ICON_PIXEL_H, remap);
@@ -996,10 +996,10 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
         */
         if (TheDebugState().map_editor_active() &&
             TheWorld().current_cell() == Cell_Number()) {
-          LogicPage->Draw_Rect(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
-                               TheMap().TacPixelX + x + CELL_PIXEL_W - 1,
-                               TheMap().TacPixelY + y + CELL_PIXEL_H - 1,
-                               kYellow);
+          LogicPage->DrawRect(x + TheMap().TacPixelX, y + TheMap().TacPixelY,
+                              TheMap().TacPixelX + x + CELL_PIXEL_W - 1,
+                              TheMap().TacPixelY + y + CELL_PIXEL_H - 1,
+                              kYellow);
         }
       }
 
@@ -1010,7 +1010,7 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
       **	piece.
       */
       if (Concrete) {
-        LogicPage->Draw_Stamp(
+        LogicPage->DrawStamp(
             TemplateTypeClass::As_Pointer(TEMPLATE_CONCRETE_GDI)
                 ->Get_Image_Data(),
             Concrete - 1, x, y, NULL, WINDOW_TACTICAL);
@@ -1109,11 +1109,11 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
         **	Draw the hash-mark cursor:
         */
         if (TheMap().ProximityCheck && Is_Generally_Clear()) {
-          LogicPage->Draw_Stamp(MouseClass::TransIconset, 0, x, y, {},
-                                static_cast<int>(WINDOW_TACTICAL));
+          LogicPage->DrawStamp(MouseClass::TransIconset, 0, x, y, {},
+                               static_cast<int>(WINDOW_TACTICAL));
         } else {
-          LogicPage->Draw_Stamp(MouseClass::TransIconset, 2, x, y, {},
-                                static_cast<int>(WINDOW_TACTICAL));
+          LogicPage->DrawStamp(MouseClass::TransIconset, 2, x, y, {},
+                               static_cast<int>(WINDOW_TACTICAL));
         }
 
         if constexpr (config::kScenarioEditorEnabled) {
@@ -1137,8 +1137,8 @@ void CellClass::Draw_It(int x, int y, int draw_type) const {
                            Cell_Y(static_cast<CELL>(TheMap().ZoneCell +
                                                     TheMap().ZoneOffset))) *
                           tptr->Width);
-                  LogicPage->Draw_Stamp(tptr->Get_Image_Data(), icon, x, y, {},
-                                        static_cast<int>(WINDOW_TACTICAL));
+                  LogicPage->DrawStamp(tptr->Get_Image_Data(), icon, x, y, {},
+                                       static_cast<int>(WINDOW_TACTICAL));
                 }
                 break;
 

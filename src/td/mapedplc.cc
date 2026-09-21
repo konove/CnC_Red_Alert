@@ -429,7 +429,7 @@ int MapEditClass::Placement_Dialog() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   if (LastChoice >= ObjCount) {
     LastChoice = 0;
   }
@@ -531,9 +531,9 @@ int MapEditClass::Placement_Dialog() {
         /*
         ........................ Erase the grid .........................
         */
-        LogicPage->Fill_Rect(kGridX - (kGridblockW * 2), kGridY,
-                             kGridX + (kGridsize * kGridblockW),
-                             kGridY + (kGridsize * kGridblockH), kBlack);
+        LogicPage->FillRect(kGridX - (kGridblockW * 2), kGridY,
+                            kGridX + (kGridsize * kGridblockW),
+                            kGridY + (kGridsize * kGridblockH), kBlack);
 
         /*
         .............. Draw a box for every cell occupied ...............
@@ -545,8 +545,8 @@ int MapEditClass::Placement_Dialog() {
           occupy = occupy.subspan(1);
           x = kGridX + ((cell % MAP_CELL_W) * kGridblockW);
           y = kGridY + ((cell / MAP_CELL_W) * kGridblockH);
-          LogicPage->Fill_Rect(x, y, x + kGridblockW - 1, y + kGridblockH - 1,
-                               kCcBrightGreen);
+          LogicPage->FillRect(x, y, x + kGridblockW - 1, y + kGridblockH - 1,
+                              kCcBrightGreen);
         }
 
         /*
@@ -554,13 +554,13 @@ int MapEditClass::Placement_Dialog() {
         */
         for (y = 0; y <= kGridsize; y++) {
           for (x = 0; x <= kGridsize; x++) {
-            LogicPage->Draw_Line(
+            LogicPage->DrawLine(
                 kGridX + (x * kGridblockW), kGridY, kGridX + (x * kGridblockW),
                 kGridY + (kGridsize * kGridblockH), kCcGreenShadow);
           }
-          LogicPage->Draw_Line(kGridX, kGridY + (y * kGridblockH),
-                               kGridX + (kGridsize * kGridblockW),
-                               kGridY + (y * kGridblockH), kCcGreenShadow);
+          LogicPage->DrawLine(kGridX, kGridY + (y * kGridblockH),
+                              kGridX + (kGridsize * kGridblockW),
+                              kGridY + (y * kGridblockH), kCcGreenShadow);
         }
 
         /*...............................................................

@@ -594,15 +594,14 @@ static void CaptureMotionFrame() {
   }
 
   // Leaked for the same reason as frames above.
-  static auto& frame_page =
-      *new GraphicBufferClass(TheScreen().visible_view().Get_Width(),
-                              TheScreen().visible_view().Get_Height(), {},
-                              TheScreen().visible_view().Get_Width() *
-                                  TheScreen().visible_view().Get_Height());
+  static auto& frame_page = *new GraphicBufferClass(
+      TheScreen().visible_view().width(), TheScreen().visible_view().height(),
+      {},
+      TheScreen().visible_view().width() * TheScreen().visible_view().height());
 
   const base::ssize frame_bytes =
-      static_cast<base::ssize>(TheScreen().visible_view().Get_Width()) *
-      TheScreen().visible_view().Get_Height();
+      static_cast<base::ssize>(TheScreen().visible_view().width()) *
+      TheScreen().visible_view().height();
 
   if (captured_count < std::ssize(frames)) {
     // A no-op on a frame reused from an earlier run of the same resolution.

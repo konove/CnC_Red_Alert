@@ -178,7 +178,7 @@ void Special_Dialog(bool simple) {
   }
 
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   bool display = true;
   bool process = true;
   while (process) {
@@ -384,8 +384,8 @@ const char* Fetch_Password(int caption, int message, int btext) {
   width += 80;
   height += (60 + 25) * 2;
 
-  const int x = (TheScreen().visible_view().Get_Width() - width) / 2;
-  const int y = (TheScreen().visible_view().Get_Height() - height) / 2;
+  const int x = (TheScreen().visible_view().width() - width) / 2;
+  const int y = (TheScreen().visible_view().height() - height) / 2;
 
   /*
   **	Create the "ok" and password edit buttons.
@@ -396,8 +396,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   static char pbuffer[45];
   base::FillBytes(base::ObjectBytes(pbuffer), '\0', sizeof(pbuffer));
   const int editx = x + 52;
-  const int editwidth =
-      ((TheScreen().visible_view().Get_Width() / 2) - editx) * 2;
+  const int editwidth = ((TheScreen().visible_view().width() / 2) - editx) * 2;
   PWEditClass button2(2, pbuffer, sizeof(pbuffer), TPF_6PT_GRAD | TPF_NOSHADOW,
                       editx, y + height - 70, editwidth, 20);
 
@@ -413,7 +412,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	Draw the background of the dialog.
   */
   Hide_Mouse();
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   Dialog_Box(x, y, width, height);
   Draw_Caption(caption, x, y, width);
 
@@ -543,7 +542,7 @@ int Fetch_Difficulty(bool amath) {
   /*
   **	Main Processing Loop.
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   bool redraw = true;
   bool process = true;
   while (process) {

@@ -143,10 +143,10 @@ void PowerClass::One_Time() {
 
   const int factor = Get_Resolution_Factor();
   const int scale = static_cast<int>(base::Bit<uint32_t>(factor));
-  PowX = TheScreen().visible_view().Get_Width() - TheMap().RadWidth;
+  PowX = TheScreen().visible_view().width() - TheMap().RadWidth;
   PowY = TheMap().RadY + TheMap().RadHeight + (13 * scale);
   PowWidth = 8 * scale;
-  PowHeight = TheScreen().visible_view().Get_Height() - PowY;
+  PowHeight = TheScreen().visible_view().height() - PowY;
   PowLineSpace = 5 * scale;
   PowLineWidth = PowWidth - 4;
 
@@ -206,7 +206,7 @@ void PowerClass::Draw_It(bool complete) {
       base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
                kWindowY) = 0;
       base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
-               kWindowWidth) = TheScreen().visible_view().Get_Width();
+               kWindowWidth) = TheScreen().visible_view().width();
       base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
                kWindowHeight) = bottom - power_height;
 
@@ -224,7 +224,7 @@ void PowerClass::Draw_It(bool complete) {
                kWindowY) = bottom - power_height;
       base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
                kWindowHeight) =
-          TheScreen().visible_view().Get_Height() -
+          TheScreen().visible_view().height() -
           base::At(base::At(WindowList, static_cast<int>(WINDOW_CUSTOM)),
                    kWindowY);
 

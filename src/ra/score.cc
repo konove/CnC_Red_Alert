@@ -22,7 +22,7 @@
 //
 // The screens are drawn at 640x400. Coordinates handed to the ScoreAnimClass
 // family and to Count_Up_Print() are 320x200 and get doubled there; direct page
-// calls (Print, Blit, Draw_Line, ...) take real pixels.
+// calls (Print, Blit, DrawLine, ...) take real pixels.
 //
 // Originally SCORE.CPP by Joe L. Bostic, started April 19, 1994; the score
 // screen routines are by BWG, April-June 1995.
@@ -163,10 +163,10 @@ void ScoreTimeClass::Update() {
       Stage = 0;
     }
     GraphicViewPortClass* oldpage = LogicPage;
-    Set_Logic_Page(TheScreen().visible_view());
+    SetLogicPage(TheScreen().visible_view());
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, {},
                   {});
-    Set_Logic_Page(oldpage);
+    SetLogicPage(oldpage);
   }
 }
 
@@ -185,12 +185,12 @@ void ScoreCredsClass::Update() {
       Stage = 0;
     }
     GraphicViewPortClass* oldpage = LogicPage;
-    Set_Logic_Page(TheScreen().visible_view());
+    SetLogicPage(TheScreen().visible_view());
     // One tick of sound per frame of the spinning credits symbol.
     TheAudio().Play(Clock1, 255, TheOptions().Normalize_Volume(130));
     CC_Draw_Shape(DataPtr, Stage, XPos, YPos, WINDOW_MAIN, SHAPE_WIN_REL, {},
                   {});
-    Set_Logic_Page(oldpage);
+    SetLogicPage(oldpage);
   }
 }
 
@@ -274,7 +274,7 @@ void ScoreScaleClass::Update() {
     AnimTimer.Set(1);
     if (Stage) {
       Set_Font_Palette(Palette);
-      TheScreen().hidden_view().Fill_Rect(0, 0, 14, 14, kTBlack);
+      TheScreen().hidden_view().FillRect(0, 0, 14, 14, kTBlack);
       TheScreen().hidden_view().Print(std::string(Text()).c_str(), 0, 0,
                                       kTBlack, kTBlack);
       TheScreen().hidden_view().Scale(TheScreen().visible_view(), 0, 0,
@@ -400,7 +400,7 @@ void ScoreClass::Presentation() {
   // Type out the headings. Each TickScoreScreen() below is sized to let the
   // text queued before it finish, which is what keeps score_objects[] from
   // overflowing.
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TIME,
                                    config::kIsFrench ? 198 : 204, 9, greenpal));
@@ -520,9 +520,9 @@ void ScoreClass::Presentation() {
   Alloc_Object(new ScorePrintClass(buffer, 274, 38, greenpal));
   TickScoreScreen(8);
   // Rule off the sum: flash the line white for a tick, then settle on green.
-  TheScreen().visible_view().Draw_Line(548, 96, 626, 96, kWhite);
+  TheScreen().visible_view().DrawLine(548, 96, 626, 96, kWhite);
   TickScoreScreen(1);
-  TheScreen().visible_view().Draw_Line(548, 96, 626, 96, kGreen);
+  TheScreen().visible_view().DrawLine(548, 96, 626, 96, kGreen);
 
   absl::SNPrintF(buffer, sizeof(buffer), "%5d", total);
   Alloc_Object(new ScorePrintClass(buffer, 286, 50, greenpal));
@@ -543,7 +543,7 @@ void ScoreClass::Presentation() {
 
   // Show stats on # of units killed. The player's own side is always the upper
   // of the two rows.
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   TheAudio().Play(sfx4, 255, TheOptions().Normalize_Volume(150));
   // The original selected the second layout for Soviet players on DOS only;
   // at this resolution both sides share entry 0.
@@ -567,7 +567,7 @@ void ScoreClass::Presentation() {
   Set_Font_Palette(redpal);
   Do_GDI_Graph(yellowptr, redptr, GKilled + CKilled, NKilled, 89);
 
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   // Print out stats on buildings destroyed, laid out like the casualties above.
   TheAudio().Play(sfx4, 255, TheOptions().Normalize_Volume(150));
@@ -619,7 +619,7 @@ void ScoreClass::Presentation() {
   // Now display the hall of fame. The printers view their strings, so each row
   // gets its own 32-byte slice of `maststr` that stays valid while it types:
   // the score at offset 0 and the mission number at offset 16.
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   char maststr[kFameRows * 32];
   std::span<const uint8_t> pal;
@@ -793,10 +793,10 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   // Draw the white-flash shape on the hidpage. It is blitted over the last
   // step of each bar, cut to that bar's length plus 3 pixels of end cap, and
   // then replaced by the final coloured frame.
-  Set_Logic_Page(TheScreen().hidden_view());
-  TheScreen().hidden_view().Fill_Rect(0, 0, 248, 18, kTBlack);
+  SetLogicPage(TheScreen().hidden_view());
+  TheScreen().hidden_view().FillRect(0, 0, 248, 18, kTBlack);
   CC_Draw_Shape(redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   Set_Font_Palette(house ? redpal : bluepal);
 
   for (int i = 1; i <= gdikilled; i++) {
@@ -1040,9 +1040,9 @@ void Animate_Cursor(int pos, int ypos) {
     _lastpos = pos;
     _state = 0;
   }
-  TheScreen().visible_view().Draw_Line((HALLFAME_X + (pos * 6)) * 2, ypos,
-                                       (HALLFAME_X + (pos * 6) + 5) * 2, ypos,
-                                       _state ? kLtBlue : kTBlack);
+  TheScreen().visible_view().DrawLine((HALLFAME_X + (pos * 6)) * 2, ypos,
+                                      (HALLFAME_X + (pos * 6) + 5) * 2, ypos,
+                                      _state ? kLtBlue : kTBlack);
   // Toggle the color of the cursor, blue or hidden, if it's time to do so:
   // every 5 ticks.
   if (_timer.IsFinished()) {
@@ -1121,7 +1121,7 @@ void Multi_Score_Presentation() {
       Set_Font(TheAssets().font(FontType::kScore));
   ServiceRealTime();
 
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TOP, config::kIsFrench ? 113 : 130,
                                    13, greenpal));

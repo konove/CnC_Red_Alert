@@ -1931,13 +1931,13 @@ static int Net_Join_Dialog() {
       //..................................................................
       if (display >= REDRAW_COLORS && joinstate < JOIN_CONFIRMED) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          LogicPage->Fill_Rect(base::At(cbox_x, i) + 1, d_color_y + 1,
-                               base::At(cbox_x, i) + 1 + d_color_w - 4,
-                               d_color_y + 1 + d_color_h - 2,
-                               ThePalettes()
-                                   .color_remaps()
-                                   .at(static_cast<PlayerColorType>(i))
-                                   .Box);
+          LogicPage->FillRect(base::At(cbox_x, i) + 1, d_color_y + 1,
+                              base::At(cbox_x, i) + 1 + d_color_w - 4,
+                              d_color_y + 1 + d_color_h - 2,
+                              ThePalettes()
+                                  .color_remaps()
+                                  .at(static_cast<PlayerColorType>(i))
+                                  .Box);
           //						(i ==
           // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
           // ColorRemaps[i].Box);
@@ -1975,7 +1975,7 @@ static int Net_Join_Dialog() {
         //...............................................................
         // Scenario title
         //...............................................................
-        //				LogicPage->Fill_Rect(d_dialog_x + 16
+        //				LogicPage->FillRect(d_dialog_x + 16
         //*2, d_name_y, d_dialog_x + d_dialog_w - 16 *2,
         // d_name_y + d_txt6_h, BLACK);
 
@@ -2017,7 +2017,7 @@ static int Net_Join_Dialog() {
         //...............................................................
         // Unit count, tech level, credits, ai players
         //...............................................................
-        //				LogicPage->Fill_Rect(d_count_x +
+        //				LogicPage->FillRect(d_count_x +
         // d_count_w + 2 *2, d_count_y, d_count_x + d_count_w + 35
         //*2, d_aiplayers_y + d_aiplayers_h+2, BLACK);
 
@@ -4631,7 +4631,7 @@ static int Net_New_Dialog() {
       // Update game parameter labels
       //..................................................................
       if (display >= REDRAW_PARMS) {
-        //				LogicPage->Fill_Rect(d_count_x +
+        //				LogicPage->FillRect(d_count_x +
         // d_count_w + 2*2, d_count_y, d_count_x + d_count_w +
         // 35*2, d_aiplayers_y + d_aiplayers_h+2, BLACK);
 
@@ -5808,7 +5808,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     y = 200 - (h / 2);
 
     Hide_Mouse();
-    Set_Logic_Page(TheScreen().visible_view());
+    SetLogicPage(TheScreen().visible_view());
     Dialog_Box(x, y, w, h);
 
     Fancy_Text_Print(buf1, 320, y + (d_margin * 2), scheme, kTBlack,
@@ -5828,16 +5828,16 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   //------------------------------------------------------------------------
   else {
     Hide_Mouse();
-    Set_Logic_Page(TheScreen().visible_view());
+    SetLogicPage(TheScreen().visible_view());
 
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
                         timeval + 1);
 
     const int fillx = 320 - (String_Pixel_Width(buf2) / 2) - 6;
-    LogicPage->Fill_Rect(
-        fillx, y + (d_margin * 2) + d_txt6_h + d_margin,
-        fillx + String_Pixel_Width(buf2) + 12,
-        y + (d_margin * 2) + d_txt6_h + d_margin + d_txt6_h + 2, kBlack);
+    LogicPage->FillRect(fillx, y + (d_margin * 2) + d_txt6_h + d_margin,
+                        fillx + String_Pixel_Width(buf2) + 12,
+                        y + (d_margin * 2) + d_txt6_h + d_margin + d_txt6_h + 2,
+                        kBlack);
 
     Fancy_Text_Print(buf2, 320, y + (d_margin * 2) + d_txt6_h + d_margin,
                      scheme, kBlack, TPF_CENTER | kTpfText);

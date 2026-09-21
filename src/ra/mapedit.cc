@@ -1964,7 +1964,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
   /*
   **	Initialize.
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   **	Create the button list.

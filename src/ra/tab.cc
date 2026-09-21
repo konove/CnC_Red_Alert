@@ -120,12 +120,12 @@ void TabClass::Draw_It(bool complete) {
   *needs *	to be redrawn.
   */
   if ((complete || IsTabToRedraw) && LogicPage->Lock()) {
-    const int width = TheScreen().visible_view().Get_Width();
+    const int width = TheScreen().visible_view().width();
     const int rightx = width - 1;
     const int tab_height = TAB_HEIGHT * 2;
 
-    LogicPage->Fill_Rect(0, 0, rightx, tab_height - 1, kBlack);
-    //		LogicPage->Fill_Rect(0, 0, rightx, tab_height-(2 * 2),
+    LogicPage->FillRect(0, 0, rightx, tab_height - 1, kBlack);
+    //		LogicPage->FillRect(0, 0, rightx, tab_height-(2 * 2),
     // BLACK);
 
     /*
@@ -133,7 +133,7 @@ void TabClass::Draw_It(bool complete) {
     */
     CC_Draw_Shape(TabShape, 0, 0, 0, WINDOW_MAIN, SHAPE_NORMAL);
     Draw_Credits_Tab();
-    LogicPage->Draw_Line(0, tab_height - 2, rightx, tab_height - 2, kBlack);
+    LogicPage->DrawLine(0, tab_height - 2, rightx, tab_height - 2, kBlack);
     Fancy_Text_Print(TXT_TAB_BUTTON_CONTROLS, EVA_WIDTH, 0,
                      &ThePalettes().metal_scheme(), kTBlack,
                      TPF_METAL12 | TPF_CENTER | TPF_USE_GRAD_PAL);
@@ -208,7 +208,7 @@ void TabClass::Hilite_Tab(int tab) {
  *=============================================================================================*/
 void TabClass::AI(KeyNumType& input, int x, int y) {
   if (y >= 0 && y < TAB_HEIGHT * 2 &&
-      x < TheScreen().visible_view().Get_Width() - 1 && x > 0) {
+      x < TheScreen().visible_view().width() - 1 && x > 0) {
     bool ok = false;
 
     /*

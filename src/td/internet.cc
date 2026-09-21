@@ -417,7 +417,7 @@ bool Do_The_Internet_Menu_Thang() {
 #endif
 #ifndef DEMO
 
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
   /*
   ** Dialog & button dimensions
@@ -451,7 +451,7 @@ bool Do_The_Internet_Menu_Thang() {
   port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
   Fancy_Text_Print(TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, TheScreen().visible_view().Get_Height(), width,
+  Format_Window_String(buffer, TheScreen().visible_view().height(), width,
                        height);
 
 #if (defined(GERMAN) || defined(FRENCH))
@@ -496,7 +496,7 @@ bool Do_The_Internet_Menu_Thang() {
     if (Is_User_WChat_Registered(users_name, buffer_len)) {
       TheNetwork().statistics_sent() = false;
       if (!Spawn_WChat(true)) {
-        Set_Logic_Page(TheScreen().visible_view());
+        SetLogicPage(TheScreen().visible_view());
         Load_Title_Page(true);
         Set_Palette(ThePalettes().title_palette());
         CCMessageBox().Process(TXT_ERROR_UNABLE_TO_RUN_WCHAT, TXT_OK);
@@ -504,7 +504,7 @@ bool Do_The_Internet_Menu_Thang() {
         return false;
       }
     } else {
-      Set_Logic_Page(TheScreen().visible_view());
+      SetLogicPage(TheScreen().visible_view());
       Load_Title_Page(true);
       Set_Palette(ThePalettes().title_palette());
       if (CCMessageBox().Process(TXT_EXPLAIN_REGISTRATION, TXT_REGISTER,
@@ -540,7 +540,7 @@ bool Do_The_Internet_Menu_Thang() {
     }
 
     if (display) {
-      Set_Logic_Page(TheScreen().visible_view());
+      SetLogicPage(TheScreen().visible_view());
 
       Hide_Mouse();
       /*

@@ -280,11 +280,11 @@ void GScreenClass::Input(KeyNumType& key, int& x, int& y) {
       Flag_To_Redraw(false);
     }
 
-    GraphicViewPortClass* oldpage = Set_Logic_Page(TheScreen().hidden_view());
+    GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().hidden_view());
 
     key = Buttons->Input();
 
-    Set_Logic_Page(oldpage);
+    SetLogicPage(oldpage);
 
   } else {
     if (key != 0) {
@@ -381,7 +381,7 @@ void GScreenClass::Render() {
   // }
 
   if (IsToUpdate || IsScreenToRedraw) {
-    GraphicViewPortClass* oldpage = Set_Logic_Page(TheScreen().hidden_view());
+    GraphicViewPortClass* oldpage = SetLogicPage(TheScreen().hidden_view());
 
     Draw_It(IsScreenToRedraw);
 
@@ -411,7 +411,7 @@ void GScreenClass::Render() {
     IsToUpdate = false;
     IsScreenToRedraw = false;
 
-    Set_Logic_Page(oldpage);
+    SetLogicPage(oldpage);
   }
 }
 
@@ -434,8 +434,8 @@ void GScreenClass::Render() {
 void GScreenClass::Blit_Display() {
   TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
   TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 0, 0, 0,
-                                 TheScreen().hidden_view().Get_Width(),
-                                 TheScreen().hidden_view().Get_Height(), false);
+                                 TheScreen().hidden_view().width(),
+                                 TheScreen().hidden_view().height(), false);
   TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), false);
 }
 

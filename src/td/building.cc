@@ -1085,10 +1085,10 @@ BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
             x1 += TheMap().TacPixelX;
             y += TheMap().TacPixelY;
             y1 += TheMap().TacPixelY;
-            Set_Logic_Page(TheScreen().visible_view());
-            LogicPage->Draw_Line(x + 1, y, x1, y1, 0x7D);
-            LogicPage->Draw_Line(x - 1, y, x1, y1, 0x7D);
-            LogicPage->Draw_Line(x, y, x1, y1, 0x7F);
+            SetLogicPage(TheScreen().visible_view());
+            LogicPage->DrawLine(x + 1, y, x1, y1, 0x7D);
+            LogicPage->DrawLine(x - 1, y, x1, y1, 0x7D);
+            LogicPage->DrawLine(x, y, x1, y1, 0x7F);
             Delay(1);  // Make sure line is visible briefly
             TheMap().Flag_To_Redraw(true);
           }

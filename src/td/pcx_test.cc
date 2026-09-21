@@ -122,8 +122,8 @@ TEST(PcxTest, WrittenFileReadsBack) {
   std::filesystem::remove(path, ignored);
 
   ASSERT_NE(loaded, nullptr);
-  ASSERT_EQ(loaded->Get_Width(), kWidth);
-  ASSERT_EQ(loaded->Get_Height(), 2);
+  ASSERT_EQ(loaded->width(), kWidth);
+  ASSERT_EQ(loaded->height(), 2);
   const auto loaded_pixels = loaded->Get_Bytes();
   for (int i = 0; i < 2 * kWidth; i++) {
     ASSERT_EQ(base::At(loaded_pixels, i), base::At(pixels, i)) << i;

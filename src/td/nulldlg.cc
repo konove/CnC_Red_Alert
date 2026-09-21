@@ -274,7 +274,7 @@ void Modem_Signoff() {
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 int Test_Null_Modem() {
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
   /*........................................................................
   Button Enumerations
   ........................................................................*/
@@ -325,7 +325,7 @@ int Test_Null_Modem() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   process = true;
 
   /*
@@ -689,7 +689,7 @@ static int Reconnect_Null_Modem() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   process = true;
 
   /*
@@ -949,7 +949,7 @@ void Destroy_Null_Connection(int id, int error) {
 GameType Select_Serial_Dialog() {
   int rc = 0;
 
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -1064,7 +1064,7 @@ GameType Select_Serial_Dialog() {
   /*
   ------------------------------- Initialize -------------------------------
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*........................................................................
   Read the CC.INI file to extract default serial settings, scenario numbers
@@ -1738,7 +1738,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
  *=========================================================================*/
 static int Com_Settings_Dialog(SerialSettingsType* settings) {
   /* ###Change collision detected! C:\PROJECTS\CODE\NULLDLG.CPP... */
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -3125,7 +3125,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
 #define TXT_HOST_INTERNET_GAME (4567 + 1)
 #define TXT_JOIN_INTERNET_GAME (4567 + 2)
 int Com_Scenario_Dialog() {
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -3647,7 +3647,7 @@ int Com_Scenario_Dialog() {
       ..................................................................*/
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          LogicPage->Fill_Rect(
+          LogicPage->FillRect(
               base::At(cbox_x, i) + (1 * factor), d_color_y + (1 * factor),
               base::At(cbox_x, i) + (1 * factor) + d_color_w - (2 * factor),
               d_color_y + (1 * factor) + d_color_h - (2 * factor),
@@ -3673,9 +3673,9 @@ int Com_Scenario_Dialog() {
                  BOXSTYLE_GREEN_BORDER, true);
         TheSession().messages().Draw();
 
-        LogicPage->Fill_Rect(d_dialog_x + (2 * factor), d_opponent_y,
-                             d_dialog_x + d_dialog_w - (4 * factor),
-                             d_opponent_y + d_txt6_h, kBlack);
+        LogicPage->FillRect(d_dialog_x + (2 * factor), d_opponent_y,
+                            d_dialog_x + d_dialog_w - (4 * factor),
+                            d_opponent_y + d_txt6_h, kBlack);
 
         if (parms_received) {
           if (oppscorescreen) {
@@ -4667,7 +4667,7 @@ int Com_Scenario_Dialog() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 int Com_Show_Scenario_Dialog() {
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -4949,7 +4949,7 @@ int Com_Show_Scenario_Dialog() {
       ..................................................................*/
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          LogicPage->Fill_Rect(
+          LogicPage->FillRect(
               base::At(cbox_x, i) + (1 * factor), d_color_y + (1 * factor),
               base::At(cbox_x, i) + (1 * factor) + d_color_w - (2 * factor),
               d_color_y + (1 * factor) + d_color_h - (2 * factor),
@@ -4975,9 +4975,9 @@ int Com_Show_Scenario_Dialog() {
                  BOXSTYLE_GREEN_BORDER, true);
         TheSession().messages().Draw();
 
-        LogicPage->Fill_Rect(d_dialog_x + (2 * factor), d_opponent_y,
-                             d_dialog_x + d_dialog_w - (4 * factor),
-                             d_ghosts_y + d_txt6_h, kBlack);
+        LogicPage->FillRect(d_dialog_x + (2 * factor), d_opponent_y,
+                            d_dialog_x + d_dialog_w - (4 * factor),
+                            d_ghosts_y + d_txt6_h, kBlack);
 
         if (parms_received) {
           if (oppscorescreen) {
@@ -5858,7 +5858,7 @@ int Com_Show_Scenario_Dialog() {
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Phone_Dialog() {
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/
@@ -6469,7 +6469,7 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
  *   04/29/1995 BRR : Created.                                             *
  *=========================================================================*/
 static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
   /*........................................................................
   Dialog & button dimensions
   ........................................................................*/

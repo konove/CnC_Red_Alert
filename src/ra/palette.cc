@@ -53,7 +53,7 @@ void PaletteClass::Set(int fade, void (*callback)()) {
                                        ((new_val - old_val) * cur_time / fade));
       }
 
-      Do_Set_Palette(fade_palette);
+      SetScreenPalette(fade_palette);
       if (callback) {
         callback();
       } else {
@@ -75,7 +75,7 @@ void PaletteClass::Set(int fade, void (*callback)()) {
   }
 
   CurrentPalette = *this;
-  Do_Set_Palette(*this);
+  SetScreenPalette(*this);
 }
 
 // the only code that uses these two (Play_Movie and OptionsClass::Proccess)
@@ -131,5 +131,5 @@ void Set_Palette(std::span<const unsigned char> palette) {
   }
   base::CopyBytes(std::as_writable_bytes(PaletteClass::CurrentPalette.bytes()),
                   std::as_bytes(palette), PaletteClass::COLOR_COUNT * 3);
-  Do_Set_Palette(palette);
+  SetScreenPalette(palette);
 }

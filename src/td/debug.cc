@@ -121,10 +121,10 @@ void Debug_Key(unsigned input) {
         */
         {
           GraphicBufferClass temp_page(
-              TheScreen().visible_view().Get_Width(),
-              TheScreen().visible_view().Get_Height(), {},
-              static_cast<int32_t>(TheScreen().visible_view().Get_Width()) *
-                  TheScreen().visible_view().Get_Height());
+              TheScreen().visible_view().width(),
+              TheScreen().visible_view().height(), {},
+              static_cast<int32_t>(TheScreen().visible_view().width()) *
+                  TheScreen().visible_view().height());
           char filename[30];
 
           TheScreen().visible_view().Blit(temp_page);
@@ -367,9 +367,8 @@ void Debug_Key(unsigned input) {
             int index;
 
             for (index = 0; index < 12; index++) {
-              LogicPage->Put_Pixel((_gridx[index] + XCENTER) - (32 + 64),
-                                   (_gridy[index] + YCENTER) - (32 + 64),
-                                   kGrey);
+              LogicPage->PutPixel((_gridx[index] + XCENTER) - (32 + 64),
+                                  (_gridy[index] + YCENTER) - (32 + 64), kGrey);
             }
           }
 
@@ -414,8 +413,8 @@ void Debug_Key(unsigned input) {
 
               x = (int)(coord & 0xFFFF);
               y = (int)((coord >> 16) & 0xFFFF);
-              LogicPage->Put_Pixel(XCENTER + (x >> 2), YCENTER + (y >> 2),
-                                   kWhite);
+              LogicPage->PutPixel(XCENTER + (x >> 2), YCENTER + (y >> 2),
+                                  kWhite);
               Delay(1);
               index++;
             }
@@ -553,7 +552,7 @@ void Debug_Key(unsigned input) {
           if (ttype.Primary != WEAPON_NONE) {
             weapon = Weapons.at(ttype.Primary).Range;
           }
-          Set_Logic_Page(TheScreen().visible_view());
+          SetLogicPage(TheScreen().visible_view());
           const COORDINATE center =
               TheWorld().current_object().at(0)->Center_Coord();
           const COORDINATE center2 =
@@ -572,7 +571,7 @@ void Debug_Key(unsigned input) {
                     y)) {
               TheMap().Coord_To_Pixel(
                   Coord_Move(center, r2, static_cast<uint16_t>(sight)), x1, y1);
-              LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, kWhite);
+              LogicPage->DrawLine(x, y + 8, x1, y1 + 8, kWhite);
             }
             if (TheMap().Coord_To_Pixel(
                     Coord_Move(center2, r1, static_cast<uint16_t>(weapon)), x,
@@ -580,7 +579,7 @@ void Debug_Key(unsigned input) {
               TheMap().Coord_To_Pixel(
                   Coord_Move(center2, r2, static_cast<uint16_t>(weapon)), x1,
                   y1);
-              LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, kRed);
+              LogicPage->DrawLine(x, y + 8, x1, y1 + 8, kRed);
             }
           }
         }

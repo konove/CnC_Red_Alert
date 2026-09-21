@@ -364,8 +364,8 @@ int main(int argc, char* argv[])
       CCDebugString("C&C95 - Setting palette.\n");
       /////////Set_Palette(Palette);
 
-      WindowList[0][kWindowWidth] = TheScreen().visible_view().Get_Width() / 8;
-      WindowList[0][kWindowHeight] = TheScreen().visible_view().Get_Height();
+      WindowList[0][kWindowWidth] = TheScreen().visible_view().width() / 8;
+      WindowList[0][kWindowHeight] = TheScreen().visible_view().height();
 
       /*
       ** Install the memory error handler

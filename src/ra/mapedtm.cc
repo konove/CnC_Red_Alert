@@ -268,7 +268,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
   /*
   **	Initialize
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   **	Fill in team names
@@ -606,7 +606,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Draw to visible_view.
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   **	Make sure 'house' is valid.
@@ -747,8 +747,8 @@ int MapEditClass::Team_Members(HousesType house) {
           **	Clear out the previously printed name of the item.
           */
           Hide_Mouse();
-          LogicPage->Fill_Rect(kDialogX + 32, msg_y, kDialogX + kDialogW - 64,
-                               msg_y + kTxt6H, kBlack);
+          LogicPage->FillRect(kDialogX + 32, msg_y, kDialogX + kDialogW - 64,
+                              msg_y + kTxt6H, kBlack);
 
           if (static_cast<unsigned>(curclass) < static_cast<unsigned>(maxclasses)) {
             Fancy_Text_Print(base::At(teamclass, curclass)->Full_Name(),

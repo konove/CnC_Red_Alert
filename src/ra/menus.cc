@@ -418,7 +418,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   if (strings.empty()) {
     return -1;
   }
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   TheKeyboard().Clear();
 
   /*
@@ -480,7 +480,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
 
   TheScreen().hidden_view().Blit(TheScreen().visible_view());
   // WindowList[static_cast<int>(WINDOW_MAIN)][2] =
-  // visible_view.Get_Width();//BG
+  // visible_view.width();//BG
   Change_Window(static_cast<int>(WINDOW_MAIN));
   TheMap().Flag_To_Redraw(true);
   return selection;
@@ -612,7 +612,7 @@ int Main_Menu(int32_t /*unused*/) {
     TheGameState().required_cd() = -1;
     Force_CD_Available(TheGameState().required_cd());
   }
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   TheKeyboard().Clear();
 
   /*
@@ -704,7 +704,7 @@ int Main_Menu(int32_t /*unused*/) {
       /*
       **	Display the title and text overlay for the menu.
       */
-      Set_Logic_Page(TheScreen().hidden_view());
+      SetLogicPage(TheScreen().hidden_view());
       //			Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w,
       // d_dialog_h); 			Draw_Caption (TXT_NONE, d_dialog_x,
       // d_dialog_y, d_dialog_w);
@@ -721,7 +721,7 @@ int Main_Menu(int32_t /*unused*/) {
       TheScreen().hidden_view().Blit(TheScreen().visible_view());
       Show_Mouse();
 
-      Set_Logic_Page(TheScreen().visible_view());
+      SetLogicPage(TheScreen().visible_view());
       display = false;
     }
 

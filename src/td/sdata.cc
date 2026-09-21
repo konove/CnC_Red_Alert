@@ -327,7 +327,7 @@ void SmudgeTypeClass::Display(int x, int y, WindowNumberType window,
       for (int h = 0; h < Height; h++) {
         CC_Draw_Shape(ptr, 0, x + (w * ICON_PIXEL_W), y + (h * ICON_PIXEL_H),
                       WINDOW_TACTICAL, SHAPE_WIN_REL);
-        // LogicPage->Draw_Stamp(ptr, w + (h*Width), x + w*ICON_PIXEL_W, y +
+        // LogicPage->DrawStamp(ptr, w + (h*Width), x + w*ICON_PIXEL_W, y +
         // h*ICON_PIXEL_H, NULL, WINDOW_TACTICAL);
       }
     }
@@ -424,7 +424,7 @@ void SmudgeTypeClass::Draw_It(int x, int y, int data) const {
     IsTheaterShape = true;  // Smudges are theater specific
     CC_Draw_Shape(ptr, data, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);
     IsTheaterShape = false;
-    //		LogicPage->Draw_Stamp(ptr, data, x, y, NULL, WINDOW_TACTICAL);
+    //		LogicPage->DrawStamp(ptr, data, x, y, NULL, WINDOW_TACTICAL);
   }
 }
 

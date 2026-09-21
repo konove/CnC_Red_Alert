@@ -70,15 +70,15 @@ inline constexpr bool base::kIsFlagEnum<GBC_Enum> = true;
 // The VGA mode the games were written for. Both still decode their
 // low-resolution movies at this size, whatever video mode is set.
 inline constexpr int kDefaultScreenWidth = 320;
-constexpr int DEFAULT_SCREEN_HEIGHT = 200;
+constexpr int kDefaultScreenHeight = 200;
 
 class GraphicBufferClass;
 
 // Makes `ptr` the page the drawing code writes to, and returns the previous
 // one so the caller can put it back.
-GraphicViewPortClass* Set_Logic_Page(
+GraphicViewPortClass* SetLogicPage(
     GraphicViewPortClass* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND);
-GraphicViewPortClass* Set_Logic_Page(
+GraphicViewPortClass* SetLogicPage(
     GraphicViewPortClass& ptr ABSL_ATTRIBUTE_LIFETIME_BOUND);
 
 // A rectangular window onto a GraphicBufferClass. Coordinates passed to the
@@ -110,21 +110,21 @@ class GraphicViewPortClass {
   GraphicViewPortClass& operator=(GraphicViewPortClass&&) = delete;
 
   // A raw pointer to the viewport's top left pixel, valid only while the
-  // buffer is locked. Prefer Get_Pixels().
-  uint8_t* Get_Offset();
+  // buffer is locked. Prefer pixels().
+  uint8_t* offset();
   // The buffer's pixels from this viewport's top left corner to the end of
-  // the buffer. Rows are Get_Width() + Get_XAdd() + Get_Pitch() bytes apart.
+  // the buffer. Rows are width() + x_add() + pitch() bytes apart.
   // Empty if the viewport is not attached to a buffer.
-  std::span<uint8_t> Get_Pixels();
-  [[nodiscard]] int Get_Height() const;
-  [[nodiscard]] int Get_Width() const;
-  [[nodiscard]] int Get_XAdd() const;
-  [[nodiscard]] int Get_XPos() const;
-  [[nodiscard]] int Get_YPos() const;
-  [[nodiscard]] int Get_Pitch() const;
+  std::span<uint8_t> pixels();
+  [[nodiscard]] int height() const;
+  [[nodiscard]] int width() const;
+  [[nodiscard]] int x_add() const;
+  [[nodiscard]] int x_pos() const;
+  [[nodiscard]] int y_pos() const;
+  [[nodiscard]] int pitch() const;
   // Whether drawing to this viewport has to lock a surface first.
-  inline bool Get_IsDirectDraw();
-  GraphicBufferClass* Get_Graphic_Buffer();
+  inline bool NeedsLock();
+  GraphicBufferClass* graphic_buffer();
 
   bool Change(int x, int y, int w, int h);
 
@@ -133,22 +133,22 @@ class GraphicViewPortClass {
   // fill in "the whole viewport" for the missing rectangle.
 
   // Sets one pixel, ignoring coordinates outside the viewport.
-  // Buffer_Put_Pixel is the same without the lock, for callers that hold one
+  // PutPixelLocked is the same without the lock, for callers that hold one
   // already.
-  void Put_Pixel(int x, int y, uint8_t color);
-  void Buffer_Put_Pixel(int x, int y, uint8_t color);
+  void PutPixel(int x, int y, uint8_t color);
+  void PutPixelLocked(int x, int y, uint8_t color);
   // Returns the palette index at x,y, or 0 outside the viewport.
-  int Get_Pixel(int x, int y);
+  int GetPixel(int x, int y);
   void Clear(uint8_t color = 0);
 
   // Copies a rectangle of the viewport out to plain memory, packed with no
   // padding, and returns the number of bytes written. The rectangle is
   // clipped to the viewport first, and nothing is written if `buff` is
   // smaller than what is left.
-  int32_t To_Buffer(int x, int y, int w, int h, std::span<uint8_t> buff,
-                    int32_t size);
-  int32_t To_Buffer(int x, int y, int w, int h, BufferClass* buff);
-  int32_t To_Buffer(BufferClass* buff);
+  int32_t CopyToBuffer(int x, int y, int w, int h, std::span<uint8_t> buff,
+                       int32_t size);
+  int32_t CopyToBuffer(int x, int y, int w, int h, BufferClass* buff);
+  int32_t CopyToBuffer(BufferClass* buff);
 
   // Copies pixel_width x pixel_height pixels from x_pixel,y_pixel in this
   // viewport to dx_pixel,dy_pixel in `dest`, clipping to both. With `trans`,
@@ -176,11 +176,11 @@ class GraphicViewPortClass {
              int bcolor);
   void Print(int num, int x_pixel, int y_pixel, int fcolor, int bcolor);
 
-  // sx,sy and dx,dy are the two corners, both inclusive, so Draw_Rect and
-  // Fill_Rect cover dx - sx + 1 pixels per row.
-  void Draw_Line(int sx, int sy, int dx, int dy, uint8_t color);
-  void Draw_Rect(int sx, int sy, int dx, int dy, uint8_t color);
-  void Fill_Rect(int sx, int sy, int dx, int dy, uint8_t color);
+  // sx,sy and dx,dy are the two corners, both inclusive, so DrawRect and
+  // FillRect cover dx - sx + 1 pixels per row.
+  void DrawLine(int sx, int sy, int dx, int dy, uint8_t color);
+  void DrawRect(int sx, int sy, int dx, int dy, uint8_t color);
+  void FillRect(int sx, int sy, int dx, int dy, uint8_t color);
 
   // Replaces every pixel in the rectangle with remap[pixel]. `remap` is a
   // 256-entry table; the shorter overload covers the whole viewport.
@@ -191,8 +191,8 @@ class GraphicViewPortClass {
   // Draws tile `icon` of an icon set at x_pixel,y_pixel, clipped to the
   // WindowList entry `clip_window` rather than to the viewport - the map
   // draws its terrain through this. `remap` may be empty for no remapping.
-  void Draw_Stamp(std::span<const std::byte> icondata, int icon, int x_pixel,
-                  int y_pixel, std::span<const uint8_t> remap, int clip_window);
+  void DrawStamp(std::span<const std::byte> icondata, int icon, int x_pixel,
+                 int y_pixel, std::span<const uint8_t> remap, int clip_window);
 
   // Locks the buffer's surface so its pixels can be read or written, and
   // reattaches this viewport to them, since locking can move them. Locks
@@ -202,7 +202,7 @@ class GraphicViewPortClass {
   // not be called.
   inline bool Lock();
   inline bool Unlock();
-  [[nodiscard]] inline int Get_LockCount() const;
+  [[nodiscard]] inline int lock_count() const;
 
   // Binds the viewport to the given rectangle of `graphic_buff`, clamping it
   // to the buffer's bounds. Has no effect on a GraphicBufferClass, which is
@@ -212,26 +212,26 @@ class GraphicViewPortClass {
  protected:
   // The viewport's top left pixel within the buffer. Null while the buffer
   // is a surface that is not currently locked.
-  uint8_t* Offset = nullptr;
-  int Width = 0;
-  int Height = 0;
+  uint8_t* offset_ = nullptr;
+  int width_ = 0;
+  int height_ = 0;
   // The bytes of the buffer's row that fall outside the viewport, that is
-  // the buffer's width minus Width. Together with Pitch it turns the end of
+  // the buffer's width minus width_. Together with pitch_ it turns the end of
   // one row of the viewport into the start of the next.
-  int XAdd = 0;
+  int x_add_ = 0;
   // Where the viewport sits in the buffer.
-  int XPos = 0;
-  int YPos = 0;
-  // Padding the buffer keeps past the end of every row, beyond XAdd. Copied
+  int x_pos_ = 0;
+  int y_pos_ = 0;
+  // Padding the buffer keeps past the end of every row, beyond x_add_. Copied
   // from the buffer, and zero for every buffer the games create.
-  int Pitch = 0;
+  int pitch_ = 0;
   // The buffer this viewport draws into; null until Attach(). A
   // GraphicBufferClass points at itself.
-  GraphicBufferClass* GraphicBuff = nullptr;
+  GraphicBufferClass* graphic_buffer_ = nullptr;
   // How deep the nested Lock() calls are; the surface is locked while this
   // is non-zero. Only the buffer's own count is used, so a viewport carries
   // this member without ever changing it.
-  int LockCount = 0;
+  int lock_count_ = 0;
 };
 
 // An allocated page of 8-bit paletted pixels, and the viewport covering the
@@ -240,8 +240,8 @@ class GraphicViewPortClass {
 //
 // The pixels come from one of three places, chosen by Init(): a span the
 // caller owns, a new[] block the buffer owns, or - with GBC_VISIBLE - an SDL
-// surface, whose pixels only exist between Lock_Surface() and
-// Unlock_Surface().
+// surface, whose pixels only exist between LockSurface() and
+// UnlockSurface().
 //
 // Example:
 //   GraphicBufferClass page(320, 200);
@@ -273,153 +273,155 @@ class GraphicBufferClass : public GraphicViewPortClass, public BufferClass {
   // Releases the window texture and surfaces Init() created for a visible
   // buffer, and cancels its pending redraw. The destructor calls it; calling
   // it again does nothing.
-  void Un_Init();
+  void ReleaseSurfaces();
 
   // Locks and unlocks the underlying SDL surface. Callers normally use the
   // inherited GraphicViewPortClass::Lock/Unlock, which also reattach the
   // viewport to the freshly locked pixels.
-  bool Lock_Surface();
-  bool Unlock_Surface();
+  bool LockSurface();
+  bool UnlockSurface();
 
   // Draws `bmp` onto this buffer with its centre landing on `pt`, scaled and
   // rotated. `scale` is 24.8 fixed point (0x100 = 1.0) and is ignored when
   // zero; `angle` is 0-255 over the full circle. Pixel 0 is transparent.
   // Whatever falls outside the buffer is dropped, so a bitmap that does not
   // fit is silently cropped.
-  void Scale_Rotate(const BitmapClass& bmp, const TPoint2D& pt, int32_t scale,
-                    uint8_t angle);
+  void DrawScaledRotated(const BitmapClass& bmp, const TPoint2D& pt,
+                         int32_t scale, uint8_t angle);
 
   // Whether this is the buffer the window shows, that is whether it was
   // initialized with GBC_VISIBLE.
-  [[nodiscard]] bool Is_Window_Surface() const {
-    return WindowTexture != nullptr;
+  [[nodiscard]] bool IsWindowSurface() const {
+    return window_texture_ != nullptr;
   }
-  // Presents the buffer's current contents. Unlock_Surface() calls it with
+  // Presents the buffer's current contents. UnlockSurface() calls it with
   // `end_frame` false, which only arms a timer to redraw if nothing else
   // presents within the next frame; Video_End_Frame() passes true to present
   // immediately.
-  void Update_Window_Surface(bool end_frame);
+  void Present(bool end_frame);
   // Sets the 256 RGB triples the paletted pixels are shown through, and
   // redraws with them. Anything already presented changes color, the way a
   // VGA palette write did.
-  void Update_Palette(std::span<const uint8_t> palette);
+  void UpdatePalette(std::span<const uint8_t> palette);
   // The SDL_Palette of the display surface, as a void* so that callers need
   // no SDL header.
-  [[nodiscard]] const void* Get_Palette() const;
+  [[nodiscard]] const void* palette() const;
 
   // Presents `paletted_data`, `width` x `height` pixels, stretched to the
   // window by SDL rather than by the game - this is how a 320x200 movie
   // fills a 640x400 screen without the game scaling every frame itself.
-  // Uses the palette already set via Update_Palette. The frame stays on screen,
-  // following later Update_Palette() calls the way a VGA screen would, until
+  // Uses the palette already set via UpdatePalette. The frame stays on screen,
+  // following later UpdatePalette() calls the way a VGA screen would, until
   // something is drawn to the display surface.
-  void Render_Scaled_Frame(std::span<const uint8_t> paletted_data, int width,
-                           int height);
+  void PresentScaledFrame(std::span<const uint8_t> paletted_data, int width,
+                          int height);
   // Drops the scaling texture, so the next present shows the display
-  // surface again. Unlock_Surface() calls it as soon as anything draws.
-  void Destroy_VQA_Texture();
+  // surface again. UnlockSurface() calls it as soon as anything draws.
+  void DropScaledFrame();
 
  protected:
-  void Init_Display_Surface();
-  void Release_Display_Surface();
+  void CreateDisplaySurface();
+  void DestroyDisplaySurface();
   // SDL types, held as void* so that this header pulls in no SDL headers.
-  void* WindowTexture = nullptr;   // SDL_Texture*, the window's contents
-  void* PaletteSurface = nullptr;  // SDL_Surface*, the 8-bit pixels
-  int RedrawTimer = 0;             // SDL timer id, 0 when no redraw is pending
-  void* VQATexture = nullptr;  // SDL_Texture* for low-res content scaling
-  int VQATextureWidth = 0;
-  int VQATextureHeight = 0;
+  void* window_texture_ = nullptr;   // SDL_Texture*, the window's contents
+  void* palette_surface_ = nullptr;  // SDL_Surface*, the 8-bit pixels
+  int redraw_timer_ = 0;  // SDL timer id, 0 when no redraw is pending
+  void* scaled_frame_texture_ =
+      nullptr;  // SDL_Texture* for low-res content scaling
+  int scaled_frame_width_ = 0;
+  int scaled_frame_height_ = 0;
 
  private:
   // Converts scaled_frame_ to RGBA with the current palette and uploads it to
-  // VQATexture. Returns false if SDL refused the texture.
-  bool Upload_Scaled_Frame();
+  // scaled_frame_texture_. Returns false if SDL refused the texture.
+  bool UploadScaledFrame();
 
-  // The paletted pixels behind VQATexture, VQATextureWidth x VQATextureHeight.
-  // The texture holds baked colors, so a palette change has to convert these
-  // again. Empty while there is no texture.
+  // The paletted pixels behind scaled_frame_texture_, scaled_frame_width_ x
+  // scaled_frame_height_. The texture holds baked colors, so a palette change
+  // has to convert these again. Empty while there is no texture.
   std::vector<uint8_t> scaled_frame_;
 };
 
 extern GraphicBufferClass* WindowBuffer;
 
-void Do_Set_Palette(std::span<const uint8_t> palette);
+void SetScreenPalette(std::span<const uint8_t> palette);
 
-inline int GraphicViewPortClass::Get_LockCount() const { return LockCount; }
+inline int GraphicViewPortClass::lock_count() const { return lock_count_; }
 
-inline bool GraphicViewPortClass::Get_IsDirectDraw() {
+inline bool GraphicViewPortClass::NeedsLock() {
   // Named for the DirectDraw surfaces this used to mean; callers read it as
   // "do the pixels have to be locked before they can be touched", which is
   // true of exactly the window's surface.
-  return GraphicBuff != nullptr && GraphicBuff->Is_Window_Surface();
+  return graphic_buffer_ != nullptr && graphic_buffer_->IsWindowSurface();
 }
 
 inline bool GraphicViewPortClass::Lock() {
-  if (GraphicBuff == nullptr) {
+  if (graphic_buffer_ == nullptr) {
     return false;
   }
 
-  const bool lock = GraphicBuff->Lock_Surface();
+  const bool lock = graphic_buffer_->LockSurface();
   if (!lock) {
     return false;
   }
 
-  if (this != GraphicBuff) {
-    Attach(GraphicBuff, XPos, YPos, Width, Height);
+  if (this != graphic_buffer_) {
+    Attach(graphic_buffer_, x_pos_, y_pos_, width_, height_);
   }
   return true;
 }
 
 inline bool GraphicViewPortClass::Unlock() {
-  return GraphicBuff == nullptr || GraphicBuff->Unlock_Surface();
+  return graphic_buffer_ == nullptr || graphic_buffer_->UnlockSurface();
 }
 
-inline uint8_t* GraphicViewPortClass::Get_Offset() { return Offset; }
-inline std::span<uint8_t> GraphicViewPortClass::Get_Pixels() {
-  if (GraphicBuff == nullptr) {
+inline uint8_t* GraphicViewPortClass::offset() { return offset_; }
+inline std::span<uint8_t> GraphicViewPortClass::pixels() {
+  if (graphic_buffer_ == nullptr) {
     return {};
   }
-  const auto pixels = GraphicBuff->Get_Bytes();
-  if (this == GraphicBuff) {
-    return GraphicBuff->Get_Bytes();
+  const auto pixels = graphic_buffer_->Get_Bytes();
+  if (this == graphic_buffer_) {
+    return graphic_buffer_->Get_Bytes();
   }
-  // Width + XAdd is the buffer's width by construction in Attach(), so this
+  // width_ + x_add_ is the buffer's width by construction in Attach(), so this
   // is the usual row-stride times y plus x.
-  return pixels.subspan(base::ToSize((YPos * (Width + XAdd + Pitch)) + XPos));
+  return pixels.subspan(
+      base::ToSize((y_pos_ * (width_ + x_add_ + pitch_)) + x_pos_));
 }
 
-inline int GraphicViewPortClass::Get_Height() const { return Height; }
+inline int GraphicViewPortClass::height() const { return height_; }
 
-inline int GraphicViewPortClass::Get_Width() const { return Width; }
+inline int GraphicViewPortClass::width() const { return width_; }
 
-inline int GraphicViewPortClass::Get_XAdd() const { return XAdd; }
-inline int GraphicViewPortClass::Get_XPos() const { return XPos; }
+inline int GraphicViewPortClass::x_add() const { return x_add_; }
+inline int GraphicViewPortClass::x_pos() const { return x_pos_; }
 
-inline int GraphicViewPortClass::Get_YPos() const { return YPos; }
+inline int GraphicViewPortClass::y_pos() const { return y_pos_; }
 
-inline GraphicBufferClass* GraphicViewPortClass::Get_Graphic_Buffer() {
-  return GraphicBuff;
+inline GraphicBufferClass* GraphicViewPortClass::graphic_buffer() {
+  return graphic_buffer_;
 }
 
-inline void GraphicViewPortClass::Put_Pixel(int x, int y, uint8_t color) {
+inline void GraphicViewPortClass::PutPixel(int x, int y, uint8_t color) {
   if (!Lock()) {
     return;
   }
 
-  this->Buffer_Put_Pixel(x, y, color);
+  this->PutPixelLocked(x, y, color);
 
   Unlock();
 }
 
-inline void GraphicViewPortClass::Buffer_Put_Pixel(const int x, const int y,
-                                                   const uint8_t color) {
-  if (x >= 0 && y >= 0 && x < Get_Width() && y < Get_Height()) {
-    const base::ssize pitch = Get_XAdd() + Get_Width() + Get_Pitch();
-    base::At(Get_Pixels(), base::ToSize(x + (y * pitch))) = color;
+inline void GraphicViewPortClass::PutPixelLocked(const int x, const int y,
+                                                 const uint8_t color) {
+  if (x >= 0 && y >= 0 && x < width() && y < height()) {
+    const base::ssize stride = x_add() + width() + pitch();
+    base::At(pixels(), base::ToSize(x + (y * stride))) = color;
   }
 }
 
-inline int GraphicViewPortClass::Get_Pixel(int x, int y) {
+inline int GraphicViewPortClass::GetPixel(int x, int y) {
   int return_code = 0;
 
   if (Lock()) {
@@ -436,9 +438,9 @@ inline void GraphicViewPortClass::Clear(uint8_t color) {
   }
 }
 
-inline int32_t GraphicViewPortClass::To_Buffer(int x, int y, int w, int h,
-                                               std::span<uint8_t> buff,
-                                               int32_t size) {
+inline int32_t GraphicViewPortClass::CopyToBuffer(int x, int y, int w, int h,
+                                                  std::span<uint8_t> buff,
+                                                  int32_t size) {
   int32_t return_code = 0;
   if (Lock()) {
     return_code = Buffer_To_Buffer(this, x, y, w, h, buff, size);
@@ -447,13 +449,14 @@ inline int32_t GraphicViewPortClass::To_Buffer(int x, int y, int w, int h,
   return return_code;
 }
 
-inline int32_t GraphicViewPortClass::To_Buffer(int x, int y, int w, int h,
-                                               BufferClass* buff) {
-  return To_Buffer(x, y, w, h, buff->Get_Bytes(), buff->Get_Size());
+inline int32_t GraphicViewPortClass::CopyToBuffer(int x, int y, int w, int h,
+                                                  BufferClass* buff) {
+  return CopyToBuffer(x, y, w, h, buff->Get_Bytes(), buff->Get_Size());
 }
 
-inline int32_t GraphicViewPortClass::To_Buffer(BufferClass* buff) {
-  return To_Buffer(0, 0, Width, Height, buff->Get_Bytes(), buff->Get_Size());
+inline int32_t GraphicViewPortClass::CopyToBuffer(BufferClass* buff) {
+  return CopyToBuffer(0, 0, width_, height_, buff->Get_Bytes(),
+                      buff->Get_Size());
 }
 
 inline bool GraphicViewPortClass::Blit(GraphicViewPortClass& dest, int x_pixel,
@@ -477,11 +480,11 @@ inline bool GraphicViewPortClass::Blit(GraphicViewPortClass& dest, int x_pixel,
 
 inline bool GraphicViewPortClass::Blit(GraphicViewPortClass& dest, int dx,
                                        int dy, bool trans) {
-  return Blit(dest, 0, 0, dx, dy, Width, Height, trans);
+  return Blit(dest, 0, 0, dx, dy, width_, height_, trans);
 }
 
 inline bool GraphicViewPortClass::Blit(GraphicViewPortClass& dest, bool trans) {
-  return Blit(dest, 0, 0, 0, 0, Width, Height, trans);
+  return Blit(dest, 0, 0, 0, 0, width_, height_, trans);
 }
 
 inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, int src_x,
@@ -513,14 +516,14 @@ inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, int src_x,
 
 inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest, bool trans,
                                         std::span<const uint8_t> remap) {
-  return Scale(dest, 0, 0, 0, 0, Width, Height, dest.Get_Width(),
-               dest.Get_Height(), trans, remap);
+  return Scale(dest, 0, 0, 0, 0, width_, height_, dest.width(), dest.height(),
+               trans, remap);
 }
 
 inline bool GraphicViewPortClass::Scale(GraphicViewPortClass& dest,
                                         std::span<const uint8_t> remap) {
-  return Scale(dest, 0, 0, 0, 0, Width, Height, dest.Get_Width(),
-               dest.Get_Height(), false, remap);
+  return Scale(dest, 0, 0, 0, 0, width_, height_, dest.width(), dest.height(),
+               false, remap);
 }
 
 inline void GraphicViewPortClass::Print(const char* string, int x_pixel,
@@ -537,7 +540,7 @@ inline void GraphicViewPortClass::Print(int num, int x_pixel, int y_pixel,
   Print(absl::StrCat(num).c_str(), x_pixel, y_pixel, fcolor, bcolor);
 }
 
-inline void GraphicViewPortClass::Draw_Stamp(
+inline void GraphicViewPortClass::DrawStamp(
     std::span<const std::byte> icondata, int icon, int x_pixel, int y_pixel,
     const std::span<const uint8_t> remap, int clip_window) {
   if (Lock()) {
@@ -562,16 +565,16 @@ inline void GraphicViewPortClass::Draw_Stamp(
   }
 }
 
-inline void GraphicViewPortClass::Draw_Line(int sx, int sy, int dx, int dy,
-                                            uint8_t color) {
+inline void GraphicViewPortClass::DrawLine(int sx, int sy, int dx, int dy,
+                                           uint8_t color) {
   if (Lock()) {
     Buffer_Draw_Line(this, sx, sy, dx, dy, color);
     Unlock();
   }
 }
 
-inline void GraphicViewPortClass::Fill_Rect(int sx, int sy, int dx, int dy,
-                                            uint8_t color) {
+inline void GraphicViewPortClass::FillRect(int sx, int sy, int dx, int dy,
+                                           uint8_t color) {
   if (Lock()) {
     Buffer_Fill_Rect(this, sx, sy, dx, dy, color);
     Unlock();
@@ -587,10 +590,10 @@ inline void GraphicViewPortClass::Remap(int sx, int sy, int width, int height,
 }
 
 inline void GraphicViewPortClass::Remap(std::span<const uint8_t> remap) {
-  Remap(0, 0, Width, Height, remap);
+  Remap(0, 0, width_, height_, remap);
 }
 
-inline int GraphicViewPortClass::Get_Pitch() const { return Pitch; }
+inline int GraphicViewPortClass::pitch() const { return pitch_; }
 // BufferClass's copies to a page live here rather than in buffer.h because
 // they need the complete GraphicViewPortClass.
 
@@ -609,7 +612,7 @@ inline int32_t BufferClass::To_Page(int w, int h, GraphicViewPortClass& view) {
   return To_Page(0, 0, w, h, view);
 }
 inline int32_t BufferClass::To_Page(GraphicViewPortClass& view) {
-  return To_Page(0, 0, view.Get_Width(), view.Get_Height(), view);
+  return To_Page(0, 0, view.width(), view.height(), view);
 }
 inline int32_t BufferClass::To_Page(int x, int y, int w, int h,
                                     GraphicViewPortClass& view) {

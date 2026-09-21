@@ -104,7 +104,7 @@ bool Get_Broadcast_Addresses() {
   // Format_Window_String rewrites the buffer in place, so the title cannot
   // be a string literal.
   char title[] = "IP Addresses";
-  Format_Window_String(title, TheScreen().visible_view().Get_Height(), width,
+  Format_Window_String(title, TheScreen().visible_view().height(), width,
                        height);
 
   GadgetClass* commands = nullptr;  // button list

@@ -107,14 +107,14 @@ int Write_PCX_File(File& file, GraphicBufferClass& pic,
                              8,
                              0,
                              0,
-                             static_cast<int16_t>(pic.Get_Width() - 1),
-                             static_cast<int16_t>(pic.Get_Height() - 1),
-                             static_cast<int16_t>(pic.Get_Width()),
-                             static_cast<int16_t>(pic.Get_Height()),
+                             static_cast<int16_t>(pic.width() - 1),
+                             static_cast<int16_t>(pic.height() - 1),
+                             static_cast<int16_t>(pic.width()),
+                             static_cast<int16_t>(pic.height()),
                              {},
                              0,
                              1,
-                             static_cast<int16_t>(pic.Get_Width()),
+                             static_cast<int16_t>(pic.width()),
                              1,
                              {0}};
 
@@ -133,8 +133,8 @@ int Write_PCX_File(File& file, GraphicBufferClass& pic,
   /*
   **	Write out the picture, line by line.
   */
-  const int VP_Scan_Line = pic.Get_Width() + pic.Get_XAdd();
-  const auto pixels = pic.Get_Pixels();
+  const int VP_Scan_Line = pic.width() + pic.x_add();
+  const auto pixels = pic.pixels();
   for (int line = 0; line < header.height + 1; line++) {
     Write_Pcx_ScanLine(file, header.byte_per_line,
                        pixels.subspan(static_cast<size_t>(line) *

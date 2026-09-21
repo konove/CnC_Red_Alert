@@ -156,20 +156,20 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
       CC_Texture_Fill(MixArchive::RetrieveData("BTEXTURE.SHP"),
                       TheGameState().in_main_loop() ? 1 : 0, x, y, w, h);
     } else {
-      LogicPage->Fill_Rect(x, y, x + w, y + h,
-                           static_cast<unsigned char>(style.Filler));
+      LogicPage->FillRect(x, y, x + w, y + h,
+                          static_cast<unsigned char>(style.Filler));
     }
   }
 
   switch (up) {
     case BOXSTYLE_GREEN_BOX:
-      LogicPage->Draw_Rect(x, y, x + w, y + h,
-                           static_cast<unsigned char>(style.Highlight));
+      LogicPage->DrawRect(x, y, x + w, y + h,
+                          static_cast<unsigned char>(style.Highlight));
       break;
 
     case BOXSTYLE_GREEN_BORDER:
-      LogicPage->Draw_Rect(x + 1, y + 1, x + w - 1, y + h - 1,
-                           static_cast<unsigned char>(style.Highlight));
+      LogicPage->DrawRect(x + 1, y + 1, x + w - 1, y + h - 1,
+                          static_cast<unsigned char>(style.Highlight));
       break;
 
     case BoxStyleEnum::BOXSTYLE_DOWN:
@@ -184,18 +184,18 @@ void Draw_Box(int x, int y, int w, int h, BoxStyleEnum up, bool filled) {
     case BoxStyleEnum::BOXSTYLE_GREEN_DIS_RAISED:
     case BoxStyleEnum::BOXSTYLE_COUNT:
     default:
-      LogicPage->Draw_Line(x, y + h, x + w, y + h,
-                           static_cast<unsigned char>(style.Shadow));
-      LogicPage->Draw_Line(x + w, y, x + w, y + h,
-                           static_cast<unsigned char>(style.Shadow));
+      LogicPage->DrawLine(x, y + h, x + w, y + h,
+                          static_cast<unsigned char>(style.Shadow));
+      LogicPage->DrawLine(x + w, y, x + w, y + h,
+                          static_cast<unsigned char>(style.Shadow));
 
-      LogicPage->Draw_Line(x, y, x + w, y,
-                           static_cast<unsigned char>(style.Highlight));
-      LogicPage->Draw_Line(x, y, x, y + h,
-                           static_cast<unsigned char>(style.Highlight));
+      LogicPage->DrawLine(x, y, x + w, y,
+                          static_cast<unsigned char>(style.Highlight));
+      LogicPage->DrawLine(x, y, x, y + h,
+                          static_cast<unsigned char>(style.Highlight));
 
-      LogicPage->Put_Pixel(x, y + h, static_cast<unsigned char>(style.Corner));
-      LogicPage->Put_Pixel(x + w, y, static_cast<unsigned char>(style.Corner));
+      LogicPage->PutPixel(x, y + h, static_cast<unsigned char>(style.Corner));
+      LogicPage->PutPixel(x + w, y, static_cast<unsigned char>(style.Corner));
       break;
   }
 }
@@ -637,8 +637,8 @@ void Simple_Text_Print(const char* text, int x, int y, int fore,
         break;
     }
 
-    if (x < TheScreen().visible_view().Get_Width() &&
-        y < TheScreen().visible_view().Get_Height()) {
+    if (x < TheScreen().visible_view().width() &&
+        y < TheScreen().visible_view().height()) {
       LogicPage->Print(tempstr, x, y, fore, back);
     }
   }

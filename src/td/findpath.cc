@@ -142,10 +142,9 @@ static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
 
       if (TheMap().Coord_To_Pixel(Cell_Coord(cell), x, y)) {
         if (threat_stage > 2) {
-          TheScreen().visible_view().Put_Pixel(x, y,
-                                               passable ? kLtGreen : kRed);
+          TheScreen().visible_view().PutPixel(x, y, passable ? kLtGreen : kRed);
         } else {
-          TheScreen().visible_view().Put_Pixel(
+          TheScreen().visible_view().PutPixel(
               x, y,
               static_cast<unsigned char>(passable ? 9 + threat_stage : kRed));
         }
@@ -154,10 +153,10 @@ static inline void Draw_Cell_Point(CELL cell, bool passable, int threat_stage,
       const int x = cell % 64;
       const int y = cell / 64;
       if (!overide) {
-        TheScreen().visible_view().Put_Pixel(64 + (x * 3) + 1, 8 + (y * 3) + 1,
-                                             passable ? kWhite : kBlack);
+        TheScreen().visible_view().PutPixel(64 + (x * 3) + 1, 8 + (y * 3) + 1,
+                                            passable ? kWhite : kBlack);
       } else {
-        TheScreen().visible_view().Put_Pixel(
+        TheScreen().visible_view().PutPixel(
             64 + (x * 3) + 1, 8 + (y * 3) + 1,
             static_cast<unsigned char>(overide));
       }
@@ -1441,8 +1440,8 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
         if (TheMap().Coord_To_Pixel(Cell_Coord(cell), x, y)) {
           TheMap().Coord_To_Pixel(
               Cell_Coord(Adjacent_Cell(cell, path->Command[cmd2])), x1, y1);
-          Set_Logic_Page(TheScreen().visible_view());
-          LogicPage->Draw_Line(x, y + 8, x1, y1 + 8, kGrey);
+          SetLogicPage(TheScreen().visible_view());
+          LogicPage->DrawLine(x, y + 8, x1, y1 + 8, kGrey);
         }
       }
 #endif
@@ -1597,7 +1596,7 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
   if (pause) {
     Get_Key_Num();
   }
-  GraphicViewPortClass* page = Set_Logic_Page(TheScreen().visible_view());
+  GraphicViewPortClass* page = SetLogicPage(TheScreen().visible_view());
 
   TheScreen().visible_page().Clear();
   Fancy_Text_Print(txt, 160, 0, kWhite, kBlack, TPF_8POINT | TPF_CENTER);
@@ -1636,7 +1635,7 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
                     TheScreen().visible_view());
     }
   }
-  Set_Logic_Page(page);
+  SetLogicPage(page);
 }
 
 void FootClass::Debug_Draw_Path(PathType* path) {

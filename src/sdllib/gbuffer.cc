@@ -35,9 +35,10 @@
 // mapped back through the inverse transform to the bitmap pixel it came
 // from. Walking the source instead would scatter its pixels and leave holes
 // wherever the scale stretches the image.
-void GraphicBufferClass::Scale_Rotate(const BitmapClass& bmp,
-                                      const TPoint2D& pt, const int32_t scale,
-                                      const uint8_t angle) {
+void GraphicBufferClass::DrawScaledRotated(const BitmapClass& bmp,
+                                           const TPoint2D& pt,
+                                           const int32_t scale,
+                                           const uint8_t angle) {
   if (scale == 0) {
     return;
   }
@@ -53,13 +54,13 @@ void GraphicBufferClass::Scale_Rotate(const BitmapClass& bmp,
   const double cx_bmp = bmp.Width / 2.0;
   const double cy_bmp = bmp.Height / 2.0;
 
-  // Rows in this buffer are Width apart: Scale_Rotate is a member of the
-  // buffer rather than of a viewport, and Init() leaves XAdd and Pitch zero
+  // Rows in this buffer are width_ apart: DrawScaledRotated is a member of the
+  // buffer rather than of a viewport, and Init() leaves x_add_ and pitch_ zero
   // for every buffer the games allocate.
   const auto dst_buf = Get_Bytes();
 
-  for (int dy = 0; dy < Height; dy++) {
-    for (int dx = 0; dx < Width; dx++) {
+  for (int dy = 0; dy < height_; dy++) {
+    for (int dx = 0; dx < width_; dx++) {
       const double rx = dx - pt.x;
       const double ry = dy - pt.y;
 
@@ -78,7 +79,7 @@ void GraphicBufferClass::Scale_Rotate(const BitmapClass& bmp,
         const uint8_t pixel =
             base::At(bmp.Data, base::ToSize((by * bmp.Width) + bx));
         if (pixel != 0) {
-          base::At(dst_buf, base::ToSize((dy * Width) + dx)) = pixel;
+          base::At(dst_buf, base::ToSize((dy * width_) + dx)) = pixel;
         }
       }
     }

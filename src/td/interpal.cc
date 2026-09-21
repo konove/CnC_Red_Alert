@@ -111,9 +111,9 @@ void Increase_Palette_Luminance(std::span<unsigned char> palette,
 void Interpolate_2X_Scale(GraphicBufferClass* source,
                           GraphicViewPortClass* /*unused*/,
                           const char* /*unused*/) {
-  // Render using SDL scaling - palette already set via Update_Palette
+  // Render using SDL scaling - palette already set via UpdatePalette
   source->Lock();
-  WindowBuffer->Render_Scaled_Frame(source->Get_Bytes(), source->Get_Width(),
-                                    source->Get_Height());
+  WindowBuffer->PresentScaledFrame(source->Get_Bytes(), source->width(),
+                                   source->height());
   source->Unlock();
 }

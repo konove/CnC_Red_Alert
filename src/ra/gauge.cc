@@ -232,11 +232,11 @@ bool GaugeClass::Draw_Me(bool forced) {
       const unsigned char color = Get_Color_Scheme()->Bright;
       if (IsHorizontal) {
         if (middle >= X + 1) {
-          LogicPage->Fill_Rect(X + 1, Y + 1, middle, Y + Height - 2, color);
+          LogicPage->FillRect(X + 1, Y + 1, middle, Y + Height - 2, color);
         }
       } else {
         if (middle >= Y + 1) {
-          LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, middle, color);
+          LogicPage->FillRect(X + 1, Y + 1, X + Width - 2, middle, color);
         }
       }
     }
@@ -482,27 +482,27 @@ bool TriColorGaugeClass::Draw_Me(bool forced) {
 
     if (CurValue <= RedLimit) {
       if (IsHorizontal) {
-        LogicPage->Fill_Rect(X + 1, Y + 1, middle, Y + Height - 2, kPink);
+        LogicPage->FillRect(X + 1, Y + 1, middle, Y + Height - 2, kPink);
       } else {
-        LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, middle, kPink);
+        LogicPage->FillRect(X + 1, Y + 1, X + Width - 2, middle, kPink);
       }
     } else if (CurValue > RedLimit && CurValue <= YellowLimit) {
       if (IsHorizontal) {
-        LogicPage->Fill_Rect(X + 1, Y + 1, red, Y + Height - 2, kPink);
-        LogicPage->Fill_Rect(red, Y + 1, middle, Y + Height - 2, kYellow);
+        LogicPage->FillRect(X + 1, Y + 1, red, Y + Height - 2, kPink);
+        LogicPage->FillRect(red, Y + 1, middle, Y + Height - 2, kYellow);
       } else {
-        LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, red, kPink);
-        LogicPage->Fill_Rect(X + 1, red, X + Width - 2, middle, kYellow);
+        LogicPage->FillRect(X + 1, Y + 1, X + Width - 2, red, kPink);
+        LogicPage->FillRect(X + 1, red, X + Width - 2, middle, kYellow);
       }
     } else if (CurValue > YellowLimit && CurValue <= MaxValue) {
       if (IsHorizontal) {
-        LogicPage->Fill_Rect(X + 1, Y + 1, red, Y + Height - 2, kPink);
-        LogicPage->Fill_Rect(red, Y + 1, yellow, Y + Height - 2, kYellow);
-        LogicPage->Fill_Rect(yellow, Y + 1, middle, Y + Height - 2, kGreen);
+        LogicPage->FillRect(X + 1, Y + 1, red, Y + Height - 2, kPink);
+        LogicPage->FillRect(red, Y + 1, yellow, Y + Height - 2, kYellow);
+        LogicPage->FillRect(yellow, Y + 1, middle, Y + Height - 2, kGreen);
       } else {
-        LogicPage->Fill_Rect(X + 1, Y + 1, X + Width - 2, red, kPink);
-        LogicPage->Fill_Rect(X + 1, red, X + Width - 2, yellow, kYellow);
-        LogicPage->Fill_Rect(X + 1, yellow, X + Width - 2, middle, kGreen);
+        LogicPage->FillRect(X + 1, Y + 1, X + Width - 2, red, kPink);
+        LogicPage->FillRect(X + 1, red, X + Width - 2, yellow, kYellow);
+        LogicPage->FillRect(X + 1, yellow, X + Width - 2, middle, kGreen);
       }
     }
 

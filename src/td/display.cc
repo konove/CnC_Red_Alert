@@ -522,7 +522,7 @@ std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
       CELL ul = Click_Cell_Calc(x, y - 1);
       const CELL lr = Click_Cell_Calc(
           x + len - 1, Bound(y + height, TacPixelY,
-                             TheScreen().visible_view().Get_Height() - 1));
+                             TheScreen().visible_view().height() - 1));
 
       if (ul == -1) {
         ul = Click_Cell_Calc(x, y);
@@ -572,12 +572,12 @@ std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
  *=============================================================================================*/
 void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
   if (width == -1) {
-    width = TheScreen().visible_view().Get_Width() - x;
+    width = TheScreen().visible_view().width() - x;
   }
   TacLeptonWidth = Pixel_To_Lepton(width);
 
   if (height == -1) {
-    height = TheScreen().visible_view().Get_Height() - y;
+    height = TheScreen().visible_view().height() - y;
   }
   TacLeptonHeight = Pixel_To_Lepton(height);
 
@@ -1718,8 +1718,8 @@ ObjectClass* DisplayClass::Cell_Object(CELL cell, int x, int y) {
  *CellIcon[] array (204)                                 * 04/16/1991 JLB : Cell
  *size increased to 16 x 16 (167)                                     *
  *   04/17/1991 JLB : Cell based tactical map rendering (165) * 04/22/1991 JLB :
- *Uses Draw_Stamp() for icon rendering (426)                               *
- *   04/22/1991 JLB : Draw_Stamp uses LogicPage now (276) * 04/23/1991 JLB : Map
+ *Uses DrawStamp() for icon rendering (426)                               *
+ *   04/22/1991 JLB : DrawStamp uses LogicPage now (276) * 04/23/1991 JLB : Map
  *active location cursor (334)                                         *
  *   05/02/1991 JLB : Added smoothing and 3 icons sets (431) * 05/22/1991 JLB :
  *Broken into Draw_Map() and Refresh_Map().                                *
@@ -1811,8 +1811,7 @@ void DisplayClass::Draw_It(bool forced) {
         *page to
         **  avoid blitting an overlapped region.
         */
-        if (TheScreen().hidden_view().Get_IsDirectDraw() &&
-            !OverlappedVideoBlits) {
+        if (TheScreen().hidden_view().NeedsLock() && !OverlappedVideoBlits) {
           Hide_Mouse();
           TheScreen().visible_view().Blit(
               TheScreen().hidden_view(), (oldx < 0 ? -oldx : 0) + TacPixelX,
@@ -2042,8 +2041,8 @@ void DisplayClass::Draw_It(bool forced) {
     **	Draw the rubber band over the top of it all.
     */
     if (IsRubberBand) {
-      LogicPage->Draw_Rect(BandX + TacPixelX, BandY + TacPixelY,
-                           NewX + TacPixelX, NewY + TacPixelY, kWhite);
+      LogicPage->DrawRect(BandX + TacPixelX, BandY + TacPixelY,
+                          NewX + TacPixelX, NewY + TacPixelY, kWhite);
     }
     /*
     **	Clear the redraw flags so that normal redraw flag setting can resume.
@@ -2221,9 +2220,9 @@ void DisplayClass::Redraw_Shadow_Rects() {
               if (Clip_Rect(&xpixel, &ypixel, &ww, &hh,
                             Lepton_To_Pixel(TacLeptonWidth),
                             Lepton_To_Pixel(TacLeptonHeight)) >= 0) {
-                LogicPage->Fill_Rect(TacPixelX + xpixel, TacPixelY + ypixel,
-                                     TacPixelX + xpixel + ww - 1,
-                                     TacPixelY + ypixel + hh - 1, kBlack);
+                LogicPage->FillRect(TacPixelX + xpixel, TacPixelY + ypixel,
+                                    TacPixelX + xpixel + ww - 1,
+                                    TacPixelY + ypixel + hh - 1, kBlack);
               }
             }
           }

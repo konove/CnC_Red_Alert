@@ -260,8 +260,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
         }
       }
 
-      GraphicViewPortClass* old_page =
-          Set_Logic_Page(TheScreen().visible_view());
+      GraphicViewPortClass* old_page = SetLogicPage(TheScreen().visible_view());
       TheTheme().Stop();
       int hidden = Get_Mouse_State();
       font = FontPtr;
@@ -282,7 +281,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
 
       if (WWMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, true) ==
           1) {
-        Set_Logic_Page(old_page);
+        SetLogicPage(old_page);
         while (hidden--) {
           Hide_Mouse();
         }
@@ -293,7 +292,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
         Hide_Mouse();
       }
       Set_Font(font);
-      Set_Logic_Page(old_page);
+      SetLogicPage(old_page);
     }
   }
 

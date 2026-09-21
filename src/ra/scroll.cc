@@ -112,9 +112,9 @@ void ScrollClass::AI(KeyNumType& input, int x, int y) {
     const bool noscroll = false;
 
     if (!noscroll) {
-      const bool at_screen_edge =
-          y <= 0 || x <= 0 || x >= TheScreen().visible_view().Get_Width() - 1 ||
-          y >= TheScreen().visible_view().Get_Height() - 1;
+      const bool at_screen_edge = y <= 0 || x <= 0 ||
+                                  x >= TheScreen().visible_view().width() - 1 ||
+                                  y >= TheScreen().visible_view().height() - 1;
 
       /*
       **	Verify that the mouse is over a scroll region.

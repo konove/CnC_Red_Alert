@@ -841,7 +841,7 @@ bool Select_Game(bool fade) {
       TheTheme().Queue_Song(THEME_NONE);
       TheSession().type() = GAME_INTERNET;
       display = false;
-      Set_Logic_Page(TheScreen().visible_view());
+      SetLogicPage(TheScreen().visible_view());
     }
 
     while (process) {
@@ -898,24 +898,23 @@ bool Select_Game(bool fade) {
           fade = false;
         }
 
-        Set_Logic_Page(TheScreen().visible_view());
+        SetLogicPage(TheScreen().visible_view());
         if constexpr (config::kVirginCheatKeysEnabled) {
-          Fancy_Text_Print("V.%d%s", TheScreen().visible_view().Get_Width() - 1,
-                           TheScreen().visible_view().Get_Height() - 10, kGrey,
+          Fancy_Text_Print("V.%d%s", TheScreen().visible_view().width() - 1,
+                           TheScreen().visible_view().height() - 10, kGrey,
                            kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                            Version_Number(), TheGameState().version_text(),
                            FOREIGN_VERSION_NUMBER);
         } else {
 #ifdef DEMO
           Version_Number();
-          Fancy_Text_Print("DEMO V%s",
-                           TheScreen().visible_view().Get_Width() - 1,
-                           TheScreen().visible_view().Get_Height() - 10, kGrey,
+          Fancy_Text_Print("DEMO V%s", TheScreen().visible_view().width() - 1,
+                           TheScreen().visible_view().height() - 10, kGrey,
                            kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                            TheGameState().version_text());
 #else
-          Fancy_Text_Print("V.%d%s", TheScreen().visible_view().Get_Width() - 1,
-                           TheScreen().visible_view().Get_Height() - 10, kGrey,
+          Fancy_Text_Print("V.%d%s", TheScreen().visible_view().width() - 1,
+                           TheScreen().visible_view().height() - 10, kGrey,
                            kTBlack, TPF_6POINT | TPF_FULLSHADOW | TPF_RIGHT,
                            Version_Number(), TheGameState().version_text());
 #endif
@@ -951,8 +950,8 @@ bool Select_Game(bool fade) {
           ** Make sure top and bottom of screen are clear in 640x480 mode
           */
           if (TheScreen().mode_height() == 480) {
-            TheScreen().visible_page().Fill_Rect(0, 0, 639, 40, 0);
-            TheScreen().visible_page().Fill_Rect(0, 440, 639, 479, 0);
+            TheScreen().visible_page().FillRect(0, 0, 639, 40, 0);
+            TheScreen().visible_page().FillRect(0, 440, 639, 479, 0);
           }
         }
       }
@@ -1940,7 +1939,7 @@ bool Select_Game(bool fade) {
   **	properly set.
   */
   DLOG(INFO) << "C&C95 - Initialising message system.";
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
   TheSession().messages().Init(TheMap().TacPixelX, TheMap().TacPixelY, 6,
                                MAX_MESSAGE_LENGTH, (6 * factor) + 1);
 
@@ -1966,7 +1965,7 @@ bool Select_Game(bool fade) {
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
   TheScreen().hidden_page().Clear();
   TheScreen().visible_page().Clear();
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   TheMap().Flag_To_Redraw();
   Call_Back();
   TheMap().Render();

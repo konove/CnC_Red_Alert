@@ -226,8 +226,8 @@ void StaticButtonClass::Draw_Background() {
   if (Background.empty() && Width > 0 && Height > 0) {
     Background.resize(base::ToSize(Width) * base::ToSize(Height));
     if (!Background.empty()) {
-      LogicPage->To_Buffer(X, Y, Width, Height, Background,
-                           static_cast<int32_t>(Background.size()));
+      LogicPage->CopyToBuffer(X, Y, Width, Height, Background,
+                              static_cast<int32_t>(Background.size()));
     }
   }
 

@@ -33,7 +33,7 @@ void Fade_Palette_To(std::span<const unsigned char> palette, int fade,
             old_val + ((new_val - old_val) * cur_time / fade));
       }
 
-      Do_Set_Palette(fade_palette);
+      SetScreenPalette(fade_palette);
       if (callback) {
         callback();
       }
@@ -54,5 +54,5 @@ void Set_Palette(std::span<const unsigned char> palette) {
   CHECK_GE(palette.size(), sizeof(CurrentPalette));
   std::ranges::copy(palette.first(sizeof(CurrentPalette)),
                     std::span(CurrentPalette).begin());
-  Do_Set_Palette(palette);
+  SetScreenPalette(palette);
 }

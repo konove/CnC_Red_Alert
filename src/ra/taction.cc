@@ -224,7 +224,7 @@ void ActionChoiceClass::Draw_It(int /*unused*/, int x, int y, int width,
       font == static_cast<uint32_t>(TPF_EFNT)) {
     if (selected) {
       flags = flags | TPF_BRIGHT_COLOR;
-      LogicPage->Fill_Rect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
+      LogicPage->FillRect(x, y, x + width - 1, y + height - 1, scheme->Shadow);
     } else {
       if (!base::Any(flags & TPF_USE_GRAD_PAL)) {
         flags = flags | TPF_MEDIUM_COLOR;

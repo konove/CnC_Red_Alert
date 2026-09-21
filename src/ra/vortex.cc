@@ -740,9 +740,9 @@ void ChronalVortexClass::Coordinate_Remap(
   }
   BufferClass destbuf(static_cast<int32_t>(count));
   const auto output = destbuf.Get_Bytes();
-  const auto input = inbuffer->Get_Pixels();
-  const auto stride = base::ToSize(
-      inbuffer->Get_Pitch() + inbuffer->Get_XAdd() + inbuffer->Get_Width());
+  const auto input = inbuffer->pixels();
+  const auto stride =
+      base::ToSize(inbuffer->pitch() + inbuffer->x_add() + inbuffer->width());
   const auto origin = base::ToSize(x) + (base::ToSize(y) * stride);
   for (size_t i = 0; i < count; ++i) {
     const auto getx = base::At(remap_table, i * 3);
@@ -822,7 +822,7 @@ void ChronalVortexClass::Render() {
       const TemplateTypeClass* ttype = nullptr;
       int icon = 0;  // The icon number to use from the template set.
 
-      GraphicViewPortClass* oldpage = Set_Logic_Page(RenderBuffer);
+      GraphicViewPortClass* oldpage = SetLogicPage(RenderBuffer);
 
       /*
       ** Temporarily modify the tactical window so it works with our offscreen
@@ -840,9 +840,9 @@ void ChronalVortexClass::Render() {
       base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowX) = 0;
       base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowY) = 0;
       base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowWidth) =
-          RenderBuffer->Get_Width();
+          RenderBuffer->width();
       base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowHeight) =
-          RenderBuffer->Get_Height();
+          RenderBuffer->height();
 
       /*
       ** Loop through all the cells that the vortex overlaps and render the
@@ -874,9 +874,9 @@ void ChronalVortexClass::Render() {
             ** Draw the template
             */
             if (!ttype->Get_Image_Data().empty()) {
-              RenderBuffer->Draw_Stamp(ttype->Get_Image_Data(), icon,
-                                       x * CELL_PIXEL_W, y * CELL_PIXEL_H, {},
-                                       static_cast<int>(WINDOW_MAIN));
+              RenderBuffer->DrawStamp(ttype->Get_Image_Data(), icon,
+                                      x * CELL_PIXEL_W, y * CELL_PIXEL_H, {},
+                                      static_cast<int>(WINDOW_MAIN));
             }
 
             /*
@@ -910,7 +910,7 @@ void ChronalVortexClass::Render() {
         }
       }
 
-      Set_Logic_Page(oldpage);
+      SetLogicPage(oldpage);
 
       /*
       ** Restore the tactical window to its correct value
@@ -952,8 +952,8 @@ void ChronalVortexClass::Render() {
       /*
       ** Create a view port to blit to
       */
-      GraphicViewPortClass target(LogicPage->Get_Graphic_Buffer(), 0,
-                                  16 + LogicPage->Get_YPos(),
+      GraphicViewPortClass target(LogicPage->graphic_buffer(), 0,
+                                  16 + LogicPage->y_pos(),
                                   Lepton_To_Pixel(TheMap().TacLeptonWidth),
                                   Lepton_To_Pixel(TheMap().TacLeptonHeight));
 
@@ -984,13 +984,13 @@ void ChronalVortexClass::Render() {
         dest_y = 0;
       }
 
-      if (dest_x + dest_width > target.Get_Width()) {
-        diff = dest_x + dest_width - target.Get_Width();
+      if (dest_x + dest_width > target.width()) {
+        diff = dest_x + dest_width - target.width();
         dest_width -= diff;
       }
 
-      if (dest_y + dest_height > target.Get_Height()) {
-        diff = dest_y + dest_height - target.Get_Height();
+      if (dest_y + dest_height > target.height()) {
+        diff = dest_y + dest_height - target.height();
         dest_height -= diff;
       }
 

@@ -302,7 +302,7 @@ int Test_Null_Modem() {
   /*
   ** Get the resolution factor
   */
-  //	int factor			= (visible_view.Get_Width() == 320) ? 1
+  //	int factor			= (visible_view.width() == 320) ? 1
   //: 2;
 
   /*
@@ -334,15 +334,15 @@ int Test_Null_Modem() {
   port::SafeCopy(buffer, Text_String(TXT_WAITING_CONNECT));
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, TheScreen().visible_view().Get_Height(), width,
+  Format_Window_String(buffer, TheScreen().visible_view().height(), width,
                        height);
 
   width = std::max(width, 100);
   width += 80;
   height += 120;
 
-  const int x = (TheScreen().visible_view().Get_Width() - width) / 2;
-  const int y = (TheScreen().visible_view().Get_Height() - height) / 2;
+  const int x = (TheScreen().visible_view().width() - width) / 2;
+  const int y = (TheScreen().visible_view().height() - height) / 2;
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
@@ -352,7 +352,7 @@ int Test_Null_Modem() {
   /*
   ** Initialize
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   process = true;
 
   /*
@@ -649,15 +649,15 @@ static int Reconnect_Null_Modem() {
   port::SafeCopy(buffer, Text_String(TXT_NULL_CONNERR_CHECK_CABLES));
   Fancy_Text_Print(TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, TheScreen().visible_view().Get_Height(), width,
+  Format_Window_String(buffer, TheScreen().visible_view().height(), width,
                        height);
 
   width = std::max(width, 100);
   width += 80;
   height += 120;
 
-  const int x = (TheScreen().visible_view().Get_Width() - width) / 2;
-  const int y = (TheScreen().visible_view().Get_Height() - height) / 2;
+  const int x = (TheScreen().visible_view().width() - width) / 2;
+  const int y = (TheScreen().visible_view().height() - height) / 2;
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
@@ -667,7 +667,7 @@ static int Reconnect_Null_Modem() {
   /*
   ** Initialize
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
   process = true;
 
   /*
@@ -1013,7 +1013,7 @@ GameType Select_Serial_Dialog() {
   /*
   ** Initialize
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   if (TheSession().SerialDefaults.Port == 0 ||
       TheSession().SerialDefaults.IRQ == -1 ||
@@ -2825,7 +2825,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   bool messages_have_focus = true;  // Gadget focus starts on the message system
 
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   Timer<SystemTickSource> kludge_timer;  // Timer to allow a wait after client
                                          // joins game before game can start
@@ -3268,13 +3268,13 @@ int Com_Scenario_Dialog(bool skirmish) {
         ..................................................................*/
         if (display >= REDRAW_COLORS) {
           for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-            LogicPage->Fill_Rect(base::At(cbox_x, i) + 1, d_color_y + 1,
-                                 base::At(cbox_x, i) + 1 + d_color_w - 2,
-                                 d_color_y + 1 + d_color_h - 2,
-                                 ThePalettes()
-                                     .color_remaps()
-                                     .at(static_cast<PlayerColorType>(i))
-                                     .Box);
+            LogicPage->FillRect(base::At(cbox_x, i) + 1, d_color_y + 1,
+                                base::At(cbox_x, i) + 1 + d_color_w - 2,
+                                d_color_y + 1 + d_color_h - 2,
+                                ThePalettes()
+                                    .color_remaps()
+                                    .at(static_cast<PlayerColorType>(i))
+                                    .Box);
             //						(i ==
             // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
             // ColorRemaps[static_cast<PlayerColorType>(i)].Box);
@@ -3303,7 +3303,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         // Update game parameter labels
         //..................................................................
         if (display >= REDRAW_PARMS) {
-          //				LogicPage->Fill_Rect(d_count_x +
+          //				LogicPage->FillRect(d_count_x +
           // d_count_w + 2, d_count_y, d_count_x + d_count_w + 35 * 2,
           // d_aiplayers_y + d_aiplayers_h+2, BLACK);
 
@@ -5026,13 +5026,13 @@ int Com_Show_Scenario_Dialog() {
       ..................................................................*/
       if (display >= REDRAW_COLORS) {
         for (i = 0; i < MAX_MPLAYER_COLORS; i++) {
-          LogicPage->Fill_Rect(base::At(cbox_x, i) + 2, d_color_y + 2,
-                               base::At(cbox_x, i) + 2 + d_color_w - 4,
-                               d_color_y + 2 + d_color_h - 4,
-                               ThePalettes()
-                                   .color_remaps()
-                                   .at(static_cast<PlayerColorType>(i))
-                                   .Box);
+          LogicPage->FillRect(base::At(cbox_x, i) + 2, d_color_y + 2,
+                              base::At(cbox_x, i) + 2 + d_color_w - 4,
+                              d_color_y + 2 + d_color_h - 4,
+                              ThePalettes()
+                                  .color_remaps()
+                                  .at(static_cast<PlayerColorType>(i))
+                                  .Box);
           //						(i ==
           // PCOLOR_DIALOG_BLUE) ? ColorRemaps[PCOLOR_REALLY_BLUE].Box :
           // ColorRemaps[static_cast<PlayerColorType>(i)].Box);
@@ -5070,7 +5070,7 @@ int Com_Show_Scenario_Dialog() {
             /*............................................................
             Scenario description
             ............................................................*/
-            // LogicPage->Fill_Rect(d_dialog_x + 16*2, d_scenario_y,
+            // LogicPage->FillRect(d_dialog_x + 16*2, d_scenario_y,
             //	d_dialog_x + d_dialog_w - 16*2, d_scenario_y + d_txt6_h,
             // BLACK);
 
@@ -5114,7 +5114,7 @@ int Com_Show_Scenario_Dialog() {
             //.........................................................
             // Unit count, tech level, credits
             //.........................................................
-            // LogicPage->Fill_Rect(d_count_x + d_count_w + 2 * 2,
+            // LogicPage->FillRect(d_count_x + d_count_w + 2 * 2,
             // d_count_y, 	d_count_x + d_count_w + 35 * 2,
             // d_aiplayers_y
             //+ d_aiplayers_h+2, 	BLACK);

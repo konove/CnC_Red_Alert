@@ -89,12 +89,12 @@
 #include "tech/mix_archive.h"
 
 void GameOptionsClass::Adjust_Variables_For_Resolution() {
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
   OptionWidth = (216 + 8) * factor;
   OptionHeight = 100 * factor;
-  OptionX = (TheScreen().visible_view().Get_Width() - OptionWidth) / 2;
-  OptionY = (TheScreen().visible_view().Get_Height() - OptionHeight) / 2;
+  OptionX = (TheScreen().visible_view().width() - OptionWidth) / 2;
+  OptionY = (TheScreen().visible_view().height() - OptionHeight) / 2;
   ButtonWidth = 130 * factor;
   OButtonHeight = 9 * factor;
   CaptionYPos = 5 * factor;
@@ -148,13 +148,13 @@ void GameOptionsClass::Process() {
   TextButtonClass*
       buttonsel[sizeof(_constants) / sizeof(base::At(_constants, 0))];
 
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   **	Build the button list for all of the buttons for this dialog.
   */
   int maxwidth = 0;
-  const int resfactor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int resfactor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
   for (int index = 0; index < std::ssize(_constants);
        index++) {
@@ -172,8 +172,8 @@ void GameOptionsClass::Process() {
     }
 
     if (index < 5) {
-      y = ((TheScreen().visible_view().Get_Height() - OptionHeight) / 2) +
-          ButtonY + ((OButtonHeight + 2) * index);
+      y = ((TheScreen().visible_view().height() - OptionHeight) / 2) + ButtonY +
+          ((OButtonHeight + 2) * index);
     } else {
       y = OptionY + ButtonResumeY;
     }
@@ -230,8 +230,8 @@ void GameOptionsClass::Process() {
   **	This cause a right click anywhere or a left click outside the dialog
   *region *	to be equivalent to clicking on the return to game button.
   */
-  (new ControlClass(kButtonResume, 0, 0, TheScreen().visible_view().Get_Width(),
-                    TheScreen().visible_view().Get_Height(),
+  (new ControlClass(kButtonResume, 0, 0, TheScreen().visible_view().width(),
+                    TheScreen().visible_view().height(),
                     GadgetClass::kLeftPress | GadgetClass::kRightPress))
       ->Add_Tail(*buttons);
 
@@ -588,7 +588,7 @@ void GameOptionsClass::Process() {
  *=============================================================================================*/
 void Draw_Caption(int text, int x, int y, int w) {
   OptionControlType option = OPTION_NONE;
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
   /*
   **	Determine the filigree to use depending on the text of the caption.
@@ -665,10 +665,9 @@ void Draw_Caption(int text, int x, int y, int w) {
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     const int length = String_Pixel_Width(Text_String(text));
-    LogicPage->Draw_Line(x + (w / 2) - (length / 2),
-                         y + FontHeight + FontYSpacing + (5 * factor),
-                         x + (w / 2) + (length / 2),
-                         y + FontHeight + FontYSpacing + (5 * factor),
-                         kCcGreen);
+    LogicPage->DrawLine(x + (w / 2) - (length / 2),
+                        y + FontHeight + FontYSpacing + (5 * factor),
+                        x + (w / 2) + (length / 2),
+                        y + FontHeight + FontYSpacing + (5 * factor), kCcGreen);
   }
 }

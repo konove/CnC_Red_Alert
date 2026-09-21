@@ -78,18 +78,17 @@
  *: Created.                                                                 *
  *=============================================================================================*/
 void GameControlsClass::Process() {
-  const int factor = TheScreen().visible_view().Get_Width() == 320 ? 1 : 2;
+  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
   /*
   **	Dialog & button dimensions
   */
   const int d_dialog_w = 232 * factor;  // dialog width
   const int d_dialog_h = 141 * factor;  // dialog height
-  const int d_dialog_x = (TheScreen().visible_view().Get_Width() - d_dialog_w) /
-                         2;  // dialog x-coord
-  const int d_dialog_y =
-      (TheScreen().visible_view().Get_Height() - d_dialog_h) /
-      2;                                                  // centered y-coord
+  const int d_dialog_x =
+      (TheScreen().visible_view().width() - d_dialog_w) / 2;  // dialog x-coord
+  const int d_dialog_y = (TheScreen().visible_view().height() - d_dialog_h) /
+                         2;                               // centered y-coord
   const int d_dialog_cx = d_dialog_x + (d_dialog_w / 2);  // center x-coord
   const int d_top_margin = 30 * factor;
 
@@ -168,12 +167,12 @@ void GameControlsClass::Process() {
       kButtonOk, TXT_OPTIONS_MENU,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, d_ok_x,
       d_ok_y);
-  okbtn.X = (TheScreen().visible_view().Get_Width() - okbtn.Width) / 2;
+  okbtn.X = (TheScreen().visible_view().width() - okbtn.Width) / 2;
 
   /*
   **	Various Inits.
   */
-  Set_Logic_Page(TheScreen().visible_view());
+  SetLogicPage(TheScreen().visible_view());
 
   /*
   **	Build button list

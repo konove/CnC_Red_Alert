@@ -615,14 +615,13 @@ void DisplayClass::Set_View_Dimensions(int x, int y, int width, int height) {
 void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
                                           bool reposition) {
   if (width == -1) {
-    TacLeptonWidth =
-        Pixel_To_Lepton(TheScreen().visible_view().Get_Width() - x);
+    TacLeptonWidth = Pixel_To_Lepton(TheScreen().visible_view().width() - x);
   } else {
     TacLeptonWidth = static_cast<LEPTON>(width * CELL_LEPTON_W);
   }
 
   if (height == -1) {
-    height = (TheScreen().visible_view().Get_Height() - y) / CELL_PIXEL_H;
+    height = (TheScreen().visible_view().height() - y) / CELL_PIXEL_H;
   }
   TacLeptonHeight = static_cast<LEPTON>(height * CELL_LEPTON_H);
 
@@ -1725,8 +1724,8 @@ ObjectClass* DisplayClass::Cell_Object(CELL cell, int x, int y) const {
  *CellIcon[] array (204)                                 * 04/16/1991 JLB : Cell
  *size increased to 16 x 16 (167)                                     *
  *   04/17/1991 JLB : Cell based tactical map rendering (165) * 04/22/1991 JLB :
- *Uses Draw_Stamp() for icon rendering (426)                               *
- *   04/22/1991 JLB : Draw_Stamp uses LogicPage now (276) * 04/23/1991 JLB : Map
+ *Uses DrawStamp() for icon rendering (426)                               *
+ *   04/22/1991 JLB : DrawStamp uses LogicPage now (276) * 04/23/1991 JLB : Map
  *active location cursor (334)                                         *
  *   05/02/1991 JLB : Added smoothing and 3 icons sets (431) * 05/22/1991 JLB :
  *Broken into Draw_Map() and Refresh_Map().                                *
@@ -1823,7 +1822,7 @@ void DisplayClass::Draw_It(bool forced) {
         *blitting
         **  an overlapped region.
         */
-        if (TheScreen().hidden_view().Get_IsDirectDraw()) {
+        if (TheScreen().hidden_view().NeedsLock()) {
           Hide_Mouse();
           TheScreen().visible_view().Blit(
               TheScreen().hidden_view(), (oldx < 0 ? -oldx : 0) + TacPixelX,
@@ -2106,8 +2105,8 @@ void DisplayClass::Draw_It(bool forced) {
     **	Draw the rubber band over the top of it all.
     */
     if (IsRubberBand) {
-      LogicPage->Draw_Rect(BandX + TacPixelX, BandY + TacPixelY,
-                           NewX + TacPixelX, NewY + TacPixelY, kWhite);
+      LogicPage->DrawRect(BandX + TacPixelX, BandY + TacPixelY,
+                          NewX + TacPixelX, NewY + TacPixelY, kWhite);
     }
 
     /*
@@ -2286,9 +2285,9 @@ void DisplayClass::Redraw_Shadow() {
                 if (Clip_Rect(&xpixel, &ypixel, &ww, &hh,
                               Lepton_To_Pixel(TacLeptonWidth),
                               Lepton_To_Pixel(TacLeptonHeight)) >= 0) {
-                  LogicPage->Fill_Rect(TacPixelX + xpixel, TacPixelY + ypixel,
-                                       TacPixelX + xpixel + ww - 1,
-                                       TacPixelY + ypixel + hh - 1, kBlack);
+                  LogicPage->FillRect(TacPixelX + xpixel, TacPixelY + ypixel,
+                                      TacPixelX + xpixel + ww - 1,
+                                      TacPixelY + ypixel + hh - 1, kBlack);
                 }
               }
             }
@@ -2886,8 +2885,8 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
     y = Get_Mouse_Y();
   }
   const bool edge = y == 0 || x == 0 ||
-                    x == TheScreen().visible_view().Get_Width() - 1 ||
-                    y == TheScreen().visible_view().Get_Height() - 1;
+                    x == TheScreen().visible_view().width() - 1 ||
+                    y == TheScreen().visible_view().height() - 1;
   const COORDINATE coord = TheMap().Pixel_To_Coord(x, y);
   const CELL cell = Coord_Cell(coord);
   if (coord) {

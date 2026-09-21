@@ -887,12 +887,12 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
   Clear_Redraw_Flag();
   if (IsSelected || TheSpecial().IsBarOn) {
     GraphicViewPortClass draw_window(
-        LogicPage->Get_Graphic_Buffer(),
+        LogicPage->graphic_buffer(),
         (base::At(base::At(WindowList, static_cast<int>(window)), kWindowX) *
          8) +
-            LogicPage->Get_XPos(),
+            LogicPage->x_pos(),
         base::At(base::At(WindowList, static_cast<int>(window)), kWindowY) +
-            LogicPage->Get_YPos(),
+            LogicPage->y_pos(),
         base::At(base::At(WindowList, static_cast<int>(window)), kWindowWidth) *
             8,
         base::At(base::At(WindowList, static_cast<int>(window)),
@@ -930,7 +930,7 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
       */
       draw_window.Remap(xx + 1, yy + 1, width - 1, 3 - 1,
                         MouseClass::FadingShade);
-      draw_window.Draw_Rect(xx, yy, xx + width - 1, yy + 3, kBlack);
+      draw_window.DrawRect(xx, yy, xx + width - 1, yy + 3, kBlack);
 
       /*
       **	Determine the width of the interior strength
@@ -948,8 +948,8 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
       if (ratio < 0x3F) {
         color = kRed;
       }
-      draw_window.Fill_Rect(xx + 1, yy + 1, xx + pwidth, yy + (3 - 1),
-                            static_cast<unsigned char>(color));
+      draw_window.FillRect(xx + 1, yy + 1, xx + pwidth, yy + (3 - 1),
+                           static_cast<unsigned char>(color));
     }
 
     /*
@@ -964,24 +964,24 @@ void TechnoClass::Draw_It(int x, int y, WindowNumberType window) {
           House->Is_Ally(ThePlayer()) || TheSpecial().IsHealthBar ? 4 : 0;
 
       // Upper left corner.
-      draw_window.Draw_Line(x - lx, fudge + y - ly, x - lx + dx, fudge + y - ly,
-                            kWhite);
-      draw_window.Draw_Line(x - lx, fudge + y - ly, x - lx, fudge + y - ly + dy,
-                            kWhite);
+      draw_window.DrawLine(x - lx, fudge + y - ly, x - lx + dx, fudge + y - ly,
+                           kWhite);
+      draw_window.DrawLine(x - lx, fudge + y - ly, x - lx, fudge + y - ly + dy,
+                           kWhite);
 
       // Upper right corner.
-      draw_window.Draw_Line(x + lx, fudge + y - ly, x + lx - dx, fudge + y - ly,
-                            kWhite);
-      draw_window.Draw_Line(x + lx, fudge + y - ly, x + lx, fudge + y - ly + dy,
-                            kWhite);
+      draw_window.DrawLine(x + lx, fudge + y - ly, x + lx - dx, fudge + y - ly,
+                           kWhite);
+      draw_window.DrawLine(x + lx, fudge + y - ly, x + lx, fudge + y - ly + dy,
+                           kWhite);
 
       // Lower right corner.
-      draw_window.Draw_Line(x + lx, y + ly, x + lx - dx, y + ly, kWhite);
-      draw_window.Draw_Line(x + lx, y + ly, x + lx, y + ly - dy, kWhite);
+      draw_window.DrawLine(x + lx, y + ly, x + lx - dx, y + ly, kWhite);
+      draw_window.DrawLine(x + lx, y + ly, x + lx, y + ly - dy, kWhite);
 
       // Lower left corner.
-      draw_window.Draw_Line(x - lx, y + ly, x - lx + dx, y + ly, kWhite);
-      draw_window.Draw_Line(x - lx, y + ly, x - lx, y + ly - dy, kWhite);
+      draw_window.DrawLine(x - lx, y + ly, x - lx + dx, y + ly, kWhite);
+      draw_window.DrawLine(x - lx, y + ly, x - lx, y + ly - dy, kWhite);
 
       if (House->Is_Ally(ThePlayer())) {
         Draw_Pips(x - lx + 5, y + ly - 3, window);
