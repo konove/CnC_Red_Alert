@@ -34,8 +34,6 @@
 ;* Functions:                                                              *
 ;* PixelBuffer* Read_PCX_File (char* name, BYTE* palette,void *buff, long
 size);
-;* PixelBuffer* Read_PCX_File (char* name, BYTE* palette, BufferClass&
-Buff);
 ;* int Write_PCX_File (char* name, PixelView& pic, BYTE* palette );*
 ;*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 #ifndef CNC_RED_ALERT_RA_FILEPCX_H_
@@ -44,7 +42,6 @@ Buff);
 #include <cstdint>
 
 #include "ra/palette.h"
-#include "sdllib/buffer.h"
 #include "sdllib/pixel_buffer.h"
 #include "tech/file.h"
 
@@ -75,8 +72,6 @@ struct PCX_HEADER {
 
 PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
                            std::span<uint8_t> backing, int32_t size);
-PixelBuffer* Read_PCX_File(const char* name, BufferClass& Buff,
-                           char* palette = nullptr);
 
 int Write_PCX_File(File& file, PixelBuffer& pic, const PaletteClass* palette);
 

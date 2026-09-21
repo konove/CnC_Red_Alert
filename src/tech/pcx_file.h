@@ -34,8 +34,6 @@
 ;* Functions:                                                              *
 ;* PixelBuffer* Read_PCX_File (char* name, BYTE* palette,void *buff, long
 size);
-;* PixelBuffer* Read_PCX_File (char* name, BYTE* palette, BufferClass&
-Buff);
 ;* int Write_PCX_File (char* name, PixelView& pic, BYTE* palette );*
 ;*= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
 
@@ -45,7 +43,6 @@ Buff);
 #include <cstdint>
 #include <span>
 
-#include "sdllib/buffer.h"
 #include "sdllib/pixel_buffer.h"
 
 struct RGB {
@@ -75,8 +72,6 @@ struct PCX_HEADER {
 
 PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette = {},
                            std::span<uint8_t> buff = {}, int32_t size = 0);
-PixelBuffer* Read_PCX_File(char* name, BufferClass& Buff,
-                           char* palette = nullptr);
 int Write_PCX_File(const char* name, PixelView& pic,
                    std::span<const unsigned char> palette);
 
