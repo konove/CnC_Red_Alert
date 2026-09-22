@@ -14,6 +14,7 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/unaligned.h"
+#include "sdllib/clip.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 
@@ -50,12 +51,6 @@ static int16_t BFPredNegTable[]{-1, -3, -2, -5, -2, -4, -3, -1,
                                 0, 0, 0, 0, 0, 0, 0, 0};
 
 static int16_t BFPredTable[]{1, 3, 2, 5, 2, 3, 4, 1};
-
-// copied from blit funcs
-static inline uint32_t Make_Code(int x, int y, int w, int h) {
-  return (x < 0 ? 0b1000U : 0U) | (x >= w ? 0b0100U : 0U) |
-         (y < 0 ? 0b0010U : 0U) | (y >= h ? 0b0001U : 0U);
-}
 
 static void Setup_Shape_Header(int pixel_width, int pixel_height,
                                std::span<const std::byte> src,
@@ -317,33 +312,33 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
   int dst_x1 = x + w;
   int dst_y1 = y + h;
 
-  const uint32_t code0 = Make_Code(dst_x0, dst_y0, dest.width(), dest.height());
-  const uint32_t code1 =
-      Make_Code(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
+  const OutCode code0 = OutCodeOf(dst_x0, dst_y0, dest.width(), dest.height());
+  const OutCode code1 =
+      OutCodeOf(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
 
   // outside
-  if (code0 & code1) {
+  if (base::Any(code0 & code1)) {
     return;
   }
 
-  if (code0 | code1) {
+  if (base::Any(code0 | code1)) {
     // If the shape needs to be clipped then we cant handle it with the new
     // header system so draw it with the old shape drawer.
     use_new_draw = false;
 
     // apply clip
-    if (code0 & 0b1000) {
+    if (base::Any(code0 & OutCode::kLeft)) {
       src_x0 -= dst_x0;
       dst_x0 = 0;
     }
-    if (code1 & 0b0100) {
+    if (base::Any(code1 & OutCode::kRight)) {
       dst_x1 = dest.width();
     }
-    if (code0 & 0b0010) {
+    if (base::Any(code0 & OutCode::kAbove)) {
       src_y0 -= dst_y0;
       dst_y0 = 0;
     }
-    if (code1 & 0b0001) {
+    if (base::Any(code1 & OutCode::kBelow)) {
       dst_y1 = dest.height();
     }
   }

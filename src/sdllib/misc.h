@@ -109,11 +109,6 @@ extern "C" {
 // Legacy byte generator state behind Random(); the games seed it.
 extern int RandNumb;
 
-// Clips the rectangle at (*x, *y) sized *dw by *dh to the window from (0, 0)
-// to (width, height), writing the clipped rectangle back through the four
-// pointers. Returns -1 and leaves them alone when the rectangle lies wholly
-// outside the window, 1 when it was clipped, and 0 when it already fitted.
-extern int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height);
 extern int Confine_Rect(int* x, int* y, int dw, int dh, int width, int height);
 
 #ifdef __cplusplus

@@ -21,9 +21,8 @@
 // page its pixels, and - for the one page the window shows - the SDL surface
 // and textures behind it and the presenting done through them.
 //
-// The primitives all clip with Cohen-Sutherland outcodes (Make_Code below)
-// and then walk whole rows, which is why Clip_Rect, the one piece of clipping
-// the map code does for itself, lives here too.
+// The primitives all clip with the Cohen-Sutherland outcodes of sdllib/clip.h
+// and then walk whole rows.
 
 #include "sdllib/pixel_buffer.h"
 
@@ -49,9 +48,9 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/bitmap.h"
+#include "sdllib/clip.h"
 #include "sdllib/display.h"
 #include "sdllib/font.h"
-#include "sdllib/misc.h"
 #include "sdllib/ww_win.h"
 
 PixelView::PixelView(PixelBuffer* buffer, int x, int y, int width, int height) {
@@ -117,19 +116,6 @@ void PixelView::Attach(PixelBuffer* buffer, int x, int y, int width,
   buffer_ = buffer;
 }
 
-// Cohen-Sutherland outcode of (x, y) against a width by height window: bits for
-// left, right, top and bottom.
-//
-// Callers clip a rectangle by taking the outcode of its top-left corner and,
-// against a window one pixel wider and taller, the outcode of the corner just
-// past its bottom-right. That second window is what makes an end coordinate
-// equal to the width count as inside: the rectangle owns pixels up to but not
-// including it.
-static inline uint32_t Make_Code(int x, int y, int width, int height) {
-  return (x < 0 ? 0b1000U : 0U) | (x >= width ? 0b0100U : 0U) |
-         (y < 0 ? 0b0010U : 0U) | (y >= height ? 0b0001U : 0U);
-}
-
 int PixelView::GetPixelLocked(int x, int y) {
   if (x < 0 || y < 0 || x >= width() || y >= height()) {
     return 0;
@@ -167,28 +153,28 @@ int32_t PixelView::CopyToBufferLocked(int x, int y, int width, int height,
   int src_x1 = x + width;
   int src_y1 = y + height;
 
-  const uint32_t code0 = Make_Code(src_x0, src_y0, width_, height_);
-  const uint32_t code1 = Make_Code(src_x1, src_y1, width_ + 1, height_ + 1);
+  const OutCode code0 = OutCodeOf(src_x0, src_y0, width_, height_);
+  const OutCode code1 = OutCodeOf(src_x1, src_y1, width_ + 1, height_ + 1);
 
   // outside
-  if (code0 & code1) {
+  if (base::Any(code0 & code1)) {
     return 0;  // i'm not sure this actually has a return value...
   }
 
-  if (code0 | code1) {
+  if (base::Any(code0 | code1)) {
     // apply clip
-    if (code0 & 0b1000) {
+    if (base::Any(code0 & OutCode::kLeft)) {
       dst_x0 -= src_x0;
       src_x0 = 0;
     }
-    if (code1 & 0b0100) {
+    if (base::Any(code1 & OutCode::kRight)) {
       src_x1 = width_;
     }
-    if (code0 & 0b0010) {
+    if (base::Any(code0 & OutCode::kAbove)) {
       dst_y0 -= src_y0;
       src_y0 = 0;
     }
-    if (code1 & 0b0001) {
+    if (base::Any(code1 & OutCode::kBelow)) {
       src_y1 = height_;
     }
   }
@@ -232,28 +218,28 @@ int32_t PixelView::CopyFromBufferLocked(int dst_x, int dst_y, int width,
   int dst_x1 = dst_x + width;
   int dst_y1 = dst_y + height;
 
-  const uint32_t code0 = Make_Code(dst_x0, dst_y0, width_, height_);
-  const uint32_t code1 = Make_Code(dst_x1, dst_y1, width_ + 1, height_ + 1);
+  const OutCode code0 = OutCodeOf(dst_x0, dst_y0, width_, height_);
+  const OutCode code1 = OutCodeOf(dst_x1, dst_y1, width_ + 1, height_ + 1);
 
   // outside
-  if (code0 & code1) {
+  if (base::Any(code0 & code1)) {
     return 0;  // i'm not sure this actually has a return value...
   }
 
-  if (code0 | code1) {
+  if (base::Any(code0 | code1)) {
     // apply clip
-    if (code0 & 0b1000) {
+    if (base::Any(code0 & OutCode::kLeft)) {
       src_x0 -= dst_x0;
       dst_x0 = 0;
     }
-    if (code1 & 0b0100) {
+    if (base::Any(code1 & OutCode::kRight)) {
       dst_x1 = width_;
     }
-    if (code0 & 0b0010) {
+    if (base::Any(code0 & OutCode::kAbove)) {
       src_y0 -= dst_y0;
       dst_y0 = 0;
     }
-    if (code1 & 0b0001) {
+    if (base::Any(code1 & OutCode::kBelow)) {
       dst_y1 = height_;
     }
   }
@@ -295,26 +281,26 @@ bool PixelView::BlitLocked(PixelView& dest, int src_x, int src_y, int dst_x,
   int src_x1 = src_x + width;
   int src_y1 = src_y + height;
 
-  uint32_t code0 = Make_Code(src_x0, src_y0, width_, height_);
-  uint32_t code1 = Make_Code(src_x1, src_y1, width_ + 1, height_ + 1);
+  OutCode code0 = OutCodeOf(src_x0, src_y0, width_, height_);
+  OutCode code1 = OutCodeOf(src_x1, src_y1, width_ + 1, height_ + 1);
 
   // outside
-  if (code0 & code1) {
+  if (base::Any(code0 & code1)) {
     return true;
   }
 
-  if (code0 | code1) {
+  if (base::Any(code0 | code1)) {
     // apply clip
-    if (code0 & 0b1000) {
+    if (base::Any(code0 & OutCode::kLeft)) {
       src_x0 = 0;
     }
-    if (code1 & 0b0100) {
+    if (base::Any(code1 & OutCode::kRight)) {
       src_x1 = width_;
     }
-    if (code0 & 0b0010) {
+    if (base::Any(code0 & OutCode::kAbove)) {
       src_y0 = 0;
     }
-    if (code1 & 0b0001) {
+    if (base::Any(code1 & OutCode::kBelow)) {
       src_y1 = height_;
     }
   }
@@ -327,29 +313,29 @@ bool PixelView::BlitLocked(PixelView& dest, int src_x, int src_y, int dst_x,
   int dst_x1 = dst_x0 + (src_x1 - src_x0);
   int dst_y1 = dst_y0 + (src_y1 - src_y0);
 
-  code0 = Make_Code(dst_x0, dst_y0, dest.width(), dest.height());
-  code1 = Make_Code(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
+  code0 = OutCodeOf(dst_x0, dst_y0, dest.width(), dest.height());
+  code1 = OutCodeOf(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
 
   // outside
-  if (code0 & code1) {
+  if (base::Any(code0 & code1)) {
     return true;  // i'm not sure this actually has a return value...
   }
 
-  if (code0 | code1) {
+  if (base::Any(code0 | code1)) {
     // apply clip
-    if (code0 & 0b1000) {
+    if (base::Any(code0 & OutCode::kLeft)) {
       src_x0 -= dst_x0;
       dst_x0 = 0;
     }
-    if (code1 & 0b0100) {
+    if (base::Any(code1 & OutCode::kRight)) {
       src_x1 -= dst_x1 - dest.width();
       dst_x1 = dest.width();
     }
-    if (code0 & 0b0010) {
+    if (base::Any(code0 & OutCode::kAbove)) {
       src_y0 -= dst_y0;
       dst_y0 = 0;
     }
-    if (code1 & 0b0001) {
+    if (base::Any(code1 & OutCode::kBelow)) {
       src_y1 -= dst_y1 - dest.height();
       dst_y1 = dest.height();
     }
@@ -455,56 +441,56 @@ bool PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
   int dst_y1 = dst_y + dst_height;
 
   // clip source
-  uint32_t code0 = Make_Code(src_x0, src_y0, width_, height_);
-  uint32_t code1 = Make_Code(src_x1, src_y1, width_ + 1, height_ + 1);
+  OutCode code0 = OutCodeOf(src_x0, src_y0, width_, height_);
+  OutCode code1 = OutCodeOf(src_x1, src_y1, width_ + 1, height_ + 1);
 
   // outside
-  if (code0 & code1) {
+  if (base::Any(code0 & code1)) {
     return true;
   }
 
-  if (code0 | code1) {
+  if (base::Any(code0 | code1)) {
     // apply clip
-    if (code0 & 0b1000) {
+    if (base::Any(code0 & OutCode::kLeft)) {
       src_x0 = 0;
       dst_x0 = dst_x + ((src_x0 - src_x) * dst_width / src_width);
     }
-    if (code1 & 0b0100) {
+    if (base::Any(code1 & OutCode::kRight)) {
       src_x1 = width_;
       dst_x1 = dst_x + ((src_x1 - src_x) * dst_width / src_width);
     }
-    if (code0 & 0b0010) {
+    if (base::Any(code0 & OutCode::kAbove)) {
       src_y0 = 0;
       dst_y0 = dst_y + ((src_y0 - src_y) * dst_height / src_height);
     }
-    if (code1 & 0b0001) {
+    if (base::Any(code1 & OutCode::kBelow)) {
       src_y1 = height_;
       dst_y1 = dst_y + ((src_y1 - src_y) * dst_height / src_height);
     }
   }
 
   // clip dest
-  code0 = Make_Code(dst_x0, dst_y0, dest.width(), dest.height());
-  code1 = Make_Code(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
+  code0 = OutCodeOf(dst_x0, dst_y0, dest.width(), dest.height());
+  code1 = OutCodeOf(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
 
   // outside
-  if (code0 & code1) {
+  if (base::Any(code0 & code1)) {
     return true;
   }
 
-  if (code0 | code1) {
+  if (base::Any(code0 | code1)) {
     // apply clip
-    if (code0 & 0b1000) {
+    if (base::Any(code0 & OutCode::kLeft)) {
       dst_x0 = 0;
       src_x0 = src_x + ((dst_x0 - dst_x) * src_width / dst_width);
     }
-    if (code1 & 0b0100) {
+    if (base::Any(code1 & OutCode::kRight)) {
       dst_x1 = dest.width();
     }
-    if (code0 & 0b0010) {
+    if (base::Any(code0 & OutCode::kAbove)) {
       src_y0 = src_y + ((dst_y0 - dst_y) * src_height / dst_height);
     }
-    if (code1 & 0b0001) {
+    if (base::Any(code1 & OutCode::kBelow)) {
       dst_y1 = dest.height();
     }
   }
@@ -761,21 +747,21 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2, uint8_t color) {
   const int height = height_;
 
   // this is different to the original asm, but reused from blits
-  const uint32_t code0 = Make_Code(x1, y1, width, height);
-  const uint32_t code1 = Make_Code(x2, y2, width, height);
+  const OutCode code0 = OutCodeOf(x1, y1, width, height);
+  const OutCode code1 = OutCodeOf(x2, y2, width, height);
 
-  if (code0 & code1) {
+  if (base::Any(code0 & code1)) {
     return;
   }
 
-  if (code0) {
-    if (code0 & 0b1000)  // left
+  if (base::Any(code0)) {
+    if (base::Any(code0 & OutCode::kLeft))  // left
     {
       if (x2 != x1) {
         y1 += -x1 * (y2 - y1) / (x2 - x1);
       }
       x1 = 0;
-    } else if (code0 & 0b0100)  // right
+    } else if (base::Any(code0 & OutCode::kRight))  // right
     {
       if (x2 != x1) {
         y1 += (width - 1 - x1) * (y2 - y1) / (x2 - x1);
@@ -783,13 +769,13 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2, uint8_t color) {
       x1 = width - 1;
     }
 
-    if (code0 & 0b0010)  // top
+    if (base::Any(code0 & OutCode::kAbove))  // top
     {
       if (y2 != y1) {
         x1 = x1 + (-y1 * (x2 - x1) / (y2 - y1));
       }
       y1 = 0;
-    } else if (code0 & 0b0001)  // bottom
+    } else if (base::Any(code0 & OutCode::kBelow))  // bottom
     {
       if (y2 != y1) {
         x1 = x1 + ((height - 1 - y1) * (x2 - x1) / (y2 - y1));
@@ -798,14 +784,14 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2, uint8_t color) {
     }
   }
 
-  if (code1) {
-    if (code1 & 0b1000)  // left
+  if (base::Any(code1)) {
+    if (base::Any(code1 & OutCode::kLeft))  // left
     {
       if (x1 != x2) {
         y2 = y2 + (-x2 * (y1 - y2) / (x1 - x2));
       }
       x2 = 0;
-    } else if (code1 & 0b0100)  // right
+    } else if (base::Any(code1 & OutCode::kRight))  // right
     {
       if (x1 != x2) {
         y2 = y2 + ((width - 1 - x2) * (y1 - y2) / (x1 - x2));
@@ -813,13 +799,13 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2, uint8_t color) {
       x2 = width - 1;
     }
 
-    if (code1 & 0b0010)  // top
+    if (base::Any(code1 & OutCode::kAbove))  // top
     {
       if (y1 != y2) {
         x2 = x2 + (-y2 * (x1 - x2) / (y1 - y2));
       }
       y2 = 0;
-    } else if (code1 & 0b0001)  // bottom
+    } else if (base::Any(code1 & OutCode::kBelow))  // bottom
     {
       if (y1 != y2) {
         x2 = x2 + ((height - 1 - y2) * (x1 - x2) / (y1 - y2));
@@ -958,26 +944,26 @@ void PixelView::RemapLocked(int x1, int y1, int width, int height,
   int dst_x1 = x1 + width;
   int dst_y1 = y1 + height;
 
-  const uint32_t code0 = Make_Code(dst_x0, dst_y0, width_, height_);
-  const uint32_t code1 = Make_Code(dst_x1, dst_y1, width_ + 1, height_ + 1);
+  const OutCode code0 = OutCodeOf(dst_x0, dst_y0, width_, height_);
+  const OutCode code1 = OutCodeOf(dst_x1, dst_y1, width_ + 1, height_ + 1);
 
   // outside
-  if (code0 & code1) {
+  if (base::Any(code0 & code1)) {
     return;
   }
 
-  if (code0 | code1) {
+  if (base::Any(code0 | code1)) {
     // apply clip
-    if (code0 & 0b1000) {
+    if (base::Any(code0 & OutCode::kLeft)) {
       dst_x0 = 0;
     }
-    if (code1 & 0b0100) {
+    if (base::Any(code1 & OutCode::kRight)) {
       dst_x1 = width_;
     }
-    if (code0 & 0b0010) {
+    if (base::Any(code0 & OutCode::kAbove)) {
       dst_y0 = 0;
     }
-    if (code1 & 0b0001) {
+    if (base::Any(code1 & OutCode::kBelow)) {
       dst_y1 = height_;
     }
   }
@@ -1002,47 +988,6 @@ void PixelView::RemapLocked(int x1, int y1, int width, int height,
     }
     dst_offset += skip;
   } while (--line_count);
-}
-
-// Declared in misc.h, defined here to share Make_Code with the primitives.
-int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height) {
-  int x0 = *x;
-  int y0 = *y;
-  int x1 = *x + *dw;
-  int y1 = *y + *dh;
-
-  const uint32_t code0 = Make_Code(x0, y0, width, height);
-  const uint32_t code1 = Make_Code(x1, y1, width + 1, height + 1);
-
-  // A bit set in both corners puts the whole rectangle past that one edge.
-  if (code0 & code1) {
-    return -1;
-  }
-
-  // Only the near corner can fall off the left or top edge and only the far
-  // corner off the right or bottom, so each edge is pulled in from one side.
-  if (code0 | code1) {
-    if (code0 & 0b1000) {
-      x0 = 0;
-    }
-    if (code1 & 0b0100) {
-      x1 = width;
-    }
-    if (code0 & 0b0010) {
-      y0 = 0;
-    }
-    if (code1 & 0b0001) {
-      y1 = height;
-    }
-
-    *x = x0;
-    *y = y0;
-    *dw = x1 - x0;
-    *dh = y1 - y0;
-    return 1;
-  }
-
-  return 0;
 }
 
 PixelBuffer::PixelBuffer(int width, int height, std::span<uint8_t> buffer,

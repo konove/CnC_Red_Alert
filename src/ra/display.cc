@@ -175,6 +175,7 @@
 #include "ra/vessel.h"
 #include "ra/vortex.h"
 #include "ra/world.h"
+#include "sdllib/clip.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -2280,9 +2281,9 @@ void DisplayClass::Redraw_Shadow(PixelView& view) {
                 int ww = CELL_PIXEL_W;
                 int hh = CELL_PIXEL_H;
 
-                if (Clip_Rect(&xpixel, &ypixel, &ww, &hh,
-                              Lepton_To_Pixel(TacLeptonWidth),
-                              Lepton_To_Pixel(TacLeptonHeight)) >= 0) {
+                if (ClipRect(xpixel, ypixel, ww, hh,
+                             Lepton_To_Pixel(TacLeptonWidth),
+                             Lepton_To_Pixel(TacLeptonHeight))) {
                   view.FillRect(TacPixelX + xpixel, TacPixelY + ypixel,
                                 TacPixelX + xpixel + ww - 1,
                                 TacPixelY + ypixel + hh - 1, kBlack);
