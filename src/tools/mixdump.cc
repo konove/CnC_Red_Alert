@@ -6,6 +6,7 @@
 // reaches the mission INIs: the ones shipped today hold the original MIX files
 // inside MAIN1..MAIN4.MIX.
 //
+//   mixdump <game-dir> --index <archive>     print the archive's index
 //   mixdump <game-dir> --list <name> ...     say which archive holds each name
 //   mixdump <game-dir> <name>                write the file to stdout
 //   mixdump <game-dir> <name> <out-file>     write the file to out-file
@@ -132,6 +133,24 @@ int main(int argc, char** argv) {
   RegisterArchives(key);
 
   const std::string_view command(base::At(args, 2));
+  if (command == "--index") {
+    for (const char* const arg : args.subspan(3)) {
+      const std::string_view name(arg);
+      const MixArchive* archive = MixArchive::Register(name, &key);
+      if (archive == nullptr) {
+        absl::FPrintF(stderr, "no such archive: %s\n", name);
+        return 1;
+      }
+      // The CRC is what a lookup matches, so printing it lets a caller test a
+      // guessed name against the entries without extracting anything.
+      for (const MixArchive::FileEntry& entry : archive->index()) {
+        absl::PrintF("%s\t%08x\t%d\t%d\n", name,
+                     static_cast<uint32_t>(entry.crc), entry.offset,
+                     entry.size);
+      }
+    }
+    return 0;
+  }
   if (command == "--list") {
     for (const char* const arg : args.subspan(3)) {
       const std::string_view name(arg);

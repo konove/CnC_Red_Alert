@@ -114,6 +114,15 @@ class MixArchive : public Node<MixArchive> {
     auto operator<=>(std::int32_t other_crc) const { return crc <=> other_crc; }
   };
 
+  // The archive's index, sorted by CRC. The names themselves are not stored -
+  // only their CRCs - so this says what an archive holds and how big each
+  // file is, but not what anything is called. For tools that inspect an
+  // archive rather than read a known file out of it.
+  [[nodiscard]] std::span<const FileEntry> index() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return file_index_;
+  }
+
  private:
   MixArchive() = default;
 

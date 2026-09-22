@@ -365,4 +365,33 @@ TEST_F(MixFileTest, ArchiveNestedInsideAnotherOpensByName) {
   EXPECT_EQ(Contents(Mix::RetrieveData("BURIED.BIN")), "deep");
 }
 
+// The index is what a tool inspecting an archive has to work from, since the
+// names themselves are not stored - only their CRCs.
+TEST_F(MixFileTest, IndexReportsEveryEntrySortedByCrc) {
+  const std::vector<MixEntry> files = {
+      {.name = "ONE.BIN", .contents = "1"},
+      {.name = "TWO.BIN", .contents = "22"},
+      {.name = "THREE.BIN", .contents = "333"}};
+  const Mix* archive = RegisterBytes("index", PlainMix(files));
+  ASSERT_NE(archive, nullptr);
+
+  const std::span<const Mix::FileEntry> index = archive->index();
+  ASSERT_EQ(index.size(), files.size());
+  EXPECT_TRUE(std::ranges::is_sorted(index, {}, &Mix::FileEntry::crc));
+
+  int64_t total = 0;
+  for (const Mix::FileEntry& entry : index) {
+    total += entry.size;
+  }
+  EXPECT_EQ(total, 1 + 2 + 3);
+
+  // Every packed name is in there, found by its CRC the way a lookup does it.
+  for (const MixEntry& file : files) {
+    const auto crc = std::bit_cast<int32_t>(CrcEngine::Compute(file.name));
+    EXPECT_TRUE(std::ranges::any_of(index, [crc](const Mix::FileEntry& e) {
+      return e.crc == crc;
+    })) << file.name;
+  }
+}
+
 }  // namespace
