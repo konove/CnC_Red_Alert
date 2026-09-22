@@ -119,6 +119,12 @@ void PixelView::Attach(PixelBuffer* buffer, int x, int y, int width,
 
 // Cohen-Sutherland outcode of (x, y) against a width by height window: bits for
 // left, right, top and bottom.
+//
+// Callers clip a rectangle by taking the outcode of its top-left corner and,
+// against a window one pixel wider and taller, the outcode of the corner just
+// past its bottom-right. That second window is what makes an end coordinate
+// equal to the width count as inside: the rectangle owns pixels up to but not
+// including it.
 static inline uint32_t Make_Code(int x, int y, int width, int height) {
   return (x < 0 ? 0b1000U : 0U) | (x >= width ? 0b0100U : 0U) |
          (y < 0 ? 0b0010U : 0U) | (y >= height ? 0b0001U : 0U);
@@ -1008,13 +1014,14 @@ int Clip_Rect(int* x, int* y, int* dw, int* dh, int width, int height) {
   const uint32_t code0 = Make_Code(x0, y0, width, height);
   const uint32_t code1 = Make_Code(x1, y1, width + 1, height + 1);
 
-  // outside
+  // A bit set in both corners puts the whole rectangle past that one edge.
   if (code0 & code1) {
     return -1;
   }
 
+  // Only the near corner can fall off the left or top edge and only the far
+  // corner off the right or bottom, so each edge is pulled in from one side.
   if (code0 | code1) {
-    // apply clip
     if (code0 & 0b1000) {
       x0 = 0;
     }
@@ -1105,11 +1112,12 @@ SDL_Renderer* Renderer() {
 
 }  // namespace
 
+// Runs on an SDL timer thread, so it only posts an event; the frame is ended
+// on the main thread by the event loop that picks the event up. Returning 0
+// does not re-arm the timer - one pending redraw at a time is enough, and the
+// present that answers this one clears redraw_timer_.
 static Uint32 Force_Redraw_Timer(Uint32 /*interval*/, void* /*unused*/) {
-  // something has been draw and not displayed for 33ms
-  // go tell the main thread it should probably display that
   TheDisplay().PostRedrawEvent();
-
   return 0;
 }
 
@@ -1181,6 +1189,10 @@ void PixelBuffer::Present(bool end_frame) {
 
   auto* window_tex = static_cast<SDL_Texture*>(window_texture_);
 
+  // Nothing asked for the frame to end, so leave the drawing in the surface
+  // and arm a timer that presents it anyway a thirtieth of a second on. The
+  // game draws in bursts between waits for input, and without this the last
+  // burst before a wait would not reach the window until the wait ended.
   if (!end_frame) {
     if (!redraw_timer_) {
       redraw_timer_ = SDL_AddTimer(1000 / 30, Force_Redraw_Timer, nullptr);
