@@ -42,6 +42,7 @@
 #include <utility>
 
 #include "absl/log/check.h"
+#include "absl/strings/str_cat.h"
 #include "base/array.h"
 #include "base/clip.h"
 #include "base/flags.h"
@@ -594,6 +595,11 @@ bool PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
   }
 
   return true;
+}
+
+void PixelView::Print(const int value, const int x, const int y,
+                      const int fore_color, const int back_color) {
+  Print(absl::StrCat(value).c_str(), x, y, fore_color, back_color);
 }
 
 void PixelView::PrintLocked(const char* text, int x, int y,

@@ -29,9 +29,12 @@
 //
 // Every drawing primitive comes in two forms: a public one that locks the
 // buffer around the work, and a `…Locked` one that does the work and expects
-// the caller to hold the lock already. The locking form is a one-line inline
-// wrapper, so a caller that draws many times can take the lock once and call
-// the locked form in a loop.
+// the caller to hold the lock already.
+//
+// PixelView is declared first so that PixelBuffer can hold one by value. The
+// few view members that reach through to the buffer are therefore defined
+// after PixelBuffer, at the bottom of this header; everything else sits in
+// the class body.
 
 #ifndef CNC_RED_ALERT_SDLLIB_PIXEL_BUFFER_H_
 #define CNC_RED_ALERT_SDLLIB_PIXEL_BUFFER_H_
@@ -43,7 +46,6 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "absl/strings/str_cat.h"
 #include "base/array.h"
 #include "base/attributes.h"
 #include "base/flags.h"
@@ -96,30 +98,55 @@ class PixelView {
   PixelView(PixelView&&) = delete;
   PixelView& operator=(PixelView&&) = delete;
 
-  // A raw pointer to the view's top left pixel, valid only while the
-  // buffer is locked. Prefer pixels().
-  uint8_t* offset();
-  // The buffer's pixels from this view's top left corner to the end of
-  // the buffer. Rows are width() + x_add() + pitch() bytes apart.
-  // Empty if the view is not attached to a buffer.
-  std::span<uint8_t> pixels();
-  [[nodiscard]] int height() const;
-  [[nodiscard]] int width() const;
-  [[nodiscard]] int x_add() const;
+  // Binds the view to the given rectangle of `buffer`, clamping it
+  // to the buffer's bounds.
+  void Attach(PixelBuffer* buffer, int x, int y, int width, int height);
+
+  // Where the view sits in the buffer, and how its rows are laid out.
+
+  [[nodiscard]] int width() const { return width_; }
+  [[nodiscard]] int height() const { return height_; }
+  [[nodiscard]] int x_pos() const { return x_pos_; }
+  [[nodiscard]] int y_pos() const { return y_pos_; }
+  // The bytes of the buffer's row that fall outside the view, that is the
+  // buffer's width minus width().
+  [[nodiscard]] int x_add() const { return x_add_; }
+  // Padding the buffer keeps past the end of every row, beyond x_add().
+  [[nodiscard]] int pitch() const { return pitch_; }
   // Bytes from the start of one row of the view to the start of the
   // next: the view's width plus everything the buffer keeps past it.
-  [[nodiscard]] int stride() const;
-  [[nodiscard]] int x_pos() const;
-  [[nodiscard]] int y_pos() const;
-  [[nodiscard]] int pitch() const;
+  [[nodiscard]] int stride() const { return width_ + x_add_ + pitch_; }
+
+  // The buffer this view draws into, and its pixels.
+
+  PixelBuffer* buffer() { return buffer_; }
+  // A raw pointer to the view's top left pixel, valid only while the
+  // buffer is locked. Prefer pixels().
+  uint8_t* offset() { return offset_; }
+  // The buffer's pixels from this view's top left corner to the end of
+  // the buffer. Rows are stride() bytes apart. Empty if the view is not
+  // attached to a buffer.
+  std::span<uint8_t> pixels();
+
+  // Locks the buffer's surface so its pixels can be read or written, and
+  // reattaches this view to them, since locking can move them. Locks
+  // nest: the surface is only really locked and unlocked by the outermost
+  // pair. Lock() returns false if the view has no buffer, or if the
+  // surface could not be locked, in which case the matching Unlock() must
+  // not be called.
+  bool Lock();
+  bool Unlock();
+  // How deep the buffer's nested locks are; 0 when the view has no buffer.
+  [[nodiscard]] int lock_count() const;
   // Whether drawing to this view has to lock a surface first.
-  inline bool NeedsLock();
-  PixelBuffer* buffer();
+  bool NeedsLock();
 
   // The drawing primitives. Each comes as a pair: the plain name locks the
   // buffer, does the work and unlocks it, while the `…Locked` name does only
   // the work and requires the caller to hold the lock. The short overloads
-  // fill in "the whole view" for the missing rectangle.
+  // fill in "the whole view" for the missing rectangle. The locking form is a
+  // one-line wrapper, so a caller that draws many times can take the lock once
+  // and call the locked form in a loop.
 
   // Sets one pixel, ignoring coordinates outside the view.
   void PutPixel(int x, int y, uint8_t color);
@@ -146,7 +173,7 @@ class PixelView {
   // the clip left nothing to do.
   int32_t CopyFromBuffer(int x, int y, int width, int height,
                          std::span<const uint8_t> source);
-  int32_t CopyFromBufferLocked(int x, int y, int width, int height,
+  int32_t CopyFromBufferLocked(int dst_x, int dst_y, int width, int height,
                                std::span<const uint8_t> source);
 
   // Copies width x height pixels from src_x,src_y in this view to
@@ -155,8 +182,12 @@ class PixelView {
   // Returns false if either view could not be locked.
   bool Blit(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
             int width, int height, bool transparent = false);
-  bool Blit(PixelView& dest, int dst_x, int dst_y, bool transparent = false);
-  bool Blit(PixelView& dest, bool transparent = false);
+  bool Blit(PixelView& dest, int dst_x, int dst_y, bool transparent = false) {
+    return Blit(dest, 0, 0, dst_x, dst_y, width_, height_, transparent);
+  }
+  bool Blit(PixelView& dest, bool transparent = false) {
+    return Blit(dest, 0, 0, transparent);
+  }
   // Both views must be locked. Overlapping source and destination are
   // handled, so this also serves as a scroll within one view.
   bool BlitLocked(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
@@ -168,10 +199,18 @@ class PixelView {
              std::span<const uint8_t> remap_table = {});
   bool Scale(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
              int src_width, int src_height, int dst_width, int dst_height,
-             std::span<const uint8_t> remap_table);
+             std::span<const uint8_t> remap_table) {
+    return Scale(dest, src_x, src_y, dst_x, dst_y, src_width, src_height,
+                 dst_width, dst_height, false, remap_table);
+  }
   bool Scale(PixelView& dest, bool transparent = false,
-             std::span<const uint8_t> remap_table = {});
-  bool Scale(PixelView& dest, std::span<const uint8_t> remap_table);
+             std::span<const uint8_t> remap_table = {}) {
+    return Scale(dest, 0, 0, 0, 0, width_, height_, dest.width(), dest.height(),
+                 transparent, remap_table);
+  }
+  bool Scale(PixelView& dest, std::span<const uint8_t> remap_table) {
+    return Scale(dest, false, remap_table);
+  }
   bool ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
                    int src_width, int src_height, int dst_width, int dst_height,
                    bool transparent, std::span<const uint8_t> remap_table);
@@ -199,7 +238,9 @@ class PixelView {
   // view.
   void Remap(int x1, int y1, int width, int height,
              std::span<const uint8_t> remap_table);
-  void Remap(std::span<const uint8_t> remap_table);
+  void Remap(std::span<const uint8_t> remap_table) {
+    Remap(0, 0, width_, height_, remap_table);
+  }
   void RemapLocked(int x1, int y1, int width, int height,
                    std::span<const uint8_t> remap_table);
 
@@ -214,21 +255,6 @@ class PixelView {
   void DrawStampLocked(std::span<const std::byte> icon_data, int icon, int x,
                        int y, std::span<const uint8_t> remap_table, int min_x,
                        int min_y, int max_x, int max_y);
-
-  // Locks the buffer's surface so its pixels can be read or written, and
-  // reattaches this view to them, since locking can move them. Locks
-  // nest: the surface is only really locked and unlocked by the outermost
-  // pair. Lock() returns false if the view has no buffer, or if the
-  // surface could not be locked, in which case the matching Unlock() must
-  // not be called.
-  inline bool Lock();
-  inline bool Unlock();
-  // How deep the buffer's nested locks are; 0 when the view has no buffer.
-  [[nodiscard]] inline int lock_count() const;
-
-  // Binds the view to the given rectangle of `buffer`, clamping it
-  // to the buffer's bounds.
-  void Attach(PixelBuffer* buffer, int x, int y, int width, int height);
 
  private:
   // The view's top left pixel within the buffer. Null while the buffer
@@ -301,6 +327,21 @@ class PixelBuffer {
   // Padding kept past the end of every row. Zero for every buffer the games
   // create; a view copies it so its rows still line up.
   [[nodiscard]] int pitch() const { return pitch_; }
+  // The buffer's whole allocation. Empty before Init(), and empty for the
+  // window's buffer while its surface is unlocked.
+  [[nodiscard]] std::span<uint8_t> bytes() { return bytes_; }
+
+  // Whether this is the buffer the window shows, that is whether it was
+  // initialized with BUFFER_VISIBLE.
+  [[nodiscard]] bool IsWindowSurface() const {
+    return window_texture_ != nullptr;
+  }
+
+  // Locks and unlocks the underlying SDL surface. Callers normally use
+  // PixelView::Lock/Unlock, which also reattach the view to the freshly
+  // locked pixels.
+  bool LockSurface();
+  bool UnlockSurface();
   // How deep the nested LockSurface() calls are; the surface is locked while
   // this is non-zero.
   [[nodiscard]] int lock_count() const { return lock_count_; }
@@ -310,12 +351,6 @@ class PixelBuffer {
   // it again does nothing.
   void ReleaseSurfaces();
 
-  // Locks and unlocks the underlying SDL surface. Callers normally use
-  // PixelView::Lock/Unlock, which also reattach the view to the freshly
-  // locked pixels.
-  bool LockSurface();
-  bool UnlockSurface();
-
   // Draws `bitmap` onto this buffer with its centre landing on `center`, scaled
   // and rotated. `scale` is 24.8 fixed point (0x100 = 1.0) and is ignored when
   // zero; `angle` is 0-255 over the full circle. Pixel 0 is transparent.
@@ -324,11 +359,6 @@ class PixelBuffer {
   void DrawScaledRotated(const BitmapClass& bitmap, const TPoint2D& center,
                          int32_t scale, uint8_t angle);
 
-  // Whether this is the buffer the window shows, that is whether it was
-  // initialized with BUFFER_VISIBLE.
-  [[nodiscard]] bool IsWindowSurface() const {
-    return window_texture_ != nullptr;
-  }
   // Presents the buffer's current contents. UnlockSurface() calls it with
   // `end_frame` false, which only arms a timer to redraw if nothing else
   // presents within the next frame; Display::EndFrame() passes true to present
@@ -353,10 +383,6 @@ class PixelBuffer {
   // Drops the scaling texture, so the next present shows the display
   // surface again. UnlockSurface() calls it as soon as anything draws.
   void DropScaledFrame();
-
-  // The buffer's whole allocation. Empty before Init(), and empty for the
-  // window's buffer while its surface is unlocked.
-  [[nodiscard]] std::span<uint8_t> bytes() { return bytes_; }
 
  protected:
   void CreateDisplaySurface();
@@ -401,8 +427,14 @@ class PixelBuffer {
   PixelView whole_;
 };
 
-inline int PixelView::lock_count() const {
-  return buffer_ == nullptr ? 0 : buffer_->lock_count();
+// The PixelView members that reach through buffer_. They live here rather than
+// in the class body because PixelBuffer is only forward declared above them.
+
+inline std::span<uint8_t> PixelView::pixels() {
+  if (buffer_ == nullptr) {
+    return {};
+  }
+  return buffer_->bytes().subspan(base::ToSize((y_pos_ * stride()) + x_pos_));
 }
 
 inline bool PixelView::NeedsLock() {
@@ -429,37 +461,22 @@ inline bool PixelView::Unlock() {
   return buffer_ == nullptr || buffer_->UnlockSurface();
 }
 
-inline uint8_t* PixelView::offset() { return offset_; }
-inline std::span<uint8_t> PixelView::pixels() {
-  if (buffer_ == nullptr) {
-    return {};
-  }
-  return buffer_->bytes().subspan(base::ToSize((y_pos_ * stride()) + x_pos_));
+inline int PixelView::lock_count() const {
+  return buffer_ == nullptr ? 0 : buffer_->lock_count();
 }
 
-inline int PixelView::height() const { return height_; }
-
-inline int PixelView::width() const { return width_; }
-
-inline int PixelView::x_add() const { return x_add_; }
-
-inline int PixelView::stride() const { return width_ + x_add_ + pitch_; }
-inline int PixelView::x_pos() const { return x_pos_; }
-
-inline int PixelView::y_pos() const { return y_pos_; }
-
-inline PixelBuffer* PixelView::buffer() { return buffer_; }
+// The locking wrappers, in the order the class declares them. Each one takes
+// the lock, calls the matching `…Locked` form and drops it again.
 
 inline void PixelView::PutPixel(int x, int y, uint8_t color) {
-  if (!Lock()) {
-    return;
+  if (Lock()) {
+    PutPixelLocked(x, y, color);
+    Unlock();
   }
-
-  this->PutPixelLocked(x, y, color);
-
-  Unlock();
 }
 
+// Inline with the wrappers rather than in the .cc: a caller that locks once
+// and plots a run of pixels calls this per pixel.
 inline void PixelView::PutPixelLocked(const int x, const int y,
                                       const uint8_t color) {
   if (x >= 0 && y >= 0 && x < width() && y < height()) {
@@ -469,7 +486,6 @@ inline void PixelView::PutPixelLocked(const int x, const int y,
 
 inline int PixelView::GetPixel(int x, int y) {
   int return_code = 0;
-
   if (Lock()) {
     return_code = GetPixelLocked(x, y);
     Unlock();
@@ -509,7 +525,6 @@ inline bool PixelView::Blit(PixelView& dest, int src_x, int src_y, int dst_x,
                             int dst_y, int width, int height,
                             bool transparent) {
   bool return_code = false;
-
   if (Lock()) {
     if (dest.Lock()) {
       return_code = BlitLocked(dest, src_x, src_y, dst_x, dst_y, width, height,
@@ -518,17 +533,7 @@ inline bool PixelView::Blit(PixelView& dest, int src_x, int src_y, int dst_x,
     }
     Unlock();
   }
-
   return return_code;
-}
-
-inline bool PixelView::Blit(PixelView& dest, int dst_x, int dst_y,
-                            bool transparent) {
-  return Blit(dest, 0, 0, dst_x, dst_y, width_, height_, transparent);
-}
-
-inline bool PixelView::Blit(PixelView& dest, bool transparent) {
-  return Blit(dest, 0, 0, transparent);
 }
 
 inline bool PixelView::Scale(PixelView& dest, int src_x, int src_y, int dst_x,
@@ -548,57 +553,10 @@ inline bool PixelView::Scale(PixelView& dest, int src_x, int src_y, int dst_x,
   return return_code;
 }
 
-inline bool PixelView::Scale(PixelView& dest, int src_x, int src_y, int dst_x,
-                             int dst_y, int src_width, int src_height,
-                             int dst_width, int dst_height,
-                             std::span<const uint8_t> remap_table) {
-  return Scale(dest, src_x, src_y, dst_x, dst_y, src_width, src_height,
-               dst_width, dst_height, false, remap_table);
-}
-
-inline bool PixelView::Scale(PixelView& dest, bool transparent,
-                             std::span<const uint8_t> remap_table) {
-  return Scale(dest, 0, 0, 0, 0, width_, height_, dest.width(), dest.height(),
-               transparent, remap_table);
-}
-
-inline bool PixelView::Scale(PixelView& dest,
-                             std::span<const uint8_t> remap_table) {
-  return Scale(dest, false, remap_table);
-}
-
 inline void PixelView::Print(const char* text, int x, int y, int fore_color,
                              int back_color) {
-  if (!Lock()) {
-    return;
-  }
-  PrintLocked(text, x, y, fore_color, back_color);
-  Unlock();
-}
-
-inline void PixelView::Print(int value, int x, int y, int fore_color,
-                             int back_color) {
-  Print(absl::StrCat(value).c_str(), x, y, fore_color, back_color);
-}
-
-inline void PixelView::DrawStamp(std::span<const std::byte> icon_data, int icon,
-                                 int x, int y,
-                                 const std::span<const uint8_t> remap_table,
-                                 int clip_window) {
-  // Tiberian Dawn stores a window's x and width in units of eight pixels;
-  // Red Alert stores them in pixels.
-#ifdef TD
-  constexpr int kWindowUnit = 8;
-#else
-  constexpr int kWindowUnit = 1;
-#endif
   if (Lock()) {
-    DrawStampLocked(
-        icon_data, icon, x, y, remap_table,
-        base::At(base::At(WindowList, clip_window), kWindowX) * kWindowUnit,
-        base::At(base::At(WindowList, clip_window), kWindowY),
-        base::At(base::At(WindowList, clip_window), kWindowWidth) * kWindowUnit,
-        base::At(base::At(WindowList, clip_window), kWindowHeight));
+    PrintLocked(text, x, y, fore_color, back_color);
     Unlock();
   }
 }
@@ -625,10 +583,28 @@ inline void PixelView::Remap(int x1, int y1, int width, int height,
   }
 }
 
-inline void PixelView::Remap(std::span<const uint8_t> remap_table) {
-  Remap(0, 0, width_, height_, remap_table);
+// Inline rather than in the .cc because the window unit differs between the
+// two games, and sdllib is compiled once, without TD defined.
+inline void PixelView::DrawStamp(std::span<const std::byte> icon_data, int icon,
+                                 int x, int y,
+                                 const std::span<const uint8_t> remap_table,
+                                 int clip_window) {
+  // Tiberian Dawn stores a window's x and width in units of eight pixels;
+  // Red Alert stores them in pixels.
+#ifdef TD
+  constexpr int kWindowUnit = 8;
+#else
+  constexpr int kWindowUnit = 1;
+#endif
+  if (Lock()) {
+    DrawStampLocked(
+        icon_data, icon, x, y, remap_table,
+        base::At(base::At(WindowList, clip_window), kWindowX) * kWindowUnit,
+        base::At(base::At(WindowList, clip_window), kWindowY),
+        base::At(base::At(WindowList, clip_window), kWindowWidth) * kWindowUnit,
+        base::At(base::At(WindowList, clip_window), kWindowHeight));
+    Unlock();
+  }
 }
-
-inline int PixelView::pitch() const { return pitch_; }
 
 #endif  // CNC_RED_ALERT_SDLLIB_PIXEL_BUFFER_H_
