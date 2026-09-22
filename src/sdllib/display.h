@@ -74,12 +74,22 @@ class Display {
   // spin a core.
   void PresentFrame();
 
-  // Posts the event that makes the event loop end the frame, so that a page
-  // that armed a redraw timer is presented even if nothing else draws.
+  // Posts the event that makes the event loop end the frame, so that drawing
+  // which armed the redraw timer is presented even if nothing else draws.
   // Called from an SDL timer thread.
   void PostRedrawEvent();
   // Whether an event the loop pulled is that redraw event.
   [[nodiscard]] bool IsRedrawEvent(uint32_t event_type) const;
+
+  // Arms a one-shot timer that posts the redraw event a thirtieth of a second
+  // from now, and does nothing if one is already pending. The game draws in
+  // bursts between waits for input; without this the last burst before a wait
+  // would not reach the window until the wait ended.
+  void ArmRedrawTimer();
+  // Cancels a pending redraw timer. Called by whatever presents the window
+  // first, and by ~Display so that no callback outlives the Display it posts
+  // its event to.
+  void CancelRedrawTimer();
 
   // Brings the window back from minimized and raises it to the front.
   void Restore();
@@ -102,6 +112,8 @@ class Display {
   PixelBuffer* window_page_ = nullptr;
   // The SDL event type PostRedrawEvent() posts, 0 before Init().
   uint32_t redraw_event_ = 0;
+  // SDL_TimerID of the pending redraw, 0 when none is armed.
+  int redraw_timer_ = 0;
   // The earliest time the next present may happen.
   std::chrono::steady_clock::time_point next_present_;
 };

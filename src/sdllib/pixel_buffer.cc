@@ -30,7 +30,6 @@
 #include <SDL_render.h>
 #include <SDL_stdinc.h>
 #include <SDL_surface.h>
-#include <SDL_timer.h>
 
 #include <algorithm>
 #include <cmath>
@@ -1057,15 +1056,6 @@ SDL_Renderer* Renderer() {
 
 }  // namespace
 
-// Runs on an SDL timer thread, so it only posts an event; the frame is ended
-// on the main thread by the event loop that picks the event up. Returning 0
-// does not re-arm the timer - one pending redraw at a time is enough, and the
-// present that answers this one clears redraw_timer_.
-static Uint32 Force_Redraw_Timer(Uint32 /*interval*/, void* /*unused*/) {
-  TheDisplay().PostRedrawEvent();
-  return 0;
-}
-
 bool PixelBuffer::LockSurface() {
   if (!palette_surface_) {
     return true;
@@ -1114,13 +1104,10 @@ void PixelBuffer::Present(bool end_frame) {
   // If VQA texture exists, keep presenting it (for animations like map select
   // that need to preserve the last frame indefinitely)
   if (scaled_frame_texture_) {
-    if (redraw_timer_) {
-      SDL_RemoveTimer(redraw_timer_);
-      redraw_timer_ = 0;
-    }
+    TheDisplay().CancelRedrawTimer();
 
     if (!end_frame) {
-      return;  // Just skip timer setup during VQA
+      return;
     }
 
     // Present the VQA frame
@@ -1135,20 +1122,13 @@ void PixelBuffer::Present(bool end_frame) {
   auto* window_tex = static_cast<SDL_Texture*>(window_texture_);
 
   // Nothing asked for the frame to end, so leave the drawing in the surface
-  // and arm a timer that presents it anyway a thirtieth of a second on. The
-  // game draws in bursts between waits for input, and without this the last
-  // burst before a wait would not reach the window until the wait ended.
+  // and let the redraw timer present it.
   if (!end_frame) {
-    if (!redraw_timer_) {
-      redraw_timer_ = SDL_AddTimer(1000 / 30, Force_Redraw_Timer, nullptr);
-    }
+    TheDisplay().ArmRedrawTimer();
     return;
   }
 
-  if (redraw_timer_) {
-    SDL_RemoveTimer(redraw_timer_);
-    redraw_timer_ = 0;
-  }
+  TheDisplay().CancelRedrawTimer();
 
   // blit from paletted surface
   SDL_Surface* tmp_surf = nullptr;
@@ -1222,9 +1202,8 @@ void PixelBuffer::CreateDisplaySurface() {
 }
 
 void PixelBuffer::DestroyDisplaySurface() {
-  if (redraw_timer_) {
-    SDL_RemoveTimer(redraw_timer_);
-    redraw_timer_ = 0;
+  if (HasDisplay()) {
+    TheDisplay().CancelRedrawTimer();
   }
   DropScaledFrame();
   if (window_texture_) {
@@ -1247,11 +1226,7 @@ void PixelBuffer::PresentScaledFrame(std::span<const uint8_t> frame, int width,
   if (frame_width > frame.size() / frame_height || !palette_surface_) {
     return;
   }
-  // Cancel any pending redraw timer
-  if (redraw_timer_) {
-    SDL_RemoveTimer(redraw_timer_);
-    redraw_timer_ = 0;
-  }
+  TheDisplay().CancelRedrawTimer();
 
   // Create intermediate texture on first use or if size changed
   if (!scaled_frame_texture_ || scaled_frame_width_ != width ||

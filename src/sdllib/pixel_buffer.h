@@ -352,7 +352,6 @@ class PixelBuffer : public PixelView {
   // SDL types, held as void* so that this header pulls in no SDL headers.
   void* window_texture_ = nullptr;   // SDL_Texture*, the window's contents
   void* palette_surface_ = nullptr;  // SDL_Surface*, the 8-bit pixels
-  int redraw_timer_ = 0;  // SDL timer id, 0 when no redraw is pending
   void* scaled_frame_texture_ =
       nullptr;  // SDL_Texture* for low-res content scaling
   int scaled_frame_width_ = 0;

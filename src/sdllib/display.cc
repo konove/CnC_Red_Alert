@@ -7,6 +7,7 @@
 #include <SDL_events.h>
 #include <SDL_render.h>
 #include <SDL_stdinc.h>
+#include <SDL_timer.h>
 #include <SDL_video.h>
 
 #include <chrono>
@@ -20,6 +21,20 @@ namespace {
 // The game's resolution is scaled up by this much to get the window size.
 constexpr int kWindowScale = 3;
 
+// How long drawing may sit in the surface before the redraw timer presents it
+// anyway. A thirtieth of a second, the rate the original game ran its frames
+// at.
+constexpr Uint32 kRedrawDelayMs = 1000 / 30;
+
+// Runs on an SDL timer thread, so all it may do is post the event; the frame
+// is ended on the main thread by the event loop that picks the event up.
+// Returning 0 does not re-arm the timer - one pending redraw at a time is
+// enough, and the present that answers it cancels the timer.
+Uint32 PostRedraw(Uint32 /*interval*/, void* /*param*/) {
+  TheDisplay().PostRedrawEvent();
+  return 0;
+}
+
 }  // namespace
 
 Display::Display() = default;
@@ -28,6 +43,7 @@ Display::Display(void* window, void* renderer)
     : window_(window), renderer_(renderer) {}
 
 Display::~Display() {
+  CancelRedrawTimer();
   if (!owns_window_) {
     return;
   }
@@ -118,6 +134,19 @@ void Display::PostRedrawEvent() {
 
 bool Display::IsRedrawEvent(uint32_t event_type) const {
   return event_type == redraw_event_;
+}
+
+void Display::ArmRedrawTimer() {
+  if (redraw_timer_ == 0) {
+    redraw_timer_ = SDL_AddTimer(kRedrawDelayMs, PostRedraw, nullptr);
+  }
+}
+
+void Display::CancelRedrawTimer() {
+  if (redraw_timer_ != 0) {
+    SDL_RemoveTimer(redraw_timer_);
+    redraw_timer_ = 0;
+  }
 }
 
 void Display::Restore() {
