@@ -549,7 +549,7 @@ void ScoreScaleClass::Update() {
   if (!Timer.Time()) {
     Timer.Set(1);
     if (Stage != 5) {
-      show_.text_page().view().Blit(
+      show_.text_page().view().BlitTo(
           TheScreen().hidden_view(), base::At(_destx, Stage + 1) * 2, YPos * 2,
           base::At(_destx, Stage + 1) * 2, YPos * 2,
           base::At(_destw, Stage + 1) * 2, base::At(_destw, Stage + 1) * 2);
@@ -773,7 +773,7 @@ void ScoreClass::Show() {
   /* --- Now display the background animation --- */
   Hide_Mouse();
   anim.DrawFrame(TheScreen().sys_mem_page().view(), 1);
-  TheScreen().sys_mem_page().view().Blit(show.page().view());
+  TheScreen().sys_mem_page().view().BlitTo(show.page().view());
   Increase_Palette_Luminance(ThePalettes().title_palette(), 30, 30, 30, 63);
 
   Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), inter_pal);
@@ -804,7 +804,7 @@ void ScoreClass::Show() {
       new ScoreTimeClass(show, 8, 172, hiscore2shape, 10, 4);
 
   /* Now display the stuff */
-  show.page().view().Blit(TheScreen().sys_mem_page().view());
+  show.page().view().BlitTo(TheScreen().sys_mem_page().view());
 
   if (player_house == HOUSE_BAD) {
     /*
@@ -1196,7 +1196,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show) {
   ** Print the # of buildings on the hidpage so we only need to do it once
   */
   PixelView& view = TheScreen().sys_mem_page().view();
-  show.page().view().Blit(view);
+  show.page().view().BlitTo(view);
   Call_Back_Delay(show, 30);
   show.AddTextRect(2 * (BUILDING_X + 8), 2 * BUILDING_Y, 2 * (BUILDING_X + 8),
                    2 * BUILDING_Y, 5 * 12, 12);
@@ -1216,9 +1216,9 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show) {
   ** Here's the animation/draw loop for blowing up the factory
   */
   for (int i = 0; i < 98; i++) {
-    TheScreen().sys_mem_page().view().Blit(TheScreen().sys_mem_page().view(),
-                                           BUILDING_X, BUILDING_Y, 0, 0,
-                                           320 - BUILDING_X, 48);
+    TheScreen().sys_mem_page().view().BlitTo(TheScreen().sys_mem_page().view(),
+                                             BUILDING_X, BUILDING_Y, 0, 0,
+                                             320 - BUILDING_X, 48);
     int shapenum = 0;  // no damage
     if (i >= 60) {
       shapenum = Extract_Shape_Count(factptr) - 2;  // some damage
@@ -1272,8 +1272,8 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show) {
                   i + 32, 40, WINDOW_MAIN,
                   SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,
                   ScoreRemapYellow, MouseClass::UnitShadow);
-    TheScreen().sys_mem_page().view().Blit(show.page().view(), 0, 0, BUILDING_X,
-                                           BUILDING_Y, 320 - BUILDING_X, 48);
+    TheScreen().sys_mem_page().view().BlitTo(
+        show.page().view(), 0, 0, BUILDING_X, BUILDING_Y, 320 - BUILDING_X, 48);
 
     /*
     ** Extra font related stuff. ST - 7/29/96 2:22PM
@@ -1281,7 +1281,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show) {
     Interpolate_2X_Scale(&show.page(), &TheScreen().hidden_view(), {});
     show.DrawTextRects();
     TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
-    TheScreen().hidden_view().Blit(TheScreen().visible_view());
+    TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
     TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     // Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff , NULL);
 
@@ -1358,8 +1358,8 @@ void ScoreClass::Do_GDI_Graph(Presentation& show,
       CC_Draw_Shape(view, yellowptr, i, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL,
                     {}, {});
     } else {
-      TheScreen().sys_mem_page().view().Blit(show.page().view(), 0, 0, 172,
-                                             ypos, 3 + gdikilled, 9);
+      TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 0, 172,
+                                               ypos, 3 + gdikilled, 9);
     }
 
     Count_Up_Print(show, "%d", i * gkilled / max, gkilled, 297, ypos + 2);
@@ -1381,8 +1381,8 @@ void ScoreClass::Do_GDI_Graph(Presentation& show,
       CC_Draw_Shape(view, redptr, i, 172, ypos + 12, WINDOW_MAIN, SHAPE_WIN_REL,
                     {}, {});
     } else {
-      TheScreen().sys_mem_page().view().Blit(show.page().view(), 0, 0, 172,
-                                             ypos + 12, 3 + nodkilled, 9);
+      TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 0, 172,
+                                               ypos + 12, 3 + nodkilled, 9);
     }
 
     Count_Up_Print(show, "%d", i * nkilled / max, nkilled, 297, ypos + 14);
@@ -1468,8 +1468,8 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show) {
   ** Draw the infantrymen and pause briefly before running the graph
   */
   Draw_InfantryMen();
-  TheScreen().sys_mem_page().view().Blit(show.page().view(), 0, 0, BARGRAPH_X,
-                                         CASUALTY_Y, 320 - BARGRAPH_X, 34);
+  TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 0, BARGRAPH_X,
+                                           CASUALTY_Y, 320 - BARGRAPH_X, 34);
   // Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff, NULL);
   /*
   ** Extra font related stuff. ST - 7/29/96 2:22PM
@@ -1477,7 +1477,7 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show) {
   Interpolate_2X_Scale(&show.page(), &TheScreen().hidden_view(), {});
   show.DrawTextRects();
   TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
-  TheScreen().hidden_view().Blit(TheScreen().visible_view());
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
 
   Call_Back_Delay(show, 40);
@@ -1495,9 +1495,9 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show) {
       Draw_InfantryMen();
       Draw_Bar_Graphs(TheScreen().sys_mem_page().view(), i, gdikilled,
                       nodkilled, civkilled);
-      TheScreen().sys_mem_page().view().Blit(show.page().view(), 0, 0,
-                                             BARGRAPH_X, CASUALTY_Y,
-                                             320 - BARGRAPH_X, 34);
+      TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 0,
+                                               BARGRAPH_X, CASUALTY_Y,
+                                               320 - BARGRAPH_X, 34);
       Count_Up_Print(show, "%d", i * GKilled / max, GKilled, SCORETEXT_X + 64,
                      CASUALTY_Y + 2);
       Count_Up_Print(show, "%d", i * NKilled / max, NKilled, SCORETEXT_X + 64,
@@ -1539,8 +1539,8 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show) {
     }
     Draw_Bar_Graphs(TheScreen().sys_mem_page().view(), max, gdikilled,
                     nodkilled, civkilled);
-    TheScreen().sys_mem_page().view().Blit(show.page().view(), 0, 0, BARGRAPH_X,
-                                           CASUALTY_Y, 320 - BARGRAPH_X, 34);
+    TheScreen().sys_mem_page().view().BlitTo(
+        show.page().view(), 0, 0, BARGRAPH_X, CASUALTY_Y, 320 - BARGRAPH_X, 34);
     Call_Back_Delay(show, 1);
   }
 }
@@ -1710,7 +1710,7 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
   /*
   ** Ready the hidpage so it can restore background under zoomed letters
   */
-  show.page().view().Blit(TheScreen().sys_mem_page().view());
+  show.page().view().BlitTo(TheScreen().sys_mem_page().view());
 
   do {
     Call_Back();
@@ -1721,7 +1721,7 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
     */
     Interpolate_2X_Scale(&show.page(), &TheScreen().hidden_view(), {});
     show.DrawTextRects();
-    TheScreen().hidden_view().Blit(TheScreen().visible_view());
+    TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
 
     if (Check_Key()) {  // if (Keyboard::Check()) {
       key = Get_Key();  // key = Keyboard::Get();
@@ -1855,7 +1855,7 @@ void Draw_InfantryMen() {
   /*
   ** First restore the background
   */
-  view.Blit(view, BARGRAPH_X, CASUALTY_Y, 0, 0, 320 - BARGRAPH_X, 34);
+  view.BlitTo(view, BARGRAPH_X, CASUALTY_Y, 0, 0, 320 - BARGRAPH_X, 34);
   /*
   ** Then draw all the infantrymen on the clean SysMemPage
   */
@@ -2068,7 +2068,7 @@ void Call_Back_Delay(Presentation& show, int time) {
     Interpolate_2X_Scale(&show.page(), &TheScreen().hidden_view(), {});
     show.DrawTextRects();
     TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
-    TheScreen().hidden_view().Blit(TheScreen().visible_view());
+    TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
     TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     //}
   } while (cd.Time());

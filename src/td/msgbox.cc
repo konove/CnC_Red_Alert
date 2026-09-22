@@ -191,7 +191,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   /*
   **	Other inits.
   */
-  TheScreen().visible_page().view().Blit(seen_buff_save.view());
+  TheScreen().visible_page().view().BlitTo(seen_buff_save.view());
 
   /*
   **	Initialize the button structures. All are initialized, even though one
@@ -252,7 +252,9 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   if (IsPicture) {
     Load_Uncompress(GameFile(msg), TheScreen().sys_mem_page().bytes(),
                     TheScreen().sys_mem_page().bytes());
-    TheScreen().sys_mem_page().Blit(TheScreen().visible_view(), 160, 100);
+    PixelView& picture = TheScreen().sys_mem_page().view();
+    picture.BlitTo(TheScreen().visible_view(), 0, 0, 160, 100, picture.width(),
+                   picture.height());
   } else {
 #endif
     Dialog_Box(view, x, y, width, height);
@@ -289,7 +291,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       */
       if (AllSurfaces.SurfacesRestored) {
         AllSurfaces.SurfacesRestored = false;
-        seen_buff_save.view().Blit(TheScreen().visible_page().view());
+        seen_buff_save.view().BlitTo(TheScreen().visible_page().view());
         display = true;
       }
 
@@ -302,7 +304,9 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         if (IsPicture) {
           Load_Uncompress(GameFile(msg), TheScreen().sys_mem_page().bytes(),
                           TheScreen().sys_mem_page().bytes());
-          TheScreen().sys_mem_page().Blit(TheScreen().visible_view(), 160, 100);
+          PixelView& picture = TheScreen().sys_mem_page().view();
+          picture.BlitTo(TheScreen().visible_view(), 0, 0, 160, 100,
+                         picture.width(), picture.height());
         } else {
 #endif
           Dialog_Box(view, x, y, width, height);

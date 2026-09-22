@@ -82,7 +82,7 @@ void GDI_Ending() {
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
   Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(),
                     ThePalettes().title_palette());
-  TheScreen().hidden_view().Blit(TheScreen().visible_view());
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
   Clear_KeyBuffer();
   Get_Key_Num();
@@ -189,7 +189,7 @@ void Nod_Ending() {
                   std::as_bytes(TheScreen().hidden_view().bytes()),
                   satpic.size());
 #else
-  TheScreen().sys_mem_page().view().Blit(show.page().view());
+  TheScreen().sys_mem_page().view().BlitTo(show.page().view());
 #endif  // NOT_FOR_WIN95
   // Read from the file: MixArchive::RetrieveData() only serves cached archives.
   GameFile kanefinl_file("KANEFINL.AUD");

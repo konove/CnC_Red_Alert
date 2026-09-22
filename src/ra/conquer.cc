@@ -606,7 +606,7 @@ static void CaptureMotionFrame() {
     // A no-op on a frame reused from an earlier run of the same resolution.
     frames.at(base::ToSize(captured_count)).resize(base::ToSize(frame_bytes));
 
-    TheScreen().visible_view().Blit(frame_page.view());
+    TheScreen().visible_view().BlitTo(frame_page.view());
     base::CopyBytes(std::as_writable_bytes(
                         std::span(frames.at(base::ToSize(captured_count)))),
                     std::as_bytes(frame_page.bytes()), frame_bytes);

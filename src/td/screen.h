@@ -18,7 +18,7 @@
 //
 // Example:
 //   Screen& screen = TheScreen();
-//   screen.hidden_view().Blit(screen.visible_view());
+//   screen.hidden_view().BlitTo(screen.visible_view());
 class Screen {
  public:
   // The game area, whatever the video mode: 640x400.

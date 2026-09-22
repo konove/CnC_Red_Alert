@@ -97,7 +97,7 @@ void Shake_Screen(int shakes) {
   shakes += shakes;
 
   Hide_Mouse();
-  TheScreen().visible_view().Blit(TheScreen().hidden_view());
+  TheScreen().visible_view().BlitTo(TheScreen().hidden_view());
   const int oldyoff = 0;
   int newyoff = 0;
   while (shakes--) {
@@ -108,15 +108,15 @@ void Shake_Screen(int shakes) {
     } while (newyoff == oldyoff);
     switch (newyoff) {
       case -1:
-        TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 2, 0, 0,
-                                       640, 398);
+        TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 2, 0, 0,
+                                         640, 398);
         break;
       case 0:
-        TheScreen().hidden_view().Blit(TheScreen().visible_view());
+        TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
         break;
       case 1:
-        TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 0, 0, 2,
-                                       640, 398);
+        TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 0, 0, 2,
+                                         640, 398);
         break;
       default:
         break;
@@ -126,6 +126,6 @@ void Shake_Screen(int shakes) {
     }
   }
 
-  TheScreen().hidden_view().Blit(TheScreen().visible_view());
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   Show_Mouse();
 }

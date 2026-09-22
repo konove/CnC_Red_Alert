@@ -168,7 +168,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   }
   Check_VQ_Palette_Set();
   if (TheScreen().is_vq640()) {
-    TheScreen().vq640().view().Blit(TheScreen().visible_view());
+    TheScreen().vq640().view().BlitTo(TheScreen().visible_view());
   } else {
     Interpolate_2X_Scale(&TheScreen().sys_mem_page(),
                          &TheScreen().visible_view(), nullptr);

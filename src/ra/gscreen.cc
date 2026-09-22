@@ -427,9 +427,9 @@ void GScreenClass::Render() {
  *=============================================================================================*/
 void GScreenClass::Blit_Display() {
   TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
-  TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 0, 0, 0,
-                                 TheScreen().hidden_view().width(),
-                                 TheScreen().hidden_view().height(), false);
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 0, 0, 0,
+                                   TheScreen().hidden_view().width(),
+                                   TheScreen().hidden_view().height());
   TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), false);
 }
 
@@ -439,7 +439,7 @@ void Shake_The_Screen(int shakes) {
   shakes += shakes;
 
   Hide_Mouse();
-  TheScreen().visible_view().Blit(TheScreen().hidden_view());
+  TheScreen().visible_view().BlitTo(TheScreen().hidden_view());
   int old_y_off = 0;
   while (shakes-- != 0) {
     // Hold each offset for exactly one tick, so the shake runs at game speed
@@ -453,21 +453,21 @@ void Shake_The_Screen(int shakes) {
     old_y_off = new_y_off;
     switch (new_y_off) {
       case -1:
-        TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 2, 0, 0,
-                                       640, 398);
+        TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 2, 0, 0,
+                                         640, 398);
         break;
       case 1:
-        TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 0, 0, 2,
-                                       640, 398);
+        TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 0, 0, 2,
+                                         640, 398);
         break;
       default:
-        TheScreen().hidden_view().Blit(TheScreen().visible_view());
+        TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
         break;
     }
     while (x == SystemTicks()) {
       TheDisplay().EndFrame();
     }
   }
-  TheScreen().hidden_view().Blit(TheScreen().visible_view());
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   Show_Mouse();
 }

@@ -511,7 +511,7 @@ bool Init_Game() {
   Wait_Vert_Blank();
   if (!TheSpecial().IsFromInstall) {
     Set_Palette(ThePalettes().title_palette());
-    TheScreen().hidden_view().Blit(TheScreen().visible_view());
+    TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
     Show_Mouse();
   }
   Call_Back();
@@ -1062,7 +1062,7 @@ bool Select_Game(bool fade) {
                           Call_Back);
           Load_Title_Screen("PREPICK.PCX", &TheScreen().hidden_view(),
                             ThePalettes().title_palette());
-          TheScreen().hidden_view().Blit(TheScreen().visible_view());
+          TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
           Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                           Call_Back);
           Clear_KeyBuffer();
@@ -1130,7 +1130,7 @@ bool Select_Game(bool fade) {
           Set_Palette(ThePalettes().black_palette());
           Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(),
                             ThePalettes().title_palette());
-          TheScreen().hidden_view().Blit(TheScreen().visible_view());
+          TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
           Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                           Call_Back);
           Clear_KeyBuffer();
@@ -2998,6 +2998,6 @@ void Load_Title_Page(bool visible) {
                     ThePalettes().title_palette());
 
   if (visible) {
-    TheScreen().hidden_view().Blit(TheScreen().visible_view());
+    TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   }
 }

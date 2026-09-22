@@ -123,7 +123,7 @@ void Load_Title_Screen(std::string_view name, PixelView* video_page,
       Read_PCX_File(std::string(name).c_str(), palette, {}, 0);
 
   if (load_buffer) {
-    load_buffer->view().Blit(*video_page);
+    load_buffer->view().BlitTo(*video_page);
     delete load_buffer;
   }
 }

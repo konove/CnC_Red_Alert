@@ -231,8 +231,8 @@ void ScorePrintClass::Update() {
       localstr[0] = Text().at(base::ToSize(Stage - 1));
       TheScreen().hidden_view().Print(localstr, pos - 12, YPos, kTBlack,
                                       kTBlack);
-      TheScreen().hidden_view().Blit(TheScreen().visible_view(), pos - 12,
-                                     YPos - 2, pos - 12, YPos - 2, 14, 16);
+      TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), pos - 12,
+                                       YPos - 2, pos - 12, YPos - 2, 14, 16);
     }
     // Smear the next letter in white, straight onto the visible page: one row
     // up, one row down and one pixel right of where it will finally sit.
@@ -286,8 +286,8 @@ void ScoreScaleClass::Update() {
       }
       TheScreen().hidden_view().Print(std::string(Text()).c_str(), XPos, YPos,
                                       kTBlack, kTBlack);
-      TheScreen().hidden_view().Blit(TheScreen().visible_view(), XPos, YPos,
-                                     XPos, YPos, 12, 12);
+      TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), XPos, YPos,
+                                       XPos, YPos, 12, 12);
       delete this;
       return;
     }
@@ -376,7 +376,7 @@ void ScoreClass::Presentation() {
   Load_Title_Screen(base::At(ScreenNames, house), &TheScreen().hidden_view(),
                     score_palette);
   Increase_Palette_Luminance(score_palette, 30, 30, 30, 63);
-  TheScreen().hidden_view().Blit(TheScreen().visible_view());
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   score_palette.Set(kFadePaletteFast, ServiceRealTime);
   TheAudio().Play(country4, 255, TheOptions().Normalize_Volume(150));
 
@@ -790,7 +790,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
       CC_Draw_Shape(view, yellowptr, i, xpos * 2, ypos * 2, WINDOW_MAIN,
                     SHAPE_WIN_REL, {}, {});
     } else {
-      hidden.Blit(view, 0, 0, xpos * 2, ypos * 2, (3 + gdikilled) * 2, 16);
+      hidden.BlitTo(view, 0, 0, xpos * 2, ypos * 2, (3 + gdikilled) * 2, 16);
     }
 
     Count_Up_Print("%d", CountUpValue(gkilled, i, gdikilled), gkilled, 297,
@@ -809,8 +809,8 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
       CC_Draw_Shape(view, redptr, i, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
                     SHAPE_WIN_REL, {}, {});
     } else {
-      hidden.Blit(view, 0, 0, xpos * 2, (ypos + 12) * 2, (3 + nodkilled) * 2,
-                  16);
+      hidden.BlitTo(view, 0, 0, xpos * 2, (ypos + 12) * 2, (3 + nodkilled) * 2,
+                    16);
     }
 
     Count_Up_Print("%d", CountUpValue(nkilled, i, nodkilled), nkilled, 297,
@@ -920,14 +920,14 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
   const auto keystrok = MixArchive::RetrieveData("KEYSTROK.AUD");
 
   // Ready the hidpage so it can restore background under zoomed letters.
-  TheScreen().visible_view().Blit(TheScreen().hidden_view());
+  TheScreen().visible_view().BlitTo(TheScreen().hidden_view());
 
   // Put a copy of the high score area on a spare area of the hidpage, so we can
   // use it to restore the letter's background instead of filling with black.
   // The copy sits 200 pixels (100 in 320x200 terms) above the original, which
   // is where the `ypos - 100` and Animate_Cursor()'s `ypos - 200` come from.
-  TheScreen().hidden_view().Blit(TheScreen().hidden_view(), 0, 200, 0, 0, 200,
-                                 200);
+  TheScreen().hidden_view().BlitTo(TheScreen().hidden_view(), 0, 200, 0, 0, 200,
+                                   200);
 
   do {
     ServiceRealTime();
@@ -963,12 +963,12 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
           // Erase the letter on both pages from the saved background copy.
 
           const int xposindex6 = (xpos + (index * 6)) * 2;
-          TheScreen().hidden_view().Blit(TheScreen().visible_view(), xposindex6,
-                                         (ypos - 100) * 2, xposindex6, ypos * 2,
-                                         12, 12);
-          TheScreen().hidden_view().Blit(TheScreen().hidden_view(), xposindex6,
-                                         (ypos - 100) * 2, xposindex6, ypos * 2,
-                                         12, 12);
+          TheScreen().hidden_view().BlitTo(TheScreen().visible_view(),
+                                           xposindex6, (ypos - 100) * 2,
+                                           xposindex6, ypos * 2, 12, 12);
+          TheScreen().hidden_view().BlitTo(TheScreen().hidden_view(),
+                                           xposindex6, (ypos - 100) * 2,
+                                           xposindex6, ypos * 2, 12, 12);
         }
 
       } else if (key != KA_RETURN) {
@@ -978,10 +978,10 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
           ascii -= 'a' - 'A';
         }
         if ((ascii >= '!' && ascii <= KA_TILDA) || ascii == ' ') {
-          TheScreen().hidden_view().Blit(
+          TheScreen().hidden_view().BlitTo(
               TheScreen().visible_view(), (xpos + (index * 6)) * 2,
               (ypos - 100) * 2, (xpos + (index * 6)) * 2, ypos * 2, 12, 12);
-          TheScreen().hidden_view().Blit(
+          TheScreen().hidden_view().BlitTo(
               TheScreen().hidden_view(), (xpos + (index * 6)) * 2,
               (ypos - 100) * 2, (xpos + (index * 6)) * 2, ypos * 2, 12, 12);
           base::At(str, base::ToSize(index)) = static_cast<char>(ascii);
@@ -1019,7 +1019,7 @@ void Animate_Cursor(int pos, int ypos) {
   // If they moved the cursor, erase the old one from Input_Name()'s saved
   // background copy, 200 pixels up the hidden page, and restart the blink.
   if (pos != _lastpos) {
-    TheScreen().hidden_view().Blit(
+    TheScreen().hidden_view().BlitTo(
         TheScreen().visible_view(), (HALLFAME_X + (_lastpos * 6)) * 2,
         ypos - 200, (HALLFAME_X + (_lastpos * 6)) * 2, ypos, 12, 2);
     _lastpos = pos;

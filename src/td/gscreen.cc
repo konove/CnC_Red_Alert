@@ -434,7 +434,7 @@ static void Add_Current_Screen() {
         ->Init(TheScreen().visible_view().width(),
                TheScreen().visible_view().height(), {}, 0,
                static_cast<PixelBufferFlags>(0));
-    TheScreen().visible_view().Blit(
+    TheScreen().visible_view().BlitTo(
         base::At(ScreenList, CurrentScreen)->view());
 
     CurrentScreen++;
@@ -474,9 +474,9 @@ extern bool CanVblankSync;
  *=============================================================================================*/
 void GScreenClass::Blit_Display() {
   TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
-  TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 0, 0, 0,
-                                 TheScreen().hidden_view().width(),
-                                 TheScreen().hidden_view().height(), false);
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 0, 0, 0,
+                                   TheScreen().hidden_view().width(),
+                                   TheScreen().hidden_view().height());
   if (config::kCheatKeysEnabled) {
     Add_Current_Screen();
   }

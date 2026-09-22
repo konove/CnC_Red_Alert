@@ -223,7 +223,7 @@ static void Load_Prolog_Page() {
   Hide_Mouse();
   Load_Title_Screen("PROLOG.PCX", &TheScreen().hidden_view(),
                     ThePalettes().title_palette());
-  TheScreen().hidden_view().Blit(TheScreen().visible_view());
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   ThePalettes().title_palette().Set();
   Show_Mouse();
 }
@@ -576,7 +576,7 @@ bool Select_Game(bool /*fade*/) {
         Load_Title_Page();
         ThePalettes().game_palette() = ThePalettes().title_palette();
 
-        TheScreen().hidden_view().Blit(TheScreen().visible_view());
+        TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
         //				if (fade) {
         //					WhitePalette.Set();
         //					CCPalette.Set(kFadePaletteSlow,
@@ -1742,7 +1742,7 @@ void Load_Title_Page(bool visible) {
                     ThePalettes().title_palette());
 
   if (visible) {
-    TheScreen().hidden_view().Blit(TheScreen().visible_view());
+    TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   }
 }
 
@@ -1773,7 +1773,7 @@ static void Init_Color_Remaps() {
   TheScreen().sys_mem_page().view().Clear();
   Load_Picture("PALETTE.CPS", TheScreen().sys_mem_page().bytes(),
                TheScreen().sys_mem_page().bytes(), {}, BM_DEFAULT);
-  TheScreen().sys_mem_page().view().Blit(TheScreen().hidden_view());
+  TheScreen().sys_mem_page().view().BlitTo(TheScreen().hidden_view());
   for (const PlayerColorType pcolor :
        magic_enum::enum_values<PlayerColorType>()) {
     auto& ptr = ThePalettes().color_remaps().at(pcolor).RemapTable;

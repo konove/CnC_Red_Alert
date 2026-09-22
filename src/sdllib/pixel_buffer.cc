@@ -265,9 +265,9 @@ void PixelView::CopyFromBufferLocked(const int dst_x, const int dst_y,
   } while (--line_count);
 }
 
-bool PixelView::BlitLocked(PixelView& dest, const int src_x, const int src_y,
-                           const int dst_x, const int dst_y, const int width,
-                           const int height, const bool transparent) {
+void PixelView::BlitToLocked(PixelView& dest, const int src_x, const int src_y,
+                             const int dst_x, const int dst_y, const int width,
+                             const int height, const bool transparent) {
   // Only Tiberian Dawn asks for a transparent blit.
 
   // clip source
@@ -276,7 +276,7 @@ bool PixelView::BlitLocked(PixelView& dest, const int src_x, const int src_y,
   int src_width = width;
   int src_height = height;
   if (!ClipRect(src_x0, src_y0, src_width, src_height, width_, height_)) {
-    return true;
+    return;
   }
   int src_x1 = src_x0 + src_width;
   int src_y1 = src_y0 + src_height;
@@ -295,7 +295,7 @@ bool PixelView::BlitLocked(PixelView& dest, const int src_x, const int src_y,
 
   // outside
   if (base::Any(code0 & code1)) {
-    return true;  // i'm not sure this actually has a return value...
+    return;
   }
 
   if (base::Any(code0 | code1)) {
@@ -325,11 +325,11 @@ bool PixelView::BlitLocked(PixelView& dest, const int src_x, const int src_y,
   auto dst_offset = dest.pixels().begin() + dst_x0 + (dst_y0 * dst_area);
 
   if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
-    return true;
+    return;
   }
 
   if (std::to_address(src_offset) == std::to_address(dst_offset)) {
-    return true;
+    return;
   }
 
   const int pixel_count = src_x1 - src_x0;
@@ -394,8 +394,6 @@ bool PixelView::BlitLocked(PixelView& dest, const int src_x, const int src_y,
       } while (--line_count);
     }
   }
-
-  return true;
 }
 
 bool PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,

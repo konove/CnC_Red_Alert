@@ -34,8 +34,8 @@ void Presentation::DrawTextRects() {
   }
   for (int i = 0; i < text_rect_count_; i++) {
     const TextRect& rect = base::At(std::span(text_rects_), i);
-    text_page_.view().Blit(dest, rect.source_x, rect.source_y, rect.dest_x,
-                           rect.dest_y, rect.width, rect.height, true);
+    text_page_.view().BlitTo(dest, rect.source_x, rect.source_y, rect.dest_x,
+                             rect.dest_y, rect.width, rect.height, true);
   }
   dest.Unlock();
 }

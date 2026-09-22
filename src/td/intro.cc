@@ -204,8 +204,8 @@ void Choose_Side() {
       Set_Palette(ThePalettes().title_palette());
       setpalette = 0;
     }
-    TheScreen().sys_mem_page().view().Blit(show.page().view(), 0, 22, 0, 22,
-                                           320, 156);
+    TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 22, 0, 22,
+                                             320, 156);
 
     /*
     ** If the sample has stopped or is about to then restart it

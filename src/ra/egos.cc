@@ -247,8 +247,7 @@ void EgoClass::Wipe(PixelView& view, PixelBuffer* background) const {
     }
   }
 
-  background->view().Blit(view, x - 1, YPos, x - 1, YPos, width + 2, 14 + 1,
-                          false);
+  background->view().BlitTo(view, x - 1, YPos, x - 1, YPos, width + 2, 14 + 1);
 }
 
 /***********************************************************************************************
@@ -293,9 +292,9 @@ static void Slide_Show(int slide, int frame) {
     ** Blit in a quarter of the new frame to the background page.
     */
     PixelView& slide_view = base::At(SlideBuffers, slide)->view();
-    slide_view.Blit(BackgroundPage->view(), 0, (frame - 1) * CHUNK_HEIGHT, 0,
-                    (frame - 1) * CHUNK_HEIGHT,
-                    TheScreen().visible_view().width(), CHUNK_HEIGHT, false);
+    slide_view.BlitTo(BackgroundPage->view(), 0, (frame - 1) * CHUNK_HEIGHT, 0,
+                      (frame - 1) * CHUNK_HEIGHT,
+                      TheScreen().visible_view().width(), CHUNK_HEIGHT);
     return;
   }
 
@@ -303,10 +302,10 @@ static void Slide_Show(int slide, int frame) {
     /*
     ** Blit in a quarter of the new frame to the hid page.
     */
-    BackgroundPage->view().Blit(
+    BackgroundPage->view().BlitTo(
         TheScreen().hidden_view(), 0, (frame - 5) * CHUNK_HEIGHT, 0,
         (frame - 5) * CHUNK_HEIGHT, TheScreen().visible_view().width(),
-        CHUNK_HEIGHT, false);
+        CHUNK_HEIGHT);
     return;
   }
 
@@ -698,7 +697,7 @@ void Show_Who_Was_Responsible() {
   BackgroundPage->Init(TheScreen().visible_view().width(),
                        TheScreen().visible_view().height(), {}, 0, BUFFER_NONE);
 
-  TheScreen().visible_view().Blit(BackgroundPage->view());
+  TheScreen().visible_view().BlitTo(BackgroundPage->view());
 
   /*
   ** Go away nasty keyboard.
@@ -808,10 +807,9 @@ void Show_Who_Was_Responsible() {
     *print doesn't
     ** clip vertically and looks ugly when it suddenly appears and disappears.
     */
-    TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 16, 0, 16,
-                                   TheScreen().visible_view().width(),
-                                   TheScreen().visible_view().height() - 32,
-                                   false);
+    TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), 0, 16, 0, 16,
+                                     TheScreen().visible_view().width(),
+                                     TheScreen().visible_view().height() - 32);
 
     /*
     ** Try and prevent Win95 from swapping out pictures we havnt used yet.

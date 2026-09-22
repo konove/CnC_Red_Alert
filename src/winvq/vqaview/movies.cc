@@ -347,23 +347,24 @@ long Draw_To_Buffer_Callback(unsigned char* buffer, long frame_number) {
 // Do the cool interpolated, interlaced scale.
 //
   Interpolate_2X_Scale(Draw_Page, Back_Page);
-  Back_Page->Blit(*Screen_Buffer, 0, 0, 0, 100, 640, 314);
+  Back_Page->BlitTo(*Screen_Buffer, 0, 0, 0, 100, 640, 314);
 
-//
-// Draw 320x200 to Normal RAM, scale to Screen.
-//
+  //
+  // Draw 320x200 to Normal RAM, scale to Screen.
+  //
 
-//
-// Draw 320x200 to Normal RAM, scale to Normal RAM, Blit to Hid, Blit to Screen.
-//
+  //
+  // Draw 320x200 to Normal RAM, scale to Normal RAM, Blit to Hid, Blit to
+  // Screen.
+  //
 
-//
-// Draw 320x200 to Normal RAM, scale to Normal RAM, Blit to Screen.
-//
+  //
+  // Draw 320x200 to Normal RAM, scale to Normal RAM, Blit to Screen.
+  //
 
-//
-// Draw 320x200 to Normal RAM, Blit to Screen.
-//
+  //
+  // Draw 320x200 to Normal RAM, Blit to Screen.
+  //
 
 #endif
 

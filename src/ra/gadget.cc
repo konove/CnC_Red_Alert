@@ -488,7 +488,7 @@ KeyNumType GadgetClass::Input(PixelView& view) {
       char filename[30];
 
       //			Hide_Mouse();
-      TheScreen().visible_view().Blit(temp_page.view());
+      TheScreen().visible_view().BlitTo(temp_page.view());
       //			Show_Mouse();
       for (int lp = 0; lp < 99; lp++) {
         absl::SNPrintF(filename, sizeof(filename), "scrsht%02d.pcx", lp);

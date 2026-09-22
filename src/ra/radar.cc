@@ -539,8 +539,8 @@ void RadarClass::Draw_It(PixelView& view, bool forced) {
 
         if (TheScreen().IsVisible(&view)) {
           Hide_Mouse();
-          view.Blit(TheScreen().visible_view(), RadX, RadY, RadX, RadY,
-                    RadWidth, RadHeight);
+          view.BlitTo(TheScreen().visible_view(), RadX, RadY, RadX, RadY,
+                      RadWidth, RadHeight);
           Show_Mouse();
         }
       }
@@ -1946,7 +1946,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           *blits are
           ** always done in software by the library anyway.
           */
-          TheScreen().hidden_view().Blit(
+          TheScreen().hidden_view().BlitTo(
               TheScreen().hidden_view(),
               ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
               ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY,
@@ -1965,13 +1965,13 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           /*
           ** Do the blit in 2 stages.
           */
-          TheScreen().hidden_view().Blit(
+          TheScreen().hidden_view().BlitTo(
               temp_surface.view(),
               ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
               ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY, 0,
               0, RadarWidth, RadarHeight);
 
-          temp_surface.view().Blit(
+          temp_surface.view().BlitTo(
               TheScreen().hidden_view(), 0, 0,
               ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
               ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,

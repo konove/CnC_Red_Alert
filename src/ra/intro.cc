@@ -44,7 +44,7 @@ void PlayFirstLaunchIntro(PixelView& hidden, PixelView& visible) {
     Hide_Mouse();
     Load_Title_Page();
     ThePalettes().game_palette() = ThePalettes().title_palette();
-    hidden.Blit(visible);
+    hidden.BlitTo(visible);
     ThePalettes().title_palette().Set();
     Show_Mouse();
 

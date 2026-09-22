@@ -163,8 +163,8 @@ void Dialog_Box(int x, int y, int w, int h) {
                 SHAPE_WIN_REL);
 
   TheMouse()->Draw_Mouse(&TheScreen().hidden_view());
-  TheScreen().hidden_view().Blit(TheScreen().visible_view(), x, y, x, y, w, h,
-                                 false);
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), x, y, x, y, w,
+                                   h);
   TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), false);
 }
 

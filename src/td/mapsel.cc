@@ -610,7 +610,7 @@ void Map_Selection() {
   Wait_Vert_Blank();
   Set_Palette(grey2palette);
 
-  TheScreen().sys_mem_page().view().Blit(show.page().view());
+  TheScreen().sys_mem_page().view().BlitTo(show.page().view());
 
   Call_Back_Delay(show, 4);
   for (int i = 1; i < greyearth2.frame_count(); i++) {
@@ -625,7 +625,7 @@ void Map_Selection() {
   */
   TheScreen().sys_mem_page().view().Clear();
   anim.DrawFrame(TheScreen().sys_mem_page().view(), 1);
-  TheScreen().sys_mem_page().view().Blit(show.page().view());
+  TheScreen().sys_mem_page().view().BlitTo(show.page().view());
 
   Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), {});
 
@@ -641,7 +641,7 @@ void Map_Selection() {
   /*
   ** now make the grid appear
   */
-  TheScreen().sys_mem_page().view().Blit(show.page().view());
+  TheScreen().sys_mem_page().view().BlitTo(show.page().view());
   Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), {});
 
   TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(130));
@@ -782,13 +782,13 @@ void Map_Selection() {
   TheScreen().sys_mem_page().view().Clear();
   progress.DrawFrame(TheScreen().sys_mem_page().view(), 0);
 
-  TheScreen().sys_mem_page().view().Blit(show.page().view());
+  TheScreen().sys_mem_page().view().BlitTo(show.page().view());
 
   Increase_Palette_Luminance(progresspalette, 30, 30, 30, 63);
 
   auto* europe = new PixelBuffer(TheScreen().sys_mem_page().width(),
                                  TheScreen().sys_mem_page().height());
-  TheScreen().sys_mem_page().view().Blit(europe->view());
+  TheScreen().sys_mem_page().view().BlitTo(europe->view());
 
   /*
   ** Now show territories as they existed last scenario
@@ -797,7 +797,7 @@ void Map_Selection() {
                             static_cast<int>(TheWorld().scen_dir()));
   if (startframe) {
     progress.DrawFrame(TheScreen().sys_mem_page().view(), startframe);
-    TheScreen().sys_mem_page().view().Blit(show.page().view());
+    TheScreen().sys_mem_page().view().BlitTo(show.page().view());
   }
   Set_Palette(progresspalette);
   Call_Back_Delay(show, 45);
@@ -806,8 +806,8 @@ void Map_Selection() {
   ** Now dissolve in first advance of territories
   */
   const int xcoord = house == HOUSE_GOOD ? 0 : 204;
-  TheScreen().sys_mem_page().view().Blit(backpage.view(), xcoord, 1, 0, 0,
-                                         20 * 6, 8);
+  TheScreen().sys_mem_page().view().BlitTo(backpage.view(), xcoord, 1, 0, 0,
+                                           20 * 6, 8);
   TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
   if (house == HOUSE_GOOD) {
     Alloc_Object(new ScorePrintClass(show, TXT_MAP_GDI, 0, 2, greenpal));
@@ -821,8 +821,8 @@ void Map_Selection() {
   progress.DrawFrame(TheScreen().sys_mem_page().view(), startframe + 1);
   Bit_It_In(show, 0, 0, 320, 200, &TheScreen().sys_mem_page(), &show.page(), 1,
             true);
-  backpage.view().Blit(TheScreen().sys_mem_page().view(), 0, 0, xcoord, 1,
-                       20 * 6, 8);
+  backpage.view().BlitTo(TheScreen().sys_mem_page().view(), 0, 0, xcoord, 1,
+                         20 * 6, 8);
   Call_Back_Delay(show, 85);
 
   /*
@@ -840,8 +840,8 @@ void Map_Selection() {
 
   Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), {});
 
-  TheScreen().sys_mem_page().view().Blit(backpage.view(), xcoord, 1, 0, 0,
-                                         20 * 6, 8);
+  TheScreen().sys_mem_page().view().BlitTo(backpage.view(), xcoord, 1, 0, 0,
+                                           20 * 6, 8);
   if (!lastscenario) {
     TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
     if (house == HOUSE_GOOD) {
@@ -857,8 +857,8 @@ void Map_Selection() {
   progress.DrawFrame(TheScreen().sys_mem_page().view(), startframe + 2);
   Bit_It_In(show, 0, 0, 320, 200, &TheScreen().sys_mem_page(), &show.page(), 1,
             true);
-  backpage.view().Blit(TheScreen().sys_mem_page().view(), 0, 0, xcoord, 11,
-                       20 * 6, 8);
+  backpage.view().BlitTo(TheScreen().sys_mem_page().view(), 0, 0, xcoord, 11,
+                         20 * 6, 8);
   if (!lastscenario) {
     Call_Back_Delay(show, 85);
   }
@@ -1138,7 +1138,7 @@ void Map_Selection() {
     ** Draw the country's shape in non-fading colors
     */
     PixelView& view = TheScreen().sys_mem_page().view();
-    europe->view().Blit(view);
+    europe->view().BlitTo(view);
     const int shape =
         base::At(base::At(base::At(CountryArray, scenario).CountryShape,
                           static_cast<int>(TheWorld().scen_dir())),
@@ -1148,7 +1148,7 @@ void Map_Selection() {
                   base::At(_countryx, xshuffled_rows),
                   base::At(_countryy, xshuffled_rows), WINDOW_MAIN,
                   SHAPE_WIN_REL | SHAPE_CENTER, {}, {});
-    TheScreen().sys_mem_page().view().Blit(show.page().view());
+    TheScreen().sys_mem_page().view().BlitTo(show.page().view());
     Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), {});
 
     /*
@@ -1195,7 +1195,7 @@ void Map_Selection() {
     progress.DrawFrame(show.page().view(), progress.frame_count() - 1);
     Set_Palette(localpalette);
     progress.Close();
-    show.page().view().Blit(TheScreen().sys_mem_page().view());
+    show.page().view().BlitTo(TheScreen().sys_mem_page().view());
     Print_Statistics(show, 20, 160, house == HOUSE_GOOD ? 0 : 160);
   }
 
@@ -1553,8 +1553,8 @@ void Fading_Byte_Blit(int srcx, int srcy, int destx, int desty, int w, int h,
       if (tempy >= h) {
         tempy = 0;
       }
-      src->Blit(*dest, (srcx + x) << 3, srcy + (y << 1), (destx + x) << 3,
-                desty + (y << 1), 1 << 3, 2);
+      src->BlitTo(*dest, (srcx + x) << 3, srcy + (y << 1), (destx + x) << 3,
+                  desty + (y << 1), 1 << 3, 2);
     }
   }
 }

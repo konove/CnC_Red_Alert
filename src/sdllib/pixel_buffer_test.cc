@@ -122,7 +122,7 @@ TEST(BlitTest, ClipsRowsAndColumnsOffTheTopLeft) {
   std::vector<uint8_t> page(size_t{4} * 4, 0);
   PixelBuffer dest(4, 4, page);
 
-  source.view().Blit(dest.view(), 0, 0, -1, -1, 3, 3);
+  source.view().BlitTo(dest.view(), 0, 0, -1, -1, 3, 3);
 
   EXPECT_EQ(page, (std::vector<uint8_t>{5, 6, 0, 0,  //
                                         8, 9, 0, 0,  //
@@ -138,7 +138,7 @@ TEST(BlitTest, SourceClippedAtTopLeftKeepsItsPlaceInTheDestination) {
 
   // The rectangle's first row and column lie off the source, so the pixels
   // that do exist belong one row down and one column right of (1, 1).
-  source.view().Blit(dest.view(), -1, -1, 1, 1, 3, 3);
+  source.view().BlitTo(dest.view(), -1, -1, 1, 1, 3, 3);
 
   EXPECT_EQ(page, (std::vector<uint8_t>{0, 0, 0, 0,  //
                                         0, 0, 0, 0,  //
@@ -152,7 +152,7 @@ TEST(BlitTest, ClipsRowsAndColumnsOffTheBottomRight) {
   std::vector<uint8_t> page(size_t{4} * 4, 0);
   PixelBuffer dest(4, 4, page);
 
-  source.view().Blit(dest.view(), 0, 0, 2, 2, 3, 3);
+  source.view().BlitTo(dest.view(), 0, 0, 2, 2, 3, 3);
 
   EXPECT_EQ(page, (std::vector<uint8_t>{0, 0, 0, 0,  //
                                         0, 0, 0, 0,  //
@@ -167,13 +167,13 @@ TEST(BlitTest, RectangleWhollyOffTheDestinationDrawsNothing) {
   std::vector<uint8_t> page = blank;
   PixelBuffer dest(4, 4, page);
 
-  source.view().Blit(dest.view(), 0, 0, -3, 0, 3, 3);
+  source.view().BlitTo(dest.view(), 0, 0, -3, 0, 3, 3);
   EXPECT_EQ(page, blank);
-  source.view().Blit(dest.view(), 0, 0, 4, 0, 3, 3);
+  source.view().BlitTo(dest.view(), 0, 0, 4, 0, 3, 3);
   EXPECT_EQ(page, blank);
-  source.view().Blit(dest.view(), 0, 0, 0, -3, 3, 3);
+  source.view().BlitTo(dest.view(), 0, 0, 0, -3, 3, 3);
   EXPECT_EQ(page, blank);
-  source.view().Blit(dest.view(), 0, 0, 0, 4, 3, 3);
+  source.view().BlitTo(dest.view(), 0, 0, 0, 4, 3, 3);
   EXPECT_EQ(page, blank);
 }
 
@@ -186,7 +186,7 @@ TEST(BlitTest, FullSourceOverhangingTwoEdgesCarriesTheSourceAlong) {
   PixelBuffer dest(4, 4, page);
 
   // Off the left by one and off the bottom by one.
-  source.view().Blit(dest.view(), 0, 0, -1, 2, 3, 3);
+  source.view().BlitTo(dest.view(), 0, 0, -1, 2, 3, 3);
 
   EXPECT_EQ(page, (std::vector<uint8_t>{0, 0, 0, 0,  //
                                         0, 0, 0, 0,  //

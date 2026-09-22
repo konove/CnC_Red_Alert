@@ -510,7 +510,7 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   Keyboard::Clear();
   Hide_Mouse();
 
-  TheScreen().hidden_view().Blit(TheScreen().visible_view());
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   Change_Window(static_cast<int>(WINDOW_MAIN));
   TheMap().Flag_To_Redraw(true);
   return selection;
@@ -895,7 +895,7 @@ int Main_Menu(int timeout) {
       **	Copy the menu to the visible page.
       */
       Hide_Mouse();
-      TheScreen().hidden_view().Blit(TheScreen().visible_view());
+      TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
       Show_Mouse();
 
       startbtn.Draw_All(view);

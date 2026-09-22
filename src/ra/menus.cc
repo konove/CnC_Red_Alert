@@ -480,7 +480,7 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   TheKeyboard().Clear();
   Hide_Mouse();
 
-  TheScreen().hidden_view().Blit(TheScreen().visible_view());
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   // WindowList[static_cast<int>(WINDOW_MAIN)][2] =
   // visible_view.width();//BG
   Change_Window(static_cast<int>(WINDOW_MAIN));
@@ -721,7 +721,7 @@ int Main_Menu(int32_t /*unused*/) {
       **	Copy the menu to the visible page.
       */
       Hide_Mouse();
-      hidden.Blit(view);
+      hidden.BlitTo(view);
       Show_Mouse();
 
       display = false;

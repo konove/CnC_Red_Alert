@@ -126,7 +126,7 @@ void Debug_Key(unsigned input) {
                   TheScreen().visible_view().height());
           char filename[30];
 
-          TheScreen().visible_view().Blit(temp_page.view());
+          TheScreen().visible_view().BlitTo(temp_page.view());
           for (int lp = 0; lp < 99; lp++) {
             if (lp < 10) {
               absl::SNPrintF(filename, sizeof(filename), "scrsht0%d.pcx", lp);

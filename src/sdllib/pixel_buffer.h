@@ -85,7 +85,7 @@ class PixelView;
 // Example:
 //   PixelView view(&page, 0, 0, 320, 200);
 //   view.Clear();
-//   view.Blit(TheScreen().visible_view());
+//   view.BlitTo(TheScreen().visible_view());
 class PixelView {
  public:
   // Attaches the view to `buffer` at x,y with the given size; see
@@ -179,19 +179,15 @@ class PixelView {
   // Copies width x height pixels from src_x,src_y in this view to
   // dst_x,dst_y in `dest`, clipping to both. With `transparent`,
   // pixel 0 is left alone in the destination instead of being copied.
-  // Returns false if either view could not be locked.
-  bool Blit(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
-            int width, int height, bool transparent = false);
-  bool Blit(PixelView& dest, int dst_x, int dst_y, bool transparent = false) {
-    return Blit(dest, 0, 0, dst_x, dst_y, width_, height_, transparent);
-  }
-  bool Blit(PixelView& dest, bool transparent = false) {
-    return Blit(dest, 0, 0, transparent);
-  }
+  // Copies nothing if either view cannot be locked.
+  void BlitTo(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
+              int width, int height, bool transparent = false);
+  // Copies the whole view to the top left corner of `dest`.
+  void BlitTo(PixelView& dest) { BlitTo(dest, 0, 0, 0, 0, width_, height_); }
   // Both views must be locked. Overlapping source and destination are
   // handled, so this also serves as a scroll within one view.
-  bool BlitLocked(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
-                  int width, int height, bool transparent);
+  void BlitToLocked(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
+                    int width, int height, bool transparent);
 
   bool Scale(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
              int src_width, int src_height, int dst_width, int dst_height,
@@ -517,19 +513,17 @@ inline void PixelView::CopyFromBuffer(int dst_x, int dst_y, int width,
   }
 }
 
-inline bool PixelView::Blit(PixelView& dest, int src_x, int src_y, int dst_x,
-                            int dst_y, int width, int height,
-                            bool transparent) {
-  bool return_code = false;
+inline void PixelView::BlitTo(PixelView& dest, int src_x, int src_y, int dst_x,
+                              int dst_y, int width, int height,
+                              bool transparent) {
   if (Lock()) {
     if (dest.Lock()) {
-      return_code = BlitLocked(dest, src_x, src_y, dst_x, dst_y, width, height,
-                               transparent);
+      BlitToLocked(dest, src_x, src_y, dst_x, dst_y, width, height,
+                   transparent);
       dest.Unlock();
     }
     Unlock();
   }
-  return return_code;
 }
 
 inline bool PixelView::Scale(PixelView& dest, int src_x, int src_y, int dst_x,

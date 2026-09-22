@@ -1449,7 +1449,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     filename = "ALIPAPER.PCX";
   }
   Load_Title_Screen(filename, &TheScreen().hidden_view(), temp);
-  TheScreen().hidden_view().Blit(TheScreen().visible_view());
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
 
   static const unsigned char _scorepal[] = {0, 1, 12, 13,  4,   5,   6,  7,
                                             8, 9, 10, 255, 252, 253, 14, 248};

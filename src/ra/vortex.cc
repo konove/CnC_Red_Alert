@@ -953,10 +953,10 @@ void ChronalVortexClass::Render(PixelView& view) {
       // Blit the freshly drawn cells and vortex into place on the hid page.
       // The whole of RenderBuffer goes across; Blit clips it to the tactical
       // view and advances the source by whatever came off the top and left.
-      RenderBuffer.view().Blit(
-          target, 0, 0, Lepton_To_Pixel(static_cast<LEPTON>(xoff)),
-          Lepton_To_Pixel(static_cast<LEPTON>(yoff)), RenderBuffer.width(),
-          RenderBuffer.height(), false);
+      RenderBuffer.view().BlitTo(target, 0, 0,
+                                 Lepton_To_Pixel(static_cast<LEPTON>(xoff)),
+                                 Lepton_To_Pixel(static_cast<LEPTON>(yoff)),
+                                 RenderBuffer.width(), RenderBuffer.height());
     }
   }
 }

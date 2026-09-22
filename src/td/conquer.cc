@@ -510,7 +510,7 @@ void Main_Game() {
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, NULL);
   Load_Title_Screen("DEMOPIC.PCX", &TheScreen().hidden_view(),
                     ThePalettes().title_palette());
-  TheScreen().hidden_view().Blit(TheScreen().visible_view());
+  TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, NULL);
   Clear_KeyBuffer();
   Get_Key();
