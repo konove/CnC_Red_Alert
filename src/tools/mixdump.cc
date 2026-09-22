@@ -10,6 +10,10 @@
 //   mixdump <game-dir> --list <name> ...     say which archive holds each name
 //   mixdump <game-dir> <name>                write the file to stdout
 //   mixdump <game-dir> <name> <out-file>     write the file to out-file
+//
+// docs/GAME_DATA.md covers what a stock installation holds and how to identify
+// an entry, given that the index stores a CRC of each name rather than the
+// name.
 
 #include <array>
 #include <cstddef>
