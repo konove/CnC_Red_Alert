@@ -441,8 +441,8 @@ int main(int argc, char* argv[])
       CCDebugString("C&C95 - Entering main game.\n");
       Main_Game();
 
-      TheScreen().visible_page().Clear();
-      TheScreen().hidden_page().Clear();
+      TheScreen().visible_page().view().Clear();
+      TheScreen().hidden_page().view().Clear();
 
       CCDebugString("C&C95 - About to exit.\n");
       ShutDown();

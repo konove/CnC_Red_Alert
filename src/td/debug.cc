@@ -126,7 +126,7 @@ void Debug_Key(unsigned input) {
                   TheScreen().visible_view().height());
           char filename[30];
 
-          TheScreen().visible_view().Blit(temp_page);
+          TheScreen().visible_view().Blit(temp_page.view());
           for (int lp = 0; lp < 99; lp++) {
             if (lp < 10) {
               absl::SNPrintF(filename, sizeof(filename), "scrsht0%d.pcx", lp);
@@ -138,7 +138,7 @@ void Debug_Key(unsigned input) {
             }
           }
 
-          Write_PCX_File(filename, temp_page, CurrentPalette);
+          Write_PCX_File(filename, temp_page.view(), CurrentPalette);
           // Map.Place_Random_Crate();
         }
         break;

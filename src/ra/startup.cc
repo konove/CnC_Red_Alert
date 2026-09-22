@@ -413,8 +413,8 @@ int main(const int argc, char* argv[])
 
   RunGame();
 
-  TheScreen().visible_page().Clear();
-  TheScreen().hidden_page().Clear();
+  TheScreen().visible_page().view().Clear();
+  TheScreen().hidden_page().view().Clear();
   ShutDown();
   return EXIT_SUCCESS;
 }
@@ -435,8 +435,8 @@ void CleanUpAndExitWithError(char* message) {
 [[noreturn]] void EmergencyExit(const int exit_code) {
   // Blank the screen first, so nothing glitches while the window loses focus
   // on the way out.
-  TheScreen().visible_page().Clear();
-  TheScreen().hidden_page().Clear();
+  TheScreen().visible_page().view().Clear();
+  TheScreen().hidden_page().view().Clear();
   ThePalettes().black_palette().Set();
   ShutDown();
   exit(exit_code);

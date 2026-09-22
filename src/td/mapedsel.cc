@@ -158,7 +158,7 @@ int MapEditClass::Select_Object() {
   /*
   -------------------------- Force map to redraw ---------------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
 
   return rc;
@@ -257,7 +257,7 @@ void MapEditClass::Select_Next() {
   /*
   -------------------------- Force map to redraw ---------------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
 }
 

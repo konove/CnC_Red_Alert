@@ -3825,7 +3825,7 @@ void HouseClass::MPlayer_Defeated() {
   if (ThePlayer() == this) {
     TheSession().obi_wan() = true;
     TheDebugState().set_unshroud(true);
-    TheScreen().hidden_page().Clear();
+    TheScreen().hidden_page().view().Clear();
     TheMap().Flag_To_Redraw(true);
 
     /*.....................................................................

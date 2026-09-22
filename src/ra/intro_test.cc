@@ -82,7 +82,7 @@ class IntroTest : public testing::Test {
 TEST_F(IntroTest, CdInstallPlaysTheIntroWithoutAsking) {
   using_dvd = false;
 
-  PlayFirstLaunchIntro(hidden_, seen_);
+  PlayFirstLaunchIntro(hidden_.view(), seen_.view());
 
   EXPECT_EQ(dialogs_shown, 0);
   EXPECT_EQ(movies_played, 1);
@@ -94,7 +94,7 @@ TEST_F(IntroTest, DvdAsksForTheSideBeforeTheIntro) {
   using_dvd = true;
   dialog_answer = 1;
 
-  PlayFirstLaunchIntro(hidden_, seen_);
+  PlayFirstLaunchIntro(hidden_.view(), seen_.view());
 
   EXPECT_EQ(dialogs_shown, 1);
   EXPECT_EQ(movies_played, 1);
@@ -104,7 +104,7 @@ TEST_F(IntroTest, DvdAsksForTheSideBeforeTheIntro) {
 TEST_F(IntroTest, DvdLeavesTheMouseAsItFoundIt) {
   using_dvd = true;
 
-  PlayFirstLaunchIntro(hidden_, seen_);
+  PlayFirstLaunchIntro(hidden_.view(), seen_.view());
 
   EXPECT_EQ(mouse_hides, 0);
 }

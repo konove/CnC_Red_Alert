@@ -86,9 +86,9 @@ TEST(CopyFromBufferTest, ClipsRowsAndColumnsOffTheTopLeft) {
   // 5 6
   const std::vector<uint8_t> image = NumberedPixels(2 * 3);
   std::vector<uint8_t> page(size_t{4} * 4, 0);
-  PixelBuffer view(4, 4, page);
+  PixelBuffer dest(4, 4, page);
 
-  view.CopyFromBuffer(-1, -1, 2, 3, image);
+  dest.view().CopyFromBuffer(-1, -1, 2, 3, image);
 
   EXPECT_EQ(page, (std::vector<uint8_t>{4, 0, 0, 0,  //
                                         6, 0, 0, 0,  //
@@ -101,12 +101,12 @@ TEST(CopyToBufferTest, ClipsRowsAndColumnsOffTheTopLeft) {
   //  5  6  7  8
   //  ...
   std::vector<uint8_t> page = NumberedPixels(4 * 4);
-  PixelBuffer view(4, 4, page);
+  PixelBuffer dest(4, 4, page);
   std::array<uint8_t, 9> out{};
   out.fill(0xff);
 
   // The part of the 3x3 rectangle that lies off the view is left alone.
-  view.CopyToBuffer(-1, -1, 3, 3, out, int32_t{out.size()});
+  dest.view().CopyToBuffer(-1, -1, 3, 3, out, int32_t{out.size()});
 
   EXPECT_EQ(out, (std::array<uint8_t, 9>{0xff, 0xff, 0xff,  //
                                          0xff, 1, 2,        //
@@ -120,9 +120,9 @@ TEST(BlitTest, ClipsRowsAndColumnsOffTheTopLeft) {
   std::vector<uint8_t> image = NumberedPixels(3 * 3);
   PixelBuffer source(3, 3, image);
   std::vector<uint8_t> page(size_t{4} * 4, 0);
-  PixelBuffer view(4, 4, page);
+  PixelBuffer dest(4, 4, page);
 
-  source.Blit(view, 0, 0, -1, -1, 3, 3);
+  source.view().Blit(dest.view(), 0, 0, -1, -1, 3, 3);
 
   EXPECT_EQ(page, (std::vector<uint8_t>{5, 6, 0, 0,  //
                                         8, 9, 0, 0,  //
@@ -134,11 +134,11 @@ TEST(BlitTest, SourceClippedAtTopLeftKeepsItsPlaceInTheDestination) {
   std::vector<uint8_t> image = NumberedPixels(3 * 3);
   PixelBuffer source(3, 3, image);
   std::vector<uint8_t> page(size_t{4} * 4, 0);
-  PixelBuffer view(4, 4, page);
+  PixelBuffer dest(4, 4, page);
 
   // The rectangle's first row and column lie off the source, so the pixels
   // that do exist belong one row down and one column right of (1, 1).
-  source.Blit(view, -1, -1, 1, 1, 3, 3);
+  source.view().Blit(dest.view(), -1, -1, 1, 1, 3, 3);
 
   EXPECT_EQ(page, (std::vector<uint8_t>{0, 0, 0, 0,  //
                                         0, 0, 0, 0,  //
@@ -150,9 +150,9 @@ TEST(BlitTest, ClipsRowsAndColumnsOffTheBottomRight) {
   std::vector<uint8_t> image = NumberedPixels(3 * 3);
   PixelBuffer source(3, 3, image);
   std::vector<uint8_t> page(size_t{4} * 4, 0);
-  PixelBuffer view(4, 4, page);
+  PixelBuffer dest(4, 4, page);
 
-  source.Blit(view, 0, 0, 2, 2, 3, 3);
+  source.view().Blit(dest.view(), 0, 0, 2, 2, 3, 3);
 
   EXPECT_EQ(page, (std::vector<uint8_t>{0, 0, 0, 0,  //
                                         0, 0, 0, 0,  //
@@ -165,15 +165,15 @@ TEST(BlitTest, RectangleWhollyOffTheDestinationDrawsNothing) {
   PixelBuffer source(3, 3, image);
   const std::vector<uint8_t> blank(size_t{4} * 4, 0);
   std::vector<uint8_t> page = blank;
-  PixelBuffer view(4, 4, page);
+  PixelBuffer dest(4, 4, page);
 
-  source.Blit(view, 0, 0, -3, 0, 3, 3);
+  source.view().Blit(dest.view(), 0, 0, -3, 0, 3, 3);
   EXPECT_EQ(page, blank);
-  source.Blit(view, 0, 0, 4, 0, 3, 3);
+  source.view().Blit(dest.view(), 0, 0, 4, 0, 3, 3);
   EXPECT_EQ(page, blank);
-  source.Blit(view, 0, 0, 0, -3, 3, 3);
+  source.view().Blit(dest.view(), 0, 0, 0, -3, 3, 3);
   EXPECT_EQ(page, blank);
-  source.Blit(view, 0, 0, 0, 4, 3, 3);
+  source.view().Blit(dest.view(), 0, 0, 0, 4, 3, 3);
   EXPECT_EQ(page, blank);
 }
 
@@ -183,10 +183,10 @@ TEST(BlitTest, FullSourceOverhangingTwoEdgesCarriesTheSourceAlong) {
   std::vector<uint8_t> image = NumberedPixels(3 * 3);
   PixelBuffer source(3, 3, image);
   std::vector<uint8_t> page(size_t{4} * 4, 0);
-  PixelBuffer view(4, 4, page);
+  PixelBuffer dest(4, 4, page);
 
   // Off the left by one and off the bottom by one.
-  source.Blit(view, 0, 0, -1, 2, 3, 3);
+  source.view().Blit(dest.view(), 0, 0, -1, 2, 3, 3);
 
   EXPECT_EQ(page, (std::vector<uint8_t>{0, 0, 0, 0,  //
                                         0, 0, 0, 0,  //

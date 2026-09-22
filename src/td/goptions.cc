@@ -274,7 +274,7 @@ void GameOptionsClass::Process() {
       /*
       **	Redraw the map.
       */
-      TheScreen().hidden_page().Clear();
+      TheScreen().hidden_page().view().Clear();
       TheMap().Flag_To_Redraw(true);
       TheMap().Render();
 
@@ -560,7 +560,7 @@ void GameOptionsClass::Process() {
   */
   Keyboard::Clear();
   Call_Back();
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Call_Back();
   TheMap().Flag_To_Redraw(true);
   TheMap().Render();

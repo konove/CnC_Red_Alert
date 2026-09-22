@@ -132,8 +132,8 @@ void GScreenClass::One_Time() {
   Buttons = nullptr;
   ShadowPage = new PixelBuffer(320, 200);
   if (ShadowPage) {
-    ShadowPage->Clear();
-    TheScreen().hidden_page().Clear();
+    ShadowPage->view().Clear();
+    TheScreen().hidden_page().view().Clear();
   }
 }
 
@@ -181,8 +181,8 @@ void GScreenClass::Init_Clear() {
   ** Clear the ShadowPage & HidPage to force a complete shadow blit.
   */
   if (ShadowPage) {
-    ShadowPage->Clear();
-    TheScreen().hidden_page().Clear();
+    ShadowPage->view().Clear();
+    TheScreen().hidden_page().view().Clear();
   }
 
   IsScreenToRedraw = true;
@@ -434,7 +434,8 @@ static void Add_Current_Screen() {
         ->Init(TheScreen().visible_view().width(),
                TheScreen().visible_view().height(), {}, 0,
                static_cast<PixelBufferFlags>(0));
-    TheScreen().visible_view().Blit(*base::At(ScreenList, CurrentScreen));
+    TheScreen().visible_view().Blit(
+        base::At(ScreenList, CurrentScreen)->view());
 
     CurrentScreen++;
 
@@ -442,7 +443,8 @@ static void Add_Current_Screen() {
       char filename[20];
       for (int i = 0; i < MAX_SCREENS_SAVED; i++) {
         absl::SNPrintF(filename, sizeof(filename), "SCRN%04d.PCX", i);
-        Write_PCX_File(filename, *base::At(ScreenList, i), CurrentPalette);
+        Write_PCX_File(filename, base::At(ScreenList, i)->view(),
+                       CurrentPalette);
         delete base::At(ScreenList, i);
       }
 

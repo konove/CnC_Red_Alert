@@ -588,9 +588,9 @@ void RadarClass::Render_Terrain(PixelView& view, CELL cell, int x, int y,
       continue;
     }
 
-    IconStage.CopyFromBuffer(0, 0, 3, 3, icon);
-    IconStage.Scale(view, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
-                    FadingBrighten);
+    IconStage.view().CopyFromBuffer(0, 0, 3, 3, icon);
+    IconStage.view().Scale(view, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
+                           FadingBrighten);
   }
 }
 
@@ -702,12 +702,13 @@ void RadarClass::Render_Overlay(PixelView& view, CELL cell, int x, int y,
       if (icon.empty()) {
         return;
       }
-      IconStage.CopyFromBuffer(0, 0, 3, 3, icon);
+      IconStage.view().CopyFromBuffer(0, 0, 3, 3, icon);
       if (otype->IsTiberium) {
-        IconStage.Scale(view, 0, 0, x, y, 3, 3, size, size, true, FadingGreen);
+        IconStage.view().Scale(view, 0, 0, x, y, 3, 3, size, size, true,
+                               FadingGreen);
       } else {
-        IconStage.Scale(view, 0, 0, x, y, 3, 3, size, size, true,
-                        FadingBrighten);
+        IconStage.view().Scale(view, 0, 0, x, y, 3, 3, size, size, true,
+                               FadingBrighten);
       }
     }
   }
@@ -889,11 +890,12 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, CELL cell) {
                                (icon * std::size_t{24} * 24);
             if (start <= data.size() &&
                 data.size() - start >= std::size_t{24} * 24) {
-              TileStage.CopyFromBuffer(0, 0, 24, 24,
-                                       base::UnsignedBytes(data.subspan(
-                                           start, std::size_t{24} * 24)));
-              TileStage.Scale(view, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
-                              true);
+              TileStage.view().CopyFromBuffer(
+                  0, 0, 24, 24,
+                  base::UnsignedBytes(
+                      data.subspan(start, std::size_t{24} * 24)));
+              TileStage.view().Scale(view, 0, 0, x, y, 24, 24, ZoomFactor,
+                                     ZoomFactor, true);
             }
           }
         }
@@ -1688,12 +1690,12 @@ void RadarClass::Set_Radar_Position(CELL cell) {
                             ((RadarHeight + 16) / 16) * 16, {}, 0, BUFFER_NONE);
 
           TheScreen().hidden_view().Blit(
-              temp_surface,
+              temp_surface.view(),
               ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
               ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY, 0,
               0, RadarWidth, RadarHeight);
 
-          temp_surface.Blit(
+          temp_surface.view().Blit(
               TheScreen().hidden_view(), 0, 0,
               ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
               ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,

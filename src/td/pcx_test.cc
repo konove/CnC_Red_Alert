@@ -113,7 +113,7 @@ TEST(PcxTest, WrittenFileReadsBack) {
   std::array<uint8_t, 768> palette{};
   palette.at(3) = 63;
 
-  Write_PCX_File(path.string().c_str(), picture, palette);
+  Write_PCX_File(path.string().c_str(), picture.view(), palette);
 
   std::array<uint8_t, 768> loaded_palette{};
   const std::unique_ptr<PixelBuffer> loaded(

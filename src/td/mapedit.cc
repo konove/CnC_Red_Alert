@@ -560,7 +560,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     */
     if (TheDebugState().map_editor_active() && Changed) {
       rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-      TheScreen().hidden_page().Clear();
+      TheScreen().hidden_page().view().Clear();
       Flag_To_Redraw(true);
       Render();
       /*
@@ -712,7 +712,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
     ---------------------------------------------------------------------*/
     case KN_F6:
       TheDebugState().set_show_passability(!TheDebugState().show_passability());
-      TheScreen().hidden_page().Clear();
+      TheScreen().hidden_page().view().Clear();
       Flag_To_Redraw(true);
       input = KN_NONE;
       break;
@@ -763,7 +763,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         break;
       }
       rc = CCMessageBox().Process("Exit Scenario Editor?", TXT_YES, TXT_NO);
-      TheScreen().hidden_page().Clear();
+      TheScreen().hidden_page().view().Clear();
       Flag_To_Redraw(true);
       Render();
 
@@ -780,7 +780,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       */
       if (Changed) {
         rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-        TheScreen().hidden_page().Clear();
+        TheScreen().hidden_page().view().Clear();
         Flag_To_Redraw(true);
         Render();
 
@@ -859,7 +859,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         ...................... Force map to redraw ......................
         */
-        TheScreen().hidden_page().Clear();
+        TheScreen().hidden_page().view().Clear();
         Flag_To_Redraw(true);
         Render();
       }
@@ -1137,7 +1137,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
                 */
                 TheWorld().current_cell() = Click_Cell_Calc(
                     ActiveKeyboard->MouseQX, ActiveKeyboard->MouseQY);
-                TheScreen().hidden_page().Clear();
+                TheScreen().hidden_page().view().Clear();
                 Flag_To_Redraw(true);
                 Render();
               }
@@ -1212,7 +1212,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         /*
         ........................ Force a redraw .........................
         */
-        TheScreen().hidden_page().Clear();
+        TheScreen().hidden_page().view().Clear();
         Flag_To_Redraw(true);
         Changed = true;
       } else {
@@ -1226,7 +1226,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
           /*
           ...................... Force a redraw ........................
           */
-          TheScreen().hidden_page().Clear();
+          TheScreen().hidden_page().view().Clear();
           Flag_To_Redraw(true);
           Changed = true;
         }
@@ -1267,7 +1267,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
 
       Set_House_Buttons(TheWorld().current_object().at(0)->Owner(), Buttons,
                         kPopupGdi);
-      TheScreen().hidden_page().Clear();
+      TheScreen().hidden_page().view().Clear();
       Flag_To_Redraw(true);
       input = KN_NONE;
       break;
@@ -1317,7 +1317,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
         if (strength != TheWorld().current_object().at(0)->Strength) {
           TheWorld().current_object().at(0)->Strength =
               static_cast<int16_t>(strength);
-          TheScreen().hidden_page().Clear();
+          TheScreen().hidden_page().view().Clear();
           Flag_To_Redraw(true);
           Changed = true;
         }
@@ -1352,7 +1352,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
                 FacingDial->Get_Direction());
           }
 
-          TheScreen().hidden_page().Clear();
+          TheScreen().hidden_page().view().Clear();
           Flag_To_Redraw(true);
           Changed = true;
         }
@@ -1368,7 +1368,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
       if (BaseGauge->Get_Value() != BasePercent) {
         BasePercent = BaseGauge->Get_Value();
         Build_Base_To(BasePercent);
-        TheScreen().hidden_page().Clear();
+        TheScreen().hidden_page().view().Clear();
         Flag_To_Redraw(true);
       }
       input = KN_NONE;
@@ -1593,7 +1593,7 @@ void MapEditClass::Main_Menu() {
       case 0:
         if (Changed) {
           rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-          TheScreen().hidden_page().Clear();
+          TheScreen().hidden_page().view().Clear();
           Flag_To_Redraw(true);
           Render();
           if (rc == 0) {
@@ -1616,7 +1616,7 @@ void MapEditClass::Main_Menu() {
       case 1:
         if (Changed) {
           rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-          TheScreen().hidden_page().Clear();
+          TheScreen().hidden_page().view().Clear();
           Flag_To_Redraw(true);
           Render();
           if (rc == 0) {
@@ -1687,7 +1687,7 @@ void MapEditClass::Main_Menu() {
       case 7:
         if (Changed) {
           rc = CCMessageBox().Process("Save Changes?", TXT_YES, TXT_NO);
-          TheScreen().hidden_page().Clear();
+          TheScreen().hidden_page().view().Clear();
           Flag_To_Redraw(true);
           Render();
           if (rc == 0) {
@@ -1712,7 +1712,7 @@ void MapEditClass::Main_Menu() {
   - Invoke Flag_To_Redraw to tell DisplayClass to re-render the whole screen
   - Invoke Redraw() to update the display
   ------------------------------------------------------------------------*/
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 }

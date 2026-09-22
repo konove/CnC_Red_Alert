@@ -89,7 +89,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     TheTheme().Queue_Song(theme);
     if (!clear_screen) {
       ThePalettes().black_palette().Set(kFadePaletteMedium);
-      TheScreen().visible_page().Clear();
+      TheScreen().visible_page().view().Clear();
       ThePalettes().black_palette().Adjust(0x08, ThePalettes().white_palette());
       ThePalettes().black_palette().Set();
       ThePalettes().black_palette().Adjust(0xFF);
@@ -120,7 +120,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
 
     if (player.Open(fullname.c_str(), &TheGameState().anim_control()) == 0) {
       movie_broken_out = false;
-      TheScreen().sys_mem_page().Clear();
+      TheScreen().sys_mem_page().view().Clear();
       TheGameState().in_movie() = true;
       player.Play(VQAMODE_RUN);
       player.Close();
@@ -130,7 +130,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
       // Early exit leaves the palette in an inconsistent state.
       if (movie_broken_out) {
         clear_screen = true;
-        TheScreen().visible_page().Clear();
+        TheScreen().visible_page().view().Clear();
         movie_broken_out = false;
       }
     } else {
@@ -139,7 +139,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
 
     // The VQA player may leave the framebuffer and palette dirty.
     if (clear_screen) {
-      TheScreen().visible_page().Clear();
+      TheScreen().visible_page().view().Clear();
       ThePalettes().black_palette().Adjust(0x08, ThePalettes().white_palette());
       ThePalettes().black_palette().Set();
       ThePalettes().black_palette().Adjust(0xFF);
@@ -168,7 +168,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   }
   Check_VQ_Palette_Set();
   if (TheScreen().is_vq640()) {
-    TheScreen().vq640().Blit(TheScreen().visible_view());
+    TheScreen().vq640().view().Blit(TheScreen().visible_view());
   } else {
     Interpolate_2X_Scale(&TheScreen().sys_mem_page(),
                          &TheScreen().visible_view(), nullptr);

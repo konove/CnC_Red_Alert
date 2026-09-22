@@ -343,7 +343,7 @@ bool Init_Game() {
   **	Play the startup animation.
   */
   if (!TheSpecial().IsFromInstall) {
-    TheScreen().visible_page().Clear();
+    TheScreen().visible_page().view().Clear();
     if (!LogoAlreadyPlayed()) {
       Play_Intro();
       MarkLogoPlayed();
@@ -1003,7 +1003,7 @@ bool Select_Game(bool /*fade*/) {
             Play_Intro(TheDebugState().developer_mode());
           } else {
             Hide_Mouse();
-            TheScreen().visible_page().Clear();
+            TheScreen().visible_page().view().Clear();
             Show_Mouse();
             Play_Movie(VQ_INTRO_MOVIE, THEME_NONE,
                        true);  // no transition picture to briefing
@@ -1141,8 +1141,8 @@ bool Select_Game(bool /*fade*/) {
 
     if (selection != kSelStartNewGame) {
       ThePalettes().black_palette().Set(kFadePaletteMedium, ServiceRealTime);
-      TheScreen().hidden_page().Clear();
-      TheScreen().visible_page().Clear();
+      TheScreen().hidden_page().view().Clear();
+      TheScreen().visible_page().view().Clear();
     }
     Show_Mouse();
     if (!Start_Scenario(TheScenario().ScenarioName)) {
@@ -1194,8 +1194,8 @@ bool Select_Game(bool /*fade*/) {
   ServiceRealTime();
   Hide_Mouse();
   ThePalettes().black_palette().Set(kFadePaletteMedium, ServiceRealTime);
-  TheScreen().hidden_page().Clear();
-  TheScreen().visible_page().Clear();
+  TheScreen().hidden_page().view().Clear();
+  TheScreen().visible_page().view().Clear();
   Show_Mouse();
   /*
   ** Sidebar is always active in hi-res.
@@ -1275,14 +1275,14 @@ static void Play_Intro(bool sequenced) {
       _counter--;
     }
     Hide_Mouse();
-    TheScreen().visible_page().Clear();
+    TheScreen().visible_page().view().Clear();
     Show_Mouse();
     Play_Movie(static_cast<VQType>(_counter--), THEME_NONE);
 
     //		Show_Mouse();
   } else {
     Hide_Mouse();
-    TheScreen().visible_page().Clear();
+    TheScreen().visible_page().view().Clear();
     Show_Mouse();
     Play_Movie(VQ_REDINTRO, THEME_NONE, false);
   }
@@ -1770,10 +1770,10 @@ static void Init_Color_Remaps() {
   ** after that are the remap colors.
   */
 
-  TheScreen().sys_mem_page().Clear();
+  TheScreen().sys_mem_page().view().Clear();
   Load_Picture("PALETTE.CPS", TheScreen().sys_mem_page().bytes(),
                TheScreen().sys_mem_page().bytes(), {}, BM_DEFAULT);
-  TheScreen().sys_mem_page().Blit(TheScreen().hidden_view());
+  TheScreen().sys_mem_page().view().Blit(TheScreen().hidden_view());
   for (const PlayerColorType pcolor :
        magic_enum::enum_values<PlayerColorType>()) {
     auto& ptr = ThePalettes().color_remaps().at(pcolor).RemapTable;
@@ -2061,7 +2061,7 @@ static void Init_Fonts() { TheAssets().LoadFonts(); }
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
 static void Init_CDROM_Access() {
-  TheScreen().visible_page().Clear();
+  TheScreen().visible_page().view().Clear();
   TheScreen().hidden_view().Clear();
 
   //	Determine if we're going to be running from a DVD.
@@ -2094,7 +2094,7 @@ static void Init_CDROM_Access() {
       error = SearchPaths::Add("?:\\");
       switch (error) {
         case 1:
-          TheScreen().visible_page().Clear();
+          TheScreen().visible_page().view().Clear();
           ThePalettes().game_palette().Set();
           Show_Mouse();
           WWMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
@@ -2102,7 +2102,7 @@ static void Init_CDROM_Access() {
           EmergencyExit(EXIT_FAILURE);
 
         case 2:
-          TheScreen().visible_page().Clear();
+          TheScreen().visible_page().view().Clear();
           ThePalettes().game_palette().Set();
           Show_Mouse();
           if (WWMessageBox().Process(TXT_CD_DIALOG_1, TXT_OK, TXT_CANCEL) ==
@@ -2114,7 +2114,7 @@ static void Init_CDROM_Access() {
           break;
 
         default:
-          TheScreen().visible_page().Clear();
+          TheScreen().visible_page().view().Clear();
           Show_Mouse();
           if (!Force_CD_Available(TheGameState().required_cd())) {
             // Prog_End();
@@ -2448,7 +2448,7 @@ static void Init_Mouse() {
   } else {
     ThePalettes().game_palette().Set();
     ThePalettes().game_palette().Set();
-    TheScreen().visible_page().Clear();
+    TheScreen().visible_page().view().Clear();
     WWMessageBox().Process(kLanguageText.no_mouse, TXT_OK);
     // Prog_End();
     EmergencyExit(1);

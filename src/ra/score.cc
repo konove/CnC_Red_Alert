@@ -348,9 +348,9 @@ void ScoreClass::Presentation() {
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
   TheTheme().Queue_Song(THEME_SCORE);
 
-  TheScreen().visible_page().Clear();
+  TheScreen().visible_page().view().Clear();
   TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   ThePalettes().black_palette().Set();
 
   const auto country4 = MixArchive::RetrieveData("COUNTRY4.AUD");
@@ -667,13 +667,13 @@ void ScoreClass::Presentation() {
     }
   }
   ThePalettes().black_palette().Set(kFadePaletteFast, nullptr);
-  TheScreen().visible_page().Clear();
+  TheScreen().visible_page().view().Clear();
   Show_Mouse();
 
   TheTheme().Queue_Song(THEME_NONE);
 
   ThePalettes().black_palette().Set(kFadePaletteFast, nullptr);
-  TheScreen().visible_page().Clear();
+  TheScreen().visible_page().view().Clear();
   ThePalettes().game_palette().Set();
 
   Set_Font(oldfont);
@@ -1088,14 +1088,14 @@ void Multi_Score_Presentation() {
   WsaAnimation anim("MLTIPLYR.WSA", score_palette);
   // Display the background animation. The first frame goes up under a black
   // palette and is faded in; the remaining frames then play at two ticks each.
-  pseudoseenbuff.Clear();
-  anim.DrawFrame(pseudoseenbuff, 1);
+  pseudoseenbuff.view().Clear();
+  anim.DrawFrame(pseudoseenbuff.view(), 1);
   Interpolate_2X_Scale(&pseudoseenbuff, &TheScreen().visible_view(), {});
   score_palette.Set(kFadePaletteFast, ServiceRealTime);
 
   int frame = 1;
   while (frame < anim.frame_count()) {
-    anim.DrawFrame(pseudoseenbuff, frame++);
+    anim.DrawFrame(pseudoseenbuff.view(), frame++);
     Interpolate_2X_Scale(&pseudoseenbuff, &TheScreen().visible_view(), {});
     TickScoreScreen(2);
   }

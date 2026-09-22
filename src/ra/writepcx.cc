@@ -132,8 +132,8 @@ int Write_PCX_File(File& file, PixelBuffer& pic, const PaletteClass* palette) {
   /*
   **	Write out the picture, line by line.
   */
-  const int VP_Scan_Line = pic.width() + pic.x_add();
-  const auto pixels = pic.pixels();
+  const int VP_Scan_Line = pic.width() + pic.view().x_add();
+  const auto pixels = pic.view().pixels();
   for (int line = 0; line < header.height + 1; line++) {
     Write_Pcx_ScanLine(file, header.byte_per_line,
                        pixels.subspan(static_cast<size_t>(line) *

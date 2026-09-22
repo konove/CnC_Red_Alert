@@ -1591,7 +1591,7 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
   }
   PixelView& view = TheScreen().visible_view();
 
-  TheScreen().visible_page().Clear();
+  TheScreen().visible_page().view().Clear();
   Fancy_Text_Print(view, txt, 160, 0, kWhite, kBlack, TPF_8POINT | TPF_CENTER);
   for (int x = 0; x < 64; x++) {
     for (int y = 0; y < 64; y++) {

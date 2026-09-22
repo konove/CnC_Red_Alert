@@ -69,10 +69,6 @@ void PixelView::DrawRect(int x1, int y1, int x2, int y2, uint8_t color) {
 
 void PixelView::Attach(PixelBuffer* buffer, int x, int y, int width,
                        int height) {
-  if (this == buffer_) {
-    return;
-  }
-
   // Clamp the corner into the buffer. A buffer that Init() has not sized yet
   // has no last pixel to clamp to, so the corner stays at the origin and the
   // width and height below come out zero; Screen builds its views against
@@ -956,7 +952,12 @@ PixelBuffer::PixelBuffer(int width, int height, std::span<uint8_t> buffer,
 PixelBuffer::PixelBuffer(int width, int height, std::span<uint8_t> buffer)
     : PixelBuffer(width, height, buffer, width * height) {}
 
-PixelBuffer::PixelBuffer() { buffer_ = this; }
+PixelBuffer::PixelBuffer() {
+  // Attach the view even though there are no pixels yet, so that view() is
+  // usable before Init(); the rectangle comes out empty and Init() attaches
+  // it again for real.
+  whole_.Attach(this, 0, 0, 0, 0);
+}
 
 PixelBuffer::~PixelBuffer() {
   ReleaseSurfaces();
@@ -980,8 +981,6 @@ void PixelBuffer::Init(int width, int height, std::span<uint8_t> buffer,
   width_ = width;
   height_ = height;
   pitch_ = 0;
-  x_add_ = 0;
-  x_pos_ = y_pos_ = 0;
 
   if (base::Any(flags & BUFFER_VISIBLE)) {
     // The pixels are the SDL surface's; bytes_ points at them only between
@@ -995,12 +994,12 @@ void PixelBuffer::Init(int width, int height, std::span<uint8_t> buffer,
     // The allocation above holds exactly `size` bytes.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
     bytes_ = std::span(owned_pixels_.get(), size);
-    offset_ = bytes_.data();
   } else {
     owned_pixels_.reset();
     bytes_ = buffer;
-    offset_ = bytes_.data();
   }
+
+  whole_.Attach(this, 0, 0, width_, height_);
 }
 
 void PixelBuffer::ReleaseSurfaces() { DestroyDisplaySurface(); }
@@ -1024,12 +1023,12 @@ bool PixelBuffer::LockSurface() {
       return false;
     }
     const auto* surface = static_cast<SDL_Surface*>(palette_surface_);
-    offset_ = static_cast<uint8_t*>(surface->pixels);
     // SDL_LockSurface exposes pitch bytes for each of the surface's rows until
     // it is unlocked.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    bytes_ = std::span(offset_,
+    bytes_ = std::span(static_cast<uint8_t*>(surface->pixels),
                        base::ToSize(surface->pitch) * base::ToSize(surface->h));
+    whole_.Attach(this, 0, 0, width_, height_);
   }
 
   lock_count_++;
@@ -1045,8 +1044,9 @@ bool PixelBuffer::UnlockSurface() {
 
   if (!lock_count_) {
     SDL_UnlockSurface(static_cast<SDL_Surface*>(palette_surface_));
-    offset_ = nullptr;
     bytes_ = {};
+    // The pixels are gone until the next lock; leave no view pointing at them.
+    whole_.Attach(this, 0, 0, width_, height_);
     // Content was drawn to palette_surface_ - clear VQA texture to switch back
     // to normal rendering mode
     if (scaled_frame_texture_) {
@@ -1287,9 +1287,8 @@ void PixelBuffer::DrawScaledRotated(const BitmapClass& bitmap,
   const double cx_bmp = bitmap.Width / 2.0;
   const double cy_bmp = bitmap.Height / 2.0;
 
-  // Rows in this buffer are width_ apart: DrawScaledRotated is a member of the
-  // buffer rather than of a view, and Init() leaves x_add_ and pitch_ zero
-  // for every buffer the games allocate.
+  // Rows are width_ apart: this draws to the whole buffer rather than to a
+  // view, and Init() leaves pitch_ zero for every buffer the games allocate.
   const auto dst_buf = bytes();
 
   for (int y2 = 0; y2 < height_; y2++) {

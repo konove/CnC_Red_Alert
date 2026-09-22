@@ -155,7 +155,7 @@ void MapEditClass::Handle_Teams(const char* caption) {
           ................. Unable to create; issue warning ..................
           */
           CCMessageBox().Process("No more teams available.");
-          TheScreen().hidden_page().Clear();
+          TheScreen().hidden_page().view().Clear();
           Flag_To_Redraw(true);
           Render();
         }
@@ -496,7 +496,7 @@ int MapEditClass::Select_Team(const char* caption) {
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -1375,7 +1375,7 @@ int MapEditClass::Edit_Team() {
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -1941,7 +1941,7 @@ int MapEditClass::Team_Members(HousesType house) {
   /*
   **	Redraw the display.
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 

@@ -83,7 +83,8 @@ for every other view. `PixelView::lock_count()` forwards to `buffer_->lock_count
 buffer is passed as a `PixelView&`. The compiler enumerates every one of them once step 1 lands.
 
 **Step 5 — `Any_Locked()`.** With `lock_count()` forwarding, both games' `Any_Locked()` starts
-reporting real lock depth. Check its callers still do the right thing when it can return true.
+reporting real lock depth. Check its callers still do the right thing when it can return true. There
+are none — the function has no callers in either game, so it goes.
 
 `src/winvq/vqaview/` is not in any `CMakeLists.txt` and already calls removed APIs
 (`Get_DD_Surface`); it is left alone.
@@ -98,5 +99,12 @@ reporting real lock depth. Check its callers still do the right thing when it ca
 
 ## Progress
 
-- [ ] Steps 1-4
-- [ ] Step 5
+- [x] Step 5: `Any_Locked()` deleted from both games, having had no callers.
+- [x] Steps 1-4: `PixelBuffer` composes a `PixelView whole_`; 304 drawing calls and 84 arguments
+      grew a `.view()`; `pitch_`, `width_`, `height_` and `lock_count_` moved to the buffer and both
+      classes' members are private now. `Interpolate_2X_Scale()` says `LockSurface()` outright,
+      since it locks the pixels without using a view.
+
+Verified: both games and all 713 tests build and pass; a full strict build reports no finding the
+tree did not already have; both save/load smoke tests and the RA fixture load pass; RA and TD both
+play their intro movie and draw their menu on a real display.

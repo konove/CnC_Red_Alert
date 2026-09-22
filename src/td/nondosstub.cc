@@ -148,7 +148,7 @@ void Load_Title_Screen(const char* name, PixelView* video_page,
   PixelBuffer* load_buffer = Read_PCX_File(name, palette, {}, 0);
 
   if (load_buffer) {
-    load_buffer->Blit(*video_page);
+    load_buffer->view().Blit(*video_page);
     delete load_buffer;
   }
 }

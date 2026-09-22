@@ -301,7 +301,7 @@ void Special_Dialog() {
   }
 
   TheMap().Revert_Mouse_Shape();
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   TheMap().Flag_To_Redraw(true);
   TheMap().Render();
 }

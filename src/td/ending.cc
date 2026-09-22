@@ -112,8 +112,8 @@ void GDI_Ending() {
     Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
                     TheScreen().sys_mem_page().bytes(),
                     ThePalettes().title_palette());
-    TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0, 0, 0,
-                                     320, 199, 640, 398);
+    TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
+                                            0, 320, 199, 640, 398);
     Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                     Call_Back);
     Clear_KeyBuffer();
@@ -132,8 +132,8 @@ void GDI_Ending() {
   Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
                   TheScreen().sys_mem_page().bytes(),
                   ThePalettes().title_palette());
-  TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0, 0, 0, 320,
-                                   199, 640, 398);
+  TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
+                                          0, 320, 199, 640, 398);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
   Clear_KeyBuffer();
   //	CountDownTimerClass count;
@@ -177,11 +177,11 @@ void Nod_Ending() {
   PseudoSeenBuff = new PixelBuffer(320, 200, {});
   TextPrintBuffer = new PixelBuffer(TheScreen().visible_view().width(),
                                     TheScreen().visible_view().height(), {});
-  TextPrintBuffer->Clear();
+  TextPrintBuffer->view().Clear();
   BlitList.Clear();
   TheScreen().visible_view().Clear();
   TheScreen().hidden_view().Clear();
-  PseudoSeenBuff->Clear();
+  PseudoSeenBuff->view().Clear();
 
   GameFile f("SATSEL.PAL");
   const auto localpal = Load_Alloc_Data(f);
@@ -193,7 +193,7 @@ void Nod_Ending() {
                   std::as_bytes(TheScreen().hidden_view().bytes()),
                   satpic.size());
 #else
-  TheScreen().sys_mem_page().Blit(*PseudoSeenBuff);
+  TheScreen().sys_mem_page().view().Blit(PseudoSeenBuff->view());
 #endif  // NOT_FOR_WIN95
   // Read from the file: MixArchive::RetrieveData() only serves cached archives.
   GameFile kanefinl_file("KANEFINL.AUD");
@@ -280,7 +280,7 @@ void Nod_Ending() {
   }
   // erase the "choose a target" text
   TheScreen().visible_view().FillRect(0, 360, 638, 398, 0);
-  TextPrintBuffer->FillRect(0, 360, 638, 398, 0);
+  TextPrintBuffer->view().FillRect(0, 360, 638, 398, 0);
 
   Hide_Mouse();
   Keyboard::Clear();
@@ -302,8 +302,8 @@ void Nod_Ending() {
     Load_Uncompress(attract_file, TheScreen().sys_mem_page().bytes(),
                     TheScreen().sys_mem_page().bytes(),
                     ThePalettes().title_palette());
-    TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0, 0, 0,
-                                     320, 199, 640, 398);
+    TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
+                                            0, 320, 199, 640, 398);
     Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                     Call_Back);
     Clear_KeyBuffer();
@@ -322,8 +322,8 @@ void Nod_Ending() {
   Load_Uncompress(f2, TheScreen().sys_mem_page().bytes(),
                   TheScreen().sys_mem_page().bytes(),
                   ThePalettes().title_palette());
-  TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0, 0, 0, 320,
-                                   199, 640, 398);
+  TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
+                                          0, 320, 199, 640, 398);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
   Clear_KeyBuffer();
   //	CountDownTimerClass count;

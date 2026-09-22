@@ -388,7 +388,7 @@ bool Start_Scenario(char* name, bool briefing) {
 
   if (briefing) {
     Hide_Mouse();
-    TheScreen().visible_page().Clear();
+    TheScreen().visible_page().view().Clear();
     Show_Mouse();
     Play_Movie(TheScenario().IntroMovie);
     Play_Movie(TheScenario().BriefMovie);
@@ -416,7 +416,7 @@ bool Start_Scenario(char* name, bool briefing) {
 
   if (briefing) {
     Hide_Mouse();
-    TheScreen().visible_page().Clear();
+    TheScreen().visible_page().view().Clear();
     Show_Mouse();
     Play_Movie(TheScenario().ActionMovie, TheScenario().TransitTheme);
   }
@@ -870,7 +870,7 @@ void Do_Win() {
   }
 
   Hide_Mouse();
-  TheScreen().visible_page().Clear();
+  TheScreen().visible_page().view().Clear();
   Show_Mouse();
   Play_Movie(TheScenario().WinMovie);
 
@@ -1082,7 +1082,7 @@ void Do_Lose() {
   }
 
   Hide_Mouse();
-  TheScreen().visible_page().Clear();
+  TheScreen().visible_page().view().Clear();
   Show_Mouse();
   DLOG(INFO) << "Trying to play lose movie";
   Play_Movie(TheScenario().LoseMovie);

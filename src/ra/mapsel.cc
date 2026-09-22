@@ -164,21 +164,21 @@ static void PlayMapReveal(const std::string& animation_name,
 
   // The artwork is drawn at this size and scaled up to the screen.
   PixelBuffer page(320, 200);
-  page.Clear();
+  page.view().Clear();
   WsaAnimation animation(animation_name, palette);
 
   TheKeyboard().Clear();
   TheScreen().visible_view().Clear();
   palette.Set(kFadePaletteFast, ServiceRealTime);
 
-  animation.DrawFrame(page, 1);
+  animation.DrawFrame(page.view(), 1);
   Interpolate_2X_Scale(&page, &TheScreen().visible_view(), {});
 
   PlayMapSound("MAPWIPE2.AUD");
   // Ctrl-Q, the score screen's skip key, plays the rest without the waits.
   bool skip = false;
   for (int frame = 1; frame < animation.frame_count(); frame++) {
-    animation.DrawFrame(page, frame);
+    animation.DrawFrame(page.view(), frame);
     Interpolate_2X_Scale(&page, &TheScreen().visible_view(), {});
     skip = skip || (KeyboardClass::Down(KN_LCTRL) && KeyboardClass::Down(KN_Q));
     ServiceRealTimeFor(skip ? 0 : 2);

@@ -76,8 +76,8 @@ TEST(WsaTest, ClosedAnimationDrawsNothing) {
   EXPECT_EQ(animation.frame_count(), 0);
 
   std::vector<uint8_t> page(size_t{16} * 16, '\x5a');
-  PixelBuffer view(16, 16, page);
-  EXPECT_FALSE(animation.DrawFrame(view, 0));
+  PixelBuffer buffer(16, 16, page);
+  EXPECT_FALSE(animation.DrawFrame(buffer.view(), 0));
   EXPECT_EQ(std::count(page.begin(), page.end(), '\x5a'), std::ssize(page));
 }
 
@@ -90,8 +90,8 @@ TEST(WsaTest, CloseMakesAnimationInert) {
   EXPECT_EQ(animation.frame_count(), 0);
 
   std::vector<uint8_t> page(size_t{16} * 16, '\0');
-  PixelBuffer view(16, 16, page);
-  EXPECT_FALSE(animation.DrawFrame(view, 0));
+  PixelBuffer buffer(16, 16, page);
+  EXPECT_FALSE(animation.DrawFrame(buffer.view(), 0));
 }
 
 TEST(WsaTest, OpenRejectsFirstFrameLargerThanDeltaBuffer) {
@@ -136,8 +136,8 @@ TEST(WsaTest, AnimateRejectsOversizedFrame) {
   ASSERT_TRUE(animation.is_open());
 
   std::vector<uint8_t> page(size_t{16} * 16, '\0');
-  PixelBuffer view(16, 16, page);
-  animation.DrawFrame(view, 1);
+  PixelBuffer buffer(16, 16, page);
+  animation.DrawFrame(buffer.view(), 1);
 
   EXPECT_EQ(std::count(page.begin(), page.end(), '\xee'), 0);
 }
@@ -188,12 +188,12 @@ TEST(WsaTest, AnimationWithPaletteDoesNotWrapWithoutLoopFrame) {
   ASSERT_TRUE(animation.is_open());
 
   std::vector<uint8_t> page(4, 0);
-  PixelBuffer view(4, 1, page);
-  ASSERT_TRUE(animation.DrawFrame(view, 0));
+  PixelBuffer buffer(4, 1, page);
+  ASSERT_TRUE(animation.DrawFrame(buffer.view(), 0));
 
   // Going backwards through a loop frame would reach frame 2 in one step, but
   // there is none, so both deltas have to be applied.
-  EXPECT_TRUE(animation.DrawFrame(view, 2));
+  EXPECT_TRUE(animation.DrawFrame(buffer.view(), 2));
   EXPECT_EQ(page.front(), 0x03);
 }
 
@@ -205,12 +205,12 @@ TEST(WsaTest, AnimateStopsAtFrameItCannotLoad) {
   ASSERT_TRUE(animation.is_open());
 
   std::vector<uint8_t> page(4, 0);
-  PixelBuffer view(4, 1, page);
-  EXPECT_FALSE(animation.DrawFrame(view, 2));
+  PixelBuffer buffer(4, 1, page);
+  EXPECT_FALSE(animation.DrawFrame(buffer.view(), 2));
   EXPECT_EQ(page.front(), 0x01);
 
   // The animation knows it is showing frame 1, so asking for it is no work.
-  EXPECT_TRUE(animation.DrawFrame(view, 1));
+  EXPECT_TRUE(animation.DrawFrame(buffer.view(), 1));
   EXPECT_EQ(page.front(), 0x01);
 }
 

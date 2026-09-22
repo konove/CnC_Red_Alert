@@ -37,7 +37,7 @@ void Check_For_Focus_Loss() {
 }
 
 void Memory_Error_Handler() {
-  TheScreen().visible_page().Clear();
+  TheScreen().visible_page().view().Clear();
   Set_Palette(ThePalettes().game_palette());
   while (Get_Mouse_State()) {
     Show_Mouse();

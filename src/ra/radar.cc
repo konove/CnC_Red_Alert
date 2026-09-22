@@ -653,9 +653,9 @@ void RadarClass::Render_Terrain(PixelView& view, CELL cell, int x, int y,
     if (icon.empty()) {
       continue;
     }
-    IconStage.CopyFromBuffer(0, 0, 3, 3, icon);
-    IconStage.Scale(view, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
-                    FadingBrighten);
+    IconStage.view().CopyFromBuffer(0, 0, 3, 3, icon);
+    IconStage.view().Scale(view, 0, 0, x, y, 3, 3, ZoomFactor, ZoomFactor, true,
+                           FadingBrighten);
   }
 }
 
@@ -784,14 +784,14 @@ void RadarClass::Render_Overlay(PixelView& view, CELL cell, int x, int y,
       if (icon.empty()) {
         return;
       }
-      IconStage.CopyFromBuffer(0, 0, 3, 3, icon);
+      IconStage.view().CopyFromBuffer(0, 0, 3, 3, icon);
       if (otype->IsTiberium) {
         if (size == 1) {
           view.PutPixel(x, y, DKGREY);
 
         } else {
-          IconStage.Scale(view, 0, 0, x, y, 3, 3, size, size, true,
-                          FadingYellow);
+          IconStage.view().Scale(view, 0, 0, x, y, 3, 3, size, size, true,
+                                 FadingYellow);
         }
       }
 
@@ -1041,8 +1041,9 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, CELL cell) {
           return;
         }
         const auto data = icondata.subspan(offset, size_t{24} * 24);
-        TileStage.CopyFromBuffer(0, 0, 24, 24, data);
-        TileStage.Scale(view, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor, true);
+        TileStage.view().CopyFromBuffer(0, 0, 24, 24, data);
+        TileStage.view().Scale(view, 0, 0, x, y, 24, 24, ZoomFactor, ZoomFactor,
+                               true);
       } else {
         /*BG*/ view.PutPixel(
             x, y, static_cast<unsigned char>(cellptr->Cell_Color(false)));
@@ -1965,12 +1966,12 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           ** Do the blit in 2 stages.
           */
           TheScreen().hidden_view().Blit(
-              temp_surface,
+              temp_surface.view(),
               ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
               ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY, 0,
               0, RadarWidth, RadarHeight);
 
-          temp_surface.Blit(
+          temp_surface.view().Blit(
               TheScreen().hidden_view(), 0, 0,
               ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
               ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,

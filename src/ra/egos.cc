@@ -247,7 +247,8 @@ void EgoClass::Wipe(PixelView& view, PixelBuffer* background) const {
     }
   }
 
-  background->Blit(view, x - 1, YPos, x - 1, YPos, width + 2, 14 + 1, false);
+  background->view().Blit(view, x - 1, YPos, x - 1, YPos, width + 2, 14 + 1,
+                          false);
 }
 
 /***********************************************************************************************
@@ -291,10 +292,10 @@ static void Slide_Show(int slide, int frame) {
     /*
     ** Blit in a quarter of the new frame to the background page.
     */
-    base::At(SlideBuffers, slide)
-        ->Blit(*BackgroundPage, 0, (frame - 1) * CHUNK_HEIGHT, 0,
-               (frame - 1) * CHUNK_HEIGHT, TheScreen().visible_view().width(),
-               CHUNK_HEIGHT, false);
+    PixelView& slide_view = base::At(SlideBuffers, slide)->view();
+    slide_view.Blit(BackgroundPage->view(), 0, (frame - 1) * CHUNK_HEIGHT, 0,
+                    (frame - 1) * CHUNK_HEIGHT,
+                    TheScreen().visible_view().width(), CHUNK_HEIGHT, false);
     return;
   }
 
@@ -302,7 +303,7 @@ static void Slide_Show(int slide, int frame) {
     /*
     ** Blit in a quarter of the new frame to the hid page.
     */
-    BackgroundPage->Blit(
+    BackgroundPage->view().Blit(
         TheScreen().hidden_view(), 0, (frame - 5) * CHUNK_HEIGHT, 0,
         (frame - 5) * CHUNK_HEIGHT, TheScreen().visible_view().width(),
         CHUNK_HEIGHT, false);
@@ -686,7 +687,7 @@ void Show_Who_Was_Responsible() {
         ->Init(TheScreen().visible_view().width(),
                TheScreen().visible_view().height(), {}, 0, BUFFER_NONE);
     Load_Title_Screen(base::Suffix(base::At(SlideNames, index), 0).data(),
-                      base::At(SlideBuffers, index),
+                      &base::At(SlideBuffers, index)->view(),
                       base::At(SlidePals, index));
   }
 
@@ -697,7 +698,7 @@ void Show_Who_Was_Responsible() {
   BackgroundPage->Init(TheScreen().visible_view().width(),
                        TheScreen().visible_view().height(), {}, 0, BUFFER_NONE);
 
-  TheScreen().visible_view().Blit(*BackgroundPage);
+  TheScreen().visible_view().Blit(BackgroundPage->view());
 
   /*
   ** Go away nasty keyboard.
@@ -817,8 +818,8 @@ void Show_Who_Was_Responsible() {
     */
     if (frame) {
       for (int i = slide_number + 1; i < NUM_SLIDES; i++) {
-        if (!base::At(SlideBuffers, i)->NeedsLock()) {
-          Force_VM_Page_In(base::At(SlideBuffers, i)->offset(),
+        if (!base::At(SlideBuffers, i)->view().NeedsLock()) {
+          Force_VM_Page_In(base::At(SlideBuffers, i)->view().offset(),
                            TheScreen().visible_view().width() *
                                TheScreen().visible_view().height());
         }

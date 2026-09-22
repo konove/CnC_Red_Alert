@@ -292,7 +292,7 @@ static void EndScenario() {
   }
 
   ThePalettes().black_palette().Set(kFadePaletteSlow);
-  TheScreen().visible_page().Clear();
+  TheScreen().visible_page().view().Clear();
 
   if (TheSession().Record || TheSession().Play) {
     TheSession().RecordFile.Close();
@@ -606,7 +606,7 @@ static void CaptureMotionFrame() {
     // A no-op on a frame reused from an earlier run of the same resolution.
     frames.at(base::ToSize(captured_count)).resize(base::ToSize(frame_bytes));
 
-    TheScreen().visible_view().Blit(frame_page);
+    TheScreen().visible_view().Blit(frame_page.view());
     base::CopyBytes(std::as_writable_bytes(
                         std::span(frames.at(base::ToSize(captured_count)))),
                     std::as_bytes(frame_page.bytes()), frame_bytes);
@@ -712,7 +712,7 @@ bool RunFrame() {
   // means a message has expired & been removed, and the entire map must be
   // updated.
   if (TheSession().Messages.Manage()) {
-    TheScreen().hidden_page().Clear();
+    TheScreen().hidden_page().view().Clear();
     TheMap().Flag_To_Redraw(true);
   }
 

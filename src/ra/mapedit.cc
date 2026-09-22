@@ -2137,7 +2137,7 @@ void Go_Editor(const bool flag) {
     TheMap().Init_IO();
 
     // Force a complete redraw of the screen
-    TheScreen().hidden_page().Clear();
+    TheScreen().hidden_page().view().Clear();
     TheMap().Flag_To_Redraw(true);
     TheMap().Render();
 

@@ -172,7 +172,7 @@ void GScreenClass::Init_Clear() {
   ** Clear the ShadowPage & hidden_view to force a complete shadow blit.
   */
   if (ShadowPage) {
-    ShadowPage->Clear();
+    ShadowPage->view().Clear();
   }
 
   TheScreen().hidden_view().Clear();

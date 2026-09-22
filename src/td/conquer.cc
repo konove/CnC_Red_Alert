@@ -430,7 +430,7 @@ void Main_Game() {
     **	Scenario is done; fade palette to black
     */
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteSlow, nullptr);
-    TheScreen().visible_page().Clear();
+    TheScreen().visible_page().view().Clear();
 
 #ifndef DEMO
     /*
@@ -1739,7 +1739,7 @@ bool Main_Loop() {
   *updated.
   */
   if (TheSession().messages().Manage()) {
-    TheScreen().hidden_page().Clear();
+    TheScreen().hidden_page().view().Clear();
     TheMap().Flag_To_Redraw(true);
   }
 
@@ -2062,7 +2062,7 @@ void Go_Editor(bool flag) {
     /*
     ** Force a complete redraw of the screen
     */
-    TheScreen().hidden_page().Clear();
+    TheScreen().hidden_page().view().Clear();
     TheMap().Flag_To_Redraw(true);
     TheMap().Render();
 
@@ -2086,7 +2086,7 @@ void Go_Editor(bool flag) {
     /*
     ** Force a complete redraw of the screen
     */
-    TheScreen().hidden_page().Clear();
+    TheScreen().hidden_page().view().Clear();
     TheMap().Flag_To_Redraw(true);
     TheMap().Render();
   }
@@ -2153,7 +2153,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     if (!TheGameState().preserve_movie_screen()) {
       Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                       Call_Back);
-      TheScreen().visible_page().Clear();
+      TheScreen().visible_page().view().Clear();
       std::ranges::fill(ThePalettes().black_palette(), 0x01);
       Set_Palette(ThePalettes().black_palette());
       std::ranges::fill(ThePalettes().black_palette(), 0x00);
@@ -2176,7 +2176,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       // Suspend_Audio_Thread();
 
       // Set_Palette(BlackPalette);
-      TheScreen().sys_mem_page().Clear();
+      TheScreen().sys_mem_page().view().Clear();
       TheGameState().in_movie() = true;
       player.Play(VQAMODE_RUN);
       player.Close();
@@ -2188,7 +2188,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       */
       if (movie_broken_out) {
         clear_screen = true;
-        TheScreen().visible_page().Clear();
+        TheScreen().visible_page().view().Clear();
         movie_broken_out = false;
       }
     }
@@ -2199,7 +2199,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     *screen and *	forcing the palette to black.
     */
     if (clear_screen) {
-      TheScreen().visible_page().Clear();
+      TheScreen().visible_page().view().Clear();
       std::ranges::fill(ThePalettes().black_palette(), 0x01);
       Set_Palette(ThePalettes().black_palette());
       std::ranges::fill(ThePalettes().black_palette(), 0x00);

@@ -1385,7 +1385,7 @@ int Surrender_Dialog() {
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   TheMap().Flag_To_Redraw(true);
   TheMap().Render();
 

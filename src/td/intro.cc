@@ -123,7 +123,7 @@ void Choose_Side() {
 
   TextPrintBuffer = new PixelBuffer(TheScreen().visible_view().width(),
                                     TheScreen().visible_view().height(), {});
-  TextPrintBuffer->Clear();
+  TextPrintBuffer->view().Clear();
   BlitList.Clear();
   PseudoSeenBuff = new PixelBuffer(320, 200, {});
   int frame = 0;
@@ -150,7 +150,7 @@ void Choose_Side() {
 
   if (TheSpecial().IsFromInstall) {
     {
-      TheScreen().visible_page().Clear();
+      TheScreen().visible_page().view().Clear();
       TheGameState().preserve_movie_screen() = true;
       Play_Movie("INTRO2", THEME_NONE, false);
     }
@@ -166,11 +166,11 @@ void Choose_Side() {
   gdibrief = Open_Movie(gdibrief_player, gdibrief_io, "GDI1.VQA");
 
   TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
-  TheScreen().hidden_page().Clear();
-  PseudoSeenBuff->Clear();
-  TheScreen().sys_mem_page().Clear();
+  TheScreen().hidden_page().view().Clear();
+  PseudoSeenBuff->view().Clear();
+  TheScreen().sys_mem_page().view().Clear();
   // if (!Special.IsFromInstall) {
-  TheScreen().visible_page().Clear();
+  TheScreen().visible_page().view().Clear();
   Set_Palette(ThePalettes().title_palette());
   //} else {
   // setpalette = 1;
@@ -202,13 +202,14 @@ void Choose_Side() {
 
   while (endframe != frame ||
          (speechplaying && TheAudio().IsPlaying(speech.data()))) {
-    anim.DrawFrame(TheScreen().sys_mem_page(), frame++);
+    anim.DrawFrame(TheScreen().sys_mem_page().view(), frame++);
     if (setpalette) {
       Wait_Vert_Blank();
       Set_Palette(ThePalettes().title_palette());
       setpalette = 0;
     }
-    TheScreen().sys_mem_page().Blit(*PseudoSeenBuff, 0, 22, 0, 22, 320, 156);
+    TheScreen().sys_mem_page().view().Blit(PseudoSeenBuff->view(), 0, 22, 0, 22,
+                                           320, 156);
 
     /*
     ** If the sample has stopped or is about to then restart it
@@ -264,11 +265,11 @@ void Choose_Side() {
   anim.Close();
 
   // erase the "choose side" text
-  PseudoSeenBuff->FillRect(0, 180, 319, 199, 0);
+  PseudoSeenBuff->view().FillRect(0, 180, 319, 199, 0);
   TheScreen().visible_view().FillRect(0, 180 * 2, 319 * 2, 199 * 2, 0);
   Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),
                        "SIDES.PAL");
-  TheScreen().sys_mem_page().Clear();
+  TheScreen().sys_mem_page().view().Clear();
 
   Keyboard::Clear();
 
@@ -317,7 +318,7 @@ void Choose_Side() {
     /*
     ** Make sure the screen's fully clear after the movie plays
     */
-    TheScreen().visible_page().Clear();
+    TheScreen().visible_page().view().Clear();
     std::ranges::fill(ThePalettes().black_palette(), 0x01);
     Set_Palette(ThePalettes().black_palette());
     std::ranges::fill(ThePalettes().black_palette(), 0x00);

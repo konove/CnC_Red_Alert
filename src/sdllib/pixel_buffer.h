@@ -24,8 +24,8 @@
 // exist only while it is locked. A PixelView is a rectangular window onto such
 // a buffer. Coordinates passed to a view are relative to its corner and are
 // clipped to it, so the drawing primitives need to know nothing about the page
-// behind it. A PixelBuffer is also the view covering the whole of itself,
-// which is why it derives from PixelView.
+// behind it. Drawing is a view's job alone: a buffer owns pixels and hands out
+// the view covering the whole of itself through view().
 //
 // Every drawing primitive comes in two forms: a public one that locks the
 // buffer around the work, and a `…Locked` one that does the work and expects
@@ -223,14 +223,14 @@ class PixelView {
   // not be called.
   inline bool Lock();
   inline bool Unlock();
+  // How deep the buffer's nested locks are; 0 when the view has no buffer.
   [[nodiscard]] inline int lock_count() const;
 
   // Binds the view to the given rectangle of `buffer`, clamping it
-  // to the buffer's bounds. Has no effect on a PixelBuffer, which is
-  // permanently the view covering itself.
+  // to the buffer's bounds.
   void Attach(PixelBuffer* buffer, int x, int y, int width, int height);
 
- protected:
+ private:
   // The view's top left pixel within the buffer. Null while the buffer
   // is a surface that is not currently locked.
   uint8_t* offset_ = nullptr;
@@ -246,28 +246,26 @@ class PixelView {
   // Padding the buffer keeps past the end of every row, beyond x_add_. Copied
   // from the buffer, and zero for every buffer the games create.
   int pitch_ = 0;
-  // The buffer this view draws into; null until Attach(). A
-  // PixelBuffer points at itself.
+  // The buffer this view draws into; null until Attach().
   PixelBuffer* buffer_ = nullptr;
-  // How deep the nested Lock() calls are; the surface is locked while this
-  // is non-zero. Only the buffer's own count is used, so a view carries
-  // this member without ever changing it.
-  int lock_count_ = 0;
 };
 
-// An allocated page of 8-bit paletted pixels, and the view covering the
-// whole of it. Both games keep a handful: the visible page, the hidden page
-// the frame is composed on, and the staging pages movies decode into.
+// An allocated page of 8-bit paletted pixels. Both games keep a handful: the
+// visible page, the hidden page the frame is composed on, and the staging
+// pages movies decode into.
 //
 // The pixels come from one of three places, chosen by Init(): a span the
 // caller owns, a block the buffer allocates and owns, or - with
 // BUFFER_VISIBLE - an SDL surface, whose pixels only exist between
 // LockSurface() and UnlockSurface().
 //
+// A buffer draws nothing itself; view() hands out the view covering all of
+// it, and every drawing primitive lives there.
+//
 // Example:
 //   PixelBuffer page(320, 200);
-//   page.Clear();
-class PixelBuffer : public PixelView {
+//   page.view().Clear();
+class PixelBuffer {
  public:
   // Sizes the buffer and gives it `buffer`'s pixels, or allocates `size`
   // bytes (width * height when `byte_count` is zero) if `buffer` is empty.
@@ -293,14 +291,28 @@ class PixelBuffer : public PixelView {
   // buffer is too small for width * height.
   void Init(int width, int height, std::span<uint8_t> buffer,
             int32_t byte_count, PixelBufferFlags flags);
+
+  // The view covering the whole buffer. Everything that draws goes through a
+  // view; this is the one for callers that want the entire page.
+  PixelView& view() ABSL_ATTRIBUTE_LIFETIME_BOUND { return whole_; }
+
+  [[nodiscard]] int width() const { return width_; }
+  [[nodiscard]] int height() const { return height_; }
+  // Padding kept past the end of every row. Zero for every buffer the games
+  // create; a view copies it so its rows still line up.
+  [[nodiscard]] int pitch() const { return pitch_; }
+  // How deep the nested LockSurface() calls are; the surface is locked while
+  // this is non-zero.
+  [[nodiscard]] int lock_count() const { return lock_count_; }
+
   // Releases the window texture and surfaces Init() created for a visible
   // buffer, and cancels its pending redraw. The destructor calls it; calling
   // it again does nothing.
   void ReleaseSurfaces();
 
-  // Locks and unlocks the underlying SDL surface. Callers normally use the
-  // inherited PixelView::Lock/Unlock, which also reattach the
-  // view to the freshly locked pixels.
+  // Locks and unlocks the underlying SDL surface. Callers normally use
+  // PixelView::Lock/Unlock, which also reattach the view to the freshly
+  // locked pixels.
   bool LockSurface();
   bool UnlockSurface();
 
@@ -367,15 +379,31 @@ class PixelBuffer : public PixelView {
   // has to convert these again. Empty while there is no texture.
   std::vector<uint8_t> scaled_frame_;
 
+  int width_ = 0;
+  int height_ = 0;
+  // Padding kept past the end of every row; zero for every buffer the games
+  // create.
+  int pitch_ = 0;
+  // How deep the nested LockSurface() calls are; the surface is locked while
+  // this is non-zero.
+  int lock_count_ = 0;
+
   // The pixels, wherever they came from: owned_pixels_, the caller's span, or
   // the locked SDL surface. Empty when the window's surface is unlocked.
   std::span<uint8_t> bytes_;
   // The allocation behind bytes_ when the buffer allocated its own pixels;
   // null when the pixels are the caller's or the SDL surface's.
   std::unique_ptr<uint8_t[]> owned_pixels_;
+
+  // The view onto all of this buffer. Attached to `this` by the constructors
+  // and re-attached whenever the pixels move: Init(), LockSurface() and
+  // UnlockSurface().
+  PixelView whole_;
 };
 
-inline int PixelView::lock_count() const { return lock_count_; }
+inline int PixelView::lock_count() const {
+  return buffer_ == nullptr ? 0 : buffer_->lock_count();
+}
 
 inline bool PixelView::NeedsLock() {
   // Named for the DirectDraw surfaces this used to mean; callers read it as
@@ -389,14 +417,11 @@ inline bool PixelView::Lock() {
     return false;
   }
 
-  const bool lock = buffer_->LockSurface();
-  if (!lock) {
+  if (!buffer_->LockSurface()) {
     return false;
   }
 
-  if (this != buffer_) {
-    Attach(buffer_, x_pos_, y_pos_, width_, height_);
-  }
+  Attach(buffer_, x_pos_, y_pos_, width_, height_);
   return true;
 }
 
@@ -408,9 +433,6 @@ inline uint8_t* PixelView::offset() { return offset_; }
 inline std::span<uint8_t> PixelView::pixels() {
   if (buffer_ == nullptr) {
     return {};
-  }
-  if (this == buffer_) {
-    return buffer_->bytes();
   }
   return buffer_->bytes().subspan(base::ToSize((y_pos_ * stride()) + x_pos_));
 }

@@ -290,7 +290,7 @@ int MapEditClass::Load_Scenario() {
   */
   if (!Read_Scenario_Ini(TheWorld().scenario_name())) {
     CCMessageBox().Process("Unable to read scenario!");
-    TheScreen().hidden_page().Clear();
+    TheScreen().hidden_page().view().Clear();
     Flag_To_Redraw(true);
     Render();
   } else {
@@ -343,7 +343,7 @@ int MapEditClass::Save_Scenario() {
   if (fp) {
     fclose(fp);
     rc = CCMessageBox().Process("File exists. Replace?", TXT_YES, TXT_NO);
-    TheScreen().hidden_page().Clear();
+    TheScreen().hidden_page().view().Clear();
     Flag_To_Redraw(true);
     Render();
     if (rc == 1) {
@@ -858,7 +858,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -1440,7 +1440,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -2010,7 +2010,7 @@ int MapEditClass::Scenario_Dialog() {
   /*
   ----------------------------- Redraw the map -----------------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -2177,7 +2177,7 @@ void MapEditClass::Handle_Triggers() {
         ................. Unable to create; issue warning ..................
         */
         CCMessageBox().Process("No more triggers available.");
-        TheScreen().hidden_page().Clear();
+        TheScreen().hidden_page().view().Clear();
         Flag_To_Redraw(true);
         Render();
       }
@@ -2524,7 +2524,7 @@ int MapEditClass::Select_Trigger() {
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -3051,7 +3051,7 @@ int MapEditClass::Edit_Trigger() {
         if (CurTeam) {
           CurTrigger->Team = CurTeam;
         }
-        TheScreen().hidden_page().Clear();
+        TheScreen().hidden_page().view().Clear();
         Flag_To_Redraw(true);
         Render();
         display = REDRAW_ALL;
@@ -3144,7 +3144,7 @@ int MapEditClass::Edit_Trigger() {
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -3432,7 +3432,7 @@ int MapEditClass::Import_Triggers() {
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -3762,7 +3762,7 @@ int MapEditClass::Import_Teams() {
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 

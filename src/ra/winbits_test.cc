@@ -50,7 +50,7 @@ class TestScreen {
   TestScreen& operator=(TestScreen&&) = delete;
 
   [[nodiscard]] PixelView& view() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return buffer_;
+    return buffer_.view();
   }
 
   [[nodiscard]] std::uint8_t Pixel(int x, int y) const {

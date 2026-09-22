@@ -177,7 +177,7 @@ bool Start_Scenario(char* root, bool briefing) {
     GameFile file(buffer);
 
     if (TheSession().type() == GAME_NORMAL && !file.IsAvailable()) {
-      TheScreen().visible_page().Clear();
+      TheScreen().visible_page().view().Clear();
       Set_Palette(ThePalettes().game_palette());
       //			Show_Mouse();
       /*

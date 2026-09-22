@@ -191,7 +191,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   /*
   **	Other inits.
   */
-  TheScreen().visible_page().Blit(seen_buff_save);
+  TheScreen().visible_page().view().Blit(seen_buff_save.view());
 
   /*
   **	Initialize the button structures. All are initialized, even though one
@@ -290,7 +290,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       */
       if (AllSurfaces.SurfacesRestored) {
         AllSurfaces.SurfacesRestored = false;
-        seen_buff_save.Blit(TheScreen().visible_page());
+        seen_buff_save.view().Blit(TheScreen().visible_page().view());
         display = true;
       }
 

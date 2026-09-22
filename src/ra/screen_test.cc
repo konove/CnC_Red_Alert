@@ -30,7 +30,7 @@ TEST(ScreenTest, OnlyTheVisibleViewIsVisible) {
   Screen screen;
   EXPECT_TRUE(screen.IsVisible(&screen.visible_view()));
   EXPECT_FALSE(screen.IsVisible(&screen.hidden_view()));
-  EXPECT_FALSE(screen.IsVisible(&screen.visible_page()));
+  EXPECT_FALSE(screen.IsVisible(&screen.visible_page().view()));
   EXPECT_FALSE(screen.IsVisible(nullptr));
 }
 

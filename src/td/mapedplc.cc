@@ -870,7 +870,7 @@ int MapEditClass::Placement_Dialog() {
   /*
   --------------------------- Redraw the display ---------------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 
@@ -950,7 +950,7 @@ void MapEditClass::Start_Placement() {
   */
   if (!PendingObjectPtr) {
     CCMessageBox().Process("No more objects of this type available.");
-    TheScreen().hidden_page().Clear();
+    TheScreen().hidden_page().view().Clear();
     Flag_To_Redraw(true);
     Render();
     PendingObject = nullptr;
@@ -1239,7 +1239,7 @@ void MapEditClass::Cancel_Placement() {
   /*
   ----------------- Redraw the map to erase old leftovers ------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1328,7 +1328,7 @@ void MapEditClass::Place_Next() {
   /*
   ----------------- Redraw the map to erase old leftovers ------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1419,7 +1419,7 @@ void MapEditClass::Place_Prev() {
   /*
   ----------------- Redraw the map to erase old leftovers ------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1507,7 +1507,7 @@ void MapEditClass::Place_Next_Category() {
   /*
   ----------------- Redraw the map to erase old leftovers ------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1609,7 +1609,7 @@ void MapEditClass::Place_Prev_Category() {
   /*
   ----------------- Redraw the map to erase old leftovers ------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1684,7 +1684,7 @@ void MapEditClass::Place_Home() {
   /*
   ----------------- Redraw the map to erase old leftovers ------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
   Render();
 }
@@ -1879,7 +1879,7 @@ void MapEditClass::Place_Trigger() {
   /*
   -------------------------- Force map to redraw ---------------------------
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
 }
 
@@ -1913,7 +1913,7 @@ void MapEditClass::Start_Base_Building() {
   /*
   ** Force map to redraw
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
 }
 
@@ -1947,7 +1947,7 @@ void MapEditClass::Cancel_Base_Building() {
   /*
   ** Force map to redraw
   */
-  TheScreen().hidden_page().Clear();
+  TheScreen().hidden_page().view().Clear();
   Flag_To_Redraw(true);
 }
 

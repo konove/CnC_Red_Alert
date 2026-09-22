@@ -870,9 +870,9 @@ void ChronalVortexClass::Render(PixelView& view) {
             ** Draw the template
             */
             if (!ttype->Get_Image_Data().empty()) {
-              RenderBuffer->DrawStamp(ttype->Get_Image_Data(), icon,
-                                      x * CELL_PIXEL_W, y * CELL_PIXEL_H, {},
-                                      static_cast<int>(WINDOW_MAIN));
+              RenderBuffer->view().DrawStamp(ttype->Get_Image_Data(), icon,
+                                             x * CELL_PIXEL_W, y * CELL_PIXEL_H,
+                                             {}, static_cast<int>(WINDOW_MAIN));
             }
 
             /*
@@ -880,8 +880,8 @@ void ChronalVortexClass::Render(PixelView& view) {
             */
             if (cellptr->Smudge != SMUDGE_NONE) {
               SmudgeTypeClass::As_Reference(cellptr->Smudge)
-                  .Draw_It(*RenderBuffer, x * CELL_PIXEL_W, y * CELL_PIXEL_H,
-                           cellptr->SmudgeData);
+                  .Draw_It(RenderBuffer->view(), x * CELL_PIXEL_W,
+                           y * CELL_PIXEL_H, cellptr->SmudgeData);
             }
 
             /*
@@ -893,12 +893,13 @@ void ChronalVortexClass::Render(PixelView& view) {
               IsTheaterShape = static_cast<bool>(
                   otype.IsTheater);  // Tell Build_Frame if this overlay is
                                      // theater specific
-              CC_Draw_Shape(
-                  *RenderBuffer, otype.Get_Image_Data(), cellptr->OverlayData,
-                  (x * CELL_PIXEL_W) + (CELL_PIXEL_W >> 1),
-                  (y * CELL_PIXEL_H) + (CELL_PIXEL_H >> 1), WINDOW_TACTICAL,
-                  SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
-                  DisplayClass::UnitShadow);
+              CC_Draw_Shape(RenderBuffer->view(), otype.Get_Image_Data(),
+                            cellptr->OverlayData,
+                            (x * CELL_PIXEL_W) + (CELL_PIXEL_W >> 1),
+                            (y * CELL_PIXEL_H) + (CELL_PIXEL_H >> 1),
+                            WINDOW_TACTICAL,
+                            SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
+                            DisplayClass::UnitShadow);
 
               IsTheaterShape = false;
             }
@@ -919,7 +920,7 @@ void ChronalVortexClass::Render(PixelView& view) {
       /*
       ** Render the vortex over the cells we just rendered to our buffer
       */
-      Coordinate_Remap(RenderBuffer,
+      Coordinate_Remap(&RenderBuffer->view(),
                        Lepton_To_Pixel(Coord_X(Coord_Fraction(Position))),
                        Lepton_To_Pixel(Coord_Y(Coord_Fraction(Position))), 64,
                        64, base::UnsignedBytes(lut_ptr));
@@ -953,10 +954,10 @@ void ChronalVortexClass::Render(PixelView& view) {
       // Blit the freshly drawn cells and vortex into place on the hid page.
       // The whole of RenderBuffer goes across; Blit clips it to the tactical
       // view and advances the source by whatever came off the top and left.
-      RenderBuffer->Blit(target, 0, 0,
-                         Lepton_To_Pixel(static_cast<LEPTON>(xoff)),
-                         Lepton_To_Pixel(static_cast<LEPTON>(yoff)),
-                         RenderBuffer->width(), RenderBuffer->height(), false);
+      RenderBuffer->view().Blit(
+          target, 0, 0, Lepton_To_Pixel(static_cast<LEPTON>(xoff)),
+          Lepton_To_Pixel(static_cast<LEPTON>(yoff)), RenderBuffer->width(),
+          RenderBuffer->height(), false);
     }
   }
 }

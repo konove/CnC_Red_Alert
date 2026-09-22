@@ -294,7 +294,7 @@ bool Init_Game() {
   if (!TheSpecial().IsFromInstall) {
     Set_Palette(ThePalettes().black_palette());
     DLOG(INFO) << "C&C95 - About to clear visible page";
-    TheScreen().visible_page().Clear();
+    TheScreen().visible_page().view().Clear();
   }
 
   Set_Palette(ThePalettes().game_palette());
@@ -1383,14 +1383,14 @@ bool Select_Game(bool fade) {
           if (GameFile("TRAILER.VQA").IsAvailable()) {
             Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                             Call_Back);
-            TheScreen().visible_page().Clear();
+            TheScreen().visible_page().view().Clear();
             if (GameFile("ATTRACT2.CPS").IsAvailable()) {
               GameFile f("ATTRACT2.CPS");
               Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
                               TheScreen().sys_mem_page().bytes(),
                               ThePalettes().title_palette());
-              TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0,
-                                               0, 0, 320, 199, 640, 398);
+              TheScreen().sys_mem_page().view().Scale(
+                  TheScreen().visible_view(), 0, 0, 0, 0, 320, 199, 640, 398);
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                               Call_Back);
             }
@@ -1408,14 +1408,14 @@ bool Select_Game(bool fade) {
           if (GameFile("SIZZLE.VQA").IsAvailable()) {
             Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                             Call_Back);
-            TheScreen().visible_page().Clear();
+            TheScreen().visible_page().view().Clear();
             if (GameFile("ATTRACT2.CPS").IsAvailable()) {
               GameFile f("ATTRACT2.CPS");
               Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
                               TheScreen().sys_mem_page().bytes(),
                               ThePalettes().title_palette());
-              TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0,
-                                               0, 0, 320, 199, 640, 398);
+              TheScreen().sys_mem_page().view().Scale(
+                  TheScreen().visible_view(), 0, 0, 0, 0, 320, 199, 640, 398);
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                               Call_Back);
             }
@@ -1433,14 +1433,14 @@ bool Select_Game(bool fade) {
           if (GameFile("SIZZLE2.VQA").IsAvailable()) {
             Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                             Call_Back);
-            TheScreen().visible_page().Clear();
+            TheScreen().visible_page().view().Clear();
             if (GameFile("ATTRACT2.CPS").IsAvailable()) {
               GameFile f("ATTRACT2.CPS");
               Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
                               TheScreen().sys_mem_page().bytes(),
                               ThePalettes().title_palette());
-              TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0,
-                                               0, 0, 320, 199, 640, 398);
+              TheScreen().sys_mem_page().view().Scale(
+                  TheScreen().visible_view(), 0, 0, 0, 0, 320, 199, 640, 398);
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                               Call_Back);
             }
@@ -1457,14 +1457,14 @@ bool Select_Game(bool fade) {
 
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                           Call_Back);
-          TheScreen().visible_page().Clear();
+          TheScreen().visible_page().view().Clear();
           if (GameFile("ATTRACT2.CPS").IsAvailable()) {
             GameFile f("ATTRACT2.CPS");
             Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
                             TheScreen().sys_mem_page().bytes(),
                             ThePalettes().title_palette());
-            TheScreen().sys_mem_page().Scale(TheScreen().visible_view(), 0, 0,
-                                             0, 0, 320, 199, 640, 398);
+            TheScreen().sys_mem_page().view().Scale(
+                TheScreen().visible_view(), 0, 0, 0, 0, 320, 199, 640, 398);
             Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                             Call_Back);
           }
@@ -1621,8 +1621,8 @@ bool Select_Game(bool fade) {
     if (selection != kSelStartNewGame) {
       Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                       Call_Back);
-      TheScreen().hidden_page().Clear();
-      TheScreen().visible_page().Clear();
+      TheScreen().hidden_page().view().Clear();
+      TheScreen().visible_page().view().Clear();
     }
     Show_Mouse();
 
@@ -1964,8 +1964,8 @@ bool Select_Game(bool fade) {
   TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
 
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
-  TheScreen().hidden_page().Clear();
-  TheScreen().visible_page().Clear();
+  TheScreen().hidden_page().view().Clear();
+  TheScreen().visible_page().view().Clear();
   TheMap().Flag_To_Redraw();
   Call_Back();
   TheMap().Render();

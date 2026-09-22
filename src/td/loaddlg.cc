@@ -328,11 +328,11 @@ bool LoadOptionsClass::Process() {
       **	Redraw the map.
       */
       if (TheGameState().in_main_loop()) {
-        TheScreen().hidden_page().Clear();
+        TheScreen().hidden_page().view().Clear();
         TheMap().Flag_To_Redraw(true);
         TheMap().Render();
       } else {
-        TheScreen().hidden_page().Clear();
+        TheScreen().hidden_page().view().Clear();
         Load_Title_Page(true);
       }
 
@@ -415,7 +415,7 @@ bool LoadOptionsClass::Process() {
             CCMessageBox().Process(TXT_ERROR_LOADING_GAME);
           } else {
             Hide_Mouse();
-            TheScreen().visible_page().Clear();
+            TheScreen().visible_page().view().Clear();
             Set_Palette(ThePalettes().game_palette());
             Show_Mouse();
             process = false;
