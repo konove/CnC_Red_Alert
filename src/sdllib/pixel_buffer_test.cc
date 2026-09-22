@@ -160,4 +160,38 @@ TEST(BlitTest, ClipsRowsAndColumnsOffTheBottomRight) {
                                         0, 0, 4, 5}));
 }
 
+TEST(BlitTest, RectangleWhollyOffTheDestinationDrawsNothing) {
+  std::vector<uint8_t> image = NumberedPixels(3 * 3);
+  PixelBuffer source(3, 3, image);
+  const std::vector<uint8_t> blank(size_t{4} * 4, 0);
+  std::vector<uint8_t> page = blank;
+  PixelBuffer view(4, 4, page);
+
+  source.Blit(view, 0, 0, -3, 0, 3, 3);
+  EXPECT_EQ(page, blank);
+  source.Blit(view, 0, 0, 4, 0, 3, 3);
+  EXPECT_EQ(page, blank);
+  source.Blit(view, 0, 0, 0, -3, 3, 3);
+  EXPECT_EQ(page, blank);
+  source.Blit(view, 0, 0, 0, 4, 3, 3);
+  EXPECT_EQ(page, blank);
+}
+
+// The shape the chronal vortex blits: a source buffer exactly the size of the
+// rectangle, landing partly off two edges of the destination at once.
+TEST(BlitTest, FullSourceOverhangingTwoEdgesCarriesTheSourceAlong) {
+  std::vector<uint8_t> image = NumberedPixels(3 * 3);
+  PixelBuffer source(3, 3, image);
+  std::vector<uint8_t> page(size_t{4} * 4, 0);
+  PixelBuffer view(4, 4, page);
+
+  // Off the left by one and off the bottom by one.
+  source.Blit(view, 0, 0, -1, 2, 3, 3);
+
+  EXPECT_EQ(page, (std::vector<uint8_t>{0, 0, 0, 0,  //
+                                        0, 0, 0, 0,  //
+                                        2, 3, 0, 0,  //
+                                        5, 6, 0, 0}));
+}
+
 }  // namespace
