@@ -333,7 +333,7 @@ class PixelBuffer {
   // `end_frame` false, which only arms a timer to redraw if nothing else
   // presents within the next frame; Display::EndFrame() passes true to present
   // immediately.
-  void Present(bool end_frame);
+  void Present(bool end_frame) const;
   // Sets the 256 RGB triples the paletted pixels are shown through, and
   // redraws with them. Anything already presented changes color, the way a
   // VGA palette write did.

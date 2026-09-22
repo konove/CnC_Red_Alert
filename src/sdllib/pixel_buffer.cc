@@ -52,11 +52,13 @@
 #include "sdllib/font.h"
 #include "sdllib/ww_win.h"
 
-PixelView::PixelView(PixelBuffer* buffer, int x, int y, int width, int height) {
+PixelView::PixelView(PixelBuffer* buffer, const int x, const int y,
+                     const int width, const int height) {
   Attach(buffer, x, y, width, height);
 }
 
-void PixelView::DrawRect(int x1, int y1, int x2, int y2, uint8_t color) {
+void PixelView::DrawRect(const int x1, const int y1, const int x2, const int y2,
+                         const uint8_t color) {
   if (!Lock()) {
     return;
   }
@@ -111,7 +113,7 @@ void PixelView::Attach(PixelBuffer* buffer, int x, int y, int width,
   buffer_ = buffer;
 }
 
-int PixelView::GetPixelLocked(int x, int y) {
+int PixelView::GetPixelLocked(const int x, const int y) {
   if (x < 0 || y < 0 || x >= width() || y >= height()) {
     return 0;
   }
@@ -122,7 +124,7 @@ int PixelView::GetPixelLocked(int x, int y) {
   return *dst_offset;
 }
 
-void PixelView::ClearLocked(uint8_t color) {
+void PixelView::ClearLocked(const uint8_t color) {
   const base::ssize dst_area = stride();
   auto dst_offset = pixels().begin();
 
@@ -136,8 +138,8 @@ void PixelView::ClearLocked(uint8_t color) {
   } while (--line_count);
 }
 
-int32_t PixelView::CopyToBufferLocked(int x, int y, int width, int height,
-                                      std::span<uint8_t> dest,
+int32_t PixelView::CopyToBufferLocked(const int x, const int y, const int width,
+                                      const int height, std::span<uint8_t> dest,
                                       int32_t /*dest_size*/) {
   int dst_x0 = 0;
   int dst_y0 = 0;
@@ -201,8 +203,8 @@ int32_t PixelView::CopyToBufferLocked(int x, int y, int width, int height,
   return 0;
 }
 
-int32_t PixelView::CopyFromBufferLocked(int dst_x, int dst_y, int width,
-                                        int height,
+int32_t PixelView::CopyFromBufferLocked(const int dst_x, const int dst_y,
+                                        const int width, const int height,
                                         std::span<const uint8_t> source) {
   int src_x0 = 0;
   int src_y0 = 0;
@@ -266,8 +268,9 @@ int32_t PixelView::CopyFromBufferLocked(int dst_x, int dst_y, int width,
   return 0;
 }
 
-bool PixelView::BlitLocked(PixelView& dest, int src_x, int src_y, int dst_x,
-                           int dst_y, int width, int height, bool transparent) {
+bool PixelView::BlitLocked(PixelView& dest, const int src_x, const int src_y,
+                           const int dst_x, const int dst_y, const int width,
+                           const int height, const bool transparent) {
   // Only Tiberian Dawn asks for a transparent blit.
 
   // clip source
@@ -506,7 +509,7 @@ bool PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
         }
 
         x += dx_frac;
-        out++;
+        ++out;
       } while (--counter_x);
 
       src_offset += dy_intr;
@@ -533,7 +536,7 @@ bool PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
         }
 
         x += dx_frac;
-        out++;
+        ++out;
       } while (--counter_x);
 
       src_offset += dy_intr;
@@ -593,8 +596,8 @@ bool PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
   return true;
 }
 
-void PixelView::PrintLocked(const char* text, int x, int y, int fore_color,
-                            int back_color) {
+void PixelView::PrintLocked(const char* text, int x, int y,
+                            const int fore_color, const int back_color) {
   if (!text || FontPtr.empty()) {
     return;
   }
@@ -719,7 +722,8 @@ void PixelView::PrintLocked(const char* text, int x, int y, int fore_color,
   }
 }
 
-void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2, uint8_t color) {
+void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
+                               const uint8_t color) {
   const int width = width_;
   const int height = height_;
 
@@ -872,7 +876,8 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2, uint8_t color) {
   }
 }
 
-void PixelView::FillRectLocked(int x1, int y1, int x2, int y2, uint8_t color) {
+void PixelView::FillRectLocked(int x1, int y1, int x2, int y2,
+                               const uint8_t color) {
   if (x1 > x2) {
     std::swap(x1, x2);
   }
@@ -909,8 +914,9 @@ void PixelView::FillRectLocked(int x1, int y1, int x2, int y2, uint8_t color) {
   } while (--line_count);
 }
 
-void PixelView::RemapLocked(int x1, int y1, int width, int height,
-                            std::span<const uint8_t> remap_table) {
+void PixelView::RemapLocked(const int x1, const int y1, const int width,
+                            const int height,
+                            const std::span<const uint8_t> remap_table) {
   if (remap_table.empty()) {
     return;
   }
@@ -943,13 +949,15 @@ void PixelView::RemapLocked(int x1, int y1, int width, int height,
   } while (--line_count);
 }
 
-PixelBuffer::PixelBuffer(int width, int height, std::span<uint8_t> buffer,
-                         int32_t byte_count)
+PixelBuffer::PixelBuffer(const int width, const int height,
+                         const std::span<uint8_t> buffer,
+                         const int32_t byte_count)
     : PixelBuffer() {
   Init(width, height, buffer, byte_count, BUFFER_NONE);
 }
 
-PixelBuffer::PixelBuffer(int width, int height, std::span<uint8_t> buffer)
+PixelBuffer::PixelBuffer(const int width, const int height,
+                         const std::span<uint8_t> buffer)
     : PixelBuffer(width, height, buffer, width * height) {}
 
 PixelBuffer::PixelBuffer() {
@@ -966,8 +974,9 @@ PixelBuffer::~PixelBuffer() {
   }
 }
 
-void PixelBuffer::Init(int width, int height, std::span<uint8_t> buffer,
-                       int32_t byte_count, PixelBufferFlags flags) {
+void PixelBuffer::Init(const int width, const int height,
+                       const std::span<uint8_t> buffer,
+                       const int32_t byte_count, const PixelBufferFlags flags) {
   CHECK_GE(width, 0);
   CHECK_GE(height, 0);
   CHECK_GE(byte_count, 0);
@@ -1058,7 +1067,7 @@ bool PixelBuffer::UnlockSurface() {
   return true;
 }
 
-void PixelBuffer::Present(bool end_frame) {
+void PixelBuffer::Present(const bool end_frame) const {
   // If VQA texture exists, keep presenting it (for animations like map select
   // that need to preserve the last frame indefinitely)
   if (scaled_frame_texture_) {
@@ -1104,7 +1113,7 @@ void PixelBuffer::Present(bool end_frame) {
   SDL_Event_Loop();
 }
 
-void PixelBuffer::UpdatePalette(std::span<const uint8_t> palette) {
+void PixelBuffer::UpdatePalette(const std::span<const uint8_t> palette) {
   auto* sdl_pal = static_cast<SDL_Surface*>(palette_surface_)->format->palette;
   if (palette.size() / 3 < base::ToSize(sdl_pal->ncolors)) {
     return;
@@ -1176,8 +1185,8 @@ void PixelBuffer::DestroyDisplaySurface() {
   }
 }
 
-void PixelBuffer::PresentScaledFrame(std::span<const uint8_t> frame, int width,
-                                     int height) {
+void PixelBuffer::PresentScaledFrame(std::span<const uint8_t> frame,
+                                     const int width, const int height) {
   if (width <= 0 || height <= 0) {
     return;
   }
