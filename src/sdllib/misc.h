@@ -109,7 +109,6 @@ extern "C" {
 // Legacy byte generator state behind Random(); the games seed it.
 extern int RandNumb;
 
-extern int Confine_Rect(int* x, int* y, int dw, int dh, int width, int height);
 
 #ifdef __cplusplus
 }

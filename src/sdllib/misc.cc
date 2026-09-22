@@ -117,34 +117,6 @@ std::span<uint8_t> Build_Fading_Table(std::span<const uint8_t> palette,
   return dest;
 }
 
-int Confine_Rect(int* x, int* y, int dw, int dh, int width, int height) {
-  int ret = 0;
-
-  if (*x < 0) {
-    *x = 0;
-    ret = 1;
-  } else if (*x + dw > width) {
-    *x -= *x + dw - width;
-
-    *x = std::max(*x, 0);
-
-    ret = 1;
-  }
-
-  if (*y < 0) {
-    *y = 0;
-    ret = 1;
-  } else if (*y + dh > height) {
-    *y -= *y + dh - height;
-
-    *y = std::max(*y, 0);
-
-    ret = 1;
-  }
-
-  return ret;
-}
-
 uint8_t Random() {
   // The generator shifts and carries through the bytes of RandNumb, low byte
   // first, so it works on a copy of them and stores the result back.

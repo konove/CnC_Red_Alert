@@ -90,6 +90,7 @@
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
 #include "base/array.h"
+#include "base/clip.h"
 #include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/safe_string.h"
@@ -1896,8 +1897,8 @@ void RadarClass::Set_Radar_Position(CELL cell) {
     oldy = 0;
   }
 
-  Confine_Rect(&oldx, &oldy, RadarCellWidth, RadarCellHeight, MapCellWidth,
-               MapCellHeight);
+  ConfineRect(oldx, oldy, RadarCellWidth, RadarCellHeight, MapCellWidth,
+              MapCellHeight);
 
   const int newx = oldx + MapCellX;
   const int newy = oldy + MapCellY;

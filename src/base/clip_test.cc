@@ -132,4 +132,63 @@ TEST(ClipRectTest, CellStraddlingTheTacticalEdge) {
   EXPECT_EQ(height, 24);
 }
 
+TEST(ConfineRectTest, RectangleInsideDoesNotMove) {
+  int x = 10;
+  int y = 20;
+
+  EXPECT_FALSE(ConfineRect(x, y, 5, 6, kWidth, kHeight));
+  EXPECT_EQ(x, 10);
+  EXPECT_EQ(y, 20);
+}
+
+TEST(ConfineRectTest, RectangleTouchingTheFarEdgeDoesNotMove) {
+  int x = 40;
+  int y = 40;
+
+  EXPECT_FALSE(ConfineRect(x, y, 10, 10, kWidth, kHeight));
+  EXPECT_EQ(x, 40);
+  EXPECT_EQ(y, 40);
+}
+
+// The rectangle keeps its size and slides back inside, unlike ClipRect(),
+// which would have trimmed the overhang off instead.
+TEST(ConfineRectTest, OverhangSlidesBackAndKeepsItsSize) {
+  int x = 45;
+  int y = 48;
+
+  EXPECT_TRUE(ConfineRect(x, y, 10, 20, kWidth, kHeight));
+  EXPECT_EQ(x, 40);
+  EXPECT_EQ(y, 30);
+}
+
+TEST(ConfineRectTest, NegativeOriginMovesToZero) {
+  int x = -5;
+  int y = -8;
+
+  EXPECT_TRUE(ConfineRect(x, y, 10, 20, kWidth, kHeight));
+  EXPECT_EQ(x, 0);
+  EXPECT_EQ(y, 0);
+}
+
+TEST(ConfineRectTest, RectangleLargerThanTheWindowPinsToTheOrigin) {
+  int x = 30;
+  int y = 30;
+
+  EXPECT_TRUE(ConfineRect(x, y, 100, 100, kWidth, kHeight));
+  EXPECT_EQ(x, 0);
+  EXPECT_EQ(y, 0);
+}
+
+// A rectangle too big for the window reports as bounded even though it was
+// already at the origin and does not move. Both games' map scrolling depends
+// on that: it reads the result as "the scroll hit the edge of the world".
+TEST(ConfineRectTest, OversizedRectangleAtTheOriginStillReportsBounded) {
+  int x = 0;
+  int y = 0;
+
+  EXPECT_TRUE(ConfineRect(x, y, 100, 100, kWidth, kHeight));
+  EXPECT_EQ(x, 0);
+  EXPECT_EQ(y, 0);
+}
+
 }  // namespace

@@ -632,8 +632,8 @@ void DisplayClass::Update_View_Dimensions(int x, int y, int width, int height,
   int xx = Coord_X(TacticalCoord) - (MapCellX * CELL_LEPTON_W);
   int yy = Coord_Y(TacticalCoord) - (MapCellY * CELL_LEPTON_H);
 
-  Confine_Rect(&xx, &yy, TacLeptonWidth, TacLeptonHeight,
-               MapCellWidth * CELL_LEPTON_W, MapCellHeight * CELL_LEPTON_H);
+  ConfineRect(xx, yy, TacLeptonWidth, TacLeptonHeight,
+              MapCellWidth * CELL_LEPTON_W, MapCellHeight * CELL_LEPTON_H);
 
   if (reposition) {
     Set_Tactical_Position(
@@ -1292,9 +1292,9 @@ bool DisplayClass::Scroll_Map(DirType facing, int& distance, bool really) {
            static_cast<int16_t>(Cell_To_Lepton(MapCellX));
   int yy = static_cast<int>(static_cast<int16_t>(Coord_Y(coord))) -
            static_cast<int16_t>(Cell_To_Lepton(MapCellY));
-  bool shifted = Confine_Rect(&xx, &yy, TacLeptonWidth, TacLeptonHeight,
-                              Cell_To_Lepton(MapCellWidth),
-                              Cell_To_Lepton(MapCellHeight)) != 0;
+  bool shifted =
+      ConfineRect(xx, yy, TacLeptonWidth, TacLeptonHeight,
+                  Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight));
   if (xx < 0) {
     xx = 0;
     shifted = true;
@@ -3927,9 +3927,8 @@ void DisplayClass::Set_Tactical_Position(COORDINATE coord) {
   int yy = static_cast<int>(Coord_Y(coord)) -
            static_cast<int>(Cell_To_Lepton(MapCellY));
 
-  Confine_Rect(&xx, &yy, TacLeptonWidth, TacLeptonHeight,
-               Cell_To_Lepton(MapCellWidth),
-               Cell_To_Lepton(MapCellHeight));
+  ConfineRect(xx, yy, TacLeptonWidth, TacLeptonHeight,
+              Cell_To_Lepton(MapCellWidth), Cell_To_Lepton(MapCellHeight));
   coord = XY_Coord(static_cast<LEPTON>(xx + Cell_To_Lepton(MapCellX)),
                    static_cast<LEPTON>(yy + Cell_To_Lepton(MapCellY)));
 
