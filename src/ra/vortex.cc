@@ -950,51 +950,13 @@ void ChronalVortexClass::Render(PixelView& view) {
                        Lepton_To_Pixel(TheMap().TacLeptonWidth),
                        Lepton_To_Pixel(TheMap().TacLeptonHeight));
 
-      /*
-      ** Do some clipping since the library clipping gets it wrong.
-      */
-      int diff = 0;
-
-      int source_x = 0;
-      int source_y = 0;
-      const int source_width = CELL_PIXEL_W * 4;
-      const int source_height = CELL_PIXEL_H * 4;
-
-      int dest_x = Lepton_To_Pixel(static_cast<LEPTON>(xoff));
-      int dest_y = Lepton_To_Pixel(static_cast<LEPTON>(yoff));
-      int dest_width = source_width;
-      int dest_height = source_height;
-
-      if (dest_x < 0) {
-        dest_width += dest_x;
-        source_x -= dest_x;
-        dest_x = 0;
-      }
-
-      if (dest_y < 0) {
-        dest_height += dest_y;
-        source_y -= dest_y;
-        dest_y = 0;
-      }
-
-      if (dest_x + dest_width > target.width()) {
-        diff = dest_x + dest_width - target.width();
-        dest_width -= diff;
-      }
-
-      if (dest_y + dest_height > target.height()) {
-        diff = dest_y + dest_height - target.height();
-        dest_height -= diff;
-      }
-
-      /*
-      ** Blit our freshly draw cells and vortex into their correct position on
-      *the hidpage
-      */
-      if (dest_width > 0 && dest_height > 0) {
-        RenderBuffer->Blit(target, source_x, source_y, dest_x, dest_y,
-                           dest_width, dest_height, false);
-      }
+      // Blit the freshly drawn cells and vortex into place on the hid page.
+      // The whole of RenderBuffer goes across; Blit clips it to the tactical
+      // view and advances the source by whatever came off the top and left.
+      RenderBuffer->Blit(target, 0, 0,
+                         Lepton_To_Pixel(static_cast<LEPTON>(xoff)),
+                         Lepton_To_Pixel(static_cast<LEPTON>(yoff)),
+                         RenderBuffer->width(), RenderBuffer->height(), false);
     }
   }
 }
