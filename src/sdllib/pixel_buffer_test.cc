@@ -160,27 +160,4 @@ TEST(BlitTest, ClipsRowsAndColumnsOffTheBottomRight) {
                                         0, 0, 4, 5}));
 }
 
-// The game's pages are destroyed with the Game in ShutDown(), before the
-// static destructors run; nothing may be left pointing at them.
-TEST(LifetimeTest, DestroyingTheLogicPageClearsLogicPage) {
-  std::vector<uint8_t> pixels(size_t{4} * 4);
-  {
-    PixelBuffer buffer(4, 4, pixels);
-    PixelView view(&buffer, 0, 0, 2, 2);
-    SetLogicPage(view);
-  }
-  EXPECT_EQ(LogicPage, nullptr);
-}
-
-TEST(LifetimeTest, DestroyingAnotherViewKeepsLogicPage) {
-  std::vector<uint8_t> pixels(size_t{4} * 4);
-  PixelBuffer buffer(4, 4, pixels);
-  SetLogicPage(buffer);
-  {
-    const PixelView view(&buffer, 0, 0, 2, 2);
-  }
-  EXPECT_EQ(LogicPage, &buffer);
-  SetLogicPage(nullptr);
-}
-
 }  // namespace

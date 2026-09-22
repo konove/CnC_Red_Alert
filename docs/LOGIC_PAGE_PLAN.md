@@ -560,3 +560,21 @@ reset in `~PixelView` (`:60-64`) and the declarations at `src/sdllib/pixel_buffe
   Verification: both build dirs clean, 692 tests pass, both save/load smoke scripts pass, and ASan
   leak totals are byte-identical to phases 2 through 5 in both games (RA 29,823 bytes in 73
   allocations, TD 17,272 in 215) with no memory errors.
+
+- 2026-09-21: phase 7 done. `LogicPage`, both `SetLogicPage` overloads and the reset in `~PixelView`
+  are deleted, along with the two `pixel_buffer_test.cc` cases that asserted on the global.
+  `~PixelView` existed only for that reset and is now `= default` in the header, kept declared so
+  `cppcoreguidelines-special-member-functions` stays satisfied next to the deleted copy and move
+  operations.
+
+  The deletion is the proof phase 6 was complete: the whole tree builds without the global, so no
+  reader was missed. 690 tests pass (688 of the old 692, less the two deleted), both build dirs are
+  clean, both save/load smoke scripts pass, and ASan leak totals are byte-identical to every phase
+  since 2 (RA 29,823 bytes in 73 allocations, TD 17,272 in 215).
+
+  The plan is complete. Two follow-ups it created rather than closed: `PseudoSeenBuff` (TD) and
+  `RenderBuffer` (RA's vortex) are still globals -- pages that want owners, in the manner of phase
+  0's `Display` -- and `NullModemClass::Abort_Modem` is dead in both games, since both
+  implementations of `Set_Abort_Function` discard the pointer they are given. The real-display run
+  covering phases 0 through 7 is still outstanding; headless never loads palettes, so no rendering
+  regression in any of this work would have shown up in the checks above.

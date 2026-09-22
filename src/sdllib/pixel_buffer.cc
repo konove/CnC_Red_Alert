@@ -54,21 +54,6 @@
 #include "sdllib/misc.h"
 #include "sdllib/ww_win.h"
 
-PixelView* LogicPage = nullptr;
-
-PixelView::~PixelView() {
-  if (LogicPage == this) {
-    LogicPage = nullptr;
-  }
-}
-
-PixelView* SetLogicPage(PixelView* page) {
-  std::swap(LogicPage, page);
-  return page;
-}
-
-PixelView* SetLogicPage(PixelView& page) { return SetLogicPage(&page); }
-
 PixelView::PixelView(PixelBuffer* buffer, int x, int y, int width, int height) {
   Attach(buffer, x, y, width, height);
 }

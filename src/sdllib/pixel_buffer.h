@@ -71,16 +71,6 @@ inline constexpr int kDefaultScreenHeight = 200;
 class PixelBuffer;
 class PixelView;
 
-// The page the drawing code writes to when a caller does not name one.
-// Set it through SetLogicPage(); a view that is destroyed while it is the
-// logic page clears this.
-extern PixelView* LogicPage;
-
-// Makes `page` the page the drawing code writes to, and returns the previous
-// one so the caller can put it back.
-PixelView* SetLogicPage(PixelView* page ABSL_ATTRIBUTE_LIFETIME_BOUND);
-PixelView* SetLogicPage(PixelView& page ABSL_ATTRIBUTE_LIFETIME_BOUND);
-
 // A rectangular window onto a PixelBuffer. Coordinates passed to the
 // drawing members are relative to the window's top left corner and are
 // clipped to it, so the same primitives serve the full page, the map area and
@@ -100,9 +90,7 @@ class PixelView {
   // Attach() for how the rectangle is clamped to the buffer.
   PixelView(PixelBuffer* buffer, int x, int y, int width, int height);
   PixelView() = default;
-  // Resets LogicPage if it points here, so that nothing draws into a
-  // view that is gone.
-  ~PixelView();
+  ~PixelView() = default;
   PixelView(const PixelView&) = delete;
   PixelView& operator=(const PixelView&) = delete;
   PixelView(PixelView&&) = delete;
