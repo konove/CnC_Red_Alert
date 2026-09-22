@@ -106,7 +106,7 @@ TEST(CopyToBufferTest, ClipsRowsAndColumnsOffTheTopLeft) {
   out.fill(0xff);
 
   // The part of the 3x3 rectangle that lies off the view is left alone.
-  dest.view().CopyToBuffer(-1, -1, 3, 3, out, int32_t{out.size()});
+  dest.view().CopyToBuffer(-1, -1, 3, 3, out);
 
   EXPECT_EQ(out, (std::array<uint8_t, 9>{0xff, 0xff, 0xff,  //
                                          0xff, 1, 2,        //

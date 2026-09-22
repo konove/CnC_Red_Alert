@@ -227,8 +227,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   Hide_Mouse();
   if (preserve) {
     back.resize(base::ToSize(width * height));
-    TheScreen().visible_view().CopyToBuffer(
-        x, y, width, height, back, static_cast<int32_t>(width) * height);
+    TheScreen().visible_view().CopyToBuffer(x, y, width, height, back);
   }
   Dialog_Box(x, y, width, height);
   Draw_Caption(view, Caption, x, y, width);

@@ -244,9 +244,8 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   Hide_Mouse();
   if (preserve) {
     back.resize(base::ToSize(width * height));
-    TheScreen().visible_view().CopyToBuffer(
-        x, y, width, height, std::span(back),
-        static_cast<int32_t>(width) * height);
+    TheScreen().visible_view().CopyToBuffer(x, y, width, height,
+                                            std::span(back));
   }
   // display = true;
 #ifdef JAPANESE

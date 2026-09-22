@@ -163,9 +163,9 @@ class PixelView {
   // padding. The rectangle is clipped to the view first. Returns 0 once
   // pixels have been copied, and non-zero when the clip left nothing to do.
   int32_t CopyToBuffer(int x, int y, int width, int height,
-                       std::span<uint8_t> dest, int32_t dest_size);
+                       std::span<uint8_t> dest);
   int32_t CopyToBufferLocked(int x, int y, int width, int height,
-                             std::span<uint8_t> dest, int32_t dest_size);
+                             std::span<uint8_t> dest);
 
   // The other direction: copies a width x height image from plain memory
   // into the view at x,y, clipping it to the view. `source` is packed with
@@ -501,11 +501,10 @@ inline void PixelView::Clear(uint8_t color) {
 }
 
 inline int32_t PixelView::CopyToBuffer(int x, int y, int width, int height,
-                                       std::span<uint8_t> dest,
-                                       int32_t dest_size) {
+                                       std::span<uint8_t> dest) {
   int32_t return_code = 0;
   if (Lock()) {
-    return_code = CopyToBufferLocked(x, y, width, height, dest, dest_size);
+    return_code = CopyToBufferLocked(x, y, width, height, dest);
     Unlock();
   }
   return return_code;

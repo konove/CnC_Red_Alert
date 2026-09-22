@@ -140,8 +140,8 @@ void PixelView::ClearLocked(const uint8_t color) {
 }
 
 int32_t PixelView::CopyToBufferLocked(const int x, const int y, const int width,
-                                      const int height, std::span<uint8_t> dest,
-                                      int32_t /*dest_size*/) {
+                                      const int height,
+                                      std::span<uint8_t> dest) {
   int dst_x0 = 0;
   int dst_y0 = 0;
 

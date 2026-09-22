@@ -45,8 +45,6 @@
 
 #include "ra/statbtn.h"
 
-#include <cstdint>
-
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "ra/defines.h"
@@ -217,8 +215,7 @@ void StaticButtonClass::Draw_Background(PixelView& view) {
   if (Background.empty() && Width > 0 && Height > 0) {
     Background.resize(base::ToSize(Width) * base::ToSize(Height));
     if (!Background.empty()) {
-      view.CopyToBuffer(X, Y, Width, Height, Background,
-                        static_cast<int32_t>(Background.size()));
+      view.CopyToBuffer(X, Y, Width, Height, Background);
     }
   }
 
