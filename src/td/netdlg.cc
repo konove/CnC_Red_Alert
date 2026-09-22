@@ -4352,7 +4352,8 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   char buf1[40] = {0};
   char buf2[40] = {0};
 
-  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
+  PixelView& view = TheScreen().visible_view();
+  const int factor = view.width() == 320 ? 1 : 2;
 
   const int d_txt6_h = (6 * factor) + 1;
   const int d_margin = 5 * factor;
@@ -4361,9 +4362,9 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   Draw the dialog from scratch
   ------------------------------------------------------------------------*/
   if (fresh) {
-    Fancy_Text_Print(
-        *LogicPage, "", 0, 0, kCcGreen, kTBlack,
-        TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+    Select_Text_Font(
+        TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW, kCcGreen,
+        kTBlack);
     if (reconn) {
       const int id = TheNetwork().ipx().Connection_ID(oldest_index);
       Format_Runtime_Text(buf1, sizeof(buf1), Text_String(TXT_RECONNECTING_TO),
@@ -4384,20 +4385,19 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     y = (100 * factor) - (h / 2);
 
     Hide_Mouse();
-    SetLogicPage(TheScreen().visible_view());
-    Dialog_Box(*LogicPage, x, y, w, h);
+    Dialog_Box(view, x, y, w, h);
 
     Fancy_Text_Print(
-        *LogicPage, buf1, 160 * factor, y + (d_margin * 2), kCcGreen, kBlack,
+        view, buf1, 160 * factor, y + (d_margin * 2), kCcGreen, kBlack,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     Fancy_Text_Print(
-        *LogicPage, buf2, 160 * factor,
-        y + (d_margin * 2) + d_txt6_h + d_margin, kCcGreen, kBlack,
+        view, buf2, 160 * factor, y + (d_margin * 2) + d_txt6_h + d_margin,
+        kCcGreen, kBlack,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     Fancy_Text_Print(
-        *LogicPage, buf3, 160 * factor,
+        view, buf3, 160 * factor,
         y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2), kCcGreen, kBlack,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -4408,19 +4408,17 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     Just update the timeout value on the dialog
     ------------------------------------------------------------------------*/
     Hide_Mouse();
-    SetLogicPage(TheScreen().visible_view());
 
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
                         timeval + 1);
     const int pixwidth = String_Pixel_Width(buf2);
-    LogicPage->FillRect((160 * factor) - (pixwidth / 2) - 12,
-                        y + (d_margin * 2) + d_txt6_h + d_margin,
-                        (160 * factor) + (pixwidth / 2) + 12,
-                        y + (d_margin * 2) + (d_txt6_h * 2) + d_margin,
-                        kTBlack);
+    view.FillRect((160 * factor) - (pixwidth / 2) - 12,
+                  y + (d_margin * 2) + d_txt6_h + d_margin,
+                  (160 * factor) + (pixwidth / 2) + 12,
+                  y + (d_margin * 2) + (d_txt6_h * 2) + d_margin, kTBlack);
     Fancy_Text_Print(
-        *LogicPage, buf2, 160 * factor,
-        y + (d_margin * 2) + d_txt6_h + d_margin, kCcGreen, kBlack,
+        view, buf2, 160 * factor, y + (d_margin * 2) + d_txt6_h + d_margin,
+        kCcGreen, kBlack,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
     Show_Mouse();

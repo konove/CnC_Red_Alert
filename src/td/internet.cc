@@ -416,7 +416,8 @@ bool Do_The_Internet_Menu_Thang() {
 #endif
 #ifndef DEMO
 
-  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
+  PixelView& view = TheScreen().visible_view();
+  const int factor = view.width() == 320 ? 1 : 2;
 
   /*
   ** Dialog & button dimensions
@@ -448,10 +449,8 @@ bool Do_The_Internet_Menu_Thang() {
   // than the shared string table.
   char buffer[80 * 3];
   port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
-                   TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, TheScreen().visible_view().height(), width,
-                       height);
+  Select_Text_Font(TPF_6PT_GRAD | TPF_NOSHADOW, kTBlack, kTBlack);
+  Format_Window_String(buffer, view.height(), width, height);
 
 #if (defined(GERMAN) || defined(FRENCH))
   d_dialog_w = width + 25 * factor;
@@ -481,8 +480,8 @@ bool Do_The_Internet_Menu_Thang() {
 
   // buttons = &cancelbtn;
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kCcGreen, kTBlack,
-                   TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+  Select_Text_Font(TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
+                   kCcGreen, kTBlack);
 
   char users_name[256];
   const int buffer_len = sizeof(users_name);
@@ -495,23 +494,21 @@ bool Do_The_Internet_Menu_Thang() {
     if (Is_User_WChat_Registered(users_name, buffer_len)) {
       TheNetwork().statistics_sent() = false;
       if (!Spawn_WChat(true)) {
-        SetLogicPage(TheScreen().visible_view());
         Load_Title_Page(true);
         Set_Palette(ThePalettes().title_palette());
         CCMessageBox().Process(TXT_ERROR_UNABLE_TO_RUN_WCHAT, TXT_OK);
-        LogicPage->Clear();
+        view.Clear();
         return false;
       }
     } else {
-      SetLogicPage(TheScreen().visible_view());
       Load_Title_Page(true);
       Set_Palette(ThePalettes().title_palette());
       if (CCMessageBox().Process(TXT_EXPLAIN_REGISTRATION, TXT_REGISTER,
                                  TXT_CANCEL)) {
-        LogicPage->Clear();
+        view.Clear();
         return false;
       }
-      LogicPage->Clear();
+      view.Clear();
       Spawn_Registration_App();
       return false;
     }
@@ -539,8 +536,6 @@ bool Do_The_Internet_Menu_Thang() {
     }
 
     if (display) {
-      SetLogicPage(TheScreen().visible_view());
-
       Hide_Mouse();
       /*
       ** Redraw backgound & dialog box
@@ -548,14 +543,14 @@ bool Do_The_Internet_Menu_Thang() {
       Load_Title_Page(true);
       Set_Palette(ThePalettes().title_palette());
 
-      Dialog_Box(*LogicPage, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
+      Dialog_Box(view, d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
       /*
       ** Dialog & Field labels
       */
-      Draw_Caption(*LogicPage, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
+      Draw_Caption(view, TXT_NONE, d_dialog_x, d_dialog_y, d_dialog_w);
 
-      Fancy_Text_Print(*LogicPage, buffer, d_dialog_cx - (width / 2),
+      Fancy_Text_Print(view, buffer, d_dialog_cx - (width / 2),
                        d_dialog_y + (25 * factor), kCcGreen, kTBlack,
                        TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
@@ -566,7 +561,7 @@ bool Do_The_Internet_Menu_Thang() {
       .................... Rebuild the button list ....................
       */
       // buttons->Draw_All();
-      cancelbtn.Draw_Me(*LogicPage, true);
+      cancelbtn.Draw_Me(view, true);
 
       Show_Mouse();
       display = false;
@@ -585,7 +580,7 @@ bool Do_The_Internet_Menu_Thang() {
 #endif
 
     // input = buttons->Input();
-    input = cancelbtn.Input(*LogicPage);
+    input = cancelbtn.Input(view);
 
     /*
     ---------------------------- Process input ----------------------------

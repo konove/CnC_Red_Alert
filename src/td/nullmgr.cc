@@ -1041,7 +1041,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   int height = 0;  // dialog dimensions
   char buffer[80 * 3];
 
-  const int factor = TheScreen().visible_view().width() / 320;
+  PixelView& view = TheScreen().visible_view();
+  const int factor = view.width() / 320;
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.
@@ -1049,22 +1050,15 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   */
   port::SafeCopy(buffer, Text_String(TXT_INITIALIZING_MODEM));
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
-                   TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, TheScreen().visible_view().height(), width,
-                       height);
+  Select_Text_Font(TPF_6PT_GRAD | TPF_NOSHADOW, kTBlack, kTBlack);
+  Format_Window_String(buffer, view.height(), width, height);
 
   width = std::max(width, 50 * factor);
   width += 40 * factor;
   height += 60 * factor;
 
-  const int x = (TheScreen().visible_view().width() - width) / 2;
-  const int y = (TheScreen().visible_view().height() - height) / 2;
-
-  /*
-  ------------------------------- Initialize -------------------------------
-  */
-  SetLogicPage(TheScreen().visible_view());
+  const int x = (view.width() - width) / 2;
+  const int y = (view.height() - height) / 2;
 
   /*
   ............................ Draw the dialog .............................
@@ -1074,12 +1068,11 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     Load_Title_Page(true);
   }
 
-  Dialog_Box(*LogicPage, x, y, width, height);
-  Draw_Caption(*LogicPage, TXT_NONE, x, y, width);
+  Dialog_Box(view, x, y, width, height);
+  Draw_Caption(view, TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(*LogicPage, buffer, x + (20 * factor), y + (25 * factor),
-                   kCcGreen, kTBlack,
-                   TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+  Fancy_Text_Print(view, buffer, x + (20 * factor), y + (25 * factor), kCcGreen,
+                   kTBlack, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   Show_Mouse();
 
@@ -1319,7 +1312,8 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
                                           bool reconnect) {
   // Timer_Test(__LINE__, __FILE__);
 
-  const int factor = TheScreen().visible_view().width() / 320;
+  PixelView& view = TheScreen().visible_view();
+  const int factor = view.width() / 320;
 
   /*........................................................................
   Button Enumerations
@@ -1354,18 +1348,16 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
 
   // Timer_Test(__LINE__, __FILE__);
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
-                   TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, TheScreen().visible_view().height(), width,
-                       height);
+  Select_Text_Font(TPF_6PT_GRAD | TPF_NOSHADOW, kTBlack, kTBlack);
+  Format_Window_String(buffer, view.height(), width, height);
 
   const int text_width = width;
   width = std::max(width, 50 * factor);
   width += 40 * factor;
   height += 60 * factor;
 
-  const int x = (TheScreen().visible_view().width() - width) / 2;
-  const int y = (TheScreen().visible_view().height() - height) / 2;
+  const int x = (view.width() - width) / 2;
+  const int y = (view.height() - height) / 2;
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL,
@@ -1376,11 +1368,6 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
       y + height - (FontHeight + FontYSpacing + (2 * factor)) - (5 * factor));
 
   // Timer_Test(__LINE__, __FILE__);
-
-  /*
-  ------------------------------- Initialize -------------------------------
-  */
-  SetLogicPage(TheScreen().visible_view());
 
   /*
   ............................ Create the list .............................
@@ -1403,20 +1390,19 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
 
   // Timer_Test(__LINE__, __FILE__);
 
-  Dialog_Box(*LogicPage, x, y, width, height);
-  Draw_Caption(*LogicPage, TXT_NONE, x, y, width);
+  Dialog_Box(view, x, y, width, height);
+  Draw_Caption(view, TXT_NONE, x, y, width);
 
   // Timer_Test(__LINE__, __FILE__);
 
-  Fancy_Text_Print(*LogicPage, buffer,
-                   (TheScreen().visible_view().width() / 2) - (text_width / 2),
+  Fancy_Text_Print(view, buffer, (view.width() / 2) - (text_width / 2),
                    y + (25 * factor), kCcGreen, kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   // Timer_Test(__LINE__, __FILE__);
 
   CCDebugString("C&C95 - About to draw buttons.\n");
-  Commands->Draw_All(*LogicPage);
+  Commands->Draw_All(view);
   CCDebugString("C&C95 - About to show mouse.\n");
   Show_Mouse();
 
@@ -1467,7 +1453,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
     if (AllSurfaces.SurfacesRestored) {
       CCDebugString("C&C95 - About to restore video surfaces.\n");
       AllSurfaces.SurfacesRestored = false;
-      Commands->Draw_All(*LogicPage);
+      Commands->Draw_All(view);
     }
 
     // Timer_Test(__LINE__, __FILE__);
@@ -1488,7 +1474,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
     */
     CCDebugString("C&C95 - About to check for keyboard input.\n");
     if (!Input) {
-      Input = Commands->Input(*LogicPage);
+      Input = Commands->Input(view);
     }
 
     switch (static_cast<int>(Input)) {
@@ -1559,7 +1545,8 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
 // Not const: answers through the serial port.
 // NOLINTNEXTLINE(readability-make-member-function-const)
 DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
-  const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
+  PixelView& view = TheScreen().visible_view();
+  const int factor = view.width() == 320 ? 1 : 2;
 
   /*........................................................................
   Button Enumerations
@@ -1603,18 +1590,16 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     port::SafeCopy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
   }
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
-                   TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(text_buffer, TheScreen().visible_view().height(), width,
-                       height);
+  Select_Text_Font(TPF_6PT_GRAD | TPF_NOSHADOW, kTBlack, kTBlack);
+  Format_Window_String(text_buffer, view.height(), width, height);
 
   int text_width = width;
   width = std::max(width, 50 * factor);
   width += 40 * factor;
   height += 60 * factor;
 
-  int x = (TheScreen().visible_view().width() - width) / 2;
-  int y = (TheScreen().visible_view().height() - height) / 2;
+  int x = (view.width() - width) / 2;
+  int y = (view.height() - height) / 2;
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL,
@@ -1623,11 +1608,6 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
             (String_Pixel_Width(Text_String(TXT_CANCEL)) + (8 * factor))) /
            2),
       y + height - (FontHeight + FontYSpacing + (2 * factor)) - (5 * factor));
-
-  /*
-  ------------------------------- Initialize -------------------------------
-  */
-  SetLogicPage(TheScreen().visible_view());
 
   // Load_Picture("TITLE.CPS", HidPage, HidPage, Palette, BM_DEFAULT);
 
@@ -1682,19 +1662,18 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         /*
         ..................... Draw the background .......................
         */
-        Dialog_Box(*LogicPage, x, y, width, height);
+        Dialog_Box(view, x, y, width, height);
         /*
         ....................... Draw the labels .........................
         */
-        Draw_Caption(*LogicPage, TXT_NONE, x, y, width);
+        Draw_Caption(view, TXT_NONE, x, y, width);
 
-        Fancy_Text_Print(
-            *LogicPage, text_buffer,
-            (TheScreen().visible_view().width() / 2) - (text_width / 2),
-            y + (25 * factor), kCcGreen, kTBlack,
-            TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+        Fancy_Text_Print(view, text_buffer,
+                         (view.width() / 2) - (text_width / 2),
+                         y + (25 * factor), kCcGreen, kTBlack,
+                         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-        Commands->Draw_All(*LogicPage);
+        Commands->Draw_All(view);
       }
       Show_Mouse();
       display = REDRAW_NONE;
@@ -1707,7 +1686,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     ............................ Process input ............................
     */
     if (!Input) {
-      Input = Commands->Input(*LogicPage);
+      Input = Commands->Input(view);
     }
     switch (static_cast<int>(Input)) {
       case KN_ESC:
@@ -1725,18 +1704,16 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
       if (std::string_view(comm_buffer).starts_with("RING")) {
         port::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
 
-        Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, kTBlack, kTBlack,
-                         TPF_6PT_GRAD | TPF_NOSHADOW);
-        Format_Window_String(text_buffer, TheScreen().visible_view().height(),
-                             width, height);
+        Select_Text_Font(TPF_6PT_GRAD | TPF_NOSHADOW, kTBlack, kTBlack);
+        Format_Window_String(text_buffer, view.height(), width, height);
 
         text_width = width;
         width = std::max(width, 50 * factor);
         width += 40 * factor;
         height += 60 * factor;
 
-        x = (TheScreen().visible_view().width() - width) / 2;
-        y = (TheScreen().visible_view().height() - height) / 2;
+        x = (view.width() - width) / 2;
+        y = (view.height() - height) / 2;
 
         // PortKillTime( Port, 100 );
 
@@ -2006,7 +1983,9 @@ int NullModemClass::Abort_Modem()
   /*
   ........................... Get user input ............................
   */
-  Input = Commands->Input(*LogicPage);
+  // Installed only by Setup_Abort_Modem(), which Dial_Modem() and
+  // Answer_Modem() call while their dialog is up on the visible page.
+  Input = Commands->Input(TheScreen().visible_view());
 
   switch (static_cast<int>(Input)) {
     case KN_ESC:

@@ -136,9 +136,10 @@ static struct InfantryAnim {
   const InfantryTypeClass* Class{};
 } InfantryMan[NUMINFANTRYMEN];
 static void Draw_InfantryMen();
-static void Draw_InfantryMan(int index);
+static void Draw_InfantryMan(PixelView& view, int index);
 static void New_Infantry_Anim(int index, int anim);
-static void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled);
+static void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,
+                            int ckilled);
 static void Animate_Cursor(int pos, int ypos);
 static void Animate_Score_Objs();
 static void Cycle_Wait_Click();
@@ -332,11 +333,8 @@ void ScoreTimeClass::Update() {
     if (++Stage >= MaxStage) {
       Stage = 0;
     }
-    PixelView* oldpage = LogicPage;
-    SetLogicPage(PseudoSeenBuff);
-    CC_Draw_Shape(*LogicPage, DataPtr, Stage, XPos, YPos, WINDOW_MAIN,
+    CC_Draw_Shape(*PseudoSeenBuff, DataPtr, Stage, XPos, YPos, WINDOW_MAIN,
                   SHAPE_WIN_REL, {}, {});
-    SetLogicPage(oldpage);
   }
 }
 
@@ -357,8 +355,6 @@ void ScoreCredsClass::Update() {
     if (++Stage >= MaxStage) {
       Stage = 0;
     }
-    PixelView* oldpage = LogicPage;
-    SetLogicPage(PseudoSeenBuff);
     if (Stage < 22) {
       TheAudio().Play(Clock1, 255, TheOptions().Normalize_Sound(70));
     } else {
@@ -366,9 +362,8 @@ void ScoreCredsClass::Update() {
         TheAudio().Play(CashTurn, 255, TheOptions().Normalize_Sound(70));
       }
     }
-    CC_Draw_Shape(*LogicPage, DataPtr, Stage, XPos, YPos, WINDOW_MAIN,
+    CC_Draw_Shape(*PseudoSeenBuff, DataPtr, Stage, XPos, YPos, WINDOW_MAIN,
                   SHAPE_WIN_REL, {}, {});
-    SetLogicPage(oldpage);
   }
 }
 
@@ -721,8 +716,6 @@ void ScoreClass::Presentation() {
   TheScreen().hidden_page().Clear();
   Set_Palette(ThePalettes().black_palette());
 
-  SetLogicPage(TheScreen().sys_mem_page());
-
   const auto country4 = MixArchive::RetrieveData("COUNTRY4.AUD");
   const auto sfx4 = MixArchive::RetrieveData("SFX4.AUD");
   Beepy6 = MixArchive::RetrieveData("BEEPY6.AUD");
@@ -846,14 +839,12 @@ void ScoreClass::Presentation() {
     ** load the logo
     */
     const auto logoptr = MixArchive::RetrieveData("LOGOS.SHP");
-    CC_Draw_Shape(*LogicPage, logoptr, 1, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {},
-                  {});
+    CC_Draw_Shape(TheScreen().sys_mem_page(), logoptr, 1, 0, 0, WINDOW_MAIN,
+                  SHAPE_WIN_REL, {}, {});
 
     Bit_It_In(0, 0, 128, 104 - 16, &TheScreen().sys_mem_page(), PseudoSeenBuff,
               1);
   }
-
-  SetLogicPage(PseudoSeenBuff);
 
 #ifdef FRENCH
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TIME, 200, 3, greenpal));
@@ -906,7 +897,6 @@ void ScoreClass::Presentation() {
   /*
   ** Show stats on # of units killed
   */
-  SetLogicPage(*PseudoSeenBuff);
   TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_CASU, base::At(_casuax, house),
                                    base::At(_casuay, house), redpal));
@@ -928,8 +918,6 @@ void ScoreClass::Presentation() {
   } else {
     Do_GDI_Graph(yellowptr, redptr, GKilled + CKilled, NKilled, 88);
   }
-
-  SetLogicPage(*PseudoSeenBuff);
 
   /*
   ** Print out stats on buildings destroyed
@@ -1033,7 +1021,6 @@ void ScoreClass::Presentation() {
   /*
   ** Now display the hall of fame
   */
-  SetLogicPage(*PseudoSeenBuff);
 
   for (int j = 0; j < NUMFAMENAMES; j++) {
     Alloc_Object(new ScorePrintClass(base::At(hallfame, j).name, HALLFAME_X,
@@ -1108,8 +1095,6 @@ void ScoreClass::Presentation() {
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
   ControlQ = false;
-
-  SetLogicPage(TheScreen().visible_view());
 
   delete PseudoSeenBuff;
   PseudoSeenBuff = nullptr;
@@ -1234,8 +1219,8 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
   /*
   ** Print the # of buildings on the hidpage so we only need to do it once
   */
-  PseudoSeenBuff->Blit(TheScreen().sys_mem_page());
-  SetLogicPage(TheScreen().sys_mem_page());
+  PixelView& view = TheScreen().sys_mem_page();
+  PseudoSeenBuff->Blit(view);
   Call_Back_Delay(30);
   BlitList.Add(2 * (BUILDING_X + 8), 2 * BUILDING_Y, 2 * (BUILDING_X + 8),
                2 * BUILDING_Y, 5 * 12, 12);
@@ -1273,7 +1258,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     ** Draw the building before Rambo
     */
     if (i < 68) {
-      CC_Draw_Shape(*LogicPage, factptr, shapenum, 0, 0, WINDOW_MAIN,
+      CC_Draw_Shape(view, factptr, shapenum, 0, 0, WINDOW_MAIN,
                     SHAPE_FADING | SHAPE_WIN_REL, ScoreRemapBldg,
                     MouseClass::UnitShadow);
     }
@@ -1286,7 +1271,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
       int shapeindex = (i - 61) / 2;
       if (shapeindex < firecount) {
         CC_Draw_Shape(
-            *LogicPage, fball1ptr, shapeindex, 10, 10, WINDOW_MAIN,
+            view, fball1ptr, shapeindex, 10, 10, WINDOW_MAIN,
             SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,
             ScoreRemapFBall, {});
       }
@@ -1294,7 +1279,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
         shapeindex = (i - 64) / 2;
         if (shapeindex < firecount) {
           CC_Draw_Shape(
-              *LogicPage, fball1ptr, shapeindex, 50, 30, WINDOW_MAIN,
+              view, fball1ptr, shapeindex, 50, 30, WINDOW_MAIN,
               SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,
               ScoreRemapFBall, {});
         }
@@ -1303,7 +1288,7 @@ void ScoreClass::Do_Nod_Buildings_Graph() {
     /*
     ** Draw the Rambo character running away from the building
     */
-    CC_Draw_Shape(*LogicPage, rmboptr,
+    CC_Draw_Shape(view, rmboptr,
                   ramboclass->DoControls.at(DO_WALK).Frame +
                       (ramboclass->DoControls.at(DO_WALK).Jump * 6) +
                       ((i / 2) % ramboclass->DoControls.at(DO_WALK).Count),
@@ -1381,18 +1366,19 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   }
 
   // Draw the white-flash shape on the hidpage
-  SetLogicPage(TheScreen().sys_mem_page());
   TheScreen().sys_mem_page().FillRect(0, 0, 124, 9, kTBlack);
-  CC_Draw_Shape(*LogicPage, redptr, 120, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {},
-                {});
-  SetLogicPage(PseudoSeenBuff);
+  CC_Draw_Shape(TheScreen().sys_mem_page(), redptr, 120, 0, 0, WINDOW_MAIN,
+                SHAPE_WIN_REL, {}, {});
+
+  // Everything below draws the bars themselves, onto the pseudo seen page.
+  PixelView& view = *PseudoSeenBuff;
 
   BlitList.Add(594, 2 * (ypos + 2), 594, 2 * (ypos + 2), 5 * 12, 12);
 
   for (int i = 1; i <= gdikilled; i++) {
     if (i != gdikilled) {
-      CC_Draw_Shape(*LogicPage, yellowptr, i, 172, ypos, WINDOW_MAIN,
-                    SHAPE_WIN_REL, {}, {});
+      CC_Draw_Shape(view, yellowptr, i, 172, ypos, WINDOW_MAIN, SHAPE_WIN_REL,
+                    {}, {});
     } else {
       TheScreen().sys_mem_page().Blit(*PseudoSeenBuff, 0, 0, 172, ypos,
                                       3 + gdikilled, 9);
@@ -1404,7 +1390,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
       Call_Back_Delay(2);
     }
   }
-  CC_Draw_Shape(*LogicPage, yellowptr, gdikilled, 172, ypos, WINDOW_MAIN,
+  CC_Draw_Shape(view, yellowptr, gdikilled, 172, ypos, WINDOW_MAIN,
                 SHAPE_WIN_REL, {}, {});
   Count_Up_Print("%d", gkilled, gkilled, 297, ypos + 2);
   if (!Check_Key()) {
@@ -1414,8 +1400,8 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   BlitList.Add(594, 2 * (ypos + 14), 594, 2 * (ypos + 14), 5 * 12, 12);
   for (int i = 1; i <= nodkilled; i++) {
     if (i != nodkilled) {
-      CC_Draw_Shape(*LogicPage, redptr, i, 172, ypos + 12, WINDOW_MAIN,
-                    SHAPE_WIN_REL, {}, {});
+      CC_Draw_Shape(view, redptr, i, 172, ypos + 12, WINDOW_MAIN, SHAPE_WIN_REL,
+                    {}, {});
     } else {
       TheScreen().sys_mem_page().Blit(*PseudoSeenBuff, 0, 0, 172, ypos + 12,
                                       3 + nodkilled, 9);
@@ -1433,7 +1419,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   /*
   ** Make sure accurate count is printed at end
   */
-  CC_Draw_Shape(*LogicPage, redptr, nodkilled, 172, ypos + 12, WINDOW_MAIN,
+  CC_Draw_Shape(view, redptr, nodkilled, 172, ypos + 12, WINDOW_MAIN,
                 SHAPE_WIN_REL, {}, {});
   Count_Up_Print("%d", nkilled, nkilled, 297, ypos + 14);
   if (!Check_Key()) {
@@ -1529,7 +1515,8 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
     // Draw & update infantrymen 3 times for every tick on the graph (i)
     for (int j = 0; j < 3; j++) {
       Draw_InfantryMen();
-      Draw_Bar_Graphs(i, gdikilled, nodkilled, civkilled);
+      Draw_Bar_Graphs(TheScreen().sys_mem_page(), i, gdikilled, nodkilled,
+                      civkilled);
       TheScreen().sys_mem_page().Blit(*PseudoSeenBuff, 0, 0, BARGRAPH_X,
                                       CASUALTY_Y, 320 - BARGRAPH_X, 34);
       Count_Up_Print("%d", i * GKilled / max, GKilled, SCORETEXT_X + 64,
@@ -1568,7 +1555,8 @@ void ScoreClass::Do_Nod_Casualties_Graph() {
     if (k) {
       Draw_InfantryMen();
     }
-    Draw_Bar_Graphs(max, gdikilled, nodkilled, civkilled);
+    Draw_Bar_Graphs(TheScreen().sys_mem_page(), max, gdikilled, nodkilled,
+                    civkilled);
     TheScreen().sys_mem_page().Blit(*PseudoSeenBuff, 0, 0, BARGRAPH_X,
                                     CASUALTY_Y, 320 - BARGRAPH_X, 34);
     Call_Back_Delay(1);
@@ -1876,18 +1864,17 @@ void Draw_InfantryMen() {
   // Only draw the infantrymen if we're playing Nod... GDI wouldn't execute
   //	people like that.
 
+  PixelView& view = TheScreen().sys_mem_page();
+
   /*
   ** First restore the background
   */
-  TheScreen().sys_mem_page().Blit(TheScreen().sys_mem_page(), BARGRAPH_X,
-                                  CASUALTY_Y, 0, 0, 320 - BARGRAPH_X, 34);
-  SetLogicPage(TheScreen().sys_mem_page());
-
+  view.Blit(view, BARGRAPH_X, CASUALTY_Y, 0, 0, 320 - BARGRAPH_X, 34);
   /*
   ** Then draw all the infantrymen on the clean SysMemPage
   */
   for (int k = 0; k < NUMINFANTRYMEN; k++) {
-    Draw_InfantryMan(k);
+    Draw_InfantryMan(view, k);
   }
   /*
   ** They'll all be blitted over to the seenpage after the graphs are drawn
@@ -1908,8 +1895,7 @@ void Draw_InfantryMen() {
  * HISTORY:                                                                *
  *   04/13/1995 BWG : Created.                                             *
  *=========================================================================*/
-void Draw_InfantryMan(int index) {
-
+void Draw_InfantryMan(PixelView& view, int index) {
   /* If the infantryman's dead, just abort this function */
   if (base::At(InfantryMan, index).anim == -1) {
     return;
@@ -1922,7 +1908,7 @@ void Draw_InfantryMan(int index) {
           .at(static_cast<DoType>(base::At(InfantryMan, index).anim))
           .Frame;
 
-  CC_Draw_Shape(*LogicPage, base::At(InfantryMan, index).shapefile, stage,
+  CC_Draw_Shape(view, base::At(InfantryMan, index).shapefile, stage,
                 base::At(InfantryMan, index).xpos,
                 base::At(InfantryMan, index).ypos, WINDOW_MAIN,
                 SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL,  //|SHAPE_GHOST,
@@ -1990,13 +1976,13 @@ void New_Infantry_Anim(int index, int anim) {
  * HISTORY:                                                                *
  *   04/13/1995 BWG : Created.                                             *
  *=========================================================================*/
-void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
+void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,
+                     int ckilled) {
   if (gkilled) {
-    LogicPage->FillRect(0, 0 + 4, 0 + std::min(i, gkilled), 0 + 5, kLtCyan);
-    LogicPage->DrawLine(0 + 1, 0 + 6, 0 + std::min(i, gkilled) + 1, 0 + 6,
-                        kTBlack);
-    LogicPage->DrawLine(0 + std::min(i, gkilled) + 1, 0 + 5,
-                        0 + std::min(i, gkilled) + 1, 0 + 5, kTBlack);
+    view.FillRect(0, 0 + 4, 0 + std::min(i, gkilled), 0 + 5, kLtCyan);
+    view.DrawLine(0 + 1, 0 + 6, 0 + std::min(i, gkilled) + 1, 0 + 6, kTBlack);
+    view.DrawLine(0 + std::min(i, gkilled) + 1, 0 + 5,
+                  0 + std::min(i, gkilled) + 1, 0 + 5, kTBlack);
     if (i <= gkilled) {
       const int anim = base::At(InfantryMan, i / 11).anim;
       if (anim != -1 && anim < static_cast<int>(DO_GUN_DEATH)) {
@@ -2012,11 +1998,10 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
     }
   }
   if (nkilled) {
-    LogicPage->FillRect(0, 0 + 16, 0 + std::min(i, nkilled), 0 + 17, kRed);
-    LogicPage->DrawLine(0 + 1, 0 + 18, 0 + std::min(i, nkilled) + 1, 0 + 18,
-                        kTBlack);
-    LogicPage->DrawLine(0 + std::min(i, nkilled) + 1, 0 + 17,
-                        0 + std::min(i, nkilled) + 1, 0 + 17, kTBlack);
+    view.FillRect(0, 0 + 16, 0 + std::min(i, nkilled), 0 + 17, kRed);
+    view.DrawLine(0 + 1, 0 + 18, 0 + std::min(i, nkilled) + 1, 0 + 18, kTBlack);
+    view.DrawLine(0 + std::min(i, nkilled) + 1, 0 + 17,
+                  0 + std::min(i, nkilled) + 1, 0 + 17, kTBlack);
     if (i <= nkilled) {
       const int anim =
           base::At(InfantryMan, (NUMINFANTRYMEN / 3) + (i / 11)).anim;
@@ -2035,11 +2020,10 @@ void Draw_Bar_Graphs(int i, int gkilled, int nkilled, int ckilled) {
   }
 
   if (ckilled) {
-    LogicPage->FillRect(0, 0 + 28, 0 + std::min(i, ckilled), 0 + 29, kRed);
-    LogicPage->DrawLine(0 + 1, 0 + 30, 0 + std::min(i, ckilled) + 1, 0 + 30,
-                        kTBlack);
-    LogicPage->DrawLine(0 + std::min(i, ckilled) + 1, 0 + 29,
-                        0 + std::min(i, ckilled) + 1, 0 + 29, kTBlack);
+    view.FillRect(0, 0 + 28, 0 + std::min(i, ckilled), 0 + 29, kRed);
+    view.DrawLine(0 + 1, 0 + 30, 0 + std::min(i, ckilled) + 1, 0 + 30, kTBlack);
+    view.DrawLine(0 + std::min(i, ckilled) + 1, 0 + 29,
+                  0 + std::min(i, ckilled) + 1, 0 + 29, kTBlack);
     if (i <= ckilled) {
       const int anim =
           base::At(InfantryMan, (NUMINFANTRYMEN * 2 / 3) + (i / 11)).anim;
@@ -2215,8 +2199,6 @@ void Multi_Score_Presentation() {
       Set_Font(TheAssets().font(FontType::kScore));
   Call_Back();
 
-  SetLogicPage(*PseudoSeenBuff);
-
   /*
   ** Move all the scores over a notch if there's more games than can be
   ** shown (which is known by MPlayerCurGame == MAX_MULTI_GAMES-1);
@@ -2277,8 +2259,6 @@ void Multi_Score_Presentation() {
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteFast, nullptr);
   TheScreen().visible_page().Clear();
   Set_Palette(ThePalettes().game_palette());
-
-  SetLogicPage(TheScreen().visible_view());
 
   delete PseudoSeenBuff;
   PseudoSeenBuff = nullptr;

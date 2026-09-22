@@ -519,3 +519,44 @@ reset in `~PixelView` (`:60-64`) and the declarations at `src/sdllib/pixel_buffe
   What is left for phase 6 is exactly what the plan named, plus two items it did not: the five
   `LogicPage` reads in `src/td/debug.cc` sit inside an `#ifdef NEVER` block that compiles in no
   configuration, and `src/td/findpath.cc`'s debug path holds a save/restore pair of its own.
+
+- 2026-09-21: phase 6 done for both games. No file outside `src/sdllib/pixel_buffer.*` mentions
+  `LogicPage`. The residue divided into five kinds, and most of it turned out to be ceremony rather
+  than work:
+  - **The score screens.** Both games' `ScoreTimeClass::Update` and `ScoreCredsClass::Update` saved
+    and restored the page because a generic animation tick calls them, but each then set it
+    unconditionally -- RA's to the visible view, TD's to `PseudoSeenBuff` -- so the drawn page never
+    depended on what came in. Once those name their view, every set in `Presentation` and
+    `Multi_Score_Presentation` had no reader left: of the four `Update` implementations the tick
+    loop reaches, the other two already named their page explicitly. TD's `Draw_InfantryMan` and
+    `Draw_Bar_Graphs` took a `PixelView&` from the callers that used to set the page for them; which
+    of the four pages each draw lands on was established from the blit that follows it, not assumed.
+  - **The modem callbacks.** `NullModemClass::Abort_Modem` is the one place a parameter was
+    impossible: it is installed through `Set_Abort_Function()`, whose type is `int (*)()`
+    (`sdllib/wincomm.h:182`). It names the visible view locally, which is the page its two
+    installers have on screen whenever it can fire. (Both implementations of `Set_Abort_Function`
+    discard the pointer, so the callback is registered and never invoked -- worth its own dead-code
+    pass.)
+  - **The simulation path.** `TechnoClass::Electric_Zap` and `BuildingClass::Fire_At` name
+    `TheScreen().visible_view()` at the point of use, as the plan prescribed.
+  - **The save/restore pairs.** Neither `Force_CD_Available` leaked: the duplicated restore covering
+    the early return was doing its job. Both needed no replacement local at all, because their only
+    draw is a message box that has named its own page since phase 5. TD's `Map_Selection` lost the
+    teardown restore that phase 1 added (b6ea2927): it existed so `~PixelView` would not leave the
+    global dangling when `PseudoSeenBuff` died, and with no global that leak is structurally
+    impossible rather than repaired. The same applies to the two sets TD's score screen ran
+    immediately before `delete PseudoSeenBuff`.
+  - **Dead code, deleted rather than converted.** `src/td/debug.cc` lines 341-514, an `#ifdef NEVER`
+    block around a dead `case KN_F2:` with three more `#ifdef NEVER` blocks nested inside it, and a
+    fourth in `src/td/findpath.cc` referencing a `Debug_ShowPath` that exists in neither game.
+    `NEVER` is defined nowhere in the tree.
+
+  `PseudoSeenBuff` and the vortex's `RenderBuffer` remain globals. They are pages, not _the_ logic
+  page; phase 6 only stopped them being `SetLogicPage` targets, and giving them owners is a separate
+  job. One real bug surfaced: `FootClass::Find_Path`'s two debug blocks read the global _after_
+  `Debug_Draw_Map` had restored it, so the path visualiser drew to whatever the simulation happened
+  to leave behind and worked by accident.
+
+  Verification: both build dirs clean, 692 tests pass, both save/load smoke scripts pass, and ASan
+  leak totals are byte-identical to phases 2 through 5 in both games (RA 29,823 bytes in 73
+  allocations, TD 17,272 in 215) with no memory errors.

@@ -3106,7 +3106,6 @@ bool Force_CD_Available(int cd) {
                               base::At(_volid, cd));
         }
       }
-      PixelView* oldpage = SetLogicPage(TheScreen().visible_view());
       // The theme was already stopped above, and the only way out of this
       // loop is the cancel below, so there is nothing to remember here.
       TheTheme().Stop();
@@ -3134,7 +3133,6 @@ bool Force_CD_Available(int cd) {
 
       if (CCMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, true) ==
           1) {
-        SetLogicPage(oldpage);
         Hide_Mouse();
         TheGameState().in_main_loop() = old_in_main_loop;
         return false;
@@ -3145,7 +3143,6 @@ bool Force_CD_Available(int cd) {
       Set_Palette(_palette);
       Set_Font(font);
       Set_Font_Palette(_hold);
-      SetLogicPage(oldpage);
       TheGameState().in_main_loop() = old_in_main_loop;
     }
   }

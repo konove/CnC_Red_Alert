@@ -1124,14 +1124,14 @@ void Map_Selection() {
     /*
     ** Draw the country's shape in non-fading colors
     */
-    SetLogicPage(TheScreen().sys_mem_page());
-    europe->Blit(TheScreen().sys_mem_page());
+    PixelView& view = TheScreen().sys_mem_page();
+    europe->Blit(view);
     const int shape =
         base::At(base::At(base::At(CountryArray, scenario).CountryShape,
                           static_cast<int>(TheWorld().scen_dir())),
                  selection);
     const int xshuffled_rows = shape + (house == HOUSE_GOOD ? 0 : 18);
-    CC_Draw_Shape(*LogicPage, countryshape, shape,
+    CC_Draw_Shape(view, countryshape, shape,
                   base::At(_countryx, xshuffled_rows),
                   base::At(_countryy, xshuffled_rows), WINDOW_MAIN,
                   SHAPE_WIN_REL | SHAPE_CENTER, {}, {});
@@ -1188,10 +1188,6 @@ void Map_Selection() {
   TheTheme().Queue_Song(THEME_NONE);
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, nullptr);
   delete europe;
-
-  // Point the logic page back at the screen before the pages this screen drew
-  // to go away; the branch above leaves it on the system memory page.
-  SetLogicPage(TheScreen().visible_view());
 
   delete PseudoSeenBuff;
   PseudoSeenBuff = nullptr;

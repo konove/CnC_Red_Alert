@@ -800,15 +800,15 @@ PathType* FootClass::Find_Path(CELL dest, std::span<FacingType> final_moves,
         ** did.
         */
         if (TheDebugState().trace_path_search() && DrawPath) {
-          Fancy_Text_Print(*LogicPage, "   Left", 0, 92, kWhite, kBlack,
-                           TPF_6POINT);
-          Fancy_Text_Print(*LogicPage, "Total Steps", 0, 100, kWhite, kBlack,
+          PixelView& view = TheScreen().visible_view();
+          Fancy_Text_Print(view, "   Left", 0, 92, kWhite, kBlack, TPF_6POINT);
+          Fancy_Text_Print(view, "Total Steps", 0, 100, kWhite, kBlack,
                            TPF_6POINT);
           if (left) {
-            Fancy_Text_Print(*LogicPage, "    %d", 0, 108, kWhite, kBlack,
-                             TPF_6POINT, pleft.Length);
+            Fancy_Text_Print(view, "    %d", 0, 108, kWhite, kBlack, TPF_6POINT,
+                             pleft.Length);
           } else {
-            Fancy_Text_Print(*LogicPage, "   FAIL", 0, 108, kWhite, kBlack,
+            Fancy_Text_Print(view, "   FAIL", 0, 108, kWhite, kBlack,
                              TPF_6POINT);
           }
         }
@@ -832,15 +832,15 @@ PathType* FootClass::Find_Path(CELL dest, std::span<FacingType> final_moves,
         ** did.
         */
         if (TheDebugState().trace_path_search() && DrawPath) {
-          Fancy_Text_Print(*LogicPage, "  Right", 0, 92, kWhite, kBlack,
-                           TPF_6POINT);
-          Fancy_Text_Print(*LogicPage, "Total Steps", 0, 100, kWhite, kBlack,
+          PixelView& view = TheScreen().visible_view();
+          Fancy_Text_Print(view, "  Right", 0, 92, kWhite, kBlack, TPF_6POINT);
+          Fancy_Text_Print(view, "Total Steps", 0, 100, kWhite, kBlack,
                            TPF_6POINT);
           if (right) {
-            Fancy_Text_Print(*LogicPage, "    %d", 0, 108, kWhite, kBlack,
-                             TPF_6POINT, pright.Length);
+            Fancy_Text_Print(view, "    %d", 0, 108, kWhite, kBlack, TPF_6POINT,
+                             pright.Length);
           } else {
-            Fancy_Text_Print(*LogicPage, "   FAIL", 0, 108, kWhite, kBlack,
+            Fancy_Text_Print(view, "   FAIL", 0, 108, kWhite, kBlack,
                              TPF_6POINT);
           }
         }
@@ -1439,19 +1439,6 @@ int FootClass::Optimize_Moves(PathType* path, MoveType threshhold)
   path->Length = 0;
   while (base::At(path->Command, cmd2) != END) {
     if (base::At(path->Command, cmd2) != kEmptyCommand) {
-#ifdef NEVER
-      if (Debug_ShowPath) {
-        int x, y, x1, y1;
-
-        if (TheMap().Coord_To_Pixel(Cell_Coord(cell), x, y)) {
-          TheMap().Coord_To_Pixel(
-              Cell_Coord(Adjacent_Cell(cell, path->Command[cmd2])), x1, y1);
-          SetLogicPage(TheScreen().visible_view());
-          LogicPage->DrawLine(x, y + 8, x1, y1 + 8, kGrey);
-        }
-      }
-#endif
-
       cell = Adjacent_Cell(cell, base::At(path->Command, cmd2));
       path->Cost +=
           Passable_Cell(cell, base::At(path->Command, cmd2), -1, threshhold);
@@ -1602,11 +1589,10 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
   if (pause) {
     Get_Key_Num();
   }
-  PixelView* page = SetLogicPage(TheScreen().visible_view());
+  PixelView& view = TheScreen().visible_view();
 
   TheScreen().visible_page().Clear();
-  Fancy_Text_Print(*LogicPage, txt, 160, 0, kWhite, kBlack,
-                   TPF_8POINT | TPF_CENTER);
+  Fancy_Text_Print(view, txt, 160, 0, kWhite, kBlack, TPF_8POINT | TPF_CENTER);
   for (int x = 0; x < 64; x++) {
     for (int y = 0; y < 64; y++) {
       int color = 0;
@@ -1638,11 +1624,10 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
       if (XY_Cell(x, y) == dest) {
         color = kBlue;
       }
-      Fat_Put_Pixel(TheScreen().visible_view(), 64 + (x * 3), 8 + (y * 3),
+      Fat_Put_Pixel(view, 64 + (x * 3), 8 + (y * 3),
                     static_cast<uint8_t>(color), 3);
     }
   }
-  SetLogicPage(page);
 }
 
 void FootClass::Debug_Draw_Path(PathType* path) {
