@@ -68,15 +68,6 @@ extern void VQA_ResumeAudio();
 void Focus_Loss();
 void Focus_Restore();
 
-BOOL Any_Locked() {
-  if (TheScreen().visible_view().lock_count() ||
-      TheScreen().hidden_view().lock_count()) {
-    return (true);
-  } else {
-    return (false);
-  }
-}
-
 /***********************************************************************************************
  * Check_For_Focus_Loss -- check for the end of the focus loss *
  *                                                                                             *

@@ -409,15 +409,6 @@ void Colour_Debug(int call_number) {
 
 #pragma on(unreferenced)
 
-BOOL Any_Locked() {
-  if (TheScreen().visible_view().lock_count() ||
-      TheScreen().hidden_view().lock_count()) {
-    return true;
-  } else {
-    return FALSE;
-  }
-}
-
 HANDLE DebugFile = INVALID_HANDLE_VALUE;
 
 /***********************************************************************************************
