@@ -159,22 +159,22 @@ class PixelView {
   void Clear(uint8_t color = 0);
   void ClearLocked(uint8_t color);
 
-  // Copies a rectangle of the view out to plain memory, packed with no
-  // padding. The rectangle is clipped to the view first. Returns 0 once
-  // pixels have been copied, and non-zero when the clip left nothing to do.
-  int32_t CopyToBuffer(int x, int y, int width, int height,
-                       std::span<uint8_t> dest);
-  int32_t CopyToBufferLocked(int x, int y, int width, int height,
-                             std::span<uint8_t> dest);
+  // Copies the width x height rectangle at src_x,src_y in the view out to
+  // plain memory, packed with no padding. The rectangle is clipped to the
+  // view first, and a rectangle that misses the view entirely copies
+  // nothing.
+  void CopyToBuffer(int src_x, int src_y, int width, int height,
+                    std::span<uint8_t> dest);
+  void CopyToBufferLocked(int src_x, int src_y, int width, int height,
+                          std::span<uint8_t> dest);
 
   // The other direction: copies a width x height image from plain memory
-  // into the view at x,y, clipping it to the view. `source` is packed with
-  // no padding. Returns 0 once pixels have been copied, and non-zero when
-  // the clip left nothing to do.
-  int32_t CopyFromBuffer(int x, int y, int width, int height,
-                         std::span<const uint8_t> source);
-  int32_t CopyFromBufferLocked(int dst_x, int dst_y, int width, int height,
-                               std::span<const uint8_t> source);
+  // into the view at dst_x,dst_y, clipping it to the view. `source` is
+  // packed with no padding.
+  void CopyFromBuffer(int dst_x, int dst_y, int width, int height,
+                      std::span<const uint8_t> source);
+  void CopyFromBufferLocked(int dst_x, int dst_y, int width, int height,
+                            std::span<const uint8_t> source);
 
   // Copies width x height pixels from src_x,src_y in this view to
   // dst_x,dst_y in `dest`, clipping to both. With `transparent`,
@@ -500,24 +500,21 @@ inline void PixelView::Clear(uint8_t color) {
   }
 }
 
-inline int32_t PixelView::CopyToBuffer(int x, int y, int width, int height,
-                                       std::span<uint8_t> dest) {
-  int32_t return_code = 0;
+inline void PixelView::CopyToBuffer(int src_x, int src_y, int width, int height,
+                                    std::span<uint8_t> dest) {
   if (Lock()) {
-    return_code = CopyToBufferLocked(x, y, width, height, dest);
+    CopyToBufferLocked(src_x, src_y, width, height, dest);
     Unlock();
   }
-  return return_code;
 }
 
-inline int32_t PixelView::CopyFromBuffer(int x, int y, int width, int height,
-                                         std::span<const uint8_t> source) {
-  int32_t return_code = 0;
+inline void PixelView::CopyFromBuffer(int dst_x, int dst_y, int width,
+                                      int height,
+                                      std::span<const uint8_t> source) {
   if (Lock()) {
-    return_code = CopyFromBufferLocked(x, y, width, height, source);
+    CopyFromBufferLocked(dst_x, dst_y, width, height, source);
     Unlock();
   }
-  return return_code;
 }
 
 inline bool PixelView::Blit(PixelView& dest, int src_x, int src_y, int dst_x,

@@ -139,24 +139,24 @@ void PixelView::ClearLocked(const uint8_t color) {
   } while (--line_count);
 }
 
-int32_t PixelView::CopyToBufferLocked(const int x, const int y, const int width,
-                                      const int height,
-                                      std::span<uint8_t> dest) {
+void PixelView::CopyToBufferLocked(const int src_x, const int src_y,
+                                   const int width, const int height,
+                                   std::span<uint8_t> dest) {
   int dst_x0 = 0;
   int dst_y0 = 0;
 
   // clip src
-  int src_x0 = x;
-  int src_y0 = y;
-  int src_x1 = x + width;
-  int src_y1 = y + height;
+  int src_x0 = src_x;
+  int src_y0 = src_y;
+  int src_x1 = src_x + width;
+  int src_y1 = src_y + height;
 
   const OutCode code0 = OutCodeOf(src_x0, src_y0, width_, height_);
   const OutCode code1 = OutCodeOf(src_x1, src_y1, width_ + 1, height_ + 1);
 
   // outside
   if (base::Any(code0 & code1)) {
-    return 0;  // i'm not sure this actually has a return value...
+    return;
   }
 
   if (base::Any(code0 | code1)) {
@@ -184,11 +184,11 @@ int32_t PixelView::CopyToBufferLocked(const int x, const int y, const int width,
       dest.begin() + dst_x0 + (static_cast<base::ssize>(dst_y0) * width);
 
   if (src_x1 <= src_x0 || src_y1 <= src_y0) {
-    return 1;
+    return;
   }
 
   if (std::to_address(src_offset) == std::to_address(dst_offset)) {
-    return 1;
+    return;
   }
 
   const int pixel_count = src_x1 - src_x0;
@@ -200,13 +200,11 @@ int32_t PixelView::CopyToBufferLocked(const int x, const int y, const int width,
     src_offset += src_area;
     dst_offset += width;
   } while (--line_count);
-
-  return 0;
 }
 
-int32_t PixelView::CopyFromBufferLocked(const int dst_x, const int dst_y,
-                                        const int width, const int height,
-                                        std::span<const uint8_t> source) {
+void PixelView::CopyFromBufferLocked(const int dst_x, const int dst_y,
+                                     const int width, const int height,
+                                     std::span<const uint8_t> source) {
   int src_x0 = 0;
   int src_y0 = 0;
 
@@ -221,7 +219,7 @@ int32_t PixelView::CopyFromBufferLocked(const int dst_x, const int dst_y,
 
   // outside
   if (base::Any(code0 & code1)) {
-    return 0;  // i'm not sure this actually has a return value...
+    return;
   }
 
   if (base::Any(code0 | code1)) {
@@ -249,11 +247,11 @@ int32_t PixelView::CopyFromBufferLocked(const int dst_x, const int dst_y,
   auto dst_offset = pixels().begin() + dst_x0 + (dst_y0 * dst_area);
 
   if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
-    return 1;
+    return;
   }
 
   if (std::to_address(src_offset) == std::to_address(dst_offset)) {
-    return 1;
+    return;
   }
 
   const int pixel_count = dst_x1 - dst_x0;
@@ -265,8 +263,6 @@ int32_t PixelView::CopyFromBufferLocked(const int dst_x, const int dst_y,
     src_offset += width;
     dst_offset += dst_area;
   } while (--line_count);
-
-  return 0;
 }
 
 bool PixelView::BlitLocked(PixelView& dest, const int src_x, const int src_y,
