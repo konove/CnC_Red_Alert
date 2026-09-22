@@ -62,10 +62,10 @@
 #include "td/jshell.h"
 #include "td/palette.h"
 #include "td/palettes.h"
+#include "td/presentation.h"
 #include "td/score.h"
 #include "td/screen.h"
 #include "td/special.h"
-#include "td/textblit.h"
 #include "td/world.h"
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
@@ -121,11 +121,7 @@ void Choose_Side() {
   const int oldfontxspacing = FontXSpacing;
   int setpalette = 0;
 
-  TextPrintBuffer = new PixelBuffer(TheScreen().visible_view().width(),
-                                    TheScreen().visible_view().height(), {});
-  TextPrintBuffer->view().Clear();
-  BlitList.Clear();
-  PseudoSeenBuff = new PixelBuffer(320, 200, {});
+  Presentation show;
   int frame = 0;
   int endframe = 255;
   bool lettersdone = false;
@@ -167,7 +163,7 @@ void Choose_Side() {
 
   TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
   TheScreen().hidden_page().view().Clear();
-  PseudoSeenBuff->view().Clear();
+  show.page().view().Clear();
   TheScreen().sys_mem_page().view().Clear();
   // if (!Special.IsFromInstall) {
   TheScreen().visible_page().view().Clear();
@@ -179,19 +175,19 @@ void Choose_Side() {
   int statichandle = TheAudio().Play(staticaud, 255, 64);
   CountDownTimerClass sample_timer;
   sample_timer.Set(0x3f);
-  Alloc_Object(new ScorePrintClass(TXT_GDI_NAME, 0, 180, yellowpal));
+  Alloc_Object(new ScorePrintClass(show, TXT_GDI_NAME, 0, 180, yellowpal));
 #ifdef FRENCH
-  Alloc_Object(new ScorePrintClass(TXT_GDI_NAME2, 0, 187, yellowpal));
+  Alloc_Object(new ScorePrintClass(show, TXT_GDI_NAME2, 0, 187, yellowpal));
 #endif
-  Alloc_Object(new ScorePrintClass(TXT_NOD_NAME, 180, 180, redpal));
+  Alloc_Object(new ScorePrintClass(show, TXT_NOD_NAME, 180, 180, redpal));
 
 #ifdef GERMAN
-  Alloc_Object(new ScorePrintClass(TXT_SEL_TRANS, 57, 190, _graypal));
+  Alloc_Object(new ScorePrintClass(show, TXT_SEL_TRANS, 57, 190, _graypal));
 #else
 #ifdef FRENCH
-  Alloc_Object(new ScorePrintClass(TXT_SEL_TRANS, 103, 194, _graypal));
+  Alloc_Object(new ScorePrintClass(show, TXT_SEL_TRANS, 103, 194, _graypal));
 #else
-  Alloc_Object(new ScorePrintClass(TXT_SEL_TRANS, 103, 190, _graypal));
+  Alloc_Object(new ScorePrintClass(show, TXT_SEL_TRANS, 103, 190, _graypal));
 #endif
 #endif
   Keyboard::Clear();
@@ -208,7 +204,7 @@ void Choose_Side() {
       Set_Palette(ThePalettes().title_palette());
       setpalette = 0;
     }
-    TheScreen().sys_mem_page().view().Blit(PseudoSeenBuff->view(), 0, 22, 0, 22,
+    TheScreen().sys_mem_page().view().Blit(show.page().view(), 0, 22, 0, 22,
                                            320, 156);
 
     /*
@@ -219,7 +215,7 @@ void Choose_Side() {
       statichandle = TheAudio().Play(staticaud, 255, 64);
       sample_timer.Set(0x3f);
     }
-    Call_Back_Delay(3);  // delay only if haven't clicked
+    Call_Back_Delay(show, 3);  // delay only if haven't clicked
 
     /* keep the mouse hidden until the letters are thru printing */
     if (!lettersdone) {
@@ -265,10 +261,9 @@ void Choose_Side() {
   anim.Close();
 
   // erase the "choose side" text
-  PseudoSeenBuff->view().FillRect(0, 180, 319, 199, 0);
+  show.page().view().FillRect(0, 180, 319, 199, 0);
   TheScreen().visible_view().FillRect(0, 180 * 2, 319 * 2, 199 * 2, 0);
-  Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),
-                       "SIDES.PAL");
+  Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), "SIDES.PAL");
   TheScreen().sys_mem_page().view().Clear();
 
   Keyboard::Clear();
@@ -333,10 +328,5 @@ void Choose_Side() {
   Set_Font(oldfont);
   FontXSpacing = oldfontxspacing;
 
-  delete PseudoSeenBuff;
-  PseudoSeenBuff = nullptr;
-  delete TextPrintBuffer;
-  TextPrintBuffer = nullptr;
-  BlitList.Clear();
 }
 #endif

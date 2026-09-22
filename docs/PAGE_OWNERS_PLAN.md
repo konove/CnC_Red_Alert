@@ -140,5 +140,48 @@ has both pages, so `DrawTextRects()` just draws.
 
 ## Progress
 
-- [ ] Step 1
-- [ ] Steps 2-4
+- **2026-09-22: step 1 done.** `RenderBuffer` is a `PixelBuffer` member sized by
+  `ChronalVortexClass`'s constructor. The null check, both `delete`s and the reallocation in
+  `Serialize()` are gone; the save-game path clears the page instead. With nothing left to do but
+  assign a member of a dying object, the destructor is defaulted.
+
+  Verification: both build dirs clean, `tools/strict_tu.py` clean on `vortex.cc`, 713 tests pass,
+  both Red Alert smoke scripts pass (240 object positions, and the legacy fixture still loads), and
+  ASan `-NEWGAMESCG01EA -QUITFRAME100` shows no leak from the vortex - every remaining allocation is
+  the known `MapEditClass::One_Time()` / `Init_Game()` set, so `World`'s destructor does free the
+  page.
+
+- **2026-09-22: steps 2-4 done.** `Presentation` (`src/td/presentation.h/.cc`) owns the art page,
+  the text page and the queued text rectangles; `src/td/textblit.h` and `TextBlitClass` are deleted,
+  as are all three globals. Each of the five presentations builds one on the stack. 177 lines of
+  reads became calls on it, and 181 call sites gained the argument: `Call_Back_Delay`,
+  `Animate_Cursor`, `Bit_It_In`, `Cycle_Wait_Click`, `Print_Statistics`, `Cycle_Call_Back_Delay`,
+  the seven `ScoreClass` drawing helpers, and every `ScoreAnimClass` constructor.
+
+  Four things the plan did not anticipate:
+  - **The anim objects hold the reference rather than taking it per tick.** `ScoreAnimClass` stores
+    a `Presentation&`, so `Update()` keeps its no-argument signature and `Animate_Score_Objs()`
+    needs no parameter. The objects are allocated and destroyed inside one presentation, so the
+    reference cannot dangle - and the generic tick that made this state global in the first place
+    stops being the problem.
+  - **`ScoreClass::Presentation()` is renamed `Show()`.** A member function of that name hides the
+    type inside the class, so every `Presentation&` parameter in `score.h` failed to compile. The
+    method was a noun anyway; there were 7 call sites.
+  - **`Presentation`'s accessors needed `ABSL_ATTRIBUTE_LIFETIME_BOUND`, its constructors did not.**
+    The strict build asks for the attribute on the base `ScoreAnimClass` constructors, and rejects
+    it on the derived ones that forward to them.
+  - **Tiberian Dawn's `#ifdef FRENCH` branches were stale.** Four `FillRect` calls in `mapsel.cc`
+    were left on a `PixelBuffer` by 7d9f4b4b, because no configuration compiles them. Converted, not
+    deleted; see the finding above.
+
+  Verification: both build dirs clean, `tools/strict_tu.py` clean on all six touched TUs, 713 tests
+  pass, both save/load smoke scripts pass (RA 240 object positions, TD 5,742 game states), and ASan
+  `-NEWGAMESCG01EA -QUITFRAME100` reports no memory errors and **no leaks at all** in Tiberian Dawn.
+
+  **Real-display run: partial.** Tiberian Dawn was driven to `Choose_Side`, which renders correctly
+  and exercises all four of the new class's operations - the art page scaled 2x (the side-logo
+  movie) and the caption page blitted forward through the rectangle queue ("GLOBAL DEFENSE
+  INITIATIVE", "BROTHERHOOD OF NOD", "SELECT TRANSMISSION", all crisp at full resolution). Red
+  Alert's menu and intro movie were confirmed the same way. `Map_Selection`, both score screens and
+  the Nod ending were **not** reached: synthetic XTest clicks only land in this game intermittently,
+  and there is no `xdotool` on this machine. They need a human to click through once.

@@ -54,6 +54,7 @@ class ArchiveWriter;
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/wwstd.h"
+#include "td/presentation.h"
 #include "tech/file.h"
 
 class ScoreClass {
@@ -71,7 +72,9 @@ class ScoreClass {
   int64_t ElapsedTime;
 
   void Init() { base::FillBytes(base::ObjectBytes(*this), 0, sizeof(*this)); }
-  void Presentation();
+  // Runs the mission's score screen: the animated tally of kills,
+  // buildings and harvested tiberium, and the high-score entry after it.
+  void Show();
 
   /*
   **	File I/O.
@@ -88,24 +91,27 @@ class ScoreClass {
   void ScoreDelay(int ticks);
   void Pulse_Bar_Graph();
   void Print_Graph_Title(int, int);
-  static void Print_Minutes(int minutes);
-  static void Count_Up_Print(const char* str, int percent, int max, int xpos,
-                             int ypos);
-  static void Show_Credits(int house, std::span<const unsigned char> pal);
-  static void Do_GDI_Graph(std::span<const std::byte> yellowptr,
+  static void Print_Minutes(Presentation& show, int minutes);
+  static void Count_Up_Print(Presentation& show, const char* str, int percent,
+                             int max, int xpos, int ypos);
+  static void Show_Credits(Presentation& show, int house,
+                           std::span<const unsigned char> pal);
+  static void Do_GDI_Graph(Presentation& show,
+                           std::span<const std::byte> yellowptr,
                            std::span<const std::byte> redptr, int gkilled,
                            int nkilled, int ypos);
-  void Do_Nod_Casualties_Graph();
-  void Do_Nod_Buildings_Graph();
-  static void Input_Name(std::span<char> str, int xpos, int ypos,
-                         std::span<const unsigned char> pal);
+  void Do_Nod_Casualties_Graph(Presentation& show);
+  void Do_Nod_Buildings_Graph(Presentation& show);
+  static void Input_Name(Presentation& show, std::span<char> str, int xpos,
+                         int ypos, std::span<const unsigned char> pal);
 };
 
 class ScoreAnimClass {
  public:
-  ScoreAnimClass(int x, int y,
+  ScoreAnimClass(Presentation& show ABSL_ATTRIBUTE_LIFETIME_BOUND, int x, int y,
                  std::span<const std::byte> data ABSL_ATTRIBUTE_LIFETIME_BOUND);
-  ScoreAnimClass(int x, int y, const char* text ABSL_ATTRIBUTE_LIFETIME_BOUND);
+  ScoreAnimClass(Presentation& show ABSL_ATTRIBUTE_LIFETIME_BOUND, int x, int y,
+                 const char* text ABSL_ATTRIBUTE_LIFETIME_BOUND);
   int XPos;
   int Stage = 0;
   int YPos;
@@ -121,6 +127,12 @@ class ScoreAnimClass {
   // The animation's text, for the text-style animations.
   [[nodiscard]] const char* Text() const { return TextData; }
   virtual void Update() {}
+
+ protected:
+  // The presentation these draw into, which outlives every animation on it.
+  Presentation& show_;
+
+ public:
   virtual ~ScoreAnimClass() = default;
   ScoreAnimClass(const ScoreAnimClass&) = delete;
   ScoreAnimClass& operator=(const ScoreAnimClass&) = delete;
@@ -136,8 +148,8 @@ class ScoreCredsClass : public ScoreAnimClass {
   std::span<const std::byte> Clock1;
 
   void Update() override;
-  ScoreCredsClass(int xpos, int ypos, std::span<const std::byte> data, int max,
-                  int timer);
+  ScoreCredsClass(Presentation& show, int xpos, int ypos,
+                  std::span<const std::byte> data, int max, int timer);
   ~ScoreCredsClass() override = default;
   ScoreCredsClass(const ScoreCredsClass&) = delete;
   ScoreCredsClass& operator=(const ScoreCredsClass&) = delete;
@@ -150,8 +162,8 @@ class ScoreTimeClass : public ScoreAnimClass {
   int MaxStage;
   int TimerReset;
   void Update() override;
-  ScoreTimeClass(int xpos, int ypos, std::span<const std::byte> data, int max,
-                 int timer);
+  ScoreTimeClass(Presentation& show, int xpos, int ypos,
+                 std::span<const std::byte> data, int max, int timer);
   ~ScoreTimeClass() override = default;
   ScoreTimeClass(const ScoreTimeClass&) = delete;
   ScoreTimeClass& operator=(const ScoreTimeClass&) = delete;
@@ -164,11 +176,11 @@ class ScorePrintClass : public ScoreAnimClass {
   int Background;
   std::span<const uint8_t> PrimaryPalette;
   void Update() override;
-  ScorePrintClass(const char* string, int xpos, int ypos,
+  ScorePrintClass(Presentation& show, const char* string, int xpos, int ypos,
                   std::span<const uint8_t> palette
                       ABSL_ATTRIBUTE_LIFETIME_BOUND,
                   int background = kTBlack);
-  ScorePrintClass(int string, int xpos, int ypos,
+  ScorePrintClass(Presentation& show, int string, int xpos, int ypos,
                   std::span<const uint8_t> palette
                       ABSL_ATTRIBUTE_LIFETIME_BOUND,
                   int background = kTBlack);
@@ -184,11 +196,11 @@ class MultiStagePrintClass : public ScoreAnimClass {
   int Background;
   std::span<const uint8_t> PrimaryPalette;
   void Update() override;
-  MultiStagePrintClass(const char* string, int xpos, int ypos,
-                       std::span<const uint8_t> palette
-                           ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                       int background = kTBlack);
-  MultiStagePrintClass(int string, int xpos, int ypos,
+  MultiStagePrintClass(
+      Presentation& show, const char* string, int xpos, int ypos,
+      std::span<const uint8_t> palette ABSL_ATTRIBUTE_LIFETIME_BOUND,
+      int background = kTBlack);
+  MultiStagePrintClass(Presentation& show, int string, int xpos, int ypos,
                        std::span<const uint8_t> palette
                            ABSL_ATTRIBUTE_LIFETIME_BOUND,
                        int background = kTBlack);
@@ -203,7 +215,7 @@ class ScoreScaleClass : public ScoreAnimClass {
  public:
   std::span<const uint8_t> Palette;
   void Update() override;
-  ScoreScaleClass(const char* string, int xpos, int ypos,
+  ScoreScaleClass(Presentation& show, const char* string, int xpos, int ypos,
                   std::span<const uint8_t> pal ABSL_ATTRIBUTE_LIFETIME_BOUND);
   ~ScoreScaleClass() override = default;
   ScoreScaleClass(const ScoreScaleClass&) = delete;
@@ -218,11 +230,10 @@ extern ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 void Multi_Score_Presentation();
 
 void Map_Selection();
-void Bit_It_In(int x, int y, int w, int h, PixelBuffer* src, PixelBuffer* dest,
-               int delay = 0, bool dagger = false);
-void Call_Back_Delay(int time);
+void Bit_It_In(Presentation& show, int x, int y, int w, int h, PixelBuffer* src,
+               PixelBuffer* dest, int delay = 0, bool dagger = false);
+void Call_Back_Delay(Presentation& show, int time);
 int Alloc_Object(ScoreAnimClass* obj);
-extern PixelBuffer* PseudoSeenBuff;
 
 extern template void ScoreClass::Serialize<ArchiveWriter>(ArchiveWriter&);
 extern template void ScoreClass::Serialize<ArchiveReader>(ArchiveReader&);

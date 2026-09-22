@@ -444,17 +444,17 @@ void Do_Win() {
 
     switch (TheWorld().scenario()) {
       case 1:
-        TheWorld().score().Presentation();
+        TheWorld().score().Show();
         TheWorld().scenario() = 10;
         break;
 
       case 10:
-        TheWorld().score().Presentation();
+        TheWorld().score().Show();
         TheWorld().scenario() = 6;
         break;
 
       default:
-        TheWorld().score().Presentation();
+        TheWorld().score().Show();
         GDI_Ending();
         TheGameState().active() = false;
         Show_Mouse();
@@ -469,7 +469,7 @@ void Do_Win() {
 #ifdef NEWMENU
     if (TheWorld().scenario() >= 20) {
       Keyboard::Clear();
-      TheWorld().score().Presentation();
+      TheWorld().score().Show();
       TheGameState().active() = false;
       Show_Mouse();
       return;
@@ -504,7 +504,7 @@ void Do_Win() {
 
     if (!TheSpecial().IsJurassic || !TheGameState().thingies_enabled()) {
       Keyboard::Clear();
-      TheWorld().score().Presentation();
+      TheWorld().score().Show();
 
       /*
       **	Skip scenario #7 if the airfield was blown up.

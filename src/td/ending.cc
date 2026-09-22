@@ -68,10 +68,10 @@
 #include "td/jshell.h"
 #include "td/palette.h"
 #include "td/palettes.h"
+#include "td/presentation.h"
 #include "td/score.h"
 #include "td/screen.h"
 #include "td/text.h"
-#include "td/textblit.h"
 #include "td/winstub.h"
 #include "td/world.h"
 #include "tech/audio_mixer.h"
@@ -96,7 +96,7 @@ void GDI_Ending() {
     Play_Movie("GDIFINA");
   }
 
-  TheWorld().score().Presentation();
+  TheWorld().score().Show();
 
   if (TheWorld().temple_ioned()) {
     Play_Movie("GDIEND2");
@@ -170,18 +170,14 @@ void Nod_Ending() {
 #endif  // NOT_FOR_WIN95
   const int oldfontxspacing = FontXSpacing;
 
-  TheWorld().score().Presentation();
+  TheWorld().score().Show();
 
   const std::span<const std::byte> oldfont =
       Set_Font(TheAssets().font(FontType::kScore));
-  PseudoSeenBuff = new PixelBuffer(320, 200, {});
-  TextPrintBuffer = new PixelBuffer(TheScreen().visible_view().width(),
-                                    TheScreen().visible_view().height(), {});
-  TextPrintBuffer->view().Clear();
-  BlitList.Clear();
+  Presentation show;
   TheScreen().visible_view().Clear();
   TheScreen().hidden_view().Clear();
-  PseudoSeenBuff->view().Clear();
+  show.page().view().Clear();
 
   GameFile f("SATSEL.PAL");
   const auto localpal = Load_Alloc_Data(f);
@@ -193,7 +189,7 @@ void Nod_Ending() {
                   std::as_bytes(TheScreen().hidden_view().bytes()),
                   satpic.size());
 #else
-  TheScreen().sys_mem_page().view().Blit(PseudoSeenBuff->view());
+  TheScreen().sys_mem_page().view().Blit(show.page().view());
 #endif  // NOT_FOR_WIN95
   // Read from the file: MixArchive::RetrieveData() only serves cached archives.
   GameFile kanefinl_file("KANEFINL.AUD");
@@ -213,7 +209,7 @@ void Nod_Ending() {
   Show_Mouse();
 
   Increase_Palette_Luminance(port::UnsignedBytes(localpal), 30, 30, 30, 63);
-  Interpolate_2X_Scale(PseudoSeenBuff, &TheScreen().visible_view(),
+  Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
                        "SATSELIN.PAL");
 
   Keyboard::Clear();
@@ -227,12 +223,12 @@ void Nod_Ending() {
   while (!done) {
     if (!printedtext && !TheAudio().IsPlaying(kanefinl.data())) {
       printedtext = true;
-      Alloc_Object(
-          new ScorePrintClass(Text_String(TXT_SEL_TARGET), 0, 180, _tanpal));
+      Alloc_Object(new ScorePrintClass(show, Text_String(TXT_SEL_TARGET), 0,
+                                       180, _tanpal));
       mouseshown = true;
       Show_Mouse();
     }
-    Call_Back_Delay(1);
+    Call_Back_Delay(show, 1);
     if (!Keyboard::Check()) {
       if (!TheAudio().IsPlaying(loopie6m.data())) {
         TheAudio().Play(loopie6m, 255, 128);
@@ -266,9 +262,6 @@ void Nod_Ending() {
   }
 #ifdef NOT_FOR_WIN95
   satpic.clear();
-#else
-  delete PseudoSeenBuff;
-  PseudoSeenBuff = nullptr;
 #endif  // NOT_FOR_WIN95
 
   /* get rid of all the animating objects */
@@ -280,7 +273,7 @@ void Nod_Ending() {
   }
   // erase the "choose a target" text
   TheScreen().visible_view().FillRect(0, 360, 638, 398, 0);
-  TextPrintBuffer->view().FillRect(0, 360, 638, 398, 0);
+  show.text_page().view().FillRect(0, 360, 638, 398, 0);
 
   Hide_Mouse();
   Keyboard::Clear();
@@ -336,8 +329,5 @@ void Nod_Ending() {
   Play_Movie("CC2TEASE");
 
   delete[] port::CharBytes(std::span(localpal)).data();
-  delete TextPrintBuffer;
-  TextPrintBuffer = nullptr;
-  BlitList.Clear();
 }
 #endif
