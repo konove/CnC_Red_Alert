@@ -121,7 +121,8 @@
  *                                                                                             *
  * HISTORY: * 8/29/96 4:25PM ST : Created *
  *=============================================================================================*/
-ChronalVortexClass::ChronalVortexClass() = default;
+ChronalVortexClass::ChronalVortexClass()
+    : RenderBuffer(CELL_PIXEL_W * 4, CELL_PIXEL_H * 4) {}
 
 /***********************************************************************************************
  * CVC::~ChronalVortexClass -- vortex class destructor *
@@ -136,10 +137,9 @@ ChronalVortexClass::ChronalVortexClass() = default;
  *                                                                                             *
  * HISTORY: * 8/29/96 4:25PM ST : Created *
  *=============================================================================================*/
-ChronalVortexClass::~ChronalVortexClass() {
-  delete RenderBuffer;
-  Active = 0;
-}
+// Declared rather than defaulted in the header only so the deleted copy and
+// move operations have a destructor beside them.
+ChronalVortexClass::~ChronalVortexClass() = default;
 
 /***********************************************************************************************
  * CVC::Appear -- Makes a chronal vortex appear at the given coordinate. *
@@ -313,8 +313,10 @@ void ChronalVortexClass::Serialize(Archive& ar) {
     StartShutdown = shutdown ? -1 : 0;
     StartHiding = hiding ? -1 : 0;
     Hidden = hidden ? -1 : 0;
-    delete RenderBuffer;
-    RenderBuffer = nullptr;
+    // The page is scratch redrawn on the next render, but the saved game
+    // says nothing about it, so start it blank rather than on the pixels
+    // the outgoing game left there.
+    RenderBuffer.view().Clear();
     if (ar.ok()) {
       Theater = THEATER_NONE;
       Setup_Remap_Tables(TheScenario().Theater);
@@ -812,9 +814,6 @@ void ChronalVortexClass::Render(PixelView& view) {
       *if we build
       ** the image from the hidpage.
       */
-      if (!RenderBuffer) {
-        RenderBuffer = new PixelBuffer(CELL_PIXEL_W * 4, CELL_PIXEL_H * 4, {});
-      }
       const CELL xc = Coord_XCell(Position);
       const CELL yc = Coord_YCell(Position);
       const TemplateTypeClass* ttype = nullptr;
@@ -836,9 +835,9 @@ void ChronalVortexClass::Render(PixelView& view) {
       base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowX) = 0;
       base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowY) = 0;
       base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowWidth) =
-          RenderBuffer->width();
+          RenderBuffer.width();
       base::At(WindowList[static_cast<int>(WINDOW_TACTICAL)], kWindowHeight) =
-          RenderBuffer->height();
+          RenderBuffer.height();
 
       /*
       ** Loop through all the cells that the vortex overlaps and render the
@@ -870,9 +869,9 @@ void ChronalVortexClass::Render(PixelView& view) {
             ** Draw the template
             */
             if (!ttype->Get_Image_Data().empty()) {
-              RenderBuffer->view().DrawStamp(ttype->Get_Image_Data(), icon,
-                                             x * CELL_PIXEL_W, y * CELL_PIXEL_H,
-                                             {}, static_cast<int>(WINDOW_MAIN));
+              RenderBuffer.view().DrawStamp(ttype->Get_Image_Data(), icon,
+                                            x * CELL_PIXEL_W, y * CELL_PIXEL_H,
+                                            {}, static_cast<int>(WINDOW_MAIN));
             }
 
             /*
@@ -880,7 +879,7 @@ void ChronalVortexClass::Render(PixelView& view) {
             */
             if (cellptr->Smudge != SMUDGE_NONE) {
               SmudgeTypeClass::As_Reference(cellptr->Smudge)
-                  .Draw_It(RenderBuffer->view(), x * CELL_PIXEL_W,
+                  .Draw_It(RenderBuffer.view(), x * CELL_PIXEL_W,
                            y * CELL_PIXEL_H, cellptr->SmudgeData);
             }
 
@@ -893,7 +892,7 @@ void ChronalVortexClass::Render(PixelView& view) {
               IsTheaterShape = static_cast<bool>(
                   otype.IsTheater);  // Tell Build_Frame if this overlay is
                                      // theater specific
-              CC_Draw_Shape(RenderBuffer->view(), otype.Get_Image_Data(),
+              CC_Draw_Shape(RenderBuffer.view(), otype.Get_Image_Data(),
                             cellptr->OverlayData,
                             (x * CELL_PIXEL_W) + (CELL_PIXEL_W >> 1),
                             (y * CELL_PIXEL_H) + (CELL_PIXEL_H >> 1),
@@ -920,7 +919,7 @@ void ChronalVortexClass::Render(PixelView& view) {
       /*
       ** Render the vortex over the cells we just rendered to our buffer
       */
-      Coordinate_Remap(&RenderBuffer->view(),
+      Coordinate_Remap(&RenderBuffer.view(),
                        Lepton_To_Pixel(Coord_X(Coord_Fraction(Position))),
                        Lepton_To_Pixel(Coord_Y(Coord_Fraction(Position))), 64,
                        64, base::UnsignedBytes(lut_ptr));
@@ -954,10 +953,10 @@ void ChronalVortexClass::Render(PixelView& view) {
       // Blit the freshly drawn cells and vortex into place on the hid page.
       // The whole of RenderBuffer goes across; Blit clips it to the tactical
       // view and advances the source by whatever came off the top and left.
-      RenderBuffer->view().Blit(
+      RenderBuffer.view().Blit(
           target, 0, 0, Lepton_To_Pixel(static_cast<LEPTON>(xoff)),
-          Lepton_To_Pixel(static_cast<LEPTON>(yoff)), RenderBuffer->width(),
-          RenderBuffer->height(), false);
+          Lepton_To_Pixel(static_cast<LEPTON>(yoff)), RenderBuffer.width(),
+          RenderBuffer.height(), false);
     }
   }
 }

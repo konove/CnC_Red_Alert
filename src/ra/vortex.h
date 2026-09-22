@@ -273,12 +273,11 @@ class ChronalVortexClass {
   */
   int Damage{200};
 
-  /*
-  ** Offscreen buffer to render vortex into. This is needed so we can handle
-  *clipping.
-  */
-  PixelBuffer* RenderBuffer{
-      nullptr};  // We havn't allocated it yet. It will be allocated as needed.
+  // The offscreen page the vortex is drawn into, four cells square. The remap
+  // reads pixels from outside the tactical window, which the hidden page does
+  // not have, so the vortex rebuilds that square of the map itself and blits
+  // the result back clipped. The constructor sizes it.
+  PixelBuffer RenderBuffer;
 };
 
 class ArchiveReader;
