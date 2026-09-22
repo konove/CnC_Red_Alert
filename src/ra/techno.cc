@@ -3138,7 +3138,6 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
     x1 += TheMap().TacPixelX;
     y += TheMap().TacPixelY;
     y1 += TheMap().TacPixelY;
-    SetLogicPage(TheScreen().visible_view());
     gonnadraw = true;
   }
 
@@ -3155,6 +3154,7 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
       {0, 0, 0, 8, 8, 8, 0, 0},      {-8, -8, -8, 0, 0, 0, -8, -8}};
 
   if (gonnadraw) {
+    PixelView& view = TheScreen().visible_view();
     const int savex = x;
     const int savey = y;
     for (int shots = 0; shots < 3; shots++) {
@@ -3198,12 +3198,12 @@ bool TechnoClass::Electric_Zap(TARGET target, int which,
         x += base::At(base::At(_xadd, facing), lastfacing);
         y += base::At(base::At(_yadd, facing), lastfacing);
         if (!remap.empty()) {
-          CC_Draw_Shape(*LogicPage, TheAssets().lightning_shapes(),
+          CC_Draw_Shape(view, TheAssets().lightning_shapes(),
                         base::At(_shape, facing) + (shots ? 4 : 0), x, y,
                         WINDOW_TACTICAL,
                         SHAPE_FADING | SHAPE_CENTER | SHAPE_WIN_REL, remap);
         } else {
-          CC_Draw_Shape(*LogicPage, TheAssets().lightning_shapes(),
+          CC_Draw_Shape(view, TheAssets().lightning_shapes(),
                         base::At(_shape, facing) + (shots ? 4 : 0), x, y,
                         WINDOW_TACTICAL, SHAPE_CENTER | SHAPE_WIN_REL);
         }

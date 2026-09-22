@@ -37,18 +37,15 @@
 #include "ra/game_state.h"
 #include "ra/inline.h"
 #include "ra/input.h"
-#include "ra/interpal.h"
 #include "ra/jshell.h"
 #include "ra/mission_id.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
-#include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "sdllib/font.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
@@ -259,7 +256,6 @@ bool Force_CD_Available(int cd_desired)  // ajw
         }
       }
 
-      PixelView* old_page = SetLogicPage(TheScreen().visible_view());
       TheTheme().Stop();
       int hidden = Get_Mouse_State();
       font = FontPtr;
@@ -280,7 +276,6 @@ bool Force_CD_Available(int cd_desired)  // ajw
 
       if (WWMessageBox().Process(buffer, TXT_OK, TXT_CANCEL, TXT_NONE, true) ==
           1) {
-        SetLogicPage(old_page);
         while (hidden--) {
           Hide_Mouse();
         }
@@ -291,7 +286,6 @@ bool Force_CD_Available(int cd_desired)  // ajw
         Hide_Mouse();
       }
       Set_Font(font);
-      SetLogicPage(old_page);
     }
   }
 

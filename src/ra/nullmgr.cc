@@ -1041,21 +1041,17 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   ------------------------------------------------------------------------*/
   port::SafeCopy(buffer, Text_String(TXT_INITIALIZING_MODEM));
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
-  const int lines = Format_Window_String(
-      buffer, TheScreen().visible_view().height(), width, height);
+  PixelView& view = TheScreen().visible_view();
+
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
+  const int lines = Format_Window_String(buffer, view.height(), width, height);
 
   width = std::max(width, 180);
   width += 80;
   height += 80;
 
-  const int x = (TheScreen().visible_view().width() - width) / 2;
-  const int y = (TheScreen().visible_view().height() - height) / 2;
-
-  /*------------------------------------------------------------------------
-  Initialize
-  ------------------------------------------------------------------------*/
-  SetLogicPage(TheScreen().visible_view());
+  const int x = (view.width() - width) / 2;
+  const int y = (view.height() - height) / 2;
 
   /*------------------------------------------------------------------------
   Draw the dialog
@@ -1066,14 +1062,14 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   }
 
   Dialog_Box(x, y, width, height);
-  Draw_Caption(*LogicPage, TXT_NONE, x, y, width);
+  Draw_Caption(view, TXT_NONE, x, y, width);
 
   if (lines == 1) {
-    Fancy_Text_Print(*LogicPage, buffer, x + (width / 2), y + 25,
+    Fancy_Text_Print(view, buffer, x + (width / 2), y + 25,
                      GadgetClass::Get_Color_Scheme(), kTBlack,
                      kTpfText | TPF_CENTER);
   } else {
-    Fancy_Text_Print(*LogicPage, buffer, x + 40, y + 25,
+    Fancy_Text_Print(view, buffer, x + 40, y + 25,
                      GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
   }
 
@@ -1277,27 +1273,23 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
 
   std::string buffer(buffer_const);
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
-  Format_Window_String(std::span(buffer), TheScreen().visible_view().height(),
-                       width, height);
+  PixelView& view = TheScreen().visible_view();
+
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
+  Format_Window_String(std::span(buffer), view.height(), width, height);
 
   const int text_width = width;
   width = std::max(width, 180);
   width += 80;
   height += 120;
 
-  const int x = (TheScreen().visible_view().width() - width) / 2;
-  const int y = (TheScreen().visible_view().height() - height) / 2;
+  const int x = (view.width() - width) / 2;
+  const int y = (view.height() - height) / 2;
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
       x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) / 2),
       y + height - (FontHeight + FontYSpacing + 4) - 20);
-
-  /*------------------------------------------------------------------------
-  Initialize
-  ------------------------------------------------------------------------*/
-  SetLogicPage(TheScreen().visible_view());
 
   /*------------------------------------------------------------------------
   Create the list
@@ -1315,13 +1307,12 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   }
 
   Dialog_Box(x, y, width, height);
-  Draw_Caption(*LogicPage, TXT_NONE, x, y, width);
+  Draw_Caption(view, TXT_NONE, x, y, width);
 
-  Fancy_Text_Print(*LogicPage, buffer.c_str(),
-                   (TheScreen().visible_view().width() / 2) - (text_width / 2),
+  Fancy_Text_Print(view, buffer.c_str(), (view.width() / 2) - (text_width / 2),
                    y + 50, GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
 
-  Commands->Draw_All(*LogicPage);
+  Commands->Draw_All(view);
   Show_Mouse();
 
   /*
@@ -1356,7 +1347,7 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
     */
     if (AllSurfaces.SurfacesRestored) {
       AllSurfaces.SurfacesRestored = false;
-      Commands->Draw_All(*LogicPage);
+      Commands->Draw_All(view);
     }
 
     delay = SerialPort->Get_Modem_Result(delay, buffer.c_str(), 81);
@@ -1475,17 +1466,18 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     port::SafeCopy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
   }
 
-  Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
-  Format_Window_String(text_buffer, TheScreen().visible_view().height(), width,
-                       height);
+  PixelView& view = TheScreen().visible_view();
+
+  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
+  Format_Window_String(text_buffer, view.height(), width, height);
 
   int text_width = width;
   width = std::max(width, 180);
   width += 80;
   height += 120;
 
-  int x = (TheScreen().visible_view().width() - width) / 2;
-  int y = (TheScreen().visible_view().height() - height) / 2;
+  int x = (view.width() - width) / 2;
+  int y = (view.height() - height) / 2;
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
@@ -1495,7 +1487,6 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   /*------------------------------------------------------------------------
   Initialize
   ------------------------------------------------------------------------*/
-  SetLogicPage(TheScreen().visible_view());
   Load_Title_Page(true);
 
   Input = KN_NONE;
@@ -1550,14 +1541,13 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         /*...............................................................
         Draw the labels
         ...............................................................*/
-        Draw_Caption(*LogicPage, TXT_NONE, x, y, width);
+        Draw_Caption(view, TXT_NONE, x, y, width);
 
-        Fancy_Text_Print(
-            *LogicPage, text_buffer,
-            (TheScreen().visible_view().width() / 2) - (text_width / 2), y + 50,
-            GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
+        Fancy_Text_Print(view, text_buffer,
+                         (view.width() / 2) - (text_width / 2), y + 50,
+                         GadgetClass::Get_Color_Scheme(), kTBlack, kTpfText);
 
-        Commands->Draw_All(*LogicPage);
+        Commands->Draw_All(view);
       }
       Show_Mouse();
       display = REDRAW_NONE;
@@ -1569,7 +1559,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     Process input
     .....................................................................*/
     if (!Input) {
-      Input = Commands->Input(*LogicPage);
+      Input = Commands->Input(view);
     }
     switch (static_cast<int>(Input)) {
       case KN_ESC:
@@ -1586,18 +1576,16 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
       if (std::string_view(comm_buffer).starts_with("RING")) {
         port::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
 
-        Fancy_Text_Print(*LogicPage, TXT_NONE, 0, 0, nullptr, kTBlack,
-                         kTpfText);
-        Format_Window_String(text_buffer, TheScreen().visible_view().height(),
-                             width, height);
+        Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
+        Format_Window_String(text_buffer, view.height(), width, height);
 
         text_width = width;
         width = std::max(width, 180);
         width += 80;
         height += 120;
 
-        x = (TheScreen().visible_view().width() - width) / 2;
-        y = (TheScreen().visible_view().height() - height) / 2;
+        x = (view.width() - width) / 2;
+        y = (view.height() - height) / 2;
 
         static constexpr unsigned char kAnswerCommand[] = {'A', 'T', 'A', '\r'};
         SerialPort->Write_To_Serial_Port(
@@ -1859,9 +1847,13 @@ int NullModemClass::Abort_Modem() {
   ServiceRealTime();
 
   /*
-  ** Get user input
+  ** Get user input. The serial port installs this as an int(*)() abort
+  ** callback, so it cannot be handed a view; the only two functions that
+  ** install it, Dial_Modem() and Answer_Modem(), both draw their dialog to
+  ** the visible page, which is the page this used to find in the global.
   */
-  Input = Commands->Input(*LogicPage);
+  PixelView& view = TheScreen().visible_view();
+  Input = Commands->Input(view);
 
   switch (static_cast<int>(Input)) {
     case KN_ESC:

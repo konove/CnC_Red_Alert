@@ -5,6 +5,7 @@
 #include <span>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "base/buffer.h"
 #include "base/types.h"
 #include "gtest/gtest.h"
@@ -27,28 +28,30 @@ void SDL_Event_Handler(SDL_Event* /*event*/) {}
 
 namespace {
 
-// A PixelBuffer over plain memory, installed as LogicPage for the
-// length of one test and taken out again afterwards.
+// A PixelBuffer over plain memory for the length of one test. The winbits
+// functions take the view to draw on, so the test hands them view().
 class TestScreen {
  public:
   // sdllib holds the window rows and the game fills them in; one window
   // covering the whole buffer is all these tests need.
   TestScreen()
       : pixels_(std::size_t{kWidth} * kHeight, 0),
-        buffer_(kWidth, kHeight, pixels_),
-        previous_(SetLogicPage(&buffer_)) {
+        buffer_(kWidth, kHeight, pixels_) {
     WindowList[0][kWindowX] = 0;
     WindowList[0][kWindowY] = 0;
     WindowList[0][kWindowWidth] = kWidth;
     WindowList[0][kWindowHeight] = kHeight;
   }
 
+  ~TestScreen() = default;
   TestScreen(const TestScreen&) = delete;
   TestScreen& operator=(const TestScreen&) = delete;
-
-  ~TestScreen() { SetLogicPage(previous_); }
   TestScreen(TestScreen&&) = delete;
   TestScreen& operator=(TestScreen&&) = delete;
+
+  [[nodiscard]] PixelView& view() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return buffer_;
+  }
 
   [[nodiscard]] std::uint8_t Pixel(int x, int y) const {
     return pixels_.at(Offset(x, y));
@@ -64,7 +67,6 @@ class TestScreen {
 
   std::vector<std::uint8_t> pixels_;
   PixelBuffer buffer_;
-  PixelView* previous_;
 };
 
 // An 8-bit BMP whose pixel at column x of the bottom-up row y is
@@ -123,7 +125,7 @@ TEST(WinBitsTest, SaveAndRestoreRoundTripsARectangle) {
   }
 
   std::uint8_t saved[2 * 3] = {};
-  ASSERT_TRUE(SaveSurfaceRect(*LogicPage, 2, 1, 2, 3, saved, WINDOW_MAIN));
+  ASSERT_TRUE(SaveSurfaceRect(screen.view(), 2, 1, 2, 3, saved, WINDOW_MAIN));
 
   // Top-down, no padding: the first row saved is the one at y == 1.
   EXPECT_EQ(saved[0], screen.Pixel(2, 1));
@@ -134,7 +136,8 @@ TEST(WinBitsTest, SaveAndRestoreRoundTripsARectangle) {
     screen.SetPixel(2, y, 0xFF);
     screen.SetPixel(3, y, 0xFF);
   }
-  ASSERT_TRUE(RestoreSurfaceRect(*LogicPage, 2, 1, 2, 3, saved, WINDOW_MAIN));
+  ASSERT_TRUE(
+      RestoreSurfaceRect(screen.view(), 2, 1, 2, 3, saved, WINDOW_MAIN));
 
   EXPECT_EQ(screen.Pixel(2, 1), (2 * 1) + 8 + 1);
   EXPECT_EQ(screen.Pixel(3, 3), (3 * 8) + 3 + 1);
@@ -143,11 +146,11 @@ TEST(WinBitsTest, SaveAndRestoreRoundTripsARectangle) {
 }
 
 TEST(WinBitsTest, DrawDibTurnsTheImageRightWayUp) {
-  const TestScreen screen;
+  TestScreen screen;
   const auto image = dib::Image::FromBmp(MakeBmp(2, 2, 10));
   ASSERT_TRUE(image.has_value());
 
-  DrawDib(*LogicPage, *image, 1, 1, 100, WINDOW_MAIN);
+  DrawDib(screen.view(), *image, 1, 1, 100, WINDOW_MAIN);
 
   // Row 0 of the image is its bottom row, so it lands on the lower line.
   EXPECT_EQ(screen.Pixel(1, 2), 10);
@@ -158,11 +161,11 @@ TEST(WinBitsTest, DrawDibTurnsTheImageRightWayUp) {
 }
 
 TEST(WinBitsTest, DrawDibClipsEachRowToTheGivenWidth) {
-  const TestScreen screen;
+  TestScreen screen;
   const auto image = dib::Image::FromBmp(MakeBmp(3, 1, 20));
   ASSERT_TRUE(image.has_value());
 
-  DrawDib(*LogicPage, *image, 0, 0, 2, WINDOW_MAIN);
+  DrawDib(screen.view(), *image, 0, 0, 2, WINDOW_MAIN);
 
   EXPECT_EQ(screen.Pixel(0, 0), 20);
   EXPECT_EQ(screen.Pixel(1, 0), 21);
@@ -170,11 +173,11 @@ TEST(WinBitsTest, DrawDibClipsEachRowToTheGivenWidth) {
 }
 
 TEST(WinBitsTest, DrawDibDrawsNothingForANegativeWidth) {
-  const TestScreen screen;
+  TestScreen screen;
   const auto image = dib::Image::FromBmp(MakeBmp(2, 2, 30));
   ASSERT_TRUE(image.has_value());
 
-  DrawDib(*LogicPage, *image, 0, 0, -1, WINDOW_MAIN);
+  DrawDib(screen.view(), *image, 0, 0, -1, WINDOW_MAIN);
 
   EXPECT_EQ(screen.Pixel(0, 0), 0);
   EXPECT_EQ(screen.Pixel(1, 1), 0);
@@ -183,15 +186,15 @@ TEST(WinBitsTest, DrawDibDrawsNothingForANegativeWidth) {
 }  // namespace
 
 TEST(WinBitsTest, RejectsShortBuffersAndOutOfWindowRectangles) {
-  const TestScreen screen;
+  TestScreen screen;
   std::uint8_t short_buffer[3] = {1, 2, 3};
   EXPECT_FALSE(
-      SaveSurfaceRect(*LogicPage, 0, 0, 2, 2, short_buffer, WINDOW_MAIN));
+      SaveSurfaceRect(screen.view(), 0, 0, 2, 2, short_buffer, WINDOW_MAIN));
   EXPECT_FALSE(
-      RestoreSurfaceRect(*LogicPage, 0, 0, 2, 2, short_buffer, WINDOW_MAIN));
+      RestoreSurfaceRect(screen.view(), 0, 0, 2, 2, short_buffer, WINDOW_MAIN));
   EXPECT_FALSE(
-      SaveSurfaceRect(*LogicPage, -1, 0, 1, 1, short_buffer, WINDOW_MAIN));
-  EXPECT_FALSE(RestoreSurfaceRect(*LogicPage, kWidth, 0, 1, 1, short_buffer,
+      SaveSurfaceRect(screen.view(), -1, 0, 1, 1, short_buffer, WINDOW_MAIN));
+  EXPECT_FALSE(RestoreSurfaceRect(screen.view(), kWidth, 0, 1, 1, short_buffer,
                                   WINDOW_MAIN));
   EXPECT_EQ(short_buffer[0], 1);
   EXPECT_EQ(screen.Pixel(0, 0), 0);

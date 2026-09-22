@@ -161,11 +161,8 @@ void ScoreTimeClass::Update() {
     if (++Stage >= MaxStage) {
       Stage = 0;
     }
-    PixelView* oldpage = LogicPage;
-    SetLogicPage(TheScreen().visible_view());
-    CC_Draw_Shape(*LogicPage, DataPtr, Stage, XPos, YPos, WINDOW_MAIN,
-                  SHAPE_WIN_REL, {}, {});
-    SetLogicPage(oldpage);
+    CC_Draw_Shape(TheScreen().visible_view(), DataPtr, Stage, XPos, YPos,
+                  WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
   }
 }
 
@@ -183,13 +180,10 @@ void ScoreCredsClass::Update() {
     if (++Stage >= MaxStage) {
       Stage = 0;
     }
-    PixelView* oldpage = LogicPage;
-    SetLogicPage(TheScreen().visible_view());
     // One tick of sound per frame of the spinning credits symbol.
     TheAudio().Play(Clock1, 255, TheOptions().Normalize_Volume(130));
-    CC_Draw_Shape(*LogicPage, DataPtr, Stage, XPos, YPos, WINDOW_MAIN,
-                  SHAPE_WIN_REL, {}, {});
-    SetLogicPage(oldpage);
+    CC_Draw_Shape(TheScreen().visible_view(), DataPtr, Stage, XPos, YPos,
+                  WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
   }
 }
 
@@ -399,8 +393,6 @@ void ScoreClass::Presentation() {
   // Type out the headings. Each TickScoreScreen() below is sized to let the
   // text queued before it finish, which is what keeps score_objects[] from
   // overflowing.
-  SetLogicPage(TheScreen().visible_view());
-
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TIME,
                                    config::kIsFrench ? 198 : 204, 9, greenpal));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_LEAD, 164, 26, greenpal));
@@ -542,7 +534,6 @@ void ScoreClass::Presentation() {
 
   // Show stats on # of units killed. The player's own side is always the upper
   // of the two rows.
-  SetLogicPage(TheScreen().visible_view());
   TheAudio().Play(sfx4, 255, TheOptions().Normalize_Volume(150));
   // The original selected the second layout for Soviet players on DOS only;
   // at this resolution both sides share entry 0.
@@ -565,8 +556,6 @@ void ScoreClass::Presentation() {
 
   Set_Font_Palette(redpal);
   Do_GDI_Graph(yellowptr, redptr, GKilled + CKilled, NKilled, 89);
-
-  SetLogicPage(TheScreen().visible_view());
 
   // Print out stats on buildings destroyed, laid out like the casualties above.
   TheAudio().Play(sfx4, 255, TheOptions().Normalize_Volume(150));
@@ -618,8 +607,6 @@ void ScoreClass::Presentation() {
   // Now display the hall of fame. The printers view their strings, so each row
   // gets its own 32-byte slice of `maststr` that stays valid while it types:
   // the score at offset 0 and the mission number at offset 16.
-  SetLogicPage(TheScreen().visible_view());
-
   char maststr[kFameRows * 32];
   std::span<const uint8_t> pal;
   for (int i = 0; i < kFameRows; i++) {
@@ -792,20 +779,18 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   // Draw the white-flash shape on the hidpage. It is blitted over the last
   // step of each bar, cut to that bar's length plus 3 pixels of end cap, and
   // then replaced by the final coloured frame.
-  SetLogicPage(TheScreen().hidden_view());
-  TheScreen().hidden_view().FillRect(0, 0, 248, 18, kTBlack);
-  CC_Draw_Shape(*LogicPage, redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {},
-                {});
-  SetLogicPage(TheScreen().visible_view());
+  PixelView& hidden = TheScreen().hidden_view();
+  PixelView& view = TheScreen().visible_view();
+  hidden.FillRect(0, 0, 248, 18, kTBlack);
+  CC_Draw_Shape(hidden, redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
   Set_Font_Palette(house ? redpal : bluepal);
 
   for (int i = 1; i <= gdikilled; i++) {
     if (i != gdikilled) {
-      CC_Draw_Shape(*LogicPage, yellowptr, i, xpos * 2, ypos * 2, WINDOW_MAIN,
+      CC_Draw_Shape(view, yellowptr, i, xpos * 2, ypos * 2, WINDOW_MAIN,
                     SHAPE_WIN_REL, {}, {});
     } else {
-      TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 0, xpos * 2,
-                                     ypos * 2, (3 + gdikilled) * 2, 16);
+      hidden.Blit(view, 0, 0, xpos * 2, ypos * 2, (3 + gdikilled) * 2, 16);
     }
 
     Count_Up_Print("%d", CountUpValue(gkilled, i, gdikilled), gkilled, 297,
@@ -813,19 +798,19 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
     TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Volume(150));
     TickScoreScreen(2);
   }
-  CC_Draw_Shape(*LogicPage, yellowptr, gdikilled, xpos * 2, ypos * 2,
-                WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
+  CC_Draw_Shape(view, yellowptr, gdikilled, xpos * 2, ypos * 2, WINDOW_MAIN,
+                SHAPE_WIN_REL, {}, {});
   Count_Up_Print("%d", gkilled, gkilled, 297, ypos + 2);
   /*BG	if (!TheKeyboard().Check()) */ TickScoreScreen(40);
 
   Set_Font_Palette(house ? bluepal : redpal);
   for (int i = 1; i <= nodkilled; i++) {
     if (i != nodkilled) {
-      CC_Draw_Shape(*LogicPage, redptr, i, xpos * 2, (ypos + 12) * 2,
-                    WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
+      CC_Draw_Shape(view, redptr, i, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
+                    SHAPE_WIN_REL, {}, {});
     } else {
-      TheScreen().hidden_view().Blit(TheScreen().visible_view(), 0, 0, xpos * 2,
-                                     (ypos + 12) * 2, (3 + nodkilled) * 2, 16);
+      hidden.Blit(view, 0, 0, xpos * 2, (ypos + 12) * 2, (3 + nodkilled) * 2,
+                  16);
     }
 
     Count_Up_Print("%d", CountUpValue(nkilled, i, nodkilled), nkilled, 297,
@@ -836,8 +821,8 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
 
   // Make sure accurate count is printed at end: with no losses the loop above
   // never runs.
-  CC_Draw_Shape(*LogicPage, redptr, nodkilled, xpos * 2, (ypos + 12) * 2,
-                WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
+  CC_Draw_Shape(view, redptr, nodkilled, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
+                SHAPE_WIN_REL, {}, {});
   Count_Up_Print("%d", nkilled, nkilled, 297, ypos + 14);
   /*BG	if (!TheKeyboard().Check()) */ TickScoreScreen(40);
 }
@@ -1120,8 +1105,6 @@ void Multi_Score_Presentation() {
   const std::span<const std::byte> oldfont =
       Set_Font(TheAssets().font(FontType::kScore));
   ServiceRealTime();
-
-  SetLogicPage(TheScreen().visible_view());
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TOP, config::kIsFrench ? 113 : 130,
                                    13, greenpal));

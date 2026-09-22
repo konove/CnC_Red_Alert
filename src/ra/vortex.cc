@@ -820,8 +820,6 @@ void ChronalVortexClass::Render(PixelView& view) {
       const TemplateTypeClass* ttype = nullptr;
       int icon = 0;  // The icon number to use from the template set.
 
-      PixelView* oldpage = SetLogicPage(RenderBuffer);
-
       /*
       ** Temporarily modify the tactical window so it works with our offscreen
       *buffer
@@ -882,7 +880,7 @@ void ChronalVortexClass::Render(PixelView& view) {
             */
             if (cellptr->Smudge != SMUDGE_NONE) {
               SmudgeTypeClass::As_Reference(cellptr->Smudge)
-                  .Draw_It(*LogicPage, x * CELL_PIXEL_W, y * CELL_PIXEL_H,
+                  .Draw_It(*RenderBuffer, x * CELL_PIXEL_W, y * CELL_PIXEL_H,
                            cellptr->SmudgeData);
             }
 
@@ -896,7 +894,7 @@ void ChronalVortexClass::Render(PixelView& view) {
                   otype.IsTheater);  // Tell Build_Frame if this overlay is
                                      // theater specific
               CC_Draw_Shape(
-                  *LogicPage, otype.Get_Image_Data(), cellptr->OverlayData,
+                  *RenderBuffer, otype.Get_Image_Data(), cellptr->OverlayData,
                   (x * CELL_PIXEL_W) + (CELL_PIXEL_W >> 1),
                   (y * CELL_PIXEL_H) + (CELL_PIXEL_H >> 1), WINDOW_TACTICAL,
                   SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
@@ -907,8 +905,6 @@ void ChronalVortexClass::Render(PixelView& view) {
           }
         }
       }
-
-      SetLogicPage(oldpage);
 
       /*
       ** Restore the tactical window to its correct value

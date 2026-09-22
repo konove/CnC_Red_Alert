@@ -5733,6 +5733,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   const int d_margin = 10;
 
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
+  PixelView& view = TheScreen().visible_view();
 
   /*
   ** If we have just received input focus again after running in the
@@ -5748,8 +5749,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   //	Draw the dialog from scratch
   //------------------------------------------------------------------------
   if (fresh) {
-    Fancy_Text_Print(*LogicPage, "", 0, 0, scheme, kTBlack,
-                     TPF_CENTER | kTpfText);
+    Fancy_Text_Print(view, "", 0, 0, scheme, kTBlack, TPF_CENTER | kTpfText);
 
     switch (TheSession().Type) {
       case GAME_IPX:
@@ -5802,19 +5802,17 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     y = 200 - (h / 2);
 
     Hide_Mouse();
-    SetLogicPage(TheScreen().visible_view());
     Dialog_Box(x, y, w, h);
 
-    Fancy_Text_Print(*LogicPage, buf1, 320, y + (d_margin * 2), scheme, kTBlack,
+    Fancy_Text_Print(view, buf1, 320, y + (d_margin * 2), scheme, kTBlack,
                      TPF_CENTER | kTpfText);
 
-    Fancy_Text_Print(*LogicPage, buf2, 320,
-                     y + (d_margin * 2) + d_txt6_h + d_margin, scheme, kTBlack,
-                     TPF_CENTER | kTpfText);
-
-    Fancy_Text_Print(*LogicPage, bForfeitWarning ? szNewCancelMessage : buf3,
-                     320, y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2),
+    Fancy_Text_Print(view, buf2, 320, y + (d_margin * 2) + d_txt6_h + d_margin,
                      scheme, kTBlack, TPF_CENTER | kTpfText);
+
+    Fancy_Text_Print(view, bForfeitWarning ? szNewCancelMessage : buf3, 320,
+                     y + (d_margin * 2) + ((d_txt6_h + d_margin) * 2), scheme,
+                     kTBlack, TPF_CENTER | kTpfText);
 
     Show_Mouse();
   }
@@ -5823,20 +5821,18 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   //------------------------------------------------------------------------
   else {
     Hide_Mouse();
-    SetLogicPage(TheScreen().visible_view());
 
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
                         timeval + 1);
 
     const int fillx = 320 - (String_Pixel_Width(buf2) / 2) - 6;
-    LogicPage->FillRect(fillx, y + (d_margin * 2) + d_txt6_h + d_margin,
-                        fillx + String_Pixel_Width(buf2) + 12,
-                        y + (d_margin * 2) + d_txt6_h + d_margin + d_txt6_h + 2,
-                        kBlack);
+    view.FillRect(fillx, y + (d_margin * 2) + d_txt6_h + d_margin,
+                  fillx + String_Pixel_Width(buf2) + 12,
+                  y + (d_margin * 2) + d_txt6_h + d_margin + d_txt6_h + 2,
+                  kBlack);
 
-    Fancy_Text_Print(*LogicPage, buf2, 320,
-                     y + (d_margin * 2) + d_txt6_h + d_margin, scheme, kBlack,
-                     TPF_CENTER | kTpfText);
+    Fancy_Text_Print(view, buf2, 320, y + (d_margin * 2) + d_txt6_h + d_margin,
+                     scheme, kBlack, TPF_CENTER | kTpfText);
 
     Show_Mouse();
   }
