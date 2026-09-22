@@ -48,12 +48,6 @@ add_gtest(
         LIBS sdllib
 )
 
-add_gtest(
-        NAME sdllib_clip_test
-        SOURCES clip_test.cc clip.cc
-        LIBS base
-)
-
 # SetPalette() reaches the mouse cursor, which decompresses its shape; tech
 # depends on sdllib, so the decoder is compiled in directly.
 add_gtest(

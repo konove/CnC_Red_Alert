@@ -11,10 +11,10 @@
 #include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/clip.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/unaligned.h"
-#include "sdllib/clip.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 

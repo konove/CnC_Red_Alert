@@ -21,7 +21,7 @@
 // page its pixels, and - for the one page the window shows - the SDL surface
 // and textures behind it and the presenting done through them.
 //
-// The primitives all clip with the Cohen-Sutherland outcodes of sdllib/clip.h
+// The primitives all clip with the Cohen-Sutherland outcodes of base/clip.h
 // and then walk whole rows.
 
 #include "sdllib/pixel_buffer.h"
@@ -43,11 +43,11 @@
 
 #include "absl/log/check.h"
 #include "base/array.h"
+#include "base/clip.h"
 #include "base/flags.h"
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/bitmap.h"
-#include "sdllib/clip.h"
 #include "sdllib/display.h"
 #include "sdllib/font.h"
 #include "sdllib/ww_win.h"
@@ -277,32 +277,13 @@ bool PixelView::BlitLocked(PixelView& dest, int src_x, int src_y, int dst_x,
   // clip source
   int src_x0 = src_x;
   int src_y0 = src_y;
-  int src_x1 = src_x + width;
-  int src_y1 = src_y + height;
-
-  OutCode code0 = OutCodeOf(src_x0, src_y0, width_, height_);
-  OutCode code1 = OutCodeOf(src_x1, src_y1, width_ + 1, height_ + 1);
-
-  // outside
-  if (base::Any(code0 & code1)) {
+  int src_width = width;
+  int src_height = height;
+  if (!ClipRect(src_x0, src_y0, src_width, src_height, width_, height_)) {
     return true;
   }
-
-  if (base::Any(code0 | code1)) {
-    // apply clip
-    if (base::Any(code0 & OutCode::kLeft)) {
-      src_x0 = 0;
-    }
-    if (base::Any(code1 & OutCode::kRight)) {
-      src_x1 = width_;
-    }
-    if (base::Any(code0 & OutCode::kAbove)) {
-      src_y0 = 0;
-    }
-    if (base::Any(code1 & OutCode::kBelow)) {
-      src_y1 = height_;
-    }
-  }
+  int src_x1 = src_x0 + src_width;
+  int src_y1 = src_y0 + src_height;
 
   // clip dest
   // Whatever the source clip took off the top and left moves the destination
@@ -312,8 +293,9 @@ bool PixelView::BlitLocked(PixelView& dest, int src_x, int src_y, int dst_x,
   int dst_x1 = dst_x0 + (src_x1 - src_x0);
   int dst_y1 = dst_y0 + (src_y1 - src_y0);
 
-  code0 = OutCodeOf(dst_x0, dst_y0, dest.width(), dest.height());
-  code1 = OutCodeOf(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
+  const OutCode code0 = OutCodeOf(dst_x0, dst_y0, dest.width(), dest.height());
+  const OutCode code1 =
+      OutCodeOf(dst_x1, dst_y1, dest.width() + 1, dest.height() + 1);
 
   // outside
   if (base::Any(code0 & code1)) {
@@ -940,42 +922,18 @@ void PixelView::RemapLocked(int x1, int y1, int width, int height,
   // clip
   int dst_x0 = x1;
   int dst_y0 = y1;
-  int dst_x1 = x1 + width;
-  int dst_y1 = y1 + height;
-
-  const OutCode code0 = OutCodeOf(dst_x0, dst_y0, width_, height_);
-  const OutCode code1 = OutCodeOf(dst_x1, dst_y1, width_ + 1, height_ + 1);
-
-  // outside
-  if (base::Any(code0 & code1)) {
+  int pixel_count = width;
+  int line_count = height;
+  if (!ClipRect(dst_x0, dst_y0, pixel_count, line_count, width_, height_)) {
     return;
-  }
-
-  if (base::Any(code0 | code1)) {
-    // apply clip
-    if (base::Any(code0 & OutCode::kLeft)) {
-      dst_x0 = 0;
-    }
-    if (base::Any(code1 & OutCode::kRight)) {
-      dst_x1 = width_;
-    }
-    if (base::Any(code0 & OutCode::kAbove)) {
-      dst_y0 = 0;
-    }
-    if (base::Any(code1 & OutCode::kBelow)) {
-      dst_y1 = height_;
-    }
   }
 
   const base::ssize dst_area = stride();
   auto dst_offset = pixels().begin() + dst_x0 + (dst_y0 * dst_area);
 
-  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
+  if (pixel_count <= 0 || line_count <= 0) {
     return;
   }
-
-  const int pixel_count = dst_x1 - dst_x0;
-  int line_count = dst_y1 - dst_y0;
 
   const int skip = static_cast<int>(dst_area - pixel_count);
 
@@ -1202,7 +1160,9 @@ void PixelBuffer::CreateDisplaySurface() {
 }
 
 void PixelBuffer::DestroyDisplaySurface() {
-  if (HasDisplay()) {
+  // Only the window page can have armed the timer, and only it has surfaces
+  // to release; ~Display cancels anything still pending.
+  if (window_texture_ != nullptr && HasDisplay()) {
     TheDisplay().CancelRedrawTimer();
   }
   DropScaledFrame();

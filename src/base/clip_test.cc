@@ -1,4 +1,4 @@
-#include "sdllib/clip.h"
+#include "base/clip.h"
 
 #include <gtest/gtest.h>
 
