@@ -72,7 +72,7 @@ static_assert(sizeof(FontHeader) == 14,
 // empty rows to the bottom of the box.
 //
 // Example:
-//   FontView font(FontPtr);
+//   FontView font(g_font);
 //   int width = font.GlyphWidth(ch);
 class FontView {
  public:
@@ -88,45 +88,52 @@ class FontView {
     FontHeader header{};
     base::CopyBytes(base::ObjectBytes(header), std::as_bytes(font_),
                     sizeof(header));
-    info_ = Table(header.info_block);
-    offsets_ = Table(header.offset_block);
-    widths_ = Table(header.width_block);
-    heights_ = Table(header.height_block);
+    info_ = DataFrom(header.info_block);
+    offsets_ = DataFrom(header.offset_block);
+    widths_ = DataFrom(header.width_block);
+    heights_ = DataFrom(header.height_block);
   }
 
   // Height and width of the tallest and widest glyphs, in pixels.
   [[nodiscard]] int MaxHeight() const {
-    return Byte(info_, kFontInfoMaxHeight);
+    return ReadByte(info_, kFontInfoMaxHeight);
   }
-  [[nodiscard]] int MaxWidth() const { return Byte(info_, kFontInfoMaxWidth); }
-  // Width of glyph ch in pixels, not counting FontXSpacing.
-  [[nodiscard]] int GlyphWidth(uint8_t ch) const { return Byte(widths_, ch); }
-  // Number of pixel rows stored for glyph ch.
-  [[nodiscard]] int GlyphHeight(uint8_t ch) const {
-    return PackedHeight(ch) / 256;
+  [[nodiscard]] int MaxWidth() const {
+    return ReadByte(info_, kFontInfoMaxWidth);
   }
-  // Number of empty rows between the top of the line and glyph ch's first
-  // stored row.
-  [[nodiscard]] int GlyphBlankRowsAbove(uint8_t ch) const {
-    return PackedHeight(ch) % 256;
+  // Width of the glyph for character in pixels, not counting g_font_x_spacing.
+  [[nodiscard]] int GlyphWidth(uint8_t character) const {
+    return ReadByte(widths_, character);
   }
-  // Returns glyph ch's pixel rows, or an empty span for malformed data. Each
-  // byte packs two 4-bit indices into FontPalette, low nibble first, and each
-  // row starts on a byte boundary, so a row is (GlyphWidth() + 1) / 2 bytes.
-  [[nodiscard]] std::span<const std::byte> GlyphData(uint8_t ch) const {
+  // Number of pixel rows stored for the glyph for character.
+  [[nodiscard]] int GlyphHeight(uint8_t character) const {
+    return PackedHeight(character) / 256;
+  }
+  // Number of empty rows between the top of the line and the first stored row
+  // of the glyph for character.
+  [[nodiscard]] int GlyphBlankRowsAbove(uint8_t character) const {
+    return PackedHeight(character) % 256;
+  }
+  // Returns the pixel rows of the glyph for character, or an empty span for
+  // malformed data. Each byte packs two 4-bit indices into g_font_palette, low
+  // nibble first, and each row starts on a byte boundary, so a row is
+  // (GlyphWidth() + 1) / 2 bytes.
+  [[nodiscard]] std::span<const std::byte> GlyphData(uint8_t character) const {
     // The offset table holds one uint16 offset from the start of the font data
     // per glyph.
-    const auto data = Table(ReadWord(offsets_, base::ssize{2} * ch));
-    const base::ssize size =
-        base::ssize{(GlyphWidth(ch) + 1) / 2} * GlyphHeight(ch);
-    return size <= std::ssize(data) ? data.first(base::ToSize(size))
-                                    : std::span<const std::byte>{};
+    const auto from_glyph =
+        DataFrom(ReadWord(offsets_, base::ssize{2} * character));
+    const base::ssize glyph_bytes =
+        base::ssize{(GlyphWidth(character) + 1) / 2} * GlyphHeight(character);
+    return glyph_bytes <= std::ssize(from_glyph)
+               ? from_glyph.first(base::ToSize(glyph_bytes))
+               : std::span<const std::byte>{};
   }
 
  private:
-  // Byte and ReadWord return 0 for an offset outside data; see the class
+  // ReadByte and ReadWord return 0 for an offset outside data; see the class
   // comment.
-  static uint8_t Byte(std::span<const std::byte> data, base::ssize offset) {
+  static uint8_t ReadByte(std::span<const std::byte> data, base::ssize offset) {
     return offset < std::ssize(data)
                ? std::to_integer<uint8_t>(base::At(data, offset))
                : 0;
@@ -141,13 +148,13 @@ class FontView {
                     data.subspan(base::ToSize(offset)), sizeof(value));
     return value;
   }
-  [[nodiscard]] int PackedHeight(uint8_t ch) const {
-    return ReadWord(heights_, base::ssize{2} * ch);
+  [[nodiscard]] int PackedHeight(uint8_t character) const {
+    return ReadWord(heights_, base::ssize{2} * character);
   }
   // Returns the font data from offset to the end, or an empty span if offset
   // is past it. Tables carry no length in the header, so each is bounded only
   // by the end of the data.
-  [[nodiscard]] std::span<const std::byte> Table(base::ssize offset) const {
+  [[nodiscard]] std::span<const std::byte> DataFrom(base::ssize offset) const {
     return offset <= std::ssize(font_) ? font_.subspan(base::ToSize(offset))
                                        : std::span<const std::byte>{};
   }
@@ -160,23 +167,23 @@ class FontView {
   std::span<const std::byte> heights_;
 };
 
-// Makes new_font the current font and refreshes FontWidth and FontHeight from
-// it. Returns the previous font, so callers can restore it. An empty new_font
-// leaves the current font in place (and still returns it).
-std::span<const std::byte> Set_Font(std::span<const std::byte> new_font);
+// Makes font the current font and refreshes g_font_max_width and
+// g_font_max_height from it. Returns the previous font, so callers can restore
+// it. An empty font leaves the current font in place (and still returns it).
+std::span<const std::byte> SetFont(std::span<const std::byte> font);
 
-// Returns the horizontal distance, in pixels, that printing chr in the current
-// font advances by: its glyph width plus FontXSpacing.
-int Char_Pixel_Width(char chr);
+// Returns the horizontal distance, in pixels, that printing character in the
+// current font advances by: its glyph width plus g_font_x_spacing.
+int CharPixelWidth(char character);
 
-// Returns the width in pixels of the widest line of string in the current
+// Returns the width in pixels of the widest line of text in the current
 // font, or 0 for nullptr. Lines are separated by '\r' only, as the game's
 // text strings are; a '\n' is measured as a glyph, although PixelView::Print()
-// breaks the line on it. Every glyph counts FontXSpacing after it, the last
+// breaks the line on it. Every glyph counts g_font_x_spacing after it, the last
 // one on a line included, as Print() advances.
-int String_Pixel_Width(const char* string);
+int StringPixelWidth(const char* text);
 
-// Copies palette into FontPalette entries start_idx through end_idx
+// Copies palette into g_font_palette entries start_idx through end_idx
 // inclusive. Both indices are taken modulo 16; the call does nothing if the
 // range is then negative or reversed, or if palette holds fewer entries than
 // the range. Entries 0 and 1 are overwritten by the colours of every
@@ -184,13 +191,13 @@ int String_Pixel_Width(const char* string);
 void Set_Font_Palette_Range(std::span<const uint8_t> palette, int start_idx,
                             int end_idx);
 
-// Both return FontPalette; the pointer form is what the assembly text printer
-// used.
+// Both return g_font_palette; the pointer form is what the assembly text
+// printer used.
 void* Get_Font_Palette_Ptr();
 std::span<const uint8_t> Get_Font_Palette();
 
 // Sets all 16 font colour entries (indices 0 through 15).
-inline void Set_Font_Palette(std::span<const uint8_t> palette) {
+inline void SetFontPalette(std::span<const uint8_t> palette) {
   constexpr int kFirstColor = 0;
   constexpr int kLastColor = 15;
   Set_Font_Palette_Range(palette, kFirstColor, kLastColor);
@@ -199,23 +206,23 @@ inline void Set_Font_Palette(std::span<const uint8_t> palette) {
 // Extra pixels printed after every glyph and between lines. Callers set these
 // per font before printing and measuring, and PixelView::Print() and the width
 // functions above all read them.
-extern int FontXSpacing;
-extern int FontYSpacing;
+extern int g_font_x_spacing;
+extern int g_font_y_spacing;
 
 // Width of the widest and height of the tallest glyph in the current font, in
-// pixels, as Set_Font() last cached them.
-extern int FontWidth;
-extern int FontHeight;
+// pixels, as SetFont() last cached them.
+extern int g_font_max_width;
+extern int g_font_max_height;
 
-// The current font's data, as passed to Set_Font(); empty before the first
+// The current font's data, as passed to SetFont(); empty before the first
 // call, and then nothing prints.
-extern std::span<const std::byte> FontPtr;
+extern std::span<const std::byte> g_font;
 
 // Maps the 4-bit glyph pixel values to screen colours. Entry 0 is the
 // background, and a 0 in the table is transparent: nothing is drawn. Starts
 // as the identity mapping; PixelView::Print() sets entries 0 and 1 to its
 // background and foreground on every call, and Set_Font_Palette_Range()
 // installs the other colours of multi-colour fonts.
-extern uint8_t FontPalette[16];
+extern uint8_t g_font_palette[16];
 
 #endif  // CNC_RED_ALERT_SDLLIB_FONT_H_

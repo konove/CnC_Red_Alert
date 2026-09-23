@@ -343,7 +343,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
 
   int print_this_pass = 0;
   Select_Text_Font(style, &ThePalettes().color_remaps().at(color), kTBlack);
-  int wid = String_Pixel_Width(message);
+  int wid = StringPixelWidth(message);
   if (wid >= Width - 8) {
     //------------------------------------------------------------------------
     //	Bugger. Its too long. Loop through and find out how many chars we can
@@ -359,7 +359,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
       port::SafeCopy(base::Suffix(temp, mess_start),
                      std::string_view(txt).substr(0, base::ToSize(j)));
       base::At(temp, mess_start + j) = 0;
-      wid = String_Pixel_Width(temp);
+      wid = StringPixelWidth(temp);
       if (wid >= Width - 8) {
         print_this_pass = mess_start + j - 1;
         break;
@@ -623,12 +623,12 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
     std::vector<char> concat_test(base::ToSize(MaxChars + 1));
     Select_Text_Font(tlabel->Style, tlabel->Color, kTBlack);
     const int name_width =
-        String_Pixel_Width(tlabel->Text) - String_Pixel_Width(msg.data());
+        StringPixelWidth(tlabel->Text) - StringPixelWidth(msg.data());
 
     port::SafeCopy(std::span(concat_test).first(base::ToSize(MaxChars)),
                    msg.data());
     port::SafeAppend(std::span(concat_test).first(base::ToSize(MaxChars)), txt);
-    int width = String_Pixel_Width(concat_test.data()) + name_width;
+    int width = StringPixelWidth(concat_test.data()) + name_width;
     min_chars = 10;
 
     while (width >= Width - 8) {
@@ -644,7 +644,7 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
       port::SafeAppend(std::span(concat_test).first(base::ToSize(MaxChars)),
                        txt);
 
-      width = String_Pixel_Width(concat_test.data()) + name_width;
+      width = StringPixelWidth(concat_test.data()) + name_width;
     }
 
     port::SafeAppend(msg, txt);
@@ -1190,7 +1190,7 @@ int MessageListClass::Input(KeyNumType& input) {
             *screen edit box.
             */
             Select_Text_Font(EditLabel->Style, EditLabel->Color, kTBlack);
-            const int width = String_Pixel_Width(EditBuf);
+            const int width = StringPixelWidth(EditBuf);
             if (width >= Width - 10) {
               overflowed = true;
               EditCurPos--;
@@ -1256,7 +1256,7 @@ void MessageListClass::Draw(PixelView& view) {
         EditLabel->Has_Focus()) {
       txt[0] = CursorChar;
       Fancy_Text_Print(
-          view, txt, EditLabel->X + String_Pixel_Width(EditLabel->Text),
+          view, txt, EditLabel->X + StringPixelWidth(EditLabel->Text),
           EditLabel->Y, EditLabel->Color, kTBlack, EditLabel->Style);
     }
 

@@ -804,7 +804,7 @@ int MessageListClass::Input(KeyNumType& input) {
           *screen edit box.
           */
           Select_Text_Font(EditLabel->Style, EditLabel->Color, kTBlack);
-          const int width = String_Pixel_Width(EditBuf.data());
+          const int width = StringPixelWidth(EditBuf.data());
           if (width >= Width) {
             --EditCurPos;
             base::At(EditBuf, base::ToSize(EditCurPos)) = 0;

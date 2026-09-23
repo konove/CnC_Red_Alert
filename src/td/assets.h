@@ -43,7 +43,7 @@ enum class FontType {
 // from, and stay valid only as long as that archive stays registered.
 //
 // Example:
-//   Set_Font(TheAssets().font(FontType::kScore));
+//   SetFont(TheAssets().font(FontType::kScore));
 class Assets {
  public:
   Assets();

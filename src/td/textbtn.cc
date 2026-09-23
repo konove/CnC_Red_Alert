@@ -91,11 +91,11 @@ TextButtonClass::TextButtonClass(unsigned id, const char* text,
   if (w == -1 || h == -1) {
     Select_Text_Font(PrintFlags, kTBlack, kTBlack);
     if (w == -1) {
-      Width = String_Pixel_Width(String) + 8;
+      Width = StringPixelWidth(String) + 8;
       //			if (SeenBuff.width() != 320) Width *= 2;
     }
     if (h == -1) {
-      Height = FontHeight + FontYSpacing + 2;
+      Height = g_font_max_height + g_font_y_spacing + 2;
       //			if (SeenBuff.height() != 200) Height *= 2;
     }
   }
@@ -162,11 +162,11 @@ TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
   if (w == -1 || h == -1) {
     Select_Text_Font(PrintFlags, kTBlack, kTBlack);
     if (w == -1) {
-      Width = String_Pixel_Width(String) + 8;
+      Width = StringPixelWidth(String) + 8;
       //			if (SeenBuff.width() != 320) Width *= 2;
     }
     if (h == -1) {
-      Height = FontHeight + FontYSpacing + 2;
+      Height = g_font_max_height + g_font_y_spacing + 2;
       //			if (SeenBuff.height() != 200) Height *= 2;
     }
   }
@@ -237,8 +237,8 @@ void TextButtonClass::Set_Text(const char* text, bool resize) {
   Flag_To_Redraw();
   if (resize && String) {
     Select_Text_Font(PrintFlags, kTBlack, kTBlack);
-    Width = String_Pixel_Width(String) + 8;
-    Height = FontHeight + FontYSpacing + 2;
+    Width = StringPixelWidth(String) + 8;
+    Height = g_font_max_height + g_font_y_spacing + 2;
   }
 }
 
@@ -294,7 +294,7 @@ void TextButtonClass::Draw_Background(PixelView& view) {
   **	Draw the body & set text color.
   */
   const BoxStyleEnum style = [this] {
-    // if (FontPtr.data() == TheAssets().font(FontType::k6PointGradient)
+    // if (g_font.data() == TheAssets().font(FontType::k6PointGradient)
     //                            .data()) {
     if (base::Any(PrintFlags & TPF_6PT_GRAD)) {
       if (IsDisabled) {
@@ -332,7 +332,7 @@ void TextButtonClass::Draw_Text(PixelView& view, const char* text) {
   */
   if (String) {
     int color = 0;
-    // if (FontPtr.data() == TheAssets().font(FontType::k6PointGradient)
+    // if (g_font.data() == TheAssets().font(FontType::k6PointGradient)
     //                            .data()) {
     if (base::Any(PrintFlags & TPF_6PT_GRAD)) {
       color = kCcGreen;

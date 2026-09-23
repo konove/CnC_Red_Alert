@@ -8,55 +8,57 @@
 
 #include "base/array.h"
 
-int FontXSpacing;
-int FontYSpacing;
-int FontWidth;
-int FontHeight;
-std::span<const std::byte> FontPtr;
+int g_font_x_spacing;
+int g_font_y_spacing;
+int g_font_max_width;
+int g_font_max_height;
+std::span<const std::byte> g_font;
 
-uint8_t FontPalette[16]{
+uint8_t g_font_palette[16]{
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
     0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
 };
 
-std::span<const std::byte> Set_Font(std::span<const std::byte> new_font) {
-  const auto old_font = FontPtr;
+std::span<const std::byte> SetFont(std::span<const std::byte> font) {
+  const auto previous_font = g_font;
 
-  if (!new_font.empty()) {
-    FontPtr = new_font;
+  if (!font.empty()) {
+    g_font = font;
 
     // Cached for the dialog and menu layout code, which reads the metrics
     // without a FontView.
-    const FontView font(new_font);
-    FontHeight = font.MaxHeight();
-    FontWidth = font.MaxWidth();
+    const FontView view(font);
+    g_font_max_height = view.MaxHeight();
+    g_font_max_width = view.MaxWidth();
   }
 
-  return old_font;
+  return previous_font;
 }
 
-int Char_Pixel_Width(const char chr) {
-  return FontView(FontPtr).GlyphWidth(static_cast<uint8_t>(chr)) + FontXSpacing;
+int CharPixelWidth(const char character) {
+  return FontView(g_font).GlyphWidth(static_cast<uint8_t>(character)) +
+         g_font_x_spacing;
 }
 
-int String_Pixel_Width(const char* string) {
-  if (!string) {
+int StringPixelWidth(const char* text) {
+  if (!text) {
     return 0;
   }
 
-  const FontView font(FontPtr);
-  int largest = 0;  // Largest recorded line width of the string.
-  int width = 0;    // Working accumulator of the current line's width.
-  for (const char ch : std::string_view(string)) {
+  const FontView font(g_font);
+  int widest_line = 0;
+  int line_width = 0;  // Width of the line measured so far.
+  for (const char character : std::string_view(text)) {
     // '\r' is the game's line break; see the declaration.
-    if (ch == '\r') {
-      largest = std::max(largest, width);
-      width = 0;
+    if (character == '\r') {
+      widest_line = std::max(widest_line, line_width);
+      line_width = 0;
     } else {
-      width += font.GlyphWidth(static_cast<uint8_t>(ch)) + FontXSpacing;
+      line_width +=
+          font.GlyphWidth(static_cast<uint8_t>(character)) + g_font_x_spacing;
     }
   }
-  return std::max(largest, width);
+  return std::max(widest_line, line_width);
 }
 
 void Set_Font_Palette_Range(std::span<const uint8_t> palette, int start_idx,
@@ -74,9 +76,9 @@ void Set_Font_Palette_Range(std::span<const uint8_t> palette, int start_idx,
     return;
   }
   for (int i = start_idx; i <= end_idx; ++i) {
-    base::At(FontPalette, i) = *palette8++;
+    base::At(g_font_palette, i) = *palette8++;
   }
 }
 
-void* Get_Font_Palette_Ptr() { return FontPalette; }
-std::span<const uint8_t> Get_Font_Palette() { return FontPalette; }
+void* Get_Font_Palette_Ptr() { return g_font_palette; }
+std::span<const uint8_t> Get_Font_Palette() { return g_font_palette; }

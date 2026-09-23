@@ -346,8 +346,8 @@ int Test_Null_Modem() {
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
-      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) / 2),
-      y + height - (FontHeight + FontYSpacing + 4) - 20);
+      x + ((width - (StringPixelWidth(Text_String(TXT_CANCEL)) + 16)) / 2),
+      y + height - (g_font_max_height + g_font_y_spacing + 4) - 20);
 
   process = true;
 
@@ -658,8 +658,8 @@ static int Reconnect_Null_Modem() {
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
-      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) / 2),
-      y + height - (FontHeight + FontYSpacing + 4) - 20);
+      x + ((width - (StringPixelWidth(Text_String(TXT_CANCEL)) + 16)) / 2),
+      y + height - (g_font_max_height + g_font_y_spacing + 4) - 20);
 
   process = true;
 

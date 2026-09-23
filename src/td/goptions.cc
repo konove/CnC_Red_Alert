@@ -663,10 +663,11 @@ void Draw_Caption(PixelView& view, int text, int x, int y, int w) {
         view, text, (w / 2) + x, (5 * factor) + y, kCcGreen, kTBlack,
         TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-    const int length = String_Pixel_Width(Text_String(text));
+    const int length = StringPixelWidth(Text_String(text));
     view.DrawLine(x + (w / 2) - (length / 2),
-                  y + FontHeight + FontYSpacing + (5 * factor),
+                  y + g_font_max_height + g_font_y_spacing + (5 * factor),
                   x + (w / 2) + (length / 2),
-                  y + FontHeight + FontYSpacing + (5 * factor), kCcGreen);
+                  y + g_font_max_height + g_font_y_spacing + (5 * factor),
+                  kCcGreen);
   }
 }

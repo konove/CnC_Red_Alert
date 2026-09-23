@@ -1354,9 +1354,10 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
       kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       x + ((width -
-            (String_Pixel_Width(Text_String(TXT_CANCEL)) + (8 * factor))) /
+            (StringPixelWidth(Text_String(TXT_CANCEL)) + (8 * factor))) /
            2),
-      y + height - (FontHeight + FontYSpacing + (2 * factor)) - (5 * factor));
+      y + height - (g_font_max_height + g_font_y_spacing + (2 * factor)) -
+          (5 * factor));
 
   // Timer_Test(__LINE__, __FILE__);
 
@@ -1596,9 +1597,10 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
       kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       x + ((width -
-            (String_Pixel_Width(Text_String(TXT_CANCEL)) + (8 * factor))) /
+            (StringPixelWidth(Text_String(TXT_CANCEL)) + (8 * factor))) /
            2),
-      y + height - (FontHeight + FontYSpacing + (2 * factor)) - (5 * factor));
+      y + height - (g_font_max_height + g_font_y_spacing + (2 * factor)) -
+          (5 * factor));
 
   // Load_Picture("TITLE.CPS", HidPage, HidPage, Palette, BM_DEFAULT);
 

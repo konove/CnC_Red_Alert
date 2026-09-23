@@ -1098,7 +1098,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y, bool objects) const {
                     TheMap().TacPixelX + x + ICON_PIXEL_W - 1,
                     TheMap().TacPixelY + y + ICON_PIXEL_H - 1,
                     static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
-      FontXSpacing -= 2;
+      g_font_x_spacing -= 2;
       Fancy_Text_Print(
           view, "%02X%02X\r%d%d%d\r%d %d",
           TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1), TheMap().TacPixelY + y,
@@ -1107,7 +1107,7 @@ void CellClass::Draw_It(PixelView& view, int x, int y, bool objects) const {
           Cell_Y(cell), Cell_X(cell), Zones.at(MZONE_NORMAL),
           Zones.at(MZONE_CRUSHER), Zones.at(MZONE_DESTROYER), Overlay,
           OverlayData);
-      FontXSpacing += 2;
+      g_font_x_spacing += 2;
     } else {
       if constexpr (config::kScenarioEditorEnabled) {
         /*

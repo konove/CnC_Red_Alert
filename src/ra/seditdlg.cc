@@ -103,14 +103,14 @@ const char* SimpleEditDlgClass::Show() {
   /*
           if( szTitle )
           {
-                  d_title_w = String_Pixel_Width( szTitle );
+                  d_title_w = StringPixelWidth( szTitle );
                   d_title_h = 20;
                   d_title_x = d_dialog_cx - d_title_w / 2;
                   d_title_y = d_dialog_y + d_gap_y;
           }
   */
 
-  const int d_prompt_w = String_Pixel_Width(szPrompt.c_str());
+  const int d_prompt_w = StringPixelWidth(szPrompt.c_str());
   const int d_prompt_x = d_dialog_x + x_margin;
   const int d_prompt_y = !szTitle.empty() ? (d_dialog_y + (3 * d_gap_y) + 20)
                                           : (d_dialog_y + d_gap_y);
@@ -120,7 +120,7 @@ const char* SimpleEditDlgClass::Show() {
   const int d_edit_y = d_prompt_y;
 
   const int d_prompt2_w =
-      !szPrompt2.empty() ? String_Pixel_Width(szPrompt2.c_str()) : 0;
+      !szPrompt2.empty() ? StringPixelWidth(szPrompt2.c_str()) : 0;
   const int d_prompt2_h = 20;
   const int d_prompt2_x = d_dialog_x + x_margin;
   const int d_prompt2_y = d_prompt_y + d_prompt2_h + d_gap_y;

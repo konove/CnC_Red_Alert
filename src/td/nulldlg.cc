@@ -317,9 +317,10 @@ int Test_Null_Modem() {
       kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       x + ((width -
-            (String_Pixel_Width(Text_String(TXT_CANCEL)) + (8 * factor))) /
+            (StringPixelWidth(Text_String(TXT_CANCEL)) + (8 * factor))) /
            2),
-      y + height - (FontHeight + FontYSpacing + (2 * factor)) - (5 * factor));
+      y + height - (g_font_max_height + g_font_y_spacing + (2 * factor)) -
+          (5 * factor));
 
   /*
   ------------------------------- Initialize -------------------------------
@@ -683,8 +684,8 @@ static int Reconnect_Null_Modem() {
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 8)) / 2),
-      y + height - (FontHeight + FontYSpacing + 2) - 5);
+      x + ((width - (StringPixelWidth(Text_String(TXT_CANCEL)) + 8)) / 2),
+      y + height - (g_font_max_height + g_font_y_spacing + 2) - 5);
 
   /*
   ------------------------------- Initialize -------------------------------
@@ -3686,7 +3687,7 @@ int Com_Scenario_Dialog() {
             absl::SNPrintF(txt, sizeof(txt), "%s",
                            Text_String(TXT_WAITING_FOR_OPPONENT));
 
-            const int txtwidth = String_Pixel_Width(txt);
+            const int txtwidth = StringPixelWidth(txt);
 
             Fancy_Text_Print(view, txt, d_dialog_cx - (txtwidth / 2),
                              d_opponent_y, kCcGreen, kTBlack,
@@ -4990,7 +4991,7 @@ int Com_Show_Scenario_Dialog() {
             absl::SNPrintF(txt, sizeof(txt), "%s",
                            Text_String(TXT_WAITING_FOR_OPPONENT));
 
-            const int txtwidth = String_Pixel_Width(txt);
+            const int txtwidth = StringPixelWidth(txt);
 
             Fancy_Text_Print(view, txt, d_dialog_cx - (txtwidth / 2),
                              d_opponent_y, kCcGreen, kTBlack,

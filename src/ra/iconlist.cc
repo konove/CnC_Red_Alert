@@ -202,9 +202,9 @@ int IconListClass::Add_Item(
       //	Stupid usage of globals for font stuff... <grumble>
       if (TextFlags == TPF_TYPE) {
         const std::span<const std::byte> pFontBefore =
-            Set_Font(TheAssets().font(FontType::kType));
-        const int FontXSpacingBefore = FontXSpacing;
-        FontXSpacing = -2;
+            SetFont(TheAssets().font(FontType::kType));
+        const int FontXSpacingBefore = g_font_x_spacing;
+        g_font_x_spacing = -2;
 
         const int iWidthToClipAt =
             IsScrollActive ? Width : Width - UpGadget.Width;
@@ -213,8 +213,8 @@ int IconListClass::Add_Item(
         Format_Window_String_New(text, iWidthToClipAt, iWidthMax, iHeight,
                                  szText, 50);
 
-        Set_Font(pFontBefore);
-        FontXSpacing =
+        SetFont(pFontBefore);
+        g_font_x_spacing =
             FontXSpacingBefore;  //	Just in case it matters... Doubt it.
       } else {
         //	Currently never called. Test well if you use IconList with a
@@ -774,12 +774,12 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
   // While there are more letters left divide the line up.
   while (character(source)) {
     int linelen = 0;
-    height += FontHeight + FontYSpacing;
+    height += g_font_max_height + g_font_y_spacing;
     lines++;
 
     // While the current line is less then the max length...
     base::At(output, dest) = character(source);
-    linelen += Char_Pixel_Width(character(source));
+    linelen += CharPixelWidth(character(source));
     // A glyph wider than the whole line must still consume input. The old
     // backward search could revisit it forever (or move before the input).
     if (linelen >= maxlinelen && character(source) != '\r') {
@@ -795,7 +795,7 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
     while (linelen < maxlinelen && character(source) != '\r' &&
            character(source) != '\0') {
       base::At(output, ++dest) = character(++source);
-      linelen += Char_Pixel_Width(character(source));
+      linelen += CharPixelWidth(character(source));
     }
 
     // if the line is too long...
@@ -806,7 +806,7 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
       const std::size_t stringOverEnd = source;
       while (linelen > 0 && character(source) != ' ' &&
              character(source) != '\r' && character(source) != '\0') {
-        linelen -= Char_Pixel_Width(character(source));
+        linelen -= CharPixelWidth(character(source));
         if (source == 0) {
           break;
         }

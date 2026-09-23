@@ -140,13 +140,12 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     /*
     **	Build the button list.
     */
-    bheight = FontHeight + FontYSpacing + (2 * factor);
-    bwidth =
-        std::max<int>(String_Pixel_Width(b1txt) + (8 * factor), 30 * factor);
+    bheight = g_font_max_height + g_font_y_spacing + (2 * factor);
+    bwidth = std::max<int>(StringPixelWidth(b1txt) + (8 * factor), 30 * factor);
 
     if (b2txt) {
       numbuttons = 2;
-      bwidth = std::max<int>(String_Pixel_Width(b2txt) + (8 * factor), bwidth);
+      bwidth = std::max<int>(StringPixelWidth(b2txt) + (8 * factor), bwidth);
 
       if (b3txt) {
         numbuttons = 3;

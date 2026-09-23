@@ -48,7 +48,7 @@ void Assets::LoadFonts() {
   for (const FontType type : magic_enum::enum_values<FontType>()) {
     fonts_.at(type) = MixArchive::RetrieveData(kFontFiles.at(type));
   }
-  Set_Font(font(FontType::k8Point));
+  SetFont(font(FontType::k8Point));
 }
 
 void Assets::LoadStrings() {

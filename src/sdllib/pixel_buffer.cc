@@ -705,11 +705,11 @@ void PixelView::Print(const int value, const int x, const int y,
 
 void PixelView::PrintLocked(const char* text, int x, int y,
                             const int fore_color, const int back_color) {
-  if (!text || FontPtr.empty()) {
+  if (!text || g_font.empty()) {
     return;
   }
 
-  const FontView font(FontPtr);
+  const FontView font(g_font);
 
   const int start_x = x;
   const base::ssize buffer_stride = stride();
@@ -721,12 +721,12 @@ void PixelView::PrintLocked(const char* text, int x, int y,
     return;
   }
 
-  // Glyph pixels are palette indices into FontPalette: entry 0 is the
+  // Glyph pixels are palette indices into g_font_palette: entry 0 is the
   // background (0 also means transparent) and entry 1 the foreground;
   // multi-colour fonts fill entries 2-15 via Set_Font_Palette_Range().
   const auto background = static_cast<uint8_t>(back_color);
-  FontPalette[1] = static_cast<uint8_t>(fore_color);
-  FontPalette[0] = background;
+  g_font_palette[1] = static_cast<uint8_t>(fore_color);
+  g_font_palette[0] = background;
 
   auto next_glyph_start = line_start + x;
 
@@ -740,10 +740,11 @@ void PixelView::PrintLocked(const char* text, int x, int y,
     auto draw_ptr = next_glyph_start;
     const int glyph_width = font.GlyphWidth(ch);
 
-    if (ch == '\n' || ch == '\r' || x + glyph_width + FontXSpacing > width_) {
+    if (ch == '\n' || ch == '\r' ||
+        x + glyph_width + g_font_x_spacing > width_) {
       // Advance to the next line: '\n' returns to the viewport edge, '\r'
       // and auto-wrap return to the starting column.
-      const int line_height = max_glyph_height + FontYSpacing;
+      const int line_height = max_glyph_height + g_font_y_spacing;
       if (height_ < y + line_height) {
         return;  // No room for another line.
       }
@@ -759,8 +760,8 @@ void PixelView::PrintLocked(const char* text, int x, int y,
       draw_ptr = next_glyph_start;  // The wrapped glyph draws on the new line.
     }
 
-    x += glyph_width + FontXSpacing;
-    next_glyph_start = draw_ptr + FontXSpacing + glyph_width;
+    x += glyph_width + g_font_x_spacing;
+    next_glyph_start = draw_ptr + g_font_x_spacing + glyph_width;
 
     // Distance from the end of a glyph row to the start of the next one.
     const int row_skip = static_cast<int>(buffer_stride - glyph_width);
@@ -786,7 +787,7 @@ void PixelView::PrintLocked(const char* text, int x, int y,
     if (glyph_height != 0) {
       // Each glyph byte packs two 4-bit palette indices, low nibble first.
       // Index 0 is transparent unless a background color is set, in which
-      // case FontPalette[0] already paints it.
+      // case g_font_palette[0] already paints it.
       const auto glyph = font.GlyphData(ch);
       if (glyph.empty()) {
         return;
@@ -797,7 +798,7 @@ void PixelView::PrintLocked(const char* text, int x, int y,
         while (cols_left > 0) {
           const auto pixel_pair = std::to_integer<uint8_t>(*glyph_data++);
 
-          const uint8_t left = base::At(FontPalette, pixel_pair & 0x0F);
+          const uint8_t left = base::At(g_font_palette, pixel_pair & 0x0F);
           if (left != 0) {
             *draw_ptr = left;
           }
@@ -805,7 +806,7 @@ void PixelView::PrintLocked(const char* text, int x, int y,
           --cols_left;
 
           if (cols_left > 0) {
-            const uint8_t right = base::At(FontPalette, pixel_pair >> 4);
+            const uint8_t right = base::At(g_font_palette, pixel_pair >> 4);
             if (right != 0) {
               *draw_ptr = right;
             }

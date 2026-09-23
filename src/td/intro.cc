@@ -118,7 +118,7 @@ void Choose_Side() {
   bool nodbrief = false;  // Movie opened successfully?
   std::span<const std::byte> speech;
   bool speechplaying = false;
-  const int oldfontxspacing = FontXSpacing;
+  const int oldfontxspacing = g_font_x_spacing;
   int setpalette = 0;
 
   Presentation show;
@@ -129,7 +129,7 @@ void Choose_Side() {
   Hide_Mouse();
   /* Change to the six-point font for Text_Print */
   const std::span<const std::byte> oldfont =
-      Set_Font(TheAssets().font(FontType::kScore));
+      SetFont(TheAssets().font(FontType::kScore));
 
   Call_Back();
 
@@ -331,8 +331,7 @@ void Choose_Side() {
   delete[] port::CharBytes(std::span(speechg)).data();
   delete[] port::CharBytes(std::span(speechn)).data();
 
-  Set_Font(oldfont);
-  FontXSpacing = oldfontxspacing;
-
+  SetFont(oldfont);
+  g_font_x_spacing = oldfontxspacing;
 }
 #endif

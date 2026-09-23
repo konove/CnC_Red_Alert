@@ -253,7 +253,7 @@ void Setup_Menu(PixelView& view, const MenuConfig& menu,
   Hide_Mouse();
   for (int i = 0; i < item_count; i++) {
     const int text_index = Select_To_Entry(i, visible_items, bit_offset);
-    const int draw_y = menu_y + (i * FontHeight) + (i * line_spacing);
+    const int draw_y = menu_y + (i * g_font_max_height) + (i * line_spacing);
     Fancy_Text_Print(
         view, base::At(labels, base::ToSize(text_index)), menu_x, draw_y,
         text_index == selected_entry && MenuUpdate ? menu.highlight_color
@@ -285,7 +285,8 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
   const int maxitem = menu.item_count - 1;            /* find max items */
   int newitem = item = menu.selected % (maxitem + 1); /* find selected */
   int select = -1;                                    /* no selection made		*/
-  const int menuskip = FontHeight + MenuSkip;         /* calc new font height	*/
+  const int menuskip =
+      g_font_max_height + MenuSkip;                   /* calc new font height	*/
   const int halfskip = MenuSkip / 2;                  /* adjustment for menus	*/
 
   const int menuy = static_cast<int>(WinY) + menu.y; /* get the absolute */
@@ -311,9 +312,9 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
   **	out the new selected item, and continue forward.
   */
   /* get menu coords from the menu */
-  const int mx1 = (static_cast<int>(WinX) * 8) + (menu.x * FontWidth);
+  const int mx1 = (static_cast<int>(WinX) * 8) + (menu.x * g_font_max_width);
   const int my1 = static_cast<int>(WinY) + menu.y - halfskip;
-  const int mx2 = mx1 + (menu.item_width * FontWidth) -
+  const int mx2 = mx1 + (menu.item_width * g_font_max_width) -
                   1; /*		structure as		*/
   const int my2 = my1 + (menu.item_count * menuskip) -
                   1; /*		necessary			*/
@@ -468,7 +469,7 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   Fancy_Text_Print(view, TXT_NONE, 0, 0, 0, 0, TPF_8POINT | TPF_DROPSHADOW);
   int length = 0;  // The width of the menu (in pixels).
   for (const char* text : strings) {
-    length = std::max(length, String_Pixel_Width(text));
+    length = std::max(length, StringPixelWidth(text));
   }
   length += 7;
   menu_config.item_width = length / 8;
@@ -482,9 +483,9 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   base::At(base::At(WindowList, static_cast<int>(WINDOW_MENU)), kWindowX) =
       19 - (length / 16);
   base::At(base::At(WindowList, static_cast<int>(WINDOW_MENU)), kWindowY) =
-      174 - (menu_config.item_count * (FontHeight + FontYSpacing));
+      174 - (menu_config.item_count * (g_font_max_height + g_font_y_spacing));
   base::At(base::At(WindowList, static_cast<int>(WINDOW_MENU)), kWindowHeight) =
-      (menu_config.item_count * FontHeight) + 5 /*11*/;
+      (menu_config.item_count * g_font_max_height) + 5 /*11*/;
 
   /*
   **	Display the menu.

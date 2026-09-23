@@ -517,7 +517,7 @@ std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
 
   if (text) {
     std::span<int16_t> ptr(_list);
-    int len = String_Pixel_Width(text) + CELL_PIXEL_W;
+    int len = StringPixelWidth(text) + CELL_PIXEL_W;
     const int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth);
 
     /*
@@ -534,7 +534,7 @@ std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
     **	Build the list of overlap cell offset values according to the text
     **	coordinate and the length.
     */
-    const int height = ((FontHeight * lines) + 23) / 24 * 24;
+    const int height = ((g_font_max_height * lines) + 23) / 24 * 24;
 
     if (x <= right) {
       CELL ul = Click_Cell_Calc(x, y - 1);

@@ -1279,8 +1279,8 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
-      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) / 2),
-      y + height - (FontHeight + FontYSpacing + 4) - 20);
+      x + ((width - (StringPixelWidth(Text_String(TXT_CANCEL)) + 16)) / 2),
+      y + height - (g_font_max_height + g_font_y_spacing + 4) - 20);
 
   /*------------------------------------------------------------------------
   Create the list
@@ -1472,8 +1472,8 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
-      x + ((width - (String_Pixel_Width(Text_String(TXT_CANCEL)) + 16)) / 2),
-      y + height - (FontHeight + FontYSpacing + 4) - 20);
+      x + ((width - (StringPixelWidth(Text_String(TXT_CANCEL)) + 16)) / 2),
+      y + height - (g_font_max_height + g_font_y_spacing + 4) - 20);
 
   /*------------------------------------------------------------------------
   Initialize

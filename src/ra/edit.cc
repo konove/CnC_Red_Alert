@@ -69,13 +69,14 @@ EditClass::EditClass(const int id, std::span<char> text, const int max_len,
     Select_Text_Font(TextFlags, nullptr, kTBlack);
 
     if (h == -1) {
-      Height = FontHeight + 1;
+      Height = g_font_max_height + 1;
     }
     if (w == -1) {
       if (!std::string_view(String.data()).empty()) {
-        Width = String_Pixel_Width(String.data()) + 6;
+        Width = StringPixelWidth(String.data()) + 6;
       } else {
-        Width = ((Char_Pixel_Width('X') + FontXSpacing) * (MaxLength + 1)) + 2;
+        Width =
+            ((CharPixelWidth('X') + g_font_x_spacing) * (MaxLength + 1)) + 2;
       }
     }
   }
@@ -180,8 +181,8 @@ void EditClass::Draw_Text(PixelView& view, const char* text) {
                           TextFlags | flags, Width - 2);
 
   if (Has_Focus() && std::cmp_less(std::string_view(text).size(), MaxLength) &&
-      String_Pixel_Width(text) + String_Pixel_Width("_") < Width - 2) {
-    Conquer_Clip_Text_Print(view, "_", X + 1 + String_Pixel_Width(text), Y + 1,
+      StringPixelWidth(text) + StringPixelWidth("_") < Width - 2) {
+    Conquer_Clip_Text_Print(view, "_", X + 1 + StringPixelWidth(text), Y + 1,
                             Color, kTBlack, TextFlags | flags);
   }
 }
@@ -314,8 +315,8 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
     case KA_ALT_BIT:
     case KA_RLSE_BIT:
     default:
-      if (String_Pixel_Width(String.data()) +
-              Char_Pixel_Width(static_cast<char>(ascii)) >=
+      if (StringPixelWidth(String.data()) +
+              CharPixelWidth(static_cast<char>(ascii)) >=
           Width - 2) {
         break;
       }

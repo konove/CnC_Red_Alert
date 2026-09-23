@@ -121,10 +121,10 @@ TEST(SetFontTest, CachesMetricsAbove127) {
   blob.at(14 + kFontInfoMaxHeight) = 200;
   blob.at(14 + kFontInfoMaxWidth) = 130;
 
-  const auto old_font = Set_Font(std::as_bytes(std::span(blob)));
-  EXPECT_EQ(FontHeight, 200);
-  EXPECT_EQ(FontWidth, 130);
-  Set_Font(old_font);
+  const auto old_font = SetFont(std::as_bytes(std::span(blob)));
+  EXPECT_EQ(g_font_max_height, 200);
+  EXPECT_EQ(g_font_max_width, 130);
+  SetFont(old_font);
 }
 
 }  // namespace

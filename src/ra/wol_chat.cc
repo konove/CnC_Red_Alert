@@ -1231,7 +1231,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
     switch (hRes) {
       case CHAT_E_BADCHANNELPASSWORD: {
         Select_Text_Font(kTpfText, nullptr,
-                         kTBlack);  //	Required before String_Pixel_Width()
+                         kTBlack);  //	Required before StringPixelWidth()
                                     // call, for god's sake.
         auto* pEditDlg = new SimpleEditDlgClass(
             [] {
@@ -1368,7 +1368,7 @@ void CreateChatChannel(WolapiObject* pWO) {
   */
   {
     Select_Text_Font(kTpfText, nullptr,
-                     kTBlack);  //	Required before String_Pixel_Width()
+                     kTBlack);  //	Required before StringPixelWidth()
                                 // call, for god's sake.
     pEditDlg = new SimpleEditDlgClass(
         350, TXT_WOL_CREATECHANNELTITLE, TXT_WOL_CREATECHANNELPROMPT,

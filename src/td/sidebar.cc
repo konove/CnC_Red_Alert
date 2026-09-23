@@ -323,16 +323,16 @@ void SidebarClass::Init_IO() {
     /*
     ** Set the button widths based on the string that goes in them.
     */
-    oldfont = Set_Font(TheAssets().font(FontType::k6Point));
-    oldx = FontXSpacing;
-    FontXSpacing = -1;
+    oldfont = SetFont(TheAssets().font(FontType::k6Point));
+    oldx = g_font_x_spacing;
+    g_font_x_spacing = -1;
     Select_Text_Font(TPF_6POINT | TPF_NOSHADOW, kTBlack, kTBlack);
 
-    int maxwidth = String_Pixel_Width(Text_String(TXT_REPAIR_BUTTON)) + 8;
+    int maxwidth = StringPixelWidth(Text_String(TXT_REPAIR_BUTTON)) + 8;
     maxwidth = std::max<int>(
-        maxwidth, String_Pixel_Width(Text_String(TXT_BUTTON_SELL)) + 8);
+        maxwidth, StringPixelWidth(Text_String(TXT_BUTTON_SELL)) + 8);
     maxwidth =
-        std::max<int>(maxwidth, String_Pixel_Width(Text_String(TXT_MAP)) + 8);
+        std::max<int>(maxwidth, StringPixelWidth(Text_String(TXT_MAP)) + 8);
     Repair.Width = maxwidth;
     Upgrade.Width = maxwidth;
     Zoom.Width = maxwidth;
@@ -395,9 +395,9 @@ void SidebarClass::Init_IO() {
       Zoom.Disable();
     }
 
-    Set_Font(oldfont);
-    FontXSpacing = oldx;
-    FontXSpacing = -1;
+    SetFont(oldfont);
+    g_font_x_spacing = oldx;
+    g_font_x_spacing = -1;
 
     base::At(Column, 0).Init_IO(0);
     base::At(Column, 1).Init_IO(1);

@@ -293,11 +293,12 @@ class TListClass final : public ControlClass {
 
 template <class T>
 TListClass<T>::TListClass(int id, int x, int y, int w, int h,
-                          TextPrintType flags, std::span<const std::byte> up, std::span<const std::byte> down)
+                          TextPrintType flags, std::span<const std::byte> up,
+                          std::span<const std::byte> down)
     : ControlClass(static_cast<unsigned>(id), x, y, w, h,
                    kLeftPress | kLeftRelease | kKeyboard, false),
       TextFlags(flags),
-      LineHeight(FontHeight + FontYSpacing - 1),
+      LineHeight(g_font_max_height + g_font_y_spacing - 1),
       LineCount((h - 1) / LineHeight),
       UpGadget(0, up, x + w, y),
       DownGadget(0, down, x + w, y + h),

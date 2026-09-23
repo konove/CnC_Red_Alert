@@ -1348,19 +1348,19 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     /*
     **	Build the button list.
     */
-    bheight = FontHeight + FontYSpacing + 2;
-    bwidth = std::max(String_Pixel_Width(b1txt) + 8, 80);
+    bheight = g_font_max_height + g_font_y_spacing + 2;
+    bwidth = std::max(StringPixelWidth(b1txt) + 8, 80);
     if (b2txt) {
       numbuttons = 2;
       b2char = static_cast<char>(toupper(b2txt[0]));
-      bwidth = std::max(String_Pixel_Width(b2txt) + 8, bwidth);
+      bwidth = std::max(StringPixelWidth(b2txt) + 8, bwidth);
       //			b1x = x + 10;
       //// left side
 
       if (b3txt) {
         numbuttons = 3;
         b3char = static_cast<char>(toupper(b3txt[0]));
-        bwidth = std::max(String_Pixel_Width(b3txt) + 8, bwidth);
+        bwidth = std::max(StringPixelWidth(b3txt) + 8, bwidth);
       }
 
     } else {
@@ -1453,7 +1453,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   static const unsigned char _scorepal[] = {0, 1, 12, 13,  4,   5,   6,  7,
                                             8, 9, 10, 255, 252, 253, 14, 248};
-  Set_Font_Palette(_scorepal);
+  SetFontPalette(_scorepal);
   temp.Set(kFadePaletteMedium, ServiceRealTime);
 
   // Main Processing Loop.
@@ -1462,7 +1462,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   TheKeyboard().Clear();
 
-  Set_Font_Palette(_scorepal);
+  SetFontPalette(_scorepal);
   int xprint = x + 20;
   int yprint = y + 25;
   do {
@@ -1471,13 +1471,13 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     base::At(bufprint, 0) = base::At(buffer, bufindex);
     if (base::At(bufprint, 0) == '\r' || base::At(bufprint, 0) == '@') {
       xprint = x + 20;
-      yprint += FontHeight + FontYSpacing;
+      yprint += g_font_max_height + g_font_y_spacing;
 
     } else {
       if (base::At(bufprint, 0) != 20) {
         TheScreen().visible_view().Print(bufprint, xprint, yprint, kTBlack,
                                          kTBlack);
-        xprint += Char_Pixel_Width(base::At(bufprint, 0));
+        xprint += CharPixelWidth(base::At(bufprint, 0));
       }
     }
     if (base::At(bufprint, 0) == '\r' || base::At(bufprint, 0) == '@') {

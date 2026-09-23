@@ -941,13 +941,13 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
                   TheMap().TacPixelX + x + ICON_PIXEL_W - 1,
                   TheMap().TacPixelY + y + ICON_PIXEL_H - 1,
                   static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
-    FontXSpacing -= 2;
+    g_font_x_spacing -= 2;
     Fancy_Text_Print(
         view, "%d\r%2X%c\r%02X.%02X",
         TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1), TheMap().TacPixelY + y,
         kWhite, kTBlack, TPF_6POINT | TPF_NOSHADOW | TPF_CENTER, cell,
         Flag.Composite, Cell_Occupier() ? '*' : ' ', Overlay, OverlayData);
-    FontXSpacing += 2;
+    g_font_x_spacing += 2;
   } else {
     if (!draw_type || draw_type == CELL_BLIT_ONLY) {
       if constexpr (config::kScenarioEditorEnabled) {

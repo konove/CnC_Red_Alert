@@ -103,9 +103,10 @@ bool ConfirmationClass::Process(const char* string) {
   **	Create Buttons.  Button coords are in pixels, but are window-relative.
   */
 
-  const int bheight = FontHeight + FontYSpacing + 2;  // button width and height
+  const int bheight =
+      g_font_max_height + g_font_y_spacing + 2;  // button width and height
   const int bwidth =
-      std::max<int>(String_Pixel_Width(Text_String(TXT_YES)) + 8, 30);
+      std::max<int>(StringPixelWidth(Text_String(TXT_YES)) + 8, 30);
 
   TextButtonClass yesbtn(
       kButtonYes, TXT_YES, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,

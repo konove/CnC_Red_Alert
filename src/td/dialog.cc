@@ -230,25 +230,25 @@ int Format_Window_String(std::span<char> string, int max_line_len, int& width,
   size_t cursor = 0;
   while (cursor < string.size() && base::At(string, cursor) != '\0') {
     const auto line_start = cursor;
-    height += FontHeight + FontYSpacing;
+    height += g_font_max_height + g_font_y_spacing;
     ++lines;
     int line_len = 0;
     while (cursor < string.size() && line_len < max_line_len &&
            base::At(string, cursor) != '\r' &&
            base::At(string, cursor) != '\0') {
-      line_len += Char_Pixel_Width(base::At(string, cursor++));
+      line_len += CharPixelWidth(base::At(string, cursor++));
     }
     if (line_len >= max_line_len) {
       const auto overflow = cursor;
       while (cursor > line_start &&
              (cursor == string.size() || base::At(string, cursor) != ' ')) {
-        line_len -= Char_Pixel_Width(base::At(string, --cursor));
+        line_len -= CharPixelWidth(base::At(string, --cursor));
       }
       if (cursor == line_start) {
         cursor = overflow > line_start ? overflow - 1 : line_start;
         line_len = 0;
         for (auto c = line_start; c < cursor; ++c) {
-          line_len += Char_Pixel_Width(base::At(string, c));
+          line_len += CharPixelWidth(base::At(string, c));
         }
       }
     }
@@ -512,7 +512,7 @@ TextStyle Select_Text_Font(TextPrintType flag, int fore, int back) {
     case TextPrintType::TPF_BRIGHT_COLOR:
     case TextPrintType::TPF_USE_GRAD_PAL:
     default:
-      font = FontPtr;
+      font = g_font;
       break;
   }
 
@@ -587,10 +587,10 @@ TextStyle Select_Text_Font(TextPrintType flag, int fore, int back) {
   /*
   **	Set the font and spacing according to the values they should be.
   */
-  FontXSpacing = xspace;
-  FontYSpacing = yspace;
-  Set_Font(font);
-  Set_Font_Palette(fontpalette);
+  g_font_x_spacing = xspace;
+  g_font_y_spacing = yspace;
+  SetFont(font);
+  SetFontPalette(fontpalette);
   return {.flag = flag, .forecolor = fore};
 }
 
@@ -614,11 +614,11 @@ void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
   if (text && *text) {
     switch (flag & (TPF_CENTER | TPF_RIGHT)) {
       case TPF_CENTER:
-        x -= String_Pixel_Width(tempstr) / 2;
+        x -= StringPixelWidth(tempstr) / 2;
         break;
 
       case TPF_RIGHT:
-        x -= String_Pixel_Width(tempstr);
+        x -= StringPixelWidth(tempstr);
         break;
 
       case TextPrintType::TPF_LASTPOINT:
@@ -775,7 +775,7 @@ void Conquer_Clip_Text_Print(PixelView& view, const char* text, int x, int y,
     int line_width = 0;
     size_t visible = 0;
     while (visible < count) {
-      const int next = Char_Pixel_Width(base::At(source, visible));
+      const int next = CharPixelWidth(base::At(source, visible));
       if (offset + line_width + next >= width) {
         break;
       }

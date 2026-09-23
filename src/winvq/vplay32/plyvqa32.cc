@@ -149,7 +149,7 @@ void main(long argc, char** argv) {
 #if (CAPTIONS)
   myconfig.CapFont = (char*)Load_Font("caption.fnt");
   myconfig.OptionFlags |= VQAOPTF_CAPTIONS;
-  Set_Font(myconfig.CapFont);
+  SetFont(myconfig.CapFont);
   SetDAC(251, 255, 255, 255);  // WHITE
   SetDAC(252, 255, 000, 000);  // RED
   SetDAC(253, 000, 255, 000);  // GREEN

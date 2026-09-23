@@ -516,8 +516,8 @@ void Map_Selection() {
   std::array<unsigned char, 768> progresspalette{};
 
   Keyboard::Clear();
-  Set_Font(TheAssets().font(FontType::kScore));
-  Set_Font_Palette(_regpal);
+  SetFont(TheAssets().font(FontType::kScore));
+  SetFontPalette(_regpal);
   Set_Palette(ThePalettes().black_palette());
 
   const int scenario = TheWorld().scenario() + (house == HOUSE_GOOD ? 0 : 14);
@@ -681,13 +681,13 @@ void Map_Selection() {
 
       case 16:
         show.text_page().view().FillRect(
-            0, 20, 2 * String_Pixel_Width(Text_String(TXT_READING_IMAGE_DATA)),
+            0, 20, 2 * StringPixelWidth(Text_String(TXT_READING_IMAGE_DATA)),
             2 * (10 + 12), kBlack);
         break;
 
       case 17:
         show.text_page().view().FillRect(
-            0, 20, 2 * String_Pixel_Width(Text_String(TXT_READING_IMAGE_DATA)),
+            0, 20, 2 * StringPixelWidth(Text_String(TXT_READING_IMAGE_DATA)),
             2 * (10 + 12), kTBlack);
         Alloc_Object(
             new MultiStagePrintClass(show, "ANALYZING", 0, 10, _othergreenpal));
@@ -695,13 +695,13 @@ void Map_Selection() {
 
       case 33:
         show.text_page().view().FillRect(
-            0, 20, 2 * String_Pixel_Width(Text_String(TXT_ANALYZING)),
+            0, 20, 2 * StringPixelWidth(Text_String(TXT_ANALYZING)),
             2 * (10 + 12), kBlack);
         break;
 
       case 34:
         show.text_page().view().FillRect(
-            0, 20, 2 * String_Pixel_Width(Text_String(TXT_ANALYZING)),
+            0, 20, 2 * StringPixelWidth(Text_String(TXT_ANALYZING)),
             2 * (10 + 12), kTBlack);
         Alloc_Object(new MultiStagePrintClass(
             show, Text_String(TXT_ENHANCING_IMAGE_DATA), 0, 10,
@@ -710,15 +710,13 @@ void Map_Selection() {
 
       case 44:
         show.text_page().view().FillRect(
-            0, 20,
-            2 * String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE_DATA)),
+            0, 20, 2 * StringPixelWidth(Text_String(TXT_ENHANCING_IMAGE_DATA)),
             2 * (10 + 12), kBlack);
         break;
 
       case 45:
         show.text_page().view().FillRect(
-            0, 20,
-            2 * String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE_DATA)),
+            0, 20, 2 * StringPixelWidth(Text_String(TXT_ENHANCING_IMAGE_DATA)),
             2 * (10 + 12), kTBlack);
         Alloc_Object(new MultiStagePrintClass(
             show, Text_String(TXT_ISOLATING_OPERATIONAL_THEATER), 0, 10,
@@ -728,7 +726,7 @@ void Map_Selection() {
       case 70:
         show.text_page().view().FillRect(
             0, 20,
-            2 * String_Pixel_Width(
+            2 * StringPixelWidth(
                     Text_String(TXT_ISOLATING_OPERATIONAL_THEATER)),
             2 * (10 + 12), kBlack);
         break;
@@ -736,7 +734,7 @@ void Map_Selection() {
       case 71:
         show.text_page().view().FillRect(
             0, 20,
-            2 * String_Pixel_Width(
+            2 * StringPixelWidth(
                     Text_String(TXT_ISOLATING_OPERATIONAL_THEATER)),
             2 * (10 + 12), kTBlack);
         Alloc_Object(new MultiStagePrintClass(
@@ -759,13 +757,13 @@ void Map_Selection() {
 
   show.text_page().view().FillRect(
       0, 20,
-      2 * String_Pixel_Width(
+      2 * StringPixelWidth(
               Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
       2 * (10 + 24), kBlack);
   Call_Back_Delay(show, 1);
   show.text_page().view().FillRect(
       0, 20,
-      2 * String_Pixel_Width(
+      2 * StringPixelWidth(
               Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
       2 * (10 + 24), kTBlack);
   Call_Back_Delay(show, 1);
@@ -862,7 +860,7 @@ void Map_Selection() {
   if (!lastscenario) {
     Call_Back_Delay(show, 85);
   }
-//	Set_Font(oldfont);
+//	SetFont(oldfont);
 #ifdef FRENCH
   show.page().view().FillRect(xcoord, 12, xcoord + 6 * 16 + 10, 20, kBlack);
   show.text_page().view().FillRect(2 * xcoord, 24, 2 * (xcoord + 6 * 16 + 10),
@@ -963,20 +961,18 @@ void Map_Selection() {
         case 35:
           if (house == HOUSE_GOOD) {
             show.text_page().view().FillRect(
-                0, 20, 2 * String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE)),
+                0, 20, 2 * StringPixelWidth(Text_String(TXT_ENHANCING_IMAGE)),
                 2 * (10 + 12), kBlack);
           } else {
 #ifdef FRENCH
             show.text_page().view().FillRect(
                 360, 20,
-                2 * (180 +
-                     String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE))),
+                2 * (180 + StringPixelWidth(Text_String(TXT_ENHANCING_IMAGE))),
                 2 * (10 + 12), kBlack);
 #else
             show.text_page().view().FillRect(
                 420, 20,
-                2 * (210 +
-                     String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE))),
+                2 * (210 + StringPixelWidth(Text_String(TXT_ENHANCING_IMAGE))),
                 2 * (10 + 12), kBlack);
 #endif  //(FRENCH)
           }
@@ -985,20 +981,18 @@ void Map_Selection() {
         case 36:
           if (house == HOUSE_GOOD) {
             show.text_page().view().FillRect(
-                0, 20, 2 * String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE)),
+                0, 20, 2 * StringPixelWidth(Text_String(TXT_ENHANCING_IMAGE)),
                 2 * (10 + 12), kTBlack);
           } else {
 #ifdef FRENCH
             show.text_page().view().FillRect(
                 360, 20,
-                2 * (180 +
-                     String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE))),
+                2 * (180 + StringPixelWidth(Text_String(TXT_ENHANCING_IMAGE))),
                 2 * (10 + 12), kTBlack);
 #else
             show.text_page().view().FillRect(
                 420, 20,
-                2 * (210 +
-                     String_Pixel_Width(Text_String(TXT_ENHANCING_IMAGE))),
+                2 * (210 + StringPixelWidth(Text_String(TXT_ENHANCING_IMAGE))),
                 2 * (10 + 12), kTBlack);
 #endif  //(FRENCH)
           }
@@ -1058,7 +1052,7 @@ void Map_Selection() {
     }
   }
 
-  //	Set_Font(TheAssets().font(FontType::kScore));
+  //	SetFont(TheAssets().font(FontType::kScore));
   TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
   Alloc_Object(
       new ScorePrintClass(show, TXT_MAP_SELECT, attackxcoord, 160, greenpal));
@@ -1270,7 +1264,7 @@ void Print_Statistics(Presentation& show, int country, int xpos, int ypos) {
 
   /* Change to the six-point font for Text_Print */
   const std::span<const std::byte> oldfont =
-      Set_Font(TheAssets().font(FontType::kScore));
+      SetFont(TheAssets().font(FontType::kScore));
 
 #ifdef GERMAN
   xpos = 8;
@@ -1458,7 +1452,7 @@ void Print_Statistics(Presentation& show, int country, int xpos, int ypos) {
     Call_Back_Delay(show, 1);
   }
   Keyboard::Clear();
-  Set_Font(oldfont);
+  SetFont(oldfont);
 }
 
 #ifdef NEVER

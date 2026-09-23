@@ -348,7 +348,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
   if (cgiReturn.bCreateGame && cgiReturn.bPrivate) {
     //	Get a password for the channel.
     Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
-                     kTpfText);  //	Required before String_Pixel_Width()
+                     kTpfText);  //	Required before StringPixelWidth()
                                  // call, for god's sake.
     auto* pEditDlg =
         new SimpleEditDlgClass(300, TXT_WOL_CREATEPRIVGAMETITLE,

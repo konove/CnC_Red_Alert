@@ -170,12 +170,12 @@ void Nod_Ending() {
 #ifdef NOT_FOR_WIN95
   std::vector<uint8_t> satpic(64000);
 #endif  // NOT_FOR_WIN95
-  const int oldfontxspacing = FontXSpacing;
+  const int oldfontxspacing = g_font_x_spacing;
 
   TheWorld().score().Show();
 
   const std::span<const std::byte> oldfont =
-      Set_Font(TheAssets().font(FontType::kScore));
+      SetFont(TheAssets().font(FontType::kScore));
   Presentation show;
   TheScreen().visible_view().Clear();
   TheScreen().hidden_view().Clear();
@@ -287,8 +287,8 @@ void Nod_Ending() {
   Hide_Mouse();
   Keyboard::Clear();
 
-  Set_Font(oldfont);
-  FontXSpacing = oldfontxspacing;
+  SetFont(oldfont);
+  g_font_x_spacing = oldfontxspacing;
   TheAudio().Stop(kanefinl.data());
   TheAudio().Stop(loopie6m.data());
 

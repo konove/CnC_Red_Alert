@@ -55,7 +55,7 @@ void Assets::LoadFonts() {
     }
     fonts_.at(type) = font_data_.at(type);
   }
-  Set_Font(font(FontType::k8Point));
+  SetFont(font(FontType::k8Point));
 }
 
 void Assets::LoadStrings() {

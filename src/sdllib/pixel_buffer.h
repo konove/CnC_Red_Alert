@@ -196,7 +196,7 @@ class PixelView {
                    int src_width, int src_height, int dst_width, int dst_height,
                    bool transparent, std::span<const uint8_t> remap_table);
 
-  // Draws text in the current font (FontPtr) at x,y, wrapping to a new line
+  // Draws text in the current font (g_font) at x,y, wrapping to a new line
   // when the text runs past the view's width. `fore_color` and `back_color`
   // are palette indices, and a `back_color` of 0 leaves the background
   // untouched; the integer overload prints the number in decimal. Does

@@ -532,7 +532,7 @@ std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
 
   if (text != nullptr) {
     std::span<int16_t> ptr(_list);
-    int len = String_Pixel_Width(text) + CELL_PIXEL_W;
+    int len = StringPixelWidth(text) + CELL_PIXEL_W;
     const int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth);
 
     /*

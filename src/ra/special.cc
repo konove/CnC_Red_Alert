@@ -297,7 +297,7 @@ void PWEditClass::Draw_Text(PixelView& view, const char* text) {
   base::FillBytes(base::ObjectBytes(buffer), '*',
                   std::min(std::string_view(text).size(), sizeof(buffer) - 1));
 
-  if (FontPtr.data() == TheAssets().font(FontType::k6PointGradient).data()) {
+  if (g_font.data() == TheAssets().font(FontType::k6PointGradient).data()) {
     const TextPrintType flags =
         Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
@@ -306,7 +306,7 @@ void PWEditClass::Draw_Text(PixelView& view, const char* text) {
 
     if (Has_Focus() &&
         std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
-      Conquer_Clip_Text_Print(view, "_", X + 1 + String_Pixel_Width(buffer),
+      Conquer_Clip_Text_Print(view, "_", X + 1 + StringPixelWidth(buffer),
                               Y + 1, Color, kTBlack, TextFlags | flags);
     }
   } else {
@@ -319,7 +319,7 @@ void PWEditClass::Draw_Text(PixelView& view, const char* text) {
     if (Has_Focus() &&
         std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
       Conquer_Clip_Text_Print(
-          view, "_", X + 1 + String_Pixel_Width(buffer), Y + 1,
+          view, "_", X + 1 + StringPixelWidth(buffer), Y + 1,
           &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE), kTBlack,
           TextFlags);
     }
@@ -366,9 +366,10 @@ const char* Fetch_Password(int caption, int message, int btext) {
   /*
   **	Build the button list.
   */
-  const int bheight = FontHeight + FontYSpacing + 4;  // button width and height
+  const int bheight =
+      g_font_max_height + g_font_y_spacing + 4;  // button width and height
   const int bwidth =
-      std::max(String_Pixel_Width(Text_String(btext)) + 16, 30 * 2);
+      std::max(StringPixelWidth(Text_String(btext)) + 16, 30 * 2);
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.

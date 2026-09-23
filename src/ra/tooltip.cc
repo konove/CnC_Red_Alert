@@ -67,11 +67,11 @@ ToolTipClass::ToolTipClass(GadgetClass* gadget, const char* szText, int x_show,
     port::SafeCopy(szTip, szText != nullptr ? szText : "");
   }
 
-  Set_Font(TheAssets().font(FontType::kType));
+  SetFont(TheAssets().font(FontType::kType));
   Select_Text_Font(TPF_TYPE, nullptr,
-                   kTBlack);  //	Required before String_Pixel_Width()
+                   kTBlack);  //	Required before StringPixelWidth()
                               // call, for god's sake.
-  wShow = String_Pixel_Width(szTip) + 2;
+  wShow = StringPixelWidth(szTip) + 2;
   hShow = 11;
 
   if (!bIconList) {
@@ -134,7 +134,7 @@ void ToolTipClass::Move(PixelView& view, int x_show, int y_show) {
 //***********************************************************************************************
 void ToolTipClass::Show(PixelView& view) {
   if (!bShowing) {
-    Set_Font(TheAssets().font(FontType::kType));
+    SetFont(TheAssets().font(FontType::kType));
     int xShowUse = xShow;
     int yShowUse = 0;
     int wShowUse = 0;
@@ -164,9 +164,9 @@ void ToolTipClass::Show(PixelView& view) {
         return;
       }
       Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
-                       TPF_TYPE);  //	Required before String_Pixel_Width()
+                       TPF_TYPE);  //	Required before StringPixelWidth()
                                    // call, for god's sake.
-      wShowUse = String_Pixel_Width(szTipUse) + 2;
+      wShowUse = StringPixelWidth(szTipUse) + 2;
       if (bRightAlign) {
         xShowUse -= wShowUse;
       }
@@ -222,8 +222,8 @@ void ToolTipClass::Unshow(PixelView& view) {
       //				return;
       //			}
       //			Fancy_Text_Print( TXT_NONE, 0, 0, TBLACK,
-      // TBLACK, TPF_TYPE );	//	Required before String_Pixel_Width()
-      // call, for god's sake. 			wShowUse = String_Pixel_Width(
+      // TBLACK, TPF_TYPE );	//	Required before StringPixelWidth()
+      // call, for god's sake. 			wShowUse = StringPixelWidth(
       // szTipUsed ) + 2; 			if( bRightAlign )
       // xShowUse -= wShowUse;
       xShowUse = xLastShow;

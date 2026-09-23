@@ -227,7 +227,7 @@ void ScorePrintClass::Update() {
     // and is blitted across, 14x16 from two rows up, so the blit also wipes the
     // white smear drawn around it on the last tick.
     if (Stage) {
-      Set_Font_Palette(PrimaryPalette);
+      SetFontPalette(PrimaryPalette);
       localstr[0] = Text().at(base::ToSize(Stage - 1));
       TheScreen().hidden_view().Print(localstr, pos - 12, YPos, kTBlack,
                                       kTBlack);
@@ -238,7 +238,7 @@ void ScorePrintClass::Update() {
     // up, one row down and one pixel right of where it will finally sit.
     if (base::ToSize(Stage) < Text().size()) {
       localstr[0] = Text().at(base::ToSize(Stage));
-      Set_Font_Palette(_whitepal);
+      SetFontPalette(_whitepal);
       TheScreen().visible_view().Print(localstr, pos, YPos - 1, kTBlack,
                                        kTBlack);
       TheScreen().visible_view().Print(localstr, pos, YPos + 1, kTBlack,
@@ -266,7 +266,7 @@ void ScoreScaleClass::Update() {
   if (AnimTimer.IsFinished()) {
     AnimTimer.Set(1);
     if (Stage) {
-      Set_Font_Palette(Palette);
+      SetFontPalette(Palette);
       TheScreen().hidden_view().FillRect(0, 0, 14, 14, kTBlack);
       TheScreen().hidden_view().Print(std::string(Text()).c_str(), 0, 0,
                                       kTBlack, kTBlack);
@@ -278,7 +278,7 @@ void ScoreScaleClass::Update() {
     } else {
       // Zoom finished: print the letter at its final size, free the slot (which
       // Input_Name() is waiting on) and self-destruct.
-      Set_Font_Palette(Palette);
+      SetFontPalette(Palette);
       for (auto& ScoreObj : score_objects) {
         if (ScoreObj == this) {
           ScoreObj = nullptr;
@@ -310,7 +310,7 @@ int Alloc_Object(ScoreAnimClass* obj) {
   }
 }
 
-// 16-entry font palettes for Set_Font_Palette(): each maps the gradient score
+// 16-entry font palettes for SetFontPalette(): each maps the gradient score
 // font onto one colour ramp of the score screen palette. Blue is the Allied
 // colour, red the Soviet one, green the headings and ratings, and yellow the
 // "click to continue" prompt.
@@ -339,11 +339,11 @@ void ScoreClass::Presentation() {
   static const int _bldggy[2] = {138, 138};
   static const int _bldgny[2] = {150, 150};
 
-  const int oldfontxspacing = FontXSpacing;
+  const int oldfontxspacing = g_font_x_spacing;
   const int house = IsSovietHouse(ThePlayer()->Class->House) ? 1 : 0;  // 0 or 1
 
   ControlQ = false;
-  FontXSpacing = 0;
+  g_font_x_spacing = 0;
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
   TheTheme().Queue_Song(THEME_SCORE);
 
@@ -366,7 +366,7 @@ void ScoreClass::Presentation() {
 
   // Change to the score screen font; restored on the way out.
   const std::span<const std::byte> oldfont =
-      Set_Font(TheAssets().font(FontType::kScore));
+      SetFont(TheAssets().font(FontType::kScore));
   ServiceRealTime();
 
   // Load this side's background onto the hidden page, brighten its palette,
@@ -484,7 +484,7 @@ void ScoreClass::Presentation() {
   // ticks after leadership. The loop ends as soon as both show their final
   // values, which is only early when a rating is zero.
   for (int i = 0; i <= 130; i++) {
-    Set_Font_Palette(greenpal);
+    SetFontPalette(greenpal);
     const int lead = CountUpValue(leadership, i, 100);
     Count_Up_Print("%3d%%", lead, leadership, 244, 26);
     const int econo = CountUpValue(economy, i - 30, 100);
@@ -553,7 +553,7 @@ void ScoreClass::Presentation() {
   }
   TickScoreScreen(6);
 
-  Set_Font_Palette(redpal);
+  SetFontPalette(redpal);
   Do_GDI_Graph(yellowptr, redptr, GKilled + CKilled, NKilled, 89);
 
   // Print out stats on buildings destroyed, laid out like the casualties above.
@@ -673,8 +673,8 @@ void ScoreClass::Presentation() {
   TheScreen().visible_page().view().Clear();
   ThePalettes().game_palette().Set();
 
-  Set_Font(oldfont);
-  FontXSpacing = oldfontxspacing;
+  SetFont(oldfont);
+  g_font_x_spacing = oldfontxspacing;
   ControlQ = false;
 }
 
@@ -780,7 +780,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   PixelView& view = TheScreen().visible_view();
   hidden.FillRect(0, 0, 248, 18, kTBlack);
   CC_Draw_Shape(hidden, redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
-  Set_Font_Palette(house ? redpal : bluepal);
+  SetFontPalette(house ? redpal : bluepal);
 
   for (int i = 1; i <= gdikilled; i++) {
     if (i != gdikilled) {
@@ -800,7 +800,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   Count_Up_Print("%d", gkilled, gkilled, 297, ypos + 2);
   /*BG	if (!TheKeyboard().Check()) */ TickScoreScreen(40);
 
-  Set_Font_Palette(house ? bluepal : redpal);
+  SetFontPalette(house ? bluepal : redpal);
   for (int i = 1; i <= nodkilled; i++) {
     if (i != nodkilled) {
       CC_Draw_Shape(view, redptr, i, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
@@ -870,7 +870,7 @@ void ScoreClass::Show_Credits(int house, std::span<const uint8_t> pal) {
 
     i = std::max(i, 0);
 
-    Set_Font_Palette(pal);
+    SetFontPalette(pal);
     Count_Up_Print("%d", i, static_cast<int>(ThePlayer()->Available_Money()),
                    base::At(_credpx, house), base::At(_credpy, house));
     TickScoreScreen(2);
@@ -1073,9 +1073,9 @@ void Multi_Score_Presentation() {
   // doubled onto the visible page.
   PixelBuffer pseudoseenbuff(320, 200);
 
-  const int oldfontxspacing = FontXSpacing;
+  const int oldfontxspacing = g_font_x_spacing;
 
-  FontXSpacing = 0;
+  g_font_x_spacing = 0;
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
 
   ThePalettes().black_palette().Set();
@@ -1100,7 +1100,7 @@ void Multi_Score_Presentation() {
 
   // Change to the score screen font; restored on the way out.
   const std::span<const std::byte> oldfont =
-      Set_Font(TheAssets().font(FontType::kScore));
+      SetFont(TheAssets().font(FontType::kScore));
   ServiceRealTime();
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TOP, config::kIsFrench ? 113 : 130,
@@ -1184,8 +1184,8 @@ void Multi_Score_Presentation() {
   ThePalettes().black_palette().Set(kFadePaletteFast, nullptr);
   TheScreen().visible_view().Clear();
   ThePalettes().game_palette().Set();
-  Set_Font(oldfont);
-  FontXSpacing = oldfontxspacing;
+  SetFont(oldfont);
+  g_font_x_spacing = oldfontxspacing;
   ControlQ = false;
   Show_Mouse();
 }

@@ -1244,10 +1244,10 @@ static int Net_Join_Dialog() {
           p = Text_String(TXT_COUNT);
           absl::SNPrintF(txt, sizeof(txt), "%s %d", p,
                          TheSession().unit_count());
-          Fancy_Text_Print(
-              view, txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
-              d_msg3_y, kCcGreen, kTBlack,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(view, txt,
+                           d_dialog_x + (d_dialog_w / 4) - StringPixelWidth(p),
+                           d_msg3_y, kCcGreen, kTBlack,
+                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           p = Text_String(TXT_LEVEL);
           if (TheWorld().build_level() <= MPLAYER_BUILD_LEVEL_MAX) {
@@ -1256,11 +1256,11 @@ static int Net_Join_Dialog() {
           } else {
             absl::SNPrintF(txt, sizeof(txt), "%s **", p);
           }
-          Fancy_Text_Print(view, txt,
-                           d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
-                               String_Pixel_Width(p),
-                           d_msg3_y, kCcGreen, kTBlack,
-                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(
+              view, txt,
+              d_dialog_x + d_dialog_w - (d_dialog_w / 4) - StringPixelWidth(p),
+              d_msg3_y, kCcGreen, kTBlack,
+              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
           Bases
@@ -1271,10 +1271,10 @@ static int Net_Join_Dialog() {
           } else {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_OFF));
           }
-          Fancy_Text_Print(
-              view, txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
-              d_msg4_y, kCcGreen, kTBlack,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(view, txt,
+                           d_dialog_x + (d_dialog_w / 4) - StringPixelWidth(p),
+                           d_msg4_y, kCcGreen, kTBlack,
+                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
           Tiberium
@@ -1286,10 +1286,10 @@ static int Net_Join_Dialog() {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_OFF));
           }
 
-          Fancy_Text_Print(
-              view, txt, d_dialog_x + (d_dialog_w / 4) - String_Pixel_Width(p),
-              d_msg5_y, kCcGreen, kTBlack,
-              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(view, txt,
+                           d_dialog_x + (d_dialog_w / 4) - StringPixelWidth(p),
+                           d_msg5_y, kCcGreen, kTBlack,
+                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
           Goody boxes
@@ -1301,11 +1301,11 @@ static int Net_Join_Dialog() {
             absl::SNPrintF(txt, sizeof(txt), "%s %s", p, Text_String(TXT_OFF));
           }
 
-          Fancy_Text_Print(view, txt,
-                           d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
-                               String_Pixel_Width(p),
-                           d_msg4_y, kCcGreen, kTBlack,
-                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(
+              view, txt,
+              d_dialog_x + d_dialog_w - (d_dialog_w / 4) - StringPixelWidth(p),
+              d_msg4_y, kCcGreen, kTBlack,
+              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
           /*............................................................
           Computer AI players
@@ -1322,11 +1322,11 @@ static int Net_Join_Dialog() {
                              Text_String(TXT_OFF));
             }
           }
-          Fancy_Text_Print(view, txt,
-                           d_dialog_x + d_dialog_w - (d_dialog_w / 4) -
-                               String_Pixel_Width(p),
-                           d_msg5_y, kCcGreen, kTBlack,
-                           TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
+          Fancy_Text_Print(
+              view, txt,
+              d_dialog_x + d_dialog_w - (d_dialog_w / 4) - StringPixelWidth(p),
+              d_msg5_y, kCcGreen, kTBlack,
+              TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
         } else {
           /*...............................................................
@@ -4377,8 +4377,8 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                         timeval + 1);
     const char* buf3 = Text_String(TXT_PRESS_ESC);
 
-    w = std::max<int>(String_Pixel_Width(buf1), String_Pixel_Width(buf2));
-    w = std::max<int>(String_Pixel_Width(buf3), w);
+    w = std::max<int>(StringPixelWidth(buf1), StringPixelWidth(buf2));
+    w = std::max<int>(StringPixelWidth(buf3), w);
     w += d_margin * 4;
     h = (d_txt6_h * 3) + (d_margin * 6);
     x = (160 * factor) - (w / 2);
@@ -4411,7 +4411,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
 
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
                         timeval + 1);
-    const int pixwidth = String_Pixel_Width(buf2);
+    const int pixwidth = StringPixelWidth(buf2);
     view.FillRect((160 * factor) - (pixwidth / 2) - 12,
                   y + (d_margin * 2) + d_txt6_h + d_margin,
                   (160 * factor) + (pixwidth / 2) + 12,

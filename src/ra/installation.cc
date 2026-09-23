@@ -258,7 +258,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
 
       TheTheme().Stop();
       int hidden = Get_Mouse_State();
-      font = FontPtr;
+      font = g_font;
 
       // Only set the palette if necessary.
       if (PaletteClass::CurrentPalette.at(1).Red_Component() +
@@ -285,7 +285,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
       while (hidden--) {
         Hide_Mouse();
       }
-      Set_Font(font);
+      SetFont(font);
     }
   }
 

@@ -172,12 +172,12 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
 
   PixelView& view = TheScreen().visible_view();
 
-  //	Just making sure globals are set right before String_Pixel_Width()
+  //	Just making sure globals are set right before StringPixelWidth()
   // call... sigh
   Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
                    kTBlack, TPF_6PT_GRAD | TPF_NOSHADOW);
   const int iSaveTextWidth =
-      String_Pixel_Width(TXT_WOL_SAVELOGIN) + BIGCHECK_OFFSETX;
+      StringPixelWidth(TXT_WOL_SAVELOGIN) + BIGCHECK_OFFSETX;
   BigCheckBoxClass SaveCheckBox(kButtonSavecheck, d_save_x, d_save_y,
                                 iSaveTextWidth, d_save_h, TXT_WOL_SAVELOGIN,
                                 TPF_6PT_GRAD | TPF_NOSHADOW, true);

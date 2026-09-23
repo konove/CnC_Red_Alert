@@ -3014,7 +3014,7 @@ bool Force_CD_Available(int cd) {
 #endif
   static unsigned char _palette[768];
   static unsigned char
-      _hold[16];  // Saved copy of the font palette (FontPalette).
+      _hold[16];  // Saved copy of the font palette (g_font_palette).
   static std::span<const std::byte> font;
   static const char* _volid[] = {"GDI", "NOD", "COVERT"};
 
@@ -3104,7 +3104,7 @@ bool Force_CD_Available(int cd) {
       // loop is the cancel below, so there is nothing to remember here.
       TheTheme().Stop();
       int hidden = Get_Mouse_State();
-      font = FontPtr;
+      font = g_font;
       std::ranges::copy(CurrentPalette, std::begin(_palette));
       std::ranges::copy(Get_Font_Palette(), std::begin(_hold));
 
@@ -3135,8 +3135,8 @@ bool Force_CD_Available(int cd) {
         Hide_Mouse();
       }
       Set_Palette(_palette);
-      Set_Font(font);
-      Set_Font_Palette(_hold);
+      SetFont(font);
+      SetFontPalette(_hold);
       TheGameState().in_main_loop() = old_in_main_loop;
     }
   }
