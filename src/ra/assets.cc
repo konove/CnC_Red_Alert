@@ -12,7 +12,6 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/defines.h"
 #include "ra/ini.h"
-#include "sdllib/font.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
 
@@ -48,7 +47,6 @@ void Assets::LoadFonts() {
   for (const FontType type : magic_enum::enum_values<FontType>()) {
     fonts_.at(type) = MixArchive::RetrieveData(kFontFiles.at(type));
   }
-  SetFont(font(FontType::k8Point));
 }
 
 void Assets::LoadStrings() {

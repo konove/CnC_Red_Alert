@@ -456,7 +456,6 @@ void WOL_GameSetupDialog::Initialize() {
   pStaticAIPlayers = new StaticButtonClass(
       0, "   ", kTpfText, d_aiplayers_x + d_aiplayers_w + 4, d_aiplayers_y);
 
-  Select_Text_Font(kTpfText, nullptr, 0);
   pDropListHouse = new DropListClass(
       kButtonHouse, szHouseBuffer, sizeof(szHouseBuffer), kTpfText, d_house_x,
       d_house_y, d_house_w, d_house_h, MixArchive::RetrieveData("BTN-UP.SHP"),

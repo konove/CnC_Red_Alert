@@ -14,7 +14,7 @@
 void Draw_Caption(PixelView& view, int text, int x, int y, int w);
 void Draw_Caption(PixelView& view, const char* text, int x, int y, int w);
 // Word wraps "string" in place so that no line exceeds "max_line_len" pixels
-// when rendered with the current font.
+// when rendered in `font`.
 //
 // Line breaks are written directly into the buffer: the space (or the '@'
 // marker, which callers use to request an explicit break) at each break point
@@ -25,9 +25,6 @@ void Draw_Caption(PixelView& view, const char* text, int x, int y, int w);
 // "width" receives the pixel width of the widest resulting line and "height"
 // the total pixel height of all lines. Returns the number of lines, or 0 if
 // "string" is nullptr.
-int Format_Window_String(std::span<char> string, int max_line_len, int& width,
-                         int& height);
-// Same, measured in `font` rather than the current font.
 int Format_Window_String(const FontStyle& font, std::span<char> string,
                          int max_line_len, int& width, int& height);
 extern void Dialog_Box(int x, int y, int w, int h);
@@ -93,14 +90,6 @@ FontStyle TextFontStyle(TextPrintType flag);
 TextStyle TextStyleFor(TextPrintType flag, RemapControlType* fore = nullptr,
                        int back = kTBlack);
 
-// TextStyleFor(), also installed in the font globals. Temporary: callers move
-// to the style it returns (docs/FONT_GLOBALS_PLAN.md). Draws nothing, so code
-// that only needs StringPixelWidth() or g_font_max_height to be right calls
-// this and ignores the result.
-TextStyle Select_Text_Font(TextPrintType flag, RemapControlType* fore = nullptr,
-                           int back = kTBlack);
-// Same, for the single-color scheme Plain_Text_Print builds.
-TextStyle Select_Text_Font(TextPrintType flag, int fore, int back);
 void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
                        RemapControlType* fore, int back, TextPrintType flag);
 // Fancy_Text_Print with a single palette color in place of the color scheme.

@@ -46,7 +46,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 
 //***********************************************************************************************
 bool WOL_Download_Dialog(IDownload* pDownload,
@@ -86,10 +85,6 @@ bool WOL_Download_Dialog(IDownload* pDownload,
   //	char* info_string = (char*)szTitle;
 
   PixelView& view = TheScreen().visible_view();
-
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
-                   kTBlack,
-                   TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   //	Format_Window_String( info_string, visible_view.height(), width,
   // height

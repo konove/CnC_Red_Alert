@@ -275,10 +275,6 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   // rather than the shared string table.
   std::string info_string(Text_String(TXT_RECEIVING_SCENARIO));
 
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
-                   kTBlack,
-                   TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
-
   Format_Window_String(TextFontStyle(TPF_CENTER | TPF_6PT_GRAD |
                                      TPF_USE_GRAD_PAL | TPF_NOSHADOW),
                        std::span(info_string), view.height(), width, height);
@@ -305,10 +301,6 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
 
   GaugeClass progress_meter(kButtonProgress, d_progress_x, d_progress_y,
                             d_progress_w, d_progress_h);
-
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
-                   kTBlack,
-                   TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   enum class RedrawType {
     REDRAW_NONE = 0,
@@ -559,10 +551,6 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   Timer<SystemTickSource>
       response_timer;  // timeout timer for waiting for responses
 
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
-                   kTBlack,
-                   TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
-
   Format_Window_String(TextFontStyle(TPF_CENTER | TPF_6PT_GRAD |
                                      TPF_USE_GRAD_PAL | TPF_NOSHADOW),
                        std::span(info_string), view.height(), width, height);
@@ -589,10 +577,6 @@ bool Send_Remote_File(const char* file_name, int gametype) {
 
   GaugeClass progress_meter(kButtonProgress, d_progress_x, d_progress_y,
                             d_progress_w, d_progress_h);
-
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
-                   kTBlack,
-                   TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   enum class RedrawType {
     REDRAW_NONE = 0,

@@ -1329,9 +1329,6 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   }
 
   PixelView& view = TheScreen().visible_view();
-  Fancy_Text_Print(view, TXT_NONE, 0, 0,
-                   &ThePalettes().color_remaps().at(PCOLOR_TYPE), kTBlack,
-                   TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   // The buttons and the page of text are both laid out in this font.
   const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   /*
@@ -1387,9 +1384,6 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   // Copy to mutable buffer for Format_Window_String (which inserts newlines).
   page_text.copy(buffer, page_text.size());
   base::At(buffer, page_text.size()) = '\0';
-  Fancy_Text_Print(view, TXT_NONE, 0, 0,
-                   &ThePalettes().color_remaps().at(PCOLOR_TYPE), kTBlack,
-                   TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   int width = 0;
   int height = 0;
   Format_Window_String(font, buffer, 300, width, height);
@@ -1455,7 +1449,6 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   static const unsigned char _scorepal[] = {0, 1, 12, 13,  4,   5,   6,  7,
                                             8, 9, 10, 255, 252, 253, 14, 248};
-  SetFontPalette(_scorepal);
   temp.Set(kFadePaletteMedium, ServiceRealTime);
 
   // Main Processing Loop.
@@ -1464,7 +1457,6 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
   TheKeyboard().Clear();
 
-  SetFontPalette(_scorepal);
   // The text types out in the font the button constructors above selected
   // last (each measures itself in kTpfButton), recoloured through _scorepal.
   // That is not the style the page was wrapped in: it sets letters a pixel

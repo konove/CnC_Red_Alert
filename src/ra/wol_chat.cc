@@ -59,7 +59,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 #include "tech/ftimer.h"
 #include "tech/mix_archive.h"
 
@@ -1230,8 +1229,6 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
     hRes = pWO->ChannelJoin(pChannel);
     switch (hRes) {
       case CHAT_E_BADCHANNELPASSWORD: {
-        Select_Text_Font(kTpfText, nullptr,
-                         kTBlack);  //	Required before StringPixelWidth()
                                     // call, for god's sake.
         auto* pEditDlg = new SimpleEditDlgClass(
             [] {
@@ -1367,8 +1364,6 @@ void CreateChatChannel(WolapiObject* pWO) {
           else
   */
   {
-    Select_Text_Font(kTpfText, nullptr,
-                     kTBlack);  //	Required before StringPixelWidth()
                                 // call, for god's sake.
     pEditDlg = new SimpleEditDlgClass(
         350, TXT_WOL_CREATECHANNELTITLE, TXT_WOL_CREATECHANNELPROMPT,

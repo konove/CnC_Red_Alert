@@ -357,8 +357,6 @@ const char* Fetch_Password(int caption, int message, int btext) {
   }
 
   PixelView& view = TheScreen().visible_view();
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
-                   TPF_6PT_GRAD | TPF_NOSHADOW);
 
   /*
   **	Examine the optional button parameters. Fetch the width and starting
@@ -378,8 +376,6 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	These dimensions will control how the dialog box looks.
   */
   port::SafeCopy(buffer, Text_String(message));
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
-                   TPF_6PT_GRAD | TPF_NOSHADOW);
   int width = 0;
   int height = 0;
   Format_Window_String(font, buffer, 255, width, height);
@@ -518,8 +514,6 @@ int Fetch_Difficulty(bool amath) {
     }
   }
   PixelView& view = TheScreen().visible_view();
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
-                   TPF_6PT_GRAD | TPF_NOSHADOW);
   int width = 0;
   int height = 0;
   Format_Window_String(TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW), buffer,

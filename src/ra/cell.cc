@@ -146,7 +146,6 @@
 #include "ra/vessel.h"
 #include "ra/vortex.h"
 #include "ra/world.h"
-#include "sdllib/font.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_win.h"
@@ -1098,7 +1097,6 @@ void CellClass::Draw_It(PixelView& view, int x, int y, bool objects) const {
                     TheMap().TacPixelX + x + ICON_PIXEL_W - 1,
                     TheMap().TacPixelY + y + ICON_PIXEL_H - 1,
                     static_cast<unsigned char>(Sim_Random_Pick(1, 254)));
-      g_font_x_spacing -= 2;
       Fancy_Text_Print(
           view, "%02X%02X\r%d%d%d\r%d %d",
           TheMap().TacPixelX + x + (ICON_PIXEL_W >> 1), TheMap().TacPixelY + y,
@@ -1107,7 +1105,6 @@ void CellClass::Draw_It(PixelView& view, int x, int y, bool objects) const {
           Cell_Y(cell), Cell_X(cell), Zones.at(MZONE_NORMAL),
           Zones.at(MZONE_CRUSHER), Zones.at(MZONE_DESTROYER), Overlay,
           OverlayData);
-      g_font_x_spacing += 2;
     } else {
       if constexpr (config::kScenarioEditorEnabled) {
         /*

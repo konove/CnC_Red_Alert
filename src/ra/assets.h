@@ -48,7 +48,7 @@ enum class FontType {
 // so they stay valid only as long as those archives stay registered.
 //
 // Example:
-//   SetFont(TheAssets().font(FontType::kScore));
+//   const FontView font(TheAssets().font(FontType::kScore));
 class Assets {
  public:
   // The number of tutorial messages TUTORIAL.INI can hold. The trigger

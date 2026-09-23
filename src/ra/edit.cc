@@ -66,7 +66,6 @@ EditClass::EditClass(const int id, std::span<char> text, const int max_len,
   GadgetClass::Flag_To_Redraw();
 
   if (w == -1 || h == -1) {
-    Select_Text_Font(TextFlags, nullptr, kTBlack);
     const FontStyle font = TextFontStyle(TextFlags);
 
     if (h == -1) {

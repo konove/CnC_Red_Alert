@@ -315,11 +315,6 @@ TListClass<T>::TListClass(int id, int x, int y, int w, int h,
   ScrollGadget.Y = Y + UpGadget.Height;
   ScrollGadget.Height -= UpGadget.Height + DownGadget.Height;
   ScrollGadget.Width = std::max(UpGadget.Width, DownGadget.Width);
-
-  /*
-  **	Set the list box to a default state.
-  */
-  Select_Text_Font(TextFlags, nullptr, kTBlack);
 }
 
 template <class T>

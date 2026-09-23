@@ -57,7 +57,6 @@
 #include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/screen.h"
-#include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
@@ -110,7 +109,6 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   }
 
   PixelView& view = TheScreen().visible_view();
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
   const FontStyle font = TextFontStyle(kTpfText);
 
   /*
@@ -146,7 +144,6 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   buffer[BUFFSIZE - 1] = 0;
   port::SafeCopy(buffer, msg);
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
   int width = 0;
   int height = 0;
   const int lines = Format_Window_String(font, buffer, 510, width, height);

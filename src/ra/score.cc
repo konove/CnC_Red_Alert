@@ -241,7 +241,6 @@ void ScorePrintClass::Update() {
     // and is blitted across, 14x16 from two rows up, so the blit also wipes the
     // white smear drawn around it on the last tick.
     if (Stage) {
-      SetFontPalette(PrimaryPalette);
       localstr[0] = Text().at(base::ToSize(Stage - 1));
       TheScreen().hidden_view().Print(ScoreFontStyle(PrimaryPalette), localstr,
                                       pos - 12, YPos, kTBlack, kTBlack);
@@ -252,7 +251,6 @@ void ScorePrintClass::Update() {
     // up, one row down and one pixel right of where it will finally sit.
     if (base::ToSize(Stage) < Text().size()) {
       localstr[0] = Text().at(base::ToSize(Stage));
-      SetFontPalette(_whitepal);
       const FontStyle white = ScoreFontStyle(_whitepal);
       TheScreen().visible_view().Print(white, localstr, pos, YPos - 1, kTBlack,
                                        kTBlack);
@@ -281,7 +279,6 @@ void ScoreScaleClass::Update() {
   if (AnimTimer.IsFinished()) {
     AnimTimer.Set(1);
     if (Stage) {
-      SetFontPalette(Palette);
       TheScreen().hidden_view().FillRect(0, 0, 14, 14, kTBlack);
       TheScreen().hidden_view().Print(ScoreFontStyle(Palette),
                                       std::string(Text()).c_str(), 0, 0,
@@ -294,7 +291,6 @@ void ScoreScaleClass::Update() {
     } else {
       // Zoom finished: print the letter at its final size, free the slot (which
       // Input_Name() is waiting on) and self-destruct.
-      SetFontPalette(Palette);
       for (auto& ScoreObj : score_objects) {
         if (ScoreObj == this) {
           ScoreObj = nullptr;
@@ -327,7 +323,7 @@ int Alloc_Object(ScoreAnimClass* obj) {
   }
 }
 
-// 16-entry font palettes for SetFontPalette(): each maps the gradient score
+// 16-entry font palettes for ScoreFontStyle(): each maps the gradient score
 // font onto one colour ramp of the score screen palette. Blue is the Allied
 // colour, red the Soviet one, green the headings and ratings, and yellow the
 // "click to continue" prompt.
@@ -356,11 +352,9 @@ void ScoreClass::Presentation() {
   static const int _bldggy[2] = {138, 138};
   static const int _bldgny[2] = {150, 150};
 
-  const int oldfontxspacing = g_font_x_spacing;
   const int house = IsSovietHouse(ThePlayer()->Class->House) ? 1 : 0;  // 0 or 1
 
   ControlQ = false;
-  g_font_x_spacing = 0;
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
   TheTheme().Queue_Song(THEME_SCORE);
 
@@ -381,9 +375,6 @@ void ScoreClass::Presentation() {
   const auto yellowptr = MixArchive::RetrieveData("BAR3BHR.SHP");
   const auto redptr = MixArchive::RetrieveData("BAR3RHR.SHP");
 
-  // Change to the score screen font; restored on the way out.
-  const std::span<const std::byte> oldfont =
-      SetFont(TheAssets().font(FontType::kScore));
   ServiceRealTime();
 
   // Load this side's background onto the hidden page, brighten its palette,
@@ -501,7 +492,6 @@ void ScoreClass::Presentation() {
   // ticks after leadership. The loop ends as soon as both show their final
   // values, which is only early when a rating is zero.
   for (int i = 0; i <= 130; i++) {
-    SetFontPalette(greenpal);
     const int lead = CountUpValue(leadership, i, 100);
     Count_Up_Print("%3d%%", lead, leadership, 244, 26, greenpal);
     const int econo = CountUpValue(economy, i - 30, 100);
@@ -570,7 +560,6 @@ void ScoreClass::Presentation() {
   }
   TickScoreScreen(6);
 
-  SetFontPalette(redpal);
   Do_GDI_Graph(yellowptr, redptr, GKilled + CKilled, NKilled, 89);
 
   // Print out stats on buildings destroyed, laid out like the casualties above.
@@ -690,8 +679,6 @@ void ScoreClass::Presentation() {
   TheScreen().visible_page().view().Clear();
   ThePalettes().game_palette().Set();
 
-  SetFont(oldfont);
-  g_font_x_spacing = oldfontxspacing;
   ControlQ = false;
 }
 
@@ -797,7 +784,6 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   PixelView& view = TheScreen().visible_view();
   hidden.FillRect(0, 0, 248, 18, kTBlack);
   CC_Draw_Shape(hidden, redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
-  SetFontPalette(house ? redpal : bluepal);
   const std::span<const uint8_t> top_palette = house ? redpal : bluepal;
 
   for (int i = 1; i <= gdikilled; i++) {
@@ -818,7 +804,6 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   Count_Up_Print("%d", gkilled, gkilled, 297, ypos + 2, top_palette);
   /*BG	if (!TheKeyboard().Check()) */ TickScoreScreen(40);
 
-  SetFontPalette(house ? bluepal : redpal);
   const std::span<const uint8_t> bottom_palette = house ? bluepal : redpal;
   for (int i = 1; i <= nodkilled; i++) {
     if (i != nodkilled) {
@@ -889,7 +874,6 @@ void ScoreClass::Show_Credits(int house, std::span<const uint8_t> pal) {
 
     i = std::max(i, 0);
 
-    SetFontPalette(pal);
     Count_Up_Print("%d", i, static_cast<int>(ThePlayer()->Available_Money()),
                    base::At(_credpx, house), base::At(_credpy, house), pal);
     TickScoreScreen(2);
@@ -1095,9 +1079,6 @@ void Multi_Score_Presentation() {
   // doubled onto the visible page.
   PixelBuffer pseudoseenbuff(320, 200);
 
-  const int oldfontxspacing = g_font_x_spacing;
-
-  g_font_x_spacing = 0;
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
 
   ThePalettes().black_palette().Set();
@@ -1120,9 +1101,6 @@ void Multi_Score_Presentation() {
   }
   anim.Close();
 
-  // Change to the score screen font; restored on the way out.
-  const std::span<const std::byte> oldfont =
-      SetFont(TheAssets().font(FontType::kScore));
   ServiceRealTime();
 
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TOP, config::kIsFrench ? 113 : 130,
@@ -1206,8 +1184,6 @@ void Multi_Score_Presentation() {
   ThePalettes().black_palette().Set(kFadePaletteFast, nullptr);
   TheScreen().visible_view().Clear();
   ThePalettes().game_palette().Set();
-  SetFont(oldfont);
-  g_font_x_spacing = oldfontxspacing;
   ControlQ = false;
   Show_Mouse();
 }

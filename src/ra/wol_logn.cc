@@ -172,10 +172,6 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
 
   PixelView& view = TheScreen().visible_view();
 
-  //	Just making sure globals are set right before StringPixelWidth()
-  // call... sigh
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
-                   kTBlack, TPF_6PT_GRAD | TPF_NOSHADOW);
   const int iSaveTextWidth =
       StringPixelWidth(TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW),
                        TXT_WOL_SAVELOGIN) +

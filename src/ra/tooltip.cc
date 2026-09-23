@@ -26,12 +26,10 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/safe_string.h"
-#include "ra/assets.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
 #include "ra/iconlist.h"
-#include "ra/text_ids.h"
 #include "ra/winbits.h"
 #include "sdllib/font.h"
 #include "sdllib/pixel_buffer.h"
@@ -67,9 +65,6 @@ ToolTipClass::ToolTipClass(GadgetClass* gadget, const char* szText, int x_show,
     port::SafeCopy(szTip, szText != nullptr ? szText : "");
   }
 
-  SetFont(TheAssets().font(FontType::kType));
-  Select_Text_Font(TPF_TYPE, nullptr,
-                   kTBlack);  //	Required before StringPixelWidth()
                               // call, for god's sake.
   wShow = StringPixelWidth(TextFontStyle(TPF_TYPE), szTip) + 2;
   hShow = 11;
@@ -134,7 +129,6 @@ void ToolTipClass::Move(PixelView& view, int x_show, int y_show) {
 //***********************************************************************************************
 void ToolTipClass::Show(PixelView& view) {
   if (!bShowing) {
-    SetFont(TheAssets().font(FontType::kType));
     int xShowUse = xShow;
     int yShowUse = 0;
     int wShowUse = 0;
@@ -163,8 +157,6 @@ void ToolTipClass::Show(PixelView& view) {
         bLastShowNoText = true;
         return;
       }
-      Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
-                       TPF_TYPE);  //	Required before StringPixelWidth()
                                    // call, for god's sake.
       wShowUse = StringPixelWidth(TextFontStyle(TPF_TYPE), szTipUse) + 2;
       if (bRightAlign) {

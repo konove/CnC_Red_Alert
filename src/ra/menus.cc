@@ -449,7 +449,6 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   **	Determine the width of the menu by finding the length of the
   **	longest menu entry.
   */
-  Plain_Text_Print(view, TXT_NONE, 0, 0, 0, 0, TPF_8POINT | TPF_DROPSHADOW);
   const FontStyle font = TextFontStyle(kMenuTextFlags);
   int length = 0;  // The width of the menu (in pixels).
   for (const char* text : strings) {
@@ -666,10 +665,6 @@ int Main_Menu(int32_t /*unused*/) {
   base::At(buttons, curbutton)->Turn_On();
 
   TheKeyboard().Clear();
-
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
-                   kTBlack,
-                   TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   const fixed oldvolume = TheOptions().ScoreVolume;
   if (oldvolume == 0) {

@@ -95,7 +95,6 @@ StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
   Set_Text(text);
 
   if (w == -1 || h == -1) {
-    Select_Text_Font(PrintFlags, nullptr, kTBlack);
     const FontStyle font = TextFontStyle(PrintFlags);
     if (w == -1) {
       Width = StringPixelWidth(font, String);

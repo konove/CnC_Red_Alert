@@ -32,7 +32,6 @@
 #include "port/win32/win32_types.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
-#include "ra/dialog.h"
 #include "ra/dib.h"
 #include "ra/game_state.h"
 #include "ra/iconlist.h"
@@ -47,7 +46,6 @@
 #include "sdllib/display.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 #include "tech/rgb.h"
@@ -1703,8 +1701,6 @@ void WolapiObject::DoFindPage() {
   //	User presses find/page button.
 
   //	Ask user for user desired.
-  Select_Text_Font(kTpfText, nullptr,
-                   kTBlack);  //	Required before StringPixelWidth()
                               // call, for god's sake.
   auto* pFindPageDlg = new SimpleEditDlgClass(
       400, TXT_WOL_PAGELOCATE, TXT_WOL_USERNAMEPROMPT, WOL_NAME_LEN_MAX);

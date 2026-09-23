@@ -1034,7 +1034,6 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
 
   PixelView& view = TheScreen().visible_view();
 
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
   const int lines = Format_Window_String(TextFontStyle(kTpfText), buffer,
                                          view.height(), width, height);
 
@@ -1267,7 +1266,6 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
 
   PixelView& view = TheScreen().visible_view();
 
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
   const FontStyle font = TextFontStyle(kTpfText);
   Format_Window_String(font, std::span(buffer), view.height(), width, height);
 
@@ -1462,7 +1460,6 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
   PixelView& view = TheScreen().visible_view();
 
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
   const FontStyle font = TextFontStyle(kTpfText);
   Format_Window_String(font, text_buffer, view.height(), width, height);
 
@@ -1572,7 +1569,6 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
       if (std::string_view(comm_buffer).starts_with("RING")) {
         port::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
 
-        Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
         Format_Window_String(font, text_buffer, view.height(), width, height);
 
         text_width = width;

@@ -101,8 +101,6 @@ bool Get_Broadcast_Addresses() {
 
   PixelView& view = TheScreen().visible_view();
 
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
-                   TPF_6PT_GRAD | TPF_NOSHADOW);
   // Format_Window_String rewrites the buffer in place, so the title cannot
   // be a string literal.
   char title[] = "IP Addresses";
@@ -122,8 +120,6 @@ bool Get_Broadcast_Addresses() {
                             d_cancel_y, d_cancel_w, d_cancel_h);
 
   ip_address_list.Set_Selected_Style(ColorListClass::SELECT_NORMAL);
-
-  Fancy_Text_Print(view, "", 0, 0, scheme, kTBlack, TPF_CENTER | kTpfText);
 
   Load_Title_Page(true);
   ThePalettes().title_palette().Set();  // GamePalette.Set();

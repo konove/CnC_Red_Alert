@@ -65,7 +65,6 @@
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
-#include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "ra/vector_dynamic.h"
 #include "sdllib/font.h"
@@ -434,9 +433,6 @@ void Show_Who_Was_Responsible() {
   // The credits are drawn to the hidden page and blitted forward a frame at a
   // time, so that the text never appears half-scrolled on screen.
   PixelView& view = TheScreen().hidden_view();
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
-                   kTBlack,
-                   TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   /*
   ** Miscellaneous stuff for parsing the credits text file.

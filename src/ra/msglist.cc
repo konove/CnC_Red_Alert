@@ -342,7 +342,6 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   //------------------------------------------------------------------------
 
   int print_this_pass = 0;
-  Select_Text_Font(style, &ThePalettes().color_remaps().at(color), kTBlack);
   const FontStyle font = TextFontStyle(style);
   int wid = StringPixelWidth(font, message);
   if (wid >= Width - 8) {
@@ -622,7 +621,6 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
     // We need to trim the message if there is no room to draw it
     //---------------------------------------------------------------------
     std::vector<char> concat_test(base::ToSize(MaxChars + 1));
-    Select_Text_Font(tlabel->Style, tlabel->Color, kTBlack);
     const FontStyle font = TextFontStyle(tlabel->Style);
     const int name_width = StringPixelWidth(font, tlabel->Text) -
                            StringPixelWidth(font, msg.data());
@@ -1191,7 +1189,6 @@ int MessageListClass::Input(KeyNumType& input) {
             ** Verify that the additional character would not overrun the on
             *screen edit box.
             */
-            Select_Text_Font(EditLabel->Style, EditLabel->Color, kTBlack);
             const int width =
                 StringPixelWidth(TextFontStyle(EditLabel->Style), EditBuf);
             if (width >= Width - 10) {

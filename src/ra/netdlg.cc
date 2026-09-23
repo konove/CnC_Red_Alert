@@ -1574,7 +1574,6 @@ static int Net_Join_Dialog() {
   TextButtonClass nodbtn(kButtonNod, TXT_SOVIET, kTpfButton, d_nod_x, d_nod_y,
                          d_nod_w);
 #else
-  Fancy_Text_Print(view, "", 0, 0, nullptr, 0, kTpfText);
   DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext), kTpfText,
                          d_house_x, d_house_y, d_house_w, d_house_h,
                          MixArchive::RetrieveData("BTN-UP.SHP"),
@@ -1695,8 +1694,6 @@ static int Net_Join_Dialog() {
   aiplayersgauge.Use_Thumb(false);
   aiplayersgauge.Set_Maximum(TheSession().Options.AIPlayers);
   aiplayersgauge.Set_Value(TheSession().Options.AIPlayers);
-
-  Fancy_Text_Print(view, "", 0, 0, scheme, kTBlack, kTpfText);
 
   TheSession().Messages.Init(
       d_message1_x + 2, d_message1_y + 2, 14, MAX_MESSAGE_LENGTH, d_txt6_h,
@@ -5748,8 +5745,6 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   //	Draw the dialog from scratch
   //------------------------------------------------------------------------
   if (fresh) {
-    Fancy_Text_Print(view, "", 0, 0, scheme, kTBlack, TPF_CENTER | kTpfText);
-
     switch (TheSession().Type) {
       case GAME_IPX:
       case GAME_INTERNET:

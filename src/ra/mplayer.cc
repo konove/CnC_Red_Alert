@@ -238,9 +238,6 @@ GameType Select_MPlayer_Game() {
 
   TheKeyboard().Clear();
 
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
-                   kTBlack, TPF_CENTER | kTpfText);
-
   //------------------------------------------------------------------------
   //	Main Processing Loop
   //------------------------------------------------------------------------

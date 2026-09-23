@@ -332,8 +332,6 @@ int Test_Null_Modem() {
   **	These dimensions will control how the dialog box looks.
   */
   port::SafeCopy(buffer, Text_String(TXT_WAITING_CONNECT));
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
-                   TPF_6PT_GRAD | TPF_NOSHADOW);
   const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(font, buffer, TheScreen().visible_view().height(), width,
                        height);
@@ -646,8 +644,6 @@ static int Reconnect_Null_Modem() {
   **	These dimensions will control how the dialog box looks.
   */
   port::SafeCopy(buffer, Text_String(TXT_NULL_CONNERR_CHECK_CABLES));
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
-                   TPF_6PT_GRAD | TPF_NOSHADOW);
   const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(font, buffer, TheScreen().visible_view().height(), width,
                        height);
@@ -988,7 +984,6 @@ GameType Select_Serial_Dialog() {
 
   SerialSettingsType* settings = nullptr;
   bool selectsettings = false;
-  RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   /*
   ** Buttons
@@ -1038,8 +1033,6 @@ GameType Select_Serial_Dialog() {
 
   TheKeyboard().Clear();
 
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, scheme, kTBlack,
-                   TPF_CENTER | kTpfText);
 
   /*
   ** Main Processing Loop
@@ -1500,9 +1493,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
-        // init font variables
 
-        Fancy_Text_Print(view, TXT_NONE, 0, 0, scheme, kTBlack, kTpfText);
 
         /*...............................................................
         Dialog & Field labels
@@ -2106,10 +2097,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
-        // init font variables
 
-        Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
-                         TPF_CENTER | kTpfText);
 
         /*
         ** Dialog & Field labels
@@ -2844,7 +2832,6 @@ int Com_Scenario_Dialog(bool skirmish) {
                          d_nod_w, d_nod_h);
 #else
   char housetext[25] = "";
-  Fancy_Text_Print(view, "", 0, 0, nullptr, 0, kTpfText);
   DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext), kTpfText,
                          d_house_x, d_house_y, d_house_w, d_house_h,
                          MixArchive::RetrieveData("BTN-UP.SHP"),
@@ -3209,10 +3196,7 @@ int Com_Scenario_Dialog(bool skirmish) {
         if (display >= REDRAW_BACKGROUND) {
           Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
-          // init font variables
 
-          Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
-                           TPF_CENTER | kTpfText);
 
           /*...............................................................
           Dialog & Field labels
@@ -4740,7 +4724,6 @@ int Com_Show_Scenario_Dialog() {
                          d_nod_w, d_nod_h);
 #else   // OLDWAY
   char housetext[25] = "";
-  Fancy_Text_Print(view, "", 0, 0, nullptr, 0, kTpfText);
   DropListClass housebtn(kButtonHouse, housetext, sizeof(housetext), kTpfText,
                          d_house_x, d_house_y, d_house_w, d_house_h,
                          MixArchive::RetrieveData("BTN-UP.SHP"),
@@ -4885,7 +4868,6 @@ int Com_Show_Scenario_Dialog() {
   aiplayersgauge.Set_Maximum(TheRules().MaxPlayers - 2);
   aiplayersgauge.Set_Value(TheSession().Options.AIPlayers);
 
-  Fancy_Text_Print(view, "", 0, 0, scheme, kTBlack, TPF_CENTER | kTpfText);
 
   transmit = true;
   first = true;
@@ -6285,10 +6267,7 @@ static int Phone_Dialog() {
 
         Dialog_Box(d_dialog_x, d_dialog_y, d_dialog_w, d_dialog_h);
 
-        // init font variables
 
-        Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
-                         TPF_CENTER | kTpfText);
 
         /*...............................................................
         Dialog & Field labels

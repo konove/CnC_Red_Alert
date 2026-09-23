@@ -21,7 +21,6 @@
 #include "ra/installation.h"
 
 #include <array>
-#include <cstddef>
 #include <memory>
 #include <span>
 #include <string>
@@ -45,7 +44,6 @@
 #include "ra/palettes.h"
 #include "ra/text_ids.h"
 #include "ra/theme.h"
-#include "sdllib/font.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
@@ -115,7 +113,6 @@ constexpr int kDvdName = 4;
 bool Force_CD_Available(int cd_desired)  // ajw
 {
   static int _last = -1;
-  static std::span<const std::byte> font;
   // Disc names as printed on the localized releases, in the language this
   // build was compiled for.
   static constexpr std::array<const char*, 5> kCdNames = [] {
@@ -258,7 +255,6 @@ bool Force_CD_Available(int cd_desired)  // ajw
 
       TheTheme().Stop();
       int hidden = Get_Mouse_State();
-      font = g_font;
 
       // Only set the palette if necessary.
       if (PaletteClass::CurrentPalette.at(1).Red_Component() +
@@ -285,7 +281,6 @@ bool Force_CD_Available(int cd_desired)  // ajw
       while (hidden--) {
         Hide_Mouse();
       }
-      SetFont(font);
     }
   }
 

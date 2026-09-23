@@ -48,7 +48,6 @@
 #include "base/types.h"
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
-#include "ra/assets.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/dib.h"
@@ -199,12 +198,8 @@ int IconListClass::Add_Item(
 
       int iWidthMax = 0;
       int iHeight = 0;
-      //	Stupid usage of globals for font stuff... <grumble>
       if (TextFlags == TPF_TYPE) {
-        const std::span<const std::byte> pFontBefore =
-            SetFont(TheAssets().font(FontType::kType));
-        const int FontXSpacingBefore = g_font_x_spacing;
-        g_font_x_spacing = -2;
+        // The typewriter font wraps with its letters two pixels closer.
         FontStyle font = TextFontStyle(TPF_TYPE);
         font.x_spacing = -2;
 
@@ -214,14 +209,9 @@ int IconListClass::Add_Item(
         // should occur.
         Format_Window_String_New(font, text, iWidthToClipAt, iWidthMax, iHeight,
                                  szText, 50);
-
-        SetFont(pFontBefore);
-        g_font_x_spacing =
-            FontXSpacingBefore;  //	Just in case it matters... Doubt it.
       } else {
-        //	Currently never called. Test well if you use IconList with a
-        // font other than TPF_TYPE, 	as the character spacing globals get set
-        // weirdly, I've found.
+        // Currently never called: every icon list prints in the typewriter
+        // font.
         const int iWidthToClipAt =
             IsScrollActive ? Width : Width - UpGadget.Width;
         //	This call will place '\r's in the string where line breaks

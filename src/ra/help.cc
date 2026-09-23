@@ -316,7 +316,6 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
 void HelpClass::Set_Text(int text) {
   if (text != TXT_NONE) {
     Text = text;
-    Select_Text_Font(TPF_MAP | TPF_NOSHADOW, 0, 0);
     Width = StringPixelWidth(TextFontStyle(TPF_MAP | TPF_NOSHADOW),
                              Text_String(Text));
     if (IsRight) {

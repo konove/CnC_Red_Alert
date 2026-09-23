@@ -274,12 +274,6 @@ static constexpr bool Is_Line_Break(const char c) {
   return c == '\r' || c == '@' || c == '\0';
 }
 
-int Format_Window_String(std::span<char> string, const int max_line_len,
-                         int& width, int& height) {
-  return Format_Window_String(CurrentFontStyle(), string, max_line_len, width,
-                              height);
-}
-
 int Format_Window_String(const FontStyle& font, std::span<char> string,
                          int max_line_len, int& width, int& height) {
   width = 0;
@@ -589,9 +583,7 @@ TextStyle TextStyleFor(TextPrintType flag, RemapControlType* fore,
     }
   }
 
-  /*
-  **	Change the current font palette according to the dropshadow flags.
-  */
+  // Set the glyph palette's shadow colours from the shadow flags.
   const TextPrintType shadow =
       flag & (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW |
               TPF_LIGHTSHADOW);  // Requested shadow value.
@@ -661,19 +653,9 @@ TextStyle TextStyleFor(TextPrintType flag, RemapControlType* fore,
   return {.flag = flag, .forecolor = forecolor, .font_style = font_style};
 }
 
-TextStyle Select_Text_Font(const TextPrintType flag, RemapControlType* fore,
-                           const int back) {
-  const TextStyle style = TextStyleFor(flag, fore, back);
-  g_font_x_spacing = style.font_style.x_spacing;
-  g_font_y_spacing = style.font_style.y_spacing;
-  SetFont(style.font_style.font.data());
-  SetFontPalette(style.font_style.palette);
-  return style;
-}
-
 void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
                        RemapControlType* fore, int back, TextPrintType flag) {
-  const TextStyle style = Select_Text_Font(flag, fore, back);
+  const TextStyle style = TextStyleFor(flag, fore, back);
   flag = style.flag;
 
   /*
@@ -748,11 +730,6 @@ void Fancy_Text_Print(PixelView& view, const int text, const int x, const int y,
                       const absl::Span<const absl::FormatArg> args) {
   if (text != TXT_NONE) {
     Fancy_Text_Print(view, Text_String(text), x, y, fore, back, flag, args);
-  } else {
-    /*
-    **	Just the flags are to be changed, since the text number is TXT_NONE.
-    */
-    Simple_Text_Print(view, nullptr, x, y, fore, back, flag);
   }
 }
 
@@ -789,12 +766,6 @@ void Fancy_Text_Print(PixelView& view, const char* text, const int x,
   if (text) {
     const std::string formatted = port::FormatRuntime(text, args);
     Simple_Text_Print(view, formatted.c_str(), x, y, fore, back, flag);
-  } else {
-    /*
-    **	Just the flags are desired to be changed, so call the simple print
-    *routine with *	a nullptr text pointer.
-    */
-    Simple_Text_Print(view, nullptr, x, y, fore, back, flag);
   }
 }
 
@@ -836,7 +807,6 @@ void Conquer_Clip_Text_Print(PixelView& view, const char* text, int x, int y,
   }
   char buffer[512];
   port::SafeCopy(buffer, text);
-  Simple_Text_Print(view, nullptr, 0, 0, nullptr, kTBlack, flag);
   const FontStyle font = TextFontStyle(flag);
   std::span<char> source(buffer);
   int offset = 0;
@@ -955,12 +925,6 @@ void Plain_Text_Print(PixelView& view, const int text, const int x, const int y,
  * HISTORY:                                                                *
  *   01/05/1996 BRR : Created.                                             *
  *=========================================================================*/
-TextStyle Select_Text_Font(const TextPrintType flag, const int fore,
-                           const int back) {
-  RemapControlType scheme = Plain_Scheme(fore);
-  return Select_Text_Font(flag, &scheme, back);
-}
-
 void Plain_Text_Print(PixelView& view, const char* text, const int x,
                       const int y, const int fore, const int back,
                       const TextPrintType flag,
