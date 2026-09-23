@@ -652,7 +652,7 @@ void ScoreClass::Show() {
   int max = 0;
   std::span<const std::byte> yellowptr = {};
   std::span<const std::byte> redptr = {};
-  struct Fame hallfame[NUMFAMENAMES];
+  struct Fame hallfame[NUMFAMENAMES] = {};
   const int oldfontxspacing = FontXSpacing;
   const HousesType player_house = ThePlayer()->Class->House;
   const int house = static_cast<int>(player_house);  // 0 or 1
@@ -950,11 +950,16 @@ void ScoreClass::Show() {
   ** make a new one filled with blanks.
   */
   if (!GameFileExists("HALLFAME.DAT")) {
-    // hall of fame doesn't exist, so blank it out & write it
+    // hall of fame doesn't exist, so blank it out & write it. The blanking
+    // has to happen even if the write below fails (a read-only directory,
+    // say): hallfame is used unconditionally further down, and it must not
+    // contain whatever value-initialization or the stack left behind.
+    for (i = 0; i < NUMFAMENAMES; i++) {
+      base::At(base::At(hallfame, i).name, 0) = static_cast<char>(
+          base::At(hallfame, i).score = base::At(hallfame, i).level = 0);
+    }
     if (const auto out = OpenGameFile("HALLFAME.DAT", FileAccess::kWrite)) {
       for (i = 0; i < NUMFAMENAMES; i++) {
-        base::At(base::At(hallfame, i).name, 0) = static_cast<char>(
-            base::At(hallfame, i).score = base::At(hallfame, i).level = 0);
         out->WriteObject(base::At(hallfame, i));
       }
     }

@@ -18,8 +18,10 @@
 #include "tech/byte_stream.h"
 
 // Returns a stream over the bytes of name resolved the way the game looks up
-// data: writes go straight to a loose file next to the executable (never
-// searched), a read first checks the search paths and then the registered
+// data: writes never search the search paths or the archives, going straight
+// to a loose file next to the executable (though OpenDiskFile still prefers
+// an existing lowercase twin of that name over creating a new upper-case
+// one); a read first checks the search paths and then the registered
 // mixfile archives (a loose file wins over a packed copy, so patches work).
 // Returns nullptr if name is empty, found nowhere, or cannot be opened. This
 // is how the mixfile archives open their own files, including one packed

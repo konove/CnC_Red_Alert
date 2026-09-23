@@ -30,6 +30,15 @@ std::string ReadFile(const std::filesystem::path& path) {
   return {std::istreambuf_iterator<char>(file), {}};
 }
 
+// FindExistingFile lowercases the whole path it is given, so a test that
+// relies on its retry finding a sibling file needs the directory part of the
+// path to already be all lowercase (true of temp_directory_path() on Linux,
+// not guaranteed elsewhere, e.g. a TMPDIR with mixed-case components).
+bool DirectoryIsAllLowercase(const std::filesystem::path& directory) {
+  const std::string generic = directory.generic_string();
+  return generic == absl::AsciiStrToLower(generic);
+}
+
 class DiskFileTest : public ::testing::Test {
  protected:
   void SetUp() override {
@@ -72,6 +81,9 @@ TEST_F(DiskFileTest, OpenDiskFileWritesTheExistingLowercaseFile) {
   // file is found; temp_directory_path() is lowercase on Linux.
   const std::filesystem::path lower = std::filesystem::temp_directory_path() /
                                       "disk_file_test_lowercase_write.bin";
+  if (!DirectoryIsAllLowercase(lower.parent_path())) {
+    GTEST_SKIP() << "TMPDIR has upper-case components";
+  }
   const std::filesystem::path upper =
       lower.parent_path() / absl::AsciiStrToUpper(lower.filename().string());
   WriteFile(lower, "old");
@@ -87,6 +99,26 @@ TEST_F(DiskFileTest, OpenDiskFileWritesTheExistingLowercaseFile) {
   }
   EXPECT_FALSE(std::filesystem::exists(upper));
   EXPECT_EQ(ReadFile(lower), "new");
+  std::filesystem::remove(lower);
+}
+
+TEST_F(DiskFileTest, RawDiskStreamOpenDoesNotFallBackToLowercaseTwin) {
+  // Only FindExistingFile/OpenDiskFile retry under the lowercased name;
+  // DiskStream::Open by itself must fail rather than silently reading a
+  // different file than the one it was asked to open.
+  const std::filesystem::path lower = std::filesystem::temp_directory_path() /
+                                      "disk_file_test_lowercase_raw.bin";
+  if (!DirectoryIsAllLowercase(lower.parent_path())) {
+    GTEST_SKIP() << "TMPDIR has upper-case components";
+  }
+  const std::filesystem::path upper =
+      lower.parent_path() / absl::AsciiStrToUpper(lower.filename().string());
+  WriteFile(lower, "x");
+  if (std::filesystem::exists(upper)) {
+    std::filesystem::remove(lower);
+    GTEST_SKIP() << "case-insensitive filesystem";
+  }
+  EXPECT_EQ(DiskStream::Open(upper.string(), FileAccess::kRead), nullptr);
   std::filesystem::remove(lower);
 }
 

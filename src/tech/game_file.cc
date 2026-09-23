@@ -1,4 +1,5 @@
-// File: GameFile implementation.
+// File: OpenGameFile, GameFileExists, GameFileSize and DeleteGameFile,
+// the free functions that resolve and open the game's data by name.
 //
 // Originally CCFILE.CPP by Joe L. Bostic, started August 8, 1994.
 
@@ -15,6 +16,7 @@
 #include "base/types.h"
 #include "sdllib/file_access.h"
 #include "tech/byte_stream.h"
+#include "tech/disk_file.h"
 #include "tech/mix_archive.h"
 #include "tech/search_paths.h"
 
@@ -24,10 +26,13 @@ std::unique_ptr<ByteStream> OpenGameFile(const std::string_view name,
     return nullptr;
   }
 
-  // Writes never search: they target the name as given, so a loose file is
-  // created next to the executable rather than on the CD.
+  // Writes never search the search paths or the archives: they target the
+  // name as given, so a loose file is created next to the executable rather
+  // than on the CD. OpenDiskFile still prefers an existing lowercase twin of
+  // that name (e.g. conquer.ini) over creating a new upper-case file, the
+  // same as every other write site.
   if (HasAccess(access, FileAccess::kWrite)) {
-    return DiskStream::Open(name, access);
+    return OpenDiskFile(name, access);
   }
 
   // A loose file on disk wins over the packed copy, so patches work.

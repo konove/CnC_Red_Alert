@@ -9,14 +9,18 @@
 #include <filesystem>
 #include <fstream>
 #include <ios>
+#include <iterator>
 #include <memory>
+#include <span>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "absl/base/attributes.h"
+#include "absl/strings/ascii.h"
 #include "base/seek_origin.h"
 #include "gtest/gtest.h"
+#include "sdllib/file_access.h"
 #include "tech/byte_stream.h"
 #include "tech/crc.h"
 #include "tech/mix_archive.h"
@@ -229,6 +233,30 @@ TEST_F(GameFileTest, OpenGameFileWriteToUncachedFileWritesNothing) {
 
   // Backed by a RangeStream over the mixfile on disk, which is read-only.
   EXPECT_EQ(file->Write("zz", 2), 0);
+}
+
+TEST_F(GameFileTest, OpenGameFileWriteReplacesExistingLowercaseFile) {
+  // A write never searches (Findings), so it opens the name in the current
+  // working directory the same way OpenDiskFile does, and picks up the same
+  // lowercase-twin fallback: it must update an existing lowercase file
+  // (e.g. conquer.ini) rather than create a new upper-case one beside it.
+  const std::string lower_name = "game_file_test_write_lowercase.bin";
+  const std::string upper_name = absl::AsciiStrToUpper(lower_name);
+  WriteFile(lower_name, {'o', 'l', 'd'});
+  if (std::filesystem::exists(upper_name)) {
+    std::filesystem::remove(lower_name);
+    GTEST_SKIP() << "case-insensitive filesystem";
+  }
+  {
+    const std::unique_ptr<ByteStream> out =
+        OpenGameFile(upper_name, FileAccess::kWrite);
+    ASSERT_NE(out, nullptr);
+    out->Write(std::as_bytes(std::span(std::string_view("new"))));
+  }
+  EXPECT_FALSE(std::filesystem::exists(upper_name));
+  std::ifstream in(lower_name, std::ios::binary);
+  EXPECT_EQ(std::string(std::istreambuf_iterator<char>(in), {}), "new");
+  std::filesystem::remove(lower_name);
 }
 
 TEST_F(GameFileTest, DeleteGameFileRemovesLooseFile) {

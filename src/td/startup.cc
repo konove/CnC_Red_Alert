@@ -326,16 +326,20 @@ int main(int argc, char* argv[])
       return EXIT_FAILURE;
     }
 
-    // OpenDiskFile creates an empty CONQUER.INI when it does not already
-    // exist, replacing the old explicit Create() call; we don't care about
-    // most of it anyway. The stream only needs to stay open for
+    // A kReadWrite open fails outright on a read-only CONQUER.INI (or a
+    // read-only directory when there is none yet), which used to start fine
+    // under stdio. Probe for the file and create it with a throwaway kWrite
+    // open if missing, then reopen it kRead: that succeeds whether or not
+    // the file is writable. The stream only needs to stay open for
     // Read_Setup_Options, not for the rest of the play session, so it is
     // scoped to this one call rather than held open by the outer if below.
     bool config_available = false;
-    if (const auto cfile =
-            OpenDiskFile("CONQUER.INI", FileAccess::kReadWrite)) {
-      Read_Setup_Options(*cfile, *options);
-      config_available = true;
+    if (FindExistingFile("CONQUER.INI").has_value() ||
+        OpenDiskFile("CONQUER.INI", FileAccess::kWrite)) {
+      if (const auto cfile = OpenDiskFile("CONQUER.INI")) {
+        Read_Setup_Options(*cfile, *options);
+        config_available = true;
+      }
     }
 
     if (config_available) {
