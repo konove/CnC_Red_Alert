@@ -301,6 +301,15 @@ struct Fame {
 
 ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 
+FontStyle ScoreFontStyle(const std::span<const uint8_t> palette) {
+  FontStyle style{.font = FontView(TheAssets().font(FontType::kScore))};
+  if (palette.size() >= style.palette.size()) {
+    std::ranges::copy(palette.first(style.palette.size()),
+                      style.palette.begin());
+  }
+  return style;
+}
+
 ScoreAnimClass::ScoreAnimClass(Presentation& show, int x, int y,
                                std::span<const std::byte> data)
     : XPos(x), YPos(y), DataPtr(data), show_(show) {
@@ -311,8 +320,8 @@ ScoreAnimClass::ScoreAnimClass(Presentation& show, int x, int y,
 ScoreAnimClass::ScoreAnimClass(Presentation& show, int x, int y,
                                const char* text)
     : XPos(x), YPos(y), TextData(text), show_(show) {
-  show_.AddTextRect(x * 2, y * 2, x * 2, y * 2, 2 * StringPixelWidth(Text()),
-                    16);
+  show_.AddTextRect(x * 2, y * 2, x * 2, y * 2,
+                    2 * StringPixelWidth(ScoreFontStyle(), Text()), 16);
 
   Timer.Set(0);
   Timer.Start();
@@ -418,26 +427,29 @@ void ScorePrintClass::Update() {
           kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack,
           kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack};
       SetFontPalette(_blackpal);
-      show_.text_page().view().Print(localstr, 2 * (pos - 6), 2 * (YPos - 1),
-                                     kTBlack, kTBlack);
-      show_.text_page().view().Print(localstr, 2 * (pos - 6), 2 * (YPos + 1),
-                                     kTBlack, kTBlack);
-      show_.text_page().view().Print(localstr, 2 * (pos - 6 + 1), 2 * YPos,
-                                     kTBlack, kTBlack);
+      const FontStyle black_font = ScoreFontStyle(_blackpal);
+      show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6),
+                                     2 * (YPos - 1), kTBlack, kTBlack);
+      show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6),
+                                     2 * (YPos + 1), kTBlack, kTBlack);
+      show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6 + 1),
+                                     2 * YPos, kTBlack, kTBlack);
 
       SetFontPalette(PrimaryPalette);
-      show_.text_page().view().Print(localstr, 2 * (pos - 6), 2 * YPos, kTBlack,
-                                     kTBlack);
+      const FontStyle primary_font = ScoreFontStyle(PrimaryPalette);
+      show_.text_page().view().Print(primary_font, localstr, 2 * (pos - 6),
+                                     2 * YPos, kTBlack, kTBlack);
     }
     if (Text_At(Stage)) {
       base::At(localstr, 0) = Text_At(Stage);
       SetFontPalette(_whitepal);
-      show_.text_page().view().Print(localstr, pos * 2, 2 * (YPos - 1), kTBlack,
-                                     kTBlack);
-      show_.text_page().view().Print(localstr, pos * 2, 2 * (YPos + 1), kTBlack,
-                                     kTBlack);
-      show_.text_page().view().Print(localstr, (pos + 1) * 2, 2 * YPos, kTBlack,
-                                     kTBlack);
+      const FontStyle white_font = ScoreFontStyle(_whitepal);
+      show_.text_page().view().Print(white_font, localstr, pos * 2,
+                                     2 * (YPos - 1), kTBlack, kTBlack);
+      show_.text_page().view().Print(white_font, localstr, pos * 2,
+                                     2 * (YPos + 1), kTBlack, kTBlack);
+      show_.text_page().view().Print(white_font, localstr, (pos + 1) * 2,
+                                     2 * YPos, kTBlack, kTBlack);
     }
     Stage++;
   }
@@ -502,26 +514,29 @@ void MultiStagePrintClass::Update() {
             kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack,
             kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack};
         SetFontPalette(_blackpal);
-        show_.text_page().view().Print(localstr, 2 * (pos - 6), 2 * (YPos - 1),
-                                       kTBlack, kTBlack);
-        show_.text_page().view().Print(localstr, 2 * (pos - 6), 2 * (YPos + 1),
-                                       kTBlack, kTBlack);
-        show_.text_page().view().Print(localstr, 2 * (pos - 6 + 1), 2 * YPos,
-                                       kTBlack, kTBlack);
+        const FontStyle black_font = ScoreFontStyle(_blackpal);
+        show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6),
+                                       2 * (YPos - 1), kTBlack, kTBlack);
+        show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6),
+                                       2 * (YPos + 1), kTBlack, kTBlack);
+        show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6 + 1),
+                                       2 * YPos, kTBlack, kTBlack);
 
         SetFontPalette(PrimaryPalette);
-        show_.text_page().view().Print(localstr, 2 * (pos - 6), 2 * YPos,
-                                       kTBlack, kTBlack);
+        const FontStyle primary_font = ScoreFontStyle(PrimaryPalette);
+        show_.text_page().view().Print(primary_font, localstr, 2 * (pos - 6),
+                                       2 * YPos, kTBlack, kTBlack);
       }
       if (Text_At(Stage)) {
         base::At(localstr, 0) = Text_At(Stage);
         SetFontPalette(_whitepal);
-        show_.text_page().view().Print(localstr, pos * 2, 2 * (YPos - 1),
-                                       kTBlack, kTBlack);
-        show_.text_page().view().Print(localstr, pos * 2, 2 * (YPos + 1),
-                                       kTBlack, kTBlack);
-        show_.text_page().view().Print(localstr, (pos + 1) * 2, 2 * YPos,
-                                       kTBlack, kTBlack);
+        const FontStyle white_font = ScoreFontStyle(_whitepal);
+        show_.text_page().view().Print(white_font, localstr, pos * 2,
+                                       2 * (YPos - 1), kTBlack, kTBlack);
+        show_.text_page().view().Print(white_font, localstr, pos * 2,
+                                       2 * (YPos + 1), kTBlack, kTBlack);
+        show_.text_page().view().Print(white_font, localstr, (pos + 1) * 2,
+                                       2 * YPos, kTBlack, kTBlack);
       }
       Stage++;
 
@@ -558,8 +573,9 @@ void ScoreScaleClass::Update() {
     }
     if (Stage) {
       SetFontPalette(Palette);
+      const FontStyle font = ScoreFontStyle(Palette);
       show_.text_page().view().FillRect(0, 0, 14, 14, kTBlack);
-      show_.text_page().view().Print(Text(), 0, 0, kTBlack, kTBlack);
+      show_.text_page().view().Print(font, Text(), 0, 0, kTBlack, kTBlack);
       show_.text_page().view().Scale(TheScreen().hidden_view(), 0, 0,
                                      base::At(_destx, Stage) * 2, YPos * 2, 10,
                                      10, base::At(_destw, Stage) * 2,
@@ -572,12 +588,13 @@ void ScoreScaleClass::Update() {
       Stage--;
     } else {
       SetFontPalette(Palette);
+      const FontStyle font = ScoreFontStyle(Palette);
       for (auto& ScoreObj : ScoreObjs) {
         if (ScoreObj == this) {
           ScoreObj = nullptr;
         }
       }
-      show_.text_page().view().Print(Text(), XPos * 2, YPos * 2, kTBlack,
+      show_.text_page().view().Print(font, Text(), XPos * 2, YPos * 2, kTBlack,
                                      kTBlack);
       // TextPrintBuffer->Blit(HidPage, XPos * 2, YPos * 2, XPos
       // * 2, YPos * 2,2 * 6, 2 * 6);
@@ -837,17 +854,18 @@ void ScoreClass::Show() {
   show.AddTextRect(528, 76, 528, 76, 4 * 12, 12);
   show.AddTextRect(528, 100, 528, 100, 4 * 12, 12);
   show.AddTextRect(550, 18, 550, 18, 64, 12);  // Minutes
+  const FontStyle font = ScoreFontStyle(greenpal);
   for (i = 0; i <= 160; i++) {
     SetFontPalette(greenpal);
-    Count_Up_Print(show, "%3d%%", i, leadership, 264, 26);
+    Count_Up_Print(show, font, "%3d%%", i, leadership, 264, 26);
     if (i >= 30) {
-      Count_Up_Print(show, "%3d%%", i - 30, efficiency, 264, 38);
+      Count_Up_Print(show, font, "%3d%%", i - 30, efficiency, 264, 38);
     }
     if (i >= 60) {
-      Count_Up_Print(show, "%3d", scorecounter, total, 264, 50);
+      Count_Up_Print(show, font, "%3d", scorecounter, total, 264, 50);
       scorecounter = scorecounter + (total / 100);
     }
-    Print_Minutes(show, minutes);
+    Print_Minutes(show, font, minutes);
     Call_Back_Delay(show, 1);
     TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Sound(60));
     if (Check_Key() && i < max - 5) {
@@ -855,7 +873,7 @@ void ScoreClass::Show() {
       Keyboard::Clear();
     }
   }
-  Count_Up_Print(show, "%3d", total, total, 264, 50);
+  Count_Up_Print(show, font, "%3d", total, total, 264, 50);
 
   Call_Back_Delay(show, 60);
 
@@ -888,9 +906,10 @@ void ScoreClass::Show() {
 
   SetFontPalette(redpal);
   if (player_house == HOUSE_BAD) {
-    Do_Nod_Casualties_Graph(show);
+    Do_Nod_Casualties_Graph(show, ScoreFontStyle(redpal));
   } else {
-    Do_GDI_Graph(show, yellowptr, redptr, GKilled + CKilled, NKilled, 88);
+    Do_GDI_Graph(show, ScoreFontStyle(redpal), yellowptr, redptr,
+                 GKilled + CKilled, NKilled, 88);
   }
 
   /*
@@ -920,9 +939,10 @@ void ScoreClass::Show() {
   if (player_house == HOUSE_BAD) {
     Call_Back_Delay(show, 6);
     SetFontPalette(greenpal);
-    Do_Nod_Buildings_Graph(show);
+    Do_Nod_Buildings_Graph(show, ScoreFontStyle(greenpal));
   } else {
-    Do_GDI_Graph(show, yellowptr, redptr, GBKilled + CBKilled, NBKilled, 136);
+    Do_GDI_Graph(show, ScoreFontStyle(greenpal), yellowptr, redptr,
+                 GBKilled + CBKilled, NBKilled, 136);
   }
 
   // Wait for text printing to complete
@@ -1187,7 +1207,8 @@ void Cycle_Wait_Click(Presentation& show) {
 
 // Not const: plays the score screen animation.
 // NOLINTNEXTLINE(readability-make-member-function-const)
-void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show) {
+void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
+                                        const FontStyle& font) {
   const auto factptr = MixArchive::RetrieveData("FACT.SHP");
   const auto rmboptr = MixArchive::RetrieveData("RMBO.SHP");
   const auto fball1ptr = MixArchive::RetrieveData("FBALL1.SHP");
@@ -1207,12 +1228,12 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show) {
   show.AddTextRect(2 * (BUILDING_X + 8), 2 * (BUILDING_Y + 24),
                    2 * (BUILDING_X + 8), 2 * (BUILDING_Y + 24), 5 * 12, 12);
 
-  show.text_page().view().Print(0, (BUILDING_X + 8) * 2, BUILDING_Y * 2,
+  show.text_page().view().Print(font, 0, (BUILDING_X + 8) * 2, BUILDING_Y * 2,
                                 kTBlack, kTBlack);
-  show.text_page().view().Print(0, (BUILDING_X + 8) * 2, (BUILDING_Y + 12) * 2,
-                                kTBlack, kTBlack);
-  show.text_page().view().Print(0, (BUILDING_X + 8) * 2, (BUILDING_Y + 24) * 2,
-                                kTBlack, kTBlack);
+  show.text_page().view().Print(font, 0, (BUILDING_X + 8) * 2,
+                                (BUILDING_Y + 12) * 2, kTBlack, kTBlack);
+  show.text_page().view().Print(font, 0, (BUILDING_X + 8) * 2,
+                                (BUILDING_Y + 24) * 2, kTBlack, kTBlack);
 
   /*
   ** Here's the animation/draw loop for blowing up the factory
@@ -1296,9 +1317,11 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show) {
   i = std::max(i, CBKilled);
 
   for (int q = 0; q <= i; q++) {
-    Count_Up_Print(show, "%d", q, GBKilled, BUILDING_X + 8, BUILDING_Y);
-    Count_Up_Print(show, "%d", q, NBKilled, BUILDING_X + 8, BUILDING_Y + 12);
-    Count_Up_Print(show, "%d", q, CBKilled, BUILDING_X + 8, BUILDING_Y + 24);
+    Count_Up_Print(show, font, "%d", q, GBKilled, BUILDING_X + 8, BUILDING_Y);
+    Count_Up_Print(show, font, "%d", q, NBKilled, BUILDING_X + 8,
+                   BUILDING_Y + 12);
+    Count_Up_Print(show, font, "%d", q, CBKilled, BUILDING_X + 8,
+                   BUILDING_Y + 24);
     if (!Check_Key()) {
       TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Sound(110));
       Call_Back_Delay(show, 1);
@@ -1321,7 +1344,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show) {
  *   05/03/1995 BWG : Created.                                             *
  *=========================================================================*/
 
-void ScoreClass::Do_GDI_Graph(Presentation& show,
+void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
                               std::span<const std::byte> yellowptr,
                               std::span<const std::byte> redptr, int gkilled,
                               int nkilled, int ypos) {
@@ -1364,7 +1387,7 @@ void ScoreClass::Do_GDI_Graph(Presentation& show,
                                                ypos, 3 + gdikilled, 9);
     }
 
-    Count_Up_Print(show, "%d", i * gkilled / max, gkilled, 297, ypos + 2);
+    Count_Up_Print(show, font, "%d", i * gkilled / max, gkilled, 297, ypos + 2);
     if (!Check_Key()) {
       TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Sound(110));
       Call_Back_Delay(show, 2);
@@ -1372,7 +1395,7 @@ void ScoreClass::Do_GDI_Graph(Presentation& show,
   }
   CC_Draw_Shape(view, yellowptr, gdikilled, 172, ypos, WINDOW_MAIN,
                 SHAPE_WIN_REL, {}, {});
-  Count_Up_Print(show, "%d", gkilled, gkilled, 297, ypos + 2);
+  Count_Up_Print(show, font, "%d", gkilled, gkilled, 297, ypos + 2);
   if (!Check_Key()) {
     Call_Back_Delay(show, 40);
   }
@@ -1387,7 +1410,8 @@ void ScoreClass::Do_GDI_Graph(Presentation& show,
                                                ypos + 12, 3 + nodkilled, 9);
     }
 
-    Count_Up_Print(show, "%d", i * nkilled / max, nkilled, 297, ypos + 14);
+    Count_Up_Print(show, font, "%d", i * nkilled / max, nkilled, 297,
+                   ypos + 14);
     if (!Check_Key()) {
       TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Sound(110));
       Call_Back_Delay(show, 2);
@@ -1401,7 +1425,7 @@ void ScoreClass::Do_GDI_Graph(Presentation& show,
   */
   CC_Draw_Shape(view, redptr, nodkilled, 172, ypos + 12, WINDOW_MAIN,
                 SHAPE_WIN_REL, {}, {});
-  Count_Up_Print(show, "%d", nkilled, nkilled, 297, ypos + 14);
+  Count_Up_Print(show, font, "%d", nkilled, nkilled, 297, ypos + 14);
   if (!Check_Key()) {
     Call_Back_Delay(show, 40);
   }
@@ -1409,7 +1433,8 @@ void ScoreClass::Do_GDI_Graph(Presentation& show,
 
 // Not const: plays the score screen animation.
 // NOLINTNEXTLINE(readability-make-member-function-const)
-void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show) {
+void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show,
+                                         const FontStyle& font) {
   const auto e1ptr = MixArchive::RetrieveData("E1.SHP");
   const auto c1ptr = MixArchive::RetrieveData("C1.SHP");
 
@@ -1500,12 +1525,12 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show) {
       TheScreen().sys_mem_page().view().BlitTo(show.page().view(), 0, 0,
                                                BARGRAPH_X, CASUALTY_Y,
                                                320 - BARGRAPH_X, 34);
-      Count_Up_Print(show, "%d", i * GKilled / max, GKilled, SCORETEXT_X + 64,
-                     CASUALTY_Y + 2);
-      Count_Up_Print(show, "%d", i * NKilled / max, NKilled, SCORETEXT_X + 64,
-                     CASUALTY_Y + 14);
-      Count_Up_Print(show, "%d", i * CKilled / max, CKilled, SCORETEXT_X + 64,
-                     CASUALTY_Y + 26);
+      Count_Up_Print(show, font, "%d", i * GKilled / max, GKilled,
+                     SCORETEXT_X + 64, CASUALTY_Y + 2);
+      Count_Up_Print(show, font, "%d", i * NKilled / max, NKilled,
+                     SCORETEXT_X + 64, CASUALTY_Y + 14);
+      Count_Up_Print(show, font, "%d", i * CKilled / max, CKilled,
+                     SCORETEXT_X + 64, CASUALTY_Y + 26);
       if (!Check_Key()) {
         Call_Back_Delay(show, 3);
       }
@@ -1519,11 +1544,11 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show) {
   /*
   ** Make sure accurate count is printed at end
   */
-  Count_Up_Print(show, "%d", GKilled, GKilled, SCORETEXT_X + 64,
+  Count_Up_Print(show, font, "%d", GKilled, GKilled, SCORETEXT_X + 64,
                  CASUALTY_Y + 2);
-  Count_Up_Print(show, "%d", NKilled, NKilled, SCORETEXT_X + 64,
+  Count_Up_Print(show, font, "%d", NKilled, NKilled, SCORETEXT_X + 64,
                  CASUALTY_Y + 14);
-  Count_Up_Print(show, "%d", CKilled, CKilled, SCORETEXT_X + 64,
+  Count_Up_Print(show, font, "%d", CKilled, CKilled, SCORETEXT_X + 64,
                  CASUALTY_Y + 26);
 
   /*
@@ -1578,6 +1603,7 @@ void ScoreClass::Show_Credits(Presentation& show, int house,
   ** Print out total credits left at end of scenario
   */
   int i = -50;
+  const FontStyle font = ScoreFontStyle(pal);
 
   show.AddTextRect(2 * base::At(_credpx, house), 2 * base::At(_credpy, house),
                    2 * base::At(_credpx, house), 2 * base::At(_credpy, house),
@@ -1597,7 +1623,7 @@ void ScoreClass::Show_Credits(Presentation& show, int house,
     i = std::max(i, 0);
 
     SetFontPalette(pal);
-    Count_Up_Print(show, "%d", i,
+    Count_Up_Print(show, font, "%d", i,
                    static_cast<int>(ThePlayer()->Available_Money()),
                    base::At(_credpx, house), base::At(_credpy, house));
     Call_Back_Delay(show, 2);
@@ -1629,7 +1655,8 @@ void ScoreClass::Show_Credits(Presentation& show, int house,
  * HISTORY:                                                                *
  *   04/13/1995 BWG : Created.                                             *
  *=========================================================================*/
-void ScoreClass::Print_Minutes(Presentation& show, int minutes) {
+void ScoreClass::Print_Minutes(Presentation& show, const FontStyle& font,
+                               int minutes) {
   char str[20];
   if (minutes >= 60) {
     if (minutes / 60 > 9) {
@@ -1641,7 +1668,7 @@ void ScoreClass::Print_Minutes(Presentation& show, int minutes) {
     Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT2),
                         minutes);
   }
-  show.text_page().view().Print(str, 550, 18, kTBlack, kTBlack);
+  show.text_page().view().Print(font, str, 550, 18, kTBlack, kTBlack);
 }
 
 /***********************************************************************************************
@@ -1664,8 +1691,9 @@ void ScoreClass::Print_Minutes(Presentation& show, int minutes) {
  *                                                                                             *
  * HISTORY: * 04/07/1995 BWG : Created. *
  *=============================================================================================*/
-void ScoreClass::Count_Up_Print(Presentation& show, const char* str,
-                                int percent, int max, int xpos, int ypos) {
+void ScoreClass::Count_Up_Print(Presentation& show, const FontStyle& font,
+                                const char* str, int percent, int max, int xpos,
+                                int ypos) {
   char destbuf[64];
 
   Format_Runtime_Text(destbuf, sizeof(destbuf), str,
@@ -1674,7 +1702,8 @@ void ScoreClass::Count_Up_Print(Presentation& show, const char* str,
 
   show.text_page().view().FillRect(xpos * 2, ypos * 2, (xpos + width) * 2,
                                    (ypos + 7) * 2, kBlack);
-  show.text_page().view().Print(destbuf, xpos * 2, ypos * 2, kWhite, kTBlack);
+  show.text_page().view().Print(font, destbuf, xpos * 2, ypos * 2, kWhite,
+                                kTBlack);
 
   // TextPrintBuffer->Blit(*TextPrintBuffer, xpos * 2, ypos * 2,
   // 0, 0, width * 2, 8 * 2); TextPrintBuffer->Print(destbuf, 0,

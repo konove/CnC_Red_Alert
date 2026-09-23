@@ -43,6 +43,7 @@
 
 class ArchiveReader;
 class ArchiveWriter;
+struct FontStyle;
 
 #include <cstdint>
 #include <cstring>
@@ -90,17 +91,19 @@ class ScoreClass {
   void ScoreDelay(int ticks);
   void Pulse_Bar_Graph();
   void Print_Graph_Title(int, int);
-  static void Print_Minutes(Presentation& show, int minutes);
-  static void Count_Up_Print(Presentation& show, const char* str, int percent,
-                             int max, int xpos, int ypos);
+  static void Print_Minutes(Presentation& show, const FontStyle& font,
+                            int minutes);
+  static void Count_Up_Print(Presentation& show, const FontStyle& font,
+                             const char* str, int percent, int max, int xpos,
+                             int ypos);
   static void Show_Credits(Presentation& show, int house,
                            std::span<const unsigned char> pal);
-  static void Do_GDI_Graph(Presentation& show,
+  static void Do_GDI_Graph(Presentation& show, const FontStyle& font,
                            std::span<const std::byte> yellowptr,
                            std::span<const std::byte> redptr, int gkilled,
                            int nkilled, int ypos);
-  void Do_Nod_Casualties_Graph(Presentation& show);
-  void Do_Nod_Buildings_Graph(Presentation& show);
+  void Do_Nod_Casualties_Graph(Presentation& show, const FontStyle& font);
+  void Do_Nod_Buildings_Graph(Presentation& show, const FontStyle& font);
   static void Input_Name(Presentation& show, std::span<char> str, int xpos,
                          int ypos, std::span<const unsigned char> pal);
 };
@@ -227,6 +230,11 @@ class ScoreScaleClass : public ScoreAnimClass {
 extern ScoreAnimClass* ScoreObjs[MAXSCOREOBJS];
 
 void Multi_Score_Presentation();
+
+// The score font as the score and map selection screens print with it: no
+// extra spacing, and `palette` for the glyph values when it holds all 16
+// entries (the identity palette otherwise).
+FontStyle ScoreFontStyle(std::span<const uint8_t> palette = {});
 
 void Map_Selection();
 void Bit_It_In(Presentation& show, int x, int y, int w, int h, PixelBuffer* src,

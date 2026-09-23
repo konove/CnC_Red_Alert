@@ -518,6 +518,9 @@ void Map_Selection() {
   Keyboard::Clear();
   SetFont(TheAssets().font(FontType::kScore));
   SetFontPalette(_regpal);
+  // The score animations print this screen's captions in the score font; the
+  // rectangles that clear them again are measured in it too.
+  const FontStyle score_font = ScoreFontStyle();
   Set_Palette(ThePalettes().black_palette());
 
   const int scenario = TheWorld().scenario() + (house == HOUSE_GOOD ? 0 : 14);
@@ -681,13 +684,17 @@ void Map_Selection() {
 
       case 16:
         show.text_page().view().FillRect(
-            0, 20, 2 * StringPixelWidth(Text_String(TXT_READING_IMAGE_DATA)),
+            0, 20,
+            2 * StringPixelWidth(score_font,
+                                 Text_String(TXT_READING_IMAGE_DATA)),
             2 * (10 + 12), kBlack);
         break;
 
       case 17:
         show.text_page().view().FillRect(
-            0, 20, 2 * StringPixelWidth(Text_String(TXT_READING_IMAGE_DATA)),
+            0, 20,
+            2 * StringPixelWidth(score_font,
+                                 Text_String(TXT_READING_IMAGE_DATA)),
             2 * (10 + 12), kTBlack);
         Alloc_Object(
             new MultiStagePrintClass(show, "ANALYZING", 0, 10, _othergreenpal));
@@ -695,13 +702,13 @@ void Map_Selection() {
 
       case 33:
         show.text_page().view().FillRect(
-            0, 20, 2 * StringPixelWidth(Text_String(TXT_ANALYZING)),
+            0, 20, 2 * StringPixelWidth(score_font, Text_String(TXT_ANALYZING)),
             2 * (10 + 12), kBlack);
         break;
 
       case 34:
         show.text_page().view().FillRect(
-            0, 20, 2 * StringPixelWidth(Text_String(TXT_ANALYZING)),
+            0, 20, 2 * StringPixelWidth(score_font, Text_String(TXT_ANALYZING)),
             2 * (10 + 12), kTBlack);
         Alloc_Object(new MultiStagePrintClass(
             show, Text_String(TXT_ENHANCING_IMAGE_DATA), 0, 10,
@@ -710,13 +717,17 @@ void Map_Selection() {
 
       case 44:
         show.text_page().view().FillRect(
-            0, 20, 2 * StringPixelWidth(Text_String(TXT_ENHANCING_IMAGE_DATA)),
+            0, 20,
+            2 * StringPixelWidth(score_font,
+                                 Text_String(TXT_ENHANCING_IMAGE_DATA)),
             2 * (10 + 12), kBlack);
         break;
 
       case 45:
         show.text_page().view().FillRect(
-            0, 20, 2 * StringPixelWidth(Text_String(TXT_ENHANCING_IMAGE_DATA)),
+            0, 20,
+            2 * StringPixelWidth(score_font,
+                                 Text_String(TXT_ENHANCING_IMAGE_DATA)),
             2 * (10 + 12), kTBlack);
         Alloc_Object(new MultiStagePrintClass(
             show, Text_String(TXT_ISOLATING_OPERATIONAL_THEATER), 0, 10,
@@ -727,7 +738,7 @@ void Map_Selection() {
         show.text_page().view().FillRect(
             0, 20,
             2 * StringPixelWidth(
-                    Text_String(TXT_ISOLATING_OPERATIONAL_THEATER)),
+                    score_font, Text_String(TXT_ISOLATING_OPERATIONAL_THEATER)),
             2 * (10 + 12), kBlack);
         break;
 
@@ -735,7 +746,7 @@ void Map_Selection() {
         show.text_page().view().FillRect(
             0, 20,
             2 * StringPixelWidth(
-                    Text_String(TXT_ISOLATING_OPERATIONAL_THEATER)),
+                    score_font, Text_String(TXT_ISOLATING_OPERATIONAL_THEATER)),
             2 * (10 + 12), kTBlack);
         Alloc_Object(new MultiStagePrintClass(
             show, Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES), 0, 10,
@@ -758,13 +769,13 @@ void Map_Selection() {
   show.text_page().view().FillRect(
       0, 20,
       2 * StringPixelWidth(
-              Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
+              score_font, Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
       2 * (10 + 24), kBlack);
   Call_Back_Delay(show, 1);
   show.text_page().view().FillRect(
       0, 20,
       2 * StringPixelWidth(
-              Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
+              score_font, Text_String(TXT_ESTABLISHING_TRADITIONAL_BOUNDARIES)),
       2 * (10 + 24), kTBlack);
   Call_Back_Delay(show, 1);
 
@@ -961,18 +972,22 @@ void Map_Selection() {
         case 35:
           if (house == HOUSE_GOOD) {
             show.text_page().view().FillRect(
-                0, 20, 2 * StringPixelWidth(Text_String(TXT_ENHANCING_IMAGE)),
+                0, 20,
+                2 * StringPixelWidth(score_font,
+                                     Text_String(TXT_ENHANCING_IMAGE)),
                 2 * (10 + 12), kBlack);
           } else {
 #ifdef FRENCH
             show.text_page().view().FillRect(
                 360, 20,
-                2 * (180 + StringPixelWidth(Text_String(TXT_ENHANCING_IMAGE))),
+                2 * (180 + StringPixelWidth(score_font,
+                                            Text_String(TXT_ENHANCING_IMAGE))),
                 2 * (10 + 12), kBlack);
 #else
             show.text_page().view().FillRect(
                 420, 20,
-                2 * (210 + StringPixelWidth(Text_String(TXT_ENHANCING_IMAGE))),
+                2 * (210 + StringPixelWidth(score_font,
+                                            Text_String(TXT_ENHANCING_IMAGE))),
                 2 * (10 + 12), kBlack);
 #endif  //(FRENCH)
           }
@@ -981,18 +996,22 @@ void Map_Selection() {
         case 36:
           if (house == HOUSE_GOOD) {
             show.text_page().view().FillRect(
-                0, 20, 2 * StringPixelWidth(Text_String(TXT_ENHANCING_IMAGE)),
+                0, 20,
+                2 * StringPixelWidth(score_font,
+                                     Text_String(TXT_ENHANCING_IMAGE)),
                 2 * (10 + 12), kTBlack);
           } else {
 #ifdef FRENCH
             show.text_page().view().FillRect(
                 360, 20,
-                2 * (180 + StringPixelWidth(Text_String(TXT_ENHANCING_IMAGE))),
+                2 * (180 + StringPixelWidth(score_font,
+                                            Text_String(TXT_ENHANCING_IMAGE))),
                 2 * (10 + 12), kTBlack);
 #else
             show.text_page().view().FillRect(
                 420, 20,
-                2 * (210 + StringPixelWidth(Text_String(TXT_ENHANCING_IMAGE))),
+                2 * (210 + StringPixelWidth(score_font,
+                                            Text_String(TXT_ENHANCING_IMAGE))),
                 2 * (10 + 12), kTBlack);
 #endif  //(FRENCH)
           }
