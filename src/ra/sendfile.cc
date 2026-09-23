@@ -352,10 +352,9 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   */
   const auto save_file = OpenDiskFile(save_file_name, FileAccess::kWrite);
   if (!save_file) {
-    // A null stream cannot be treated like a closed GameFile: unlike the old
-    // auto-opening object, there is nothing here for Write() to silently
-    // reopen and fail against, so bail out instead of running the transfer
-    // as a no-op.
+    // The open failed (a full disk, a read-only directory, ...); there is
+    // no stream to receive the incoming blocks into, so bail out rather
+    // than run the rest of the transfer as a no-op.
     return false;
   }
 
@@ -671,9 +670,10 @@ bool Send_Remote_File(const char* file_name, int gametype) {
 
   const auto send_file = OpenGameFile(file_name);
   if (!send_file) {
-    // A null stream cannot be treated like a closed GameFile (see the
-    // matching comment in Receive_Remote_File): bail out here even though
-    // the FILE_INFO packet announcing this transfer already went out above.
+    // The open failed; there is nothing to read the blocks from, so bail
+    // out here (see the matching comment in Receive_Remote_File) even
+    // though the FILE_INFO packet announcing this transfer already went
+    // out above.
     return false;
   }
 

@@ -1587,3 +1587,42 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   and `td/queue.cc`'s `Print_CRCs`/`Dump_Packet_Too_Late_Stuff`/reconnect dumps) — left alone as out
   of this plan's scope (never routed through the deleted interface). Not checked: real-display
   screens (see the report/PR for the list); left for the user.
+- 2026-09-23: Final-review fixes landed. `td/startup.cc`'s CONQUER.INI open mirrors RA's: probe
+  `FindExistingFile`, create with a throwaway `kWrite` open if missing, then reopen `kRead` for
+  `Read_Setup_Options` — a `kReadWrite` open used to fail outright on a read-only CONQUER.INI (or a
+  read-only directory when there was none yet), regressing the pre-branch stdio behavior.
+  `td/score.cc`'s `hallfame` array is now value-initialized and its zeroing loop runs
+  unconditionally, not only inside the `OpenGameFile(..., kWrite)` success branch, so a HALLFAME.DAT
+  that cannot be created no longer leaves the hall-of-fame screen reading uninitialized memory.
+  `tech/game_file.cc`'s write branch now calls `OpenDiskFile` instead of `DiskStream::Open`, so a
+  write picks up the existing lowercase twin of a name the same way every other write site does;
+  header and `GameFileTest` comments/tests updated
+  (`OpenGameFileWriteReplacesExistingLowercaseFile`). Minors: `ra/loaddlg.cc` and `td/loaddlg.cc`'s
+  delete button now goes through `FindExistingFile` before `std::filesystem::remove`, so it can
+  delete a lowercase save the list showed; `DiskStream::Seek` now flushes (the same try/catch
+  `Flush()` uses) before seeking, so a write that failed to flush is reported through `ok()` instead
+  of silently keeping the old position (test:
+  `DiskStreamErrorTest.SeekFlushesAPendingWriteAndReportsItsFailure`); `sdllib/file_system.cc`'s
+  `FindFiles` now catches `std::system_error` around `path::string()` for the MSVC-only
+  code-page-conversion throw; stale leftovers fixed per the review (`game_file.cc`/
+  `file_system.{h,cc}` file comments, `file_access.h`'s example and its unused
+  `operator|`/`operator&`, `ra/sendfile.cc`'s two comments restated without the deleted "closed
+  GameFile" concept, `.claude/commands/rename-google-style.md`'s example class, `stream_sink.h`'s
+  example now opens with `OpenDiskFile`); `disk_file_test.cc`'s lowercase-write test (and the new
+  raw-`DiskStream::Open` no-fallback test, `RawDiskStreamOpenDoesNotFallBackToLowercaseTwin`) now
+  skip when `TMPDIR` is not itself all-lowercase, not only when the filesystem is case-insensitive;
+  `td/init.cc`'s four
+  `if (GameFileExists("ATTRACT2.CPS")) { if (const auto file = OpenGameFile(...)) {...} ... }`
+  blocks collapsed to a single `if (const auto file = OpenGameFile(...))` guarding the load, the
+  scale and the fade together (no else branches; the outer existence check guarded nothing an
+  `OpenGameFile` failure didn't already cover). `build` and `build-strict` both clean;
+  `ctest --test-dir build-strict` 733/733 (net +3: the two `DiskFileTest`/`DiskStreamErrorTest`
+  additions and the `GameFileTest` lowercase-write test); RA smoke OK (240 positions,
+  `--load-fixture` OK); TD smoke OK (5951 game states). Item 1 proven headlessly both ways: with the
+  fix, `build-strict/src/td/tdsdl` (and a rebuilt `build/src/td/tdsdl`) started to frame 10 against
+  a `chmod 444` `CONQUER.INI` with no "Run SETUP program first."; reverting just `src/td/startup.cc`
+  to HEAD via `git stash` and rebuilding `build/src/td/tdsdl` reproduced the regression exactly
+  (exit 1, "Run SETUP program first.") against the same read-only file, then the stash was popped
+  and both binaries rebuilt with the fix; `build-strict/src/td/CONQUER.INI`'s mode and bytes were
+  restored and verified identical with `cmp`. Not re-checked: the ASan pass and the real-display
+  screens from the prior entry (out of scope for this review pass).

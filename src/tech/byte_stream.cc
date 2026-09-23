@@ -133,6 +133,12 @@ base::ssize DiskStream::Write(const std::span<const std::byte> buffer) {
 
 base::ssize DiskStream::Seek(const base::ssize offset,
                              const SeekOrigin origin) {
+  // A write still buffered by the filebuf can fail to flush; pubseekoff
+  // would then return -1, which Seek would otherwise read as "seek before
+  // the start" and silently report the old position instead of the write
+  // failure. Flush first, the same way Flush() itself does, so a failed
+  // write surfaces through ok().
+  Flush();
   const std::streampos moved = file_.pubseekoff(offset, SeekDir(origin));
   if (static_cast<std::streamoff>(moved) == -1) {
     // A seek to before the start fails and leaves the position alone, as

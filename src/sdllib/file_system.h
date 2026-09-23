@@ -1,7 +1,7 @@
 #ifndef CNC_RED_ALERT_SDLLIB_FILE_SYSTEM_H_
 #define CNC_RED_ALERT_SDLLIB_FILE_SYSTEM_H_
 
-// Directory listing and free space for the working directory, over
+// File: directory listing and free space for the working directory, over
 // std::filesystem.
 
 #include <cstdint>

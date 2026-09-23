@@ -202,6 +202,22 @@ TEST(DiskStreamErrorTest, FlushToFullDeviceFails) {
   EXPECT_FALSE(stream->ok());
 }
 
+TEST(DiskStreamErrorTest, SeekFlushesAPendingWriteAndReportsItsFailure) {
+  if (!std::filesystem::exists("/dev/full")) {
+    GTEST_SKIP() << "no /dev/full on this platform";
+  }
+  const std::unique_ptr<DiskStream> stream =
+      DiskStream::Open("/dev/full", FileAccess::kWrite);
+  ASSERT_NE(stream, nullptr);
+  // A few bytes fit in the filebuf's own buffer, so Write itself reports
+  // success; without Seek flushing first, pubseekoff's own failed flush
+  // would be read as "seek before the start" and Seek would silently keep
+  // reporting the old position instead of the write failure.
+  EXPECT_EQ(stream->Write(Bytes("abc")), 3);
+  stream->Seek(0, SeekOrigin::kBegin);
+  EXPECT_FALSE(stream->ok());
+}
+
 #ifdef __linux__
 // gtest_main.cc marks the whole test process undumpable (PR_SET_DUMPABLE 0)
 // so a death test's forked child leaves no systemd-coredump behind, but the

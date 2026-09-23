@@ -1,3 +1,5 @@
+// File: MatchesPattern, FindFiles and FreeDiskSpace implementations.
+
 #include "sdllib/file_system.h"
 
 #include <algorithm>
@@ -52,7 +54,17 @@ std::vector<FoundFile> FindFiles(const std::string_view pattern,
   for (; !error && entries != std::filesystem::directory_iterator();
        entries.increment(error)) {
     const std::filesystem::directory_entry& entry = *entries;
-    std::string name = entry.path().filename().string();
+    std::string name;
+    try {
+      // On MSVC, path::string() throws std::system_error when the current
+      // code page cannot represent every character of the native (wide)
+      // name; the Win32 FindFirstFile code this replaced never threw for
+      // that. Skip such an entry instead of crashing; Linux's narrow,
+      // already-UTF-8 native encoding never takes this path.
+      name = entry.path().filename().string();
+    } catch (const std::system_error&) {
+      continue;
+    }
     if (!MatchesPattern(pattern, name)) {
       continue;
     }

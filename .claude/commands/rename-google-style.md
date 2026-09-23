@@ -144,7 +144,7 @@ the case and move on.
 because the file should be named after what it holds now:
 
 - A file built around one class is named after that class in `snake_case`: `AudioMixer` lives in
-  `audio_mixer.h`, `WsaAnimation` in `wsa_animation.h`, `GameFile` in `game_file.h`.
+  `audio_mixer.h`, `WsaAnimation` in `wsa_animation.h`, `MixArchive` in `mix_archive.h`.
 - A file of free functions and tables is named after its subject, in the game's vocabulary, and a
   `.cc`/`.h` pair shares one name.
 - Westwood-era names usually fail this: 8.3 truncations (`blwstraw` -> `blowfish_source`, `b64pipe`

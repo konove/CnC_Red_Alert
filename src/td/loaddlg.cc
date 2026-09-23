@@ -52,7 +52,9 @@
 #include <cstring>
 #include <filesystem>
 #include <memory>
+#include <optional>
 #include <span>
+#include <string>
 #include <string_view>
 #include <system_error>
 
@@ -86,6 +88,7 @@
 #include "td/textbtn.h"
 #include "td/vector.h"
 #include "td/world.h"
+#include "tech/disk_file.h"
 
 /***********************************************************************************************
  * LoadOptionsClass::LoadOptionsClass -- class constructor *
@@ -460,8 +463,13 @@ bool LoadOptionsClass::Process() {
         if (CCMessageBox().Process(TXT_DELETE_FILE_QUERY, TXT_YES, TXT_NO) ==
             0) {
           absl::SNPrintF(fname, sizeof(fname), "SAVEGAME.%03d", game_num);
-          std::error_code error;
-          std::filesystem::remove(fname, error);
+          // The list can show a lowercase save (savegame.001) that a
+          // case-sensitive remove(fname) would miss; find the file the way
+          // it was opened for loading before deleting it.
+          if (const std::optional<std::string> path = FindExistingFile(fname)) {
+            std::error_code error;
+            std::filesystem::remove(*path, error);
+          }
           Clear_List(&listbtn);
           Fill_List(&listbtn);
           if (listbtn.Count() == 0) {

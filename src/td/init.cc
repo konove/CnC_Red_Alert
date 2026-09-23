@@ -1384,12 +1384,10 @@ bool Select_Game(bool fade) {
             Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                             Call_Back);
             TheScreen().visible_page().view().Clear();
-            if (GameFileExists("ATTRACT2.CPS")) {
-              if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
-                Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
-                                TheScreen().sys_mem_page().bytes(),
-                                ThePalettes().title_palette());
-              }
+            if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
+              Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
+                              TheScreen().sys_mem_page().bytes(),
+                              ThePalettes().title_palette());
               TheScreen().sys_mem_page().view().Scale(
                   TheScreen().visible_view(), 0, 0, 0, 0, 320, 199, 640, 398);
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
@@ -1410,12 +1408,10 @@ bool Select_Game(bool fade) {
             Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                             Call_Back);
             TheScreen().visible_page().view().Clear();
-            if (GameFileExists("ATTRACT2.CPS")) {
-              if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
-                Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
-                                TheScreen().sys_mem_page().bytes(),
-                                ThePalettes().title_palette());
-              }
+            if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
+              Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
+                              TheScreen().sys_mem_page().bytes(),
+                              ThePalettes().title_palette());
               TheScreen().sys_mem_page().view().Scale(
                   TheScreen().visible_view(), 0, 0, 0, 0, 320, 199, 640, 398);
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
@@ -1436,12 +1432,10 @@ bool Select_Game(bool fade) {
             Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                             Call_Back);
             TheScreen().visible_page().view().Clear();
-            if (GameFileExists("ATTRACT2.CPS")) {
-              if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
-                Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
-                                TheScreen().sys_mem_page().bytes(),
-                                ThePalettes().title_palette());
-              }
+            if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
+              Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
+                              TheScreen().sys_mem_page().bytes(),
+                              ThePalettes().title_palette());
               TheScreen().sys_mem_page().view().Scale(
                   TheScreen().visible_view(), 0, 0, 0, 0, 320, 199, 640, 398);
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
@@ -1461,12 +1455,10 @@ bool Select_Game(bool fade) {
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                           Call_Back);
           TheScreen().visible_page().view().Clear();
-          if (GameFileExists("ATTRACT2.CPS")) {
-            if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
-              Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
-                              TheScreen().sys_mem_page().bytes(),
-                              ThePalettes().title_palette());
-            }
+          if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
+            Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
+                            TheScreen().sys_mem_page().bytes(),
+                            ThePalettes().title_palette());
             TheScreen().sys_mem_page().view().Scale(
                 TheScreen().visible_view(), 0, 0, 0, 0, 320, 199, 640, 398);
             Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,

@@ -15,8 +15,8 @@
 // opens nor closes the stream; whoever owns the stream does.
 //
 // Example:
-//   const std::unique_ptr<ByteStream> file =
-//       OpenGameFile("SAVEGAME.001", FileAccess::kWrite);
+//   const std::unique_ptr<DiskStream> file =
+//       OpenDiskFile("SAVEGAME.001", FileAccess::kWrite);
 //   StreamSink sink(*file);
 class StreamSink : public ByteSink {
  public:

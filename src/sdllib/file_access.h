@@ -5,27 +5,17 @@
 
 // File access rights used by the stream openers.
 //
-// These are bitmask flags: kRead and kWrite can be combined with bitwise OR
-// to request read-write access (kReadWrite is provided as a convenience).
+// These are bitmask flags: kRead and kWrite can be combined to request
+// read-write access (kReadWrite is provided as a convenience).
 //
 // Example:
-//   file.Open(FileAccess::kRead);
-//   file.Open(FileAccess::kReadWrite);
+//   OpenDiskFile(path, FileAccess::kRead);
+//   OpenDiskFile(path, FileAccess::kReadWrite);
 enum class FileAccess : uint32_t {
   kRead = 1,
   kWrite = 2,
   kReadWrite = 3,
 };
-
-constexpr FileAccess operator|(FileAccess lhs, FileAccess rhs) {
-  return static_cast<FileAccess>(static_cast<uint32_t>(lhs) |
-                                 static_cast<uint32_t>(rhs));
-}
-
-constexpr FileAccess operator&(FileAccess lhs, FileAccess rhs) {
-  return static_cast<FileAccess>(static_cast<uint32_t>(lhs) &
-                                 static_cast<uint32_t>(rhs));
-}
 
 // Returns true if any flags in `test` are set in `rights`.
 constexpr bool HasAccess(FileAccess rights, FileAccess test) {
