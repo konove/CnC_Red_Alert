@@ -68,11 +68,13 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <filesystem>
 #include <memory>
 #include <optional>
 #include <span>
 #include <string>
 #include <string_view>
+#include <system_error>
 #include <utility>
 #include <vector>
 
@@ -2601,22 +2603,44 @@ bool Load_Recording_Values(ByteStream& file) {
   return reader.ok();
 }
 
+// Extract() is sometimes called with filename == outname (Extract(
+// "SCORES.MIX", "SCORES.MIX") pulls a packed file out of a MIX archive into
+// a loose file of the same name), so the destination is never opened under
+// its final name: opening a loose "outname" for write truncates it
+// immediately, which would clobber the very data "filename" resolves to
+// whenever a loose copy from an earlier run already sits there (the loose
+// file wins over the packed one). Copy into a sibling "<outname>.tmp"
+// instead, close both streams, and only then rename the temp file over
+// outname; a failed open, a short read, or a failed rename all leave
+// outname untouched.
 void Extract(const char* filename, const char* outname) {
-  const auto in_file = OpenGameFile(filename);
-  const auto out_file = OpenGameFile(outname, FileAccess::kWrite);
-  if (!in_file || !out_file) {
-    return;
-  }
-
-  std::array<char, 32768> buffer{};
-
-  while (true) {
-    const base::ssize bytes = in_file->Read(std::span(buffer), 32768);
-    if (bytes <= 0) {
-      break;
+  const std::string temp_name = std::string(outname) + ".tmp";
+  bool copy_ok = false;
+  {
+    const auto in_file = OpenGameFile(filename);
+    const auto out_file = OpenGameFile(temp_name, FileAccess::kWrite);
+    if (in_file && out_file) {
+      std::array<char, 32768> buffer{};
+      while (true) {
+        const base::ssize bytes = in_file->Read(std::span(buffer), 32768);
+        if (bytes <= 0) {
+          break;
+        }
+        out_file->Write(std::span(buffer), bytes);
+      }
+      out_file->Flush();
+      copy_ok = in_file->ok() && out_file->ok();
     }
-    out_file->Write(std::span(buffer), bytes);
+  }  // in_file and out_file close here, before the rename below.
+
+  std::error_code error;
+  if (copy_ok) {
+    std::filesystem::rename(temp_name, outname, error);
+    if (!error) {
+      return;
+    }
   }
+  std::filesystem::remove(temp_name, error);
 }
 
 static bool bUsingDVD = false;

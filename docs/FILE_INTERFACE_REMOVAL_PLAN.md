@@ -1507,3 +1507,30 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   since the same scenario completed in under a second once the files were warm) rather than
   re-litigated, since the from-scratch run with the new code already gave the byte-identical proof
   the step requires.
+
+- 2026-09-23: Step 9, RA fix round 1 (review). Two changes on top of the RA commit above, no amend.
+  (1) `sendfile.cc`'s two new `if (!save_file) return false;` / `if (!send_file) return false;`
+  checks (added because a null `unique_ptr<ByteStream>` can't be treated like a closed
+  `GameFile`/`DiskFile`, unlike the old auto-opening objects) do change behavior on the practically
+  unreachable path where the file existed moments earlier but the open itself fails:
+  `Receive_Remote_File` used to keep running the transfer loop as a no-op and still call
+  `Read_Scenario_Descriptions()` at the end; `Send_Remote_File` had already sent the `FILE_INFO`
+  packet announcing the transfer before the old `Open(kRead)`. Kept the early returns (ruling: a
+  null stream is not a closed file) and added a one-line comment at each explaining why, recorded
+  here per the review since the per-task report file isn't committed. (2) `Extract()` (`init.cc`) no
+  longer opens `outname` for write directly: it copies into a sibling `<outname>.tmp`
+  (`OpenGameFile(temp_name, kWrite)`), and only once the copy loop has finished with both streams
+  `ok()` and both streams closed (the block holding them ends, after an explicit `Flush()` on the
+  temp stream) does it `std::filesystem::rename` the temp file over `outname`; any failure — a null
+  open, a short/failed read or write, or a failed rename — removes the temp file
+  (`std::filesystem::remove` with the `error_code` overload) and leaves `outname` untouched. This
+  fixes the pre-existing self-truncation bug found while verifying the RA commit above
+  (`Extract("SCORES.MIX", "SCORES.MIX")` reading and writing the same loose file). Verified on the
+  Steam install in `build-strict/src/ra` (all three of `GENERAL3.MIX`/`GENERAL4.MIX`/`SCORES.MIX`
+  backed up to `/tmp/claude-1000/.../scratchpad/fix1_backup/` first): (a) all three absent →
+  regenerated, `cmp`-identical to the backups, no `.tmp` left; (b) only `GENERAL4.MIX` absent (the
+  exact precondition that produced the 0-byte `SCORES.MIX` before) → `SCORES.MIX` stays
+  `cmp`-identical to the backup (previously it was truncated to 0), `GENERAL3.MIX`/`GENERAL4.MIX`
+  also `cmp`-identical, no `.tmp` left. Final state of `build-strict/src/ra`'s three files matches
+  the backups (`md5sum`). `build` and `build-strict` clean; `ctest --test-dir build-strict` 753/753;
+  RA smoke OK (240 positions, `--load-fixture` OK).
