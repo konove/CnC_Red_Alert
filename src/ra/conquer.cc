@@ -103,6 +103,7 @@
 #include "ra/wolstrng.h"
 #include "ra/world.h"
 #include "sdllib/display.h"
+#include "sdllib/file_access.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
@@ -616,14 +617,14 @@ static void CaptureMotionFrame() {
 
   TheDebugState().set_motion_capture(false);
 
-  DiskFile file;
   for (base::ssize index = 0; index < captured_count; index++) {
     base::CopyBytes(std::as_writable_bytes(frame_page.bytes()),
                     std::as_bytes(std::span(frames.at(base::ToSize(index)))),
                     frame_bytes);
-    file.SetName(absl::StrFormat("cap%04d.pcx", index));
-
-    Write_PCX_File(file, frame_page, &ThePalettes().game_palette());
+    const std::string name = absl::StrFormat("cap%04d.pcx", index);
+    if (const auto file = OpenDiskFile(name, FileAccess::kWrite)) {
+      Write_PCX_File(*file, frame_page, &ThePalettes().game_palette());
+    }
   }
 
   // Release the run's buffers so that the next run re-reads MovieTime.

@@ -44,11 +44,10 @@
 #include "base/buffer.h"
 #include "ra/filepcx.h"
 #include "ra/palette.h"
-#include "sdllib/file_access.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/file.h"
+#include "tech/byte_stream.h"
 
-static void Write_Pcx_ScanLine(File& file, int scansize,
+static void Write_Pcx_ScanLine(ByteStream& file, int scansize,
                                std::span<const uint8_t> pixels);
 
 /***************************************************************************
@@ -98,7 +97,8 @@ static const unsigned char rle_full_run =
  *                                                                                             *
  * HISTORY: * 06/03/1996 JLB : Created. *
  *=============================================================================================*/
-int Write_PCX_File(File& file, PixelBuffer& pic, const PaletteClass* palette) {
+int Write_PCX_File(ByteStream& file, PixelBuffer& pic,
+                   const PaletteClass* palette) {
   unsigned char palcopy[256 * sizeof(RGB)];
   const PCX_HEADER header = {10,
                              5,
@@ -118,15 +118,9 @@ int Write_PCX_File(File& file, PixelBuffer& pic, const PaletteClass* palette) {
                              {0}};
 
   /*
-  **	Open the output file and write out the header information. If the file
-  **	is already open, then just presume that it is positioned correctly and
-  *is *	open for write.
+  **	Write out the header information. The caller has already opened the
+  **	file for write and positioned it wherever it wants this picture to go.
   */
-  bool open = false;
-  if (!file.IsOpen()) {
-    file.Open(FileAccess::kWrite);
-    open = true;
-  }
   file.WriteObject(header);
 
   /*
@@ -160,12 +154,6 @@ int Write_PCX_File(File& file, PixelBuffer& pic, const PaletteClass* palette) {
   */
   file.WriteObject(palcopy);
 
-  /*
-  **	Close the file (if necessary) and exit with no error flag.
-  */
-  if (open) {
-    file.Close();
-  }
   return 0;
 }
 
@@ -187,7 +175,7 @@ int Write_PCX_File(File& file, PixelBuffer& pic, const PaletteClass* palette) {
  * HISTORY: * 05/04/1995 JRJ : Created. * 06/03/1996 JLB : Converted to C++ and
  *file class I/O.                                     *
  *=============================================================================================*/
-static void Write_Pcx_ScanLine(File& file, int scansize,
+static void Write_Pcx_ScanLine(ByteStream& file, int scansize,
                                std::span<const uint8_t> pixels) {
   if (scansize <= 0 || static_cast<size_t>(scansize) > pixels.size()) {
     return;

@@ -14,64 +14,47 @@
 #include "base/types.h"
 #include "gtest/gtest.h"
 #include "sdllib/aud_decoder.h"
-#include "sdllib/file_access.h"
-#include "tech/file.h"
-#include "tech/memory_file.h"
+#include "tech/byte_stream.h"
 
 namespace {
 
 constexpr int kRate = 22050;
 constexpr int kCallbackSamples = 512;
 
-// How many ScoreFiles the mixer has not closed yet.
+// How many ScoreStreams the mixer has not closed yet.
 int open_files = 0;
 
 // An in-memory score that is counted while it lives, which is how the tests
 // see the mixer let go of a file.
-class ScoreFile final : public File {
+class ScoreStream final : public ByteStream {
  public:
-  explicit ScoreFile(std::span<const std::byte> aud) : file_(std::ssize(aud)) {
-    file_.Open(FileAccess::kReadWrite);
-    file_.Write(aud);
-    file_.Seek(0, SeekOrigin::kBegin);
+  explicit ScoreStream(std::span<const std::byte> aud)
+      : bytes_(aud.begin(), aud.end()), stream_(bytes_) {
     open_files++;
   }
-  ~ScoreFile() override { open_files--; }
+  ~ScoreStream() override { open_files--; }
 
-  ScoreFile(const ScoreFile&) = delete;
-  ScoreFile& operator=(const ScoreFile&) = delete;
-  ScoreFile(ScoreFile&&) = delete;
-  ScoreFile& operator=(ScoreFile&&) = delete;
+  ScoreStream(const ScoreStream&) = delete;
+  ScoreStream& operator=(const ScoreStream&) = delete;
+  ScoreStream(ScoreStream&&) = delete;
+  ScoreStream& operator=(ScoreStream&&) = delete;
 
-  [[nodiscard]] std::string_view FileName() const override {
-    return file_.FileName();
-  }
-  void SetName(std::string_view name) override { file_.SetName(name); }
-  bool Create() override { return file_.Create(); }
-  bool Delete() override { return file_.Delete(); }
-  bool IsAvailable() override { return file_.IsAvailable(); }
-  [[nodiscard]] bool IsOpen() const override { return file_.IsOpen(); }
-  bool Open(std::string_view name, FileAccess access) override {
-    return file_.Open(name, access);
-  }
-  bool Open(FileAccess access) override { return file_.Open(access); }
-  using File::Read;
-  using File::Write;
+  using ByteStream::Read;
+  using ByteStream::Write;
   base::ssize Read(std::span<std::byte> buffer) override {
-    return file_.Read(buffer);
+    return stream_.Read(buffer);
   }
   base::ssize Write(std::span<const std::byte> buffer) override {
-    return file_.Write(buffer);
+    return stream_.Write(buffer);
   }
-  [[nodiscard]] bool ok() const override { return file_.ok(); }
   base::ssize Seek(base::ssize offset, SeekOrigin origin) override {
-    return file_.Seek(offset, origin);
+    return stream_.Seek(offset, origin);
   }
-  base::ssize Size() override { return file_.Size(); }
-  void Close() override { file_.Close(); }
+  base::ssize Size() override { return stream_.Size(); }
 
  private:
-  MemoryFile file_;  // Owns a copy of the score.
+  std::vector<std::byte> bytes_;  // Owns a copy of the score.
+  MemoryStream stream_;           // A view of bytes_.
 };
 
 void Append(std::vector<std::byte>& out, std::span<const std::byte> bytes) {
@@ -146,7 +129,7 @@ class AudioMixerTest : public testing::Test {
   }
 
   int Stream(std::span<const std::byte> aud) {
-    return mixer_.Stream(std::make_unique<ScoreFile>(aud), 255);
+    return mixer_.Stream(std::make_unique<ScoreStream>(aud), 255);
   }
 
   // Runs one device callback and returns the samples it produced.
@@ -309,7 +292,7 @@ TEST_F(AudioMixerTest, StreamsAScoreBlockByBlockAndClosesItsFile) {
 
 TEST_F(AudioMixerTest, StreamFailsCleanly) {
   EXPECT_EQ(mixer_.Stream("NO-SUCH-SCORE.AUD", 255), -1);
-  EXPECT_EQ(mixer_.Stream(std::unique_ptr<File>(), 255), -1);
+  EXPECT_EQ(mixer_.Stream(std::unique_ptr<ByteStream>(), 255), -1);
 
   EXPECT_EQ(Stream(ConstantSample(8, 1, 0)), -1);  // Not 16-bit.
   EXPECT_EQ(open_files, 0);

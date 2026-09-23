@@ -40,11 +40,11 @@
 #include "ra/theme.h"
 #include "ra/winstub.h"
 #include "ra/world.h"
-#include "sdllib/file_access.h"
 #include "sdllib/iconcach.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/audio_mixer.h"
+#include "tech/byte_stream.h"
 #include "tech/game_file.h"
 #include "winvq/vqa32/vqaplay.h"
 
@@ -160,7 +160,7 @@ class BufferedFileReader {
  public:
   static constexpr size_t kBufferSize = 2048;
 
-  explicit BufferedFileReader(GameFile& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
+  explicit BufferedFileReader(ByteStream& file ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : file_(file) {}
 
   // Delete copy/move to prevent accidental state duplication.
@@ -189,7 +189,7 @@ class BufferedFileReader {
     return bytes_in_buffer_ > 0;
   }
 
-  GameFile& file_;
+  ByteStream& file_;
 
   // Use std::array for standard compliance and bounds awareness.
   std::array<uint8_t, kBufferSize> buffer_{};
@@ -201,12 +201,12 @@ class BufferedFileReader {
 
 PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
                            std::span<uint8_t> backing, int32_t size) {
-  GameFile file_handle(name);
-  if (!file_handle.IsAvailable() || !file_handle.Open(FileAccess::kRead)) {
+  const auto file_handle = OpenGameFile(name);
+  if (!file_handle) {
     return nullptr;
   }
   PCX_HEADER header{};
-  if (!file_handle.ReadObject(header) || header.id != 10 ||
+  if (!file_handle->ReadObject(header) || header.id != 10 ||
       header.version != 5 || header.pixelsize != 8 ||
       header.color_planes != 1 || header.encoding != 1) {
     return nullptr;
@@ -232,7 +232,7 @@ PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
   }
   auto pic = std::make_unique<PixelBuffer>(width, height, backing);
   const auto pixels = pic->bytes();
-  BufferedFileReader reader(file_handle);
+  BufferedFileReader reader(*file_handle);
   for (int row = 0; row < height; ++row) {
     int column = 0;
     while (column < header.byte_per_line) {
@@ -266,8 +266,8 @@ PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
     if (palette.size() < 768) {
       return nullptr;
     }
-    file_handle.Seek(-768, SeekOrigin::kEnd);
-    if (file_handle.Read(std::as_writable_bytes(palette.first(768))) != 768) {
+    file_handle->Seek(-768, SeekOrigin::kEnd);
+    if (file_handle->Read(std::as_writable_bytes(palette.first(768))) != 768) {
       return nullptr;
     }
     for (auto& color : palette.first(768)) {

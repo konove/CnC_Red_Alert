@@ -18,7 +18,7 @@
 #include "sdllib/iff.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/xor_delta.h"
-#include "tech/file.h"
+#include "tech/byte_stream.h"
 #include "tech/game_file.h"
 
 namespace {
@@ -85,19 +85,19 @@ constexpr size_t kPaletteSize = 768;
 
 WsaAnimation::WsaAnimation(const std::string_view file_name,
                            const std::span<uint8_t> palette) {
-  GameFile file(file_name);
-  if (file.Open()) {
-    Load(file, palette);
+  const auto file = OpenGameFile(file_name);
+  if (file) {
+    Load(*file, palette);
   }
 }
 
-WsaAnimation::WsaAnimation(File& file, const std::span<uint8_t> palette) {
+WsaAnimation::WsaAnimation(ByteStream& file, const std::span<uint8_t> palette) {
   Load(file, palette);
 }
 
 void WsaAnimation::Close() { *this = WsaAnimation(); }
 
-void WsaAnimation::Load(File& file, const std::span<uint8_t> palette) {
+void WsaAnimation::Load(ByteStream& file, const std::span<uint8_t> palette) {
   WsaFileHeader file_header;
   if (!file.ReadObject(file_header)) {
     return;

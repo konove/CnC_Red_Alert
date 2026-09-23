@@ -43,7 +43,8 @@ size);
 
 #include "ra/palette.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/file.h"
+
+class ByteStream;
 
 struct RGB {
   unsigned char red;
@@ -73,6 +74,7 @@ struct PCX_HEADER {
 PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
                            std::span<uint8_t> backing, int32_t size);
 
-int Write_PCX_File(File& file, PixelBuffer& pic, const PaletteClass* palette);
+int Write_PCX_File(ByteStream& file, PixelBuffer& pic,
+                   const PaletteClass* palette);
 
 #endif  // CNC_RED_ALERT_RA_FILEPCX_H_

@@ -17,7 +17,7 @@
 #include "base/numeric.h"
 #include "port/unaligned.h"
 #include "sdllib/aud_decoder.h"
-#include "tech/file.h"
+#include "tech/byte_stream.h"
 #include "tech/game_file.h"
 
 static int ChannelCount(const AudHeader& header) {
@@ -240,14 +240,14 @@ void AudioMixer::StartChannel(Channel& channel, const AudHeader& header,
 }
 
 int AudioMixer::Stream(const std::string_view file_name, const int volume) {
-  auto file = std::make_unique<GameFile>(file_name);
-  if (!file->Open()) {
+  auto file = OpenGameFile(file_name);
+  if (!file) {
     return -1;
   }
   return Stream(std::move(file), volume);
 }
 
-int AudioMixer::Stream(std::unique_ptr<File> file, const int volume) {
+int AudioMixer::Stream(std::unique_ptr<ByteStream> file, const int volume) {
   AudHeader header{};
   if (!file || !file->ReadObject(header)) {
     return -1;

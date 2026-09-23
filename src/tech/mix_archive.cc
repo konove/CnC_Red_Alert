@@ -24,29 +24,28 @@
 #include "absl/strings/match.h"
 #include "base/buffer.h"
 #include "base/seek_origin.h"
-#include "sdllib/file_access.h"
 #include "tech/blowfish_source.h"
 #include "tech/byte_source.h"
+#include "tech/byte_stream.h"
 #include "tech/crc.h"
-#include "tech/file_source.h"
 #include "tech/game_file.h"
 #include "tech/listnode.h"
 #include "tech/pk.h"
 #include "tech/pk_source.h"
 #include "tech/sha.h"
 #include "tech/sha1_source.h"
+#include "tech/stream_source.h"
 
 bool MixArchive::Open(std::string_view filename, const PKey* key) {
-  GameFile file(filename);
-  filename_ = file.FileName();
-
-  FileSource file_straw(file);
-  std::unique_ptr<BlowfishSource> decrypt_straw;
-  ByteSource* straw = &file_straw;
-
-  if (!file.IsAvailable()) {
+  const auto file = OpenGameFile(filename);
+  if (!file) {
     return false;
   }
+  filename_ = filename;
+
+  StreamSource file_straw(*file);
+  std::unique_ptr<BlowfishSource> decrypt_straw;
+  ByteSource* straw = &file_straw;
 
   FileHeader file_header{};
   struct MixMetadata {
@@ -115,15 +114,14 @@ bool MixArchive::Open(std::string_view filename, const PKey* key) {
     }
   }
 
-  if (int64_t{file.Seek(0, SeekOrigin::kCurrent)} + data_size_ >
-      int64_t{file.Size()}) {
+  if (int64_t{file->Tell()} + data_size_ > int64_t{file->Size()}) {
     return false;
   }
 
   // Calculate start position.
-  // Seek returns long, cast to int32_t to match class member (assuming < 2GB
+  // Tell returns long, cast to int32_t to match class member (assuming < 2GB
   // files)
-  data_start_ = static_cast<std::int32_t>(file.Seek(0, SeekOrigin::kCurrent));
+  data_start_ = static_cast<std::int32_t>(file->Tell());
 
   return true;
 }
@@ -154,18 +152,18 @@ bool MixArchive::Cache() {
     return false;
   }
 
-  GameFile file(filename_);
-  FileSource file_straw(file);
-  Sha1Source sha(file_straw);
-  ByteSource* const straw =
-      has_digest_ ? static_cast<ByteSource*>(&sha) : &file_straw;
-
-  if (!file.Open(FileAccess::kRead)) {
+  const auto file = OpenGameFile(filename_);
+  if (!file) {
     data_.clear();
     return false;
   }
 
-  file.Seek(data_start_, SeekOrigin::kBegin);
+  StreamSource file_straw(*file);
+  Sha1Source sha(file_straw);
+  ByteSource* const straw =
+      has_digest_ ? static_cast<ByteSource*>(&sha) : &file_straw;
+
+  file->Seek(data_start_, SeekOrigin::kBegin);
 
   // Read directly into the vector buffer
   if (straw->Read(data_) != data_size_) {

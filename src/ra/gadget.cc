@@ -76,6 +76,7 @@
 #include "ra/link.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
+#include "sdllib/file_access.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
@@ -484,7 +485,6 @@ KeyNumType GadgetClass::Input(PixelView& view) {
           TheScreen().visible_view().height(), {},
           static_cast<int32_t>(TheScreen().visible_view().width()) *
               TheScreen().visible_view().height());
-      DiskFile file;
       char filename[30];
 
       //			Hide_Mouse();
@@ -492,13 +492,14 @@ KeyNumType GadgetClass::Input(PixelView& view) {
       //			Show_Mouse();
       for (int lp = 0; lp < 99; lp++) {
         absl::SNPrintF(filename, sizeof(filename), "scrsht%02d.pcx", lp);
-        file.SetName(filename);
-        if (!file.IsAvailable()) {
+        if (!FindExistingFile(filename).has_value()) {
           break;
         }
       }
 
-      Write_PCX_File(file, temp_page, &ThePalettes().game_palette());
+      if (const auto file = OpenDiskFile(filename, FileAccess::kWrite)) {
+        Write_PCX_File(*file, temp_page, &ThePalettes().game_palette());
+      }
       PlaySoundEffect(VOC_BEEP);
     }
   }

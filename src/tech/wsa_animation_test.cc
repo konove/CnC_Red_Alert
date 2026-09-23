@@ -13,7 +13,7 @@
 #include "gtest/gtest.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_win.h"
-#include "tech/memory_file.h"
+#include "tech/byte_stream.h"
 
 // ww_win.cc, pulled in through pixel_buffer, dispatches events to the app.
 void SDL_Event_Handler(SDL_Event* /*event*/) {}
@@ -40,10 +40,9 @@ void PutUint32(std::vector<char>& out, int64_t value) {
 }
 
 // Loads the WSA file in `image`.
-WsaAnimation LoadWsa(std::vector<char> image) {
-  MemoryFile file(std::as_writable_bytes(std::span(image)));
-  file.Open();
-  return WsaAnimation(file);
+WsaAnimation LoadWsa(const std::vector<char>& image) {
+  MemoryStream stream(std::as_bytes(std::span(image)));
+  return WsaAnimation(stream);
 }
 
 // Builds a one-frame WSA of the given size, whose frame 0 is `frame_size` LCW

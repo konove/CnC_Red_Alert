@@ -36,7 +36,7 @@
 #include "absl/base/attributes.h"
 #include "base/installed.h"
 #include "sdllib/aud_decoder.h"
-#include "tech/file.h"
+#include "tech/byte_stream.h"
 
 // What the VQA player installs to have its sound track mixed in first.
 using AudioCallback = void (*)(uint8_t* device_buffer, int device_bytes);
@@ -104,7 +104,7 @@ class AudioMixer {
   // As above, from `file`, which must be open for reading at the AudHeader.
   // The mixer closes and destroys it when the score ends or is stopped, or at
   // once if it cannot be played.
-  int Stream(std::unique_ptr<File> file, int volume);
+  int Stream(std::unique_ptr<ByteStream> file, int volume);
 
   // Queues the next block of each streamed score that is running low, and
   // closes the files of those that ended or were faded out.
@@ -156,7 +156,7 @@ class AudioMixer {
   // (clang-analyzer-optin.performance.Padding).
   struct Channel {
     const void* sample_data = nullptr;  // identifies the sample being played
-    std::unique_ptr<File> file;         // the streamed score; main thread only
+    std::unique_ptr<ByteStream> file;   // the streamed score; main thread only
     SDL_AudioStream* converter = nullptr;  // to the device format; mixed from
     std::span<const std::byte> remaining_input;  // blocks not yet decoded
 

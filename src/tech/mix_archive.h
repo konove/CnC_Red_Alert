@@ -45,7 +45,7 @@
 #include "tech/listnode.h"
 #include "tech/pk.h"
 
-// An archive is opened, and its files are served, through GameFile, so an
+// An archive is opened, and its files are served, through OpenGameFile, so an
 // archive packed inside another registered archive works too.
 // NOLINTNEXTLINE(cppcoreguidelines-virtual-class-destructor)
 class MixArchive : public Node<MixArchive> {

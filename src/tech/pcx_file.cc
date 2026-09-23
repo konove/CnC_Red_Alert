@@ -46,10 +46,11 @@
 #include "base/numeric.h"
 #include "sdllib/file_access.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/file.h"
+#include "tech/byte_stream.h"
 #include "tech/game_file.h"
 
-static void Write_Pcx_ScanLine(File& file, std::span<const uint8_t> pixels);
+static void Write_Pcx_ScanLine(ByteStream& file,
+                               std::span<const uint8_t> pixels);
 
 /***************************************************************************
  * WRITE_PCX_FILE -- Write the data in ViewPort to a pcx file              *
@@ -77,15 +78,15 @@ int Write_PCX_File(const char* name, PixelView& pic,
   PCX_HEADER header = {10,  5,   1,  8, 0, 0,   319, 199,
                        320, 200, {}, 0, 1, 320, 1,   {}};
 
-  GameFile file(name);
-  if (!file.Open(FileAccess::kWrite)) {
+  const auto file = OpenGameFile(name, FileAccess::kWrite);
+  if (!file) {
     return 0;
   }
 
   header.width = static_cast<int16_t>(pic.width() - 1);
   header.height = static_cast<int16_t>(pic.height() - 1);
   header.byte_per_line = static_cast<int16_t>(pic.width());
-  file.WriteObject(header);
+  file->WriteObject(header);
 
   const int VP_Scan_Line = pic.width() + pic.x_add();
   PixelBuffer* Graphic_Buffer = pic.buffer();
@@ -93,8 +94,8 @@ int Write_PCX_File(const char* name, PixelView& pic,
       base::ToSize((pic.y_pos() * VP_Scan_Line) + pic.x_pos()));
   for (i = 0; i < static_cast<unsigned>(header.height) + 1; i++) {
     Write_Pcx_ScanLine(
-        file, pixels.subspan(i * static_cast<std::size_t>(VP_Scan_Line),
-                             static_cast<std::size_t>(header.byte_per_line)));
+        *file, pixels.subspan(i * static_cast<std::size_t>(VP_Scan_Line),
+                              static_cast<std::size_t>(header.byte_per_line)));
   }
   base::CopyBytes(base::ObjectBytes(palcopy), std::as_bytes(palette),
                   sizeof(palcopy));
@@ -103,8 +104,8 @@ int Write_PCX_File(const char* name, PixelView& pic,
     component = static_cast<unsigned char>(component << 2);
   }
   i = 0x0c;
-  file.Write(base::ObjectBytes(i).first(1));
-  file.Write(base::ObjectBytes(palcopy));
+  file->Write(base::ObjectBytes(i).first(1));
+  file->Write(base::ObjectBytes(palcopy));
   return 0;
 }
 
@@ -123,7 +124,7 @@ int Write_PCX_File(const char* name, PixelView& pic,
  *=========================================================================*/
 
 constexpr int kPoolSize = 2048;
-void Write_Pcx_ScanLine(File& file, std::span<const uint8_t> pixels) {
+void Write_Pcx_ScanLine(ByteStream& file, std::span<const uint8_t> pixels) {
   unsigned char pool[kPoolSize];
 
   std::size_t used = 0;

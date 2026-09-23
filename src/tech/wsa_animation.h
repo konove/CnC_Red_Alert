@@ -42,7 +42,8 @@
 #include <vector>
 
 #include "sdllib/pixel_buffer.h"
-#include "tech/file.h"
+
+class ByteStream;
 
 // A .WSA animation held in memory, in the manner of std::ifstream: the
 // constructor loads the file, is_open() says whether that worked, and a closed
@@ -64,7 +65,7 @@ class WsaAnimation {
                         std::span<uint8_t> palette = {});
 
   // As above, from `file`, which must be open for reading and is left open.
-  explicit WsaAnimation(File& file, std::span<uint8_t> palette = {});
+  explicit WsaAnimation(ByteStream& file, std::span<uint8_t> palette = {});
 
   // A loaded animation always holds its offset table.
   [[nodiscard]] bool is_open() const { return !file_buffer_.empty(); }
@@ -91,7 +92,7 @@ class WsaAnimation {
  private:
   // Does the constructors' work on the open file. A file that fails its checks
   // leaves the animation untouched, and so closed.
-  void Load(File& file, std::span<uint8_t> palette);
+  void Load(ByteStream& file, std::span<uint8_t> palette);
 
   // Returns the position in file_buffer_ of the delta that produces `frame`, or
   // 0 if the offset table has no entry for it. 0 is never a real position,

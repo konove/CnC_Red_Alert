@@ -1342,3 +1342,42 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   `ctest --test-dir build-strict` (752/752) all clean;
   `tools/td_saveload_smoke.sh build-strict/src/td/tdsdl SCG01EA --team` OK (5951 game states) —
   headless only, no real display.
+- 2026-09-23: Step 7b landed. `WsaAnimation(ByteStream&)` and `Load(ByteStream&, ...)`
+  (`tech/wsa_animation.*`); the name constructor uses `OpenGameFile`. TD's
+  `Write_PCX_File(const char*, ...)` (`tech/pcx_file.cc`) opens
+  `OpenGameFile(name, FileAccess::kWrite)` internally, keeping its old signature; both games'
+  `Write_Pcx_ScanLine` now take `ByteStream&`. RA's `Write_PCX_File(ByteStream&, ...)`
+  (`ra/filepcx.h`/`ra/writepcx.cc`) lost its auto-open/close entirely — the caller now owns the open
+  stream; `ra/conquer.cc`'s motion-capture writer and `ra/gadget.cc`'s cheat-key screenshot each
+  open with `OpenDiskFile(name, FileAccess::kWrite)`, skipping the write if it fails (the old code
+  wrote nothing on a failed auto-open too), and `gadget.cc`'s scan for an unused `scrshtNN.pcx` uses
+  `FindExistingFile(name).has_value()` instead of `DiskFile::IsAvailable()`.
+  `AudioMixer::Stream(std::unique_ptr<ByteStream>, int)` and `Channel::file` (`tech/audio_mixer.*`);
+  the name overload uses `OpenGameFile`. Both `BufferedFileReader`s (`ra/nondosstub.cc`,
+  `td/nondosstub.cc`) and their `Read_PCX_File` now take/hold `ByteStream&`, opening with
+  `OpenGameFile` and seeking `Seek(-768, SeekOrigin::kEnd)` on that same stream for the palette.
+  `MixArchive::Open` opens once with `OpenGameFile` up front (returning false immediately if it is
+  null, same outcome as the old `IsAvailable()` check), wraps it in a `StreamSource`, and uses
+  `Tell()`/`Size()` on the stream in place of `Seek(0, kCurrent)`/`Size()` on the old `GameFile`;
+  `filename_ = filename` (the name as given, unchanged). `MixArchive::Cache` opens first, then
+  builds the `StreamSource`/`Sha1Source`, then seeks to `data_start_` on the open stream, matching
+  the brief's order. One header-only fix beyond the brief: `tech/audio_mixer.h`'s
+  `std::unique_ptr<ByteStream> file` member sits inside `Channel`, and `AudioMixer`'s destructor
+  (`~AudioMixer() { Close(); }`) is defined inline in the header, so a forward-declared `ByteStream`
+  left `sizeof(ByteStream)` incomplete wherever an `AudioMixer` (or the test fixture holding one)
+  was destroyed; fixed by including `tech/byte_stream.h` in the header instead of forward-declaring,
+  the same way `tech/wsa_animation.h`/`ra/filepcx.h` (no inline destructor touching the type) could
+  still get away with a forward declaration. Test doubles: `wsa_animation_test.cc`'s `LoadWsa` now
+  builds a `MemoryStream` over the encoded bytes directly (no `MemoryFile`/`Open()` step);
+  `audio_mixer_test.cc`'s `ScoreFile : File` became `ScoreStream : ByteStream`, owning a
+  `std::vector<std::byte>` behind a `MemoryStream` and keeping the `open_files` live-instance
+  counter the tests assert on. Both `build` and `build-strict` build clean;
+  `ctest --test-dir build-strict` is 752/752 passed (`WsaTest`/`AudioMixerTest`/`MixFileTest`/
+  `PcxTest` all included, `PcxTest.WrittenFileReadsBack` round-trips RA's stream-based
+  `Write_PCX_File`/`Read_PCX_File`); both smoke scripts print OK (240 object positions, 5951 game
+  states) — every game-data read in both games goes through the converted `MixArchive`. Not checked:
+  the real-display items the brief calls out (a WSA animation on TD's map-selection screen, a
+  streamed score playing past its first block, a TD and an RA screenshot opened after being written)
+  — headless (`SDL_VIDEODRIVER=dummy`) never loads palettes or opens a window, so these are left for
+  the user, same as Step 7a's attract-screen items; the mechanical pattern matches what strict
+  analysis and the smoke/unit tests already exercise.
