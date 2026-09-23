@@ -116,16 +116,20 @@ EditClass::EditClass(int id, std::span<char> text, int max_len,
 
   if (w == -1 || h == -1) {
     Select_Text_Font(TextFlags, kTBlack, kTBlack);
+    const FontStyle font = TextFontStyle(TextFlags);
 
     if (h == -1) {
-      Height = g_font_max_height + 2;
+      Height = FontMaxHeight(font) + 2;
     }
     if (w == -1) {
       if (!std::string_view(String.data()).empty()) {
-        Width = StringPixelWidth(String.data()) + 6;
+        Width = StringPixelWidth(font, String.data()) + 6;
       } else {
+        // CharPixelWidth() already includes the spacing, so it counts twice
+        // here, as it always has.
         Width =
-            ((CharPixelWidth('X') + g_font_x_spacing) * (MaxLength + 1)) + 2;
+            ((CharPixelWidth(font, 'X') + font.x_spacing) * (MaxLength + 1)) +
+            2;
       }
     }
   }
@@ -345,7 +349,11 @@ void EditClass::Draw_Background(PixelView& view) {
  * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
 void EditClass::Draw_Text(PixelView& view, const char* text) {
-  if (g_font.data() == TheAssets().font(FontType::k6PointGradient).data()) {
+  // Conquer_Clip_Text_Print() selects the font of TextFlags; the colour flags
+  // added below do not change it.
+  const FontStyle font = TextFontStyle(TextFlags);
+  if (font.font.data().data() ==
+      TheAssets().font(FontType::k6PointGradient).data()) {
     const TextPrintType flags =
         Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
@@ -354,9 +362,10 @@ void EditClass::Draw_Text(PixelView& view, const char* text) {
 
     if (Has_Focus() &&
         std::cmp_less(std::string_view(text).size(), MaxLength) &&
-        StringPixelWidth(text) + StringPixelWidth("_") < Width - 2) {
-      Conquer_Clip_Text_Print(view, "_", X + 1 + StringPixelWidth(text), Y + 1,
-                              Color, kTBlack, TextFlags | flags);
+        StringPixelWidth(font, text) + StringPixelWidth(font, "_") <
+            Width - 2) {
+      Conquer_Clip_Text_Print(view, "_", X + 1 + StringPixelWidth(font, text),
+                              Y + 1, Color, kTBlack, TextFlags | flags);
     }
   } else {
     Conquer_Clip_Text_Print(view, text, X + 1, Y + 1,
@@ -365,9 +374,10 @@ void EditClass::Draw_Text(PixelView& view, const char* text) {
 
     if (Has_Focus() &&
         std::cmp_less(std::string_view(text).size(), MaxLength) &&
-        StringPixelWidth(text) + StringPixelWidth("_") < Width - 2) {
-      Conquer_Clip_Text_Print(view, "_", X + 1 + StringPixelWidth(text), Y + 1,
-                              kBlue, kTBlack, TextFlags);
+        StringPixelWidth(font, text) + StringPixelWidth(font, "_") <
+            Width - 2) {
+      Conquer_Clip_Text_Print(view, "_", X + 1 + StringPixelWidth(font, text),
+                              Y + 1, kBlue, kTBlack, TextFlags);
     }
   }
 }
@@ -540,8 +550,9 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
       /*
       **	Don't add a character if the length is greater than edit width.
       */
-      if (StringPixelWidth(String.data()) +
-              CharPixelWidth(static_cast<char>(ascii)) >=
+      if (const FontStyle font = TextFontStyle(TextFlags);
+          StringPixelWidth(font, String.data()) +
+              CharPixelWidth(font, static_cast<char>(ascii)) >=
           Width - 2) {
         break;
       }

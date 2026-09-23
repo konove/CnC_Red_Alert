@@ -90,12 +90,13 @@ TextButtonClass::TextButtonClass(unsigned id, const char* text,
       PrintFlags(style) {
   if (w == -1 || h == -1) {
     Select_Text_Font(PrintFlags, kTBlack, kTBlack);
+    const FontStyle font = TextFontStyle(PrintFlags);
     if (w == -1) {
-      Width = StringPixelWidth(String) + 8;
+      Width = StringPixelWidth(font, String) + 8;
       //			if (SeenBuff.width() != 320) Width *= 2;
     }
     if (h == -1) {
-      Height = g_font_max_height + g_font_y_spacing + 2;
+      Height = FontLineHeight(font) + 2;
       //			if (SeenBuff.height() != 200) Height *= 2;
     }
   }
@@ -161,12 +162,13 @@ TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
 
   if (w == -1 || h == -1) {
     Select_Text_Font(PrintFlags, kTBlack, kTBlack);
+    const FontStyle font = TextFontStyle(PrintFlags);
     if (w == -1) {
-      Width = StringPixelWidth(String) + 8;
+      Width = StringPixelWidth(font, String) + 8;
       //			if (SeenBuff.width() != 320) Width *= 2;
     }
     if (h == -1) {
-      Height = g_font_max_height + g_font_y_spacing + 2;
+      Height = FontLineHeight(font) + 2;
       //			if (SeenBuff.height() != 200) Height *= 2;
     }
   }
@@ -237,8 +239,9 @@ void TextButtonClass::Set_Text(const char* text, bool resize) {
   Flag_To_Redraw();
   if (resize && String) {
     Select_Text_Font(PrintFlags, kTBlack, kTBlack);
-    Width = StringPixelWidth(String) + 8;
-    Height = g_font_max_height + g_font_y_spacing + 2;
+    const FontStyle font = TextFontStyle(PrintFlags);
+    Width = StringPixelWidth(font, String) + 8;
+    Height = FontLineHeight(font) + 2;
   }
 }
 

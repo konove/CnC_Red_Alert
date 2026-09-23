@@ -328,11 +328,12 @@ void SidebarClass::Init_IO() {
     g_font_x_spacing = -1;
     Select_Text_Font(TPF_6POINT | TPF_NOSHADOW, kTBlack, kTBlack);
 
-    int maxwidth = StringPixelWidth(Text_String(TXT_REPAIR_BUTTON)) + 8;
+    const FontStyle font = TextFontStyle(TPF_6POINT | TPF_NOSHADOW);
+    int maxwidth = StringPixelWidth(font, Text_String(TXT_REPAIR_BUTTON)) + 8;
     maxwidth = std::max<int>(
-        maxwidth, StringPixelWidth(Text_String(TXT_BUTTON_SELL)) + 8);
-    maxwidth =
-        std::max<int>(maxwidth, StringPixelWidth(Text_String(TXT_MAP)) + 8);
+        maxwidth, StringPixelWidth(font, Text_String(TXT_BUTTON_SELL)) + 8);
+    maxwidth = std::max<int>(maxwidth,
+                             StringPixelWidth(font, Text_String(TXT_MAP)) + 8);
     Repair.Width = maxwidth;
     Upgrade.Width = maxwidth;
     Zoom.Width = maxwidth;

@@ -127,6 +127,7 @@
 #include "td/coord.h"
 #include "td/debug_state.h"
 #include "td/defines.h"
+#include "td/dialog.h"
 #include "td/display_constants.h"
 #include "td/event.h"
 #include "td/gadget.h"
@@ -516,8 +517,10 @@ std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
   static int16_t _list[30];
 
   if (text) {
+    // The one caller is the help text, printed in this font.
+    const FontStyle font = TextFontStyle(TPF_MAP | TPF_NOSHADOW);
     std::span<int16_t> ptr(_list);
-    int len = StringPixelWidth(text) + CELL_PIXEL_W;
+    int len = StringPixelWidth(font, text) + CELL_PIXEL_W;
     const int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth);
 
     /*
@@ -534,7 +537,7 @@ std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
     **	Build the list of overlap cell offset values according to the text
     **	coordinate and the length.
     */
-    const int height = ((g_font_max_height * lines) + 23) / 24 * 24;
+    const int height = ((FontMaxHeight(font) * lines) + 23) / 24 * 24;
 
     if (x <= right) {
       CELL ul = Click_Cell_Calc(x, y - 1);
