@@ -98,21 +98,12 @@ void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
 
 /*========================= Assembly Routines ==============================*/
 
-#ifdef __cplusplus
 std::span<uint8_t> Build_Fading_Table(
     std::span<const uint8_t> palette,
     std::span<uint8_t> dest ABSL_ATTRIBUTE_LIFETIME_BOUND, int color, int frac);
 
-extern "C" {
-#endif
-
 // Legacy byte generator state behind Random(); the games seed it.
 extern int RandNumb;
-
-
-#ifdef __cplusplus
-}
-#endif
 
 /*=========================================================================*/
 

@@ -226,9 +226,6 @@ static bool Map_Edit_Loop();
 static void Trap_Object();
 
 static void Do_Record_Playback();
-extern "C" {
-extern char* nheapbeg;
-}
 
 /***********************************************************************************************
  * Main_Game -- Main game startup routine. *

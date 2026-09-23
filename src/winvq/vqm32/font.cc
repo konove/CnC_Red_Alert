@@ -57,13 +57,11 @@
  *-------------------------------------------------------------------------*/
 
 /* min and max macros */
-#ifdef __cplusplus
 #ifndef max
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 #endif
 #ifndef min
 #define min(a, b) (((a) < (b)) ? (a) : (b))
-#endif
 #endif
 
 void const* FontPtr = NULL;
@@ -95,7 +93,7 @@ char* FontWidthBlockPtr = NULL;
  *
  ****************************************************************************/
 
-void* cdecl Load_Font(char const* name) {
+void* Load_Font(const char* name) {
   Font* font = NULL;
   long fh;
   short size;
@@ -155,7 +153,7 @@ void* cdecl Load_Font(char const* name) {
  *
  ****************************************************************************/
 
-void* cdecl Set_Font(void const* font) {
+void* Set_Font(const void* font) {
   void const* oldfont;
   FontInfo* fi;
 

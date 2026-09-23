@@ -18,7 +18,6 @@
 
 #include "ra/function.h"
 
-extern "C" {
 #include "dtable.cpp"
 #include "itable.cpp"
 #include "winvq/vqm32/soscomp.h"
@@ -80,5 +79,4 @@ SkipLoop:
   info->dwSampleIndex = (unsigned long)fastindex;
   info->dwPredicted = sample;
   return numbytes << 2;
-}
 }

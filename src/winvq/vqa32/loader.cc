@@ -111,10 +111,6 @@ static int32_t Load_SND0(VQAHandle* vqap, int32_t iffsize);
 static int32_t Load_SND1(VQAHandle* vqap, int32_t iffsize);
 static int32_t Load_SND2(VQAHandle* vqap, int32_t iffsize);
 
-extern "C" {
-void __cdecl Force_VM_Page_In(void* buffer, int length);
-}
-
 // Returns the payload size of an IFF chunk, which the file stores big-endian.
 // VQA chunks are far smaller than 2 GiB, so the size fits int32_t.
 static int32_t ChunkSize(const ChunkHeader& chunk) {

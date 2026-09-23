@@ -64,9 +64,7 @@ inline constexpr bool base::kIsFlagEnum<MemoryFlagType> = true;
 /*
 ** Prototypes for VMPAGEIN.ASM
 */
-extern "C" {
 void Force_VM_Page_In(void* buffer, int length);
-}
 
 /*=========================================================================*/
 /* The following prototypes are for the file: ALLOC.CPP

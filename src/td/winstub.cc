@@ -390,7 +390,7 @@ ColourList ColourLookup[9] = {0, 0,  0,  63, 0,  0,  0,  63, 0,
 
 int DebugColour = 1;
 
-extern "C" void Set_Palette_Register(int number, int red, int green, int blue);
+void Set_Palette_Register(int number, int red, int green, int blue);
 #pragma off(unreferenced)
 void Colour_Debug(int call_number) {
   // #if 0
@@ -499,10 +499,7 @@ long VQNumBytes;
 unsigned long VQSlowpal;
 static bool VQPaletteChange = false;
 
-extern "C" {
-void __cdecl SetPalette(unsigned char* palette, long numbytes,
-                        unsigned long slowpal);
-}
+void SetPalette(unsigned char* palette, long numbytes, unsigned long slowpal);
 
 void Flag_To_Set_Palette(unsigned char* palette, long numbytes,
                          unsigned long slowpal) {
@@ -521,7 +518,7 @@ void Check_VQ_Palette_Set() {
   }
 }
 
-void __cdecl SetPalette(unsigned char* palette, long, unsigned long) {
+void SetPalette(unsigned char* palette, long, unsigned long) {
   for (int i = 0; i < 256 * 3; i++) {
     *(palette + i) &= 63;
   }

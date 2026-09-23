@@ -52,7 +52,7 @@
 #include "wwmem.h"
 #endif
 
-extern "C" unsigned long Largest_Mem_Block();
+unsigned long Largest_Mem_Block();
 
 //
 // use double-word alignment for allocs

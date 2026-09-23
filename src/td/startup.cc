@@ -118,11 +118,6 @@ void Delete_Swap_Files();
 [[maybe_unused]] static void Read_Setup_Options(ByteStream& config_file,
                                                 const StartupOptions& options);
 
-extern "C" {
-bool __cdecl Detect_MMX_Availability();
-void __cdecl Init_MMX();
-}
-
 /***********************************************************************************************
  * main -- Initial startup routine (preps library systems). *
  *                                                                                             *
@@ -500,7 +495,7 @@ int main(int argc, char* argv[])
  *                                                                                             *
  * HISTORY: * 03/20/1995 JLB : Created. *
  *=============================================================================================*/
-void __cdecl Prog_End() {
+void Prog_End() {
 #ifndef DEMO
   if (TheSession().type() == GAME_MODEM ||
       TheSession().type() == GAME_NULL_MODEM) {

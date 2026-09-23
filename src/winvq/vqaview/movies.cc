@@ -58,15 +58,12 @@ void Interpolate_2X_Scale(PixelBuffer* source, PixelBuffer* dest);
 // PRIVATE GLOBALS
 //==========================================================================
 
-extern "C" {
 extern unsigned char* InterpolationPalette;
 extern unsigned char Palette_Interpolation_Table[SIZE_OF_PALETTE]
                                                 [SIZE_OF_PALETTE];
-extern void __cdecl Asm_Create_Palette_Interpolation_Table();
-extern void __cdecl Asm_Interpolate(unsigned char* src_ptr,
-                                    unsigned char* dest_ptr, int lines,
-                                    int src_width, int dest_width);
-}
+extern void Asm_Create_Palette_Interpolation_Table();
+extern void Asm_Interpolate(unsigned char* src_ptr, unsigned char* dest_ptr,
+                            int lines, int src_width, int dest_width);
 unsigned char Palette_Interpolation_Table[SIZE_OF_PALETTE][SIZE_OF_PALETTE];
 unsigned char* InterpolationPalette;
 

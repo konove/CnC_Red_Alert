@@ -24,10 +24,6 @@
 
 #include <cstdint>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 enum class MemoryFlagType {
   MEM_NORMAL = 0x0000,   // Default memory (normal).
   MEM_PUBLIC = 0x0000,   // Default memory (normal).
@@ -48,16 +44,11 @@ MemoryFlagType operator&(MemoryFlagType, MemoryFlagType);
 MemoryFlagType operator~(MemoryFlagType);
 
 /* Prototypes for functions defined in this file */
-void* __cdecl Alloc(uint64_t bytes_to_alloc, MemoryFlagType flags);
-void __cdecl Free(void* pointer);
-void* __cdecl Resize_Alloc(const void* original_ptr,
-                           uint64_t new_size_in_bytes);
+void* Alloc(uint64_t bytes_to_alloc, MemoryFlagType flags);
+void Free(void* pointer);
+void* Resize_Alloc(const void* original_ptr, uint64_t new_size_in_bytes);
 int64_t Ram_Free(MemoryFlagType flag);
 int64_t Total_Ram_Free(MemoryFlagType flag);
-int64_t __cdecl Heap_Size(MemoryFlagType flag);
-
-#ifdef __cplusplus
-}
-#endif
+int64_t Heap_Size(MemoryFlagType flag);
 
 #endif  // CNC_RED_ALERT_TD_WWALLOC_H_

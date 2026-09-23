@@ -40,16 +40,8 @@
 
 #ifdef __BORLANDC__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-short __cdecl inp(unsigned short portid);
-void __cdecl outp(unsigned short portid, short value);
-
-#ifdef __cplusplus
-}
-#endif
+short inp(unsigned short portid);
+void outp(unsigned short portid, short value);
 
 #endif /* __BORLANDC__ */
 

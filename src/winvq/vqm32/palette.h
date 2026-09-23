@@ -43,19 +43,10 @@
 
 /* Prototypes */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void __cdecl SetPalette(std::span<uint8_t> palette, int32_t numbytes,
-                        uint32_t slowpal);
-void __cdecl ReadPalette(void* palette);
-void __cdecl SetDAC(int32_t color, int32_t red, int32_t green, int32_t blue);
-void __cdecl TranslatePalette(void* pal24, void* pal15, int32_t numbytes);
-
-#ifdef __cplusplus
-}
-#endif
+void SetPalette(std::span<uint8_t> palette, int32_t numbytes, uint32_t slowpal);
+void ReadPalette(void* palette);
+void SetDAC(int32_t color, int32_t red, int32_t green, int32_t blue);
+void TranslatePalette(void* pal24, void* pal15, int32_t numbytes);
 
 void SortPalette(unsigned char* pal, int32_t numcolors);
 

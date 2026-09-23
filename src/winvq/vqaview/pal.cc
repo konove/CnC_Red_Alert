@@ -93,10 +93,6 @@ void Update_Full_Palette(unsigned char* palette) {
 
 extern VQAClass* TestVqa;
 
-extern "C" {
-void __cdecl SetPalette(unsigned char* palette, long, unsigned long);
-}
-
-void __cdecl SetPalette(unsigned char* palette, long, unsigned long) {
+void SetPalette(unsigned char* palette, long, unsigned long) {
   TestVqa->Update_Palette(palette);
 }

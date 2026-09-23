@@ -47,8 +47,6 @@
 #include "tech/random.h"
 
 static int SimRandIndex = 0;
-extern "C" {
-}
 
 namespace {
 RandomClass gameplay_random;

@@ -67,31 +67,22 @@ using HuffCode = _HuffCode;
 #define HUFF_EOS 256 /* End of stream symbol */
 
 /* Prototypes */
-#ifdef __cplusplus
-extern "C" {
-#endif
+long HuffCompress(unsigned char* data, unsigned char* buffer, long length,
+                  char* work);
 
-long __cdecl HuffCompress(unsigned char* data, unsigned char* buffer,
-                          long length, char* work);
+long HuffDecompress(unsigned char* data, unsigned char* buffer, long length,
+                    char* work);
 
-long __cdecl HuffDecompress(unsigned char* data, unsigned char* buffer,
-                            long length, char* work);
+void HuffCount(unsigned char* data, TreeNode* nodes, long length, long zero);
 
-void __cdecl HuffCount(unsigned char* data, TreeNode* nodes, long length,
-                       long zero);
+void HuffScaleCounts(TreeNode* nodes);
+long RLEHuffCounts(TreeNode* nodes, unsigned char* buffer);
+long BuildHuffTree(TreeNode* nodes);
 
-void __cdecl HuffScaleCounts(TreeNode* nodes);
-long __cdecl RLEHuffCounts(TreeNode* nodes, unsigned char* buffer);
-long __cdecl BuildHuffTree(TreeNode* nodes);
+void ConvertToCodes(TreeNode* nodes, HuffCode* codes, unsigned short code,
+                    short bits, short node);
 
-void __cdecl ConvertToCodes(TreeNode* nodes, HuffCode* codes,
-                            unsigned short code, short bits, short node);
-
-long __cdecl HuffEncode(unsigned char* data, unsigned char* buffer,
-                        HuffCode* codes, long length);
-
-#ifdef __cplusplus
-}
-#endif
+long HuffEncode(unsigned char* data, unsigned char* buffer, HuffCode* codes,
+                long length);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQM32_HUFFMAN_H_

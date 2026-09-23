@@ -48,6 +48,7 @@
 #include "tech/byte_stream.h"
 #include "tech/pcx_file.h"
 #include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqm32/palette.h"
 
 static ThemeType OldTheme = THEME_NONE;
 
@@ -98,11 +99,6 @@ static int32_t VQNumBytes;
 static uint32_t VQSlowpal;
 static bool VQPaletteChange = false;
 
-extern "C" {
-void __cdecl SetPalette(std::span<unsigned char> palette, int32_t numbytes,
-                        uint32_t slowpal);
-}
-
 void Flag_To_Set_Palette(std::span<unsigned char> palette, int32_t numbytes,
                          uint32_t slowpal) {
   VQPalette = palette;
@@ -120,8 +116,8 @@ void Check_VQ_Palette_Set() {
   }
 }
 
-void __cdecl SetPalette(std::span<unsigned char> palette, int32_t /*unused*/,
-                        uint32_t /*unused*/) {
+void SetPalette(std::span<unsigned char> palette, int32_t /*unused*/,
+                uint32_t /*unused*/) {
   for (int i = 0; i < 256 * 3; i++) {
     base::At(palette, base::ToSize(i)) &= 63;
   }

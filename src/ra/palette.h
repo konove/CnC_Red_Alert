@@ -91,6 +91,6 @@ class PaletteClass {
 
 void Set_Palette(std::span<const unsigned char> palette);
 
-extern "C" unsigned char* CurrentPalette;
+extern unsigned char* CurrentPalette;
 
 #endif  // CNC_RED_ALERT_RA_PALETTE_H_

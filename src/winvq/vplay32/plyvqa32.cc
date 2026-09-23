@@ -94,10 +94,8 @@ static char* GetFilePart(char* path);
 void Print_Play_Stats(VQAConfig* config, VQAStatistics* stats);
 long VQCallback(unsigned char* screen, long framenum);
 
-extern "C" {
-int __cdecl Check_Key();
-int __cdecl Get_Key();
-}
+int Check_Key();
+int Get_Key();
 
 /****************************************************************************
  *
@@ -600,7 +598,7 @@ int Get_Key() { return (LastKey); }
  * SYNOPSIS
  *     Action = HardErr_Handler(DeviceError, ErrorCode, DeviceHeader)
  *
- *     int HardErr_Handler(unsigned, unsigned, unsigned __far *);
+ *     int HardErr_Handler(unsigned, unsigned, unsigned*);
  *
  * FUNCTION
  *
@@ -662,8 +660,7 @@ int Get_Key() { return (LastKey); }
  *
  ****************************************************************************/
 
-int __far HardErr_Handler(unsigned deverror, unsigned errcode,
-                          unsigned __far* devhdr) {
+int HardErr_Handler(unsigned deverror, unsigned errcode, unsigned* devhdr) {
   /* Prevent compiler warnings. */
   errcode = errcode;
   devhdr = devhdr;

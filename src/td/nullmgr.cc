@@ -117,15 +117,6 @@
 
 #define DEFAULT_TIMEOUT 2000
 
-//
-// the following is for a fix around a greenleaf bug
-// where they do not check for the value of abortkey
-// to determine whether or not they call the abort modem function.
-//
-extern "C" {
-extern void (*AbortModemFunctionPtr)(int);
-}
-
 void (*NullModemClass::OrigAbortModemFunc)(int);
 
 KeyNumType NullModemClass::Input;

@@ -64,12 +64,6 @@
  *
  ****************************************************************************/
 
-#ifdef __WATCOMC__
-long __cdecl __saveregs Char_Pixel_Width(char chr)
-#else
-#pragma saveregs
-long __cdecl Char_Pixel_Width(char chr)
-#endif
-{
+long Char_Pixel_Width(char chr) {
   return (*(FontWidthBlockPtr + chr) + FontXSpacing);
 }

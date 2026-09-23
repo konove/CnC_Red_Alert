@@ -38,14 +38,6 @@
  *
  ****************************************************************************/
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-long __cdecl Calculate_CRC(void const* buffer, long length);
-
-#ifdef __cplusplus
-}
-#endif
+long Calculate_CRC(const void* buffer, long length);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQM32_CRC_H_

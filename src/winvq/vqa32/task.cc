@@ -72,12 +72,6 @@
  * PRIVATE DECLARATIONS
  *-------------------------------------------------------------------------*/
 
-/* Externals */
-extern "C" {
-extern int __cdecl Check_Key();
-extern int __cdecl Get_Key();
-}
-
 /* VqaPlayer: thin RAII facade over the internal player entry points. */
 
 VqaPlayer::VqaPlayer() : impl_(std::make_unique<VQAHandle>()) {}

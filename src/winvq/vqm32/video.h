@@ -93,25 +93,17 @@ unsigned char* GetXHidPage();
 unsigned char* GetXSeenPage();
 void DisplayXPage(int32_t page);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void __cdecl WaitNoVB(int16_t vbibit);
-void __cdecl WaitVB(int16_t vbibit);
-void __cdecl ClearVRAM();
-int32_t __cdecl SetXMode(int32_t mode);
-void __cdecl ClearXMode();
-void __cdecl ShowXPage(uint32_t StartOffset);
-void __cdecl Xmode_BufferCopy_320x200(void* buff, void* screen);
-void __cdecl Xmode_Blit(void* buffer, void* screen, int32_t imgwidth,
-                        int32_t imgheight);
-void __cdecl MCGA_BufferCopy(unsigned char* buffer, unsigned char* dummy);
-void __cdecl MCGA_Blit(unsigned char* buffer, unsigned char* screen,
-                       int32_t imgwidth, int32_t imgheight);
-
-#ifdef __cplusplus
-}
-#endif
+void WaitNoVB(int16_t vbibit);
+void WaitVB(int16_t vbibit);
+void ClearVRAM();
+int32_t SetXMode(int32_t mode);
+void ClearXMode();
+void ShowXPage(uint32_t StartOffset);
+void Xmode_BufferCopy_320x200(void* buff, void* screen);
+void Xmode_Blit(void* buffer, void* screen, int32_t imgwidth,
+                int32_t imgheight);
+void MCGA_BufferCopy(unsigned char* buffer, unsigned char* dummy);
+void MCGA_Blit(unsigned char* buffer, unsigned char* screen, int32_t imgwidth,
+               int32_t imgheight);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQM32_VIDEO_H_

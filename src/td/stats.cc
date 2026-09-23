@@ -158,8 +158,6 @@ constexpr int kCompletionPlayer2Won = 4;
 constexpr int kCompletionPlayer2WonByResignation = 5;
 constexpr int kCompletionPlayer2WonByDisconnection = 6;
 
-extern "C" char CPUType;
-
 static TimerClass GameTimer;
 static int32_t GameEndTime;
 

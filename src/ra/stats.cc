@@ -177,8 +177,6 @@ constexpr int kCompletionPlayer2WonByDisconnection = 6;
 // Stalemate games.
 constexpr int kCompletionWash = 64;
 
-extern "C" char CPUType;
-
 static TimerClass GameTimer;
 static int32_t GameEndTime;
 

@@ -3,6 +3,6 @@
 
 #include "sdllib/pixel_buffer.h"
 
-extern "C" void ModeX_Blit(PixelBuffer* source);
+void ModeX_Blit(PixelBuffer* source);
 
 #endif  // CNC_RED_ALERT_TD_WINASM_H_

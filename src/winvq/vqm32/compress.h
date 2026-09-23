@@ -48,15 +48,7 @@ int32_t LCW_Uncompress(std::span<const std::byte> source,
 int32_t LCW_Uncompress(std::span<const unsigned char> source,
                        std::span<unsigned char> dest);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 int32_t AudioZap(void* source, void* dest, int32_t size);
-int32_t __cdecl AudioUnzap(void* source, void* dest, int32_t /*unused*/);
-
-#ifdef __cplusplus
-}
-#endif
+int32_t AudioUnzap(void* source, void* dest, int32_t /*unused*/);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQM32_COMPRESS_H_

@@ -68,39 +68,19 @@ struct _FontInfo {
 };
 using FontInfo = _FontInfo;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 extern void const* FontPtr;
 extern int FontXSpacing;
 extern int FontYSpacing;
-
-#ifdef __cplusplus
-}
-#endif
 
 extern char FontWidth;
 extern char FontHeight;
 extern char* FontWidthBlockPtr;
 
 /* Function prototypes. */
-void* cdecl Load_Font(char const* name);
-void* cdecl Set_Font(void const* font);
-unsigned short __cdecl String_Pixel_Width(char const* string);
+void* Load_Font(const char* name);
+void* Set_Font(const void* font);
+unsigned short String_Pixel_Width(const char* string);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#ifdef __WATCOMC__
-long __cdecl __saveregs Char_Pixel_Width(char chr);
-#else
-long __cdecl Char_Pixel_Width(char chr);
-#endif
-
-#ifdef __cplusplus
-}
-#endif
+long Char_Pixel_Width(char chr);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQM32_FONT_H_

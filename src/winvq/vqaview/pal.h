@@ -47,9 +47,7 @@ void Update_Full_Palette(unsigned char* palette);
 // PUBLIC FUNCTIONS
 //==========================================================================
 
-extern "C" {
 char CurrentPalette[SIZE_OF_PALETTE * 3];
-}
 
 //==========================================================================
 // PUBLIC DEFINES

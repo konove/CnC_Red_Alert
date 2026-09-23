@@ -187,8 +187,8 @@ inline void Set_Font_Palette(std::span<const uint8_t> palette) {
 
 //////////////////////////////////////// External varables
 //////////////////////////////////////////
-extern "C" int FontXSpacing;
-extern "C" int FontYSpacing;
+extern int FontXSpacing;
+extern int FontYSpacing;
 extern char FontWidth;
 extern char FontHeight;
 

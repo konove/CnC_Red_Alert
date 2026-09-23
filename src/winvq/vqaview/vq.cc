@@ -398,8 +398,7 @@ void Increase_Palette_Luminance(unsigned char* palette, int red_percentage,
  **
  *=========================================================================*/
 extern BOOL SuspendAudioCallback;
-extern "C" unsigned char Palette_Interpolation_Table[SIZE_OF_PALETTE]
-                                                    [SIZE_OF_PALETTE];
+unsigned char Palette_Interpolation_Table[SIZE_OF_PALETTE][SIZE_OF_PALETTE];
 BOOL VQAClass::Update_Palette(unsigned char* newpalette) {
   unsigned char* pal_src = newpalette;
   unsigned char* pal_dst = palette;

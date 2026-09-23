@@ -81,17 +81,8 @@ using SOS_COMPRESS_HEADER = tagCOMPRESS_HEADER;
 
 /* Prototypes */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void __cdecl VQA_sosCODECInitStream(SosCompressInfo* /*info*/);
-uint32_t __cdecl VQA_sosCODECCompressData(SosCompressInfo*, uint32_t);
-bool __cdecl DecompressVqaSosData(SosCompressInfo* /*info*/,
-                                  int32_t /*uncomp_size*/);
-
-#ifdef __cplusplus
-}
-#endif
+void VQA_sosCODECInitStream(SosCompressInfo* /*info*/);
+uint32_t VQA_sosCODECCompressData(SosCompressInfo*, uint32_t);
+bool DecompressVqaSosData(SosCompressInfo* /*info*/, int32_t /*uncomp_size*/);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQM32_SOSCOMP_H_

@@ -40,15 +40,7 @@
 
 /* Prototypes */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void __cdecl Eor_Region(long sx, long sy, long dx, long dy, long color);
-void __cdecl Fill_Rect(long x1, long y1, long x2, long y2, long color);
-
-#ifdef __cplusplus
-}
-#endif
+void Eor_Region(long sx, long sy, long dx, long dy, long color);
+void Fill_Rect(long x1, long y1, long x2, long y2, long color);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQM32_GRAPHICS_H_

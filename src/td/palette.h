@@ -3,7 +3,7 @@
 
 #include <span>
 
-extern "C" unsigned char CurrentPalette[3 * 256];
+extern unsigned char CurrentPalette[3 * 256];
 
 void Set_Palette(std::span<const unsigned char> palette);
 void Fade_Palette_To(std::span<const unsigned char> palette, int fade,

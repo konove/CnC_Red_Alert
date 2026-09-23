@@ -47,24 +47,15 @@
 void VESA_Blit_640x480(DisplayInfo* disp, unsigned char* buf, long x1, long y1,
                        long width, long height);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+void Blit_VESA640x480(DisplayInfo* disp, unsigned char* buf, long x1, long y1,
+                      long width, long height);
 
-void __cdecl Blit_VESA640x480(DisplayInfo* disp, unsigned char* buf, long x1,
-                              long y1, long width, long height);
+void Buf_320x200_To_VESA_320x200(unsigned char* buffer, long grain);
+void Buf_320x200_To_VESA_640x400(unsigned char* buffer, long grain);
+void Buf_320x200_To_VESA_32K(unsigned char* buffer, unsigned char* palette,
+                             long grain);
 
-void __cdecl Buf_320x200_To_VESA_320x200(unsigned char* buffer, long grain);
-void __cdecl Buf_320x200_To_VESA_640x400(unsigned char* buffer, long grain);
-void __cdecl Buf_320x200_To_VESA_32K(unsigned char* buffer,
-                                     unsigned char* palette, long grain);
-
-void __cdecl Copy_Row(char*, char*, long);
-void __cdecl Copy_Word_Row(char* source, char* dest, char* palette,
-                           long numbytes);
-
-#ifdef __cplusplus
-}
-#endif
+void Copy_Row(char*, char*, long);
+void Copy_Word_Row(char* source, char* dest, char* palette, long numbytes);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQM32_VESABLIT_H_

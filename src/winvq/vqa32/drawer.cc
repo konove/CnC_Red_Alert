@@ -91,10 +91,10 @@ static void Prepare_Frame(VQAData* vqabuf);
 
 static int32_t DrawFrame_Buffer(VQAHandle* vqa);
 
-static void __cdecl UnVQ_Nop(std::span<const unsigned char> codebook,
-                             std::span<const unsigned char> pointers,
-                             std::span<unsigned char> buffer, int blocksperrow,
-                             int numrows, int bufwidth);
+static void UnVQ_Nop(std::span<const unsigned char> codebook,
+                     std::span<const unsigned char> pointers,
+                     std::span<unsigned char> buffer, int blocksperrow,
+                     int numrows, int bufwidth);
 
 /****************************************************************************
  *
@@ -453,7 +453,6 @@ static void Prepare_Frame(VQAData* vqabuf) {
  *
  ****************************************************************************/
 
-extern void __cdecl Set_Palette(void* palette);
 static int32_t DrawFrame_Buffer(VQAHandle* vqa) {
 
   auto* vqa_handle_p = vqa;

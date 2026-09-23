@@ -58,13 +58,8 @@ int IPX_Close_Socket(uint16_t socket) {
 
 int IPX_Get_Connection_Number() { return IPX_Get_Connection_Number95(); }
 
-extern "C" {
-extern void __cdecl Int3();
-}
-
 int IPX_Get_Local_Target(unsigned char* dest_network, unsigned char* dest_node,
                          uint16_t dest_socket, unsigned char* bridge_address) {
-  // Int3();
   return IPX_Get_Local_Target95(dest_network, dest_node, dest_socket,
                                 bridge_address);
 }

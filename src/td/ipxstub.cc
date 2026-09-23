@@ -3,37 +3,31 @@
 
 #include "td/ipx95.h"
 
-bool __stdcall IPX_Initialise() { return false; }
+bool IPX_Initialise() { return false; }
 
-bool __stdcall IPX_Get_Outstanding_Buffer95(unsigned char* /*buffer*/) {
-  return false;
-}
+bool IPX_Get_Outstanding_Buffer95(unsigned char* /*buffer*/) { return false; }
 
-void __stdcall IPX_Shut_Down95() {}
+void IPX_Shut_Down95() {}
 
-int __stdcall IPX_Send_Packet95(unsigned char* /*unused*/,
-                                const std::byte* /*unused*/, int /*unused*/,
-                                unsigned char* /*unused*/,
-                                unsigned char* /*unused*/) {
+int IPX_Send_Packet95(unsigned char* /*unused*/, const std::byte* /*unused*/,
+                      int /*unused*/, unsigned char* /*unused*/,
+                      unsigned char* /*unused*/) {
   return 0;
 }
 
-int __stdcall IPX_Broadcast_Packet95(const std::byte* /*unused*/,
-                                     int /*unused*/) {
+int IPX_Broadcast_Packet95(const std::byte* /*unused*/, int /*unused*/) {
   return 0;
 }
 
-bool __stdcall IPX_Start_Listening95() { return false; }
+bool IPX_Start_Listening95() { return false; }
 
-int __stdcall IPX_Open_Socket95(int /*socket*/) { return 0; }
+int IPX_Open_Socket95(int /*socket*/) { return 0; }
 
-void __stdcall IPX_Close_Socket95(int /*socket*/) {}
+void IPX_Close_Socket95(int /*socket*/) {}
 
-int __stdcall IPX_Get_Connection_Number95() { return 0; }
+int IPX_Get_Connection_Number95() { return 0; }
 
-int __stdcall IPX_Get_Local_Target95(unsigned char* /*unused*/,
-                                     unsigned char* /*unused*/,
-                                     uint16_t /*unused*/,
-                                     unsigned char* /*unused*/) {
+int IPX_Get_Local_Target95(unsigned char* /*unused*/, unsigned char* /*unused*/,
+                           uint16_t /*unused*/, unsigned char* /*unused*/) {
   return 0;
 }
