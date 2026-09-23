@@ -39,7 +39,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
-#include <source_location>
 #include <span>
 #include <vector>
 
@@ -202,18 +201,13 @@ class PixelView {
   // past the view's width. `fore_color` and `back_color` are palette indices
   // that stand in for glyph values 1 and 0, and a `back_color` of 0 leaves the
   // background untouched; the integer overload prints the number in decimal.
-  // Does nothing if `text` is null or the style has no font. `location` is
-  // for the temporary CheckFontStyle() (sdllib/font.h).
+  // Does nothing if `text` is null or the style has no font.
   void Print(const FontStyle& style, const char* text, int x, int y,
-             int fore_color, int back_color,
-             std::source_location location = std::source_location::current());
+             int fore_color, int back_color);
   void Print(const FontStyle& style, int value, int x, int y, int fore_color,
-             int back_color,
-             std::source_location location = std::source_location::current());
-  void PrintLocked(
-      const FontStyle& style, const char* text, int x, int y, int fore_color,
-      int back_color,
-      std::source_location location = std::source_location::current());
+             int back_color);
+  void PrintLocked(const FontStyle& style, const char* text, int x, int y,
+                   int fore_color, int back_color);
 
   // The three above, in CurrentFontStyle() (sdllib/font.h). Each also writes
   // its colours into g_font_palette entries 0 and 1, as the game always did.

@@ -1,7 +1,6 @@
 #ifndef CNC_RED_ALERT_TD_DIALOG_H_
 #define CNC_RED_ALERT_TD_DIALOG_H_
 
-#include <source_location>
 #include <span>
 
 #include "absl/strings/str_format.h"
@@ -16,10 +15,8 @@
 int Format_Window_String(std::span<char> string, int max_line_len, int& width,
                          int& height);
 // Same, measured in `font` rather than the current font.
-int Format_Window_String(
-    const FontStyle& font, std::span<char> string, int max_line_len, int& width,
-    int& height,
-    std::source_location location = std::source_location::current());
+int Format_Window_String(const FontStyle& font, std::span<char> string,
+                         int max_line_len, int& width, int& height);
 extern void Dialog_Box(PixelView& view, int x, int y, int w, int h);
 void Conquer_Clip_Text_Print(PixelView& view, const char* /*text*/, int x,
                              int y, int fore, int back = kTBlack,

@@ -54,7 +54,6 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
-#include <source_location>
 #include <span>
 #include <string>
 #include <string_view>
@@ -285,8 +284,7 @@ int Format_Window_String(std::span<char> string, const int max_line_len,
 }
 
 int Format_Window_String(const FontStyle& font, std::span<char> string,
-                         int max_line_len, int& width, int& height,
-                         const std::source_location location) {
+                         int max_line_len, int& width, int& height) {
   width = 0;
   height = 0;
 
@@ -298,24 +296,24 @@ int Format_Window_String(const FontStyle& font, std::span<char> string,
   size_t cursor = 0;
   while (cursor < string.size() && base::At(string, cursor) != '\0') {
     const auto line_start = cursor;
-    height += FontLineHeight(font, location);
+    height += FontLineHeight(font);
     ++lines;
     int line_len = 0;
     while (cursor < string.size() && line_len < max_line_len &&
            !Is_Line_Break(base::At(string, cursor))) {
-      line_len += CharPixelWidth(font, base::At(string, cursor++), location);
+      line_len += CharPixelWidth(font, base::At(string, cursor++));
     }
     if (line_len >= max_line_len) {
       const auto overflow = cursor;
       while (cursor > line_start &&
              (cursor == string.size() || base::At(string, cursor) != ' ')) {
-        line_len -= CharPixelWidth(font, base::At(string, --cursor), location);
+        line_len -= CharPixelWidth(font, base::At(string, --cursor));
       }
       if (cursor == line_start) {
         cursor = overflow > line_start ? overflow - 1 : line_start;
         line_len = 0;
         for (auto c = line_start; c < cursor; ++c) {
-          line_len += CharPixelWidth(font, base::At(string, c), location);
+          line_len += CharPixelWidth(font, base::At(string, c));
         }
       }
     }

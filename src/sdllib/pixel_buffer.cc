@@ -38,7 +38,6 @@
 #include <cstdint>
 #include <memory>
 #include <numbers>
-#include <source_location>
 #include <span>
 #include <string_view>
 #include <utility>
@@ -693,19 +692,16 @@ void PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
 }
 
 void PixelView::Print(const FontStyle& style, const char* text, const int x,
-                      const int y, const int fore_color, const int back_color,
-                      const std::source_location location) {
+                      const int y, const int fore_color, const int back_color) {
   if (Lock()) {
-    PrintLocked(style, text, x, y, fore_color, back_color, location);
+    PrintLocked(style, text, x, y, fore_color, back_color);
     Unlock();
   }
 }
 
 void PixelView::Print(const FontStyle& style, const int value, const int x,
-                      const int y, const int fore_color, const int back_color,
-                      const std::source_location location) {
-  Print(style, absl::StrCat(value).c_str(), x, y, fore_color, back_color,
-        location);
+                      const int y, const int fore_color, const int back_color) {
+  Print(style, absl::StrCat(value).c_str(), x, y, fore_color, back_color);
 }
 
 void PixelView::Print(const char* text, const int x, const int y,
@@ -730,9 +726,7 @@ void PixelView::PrintLocked(const char* text, const int x, const int y,
 }
 
 void PixelView::PrintLocked(const FontStyle& style, const char* text, int x,
-                            int y, const int fore_color, const int back_color,
-                            const std::source_location location) {
-  CheckFontStyle(style, FontUse::kPrint, location);
+                            int y, const int fore_color, const int back_color) {
   const FontView& font = style.font;
   if (!text || font.data().empty()) {
     return;
