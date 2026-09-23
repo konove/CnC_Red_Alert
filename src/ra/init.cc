@@ -144,8 +144,8 @@
 #include "ra/world.h"
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
-#include "sdllib/file.h"
 #include "sdllib/file_access.h"
+#include "sdllib/file_system.h"
 #include "sdllib/iff.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
@@ -1965,22 +1965,17 @@ static void Init_Expansion_Files() {
   /*
   **	Before all else, cache any additional mixfiles.
   */
-  FindFileState state{};
-  if (Find_First_File("SC*.MIX", state)) {
-    do {
-      // scores shouldn't be loaded here but may be found if main has been
-      // extracted
-      if (absl::EqualsIgnoreCase(state.name, "scores.mix")) {
-        continue;
-      }
-      MixArchive::Register(state.name, &TheAssets().mix_key());
-      MixArchive::Cache(state.name);
-    } while (Find_Next_File(state));
+  for (const FoundFile& found : FindFiles("SC*.MIX")) {
+    // scores shouldn't be loaded here but may be found if main has been
+    // extracted
+    if (absl::EqualsIgnoreCase(found.name, "scores.mix")) {
+      continue;
+    }
+    MixArchive::Register(found.name, &TheAssets().mix_key());
+    MixArchive::Cache(found.name);
   }
-  if (Find_First_File("SS*.MIX", state)) {
-    do {
-      MixArchive::Register(state.name, &TheAssets().mix_key());
-    } while (Find_Next_File(state));
+  for (const FoundFile& found : FindFiles("SS*.MIX")) {
+    MixArchive::Register(found.name, &TheAssets().mix_key());
   }
 }
 

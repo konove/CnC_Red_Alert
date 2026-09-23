@@ -1152,3 +1152,31 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   `gtest_main.cc`'s default for every other test.
   `ctest --test-dir build-strict -R RealReadError -V` now shows the test **passing**, not skipped;
   full `ctest --test-dir build-strict` is 725/725 with no skips (previously 725/725 with 1 skipped).
+- 2026-09-23: Step 4 landed. `sdllib/file.{h,cc}` renamed (`git mv`) to `sdllib/file_system.{h,cc}`
+  and rewritten on `std::filesystem`: `MatchesPattern` (a case-insensitive glob with wildcard and
+  single-character placeholders, one backtrack point), `FindFiles` (sorted
+  `FoundFile{name, modified}` list, directories and unstat'able entries skipped) and `FreeDiskSpace`
+  replace `Find_First_File`/`Find_Next_File`/`End_Find_File` and `Disk_Space_Available`; the
+  `_WIN32` branch, `fnmatch`, `stat`, `statvfs`, `getcwd` and their headers are gone. All 12 callers
+  converted: RA `init.cc` (registering the `SC` and `SS` mixfiles), `session.cc` (two PKT/MPR find
+  loops plus the `Compute_Unique_ID` CRC bits, kept on `static_cast<uint64_t>(FreeDiskSpace())`),
+  `startup.cc` and `loaddlg.cc` (disk-space guard and the savegame listing feeding
+  `FileEntryClass::DateTime`); TD `init.cc`, `startup.cc`, `loaddlg.cc` the same way. The old
+  `do {...} while (Find_Next_File(...))` loops became range-`for` over `FindFiles(...)`;
+  `Num_From_Ext`/`MultiMission` take a raw C string, so their call sites gained
+  `found.name.c_str()`. RED: with a placeholder `file_system.h`/`.cc` (declarations and bodies
+  removed), `sdllib_test` failed to compile (`FoundFile`/`FindFiles`/
+  `MatchesPattern`/`FreeDiskSpace` not declared). GREEN: restored implementation, same target links
+  and all 6 new cases pass. Needed one fix beyond the brief's snippet: an `<utility>` include for
+  `std::move` (`misc-include-cleaner`). Both `build` and `build-strict` build clean;
+  `ctest --test-dir build-strict` is 731/731 passed (up from 725: the 6 new `file_system_test.cc`
+  cases). Both smoke scripts print OK against `build-strict/src/ra/rasdl` and
+  `build-strict/src/td/tdsdl`. Real-data checks: a standalone probe linking `sdllib/file_system.cc`
+  against the Steam TD directory found the two `SC` mixfiles and `SCORES.MIX` via a glob match on
+  `SC` (no `SS` mixfiles — the base game has no Covert Ops expansion) with correct sizes and
+  modification times; the same probe against an `rasdl`-written save slot matched a savegame glob's
+  `modified` field to the file's real `stat` mtime to the second. Could not drive the actual
+  load-dialog UI or see TD's addon-mixfile registration `DLOG(INFO)` line — `DLOG` compiles out
+  under `RelWithDebInfo`'s `NDEBUG` (per CLAUDE.md, never run Debug for this), and the environment
+  is headless — so the dialog check is this indirect probe rather than a screenshot of the real
+  list.

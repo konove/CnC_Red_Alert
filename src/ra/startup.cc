@@ -82,7 +82,7 @@
 #include "ra/startup_options.h"
 #include "ra/winstub.h"
 #include "ra/world.h"
-#include "sdllib/file.h"
+#include "sdllib/file_system.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
@@ -331,7 +331,7 @@ int main(const int argc, char* argv[])
 
 
   // Refuse to start without 8 MB free for save games and the config file.
-  if (Disk_Space_Available() < kInitFreeDiskSpace) {
+  if (FreeDiskSpace() < kInitFreeDiskSpace) {
     absl::PrintF("%s", kLanguageText.insufficient_disk);
     absl::PrintF("%s\n",
                  MustHaveDiskSpaceText(kInitFreeDiskSpace / (1024 * 1024)));

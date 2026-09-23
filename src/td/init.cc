@@ -70,8 +70,8 @@
 #include "base/buffer.h"
 #include "port/random_seed.h"
 #include "port/safe_string.h"
-#include "sdllib/file.h"
 #include "sdllib/file_access.h"
+#include "sdllib/file_system.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
@@ -390,22 +390,17 @@ bool Init_Game() {
   /*
   **	Before all else, cache any additional mixfiles.
   */
-  FindFileState state{};
-  if (Find_First_File("SC*.MIX", state)) {
-    do {
-      // don't cache scores
-      if (absl::EqualsIgnoreCase(state.name, "scores.mix")) {
-        continue;
-      }
+  for (const FoundFile& found : FindFiles("SC*.MIX")) {
+    // don't cache scores
+    if (absl::EqualsIgnoreCase(found.name, "scores.mix")) {
+      continue;
+    }
 
-      (void)MixArchive::Register(state.name);
-      MixArchive::Cache(state.name);
-    } while (Find_Next_File(state));
+    (void)MixArchive::Register(found.name);
+    MixArchive::Cache(found.name);
   }
-  if (Find_First_File("SS*.MIX", state)) {
-    do {
-      (void)MixArchive::Register(state.name);
-    } while (Find_Next_File(state));
+  for (const FoundFile& found : FindFiles("SS*.MIX")) {
+    (void)MixArchive::Register(found.name);
   }
 #endif  // DEMO
 

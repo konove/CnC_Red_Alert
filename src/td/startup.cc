@@ -85,7 +85,7 @@
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
 #include "absl/strings/match.h"
-#include "sdllib/file.h"
+#include "sdllib/file_system.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
@@ -320,7 +320,7 @@ int main(int argc, char* argv[])
     ** If there is not enough disk space free, dont allow the product to run.
     */
 
-    if (Disk_Space_Available() < INIT_FREE_DISK_SPACE) {
+    if (FreeDiskSpace() < INIT_FREE_DISK_SPACE) {
       // pretty unlikely
       ShutDown();
       return EXIT_FAILURE;

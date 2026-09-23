@@ -96,7 +96,7 @@
 #include "ra/queue.h"
 #include "ra/unit.h"
 #include "ra/world.h"
-#include "sdllib/file.h"
+#include "sdllib/file_system.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
 #include "tech/archive.h"
@@ -929,13 +929,11 @@ void SessionClass::Read_Scenario_Descriptions() {
 /*
 **	Fetch any scenario packet lists and apply them first.
 */
-  FindFileState state{};
-  bool found = Find_First_File("*.PKT", state);
-  while (found) {
+  for (const FoundFile& found : FindFiles("*.PKT")) {
     // debugprint("Found file '%s'.\n", block.cAlternateFileName);
     // debugprint("Found file '%s'.\n", block.cFileName);
     // debugprint( "Found alternate PKT file.\n" );
-    GameFile mission_file(state.name);
+    GameFile mission_file(found.name);
     INIClass ini;
     ini.Load(mission_file);
 
@@ -948,8 +946,6 @@ void SessionClass::Read_Scenario_Descriptions() {
       Scenarios.Add(new MultiMission(fname, buffer, nullptr, true,
                                      IsMissionCounterstrike(fname)));
     }
-
-    found = Find_Next_File(state);
   }
 
   /*
@@ -1012,10 +1008,9 @@ void SessionClass::Read_Scenario_Descriptions() {
   char name_buffer[128];
   char digest_buffer[32];
 
-  found = Find_First_File("*.MPR", state);
-  while (found) {
+  for (const FoundFile& found : FindFiles("*.MPR")) {
     // debugprint( "Found MPR '%s'\n", file_name );
-    GameFile mission_file(state.name);
+    GameFile mission_file(found.name);
     INIClass ini;
     ini.Load(mission_file);
 
@@ -1023,13 +1018,10 @@ void SessionClass::Read_Scenario_Descriptions() {
                    sizeof(name_buffer));
     ini.Get_String("Digest", "1", "No Digest", digest_buffer,
                    sizeof(digest_buffer));
-    Scenarios.Add(new MultiMission(state.name, name_buffer, digest_buffer,
-                                   ini.Get_Bool("Basic", "Official", false),
-                                   false));
-
-    found = Find_Next_File(state);
+    Scenarios.Add(
+        new MultiMission(found.name.c_str(), name_buffer, digest_buffer,
+                         ini.Get_Bool("Basic", "Official", false), false));
   }
-
 }
 
 /***************************************************************************
@@ -1280,7 +1272,7 @@ uint32_t SessionClass::Compute_Unique_ID() {
   //------------------------------------------------------------------------
   // Now add in the free space on the hard drive
   //------------------------------------------------------------------------
-  const uint64_t diskfree = Disk_Space_Available();
+  const auto diskfree = static_cast<uint64_t>(FreeDiskSpace());
   Add_CRC(&id, diskfree & 0xFFFFFFFF);
   Add_CRC(&id, diskfree >> 32);
 

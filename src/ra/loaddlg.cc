@@ -81,7 +81,7 @@
 #include "ra/textbtn.h"
 #include "ra/theme.h"
 #include "ra/toggle.h"
-#include "sdllib/file.h"
+#include "sdllib/file_system.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
@@ -462,7 +462,7 @@ bool LoadOptionsClass::Process() {
           break;
         }
         game_idx = listbtn.Current_Index();
-        if (Disk_Space_Available() < kSaveGameDiskSpace && game_idx == 0) {
+        if (FreeDiskSpace() < kSaveGameDiskSpace && game_idx == 0) {
           WWMessageBox().Process(TXT_SPACE_CANT_SAVE);
           firsttime = true;
           display = true;
@@ -636,7 +636,6 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   char descr[kDescripMax + 32];
   unsigned scenario = 0;  // scenario #
   HousesType house = HOUSE_NONE;
-  FindFileState find_state{};
   int id = 0;
 
   /*
@@ -657,14 +656,12 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   /*
   ** Find all savegame files
   */
-  bool found = Find_First_File("SAVEGAME.*", find_state);
-
-  while (found) {
-    if (!absl::EqualsIgnoreCase(find_state.name, kNetSaveFileName)) {
+  for (const FoundFile& found : FindFiles("SAVEGAME.*")) {
+    if (!absl::EqualsIgnoreCase(found.name, kNetSaveFileName)) {
       /*
       ** Extract the game ID from the filename
       */
-      id = Num_From_Ext(find_state.name);
+      id = Num_From_Ext(found.name.c_str());
 
       /*
       ** get the game's info; if success, add it to the list
@@ -691,14 +688,9 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
       fdata->Scenario = scenario;
       fdata->House = house;
       fdata->Num = id;
-      fdata->DateTime = find_state.mod_time;
+      fdata->DateTime = found.modified;
       Files.Add(fdata);
     }
-
-    /*
-    ** Find the next file
-    */
-    found = Find_Next_File(find_state);
   }
 
   /*
