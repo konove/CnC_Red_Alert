@@ -1356,6 +1356,8 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   the name overload uses `OpenGameFile`. Both `BufferedFileReader`s (`ra/nondosstub.cc`,
   `td/nondosstub.cc`) and their `Read_PCX_File` now take/hold `ByteStream&`, opening with
   `OpenGameFile` and seeking `Seek(-768, SeekOrigin::kEnd)` on that same stream for the palette.
+  **Correction (Step 8):** only the `BufferedFileReader`s hold a `ByteStream&`; both
+  `Read_PCX_File`s still take a file name and open it with `OpenGameFile` themselves.
   `MixArchive::Open` opens once with `OpenGameFile` up front (returning false immediately if it is
   null, same outcome as the old `IsAvailable()` check), wraps it in a `StreamSource`, and uses
   `Tell()`/`Size()` on the stream in place of `Seek(0, kCurrent)`/`Size()` on the old `GameFile`;
@@ -1374,10 +1376,35 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   counter the tests assert on. Both `build` and `build-strict` build clean;
   `ctest --test-dir build-strict` is 752/752 passed (`WsaTest`/`AudioMixerTest`/`MixFileTest`/
   `PcxTest` all included, `PcxTest.WrittenFileReadsBack` round-trips RA's stream-based
-  `Write_PCX_File`/`Read_PCX_File`); both smoke scripts print OK (240 object positions, 5951 game
-  states) — every game-data read in both games goes through the converted `MixArchive`. Not checked:
-  the real-display items the brief calls out (a WSA animation on TD's map-selection screen, a
-  streamed score playing past its first block, a TD and an RA screenshot opened after being written)
-  — headless (`SDL_VIDEODRIVER=dummy`) never loads palettes or opens a window, so these are left for
-  the user, same as Step 7a's attract-screen items; the mechanical pattern matches what strict
-  analysis and the smoke/unit tests already exercise.
+  `Write_PCX_File`/`Read_PCX_File` — **Correction (Step 8):** it does not; `src/td/pcx_test.cc`
+  round-trips TD's name-based `Write_PCX_File` (`tech/pcx_file.cc`) and TD's `Read_PCX_File`, and
+  RA's `ra/writepcx.cc`/`ra/nondosstub.cc` were verified by reading the code only); both smoke
+  scripts print OK (240 object positions, 5951 game states) — every game-data read in both games
+  goes through the converted `MixArchive`. Not checked: the real-display items the brief calls out
+  (a WSA animation on TD's map-selection screen, a streamed score playing past its first block, a TD
+  and an RA screenshot opened after being written) — headless (`SDL_VIDEODRIVER=dummy`) never loads
+  palettes or opens a window, so these are left for the user, same as Step 7a's attract-screen
+  items; the mechanical pattern matches what strict analysis and the smoke/unit tests already
+  exercise.
+- 2026-09-23: Step 8, first commit (save games). RA `Save_Game`/`Load_Game`/`Get_Savefile_Info` and
+  TD's three hold a `std::unique_ptr<DiskStream>` from `OpenDiskFile` and read or write it through
+  `StreamSource`/`StreamSink`; RA's digest rewrite and both `Load_Game` seeks act on that stream
+  (`Tell()` in place of `Seek(0, kCurrent)`), so the pipe-opened-file `Seek` hazard is gone, and
+  every `file.Close()` went (scope closes). `RA_SAVE_DUMP` is a nullable `DiskStream` with an
+  `std::optional<StreamSink>`. Truncation: RA's old `FileSink` opened lazily, but its first write
+  was the description, the first statement after the in-memory setup, so opening `kWrite` up front
+  truncates no earlier than before on any path that can fail; a failed open now returns `false`
+  before `Put_All` rather than serializing into a failed pipe. TD opened explicitly first already.
+  Beyond the brief: TD `Save_Game` returns `saved && sink.Flush()` (was `writer.ok()`), so a write
+  the full disk refuses only at the buffer flush is reported. `OpenDiskFile`'s lowercase fallback is
+  new for TD's loads and both games' saves (TD's `DiskFile::Open` never retried): a `savegame.099`
+  now loads in TD and is overwritten in place, not shadowed by a new `SAVEGAME.099` (checked
+  headless). Byte identity: TD `-SEED1 -NEWGAMESCG01EA -TEAMTEST -QUITFRAME60 -SAVESLOT99` saves
+  from the pre-change and new `tdsdl` are `cmp`-identical; RA saves differ run to run even with
+  `-SEED1` (the score's wall-clock `RealTime` stopwatch, one byte in `SCOR`, plus the digest and
+  that 8-byte Blowfish block), so new saves were matched to old ones whose `RA_SAVE_DUMP` body was
+  identical, and those pairs are `cmp`-identical (2 of 3 new runs matched). Also folded in the Step
+  7b review's doc fixes (the two corrections above, `mix_archive.cc`'s `Tell` comment,
+  `WsaAnimation(ByteStream&)`'s comment, a contract comment on RA `Write_PCX_File`). `build` and
+  `build-strict` clean; `ctest --test-dir build-strict` 752/752; RA smoke OK (240 positions, and
+  `--load-fixture` OK), TD smoke `SCG01EA --team` OK (5951 game states).

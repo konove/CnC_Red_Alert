@@ -118,9 +118,8 @@ bool MixArchive::Open(std::string_view filename, const PKey* key) {
     return false;
   }
 
-  // Calculate start position.
-  // Tell returns long, cast to int32_t to match class member (assuming < 2GB
-  // files)
+  // The data starts right after the header and index, so the base::ssize
+  // position Tell returns always fits data_start_'s int32_t.
   data_start_ = static_cast<std::int32_t>(file->Tell());
 
   return true;

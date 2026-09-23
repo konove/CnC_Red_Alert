@@ -74,6 +74,10 @@ struct PCX_HEADER {
 PixelBuffer* Read_PCX_File(const char* name, std::span<uint8_t> palette,
                            std::span<uint8_t> backing, int32_t size);
 
+// Writes pic as a PCX picture with palette (6-bit components, widened to the
+// file's 8 bits) to file, which the caller has opened for writing; the
+// picture starts at the stream's current position and the stream is left
+// open. Returns 0.
 int Write_PCX_File(ByteStream& file, PixelBuffer& pic,
                    const PaletteClass* palette);
 

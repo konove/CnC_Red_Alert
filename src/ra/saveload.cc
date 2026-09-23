@@ -46,6 +46,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -128,9 +130,8 @@
 #include "tech/blowfish_source.h"
 #include "tech/byte_sink.h"
 #include "tech/byte_source.h"
+#include "tech/byte_stream.h"
 #include "tech/disk_file.h"
-#include "tech/file_sink.h"
-#include "tech/file_source.h"
 #include "tech/game_file.h"
 #include "tech/lzo_sink.h"
 #include "tech/lzo_source.h"
@@ -138,6 +139,8 @@
 #include "tech/sha.h"
 #include "tech/sha1_sink.h"
 #include "tech/sha1_source.h"
+#include "tech/stream_sink.h"
+#include "tech/stream_source.h"
 #include "tech/tee_sink.h"
 
 #define SAVE_BLOCK_SIZE 4096
@@ -489,9 +492,13 @@ bool Save_Game(int id, const std::string_view descr, bool /*unused*/) {
   /*
   **	Open the file
   */
-  DiskFile file(name);
+  const std::unique_ptr<DiskStream> file =
+      OpenDiskFile(name, FileAccess::kWrite);
+  if (file == nullptr) {
+    return false;
+  }
 
-  FileSink fpipe(&file);
+  StreamSink fpipe(*file);
 
   /*
   **	Save the description, scenario #, and house
@@ -522,7 +529,7 @@ bool Save_Game(int id, const std::string_view descr, bool /*unused*/) {
     header(magic, version, scenario32, house);
   }
 
-  const base::ssize pos = file.Seek(0, SeekOrigin::kCurrent);
+  const base::ssize pos = file->Tell();
 
   /*
   **	Store a dummy message digest.
@@ -543,34 +550,35 @@ bool Save_Game(int id, const std::string_view descr, bool /*unused*/) {
 
   // Tee the field-wise body before compression. The dump has Section tags
   // but no save header, encryption, or digest, so it can be compared directly.
-  DiskFile dump_file;
-  FileSink dump_pipe(dump_file);
-  bool dump_open = false;
   const std::string dump_path = port::GetEnv("RA_SAVE_DUMP").value_or("");
+  std::unique_ptr<DiskStream> dump_file;
   if (!dump_path.empty()) {
-    dump_file.Open(dump_path, FileAccess::kWrite);
-    dump_open = dump_file.IsOpen();
-    if (!dump_open) {
+    dump_file = OpenDiskFile(dump_path, FileAccess::kWrite);
+    if (dump_file == nullptr) {
       DLOG(WARNING) << "Cannot open RA_SAVE_DUMP: " << dump_path;
     }
   }
-  TeeSink tee(pipe, dump_open ? &dump_pipe : nullptr);
+  std::optional<StreamSink> dump_pipe;
+  if (dump_file != nullptr) {
+    dump_pipe.emplace(*dump_file);
+  }
+  TeeSink tee(pipe, dump_pipe.has_value() ? &*dump_pipe : nullptr);
   Put_All(tee, save_net);
   if (!tee.copy_ok()) {
     DLOG(WARNING) << "Incomplete RA_SAVE_DUMP: " << dump_path;
   }
-  dump_file.Close();
 
   /*
   **	Output the real final message digest. This is the one that is of
   **	the data image as it exists on the disk.
   */
   pipe.Flush();
-  file.Seek(pos, SeekOrigin::kBegin);
+  file->Seek(pos, SeekOrigin::kBegin);
   digest = sha.digest();
   fpipe.Write(digest);
 
-  // Finish closes the file, so it runs even when the tee already failed.
+  // Finish flushes the file and reports a failed write, so it runs even when
+  // the tee already failed.
   const bool finished = pipe.Finish();
   return finished && tee.ok();
 }
@@ -635,12 +643,12 @@ bool Load_Game(int id) {
   /*
   **	Open the file
   */
-  DiskFile file(name);
-  if (!file.IsAvailable()) {
+  const std::unique_ptr<DiskStream> file = OpenDiskFile(name);
+  if (file == nullptr) {
     return false;
   }
 
-  FileSource fstraw(file);
+  StreamSource fstraw(*file);
 
   ServiceBackgroundTasks();
 
@@ -673,7 +681,7 @@ bool Load_Game(int id) {
   **	Remember the file position since we must seek back here to
   **	perform the real saved game read.
   */
-  const base::ssize pos = file.Seek(0, SeekOrigin::kCurrent);
+  const base::ssize pos = file->Tell();
 
   /*
   **	Pass the rest of the file through the hash straw so that
@@ -704,7 +712,7 @@ bool Load_Game(int id) {
   /*
   **	Set up the pipe so that the scenario data can be read.
   */
-  file.Seek(pos, SeekOrigin::kBegin);
+  file->Seek(pos, SeekOrigin::kBegin);
   BlowfishSource bstraw(CipherMode::kDecrypt, fstraw);
   LzoSource straw(CodecMode::kDecompress, bstraw, SAVE_BLOCK_SIZE);
   bstraw.Key(base::ObjectBytes(TheAssets().mix_key())
@@ -961,7 +969,6 @@ bool Load_Game(int id) {
     }
   }
 
-  file.Close();
   TheWorld().whom() = ThePlayer()->Class->House;
   if (TheMap().PendingObjectPtr) {
     TheMap().PendingObject = &TheMap().PendingObjectPtr->Class_Of();
@@ -1325,9 +1332,12 @@ bool Get_Savefile_Info(int id, std::span<char> buf, size_t buf_size,
   **	Generate the filename to load
   */
   absl::SNPrintF(name, sizeof(name), "SAVEGAME.%03d", id);
-  DiskFile file(name);
+  const std::unique_ptr<DiskStream> file = OpenDiskFile(name);
+  if (file == nullptr) {
+    return false;
+  }
 
-  FileSource straw(file);
+  StreamSource straw(*file);
 
   /*
   **	Read in the description, scenario #, and the house

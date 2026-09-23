@@ -64,7 +64,7 @@ class WsaAnimation {
   explicit WsaAnimation(std::string_view file_name,
                         std::span<uint8_t> palette = {});
 
-  // As above, from `file`, which must be open for reading and is left open.
+  // As above, reading from `file`'s current position; `file` is left open.
   explicit WsaAnimation(ByteStream& file, std::span<uint8_t> palette = {});
 
   // A loaded animation always holds its offset table.

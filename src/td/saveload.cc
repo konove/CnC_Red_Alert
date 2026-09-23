@@ -42,6 +42,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
 #include <span>
 #include <string_view>
 
@@ -90,9 +91,10 @@
 #include "td/vector.h"
 #include "td/world.h"
 #include "tech/archive.h"
+#include "tech/byte_stream.h"
 #include "tech/disk_file.h"
-#include "tech/file_sink.h"
-#include "tech/file_source.h"
+#include "tech/stream_sink.h"
+#include "tech/stream_source.h"
 
 /*
 ********************************** Defines **********************************
@@ -100,7 +102,6 @@
 
 // Write the theater/map, object heaps, ordered layers, and globals as fields.
 bool Save_Game(int id, const char* descr) {
-  DiskFile file;
   char name[port::kMaxFname + port::kMaxExt];
   int32_t version = 0;
   char descr_buf[kDescripMax]{};
@@ -116,8 +117,9 @@ bool Save_Game(int id, const char* descr) {
   /*
   **	Open the file
   */
-  file.Open(name, FileAccess::kWrite);
-  if (!file.IsOpen()) {
+  const std::unique_ptr<DiskStream> file =
+      OpenDiskFile(name, FileAccess::kWrite);
+  if (file == nullptr) {
     return false;
   }
 
@@ -135,18 +137,15 @@ bool Save_Game(int id, const char* descr) {
   base::At(descr_buf, std::string_view(descr_buf).size() + 1) =
       26;  // put CTRL-Z after NULL
 
-  if (file.Write(descr_buf, kDescripMax) != kDescripMax) {
-    file.Close();
+  if (file->Write(descr_buf, kDescripMax) != kDescripMax) {
     return false;
   }
 
-  if (!file.WriteObject(scenario)) {
-    file.Close();
+  if (!file->WriteObject(scenario)) {
     return false;
   }
 
-  if (!file.WriteObject(house)) {
-    file.Close();
+  if (!file->WriteObject(house)) {
     return false;
   }
 
@@ -155,12 +154,11 @@ bool Save_Game(int id, const char* descr) {
   */
   version = kSaveGameVersion;
 
-  if (!file.WriteObject(version)) {
-    file.Close();
+  if (!file->WriteObject(version)) {
     return false;
   }
 
-  FileSink sink(file);
+  StreamSink sink(*file);
   ArchiveWriter writer(sink);
   writer.Section(FourCC("FRAM"));
   int64_t frame = CurrentFrame();
@@ -238,12 +236,13 @@ bool Save_Game(int id, const char* descr) {
 
     return true;
   }();
-  return saved && writer.ok();
+  // The flush reports a write the disk refused only once the buffer reached
+  // it, such as one to a full disk.
+  return saved && sink.Flush();
 }
 
 // Load heaps before ordered object lists; rebuild runtime placement/UI state last.
 bool Load_Game(int id) {
-  DiskFile file;
   char name[port::kMaxFname + port::kMaxExt];
   int32_t version = 0;
   unsigned scenario = 0;
@@ -258,26 +257,23 @@ bool Load_Game(int id) {
   /*
   **	Open the file
   */
-  file.Open(name, FileAccess::kRead);
-  if (!file.IsOpen()) {
+  const std::unique_ptr<DiskStream> file = OpenDiskFile(name);
+  if (file == nullptr) {
     return false;
   }
 
   /*
   **	Read & discard the save-game's header info
   */
-  if (file.Read(descr_buf, kDescripMax) != kDescripMax) {
-    file.Close();
+  if (file->Read(descr_buf, kDescripMax) != kDescripMax) {
     return false;
   }
 
-  if (!file.ReadObject(scenario)) {
-    file.Close();
+  if (!file->ReadObject(scenario)) {
     return false;
   }
 
-  if (!file.ReadObject(house)) {
-    file.Close();
+  if (!file->ReadObject(house)) {
     return false;
   }
 
@@ -295,18 +291,16 @@ bool Load_Game(int id) {
   /*
   **	Read in & verify the save-game ID code
   */
-  if (!file.ReadObject(version)) {
-    file.Close();
+  if (!file->ReadObject(version)) {
     return false;
   }
 
   if (version != kSaveGameVersion) {
-    file.Close();
     return false;
   }
 
   Clear_Scenario();
-  FileSource source(file);
+  StreamSource source(*file);
   ArchiveReader reader(source);
   if (!reader.Section(FourCC("FRAM"))) {
     return false;
@@ -379,7 +373,6 @@ bool Load_Game(int id) {
       !TheObjectHeaps().unit().Load(reader) ||
       !TheObjectHeaps().factory().Load(reader)) {
     DLOG(ERROR) << "Cannot load saved heaps: " << reader.error();
-    file.Close();
     return false;
   }
 
@@ -408,13 +401,11 @@ bool Load_Game(int id) {
   TheWorld().logic().Serialize(reader);
   if (!reader.ok()) {
     DLOG(ERROR) << "Cannot load saved state: " << reader.error();
-    file.Close();
     return false;
   }
   for (auto& i : MouseClass::Layer) {
     i.Serialize(reader);
     if (!reader.ok()) {
-      file.Close();
       return false;
     }
   }
@@ -426,7 +417,6 @@ bool Load_Game(int id) {
   TheWorld().score().Serialize(reader);
   if (!reader.ok()) {
     DLOG(ERROR) << "Cannot load saved state: " << reader.error();
-    file.Close();
     return false;
   }
 
@@ -436,7 +426,6 @@ bool Load_Game(int id) {
   TheWorld().base().Serialize(reader);
   if (!reader.ok()) {
     DLOG(ERROR) << "Cannot load saved state: " << reader.error();
-    file.Close();
     return false;
   }
 
@@ -445,11 +434,9 @@ bool Load_Game(int id) {
   */
   if (!Load_Misc_Values(reader)) {
     DLOG(ERROR) << "Cannot load saved globals: " << reader.error();
-    file.Close();
     return false;
   }
 
-  file.Close();
   TheWorld().whom() = ThePlayer()->Class->House;
   switch (TheWorld().whom()) {
     case HOUSE_GOOD:
@@ -587,7 +574,6 @@ bool Load_Misc_Values(ArchiveReader& file) {
  *=========================================================================*/
 bool Get_Savefile_Info(int id, std::span<char> buf, unsigned* scenp,
                        HousesType* housep) {
-  DiskFile file;
   char name[port::kMaxFname + port::kMaxExt];
   int32_t version = 0;
   char descr_buf[kDescripMax];
@@ -600,13 +586,11 @@ bool Get_Savefile_Info(int id, std::span<char> buf, unsigned* scenp,
   /*
   **	If the file opens OK, read the file
   */
-  file.Open(name, FileAccess::kRead);
-  if (file.IsOpen()) {
+  if (const std::unique_ptr<DiskStream> file = OpenDiskFile(name)) {
     /*
     **	Read in the description, scenario #, and the house
     */
-    if (file.Read(descr_buf, kDescripMax) != kDescripMax) {
-      file.Close();
+    if (file->Read(descr_buf, kDescripMax) != kDescripMax) {
       return false;
     }
 
@@ -619,30 +603,24 @@ bool Get_Savefile_Info(int id, std::span<char> buf, unsigned* scenp,
     }
     port::SafeCopy(std::span(buf).first(kDescripMax), descr_buf);
 
-    if (!file.ReadObject(*scenp)) {
-      file.Close();
+    if (!file->ReadObject(*scenp)) {
       return false;
     }
 
-    if (!file.ReadObject(*housep)) {
-      file.Close();
+    if (!file->ReadObject(*housep)) {
       return false;
     }
 
     /*
     **	Read & verify the save-game version #
     */
-    if (!file.ReadObject(version)) {
-      file.Close();
+    if (!file->ReadObject(version)) {
       return false;
     }
 
     if (version != kSaveGameVersion) {
-      file.Close();
       return false;
     }
-
-    file.Close();
 
     return true;
   }
