@@ -58,12 +58,15 @@
 #include <string>
 #include <string_view>
 
+#include "absl/log/log.h"
+#include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
+#include "magic_enum/magic_enum.hpp"
 #include "port/format.h"
 #include "port/safe_string.h"
 #include "sdllib/font.h"
@@ -356,11 +359,123 @@ void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style) {
  * HISTORY: * 12/24/1991 JLB : Created. * 10/26/94   JLB : Handles font X
  *spacing in a more friendly manner.                        *
  *=============================================================================================*/
-TextStyle Select_Text_Font(TextPrintType flag, int fore, int back) {
-  int yspace = 0;                        // Y spacing adjustment for font.
-  int xspace = 0;                        // Spacing adjustment for font.
-  std::span<const std::byte> font = {};  // Font to use.
+namespace {
 
+// The shadows the 3-point font has no room for.
+constexpr TextPrintType kShadowsTooBigFor3Point =
+    TPF_DROPSHADOW | TPF_FULLSHADOW | TPF_NOSHADOW;
+
+// Returns flag without the shadows its font cannot draw.
+TextPrintType SupportedTextFlags(const TextPrintType flag) {
+  const TextPrintType point = flag & static_cast<TextPrintType>(0x000F);
+  return point == TPF_3POINT ? flag & ~kShadowsTooBigFor3Point : flag;
+}
+
+// Returns the name of the loaded font that data is, for the log.
+std::string_view FontName(const std::span<const std::byte> data) {
+  const Assets& assets = TheAssets();
+  for (const FontType type : magic_enum::enum_values<FontType>()) {
+    if (assets.font(type).data() == data.data()) {
+      return magic_enum::enum_name(type);
+    }
+  }
+  return data.empty() ? "no font" : "an unknown font";
+}
+
+}  // namespace
+
+FontStyle TextFontStyle(TextPrintType flag) {
+  flag = SupportedTextFlags(flag);
+  int xspace = 1;
+  int yspace = 0;
+  std::span<const std::byte> font = {};
+
+  const TextPrintType point =
+      flag & static_cast<TextPrintType>(0x000F);  // Requested font size.
+  const Assets& assets = TheAssets();
+  switch (point) {
+    case TPF_GREEN12:
+      font = assets.font(FontType::kGreen12);
+      break;
+
+    case TPF_GREEN12_GRAD:
+      font = assets.font(FontType::kGreen12Gradient);
+      break;
+
+    case TPF_MAP:
+      font = assets.font(FontType::kMap);
+      xspace -= 1;
+      break;
+
+    case TPF_VCR:
+      font = assets.font(FontType::kVcr);
+      break;
+
+    case TPF_6PT_GRAD:
+      font = assets.font(FontType::k6PointGradient);
+      xspace -= 1;
+      // yspace -= 1;
+      break;
+
+    case TPF_3POINT:
+      xspace += 1;
+      font = assets.font(FontType::k3Point);
+      break;
+
+    case TPF_6POINT:
+      font = assets.font(FontType::k6Point);
+      xspace -= 1;
+      // yspace -= 1;
+      break;
+
+    case TPF_8POINT:
+      font = assets.font(FontType::k8Point);
+      xspace -= 2;
+      yspace -= 4;
+      break;
+
+    case TPF_LED:
+      xspace -= 4;
+      font = assets.font(FontType::kLed);
+      break;
+
+    case TextPrintType::TPF_LASTPOINT:
+    case TextPrintType::TPF_NOSHADOW:
+    case TextPrintType::TPF_DROPSHADOW:
+    case TextPrintType::TPF_FULLSHADOW:
+    case TextPrintType::TPF_LIGHTSHADOW:
+    case TextPrintType::TPF_CENTER:
+    case TextPrintType::TPF_RIGHT:
+    case TextPrintType::TPF_MEDIUM_COLOR:
+    case TextPrintType::TPF_BRIGHT_COLOR:
+    case TextPrintType::TPF_USE_GRAD_PAL:
+    default:
+      // No point size: the font of whatever printed last. The plan to remove
+      // the font globals needs to know whether this is ever reached.
+      font = g_font;
+      LOG_FIRST_N(ERROR, 20)
+          << "Text flags 0x" << absl::Hex(static_cast<int>(flag))
+          << " name no point size; keeping " << FontName(font);
+      break;
+  }
+
+  // Any one shadow flag takes a pixel off the letter spacing, and
+  // TPF_NOSHADOW two off the line spacing too.
+  const TextPrintType shadow =
+      flag & (TPF_NOSHADOW | TPF_DROPSHADOW | TPF_FULLSHADOW | TPF_LIGHTSHADOW);
+  if (shadow == TPF_NOSHADOW) {
+    xspace -= 1;
+    yspace -= 2;
+  } else if (shadow == TPF_DROPSHADOW || shadow == TPF_LIGHTSHADOW ||
+             shadow == TPF_FULLSHADOW) {
+    xspace -= 1;
+  }
+
+  return {.font = FontView(font), .x_spacing = xspace, .y_spacing = yspace};
+}
+
+TextStyle TextStyleFor(TextPrintType flag, int fore, const int back) {
+  flag = SupportedTextFlags(flag);
   ////////////////#if (0)
   static unsigned char _textfontpal[16][16] = {
       {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -446,77 +561,6 @@ TextStyle Select_Text_Font(TextPrintType flag, int fore, int back) {
   }
 
   /*
-  **	Change the current font if it differs from the font desired.
-  */
-  const TextPrintType point =
-      flag & static_cast<TextPrintType>(0x000F);  // Requested font size.
-  xspace = 1;
-  yspace = 0;
-
-  const Assets& assets = TheAssets();
-  switch (point) {
-    case TPF_GREEN12:
-      font = assets.font(FontType::kGreen12);
-      break;
-
-    case TPF_GREEN12_GRAD:
-      font = assets.font(FontType::kGreen12Gradient);
-      break;
-
-    case TPF_MAP:
-      font = assets.font(FontType::kMap);
-      xspace -= 1;
-      break;
-
-    case TPF_VCR:
-      font = assets.font(FontType::kVcr);
-      break;
-
-    case TPF_6PT_GRAD:
-      font = assets.font(FontType::k6PointGradient);
-      xspace -= 1;
-      // yspace -= 1;
-      break;
-
-    case TPF_3POINT:
-      xspace += 1;
-      font = assets.font(FontType::k3Point);
-      flag = flag & ~(TPF_DROPSHADOW | TPF_FULLSHADOW | TPF_NOSHADOW);
-      break;
-
-    case TPF_6POINT:
-      font = assets.font(FontType::k6Point);
-      xspace -= 1;
-      // yspace -= 1;
-      break;
-
-    case TPF_8POINT:
-      font = assets.font(FontType::k8Point);
-      xspace -= 2;
-      yspace -= 4;
-      break;
-
-    case TPF_LED:
-      xspace -= 4;
-      font = assets.font(FontType::kLed);
-      break;
-
-    case TextPrintType::TPF_LASTPOINT:
-    case TextPrintType::TPF_NOSHADOW:
-    case TextPrintType::TPF_DROPSHADOW:
-    case TextPrintType::TPF_FULLSHADOW:
-    case TextPrintType::TPF_LIGHTSHADOW:
-    case TextPrintType::TPF_CENTER:
-    case TextPrintType::TPF_RIGHT:
-    case TextPrintType::TPF_MEDIUM_COLOR:
-    case TextPrintType::TPF_BRIGHT_COLOR:
-    case TextPrintType::TPF_USE_GRAD_PAL:
-    default:
-      font = g_font;
-      break;
-  }
-
-  /*
   **	Change the current font palette according to the dropshadow flags.
   */
   const TextPrintType shadow =
@@ -529,8 +573,6 @@ TextStyle Select_Text_Font(TextPrintType flag, int fore, int back) {
     case TPF_NOSHADOW:
       base::At(fontpalette, 2) = static_cast<unsigned char>(back);
       base::At(fontpalette, 3) = static_cast<unsigned char>(back);
-      xspace -= 1;
-      yspace -= 2;
       break;
 
     /*
@@ -540,7 +582,6 @@ TextStyle Select_Text_Font(TextPrintType flag, int fore, int back) {
     case TPF_DROPSHADOW:
       base::At(fontpalette, 2) = kBlack;
       base::At(fontpalette, 3) = static_cast<unsigned char>(back);
-      xspace -= 1;
       break;
 
     /*
@@ -550,7 +591,6 @@ TextStyle Select_Text_Font(TextPrintType flag, int fore, int back) {
     case TPF_LIGHTSHADOW:
       base::At(fontpalette, 2) = (14 * 16) + 7 + 1;
       base::At(fontpalette, 3) = static_cast<unsigned char>(back);
-      xspace -= 1;
       break;
 
     /*
@@ -560,7 +600,6 @@ TextStyle Select_Text_Font(TextPrintType flag, int fore, int back) {
     case TPF_FULLSHADOW:
       base::At(fontpalette, 2) = kBlack;
       base::At(fontpalette, 3) = kBlack;
-      xspace -= 1;
       break;
 
     case TextPrintType::TPF_LASTPOINT:
@@ -584,14 +623,19 @@ TextStyle Select_Text_Font(TextPrintType flag, int fore, int back) {
   base::At(fontpalette, 0) = static_cast<unsigned char>(back);
   base::At(fontpalette, 1) = static_cast<unsigned char>(fore);
 
-  /*
-  **	Set the font and spacing according to the values they should be.
-  */
-  g_font_x_spacing = xspace;
-  g_font_y_spacing = yspace;
-  SetFont(font);
-  SetFontPalette(fontpalette);
-  return {.flag = flag, .forecolor = fore};
+  FontStyle font_style = TextFontStyle(flag);
+  std::ranges::copy(fontpalette, font_style.palette.begin());
+  return {.flag = flag, .forecolor = fore, .font_style = font_style};
+}
+
+TextStyle Select_Text_Font(const TextPrintType flag, const int fore,
+                           const int back) {
+  const TextStyle style = TextStyleFor(flag, fore, back);
+  g_font_x_spacing = style.font_style.x_spacing;
+  g_font_y_spacing = style.font_style.y_spacing;
+  SetFont(style.font_style.font.data());
+  SetFontPalette(style.font_style.palette);
+  return style;
 }
 
 void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
@@ -606,7 +650,8 @@ void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
   }
   const char* tempstr = text ? filtered.c_str() : nullptr;
 
-  flag = Select_Text_Font(flag, fore, back).flag;
+  const TextStyle style = Select_Text_Font(flag, fore, back);
+  flag = style.flag;
 
   /*
   **	Display the (centered) message if there is one.
@@ -614,11 +659,11 @@ void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
   if (text && *text) {
     switch (flag & (TPF_CENTER | TPF_RIGHT)) {
       case TPF_CENTER:
-        x -= StringPixelWidth(tempstr) / 2;
+        x -= StringPixelWidth(style.font_style, tempstr) / 2;
         break;
 
       case TPF_RIGHT:
-        x -= StringPixelWidth(tempstr);
+        x -= StringPixelWidth(style.font_style, tempstr);
         break;
 
       case TextPrintType::TPF_LASTPOINT:
@@ -644,7 +689,7 @@ void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
 
     if (x < TheScreen().visible_view().width() &&
         y < TheScreen().visible_view().height()) {
-      view.Print(tempstr, x, y, fore, back);
+      view.Print(style.font_style, tempstr, x, y, fore, back);
     }
   }
 }
