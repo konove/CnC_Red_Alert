@@ -23,6 +23,28 @@
 #include "tech/byte_stream.h"
 #include "tech/file.h"
 
+// Returns a stream over the bytes of name resolved the way the game looks up
+// data: writes go straight to a loose file next to the executable (never
+// searched), a read first checks the search paths and then the registered
+// mixfile archives (a loose file wins over a packed copy, so patches work).
+// Returns nullptr if name is empty, found nowhere, or cannot be opened. This
+// is how the mixfile archives open their own files, including one packed
+// inside another.
+std::unique_ptr<ByteStream> OpenGameFile(std::string_view name,
+                                         FileAccess access = FileAccess::kRead);
+
+// Returns true if name is packed in a registered archive or found as a loose
+// file.
+bool GameFileExists(std::string_view name);
+
+// Returns the size of name in bytes, for a packed file the size of the
+// embedded file, without opening it. Returns 0 for a name found nowhere.
+base::ssize GameFileSize(std::string_view name);
+
+// Deletes the loose file by this name. Returns false, deleting nothing, if
+// there is none; a file packed in an archive cannot be deleted.
+bool DeleteGameFile(std::string_view name);
+
 // A file object bound to a game data name. Opening resolves the name and
 // attaches one ByteStream: a DiskStream for a loose file, a MemoryStream for
 // a file in a cached archive, or a RangeStream for a file in an archive on
@@ -46,12 +68,6 @@ class GameFile : public File {
   GameFile& operator=(GameFile&&) = delete;
 
   ~GameFile() override = default;
-
-  // Returns a stream over the bytes of name resolved the way Open() resolves
-  // it, or nullptr if the name is found nowhere or cannot be opened. This is
-  // how the mixfile archives open their own files.
-  static std::unique_ptr<ByteStream> OpenStream(
-      std::string_view name, FileAccess rights = FileAccess::kRead);
 
   // Returns the name as given; resolution happens when the file is opened.
   [[nodiscard]] std::string_view FileName() const
@@ -80,7 +96,7 @@ class GameFile : public File {
             FileAccess rights = FileAccess::kRead) override;
 
   // Opens the file, closing it first if it was open, and returns whether a
-  // stream could be attached; see OpenStream().
+  // stream could be attached; see OpenGameFile().
   bool Open(FileAccess rights = FileAccess::kRead) override;
 
   // Reads from the file, opening it for read access and closing it again if

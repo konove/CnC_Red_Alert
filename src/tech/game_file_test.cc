@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <fstream>
 #include <ios>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -16,6 +17,7 @@
 #include "absl/base/attributes.h"
 #include "base/seek_origin.h"
 #include "gtest/gtest.h"
+#include "tech/byte_stream.h"
 #include "tech/crc.h"
 #include "tech/mix_archive.h"
 #include "tech/search_paths.h"
@@ -228,6 +230,97 @@ TEST_F(GameFileTest, OpenOfNameFoundNowhereFails) {
   EXPECT_EQ(file.Size(), 0);
   char buffer[4] = {};
   EXPECT_EQ(file.Read(buffer, 4), 0);
+}
+
+// The free functions below are the ones OpenGameFile/GameFileExists/
+// GameFileSize/DeleteGameFile eventually replace GameFile with; they cover
+// the same scenarios as the GameFile tests above.
+
+TEST_F(GameFileTest, OpenGameFileOfNameFoundNowhereIsNull) {
+  EXPECT_EQ(OpenGameFile("GAME_FILE_TEST_MISSING.BIN"), nullptr);
+  EXPECT_FALSE(GameFileExists("GAME_FILE_TEST_MISSING.BIN"));
+  EXPECT_EQ(GameFileSize("GAME_FILE_TEST_MISSING.BIN"), 0);
+}
+
+TEST_F(GameFileTest, SizeOfPackedFileNeedsNoOpen) {
+  EXPECT_EQ(GameFileSize(kPackedName), 4);
+}
+
+TEST_F(GameFileTest, DeleteGameFileRefusesPackedFile) {
+  EXPECT_FALSE(DeleteGameFile(kPackedName));
+  EXPECT_TRUE(GameFileExists(kPackedName));
+}
+
+TEST_F(GameFileTest, OpenGameFileReadsCachedFileAndSeeksWithinItsImage) {
+  CacheMixfile();
+  const std::unique_ptr<ByteStream> file = OpenGameFile(kPackedName);
+  ASSERT_NE(file, nullptr);
+  EXPECT_EQ(file->Size(), 4);
+
+  char buffer[8] = {};
+  EXPECT_EQ(file->Read(buffer, 2), 2);
+  EXPECT_EQ(std::string(buffer, 2), "ab");
+
+  EXPECT_EQ(file->Seek(10, SeekOrigin::kBegin), 4);
+  EXPECT_EQ(file->Read(buffer, 1), 0);
+  EXPECT_EQ(file->Seek(-10, SeekOrigin::kCurrent), 0);
+  EXPECT_EQ(file->Seek(-1, SeekOrigin::kEnd), 3);
+  EXPECT_EQ(file->Read(buffer, 8), 1);
+  EXPECT_EQ(buffer[0], 'd');
+}
+
+TEST_F(GameFileTest, OpenGameFileReadsUncachedFileOnlyItsBytesOfTheMixfile) {
+  const std::unique_ptr<ByteStream> file = OpenGameFile(kPackedName);
+  ASSERT_NE(file, nullptr);
+  EXPECT_EQ(file->Size(), 4);
+
+  char buffer[8] = {};
+  EXPECT_EQ(file->Read(buffer, 8), 4);
+  EXPECT_EQ(std::string(buffer, 4), "abcd");
+}
+
+TEST_F(GameFileTest,
+       OpenGameFileReadsUncachedMixfileInsideUncachedMixfileBytes) {
+  RegisterNestedMixfiles();
+  const std::unique_ptr<ByteStream> file = OpenGameFile(kPackedName);
+  ASSERT_NE(file, nullptr);
+  EXPECT_EQ(file->Size(), 4);
+
+  char buffer[8] = {};
+  EXPECT_EQ(file->Read(buffer, 8), 4);
+  EXPECT_EQ(std::string(buffer, 4), "abcd");
+}
+
+TEST_F(GameFileTest, OpenGameFileReadsCachedMixfileInsideUncachedMixfile) {
+  RegisterNestedMixfiles();
+  ASSERT_TRUE(MixArchive::Cache(kInnerName));
+  const std::unique_ptr<ByteStream> file = OpenGameFile(kPackedName);
+  ASSERT_NE(file, nullptr);
+
+  char buffer[8] = {};
+  EXPECT_EQ(file->Read(buffer, 8), 4);
+  EXPECT_EQ(std::string(buffer, 4), "abcd");
+}
+
+TEST_F(GameFileTest, OpenGameFileForLooseFileOverridesPackedCopy) {
+  CacheMixfile();
+  WriteLooseCopy("LOOSE");
+  EXPECT_TRUE(GameFileExists(kPackedName));
+  const std::unique_ptr<ByteStream> file = OpenGameFile(kPackedName);
+  ASSERT_NE(file, nullptr);
+  EXPECT_EQ(file->Size(), 5);
+
+  char buffer[8] = {};
+  EXPECT_EQ(file->Read(buffer, 8), 5);
+  EXPECT_EQ(std::string(buffer, 5), "LOOSE");
+}
+
+TEST_F(GameFileTest, DeleteGameFileRemovesLooseFile) {
+  WriteFile(loose_path(), {'h', 'i'});
+  EXPECT_TRUE(GameFileExists(loose_path().string()));
+  EXPECT_TRUE(DeleteGameFile(loose_path().string()));
+  EXPECT_FALSE(std::filesystem::exists(loose_path()));
+  EXPECT_FALSE(GameFileExists(loose_path().string()));
 }
 
 }  // namespace

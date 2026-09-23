@@ -99,7 +99,17 @@ TEST_F(DiskStreamTest, ReadWriteKeepsExistingContents) {
   }
   const std::unique_ptr<DiskStream> stream =
       DiskStream::Open(path(), FileAccess::kRead);
+  ASSERT_NE(stream, nullptr);
   EXPECT_EQ(ReadAll(*stream, 10), "xabcd!");
+}
+
+TEST_F(DiskStreamTest, FlushSucceedsAndKeepsTheStreamUsable) {
+  const std::unique_ptr<DiskStream> stream =
+      DiskStream::Open(path(), FileAccess::kReadWrite);
+  ASSERT_NE(stream, nullptr);
+  EXPECT_EQ(stream->Write(Bytes("!")), 1);
+  EXPECT_TRUE(stream->Flush());
+  EXPECT_TRUE(stream->ok());
 }
 
 TEST_F(DiskStreamTest, ReadWriteCreatesMissingFile) {
@@ -112,6 +122,7 @@ TEST_F(DiskStreamTest, ReadWriteCreatesMissingFile) {
 TEST_F(DiskStreamTest, SeekBeforeTheStartKeepsThePosition) {
   const std::unique_ptr<DiskStream> stream =
       DiskStream::Open(path(), FileAccess::kRead);
+  ASSERT_NE(stream, nullptr);
   EXPECT_EQ(stream->Seek(2, SeekOrigin::kBegin), 2);
   EXPECT_EQ(stream->Seek(-10, SeekOrigin::kCurrent), 2);
   EXPECT_EQ(ReadAll(*stream, 1), "b");
@@ -120,9 +131,22 @@ TEST_F(DiskStreamTest, SeekBeforeTheStartKeepsThePosition) {
 TEST_F(DiskStreamTest, SizePreservesThePosition) {
   const std::unique_ptr<DiskStream> stream =
       DiskStream::Open(path(), FileAccess::kRead);
+  ASSERT_NE(stream, nullptr);
   EXPECT_EQ(ReadAll(*stream, 2), "xa");
   EXPECT_EQ(stream->Size(), 5);
   EXPECT_EQ(ReadAll(*stream, 1), "b");
+}
+
+TEST_F(DiskStreamTest, FailedSeekWithBufferedReadDataKeepsThePosition) {
+  // Filling the read buffer (fixture is only 5 bytes, so one byte fills it)
+  // exercises the same failed-seek path as SeekBeforeTheStartKeepsThePosition
+  // once the filebuf is no longer positioned where the stream last reported.
+  const std::unique_ptr<DiskStream> stream =
+      DiskStream::Open(path(), FileAccess::kRead);
+  ASSERT_NE(stream, nullptr);
+  EXPECT_EQ(ReadAll(*stream, 1), "x");
+  EXPECT_EQ(stream->Seek(-10, SeekOrigin::kCurrent), 1);
+  EXPECT_EQ(ReadAll(*stream, 1), "a");
 }
 
 TEST(DiskStreamErrorTest, OpenRefusesDirectory) {

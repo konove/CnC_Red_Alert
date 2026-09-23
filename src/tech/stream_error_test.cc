@@ -2,9 +2,11 @@
 // errors below a file straw, truncated compressed data, and the
 // flush-then-write-directly sequence the save game relies on.
 
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <filesystem>
+#include <iterator>
 #include <span>
 #include <string>
 #include <string_view>
@@ -26,6 +28,8 @@
 #include "tech/lzo_sink.h"
 #include "tech/lzo_source.h"
 #include "tech/span_sink.h"
+#include "tech/stream_sink.h"
+#include "tech/stream_source.h"
 
 namespace {
 
@@ -93,6 +97,66 @@ class ScriptedFile : public File {
   base::ssize position_ = 0;
   bool open_ = false;
   bool failed_ = false;
+};
+
+// The ByteStream twin of ScriptedFile, for the StreamSource tests: hands out
+// `data` and then, if `fail_after` is set, reports a read error once that
+// many bytes have been read.
+class ScriptedStream : public ByteStream {
+ public:
+  ScriptedStream(std::string_view data, base::ssize fail_after)
+      : data_(data), fail_after_(fail_after) {}
+
+  using ByteStream::Read;
+  using ByteStream::Write;
+  base::ssize Read(std::span<std::byte> buffer) override {
+    base::ssize count = 0;
+    while (count < std::ssize(buffer) && position_ < std::ssize(data_)) {
+      if (position_ == fail_after_) {
+        failed_ = true;
+        break;
+      }
+      base::At(buffer, static_cast<std::size_t>(count++)) =
+          static_cast<std::byte>(
+              data_.at(static_cast<std::size_t>(position_++)));
+    }
+    return count;
+  }
+  base::ssize Write(std::span<const std::byte> /*buffer*/) override {
+    return 0;
+  }
+  [[nodiscard]] bool ok() const override { return !failed_; }
+  base::ssize Seek(base::ssize /*offset*/, SeekOrigin /*origin*/) override {
+    return position_;
+  }
+  base::ssize Size() override { return std::ssize(data_); }
+
+ private:
+  std::string data_;
+  base::ssize fail_after_;  // -1 means reads never fail.
+  base::ssize position_ = 0;
+  bool failed_ = false;
+};
+
+// A stream whose Write stores at most `accept` bytes and reports that count,
+// so StreamSink sees a short write without needing a real full device.
+class ShortWriteStream : public ByteStream {
+ public:
+  explicit ShortWriteStream(base::ssize accept) : accept_(accept) {}
+
+  using ByteStream::Read;
+  using ByteStream::Write;
+  base::ssize Read(std::span<std::byte> /*buffer*/) override { return 0; }
+  base::ssize Write(std::span<const std::byte> buffer) override {
+    return std::min(accept_, std::ssize(buffer));
+  }
+  base::ssize Seek(base::ssize /*offset*/, SeekOrigin /*origin*/) override {
+    return 0;
+  }
+  base::ssize Size() override { return 0; }
+
+ private:
+  base::ssize accept_;
 };
 
 TEST(StreamErrorTest, BufferPipeStoresWhatFitsThenFailsForGood) {
@@ -185,7 +249,58 @@ TEST(StreamErrorTest, ReadErrorIsStickyThroughTransformStraw) {
   EXPECT_FALSE(decompressor.ok());
 }
 
-TEST(StreamErrorTest, DiskReadErrorReachesFileAndStraw) {
+// StreamSource twin of FileStrawTellsEndOfFileFromReadError.
+TEST(StreamErrorTest, StreamSourceTellsEndOfStreamFromReadError) {
+  {
+    ScriptedStream stream("abc", -1);
+    StreamSource source(stream);
+    std::array<std::byte, 8> buffer{};
+    EXPECT_EQ(source.Read(buffer), 3);
+    EXPECT_EQ(source.Read(buffer), 0);
+    EXPECT_TRUE(source.ok());
+  }
+  {
+    // Two bytes arrive, then the stream fails.
+    ScriptedStream stream("abcdef", 2);
+    StreamSource source(stream);
+    std::array<std::byte, 8> buffer{};
+    EXPECT_EQ(source.Read(buffer), 2);
+    EXPECT_FALSE(source.ok());
+    EXPECT_EQ(source.Read(buffer), 0);
+    EXPECT_FALSE(source.ok());
+  }
+}
+
+// StreamSource twin of ReadErrorIsStickyThroughTransformStraw.
+TEST(StreamErrorTest, ReadErrorIsStickyThroughTransformStreamSource) {
+  RecordingSink encoded;
+  LzoSink compressor(CodecMode::kCompress, encoded, 16);
+  compressor.Write(Bytes("0123456789abcdefghijklmnopqrstuvwxyz"));
+  compressor.Finish();
+  std::string stored(static_cast<std::size_t>(std::ssize(encoded.bytes)), '\0');
+  for (std::size_t i = 0; i < stored.size(); ++i) {
+    stored.at(i) = static_cast<char>(encoded.bytes.at(i));
+  }
+
+  // Blocks of 16, 16 and 4 bytes; the read error lands inside the last.
+  ScriptedStream stream(stored, std::ssize(stored) - 3);
+  StreamSource source(stream);
+  LzoSource decompressor(CodecMode::kDecompress, source, 16);
+  std::array<std::byte, 64> buffer{};
+  EXPECT_EQ(decompressor.Read(buffer), 32);
+  EXPECT_FALSE(decompressor.ok());
+  EXPECT_EQ(decompressor.Read(buffer), 0);
+  EXPECT_FALSE(decompressor.ok());
+}
+
+TEST(StreamSinkTest, StreamSinkFailsOnShortWrite) {
+  ShortWriteStream stream(/*accept=*/3);
+  StreamSink sink(stream);
+  EXPECT_FALSE(sink.Write(Bytes("abcdef")));
+  EXPECT_FALSE(sink.ok());
+}
+
+TEST(StreamErrorTest, DirectoryRefusedAtOpenAndFileSourceFailsWithNothingOpen) {
   // Opening a directory is refused up front: reading one throws instead of
   // returning an error, and refusing the open is what keeps IsAvailable()
   // from treating the directory as a file.

@@ -8,11 +8,16 @@
 #include <fstream>
 #include <ios>
 #include <iterator>
+#include <memory>
+#include <span>
 #include <string>
+#include <string_view>
 
 #include "absl/strings/ascii.h"
 #include "base/seek_origin.h"
 #include "gtest/gtest.h"
+#include "sdllib/file_access.h"
+#include "tech/byte_stream.h"
 
 namespace {
 
@@ -97,6 +102,37 @@ TEST_F(DiskFileTest, SeekIsIgnoredBeforeTheStartOfTheFile) {
   EXPECT_EQ(file.Seek(-1, SeekOrigin::kEnd), 4);
   // stdio refuses a seek to before the start, so the position stays put.
   EXPECT_EQ(file.Seek(-10, SeekOrigin::kCurrent), 4);
+}
+
+TEST_F(DiskFileTest, OpenDiskFileWritesTheExistingLowercaseFile) {
+  // FindExistingFile lowercases the whole path, so only an all-lowercase
+  // file is found; temp_directory_path() is lowercase on Linux.
+  const std::filesystem::path lower = std::filesystem::temp_directory_path() /
+                                      "disk_file_test_lowercase_write.bin";
+  const std::filesystem::path upper =
+      lower.parent_path() / absl::AsciiStrToUpper(lower.filename().string());
+  WriteFile(lower, "old");
+  if (std::filesystem::exists(upper)) {
+    std::filesystem::remove(lower);
+    GTEST_SKIP() << "case-insensitive filesystem";
+  }
+  {
+    const std::unique_ptr<DiskStream> out =
+        OpenDiskFile(upper.string(), FileAccess::kWrite);
+    ASSERT_NE(out, nullptr);
+    out->Write(std::as_bytes(std::span(std::string_view("new"))));
+  }
+  EXPECT_FALSE(std::filesystem::exists(upper));
+  EXPECT_EQ(ReadFile(lower), "new");
+  std::filesystem::remove(lower);
+}
+
+TEST_F(DiskFileTest, OpenDiskFileForReadOfMissingFileIsNull) {
+  EXPECT_EQ(OpenDiskFile(path() + ".missing"), nullptr);
+  const std::unique_ptr<DiskStream> created =
+      OpenDiskFile(path() + ".new", FileAccess::kWrite);
+  EXPECT_NE(created, nullptr);
+  std::filesystem::remove(path() + ".new");
 }
 
 }  // namespace

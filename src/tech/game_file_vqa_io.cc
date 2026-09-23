@@ -13,7 +13,7 @@
 #include "tech/game_file.h"
 
 bool GameFileVqaIo::Open(const std::string_view name) {
-  stream_ = GameFile::OpenStream(name, FileAccess::kRead);
+  stream_ = OpenGameFile(name, FileAccess::kRead);
   return stream_ != nullptr;
 }
 

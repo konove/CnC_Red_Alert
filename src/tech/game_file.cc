@@ -21,21 +21,21 @@
 #include "tech/mix_archive.h"
 #include "tech/search_paths.h"
 
-std::unique_ptr<ByteStream> GameFile::OpenStream(const std::string_view name,
-                                                 const FileAccess rights) {
+std::unique_ptr<ByteStream> OpenGameFile(const std::string_view name,
+                                         const FileAccess access) {
   if (name.empty()) {
     return nullptr;
   }
 
   // Writes never search: they target the name as given, so a loose file is
   // created next to the executable rather than on the CD.
-  if (HasAccess(rights, FileAccess::kWrite)) {
-    return DiskStream::Open(name, rights);
+  if (HasAccess(access, FileAccess::kWrite)) {
+    return DiskStream::Open(name, access);
   }
 
   // A loose file on disk wins over the packed copy, so patches work.
   if (const std::optional<std::string> path = SearchPaths::Resolve(name)) {
-    return DiskStream::Open(*path, rights);
+    return DiskStream::Open(*path, access);
   }
 
   const std::optional<MixArchive::FileLocation> location =
@@ -53,12 +53,40 @@ std::unique_ptr<ByteStream> GameFile::OpenStream(const std::string_view name,
   // same way, so an archive packed inside another one becomes a window of a
   // window. The offset is relative to the archive's own start.
   std::unique_ptr<ByteStream> archive =
-      OpenStream(location->mixfile->Filename(), FileAccess::kRead);
+      OpenGameFile(location->mixfile->Filename(), FileAccess::kRead);
   if (archive == nullptr) {
     return nullptr;
   }
   return std::make_unique<RangeStream>(std::move(archive), location->offset,
                                        location->size);
+}
+
+bool GameFileExists(const std::string_view name) {
+  // The archive index is in memory, so it is checked before the disk.
+  return MixArchive::Offset(name).has_value() ||
+         SearchPaths::Resolve(name).has_value();
+}
+
+base::ssize GameFileSize(const std::string_view name) {
+  // A packed file's size is in the archive index, so no open is needed for
+  // it; a loose file has to be opened to be measured.
+  if (SearchPaths::Resolve(name).has_value()) {
+    const std::unique_ptr<ByteStream> stream =
+        OpenGameFile(name, FileAccess::kRead);
+    return stream != nullptr ? stream->Size() : 0;
+  }
+  const std::optional<MixArchive::FileLocation> location =
+      MixArchive::Offset(name);
+  return location ? location->size : 0;
+}
+
+bool DeleteGameFile(const std::string_view name) {
+  const std::optional<std::string> path = SearchPaths::Resolve(name);
+  if (!path.has_value()) {
+    return false;
+  }
+  std::error_code error;
+  return std::filesystem::remove(*path, error);
 }
 
 void GameFile::SetName(const std::string_view name) {
@@ -68,27 +96,15 @@ void GameFile::SetName(const std::string_view name) {
 
 bool GameFile::Create() {
   Close();
-  return DiskStream::Open(name_, FileAccess::kWrite) != nullptr;
+  return OpenGameFile(name_, FileAccess::kWrite) != nullptr;
 }
 
 bool GameFile::Delete() {
   Close();
-  const std::optional<std::string> path = SearchPaths::Resolve(name_);
-  if (!path.has_value()) {
-    return false;
-  }
-  std::error_code error;
-  return std::filesystem::remove(*path, error);
+  return DeleteGameFile(name_);
 }
 
-bool GameFile::IsAvailable() {
-  if (IsOpen()) {
-    return true;
-  }
-  // The archive index is in memory, so it is checked before the disk.
-  return MixArchive::Offset(name_).has_value() ||
-         SearchPaths::Resolve(name_).has_value();
-}
+bool GameFile::IsAvailable() { return IsOpen() || GameFileExists(name_); }
 
 bool GameFile::Open(const std::string_view name, const FileAccess rights) {
   SetName(name);
@@ -98,7 +114,7 @@ bool GameFile::Open(const std::string_view name, const FileAccess rights) {
 bool GameFile::Open(const FileAccess rights) {
   Close();
   failed_ = false;
-  stream_ = OpenStream(name_, rights);
+  stream_ = OpenGameFile(name_, rights);
   return IsOpen();
 }
 
@@ -137,17 +153,5 @@ base::ssize GameFile::Seek(const base::ssize offset, const SeekOrigin origin) {
 }
 
 base::ssize GameFile::Size() {
-  if (IsOpen()) {
-    return stream_->Size();
-  }
-  // A packed file's size is in the archive index, so no open is needed for
-  // it; a loose file has to be opened to be measured.
-  if (SearchPaths::Resolve(name_).has_value()) {
-    const std::unique_ptr<ByteStream> stream =
-        OpenStream(name_, FileAccess::kRead);
-    return stream != nullptr ? stream->Size() : 0;
-  }
-  const std::optional<MixArchive::FileLocation> location =
-      MixArchive::Offset(name_);
-  return location ? location->size : 0;
+  return IsOpen() ? stream_->Size() : GameFileSize(name_);
 }

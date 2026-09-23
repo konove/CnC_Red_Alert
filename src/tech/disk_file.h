@@ -43,6 +43,12 @@
 // carry it in lower case), otherwise nullopt.
 std::optional<std::string> FindExistingFile(std::string_view path);
 
+// Opens path, preferring an existing file under the lowercased name when the
+// name as given does not exist (see FindExistingFile), for every access mode:
+// a write replaces the file the game would read. Returns nullptr on failure.
+std::unique_ptr<DiskStream> OpenDiskFile(std::string_view path,
+                                         FileAccess access = FileAccess::kRead);
+
 // A File over one file on disk, held as a DiskStream while it is open. Read
 // and Write on a closed file open it for the call and close it afterwards.
 class DiskFile : public File {

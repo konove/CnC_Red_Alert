@@ -1180,3 +1180,43 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   under `RelWithDebInfo`'s `NDEBUG` (per CLAUDE.md, never run Debug for this), and the environment
   is headless — so the dialog check is this indirect probe rather than a screenshot of the real
   list.
+- 2026-09-23: Step 5 landed. Added the free functions `OpenGameFile`/`GameFileExists`/
+  `GameFileSize`/`DeleteGameFile` (`tech/game_file.{h,cc}`) and `OpenDiskFile`
+  (`tech/disk_file.{h,cc}`); `GameFile::OpenStream` is gone, folded into `OpenGameFile` (including
+  its own recursive call for an archive nested inside another one), and every `GameFile` member now
+  forwards to the matching free function instead of duplicating its body. `DiskFile`'s methods are
+  unchanged — `OpenDiskFile`'s write path deliberately differs from `DiskFile::Open` (it follows
+  `FindExistingFile`'s lowercase fallback for every access mode, `DiskFile::Open` never retries) so
+  reimplementing `DiskFile` on it would change its behavior, which is out of scope until callers
+  move. `ByteStream::Flush()` defaults to `ok()`; `DiskStream::Flush()` calls `pubsync()` and
+  catches `std::ios_base::failure` the same way `Read()` does. Added `tech/stream_source.h`/
+  `tech/stream_sink.h` (`StreamSource`/`StreamSink`, a `ByteSource`/`ByteSink` over an already-open
+  `ByteStream` that neither opens nor closes it); `game_file_vqa_io.cc` — the only user of
+  `GameFile::OpenStream` outside `game_file.*` — now calls `OpenGameFile`. Folded in the four Step 3
+  review leftovers: the `RangeStream::Read` comment now says `pubseekoff` instead of "fseek and
+  ftell"; `DiskReadErrorReachesFileAndStraw` renamed
+  `DirectoryRefusedAtOpenAndFileSourceFailsWithNothingOpen`; `ReadWriteKeepsExistingContents`/
+  `SeekBeforeTheStartKeepsThePosition`/`SizePreservesThePosition` gained the missing
+  `ASSERT_NE(stream, nullptr)`; added
+  `DiskStreamTest.FailedSeekWithBufferedReadDataKeepsThePosition` (read 1 byte to fill the buffer,
+  seek -10 from current, confirm the position holds and the next read still returns "a"). Test
+  additions beyond the brief's three `GameFile` examples: ported every free-function-representable
+  `GameFileTest` case (cached/uncached/nested/cached-nested mixfile reads, the
+  loose-file-overrides-packed case, delete-removes-loose) to `OpenGameFile`/
+  `GameFileExists`/`DeleteGameFile`; `WriteToCachedFileWritesNothing` has no free-function analogue
+  (it exercises `GameFile`'s stateful open-for-read-then-write-without-reopening path, which
+  `OpenGameFile` being called once per access can't reach) so it was left as a `GameFile`-only
+  regression test. Added `ScriptedStream : ByteStream` alongside the existing `ScriptedFile : File`
+  and repeated its three `FileSource` cases over `StreamSource`
+  (`StreamSourceTellsEndOfStreamFromReadError`, `ReadErrorIsStickyThroughTransformStreamSource`),
+  plus `ShortWriteStream : ByteStream` and `StreamSinkTest.StreamSinkFailsOnShortWrite` from the
+  brief, and a `DiskStreamTest.FlushSucceedsAndKeepsTheStreamUsable` smoke test for the new
+  `Flush()` (the throwing-`pubsync()` and TD-recording cases stay in Step 8, per the Review Focus
+  table). RED: `tech_test` failed to compile
+  (`OpenGameFile`/`GameFileExists`/`GameFileSize`/`DeleteGameFile`/
+  `OpenDiskFile`/`StreamSource`/`StreamSink` not declared). GREEN: `build` and `build-strict` both
+  build clean; `ctest --test-dir build-strict` is 747/747 passed (up from 731: the new
+  `game_file_test.cc`/`disk_file_test.cc`/`stream_error_test.cc`/`byte_stream_test.cc` cases). Both
+  smoke scripts print OK against `build-strict/src/ra/rasdl` and `build-strict/src/td/tdsdl` (240
+  object positions and 5951 game states identical, respectively). No production caller changed yet,
+  as planned; `GameFile`/`DiskFile` still exist and pass their original tests unmodified.

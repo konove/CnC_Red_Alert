@@ -149,6 +149,18 @@ base::ssize DiskStream::Size() {
   return ToPosition(end);
 }
 
+bool DiskStream::Flush() {
+  try {
+    if (file_.pubsync() != 0) {
+      failed_ = true;
+    }
+  } catch (const std::ios_base::failure&) {
+    // Same real I/O error case Read() catches, on the write-back path.
+    failed_ = true;
+  }
+  return ok();
+}
+
 base::ssize MemoryStream::Read(const std::span<std::byte> buffer) {
   const base::ssize count =
       std::min(std::ssize(buffer), std::ssize(bytes_) - position_);
@@ -180,7 +192,8 @@ base::ssize RangeStream::Read(const std::span<std::byte> buffer) {
   // opened once and read from many times, and a seek on this window moves only
   // position_. Reposition it when it is not already where this read starts --
   // which, for the sequential reads that decoding a packed file is made of, is
-  // almost never, and each skipped seek is an fseek and an ftell.
+  // almost never, and each skipped seek is a filebuf pubseekoff (an lseek that
+  // discards the buffer).
   const base::ssize start = offset_ + position_;
   if (inner_position_ != start) {
     if (inner_->Seek(start, SeekOrigin::kBegin) != start) {

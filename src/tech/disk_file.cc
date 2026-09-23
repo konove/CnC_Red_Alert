@@ -51,6 +51,14 @@ std::optional<std::string> FindExistingFile(const std::string_view path) {
   return std::nullopt;
 }
 
+std::unique_ptr<DiskStream> OpenDiskFile(const std::string_view path,
+                                         const FileAccess access) {
+  if (const std::optional<std::string> existing = FindExistingFile(path)) {
+    return DiskStream::Open(*existing, access);
+  }
+  return access == FileAccess::kRead ? nullptr : DiskStream::Open(path, access);
+}
+
 bool DiskFile::Create() {
   Close();
   return DiskStream::Open(filename_, FileAccess::kWrite) != nullptr;

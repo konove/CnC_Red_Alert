@@ -54,6 +54,9 @@ class ByteStream {
   // stream is not a failure.
   [[nodiscard]] virtual bool ok() const { return true; }
 
+  // Pushes buffered writes to the operating system. Returns ok().
+  virtual bool Flush() { return ok(); }
+
   // Returns the current position.
   base::ssize Tell() { return Seek(0, SeekOrigin::kCurrent); }
 
@@ -160,6 +163,7 @@ class DiskStream final : public ByteStream {
   base::ssize Seek(base::ssize offset,
                    SeekOrigin origin = SeekOrigin::kCurrent) override;
   base::ssize Size() override;
+  bool Flush() override;
   [[nodiscard]] bool ok() const override { return !failed_; }
 
  private:
@@ -168,10 +172,11 @@ class DiskStream final : public ByteStream {
   // The open file. A filebuf reports a failed write as a short sputn, and a
   // failed read by throwing std::ios_base::failure instead of returning a
   // short count; DiskStream::Read catches that and turns it into ok()
-  // reporting false, same as a failed write.
+  // reporting false, same as a failed write. pubsync() (Flush()) can throw
+  // the same way on some errors and is caught the same way.
   std::filebuf file_;
 
-  // Set when a read or write fails.
+  // Set when a read, write or flush fails.
   bool failed_ = false;
 };
 
