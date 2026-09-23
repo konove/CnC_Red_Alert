@@ -1,12 +1,11 @@
-// Tests for GameFile over loose files and cached, uncached and nested
-// mixfiles. Also covers OpenGameFile/GameFileExists/GameFileSize/
-// DeleteGameFile, the free functions replacing GameFile.
+// Tests for OpenGameFile/GameFileExists/GameFileSize/DeleteGameFile, the
+// free functions that replace the GameFile class, over loose files and
+// cached, uncached and nested mixfiles.
 
 #include "tech/game_file.h"
 
 #include <bit>
 #include <cstdint>
-#include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <ios>
@@ -134,108 +133,6 @@ class GameFileTest : public ::testing::Test {
   std::filesystem::path loose_path_;
   std::filesystem::path search_dir_;
 };
-
-TEST_F(GameFileTest, CachedFileReadsAndSeeksWithinItsImage) {
-  CacheMixfile();
-  GameFile file(kPackedName);
-  ASSERT_TRUE(file.Open());
-  EXPECT_EQ(file.Size(), 4);
-
-  char buffer[8] = {};
-  EXPECT_EQ(file.Read(buffer, 2), 2);
-  EXPECT_EQ(std::string(buffer, 2), "ab");
-
-  EXPECT_EQ(file.Seek(10, SeekOrigin::kBegin), 4);
-  EXPECT_EQ(file.Read(buffer, 1), 0);
-  EXPECT_EQ(file.Seek(-10, SeekOrigin::kCurrent), 0);
-  EXPECT_EQ(file.Seek(-1, SeekOrigin::kEnd), 3);
-  EXPECT_EQ(file.Read(buffer, 8), 1);
-  EXPECT_EQ(buffer[0], 'd');
-}
-
-TEST_F(GameFileTest, WriteToCachedFileWritesNothing) {
-  CacheMixfile();
-  GameFile file(kPackedName);
-  ASSERT_TRUE(file.Open());
-
-  // Used to fall through to the base class and write through a null handle.
-  EXPECT_EQ(file.Write("zz", 2), 0);
-}
-
-TEST_F(GameFileTest, UncachedFileReadsOnlyItsBytesOfTheMixfile) {
-  GameFile file(kPackedName);
-  ASSERT_TRUE(file.Open());
-  EXPECT_EQ(file.Size(), 4);
-
-  char buffer[8] = {};
-  EXPECT_EQ(file.Read(buffer, 8), 4);
-  EXPECT_EQ(std::string(buffer, 4), "abcd");
-}
-
-TEST_F(GameFileTest, SizeOfUnopenedPackedFileIsItsOwnSize) {
-  GameFile file(kPackedName);
-  EXPECT_EQ(file.Size(), 4);
-}
-
-TEST_F(GameFileTest, DeleteRefusesPackedFile) {
-  GameFile file(kPackedName);
-  EXPECT_FALSE(file.Delete());
-  EXPECT_TRUE(file.IsAvailable());
-}
-
-TEST_F(GameFileTest, DeleteRemovesLooseFile) {
-  WriteFile(loose_path(), {'h', 'i'});
-  GameFile file(loose_path().string());
-  EXPECT_TRUE(file.Delete());
-  EXPECT_FALSE(std::filesystem::exists(loose_path()));
-}
-
-TEST_F(GameFileTest, UncachedMixfileInsideUncachedMixfileReadsItsBytes) {
-  RegisterNestedMixfiles();
-  GameFile file(kPackedName);
-  ASSERT_TRUE(file.Open());
-  EXPECT_EQ(file.Size(), 4);
-
-  char buffer[8] = {};
-  EXPECT_EQ(file.Read(buffer, 8), 4);
-  EXPECT_EQ(std::string(buffer, 4), "abcd");
-}
-
-TEST_F(GameFileTest, CachedMixfileInsideUncachedMixfileReadsItsBytes) {
-  RegisterNestedMixfiles();
-  ASSERT_TRUE(MixArchive::Cache(kInnerName));
-  GameFile file(kPackedName);
-  ASSERT_TRUE(file.Open());
-
-  char buffer[8] = {};
-  EXPECT_EQ(file.Read(buffer, 8), 4);
-  EXPECT_EQ(std::string(buffer, 4), "abcd");
-}
-
-TEST_F(GameFileTest, LooseFileOnSearchPathOverridesPackedCopy) {
-  CacheMixfile();
-  WriteLooseCopy("LOOSE");
-  GameFile file(kPackedName);
-  ASSERT_TRUE(file.Open());
-  EXPECT_EQ(file.Size(), 5);
-
-  char buffer[8] = {};
-  EXPECT_EQ(file.Read(buffer, 8), 5);
-  EXPECT_EQ(std::string(buffer, 5), "LOOSE");
-}
-
-TEST_F(GameFileTest, OpenOfNameFoundNowhereFails) {
-  GameFile file("GAME_FILE_TEST_MISSING.BIN");
-  EXPECT_FALSE(file.IsAvailable());
-  EXPECT_FALSE(file.Open());
-  EXPECT_EQ(file.Size(), 0);
-  char buffer[4] = {};
-  EXPECT_EQ(file.Read(buffer, 4), 0);
-}
-
-// The free functions below are the ones OpenGameFile/GameFileExists/
-// GameFileSize/DeleteGameFile eventually replace GameFile with; they cover
-// the same scenarios as the GameFile tests above.
 
 TEST_F(GameFileTest, OpenGameFileOfNameFoundNowhereIsNull) {
   EXPECT_EQ(OpenGameFile("GAME_FILE_TEST_MISSING.BIN"), nullptr);

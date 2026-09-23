@@ -101,7 +101,7 @@ class ByteSink {
 // link in front of the one it feeds, so that destruction runs the other way.
 //
 // Example:
-//   FileSink file(disk_file);
+//   StreamSink file(*disk_stream);
 //   BlowfishSink cipher(CipherMode::kEncrypt, file);
 //   LzoSink compressor(CodecMode::kCompress, cipher);
 class ChainedSink : public ByteSink {

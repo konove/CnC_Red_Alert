@@ -4,17 +4,14 @@
 
 #include "tech/game_file.h"
 
-#include <cstddef>
 #include <filesystem>
 #include <memory>
 #include <optional>
-#include <span>
 #include <string>
 #include <string_view>
 #include <system_error>
 #include <utility>
 
-#include "base/seek_origin.h"
 #include "base/types.h"
 #include "sdllib/file_access.h"
 #include "tech/byte_stream.h"
@@ -87,71 +84,4 @@ bool DeleteGameFile(const std::string_view name) {
   }
   std::error_code error;
   return std::filesystem::remove(*path, error);
-}
-
-void GameFile::SetName(const std::string_view name) {
-  Close();
-  name_ = name;
-}
-
-bool GameFile::Create() {
-  Close();
-  return OpenGameFile(name_, FileAccess::kWrite) != nullptr;
-}
-
-bool GameFile::Delete() {
-  Close();
-  return DeleteGameFile(name_);
-}
-
-bool GameFile::IsAvailable() { return IsOpen() || GameFileExists(name_); }
-
-bool GameFile::Open(const std::string_view name, const FileAccess rights) {
-  SetName(name);
-  return Open(rights);
-}
-
-bool GameFile::Open(const FileAccess rights) {
-  Close();
-  failed_ = false;
-  stream_ = OpenGameFile(name_, rights);
-  return IsOpen();
-}
-
-base::ssize GameFile::Read(const std::span<std::byte> buffer) {
-  const bool opened_for_this_read = !IsOpen() && Open(FileAccess::kRead);
-  if (!IsOpen()) {
-    return 0;
-  }
-  const base::ssize bytes_read = stream_->Read(buffer);
-  if (!stream_->ok()) {
-    failed_ = true;
-  }
-  if (opened_for_this_read) {
-    Close();
-  }
-  return bytes_read;
-}
-
-base::ssize GameFile::Write(const std::span<const std::byte> buffer) {
-  const bool opened_for_this_write = !IsOpen() && Open(FileAccess::kWrite);
-  if (!IsOpen()) {
-    return 0;
-  }
-  const base::ssize bytes_written = stream_->Write(buffer);
-  if (!stream_->ok()) {
-    failed_ = true;
-  }
-  if (opened_for_this_write) {
-    Close();
-  }
-  return bytes_written;
-}
-
-base::ssize GameFile::Seek(const base::ssize offset, const SeekOrigin origin) {
-  return IsOpen() ? stream_->Seek(offset, origin) : 0;
-}
-
-base::ssize GameFile::Size() {
-  return IsOpen() ? stream_->Size() : GameFileSize(name_);
 }

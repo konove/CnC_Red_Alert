@@ -1,10 +1,8 @@
-// Tests for DiskFile: implicit open on Read/Write, the lowercase-name retry,
-// and Open() reporting a missing file. Also covers OpenDiskFile, the free
-// function replacing DiskFile.
+// Tests for FindExistingFile's lowercase-name retry and OpenDiskFile, the
+// free functions that replace the DiskFile class.
 
 #include "tech/disk_file.h"
 
-#include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <ios>
@@ -15,7 +13,6 @@
 #include <string_view>
 
 #include "absl/strings/ascii.h"
-#include "base/seek_origin.h"
 #include "gtest/gtest.h"
 #include "sdllib/file_access.h"
 #include "tech/byte_stream.h"
@@ -51,22 +48,7 @@ class DiskFileTest : public ::testing::Test {
   std::filesystem::path path_;
 };
 
-TEST_F(DiskFileTest, ReadOpensAndClosesImplicitly) {
-  DiskFile file(path());
-  char buffer[8] = {};
-  EXPECT_EQ(file.Read(buffer, 8), 5);
-  EXPECT_EQ(std::string(buffer, 5), "xabcd");
-  EXPECT_FALSE(file.IsOpen());
-}
-
-TEST_F(DiskFileTest, WriteOpensAndClosesImplicitly) {
-  DiskFile file(path());
-  EXPECT_EQ(file.Write("hi", 2), 2);
-  EXPECT_FALSE(file.IsOpen());
-  EXPECT_EQ(ReadFile(path()), "hi");
-}
-
-TEST_F(DiskFileTest, IsAvailableRetriesLowercaseNameAndRenames) {
+TEST_F(DiskFileTest, FindExistingFileRetriesLowercaseName) {
   // The retry lowercases the whole name, so it only finds all-lowercase files.
   const std::filesystem::path lower =
       std::filesystem::temp_directory_path() / "disk_file_test_lowercase.bin";
@@ -78,31 +60,11 @@ TEST_F(DiskFileTest, IsAvailableRetriesLowercaseNameAndRenames) {
     GTEST_SKIP() << "case-insensitive filesystem";
   }
 
-  DiskFile file(upper.string());
-  EXPECT_TRUE(file.IsAvailable());
-  EXPECT_EQ(file.FileName(), lower.string());
+  EXPECT_EQ(FindExistingFile(upper.string()), lower.string());
 
-  // Open() alone does not retry.
-  DiskFile direct(upper.string());
-  direct.Open();
-  EXPECT_FALSE(direct.IsOpen());
+  // The exact name still wins when it exists too.
+  EXPECT_EQ(FindExistingFile(lower.string()), lower.string());
   std::filesystem::remove(lower);
-}
-
-TEST_F(DiskFileTest, OpenOfMissingFileFails) {
-  DiskFile file(path() + ".missing");
-  EXPECT_FALSE(file.Open());
-  EXPECT_FALSE(file.IsOpen());
-  EXPECT_FALSE(file.IsAvailable());
-  EXPECT_EQ(file.Size(), 0);
-}
-
-TEST_F(DiskFileTest, SeekIsIgnoredBeforeTheStartOfTheFile) {
-  DiskFile file(path());
-  ASSERT_TRUE(file.Open());
-  EXPECT_EQ(file.Seek(-1, SeekOrigin::kEnd), 4);
-  // stdio refuses a seek to before the start, so the position stays put.
-  EXPECT_EQ(file.Seek(-10, SeekOrigin::kCurrent), 4);
 }
 
 TEST_F(DiskFileTest, OpenDiskFileWritesTheExistingLowercaseFile) {

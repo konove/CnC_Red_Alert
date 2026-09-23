@@ -1016,21 +1016,21 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
 
 ## Step 10: Delete File and its implementations
 
-- [ ] Delete `src/tech/file.{h,cc}`, `src/tech/file_test.cc`, `src/tech/memory_file.{h,cc}`,
+- [x] Delete `src/tech/file.{h,cc}`, `src/tech/file_test.cc`, `src/tech/memory_file.{h,cc}`,
       `src/tech/file_source.{h,cc}`, `src/tech/file_sink.{h,cc}`, the `GameFile` and `DiskFile`
       classes (their headers keep the free functions), and `disk_file_test.cc`'s tests of auto-open
       and `IsAvailable` renaming (`ReadOpensAndClosesImplicitly`, `WriteOpensAndClosesImplicitly`,
       `IsAvailableRetriesLowercaseNameAndRenames` — the last is covered by
       `OpenDiskFileWritesTheExistingLowercaseFile` and a `FindExistingFile` test, which it becomes).
       Update `src/tech/CMakeLists.txt`'s test list.
-- [ ] Fix every comment that names the deleted classes: `byte_source.h:99`, `byte_sink.h:104`,
+- [x] Fix every comment that names the deleted classes: `byte_source.h:99`, `byte_sink.h:104`,
       `mix_archive.h:48`, `search_paths.h:19`, `game_file_vqa_io.h:16`, `ra/assets_test.cc:12`,
       `ra/saveload.cc:571`. Leave history comments ("Originally RAWFILE.H ...") in the surviving
       headers.
-- [ ] Update `docs/FILE_IO_REFACTOR_PLAN.md`'s header note (as the streams refactor did) and the
+- [x] Update `docs/FILE_IO_REFACTOR_PLAN.md`'s header note (as the streams refactor did) and the
       memory notes `file-io-refactor-plan.md` and `file-api-modernization-preferences.md`, which
       describe `File` as current.
-- [ ] Full verification (below); commit `Delete the File interface`.
+- [x] Full verification (below); commit `Delete the File interface`.
 
 ## Verification
 
@@ -1534,3 +1534,56 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   also `cmp`-identical, no `.tmp` left. Final state of `build-strict/src/ra`'s three files matches
   the backups (`md5sum`). `build` and `build-strict` clean; `ctest --test-dir build-strict` 753/753;
   RA smoke OK (240 positions, `--load-fixture` OK).
+
+- 2026-09-23: Step 10. Deleted `File`, `MemoryFile`, `FileSource`, `FileSink` (`.h`/`.cc` each) and
+  `tech/file_test.cc`; stripped the `GameFile`/`DiskFile` classes out of `tech/game_file.*` and
+  `tech/disk_file.*`, keeping only the free functions and each header's "Originally ..." history
+  line. `tech/CMakeLists.txt`'s test list drops `file_test.cc`. Test fallout, each old test's
+  behavior now covered by: `disk_file_test.cc`'s `ReadOpensAndClosesImplicitly`,
+  `WriteOpensAndClosesImplicitly`, `OpenOfMissingFileFails` and
+  `SeekIsIgnoredBeforeTheStartOfTheFile` → `byte_stream_test.cc`'s
+  `DiskStreamTest. MissingFileDoesNotOpen` and `DiskStreamTest.SeekBeforeTheStartKeepsThePosition`
+  (auto-open itself has no replacement: the free functions never auto-open);
+  `IsAvailableRetriesLowercaseNameAndRenames` → a new `FindExistingFileRetriesLowercaseName` test
+  plus the existing `OpenDiskFileWritesTheExistingLowercaseFile`; `game_file_test.cc`'s ten
+  `GameFile`-class tests each had an `OpenGameFile*`/`GameFileSize`/`DeleteGameFile` twin already in
+  the file (Step 5), so only the class tests were deleted; `stream_error_test.cc`'s `ScriptedFile`,
+  `FileStrawTellsEndOfFileFrom ReadError` and `ReadErrorIsStickyThroughTransformStraw` → their
+  `ScriptedStream`/`StreamSource` twins (`StreamSourceTellsEndOfStreamFromReadError`,
+  `ReadErrorIsStickyThroughTransformStreamSource`);
+  `DirectoryRefusedAtOpenAndFileSourceFailsWith NothingOpen` → `byte_stream_test.cc`'s
+  `DiskStreamErrorTest.OpenRefusesDirectory` (the pattern of plugging a straw onto a file that
+  failed to open no longer exists: `OpenDiskFile` on a directory is simply null); `file_test.cc`'s
+  five `MemoryFile`-based tests → their existing `MemoryStreamTest`/`DiskStreamTest` twins in
+  `byte_stream_test.cc` (Steps 2/3). 730/753 tests remain (net −23, matching the above). Comment
+  fixes: `byte_source.h`/`byte_sink.h`'s `ChainedSource`/`ChainedSink` examples now show
+  `StreamSource`/`StreamSink` over an open stream; `search_paths.h`'s example now opens through
+  `OpenDiskFile`; `ra/assets_test.cc:12` says `OpenGameFile` instead of `GameFile`.
+  `mix_archive.h:48`, `game_file_vqa_io.h:16` and `ra/saveload.cc` already read correctly (fixed in
+  earlier steps); the doc's line numbers for those three had drifted. Also found and fixed, since
+  the final verification grep is tree-wide: two live `unlink(fname)` calls deleting a save-game slot
+  in `ra/loaddlg.cc` and `td/loaddlg.cc` (delete button in the load/save dialog), never routed
+  through `File`/`GameFile`/`DiskFile` so Steps 1-9 never touched them; replaced with
+  `std::filesystem::remove` and dropped each file's now-unused `<io.h>`/`<unistd.h>` `#ifdef _WIN32`
+  block. `docs/FILE_IO_REFACTOR_PLAN.md` gets the same "superseded by" note the streams refactor
+  added. `build` and `build-strict` clean; `ctest --test-dir build-strict` 730/730; RA smoke OK (240
+  positions, `--load-fixture` OK, 120 frames); TD smoke OK (5951 game states);
+  `-DRA_LANGUAGE=german` and `french` `rasdl` both build clean in scratch dirs. ASan
+  (`-NOMOVIES -NEWGAMESCG01EA -QUITFRAME100`, Steam data) on both games: RA leaks 12
+  allocations/3176 bytes, TD leaks 215 allocations/17272 bytes, every one tracing to
+  `MapEditClass::One_Time()`/`Init_Game()`/house/type-object bootstrap allocations (`mapedit.cc`,
+  `house.cc`, `list.cc`, `ini.cc`, `scenario.cc`, `utracker.cc`) — the same pre-existing set the
+  plan called out, none touching `tech/`, `OpenGameFile`, `OpenDiskFile`, `DiskStream`,
+  `StreamSource` or `StreamSink`. Final grep
+  (`tech/file.h|IO_Open_File|Find_First_File|Disk_Space_Available| fopen|fread|fwrite|fseek|ftell| unlink|fnmatch|statvfs`):
+  every remaining hit is a comment (`td/conquer.cc:38` doc comment, `tech/byte_stream.cc:139`
+  explaining a caught `fseek`-like throw, `td/team.cc`/`ra/team.cc`/ `tech/listnode.h` "unlinked
+  from a list" prose, unrelated to file deletion), a PC-Lint config file (`*.lnt`, not compiled),
+  dead/commented-out code (`ra/mapeddlg.cc:414`, `ra/nulldlg.cc:4419`, `ra/alloc.cc:339`/`:443`
+  under `#if (LOGGING)` where `LOGGING` is `#define`d `false`), unbuilt code (`winvq/vqm32/*.cc` —
+  only `vqm32`'s sibling `vqa32` is added to the CMake build), or a different module's own
+  `fopen`/`fclose` for a debug dump or an editor existence check that never used
+  `File`/`GameFile`/`DiskFile` (`td/mapeddlg.cc:342`'s "replace scenario?" check, `ra/queue.cc`'s
+  and `td/queue.cc`'s `Print_CRCs`/`Dump_Packet_Too_Late_Stuff`/reconnect dumps) — left alone as out
+  of this plan's scope (never routed through the deleted interface). Not checked: real-display
+  screens (see the report/PR for the list); left for the user.

@@ -54,6 +54,7 @@
 #include <memory>
 #include <span>
 #include <string_view>
+#include <system_error>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -85,12 +86,6 @@
 #include "td/textbtn.h"
 #include "td/vector.h"
 #include "td/world.h"
-
-#ifdef _WIN32
-#include <io.h>  // for unlink
-#else
-#include <unistd.h>
-#endif
 
 /***********************************************************************************************
  * LoadOptionsClass::LoadOptionsClass -- class constructor *
@@ -465,7 +460,8 @@ bool LoadOptionsClass::Process() {
         if (CCMessageBox().Process(TXT_DELETE_FILE_QUERY, TXT_YES, TXT_NO) ==
             0) {
           absl::SNPrintF(fname, sizeof(fname), "SAVEGAME.%03d", game_num);
-          unlink(fname);
+          std::error_code error;
+          std::filesystem::remove(fname, error);
           Clear_List(&listbtn);
           Fill_List(&listbtn);
           if (listbtn.Count() == 0) {

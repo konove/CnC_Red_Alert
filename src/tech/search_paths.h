@@ -16,7 +16,7 @@
 // Example:
 //   SearchPaths::Add("C:\\GameData;?:\\");
 //   if (auto path = SearchPaths::Resolve("RULES.INI")) {
-//     DiskFile file(*path);
+//     const std::unique_ptr<DiskStream> file = OpenDiskFile(*path);
 //   }
 class SearchPaths {
  public:

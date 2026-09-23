@@ -16,25 +16,18 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// File: DiskFile implementation.
+// File: opening a single file on disk as a ByteStream.
 //
 // Originally RAWFILE.CPP by Joe L. Bostic, August 8, 1994.
 
 #include "tech/disk_file.h"
 
-#include <cstddef>
-#include <filesystem>
 #include <memory>
 #include <optional>
-#include <span>
 #include <string>
 #include <string_view>
-#include <system_error>
-#include <utility>
 
 #include "absl/strings/ascii.h"
-#include "base/seek_origin.h"
-#include "base/types.h"
 #include "sdllib/file_access.h"
 #include "tech/byte_stream.h"
 
@@ -57,91 +50,4 @@ std::unique_ptr<DiskStream> OpenDiskFile(const std::string_view path,
     return DiskStream::Open(*existing, access);
   }
   return access == FileAccess::kRead ? nullptr : DiskStream::Open(path, access);
-}
-
-bool DiskFile::Create() {
-  Close();
-  return DiskStream::Open(filename_, FileAccess::kWrite) != nullptr;
-}
-
-bool DiskFile::Delete() {
-  Close();
-  if (!IsAvailable()) {
-    return false;
-  }
-  std::error_code error;
-  return std::filesystem::remove(filename_, error);
-}
-
-bool DiskFile::IsAvailable() {
-  if (filename_.empty()) {
-    return false;
-  }
-  if (IsOpen()) {
-    return true;
-  }
-  std::optional<std::string> found = FindExistingFile(filename_);
-  if (!found) {
-    return false;
-  }
-  filename_ = *std::move(found);
-  return true;
-}
-
-bool DiskFile::Open(const std::string_view filename, const FileAccess rights) {
-  SetName(filename);
-  return Open(rights);
-}
-
-bool DiskFile::Open(const FileAccess rights) {
-  Close();
-  failed_ = false;
-  if (filename_.empty()) {
-    return false;
-  }
-  stream_ = DiskStream::Open(filename_, rights);
-  return IsOpen();
-}
-
-base::ssize DiskFile::Read(const std::span<std::byte> buffer) {
-  const bool opened_for_this_read = !IsOpen() && Open(FileAccess::kRead);
-  if (!IsOpen()) {
-    return 0;
-  }
-  const base::ssize bytes_read = stream_->Read(buffer);
-  if (!stream_->ok()) {
-    failed_ = true;
-  }
-  if (opened_for_this_read) {
-    Close();
-  }
-  return bytes_read;
-}
-
-base::ssize DiskFile::Write(const std::span<const std::byte> buffer) {
-  const bool opened_for_this_write = !IsOpen() && Open(FileAccess::kWrite);
-  if (!IsOpen()) {
-    return 0;
-  }
-  const base::ssize bytes_written = stream_->Write(buffer);
-  if (!stream_->ok()) {
-    failed_ = true;
-  }
-  if (opened_for_this_write) {
-    Close();
-  }
-  return bytes_written;
-}
-
-base::ssize DiskFile::Seek(const base::ssize offset, const SeekOrigin origin) {
-  return IsOpen() ? stream_->Seek(offset, origin) : 0;
-}
-
-base::ssize DiskFile::Size() {
-  if (IsOpen()) {
-    return stream_->Size();
-  }
-  const std::unique_ptr<DiskStream> stream =
-      DiskStream::Open(filename_, FileAccess::kRead);
-  return stream != nullptr ? stream->Size() : 0;
 }

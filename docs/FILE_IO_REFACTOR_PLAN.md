@@ -1,5 +1,11 @@
 # Plan: replace the FileClass inheritance chain with composition
 
+> Superseded by `docs/FILE_INTERFACE_REMOVAL_PLAN.md`: `File`, `DiskFile`, `GameFile`, `MemoryFile`,
+> `FileSource` and `FileSink` are gone. `ByteStream` (and its `DiskStream`/
+> `MemoryStream`/`RangeStream`) is the only I/O interface; open game data with `OpenGameFile`/
+> `OpenDiskFile` and wrap an open stream in `StreamSource`/`StreamSink` when a pipe or straw is
+> needed.
+>
 > The Pipe/Straw classes named in this document were renamed by the streams refactor
 > (`docs/STREAMS_REFACTOR_PLAN.md`): `Pipe`/`Straw` are now `ByteSink`/`ByteSource`,
 > `FilePipe`/`FileStraw` are `FileSink`/`FileSource`, `BufferPipe`/`BufferStraw` are

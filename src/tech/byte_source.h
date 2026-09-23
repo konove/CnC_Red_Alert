@@ -96,7 +96,7 @@ class ByteSource {
 // one it draws from.
 //
 // Example:
-//   FileSource file(disk_file);
+//   StreamSource file(*disk_stream);
 //   BlowfishSource cipher(CipherMode::kDecrypt, file);
 //   LzoSource decompressor(CodecMode::kDecompress, cipher);
 class ChainedSource : public ByteSource {

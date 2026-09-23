@@ -9,8 +9,8 @@
 #include "magic_enum/magic_enum.hpp"
 #include "ra/defines.h"
 
-// search_paths.cc, reached through GameFile, calls the game's CD check. The
-// tests never look for a disc.
+// search_paths.cc, reached through OpenGameFile, calls the game's CD check.
+// The tests never look for a disc.
 // NOLINTBEGIN(misc-use-internal-linkage): satisfies search_paths.cc's extern.
 int Get_CD_Index(int cd_drive, int timeout);
 int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) { return -1; }

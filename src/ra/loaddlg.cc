@@ -51,6 +51,7 @@
 #include <filesystem>
 #include <span>
 #include <string_view>
+#include <system_error>
 #include <vector>
 
 #include "absl/strings/match.h"
@@ -91,12 +92,6 @@
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 #include "tech/readline.h"
-
-#ifdef _WIN32
-#include <io.h>  // for unlink
-#else
-#include <unistd.h>
-#endif
 
 /***********************************************************************************************
  * LoadOptionsClass::LoadOptionsClass -- class constructor *
@@ -506,7 +501,8 @@ bool LoadOptionsClass::Process() {
         if (WWMessageBox().Process(TXT_DELETE_FILE_QUERY, TXT_YES, TXT_NO) ==
             0) {
           absl::SNPrintF(fname, sizeof(fname), "SAVEGAME.%03d", game_num);
-          unlink(fname);
+          std::error_code error;
+          std::filesystem::remove(fname, error);
           Clear_List(&listbtn);
           Fill_List(&listbtn);
           if (listbtn.Count() == 0) {
