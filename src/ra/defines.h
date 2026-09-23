@@ -66,8 +66,11 @@ inline constexpr int kSaveGameDiskSpace = kInitFreeDiskSpace - (1024 * 4096);
 
 /**********************************************************************
 **	This is the complete list of VQs allowed to be played in the game.
+**	One byte, as in the original: the shipped scenarios store a trigger's
+**	movie in the low byte of an int whose upper bytes are 0xFF, and
+**	TActionClass reads it through that byte.
 */
-enum class VQType {
+enum class VQType : int8_t {
   VQ_NONE = -1,
   VQ_AAGUN,
   VQ_MIG,
@@ -518,8 +521,10 @@ using enum CrateType;
 *sidebar *	mechanism.
 */
 // Fixed underlying type so that kSpcChrono2, one past the last weapon, is a
-// representable value.
-enum class SpecialWeaponType : int {
+// representable value. One byte, as in the original: trigger actions in the
+// shipped scenarios store a weapon in the low byte of an int whose upper bytes
+// are 0xFF (-255 for the nuke), and TActionClass reads it through that byte.
+enum class SpecialWeaponType : int8_t {
   SPC_NONE = -1,
   SPC_SONAR_PULSE,    // Momentarily reveals submarines.
   SPC_NUCLEAR_BOMB,   //	Tactical nuclear weapon.

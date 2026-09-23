@@ -112,6 +112,12 @@ add_gtest(
     LIBS tech port sdllib absl::strings absl::check absl::log magic_enum::magic_enum
 )
 
+add_gtest(
+    NAME ra_taction_test
+    SOURCES taction_test.cc
+    LIBS base port absl::check absl::log magic_enum::magic_enum
+)
+
 # The real engine, with the startup helpers but no game entry point.
 add_gtest(
     NAME ra_game_test
