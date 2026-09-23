@@ -72,6 +72,16 @@ void CheckFontStyle(const FontStyle& style, const FontUse use,
              << (same_palette ? "same" : "different");
 }
 
+int FontMaxHeight(const FontStyle& style, const std::source_location location) {
+  CheckFontStyle(style, FontUse::kGlyphs, location);
+  return style.font.MaxHeight();
+}
+
+int FontMaxWidth(const FontStyle& style, const std::source_location location) {
+  CheckFontStyle(style, FontUse::kGlyphs, location);
+  return style.font.MaxWidth();
+}
+
 int FontLineHeight(const FontStyle& style,
                    const std::source_location location) {
   CheckFontStyle(style, FontUse::kHeight, location);

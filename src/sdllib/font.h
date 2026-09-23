@@ -203,6 +203,7 @@ struct FontStyle {
 
 // The part of a FontStyle a caller depends on, for CheckFontStyle().
 enum class FontUse {
+  kGlyphs,  // The glyphs alone.
   kWidth,   // The glyphs and x_spacing.
   kHeight,  // The glyphs and y_spacing.
   kPrint,   // Everything: glyphs, both spacings and palette entries 2-15.
@@ -216,6 +217,13 @@ enum class FontUse {
 void CheckFontStyle(
     const FontStyle& style, FontUse use,
     std::source_location location = std::source_location::current());
+
+// Returns the height of the tallest and the width of the widest glyph in
+// style, in pixels.
+int FontMaxHeight(const FontStyle& style, std::source_location location =
+                                              std::source_location::current());
+int FontMaxWidth(const FontStyle& style, std::source_location location =
+                                             std::source_location::current());
 
 // Returns the distance in pixels from one line of text in style to the next:
 // the tallest glyph plus the line spacing.

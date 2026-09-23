@@ -54,6 +54,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
+#include <source_location>
 #include <span>
 #include <string>
 #include <string_view>
@@ -220,8 +221,15 @@ void Draw_Box(PixelView& view, int x, int y, int w, int h, BoxStyleEnum up,
  * HISTORY: * 03/27/1992  SB : Created. * 05/18/1995 JLB : Greatly revised for
  *new font system.                                     *
  *=============================================================================================*/
-int Format_Window_String(std::span<char> string, int max_line_len, int& width,
-                         int& height) {
+int Format_Window_String(std::span<char> string, const int max_line_len,
+                         int& width, int& height) {
+  return Format_Window_String(CurrentFontStyle(), string, max_line_len, width,
+                              height);
+}
+
+int Format_Window_String(const FontStyle& font, std::span<char> string,
+                         int max_line_len, int& width, int& height,
+                         const std::source_location location) {
   width = 0;
   height = 0;
 
@@ -233,25 +241,25 @@ int Format_Window_String(std::span<char> string, int max_line_len, int& width,
   size_t cursor = 0;
   while (cursor < string.size() && base::At(string, cursor) != '\0') {
     const auto line_start = cursor;
-    height += g_font_max_height + g_font_y_spacing;
+    height += FontLineHeight(font, location);
     ++lines;
     int line_len = 0;
     while (cursor < string.size() && line_len < max_line_len &&
            base::At(string, cursor) != '\r' &&
            base::At(string, cursor) != '\0') {
-      line_len += CharPixelWidth(base::At(string, cursor++));
+      line_len += CharPixelWidth(font, base::At(string, cursor++), location);
     }
     if (line_len >= max_line_len) {
       const auto overflow = cursor;
       while (cursor > line_start &&
              (cursor == string.size() || base::At(string, cursor) != ' ')) {
-        line_len -= CharPixelWidth(base::At(string, --cursor));
+        line_len -= CharPixelWidth(font, base::At(string, --cursor), location);
       }
       if (cursor == line_start) {
         cursor = overflow > line_start ? overflow - 1 : line_start;
         line_len = 0;
         for (auto c = line_start; c < cursor; ++c) {
-          line_len += CharPixelWidth(base::At(string, c));
+          line_len += CharPixelWidth(font, base::At(string, c), location);
         }
       }
     }
@@ -811,6 +819,7 @@ void Conquer_Clip_Text_Print(PixelView& view, const char* text, int x, int y,
   char buffer[512];
   port::SafeCopy(buffer, text);
   Simple_Text_Print(view, nullptr, 0, 0, kTBlack, kTBlack, flag);
+  const FontStyle font = TextFontStyle(flag);
   std::span<char> source(buffer);
   int offset = 0;
   while (offset < width && !source.empty() && source.front() != '\0') {
@@ -820,7 +829,7 @@ void Conquer_Clip_Text_Print(PixelView& view, const char* text, int x, int y,
     int line_width = 0;
     size_t visible = 0;
     while (visible < count) {
-      const int next = CharPixelWidth(base::At(source, visible));
+      const int next = CharPixelWidth(font, base::At(source, visible));
       if (offset + line_width + next >= width) {
         break;
       }

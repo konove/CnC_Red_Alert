@@ -54,6 +54,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
+#include <source_location>
 #include <span>
 #include <string>
 #include <string_view>
@@ -277,8 +278,15 @@ static constexpr bool Is_Line_Break(const char c) {
   return c == '\r' || c == '@' || c == '\0';
 }
 
-int Format_Window_String(std::span<char> string, int max_line_len, int& width,
-                         int& height) {
+int Format_Window_String(std::span<char> string, const int max_line_len,
+                         int& width, int& height) {
+  return Format_Window_String(CurrentFontStyle(), string, max_line_len, width,
+                              height);
+}
+
+int Format_Window_String(const FontStyle& font, std::span<char> string,
+                         int max_line_len, int& width, int& height,
+                         const std::source_location location) {
   width = 0;
   height = 0;
 
@@ -290,24 +298,24 @@ int Format_Window_String(std::span<char> string, int max_line_len, int& width,
   size_t cursor = 0;
   while (cursor < string.size() && base::At(string, cursor) != '\0') {
     const auto line_start = cursor;
-    height += g_font_max_height + g_font_y_spacing;
+    height += FontLineHeight(font, location);
     ++lines;
     int line_len = 0;
     while (cursor < string.size() && line_len < max_line_len &&
            !Is_Line_Break(base::At(string, cursor))) {
-      line_len += CharPixelWidth(base::At(string, cursor++));
+      line_len += CharPixelWidth(font, base::At(string, cursor++), location);
     }
     if (line_len >= max_line_len) {
       const auto overflow = cursor;
       while (cursor > line_start &&
              (cursor == string.size() || base::At(string, cursor) != ' ')) {
-        line_len -= CharPixelWidth(base::At(string, --cursor));
+        line_len -= CharPixelWidth(font, base::At(string, --cursor), location);
       }
       if (cursor == line_start) {
         cursor = overflow > line_start ? overflow - 1 : line_start;
         line_len = 0;
         for (auto c = line_start; c < cursor; ++c) {
-          line_len += CharPixelWidth(base::At(string, c));
+          line_len += CharPixelWidth(font, base::At(string, c), location);
         }
       }
     }
@@ -848,6 +856,7 @@ void Conquer_Clip_Text_Print(PixelView& view, const char* text, int x, int y,
   char buffer[512];
   port::SafeCopy(buffer, text);
   Simple_Text_Print(view, nullptr, 0, 0, nullptr, kTBlack, flag);
+  const FontStyle font = TextFontStyle(flag);
   std::span<char> source(buffer);
   int offset = 0;
   while (offset < width && !source.empty() && source.front() != '\0') {
@@ -857,7 +866,7 @@ void Conquer_Clip_Text_Print(PixelView& view, const char* text, int x, int y,
     int line_width = 0;
     size_t visible = 0;
     while (visible < count) {
-      const int next = CharPixelWidth(base::At(source, visible));
+      const int next = CharPixelWidth(font, base::At(source, visible));
       if (offset + line_width + next >= width) {
         break;
       }
@@ -1016,11 +1025,10 @@ void Draw_Caption(PixelView& view, const char* text, int x, int y, int w) {
       Fancy_Text_Print(view, text, (w / 2) + x, 16 + y,
                        GadgetClass::Get_Color_Scheme(), kTBlack,
                        TPF_CENTER | kTpfText);
-      const int length = StringPixelWidth(text);
-      view.DrawLine(x + (w / 2) - (length / 2),
-                    y + g_font_max_height + g_font_y_spacing + 16,
-                    x + (w / 2) + (length / 2),
-                    y + g_font_max_height + g_font_y_spacing + 16,
+      const FontStyle font = TextFontStyle(TPF_CENTER | kTpfText);
+      const int length = StringPixelWidth(font, text);
+      view.DrawLine(x + (w / 2) - (length / 2), y + FontLineHeight(font) + 16,
+                    x + (w / 2) + (length / 2), y + FontLineHeight(font) + 16,
                     GadgetClass::Get_Color_Scheme()->Box);
     }
   }
