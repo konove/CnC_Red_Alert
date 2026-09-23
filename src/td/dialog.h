@@ -47,10 +47,10 @@ void Fancy_Text_Print(PixelView& view, int text, int x, int y, int fore,
   Fancy_Text_Print(view, text, x, y, fore, back, flag,
                    absl::MakeConstSpan(packed));
 }
-// The font state a text print needs beyond the glyphs themselves.
+// What a text print draws with: its adjusted flags, colour and font.
 struct TextStyle {
-  TextPrintType flag;    // The flags after the chosen font's own fixups.
-  int forecolor;         // Palette index the glyphs print in.
+  TextPrintType flag{};  // The flags after the chosen font's own fixups.
+  int forecolor = 0;     // Palette index the glyphs print in.
   FontStyle font_style;  // The font, spacing and glyph palette.
 };
 
