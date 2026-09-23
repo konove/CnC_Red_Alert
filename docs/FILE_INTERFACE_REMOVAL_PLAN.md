@@ -1637,3 +1637,9 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
 - **2026-09-23: follow-up — `file_access.h` moved to `tech/`.** Nothing in sdllib uses `FileAccess`
   since the `IO_*` functions went; its users are the stream openers and the game code that calls
   them. 31 includes updated; both builds clean, 733/733 tests.
+- **2026-09-23: follow-up — the parked `Extract()` temp-file case.** The temp file is opened with
+  `DiskStream::Open` by its exact name instead of `OpenGameFile`, whose write path now resolves a
+  lowercase twin: a stale `general4.mix.tmp` from an interrupted run no longer captures the copy
+  while the rename looks for `GENERAL4.MIX.tmp`. Checked on the Steam data with `GENERAL4.MIX`
+  removed and a junk `general4.mix.tmp` present: `GENERAL4.MIX` and `SCORES.MIX` came back
+  byte-identical, no `.tmp` was left, and the stale file was untouched. 733/733 tests, RA smoke OK.

@@ -158,6 +158,7 @@
 #include "tech/archive.h"
 #include "tech/audio_mixer.h"
 #include "tech/byte_stream.h"
+#include "tech/disk_stream.h"
 #include "tech/file_access.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
@@ -2612,13 +2613,15 @@ bool Load_Recording_Values(ByteStream& file) {
 // file wins over the packed one). Copy into a sibling "<outname>.tmp"
 // instead, close both streams, and only then rename the temp file over
 // outname; a failed open, a short read, or a failed rename all leave
-// outname untouched.
+// outname untouched. The temp file is opened by its exact name, not through
+// OpenGameFile, which would write into a stale lowercase twin (left by an
+// interrupted run) while the rename and remove below use the exact name.
 void Extract(const char* filename, const char* outname) {
   const std::string temp_name = std::string(outname) + ".tmp";
   bool copy_ok = false;
   {
     const auto in_file = OpenGameFile(filename);
-    const auto out_file = OpenGameFile(temp_name, FileAccess::kWrite);
+    const auto out_file = DiskStream::Open(temp_name, FileAccess::kWrite);
     if (in_file && out_file) {
       std::array<char, 32768> buffer{};
       while (true) {
