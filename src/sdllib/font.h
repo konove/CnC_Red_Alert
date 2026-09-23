@@ -30,10 +30,9 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "base/array.h"
-#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
+#include "port/unaligned.h"
 
 // Byte offsets, within the font info block, of the two font-wide metrics the
 // game reads.
@@ -85,9 +84,7 @@ class FontView {
     if (std::ssize(font_) < base::ssize{sizeof(FontHeader)}) {
       return;
     }
-    FontHeader header{};
-    base::CopyBytes(base::ObjectBytes(header), std::as_bytes(font_),
-                    sizeof(header));
+    const auto header = port::ReadUnaligned<FontHeader>(font_);
     info_ = DataFrom(header.info_block);
     offsets_ = DataFrom(header.offset_block);
     widths_ = DataFrom(header.width_block);
@@ -121,32 +118,34 @@ class FontView {
   [[nodiscard]] std::span<const std::byte> GlyphData(uint8_t character) const {
     // The offset table holds one uint16 offset from the start of the font data
     // per glyph.
-    const auto from_glyph =
-        DataFrom(ReadWord(offsets_, base::ssize{2} * character));
     const base::ssize glyph_bytes =
         base::ssize{(GlyphWidth(character) + 1) / 2} * GlyphHeight(character);
-    return glyph_bytes <= std::ssize(from_glyph)
-               ? from_glyph.first(base::ToSize(glyph_bytes))
-               : std::span<const std::byte>{};
+    return Slice(font_, ReadWord(offsets_, base::ssize{2} * character),
+                 glyph_bytes);
   }
 
  private:
-  // ReadByte and ReadWord return 0 for an offset outside data; see the class
-  // comment.
+  // Returns count bytes of data from offset, or an empty span if any of them
+  // lies outside data. Every read goes through here, which is what keeps a
+  // malformed font in bounds; see the class comment.
+  static std::span<const std::byte> Slice(std::span<const std::byte> data,
+                                          base::ssize offset,
+                                          base::ssize count) {
+    if (offset < 0 || count < 0 || offset > std::ssize(data) ||
+        count > std::ssize(data) - offset) {
+      return {};
+    }
+    return data.subspan(base::ToSize(offset), base::ToSize(count));
+  }
+  // ReadByte and ReadWord return 0 for an offset outside data.
   static uint8_t ReadByte(std::span<const std::byte> data, base::ssize offset) {
-    return offset < std::ssize(data)
-               ? std::to_integer<uint8_t>(base::At(data, offset))
-               : 0;
+    const auto bytes = Slice(data, offset, 1);
+    return bytes.empty() ? 0 : std::to_integer<uint8_t>(bytes.front());
   }
   static uint16_t ReadWord(std::span<const std::byte> data,
                            base::ssize offset) {
-    if (std::ssize(data) - offset < base::ssize{sizeof(uint16_t)}) {
-      return 0;
-    }
-    uint16_t value = 0;
-    base::CopyBytes(base::ObjectBytes(value),
-                    data.subspan(base::ToSize(offset)), sizeof(value));
-    return value;
+    const auto bytes = Slice(data, offset, sizeof(uint16_t));
+    return bytes.empty() ? 0 : port::ReadUnaligned<uint16_t>(bytes);
   }
   [[nodiscard]] int PackedHeight(uint8_t character) const {
     return ReadWord(heights_, base::ssize{2} * character);
@@ -155,8 +154,7 @@ class FontView {
   // is past it. Tables carry no length in the header, so each is bounded only
   // by the end of the data.
   [[nodiscard]] std::span<const std::byte> DataFrom(base::ssize offset) const {
-    return offset <= std::ssize(font_) ? font_.subspan(base::ToSize(offset))
-                                       : std::span<const std::byte>{};
+    return Slice(font_, offset, std::ssize(font_) - offset);
   }
   std::span<const std::byte> font_;  // The whole font file.
   // The header's tables, each running to the end of font_; empty if the
@@ -184,8 +182,7 @@ int CharPixelWidth(char character);
 int StringPixelWidth(const char* text);
 
 // Copies the first 16 entries of palette into g_font_palette, or does nothing
-// if palette holds fewer. Entries 0 and 1 are overwritten by the colours of
-// every PixelView::Print(), so only entries 2-15 last.
+// if palette holds fewer. Only entries 2-15 last; see g_font_palette.
 void SetFontPalette(std::span<const uint8_t> palette);
 
 // Extra pixels printed after every glyph and between lines. Callers set these

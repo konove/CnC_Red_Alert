@@ -132,8 +132,7 @@ TEST(SetFontTest, CachesMetricsAbove127) {
 }
 
 TEST(SetFontPaletteTest, CopiesSixteenEntriesAndIgnoresShortPalettes) {
-  std::array<uint8_t, 16> saved{};
-  std::ranges::copy(g_font_palette, saved.begin());
+  const auto saved = std::to_array(g_font_palette);
 
   std::array<uint8_t, 17> palette{};
   std::ranges::iota(palette, uint8_t{100});

@@ -34,9 +34,17 @@ std::span<const std::byte> SetFont(std::span<const std::byte> font) {
   return previous_font;
 }
 
+namespace {
+
+// Returns how far printing character in font moves the pen.
+int Advance(const FontView& font, const char character) {
+  return font.GlyphWidth(static_cast<uint8_t>(character)) + g_font_x_spacing;
+}
+
+}  // namespace
+
 int CharPixelWidth(const char character) {
-  return FontView(g_font).GlyphWidth(static_cast<uint8_t>(character)) +
-         g_font_x_spacing;
+  return Advance(FontView(g_font), character);
 }
 
 int StringPixelWidth(const char* text) {
@@ -53,8 +61,7 @@ int StringPixelWidth(const char* text) {
       widest_line = std::max(widest_line, line_width);
       line_width = 0;
     } else {
-      line_width +=
-          font.GlyphWidth(static_cast<uint8_t>(character)) + g_font_x_spacing;
+      line_width += Advance(font, character);
     }
   }
   return std::max(widest_line, line_width);
