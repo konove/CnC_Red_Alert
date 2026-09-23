@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/buffer.h"
 #include "base/numeric.h"
@@ -37,6 +38,18 @@ base::ssize ClampedSeek(const base::ssize position, const base::ssize size,
   return std::clamp<base::ssize>(base + offset, 0, size);
 }
 }  // namespace
+
+std::vector<std::byte> ByteStream::ReadBytes(const base::ssize count) {
+  std::vector<std::byte> bytes(base::ToSize(count));
+  bytes.resize(base::ToSize(Read(bytes)));
+  return bytes;
+}
+
+std::string ByteStream::ReadString(const base::ssize count) {
+  std::string text(base::ToSize(count), '\0');
+  text.resize(base::ToSize(Read(std::span(text))));
+  return text;
+}
 
 std::unique_ptr<DiskStream> DiskStream::Open(const std::string_view path,
                                              const FileAccess access) {

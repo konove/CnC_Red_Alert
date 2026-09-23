@@ -2,7 +2,9 @@
 
 #include "tech/byte_stream.h"
 
+#include <array>
 #include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <ios>
@@ -12,6 +14,8 @@
 #include <string_view>
 #include <utility>
 
+#include "base/array.h"
+#include "base/buffer.h"
 #include "base/seek_origin.h"
 #include "gtest/gtest.h"
 #include "sdllib/file_access.h"
@@ -129,6 +133,71 @@ TEST_F(DiskStreamTest, RangeOverDiskFileReadsItsBytes) {
   ASSERT_NE(disk, nullptr);
   RangeStream range(std::move(disk), 1, 4);
   EXPECT_EQ(ReadAll(range, 10), "abcd");
+}
+
+struct Header {
+  int32_t magic;
+  int16_t version;
+  int16_t flags;
+};
+
+TEST_F(DiskStreamTest, ObjectsRoundTripThroughWriteObjectAndReadObject) {
+  const Header written{.magic = 0x52415356, .version = 7, .flags = -2};
+  {
+    const std::unique_ptr<DiskStream> out =
+        DiskStream::Open(path(), FileAccess::kWrite);
+    ASSERT_NE(out, nullptr);
+    EXPECT_TRUE(out->WriteObject(written));
+  }
+  const std::unique_ptr<DiskStream> in =
+      DiskStream::Open(path(), FileAccess::kRead);
+  ASSERT_NE(in, nullptr);
+  Header read{};
+  EXPECT_TRUE(in->ReadObject(read));
+  EXPECT_EQ(read.magic, written.magic);
+  EXPECT_EQ(read.version, written.version);
+  EXPECT_EQ(read.flags, written.flags);
+}
+
+TEST(MemoryStreamTest, ReadObjectFailsOnShortRead) {
+  const std::array<std::byte, 3> bytes{};
+  MemoryStream stream(bytes);
+  int32_t value = 0;
+  EXPECT_FALSE(stream.ReadObject(value));
+}
+
+TEST(MemoryStreamTest, ArraysAreObjectsToo) {
+  const int16_t written[3] = {1, 2, 3};
+  MemoryStream stream(std::as_bytes(std::span(written)));
+  int16_t read[3] = {};
+  EXPECT_TRUE(stream.ReadObject(read));
+  EXPECT_EQ(base::At(read, 2), 3);
+}
+
+TEST(MemoryStreamTest, ReadBytesAndReadStringStopAtEndOfStream) {
+  const std::string_view text = "abcde";
+  MemoryStream stream(std::as_bytes(std::span(text)));
+  EXPECT_EQ(stream.ReadString(3), "abc");
+  EXPECT_EQ(std::ssize(stream.ReadBytes(10)), 2);
+}
+
+TEST(MemoryStreamTest, SpanAndRawPointerReadsAgree) {
+  MemoryStream stream(Bytes("xyz"));
+  std::array<std::byte, 2> first{};
+  EXPECT_EQ(stream.Read(std::span(first)), 2);
+  EXPECT_EQ(static_cast<char>(first.at(1)), 'y');
+  char last = 0;
+  EXPECT_EQ(stream.Read(base::ObjectBytes(last)), 1);
+  EXPECT_EQ(last, 'z');
+}
+
+TEST(MemoryStreamTest, TypedViewCountIsBytesRatherThanElements) {
+  const std::array<uint16_t, 2> words{0x0102, 0x0304};
+  MemoryStream stream(std::as_bytes(std::span(words)));
+  std::array<uint16_t, 2> read{};
+  EXPECT_EQ(stream.Read(std::span(read), 2), 2);  // 2 bytes = 1 element
+  EXPECT_EQ(read.at(0), words.at(0));
+  EXPECT_EQ(read.at(1), 0);
 }
 
 }  // namespace

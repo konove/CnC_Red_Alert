@@ -1070,7 +1070,7 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
 
 - 2026-09-22: plan written from two surveys of the tree at `ae978cf6`.
 - 2026-09-22: Step 1 landed. Deleted `FuseClass::Fuse_Read/Fuse_Write`,
-  `SessionClass::Save/Load(GameFile&)`, `Read_Line(File&, ...)`, TD's `Load_Picture`, the eight
+  `SessionClass::Save/Load(GameFile&)`, `Read_Line(File&, ...)`, TD's `Load_Picture`, the seven
   unused-local sites (`const GameFile file;` in td/udata.cc, td/idata.cc x2, ra/udata.cc,
   ra/idata.cc; `const DiskFile file("tabs.shp");` in ra/tab.cc;
   `const GameFile loadfile("SAVEGAME.NET");` in ra/wol_gsup.cc), and the dead
@@ -1082,3 +1082,21 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   ra/tab.cc, `td/jshell.h` and the `port/bytes_of.h` in td/startup.cc. Every deletion was confirmed
   dead first (grep across the tree, including tests). Both `build` and `build-strict` build clean;
   `ctest --test-dir build-strict` is 713/713 passed.
+- 2026-09-22: Step 2 landed. `ByteStream` gained `File`'s typed helpers verbatim (`ReadObject`,
+  `WriteObject`, `ReadBytes`, `ReadString`, the typed-span/count/char-array `Read`/`Write`
+  overloads); `DiskStream`, `MemoryStream` and `RangeStream` each got `using ByteStream::Read;`/
+  `using ByteStream::Write;` so their byte overrides don't hide the templates. `File` keeps its own
+  copies untouched, on purpose, so the compiler still flags every caller that hands a `File` where a
+  `ByteStream&` is now expected. Ported `file_test.cc`'s six cases to `byte_stream_test.cc` over
+  `DiskStream`/`MemoryStream`; `ArraysAreObjectsToo` and `SpanAndRawPointerReadsAgree` moved to
+  `MemoryStream` since it can't write, so `ArraysAreObjectsToo` builds its `MemoryStream` straight
+  from the encoded bytes rather than round-tripping through `WriteObject`. Raw array/`std::array`
+  indexing in the new tests uses `base::At`/`.at()` per the strict build's bounds-check rules, which
+  the brief's snippets didn't need since `misc-const-correctness` only complained once the members
+  existed. RED: `cmake --build build-strict --target tech_test` failed with
+  `no member named 'ReadObject'/'ReadString'/'ReadBytes' in 'DiskStream'/'MemoryStream'`. GREEN:
+  same build clean;
+  `ctest --test-dir build-strict -R 'MemoryStreamTest|DiskStreamTest|RangeStreamTest'` 14/14 passed;
+  full `tech_test` 250/250 passed. Both `build` and `build-strict` build clean;
+  `ctest --test-dir build-strict` is 719/719 passed (up from 713 in Step 1, the six new
+  `byte_stream_test.cc` cases).
