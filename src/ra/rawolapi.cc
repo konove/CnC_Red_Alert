@@ -150,7 +150,7 @@ RAChatEventSink::~RAChatEventSink() {
 //***********************************************************************************************
 // QueryInterface
 //
-HRESULT __stdcall RAChatEventSink::QueryInterface(const IID& iid, void** ppv) {
+HRESULT RAChatEventSink::QueryInterface(const IID& iid, void** ppv) {
   //	debugprint( "RAChatEventSink::QueryInterface\n" );
   if ((iid == IID_IUnknown) || (iid == IID_IChatEvent)) {
     *ppv = static_cast<IChatEvent*>(this);
@@ -165,7 +165,7 @@ HRESULT __stdcall RAChatEventSink::QueryInterface(const IID& iid, void** ppv) {
 //***********************************************************************************************
 // AddRef
 //
-ULONG __stdcall RAChatEventSink::AddRef() {
+ULONG RAChatEventSink::AddRef() {
   //	debugprint( "RAChatEventSink::AddRef\n" );
   return static_cast<ULONG>(m_cRef.fetch_add(1) + 1);
 }
@@ -173,7 +173,7 @@ ULONG __stdcall RAChatEventSink::AddRef() {
 //***********************************************************************************************
 // Release
 //
-ULONG __stdcall RAChatEventSink::Release() {
+ULONG RAChatEventSink::Release() {
   //	debugprint( "RAChatEventSink::Release\n" );
   const int remaining = m_cRef.fetch_sub(1) - 1;
   if (remaining == 0) {
@@ -1633,8 +1633,7 @@ RADownloadEventSink::RADownloadEventSink()
 //***********************************************************************************************
 // QueryInterface
 //
-HRESULT __stdcall RADownloadEventSink::QueryInterface(const IID& iid,
-                                                      void** ppv) {
+HRESULT RADownloadEventSink::QueryInterface(const IID& iid, void** ppv) {
   if ((iid == IID_IUnknown) || (iid == IID_IDownloadEvent)) {
     *ppv = static_cast<IDownloadEvent*>(this);
   } else {
@@ -1648,14 +1647,14 @@ HRESULT __stdcall RADownloadEventSink::QueryInterface(const IID& iid,
 //***********************************************************************************************
 // AddRef
 //
-ULONG __stdcall RADownloadEventSink::AddRef() {
+ULONG RADownloadEventSink::AddRef() {
   return static_cast<ULONG>(m_cRef.fetch_add(1) + 1);
 }
 
 //***********************************************************************************************
 // Release
 //
-ULONG __stdcall RADownloadEventSink::Release() {
+ULONG RADownloadEventSink::Release() {
   const int remaining = m_cRef.fetch_sub(1) - 1;
   if (remaining == 0) {
     delete this;
@@ -1744,8 +1743,7 @@ RANetUtilEventSink::~RANetUtilEventSink() {
 //***********************************************************************************************
 // QueryInterface
 //
-HRESULT __stdcall RANetUtilEventSink::QueryInterface(const IID& iid,
-                                                     void** ppv) {
+HRESULT RANetUtilEventSink::QueryInterface(const IID& iid, void** ppv) {
   //	debugprint( "RANetUtilEventSink::QueryInterface\n" );
   if ((iid == IID_IUnknown) || (iid == IID_INetUtilEvent)) {
     *ppv = static_cast<INetUtilEvent*>(this);
@@ -1760,7 +1758,7 @@ HRESULT __stdcall RANetUtilEventSink::QueryInterface(const IID& iid,
 //***********************************************************************************************
 // AddRef
 //
-ULONG __stdcall RANetUtilEventSink::AddRef() {
+ULONG RANetUtilEventSink::AddRef() {
   //	debugprint( "RANetUtilEventSink::AddRef\n" );
   return static_cast<ULONG>(m_cRef.fetch_add(1) + 1);
 }
@@ -1768,7 +1766,7 @@ ULONG __stdcall RANetUtilEventSink::AddRef() {
 //***********************************************************************************************
 // Release
 //
-ULONG __stdcall RANetUtilEventSink::Release() {
+ULONG RANetUtilEventSink::Release() {
   //	debugprint( "RANetUtilEventSink::Release\n" );
   const int remaining = m_cRef.fetch_sub(1) - 1;
   if (remaining == 0) {

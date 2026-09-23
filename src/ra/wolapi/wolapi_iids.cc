@@ -46,10 +46,6 @@
 #include "port/win32/win32_com.h"
 #include "ra/wolapi/wolapi.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 const IID IID_IRTPatcher = {0x925CDEDE,
                             0x71B9,
                             0x11D1,
@@ -134,6 +130,3 @@ const CLSID CLSID_Chat2 = {0x8B938191,
                            0x11D1,
                            {0x98, 0x08, 0x00, 0x60, 0x97, 0x06, 0xFA, 0x0C}};
 
-#ifdef __cplusplus
-}
-#endif

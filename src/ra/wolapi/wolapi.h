@@ -69,114 +69,90 @@
 #include "port/win32/win32_com.h"
 #include "port/win32/win32_types.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Forward Declarations */
 
 #ifndef __IRTPatcher_FWD_DEFINED__
 #define __IRTPatcher_FWD_DEFINED__
-typedef interface IRTPatcher IRTPatcher;
+interface IRTPatcher;
 #endif /* __IRTPatcher_FWD_DEFINED__ */
 
 #ifndef __IRTPatcherEvent_FWD_DEFINED__
 #define __IRTPatcherEvent_FWD_DEFINED__
-typedef interface IRTPatcherEvent IRTPatcherEvent;
+interface IRTPatcherEvent;
 #endif /* __IRTPatcherEvent_FWD_DEFINED__ */
 
 #ifndef __IChat_FWD_DEFINED__
 #define __IChat_FWD_DEFINED__
-typedef interface IChat IChat;
+interface IChat;
 #endif /* __IChat_FWD_DEFINED__ */
 
 #ifndef __IChatEvent_FWD_DEFINED__
 #define __IChatEvent_FWD_DEFINED__
-typedef interface IChatEvent IChatEvent;
+interface IChatEvent;
 #endif /* __IChatEvent_FWD_DEFINED__ */
 
 #ifndef __IDownload_FWD_DEFINED__
 #define __IDownload_FWD_DEFINED__
-typedef interface IDownload IDownload;
+interface IDownload;
 #endif /* __IDownload_FWD_DEFINED__ */
 
 #ifndef __IDownloadEvent_FWD_DEFINED__
 #define __IDownloadEvent_FWD_DEFINED__
-typedef interface IDownloadEvent IDownloadEvent;
+interface IDownloadEvent;
 #endif /* __IDownloadEvent_FWD_DEFINED__ */
 
 #ifndef __INetUtil_FWD_DEFINED__
 #define __INetUtil_FWD_DEFINED__
-typedef interface INetUtil INetUtil;
+interface INetUtil;
 #endif /* __INetUtil_FWD_DEFINED__ */
 
 #ifndef __INetUtilEvent_FWD_DEFINED__
 #define __INetUtilEvent_FWD_DEFINED__
-typedef interface INetUtilEvent INetUtilEvent;
+interface INetUtilEvent;
 #endif /* __INetUtilEvent_FWD_DEFINED__ */
 
 #ifndef __IChat2_FWD_DEFINED__
 #define __IChat2_FWD_DEFINED__
-typedef interface IChat2 IChat2;
+interface IChat2;
 #endif /* __IChat2_FWD_DEFINED__ */
 
 #ifndef __IChat2Event_FWD_DEFINED__
 #define __IChat2Event_FWD_DEFINED__
-typedef interface IChat2Event IChat2Event;
+interface IChat2Event;
 #endif /* __IChat2Event_FWD_DEFINED__ */
 
 #ifndef __RTPatcher_FWD_DEFINED__
 #define __RTPatcher_FWD_DEFINED__
 
-#ifdef __cplusplus
-typedef class RTPatcher RTPatcher;
-#else
-typedef struct RTPatcher RTPatcher;
-#endif /* __cplusplus */
+class RTPatcher;
 
 #endif /* __RTPatcher_FWD_DEFINED__ */
 
 #ifndef __Chat_FWD_DEFINED__
 #define __Chat_FWD_DEFINED__
 
-#ifdef __cplusplus
-typedef class Chat Chat;
-#else
-typedef struct Chat Chat;
-#endif /* __cplusplus */
+class Chat;
 
 #endif /* __Chat_FWD_DEFINED__ */
 
 #ifndef __Download_FWD_DEFINED__
 #define __Download_FWD_DEFINED__
 
-#ifdef __cplusplus
-typedef class Download Download;
-#else
-typedef struct Download Download;
-#endif /* __cplusplus */
+class Download;
 
 #endif /* __Download_FWD_DEFINED__ */
 
 #ifndef __NetUtil_FWD_DEFINED__
 #define __NetUtil_FWD_DEFINED__
 
-#ifdef __cplusplus
-typedef class NetUtil NetUtil;
-#else
-typedef struct NetUtil NetUtil;
-#endif /* __cplusplus */
+class NetUtil;
 
 #endif /* __NetUtil_FWD_DEFINED__ */
 
 #ifndef __Chat2_FWD_DEFINED__
 #define __Chat2_FWD_DEFINED__
 
-#ifdef __cplusplus
-typedef class Chat2 Chat2;
-#else
-typedef struct Chat2 Chat2;
-#endif /* __cplusplus */
+class Chat2;
 
 #endif /* __Chat2_FWD_DEFINED__ */
 
@@ -190,7 +166,7 @@ typedef struct Chat2 Chat2;
  ****************************************/
 /* [object][unique][helpstring][uuid] */
 
-EXTERN_C const IID IID_IRTPatcher;
+extern const IID IID_IRTPatcher;
 
 interface DECLSPEC_UUID("925CDEDE-71B9-11D1-B1C5-006097176556") IRTPatcher
     : public IUnknown {
@@ -214,7 +190,7 @@ interface DECLSPEC_UUID("925CDEDE-71B9-11D1-B1C5-006097176556") IRTPatcher
  ****************************************/
 /* [object][unique][helpstring][uuid] */
 
-EXTERN_C const IID IID_IRTPatcherEvent;
+extern const IID IID_IRTPatcherEvent;
 
 interface DECLSPEC_UUID("925CDEE3-71B9-11D1-B1C5-006097176556") IRTPatcherEvent
     : public IUnknown {
@@ -258,7 +234,7 @@ struct Ladder {
   struct Ladder __RPC_FAR* next;
   unsigned char login_name[40];
 };
-typedef int GroupID;
+using GroupID = int;
 
 struct Server {
   int gametype;
@@ -325,19 +301,19 @@ struct Update {
   unsigned char password[65];
   unsigned char localpath[256];
 };
-typedef struct Server Server;
+struct Server;
 
-typedef struct Channel Channel;
+struct Channel;
 
-typedef struct User User;
+struct User;
 
-typedef struct Group Group;
+struct Group;
 
-typedef struct Update Update;
+struct Update;
 
-typedef struct Ladder Ladder;
+struct Ladder;
 
-EXTERN_C const IID IID_IChat;
+extern const IID IID_IChat;
 
 interface DECLSPEC_UUID("4DD3BAF4-7579-11D1-B1C6-006097176556") IChat
     : public IUnknown {
@@ -485,7 +461,7 @@ interface DECLSPEC_UUID("4DD3BAF4-7579-11D1-B1C6-006097176556") IChat
  ****************************************/
 /* [object][unique][helpstring][uuid] */
 
-EXTERN_C const IID IID_IChatEvent;
+extern const IID IID_IChatEvent;
 
 interface DECLSPEC_UUID("4DD3BAF6-7579-11D1-B1C6-006097176556") IChatEvent
     : public IUnknown {
@@ -628,7 +604,7 @@ interface DECLSPEC_UUID("4DD3BAF6-7579-11D1-B1C6-006097176556") IChatEvent
  ****************************************/
 /* [unique][helpstring][dual][uuid][object] */
 
-EXTERN_C const IID IID_IDownload;
+extern const IID IID_IDownload;
 
 interface DECLSPEC_UUID("0BF5FCEB-9F03-11D1-9DC7-006097C54321") IDownload
     : public IUnknown {
@@ -654,7 +630,7 @@ interface DECLSPEC_UUID("0BF5FCEB-9F03-11D1-9DC7-006097C54321") IDownload
  ****************************************/
 /* [object][unique][helpstring][uuid] */
 
-EXTERN_C const IID IID_IDownloadEvent;
+extern const IID IID_IDownloadEvent;
 
 interface DECLSPEC_UUID("6869E99D-9FB4-11D1-9DC8-006097C54321") IDownloadEvent
     : public IUnknown {
@@ -684,7 +660,7 @@ interface DECLSPEC_UUID("6869E99D-9FB4-11D1-9DC8-006097C54321") IDownloadEvent
  ****************************************/
 /* [object][unique][helpstring][uuid] */
 
-EXTERN_C const IID IID_INetUtil;
+extern const IID IID_INetUtil;
 
 interface DECLSPEC_UUID("B832B0AA-A7D3-11D1-97C3-00609706FA0C") INetUtil
     : public IUnknown {
@@ -721,7 +697,7 @@ interface DECLSPEC_UUID("B832B0AA-A7D3-11D1-97C3-00609706FA0C") INetUtil
  ****************************************/
 /* [object][unique][helpstring][uuid] */
 
-EXTERN_C const IID IID_INetUtilEvent;
+extern const IID IID_INetUtilEvent;
 
 interface DECLSPEC_UUID("B832B0AC-A7D3-11D1-97C3-00609706FA0C") INetUtilEvent
     : public IUnknown {
@@ -750,7 +726,7 @@ interface DECLSPEC_UUID("B832B0AC-A7D3-11D1-97C3-00609706FA0C") INetUtilEvent
  ****************************************/
 /* [object][unique][helpstring][uuid] */
 
-typedef unsigned long GID;
+using GID = unsigned long;
 
 enum class GTYPE { SERVER = 0, CHANNEL = 1, CLIENT = 2 };
 using enum GTYPE;
@@ -759,7 +735,7 @@ inline constexpr int kAllexit = 0;
 inline constexpr int kCreatorexit = 1;
 inline constexpr int kClosec = 2;
 
-EXTERN_C const IID IID_IChat2;
+extern const IID IID_IChat2;
 
 interface DECLSPEC_UUID("8B938190-EF3F-11D1-9808-00609706FA0C") IChat2
     : public IUnknown {
@@ -807,7 +783,7 @@ interface DECLSPEC_UUID("8B938190-EF3F-11D1-9808-00609706FA0C") IChat2
  ****************************************/
 /* [object][unique][helpstring][uuid] */
 
-EXTERN_C const IID IID_IChat2Event;
+extern const IID IID_IChat2Event;
 
 interface DECLSPEC_UUID("8B938192-EF3F-11D1-9808-00609706FA0C") IChat2Event
     : public IUnknown {
@@ -851,46 +827,33 @@ interface DECLSPEC_UUID("8B938192-EF3F-11D1-9808-00609706FA0C") IChat2Event
  ****************************************/
 /* [helpstring][version][uuid] */
 
-EXTERN_C const IID LIBID_WOLAPILib;
+extern const IID LIBID_WOLAPILib;
 
-#ifdef __cplusplus
-EXTERN_C const CLSID CLSID_RTPatcher;
+extern const CLSID CLSID_RTPatcher;
 
 class DECLSPEC_UUID("925CDEDF-71B9-11D1-B1C5-006097176556") RTPatcher;
-#endif
 
-#ifdef __cplusplus
-EXTERN_C const CLSID CLSID_Chat;
+extern const CLSID CLSID_Chat;
 
 class DECLSPEC_UUID("4DD3BAF5-7579-11D1-B1C6-006097176556") Chat;
-#endif
 
-#ifdef __cplusplus
-EXTERN_C const CLSID CLSID_Download;
+extern const CLSID CLSID_Download;
 
 class DECLSPEC_UUID("BF6EA206-9E55-11D1-9DC6-006097C54321") Download;
-#endif
 
-#ifdef __cplusplus
-EXTERN_C const CLSID CLSID_NetUtil;
+extern const CLSID CLSID_NetUtil;
 
 class DECLSPEC_UUID("B832B0AB-A7D3-11D1-97C3-00609706FA0C") NetUtil;
-#endif
 
-#ifdef __cplusplus
-EXTERN_C const CLSID CLSID_Chat2;
+extern const CLSID CLSID_Chat2;
 
 class DECLSPEC_UUID("8B938191-EF3F-11D1-9808-00609706FA0C") Chat2;
-#endif
 #endif /* __WOLAPILib_LIBRARY_DEFINED__ */
 
 /* Additional Prototypes for ALL interfaces */
 
 /* end of Additional Prototypes */
 
-#ifdef __cplusplus
-}
-#endif
 
 #ifdef __clang__
 #pragma clang diagnostic pop

@@ -42,7 +42,6 @@
 #define STDMETHOD_(type, method) virtual type method
 #define STDMETHODIMP HRESULT
 #define STDMETHODIMP_(type) type
-#define EXTERN_C extern "C"
 #define DECLSPEC_UUID(x)
 #define MIDL_INTERFACE(x) struct
 #define CONST_VTBL const
