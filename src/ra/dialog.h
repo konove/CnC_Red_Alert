@@ -7,6 +7,7 @@
 #include "absl/types/span.h"
 #include "port/format.h"
 #include "ra/defines.h"
+#include "sdllib/font.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
 
@@ -74,14 +75,25 @@ void Fancy_Text_Print(PixelView& view, int text, int x, int y,
 }
 // The font state a text print needs beyond the glyphs themselves.
 struct TextStyle {
-  TextPrintType flag;  // The flags after the chosen font's own fixups.
-  int forecolor;       // Palette index the glyphs print in.
+  TextPrintType flag;    // The flags after the chosen font's own fixups.
+  int forecolor;         // Palette index the glyphs print in.
+  FontStyle font_style;  // The font, spacing and glyph palette.
 };
 
-// Selects the font, spacing and font palette that `flag` asks for, and returns
-// the style a print of that text would use. Draws nothing, so code that only
-// needs StringPixelWidth() or g_font_max_height to be right calls this and
-// ignores the result.
+// Returns the font and spacing `flag` selects by its point size and shadow,
+// with the identity palette: all that measuring text needs. A flag without a
+// point size (TPF_LASTPOINT) keeps the current font, for now.
+FontStyle TextFontStyle(TextPrintType flag);
+
+// Returns the style a print with `flag` in the colours `fore` (PCOLOR_RED if
+// nullptr) and `back` uses: TextFontStyle() plus the glyph palette.
+TextStyle TextStyleFor(TextPrintType flag, RemapControlType* fore = nullptr,
+                       int back = kTBlack);
+
+// TextStyleFor(), also installed in the font globals. Temporary: callers move
+// to the style it returns (docs/FONT_GLOBALS_PLAN.md). Draws nothing, so code
+// that only needs StringPixelWidth() or g_font_max_height to be right calls
+// this and ignores the result.
 TextStyle Select_Text_Font(TextPrintType flag, RemapControlType* fore = nullptr,
                            int back = kTBlack);
 // Same, for the single-color scheme Plain_Text_Print builds.
