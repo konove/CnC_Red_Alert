@@ -51,7 +51,6 @@
 #include "ra/stage.h"
 #include "ra/type.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/file.h"
 #include "tech/fixed.h"
 
 /**********************************************************************************************

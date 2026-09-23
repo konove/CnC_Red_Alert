@@ -208,9 +208,6 @@ struct TLucentType {
   unsigned char reserved;
 };
 
-int Load_Picture(const char* filename, std::span<uint8_t> scratchbuf,
-                 std::span<uint8_t> destbuf, std::span<unsigned char> palette,
-                 PicturePlaneType format);
 std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
                                           int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);

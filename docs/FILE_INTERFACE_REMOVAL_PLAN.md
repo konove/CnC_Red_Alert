@@ -1069,3 +1069,16 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
 ## Progress
 
 - 2026-09-22: plan written from two surveys of the tree at `ae978cf6`.
+- 2026-09-22: Step 1 landed. Deleted `FuseClass::Fuse_Read/Fuse_Write`,
+  `SessionClass::Save/Load(GameFile&)`, `Read_Line(File&, ...)`, TD's `Load_Picture`, the eight
+  unused-local sites (`const GameFile file;` in td/udata.cc, td/idata.cc x2, ra/udata.cc,
+  ra/idata.cc; `const DiskFile file("tabs.shp");` in ra/tab.cc;
+  `const GameFile loadfile("SAVEGAME.NET");` in ra/wol_gsup.cc), and the dead
+  `Load_Alloc_Data(cfile)` + `delete[]` in td/startup.cc. Removed the ten stale `tech/file.h`
+  includes (ra/anim.h, ra/saveload.h — replaced with `<span>`, td/base.h, td/factory.h, td/layer.h,
+  td/mouse.h, td/score.h, td/sidebar.h, td/trigger.h, tech/byte_stream.h), plus includes that went
+  unused as a side effect: `tech/file_sink.h`/`tech/file_source.h` in ra/session.cc,
+  `tech/game_file.h` in td/udata.cc/td/idata.cc/ra/udata.cc/ra/idata.cc, `tech/disk_file.h` in
+  ra/tab.cc, `td/jshell.h` and the `port/bytes_of.h` in td/startup.cc. Every deletion was confirmed
+  dead first (grep across the tree, including tests). Both `build` and `build-strict` build clean;
+  `ctest --test-dir build-strict` is 713/713 passed.

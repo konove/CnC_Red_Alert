@@ -83,7 +83,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
-#include "tech/game_file.h"
 #include "tech/mix_archive.h"
 
 /*
@@ -1065,7 +1064,6 @@ void UnitTypeClass::Prep_For_Add() {
 void UnitTypeClass::One_Time() {
   for (const UnitType index : magic_enum::enum_values<UnitType>()) {
     UnitTypeClass& uclass = As_Reference(index);
-    const GameFile file;
 
     int largest = 0;
     //		if (uclass.Level != -1) {

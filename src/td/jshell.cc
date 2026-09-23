@@ -76,7 +76,6 @@
 #include "support.h"
 #include "td/startup.h"
 #include "tech/file.h"
-#include "tech/game_file.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *
@@ -267,13 +266,6 @@ int32_t Load_Uncompress(File& file, std::span<uint8_t> uncomp_buff,
     file.Close();
   }
   return result;
-}
-
-int Load_Picture(const char* filename, std::span<uint8_t> scratchbuf,
-                 std::span<uint8_t> destbuf, std::span<unsigned char> palette,
-                 PicturePlaneType /*unused*/) {
-  GameFile fc(filename);
-  return Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000;
 }
 
 std::vector<std::byte> LoadAllocData(File& file) {

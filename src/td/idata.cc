@@ -82,7 +82,6 @@
 #include "td/type.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/game_file.h"
 #include "tech/mix_archive.h"
 
 /*
@@ -1812,8 +1811,6 @@ InfantryType InfantryTypeClass::From_Name(const char* name) {
  *=============================================================================================*/
 void InfantryTypeClass::One_Time() {
   for (InfantryType index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
-    const GameFile file;
-
     const InfantryTypeClass* uclass = &As_Reference(index);
 
     /*
@@ -1856,8 +1853,6 @@ void InfantryTypeClass::One_Time() {
 void InfantryTypeClass::Init(TheaterType theater) {
   if (Get_Resolution_Factor() && (theater != TheWorld().last_theater())) {
     for (InfantryType index = INFANTRY_E1; index < INFANTRY_COUNT; index++) {
-      const GameFile file;
-
       const InfantryTypeClass* uclass = &As_Reference(index);
 
       uclass->Set_Cameo_Data({});

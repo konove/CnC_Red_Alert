@@ -46,7 +46,6 @@ class ArchiveWriter;
 
 #include "td/object.h"
 #include "td/vector.h"
-#include "tech/file.h"
 
 class LayerClass : public DynamicVectorClass<ObjectClass*> {
  public:

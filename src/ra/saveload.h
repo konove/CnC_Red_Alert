@@ -3,13 +3,13 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <string_view>
 
 #include "ra/defines.h"
 #include "tech/archive.h"
 #include "tech/byte_sink.h"
 #include "tech/byte_source.h"
-#include "tech/file.h"
 
 // Identifies a saved game written by this port. It follows the description
 // in the file header, where the original format kept the scenario number, so

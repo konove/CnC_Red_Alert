@@ -43,7 +43,6 @@
 #include <cstdint>
 
 #include "ra/defines.h"
-#include "tech/file.h"
 
 /****************************************************************************
 **	The fuse is used by projectiles to determine whether detonation should
@@ -68,8 +67,6 @@ class FuseClass {
   void Arm_Fuse(COORDINATE location, COORDINATE target, int time = 0xFF,
                 int arming = 0);
   bool Fuse_Checkup(COORDINATE newlocation);
-  void Fuse_Write(File& file) const;
-  void Fuse_Read(File& file);
   [[nodiscard]] COORDINATE Fuse_Target() const;
 
   /*

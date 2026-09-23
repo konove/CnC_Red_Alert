@@ -80,7 +80,6 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/world.h"
-#include "tech/game_file.h"
 #include "tech/mix_archive.h"
 
 std::span<const std::byte> UnitTypeClass::WakeShapes = {};
@@ -1442,7 +1441,6 @@ void UnitTypeClass::Prep_For_Add() {
 void UnitTypeClass::One_Time() {
   for (UnitType index = UNIT_HTANK; index < UNIT_COUNT; index++) {
     const UnitTypeClass& uclass = As_Reference(index);
-    const GameFile file;
 
     std::span<const std::byte> ptr;  // Shape pointer and set pointer.
 

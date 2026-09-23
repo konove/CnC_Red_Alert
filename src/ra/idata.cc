@@ -86,7 +86,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
-#include "tech/game_file.h"
 #include "tech/mix_archive.h"
 
 static DoInfoStruct DogDoControls[magic_enum::enum_count<DoType>()] = {
@@ -1254,8 +1253,6 @@ InfantryType InfantryTypeClass::From_Name(const char* name) {
  *=============================================================================================*/
 void InfantryTypeClass::One_Time() {
   for (const InfantryType index : magic_enum::enum_values<InfantryType>()) {
-    const GameFile file;
-
     InfantryTypeClass* uclass = &As_Reference(index);
 
     // Generic shape for all houses load method.

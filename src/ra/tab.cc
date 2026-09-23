@@ -66,7 +66,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/wwstd.h"
-#include "tech/disk_file.h"
 #include "tech/fixed.h"
 #include "tech/mix_archive.h"
 
@@ -292,7 +291,6 @@ void TabClass::Set_Active(int select) {
  *=============================================================================================*/
 void TabClass::One_Time() {
   SidebarClass::One_Time();
-  const DiskFile file("tabs.shp");
   TabShape = MixArchive::RetrieveData("TABS.SHP");
 }
 

@@ -21,10 +21,8 @@
 #include <span>
 
 #include "tech/byte_source.h"
-#include "tech/file.h"
 
 void strtrim(std::span<char> buffer);
-int Read_Line(File& file, std::span<char> buffer, bool& eof);
 int Read_Line(ByteSource& file, std::span<char> buffer, bool& eof);
 
 #endif  // CNC_RED_ALERT_TECH_READLINE_H_

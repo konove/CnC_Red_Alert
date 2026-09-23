@@ -55,7 +55,6 @@ class ArchiveWriter;
 #include "sdllib/timer.h"
 #include "sdllib/wwstd.h"
 #include "td/presentation.h"
-#include "tech/file.h"
 
 class ScoreClass {
  public:

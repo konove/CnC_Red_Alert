@@ -103,8 +103,6 @@
 #include "tech/byte_sink.h"
 #include "tech/byte_source.h"
 #include "tech/disk_file.h"
-#include "tech/file_sink.h"
-#include "tech/file_source.h"
 #include "tech/number_parse.h"
 
 // #include "WolDebug.h"
@@ -457,62 +455,6 @@ int SessionClass::Save(ByteSink& file) {
 bool SessionClass::Load(ByteSource& file) {
   ArchiveReader reader(file);
   Serialize(reader);
-  return reader.ok();
-}  // end of Load
-
-/***************************************************************************
- * SessionClass::Save -- Saves this class to a file                        *
- *                                                                         *
- * Only certain members of this class should be saved into a save-game * file;
- *this routine saves only those members.
- **
- *                                                                         *
- * INPUT:                                                                  *
- *		file		file to save to
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		1 = OK, 0 = error
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   12/04/1995 BRR : Created.                                             *
- *=========================================================================*/
-int SessionClass::Save(GameFile& file) {
-  FileSink pipe(file);
-  ArchiveWriter writer(pipe);
-  Serialize(writer);
-  SerializePlayers(writer);
-  return 1;
-}  // end of Save
-
-/***************************************************************************
- * SessionClass::Load -- Loads this class from a file                      *
- *                                                                         *
- * INPUT:                                                                  *
- *		file		file to load from
- **
- *                                                                         *
- * OUTPUT:                                                                 *
- *		1 = OK, 0 = error
- **
- *                                                                         *
- * WARNINGS:                                                               *
- *		none.
- **
- *                                                                         *
- * HISTORY:                                                                *
- *   12/04/1995 BRR : Created.                                             *
- *=========================================================================*/
-bool SessionClass::Load(GameFile& file) {
-  FileSource straw(file);
-  ArchiveReader reader(straw);
-  Serialize(reader);
-  SerializePlayers(reader);
   return reader.ok();
 }  // end of Load
 

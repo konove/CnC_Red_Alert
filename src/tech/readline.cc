@@ -27,8 +27,6 @@
 
 #include "base/array.h"
 #include "tech/byte_source.h"
-#include "tech/file.h"
-#include "tech/file_source.h"
 
 void strtrim(std::span<char> buffer) {
   const auto end = std::ranges::find(buffer, '\0');
@@ -46,11 +44,6 @@ void strtrim(std::span<char> buffer) {
   if (text.size() < buffer.size()) {
     base::At(buffer, static_cast<std::size_t>(text.size())) = '\0';
   }
-}
-
-int Read_Line(File& file, std::span<char> buffer, bool& eof) {
-  FileSource fs(file);
-  return Read_Line(fs, buffer, eof);
 }
 
 int Read_Line(ByteSource& file, std::span<char> buffer, bool& eof) {

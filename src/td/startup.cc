@@ -1,6 +1,3 @@
-#ifndef TD_NO_ENTRY_POINT
-#include "port/bytes_of.h"
-#endif
 /*
 **	Command & Conquer(tm)
 **	Copyright 2025 Electronic Arts Inc.
@@ -96,7 +93,6 @@
 #include "td/conquer.h"
 #include "td/debug_state.h"
 #include "td/goptions.h"
-#include "td/jshell.h"
 #include "td/special.h"
 #include "td/world.h"
 #include "tech/search_paths.h"
@@ -336,9 +332,6 @@ int main(int argc, char* argv[])
     }
 
     if (cfile.IsAvailable()) {
-      const auto config_data = port::CharBytes(Load_Alloc_Data(cfile));
-      char* cdata = config_data.data();
-      delete[] cdata;
       Read_Setup_Options(&cfile, *options);
 
       CCDebugString("C&C95 - Creating main window.\n");

@@ -49,7 +49,6 @@ class ArchiveWriter;
 #include "td/building.h"
 #include "td/defines.h"
 #include "td/vector.h"
-#include "tech/file.h"
 
 /****************************************************************************
 ** This class defines one "node" in the pre-built base list.  Each node

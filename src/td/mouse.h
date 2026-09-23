@@ -53,7 +53,6 @@ class ArchiveWriter;
 #include "td/defines.h"
 #include "td/game_clock.h"
 #include "td/scroll.h"
-#include "tech/file.h"
 
 class MouseClass : public ScrollClass {
  public:

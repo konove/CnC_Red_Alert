@@ -15,7 +15,6 @@
 #include "base/seek_origin.h"
 #include "base/types.h"
 #include "sdllib/file_access.h"
-#include "tech/file.h"
 
 // A seekable sequence of bytes. Positions are measured from the start of the
 // stream.

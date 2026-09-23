@@ -548,8 +548,6 @@ class SessionClass {
 
   int Save(ByteSink& file);
   bool Load(ByteSource& file);
-  int Save(GameFile& file);
-  bool Load(GameFile& file);
 
   //.....................................................................
   // Debugging / Sync Bugs

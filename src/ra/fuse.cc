@@ -48,7 +48,6 @@
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
-#include "tech/file.h"
 
 /***********************************************************************************************
  * FuseClass::Arm_Fuse -- Sets up fuse for detonation check. *
@@ -135,44 +134,3 @@ bool FuseClass::Fuse_Checkup(COORDINATE newlocation) {
   return false;
 }
 
-/***********************************************************************************************
- * FuseClass::Fuse_Write -- Writes the fuse data to the save game file. *
- *                                                                                             *
- *    Use this routine to output the fuse class data to the save game file
- *specified.          *
- *                                                                                             *
- * INPUT:   file  -- The file to output the data to. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
-void FuseClass::Fuse_Write(File& file) const {
-  file.WriteObject(Timer);
-  file.WriteObject(Arming);
-  file.WriteObject(HeadTo);
-  file.WriteObject(Proximity);
-}
-
-/***********************************************************************************************
- * FuseClass::Fuse_Read -- Reads the fuse class data from the save game file. *
- *                                                                                             *
- *    Use this routine to input the fuse class data from the save game file
- *specified.         *
- *                                                                                             *
- * INPUT:   file  -- The file to input the data from. *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 10/17/1994 JLB : Created. *
- *=============================================================================================*/
-void FuseClass::Fuse_Read(File& file) {
-  file.ReadObject(Timer);
-  file.ReadObject(Arming);
-  file.ReadObject(HeadTo);
-  file.ReadObject(Proximity);
-}

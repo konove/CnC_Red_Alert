@@ -552,7 +552,6 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   const int tabs[] = {77 * 2};       // tabs for player list box
   const int optiontabs[] = {8 * 2};  // tabs for option list box
 
-  const GameFile loadfile("SAVEGAME.NET");
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
 
   const int cbox_x[] = {
