@@ -14,9 +14,6 @@ char FontWidth;
 char FontHeight;
 std::span<const std::byte> FontPtr;
 
-// Maps 4-bit glyph pixel values to screen colors. Defaults to the identity
-// mapping; PixelView::PrintLocked installs the fore/background per call and
-// Set_Font_Palette_Range() installs multi-colour font palettes.
 uint8_t FontPalette[16]{
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
     0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
@@ -28,7 +25,8 @@ std::span<const std::byte> Set_Font(std::span<const std::byte> new_font) {
   if (!new_font.empty()) {
     FontPtr = new_font;
 
-    // Refresh the font metric globals the rest of the system reads.
+    // Cached for the dialog and menu layout code, which reads the metrics
+    // without a FontView.
     const FontView font(new_font);
     FontHeight = static_cast<char>(font.MaxHeight());
     FontWidth = static_cast<char>(font.MaxWidth());
@@ -50,6 +48,7 @@ int String_Pixel_Width(const char* string) {
   int largest = 0;  // Largest recorded line width of the string.
   int width = 0;    // Working accumulator of the current line's width.
   for (const char ch : std::string_view(string)) {
+    // '\r' is the game's line break; see the declaration.
     if (ch == '\r') {
       largest = std::max(largest, width);
       width = 0;
@@ -64,6 +63,9 @@ void Set_Font_Palette_Range(std::span<const uint8_t> palette, int start_idx,
                             int end_idx) {
   auto palette8 = palette.begin();
 
+  // Wrap into the table like the original assembly, which masked both with
+  // 0x0F; unlike the mask, % leaves a negative index negative, and the check
+  // below rejects it.
   start_idx %= 16;
   end_idx %= 16;
 
