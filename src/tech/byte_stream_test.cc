@@ -103,13 +103,18 @@ TEST_F(DiskStreamTest, ReadWriteKeepsExistingContents) {
   EXPECT_EQ(ReadAll(*stream, 10), "xabcd!");
 }
 
-TEST_F(DiskStreamTest, FlushSucceedsAndKeepsTheStreamUsable) {
+TEST_F(DiskStreamTest, FlushedWritesAreVisibleToLaterWrites) {
   const std::unique_ptr<DiskStream> stream =
       DiskStream::Open(path(), FileAccess::kReadWrite);
   ASSERT_NE(stream, nullptr);
+  stream->Seek(0, SeekOrigin::kEnd);
   EXPECT_EQ(stream->Write(Bytes("!")), 1);
   EXPECT_TRUE(stream->Flush());
   EXPECT_TRUE(stream->ok());
+  EXPECT_EQ(stream->Write(Bytes("?")), 1);
+  EXPECT_TRUE(stream->Flush());
+  EXPECT_EQ(stream->Seek(0, SeekOrigin::kBegin), 0);
+  EXPECT_EQ(ReadAll(*stream, 16), "xabcd!?");
 }
 
 TEST_F(DiskStreamTest, ReadWriteCreatesMissingFile) {
@@ -165,6 +170,20 @@ TEST(DiskStreamErrorTest, WriteToFullDeviceFails) {
   // Larger than any filebuf buffer, so the failure surfaces in Write itself.
   const std::vector<std::byte> block(1 << 20);
   stream->Write(block);
+  EXPECT_FALSE(stream->ok());
+}
+
+TEST(DiskStreamErrorTest, FlushToFullDeviceFails) {
+  if (!std::filesystem::exists("/dev/full")) {
+    GTEST_SKIP() << "no /dev/full on this platform";
+  }
+  const std::unique_ptr<DiskStream> stream =
+      DiskStream::Open("/dev/full", FileAccess::kWrite);
+  ASSERT_NE(stream, nullptr);
+  // One byte fits in the filebuf's own buffer, so sputn buffers it and
+  // Write reports success; the failure only surfaces on Flush's pubsync.
+  EXPECT_EQ(stream->Write(Bytes("!")), 1);
+  EXPECT_FALSE(stream->Flush());
   EXPECT_FALSE(stream->ok());
 }
 

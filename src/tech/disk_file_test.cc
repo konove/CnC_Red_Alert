@@ -1,5 +1,6 @@
 // Tests for DiskFile: implicit open on Read/Write, the lowercase-name retry,
-// and Open() reporting a missing file.
+// and Open() reporting a missing file. Also covers OpenDiskFile, the free
+// function replacing DiskFile.
 
 #include "tech/disk_file.h"
 

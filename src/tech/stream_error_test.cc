@@ -1,6 +1,7 @@
 // Tests how failures travel through pipes and straws: short writes, read
 // errors below a file straw, truncated compressed data, and the
-// flush-then-write-directly sequence the save game relies on.
+// flush-then-write-directly sequence the save game relies on. Also covers
+// StreamSource/StreamSink, the ByteStream twins of FileSource/FileSink.
 
 #include <algorithm>
 #include <array>
@@ -159,6 +160,23 @@ class ShortWriteStream : public ByteStream {
   base::ssize accept_;
 };
 
+// A stream that accepts every write but whose Flush always fails, e.g. a
+// pubsync that reports EIO after the bytes were already accepted by Write.
+class FailingFlushStream : public ByteStream {
+ public:
+  using ByteStream::Read;
+  using ByteStream::Write;
+  base::ssize Read(std::span<std::byte> /*buffer*/) override { return 0; }
+  base::ssize Write(std::span<const std::byte> buffer) override {
+    return std::ssize(buffer);
+  }
+  bool Flush() override { return false; }
+  base::ssize Seek(base::ssize /*offset*/, SeekOrigin /*origin*/) override {
+    return 0;
+  }
+  base::ssize Size() override { return 0; }
+};
+
 TEST(StreamErrorTest, BufferPipeStoresWhatFitsThenFailsForGood) {
   std::array<char, 4> storage{};
   SpanSink sink(std::as_writable_bytes(std::span(storage)));
@@ -297,6 +315,24 @@ TEST(StreamSinkTest, StreamSinkFailsOnShortWrite) {
   ShortWriteStream stream(/*accept=*/3);
   StreamSink sink(stream);
   EXPECT_FALSE(sink.Write(Bytes("abcdef")));
+  EXPECT_FALSE(sink.ok());
+  // The failure is sticky: a later write does not get a second chance.
+  EXPECT_FALSE(sink.Write(Bytes("g")));
+  EXPECT_FALSE(sink.ok());
+}
+
+TEST(StreamSinkTest, FlushPropagatesAStreamFlushFailure) {
+  FailingFlushStream stream;
+  StreamSink sink(stream);
+  EXPECT_TRUE(sink.Write(Bytes("ok")));
+  EXPECT_FALSE(sink.Flush());
+  EXPECT_FALSE(sink.ok());
+}
+
+TEST(StreamSinkTest, FinishPropagatesAStreamFlushFailure) {
+  FailingFlushStream stream;
+  StreamSink sink(stream);
+  EXPECT_FALSE(sink.Finish());
   EXPECT_FALSE(sink.ok());
 }
 

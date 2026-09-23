@@ -1203,20 +1203,39 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   additions beyond the brief's three `GameFile` examples: ported every free-function-representable
   `GameFileTest` case (cached/uncached/nested/cached-nested mixfile reads, the
   loose-file-overrides-packed case, delete-removes-loose) to `OpenGameFile`/
-  `GameFileExists`/`DeleteGameFile`; `WriteToCachedFileWritesNothing` has no free-function analogue
-  (it exercises `GameFile`'s stateful open-for-read-then-write-without-reopening path, which
-  `OpenGameFile` being called once per access can't reach) so it was left as a `GameFile`-only
-  regression test. Added `ScriptedStream : ByteStream` alongside the existing `ScriptedFile : File`
-  and repeated its three `FileSource` cases over `StreamSource`
-  (`StreamSourceTellsEndOfStreamFromReadError`, `ReadErrorIsStickyThroughTransformStreamSource`),
-  plus `ShortWriteStream : ByteStream` and `StreamSinkTest.StreamSinkFailsOnShortWrite` from the
-  brief, and a `DiskStreamTest.FlushSucceedsAndKeepsTheStreamUsable` smoke test for the new
-  `Flush()` (the throwing-`pubsync()` and TD-recording cases stay in Step 8, per the Review Focus
-  table). RED: `tech_test` failed to compile
-  (`OpenGameFile`/`GameFileExists`/`GameFileSize`/`DeleteGameFile`/
+  `GameFileExists`/`DeleteGameFile`. **Correction (Step 6 test-fix commit):**
+  `WriteToCachedFileWritesNothing` does have a free-function analogue after all — the read-only-ness
+  is a property of the `MemoryStream`/`RangeStream` `OpenGameFile` hands back, not of `GameFile`'s
+  open/close state, so `OpenGameFileWriteToCachedFileWritesNothing` (and the uncached/`RangeStream`
+  twin, `OpenGameFileWriteToUncachedFileWritesNothing`) were added and the `GameFile`-only
+  regression test was kept alongside them rather than in its place. Added
+  `ScriptedStream : ByteStream` alongside the existing `ScriptedFile : File` and repeated its three
+  `FileSource` cases over `StreamSource` (`StreamSourceTellsEndOfStreamFromReadError`,
+  `ReadErrorIsStickyThroughTransformStreamSource`), plus `ShortWriteStream : ByteStream` and
+  `StreamSinkTest.StreamSinkFailsOnShortWrite` from the brief, and a
+  `DiskStreamTest.FlushSucceedsAndKeepsTheStreamUsable` smoke test for the new `Flush()` (the
+  throwing-`pubsync()` and TD-recording cases stay in Step 8, per the Review Focus table). RED:
+  `tech_test` failed to compile (`OpenGameFile`/`GameFileExists`/`GameFileSize`/`DeleteGameFile`/
   `OpenDiskFile`/`StreamSource`/`StreamSink` not declared). GREEN: `build` and `build-strict` both
   build clean; `ctest --test-dir build-strict` is 747/747 passed (up from 731: the new
   `game_file_test.cc`/`disk_file_test.cc`/`stream_error_test.cc`/`byte_stream_test.cc` cases). Both
   smoke scripts print OK against `build-strict/src/ra/rasdl` and `build-strict/src/td/tdsdl` (240
   object positions and 5951 game states identical, respectively). No production caller changed yet,
   as planned; `GameFile`/`DiskFile` still exist and pass their original tests unmodified.
+- 2026-09-23: Step 6 test-fix commit (before the INI conversion). Fixed the Step 5 progress bullet
+  above: `WriteToCachedFileWritesNothing` does have a free-function twin (see the correction inline
+  above); added `GameFileTest.OpenGameFileWriteToCachedFileWritesNothing` and
+  `OpenGameFileWriteToUncachedFileWritesNothing` (the latter over the `RangeStream` path, which the
+  original `GameFile` test never covered). Added `DiskStreamErrorTest.FlushToFullDeviceFails`
+  (`/dev/full`, `GTEST_SKIP` if absent: a 1-byte write is accepted by `sputn`'s own buffer, so the
+  failure only surfaces on `Flush`'s `pubsync`). Renamed Step 5's
+  `DiskStreamTest.FlushSucceedsAndKeepsTheStreamUsable` to `FlushedWritesAreVisibleToLaterWrites`
+  and had it write, flush, write and flush again, then read the file back end to end, since the old
+  body only checked `Flush()`'s return value and never looked at the bytes. Added
+  `StreamSinkTest.FlushPropagatesAStreamFlushFailure` and `FinishPropagatesAStreamFlushFailure` (a
+  `FailingFlushStream : ByteStream` alongside `stream_error_test.cc`'s existing `ScriptedStream`/
+  `ShortWriteStream`), and extended `StreamSinkFailsOnShortWrite` to check that a write after the
+  failure also returns `false` (the sink's `ok()` is sticky). Added a second sentence to the header
+  comment of `game_file_test.cc`, `disk_file_test.cc` and `stream_error_test.cc` naming the free
+  functions/`StreamSource`/`StreamSink` they also exercise. Both `build` and `build-strict` build
+  clean; `ctest --test-dir build-strict` is 752/752 passed (up from 747: the 5 new cases above).

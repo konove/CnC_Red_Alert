@@ -1,5 +1,6 @@
 // Tests for GameFile over loose files and cached, uncached and nested
-// mixfiles.
+// mixfiles. Also covers OpenGameFile/GameFileExists/GameFileSize/
+// DeleteGameFile, the free functions replacing GameFile.
 
 #include "tech/game_file.h"
 
@@ -313,6 +314,24 @@ TEST_F(GameFileTest, OpenGameFileForLooseFileOverridesPackedCopy) {
   char buffer[8] = {};
   EXPECT_EQ(file->Read(buffer, 8), 5);
   EXPECT_EQ(std::string(buffer, 5), "LOOSE");
+}
+
+TEST_F(GameFileTest, OpenGameFileWriteToCachedFileWritesNothing) {
+  CacheMixfile();
+  const std::unique_ptr<ByteStream> file = OpenGameFile(kPackedName);
+  ASSERT_NE(file, nullptr);
+
+  // Backed by a MemoryStream over the cached mixfile image, which is
+  // read-only.
+  EXPECT_EQ(file->Write("zz", 2), 0);
+}
+
+TEST_F(GameFileTest, OpenGameFileWriteToUncachedFileWritesNothing) {
+  const std::unique_ptr<ByteStream> file = OpenGameFile(kPackedName);
+  ASSERT_NE(file, nullptr);
+
+  // Backed by a RangeStream over the mixfile on disk, which is read-only.
+  EXPECT_EQ(file->Write("zz", 2), 0);
 }
 
 TEST_F(GameFileTest, DeleteGameFileRemovesLooseFile) {
