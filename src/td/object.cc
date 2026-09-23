@@ -766,7 +766,10 @@ bool ObjectClass::Select() {
     Unselect_All();
   }
 
-  if (dynamic_cast<const TechnoTypeClass&>(Class_Of()).IsLeader) {
+  // A group's leader goes first. Only technos have one; the map editor also
+  // selects terrain, whose type is not a TechnoTypeClass.
+  if (Is_Techno() &&
+      dynamic_cast<const TechnoTypeClass&>(Class_Of()).IsLeader) {
     TheWorld().current_object().Add_Head(this);
   } else {
     TheWorld().current_object().Add(this);
