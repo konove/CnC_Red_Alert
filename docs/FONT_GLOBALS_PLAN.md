@@ -182,3 +182,29 @@ lines.
   games log no mismatch and no flag without a point size. The strict build caught one thing
   `tools/strict_tu.py` did not: `TextStyle` needed initializers for its other two fields once it
   gained a member with its own.
+
+- **2026-09-23: phase 3 done** (d7a7fe5a, af535480..abcb2e93). Groundwork first: a `FontStyle`
+  overload of `Format_Window_String()`, `Conquer_Clip_Text_Print()` and RA's `Draw_Caption()`
+  measuring in their own flags, and checked `FontMaxHeight()` / `FontMaxWidth()`. Then six forks on
+  disjoint files moved every reader, one commit per group and game. Marking the legacy measure,
+  `Print` and `Format_Window_String` overloads `[[deprecated]]` and syntax-checking all 753 RA and
+  TD units found no caller left; the only direct global read outside the writers is TD
+  `Force_CD_Available()`'s palette save, itself a writer. The runtime check fired at two sites in
+  headless SCG01EA runs, both the predicted list line height: the map editor's lists, built in
+  `MapEditClass::One_Time()` while the startup font is current, now space their rows by their own
+  editor font (RA `ra/list.cc:111`, TD `td/list.cc:113`). Kept, and listed for the user.
+
+  Verification: both build dirs clean, 739 tests, both save/load smoke scripts pass.
+
+  **Real-display walkthrough before phase 4** (the check logs `Font style at file:line differs`; run
+  from a terminal and keep stderr). Sites the forks could not settle by reading:
+  - RA: main menu and options (`menus.cc` `Check_Menu`), the password prompt (`special.cc`
+    `PWEditClass::Draw_Text`), the network reconnect dialog update branch (`netdlg.cc`), the WOL
+    save-login dialog (`seditdlg.cc`, created with no select before it), the credits wipe
+    (`egos.cc`), the briefing typing (`scenario.cc` 1456-1490), the score screen (`score.cc`, y
+    spacing only is expected and harmless), tooltips and help (`iconlist.cc` typewriter path).
+  - TD: main menu (`menus.cc` `Check_Menu`), network dialog labels (`netdlg.cc` 1252-1332, 4423),
+    null-modem dialogs (`nulldlg.cc` 3690, 4994), edit fields (`edit.cc` `Draw_Text`, `Handle_Key`),
+    help text (`display.cc` `Text_Overlap_List`), the score screen (y spacing only expected), and
+    the map selection screen between missions (`mapsel.cc`: x spacing may differ, which moves the
+    label boxes).
