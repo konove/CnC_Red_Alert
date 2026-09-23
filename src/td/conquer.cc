@@ -3106,7 +3106,7 @@ bool Force_CD_Available(int cd) {
       int hidden = Get_Mouse_State();
       font = g_font;
       std::ranges::copy(CurrentPalette, std::begin(_palette));
-      std::ranges::copy(Get_Font_Palette(), std::begin(_hold));
+      std::ranges::copy(g_font_palette, std::begin(_hold));
 
       /*
       **	Only set the palette if necessary.

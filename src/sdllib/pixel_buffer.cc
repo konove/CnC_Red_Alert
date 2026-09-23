@@ -723,7 +723,7 @@ void PixelView::PrintLocked(const char* text, int x, int y,
 
   // Glyph pixels are palette indices into g_font_palette: entry 0 is the
   // background (0 also means transparent) and entry 1 the foreground;
-  // multi-colour fonts fill entries 2-15 via Set_Font_Palette_Range().
+  // multi-colour fonts fill entries 2-15 via SetFontPalette().
   const auto background = static_cast<uint8_t>(back_color);
   g_font_palette[1] = static_cast<uint8_t>(fore_color);
   g_font_palette[0] = background;

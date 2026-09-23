@@ -183,25 +183,10 @@ int CharPixelWidth(char character);
 // one on a line included, as Print() advances.
 int StringPixelWidth(const char* text);
 
-// Copies palette into g_font_palette entries start_idx through end_idx
-// inclusive. Both indices are taken modulo 16; the call does nothing if the
-// range is then negative or reversed, or if palette holds fewer entries than
-// the range. Entries 0 and 1 are overwritten by the colours of every
-// PixelView::Print(), so only entries 2-15 last.
-void Set_Font_Palette_Range(std::span<const uint8_t> palette, int start_idx,
-                            int end_idx);
-
-// Both return g_font_palette; the pointer form is what the assembly text
-// printer used.
-void* Get_Font_Palette_Ptr();
-std::span<const uint8_t> Get_Font_Palette();
-
-// Sets all 16 font colour entries (indices 0 through 15).
-inline void SetFontPalette(std::span<const uint8_t> palette) {
-  constexpr int kFirstColor = 0;
-  constexpr int kLastColor = 15;
-  Set_Font_Palette_Range(palette, kFirstColor, kLastColor);
-}
+// Copies the first 16 entries of palette into g_font_palette, or does nothing
+// if palette holds fewer. Entries 0 and 1 are overwritten by the colours of
+// every PixelView::Print(), so only entries 2-15 last.
+void SetFontPalette(std::span<const uint8_t> palette);
 
 // Extra pixels printed after every glyph and between lines. Callers set these
 // per font before printing and measuring, and PixelView::Print() and the width
@@ -221,7 +206,7 @@ extern std::span<const std::byte> g_font;
 // Maps the 4-bit glyph pixel values to screen colours. Entry 0 is the
 // background, and a 0 in the table is transparent: nothing is drawn. Starts
 // as the identity mapping; PixelView::Print() sets entries 0 and 1 to its
-// background and foreground on every call, and Set_Font_Palette_Range()
+// background and foreground on every call, and SetFontPalette()
 // installs the other colours of multi-colour fonts.
 extern uint8_t g_font_palette[16];
 

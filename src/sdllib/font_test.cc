@@ -1,10 +1,14 @@
 #include "sdllib/font.h"
 
+#include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdint>
+#include <numeric>
 #include <span>
 #include <vector>
 
+#include "base/array.h"
 #include "base/buffer.h"
 #include "gtest/gtest.h"
 
@@ -125,6 +129,22 @@ TEST(SetFontTest, CachesMetricsAbove127) {
   EXPECT_EQ(g_font_max_height, 200);
   EXPECT_EQ(g_font_max_width, 130);
   SetFont(old_font);
+}
+
+TEST(SetFontPaletteTest, CopiesSixteenEntriesAndIgnoresShortPalettes) {
+  std::array<uint8_t, 16> saved{};
+  std::ranges::copy(g_font_palette, saved.begin());
+
+  std::array<uint8_t, 17> palette{};
+  std::ranges::iota(palette, uint8_t{100});
+  SetFontPalette(palette);
+  EXPECT_TRUE(std::ranges::equal(g_font_palette, std::span(palette).first(16)));
+
+  const std::array<uint8_t, 15> short_palette{};
+  SetFontPalette(short_palette);
+  EXPECT_EQ(base::At(g_font_palette, 0), 100);
+
+  SetFontPalette(saved);
 }
 
 }  // namespace

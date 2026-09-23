@@ -3,10 +3,9 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <iterator>
 #include <span>
 #include <string_view>
-
-#include "base/array.h"
 
 int g_font_x_spacing;
 int g_font_y_spacing;
@@ -61,24 +60,10 @@ int StringPixelWidth(const char* text) {
   return std::max(widest_line, line_width);
 }
 
-void Set_Font_Palette_Range(std::span<const uint8_t> palette, int start_idx,
-                            int end_idx) {
-  auto palette8 = palette.begin();
-
-  // Wrap into the table like the original assembly, which masked both with
-  // 0x0F; unlike the mask, % leaves a negative index negative, and the check
-  // below rejects it.
-  start_idx %= 16;
-  end_idx %= 16;
-
-  if (start_idx < 0 || end_idx < start_idx ||
-      end_idx - start_idx + 1 > std::ssize(palette)) {
+void SetFontPalette(std::span<const uint8_t> palette) {
+  if (std::ssize(palette) < std::ssize(g_font_palette)) {
     return;
   }
-  for (int i = start_idx; i <= end_idx; ++i) {
-    base::At(g_font_palette, i) = *palette8++;
-  }
+  std::ranges::copy(palette.first(std::size(g_font_palette)),
+                    std::begin(g_font_palette));
 }
-
-void* Get_Font_Palette_Ptr() { return g_font_palette; }
-std::span<const uint8_t> Get_Font_Palette() { return g_font_palette; }
