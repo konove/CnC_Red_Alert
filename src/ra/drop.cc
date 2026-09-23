@@ -77,19 +77,19 @@ void DropListClass::Zap() {
   EditClass::Zap();
 }
 
-DropListClass& DropListClass::Add(LinkClass& object) {
+LinkClass& DropListClass::Add(LinkClass& object) {
   DropButton.Add(object);
-  return dynamic_cast<DropListClass&>(EditClass::Add(object));
+  return EditClass::Add(object);
 }
 
-DropListClass& DropListClass::Add_Tail(LinkClass& object) {
+LinkClass& DropListClass::Add_Tail(LinkClass& object) {
   DropButton.Add_Tail(object);
-  return dynamic_cast<DropListClass&>(EditClass::Add_Tail(object));
+  return EditClass::Add_Tail(object);
 }
 
-DropListClass& DropListClass::Add_Head(LinkClass& object) {
+LinkClass& DropListClass::Add_Head(LinkClass& object) {
   DropButton.Add_Head(object);
-  return dynamic_cast<DropListClass&>(EditClass::Add_Head(object));
+  return EditClass::Add_Head(object);
 }
 
 DropListClass* DropListClass::Remove() {

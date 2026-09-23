@@ -65,9 +65,11 @@ class DropListClass : public EditClass {
   DropListClass(DropListClass&&) = delete;
   DropListClass& operator=(DropListClass&&) = delete;
 
-  DropListClass& Add(LinkClass& object) override;
-  DropListClass& Add_Tail(LinkClass& object) override;
-  DropListClass& Add_Head(LinkClass& object) override;
+  // Link the list and its drop button into the chain `object` is in, and
+  // return the head of that chain, which may be any gadget.
+  LinkClass& Add(LinkClass& object) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  LinkClass& Add_Tail(LinkClass& object) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  LinkClass& Add_Head(LinkClass& object) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   DropListClass* Remove() override;
   void Zap() override;
 
@@ -133,9 +135,10 @@ class TDropListClass : public EditClass {
   T& at(int index) { return List.at(index); }
   T& operator[](int index) { return at(index); }
 
-  TDropListClass& Add(LinkClass& object) override;
-  TDropListClass& Add_Tail(LinkClass& object) override;
-  TDropListClass& Add_Head(LinkClass& object) override;
+  // As DropListClass's: each returns the head of the chain.
+  LinkClass& Add(LinkClass& object) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  LinkClass& Add_Tail(LinkClass& object) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
+  LinkClass& Add_Head(LinkClass& object) ABSL_ATTRIBUTE_LIFETIME_BOUND override;
   TDropListClass* Remove() override;
   void Zap() override;
 
@@ -205,21 +208,21 @@ void TDropListClass<T>::Zap() {
 }
 
 template <class T>
-TDropListClass<T>& TDropListClass<T>::Add(LinkClass& object) {
+LinkClass& TDropListClass<T>::Add(LinkClass& object) {
   DropButton.Add(object);
-  return dynamic_cast<TDropListClass&>(EditClass::Add(object));
+  return EditClass::Add(object);
 }
 
 template <class T>
-TDropListClass<T>& TDropListClass<T>::Add_Tail(LinkClass& object) {
+LinkClass& TDropListClass<T>::Add_Tail(LinkClass& object) {
   DropButton.Add_Tail(object);
-  return dynamic_cast<TDropListClass&>(EditClass::Add_Tail(object));
+  return EditClass::Add_Tail(object);
 }
 
 template <class T>
-TDropListClass<T>& TDropListClass<T>::Add_Head(LinkClass& object) {
+LinkClass& TDropListClass<T>::Add_Head(LinkClass& object) {
   DropButton.Add_Head(object);
-  return dynamic_cast<TDropListClass&>(EditClass::Add_Head(object));
+  return EditClass::Add_Head(object);
 }
 
 template <class T>

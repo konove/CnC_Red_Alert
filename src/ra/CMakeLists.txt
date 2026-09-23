@@ -129,6 +129,15 @@ apply_dotenv_settings(ra_game_test)
 apply_language_setting(ra_game_test)
 
 add_gtest(
+    NAME ra_drop_test
+    SOURCES drop_test.cc startup.cc
+    LIBS ra_engine absl::core_headers
+)
+target_compile_definitions(ra_drop_test PRIVATE RA_NO_ENTRY_POINT=1)
+apply_dotenv_settings(ra_drop_test)
+apply_language_setting(ra_drop_test)
+
+add_gtest(
     NAME ra_assets_test
     SOURCES assets_test.cc assets.cc ini.cc
     LIBS base port sdllib tech magic_enum::magic_enum absl::strings absl::check absl::log
