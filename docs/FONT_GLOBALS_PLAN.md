@@ -208,3 +208,19 @@ lines.
     help text (`display.cc` `Text_Overlap_List`), the score screen (y spacing only expected), and
     the map selection screen between missions (`mapsel.cc`: x spacing may differ, which moves the
     label boxes).
+
+- **2026-09-23: phase 4 done, plan complete** (c49ba522..02e6b347). The order changed from the plan
+  so that every commit stayed quiet: the runtime check went first (it would have logged everywhere
+  once the writers were gone), then `TPF_LASTPOINT` became 8-point (no run ever logged it), then
+  RA's and TD's writers, then sdllib. `Select_Text_Font()` is gone in both games; 56 select-only
+  calls in RA and 29 in TD were deleted, with every `SetFont()` / `SetFontPalette()` / spacing write
+  and save-and-restore pair. A script deleted whole statements; its first version swallowed an
+  `else` block in `ra/iconlist.cc` because a trailing comment hid the `;`, so it was reverted and
+  rerun with comments stripped and declaration continuations skipped, and every removed line that
+  was not itself a writer call was reviewed.
+
+  sdllib has no font state left: `FontView`, `FontStyle`, the measure functions and
+  `PixelView::Print(const FontStyle&, ...)`. Verification: full strict build clean, 740 tests, both
+  save/load smoke scripts. The real-display walkthrough reached only startup, the menus and the
+  skirmish screen (which found two unrelated crashes, fixed in 1a4c1528 and 0cd0b46f), so the
+  screens listed under phase 3 still want a look.
