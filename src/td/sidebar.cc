@@ -107,7 +107,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_win.h"
-#include "sdllib/wwstd.h"
 #include "td/assets.h"
 #include "td/audio.h"
 #include "td/building.h"
@@ -312,8 +311,6 @@ void SidebarClass::Init_Clear() {
  * HISTORY: * 12/24/1994 JLB : Created. *
  *=============================================================================================*/
 void SidebarClass::Init_IO() {
-  std::span<const std::byte> oldfont = {};
-  int oldx = 0;
   PowerClass::Init_IO();
 
   /*
@@ -323,11 +320,6 @@ void SidebarClass::Init_IO() {
     /*
     ** Set the button widths based on the string that goes in them.
     */
-    oldfont = SetFont(TheAssets().font(FontType::k6Point));
-    oldx = g_font_x_spacing;
-    g_font_x_spacing = -1;
-    Select_Text_Font(TPF_6POINT | TPF_NOSHADOW, kTBlack, kTBlack);
-
     const FontStyle font = TextFontStyle(TPF_6POINT | TPF_NOSHADOW);
     int maxwidth = StringPixelWidth(font, Text_String(TXT_REPAIR_BUTTON)) + 8;
     maxwidth = std::max<int>(
@@ -395,10 +387,6 @@ void SidebarClass::Init_IO() {
     } else {
       Zoom.Disable();
     }
-
-    SetFont(oldfont);
-    g_font_x_spacing = oldx;
-    g_font_x_spacing = -1;
 
     base::At(Column, 0).Init_IO(0);
     base::At(Column, 1).Init_IO(1);

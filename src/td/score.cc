@@ -426,7 +426,6 @@ void ScorePrintClass::Update() {
       static const unsigned char _blackpal[] = {
           kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack,
           kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack};
-      SetFontPalette(_blackpal);
       const FontStyle black_font = ScoreFontStyle(_blackpal);
       show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6),
                                      2 * (YPos - 1), kTBlack, kTBlack);
@@ -435,14 +434,12 @@ void ScorePrintClass::Update() {
       show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6 + 1),
                                      2 * YPos, kTBlack, kTBlack);
 
-      SetFontPalette(PrimaryPalette);
       const FontStyle primary_font = ScoreFontStyle(PrimaryPalette);
       show_.text_page().view().Print(primary_font, localstr, 2 * (pos - 6),
                                      2 * YPos, kTBlack, kTBlack);
     }
     if (Text_At(Stage)) {
       base::At(localstr, 0) = Text_At(Stage);
-      SetFontPalette(_whitepal);
       const FontStyle white_font = ScoreFontStyle(_whitepal);
       show_.text_page().view().Print(white_font, localstr, pos * 2,
                                      2 * (YPos - 1), kTBlack, kTBlack);
@@ -513,7 +510,6 @@ void MultiStagePrintClass::Update() {
         static const unsigned char _blackpal[] = {
             kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack,
             kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack, kBlack};
-        SetFontPalette(_blackpal);
         const FontStyle black_font = ScoreFontStyle(_blackpal);
         show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6),
                                        2 * (YPos - 1), kTBlack, kTBlack);
@@ -522,14 +518,12 @@ void MultiStagePrintClass::Update() {
         show_.text_page().view().Print(black_font, localstr, 2 * (pos - 6 + 1),
                                        2 * YPos, kTBlack, kTBlack);
 
-        SetFontPalette(PrimaryPalette);
         const FontStyle primary_font = ScoreFontStyle(PrimaryPalette);
         show_.text_page().view().Print(primary_font, localstr, 2 * (pos - 6),
                                        2 * YPos, kTBlack, kTBlack);
       }
       if (Text_At(Stage)) {
         base::At(localstr, 0) = Text_At(Stage);
-        SetFontPalette(_whitepal);
         const FontStyle white_font = ScoreFontStyle(_whitepal);
         show_.text_page().view().Print(white_font, localstr, pos * 2,
                                        2 * (YPos - 1), kTBlack, kTBlack);
@@ -572,7 +566,6 @@ void ScoreScaleClass::Update() {
       // _destx[Stage+1], YPos, _destw[Stage+1], _destw[Stage+1]);
     }
     if (Stage) {
-      SetFontPalette(Palette);
       const FontStyle font = ScoreFontStyle(Palette);
       show_.text_page().view().FillRect(0, 0, 14, 14, kTBlack);
       show_.text_page().view().Print(font, Text(), 0, 0, kTBlack, kTBlack);
@@ -587,7 +580,6 @@ void ScoreScaleClass::Update() {
       // _destw[Stage], _destw[Stage], true);
       Stage--;
     } else {
-      SetFontPalette(Palette);
       const FontStyle font = ScoreFontStyle(Palette);
       for (auto& ScoreObj : ScoreObjs) {
         if (ScoreObj == this) {
@@ -670,7 +662,6 @@ void ScoreClass::Show() {
   std::span<const std::byte> yellowptr = {};
   std::span<const std::byte> redptr = {};
   struct Fame hallfame[NUMFAMENAMES] = {};
-  const int oldfontxspacing = g_font_x_spacing;
   const HousesType player_house = ThePlayer()->Class->House;
   const int house = static_cast<int>(player_house);  // 0 or 1
   char inter_pal[15];
@@ -691,7 +682,6 @@ void ScoreClass::Show() {
   Presentation show;
 
   ControlQ = false;
-  g_font_x_spacing = 0;
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
   TheTheme().Queue_Song(THEME_WIN1);
 
@@ -782,8 +772,6 @@ void ScoreClass::Show() {
   }
 
   /* Change to the six-point font for Text_Print */
-  const std::span<const std::byte> oldfont =
-      SetFont(TheAssets().font(FontType::kScore));
   Call_Back();
 
   /* --- Now display the background animation --- */
@@ -856,7 +844,6 @@ void ScoreClass::Show() {
   show.AddTextRect(550, 18, 550, 18, 64, 12);  // Minutes
   const FontStyle font = ScoreFontStyle(greenpal);
   for (i = 0; i <= 160; i++) {
-    SetFontPalette(greenpal);
     Count_Up_Print(show, font, "%3d%%", i, leadership, 264, 26);
     if (i >= 30) {
       Count_Up_Print(show, font, "%3d%%", i - 30, efficiency, 264, 38);
@@ -904,7 +891,6 @@ void ScoreClass::Show() {
                                    base::At(_nodtxy, house), redpal));
   Call_Back_Delay(show, 6);
 
-  SetFontPalette(redpal);
   if (player_house == HOUSE_BAD) {
     Do_Nod_Casualties_Graph(show, ScoreFontStyle(redpal));
   } else {
@@ -938,7 +924,6 @@ void ScoreClass::Show() {
 
   if (player_house == HOUSE_BAD) {
     Call_Back_Delay(show, 6);
-    SetFontPalette(greenpal);
     Do_Nod_Buildings_Graph(show, ScoreFontStyle(greenpal));
   } else {
     Do_GDI_Graph(show, ScoreFontStyle(greenpal), yellowptr, redptr,
@@ -1096,8 +1081,6 @@ void ScoreClass::Show() {
   TheScreen().visible_page().view().Clear();
   Set_Palette(ThePalettes().game_palette());
 
-  SetFont(oldfont);
-  g_font_x_spacing = oldfontxspacing;
   ControlQ = false;
 }
 
@@ -1622,7 +1605,6 @@ void ScoreClass::Show_Credits(Presentation& show, int house,
 
     i = std::max(i, 0);
 
-    SetFontPalette(pal);
     Count_Up_Print(show, font, "%d", i,
                    static_cast<int>(ThePlayer()->Available_Money()),
                    base::At(_credpx, house), base::At(_credpy, house));
@@ -2173,9 +2155,6 @@ void Multi_Score_Presentation() {
   static const std::span<const unsigned char> _colors[] = {
       yellowpal, redpal, bluepal, _orangepal, greenpal, _graypal};
 
-  const int oldfontxspacing = g_font_x_spacing;
-
-  g_font_x_spacing = 0;
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL);
   TheTheme().Queue_Song(THEME_WIN1);
 
@@ -2209,8 +2188,6 @@ void Multi_Score_Presentation() {
   anim.Close();
 
   /* Change to the six-point font for Text_Print */
-  const std::span<const std::byte> oldfont =
-      SetFont(TheAssets().font(FontType::kScore));
   Call_Back();
 
   /*
@@ -2274,8 +2251,6 @@ void Multi_Score_Presentation() {
   TheScreen().visible_page().view().Clear();
   Set_Palette(ThePalettes().game_palette());
 
-  SetFont(oldfont);
-  g_font_x_spacing = oldfontxspacing;
   ControlQ = false;
   Show_Mouse();
 }

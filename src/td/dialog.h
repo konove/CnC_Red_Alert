@@ -12,9 +12,9 @@
 #include "td/defines.h"
 #include "td/jshell.h"
 
-int Format_Window_String(std::span<char> string, int max_line_len, int& width,
-                         int& height);
-// Same, measured in `font` rather than the current font.
+// Word wraps `string` in place so that no line exceeds `max_line_len` pixels
+// in `font`, writing '\r' at each break. `width` and `height` receive the
+// size of the wrapped text. Returns the number of lines.
 int Format_Window_String(const FontStyle& font, std::span<char> string,
                          int max_line_len, int& width, int& height);
 extern void Dialog_Box(PixelView& view, int x, int y, int w, int h);
@@ -69,12 +69,6 @@ FontStyle TextFontStyle(TextPrintType flag);
 TextStyle TextStyleFor(TextPrintType flag, int fore = kTBlack,
                        int back = kTBlack);
 
-// TextStyleFor(), also installed in the font globals. Temporary: callers move
-// to the style it returns (docs/FONT_GLOBALS_PLAN.md). Draws nothing, so code
-// that only needs StringPixelWidth() or g_font_max_height to be right calls
-// this and ignores the result.
-TextStyle Select_Text_Font(TextPrintType flag, int fore = kTBlack,
-                           int back = kTBlack);
 void Simple_Text_Print(PixelView& view, const char* text, int x, int y,
                        int fore, int back, TextPrintType flag);
 

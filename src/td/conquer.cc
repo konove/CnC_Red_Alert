@@ -90,7 +90,6 @@
 #include "port/safe_string.h"
 #include "port/unaligned.h"
 #include "sdllib/display.h"
-#include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
@@ -3013,9 +3012,6 @@ bool Force_CD_Available(int cd) {
   static int _last = -1;
 #endif
   static unsigned char _palette[768];
-  static unsigned char
-      _hold[16];  // Saved copy of the font palette (g_font_palette).
-  static std::span<const std::byte> font;
   static const char* _volid[] = {"GDI", "NOD", "COVERT"};
 
   int new_cd_drive = 0;
@@ -3104,9 +3100,7 @@ bool Force_CD_Available(int cd) {
       // loop is the cancel below, so there is nothing to remember here.
       TheTheme().Stop();
       int hidden = Get_Mouse_State();
-      font = g_font;
       std::ranges::copy(CurrentPalette, std::begin(_palette));
-      std::ranges::copy(g_font_palette, std::begin(_hold));
 
       /*
       **	Only set the palette if necessary.
@@ -3135,8 +3129,6 @@ bool Force_CD_Available(int cd) {
         Hide_Mouse();
       }
       Set_Palette(_palette);
-      SetFont(font);
-      SetFontPalette(_hold);
       TheGameState().in_main_loop() = old_in_main_loop;
     }
   }

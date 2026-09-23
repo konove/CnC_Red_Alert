@@ -89,7 +89,6 @@ TextButtonClass::TextButtonClass(unsigned id, const char* text,
       String(text),
       PrintFlags(style) {
   if (w == -1 || h == -1) {
-    Select_Text_Font(PrintFlags, kTBlack, kTBlack);
     const FontStyle font = TextFontStyle(PrintFlags);
     if (w == -1) {
       Width = StringPixelWidth(font, String) + 8;
@@ -161,7 +160,6 @@ TextButtonClass::TextButtonClass(unsigned id, int text, TextPrintType style,
   Set_Text(text);
 
   if (w == -1 || h == -1) {
-    Select_Text_Font(PrintFlags, kTBlack, kTBlack);
     const FontStyle font = TextFontStyle(PrintFlags);
     if (w == -1) {
       Width = StringPixelWidth(font, String) + 8;
@@ -238,7 +236,6 @@ void TextButtonClass::Set_Text(const char* text, bool resize) {
   String = text;
   Flag_To_Redraw();
   if (resize && String) {
-    Select_Text_Font(PrintFlags, kTBlack, kTBlack);
     const FontStyle font = TextFontStyle(PrintFlags);
     Width = StringPixelWidth(font, String) + 8;
     Height = FontLineHeight(font) + 2;
@@ -297,8 +294,6 @@ void TextButtonClass::Draw_Background(PixelView& view) {
   **	Draw the body & set text color.
   */
   const BoxStyleEnum style = [this] {
-    // if (g_font.data() == TheAssets().font(FontType::k6PointGradient)
-    //                            .data()) {
     if (base::Any(PrintFlags & TPF_6PT_GRAD)) {
       if (IsDisabled) {
         return BOXSTYLE_GREEN_DIS_RAISED;
@@ -335,8 +330,6 @@ void TextButtonClass::Draw_Text(PixelView& view, const char* text) {
   */
   if (String) {
     int color = 0;
-    // if (g_font.data() == TheAssets().font(FontType::k6PointGradient)
-    //                            .data()) {
     if (base::Any(PrintFlags & TPF_6PT_GRAD)) {
       color = kCcGreen;
 

@@ -115,7 +115,6 @@ EditClass::EditClass(int id, std::span<char> text, int max_len,
   EditClass::Set_Text(text, max_len);
 
   if (w == -1 || h == -1) {
-    Select_Text_Font(TextFlags, kTBlack, kTBlack);
     const FontStyle font = TextFontStyle(TextFlags);
 
     if (h == -1) {

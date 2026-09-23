@@ -46,13 +46,11 @@
 #include <span>
 
 #include "port/bytes_of.h"
-#include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
-#include "td/assets.h"
 #include "td/conquer.h"
 #include "td/debug_state.h"
 #include "td/defines.h"
@@ -118,7 +116,6 @@ void Choose_Side() {
   bool nodbrief = false;  // Movie opened successfully?
   std::span<const std::byte> speech;
   bool speechplaying = false;
-  const int oldfontxspacing = g_font_x_spacing;
   int setpalette = 0;
 
   Presentation show;
@@ -127,9 +124,6 @@ void Choose_Side() {
   bool lettersdone = false;
 
   Hide_Mouse();
-  /* Change to the six-point font for Text_Print */
-  const std::span<const std::byte> oldfont =
-      SetFont(TheAssets().font(FontType::kScore));
 
   Call_Back();
 
@@ -330,8 +324,5 @@ void Choose_Side() {
   delete[] port::CharBytes(std::span(staticaud)).data();
   delete[] port::CharBytes(std::span(speechg)).data();
   delete[] port::CharBytes(std::span(speechn)).data();
-
-  SetFont(oldfont);
-  g_font_x_spacing = oldfontxspacing;
 }
 #endif

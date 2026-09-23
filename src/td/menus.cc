@@ -470,7 +470,6 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   **	Determine the width of the menu by finding the length of the
   **	longest menu entry.
   */
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, 0, 0, TPF_8POINT | TPF_DROPSHADOW);
   const FontStyle font = TextFontStyle(TPF_8POINT | TPF_DROPSHADOW);
   int length = 0;  // The width of the menu (in pixels).
   for (const char* text : strings) {
@@ -813,8 +812,6 @@ int Main_Menu(int timeout) {
 
   Keyboard::Clear();
 
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, kCcGreen, kTBlack,
-                   TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
   while (Get_Mouse_State() > 0) {
     Show_Mouse();
   }

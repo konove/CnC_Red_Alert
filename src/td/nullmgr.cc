@@ -1041,7 +1041,6 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   */
   port::SafeCopy(buffer, Text_String(TXT_INITIALIZING_MODEM));
 
-  Select_Text_Font(TPF_6PT_GRAD | TPF_NOSHADOW, kTBlack, kTBlack);
   const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(font, buffer, view.height(), width, height);
 
@@ -1340,7 +1339,6 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
 
   // Timer_Test(__LINE__, __FILE__);
 
-  Select_Text_Font(TPF_6PT_GRAD | TPF_NOSHADOW, kTBlack, kTBlack);
   const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(font, buffer, view.height(), width, height);
 
@@ -1583,7 +1581,6 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     port::SafeCopy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
   }
 
-  Select_Text_Font(TPF_6PT_GRAD | TPF_NOSHADOW, kTBlack, kTBlack);
   const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(font, text_buffer, view.height(), width, height);
 
@@ -1698,7 +1695,6 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
       if (std::string_view(comm_buffer).starts_with("RING")) {
         port::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
 
-        Select_Text_Font(TPF_6PT_GRAD | TPF_NOSHADOW, kTBlack, kTBlack);
         Format_Window_String(font, text_buffer, view.height(), width, height);
 
         text_width = width;

@@ -54,13 +54,11 @@
 #include <cstdio>
 
 #include "absl/strings/str_format.h"
-#include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
-#include "td/assets.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/game_state.h"
@@ -170,12 +168,9 @@ void Nod_Ending() {
 #ifdef NOT_FOR_WIN95
   std::vector<uint8_t> satpic(64000);
 #endif  // NOT_FOR_WIN95
-  const int oldfontxspacing = g_font_x_spacing;
 
   TheWorld().score().Show();
 
-  const std::span<const std::byte> oldfont =
-      SetFont(TheAssets().font(FontType::kScore));
   Presentation show;
   TheScreen().visible_view().Clear();
   TheScreen().hidden_view().Clear();
@@ -287,8 +282,6 @@ void Nod_Ending() {
   Hide_Mouse();
   Keyboard::Clear();
 
-  SetFont(oldfont);
-  g_font_x_spacing = oldfontxspacing;
   TheAudio().Stop(kanefinl.data());
   TheAudio().Stop(loopie6m.data());
 

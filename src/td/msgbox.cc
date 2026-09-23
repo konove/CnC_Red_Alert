@@ -131,8 +131,6 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   **	Examine the optional button parameters. Fetch the width and starting
   **	characters for each.
   */
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, kTBlack, kTBlack,
-                   TPF_6PT_GRAD | TPF_NOSHADOW);
   const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
   int bwidth = 0;   // button width
   int bheight = 0;  // button height

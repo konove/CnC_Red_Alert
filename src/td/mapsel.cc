@@ -41,7 +41,6 @@
  *- - - - - - - */
 
 #include <array>
-#include <cstddef>
 #include <cstdio>
 #include <cstring>
 #include <numeric>
@@ -508,16 +507,12 @@ void Map_Selection() {
   static const unsigned char _othergreenpal[] = {
       0,    0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x26,
       0x26, 0x26, 0x26, 0x26, 0x26, 0x26, 0x26, 0x26};
-  static const unsigned char _regpal[] = {0, 1, 2,  3,  4,  5,  6,  7,
-                                          8, 9, 10, 11, 12, 13, 14, 15};
   PixelBuffer backpage(20 * 6, 8);
 
   std::array<unsigned char, 768> grey2palette{};
   std::array<unsigned char, 768> progresspalette{};
 
   Keyboard::Clear();
-  SetFont(TheAssets().font(FontType::kScore));
-  SetFontPalette(_regpal);
   // The score animations print this screen's captions in the score font; the
   // rectangles that clear them again are measured in it too.
   const FontStyle score_font = ScoreFontStyle();
@@ -871,7 +866,6 @@ void Map_Selection() {
   if (!lastscenario) {
     Call_Back_Delay(show, 85);
   }
-//	SetFont(oldfont);
 #ifdef FRENCH
   show.page().view().FillRect(xcoord, 12, xcoord + 6 * 16 + 10, 20, kBlack);
   show.text_page().view().FillRect(2 * xcoord, 24, 2 * (xcoord + 6 * 16 + 10),
@@ -1071,7 +1065,6 @@ void Map_Selection() {
     }
   }
 
-  //	SetFont(TheAssets().font(FontType::kScore));
   TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
   Alloc_Object(
       new ScorePrintClass(show, TXT_MAP_SELECT, attackxcoord, 160, greenpal));
@@ -1282,8 +1275,6 @@ void Print_Statistics(Presentation& show, int country, int xpos, int ypos) {
   static char _deststr[16];
 
   /* Change to the six-point font for Text_Print */
-  const std::span<const std::byte> oldfont =
-      SetFont(TheAssets().font(FontType::kScore));
 
 #ifdef GERMAN
   xpos = 8;
@@ -1471,7 +1462,6 @@ void Print_Statistics(Presentation& show, int country, int xpos, int ypos) {
     Call_Back_Delay(show, 1);
   }
   Keyboard::Clear();
-  SetFont(oldfont);
 }
 
 #ifdef NEVER

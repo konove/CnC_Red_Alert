@@ -302,8 +302,6 @@ int Test_Null_Modem() {
   **	These dimensions will control how the dialog box looks.
   */
   port::SafeCopy(buffer, Text_String(TXT_WAITING_CONNECT));
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, kTBlack, kTBlack,
-                   TPF_6PT_GRAD | TPF_NOSHADOW);
   const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(font, buffer, 200 * factor, width, height);
 
@@ -670,8 +668,6 @@ static int Reconnect_Null_Modem() {
   **	These dimensions will control how the dialog box looks.
   */
   port::SafeCopy(buffer, Text_String(TXT_NULL_CONNERR_CHECK_CABLES));
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, kTBlack, kTBlack,
-                   TPF_6PT_GRAD | TPF_NOSHADOW);
   const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(font, buffer, 200, width, height);
 
@@ -1101,9 +1097,6 @@ GameType Select_Serial_Dialog() {
   base::At(buttons, curbutton)->Turn_On();
 
   Keyboard::Clear();
-
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, kCcGreen, kTBlack,
-                   TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   smart_print_enabled = true;
 
@@ -4856,9 +4849,6 @@ int Com_Show_Scenario_Dialog() {
   } else {
     nodbtn.Turn_On();
   }
-
-  Fancy_Text_Print(view, "", 0, 0, kCcGreen, kTBlack,
-                   TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
   int transmit = 1;  // 1 = re-transmit new game options
   int first = 1;     // 1 = no packets received yet

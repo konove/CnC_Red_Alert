@@ -62,7 +62,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/gadget.h"
@@ -803,7 +802,6 @@ int MessageListClass::Input(KeyNumType& input) {
           ** Verify that the additional character would not overrun the on
           *screen edit box.
           */
-          Select_Text_Font(EditLabel->Style, EditLabel->Color, kTBlack);
           const int width =
               StringPixelWidth(TextFontStyle(EditLabel->Style), EditBuf.data());
           if (width >= Width) {

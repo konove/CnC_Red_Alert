@@ -7,7 +7,6 @@
 
 #include "base/enum_array.h"
 #include "magic_enum/magic_enum.hpp"
-#include "sdllib/font.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/jshell.h"
@@ -55,7 +54,6 @@ void Assets::LoadFonts() {
     }
     fonts_.at(type) = font_data_.at(type);
   }
-  SetFont(font(FontType::k8Point));
 }
 
 void Assets::LoadStrings() {

@@ -236,9 +236,6 @@ void GameOptionsClass::Process() {
 
   Keyboard::Clear();
 
-  Fancy_Text_Print(view, TXT_NONE, 0, 0, kCcGreen, kTBlack,
-                   TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
-
   /*
   **	Main Processing Loop.
   */
