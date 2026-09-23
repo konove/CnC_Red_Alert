@@ -165,11 +165,13 @@ class DiskStream final : public ByteStream {
  private:
   DiskStream() = default;
 
-  // The open file. A filebuf reports failed writes (a short sputn, a failed
-  // pubsync) but not failed reads, which look like the end of the file.
+  // The open file. A filebuf reports a failed write as a short sputn, and a
+  // failed read by throwing std::ios_base::failure instead of returning a
+  // short count; DiskStream::Read catches that and turns it into ok()
+  // reporting false, same as a failed write.
   std::filebuf file_;
 
-  // Set when a write or flush fails.
+  // Set when a read or write fails.
   bool failed_ = false;
 };
 

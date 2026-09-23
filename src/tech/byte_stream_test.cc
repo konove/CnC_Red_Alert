@@ -139,6 +139,23 @@ TEST(DiskStreamErrorTest, WriteToFullDeviceFails) {
   EXPECT_FALSE(stream->ok());
 }
 
+TEST(DiskStreamErrorTest, RealReadErrorSetsOkFalseWithoutThrowing) {
+  // Reading a process's own memory map at offset 0 fails with EIO; unlike a
+  // directory, the open itself succeeds, so this is the one read error this
+  // test suite can provoke without a failing disk.
+  if (!std::filesystem::exists("/proc/self/mem")) {
+    GTEST_SKIP() << "no /proc/self/mem on this platform";
+  }
+  const std::unique_ptr<DiskStream> stream =
+      DiskStream::Open("/proc/self/mem", FileAccess::kRead);
+  if (stream == nullptr) {
+    GTEST_SKIP() << "could not open /proc/self/mem";
+  }
+  std::array<std::byte, 8> buffer{};
+  EXPECT_EQ(stream->Read(buffer), 0);
+  EXPECT_FALSE(stream->ok());
+}
+
 TEST(MemoryStreamTest, ReadsWithinTheViewAndClampsSeeks) {
   MemoryStream stream(Bytes("xabcd"));
   EXPECT_EQ(stream.Size(), 5);

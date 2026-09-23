@@ -1132,3 +1132,13 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   timed 3x on the RA binary before and after, both in `build-strict`: before (stdio) 3.95/3.97/3.97
   s, after (`std::filebuf`) 3.87/3.88/3.93 s — no regression. The real-display intro-movie decode
   check from the brief was not run (headless environment); flagged as not covered by this step.
+- 2026-09-23: Step 3 fix round 1. Review found libstdc++'s filebuf _throws_ `std::ios_base::failure`
+  on a real read error (confirmed: `/tmp` as a directory, `sgetn` on it) rather than returning a
+  short count, so an unguarded `DiskStream::Read` let a real disk error reach `std::terminate` where
+  stdio's `ferror()` used to just set `failed_`. Wrapped the `sgetn` call in
+  `try { ... } catch (const std::ios_base::failure&)`, setting `failed_ = true` and returning 0, so
+  `ok()` reports a read error exactly as it did before. Reworded the three comments the review named
+  (`byte_stream.h`'s `failed_`/`file_` comments, `byte_stream.cc`'s directory-refusal rationale,
+  `stream_error_test.cc`'s directory test) to say a directory throws rather than "can't be
+  distinguished from EOF". Added `DiskStreamErrorTest.RealReadErrorSetsOkFalseWithoutThrowing`
+  (`/proc/self/mem`, `GTEST_SKIP()` if missing or `Open` fails) per the ruling.

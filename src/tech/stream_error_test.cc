@@ -186,9 +186,9 @@ TEST(StreamErrorTest, ReadErrorIsStickyThroughTransformStraw) {
 }
 
 TEST(StreamErrorTest, DiskReadErrorReachesFileAndStraw) {
-  // Opening a directory is refused up front: a filebuf cannot distinguish a
-  // read error from end of file, so DiskStream::Open rejects directories
-  // before that ambiguity can arise.
+  // Opening a directory is refused up front: reading one throws instead of
+  // returning an error, and refusing the open is what keeps IsAvailable()
+  // from treating the directory as a file.
   const std::string directory = std::filesystem::temp_directory_path().string();
   EXPECT_EQ(DiskStream::Open(directory, FileAccess::kRead), nullptr);
 

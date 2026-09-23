@@ -75,8 +75,10 @@ std::string ByteStream::ReadString(const base::ssize count) {
 std::unique_ptr<DiskStream> DiskStream::Open(const std::string_view path,
                                              const FileAccess access) {
   const std::filesystem::path file_path(path);
-  // A directory opens as a file on POSIX and then fails every read, which a
-  // filebuf cannot report; refuse it here instead.
+  // A directory opens as a file on POSIX; reading it then throws instead of
+  // returning an error code. Refusing it here, rather than letting the first
+  // read throw, is also what keeps IsAvailable()/FindExistingFile() from
+  // treating a directory as though it were a file that merely can't be read.
   std::error_code error;
   if (std::filesystem::is_directory(file_path, error)) {
     return nullptr;
@@ -109,7 +111,15 @@ std::unique_ptr<DiskStream> DiskStream::Open(const std::string_view path,
 }
 
 base::ssize DiskStream::Read(const std::span<std::byte> buffer) {
-  return file_.sgetn(port::CharBytes(buffer).data(), std::ssize(buffer));
+  try {
+    return file_.sgetn(port::CharBytes(buffer).data(), std::ssize(buffer));
+  } catch (const std::ios_base::failure&) {
+    // A real I/O error (EIO from a failing disk, a dropped network share)
+    // throws instead of returning a short count; report it through ok(), as
+    // the stdio-backed implementation did by checking ferror().
+    failed_ = true;
+    return 0;
+  }
 }
 
 base::ssize DiskStream::Write(const std::span<const std::byte> buffer) {
