@@ -202,8 +202,6 @@ else ()
         # Disable all warnings for quick build
         add_compile_options(-w)
     endif ()
-    # workarounds
-    add_compile_definitions(__cdecl= __far= __stdcall= cdecl= far=)
 endif ()
 
 # Use Chromium-style includes: all paths relative to src root

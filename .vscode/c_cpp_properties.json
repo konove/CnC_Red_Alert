@@ -14,12 +14,7 @@
         "WIN32",
         "ENGLISH=1",
         "PORTABLE=1",
-        "WINSOCK_IPX=1",
-        "__cdecl=",
-        "__far=",
-        "__stdcall=",
-        "cdecl=",
-        "far="
+        "WINSOCK_IPX=1"
       ],
       "compilerPath": "/usr/bin/g++",
       "cStandard": "c23",
