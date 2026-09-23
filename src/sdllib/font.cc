@@ -10,8 +10,8 @@
 
 int FontXSpacing;
 int FontYSpacing;
-char FontWidth;
-char FontHeight;
+int FontWidth;
+int FontHeight;
 std::span<const std::byte> FontPtr;
 
 uint8_t FontPalette[16]{
@@ -28,8 +28,8 @@ std::span<const std::byte> Set_Font(std::span<const std::byte> new_font) {
     // Cached for the dialog and menu layout code, which reads the metrics
     // without a FontView.
     const FontView font(new_font);
-    FontHeight = static_cast<char>(font.MaxHeight());
-    FontWidth = static_cast<char>(font.MaxWidth());
+    FontHeight = font.MaxHeight();
+    FontWidth = font.MaxWidth();
   }
 
   return old_font;
@@ -70,8 +70,7 @@ void Set_Font_Palette_Range(std::span<const uint8_t> palette, int start_idx,
   end_idx %= 16;
 
   if (start_idx < 0 || end_idx < start_idx ||
-      (static_cast<size_t>(end_idx) - static_cast<size_t>(start_idx) + 1) >
-          palette.size()) {
+      end_idx - start_idx + 1 > std::ssize(palette)) {
     return;
   }
   for (int i = start_idx; i <= end_idx; ++i) {

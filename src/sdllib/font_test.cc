@@ -116,4 +116,15 @@ TEST(FontViewTest, GlyphDataPointsIntoBlob) {
   EXPECT_EQ(font.GlyphData(1).front(), std::byte{0xCD});
 }
 
+TEST(SetFontTest, CachesMetricsAbove127) {
+  std::vector<uint8_t> blob = MakeTestFont();
+  blob.at(14 + kFontInfoMaxHeight) = 200;
+  blob.at(14 + kFontInfoMaxWidth) = 130;
+
+  const auto old_font = Set_Font(std::as_bytes(std::span(blob)));
+  EXPECT_EQ(FontHeight, 200);
+  EXPECT_EQ(FontWidth, 130);
+  Set_Font(old_font);
+}
+
 }  // namespace

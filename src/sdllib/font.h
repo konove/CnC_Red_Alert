@@ -32,6 +32,8 @@
 #include "absl/base/attributes.h"
 #include "base/array.h"
 #include "base/buffer.h"
+#include "base/numeric.h"
+#include "base/types.h"
 
 // Byte offsets, within the font info block, of the two font-wide metrics the
 // game reads.
@@ -80,7 +82,7 @@ class FontView {
   explicit FontView(
       std::span<const std::byte> data ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : font_(data) {
-    if (font_.size() < sizeof(FontHeader)) {
+    if (std::ssize(font_) < base::ssize{sizeof(FontHeader)}) {
       return;
     }
     FontHeader header{};
@@ -114,39 +116,40 @@ class FontView {
   [[nodiscard]] std::span<const std::byte> GlyphData(uint8_t ch) const {
     // The offset table holds one uint16 offset from the start of the font data
     // per glyph.
-    const auto data = Table(ReadWord(offsets_, size_t{2} * ch));
-    const auto size = ((static_cast<size_t>(GlyphWidth(ch)) + 1) / 2) *
-                      static_cast<size_t>(GlyphHeight(ch));
-    return size <= data.size() ? data.first(size)
-                               : std::span<const std::byte>{};
+    const auto data = Table(ReadWord(offsets_, base::ssize{2} * ch));
+    const base::ssize size =
+        base::ssize{(GlyphWidth(ch) + 1) / 2} * GlyphHeight(ch);
+    return size <= std::ssize(data) ? data.first(base::ToSize(size))
+                                    : std::span<const std::byte>{};
   }
 
  private:
   // Byte and ReadWord return 0 for an offset outside data; see the class
   // comment.
-  static uint8_t Byte(std::span<const std::byte> data, size_t offset) {
-    return offset < data.size()
+  static uint8_t Byte(std::span<const std::byte> data, base::ssize offset) {
+    return offset < std::ssize(data)
                ? std::to_integer<uint8_t>(base::At(data, offset))
                : 0;
   }
-  static uint16_t ReadWord(std::span<const std::byte> data, size_t offset) {
-    if (offset > data.size() || data.size() - offset < sizeof(uint16_t)) {
+  static uint16_t ReadWord(std::span<const std::byte> data,
+                           base::ssize offset) {
+    if (std::ssize(data) - offset < base::ssize{sizeof(uint16_t)}) {
       return 0;
     }
     uint16_t value = 0;
     base::CopyBytes(base::ObjectBytes(value),
-                    std::as_bytes(data.subspan(offset)), sizeof(value));
+                    data.subspan(base::ToSize(offset)), sizeof(value));
     return value;
   }
   [[nodiscard]] int PackedHeight(uint8_t ch) const {
-    return ReadWord(heights_, size_t{2} * ch);
+    return ReadWord(heights_, base::ssize{2} * ch);
   }
   // Returns the font data from offset to the end, or an empty span if offset
   // is past it. Tables carry no length in the header, so each is bounded only
   // by the end of the data.
-  [[nodiscard]] std::span<const std::byte> Table(size_t offset) const {
-    return offset <= font_.size() ? font_.subspan(offset)
-                                  : std::span<const std::byte>{};
+  [[nodiscard]] std::span<const std::byte> Table(base::ssize offset) const {
+    return offset <= std::ssize(font_) ? font_.subspan(base::ToSize(offset))
+                                       : std::span<const std::byte>{};
   }
   std::span<const std::byte> font_;  // The whole font file.
   // The header's tables, each running to the end of font_; empty if the
@@ -201,8 +204,8 @@ extern int FontYSpacing;
 
 // Width of the widest and height of the tallest glyph in the current font, in
 // pixels, as Set_Font() last cached them.
-extern char FontWidth;
-extern char FontHeight;
+extern int FontWidth;
+extern int FontHeight;
 
 // The current font's data, as passed to Set_Font(); empty before the first
 // call, and then nothing prints.
