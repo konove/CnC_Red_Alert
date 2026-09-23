@@ -416,12 +416,12 @@ void Show_Who_Was_Responsible() {
   *centered.
   **  If the text starts after column 40 it will be right justified.
   */
-  GameFile creditsfile("credits.txt");
-  if (!creditsfile.IsAvailable()) {
+  const auto creditsfile = OpenGameFile("credits.txt");
+  if (!creditsfile) {
     return;
   }
-  std::vector<char> credits(base::ToSize(creditsfile.Size()) + 1);
-  if (creditsfile.Read(std::as_writable_bytes(
+  std::vector<char> credits(base::ToSize(creditsfile->Size()) + 1);
+  if (creditsfile->Read(std::as_writable_bytes(
           std::span(credits).first(credits.size() - 1))) <= 0) {
     return;
   }
@@ -441,7 +441,7 @@ void Show_Who_Was_Responsible() {
   /*
   ** Miscellaneous stuff for parsing the credits text file.
   */
-  int length = static_cast<int>(creditsfile.Size());
+  int length = static_cast<int>(creditsfile->Size());
   int line = 0;
   int column = 0;
   auto cptr = credits.begin();
@@ -648,7 +648,9 @@ void Show_Who_Was_Responsible() {
   /*
   ** Load the reference palette for the font.
   */
-  GameFile("EGOPAL.PAL").ReadObject(ThePalettes().title_palette());
+  if (const auto file = OpenGameFile("EGOPAL.PAL")) {
+    file->ReadObject(ThePalettes().title_palette());
+  }
 
   /*
   ** Copy the font palette entries into the combo palette.

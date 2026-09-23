@@ -68,6 +68,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <span>
+#include <string_view>
 #include <vector>
 
 #include "absl/strings/str_format.h"
@@ -96,6 +97,7 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "ra/world.h"
+#include "sdllib/file_access.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_win.h"
@@ -1022,10 +1024,11 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
   if (theater != Theater) {
     Theater = theater;
 
-    GameFile file(base::At(_remaps, static_cast<int>(Theater)));
+    const std::string_view remap_name =
+        base::At(_remaps, static_cast<int>(Theater));
 
-    if (file.IsAvailable()) {
-      file.ReadObject(VortexRemapTables);
+    if (const auto file = OpenGameFile(remap_name)) {
+      file->ReadObject(VortexRemapTables);
     } else {
       for (int i = 0; i < MAX_REMAP_SHADES; i++) {
         Build_Fading_Table(ThePalettes().game_palette(),
@@ -1033,7 +1036,9 @@ void ChronalVortexClass::Setup_Remap_Tables(TheaterType theater) {
                            240 - (i * 256 / MAX_REMAP_SHADES));
       }
 
-      file.WriteObject(VortexRemapTables);
+      if (const auto out = OpenGameFile(remap_name, FileAccess::kWrite)) {
+        out->WriteObject(VortexRemapTables);
+      }
     }
   }
 

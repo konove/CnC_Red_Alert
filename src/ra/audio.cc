@@ -598,9 +598,8 @@ void ServiceSpeech() {
                 .replace_extension(".AUD")
                 .string();
 
-        GameFile file(file_name);
-        if (file.IsAvailable() &&
-            file.Read(base::At(slots, playing_buffer).buffer)) {
+        const auto file = OpenGameFile(file_name);
+        if (file && file->Read(base::At(slots, playing_buffer).buffer)) {
           speech = base::At(slots, playing_buffer).buffer;
           base::At(slots, playing_buffer).voice = speak_queue;
         }

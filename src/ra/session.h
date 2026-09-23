@@ -674,12 +674,13 @@ class SessionClass {
   //.....................................................................
   // For Recording & Playing back a file
   //.....................................................................
-  // The file a recording is written to or played back from, and that file
-  // while a game is being recorded or played back; nullptr otherwise.
+  // The name of the file a recording is written to or played back from.
   [[nodiscard]] const std::string& record_file_name() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return record_file_name_;
   }
+  // The open stream over record_file_name(): non-null while a game is being
+  // recorded or played back, null otherwise.
   std::unique_ptr<ByteStream>& record_stream() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return record_stream_;
   }

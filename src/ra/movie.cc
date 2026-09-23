@@ -76,7 +76,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
   if (name) {
     const auto fullname =
         std::filesystem::path(name).replace_extension(".VQA").string();
-    if (!GameFile(fullname).IsAvailable()) {
+    if (!GameFileExists(fullname)) {
       DLOG(WARNING) << "Play_Movie: file not found: " << fullname;
       return;
     }

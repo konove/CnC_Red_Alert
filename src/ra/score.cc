@@ -339,7 +339,6 @@ void ScoreClass::Presentation() {
   static const int _bldggy[2] = {138, 138};
   static const int _bldgny[2] = {150, 150};
 
-  GameFile file(kFameFileName);
   const int oldfontxspacing = FontXSpacing;
   const int house = IsSovietHouse(ThePlayer()->Class->House) ? 1 : 0;  // 0 or 1
 
@@ -592,10 +591,8 @@ void ScoreClass::Presentation() {
 
   // Load the table. A missing or short file reads as an empty table.
   std::array<std::byte, kFameFileSize> rawfame{};
-  if (file.IsAvailable()) {
-    file.Open(FileAccess::kRead);
-    file.Read(std::span<std::byte>(rawfame));
-    file.Close();
+  if (const auto file = OpenGameFile(kFameFileName)) {
+    file->Read(std::span<std::byte>(rawfame));
   }
   FameTable hallfame = DecodeFameTable(rawfame);
 
@@ -647,9 +644,9 @@ void ScoreClass::Presentation() {
     Input_Name(row.name, HALLFAME_X, HALLFAME_Y + (index * 8), pal);
 
     EncodeFameTable(hallfame, rawfame);
-    file.Open(FileAccess::kWrite);
-    file.Write(std::span<const std::byte>(rawfame));
-    file.Close();
+    if (const auto file = OpenGameFile(kFameFileName, FileAccess::kWrite)) {
+      file->Write(std::span<const std::byte>(rawfame));
+    }
   } else {
     Alloc_Object(new ScorePrintClass(TXT_CLICK_CONTINUE, 149, 190, yellowpal));
     ControlQ = false;

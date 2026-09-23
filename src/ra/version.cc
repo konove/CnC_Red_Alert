@@ -329,10 +329,8 @@ char* VersionClass::Version_Name() {
  *   10/26/1995 BRR : Created.                                             *
  *=========================================================================*/
 void VersionClass::Read_Text_String() {
-  DiskFile file("VERSION.TXT");
-
-  if (file.IsAvailable()) {
-    file.ReadObject(VersionText);
+  if (const auto file = OpenDiskFile("VERSION.TXT")) {
+    file->ReadObject(VersionText);
     VersionText[sizeof(VersionText) - 1] = '\0';
     while (base::At(VersionText, std::string_view(VersionText).size() - 1) ==
            '\r') {
@@ -576,11 +574,10 @@ const char* Version_Name() {
     version += "AM";
   }
 
-  DiskFile file("VERSION.TXT");
-  if (file.IsAvailable()) {
+  if (const auto file = OpenDiskFile("VERSION.TXT")) {
     char file_content[26] = {};
     version += '\r';
-    file.Read(file_content, 25);
+    file->Read(file_content, 25);
     file_content[25] = '\0';  // Ensure null termination
     version += file_content;
   }

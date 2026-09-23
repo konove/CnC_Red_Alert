@@ -323,7 +323,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
 
     archives.main = MixArchive::Register("MAIN.MIX", &TheAssets().mix_key());
     DCHECK(archives.main != nullptr);
-    if (GameFile("MOVIES1.MIX").IsAvailable()) {
+    if (GameFileExists("MOVIES1.MIX")) {
       archives.movies =
           MixArchive::Register("MOVIES1.MIX", &TheAssets().mix_key());
     } else {

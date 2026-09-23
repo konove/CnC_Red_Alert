@@ -2813,7 +2813,6 @@ int Com_Scenario_Dialog(bool skirmish) {
   // event ptr
   int64_t msg_timeout = 1200;  // init to 20 seconds
 
-  GameFile loadfile("SAVEGAME.NET");
   bool load_game = false;  // 1 = load a saved game
   NodeNameType* who = nullptr;       // node to add to Players
   char item[MPLAYER_NAME_MAX + 64];  // for filling in lists
@@ -2929,7 +2928,7 @@ int Com_Scenario_Dialog(bool skirmish) {
     okbtn.Add_Tail(*commands);
   }
   cancelbtn.Add_Tail(*commands);
-  if (!skirmish && loadfile.IsAvailable()) {
+  if (!skirmish && GameFileExists("SAVEGAME.NET")) {
   } else {
     cancelbtn.X = loadbtn.X;
   }
@@ -3151,7 +3150,7 @@ int Com_Scenario_Dialog(bool skirmish) {
           (!ok_button_added && gameoptions && kludge_timer.IsFinished())) {
         okbtn.Add_Tail(*commands);
         ok_button_added = true;
-        if (loadfile.IsAvailable()) {
+        if (GameFileExists("SAVEGAME.NET")) {
           loadbtn.Add_Tail(*commands);
         }
         display = std::max(display, REDRAW_BUTTONS);
@@ -3789,12 +3788,10 @@ int Com_Scenario_Dialog(bool skirmish) {
                        TheSession()
                            .Scenarios.at(TheSession().Options.ScenarioIndex)
                            ->Description());
-        GameFile file(TheSession()
-                          .Scenarios.at(TheSession().Options.ScenarioIndex)
-                          ->Get_Filename());
-
-        SendPacket.ScenarioInfo.FileLength =
-            static_cast<unsigned int>(file.Size());
+        SendPacket.ScenarioInfo.FileLength = static_cast<unsigned int>(
+            GameFileSize(TheSession()
+                             .Scenarios.at(TheSession().Options.ScenarioIndex)
+                             ->Get_Filename()));
 
         port::SafeCopy(SendPacket.ScenarioInfo.ShortFileName,
                        TheSession()
@@ -5759,62 +5756,59 @@ int Com_Show_Scenario_Dialog() {
                   ((Expansion_CS_Present() &&
                     IsMissionCounterstrike(TheSession().ScenarioFileName)) ||
                    (Expansion_AM_Present() &&
-                    IsMissionAftermath(TheSession().ScenarioFileName)))) {
-                GameFile check_file(TheSession().ScenarioFileName);
-                if (!check_file.IsAvailable()) {
-                  const int current_drive = SearchPaths::current_cd_drive();
-                  const int index = Get_CD_Index(current_drive, 1 * 60);
-                  bool needcd = false;
-                  if (IsMissionCounterstrike(TheSession().ScenarioFileName) &&
-                      (index != 2 && index != 3)) {
-                    TheGameState().required_cd() = 2;
-                    needcd = true;
+                    IsMissionAftermath(TheSession().ScenarioFileName))) &&
+                  !GameFileExists(TheSession().ScenarioFileName)) {
+                const int current_drive = SearchPaths::current_cd_drive();
+                const int index = Get_CD_Index(current_drive, 1 * 60);
+                bool needcd = false;
+                if (IsMissionCounterstrike(TheSession().ScenarioFileName) &&
+                    (index != 2 && index != 3)) {
+                  TheGameState().required_cd() = 2;
+                  needcd = true;
+                }
+
+                if (IsMissionAftermath(TheSession().ScenarioFileName) &&
+                    (index != 3)) {
+                  TheGameState().required_cd() = 3;
+                  needcd = true;
+                }
+
+                if (needcd) {
+                  WWDebugString("RA95 - Counterstrike CD is not in drive\n");
+
+                  /*
+                  ** We should have the scenario but the wrong disk is in.
+                  ** Tell the host that I am ready to go anyway.
+                  */
+                  base::FillBytes(base::ObjectBytes(SendPacket), 0,
+                                  sizeof(SendPacket));
+                  SendPacket.Command = SERIAL_READY_TO_GO;
+                  TheNetwork().null_modem().Send_Message(
+                      base::ObjectBytes(SendPacket), sizeof(SendPacket), 1);
+
+                  starttime = SystemTicks();
+                  while ((TheNetwork().null_modem().Num_Send() &&
+                          SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) ||
+                         SystemTicks() - starttime < 60) {
+                    TheNetwork().null_modem().Service();
+                  }
+                  ready_packet_was_sent = true;
+
+                  if (!Force_CD_Available(TheGameState().required_cd())) {
+                    EmergencyExit(EXIT_FAILURE);
                   }
 
-                  if (IsMissionAftermath(TheSession().ScenarioFileName) &&
-                      (index != 3)) {
-                    TheGameState().required_cd() = 3;
-                    needcd = true;
-                  }
+                  /*
+                  ** Update the internal list of scenarios to include the
+                  *counterstrike
+                  ** list.
+                  */
+                  TheSession().Read_Scenario_Descriptions();
 
-                  if (needcd) {
-                    WWDebugString("RA95 - Counterstrike CD is not in drive\n");
-
-                    /*
-                    ** We should have the scenario but the wrong disk is in.
-                    ** Tell the host that I am ready to go anyway.
-                    */
-                    base::FillBytes(base::ObjectBytes(SendPacket), 0,
-                                    sizeof(SendPacket));
-                    SendPacket.Command = SERIAL_READY_TO_GO;
-                    TheNetwork().null_modem().Send_Message(
-                        base::ObjectBytes(SendPacket), sizeof(SendPacket), 1);
-
-                    starttime = SystemTicks();
-                    while (
-                        (TheNetwork().null_modem().Num_Send() &&
-                         SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) ||
-                        SystemTicks() - starttime < 60) {
-                      TheNetwork().null_modem().Service();
-                    }
-                    ready_packet_was_sent = true;
-
-                    if (!Force_CD_Available(TheGameState().required_cd())) {
-                      EmergencyExit(EXIT_FAILURE);
-                    }
-
-                    /*
-                    ** Update the internal list of scenarios to include the
-                    *counterstrike
-                    ** list.
-                    */
-                    TheSession().Read_Scenario_Descriptions();
-
-                    /*
-                    ** Make sure we dont time out because of the disk swap
-                    */
-                    lastmsgtime = SystemTicks();
-                  }
+                  /*
+                  ** Make sure we dont time out because of the disk swap
+                  */
+                  lastmsgtime = SystemTicks();
                 }
               }
 

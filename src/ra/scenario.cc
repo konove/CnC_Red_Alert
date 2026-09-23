@@ -404,8 +404,7 @@ bool Start_Scenario(char* name, bool briefing) {
                    VQName.at(TheScenario().BriefMovie));
   }
   if (TheSession().Type == GAME_NORMAL &&
-      (TheScenario().BriefMovie == VQ_NONE ||
-       !GameFile(buffer).IsAvailable())) {
+      (TheScenario().BriefMovie == VQ_NONE || !GameFileExists(buffer))) {
     /*
     ** Make sure the mouse is visible before showing the restatement.
     */
@@ -1231,7 +1230,7 @@ BriefingAction Restate_Mission() {
   if (TheScenario().BriefMovie != VQ_NONE) {
     const auto video_filename =
         std::string(VQName.at(TheScenario().BriefMovie)) + ".VQA";
-    has_video = GameFile(video_filename).IsAvailable();
+    has_video = GameFileExists(video_filename);
   }
 
   // Choose buttons based on video availability.
@@ -1749,7 +1748,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
       }
       absl::SNPrintF(fname, sizeof(fname), "SC%c%02d%c%c.INI", c_player,
                      scenario, c_dir, 'A' + static_cast<int>(candidate));
-      if (!GameFile(fname).IsAvailable()) {
+      if (!GameFileExists(fname)) {
         break;
       }
       available++;

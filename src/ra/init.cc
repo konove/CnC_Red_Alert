@@ -2164,15 +2164,13 @@ static void Init_Bootstrap_Mixfiles() {
   TheGameState().required_cd() = -2;
 
   if constexpr (config::kWolapiEnabled) {
-    GameFile fileWolapiMix("WOLAPI.MIX");
-    if (fileWolapiMix.IsAvailable()) {
+    if (GameFileExists("WOLAPI.MIX")) {
       MixArchive::Register("WOLAPI.MIX", &TheAssets().mix_key());
       MixArchive::Cache("WOLAPI.MIX");
     }
   }
 
-  GameFile file2("EXPAND2.MIX");
-  if (file2.IsAvailable()) {
+  if (GameFileExists("EXPAND2.MIX")) {
     MixArchive::Register("EXPAND2.MIX", &TheAssets().mix_key());
     Cache_Or_Exit("EXPAND2.MIX");
 
@@ -2180,8 +2178,7 @@ static void Init_Bootstrap_Mixfiles() {
     Cache_Or_Exit("HIRES1.MIX");
   }
 
-  GameFile file("EXPAND.MIX");
-  if (file.IsAvailable()) {
+  if (GameFileExists("EXPAND.MIX")) {
     MixArchive::Register("EXPAND.MIX", &TheAssets().mix_key());
     Cache_Or_Exit("EXPAND.MIX");
   }
@@ -2226,21 +2223,19 @@ static void Extract(const char* filename, const char* outname);
 static void Init_Secondary_Mixfiles() {
   Assets::DiscArchives& archives = TheAssets().disc_archives();
 
-  if (GameFile("MAIN1.MIX").IsAvailable()) {
+  if (GameFileExists("MAIN1.MIX")) {
     // MAIN1-4 from steam
 
     // extract the extra missions from the expansion "discs"
     // (they don't contain the base missions)
-    if (GameFile("MAIN3.MIX").IsAvailable() &&
-        !GameFile("GENERAL3.MIX").IsAvailable()) {
+    if (GameFileExists("MAIN3.MIX") && !GameFileExists("GENERAL3.MIX")) {
       const MixArchive* tmp =
           MixArchive::Register("MAIN3.MIX", &TheAssets().mix_key());
       Extract("GENERAL.MIX", "GENERAL3.MIX");
       delete tmp;
     }
 
-    if (GameFile("MAIN4.MIX").IsAvailable() &&
-        !GameFile("GENERAL4.MIX").IsAvailable()) {
+    if (GameFileExists("MAIN4.MIX") && !GameFileExists("GENERAL4.MIX")) {
       const MixArchive* tmp =
           MixArchive::Register("MAIN4.MIX", &TheAssets().mix_key());
       Extract("GENERAL.MIX", "GENERAL4.MIX");
@@ -2288,12 +2283,12 @@ static void Init_Secondary_Mixfiles() {
         "GENERAL.MIX", &TheAssets().mix_key());  // Never cached.
   }
 
-  if (GameFile("MOVIES1.MIX").IsAvailable()) {
+  if (GameFileExists("MOVIES1.MIX")) {
     archives.movies = MixArchive::Register(
         "MOVIES1.MIX", &TheAssets().mix_key());  // Never cached.
   }
   // load both sets of movies if possible
-  if (GameFile("MOVIES2.MIX").IsAvailable()) {
+  if (GameFileExists("MOVIES2.MIX")) {
     archives.movies = MixArchive::Register(
         "MOVIES2.MIX", &TheAssets().mix_key());  // Never cached.
   }
@@ -2607,23 +2602,20 @@ bool Load_Recording_Values(ByteStream& file) {
 }
 
 void Extract(const char* filename, const char* outname) {
-  GameFile inFile(filename);
-  GameFile outFile(outname);
-
-  inFile.Open();
-  outFile.Open(FileAccess::kWrite);
+  const auto in_file = OpenGameFile(filename);
+  const auto out_file = OpenGameFile(outname, FileAccess::kWrite);
+  if (!in_file || !out_file) {
+    return;
+  }
 
   std::array<char, 32768> buffer{};
 
-  int64_t size = inFile.Size();
-
-  while (size > 0) {
-    const base::ssize bytes = inFile.Read(std::span(buffer), 32768);
+  while (true) {
+    const base::ssize bytes = in_file->Read(std::span(buffer), 32768);
     if (bytes <= 0) {
       break;
     }
-    outFile.Write(std::span(buffer), bytes);
-    size -= bytes;
+    out_file->Write(std::span(buffer), bytes);
   }
 }
 

@@ -357,7 +357,6 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
   /*
   **	Add in all the expansion scenarios.
   */
-  GameFile file;
   char buffer[128];
   char buffer2[128];
   const auto sbuffer = port::CharBytes(ShapeBufferBytes);
@@ -377,7 +376,6 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
     port::SafeAppend(buffer2, ".INI");
     TheScenario().Set_Scenario_Name(buffer);
     TheScenario().Scenario = index;
-    file.SetName(buffer);
     bool bOk = false;
     if (index < 36) {
       bOk = bCounterstrike;
@@ -385,12 +383,13 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
       bOk = !bCounterstrike;
     }
 
-    if (bOk && file.IsAvailable()) {
+    const auto file = bOk ? OpenGameFile(buffer) : nullptr;
+    if (file) {
       EObjectClass obj{};
       switch (buffer[2]) {
         case 'G':
         case 'g':
-          file.Read(sbuffer, 2000);
+          file->Read(sbuffer, 2000);
           base::At(sbuffer, 2000) = '\r';
           base::At(sbuffer, 2000 + 1) = '\n';
           base::At(sbuffer, 2000 + 2) = '\0';
@@ -411,7 +410,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
 
         case 'U':
         case 'u':
-          file.Read(sbuffer, 2000);
+          file->Read(sbuffer, 2000);
           base::At(sbuffer, 2000) = '\r';
           base::At(sbuffer, 2000 + 1) = '\n';
           base::At(sbuffer, 2000 + 2) = '\0';

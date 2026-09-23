@@ -2867,11 +2867,10 @@ void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
                  TheSession()
                      .Scenarios.at(TheSession().Options.ScenarioIndex)
                      ->Description());
-  GameFile file(TheSession()
-                    .Scenarios.at(TheSession().Options.ScenarioIndex)
-                    ->Get_Filename());
-  GParams.GPacket.ScenarioInfo.FileLength =
-      static_cast<unsigned int>(file.Size());
+  GParams.GPacket.ScenarioInfo.FileLength = static_cast<unsigned int>(
+      GameFileSize(TheSession()
+                       .Scenarios.at(TheSession().Options.ScenarioIndex)
+                       ->Get_Filename()));
   port::SafeCopy(GParams.GPacket.ScenarioInfo.ShortFileName,
                  TheSession()
                      .Scenarios.at(TheSession().Options.ScenarioIndex)

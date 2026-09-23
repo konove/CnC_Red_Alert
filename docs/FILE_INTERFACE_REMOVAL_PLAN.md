@@ -1006,12 +1006,12 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
 - _Size only_ (→ `GameFileSize`): RA `wol_gsup.cc:2871`, `nulldlg.cc:3792`, `netdlg.cc:5069`,
   `saveload.cc:1027`/`:1044`.
 
-- [ ] Convert TD's sites; both builds; tests; TD smoke; commit
+- [x] Convert TD's sites; both builds; tests; TD smoke; commit
       `Open Tiberian Dawn's files as streams`.
-- [ ] Convert RA's sites; both builds; tests; RA smoke; first-run `Extract()` check on the Steam
+- [x] Convert RA's sites; both builds; tests; RA smoke; first-run `Extract()` check on the Steam
       data (move GENERAL3.MIX/GENERAL4.MIX aside, start RA, confirm they are recreated
       byte-identical: `cmp`); commit `Open Red Alert's files as streams`.
-- [ ] `grep -rnE '\b(GameFile|DiskFile|MemoryFile|FileSource|FileSink)\b' src --include='*.cc'     --include='*.h' | grep -v '_test\.cc' | grep -vE 'src/tech/(game_file|disk_file|memory_file|     file_source|file_sink|file)\.'`
+- [x] `grep -rnE '\b(GameFile|DiskFile|MemoryFile|FileSource|FileSink)\b' src --include='*.cc'     --include='*.h' | grep -v '_test\.cc' | grep -vE 'src/tech/(game_file|disk_file|memory_file|     file_source|file_sink|file)\.'`
       lists only comments and dead-macro/unbuilt code.
 
 ## Step 10: Delete File and its implementations
@@ -1462,3 +1462,48 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   dialogs, the expansion-scenario NEWMENU dialog, mapeddlg's trigger/team-name dialogs) — left for
   the user, no headless path exercises them. RA's half (`Extract()`, `sendfile.cc`, and the
   remaining existence/ read/size-only sites) is a separate later task.
+- 2026-09-23: Step 9, RA commit. Converted every remaining live `GameFile`/`DiskFile` object use in
+  `src/ra/`: existence checks (`movie.cc`, `theme.cc`, `installation.cc`, `scenario.cc` x3,
+  `init.cc` x7, `nulldlg.cc` x2, `netdlg.cc` x2, `saveload.cc`), `Size()`-only queries
+  (`wol_gsup.cc`, `nulldlg.cc`, `netdlg.cc`, `saveload.cc`), one-shot reads (`egos.cc` x2,
+  `audio.cc`), a read/write branch keyed on existence (`vortex.cc`'s remap-table cache), a
+  read-then-write pair through two scoped streams (`score.cc`'s hall-of-fame file), and the explicit
+  sequences in `sendfile.cc` (`Receive_Remote_File`'s save stream: `std::filesystem::remove` then
+  `OpenDiskFile(name, kWrite)`, held open across the receive loop and `Flush()`ed before
+  `Read_Scenario_Descriptions()` instead of `Close()`d; `Send_Remote_File`'s read stream, opened
+  once where the old code re-opened after an earlier `IsAvailable()`/`Size()` check) and
+  `expand.cc`'s per-scenario loop (opens fresh each iteration instead of reusing one `SetName`d
+  object). `Init_Secondary_Mixfiles`'s `Extract()` (`init.cc`) is `OpenGameFile(filename)` /
+  `OpenGameFile(outname, kWrite)`, returns if either is null, and copies in 32 KiB blocks until
+  `Read` returns 0 (dropped the separate `Size()`-bounded loop count, since a short/zero read
+  already ends the copy). Two `readability-redundant-nested-if` findings appeared where removing a
+  `GameFile` declaration left an `if` whose body was only another `if` (`netdlg.cc`, `nulldlg.cc`'s
+  counterstrike-CD checks); merged the conditions. Also folded in: `session.h`'s run-on comment over
+  `record_file_name()`/`record_stream()` split into one sentence per accessor, and `ra/filepcx.h`'s
+  `Write_PCX_File` contract comment now says `palette` must not be null (`writepcx.cc` dereferences
+  `palette->bytes()` unconditionally). `build` and `build-strict` clean;
+  `ctest --test-dir build-strict` 753/753; RA smoke OK (240 positions, `--load-fixture` OK);
+  `-DRA_LANGUAGE=german` and `-DRA_LANGUAGE=french` both build `rasdl` clean in scratch dirs.
+
+  `Extract()` verification (Steam install, MAIN3/MAIN4.MIX present): moving only GENERAL3.MIX/
+  GENERAL4.MIX aside and rerunning surfaced a pre-existing bug, not a regression — `Extract` is also
+  called as `Extract("SCORES.MIX", "SCORES.MIX")` (same name both ways) to pull SCORES.MIX out of
+  MAIN4.MIX. On a truly first run this is safe: the read resolves to the packed copy inside
+  MAIN4.MIX (no loose file exists yet) and the write creates a separate loose file. But a loose
+  SCORES.MIX from an earlier successful extraction already existed in the test directory (only the
+  GENERAL files had been moved aside, matching the brief's instruction); with a loose copy present,
+  `OpenGameFile` for read now resolves to that _same_ loose file (loose wins over packed), and the
+  write open right after it truncates that file on open, so the read comes up empty and SCORES.MIX
+  is left at 0 bytes. The old `Extract` has the identical operation order (`inFile.Open()` then
+  `outFile.Open(kWrite)`, both delegating to the same `OpenGameFile`), so it has the same failure
+  under the same precondition — confirmed by inspection, not fixed, since Step 9 only converts call
+  sites and the two implementations are operationally identical. Recovery: re-ran with GENERAL3.MIX,
+  GENERAL4.MIX _and_ SCORES.MIX all absent (a genuine first run), which regenerated all three
+  byte-identical to known-good references (`cmp`); the corrupted 0-byte SCORES.MIX was never the
+  delivered state and needed no separate restore beyond that regeneration. An earlier attempt to
+  reproduce the same clean extraction with a pre-Step-9 baseline binary (built from a scratch
+  worktree at this branch's parent commit) did not complete in a reasonable time and was abandoned
+  as inconclusive (most likely cold page cache against the Steam library's 200-500 MB MAIN3/4.MIX,
+  since the same scenario completed in under a second once the files were warm) rather than
+  re-litigated, since the from-scratch run with the new code already gave the byte-identical proof
+  the step requires.

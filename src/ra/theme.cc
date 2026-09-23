@@ -602,8 +602,7 @@ ThemeType ThemeClass::From_Name(const char* name) {
  *=============================================================================================*/
 void ThemeClass::Scan() {
   for (const ThemeType theme : magic_enum::enum_values<ThemeType>()) {
-    _themes.at(theme).Available =
-        GameFile(Theme_File_Name(theme)).IsAvailable();
+    _themes.at(theme).Available = GameFileExists(Theme_File_Name(theme));
   }
 }
 

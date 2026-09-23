@@ -756,8 +756,7 @@ bool Load_Game(int id) {
   ** CD to request later
   */
   if (load_net) {
-    GameFile scenario_file(TheScenario().ScenarioName);
-    if (!scenario_file.IsAvailable()) {
+    if (!GameFileExists(TheScenario().ScenarioName)) {
       int cd = -1;
       if (IsMissionCounterstrike(TheScenario().ScenarioName)) {
         cd = 2;
@@ -1031,8 +1030,6 @@ bool Load_Game(int id) {
 
   } else {
     if (load_net) {
-      GameFile scenario_file(TheScenario().ScenarioName);
-
       /*
       ** Fix up the session class variables
       */
@@ -1048,7 +1045,7 @@ bool Load_Game(int id) {
                           sizeof(TheSession().ScenarioFileName));
           TheSession().ScenarioFileLength =
               static_cast<decltype(TheSession().ScenarioFileLength)>(
-                  scenario_file.Size());
+                  GameFileSize(TheScenario().ScenarioName));
           base::CopyBytes(
               base::ObjectBytes(TheSession().ScenarioDigest),
               std::as_bytes(TheSession().Scenarios.at(s)->Get_Digest_Bytes()),

@@ -47,8 +47,10 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
+#include <filesystem>
 #include <span>
 #include <string>
+#include <system_error>
 
 #include "base/array.h"
 #include "base/buffer.h"
@@ -332,28 +334,26 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   /*
   ** If the file name is already in use, use the temp file name
   */
-  GameFile test_file(file_name);
-
   std::string save_file_name;
-  if (test_file.IsAvailable()) {
+  if (GameFileExists(file_name)) {
     save_file_name = "DOWNLOAD.TMP";
   } else {
     save_file_name = std::string(file_name);
   }
 
-  DiskFile save_file(save_file_name);
-
   /*
   ** If the file already exists then delete it and re-create it.
   */
-  if (save_file.IsAvailable()) {
-    save_file.Delete();
-  }
+  std::error_code remove_error;
+  std::filesystem::remove(save_file_name, remove_error);
 
   /*
   ** Open the file for write
   */
-  save_file.Open(FileAccess::kWrite);
+  const auto save_file = OpenDiskFile(save_file_name, FileAccess::kWrite);
+  if (!save_file) {
+    return false;
+  }
 
   GadgetClass* commands = &cancelbtn;  // button list
   commands->Add_Tail(progress_meter);
@@ -420,7 +420,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
                base::ObjectBytes(receive_packet), &packet_len) > 0) &&
           (receive_packet.Command == SERIAL_FILE_CHUNK) &&
           (receive_packet.BlockNumber == last_received_block + 1)) {
-        save_file.Write(receive_packet.RawData, receive_packet.BlockLength);
+        save_file->Write(receive_packet.RawData, receive_packet.BlockLength);
         total_length += receive_packet.BlockLength;
         last_received_block++;
 
@@ -451,7 +451,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
           (receive_packet.BlockNumber == last_received_block + 1))
 
       {
-        save_file.Write(receive_packet.RawData, receive_packet.BlockLength);
+        save_file->Write(receive_packet.RawData, receive_packet.BlockLength);
         total_length += receive_packet.BlockLength;
         last_received_block++;
 
@@ -493,7 +493,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
 
   } while (process);
 
-  save_file.Close();
+  save_file->Flush();
 
   /*
   ** Update the internal list of scenarios to include the downloaded one so we
@@ -609,15 +609,13 @@ bool Send_Remote_File(const char* file_name, int gametype) {
       .Command = SERIAL_FILE_INFO, .Name = {}, .ID = 0, .ScenarioInfo = {}};
   GlobalPacketType net_file_info{};
 
-  GameFile send_file(file_name);
-
-  if (!send_file.IsAvailable()) {
+  if (!GameFileExists(file_name)) {
     // WWDebugString ("RA95 - Error - could not find file to send to client\n");
     //		debugprint("RA95 - Error - could not find file to send to
     // client\n");
     return false;
   }
-  int file_length = static_cast<int>(send_file.Size());
+  int file_length = static_cast<int>(GameFileSize(file_name));
 
   response_timer.Set(RESPONSE_TIMEOUT);
 
@@ -667,7 +665,10 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   const int max_chunk_size = MAX_SEND_FILE_PACKET_SIZE;
   const int total_blocks = (file_length + max_chunk_size - 1) / max_chunk_size;
 
-  send_file.Open(FileAccess::kRead);
+  const auto send_file = OpenGameFile(file_name);
+  if (!send_file) {
+    return false;
+  }
 
   GadgetClass* commands = &cancelbtn;  // button list
   commands->Add_Tail(progress_meter);
@@ -737,7 +738,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
 
           file_length -= send_packet.BlockLength;
 
-          if (send_file.Read(send_packet.RawData, send_packet.BlockLength) ==
+          if (send_file->Read(send_packet.RawData, send_packet.BlockLength) ==
               send_packet.BlockLength) {
             TheNetwork().null_modem().Send_Message(
                 base::ObjectBytes(send_packet), sizeof(send_packet), 1);
@@ -773,7 +774,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
 
           file_length -= send_packet.BlockLength;
 
-          if (send_file.Read(send_packet.RawData, send_packet.BlockLength) ==
+          if (send_file->Read(send_packet.RawData, send_packet.BlockLength) ==
               send_packet.BlockLength) {
             for (int i = 0; i < TheSession().RequestCount; i++) {
               TheNetwork().ipx().Send_Global_Message(
