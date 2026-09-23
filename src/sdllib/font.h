@@ -28,6 +28,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <source_location>
 #include <span>
 
 #include "absl/base/attributes.h"
@@ -200,20 +201,41 @@ struct FontStyle {
   std::array<uint8_t, 16> palette = kIdentityFontPalette;
 };
 
+// The part of a FontStyle a caller depends on, for CheckFontStyle().
+enum class FontUse {
+  kWidth,   // The glyphs and x_spacing.
+  kHeight,  // The glyphs and y_spacing.
+  kPrint,   // Everything: glyphs, both spacings and palette entries 2-15.
+};
+
+// Temporary, while callers move from the font globals to explicit styles (see
+// docs/FONT_GLOBALS_PLAN.md): logs an error, once per call site, if the part
+// of style that `use` names differs from what the globals hold. A site that
+// logs depended on a font chosen by earlier code, so passing it its own style
+// would change what it draws or measures.
+void CheckFontStyle(
+    const FontStyle& style, FontUse use,
+    std::source_location location = std::source_location::current());
+
 // Returns the distance in pixels from one line of text in style to the next:
 // the tallest glyph plus the line spacing.
-int FontLineHeight(const FontStyle& style);
+int FontLineHeight(const FontStyle& style, std::source_location location =
+                                               std::source_location::current());
 
 // Returns the horizontal distance, in pixels, that printing character in style
 // advances by: its glyph width plus style.x_spacing.
-int CharPixelWidth(const FontStyle& style, char character);
+int CharPixelWidth(
+    const FontStyle& style, char character,
+    std::source_location location = std::source_location::current());
 
 // Returns the width in pixels of the widest line of text in style, or 0 for
 // nullptr. Lines are separated by '\r' only, as the game's text strings are; a
 // '\n' is measured as a glyph, although PixelView::Print() breaks the line on
 // it. Every glyph counts style.x_spacing after it, the last one on a line
 // included, as Print() advances.
-int StringPixelWidth(const FontStyle& style, const char* text);
+int StringPixelWidth(
+    const FontStyle& style, const char* text,
+    std::source_location location = std::source_location::current());
 
 // Returns the style the font globals below describe. Temporary: the legacy
 // functions that read the globals build their style with it until every
