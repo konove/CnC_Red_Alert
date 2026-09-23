@@ -1303,10 +1303,11 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   file leaves it empty, same as the old `Size()==0` path). A missing file's `Load_Picture` now
   returns 0 directly instead of falling into `Load_Uncompress` with a closed stream. TD's dead
   `#ifdef JAPANESE` block in `msgbox.cc` (never compiles) was left untouched. `td/startup.cc`'s
-  `main()` now opens CONQUER.INI once with `OpenDiskFile("CONQUER.INI", FileAccess::kReadWrite)`
-  (creates it if missing, replacing the `Create()` probe) for the guard and for
-  `Read_Setup_Options`, whose own `IsAvailable()` check was dropped since the caller only invokes it
-  with a stream that already opened; the later profile read and write each get their own scoped
+  `main()` opens CONQUER.INI with `OpenDiskFile("CONQUER.INI", FileAccess::kReadWrite)` (creates it
+  if missing, replacing the `Create()` probe), scoped to just the `Read_Setup_Options` call (a
+  `bool config_available` records success for the surrounding control flow — see the fix-round
+  bullet below), whose own `IsAvailable()` check was dropped since the caller only invokes it with a
+  stream that already opened; the later profile read and write each get their own scoped
   `OpenDiskFile` (`kRead` then `kWrite`), so the read stream is destroyed before the write stream
   truncates. `td/assets_test.cc`'s stub became `LoadAllocData(ByteStream&)` over a forward-declared
   `class ByteStream;`. Found during the build: `td/startup.cc` compiles `Read_Setup_Options`'s
@@ -1328,3 +1329,16 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   TD's ending cutscenes are not reachable from either smoke script (they need the interactive menu)
   and were not visually verified — flagged as not directly checked; they follow the same mechanical
   pattern validated elsewhere and passed clang-tidy/GCC/clang strict analysis.
+- 2026-09-23: Step 7a fix round 1. Review found that `td/startup.cc`'s
+  `if (const auto cfile = OpenDiskFile("CONQUER.INI", FileAccess::kReadWrite))` tied the open
+  `DiskStream`'s lifetime to the entire play session (`Create_Main_Window`, audio/video init,
+  `Main_Game()`, `ShutDown()`) because it doubled as that block's condition, even though `cfile` is
+  only used once, for `Read_Setup_Options`; the old auto-opening `DiskFile` never held an OS handle
+  between calls. Fixed by opening `cfile` in its own `if`, calling `Read_Setup_Options` and setting
+  a new `bool config_available` inside it, then gating the rest of the old block on
+  `config_available` instead — `cfile` now closes as soon as `Read_Setup_Options` returns, and the
+  control flow (what runs or falls through to "Run SETUP program first" when the file can't be
+  opened) is unchanged. `tools/strict_tu.py src/td/startup.cc`, full `build`/`build-strict`, and
+  `ctest --test-dir build-strict` (752/752) all clean;
+  `tools/td_saveload_smoke.sh build-strict/src/td/tdsdl SCG01EA --team` OK (5951 game states) —
+  headless only, no real display.

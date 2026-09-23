@@ -328,11 +328,17 @@ int main(int argc, char* argv[])
 
     // OpenDiskFile creates an empty CONQUER.INI when it does not already
     // exist, replacing the old explicit Create() call; we don't care about
-    // most of it anyway.
+    // most of it anyway. The stream only needs to stay open for
+    // Read_Setup_Options, not for the rest of the play session, so it is
+    // scoped to this one call rather than held open by the outer if below.
+    bool config_available = false;
     if (const auto cfile =
             OpenDiskFile("CONQUER.INI", FileAccess::kReadWrite)) {
       Read_Setup_Options(*cfile, *options);
+      config_available = true;
+    }
 
+    if (config_available) {
       CCDebugString("C&C95 - Creating main window.\n");
 
       Create_Main_Window(nullptr, 0, Screen::kWidth, TheScreen().mode_height());
