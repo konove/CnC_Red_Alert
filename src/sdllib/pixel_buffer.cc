@@ -704,27 +704,6 @@ void PixelView::Print(const FontStyle& style, const int value, const int x,
   Print(style, absl::StrCat(value).c_str(), x, y, fore_color, back_color);
 }
 
-void PixelView::Print(const char* text, const int x, const int y,
-                      const int fore_color, const int back_color) {
-  if (Lock()) {
-    PrintLocked(text, x, y, fore_color, back_color);
-    Unlock();
-  }
-}
-
-void PixelView::Print(const int value, const int x, const int y,
-                      const int fore_color, const int back_color) {
-  Print(absl::StrCat(value).c_str(), x, y, fore_color, back_color);
-}
-
-void PixelView::PrintLocked(const char* text, const int x, const int y,
-                            const int fore_color, const int back_color) {
-  // Code that reads g_font_palette after a print still sees these colours.
-  g_font_palette[1] = static_cast<uint8_t>(fore_color);
-  g_font_palette[0] = static_cast<uint8_t>(back_color);
-  PrintLocked(CurrentFontStyle(), text, x, y, fore_color, back_color);
-}
-
 void PixelView::PrintLocked(const FontStyle& style, const char* text, int x,
                             int y, const int fore_color, const int back_color) {
   const FontView& font = style.font;

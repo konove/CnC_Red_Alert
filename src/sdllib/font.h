@@ -16,8 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Westwood .FNT bitmap fonts: a view over the font data, the current font and
-// its spacing, and the 16-entry palette that colours the glyphs. Originally the
+// Westwood .FNT bitmap fonts: a view over the font data, and FontStyle, the
+// font, spacing and 16-entry glyph palette a print or measurement uses; there
+// is no current font, every caller passes its style. Originally the
 // Westwood 32-bit font library (FONT.H, Scott K. Bowen, June 1994), which split
 // these across SET_FONT.CPP, FONT.CPP and TEXTPRNT.ASM; the drawing itself is
 // PixelView::Print() in sdllib/pixel_buffer.cc.
@@ -105,7 +106,7 @@ class FontView {
   [[nodiscard]] int MaxWidth() const {
     return ReadByte(info_, kFontInfoMaxWidth);
   }
-  // Width of the glyph for character in pixels, not counting g_font_x_spacing.
+  // Width of the glyph for character in pixels, not counting any spacing.
   [[nodiscard]] int GlyphWidth(const uint8_t character) const {
     return ReadByte(widths_, character);
   }
@@ -119,8 +120,8 @@ class FontView {
     return PackedHeight(character) % 256;
   }
   // Returns the pixel rows of the glyph for character, or an empty span for
-  // malformed data. Each byte packs two 4-bit indices into g_font_palette, low
-  // nibble first, and each row starts on a byte boundary, so a row is
+  // malformed data. Each byte packs two 4-bit indices into the glyph palette,
+  // low nibble first, and each row starts on a byte boundary, so a row is
   // (GlyphWidth() + 1) / 2 bytes.
   [[nodiscard]] std::span<const std::byte> GlyphData(
       const uint8_t character) const {
@@ -219,45 +220,5 @@ int CharPixelWidth(const FontStyle& style, char character);
 // it. Every glyph counts style.x_spacing after it, the last one on a line
 // included, as Print() advances.
 int StringPixelWidth(const FontStyle& style, const char* text);
-
-// Returns the style the font globals below describe. Temporary: the legacy
-// functions that read the globals build their style with it until every
-// caller passes one; see docs/FONT_GLOBALS_PLAN.md.
-FontStyle CurrentFontStyle();
-
-// Makes font the current font and refreshes g_font_max_width and
-// g_font_max_height from it. Returns the previous font, so callers can restore
-// it. An empty font leaves the current font in place (and still returns it).
-std::span<const std::byte> SetFont(std::span<const std::byte> font);
-
-// The two functions above, measured in CurrentFontStyle().
-int CharPixelWidth(char character);
-int StringPixelWidth(const char* text);
-
-// Copies the first 16 entries of palette into g_font_palette, or does nothing
-// if palette holds fewer. Only entries 2-15 last; see g_font_palette.
-void SetFontPalette(std::span<const uint8_t> palette);
-
-// Extra pixels printed after every glyph and between lines. Callers set these
-// per font before printing and measuring, and PixelView::Print() and the width
-// functions above all read them.
-extern int g_font_x_spacing;
-extern int g_font_y_spacing;
-
-// Width of the widest and height of the tallest glyph in the current font, in
-// pixels, as SetFont() last cached them.
-extern int g_font_max_width;
-extern int g_font_max_height;
-
-// The current font's data, as passed to SetFont(); empty before the first
-// call, and then nothing prints.
-extern std::span<const std::byte> g_font;
-
-// Maps the 4-bit glyph pixel values to screen colours. Entry 0 is the
-// background, and a 0 in the table is transparent: nothing is drawn. Starts
-// as the identity mapping; PixelView::Print() sets entries 0 and 1 to its
-// background and foreground on every call, and SetFontPalette()
-// installs the other colours of multi-colour fonts.
-extern uint8_t g_font_palette[16];
 
 #endif  // CNC_RED_ALERT_SDLLIB_FONT_H_

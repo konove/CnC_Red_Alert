@@ -11,7 +11,6 @@
 #include <numeric>
 #include <vector>
 
-#include "base/array.h"
 #include "gtest/gtest.h"
 #include "port/unaligned.h"
 #include "sdllib/font.h"
@@ -240,43 +239,12 @@ TEST(PrintTest, DrawsThroughTheStylesPaletteAndSpacing) {
   style.palette.at(3) = 60;
   std::vector<uint8_t> pixels(size_t{8} * 2, 0);
   PixelBuffer page(8, 2, pixels);
-  const auto saved_palette = std::to_array(g_font_palette);
 
   page.view().Print(style, "\x01\x02", 0, 0, 7, 0);
 
   // Glyph 1 at x 0-2, one pixel of spacing, glyph 2 at x 4-5 on row 1.
   EXPECT_EQ(pixels, (std::vector<uint8_t>{7, 50, 60, 0, 0, 0, 0, 0,  //
                                           0, 7, 50, 0, 7, 60, 0, 0}));
-  // The palette entries the colours stand in for are the print's own.
-  EXPECT_EQ(std::to_array(g_font_palette), saved_palette);
-}
-
-TEST(PrintTest, LegacyPrintMatchesTheGlobalsStyle) {
-  const std::vector<std::byte> blob = MakePrintFont();
-  FontStyle style{.font = FontView(blob), .x_spacing = -1, .y_spacing = 0};
-  style.palette.at(2) = 50;
-  style.palette.at(3) = 60;
-  std::vector<uint8_t> explicit_pixels(size_t{8} * 2, 9);
-  std::vector<uint8_t> legacy_pixels(size_t{8} * 2, 9);
-  PixelBuffer explicit_page(8, 2, explicit_pixels);
-  PixelBuffer legacy_page(8, 2, legacy_pixels);
-
-  const auto old_font = SetFont(blob);
-  const int old_x_spacing = g_font_x_spacing;
-  const auto old_palette = std::to_array(g_font_palette);
-  g_font_x_spacing = style.x_spacing;
-  SetFontPalette(style.palette);
-
-  explicit_page.view().Print(style, "\x01\x02\x01", 0, 0, 7, 4);
-  legacy_page.view().Print("\x01\x02\x01", 0, 0, 7, 4);
-
-  EXPECT_EQ(explicit_pixels, legacy_pixels);
-  EXPECT_EQ(base::At(g_font_palette, 1), 7);
-  EXPECT_EQ(base::At(g_font_palette, 0), 4);
-
-  SetFontPalette(old_palette);
-  g_font_x_spacing = old_x_spacing;
-  SetFont(old_font);
 }
 
 }  // namespace

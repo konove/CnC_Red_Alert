@@ -1,14 +1,10 @@
 #include "sdllib/font.h"
 
-#include <algorithm>
-#include <array>
 #include <cstddef>
 #include <cstdint>
-#include <numeric>
 #include <span>
 #include <vector>
 
-#include "base/array.h"
 #include "base/buffer.h"
 #include "gtest/gtest.h"
 
@@ -120,30 +116,16 @@ TEST(FontViewTest, GlyphDataPointsIntoBlob) {
   EXPECT_EQ(font.GlyphData(1).front(), std::byte{0xCD});
 }
 
-TEST(SetFontTest, CachesMetricsAbove127) {
+// The metrics are bytes in the font file; reading them must not narrow them
+// through a signed char, as the old cached globals once did.
+TEST(FontStyleTest, MaxMetricsAbove127) {
   std::vector<uint8_t> blob = MakeTestFont();
   blob.at(14 + kFontInfoMaxHeight) = 200;
   blob.at(14 + kFontInfoMaxWidth) = 130;
+  const FontStyle style{.font = FontView(std::as_bytes(std::span(blob)))};
 
-  const auto old_font = SetFont(std::as_bytes(std::span(blob)));
-  EXPECT_EQ(g_font_max_height, 200);
-  EXPECT_EQ(g_font_max_width, 130);
-  SetFont(old_font);
-}
-
-TEST(SetFontPaletteTest, CopiesSixteenEntriesAndIgnoresShortPalettes) {
-  const auto saved = std::to_array(g_font_palette);
-
-  std::array<uint8_t, 17> palette{};
-  std::ranges::iota(palette, uint8_t{100});
-  SetFontPalette(palette);
-  EXPECT_TRUE(std::ranges::equal(g_font_palette, std::span(palette).first(16)));
-
-  const std::array<uint8_t, 15> short_palette{};
-  SetFontPalette(short_palette);
-  EXPECT_EQ(base::At(g_font_palette, 0), 100);
-
-  SetFontPalette(saved);
+  EXPECT_EQ(FontMaxHeight(style), 200);
+  EXPECT_EQ(FontMaxWidth(style), 130);
 }
 
 TEST(FontStyleTest, MeasuresWithItsOwnSpacing) {
@@ -157,26 +139,6 @@ TEST(FontStyleTest, MeasuresWithItsOwnSpacing) {
   EXPECT_EQ(StringPixelWidth(style, "\x01\x01\r\x01"), 12);
   EXPECT_EQ(StringPixelWidth(style, nullptr), 0);
   EXPECT_EQ(FontLineHeight(style), 7);
-}
-
-// The legacy functions measure in whatever the globals hold, so setting the
-// globals to a style has to give the same widths as passing it.
-TEST(FontStyleTest, LegacyMeasurementMatchesTheGlobalsStyle) {
-  const std::vector<uint8_t> blob = MakeTestFont();
-  const auto font = std::as_bytes(std::span(blob));
-  const auto old_font = SetFont(font);
-  const int old_x_spacing = g_font_x_spacing;
-  g_font_x_spacing = 3;
-
-  const FontStyle current = CurrentFontStyle();
-  EXPECT_EQ(current.font.data().data(), font.data());
-  EXPECT_EQ(current.x_spacing, 3);
-  EXPECT_EQ(StringPixelWidth("\x01\x01"),
-            StringPixelWidth(current, "\x01\x01"));
-  EXPECT_EQ(CharPixelWidth('\x01'), CharPixelWidth(current, '\x01'));
-
-  g_font_x_spacing = old_x_spacing;
-  SetFont(old_font);
 }
 
 }  // namespace

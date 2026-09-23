@@ -209,13 +209,6 @@ class PixelView {
   void PrintLocked(const FontStyle& style, const char* text, int x, int y,
                    int fore_color, int back_color);
 
-  // The three above, in CurrentFontStyle() (sdllib/font.h). Each also writes
-  // its colours into g_font_palette entries 0 and 1, as the game always did.
-  void Print(const char* text, int x, int y, int fore_color, int back_color);
-  void Print(int value, int x, int y, int fore_color, int back_color);
-  void PrintLocked(const char* text, int x, int y, int fore_color,
-                   int back_color);
-
   // x1,y1 and x2,y2 are the two corners, both inclusive, so DrawRect and
   // FillRect cover x2 - x1 + 1 pixels per row.
   void DrawLine(int x1, int y1, int x2, int y2, uint8_t color);
