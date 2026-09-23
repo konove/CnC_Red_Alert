@@ -167,4 +167,18 @@ lines.
 
 ## Progress
 
-- **2026-09-23: plan written.** Nothing implemented yet.
+- **2026-09-23: plan written** (c172fab1).
+
+- **2026-09-23: phases 1 and 2 done** (0fe7d3f0..96e30c30). `FontStyle` holds a `FontView`, the two
+  spacings and the glyph palette; the Google struct rule keeps behaviour out of it, so the line
+  height is the free function `FontLineHeight()` rather than a member, and max height and width are
+  read through `style.font` (`FontView` gained a default constructor and `data()`). `TextStyle`
+  names its `FontStyle` member `font_style`, since `style.font.font` read badly. `TextFontStyle()`,
+  `TextStyleFor()` and a shim `Select_Text_Font()` exist in both games, and `Simple_Text_Print()`
+  draws with the explicit style.
+
+  Phase 0 (the page dump) was skipped for now: the new tests compare the legacy and explicit paths
+  pixel for pixel, and the runtime check covers the rest. Headless SCG01EA runs to frame 200 in both
+  games log no mismatch and no flag without a point size. The strict build caught one thing
+  `tools/strict_tu.py` did not: `TextStyle` needed initializers for its other two fields once it
+  gained a member with its own.
