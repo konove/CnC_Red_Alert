@@ -118,6 +118,20 @@ static void Animate_Score_Objs();
 // does not time out.
 static void Cycle_Wait_Click(bool cycle = true);
 
+// The font the score screens print in, as Presentation() and
+// Multi_Score_Presentation() install it: the score font with no extra letter
+// spacing, its glyph values mapped through `palette`, which is ignored unless
+// it has all 16 entries. The screens never set a line spacing; every print on
+// them is a single line, so 0 draws the same as whatever was left behind.
+static FontStyle ScoreFontStyle(std::span<const uint8_t> palette) {
+  FontStyle style{.font = FontView(TheAssets().font(FontType::kScore))};
+  if (std::ssize(palette) >= std::ssize(style.palette)) {
+    std::ranges::copy(palette.first(style.palette.size()),
+                      style.palette.begin());
+  }
+  return style;
+}
+
 // The count-up tick sound; loaded by Presentation().
 static std::span<const std::byte> Beepy6;
 // Ctrl-Q cheat key to skip past the score screen: once TickScoreScreen() has
@@ -229,8 +243,8 @@ void ScorePrintClass::Update() {
     if (Stage) {
       SetFontPalette(PrimaryPalette);
       localstr[0] = Text().at(base::ToSize(Stage - 1));
-      TheScreen().hidden_view().Print(localstr, pos - 12, YPos, kTBlack,
-                                      kTBlack);
+      TheScreen().hidden_view().Print(ScoreFontStyle(PrimaryPalette), localstr,
+                                      pos - 12, YPos, kTBlack, kTBlack);
       TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), pos - 12,
                                        YPos - 2, pos - 12, YPos - 2, 14, 16);
     }
@@ -239,11 +253,12 @@ void ScorePrintClass::Update() {
     if (base::ToSize(Stage) < Text().size()) {
       localstr[0] = Text().at(base::ToSize(Stage));
       SetFontPalette(_whitepal);
-      TheScreen().visible_view().Print(localstr, pos, YPos - 1, kTBlack,
+      const FontStyle white = ScoreFontStyle(_whitepal);
+      TheScreen().visible_view().Print(white, localstr, pos, YPos - 1, kTBlack,
                                        kTBlack);
-      TheScreen().visible_view().Print(localstr, pos, YPos + 1, kTBlack,
+      TheScreen().visible_view().Print(white, localstr, pos, YPos + 1, kTBlack,
                                        kTBlack);
-      TheScreen().visible_view().Print(localstr, pos + 1, YPos, kTBlack,
+      TheScreen().visible_view().Print(white, localstr, pos + 1, YPos, kTBlack,
                                        kTBlack);
     }
     Stage++;
@@ -268,7 +283,8 @@ void ScoreScaleClass::Update() {
     if (Stage) {
       SetFontPalette(Palette);
       TheScreen().hidden_view().FillRect(0, 0, 14, 14, kTBlack);
-      TheScreen().hidden_view().Print(std::string(Text()).c_str(), 0, 0,
+      TheScreen().hidden_view().Print(ScoreFontStyle(Palette),
+                                      std::string(Text()).c_str(), 0, 0,
                                       kTBlack, kTBlack);
       TheScreen().hidden_view().Scale(TheScreen().visible_view(), 0, 0,
                                       base::At(_destx, Stage) * 2, YPos, 10, 12,
@@ -284,7 +300,8 @@ void ScoreScaleClass::Update() {
           ScoreObj = nullptr;
         }
       }
-      TheScreen().hidden_view().Print(std::string(Text()).c_str(), XPos, YPos,
+      TheScreen().hidden_view().Print(ScoreFontStyle(Palette),
+                                      std::string(Text()).c_str(), XPos, YPos,
                                       kTBlack, kTBlack);
       TheScreen().hidden_view().BlitTo(TheScreen().visible_view(), XPos, YPos,
                                        XPos, YPos, 12, 12);
@@ -486,20 +503,20 @@ void ScoreClass::Presentation() {
   for (int i = 0; i <= 130; i++) {
     SetFontPalette(greenpal);
     const int lead = CountUpValue(leadership, i, 100);
-    Count_Up_Print("%3d%%", lead, leadership, 244, 26);
+    Count_Up_Print("%3d%%", lead, leadership, 244, 26, greenpal);
     const int econo = CountUpValue(economy, i - 30, 100);
     if (i >= 30) {
-      Count_Up_Print("%3d%%", econo, economy, 244, 38);
+      Count_Up_Print("%3d%%", econo, economy, 244, 38, greenpal);
     }
-    Print_Minutes(minutes);
+    Print_Minutes(minutes, greenpal);
     TickScoreScreen(1);
     TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Volume(100));
     if (i >= 30 && lead == leadership && econo == economy) {
       break;
     }
   }
-  Count_Up_Print("%3d%%", leadership, leadership, 244, 26);
-  Count_Up_Print("%3d%%", economy, economy, 244, 38);
+  Count_Up_Print("%3d%%", leadership, leadership, 244, 26, greenpal);
+  Count_Up_Print("%3d%%", economy, economy, 244, 38, greenpal);
 
   // ScorePrintClass views `buffer` rather than copying it, so the delays that
   // follow must outlast the typing of "x nnnnn" (one letter per tick) before
@@ -781,6 +798,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   hidden.FillRect(0, 0, 248, 18, kTBlack);
   CC_Draw_Shape(hidden, redptr, 119, 0, 0, WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
   SetFontPalette(house ? redpal : bluepal);
+  const std::span<const uint8_t> top_palette = house ? redpal : bluepal;
 
   for (int i = 1; i <= gdikilled; i++) {
     if (i != gdikilled) {
@@ -791,16 +809,17 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
     }
 
     Count_Up_Print("%d", CountUpValue(gkilled, i, gdikilled), gkilled, 297,
-                   ypos + 2);
+                   ypos + 2, top_palette);
     TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Volume(150));
     TickScoreScreen(2);
   }
   CC_Draw_Shape(view, yellowptr, gdikilled, xpos * 2, ypos * 2, WINDOW_MAIN,
                 SHAPE_WIN_REL, {}, {});
-  Count_Up_Print("%d", gkilled, gkilled, 297, ypos + 2);
+  Count_Up_Print("%d", gkilled, gkilled, 297, ypos + 2, top_palette);
   /*BG	if (!TheKeyboard().Check()) */ TickScoreScreen(40);
 
   SetFontPalette(house ? bluepal : redpal);
+  const std::span<const uint8_t> bottom_palette = house ? bluepal : redpal;
   for (int i = 1; i <= nodkilled; i++) {
     if (i != nodkilled) {
       CC_Draw_Shape(view, redptr, i, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
@@ -811,7 +830,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
     }
 
     Count_Up_Print("%d", CountUpValue(nkilled, i, nodkilled), nkilled, 297,
-                   ypos + 14);
+                   ypos + 14, bottom_palette);
     TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Volume(150));
     TickScoreScreen(2);
   }
@@ -820,7 +839,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   // never runs.
   CC_Draw_Shape(view, redptr, nodkilled, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
                 SHAPE_WIN_REL, {}, {});
-  Count_Up_Print("%d", nkilled, nkilled, 297, ypos + 14);
+  Count_Up_Print("%d", nkilled, nkilled, 297, ypos + 14, bottom_palette);
   /*BG	if (!TheKeyboard().Check()) */ TickScoreScreen(40);
 }
 
@@ -872,7 +891,7 @@ void ScoreClass::Show_Credits(int house, std::span<const uint8_t> pal) {
 
     SetFontPalette(pal);
     Count_Up_Print("%d", i, static_cast<int>(ThePlayer()->Available_Money()),
-                   base::At(_credpx, house), base::At(_credpy, house));
+                   base::At(_credpx, house), base::At(_credpy, house), pal);
     TickScoreScreen(2);
   } while (i < ThePlayer()->Available_Money());
 
@@ -881,7 +900,8 @@ void ScoreClass::Show_Credits(int house, std::span<const uint8_t> pal) {
   base::At(score_objects, credobj) = nullptr;
 }
 
-void ScoreClass::Print_Minutes(int minutes) {
+void ScoreClass::Print_Minutes(int minutes,
+                               const std::span<const uint8_t> palette) {
   char str[20];
   if (minutes >= 60) {
     // The hours field is a single digit.
@@ -894,17 +914,19 @@ void ScoreClass::Print_Minutes(int minutes) {
     Format_Runtime_Text(str, sizeof(str), Text_String(TXT_SCORE_TIMEFORMAT2),
                         minutes);
   }
-  TheScreen().visible_view().Print(str, 550, 18, kTBlack, kTBlack);
+  TheScreen().visible_view().Print(ScoreFontStyle(palette), str, 550, 18,
+                                   kTBlack, kTBlack);
 }
 
 void ScoreClass::Count_Up_Print(const char* str, int percent, int maxval,
-                                int xpos, int ypos) {
+                                int xpos, int ypos,
+                                const std::span<const uint8_t> palette) {
   char destbuf[64];
 
   Format_Runtime_Text(destbuf, sizeof(destbuf), str,
                       percent <= maxval ? percent : maxval);
-  TheScreen().visible_view().Print(destbuf, xpos * 2, ypos * 2, kTBlack,
-                                   kBlack);
+  TheScreen().visible_view().Print(ScoreFontStyle(palette), destbuf, xpos * 2,
+                                   ypos * 2, kTBlack, kBlack);
 }
 
 void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,

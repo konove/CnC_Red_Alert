@@ -1332,6 +1332,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   Fancy_Text_Print(view, TXT_NONE, 0, 0,
                    &ThePalettes().color_remaps().at(PCOLOR_TYPE), kTBlack,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
+  // The buttons and the page of text are both laid out in this font.
+  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   /*
   **	Examine the optional button parameters. Fetch the width and starting
   **	characters for each.
@@ -1348,19 +1350,19 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     /*
     **	Build the button list.
     */
-    bheight = g_font_max_height + g_font_y_spacing + 2;
-    bwidth = std::max(StringPixelWidth(b1txt) + 8, 80);
+    bheight = FontLineHeight(font) + 2;
+    bwidth = std::max(StringPixelWidth(font, b1txt) + 8, 80);
     if (b2txt) {
       numbuttons = 2;
       b2char = static_cast<char>(toupper(b2txt[0]));
-      bwidth = std::max(StringPixelWidth(b2txt) + 8, bwidth);
+      bwidth = std::max(StringPixelWidth(font, b2txt) + 8, bwidth);
       //			b1x = x + 10;
       //// left side
 
       if (b3txt) {
         numbuttons = 3;
         b3char = static_cast<char>(toupper(b3txt[0]));
-        bwidth = std::max(StringPixelWidth(b3txt) + 8, bwidth);
+        bwidth = std::max(StringPixelWidth(font, b3txt) + 8, bwidth);
       }
 
     } else {
@@ -1390,7 +1392,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
                    TPF_6PT_GRAD | TPF_USE_GRAD_PAL);
   int width = 0;
   int height = 0;
-  Format_Window_String(buffer, 300, width, height);
+  Format_Window_String(font, buffer, 300, width, height);
   height += numbuttons == 0 ? 30 : 60;
 
   const int x = (view.width() - width) / 2;
@@ -1463,6 +1465,12 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
   TheKeyboard().Clear();
 
   SetFontPalette(_scorepal);
+  // The text types out in the font the button constructors above selected
+  // last (each measures itself in kTpfButton), recoloured through _scorepal.
+  // That is not the style the page was wrapped in: it sets letters a pixel
+  // closer and lines two pixels closer.
+  FontStyle typed = TextFontStyle(kTpfButton);
+  std::ranges::copy(_scorepal, typed.palette.begin());
   int xprint = x + 20;
   int yprint = y + 25;
   do {
@@ -1471,13 +1479,13 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
     base::At(bufprint, 0) = base::At(buffer, bufindex);
     if (base::At(bufprint, 0) == '\r' || base::At(bufprint, 0) == '@') {
       xprint = x + 20;
-      yprint += g_font_max_height + g_font_y_spacing;
+      yprint += FontLineHeight(typed);
 
     } else {
       if (base::At(bufprint, 0) != 20) {
-        TheScreen().visible_view().Print(bufprint, xprint, yprint, kTBlack,
-                                         kTBlack);
-        xprint += CharPixelWidth(base::At(bufprint, 0));
+        TheScreen().visible_view().Print(typed, bufprint, xprint, yprint,
+                                         kTBlack, kTBlack);
+        xprint += CharPixelWidth(typed, base::At(bufprint, 0));
       }
     }
     if (base::At(bufprint, 0) == '\r' || base::At(bufprint, 0) == '@') {

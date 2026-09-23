@@ -93,15 +93,17 @@ class ScoreClass {
 
  private:
   // Prints the mission time next to the clock animation, as hours and minutes
-  // once it reaches an hour. The display tops out at 9:59.
-  static void Print_Minutes(int minutes);
+  // once it reaches an hour, in the score font through `palette`. The display
+  // tops out at 9:59.
+  static void Print_Minutes(int minutes, std::span<const uint8_t> palette);
 
   // Formats min(percent, max) with the one-integer run-time format `str` and
   // prints it straight to the visible page over a solid black background, so a
   // counter can be reprinted in place every tick without flashing. `xpos` and
-  // `ypos` are 320x200 coordinates.
+  // `ypos` are 320x200 coordinates; the score font's glyphs map through
+  // `palette`.
   static void Count_Up_Print(const char* str, int percent, int max, int xpos,
-                             int ypos);
+                             int ypos, std::span<const uint8_t> palette);
 
   // Prints the "ending credits" caption, then counts the player's remaining
   // money up to its final value beside a spinning credits animation. `house`
