@@ -15,7 +15,7 @@
 #include "absl/strings/ascii.h"
 #include "gtest/gtest.h"
 #include "sdllib/file_access.h"
-#include "tech/byte_stream.h"
+#include "tech/disk_stream.h"
 
 namespace {
 

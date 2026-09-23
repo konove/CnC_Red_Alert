@@ -15,6 +15,7 @@
 #include "gtest/gtest.h"
 #include "sdllib/aud_decoder.h"
 #include "tech/byte_stream.h"
+#include "tech/memory_stream.h"
 
 namespace {
 

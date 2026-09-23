@@ -91,8 +91,8 @@
 #include "td/vector.h"
 #include "td/world.h"
 #include "tech/archive.h"
-#include "tech/byte_stream.h"
 #include "tech/disk_file.h"
+#include "tech/disk_stream.h"
 #include "tech/stream_sink.h"
 #include "tech/stream_source.h"
 

@@ -1,27 +1,24 @@
 #ifndef CNC_RED_ALERT_TECH_BYTE_STREAM_H_
 #define CNC_RED_ALERT_TECH_BYTE_STREAM_H_
 
-// File: ByteStream, a seekable source or sink of bytes with no name, and the
-// three kinds the game composes: a file on disk, a block of memory, and a
-// window onto another stream. A file inside a mixfile inside another mixfile
-// is a RangeStream over a RangeStream over a DiskStream.
+// File: ByteStream, a seekable source or sink of bytes with no name. The
+// three kinds the game composes each have their own header: DiskStream (a file
+// on disk, tech/disk_stream.h), MemoryStream (a block of memory,
+// tech/memory_stream.h) and RangeStream (a window onto another stream,
+// tech/range_stream.h). A file inside a mixfile inside another mixfile is a
+// RangeStream over a RangeStream over a DiskStream.
 
 #include <cstddef>
-#include <fstream>
-#include <memory>
 #include <span>
 #include <string>
-#include <string_view>
 #include <type_traits>
 #include <vector>
 
-#include "absl/base/attributes.h"
 #include "absl/log/check.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
-#include "sdllib/file_access.h"
 
 // A seekable sequence of bytes. Positions are measured from the start of the
 // stream.
@@ -136,116 +133,9 @@ class ByteStream {
   }
 };
 
-// A file on disk, open from construction until destruction.
-class DiskStream final : public ByteStream {
- public:
-  // Opens path with the given access and returns the stream, or nullptr if
-  // the file could not be opened. Write access creates or truncates the
-  // file; read-write access keeps its contents.
-  static std::unique_ptr<DiskStream> Open(std::string_view path,
-                                          FileAccess access);
-
-  ~DiskStream() override = default;
-
-  DiskStream(const DiskStream&) = delete;
-  DiskStream& operator=(const DiskStream&) = delete;
-  DiskStream(DiskStream&&) = delete;
-  DiskStream& operator=(DiskStream&&) = delete;
-
-  using ByteStream::Read;
-  using ByteStream::Write;
-  base::ssize Read(std::span<std::byte> buffer) override;
-  base::ssize Write(std::span<const std::byte> buffer) override;
-
-  // A seek to before the start of the file leaves the position where it was,
-  // as stdio does; a seek past the end is allowed, and a write there extends
-  // the file.
-  base::ssize Seek(base::ssize offset,
-                   SeekOrigin origin = SeekOrigin::kCurrent) override;
-  base::ssize Size() override;
-  bool Flush() override;
-  [[nodiscard]] bool ok() const override { return !failed_; }
-
- private:
-  DiskStream() = default;
-
-  // The open file. A filebuf reports a failed write as a short sputn, and a
-  // failed read by throwing std::ios_base::failure instead of returning a
-  // short count; DiskStream::Read catches that and turns it into ok()
-  // reporting false, same as a failed write. pubsync() (Flush()) can throw
-  // the same way on some errors and is caught the same way.
-  std::filebuf file_;
-
-  // Set when a read, write or flush fails.
-  bool failed_ = false;
-};
-
-// A read-only view of bytes that someone else owns and keeps alive for as
-// long as the stream is used, such as a file inside a cached mixfile.
-class MemoryStream final : public ByteStream {
- public:
-  explicit MemoryStream(
-      std::span<const std::byte> bytes ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : bytes_(bytes) {}
-
-  using ByteStream::Read;
-  using ByteStream::Write;
-  base::ssize Read(std::span<std::byte> buffer) override;
-  base::ssize Write(std::span<const std::byte> /*buffer*/) override {
-    return 0;
-  }
-
-  // The position is clamped to [0, Size()].
-  base::ssize Seek(base::ssize offset,
-                   SeekOrigin origin = SeekOrigin::kCurrent) override;
-  base::ssize Size() override { return std::ssize(bytes_); }
-
- private:
-  std::span<const std::byte> bytes_;
-  base::ssize position_ = 0;
-};
-
-// A read-only window of size bytes starting offset bytes into another
-// stream, which it owns. Reads never leave the window, and positions are
-// relative to its start, so the window behaves as a whole stream of its own.
-class RangeStream final : public ByteStream {
- public:
-  // The window is clipped to what inner actually holds.
-  RangeStream(std::unique_ptr<ByteStream> inner, base::ssize offset,
-              base::ssize size);
-
-  using ByteStream::Read;
-  using ByteStream::Write;
-  base::ssize Read(std::span<std::byte> buffer) override;
-  base::ssize Write(std::span<const std::byte> /*buffer*/) override {
-    return 0;
-  }
-
-  // The position is clamped to [0, Size()].
-  base::ssize Seek(base::ssize offset,
-                   SeekOrigin origin = SeekOrigin::kCurrent) override;
-  base::ssize Size() override { return size_; }
-  [[nodiscard]] bool ok() const override { return !failed_ && inner_->ok(); }
-
- private:
-  std::unique_ptr<ByteStream> inner_;
-
-  // Set when inner_ could not be positioned for a read.
-  bool failed_ = false;
-
-  // Where the window starts in inner_.
-  base::ssize offset_;
-
-  // Length of the window.
-  base::ssize size_;
-
-  // Current position within the window.
-  base::ssize position_ = 0;
-
-  // Where inner_ was left by our last read, or -1 when that is unknown --
-  // before the first read, and after any read that did not land where it was
-  // asked to. A read only repositions inner_ when it disagrees with this.
-  base::ssize inner_position_ = -1;
-};
+// Returns position moved by offset from origin, clamped to [0, size]: the
+// seek of a stream that cannot move outside its bytes.
+base::ssize ClampedSeek(base::ssize position, base::ssize size,
+                        base::ssize offset, SeekOrigin origin);
 
 #endif  // CNC_RED_ALERT_TECH_BYTE_STREAM_H_

@@ -88,6 +88,7 @@
 #include "td/world.h"
 #include "tech/byte_stream.h"
 #include "tech/disk_file.h"
+#include "tech/disk_stream.h"
 #include "tech/game_file.h"
 #include "tech/number_parse.h"
 

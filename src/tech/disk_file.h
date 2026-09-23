@@ -31,6 +31,7 @@
 
 #include "sdllib/file_access.h"
 #include "tech/byte_stream.h"
+#include "tech/disk_stream.h"
 
 // Returns path if a file exists there, otherwise the lowercased path if a file
 // exists there (game data is named in upper case, while Unix installs often

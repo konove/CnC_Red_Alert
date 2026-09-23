@@ -29,7 +29,7 @@
 
 #include "absl/strings/ascii.h"
 #include "sdllib/file_access.h"
-#include "tech/byte_stream.h"
+#include "tech/disk_stream.h"
 
 std::optional<std::string> FindExistingFile(const std::string_view path) {
   // Opening is the existence test; it is what Open() will do next.

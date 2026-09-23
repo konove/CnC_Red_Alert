@@ -1626,3 +1626,11 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   and both binaries rebuilt with the fix; `build-strict/src/td/CONQUER.INI`'s mode and bytes were
   restored and verified identical with `cmp`. Not re-checked: the ASan pass and the real-display
   screens from the prior entry (out of scope for this review pass).
+- **2026-09-23: follow-up — each stream kind in its own file.** `DiskStream`, `MemoryStream` and
+  `RangeStream` moved out of `tech/byte_stream.{h,cc}` into `tech/disk_stream.*`,
+  `tech/memory_stream.*` and `tech/range_stream.*`, with their tests split the same way
+  (`byte_stream_test.cc` keeps the helper tests, now written against a `ByteStream&`).
+  `byte_stream.h` no longer includes `<fstream>`; only `disk_stream.h` does, which reaches 10 direct
+  includers plus the 28 of `disk_file.h`, down from the ~400 translation units that saw it through
+  `byte_stream.h`. `ClampedSeek`, shared by the memory and range streams, is declared in
+  `byte_stream.h`. Both builds clean, 733/733 tests, both smoke scripts OK.

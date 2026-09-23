@@ -13,7 +13,7 @@
 #include "gtest/gtest.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_win.h"
-#include "tech/byte_stream.h"
+#include "tech/memory_stream.h"
 
 // ww_win.cc, pulled in through pixel_buffer, dispatches events to the app.
 void SDL_Event_Handler(SDL_Event* /*event*/) {}
