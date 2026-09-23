@@ -4970,7 +4970,6 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
 
   int count = 0;
   int weakest = 0;
-  int desired = enemy->Risk() * House->Control.TechLevel;
   int risktotal = 0;
 
   /*
@@ -4979,6 +4978,8 @@ void TechnoClass::Base_Is_Attacked(TechnoClass* enemy) {
   if (enemy == nullptr || House->Is_Ally(enemy) || House->IsHuman) {
     return;
   }
+
+  int desired = enemy->Risk() * House->Control.TechLevel;
 
   /*
   **	Don't overreact if this building can defend itself.
