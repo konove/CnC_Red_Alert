@@ -5,7 +5,6 @@
 #include <array>
 #include <cstddef>
 #include <filesystem>
-#include <memory>
 #include <span>
 #include <string>
 #include <string_view>
@@ -187,20 +186,18 @@ TEST(StreamErrorTest, ReadErrorIsStickyThroughTransformStraw) {
 }
 
 TEST(StreamErrorTest, DiskReadErrorReachesFileAndStraw) {
-  // Reading a directory opened as a file fails in the C library.
+  // Opening a directory is refused up front: a filebuf cannot distinguish a
+  // read error from end of file, so DiskStream::Open rejects directories
+  // before that ambiguity can arise.
   const std::string directory = std::filesystem::temp_directory_path().string();
-  const std::unique_ptr<DiskStream> stream =
-      DiskStream::Open(directory, FileAccess::kRead);
-  if (stream == nullptr) {
-    GTEST_SKIP() << "this C library does not open directories";
-  }
-  std::array<std::byte, 8> buffer{};
-  EXPECT_EQ(stream->Read(buffer), 0);
-  EXPECT_FALSE(stream->ok());
+  EXPECT_EQ(DiskStream::Open(directory, FileAccess::kRead), nullptr);
 
   DiskFile file(directory);
+  EXPECT_FALSE(file.Open());
+  EXPECT_FALSE(file.IsAvailable());
+  std::array<std::byte, 8> buffer{};
   EXPECT_EQ(file.Read(buffer), 0);
-  EXPECT_FALSE(file.ok());
+
   FileSource straw(file);
   EXPECT_EQ(straw.Read(buffer), 0);
   EXPECT_FALSE(straw.ok());

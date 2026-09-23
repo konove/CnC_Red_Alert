@@ -41,27 +41,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <ctime>
-#include <span>
-#include <string_view>
-
-#include "sdllib/file_access.h"
-
-// low level IO implemented here
-void* IO_Open_File(const char* filename, FileAccess mode);
-void IO_Close_File(void* handle);
-
-bool IO_Read_File(void* handle, std::span<std::byte> buffer,
-                  size_t& actual_read);
-bool IO_Write_File(void* handle, std::span<const std::byte> buffer,
-                   size_t& actual_written);
-
-// Seeks like fseek and returns the new position, or -1 on error. offset may
-// be negative for SEEK_CUR and SEEK_END.
-int64_t IO_Seek_File(void* handle, int64_t offset, int origin);
-// Returns the file's length in bytes, or -1 on error. Preserves the position.
-int64_t IO_Get_File_Size(void* handle);
-
-bool IO_Delete_File(const char* filename);
 
 // file searching
 struct FindFileState {

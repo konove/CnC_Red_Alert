@@ -7,6 +7,7 @@
 // is a RangeStream over a RangeStream over a DiskStream.
 
 #include <cstddef>
+#include <fstream>
 #include <memory>
 #include <span>
 #include <string>
@@ -141,7 +142,7 @@ class DiskStream final : public ByteStream {
   static std::unique_ptr<DiskStream> Open(std::string_view path,
                                           FileAccess access);
 
-  ~DiskStream() override;
+  ~DiskStream() override = default;
 
   DiskStream(const DiskStream&) = delete;
   DiskStream& operator=(const DiskStream&) = delete;
@@ -162,13 +163,13 @@ class DiskStream final : public ByteStream {
   [[nodiscard]] bool ok() const override { return !failed_; }
 
  private:
-  explicit DiskStream(void* handle ABSL_ATTRIBUTE_LIFETIME_BOUND)
-      : handle_(handle) {}
+  DiskStream() = default;
 
-  // Low-level IO handle from IO_Open_File; never null.
-  void* handle_;
+  // The open file. A filebuf reports failed writes (a short sputn, a failed
+  // pubsync) but not failed reads, which look like the end of the file.
+  std::filebuf file_;
 
-  // Set when the C library reports a read or write error.
+  // Set when a write or flush fails.
   bool failed_ = false;
 };
 

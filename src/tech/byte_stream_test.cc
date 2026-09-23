@@ -13,6 +13,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/array.h"
 #include "base/buffer.h"
@@ -83,6 +84,61 @@ TEST_F(DiskStreamTest, WritesAppendAtTheEnd) {
   EXPECT_EQ(ReadAll(*stream, 16), "xabcd!");
 }
 
+TEST_F(DiskStreamTest, ReadWriteKeepsExistingContents) {
+  {
+    const std::unique_ptr<DiskStream> stream =
+        DiskStream::Open(path(), FileAccess::kReadWrite);
+    ASSERT_NE(stream, nullptr);
+    EXPECT_EQ(stream->Seek(0, SeekOrigin::kEnd), 5);
+    EXPECT_EQ(stream->Write(Bytes("!")), 1);
+  }
+  const std::unique_ptr<DiskStream> stream =
+      DiskStream::Open(path(), FileAccess::kRead);
+  EXPECT_EQ(ReadAll(*stream, 10), "xabcd!");
+}
+
+TEST_F(DiskStreamTest, ReadWriteCreatesMissingFile) {
+  const std::string missing = path() + ".new";
+  EXPECT_NE(DiskStream::Open(missing, FileAccess::kReadWrite), nullptr);
+  EXPECT_TRUE(std::filesystem::exists(missing));
+  std::filesystem::remove(missing);
+}
+
+TEST_F(DiskStreamTest, SeekBeforeTheStartKeepsThePosition) {
+  const std::unique_ptr<DiskStream> stream =
+      DiskStream::Open(path(), FileAccess::kRead);
+  EXPECT_EQ(stream->Seek(2, SeekOrigin::kBegin), 2);
+  EXPECT_EQ(stream->Seek(-10, SeekOrigin::kCurrent), 2);
+  EXPECT_EQ(ReadAll(*stream, 1), "b");
+}
+
+TEST_F(DiskStreamTest, SizePreservesThePosition) {
+  const std::unique_ptr<DiskStream> stream =
+      DiskStream::Open(path(), FileAccess::kRead);
+  EXPECT_EQ(ReadAll(*stream, 2), "xa");
+  EXPECT_EQ(stream->Size(), 5);
+  EXPECT_EQ(ReadAll(*stream, 1), "b");
+}
+
+TEST(DiskStreamErrorTest, OpenRefusesDirectory) {
+  EXPECT_EQ(DiskStream::Open(std::filesystem::temp_directory_path().string(),
+                             FileAccess::kRead),
+            nullptr);
+}
+
+TEST(DiskStreamErrorTest, WriteToFullDeviceFails) {
+  if (!std::filesystem::exists("/dev/full")) {
+    GTEST_SKIP() << "no /dev/full on this platform";
+  }
+  const std::unique_ptr<DiskStream> stream =
+      DiskStream::Open("/dev/full", FileAccess::kWrite);
+  ASSERT_NE(stream, nullptr);
+  // Larger than any filebuf buffer, so the failure surfaces in Write itself.
+  const std::vector<std::byte> block(1 << 20);
+  stream->Write(block);
+  EXPECT_FALSE(stream->ok());
+}
+
 TEST(MemoryStreamTest, ReadsWithinTheViewAndClampsSeeks) {
   MemoryStream stream(Bytes("xabcd"));
   EXPECT_EQ(stream.Size(), 5);
@@ -142,21 +198,28 @@ struct Header {
 };
 
 TEST_F(DiskStreamTest, ObjectsRoundTripThroughWriteObjectAndReadObject) {
+  const std::unique_ptr<DiskStream> stream =
+      DiskStream::Open(path(), FileAccess::kReadWrite);
+  ASSERT_NE(stream, nullptr);
+
   const Header written{.magic = 0x52415356, .version = 7, .flags = -2};
-  {
-    const std::unique_ptr<DiskStream> out =
-        DiskStream::Open(path(), FileAccess::kWrite);
-    ASSERT_NE(out, nullptr);
-    EXPECT_TRUE(out->WriteObject(written));
-  }
-  const std::unique_ptr<DiskStream> in =
-      DiskStream::Open(path(), FileAccess::kRead);
-  ASSERT_NE(in, nullptr);
+  const std::array<int16_t, 3> array_written = {1, 2, 3};
+  EXPECT_TRUE(stream->WriteObject(written));
+  EXPECT_TRUE(stream->WriteObject(array_written));
+  EXPECT_TRUE(stream->WriteObject(int32_t{-1}));
+  EXPECT_EQ(stream->Seek(0, SeekOrigin::kBegin), 0);
+
   Header read{};
-  EXPECT_TRUE(in->ReadObject(read));
+  std::array<int16_t, 3> array_read{};
+  int32_t trailer = 0;
+  EXPECT_TRUE(stream->ReadObject(read));
+  EXPECT_TRUE(stream->ReadObject(array_read));
+  EXPECT_TRUE(stream->ReadObject(trailer));
   EXPECT_EQ(read.magic, written.magic);
   EXPECT_EQ(read.version, written.version);
   EXPECT_EQ(read.flags, written.flags);
+  EXPECT_EQ(array_read, array_written);
+  EXPECT_EQ(trailer, -1);
 }
 
 TEST(MemoryStreamTest, ReadObjectFailsOnShortRead) {
@@ -198,6 +261,17 @@ TEST(MemoryStreamTest, TypedViewCountIsBytesRatherThanElements) {
   EXPECT_EQ(stream.Read(std::span(read), 2), 2);  // 2 bytes = 1 element
   EXPECT_EQ(read.at(0), words.at(0));
   EXPECT_EQ(read.at(1), 0);
+}
+
+TEST(MemoryStreamTest, TypedViewCountStopsMidElement) {
+  MemoryStream stream(Bytes("abcd"));
+  std::array<uint16_t, 2> words{};
+  EXPECT_EQ(stream.Read(std::span(words), 3), 3);  // 3 bytes: 1 full, 1 half
+  const auto bytes = std::as_bytes(std::span(words));
+  EXPECT_EQ(base::At(bytes, 0), std::byte{'a'});
+  EXPECT_EQ(base::At(bytes, 1), std::byte{'b'});
+  EXPECT_EQ(base::At(bytes, 2), std::byte{'c'});
+  EXPECT_EQ(base::At(bytes, 3), std::byte{0});
 }
 
 }  // namespace

@@ -1100,3 +1100,35 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   full `tech_test` 250/250 passed. Both `build` and `build-strict` build clean;
   `ctest --test-dir build-strict` is 719/719 passed (up from 713 in Step 1, the six new
   `byte_stream_test.cc` cases).
+- 2026-09-23: Step 3 landed. `DiskStream` sits on `std::filebuf` instead of the stdio `IO_*`
+  wrappers; `Open()` refuses a directory up front (a filebuf cannot tell a read error from end of
+  file), `Read`/`Write` go through `sgetn`/`sputn` over `port::CharBytes`, `Seek` reports the
+  pre-seek position on a seek before the start (the `pubseekoff` failure case), and `Size()`
+  round-trips the position through `pubseekoff`. `IO_Open_File`, `IO_Close_File`, `IO_Read_File`,
+  `IO_Write_File`, `IO_Seek_File`, `IO_Get_File_Size` and `IO_Delete_File` are deleted from
+  `sdllib/file.{h,cc}`, along with `StdioOrigin`/`SeekOriginFromStdio`/`<cstdio>` from
+  `base/seek_origin.h`; `FindExistingFile` now probes with `DiskStream::Open` and
+  `DiskFile::Delete`/ `GameFile::Delete` call `std::filesystem::remove`. `sdllib/file_test.cc`'s two
+  `IO_Open_File` tests are gone (their coverage is `DiskStreamTest.ReadWriteKeepsExistingContents`/
+  `ReadWriteCreatesMissingFile`, converted to `DiskStream::Open`), and `stream_error_test.cc`'s
+  directory test now expects `DiskStream::Open`/`DiskFile::Open` to fail outright instead of opening
+  and then failing the read. Per the controller: also strengthened
+  `DiskStreamTest.ObjectsRoundTripThroughWriteObjectAndReadObject` to round-trip a `Header`, a
+  `std::array<int16_t, 3>` and a trailer through one `kReadWrite` stream (mirroring
+  `file_test.cc:25`'s three-object test), and added `MemoryStreamTest.TypedViewCountStopsMidElement`
+  (the count=3-bytes-into-two-uint16_t-elements case from `file_test.cc:87`) alongside the existing
+  count=2 case. RED: with the old stdio implementation still in place, `tech_test` failed
+  `DiskStreamErrorTest.OpenRefusesDirectory` (fopen on `/tmp` succeeds on this glibc) and
+  `StreamErrorTest.DiskReadErrorReachesFileAndStraw`. GREEN: same build clean; both suites pass.
+  Strict findings fixed beyond the brief's snippet: an explicit `~DiskStream() override = default;`
+  (rule-of-five), `<iosfwd>` for `std::streampos`, `static_cast<std::streamoff>(...)` instead of the
+  functional-style `std::streamoff(...)` cast, and a `default: break;` in the access `switch`. Both
+  `build` and `build-strict` build clean; `ctest --test-dir build-strict` is 724/724 passed (up from
+  719: +7 `byte_stream_test.cc` cases — 4 `DiskStreamTest`, 2 `DiskStreamErrorTest`,
+  `TypedViewCountStopsMidElement` — minus the 2 retired `sdllib_test` `IO_Open_File` cases). Both
+  smoke scripts print OK against `build-strict/src/ra/rasdl` and `build-strict/src/td/tdsdl`.
+  Performance: no clean isolated load-time number was practical (the game does not print one), so
+  per the controller's fallback the whole headless run (`-NOMOVIES -LOADGAME0 -QUITFRAME120`) was
+  timed 3x on the RA binary before and after, both in `build-strict`: before (stdio) 3.95/3.97/3.97
+  s, after (`std::filebuf`) 3.87/3.88/3.93 s — no regression. The real-display intro-movie decode
+  check from the brief was not run (headless environment); flagged as not covered by this step.

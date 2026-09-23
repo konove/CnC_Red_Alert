@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-// File access rights used by File::Open() and IO_Open_File().
+// File access rights used by the stream openers.
 //
 // These are bitmask flags: kRead and kWrite can be combined with bitwise OR
 // to request read-write access (kReadWrite is provided as a convenience).

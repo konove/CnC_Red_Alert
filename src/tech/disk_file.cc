@@ -23,31 +23,29 @@
 #include "tech/disk_file.h"
 
 #include <cstddef>
+#include <filesystem>
 #include <memory>
 #include <optional>
 #include <span>
 #include <string>
 #include <string_view>
+#include <system_error>
 #include <utility>
 
 #include "absl/strings/ascii.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
-#include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "tech/byte_stream.h"
 
 std::optional<std::string> FindExistingFile(const std::string_view path) {
   // Opening is the existence test; it is what Open() will do next.
   std::string name(path);
-  if (void* const handle = IO_Open_File(name.c_str(), FileAccess::kRead)) {
-    IO_Close_File(handle);
+  if (DiskStream::Open(name, FileAccess::kRead) != nullptr) {
     return name;
   }
   std::string lower_name = absl::AsciiStrToLower(name);
-  if (void* const handle =
-          IO_Open_File(lower_name.c_str(), FileAccess::kRead)) {
-    IO_Close_File(handle);
+  if (DiskStream::Open(lower_name, FileAccess::kRead) != nullptr) {
     return lower_name;
   }
   return std::nullopt;
@@ -63,7 +61,8 @@ bool DiskFile::Delete() {
   if (!IsAvailable()) {
     return false;
   }
-  return IO_Delete_File(filename_.c_str());
+  std::error_code error;
+  return std::filesystem::remove(filename_, error);
 }
 
 bool DiskFile::IsAvailable() {

@@ -5,16 +5,17 @@
 #include "tech/game_file.h"
 
 #include <cstddef>
+#include <filesystem>
 #include <memory>
 #include <optional>
 #include <span>
 #include <string>
 #include <string_view>
+#include <system_error>
 #include <utility>
 
 #include "base/seek_origin.h"
 #include "base/types.h"
-#include "sdllib/file.h"
 #include "sdllib/file_access.h"
 #include "tech/byte_stream.h"
 #include "tech/mix_archive.h"
@@ -73,7 +74,11 @@ bool GameFile::Create() {
 bool GameFile::Delete() {
   Close();
   const std::optional<std::string> path = SearchPaths::Resolve(name_);
-  return path.has_value() && IO_Delete_File(path->c_str());
+  if (!path.has_value()) {
+    return false;
+  }
+  std::error_code error;
+  return std::filesystem::remove(*path, error);
 }
 
 bool GameFile::IsAvailable() {

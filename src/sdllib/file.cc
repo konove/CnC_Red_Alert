@@ -3,14 +3,10 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
-#include <cstdio>
 #include <filesystem>
-#include <span>
 #include <string>
 #include <system_error>
 #include <vector>
-
-#include "sdllib/file_access.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -20,70 +16,6 @@
 #include <sys/statvfs.h>
 #include <unistd.h>
 #endif
-
-void* IO_Open_File(const char* filename, FileAccess mode) {
-  switch (mode) {
-    case FileAccess::kRead:
-      return fopen(filename, "rb");
-    case FileAccess::kWrite:
-      return fopen(filename, "wb");
-    case FileAccess::kReadWrite: {
-      // "w+b" would empty an existing file; read-write access means keeping
-      // its contents (the record file appends to itself). Only create the
-      // file when there is nothing to keep.
-      if (FILE* const file = fopen(filename, "r+b")) {
-        return file;
-      }
-      return fopen(filename, "w+b");
-    }
-    default:
-      return nullptr;
-  }
-}
-
-void IO_Close_File(void* handle) {
-  auto* file = static_cast<FILE*>(handle);
-  fclose(file);
-}
-
-bool IO_Read_File(void* handle, std::span<std::byte> buffer,
-                  size_t& actual_read) {
-  auto* file = static_cast<FILE*>(handle);
-  // The C API receives the exact writable range carried by buffer.
-  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-libc-call)
-  actual_read = fread(buffer.data(), 1, buffer.size(), file);
-  return ferror(file) == 0;
-}
-
-bool IO_Write_File(void* handle, std::span<const std::byte> buffer,
-                   size_t& actual_written) {
-  auto* file = static_cast<FILE*>(handle);
-  // The C API receives the exact readable range carried by buffer.
-  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-libc-call)
-  actual_written = fwrite(buffer.data(), 1, buffer.size(), file);
-  return ferror(file) == 0;
-}
-
-int64_t IO_Seek_File(void* handle, int64_t offset, int origin) {
-  auto* file = static_cast<FILE*>(handle);
-  fseek(file, offset, origin);
-  return ftell(file);
-}
-
-int64_t IO_Get_File_Size(void* handle) {
-  auto* file = static_cast<FILE*>(handle);
-  const int64_t pos = ftell(file);
-
-  fseek(file, 0, SEEK_END);
-
-  const int64_t length = ftell(file);
-
-  fseek(file, pos, SEEK_SET);
-
-  return length;
-}
-
-bool IO_Delete_File(const char* filename) { return unlink(filename) == 0; }
 
 #ifdef _WIN32
 static bool Update_Find_Result(FindFileState& state, WIN32_FIND_DATA& data) {
