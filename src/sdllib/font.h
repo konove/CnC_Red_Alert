@@ -79,7 +79,7 @@ class FontView {
   // and the metric tables lazily. Data shorter than the header gives a view
   // whose every metric is 0.
   explicit FontView(
-      std::span<const std::byte> data ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      const std::span<const std::byte> data ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : font_(data) {
     if (std::ssize(font_) < base::ssize{sizeof(FontHeader)}) {
       return;
@@ -99,23 +99,24 @@ class FontView {
     return ReadByte(info_, kFontInfoMaxWidth);
   }
   // Width of the glyph for character in pixels, not counting g_font_x_spacing.
-  [[nodiscard]] int GlyphWidth(uint8_t character) const {
+  [[nodiscard]] int GlyphWidth(const uint8_t character) const {
     return ReadByte(widths_, character);
   }
   // Number of pixel rows stored for the glyph for character.
-  [[nodiscard]] int GlyphHeight(uint8_t character) const {
+  [[nodiscard]] int GlyphHeight(const uint8_t character) const {
     return PackedHeight(character) / 256;
   }
   // Number of empty rows between the top of the line and the first stored row
   // of the glyph for character.
-  [[nodiscard]] int GlyphBlankRowsAbove(uint8_t character) const {
+  [[nodiscard]] int GlyphBlankRowsAbove(const uint8_t character) const {
     return PackedHeight(character) % 256;
   }
   // Returns the pixel rows of the glyph for character, or an empty span for
   // malformed data. Each byte packs two 4-bit indices into g_font_palette, low
   // nibble first, and each row starts on a byte boundary, so a row is
   // (GlyphWidth() + 1) / 2 bytes.
-  [[nodiscard]] std::span<const std::byte> GlyphData(uint8_t character) const {
+  [[nodiscard]] std::span<const std::byte> GlyphData(
+      const uint8_t character) const {
     // The offset table holds one uint16 offset from the start of the font data
     // per glyph.
     const base::ssize glyph_bytes =
@@ -128,9 +129,9 @@ class FontView {
   // Returns count bytes of data from offset, or an empty span if any of them
   // lies outside data. Every read goes through here, which is what keeps a
   // malformed font in bounds; see the class comment.
-  static std::span<const std::byte> Slice(std::span<const std::byte> data,
-                                          base::ssize offset,
-                                          base::ssize count) {
+  static std::span<const std::byte> Slice(const std::span<const std::byte> data,
+                                          const base::ssize offset,
+                                          const base::ssize count) {
     if (offset < 0 || count < 0 || offset > std::ssize(data) ||
         count > std::ssize(data) - offset) {
       return {};
@@ -138,22 +139,24 @@ class FontView {
     return data.subspan(base::ToSize(offset), base::ToSize(count));
   }
   // ReadByte and ReadWord return 0 for an offset outside data.
-  static uint8_t ReadByte(std::span<const std::byte> data, base::ssize offset) {
+  static uint8_t ReadByte(const std::span<const std::byte> data,
+                          const base::ssize offset) {
     const auto bytes = Slice(data, offset, 1);
     return bytes.empty() ? 0 : std::to_integer<uint8_t>(bytes.front());
   }
-  static uint16_t ReadWord(std::span<const std::byte> data,
-                           base::ssize offset) {
+  static uint16_t ReadWord(const std::span<const std::byte> data,
+                           const base::ssize offset) {
     const auto bytes = Slice(data, offset, sizeof(uint16_t));
     return bytes.empty() ? 0 : port::ReadUnaligned<uint16_t>(bytes);
   }
-  [[nodiscard]] int PackedHeight(uint8_t character) const {
+  [[nodiscard]] int PackedHeight(const uint8_t character) const {
     return ReadWord(heights_, base::ssize{2} * character);
   }
   // Returns the font data from offset to the end, or an empty span if offset
   // is past it. Tables carry no length in the header, so each is bounded only
   // by the end of the data.
-  [[nodiscard]] std::span<const std::byte> DataFrom(base::ssize offset) const {
+  [[nodiscard]] std::span<const std::byte> DataFrom(
+      const base::ssize offset) const {
     return Slice(font_, offset, std::ssize(font_) - offset);
   }
   std::span<const std::byte> font_;  // The whole font file.
