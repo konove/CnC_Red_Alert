@@ -1911,8 +1911,7 @@ void TemplateTypeClass::Display(PixelView& view, int x, int y,
         TheScreen().hidden_view().Scale(
             view, 0, 0, x + ((index % w) * (ICON_PIXEL_W / 2)),
             y + ((index / w) * (ICON_PIXEL_H / 2)), ICON_PIXEL_W, ICON_PIXEL_H,
-            ICON_PIXEL_W / 2, ICON_PIXEL_H / 2,
-            std::span<const unsigned char>{});
+            ICON_PIXEL_W / 2, ICON_PIXEL_H / 2);
 
       } else {
         TheScreen().hidden_view().BlitTo(

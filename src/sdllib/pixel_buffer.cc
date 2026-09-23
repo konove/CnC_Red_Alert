@@ -480,30 +480,28 @@ void PixelView::BlitToLocked(PixelView& dest, const int src_x, const int src_y,
   }
 }
 
-bool PixelView::Scale(PixelView& dest, int src_x, int src_y, int dst_x,
-                      int dst_y, int src_width, int src_height, int dst_width,
-                      int dst_height, bool transparent,
-                      std::span<const uint8_t> remap_table) {
-  bool return_code = false;
+void PixelView::Scale(PixelView& dest, const int src_x, const int src_y,
+                      const int dst_x, const int dst_y, const int src_width,
+                      const int src_height, const int dst_width,
+                      const int dst_height, const bool transparent,
+                      const std::span<const uint8_t> remap_table) {
   if (Lock()) {
     if (dest.Lock()) {
-      return_code =
-          ScaleLocked(dest, src_x, src_y, dst_x, dst_y, src_width, src_height,
-                      dst_width, dst_height, transparent, remap_table);
+      ScaleLocked(dest, src_x, src_y, dst_x, dst_y, src_width, src_height,
+                  dst_width, dst_height, transparent, remap_table);
       dest.Unlock();
     }
     Unlock();
   }
-  return return_code;
 }
 
-bool PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
+void PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
                             int dst_y, int src_width, int src_height,
                             int dst_width, int dst_height, bool transparent,
                             std::span<const uint8_t> remap_table) {
   // Check for scale error when to or from size 0,0
   if (dst_width == 0 || dst_height == 0 || src_width == 0 || src_height == 0) {
-    return true;
+    return;
   }
 
   int src_x0 = src_x;
@@ -522,7 +520,7 @@ bool PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
 
   // outside
   if (base::Any(code0 & code1)) {
-    return true;
+    return;
   }
 
   if (base::Any(code0 | code1)) {
@@ -551,7 +549,7 @@ bool PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
 
   // outside
   if (base::Any(code0 & code1)) {
-    return true;
+    return;
   }
 
   if (base::Any(code0 | code1)) {
@@ -585,7 +583,7 @@ bool PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
   const int dx_frac = (src_width * 65536) / dst_width;
 
   if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
-    return true;
+    return;
   }
 
   int counter_y = dst_y1 - dst_y0;
@@ -688,8 +686,6 @@ bool PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
       }
     } while (--counter_y);
   }
-
-  return true;
 }
 
 void PixelView::Print(const char* text, const int x, const int y,

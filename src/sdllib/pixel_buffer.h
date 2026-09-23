@@ -185,25 +185,15 @@ class PixelView {
   void BlitToLocked(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
                     int width, int height, bool transparent);
 
-  bool Scale(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
+  // Stretches or shrinks the src_width x src_height rectangle at src_x,src_y
+  // in this view onto the dst_width x dst_height rectangle at dst_x,dst_y in
+  // `dest`, clipping to both. With `transparent`, pixel 0 is left alone in the
+  // destination; a non-empty `remap_table` translates every pixel through it.
+  void Scale(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
              int src_width, int src_height, int dst_width, int dst_height,
              bool transparent = false,
              std::span<const uint8_t> remap_table = {});
-  bool Scale(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
-             int src_width, int src_height, int dst_width, int dst_height,
-             std::span<const uint8_t> remap_table) {
-    return Scale(dest, src_x, src_y, dst_x, dst_y, src_width, src_height,
-                 dst_width, dst_height, false, remap_table);
-  }
-  bool Scale(PixelView& dest, bool transparent = false,
-             std::span<const uint8_t> remap_table = {}) {
-    return Scale(dest, 0, 0, 0, 0, width_, height_, dest.width(), dest.height(),
-                 transparent, remap_table);
-  }
-  bool Scale(PixelView& dest, std::span<const uint8_t> remap_table) {
-    return Scale(dest, false, remap_table);
-  }
-  bool ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
+  void ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x, int dst_y,
                    int src_width, int src_height, int dst_width, int dst_height,
                    bool transparent, std::span<const uint8_t> remap_table);
 
