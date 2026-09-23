@@ -85,7 +85,7 @@ struct TextStyle {
 
 // Returns the font and spacing `flag` selects by its point size and shadow,
 // with the identity palette: all that measuring text needs. A flag without a
-// point size (TPF_LASTPOINT) keeps the current font, for now.
+// point size (TPF_LASTPOINT) selects the 8-point font.
 FontStyle TextFontStyle(TextPrintType flag);
 
 // Returns the style a print with `flag` in the colours `fore` (PCOLOR_RED if

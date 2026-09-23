@@ -58,15 +58,12 @@
 #include <string>
 #include <string_view>
 
-#include "absl/log/log.h"
-#include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
-#include "magic_enum/magic_enum.hpp"
 #include "port/format.h"
 #include "port/safe_string.h"
 #include "sdllib/font.h"
@@ -377,17 +374,6 @@ TextPrintType SupportedTextFlags(const TextPrintType flag) {
   return point == TPF_3POINT ? flag & ~kShadowsTooBigFor3Point : flag;
 }
 
-// Returns the name of the loaded font that data is, for the log.
-std::string_view FontName(const std::span<const std::byte> data) {
-  const Assets& assets = TheAssets();
-  for (const FontType type : magic_enum::enum_values<FontType>()) {
-    if (assets.font(type).data() == data.data()) {
-      return magic_enum::enum_name(type);
-    }
-  }
-  return data.empty() ? "no font" : "an unknown font";
-}
-
 }  // namespace
 
 FontStyle TextFontStyle(TextPrintType flag) {
@@ -456,12 +442,9 @@ FontStyle TextFontStyle(TextPrintType flag) {
     case TextPrintType::TPF_BRIGHT_COLOR:
     case TextPrintType::TPF_USE_GRAD_PAL:
     default:
-      // No point size: the font of whatever printed last. The plan to remove
-      // the font globals needs to know whether this is ever reached.
-      font = g_font;
-      LOG_FIRST_N(ERROR, 20)
-          << "Text flags 0x" << absl::Hex(static_cast<int>(flag))
-          << " name no point size; keeping " << FontName(font);
+      // No point size. The original kept whichever font printed last; no
+      // caller relies on that, and 8-point is the font Assets starts with.
+      font = assets.font(FontType::k8Point);
       break;
   }
 
