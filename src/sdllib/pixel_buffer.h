@@ -31,10 +31,7 @@
 // buffer around the work, and a `…Locked` one that does the work and expects
 // the caller to hold the lock already.
 //
-// PixelView is declared first so that PixelBuffer can hold one by value. The
-// few view members that reach through to the buffer are therefore defined
-// after PixelBuffer, at the bottom of this header; everything else sits in
-// the class body.
+// PixelView is declared first so that PixelBuffer can hold one by value.
 
 #ifndef CNC_RED_ALERT_SDLLIB_PIXEL_BUFFER_H_
 #define CNC_RED_ALERT_SDLLIB_PIXEL_BUFFER_H_
@@ -49,7 +46,6 @@
 #include "base/array.h"
 #include "base/attributes.h"
 #include "base/flags.h"
-#include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/bitmap.h"
 #include "sdllib/ww_win.h"
@@ -422,156 +418,6 @@ class PixelBuffer {
   // UnlockSurface().
   PixelView whole_;
 };
-
-// The PixelView members that reach through buffer_. They live here rather than
-// in the class body because PixelBuffer is only forward declared above them.
-
-inline std::span<uint8_t> PixelView::pixels() {
-  if (buffer_ == nullptr) {
-    return {};
-  }
-  return buffer_->bytes().subspan(base::ToSize((y_pos_ * stride()) + x_pos_));
-}
-
-inline bool PixelView::NeedsLock() {
-  // Named for the DirectDraw surfaces this used to mean; callers read it as
-  // "do the pixels have to be locked before they can be touched", which is
-  // true of exactly the window's surface.
-  return buffer_ != nullptr && buffer_->IsWindowSurface();
-}
-
-inline bool PixelView::Lock() {
-  if (buffer_ == nullptr) {
-    return false;
-  }
-
-  if (!buffer_->LockSurface()) {
-    return false;
-  }
-
-  Attach(buffer_, x_pos_, y_pos_, width_, height_);
-  return true;
-}
-
-inline bool PixelView::Unlock() {
-  return buffer_ == nullptr || buffer_->UnlockSurface();
-}
-
-inline int PixelView::lock_count() const {
-  return buffer_ == nullptr ? 0 : buffer_->lock_count();
-}
-
-// The locking wrappers, in the order the class declares them. Each one takes
-// the lock, calls the matching `…Locked` form and drops it again.
-
-inline void PixelView::PutPixel(int x, int y, uint8_t color) {
-  if (Lock()) {
-    PutPixelLocked(x, y, color);
-    Unlock();
-  }
-}
-
-// Inline with the wrappers rather than in the .cc: a caller that locks once
-// and plots a run of pixels calls this per pixel.
-inline void PixelView::PutPixelLocked(const int x, const int y,
-                                      const uint8_t color) {
-  if (x >= 0 && y >= 0 && x < width() && y < height()) {
-    base::At(pixels(), base::ToSize(x + (y * stride()))) = color;
-  }
-}
-
-inline int PixelView::GetPixel(int x, int y) {
-  int return_code = 0;
-  if (Lock()) {
-    return_code = GetPixelLocked(x, y);
-    Unlock();
-  }
-  return return_code;
-}
-
-inline void PixelView::Clear(uint8_t color) {
-  if (Lock()) {
-    ClearLocked(color);
-    Unlock();
-  }
-}
-
-inline void PixelView::CopyToBuffer(int src_x, int src_y, int width, int height,
-                                    std::span<uint8_t> dest) {
-  if (Lock()) {
-    CopyToBufferLocked(src_x, src_y, width, height, dest);
-    Unlock();
-  }
-}
-
-inline void PixelView::CopyFromBuffer(int dst_x, int dst_y, int width,
-                                      int height,
-                                      std::span<const uint8_t> source) {
-  if (Lock()) {
-    CopyFromBufferLocked(dst_x, dst_y, width, height, source);
-    Unlock();
-  }
-}
-
-inline void PixelView::BlitTo(PixelView& dest, int src_x, int src_y, int dst_x,
-                              int dst_y, int width, int height,
-                              bool transparent) {
-  if (Lock()) {
-    if (dest.Lock()) {
-      BlitToLocked(dest, src_x, src_y, dst_x, dst_y, width, height,
-                   transparent);
-      dest.Unlock();
-    }
-    Unlock();
-  }
-}
-
-inline bool PixelView::Scale(PixelView& dest, int src_x, int src_y, int dst_x,
-                             int dst_y, int src_width, int src_height,
-                             int dst_width, int dst_height, bool transparent,
-                             std::span<const uint8_t> remap_table) {
-  bool return_code = false;
-  if (Lock()) {
-    if (dest.Lock()) {
-      return_code =
-          ScaleLocked(dest, src_x, src_y, dst_x, dst_y, src_width, src_height,
-                      dst_width, dst_height, transparent, remap_table);
-      dest.Unlock();
-    }
-    Unlock();
-  }
-  return return_code;
-}
-
-inline void PixelView::Print(const char* text, int x, int y, int fore_color,
-                             int back_color) {
-  if (Lock()) {
-    PrintLocked(text, x, y, fore_color, back_color);
-    Unlock();
-  }
-}
-
-inline void PixelView::DrawLine(int x1, int y1, int x2, int y2, uint8_t color) {
-  if (Lock()) {
-    DrawLineLocked(x1, y1, x2, y2, color);
-    Unlock();
-  }
-}
-
-inline void PixelView::FillRect(int x1, int y1, int x2, int y2, uint8_t color) {
-  if (Lock()) {
-    FillRectLocked(x1, y1, x2, y2, color);
-    Unlock();
-  }
-}
-
-inline void PixelView::Remap(int x1, int y1, int width, int height,
-                             std::span<const uint8_t> remap_table) {
-  if (Lock()) {
-    RemapLocked(x1, y1, width, height, remap_table);
-    Unlock();
-  }
-}
 
 // Inline rather than in the .cc because the window unit differs between the
 // two games, and sdllib is compiled once, without TD defined.

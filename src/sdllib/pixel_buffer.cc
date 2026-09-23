@@ -58,18 +58,6 @@ PixelView::PixelView(PixelBuffer* buffer, const int x, const int y,
   Attach(buffer, x, y, width, height);
 }
 
-void PixelView::DrawRect(const int x1, const int y1, const int x2, const int y2,
-                         const uint8_t color) {
-  if (!Lock()) {
-    return;
-  }
-  DrawLineLocked(x1, y1, x2, y1, color);
-  DrawLineLocked(x1, y2, x2, y2, color);
-  DrawLineLocked(x1, y1, x1, y2, color);
-  DrawLineLocked(x2, y1, x2, y2, color);
-  Unlock();
-}
-
 void PixelView::Attach(PixelBuffer* buffer, int x, int y, int width,
                        int height) {
   // Clamp the corner into the buffer. A buffer that Init() has not sized yet
@@ -114,6 +102,63 @@ void PixelView::Attach(PixelBuffer* buffer, int x, int y, int width,
   buffer_ = buffer;
 }
 
+std::span<uint8_t> PixelView::pixels() {
+  if (buffer_ == nullptr) {
+    return {};
+  }
+  return buffer_->bytes().subspan(base::ToSize((y_pos_ * stride()) + x_pos_));
+}
+
+bool PixelView::Lock() {
+  if (buffer_ == nullptr) {
+    return false;
+  }
+
+  if (!buffer_->LockSurface()) {
+    return false;
+  }
+
+  Attach(buffer_, x_pos_, y_pos_, width_, height_);
+  return true;
+}
+
+bool PixelView::Unlock() {
+  return buffer_ == nullptr || buffer_->UnlockSurface();
+}
+
+int PixelView::lock_count() const {
+  return buffer_ == nullptr ? 0 : buffer_->lock_count();
+}
+
+bool PixelView::NeedsLock() {
+  // Named for the DirectDraw surfaces this used to mean; callers read it as
+  // "do the pixels have to be locked before they can be touched", which is
+  // true of exactly the window's surface.
+  return buffer_ != nullptr && buffer_->IsWindowSurface();
+}
+
+void PixelView::PutPixel(const int x, const int y, const uint8_t color) {
+  if (Lock()) {
+    PutPixelLocked(x, y, color);
+    Unlock();
+  }
+}
+
+void PixelView::PutPixelLocked(const int x, const int y, const uint8_t color) {
+  if (x >= 0 && y >= 0 && x < width() && y < height()) {
+    base::At(pixels(), base::ToSize(x + (y * stride()))) = color;
+  }
+}
+
+int PixelView::GetPixel(const int x, const int y) {
+  int return_code = 0;
+  if (Lock()) {
+    return_code = GetPixelLocked(x, y);
+    Unlock();
+  }
+  return return_code;
+}
+
 int PixelView::GetPixelLocked(const int x, const int y) {
   if (x < 0 || y < 0 || x >= width() || y >= height()) {
     return 0;
@@ -123,6 +168,13 @@ int PixelView::GetPixelLocked(const int x, const int y) {
   const auto dst_offset = pixels().begin() + x + (y * dst_area);
 
   return *dst_offset;
+}
+
+void PixelView::Clear(const uint8_t color) {
+  if (Lock()) {
+    ClearLocked(color);
+    Unlock();
+  }
 }
 
 void PixelView::ClearLocked(const uint8_t color) {
@@ -137,6 +189,14 @@ void PixelView::ClearLocked(const uint8_t color) {
     std::fill_n(dst_offset, pixel_count, color);
     dst_offset += dst_area;
   } while (--line_count);
+}
+
+void PixelView::CopyToBuffer(const int src_x, const int src_y, const int width,
+                             const int height, const std::span<uint8_t> dest) {
+  if (Lock()) {
+    CopyToBufferLocked(src_x, src_y, width, height, dest);
+    Unlock();
+  }
 }
 
 void PixelView::CopyToBufferLocked(const int src_x, const int src_y,
@@ -202,6 +262,15 @@ void PixelView::CopyToBufferLocked(const int src_x, const int src_y,
   } while (--line_count);
 }
 
+void PixelView::CopyFromBuffer(const int dst_x, const int dst_y,
+                               const int width, const int height,
+                               const std::span<const uint8_t> source) {
+  if (Lock()) {
+    CopyFromBufferLocked(dst_x, dst_y, width, height, source);
+    Unlock();
+  }
+}
+
 void PixelView::CopyFromBufferLocked(const int dst_x, const int dst_y,
                                      const int width, const int height,
                                      std::span<const uint8_t> source) {
@@ -263,6 +332,19 @@ void PixelView::CopyFromBufferLocked(const int dst_x, const int dst_y,
     src_offset += width;
     dst_offset += dst_area;
   } while (--line_count);
+}
+
+void PixelView::BlitTo(PixelView& dest, const int src_x, const int src_y,
+                       const int dst_x, const int dst_y, const int width,
+                       const int height, const bool transparent) {
+  if (Lock()) {
+    if (dest.Lock()) {
+      BlitToLocked(dest, src_x, src_y, dst_x, dst_y, width, height,
+                   transparent);
+      dest.Unlock();
+    }
+    Unlock();
+  }
 }
 
 void PixelView::BlitToLocked(PixelView& dest, const int src_x, const int src_y,
@@ -394,6 +476,23 @@ void PixelView::BlitToLocked(PixelView& dest, const int src_x, const int src_y,
       } while (--line_count);
     }
   }
+}
+
+bool PixelView::Scale(PixelView& dest, int src_x, int src_y, int dst_x,
+                      int dst_y, int src_width, int src_height, int dst_width,
+                      int dst_height, bool transparent,
+                      std::span<const uint8_t> remap_table) {
+  bool return_code = false;
+  if (Lock()) {
+    if (dest.Lock()) {
+      return_code =
+          ScaleLocked(dest, src_x, src_y, dst_x, dst_y, src_width, src_height,
+                      dst_width, dst_height, transparent, remap_table);
+      dest.Unlock();
+    }
+    Unlock();
+  }
+  return return_code;
 }
 
 bool PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
@@ -591,6 +690,14 @@ bool PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
   return true;
 }
 
+void PixelView::Print(const char* text, const int x, const int y,
+                      const int fore_color, const int back_color) {
+  if (Lock()) {
+    PrintLocked(text, x, y, fore_color, back_color);
+    Unlock();
+  }
+}
+
 void PixelView::Print(const int value, const int x, const int y,
                       const int fore_color, const int back_color) {
   Print(absl::StrCat(value).c_str(), x, y, fore_color, back_color);
@@ -719,6 +826,34 @@ void PixelView::PrintLocked(const char* text, int x, int y,
         }
       }
     }
+  }
+}
+
+void PixelView::DrawLine(const int x1, const int y1, const int x2, const int y2,
+                         const uint8_t color) {
+  if (Lock()) {
+    DrawLineLocked(x1, y1, x2, y2, color);
+    Unlock();
+  }
+}
+
+void PixelView::DrawRect(const int x1, const int y1, const int x2, const int y2,
+                         const uint8_t color) {
+  if (!Lock()) {
+    return;
+  }
+  DrawLineLocked(x1, y1, x2, y1, color);
+  DrawLineLocked(x1, y2, x2, y2, color);
+  DrawLineLocked(x1, y1, x1, y2, color);
+  DrawLineLocked(x2, y1, x2, y2, color);
+  Unlock();
+}
+
+void PixelView::FillRect(const int x1, const int y1, const int x2, const int y2,
+                         const uint8_t color) {
+  if (Lock()) {
+    FillRectLocked(x1, y1, x2, y2, color);
+    Unlock();
   }
 }
 
@@ -912,6 +1047,15 @@ void PixelView::FillRectLocked(int x1, int y1, int x2, int y2,
     std::fill_n(dst_offset, pixel_count, color);
     dst_offset += dst_area;
   } while (--line_count);
+}
+
+void PixelView::Remap(const int x1, const int y1, const int width,
+                      const int height,
+                      const std::span<const uint8_t> remap_table) {
+  if (Lock()) {
+    RemapLocked(x1, y1, width, height, remap_table);
+    Unlock();
+  }
 }
 
 void PixelView::RemapLocked(const int x1, const int y1, const int width,
@@ -1326,4 +1470,3 @@ void PixelBuffer::DrawScaledRotated(const BitmapClass& bitmap,
     }
   }
 }
-
