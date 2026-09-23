@@ -1042,7 +1042,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   port::SafeCopy(buffer, Text_String(TXT_INITIALIZING_MODEM));
 
   Select_Text_Font(TPF_6PT_GRAD | TPF_NOSHADOW, kTBlack, kTBlack);
-  Format_Window_String(buffer, view.height(), width, height);
+  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
+  Format_Window_String(font, buffer, view.height(), width, height);
 
   width = std::max(width, 50 * factor);
   width += 40 * factor;
@@ -1340,7 +1341,8 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   // Timer_Test(__LINE__, __FILE__);
 
   Select_Text_Font(TPF_6PT_GRAD | TPF_NOSHADOW, kTBlack, kTBlack);
-  Format_Window_String(buffer, view.height(), width, height);
+  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
+  Format_Window_String(font, buffer, view.height(), width, height);
 
   const int text_width = width;
   width = std::max(width, 50 * factor);
@@ -1354,10 +1356,9 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
       kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       x + ((width -
-            (StringPixelWidth(Text_String(TXT_CANCEL)) + (8 * factor))) /
+            (StringPixelWidth(font, Text_String(TXT_CANCEL)) + (8 * factor))) /
            2),
-      y + height - (g_font_max_height + g_font_y_spacing + (2 * factor)) -
-          (5 * factor));
+      y + height - (FontLineHeight(font) + (2 * factor)) - (5 * factor));
 
   // Timer_Test(__LINE__, __FILE__);
 
@@ -1583,7 +1584,8 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   }
 
   Select_Text_Font(TPF_6PT_GRAD | TPF_NOSHADOW, kTBlack, kTBlack);
-  Format_Window_String(text_buffer, view.height(), width, height);
+  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
+  Format_Window_String(font, text_buffer, view.height(), width, height);
 
   int text_width = width;
   width = std::max(width, 50 * factor);
@@ -1597,10 +1599,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
       kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       x + ((width -
-            (StringPixelWidth(Text_String(TXT_CANCEL)) + (8 * factor))) /
+            (StringPixelWidth(font, Text_String(TXT_CANCEL)) + (8 * factor))) /
            2),
-      y + height - (g_font_max_height + g_font_y_spacing + (2 * factor)) -
-          (5 * factor));
+      y + height - (FontLineHeight(font) + (2 * factor)) - (5 * factor));
 
   // Load_Picture("TITLE.CPS", HidPage, HidPage, Palette, BM_DEFAULT);
 
@@ -1698,7 +1699,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         port::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
 
         Select_Text_Font(TPF_6PT_GRAD | TPF_NOSHADOW, kTBlack, kTBlack);
-        Format_Window_String(text_buffer, view.height(), width, height);
+        Format_Window_String(font, text_buffer, view.height(), width, height);
 
         text_width = width;
         width = std::max(width, 50 * factor);

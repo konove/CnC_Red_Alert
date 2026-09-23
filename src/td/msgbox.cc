@@ -133,6 +133,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   */
   Fancy_Text_Print(view, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
+  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
   int bwidth = 0;   // button width
   int bheight = 0;  // button height
   int numbuttons = 0;
@@ -140,12 +141,14 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     /*
     **	Build the button list.
     */
-    bheight = g_font_max_height + g_font_y_spacing + (2 * factor);
-    bwidth = std::max<int>(StringPixelWidth(b1txt) + (8 * factor), 30 * factor);
+    bheight = FontLineHeight(font) + (2 * factor);
+    bwidth = std::max<int>(StringPixelWidth(font, b1txt) + (8 * factor),
+                           30 * factor);
 
     if (b2txt) {
       numbuttons = 2;
-      bwidth = std::max<int>(StringPixelWidth(b2txt) + (8 * factor), bwidth);
+      bwidth =
+          std::max<int>(StringPixelWidth(font, b2txt) + (8 * factor), bwidth);
 
       if (b3txt) {
         numbuttons = 3;
@@ -171,7 +174,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     height = 140 - 60;
   } else
 #endif
-    Format_Window_String(buffer, 255 * factor, width, height);
+    Format_Window_String(font, buffer, 255 * factor, width, height);
 
   // BG #ifdef JAPANESE
   // BG 	if(!IsPicture) {

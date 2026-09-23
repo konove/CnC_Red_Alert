@@ -304,7 +304,8 @@ int Test_Null_Modem() {
   port::SafeCopy(buffer, Text_String(TXT_WAITING_CONNECT));
   Fancy_Text_Print(view, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, 200 * factor, width, height);
+  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
+  Format_Window_String(font, buffer, 200 * factor, width, height);
 
   width = std::max(width, 50 * factor);
   width += 40 * factor;
@@ -317,10 +318,9 @@ int Test_Null_Modem() {
       kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
       x + ((width -
-            (StringPixelWidth(Text_String(TXT_CANCEL)) + (8 * factor))) /
+            (StringPixelWidth(font, Text_String(TXT_CANCEL)) + (8 * factor))) /
            2),
-      y + height - (g_font_max_height + g_font_y_spacing + (2 * factor)) -
-          (5 * factor));
+      y + height - (FontLineHeight(font) + (2 * factor)) - (5 * factor));
 
   /*
   ------------------------------- Initialize -------------------------------
@@ -672,7 +672,8 @@ static int Reconnect_Null_Modem() {
   port::SafeCopy(buffer, Text_String(TXT_NULL_CONNERR_CHECK_CABLES));
   Fancy_Text_Print(view, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, 200, width, height);
+  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
+  Format_Window_String(font, buffer, 200, width, height);
 
   width = std::max(width, 50);
   width += 40;
@@ -684,8 +685,8 @@ static int Reconnect_Null_Modem() {
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL,
       TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,
-      x + ((width - (StringPixelWidth(Text_String(TXT_CANCEL)) + 8)) / 2),
-      y + height - (g_font_max_height + g_font_y_spacing + 2) - 5);
+      x + ((width - (StringPixelWidth(font, Text_String(TXT_CANCEL)) + 8)) / 2),
+      y + height - (FontLineHeight(font) + 2) - 5);
 
   /*
   ------------------------------- Initialize -------------------------------
@@ -3687,7 +3688,9 @@ int Com_Scenario_Dialog() {
             absl::SNPrintF(txt, sizeof(txt), "%s",
                            Text_String(TXT_WAITING_FOR_OPPONENT));
 
-            const int txtwidth = StringPixelWidth(txt);
+            const int txtwidth = StringPixelWidth(
+                TextFontStyle(TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW),
+                txt);
 
             Fancy_Text_Print(view, txt, d_dialog_cx - (txtwidth / 2),
                              d_opponent_y, kCcGreen, kTBlack,
@@ -4991,7 +4994,9 @@ int Com_Show_Scenario_Dialog() {
             absl::SNPrintF(txt, sizeof(txt), "%s",
                            Text_String(TXT_WAITING_FOR_OPPONENT));
 
-            const int txtwidth = StringPixelWidth(txt);
+            const int txtwidth = StringPixelWidth(
+                TextFontStyle(TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW),
+                txt);
 
             Fancy_Text_Print(view, txt, d_dialog_cx - (txtwidth / 2),
                              d_opponent_y, kCcGreen, kTBlack,

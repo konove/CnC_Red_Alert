@@ -93,7 +93,8 @@ bool ConfirmationClass::Process(const char* string) {
   port::SafeCopy(buffer, string);
   Fancy_Text_Print(view, TXT_NONE, 0, 0, kTBlack, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, 200 * factor, width, height);
+  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
+  Format_Window_String(font, buffer, 200 * factor, width, height);
   width += 60 * factor;
   height += 60 * factor;
   const int x = ((320 * factor) - width) / 2;
@@ -103,10 +104,9 @@ bool ConfirmationClass::Process(const char* string) {
   **	Create Buttons.  Button coords are in pixels, but are window-relative.
   */
 
-  const int bheight =
-      g_font_max_height + g_font_y_spacing + 2;  // button width and height
+  const int bheight = FontLineHeight(font) + 2;  // button width and height
   const int bwidth =
-      std::max<int>(StringPixelWidth(Text_String(TXT_YES)) + 8, 30);
+      std::max<int>(StringPixelWidth(font, Text_String(TXT_YES)) + 8, 30);
 
   TextButtonClass yesbtn(
       kButtonYes, TXT_YES, TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW,

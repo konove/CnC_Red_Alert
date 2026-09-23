@@ -454,7 +454,8 @@ bool Do_The_Internet_Menu_Thang() {
   char buffer[80 * 3];
   port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
   Select_Text_Font(TPF_6PT_GRAD | TPF_NOSHADOW, kTBlack, kTBlack);
-  Format_Window_String(buffer, view.height(), width, height);
+  Format_Window_String(TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW), buffer,
+                       view.height(), width, height);
 
 #if (defined(GERMAN) || defined(FRENCH))
   d_dialog_w = width + 25 * factor;
