@@ -1142,3 +1142,13 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   `stream_error_test.cc`'s directory test) to say a directory throws rather than "can't be
   distinguished from EOF". Added `DiskStreamErrorTest.RealReadErrorSetsOkFalseWithoutThrowing`
   (`/proc/self/mem`, `GTEST_SKIP()` if missing or `Open` fails) per the ruling.
+- 2026-09-23: Step 3 fix round 2. The new test skipped on every run, not just in a sandbox:
+  `src/testing/gtest_main.cc` unconditionally calls `prctl(PR_SET_DUMPABLE, 0)` for every test
+  binary (so a death test's forked child leaves no coredump) unless `CNC_TEST_CORE_DUMPS` is set,
+  and the kernel denies `/proc/self/mem` to a non-dumpable process even for self-access. Added a
+  `ScopedDumpable` RAII guard local to `byte_stream_test.cc` that reads `prctl(PR_GET_DUMPABLE)`,
+  sets it to 1, and restores the saved value in its destructor (so a failed `EXPECT_EQ`/`ASSERT_NE`
+  still restores it); the test now constructs one for its own scope instead of weakening
+  `gtest_main.cc`'s default for every other test.
+  `ctest --test-dir build-strict -R RealReadError -V` now shows the test **passing**, not skipped;
+  full `ctest --test-dir build-strict` is 725/725 with no skips (previously 725/725 with 1 skipped).

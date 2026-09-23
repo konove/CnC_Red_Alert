@@ -21,6 +21,11 @@
 #include "gtest/gtest.h"
 #include "sdllib/file_access.h"
 
+#ifdef __linux__
+#include <linux/prctl.h>
+#include <sys/prctl.h>
+#endif
+
 namespace {
 
 std::span<const std::byte> Bytes(const std::string_view text) {
@@ -139,10 +144,41 @@ TEST(DiskStreamErrorTest, WriteToFullDeviceFails) {
   EXPECT_FALSE(stream->ok());
 }
 
+#ifdef __linux__
+// gtest_main.cc marks the whole test process undumpable (PR_SET_DUMPABLE 0)
+// so a death test's forked child leaves no systemd-coredump behind, but the
+// kernel also denies opening /proc/self/mem to an undumpable process, even
+// for self-access. Only RealReadErrorSetsOkFalseWithoutThrowing needs
+// dumpability, so it restores it for its own scope rather than weakening
+// gtest_main.cc's default for every other test.
+class ScopedDumpable {
+ public:
+  // prctl declares its optional arguments with a trailing "...".
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
+  ScopedDumpable() : was_dumpable_(prctl(PR_GET_DUMPABLE)) {
+    prctl(PR_SET_DUMPABLE, 1);  // NOLINT(cppcoreguidelines-pro-type-vararg)
+  }
+  ~ScopedDumpable() {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-vararg)
+    prctl(PR_SET_DUMPABLE, was_dumpable_);
+  }
+
+  ScopedDumpable(const ScopedDumpable&) = delete;
+  ScopedDumpable& operator=(const ScopedDumpable&) = delete;
+  ScopedDumpable(ScopedDumpable&&) = delete;
+  ScopedDumpable& operator=(ScopedDumpable&&) = delete;
+
+ private:
+  int was_dumpable_;
+};
+#endif  // __linux__
+
 TEST(DiskStreamErrorTest, RealReadErrorSetsOkFalseWithoutThrowing) {
+#ifdef __linux__
   // Reading a process's own memory map at offset 0 fails with EIO; unlike a
   // directory, the open itself succeeds, so this is the one read error this
   // test suite can provoke without a failing disk.
+  const ScopedDumpable dumpable;
   if (!std::filesystem::exists("/proc/self/mem")) {
     GTEST_SKIP() << "no /proc/self/mem on this platform";
   }
@@ -154,6 +190,9 @@ TEST(DiskStreamErrorTest, RealReadErrorSetsOkFalseWithoutThrowing) {
   std::array<std::byte, 8> buffer{};
   EXPECT_EQ(stream->Read(buffer), 0);
   EXPECT_FALSE(stream->ok());
+#else
+  GTEST_SKIP() << "/proc/self/mem is Linux-only";
+#endif
 }
 
 TEST(MemoryStreamTest, ReadsWithinTheViewAndClampsSeeks) {
