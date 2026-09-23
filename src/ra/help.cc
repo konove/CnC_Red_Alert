@@ -274,22 +274,24 @@ void HelpClass::Draw_It(PixelView& view, bool forced) {
       view.Lock()) {
     Plain_Text_Print(view, Text, DrawX, DrawY, Color, kBlack,
                      TPF_MAP | TPF_NOSHADOW);
-    view.DrawRect(DrawX - 1, DrawY - 1, DrawX + Width + 1,
-                  DrawY + g_font_max_height, static_cast<unsigned char>(Color));
+    const FontStyle font = TextFontStyle(TPF_MAP | TPF_NOSHADOW);
+    const int font_height = FontMaxHeight(font);
+    view.DrawRect(DrawX - 1, DrawY - 1, DrawX + Width + 1, DrawY + font_height,
+                  static_cast<unsigned char>(Color));
 
     if (Cost) {
       char buffer[15];
       absl::SNPrintF(buffer, sizeof(buffer), "$%d", Cost);
-      const int width = StringPixelWidth(buffer);
+      const int width = StringPixelWidth(font, buffer);
 
-      Plain_Text_Print(view, buffer, DrawX, DrawY + g_font_max_height, Color,
-                       kBlack, TPF_MAP | TPF_NOSHADOW);
-      view.DrawRect(DrawX - 1, DrawY + g_font_max_height, DrawX + width + 1,
-                    DrawY + g_font_max_height + g_font_max_height - 1,
+      Plain_Text_Print(view, buffer, DrawX, DrawY + font_height, Color, kBlack,
+                       TPF_MAP | TPF_NOSHADOW);
+      view.DrawRect(DrawX - 1, DrawY + font_height, DrawX + width + 1,
+                    DrawY + font_height + font_height - 1,
                     static_cast<unsigned char>(Color));
-      view.DrawLine(DrawX, DrawY + g_font_max_height,
-                    DrawX + std::min(width + 1, Width) - 1,
-                    DrawY + g_font_max_height, kBlack);
+      view.DrawLine(DrawX, DrawY + font_height,
+                    DrawX + std::min(width + 1, Width) - 1, DrawY + font_height,
+                    kBlack);
     }
     view.Unlock();
   }
@@ -315,7 +317,8 @@ void HelpClass::Set_Text(int text) {
   if (text != TXT_NONE) {
     Text = text;
     Select_Text_Font(TPF_MAP | TPF_NOSHADOW, 0, 0);
-    Width = StringPixelWidth(Text_String(Text));
+    Width = StringPixelWidth(TextFontStyle(TPF_MAP | TPF_NOSHADOW),
+                             Text_String(Text));
     if (IsRight) {
       DrawX = X - Width;
       DrawY = Y;

@@ -71,7 +71,7 @@ ToolTipClass::ToolTipClass(GadgetClass* gadget, const char* szText, int x_show,
   Select_Text_Font(TPF_TYPE, nullptr,
                    kTBlack);  //	Required before StringPixelWidth()
                               // call, for god's sake.
-  wShow = StringPixelWidth(szTip) + 2;
+  wShow = StringPixelWidth(TextFontStyle(TPF_TYPE), szTip) + 2;
   hShow = 11;
 
   if (!bIconList) {
@@ -166,7 +166,7 @@ void ToolTipClass::Show(PixelView& view) {
       Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
                        TPF_TYPE);  //	Required before StringPixelWidth()
                                    // call, for god's sake.
-      wShowUse = StringPixelWidth(szTipUse) + 2;
+      wShowUse = StringPixelWidth(TextFontStyle(TPF_TYPE), szTipUse) + 2;
       if (bRightAlign) {
         xShowUse -= wShowUse;
       }

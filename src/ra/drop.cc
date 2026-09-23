@@ -65,7 +65,7 @@ DropListClass::DropListClass(int id, std::span<char> text, int max_len,
       List(0, x, y + Get_Build_Frame_Height(down),
            w + Get_Build_Frame_Width(down), h, flags, up, down) {
   Select_Text_Font(flags, nullptr, 0);
-  Height = g_font_max_height + 1;
+  Height = FontMaxHeight(TextFontStyle(flags)) + 1;
   List.Make_Peer(*this);
   DropButton.Make_Peer(*this);
 }

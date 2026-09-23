@@ -120,8 +120,8 @@ bool AddItemExtras(DynamicVectorClass<IconList_ItemExtras*>& list,
 
 }  // namespace
 
-static int Format_Window_String_New(const char* string, int maxlinelen,
-                                    int& width, int& height,
+static int Format_Window_String_New(const FontStyle& font, const char* string,
+                                    int maxlinelen, int& width, int& height,
                                     std::span<char> output, int iExtraChars);
 
 //***********************************************************************************************
@@ -205,12 +205,14 @@ int IconListClass::Add_Item(
             SetFont(TheAssets().font(FontType::kType));
         const int FontXSpacingBefore = g_font_x_spacing;
         g_font_x_spacing = -2;
+        FontStyle font = TextFontStyle(TPF_TYPE);
+        font.x_spacing = -2;
 
         const int iWidthToClipAt =
             IsScrollActive ? Width : Width - UpGadget.Width;
         //	This call will place '\r's in the string where line breaks
         // should occur.
-        Format_Window_String_New(text, iWidthToClipAt, iWidthMax, iHeight,
+        Format_Window_String_New(font, text, iWidthToClipAt, iWidthMax, iHeight,
                                  szText, 50);
 
         SetFont(pFontBefore);
@@ -224,8 +226,8 @@ int IconListClass::Add_Item(
             IsScrollActive ? Width : Width - UpGadget.Width;
         //	This call will place '\r's in the string where line breaks
         // should occur.
-        Format_Window_String_New(text, iWidthToClipAt, iWidthMax, iHeight,
-                                 szText, 50);
+        Format_Window_String_New(TextFontStyle(TextFlags), text, iWidthToClipAt,
+                                 iWidthMax, iHeight, szText, 50);
       }
 
       //	Each break character causes a line to be added to list.
@@ -751,9 +753,9 @@ int IconListClass::OffsetToIndex(int iIndex, int y) {
 // single word has to be made. 	Hey - it's better than an infinite loop that
 // forces you to reset your machine, as in the original code...
 
-int Format_Window_String_New(const char* string, int maxlinelen, int& width,
-                             int& height, std::span<char> output,
-                             int iExtraChars) {
+int Format_Window_String_New(const FontStyle& font, const char* string,
+                             int maxlinelen, int& width, int& height,
+                             std::span<char> output, int iExtraChars) {
   std::size_t source = 0;
   std::size_t dest = 0;
   int lines = 0;
@@ -774,12 +776,12 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
   // While there are more letters left divide the line up.
   while (character(source)) {
     int linelen = 0;
-    height += g_font_max_height + g_font_y_spacing;
+    height += FontLineHeight(font);
     lines++;
 
     // While the current line is less then the max length...
     base::At(output, dest) = character(source);
-    linelen += CharPixelWidth(character(source));
+    linelen += CharPixelWidth(font, character(source));
     // A glyph wider than the whole line must still consume input. The old
     // backward search could revisit it forever (or move before the input).
     if (linelen >= maxlinelen && character(source) != '\r') {
@@ -795,7 +797,7 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
     while (linelen < maxlinelen && character(source) != '\r' &&
            character(source) != '\0') {
       base::At(output, ++dest) = character(++source);
-      linelen += CharPixelWidth(character(source));
+      linelen += CharPixelWidth(font, character(source));
     }
 
     // if the line is too long...
@@ -806,7 +808,7 @@ int Format_Window_String_New(const char* string, int maxlinelen, int& width,
       const std::size_t stringOverEnd = source;
       while (linelen > 0 && character(source) != ' ' &&
              character(source) != '\r' && character(source) != '\0') {
-        linelen -= CharPixelWidth(character(source));
+        linelen -= CharPixelWidth(font, character(source));
         if (source == 0) {
           break;
         }

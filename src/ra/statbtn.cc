@@ -96,11 +96,12 @@ StaticButtonClass::StaticButtonClass(unsigned /*unused*/, const char* text,
 
   if (w == -1 || h == -1) {
     Select_Text_Font(PrintFlags, nullptr, kTBlack);
+    const FontStyle font = TextFontStyle(PrintFlags);
     if (w == -1) {
-      Width = StringPixelWidth(String);
+      Width = StringPixelWidth(font, String);
     }
     if (h == -1) {
-      Height = static_cast<unsigned char>(g_font_max_height);
+      Height = static_cast<unsigned char>(FontMaxHeight(font));
     }
   }
 }
