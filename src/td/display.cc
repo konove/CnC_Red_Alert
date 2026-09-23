@@ -421,35 +421,53 @@ void DisplayClass::Init_Theater(TheaterType theater) {
   std::ranges::copy(ThePalettes().game_palette(),
                     ThePalettes().original_palette().begin());
 
-  GameFile(Fading_Table_Name("GREEN", theater)).ReadObject(FadingGreen);
+  if (const auto file = OpenGameFile(Fading_Table_Name("GREEN", theater))) {
+    file->ReadObject(FadingGreen);
+  }
   if (theater == THEATER_DESERT) {
     base::At(FadingGreen, 196) = 160;
   }
 
-  GameFile(Fading_Table_Name("YELLOW", theater)).ReadObject(FadingYellow);
+  if (const auto file = OpenGameFile(Fading_Table_Name("YELLOW", theater))) {
+    file->ReadObject(FadingYellow);
+  }
 
-  GameFile(Fading_Table_Name("RED", theater)).ReadObject(FadingRed);
+  if (const auto file = OpenGameFile(Fading_Table_Name("RED", theater))) {
+    file->ReadObject(FadingRed);
+  }
 
-  GameFile(Fading_Table_Name("MOUSE", theater))
-      .ReadObject(MouseTranslucentTable);
+  if (const auto file = OpenGameFile(Fading_Table_Name("MOUSE", theater))) {
+    file->ReadObject(MouseTranslucentTable);
+  }
 
   //	MouseDrawPtr = MouseTranslucentTable;
   //	MouseDrawPtr2 = Add_Long_To_Pointer(MouseTranslucentTable, 256L);
   //	MouseDrawVal = 1;
   //	MouseDrawFlags = (int)SHAPE_GHOST;
 
-  GameFile(Fading_Table_Name("TRANS", theater)).ReadObject(TranslucentTable);
+  if (const auto file = OpenGameFile(Fading_Table_Name("TRANS", theater))) {
+    file->ReadObject(TranslucentTable);
+  }
 
-  GameFile(Fading_Table_Name("WHITE", theater))
-      .ReadObject(WhiteTranslucentTable);
+  if (const auto file = OpenGameFile(Fading_Table_Name("WHITE", theater))) {
+    file->ReadObject(WhiteTranslucentTable);
+  }
 
-  GameFile(Fading_Table_Name("SHADOW", theater)).ReadObject(ShadowTrans);
+  if (const auto file = OpenGameFile(Fading_Table_Name("SHADOW", theater))) {
+    file->ReadObject(ShadowTrans);
+  }
 
-  GameFile(Fading_Table_Name("UNITS", theater)).ReadObject(UnitShadow);
+  if (const auto file = OpenGameFile(Fading_Table_Name("UNITS", theater))) {
+    file->ReadObject(UnitShadow);
+  }
 
-  GameFile(Fading_Table_Name("SHADE", theater)).ReadObject(FadingShade);
+  if (const auto file = OpenGameFile(Fading_Table_Name("SHADE", theater))) {
+    file->ReadObject(FadingShade);
+  }
 
-  GameFile(Fading_Table_Name("LIGHT", theater)).ReadObject(FadingLight);
+  if (const auto file = OpenGameFile(Fading_Table_Name("LIGHT", theater))) {
+    file->ReadObject(FadingLight);
+  }
 
   /*
   **	Create the shadow color used by aircraft.

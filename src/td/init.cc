@@ -334,8 +334,9 @@ bool Init_Game() {
   **	Default palette initialization. Uses the desert palette for convenience,
   **	but only the non terrain specific colors matter.
   */
-  GameFile palfile("TEMPERAT.PAL");
-  palfile.Read(std::span(ThePalettes().game_palette()), 768L);
+  if (const auto palfile = OpenGameFile("TEMPERAT.PAL")) {
+    palfile->Read(std::span(ThePalettes().game_palette()), 768L);
+  }
 
   if (TheMouse() == nullptr) {
     char buffer[255];
@@ -468,7 +469,7 @@ bool Init_Game() {
   **	copied the coorect versions to the hard drive.
   */
   DLOG(INFO) << "C&C95 - About to register SPEECH.MIX";
-  if (GameFile("SPEECH.MIX").IsAvailable()) {
+  if (GameFileExists("SPEECH.MIX")) {
     (void)MixArchive::Register("SPEECH.MIX");  // Never cached.
   }
   DLOG(INFO) << "C&C95 - About to register SOUNDS.MIX";
@@ -1379,11 +1380,11 @@ bool Select_Game(bool fade) {
           Hide_Mouse();
 
           // verify existence of movie file before playing this sequence.
-          if (GameFile("TRAILER.VQA").IsAvailable()) {
+          if (GameFileExists("TRAILER.VQA")) {
             Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                             Call_Back);
             TheScreen().visible_page().view().Clear();
-            if (GameFile("ATTRACT2.CPS").IsAvailable()) {
+            if (GameFileExists("ATTRACT2.CPS")) {
               if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
                 Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
                                 TheScreen().sys_mem_page().bytes(),
@@ -1405,11 +1406,11 @@ bool Select_Game(bool fade) {
             Play_Movie("TRAILER");  // Red Alert teaser.
           }
 
-          if (GameFile("SIZZLE.VQA").IsAvailable()) {
+          if (GameFileExists("SIZZLE.VQA")) {
             Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                             Call_Back);
             TheScreen().visible_page().view().Clear();
-            if (GameFile("ATTRACT2.CPS").IsAvailable()) {
+            if (GameFileExists("ATTRACT2.CPS")) {
               if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
                 Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
                                 TheScreen().sys_mem_page().bytes(),
@@ -1431,11 +1432,11 @@ bool Select_Game(bool fade) {
             Play_Movie("SIZZLE");  // Red Alert teaser.
           }
 
-          if (GameFile("SIZZLE2.VQA").IsAvailable()) {
+          if (GameFileExists("SIZZLE2.VQA")) {
             Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                             Call_Back);
             TheScreen().visible_page().view().Clear();
-            if (GameFile("ATTRACT2.CPS").IsAvailable()) {
+            if (GameFileExists("ATTRACT2.CPS")) {
               if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
                 Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
                                 TheScreen().sys_mem_page().bytes(),
@@ -1460,7 +1461,7 @@ bool Select_Game(bool fade) {
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                           Call_Back);
           TheScreen().visible_page().view().Clear();
-          if (GameFile("ATTRACT2.CPS").IsAvailable()) {
+          if (GameFileExists("ATTRACT2.CPS")) {
             if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
               Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
                               TheScreen().sys_mem_page().bytes(),
@@ -2856,11 +2857,10 @@ int Version_Number() {
                  ".07");        // Win95 USA version number
 #endif                          // FRENCH | GERMAN
 
-  DiskFile file("VERSION.TXT");
   char version[16];
   base::FillBytes(base::ObjectBytes(version), 0, sizeof(version));
-  if (file.IsAvailable()) {
-    file.ReadObject(version);
+  if (const auto file = OpenDiskFile("VERSION.TXT")) {
+    file->ReadObject(version);
   }
   port::SafeAppend(
       TheGameState().version_text(),
@@ -2928,8 +2928,8 @@ void Save_Recording_Values(ByteStream& file) {
   file.WriteObject(TheSession().frame_send_rate());
   file.WriteObject(TheSession().comm_protocol());
 
-  if (TheSession().super_record()) {
-    file.Flush();
+  if (TheSession().super_record() && !file.Flush()) {
+    DLOG(WARNING) << "Save_Recording_Values: Flush failed, disk may be full";
   }
 }
 

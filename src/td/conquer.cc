@@ -3261,8 +3261,8 @@ static void Do_Record_Playback() {
     /*.....................................................................
     For 'SuperRecord', push the frame to disk now, so a crash keeps it.
     .....................................................................*/
-    if (TheSession().super_record()) {
-      record->Flush();
+    if (TheSession().super_record() && !record->Flush()) {
+      DLOG(WARNING) << "Do_Record_Playback: Flush failed, disk may be full";
     }
   }
 

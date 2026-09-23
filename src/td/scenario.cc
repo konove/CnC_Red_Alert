@@ -174,9 +174,8 @@ bool Start_Scenario(char* root, bool briefing) {
 
     char buffer[25];
     absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA", TheWorld().brief_movie());
-    GameFile file(buffer);
 
-    if (TheSession().type() == GAME_NORMAL && !file.IsAvailable()) {
+    if (TheSession().type() == GAME_NORMAL && !GameFileExists(buffer)) {
       TheScreen().visible_page().view().Clear();
       Set_Palette(ThePalettes().game_palette());
       //			Show_Mouse();
@@ -741,9 +740,7 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
     absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA", TheWorld().brief_movie());
     absl::SNPrintF(buffer1, sizeof(buffer1), "%s.VQA",
                    TheWorld().action_movie());
-    GameFile file1(buffer);
-    GameFile file2(buffer1);
-    if (!file1.IsAvailable() && !file2.IsAvailable()) {
+    if (!GameFileExists(buffer) && !GameFileExists(buffer1)) {
       right_btn = TXT_OK;
       left_btn = TXT_NONE;
       brief = false;

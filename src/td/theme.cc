@@ -361,8 +361,7 @@ const char* ThemeClass::Theme_File_Name(ThemeType theme) {
     static auto name = std::filesystem::path(_themes.at(theme).Name)
                            .replace_extension(".VAR")
                            .string();
-    GameFile file(name);
-    if (file.IsAvailable()) {
+    if (GameFileExists(name)) {
       return name.data();
     }
   }
@@ -556,8 +555,7 @@ void ThemeClass::Scan() {
     //		if (theme == THEME_J1 && !Special.IsJurassic) {
     //			_themes[theme].Available = false;
     //		} else {
-    _themes.at(theme).Available =
-        GameFile(Theme_File_Name(theme)).IsAvailable();
+    _themes.at(theme).Available = GameFileExists(Theme_File_Name(theme));
     //		}
   }
 }

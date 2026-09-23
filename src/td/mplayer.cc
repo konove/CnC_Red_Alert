@@ -452,13 +452,12 @@ void Read_MultiPlayer_Settings() {
   /*------------------------------------------------------------------------
   Create filename and read the file.
   ------------------------------------------------------------------------*/
-  GameFile file("CONQUER.INI");
-  if (!file.IsAvailable()) {
+  const auto file = OpenGameFile("CONQUER.INI");
+  if (!file) {
     return;
   }
-  file.Read(std::as_writable_bytes(ShapeBufferBytes)
-                .first(ShapeBufferBytes.size() - 1));
-  file.Close();
+  file->Read(std::as_writable_bytes(ShapeBufferBytes)
+                 .first(ShapeBufferBytes.size() - 1));
 
   if (!TheSpecial().IsFromWChat) {
     /*------------------------------------------------------------------------
@@ -809,7 +808,6 @@ void Read_MultiPlayer_Settings() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void Write_MultiPlayer_Settings() {
-  GameFile file;
   char entrytext[4];
   char buf[128];  // buffer for parsing INI entry
 
@@ -820,12 +818,9 @@ void Write_MultiPlayer_Settings() {
   char* buffer = ShapeBuffer;  // INI staging buffer pointer.
   std::ranges::fill(ShapeBufferBytes, 0);
 
-  file.SetName("CONQUER.INI");
-  if (file.IsAvailable()) {
-    file.Open(FileAccess::kRead);
-    file.Read(std::as_writable_bytes(ShapeBufferBytes)
-                  .first(ShapeBufferBytes.size() - 1));
-    file.Close();
+  if (const auto in = OpenGameFile("CONQUER.INI")) {
+    in->Read(std::as_writable_bytes(ShapeBufferBytes)
+                 .first(ShapeBufferBytes.size() - 1));
   }
 
   /*------------------------------------------------------------------------
@@ -949,10 +944,10 @@ void Write_MultiPlayer_Settings() {
   /*------------------------------------------------------------------------
   Write the INI data out to a file.
   ------------------------------------------------------------------------*/
-  file.Open(FileAccess::kWrite);
-  file.Write(
-      std::as_bytes(ShapeBufferBytes).first(std::string_view(buffer).size()));
-  file.Close();
+  if (const auto out = OpenGameFile("CONQUER.INI", FileAccess::kWrite)) {
+    out->Write(
+        std::as_bytes(ShapeBufferBytes).first(std::string_view(buffer).size()));
+  }
 }
 
 /***********************************************************************************************
@@ -968,7 +963,6 @@ void Write_MultiPlayer_Settings() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void Read_Scenario_Descriptions() {
-  GameFile file;
   char fname[20];
 
   /*------------------------------------------------------------------------
@@ -985,9 +979,8 @@ void Read_Scenario_Descriptions() {
     Set_Scenario_Name(TheWorld().scenario_name(), i, SCEN_PLAYER_MPLAYER,
                       SCEN_DIR_EAST, SCEN_VAR_A);
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
-    file.SetName(fname);
 
-    if (file.IsAvailable()) {
+    if (GameFileExists(fname)) {
       TheSession().scenario_files().Add(i);
     }
   }
@@ -1011,10 +1004,10 @@ void Read_Scenario_Descriptions() {
                       TheSession().scenario_files().at(i), SCEN_PLAYER_MPLAYER,
                       SCEN_DIR_EAST, SCEN_VAR_A);
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", TheWorld().scenario_name());
-    file.SetName(fname);
-    file.Read(std::as_writable_bytes(ShapeBufferBytes)
-                  .first(ShapeBufferBytes.size() - 1));
-    file.Close();
+    if (const auto file = OpenGameFile(fname)) {
+      file->Read(std::as_writable_bytes(ShapeBufferBytes)
+                     .first(ShapeBufferBytes.size() - 1));
+    }
 
     /*.....................................................................
     Extract description & add it to the list.

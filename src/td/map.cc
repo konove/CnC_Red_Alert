@@ -921,7 +921,6 @@ bool MapClass::Read_Binary(const char* root, unsigned long*)
 bool MapClass::Read_Binary(const char* root, uint32_t* crc)
 #endif
 {
-  GameFile file;
   char fname[port::kMaxFname + port::kMaxExt];
   int i = 0;
 
@@ -933,11 +932,10 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
   /*
   **	Create object & open file.
   */
-  file.SetName(fname);
-  if (!file.IsAvailable()) {
+  const auto file = OpenGameFile(fname);
+  if (!file) {
     return false;
   }
-  file.Open(FileAccess::kRead);
 
   /*
   **	Loop through all cells.
@@ -949,7 +947,7 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
       unsigned char TIcon;  // Template icon number.
     } temp{};
 
-    if (!file.ReadObject(temp)) {
+    if (!file->ReadObject(temp)) {
       break;
     }
     if (temp.TType == static_cast<TemplateType>(255)) {
@@ -985,11 +983,6 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
 
   }
 
-  /*
-  **	Close the file.
-  */
-  file.Close();
-
   return i == MAP_CELL_TOTAL;
 }
 
@@ -1015,8 +1008,10 @@ bool MapClass::Write_Binary(const char* root) {
   /*
   **	Create object & open file.
   */
-  auto* file = new GameFile(fname);
-  file->Open(FileAccess::kWrite);
+  const auto file = OpenGameFile(fname, FileAccess::kWrite);
+  if (!file) {
+    return false;
+  }
 
   /*
   **	Loop through all cells.
@@ -1026,8 +1021,6 @@ bool MapClass::Write_Binary(const char* root) {
     **	Save TType.
     */
     if (!file->WriteObject(TheMap().at(i).TType)) {
-      file->Close();
-      delete file;
       return false;
     }
 
@@ -1035,17 +1028,9 @@ bool MapClass::Write_Binary(const char* root) {
     **	Save TIcon.
     */
     if (!file->WriteObject(TheMap().at(i).TIcon)) {
-      file->Close();
-      delete file;
       return false;
     }
   }
-
-  /*
-  **	Close the file.
-  */
-  file->Close();
-  delete file;
 
   return true;
 }

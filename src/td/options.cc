@@ -75,6 +75,7 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "port/bytes_of.h"
+#include "sdllib/file_access.h"
 #include "sdllib/misc.h"
 #include "sdllib/shape.h"
 #include "td/audio.h"
@@ -491,13 +492,12 @@ void OptionsClass::Load_Settings() {
   /*
   **	Create filename and read the file.
   */
-  GameFile file("CONQUER.INI");
-  if (!file.IsAvailable()) {
+  const auto file = OpenGameFile("CONQUER.INI");
+  if (!file) {
     return;
   }
-  file.Read(std::as_writable_bytes(ShapeBufferBytes)
-                .first(ShapeBufferBytes.size() - 1));
-  file.Close();
+  file->Read(std::as_writable_bytes(ShapeBufferBytes)
+                 .first(ShapeBufferBytes.size() - 1));
 
   /*
   **	Read in the Options values
@@ -649,8 +649,6 @@ void OptionsClass::Load_Settings() {
  * HISTORY: * 02/14/1995 BR : Created. *
  *=============================================================================================*/
 void OptionsClass::Save_Settings() const {
-  GameFile file;
-
   /*
   **	Get a working pointer to the INI staging buffer. Make sure that the
   *buffer *	starts cleared out of any data.
@@ -658,10 +656,9 @@ void OptionsClass::Save_Settings() const {
   char* buffer = ShapeBuffer;  // INI staging buffer pointer.
   std::ranges::fill(ShapeBufferBytes, 0);
 
-  file.SetName("CONQUER.INI");
-  if (file.IsAvailable()) {
-    file.Read(std::as_writable_bytes(ShapeBufferBytes)
-                  .first(ShapeBufferBytes.size() - 1));
+  if (const auto in = OpenGameFile("CONQUER.INI")) {
+    in->Read(std::as_writable_bytes(ShapeBufferBytes)
+                 .first(ShapeBufferBytes.size() - 1));
   }
 
   /*
@@ -697,8 +694,10 @@ void OptionsClass::Save_Settings() const {
   /*
   **	Write the INI data out to a file.
   */
-  file.Write(
-      std::as_bytes(ShapeBufferBytes).first(std::string_view(buffer).size()));
+  if (const auto out = OpenGameFile("CONQUER.INI", FileAccess::kWrite)) {
+    out->Write(
+        std::as_bytes(ShapeBufferBytes).first(std::string_view(buffer).size()));
+  }
 }
 
 /***********************************************************************************************

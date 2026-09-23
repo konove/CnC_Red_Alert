@@ -1438,3 +1438,27 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   753/753; RA smoke OK (240 positions, `--load-fixture` OK), TD smoke `SCG01EA --team` OK (5951 game
   states). Not checked: the menus' attract-mode playback (`kSelTimeout`), which needs the
   interactive menu.
+- 2026-09-23: Step 9, TD commit. Converted every remaining live `GameFile`/`DiskFile` object use in
+  `src/td/` (existence checks, one-shot reads, read-then-write pairs, explicit open/read/write
+  sequences, the heap `new GameFile` in `map.cc`) to the free functions and owned streams:
+  `ending.cc`, `ini.cc`, `mapsel.cc`, `mplayer.cc`, `internet.cc`, `expand.cc`, `goptions.cc`,
+  `sidebar.cc`, `stats.cc`, `theme.cc`, `scenario.cc`, `options.cc`, `display.cc`, `score.cc`,
+  `map.cc`, `mapeddlg.cc`, `audio.cc`, `init.cc`. `map.cc`'s `MapClass::Write_Binary` drops the heap
+  `GameFile` and its manual `Close`/`delete` on every early return for a stack
+  `OpenGameFile(fname, FileAccess::kWrite)`. `score.cc`'s hall-of-fame read/write/write against
+  HALLFAME.DAT becomes three independent scoped opens (the old object's explicit open/close already
+  kept them from overlapping). Left alone as dead: code under `#ifdef DEMO`/`JAPANESE`/`OBSOLETE`/
+  `ONHOLD` (`ending.cc`, `theme.cc`, `scenario.cc`, `msgbox.cc`, `init.cc`'s `Parse_INI_File` and
+  `Version_Number`'s `#ifdef OBSOLETE` half) and unbuilt `winstub.cc`; `NEWMENU` and
+  `config::kCheatKeysEnabled` code was converted since both compile. Also folded in: TD super-record
+  now `DLOG(WARNING)`s when `Flush()` fails in `Save_Recording_Values` (`init.cc`) and
+  `Do_Record_Playback` (`conquer.cc`), and the run-on comment over the record accessors in
+  `session.h` is now five short sentences. One shadow found only by the strict build: `ini.cc`'s new
+  `MISSION.INI` read reused the name `file`, already bound to the earlier `%s.INI` read in the same
+  function; renamed to `mission_file`. `build` and `build-strict` clean;
+  `ctest --test-dir build-strict` 753/753; TD smoke `SCG01EA --team` OK (5951 game states); headless
+  `-SPAWN` under `SDL_VIDEODRIVER=dummy` reaches `Restore_Cached_Icons` and exits 0. Not checked:
+  display-only screens the new code touches (score/hall-of-fame display, options/multiplayer
+  dialogs, the expansion-scenario NEWMENU dialog, mapeddlg's trigger/team-name dialogs) — left for
+  the user, no headless path exercises them. RA's half (`Extract()`, `sendfile.cc`, and the
+  remaining existence/ read/size-only sites) is a separate later task.

@@ -615,8 +615,10 @@ void Speak_AI() {
                               .replace_extension(".AUD")
                               .string();
 
-        if (GameFile(name).Read(std::span(speech_buffer), SPEECH_BUFFER_SIZE)) {
-          TheAudio().Play(speech_buffer, 254, TheOptions().Volume);
+        if (const auto file = OpenGameFile(name)) {
+          if (file->Read(std::span(speech_buffer), SPEECH_BUFFER_SIZE)) {
+            TheAudio().Play(speech_buffer, 254, TheOptions().Volume);
+          }
         }
         _last = speak_queue;
       } else {

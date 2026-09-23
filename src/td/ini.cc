@@ -69,6 +69,7 @@
 #include "port/bytes_of.h"
 #include "port/platform.h"
 #include "port/safe_string.h"
+#include "sdllib/file_access.h"
 #include "sdllib/shape.h"
 #include "td/base.h"
 #include "td/building.h"
@@ -217,7 +218,7 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
     for (i = SCEN_VAR_A; i < SCEN_VAR_COUNT; i++) {
       absl::SNPrintF(fname, sizeof(fname), "SC%c%02d%c%c.INI", c_player,
                      scenario, c_dir, 'A' + static_cast<int>(i));
-      if (!GameFile(fname).IsAvailable()) {
+      if (!GameFileExists(fname)) {
         break;
       }
     }
@@ -345,12 +346,12 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   */
 
   absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);
-  GameFile file(fname);
-  if (!file.IsAvailable()) {
+  const auto file = OpenGameFile(fname);
+  if (!file) {
     return false;
   }
-  file.Read(std::as_writable_bytes(ShapeBufferBytes)
-                .first(ShapeBufferBytes.size() - 1));
+  file->Read(std::as_writable_bytes(ShapeBufferBytes)
+                 .first(ShapeBufferBytes.size() - 1));
 
   /*
   ** Init the Scenario CRC value
@@ -576,9 +577,10 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
   */
   if (base::At(TheWorld().briefing_text(), 0) == '\0') {
     std::ranges::fill(ShapeBufferBytes, 0);
-    GameFile("MISSION.INI")
-        .Read(std::as_writable_bytes(ShapeBufferBytes)
-                  .first(ShapeBufferBytes.size() - 1));
+    if (const auto mission_file = OpenGameFile("MISSION.INI")) {
+      mission_file->Read(std::as_writable_bytes(ShapeBufferBytes)
+                              .first(ShapeBufferBytes.size() - 1));
+    }
 
     std::span<char> work(TheWorld().briefing_text());
     int player_index = 1;
@@ -704,7 +706,6 @@ void Write_Scenario_Ini(const char* root) {
   if constexpr (config::kCheatKeysEnabled) {
     char fname[port::kMaxFname + port::kMaxExt];  // full scenario name
     HousesType house = HOUSE_NONE;
-    GameFile file;
 
     /*
     **	Get a working pointer to the INI staging buffer. Make sure that the
@@ -739,12 +740,9 @@ void Write_Scenario_Ini(const char* root) {
     **	Create scenario filename and clear the buffer to empty.
     */
     absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);
-    file.SetName(fname);
-    if (file.IsAvailable()) {
-      //		file.Open(READ);
-      file.Read(std::as_writable_bytes(ShapeBufferBytes)
-                    .first(ShapeBufferBytes.size() - 1));
-      //		file.Close();
+    if (const auto in = OpenGameFile(fname)) {
+      in->Read(std::as_writable_bytes(ShapeBufferBytes)
+                   .first(ShapeBufferBytes.size() - 1));
     } else {
       absl::SNPrintF(buffer, base::ToSize(ShapeBufferSize),
                      "; Scenario %d control for house %s.\r\n",
@@ -793,10 +791,10 @@ void Write_Scenario_Ini(const char* root) {
     /*
     **	Write the scenario data out to a file.
     */
-    //	file.Open(WRITE);
-    file.Write(
-        std::as_bytes(ShapeBufferBytes).first(std::string_view(buffer).size()));
-    //	file.Close();
+    if (const auto out = OpenGameFile(fname, FileAccess::kWrite)) {
+      out->Write(std::as_bytes(ShapeBufferBytes)
+                     .first(std::string_view(buffer).size()));
+    }
 
     /*
     **	Now update the Master INI file, containing the master list of triggers &
@@ -804,12 +802,9 @@ void Write_Scenario_Ini(const char* root) {
     */
     std::ranges::fill(ShapeBufferBytes, 0);
 
-    file.SetName("MASTER.INI");
-    if (file.IsAvailable()) {
-      //		file.Open(READ);
-      file.Read(std::as_writable_bytes(ShapeBufferBytes)
-                    .first(ShapeBufferBytes.size() - 1));
-      //		file.Close();
+    if (const auto in = OpenGameFile("MASTER.INI")) {
+      in->Read(std::as_writable_bytes(ShapeBufferBytes)
+                   .first(ShapeBufferBytes.size() - 1));
     } else {
       absl::SNPrintF(buffer, base::ToSize(ShapeBufferSize),
                      "; Master Trigger & Team List.\r\n");
@@ -818,10 +813,10 @@ void Write_Scenario_Ini(const char* root) {
     TeamTypeClass::Write_INI(port::CharBytes(ShapeBufferBytes), false);
     TriggerClass::Write_INI(port::CharBytes(ShapeBufferBytes), false);
 
-    //	file.Open(WRITE);
-    file.Write(
-        std::as_bytes(ShapeBufferBytes).first(std::string_view(buffer).size()));
-    //	file.Close();
+    if (const auto out = OpenGameFile("MASTER.INI", FileAccess::kWrite)) {
+      out->Write(std::as_bytes(ShapeBufferBytes)
+                     .first(std::string_view(buffer).size()));
+    }
   }
 }
 

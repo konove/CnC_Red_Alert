@@ -156,11 +156,14 @@ class SessionClass {
   int& score_count() ABSL_ATTRIBUTE_LIFETIME_BOUND { return score_count_; }
   int& current_game() ABSL_ATTRIBUTE_LIFETIME_BOUND { return current_game_; }
 
-  // The recording of the game: the name of the file it is written to or
-  // read back from, that file while a game is recorded or played back
-  // (nullptr otherwise), whether either is happening, whether the recording
-  // is flushed to disk every frame so it survives a crash, and whether an idle
-  // menu may start a playback.
+  // The recording of the game.
+  //
+  // record_file_name is the name of the file recorded to or played back
+  // from. record_stream is that file while a recording or playback is in
+  // progress, and nullptr otherwise. record_game is true while recording;
+  // playback_game is true while playing a recording back. super_record
+  // flushes the recording to disk every frame, so it survives a crash.
+  // allow_attract lets an idle menu start a playback.
   [[nodiscard]] const std::string& record_file_name() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return record_file_name_;

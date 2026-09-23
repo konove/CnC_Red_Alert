@@ -452,7 +452,7 @@ void GameOptionsClass::Process() {
             char buffer[25];
             absl::SNPrintF(buffer, sizeof(buffer), "%s.VQA",
                            TheWorld().brief_movie());
-            if (GameFile(buffer).IsAvailable()) {
+            if (GameFileExists(buffer)) {
               Play_Movie(TheWorld().brief_movie());
             } else {
               Play_Movie(TheWorld().action_movie());

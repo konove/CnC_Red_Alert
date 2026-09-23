@@ -3231,7 +3231,6 @@ int MapEditClass::Import_Triggers() {
   bool cancel = false;
   static const int tabs[] = {70, 220, 370, 420};  // list box tab stops
   DynamicVectorClass<char*> trignames;      // list of INI trigger names
-  GameFile file;                            // file for reading the INI file
   char buf[128];                            // for reading an INI entry
   constexpr int kItemSize = 60;
   char item[kItemSize];  // for adding to list box
@@ -3265,15 +3264,12 @@ int MapEditClass::Import_Triggers() {
   ........................................................................*/
   std::vector<char> profile_storage(30000);
   char* inibuf = profile_storage.data();  // working INI buffer
-  file.SetName("MASTER.INI");
-  if (!file.IsAvailable()) {
-    file.Close();
-
+  const auto file = OpenGameFile("MASTER.INI");
+  if (!file) {
     return (-1);
   }
-  file.Read(std::as_writable_bytes(std::span(profile_storage))
-                .first(profile_storage.size() - 1));
-  file.Close();
+  file->Read(std::as_writable_bytes(std::span(profile_storage))
+                 .first(profile_storage.size() - 1));
 
   /*........................................................................
   Read all entry names in the Triggers section into a temp buffer
@@ -3558,7 +3554,6 @@ int MapEditClass::Import_Teams() {
   bool cancel = false;
   static const int tabs[] = {120, 180};  // list box tab stops
   DynamicVectorClass<char*> teamnames;  // list of INI team names
-  GameFile file;                        // file for reading the INI file
   char buf[128];                        // for reading an INI entry
   constexpr int kItemSize = 60;
   char item[kItemSize];  // for adding to list box
@@ -3593,16 +3588,12 @@ int MapEditClass::Import_Teams() {
   ........................................................................*/
   std::vector<char> profile_storage(30000);
   char* inibuf = profile_storage.data();  // working INI buffer
-  file.SetName("MASTER.INI");
-  if (!file.IsAvailable()) {
-    file.Close();
-
+  const auto file = OpenGameFile("MASTER.INI");
+  if (!file) {
     return (-1);
   }
-  file.Read(std::as_writable_bytes(std::span(profile_storage))
-                .first(profile_storage.size() - 1));
-
-  file.Close();
+  file->Read(std::as_writable_bytes(std::span(profile_storage))
+                 .first(profile_storage.size() - 1));
   /*........................................................................
   Read all entry names in the TeamTypes section into a temp buffer
   ........................................................................*/

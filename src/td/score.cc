@@ -652,7 +652,6 @@ void ScoreClass::Show() {
   int max = 0;
   std::span<const std::byte> yellowptr = {};
   std::span<const std::byte> redptr = {};
-  GameFile file("HALLFAME.DAT");
   struct Fame hallfame[NUMFAMENAMES];
   const int oldfontxspacing = FontXSpacing;
   const HousesType player_house = ThePlayer()->Class->House;
@@ -950,24 +949,22 @@ void ScoreClass::Show() {
   ** First check for the existence of the file, and if there isn't one,
   ** make a new one filled with blanks.
   */
-  if (!file.IsAvailable()) {
+  if (!GameFileExists("HALLFAME.DAT")) {
     // hall of fame doesn't exist, so blank it out & write it
-    file.Open(FileAccess::kWrite);
-
-    for (i = 0; i < NUMFAMENAMES; i++) {
-      base::At(base::At(hallfame, i).name, 0) = static_cast<char>(
-          base::At(hallfame, i).score = base::At(hallfame, i).level = 0);
-      file.WriteObject(base::At(hallfame, i));
+    if (const auto out = OpenGameFile("HALLFAME.DAT", FileAccess::kWrite)) {
+      for (i = 0; i < NUMFAMENAMES; i++) {
+        base::At(base::At(hallfame, i).name, 0) = static_cast<char>(
+            base::At(hallfame, i).score = base::At(hallfame, i).level = 0);
+        out->WriteObject(base::At(hallfame, i));
+      }
     }
-
-    file.Close();
   }
 
-  file.Open(FileAccess::kRead);
-  for (i = 0; i < NUMFAMENAMES; i++) {
-    file.ReadObject(base::At(hallfame, i));
+  if (const auto in = OpenGameFile("HALLFAME.DAT")) {
+    for (i = 0; i < NUMFAMENAMES; i++) {
+      in->ReadObject(base::At(hallfame, i));
+    }
   }
-  file.Close();
 
   /*
   ** If the player's score is good enough to bump someone off the list,
@@ -1037,11 +1034,11 @@ void ScoreClass::Show() {
     Input_Name(show, base::At(hallfame, index).name, HALLFAME_X,
                HALLFAME_Y + (index * 8), bluepal);
 
-    file.Open(FileAccess::kWrite);
-    for (i = 0; i < NUMFAMENAMES; i++) {
-      file.WriteObject(base::At(hallfame, i));
+    if (const auto out = OpenGameFile("HALLFAME.DAT", FileAccess::kWrite)) {
+      for (i = 0; i < NUMFAMENAMES; i++) {
+        out->WriteObject(base::At(hallfame, i));
+      }
     }
-    file.Close();
   } else {
 #ifdef FRENCH
     Alloc_Object(

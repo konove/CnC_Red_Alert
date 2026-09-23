@@ -105,7 +105,7 @@ void GDI_Ending() {
   }
 
   CountDownTimerClass count;
-  if (GameFile("TRAILER.VQA").IsAvailable()) {
+  if (GameFileExists("TRAILER.VQA")) {
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                     Call_Back);
     if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
@@ -197,10 +197,14 @@ void Nod_Ending() {
   TheScreen().sys_mem_page().view().BlitTo(show.page().view());
 #endif  // NOT_FOR_WIN95
   // Read from the file: MixArchive::RetrieveData() only serves cached archives.
-  GameFile kanefinl_file("KANEFINL.AUD");
-  const auto kanefinl = kanefinl_file.ReadBytes(kanefinl_file.Size());
-  GameFile loopie6m_file("LOOPIE6M.AUD");
-  const auto loopie6m = loopie6m_file.ReadBytes(loopie6m_file.Size());
+  const auto kanefinl_file = OpenGameFile("KANEFINL.AUD");
+  const std::vector<std::byte> kanefinl =
+      kanefinl_file ? kanefinl_file->ReadBytes(kanefinl_file->Size())
+                    : std::vector<std::byte>{};
+  const auto loopie6m_file = OpenGameFile("LOOPIE6M.AUD");
+  const std::vector<std::byte> loopie6m =
+      loopie6m_file ? loopie6m_file->ReadBytes(loopie6m_file->Size())
+                    : std::vector<std::byte>{};
 
   Play_Movie("NODFINAL", THEME_NONE, false);
 
@@ -293,7 +297,7 @@ void Nod_Ending() {
   Play_Movie(fname);
 
   CountDownTimerClass count;
-  if (GameFile("TRAILER.VQA").IsAvailable()) {
+  if (GameFileExists("TRAILER.VQA")) {
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                     Call_Back);
     if (const auto file = OpenGameFile("ATTRACT2.CPS")) {

@@ -1159,7 +1159,9 @@ void Map_Selection() {
     ** Now clear the palette of all but the country's colors, and fade
     ** the palette down
     */
-    GameFile("DARK_E.PAL").Read(localpalette, 768);
+    if (const auto file = OpenGameFile("DARK_E.PAL")) {
+      file->Read(localpalette, 768);
+    }
     //		Load_Data("DARK_E.PAL", localpalette, 768);
     Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);
     Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
@@ -1171,8 +1173,10 @@ void Map_Selection() {
     Print_Statistics(show, color % 128, base::At(_countryx, xshuffled_rows),
                      base::At(_countryy, xshuffled_rows));
   } else {
-    GameFile(house == HOUSE_GOOD ? "DARK_B.PAL" : "DARK_SA.PAL")
-        .Read(localpalette, 768);
+    if (const auto file =
+            OpenGameFile(house == HOUSE_GOOD ? "DARK_B.PAL" : "DARK_SA.PAL")) {
+      file->Read(localpalette, 768);
+    }
     Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);
     Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
                          "MAP_LOC3.PAL");
