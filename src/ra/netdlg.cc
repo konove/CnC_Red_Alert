@@ -5731,6 +5731,8 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
 
   RemapControlType* scheme = GadgetClass::Get_Color_Scheme();
   PixelView& view = TheScreen().visible_view();
+  // Every line of the dialog prints in this.
+  const FontStyle font = TextFontStyle(TPF_CENTER | kTpfText);
 
   /*
   ** If we have just received input focus again after running in the
@@ -5774,7 +5776,7 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
                         timeval + 1);
     const char* buf3 = Text_String(TXT_PRESS_ESC);
 
-    w = std::max(StringPixelWidth(buf1), StringPixelWidth(buf2));
+    w = std::max(StringPixelWidth(font, buf1), StringPixelWidth(font, buf2));
 
     //	A tournament game forfeits if you cancel, so the box says so and has
     //	to be wide enough for the longer line.
@@ -5786,11 +5788,11 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
         TheNetwork().wolapi() != nullptr &&
         TheNetwork().wolapi()->GameInfoCurrent.bTournament;
     if (bForfeitWarning) {
-      w = std::max(StringPixelWidth(szNewCancelMessage), w);
+      w = std::max(StringPixelWidth(font, szNewCancelMessage), w);
       //	* 2;		why was it ever multiplied by this!!!?
       w += d_margin * 12;
     } else {
-      w = std::max(StringPixelWidth(buf3), w) * 2;
+      w = std::max(StringPixelWidth(font, buf3), w) * 2;
       w += d_margin * 5;
     }
 
@@ -5822,9 +5824,9 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
     Format_Runtime_Text(buf2, sizeof(buf2), Text_String(TXT_TIME_ALLOWED),
                         timeval + 1);
 
-    const int fillx = 320 - (StringPixelWidth(buf2) / 2) - 6;
+    const int fillx = 320 - (StringPixelWidth(font, buf2) / 2) - 6;
     view.FillRect(fillx, y + (d_margin * 2) + d_txt6_h + d_margin,
-                  fillx + StringPixelWidth(buf2) + 12,
+                  fillx + StringPixelWidth(font, buf2) + 12,
                   y + (d_margin * 2) + d_txt6_h + d_margin + d_txt6_h + 2,
                   kBlack);
 

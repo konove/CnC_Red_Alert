@@ -106,7 +106,8 @@ bool Get_Broadcast_Addresses() {
   // Format_Window_String rewrites the buffer in place, so the title cannot
   // be a string literal.
   char title[] = "IP Addresses";
-  Format_Window_String(title, view.height(), width, height);
+  Format_Window_String(TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW), title,
+                       view.height(), width, height);
 
   GadgetClass* commands = nullptr;  // button list
   ColorListClass ip_address_list(kButtonIplist, d_ip_address_list_x,

@@ -334,7 +334,8 @@ int Test_Null_Modem() {
   port::SafeCopy(buffer, Text_String(TXT_WAITING_CONNECT));
   Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, TheScreen().visible_view().height(), width,
+  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
+  Format_Window_String(font, buffer, TheScreen().visible_view().height(), width,
                        height);
 
   width = std::max(width, 100);
@@ -346,8 +347,9 @@ int Test_Null_Modem() {
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
-      x + ((width - (StringPixelWidth(Text_String(TXT_CANCEL)) + 16)) / 2),
-      y + height - (g_font_max_height + g_font_y_spacing + 4) - 20);
+      x + ((width - (StringPixelWidth(font, Text_String(TXT_CANCEL)) + 16)) /
+           2),
+      y + height - (FontLineHeight(font) + 4) - 20);
 
   process = true;
 
@@ -646,7 +648,8 @@ static int Reconnect_Null_Modem() {
   port::SafeCopy(buffer, Text_String(TXT_NULL_CONNERR_CHECK_CABLES));
   Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack,
                    TPF_6PT_GRAD | TPF_NOSHADOW);
-  Format_Window_String(buffer, TheScreen().visible_view().height(), width,
+  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
+  Format_Window_String(font, buffer, TheScreen().visible_view().height(), width,
                        height);
 
   width = std::max(width, 100);
@@ -658,8 +661,9 @@ static int Reconnect_Null_Modem() {
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
-      x + ((width - (StringPixelWidth(Text_String(TXT_CANCEL)) + 16)) / 2),
-      y + height - (g_font_max_height + g_font_y_spacing + 4) - 20);
+      x + ((width - (StringPixelWidth(font, Text_String(TXT_CANCEL)) + 16)) /
+           2),
+      y + height - (FontLineHeight(font) + 4) - 20);
 
   process = true;
 

@@ -177,7 +177,9 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
   Fancy_Text_Print(view, TXT_NONE, 0, 0, GadgetClass::Get_Color_Scheme(),
                    kTBlack, TPF_6PT_GRAD | TPF_NOSHADOW);
   const int iSaveTextWidth =
-      StringPixelWidth(TXT_WOL_SAVELOGIN) + BIGCHECK_OFFSETX;
+      StringPixelWidth(TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW),
+                       TXT_WOL_SAVELOGIN) +
+      BIGCHECK_OFFSETX;
   BigCheckBoxClass SaveCheckBox(kButtonSavecheck, d_save_x, d_save_y,
                                 iSaveTextWidth, d_save_h, TXT_WOL_SAVELOGIN,
                                 TPF_6PT_GRAD | TPF_NOSHADOW, true);

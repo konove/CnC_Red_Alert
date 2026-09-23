@@ -80,6 +80,13 @@
 #include "sdllib/wwstd.h"
 #include "tech/fixed.h"
 
+namespace {
+
+// The flags every menu item prints with.
+constexpr TextPrintType kMenuTextFlags = TPF_8POINT | TPF_DROPSHADOW;
+
+}  // namespace
+
 /*****************************
 **	Function prototypes
 ******************************/
@@ -215,10 +222,11 @@ void Setup_Menu(PixelView& view, int menu, std::span<const char* const> text,
 
   Plain_Text_Print(view, 0, 0, 0, kTBlack, kTBlack,
                    TPF_8POINT | TPF_DROPSHADOW);
+  const int item_height = FontMaxHeight(TextFontStyle(kMenuTextFlags));
   Hide_Mouse();
   for (int lp = 0; lp < num; lp++) {
     const int idx = Select_To_Entry(lp, field, index);
-    const int drawy = menuy + (lp * g_font_max_height) + (lp * skip);
+    const int drawy = menuy + (lp * item_height) + (lp * skip);
     Plain_Text_Print(
         view, base::At(text, base::ToSize(idx)), menux, drawy,
         base::At(menuptr, idx == item && MenuUpdate ? kHilite : kNormcol),
@@ -248,8 +256,10 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
   int newitem = item =
       base::At(menuptr, kMselected) % (maxitem + 1); /* find selected */
   int select = -1;                            /* no selection made		*/
+  // The menu's items print in kMenuTextFlags; see Setup_Menu().
+  const FontStyle font = TextFontStyle(kMenuTextFlags);
   const int menuskip =
-      g_font_max_height + MenuSkip;           /* calc new font height	*/
+      FontMaxHeight(font) + MenuSkip;         /* calc new font height	*/
   const int halfskip = MenuSkip / 2;          /* adjustment for menus	*/
 
   const int menuy =
@@ -280,10 +290,10 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
   */
   /* get menu coords from the menu structure as necessary */
   const int mx1 =
-      static_cast<int>(WinX) + (base::At(menuptr, kMenux) * g_font_max_width);
+      static_cast<int>(WinX) + (base::At(menuptr, kMenux) * FontMaxWidth(font));
   const int my1 = static_cast<int>(WinY) + base::At(menuptr, kMenuy) -
                   halfskip; /*		from the menu		*/
-  const int mx2 = mx1 + (base::At(menuptr, kItemwidth) * g_font_max_width) -
+  const int mx2 = mx1 + (base::At(menuptr, kItemwidth) * FontMaxWidth(font)) -
                   1; /*		structure as		*/
   const int my2 = my1 + (base::At(menuptr, kItemshigh) * menuskip) -
                   1; /*		necessary			*/
@@ -440,9 +450,10 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   **	longest menu entry.
   */
   Plain_Text_Print(view, TXT_NONE, 0, 0, 0, 0, TPF_8POINT | TPF_DROPSHADOW);
+  const FontStyle font = TextFontStyle(kMenuTextFlags);
   int length = 0;  // The width of the menu (in pixels).
   for (const char* text : strings) {
-    length = std::max(length, StringPixelWidth(text));
+    length = std::max(length, StringPixelWidth(font, text));
   }
   length += 7;
   base::At(menu_list[0], kItemwidth) = length / 8;
@@ -456,10 +467,9 @@ int Do_Menu(std::span<const char* const> strings, bool /*unused*/) {
   base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowX) =
       (19 - (length / 16)) * 8;
   base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowY) =
-      174 - (base::At(menu_list[0], kItemshigh) *
-             (g_font_max_height + g_font_y_spacing));
+      174 - (base::At(menu_list[0], kItemshigh) * FontLineHeight(font));
   base::At(WindowList[static_cast<int>(WINDOW_MENU)], kWindowHeight) =
-      (base::At(menu_list[0], kItemshigh) * g_font_max_height) + 5 /*11*/;
+      (base::At(menu_list[0], kItemshigh) * FontMaxHeight(font)) + 5 /*11*/;
 
   /*
   **	Display the menu.

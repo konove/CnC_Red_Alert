@@ -136,6 +136,7 @@
 #include "ra/coord.h"
 #include "ra/debug_state.h"
 #include "ra/defines.h"
+#include "ra/dialog.h"
 #include "ra/display_constants.h"
 #include "ra/event.h"
 #include "ra/face.h"
@@ -532,7 +533,9 @@ std::span<const int16_t> DisplayClass::Text_Overlap_List(const char* text,
 
   if (text != nullptr) {
     std::span<int16_t> ptr(_list);
-    int len = StringPixelWidth(text) + CELL_PIXEL_W;
+    // The text is help text, which HelpClass prints in TPF_MAP | TPF_NOSHADOW.
+    int len = StringPixelWidth(TextFontStyle(TPF_MAP | TPF_NOSHADOW), text) +
+              CELL_PIXEL_W;
     const int right = TacPixelX + Lepton_To_Pixel(TacLeptonWidth);
 
     /*

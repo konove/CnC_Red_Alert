@@ -111,6 +111,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
 
   PixelView& view = TheScreen().visible_view();
   Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
+  const FontStyle font = TextFontStyle(kTpfText);
 
   /*
   **	Examine the optional button parameters. Fetch the width and starting
@@ -123,12 +124,12 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     /*
     **	Build the button list.
     */
-    bheight = g_font_max_height + g_font_y_spacing + 4;
-    bwidth = std::max(StringPixelWidth(b1txt) + 16, 30 * 2);
+    bheight = FontLineHeight(font) + 4;
+    bwidth = std::max(StringPixelWidth(font, b1txt) + 16, 30 * 2);
 
     if (b2txt != nullptr) {
       numbuttons = 2;
-      bwidth = std::max(StringPixelWidth(b2txt) + 16, bwidth);
+      bwidth = std::max(StringPixelWidth(font, b2txt) + 16, bwidth);
 
       if (b3txt != nullptr) {
         numbuttons = 3;
@@ -148,7 +149,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
   int width = 0;
   int height = 0;
-  const int lines = Format_Window_String(buffer, 510, width, height);
+  const int lines = Format_Window_String(font, buffer, 510, width, height);
   TextPrintType tpf = kTpfText;
 
   width = std::max(width, 180);

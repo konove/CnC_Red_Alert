@@ -297,7 +297,9 @@ void PWEditClass::Draw_Text(PixelView& view, const char* text) {
   base::FillBytes(base::ObjectBytes(buffer), '*',
                   std::min(std::string_view(text).size(), sizeof(buffer) - 1));
 
-  if (g_font.data() == TheAssets().font(FontType::k6PointGradient).data()) {
+  const FontStyle font = TextFontStyle(TextFlags);
+  if (font.font.data().data() ==
+      TheAssets().font(FontType::k6PointGradient).data()) {
     const TextPrintType flags =
         Has_Focus() ? TPF_BRIGHT_COLOR : static_cast<TextPrintType>(0);
 
@@ -306,7 +308,7 @@ void PWEditClass::Draw_Text(PixelView& view, const char* text) {
 
     if (Has_Focus() &&
         std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
-      Conquer_Clip_Text_Print(view, "_", X + 1 + StringPixelWidth(buffer),
+      Conquer_Clip_Text_Print(view, "_", X + 1 + StringPixelWidth(font, buffer),
                               Y + 1, Color, kTBlack, TextFlags | flags);
     }
   } else {
@@ -319,7 +321,7 @@ void PWEditClass::Draw_Text(PixelView& view, const char* text) {
     if (Has_Focus() &&
         std::cmp_less(std::string_view(buffer).size(), MaxLength)) {
       Conquer_Clip_Text_Print(
-          view, "_", X + 1 + StringPixelWidth(buffer), Y + 1,
+          view, "_", X + 1 + StringPixelWidth(font, buffer), Y + 1,
           &ThePalettes().color_remaps().at(PCOLOR_DIALOG_BLUE), kTBlack,
           TextFlags);
     }
@@ -366,10 +368,10 @@ const char* Fetch_Password(int caption, int message, int btext) {
   /*
   **	Build the button list.
   */
-  const int bheight =
-      g_font_max_height + g_font_y_spacing + 4;  // button width and height
+  const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
+  const int bheight = FontLineHeight(font) + 4;  // button width and height
   const int bwidth =
-      std::max(StringPixelWidth(Text_String(btext)) + 16, 30 * 2);
+      std::max(StringPixelWidth(font, Text_String(btext)) + 16, 30 * 2);
 
   /*
   **	Determine the dimensions of the text to be used for the dialog box.
@@ -380,7 +382,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   int width = 0;
   int height = 0;
-  Format_Window_String(buffer, 255, width, height);
+  Format_Window_String(font, buffer, 255, width, height);
 
   width = std::max(width, 100);
   width += 80;
@@ -520,7 +522,8 @@ int Fetch_Difficulty(bool amath) {
                    TPF_6PT_GRAD | TPF_NOSHADOW);
   int width = 0;
   int height = 0;
-  Format_Window_String(buffer, w - 120, width, height);
+  Format_Window_String(TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW), buffer,
+                       w - 120, width, height);
 
   /*
   **	Create the OK button.

@@ -279,7 +279,9 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
                    kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  Format_Window_String(std::span(info_string), view.height(), width, height);
+  Format_Window_String(TextFontStyle(TPF_CENTER | TPF_6PT_GRAD |
+                                     TPF_USE_GRAD_PAL | TPF_NOSHADOW),
+                       std::span(info_string), view.height(), width, height);
 
   /*
   ** Button Enumerations
@@ -561,7 +563,9 @@ bool Send_Remote_File(const char* file_name, int gametype) {
                    kTBlack,
                    TPF_CENTER | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-  Format_Window_String(std::span(info_string), view.height(), width, height);
+  Format_Window_String(TextFontStyle(TPF_CENTER | TPF_6PT_GRAD |
+                                     TPF_USE_GRAD_PAL | TPF_NOSHADOW),
+                       std::span(info_string), view.height(), width, height);
 
   /*
   ** Button Enumerations

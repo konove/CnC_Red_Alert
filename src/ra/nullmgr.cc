@@ -1035,7 +1035,8 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   PixelView& view = TheScreen().visible_view();
 
   Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
-  const int lines = Format_Window_String(buffer, view.height(), width, height);
+  const int lines = Format_Window_String(TextFontStyle(kTpfText), buffer,
+                                         view.height(), width, height);
 
   width = std::max(width, 180);
   width += 80;
@@ -1267,7 +1268,8 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   PixelView& view = TheScreen().visible_view();
 
   Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
-  Format_Window_String(std::span(buffer), view.height(), width, height);
+  const FontStyle font = TextFontStyle(kTpfText);
+  Format_Window_String(font, std::span(buffer), view.height(), width, height);
 
   const int text_width = width;
   width = std::max(width, 180);
@@ -1279,8 +1281,9 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
-      x + ((width - (StringPixelWidth(Text_String(TXT_CANCEL)) + 16)) / 2),
-      y + height - (g_font_max_height + g_font_y_spacing + 4) - 20);
+      x + ((width - (StringPixelWidth(font, Text_String(TXT_CANCEL)) + 16)) /
+           2),
+      y + height - (FontLineHeight(font) + 4) - 20);
 
   /*------------------------------------------------------------------------
   Create the list
@@ -1460,7 +1463,8 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   PixelView& view = TheScreen().visible_view();
 
   Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
-  Format_Window_String(text_buffer, view.height(), width, height);
+  const FontStyle font = TextFontStyle(kTpfText);
+  Format_Window_String(font, text_buffer, view.height(), width, height);
 
   int text_width = width;
   width = std::max(width, 180);
@@ -1472,8 +1476,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
   TextButtonClass cancelbtn(
       kButtonCancel, TXT_CANCEL, kTpfButton,
-      x + ((width - (StringPixelWidth(Text_String(TXT_CANCEL)) + 16)) / 2),
-      y + height - (g_font_max_height + g_font_y_spacing + 4) - 20);
+      x + ((width - (StringPixelWidth(font, Text_String(TXT_CANCEL)) + 16)) /
+           2),
+      y + height - (FontLineHeight(font) + 4) - 20);
 
   /*------------------------------------------------------------------------
   Initialize
@@ -1568,7 +1573,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         port::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
 
         Fancy_Text_Print(view, TXT_NONE, 0, 0, nullptr, kTBlack, kTpfText);
-        Format_Window_String(text_buffer, view.height(), width, height);
+        Format_Window_String(font, text_buffer, view.height(), width, height);
 
         text_width = width;
         width = std::max(width, 180);

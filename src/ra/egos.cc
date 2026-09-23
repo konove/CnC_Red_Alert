@@ -236,7 +236,7 @@ void EgoClass::Render(PixelView& view) const {
  * HISTORY: * 9/9/96 11:58PM ST : Created *
  *=============================================================================================*/
 void EgoClass::Wipe(PixelView& view, PixelBuffer* background) const {
-  const int width = StringPixelWidth(Text);
+  const int width = StringPixelWidth(TextFontStyle(Flags), Text);
   int x = XPos;
 
   if (base::Any(Flags & TPF_RIGHT)) {
