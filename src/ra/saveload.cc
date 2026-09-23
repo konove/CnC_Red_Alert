@@ -1077,8 +1077,9 @@ bool Load_Game(int id) {
   **	Rescan the scenario file for any rules updates.
   */
   CCINIClass ini;
-  GameFile fc(TheScenario().ScenarioName);
-  ini.Load(fc, true);
+  if (const auto fc = OpenGameFile(TheScenario().ScenarioName)) {
+    ini.Load(*fc, true);
+  }
 
   /*
   **	Reset the rules values to their initial settings.
@@ -1144,8 +1145,8 @@ bool Load_Game(int id) {
         }
       }
       CCINIClass mpini;
-      GameFile mplayer_ini("MPLAYER.INI");
-      if (mpini.Load(mplayer_ini, false)) {
+      if (const auto mplayer_ini = OpenGameFile("MPLAYER.INI");
+          mplayer_ini && mpini.Load(*mplayer_ini, false)) {
         TheRules().General(mpini);
         TheRules().Recharge(mpini);
         TheRules().AI(mpini);

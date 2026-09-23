@@ -160,12 +160,12 @@
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
 #include "tech/key_phrase_hash.h"
-#include "tech/memory_file.h"
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 #include "tech/random.h"
 #include "tech/rgb.h"
 #include "tech/search_paths.h"
+#include "tech/span_source.h"
 #include "winvq/vqa32/vqaplay.h"
 
 static RemapControlType SidebarScheme;
@@ -312,16 +312,17 @@ bool Init_Game() {
   /*
   **	Find and process any rules for this game.
   */
-  GameFile fc("RULES.INI");
-  if (TheRules().rule_ini().Load(fc, false)) {
+  if (const auto fc = OpenGameFile("RULES.INI");
+      fc && TheRules().rule_ini().Load(*fc, false)) {
     TheRules().Process(TheRules().rule_ini());
   }
   //  Aftermath runtime change 9/29/98
   //	This is safe to do, as only rules for aftermath units are included in
   // this ini.
   if (Is_Aftermath_Installed()) {
-    GameFile aftermath_ini("AFTRMATH.INI");
-    if (TheRules().aftermath_ini().Load(aftermath_ini, false)) {
+    if (const auto aftermath_ini = OpenGameFile("AFTRMATH.INI");
+        aftermath_ini &&
+        TheRules().aftermath_ini().Load(*aftermath_ini, false)) {
       TheRules().Process(TheRules().aftermath_ini());
     }
   }
@@ -1221,10 +1222,9 @@ static constexpr char kLogoPlayedSection[] = "Intro";
 static constexpr char kLogoPlayedEntry[] = "LogoPlayed";
 
 static bool LogoAlreadyPlayed() {
-  GameFile file(kConfigFileName);
   INIClass ini;
-  if (file.IsAvailable()) {
-    ini.Load(file);
+  if (const auto file = OpenGameFile(kConfigFileName)) {
+    ini.Load(*file);
   }
   return ini.Get_Bool(kLogoPlayedSection, kLogoPlayedEntry, false);
 }
@@ -1235,14 +1235,15 @@ static void MarkLogoPlayed() {
   if (bNoMovies) {
     return;
   }
-  GameFile file(kConfigFileName);
   INIClass ini;
   // Keep every other setting in the file.
-  if (file.IsAvailable()) {
-    ini.Load(file);
+  if (const auto file = OpenGameFile(kConfigFileName)) {
+    ini.Load(*file);
   }
   ini.Put_Bool(kLogoPlayedSection, kLogoPlayedEntry, true);
-  ini.Save(file);
+  if (const auto file = OpenGameFile(kConfigFileName, FileAccess::kWrite)) {
+    ini.Save(*file);
+  }
 }
 
 /***********************************************************************************************
@@ -2512,10 +2513,10 @@ static void Init_Bulk_Data() {
  * HISTORY: * 07/08/1996 JLB : Created. *
  *=============================================================================================*/
 static void Init_Keys() {
-  std::string keys = GetKeys();
-  MemoryFile file(std::as_writable_bytes(std::span(keys)));
+  const std::string keys = GetKeys();
+  SpanSource source(std::as_bytes(std::span(keys)));
   INIClass ini;
-  ini.Load(file);
+  ini.Load(source);
 
   TheAssets().set_mix_key(ini.Get_PKey(true));
 }

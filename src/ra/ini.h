@@ -50,8 +50,8 @@
 #include "ra/search.h"
 #include "tech/byte_sink.h"
 #include "tech/byte_source.h"
+#include "tech/byte_stream.h"
 #include "tech/crc.h"
-#include "tech/file.h"
 #include "tech/fixed.h"
 #include "tech/listnode.h"
 #include "tech/pk.h"
@@ -72,9 +72,9 @@ class INIClass {
   /*
   **	Fetch and store INI data.
   */
-  bool Load(File& file);
+  bool Load(ByteStream& file);
   bool Load(ByteSource& file);
-  bool Save(File& file) const;
+  bool Save(ByteStream& file) const;
   bool Save(ByteSink& pipe) const;
 
   /*

@@ -853,18 +853,18 @@ only user outside `game_file.*`) with `OpenGameFile`, then delete the static.
 `udpaddr.cc:136`; `init.cc:315`, `:323`, `:1224`, `:1238` (Load + Save), `:2521` (`MemoryFile` over
 the keys); `nulldlg.cc:4438`; `saveload.cc:1080`, `:1147`.
 
-- [ ] Change `INIClass::Load(File&)` → `Load(ByteStream&)` and `Save(File&) const` →
+- [x] Change `INIClass::Load(File&)` → `Load(ByteStream&)` and `Save(File&) const` →
       `Save(ByteStream&) const`, each wrapping a `StreamSource`/`StreamSink`; the same for
       `CCINIClass::Load(ByteStream&, bool)`/`Save(ByteStream&, bool)`.
-- [ ] Convert each caller with the Call-site patterns table. `ra/init.cc:2521` needs no stream:
+- [x] Convert each caller with the Call-site patterns table. `ra/init.cc:2521` needs no stream:
       `SpanSource source(std::as_bytes(std::span(keys))); ini.Load(source);` (the `ByteSource&`
       overload). Where the old code checked `IsAvailable()` and then `Size()` (`nulldlg.cc:4438`),
       open once and ask the stream.
-- [ ] Build both dirs: the compiler lists any caller still passing a `GameFile`/`DiskFile`.
-- [ ] Tests, both smoke scripts. Check on real data: RA starts with `REDALERT.INI` present and with
+- [x] Build both dirs: the compiler lists any caller still passing a `GameFile`/`DiskFile`.
+- [x] Tests, both smoke scripts. Check on real data: RA starts with `REDALERT.INI` present and with
       it deleted (it is recreated), options changed in the menu survive a restart, and the
       skirmish/multiplayer scenario list (`MISSIONS.PKT`, `*.PKT`, `*.MPR`) is populated.
-- [ ] Commit: `Load and save INI files through open streams`.
+- [x] Commit: `Load and save INI files through open streams`.
 
 ## Step 7: Loaders, writers and the audio mixer take ByteStream
 
@@ -1239,3 +1239,53 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   comment of `game_file_test.cc`, `disk_file_test.cc` and `stream_error_test.cc` naming the free
   functions/`StreamSource`/`StreamSink` they also exercise. Both `build` and `build-strict` build
   clean; `ctest --test-dir build-strict` is 752/752 passed (up from 747: the 5 new cases above).
+- 2026-09-23: Step 6 landed. `INIClass::Load(File&)`/`Save(File&) const` are now
+  `Load(ByteStream&)`/`Save(ByteStream&) const`, each wrapping a `StreamSource`/`StreamSink` exactly
+  as the `ByteSource`/`ByteSink` overloads already did; the same for
+  `CCINIClass::Load(ByteStream&, bool)`/`Save(ByteStream&, bool)`. Every caller the compiler found
+  (`assets.cc`, `init.cc` (6 sites: `RULES.INI`, `AFTRMATH.INI`, `LogoAlreadyPlayed`,
+  `MarkLogoPlayed`'s read and write, and `Init_Keys`'s in-memory keys), `nulldlg.cc`, `options.cc`
+  (`Load_Settings` and `Save_Settings`'s read and write), `saveload.cc` (2 sites — the scenario and
+  `MPLAYER.INI` `CCINIClass` loads only, per the brief; the rest of `saveload.cc` is Step 8's),
+  `scenario.cc` (5 sites), `session.cc` (8 sites), `startup.cc` (`Main`'s read and write),
+  `udpaddr.cc`) converted per the Call-site patterns table: a `GameFile` caller took `OpenGameFile`,
+  a `DiskFile` caller took `OpenDiskFile`, an ignored-result load kept ignoring a null/failed open,
+  a checked load became `!file || !ini.Load(*file)`, and `init.cc:2521`'s in-memory key load became
+  `SpanSource source(std::as_bytes(std::span(keys))); ini.Load(source);` (dropping `MemoryFile`
+  entirely). Five read-then-write sites needed the read stream's scope to end before the write
+  stream opened (`FileAccess::kWrite` truncates): `init.cc`'s `MarkLogoPlayed` (config file: read in
+  one `if`, `Put_Bool`, write in a second `OpenGameFile(..., kWrite)`), `options.cc`'s
+  `Save_Settings` (same shape over the config file), `session.cc`'s `Write_MultiPlayer_Settings`
+  (read result kept in a `bool loaded` so the whole write section can stay gated on it without
+  reusing the read stream), `scenario.cc`'s `Write_Scenario_INI` (reads via `OpenGameFile`, writes
+  via `OpenDiskFile` — already two different opens since the old code mixed `GameFile` read and
+  `DiskFile` write), and `startup.cc`'s `Main` (the explicit `DiskFile::Create()` probe became
+  `FindExistingFile(...).has_value() || OpenDiskFile(..., kWrite)` — the `f.Create()`-before-load-
+  and-save pattern from the table, since the write-mode open both creates the file and proves
+  writability). `nulldlg.cc`'s `Find_Local_Scenario` folded the old `IsAvailable()`-then-`Size()`
+  pair into one `OpenGameFile(...); file && std::cmp_equal(file->Size(), length)`. Added
+  `sdllib/file_access.h` and/or `tech/game_file.h`/`tech/span_source.h` directly to every file that
+  now names `FileAccess`/`OpenGameFile`/`SpanSource` (`misc-include-cleaner`); dropped
+  `tech/file.h`/`tech/file_sink.h`/`tech/file_source.h`/`tech/memory_file.h` from `ini.{h,cc}`,
+  `ccini.{h,cc}` and `init.cc` where nothing else in the file still needed them. Both `build` and
+  `build-strict` build clean; `ctest --test-dir build-strict` is still 752/752 passed (no test
+  needed converting — no test constructs an `INIClass`/`CCINIClass` over a `File`). Both smoke
+  scripts print OK (240 object positions, 5951 game states). Real-data checks: backed up
+  `build-strict/src/ra/REDALERT.INI`, deleted it, ran `rasdl -NOMOVIES -QUITFRAME5` headless
+  (`SDL_VIDEODRIVER=dummy`) against the Steam install, confirmed a fresh `[Intro]\nPlayIntro=no`
+  file was written (the `MarkLogoPlayed` read-then-write path, exercised through the
+  `FindExistingFile`-probe-then-`OpenDiskFile` creation path in `Main`), then restored the original
+  file and verified its checksum matches. Confirmed with `tools/mixdump` that `MISSIONS.PKT` (the
+  file `Read_Scenario_Descriptions` reads via the now-converted `OpenGameFile`) is real data in this
+  install — 795 bytes packed in `GENERAL.MIX`, 24 valid `[Missions]` entries — and that
+  `SessionClass::One_Time()` (which calls `Read_Scenario_Descriptions()`) runs unconditionally on
+  every headless boot, which the REDALERT.INI check and both smoke scripts already exercised without
+  error. Did not directly print `Scenarios.Count()` from a running game (would need either an
+  interactive skirmish-menu session or a new standalone harness reproducing RA's global bootstrap,
+  both out of scope for this check) — flagged as not directly verified, though the same
+  `OpenGameFile` mixfile-nested-read mechanics are already covered by Step 5's `GameFileTest` and
+  `INIClass`'s section-parsing is unchanged by this step. Also did not check that options changed in
+  the in-game menu survive a restart: `OptionsClass::Save_Settings` is called only from the
+  interactive options dialog (`gamedlg.cc`), which needs a real display per
+  [[running-ra-with-game-data]] (`SDL_VIDEODRIVER=dummy` never loads real palettes/accepts input);
+  `Load_Settings` runs on every boot and was exercised, `Save_Settings` was not.

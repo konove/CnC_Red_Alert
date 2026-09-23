@@ -60,8 +60,9 @@ void Assets::LoadStrings() {
 
 void Assets::LoadTutorialText() {
   INIClass ini;
-  GameFile file("TUTORIAL.INI");
-  ini.Load(file);
+  if (const auto file = OpenGameFile("TUTORIAL.INI")) {
+    ini.Load(*file);
+  }
 
   for (int index = 0; index < kTutorialTextCount; ++index) {
     char buffer[128];

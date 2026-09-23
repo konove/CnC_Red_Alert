@@ -96,6 +96,7 @@
 #include "ra/queue.h"
 #include "ra/unit.h"
 #include "ra/world.h"
+#include "sdllib/file_access.h"
 #include "sdllib/file_system.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
@@ -103,6 +104,7 @@
 #include "tech/byte_sink.h"
 #include "tech/byte_source.h"
 #include "tech/disk_file.h"
+#include "tech/game_file.h"
 #include "tech/number_parse.h"
 
 // #include "WolDebug.h"
@@ -496,8 +498,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
   //	Create filename and read the file.
   INIClass ini;
-  DiskFile fc(kConfigFileName);
-  if (ini.Load(fc)) {
+  if (const auto fc = OpenDiskFile(kConfigFileName); fc && ini.Load(*fc)) {
     //	Get the player's last-used Handle
     ini.Get_String("MultiPlayer", "Handle", "Noname", Handle, sizeof(Handle));
 
@@ -789,8 +790,11 @@ void SessionClass::Read_MultiPlayer_Settings() {
 void SessionClass::Write_MultiPlayer_Settings() {
 
   INIClass ini;
-  DiskFile file(kConfigFileName);
-  if (ini.Load(file)) {
+  bool loaded = false;
+  if (const auto file = OpenDiskFile(kConfigFileName)) {
+    loaded = ini.Load(*file);
+  }
+  if (loaded) {
     //	Save the player's last-used Handle & Color
     ini.Put_Int("MultiPlayer", "PhoneIndex", CurPhoneIdx);
     ini.Put_Int("MultiPlayer", "Color", static_cast<int>(PrefColor));
@@ -855,7 +859,9 @@ void SessionClass::Write_MultiPlayer_Settings() {
     }
 
     //	Write the INI data out to a file.
-    ini.Save(file);
+    if (const auto file = OpenDiskFile(kConfigFileName, FileAccess::kWrite)) {
+      ini.Save(*file);
+    }
   }
 }
 
@@ -903,10 +909,9 @@ void SessionClass::Read_Scenario_Descriptions() {
   /*
   **	Fetch the main multiplayer scenario packet data.
   */
-  GameFile file("MISSIONS.PKT");
-  if (file.IsAvailable()) {
+  if (const auto file = OpenGameFile("MISSIONS.PKT")) {
     INIClass ini;
-    ini.Load(file);
+    ini.Load(*file);
     const int count = ini.Entry_Count("Missions");
     // debugprint( "Found %i missions in Missions.pkt\n", count );
     for (int index = 0; index < count; index++) {
@@ -933,9 +938,10 @@ void SessionClass::Read_Scenario_Descriptions() {
     // debugprint("Found file '%s'.\n", block.cAlternateFileName);
     // debugprint("Found file '%s'.\n", block.cFileName);
     // debugprint( "Found alternate PKT file.\n" );
-    GameFile mission_file(found.name);
     INIClass ini;
-    ini.Load(mission_file);
+    if (const auto mission_file = OpenGameFile(found.name)) {
+      ini.Load(*mission_file);
+    }
 
     const int count = ini.Entry_Count("Missions");
     for (int index = 0; index < count; index++) {
@@ -957,10 +963,9 @@ void SessionClass::Read_Scenario_Descriptions() {
   ** of problems without obviously giving the maps away to non-CS owners.
   */
   if (Is_Counterstrike_Installed()) {
-    GameFile file2("CSTRIKE.PKT");
-    if (file2.IsAvailable()) {
+    if (const auto file2 = OpenGameFile("CSTRIKE.PKT")) {
       INIClass ini;
-      ini.Load(file2);
+      ini.Load(*file2);
       const int count = ini.Entry_Count("Missions");
       // debugprint( "Found %i missions in cstrike.pkt\n", count );
       for (int index = 0; index < count; index++) {
@@ -984,10 +989,9 @@ void SessionClass::Read_Scenario_Descriptions() {
 
   // Aftermath scenarios are now in their own pkt file.
   if (Is_Aftermath_Installed()) {
-    GameFile file2("AFTMATH.PKT");
-    if (file2.IsAvailable()) {
+    if (const auto file2 = OpenGameFile("AFTMATH.PKT")) {
       INIClass ini;
-      ini.Load(file2);
+      ini.Load(*file2);
       const int count = ini.Entry_Count("Missions");
       // debugprint( "Found %i missions in aftmath.pkt\n", count );
       for (int index = 0; index < count; index++) {
@@ -1010,9 +1014,10 @@ void SessionClass::Read_Scenario_Descriptions() {
 
   for (const FoundFile& found : FindFiles("*.MPR")) {
     // debugprint( "Found MPR '%s'\n", file_name );
-    GameFile mission_file(found.name);
     INIClass ini;
-    ini.Load(mission_file);
+    if (const auto mission_file = OpenGameFile(found.name)) {
+      ini.Load(*mission_file);
+    }
 
     ini.Get_String("Basic", "Name", "No Name", name_buffer,
                    sizeof(name_buffer));

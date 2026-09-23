@@ -4435,16 +4435,13 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
     if (std::string_view(TheSession().Scenarios.at(index)->Description()) ==
         description) {
       // debugprint("found matching description.\n");
-      GameFile file(TheSession().Scenarios.at(index)->Get_Filename());
-
       /*
-      ** Possible rejection on the basis of availability.
+      ** Possible rejection on the basis of availability and size; opening the
+      ** file once answers both.
       */
-      // debugprint("file is available.\n");
-      /*
-      ** Possible rejection on the basis of size.
-      */
-      if (file.IsAvailable() && std::cmp_equal(file.Size(), length)) {
+      if (const auto file =
+              OpenGameFile(TheSession().Scenarios.at(index)->Get_Filename());
+          file && std::cmp_equal(file->Size(), length)) {
         // debugprint("length matches.\n");
         /*
         ** We don't know the digest for 'official' scenarios so assume its
@@ -4456,7 +4453,7 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
           ** Possible rejection on the basis of digest
           */
           INIClass ini;
-          ini.Load(file);
+          ini.Load(*file);
           ini.Get_String("Digest", "1", "No digest here mate. Nope.",
                          digest_buffer, sizeof(digest_buffer));
         }

@@ -92,10 +92,8 @@
 #include "tech/base64_source.h"
 #include "tech/byte_sink.h"
 #include "tech/byte_source.h"
+#include "tech/byte_stream.h"
 #include "tech/crc.h"
-#include "tech/file.h"
-#include "tech/file_sink.h"
-#include "tech/file_source.h"
 #include "tech/fixed.h"
 #include "tech/int.h"
 #include "tech/number_parse.h"
@@ -103,6 +101,8 @@
 #include "tech/readline.h"
 #include "tech/span_sink.h"
 #include "tech/span_source.h"
+#include "tech/stream_sink.h"
+#include "tech/stream_source.h"
 
 /***********************************************************************************************
  * INIClass::~INIClass -- Destructor for INI handler. *
@@ -188,8 +188,8 @@ bool INIClass::Clear(const char* section, const char* entry) {
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-bool INIClass::Load(File& file) {
-  FileSource fs(file);
+bool INIClass::Load(ByteStream& file) {
+  StreamSource fs(file);
   return Load(fs);
 }
 
@@ -327,8 +327,8 @@ bool INIClass::Load(ByteSource& file) {
  *                                                                                             *
  * HISTORY: * 07/02/1996 JLB : Created. *
  *=============================================================================================*/
-bool INIClass::Save(File& file) const {
-  FileSink fp(file);
+bool INIClass::Save(ByteStream& file) const {
+  StreamSink fp(file);
   return Save(fp);
 }
 

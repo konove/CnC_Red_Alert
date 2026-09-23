@@ -77,6 +77,7 @@
 #include "ra/palettes.h"
 #include "ra/session.h"
 #include "ra/theme.h"
+#include "sdllib/file_access.h"
 #include "sdllib/keyboard.h"
 #include "tech/audio_mixer.h"
 #include "tech/fixed.h"
@@ -466,9 +467,10 @@ void OptionsClass::Load_Settings() {
   /*
   **	Create filename and read the file.
   */
-  GameFile file(kConfigFileName);
   INIClass ini;
-  ini.Load(file);
+  if (const auto file = OpenGameFile(kConfigFileName)) {
+    ini.Load(*file);
+  }
 
   /*
   **	Read in the Options values
@@ -656,7 +658,6 @@ void OptionsClass::Load_Settings() {
  *hotkeys.                                                         *
  *=============================================================================================*/
 void OptionsClass::Save_Settings() const {
-  GameFile file(kConfigFileName);
   INIClass ini;
 
   /*
@@ -664,8 +665,8 @@ void OptionsClass::Save_Settings() const {
   *be *	explicitly written out by this routine. By preloading the database,
   *these entries *	will be carried over.
   */
-  if (file.IsAvailable()) {
-    ini.Load(file);
+  if (const auto file = OpenGameFile(kConfigFileName)) {
+    ini.Load(*file);
   }
 
   /*
@@ -741,7 +742,9 @@ void OptionsClass::Save_Settings() const {
   /*
   **	Write the INI data out to a file.
   */
-  ini.Save(file);
+  if (const auto file = OpenGameFile(kConfigFileName, FileAccess::kWrite)) {
+    ini.Save(*file);
+  }
 }
 
 /***********************************************************************************************

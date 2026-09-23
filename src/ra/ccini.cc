@@ -124,13 +124,13 @@
 #include "ra/weapon.h"
 #include "tech/byte_sink.h"
 #include "tech/byte_source.h"
+#include "tech/byte_stream.h"
 #include "tech/crc.h"
-#include "tech/file.h"
-#include "tech/file_sink.h"
-#include "tech/file_source.h"
 #include "tech/fixed.h"
 #include "tech/sha.h"
 #include "tech/sha1_sink.h"
+#include "tech/stream_sink.h"
+#include "tech/stream_source.h"
 /***********************************************************************************************
  * CCINIClass::Load -- Load the INI database from the file specified. *
  *                                                                                             *
@@ -155,8 +155,8 @@
  * HISTORY: * 07/03/1996 JLB : Created. * 08/21/1996 JLB : Handles digest
  *control.                                                  *
  *=============================================================================================*/
-bool CCINIClass::Load(File& file, bool withdigest) {
-  FileSource fs(file);
+bool CCINIClass::Load(ByteStream& file, bool withdigest) {
+  StreamSource fs(file);
   return Load(fs, withdigest);
 }
 
@@ -229,8 +229,8 @@ bool CCINIClass::Load(ByteSource& file, bool withdigest) {
  * HISTORY: * 07/03/1996 JLB : Created. * 08/21/1996 JLB : Handles message
  *digest control.                                          *
  *=============================================================================================*/
-bool CCINIClass::Save(File& file, bool withdigest) {
-  FileSink fp(file);
+bool CCINIClass::Save(ByteStream& file, bool withdigest) {
+  StreamSink fp(file);
   return Save(fp, withdigest);
 }
 

@@ -133,8 +133,7 @@ bool Get_Broadcast_Addresses() {
   CCINIClass ip_ini;
   int res = 0;
 
-  GameFile fc("IP.INI");
-  if (ip_ini.Load(fc, false)) {
+  if (const auto fc = OpenGameFile("IP.INI"); fc && ip_ini.Load(*fc, false)) {
     int entry = 0;
     char entry_name[16];
     do {

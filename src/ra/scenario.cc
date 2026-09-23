@@ -159,6 +159,7 @@
 #include "ra/weapon.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"
+#include "sdllib/file_access.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
@@ -488,8 +489,8 @@ bool Read_Scenario(char* name) {
         }
       }
       CCINIClass ini;
-      GameFile fc("MPLAYER.INI");
-      if (ini.Load(fc, false)) {
+      if (const auto fc = OpenGameFile("MPLAYER.INI");
+          fc && ini.Load(*fc, false)) {
         TheRules().General(ini);
         TheRules().Recharge(ini);
         TheRules().AI(ini);
@@ -1986,10 +1987,10 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   */
   //	absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);
   CCINIClass ini;
-  GameFile file(fname);
   //	file.Cache();
 
-  if (!ini.Load(file, true)) {
+  const auto file = OpenGameFile(fname);
+  if (!file || !ini.Load(*file, true)) {
     return false;
   }
 
@@ -2219,8 +2220,9 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
   **	the mission.ini file.  VG 10/17/96
   */
   INIClass mini;
-  GameFile fc("MISSION.INI");
-  mini.Load(fc);
+  if (const auto fc = OpenGameFile("MISSION.INI")) {
+    mini.Load(*fc);
+  }
   mini.Get_TextBlock(fname, TheScenario().BriefingText,
                      sizeof(TheScenario().BriefingText));
 
@@ -2314,8 +2316,6 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
  *=============================================================================================*/
 void Write_Scenario_INI(const char* fname) {
   if constexpr (config::kCheatKeysEnabled) {
-    GameFile file(fname);
-
     CCINIClass ini;
 
     /*
@@ -2324,8 +2324,8 @@ void Write_Scenario_INI(const char* fname) {
     **	out. Preloading the scenario will preserve these manually
     **	maintained entries.
     */
-    if (file.IsAvailable()) {
-      ini.Load(file, true);
+    if (const auto file = OpenGameFile(fname)) {
+      ini.Load(*file, true);
     }
 
     static const char* const BASIC = "Basic";
@@ -2372,8 +2372,9 @@ void Write_Scenario_INI(const char* fname) {
       ini.Put_TextBlock("Briefing", TheScenario().BriefingText);
     }
     //	absl::SNPrintF(fname, sizeof(fname), "%s.INI", root);
-    DiskFile rawfile(fname);
-    ini.Save(rawfile, true);
+    if (const auto rawfile = OpenDiskFile(fname, FileAccess::kWrite)) {
+      ini.Save(*rawfile, true);
+    }
   }
 }
 

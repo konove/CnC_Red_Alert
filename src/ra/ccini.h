@@ -46,7 +46,7 @@
 #include "ra/ini.h"
 #include "tech/byte_sink.h"
 #include "tech/byte_source.h"
-#include "tech/file.h"
+#include "tech/byte_stream.h"
 #include "tech/sha.h"
 
 class TriggerTypeClass;
@@ -60,11 +60,11 @@ class CCINIClass : public INIClass {
  public:
   CCINIClass() = default;
 
-  bool Load(File& file, bool withdigest);
+  bool Load(ByteStream& file, bool withdigest);
   bool Load(ByteSource& file, bool withdigest);
   // Saving with a digest temporarily stores the digest as an INI section, so
   // these overloads change the database while they run.
-  bool Save(File& file, bool withdigest);
+  bool Save(ByteStream& file, bool withdigest);
   bool Save(ByteSink& pipe, bool withdigest);
 
   uint64_t Get_Buildings(const char* section, const char* entry,

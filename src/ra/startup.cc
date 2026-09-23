@@ -82,6 +82,7 @@
 #include "ra/startup_options.h"
 #include "ra/winstub.h"
 #include "ra/world.h"
+#include "sdllib/file_access.h"
 #include "sdllib/file_system.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
@@ -327,8 +328,6 @@ int main(const int argc, char* argv[])
   ApplyStartupOptions(*options);
 
   InitTickTimer();
-  DiskFile config_file(kConfigFileName);
-
 
   // Refuse to start without 8 MB free for save games and the config file.
   if (FreeDiskSpace() < kInitFreeDiskSpace) {
@@ -340,12 +339,11 @@ int main(const int argc, char* argv[])
   }
 
   // The original installer wrote the config file. Without one, start from
-  // an empty file: every option has a default.
-  if (!config_file.IsAvailable()) {
-    config_file.Create();
-  }
-
-  if (!config_file.IsAvailable()) {
+  // an empty file: every option has a default. Probe writability now, before
+  // there is a window to report failure from; the write open below creates
+  // the file.
+  if (!FindExistingFile(kConfigFileName).has_value() &&
+      !OpenDiskFile(kConfigFileName, FileAccess::kWrite)) {
     // The config file could neither be opened nor created. There is no
     // window yet to read a key from, so report and leave.
     absl::PrintF("%s\n", kLanguageText.setup_first);
@@ -354,7 +352,9 @@ int main(const int argc, char* argv[])
   }
 
   INIClass ini;
-  ini.Load(config_file);
+  if (const auto config_file = OpenDiskFile(kConfigFileName)) {
+    ini.Load(*config_file);
+  }
 
   // Sets the mode height, so it has to come before the window is opened.
   ReadConfigOptions(ini, *options);
@@ -404,7 +404,10 @@ int main(const int argc, char* argv[])
   if (TheSpecial().IsFromInstall) {
     TheGameState().breakout_allowed() = true;
     ini.Put_Bool("Intro", "PlayIntro", false);
-    ini.Save(config_file);
+    if (const auto config_file =
+            OpenDiskFile(kConfigFileName, FileAccess::kWrite)) {
+      ini.Save(*config_file);
+    }
   }
 
   // While the game runs an out-of-memory exit still has everything to
