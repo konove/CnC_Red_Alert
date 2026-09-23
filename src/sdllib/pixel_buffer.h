@@ -46,7 +46,6 @@
 #include "base/array.h"
 #include "base/attributes.h"
 #include "base/flags.h"
-#include "base/types.h"
 #include "sdllib/bitmap.h"
 #include "sdllib/ww_win.h"
 
@@ -135,7 +134,7 @@ class PixelView {
   // How deep the buffer's nested locks are; 0 when the view has no buffer.
   [[nodiscard]] int lock_count() const;
   // Whether drawing to this view has to lock a surface first.
-  bool NeedsLock();
+  [[nodiscard]] bool NeedsLock() const;
 
   // The drawing primitives. Each comes as a pair: the plain name locks the
   // buffer, does the work and unlocks it, while the `…Locked` name does only
@@ -220,7 +219,7 @@ class PixelView {
   // view.
   void Remap(int x1, int y1, int width, int height,
              std::span<const uint8_t> remap_table);
-  void Remap(std::span<const uint8_t> remap_table) {
+  void Remap(const std::span<const uint8_t> remap_table) {
     Remap(0, 0, width_, height_, remap_table);
   }
   void RemapLocked(int x1, int y1, int width, int height,
@@ -411,10 +410,10 @@ class PixelBuffer {
 
 // Inline rather than in the .cc because the window unit differs between the
 // two games, and sdllib is compiled once, without TD defined.
-inline void PixelView::DrawStamp(std::span<const std::byte> icon_data, int icon,
-                                 int x, int y,
+inline void PixelView::DrawStamp(const std::span<const std::byte> icon_data,
+                                 const int icon, const int x, const int y,
                                  const std::span<const uint8_t> remap_table,
-                                 int clip_window) {
+                                 const int clip_window) {
   // Tiberian Dawn stores a window's x and width in units of eight pixels;
   // Red Alert stores them in pixels.
 #ifdef TD

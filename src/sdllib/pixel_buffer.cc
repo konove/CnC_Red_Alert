@@ -122,6 +122,8 @@ bool PixelView::Lock() {
   return true;
 }
 
+// Not const although it writes no member: releasing the buffer's lock is
+// the whole point, and it ends this view's access to the pixels.
 void PixelView::Unlock() {
   if (buffer_ != nullptr) {
     buffer_->UnlockSurface();
@@ -132,7 +134,7 @@ int PixelView::lock_count() const {
   return buffer_ == nullptr ? 0 : buffer_->lock_count();
 }
 
-bool PixelView::NeedsLock() {
+bool PixelView::NeedsLock() const {
   // Named for the DirectDraw surfaces this used to mean; callers read it as
   // "do the pixels have to be locked before they can be touched", which is
   // true of exactly the window's surface.
