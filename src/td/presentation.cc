@@ -28,14 +28,18 @@ void Presentation::AddTextRect(int x, int y, int dest_x, int dest_y, int width,
 void Presentation::ClearTextRects() { text_rect_count_ = 0; }
 
 void Presentation::DrawTextRects() {
+  PixelView& source = text_page_.view();
   PixelView& dest = TheScreen().hidden_view();
-  if (!dest.Lock()) {
-    return;
+  if (source.Lock()) {
+    if (dest.Lock()) {
+      for (int i = 0; i < text_rect_count_; i++) {
+        const auto& [source_x, source_y, dest_x, dest_y, width, height] =
+            base::At(std::span(text_rects_), i);
+        source.BlitToLocked(dest, source_x, source_y, dest_x, dest_y, width,
+                            height, true);
+      }
+      dest.Unlock();
+    }
+    source.Unlock();
   }
-  for (int i = 0; i < text_rect_count_; i++) {
-    const TextRect& rect = base::At(std::span(text_rects_), i);
-    text_page_.view().BlitTo(dest, rect.source_x, rect.source_y, rect.dest_x,
-                             rect.dest_y, rect.width, rect.height, true);
-  }
-  dest.Unlock();
 }
