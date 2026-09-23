@@ -122,8 +122,10 @@ bool PixelView::Lock() {
   return true;
 }
 
-bool PixelView::Unlock() {
-  return buffer_ == nullptr || buffer_->UnlockSurface();
+void PixelView::Unlock() {
+  if (buffer_ != nullptr) {
+    buffer_->UnlockSurface();
+  }
 }
 
 int PixelView::lock_count() const {
@@ -1188,9 +1190,9 @@ bool PixelBuffer::LockSurface() {
   return true;
 }
 
-bool PixelBuffer::UnlockSurface() {
+void PixelBuffer::UnlockSurface() {
   if (!palette_surface_ || !lock_count_) {
-    return true;
+    return;
   }
 
   lock_count_--;
@@ -1207,8 +1209,6 @@ bool PixelBuffer::UnlockSurface() {
     }
     Present(false);
   }
-
-  return true;
 }
 
 void PixelBuffer::Present(const bool end_frame) const {

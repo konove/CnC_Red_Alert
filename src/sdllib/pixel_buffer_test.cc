@@ -60,16 +60,18 @@ TEST(GraphicViewPortLockTest, AttachingToAnEmptyBufferGivesAnEmptyViewport) {
 }
 
 // A plain memory buffer has no surface to lock, so Lock() succeeds without
-// SDL and the nesting count still tracks the calls.
-TEST(GraphicViewPortLockTest, MemoryBufferLocksNest) {
+// SDL and nothing is counted.
+TEST(GraphicViewPortLockTest, MemoryBufferLocksWithoutCounting) {
   std::vector<uint8_t> pixels(size_t{4} * 4, 0);
   PixelBuffer page(4, 4, pixels);
   PixelView view(&page, 1, 1, 2, 2);
 
   ASSERT_TRUE(view.Lock());
   ASSERT_TRUE(view.Lock());
-  EXPECT_TRUE(view.Unlock());
-  EXPECT_TRUE(view.Unlock());
+  EXPECT_EQ(view.lock_count(), 0);
+  view.Unlock();
+  view.Unlock();
+  EXPECT_EQ(view.lock_count(), 0);
 }
 
 // Returns `count` pixels numbered from 1, so that every pixel of a test image

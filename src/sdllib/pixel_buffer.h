@@ -131,7 +131,7 @@ class PixelView {
   // surface could not be locked, in which case the matching Unlock() must
   // not be called.
   bool Lock();
-  bool Unlock();
+  void Unlock();
   // How deep the buffer's nested locks are; 0 when the view has no buffer.
   [[nodiscard]] int lock_count() const;
   // Whether drawing to this view has to lock a surface first.
@@ -333,7 +333,7 @@ class PixelBuffer {
   // PixelView::Lock/Unlock, which also reattach the view to the freshly
   // locked pixels.
   bool LockSurface();
-  bool UnlockSurface();
+  void UnlockSurface();
   // How deep the nested LockSurface() calls are; the surface is locked while
   // this is non-zero.
   [[nodiscard]] int lock_count() const { return lock_count_; }
