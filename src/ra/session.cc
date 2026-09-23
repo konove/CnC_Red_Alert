@@ -184,8 +184,6 @@ SessionClass::SessionClass()
 
   LastMessage[0] = 0;
 
-  RecordFile.SetName("RECORD.BIN");  // always uses this name
-
   GameName[0] = 0;
 
   SerialDefaults.Port = 0x2f8;                  // set from INI file

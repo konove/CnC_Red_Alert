@@ -117,6 +117,21 @@ TEST_F(DiskStreamTest, FlushedWritesAreVisibleToLaterWrites) {
   EXPECT_EQ(ReadAll(*stream, 16), "xabcd!?");
 }
 
+// TD's super-record mode keeps RECORD.BIN open for the whole game and flushes
+// it every frame, so a crash still leaves the frames written so far on disk.
+TEST_F(DiskStreamTest, FlushMakesWrittenBytesVisible) {
+  const std::unique_ptr<DiskStream> out =
+      DiskStream::Open(path(), FileAccess::kWrite);
+  ASSERT_NE(out, nullptr);
+  EXPECT_EQ(out->Write(Bytes("frame")), 5);
+  EXPECT_TRUE(out->Flush());
+  // Read back through a second handle while the first is still open.
+  const std::unique_ptr<DiskStream> in =
+      DiskStream::Open(path(), FileAccess::kRead);
+  ASSERT_NE(in, nullptr);
+  EXPECT_EQ(ReadAll(*in, 10), "frame");
+}
+
 TEST_F(DiskStreamTest, ReadWriteCreatesMissingFile) {
   const std::string missing = path() + ".new";
   EXPECT_NE(DiskStream::Open(missing, FileAccess::kReadWrite), nullptr);

@@ -929,7 +929,7 @@ Two commits.
 `src/ra/conquer.cc:298`, `src/ra/record_playback.cc`, `src/ra/queue.cc`, `src/td/session.h`
 (`record_file_`), `src/td/init.cc`, `src/td/conquer.cc`, `src/td/queue.cc`.
 
-- [ ] **Write the failing test** (`byte_stream_test.cc`):
+- [x] **Write the failing test** (`byte_stream_test.cc`):
 
 ```cpp
 TEST_F(DiskStreamTest, FlushMakesWrittenBytesVisible) {
@@ -943,32 +943,32 @@ TEST_F(DiskStreamTest, FlushMakesWrittenBytesVisible) {
 }
 ```
 
-- [ ] **RA save/load.** `Save_Game`: `const auto file = OpenDiskFile(name, FileAccess::kWrite)`,
+- [x] **RA save/load.** `Save_Game`: `const auto file = OpenDiskFile(name, FileAccess::kWrite)`,
       return false if null, `StreamSink` over `*file`, and the digest rewrite seeks `file` itself
       (`:525`, `:569`); the "Finish closes the file" comment (`:571`) goes — scope does it. The dump
       file is a nullable `std::unique_ptr<DiskStream>`. `Load_Game`: open first (a null stream is
       the old `IsAvailable` failure), `StreamSource`, seeks on the stream, `file.Close()` (`:964`)
       deleted. `Get_Savefile_Info`: the same.
-- [ ] **TD save/load.** `Save_Game`, `Load_Game`, `Get_Savefile_Info` hold a
+- [x] **TD save/load.** `Save_Game`, `Load_Game`, `Get_Savefile_Info` hold a
       `std::unique_ptr<DiskStream>`; every `file.Close(); return false;` becomes `return false;`.
       Char-array `Read(descr_buf, n)`/`Write` calls work unchanged on the stream.
-- [ ] **RA recording.** `GameFile RecordFile` → `std::string record_file_name_` (set where
+- [x] **RA recording.** `GameFile RecordFile` → `std::string record_file_name_` (set where
       `session.cc:187` calls `SetName`) and `std::unique_ptr<ByteStream> record_stream_`, null when
       not recording or playing back. `IsAvailable()` + `Open(kRead)` → assign `OpenGameFile(name)`
       and test for null; `Close()` → `reset()`. `Load/Save_Recording_Values(ByteStream&)` wrap
       `StreamSource`/`StreamSink`. `record_playback.cc` and `queue.cc` call through the stream
       (`->WriteObject`).
-- [ ] **TD recording, fixing super-record.** The same shape for `record_file_`. Super-record keeps
+- [x] **TD recording, fixing super-record.** The same shape for `record_file_`. Super-record keeps
       the stream open for the whole game and calls `Flush()` where it used to `Close()`
       (`td/init.cc:2928`, `td/conquer.cc:3273`); the `Open(kReadWrite)` + `Seek(0, kEnd)` at
       `td/conquer.cc:3235` goes. `Queue_Record` then appends to the open stream instead of
       truncating the file.
-- [ ] Both builds, all tests, both smoke scripts (they exercise save/load end to end), and
+- [x] Both builds, all tests, both smoke scripts (they exercise save/load end to end), and
       `tools/td_saveload_smoke.sh ... SCG01EA --team`. Recording check, both games (the switches
       need `config::kCheatKeysEnabled`): record a short skirmish with `-XX`, play it back with
       `-XY`, and confirm the playback matches. For TD super-record (`-XXS`), also confirm RECORD.BIN
       grows every frame and plays back (it was truncated before).
-- [ ] Commit (two): `Save and load games through owned streams`,
+- [x] Commit (two): `Save and load games through owned streams`,
       `Keep the recording stream open and flush it in super-record mode`.
 
 ## Step 9: The remaining GameFile and DiskFile users
@@ -1408,3 +1408,33 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   `WsaAnimation(ByteStream&)`'s comment, a contract comment on RA `Write_PCX_File`). `build` and
   `build-strict` clean; `ctest --test-dir build-strict` 752/752; RA smoke OK (240 positions, and
   `--load-fixture` OK), TD smoke `SCG01EA --team` OK (5951 game states).
+- 2026-09-23: Step 8, second commit (recordings). RA `SessionClass::RecordFile` and TD's
+  `record_file_` became a private `std::string record_file_name_ = "RECORD.BIN"` (a default member
+  initializer rather than RA's constructor `SetName`, which is deleted) and a
+  `std::unique_ptr<ByteStream> record_stream_`, null outside a recorded or played-back game, behind
+  `record_file_name()`/`record_stream()`. Every open is `OpenGameFile(name)` or
+  `OpenGameFile(name, FileAccess::kWrite)` into a local that moves into `record_stream()` only once
+  the header was read or written; game end `reset()`s it. RA's `Load/Save_Recording_Values` take
+  `ByteStream&` over `StreamSource`/`StreamSink`; TD's (`td/init.h`) now take the open `ByteStream&`
+  too instead of reaching for the global. Super-record keeps the stream open for the whole game,
+  `Flush()`es where it used to `Close()` (after the header and after each frame's
+  `Do_Record_Playback` block), drops the `Open(kReadWrite)` + `Seek(0, kEnd)`, and is now closed at
+  game end like a plain recording. Deviations: an `-XY` whose RECORD.BIN is missing now clears
+  `Play`/`playback_game()` like a failed open always did (the old `IsAvailable()` miss left it set,
+  so the game started and ended at once on the first failed read); and `Do_Record_Playback`/
+  `Queue_Record`/`Queue_Playback` skip a null stream (a playback read counts as failed) rather than
+  dereference it, though every path that sets the flags now opens the stream first. Added
+  `DiskStreamTest.FlushMakesWrittenBytesVisible` (RED with the `Flush()` commented out: the second
+  handle read ""). Headless recording checks (`-SEED1 -NEWGAMESCG01EA -QUITFRAME120`, cheat keys are
+  on: `.env` sets `BUILD_VERSION=internal`): RA `-XX` then `-XY -QUITFRAME120` and TD `-XX` then
+  `-XY -NEWGAMESCG01EA -QUITFRAME120` (TD's `-QUITFRAME` alone returns from the menu before a
+  playback starts) replay the recorded unit positions exactly (480 RA, 1920 TD unit/infantry lines);
+  each new RECORD.BIN is `cmp`-identical to one the pre-change binary wrote (recordings vary run to
+  run in 2 RA / 6 TD header bytes). TD `-XXS`: the old binary left a 4-byte RECORD.BIN; the new one
+  writes the full 2083 bytes (the `-XX` recording, header bytes aside), `strace` shows 122 `write`s
+  to it over the 120 frames (one per frame, plus the header and the close), it plays back exactly,
+  and a run SIGKILLed at frame 58 leaves 1087 bytes on disk (a `-XX` run killed there leaves 0) that
+  play back the same 58 frames. `build` and `build-strict` clean; `ctest --test-dir build-strict`
+  753/753; RA smoke OK (240 positions, `--load-fixture` OK), TD smoke `SCG01EA --team` OK (5951 game
+  states). Not checked: the menus' attract-mode playback (`kSelTimeout`), which needs the
+  interactive menu.

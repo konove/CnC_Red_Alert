@@ -55,10 +55,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <memory>
 #include <optional>
 #include <span>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "absl/log/log.h"
@@ -145,6 +147,7 @@
 #include "td/winstub.h"
 #include "td/world.h"
 #include "tech/audio_mixer.h"
+#include "tech/byte_stream.h"
 #include "tech/disk_file.h"
 #include "tech/game_file.h"
 #include "tech/key_phrase_hash.h"
@@ -815,10 +818,11 @@ bool Select_Game(bool fade) {
     ** If we're playing back a recording, load all pertinant values & skip
     ** the menu loop.  Hide the now-useless mouse pointer.
     */
-    if (TheSession().playback_game() &&
-        TheSession().record_file().IsAvailable()) {
-      if (TheSession().record_file().Open(FileAccess::kRead)) {
-        Load_Recording_Values();
+    if (TheSession().playback_game()) {
+      if (std::unique_ptr<ByteStream> record =
+              OpenGameFile(TheSession().record_file_name())) {
+        Load_Recording_Values(*record);
+        TheSession().record_stream() = std::move(record);
         process = false;
         TheTheme().Fade_Out();
       } else {
@@ -1508,17 +1512,15 @@ bool Select_Game(bool fade) {
           break;
 
         case kSelTimeout:
-          if (TheSession().allow_attract() &&
-              TheSession().record_file().IsAvailable()) {
+          if (std::unique_ptr<ByteStream> record =
+                  TheSession().allow_attract()
+                      ? OpenGameFile(TheSession().record_file_name())
+                      : nullptr) {
             TheSession().playback_game() = true;
-            if (TheSession().record_file().Open(FileAccess::kRead)) {
-              Load_Recording_Values();
-              process = false;
-              TheTheme().Fade_Out();
-            } else {
-              TheSession().playback_game() = false;
-              selection = kSelNone;
-            }
+            Load_Recording_Values(*record);
+            TheSession().record_stream() = std::move(record);
+            process = false;
+            TheTheme().Fade_Out();
           } else {
             selection = kSelNone;
           }
@@ -1577,8 +1579,10 @@ bool Select_Game(bool fade) {
   ** This must be done after 'Seed' has been initialized.
   */
   if (TheSession().record_game()) {
-    if (TheSession().record_file().Open(FileAccess::kWrite)) {
-      Save_Recording_Values();
+    if (std::unique_ptr<ByteStream> record =
+            OpenGameFile(TheSession().record_file_name(), FileAccess::kWrite)) {
+      Save_Recording_Values(*record);
+      TheSession().record_stream() = std::move(record);
     } else {
       TheSession().record_game() = false;
     }
@@ -2596,8 +2600,8 @@ std::optional<StartupOptions> Parse_Command_Line(
           **	Turn on super-record mode, which thrashes your disk terribly,
           ** but is really really cool.  Well, sometimes it is, anyway.
           ** At least, it can be.  Once in a while.
-          ** This flag tells the recording system to re-open the file for
-          ** each write, so the recording survives a crash.
+          ** This flag tells the recording system to flush the file to disk
+          ** every frame, so the recording survives a crash.
           */
           case 'S':
             if constexpr (config::kCheatKeysEnabled) {
@@ -2885,7 +2889,7 @@ int Version_Number() {
  * Save_Recording_Values -- Saves recording values to a recording file     *
  *                                                                         *
  * INPUT:                                                                  *
- *      none.                                                              *
+ *      file   the open recording                                          *
  *                                                                         *
  * OUTPUT:                                                                 *
  *      none.                                                              *
@@ -2896,36 +2900,36 @@ int Version_Number() {
  * HISTORY:                                                                *
  *   05/15/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Save_Recording_Values() {
-  TheSession().record_file().WriteObject(TheSession().type());
-  TheSession().record_file().WriteObject(TheNetwork().modem_game_type());
-  TheSession().record_file().WriteObject(TheWorld().build_level());
-  TheSession().record_file().WriteObject(TheSession().player_name());
-  TheSession().record_file().WriteObject(TheSession().preferred_color());
-  TheSession().record_file().WriteObject(TheSession().color_index());
-  TheSession().record_file().WriteObject(TheSession().house());
-  TheSession().record_file().WriteObject(TheSession().local_id());
-  TheSession().record_file().WriteObject(TheSession().player_count());
-  TheSession().record_file().WriteObject(TheSession().bases());
-  TheSession().record_file().WriteObject(TheSession().credits());
-  TheSession().record_file().WriteObject(TheSession().tiberium());
-  TheSession().record_file().WriteObject(TheSession().crates());
-  TheSession().record_file().WriteObject(TheSession().ghosts());
-  TheSession().record_file().WriteObject(TheSession().unit_count());
-  TheSession().record_file().WriteObject(TheSession().player_ids());
-  TheSession().record_file().WriteObject(TheSession().player_houses());
-  TheSession().record_file().WriteObject(TheWorld().seed());
-  TheSession().record_file().WriteObject(TheWorld().scenario());
-  TheSession().record_file().WriteObject(TheWorld().scen_player());
-  TheSession().record_file().WriteObject(TheWorld().scen_dir());
-  TheSession().record_file().WriteObject(TheWorld().whom());
-  TheSession().record_file().WriteObject(TheSpecial());
-  TheSession().record_file().WriteObject(TheOptions());
-  TheSession().record_file().WriteObject(TheSession().frame_send_rate());
-  TheSession().record_file().WriteObject(TheSession().comm_protocol());
+void Save_Recording_Values(ByteStream& file) {
+  file.WriteObject(TheSession().type());
+  file.WriteObject(TheNetwork().modem_game_type());
+  file.WriteObject(TheWorld().build_level());
+  file.WriteObject(TheSession().player_name());
+  file.WriteObject(TheSession().preferred_color());
+  file.WriteObject(TheSession().color_index());
+  file.WriteObject(TheSession().house());
+  file.WriteObject(TheSession().local_id());
+  file.WriteObject(TheSession().player_count());
+  file.WriteObject(TheSession().bases());
+  file.WriteObject(TheSession().credits());
+  file.WriteObject(TheSession().tiberium());
+  file.WriteObject(TheSession().crates());
+  file.WriteObject(TheSession().ghosts());
+  file.WriteObject(TheSession().unit_count());
+  file.WriteObject(TheSession().player_ids());
+  file.WriteObject(TheSession().player_houses());
+  file.WriteObject(TheWorld().seed());
+  file.WriteObject(TheWorld().scenario());
+  file.WriteObject(TheWorld().scen_player());
+  file.WriteObject(TheWorld().scen_dir());
+  file.WriteObject(TheWorld().whom());
+  file.WriteObject(TheSpecial());
+  file.WriteObject(TheOptions());
+  file.WriteObject(TheSession().frame_send_rate());
+  file.WriteObject(TheSession().comm_protocol());
 
   if (TheSession().super_record()) {
-    TheSession().record_file().Close();
+    file.Flush();
   }
 }
 
@@ -2933,7 +2937,7 @@ void Save_Recording_Values() {
  * Load_Recording_Values -- Loads recording values from recording file     *
  *                                                                         *
  * INPUT:                                                                  *
- *      none.                                                              *
+ *      file   the open recording                                          *
  *                                                                         *
  * OUTPUT:                                                                 *
  *      none.                                                              *
@@ -2944,35 +2948,35 @@ void Save_Recording_Values() {
  * HISTORY:                                                                *
  *   05/15/1995 BRR : Created.                                             *
  *=========================================================================*/
-void Load_Recording_Values() {
+void Load_Recording_Values(ByteStream& file) {
   Read_MultiPlayer_Settings();
 
-  TheSession().record_file().ReadObject(TheSession().type());
-  TheSession().record_file().ReadObject(TheNetwork().modem_game_type());
-  TheSession().record_file().ReadObject(TheWorld().build_level());
-  TheSession().record_file().ReadObject(TheSession().player_name());
-  TheSession().record_file().ReadObject(TheSession().preferred_color());
-  TheSession().record_file().ReadObject(TheSession().color_index());
-  TheSession().record_file().ReadObject(TheSession().house());
-  TheSession().record_file().ReadObject(TheSession().local_id());
-  TheSession().record_file().ReadObject(TheSession().player_count());
-  TheSession().record_file().ReadObject(TheSession().bases());
-  TheSession().record_file().ReadObject(TheSession().credits());
-  TheSession().record_file().ReadObject(TheSession().tiberium());
-  TheSession().record_file().ReadObject(TheSession().crates());
-  TheSession().record_file().ReadObject(TheSession().ghosts());
-  TheSession().record_file().ReadObject(TheSession().unit_count());
-  TheSession().record_file().ReadObject(TheSession().player_ids());
-  TheSession().record_file().ReadObject(TheSession().player_houses());
-  TheSession().record_file().ReadObject(TheWorld().seed());
-  TheSession().record_file().ReadObject(TheWorld().scenario());
-  TheSession().record_file().ReadObject(TheWorld().scen_player());
-  TheSession().record_file().ReadObject(TheWorld().scen_dir());
-  TheSession().record_file().ReadObject(TheWorld().whom());
-  TheSession().record_file().ReadObject(TheSpecial());
-  TheSession().record_file().ReadObject(TheOptions());
-  TheSession().record_file().ReadObject(TheSession().frame_send_rate());
-  TheSession().record_file().ReadObject(TheSession().comm_protocol());
+  file.ReadObject(TheSession().type());
+  file.ReadObject(TheNetwork().modem_game_type());
+  file.ReadObject(TheWorld().build_level());
+  file.ReadObject(TheSession().player_name());
+  file.ReadObject(TheSession().preferred_color());
+  file.ReadObject(TheSession().color_index());
+  file.ReadObject(TheSession().house());
+  file.ReadObject(TheSession().local_id());
+  file.ReadObject(TheSession().player_count());
+  file.ReadObject(TheSession().bases());
+  file.ReadObject(TheSession().credits());
+  file.ReadObject(TheSession().tiberium());
+  file.ReadObject(TheSession().crates());
+  file.ReadObject(TheSession().ghosts());
+  file.ReadObject(TheSession().unit_count());
+  file.ReadObject(TheSession().player_ids());
+  file.ReadObject(TheSession().player_houses());
+  file.ReadObject(TheWorld().seed());
+  file.ReadObject(TheWorld().scenario());
+  file.ReadObject(TheWorld().scen_player());
+  file.ReadObject(TheWorld().scen_dir());
+  file.ReadObject(TheWorld().whom());
+  file.ReadObject(TheSpecial());
+  file.ReadObject(TheOptions());
+  file.ReadObject(TheSession().frame_send_rate());
+  file.ReadObject(TheSession().comm_protocol());
 }
 
 /***********************************************************************************************

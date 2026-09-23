@@ -8,6 +8,8 @@
 #include "td/ipxaddr.h"
 #include "td/startup_options.h"
 
+class ByteStream;
+
 void Uninit_Game();
 void Load_Title_Page(bool visible = false);
 void Anim_Init();
@@ -21,8 +23,11 @@ std::optional<StartupOptions> Parse_Command_Line(
     std::span<const std::string_view> arguments);
 void Parse_INI_File();
 int Version_Number();
-void Save_Recording_Values();
-void Load_Recording_Values();
+// Writes the recording's header (session, scenario and seed) to the open
+// `file`, flushing it to disk at once in super-record mode.
+void Save_Recording_Values(ByteStream& file);
+// Reads the header Save_Recording_Values wrote back from the open `file`.
+void Load_Recording_Values(ByteStream& file);
 
 // Returns the network across an IPX bridge that `address` names, the
 // "-DESTNET" switch's value or the config file's DestNet option: up to ten

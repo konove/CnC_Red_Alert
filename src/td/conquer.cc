@@ -85,13 +85,11 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "base/seek_origin.h"
 #include "port/env.h"
 #include "port/platform.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
 #include "sdllib/display.h"
-#include "sdllib/file_access.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -172,8 +170,8 @@
 #include "tech/archive.h"
 #include "tech/audio_mixer.h"
 #include "tech/byte_sink.h"
+#include "tech/byte_stream.h"
 #include "tech/crc.h"
-#include "tech/game_file.h"
 #include "tech/game_file_vqa_io.h"
 #include "tech/mix_archive.h"
 #include "tech/search_paths.h"
@@ -443,9 +441,8 @@ void Main_Game() {
     ** (Skip this step if we're in playback mode; the modem or net won't have
     ** been initialized in that case.)
     */
-    if ((TheSession().record_game() && !TheSession().super_record()) ||
-        TheSession().playback_game()) {
-      TheSession().record_file().Close();
+    if (TheSession().record_game() || TheSession().playback_game()) {
+      TheSession().record_stream().reset();
     }
 
     if (!TheSession().playback_game()) {
@@ -3224,28 +3221,23 @@ static void Do_Record_Playback() {
   uint32_t sum2 = 0;
   uint32_t ltgt = 0;
 
+  // Null only outside a recorded or played-back game.
+  ByteStream* const record = TheSession().record_stream().get();
+
   /*------------------------------------------------------------------------
   Record a game
   ------------------------------------------------------------------------*/
-  if (TheSession().record_game()) {
-    /*.....................................................................
-    For 'SuperRecord', we'll open & close the file with every entry.
-    .....................................................................*/
-    if (TheSession().super_record()) {
-      TheSession().record_file().Open(FileAccess::kReadWrite);
-      TheSession().record_file().Seek(0, SeekOrigin::kEnd);
-    }
-
+  if (TheSession().record_game() && record != nullptr) {
     /*.....................................................................
     Save the map's location
     .....................................................................*/
-    TheSession().record_file().WriteObject(TheMap().DesiredTacticalCoord);
+    record->WriteObject(TheMap().DesiredTacticalCoord);
 
     /*.....................................................................
     Save the current object list count
     .....................................................................*/
     count = static_cast<int>(TheWorld().current_object().Count());
-    TheSession().record_file().WriteObject(count);
+    record->WriteObject(count);
 
     /*.....................................................................
     Save a CRC of the selected-object list.
@@ -3256,37 +3248,36 @@ static void Do_Record_Playback() {
           static_cast<uint32_t>(TheWorld().current_object().at(i)->As_Target());
       sum += ltgt;
     }
-    TheSession().record_file().WriteObject(sum);
+    record->WriteObject(sum);
 
     /*.....................................................................
     Save all selected objects.
     .....................................................................*/
     for (int i = 0; i < count; i++) {
       tgt = TheWorld().current_object().at(i)->As_Target();
-      TheSession().record_file().WriteObject(tgt);
+      record->WriteObject(tgt);
     }
 
     /*.....................................................................
-    If 'SuperRecord', close the file now.
+    For 'SuperRecord', push the frame to disk now, so a crash keeps it.
     .....................................................................*/
     if (TheSession().super_record()) {
-      TheSession().record_file().Close();
+      record->Flush();
     }
   }
 
   /*------------------------------------------------------------------------
   Play back a game ("attract" mode)
   ------------------------------------------------------------------------*/
-  if (TheSession().playback_game()) {
+  if (TheSession().playback_game() && record != nullptr) {
     /*.....................................................................
     Read & set the map's location.
     .....................................................................*/
-    if (TheSession().record_file().ReadObject(coord) &&
-        coord != TheMap().DesiredTacticalCoord) {
+    if (record->ReadObject(coord) && coord != TheMap().DesiredTacticalCoord) {
       TheMap().Set_Tactical_Position(coord);
     }
 
-    if (TheSession().record_file().ReadObject(count)) {
+    if (record->ReadObject(count)) {
       /*..................................................................
       Compute a CRC of the current object-selection list.
       ..................................................................*/
@@ -3301,7 +3292,7 @@ static void Do_Record_Playback() {
       Load the CRC of the objects on disk; if it doesn't match, select
       all objects as they're loaded.
       ..................................................................*/
-      TheSession().record_file().ReadObject(sum2);
+      record->ReadObject(sum2);
       if (sum2 != sum) {
         Unselect_All();
       }
@@ -3309,7 +3300,7 @@ static void Do_Record_Playback() {
       TheGameState().allow_voice() = true;
 
       for (int i = 0; i < count; i++) {
-        if (TheSession().record_file().ReadObject(tgt)) {
+        if (record->ReadObject(tgt)) {
           ObjectClass* obj = As_Object(tgt);
           if (obj && sum2 != sum) {
             obj->Select();

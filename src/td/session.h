@@ -4,13 +4,15 @@
 #define CNC_RED_ALERT_TD_SESSION_H_
 
 #include <cstdint>
+#include <memory>
+#include <string>
 
 #include "absl/base/attributes.h"
 #include "base/installed.h"
-#include "tech/game_file.h"
 #include "td/defines.h"
 #include "td/msglist.h"
 #include "td/vector.h"
+#include "tech/byte_stream.h"
 
 // What kind of game is being played and, when it is a multiplayer one, who
 // is in it and under what rules. Red Alert gathers the same state into a
@@ -154,10 +156,18 @@ class SessionClass {
   int& score_count() ABSL_ATTRIBUTE_LIFETIME_BOUND { return score_count_; }
   int& current_game() ABSL_ATTRIBUTE_LIFETIME_BOUND { return current_game_; }
 
-  // The recording of the game: the file it is written to or read back
-  // from, whether either is happening, whether every write reopens the file
-  // and whether an idle menu may start a playback.
-  GameFile& record_file() ABSL_ATTRIBUTE_LIFETIME_BOUND { return record_file_; }
+  // The recording of the game: the name of the file it is written to or
+  // read back from, that file while a game is recorded or played back
+  // (nullptr otherwise), whether either is happening, whether the recording
+  // is flushed to disk every frame so it survives a crash, and whether an idle
+  // menu may start a playback.
+  [[nodiscard]] const std::string& record_file_name() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return record_file_name_;
+  }
+  std::unique_ptr<ByteStream>& record_stream() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return record_stream_;
+  }
   bool& record_game() ABSL_ATTRIBUTE_LIFETIME_BOUND { return record_game_; }
   int& super_record() ABSL_ATTRIBUTE_LIFETIME_BOUND { return super_record_; }
   bool& playback_game() ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -237,7 +247,8 @@ class SessionClass {
   int score_count_ = 0;
   int current_game_ = 0;
 
-  GameFile record_file_{"RECORD.BIN"};
+  std::string record_file_name_ = "RECORD.BIN";
+  std::unique_ptr<ByteStream> record_stream_;
   bool record_game_ = false;
   int super_record_ = 0;
   bool playback_game_ = false;

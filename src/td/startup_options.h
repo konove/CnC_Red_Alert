@@ -51,7 +51,7 @@ struct StartupOptions {
   bool visible_target = false;  // -XV
 
   // Recording a multiplayer game: -XX records, -XY plays back, and -XS
-  // reopens the file for each write so a crash keeps what was recorded.
+  // flushes the file every frame so a crash keeps what was recorded.
   bool record = false;
   bool playback = false;
   bool super_record = false;

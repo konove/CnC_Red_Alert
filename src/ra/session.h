@@ -40,7 +40,9 @@
 #define CNC_RED_ALERT_RA_SESSION_H_
 
 #include <cstdint>
+#include <memory>
 #include <span>
+#include <string>
 
 #include "absl/base/attributes.h"
 #include "base/enum_array.h"
@@ -59,7 +61,7 @@
 #include "sdllib/pixel_buffer.h"
 #include "tech/byte_sink.h"
 #include "tech/byte_source.h"
-#include "tech/game_file.h"
+#include "tech/byte_stream.h"
 
 //---------------------------------------------------------------------------
 // Defines
@@ -672,7 +674,15 @@ class SessionClass {
   //.....................................................................
   // For Recording & Playing back a file
   //.....................................................................
-  GameFile RecordFile;
+  // The file a recording is written to or played back from, and that file
+  // while a game is being recorded or played back; nullptr otherwise.
+  [[nodiscard]] const std::string& record_file_name() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return record_file_name_;
+  }
+  std::unique_ptr<ByteStream>& record_stream() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return record_stream_;
+  }
   bool Record : 1 {false};  // set via command line
   bool Play : 1 {false};
   bool Attract : 1 {false};
@@ -721,6 +731,10 @@ class SessionClass {
   TARGET TrapTarget{kTargetNone};  // Target # of object, 0 = ignore
   CellClass* TrapCell{nullptr};    // Ptr to cell to trap (watch)
   int32_t TrapPrintCRC{0};         // Frame # to print CRC state file
+
+ private:
+  std::string record_file_name_ = "RECORD.BIN";
+  std::unique_ptr<ByteStream> record_stream_;
 };
 
 class ArchiveReader;

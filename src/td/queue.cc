@@ -129,7 +129,7 @@
 #include "td/unit.h"
 #include "td/winstub.h"
 #include "td/world.h"
-#include "tech/game_file.h"
+#include "tech/byte_stream.h"
 
 /********************************** Globals *********************************/
 //---------------------------------------------------------------------------
@@ -3387,11 +3387,15 @@ static void Queue_Record() {
   //------------------------------------------------------------------------
   //	Save the # of events, then all events.
   //------------------------------------------------------------------------
-  TheSession().record_file().WriteObject(j);
+  ByteStream* const record = TheSession().record_stream().get();
+  if (record == nullptr) {
+    return;
+  }
+  record->WriteObject(j);
   for (int i = 0; i < TheNetwork().do_list().Count(); i++) {
     if (std::cmp_equal(CurrentFrame(), TheNetwork().do_list().at(i).Frame) &&
         !TheNetwork().do_list().at(i).IsExecuted) {
-      TheSession().record_file().WriteObject(TheNetwork().do_list().at(i));
+      record->WriteObject(TheNetwork().do_list().at(i));
       j--;
     }
   }
@@ -3492,9 +3496,10 @@ static void Queue_Playback() {
   //	Read the DoList from disk
   //------------------------------------------------------------------------
   int ok = 1;
-  if (TheSession().record_file().ReadObject(numevents)) {
+  ByteStream* const record = TheSession().record_stream().get();
+  if (record != nullptr && record->ReadObject(numevents)) {
     for (int i = 0; i < numevents; i++) {
-      if (TheSession().record_file().ReadObject(event)) {
+      if (record->ReadObject(event)) {
         event.IsExecuted = 0;
         TheNetwork().do_list().Add(event);
       } else {

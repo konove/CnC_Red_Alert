@@ -113,7 +113,6 @@
 #include "tech/disk_file.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
-#include "tech/game_file.h"
 #include "tech/glow_pulse.h"
 #include "tech/rgb.h"
 
@@ -296,7 +295,7 @@ static void EndScenario() {
   TheScreen().visible_page().view().Clear();
 
   if (TheSession().Record || TheSession().Play) {
-    TheSession().RecordFile.Close();
+    TheSession().record_stream().reset();
   }
 
   if (!TheSession().Play) {

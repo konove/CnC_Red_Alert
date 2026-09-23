@@ -68,10 +68,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <memory>
 #include <optional>
 #include <span>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "absl/log/check.h"
@@ -154,8 +156,7 @@
 #include "sdllib/wwstd.h"
 #include "tech/archive.h"
 #include "tech/audio_mixer.h"
-#include "tech/file_sink.h"
-#include "tech/file_source.h"
+#include "tech/byte_stream.h"
 #include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
@@ -166,6 +167,8 @@
 #include "tech/rgb.h"
 #include "tech/search_paths.h"
 #include "tech/span_source.h"
+#include "tech/stream_sink.h"
+#include "tech/stream_source.h"
 #include "winvq/vqa32/vqaplay.h"
 
 static RemapControlType SidebarScheme;
@@ -194,8 +197,8 @@ static void Init_Random();
 
 #define ATTRACT_MODE_TIMEOUT 3600  // timeout for attract mode
 
-static bool Load_Recording_Values(GameFile& file);
-static bool Save_Recording_Values(GameFile& file);
+static bool Load_Recording_Values(ByteStream& file);
+static bool Save_Recording_Values(ByteStream& file);
 
 #include "ra/config.h"
 #include "ra/expand.h"
@@ -549,15 +552,13 @@ bool Select_Game(bool /*fade*/) {
     ** If we're playing back a recording, load all pertinent values & skip
     ** the menu loop.  Hide the now-useless mouse pointer.
     */
-    if (TheSession().Play && TheSession().RecordFile.IsAvailable()) {
-      if (TheSession().RecordFile.Open(FileAccess::kRead)) {
-        if (Load_Recording_Values(TheSession().RecordFile)) {
-          process = false;
-          TheTheme().Fade_Out();
-        } else {
-          TheSession().RecordFile.Close();
-          TheSession().Play = false;
-        }
+    if (TheSession().Play) {
+      std::unique_ptr<ByteStream> record =
+          OpenGameFile(TheSession().record_file_name());
+      if (record != nullptr && Load_Recording_Values(*record)) {
+        TheSession().record_stream() = std::move(record);
+        process = false;
+        TheTheme().Fade_Out();
       } else {
         TheSession().Play = false;
       }
@@ -1036,17 +1037,15 @@ bool Select_Game(bool /*fade*/) {
           break;
 
         case kSelTimeout:
-          if (TheSession().Attract && TheSession().RecordFile.IsAvailable()) {
+          if (std::unique_ptr<ByteStream> record =
+                  TheSession().Attract
+                      ? OpenGameFile(TheSession().record_file_name())
+                      : nullptr) {
             TheSession().Play = true;
-            if (TheSession().RecordFile.Open(FileAccess::kRead)) {
-              if (Load_Recording_Values(TheSession().RecordFile)) {
-                process = false;
-                TheTheme().Fade_Out();
-              } else {
-                TheSession().RecordFile.Close();
-                TheSession().Play = false;
-                selection = kSelNone;
-              }
+            if (Load_Recording_Values(*record)) {
+              TheSession().record_stream() = std::move(record);
+              process = false;
+              TheTheme().Fade_Out();
             } else {
               TheSession().Play = false;
               selection = kSelNone;
@@ -1081,8 +1080,10 @@ bool Select_Game(bool /*fade*/) {
   ** Save initialization values if we're recording this game.
   */
   if (TheSession().Record) {
-    if (TheSession().RecordFile.Open(FileAccess::kWrite)) {
-      Save_Recording_Values(TheSession().RecordFile);
+    if (std::unique_ptr<ByteStream> record =
+            OpenGameFile(TheSession().record_file_name(), FileAccess::kWrite)) {
+      Save_Recording_Values(*record);
+      TheSession().record_stream() = std::move(record);
     } else {
       TheSession().Record = false;
     }
@@ -2573,8 +2574,8 @@ static void SerializeRecording(Archive& ar) {
   }
 }
 
-bool Save_Recording_Values(GameFile& file) {
-  FileSink pipe(file);
+bool Save_Recording_Values(ByteStream& file) {
+  StreamSink pipe(file);
   ArchiveWriter writer(pipe);
   SerializeRecording(writer);
   return true;
@@ -2598,8 +2599,8 @@ bool Save_Recording_Values(GameFile& file) {
  * HISTORY:                                                                *
  *   09/28/1995 BRR : Created.                                             *
  *=========================================================================*/
-bool Load_Recording_Values(GameFile& file) {
-  FileSource straw(file);
+bool Load_Recording_Values(ByteStream& file) {
+  StreamSource straw(file);
   ArchiveReader reader(straw);
   SerializeRecording(reader);
   return reader.ok();
