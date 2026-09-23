@@ -1,12 +1,13 @@
-#ifndef CNC_RED_ALERT_SDLLIB_FILE_ACCESS_H_
-#define CNC_RED_ALERT_SDLLIB_FILE_ACCESS_H_
+#ifndef CNC_RED_ALERT_TECH_FILE_ACCESS_H_
+#define CNC_RED_ALERT_TECH_FILE_ACCESS_H_
 
 #include <cstdint>
 
-// File access rights used by the stream openers.
+// File: the access rights the stream openers take (DiskStream::Open,
+// OpenDiskFile, OpenGameFile).
 //
-// These are bitmask flags: kRead and kWrite can be combined to request
-// read-write access (kReadWrite is provided as a convenience).
+// The values are bit flags, so HasAccess(access, FileAccess::kWrite) is true
+// for both kWrite and kReadWrite.
 //
 // Example:
 //   OpenDiskFile(path, FileAccess::kRead);
@@ -22,4 +23,4 @@ constexpr bool HasAccess(FileAccess rights, FileAccess test) {
   return (static_cast<uint32_t>(rights) & static_cast<uint32_t>(test)) != 0;
 }
 
-#endif  // CNC_RED_ALERT_SDLLIB_FILE_ACCESS_H_
+#endif  // CNC_RED_ALERT_TECH_FILE_ACCESS_H_

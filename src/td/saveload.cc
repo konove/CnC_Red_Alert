@@ -51,7 +51,6 @@
 #include "base/array.h"
 #include "port/platform.h"
 #include "port/safe_string.h"
-#include "sdllib/file_access.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/base.h"
@@ -93,6 +92,7 @@
 #include "tech/archive.h"
 #include "tech/disk_file.h"
 #include "tech/disk_stream.h"
+#include "tech/file_access.h"
 #include "tech/stream_sink.h"
 #include "tech/stream_source.h"
 

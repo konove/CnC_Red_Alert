@@ -14,8 +14,8 @@
 #include <string_view>
 
 #include "base/types.h"
-#include "sdllib/file_access.h"
 #include "tech/byte_stream.h"
+#include "tech/file_access.h"
 
 // Returns a stream over the bytes of name resolved the way the game looks up
 // data: writes never search the search paths or the archives, going straight

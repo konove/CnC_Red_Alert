@@ -72,7 +72,6 @@
 #include "base/types.h"
 #include "port/platform.h"
 #include "rand.h"
-#include "sdllib/file_access.h"
 #include "sdllib/memflag.h"
 #include "sdllib/tile.h"
 #include "td/cell.h"
@@ -93,6 +92,7 @@
 #include "td/type.h"
 #include "td/vector.h"
 #include "td/world.h"
+#include "tech/file_access.h"
 #include "tech/game_file.h"
 
 #define MCW MAP_CELL_W

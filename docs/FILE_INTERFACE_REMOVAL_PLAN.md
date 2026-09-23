@@ -1634,3 +1634,6 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   includers plus the 28 of `disk_file.h`, down from the ~400 translation units that saw it through
   `byte_stream.h`. `ClampedSeek`, shared by the memory and range streams, is declared in
   `byte_stream.h`. Both builds clean, 733/733 tests, both smoke scripts OK.
+- **2026-09-23: follow-up — `file_access.h` moved to `tech/`.** Nothing in sdllib uses `FileAccess`
+  since the `IO_*` functions went; its users are the stream openers and the game code that calls
+  them. 31 includes updated; both builds clean, 733/733 tests.

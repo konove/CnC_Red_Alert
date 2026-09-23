@@ -17,7 +17,7 @@
 #include "base/seek_origin.h"
 #include "base/types.h"
 #include "port/bytes_of.h"
-#include "sdllib/file_access.h"
+#include "tech/file_access.h"
 
 namespace {
 std::ios_base::seekdir SeekDir(const SeekOrigin origin) {

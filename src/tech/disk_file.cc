@@ -28,8 +28,8 @@
 #include <string_view>
 
 #include "absl/strings/ascii.h"
-#include "sdllib/file_access.h"
 #include "tech/disk_stream.h"
+#include "tech/file_access.h"
 
 std::optional<std::string> FindExistingFile(const std::string_view path) {
   // Opening is the existence test; it is what Open() will do next.

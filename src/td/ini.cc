@@ -69,7 +69,6 @@
 #include "port/bytes_of.h"
 #include "port/platform.h"
 #include "port/safe_string.h"
-#include "sdllib/file_access.h"
 #include "sdllib/shape.h"
 #include "td/base.h"
 #include "td/building.h"
@@ -108,6 +107,7 @@
 #include "td/vector.h"
 #include "td/winstub.h"
 #include "td/world.h"
+#include "tech/file_access.h"
 #include "tech/game_file.h"
 
 // The most money a scenario lets the player carry over from the last one,

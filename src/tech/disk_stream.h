@@ -11,8 +11,8 @@
 
 #include "base/seek_origin.h"
 #include "base/types.h"
-#include "sdllib/file_access.h"
 #include "tech/byte_stream.h"
+#include "tech/file_access.h"
 
 // A file on disk, open from construction until destruction.
 class DiskStream final : public ByteStream {

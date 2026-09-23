@@ -82,12 +82,12 @@
 #include "ra/startup_options.h"
 #include "ra/winstub.h"
 #include "ra/world.h"
-#include "sdllib/file_access.h"
 #include "sdllib/file_system.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "tech/disk_file.h"
+#include "tech/file_access.h"
 #include "tech/search_paths.h"
 #endif  // RA_NO_ENTRY_POINT
 

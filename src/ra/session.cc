@@ -96,7 +96,6 @@
 #include "ra/queue.h"
 #include "ra/unit.h"
 #include "ra/world.h"
-#include "sdllib/file_access.h"
 #include "sdllib/file_system.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
@@ -104,6 +103,7 @@
 #include "tech/byte_sink.h"
 #include "tech/byte_source.h"
 #include "tech/disk_file.h"
+#include "tech/file_access.h"
 #include "tech/game_file.h"
 #include "tech/number_parse.h"
 

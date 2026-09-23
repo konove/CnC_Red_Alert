@@ -9,7 +9,7 @@
 
 #include "base/seek_origin.h"
 #include "base/types.h"
-#include "sdllib/file_access.h"
+#include "tech/file_access.h"
 #include "tech/game_file.h"
 
 bool GameFileVqaIo::Open(const std::string_view name) {

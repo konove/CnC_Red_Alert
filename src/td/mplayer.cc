@@ -69,7 +69,6 @@
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
 #include "rand.h"
-#include "sdllib/file_access.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
@@ -103,6 +102,7 @@
 #include "td/textbtn.h"
 #include "td/vector.h"
 #include "td/world.h"
+#include "tech/file_access.h"
 #include "tech/game_file.h"
 #include "tech/number_parse.h"
 

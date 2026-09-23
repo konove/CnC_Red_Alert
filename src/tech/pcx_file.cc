@@ -44,9 +44,9 @@
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "sdllib/file_access.h"
 #include "sdllib/pixel_buffer.h"
 #include "tech/byte_stream.h"
+#include "tech/file_access.h"
 #include "tech/game_file.h"
 
 static void Write_Pcx_ScanLine(ByteStream& file,

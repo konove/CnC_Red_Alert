@@ -20,9 +20,9 @@
 #include "absl/strings/ascii.h"
 #include "base/seek_origin.h"
 #include "gtest/gtest.h"
-#include "sdllib/file_access.h"
 #include "tech/byte_stream.h"
 #include "tech/crc.h"
+#include "tech/file_access.h"
 #include "tech/mix_archive.h"
 #include "tech/search_paths.h"
 

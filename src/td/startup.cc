@@ -86,7 +86,6 @@
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
 #include "absl/strings/match.h"
-#include "sdllib/file_access.h"
 #include "sdllib/file_system.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
@@ -98,6 +97,7 @@
 #include "td/special.h"
 #include "td/world.h"
 #include "tech/disk_file.h"
+#include "tech/file_access.h"
 #include "tech/search_paths.h"
 #endif  // TD_NO_ENTRY_POINT
 

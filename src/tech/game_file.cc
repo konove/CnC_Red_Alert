@@ -14,10 +14,10 @@
 #include <utility>
 
 #include "base/types.h"
-#include "sdllib/file_access.h"
 #include "tech/byte_stream.h"
 #include "tech/disk_file.h"
 #include "tech/disk_stream.h"
+#include "tech/file_access.h"
 #include "tech/memory_stream.h"
 #include "tech/mix_archive.h"
 #include "tech/range_stream.h"

@@ -17,8 +17,8 @@
 
 #include "base/seek_origin.h"
 #include "gtest/gtest.h"
-#include "sdllib/file_access.h"
 #include "tech/byte_stream.h"
+#include "tech/file_access.h"
 #include "tech/range_stream.h"
 
 #ifdef __linux__
