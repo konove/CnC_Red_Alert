@@ -25,6 +25,7 @@
 #ifndef CNC_RED_ALERT_SDLLIB_FONT_H_
 #define CNC_RED_ALERT_SDLLIB_FONT_H_
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <span>
@@ -71,10 +72,13 @@ static_assert(sizeof(FontHeader) == 14,
 // empty rows to the bottom of the box.
 //
 // Example:
-//   FontView font(g_font);
+//   FontView font(TheAssets().font(FontType::k8Point));
 //   int width = font.GlyphWidth(ch);
 class FontView {
  public:
+  // A view of no font: every metric is 0 and every glyph is empty.
+  FontView() = default;
+
   // data should hold a complete font file; the view reads the header eagerly
   // and the metric tables lazily. Data shorter than the header gives a view
   // whose every metric is 0.
@@ -90,6 +94,9 @@ class FontView {
     widths_ = DataFrom(header.width_block);
     heights_ = DataFrom(header.height_block);
   }
+
+  // The font data the view reads; empty for a default-constructed view.
+  [[nodiscard]] std::span<const std::byte> data() const { return font_; }
 
   // Height and width of the tallest and widest glyphs, in pixels.
   [[nodiscard]] int MaxHeight() const {
@@ -168,20 +175,58 @@ class FontView {
   std::span<const std::byte> heights_;
 };
 
+// Glyph pixel value -> screen colour table that leaves every value as it is.
+inline constexpr std::array<uint8_t, 16> kIdentityFontPalette{
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+};
+
+// Everything a print or a measurement needs to know about the font: the glyphs,
+// the extra spacing around them, and the colour each glyph pixel value maps to.
+// A plain value; the font data it views belongs to the caller (in the games,
+// to Assets), and must outlive it.
+//
+// Example:
+//   const FontStyle style{.font = FontView(data), .x_spacing = 1};
+//   view.Print(style, "Hello", x, y, fore, back);
+struct FontStyle {
+  FontView font;
+  int x_spacing = 0;  // Extra pixels after every glyph; may be negative.
+  int y_spacing = 0;  // Extra pixels between lines; may be negative.
+  // Maps the 4-bit glyph pixel values to screen colours. PixelView::Print()
+  // replaces entries 0 (background) and 1 (foreground) with its colours on a
+  // copy, so only entries 2-15 of a multi-colour font matter here. A 0 in the
+  // table is transparent: nothing is drawn.
+  std::array<uint8_t, 16> palette = kIdentityFontPalette;
+};
+
+// Returns the distance in pixels from one line of text in style to the next:
+// the tallest glyph plus the line spacing.
+int FontLineHeight(const FontStyle& style);
+
+// Returns the horizontal distance, in pixels, that printing character in style
+// advances by: its glyph width plus style.x_spacing.
+int CharPixelWidth(const FontStyle& style, char character);
+
+// Returns the width in pixels of the widest line of text in style, or 0 for
+// nullptr. Lines are separated by '\r' only, as the game's text strings are; a
+// '\n' is measured as a glyph, although PixelView::Print() breaks the line on
+// it. Every glyph counts style.x_spacing after it, the last one on a line
+// included, as Print() advances.
+int StringPixelWidth(const FontStyle& style, const char* text);
+
+// Returns the style the font globals below describe. Temporary: the legacy
+// functions that read the globals build their style with it until every
+// caller passes one; see docs/FONT_GLOBALS_PLAN.md.
+FontStyle CurrentFontStyle();
+
 // Makes font the current font and refreshes g_font_max_width and
 // g_font_max_height from it. Returns the previous font, so callers can restore
 // it. An empty font leaves the current font in place (and still returns it).
 std::span<const std::byte> SetFont(std::span<const std::byte> font);
 
-// Returns the horizontal distance, in pixels, that printing character in the
-// current font advances by: its glyph width plus g_font_x_spacing.
+// The two functions above, measured in CurrentFontStyle().
 int CharPixelWidth(char character);
-
-// Returns the width in pixels of the widest line of text in the current
-// font, or 0 for nullptr. Lines are separated by '\r' only, as the game's
-// text strings are; a '\n' is measured as a glyph, although PixelView::Print()
-// breaks the line on it. Every glyph counts g_font_x_spacing after it, the last
-// one on a line included, as Print() advances.
 int StringPixelWidth(const char* text);
 
 // Copies the first 16 entries of palette into g_font_palette, or does nothing

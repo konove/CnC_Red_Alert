@@ -65,6 +65,7 @@ inline constexpr bool base::kIsFlagEnum<PixelBufferFlags> = true;
 inline constexpr int kDefaultScreenWidth = 320;
 inline constexpr int kDefaultScreenHeight = 200;
 
+struct FontStyle;
 class PixelBuffer;
 class PixelView;
 
@@ -196,11 +197,20 @@ class PixelView {
                    int src_width, int src_height, int dst_width, int dst_height,
                    bool transparent, std::span<const uint8_t> remap_table);
 
-  // Draws text in the current font (g_font) at x,y, wrapping to a new line
-  // when the text runs past the view's width. `fore_color` and `back_color`
-  // are palette indices, and a `back_color` of 0 leaves the background
-  // untouched; the integer overload prints the number in decimal. Does
-  // nothing if `text` is null or no font is set.
+  // Draws text in `style` at x,y, wrapping to a new line when the text runs
+  // past the view's width. `fore_color` and `back_color` are palette indices
+  // that stand in for glyph values 1 and 0, and a `back_color` of 0 leaves the
+  // background untouched; the integer overload prints the number in decimal.
+  // Does nothing if `text` is null or the style has no font.
+  void Print(const FontStyle& style, const char* text, int x, int y,
+             int fore_color, int back_color);
+  void Print(const FontStyle& style, int value, int x, int y, int fore_color,
+             int back_color);
+  void PrintLocked(const FontStyle& style, const char* text, int x, int y,
+                   int fore_color, int back_color);
+
+  // The three above, in CurrentFontStyle() (sdllib/font.h). Each also writes
+  // its colours into g_font_palette entries 0 and 1, as the game always did.
   void Print(const char* text, int x, int y, int fore_color, int back_color);
   void Print(int value, int x, int y, int fore_color, int back_color);
   void PrintLocked(const char* text, int x, int y, int fore_color,

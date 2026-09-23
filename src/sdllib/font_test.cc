@@ -146,4 +146,37 @@ TEST(SetFontPaletteTest, CopiesSixteenEntriesAndIgnoresShortPalettes) {
   SetFontPalette(saved);
 }
 
+TEST(FontStyleTest, MeasuresWithItsOwnSpacing) {
+  const std::vector<uint8_t> blob = MakeTestFont();
+  const FontStyle style{.font = FontView(std::as_bytes(std::span(blob))),
+                        .x_spacing = 2,
+                        .y_spacing = -1};
+
+  // Glyph 1 is 4 pixels wide; each glyph advances by its width plus 2.
+  EXPECT_EQ(CharPixelWidth(style, '\x01'), 6);
+  EXPECT_EQ(StringPixelWidth(style, "\x01\x01\r\x01"), 12);
+  EXPECT_EQ(StringPixelWidth(style, nullptr), 0);
+  EXPECT_EQ(FontLineHeight(style), 7);
+}
+
+// The legacy functions measure in whatever the globals hold, so setting the
+// globals to a style has to give the same widths as passing it.
+TEST(FontStyleTest, LegacyMeasurementMatchesTheGlobalsStyle) {
+  const std::vector<uint8_t> blob = MakeTestFont();
+  const auto font = std::as_bytes(std::span(blob));
+  const auto old_font = SetFont(font);
+  const int old_x_spacing = g_font_x_spacing;
+  g_font_x_spacing = 3;
+
+  const FontStyle current = CurrentFontStyle();
+  EXPECT_EQ(current.font.data().data(), font.data());
+  EXPECT_EQ(current.x_spacing, 3);
+  EXPECT_EQ(StringPixelWidth("\x01\x01"),
+            StringPixelWidth(current, "\x01\x01"));
+  EXPECT_EQ(CharPixelWidth('\x01'), CharPixelWidth(current, '\x01'));
+
+  g_font_x_spacing = old_x_spacing;
+  SetFont(old_font);
+}
+
 }  // namespace

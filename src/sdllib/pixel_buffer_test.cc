@@ -11,7 +11,10 @@
 #include <numeric>
 #include <vector>
 
+#include "base/array.h"
 #include "gtest/gtest.h"
+#include "port/unaligned.h"
+#include "sdllib/font.h"
 
 // ww_win.cc, pulled in through pixel_buffer, dispatches events to the app.
 void SDL_Event_Handler(SDL_Event* /*event*/) {}
@@ -194,6 +197,86 @@ TEST(BlitTest, FullSourceOverhangingTwoEdgesCarriesTheSourceAlong) {
                                         0, 0, 0, 0,  //
                                         2, 3, 0, 0,  //
                                         5, 6, 0, 0}));
+}
+
+// A three-glyph font, 2 rows tall: glyph 1 is 3 pixels wide and 2 rows,
+// glyph 2 is 2 pixels wide and 1 row with 1 blank row above.
+std::vector<std::byte> MakePrintFont() {
+  std::vector<std::byte> blob(42, std::byte{0});
+  const auto word = [&blob](int offset, int value) {
+    port::WriteUnaligned(std::span(blob).subspan(static_cast<size_t>(offset)),
+                         static_cast<uint16_t>(value));
+  };
+  const auto byte = [&blob](int offset, int value) {
+    blob.at(static_cast<size_t>(offset)) = static_cast<std::byte>(value);
+  };
+  word(4, 14);   // info block
+  word(6, 20);   // offset table
+  word(8, 26);   // width table
+  word(10, 35);  // glyph data
+  word(12, 29);  // height table
+  byte(14 + kFontInfoMaxHeight, 2);
+  byte(14 + kFontInfoMaxWidth, 3);
+  word(22, 35);             // glyph 1 data
+  word(24, 39);             // glyph 2 data
+  byte(27, 3);              // glyph 1 width
+  byte(28, 2);              // glyph 2 width
+  word(31, 2 * 256);        // glyph 1: 2 rows
+  word(33, (1 * 256) + 1);  // glyph 2: 1 row, 1 blank above
+  // Glyph 1 rows: pixel values 1 2 3 and 0 1 2, two per byte, low nibble
+  // first. Glyph 2: 1 3.
+  byte(35, 0x21);
+  byte(36, 0x03);
+  byte(37, 0x10);
+  byte(38, 0x02);
+  byte(39, 0x31);
+  return blob;
+}
+
+TEST(PrintTest, DrawsThroughTheStylesPaletteAndSpacing) {
+  const std::vector<std::byte> blob = MakePrintFont();
+  FontStyle style{.font = FontView(blob), .x_spacing = 1};
+  style.palette.at(2) = 50;
+  style.palette.at(3) = 60;
+  std::vector<uint8_t> pixels(size_t{8} * 2, 0);
+  PixelBuffer page(8, 2, pixels);
+  const auto saved_palette = std::to_array(g_font_palette);
+
+  page.view().Print(style, "\x01\x02", 0, 0, 7, 0);
+
+  // Glyph 1 at x 0-2, one pixel of spacing, glyph 2 at x 4-5 on row 1.
+  EXPECT_EQ(pixels, (std::vector<uint8_t>{7, 50, 60, 0, 0, 0, 0, 0,  //
+                                          0, 7, 50, 0, 7, 60, 0, 0}));
+  // The palette entries the colours stand in for are the print's own.
+  EXPECT_EQ(std::to_array(g_font_palette), saved_palette);
+}
+
+TEST(PrintTest, LegacyPrintMatchesTheGlobalsStyle) {
+  const std::vector<std::byte> blob = MakePrintFont();
+  FontStyle style{.font = FontView(blob), .x_spacing = -1, .y_spacing = 0};
+  style.palette.at(2) = 50;
+  style.palette.at(3) = 60;
+  std::vector<uint8_t> explicit_pixels(size_t{8} * 2, 9);
+  std::vector<uint8_t> legacy_pixels(size_t{8} * 2, 9);
+  PixelBuffer explicit_page(8, 2, explicit_pixels);
+  PixelBuffer legacy_page(8, 2, legacy_pixels);
+
+  const auto old_font = SetFont(blob);
+  const int old_x_spacing = g_font_x_spacing;
+  const auto old_palette = std::to_array(g_font_palette);
+  g_font_x_spacing = style.x_spacing;
+  SetFontPalette(style.palette);
+
+  explicit_page.view().Print(style, "\x01\x02\x01", 0, 0, 7, 4);
+  legacy_page.view().Print("\x01\x02\x01", 0, 0, 7, 4);
+
+  EXPECT_EQ(explicit_pixels, legacy_pixels);
+  EXPECT_EQ(base::At(g_font_palette, 1), 7);
+  EXPECT_EQ(base::At(g_font_palette, 0), 4);
+
+  SetFontPalette(old_palette);
+  g_font_x_spacing = old_x_spacing;
+  SetFont(old_font);
 }
 
 }  // namespace

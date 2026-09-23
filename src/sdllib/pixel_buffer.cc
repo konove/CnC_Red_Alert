@@ -32,6 +32,7 @@
 #include <SDL_surface.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -690,6 +691,19 @@ void PixelView::ScaleLocked(PixelView& dest, int src_x, int src_y, int dst_x,
   }
 }
 
+void PixelView::Print(const FontStyle& style, const char* text, const int x,
+                      const int y, const int fore_color, const int back_color) {
+  if (Lock()) {
+    PrintLocked(style, text, x, y, fore_color, back_color);
+    Unlock();
+  }
+}
+
+void PixelView::Print(const FontStyle& style, const int value, const int x,
+                      const int y, const int fore_color, const int back_color) {
+  Print(style, absl::StrCat(value).c_str(), x, y, fore_color, back_color);
+}
+
 void PixelView::Print(const char* text, const int x, const int y,
                       const int fore_color, const int back_color) {
   if (Lock()) {
@@ -703,13 +717,20 @@ void PixelView::Print(const int value, const int x, const int y,
   Print(absl::StrCat(value).c_str(), x, y, fore_color, back_color);
 }
 
-void PixelView::PrintLocked(const char* text, int x, int y,
+void PixelView::PrintLocked(const char* text, const int x, const int y,
                             const int fore_color, const int back_color) {
-  if (!text || g_font.empty()) {
+  // Code that reads g_font_palette after a print still sees these colours.
+  g_font_palette[1] = static_cast<uint8_t>(fore_color);
+  g_font_palette[0] = static_cast<uint8_t>(back_color);
+  PrintLocked(CurrentFontStyle(), text, x, y, fore_color, back_color);
+}
+
+void PixelView::PrintLocked(const FontStyle& style, const char* text, int x,
+                            int y, const int fore_color, const int back_color) {
+  const FontView& font = style.font;
+  if (!text || font.data().empty()) {
     return;
   }
-
-  const FontView font(g_font);
 
   const int start_x = x;
   const base::ssize buffer_stride = stride();
@@ -721,12 +742,12 @@ void PixelView::PrintLocked(const char* text, int x, int y,
     return;
   }
 
-  // Glyph pixels are palette indices into g_font_palette: entry 0 is the
-  // background (0 also means transparent) and entry 1 the foreground;
-  // multi-colour fonts fill entries 2-15 via SetFontPalette().
+  // Glyph pixels are indices into the style's palette, with entry 0 the
+  // background (0 also means transparent) and entry 1 the foreground.
   const auto background = static_cast<uint8_t>(back_color);
-  g_font_palette[1] = static_cast<uint8_t>(fore_color);
-  g_font_palette[0] = background;
+  std::array<uint8_t, 16> palette = style.palette;
+  palette.at(1) = static_cast<uint8_t>(fore_color);
+  palette.at(0) = background;
 
   auto next_glyph_start = line_start + x;
 
@@ -741,10 +762,10 @@ void PixelView::PrintLocked(const char* text, int x, int y,
     const int glyph_width = font.GlyphWidth(ch);
 
     if (ch == '\n' || ch == '\r' ||
-        x + glyph_width + g_font_x_spacing > width_) {
+        x + glyph_width + style.x_spacing > width_) {
       // Advance to the next line: '\n' returns to the viewport edge, '\r'
       // and auto-wrap return to the starting column.
-      const int line_height = max_glyph_height + g_font_y_spacing;
+      const int line_height = max_glyph_height + style.y_spacing;
       if (height_ < y + line_height) {
         return;  // No room for another line.
       }
@@ -760,8 +781,8 @@ void PixelView::PrintLocked(const char* text, int x, int y,
       draw_ptr = next_glyph_start;  // The wrapped glyph draws on the new line.
     }
 
-    x += glyph_width + g_font_x_spacing;
-    next_glyph_start = draw_ptr + g_font_x_spacing + glyph_width;
+    x += glyph_width + style.x_spacing;
+    next_glyph_start = draw_ptr + style.x_spacing + glyph_width;
 
     // Distance from the end of a glyph row to the start of the next one.
     const int row_skip = static_cast<int>(buffer_stride - glyph_width);
@@ -787,7 +808,7 @@ void PixelView::PrintLocked(const char* text, int x, int y,
     if (glyph_height != 0) {
       // Each glyph byte packs two 4-bit palette indices, low nibble first.
       // Index 0 is transparent unless a background color is set, in which
-      // case g_font_palette[0] already paints it.
+      // case palette[0] already paints it.
       const auto glyph = font.GlyphData(ch);
       if (glyph.empty()) {
         return;
@@ -798,7 +819,7 @@ void PixelView::PrintLocked(const char* text, int x, int y,
         while (cols_left > 0) {
           const auto pixel_pair = std::to_integer<uint8_t>(*glyph_data++);
 
-          const uint8_t left = base::At(g_font_palette, pixel_pair & 0x0F);
+          const uint8_t left = base::At(std::span(palette), pixel_pair & 0x0F);
           if (left != 0) {
             *draw_ptr = left;
           }
@@ -806,7 +827,7 @@ void PixelView::PrintLocked(const char* text, int x, int y,
           --cols_left;
 
           if (cols_left > 0) {
-            const uint8_t right = base::At(g_font_palette, pixel_pair >> 4);
+            const uint8_t right = base::At(std::span(palette), pixel_pair >> 4);
             if (right != 0) {
               *draw_ptr = right;
             }
