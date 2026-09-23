@@ -2272,9 +2272,8 @@ void AnimTypeClass::One_Time() {
                               .replace_extension(".SHP")
                               .string();
 
-    DiskFile file(fullname);
-    if (file.IsAvailable()) {
-      As_Reference(index).Set_Image_Data(Load_Alloc_Data(file));
+    if (const auto file = OpenDiskFile(fullname)) {
+      As_Reference(index).Set_Image_Data(Load_Alloc_Data(*file));
     } else {
       As_Reference(index).Set_Image_Data(MixArchive::RetrieveData(fullname));
     }

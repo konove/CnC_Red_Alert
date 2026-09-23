@@ -133,12 +133,18 @@ void Choose_Side() {
 
   Call_Back();
 
-  GameFile f("STRUGGLE.AUD");
-  const auto staticaud = Load_Alloc_Data(f);
-  f.Open("GDI_SLCT.AUD");
-  const auto speechg = Load_Alloc_Data(f);
-  f.Open("NOD_SLCT.AUD");
-  const auto speechn = Load_Alloc_Data(f);
+  std::span<std::byte> staticaud;
+  if (const auto file = OpenGameFile("STRUGGLE.AUD")) {
+    staticaud = Load_Alloc_Data(*file);
+  }
+  std::span<std::byte> speechg;
+  if (const auto file = OpenGameFile("GDI_SLCT.AUD")) {
+    speechg = Load_Alloc_Data(*file);
+  }
+  std::span<std::byte> speechn;
+  if (const auto file = OpenGameFile("NOD_SLCT.AUD")) {
+    speechn = Load_Alloc_Data(*file);
+  }
 
   //	staticaud = MixArchive::RetrieveData("STRUGGLE.AUD");
   //	speechg = MixArchive::RetrieveData("GDI_SLCT.AUD");

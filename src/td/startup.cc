@@ -40,6 +40,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
+#include "td/startup.h"
+
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -68,11 +70,10 @@
 #include "td/profile.h"
 #include "td/screen.h"
 #include "td/session.h"
-#include "td/startup.h"
 #include "td/startup_options.h"
 #include "td/winstub.h"
 #include "tech/audio_mixer.h"
-#include "tech/disk_file.h"
+#include "tech/byte_stream.h"
 
 // The two tests that link this file define TD_NO_ENTRY_POINT; these headers
 // serve only main().
@@ -85,6 +86,7 @@
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
 #include "absl/strings/match.h"
+#include "sdllib/file_access.h"
 #include "sdllib/file_system.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
@@ -95,6 +97,7 @@
 #include "td/goptions.h"
 #include "td/special.h"
 #include "td/world.h"
+#include "tech/disk_file.h"
 #include "tech/search_paths.h"
 #endif  // TD_NO_ENTRY_POINT
 
@@ -112,9 +115,8 @@ void Delete_Swap_Files();
 [[maybe_unused]] [[noreturn]] static void Print_Error_End_Exit(char* string);
 [[maybe_unused]] [[noreturn]] static void Print_Error_Exit(char* string);
 
-[[maybe_unused]] static void Read_Setup_Options(DiskFile* config_file,
+[[maybe_unused]] static void Read_Setup_Options(ByteStream& config_file,
                                                 const StartupOptions& options);
-
 
 extern "C" {
 bool __cdecl Detect_MMX_Availability();
@@ -314,8 +316,6 @@ int main(int argc, char* argv[])
 
     InitTickTimer();
 
-    DiskFile cfile("CONQUER.INI");
-
     /*
     ** If there is not enough disk space free, dont allow the product to run.
     */
@@ -326,13 +326,12 @@ int main(int argc, char* argv[])
       return EXIT_FAILURE;
     }
 
-    if (!cfile.IsAvailable()) {
-      // just create an empty config, we don't care about most of it anyway
-      cfile.Create();
-    }
-
-    if (cfile.IsAvailable()) {
-      Read_Setup_Options(&cfile, *options);
+    // OpenDiskFile creates an empty CONQUER.INI when it does not already
+    // exist, replacing the old explicit Create() call; we don't care about
+    // most of it anyway.
+    if (const auto cfile =
+            OpenDiskFile("CONQUER.INI", FileAccess::kReadWrite)) {
+      Read_Setup_Options(*cfile, *options);
 
       CCDebugString("C&C95 - Creating main window.\n");
 
@@ -373,8 +372,10 @@ int main(int argc, char* argv[])
       CCDebugString("C&C95 - Reading CONQUER.INI.\n");
       std::vector<char> profile_storage(64000);
       char* buffer = profile_storage.data();
-      cfile.Read(std::as_writable_bytes(std::span(profile_storage))
-                     .first(profile_storage.size() - 1));
+      if (const auto config_read = OpenDiskFile("CONQUER.INI")) {
+        config_read->Read(std::as_writable_bytes(std::span(profile_storage))
+                              .first(profile_storage.size() - 1));
+      }
 
       /*
       **	Check for forced intro movie run disabling. If the conquer
@@ -403,8 +404,11 @@ int main(int argc, char* argv[])
       ** gonna change it to say "no" in the future.
       */
       WWWritePrivateProfileString("Intro", "PlayIntro", "No", profile_storage);
-      cfile.Write(std::as_bytes(std::span(profile_storage))
-                      .first(std::string_view(buffer).size()));
+      if (const auto config_write =
+              OpenDiskFile("CONQUER.INI", FileAccess::kWrite)) {
+        config_write->Write(std::as_bytes(std::span(profile_storage))
+                                .first(std::string_view(buffer).size()));
+      }
 
 #ifdef _WIN32
       CCDebugString(
@@ -544,54 +548,53 @@ void ShutDown() {
  *                                                                                             *
  * HISTORY: * 6/7/96 4:09PM ST : Created *
  *=============================================================================================*/
-void Read_Setup_Options(DiskFile* config_file, const StartupOptions& options) {
-  std::vector<char> profile_storage(base::ToSize(config_file->Size() + 1));
+void Read_Setup_Options(ByteStream& config_file,
+                        const StartupOptions& options) {
+  std::vector<char> profile_storage(base::ToSize(config_file.Size() + 1));
   char* buffer = profile_storage.data();
 
-  if (config_file->IsAvailable()) {
-    config_file->Read(std::as_writable_bytes(std::span(profile_storage))
-                          .first(profile_storage.size() - 1));
+  config_file.Read(std::as_writable_bytes(std::span(profile_storage))
+                       .first(profile_storage.size() - 1));
 
-    AllowHardwareBlitFills =
-        WWGetPrivateProfileInt("Options", "HardwareFills", 1, buffer) != 0;
-    // Resolution=yes and -480 both ask for a 480-line mode; Screen::Init()
-    // letterboxes the 400-line game area inside it.
-    TheScreen().set_mode_height(
-        options.tall_screen ||
-                WWGetPrivateProfileInt("Options", "Resolution", 0, buffer) != 0
-            ? 480
-            : Screen::kHeight);
-    TheGameState().compatibility_v107() =
-        options.compatibility_v107 ||
-        WWGetPrivateProfileInt("Options", "Compatibility", 0, buffer) != 0;
+  AllowHardwareBlitFills =
+      WWGetPrivateProfileInt("Options", "HardwareFills", 1, buffer) != 0;
+  // Resolution=yes and -480 both ask for a 480-line mode; Screen::Init()
+  // letterboxes the 400-line game area inside it.
+  TheScreen().set_mode_height(
+      options.tall_screen ||
+              WWGetPrivateProfileInt("Options", "Resolution", 0, buffer) != 0
+          ? 480
+          : Screen::kHeight);
+  TheGameState().compatibility_v107() =
+      options.compatibility_v107 ||
+      WWGetPrivateProfileInt("Options", "Compatibility", 0, buffer) != 0;
 
-    /*
-    ** See if an alternative socket number has been specified
-    */
-    if (options.socket.has_value()) {
-      TheNetwork().ipx().Set_Socket(*options.socket);
-    } else {
-      const int socket = WWGetPrivateProfileInt("Options", "Socket", 0, buffer);
-      if (socket > 0 && socket < 0x4000) {
-        TheNetwork().ipx().Set_Socket(static_cast<uint16_t>(0x4000 + socket));
-      }
+  /*
+  ** See if an alternative socket number has been specified
+  */
+  if (options.socket.has_value()) {
+    TheNetwork().ipx().Set_Socket(*options.socket);
+  } else {
+    const int socket = WWGetPrivateProfileInt("Options", "Socket", 0, buffer);
+    if (socket > 0 && socket < 0x4000) {
+      TheNetwork().ipx().Set_Socket(static_cast<uint16_t>(0x4000 + socket));
     }
+  }
 
-    /*
-    ** See if a destination network has been specified
-    */
-    std::optional<IPXAddressClass> bridge_net = options.bridge_net;
-    if (!bridge_net.has_value()) {
-      char netbuf[512];
-      base::FillBytes(base::ObjectBytes(netbuf), 0, sizeof(netbuf));
-      if (WWGetPrivateProfileString("Options", "DestNet", nullptr, netbuf,
-                                    buffer) != nullptr) {
-        bridge_net = ParseDestNet(netbuf);
-      }
+  /*
+  ** See if a destination network has been specified
+  */
+  std::optional<IPXAddressClass> bridge_net = options.bridge_net;
+  if (!bridge_net.has_value()) {
+    char netbuf[512];
+    base::FillBytes(base::ObjectBytes(netbuf), 0, sizeof(netbuf));
+    if (WWGetPrivateProfileString("Options", "DestNet", nullptr, netbuf,
+                                  buffer) != nullptr) {
+      bridge_net = ParseDestNet(netbuf);
     }
-    if (bridge_net.has_value()) {
-      TheNetwork().is_bridge() = 1;
-      TheNetwork().bridge_net() = *bridge_net;
-    }
+  }
+  if (bridge_net.has_value()) {
+    TheNetwork().is_bridge() = 1;
+    TheNetwork().bridge_net() = *bridge_net;
   }
 }

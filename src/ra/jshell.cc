@@ -70,7 +70,7 @@
 #include "sdllib/iff.h"
 #include "sdllib/misc.h"
 #include "sdllib/ww_win.h"
-#include "tech/file.h"
+#include "tech/byte_stream.h"
 #include "tech/game_file.h"
 #include "tech/rgb.h"
 
@@ -198,13 +198,9 @@ void Format_Runtime_Text(std::span<char> buffer, const size_t size,
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t Load_Uncompress(File& file, std::span<uint8_t> uncomp_buff,
+int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
                         std::span<uint8_t> dest_buff,
                         std::span<unsigned char> reserved_data) {
-  const bool opened = !file.IsOpen();
-  if (opened && !file.Open()) {
-    return 0;
-  }
   const auto decode = [&] -> int32_t {
     uint16_t stored_size = 0;
     CompHeaderType header{};
@@ -248,18 +244,17 @@ int32_t Load_Uncompress(File& file, std::span<uint8_t> uncomp_buff,
     }
     return static_cast<int32_t>(Uncompress_Data(source, dest));
   };
-  const int32_t result = decode();
-  if (opened) {
-    file.Close();
-  }
-  return result;
+  return decode();
 }
 
 int Load_Picture(const char* filename, std::span<uint8_t> scratchbuf,
                  std::span<uint8_t> destbuf, std::span<unsigned char> palette,
                  PicturePlaneType /*unused*/) {
-  GameFile fc(filename);
-  return Load_Uncompress(fc, scratchbuf, destbuf, palette) / 8000;
+  const auto file = OpenGameFile(filename);
+  if (!file) {
+    return 0;
+  }
+  return Load_Uncompress(*file, scratchbuf, destbuf, palette) / 8000;
 }
 
 /***********************************************************************************************

@@ -1042,13 +1042,17 @@ void Map_Selection() {
   int done = 0;
 
   if (house == HOUSE_GOOD) {
-    GameFile f(lastscenario ? "CLICK_EB.CPS" : "CLICK_E.CPS");
-    Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
-                    TheScreen().sys_mem_page().bytes(), {});
+    if (const auto file =
+            OpenGameFile(lastscenario ? "CLICK_EB.CPS" : "CLICK_E.CPS")) {
+      Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
+                      TheScreen().sys_mem_page().bytes(), {});
+    }
   } else {
-    GameFile f(lastscenario ? "CLICK_SA.CPS" : "CLICK_A.CPS");
-    Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
-                    TheScreen().sys_mem_page().bytes(), {});
+    if (const auto file =
+            OpenGameFile(lastscenario ? "CLICK_SA.CPS" : "CLICK_A.CPS")) {
+      Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
+                      TheScreen().sys_mem_page().bytes(), {});
+    }
     if (lastscenario) {
       attackxcoord = 200;
     }

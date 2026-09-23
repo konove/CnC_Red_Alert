@@ -75,7 +75,7 @@
 #include "sdllib/ww_win.h"
 #include "support.h"
 #include "td/startup.h"
-#include "tech/file.h"
+#include "tech/byte_stream.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *
@@ -211,13 +211,9 @@ void File_Fatal(const char* message) {
  *                                                                                             *
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
-int32_t Load_Uncompress(File& file, std::span<uint8_t> uncomp_buff,
+int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
                         std::span<uint8_t> dest_buff,
                         std::span<unsigned char> reserved_data) {
-  const bool opened = !file.IsOpen();
-  if (opened && !file.Open()) {
-    return 0;
-  }
   const auto decode = [&] -> int32_t {
     uint16_t stored_size = 0;
     CompHeaderType header{};
@@ -261,20 +257,16 @@ int32_t Load_Uncompress(File& file, std::span<uint8_t> uncomp_buff,
     }
     return static_cast<int32_t>(Uncompress_Data(source, dest));
   };
-  const int32_t result = decode();
-  if (opened) {
-    file.Close();
-  }
-  return result;
+  return decode();
 }
 
-std::vector<std::byte> LoadAllocData(File& file) {
+std::vector<std::byte> LoadAllocData(ByteStream& file) {
   std::vector<std::byte> data(base::ToSize(file.Size()));
   file.Read(std::span(data));
   return data;
 }
 
-std::span<std::byte> Load_Alloc_Data(File& file) {
+std::span<std::byte> Load_Alloc_Data(ByteStream& file) {
   const auto size = base::ToSize(file.Size());
   // The returned view carries the exact allocation extent; legacy callers
   // retain ownership. The extra NUL also supports files read as C strings.

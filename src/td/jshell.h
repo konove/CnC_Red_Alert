@@ -60,7 +60,8 @@
 #include "sdllib/iff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/file.h"
+
+class ByteStream;
 
 /*
 **	Interface class to the keyboard. This insulates the game from library
@@ -213,11 +214,11 @@ std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
 void Set_Window(int window, int x, int y, int w, int h);
 // Allocates a buffer, reads the file into it, and null-terminates.
 // Returns ownership of the buffer. Caller must delete[].
-std::span<std::byte> Load_Alloc_Data(File& file);
+std::span<std::byte> Load_Alloc_Data(ByteStream& file);
 
 // Reads a file into owned byte storage.
-std::vector<std::byte> LoadAllocData(File& file);
-int32_t Load_Uncompress(File& file, std::span<uint8_t> uncomp_buff,
+std::vector<std::byte> LoadAllocData(ByteStream& file);
+int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
                         std::span<uint8_t> dest_buff,
                         std::span<unsigned char> reserved_data);
 int32_t Translucent_Table_Size(int count);

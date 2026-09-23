@@ -877,21 +877,21 @@ Two commits.
 `mapsel.cc:1045`, `:1049`, `init.cc:1388`, `:1413`, `:1438`, `:1462`, `intro.cc:136-141`,
 `mouse.cc:289`, `bbdata.cc:595`, `adata.cc:2275`, `startup.cc:321`; RA `jshell.cc:261`.
 
-- [ ] `Load_Uncompress(ByteStream& file, ...)` in both games: delete the `IsOpen`/`Open`/`Close` and
+- [x] `Load_Uncompress(ByteStream& file, ...)` in both games: delete the `IsOpen`/`Open`/`Close` and
       the `opened` flag; the reads are unchanged (the helpers are on `ByteStream` now).
       `LoadAllocData(ByteStream&)`, `Load_Alloc_Data(ByteStream&)`.
-- [ ] Callers open first:
+- [x] Callers open first:
       `if (const auto file = OpenGameFile("ATTRACT2.CPS")) {     Load_Uncompress(*file, ...); }`.
       Where the result is used as a count, a missing file yields 0 as before. `td/ending.cc:182` and
       `td/intro.cc:136` open one stream per file they read.
-- [ ] `td/startup.cc:321`: `Read_Setup_Options(DiskFile*, ...)` becomes
+- [x] `td/startup.cc:321`: `Read_Setup_Options(DiskFile*, ...)` becomes
       `Read_Setup_Options(ByteStream&, ...)`; open the config with
       `OpenDiskFile("CONQUER.INI",     FileAccess::kReadWrite)` (creates it if missing, replacing
       `Create()`), and give the profile read (`:383`) and write (`:413`) their own `OpenDiskFile`
       streams in that order.
-- [ ] Both builds, tests, TD smoke. Real-display check (headless never loads palettes): TD title and
+- [x] Both builds, tests, TD smoke. Real-display check (headless never loads palettes): TD title and
       ending pictures, map selection, the intro's STRUGGLE sequence, RA's `Load_Picture` screens.
-- [ ] Commit: `Read pictures from open streams`.
+- [x] Commit: `Read pictures from open streams`.
 
 **7b — WSA, PCX, audio, stub readers, mix archives.** Files: `src/tech/wsa_animation.{h,cc}`
 (+test), `src/tech/pcx_file.cc`, `src/ra/writepcx.cc`, `src/ra/filepcx.h`, `src/ra/conquer.cc:619`,
@@ -1289,3 +1289,42 @@ memory note _parallel forks for mechanical sweeps_ applies (disjoint file groups
   interactive options dialog (`gamedlg.cc`), which needs a real display per
   [[running-ra-with-game-data]] (`SDL_VIDEODRIVER=dummy` never loads real palettes/accepts input);
   `Load_Settings` runs on every boot and was exercised, `Save_Settings` was not.
+- 2026-09-23: Step 7a landed. `Load_Uncompress` (both games), TD's `LoadAllocData`/`Load_Alloc_Data`
+  now take `ByteStream&` instead of `File&`; the `IsOpen`/`Open`/`Close`/`opened`-flag dance is
+  gone, since the caller now hands in an already-open stream. `ra/jshell.h`/`td/jshell.h`
+  forward-declare `class ByteStream;` instead of including `tech/file.h`. Converted every caller in
+  the brief's list (`ending.cc:111,131,182-185,294,314`, `mapsel.cc:1045,1049`, `init.cc`'s four
+  `ATTRACT2.CPS` blocks, `intro.cc:136-141`, `mouse.cc:289`, `bbdata.cc:595`, `adata.cc:2275`,
+  `assets.cc`'s `LoadFonts`, RA `jshell.cc:261`'s `Load_Picture`) to
+  `if (const auto file = OpenGameFile(...))`; where a `GameFile`/`DiskFile` object was reused across
+  two or three unrelated files (`ending.cc`'s SATSEL.PAL/SATSEL.CPS, `intro.cc`'s
+  STRUGGLE/GDI_SLCT/NOD_SLCT.AUD), each file got its own `OpenGameFile` call and the destination
+  variable became a plain `std::span<std::byte>` default-initialized before the `if`s (a missing
+  file leaves it empty, same as the old `Size()==0` path). A missing file's `Load_Picture` now
+  returns 0 directly instead of falling into `Load_Uncompress` with a closed stream. TD's dead
+  `#ifdef JAPANESE` block in `msgbox.cc` (never compiles) was left untouched. `td/startup.cc`'s
+  `main()` now opens CONQUER.INI once with `OpenDiskFile("CONQUER.INI", FileAccess::kReadWrite)`
+  (creates it if missing, replacing the `Create()` probe) for the guard and for
+  `Read_Setup_Options`, whose own `IsAvailable()` check was dropped since the caller only invokes it
+  with a stream that already opened; the later profile read and write each get their own scoped
+  `OpenDiskFile` (`kRead` then `kWrite`), so the read stream is destroyed before the write stream
+  truncates. `td/assets_test.cc`'s stub became `LoadAllocData(ByteStream&)` over a forward-declared
+  `class ByteStream;`. Found during the build: `td/startup.cc` compiles `Read_Setup_Options`'s
+  definition unconditionally but guards `main()` (and therefore every `OpenDiskFile`/`FileAccess`
+  use) behind `#ifndef TD_NO_ENTRY_POINT`, so `misc-include-cleaner` flagged
+  `sdllib/file_access.h`/`tech/disk_file.h` as unused in the three `TD_NO_ENTRY_POINT` test targets;
+  moved both includes inside that guard. Both `build` and `build-strict` build clean;
+  `ctest --test-dir build-strict` is still 752/752 passed; both smoke scripts print OK (240 object
+  positions, 5951 game states). Real-display check: attempted on the machine's actual `DISPLAY=:0`
+  (not just `SDL_VIDEODRIVER=dummy`) — `tdsdl` creates its window (confirmed via `wmctrl -l`) and
+  runs past `Set_Video_Mode`/`Restore_Cached_Icons` without crashing, but the session's screen was
+  locked, so no visual capture of the title/ending/map-select/ intro screens was possible; confirmed
+  via `git stash` that an unmodified `tdsdl` hangs at the same point under `SDL_VIDEODRIVER=dummy`
+  (waiting at the menu for input, per [[headless-load-failure-hangs]], not a regression). The
+  startup/CONQUER.INI and `MOUSE.SHP` conversions are exercised indirectly by the passing TD smoke
+  test (`-NEWGAME.../-NOMOVIES` reaches `main()`'s config path and `MouseClass::One_Time()` every
+  run); RA's `PALETTE.CPS` load through the converted `Load_Picture` is exercised the same way by
+  the RA smoke test. The `ending.cc`/`mapsel.cc`/`intro.cc`/`init.cc` attract-screen conversions and
+  TD's ending cutscenes are not reachable from either smoke script (they need the interactive menu)
+  and were not visually verified — flagged as not directly checked; they follow the same mechanical
+  pattern validated elsewhere and passed clang-tidy/GCC/clang strict analysis.

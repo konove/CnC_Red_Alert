@@ -50,8 +50,9 @@ void Assets::LoadFonts() {
       fonts_.at(type) = MixArchive::RetrieveData(source.file);
       continue;
     }
-    GameFile file(source.file);
-    font_data_.at(type) = LoadAllocData(file);
+    if (const auto file = OpenGameFile(source.file)) {
+      font_data_.at(type) = LoadAllocData(*file);
+    }
     fonts_.at(type) = font_data_.at(type);
   }
   Set_Font(font(FontType::k8Point));

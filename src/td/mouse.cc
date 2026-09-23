@@ -286,9 +286,8 @@ void MouseClass::One_Time() {
   **	Override the mouse shape file with the one in the current directory, but
   *only if there *	is an override file available.
   */
-  DiskFile file("MOUSE.SHP");
-  if (file.IsAvailable()) {
-    MouseShapes = Load_Alloc_Data(file);
+  if (const auto file = OpenDiskFile("MOUSE.SHP")) {
+    MouseShapes = Load_Alloc_Data(*file);
   } else {
     MouseShapes = MixArchive::RetrieveData("MOUSE.SHP");
   }

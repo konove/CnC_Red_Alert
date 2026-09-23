@@ -64,7 +64,8 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/file.h"
+
+class ByteStream;
 
 /*
 **	Interface class to the keyboard. This insulates the game from library
@@ -279,7 +280,7 @@ std::span<unsigned char> Conquer_Build_Fading_Table(
 std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
                                           int iconnum);
 void Set_Window(int window, int x, int y, int w, int h);
-int32_t Load_Uncompress(File& file, std::span<uint8_t> uncomp_buff,
+int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
                         std::span<uint8_t> dest_buff,
                         std::span<unsigned char> reserved_data);
 int32_t Translucent_Table_Size(int count);

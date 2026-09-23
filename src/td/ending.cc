@@ -108,10 +108,11 @@ void GDI_Ending() {
   if (GameFile("TRAILER.VQA").IsAvailable()) {
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                     Call_Back);
-    GameFile f("ATTRACT2.CPS");
-    Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
-                    TheScreen().sys_mem_page().bytes(),
-                    ThePalettes().title_palette());
+    if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
+      Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
+                      TheScreen().sys_mem_page().bytes(),
+                      ThePalettes().title_palette());
+    }
     TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
                                             0, 320, 199, 640, 398);
     Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
@@ -128,10 +129,11 @@ void GDI_Ending() {
   }
 
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
-  GameFile f("ATTRACT2.CPS");
-  Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
-                  TheScreen().sys_mem_page().bytes(),
-                  ThePalettes().title_palette());
+  if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
+    Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
+                    TheScreen().sys_mem_page().bytes(),
+                    ThePalettes().title_palette());
+  }
   TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
                                           0, 320, 199, 640, 398);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
@@ -179,11 +181,14 @@ void Nod_Ending() {
   TheScreen().hidden_view().Clear();
   show.page().view().Clear();
 
-  GameFile f("SATSEL.PAL");
-  const auto localpal = Load_Alloc_Data(f);
-  f.Open("SATSEL.CPS");
-  Load_Uncompress(f, TheScreen().sys_mem_page().bytes(),
-                  TheScreen().sys_mem_page().bytes(), {});
+  std::span<std::byte> localpal;
+  if (const auto file = OpenGameFile("SATSEL.PAL")) {
+    localpal = Load_Alloc_Data(*file);
+  }
+  if (const auto file = OpenGameFile("SATSEL.CPS")) {
+    Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
+                    TheScreen().sys_mem_page().bytes(), {});
+  }
 #ifdef NOT_FOR_WIN95
   base::CopyBytes(std::as_writable_bytes(std::span(satpic)),
                   std::as_bytes(TheScreen().hidden_view().bytes()),
@@ -291,10 +296,11 @@ void Nod_Ending() {
   if (GameFile("TRAILER.VQA").IsAvailable()) {
     Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                     Call_Back);
-    GameFile attract_file("ATTRACT2.CPS");
-    Load_Uncompress(attract_file, TheScreen().sys_mem_page().bytes(),
-                    TheScreen().sys_mem_page().bytes(),
-                    ThePalettes().title_palette());
+    if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
+      Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
+                      TheScreen().sys_mem_page().bytes(),
+                      ThePalettes().title_palette());
+    }
     TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
                                             0, 320, 199, 640, 398);
     Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
@@ -311,10 +317,11 @@ void Nod_Ending() {
   }
 
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
-  GameFile f2("ATTRACT2.CPS");
-  Load_Uncompress(f2, TheScreen().sys_mem_page().bytes(),
-                  TheScreen().sys_mem_page().bytes(),
-                  ThePalettes().title_palette());
+  if (const auto file = OpenGameFile("ATTRACT2.CPS")) {
+    Load_Uncompress(*file, TheScreen().sys_mem_page().bytes(),
+                    TheScreen().sys_mem_page().bytes(),
+                    ThePalettes().title_palette());
+  }
   TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
                                           0, 320, 199, 640, 398);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
