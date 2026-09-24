@@ -48,29 +48,13 @@
 #include "winvq/vqm32/soscomp.h"
 #include "winvq/vqm32/video.h"
 
-// Identification of the original library. Unused.
-#define VQA_VERSION "2.42"
-#define VQA_DATE __DATE__ " " __TIME__
-
-#define VQA_IDSTRING "VQA32 " VQA_VERSION " (" VQA_DATE ")"
-#define VQA_REQUIRES "VQM32 2.12 or better."
-
 // Packs a block width and height into the dimension code the drawer switches
-// on to pick an decode_frame routine. Only 4x2 and 4x4 blocks have one.
+// on to pick a decoder. Only 4x2 and 4x4 blocks have one.
 constexpr uint32_t BlockDimensions(uint32_t a, uint32_t b) {
   return ((a & 0xFF) << 8) | (b & 0xFF);
 }
-#define BLOCK_2X2 BlockDimensions(2, 2)
-#define BLOCK_2X3 BlockDimensions(2, 3)
 constexpr uint32_t kBlock4x2 = BlockDimensions(4, 2);
 constexpr uint32_t kBlock4x4 = BlockDimensions(4, 4);
-
-// Limits of the DOS library. Unused: the buffer counts come from VqaConfig.
-#define VQA_MAX_CBBUFS 10     // Maximum number of codebook buffers
-#define VQA_MAX_FRAMEBUFS 30  // Maximum number of frame buffers
-
-// Vector pointer value that marked a masked-out block. Unused.
-#define VQA_MASK_POINTER 0x8000
 
 // ChunkHeader: the 8 bytes in front of every IFF chunk, read raw. id compares
 // against the ID_ and kChunk constants as read; size is big-endian and only
@@ -107,11 +91,9 @@ struct VqaCodebook {
   int32_t compressed_offset = 0;
 };
 
-// VqaCodebook flags, set by the loader for each new codebook.
-#define VQACBB_DOWNLOADED 0  // Download codebook to VRAM (XMODE VRAM)
-#define VQACBB_CBCOMP 1      // Codebook is still compressed
-#define VQACBF_DOWNLOADED (1U << VQACBB_DOWNLOADED)
-constexpr uint32_t kCodebookCompressed = 1U << VQACBB_CBCOMP;
+// VqaCodebook flag, set by the loader for each new codebook: the codebook is
+// still compressed.
+constexpr uint32_t kCodebookCompressed = 1U << 1;
 
 // VqaFrame: one buffer in the ring of loaded frames. The loader fills it
 // and sets kFrameLoaded; the drawer decodes it; the flipper or a skip
@@ -140,16 +122,15 @@ struct VqaFrame {
 };
 
 // VqaFrame flags. All clear means the buffer is free for the loader.
-#define VQAFRMB_LOADED 0   // Loaded and waiting to be drawn
-#define VQAFRMB_KEY 1      // Key frame: never skipped
-#define VQAFRMB_PALETTE 2  // Carries a palette that must be set
-#define VQAFRMB_PALCOMP 3  // Palette is still compressed
-#define VQAFRMB_PTRCOMP 4  // Vector pointer data is still compressed
-constexpr uint32_t kFrameLoaded = 1U << VQAFRMB_LOADED;
-constexpr uint32_t kFrameKey = 1U << VQAFRMB_KEY;
-constexpr uint32_t kFrameHasPalette = 1U << VQAFRMB_PALETTE;
-constexpr uint32_t kFramePaletteCompressed = 1U << VQAFRMB_PALCOMP;
-constexpr uint32_t kFramePointersCompressed = 1U << VQAFRMB_PTRCOMP;
+// Loaded and waiting to be drawn.
+constexpr uint32_t kFrameLoaded = 1U << 0;
+// Key frame: never skipped.
+constexpr uint32_t kFrameKey = 1U << 1;
+// Carries a palette that must be set.
+constexpr uint32_t kFrameHasPalette = 1U << 2;
+// The palette and the vector pointers are still compressed.
+constexpr uint32_t kFramePaletteCompressed = 1U << 3;
+constexpr uint32_t kFramePointersCompressed = 1U << 4;
 
 // VqaLoader: the loader's position in the file and in the buffer rings.
 struct VqaLoader {
@@ -239,9 +220,8 @@ struct VqaDrawer {
   int32_t WaitsOnLoader;
 };
 
-// Drawer flags.
-#define VQADRWB_SETPAL 0  // A skipped frame's palette is pending.
-constexpr uint32_t kDrawerPalettePending = 1U << VQADRWB_SETPAL;
+// Drawer flag: a skipped frame's palette is pending.
+constexpr uint32_t kDrawerPalettePending = 1U << 0;
 
 // VqaFlipper: the frame the drawer finished, which ReleaseDrawnFrame()
 // releases. The name is from DOS, where this step showed the frame by flipping
@@ -305,26 +285,21 @@ struct VqaAudio {
 
 // Audio flags. The two-bit fields hold an HMI_* state; DIGIINIT is set while
 // the SDL stream and callback are installed. The rest come from the DOS
-// library: TIMERINIT is only ever cleared, HMITIMER is set only by
-// VQA_StartTimerInt(), which nothing calls, and the page locks are unused.
-#define VQAAUDB_DIGIINIT 0    // Sound output initialized (2 bits)
-#define VQAAUDB_TIMERINIT 2   // HMI timer system initialized (2 bits)
-#define VQAAUDB_HMITIMER 4    // HMI timer callback initialized (2 bits)
-#define VQAAUDB_ISPLAYING 6   // The callback is playing the ring.
-#define VQAAUDB_MEMLOCKED 30  // Audio memory page locked.
-#define VQAAUDB_MODLOCKED 31  // Audio module page locked.
+// library: TIMERINIT is only ever cleared, and HMITIMER is set only by
+// VQA_StartTimerInt(), which nothing calls.
+#define VQAAUDB_DIGIINIT 0   // Sound output initialized (2 bits)
+#define VQAAUDB_TIMERINIT 2  // HMI timer system initialized (2 bits)
+#define VQAAUDB_HMITIMER 4   // HMI timer callback initialized (2 bits)
 
 #define VQAAUDF_DIGIINIT (3U << VQAAUDB_DIGIINIT)
 #define VQAAUDF_TIMERINIT (3U << VQAAUDB_TIMERINIT)
 #define VQAAUDF_HMITIMER (3U << VQAAUDB_HMITIMER)
-constexpr uint32_t kAudioPlaying = 1U << VQAAUDB_ISPLAYING;
-#define VQAAUDF_MEMLOCKED (1U << VQAAUDB_MEMLOCKED)
-#define VQAAUDF_MODLOCKED (1U << VQAAUDB_MODLOCKED)
+// The callback is playing the ring.
+constexpr uint32_t kAudioPlaying = 1U << 6;
 
 // States of the two-bit audio flag fields.
 #define HMI_UNINIT 0U   // Not initialized
 #define HMI_VQAINIT 1U  // Initialized by the player
-#define HMI_APPINIT 2U  // Initialized by the application
 
 // VqaMovie: everything a movie needs while it is open. Allocated by OpenVqa()
 // once the header is read and freed by CloseVqa().
@@ -379,28 +354,21 @@ struct VqaMovie {
 };
 
 // VqaMovie flags.
-
 // A drawn frame waits for ReleaseDrawnFrame() to release it; no other frame is
 // drawn until then.
-#define VQADATB_UPDATE 0
+constexpr uint32_t kMovieAwaitingRelease = 1U << 0;
 // The drawer has a frame ready and is waiting on kMovieAwaitingRelease, so it
 // does not select another.
-#define VQADATB_DSLEEP 1
+constexpr uint32_t kMovieDrawerAsleep = 1U << 1;
 // The loader stopped inside a sound chunk until the audio ring has room; see
 // chunk_header.
-#define VQADATB_LSLEEP 2
-#define VQADATB_DDONE 3  // The drawer has finished. Set when done.
-#define VQADATB_LDONE 4  // The loader has finished. Set when done.
+constexpr uint32_t kMovieLoaderAsleep = 1U << 2;
+// The drawer and the loader have finished.
+constexpr uint32_t kMovieDrawerDone = 1U << 3;
+constexpr uint32_t kMovieLoaderDone = 1U << 4;
 // PlayVqa() has configured the drawer and started the clock and sound.
-#define VQADATB_PRIMED 5
-#define VQADATB_PAUSED 6  // The player is paused.
-constexpr uint32_t kMovieAwaitingRelease = 1U << VQADATB_UPDATE;
-constexpr uint32_t kMovieDrawerAsleep = 1U << VQADATB_DSLEEP;
-constexpr uint32_t kMovieLoaderAsleep = 1U << VQADATB_LSLEEP;
-constexpr uint32_t kMovieDrawerDone = 1U << VQADATB_DDONE;
-constexpr uint32_t kMovieLoaderDone = 1U << VQADATB_LDONE;
-constexpr uint32_t kMovieStarted = 1U << VQADATB_PRIMED;
-constexpr uint32_t kMoviePaused = 1U << VQADATB_PAUSED;
+constexpr uint32_t kMovieStarted = 1U << 5;
+constexpr uint32_t kMoviePaused = 1U << 6;
 
 // VqaPlayerState: the player state behind VqaPlayer, which owns one; tests use
 // one directly to reach the internals. It outlives the movies opened on it.

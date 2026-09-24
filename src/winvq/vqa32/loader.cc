@@ -1588,7 +1588,6 @@ static int32_t Load_CBF0(const VqaPlayerState* vqap, int32_t iffsize) {
 
   /* Clock pointers to next CB Buffer. */
   loader->full_codebook = curcb;
-  loader->full_codebook->flags &= ~VQACBF_DOWNLOADED;
   loader->partial_codebook = curcb->next;
 
   return 0;
@@ -1644,7 +1643,6 @@ static int32_t Load_CBFZ(const VqaPlayerState* vqap, int32_t iffsize) {
 
   /* Clock pointers to next CB Buffer */
   loader->full_codebook = curcb;
-  loader->full_codebook->flags &= ~VQACBF_DOWNLOADED;
   loader->partial_codebook = curcb->next;
 
   return 0;
@@ -1712,7 +1710,6 @@ static int32_t Load_CBP0(const VqaPlayerState* vqap, int32_t iffsize) {
 
     /* Go to the next codebook buffer */
     loader->full_codebook = curcb;
-    loader->full_codebook->flags &= ~VQACBF_DOWNLOADED;
     loader->partial_codebook = curcb->next;
   }
 
@@ -1800,7 +1797,6 @@ static int32_t Load_CBPZ(const VqaPlayerState* vqap, int32_t iffsize) {
 
     /* Go to the next codebook buffer */
     loader->full_codebook = curcb;
-    loader->full_codebook->flags &= ~VQACBF_DOWNLOADED;
     loader->partial_codebook = curcb->next;
   }
 

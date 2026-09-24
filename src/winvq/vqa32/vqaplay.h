@@ -37,64 +37,52 @@
 // Originally written by Bill Randolph and Denzil E. Long, Jr. at Westwood
 // Studios, April 1995.
 
-// Build switches of the original DOS library. Nothing in vqa32 tests them any
-// more; only the standalone player in vplay32, which is not built, reads
-// VQAAUDIO_ON, VQAVESA_ON and VQAWOOFER_ON.
-#define VQASTANDALONE 0  // Stand alone player
-#define VQAVOC_ON 0      // Enable VOC file override
-#define VQAAUDIO_ON 1    // Audio playback enable/disable
-#define VQAVIDEO_ON 0    // Video manager enable/disable
-#define VQAMCGA_ON 0     // MCGA enable/disable
-#define VQAXMODE_ON 0    // Xmode enable/disable
-#define VQAVESA_ON 0     // VESA enable/disable
-#define VQABLOCK_2X2 0   // 2x2 block decode enable/disable
-#define VQABLOCK_2X3 0   // 2x3 block decode enable/disable
-#define VQABLOCK_4X2 1   // 4x2 block decode enable/disable
-#define VQABLOCK_4X4 1   // 4x4 block decode enable/disable
-#define VQAWOOFER_ON 0   // Subwoofer track enable/disable
-
 // Playback modes, the argument to VqaPlayer::Play().
-constexpr int kVqaModeRun = 0;  // Play the movie through to the end.
-constexpr int kVqaModeWalk =
-    1;  // Load and draw at most one frame, then return.
-constexpr int kVqaModePause = 2;  // Suspend playback and its audio.
-constexpr int kVqaModeStop = 3;   // End playback, as if the movie had finished.
+// Play the movie through to the end.
+constexpr int kVqaModeRun = 0;
+// Load and draw at most one frame, then return.
+constexpr int kVqaModeWalk = 1;
+// Suspend playback and its audio.
+constexpr int kVqaModePause = 2;
+// End playback, as if the movie had finished.
+constexpr int kVqaModeStop = 3;
 
 // Clocks the player can pace frames by (VqaConfig::clock_source). The audio
 // clock is used only while sound plays and the interrupt clock never starts
-// on this port, so both fall back to the system clock ("DOS").
-constexpr int kVqaClockDefault =
-    -1;                             // Audio if playing, else the system clock.
-constexpr int kVqaClockSystem = 1;  // System clock
-constexpr int kVqaClockInterrupt = 2;  // Timer interrupt tick count
-constexpr int kVqaClockAudio = 3;      // Bytes of audio played so far
+// on this port, so both fall back to the system clock.
+// Audio if playing, else the system clock.
+constexpr int kVqaClockDefault = -1;
+constexpr int kVqaClockSystem = 1;
+// Timer interrupt tick count.
+constexpr int kVqaClockInterrupt = 2;
+// Bytes of audio played so far.
+constexpr int kVqaClockAudio = 3;
 
-// Resolution of the player's clock: frame times, VQAStatistics::start_time and
-// end_time are in ticks of 1/60 second.
+// Resolution of the player's clock: frame times are in ticks of 1/60 second.
 constexpr int kVqaTicksPerSecond = 60;
 
-// Error and status codes. The entry points return 0 or one of these; the ones
-// from kVqaNoBuffer on are states of the loader and drawer, not failures.
-constexpr int32_t kVqaOk = 0;  // No error
-constexpr int32_t kVqaEndOfMovie =
-    -1;  // Normal end of the movie, or stopped early
-constexpr int32_t kVqaErrorOpen = -2;  // Unable to open
-constexpr int32_t kVqaErrorRead =
-    -3;                        // Read error, or a chunk that does not fit
-#define VQAERR_WRITE (-4)      // Write error
-constexpr int32_t kVqaErrorSeek = -5;      // Seek error
-constexpr int32_t kVqaErrorNotVqa = -6;    // Not a valid VQA file.
-constexpr int32_t kVqaErrorNoMemory = -7;  // Unable to allocate memory
-constexpr int32_t kVqaNoBuffer =
-    -8;  // No frame buffer free to load or ready to draw
-constexpr int32_t kVqaNotTime = -9;    // Not time for the next frame yet
-constexpr int32_t kVqaSleeping = -10;  // Waiting on the audio or the page flip
-#define VQAERR_VIDEO (-11)     // Video related error.
-constexpr int32_t kVqaErrorAudio = -12;  // Audio related error.
-constexpr int32_t kVqaPaused = -13;      // In paused state.
+// Result codes. The entry points return 0 or one of these; the ones from
+// kVqaNoBuffer on are states of the loader and drawer, not failures.
+constexpr int32_t kVqaOk = 0;
+// Normal end of the movie, or stopped early.
+constexpr int32_t kVqaEndOfMovie = -1;
+constexpr int32_t kVqaErrorOpen = -2;
+// A read error, or a chunk that does not fit its buffer.
+constexpr int32_t kVqaErrorRead = -3;
+constexpr int32_t kVqaErrorSeek = -5;
+// Not a valid VQA file.
+constexpr int32_t kVqaErrorNotVqa = -6;
+constexpr int32_t kVqaErrorNoMemory = -7;
+// No frame buffer free to load or ready to draw.
+constexpr int32_t kVqaNoBuffer = -8;
+// Not time for the next frame yet.
+constexpr int32_t kVqaNotTime = -9;
+// Waiting on the audio or the page flip.
+constexpr int32_t kVqaSleeping = -10;
+constexpr int32_t kVqaErrorAudio = -12;
+constexpr int32_t kVqaPaused = -13;
 
-// Events passed to VqaConfig::event_handler. Only kVqaEventSync is sent.
-#define VQAEVENT_PALETTE (1 << 0)
+// The event passed to VqaConfig::event_handler.
 constexpr uint32_t kVqaEventSync = 1U << 1;
 
 // VqaConfig: how a movie is played. Start from SetVqaConfigDefaults() and
@@ -181,52 +169,35 @@ struct VqaConfig {
   char* EVAFont{};  // For C&C Only
 };
 
-// Drawing flags (VqaConfig::draw_flags): the VQACFGB_* bit numbers and the
-// kVqaDraw* masks built from them.
-
+// Drawing flags (VqaConfig::draw_flags).
 // Decode into the image buffer; nothing is drawn without it.
-#define VQACFGB_BUFFER 0
-#define VQACFGB_NODRAW 1  // Load only; frames are discarded undrawn.
+constexpr uint32_t kVqaDrawToBuffer = 1U << 0;
+// Load only; frames are discarded undrawn.
+constexpr uint32_t kVqaDrawNothing = 1U << 1;
 // Never skip frames to catch up. The audio callback clears it when the sound
 // runs dry.
-#define VQACFGB_NOSKIP 2
-#define VQACFGB_VRAMCB 3   // XMode VRAM copy enable
-#define VQACFGB_ORIGIN 4  // Two bits: the corner the margins are measured from.
-#define VQACFGB_SCALEX2 6  // Scale X2 enable (VESA 320x200 to 640x400)
-#define VQACFGB_WOOFER 7   // Subwoofer track
-constexpr uint32_t kVqaDrawToBuffer = 1U << VQACFGB_BUFFER;
-constexpr uint32_t kVqaDrawNothing = 1U << VQACFGB_NODRAW;
-constexpr uint32_t kVqaDrawNoSkip = 1U << VQACFGB_NOSKIP;
-#define VQACFGF_VRAMCB (1U << VQACFGB_VRAMCB)
-constexpr uint32_t kVqaDrawOriginMask = 3U << VQACFGB_ORIGIN;
-constexpr uint32_t kVqaDrawTopLeft = 0U << VQACFGB_ORIGIN;
-constexpr uint32_t kVqaDrawTopRight = 1U << VQACFGB_ORIGIN;
-constexpr uint32_t kVqaDrawBottomRight = 2U << VQACFGB_ORIGIN;
-constexpr uint32_t kVqaDrawBottomLeft = 3U << VQACFGB_ORIGIN;
-#define VQACFGF_SCALEX2 (1U << VQACFGB_SCALEX2)
-#define VQACFGF_WOOFER (1U << VQACFGB_WOOFER)
+constexpr uint32_t kVqaDrawNoSkip = 1U << 2;
+// Two bits naming the buffer corner the margins are measured from.
+constexpr uint32_t kVqaDrawOriginMask = 3U << 4;
+constexpr uint32_t kVqaDrawTopLeft = 0U << 4;
+constexpr uint32_t kVqaDrawTopRight = 1U << 4;
+constexpr uint32_t kVqaDrawBottomRight = 2U << 4;
+constexpr uint32_t kVqaDrawBottomLeft = 3U << 4;
 
 // Player options (VqaConfig::option_flags).
-
 // Play the sound track. Cleared by Open() when the movie has none.
-#define VQAOPTB_AUDIO 0
+constexpr uint32_t kVqaOptionAudio = 1U << 0;
 // Draw every frame as soon as it is loaded, ignoring the clock.
-#define VQAOPTB_STEP 1
-#define VQAOPTB_UNUSED2 2   // Retired: mono debug output enable.
-#define VQAOPTB_PALOFF 3    // Seeking does not restore the palette.
-#define VQAOPTB_SLOWPAL 4   // Passed on to QueueVqaPalette().
-#define VQAOPTB_HMIINIT 5   // HMI already initialized by client.
-#define VQAOPTB_ALTAUDIO 6  // Use the alternate sound track, if there is one.
-#define VQAOPTB_CAPTIONS 7  // Show captions. Unused.
-#define VQAOPTB_EVA 8       // Show EVA text (For C&C only). Unused.
-constexpr uint32_t kVqaOptionAudio = 1U << VQAOPTB_AUDIO;
-constexpr uint32_t kVqaOptionStep = 1U << VQAOPTB_STEP;
-constexpr uint32_t kVqaOptionPaletteOff = 1U << VQAOPTB_PALOFF;
-constexpr uint32_t kVqaOptionSlowPalette = 1U << VQAOPTB_SLOWPAL;
-#define VQAOPTF_HMIINIT (1U << VQAOPTB_HMIINIT)
-constexpr uint32_t kVqaOptionAltAudio = 1U << VQAOPTB_ALTAUDIO;
-#define VQAOPTF_CAPTIONS (1U << VQAOPTB_CAPTIONS)
-#define VQAOPTF_EVA (1U << VQAOPTB_EVA)  // For C&C only
+constexpr uint32_t kVqaOptionStep = 1U << 1;
+// Seeking does not restore the palette.
+constexpr uint32_t kVqaOptionPaletteOff = 1U << 3;
+// Passed on to QueueVqaPalette().
+constexpr uint32_t kVqaOptionSlowPalette = 1U << 4;
+// Use the alternate sound track, if there is one.
+constexpr uint32_t kVqaOptionAltAudio = 1U << 6;
+// Show captions and, in C&C, E.V.A. text. Unused.
+#define VQAOPTF_CAPTIONS (1U << 7)
+#define VQAOPTF_EVA (1U << 8)
 
 // VQAInfo: what VqaPlayer::GetInfo() reports about the open movie.
 struct VQAInfo {
