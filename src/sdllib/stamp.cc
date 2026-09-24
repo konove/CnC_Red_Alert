@@ -16,31 +16,25 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/tile.h"
 
+namespace {
+
 // The icon set header of Tiberian Dawn, which lacks Red Alert's MapWidth,
 // MapHeight and ColorMap fields. sdllib is compiled without TD, so
 // IControl_Type is always Red Alert's layout and Tiberian Dawn's sets are read
-// through this one.
+// through this one. Only the three table offsets are read; the rest hold
+// their place in the layout.
 struct TiberianDawnIconSetHeader {
-  int16_t width;       // Width of icons (pixels).
-  int16_t height;      // Height of icons (pixels).
-  int16_t count;       // Number of (logical) icons in this set.
-  int16_t allocated;   // Was this iconset allocated?
-  int32_t size;        // Size of entire iconset memory block.
-  int32_t icons;       // Offset from buffer start to icon data.
-  int32_t palettes;    // Offset from buffer start to palette data.
-  int32_t remaps;      // Offset from buffer start to remap index data.
-  int32_t trans_flag;  // Offset for transparency flag table.
-  int32_t map;         // Icon map offset (if present).
+  [[maybe_unused]] int16_t width;      // Width of icons (pixels).
+  [[maybe_unused]] int16_t height;     // Height of icons (pixels).
+  [[maybe_unused]] int16_t count;      // Number of (logical) icons in this set.
+  [[maybe_unused]] int16_t allocated;  // Was this iconset allocated?
+  [[maybe_unused]] int32_t size;       // Size of the whole iconset.
+  int32_t icons;                       // Offset of the icon data.
+  [[maybe_unused]] int32_t palettes;   // Offset of the palette data.
+  [[maybe_unused]] int32_t remaps;     // Offset of the remap index data.
+  int32_t trans_flag;                  // Offset of the transparency flags.
+  int32_t map;                         // Offset of the icon map, if present.
 };
-
-// Returns the part of `icon_set` from `offset` to its end, or an empty span if
-// the header's offset lies outside the set.
-static std::span<const std::byte> TableAt(std::span<const std::byte> icon_set,
-                                          int offset) {
-  return offset >= 0 && base::ToSize(offset) <= icon_set.size()
-             ? icon_set.subspan(base::ToSize(offset))
-             : std::span<const std::byte>{};
-}
 
 // What drawing a tile needs from an icon set, the tables as views into the
 // set's data.
@@ -62,6 +56,17 @@ struct IconSetTables {
   std::span<const std::byte> cell_tiles;
 };
 
+}  // namespace
+
+// Returns the part of `icon_set` from `offset` to its end, or an empty span if
+// the header's offset lies outside the set.
+static std::span<const std::byte> TableAt(
+    const std::span<const std::byte> icon_set, const int offset) {
+  return offset >= 0 && base::ToSize(offset) <= icon_set.size()
+             ? icon_set.subspan(base::ToSize(offset))
+             : std::span<const std::byte>{};
+}
+
 // Reads the header of `icon_set`. Returns nullopt if the data is too short to
 // hold one, or the tile size is not positive.
 //
@@ -70,7 +75,7 @@ struct IconSetTables {
 // frees and replaces, so a different set can turn up at an address already
 // seen.
 static std::optional<IconSetTables> ReadIconSet(
-    std::span<const std::byte> icon_set) {
+    const std::span<const std::byte> icon_set) {
   if (icon_set.size() < sizeof(IControl_Type)) {
     return std::nullopt;
   }
@@ -111,11 +116,11 @@ static std::optional<IconSetTables> ReadIconSet(
                        .cell_tiles = TableAt(icon_set, cell_tiles_offset)};
 }
 
-void PixelView::DrawStampLocked(std::span<const std::byte> icon_set, int cell,
-                                int x, int y,
+void PixelView::DrawStampLocked(const std::span<const std::byte> icon_set,
+                                const int cell, int x, int y,
                                 std::span<const uint8_t> remap_table,
-                                int clip_x, int clip_y, int clip_width,
-                                int clip_height) {
+                                const int clip_x, const int clip_y,
+                                const int clip_width, const int clip_height) {
   const std::optional<IconSetTables> tables = ReadIconSet(icon_set);
   if (!tables) {
     return;
@@ -173,8 +178,7 @@ void PixelView::DrawStampLocked(std::span<const std::byte> icon_set, int cell,
       auto src = src_start + (static_cast<base::ssize>(row) * tile_width);
       auto dst = dst_start + (row * dst_stride);
       for (int column = 0; column < draw_width; ++column) {
-        const uint8_t pixel = translate(std::to_integer<uint8_t>(*src++));
-        if (pixel) {
+        if (const uint8_t pixel = translate(std::to_integer<uint8_t>(*src++))) {
           *dst = pixel;
         }
         ++dst;
@@ -186,18 +190,20 @@ void PixelView::DrawStampLocked(std::span<const std::byte> icon_set, int cell,
     // Color 0 is tested after the remap, so it is transparent whatever the
     // set's flag says, and a table that maps a color to 0 makes that color
     // transparent too.
-    draw_transparent(
-        [remap_table](uint8_t pixel) { return base::At(remap_table, pixel); });
+    draw_transparent([remap_table](const uint8_t pixel) {
+      return base::At(remap_table, pixel);
+    });
   } else if (base::At(tables->transparent, base::ToSize(tile)) != std::byte{}) {
     // The set's per-tile flag: color 0 leaves the destination alone.
-    draw_transparent([](uint8_t pixel) { return pixel; });
+    draw_transparent([](const uint8_t pixel) { return pixel; });
   } else {
     // Opaque: whole rows are copied.
     for (int row = 0; row < draw_height; ++row) {
       const auto src = src_start + (static_cast<base::ssize>(row) * tile_width);
-      std::transform(
-          src, src + draw_width, dst_start + (row * dst_stride),
-          [](std::byte value) { return std::to_integer<uint8_t>(value); });
+      std::transform(src, src + draw_width, dst_start + (row * dst_stride),
+                     [](const std::byte value) {
+                       return std::to_integer<uint8_t>(value);
+                     });
     }
   }
 }
