@@ -49,6 +49,9 @@ int32_t LCW_Uncompress(std::span<const unsigned char> source,
                        std::span<unsigned char> dest);
 
 int32_t AudioZap(void* source, void* dest, int32_t size);
+// Meant to decompress ZAP (Westwood ADPCM) sound from source into size bytes
+// of dest. The SDL port has only a stub, in vqa32/vqmstub.cc, which writes
+// nothing and returns 0.
 int32_t AudioUnzap(void* source, void* dest, int32_t /*unused*/);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQM32_COMPRESS_H_

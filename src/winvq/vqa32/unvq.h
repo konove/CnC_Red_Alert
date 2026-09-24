@@ -19,36 +19,28 @@
 #ifndef CNC_RED_ALERT_WINVQ_VQA32_UNVQ_H_
 #define CNC_RED_ALERT_WINVQ_VQA32_UNVQ_H_
 
-/****************************************************************************
- *
- *         C O N F I D E N T I A L -- W E S T W O O D  S T U D I O S
- *
- *----------------------------------------------------------------------------
- *
- * PROJECT
- *     VQAPlay32 library. (32-Bit protected mode)
- *
- * FILE
- *     unvq.h
- *
- * DESCRIPTION
- *     VQ frame decompress definitions.
- *
- * PROGRAMMER
- *     Denzil E. Long, Jr.
- *
- * DATE
- *     Feburary 8, 1995
- *
- ****************************************************************************/
+// File: the VQ frame decoders, which rebuild a frame's pixels from its vector
+// pointers and the codebook of pixel blocks they index.
+//
+// Originally written by Denzil E. Long, Jr. at Westwood Studios, February
+// 1995.
 
 #include <span>
 
+// Decodes a frame of 4x2-pixel blocks into buffer, a pixel buffer bufwidth
+// bytes wide that starts at the image's top-left pixel. pointers holds one
+// 16-bit entry per block, blocksperrow x numrows of them, stored as two
+// planes: every entry's low byte, then every entry's high byte. An entry
+// numbers an 8-byte block in codebook, or, when its high byte is 0x0F, is a
+// solid block of the color in its low byte. Sizes that do not fit the spans
+// draw nothing; an entry past the end of codebook stops the decode there.
 void UnVQ_4x2(std::span<const unsigned char> codebook,
               std::span<const unsigned char> pointers,
               std::span<unsigned char> buffer, int blocksperrow, int numrows,
               int bufwidth);
 
+// As UnVQ_4x2(), for 4x4-pixel blocks: codebook entries are 16 bytes, and a
+// high byte of 0xFF marks a solid block.
 void UnVQ_4x4(std::span<const unsigned char> codebook,
               std::span<const unsigned char> pointers,
               std::span<unsigned char> buffer, int blocksperrow, int numrows,

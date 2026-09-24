@@ -1,4 +1,6 @@
-// don't need much from VQM32, and it's all asm
+// File: C++ stand-ins for the VQM32 sound decoders the VQA loader calls,
+// which were all assembly: the IMA ADPCM decoder for SND2 sound, and a stub
+// where the ZAP decoder for SND1 sound would be.
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>
@@ -10,9 +12,12 @@
 #include "winvq/vqm32/compress.h"
 #include "winvq/vqm32/soscomp.h"
 
+// IMA ADPCM step index change for each 4-bit code: small codes step the
+// quantizer down, large ones up. The sign bit (8) does not matter.
 static constexpr int kImaAdpcmIndexTable[] = {-1, -1, -1, -1, 2, 4, 6, 8,
                                               -1, -1, -1, -1, 2, 4, 6, 8};
 
+// IMA ADPCM quantizer step sizes, roughly 10% apart, for step indexes 0-88.
 static constexpr int16_t kImaAdpcmStepTable[89] = {
     7,     8,     9,     10,    11,    12,    13,    14,    16,    17,
     19,    21,    23,    25,    28,    31,    34,    37,    41,    45,
@@ -25,23 +30,21 @@ static constexpr int16_t kImaAdpcmStepTable[89] = {
     15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767};
 
 // The only ZAP decoder is the original assembly (vqm32/audunzap.asm), which
-// the SDL port does not build. This stub writes nothing, so it cannot exceed
-// the destination size the loader passes. A real decoder must stop after
-// size bytes.
+// the SDL port does not build. Writing nothing, the stub cannot exceed the
+// destination size the loader passes; a real decoder must stop after size
+// bytes.
 int32_t AudioUnzap(void* /*source*/, void* /*dest*/, int32_t /*size*/) {
   absl::PrintF("%s\n", __func__);
   return 0;
 }
 
-// oh look, another ADPCM decoder...
 void VQA_sosCODECInitStream(SosCompressInfo* info) {
   info->predicted = info->predicted2 = 0;
   info->step_index = info->step_index2 = 0;
 }
 
-// Returns true on success, false on failure.
 bool DecompressVqaSosData(SosCompressInfo* info, int32_t uncomp_size) {
-  // Sanity check: This decoder only supports Mono 16-bit.
+  // The only format the movies use; see soscomp.h.
   if (info->channels != 1 || info->bit_size != 16) {
     absl::FPrintF(stderr, "%s (%d/%d)\n", __func__, info->channels,
                   info->bit_size);
@@ -55,37 +58,33 @@ bool DecompressVqaSosData(SosCompressInfo* info, int32_t uncomp_size) {
     return false;
   }
 
-  // Loop processes 4 output bytes (2 samples) per iteration.
-  // We use >= 4 to prevent underflow if uncomp_size is not a multiple of 4.
+  // One input byte is two samples, 4 output bytes. A trailing part of that
+  // (uncomp_size not a multiple of 4) is left undecoded.
   while (uncomp_size >= 4) {
     const uint8_t raw_byte = in_ptr.front();
     in_ptr = in_ptr.subspan(1);
 
-    // A single byte contains two 4-bit ADPCM samples (nibbles).
-    // We iterate 0 (low nibble) then 1 (high nibble).
+    // A byte holds two 4-bit codes, the low nibble first.
     for (int i = 0; i < 2; ++i) {
-      // 1. Extract Nibble
-      // Low nibble (bits 0-3) first, then High nibble (bits 4-7)
       const auto nibble =
           static_cast<std::uint8_t>(i == 0 ? raw_byte & 0x0F : raw_byte >> 4);
 
-      // 2. Get current step size
+      // This sample uses the step size before the update below.
       const int step = base::At(kImaAdpcmStepTable, info->step_index);
 
-      // 3. Update Step Index for the NEXT sample
       const int index_delta = base::At(kImaAdpcmIndexTable, nibble);
       info->step_index = static_cast<std::int16_t>(std::clamp(info->step_index + index_delta, 0, 88));
 
-      // 4. Calculate Difference
-      // Formula: ( (nibble * 2 + 1) * step ) / 8
-      // Note: The logic (nibble & 7) masks out the sign bit for calculation
+      // The difference is (magnitude + 1/2) * step / 4, the magnitude being
+      // the code's low 3 bits and bit 3 its sign. The IMA reference adds the
+      // shifted steps bit by bit and truncates each; this truncates once, so
+      // it can come out up to 3 higher.
       const int sign = nibble & 8 ? -1 : 1;
       const int diff = (((((nibble & 7) * 2) + 1) * step) / 8) * sign;
 
-      // 5. Update and Clamp Predicted Value
+      // The prediction saturates at the 16-bit range.
       info->predicted = std::clamp(info->predicted + diff, -32768, 32767);
 
-      // 6. Output Sample
       const auto sample = static_cast<std::int16_t>(info->predicted);
       base::CopyBytes(std::as_writable_bytes(out_ptr),
                       base::ObjectBytes(sample), sizeof(sample));
@@ -95,7 +94,7 @@ bool DecompressVqaSosData(SosCompressInfo* info, int32_t uncomp_size) {
     uncomp_size -= 4;
   }
 
-  // Update the struct pointers to reflect the new position.
+  // The next chunk carries on from here.
   info->source = in_ptr;
   info->dest = out_ptr;
 
