@@ -61,7 +61,6 @@
  *     DrawFrame_VESA320_32KBuf - Draws a frame in VESA320_32K format to a
  *                                buffer.
  *     PageFlip_VESA            - Page flip VESA display.
- *     DrawFrame_Buffer         - Draw a frame to a buffer.
  *     PageFlip_Nop             - Do nothing page flip.
  *     UnVQ_Nop                 - Do nothing decode_frame.
  *     Mask_Rect                - Sets non-drawable rectangle in image.
@@ -89,7 +88,6 @@
 static int32_t Select_Frame(VqaPlayerState* vqap);
 static void Prepare_Frame(VqaMovie* vqabuf);
 
-static int32_t DrawFrame_Buffer(VqaPlayerState* vqa);
 
 static void UnVQ_Nop(std::span<const unsigned char> codebook,
                      std::span<const unsigned char> pointers,
@@ -203,18 +201,12 @@ void ConfigureDrawer(VqaPlayerState* vqap) {
     }
   }
 
-  /* Initialize the draw vectors for the specified video mode. */
-  /* Purely buffered (Video refresh is up to the client. */
-  {
-    vqabuf->Draw_Frame = DrawFrame_Buffer;
-
-    // Pre-compute the draw offset for speed. decode_frame fills rightward and
-    // downward, so it starts at the image's top-left pixel whichever corner
-    // is anchored.
-    drawer->image_offset =
-        (drawer->image_width * std::min(drawer->y1, drawer->y2)) +
-        std::min(drawer->x1, drawer->x2);
-  }
+  // Pre-compute the draw offset for speed. decode_frame fills rightward and
+  // downward, so it starts at the image's top-left pixel whichever corner is
+  // anchored.
+  drawer->image_offset =
+      (drawer->image_width * std::min(drawer->y1, drawer->y2)) +
+      std::min(drawer->x1, drawer->x2);
 }
 
 /****************************************************************************
@@ -429,27 +421,7 @@ static void Prepare_Frame(VqaMovie* vqabuf) {
   }
 }
 
-/****************************************************************************
- *
- * NAME
- *     DrawFrame_Buffer - Draw a frame to a buffer.
- *
- * SYNOPSIS
- *     Error = DrawFrame_Buffer(VQA)
- *
- *     long DrawFrame_Buffere(VqaPlayerState *);
- *
- * FUNCTION
- *
- * INPUTS
- *     VQA - Pointer to VQA handle.
- *
- * RESULT
- *     Error - 0 if successful, otherwise VQAERR_??? error code.
- *
- ****************************************************************************/
-
-static int32_t DrawFrame_Buffer(VqaPlayerState* vqa) {
+int32_t DrawNextFrame(VqaPlayerState* vqa) {
   auto* vqa_handle_p = vqa;
   /* Dereference data members for quicker access. */
   const VqaConfig* config = &vqa_handle_p->config;

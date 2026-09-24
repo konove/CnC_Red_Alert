@@ -248,10 +248,6 @@ constexpr uint32_t kAudioPlaying = 1U << 6;
 // VqaMovie: everything a movie needs while it is open. Allocated by OpenVqa()
 // once the header is read and freed by CloseVqa().
 struct VqaMovie {
-  // Draws the drawer's next frame if it is due; DrawFrame_Buffer, the only
-  // draw routine left.
-  int32_t (*Draw_Frame)(VqaPlayerState* vqa) = nullptr;
-
   // Decodes a frame into the image buffer: the routine for the movie's block
   // size, or one that does nothing when kVqaDrawToBuffer is clear or the block
   // size has no routine.
@@ -353,9 +349,15 @@ int32_t LoadNextFrame(VqaPlayerState* vqa);
 // when playback starts.
 void ConfigureDrawer(VqaPlayerState* vqap);
 
+// Decodes the drawer's next frame into the image buffer if it is due, hands it
+// to the frame callback, and leaves it for ReleaseDrawnFrame(). Returns 0 when
+// a frame was drawn; kVqaNotTime, kVqaNoBuffer or kVqaSleeping when none was;
+// or kVqaEndOfMovie when the frame callback asked to stop.
+int32_t DrawNextFrame(VqaPlayerState* vqa);
+
 // The page flip: once the drawer has drawn a frame (kMovieAwaitingRelease),
-// frees that frame's buffer for the loader. Always returns 0.
-int64_t ReleaseDrawnFrame(const VqaPlayerState* state);
+// frees that frame's buffer for the loader.
+void ReleaseDrawnFrame(const VqaPlayerState* state);
 
 // Sets the movie clock to time (kVqaTicksPerSecond), using the kVqaClock*
 // method, or the best one available, as its source.

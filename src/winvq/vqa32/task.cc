@@ -172,14 +172,12 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
         }
 
         if ((config->draw_flags & kVqaDrawNothing) == 0) {
-          result = (*movie->Draw_Frame)(state);
+          result = DrawNextFrame(state);
           if (result == 0) {
             result = movie->drawer.last_drawn_frame;
             // The frame is on screen (the frame_callback showed it), so its
             // buffer can go back to the loader.
-            if (ReleaseDrawnFrame(state) != 0) {
-              movie->flags |= kMovieDrawerDone | kMovieLoaderDone;
-            }
+            ReleaseDrawnFrame(state);
           } else {
             // frame_callback asked to stop.
             if (result == kVqaEndOfMovie) {
@@ -234,7 +232,7 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
   return result;
 }
 
-int64_t ReleaseDrawnFrame(const VqaPlayerState* state) {
+void ReleaseDrawnFrame(const VqaPlayerState* state) {
   auto* movie = state->movie.get();
 
   if ((movie->flags & kMovieAwaitingRelease) != 0) {
@@ -242,6 +240,4 @@ int64_t ReleaseDrawnFrame(const VqaPlayerState* state) {
     movie->flipper.drawn_frame->flags = 0;
     movie->flags &= ~kMovieAwaitingRelease;
   }
-
-  return 0;
 }
