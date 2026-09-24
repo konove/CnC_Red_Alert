@@ -17,6 +17,7 @@
 #include "winvq/vqa32/audio_ring.h"
 #include "winvq/vqa32/frame_ring.h"
 #include "winvq/vqa32/lcw_buffer.h"
+#include "winvq/vqa32/movie_clock.h"
 #include "winvq/vqa32/movie_drawer.h"
 #include "winvq/vqa32/vqa_audio_device.h"
 #include "winvq/vqa32/vqa_format.h"
@@ -468,6 +469,71 @@ TEST_F(MovieTest, ClosesTheFileWhenDestroyed) {
 
   movie_.reset();
   EXPECT_EQ(fake_.closes, 1);
+}
+
+TEST_F(MovieTest, APauseHoldsTheFramesAndTheClock) {
+  fake_.data = EmptyFrames(SmallHeader());
+  ASSERT_EQ(Open(), std::nullopt);
+  ASSERT_EQ(movie_->Step(), VqaStepResult::kFrameShown);
+
+  movie_->Pause();
+  EXPECT_TRUE(movie_->paused());
+  // However late it gets, a paused movie shows nothing more.
+  movie_->clock().Set(1'000'000, nullptr);
+  for (int i = 0; i < 5; ++i) {
+    EXPECT_EQ(movie_->Step(), VqaStepResult::kWaiting);
+  }
+  EXPECT_EQ(client_.shown, std::vector<int>{0});
+
+  // Resuming turns the clock back to the pause, so frame 1 is not due yet:
+  // it is due a fifteenth of a second after frame 0.
+  movie_->Resume();
+  EXPECT_FALSE(movie_->paused());
+  EXPECT_LT(movie_->clock().Now(), kVqaTicksPerSecond / 15);
+}
+
+TEST_F(MovieTest, APauseStopsTheSoundAndResumingRestartsIt) {
+  fake_.data = MovieStart(SmallSoundHeader(), {0, 0, 0});
+  // Loads straight into the ring, so the sound starts with the movie.
+  AppendChunk(fake_.data, "SND0", std::vector<uint8_t>(4096, 0x80));
+  AppendFrameEnd(fake_.data);
+  AppendFrameEnd(fake_.data);
+  AppendFrameEnd(fake_.data);
+  EnableAudio();
+  ASSERT_EQ(Open(), std::nullopt);
+  ASSERT_EQ(movie_->Step(), VqaStepResult::kFrameShown);
+  ASSERT_TRUE(movie_->audio_output()->playing());
+
+  movie_->Pause();
+  EXPECT_FALSE(movie_->audio_output()->playing());
+  EXPECT_FALSE(device_.attached());
+
+  movie_->Resume();
+  EXPECT_TRUE(movie_->audio_output()->playing());
+  EXPECT_TRUE(device_.attached());
+}
+
+TEST_F(MovieTest, APauseBeforeTheFirstStepHoldsTheFirstFrame) {
+  fake_.data = EmptyFrames(SmallHeader());
+  ASSERT_EQ(Open(), std::nullopt);
+
+  movie_->Pause();
+  EXPECT_EQ(movie_->Step(), VqaStepResult::kWaiting);
+  EXPECT_TRUE(client_.shown.empty());
+
+  movie_->Resume();
+  EXPECT_EQ(movie_->Step(), VqaStepResult::kFrameShown);
+  EXPECT_EQ(client_.shown, std::vector<int>{0});
+}
+
+TEST_F(MovieTest, AnEndedMovieCannotBePaused) {
+  fake_.data = EmptyFrames(SmallHeader());
+  ASSERT_EQ(Open(), std::nullopt);
+  PlayToTheEnd();
+
+  movie_->Pause();
+  EXPECT_FALSE(movie_->paused());
+  EXPECT_EQ(movie_->Step(), VqaStepResult::kEnded);
 }
 
 }  // namespace

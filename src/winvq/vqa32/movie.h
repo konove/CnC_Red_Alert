@@ -4,6 +4,7 @@
 #ifndef CNC_RED_ALERT_WINVQ_VQA32_MOVIE_H_
 #define CNC_RED_ALERT_WINVQ_VQA32_MOVIE_H_
 
+#include <cstdint>
 #include <expected>
 #include <memory>
 #include <string_view>
@@ -44,9 +45,14 @@ class Movie {
   // See VqaPlayer.
   void Run();
   VqaStepResult Step();
+  void Pause();
+  void Resume();
+  [[nodiscard]] bool paused() const { return paused_; }
   [[nodiscard]] int last_frame_shown() const {
     return drawer_->last_drawn_frame();
   }
+  [[nodiscard]] int frame_count() const { return header_.frame_count; }
+  [[nodiscard]] int frame_rate() const { return header_.fps; }
 
   // The parts, for tests.
   [[nodiscard]] const VqaHeader& header() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -97,6 +103,11 @@ class Movie {
 
   bool started_ = false;
   bool ended_ = false;
+  bool paused_ = false;
+  // What the clock read when the movie was paused, and whether the sound was
+  // playing then; Resume() picks up from both.
+  int64_t paused_ticks_ = 0;
+  bool paused_sound_ = false;
   // The loader has read the whole movie, or failed.
   bool loaded_ = false;
 };

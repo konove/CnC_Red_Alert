@@ -149,8 +149,21 @@ class VqaPlayer {
   // Gives the loader and the drawer one turn each and returns what came of
   // it; for a caller with its own loop. The sound plays on between calls.
   VqaStepResult Step();
+  // Holds the movie: the frames stop and so does the sound, and Step() only
+  // gives the client its OnIdle() call. Resume() carries on from the frame
+  // and the moment of sound where it stopped. Either may be called before the
+  // first Step(), or from a client callback; both are no-ops once the movie
+  // has ended. Pausing a paused movie, or resuming one that plays, does
+  // nothing.
+  void Pause();
+  void Resume();
+  [[nodiscard]] bool paused() const;
+
   // Number of the last frame shown; 0 before the first.
   [[nodiscard]] int last_frame_shown() const;
+  // The movie's length in frames, and the frames per second it plays at.
+  [[nodiscard]] int frame_count() const;
+  [[nodiscard]] int frame_rate() const;
 
  private:
   explicit VqaPlayer(std::unique_ptr<Movie> movie);

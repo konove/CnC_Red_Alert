@@ -254,6 +254,38 @@ void Movie::Finish() {
   }
 }
 
+void Movie::Pause() {
+  if (paused_ || ended_) {
+    return;
+  }
+  paused_ = true;
+  // Before the first step there is no clock or sound to hold yet.
+  if (!started_) {
+    return;
+  }
+  paused_ticks_ = clock_.Now();
+  paused_sound_ = audio_output_ != nullptr && audio_output_->playing();
+  if (paused_sound_) {
+    audio_output_->Stop();
+  }
+}
+
+void Movie::Resume() {
+  if (!paused_) {
+    return;
+  }
+  paused_ = false;
+  if (!started_ || ended_) {
+    return;
+  }
+  // The output keeps its place in the ring across Stop() and Start() but
+  // counts its ticks from zero again, so the clock is set to read on from
+  // where it stopped. Another movie's sound having taken the device since
+  // leaves this one on the system clock.
+  const bool audio_clock = paused_sound_ && audio_output_->Start();
+  clock_.Set(paused_ticks_, audio_clock ? audio_output_.get() : nullptr);
+}
+
 // Each step gives the loader one frame to load and the drawer one frame to
 // draw; either may decline (no free buffer, not yet time) and the caller
 // comes round again. The loader runs ahead by up to frame_buffers frames,
@@ -261,6 +293,12 @@ void Movie::Finish() {
 VqaStepResult Movie::Step() {
   if (ended_) {
     return VqaStepResult::kEnded;
+  }
+  // A paused movie neither loads nor draws; the client still gets its idle
+  // call, where it would read the input that resumes the movie.
+  if (paused_) {
+    client_->OnIdle();
+    return VqaStepResult::kWaiting;
   }
   if (!started_) {
     Start();

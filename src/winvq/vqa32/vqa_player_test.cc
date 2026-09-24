@@ -136,4 +136,27 @@ TEST_F(VqaPlayerTest, DestroyingThePlayerClosesTheFile) {
   EXPECT_EQ(fake_.closes, 1);
 }
 
+TEST_F(VqaPlayerTest, ReportsTheMovieLength) {
+  fake_.data = EmptyFrames(SmallHeader());
+  const auto player = Open();
+  ASSERT_TRUE(player.has_value());
+
+  EXPECT_EQ(player->frame_count(), 3);
+  EXPECT_EQ(player->frame_rate(), 15);
+}
+
+TEST_F(VqaPlayerTest, APausedPlayerShowsNothingUntilResumed) {
+  fake_.data = EmptyFrames(SmallHeader());
+  auto player = Open();
+  ASSERT_TRUE(player.has_value());
+
+  player->Pause();
+  EXPECT_TRUE(player->paused());
+  EXPECT_EQ(player->Step(), VqaStepResult::kWaiting);
+  EXPECT_TRUE(client_.shown.empty());
+
+  player->Resume();
+  EXPECT_EQ(player->Step(), VqaStepResult::kFrameShown);
+}
+
 }  // namespace

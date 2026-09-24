@@ -51,4 +51,14 @@ void VqaPlayer::Run() { movie_->Run(); }
 
 VqaStepResult VqaPlayer::Step() { return movie_->Step(); }
 
+void VqaPlayer::Pause() { movie_->Pause(); }
+
+void VqaPlayer::Resume() { movie_->Resume(); }
+
+bool VqaPlayer::paused() const { return movie_->paused(); }
+
 int VqaPlayer::last_frame_shown() const { return movie_->last_frame_shown(); }
+
+int VqaPlayer::frame_count() const { return movie_->frame_count(); }
+
+int VqaPlayer::frame_rate() const { return movie_->frame_rate(); }
