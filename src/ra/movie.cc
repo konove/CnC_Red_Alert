@@ -48,6 +48,7 @@
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
 #include "tech/game_file_vqa_io.h"
+#include "tech/mixer_vqa_audio.h"
 #include "winvq/vqa32/vqa_player.h"
 
 // Set by VQ_Call_Back() when the player presses Esc to abort a movie, so
@@ -97,8 +98,10 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     TheKeyboard().Clear();
 
     VqaPlayer player;
-    GameFileVqaIo movie_io;  // Must outlive the open movie.
+    GameFileVqaIo movie_io;  // Both must outlive the open movie.
+    MixerVqaAudio movie_audio(TheAudio());
     player.SetIo(&movie_io);
+    TheGameState().anim_control().audio_device = &movie_audio;
 
     if (TheScreen().is_vq640()) {
       TheGameState().anim_control().image_width = 640;
@@ -184,7 +187,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   }
 
   if (!TheGameState().in_focus()) {
-    PauseVqaAudio();
+    TheAudio().SetExtraPaused(true);
     while (!TheGameState().in_focus()) {
       Check_For_Focus_Loss();
     }

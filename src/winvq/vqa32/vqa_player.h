@@ -26,7 +26,7 @@
 
 #include "base/numeric.h"
 
-struct SDL_AudioSpec;
+class VqaAudioDevice;
 
 // File: the public interface of the VQA movie player - VqaPlayer, the
 // VqaConfig a movie is opened with, and the codes and flags that go with them.
@@ -35,7 +35,7 @@ struct SDL_AudioSpec;
 // Playing a movie is one blocking call: VqaPlayer::Play(kVqaModeRun) loads,
 // decodes and paces the frames itself. Each decoded frame lands in an image
 // buffer and is handed to the client through VqaConfig::frame_callback, which
-// puts it on screen; the sound is fed to an SDL audio callback the client
+// puts it on screen; the sound plays through a VqaAudioDevice the client
 // provides. The DOS video modes are gone, so the player only ever decodes into
 // a buffer, and only when kVqaDrawToBuffer is set.
 //
@@ -119,16 +119,10 @@ struct VqaConfig {
   // Each must be at least 1, or Open() fails with kVqaErrorNoMemory.
   int32_t frame_buffer_count{};
   int32_t codebook_buffer_count{};
-  // The SDL device audio_callback runs on. The player locks it while touching
-  // state the callback shares.
-  uint32_t audio_device_id{};  // SDL_AudioDeviceID
-  // The client's callback slot, which its SDL audio callback calls through.
-  // While a movie with sound is open the player installs its mixer there,
-  // and clears the slot when the movie closes.
-  void (**audio_callback)(std::span<std::byte> device_buffer){};
-  // The device's output format; the movie's sound is converted to it.
-  // Required when kVqaOptionAudio is set.
-  const SDL_AudioSpec* audio_spec{};
+  // The device the sound plays through, which must outlive the open movie;
+  // the sound is converted to its format. Required when kVqaOptionAudio is
+  // set.
+  VqaAudioDevice* audio_device{};
   // Size of the audio ring in bytes, rounded down to whole audio_block_bytes
   // blocks. -1 = as many blocks as fit in 1.5 seconds of the movie's sound;
   // 0, or less than one block, = no ring, so no sound.
@@ -143,8 +137,7 @@ struct VqaConfig {
 constexpr uint32_t kVqaDrawToBuffer = base::Bit<uint32_t>(0);
 // Load only; frames are discarded undrawn.
 constexpr uint32_t kVqaDrawNothing = base::Bit<uint32_t>(1);
-// Never skip frames to catch up. The audio callback clears it when the sound
-// runs dry.
+// Never skip frames to catch up, until the sound first runs dry.
 constexpr uint32_t kVqaDrawNoSkip = base::Bit<uint32_t>(2);
 // Two bits naming the buffer corner the margins are measured from.
 constexpr uint32_t kVqaDrawOriginMask = 3U << 4;
@@ -223,12 +216,6 @@ class VqaPlayer {
 // ring sized from the movie, and no frames decoded until the caller sets
 // kVqaDrawToBuffer.
 void SetVqaConfigDefaults(VqaConfig* config);
-
-// Pause and resume the playing movie's sound, for when the game window loses
-// and regains focus. The movie's clock follows the sound, so the frames wait
-// too. Both do nothing when no movie sound is playing.
-void PauseVqaAudio();
-void ResumeVqaAudio();
 
 // Supplied by the game: queue a palette change for the next frame.
 void QueueVqaPalette(std::span<uint8_t> palette, int32_t numbytes,

@@ -25,7 +25,6 @@
 
 #include "winvq/vqa32/vqa_player.h"
 
-#include <atomic>
 #include <cstdint>
 #include <memory>
 #include <string_view>
@@ -62,7 +61,25 @@ int VqaPlayer::Play(int mode) {
   return static_cast<int>(PlayVqa(impl_.get(), mode));
 }
 
-std::atomic<bool> vqa_movie_loaded = false;
+// Makes the movie clock read now_ticks, running from the sound when the
+// configured clock allows it and the sound is playing, else from the system
+// clock.
+static void SetMovieClock(VqaMovie* movie, const VqaConfig& config,
+                          const int64_t now_ticks) {
+  const bool audio_clock = (config.clock_source == kVqaClockDefault ||
+                            config.clock_source == kVqaClockAudio) &&
+                           movie->audio_output != nullptr &&
+                           movie->audio_output->playing();
+  movie->clock.Set(now_ticks,
+                   audio_clock ? movie->audio_output.get() : nullptr);
+}
+
+// Stops the sound, if it plays.
+static void StopMovieSound(const VqaMovie* movie) {
+  if (movie->audio_output != nullptr) {
+    movie->audio_output->Stop();
+  }
+}
 
 // Each pass of the loop gives the loader one frame to load and the drawer one
 // frame to draw; either may decline (no free buffer, not yet time) and the
@@ -90,15 +107,15 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
     ConfigureDrawer(state);
 
     if ((config->option_flags & kVqaOptionAudio) != 0 &&
-        movie->audio.block_loaded.at(0) != 0) {
-      StartMovieAudio(state);
+        movie->audio->block_loaded(0)) {
+      movie->audio_output->Start();
     }
 
     // Set the clock to the time of the first frame loaded, so it is due now.
     const auto first_frame_time = movie->ring.draw_frame().frame_number *
                                   kVqaTicksPerSecond / config->frame_rate;
 
-    SetMovieClock(state, first_frame_time, config->clock_source);
+    SetMovieClock(movie, *config, first_frame_time);
 
     movie->flags |= kMovieStarted;
   }
@@ -107,12 +124,10 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
     case kVqaModePause:
       if ((movie->flags & kMoviePaused) == 0) {
         movie->flags |= kMoviePaused;
-        movie->end_time = ReadMovieClock(state);
+        movie->end_time = movie->clock.Now();
 
         // The clock follows the sound, so stopping it stops the clock too.
-        if ((movie->audio.flags & kAudioPlaying) != 0) {
-          StopMovieAudio(state);
-        }
+        StopMovieSound(movie);
       }
 
       result = kVqaPaused;
@@ -131,18 +146,17 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
       if ((movie->flags & kMoviePaused) != 0) {
         movie->flags &= ~kMoviePaused;
 
-        // StartMovieAudio() fails only if some movie's sound is already
-        // playing, which ends this one.
+        // Starting fails only if another movie's sound holds the device,
+        // which ends this one.
         if (((config->option_flags & kVqaOptionAudio) != 0) &&
-            (StartMovieAudio(state) != 0)) {
-          StopMovieAudio(state);
+            !movie->audio_output->Start()) {
 #ifdef _WIN32
           SetPriorityClass(GetCurrentProcess(), process_priority);
 #endif  // _WIN32
           return kVqaEndOfMovie;
         }
 
-        SetMovieClock(state, movie->end_time, config->clock_source);
+        SetMovieClock(movie, *config, movie->end_time);
       }
 
       // Load, draw, load, draw... until both are done.
@@ -154,8 +168,9 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
           // loaded still play.
           if (result != 0 && result != kVqaNoBuffer && result != kVqaSleeping) {
             movie->flags |= kMovieLoaderDone;
-            // The flag carries no other data to the audio thread.
-            vqa_movie_loaded.store(true, std::memory_order_relaxed);
+            if (movie->audio != nullptr) {
+              movie->audio->MarkMovieLoaded();
+            }
             result = 0;
           }
         }
@@ -202,10 +217,8 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
       result == kVqaEndOfMovie) {
     // Read the clock before stopping the sound, since the clock is the
     // amount of sound played.
-    movie->end_time = ReadMovieClock(state);
-    if ((movie->audio.flags & kAudioPlaying) != 0) {
-      StopMovieAudio(state);
-    }
+    movie->end_time = movie->clock.Now();
+    StopMovieSound(movie);
 
     result = kVqaEndOfMovie;
   }

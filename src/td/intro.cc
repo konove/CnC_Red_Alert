@@ -68,14 +68,17 @@
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
 #include "tech/game_file_vqa_io.h"
+#include "tech/mixer_vqa_audio.h"
 #include "tech/wsa_animation.h"
 #include "winvq/vqa32/vqa_player.h"
 
 #ifndef DEMO
 
-// Opens a movie on the given player without playing it. The io object must
-// stay alive until the player is closed. Returns true if the movie opened.
-static bool Open_Movie(VqaPlayer& player, GameFileVqaIo& io, const char* name) {
+// Opens a movie on the given player without playing it. The io object and the
+// audio device must stay alive until the player is closed. Returns true if the
+// movie opened.
+static bool Open_Movie(VqaPlayer& player, GameFileVqaIo& io,
+                       MixerVqaAudio& audio, const char* name) {
   if (!TheDebugState().quiet() && TheAudio().is_open()) {
     TheGameState().anim_control().option_flags |= kVqaOptionAudio;
   } else {
@@ -83,6 +86,7 @@ static bool Open_Movie(VqaPlayer& player, GameFileVqaIo& io, const char* name) {
   }
 
   player.SetIo(&io);
+  TheGameState().anim_control().audio_device = &audio;
   return player.Open(name, &TheGameState().anim_control()) == 0;
 }
 
@@ -108,10 +112,12 @@ void Choose_Side() {
                                            0x12, 0x1c, 0x14, 0x0,  0x0,  0x0,
                                            0x0,  0x0,  0x1C, 0x0};
 
+  // The io objects and the audio device must outlive the open players.
+  MixerVqaAudio movie_audio(TheAudio());
+  GameFileVqaIo gdibrief_io;
+  GameFileVqaIo nodbrief_io;
   VqaPlayer gdibrief_player;
   VqaPlayer nodbrief_player;
-  GameFileVqaIo gdibrief_io;
-  GameFileVqaIo nodbrief_io;  // Must outlive the open players.
   bool gdibrief = false;
   bool nodbrief = false;  // Movie opened successfully?
   std::span<const std::byte> speech;
@@ -156,10 +162,10 @@ void Choose_Side() {
   WsaAnimation anim("CHOOSE.WSA", ThePalettes().title_palette());
   Call_Back();
 
-
-  nodbrief = Open_Movie(nodbrief_player, nodbrief_io, "NOD1PRE.VQA");
+  nodbrief =
+      Open_Movie(nodbrief_player, nodbrief_io, movie_audio, "NOD1PRE.VQA");
   Call_Back();
-  gdibrief = Open_Movie(gdibrief_player, gdibrief_io, "GDI1.VQA");
+  gdibrief = Open_Movie(gdibrief_player, gdibrief_io, movie_audio, "GDI1.VQA");
 
   TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
   TheScreen().hidden_page().view().Clear();

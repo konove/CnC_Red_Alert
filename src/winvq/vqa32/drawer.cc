@@ -132,7 +132,7 @@ static int32_t SelectFrameToDraw(VqaPlayerState* state) {
   }
 
   // The frame the clock has reached; a frame is due from its start time on.
-  const int64_t now_ticks = ReadMovieClock(state);
+  const int64_t now_ticks = movie->clock.Now();
   const int64_t due_frame = now_ticks * config->frame_rate / kVqaTicksPerSecond;
 
   // Too early for this frame.
@@ -142,8 +142,10 @@ static int32_t SelectFrameToDraw(VqaPlayerState* state) {
 
   // Draw this frame however late it is when skipping is disabled, or once
   // frame_rate / 5 frames have gone by since the last frame selected, so a
-  // slow machine still shows about 5 frames a second.
-  if ((config->draw_flags & kVqaDrawNoSkip) != 0 ||
+  // slow machine still shows about 5 frames a second. kVqaDrawNoSkip holds
+  // only until the sound first runs dry, so it does not happen again.
+  const bool underran = movie->audio != nullptr && movie->audio->underran();
+  if (((config->draw_flags & kVqaDrawNoSkip) != 0 && !underran) ||
       frame->frame_number - drawer->last_selected_frame >=
           config->frame_rate / 5) {
     drawer->last_selected_frame = frame->frame_number;

@@ -44,9 +44,12 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "winvq/vqa32/adpcm_decoders.h"
+#include "winvq/vqa32/audio_output.h"
+#include "winvq/vqa32/audio_ring.h"
 #include "winvq/vqa32/chunk_reader.h"
 #include "winvq/vqa32/frame_ring.h"
 #include "winvq/vqa32/lcw_buffer.h"
+#include "winvq/vqa32/movie_clock.h"
 #include "winvq/vqa32/vq_decoder.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player.h"
@@ -56,19 +59,19 @@
 struct VqaLoader {
   // Index in the ring of the codebook the partial codebooks of the current
   // group are collected into, to become the next group's codebook.
-  int partial_codebook;
+  int partial_codebook = 0;
   // Index of the last complete codebook, used by the frames being loaded.
-  int full_codebook;
+  int full_codebook = 0;
   // Partial codebooks collected into partial_codebook so far, and their total
   // size in bytes (compressed or not).
-  int32_t partial_count;
-  int32_t partial_bytes;
+  int32_t partial_count = 0;
+  int32_t partial_bytes = 0;
   // Where compressed pieces collect in partial_codebook, estimated from the
   // group's first piece.
-  int32_t partial_offset;
+  int32_t partial_offset = 0;
   // Number of the next frame to load; the movie is loaded when it reaches
   // the header's frame count.
-  int32_t next_frame_number;
+  int32_t next_frame_number = 0;
   // The chunk being loaded, kept so a loader woken from kMovieLoaderAsleep
   // resumes inside it instead of reading a new one.
   Chunk chunk;
@@ -106,51 +109,6 @@ struct VqaDrawer {
 // Drawer flag: a skipped frame's palette is pending.
 constexpr uint32_t kDrawerPalettePending = base::Bit<uint32_t>(0);
 
-// VqaAudio: the sound ring and the state shared with the SDL audio callback.
-//
-// The ring is block_count blocks of config.audio_block_bytes bytes. The
-// loader decompresses each frame's sound chunk into staging, and
-// CopyStagedAudio() moves it into the ring at write_offset, marking the blocks
-// it filled in block_loaded. The callback, on the audio thread, plays
-// play_block and frees it once the next block is loaded; if it is not, it
-// plays the block again. The loader sleeps (kVqaSleeping) while the
-// block it would overwrite is still unplayed. Code on the main thread holds the
-// SDL device lock while changing what the callback reads.
-struct VqaAudio {
-  // One flag per ring block: 1 = holds unplayed sound, 0 = free to fill.
-  std::vector<int16_t> block_loaded;
-  // Staging for one frame's decompressed sound, staging_capacity bytes.
-  std::vector<unsigned char> staging;
-  // The ring, config.audio_buffer_bytes bytes; empty without sound.
-  std::vector<unsigned char> ring;
-  // Byte offset in the ring where the loader writes next.
-  int32_t write_offset = 0;
-  int32_t block_count = 0;
-  // The block being played.
-  int32_t play_block = 0;
-  // Bytes in staging waiting for CopyStagedAudio(), 0 when it is empty.
-  int32_t staged_bytes = 0;
-  int32_t staging_capacity = 0;
-  uint32_t flags = 0;  // kAudio* bits
-  // Format of the track being played, the primary or the alternate one.
-  int sample_rate = 0;
-  int channels = 0;
-  int bits_per_sample = 0;  // 8 or 16
-  int32_t bytes_per_second = 0;
-  // Decoder state for SND2 (IMA ADPCM) chunks, carried from chunk to chunk.
-  ImaAdpcmDecoder adpcm;
-  // Blocks handed to SDL since the sound started (a replayed block counts
-  // only after the movie has loaded completely). ReadMovieClock() derives the
-  // movie clock from it.
-  int blocks_played = 0;
-};
-
-// Audio flags.
-// The SDL stream and callback are installed.
-constexpr uint32_t kAudioOpen = base::Bit<uint32_t>(0);
-// The callback is playing the ring.
-constexpr uint32_t kAudioPlaying = base::Bit<uint32_t>(6);
-
 // VqaMovie: everything a movie needs while it is open. Allocated by OpenVqa()
 // once the header is read and freed by CloseVqa().
 struct VqaMovie {
@@ -167,7 +125,17 @@ struct VqaMovie {
   // The image buffer, when the player allocated it.
   std::vector<unsigned char> image_storage;
 
-  VqaAudio audio;
+  // The sound track's format, and the decoder state SND2 (IMA ADPCM) chunks
+  // carry from one to the next. Meaningful only with audio.
+  AudioFormat audio_format;
+  ImaAdpcmDecoder adpcm;
+  // The sound on its way to the device, and what plays it; both empty when
+  // the movie plays without sound. Declared in this order so the output,
+  // whose mixer reads the ring, goes first.
+  std::unique_ptr<AudioRing> audio;
+  std::unique_ptr<AudioOutput> audio_output;
+  // Paces the frames.
+  MovieClock clock;
   VqaLoader loader{};
   VqaDrawer drawer{};
   uint32_t flags = 0;        // kMovie* bits
@@ -248,46 +216,5 @@ void ConfigureDrawer(VqaPlayerState* state);
 // frame was drawn; kVqaNotTime or kVqaNoBuffer when none was; or
 // kVqaEndOfMovie when the frame callback asked to stop.
 int32_t DrawNextFrame(VqaPlayerState* state);
-
-// Makes the movie clock read now_ticks (kVqaTicksPerSecond), and picks what it
-// runs on: the sound played so far when clock_source is kVqaClockDefault or
-// kVqaClockAudio and sound is playing, else the system clock. PlayVqa() calls
-// it when the movie starts and, with the time the pause began, when it
-// resumes, so a pause does not count.
-void SetMovieClock(const VqaPlayerState* state, int64_t now_ticks,
-                   int clock_source);
-// Returns the movie clock in kVqaTicksPerSecond, from the source and offset
-// the last SetMovieClock() set.
-int64_t ReadMovieClock(const VqaPlayerState* state);
-
-// Sound output. The sound system plays one movie at a time; the functions
-// below keep its state in audio.cc, shared by every VqaPlayerState.
-//
-// Creates the SDL stream converting the movie's sound to config.audio_spec
-// and installs the player's mixer in config.audio_callback. Returns 0, or -1
-// with nothing installed when SDL cannot convert to that spec.
-int32_t OpenMovieAudio(VqaPlayerState* state);
-// Stops the sound and, when this is the last open movie, removes the mixer
-// and frees the stream.
-void CloseMovieAudio(VqaPlayerState* state);
-// Starts the mixer playing the movie's audio ring from play_block, with the
-// audio clock back at zero. Returns 0, or -1 if a movie's sound is already
-// playing.
-int32_t StartMovieAudio(VqaPlayerState* state);
-// Stops the mixer playing the ring; the sound already converted is kept for a
-// restart.
-void StopMovieAudio(const VqaPlayerState* state);
-// Moves the staged sound (staged_bytes of staging) into the ring at
-// write_offset, wrapping at its end, and marks the blocks it completes as
-// loaded. Returns 0, also when there is nothing to move or the sound is off,
-// or kVqaSleeping, with the sound still staged, when the blocks it would
-// overwrite have not played yet.
-int32_t CopyStagedAudio(VqaPlayerState* state);
-
-// Set once the loader has read the whole movie; from then on the audio
-// callback counts a replayed block towards the clock, so the last frames
-// still come due after the sound runs out. Written by OpenVqa() and
-// PlayVqa() on the main thread and read on the audio thread.
-extern std::atomic<bool> vqa_movie_loaded;
 
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_VQA_PLAYER_STATE_H_

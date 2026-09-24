@@ -4,6 +4,8 @@
 #ifndef CNC_RED_ALERT_WINVQ_VQA32_VQA_TEST_UTIL_H_
 #define CNC_RED_ALERT_WINVQ_VQA32_VQA_TEST_UTIL_H_
 
+#include <SDL_audio.h>
+
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
@@ -12,10 +14,12 @@
 #include <utility>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
+#include "winvq/vqa32/vqa_audio_device.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqaio.h"
 
@@ -73,6 +77,41 @@ class FakeVqaIo final : public VqaIo {
   bool fail_read = false;
   int opens = 0;
   int closes = 0;
+};
+
+// A sound device that plays nothing. Pump() calls the installed mixer as the
+// device's thread would.
+class FakeVqaAudioDevice final : public VqaAudioDevice {
+ public:
+  FakeVqaAudioDevice() {
+    audio_spec.freq = 22050;
+    audio_spec.format = AUDIO_S16;
+    audio_spec.channels = 2;
+  }
+
+  [[nodiscard]] const SDL_AudioSpec& spec() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND override {
+    return audio_spec;
+  }
+  bool Attach(Mixer mixer) override {
+    if (mixer_) {
+      return false;
+    }
+    mixer_ = std::move(mixer);
+    return true;
+  }
+  void Detach() override { mixer_ = nullptr; }
+  void lock() override {}
+  void unlock() override {}
+
+  [[nodiscard]] bool attached() const { return static_cast<bool>(mixer_); }
+  void Pump(std::span<std::byte> buffer) const { mixer_(buffer); }
+
+  // The format the sound is converted to; any SDL format.
+  SDL_AudioSpec audio_spec{};
+
+ private:
+  Mixer mixer_;
 };
 
 inline void AppendBytes(std::vector<uint8_t>& out, std::string_view text) {

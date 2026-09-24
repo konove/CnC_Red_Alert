@@ -166,7 +166,7 @@ void AudioMixer::DeviceCallback(void* mixer, uint8_t* device_buffer,
 
   auto& self = *static_cast<AudioMixer*>(mixer);
   // A movie's sound track goes in first.
-  if (self.extra_callback_) {
+  if (self.extra_callback_ && !self.extra_paused_) {
     self.extra_callback_(output);
   }
   self.Mix(output);
@@ -453,6 +453,28 @@ int AudioMixer::Play(std::span<const std::byte> sample, int priority,
   SDL_UnlockAudioDevice(device_);
 
   return handle;
+}
+
+bool AudioMixer::AttachExtraCallback(AudioCallback callback) {
+  SDL_LockAudioDevice(device_);
+  const bool attached = !extra_callback_;
+  if (attached) {
+    extra_callback_ = std::move(callback);
+  }
+  SDL_UnlockAudioDevice(device_);
+  return attached;
+}
+
+void AudioMixer::DetachExtraCallback() {
+  SDL_LockAudioDevice(device_);
+  extra_callback_ = nullptr;
+  SDL_UnlockAudioDevice(device_);
+}
+
+void AudioMixer::SetExtraPaused(const bool paused) {
+  SDL_LockAudioDevice(device_);
+  extra_paused_ = paused;
+  SDL_UnlockAudioDevice(device_);
 }
 
 void AudioMixer::SetScoreVolume(int volume) {

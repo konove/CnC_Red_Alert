@@ -173,6 +173,7 @@
 #include "tech/crc.h"
 #include "tech/game_file_vqa_io.h"
 #include "tech/mix_archive.h"
+#include "tech/mixer_vqa_audio.h"
 #include "tech/search_paths.h"
 #include "winvq/vqa32/vqa_player.h"
 
@@ -2155,8 +2156,10 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     Keyboard::Clear();
 
     VqaPlayer player;
-    GameFileVqaIo movie_io;  // Must outlive the open movie.
+    GameFileVqaIo movie_io;  // Both must outlive the open movie.
+    MixerVqaAudio movie_audio(TheAudio());
     player.SetIo(&movie_io);
+    TheGameState().anim_control().audio_device = &movie_audio;
 
     if (!TheDebugState().quiet() && TheAudio().is_open()) {
       TheGameState().anim_control().option_flags |= kVqaOptionAudio;
@@ -2711,7 +2714,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   }
 
   if (!TheGameState().in_focus()) {
-    PauseVqaAudio();
+    TheAudio().SetExtraPaused(true);
     while (!TheGameState().in_focus()) {
       Keyboard::Check();
       Check_For_Focus_Loss();

@@ -28,6 +28,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <span>
 #include <string_view>
@@ -40,7 +41,7 @@
 
 // What the VQA player installs to have its sound track mixed in first. It
 // fills device_buffer, which arrives silenced, in the device's format.
-using AudioCallback = void (*)(std::span<std::byte> device_buffer);
+using AudioCallback = std::function<void(std::span<std::byte> device_buffer)>;
 
 // Plays Westwood .AUD sounds on the SDL audio device: up to four at once, each
 // an in-memory sample or a score streamed from a file. A sound is known by the
@@ -130,16 +131,23 @@ class AudioMixer {
   // device's format. The device callback; public for tests.
   void Mix(std::span<std::byte> output);
 
-  // The VQA player shares the device: it pauses and locks it by id, converts
-  // to its format, and installs a callback that Mix() output is added to.
+  // The VQA player shares the device (see tech/mixer_vqa_audio.h): it locks
+  // it by id, converts to its format, and installs a callback that fills each
+  // device buffer before Mix() adds to it.
   [[nodiscard]] uint32_t device_id() const { return device_; }
-  [[nodiscard]] SDL_AudioSpec* output_spec() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return &output_spec_;
-  }
-  [[nodiscard]] AudioCallback* extra_callback_slot()
+  [[nodiscard]] const SDL_AudioSpec& output_spec() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return &extra_callback_;
+    return output_spec_;
   }
+
+  // Installs that callback. Returns false, installing nothing, when one is
+  // installed already.
+  bool AttachExtraCallback(AudioCallback callback);
+  // Removes it, waiting out a device callback in progress.
+  void DetachExtraCallback();
+  // Stops calling it while paused, without removing it: for while the game
+  // window is out of focus. A movie paced by its sound waits meanwhile.
+  void SetExtraPaused(bool paused);
 
  private:
   // Windows original had 5 slots; DOS had 4. One slot was reserved for disk
@@ -221,7 +229,8 @@ class AudioMixer {
   SDL_AudioDeviceID device_ = 0;     // 0 while closed
   SDL_AudioSpec output_spec_{};      // what the device settled on
   std::vector<int16_t> mix_buffer_;  // one callback's worth from a channel
-  AudioCallback extra_callback_ = nullptr;
+  AudioCallback extra_callback_;
+  bool extra_paused_ = false;
   int score_volume_ = 255;
   std::array<Channel, kChannelCount> channels_;
 };

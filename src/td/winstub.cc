@@ -59,8 +59,6 @@ bool ReadyToQuit = false;
 
 unsigned long CCFocusMessage =
     WM_USER + 50;  // Private message for receiving application focus
-extern void PauseVqaAudio();
-extern void ResumeVqaAudio();
 
 ThemeType OldTheme = THEME_NONE;
 
@@ -132,7 +130,7 @@ void Check_For_Focus_Loss() {
   }
 
   if (!focus_last_time && TheGameState().in_focus()) {
-    PauseVqaAudio();
+    TheAudio().SetExtraPaused(true);
     CountDownTimerClass cd;
     cd.Set(60 * 1);
 
@@ -146,7 +144,7 @@ void Check_For_Focus_Loss() {
       }
 
     } while (cd.Time());
-    ResumeVqaAudio();
+    TheAudio().SetExtraPaused(false);
     // AllSurfaces.Restore_Surfaces();
     // VisiblePage.Clear();
     // HiddenPage.Clear();

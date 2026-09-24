@@ -23,7 +23,7 @@
 #include "td/screen.h"
 #include "td/startup.h"
 #include "td/winstub.h"
-#include "winvq/vqa32/vqa_player.h"
+#include "tech/audio_mixer.h"
 
 void CCDebugString(const char* /*string*/) {}
 
@@ -31,7 +31,7 @@ void Check_For_Focus_Loss() {
   if (!TheGameState().in_focus()) {
     SDL_Event_Loop();
     if (TheGameState().in_focus()) {
-      ResumeVqaAudio();
+      TheAudio().SetExtraPaused(false);
     }
   }
 }

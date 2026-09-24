@@ -2116,10 +2116,6 @@ void Anim_Init() {
   // AnimControl.Volume = 0x00FF;
   // AnimControl.AudioRate = 22050;
   //	if (NewConfig.Speed) AnimControl.AudioRate = 11025;
-  TheGameState().anim_control().audio_device_id = TheAudio().device_id();
-  TheGameState().anim_control().audio_callback =
-      TheAudio().extra_callback_slot();
-  TheGameState().anim_control().audio_spec = TheAudio().output_spec();
   // if (!TheDebugState().quiet() && Audio.is_open()) {
   // AnimControl.OptionFlags |= VQAOPTF_AUDIO;
   //}

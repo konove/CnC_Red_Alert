@@ -25,10 +25,10 @@
 // Studios, August 1995.
 
 #include <algorithm>
-#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <span>
 #include <string_view>
@@ -39,6 +39,8 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "winvq/vqa32/adpcm_decoders.h"
+#include "winvq/vqa32/audio_output.h"
+#include "winvq/vqa32/audio_ring.h"
 #include "winvq/vqa32/chunk_reader.h"
 #include "winvq/vqa32/frame_ring.h"
 #include "winvq/vqa32/lcw_buffer.h"
@@ -60,9 +62,9 @@ static int32_t LoadPalette(const VqaPlayerState* state, const Chunk& chunk,
                            bool compressed);
 static int32_t LoadVectorPointers(const VqaPlayerState* state,
                                   const Chunk& chunk, bool compressed);
-static int32_t LoadSound(VqaPlayerState* state, const Chunk& chunk);
-static int32_t LoadZapSound(VqaPlayerState* state, const Chunk& chunk);
-static int32_t LoadAdpcmSound(VqaPlayerState* state, const Chunk& chunk);
+static int32_t LoadSound(const VqaPlayerState* state, const Chunk& chunk);
+static int32_t LoadZapSound(const VqaPlayerState* state, const Chunk& chunk);
+static int32_t LoadAdpcmSound(const VqaPlayerState* state, const Chunk& chunk);
 
 // What LoadFramePart() made of a chunk.
 enum class FramePart {
@@ -215,14 +217,22 @@ static int32_t PrepareMovie(VqaPlayerState* state, VqaConfig* config) {
   // smaller than one block (audio_buffer_bytes below audio_block_bytes, or -1
   // when 1.5 seconds of sound is less than one block). No audio code runs for
   // such a movie, so none of it has to handle an empty ring.
-  if (state->movie->audio.block_loaded.empty()) {
+  if (state->movie->audio == nullptr) {
     config->option_flags &= ~kVqaOptionAudio;
   }
 
   // Start the sound output: originally HMI's DOS sound drivers, now the SDL
   // mixer.
-  if ((config->option_flags & kVqaOptionAudio) != 0 && OpenMovieAudio(state)) {
-    return kVqaErrorAudio;
+  if ((config->option_flags & kVqaOptionAudio) != 0) {
+    if (config->audio_device == nullptr) {
+      return kVqaErrorAudio;
+    }
+    state->movie->audio_output =
+        AudioOutput::Create(*config->audio_device, *state->movie->audio,
+                            state->movie->audio_format);
+    if (state->movie->audio_output == nullptr) {
+      return kVqaErrorAudio;
+    }
   }
 
   // Preload the frame ring, so playback starts with frames in hand.
@@ -235,7 +245,6 @@ static int32_t PrepareMovie(VqaPlayerState* state, VqaConfig* config) {
 
 int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
                 VqaConfig* config) {
-  vqa_movie_loaded.store(false, std::memory_order_relaxed);
 
   if (!state->io->Open(filename)) {
     return kVqaErrorOpen;
@@ -249,17 +258,17 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
 }
 
 void CloseVqa(VqaPlayerState* state) {
-  // Audio is open only once OpenMovieAudio() has run. A failed OpenVqa() can
-  // get here earlier, with no data and no audio callback to tear down.
-  if (state->movie != nullptr &&
-      (state->movie->audio.flags & kAudioOpen) != 0) {
-    CloseMovieAudio(state);
-  }
-
   state->io->Close();
 
-  // Also frees the play buffers.
+  // Frees the play buffers, stopping the sound first.
   state->Reset();
+}
+
+// Moves the staged sound into the audio ring, holding the audio thread off
+// while it does. Returns false when the ring has no room for it yet.
+static bool CopyStagedSound(VqaMovie* movie) {
+  const std::scoped_lock<VqaAudioDevice> lock(movie->audio_output->device());
+  return movie->audio->CopyStaged();
 }
 
 // Reads chunks until one completes a frame: a VQFR or VQFK container, or, in
@@ -360,7 +369,7 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
           break;
         }
 
-        if (CopyStagedAudio(state) == kVqaSleeping) {
+        if (!CopyStagedSound(movie)) {
           movie->flags |= kMovieLoaderAsleep;
           return kVqaSleeping;
         }
@@ -449,56 +458,29 @@ static std::unique_ptr<VqaMovie> AllocateMovie(const VqaHeader* header,
   // The sound's format, its ring and its staging buffer.
   if ((header->flags & kVqaHasAudio) != 0 &&
       (config->option_flags & kVqaOptionAudio) != 0) {
-    VqaAudio* audio = &movie->audio;
-
-    // Version 1 movies only had 22050 Hz 8-bit mono sound.
-    if (header->version < kVqaVersion2) {
-      audio->sample_rate = 22050;
-      audio->channels = 1;
-      audio->bits_per_sample = 8;
-      audio->bytes_per_second = 22050;
-    } else {
-      if (config->option_flags & kVqaOptionAltAudio &&
-          (header->flags & kVqaHasAltAudio) != 0) {
-        audio->sample_rate = header->alt_sample_rate;
-        audio->channels = header->alt_channels;
-        audio->bits_per_sample = header->alt_bits_per_sample;
-      } else {
-        audio->sample_rate = header->sample_rate;
-        audio->channels = header->channels;
-        audio->bits_per_sample = header->bits_per_sample;
-      }
-
-      audio->bytes_per_second =
-          audio->sample_rate * audio->channels * (audio->bits_per_sample / 8);
-    }
+    const bool alternate = (config->option_flags & kVqaOptionAltAudio) != 0 &&
+                           (header->flags & kVqaHasAltAudio) != 0;
+    movie->audio_format = AudioFormat::FromHeader(*header, alternate);
+    const int bytes_per_second = movie->audio_format.bytes_per_second();
 
     // By default, as many whole blocks as fit in 1.5 seconds of sound.
     if (config->audio_buffer_bytes == -1) {
-      const auto blocks =
-          (audio->bytes_per_second + (audio->bytes_per_second / 2)) /
-          config->audio_block_bytes;
+      const auto blocks = (bytes_per_second + (bytes_per_second / 2)) /
+                          config->audio_block_bytes;
       config->audio_buffer_bytes = config->audio_block_bytes * blocks;
     }
-    // The ring is filled and played in whole blocks; the audio callback wraps
-    // at its end in bytes and at block_count in blocks, which must agree.
+    // The ring is filled and played in whole blocks.
     config->audio_buffer_bytes -=
         config->audio_buffer_bytes % config->audio_block_bytes;
 
     // Less than one block is no ring at all; OpenVqa() then turns the sound
-    // off.
+    // off. Staging holds one chunk's sound: twice one frame's worth, for
+    // chunks that run long, plus 100 bytes.
     if (config->audio_buffer_bytes > 0) {
-      audio->ring.resize(base::ToSize(config->audio_buffer_bytes));
-
-      audio->block_count =
-          config->audio_buffer_bytes / config->audio_block_bytes;
-      audio->block_loaded.resize(base::ToSize(audio->block_count), 0);
-
-      // Staging holds one chunk's sound: twice one frame's worth, for
-      // chunks that run long, plus 100 bytes.
-      audio->staging_capacity =
-          (audio->bytes_per_second / header->fps * 2) + 100;
-      audio->staging.resize(base::ToSize(audio->staging_capacity));
+      movie->audio = std::make_unique<AudioRing>(
+          config->audio_buffer_bytes / config->audio_block_bytes,
+          config->audio_block_bytes,
+          (bytes_per_second / header->fps * 2) + 100);
     }
   }
 
@@ -672,147 +654,86 @@ static int32_t LoadVectorPointers(const VqaPlayerState* state,
   return 0;
 }
 
-// The sound chunk loaders stage a chunk's sound in audio.staging, for
-// CopyStagedAudio() to move into the ring. The movie's first sound chunk may
-// be larger than staging - it preloads the sound - and goes straight into the
-// ring instead; a larger chunk anywhere else is an error. They run only with
-// the sound on. Each returns 0, or kVqaErrorRead.
-
-// Accounts for the sound a preloading first chunk wrote at the start of the
-// ring: moves the write position past it, back to the start when it filled
-// the ring exactly, and marks the whole blocks it filled. The next chunk
-// completes a partial last block.
-static void CommitPreload(VqaAudio* audio, const VqaConfig& config,
-                          const int32_t bytes) {
-  audio->write_offset =
-      (audio->write_offset + bytes) % config.audio_buffer_bytes;
-  for (int32_t i = 0; i < bytes / config.audio_block_bytes; i++) {
-    audio->block_loaded.at(base::ToSize(i)) = 1;
-  }
-}
+// The sound chunk loaders stage a chunk's sound in the audio ring's staging
+// buffer, for CopyStaged() to move into the ring. The movie's first sound
+// chunk may be larger than staging - it preloads the sound - and goes straight
+// into the ring instead; a larger chunk anywhere else is an error. They run
+// only with the sound on. Each returns 0, or kVqaErrorRead.
 
 // Loads an uncompressed sound chunk.
-static int32_t LoadSound(VqaPlayerState* state, const Chunk& chunk) {
-  VqaMovie* movie = state->movie.get();
-  VqaAudio* audio = &movie->audio;
-  VqaConfig* config = &state->config;
+static int32_t LoadSound(const VqaPlayerState* state, const Chunk& chunk) {
+  AudioRing& audio = *state->movie->audio;
+  ChunkReader reader(*state->io);
   const int32_t padded_bytes = chunk.padded_size();
 
   // The first chunk, too big for staging, preloads the ring.
-  if (padded_bytes > audio->staging_capacity && audio->write_offset == 0) {
-    if (padded_bytes > config->audio_buffer_bytes) {
+  if (padded_bytes > audio.staging_capacity() && audio.write_offset() == 0) {
+    if (!reader.ReadPayload(chunk, audio.ring())) {
       return kVqaErrorRead;
     }
-
-    if (!state->io->Read(std::span(audio->ring), padded_bytes)) {
-      return kVqaErrorRead;
-    }
-
-    CommitPreload(audio, *config, chunk.size);
-
+    audio.CommitPreload(chunk.size);
     return 0;
   }
+
   // Only the first chunk may exceed staging.
-  if (padded_bytes > audio->staging_capacity) {
+  if (!reader.ReadPayload(chunk, audio.staging())) {
     return kVqaErrorRead;
   }
-
-  if (!state->io->Read(std::span(audio->staging), padded_bytes)) {
-    return kVqaErrorRead;
-  }
-
-  audio->staged_bytes = chunk.size;
-
+  audio.Stage(chunk.size);
   return 0;
 }
 
 // Loads a sound chunk in Westwood's ZAP ADPCM, which starts with a ZapHeader.
-static int32_t LoadZapSound(VqaPlayerState* state, const Chunk& chunk) {
-  ZapHeader zap_header{};
-
-  VqaMovie* movie = state->movie.get();
-  VqaAudio* audio = &movie->audio;
-  VqaConfig* config = &state->config;
-  int32_t padded_bytes = chunk.padded_size();
+static int32_t LoadZapSound(const VqaPlayerState* state, const Chunk& chunk) {
+  AudioRing& audio = *state->movie->audio;
+  ChunkReader reader(*state->io);
 
   // The ZAP header is part of the chunk; a shorter chunk would leave a
   // negative payload size.
-  if (chunk.size < int32_t{sizeof(ZapHeader)}) {
-    return kVqaErrorRead;
-  }
-
-  if (!state->io->ReadObject(zap_header)) {
+  ZapHeader zap_header{};
+  if (chunk.size < int32_t{sizeof(ZapHeader)} ||
+      !reader.ReadObject(zap_header)) {
     return kVqaErrorRead;
   }
 
   // The sound after the header.
-  padded_bytes -= int32_t{sizeof(ZapHeader)};
+  const int32_t padded_bytes = chunk.padded_size() - int32_t{sizeof(ZapHeader)};
+  const int32_t sound_bytes = zap_header.uncompressed_size;
+  const bool stored =
+      zap_header.uncompressed_size == zap_header.compressed_size;
 
-  // The first chunk, too big for staging, preloads the ring.
-  if (std::cmp_greater(zap_header.uncompressed_size, audio->staging_capacity) &&
-      audio->write_offset == 0) {
-    if (padded_bytes > config->audio_buffer_bytes ||
-        std::cmp_greater(zap_header.uncompressed_size,
-                         config->audio_buffer_bytes)) {
-      return kVqaErrorRead;
-    }
-
-    // Equal sizes: stored uncompressed.
-    if (zap_header.uncompressed_size == zap_header.compressed_size) {
-      if (!state->io->Read(std::span(audio->ring), padded_bytes)) {
-        return kVqaErrorRead;
-      }
-    } else {
-      // Loaded at the end of the ring and decompressed towards its start.
-      const auto compressed =
-          std::span(audio->ring)
-              .subspan(base::ToSize(config->audio_buffer_bytes - padded_bytes));
-
-      if (!state->io->Read(compressed, padded_bytes)) {
-        return kVqaErrorRead;
-      }
-
-      // TODO: DecodeZapSound() is a stub that writes nothing, so the ring
-      // keeps the compressed bytes and whatever was there before, and plays
-      // them. The shipped Red Alert movies have no SND1 sound.
-      DecodeZapSound(
-          compressed,
-          std::span(audio->ring).first(zap_header.uncompressed_size));
-    }
-
-    CommitPreload(audio, *config, zap_header.uncompressed_size);
-
-    return 0;
-  }
-
-  // Only the first chunk may exceed staging.
-  if (padded_bytes > audio->staging_capacity ||
-      std::cmp_greater(zap_header.uncompressed_size, audio->staging_capacity)) {
+  // The first chunk, too big for staging, preloads the ring; any other chunk
+  // must fit staging.
+  const bool preload =
+      sound_bytes > audio.staging_capacity() && audio.write_offset() == 0;
+  const std::span<unsigned char> target =
+      preload ? audio.ring() : audio.staging();
+  if (padded_bytes > std::ssize(target) || sound_bytes > std::ssize(target)) {
     return kVqaErrorRead;
   }
 
-  if (zap_header.uncompressed_size == zap_header.compressed_size) {
-    if (!state->io->Read(std::span(audio->staging), padded_bytes)) {
+  if (stored) {
+    if (!reader.Read(target, padded_bytes)) {
       return kVqaErrorRead;
     }
   } else {
-    // Loaded at the end of staging and decompressed towards its start.
+    // Loaded at the end of the target and decompressed towards its start.
     const auto compressed =
-        std::span(audio->staging)
-            .subspan(base::ToSize(audio->staging_capacity - padded_bytes));
-
-    if (!state->io->Read(compressed, padded_bytes)) {
+        target.subspan(base::ToSize(std::ssize(target) - padded_bytes));
+    if (!reader.Read(compressed, padded_bytes)) {
       return kVqaErrorRead;
     }
-
-    // TODO: As above, DecodeZapSound() writes nothing.
-    DecodeZapSound(
-        compressed,
-        std::span(audio->staging).first(zap_header.uncompressed_size));
+    // TODO: DecodeZapSound() is a stub that writes nothing, so the target
+    // keeps the compressed bytes and whatever was there before, and plays
+    // them. The shipped Red Alert movies have no SND1 sound.
+    DecodeZapSound(compressed, target.first(base::ToSize(sound_bytes)));
   }
 
-  audio->staged_bytes = zap_header.uncompressed_size;
-
+  if (preload) {
+    audio.CommitPreload(sound_bytes);
+  } else {
+    audio.Stage(sound_bytes);
+  }
   return 0;
 }
 
@@ -822,78 +743,58 @@ static int32_t LoadZapSound(VqaPlayerState* state, const Chunk& chunk) {
 // TODO: A format the decoder does not produce, or a failed decode, leaves dest
 // as it was, so the ring plays whatever it held. The shipped Red Alert movies
 // are all 16-bit mono.
-static void DecodeAdpcm(VqaAudio* audio, const std::span<const uint8_t> source,
+static void DecodeAdpcm(VqaMovie* movie, const std::span<const uint8_t> source,
                         const std::span<uint8_t> dest) {
-  if (!ImaAdpcmDecoder::Supports(audio->channels, audio->bits_per_sample)) {
+  const AudioFormat& format = movie->audio_format;
+  if (!ImaAdpcmDecoder::Supports(format.channels, format.bits_per_sample)) {
     DLOG_FIRST_N(WARNING, 1)
-        << "IMA ADPCM sound with " << audio->channels << " channels of "
-        << audio->bits_per_sample << " bits cannot be decoded";
+        << "IMA ADPCM sound with " << format.channels << " channels of "
+        << format.bits_per_sample << " bits cannot be decoded";
     return;
   }
-  audio->adpcm.Decode(source, dest);
+  movie->adpcm.Decode(source, dest);
 }
 
 // Loads a sound chunk in IMA ADPCM, 4 bits a sample.
-static int32_t LoadAdpcmSound(VqaPlayerState* state, const Chunk& chunk) {
+static int32_t LoadAdpcmSound(const VqaPlayerState* state, const Chunk& chunk) {
   VqaMovie* movie = state->movie.get();
-  VqaAudio* audio = &movie->audio;
-  VqaConfig* config = &state->config;
+  AudioRing& audio = *movie->audio;
+  ChunkReader reader(*state->io);
   const int32_t padded_bytes = chunk.padded_size();
 
   // Two samples a byte. 64-bit so an oversized chunk cannot overflow before
   // the bounds checks.
   const int64_t wide_decoded_bytes =
-      int64_t{chunk.size} * (audio->bits_per_sample / 4);
+      int64_t{chunk.size} * (movie->audio_format.bits_per_sample / 4);
   if (wide_decoded_bytes >
-      std::max(config->audio_buffer_bytes, audio->staging_capacity)) {
+      std::max(audio.capacity(), audio.staging_capacity())) {
     return kVqaErrorRead;
   }
   const auto decoded_bytes = static_cast<int32_t>(wide_decoded_bytes);
 
-  // The first chunk, too big for staging, preloads the ring.
-  if (decoded_bytes > audio->staging_capacity && audio->write_offset == 0) {
-    // decoded_bytes fits the ring, being above staging_capacity.
-    if (padded_bytes > config->audio_buffer_bytes) {
-      return kVqaErrorRead;
-    }
-
-    // Loaded at the end of the ring and decompressed towards its start.
-    const auto compressed =
-        std::span(audio->ring)
-            .subspan(base::ToSize(config->audio_buffer_bytes - padded_bytes));
-
-    if (!state->io->Read(compressed, padded_bytes)) {
-      return kVqaErrorRead;
-    }
-
-    DecodeAdpcm(audio, compressed,
-                std::span(audio->ring).first(base::ToSize(decoded_bytes)));
-
-    CommitPreload(audio, *config, decoded_bytes);
-
-    return 0;
-  }
-
-  // Only the first chunk may exceed staging.
-  if (padded_bytes > audio->staging_capacity ||
-      decoded_bytes > audio->staging_capacity) {
+  // The first chunk, too big for staging, preloads the ring; any other chunk
+  // must fit staging.
+  const bool preload =
+      decoded_bytes > audio.staging_capacity() && audio.write_offset() == 0;
+  const std::span<unsigned char> target =
+      preload ? audio.ring() : audio.staging();
+  if (padded_bytes > std::ssize(target) || decoded_bytes > std::ssize(target)) {
     return kVqaErrorRead;
   }
 
-  // Loaded at the end of staging and decompressed towards its start.
+  // Loaded at the end of the target and decompressed towards its start.
   const auto compressed =
-      std::span(audio->staging)
-          .subspan(base::ToSize(audio->staging_capacity - padded_bytes));
-
-  if (!state->io->Read(compressed, padded_bytes)) {
+      target.subspan(base::ToSize(std::ssize(target) - padded_bytes));
+  if (!reader.Read(compressed, padded_bytes)) {
     return kVqaErrorRead;
   }
+  DecodeAdpcm(movie, compressed, target.first(base::ToSize(decoded_bytes)));
 
-  DecodeAdpcm(audio, compressed,
-              std::span(audio->staging).first(base::ToSize(decoded_bytes)));
-
-  audio->staged_bytes = decoded_bytes;
-
+  if (preload) {
+    audio.CommitPreload(decoded_bytes);
+  } else {
+    audio.Stage(decoded_bytes);
+  }
   return 0;
 }
 

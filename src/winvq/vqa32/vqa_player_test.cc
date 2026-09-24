@@ -20,6 +20,7 @@
 #include "base/array.h"
 #include "base/types.h"
 #include "gtest/gtest.h"
+#include "winvq/vqa32/audio_ring.h"
 #include "winvq/vqa32/frame_ring.h"
 #include "winvq/vqa32/lcw_buffer.h"
 #include "winvq/vqa32/vqa_format.h"
@@ -170,20 +171,14 @@ class VqaLoaderTest : public testing::Test {
 
   int32_t Open() { return OpenVqa(&state_, "test.vqa", &config_); }
 
-  // Turns the sound on. The player converts to audio_spec_ and installs its
-  // mixer in audio_callback_, which must outlive the movie.
+  // Turns the sound on, played through device_.
   void EnableAudio() {
-    audio_spec_.freq = 22050;
-    audio_spec_.format = AUDIO_S16;
-    audio_spec_.channels = 2;
     config_.option_flags |= kVqaOptionAudio;
-    config_.audio_spec = &audio_spec_;
-    config_.audio_callback = &audio_callback_;
+    config_.audio_device = &device_;
   }
 
   FakeVqaIo fake_;
-  SDL_AudioSpec audio_spec_{};
-  void (*audio_callback_)(std::span<std::byte>) = nullptr;
+  FakeVqaAudioDevice device_;
   VqaPlayerState state_;
   VqaConfig config_{};
 };
@@ -354,12 +349,35 @@ TEST_F(VqaLoaderTest, SkippedFramePaletteIsSetWithTheNextFrameDrawn) {
   ConfigureDrawer(&state_);
   // 15 fps: tick 9 of 60 per second is frame 2, with 50 ms to spare before
   // frame 3 comes due.
-  SetMovieClock(&state_, 9, kVqaClockSystem);
+  state_.movie->clock.Set(9, nullptr);
   ASSERT_EQ(DrawNextFrame(&state_), 0);
 
   EXPECT_EQ(state_.movie->drawer.last_drawn_frame, 2);
   ASSERT_EQ(QueuedPalette().size(), 768U);
   EXPECT_EQ(QueuedPalette().front(), 9);
+}
+
+TEST_F(VqaLoaderTest, AnAudioUnderrunLetsTheDrawerSkip) {
+  config_.frame_buffer_count = 3;
+  fake_.data = EmptyFrames(SmallSoundHeader());
+  EnableAudio();
+  config_.draw_flags = kVqaDrawNoSkip;
+  ASSERT_EQ(Open(), 0);
+  ConfigureDrawer(&state_);
+  // 15 fps: tick 9 of 60 per second is frame 2.
+  state_.movie->clock.Set(9, nullptr);
+
+  // Frame 0 is late, but skipping is off.
+  ASSERT_EQ(DrawNextFrame(&state_), 0);
+  EXPECT_EQ(state_.movie->drawer.last_drawn_frame, 0);
+
+  // The sound runs dry: nothing follows the block playing.
+  state_.movie->audio->Advance();
+  ASSERT_TRUE(state_.movie->audio->underran());
+
+  // Now frame 1 is skipped for frame 2, the one due.
+  ASSERT_EQ(DrawNextFrame(&state_), 0);
+  EXPECT_EQ(state_.movie->drawer.last_drawn_frame, 2);
 }
 
 TEST_F(VqaLoaderTest, RejectsUncompressedPaletteOver256Colors) {
@@ -429,14 +447,14 @@ TEST_F(VqaLoaderTest, PlaysSilentlyWithoutAnAudioRing) {
   EnableAudio();
   config_.audio_buffer_bytes = 0;
   ASSERT_EQ(Open(), 0);
-  // No sound path runs: the mixer was never installed.
+  // No sound path runs: there is nothing to play the sound with.
   EXPECT_EQ(state_.config.option_flags & kVqaOptionAudio, 0U);
-  EXPECT_EQ(audio_callback_, nullptr);
+  EXPECT_EQ(state_.movie->audio_output, nullptr);
 
   // A pause and resume must not start the sound either.
   EXPECT_EQ(PlayVqa(&state_, kVqaModePause), kVqaPaused);
   EXPECT_EQ(PlayVqa(&state_, kVqaModeRun), kVqaEndOfMovie);
-  EXPECT_EQ(state_.movie->audio.flags & kAudioPlaying, 0U);
+  EXPECT_FALSE(device_.attached());
 }
 
 TEST_F(VqaLoaderTest, WalkKeepsTheSoundPlayingUntilTheEnd) {
@@ -453,9 +471,10 @@ TEST_F(VqaLoaderTest, WalkKeepsTheSoundPlayingUntilTheEnd) {
   // Each walk moves one frame on; the sound, and the clock that follows it,
   // must keep running between them.
   PlayVqa(&state_, kVqaModeWalk);
-  EXPECT_NE(state_.movie->audio.flags & kAudioPlaying, 0U);
+  EXPECT_TRUE(state_.movie->audio_output->playing());
   PlayVqa(&state_, kVqaModeWalk);
-  EXPECT_NE(state_.movie->audio.flags & kAudioPlaying, 0U);
+  EXPECT_TRUE(state_.movie->audio_output->playing());
+  EXPECT_TRUE(device_.attached());
 
   // The walk that reaches the end stops it.
   int32_t result = 0;
@@ -463,17 +482,25 @@ TEST_F(VqaLoaderTest, WalkKeepsTheSoundPlayingUntilTheEnd) {
     result = PlayVqa(&state_, kVqaModeWalk);
   }
   EXPECT_EQ(result, kVqaEndOfMovie);
-  EXPECT_EQ(state_.movie->audio.flags & kAudioPlaying, 0U);
+  EXPECT_FALSE(state_.movie->audio_output->playing());
+  EXPECT_FALSE(device_.attached());
 }
 
 TEST_F(VqaLoaderTest, FailsToOpenWhenTheSoundCannotBeConverted) {
   fake_.data = EmptyFrames(SmallSoundHeader());
   EnableAudio();
   // Not an SDL sample format, so SDL cannot convert to it.
-  audio_spec_.format = 0;
+  device_.audio_spec.format = 0;
 
   EXPECT_EQ(Open(), kVqaErrorAudio);
-  EXPECT_EQ(audio_callback_, nullptr);
+  EXPECT_FALSE(device_.attached());
+}
+
+TEST_F(VqaLoaderTest, FailsToOpenWithSoundButNoDevice) {
+  fake_.data = EmptyFrames(SmallSoundHeader());
+  config_.option_flags |= kVqaOptionAudio;
+
+  EXPECT_EQ(Open(), kVqaErrorAudio);
 }
 
 TEST_F(VqaLoaderTest, RingOfPartBlocksWrapsAfterTheLastWholeBlock) {
@@ -487,57 +514,17 @@ TEST_F(VqaLoaderTest, RingOfPartBlocksWrapsAfterTheLastWholeBlock) {
   // Two 2048-byte blocks and 904 bytes that are not one.
   config_.audio_buffer_bytes = 5000;
   ASSERT_EQ(Open(), 0);
-  VqaAudio& audio = state_.movie->audio;
-  ASSERT_EQ(audio.block_count, 2);
-  ASSERT_EQ(StartMovieAudio(&state_), 0);
+  const AudioRing& audio = *state_.movie->audio;
+  EXPECT_EQ(audio.block_count(), 2);
+  EXPECT_EQ(audio.capacity(), 2 * 2048);
+  ASSERT_TRUE(state_.movie->audio_output->Start());
 
-  std::array<std::byte, 256> device{};
-  for (int i = 0; i < 1000 && audio.play_block != 1; ++i) {
-    audio_callback_(device);
+  // The device pulls the preloaded blocks through the mixer.
+  std::array<std::byte, 256> buffer{};
+  for (int i = 0; i < 1000 && audio.play_block() != 1; ++i) {
+    device_.Pump(buffer);
   }
-  ASSERT_EQ(audio.play_block, 1);
-
-  // Once the loader has refilled block 0, playing moves on to it.
-  audio.block_loaded.at(0) = 1;
-  for (int i = 0; i < 1000 && audio.play_block == 1; ++i) {
-    audio_callback_(device);
-  }
-  EXPECT_EQ(audio.play_block, 0);
-}
-
-TEST_F(VqaLoaderTest, CopyStagedAudioWrapsAtTheEndOfTheRing) {
-  fake_.data = EmptyFrames(SmallSoundHeader());
-  EnableAudio();
-  config_.audio_buffer_bytes = 4 * 2048;
-  ASSERT_EQ(Open(), 0);
-  VqaAudio& audio = state_.movie->audio;
-  ASSERT_EQ(audio.block_count, 4);
-
-  // 1000 bytes into block 0: nothing completed yet.
-  std::ranges::fill(audio.staging, uint8_t{1});
-  audio.staged_bytes = 1000;
-  EXPECT_EQ(CopyStagedAudio(&state_), 0);
-  EXPECT_EQ(audio.write_offset, 1000);
-  EXPECT_EQ(audio.staged_bytes, 0);
-  EXPECT_EQ(audio.block_loaded, (std::vector<int16_t>{0, 0, 0, 0}));
-
-  // From the middle of block 3 round to the middle of block 0, completing
-  // block 3 only.
-  audio.write_offset = (3 * 2048) + 1024;
-  std::ranges::fill(audio.staging, uint8_t{2});
-  audio.staged_bytes = 1024 + 500;
-  EXPECT_EQ(CopyStagedAudio(&state_), 0);
-  EXPECT_EQ(audio.write_offset, 500);
-  EXPECT_EQ(audio.block_loaded, (std::vector<int16_t>{0, 0, 0, 1}));
-  EXPECT_EQ(audio.ring.at((4 * 2048) - 1), 2);
-  EXPECT_EQ(audio.ring.at(499), 2);
-  EXPECT_EQ(audio.ring.at(500), 1);
-
-  // Block 3 has not played, so a write that would reach it again waits.
-  audio.write_offset = 2 * 2048;
-  audio.staged_bytes = 2048;
-  EXPECT_EQ(CopyStagedAudio(&state_), kVqaSleeping);
-  EXPECT_EQ(audio.staged_bytes, 2048);
+  EXPECT_EQ(audio.play_block(), 1);
 }
 
 TEST_F(VqaLoaderTest, FirstSoundChunkFillingTheRingWrapsTheWriteOffset) {
@@ -550,14 +537,10 @@ TEST_F(VqaLoaderTest, FirstSoundChunkFillingTheRingWrapsTheWriteOffset) {
   EnableAudio();
   config_.audio_buffer_bytes = 2 * 2048;
   ASSERT_EQ(Open(), 0);
-  VqaAudio& audio = state_.movie->audio;
-  ASSERT_EQ(audio.write_offset, 0);
-
-  // Once both blocks have played, the next chunk goes in at the start.
-  std::ranges::fill(audio.block_loaded, int16_t{0});
-  audio.staged_bytes = 100;
-  EXPECT_EQ(CopyStagedAudio(&state_), 0);
-  EXPECT_EQ(audio.write_offset, 100);
+  const AudioRing& audio = *state_.movie->audio;
+  EXPECT_EQ(audio.write_offset(), 0);
+  EXPECT_TRUE(audio.block_loaded(0));
+  EXPECT_TRUE(audio.block_loaded(1));
 }
 
 TEST_F(VqaLoaderTest, PlaysToTheEndWithoutAnImageBuffer) {

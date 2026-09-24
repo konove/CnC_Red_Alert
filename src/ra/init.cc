@@ -1332,10 +1332,6 @@ void Anim_Init() {
   if (ThePalettes().slow_palette()) {
     TheGameState().anim_control().option_flags |= kVqaOptionSlowPalette;
   }
-  TheGameState().anim_control().audio_device_id = TheAudio().device_id();
-  TheGameState().anim_control().audio_callback =
-      TheAudio().extra_callback_slot();
-  TheGameState().anim_control().audio_spec = TheAudio().output_spec();
 }
 
 // Kept out of Parse_Command_Line() so the std::optional below does not make

@@ -22,7 +22,7 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
-#include "winvq/vqa32/vqa_player.h"
+#include "tech/audio_mixer.h"
 
 void WWDebugString(const char* /*string*/) {}
 
@@ -30,7 +30,7 @@ void Check_For_Focus_Loss() {
   if (!TheGameState().in_focus()) {
     SDL_Event_Loop();
     if (TheGameState().in_focus()) {
-      ResumeVqaAudio();
+      TheAudio().SetExtraPaused(false);
     }
   }
 }
