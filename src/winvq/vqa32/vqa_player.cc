@@ -95,7 +95,7 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
     }
 
     // Set the clock to the time of the first frame loaded, so it is due now.
-    const auto first_frame_time = drawer->current_frame->frame_number *
+    const auto first_frame_time = movie->ring.draw_frame().frame_number *
                                   kVqaTicksPerSecond / config->frame_rate;
 
     SetMovieClock(state, first_frame_time, config->clock_source);
@@ -164,9 +164,6 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
           result = DrawNextFrame(state);
           if (result == 0) {
             result = drawer->last_drawn_frame;
-            // The frame is on screen (the frame_callback showed it), so its
-            // buffer can go back to the loader.
-            ReleaseDrawnFrame(state);
           } else {
             // frame_callback asked to stop.
             if (result == kVqaEndOfMovie) {
@@ -187,8 +184,7 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
         } else {
           // Not drawing: discard each frame as soon as it is loaded.
           movie->flags |= kMovieDrawerDone;
-          drawer->current_frame->flags = 0;
-          drawer->current_frame = drawer->current_frame->next;
+          movie->ring.FinishDrawing();
         }
 
         if (mode == kVqaModeWalk) {
@@ -219,14 +215,4 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
 #endif  // _WIN32
 
   return result;
-}
-
-void ReleaseDrawnFrame(const VqaPlayerState* state) {
-  auto* movie = state->movie.get();
-
-  if ((movie->flags & kMovieAwaitingRelease) != 0) {
-    // Clearing the flags hands the buffer back to the loader.
-    movie->flipper.drawn_frame->flags = 0;
-    movie->flags &= ~kMovieAwaitingRelease;
-  }
 }

@@ -24,6 +24,6 @@ target_link_libraries(vqa32 PRIVATE SDL2::SDL2)
 include(Testing)
 add_gtest(
     NAME vqa32_test
-    SOURCES vqa_player_test.cc vq_decoder_test.cc chunk_reader_test.cc lcw_buffer_test.cc adpcm_decoders_test.cc
+    SOURCES vqa_player_test.cc vq_decoder_test.cc chunk_reader_test.cc lcw_buffer_test.cc adpcm_decoders_test.cc frame_ring_test.cc
     LIBS vqa32 base port sdllib absl::core_headers SDL2::SDL2
 )

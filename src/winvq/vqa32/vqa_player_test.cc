@@ -20,6 +20,8 @@
 #include "base/array.h"
 #include "base/types.h"
 #include "gtest/gtest.h"
+#include "winvq/vqa32/frame_ring.h"
+#include "winvq/vqa32/lcw_buffer.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player_state.h"
 #include "winvq/vqa32/vqa_test_util.h"
@@ -265,7 +267,7 @@ TEST_F(VqaLoaderTest, KeyFrameContainerMarksAKeyFrame) {
   AppendChunk(fake_.data, "VQFK", frame);
 
   ASSERT_EQ(Open(), 0);
-  EXPECT_NE(state_.movie->frames.front()->flags & kFrameKey, 0U);
+  EXPECT_TRUE(state_.movie->ring.draw_frame().key);
 }
 
 TEST_F(VqaLoaderTest, PartialCompressedCodebookLoadsAtEstimatedOffset) {
@@ -275,10 +277,11 @@ TEST_F(VqaLoaderTest, PartialCompressedCodebookLoadsAtEstimatedOffset) {
 
   ASSERT_EQ(Open(), 0);
   // Groupsize 1: offset = codebook_capacity - (20 * 1 + 100).
-  const VqaCodebook* codebook = state_.movie->loader.full_codebook;
-  EXPECT_TRUE(codebook->buffer.compressed());
-  EXPECT_EQ(base::At(codebook->buffer.data(), kCodebookCapacity - 121), 0);
-  EXPECT_EQ(base::At(codebook->buffer.data(), kCodebookCapacity - 120), 0xAB);
+  const LcwBuffer& codebook =
+      state_.movie->ring.codebook(state_.movie->loader.full_codebook).data;
+  EXPECT_TRUE(codebook.compressed());
+  EXPECT_EQ(base::At(codebook.data(), kCodebookCapacity - 121), 0);
+  EXPECT_EQ(base::At(codebook.data(), kCodebookCapacity - 120), 0xAB);
 }
 
 TEST_F(VqaLoaderTest, FullCodebookDiscardsCollectedPieces) {
@@ -325,8 +328,8 @@ TEST_F(VqaLoaderTest, AcceptsFullPalette) {
   AppendFrameEnd(fake_.data);
 
   ASSERT_EQ(Open(), 0);
-  const VqaFrame& frame = *state_.movie->frames.front();
-  EXPECT_NE(frame.flags & kFrameHasPalette, 0U);
+  const Frame& frame = state_.movie->ring.draw_frame();
+  EXPECT_TRUE(frame.has_palette);
   EXPECT_EQ(frame.palette.size(), 768);
   EXPECT_EQ(base::At(frame.palette.contents(), 767), 7);
 }
@@ -595,7 +598,7 @@ TEST_F(VqaLoaderTest, StopEndsPlaybackWithoutLoadingTheRest) {
 // horizontally and gap_y vertically from the corner named by origin.
 VqaDrawer PlaceImage(uint32_t origin, int gap_x = 10, int gap_y = 20) {
   VqaPlayerState state;
-  state.movie = std::make_unique<VqaMovie>();
+  state.movie = std::make_unique<VqaMovie>(FrameRing(1, 1, 1, 1, 1));
   state.movie->drawer.image_width = 320;
   state.movie->drawer.image_height = 200;
   state.movie->drawer.y2 = 12345;  // Stale value the placement must not read.

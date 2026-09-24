@@ -34,6 +34,7 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
+#include "winvq/vqa32/frame_ring.h"
 #include "winvq/vqa32/vq_decoder.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player.h"
@@ -117,10 +118,10 @@ static int32_t SelectFrameToDraw(VqaPlayerState* state) {
   VqaConfig* config = &state->config;
   VqaMovie* movie = state->movie.get();
   VqaDrawer* drawer = &movie->drawer;
-  VqaFrame* frame = drawer->current_frame;
+  Frame* frame = &movie->ring.draw_frame();
 
   // The loader has not filled this buffer yet.
-  if ((frame->flags & kFrameLoaded) == 0) {
+  if (!frame->loaded) {
     return kVqaNoBuffer;
   }
 
@@ -154,18 +155,18 @@ static int32_t SelectFrameToDraw(VqaPlayerState* state) {
   // palette still has to take effect, so it is kept for the frame drawn next.
   while (true) {
     // The loader has not caught up; continue from here next time.
-    if ((frame->flags & kFrameLoaded) == 0) {
+    if (!frame->loaded) {
       return kVqaNoBuffer;
     }
 
     // Stop at the frame that is due; key frames are never skipped.
-    if ((frame->flags & kFrameKey) != 0 || frame->frame_number >= due_frame) {
+    if (frame->key || frame->frame_number >= due_frame) {
       break;
     }
 
     // Stash the palette in saved_palette, and flag it for DrawNextFrame() to
     // set with the next frame it draws. A later skipped palette replaces it.
-    if (frame->flags & kFrameHasPalette) {
+    if (frame->has_palette) {
       frame->palette.Decompress();
 
       // A decompressed palette can be up to palette_capacity bytes, more than
@@ -184,10 +185,8 @@ static int32_t SelectFrameToDraw(VqaPlayerState* state) {
       return kVqaEndOfMovie;
     }
 
-    // Clearing the flags hands the buffer back to the loader.
-    frame->flags = 0;
-    frame = frame->next;
-    drawer->current_frame = frame;
+    movie->ring.FinishDrawing();
+    frame = &movie->ring.draw_frame();
   }
 
   drawer->last_selected_frame = frame->frame_number;
@@ -195,16 +194,12 @@ static int32_t SelectFrameToDraw(VqaPlayerState* state) {
   return 0;
 }
 
-// Decompresses the drawer's current frame: its codebook, palette and vector
-// pointers. Each is LCW compressed at the end of its buffer and decompressed in
-// place towards the start, and only once: the flags record what is still
-// compressed, and a codebook serves every frame of its group.
-static void DecompressFrame(const VqaMovie* movie) {
-  VqaFrame* frame = movie->drawer.current_frame;
-  // The group's later frames find the codebook decompressed already.
-  frame->codebook->buffer.Decompress();
-  frame->palette.Decompress();
-  frame->pointers.Decompress();
+// Decompresses what a frame is drawn from: its codebook, palette and vector
+// pointers. The group's later frames find the codebook decompressed already.
+static void DecompressFrame(Frame& frame, Codebook& codebook) {
+  codebook.data.Decompress();
+  frame.palette.Decompress();
+  frame.pointers.Decompress();
 }
 
 int32_t DrawNextFrame(VqaPlayerState* state) {
@@ -212,26 +207,13 @@ int32_t DrawNextFrame(VqaPlayerState* state) {
   VqaMovie* movie = state->movie.get();
   VqaDrawer* drawer = &movie->drawer;
 
-  // A drawer asleep has its frame selected and decompressed already, and is
-  // only waiting for the last frame drawn to be released.
-  if (!(movie->flags & kMovieDrawerAsleep)) {
-    if (const auto result = SelectFrameToDraw(state); result != 0) {
-      return result;
-    }
-
-    DecompressFrame(movie);
+  if (const auto result = SelectFrameToDraw(state); result != 0) {
+    return result;
   }
 
-  // One drawn frame at a time: wait for ReleaseDrawnFrame() to hand back the
-  // last one before drawing over the image buffer again.
-  if (movie->flags & kMovieAwaitingRelease) {
-    movie->flags |= kMovieDrawerAsleep;
-    return kVqaSleeping;
-  }
-
-  movie->flags &= ~kMovieDrawerAsleep;
-
-  VqaFrame* frame = drawer->current_frame;
+  Frame& frame = movie->ring.draw_frame();
+  Codebook& codebook = movie->ring.codebook(frame.codebook);
+  DecompressFrame(frame, codebook);
 
   // Without a buffer (kVqaDrawToBuffer clear and none provided) a centered
   // image's offset lies past the empty one. The decoder then gets nothing and
@@ -250,37 +232,30 @@ int32_t DrawNextFrame(VqaPlayerState* state) {
   // Set the frame's own palette, or else the one SelectFrameToDraw() saved from
   // a frame it skipped: this frame's palette buffer holds only a stale palette
   // when the frame carries none.
-  if ((frame->flags & kFrameHasPalette) != 0) {
-    QueueVqaPalette(frame->palette.writable_data(),
-                    static_cast<int32_t>(frame->palette.size()), slow_palette);
+  if (frame.has_palette) {
+    QueueVqaPalette(frame.palette.writable_data(),
+                    static_cast<int32_t>(frame.palette.size()), slow_palette);
   } else if ((drawer->flags & kDrawerPalettePending) != 0) {
     QueueVqaPalette(drawer->saved_palette, drawer->saved_palette_bytes,
                     slow_palette);
   }
-  frame->flags &= ~kFrameHasPalette;
   drawer->flags &= ~kDrawerPalettePending;
 
   if (movie->block_shape.has_value()) {
-    DecodeVqFrame(*movie->block_shape, frame->codebook->buffer.data(),
-                  frame->pointers.data(), image, drawer->blocks_per_row,
+    DecodeVqFrame(*movie->block_shape, codebook.data.data(),
+                  frame.pointers.data(), image, drawer->blocks_per_row,
                   drawer->block_rows, drawer->image_width);
   }
 
   // For PlayVqa() to return in walk mode.
-  drawer->last_drawn_frame = frame->frame_number;
+  drawer->last_drawn_frame = frame.frame_number;
 
-  // ReleaseDrawnFrame() frees this buffer once the frame has been shown.
-  movie->flipper.drawn_frame = frame;
-  movie->flags |= kMovieAwaitingRelease;
+  // The client shows the frame. The queued palette points into the frame's
+  // buffer, so the frame goes back to the loader only after the callback.
+  const bool stop = config->frame_callback != nullptr &&
+                    config->frame_callback(drawer->image_buffer.data(),
+                                           frame.frame_number) != 0;
+  movie->ring.FinishDrawing();
 
-  // The client shows the frame.
-  if ((config->frame_callback != nullptr) &&
-      (config->frame_callback(drawer->image_buffer.data(),
-                              frame->frame_number) != 0)) {
-    return kVqaEndOfMovie;
-  }
-
-  drawer->current_frame = frame->next;
-
-  return 0;
+  return stop ? kVqaEndOfMovie : 0;
 }

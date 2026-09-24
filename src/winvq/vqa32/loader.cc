@@ -40,6 +40,7 @@
 #include "base/numeric.h"
 #include "winvq/vqa32/adpcm_decoders.h"
 #include "winvq/vqa32/chunk_reader.h"
+#include "winvq/vqa32/frame_ring.h"
 #include "winvq/vqa32/lcw_buffer.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player.h"
@@ -277,7 +278,7 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
 
   VqaMovie* movie = state->movie.get();
   VqaLoader* loader = &movie->loader;
-  VqaFrame* frame = loader->current_frame;
+  Frame* frame = &movie->ring.load_frame();
   Chunk& chunk = loader->chunk;
   ChunkReader reader(*state->io);
 
@@ -289,7 +290,7 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
 
   // The next buffer still holds a frame the drawer has not released. Wait
   // for it, which also gives the drawer the turn.
-  if (frame->flags & kFrameLoaded) {
+  if (frame->loaded) {
     return kVqaNoBuffer;
   }
 
@@ -331,7 +332,7 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
         }
 
         if (chunk.id == kChunkVqfk) {
-          frame->flags |= kFrameKey;
+          frame->key = true;
         }
         frame_loaded = true;
         break;
@@ -384,18 +385,9 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
   frame->frame_number = loader->next_frame_number;
   loader->next_frame_number++;
 
-  frame->flags |= kFrameLoaded;
-  loader->current_frame = frame->next;
+  movie->ring.FinishLoading();
 
   return 0;
-}
-
-// Links nodes into a ring through their next pointers, the last to the first.
-template <class Node>
-static void LinkRing(std::vector<std::unique_ptr<Node>>& nodes) {
-  for (size_t i = 0; i < nodes.size(); i++) {
-    nodes.at(i)->next = nodes.at((i + 1) % nodes.size()).get();
-  }
 }
 
 // Allocates the play buffers of a movie with this header: the codebook and
@@ -409,62 +401,36 @@ static std::unique_ptr<VqaMovie> AllocateMovie(const VqaHeader* header,
     return nullptr;
   }
 
-  auto owned_movie = std::make_unique<VqaMovie>();
-  VqaMovie* movie = owned_movie.get();
-
   // Compressed data is loaded at the end of its buffer and decompressed in
   // place towards the start, so each buffer is the decompressed size plus
   // slack (250 bytes for a codebook, 1 KiB for a palette or the vector
   // pointers): room for the output never to catch up with input still to be
   // read, even for data LCW could not shrink. The sizes are rounded down to a
   // multiple of 4, which kept the DOS buffers DWORD aligned.
-  movie->codebook_capacity =
+  const int32_t codebook_capacity =
       ((header->codebook_entries * header->block_width * header->block_height) +
        250) /
       4 * 4;
 
   // 256 colors of 3 bytes.
-  movie->palette_capacity = (768 + 1024) / 4 * 4;
+  const int32_t palette_capacity = (768 + 1024) / 4 * 4;
 
   // Two bytes per block.
-  movie->pointers_capacity =
+  const int32_t pointers_capacity =
       (((header->image_width / header->block_width) *
         (header->image_height / header->block_height) * int{sizeof(int16_t)}) +
        1024) /
       4 * 4;
 
-  // The codebook ring.
-  movie->codebooks.reserve(base::ToSize(config->codebook_buffer_count));
-
-  for (int32_t i = 0; i < config->codebook_buffer_count; i++) {
-    movie->codebooks.push_back(
-        std::make_unique<VqaCodebook>(movie->codebook_capacity));
-  }
-
-  LinkRing(movie->codebooks);
-
-  // The loader starts assembling into the first node.
-  VqaCodebook* const first_codebook = movie->codebooks.front().get();
-  movie->loader.partial_codebook = first_codebook;
-  movie->loader.full_codebook = first_codebook;
-
-  // The frame ring.
-  movie->frames.reserve(base::ToSize(config->frame_buffer_count));
-
-  for (int32_t i = 0; i < config->frame_buffer_count; i++) {
-    auto frame = std::make_unique<VqaFrame>(movie->pointers_capacity,
-                                            movie->palette_capacity);
-    frame->codebook = first_codebook;
-    movie->frames.push_back(std::move(frame));
-  }
-
-  LinkRing(movie->frames);
-
-  // The loader, the drawer and the flipper all start at the first frame.
-  VqaFrame* const first_frame = movie->frames.front().get();
-  movie->loader.current_frame = first_frame;
-  movie->drawer.current_frame = first_frame;
-  movie->flipper.drawn_frame = first_frame;
+  // The loader starts assembling the first codebook into the first node, and
+  // the loader and the drawer both start at the first frame.
+  auto owned_movie = std::make_unique<VqaMovie>(
+      FrameRing(config->frame_buffer_count, config->codebook_buffer_count,
+                codebook_capacity, pointers_capacity, palette_capacity));
+  VqaMovie* movie = owned_movie.get();
+  movie->codebook_capacity = codebook_capacity;
+  movie->palette_capacity = palette_capacity;
+  movie->pointers_capacity = pointers_capacity;
 
   // The image buffer: the caller's; else, when the player draws, its own the
   // size of the movie; else none, and the drawer draws nothing.
@@ -598,11 +564,11 @@ static int32_t LoadFrameContainer(VqaPlayerState* state, const Chunk& frame) {
 
 // Makes the codebook being assembled the full codebook, used by the frames
 // loaded from now on; the next group's pieces go to the node after it.
-static void CompleteCodebook(VqaLoader* loader) {
+static void CompleteCodebook(VqaLoader* loader, const FrameRing& ring) {
   loader->partial_count = 0;
   loader->partial_bytes = 0;
   loader->full_codebook = loader->partial_codebook;
-  loader->partial_codebook = loader->partial_codebook->next;
+  loader->partial_codebook = ring.next_codebook(loader->partial_codebook);
 }
 
 // Loads a full codebook, raw or compressed, into the node being assembled. It
@@ -611,14 +577,15 @@ static int32_t LoadFullCodebook(const VqaPlayerState* state, const Chunk& chunk,
                                 const bool compressed) {
   VqaLoader* loader = &state->movie->loader;
   ChunkReader reader(*state->io);
-  LcwBuffer& buffer = loader->partial_codebook->buffer;
+  LcwBuffer& buffer =
+      state->movie->ring.codebook(loader->partial_codebook).data;
 
   if (!(compressed ? buffer.LoadCompressed(reader, chunk)
                    : buffer.LoadRaw(reader, chunk))) {
     return kVqaErrorRead;
   }
 
-  CompleteCodebook(loader);
+  CompleteCodebook(loader, state->movie->ring);
   return 0;
 }
 
@@ -636,7 +603,7 @@ static int32_t LoadPartialCodebook(const VqaPlayerState* state,
   VqaMovie* movie = state->movie.get();
   VqaLoader* loader = &movie->loader;
   ChunkReader reader(*state->io);
-  LcwBuffer& buffer = loader->partial_codebook->buffer;
+  LcwBuffer& buffer = movie->ring.codebook(loader->partial_codebook).data;
   const int frames_per_group = state->header.frames_per_group;
 
   if (compressed && loader->partial_bytes == 0) {
@@ -666,7 +633,7 @@ static int32_t LoadPartialCodebook(const VqaPlayerState* state,
     } else {
       buffer.SetRaw(loader->partial_bytes);
     }
-    CompleteCodebook(loader);
+    CompleteCodebook(loader, movie->ring);
   }
 
   return 0;
@@ -675,7 +642,7 @@ static int32_t LoadPartialCodebook(const VqaPlayerState* state,
 // Loads a palette, raw or compressed, into the frame's palette buffer.
 static int32_t LoadPalette(const VqaPlayerState* state, const Chunk& chunk,
                            const bool compressed) {
-  VqaFrame* frame = state->movie->loader.current_frame;
+  Frame* frame = &state->movie->ring.load_frame();
   ChunkReader reader(*state->io);
 
   // The drawer keeps a skipped frame's palette in its 256-color copy, so a
@@ -695,7 +662,7 @@ static int32_t LoadPalette(const VqaPlayerState* state, const Chunk& chunk,
 // Loads vector pointers, raw or compressed, into the frame's pointer buffer.
 static int32_t LoadVectorPointers(const VqaPlayerState* state,
                                   const Chunk& chunk, const bool compressed) {
-  VqaFrame* frame = state->movie->loader.current_frame;
+  Frame* frame = &state->movie->ring.load_frame();
   ChunkReader reader(*state->io);
 
   if (!(compressed ? frame->pointers.LoadCompressed(reader, chunk)
@@ -933,8 +900,10 @@ static int32_t LoadAdpcmSound(VqaPlayerState* state, const Chunk& chunk) {
 // Loads a chunk a frame is built from into the loader's current frame, and
 // flags the frame as the chunk says: key, or carrying a palette.
 static FramePart LoadFramePart(VqaPlayerState* state, const Chunk& chunk) {
+  Frame& frame = state->movie->ring.load_frame();
   int32_t result = 0;
-  uint32_t frame_flags = 0;
+  bool has_palette = false;
+  bool key = false;
   FramePart part = FramePart::kLoaded;
   switch (chunk.id) {
     case kChunkCbf0:
@@ -948,7 +917,7 @@ static FramePart LoadFramePart(VqaPlayerState* state, const Chunk& chunk) {
     case kChunkCpl0:
     case kChunkCplz:
       result = LoadPalette(state, chunk, chunk.id == kChunkCplz);
-      frame_flags = kFrameHasPalette;
+      has_palette = true;
       break;
     case kChunkVpt0:
     case kChunkVptz:
@@ -959,7 +928,7 @@ static FramePart LoadFramePart(VqaPlayerState* state, const Chunk& chunk) {
     // A key frame's vector pointers; key frames are never skipped.
     case kChunkVptk:
       result = LoadVectorPointers(state, chunk, true);
-      frame_flags = kFrameKey;
+      key = true;
       part = FramePart::kVectorPointers;
       break;
     default:
@@ -969,7 +938,8 @@ static FramePart LoadFramePart(VqaPlayerState* state, const Chunk& chunk) {
   if (result != 0) {
     return FramePart::kFailed;
   }
-  state->movie->loader.current_frame->flags |= frame_flags;
+  frame.has_palette = frame.has_palette || has_palette;
+  frame.key = frame.key || key;
   return part;
 }
 

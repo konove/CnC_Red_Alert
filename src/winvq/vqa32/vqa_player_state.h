@@ -22,14 +22,12 @@
 // File: the VQA player's internal state, VqaPlayerState, and the functions the
 // player's source files share. Only vqa32 and its tests include it.
 //
-// The player is three cooperating parts that take turns in PlayVqa()'s loop
-// on one thread. The loader reads frames from the file into a ring of frame
-// buffers and their codebooks into a ring of codebook buffers; the drawer
-// decodes a loaded frame into the image buffer when the clock says it is due;
-// the "flipper" (ReleaseDrawnFrame) then hands the frame's buffer back to the
-// loader. Each part keeps its own position in the rings, so a frame buffer's
-// flags are how they tell each other it is full or free. The sound runs
-// separately, on the SDL audio thread, from a ring the loader fills.
+// The player is two cooperating parts that take turns in PlayVqa()'s loop on
+// one thread. The loader reads frames and their codebooks from the file into
+// a FrameRing; the drawer decodes a loaded frame into the image buffer when
+// the clock says it is due, shows it and hands its buffer back to the loader.
+// The sound runs separately, on the SDL audio thread, from a ring the loader
+// fills.
 //
 // Originally written by Denzil E. Long, Jr. and Bill Randolph at Westwood
 // Studios, August 1995.
@@ -47,66 +45,20 @@
 #include "base/types.h"
 #include "winvq/vqa32/adpcm_decoders.h"
 #include "winvq/vqa32/chunk_reader.h"
+#include "winvq/vqa32/frame_ring.h"
 #include "winvq/vqa32/lcw_buffer.h"
 #include "winvq/vqa32/vq_decoder.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player.h"
 #include "winvq/vqa32/vqaio.h"
 
-// VqaCodebook: one buffer in the ring of codebooks. A codebook is the table of
-// pixel blocks a frame's vector pointers index into, and serves every frame
-// of a group. The loader assembles the next group's codebook from the
-// partial codebooks in the current group's frames, so the ring needs at
-// least that one codebook ahead of the one in use.
-//
-// A compressed codebook is decompressed by the drawer when the first frame
-// using it is drawn.
-struct VqaCodebook {
-  explicit VqaCodebook(base::ssize capacity) : buffer(capacity) {}
-
-  // codebook_capacity bytes.
-  LcwBuffer buffer;
-  VqaCodebook* next = nullptr;
-};
-
-// VqaFrame: one buffer in the ring of loaded frames. The loader fills it
-// and sets kFrameLoaded; the drawer decodes it; the flipper or a skip
-// clears flags to hand it back to the loader. Compressed data is decompressed
-// just before the frame is drawn, as in VqaCodebook.
-struct VqaFrame {
-  VqaFrame(base::ssize pointers_capacity, base::ssize palette_capacity)
-      : pointers(pointers_capacity), palette(palette_capacity) {}
-
-  // The frame's vector pointers, one per block, pointers_capacity bytes.
-  LcwBuffer pointers;
-  // The frame's palette as 8-bit R,G,B triplets, palette_capacity bytes. Holds
-  // a stale palette when the frame has none (kFrameHasPalette clear).
-  LcwBuffer palette;
-  // The codebook the frame's pointers index into.
-  VqaCodebook* codebook = nullptr;
-  VqaFrame* next = nullptr;
-  uint32_t flags = 0;  // kFrame* bits
-  // Number of the frame in the movie.
-  int32_t frame_number = 0;
-};
-
-// VqaFrame flags. All clear means the buffer is free for the loader.
-// Loaded and waiting to be drawn.
-constexpr uint32_t kFrameLoaded = base::Bit<uint32_t>(0);
-// Key frame: never skipped.
-constexpr uint32_t kFrameKey = base::Bit<uint32_t>(1);
-// Carries a palette that must be set.
-constexpr uint32_t kFrameHasPalette = base::Bit<uint32_t>(2);
-
 // VqaLoader: the loader's position in the file and in the buffer rings.
 struct VqaLoader {
-  // The codebook node the partial codebooks of the current group are
-  // collected into, to become the next group's codebook.
-  VqaCodebook* partial_codebook;
-  // The last complete codebook, used by the frames being loaded.
-  VqaCodebook* full_codebook;
-  // The frame node the next frame is loaded into.
-  VqaFrame* current_frame;
+  // Index in the ring of the codebook the partial codebooks of the current
+  // group are collected into, to become the next group's codebook.
+  int partial_codebook;
+  // Index of the last complete codebook, used by the frames being loaded.
+  int full_codebook;
   // Partial codebooks collected into partial_codebook so far, and their total
   // size in bytes (compressed or not).
   int32_t partial_count;
@@ -124,8 +76,6 @@ struct VqaLoader {
 
 // VqaDrawer: where and when the drawer decodes frames.
 struct VqaDrawer {
-  // The next frame to draw.
-  VqaFrame* current_frame;
   uint32_t flags;  // kDrawer* bits
   // The buffer frames are decoded into, image_width x image_height pixels:
   // the caller's, the player's own, or empty when neither was provided.
@@ -155,14 +105,6 @@ struct VqaDrawer {
 
 // Drawer flag: a skipped frame's palette is pending.
 constexpr uint32_t kDrawerPalettePending = base::Bit<uint32_t>(0);
-
-// VqaFlipper: the frame the drawer finished, which ReleaseDrawnFrame()
-// releases. The name is from DOS, where this step showed the frame by flipping
-// video pages; now the client's frame_callback has already shown it.
-struct VqaFlipper {
-  // The frame drawn last; valid while kMovieAwaitingRelease is set.
-  VqaFrame* drawn_frame;
-};
 
 // VqaAudio: the sound ring and the state shared with the SDL audio callback.
 //
@@ -212,14 +154,15 @@ constexpr uint32_t kAudioPlaying = base::Bit<uint32_t>(6);
 // VqaMovie: everything a movie needs while it is open. Allocated by OpenVqa()
 // once the header is read and freed by CloseVqa().
 struct VqaMovie {
+  explicit VqaMovie(FrameRing frame_ring) : ring(std::move(frame_ring)) {}
+
   // The shape of the blocks frames are decoded from; nullopt when nothing is
   // decoded, because kVqaDrawToBuffer is clear or the block size has no
   // decoder.
   std::optional<BlockShape> block_shape;
 
-  // RAII storage for nodes - these vectors own the node objects
-  std::vector<std::unique_ptr<VqaCodebook>> codebooks;
-  std::vector<std::unique_ptr<VqaFrame>> frames;
+  // The loaded frames and their codebooks.
+  FrameRing ring;
 
   // The image buffer, when the player allocated it.
   std::vector<unsigned char> image_storage;
@@ -227,7 +170,6 @@ struct VqaMovie {
   VqaAudio audio;
   VqaLoader loader{};
   VqaDrawer drawer{};
-  VqaFlipper flipper{};
   uint32_t flags = 0;        // kMovie* bits
   // Buffer sizes in bytes for one codebook, palette and set of vector
   // pointers, computed from the header with slack for compressed data loaded
@@ -241,12 +183,6 @@ struct VqaMovie {
 };
 
 // VqaMovie flags.
-// A drawn frame waits for ReleaseDrawnFrame() to release it; no other frame is
-// drawn until then.
-constexpr uint32_t kMovieAwaitingRelease = base::Bit<uint32_t>(0);
-// The drawer has a frame ready and is waiting on kMovieAwaitingRelease, so it
-// does not select another.
-constexpr uint32_t kMovieDrawerAsleep = base::Bit<uint32_t>(1);
 // The loader stopped inside a sound chunk until the audio ring has room; see
 // chunk_header.
 constexpr uint32_t kMovieLoaderAsleep = base::Bit<uint32_t>(2);
@@ -308,14 +244,10 @@ int32_t LoadNextFrame(VqaPlayerState* state);
 void ConfigureDrawer(VqaPlayerState* state);
 
 // Decodes the drawer's next frame into the image buffer if it is due, hands it
-// to the frame callback, and leaves it for ReleaseDrawnFrame(). Returns 0 when
-// a frame was drawn; kVqaNotTime, kVqaNoBuffer or kVqaSleeping when none was;
-// or kVqaEndOfMovie when the frame callback asked to stop.
+// to the frame callback and frees its buffer for the loader. Returns 0 when a
+// frame was drawn; kVqaNotTime or kVqaNoBuffer when none was; or
+// kVqaEndOfMovie when the frame callback asked to stop.
 int32_t DrawNextFrame(VqaPlayerState* state);
-
-// The page flip: once the drawer has drawn a frame (kMovieAwaitingRelease),
-// frees that frame's buffer for the loader.
-void ReleaseDrawnFrame(const VqaPlayerState* state);
 
 // Makes the movie clock read now_ticks (kVqaTicksPerSecond), and picks what it
 // runs on: the sound played so far when clock_source is kVqaClockDefault or
