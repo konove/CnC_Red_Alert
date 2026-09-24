@@ -76,6 +76,14 @@ struct VqaHeader {
 #pragma pack(pop)
 static_assert(sizeof(VqaHeader) == 42);
 
+// ZapHeader: the start of a SND1 (Westwood ZAP ADPCM) sound chunk's payload.
+// Equal sizes mean the sound is stored uncompressed.
+struct ZapHeader {
+  uint16_t uncompressed_size;  // Bytes of sound after decompression.
+  uint16_t compressed_size;    // Bytes of sound in the chunk.
+};
+static_assert(sizeof(ZapHeader) == 4);
+
 // VqaHeader::version values.
 constexpr uint16_t kVqaVersion1 = 1;
 constexpr uint16_t kVqaVersion2 = 2;

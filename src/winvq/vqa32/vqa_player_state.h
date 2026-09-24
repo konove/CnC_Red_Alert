@@ -38,33 +38,20 @@
 #include <atomic>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <span>
 #include <string_view>
 #include <vector>
 
 #include "base/numeric.h"
 #include "base/types.h"
+#include "winvq/vqa32/adpcm_decoders.h"
 #include "winvq/vqa32/chunk_reader.h"
 #include "winvq/vqa32/lcw_buffer.h"
+#include "winvq/vqa32/vq_decoder.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player.h"
 #include "winvq/vqa32/vqaio.h"
-#include "winvq/vqm32/soscomp.h"
-
-// Packs a block width and height into the dimension code the drawer switches
-// on to pick a decoder. Only 4x2 and 4x4 blocks have one.
-constexpr uint32_t BlockDimensions(uint32_t a, uint32_t b) {
-  return ((a & 0xFF) << 8) | (b & 0xFF);
-}
-constexpr uint32_t kBlock4x2 = BlockDimensions(4, 2);
-constexpr uint32_t kBlock4x4 = BlockDimensions(4, 4);
-
-// ZapHeader: the header of a SND1 (Westwood ADPCM) sound chunk. Equal sizes
-// mean the sound is stored uncompressed.
-struct ZapHeader {
-  uint16_t UnCompSize;  // Bytes of sound after decompression
-  uint16_t CompSize;    // Bytes of sound in the chunk
-};
 
 // VqaCodebook: one buffer in the ring of codebooks. A codebook is the table of
 // pixel blocks a frame's vector pointers index into, and serves every frame
@@ -155,7 +142,7 @@ struct VqaDrawer {
   // 256 colors, which is why the loader rejects larger palettes.
   int32_t saved_palette_bytes;
   std::array<unsigned char, 768> saved_palette;
-  // The image size in blocks, the geometry decode_frame walks.
+  // The image size in blocks, the geometry the decoder walks.
   int32_t blocks_per_row;
   int32_t block_rows;
   // Number of the last frame selected for drawing. SelectFrameToDraw() draws
@@ -209,7 +196,7 @@ struct VqaAudio {
   int bits_per_sample = 0;  // 8 or 16
   int32_t bytes_per_second = 0;
   // Decoder state for SND2 (IMA ADPCM) chunks, carried from chunk to chunk.
-  AdpcmStream adpcm = {};
+  ImaAdpcmDecoder adpcm;
   // Blocks handed to SDL since the sound started (a replayed block counts
   // only after the movie has loaded completely). ReadMovieClock() derives the
   // movie clock from it.
@@ -225,13 +212,10 @@ constexpr uint32_t kAudioPlaying = base::Bit<uint32_t>(6);
 // VqaMovie: everything a movie needs while it is open. Allocated by OpenVqa()
 // once the header is read and freed by CloseVqa().
 struct VqaMovie {
-  // Decodes a frame into the image buffer: the routine for the movie's block
-  // size, or one that does nothing when kVqaDrawToBuffer is clear or the block
-  // size has no routine.
-  void (*decode_frame)(std::span<const unsigned char> codebook,
-                       std::span<const unsigned char> pointers,
-                       std::span<unsigned char> buffer, int blocks_per_row,
-                       int block_rows, int stride) = nullptr;
+  // The shape of the blocks frames are decoded from; nullopt when nothing is
+  // decoded, because kVqaDrawToBuffer is clear or the block size has no
+  // decoder.
+  std::optional<BlockShape> block_shape;
 
   // RAII storage for nodes - these vectors own the node objects
   std::vector<std::unique_ptr<VqaCodebook>> codebooks;

@@ -26,6 +26,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <optional>
 #include <span>
 #include <utility>
 
@@ -37,11 +38,6 @@
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player.h"
 #include "winvq/vqa32/vqa_player_state.h"
-
-static void DecodeNothing(std::span<const unsigned char> codebook,
-                          std::span<const unsigned char> pointers,
-                          std::span<unsigned char> buffer, int blocks_per_row,
-                          int block_rows, int stride);
 
 void ConfigureDrawer(VqaPlayerState* state) {
   VqaMovie* movie = state->movie.get();
@@ -85,7 +81,7 @@ void ConfigureDrawer(VqaPlayerState* state) {
   }
 
   // The placement comes from the caller's config, not the file, so an image
-  // that does not fit the buffer is a programmer error. Unchecked, decode_frame
+  // that does not fit the buffer is a programmer error. Unchecked, the decoder
   // would write outside the buffer from image_offset.
   DCHECK(std::min(drawer->x1, drawer->x2) >= 0 &&
          std::max(drawer->x1, drawer->x2) < drawer->image_width &&
@@ -96,27 +92,15 @@ void ConfigureDrawer(VqaPlayerState* state) {
   // it walks. A partial block at the right or bottom edge is not drawn.
   drawer->blocks_per_row = header->image_width / header->block_width;
   drawer->block_rows = header->image_height / header->block_height;
-  const uint32_t block_dimensions =
-      BlockDimensions(header->block_width, header->block_height);
 
   // Without kVqaDrawToBuffer, or for a block size no decoder handles, frames
-  // decode to nothing rather than through a null pointer.
-  movie->decode_frame = DecodeNothing;
+  // are not decoded.
+  movie->block_shape =
+      (config->draw_flags & kVqaDrawToBuffer) != 0
+          ? BlockShapeFor(header->block_width, header->block_height)
+          : std::nullopt;
 
-  if (config->draw_flags & kVqaDrawToBuffer) {
-    switch (block_dimensions) {
-      case kBlock4x2:
-        movie->decode_frame = DecodeFrame4x2;
-        break;
-      case kBlock4x4:
-        movie->decode_frame = DecodeFrame4x4;
-        break;
-      default:
-        break;
-    }
-  }
-
-  // decode_frame fills rightward and downward, so it starts at the image's
+  // The decoder fills rightward and downward, so it starts at the image's
   // top-left pixel whichever corner is anchored.
   drawer->image_offset =
       (drawer->image_width * std::min(drawer->y1, drawer->y2)) +
@@ -250,7 +234,7 @@ int32_t DrawNextFrame(VqaPlayerState* state) {
   VqaFrame* frame = drawer->current_frame;
 
   // Without a buffer (kVqaDrawToBuffer clear and none provided) a centered
-  // image's offset lies past the empty one. decode_frame then gets nothing and
+  // image's offset lies past the empty one. The decoder then gets nothing and
   // draws nothing, and the frame goes on to be released like any other.
   const bool offset_in_buffer =
       drawer->image_offset >= 0 &&
@@ -276,10 +260,11 @@ int32_t DrawNextFrame(VqaPlayerState* state) {
   frame->flags &= ~kFrameHasPalette;
   drawer->flags &= ~kDrawerPalettePending;
 
-  // Decode the image.
-  movie->decode_frame(frame->codebook->buffer.data(), frame->pointers.data(),
-                      image, drawer->blocks_per_row, drawer->block_rows,
-                      drawer->image_width);
+  if (movie->block_shape.has_value()) {
+    DecodeVqFrame(*movie->block_shape, frame->codebook->buffer.data(),
+                  frame->pointers.data(), image, drawer->blocks_per_row,
+                  drawer->block_rows, drawer->image_width);
+  }
 
   // For PlayVqa() to return in walk mode.
   drawer->last_drawn_frame = frame->frame_number;
@@ -299,11 +284,3 @@ int32_t DrawNextFrame(VqaPlayerState* state) {
 
   return 0;
 }
-
-// The decode_frame of a movie that draws nothing: there is no buffer to draw
-// into, or no decoder for its block size.
-static void DecodeNothing(std::span<const unsigned char> /*codebook*/,
-                          std::span<const unsigned char> /*pointers*/,
-                          std::span<unsigned char> /*buffer*/,
-                          int /*blocks_per_row*/, int /*block_rows*/,
-                          int /*stride*/) {}

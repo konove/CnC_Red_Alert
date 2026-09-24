@@ -15,7 +15,7 @@ target_sources(vqa32 PUBLIC
         FILES ${VQA32_HEADERS}
 )
 
-target_link_libraries(vqa32 PUBLIC base PRIVATE port sdllib)
+target_link_libraries(vqa32 PUBLIC base PRIVATE port sdllib absl::log)
 
 find_package(SDL2 REQUIRED)
 target_link_libraries(vqa32 PRIVATE SDL2::SDL2)
@@ -24,6 +24,6 @@ target_link_libraries(vqa32 PRIVATE SDL2::SDL2)
 include(Testing)
 add_gtest(
     NAME vqa32_test
-    SOURCES vqa_player_test.cc vq_decoder_test.cc chunk_reader_test.cc lcw_buffer_test.cc
-    LIBS vqa32 base sdllib absl::core_headers SDL2::SDL2
+    SOURCES vqa_player_test.cc vq_decoder_test.cc chunk_reader_test.cc lcw_buffer_test.cc adpcm_decoders_test.cc
+    LIBS vqa32 base port sdllib absl::core_headers SDL2::SDL2
 )

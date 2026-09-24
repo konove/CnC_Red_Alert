@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <optional>
 #include <span>
 
 #include "base/array.h"
@@ -63,18 +64,22 @@ void DecodeBlocks(std::span<const unsigned char> codebook,
 }
 }  // namespace
 
-void DecodeFrame4x2(std::span<const unsigned char> codebook,
-                    std::span<const unsigned char> pointers,
-                    std::span<unsigned char> buffer, int blocks_per_row,
-                    int block_rows, int stride) {
-  DecodeBlocks(codebook, pointers, buffer, blocks_per_row, block_rows, stride,
-               2);
+std::optional<BlockShape> BlockShapeFor(const int width, const int height) {
+  if (width == 4 && height == 2) {
+    return BlockShape::k4x2;
+  }
+  if (width == 4 && height == 4) {
+    return BlockShape::k4x4;
+  }
+  return std::nullopt;
 }
 
-void DecodeFrame4x4(std::span<const unsigned char> codebook,
-                    std::span<const unsigned char> pointers,
-                    std::span<unsigned char> buffer, int blocks_per_row,
-                    int block_rows, int stride) {
+void DecodeVqFrame(const BlockShape shape,
+                   const std::span<const unsigned char> codebook,
+                   const std::span<const unsigned char> pointers,
+                   const std::span<unsigned char> buffer,
+                   const int blocks_per_row, const int block_rows,
+                   const int stride) {
   DecodeBlocks(codebook, pointers, buffer, blocks_per_row, block_rows, stride,
-               4);
+               shape == BlockShape::k4x2 ? 2 : 4);
 }

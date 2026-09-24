@@ -1,16 +1,11 @@
-// File: C++ stand-ins for the VQM32 sound decoders the VQA loader calls,
-// which were all assembly: the IMA ADPCM decoder for SND2 sound, and a stub
-// where the ZAP decoder for SND1 sound would be.
+#include "winvq/vqa32/adpcm_decoders.h"
+
 #include <algorithm>
 #include <cstdint>
-#include <cstdio>
 #include <span>
 
-#include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "port/unaligned.h"
-#include "winvq/vqm32/compress.h"
-#include "winvq/vqm32/soscomp.h"
 
 // IMA ADPCM step index change for each 4-bit code: small codes step the
 // quantizer down, large ones up. The sign bit (8) does not matter.
@@ -29,25 +24,17 @@ static constexpr int16_t kImaAdpcmStepTable[89] = {
     5894,  6484,  7132,  7845,  8630,  9493,  10442, 11487, 12635, 13899,
     15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767};
 
-// The only ZAP decoder is the original assembly (vqm32/audunzap.asm), which
-// the SDL port does not build. Writing nothing, the stub cannot overrun dest;
-// a real decoder must stop at its end.
-int32_t AudioUnzap(std::span<const unsigned char> /*source*/,
-                   std::span<unsigned char> /*dest*/) {
-  absl::PrintF("%s\n", __func__);
+int32_t DecodeZapSound(std::span<const unsigned char> /*source*/,
+                       std::span<unsigned char> /*dest*/) {
   return 0;
 }
 
-bool DecodeAdpcmSound(AdpcmStream* stream, const int channels,
-                      const int bits_per_sample,
-                      const std::span<const uint8_t> source,
-                      const std::span<uint8_t> dest) {
-  // The only format the movies use; see soscomp.h.
-  if (channels != 1 || bits_per_sample != 16) {
-    absl::FPrintF(stderr, "%s (%d/%d)\n", __func__, channels, bits_per_sample);
-    return false;
-  }
+bool ImaAdpcmDecoder::Supports(const int channels, const int bits_per_sample) {
+  return channels == 1 && bits_per_sample == 16;
+}
 
+bool ImaAdpcmDecoder::Decode(const std::span<const uint8_t> source,
+                             const std::span<uint8_t> dest) {
   if (dest.size() / 4 > source.size()) {
     return false;
   }
@@ -66,11 +53,11 @@ bool DecodeAdpcmSound(AdpcmStream* stream, const int channels,
           static_cast<uint8_t>(i == 0 ? code_pair & 0x0F : code_pair >> 4);
 
       // This sample uses the step size before the update below.
-      const int step = base::At(kImaAdpcmStepTable, stream->step_index);
+      const int step = base::At(kImaAdpcmStepTable, step_index_);
 
       const int index_delta = base::At(kImaAdpcmIndexTable, code);
-      stream->step_index = static_cast<int16_t>(
-          std::clamp(stream->step_index + index_delta, 0, 88));
+      step_index_ =
+          static_cast<int16_t>(std::clamp(step_index_ + index_delta, 0, 88));
 
       // The difference is (magnitude + 1/2) * step / 4, the magnitude being
       // the code's low 3 bits and bit 3 its sign. The IMA reference adds the
@@ -80,10 +67,9 @@ bool DecodeAdpcmSound(AdpcmStream* stream, const int channels,
       const int difference = (((((code & 7) * 2) + 1) * step) / 8) * sign;
 
       // The prediction saturates at the 16-bit range.
-      stream->predicted =
-          std::clamp(stream->predicted + difference, -32768, 32767);
+      predicted_ = std::clamp(predicted_ + difference, -32768, 32767);
 
-      const auto sample = static_cast<int16_t>(stream->predicted);
+      const auto sample = static_cast<int16_t>(predicted_);
       port::WriteUnaligned(std::as_writable_bytes(output), sample);
       output = output.subspan(sizeof(sample));
     }

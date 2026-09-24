@@ -35,17 +35,17 @@
 #include <utility>
 #include <vector>
 
+#include "absl/log/log.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "winvq/vqa32/adpcm_decoders.h"
 #include "winvq/vqa32/chunk_reader.h"
 #include "winvq/vqa32/lcw_buffer.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player.h"
 #include "winvq/vqa32/vqa_player_state.h"
 #include "winvq/vqa32/vqaio.h"
-#include "winvq/vqm32/compress.h"
 #include "winvq/vqm32/iff.h"
-#include "winvq/vqm32/soscomp.h"
 
 static std::unique_ptr<VqaMovie> AllocateMovie(const VqaHeader* header,
                                                VqaConfig* config);
@@ -782,15 +782,16 @@ static int32_t LoadZapSound(VqaPlayerState* state, const Chunk& chunk) {
   padded_bytes -= int32_t{sizeof(ZapHeader)};
 
   // The first chunk, too big for staging, preloads the ring.
-  if (std::cmp_greater(zap_header.UnCompSize, audio->staging_capacity) &&
+  if (std::cmp_greater(zap_header.uncompressed_size, audio->staging_capacity) &&
       audio->write_offset == 0) {
     if (padded_bytes > config->audio_buffer_bytes ||
-        std::cmp_greater(zap_header.UnCompSize, config->audio_buffer_bytes)) {
+        std::cmp_greater(zap_header.uncompressed_size,
+                         config->audio_buffer_bytes)) {
       return kVqaErrorRead;
     }
 
     // Equal sizes: stored uncompressed.
-    if (zap_header.UnCompSize == zap_header.CompSize) {
+    if (zap_header.uncompressed_size == zap_header.compressed_size) {
       if (!state->io->Read(std::span(audio->ring), padded_bytes)) {
         return kVqaErrorRead;
       }
@@ -804,25 +805,26 @@ static int32_t LoadZapSound(VqaPlayerState* state, const Chunk& chunk) {
         return kVqaErrorRead;
       }
 
-      // TODO: AudioUnzap() is a stub that writes nothing, so the ring keeps
-      // the compressed bytes and whatever was there before, and plays them.
-      // The shipped Red Alert movies have no SND1 sound.
-      AudioUnzap(compressed,
-                 std::span(audio->ring).first(zap_header.UnCompSize));
+      // TODO: DecodeZapSound() is a stub that writes nothing, so the ring
+      // keeps the compressed bytes and whatever was there before, and plays
+      // them. The shipped Red Alert movies have no SND1 sound.
+      DecodeZapSound(
+          compressed,
+          std::span(audio->ring).first(zap_header.uncompressed_size));
     }
 
-    CommitPreload(audio, *config, zap_header.UnCompSize);
+    CommitPreload(audio, *config, zap_header.uncompressed_size);
 
     return 0;
   }
 
   // Only the first chunk may exceed staging.
   if (padded_bytes > audio->staging_capacity ||
-      std::cmp_greater(zap_header.UnCompSize, audio->staging_capacity)) {
+      std::cmp_greater(zap_header.uncompressed_size, audio->staging_capacity)) {
     return kVqaErrorRead;
   }
 
-  if (zap_header.UnCompSize == zap_header.CompSize) {
+  if (zap_header.uncompressed_size == zap_header.compressed_size) {
     if (!state->io->Read(std::span(audio->staging), padded_bytes)) {
       return kVqaErrorRead;
     }
@@ -836,14 +838,32 @@ static int32_t LoadZapSound(VqaPlayerState* state, const Chunk& chunk) {
       return kVqaErrorRead;
     }
 
-    // TODO: As above, AudioUnzap() writes nothing.
-    AudioUnzap(compressed,
-               std::span(audio->staging).first(zap_header.UnCompSize));
+    // TODO: As above, DecodeZapSound() writes nothing.
+    DecodeZapSound(
+        compressed,
+        std::span(audio->staging).first(zap_header.uncompressed_size));
   }
 
-  audio->staged_bytes = zap_header.UnCompSize;
+  audio->staged_bytes = zap_header.uncompressed_size;
 
   return 0;
+}
+
+// Decodes an IMA ADPCM chunk's sound from source into dest with the movie's
+// decoder.
+//
+// TODO: A format the decoder does not produce, or a failed decode, leaves dest
+// as it was, so the ring plays whatever it held. The shipped Red Alert movies
+// are all 16-bit mono.
+static void DecodeAdpcm(VqaAudio* audio, const std::span<const uint8_t> source,
+                        const std::span<uint8_t> dest) {
+  if (!ImaAdpcmDecoder::Supports(audio->channels, audio->bits_per_sample)) {
+    DLOG_FIRST_N(WARNING, 1)
+        << "IMA ADPCM sound with " << audio->channels << " channels of "
+        << audio->bits_per_sample << " bits cannot be decoded";
+    return;
+  }
+  audio->adpcm.Decode(source, dest);
 }
 
 // Loads a sound chunk in IMA ADPCM, 4 bits a sample.
@@ -879,12 +899,8 @@ static int32_t LoadAdpcmSound(VqaPlayerState* state, const Chunk& chunk) {
       return kVqaErrorRead;
     }
 
-    // TODO: A failed decode (the decoder takes only 16-bit mono) is ignored,
-    // so the ring plays whatever it held. The shipped Red Alert movies are
-    // all 16-bit mono.
-    DecodeAdpcmSound(&audio->adpcm, audio->channels, audio->bits_per_sample,
-                     compressed,
-                     std::span(audio->ring).first(base::ToSize(decoded_bytes)));
+    DecodeAdpcm(audio, compressed,
+                std::span(audio->ring).first(base::ToSize(decoded_bytes)));
 
     CommitPreload(audio, *config, decoded_bytes);
 
@@ -906,10 +922,8 @@ static int32_t LoadAdpcmSound(VqaPlayerState* state, const Chunk& chunk) {
     return kVqaErrorRead;
   }
 
-  // TODO: A failed decode is ignored here too.
-  DecodeAdpcmSound(
-      &audio->adpcm, audio->channels, audio->bits_per_sample, compressed,
-      std::span(audio->staging).first(base::ToSize(decoded_bytes)));
+  DecodeAdpcm(audio, compressed,
+              std::span(audio->staging).first(base::ToSize(decoded_bytes)));
 
   audio->staged_bytes = decoded_bytes;
 

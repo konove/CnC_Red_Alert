@@ -25,25 +25,30 @@
 // Originally written by Denzil E. Long, Jr. at Westwood Studios, February
 // 1995.
 
+#include <optional>
 #include <span>
 
-// Decodes a frame of 4x2-pixel blocks into buffer, a pixel buffer stride
-// bytes wide that starts at the image's top-left pixel. pointers holds one
-// 16-bit entry per block, blocks_per_row x block_rows of them, stored as two
-// planes: every entry's low byte, then every entry's high byte. An entry
-// numbers an 8-byte block in codebook, or, when its high byte is 0x0F, is a
-// solid block of the color in its low byte. Sizes that do not fit the spans
-// draw nothing; an entry past the end of codebook stops the decode there.
-void DecodeFrame4x2(std::span<const unsigned char> codebook,
-                    std::span<const unsigned char> pointers,
-                    std::span<unsigned char> buffer, int blocks_per_row,
-                    int block_rows, int stride);
+// The pixel blocks a movie's frames are made of; only these have a decoder.
+enum class BlockShape {
+  k4x2,  // 4x2-pixel blocks, 8 bytes each in the codebook.
+  k4x4,  // 4x4-pixel blocks, 16 bytes each.
+};
 
-// As DecodeFrame4x2(), for 4x4-pixel blocks: codebook entries are 16 bytes, and
-// a high byte of 0xFF marks a solid block.
-void DecodeFrame4x4(std::span<const unsigned char> codebook,
-                    std::span<const unsigned char> pointers,
-                    std::span<unsigned char> buffer, int blocks_per_row,
-                    int block_rows, int stride);
+// Returns the shape of width x height blocks, or nullopt for a size with no
+// decoder.
+std::optional<BlockShape> BlockShapeFor(int width, int height);
+
+// Decodes a frame of blocks of the given shape into buffer, a pixel buffer
+// stride bytes wide that starts at the image's top-left pixel. pointers holds
+// one 16-bit entry per block, blocks_per_row x block_rows of them, stored as
+// two planes: every entry's low byte, then every entry's high byte. An entry
+// numbers a block in codebook, or, when its high byte is 0x0F (4x2) or 0xFF
+// (4x4), is a solid block of the color in its low byte. Sizes that do not fit
+// the spans draw nothing; an entry past the end of codebook stops the decode
+// there.
+void DecodeVqFrame(BlockShape shape, std::span<const unsigned char> codebook,
+                   std::span<const unsigned char> pointers,
+                   std::span<unsigned char> buffer, int blocks_per_row,
+                   int block_rows, int stride);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_VQ_DECODER_H_
