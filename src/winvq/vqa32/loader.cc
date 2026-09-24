@@ -247,27 +247,10 @@ static int32_t PrepareMovie(VqaPlayerState* state, VqaConfig* config) {
     config->option_flags &= ~kVqaOptionAudio;
   }
 
-  // Start the sound output and the ADPCM decoder for the track.
-  if (config->option_flags & kVqaOptionAudio) {
-    VqaAudio* audio = &state->movie->audio;
-
-    // Originally HMI's DOS sound drivers; now the SDL mixer.
-    if (OpenMovieAudio(state)) {
-      return kVqaErrorAudio;
-    }
-
-    // The decoder state runs on from chunk to chunk, so it starts once here.
-    ResetAdpcmStream(&audio->adpcm);
-
-    // The track's format. A version 1 track is always 22050 Hz 8-bit mono.
-    if (header->version == kVqaVersion1) {
-      audio->adpcm.bits_per_sample = 8;
-      audio->adpcm.channels = 1;
-    } else {
-      audio->adpcm.bits_per_sample =
-          static_cast<int16_t>(audio->bits_per_sample);
-      audio->adpcm.channels = static_cast<int16_t>(audio->channels);
-    }
+  // Start the sound output: originally HMI's DOS sound drivers, now the SDL
+  // mixer.
+  if ((config->option_flags & kVqaOptionAudio) != 0 && OpenMovieAudio(state)) {
+    return kVqaErrorAudio;
   }
 
   // Preload the frame ring, so playback starts with frames in hand.
@@ -1092,9 +1075,9 @@ static int32_t LoadAdpcmSound(VqaPlayerState* state, int32_t chunk_bytes) {
     // TODO: A failed decode (the decoder takes only 16-bit mono) is ignored,
     // so the ring plays whatever it held. The shipped Red Alert movies are
     // all 16-bit mono.
-    audio->adpcm.source = compressed;
-    audio->adpcm.dest = audio->ring;
-    DecodeAdpcmSound(&audio->adpcm, decoded_bytes);
+    DecodeAdpcmSound(&audio->adpcm, audio->channels, audio->bits_per_sample,
+                     compressed,
+                     std::span(audio->ring).first(base::ToSize(decoded_bytes)));
 
     CommitPreload(audio, *config, decoded_bytes);
 
@@ -1117,9 +1100,9 @@ static int32_t LoadAdpcmSound(VqaPlayerState* state, int32_t chunk_bytes) {
   }
 
   // TODO: A failed decode is ignored here too.
-  audio->adpcm.source = compressed;
-  audio->adpcm.dest = audio->staging;
-  DecodeAdpcmSound(&audio->adpcm, decoded_bytes);
+  DecodeAdpcmSound(
+      &audio->adpcm, audio->channels, audio->bits_per_sample, compressed,
+      std::span(audio->staging).first(base::ToSize(decoded_bytes)));
 
   audio->staged_bytes = decoded_bytes;
 

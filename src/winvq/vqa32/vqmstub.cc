@@ -5,11 +5,10 @@
 #include <cstdint>
 #include <cstdio>
 #include <span>
-#include <utility>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
-#include "base/buffer.h"
+#include "port/unaligned.h"
 #include "winvq/vqm32/compress.h"
 #include "winvq/vqm32/soscomp.h"
 
@@ -39,29 +38,25 @@ int32_t AudioUnzap(std::span<const unsigned char> /*source*/,
   return 0;
 }
 
-void ResetAdpcmStream(AdpcmStream* stream) {
-  stream->predicted = 0;
-  stream->step_index = 0;
-}
-
-bool DecodeAdpcmSound(AdpcmStream* stream, int32_t output_bytes) {
+bool DecodeAdpcmSound(AdpcmStream* stream, const int channels,
+                      const int bits_per_sample,
+                      std::span<const uint8_t> source,
+                      std::span<uint8_t> dest) {
   // The only format the movies use; see soscomp.h.
-  if (stream->channels != 1 || stream->bits_per_sample != 16) {
-    absl::FPrintF(stderr, "%s (%d/%d)\n", __func__, stream->channels,
-                  stream->bits_per_sample);
+  if (channels != 1 || bits_per_sample != 16) {
+    absl::FPrintF(stderr, "%s (%d/%d)\n", __func__, channels, bits_per_sample);
     return false;
   }
 
-  auto input = stream->source;
-  auto output = stream->dest;
-  if (output_bytes < 0 || std::cmp_greater(output_bytes, output.size()) ||
-      std::cmp_greater(output_bytes / 4, input.size())) {
+  if (dest.size() / 4 > source.size()) {
     return false;
   }
 
   // One input byte is two samples, 4 output bytes. A trailing part of that
-  // (output_bytes not a multiple of 4) is left undecoded.
-  while (output_bytes >= 4) {
+  // (dest not a multiple of 4 bytes) is left undecoded.
+  auto input = source;
+  auto output = dest;
+  while (output.size() >= 4) {
     const uint8_t code_pair = input.front();
     input = input.subspan(1);
 
@@ -89,17 +84,10 @@ bool DecodeAdpcmSound(AdpcmStream* stream, int32_t output_bytes) {
           std::clamp(stream->predicted + difference, -32768, 32767);
 
       const auto sample = static_cast<int16_t>(stream->predicted);
-      base::CopyBytes(std::as_writable_bytes(output), base::ObjectBytes(sample),
-                      sizeof(sample));
+      port::WriteUnaligned(std::as_writable_bytes(output), sample);
       output = output.subspan(sizeof(sample));
     }
-
-    output_bytes -= 4;
   }
-
-  // The next chunk carries on from here.
-  stream->source = input;
-  stream->dest = output;
 
   return true;
 }

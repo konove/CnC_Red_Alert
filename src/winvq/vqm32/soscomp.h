@@ -36,28 +36,19 @@
 #include <cstdint>
 #include <span>
 
-// AdpcmStream: an IMA ADPCM stream being decoded. The VQA loader sets
-// source, dest and the format for each sound chunk; the predictor and step
-// index carry the decoder's state from one chunk to the next.
+// AdpcmStream: the state of an IMA ADPCM decoder, which runs on from one
+// sound chunk to the next: the last sample, and the index of the quantizer
+// step the next code is scaled by. A value-initialized stream is at its start.
 struct AdpcmStream {
-  std::span<const uint8_t> source;
-  std::span<uint8_t> dest;
-
-  int16_t bits_per_sample;
-  int16_t channels;
-
-  // The decoder state: the last sample, and the index of the quantizer step
-  // the next code is scaled by.
   int32_t predicted;
   int16_t step_index;
 };
 
-// Starts a stream: zeroes the predictor and the step index.
-void ResetAdpcmStream(AdpcmStream* stream);
-// Decodes IMA ADPCM from stream->source into output_bytes of stream->dest,
-// continuing from the state the last call left, and advances source and dest
-// past what it used. Only 16-bit mono is supported. Returns false, decoding
-// nothing, for another format or when either span is too short.
-bool DecodeAdpcmSound(AdpcmStream* stream, int32_t output_bytes);
+// Decodes IMA ADPCM from source to fill dest with samples of the given format,
+// continuing from the state the last call left in stream. source and dest may
+// overlap, with source at the end. Only 16-bit mono is supported. Returns
+// false, decoding nothing, for another format or when source is too short.
+bool DecodeAdpcmSound(AdpcmStream* stream, int channels, int bits_per_sample,
+                      std::span<const uint8_t> source, std::span<uint8_t> dest);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQM32_SOSCOMP_H_
