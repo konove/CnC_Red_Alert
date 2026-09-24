@@ -203,27 +203,27 @@ int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
                         std::span<unsigned char> reserved_data) {
   const auto decode = [&] -> int32_t {
     uint16_t stored_size = 0;
-    CompHeaderType header{};
+    CompressedBlockHeader header{};
     if (!file.ReadObject(stored_size) || !file.ReadObject(header) ||
         stored_size < sizeof(header)) {
       return 0;
     }
     std::size_t size = stored_size - sizeof(header);
-    if (header.Skip < 0 || std::cmp_greater(header.Skip, size)) {
+    if (header.skip_bytes < 0 || std::cmp_greater(header.skip_bytes, size)) {
       return 0;
     }
-    if (header.Skip != 0) {
-      size -= base::ToSize(header.Skip);
+    if (header.skip_bytes != 0) {
+      size -= base::ToSize(header.skip_bytes);
       if (!reserved_data.empty()) {
-        if (std::cmp_greater(header.Skip, reserved_data.size()) ||
-            file.Read(reserved_data.first(base::ToSize(header.Skip))) !=
-                header.Skip) {
+        if (std::cmp_greater(header.skip_bytes, reserved_data.size()) ||
+            file.Read(reserved_data.first(base::ToSize(header.skip_bytes))) !=
+                header.skip_bytes) {
           return 0;
         }
       } else {
-        file.Seek(header.Skip, SeekOrigin::kCurrent);
+        file.Seek(header.skip_bytes, SeekOrigin::kCurrent);
       }
-      header.Skip = 0;
+      header.skip_bytes = 0;
     }
     auto source = uncomp_buff;
     const auto dest = dest_buff;
@@ -243,7 +243,7 @@ int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
       return 0;
     }
     return static_cast<int32_t>(
-        Uncompress_Data(std::as_bytes(source), std::as_writable_bytes(dest)));
+        UncompressBlock(std::as_bytes(source), std::as_writable_bytes(dest)));
   };
   return decode();
 }

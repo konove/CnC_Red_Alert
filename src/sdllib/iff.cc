@@ -9,23 +9,24 @@
 #include "base/types.h"
 #include "sdllib/lcw_uncompress.h"
 
-base::ssize Uncompress_Data(std::span<const std::byte> src,
-                            std::span<std::byte> dst) {
-  if (src.size() < sizeof(CompHeaderType)) {
+base::ssize UncompressBlock(std::span<const std::byte> block,
+                            std::span<std::byte> dest) {
+  if (block.size() < sizeof(CompressedBlockHeader)) {
     return 0;
   }
-  CompHeaderType header{};
-  base::CopyBytes(base::ObjectBytes(header), src, sizeof(header));
-  if (header.Skip < 0) {
+  CompressedBlockHeader header{};
+  base::CopyBytes(base::ObjectBytes(header), block, sizeof(header));
+  if (header.skip_bytes < 0) {
     return 0;
   }
-  const auto skip = static_cast<size_t>(header.Skip);
-  if (skip > src.size() - sizeof(header) || header.Size > dst.size()) {
+  const auto skip_bytes = static_cast<size_t>(header.skip_bytes);
+  if (skip_bytes > block.size() - sizeof(header) ||
+      header.uncompressed_bytes > dest.size()) {
     return 0;
   }
-  const auto payload = src.subspan(sizeof(header) + skip);
-  const auto output = dst.first(header.Size);
-  switch (static_cast<CompressionType>(header.Method)) {
+  const auto payload = block.subspan(sizeof(header) + skip_bytes);
+  const auto output = dest.first(header.uncompressed_bytes);
+  switch (static_cast<CompressionMethod>(header.method)) {
     case NOCOMPRESS:
       if (payload.size() < output.size()) {
         return 0;
@@ -34,10 +35,10 @@ base::ssize Uncompress_Data(std::span<const std::byte> src,
       break;
     case LCW:
       return LCW_Uncompress(payload, output);
-    // Westwood's library returned Size for HORIZONTAL without writing anything
-    // (its RLE decoder was left out of the build) and copied LZW and unknown
-    // methods as if uncompressed. Either way the caller took garbage for a
-    // picture.
+    // Westwood's library returned the size for HORIZONTAL without writing
+    // anything (its RLE decoder was left out of the build) and copied LZW and
+    // unknown methods as if uncompressed. Either way the caller took garbage
+    // for a picture.
     case HORIZONTAL:
     case LZW12:
     case LZW14:

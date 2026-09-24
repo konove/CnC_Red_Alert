@@ -17,8 +17,8 @@
 */
 
 // Westwood's compressed data block, the format of the .CPS pictures: a
-// CompHeaderType, a reserved area the header's Skip counts (a CPS keeps its
-// palette there), then the data itself.
+// CompressedBlockHeader, a reserved area the header's skip_bytes counts (a CPS
+// keeps its palette there), then the data itself.
 
 #ifndef CNC_RED_ALERT_SDLLIB_IFF_H_
 #define CNC_RED_ALERT_SDLLIB_IFF_H_
@@ -38,35 +38,35 @@ enum class PicturePlaneType {
 };
 using enum PicturePlaneType;
 
-// The compression method, as stored in CompHeaderType::Method. The values are
-// the file format's. Only NOCOMPRESS and LCW are decoded.
-enum class CompressionType {
+// The compression method, as stored in CompressedBlockHeader::method. The
+// values are the file format's. Only NOCOMPRESS and LCW are decoded.
+enum class CompressionMethod {
   NOCOMPRESS,  // No compression (raw data).
   LZW12,       // LZW 12 bit codes.
   LZW14,       // LZW 14 bit codes.
   HORIZONTAL,  // Run length encoding (RLE).
   LCW          // Westwood proprietary compression.
 };
-using enum CompressionType;
+using enum CompressionMethod;
 
 // The header every compressed block starts with, little-endian and unpadded
 // as on disk. A block stored in a file is preceded by two more bytes giving
 // the size of the rest of it: this header, the skipped area and the data.
 #pragma pack(push, 1)
-struct CompHeaderType {
-  char Method;    // Compression method (CompressionType).
-  char pad;       // Reserved pad byte (always 0).
-  uint32_t Size;  // Size of the uncompressed data.
-  int16_t Skip;   // Bytes between this header and the data.
+struct CompressedBlockHeader {
+  char method;                  // Compression method (CompressionMethod).
+  char pad;                     // Reserved pad byte (always 0).
+  uint32_t uncompressed_bytes;  // Size of the uncompressed data.
+  int16_t skip_bytes;           // Bytes between this header and the data.
 };
 #pragma pack(pop)
 
-// Decodes the block in `src`, which starts with its CompHeaderType, into the
-// front of `dst`. Returns the number of bytes written: the header's Size for
+// Decodes `block`, which starts with its CompressedBlockHeader, into the
+// front of `dest`. Returns the number of bytes written: uncompressed_bytes for
 // uncompressed data, what the stream produced for LCW. Returns 0 for any other
-// method, a negative Skip, a `src` too short for the header and the skipped
-// area, or a `dst` too short for Size.
-base::ssize Uncompress_Data(std::span<const std::byte> src,
-                            std::span<std::byte> dst);
+// method, a negative skip_bytes, a `block` too short for the header and the
+// skipped area, or a `dest` too short for uncompressed_bytes.
+base::ssize UncompressBlock(std::span<const std::byte> block,
+                            std::span<std::byte> dest);
 
 #endif  // CNC_RED_ALERT_SDLLIB_IFF_H_
