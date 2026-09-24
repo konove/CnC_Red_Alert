@@ -468,8 +468,10 @@ TEST_F(VqaLoaderTest, AcceptsFullPalette) {
   AppendFrameEnd(fake_.data);
 
   ASSERT_EQ(Open(), 0);
-  EXPECT_EQ(state_.movie->drawer.saved_palette_bytes, 768);
-  EXPECT_EQ(state_.movie->drawer.saved_palette.at(767), 7);
+  const VqaFrame& frame = *state_.movie->frames.front();
+  EXPECT_NE(frame.flags & kFrameHasPalette, 0U);
+  EXPECT_EQ(frame.palette_bytes, 768);
+  EXPECT_EQ(frame.palette.at(767), 7);
 }
 
 TEST_F(VqaLoaderTest, SkippedFramePaletteIsSetWithTheNextFrameDrawn) {

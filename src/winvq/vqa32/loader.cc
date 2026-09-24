@@ -35,7 +35,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "winvq/vqa32/vqa_format.h"
@@ -330,7 +329,6 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
   VqaPlayerState* vqa_handle_p = state;
   VqaMovie* movie = vqa_handle_p->movie.get();
   VqaLoader* loader = &movie->loader;
-  VqaDrawer* drawer = &vqa_handle_p->movie->drawer;
   VqaFrame* frame = loader->current_frame;
   ChunkHeader* chunk = &loader->chunk_header;
 
@@ -425,16 +423,6 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
           return kVqaErrorRead;
         }
 
-        // Keep the movie's first palette in the drawer, a copy Westwood's
-        // Monopoly read from there. The player never reads it: saved_palette
-        // is written again before DrawNextFrame() uses it.
-        if (drawer->saved_palette_bytes == 0) {
-          base::CopyBytes(base::ObjectBytes(drawer->saved_palette),
-                          std::as_bytes(std::span(frame->palette)),
-                          frame->palette_bytes);
-          drawer->saved_palette_bytes = frame->palette_bytes;
-        }
-
         // Flag this frame as having a palette.
         frame->flags |= kFrameHasPalette;
         break;
@@ -443,16 +431,6 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
       case kChunkCplz:
         if (LoadCompressedPalette(vqa_handle_p, chunk_bytes)) {
           return kVqaErrorRead;
-        }
-
-        // Keep the movie's first palette in the drawer, a copy Westwood's
-        // Monopoly read from there. The player never reads it: saved_palette
-        // is written again before DrawNextFrame() uses it.
-        if (drawer->saved_palette_bytes == 0) {
-          drawer->saved_palette_bytes =
-              LCW_Uncompress(std::span(frame->palette)
-                                 .subspan(base::ToSize(frame->palette_offset)),
-                             drawer->saved_palette);
         }
 
         // Flag this frame as having a palette.
@@ -820,7 +798,6 @@ static int32_t LoadFrameContainer(VqaPlayerState* state, int32_t frame_bytes) {
   VqaMovie* movie = state->movie.get();
   VqaFrame* frame = movie->loader.current_frame;
   const int32_t padded_frame_bytes = PadSize(frame_bytes);
-  VqaDrawer* drawer = &state->movie->drawer;
   ChunkHeader* chunk = &movie->loader.chunk_header;
 
   while (bytes_loaded < padded_frame_bytes) {
@@ -872,16 +849,6 @@ static int32_t LoadFrameContainer(VqaPlayerState* state, int32_t frame_bytes) {
           return kVqaErrorRead;
         }
 
-        // Keep the movie's first palette in the drawer, a copy Westwood's
-        // Monopoly read from there. The player never reads it: saved_palette
-        // is written again before DrawNextFrame() uses it.
-        if (drawer->saved_palette_bytes == 0) {
-          base::CopyBytes(base::ObjectBytes(drawer->saved_palette),
-                          std::as_bytes(std::span(frame->palette)),
-                          frame->palette_bytes);
-          drawer->saved_palette_bytes = frame->palette_bytes;
-        }
-
         // Flag this frame as having a palette.
         frame->flags |= kFrameHasPalette;
         break;
@@ -890,16 +857,6 @@ static int32_t LoadFrameContainer(VqaPlayerState* state, int32_t frame_bytes) {
       case kChunkCplz:
         if (LoadCompressedPalette(state, chunk_bytes)) {
           return kVqaErrorRead;
-        }
-
-        // Keep the movie's first palette in the drawer, a copy Westwood's
-        // Monopoly read from there. The player never reads it: saved_palette
-        // is written again before DrawNextFrame() uses it.
-        if (drawer->saved_palette_bytes == 0) {
-          drawer->saved_palette_bytes =
-              LCW_Uncompress(std::span(frame->palette)
-                                 .subspan(base::ToSize(frame->palette_offset)),
-                             drawer->saved_palette);
         }
 
         // Flag this frame as having a palette.
@@ -1112,8 +1069,8 @@ static int32_t LoadCompressedPartialCodebook(const VqaPlayerState* state,
 static int32_t LoadPalette(const VqaPlayerState* state, int32_t chunk_bytes) {
   VqaFrame* frame = state->movie->loader.current_frame;
 
-  // The loader copies a frame's palette into the drawer's 256-color palette,
-  // so a larger one is malformed and would overrun that copy.
+  // The drawer keeps a skipped frame's palette in its 256-color copy, so a
+  // larger one is malformed.
   if (!FitsInBuffer(0, PadSize(chunk_bytes),
                     int64_t{sizeof(VqaDrawer::saved_palette)})) {
     return kVqaErrorRead;

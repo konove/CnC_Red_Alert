@@ -165,12 +165,10 @@ struct VqaDrawer {
   int32_t x1, y1, x2, y2;
   // Index in image_buffer of the image's top-left pixel.
   int32_t image_offset;
-  // Size in bytes of saved_palette's contents; 0 until the loader has seen the
-  // movie's first palette.
+  // The palette of the last frame skipped with one, set with the next frame
+  // drawn while kDrawerPalettePending is set, and its size in bytes. At most
+  // 256 colors, which is why the loader rejects larger palettes.
   int32_t saved_palette_bytes;
-  // The movie's first palette, copied there by the loader, and later the
-  // palette of a frame skipped with kDrawerPalettePending. At most 256 colors,
-  // which is why the loader rejects larger palettes.
   std::array<unsigned char, 768> saved_palette;
   // The image size in blocks, the geometry decode_frame walks.
   int32_t blocks_per_row;
