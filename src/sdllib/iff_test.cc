@@ -3,14 +3,14 @@
 #include "sdllib/iff.h"
 
 #include <array>
-#include <cstddef>
 #include <cstdint>
 #include <span>
 #include <vector>
 
-#include "base/buffer.h"
+#include "base/numeric.h"
 #include "base/types.h"
 #include "gtest/gtest.h"
+#include "port/unaligned.h"
 
 namespace {
 
@@ -24,9 +24,8 @@ std::vector<unsigned char> Block(char method, uint32_t uncompressed_bytes,
                                      .uncompressed_bytes = uncompressed_bytes,
                                      .skip_bytes = skip_bytes};
   std::vector<unsigned char> block(sizeof(header));
-  base::CopyBytes(std::as_writable_bytes(std::span(block)),
-                  base::ObjectBytes(header), sizeof(header));
-  block.resize(block.size() + static_cast<size_t>(skip_bytes), 0xee);
+  port::WriteUnaligned(std::as_writable_bytes(std::span(block)), header);
+  block.resize(block.size() + base::ToSize(skip_bytes), 0xee);
   block.insert(block.end(), data.begin(), data.end());
   return block;
 }

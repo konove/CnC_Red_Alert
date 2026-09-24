@@ -6,7 +6,9 @@
 #include <span>
 
 #include "base/buffer.h"
+#include "base/numeric.h"
 #include "base/types.h"
+#include "port/unaligned.h"
 #include "sdllib/lcw_uncompress.h"
 
 base::ssize UncompressBlock(std::span<const std::byte> block,
@@ -14,12 +16,11 @@ base::ssize UncompressBlock(std::span<const std::byte> block,
   if (block.size() < sizeof(CompressedBlockHeader)) {
     return 0;
   }
-  CompressedBlockHeader header{};
-  base::CopyBytes(base::ObjectBytes(header), block, sizeof(header));
+  const auto header = port::ReadUnaligned<CompressedBlockHeader>(block);
   if (header.skip_bytes < 0) {
     return 0;
   }
-  const auto skip_bytes = static_cast<size_t>(header.skip_bytes);
+  const auto skip_bytes = base::ToSize(header.skip_bytes);
   if (skip_bytes > block.size() - sizeof(header) ||
       header.uncompressed_bytes > dest.size()) {
     return 0;
@@ -32,7 +33,7 @@ base::ssize UncompressBlock(std::span<const std::byte> block,
         return 0;
       }
       base::CopyBytes(output, payload, output.size());
-      break;
+      return std::ssize(output);
     case LCW:
       return LCW_Uncompress(payload, output);
     // Westwood's library returned the size for HORIZONTAL without writing
@@ -45,5 +46,4 @@ base::ssize UncompressBlock(std::span<const std::byte> block,
     default:
       return 0;
   }
-  return std::ssize(output);
 }
