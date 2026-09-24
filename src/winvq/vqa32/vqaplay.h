@@ -199,35 +199,6 @@ constexpr uint32_t kVqaOptionAltAudio = 1U << 6;
 #define VQAOPTF_CAPTIONS (1U << 7)
 #define VQAOPTF_EVA (1U << 8)
 
-// VQAInfo: what VqaPlayer::GetInfo() reports about the open movie.
-struct VQAInfo {
-  // Number of frames, lowered by SetStop().
-  int32_t NumFrames;
-  // Frame size in pixels.
-  int32_t image_width;
-  int32_t image_height;
-  // The buffer frames are decoded into; empty when there is none.
-  std::span<unsigned char> image_buffer;
-};
-
-// VQAStatistics: what VqaPlayer::GetStats() reports about the playback so far.
-struct VQAStatistics {
-  // Clock readings (kVqaTicksPerSecond) when playback started and when it ended
-  // or was last paused.
-  int64_t start_time;
-  int64_t end_time;
-  int32_t FramesLoaded;
-  int32_t FramesDrawn;
-  // Frames dropped to keep up with the clock.
-  int32_t FramesSkipped;
-  // Size in bytes of the largest frame loaded.
-  int32_t max_frame_bytes;
-  // Number of sample bytes played. Nothing counts them, so this is always 0.
-  int64_t SamplesPlayed;
-  // Bytes the player allocated for the movie.
-  int32_t allocated_bytes;
-};
-
 // The player's internal state; defined in vqaplayp.h.
 struct VqaPlayerState;
 
@@ -284,14 +255,6 @@ class VqaPlayer {
   // the frame number seeked to, or a negative kVqaError* code.
   int SeekFrame(int frame, int fromwhere);
 
-  // Shortens the open movie to its first `frame` frames. Returns the previous
-  // frame count, or -1 (changing nothing) if frame is not between 1 and that
-  // count.
-  int SetStop(int frame);
-
-  // Retrieve information/statistics about the open movie.
-  void GetInfo(VQAInfo* info) const;
-  void GetStats(VQAStatistics* stats) const;
 
  private:
   std::unique_ptr<VqaPlayerState> impl_;

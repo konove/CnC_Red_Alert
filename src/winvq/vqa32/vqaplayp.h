@@ -156,11 +156,6 @@ struct VqaLoader {
   int32_t WaitsOnDrawer;
   // Never set or read.
   int32_t WaitsOnAudio;
-  // Bytes of chunks read for the frame being loaded, and the largest total
-  // of a whole frame after the first, which also carries the movie's
-  // opening codebook (reported by VQA_GetStats()).
-  int32_t frame_bytes;
-  int32_t max_frame_bytes;
   // Header of the chunk being loaded, kept so a loader woken from
   // kMovieLoaderAsleep resumes inside it instead of reading a new one.
   ChunkHeader chunk_header;
@@ -212,8 +207,6 @@ struct VqaDrawer {
   int32_t last_drawn_frame;
   // Never set or read.
   int32_t DesiredFrame;
-  // Frames skipped to keep up with the clock.
-  int32_t skipped_count;
   // Times the drawer waited for a page flip and for a loaded frame. Never
   // read.
   int32_t WaitsOnFlipper;
@@ -265,8 +258,6 @@ struct VqaAudio {
   uint32_t flags = 0;  // kAudioPlaying and VQAAUDF_* bits
   // Byte offset of play_block in the ring.
   int32_t play_offset = 0;
-  // Never set, so VQA_GetStats() always reports 0.
-  int64_t SamplesPlayed = 0;
   // Times the callback found the next block empty and replayed the current
   // one. Never read.
   int32_t NumSkipped = 0;
@@ -342,15 +333,9 @@ struct VqaMovie {
   int32_t codebook_capacity = 0;
   int32_t palette_capacity = 0;
   int32_t pointers_capacity = 0;
-  // Frames loaded and drawn so far, for VQA_GetStats().
-  int32_t loaded_frames = 0;
-  int32_t drawn_frames = 0;
-  // Clock readings (kVqaTicksPerSecond) when playback started and when it ended
-  // or was last paused. end_time is where a resumed movie restarts the clock.
-  int64_t start_time = 0;
+  // The clock reading (kVqaTicksPerSecond) when playback ended or was last
+  // paused, where a resumed movie restarts the clock.
   int64_t end_time = 0;
-  // Bytes allocated for the movie, for VQA_GetStats().
-  int32_t allocated_bytes = 0;
 };
 
 // VqaMovie flags.
@@ -396,21 +381,18 @@ struct VqaPlayerState {
   // The copy of the caller's configuration, with the -1 defaults resolved
   // from the header.
   VqaConfig config{};
-  // The open movie's VQHD header. SetStop() lowers frame_count.
+  // The open movie's VQHD header.
   VqaHeader header{};
 };
 
-// The player entry points behind VqaPlayer's methods of the same names; see
-// vqaplay.h for what they do. OpenVqa() and CloseVqa() are also the
-// allocation and release of vqa->data.
+// The player entry points behind VqaPlayer's Open(), Close(), Play() and
+// SeekFrame(); see vqaplay.h for what they do. OpenVqa() and CloseVqa() are
+// also the allocation and release of state->movie.
 int32_t OpenVqa(VqaPlayerState* vqa, std::string_view filename,
                 VqaConfig* config);
 void CloseVqa(VqaPlayerState* vqa);
 int32_t PlayVqa(VqaPlayerState* state, int32_t mode);
 int32_t SeekVqaFrame(VqaPlayerState* vqa, int32_t frame, int32_t fromwhere);
-int32_t VQA_SetStop(VqaPlayerState* vqa, int32_t stop);
-void VQA_GetInfo(VqaPlayerState* vqa, VQAInfo* info);
-void VQA_GetStats(const VqaPlayerState* vqa, VQAStatistics* stats);
 
 // Loads the next frame into the loader's frame buffer, collecting its
 // codebook and sound on the way. Returns 0 when a frame was loaded, or

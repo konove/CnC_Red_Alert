@@ -26,9 +26,7 @@
 #include <atomic>
 #include <cstdint>
 #include <memory>
-#include <span>
 #include <string_view>
-#include <utility>
 
 #include "winvq/vqa32/vqaio.h"
 
@@ -36,7 +34,6 @@
 #include <windows.h>
 #endif
 
-#include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqa32/vqaplayp.h"
 
@@ -67,14 +64,6 @@ int VqaPlayer::Play(int mode) {
 
 int VqaPlayer::SeekFrame(int frame, int fromwhere) {
   return static_cast<int>(SeekVqaFrame(impl_.get(), frame, fromwhere));
-}
-
-int VqaPlayer::SetStop(int frame) { return VQA_SetStop(impl_.get(), frame); }
-
-void VqaPlayer::GetInfo(VQAInfo* info) const { VQA_GetInfo(impl_.get(), info); }
-
-void VqaPlayer::GetStats(VQAStatistics* stats) const {
-  VQA_GetStats(impl_.get(), stats);
 }
 
 std::atomic<bool> vqa_movie_loaded = false;
@@ -120,7 +109,6 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
                                   kVqaTicksPerSecond / config->draw_rate;
 
     SetMovieClock(state, first_frame_time, config->clock_source);
-    movie->start_time = ReadMovieClock(state);
 
     movie->flags |= kMovieStarted;
   }
@@ -172,16 +160,12 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
              (kMovieDrawerDone | kMovieLoaderDone)) {
         if ((movie->flags & kMovieLoaderDone) == 0) {
           result = LoadNextFrame(state);
-          if (result == 0) {
-            movie->loaded_frames++;
-          } else {
-            // A full ring or a wait on the sound is retried next pass. The
-            // end of the file, or any error, ends the loading: the frames
-            // already loaded still play.
-            if (result != kVqaNoBuffer && result != kVqaSleeping) {
-              movie->flags |= kMovieLoaderDone;
-              result = 0;
-            }
+          // A full ring or a wait on the sound is retried next pass. The end
+          // of the file, or any error, ends the loading: the frames already
+          // loaded still play.
+          if (result != 0 && result != kVqaNoBuffer && result != kVqaSleeping) {
+            movie->flags |= kMovieLoaderDone;
+            result = 0;
           }
         } else {
           vqa_movie_loaded = true;
@@ -190,7 +174,6 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
         if ((config->draw_flags & kVqaDrawNothing) == 0) {
           result = (*movie->Draw_Frame)(state);
           if (result == 0) {
-            movie->drawn_frames++;
             result = movie->drawer.last_drawn_frame;
             // The frame is on screen (the frame_callback showed it), so its
             // buffer can go back to the loader.
@@ -249,41 +232,6 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
 #endif  // _WIN32
 
   return result;
-}
-
-int32_t VQA_SetStop(VqaPlayerState* vqa, int32_t stop) {
-  int32_t oldstop = -1;
-
-  auto* header = &vqa->header;
-
-  if (stop > 0 && std::cmp_greater_equal(header->frame_count, stop)) {
-    oldstop = header->frame_count;
-    header->frame_count = static_cast<uint16_t>(stop);
-  }
-
-  return oldstop;
-}
-
-void VQA_GetInfo(VqaPlayerState* vqa, VQAInfo* info) {
-  const auto* header = &vqa->header;
-
-  info->NumFrames = header->frame_count;
-  info->image_height = header->image_height;
-  info->image_width = header->image_width;
-  info->image_buffer = vqa->movie->drawer.image_buffer;
-}
-
-void VQA_GetStats(const VqaPlayerState* vqa, VQAStatistics* stats) {
-  VqaMovie* vqabuf = vqa->movie.get();
-
-  stats->allocated_bytes = vqabuf->allocated_bytes;
-  stats->start_time = vqabuf->start_time;
-  stats->end_time = vqabuf->end_time;
-  stats->FramesLoaded = vqabuf->loaded_frames;
-  stats->FramesDrawn = vqabuf->drawn_frames;
-  stats->FramesSkipped = vqabuf->drawer.skipped_count;
-  stats->max_frame_bytes = vqabuf->loader.max_frame_bytes;
-  stats->SamplesPlayed = vqabuf->audio.SamplesPlayed;
 }
 
 int64_t ReleaseDrawnFrame(const VqaPlayerState* state) {

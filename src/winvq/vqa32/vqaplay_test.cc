@@ -510,7 +510,7 @@ TEST_F(VqaLoaderTest, OpensMovieShorterThanFrameBuffers) {
   AppendFrameEnd(fake_.data);
 
   ASSERT_EQ(Open(), 0);
-  EXPECT_EQ(state_.movie->loaded_frames, 1);
+  EXPECT_EQ(state_.movie->loader.next_frame_number, 1);
 }
 
 TEST_F(VqaLoaderTest, TruncatedMovieStillFailsToOpen) {
@@ -565,7 +565,7 @@ TEST_F(VqaLoaderTest, StopEndsPlaybackWithoutLoadingTheRest) {
   ASSERT_EQ(Open(), 0);
 
   EXPECT_EQ(PlayVqa(&state_, kVqaModeStop), kVqaEndOfMovie);
-  EXPECT_EQ(state_.movie->loaded_frames, 1);
+  EXPECT_EQ(state_.movie->loader.next_frame_number, 1);
 }
 
 TEST_F(VqaLoaderTest, SeekFrameLoadsFromTheFrameTable) {

@@ -521,7 +521,6 @@ int32_t LoadNextFrame(VqaPlayerState* vqa) {
   /* If we're not sleeping, initialize */
   if (!(vqabuf->flags & kMovieLoaderAsleep)) {
     frame_loaded = 0;
-    loader->frame_bytes = 0;
 
     /* Initialize the codebook ptr for the frame we're about to load:
      * (This frame's codebook is the last full codebook; we have to init it
@@ -546,10 +545,6 @@ int32_t LoadNextFrame(VqaPlayerState* vqa) {
       if (!IsValidChunkSize(iffsize)) {
         return kVqaErrorRead;
       }
-
-      // Saturates so a run of large skipped chunks cannot overflow the stat.
-      loader->frame_bytes = static_cast<int32_t>(
-          std::min<int64_t>(int64_t{loader->frame_bytes} + iffsize, INT32_MAX));
     }
 
     /* Handle each chunk type */
@@ -819,12 +814,6 @@ int32_t LoadNextFrame(VqaPlayerState* vqa) {
     }
   }
 
-  /* Update maximum frame size stat. */
-  if (loader->next_frame_number > 0 &&
-      loader->frame_bytes > loader->max_frame_bytes) {
-    loader->max_frame_bytes = loader->frame_bytes;
-  }
-
   /*-------------------------------------------------------------------------
    * SET UP THE FRAME FOR DRAWING.
    *-----------------------------------------------------------------------*/
@@ -1091,7 +1080,6 @@ static std::unique_ptr<VqaMovie> AllocBuffers(const VqaHeader* header,
    * The Max buffer sizes are computed with 1K of padding, and'd with 0xFFFC
    * to make the size divisible by 4, to ensure DWORD alignment.
    *-----------------------------------------------------------------------*/
-  vqa->allocated_bytes = sizeof(VqaMovie);
   vqa->drawer.last_time = -kVqaTicksPerSecond;
 
   /* Set maximum codebook size. */
@@ -1128,11 +1116,6 @@ static std::unique_ptr<VqaMovie> AllocBuffers(const VqaHeader* header,
     /* Allocate the buffer storage. */
     cbnode->buffer.resize(base::ToSize(vqa->codebook_capacity));
     cbnode->Buffer = cbnode->buffer.data();
-
-    /* Keep count of the memory usage. */
-    vqa->allocated_bytes +=
-        int32_t{sizeof(VqaCodebook)} + vqa->codebook_capacity;
-
     vqa->codebooks.push_back(std::move(cbnode));
   }
 
@@ -1163,11 +1146,6 @@ static std::unique_ptr<VqaMovie> AllocBuffers(const VqaHeader* header,
     framenode->Palette = framenode->palette.data();
 
     framenode->codebook = vqa->CBData;
-
-    /* Keep count of the memory usage. */
-    vqa->allocated_bytes += int32_t{sizeof(VqaFrame)} + vqa->pointers_capacity +
-                            vqa->palette_capacity;
-
     vqa->frames.push_back(std::move(framenode));
   }
 
@@ -1196,7 +1174,6 @@ static std::unique_ptr<VqaMovie> AllocBuffers(const VqaHeader* header,
       /* Plugin image buffer information. */
       vqa->drawer.image_width = header->image_width;
       vqa->drawer.image_height = header->image_height;
-      vqa->allocated_bytes += header->image_width * header->image_height;
     } else {
       vqa->drawer.image_width = config->image_width;
       vqa->drawer.image_height = config->image_height;
@@ -1258,9 +1235,6 @@ static std::unique_ptr<VqaMovie> AllocBuffers(const VqaHeader* header,
       if (config->audio_buffer.empty()) {
         audio->ring_storage.resize(base::ToSize(config->audio_buffer_bytes));
         audio->ring = audio->ring_storage;
-
-        /* Add audio buffer size to memory usage. */
-        vqa->allocated_bytes += config->audio_buffer_bytes;
       } else {
         audio->ring = config->audio_buffer;
       }
@@ -1271,18 +1245,11 @@ static std::unique_ptr<VqaMovie> AllocBuffers(const VqaHeader* header,
       audio->block_loaded.resize(base::ToSize(audio->block_count), 0);
       audio->IsLoaded = audio->block_loaded.data();
 
-      /* Add IsLoaded flags array to memory usage. */
-      vqa->allocated_bytes +=
-          audio->block_count * int32_t{sizeof(*audio->IsLoaded)};
-
       /* Allocate temporary staging buffer for the audio frames. */
       audio->staging_capacity =
           (audio->bytes_per_second / header->fps * 2) + 100;
       audio->staging.resize(base::ToSize(audio->staging_capacity));
       audio->TempBuf = audio->staging.data();
-
-      /* Add temporary buffer size to memory usage. */
-      vqa->allocated_bytes += audio->staging_capacity;
     }
   }
 
@@ -1291,9 +1258,6 @@ static std::unique_ptr<VqaMovie> AllocBuffers(const VqaHeader* header,
    *-----------------------------------------------------------------------*/
   vqa->frame_offsets.resize(header->frame_count);
   vqa->Foff = vqa->frame_offsets.data();
-
-  /* Keep a running total of memory usage. */
-  vqa->allocated_bytes += header->frame_count * int32_t{sizeof(*vqa->Foff)};
 
   return vqa_ptr;
 }
@@ -1328,15 +1292,14 @@ int32_t PrimeBuffers(VqaPlayerState* vqa) {
   /* Pre-load the buffers */
   for (int32_t i = 0; i < config->frame_buffer_count; i++) {
     const int32_t rc = LoadNextFrame(vqa);
-    if (rc == 0) {
-      vqabuf->loaded_frames++;
-    } else if (rc == kVqaEndOfMovie &&
-               std::cmp_greater_equal(vqabuf->loader.next_frame_number,
-                                      vqa->header.frame_count)) {
+    if (rc == kVqaEndOfMovie &&
+        std::cmp_greater_equal(vqabuf->loader.next_frame_number,
+                               vqa->header.frame_count)) {
       // A movie with fewer frames than buffers ends while priming. Only an
       // end of file before the last frame (a truncated movie) is an error.
       break;
-    } else if (rc != kVqaNoBuffer && rc != kVqaSleeping) {
+    }
+    if (rc != 0 && rc != kVqaNoBuffer && rc != kVqaSleeping) {
       return rc;
     }
   }

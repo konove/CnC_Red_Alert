@@ -359,7 +359,6 @@ static int32_t Select_Frame(VqaPlayerState* vqap) {
       curframe->flags = 0L;
       curframe = curframe->next;
       drawer->current_frame = curframe;
-      drawer->skipped_count++;
     } else {
       break;
     }
