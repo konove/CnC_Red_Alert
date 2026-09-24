@@ -32,7 +32,6 @@
 #include <cstdint>
 
 #include "base/numeric.h"
-#include "winvq/vqm32/iff.h"
 
 // VqaHeader: the payload of the VQHD chunk, read straight off the disk.
 //
@@ -106,37 +105,61 @@ constexpr uint16_t kVqaHasAltAudio = base::Bit<uint16_t>(1);
 // The player does not read the table: it only marks the end of the chunks in
 // front of the frames. The DOS player seeked with it.
 
-// VQA chunk IDs. MakeId packs the four characters in file order, so these
-// compare equal to an ID read raw from the disk. A "Z" suffix means the payload
-// is LCW compressed.
+// Packs four characters into a chunk ID. A chunk's ID is read raw from the
+// file, so on a little-endian host the first character is the lowest byte.
+constexpr uint32_t MakeChunkId(char a, char b, char c, char d) {
+  return (static_cast<uint32_t>(static_cast<uint8_t>(d)) << 24) |
+         (static_cast<uint32_t>(static_cast<uint8_t>(c)) << 16) |
+         (static_cast<uint32_t>(static_cast<uint8_t>(b)) << 8) |
+         static_cast<uint32_t>(static_cast<uint8_t>(a));
+}
+
+// The IFF chunk a VQA file is: a FORM whose payload starts with its type.
+constexpr uint32_t kChunkForm = MakeChunkId('F', 'O', 'R', 'M');
+
+// VQA chunk IDs. A "Z" suffix means the payload is LCW compressed.
 //
 // The format has more chunks than the player decodes, and it skips them: NAME
 // (a name string), VPTR and VPRZ (vector pointers in the Run-Skip-Dump
 // compression, the latter LCW compressed on top), SNDZ and SNAZ (LCW
 // compressed sound), CAP0 (caption text) and EVA0 (EVA text).
-constexpr int32_t kFormWvqa = MakeId('W', 'V', 'Q', 'A');   // The VQA form.
-constexpr int32_t kChunkVqhd = MakeId('V', 'Q', 'H', 'D');  // VqaHeader.
-constexpr int32_t kChunkFinf = MakeId('F', 'I', 'N', 'F');  // Frame table.
-constexpr int32_t kChunkVqfr = MakeId('V', 'Q', 'F', 'R');  // Frame container.
-constexpr int32_t kChunkVqfk = MakeId('V', 'Q', 'F', 'K');  // Key frame.
-constexpr int32_t kChunkCbf0 = MakeId('C', 'B', 'F', '0');  // Full codebook.
-constexpr int32_t kChunkCbfz = MakeId('C', 'B', 'F', 'Z');
-constexpr int32_t kChunkCbp0 = MakeId('C', 'B', 'P', '0');  // Partial codebook.
-constexpr int32_t kChunkCbpz = MakeId('C', 'B', 'P', 'Z');
-constexpr int32_t kChunkVpt0 = MakeId('V', 'P', 'T', '0');  // Vector pointers.
-constexpr int32_t kChunkVptz = MakeId('V', 'P', 'T', 'Z');
-constexpr int32_t kChunkVptk = MakeId('V', 'P', 'T', 'K');  // Delta, key frame.
-constexpr int32_t kChunkVptd = MakeId('V', 'P', 'T', 'D');  // Delta.
-constexpr int32_t kChunkCpl0 = MakeId('C', 'P', 'L', '0');  // Color palette.
-constexpr int32_t kChunkCplz = MakeId('C', 'P', 'L', 'Z');
+constexpr uint32_t kFormWvqa =
+    MakeChunkId('W', 'V', 'Q', 'A');  // The VQA form.
+constexpr uint32_t kChunkVqhd = MakeChunkId('V', 'Q', 'H', 'D');  // VqaHeader.
+constexpr uint32_t kChunkFinf =
+    MakeChunkId('F', 'I', 'N', 'F');  // Frame table.
+constexpr uint32_t kChunkVqfr =
+    MakeChunkId('V', 'Q', 'F', 'R');  // Frame container.
+constexpr uint32_t kChunkVqfk = MakeChunkId('V', 'Q', 'F', 'K');  // Key frame.
+constexpr uint32_t kChunkCbf0 =
+    MakeChunkId('C', 'B', 'F', '0');  // Full codebook.
+constexpr uint32_t kChunkCbfz = MakeChunkId('C', 'B', 'F', 'Z');
+constexpr uint32_t kChunkCbp0 =
+    MakeChunkId('C', 'B', 'P', '0');  // Partial codebook.
+constexpr uint32_t kChunkCbpz = MakeChunkId('C', 'B', 'P', 'Z');
+constexpr uint32_t kChunkVpt0 =
+    MakeChunkId('V', 'P', 'T', '0');  // Vector pointers.
+constexpr uint32_t kChunkVptz = MakeChunkId('V', 'P', 'T', 'Z');
+constexpr uint32_t kChunkVptk =
+    MakeChunkId('V', 'P', 'T', 'K');  // Delta, key frame.
+constexpr uint32_t kChunkVptd = MakeChunkId('V', 'P', 'T', 'D');  // Delta.
+constexpr uint32_t kChunkCpl0 =
+    MakeChunkId('C', 'P', 'L', '0');  // Color palette.
+constexpr uint32_t kChunkCplz = MakeChunkId('C', 'P', 'L', 'Z');
 
 // Sound for the primary track (SND*) and the alternate track (SNA*); the
 // loader keeps one track and skips the other's chunks.
-constexpr int32_t kChunkSnd0 = MakeId('S', 'N', 'D', '0');  // Uncompressed.
-constexpr int32_t kChunkSnd1 = MakeId('S', 'N', 'D', '1');  // Zap compressed.
-constexpr int32_t kChunkSnd2 = MakeId('S', 'N', 'D', '2');  // ADPCM compressed.
-constexpr int32_t kChunkSna0 = MakeId('S', 'N', 'A', '0');  // Uncompressed.
-constexpr int32_t kChunkSna1 = MakeId('S', 'N', 'A', '1');  // Zap compressed.
-constexpr int32_t kChunkSna2 = MakeId('S', 'N', 'A', '2');  // ADPCM compressed.
+constexpr uint32_t kChunkSnd0 =
+    MakeChunkId('S', 'N', 'D', '0');  // Uncompressed.
+constexpr uint32_t kChunkSnd1 =
+    MakeChunkId('S', 'N', 'D', '1');  // Zap compressed.
+constexpr uint32_t kChunkSnd2 =
+    MakeChunkId('S', 'N', 'D', '2');  // ADPCM compressed.
+constexpr uint32_t kChunkSna0 =
+    MakeChunkId('S', 'N', 'A', '0');  // Uncompressed.
+constexpr uint32_t kChunkSna1 =
+    MakeChunkId('S', 'N', 'A', '1');  // Zap compressed.
+constexpr uint32_t kChunkSna2 =
+    MakeChunkId('S', 'N', 'A', '2');  // ADPCM compressed.
 
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_VQA_FORMAT_H_

@@ -16,7 +16,8 @@
 
 // Chunk: the header in front of an IFF chunk's payload.
 struct Chunk {
-  // The four ID characters as read, comparable with the MakeId() constants.
+  // The four ID characters as read, comparable with the MakeChunkId()
+  // constants.
   uint32_t id = 0;
   // Bytes of payload, not counting the pad byte; never negative.
   int32_t size = 0;

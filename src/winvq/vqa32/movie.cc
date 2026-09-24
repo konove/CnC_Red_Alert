@@ -44,7 +44,6 @@
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player.h"
 #include "winvq/vqa32/vqaio.h"
-#include "winvq/vqm32/iff.h"
 
 std::expected<std::unique_ptr<Movie>, VqaError> Movie::Open(
     VqaIo& io, const std::string_view name, VqaClient& client,
@@ -85,7 +84,7 @@ std::expected<void, VqaError> Movie::ReadHeader(VqaAudioDevice* const audio,
                                ? VqaError::kRead
                                : VqaError::kNotVqa);
   }
-  if (form->id != ID_FORM || form->size == 0) {
+  if (form->id != kChunkForm || form->size == 0) {
     return std::unexpected(VqaError::kNotVqa);
   }
 

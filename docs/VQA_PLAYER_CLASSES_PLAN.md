@@ -242,5 +242,5 @@ Files keep the EA header where they carry EA code; brand-new files (`chunk_reade
 | 3. Audio split          | done; movies play with sound (user check)                                      | 2d5c66db                     |
 | 4. MovieLoader          | done                                                                           | 8dff973a                     |
 | 5. MovieDrawer          | done                                                                           | ab4937ce                     |
-| 6. Public API + callers | done; movies want a real-display check                                         | (next)                       |
-| 7. Tidy                 | done within phases 1 and 6 (ZapHeader, vqa_test_util.h, test split, CLAUDE.md) | d2fb0bb2, 9605b860, (next)   |
+| 6. Public API + callers | done; movies want a real-display check                                         | 2fefeed4                     |
+| 7. Tidy                 | done within phases 1 and 6 (ZapHeader, vqa_test_util.h, test split, CLAUDE.md) | d2fb0bb2, 9605b860, 2fefeed4 |

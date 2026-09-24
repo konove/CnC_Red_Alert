@@ -19,7 +19,7 @@ TEST(ChunkReaderTest, ReadsIdAndBigEndianSize) {
 
   const auto chunk = reader.Next();
   ASSERT_TRUE(chunk.has_value());
-  EXPECT_EQ(chunk->id, static_cast<uint32_t>(kChunkCpl0));
+  EXPECT_EQ(chunk->id, kChunkCpl0);
   EXPECT_EQ(chunk->size, 0x123);
   EXPECT_EQ(chunk->padded_size(), 0x124);
   EXPECT_EQ(io.pos, 8);
@@ -87,7 +87,7 @@ TEST(ChunkReaderTest, ReadsABareId) {
   AppendBytes(io.data, "WVQA");
   ChunkReader reader(io);
 
-  EXPECT_EQ(reader.ReadId(), static_cast<uint32_t>(kFormWvqa));
+  EXPECT_EQ(reader.ReadId(), kFormWvqa);
   EXPECT_EQ(reader.ReadId(), std::nullopt);
 }
 
