@@ -31,6 +31,7 @@
 #include <array>
 #include <cstdint>
 
+#include "base/numeric.h"
 #include "base/types.h"
 #include "winvq/vqm32/iff.h"
 
@@ -74,14 +75,15 @@ struct VqaHeader {
   std::array<uint16_t, 5> reserved;  // Pads the header to 42 bytes
 };
 #pragma pack(pop)
+static_assert(sizeof(VqaHeader) == 42);
 
 // VqaHeader::version values.
 constexpr uint16_t kVqaVersion1 = 1;
 constexpr uint16_t kVqaVersion2 = 2;
 
-// VqaHeader::flags bits.
-constexpr uint32_t kVqaHasAudio = 1U << 0;     // A primary audio track.
-constexpr uint32_t kVqaHasAltAudio = 1U << 1;  // An alternate audio track.
+// VqaHeader::flags bits: the movie has a primary or an alternate audio track.
+constexpr uint16_t kVqaHasAudio = base::Bit<uint16_t>(0);
+constexpr uint16_t kVqaHasAltAudio = base::Bit<uint16_t>(1);
 
 // Frame information (FINF) entries.
 //
@@ -97,12 +99,15 @@ constexpr uint32_t kVqaHasAltAudio = 1U << 1;  // An alternate audio track.
 // Seeking uses both: it replays the nearest palette frame at or before the
 // target, then starts reading at the codebook group before it. The player
 // reads no other flag.
-constexpr uint32_t kFrameInfoHasPalette = uint32_t{1} << 30;
-constexpr uint32_t kFrameInfoOffsetMask = 0x0FFFFFFFU;
+
+// Returns whether the frame a FINF entry describes carries a palette.
+constexpr bool FrameHasPalette(uint32_t frame_info) {
+  return (frame_info & base::Bit<uint32_t>(30)) != 0;
+}
 
 // Returns the byte offset in the file of the frame a FINF entry describes.
 constexpr base::ssize FrameByteOffset(uint32_t frame_info) {
-  return base::ssize{frame_info & kFrameInfoOffsetMask} * 2;
+  return base::ssize{frame_info & 0x0FFFFFFFU} * 2;
 }
 
 // VQA chunk IDs. MakeId packs the four characters in file order, so these

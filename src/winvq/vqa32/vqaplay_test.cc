@@ -343,7 +343,7 @@ TEST_F(VqaLoaderTest, FinfEntriesAreFourBytesEach) {
   EXPECT_EQ(handle_.data->FoffStorage.at(1), entries.at(1));
   EXPECT_EQ(handle_.data->FoffStorage.at(2), entries.at(2));
   // The flags occupy the top bits; the offset is stored halved.
-  EXPECT_NE(handle_.data->FoffStorage.at(0) & kFrameInfoHasPalette, 0);
+  EXPECT_TRUE(FrameHasPalette(handle_.data->FoffStorage.at(0)));
   EXPECT_EQ(FrameByteOffset(handle_.data->FoffStorage.at(1)), 0x40);
 }
 

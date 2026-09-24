@@ -300,7 +300,7 @@ int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
          * This enables the primary audio track to be played.
          */
         if (header->version > kVqaVersion1 &&
-            !(header->flags & kVqaHasAltAudio)) {
+            (header->flags & kVqaHasAltAudio) == 0) {
           config->OptionFlags &= ~VQAOPTF_ALTAUDIO;
         }
 
@@ -910,7 +910,7 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
       frame = loader->CurFrame;
 
       for (int32_t i = framenum; i >= 0; i--) {
-        if (vqabuf->FoffStorage.at(base::ToSize(i)) & kFrameInfoHasPalette) {
+        if (FrameHasPalette(vqabuf->FoffStorage.at(base::ToSize(i)))) {
           /* Seek to the palette frame. */
           rc = vqap->io->Seek(
                    FrameByteOffset(vqabuf->FoffStorage.at(base::ToSize(i))),
@@ -1228,7 +1228,7 @@ static VQAData* AllocBuffers(const VqaHeader* header, VQAConfig* config) {
       audio->BytesPerSec = 22050;
     } else {
       if (config->OptionFlags & VQAOPTF_ALTAUDIO &&
-          header->flags & kVqaHasAltAudio) {
+          (header->flags & kVqaHasAltAudio) != 0) {
         audio->SampleRate = header->alt_sample_rate;
         audio->Channels = header->alt_channels;
         audio->BitsPerSample = header->alt_bits_per_sample;
