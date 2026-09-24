@@ -589,7 +589,7 @@ TEST_F(VqaLoaderTest, SeekFrameLoadsFromTheFrameTable) {
   // Groupsize 1: frame 1 is replayed for its codebook, then frame 2 primed.
   EXPECT_EQ(SeekVqaFrame(&state_, 2, SEEK_SET), 2);
   EXPECT_EQ(state_.movie->loader.next_frame_number, 3);
-  EXPECT_EQ(state_.movie->loader.current_frame->Pointers[0], 2);
+  EXPECT_EQ(state_.movie->loader.current_frame->pointers.at(0), 2);
 }
 
 TEST_F(VqaLoaderTest, SeekFrameRejectsFramesOutsideTheMovie) {

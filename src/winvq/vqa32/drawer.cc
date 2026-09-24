@@ -179,7 +179,6 @@ void ConfigureDrawer(VqaPlayerState* vqap) {
   /* Pre-compute commonly used values for speed. */
   drawer->blocks_per_row = header->image_width / header->block_width;
   drawer->block_rows = header->image_height / header->block_height;
-  drawer->NumBlocks = drawer->blocks_per_row * drawer->block_rows;
   const uint32_t blkdim =
       BlockDimensions(header->block_width, header->block_height);
 
@@ -251,7 +250,6 @@ static int32_t Select_Frame(VqaPlayerState* vqap) {
    * then we must wait for the loader to catch up.
    */
   if ((curframe->flags & kFrameLoaded) == 0) {
-    drawer->WaitsOnLoader++;
     return kVqaNoBuffer;
   }
 
@@ -475,10 +473,7 @@ static int32_t DrawFrame_Buffer(VqaPlayerState* vqa) {
     return kVqaSleeping;
   }
 
-  if (vqabuf->flags & kMovieDrawerAsleep) {
-    drawer->WaitsOnFlipper++;
-    vqabuf->flags &= ~kMovieDrawerAsleep;
-  }
+  vqabuf->flags &= ~kMovieDrawerAsleep;
 
   /* Dereference current frame for quicker access. */
   VqaFrame* curframe = drawer->current_frame;

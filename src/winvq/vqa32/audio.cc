@@ -148,7 +148,6 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
       if (vqa_movie_loaded) {
         audio->blocks_played++;
       }
-      audio->NumSkipped++;
       /*
       ** Enable frame skipping to prevent this happening again
       */

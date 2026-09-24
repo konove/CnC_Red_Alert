@@ -46,7 +46,6 @@
 #include "winvq/vqa32/vqaio.h"
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqm32/soscomp.h"
-#include "winvq/vqm32/video.h"
 
 // Packs a block width and height into the dimension code the drawer switches
 // on to pick a decoder. Only 4x2 and 4x4 blocks have one.
@@ -84,7 +83,6 @@ struct ZapHeader {
 struct VqaCodebook {
   // codebook_capacity bytes.
   std::vector<unsigned char> buffer;
-  unsigned char* Buffer = nullptr;  // Points into buffer for compatibility
   VqaCodebook* next = nullptr;
   uint32_t flags = 0;  // kCodebook* bits
   // Where the compressed data starts in buffer.
@@ -106,10 +104,8 @@ struct VqaFrame {
   // The frame's palette as 8-bit R,G,B triplets, palette_capacity bytes. Holds
   // a stale palette when the frame has none (kFrameHasPalette clear).
   std::vector<unsigned char> palette;
-  unsigned char* Pointers = nullptr;  // Points into pointers
   // The codebook the frame's pointers index into.
   VqaCodebook* codebook = nullptr;
-  unsigned char* Palette = nullptr;  // Points into palette
   VqaFrame* next = nullptr;
   uint32_t flags = 0;  // kFrame* bits
   // Number of the frame in the movie.
@@ -148,14 +144,6 @@ struct VqaLoader {
   // Number of the next frame to load; the movie is loaded when it reaches
   // the header's frame count.
   int32_t next_frame_number;
-  // First frame of the last codebook group. Set, never read.
-  int32_t LastCBFrame;
-  // Number of frames loaded when the last one finished. Set, never read.
-  int32_t LastFrameNum;
-  // Times the loader found no free frame buffer. Never read.
-  int32_t WaitsOnDrawer;
-  // Never set or read.
-  int32_t WaitsOnAudio;
   // Header of the chunk being loaded, kept so a loader woken from
   // kMovieLoaderAsleep resumes inside it instead of reading a new one.
   ChunkHeader chunk_header;
@@ -166,8 +154,6 @@ struct VqaDrawer {
   // The next frame to draw.
   VqaFrame* current_frame;
   uint32_t flags;  // kDrawer* bits
-  // The DOS video mode's description. Unused.
-  DisplayInfo* Display;
   // The buffer frames are decoded into, image_width x image_height pixels:
   // the caller's, the player's own, or empty when neither was provided.
   std::span<unsigned char> image_buffer;
@@ -185,17 +171,9 @@ struct VqaDrawer {
   // palette of a frame skipped with kDrawerPalettePending. At most 256 colors,
   // which is why the loader rejects larger palettes.
   std::array<unsigned char, 768> saved_palette;
-  // 15-bit version of saved_palette, for 32K-color modes. Unused.
-  unsigned char Palette_15[512];
   // The image size in blocks, the geometry decode_frame walks.
   int32_t blocks_per_row;
   int32_t block_rows;
-  // blocks_per_row * block_rows. Set, never read.
-  int32_t NumBlocks;
-  // A rectangle of blocks the DOS drawer left undrawn. Unused.
-  int32_t MaskStart;
-  int32_t MaskWidth;
-  int32_t MaskHeight;
   // When the frame-skipping path last passed a frame; starts one second in
   // the past so the first frame is never early.
   int64_t last_time;  // In kVqaTicksPerSecond, as returned by ReadMovieClock().
@@ -205,12 +183,6 @@ struct VqaDrawer {
   int32_t last_selected_frame;
   // Number of the last frame drawn, which PlayVqa() returns in walk mode.
   int32_t last_drawn_frame;
-  // Never set or read.
-  int32_t DesiredFrame;
-  // Times the drawer waited for a page flip and for a loaded frame. Never
-  // read.
-  int32_t WaitsOnFlipper;
-  int32_t WaitsOnLoader;
 };
 
 // Drawer flag: a skipped frame's palette is pending.
@@ -222,8 +194,6 @@ constexpr uint32_t kDrawerPalettePending = 1U << 0;
 struct VqaFlipper {
   // The frame drawn last; valid while kMovieAwaitingRelease is set.
   VqaFrame* drawn_frame;
-  // Number of the last frame released. Never read.
-  int32_t LastFrameNum;
 };
 
 // VqaAudio: the sound ring and the state shared with the SDL audio callback.
@@ -246,21 +216,16 @@ struct VqaAudio {
   std::span<unsigned char> ring;  // ring_storage or caller-owned span
   // Byte offset in the ring where the loader writes next.
   int32_t write_offset = 0;
-  int16_t* IsLoaded = nullptr;  // Points into block_loaded
   int32_t block_count = 0;
   // The block being played, and the one after it (callback scratch).
   int32_t play_block = 0;
   int32_t next_block = 0;
-  unsigned char* TempBuf = nullptr;  // Points into staging
   // Bytes in TempBuf waiting for CopyStagedAudio(), 0 when it is empty.
   int32_t staged_bytes = 0;
   int32_t staging_capacity = 0;
   uint32_t flags = 0;  // kAudioPlaying and VQAAUDF_* bits
   // Byte offset of play_block in the ring.
   int32_t play_offset = 0;
-  // Times the callback found the next block empty and replayed the current
-  // one. Never read.
-  int32_t NumSkipped = 0;
   // Format of the track being played, the primary or the alternate one.
   int sample_rate = 0;
   int channels = 0;
@@ -317,16 +282,11 @@ struct VqaMovie {
   // offset (see FrameHasPalette and FrameByteOffset in vqa_format.h).
   std::vector<uint32_t> frame_offsets;
 
-  VqaFrame* FrameData = nullptr;  // Points to first node in frames
-  VqaCodebook* CBData = nullptr;  // Points to first node in codebooks
   VqaAudio audio;
   VqaLoader loader{};
   VqaDrawer drawer{};
   VqaFlipper flipper{};
   uint32_t flags = 0;        // kMovie* bits
-  uint32_t* Foff = nullptr;  // Points into frame_offsets
-  // Copy of VqaConfig::VBIBit. Unused.
-  int32_t VBIBit = 0;
   // Buffer sizes in bytes for one codebook, palette and set of vector
   // pointers, computed from the header with slack for compressed data loaded
   // at the end of the buffer.

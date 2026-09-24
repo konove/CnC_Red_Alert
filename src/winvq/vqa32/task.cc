@@ -238,9 +238,6 @@ int64_t ReleaseDrawnFrame(const VqaPlayerState* state) {
   auto* movie = state->movie.get();
 
   if ((movie->flags & kMovieAwaitingRelease) != 0) {
-    // Remember the last frame released, for status reporting.
-    movie->flipper.LastFrameNum = movie->flipper.drawn_frame->frame_number;
-
     // Clearing the flags hands the buffer back to the loader.
     movie->flipper.drawn_frame->flags = 0;
     movie->flags &= ~kMovieAwaitingRelease;

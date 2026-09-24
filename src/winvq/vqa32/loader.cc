@@ -353,7 +353,6 @@ int32_t OpenVqa(VqaPlayerState* vqa, std::string_view filename,
   /*-------------------------------------------------------------------------
    * INITIALIZE THE VIDEO SYSTEM IF WE ARE REQUIRED TO HANDLE THAT.
    *-----------------------------------------------------------------------*/
-  vqap->movie->VBIBit = config->VBIBit;
 
   /*-------------------------------------------------------------------------
    * AUDIO TRACK OVERRIDE FROM EXTERNAL FILE (.VOC)
@@ -514,7 +513,6 @@ int32_t LoadNextFrame(VqaPlayerState* vqa) {
    * to free up).
    */
   if (curframe->flags & kFrameLoaded) {
-    loader->WaitsOnDrawer++;
     return kVqaNoBuffer;
   }
 
@@ -822,9 +820,6 @@ int32_t LoadNextFrame(VqaPlayerState* vqa) {
   curframe->frame_number = loader->next_frame_number;
   loader->next_frame_number++;
 
-  /* Remember the last frame loaded, for status reporting. */
-  loader->LastFrameNum = loader->next_frame_number;
-
   /* Loader is finished with this frame; tell Drawer to draw it */
   curframe->flags |= kFrameLoaded;
   loader->current_frame = curframe->next;
@@ -879,7 +874,7 @@ int32_t SeekVqaFrame(VqaPlayerState* vqa, int32_t framenum,
   /* Make sure the requested frame is valid and the frame information
    * array is allocated before continuing.
    */
-  if (framenum < 0 || vqabuf->Foff == nullptr) {
+  if (framenum < 0) {
     rc = kVqaErrorSeek;
   } else if (std::cmp_greater_equal(framenum, header->frame_count)) {
     rc = kVqaEndOfMovie;
@@ -904,8 +899,8 @@ int32_t SeekVqaFrame(VqaPlayerState* vqa, int32_t framenum,
           if (!rc) {
             loader->partial_count = 0;
             loader->partial_bytes = 0;
-            loader->full_codebook = vqabuf->CBData;
-            loader->partial_codebook = vqabuf->CBData;
+            loader->full_codebook = vqabuf->codebooks.front().get();
+            loader->partial_codebook = vqabuf->codebooks.front().get();
             loader->next_frame_number = 0;
             frame->flags = 0;
 
@@ -967,8 +962,8 @@ int32_t SeekVqaFrame(VqaPlayerState* vqa, int32_t framenum,
         /* Force the loader to the desired frame. */
         loader->partial_count = 0;
         loader->partial_bytes = 0;
-        loader->full_codebook = vqabuf->CBData;
-        loader->partial_codebook = vqabuf->CBData;
+        loader->full_codebook = vqabuf->codebooks.front().get();
+        loader->partial_codebook = vqabuf->codebooks.front().get();
         loader->next_frame_number = group;
 
         /* Load frames up to the target frame collecting partial codebooks
@@ -1047,12 +1042,12 @@ int32_t SeekVqaFrame(VqaPlayerState* vqa, int32_t framenum,
  *
  *     Buffers allocated:
  *       - vqa
- *       - vqa->CBData (list)
- *       - vqa->FrameData (list)
- *       - vqa->Drawer.image_buffer
- *       - vqa->Audio.Buffer
- *       - vqa->Audio.IsLoaded
- *       - vqa->Foff
+ *       - vqa->codebooks (ring)
+ *       - vqa->frames (ring)
+ *       - vqa->drawer.image_buffer
+ *       - vqa->audio.ring
+ *       - vqa->audio.block_loaded
+ *       - vqa->frame_offsets
  *
  * INPUTS
  *     Header - Pointer to VqaHeader structure.
@@ -1099,11 +1094,6 @@ static std::unique_ptr<VqaMovie> AllocBuffers(const VqaHeader* header,
        1024) /
       4 * 4;
 
-  /* Set the frame number of the frame containing the last codebook. */
-  vqa->loader.LastCBFrame =
-      ((header->frame_count - 1) / header->frames_per_group) *
-      header->frames_per_group;
-
   /*-------------------------------------------------------------------------
    * ALLOCATE THE CODEBOOK BUFFERS.
    *-----------------------------------------------------------------------*/
@@ -1115,7 +1105,6 @@ static std::unique_ptr<VqaMovie> AllocBuffers(const VqaHeader* header,
 
     /* Allocate the buffer storage. */
     cbnode->buffer.resize(base::ToSize(vqa->codebook_capacity));
-    cbnode->Buffer = cbnode->buffer.data();
     vqa->codebooks.push_back(std::move(cbnode));
   }
 
@@ -1126,9 +1115,9 @@ static std::unique_ptr<VqaMovie> AllocBuffers(const VqaHeader* header,
   }
 
   /* Install the Codebook list */
-  vqa->CBData = vqa->codebooks.at(0).get();
-  vqa->loader.partial_codebook = vqa->CBData;
-  vqa->loader.full_codebook = vqa->CBData;
+  VqaCodebook* const first_codebook = vqa->codebooks.front().get();
+  vqa->loader.partial_codebook = first_codebook;
+  vqa->loader.full_codebook = first_codebook;
 
   /*-------------------------------------------------------------------------
    * ALLOCATE THE FRAME BUFFERS.
@@ -1142,10 +1131,8 @@ static std::unique_ptr<VqaMovie> AllocBuffers(const VqaHeader* header,
     /* Allocate the buffer storage. */
     framenode->pointers.resize(base::ToSize(vqa->pointers_capacity));
     framenode->palette.resize(base::ToSize(vqa->palette_capacity));
-    framenode->Pointers = framenode->pointers.data();
-    framenode->Palette = framenode->palette.data();
 
-    framenode->codebook = vqa->CBData;
+    framenode->codebook = first_codebook;
     vqa->frames.push_back(std::move(framenode));
   }
 
@@ -1156,10 +1143,10 @@ static std::unique_ptr<VqaMovie> AllocBuffers(const VqaHeader* header,
   }
 
   /* Install the Frame Buffer list */
-  vqa->FrameData = vqa->frames.at(0).get();
-  vqa->loader.current_frame = vqa->FrameData;
-  vqa->drawer.current_frame = vqa->FrameData;
-  vqa->flipper.drawn_frame = vqa->FrameData;
+  VqaFrame* const first_frame = vqa->frames.front().get();
+  vqa->loader.current_frame = first_frame;
+  vqa->drawer.current_frame = first_frame;
+  vqa->flipper.drawn_frame = first_frame;
 
   /*-------------------------------------------------------------------------
    * ALLOCATE THE IMAGE BUFFERS IF ONE IS NOT ALREADY PROVIDED.
@@ -1243,13 +1230,11 @@ static std::unique_ptr<VqaMovie> AllocBuffers(const VqaHeader* header,
       audio->block_count =
           config->audio_buffer_bytes / config->audio_block_bytes;
       audio->block_loaded.resize(base::ToSize(audio->block_count), 0);
-      audio->IsLoaded = audio->block_loaded.data();
 
       /* Allocate temporary staging buffer for the audio frames. */
       audio->staging_capacity =
           (audio->bytes_per_second / header->fps * 2) + 100;
       audio->staging.resize(base::ToSize(audio->staging_capacity));
-      audio->TempBuf = audio->staging.data();
     }
   }
 
@@ -1257,7 +1242,6 @@ static std::unique_ptr<VqaMovie> AllocBuffers(const VqaHeader* header,
    * ALLOCATE THE FRAME INFORMATION TABLE.
    *-----------------------------------------------------------------------*/
   vqa->frame_offsets.resize(header->frame_count);
-  vqa->Foff = vqa->frame_offsets.data();
 
   return vqa_ptr;
 }
@@ -2142,7 +2126,7 @@ static int32_t Load_SND1(VqaPlayerState* vqap, int32_t iffsize) {
     }
 
     /* Uncompress the audio frame. */
-    AudioUnzap(loadbuf.data(), audio->TempBuf, zap.UnCompSize);
+    AudioUnzap(loadbuf.data(), audio->staging.data(), zap.UnCompSize);
   }
 
   /* Set the staged_bytes */
