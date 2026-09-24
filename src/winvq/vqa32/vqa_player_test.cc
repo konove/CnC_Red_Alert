@@ -18,7 +18,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
@@ -678,9 +677,9 @@ TEST_F(VqaLoaderTest, CopyStagedAudioWrapsAtTheEndOfTheRing) {
   EXPECT_EQ(CopyStagedAudio(&state_), 0);
   EXPECT_EQ(audio.write_offset, 500);
   EXPECT_EQ(audio.block_loaded, (std::vector<int16_t>{0, 0, 0, 1}));
-  EXPECT_EQ(base::At(audio.ring, (4 * 2048) - 1), 2);
-  EXPECT_EQ(base::At(audio.ring, 499), 2);
-  EXPECT_EQ(base::At(audio.ring, 500), 1);
+  EXPECT_EQ(audio.ring.at((4 * 2048) - 1), 2);
+  EXPECT_EQ(audio.ring.at(499), 2);
+  EXPECT_EQ(audio.ring.at(500), 1);
 
   // Block 3 has not played, so a write that would reach it again waits.
   audio.write_offset = 2 * 2048;

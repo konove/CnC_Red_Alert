@@ -205,13 +205,12 @@ struct VqaFlipper {
 // block it would overwrite is still unplayed. Code on the main thread holds the
 // SDL device lock while changing what the callback reads.
 struct VqaAudio {
-  // The ring, when the player allocated it.
-  std::vector<unsigned char> ring_storage;
   // One flag per ring block: 1 = holds unplayed sound, 0 = free to fill.
   std::vector<int16_t> block_loaded;
   // Staging for one frame's decompressed sound, staging_capacity bytes.
   std::vector<unsigned char> staging;
-  std::span<unsigned char> ring;  // ring_storage or caller-owned span
+  // The ring, config.audio_buffer_bytes bytes; empty without sound.
+  std::vector<unsigned char> ring;
   // Byte offset in the ring where the loader writes next.
   int32_t write_offset = 0;
   int32_t block_count = 0;

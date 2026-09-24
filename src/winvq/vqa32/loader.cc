@@ -770,15 +770,7 @@ static std::unique_ptr<VqaMovie> AllocateMovie(const VqaHeader* header,
     // Less than one block is no ring at all; OpenVqa() then turns the sound
     // off.
     if (config->audio_buffer_bytes > 0) {
-      // TODO: A caller's ring is used whatever its size, while block_count
-      // and the loader go by audio_buffer_bytes, so a smaller one is indexed
-      // past its end. No client provides one.
-      if (config->audio_buffer.empty()) {
-        audio->ring_storage.resize(base::ToSize(config->audio_buffer_bytes));
-        audio->ring = audio->ring_storage;
-      } else {
-        audio->ring = config->audio_buffer;
-      }
+      audio->ring.resize(base::ToSize(config->audio_buffer_bytes));
 
       audio->block_count =
           config->audio_buffer_bytes / config->audio_block_bytes;
@@ -1239,7 +1231,7 @@ static int32_t LoadSound(VqaPlayerState* state, int32_t chunk_bytes) {
       return kVqaErrorRead;
     }
 
-    if (!state->io->Read(audio->ring, padded_bytes)) {
+    if (!state->io->Read(std::span(audio->ring), padded_bytes)) {
       return kVqaErrorRead;
     }
 
@@ -1310,13 +1302,14 @@ static int32_t LoadZapSound(VqaPlayerState* state, int32_t chunk_bytes) {
 
     // Equal sizes: stored uncompressed.
     if (zap_header.UnCompSize == zap_header.CompSize) {
-      if (!state->io->Read(audio->ring, padded_bytes)) {
+      if (!state->io->Read(std::span(audio->ring), padded_bytes)) {
         return kVqaErrorRead;
       }
     } else {
       // Loaded at the end of the ring and decompressed towards its start.
-      compressed = audio->ring.subspan(
-          base::ToSize(config->audio_buffer_bytes - padded_bytes));
+      compressed =
+          std::span(audio->ring)
+              .subspan(base::ToSize(config->audio_buffer_bytes - padded_bytes));
 
       if (!state->io->Read(compressed, padded_bytes)) {
         return kVqaErrorRead;
@@ -1325,7 +1318,8 @@ static int32_t LoadZapSound(VqaPlayerState* state, int32_t chunk_bytes) {
       // TODO: AudioUnzap() is a stub that writes nothing, so the ring keeps
       // the compressed bytes and whatever was there before, and plays them.
       // The shipped Red Alert movies have no SND1 sound.
-      AudioUnzap(compressed, audio->ring.first(zap_header.UnCompSize));
+      AudioUnzap(compressed,
+                 std::span(audio->ring).first(zap_header.UnCompSize));
     }
 
     audio->write_offset = (audio->write_offset + zap_header.UnCompSize) %
@@ -1404,8 +1398,9 @@ static int32_t LoadAdpcmSound(VqaPlayerState* state, int32_t chunk_bytes) {
     }
 
     // Loaded at the end of the ring and decompressed towards its start.
-    compressed = audio->ring.subspan(
-        base::ToSize(config->audio_buffer_bytes - padded_bytes));
+    compressed =
+        std::span(audio->ring)
+            .subspan(base::ToSize(config->audio_buffer_bytes - padded_bytes));
 
     if (!state->io->Read(compressed, padded_bytes)) {
       return kVqaErrorRead;

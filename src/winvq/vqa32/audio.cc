@@ -108,7 +108,7 @@ static void MixMovieSound(const std::span<std::byte> device_buffer) {
   // remainder stays in sound_converter for the next call.
   while (SDL_AudioStreamAvailable(sound_converter) < device_bytes) {
     SDL_AudioStreamPut(sound_converter,
-                       audio->ring
+                       std::span(audio->ring)
                            .subspan(base::ToSize(audio->play_block *
                                                  config->audio_block_bytes),
                                     base::ToSize(config->audio_block_bytes))
@@ -263,10 +263,11 @@ int32_t CopyStagedAudio(VqaPlayerState* state) {
   const int32_t tail_bytes = std::min(
       audio->staged_bytes, config->audio_buffer_bytes - audio->write_offset);
   const int32_t head_bytes = audio->staged_bytes - tail_bytes;
-  base::CopyBytes(std::as_writable_bytes(
-                      audio->ring.subspan(base::ToSize(audio->write_offset))),
-                  staging, tail_bytes);
-  base::CopyBytes(std::as_writable_bytes(audio->ring),
+  base::CopyBytes(
+      std::as_writable_bytes(
+          std::span(audio->ring).subspan(base::ToSize(audio->write_offset))),
+      staging, tail_bytes);
+  base::CopyBytes(std::as_writable_bytes(std::span(audio->ring)),
                   staging.subspan(base::ToSize(tail_bytes)), head_bytes);
 
   audio->write_offset =

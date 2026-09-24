@@ -129,9 +129,6 @@ struct VqaConfig {
   // The device's output format; the movie's sound is converted to it.
   // Required when kVqaOptionAudio is set.
   const SDL_AudioSpec* audio_spec{};
-  // The caller's audio ring buffer. Empty = the player allocates
-  // audio_buffer_bytes bytes.
-  std::span<unsigned char> audio_buffer;
   // Size of the audio ring in bytes, rounded down to whole audio_block_bytes
   // blocks. -1 = as many blocks as fit in 1.5 seconds of the movie's sound;
   // 0, or less than one block, = no ring, so no sound.
