@@ -102,4 +102,18 @@ TEST(DrawStampTest, ASetTooShortForItsHeaderDrawsNothing) {
   EXPECT_EQ(pixels, std::vector<uint8_t>(size_t{4} * 4, 0));
 }
 
+// A width and height both negative multiply to a positive tile size, which
+// passed the size check; the clipped width then stayed negative and the row
+// loops ran off the end of the page.
+TEST(DrawStampTest, ASetWithNegativeTileSizeDrawsNothing) {
+  constexpr std::array<uint8_t, 4> kPixels{1, 2, 3, 4};
+  const std::vector<std::byte> set = MakeIconSet(-2, -2, 1, kPixels);
+  std::vector<uint8_t> pixels(size_t{4} * 4, 0);
+  PixelBuffer page(4, 4, pixels);
+
+  page.view().DrawStampLocked(set, 0, 2, 2, {}, 0, 0, 4, 4);
+
+  EXPECT_EQ(pixels, std::vector<uint8_t>(size_t{4} * 4, 0));
+}
+
 }  // namespace

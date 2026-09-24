@@ -122,7 +122,7 @@ void PixelView::DrawStampLocked(std::span<const std::byte> icon_data, int icon,
 
   // Every table is checked against the set's data, so a damaged set draws
   // nothing rather than reading past it.
-  if (icon < 0 || icon >= IconCount || IconSize <= 0 ||
+  if (icon < 0 || icon >= IconCount || IconWidth <= 0 || IconHeight <= 0 ||
       base::ToSize(icon) >= IsTrans.size() ||
       base::ToSize(icon + 1) > StampPtr.size() / base::ToSize(IconSize)) {
     return;
