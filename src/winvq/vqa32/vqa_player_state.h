@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CNC_RED_ALERT_WINVQ_VQA32_VQAPLAYP_H_
-#define CNC_RED_ALERT_WINVQ_VQA32_VQAPLAYP_H_
+#ifndef CNC_RED_ALERT_WINVQ_VQA32_VQA_PLAYER_STATE_H_
+#define CNC_RED_ALERT_WINVQ_VQA32_VQA_PLAYER_STATE_H_
 
 // File: the VQA player's internal state, VqaPlayerState, and the functions the
 // player's source files share. Only vqa32 and its tests include it.
@@ -45,7 +45,7 @@
 #include "base/numeric.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqaio.h"
-#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqa_player.h"
 #include "winvq/vqm32/soscomp.h"
 
 // Packs a block width and height into the dimension code the drawer switches
@@ -331,7 +331,7 @@ struct VqaPlayerState {
 };
 
 // The player entry points behind VqaPlayer's Open(), Close(), Play() and
-// SeekFrame(); see vqaplay.h for what they do. OpenVqa() and CloseVqa() are
+// SeekFrame(); see vqa_player.h for what they do. OpenVqa() and CloseVqa() are
 // also the allocation and release of state->movie.
 int32_t OpenVqa(VqaPlayerState* vqa, std::string_view filename,
                 VqaConfig* config);
@@ -382,4 +382,4 @@ int32_t CopyStagedAudio(VqaPlayerState* vqap);
 // PlayVqa() on the main thread and read on the audio thread.
 extern std::atomic<bool> vqa_movie_loaded;
 
-#endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAPLAYP_H_
+#endif  // CNC_RED_ALERT_WINVQ_VQA32_VQA_PLAYER_STATE_H_

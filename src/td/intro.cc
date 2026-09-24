@@ -69,7 +69,7 @@
 #include "tech/game_file.h"
 #include "tech/game_file_vqa_io.h"
 #include "tech/wsa_animation.h"
-#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqa_player.h"
 
 #ifndef DEMO
 

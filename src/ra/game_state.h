@@ -6,7 +6,7 @@
 #include "absl/base/attributes.h"
 #include "base/installed.h"
 #include "ra/defines.h"
-#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqa_player.h"
 
 // The flags that say what the game is doing right now: whether it is
 // running at all, whether the window has the focus, whether a movie is

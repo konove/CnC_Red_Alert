@@ -154,7 +154,7 @@
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 #include "tech/search_paths.h"
-#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqa_player.h"
 
 #ifdef _WIN32
 #include "td/ccdde.h"

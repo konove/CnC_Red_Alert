@@ -171,7 +171,7 @@
 #include "tech/span_source.h"
 #include "tech/stream_sink.h"
 #include "tech/stream_source.h"
-#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqa_player.h"
 
 static RemapControlType SidebarScheme;
 

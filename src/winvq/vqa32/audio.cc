@@ -68,8 +68,8 @@
 
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "winvq/vqa32/vqaplay.h"
-#include "winvq/vqa32/vqaplayp.h"
+#include "winvq/vqa32/vqa_player.h"
+#include "winvq/vqa32/vqa_player_state.h"
 
 /*---------------------------------------------------------------------------
  * PROTOTYPES

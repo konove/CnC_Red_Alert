@@ -78,8 +78,8 @@
 #include "base/numeric.h"
 #include "winvq/vqa32/unvq.h"
 #include "winvq/vqa32/vqa_format.h"
-#include "winvq/vqa32/vqaplay.h"
-#include "winvq/vqa32/vqaplayp.h"
+#include "winvq/vqa32/vqa_player.h"
+#include "winvq/vqa32/vqa_player_state.h"
 #include "winvq/vqm32/compress.h"
 
 /*---------------------------------------------------------------------------

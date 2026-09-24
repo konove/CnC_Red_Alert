@@ -174,7 +174,7 @@
 #include "tech/game_file_vqa_io.h"
 #include "tech/mix_archive.h"
 #include "tech/search_paths.h"
-#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqa_player.h"
 
 #ifdef _WIN32
 #include "td/ccdde.h"

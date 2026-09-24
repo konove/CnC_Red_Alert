@@ -23,7 +23,7 @@
 #include "td/screen.h"
 #include "td/startup.h"
 #include "td/winstub.h"
-#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqa_player.h"
 
 void CCDebugString(const char* /*string*/) {}
 

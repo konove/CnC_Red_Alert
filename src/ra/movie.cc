@@ -48,7 +48,7 @@
 #include "tech/audio_mixer.h"
 #include "tech/game_file.h"
 #include "tech/game_file_vqa_io.h"
-#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqa_player.h"
 
 // Set by VQ_Call_Back() when the player presses Esc to abort a movie, so
 // Play_Movie() knows to clear the half-drawn frame.

@@ -15,8 +15,8 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef CNC_RED_ALERT_WINVQ_VQA32_VQAPLAY_H_
-#define CNC_RED_ALERT_WINVQ_VQA32_VQAPLAY_H_
+#ifndef CNC_RED_ALERT_WINVQ_VQA32_VQA_PLAYER_H_
+#define CNC_RED_ALERT_WINVQ_VQA32_VQA_PLAYER_H_
 
 #include <cstdint>
 #include <memory>
@@ -27,7 +27,7 @@
 
 // File: the public interface of the VQA movie player - VqaPlayer, the
 // VqaConfig a movie is opened with, and the codes and flags that go with them.
-// The player's internal state is in vqaplayp.h.
+// The player's internal state is in vqa_player_state.h.
 //
 // Playing a movie is one blocking call: VqaPlayer::Play(kVqaModeRun) loads,
 // decodes and paces the frames itself. Each decoded frame lands in an image
@@ -168,7 +168,7 @@ constexpr uint32_t kVqaOptionSlowPalette = base::Bit<uint32_t>(4);
 // Use the alternate sound track, if there is one.
 constexpr uint32_t kVqaOptionAltAudio = base::Bit<uint32_t>(6);
 
-// The player's internal state; defined in vqaplayp.h.
+// The player's internal state; defined in vqa_player_state.h.
 struct VqaPlayerState;
 
 // Abstract file source the player reads movies through (see vqaio.h).
@@ -244,4 +244,4 @@ void ResumeVqaAudio();
 void QueueVqaPalette(std::span<uint8_t> palette, int32_t numbytes,
                      uint32_t slowpal);
 
-#endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAPLAY_H_
+#endif  // CNC_RED_ALERT_WINVQ_VQA32_VQA_PLAYER_H_

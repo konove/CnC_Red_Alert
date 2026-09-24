@@ -21,7 +21,7 @@
 // Originally written by Bill Randolph and Denzil E. Long, Jr. at Westwood
 // Studios, April 1995.
 
-#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqa_player.h"
 
 void SetVqaConfigDefaults(VqaConfig* config) {
   *config = VqaConfig{};

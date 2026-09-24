@@ -373,7 +373,7 @@ Omit the `std::` prefix on fixed-width types. See `docs/TYPE_MIGRATION.md` for f
 | Global state | `ra/externs.h`                                             |
 | Streams      | `tech/byte_sink.h`, `tech/byte_source.h`                   |
 | Graphics     | `sdllib/pixel_buffer.h`                                    |
-| Video        | `winvq/vqa32/vqaplay.h`                                    |
+| Video        | `winvq/vqa32/vqa_player.h`                                 |
 
 ## Platform Notes
 

@@ -22,7 +22,7 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
-#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqa_player.h"
 
 void WWDebugString(const char* /*string*/) {}
 

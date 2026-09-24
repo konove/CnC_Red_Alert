@@ -45,7 +45,7 @@
 #include "tech/audio_mixer.h"
 #include "tech/byte_stream.h"
 #include "tech/game_file.h"
-#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqa_player.h"
 #include "winvq/vqm32/palette.h"
 
 /***********************************************************************************************

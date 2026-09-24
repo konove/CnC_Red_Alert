@@ -10,7 +10,7 @@
 #include "base/installed.h"
 #include "sdllib/timer.h"
 #include "td/defines.h"
-#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqa_player.h"
 
 // The flags that say what the game is doing right now: whether it is
 // running at all, whether the window has the focus, whether a movie is

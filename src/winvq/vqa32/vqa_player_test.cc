@@ -3,7 +3,7 @@
 // drawer placement. Movies are small synthetic files served by a scripted
 // in-memory VqaIo file source. No real movie assets are required.
 
-#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqa_player.h"
 
 #include <SDL_audio.h>
 
@@ -23,7 +23,7 @@
 #include "gtest/gtest.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqaio.h"
-#include "winvq/vqa32/vqaplayp.h"
+#include "winvq/vqa32/vqa_player_state.h"
 #include "winvq/vqm32/compress.h"
 #include "winvq/vqm32/palette.h"
 

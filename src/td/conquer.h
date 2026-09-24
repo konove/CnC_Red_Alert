@@ -29,7 +29,7 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/defines.h"
-#include "winvq/vqa32/vqaplay.h"
+#include "winvq/vqa32/vqa_player.h"
 
 #define TXT_NONE 0                         //
 #define TXT_CREDIT_FORMAT 1                // %3d.%02d

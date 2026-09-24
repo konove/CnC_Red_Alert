@@ -23,19 +23,19 @@
 // Studios, July 1995, where the loader and drawer ran as tasks off a timer
 // interrupt.
 
+#include "winvq/vqa32/vqa_player.h"
+
 #include <atomic>
 #include <cstdint>
 #include <memory>
 #include <string_view>
 
-#include "winvq/vqa32/vqaio.h"
-
 #ifdef _WIN32
 #include <windows.h>
 #endif
 
-#include "winvq/vqa32/vqaplay.h"
-#include "winvq/vqa32/vqaplayp.h"
+#include "winvq/vqa32/vqa_player_state.h"
+#include "winvq/vqa32/vqaio.h"
 
 // VqaPlayer is a thin wrapper: each method forwards to the matching entry
 // point (OpenVqa(), PlayVqa(), ...) on its state.
@@ -141,9 +141,9 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
             (StartMovieAudio(state) != 0)) {
           StopMovieAudio(state);
 #ifdef _WIN32
-            SetPriorityClass(GetCurrentProcess(), process_priority);
+          SetPriorityClass(GetCurrentProcess(), process_priority);
 #endif  // _WIN32
-            return kVqaEndOfMovie;
+          return kVqaEndOfMovie;
         }
 
         SetMovieClock(state, movie->end_time, config->clock_source);
