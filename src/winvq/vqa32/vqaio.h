@@ -1,6 +1,6 @@
 // File: VqaIo, the file source the VQA player reads movies through. The
-// player never touches files itself; whoever plays a movie installs a VqaIo
-// with VqaPlayer::SetIo(). The game's implementation is GameFileVqaIo in
+// player never touches files itself; whoever plays a movie passes a VqaIo to
+// VqaPlayer::Open(). The game's implementation is GameFileVqaIo in
 // tech/game_file_vqa_io.h; tests use an in-memory fake.
 #ifndef CNC_RED_ALERT_WINVQ_VQA32_VQAIO_H_
 #define CNC_RED_ALERT_WINVQ_VQA32_VQAIO_H_

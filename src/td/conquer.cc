@@ -58,7 +58,7 @@
  *   Theater_From_Name -- Converts ASCII name into a theater number. *
  *   Trap_Object -- gets a ptr to object of given type & coord * Unselect_All --
  *Causes all selected objects to become unselected.                         *
- *   VQ_Call_Back -- Maintenance callback used for VQ movies. * Validate_Error
+ *   Validate_Error
  *-- prints an error message when an object fails validation                 *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
@@ -134,6 +134,7 @@
 #include "td/logic.h"
 #include "td/mapedit.h"
 #include "td/mouse.h"
+#include "td/movie_screen.h"
 #include "td/mplayer.h"
 #include "td/msgbox.h"
 #include "td/msglist.h"
@@ -187,10 +188,6 @@ static CountDownTimerClass frame_timer{0L};
 
 // Measures how long one frame's logic takes, for the multiplayer frame rate.
 static TimerClass process_timer;
-
-// Set by VQ_Call_Back() when the player presses Esc to abort a movie, so
-// Play_Movie() knows to clear the half-drawn frame.
-static bool movie_broken_out;
 
 // Where the message being typed goes: a broadcast address after F4, or the
 // player picked with F1-F3. IPX only.
@@ -2129,12 +2126,6 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
         std::filesystem::path(name).replace_extension(".VQA").string();
 
     /*
-    **	Reset the anim control structure.
-    */
-    Anim_Init();
-    Discard_VQ_Palette_Change();
-
-    /*
     **	Prepare to play a movie. First hide the mouse and stop any score that is
     *playing. *	While the score (if any) is fading to silence, fade the palette
     *to black as well. *	When the palette has finished fading, wait until
@@ -2155,37 +2146,25 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     TheGameState().preserve_movie_screen() = false;
     Keyboard::Clear();
 
-    VqaPlayer player;
-    GameFileVqaIo movie_io;  // Both must outlive the open movie.
+    // The file, the screen and the sound device must outlive the player.
+    GameFileVqaIo movie_io;
+    MovieScreen screen;
     MixerVqaAudio movie_audio(TheAudio());
-    player.SetIo(&movie_io);
-    TheGameState().anim_control().audio_device = &movie_audio;
+    const bool with_sound = !TheDebugState().quiet() && TheAudio().is_open();
 
-    if (!TheDebugState().quiet() && TheAudio().is_open()) {
-      TheGameState().anim_control().option_flags |= kVqaOptionAudio;
-    } else {
-      TheGameState().anim_control().option_flags &= ~kVqaOptionAudio;
-    }
-
-    if (player.Open(fullname, &TheGameState().anim_control()) == 0) {
-      movie_broken_out = false;
-      // Suspend_Audio_Thread();
-
-      // Set_Palette(BlackPalette);
+    if (auto player = VqaPlayer::Open(movie_io, fullname, screen,
+                                      with_sound ? &movie_audio : nullptr)) {
       TheScreen().sys_mem_page().view().Clear();
       TheGameState().in_movie() = true;
-      player.Play(kVqaModeRun);
-      player.Close();
-      // Resume_Audio_Thread();
+      player->Run();
       TheGameState().in_movie() = false;
       /*
       **	Any movie that ends prematurely must have the screen
       **	cleared to avoid any unexpected palette glitches.
       */
-      if (movie_broken_out) {
+      if (screen.broken_out()) {
         clear_screen = true;
         TheScreen().visible_page().view().Clear();
-        movie_broken_out = false;
       }
     }
 
@@ -2674,64 +2653,6 @@ void Trap_Object() {
     default:
       break;
   }
-}
-
-/***********************************************************************************************
- * VQ_Call_Back -- Maintenance callback used for VQ movies. *
- *                                                                                             *
- *    This routine is called every frame of the VQ movie as it is being played.
- *If this        * routine returns non-zero, then the movie will stop. *
- *                                                                                             *
- * INPUT:   buffer   -- Pointer to the image buffer for the current frame. *
- *                                                                                             *
- *          frame    -- The frame number about to be displayed. *
- *                                                                                             *
- * OUTPUT:  Should the movie be stopped? *
- *                                                                                             *
- * WARNINGS:   none *
- *                                                                                             *
- * HISTORY: * 06/24/1995 JLB : Created. *
- *=============================================================================================*/
-
-int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
-  int key = 0;
-  if (Keyboard::Check()) {
-    key = Keyboard::Get();
-    Keyboard::Clear();
-  }
-
-  Check_VQ_Palette_Set();
-
-  Interpolate_2X_Scale(&TheScreen().sys_mem_page(), &TheScreen().visible_view(),
-                       nullptr);
-
-  // Call_Back();
-  if ((TheGameState().breakout_allowed() || TheDebugState().developer_mode()) &&
-      key == KN_ESC) {
-    Keyboard::Clear();
-    movie_broken_out = true;
-    return 1;
-  }
-
-  if (!TheGameState().in_focus()) {
-    TheAudio().SetExtraPaused(true);
-    while (!TheGameState().in_focus()) {
-      Keyboard::Check();
-      Check_For_Focus_Loss();
-    }
-  }
-
-  TheDisplay().EndFrame();
-
-  return 0;
-}
-
-int32_t VQ_Event_Handler(uint32_t event, void* /*buffer*/, int32_t /*nbytes*/) {
-  // vsync while waiting for frame
-  if (event == kVqaEventSync) {
-    TheDisplay().EndFrame();
-  }
-  return 0;
 }
 
 /***********************************************************************************************

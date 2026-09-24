@@ -9,15 +9,9 @@
 #include "base/numeric.h"
 #include "winvq/vqa32/vqa_format.h"
 
-AudioFormat AudioFormat::FromHeader(const VqaHeader& header,
-                                    const bool alternate) {
+AudioFormat AudioFormat::FromHeader(const VqaHeader& header) {
   if (header.version < kVqaVersion2) {
     return {.sample_rate = 22050, .channels = 1, .bits_per_sample = 8};
-  }
-  if (alternate) {
-    return {.sample_rate = header.alt_sample_rate,
-            .channels = header.alt_channels,
-            .bits_per_sample = header.alt_bits_per_sample};
   }
   return {.sample_rate = header.sample_rate,
           .channels = header.channels,

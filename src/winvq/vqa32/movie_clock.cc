@@ -4,7 +4,6 @@
 #include <cstdint>
 
 #include "winvq/vqa32/audio_output.h"
-#include "winvq/vqa32/vqa_player.h"
 
 void MovieClock::Set(const int64_t now_ticks, const AudioOutput* const audio) {
   audio_ = audio;

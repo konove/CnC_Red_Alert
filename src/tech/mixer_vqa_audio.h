@@ -12,12 +12,12 @@
 #include "winvq/vqa32/vqa_audio_device.h"
 
 // Plays a movie's sound on the game's AudioMixer, ahead of the game's own
-// sounds. Point VqaConfig::audio_device at one before opening a movie; it
+// sounds. Pass one to VqaPlayer::Open(); it
 // must outlive the open movie, and the mixer must outlive it.
 //
 // Example:
 //   MixerVqaAudio movie_audio(TheAudio());
-//   config.audio_device = &movie_audio;
+//   auto player = VqaPlayer::Open(io, name, screen, &movie_audio);
 class MixerVqaAudio final : public VqaAudioDevice {
  public:
   explicit MixerVqaAudio(AudioMixer& mixer ABSL_ATTRIBUTE_LIFETIME_BOUND)

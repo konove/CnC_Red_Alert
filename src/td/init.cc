@@ -32,7 +32,7 @@
  *                   Start Date : January 20, 1992 *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * Anim_Init -- Initialize the VQ animation control structure. *
+ * Functions: *
  *   Init_Game -- Main game initialization routine. * Load_Recording_Values --
  *Loads recording values from recording file                       *
  *   Parse_Command_Line -- Parses the command line parameters. * Parse_INI_File
@@ -154,7 +154,6 @@
 #include "tech/mix_archive.h"
 #include "tech/number_parse.h"
 #include "tech/search_paths.h"
-#include "winvq/vqa32/vqa_player.h"
 
 #ifdef _WIN32
 #include "td/ccdde.h"
@@ -474,12 +473,6 @@ bool Init_Game() {
   }
   DLOG(INFO) << "C&C95 - About to register SOUNDS.MIX";
   (void)MixArchive::Register("SOUNDS.MIX");
-
-  /*
-  **	Initialize the animation system.
-  */
-  DLOG(INFO) << "C&C95 - About to initialise the animation system";
-  Anim_Init();
 
   if (TheGameState().spawned_from_chat()) {
     TheSpecial().IsFromWChat = true;
@@ -2063,62 +2056,6 @@ static void Play_Intro(bool for_real) {
       _counter = -1;
     }
   }
-}
-
-/***********************************************************************************************
- * Anim_Init -- Initialize the VQ animation control structure. *
- *                                                                                             *
- *    VQ animations are controlled by a structure passed to the VQ player. This
- *routine        * initializes the structure to values required by C&C. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   Only need to call this routine once at the beginning of the game.
- **
- *                                                                                             *
- * HISTORY: * 12/20/1994 JLB : Created. *
- *=============================================================================================*/
-void Anim_Init() {
-  /* Configure player with INI file */
-  SetVqaConfigDefaults(&TheGameState().anim_control());
-  //	void const * font = Load_Font(FONT8);
-  //	AnimControl.EVAFont = (char *)font;
-  //	AnimControl.CapFont = (char *)font;
-
-  TheGameState().anim_control().draw_flags = kVqaDrawTopLeft;
-  TheGameState().anim_control().draw_flags |= kVqaDrawToBuffer;
-
-  TheGameState().anim_control().draw_flags |= kVqaDrawNoSkip;
-
-  // AnimControl.X1 =0;
-  // AnimControl.Y1 =0;
-  TheGameState().anim_control().frame_rate = -1;
-
-  TheGameState().anim_control().frame_callback = VQ_Call_Back;
-  TheGameState().anim_control().event_handler = VQ_Event_Handler;
-  TheGameState().anim_control().image_width = 320;
-  TheGameState().anim_control().image_height = 200;
-  TheGameState().anim_control().image_buffer =
-      TheScreen().sys_mem_page().bytes();
-  // AnimControl.VBIBit = VertBlank;
-  // AnimControl.DrawFlags |= VQACFGF_TOPLEFT;
-
-  if (ThePalettes().slow_palette()) {
-    TheGameState().anim_control().option_flags |= kVqaOptionSlowPalette;
-  }
-
-  //	AnimControl.AudioBuf = (unsigned char *)HidPage.Get_Buffer();
-  //	AnimControl.AudioBufSize = 32768U;
-  // AnimControl.DigiCard = NewConfig.DigitCard;
-  // AnimControl.HMIBufSize = 8192;
-  // AnimControl.Volume = 0x00FF;
-  // AnimControl.AudioRate = 22050;
-  //	if (NewConfig.Speed) AnimControl.AudioRate = 11025;
-  // if (!TheDebugState().quiet() && Audio.is_open()) {
-  // AnimControl.OptionFlags |= VQAOPTF_AUDIO;
-  //}
 }
 
 // Split out of Parse_Command_Line() so the std::optional below does not make

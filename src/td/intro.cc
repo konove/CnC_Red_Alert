@@ -43,7 +43,9 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstring>
+#include <optional>
 #include <span>
+#include <utility>
 
 #include "port/bytes_of.h"
 #include "sdllib/keyboard.h"
@@ -58,6 +60,7 @@
 #include "td/input.h"
 #include "td/interpal.h"
 #include "td/jshell.h"
+#include "td/movie_screen.h"
 #include "td/palette.h"
 #include "td/palettes.h"
 #include "td/presentation.h"
@@ -74,20 +77,18 @@
 
 #ifndef DEMO
 
-// Opens a movie on the given player without playing it. The io object and the
-// audio device must stay alive until the player is closed. Returns true if the
-// movie opened.
-static bool Open_Movie(VqaPlayer& player, GameFileVqaIo& io,
-                       MixerVqaAudio& audio, const char* name) {
-  if (!TheDebugState().quiet() && TheAudio().is_open()) {
-    TheGameState().anim_control().option_flags |= kVqaOptionAudio;
-  } else {
-    TheGameState().anim_control().option_flags &= ~kVqaOptionAudio;
+// Opens a movie without playing it, to be shown on screen and heard on audio
+// (nullptr for none). The io object, the screen and the audio device must
+// outlive the player. Returns nullopt if the movie cannot be opened.
+static std::optional<VqaPlayer> Open_Movie(GameFileVqaIo& io,
+                                           MovieScreen& screen,
+                                           MixerVqaAudio* audio,
+                                           const char* name) {
+  auto player = VqaPlayer::Open(io, name, screen, audio);
+  if (!player.has_value()) {
+    return std::nullopt;
   }
-
-  player.SetIo(&io);
-  TheGameState().anim_control().audio_device = &audio;
-  return player.Open(name, &TheGameState().anim_control()) == 0;
+  return std::move(*player);
 }
 
 /***********************************************************************************************
@@ -112,14 +113,16 @@ void Choose_Side() {
                                            0x12, 0x1c, 0x14, 0x0,  0x0,  0x0,
                                            0x0,  0x0,  0x1C, 0x0};
 
-  // The io objects and the audio device must outlive the open players.
+  // The io objects, the screen and the audio device must outlive the open
+  // players.
   MixerVqaAudio movie_audio(TheAudio());
+  MixerVqaAudio* const audio =
+      !TheDebugState().quiet() && TheAudio().is_open() ? &movie_audio : nullptr;
+  MovieScreen movie_screen;
   GameFileVqaIo gdibrief_io;
   GameFileVqaIo nodbrief_io;
-  VqaPlayer gdibrief_player;
-  VqaPlayer nodbrief_player;
-  bool gdibrief = false;
-  bool nodbrief = false;  // Movie opened successfully?
+  std::optional<VqaPlayer> gdibrief;
+  std::optional<VqaPlayer> nodbrief;
   std::span<const std::byte> speech;
   bool speechplaying = false;
   int setpalette = 0;
@@ -162,10 +165,9 @@ void Choose_Side() {
   WsaAnimation anim("CHOOSE.WSA", ThePalettes().title_palette());
   Call_Back();
 
-  nodbrief =
-      Open_Movie(nodbrief_player, nodbrief_io, movie_audio, "NOD1PRE.VQA");
+  nodbrief = Open_Movie(nodbrief_io, movie_screen, audio, "NOD1PRE.VQA");
   Call_Back();
-  gdibrief = Open_Movie(gdibrief_player, gdibrief_io, movie_audio, "GDI1.VQA");
+  gdibrief = Open_Movie(gdibrief_io, movie_screen, audio, "GDI1.VQA");
 
   TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
   TheScreen().hidden_page().view().Clear();
@@ -278,33 +280,19 @@ void Choose_Side() {
   ** Skip the briefings if we're in special mode.
   */
   if (TheSpecial().IsJurassic && TheGameState().thingies_enabled()) {
-    if (nodbrief) {
-      nodbrief_player.Close();
-      nodbrief = false;
-    }
-    if (gdibrief) {
-      gdibrief_player.Close();
-      gdibrief = false;
-    }
+    nodbrief.reset();
+    gdibrief.reset();
   }
 
-  /* play the scenario 1 briefing movie */
-  if (TheWorld().whom() == HOUSE_GOOD) {
-    if (nodbrief) {
-      nodbrief_player.Close();
-    }
-    if (gdibrief) {
-      gdibrief_player.Play(kVqaModeRun);
-      gdibrief_player.Close();
-    }
-  } else {
-    if (gdibrief) {
-      gdibrief_player.Close();
-    }
-    if (nodbrief) {
-      nodbrief_player.Play(kVqaModeRun);
-      nodbrief_player.Close();
-    }
+  /* play the scenario 1 briefing movie, closing the other side's */
+  std::optional<VqaPlayer>& briefing =
+      TheWorld().whom() == HOUSE_GOOD ? gdibrief : nodbrief;
+  std::optional<VqaPlayer>& other =
+      TheWorld().whom() == HOUSE_GOOD ? nodbrief : gdibrief;
+  other.reset();
+  if (briefing.has_value()) {
+    briefing->Run();
+    briefing.reset();
   }
 
   /* get rid of all the animating objects */

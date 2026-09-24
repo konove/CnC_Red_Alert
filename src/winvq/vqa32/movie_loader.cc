@@ -41,14 +41,13 @@
 
 MovieLoader::MovieLoader(VqaIo& io, const VqaHeader& header, FrameRing& ring,
                          AudioRing* const audio, AudioOutput* const output,
-                         const AudioFormat& format, const bool alternate_track)
+                         const AudioFormat& format)
     : reader_(io),
       header_(&header),
       ring_(&ring),
       audio_(audio),
       output_(output),
-      format_(format),
-      alternate_track_(alternate_track) {}
+      format_(format) {}
 
 LoadStatus MovieLoader::LoadNextFrame() {
   // Every frame the header counts is loaded.
@@ -107,8 +106,8 @@ LoadStatus MovieLoader::LoadNextFrame() {
         frame_loaded = true;
         break;
 
-      // Sound. SND* chunks are the primary track and SNA* the alternate one;
-      // the track not played is skipped, and both without sound. Before
+      // Sound. SND* chunks are the primary track and SNA* the alternate one,
+      // which is skipped, as is all of it without sound. Before
       // staging a chunk, the last one's sound moves from staging into the
       // ring; with no room there the loader stops and resumes here.
       case kChunkSnd0:
@@ -120,7 +119,7 @@ LoadStatus MovieLoader::LoadNextFrame() {
         const bool alternate_chunk = chunk.id == kChunkSna0 ||
                                      chunk.id == kChunkSna1 ||
                                      chunk.id == kChunkSna2;
-        if (audio_ == nullptr || alternate_chunk != alternate_track_) {
+        if (audio_ == nullptr || alternate_chunk) {
           if (!reader_.Skip(chunk)) {
             return LoadStatus::kFailed;
           }
@@ -303,10 +302,10 @@ bool MovieLoader::CopyStagedSound() {
 // into the ring instead; a larger chunk anywhere else is an error.
 
 bool MovieLoader::LoadSoundChunk(const Chunk& chunk) {
-  if (chunk.id == kChunkSnd0 || chunk.id == kChunkSna0) {
+  if (chunk.id == kChunkSnd0) {
     return LoadSound(chunk);
   }
-  if (chunk.id == kChunkSnd1 || chunk.id == kChunkSna1) {
+  if (chunk.id == kChunkSnd1) {
     return LoadZapSound(chunk);
   }
   return LoadAdpcmSound(chunk);

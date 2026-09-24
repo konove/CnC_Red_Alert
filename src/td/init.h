@@ -12,7 +12,6 @@ class ByteStream;
 
 void Uninit_Game();
 void Load_Title_Page(bool visible = false);
-void Anim_Init();
 bool Init_Game();
 bool Select_Game(bool fade = false);
 // Returns what the command-line switches ask for, leaving the game's state

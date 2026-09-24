@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
+#include <limits>
 #include <span>
 #include <string_view>
 #include <utility>
@@ -21,6 +22,7 @@
 #include "base/types.h"
 #include "winvq/vqa32/vqa_audio_device.h"
 #include "winvq/vqa32/vqa_format.h"
+#include "winvq/vqa32/vqa_player.h"
 #include "winvq/vqa32/vqaio.h"
 
 // Scripted in-memory file source. Records how the player drives it so
@@ -114,6 +116,36 @@ class FakeVqaAudioDevice final : public VqaAudioDevice {
   Mixer mixer_;
 };
 
+// A client that records what the player shows it. It stops the movie after
+// stop_after frames.
+class RecordingClient final : public VqaClient {
+ public:
+  bool OnFrame(const VqaFrameView& frame) override {
+    shown.push_back(frame.frame_number);
+    if (!frame.palette.empty()) {
+      last_palette.assign(frame.palette.begin(), frame.palette.end());
+    }
+    width = frame.width;
+    height = frame.height;
+    return std::ssize(shown) < stop_after;
+  }
+  bool OnFrameSkipped(int frame_number) override {
+    skipped.push_back(frame_number);
+    return true;
+  }
+  void OnIdle() override { ++idles; }
+
+  std::vector<int> shown;
+  std::vector<int> skipped;
+  // The last palette the player set.
+  std::vector<uint8_t> last_palette;
+  // The size of the last frame shown.
+  int width = 0;
+  int height = 0;
+  int idles = 0;
+  base::ssize stop_after = std::numeric_limits<base::ssize>::max();
+};
+
 inline void AppendBytes(std::vector<uint8_t>& out, std::string_view text) {
   out.insert(out.end(), text.begin(), text.end());
 }
@@ -128,7 +160,7 @@ inline void AppendBigEndian32(std::vector<uint8_t>& out, uint32_t value) {
   out.push_back(static_cast<uint8_t>(value));
 }
 
-// "FORM" <size> "WVQA" — the file preamble OpenVqa() validates first.
+// "FORM" <size> "WVQA" — the file preamble Open() validates first.
 inline std::vector<uint8_t> ValidPreamble() {
   std::vector<uint8_t> data;
   AppendBytes(data, "FORM");
@@ -203,7 +235,7 @@ inline std::vector<uint8_t> FinfPayload(const std::vector<uint32_t>& entries) {
   return payload;
 }
 
-// Preamble, VQHD and FINF: everything OpenVqa() reads before the frames.
+// Preamble, VQHD and FINF: everything Open() reads before the frames.
 inline std::vector<uint8_t> MovieStart(const VqaHeader& header,
                                        const std::vector<uint32_t>& entries) {
   std::vector<uint8_t> data = ValidPreamble();

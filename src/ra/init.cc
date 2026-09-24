@@ -31,7 +31,7 @@
  *                   Start Date : January 20, 1992 *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * Anim_Init -- Initialize the VQ animation control structure. *
+ * Functions: *
  *   Bootstrap -- Perform the initial bootstrap procedure. * Calculate_CRC --
  *Calculates a one-way hash from a data block.                             *
  *   Init_Authorization -- Verifies that the player is authorized to play the
@@ -171,7 +171,6 @@
 #include "tech/span_source.h"
 #include "tech/stream_sink.h"
 #include "tech/stream_source.h"
-#include "winvq/vqa32/vqa_player.h"
 
 static RemapControlType SidebarScheme;
 
@@ -339,11 +338,6 @@ bool Init_Game() {
   *allocations.
   */
   Init_Heaps();
-
-  /*
-  **	Initialize the animation system.
-  */
-  Anim_Init();
 
   /*
   **	Play the startup animation.
@@ -1289,48 +1283,6 @@ static void Play_Intro(bool sequenced) {
     TheScreen().visible_page().view().Clear();
     Show_Mouse();
     Play_Movie(VQ_REDINTRO, THEME_NONE, false);
-  }
-}
-
-/***********************************************************************************************
- * Anim_Init -- Initialize the VQ animation control structure. *
- *                                                                                             *
- *    VQ animations are controlled by a structure passed to the VQ player. This
- *routine        * initializes the structure to values required by C&C. *
- *                                                                                             *
- * INPUT:   none *
- *                                                                                             *
- * OUTPUT:  none *
- *                                                                                             *
- * WARNINGS:   Only need to call this routine once at the beginning of the game.
- **
- *                                                                                             *
- * HISTORY: * 12/20/1994 JLB : Created. *
- *=============================================================================================*/
-void Anim_Init() {
-  /* Configure player with INI file */
-  SetVqaConfigDefaults(&TheGameState().anim_control());
-  TheGameState().anim_control().draw_flags = kVqaDrawTopLeft;
-  TheGameState().anim_control().draw_flags |= kVqaDrawToBuffer;
-  // AnimControl.DrawFlags |= VQACFGF_NODRAW;
-  // BG - M. Grayford says turn this off
-  // AnimControl.DrawFlags |= VQACFGF_NOSKIP;
-
-  TheGameState().anim_control().draw_flags |= kVqaDrawNoSkip;
-  TheGameState().anim_control().frame_rate = -1;
-  TheGameState().anim_control().frame_callback = VQ_Call_Back;
-  TheGameState().anim_control().event_handler = VQ_Event_Handler;
-  TheGameState().anim_control().image_width = 320;
-  TheGameState().anim_control().image_height = 200;
-  TheGameState().anim_control().image_buffer =
-      TheScreen().sys_mem_page().bytes();
-  if (TheScreen().is_vq640()) {
-    TheGameState().anim_control().image_width = 640;
-    TheGameState().anim_control().image_height = 400;
-    TheGameState().anim_control().image_buffer = TheScreen().vq640().bytes();
-  }
-  if (ThePalettes().slow_palette()) {
-    TheGameState().anim_control().option_flags |= kVqaOptionSlowPalette;
   }
 }
 

@@ -13,8 +13,8 @@
 #include <span>
 
 #include "winvq/vqa32/audio_ring.h"
+#include "winvq/vqa32/movie_clock.h"
 #include "winvq/vqa32/vqa_audio_device.h"
-#include "winvq/vqa32/vqa_player.h"
 
 void AudioOutput::StreamDeleter::operator()(
     SDL_AudioStream* const stream) const {

@@ -6,7 +6,6 @@
 #include "absl/base/attributes.h"
 #include "base/installed.h"
 #include "ra/defines.h"
-#include "winvq/vqa32/vqa_player.h"
 
 // The flags that say what the game is doing right now: whether it is
 // running at all, whether the window has the focus, whether a movie is
@@ -72,11 +71,6 @@ class GameState {
   int& required_cd() ABSL_ATTRIBUTE_LIFETIME_BOUND { return required_cd_; }
   int& current_cd() ABSL_ATTRIBUTE_LIFETIME_BOUND { return current_cd_; }
 
-  // How movies are played, read from the INI file and overridden in code.
-  VqaConfig& anim_control() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return anim_control_;
-  }
-
   // Which dialog the main loop should pop up on its way round, because a
   // dialog cannot be opened from where the request came from.
   SpecialDialogType& special_dialog() ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -121,8 +115,6 @@ class GameState {
 
   int required_cd_ = -1;
   int current_cd_ = -1;
-
-  VqaConfig anim_control_{};
 
   SpecialDialogType special_dialog_ = SDLG_NONE;
 

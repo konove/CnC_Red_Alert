@@ -43,16 +43,16 @@ enum class LoadStatus {
 //   while (loader.LoadNextFrame() == LoadStatus::kLoaded) {}
 class MovieLoader {
  public:
-  // The sound it meets goes into audio, played by output, from the primary
-  // track or, with alternate_track, the alternate one. Both are nullptr for a
-  // movie played without sound, whose sound chunks are skipped. The io,
-  // header, ring, audio and output must outlive the loader.
+  // The sound of the primary track goes into audio, played by output; the
+  // alternate track's chunks are skipped. Both are nullptr for a movie played
+  // without sound, whose sound chunks are all skipped. The io, header, ring,
+  // audio and output must outlive the loader.
   MovieLoader(VqaIo& io ABSL_ATTRIBUTE_LIFETIME_BOUND,
               const VqaHeader& header ABSL_ATTRIBUTE_LIFETIME_BOUND,
               FrameRing& ring ABSL_ATTRIBUTE_LIFETIME_BOUND,
               AudioRing* audio ABSL_ATTRIBUTE_LIFETIME_BOUND,
               AudioOutput* output ABSL_ATTRIBUTE_LIFETIME_BOUND,
-              const AudioFormat& format, bool alternate_track);
+              const AudioFormat& format);
 
   // Loads the next frame into the ring's load_frame().
   LoadStatus LoadNextFrame();
@@ -87,8 +87,7 @@ class MovieLoader {
   // Makes the codebook being assembled the full codebook.
   void CompleteCodebook();
 
-  // Loads a sound chunk of the track being played, with the loader for its
-  // compression.
+  // Loads a primary track sound chunk with the loader for its compression.
   bool LoadSoundChunk(const Chunk& chunk);
   bool LoadSound(const Chunk& chunk);
   bool LoadZapSound(const Chunk& chunk);
@@ -103,7 +102,6 @@ class MovieLoader {
   AudioRing* audio_;
   AudioOutput* output_;
   AudioFormat format_;
-  bool alternate_track_;
   // Carried from one SND2 chunk to the next.
   ImaAdpcmDecoder adpcm_;
 

@@ -22,6 +22,8 @@
 
 #include <absl/log/check.h>
 
+#include <algorithm>
+#include <array>
 #include <cstdint>
 #include <filesystem>
 #include <span>
@@ -31,7 +33,6 @@
 #include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/game_state.h"
-#include "ra/init.h"
 #include "ra/input.h"
 #include "ra/interpal.h"
 #include "ra/jshell.h"
@@ -51,9 +52,96 @@
 #include "tech/mixer_vqa_audio.h"
 #include "winvq/vqa32/vqa_player.h"
 
-// Set by VQ_Call_Back() when the player presses Esc to abort a movie, so
-// Play_Movie() knows to clear the half-drawn frame.
-static bool movie_broken_out = false;
+namespace {
+
+// Where a movie's frames go: the frame is copied, centered, into the page it
+// is scaled from - the 640x400 vq640 page for the logo, else the 320x200
+// system memory page - and presented. Esc stops the movie where breaking out
+// is allowed; losing the window's focus pauses it.
+class MovieScreen final : public VqaClient {
+ public:
+  bool OnFrame(const VqaFrameView& frame) override {
+    if (!frame.palette.empty()) {
+      SetPalette(frame.palette);
+    }
+    PixelView& page = Page().view();
+    page.CopyFromBuffer((page.width() - frame.width) / 2,
+                        (page.height() - frame.height) / 2, frame.width,
+                        frame.height, frame.pixels);
+    return Present();
+  }
+
+  // A dropped frame still presents and reads the keyboard, so Esc works
+  // while playback catches up.
+  bool OnFrameSkipped(int /*frame_number*/) override { return Present(); }
+
+  // Too early for the next frame: wait for the display's next frame.
+  void OnIdle() override { TheDisplay().EndFrame(); }
+
+  // Whether the player pressed Esc to stop the movie.
+  [[nodiscard]] bool broken_out() const { return broken_out_; }
+
+ private:
+  static PixelBuffer& Page() {
+    return TheScreen().is_vq640() ? TheScreen().vq640()
+                                  : TheScreen().sys_mem_page();
+  }
+
+  // Movie palettes are 6 bits a color; brighten them the way the DOS game
+  // did, then set them.
+  static void SetPalette(const std::span<const uint8_t> palette) {
+    std::array<uint8_t, 768> colors{};
+    std::ranges::copy(palette.first(std::min(palette.size(), colors.size())),
+                      colors.begin());
+    for (uint8_t& color : colors) {
+      color &= 63;
+    }
+    Increase_Palette_Luminance(colors, 15, 15, 15, 63);
+    Set_Palette(colors);
+  }
+
+  // Shows the page and services the keyboard and the window's focus. Returns
+  // false when the player pressed Esc to stop the movie.
+  bool Present() {
+    int key = 0;
+    if (TheKeyboard().Check()) {
+      key = TheKeyboard().Get();
+      TheKeyboard().Clear();
+    }
+    if (TheScreen().is_vq640()) {
+      TheScreen().vq640().view().BlitTo(TheScreen().visible_view());
+    } else {
+      Interpolate_2X_Scale(&TheScreen().sys_mem_page(),
+                           &TheScreen().visible_view(), nullptr);
+    }
+    // ServiceRealTime() is deliberately not invoked here. The VQA player
+    // drives audio itself while a movie runs, and the game logic it would
+    // service is stopped.
+
+    if ((TheGameState().breakout_allowed() ||
+         TheDebugState().developer_mode()) &&
+        key == KN_ESC) {
+      TheKeyboard().Clear();
+      broken_out_ = true;
+      return false;
+    }
+
+    // The movie's clock follows its sound, so pausing the sound holds the
+    // frames too; Check_For_Focus_Loss() resumes it with the focus.
+    if (!TheGameState().in_focus()) {
+      TheAudio().SetExtraPaused(true);
+      while (!TheGameState().in_focus()) {
+        Check_For_Focus_Loss();
+      }
+    }
+    TheDisplay().EndFrame();
+    return true;
+  }
+
+  bool broken_out_ = false;
+};
+
+}  // namespace
 
 void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
   // Both named and enum-based movies come through here, including campaign
@@ -80,7 +168,6 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
       DLOG(WARNING) << "Play_Movie: file not found: " << fullname;
       return;
     }
-    Anim_Init();
 
     // Fade audio and video to black before launching the VQA player. The
     // adjust-set-adjust-set sequence below drives the palette to black and
@@ -97,46 +184,28 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     }
     TheKeyboard().Clear();
 
-    VqaPlayer player;
-    GameFileVqaIo movie_io;  // Both must outlive the open movie.
+    // The file, the screen and the sound device must outlive the player.
+    GameFileVqaIo movie_io;
+    MovieScreen screen;
     MixerVqaAudio movie_audio(TheAudio());
-    player.SetIo(&movie_io);
-    TheGameState().anim_control().audio_device = &movie_audio;
+    const bool with_sound = !TheDebugState().quiet() && TheAudio().is_open();
 
-    if (TheScreen().is_vq640()) {
-      TheGameState().anim_control().image_width = 640;
-      TheGameState().anim_control().image_height = 400;
-      TheGameState().anim_control().image_buffer = TheScreen().vq640().bytes();
-    } else {
-      TheGameState().anim_control().image_width = 320;
-      TheGameState().anim_control().image_height = 200;
-      TheGameState().anim_control().image_buffer =
-          TheScreen().sys_mem_page().bytes();
-    }
-
-    if (!TheDebugState().quiet() && TheAudio().is_open()) {
-      TheGameState().anim_control().option_flags |= kVqaOptionAudio;
-    } else {
-      TheGameState().anim_control().option_flags &= ~kVqaOptionAudio;
-    }
-
-    if (player.Open(fullname, &TheGameState().anim_control()) == 0) {
-      movie_broken_out = false;
+    if (auto player = VqaPlayer::Open(movie_io, fullname, screen,
+                                      with_sound ? &movie_audio : nullptr)) {
       TheScreen().sys_mem_page().view().Clear();
       TheGameState().in_movie() = true;
-      player.Play(kVqaModeRun);
-      player.Close();
+      player->Run();
       TheGameState().in_movie() = false;
       TheScreen().set_is_vq640(false);
 
       // Early exit leaves the palette in an inconsistent state.
-      if (movie_broken_out) {
+      if (screen.broken_out()) {
         clear_screen = true;
         TheScreen().visible_page().view().Clear();
-        movie_broken_out = false;
       }
     } else {
-      DLOG(FATAL) << "VQA_Open failed unexpectedly";
+      DLOG(FATAL) << "VqaPlayer::Open(" << fullname
+                  << ") failed: " << static_cast<int>(player.error());
     }
 
     // The VQA player may leave the framebuffer and palette dirty.
@@ -160,47 +229,4 @@ void Play_Movie(const VQType name, const ThemeType theme,
     Play_Movie(VQName.at(name), theme, clear_screen);
     TheScreen().set_is_vq640(false);
   }
-}
-
-int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
-  int key = 0;
-  if (TheKeyboard().Check()) {
-    key = TheKeyboard().Get();
-    TheKeyboard().Clear();
-  }
-  Check_VQ_Palette_Set();
-  if (TheScreen().is_vq640()) {
-    TheScreen().vq640().view().BlitTo(TheScreen().visible_view());
-  } else {
-    Interpolate_2X_Scale(&TheScreen().sys_mem_page(),
-                         &TheScreen().visible_view(), nullptr);
-  }
-  // ServiceRealTime() is deliberately not invoked here. The VQA player drives
-  // audio itself while a movie runs, and the game logic it would service is
-  // stopped.
-
-  if ((TheGameState().breakout_allowed() || TheDebugState().developer_mode()) &&
-      key == KN_ESC) {
-    TheKeyboard().Clear();
-    movie_broken_out = true;
-    return 1;
-  }
-
-  if (!TheGameState().in_focus()) {
-    TheAudio().SetExtraPaused(true);
-    while (!TheGameState().in_focus()) {
-      Check_For_Focus_Loss();
-    }
-  }
-  TheDisplay().EndFrame();
-  return 0;
-}
-
-int32_t VQ_Event_Handler(const uint32_t event, void* /*buffer*/,
-                         int32_t /*n_bytes*/) {
-  // vsync while waiting for frame
-  if (event == kVqaEventSync) {
-    TheDisplay().EndFrame();
-  }
-  return 0;
 }

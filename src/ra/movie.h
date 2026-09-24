@@ -20,8 +20,6 @@
 
 // File: VQA movie playback.
 
-#include <cstdint>
-
 #include "ra/defines.h"
 
 // Set by the -NOMOVIES command line switch; suppresses movie playback.
@@ -36,11 +34,5 @@ void Play_Movie(const char* name, ThemeType theme = THEME_NONE,
                 bool clear_screen = true);
 void Play_Movie(VQType name, ThemeType theme = THEME_NONE,
                 bool clear_screen = true);
-
-// Per-frame callback installed into the VQA player. Scales the decoded frame
-// onto the visible page, and returns non-zero to abort the movie (ESC, when
-// breaking out is allowed).
-int32_t VQ_Call_Back(unsigned char* buffer = nullptr, int32_t frame = 0);
-int32_t VQ_Event_Handler(uint32_t event, void* buffer, int32_t nbytes);
 
 #endif  // CNC_RED_ALERT_RA_MOVIE_H_

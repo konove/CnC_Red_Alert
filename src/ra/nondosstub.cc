@@ -36,7 +36,6 @@
 #include "ra/input.h"
 #include "ra/interpal.h"
 #include "ra/mapedit.h"
-#include "ra/palette.h"
 #include "ra/theme.h"
 #include "ra/winstub.h"
 #include "ra/world.h"
@@ -45,8 +44,6 @@
 #include "tech/audio_mixer.h"
 #include "tech/byte_stream.h"
 #include "tech/game_file.h"
-#include "winvq/vqa32/vqa_player.h"
-#include "winvq/vqm32/palette.h"
 
 /***********************************************************************************************
  * Focus_Loss -- this function is called when a library function detects focus
@@ -77,38 +74,6 @@ void Focus_Restore() {
   if (TheMouse()) {
     WWMouseClass::Set_Cursor_Clip();
   }
-}
-
-static std::span<uint8_t> VQPalette;
-static int32_t VQNumBytes;
-static uint32_t VQSlowpal;
-static bool VQPaletteChange = false;
-
-void QueueVqaPalette(std::span<uint8_t> palette, int32_t numbytes,
-                     uint32_t slowpal) {
-  VQPalette = palette;
-  VQNumBytes = numbytes;
-  VQSlowpal = slowpal;
-  VQPaletteChange = true;
-}
-
-void Check_VQ_Palette_Set() {
-  if (VQPaletteChange) {
-    SetPalette(VQPalette, VQNumBytes, VQSlowpal);
-    VQPaletteChange = false;
-  }
-}
-
-void SetPalette(std::span<uint8_t> palette, int32_t /*unused*/,
-                uint32_t /*unused*/) {
-  if (palette.size() < 768) {
-    return;
-  }
-  for (auto& color : palette.first(768)) {
-    color &= 63;
-  }
-  Increase_Palette_Luminance(palette, 15, 15, 15, 63);
-  Set_Palette(palette);
 }
 
 void Load_Title_Screen(std::string_view name, PixelView* video_page,

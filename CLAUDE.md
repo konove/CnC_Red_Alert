@@ -156,7 +156,7 @@ All source lives under `src/`:
 port/        → Portability layer (string utilities) [standalone]
 base/        → Header-only utilities: types.h (base::ssize), algorithm.h, trig.h [standalone]
 sdllib/      → SDL2 abstraction (graphics, audio, input) [depends: SDL2, abseil]
-winvq/       → VQA video codec (vqa32, vqm32, …; target name `vqa32`) [depends: port, SDL2]
+winvq/       → VQA video codec (vqa32, vqm32, …; target name `vqa32`) [depends: base, port, sdllib, SDL2]
 tech/        → Compression, encryption, ByteSink/ByteSource streams [depends: sdllib, port, vqa32]
 ra/          → Red Alert (~200 files) [depends: tech, sdllib, port, vqa32]
 td/          → Tiberian Dawn (~288 files) [depends: tech, sdllib, port, vqa32]

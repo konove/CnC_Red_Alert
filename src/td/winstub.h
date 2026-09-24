@@ -26,11 +26,6 @@ void Create_Main_Window(void* instance, int command_show, int width,
 void Load_Title_Screen(const char* name, PixelView* video_page,
                        std::span<unsigned char> palette);
 
-// Applies a palette change a movie queued from its own thread, or drops one
-// that was queued and never applied.
-void Check_VQ_Palette_Set();
-void Discard_VQ_Palette_Change();
-
 // Called when the window loses and regains the input focus.
 void Focus_Loss();
 void Focus_Restore();

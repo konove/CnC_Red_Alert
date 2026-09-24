@@ -27,7 +27,6 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "base/array.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "td/defines.h"
@@ -41,13 +40,10 @@
 #include "sdllib/ww_mouse.h"
 #include "td/interpal.h"
 #include "td/mapedit.h"
-#include "td/palette.h"
 #include "td/theme.h"
 #include "tech/audio_mixer.h"
 #include "tech/byte_stream.h"
 #include "tech/pcx_file.h"
-#include "winvq/vqa32/vqa_player.h"
-#include "winvq/vqm32/palette.h"
 
 static ThemeType OldTheme = THEME_NONE;
 
@@ -90,37 +86,6 @@ void Focus_Restore() {
   if (TheMouse()) {
     WWMouseClass::Set_Cursor_Clip();
   }
-}
-
-static std::span<unsigned char> VQPalette;
-static int32_t VQNumBytes;
-static uint32_t VQSlowpal;
-static bool VQPaletteChange = false;
-
-void QueueVqaPalette(std::span<unsigned char> palette, int32_t numbytes,
-                     uint32_t slowpal) {
-  VQPalette = palette;
-  VQNumBytes = numbytes;
-  VQSlowpal = slowpal;
-  VQPaletteChange = true;
-}
-
-void Discard_VQ_Palette_Change() { VQPaletteChange = false; }
-
-void Check_VQ_Palette_Set() {
-  if (VQPaletteChange) {
-    SetPalette(VQPalette, VQNumBytes, VQSlowpal);
-    VQPaletteChange = false;
-  }
-}
-
-void SetPalette(std::span<unsigned char> palette, int32_t /*unused*/,
-                uint32_t /*unused*/) {
-  for (int i = 0; i < 256 * 3; i++) {
-    base::At(palette, base::ToSize(i)) &= 63;
-  }
-  Increase_Palette_Luminance(palette, 15, 15, 15, 63);
-  Set_Palette(palette);
 }
 
 /***********************************************************************************************

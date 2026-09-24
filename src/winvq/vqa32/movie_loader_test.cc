@@ -41,7 +41,7 @@ class MovieLoaderTest : public testing::Test {
       ASSERT_NE(output_, nullptr);
     }
     loader_ = std::make_unique<MovieLoader>(io_, header_, ring_, audio_.get(),
-                                            output_.get(), kMono8Bit, false);
+                                            output_.get(), kMono8Bit);
   }
 
   FakeVqaIo io_;

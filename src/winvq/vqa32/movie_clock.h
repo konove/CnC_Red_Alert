@@ -7,6 +7,9 @@
 
 class AudioOutput;
 
+// Resolution of a movie's clock: frame times are in ticks of 1/60 second.
+inline constexpr int kVqaTicksPerSecond = 60;
+
 // A clock in kVqaTicksPerSecond that runs either from the movie's sound, so
 // the frames keep in step with what is heard, or from the system clock.
 //

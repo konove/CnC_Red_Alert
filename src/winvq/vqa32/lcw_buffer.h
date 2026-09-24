@@ -58,12 +58,6 @@ class LcwBuffer {
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return bytes_;
   }
-  // The whole buffer, writable. Only for the game's palette hook, which
-  // adjusts the palette it is handed in place; see QueueVqaPalette().
-  [[nodiscard]] std::span<unsigned char> writable_data()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return bytes_;
-  }
   // The raw or decompressed contents. Empty while compressed. The span is
   // into the buffer, which clang's lifetimebound-violation check cannot see
   // through first().

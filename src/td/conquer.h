@@ -814,8 +814,6 @@ bool Main_Loop();
 TheaterType Theater_From_Name(const char* name);
 // DirType Rotation_Calc(DirType current, DirType desired, int rate);
 void Main_Game();
-int32_t VQ_Call_Back(unsigned char* buffer = nullptr, int32_t frame = 0);
-int32_t VQ_Event_Handler(uint32_t event, void* buffer, int32_t nbytes);
 void Call_Back();
 const char* Language_Name(const char* basename);
 SourceType Source_From_Name(const char* name);

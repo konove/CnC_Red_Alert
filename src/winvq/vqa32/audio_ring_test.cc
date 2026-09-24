@@ -15,22 +15,16 @@ void StageFilled(AudioRing& ring, int bytes, uint8_t fill) {
   ring.Stage(bytes);
 }
 
-TEST(AudioFormatTest, ReadsThePrimaryOrTheAlternateTrack) {
+TEST(AudioFormatTest, ReadsTheSoundTrackFromTheHeader) {
   VqaHeader header{};
   header.version = kVqaVersion2;
   header.sample_rate = 22050;
   header.channels = 1;
   header.bits_per_sample = 16;
-  header.alt_sample_rate = 11025;
-  header.alt_channels = 2;
-  header.alt_bits_per_sample = 8;
 
-  const AudioFormat primary = AudioFormat::FromHeader(header, false);
-  EXPECT_EQ(primary.sample_rate, 22050);
-  EXPECT_EQ(primary.bytes_per_second(), 44100);
-  const AudioFormat alternate = AudioFormat::FromHeader(header, true);
-  EXPECT_EQ(alternate.sample_rate, 11025);
-  EXPECT_EQ(alternate.bytes_per_second(), 22050);
+  const AudioFormat format = AudioFormat::FromHeader(header);
+  EXPECT_EQ(format.sample_rate, 22050);
+  EXPECT_EQ(format.bytes_per_second(), 44100);
 }
 
 TEST(AudioFormatTest, Version1MoviesAre22050HzMono8Bit) {
@@ -38,7 +32,7 @@ TEST(AudioFormatTest, Version1MoviesAre22050HzMono8Bit) {
   header.version = kVqaVersion1;
   header.sample_rate = 44100;
 
-  const AudioFormat format = AudioFormat::FromHeader(header, true);
+  const AudioFormat format = AudioFormat::FromHeader(header);
   EXPECT_EQ(format.sample_rate, 22050);
   EXPECT_EQ(format.channels, 1);
   EXPECT_EQ(format.bits_per_sample, 8);

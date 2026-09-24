@@ -18,10 +18,9 @@ struct AudioFormat {
   int channels = 0;
   int bits_per_sample = 0;  // 8 or 16
 
-  // The format of a movie's primary track, or of its alternate track when
-  // alternate is set. Version 1 movies only had 22050 Hz 8-bit mono sound, and
-  // their headers do not say.
-  static AudioFormat FromHeader(const VqaHeader& header, bool alternate);
+  // The format of a movie's sound track. Version 1 movies only had 22050 Hz
+  // 8-bit mono sound, and their headers do not say.
+  static AudioFormat FromHeader(const VqaHeader& header);
 
   [[nodiscard]] int bytes_per_second() const {
     return sample_rate * channels * (bits_per_sample / 8);

@@ -18,9 +18,6 @@ void Check_For_Focus_Loss();
 void Create_Main_Window(void* instance, int command_show, int width,
                         int height);
 
-// Applies a palette change a movie queued from its own thread.
-void Check_VQ_Palette_Set();
-
 // Called when the window loses and regains the input focus.
 void Focus_Loss();
 void Focus_Restore();

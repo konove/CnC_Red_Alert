@@ -10,7 +10,6 @@
 #include "base/installed.h"
 #include "sdllib/timer.h"
 #include "td/defines.h"
-#include "winvq/vqa32/vqa_player.h"
 
 // The flags that say what the game is doing right now: whether it is
 // running at all, whether the window has the focus, whether a movie is
@@ -86,10 +85,6 @@ class GameState {
   // The build this executable shows in the menus.
   auto& version_text() ABSL_ATTRIBUTE_LIFETIME_BOUND { return version_text_; }
 
-  // How movies are played, read from the INI file and overridden in code.
-  VqaConfig& anim_control() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return anim_control_;
-  }
 
   // Which dialog the main loop should pop up on its way round, because a
   // dialog cannot be opened from where the request came from.
@@ -151,7 +146,6 @@ class GameState {
   int required_cd_ = -1;
   char version_text_[kVersionTextLength]{};
 
-  VqaConfig anim_control_{};
   SpecialDialogType special_dialog_ = SDLG_NONE;
   CountDownTimerClass speech_timer_{int64_t{0}};
 

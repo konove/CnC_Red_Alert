@@ -15,8 +15,8 @@
 
 // Serves movie data through the game's file lookup (OpenGameFile), so a
 // movie plays the same whether it is a loose file or packed in a mixfile,
-// cached or on disk. Install with VqaPlayer::SetIo() before opening a movie;
-// the object must outlive the player's use of it.
+// cached or on disk. Pass one to VqaPlayer::Open(); it must outlive the
+// player.
 class GameFileVqaIo final : public VqaIo {
  public:
   GameFileVqaIo() = default;
