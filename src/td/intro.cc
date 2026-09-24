@@ -77,9 +77,9 @@
 // stay alive until the player is closed. Returns true if the movie opened.
 static bool Open_Movie(VqaPlayer& player, GameFileVqaIo& io, const char* name) {
   if (!TheDebugState().quiet() && TheAudio().is_open()) {
-    TheGameState().anim_control().OptionFlags |= VQAOPTF_AUDIO;
+    TheGameState().anim_control().option_flags |= kVqaOptionAudio;
   } else {
-    TheGameState().anim_control().OptionFlags &= ~VQAOPTF_AUDIO;
+    TheGameState().anim_control().option_flags &= ~kVqaOptionAudio;
   }
 
   player.SetIo(&io);
@@ -288,7 +288,7 @@ void Choose_Side() {
       nodbrief_player.Close();
     }
     if (gdibrief) {
-      gdibrief_player.Play(VQAMODE_RUN);
+      gdibrief_player.Play(kVqaModeRun);
       gdibrief_player.Close();
     }
   } else {
@@ -296,7 +296,7 @@ void Choose_Side() {
       gdibrief_player.Close();
     }
     if (nodbrief) {
-      nodbrief_player.Play(VQAMODE_RUN);
+      nodbrief_player.Play(kVqaModeRun);
       nodbrief_player.Close();
     }
   }

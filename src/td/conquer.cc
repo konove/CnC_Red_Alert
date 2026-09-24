@@ -2159,9 +2159,9 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     player.SetIo(&movie_io);
 
     if (!TheDebugState().quiet() && TheAudio().is_open()) {
-      TheGameState().anim_control().OptionFlags |= VQAOPTF_AUDIO;
+      TheGameState().anim_control().option_flags |= kVqaOptionAudio;
     } else {
-      TheGameState().anim_control().OptionFlags &= ~VQAOPTF_AUDIO;
+      TheGameState().anim_control().option_flags &= ~kVqaOptionAudio;
     }
 
     if (player.Open(fullname, &TheGameState().anim_control()) == 0) {
@@ -2171,7 +2171,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       // Set_Palette(BlackPalette);
       TheScreen().sys_mem_page().view().Clear();
       TheGameState().in_movie() = true;
-      player.Play(VQAMODE_RUN);
+      player.Play(kVqaModeRun);
       player.Close();
       // Resume_Audio_Thread();
       TheGameState().in_movie() = false;
@@ -2711,7 +2711,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   }
 
   if (!TheGameState().in_focus()) {
-    VQA_PauseAudio();
+    PauseVqaAudio();
     while (!TheGameState().in_focus()) {
       Keyboard::Check();
       Check_For_Focus_Loss();
@@ -2725,7 +2725,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
 
 int32_t VQ_Event_Handler(uint32_t event, void* /*buffer*/, int32_t /*nbytes*/) {
   // vsync while waiting for frame
-  if (event == VQAEVENT_SYNC) {
+  if (event == kVqaEventSync) {
     TheDisplay().EndFrame();
   }
   return 0;

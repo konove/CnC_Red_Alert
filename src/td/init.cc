@@ -2082,33 +2082,34 @@ static void Play_Intro(bool for_real) {
  *=============================================================================================*/
 void Anim_Init() {
   /* Configure player with INI file */
-  VQA_DefaultConfig(&TheGameState().anim_control());
+  SetVqaConfigDefaults(&TheGameState().anim_control());
   //	void const * font = Load_Font(FONT8);
   //	AnimControl.EVAFont = (char *)font;
   //	AnimControl.CapFont = (char *)font;
 
-  TheGameState().anim_control().DrawFlags = VQACFGF_TOPLEFT;
-  TheGameState().anim_control().DrawFlags |= VQACFGF_BUFFER;
+  TheGameState().anim_control().draw_flags = kVqaDrawTopLeft;
+  TheGameState().anim_control().draw_flags |= kVqaDrawToBuffer;
 
-  TheGameState().anim_control().DrawFlags |= VQACFGF_NOSKIP;
+  TheGameState().anim_control().draw_flags |= kVqaDrawNoSkip;
 
   // AnimControl.X1 =0;
   // AnimControl.Y1 =0;
-  TheGameState().anim_control().FrameRate = -1;
-  TheGameState().anim_control().DrawRate = -1;
+  TheGameState().anim_control().frame_rate = -1;
+  TheGameState().anim_control().draw_rate = -1;
 
-  TheGameState().anim_control().DrawerCallback = VQ_Call_Back;
-  TheGameState().anim_control().EventHandler = VQ_Event_Handler;
-  TheGameState().anim_control().ImageWidth = 320;
-  TheGameState().anim_control().ImageHeight = 200;
+  TheGameState().anim_control().frame_callback = VQ_Call_Back;
+  TheGameState().anim_control().event_handler = VQ_Event_Handler;
+  TheGameState().anim_control().image_width = 320;
+  TheGameState().anim_control().image_height = 200;
   TheGameState().anim_control().Vmode = 0;
-  TheGameState().anim_control().ImageBuf = TheScreen().sys_mem_page().bytes();
+  TheGameState().anim_control().image_buffer =
+      TheScreen().sys_mem_page().bytes();
   // AnimControl.VBIBit = VertBlank;
   // AnimControl.DrawFlags |= VQACFGF_TOPLEFT;
-  TheGameState().anim_control().OptionFlags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
+  TheGameState().anim_control().option_flags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
 
   if (ThePalettes().slow_palette()) {
-    TheGameState().anim_control().OptionFlags |= VQAOPTF_SLOWPAL;
+    TheGameState().anim_control().option_flags |= kVqaOptionSlowPalette;
   }
 
   //	AnimControl.AudioBuf = (unsigned char *)HidPage.Get_Buffer();
@@ -2118,10 +2119,10 @@ void Anim_Init() {
   // AnimControl.Volume = 0x00FF;
   // AnimControl.AudioRate = 22050;
   //	if (NewConfig.Speed) AnimControl.AudioRate = 11025;
-  TheGameState().anim_control().AudioDeviceID = TheAudio().device_id();
-  TheGameState().anim_control().AudioCallback =
+  TheGameState().anim_control().audio_device_id = TheAudio().device_id();
+  TheGameState().anim_control().audio_callback =
       TheAudio().extra_callback_slot();
-  TheGameState().anim_control().AudioSpec = TheAudio().output_spec();
+  TheGameState().anim_control().audio_spec = TheAudio().output_spec();
   // if (!TheDebugState().quiet() && Audio.is_open()) {
   // AnimControl.OptionFlags |= VQAOPTF_AUDIO;
   //}

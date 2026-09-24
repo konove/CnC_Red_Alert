@@ -47,19 +47,20 @@
  * PUBLIC
  *     VQA_StartTimerInt - Initialize system timer interrupt.
  *     VQA_StopTimerInt  - Remove system timer interrupt.
- *     VQA_SetTimer      - Resets current time to given tick value.
- *     VQA_GetTime       - Return current time.
+ *     SetMovieClock      - Resets current time to given tick value.
+ *     ReadMovieClock       - Return current time.
  *     VQA_TimerMethod   - Get timer method being used.
- *     VQA_OpenAudio     - Open sound system.
- *     VQA_CloseAudio    - Close sound system
- *     VQA_StartAudio    - Starts audio playback
- *     VQA_StopAudio     - Stop audio playback.
- *     CopyAudio         - Copy data from Audio Temp buf into Audio play buf.
+ *     OpenMovieAudio     - Open sound system.
+ *     CloseMovieAudio    - Close sound system
+ *     StartMovieAudio    - Starts audio playback
+ *     StopMovieAudio     - Stop audio playback.
+ *     CopyStagedAudio         - Copy data from Audio Temp buf into Audio play
+ * buf.
  *
  * PRIVATE
  *     TimerCallback - VQA timer event. (Called by HMI)
  *     AutoDetect    - Auto detect the sound card.
- *     AudioCallback - Sound system callback.
+ *     audio_callback - Sound system callback.
  *
  ****************************************************************************/
 
@@ -85,7 +86,7 @@
  * GLOBAL DATA
  *-------------------------------------------------------------------------*/
 
-static VQAHandle* VQAP = nullptr;
+static VqaPlayerState* VQAP = nullptr;
 static uint32_t AudioFlags = 0;  // VQAAUDF_* bits
 static int32_t TimerIntCount = 0;
 static uint16_t VQATimer = 0;
@@ -104,8 +105,8 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
   if (!VQAP) {
     return;
   }
-  auto* audio = &VQAP->data->Audio;
-  if (!(audio->Flags & VQAAUDF_ISPLAYING) || VQAAudioPaused || !SDLStream) {
+  auto* audio = &VQAP->movie->audio;
+  if (!(audio->flags & kAudioPlaying) || VQAAudioPaused || !SDLStream) {
     return;
   }
 
@@ -113,45 +114,45 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
 
   while (SDL_AudioStreamAvailable(SDLStream) < len) {
     SDL_AudioStreamPut(SDLStream,
-                       audio->Buffer
-                           .subspan(base::ToSize(audio->PlayPosition),
-                                    base::ToSize(config->HMIBufSize))
+                       audio->ring
+                           .subspan(base::ToSize(audio->play_offset),
+                                    base::ToSize(config->audio_block_bytes))
                            .data(),
-                       config->HMIBufSize);
+                       config->audio_block_bytes);
 
-    /* Compute the 'NextBlock' index */
-    audio->NextBlock = audio->CurBlock + 1;
+    /* Compute the 'next_block' index */
+    audio->next_block = audio->play_block + 1;
 
-    if (audio->NextBlock >= audio->NumAudBlocks) {
-      audio->NextBlock = 0;
+    if (audio->next_block >= audio->block_count) {
+      audio->next_block = 0;
     }
 
     /* See if the next block has data in it; if so, update the audio
-     * buffer play position & the 'CurBlock' value.
+     * buffer play position & the 'play_block' value.
      * If not, don't change anything and replay this block.
      */
-    if (audio->IsLoadedStorage.at(base::ToSize(audio->NextBlock)) == 1) {
+    if (audio->block_loaded.at(base::ToSize(audio->next_block)) == 1) {
       /* Update this block's status to loadable (0) */
-      audio->IsLoadedStorage.at(base::ToSize(audio->CurBlock)) = 0;
+      audio->block_loaded.at(base::ToSize(audio->play_block)) = 0;
 
       /* Update position within audio buffer */
-      audio->PlayPosition += config->HMIBufSize;
-      audio->CurBlock++;
+      audio->play_offset += config->audio_block_bytes;
+      audio->play_block++;
 
-      if (audio->PlayPosition >= config->AudioBufSize) {
-        audio->PlayPosition = 0;
-        audio->CurBlock = 0;
+      if (audio->play_offset >= config->audio_buffer_bytes) {
+        audio->play_offset = 0;
+        audio->play_block = 0;
       }
-      audio->ChunksMovedToAudioBuffer++;
+      audio->blocks_played++;
     } else {
-      if (VQAMovieDone) {
-        audio->ChunksMovedToAudioBuffer++;
+      if (vqa_movie_loaded) {
+        audio->blocks_played++;
       }
       audio->NumSkipped++;
       /*
       ** Enable frame skipping to prevent this happening again
       */
-      config->DrawFlags &= ~VQACFGF_NOSKIP;
+      config->draw_flags &= ~kVqaDrawNoSkip;
     }
   }
 
@@ -175,7 +176,7 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
  *     the timer system.
  *
  * INPUTS
- *     VQA  - Pointer to private VQAHandle structure.
+ *     VQA  - Pointer to private VqaPlayerState structure.
  *     Init - Initialize HMI timer system flag. (TRUE = Initialize)
  *
  * RESULT
@@ -183,10 +184,9 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
  *
  ****************************************************************************/
 
-int32_t VQA_StartTimerInt(const VQAHandle* vqap, int32_t /*init*/) {
-
+int32_t VQA_StartTimerInt(const VqaPlayerState* vqap, int32_t /*init*/) {
   /* Dereference for quick access. */
-  VQAAudio* audio = &vqap->data->Audio;
+  VqaAudio* audio = &vqap->movie->audio;
 
   /* Register the VQA_TickCount timer event. */
   if ((AudioFlags & VQAAUDF_HMITIMER) == HMI_UNINIT << VQAAUDB_HMITIMER) {
@@ -201,7 +201,7 @@ int32_t VQA_StartTimerInt(const VQAHandle* vqap, int32_t /*init*/) {
   }
 
   /* Flag availability of the timer interrupt. */
-  audio->Flags |= HMI_VQAINIT << VQAAUDB_HMITIMER;
+  audio->flags |= HMI_VQAINIT << VQAAUDB_HMITIMER;
 
   /* Increment the timer interrupt usage count. */
   TimerIntCount++;
@@ -231,7 +231,7 @@ int32_t VQA_StartTimerInt(const VQAHandle* vqap, int32_t /*init*/) {
  *
  ****************************************************************************/
 
-void VQA_StopTimerInt(VQAHandle* /*vqap*/) {
+void VQA_StopTimerInt(VqaPlayerState* /*vqap*/) {
   /* Decrement the timer interrupt usage count. */
   if (TimerIntCount) {
     TimerIntCount--;
@@ -248,19 +248,19 @@ void VQA_StopTimerInt(VQAHandle* /*vqap*/) {
 /****************************************************************************
  *
  * NAME
- *     VQA_OpenAudio - Open sound system.
+ *     OpenMovieAudio - Open sound system.
  *
  * SYNOPSIS
- *     Error = VQA_OpenAudio(VQAHandle)
+ *     Error = OpenMovieAudio(VqaPlayerState)
  *
- *     long VQA_OpenAudio(VQAHandle *);
+ *     long OpenMovieAudio(VqaPlayerState *);
  *
  * FUNCTION
  *     Initialise the sound system. Create a direct sound object and the
  *     direct sound primary sound buffer if they dont already exist.
  *
  * INPUTS
- *     VQAHandle - Pointer to private VQAHandle.
+ *     VqaPlayerState - Pointer to private VqaPlayerState.
  *
  * RESULT
  *     Error - 0 if successful, -1 if error.
@@ -269,21 +269,21 @@ void VQA_StopTimerInt(VQAHandle* /*vqap*/) {
 
 static int OpenCount = 0;
 
-int32_t VQA_OpenAudio(VQAHandle* vqap) {
+int32_t OpenMovieAudio(VqaPlayerState* vqap) {
   /* Dereference data memebers for quicker access. */
-  VQAConfig* config = &vqap->config;
-  VQAData* vqabuf = vqap->data.get();
-  VQAAudio* audio = &vqabuf->Audio;
+  VqaConfig* config = &vqap->config;
+  VqaMovie* vqabuf = vqap->movie.get();
+  VqaAudio* audio = &vqabuf->audio;
 
   /* Reset the buffer position to the beginning. */
-  audio->CurBlock = 0;
+  audio->play_block = 0;
 
   if (OpenCount) {
     // if we've already initialised make sure we're not in the callback
     // (by unsetting it)
-    SDL_LockAudioDevice(config->AudioDeviceID);
-    *config->AudioCallback = nullptr;
-    SDL_UnlockAudioDevice(config->AudioDeviceID);
+    SDL_LockAudioDevice(config->audio_device_id);
+    *config->audio_callback = nullptr;
+    SDL_UnlockAudioDevice(config->audio_device_id);
   }
 
   // setup audio stream
@@ -291,16 +291,16 @@ int32_t VQA_OpenAudio(VQAHandle* vqap) {
     SDL_FreeAudioStream(SDLStream);
   }
 
-  const auto* spec = static_cast<SDL_AudioSpec*>(config->AudioSpec);
+  const auto* spec = static_cast<SDL_AudioSpec*>(config->audio_spec);
 
   SDLStream = SDL_NewAudioStream(
-      audio->BitsPerSample == 16 ? AUDIO_S16 : AUDIO_S8,
-      static_cast<uint8_t>(audio->Channels), audio->SampleRate, spec->format,
+      audio->bits_per_sample == 16 ? AUDIO_S16 : AUDIO_S8,
+      static_cast<uint8_t>(audio->channels), audio->sample_rate, spec->format,
       spec->channels, spec->freq);
 
   // calculate scaling factor
   const int bytes_per_second_in =
-      audio->BitsPerSample / 8 * audio->Channels * audio->SampleRate;
+      audio->bits_per_sample / 8 * audio->channels * audio->sample_rate;
   const int bytes_per_second_out =
       SDL_AUDIO_BITSIZE(spec->format) / 8 * spec->channels * spec->freq;
 
@@ -308,9 +308,9 @@ int32_t VQA_OpenAudio(VQAHandle* vqap) {
       (int64_t{bytes_per_second_in} * 32768) / bytes_per_second_out;
 
   // register our audio callback
-  *config->AudioCallback = VQA_Audio_Callback;
+  *config->audio_callback = VQA_Audio_Callback;
 
-  audio->Flags |= HMI_VQAINIT << VQAAUDB_DIGIINIT;
+  audio->flags |= HMI_VQAINIT << VQAAUDB_DIGIINIT;
   AudioFlags |= HMI_VQAINIT << VQAAUDB_DIGIINIT;
 
   OpenCount++;
@@ -321,12 +321,12 @@ int32_t VQA_OpenAudio(VQAHandle* vqap) {
 /****************************************************************************
  *
  * NAME
- *     VQA_CloseAudio - Close sound system
+ *     CloseMovieAudio - Close sound system
  *
  * SYNOPSIS
- *     VQA_CloseAudio()
+ *     CloseMovieAudio()
  *
- *     void VQA_CloseAudio();
+ *     void CloseMovieAudio();
  *
  * FUNCTION
  *     Removes VQA's involvement in the audio system.
@@ -339,18 +339,17 @@ int32_t VQA_OpenAudio(VQAHandle* vqap) {
  *
  ****************************************************************************/
 
-void VQA_CloseAudio(VQAHandle* vqap) {
-
+void CloseMovieAudio(VqaPlayerState* vqap) {
   /* Dereference for quick access. */
-  VQAAudio* audio = &vqap->data->Audio;
-  VQAConfig* config = &vqap->config;
+  VqaAudio* audio = &vqap->movie->audio;
+  VqaConfig* config = &vqap->config;
 
   /*
   ** If the audio is still playing then stop it
   */
-  VQA_StopAudio(vqap);
+  StopMovieAudio(vqap);
 
-  audio->Flags &= ~VQAAUDF_TIMERINIT;
+  audio->flags &= ~VQAAUDF_TIMERINIT;
   AudioFlags &= ~VQAAUDF_TIMERINIT;
 
   // don't remove the callback if open was called multiple times
@@ -361,29 +360,29 @@ void VQA_CloseAudio(VQAHandle* vqap) {
 
   // unregister our audio callback
   // and make sure we're not in it
-  SDL_LockAudioDevice(config->AudioDeviceID);
-  *config->AudioCallback = nullptr;
-  SDL_UnlockAudioDevice(config->AudioDeviceID);
+  SDL_LockAudioDevice(config->audio_device_id);
+  *config->audio_callback = nullptr;
+  SDL_UnlockAudioDevice(config->audio_device_id);
 
   if (SDLStream) {
     SDL_FreeAudioStream(SDLStream);
     SDLStream = nullptr;
   }
 
-  audio->Flags &= ~VQAAUDF_DIGIINIT;
+  audio->flags &= ~VQAAUDF_DIGIINIT;
   AudioFlags &= ~VQAAUDF_DIGIINIT;
-  AudioFlags &= ~VQAAUDF_ISPLAYING;
+  AudioFlags &= ~kAudioPlaying;
 }
 
 /****************************************************************************
  *
  * NAME
- *     VQA_StartAudio - Starts audio playback
+ *     StartMovieAudio - Starts audio playback
  *
  * SYNOPSIS
- *     Error = VQA_StartAudio(VQA)
+ *     Error = StartMovieAudio(VQA)
  *
- *     long VQA_StartAudio(VQAHandle *);
+ *     long StartMovieAudio(VqaPlayerState *);
  *
  * FUNCTION
  *     Start the audio playback for the movie.
@@ -396,28 +395,27 @@ void VQA_CloseAudio(VQAHandle* vqap) {
  *
  ****************************************************************************/
 
-int32_t VQA_StartAudio(VQAHandle* vqap) {
-
+int32_t StartMovieAudio(VqaPlayerState* vqap) {
   /* Save buffers for the callback routine */
   VQAP = vqap;
 
   /* Dereference commonly used data members for quicker access. */
-  VQAConfig* config = &vqap->config;
-  VQAAudio* audio = &vqap->data->Audio;
+  VqaConfig* config = &vqap->config;
+  VqaAudio* audio = &vqap->movie->audio;
 
   /* Return if already playing */
-  if (AudioFlags & VQAAUDF_ISPLAYING) {
+  if (AudioFlags & kAudioPlaying) {
     return -1;
   }
 
-  SDL_LockAudioDevice(config->AudioDeviceID);
+  SDL_LockAudioDevice(config->audio_device_id);
   // setup playback
-  audio->ChunksMovedToAudioBuffer = 0;
+  audio->blocks_played = 0;
 
-  audio->Flags |= VQAAUDF_ISPLAYING;
-  AudioFlags |= VQAAUDF_ISPLAYING;
+  audio->flags |= kAudioPlaying;
+  AudioFlags |= kAudioPlaying;
 
-  SDL_UnlockAudioDevice(config->AudioDeviceID);
+  SDL_UnlockAudioDevice(config->audio_device_id);
 
   return 0;
 }
@@ -425,37 +423,36 @@ int32_t VQA_StartAudio(VQAHandle* vqap) {
 /****************************************************************************
  *
  * NAME
- *     VQA_StopAudio - Stop audio playback.
+ *     StopMovieAudio - Stop audio playback.
  *
  * SYNOPSIS
- *     VQA_StopAudio(VQA)
+ *     StopMovieAudio(VQA)
  *
- *     void VQA_StopAudio(VQAHandle *);
+ *     void StopMovieAudio(VqaPlayerState *);
  *
  * FUNCTION
  *     Halts the currently playing audio stream.
  *
  * INPUTS
- *     VQA - Pointer to private VQAHandle.
+ *     VQA - Pointer to private VqaPlayerState.
  *
  * RESULT
  *     NONE
  *
  ****************************************************************************/
 
-void VQA_StopAudio(const VQAHandle* vqap) {
-
+void StopMovieAudio(const VqaPlayerState* vqap) {
   /* Dereference commonly used data members for quicker access. */
-  VQAAudio* audio = &vqap->data->Audio;
+  VqaAudio* audio = &vqap->movie->audio;
 
   /* Just return if not playing */
-  if (AudioFlags & VQAAUDF_ISPLAYING) {
+  if (AudioFlags & kAudioPlaying) {
     // audio->TimerHandle = nullptr;
 
     // TODO: stop buffer
 
-    audio->Flags &= ~VQAAUDF_ISPLAYING;
-    AudioFlags &= ~VQAAUDF_ISPLAYING;
+    audio->flags &= ~kAudioPlaying;
+    AudioFlags &= ~kAudioPlaying;
   }
 
   VQAP = nullptr;
@@ -464,58 +461,58 @@ void VQA_StopAudio(const VQAHandle* vqap) {
 /****************************************************************************
  *
  * NAME
- *     CopyAudio - Copy data from Audio Temp buffer into Audio play buffer.
+ *     CopyStagedAudio - Copy data from Audio Temp buffer into Audio play
+ * buffer.
  *
  * SYNOPSIS
- *     Error = CopyAudio(VQA)
+ *     Error = CopyStagedAudio(VQA)
  *
- *     long CopyAudio(VQAHandle *);
+ *     long CopyStagedAudio(VqaPlayerState *);
  *
  * FUNCTION
  *     This routine just copies the data in the TempBuf into the correct
  *     spots in the audio play buffer.  If there is no room available in the
- *     audio play buffer, the routine returns VQAERR_SLEEPING, which will put
+ *     audio play buffer, the routine returns kVqaSleeping, which will put
  *     the whole Loader to "sleep" while it waits for a free buffer.
  *
  *     If there's no data in the TempBuf to copy, the routine just returns 0.
  *
  * INPUTS
- *     VQA - Pointer to private VQAHandle structure.
+ *     VQA - Pointer to private VqaPlayerState structure.
  *
  * RESULT
  *     Error - 0 if successful or VQAERR_??? error code.
  *
  ****************************************************************************/
 
-int32_t CopyAudio(VQAHandle* vqap) {
-
+int32_t CopyStagedAudio(VqaPlayerState* vqap) {
   /* Dereference commonly used data members for quicker access. */
-  VQAAudio* audio = &vqap->data->Audio;
-  VQAConfig* config = &vqap->config;
+  VqaAudio* audio = &vqap->movie->audio;
+  VqaConfig* config = &vqap->config;
 
   /* If audio is disabled, or if we're playing from a VOC file, or if
    * there's no Audio Buffer, or if there's no data to copy, just return 0
    */
-  if ((config->OptionFlags & VQAOPTF_AUDIO) == 0 || audio->Buffer.empty() ||
-      audio->TempBufLen == 0) {
+  if ((config->option_flags & kVqaOptionAudio) == 0 || audio->ring.empty() ||
+      audio->staged_bytes == 0) {
     return 0;
   }
 
   /* Compute start & end blocks to copy into */
-  const int32_t startblock = audio->AudBufPos / config->HMIBufSize;
+  const int32_t startblock = audio->write_offset / config->audio_block_bytes;
   int32_t endblock =
-      (audio->AudBufPos + audio->TempBufLen) / config->HMIBufSize;
+      (audio->write_offset + audio->staged_bytes) / config->audio_block_bytes;
 
-  if (endblock >= audio->NumAudBlocks) {
-    endblock -= audio->NumAudBlocks;
+  if (endblock >= audio->block_count) {
+    endblock -= audio->block_count;
   }
 
-  /* If 'endblock' hasn't played yet, return VQAERR_SLEEPING */
-  if (audio->IsLoadedStorage.at(base::ToSize(endblock)) == 1) {
-    return VQAERR_SLEEPING;
+  /* If 'endblock' hasn't played yet, return kVqaSleeping */
+  if (audio->block_loaded.at(base::ToSize(endblock)) == 1) {
+    return kVqaSleeping;
   }
 
-  SDL_LockAudioDevice(config->AudioDeviceID);
+  SDL_LockAudioDevice(config->audio_device_id);
 
   /* Copy the data:
    *
@@ -526,69 +523,67 @@ int32_t CopyAudio(VQAHandle* vqap) {
   if (startblock <= endblock) {
     /* Copy data */
     base::CopyBytes(std::as_writable_bytes(
-                        audio->Buffer.subspan(base::ToSize(audio->AudBufPos))),
-                    std::as_bytes(std::span(audio->TempBufStorage)),
-                    audio->TempBufLen);
+                        audio->ring.subspan(base::ToSize(audio->write_offset))),
+                    std::as_bytes(std::span(audio->staging)),
+                    audio->staged_bytes);
 
     /* Adjust current load position */
-    audio->AudBufPos += audio->TempBufLen;
+    audio->write_offset += audio->staged_bytes;
 
     /* Mark buffer as empty */
-    audio->TempBufLen = 0;
+    audio->staged_bytes = 0;
 
     /* Set all blocks to loaded */
     for (int32_t i = startblock; i < endblock; i++) {
-      audio->IsLoadedStorage.at(base::ToSize(i)) = 1;
+      audio->block_loaded.at(base::ToSize(i)) = 1;
     }
 
-    SDL_UnlockAudioDevice(config->AudioDeviceID);
+    SDL_UnlockAudioDevice(config->audio_device_id);
     return 0;
   }
   /* Compute length of each piece */
-  const int32_t len1 = config->AudioBufSize - audio->AudBufPos;
-  const int32_t len2 = audio->TempBufLen - len1;
+  const int32_t len1 = config->audio_buffer_bytes - audio->write_offset;
+  const int32_t len2 = audio->staged_bytes - len1;
 
   /* Copy 1st piece into end of Audio Buffer */
   base::CopyBytes(std::as_writable_bytes(
-                      audio->Buffer.subspan(base::ToSize(audio->AudBufPos))),
-                  std::as_bytes(std::span(audio->TempBufStorage)), len1);
+                      audio->ring.subspan(base::ToSize(audio->write_offset))),
+                  std::as_bytes(std::span(audio->staging)), len1);
 
   /* Copy 2nd piece into start of Audio Buffer */
   base::CopyBytes(
-      std::as_writable_bytes(audio->Buffer),
-      std::as_bytes(
-          std::span(audio->TempBufStorage).subspan(base::ToSize(len1))),
+      std::as_writable_bytes(audio->ring),
+      std::as_bytes(std::span(audio->staging).subspan(base::ToSize(len1))),
       len2);
 
   /* Adjust load position */
-  audio->AudBufPos = len2;
+  audio->write_offset = len2;
 
   /* Mark buffer as empty */
-  audio->TempBufLen = 0;
+  audio->staged_bytes = 0;
 
   /* Set blocks to loaded */
-  for (int32_t i = startblock; i < audio->NumAudBlocks; i++) {
-    audio->IsLoadedStorage.at(base::ToSize(i)) = 1;
+  for (int32_t i = startblock; i < audio->block_count; i++) {
+    audio->block_loaded.at(base::ToSize(i)) = 1;
   }
 
   for (int32_t i = 0; i < endblock; i++) {
-    audio->IsLoadedStorage.at(base::ToSize(i)) = 1;
+    audio->block_loaded.at(base::ToSize(i)) = 1;
   }
 
-  SDL_UnlockAudioDevice(config->AudioDeviceID);
+  SDL_UnlockAudioDevice(config->audio_device_id);
   return 0;
 }
 
-void VQA_PauseAudio() {
-  if ((VQAP && VQAP->data) &&
-      (AudioFlags & VQAAUDF_ISPLAYING && !VQAAudioPaused)) {
+void PauseVqaAudio() {
+  if ((VQAP && VQAP->movie) &&
+      (AudioFlags & kAudioPlaying && !VQAAudioPaused)) {
     VQAAudioPaused = true;
   }
 }
 
-void VQA_ResumeAudio() {
-  if ((VQAP && VQAP->data) &&
-      (AudioFlags & VQAAUDF_ISPLAYING && VQAAudioPaused)) {
+void ResumeVqaAudio() {
+  if ((VQAP && VQAP->movie) && (AudioFlags & kAudioPlaying && VQAAudioPaused)) {
     // TODO: resume
     VQAAudioPaused = false;
   }
@@ -597,12 +592,12 @@ void VQA_ResumeAudio() {
 /****************************************************************************
  *
  * NAME
- *     VQA_SetTimer - Resets current time to given tick value.
+ *     SetMovieClock - Resets current time to given tick value.
  *
  * SYNOPSIS
- *     VQA_SetTimer(Time, Method)
+ *     SetMovieClock(Time, Method)
  *
- *     void VQA_SetTimer(int64_t, int);
+ *     void SetMovieClock(int64_t, int);
  *
  * FUNCTION
  *     Sets 'TickOffset' to a value that will make the current time look like
@@ -623,54 +618,53 @@ void VQA_ResumeAudio() {
  *
  ****************************************************************************/
 
-void VQA_SetTimer(VQAHandle* vqap, int64_t time, int method) {
-
+void SetMovieClock(VqaPlayerState* vqap, int64_t time, int method) {
   /* If the client does not have a preferencee then pick a method
    * based on the state of the player.
    */
-  if (method == VQA_TMETHOD_DEFAULT) {
+  if (method == kVqaClockDefault) {
     /* If we are playing audio, use the audio DMA position. */
-    if (AudioFlags & VQAAUDF_ISPLAYING) {
-      method = VQA_TMETHOD_AUDIO;
+    if (AudioFlags & kAudioPlaying) {
+      method = kVqaClockAudio;
     }
 
     /* Otherwise use the HMI timer if it is initialized. */
     else if (AudioFlags & VQAAUDF_HMITIMER) {
-      method = VQA_TMETHOD_INT;
+      method = kVqaClockInterrupt;
     }
 
     /* If all else fails resort the the "jerky" DOS time. */
     else {
-      method = VQA_TMETHOD_DOS;
+      method = kVqaClockSystem;
     }
   } else {
     /* We cannot use the DMA position if there isn't any audio playing. */
-    if (!(AudioFlags & VQAAUDF_ISPLAYING) && method == VQA_TMETHOD_AUDIO) {
-      method = VQA_TMETHOD_INT;
+    if (!(AudioFlags & kAudioPlaying) && method == kVqaClockAudio) {
+      method = kVqaClockInterrupt;
     }
 
     /* We cannot use the timer if it has not been initialized. */
-    if (!(AudioFlags & VQAAUDF_HMITIMER) && method == VQA_TMETHOD_INT) {
-      method = VQA_TMETHOD_DOS;
+    if (!(AudioFlags & VQAAUDF_HMITIMER) && method == kVqaClockInterrupt) {
+      method = kVqaClockSystem;
     }
   }
 
   TimerMethod = method;
 
   TickOffset = 0;
-  const int64_t curtime = VQA_GetTime(vqap);
+  const int64_t curtime = ReadMovieClock(vqap);
   TickOffset = time - curtime;
 }
 
 /****************************************************************************
  *
  * NAME
- *     VQA_GetTime - Return current time.
+ *     ReadMovieClock - Return current time.
  *
  * SYNOPSIS
- *     Time = VQA_GetTime()
+ *     Time = ReadMovieClock()
  *
- *     int64_t VQA_GetTime();
+ *     int64_t ReadMovieClock();
  *
  * FUNCTION
  *     This routine returns timer ticks computed one of 3 ways:
@@ -715,12 +709,12 @@ void VQA_SetTimer(VQAHandle* vqap, int64_t time, int method) {
  *     NONE
  *
  * RESULT
- *     Time - Time in VQA_TIMETICKS
+ *     Time - Time in kVqaTicksPerSecond
  *
  ****************************************************************************/
-int64_t VQA_GetTime(VQAHandle* vqap) {
-  VQAAudio* audio = nullptr;
-  VQAConfig* config = nullptr;
+int64_t ReadMovieClock(VqaPlayerState* vqap) {
+  VqaAudio* audio = nullptr;
+  VqaConfig* config = nullptr;
   int64_t totalbytes = 0;
   int64_t samples = 0;
   int play_cursor = 0;  // Bytes queued in SDLStream but not yet played
@@ -730,48 +724,47 @@ int64_t VQA_GetTime(VQAHandle* vqap) {
     /* If Audio is playing then timing is based on the audio DMA buffer
      * position.
      */
-    case VQA_TMETHOD_AUDIO:
+    case kVqaClockAudio:
 
       /* Dereference commonly used data members for quicker access. */
-      audio = &vqap->data->Audio;
+      audio = &vqap->movie->audio;
       config = &vqap->config;
 
-      SDL_LockAudioDevice(vqap->config.AudioDeviceID);
-      totalbytes =
-          int64_t{audio->ChunksMovedToAudioBuffer} * config->HMIBufSize;
+      SDL_LockAudioDevice(vqap->config.audio_device_id);
+      totalbytes = int64_t{audio->blocks_played} * config->audio_block_bytes;
 
       // offset by any bytes still in the stream
       // there will still be samples in the "hardware" queue, but this is the
       // best we can do
       play_cursor = SDL_AudioStreamAvailable(SDLStream);
       totalbytes -= (play_cursor * StreamConvScale) / 32768;
-      SDL_UnlockAudioDevice(vqap->config.AudioDeviceID);
+      SDL_UnlockAudioDevice(vqap->config.audio_device_id);
 
-      samples = totalbytes / audio->Channels;
-      samples = samples / (audio->BitsPerSample / 8);
+      samples = totalbytes / audio->channels;
+      samples = samples / (audio->bits_per_sample / 8);
 
       /* The elapsed ticks is calculated by the number of samples
        * processed times the tick resolution per second divided by the
        * sample rate.
        */
-      ticks = samples * VQA_TIMETICKS / audio->SampleRate;
+      ticks = samples * kVqaTicksPerSecond / audio->sample_rate;
       ticks += TickOffset;
       break;
 
     /* No audio playing, but timer interrupt is going; use VQATickCount */
-    case VQA_TMETHOD_INT:
+    case kVqaClockInterrupt:
       ticks = VQATickCount + TickOffset;
       break;
 
     /* No interrupts are going at all; use system time */
     default:
-    case VQA_TMETHOD_DOS: {
+    case kVqaClockSystem: {
       const auto now = std::chrono::system_clock::now();
       const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                           now.time_since_epoch())
                           .count();
 
-      ticks = ms * VQA_TIMETICKS / 1000;
+      ticks = ms * kVqaTicksPerSecond / 1000;
       ticks += TickOffset;
     } break;
   }

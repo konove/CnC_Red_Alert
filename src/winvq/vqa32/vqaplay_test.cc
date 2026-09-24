@@ -1,5 +1,5 @@
-// Tests for the VQA player: configuration defaults, handle lifecycle, the
-// VQA_Open() validation/error paths, chunk loading into the play buffers and
+// Tests for the VQA player: configuration defaults, player lifecycle, the
+// OpenVqa() validation/error paths, chunk loading into the play buffers and
 // drawer placement. Movies are small synthetic files served by a scripted
 // in-memory VqaIo file source. No real movie assets are required.
 
@@ -39,8 +39,8 @@ int32_t LCW_Uncompress(std::span<const unsigned char> /*source*/,
 void SetPalette(std::span<uint8_t> /*palette*/, int32_t /*numbytes*/,
                 uint32_t /*slowpal*/) {}
 
-void Flag_To_Set_Palette(std::span<uint8_t> /*palette*/, int32_t /*numbytes*/,
-                         uint32_t /*slowpal*/) {}
+void QueueVqaPalette(std::span<uint8_t> /*palette*/, int32_t /*numbytes*/,
+                     uint32_t /*slowpal*/) {}
 
 namespace {
 
@@ -115,7 +115,7 @@ void AppendBigEndian32(std::vector<uint8_t>& out, uint32_t value) {
   out.push_back(static_cast<uint8_t>(value));
 }
 
-// "FORM" <size> "WVQA" — the file preamble VQA_Open() validates first.
+// "FORM" <size> "WVQA" — the file preamble OpenVqa() validates first.
 std::vector<uint8_t> ValidPreamble() {
   std::vector<uint8_t> data;
   AppendBytes(data, "FORM");
@@ -131,37 +131,37 @@ class VqaPlayTest : public testing::Test {
 
     // Audio and drawing stay off: the tests run headless and only exercise
     // the file validation logic.
-    VQA_DefaultConfig(&config_);
-    config_.OptionFlags = 0;
-    config_.DrawFlags = VQACFGF_NODRAW;
+    SetVqaConfigDefaults(&config_);
+    config_.option_flags = 0;
+    config_.draw_flags = kVqaDrawNothing;
   }
 
   FakeVqaIo fake_;
   VqaPlayer player_;
-  VQAConfig config_{};
+  VqaConfig config_{};
 };
 
 TEST(VqaConfigTest, DefaultConfigHasDocumentedDefaults) {
-  VQAConfig config;
-  VQA_DefaultConfig(&config);
+  VqaConfig config;
+  SetVqaConfigDefaults(&config);
 
-  EXPECT_EQ(config.ImageWidth, 320);
-  EXPECT_EQ(config.ImageHeight, 200);
-  EXPECT_EQ(config.X1, -1);
-  EXPECT_EQ(config.Y1, -1);
-  EXPECT_EQ(config.FrameRate, -1);  // -1 means use the movie's frame rate.
-  EXPECT_EQ(config.DrawRate, -1);
-  EXPECT_EQ(config.DrawFlags, 0);
-  EXPECT_EQ(config.OptionFlags, VQAOPTF_AUDIO);
-  EXPECT_EQ(config.NumFrameBufs, 6);
-  EXPECT_EQ(config.NumCBBufs, 3);
+  EXPECT_EQ(config.image_width, 320);
+  EXPECT_EQ(config.image_height, 200);
+  EXPECT_EQ(config.margin_x, -1);
+  EXPECT_EQ(config.margin_y, -1);
+  EXPECT_EQ(config.frame_rate, -1);  // -1 means use the movie's frame rate.
+  EXPECT_EQ(config.draw_rate, -1);
+  EXPECT_EQ(config.draw_flags, 0);
+  EXPECT_EQ(config.option_flags, kVqaOptionAudio);
+  EXPECT_EQ(config.frame_buffer_count, 6);
+  EXPECT_EQ(config.codebook_buffer_count, 3);
   EXPECT_EQ(config.Volume, 0x00FF);
 }
 
 TEST_F(VqaPlayTest, OpenReportsOpenErrorWhenHandlerCannotOpen) {
   fake_.fail_open = true;
 
-  EXPECT_EQ(player_.Open("missing.vqa", &config_), VQAERR_OPEN);
+  EXPECT_EQ(player_.Open("missing.vqa", &config_), kVqaErrorOpen);
   EXPECT_EQ(fake_.opens, 1);
   // The file never opened, so the player must not try to close it.
   EXPECT_EQ(fake_.closes, 0);
@@ -169,7 +169,7 @@ TEST_F(VqaPlayTest, OpenReportsOpenErrorWhenHandlerCannotOpen) {
 
 TEST_F(VqaPlayTest, OpenReportsReadErrorAndClosesOnEmptyFile) {
   // No data at all: the first 8-byte header read fails.
-  EXPECT_EQ(player_.Open("empty.vqa", &config_), VQAERR_READ);
+  EXPECT_EQ(player_.Open("empty.vqa", &config_), kVqaErrorRead);
   EXPECT_EQ(fake_.closes, 1);
 }
 
@@ -178,7 +178,7 @@ TEST_F(VqaPlayTest, OpenRejectsNonIffFile) {
   AppendBigEndian32(fake_.data, 0x1234);
   AppendBytes(fake_.data, "WVQA");
 
-  EXPECT_EQ(player_.Open("notiff.vqa", &config_), VQAERR_NOTVQA);
+  EXPECT_EQ(player_.Open("notiff.vqa", &config_), kVqaErrorNotVqa);
   EXPECT_EQ(fake_.closes, 1);
 }
 
@@ -187,7 +187,7 @@ TEST_F(VqaPlayTest, OpenRejectsFormWithZeroSize) {
   AppendBigEndian32(fake_.data, 0);
   AppendBytes(fake_.data, "WVQA");
 
-  EXPECT_EQ(player_.Open("zerosize.vqa", &config_), VQAERR_NOTVQA);
+  EXPECT_EQ(player_.Open("zerosize.vqa", &config_), kVqaErrorNotVqa);
   EXPECT_EQ(fake_.closes, 1);
 }
 
@@ -196,14 +196,14 @@ TEST_F(VqaPlayTest, OpenRejectsFormWithoutWvqaId) {
   AppendBigEndian32(fake_.data, 0x1234);
   AppendBytes(fake_.data, "XXXX");
 
-  EXPECT_EQ(player_.Open("notvqa.vqa", &config_), VQAERR_NOTVQA);
+  EXPECT_EQ(player_.Open("notvqa.vqa", &config_), kVqaErrorNotVqa);
   EXPECT_EQ(fake_.closes, 1);
 }
 
 TEST_F(VqaPlayTest, OpenReportsReadErrorWhenTruncatedAfterPreamble) {
   fake_.data = ValidPreamble();
 
-  EXPECT_EQ(player_.Open("truncated.vqa", &config_), VQAERR_READ);
+  EXPECT_EQ(player_.Open("truncated.vqa", &config_), kVqaErrorRead);
   EXPECT_EQ(fake_.closes, 1);
 }
 
@@ -213,18 +213,18 @@ TEST_F(VqaPlayTest, OpenRejectsHeaderChunkWithWrongSize) {
   AppendBigEndian32(fake_.data, 4);  // Real VQA headers are much larger.
   AppendBytes(fake_.data, "XXXX");
 
-  EXPECT_EQ(player_.Open("badheader.vqa", &config_), VQAERR_NOTVQA);
+  EXPECT_EQ(player_.Open("badheader.vqa", &config_), kVqaErrorNotVqa);
   EXPECT_EQ(fake_.closes, 1);
 }
 
 TEST_F(VqaPlayTest, IoHandlerSurvivesFailedOpen) {
-  // A failed open runs VQA_Close(), which resets the handle. The installed
-  // io object must survive the reset so the handle can be reused.
-  ASSERT_EQ(player_.Open("empty.vqa", &config_), VQAERR_READ);
+  // A failed open runs CloseVqa(), which resets the player state. The
+  // installed io object must survive the reset so the player can be reused.
+  ASSERT_EQ(player_.Open("empty.vqa", &config_), kVqaErrorRead);
 
   fake_.data = ValidPreamble();
   fake_.pos = 0;
-  EXPECT_EQ(player_.Open("second.vqa", &config_), VQAERR_READ);
+  EXPECT_EQ(player_.Open("second.vqa", &config_), kVqaErrorRead);
   EXPECT_EQ(fake_.opens, 2);
   EXPECT_EQ(fake_.closes, 2);
 }
@@ -252,9 +252,9 @@ void AppendChunk(std::vector<uint8_t>& out, std::string_view id,
 
 // A 3-frame 8x8 movie with 4x2 blocks and a 16-entry codebook. The loader
 // derives these buffer sizes from it:
-//   Max_CB_Size  = (16 * 4 * 2 + 250) & 0xFFFC = 376
-//   Max_Ptr_Size = (2 * 4 * 2 + 1024) & 0xFFFC = 1040
-//   Max_Pal_Size = (768 + 1024) & 0xFFFC       = 1792
+//   codebook_capacity  = (16 * 4 * 2 + 250) & 0xFFFC = 376
+//   pointers_capacity = (2 * 4 * 2 + 1024) & 0xFFFC = 1040
+//   palette_capacity = (768 + 1024) & 0xFFFC       = 1792
 VqaHeader SmallHeader() {
   VqaHeader header{};
   header.version = kVqaVersion2;
@@ -286,7 +286,7 @@ std::vector<uint8_t> FinfPayload(const std::vector<uint32_t>& entries) {
   return payload;
 }
 
-// Preamble, VQHD and FINF: everything VQA_Open() reads before the frames.
+// Preamble, VQHD and FINF: everything OpenVqa() reads before the frames.
 std::vector<uint8_t> MovieStart(const VqaHeader& header,
                                 const std::vector<uint32_t>& entries) {
   std::vector<uint8_t> data = ValidPreamble();
@@ -301,25 +301,25 @@ void AppendFrameEnd(std::vector<uint8_t>& data) {
 }
 
 // Drives the private loader directly so tests can inspect the play buffers.
-// One frame buffer means VQA_Open() primes exactly one frame.
+// One frame buffer means OpenVqa() primes exactly one frame.
 class VqaLoaderTest : public testing::Test {
  protected:
   void SetUp() override {
-    handle_.io = &fake_;
-    VQA_DefaultConfig(&config_);
-    config_.OptionFlags = 0;
-    config_.DrawFlags = VQACFGF_NODRAW;
-    config_.NumFrameBufs = 1;
-    config_.NumCBBufs = 1;
+    state_.io = &fake_;
+    SetVqaConfigDefaults(&config_);
+    config_.option_flags = 0;
+    config_.draw_flags = kVqaDrawNothing;
+    config_.frame_buffer_count = 1;
+    config_.codebook_buffer_count = 1;
   }
 
   void TearDown() override {
-    if (handle_.data != nullptr) {
-      VQA_Close(&handle_);
+    if (state_.movie != nullptr) {
+      CloseVqa(&state_);
     }
   }
 
-  int32_t Open() { return VQA_Open(&handle_, "test.vqa", &config_); }
+  int32_t Open() { return OpenVqa(&state_, "test.vqa", &config_); }
 
   // Turns the sound on. The player converts to audio_spec_ and installs its
   // mixer in audio_callback_, which must outlive the movie.
@@ -327,16 +327,16 @@ class VqaLoaderTest : public testing::Test {
     audio_spec_.freq = 22050;
     audio_spec_.format = AUDIO_S16;
     audio_spec_.channels = 2;
-    config_.OptionFlags |= VQAOPTF_AUDIO;
-    config_.AudioSpec = &audio_spec_;
-    config_.AudioCallback = &audio_callback_;
+    config_.option_flags |= kVqaOptionAudio;
+    config_.audio_spec = &audio_spec_;
+    config_.audio_callback = &audio_callback_;
   }
 
   FakeVqaIo fake_;
   SDL_AudioSpec audio_spec_{};
   void (*audio_callback_)(uint8_t*, int) = nullptr;
-  VQAHandle handle_;
-  VQAConfig config_{};
+  VqaPlayerState state_;
+  VqaConfig config_{};
 };
 
 TEST_F(VqaLoaderTest, OpensMinimalMovie) {
@@ -353,13 +353,13 @@ TEST_F(VqaLoaderTest, FinfEntriesAreFourBytesEach) {
   AppendFrameEnd(fake_.data);
 
   ASSERT_EQ(Open(), 0);
-  ASSERT_EQ(handle_.data->FoffStorage.size(), entries.size());
-  EXPECT_EQ(handle_.data->FoffStorage.at(0), entries.at(0));
-  EXPECT_EQ(handle_.data->FoffStorage.at(1), entries.at(1));
-  EXPECT_EQ(handle_.data->FoffStorage.at(2), entries.at(2));
+  ASSERT_EQ(state_.movie->frame_offsets.size(), entries.size());
+  EXPECT_EQ(state_.movie->frame_offsets.at(0), entries.at(0));
+  EXPECT_EQ(state_.movie->frame_offsets.at(1), entries.at(1));
+  EXPECT_EQ(state_.movie->frame_offsets.at(2), entries.at(2));
   // The flags occupy the top bits; the offset is stored halved.
-  EXPECT_TRUE(FrameHasPalette(handle_.data->FoffStorage.at(0)));
-  EXPECT_EQ(FrameByteOffset(handle_.data->FoffStorage.at(1)), 0x40);
+  EXPECT_TRUE(FrameHasPalette(state_.movie->frame_offsets.at(0)));
+  EXPECT_EQ(FrameByteOffset(state_.movie->frame_offsets.at(1)), 0x40);
 }
 
 TEST_F(VqaLoaderTest, OversizedFinfChunkIsSkippedPastTheTable) {
@@ -369,8 +369,8 @@ TEST_F(VqaLoaderTest, OversizedFinfChunkIsSkippedPastTheTable) {
   AppendFrameEnd(fake_.data);
 
   ASSERT_EQ(Open(), 0);
-  ASSERT_EQ(handle_.data->FoffStorage.size(), 3U);
-  EXPECT_EQ(handle_.data->FoffStorage.at(2), 0x30U);
+  ASSERT_EQ(state_.movie->frame_offsets.size(), 3U);
+  EXPECT_EQ(state_.movie->frame_offsets.at(2), 0x30U);
   // The excess entries were skipped, so the frame after them still loaded.
   EXPECT_EQ(fake_.pos, static_cast<int64_t>(fake_.data.size()));
 }
@@ -379,7 +379,7 @@ TEST_F(VqaLoaderTest, RejectsFinfBeforeHeader) {
   fake_.data = ValidPreamble();
   AppendChunk(fake_.data, "FINF", FinfPayload({0, 0, 0}));
 
-  EXPECT_EQ(Open(), VQAERR_NOTVQA);
+  EXPECT_EQ(Open(), kVqaErrorNotVqa);
 }
 
 TEST_F(VqaLoaderTest, RejectsHeaderWithZeroGroupsize) {
@@ -388,7 +388,7 @@ TEST_F(VqaLoaderTest, RejectsHeaderWithZeroGroupsize) {
   fake_.data = MovieStart(header, {0, 0, 0});
   AppendFrameEnd(fake_.data);
 
-  EXPECT_EQ(Open(), VQAERR_NOTVQA);
+  EXPECT_EQ(Open(), kVqaErrorNotVqa);
 }
 
 TEST_F(VqaLoaderTest, RejectsHeaderWithZeroBlockSize) {
@@ -397,7 +397,7 @@ TEST_F(VqaLoaderTest, RejectsHeaderWithZeroBlockSize) {
   fake_.data = MovieStart(header, {0, 0, 0});
   AppendFrameEnd(fake_.data);
 
-  EXPECT_EQ(Open(), VQAERR_NOTVQA);
+  EXPECT_EQ(Open(), kVqaErrorNotVqa);
 }
 
 TEST_F(VqaLoaderTest, RejectsPreFrameChunkOf2GiB) {
@@ -406,7 +406,7 @@ TEST_F(VqaLoaderTest, RejectsPreFrameChunkOf2GiB) {
   // 2^31 reads back as a negative int32_t size.
   AppendChunk(fake_.data, "XXXX", 0x80000000U, {});
 
-  EXPECT_EQ(Open(), VQAERR_NOTVQA);
+  EXPECT_EQ(Open(), kVqaErrorNotVqa);
 }
 
 TEST_F(VqaLoaderTest, RejectsFrameChunkOf2GiB) {
@@ -414,7 +414,7 @@ TEST_F(VqaLoaderTest, RejectsFrameChunkOf2GiB) {
   AppendChunk(fake_.data, "VQFR", 0x80000000U, {});
   AppendFrameEnd(fake_.data);
 
-  EXPECT_EQ(Open(), VQAERR_READ);
+  EXPECT_EQ(Open(), kVqaErrorRead);
 }
 
 TEST_F(VqaLoaderTest, RejectsChunkOf2GiBInsideFrame) {
@@ -424,7 +424,7 @@ TEST_F(VqaLoaderTest, RejectsChunkOf2GiBInsideFrame) {
   AppendChunk(fake_.data, "VQFR", frame);
   AppendFrameEnd(fake_.data);
 
-  EXPECT_EQ(Open(), VQAERR_READ);
+  EXPECT_EQ(Open(), kVqaErrorRead);
 }
 
 TEST_F(VqaLoaderTest, PartialCompressedCodebookLoadsAtEstimatedOffset) {
@@ -433,11 +433,12 @@ TEST_F(VqaLoaderTest, PartialCompressedCodebookLoadsAtEstimatedOffset) {
   AppendFrameEnd(fake_.data);
 
   ASSERT_EQ(Open(), 0);
-  // Groupsize 1: offset = Max_CB_Size - (20 * 1 + 100).
-  const VQACBNode* codebook = handle_.data->Loader.FullCB;
-  EXPECT_EQ(codebook->CBOffset, kMaxCbSize - 120);
-  EXPECT_EQ(codebook->BufferStorage.at(static_cast<size_t>(codebook->CBOffset)),
-            0xAB);
+  // Groupsize 1: offset = codebook_capacity - (20 * 1 + 100).
+  const VqaCodebook* codebook = state_.movie->loader.full_codebook;
+  EXPECT_EQ(codebook->compressed_offset, kMaxCbSize - 120);
+  EXPECT_EQ(
+      codebook->buffer.at(static_cast<size_t>(codebook->compressed_offset)),
+      0xAB);
 }
 
 TEST_F(VqaLoaderTest, RejectsPartialCodebookWithNegativeOffset) {
@@ -447,7 +448,7 @@ TEST_F(VqaLoaderTest, RejectsPartialCodebookWithNegativeOffset) {
   AppendChunk(fake_.data, "CBPZ", std::vector<uint8_t>(300));
   AppendFrameEnd(fake_.data);
 
-  EXPECT_EQ(Open(), VQAERR_READ);
+  EXPECT_EQ(Open(), kVqaErrorRead);
 }
 
 TEST_F(VqaLoaderTest, RejectsPartialCodebooksOverflowingTheEnd) {
@@ -460,7 +461,7 @@ TEST_F(VqaLoaderTest, RejectsPartialCodebooksOverflowingTheEnd) {
   AppendChunk(fake_.data, "CBPZ", std::vector<uint8_t>(200));
   AppendFrameEnd(fake_.data);
 
-  EXPECT_EQ(Open(), VQAERR_READ);
+  EXPECT_EQ(Open(), kVqaErrorRead);
 }
 
 TEST_F(VqaLoaderTest, AcceptsFullPalette) {
@@ -469,8 +470,8 @@ TEST_F(VqaLoaderTest, AcceptsFullPalette) {
   AppendFrameEnd(fake_.data);
 
   ASSERT_EQ(Open(), 0);
-  EXPECT_EQ(handle_.data->Drawer.CurPalSize, 768);
-  EXPECT_EQ(handle_.data->Drawer.Palette_24.at(767), 7);
+  EXPECT_EQ(state_.movie->drawer.saved_palette_bytes, 768);
+  EXPECT_EQ(state_.movie->drawer.saved_palette.at(767), 7);
 }
 
 TEST_F(VqaLoaderTest, RejectsUncompressedPaletteOver256Colors) {
@@ -480,7 +481,7 @@ TEST_F(VqaLoaderTest, RejectsUncompressedPaletteOver256Colors) {
   AppendChunk(fake_.data, "CPL0", std::vector<uint8_t>(800));
   AppendFrameEnd(fake_.data);
 
-  EXPECT_EQ(Open(), VQAERR_READ);
+  EXPECT_EQ(Open(), kVqaErrorRead);
 }
 
 // Each chunk type is 2000 bytes, larger than its destination buffer.
@@ -494,7 +495,7 @@ TEST_P(VqaOversizedChunkTest, RejectsChunkLargerThanItsBuffer) {
   // Without the bounds check the frame would load, so Open() would succeed.
   AppendFrameEnd(fake_.data);
 
-  EXPECT_EQ(Open(), VQAERR_READ);
+  EXPECT_EQ(Open(), kVqaErrorRead);
 }
 
 INSTANTIATE_TEST_SUITE_P(AllBufferedChunks, VqaOversizedChunkTest,
@@ -502,23 +503,23 @@ INSTANTIATE_TEST_SUITE_P(AllBufferedChunks, VqaOversizedChunkTest,
                                          "CPL0", "CPLZ", "VPT0", "VPTZ"));
 
 TEST_F(VqaLoaderTest, OpensMovieShorterThanFrameBuffers) {
-  config_.NumFrameBufs = 3;
+  config_.frame_buffer_count = 3;
   VqaHeader header = SmallHeader();
   header.frame_count = 1;
   fake_.data = MovieStart(header, {0});
   AppendFrameEnd(fake_.data);
 
   ASSERT_EQ(Open(), 0);
-  EXPECT_EQ(handle_.data->LoadedFrames, 1);
+  EXPECT_EQ(state_.movie->loaded_frames, 1);
 }
 
 TEST_F(VqaLoaderTest, TruncatedMovieStillFailsToOpen) {
   // The header promises three frames but the file holds one.
-  config_.NumFrameBufs = 3;
+  config_.frame_buffer_count = 3;
   fake_.data = MovieStart(SmallHeader(), {0, 0, 0});
   AppendFrameEnd(fake_.data);
 
-  EXPECT_EQ(Open(), VQAERR_READ);
+  EXPECT_EQ(Open(), kVqaErrorRead);
 }
 
 TEST_F(VqaLoaderTest, RejectsAudioWithZeroHmiBufferSize) {
@@ -526,10 +527,10 @@ TEST_F(VqaLoaderTest, RejectsAudioWithZeroHmiBufferSize) {
   header.flags = kVqaHasAudio;
   fake_.data = MovieStart(header, {0, 0, 0});
   AppendFrameEnd(fake_.data);
-  config_.OptionFlags = VQAOPTF_AUDIO;
-  config_.HMIBufSize = 0;
+  config_.option_flags = kVqaOptionAudio;
+  config_.audio_block_bytes = 0;
 
-  EXPECT_EQ(Open(), VQAERR_AUDIO);
+  EXPECT_EQ(Open(), kVqaErrorAudio);
   EXPECT_EQ(fake_.closes, 1);
 }
 
@@ -552,19 +553,19 @@ TEST_F(VqaLoaderTest, PlaysSilentlyWithoutAnAudioRing) {
   header.bits_per_sample = 8;
   fake_.data = EmptyFrames(header);
   EnableAudio();
-  config_.AudioBufSize = 0;
+  config_.audio_buffer_bytes = 0;
   ASSERT_EQ(Open(), 0);
 
-  EXPECT_EQ(VQA_Play(&handle_, VQAMODE_RUN), VQAERR_EOF);
-  EXPECT_EQ(handle_.data->Audio.Flags & VQAAUDF_ISPLAYING, 0U);
+  EXPECT_EQ(PlayVqa(&state_, kVqaModeRun), kVqaEndOfMovie);
+  EXPECT_EQ(state_.movie->audio.flags & kAudioPlaying, 0U);
 }
 
 TEST_F(VqaLoaderTest, StopEndsPlaybackWithoutLoadingTheRest) {
   fake_.data = EmptyFrames(SmallHeader());
   ASSERT_EQ(Open(), 0);
 
-  EXPECT_EQ(VQA_Play(&handle_, VQAMODE_STOP), VQAERR_EOF);
-  EXPECT_EQ(handle_.data->LoadedFrames, 1);
+  EXPECT_EQ(PlayVqa(&state_, kVqaModeStop), kVqaEndOfMovie);
+  EXPECT_EQ(state_.movie->loaded_frames, 1);
 }
 
 TEST_F(VqaLoaderTest, SeekFrameLoadsFromTheFrameTable) {
@@ -582,13 +583,13 @@ TEST_F(VqaLoaderTest, SeekFrameLoadsFromTheFrameTable) {
     const auto tag = static_cast<uint8_t>(i);
     AppendChunk(fake_.data, "VPT0", {tag, tag});
   }
-  config_.OptionFlags = VQAOPTF_PALOFF;
+  config_.option_flags = kVqaOptionPaletteOff;
   ASSERT_EQ(Open(), 0);
 
   // Groupsize 1: frame 1 is replayed for its codebook, then frame 2 primed.
-  EXPECT_EQ(VQA_SeekFrame(&handle_, 2, SEEK_SET), 2);
-  EXPECT_EQ(handle_.data->Loader.CurFrameNum, 3);
-  EXPECT_EQ(handle_.data->Loader.CurFrame->Pointers[0], 2);
+  EXPECT_EQ(SeekVqaFrame(&state_, 2, SEEK_SET), 2);
+  EXPECT_EQ(state_.movie->loader.next_frame_number, 3);
+  EXPECT_EQ(state_.movie->loader.current_frame->Pointers[0], 2);
 }
 
 TEST_F(VqaLoaderTest, SeekFrameRejectsFramesOutsideTheMovie) {
@@ -596,64 +597,64 @@ TEST_F(VqaLoaderTest, SeekFrameRejectsFramesOutsideTheMovie) {
   AppendFrameEnd(fake_.data);
   ASSERT_EQ(Open(), 0);
 
-  EXPECT_EQ(VQA_SeekFrame(&handle_, 3, SEEK_SET), VQAERR_EOF);
-  EXPECT_EQ(VQA_SeekFrame(&handle_, -1, SEEK_SET), VQAERR_SEEK);
+  EXPECT_EQ(SeekVqaFrame(&state_, 3, SEEK_SET), kVqaEndOfMovie);
+  EXPECT_EQ(SeekVqaFrame(&state_, -1, SEEK_SET), kVqaErrorSeek);
 }
 
 // Places the 8x8 SmallHeader() image in a 320x200 buffer, gap_x pixels
 // horizontally and gap_y vertically from the corner named by origin.
-VQADrawer PlaceImage(uint32_t origin, int gap_x = 10, int gap_y = 20) {
-  VQAHandle handle;
-  handle.data = std::make_unique<VQAData>();
-  handle.data->Drawer.ImageWidth = 320;
-  handle.data->Drawer.ImageHeight = 200;
-  handle.data->Drawer.Y2 = 12345;  // Stale value the placement must not read.
-  handle.header = SmallHeader();
-  handle.config.X1 = gap_x;
-  handle.config.Y1 = gap_y;
-  handle.config.DrawFlags = origin;
+VqaDrawer PlaceImage(uint32_t origin, int gap_x = 10, int gap_y = 20) {
+  VqaPlayerState state;
+  state.movie = std::make_unique<VqaMovie>();
+  state.movie->drawer.image_width = 320;
+  state.movie->drawer.image_height = 200;
+  state.movie->drawer.y2 = 12345;  // Stale value the placement must not read.
+  state.header = SmallHeader();
+  state.config.margin_x = gap_x;
+  state.config.margin_y = gap_y;
+  state.config.draw_flags = origin;
 
-  VQA_Configure_Drawer(&handle);
+  ConfigureDrawer(&state);
 
-  return handle.data->Drawer;
+  return state.movie->drawer;
 }
 
 TEST(VqaDrawerTest, TopLeftOrigin) {
-  const VQADrawer drawer = PlaceImage(VQACFGF_TOPLEFT);
-  EXPECT_EQ(drawer.X1, 10);
-  EXPECT_EQ(drawer.X2, 17);
-  EXPECT_EQ(drawer.Y1, 20);
-  EXPECT_EQ(drawer.Y2, 27);
-  EXPECT_EQ(drawer.ScreenOffset, (320 * 20) + 10);
+  const VqaDrawer drawer = PlaceImage(kVqaDrawTopLeft);
+  EXPECT_EQ(drawer.x1, 10);
+  EXPECT_EQ(drawer.x2, 17);
+  EXPECT_EQ(drawer.y1, 20);
+  EXPECT_EQ(drawer.y2, 27);
+  EXPECT_EQ(drawer.image_offset, (320 * 20) + 10);
 }
 
 TEST(VqaDrawerTest, TopRightOrigin) {
   // Columns 302..309 leave a 10-column gap (310..319) on the right.
-  const VQADrawer drawer = PlaceImage(VQACFGF_TOPRIGHT);
-  EXPECT_EQ(drawer.X1, 309);
-  EXPECT_EQ(drawer.X2, 302);
-  EXPECT_EQ(drawer.Y1, 20);
-  EXPECT_EQ(drawer.Y2, 27);
-  EXPECT_EQ(drawer.ScreenOffset, (320 * 20) + 302);
+  const VqaDrawer drawer = PlaceImage(kVqaDrawTopRight);
+  EXPECT_EQ(drawer.x1, 309);
+  EXPECT_EQ(drawer.x2, 302);
+  EXPECT_EQ(drawer.y1, 20);
+  EXPECT_EQ(drawer.y2, 27);
+  EXPECT_EQ(drawer.image_offset, (320 * 20) + 302);
 }
 
 TEST(VqaDrawerTest, BottomLeftOrigin) {
   // Rows 172..179 leave a 20-row gap (180..199) at the bottom.
-  const VQADrawer drawer = PlaceImage(VQACFGF_BOTLEFT);
-  EXPECT_EQ(drawer.X1, 10);
-  EXPECT_EQ(drawer.X2, 17);
-  EXPECT_EQ(drawer.Y1, 179);
-  EXPECT_EQ(drawer.Y2, 172);
-  EXPECT_EQ(drawer.ScreenOffset, (320 * 172) + 10);
+  const VqaDrawer drawer = PlaceImage(kVqaDrawBottomLeft);
+  EXPECT_EQ(drawer.x1, 10);
+  EXPECT_EQ(drawer.x2, 17);
+  EXPECT_EQ(drawer.y1, 179);
+  EXPECT_EQ(drawer.y2, 172);
+  EXPECT_EQ(drawer.image_offset, (320 * 172) + 10);
 }
 
 TEST(VqaDrawerTest, BottomRightOrigin) {
-  const VQADrawer drawer = PlaceImage(VQACFGF_BOTRIGHT);
-  EXPECT_EQ(drawer.X1, 309);
-  EXPECT_EQ(drawer.X2, 302);
-  EXPECT_EQ(drawer.Y1, 179);
-  EXPECT_EQ(drawer.Y2, 172);
-  EXPECT_EQ(drawer.ScreenOffset, (320 * 172) + 302);
+  const VqaDrawer drawer = PlaceImage(kVqaDrawBottomRight);
+  EXPECT_EQ(drawer.x1, 309);
+  EXPECT_EQ(drawer.x2, 302);
+  EXPECT_EQ(drawer.y1, 179);
+  EXPECT_EQ(drawer.y2, 172);
+  EXPECT_EQ(drawer.image_offset, (320 * 172) + 302);
 }
 
 #ifndef NDEBUG
@@ -661,9 +662,9 @@ TEST(VqaDrawerDeathTest, ImageOutsideBufferFailsCheck) {
   // A gap wider than the buffer would start drawing outside it.
   // The switch is inside GoogleTest's macro.
   // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
-  EXPECT_DEATH(PlaceImage(VQACFGF_TOPLEFT, 400, 20), "Check failed");
+  EXPECT_DEATH(PlaceImage(kVqaDrawTopLeft, 400, 20), "Check failed");
   // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
-  EXPECT_DEATH(PlaceImage(VQACFGF_BOTRIGHT, 10, 250), "Check failed");
+  EXPECT_DEATH(PlaceImage(kVqaDrawBottomRight, 10, 250), "Check failed");
 }
 #endif
 

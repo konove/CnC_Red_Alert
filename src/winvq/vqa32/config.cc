@@ -41,11 +41,10 @@
  *----------------------------------------------------------------------------
  *
  * PUBLIC
- *     VQA_INIConfig     - Initialize VQAConfig structure with INI settings.
- *     VQA_DefaultConfig - Initialize VQAConfig structure with defaults.
+ *     VQA_INIConfig     - Initialize VqaConfig structure with INI settings.
+ *     SetVqaConfigDefaults - Initialize VqaConfig structure with defaults.
  *
  ****************************************************************************/
-
 
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqm32/video.h"
@@ -55,14 +54,14 @@
  *-------------------------------------------------------------------------*/
 
 /* Default configuration structure. */
-static VQAConfig defaultconfig = {
+static VqaConfig defaultconfig = {
 
-    /* DrawerCallback: This is a function that is called for every frame
+    /* frame_callback: This is a function that is called for every frame
      * in the movie.
      */
     nullptr,
 
-    /* EventHandler: This is a function that is called for every event that
+    /* event_handler: This is a function that is called for every event that
      * the client requested to be notified about.
      */
     nullptr,
@@ -78,63 +77,64 @@ static VQAConfig defaultconfig = {
     /* VBIBit: Vertical blank bit polarity. */
     -1,
 
-    /* ImageBuf: Caller-owned image storage. */
+    /* image_buffer: Caller-owned image storage. */
     {},
 
-    /* ImageWidth, ImageHeight: Width and height dimensions of image buffer.
+    /* image_width, image_height: Width and height dimensions of image buffer.
      * A width and height value of -1 tells the player to consider the image
      * buffer as having the same dimensions as the frames in the movie.
      */
     320,
     200, /* Image width and height */
 
-    /* X1, Y1: These are the coordinates to put the movies frame in the image
-     * buffer. Values of -1 tell the drawer to center the frames in the buffer.
+    /* margin_x, margin_y: These are the coordinates to put the movies frame in
+     * the image buffer. Values of -1 tell the drawer to center the frames in
+     * the buffer.
      */
     -1,
     -1,
 
-    /* FrameRate: The rate to load the frames at. A value of -1 tells the
+    /* frame_rate: The rate to load the frames at. A value of -1 tells the
      * player to use the framerate of the movie.
      */
     -1,
 
-    /* DrawRate: The rate to draw the frames at. A value of -1 tells the
+    /* draw_rate: The rate to draw the frames at. A value of -1 tells the
      * player to use the framerate of the movie. A value of 0 tells the player
      * to use a fixed rate based on the frame size.
      */
     -1,
 
-    /* TimerMethod: Timer method to use for playback. */
+    /* clock_source: Timer method to use for playback. */
     -1,
 
-    /* DrawFlags: Various drawing related flags. */
+    /* draw_flags: Various drawing related flags. */
     0,
 
-    /* OptionFlags: Various player options. */
-    VQAOPTF_AUDIO,
+    /* option_flags: Various player options. */
+    kVqaOptionAudio,
 
-    /* NumFrameBufs: The number of frame buffers to allocate/use. */
+    /* frame_buffer_count: The number of frame buffers to allocate/use. */
     6,
 
-    /* NumCBBufs: The number of codebook buffers to allocate/use. */
+    /* codebook_buffer_count: The number of codebook buffers to allocate/use. */
     3,
 
-    0,        // AudioDeviceID
-    nullptr,  // AudioCallback
-    nullptr,  // AudioSpec
+    0,        // audio_device_id
+    nullptr,  // audio_callback
+    nullptr,  // audio_spec
 
     /* VocFile: Filename of audio track override. A value of 0 tells the
      * player not to override the movies audio track.
      */
     nullptr,
 
-    /* AudioBuf: Audio buffer to use. A value of 0 tells the player that
+    /* audio_buffer: Audio buffer to use. A value of 0 tells the player that
      * it has to allocate a buffer itself.
      */
     {},
 
-    /* AudioBufSize: Size of audio buffer to use/allocate. A value of -1
+    /* audio_buffer_bytes: Size of audio buffer to use/allocate. A value of -1
      * tells the player to compute the buffer size from the audio
      * information in the movie.
      */
@@ -148,7 +148,7 @@ static VQAConfig defaultconfig = {
     /* Volume: Volume level to playback audio track. */
     0x00FF,
 
-    /* HMIBufSize: Size of HMIs internal buffer. */
+    /* audio_block_bytes: Size of HMIs internal buffer. */
     2048L,
 
     /* DigiHandle: Handle to an initialized HMI sound driver. A value of -1
@@ -191,12 +191,12 @@ static VQAConfig defaultconfig = {
 /****************************************************************************
  *
  * NAME
- *     VQA_DefaultConfig - Initialize VQAConfig structure with defaults.
+ *     SetVqaConfigDefaults - Initialize VqaConfig structure with defaults.
  *
  * SYNOPSIS
- *     VQA_DefaultConfig(Config);
+ *     SetVqaConfigDefaults(Config);
  *
- *     void VQA_DefaultConfig(VQAConfig *);
+ *     void SetVqaConfigDefaults(VqaConfig *);
  *
  * FUNCTION
  *     Initialize configuration with default settings.
@@ -209,4 +209,4 @@ static VQAConfig defaultconfig = {
  *
  ****************************************************************************/
 
-void VQA_DefaultConfig(VQAConfig* config) { *config = defaultconfig; }
+void SetVqaConfigDefaults(VqaConfig* config) { *config = defaultconfig; }

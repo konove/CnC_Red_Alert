@@ -30,7 +30,7 @@ void Check_For_Focus_Loss() {
   if (!TheGameState().in_focus()) {
     SDL_Event_Loop();
     if (TheGameState().in_focus()) {
-      VQA_ResumeAudio();
+      ResumeVqaAudio();
     }
   }
 }

@@ -41,7 +41,7 @@
  *----------------------------------------------------------------------------
  *
  * PUBLIC
- *     VQA_Configure_Drawer - Configure the drawer routines.
+ *     ConfigureDrawer - Configure the drawer routines.
  *
  * PRIVATE
  *     Select_Frame             - Selects frame to draw and preforms frame
@@ -63,7 +63,7 @@
  *     PageFlip_VESA            - Page flip VESA display.
  *     DrawFrame_Buffer         - Draw a frame to a buffer.
  *     PageFlip_Nop             - Do nothing page flip.
- *     UnVQ_Nop                 - Do nothing UnVQ.
+ *     UnVQ_Nop                 - Do nothing decode_frame.
  *     Mask_Rect                - Sets non-drawable rectangle in image.
  *     Mask_Pointers            - Mask vector pointer that are in the mask
  *                                rectangle.
@@ -86,10 +86,10 @@
 /*---------------------------------------------------------------------------
  * PRIVATE DECLARATIONS
  *-------------------------------------------------------------------------*/
-static int32_t Select_Frame(VQAHandle* vqap);
-static void Prepare_Frame(VQAData* vqabuf);
+static int32_t Select_Frame(VqaPlayerState* vqap);
+static void Prepare_Frame(VqaMovie* vqabuf);
 
-static int32_t DrawFrame_Buffer(VQAHandle* vqa);
+static int32_t DrawFrame_Buffer(VqaPlayerState* vqa);
 
 static void UnVQ_Nop(std::span<const unsigned char> codebook,
                      std::span<const unsigned char> pointers,
@@ -99,33 +99,32 @@ static void UnVQ_Nop(std::span<const unsigned char> codebook,
 /****************************************************************************
  *
  * NAME
- *     VQA_Configure_Drawer - Configure the drawer routines.
+ *     ConfigureDrawer - Configure the drawer routines.
  *
  * SYNOPSIS
- *     VQA_Configure_Drawer(VQA)
+ *     ConfigureDrawer(VQA)
  *
- *     void VQA_Configure_Drawer(VQAHandle *);
+ *     void ConfigureDrawer(VqaPlayerState *);
  *
  * FUNCTION
  *     Configure the drawing system for the current movie and configuration
  *     options.
  *
  * INPUTS
- *     VQA - Pointer to private VQAHandle.
+ *     VQA - Pointer to private VqaPlayerState.
  *
  * RESULT
  *     NONE
  *
  ****************************************************************************/
 
-void VQA_Configure_Drawer(VQAHandle* vqap) {
-
+void ConfigureDrawer(VqaPlayerState* vqap) {
   /* Dereference commonly used data members for quicker access. */
-  VQAData* vqabuf = vqap->data.get();
-  VQADrawer* drawer = &vqabuf->Drawer;
+  VqaMovie* vqabuf = vqap->movie.get();
+  VqaDrawer* drawer = &vqabuf->drawer;
   VqaHeader* header = &vqap->header;
-  VQAConfig* config = &vqap->config;
-  const uint32_t origin = config->DrawFlags & VQACFGF_ORIGIN;
+  VqaConfig* config = &vqap->config;
+  const uint32_t origin = config->draw_flags & kVqaDrawOriginMask;
 
   /*-------------------------------------------------------------------------
    * SET THE DRAW POSITION OF THE MOVIE.
@@ -133,71 +132,72 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
    * X1 = -1 -- Center image of the X axis, otherwise use X1 value.
    * Y1 = -1 -- Center image of the Y axis, otherwise use Y1 value.
    *-----------------------------------------------------------------------*/
-  if (config->X1 == -1 && config->Y1 == -1) {
-    drawer->X1 = (drawer->ImageWidth - header->image_width) / 2;
-    drawer->Y1 = (drawer->ImageHeight - header->image_height) / 2;
-    drawer->X2 = drawer->X1 + header->image_width - 1;
-    drawer->Y2 = drawer->Y1 + header->image_height - 1;
+  if (config->margin_x == -1 && config->margin_y == -1) {
+    drawer->x1 = (drawer->image_width - header->image_width) / 2;
+    drawer->y1 = (drawer->image_height - header->image_height) / 2;
+    drawer->x2 = drawer->x1 + header->image_width - 1;
+    drawer->y2 = drawer->y1 + header->image_height - 1;
   } else {
     // config->X1/Y1 is the gap between the image and the buffer corner the
     // origin names, mirroring the top-left case: a zero gap puts the image
     // flush in that corner. X1,Y1 is the image pixel nearest that corner and
     // X2,Y2 the opposite pixel, both inclusive.
     const bool right =
-        origin == VQACFGF_TOPRIGHT || origin == VQACFGF_BOTRIGHT;
+        origin == kVqaDrawTopRight || origin == kVqaDrawBottomRight;
     const bool bottom =
-        origin == VQACFGF_BOTLEFT || origin == VQACFGF_BOTRIGHT;
+        origin == kVqaDrawBottomLeft || origin == kVqaDrawBottomRight;
 
     if (right) {
-      drawer->X1 = drawer->ImageWidth - 1 - config->X1;
-      drawer->X2 = drawer->X1 - header->image_width + 1;
+      drawer->x1 = drawer->image_width - 1 - config->margin_x;
+      drawer->x2 = drawer->x1 - header->image_width + 1;
     } else {
-      drawer->X1 = config->X1;
-      drawer->X2 = drawer->X1 + header->image_width - 1;
+      drawer->x1 = config->margin_x;
+      drawer->x2 = drawer->x1 + header->image_width - 1;
     }
 
     if (bottom) {
-      drawer->Y1 = drawer->ImageHeight - 1 - config->Y1;
-      drawer->Y2 = drawer->Y1 - header->image_height + 1;
+      drawer->y1 = drawer->image_height - 1 - config->margin_y;
+      drawer->y2 = drawer->y1 - header->image_height + 1;
     } else {
-      drawer->Y1 = config->Y1;
-      drawer->Y2 = drawer->Y1 + header->image_height - 1;
+      drawer->y1 = config->margin_y;
+      drawer->y2 = drawer->y1 + header->image_height - 1;
     }
   }
 
   // The placement comes from the caller's config, not the file, so an image
-  // that does not fit the buffer is a programmer error. Unchecked, UnVQ would
-  // write outside the buffer from ScreenOffset.
-  DCHECK(std::min(drawer->X1, drawer->X2) >= 0 &&
-         std::max(drawer->X1, drawer->X2) < drawer->ImageWidth &&
-         std::min(drawer->Y1, drawer->Y2) >= 0 &&
-         std::max(drawer->Y1, drawer->Y2) < drawer->ImageHeight);
+  // that does not fit the buffer is a programmer error. Unchecked, decode_frame
+  // would write outside the buffer from image_offset.
+  DCHECK(std::min(drawer->x1, drawer->x2) >= 0 &&
+         std::max(drawer->x1, drawer->x2) < drawer->image_width &&
+         std::min(drawer->y1, drawer->y2) >= 0 &&
+         std::max(drawer->y1, drawer->y2) < drawer->image_height);
 
   /*-------------------------------------------------------------------------
    * INITIALIZE THE UNVQ ROUTINE FOR THE SPECIFIED VIDEO MODE AND BLOCK SIZE.
    *-----------------------------------------------------------------------*/
 
   /* Pre-compute commonly used values for speed. */
-  drawer->BlocksPerRow = header->image_width / header->block_width;
-  drawer->NumRows = header->image_height / header->block_height;
-  drawer->NumBlocks = drawer->BlocksPerRow * drawer->NumRows;
-  const uint32_t blkdim = BLOCK_DIM(header->block_width, header->block_height);
+  drawer->blocks_per_row = header->image_width / header->block_width;
+  drawer->block_rows = header->image_height / header->block_height;
+  drawer->NumBlocks = drawer->blocks_per_row * drawer->block_rows;
+  const uint32_t blkdim =
+      BlockDimensions(header->block_width, header->block_height);
 
   /* Initialize draw routine vectors to a NOP routine in order to prevent
    * a crash.
    */
-  vqabuf->UnVQ = UnVQ_Nop;
+  vqabuf->decode_frame = UnVQ_Nop;
 
   /* If the client specifies buffering then go ahead an set the unvq
    * vector. All of the buffered modes use the same unvq routines.
    */
-  if (config->DrawFlags & VQACFGF_BUFFER) {
+  if (config->draw_flags & kVqaDrawToBuffer) {
     switch (blkdim) {
-      case BLOCK_4X2:
-        vqabuf->UnVQ = UnVQ_4x2;
+      case kBlock4x2:
+        vqabuf->decode_frame = UnVQ_4x2;
         break;
-      case BLOCK_4X4:
-        vqabuf->UnVQ = UnVQ_4x4;
+      case kBlock4x4:
+        vqabuf->decode_frame = UnVQ_4x4;
         break;
       default:
         break;
@@ -209,12 +209,12 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
   {
     vqabuf->Draw_Frame = DrawFrame_Buffer;
 
-    // Pre-compute the draw offset for speed. UnVQ fills rightward and
+    // Pre-compute the draw offset for speed. decode_frame fills rightward and
     // downward, so it starts at the image's top-left pixel whichever corner
     // is anchored.
-    drawer->ScreenOffset =
-        (drawer->ImageWidth * std::min(drawer->Y1, drawer->Y2)) +
-        std::min(drawer->X1, drawer->X2);
+    drawer->image_offset =
+        (drawer->image_width * std::min(drawer->y1, drawer->y2)) +
+        std::min(drawer->x1, drawer->x2);
   }
 }
 
@@ -226,48 +226,47 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
  * SYNOPSIS
  *     Error = Select_Frame(VQA)
  *
- *     long Select_Frame(VQAHandle *);
+ *     long Select_Frame(VqaPlayerState *);
  *
  * FUNCTION
  *     Select a frame to draw. This is were the frame skipping/delay is
  *     performed.
  *
  * INPUTS
- *     VQA - Pointer to private VQAHandle.
+ *     VQA - Pointer to private VqaPlayerState.
  *
  * RESULT
  *     Error - 0 if successful, or VQAERR_??? error code.
  *
  ****************************************************************************/
 
-static int32_t Select_Frame(VQAHandle* vqap) {
-
+static int32_t Select_Frame(VqaPlayerState* vqap) {
   /* Dereference commonly used data members for quicker access. */
-  VQAConfig* config = &vqap->config;
-  VQAData* vqabuf = vqap->data.get();
-  VQADrawer* drawer = &vqabuf->Drawer;
-  VQAFrameNode* curframe = drawer->CurFrame;
+  VqaConfig* config = &vqap->config;
+  VqaMovie* vqabuf = vqap->movie.get();
+  VqaDrawer* drawer = &vqabuf->drawer;
+  VqaFrame* curframe = drawer->current_frame;
 
   /* Make sure the current frame is drawable. If the frame is not ready
    * then we must wait for the loader to catch up.
    */
-  if ((curframe->Flags & VQAFRMF_LOADED) == 0) {
+  if ((curframe->flags & kFrameLoaded) == 0) {
     drawer->WaitsOnLoader++;
-    return VQAERR_NOBUFFER;
+    return kVqaNoBuffer;
   }
 
   /* If single stepping then return with the next frame.*/
-  if (config->OptionFlags & VQAOPTF_STEP) {
-    drawer->LastFrame = curframe->FrameNum;
+  if (config->option_flags & kVqaOptionStep) {
+    drawer->last_selected_frame = curframe->frame_number;
     return 0;
   }
 
   /* Find the frame # we should play (rounded to nearest frame): */
-  const int64_t curtime = VQA_GetTime(vqap);
-  //	desiredframe = ((curtime * config->FrameRate) / VQA_TIMETICKS);
+  const int64_t curtime = ReadMovieClock(vqap);
+  //	desiredframe = ((curtime * config->frame_rate) / kVqaTicksPerSecond);
   // MEG MOD 06.22.95 - Should look for the desired frame to draw, not load,
   // right?
-  const int64_t desiredframe = curtime * config->DrawRate / VQA_TIMETICKS;
+  const int64_t desiredframe = curtime * config->draw_rate / kVqaTicksPerSecond;
 
   /* Handle the cases where the player is going so fast that it's not time
    * to draw this frame yet.
@@ -275,25 +274,26 @@ static int32_t Select_Frame(VQAHandle* vqap) {
    * - If the Drawer is using a slower frame rate than the Loader, use a
    *   delta-time-based wait; otherwise, use the frame number as the wait.
    */
-  if (config->DrawRate != config->FrameRate) {
-    if (curtime - drawer->LastTime < VQA_TIMETICKS / config->DrawRate) {
-      return VQAERR_NOT_TIME;
+  if (config->draw_rate != config->frame_rate) {
+    if (curtime - drawer->last_time < kVqaTicksPerSecond / config->draw_rate) {
+      return kVqaNotTime;
     }
   } else {
-    if (curframe->FrameNum > desiredframe) {
-      return VQAERR_NOT_TIME;
+    if (curframe->frame_number > desiredframe) {
+      return kVqaNotTime;
     }
   }
 
   /* Make sure we draw at least 5 frames per second */
-  if (curframe->FrameNum - drawer->LastFrame >= config->FrameRate / 5) {
-    drawer->LastFrame = curframe->FrameNum;
+  if (curframe->frame_number - drawer->last_selected_frame >=
+      config->frame_rate / 5) {
+    drawer->last_selected_frame = curframe->frame_number;
     return 0;
   }
 
   /* If frame skipping is disabled then draw every frame. */
-  if (config->DrawFlags & VQACFGF_NOSKIP) {
-    drawer->LastFrame = curframe->FrameNum;
+  if (config->draw_flags & kVqaDrawNoSkip) {
+    drawer->last_selected_frame = curframe->frame_number;
     return 0;
   }
 
@@ -302,7 +302,7 @@ static int32_t Select_Frame(VQAHandle* vqap) {
    *
    * - If this is a Key Frame, draw it
    * - If this frame's # is less than what we're supposed to draw, skip it
-   *   (Because the 1st 'desiredframe' will be 0, FrameNum MUST be typecast
+   *   (Because the 1st 'desiredframe' will be 0, frame_number MUST be typecast
    *   to signed WORD for the comparison; otherwise, the comparison uses
    *   UWORDs, and the first frame is always skipped.)
    * - If this is a palette-set frame, set the palette before skipping it
@@ -310,63 +310,63 @@ static int32_t Select_Frame(VQAHandle* vqap) {
    */
   while (true) {
     /* No frame available; return */
-    if ((curframe->Flags & VQAFRMF_LOADED) == 0) {
-      return VQAERR_NOBUFFER;
+    if ((curframe->flags & kFrameLoaded) == 0) {
+      return kVqaNoBuffer;
     }
 
     /* Force drawing of a Key Frame */
-    if (curframe->Flags & VQAFRMF_KEY) {
+    if (curframe->flags & kFrameKey) {
       break;
     }
 
     /* Skip the frame */
-    if (curframe->FrameNum < desiredframe) {
+    if (curframe->frame_number < desiredframe) {
       /* Handle a palette in a skipped frame:
        *
-       * - Stash the palette in Drawer.Palette_24
-       * - Set the Drawer.Flags VQADRWF_SETPAL bit, to tell the page-flip
+       * - Stash the palette in Drawer.saved_palette
+       * - Set the Drawer.Flags kDrawerPalettePending bit, to tell the page-flip
        *   routines that this palette must be set
        */
-      if (curframe->Flags & VQAFRMF_PALETTE) {
+      if (curframe->flags & kFrameHasPalette) {
         /* Un-LCW if needed */
-        if (curframe->Flags & VQAFRMF_PALCOMP) {
-          curframe->PaletteSize =
-              LCW_Uncompress(std::span(curframe->PaletteStorage)
-                                 .subspan(base::ToSize(curframe->PalOffset)),
-                             curframe->PaletteStorage);
+        if (curframe->flags & kFramePaletteCompressed) {
+          curframe->palette_bytes = LCW_Uncompress(
+              std::span(curframe->palette)
+                  .subspan(base::ToSize(curframe->palette_offset)),
+              curframe->palette);
 
-          curframe->Flags &= ~VQAFRMF_PALCOMP;
+          curframe->flags &= ~kFramePaletteCompressed;
         }
 
         // Stash the palette. A decompressed palette can report up to
-        // Max_Pal_Size bytes, more than the 256-color copy holds.
+        // palette_capacity bytes, more than the 256-color copy holds.
         const int32_t stash_size = std::min(
-            curframe->PaletteSize, int32_t{sizeof(drawer->Palette_24)});
-        base::CopyBytes(base::ObjectBytes(drawer->Palette_24),
-                        std::as_bytes(std::span(curframe->PaletteStorage)),
+            curframe->palette_bytes, int32_t{sizeof(drawer->saved_palette)});
+        base::CopyBytes(base::ObjectBytes(drawer->saved_palette),
+                        std::as_bytes(std::span(curframe->palette)),
                         stash_size);
-        drawer->CurPalSize = stash_size;
-        drawer->Flags |= VQADRWF_SETPAL;
+        drawer->saved_palette_bytes = stash_size;
+        drawer->flags |= kDrawerPalettePending;
       }
 
       /* Invoke callback with nullptr screen ptr */
-      if ((config->DrawerCallback != nullptr) &&
-          (config->DrawerCallback(nullptr, curframe->FrameNum) != 0)) {
-        return VQAERR_EOF;
+      if ((config->frame_callback != nullptr) &&
+          (config->frame_callback(nullptr, curframe->frame_number) != 0)) {
+        return kVqaEndOfMovie;
       }
 
       /* Skip the frame */
-      curframe->Flags = 0L;
-      curframe = curframe->Next;
-      drawer->CurFrame = curframe;
-      drawer->NumSkipped++;
+      curframe->flags = 0L;
+      curframe = curframe->next;
+      drawer->current_frame = curframe;
+      drawer->skipped_count++;
     } else {
       break;
     }
   }
 
-  drawer->LastFrame = curframe->FrameNum;
-  drawer->LastTime = curtime;
+  drawer->last_selected_frame = curframe->frame_number;
+  drawer->last_time = curtime;
 
   return 0;
 }
@@ -377,59 +377,58 @@ static int32_t Select_Frame(VQAHandle* vqap) {
  *     Prepare_Frame - Process/Decompress frame information.
  *
  * SYNOPSIS
- *     Prepare_Frame(VQAData)
+ *     Prepare_Frame(VqaMovie)
  *
- *     void Prepare_Frame(VQAData *);
+ *     void Prepare_Frame(VqaMovie *);
  *
  * FUNCTION
  *     Decompress and preprocess the various frame elements (codebook,
  *     pointers, palette, etc...)
  *
  * INPUTS
- *     VQAData - Pointer to VQAData structure.
+ *     VqaMovie - Pointer to VqaMovie structure.
  *
  * RESULT
  *     NONE
  *
  ****************************************************************************/
 
-static void Prepare_Frame(VQAData* vqabuf) {
-
+static void Prepare_Frame(VqaMovie* vqabuf) {
   /* Dereference commonly used data members for quicker access. */
-  VQADrawer* drawer = &vqabuf->Drawer;
-  VQAFrameNode* curframe = drawer->CurFrame;
-  VQACBNode* codebook = curframe->Codebook;
+  VqaDrawer* drawer = &vqabuf->drawer;
+  VqaFrame* curframe = drawer->current_frame;
+  VqaCodebook* codebook = curframe->codebook;
 
   /* Decompress the codebook, if needed */
-  if (codebook->Flags & VQACBF_CBCOMP) {
+  if (codebook->flags & kCodebookCompressed) {
     /* Decompress the codebook. */
-    LCW_Uncompress(std::span(codebook->BufferStorage)
-                       .subspan(base::ToSize(codebook->CBOffset)),
-                   codebook->BufferStorage);
+    LCW_Uncompress(std::span(codebook->buffer)
+                       .subspan(base::ToSize(codebook->compressed_offset)),
+                   codebook->buffer);
 
     /* Mark as uncompressed for the next time we use it */
-    codebook->Flags &= ~VQACBF_CBCOMP;
+    codebook->flags &= ~kCodebookCompressed;
   }
 
   /* Decompress the palette, if needed */
-  if (curframe->Flags & VQAFRMF_PALCOMP) {
-    curframe->PaletteSize =
-        LCW_Uncompress(std::span(curframe->PaletteStorage)
-                           .subspan(base::ToSize(curframe->PalOffset)),
-                       curframe->PaletteStorage);
+  if (curframe->flags & kFramePaletteCompressed) {
+    curframe->palette_bytes =
+        LCW_Uncompress(std::span(curframe->palette)
+                           .subspan(base::ToSize(curframe->palette_offset)),
+                       curframe->palette);
 
     /* Mark as uncompressed */
-    curframe->Flags &= ~VQAFRMF_PALCOMP;
+    curframe->flags &= ~kFramePaletteCompressed;
   }
 
   /* Decompress the pointer data, if needed */
-  if (curframe->Flags & VQAFRMF_PTRCOMP) {
-    LCW_Uncompress(std::span(curframe->PointersStorage)
-                       .subspan(base::ToSize(curframe->PtrOffset)),
-                   curframe->PointersStorage);
+  if (curframe->flags & kFramePointersCompressed) {
+    LCW_Uncompress(std::span(curframe->pointers)
+                       .subspan(base::ToSize(curframe->pointers_offset)),
+                   curframe->pointers);
 
     /* Mark as uncompressed */
-    curframe->Flags &= ~VQAFRMF_PTRCOMP;
+    curframe->flags &= ~kFramePointersCompressed;
   }
 }
 
@@ -441,7 +440,7 @@ static void Prepare_Frame(VQAData* vqabuf) {
  * SYNOPSIS
  *     Error = DrawFrame_Buffer(VQA)
  *
- *     long DrawFrame_Buffere(VQAHandle *);
+ *     long DrawFrame_Buffere(VqaPlayerState *);
  *
  * FUNCTION
  *
@@ -453,16 +452,15 @@ static void Prepare_Frame(VQAData* vqabuf) {
  *
  ****************************************************************************/
 
-static int32_t DrawFrame_Buffer(VQAHandle* vqa) {
-
+static int32_t DrawFrame_Buffer(VqaPlayerState* vqa) {
   auto* vqa_handle_p = vqa;
   /* Dereference data members for quicker access. */
-  const VQAConfig* config = &vqa_handle_p->config;
-  VQAData* vqabuf = vqa_handle_p->data.get();
-  VQADrawer* drawer = &vqabuf->Drawer;
+  const VqaConfig* config = &vqa_handle_p->config;
+  VqaMovie* vqabuf = vqa_handle_p->movie.get();
+  VqaDrawer* drawer = &vqabuf->drawer;
 
   /* Check our "sleep" state */
-  if (!(vqabuf->Flags & VQADATF_DSLEEP)) {
+  if (!(vqabuf->flags & kMovieDrawerAsleep)) {
     /* Find the frame to draw */
     if (const auto result = Select_Frame(vqa_handle_p); result != 0) {
       return result;
@@ -473,60 +471,62 @@ static int32_t DrawFrame_Buffer(VQAHandle* vqa) {
   }
 
   /* Wait for Update_Enabled to be set low */
-  if (vqabuf->Flags & VQADATF_UPDATE) {
-    vqabuf->Flags |= VQADATF_DSLEEP;
-    return VQAERR_SLEEPING;
+  if (vqabuf->flags & kMovieAwaitingRelease) {
+    vqabuf->flags |= kMovieDrawerAsleep;
+    return kVqaSleeping;
   }
 
-  if (vqabuf->Flags & VQADATF_DSLEEP) {
+  if (vqabuf->flags & kMovieDrawerAsleep) {
     drawer->WaitsOnFlipper++;
-    vqabuf->Flags &= ~VQADATF_DSLEEP;
+    vqabuf->flags &= ~kMovieDrawerAsleep;
   }
 
   /* Dereference current frame for quicker access. */
-  VQAFrameNode* curframe = drawer->CurFrame;
+  VqaFrame* curframe = drawer->current_frame;
 
-  if (drawer->ScreenOffset < 0 ||
-      base::ToSize(drawer->ScreenOffset) > drawer->ImageBuf.size()) {
-    return VQAERR_NOBUFFER;
+  if (drawer->image_offset < 0 ||
+      base::ToSize(drawer->image_offset) > drawer->image_buffer.size()) {
+    return kVqaNoBuffer;
   }
   const auto buff =
-      drawer->ImageBuf.subspan(base::ToSize(drawer->ScreenOffset));
+      drawer->image_buffer.subspan(base::ToSize(drawer->image_offset));
 
-  const auto pal = std::span(curframe->PaletteStorage);
-  const int32_t palsize = curframe->PaletteSize;
+  const auto pal = std::span(curframe->palette);
+  const int32_t palsize = curframe->palette_bytes;
   const uint32_t slowpal =
-      (config->OptionFlags & VQAOPTF_SLOWPAL) != 0 ? 1U : 0U;
+      (config->option_flags & kVqaOptionSlowPalette) != 0 ? 1U : 0U;
 
   /* Set the palette if necessary */
-  if (curframe->Flags & VQAFRMF_PALETTE || drawer->Flags & VQADRWF_SETPAL) {
-    Flag_To_Set_Palette(pal, palsize, slowpal);
-    curframe->Flags &= ~VQAFRMF_PALETTE;
-    drawer->Flags &= ~VQADRWF_SETPAL;
+  if (curframe->flags & kFrameHasPalette ||
+      drawer->flags & kDrawerPalettePending) {
+    QueueVqaPalette(pal, palsize, slowpal);
+    curframe->flags &= ~kFrameHasPalette;
+    drawer->flags &= ~kDrawerPalettePending;
   }
 
   /* Un-VQ the image */
-  vqabuf->UnVQ(curframe->Codebook->BufferStorage, curframe->PointersStorage,
-               buff, drawer->BlocksPerRow, drawer->NumRows, drawer->ImageWidth);
+  vqabuf->decode_frame(curframe->codebook->buffer, curframe->pointers, buff,
+                       drawer->blocks_per_row, drawer->block_rows,
+                       drawer->image_width);
 
   /* Remember the last frame drawn, for status reporting. */
-  drawer->LastFrameNum = curframe->FrameNum;
+  drawer->last_drawn_frame = curframe->frame_number;
 
   /* Tell the flipper which frame to use */
-  vqabuf->Flipper.CurFrame = curframe;
+  vqabuf->flipper.drawn_frame = curframe;
 
   /* Set the page-avail flag for the flipper */
-  vqabuf->Flags |= VQADATF_UPDATE;
+  vqabuf->flags |= kMovieAwaitingRelease;
 
   /* Invoke user's callback routine */
-  if ((config->DrawerCallback != nullptr) &&
-      (config->DrawerCallback(drawer->ImageBuf.data(), curframe->FrameNum) !=
-       0)) {
-    return VQAERR_EOF;
+  if ((config->frame_callback != nullptr) &&
+      (config->frame_callback(drawer->image_buffer.data(),
+                              curframe->frame_number) != 0)) {
+    return kVqaEndOfMovie;
   }
 
   /* Move to the next frame */
-  drawer->CurFrame = curframe->Next;
+  drawer->current_frame = curframe->next;
 
   return 0;
 }
@@ -534,7 +534,7 @@ static int32_t DrawFrame_Buffer(VQAHandle* vqa) {
 /****************************************************************************
  *
  * NAME
- *     UnVQ_Nop - Do nothing UnVQ.
+ *     UnVQ_Nop - Do nothing decode_frame.
  *
  * SYNOPSIS
  *     UnVQ_Nop(Codebook, Pointers, Buffer, BPR, Rows, BufWidth)

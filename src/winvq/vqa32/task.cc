@@ -17,7 +17,7 @@
 */
 
 // File: VqaPlayer, and the playback loop that takes turns between the
-// loader and the drawer (VQA_Play), with the small entry points around it.
+// loader and the drawer (PlayVqa), with the small entry points around it.
 //
 // Originally written by Bill Randolph and Denzil E. Long, Jr. at Westwood
 // Studios, July 1995, where the loader and drawer ran as tasks off a timer
@@ -40,33 +40,33 @@
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqa32/vqaplayp.h"
 
-// VqaPlayer is a thin wrapper: each method forwards to the VQA_* entry point
-// of the same name on its handle.
+// VqaPlayer is a thin wrapper: each method forwards to the matching entry
+// point (OpenVqa(), PlayVqa(), ...) on its state.
 
-VqaPlayer::VqaPlayer() : impl_(std::make_unique<VQAHandle>()) {}
+VqaPlayer::VqaPlayer() : impl_(std::make_unique<VqaPlayerState>()) {}
 
 VqaPlayer::~VqaPlayer() {
   // Only an open movie needs shutdown; Close() on a never-opened player
   // would call Close() on an io object that may never have been installed.
-  if (impl_->data != nullptr) {
+  if (impl_->movie != nullptr) {
     Close();
   }
 }
 
 void VqaPlayer::SetIo(VqaIo* io) { impl_->io = io; }
 
-int VqaPlayer::Open(std::string_view filename, VQAConfig* config) {
-  return static_cast<int>(VQA_Open(impl_.get(), filename, config));
+int VqaPlayer::Open(std::string_view filename, VqaConfig* config) {
+  return static_cast<int>(OpenVqa(impl_.get(), filename, config));
 }
 
-void VqaPlayer::Close() { VQA_Close(impl_.get()); }
+void VqaPlayer::Close() { CloseVqa(impl_.get()); }
 
 int VqaPlayer::Play(int mode) {
-  return static_cast<int>(VQA_Play(impl_.get(), mode));
+  return static_cast<int>(PlayVqa(impl_.get(), mode));
 }
 
 int VqaPlayer::SeekFrame(int frame, int fromwhere) {
-  return static_cast<int>(VQA_SeekFrame(impl_.get(), frame, fromwhere));
+  return static_cast<int>(SeekVqaFrame(impl_.get(), frame, fromwhere));
 }
 
 int VqaPlayer::SetStop(int frame) { return VQA_SetStop(impl_.get(), frame); }
@@ -77,17 +77,18 @@ void VqaPlayer::GetStats(VQAStatistics* stats) const {
   VQA_GetStats(impl_.get(), stats);
 }
 
-std::atomic<bool> VQAMovieDone = false;
+std::atomic<bool> vqa_movie_loaded = false;
 
 // Each pass of the loop gives the loader one frame to load and the drawer one
 // frame to draw; either may decline (no free buffer, not yet time) and the
 // loop comes round again, so a RUN spins until the movie is done. The loader
-// runs ahead by up to NumFrameBufs frames, which is what absorbs a slow read.
-int32_t VQA_Play(VQAHandle* vqa, int32_t mode) {
-  VQAData* vqabuf = nullptr;
-  VQAConfig* config = nullptr;
-  VQADrawer* drawer = nullptr;
-  int32_t rc = 0;
+// runs ahead by up to frame_buffer_count frames, which is what absorbs a slow
+// read.
+int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
+  VqaMovie* movie = nullptr;
+  VqaConfig* config = nullptr;
+  VqaDrawer* drawer = nullptr;
+  int32_t result = 0;
 
 #ifdef _WIN32
   // Run at high priority while the movie plays, so the busy loop below is not
@@ -97,159 +98,160 @@ int32_t VQA_Play(VQAHandle* vqa, int32_t mode) {
   SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
 #endif  // _WIN32
 
-  vqabuf = vqa->data.get();
-  drawer = &vqabuf->Drawer;
-  config = &vqa->config;
+  movie = state->movie.get();
+  drawer = &movie->drawer;
+  config = &state->config;
 
   // The first call starts playback. The sound starts first so the clock
-  // below can run from it, and only if VQA_Open() preloaded some. A movie
-  // whose audio ring came out empty (AudioBufSize 0, or -1 when 1.5 seconds
-  // of sound is less than one HMIBufSize block) plays silent.
-  if ((vqabuf->Flags & VQADATF_PRIMED) == 0) {
-    VQA_Configure_Drawer(vqa);
+  // below can run from it, and only if OpenVqa() preloaded some. A movie
+  // whose audio ring came out empty (audio_buffer_bytes 0, or -1 when 1.5
+  // seconds of sound is less than one audio_block_bytes block) plays silent.
+  if ((movie->flags & kMovieStarted) == 0) {
+    ConfigureDrawer(state);
 
-    if ((config->OptionFlags & VQAOPTF_AUDIO) != 0 &&
-        !vqabuf->Audio.IsLoadedStorage.empty() &&
-        vqabuf->Audio.IsLoadedStorage.front() != 0) {
-      VQA_StartAudio(vqa);
+    if ((config->option_flags & kVqaOptionAudio) != 0 &&
+        !movie->audio.block_loaded.empty() &&
+        movie->audio.block_loaded.front() != 0) {
+      StartMovieAudio(state);
     }
 
     // Set the clock to the time of the first frame loaded, so it is due now.
-    const auto i =
-        vqabuf->Drawer.CurFrame->FrameNum * VQA_TIMETICKS / config->DrawRate;
+    const auto first_frame_time = movie->drawer.current_frame->frame_number *
+                                  kVqaTicksPerSecond / config->draw_rate;
 
-    VQA_SetTimer(vqa, i, config->TimerMethod);
-    vqabuf->StartTime = VQA_GetTime(vqa);
+    SetMovieClock(state, first_frame_time, config->clock_source);
+    movie->start_time = ReadMovieClock(state);
 
-    vqabuf->Flags |= VQADATF_PRIMED;
+    movie->flags |= kMovieStarted;
   }
 
   switch (mode) {
-    case VQAMODE_PAUSE:
-      if ((vqabuf->Flags & VQADATF_PAUSED) == 0) {
-        vqabuf->Flags |= VQADATF_PAUSED;
-        vqabuf->EndTime = VQA_GetTime(vqa);
+    case kVqaModePause:
+      if ((movie->flags & kMoviePaused) == 0) {
+        movie->flags |= kMoviePaused;
+        movie->end_time = ReadMovieClock(state);
 
         // The clock follows the sound, so stopping it stops the clock too.
-        if ((vqabuf->Audio.Flags & VQAAUDF_ISPLAYING) != 0) {
-          VQA_StopAudio(vqa);
+        if ((movie->audio.flags & kAudioPlaying) != 0) {
+          StopMovieAudio(state);
         }
       }
 
-      rc = VQAERR_PAUSED;
+      result = kVqaPaused;
       break;
 
     // Shut down below without loading or drawing anything more.
-    case VQAMODE_STOP:
+    case kVqaModeStop:
       break;
 
-    case VQAMODE_RUN:
-    case VQAMODE_WALK:
+    case kVqaModeRun:
+    case kVqaModeWalk:
     default:
 
       // Resume a paused movie: the sound, and the clock from where it
       // stopped.
-      if ((vqabuf->Flags & VQADATF_PAUSED) != 0) {
-        vqabuf->Flags &= ~VQADATF_PAUSED;
+      if ((movie->flags & kMoviePaused) != 0) {
+        movie->flags &= ~kMoviePaused;
 
-        // VQA_StartAudio() fails only if some movie's sound is already
+        // StartMovieAudio() fails only if some movie's sound is already
         // playing, which ends this one.
-        if (((config->OptionFlags & VQAOPTF_AUDIO) != 0) &&
-            (VQA_StartAudio(vqa) != 0)) {
-          VQA_StopAudio(vqa);
+        if (((config->option_flags & kVqaOptionAudio) != 0) &&
+            (StartMovieAudio(state) != 0)) {
+          StopMovieAudio(state);
 #ifdef _WIN32
             SetPriorityClass(GetCurrentProcess(), process_priority);
 #endif  // _WIN32
-            return VQAERR_EOF;
+            return kVqaEndOfMovie;
         }
 
-        VQA_SetTimer(vqa, vqabuf->EndTime, config->TimerMethod);
+        SetMovieClock(state, movie->end_time, config->clock_source);
       }
 
       // Load, draw, load, draw... until both are done.
-      while ((vqabuf->Flags & (VQADATF_DDONE | VQADATF_LDONE)) !=
-             (VQADATF_DDONE | VQADATF_LDONE)) {
-        if ((vqabuf->Flags & VQADATF_LDONE) == 0) {
-          rc = VQA_LoadFrame(vqa);
-          if (rc == 0) {
-            vqabuf->LoadedFrames++;
+      while ((movie->flags & (kMovieDrawerDone | kMovieLoaderDone)) !=
+             (kMovieDrawerDone | kMovieLoaderDone)) {
+        if ((movie->flags & kMovieLoaderDone) == 0) {
+          result = LoadNextFrame(state);
+          if (result == 0) {
+            movie->loaded_frames++;
           } else {
             // A full ring or a wait on the sound is retried next pass. The
             // end of the file, or any error, ends the loading: the frames
             // already loaded still play.
-            if (rc != VQAERR_NOBUFFER && rc != VQAERR_SLEEPING) {
-              vqabuf->Flags |= VQADATF_LDONE;
-              rc = 0;
+            if (result != kVqaNoBuffer && result != kVqaSleeping) {
+              movie->flags |= kMovieLoaderDone;
+              result = 0;
             }
           }
         } else {
-          VQAMovieDone = true;
+          vqa_movie_loaded = true;
         }
 
-        if ((config->DrawFlags & VQACFGF_NODRAW) == 0) {
-          rc = (*vqabuf->Draw_Frame)(vqa);
-          if (rc == 0) {
-            vqabuf->DrawnFrames++;
-            rc = vqabuf->Drawer.LastFrameNum;
-            // The frame is on screen (the DrawerCallback showed it), so its
+        if ((config->draw_flags & kVqaDrawNothing) == 0) {
+          result = (*movie->Draw_Frame)(state);
+          if (result == 0) {
+            movie->drawn_frames++;
+            result = movie->drawer.last_drawn_frame;
+            // The frame is on screen (the frame_callback showed it), so its
             // buffer can go back to the loader.
-            if (User_Update(vqa) != 0) {
-              vqabuf->Flags |= VQADATF_DDONE | VQADATF_LDONE;
+            if (ReleaseDrawnFrame(state) != 0) {
+              movie->flags |= kMovieDrawerDone | kMovieLoaderDone;
             }
           } else {
-            // DrawerCallback asked to stop.
-            if (rc == VQAERR_EOF) {
+            // frame_callback asked to stop.
+            if (result == kVqaEndOfMovie) {
               break;
             }
             // Nothing left to draw once nothing more will be loaded.
-            if ((vqabuf->Flags & VQADATF_LDONE) != 0 && rc == VQAERR_NOBUFFER) {
-              vqabuf->Flags |= VQADATF_DDONE;
+            if ((movie->flags & kMovieLoaderDone) != 0 &&
+                result == kVqaNoBuffer) {
+              movie->flags |= kMovieDrawerDone;
             }
 
             // Too early for the next frame: let the client present or wait
             // instead of the loop spinning.
-            if (rc == VQAERR_NOT_TIME && config->EventHandler != nullptr) {
-              config->EventHandler(VQAEVENT_SYNC, nullptr, 0);
+            if (result == kVqaNotTime && config->event_handler != nullptr) {
+              config->event_handler(kVqaEventSync, nullptr, 0);
             }
           }
         } else {
           // Not drawing: discard each frame as soon as it is loaded.
-          vqabuf->Flags |= VQADATF_DDONE;
-          drawer->CurFrame->Flags = 0;
-          drawer->CurFrame = drawer->CurFrame->Next;
+          movie->flags |= kMovieDrawerDone;
+          drawer->current_frame->flags = 0;
+          drawer->current_frame = drawer->current_frame->next;
         }
 
-        if (mode == VQAMODE_WALK) {
+        if (mode == kVqaModeWalk) {
           break;
         }
       }
       break;
   }
 
-  if ((vqabuf->Flags & (VQADATF_DDONE | VQADATF_LDONE)) ==
-          (VQADATF_DDONE | VQADATF_LDONE) ||
-      mode == VQAMODE_STOP) {
+  if ((movie->flags & (kMovieDrawerDone | kMovieLoaderDone)) ==
+          (kMovieDrawerDone | kMovieLoaderDone) ||
+      mode == kVqaModeStop) {
     // Read the clock before stopping the sound, since the clock is the
     // amount of sound played.
-    vqabuf->EndTime = VQA_GetTime(vqa);
+    movie->end_time = ReadMovieClock(state);
 
-    rc = VQAERR_EOF;
+    result = kVqaEndOfMovie;
   }
 
   // Every return stops the sound, even a walk that will be called again;
   // the next call does not restart it (only a resume from pause does).
-  if ((vqabuf->Audio.Flags & VQAAUDF_ISPLAYING) != 0) {
-    VQA_StopAudio(vqa);
+  if ((movie->audio.flags & kAudioPlaying) != 0) {
+    StopMovieAudio(state);
   }
 
 #ifdef _WIN32
   SetPriorityClass(GetCurrentProcess(), process_priority);
 #endif  // _WIN32
 
-  return rc;
+  return result;
 }
 
-int32_t VQA_SetStop(VQAHandle* vqa, int32_t stop) {
+int32_t VQA_SetStop(VqaPlayerState* vqa, int32_t stop) {
   int32_t oldstop = -1;
 
   auto* header = &vqa->header;
@@ -262,38 +264,38 @@ int32_t VQA_SetStop(VQAHandle* vqa, int32_t stop) {
   return oldstop;
 }
 
-void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info) {
+void VQA_GetInfo(VqaPlayerState* vqa, VQAInfo* info) {
   const auto* header = &vqa->header;
 
   info->NumFrames = header->frame_count;
-  info->ImageHeight = header->image_height;
-  info->ImageWidth = header->image_width;
-  info->ImageBuf = vqa->data->Drawer.ImageBuf;
+  info->image_height = header->image_height;
+  info->image_width = header->image_width;
+  info->image_buffer = vqa->movie->drawer.image_buffer;
 }
 
-void VQA_GetStats(const VQAHandle* vqa, VQAStatistics* stats) {
-  VQAData* vqabuf = vqa->data.get();
+void VQA_GetStats(const VqaPlayerState* vqa, VQAStatistics* stats) {
+  VqaMovie* vqabuf = vqa->movie.get();
 
-  stats->MemUsed = vqabuf->MemUsed;
-  stats->StartTime = vqabuf->StartTime;
-  stats->EndTime = vqabuf->EndTime;
-  stats->FramesLoaded = vqabuf->LoadedFrames;
-  stats->FramesDrawn = vqabuf->DrawnFrames;
-  stats->FramesSkipped = vqabuf->Drawer.NumSkipped;
-  stats->MaxFrameSize = vqabuf->Loader.MaxFrameSize;
-  stats->SamplesPlayed = vqabuf->Audio.SamplesPlayed;
+  stats->allocated_bytes = vqabuf->allocated_bytes;
+  stats->start_time = vqabuf->start_time;
+  stats->end_time = vqabuf->end_time;
+  stats->FramesLoaded = vqabuf->loaded_frames;
+  stats->FramesDrawn = vqabuf->drawn_frames;
+  stats->FramesSkipped = vqabuf->drawer.skipped_count;
+  stats->max_frame_bytes = vqabuf->loader.max_frame_bytes;
+  stats->SamplesPlayed = vqabuf->audio.SamplesPlayed;
 }
 
-int64_t User_Update(const VQAHandle* vqa) {
-  auto* vqabuf = vqa->data.get();
+int64_t ReleaseDrawnFrame(const VqaPlayerState* state) {
+  auto* movie = state->movie.get();
 
-  if ((vqabuf->Flags & VQADATF_UPDATE) != 0) {
+  if ((movie->flags & kMovieAwaitingRelease) != 0) {
     // Remember the last frame released, for status reporting.
-    vqabuf->Flipper.LastFrameNum = vqabuf->Flipper.CurFrame->FrameNum;
+    movie->flipper.LastFrameNum = movie->flipper.drawn_frame->frame_number;
 
     // Clearing the flags hands the buffer back to the loader.
-    vqabuf->Flipper.CurFrame->Flags = 0;
-    vqabuf->Flags &= ~VQADATF_UPDATE;
+    movie->flipper.drawn_frame->flags = 0;
+    movie->flags &= ~kMovieAwaitingRelease;
   }
 
   return 0;

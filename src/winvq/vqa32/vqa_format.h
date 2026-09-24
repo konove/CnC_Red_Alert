@@ -60,7 +60,7 @@ struct VqaHeader {
   uint16_t single_color_blocks;
   uint16_t codebook_entries;  // Sizes the codebook buffer
   // Where the encoder wanted the frames drawn; 0xFFFF (-1) centers on that
-  // axis. Unused by the player, which takes the position from VQAConfig.
+  // axis. Unused by the player, which takes the position from VqaConfig.
   uint16_t draw_x;
   uint16_t draw_y;
   uint16_t max_frame_bytes;  // Size of the largest frame. Unused.

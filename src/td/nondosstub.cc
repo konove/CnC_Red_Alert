@@ -97,8 +97,8 @@ static int32_t VQNumBytes;
 static uint32_t VQSlowpal;
 static bool VQPaletteChange = false;
 
-void Flag_To_Set_Palette(std::span<unsigned char> palette, int32_t numbytes,
-                         uint32_t slowpal) {
+void QueueVqaPalette(std::span<unsigned char> palette, int32_t numbytes,
+                     uint32_t slowpal) {
   VQPalette = palette;
   VQNumBytes = numbytes;
   VQSlowpal = slowpal;

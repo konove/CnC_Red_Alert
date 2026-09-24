@@ -1309,35 +1309,36 @@ static void Play_Intro(bool sequenced) {
  *=============================================================================================*/
 void Anim_Init() {
   /* Configure player with INI file */
-  VQA_DefaultConfig(&TheGameState().anim_control());
-  TheGameState().anim_control().DrawFlags = VQACFGF_TOPLEFT;
-  TheGameState().anim_control().DrawFlags |= VQACFGF_BUFFER;
+  SetVqaConfigDefaults(&TheGameState().anim_control());
+  TheGameState().anim_control().draw_flags = kVqaDrawTopLeft;
+  TheGameState().anim_control().draw_flags |= kVqaDrawToBuffer;
   // AnimControl.DrawFlags |= VQACFGF_NODRAW;
   // BG - M. Grayford says turn this off
   // AnimControl.DrawFlags |= VQACFGF_NOSKIP;
 
-  TheGameState().anim_control().DrawFlags |= VQACFGF_NOSKIP;
-  TheGameState().anim_control().FrameRate = -1;
-  TheGameState().anim_control().DrawRate = -1;
-  TheGameState().anim_control().DrawerCallback = VQ_Call_Back;
-  TheGameState().anim_control().EventHandler = VQ_Event_Handler;
-  TheGameState().anim_control().ImageWidth = 320;
-  TheGameState().anim_control().ImageHeight = 200;
-  TheGameState().anim_control().ImageBuf = TheScreen().sys_mem_page().bytes();
+  TheGameState().anim_control().draw_flags |= kVqaDrawNoSkip;
+  TheGameState().anim_control().frame_rate = -1;
+  TheGameState().anim_control().draw_rate = -1;
+  TheGameState().anim_control().frame_callback = VQ_Call_Back;
+  TheGameState().anim_control().event_handler = VQ_Event_Handler;
+  TheGameState().anim_control().image_width = 320;
+  TheGameState().anim_control().image_height = 200;
+  TheGameState().anim_control().image_buffer =
+      TheScreen().sys_mem_page().bytes();
   if (TheScreen().is_vq640()) {
-    TheGameState().anim_control().ImageWidth = 640;
-    TheGameState().anim_control().ImageHeight = 400;
-    TheGameState().anim_control().ImageBuf = TheScreen().vq640().bytes();
+    TheGameState().anim_control().image_width = 640;
+    TheGameState().anim_control().image_height = 400;
+    TheGameState().anim_control().image_buffer = TheScreen().vq640().bytes();
   }
   TheGameState().anim_control().Vmode = 0;
-  TheGameState().anim_control().OptionFlags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
+  TheGameState().anim_control().option_flags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
   if (ThePalettes().slow_palette()) {
-    TheGameState().anim_control().OptionFlags |= VQAOPTF_SLOWPAL;
+    TheGameState().anim_control().option_flags |= kVqaOptionSlowPalette;
   }
-  TheGameState().anim_control().AudioDeviceID = TheAudio().device_id();
-  TheGameState().anim_control().AudioCallback =
+  TheGameState().anim_control().audio_device_id = TheAudio().device_id();
+  TheGameState().anim_control().audio_callback =
       TheAudio().extra_callback_slot();
-  TheGameState().anim_control().AudioSpec = TheAudio().output_spec();
+  TheGameState().anim_control().audio_spec = TheAudio().output_spec();
 }
 
 // Kept out of Parse_Command_Line() so the std::optional below does not make

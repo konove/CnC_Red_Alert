@@ -87,7 +87,7 @@ class GameState {
   auto& version_text() ABSL_ATTRIBUTE_LIFETIME_BOUND { return version_text_; }
 
   // How movies are played, read from the INI file and overridden in code.
-  VQAConfig& anim_control() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  VqaConfig& anim_control() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return anim_control_;
   }
 
@@ -151,7 +151,7 @@ class GameState {
   int required_cd_ = -1;
   char version_text_[kVersionTextLength]{};
 
-  VQAConfig anim_control_{};
+  VqaConfig anim_control_{};
   SpecialDialogType special_dialog_ = SDLG_NONE;
   CountDownTimerClass speech_timer_{int64_t{0}};
 

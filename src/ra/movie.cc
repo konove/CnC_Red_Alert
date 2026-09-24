@@ -101,27 +101,27 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     player.SetIo(&movie_io);
 
     if (TheScreen().is_vq640()) {
-      TheGameState().anim_control().ImageWidth = 640;
-      TheGameState().anim_control().ImageHeight = 400;
-      TheGameState().anim_control().ImageBuf = TheScreen().vq640().bytes();
+      TheGameState().anim_control().image_width = 640;
+      TheGameState().anim_control().image_height = 400;
+      TheGameState().anim_control().image_buffer = TheScreen().vq640().bytes();
     } else {
-      TheGameState().anim_control().ImageWidth = 320;
-      TheGameState().anim_control().ImageHeight = 200;
-      TheGameState().anim_control().ImageBuf =
+      TheGameState().anim_control().image_width = 320;
+      TheGameState().anim_control().image_height = 200;
+      TheGameState().anim_control().image_buffer =
           TheScreen().sys_mem_page().bytes();
     }
 
     if (!TheDebugState().quiet() && TheAudio().is_open()) {
-      TheGameState().anim_control().OptionFlags |= VQAOPTF_AUDIO;
+      TheGameState().anim_control().option_flags |= kVqaOptionAudio;
     } else {
-      TheGameState().anim_control().OptionFlags &= ~VQAOPTF_AUDIO;
+      TheGameState().anim_control().option_flags &= ~kVqaOptionAudio;
     }
 
     if (player.Open(fullname, &TheGameState().anim_control()) == 0) {
       movie_broken_out = false;
       TheScreen().sys_mem_page().view().Clear();
       TheGameState().in_movie() = true;
-      player.Play(VQAMODE_RUN);
+      player.Play(kVqaModeRun);
       player.Close();
       TheGameState().in_movie() = false;
       TheScreen().set_is_vq640(false);
@@ -184,7 +184,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
   }
 
   if (!TheGameState().in_focus()) {
-    VQA_PauseAudio();
+    PauseVqaAudio();
     while (!TheGameState().in_focus()) {
       Check_For_Focus_Loss();
     }
@@ -196,7 +196,7 @@ int32_t VQ_Call_Back(unsigned char* /*unused*/, int32_t /*unused*/) {
 int32_t VQ_Event_Handler(const uint32_t event, void* /*buffer*/,
                          int32_t /*n_bytes*/) {
   // vsync while waiting for frame
-  if (event == VQAEVENT_SYNC) {
+  if (event == kVqaEventSync) {
     TheDisplay().EndFrame();
   }
   return 0;

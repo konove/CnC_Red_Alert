@@ -73,7 +73,7 @@ class GameState {
   int& current_cd() ABSL_ATTRIBUTE_LIFETIME_BOUND { return current_cd_; }
 
   // How movies are played, read from the INI file and overridden in code.
-  VQAConfig& anim_control() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  VqaConfig& anim_control() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return anim_control_;
   }
 
@@ -122,7 +122,7 @@ class GameState {
   int required_cd_ = -1;
   int current_cd_ = -1;
 
-  VQAConfig anim_control_{};
+  VqaConfig anim_control_{};
 
   SpecialDialogType special_dialog_ = SDLG_NONE;
 

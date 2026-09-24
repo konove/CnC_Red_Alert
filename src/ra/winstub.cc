@@ -60,8 +60,8 @@
 
 unsigned long CCFocusMessage =
     WM_USER + 50;  // Private message for receiving application focus
-extern void VQA_PauseAudio();
-extern void VQA_ResumeAudio();
+extern void PauseVqaAudio();
+extern void ResumeVqaAudio();
 
 // #include "WolDebug.h"
 
@@ -98,7 +98,7 @@ void Check_For_Focus_Loss() {
   }
 
   if (!focus_last_time && TheGameState().in_focus()) {
-    VQA_PauseAudio();
+    PauseVqaAudio();
     CountDownTimerClass cd;
     cd.Set(60 * 1);
 
@@ -112,7 +112,7 @@ void Check_For_Focus_Loss() {
       }
 
     } while (cd.Time());
-    VQA_ResumeAudio();
+    ResumeVqaAudio();
     PostMessage(MainWindow, CCFocusMessage, 0, 0);
     //		AllSurfaces.Restore_Surfaces();
     //		visible_page.Clear();
