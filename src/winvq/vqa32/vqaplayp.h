@@ -411,9 +411,8 @@ struct VQAData {
 
   // RAII storage for buffers
   std::vector<unsigned char> ImageBufStorage;
-  // One FINF entry per header frame. Entries are 4 bytes on disk: the
-  // VQAFINF_FLAGS bits on top and the halved file offset below (see
-  // FrameByteOffset).
+  // One FINF entry per header frame: 4 flag bits on top of the halved file
+  // offset (see kFrameInfoHasPalette and FrameByteOffset in vqafile.h).
   std::vector<uint32_t> FoffStorage;
 
   VQAFrameNode* FrameData = nullptr;  // Points to first node in FrameNodes
