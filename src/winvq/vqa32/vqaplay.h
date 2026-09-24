@@ -21,6 +21,7 @@
 #include <cstdint>
 #include <memory>
 #include <span>
+#include <string_view>
 
 // File: the public interface of the VQA movie player - VqaPlayer, the
 // VQAConfig a movie is opened with, and the codes and flags that go with them.
@@ -229,8 +230,8 @@ struct VQAInfo {
   // Frame size in pixels.
   int32_t ImageWidth;
   int32_t ImageHeight;
-  // The buffer frames are decoded into; nullptr when there is none.
-  unsigned char* ImageBuf;
+  // The buffer frames are decoded into; empty when there is none.
+  std::span<unsigned char> ImageBuf;
 };
 
 // VQAStatistics: what VqaPlayer::GetStats() reports about the playback so far.
@@ -288,7 +289,7 @@ class VqaPlayer {
   // be nullptr to use defaults; the configuration is copied. No movie may be
   // open already. Returns 0 on success or a VQAERR_* code, with the player
   // closed again on failure.
-  int Open(const char* filename, VQAConfig* config);
+  int Open(std::string_view filename, VQAConfig* config);
 
   // Closes the movie, if one is open, and makes the player reusable.
   void Close();

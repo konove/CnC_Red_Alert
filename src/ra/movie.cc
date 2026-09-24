@@ -25,7 +25,6 @@
 #include <cstdint>
 #include <filesystem>
 #include <span>
-#include <string>
 
 #include "absl/log/log.h"
 #include "ra/const.h"
@@ -118,7 +117,7 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
       TheGameState().anim_control().OptionFlags &= ~VQAOPTF_AUDIO;
     }
 
-    if (player.Open(fullname.c_str(), &TheGameState().anim_control()) == 0) {
+    if (player.Open(fullname, &TheGameState().anim_control()) == 0) {
       movie_broken_out = false;
       TheScreen().sys_mem_page().view().Clear();
       TheGameState().in_movie() = true;

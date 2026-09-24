@@ -66,14 +66,13 @@
  *
  ****************************************************************************/
 
-#include "winvq/vqa32/vqaio.h"
-
 #include <algorithm>
 #include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <span>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -81,6 +80,7 @@
 #include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "winvq/vqa32/vqa_format.h"
+#include "winvq/vqa32/vqaio.h"
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqa32/vqaplayp.h"
 #include "winvq/vqm32/compress.h"
@@ -92,9 +92,8 @@
  * PRIVATE DECLARATIONS
  *-------------------------------------------------------------------------*/
 
-static VQAData* AllocBuffers(const VqaHeader* header, VQAConfig* config);
-static void FreeBuffers(const VQAData* vqa, VQAConfig* config,
-                        VqaHeader* header);
+static std::unique_ptr<VQAData> AllocBuffers(const VqaHeader* header,
+                                             VQAConfig* config);
 static int32_t PrimeBuffers(VQAHandle* vqa);
 static int32_t Load_VQF(VQAHandle* vqap, int32_t iffsize);
 static int32_t Load_FINF(const VQAHandle* vqap, int32_t iffsize);
@@ -165,14 +164,14 @@ static constexpr bool FitsInBuffer(int64_t offset, int64_t size,
  *
  ****************************************************************************/
 
-int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
+int32_t VQA_Open(VQAHandle* vqa, std::string_view filename, VQAConfig* config) {
   ChunkHeader chunk{};
 
   /* Dereference commonly used data members for quicker access. */
   VQAHandle* vqap = vqa;
   VqaHeader* header = &vqap->header;
 
-  VQAMovieDone = 0;
+  VQAMovieDone = false;
   /*-------------------------------------------------------------------------
    * VERIFY VALIDITY OF VQA FILE.
    *-----------------------------------------------------------------------*/
@@ -391,12 +390,12 @@ int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
           22050L / header->fps * header->frame_count;
       audio->ADPCM_Info.channels = 1;
     } else {
-      audio->ADPCM_Info.bit_size = audio->BitsPerSample;
-      audio->ADPCM_Info.uncomp_size = audio->SampleRate / header->fps *
-                                      (audio->BitsPerSample >> 3) *
-                                      audio->Channels * header->frame_count;
+      audio->ADPCM_Info.bit_size = static_cast<int16_t>(audio->BitsPerSample);
+      audio->ADPCM_Info.uncomp_size = static_cast<uint32_t>(
+          audio->SampleRate / header->fps * (audio->BitsPerSample / 8) *
+          audio->Channels * header->frame_count);
 
-      audio->ADPCM_Info.channels = audio->Channels;
+      audio->ADPCM_Info.channels = static_cast<int16_t>(audio->Channels);
     }
 
     audio->ADPCM_Info.comp_size =
@@ -448,16 +447,10 @@ void VQA_Close(VQAHandle* vqa) {
     VQA_StopTimerInt(vqa_handle_p);
   }
 
-  /* Free memory */
-  if (vqa_handle_p->data != nullptr) {
-    FreeBuffers(vqa_handle_p->data, &vqa_handle_p->config,
-                &vqa_handle_p->header);
-  }
-
   /* Close the VQA file */
   vqa_handle_p->io->Close();
 
-  /* Reset the VQAHandle */
+  // Also frees the play buffers.
   vqa->Reset();
 }
 
@@ -504,7 +497,7 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
 
   /* Dereference commonly used data members for quicker access. */
   VQAHandle* vqa_handle_p = vqa;
-  VQAData* vqabuf = vqa_handle_p->data;
+  VQAData* vqabuf = vqa_handle_p->data.get();
   VQALoader* loader = &vqabuf->Loader;
   VQADrawer* drawer = &vqa_handle_p->data->Drawer;
   VQAFrameNode* curframe = loader->CurFrame;
@@ -883,7 +876,7 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
   int32_t rc = VQAERR_NONE;
   /* Dereference commonly used data members for quick access. */
   VQAHandle* vqap = vqa;
-  VQAData* vqabuf = vqap->data;
+  VQAData* vqabuf = vqap->data.get();
   VQALoader* loader = &vqabuf->Loader;
   VqaHeader* header = &vqap->header;
   VQAConfig* config = &vqap->config;
@@ -973,7 +966,7 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
 
           /* Position the audio buffer to 1/2 second. */
           audio->AudBufPos = audio->SampleRate * audio->Channels *
-                             (audio->BitsPerSample >> 3) / 2;
+                             (audio->BitsPerSample / 8) / 2;
 
           /* Mark 1/2 second of the audio buffer as loaded. */
           for (int32_t i = 0; i < audio->AudBufPos / config->HMIBufSize; i++) {
@@ -1080,7 +1073,8 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
  *
  ****************************************************************************/
 
-static VQAData* AllocBuffers(const VqaHeader* header, VQAConfig* config) {
+static std::unique_ptr<VQAData> AllocBuffers(const VqaHeader* header,
+                                             VQAConfig* config) {
   /* Check the configuration for valid values. */
   if (config->NumCBBufs == 0 || config->NumFrameBufs == 0) {
     return nullptr;
@@ -1222,7 +1216,7 @@ static VQAData* AllocBuffers(const VqaHeader* header, VQAConfig* config) {
 
     /* Version 1 VQA's only supported 22050 8 bit mono audio. */
     if (header->version < kVqaVersion2) {
-      audio->SampleRate = 22050U;
+      audio->SampleRate = 22050;
       audio->Channels = 1;
       audio->BitsPerSample = 8;
       audio->BytesPerSec = 22050;
@@ -1239,7 +1233,7 @@ static VQAData* AllocBuffers(const VqaHeader* header, VQAConfig* config) {
       }
 
       audio->BytesPerSec =
-          audio->SampleRate * audio->Channels * (audio->BitsPerSample >> 3);
+          audio->SampleRate * audio->Channels * (audio->BitsPerSample / 8);
     }
 
     /* The default audio buffer size should be large enough to hold
@@ -1296,47 +1290,7 @@ static VQAData* AllocBuffers(const VqaHeader* header, VQAConfig* config) {
   /* Keep a running total of memory usage. */
   vqa->MemUsed += header->frame_count * int32_t{sizeof(*vqa->Foff)};
 
-  /* Release ownership - caller is responsible for the pointer now.
-   * VQAHandle::VQABuf will own this pointer. */
-  return vqa_ptr.release();
-}
-
-/****************************************************************************
- *
- * NAME
- *     FreeBuffers - Free VQA play buffers.
- *
- * SYNOPSIS
- *     FreeBuffers(VQAData, Config, Header)
- *
- *     void FreeBuffers(VQAData *, VQAConfig *, VqaHeader *);
- *
- * FUNCTION
- *      Free the buffers allocated by AllocBuffers().
- *
- * INPUTS
- *      VQAData - Pointer to VQAData structure.
- *      Config  - Pointer to configuration structure.
- *      Header  - Pointer to movie header structure.
- *
- * RESULT
- *      NONE
- *
- ****************************************************************************/
-
-static void FreeBuffers(const VQAData* vqa, VQAConfig* /*config*/,
-                        VqaHeader* /*header*/) {
-  /* With RAII, all we need to do is delete the VQAData structure.
-   * The vectors and unique_ptrs inside will automatically clean up:
-   * - FoffStorage (vector<uint32_t>)
-   * - Audio.BufferStorage, IsLoadedStorage, TempBufStorage (vectors)
-   * - ImageBufStorage (vector<unsigned char>)
-   * - FrameNodes (vector<unique_ptr<VQAFrameNode>>)
-   * - CBNodes (vector<unique_ptr<VQACBNode>>)
-   * Each node's BufferStorage/PointersStorage/PaletteStorage vectors
-   * are also automatically cleaned up.
-   */
-  delete vqa;
+  return vqa_ptr;
 }
 
 /****************************************************************************
@@ -1364,7 +1318,7 @@ static void FreeBuffers(const VQAData* vqa, VQAConfig* /*config*/,
 int32_t PrimeBuffers(VQAHandle* vqa) {
 
   /* Dereference commonly used data members for quick access. */
-  VQAData* vqabuf = vqa->data;
+  VQAData* vqabuf = vqa->data.get();
   VQAConfig* config = &vqa->config;
 
   /* Pre-load the buffers */
@@ -1414,7 +1368,7 @@ static int32_t Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
   int64_t bytes_loaded = 0;  // 64-bit: sums sizes up to 2^31 each.
 
   /* Dereference commonly used data members for quicker access. */
-  VQAData* vqabuf = vqap->data;
+  VQAData* vqabuf = vqap->data.get();
   VQAFrameNode* curframe = vqabuf->Loader.CurFrame;
   const int32_t framesize = PadSize(frame_iffsize);
   VQADrawer* drawer = &vqap->data->Drawer;
@@ -1564,7 +1518,7 @@ static int32_t Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
  ****************************************************************************/
 
 static int32_t Load_FINF(const VQAHandle* vqap, int32_t iffsize) {
-  VQAData* vqabuf = vqap->data;
+  VQAData* vqabuf = vqap->data.get();
 
   // The table has one 4-byte entry per frame in the header. Copying no more
   // than that and skipping the rest keeps an oversized chunk from writing
@@ -1719,7 +1673,7 @@ static int32_t Load_CBFZ(const VQAHandle* vqap, int32_t iffsize) {
 static int32_t Load_CBP0(const VQAHandle* vqap, int32_t iffsize) {
 
   /* Dereference commonly used data members for quicker access. */
-  VQAData* vqabuf = vqap->data;
+  VQAData* vqabuf = vqap->data.get();
   VQALoader* loader = &vqabuf->Loader;
   VQACBNode* curcb = loader->CurCB;
 
@@ -1789,7 +1743,7 @@ static int32_t Load_CBP0(const VQAHandle* vqap, int32_t iffsize) {
 static int32_t Load_CBPZ(const VQAHandle* vqap, int32_t iffsize) {
 
   /* Dereference commonly used data members for quicker access */
-  VQAData* vqabuf = vqap->data;
+  VQAData* vqabuf = vqap->data.get();
   VQALoader* loader = &vqabuf->Loader;
   VQACBNode* curcb = loader->CurCB;
   const int32_t padsize = PadSize(iffsize);
@@ -2068,7 +2022,7 @@ static int32_t Load_VPTZ(const VQAHandle* vqap, int32_t iffsize) {
 static int32_t Load_SND0(VQAHandle* vqap, int32_t iffsize) {
 
   /* Dereference commonly used data members for quicker access. */
-  VQAData* vqabuf = vqap->data;
+  VQAData* vqabuf = vqap->data.get();
   VQAAudio* audio = &vqabuf->Audio;
   VQAConfig* config = &vqap->config;
   const int32_t padsize = PadSize(iffsize);
@@ -2148,7 +2102,7 @@ static int32_t Load_SND1(VQAHandle* vqap, int32_t iffsize) {
   ZAPHeader zap{};
 
   /* Dereference commonly used data members for quicker access. */
-  VQAData* vqabuf = vqap->data;
+  VQAData* vqabuf = vqap->data.get();
   VQAAudio* audio = &vqabuf->Audio;
   VQAConfig* config = &vqap->config;
   int32_t padsize = PadSize(iffsize);
@@ -2273,7 +2227,7 @@ static int32_t Load_SND2(VQAHandle* vqap, int32_t iffsize) {
   std::span<unsigned char> loadbuf;
 
   /* Dereference commonly used data members for quicker access. */
-  VQAData* vqabuf = vqap->data;
+  VQAData* vqabuf = vqap->data.get();
   VQAAudio* audio = &vqabuf->Audio;
   VQAConfig* config = &vqap->config;
   const int32_t padsize = PadSize(iffsize);

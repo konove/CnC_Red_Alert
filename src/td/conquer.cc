@@ -2164,7 +2164,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       TheGameState().anim_control().OptionFlags &= ~VQAOPTF_AUDIO;
     }
 
-    if (player.Open(fullname.c_str(), &TheGameState().anim_control()) == 0) {
+    if (player.Open(fullname, &TheGameState().anim_control()) == 0) {
       movie_broken_out = false;
       // Suspend_Audio_Thread();
 

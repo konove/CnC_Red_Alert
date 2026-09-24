@@ -272,7 +272,7 @@ static int OpenCount = 0;
 int32_t VQA_OpenAudio(VQAHandle* vqap) {
   /* Dereference data memebers for quicker access. */
   VQAConfig* config = &vqap->config;
-  VQAData* vqabuf = vqap->data;
+  VQAData* vqabuf = vqap->data.get();
   VQAAudio* audio = &vqabuf->Audio;
 
   /* Reset the buffer position to the beginning. */
@@ -294,8 +294,9 @@ int32_t VQA_OpenAudio(VQAHandle* vqap) {
   const auto* spec = static_cast<SDL_AudioSpec*>(config->AudioSpec);
 
   SDLStream = SDL_NewAudioStream(
-      audio->BitsPerSample == 16 ? AUDIO_S16 : AUDIO_S8, audio->Channels,
-      audio->SampleRate, spec->format, spec->channels, spec->freq);
+      audio->BitsPerSample == 16 ? AUDIO_S16 : AUDIO_S8,
+      static_cast<uint8_t>(audio->Channels), audio->SampleRate, spec->format,
+      spec->channels, spec->freq);
 
   // calculate scaling factor
   const int bytes_per_second_in =
@@ -747,7 +748,7 @@ int64_t VQA_GetTime(VQAHandle* vqap) {
       SDL_UnlockAudioDevice(vqap->config.AudioDeviceID);
 
       samples = totalbytes / audio->Channels;
-      samples = samples / (audio->BitsPerSample >> 3);
+      samples = samples / (audio->BitsPerSample / 8);
 
       /* The elapsed ticks is calculated by the number of samples
        * processed times the tick resolution per second divided by the

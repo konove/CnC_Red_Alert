@@ -12,6 +12,7 @@
 #include <cstdio>
 #include <cstring>
 #include <iterator>
+#include <memory>
 #include <span>
 #include <string_view>
 #include <utility>
@@ -100,9 +101,8 @@ class FakeVqaIo final : public VqaIo {
   int closes = 0;
 };
 
-void AppendBytes(std::vector<uint8_t>& out, const char* text) {
-  const std::string_view view(text);
-  out.insert(out.end(), view.begin(), view.end());
+void AppendBytes(std::vector<uint8_t>& out, std::string_view text) {
+  out.insert(out.end(), text.begin(), text.end());
 }
 
 // LLVM 23 mistakes element invalidation for invalidating the vector reference;
@@ -232,7 +232,7 @@ TEST_F(VqaPlayTest, IoHandlerSurvivesFailedOpen) {
 // Appends an IFF chunk: id, big-endian declared size, payload and the pad
 // byte for odd payloads. declared_size may disagree with the payload to
 // model malformed files.
-void AppendChunk(std::vector<uint8_t>& out, const char* id,
+void AppendChunk(std::vector<uint8_t>& out, std::string_view id,
                  uint32_t declared_size, const std::vector<uint8_t>& payload) {
   // Built locally and appended once, so out is modified in a single step.
   std::vector<uint8_t> chunk;
@@ -245,7 +245,7 @@ void AppendChunk(std::vector<uint8_t>& out, const char* id,
   out.insert(out.end(), chunk.begin(), chunk.end());
 }
 
-void AppendChunk(std::vector<uint8_t>& out, const char* id,
+void AppendChunk(std::vector<uint8_t>& out, std::string_view id,
                  const std::vector<uint8_t>& payload) {
   AppendChunk(out, id, static_cast<uint32_t>(payload.size()), payload);
 }
@@ -470,7 +470,7 @@ TEST_F(VqaLoaderTest, AcceptsFullPalette) {
 
   ASSERT_EQ(Open(), 0);
   EXPECT_EQ(handle_.data->Drawer.CurPalSize, 768);
-  EXPECT_EQ(handle_.data->Drawer.Palette_24[767], 7);
+  EXPECT_EQ(handle_.data->Drawer.Palette_24.at(767), 7);
 }
 
 TEST_F(VqaLoaderTest, RejectsUncompressedPaletteOver256Colors) {
@@ -603,13 +603,11 @@ TEST_F(VqaLoaderTest, SeekFrameRejectsFramesOutsideTheMovie) {
 // Places the 8x8 SmallHeader() image in a 320x200 buffer, gap_x pixels
 // horizontally and gap_y vertically from the corner named by origin.
 VQADrawer PlaceImage(uint32_t origin, int gap_x = 10, int gap_y = 20) {
-  VQAData data;
-  data.Drawer.ImageWidth = 320;
-  data.Drawer.ImageHeight = 200;
-  data.Drawer.Y2 = 12345;  // Stale value the placement must not read.
-
   VQAHandle handle;
-  handle.data = &data;
+  handle.data = std::make_unique<VQAData>();
+  handle.data->Drawer.ImageWidth = 320;
+  handle.data->Drawer.ImageHeight = 200;
+  handle.data->Drawer.Y2 = 12345;  // Stale value the placement must not read.
   handle.header = SmallHeader();
   handle.config.X1 = gap_x;
   handle.config.Y1 = gap_y;
@@ -617,8 +615,7 @@ VQADrawer PlaceImage(uint32_t origin, int gap_x = 10, int gap_y = 20) {
 
   VQA_Configure_Drawer(&handle);
 
-  handle.data = nullptr;
-  return data.Drawer;
+  return handle.data->Drawer;
 }
 
 TEST(VqaDrawerTest, TopLeftOrigin) {

@@ -34,9 +34,12 @@
 // Originally written by Denzil E. Long, Jr. and Bill Randolph at Westwood
 // Studios, August 1995.
 
+#include <array>
+#include <atomic>
 #include <cstdint>
 #include <memory>
 #include <span>
+#include <string_view>
 #include <vector>
 
 #include "winvq/vqa32/vqa_format.h"
@@ -206,7 +209,7 @@ struct VQADrawer {
   // The movie's first palette, copied there by the loader, and later the
   // palette of a frame skipped with VQADRWF_SETPAL. At most 256 colors, which
   // is why the loader rejects larger palettes.
-  unsigned char Palette_24[768];
+  std::array<unsigned char, 768> Palette_24;
   // 15-bit version of Palette_24, for 32K-color modes. Unused.
   unsigned char Palette_15[512];
   // The image size in blocks, the geometry UnVQ walks.
@@ -289,9 +292,9 @@ struct VQAAudio {
   // one. Never read.
   int32_t NumSkipped = 0;
   // Format of the track being played, the primary or the alternate one.
-  uint16_t SampleRate = 0;
-  unsigned char Channels = 0;
-  unsigned char BitsPerSample = 0;  // 8 or 16
+  int SampleRate = 0;
+  int Channels = 0;
+  int BitsPerSample = 0;  // 8 or 16
   int32_t BytesPerSec = 0;
   // Decoder state for SND2 (IMA ADPCM) chunks, carried from chunk to chunk.
   SosCompressInfo ADPCM_Info = {};
@@ -413,16 +416,16 @@ struct VQAHandle {
   // Clears playback state so the handle can be reopened. io is intentionally
   // preserved across reset.
   void Reset() {
-    data = nullptr;
+    data.reset();
     config = {};
     header = {};
   }
 
   // The file source installed by VqaPlayer::SetIo(). Not owned.
   VqaIo* io = nullptr;
-  // The open movie's buffers, owned: allocated by VQA_Open() and deleted by
+  // The open movie's buffers: allocated by VQA_Open() and released by
   // VQA_Close(). nullptr while no movie is open.
-  VQAData* data = nullptr;
+  std::unique_ptr<VQAData> data;
   // The copy of the caller's configuration, with the -1 defaults resolved
   // from the header.
   VQAConfig config{};
@@ -433,11 +436,11 @@ struct VQAHandle {
 // The player entry points behind VqaPlayer's methods of the same names; see
 // vqaplay.h for what they do. VQA_Open() and VQA_Close() are also the
 // allocation and release of vqa->data.
-int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config);
+int32_t VQA_Open(VQAHandle* vqa, std::string_view filename, VQAConfig* config);
 void VQA_Close(VQAHandle* vqa);
 int32_t VQA_Play(VQAHandle* vqa, int32_t mode);
 int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t frame, int32_t fromwhere);
-int64_t VQA_SetStop(VQAHandle* vqa, int64_t stop);
+int32_t VQA_SetStop(VQAHandle* vqa, int32_t stop);
 void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info);
 void VQA_GetStats(const VQAHandle* vqa, VQAStatistics* stats);
 
@@ -478,10 +481,10 @@ int32_t VQA_StartAudio(VQAHandle* vqap);
 void VQA_StopAudio(const VQAHandle* vqap);
 int32_t CopyAudio(VQAHandle* vqap);
 
-// Nonzero once the loader has read the whole movie; from then on the audio
+// Set once the loader has read the whole movie; from then on the audio
 // callback counts a replayed block towards the clock, so the last frames
 // still come due after the sound runs out. Written by VQA_Open() and
-// VQA_Play() on the main thread and read on the audio thread, unsynchronized.
-extern int VQAMovieDone;
+// VQA_Play() on the main thread and read on the audio thread.
+extern std::atomic<bool> VQAMovieDone;
 
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAPLAYP_H_

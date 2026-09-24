@@ -121,7 +121,7 @@ static void UnVQ_Nop(std::span<const unsigned char> codebook,
 void VQA_Configure_Drawer(VQAHandle* vqap) {
 
   /* Dereference commonly used data members for quicker access. */
-  VQAData* vqabuf = vqap->data;
+  VQAData* vqabuf = vqap->data.get();
   VQADrawer* drawer = &vqabuf->Drawer;
   VqaHeader* header = &vqap->header;
   VQAConfig* config = &vqap->config;
@@ -244,7 +244,7 @@ static int32_t Select_Frame(VQAHandle* vqap) {
 
   /* Dereference commonly used data members for quicker access. */
   VQAConfig* config = &vqap->config;
-  VQAData* vqabuf = vqap->data;
+  VQAData* vqabuf = vqap->data.get();
   VQADrawer* drawer = &vqabuf->Drawer;
   VQAFrameNode* curframe = drawer->CurFrame;
 
@@ -458,7 +458,7 @@ static int32_t DrawFrame_Buffer(VQAHandle* vqa) {
   auto* vqa_handle_p = vqa;
   /* Dereference data members for quicker access. */
   const VQAConfig* config = &vqa_handle_p->config;
-  VQAData* vqabuf = vqa_handle_p->data;
+  VQAData* vqabuf = vqa_handle_p->data.get();
   VQADrawer* drawer = &vqabuf->Drawer;
 
   /* Check our "sleep" state */

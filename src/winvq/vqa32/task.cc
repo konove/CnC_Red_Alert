@@ -23,13 +23,14 @@
 // Studios, July 1995, where the loader and drawer ran as tasks off a timer
 // interrupt.
 
-#include "winvq/vqa32/vqaio.h"
-
-#include <span>
-
+#include <atomic>
 #include <cstdint>
 #include <memory>
+#include <span>
+#include <string_view>
 #include <utility>
+
+#include "winvq/vqa32/vqaio.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -54,7 +55,7 @@ VqaPlayer::~VqaPlayer() {
 
 void VqaPlayer::SetIo(VqaIo* io) { impl_->io = io; }
 
-int VqaPlayer::Open(const char* filename, VQAConfig* config) {
+int VqaPlayer::Open(std::string_view filename, VQAConfig* config) {
   return static_cast<int>(VQA_Open(impl_.get(), filename, config));
 }
 
@@ -68,9 +69,7 @@ int VqaPlayer::SeekFrame(int frame, int fromwhere) {
   return static_cast<int>(VQA_SeekFrame(impl_.get(), frame, fromwhere));
 }
 
-int VqaPlayer::SetStop(int frame) {
-  return static_cast<int>(VQA_SetStop(impl_.get(), frame));
-}
+int VqaPlayer::SetStop(int frame) { return VQA_SetStop(impl_.get(), frame); }
 
 void VqaPlayer::GetInfo(VQAInfo* info) const { VQA_GetInfo(impl_.get(), info); }
 
@@ -78,7 +77,7 @@ void VqaPlayer::GetStats(VQAStatistics* stats) const {
   VQA_GetStats(impl_.get(), stats);
 }
 
-int VQAMovieDone;
+std::atomic<bool> VQAMovieDone = false;
 
 // Each pass of the loop gives the loader one frame to load and the drawer one
 // frame to draw; either may decline (no free buffer, not yet time) and the
@@ -98,7 +97,7 @@ int32_t VQA_Play(VQAHandle* vqa, int32_t mode) {
   SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
 #endif  // _WIN32
 
-  vqabuf = vqa->data;
+  vqabuf = vqa->data.get();
   drawer = &vqabuf->Drawer;
   config = &vqa->config;
 
@@ -184,7 +183,7 @@ int32_t VQA_Play(VQAHandle* vqa, int32_t mode) {
             }
           }
         } else {
-          VQAMovieDone++;
+          VQAMovieDone = true;
         }
 
         if ((config->DrawFlags & VQACFGF_NODRAW) == 0) {
@@ -216,7 +215,7 @@ int32_t VQA_Play(VQAHandle* vqa, int32_t mode) {
         } else {
           // Not drawing: discard each frame as soon as it is loaded.
           vqabuf->Flags |= VQADATF_DDONE;
-          drawer->CurFrame->Flags = 0L;
+          drawer->CurFrame->Flags = 0;
           drawer->CurFrame = drawer->CurFrame->Next;
         }
 
@@ -250,8 +249,8 @@ int32_t VQA_Play(VQAHandle* vqa, int32_t mode) {
   return rc;
 }
 
-auto VQA_SetStop(VQAHandle* vqa, int64_t stop) -> int64_t {
-  int64_t oldstop = -1;
+int32_t VQA_SetStop(VQAHandle* vqa, int32_t stop) {
+  int32_t oldstop = -1;
 
   auto* header = &vqa->header;
 
@@ -269,11 +268,11 @@ void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info) {
   info->NumFrames = header->frame_count;
   info->ImageHeight = header->image_height;
   info->ImageWidth = header->image_width;
-  info->ImageBuf = vqa->data->Drawer.ImageBuf.data();
+  info->ImageBuf = vqa->data->Drawer.ImageBuf;
 }
 
 void VQA_GetStats(const VQAHandle* vqa, VQAStatistics* stats) {
-  VQAData* vqabuf = vqa->data;
+  VQAData* vqabuf = vqa->data.get();
 
   stats->MemUsed = vqabuf->MemUsed;
   stats->StartTime = vqabuf->StartTime;
@@ -286,7 +285,7 @@ void VQA_GetStats(const VQAHandle* vqa, VQAStatistics* stats) {
 }
 
 int64_t User_Update(const VQAHandle* vqa) {
-  auto* vqabuf = vqa->data;
+  auto* vqabuf = vqa->data.get();
 
   if ((vqabuf->Flags & VQADATF_UPDATE) != 0) {
     // Remember the last frame released, for status reporting.
