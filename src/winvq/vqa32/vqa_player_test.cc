@@ -7,6 +7,7 @@
 
 #include <SDL_audio.h>
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
@@ -22,13 +23,21 @@
 #include "base/types.h"
 #include "gtest/gtest.h"
 #include "winvq/vqa32/vqa_format.h"
-#include "winvq/vqa32/vqaio.h"
 #include "winvq/vqa32/vqa_player_state.h"
+#include "winvq/vqa32/vqaio.h"
 #include "winvq/vqm32/compress.h"
 #include "winvq/vqm32/palette.h"
 
 // Link-time stubs for symbols normally provided by the game or sdllib. The
-// tests never draw frames or decode palettes, so these are never called.
+// tests never decode compressed data or set the hardware palette, so these
+// are never called; QueueVqaPalette() records what it was handed.
+
+// A copy of the palette last passed to QueueVqaPalette(), for the drawer
+// tests. The stub is a free function, so it cannot reach a fixture member.
+static std::vector<uint8_t>& QueuedPalette() {
+  static std::vector<uint8_t> palette;
+  return palette;
+}
 
 int32_t LCW_Uncompress(std::span<const unsigned char> /*source*/,
                        std::span<unsigned char> /*dest*/) {
@@ -38,8 +47,12 @@ int32_t LCW_Uncompress(std::span<const unsigned char> /*source*/,
 void SetPalette(std::span<uint8_t> /*palette*/, int32_t /*numbytes*/,
                 uint32_t /*slowpal*/) {}
 
-void QueueVqaPalette(std::span<uint8_t> /*palette*/, int32_t /*numbytes*/,
-                     uint32_t /*slowpal*/) {}
+void QueueVqaPalette(std::span<uint8_t> palette, int32_t numbytes,
+                     uint32_t /*slowpal*/) {
+  QueuedPalette().assign(
+      palette.begin(),
+      palette.begin() + std::min<base::ssize>(numbytes, std::ssize(palette)));
+}
 
 namespace {
 
@@ -468,6 +481,34 @@ TEST_F(VqaLoaderTest, AcceptsFullPalette) {
   ASSERT_EQ(Open(), 0);
   EXPECT_EQ(state_.movie->drawer.saved_palette_bytes, 768);
   EXPECT_EQ(state_.movie->drawer.saved_palette.at(767), 7);
+}
+
+TEST_F(VqaLoaderTest, SkippedFramePaletteIsSetWithTheNextFrameDrawn) {
+  // Frames 0 and 1 carry palettes of 7s and 9s, frame 2 none. With the clock
+  // at frame 2 the drawer skips 0 and 1 and draws 2, which must set the
+  // palette of frame 1, the last one skipped.
+  config_.frame_buffer_count = 3;
+  fake_.data = MovieStart(SmallHeader(), {0, 0, 0});
+  AppendChunk(fake_.data, "CPL0", std::vector<uint8_t>(768, 7));
+  AppendFrameEnd(fake_.data);
+  AppendChunk(fake_.data, "CPL0", std::vector<uint8_t>(768, 9));
+  AppendFrameEnd(fake_.data);
+  AppendFrameEnd(fake_.data);
+  // A buffer to draw into; without kVqaDrawToBuffer nothing is decoded.
+  std::vector<unsigned char> image(size_t{320} * 200);
+  config_.image_buffer = image;
+  ASSERT_EQ(Open(), 0);
+  QueuedPalette().clear();
+
+  ConfigureDrawer(&state_);
+  // 15 fps: tick 9 of 60 per second is frame 2, with 50 ms to spare before
+  // frame 3 comes due.
+  SetMovieClock(&state_, 9, kVqaClockSystem);
+  ASSERT_EQ(DrawNextFrame(&state_), 0);
+
+  EXPECT_EQ(state_.movie->drawer.last_drawn_frame, 2);
+  ASSERT_EQ(QueuedPalette().size(), 768U);
+  EXPECT_EQ(QueuedPalette().front(), 9);
 }
 
 TEST_F(VqaLoaderTest, RejectsUncompressedPaletteOver256Colors) {

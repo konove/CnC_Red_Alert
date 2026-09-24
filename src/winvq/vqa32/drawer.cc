@@ -457,18 +457,20 @@ int32_t DrawNextFrame(VqaPlayerState* vqa) {
   const auto buff =
       drawer->image_buffer.subspan(base::ToSize(drawer->image_offset));
 
-  const auto pal = std::span(curframe->palette);
-  const int32_t palsize = curframe->palette_bytes;
   const uint32_t slowpal =
       (config->option_flags & kVqaOptionSlowPalette) != 0 ? 1U : 0U;
 
-  /* Set the palette if necessary */
-  if (curframe->flags & kFrameHasPalette ||
-      drawer->flags & kDrawerPalettePending) {
-    QueueVqaPalette(pal, palsize, slowpal);
-    curframe->flags &= ~kFrameHasPalette;
-    drawer->flags &= ~kDrawerPalettePending;
+  // Set the frame's own palette, or else the one Select_Frame() saved from a
+  // frame it skipped: this frame's palette buffer holds only a stale palette
+  // when the frame carries none.
+  if ((curframe->flags & kFrameHasPalette) != 0) {
+    QueueVqaPalette(curframe->palette, curframe->palette_bytes, slowpal);
+  } else if ((drawer->flags & kDrawerPalettePending) != 0) {
+    QueueVqaPalette(drawer->saved_palette, drawer->saved_palette_bytes,
+                    slowpal);
   }
+  curframe->flags &= ~kFrameHasPalette;
+  drawer->flags &= ~kDrawerPalettePending;
 
   /* Un-VQ the image */
   vqabuf->decode_frame(curframe->codebook->buffer, curframe->pointers, buff,
