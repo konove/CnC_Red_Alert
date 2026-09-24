@@ -101,12 +101,12 @@ constexpr uint16_t kVqaHasAltAudio = base::Bit<uint16_t>(1);
 // reads no other flag.
 
 // Returns whether the frame a FINF entry describes carries a palette.
-constexpr bool FrameHasPalette(uint32_t frame_info) {
+constexpr bool FrameHasPalette(const uint32_t frame_info) {
   return (frame_info & base::Bit<uint32_t>(30)) != 0;
 }
 
 // Returns the byte offset in the file of the frame a FINF entry describes.
-constexpr base::ssize FrameByteOffset(uint32_t frame_info) {
+constexpr base::ssize FrameByteOffset(const uint32_t frame_info) {
   return base::ssize{frame_info & 0x0FFFFFFFU} * 2;
 }
 
