@@ -649,6 +649,41 @@ TEST_F(VqaLoaderTest, FailsToOpenWhenTheSoundCannotBeConverted) {
   EXPECT_EQ(audio_callback_, nullptr);
 }
 
+TEST_F(VqaLoaderTest, RingOfPartBlocksWrapsAfterTheLastWholeBlock) {
+  VqaHeader header = SmallHeader();
+  header.flags = kVqaHasAudio;
+  header.sample_rate = 22050;
+  header.channels = 1;
+  header.bits_per_sample = 8;
+  fake_.data = MovieStart(header, {0, 0, 0});
+  // Loads straight into the ring as its two whole blocks.
+  AppendChunk(fake_.data, "SND0", std::vector<uint8_t>(4096, 0x80));
+  AppendFrameEnd(fake_.data);
+  AppendFrameEnd(fake_.data);
+  AppendFrameEnd(fake_.data);
+  EnableAudio();
+  // Two 2048-byte blocks and 904 bytes that are not one.
+  config_.audio_buffer_bytes = 5000;
+  ASSERT_EQ(Open(), 0);
+  VqaAudio& audio = state_.movie->audio;
+  ASSERT_EQ(audio.block_count, 2);
+  ASSERT_EQ(StartMovieAudio(&state_), 0);
+
+  std::vector<uint8_t> device(256);
+  for (int i = 0; i < 1000 && audio.play_block != 1; ++i) {
+    audio_callback_(device.data(), static_cast<int>(device.size()));
+  }
+  ASSERT_EQ(audio.play_block, 1);
+
+  // Once the loader has refilled block 0, playing moves on to it.
+  audio.block_loaded.at(0) = 1;
+  for (int i = 0; i < 1000 && audio.play_block == 1; ++i) {
+    audio_callback_(device.data(), static_cast<int>(device.size()));
+  }
+  EXPECT_EQ(audio.play_block, 0);
+  EXPECT_EQ(audio.play_offset, 0);
+}
+
 TEST_F(VqaLoaderTest, StopEndsPlaybackWithoutLoadingTheRest) {
   fake_.data = EmptyFrames(SmallHeader());
   ASSERT_EQ(Open(), 0);

@@ -363,8 +363,8 @@ int32_t OpenVqa(VqaPlayerState* vqa, std::string_view filename,
 
   // Play no sound when there is no audio ring block to play it from: the
   // movie has no sound track, the caller turned it off, or the ring came out
-  // smaller than one block (audio_buffer_bytes 0, or -1 when 1.5 seconds of
-  // sound is less than one audio_block_bytes block). No audio code runs for
+  // smaller than one block (audio_buffer_bytes below audio_block_bytes, or -1
+  // when 1.5 seconds of sound is less than one block). No audio code runs for
   // such a movie, so none of it has to handle an empty ring.
   if (vqap->movie->audio.block_loaded.empty()) {
     config->option_flags &= ~kVqaOptionAudio;
@@ -1211,6 +1211,10 @@ static std::unique_ptr<VqaMovie> AllocBuffers(const VqaHeader* header,
                      config->audio_block_bytes;
       config->audio_buffer_bytes = config->audio_block_bytes * i;
     }
+    // The ring is filled and played in whole blocks; the audio callback wraps
+    // at its end in bytes and at block_count in blocks, which must agree.
+    config->audio_buffer_bytes -=
+        config->audio_buffer_bytes % config->audio_block_bytes;
 
     /* Do not allocate anything if the audio buffer is zero length. */
     if (config->audio_buffer_bytes > 0) {

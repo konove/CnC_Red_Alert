@@ -133,8 +133,9 @@ struct VqaConfig {
   // The caller's audio ring buffer. Empty = the player allocates
   // audio_buffer_bytes bytes.
   std::span<unsigned char> audio_buffer;
-  // Size of the audio ring in bytes. -1 = as many audio_block_bytes blocks as
-  // fit in 1.5 seconds of the movie's sound; 0 = no ring, so no sound.
+  // Size of the audio ring in bytes, rounded down to whole audio_block_bytes
+  // blocks. -1 = as many blocks as fit in 1.5 seconds of the movie's sound;
+  // 0, or less than one block, = no ring, so no sound.
   int32_t audio_buffer_bytes{};
   // Size in bytes of one audio block, the unit the audio ring is filled and
   // played in. Must be positive when a movie with sound plays with audio on.

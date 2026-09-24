@@ -105,13 +105,7 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
       audio->play_offset += config->audio_block_bytes;
       audio->play_block++;
 
-      // TODO: this wraps at the ring's size in bytes, next_block above at
-      // block_count whole blocks. When audio_buffer_bytes is not a multiple of
-      // audio_block_bytes (a caller's choice; the -1 default always is), the
-      // two disagree: play_block reaches block_count and block_loaded.at()
-      // throws on the audio thread, and CopyStagedAudio() writes sound into
-      // the tail past the last whole block that never plays, then waits
-      // forever for a block that is never freed.
+      // The ring is whole blocks, so this wraps together with next_block.
       if (audio->play_offset >= config->audio_buffer_bytes) {
         audio->play_offset = 0;
         audio->play_block = 0;
