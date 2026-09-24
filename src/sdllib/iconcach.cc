@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <span>
 
 #include "base/array.h"
@@ -14,22 +15,6 @@
 #include "base/types.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/tile.h"
-
-// The tiles' pixels, IconSize bytes each, from the start of tile 0 to the end
-// of the set's data.
-static std::span<const std::byte> StampPtr;
-
-// One byte per tile: nonzero means color 0 in that tile is transparent.
-static std::span<const std::byte> IsTrans;
-
-// One byte per template cell, giving the tile drawn there. Empty if the
-// header's map offset lies outside the set, in which case the icon number is
-// the tile number.
-static std::span<const std::byte> MapPtr;
-static int IconWidth = 0;
-static int IconHeight = 0;
-static int IconSize = 0;
-static int IconCount = 0;
 
 // The icon set header of Tiberian Dawn, which lacks Red Alert's MapWidth,
 // MapHeight and ColorMap fields. sdllib is compiled without TD, so
@@ -57,46 +42,61 @@ static std::span<const std::byte> TableAt(std::span<const std::byte> icon_set,
              : std::span<const std::byte>{};
 }
 
-// Reads the header of `icon_ptr` into the globals above. Returns false, and
-// leaves them alone, if the data is too short to hold a header.
+// What drawing a tile needs from an icon set, the tables as views into the
+// set's data.
+struct IconSetTables {
+  int tile_width = 0;
+  int tile_height = 0;
+  int tile_count = 0;
+  // The tiles' pixels, tile_width * tile_height bytes each, from the start of
+  // tile 0 to the end of the set.
+  std::span<const std::byte> tiles;
+  // One byte per tile: nonzero means color 0 in that tile is transparent.
+  std::span<const std::byte> transparent;
+  // One byte per template cell, giving the tile drawn there. Empty if the
+  // header's map offset lies outside the set, in which case the cell number is
+  // the tile number.
+  std::span<const std::byte> cell_tiles;
+};
+
+// Reads the header of `icon_set`. Returns nullopt if the data is too short to
+// hold one.
 //
 // The header is read on every draw rather than remembered by the set's
 // address: sets live in the theater's MIX archive, which a theater change
 // frees and replaces, so a different set can turn up at an address already
 // seen.
-static bool Init_Stamps(std::span<const std::byte> icon_ptr) {
-  if (icon_ptr.size() < sizeof(IControl_Type)) {
-    return false;
+static std::optional<IconSetTables> ReadIconSet(
+    std::span<const std::byte> icon_set) {
+  if (icon_set.size() < sizeof(IControl_Type)) {
+    return std::nullopt;
   }
 
   IControl_Type header{};
-  base::CopyBytes(base::ObjectBytes(header), icon_ptr, sizeof(header));
-  const auto* control = &header;
-  IconCount = control->Count;
-  IconWidth = control->Width;
-  IconHeight = control->Height;
-  // A tile is one byte per pixel.
-  IconSize = IconWidth * IconHeight;
+  base::CopyBytes(base::ObjectBytes(header), icon_set, sizeof(header));
 
   // Tell Tiberian Dawn's header from Red Alert's. In Tiberian Dawn's the
   // bytes of MapWidth and MapHeight are the low and high halves of Size, so a
   // set under 64K reads as MapHeight 0. The width test catches a larger one
   // whose low half cannot be a map width; one whose low half is 256 or less
   // is taken for Red Alert's.
-  if (!control->MapHeight || control->MapWidth > 256) {
+  int32_t tiles_offset = header.Icons;
+  int32_t transparent_offset = header.TransFlag;
+  int32_t cell_tiles_offset = header.Map;
+  if (!header.MapHeight || header.MapWidth > 256) {
     TiberianDawnIconSetHeader old_header{};
-    base::CopyBytes(base::ObjectBytes(old_header), icon_ptr,
+    base::CopyBytes(base::ObjectBytes(old_header), icon_set,
                     sizeof(old_header));
-    const auto* old = &old_header;
-    MapPtr = TableAt(icon_ptr, old->map);
-    StampPtr = TableAt(icon_ptr, old->icons);
-    IsTrans = TableAt(icon_ptr, old->trans_flag);
-  } else {
-    MapPtr = TableAt(icon_ptr, control->Map);
-    StampPtr = TableAt(icon_ptr, control->Icons);
-    IsTrans = TableAt(icon_ptr, control->TransFlag);
+    tiles_offset = old_header.icons;
+    transparent_offset = old_header.trans_flag;
+    cell_tiles_offset = old_header.map;
   }
-  return true;
+  return IconSetTables{.tile_width = header.Width,
+                       .tile_height = header.Height,
+                       .tile_count = header.Count,
+                       .tiles = TableAt(icon_set, tiles_offset),
+                       .transparent = TableAt(icon_set, transparent_offset),
+                       .cell_tiles = TableAt(icon_set, cell_tiles_offset)};
 }
 
 void PixelView::DrawStampLocked(std::span<const std::byte> icon_set, int cell,
@@ -104,33 +104,39 @@ void PixelView::DrawStampLocked(std::span<const std::byte> icon_set, int cell,
                                 std::span<const uint8_t> remap_table,
                                 int clip_x, int clip_y, int clip_width,
                                 int clip_height) {
-  if (!Init_Stamps(icon_set)) {
+  const std::optional<IconSetTables> tables = ReadIconSet(icon_set);
+  if (!tables) {
     return;
   }
+  const int tile_width = tables->tile_width;
+  const int tile_height = tables->tile_height;
 
   // Translate the template cell into the tile drawn there. A cell with no
-  // tile maps to 255, which the IconCount check below turns away.
+  // tile maps to 255, which the tile_count check below turns away.
   int tile = cell;
-  if (!MapPtr.empty()) {
-    if (cell < 0 || base::ToSize(cell) >= MapPtr.size()) {
+  if (!tables->cell_tiles.empty()) {
+    if (cell < 0 || base::ToSize(cell) >= tables->cell_tiles.size()) {
       return;
     }
-    tile = std::to_integer<uint8_t>(base::At(MapPtr, base::ToSize(cell)));
+    tile = std::to_integer<uint8_t>(
+        base::At(tables->cell_tiles, base::ToSize(cell)));
   }
 
   // Every table is checked against the set's data, so a damaged set draws
-  // nothing rather than reading past it.
-  if (tile < 0 || tile >= IconCount || IconWidth <= 0 || IconHeight <= 0 ||
-      base::ToSize(tile) >= IsTrans.size() ||
-      base::ToSize(tile + 1) > StampPtr.size() / base::ToSize(IconSize)) {
+  // nothing rather than reading past it. A tile is one byte per pixel.
+  if (tile < 0 || tile >= tables->tile_count || tile_width <= 0 ||
+      tile_height <= 0 || base::ToSize(tile) >= tables->transparent.size() ||
+      base::ToSize(tile + 1) >
+          tables->tiles.size() / base::ToSize(tile_width * tile_height)) {
     return;
   }
 
   // The part of the tile left to draw once it is clipped.
-  int draw_width = IconWidth;
-  int draw_height = IconHeight;
+  int draw_width = tile_width;
+  int draw_height = tile_height;
 
-  auto src = StampPtr.begin() + (static_cast<base::ssize>(tile) * IconSize);
+  auto src = tables->tiles.begin() +
+             (static_cast<base::ssize>(tile) * tile_width * tile_height);
 
   // x,y arrive relative to the clip rectangle's corner; make them view
   // coordinates, like the rectangle's exclusive right and bottom edges.
@@ -147,7 +153,7 @@ void PixelView::DrawStampLocked(std::span<const std::byte> icon_set, int cell,
 
   // ...or ends before its left or top edge. A tile ending exactly on the
   // edge gets through here and is caught by the empty-size check below.
-  if (x + IconWidth < clip_x || y + IconHeight < clip_y) {
+  if (x + tile_width < clip_x || y + tile_height < clip_y) {
     return;
   }
 
@@ -161,7 +167,7 @@ void PixelView::DrawStampLocked(std::span<const std::byte> icon_set, int cell,
 
   // Source pixels to step over at the end of each row: the columns clipped
   // on the left, and below those clipped on the right.
-  int src_skip = IconWidth - draw_width;
+  int src_skip = tile_width - draw_width;
 
   if (x + draw_width > clip_right) {
     const int unclipped_width = draw_width;
@@ -171,7 +177,7 @@ void PixelView::DrawStampLocked(std::span<const std::byte> icon_set, int cell,
 
   if (y < clip_y) {
     draw_height -= clip_y - y;
-    src += static_cast<base::ssize>(IconWidth) * (clip_y - y);
+    src += static_cast<base::ssize>(tile_width) * (clip_y - y);
     y = clip_y;
   }
 
@@ -197,14 +203,13 @@ void PixelView::DrawStampLocked(std::span<const std::byte> icon_set, int cell,
   const base::ssize dst_skip = dst_stride - draw_width;
 
   if (remapping) {
-    const auto remap8 = remap_table;
     // Remapped draw. Color 0 is tested after the remap, so it is transparent
     // whatever the set's flag says, and a table that maps a color to 0 makes
     // that color transparent too.
     do {
       for (int column = 0; column < draw_width; column++) {
         const uint8_t pixel =
-            base::At(remap8, std::to_integer<uint8_t>(*src++));
+            base::At(remap_table, std::to_integer<uint8_t>(*src++));
         if (pixel) {
           *dst = pixel;
         }
@@ -217,7 +222,7 @@ void PixelView::DrawStampLocked(std::span<const std::byte> icon_set, int cell,
   }
   // Unremapped: the set's per-tile flag picks the transparent or the opaque
   // loop.
-  else if (base::At(IsTrans, base::ToSize(tile)) != std::byte{}) {
+  else if (base::At(tables->transparent, base::ToSize(tile)) != std::byte{}) {
     // Transparent draw: color 0 leaves the destination alone.
     do {
       for (int column = 0; column < draw_width; column++) {
@@ -238,7 +243,7 @@ void PixelView::DrawStampLocked(std::span<const std::byte> icon_set, int cell,
         return std::to_integer<uint8_t>(value);
       });
       dst += dst_stride;
-      src += IconWidth;
+      src += tile_width;
     } while (--draw_height);
   }
 }
