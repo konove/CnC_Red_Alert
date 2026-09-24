@@ -175,9 +175,6 @@ struct VqaDrawer {
   // The image size in blocks, the geometry decode_frame walks.
   int32_t blocks_per_row;
   int32_t block_rows;
-  // When the frame-skipping path last passed a frame; starts one second in
-  // the past so the first frame is never early.
-  int64_t last_time;  // In kVqaTicksPerSecond, as returned by ReadMovieClock().
   // Number of the last frame selected for drawing. SelectFrameToDraw() draws
   // regardless of the clock once frame_rate / 5 frames have passed since, so
   // at least 5 frames a second reach the screen.

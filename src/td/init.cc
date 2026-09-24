@@ -2095,7 +2095,6 @@ void Anim_Init() {
   // AnimControl.X1 =0;
   // AnimControl.Y1 =0;
   TheGameState().anim_control().frame_rate = -1;
-  TheGameState().anim_control().draw_rate = -1;
 
   TheGameState().anim_control().frame_callback = VQ_Call_Back;
   TheGameState().anim_control().event_handler = VQ_Event_Handler;

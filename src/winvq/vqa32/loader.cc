@@ -192,17 +192,9 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
           config->image_height = header->image_height;
         }
 
-        if (config->frame_rate == -1) {
+        // A frame_rate of 0 is unset too: the clock divides by it.
+        if (config->frame_rate == -1 || config->frame_rate == 0) {
           config->frame_rate = header->fps;
-        }
-
-        if (config->draw_rate == -1) {
-          config->draw_rate = header->fps;
-        }
-
-        // A draw_rate of 0 is unset too: the drawer divides by it.
-        if (config->draw_rate == -1 || config->draw_rate == 0) {
-          config->draw_rate = header->fps;
         }
 
         // Without an alternate track, play the primary one.
@@ -648,8 +640,6 @@ static std::unique_ptr<VqaMovie> AllocateMovie(const VqaHeader* header,
 
   auto owned_movie = std::make_unique<VqaMovie>();
   VqaMovie* movie = owned_movie.get();
-
-  movie->drawer.last_time = -kVqaTicksPerSecond;
 
   // Compressed data is loaded at the end of its buffer and decompressed in
   // place towards the start, so each buffer is the decompressed size plus

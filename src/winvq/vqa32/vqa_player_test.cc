@@ -159,7 +159,6 @@ TEST(VqaConfigTest, DefaultConfigHasDocumentedDefaults) {
   EXPECT_EQ(config.margin_x, -1);
   EXPECT_EQ(config.margin_y, -1);
   EXPECT_EQ(config.frame_rate, -1);  // -1 means use the movie's frame rate.
-  EXPECT_EQ(config.draw_rate, -1);
   EXPECT_EQ(config.draw_flags, 0);
   EXPECT_EQ(config.option_flags, kVqaOptionAudio);
   EXPECT_EQ(config.frame_buffer_count, 6);

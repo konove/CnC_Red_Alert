@@ -96,7 +96,7 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
 
     // Set the clock to the time of the first frame loaded, so it is due now.
     const auto first_frame_time = drawer->current_frame->frame_number *
-                                  kVqaTicksPerSecond / config->draw_rate;
+                                  kVqaTicksPerSecond / config->frame_rate;
 
     SetMovieClock(state, first_frame_time, config->clock_source);
 

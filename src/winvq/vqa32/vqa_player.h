@@ -109,12 +109,8 @@ struct VqaConfig {
   // Gap in pixels between the image and the buffer corner that the
   // kVqaDrawOriginMask bits of draw_flags name. Both -1 = center the image.
   int32_t margin_x{}, margin_y{};
-  // Frames per second the movie is loaded at; -1 = the movie's rate.
+  // Frames per second the movie plays at; -1 or 0 = the movie's rate.
   int32_t frame_rate{};
-  // Frames per second to draw; -1 or 0 = the movie's rate. When it differs
-  // from frame_rate, the drawer paces itself by the time since the last frame
-  // drawn rather than by the frame numbers.
-  int32_t draw_rate{};
   // kVqaClock* clock to pace playback by.
   int32_t clock_source{};
   uint32_t draw_flags{};    // kVqaDraw* bits

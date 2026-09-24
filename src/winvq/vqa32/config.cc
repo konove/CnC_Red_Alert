@@ -30,9 +30,8 @@ void SetVqaConfigDefaults(VqaConfig* config) {
   // Center the image in the buffer.
   config->margin_x = -1;
   config->margin_y = -1;
-  // Load and draw at the movie's own frame rate.
+  // Play at the movie's own frame rate.
   config->frame_rate = -1;
-  config->draw_rate = -1;
   config->clock_source = kVqaClockDefault;
   config->option_flags = kVqaOptionAudio;
   config->frame_buffer_count = 6;

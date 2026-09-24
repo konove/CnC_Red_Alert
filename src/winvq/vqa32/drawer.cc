@@ -150,27 +150,12 @@ static int32_t SelectFrameToDraw(VqaPlayerState* state) {
   }
 
   // The frame the clock has reached; a frame is due from its start time on.
-  // It counts at draw_rate, not frame_rate, since a Westwood change of June
-  // 1995 ("should look for the desired frame to draw, not load, right?").
-  // TODO: With draw_rate != frame_rate this compares draw-rate counts against
-  // frame numbers, which run at frame_rate, so the skip loop below skips too
-  // few frames; and last_time, the draw_rate pacing below, is set only when
-  // the skip loop runs, so with kVqaDrawNoSkip the pacing never engages.
-  // Neither game sets a draw_rate of its own.
   const int64_t now_ticks = ReadMovieClock(state);
-  const int64_t due_frame = now_ticks * config->draw_rate / kVqaTicksPerSecond;
+  const int64_t due_frame = now_ticks * config->frame_rate / kVqaTicksPerSecond;
 
-  // Too early for this frame? With a draw_rate of its own the drawer waits
-  // one draw period since the last frame; otherwise until the frame is due.
-  if (config->draw_rate != config->frame_rate) {
-    if (now_ticks - drawer->last_time <
-        kVqaTicksPerSecond / config->draw_rate) {
-      return kVqaNotTime;
-    }
-  } else {
-    if (frame->frame_number > due_frame) {
-      return kVqaNotTime;
-    }
+  // Too early for this frame.
+  if (frame->frame_number > due_frame) {
+    return kVqaNotTime;
   }
 
   // Once frame_rate / 5 frames have gone by since the last frame selected,
@@ -242,7 +227,6 @@ static int32_t SelectFrameToDraw(VqaPlayerState* state) {
   }
 
   drawer->last_selected_frame = frame->frame_number;
-  drawer->last_time = now_ticks;
 
   return 0;
 }

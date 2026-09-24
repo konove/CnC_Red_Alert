@@ -1318,7 +1318,6 @@ void Anim_Init() {
 
   TheGameState().anim_control().draw_flags |= kVqaDrawNoSkip;
   TheGameState().anim_control().frame_rate = -1;
-  TheGameState().anim_control().draw_rate = -1;
   TheGameState().anim_control().frame_callback = VQ_Call_Back;
   TheGameState().anim_control().event_handler = VQ_Event_Handler;
   TheGameState().anim_control().image_width = 320;
