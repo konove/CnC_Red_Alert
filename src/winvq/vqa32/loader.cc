@@ -68,6 +68,18 @@ static int32_t LoadSound(VqaPlayerState* state, int32_t chunk_bytes);
 static int32_t LoadZapSound(VqaPlayerState* state, int32_t chunk_bytes);
 static int32_t LoadAdpcmSound(VqaPlayerState* state, int32_t chunk_bytes);
 
+// What LoadFramePart() made of a chunk.
+enum class FramePart {
+  kNone,            // Not a part of a frame; nothing was read.
+  kFailed,          // A part that did not fit its buffer or failed to read.
+  kLoaded,          // A codebook or a palette.
+  kVectorPointers,  // The vector pointers.
+};
+static FramePart LoadFramePart(VqaPlayerState* state, uint32_t id,
+                               int32_t chunk_bytes);
+static int32_t LoadSoundChunk(VqaPlayerState* state, uint32_t id,
+                              int32_t chunk_bytes);
+
 // Returns the payload size of an IFF chunk, which the file stores big-endian.
 // VQA chunks are far smaller than 2 GiB, so the size fits int32_t.
 static int32_t ChunkSize(const ChunkHeader& chunk) {
@@ -353,6 +365,17 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
       }
     }
 
+    // Codebooks, palettes and vector pointers. In the older format without
+    // frame containers, the vector pointers come last in a frame.
+    const FramePart part = LoadFramePart(state, chunk->id, chunk_bytes);
+    if (part == FramePart::kFailed) {
+      return kVqaErrorRead;
+    }
+    if (part != FramePart::kNone) {
+      frame_loaded = part == FramePart::kVectorPointers;
+      continue;
+    }
+
     switch (chunk->id) {
       // A frame container.
       case kChunkVqfr:
@@ -374,195 +397,39 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
         frame_loaded = true;
         break;
 
-      // Full uncompressed codebook.
-      case kChunkCbf0:
-        if (LoadFullCodebook(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-        break;
-
-      // Full compressed codebook.
-      case kChunkCbfz:
-        if (LoadCompressedFullCodebook(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-        break;
-
-      // Partial uncompressed codebook.
-      case kChunkCbp0:
-        if (LoadPartialCodebook(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-        break;
-
-      // Partial compressed codebook.
-      case kChunkCbpz:
-        if (LoadCompressedPartialCodebook(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-        break;
-
-      // Uncompressed palette.
-      case kChunkCpl0:
-        if (LoadPalette(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-
-        // Flag this frame as having a palette.
-        frame->flags |= kFrameHasPalette;
-        break;
-
-      // Compressed palette.
-      case kChunkCplz:
-        if (LoadCompressedPalette(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-
-        // Flag this frame as having a palette.
-        frame->flags |= kFrameHasPalette;
-        break;
-
-      // Uncompressed vector pointers.
-      case kChunkVpt0:
-        if (LoadVectorPointers(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-
-        frame_loaded = true;
-        break;
-
-      // Compressed vector pointers.
-      case kChunkVptz:
-      case kChunkVptd:
-        if (LoadCompressedVectorPointers(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-
-        frame_loaded = true;
-        break;
-
-      // Compressed vector pointers of a key frame, which is never skipped.
-      case kChunkVptk:
-        if (LoadCompressedVectorPointers(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-
-        // Flag this frame as being key.
-        frame->flags |= kFrameKey;
-        frame_loaded = true;
-        break;
-
       // Sound. SND* chunks are the primary track and SNA* the alternate one;
       // the track not played is skipped. Before staging a chunk, the last
       // one's sound moves from staging into the ring; with no room there the
       // loader sleeps and resumes here.
       case kChunkSnd0:
-        if (!(state->config.option_flags & kVqaOptionAltAudio)) {
-          if (CopyStagedAudio(state) == kVqaSleeping) {
-            movie->flags |= kMovieLoaderAsleep;
-            return kVqaSleeping;
-          }
-          movie->flags &= ~kMovieLoaderAsleep;
-
-          if (LoadSound(state, chunk_bytes) != 0) {
-            return kVqaErrorRead;
-          }
-        } else {
-          if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
-            return kVqaErrorSeek;
-          }
-        }
-        break;
-
-      case kChunkSna0:
-        if (state->config.option_flags & kVqaOptionAltAudio) {
-          if (CopyStagedAudio(state) == kVqaSleeping) {
-            movie->flags |= kMovieLoaderAsleep;
-            return kVqaSleeping;
-          }
-          movie->flags &= ~kMovieLoaderAsleep;
-
-          if (LoadSound(state, chunk_bytes) != 0) {
-            return kVqaErrorRead;
-          }
-        } else {
-          if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
-            return kVqaErrorSeek;
-          }
-        }
-        break;
-
       case kChunkSnd1:
-        if (!(state->config.option_flags & kVqaOptionAltAudio)) {
-          if (CopyStagedAudio(state) == kVqaSleeping) {
-            movie->flags |= kMovieLoaderAsleep;
-            return kVqaSleeping;
-          }
-          movie->flags &= ~kMovieLoaderAsleep;
-
-          if (LoadZapSound(state, chunk_bytes) != 0) {
-            return kVqaErrorRead;
-          }
-        } else {
-          if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
-            return kVqaErrorSeek;
-          }
-        }
-        break;
-
-      case kChunkSna1:
-        if (state->config.option_flags & kVqaOptionAltAudio) {
-          if (CopyStagedAudio(state) == kVqaSleeping) {
-            movie->flags |= kMovieLoaderAsleep;
-            return kVqaSleeping;
-          }
-          movie->flags &= ~kMovieLoaderAsleep;
-
-          if (LoadZapSound(state, chunk_bytes) != 0) {
-            return kVqaErrorRead;
-          }
-        } else {
-          if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
-            return kVqaErrorSeek;
-          }
-        }
-        break;
-
       case kChunkSnd2:
-        if (!(state->config.option_flags & kVqaOptionAltAudio)) {
-          if (CopyStagedAudio(state) == kVqaSleeping) {
-            movie->flags |= kMovieLoaderAsleep;
-            return kVqaSleeping;
-          }
-          movie->flags &= ~kMovieLoaderAsleep;
-
-          if (LoadAdpcmSound(state, chunk_bytes) != 0) {
-            return kVqaErrorRead;
-          }
-        } else {
+      case kChunkSna0:
+      case kChunkSna1:
+      case kChunkSna2: {
+        const bool alternate_chunk = chunk->id == kChunkSna0 ||
+                                     chunk->id == kChunkSna1 ||
+                                     chunk->id == kChunkSna2;
+        const bool alternate_track =
+            (state->config.option_flags & kVqaOptionAltAudio) != 0;
+        if (alternate_chunk != alternate_track) {
           if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
             return kVqaErrorSeek;
           }
+          break;
+        }
+
+        if (CopyStagedAudio(state) == kVqaSleeping) {
+          movie->flags |= kMovieLoaderAsleep;
+          return kVqaSleeping;
+        }
+        movie->flags &= ~kMovieLoaderAsleep;
+
+        if (LoadSoundChunk(state, chunk->id, chunk_bytes) != 0) {
+          return kVqaErrorRead;
         }
         break;
-
-      case kChunkSna2:
-        if (state->config.option_flags & kVqaOptionAltAudio) {
-          if (CopyStagedAudio(state) == kVqaSleeping) {
-            movie->flags |= kMovieLoaderAsleep;
-            return kVqaSleeping;
-          }
-          movie->flags &= ~kMovieLoaderAsleep;
-
-          if (LoadAdpcmSound(state, chunk_bytes) != 0) {
-            return kVqaErrorRead;
-          }
-        } else {
-          if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
-            return kVqaErrorSeek;
-          }
-        }
-        break;
+      }
 
       // Skip any unknown chunks.
       default:
@@ -774,7 +641,6 @@ static int32_t LoadFrameContainer(VqaPlayerState* state, int32_t frame_bytes) {
   int64_t bytes_loaded = 0;  // 64-bit: sums sizes up to 2^31 each.
 
   VqaMovie* movie = state->movie.get();
-  VqaFrame* frame = movie->loader.current_frame;
   const int32_t padded_frame_bytes = PadSize(frame_bytes);
   ChunkHeader* chunk = &movie->loader.chunk_header;
 
@@ -792,84 +658,11 @@ static int32_t LoadFrameContainer(VqaPlayerState* state, int32_t frame_bytes) {
     bytes_loaded += 8;
     bytes_loaded += PadSize(chunk_bytes);
 
-    switch (chunk->id) {
-      // Full uncompressed codebook.
-      case kChunkCbf0:
-        if (LoadFullCodebook(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-        break;
-
-      // Full compressed codebook.
-      case kChunkCbfz:
-        if (LoadCompressedFullCodebook(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-        break;
-
-      // Partial uncompressed codebook.
-      case kChunkCbp0:
-        if (LoadPartialCodebook(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-        break;
-
-      // Partial compressed codebook.
-      case kChunkCbpz:
-        if (LoadCompressedPartialCodebook(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-        break;
-
-      // Uncompressed palette.
-      case kChunkCpl0:
-        if (LoadPalette(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-
-        // Flag this frame as having a palette.
-        frame->flags |= kFrameHasPalette;
-        break;
-
-      // Compressed palette.
-      case kChunkCplz:
-        if (LoadCompressedPalette(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-
-        // Flag this frame as having a palette.
-        frame->flags |= kFrameHasPalette;
-        break;
-
-      // Uncompressed vector pointers.
-      case kChunkVpt0:
-        if (LoadVectorPointers(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-        break;
-
-      // Compressed vector pointers.
-      case kChunkVptz:
-      case kChunkVptd:
-        if (LoadCompressedVectorPointers(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-        break;
-
-      // Compressed vector pointers of a key frame.
-      case kChunkVptk:
-        if (LoadCompressedVectorPointers(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-
-        // Flag this frame as being key.
-        frame->flags |= kFrameKey;
-        break;
-
-      // Sound is never inside a frame container, so an unknown chunk here
-      // is an error rather than something to skip.
-      default:
-        return kVqaErrorRead;
+    // Sound is never inside a frame container, so an unknown chunk here is an
+    // error rather than something to skip.
+    const FramePart part = LoadFramePart(state, chunk->id, chunk_bytes);
+    if (part == FramePart::kFailed || part == FramePart::kNone) {
+      return kVqaErrorRead;
     }
   }
 
@@ -1381,4 +1174,70 @@ static int32_t LoadAdpcmSound(VqaPlayerState* state, int32_t chunk_bytes) {
   audio->staged_bytes = decoded_bytes;
 
   return 0;
+}
+
+// Loads a chunk a frame is built from into the loader's current frame, and
+// flags the frame as the chunk says: key, or carrying a palette.
+static FramePart LoadFramePart(VqaPlayerState* state, const uint32_t id,
+                               const int32_t chunk_bytes) {
+  int32_t result = 0;
+  uint32_t frame_flags = 0;
+  FramePart part = FramePart::kLoaded;
+  switch (id) {
+    case kChunkCbf0:
+      result = LoadFullCodebook(state, chunk_bytes);
+      break;
+    case kChunkCbfz:
+      result = LoadCompressedFullCodebook(state, chunk_bytes);
+      break;
+    case kChunkCbp0:
+      result = LoadPartialCodebook(state, chunk_bytes);
+      break;
+    case kChunkCbpz:
+      result = LoadCompressedPartialCodebook(state, chunk_bytes);
+      break;
+    case kChunkCpl0:
+      result = LoadPalette(state, chunk_bytes);
+      frame_flags = kFrameHasPalette;
+      break;
+    case kChunkCplz:
+      result = LoadCompressedPalette(state, chunk_bytes);
+      frame_flags = kFrameHasPalette;
+      break;
+    case kChunkVpt0:
+      result = LoadVectorPointers(state, chunk_bytes);
+      part = FramePart::kVectorPointers;
+      break;
+    case kChunkVptz:
+    case kChunkVptd:
+      result = LoadCompressedVectorPointers(state, chunk_bytes);
+      part = FramePart::kVectorPointers;
+      break;
+    // A key frame's vector pointers; key frames are never skipped.
+    case kChunkVptk:
+      result = LoadCompressedVectorPointers(state, chunk_bytes);
+      frame_flags = kFrameKey;
+      part = FramePart::kVectorPointers;
+      break;
+    default:
+      return FramePart::kNone;
+  }
+
+  if (result != 0) {
+    return FramePart::kFailed;
+  }
+  state->movie->loader.current_frame->flags |= frame_flags;
+  return part;
+}
+
+// Loads a sound chunk of either track with the loader for its compression.
+static int32_t LoadSoundChunk(VqaPlayerState* state, const uint32_t id,
+                              const int32_t chunk_bytes) {
+  if (id == kChunkSnd0 || id == kChunkSna0) {
+    return LoadSound(state, chunk_bytes);
+  }
+  if (id == kChunkSnd1 || id == kChunkSna1) {
+    return LoadZapSound(state, chunk_bytes);
+  }
+  return LoadAdpcmSound(state, chunk_bytes);
 }
