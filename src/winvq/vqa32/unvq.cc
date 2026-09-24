@@ -44,8 +44,7 @@ void DecodeBlocks(std::span<const unsigned char> codebook,
       const bool solid = high_byte == (block_height == 2 ? 0x0f : 0xff);
       const base::ssize code_offset =
           ((base::ssize{high_byte} * 256) + low_byte) * 4 * height;
-      if (!solid && (code_offset > codebook_bytes ||
-                     4 * height > codebook_bytes - code_offset)) {
+      if (!solid && code_offset + (4 * height) > codebook_bytes) {
         return;
       }
       for (base::ssize line = 0; line < height; ++line) {

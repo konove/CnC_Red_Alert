@@ -123,6 +123,17 @@ void ConfigureDrawer(VqaPlayerState* state) {
       std::min(drawer->x1, drawer->x2);
 }
 
+// Decompresses a frame's palette in place, if it is still compressed.
+static void DecompressPalette(VqaFrame* frame) {
+  if (frame->flags & kFramePaletteCompressed) {
+    frame->palette_bytes = LCW_Uncompress(
+        std::span(frame->palette).subspan(base::ToSize(frame->palette_offset)),
+        frame->palette);
+
+    frame->flags &= ~kFramePaletteCompressed;
+  }
+}
+
 // Moves the drawer on to the frame to draw next and returns 0, or returns
 // kVqaNoBuffer (the loader has not caught up), kVqaNotTime (the frame is not
 // due yet) or kVqaEndOfMovie (frame_callback asked to stop while frames were
@@ -155,17 +166,12 @@ static int32_t SelectFrameToDraw(VqaPlayerState* state) {
     return kVqaNotTime;
   }
 
-  // Once frame_rate / 5 frames have gone by since the last frame selected,
-  // draw this one however late it is rather than skip further, so a slow
-  // machine still shows about 5 frames a second.
-  if (frame->frame_number - drawer->last_selected_frame >=
-      config->frame_rate / 5) {
-    drawer->last_selected_frame = frame->frame_number;
-    return 0;
-  }
-
-  // Skipping disabled: draw every frame, late or not.
-  if (config->draw_flags & kVqaDrawNoSkip) {
+  // Draw this frame however late it is when skipping is disabled, or once
+  // frame_rate / 5 frames have gone by since the last frame selected, so a
+  // slow machine still shows about 5 frames a second.
+  if ((config->draw_flags & kVqaDrawNoSkip) != 0 ||
+      frame->frame_number - drawer->last_selected_frame >=
+          config->frame_rate / 5) {
     drawer->last_selected_frame = frame->frame_number;
     return 0;
   }
@@ -179,48 +185,36 @@ static int32_t SelectFrameToDraw(VqaPlayerState* state) {
       return kVqaNoBuffer;
     }
 
-    // Key frames are never skipped.
-    if (frame->flags & kFrameKey) {
+    // Stop at the frame that is due; key frames are never skipped.
+    if ((frame->flags & kFrameKey) != 0 || frame->frame_number >= due_frame) {
       break;
     }
 
-    if (frame->frame_number < due_frame) {
-      // Stash the palette in saved_palette, and flag it for DrawNextFrame() to
-      // set with the next frame it draws. A later skipped palette replaces it.
-      if (frame->flags & kFrameHasPalette) {
-        // Decompressed in place, as DecompressFrame() would have.
-        if (frame->flags & kFramePaletteCompressed) {
-          frame->palette_bytes =
-              LCW_Uncompress(std::span(frame->palette)
-                                 .subspan(base::ToSize(frame->palette_offset)),
-                             frame->palette);
+    // Stash the palette in saved_palette, and flag it for DrawNextFrame() to
+    // set with the next frame it draws. A later skipped palette replaces it.
+    if (frame->flags & kFrameHasPalette) {
+      DecompressPalette(frame);
 
-          frame->flags &= ~kFramePaletteCompressed;
-        }
-
-        // Stash the palette. A decompressed palette can report up to
-        // palette_capacity bytes, more than the 256-color copy holds.
-        const int32_t saved_bytes = std::min(
-            frame->palette_bytes, int32_t{sizeof(drawer->saved_palette)});
-        base::CopyBytes(base::ObjectBytes(drawer->saved_palette),
-                        std::as_bytes(std::span(frame->palette)), saved_bytes);
-        drawer->saved_palette_bytes = saved_bytes;
-        drawer->flags |= kDrawerPalettePending;
-      }
-
-      // Tell the client a frame went by undrawn.
-      if ((config->frame_callback != nullptr) &&
-          (config->frame_callback(nullptr, frame->frame_number) != 0)) {
-        return kVqaEndOfMovie;
-      }
-
-      // Clearing the flags hands the buffer back to the loader.
-      frame->flags = 0;
-      frame = frame->next;
-      drawer->current_frame = frame;
-    } else {
-      break;
+      // A decompressed palette can report up to palette_capacity bytes, more
+      // than the 256-color copy holds.
+      const int32_t saved_bytes = std::min(
+          frame->palette_bytes, int32_t{sizeof(drawer->saved_palette)});
+      base::CopyBytes(base::ObjectBytes(drawer->saved_palette),
+                      std::as_bytes(std::span(frame->palette)), saved_bytes);
+      drawer->saved_palette_bytes = saved_bytes;
+      drawer->flags |= kDrawerPalettePending;
     }
+
+    // Tell the client a frame went by undrawn.
+    if ((config->frame_callback != nullptr) &&
+        (config->frame_callback(nullptr, frame->frame_number) != 0)) {
+      return kVqaEndOfMovie;
+    }
+
+    // Clearing the flags hands the buffer back to the loader.
+    frame->flags = 0;
+    frame = frame->next;
+    drawer->current_frame = frame;
   }
 
   drawer->last_selected_frame = frame->frame_number;
@@ -246,13 +240,7 @@ static void DecompressFrame(VqaMovie* movie) {
     codebook->flags &= ~kCodebookCompressed;
   }
 
-  if (frame->flags & kFramePaletteCompressed) {
-    frame->palette_bytes = LCW_Uncompress(
-        std::span(frame->palette).subspan(base::ToSize(frame->palette_offset)),
-        frame->palette);
-
-    frame->flags &= ~kFramePaletteCompressed;
-  }
+  DecompressPalette(frame);
 
   if (frame->flags & kFramePointersCompressed) {
     LCW_Uncompress(std::span(frame->pointers)
