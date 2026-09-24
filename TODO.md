@@ -21,8 +21,6 @@
     outer unlock also runs `DropScaledFrame()` and arms `Present(false)`
   - `ra/radar.cc:1036` and `:1044` are early-return unwinds inside an outer lock - the shape a guard
     most obviously fixes
-  - `winvq/vqaview/` has 5 more, but it is not in the build (`winvq/CMakeLists.txt` only adds
-    `vqa32`)
 
 ## Debugging
 

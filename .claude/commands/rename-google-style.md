@@ -200,7 +200,7 @@ Work from the narrowest scope outwards.
    `no member named 'Set_Name'; did you mean 'SetName'` gives an exact `file:line:col`; patch those
    sites and rebuild until clean.
 5. **Code the compiler never sees:** `#if 0` blocks, `#ifdef WIN32` branches and files excluded from
-   the build (`winvq/vqaview`, TD's `rawfile.cc` / `cdfile.cc`). After the build is clean,
+   the build (TD's `rawfile.cc` / `cdfile.cc`, the root `vq/` tree). After the build is clean,
    `grep -rnw '<old>'` over the scope must come back empty, or show only the other game's own
    function.
 6. **Everything that mentions the old name in prose:** the header's file comment, tests,
