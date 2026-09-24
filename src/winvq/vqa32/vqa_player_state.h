@@ -43,7 +43,9 @@
 #include <vector>
 
 #include "base/numeric.h"
+#include "base/types.h"
 #include "winvq/vqa32/chunk_reader.h"
+#include "winvq/vqa32/lcw_buffer.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player.h"
 #include "winvq/vqa32/vqaio.h"
@@ -70,44 +72,35 @@ struct ZapHeader {
 // partial codebooks in the current group's frames, so the ring needs at
 // least that one codebook ahead of the one in use.
 //
-// Compressed data is loaded at the end of the buffer (compressed_offset) and
-// decompressed in place towards the start by the drawer when the first frame
-// using it is drawn; uncompressed data is loaded at the start.
+// A compressed codebook is decompressed by the drawer when the first frame
+// using it is drawn.
 struct VqaCodebook {
-  // codebook_capacity bytes.
-  std::vector<unsigned char> buffer;
-  VqaCodebook* next = nullptr;
-  uint32_t flags = 0;  // kCodebook* bits
-  // Where the compressed data starts in buffer.
-  int32_t compressed_offset = 0;
-};
+  explicit VqaCodebook(base::ssize capacity) : buffer(capacity) {}
 
-// VqaCodebook flag, set by the loader for each new codebook: the codebook is
-// still compressed.
-constexpr uint32_t kCodebookCompressed = base::Bit<uint32_t>(1);
+  // codebook_capacity bytes.
+  LcwBuffer buffer;
+  VqaCodebook* next = nullptr;
+};
 
 // VqaFrame: one buffer in the ring of loaded frames. The loader fills it
 // and sets kFrameLoaded; the drawer decodes it; the flipper or a skip
-// clears flags to hand it back to the loader. Compressed data sits at the end
-// of its buffer and is decompressed in place just before the frame is drawn,
-// as in VqaCodebook.
+// clears flags to hand it back to the loader. Compressed data is decompressed
+// just before the frame is drawn, as in VqaCodebook.
 struct VqaFrame {
+  VqaFrame(base::ssize pointers_capacity, base::ssize palette_capacity)
+      : pointers(pointers_capacity), palette(palette_capacity) {}
+
   // The frame's vector pointers, one per block, pointers_capacity bytes.
-  std::vector<unsigned char> pointers;
+  LcwBuffer pointers;
   // The frame's palette as 8-bit R,G,B triplets, palette_capacity bytes. Holds
   // a stale palette when the frame has none (kFrameHasPalette clear).
-  std::vector<unsigned char> palette;
+  LcwBuffer palette;
   // The codebook the frame's pointers index into.
   VqaCodebook* codebook = nullptr;
   VqaFrame* next = nullptr;
   uint32_t flags = 0;  // kFrame* bits
   // Number of the frame in the movie.
   int32_t frame_number = 0;
-  // Where the compressed pointers and palette start in their buffers.
-  int32_t pointers_offset = 0;
-  int32_t palette_offset = 0;
-  // Bytes of palette, meaningful when kFrameHasPalette is set.
-  int32_t palette_bytes = 0;
 };
 
 // VqaFrame flags. All clear means the buffer is free for the loader.
@@ -117,9 +110,6 @@ constexpr uint32_t kFrameLoaded = base::Bit<uint32_t>(0);
 constexpr uint32_t kFrameKey = base::Bit<uint32_t>(1);
 // Carries a palette that must be set.
 constexpr uint32_t kFrameHasPalette = base::Bit<uint32_t>(2);
-// The palette and the vector pointers are still compressed.
-constexpr uint32_t kFramePaletteCompressed = base::Bit<uint32_t>(3);
-constexpr uint32_t kFramePointersCompressed = base::Bit<uint32_t>(4);
 
 // VqaLoader: the loader's position in the file and in the buffer rings.
 struct VqaLoader {
@@ -134,6 +124,9 @@ struct VqaLoader {
   // size in bytes (compressed or not).
   int32_t partial_count;
   int32_t partial_bytes;
+  // Where compressed pieces collect in partial_codebook, estimated from the
+  // group's first piece.
+  int32_t partial_offset;
   // Number of the next frame to load; the movie is loaded when it reaches
   // the header's frame count.
   int32_t next_frame_number;

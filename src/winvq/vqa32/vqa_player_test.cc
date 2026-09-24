@@ -17,28 +17,21 @@
 #include <string_view>
 #include <vector>
 
-#include "base/numeric.h"
+#include "base/array.h"
 #include "base/types.h"
 #include "gtest/gtest.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player_state.h"
 #include "winvq/vqa32/vqa_test_util.h"
-#include "winvq/vqm32/compress.h"
 
-// Link-time stubs for symbols normally provided by the game or sdllib. The
-// tests never decode compressed data, so LCW_Uncompress() is never called;
-// QueueVqaPalette() records what it was handed.
+// Link-time stub for the game's palette hook, which records what it was
+// handed.
 
 // A copy of the palette last passed to QueueVqaPalette(), for the drawer
 // tests. The stub is a free function, so it cannot reach a fixture member.
 static std::vector<uint8_t>& QueuedPalette() {
   static std::vector<uint8_t> palette;
   return palette;
-}
-
-int32_t LCW_Uncompress(std::span<const unsigned char> /*source*/,
-                       std::span<unsigned char> /*dest*/) {
-  return 0;
 }
 
 void QueueVqaPalette(std::span<uint8_t> palette, int32_t numbytes,
@@ -283,9 +276,24 @@ TEST_F(VqaLoaderTest, PartialCompressedCodebookLoadsAtEstimatedOffset) {
   ASSERT_EQ(Open(), 0);
   // Groupsize 1: offset = codebook_capacity - (20 * 1 + 100).
   const VqaCodebook* codebook = state_.movie->loader.full_codebook;
-  EXPECT_EQ(codebook->compressed_offset, kCodebookCapacity - 120);
-  EXPECT_EQ(codebook->buffer.at(base::ToSize(codebook->compressed_offset)),
-            0xAB);
+  EXPECT_TRUE(codebook->buffer.compressed());
+  EXPECT_EQ(base::At(codebook->buffer.data(), kCodebookCapacity - 121), 0);
+  EXPECT_EQ(base::At(codebook->buffer.data(), kCodebookCapacity - 120), 0xAB);
+}
+
+TEST_F(VqaLoaderTest, FullCodebookDiscardsCollectedPieces) {
+  // Groupsize 2: one piece of the next codebook, then a full codebook. The
+  // next group's pieces must start from nothing again.
+  VqaHeader header = SmallHeader();
+  header.frames_per_group = 2;
+  fake_.data = MovieStart(header, {0, 0, 0});
+  AppendChunk(fake_.data, "CBP0", std::vector<uint8_t>(20));
+  AppendChunk(fake_.data, "CBF0", std::vector<uint8_t>(128));
+  AppendFrameEnd(fake_.data);
+
+  ASSERT_EQ(Open(), 0);
+  EXPECT_EQ(state_.movie->loader.partial_count, 0);
+  EXPECT_EQ(state_.movie->loader.partial_bytes, 0);
 }
 
 TEST_F(VqaLoaderTest, RejectsPartialCodebookWithNegativeOffset) {
@@ -319,8 +327,8 @@ TEST_F(VqaLoaderTest, AcceptsFullPalette) {
   ASSERT_EQ(Open(), 0);
   const VqaFrame& frame = *state_.movie->frames.front();
   EXPECT_NE(frame.flags & kFrameHasPalette, 0U);
-  EXPECT_EQ(frame.palette_bytes, 768);
-  EXPECT_EQ(frame.palette.at(767), 7);
+  EXPECT_EQ(frame.palette.size(), 768);
+  EXPECT_EQ(base::At(frame.palette.contents(), 767), 7);
 }
 
 TEST_F(VqaLoaderTest, SkippedFramePaletteIsSetWithTheNextFrameDrawn) {

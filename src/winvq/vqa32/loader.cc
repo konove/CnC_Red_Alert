@@ -38,6 +38,7 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "winvq/vqa32/chunk_reader.h"
+#include "winvq/vqa32/lcw_buffer.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player.h"
 #include "winvq/vqa32/vqa_player_state.h"
@@ -50,21 +51,14 @@ static std::unique_ptr<VqaMovie> AllocateMovie(const VqaHeader* header,
                                                VqaConfig* config);
 static int32_t PreloadFrames(VqaPlayerState* state);
 static int32_t LoadFrameContainer(VqaPlayerState* state, const Chunk& frame);
-static int32_t LoadFullCodebook(const VqaPlayerState* state,
-                                const Chunk& chunk);
-static int32_t LoadCompressedFullCodebook(const VqaPlayerState* state,
-                                          const Chunk& chunk);
+static int32_t LoadFullCodebook(const VqaPlayerState* state, const Chunk& chunk,
+                                bool compressed);
 static int32_t LoadPartialCodebook(const VqaPlayerState* state,
-                                   const Chunk& chunk);
-static int32_t LoadCompressedPartialCodebook(const VqaPlayerState* state,
-                                             const Chunk& chunk);
-static int32_t LoadPalette(const VqaPlayerState* state, const Chunk& chunk);
-static int32_t LoadCompressedPalette(const VqaPlayerState* state,
-                                     const Chunk& chunk);
+                                   const Chunk& chunk, bool compressed);
+static int32_t LoadPalette(const VqaPlayerState* state, const Chunk& chunk,
+                           bool compressed);
 static int32_t LoadVectorPointers(const VqaPlayerState* state,
-                                  const Chunk& chunk);
-static int32_t LoadCompressedVectorPointers(const VqaPlayerState* state,
-                                            const Chunk& chunk);
+                                  const Chunk& chunk, bool compressed);
 static int32_t LoadSound(VqaPlayerState* state, const Chunk& chunk);
 static int32_t LoadZapSound(VqaPlayerState* state, const Chunk& chunk);
 static int32_t LoadAdpcmSound(VqaPlayerState* state, const Chunk& chunk);
@@ -443,10 +437,8 @@ static std::unique_ptr<VqaMovie> AllocateMovie(const VqaHeader* header,
   movie->codebooks.reserve(base::ToSize(config->codebook_buffer_count));
 
   for (int32_t i = 0; i < config->codebook_buffer_count; i++) {
-    auto codebook = std::make_unique<VqaCodebook>();
-
-    codebook->buffer.resize(base::ToSize(movie->codebook_capacity));
-    movie->codebooks.push_back(std::move(codebook));
+    movie->codebooks.push_back(
+        std::make_unique<VqaCodebook>(movie->codebook_capacity));
   }
 
   LinkRing(movie->codebooks);
@@ -460,11 +452,8 @@ static std::unique_ptr<VqaMovie> AllocateMovie(const VqaHeader* header,
   movie->frames.reserve(base::ToSize(config->frame_buffer_count));
 
   for (int32_t i = 0; i < config->frame_buffer_count; i++) {
-    auto frame = std::make_unique<VqaFrame>();
-
-    frame->pointers.resize(base::ToSize(movie->pointers_capacity));
-    frame->palette.resize(base::ToSize(movie->palette_capacity));
-
+    auto frame = std::make_unique<VqaFrame>(movie->pointers_capacity,
+                                            movie->palette_capacity);
     frame->codebook = first_codebook;
     movie->frames.push_back(std::move(frame));
   }
@@ -603,152 +592,67 @@ static int32_t LoadFrameContainer(VqaPlayerState* state, const Chunk& frame) {
   return 0;
 }
 
-// The chunk loaders below each read one chunk's payload, iffsize bytes and
-// the pad byte, into the loader's current frame or codebook node. Each returns
-// 0, or kVqaErrorRead when the chunk does not fit its buffer or the read
-// fails.
+// The chunk loaders below each read one chunk's payload and pad byte into
+// the loader's current frame or codebook node. Each returns 0, or
+// kVqaErrorRead when the chunk does not fit its buffer or the read fails.
 
-// Loads a full uncompressed codebook into the node being assembled, which
-// becomes the full codebook; the next group's pieces go to the node after it.
-static int32_t LoadFullCodebook(const VqaPlayerState* state,
-                                const Chunk& chunk) {
-  VqaLoader* loader = &state->movie->loader;
-  VqaCodebook* codebook = loader->partial_codebook;
-
-  if (!FitsInBuffer(0, chunk.padded_size(), state->movie->codebook_capacity)) {
-    return kVqaErrorRead;
-  }
-
-  if (!state->io->Read(std::span(codebook->buffer), chunk.padded_size())) {
-    return kVqaErrorRead;
-  }
-
-  // A full codebook replaces any pieces collected so far.
+// Makes the codebook being assembled the full codebook, used by the frames
+// loaded from now on; the next group's pieces go to the node after it.
+static void CompleteCodebook(VqaLoader* loader) {
   loader->partial_count = 0;
+  loader->partial_bytes = 0;
+  loader->full_codebook = loader->partial_codebook;
+  loader->partial_codebook = loader->partial_codebook->next;
+}
 
-  codebook->flags &= ~kCodebookCompressed;
-  codebook->compressed_offset = 0;
+// Loads a full codebook, raw or compressed, into the node being assembled. It
+// replaces any pieces collected so far.
+static int32_t LoadFullCodebook(const VqaPlayerState* state, const Chunk& chunk,
+                                const bool compressed) {
+  VqaLoader* loader = &state->movie->loader;
+  ChunkReader reader(*state->io);
+  LcwBuffer& buffer = loader->partial_codebook->buffer;
 
-  // The next group's pieces go to the next node.
-  loader->full_codebook = codebook;
-  loader->partial_codebook = codebook->next;
+  if (!(compressed ? buffer.LoadCompressed(reader, chunk)
+                   : buffer.LoadRaw(reader, chunk))) {
+    return kVqaErrorRead;
+  }
 
+  CompleteCodebook(loader);
   return 0;
 }
 
-// As LoadFullCodebook(), for a compressed codebook: loaded at the end of the
-// buffer for DecompressFrame() to decompress in place.
-static int32_t LoadCompressedFullCodebook(const VqaPlayerState* state,
-                                          const Chunk& chunk) {
-  VqaLoader* loader = &state->movie->loader;
-  VqaCodebook* codebook = loader->partial_codebook;
-  const int32_t padded_bytes = chunk.padded_size();
-
-  const int32_t compressed_offset =
-      state->movie->codebook_capacity - padded_bytes;
-
-  // A chunk larger than the buffer would start before it.
-  if (compressed_offset < 0) {
-    return kVqaErrorRead;
-  }
-
-  const auto buffer =
-      std::span(codebook->buffer).subspan(base::ToSize(compressed_offset));
-
-  if (!state->io->Read(buffer, padded_bytes)) {
-    return kVqaErrorRead;
-  }
-
-  // A full codebook replaces any pieces collected so far.
-  loader->partial_count = 0;
-
-  codebook->flags |= kCodebookCompressed;
-  codebook->compressed_offset = compressed_offset;
-
-  // The next group's pieces go to the next node.
-  loader->full_codebook = codebook;
-  loader->partial_codebook = codebook->next;
-
-  return 0;
-}
-
-// Appends one uncompressed piece of the next group's codebook. The group's
-// last piece completes it, and it becomes the full codebook.
+// Appends one piece of the next group's codebook. The group's last piece
+// completes it.
+//
+// Raw pieces collect from the start of the buffer. Compressed pieces are
+// decompressed together, as one, so they collect back from the end: the
+// group's first piece places the whole compressed codebook, whose size is not
+// known yet, estimated as this piece's size times the pieces in a group, plus
+// 100 bytes. The estimate assumes every piece is the size of the first, so a
+// larger later piece can still run off the end.
 static int32_t LoadPartialCodebook(const VqaPlayerState* state,
-                                   const Chunk& chunk) {
+                                   const Chunk& chunk, const bool compressed) {
   VqaMovie* movie = state->movie.get();
   VqaLoader* loader = &movie->loader;
-  VqaCodebook* codebook = loader->partial_codebook;
+  ChunkReader reader(*state->io);
+  LcwBuffer& buffer = loader->partial_codebook->buffer;
+  const int frames_per_group = state->header.frames_per_group;
 
-  if (!FitsInBuffer(loader->partial_bytes, chunk.padded_size(),
-                    movie->codebook_capacity)) {
-    return kVqaErrorRead;
-  }
-
-  const auto buffer =
-      std::span(codebook->buffer).subspan(base::ToSize(loader->partial_bytes));
-
-  if (!state->io->Read(buffer, chunk.padded_size())) {
-    return kVqaErrorRead;
-  }
-
-  // Each piece's pad byte is overwritten by the next piece.
-  loader->partial_bytes += chunk.size;
-  loader->partial_count++;
-
-  // The group's last piece completes the codebook.
-  if (std::cmp_equal(loader->partial_count, state->header.frames_per_group)) {
-    loader->partial_count = 0;
-    loader->partial_bytes = 0;
-
-    codebook->flags &= ~kCodebookCompressed;
-    codebook->compressed_offset = 0;
-
-    loader->full_codebook = codebook;
-    loader->partial_codebook = codebook->next;
-  }
-
-  return 0;
-}
-
-// As LoadPartialCodebook(), for compressed pieces. They collect towards the end
-// of the buffer and are decompressed together, as one, once the codebook is
-// complete.
-static int32_t LoadCompressedPartialCodebook(const VqaPlayerState* state,
-                                             const Chunk& chunk) {
-  VqaMovie* movie = state->movie.get();
-  VqaLoader* loader = &movie->loader;
-  VqaCodebook* codebook = loader->partial_codebook;
-  const int32_t padded_bytes = chunk.padded_size();
-
-  // The group's first piece places the whole compressed codebook, whose size
-  // is not known yet: estimated as this piece's size times the pieces in a
-  // group, plus 100 bytes, back from the end of the buffer.
-  if (loader->partial_bytes == 0) {
+  if (compressed && loader->partial_bytes == 0) {
     // 64-bit because a large chunk times the group size overflows int32_t.
     // A negative estimate would place the codebook before the buffer.
     const int64_t estimated_offset =
         int64_t{movie->codebook_capacity} -
-        ((int64_t{padded_bytes} * state->header.frames_per_group) + 100);
+        ((int64_t{chunk.padded_size()} * frames_per_group) + 100);
     if (estimated_offset < 0) {
       return kVqaErrorRead;
     }
-    codebook->compressed_offset = static_cast<int32_t>(estimated_offset);
+    loader->partial_offset = static_cast<int32_t>(estimated_offset);
   }
+  const int32_t start = compressed ? loader->partial_offset : 0;
 
-  // The estimate assumes every part of the group is the size of the first
-  // one, so a larger later part can still run off the end.
-  if (!FitsInBuffer(
-          int64_t{codebook->compressed_offset} + loader->partial_bytes,
-          padded_bytes, movie->codebook_capacity)) {
-    return kVqaErrorRead;
-  }
-
-  const auto buffer = std::span(codebook->buffer)
-                          .subspan(base::ToSize(codebook->compressed_offset +
-                                                loader->partial_bytes));
-
-  if (!state->io->Read(buffer, padded_bytes)) {
+  if (!buffer.ReadAt(reader, chunk, int64_t{start} + loader->partial_bytes)) {
     return kVqaErrorRead;
   }
 
@@ -756,113 +660,48 @@ static int32_t LoadCompressedPartialCodebook(const VqaPlayerState* state,
   loader->partial_bytes += chunk.size;
   loader->partial_count++;
 
-  // The group's last piece completes the codebook.
-  if (std::cmp_equal(loader->partial_count, state->header.frames_per_group)) {
-    loader->partial_count = 0;
-    loader->partial_bytes = 0;
-
-    codebook->flags |= kCodebookCompressed;
-
-    loader->full_codebook = codebook;
-    loader->partial_codebook = codebook->next;
+  if (loader->partial_count == frames_per_group) {
+    if (compressed) {
+      buffer.SetCompressed(start, loader->partial_bytes);
+    } else {
+      buffer.SetRaw(loader->partial_bytes);
+    }
+    CompleteCodebook(loader);
   }
 
   return 0;
 }
 
-// Loads an uncompressed palette into the frame's palette buffer.
-static int32_t LoadPalette(const VqaPlayerState* state, const Chunk& chunk) {
+// Loads a palette, raw or compressed, into the frame's palette buffer.
+static int32_t LoadPalette(const VqaPlayerState* state, const Chunk& chunk,
+                           const bool compressed) {
   VqaFrame* frame = state->movie->loader.current_frame;
+  ChunkReader reader(*state->io);
 
   // The drawer keeps a skipped frame's palette in its 256-color copy, so a
-  // larger one is malformed.
-  if (!FitsInBuffer(0, chunk.padded_size(),
-                    int64_t{sizeof(VqaDrawer::saved_palette)})) {
+  // larger raw one is malformed.
+  if (!compressed && !FitsInBuffer(0, chunk.padded_size(),
+                                   int64_t{sizeof(VqaDrawer::saved_palette)})) {
     return kVqaErrorRead;
   }
 
-  if (!state->io->Read(std::span(frame->palette), chunk.padded_size())) {
+  if (!(compressed ? frame->palette.LoadCompressed(reader, chunk)
+                   : frame->palette.LoadRaw(reader, chunk))) {
     return kVqaErrorRead;
   }
-
-  frame->flags &= ~kFramePaletteCompressed;
-  frame->palette_offset = 0;
-  frame->palette_bytes = chunk.size;
-
   return 0;
 }
 
-// Loads a compressed palette at the end of the frame's palette buffer.
-// palette_bytes is the compressed size until the drawer decompresses it.
-static int32_t LoadCompressedPalette(const VqaPlayerState* state,
-                                     const Chunk& chunk) {
-  VqaFrame* frame = state->movie->loader.current_frame;
-  const int32_t padded_bytes = chunk.padded_size();
-
-  const int32_t compressed_offset =
-      state->movie->palette_capacity - padded_bytes;
-
-  // A chunk larger than the buffer would start before it.
-  if (compressed_offset < 0) {
-    return kVqaErrorRead;
-  }
-
-  const auto buffer =
-      std::span(frame->palette).subspan(base::ToSize(compressed_offset));
-
-  if (!state->io->Read(buffer, padded_bytes)) {
-    return kVqaErrorRead;
-  }
-
-  frame->flags |= kFramePaletteCompressed;
-  frame->palette_offset = compressed_offset;
-  frame->palette_bytes = chunk.size;
-
-  return 0;
-}
-
-// Loads uncompressed vector pointers into the frame's pointer buffer.
+// Loads vector pointers, raw or compressed, into the frame's pointer buffer.
 static int32_t LoadVectorPointers(const VqaPlayerState* state,
-                                  const Chunk& chunk) {
+                                  const Chunk& chunk, const bool compressed) {
   VqaFrame* frame = state->movie->loader.current_frame;
+  ChunkReader reader(*state->io);
 
-  if (!FitsInBuffer(0, chunk.padded_size(), state->movie->pointers_capacity)) {
+  if (!(compressed ? frame->pointers.LoadCompressed(reader, chunk)
+                   : frame->pointers.LoadRaw(reader, chunk))) {
     return kVqaErrorRead;
   }
-
-  if (!state->io->Read(std::span(frame->pointers), chunk.padded_size())) {
-    return kVqaErrorRead;
-  }
-
-  frame->flags &= ~kFramePointersCompressed;
-  frame->pointers_offset = 0;
-
-  return 0;
-}
-
-// Loads compressed vector pointers at the end of the frame's pointer buffer.
-static int32_t LoadCompressedVectorPointers(const VqaPlayerState* state,
-                                            const Chunk& chunk) {
-  VqaFrame* frame = state->movie->loader.current_frame;
-  const int32_t padded_bytes = chunk.padded_size();
-  const int32_t compressed_offset =
-      state->movie->pointers_capacity - padded_bytes;
-
-  // A chunk larger than the buffer would start before it.
-  if (compressed_offset < 0) {
-    return kVqaErrorRead;
-  }
-
-  const auto buffer =
-      std::span(frame->pointers).subspan(base::ToSize(compressed_offset));
-
-  if (!state->io->Read(buffer, padded_bytes)) {
-    return kVqaErrorRead;
-  }
-
-  frame->flags |= kFramePointersCompressed;
-  frame->pointers_offset = compressed_offset;
-
   return 0;
 }
 
@@ -1085,37 +924,27 @@ static FramePart LoadFramePart(VqaPlayerState* state, const Chunk& chunk) {
   FramePart part = FramePart::kLoaded;
   switch (chunk.id) {
     case kChunkCbf0:
-      result = LoadFullCodebook(state, chunk);
-      break;
     case kChunkCbfz:
-      result = LoadCompressedFullCodebook(state, chunk);
+      result = LoadFullCodebook(state, chunk, chunk.id == kChunkCbfz);
       break;
     case kChunkCbp0:
-      result = LoadPartialCodebook(state, chunk);
-      break;
     case kChunkCbpz:
-      result = LoadCompressedPartialCodebook(state, chunk);
+      result = LoadPartialCodebook(state, chunk, chunk.id == kChunkCbpz);
       break;
     case kChunkCpl0:
-      result = LoadPalette(state, chunk);
-      frame_flags = kFrameHasPalette;
-      break;
     case kChunkCplz:
-      result = LoadCompressedPalette(state, chunk);
+      result = LoadPalette(state, chunk, chunk.id == kChunkCplz);
       frame_flags = kFrameHasPalette;
       break;
     case kChunkVpt0:
-      result = LoadVectorPointers(state, chunk);
-      part = FramePart::kVectorPointers;
-      break;
     case kChunkVptz:
     case kChunkVptd:
-      result = LoadCompressedVectorPointers(state, chunk);
+      result = LoadVectorPointers(state, chunk, chunk.id != kChunkVpt0);
       part = FramePart::kVectorPointers;
       break;
     // A key frame's vector pointers; key frames are never skipped.
     case kChunkVptk:
-      result = LoadCompressedVectorPointers(state, chunk);
+      result = LoadVectorPointers(state, chunk, true);
       frame_flags = kFrameKey;
       part = FramePart::kVectorPointers;
       break;

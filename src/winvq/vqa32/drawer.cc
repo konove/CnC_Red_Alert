@@ -32,11 +32,11 @@
 #include "absl/log/check.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
+#include "base/types.h"
 #include "winvq/vqa32/vq_decoder.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player.h"
 #include "winvq/vqa32/vqa_player_state.h"
-#include "winvq/vqm32/compress.h"
 
 static void DecodeNothing(std::span<const unsigned char> codebook,
                           std::span<const unsigned char> pointers,
@@ -123,17 +123,6 @@ void ConfigureDrawer(VqaPlayerState* state) {
       std::min(drawer->x1, drawer->x2);
 }
 
-// Decompresses a frame's palette in place, if it is still compressed.
-static void DecompressPalette(VqaFrame* frame) {
-  if (frame->flags & kFramePaletteCompressed) {
-    frame->palette_bytes = LCW_Uncompress(
-        std::span(frame->palette).subspan(base::ToSize(frame->palette_offset)),
-        frame->palette);
-
-    frame->flags &= ~kFramePaletteCompressed;
-  }
-}
-
 // Moves the drawer on to the frame to draw next and returns 0, or returns
 // kVqaNoBuffer (the loader has not caught up), kVqaNotTime (the frame is not
 // due yet) or kVqaEndOfMovie (frame_callback asked to stop while frames were
@@ -193,14 +182,14 @@ static int32_t SelectFrameToDraw(VqaPlayerState* state) {
     // Stash the palette in saved_palette, and flag it for DrawNextFrame() to
     // set with the next frame it draws. A later skipped palette replaces it.
     if (frame->flags & kFrameHasPalette) {
-      DecompressPalette(frame);
+      frame->palette.Decompress();
 
-      // A decompressed palette can report up to palette_capacity bytes, more
-      // than the 256-color copy holds.
-      const int32_t saved_bytes = std::min(
-          frame->palette_bytes, int32_t{sizeof(drawer->saved_palette)});
+      // A decompressed palette can be up to palette_capacity bytes, more than
+      // the 256-color copy holds.
+      const auto saved_bytes = static_cast<int32_t>(std::min(
+          frame->palette.size(), base::ssize{sizeof(drawer->saved_palette)}));
       base::CopyBytes(base::ObjectBytes(drawer->saved_palette),
-                      std::as_bytes(std::span(frame->palette)), saved_bytes);
+                      std::as_bytes(frame->palette.contents()), saved_bytes);
       drawer->saved_palette_bytes = saved_bytes;
       drawer->flags |= kDrawerPalettePending;
     }
@@ -226,29 +215,12 @@ static int32_t SelectFrameToDraw(VqaPlayerState* state) {
 // pointers. Each is LCW compressed at the end of its buffer and decompressed in
 // place towards the start, and only once: the flags record what is still
 // compressed, and a codebook serves every frame of its group.
-static void DecompressFrame(VqaMovie* movie) {
-  VqaDrawer* drawer = &movie->drawer;
-  VqaFrame* frame = drawer->current_frame;
-  VqaCodebook* codebook = frame->codebook;
-
-  if (codebook->flags & kCodebookCompressed) {
-    LCW_Uncompress(std::span(codebook->buffer)
-                       .subspan(base::ToSize(codebook->compressed_offset)),
-                   codebook->buffer);
-
-    // The group's later frames use it as it is.
-    codebook->flags &= ~kCodebookCompressed;
-  }
-
-  DecompressPalette(frame);
-
-  if (frame->flags & kFramePointersCompressed) {
-    LCW_Uncompress(std::span(frame->pointers)
-                       .subspan(base::ToSize(frame->pointers_offset)),
-                   frame->pointers);
-
-    frame->flags &= ~kFramePointersCompressed;
-  }
+static void DecompressFrame(const VqaMovie* movie) {
+  VqaFrame* frame = movie->drawer.current_frame;
+  // The group's later frames find the codebook decompressed already.
+  frame->codebook->buffer.Decompress();
+  frame->palette.Decompress();
+  frame->pointers.Decompress();
 }
 
 int32_t DrawNextFrame(VqaPlayerState* state) {
@@ -295,7 +267,8 @@ int32_t DrawNextFrame(VqaPlayerState* state) {
   // a frame it skipped: this frame's palette buffer holds only a stale palette
   // when the frame carries none.
   if ((frame->flags & kFrameHasPalette) != 0) {
-    QueueVqaPalette(frame->palette, frame->palette_bytes, slow_palette);
+    QueueVqaPalette(frame->palette.writable_data(),
+                    static_cast<int32_t>(frame->palette.size()), slow_palette);
   } else if ((drawer->flags & kDrawerPalettePending) != 0) {
     QueueVqaPalette(drawer->saved_palette, drawer->saved_palette_bytes,
                     slow_palette);
@@ -304,8 +277,8 @@ int32_t DrawNextFrame(VqaPlayerState* state) {
   drawer->flags &= ~kDrawerPalettePending;
 
   // Decode the image.
-  movie->decode_frame(frame->codebook->buffer, frame->pointers, image,
-                      drawer->blocks_per_row, drawer->block_rows,
+  movie->decode_frame(frame->codebook->buffer.data(), frame->pointers.data(),
+                      image, drawer->blocks_per_row, drawer->block_rows,
                       drawer->image_width);
 
   // For PlayVqa() to return in walk mode.
