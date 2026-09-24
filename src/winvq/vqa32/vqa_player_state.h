@@ -43,9 +43,10 @@
 #include <vector>
 
 #include "base/numeric.h"
+#include "winvq/vqa32/chunk_reader.h"
 #include "winvq/vqa32/vqa_format.h"
-#include "winvq/vqa32/vqaio.h"
 #include "winvq/vqa32/vqa_player.h"
+#include "winvq/vqa32/vqaio.h"
 #include "winvq/vqm32/soscomp.h"
 
 // Packs a block width and height into the dimension code the drawer switches
@@ -55,15 +56,6 @@ constexpr uint32_t BlockDimensions(uint32_t a, uint32_t b) {
 }
 constexpr uint32_t kBlock4x2 = BlockDimensions(4, 2);
 constexpr uint32_t kBlock4x4 = BlockDimensions(4, 4);
-
-// ChunkHeader: the 8 bytes in front of every IFF chunk, read raw. id compares
-// against the ID_ and kChunk constants as read; size is big-endian and only
-// usable through ChunkSize() in loader.cc. The payload that follows is padded
-// to an even length.
-struct ChunkHeader {
-  uint32_t id;
-  uint32_t size;
-};
 
 // ZapHeader: the header of a SND1 (Westwood ADPCM) sound chunk. Equal sizes
 // mean the sound is stored uncompressed.
@@ -145,9 +137,9 @@ struct VqaLoader {
   // Number of the next frame to load; the movie is loaded when it reaches
   // the header's frame count.
   int32_t next_frame_number;
-  // Header of the chunk being loaded, kept so a loader woken from
-  // kMovieLoaderAsleep resumes inside it instead of reading a new one.
-  ChunkHeader chunk_header;
+  // The chunk being loaded, kept so a loader woken from kMovieLoaderAsleep
+  // resumes inside it instead of reading a new one.
+  Chunk chunk;
 };
 
 // VqaDrawer: where and when the drawer decodes frames.

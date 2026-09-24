@@ -234,13 +234,13 @@ Files keep the EA header where they carry EA code; brand-new files (`chunk_reade
 
 ## Progress
 
-| Phase                   | Status | Commits |
-| ----------------------- | ------ | ------- |
-| 0. Plan doc             | todo   |         |
-| 1. Leaf building blocks | todo   |         |
-| 2. FrameRing            | todo   |         |
-| 3. Audio split          | todo   |         |
-| 4. MovieLoader          | todo   |         |
-| 5. MovieDrawer          | todo   |         |
-| 6. Public API + callers | todo   |         |
-| 7. Tidy                 | todo   |         |
+| Phase                   | Status                   | Commits  |
+| ----------------------- | ------------------------ | -------- |
+| 0. Plan doc             | done                     | 204f394e |
+| 1. Leaf building blocks | in progress: ChunkReader | b32cec56 |
+| 2. FrameRing            | todo                     |          |
+| 3. Audio split          | todo                     |          |
+| 4. MovieLoader          | todo                     |          |
+| 5. MovieDrawer          | todo                     |          |
+| 6. Public API + callers | todo                     |          |
+| 7. Tidy                 | todo                     |          |
