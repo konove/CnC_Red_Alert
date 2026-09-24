@@ -62,8 +62,8 @@ int VqaPlayer::Play(int mode) {
   return static_cast<int>(PlayVqa(impl_.get(), mode));
 }
 
-int VqaPlayer::SeekFrame(int frame, int fromwhere) {
-  return static_cast<int>(SeekVqaFrame(impl_.get(), frame, fromwhere));
+int VqaPlayer::SeekFrame(int frame) {
+  return static_cast<int>(SeekVqaFrame(impl_.get(), frame));
 }
 
 std::atomic<bool> vqa_movie_loaded = false;

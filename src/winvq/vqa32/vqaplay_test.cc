@@ -9,7 +9,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <cstdio>
 #include <cstring>
 #include <iterator>
 #include <memory>
@@ -586,7 +585,7 @@ TEST_F(VqaLoaderTest, SeekFrameLoadsFromTheFrameTable) {
   ASSERT_EQ(Open(), 0);
 
   // Groupsize 1: frame 1 is replayed for its codebook, then frame 2 primed.
-  EXPECT_EQ(SeekVqaFrame(&state_, 2, SEEK_SET), 2);
+  EXPECT_EQ(SeekVqaFrame(&state_, 2), 2);
   EXPECT_EQ(state_.movie->loader.next_frame_number, 3);
   EXPECT_EQ(state_.movie->loader.current_frame->pointers.at(0), 2);
 }
@@ -596,8 +595,8 @@ TEST_F(VqaLoaderTest, SeekFrameRejectsFramesOutsideTheMovie) {
   AppendFrameEnd(fake_.data);
   ASSERT_EQ(Open(), 0);
 
-  EXPECT_EQ(SeekVqaFrame(&state_, 3, SEEK_SET), kVqaEndOfMovie);
-  EXPECT_EQ(SeekVqaFrame(&state_, -1, SEEK_SET), kVqaErrorSeek);
+  EXPECT_EQ(SeekVqaFrame(&state_, 3), kVqaEndOfMovie);
+  EXPECT_EQ(SeekVqaFrame(&state_, -1), kVqaErrorSeek);
 }
 
 // Places the 8x8 SmallHeader() image in a 320x200 buffer, gap_x pixels

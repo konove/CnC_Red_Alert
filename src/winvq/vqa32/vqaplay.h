@@ -218,10 +218,9 @@ class VqaPlayer {
   // Repositions the open movie to the given frame, reloading the codebooks
   // from the start of the previous group and, unless kVqaOptionPaletteOff is
   // set, the palette in force; the frame offsets come from the FINF table.
-  // fromwhere is ignored: frame is always counted from the start. Returns
-  // the frame number seeked to, or a negative kVqaError* code.
-  int SeekFrame(int frame, int fromwhere);
-
+  // frame counts from the start of the movie. Returns the frame number seeked
+  // to, or a negative kVqaError* code.
+  int SeekFrame(int frame);
 
  private:
   std::unique_ptr<VqaPlayerState> impl_;

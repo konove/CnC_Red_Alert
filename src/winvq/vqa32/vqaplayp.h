@@ -336,7 +336,7 @@ int32_t OpenVqa(VqaPlayerState* vqa, std::string_view filename,
                 VqaConfig* config);
 void CloseVqa(VqaPlayerState* vqa);
 int32_t PlayVqa(VqaPlayerState* state, int32_t mode);
-int32_t SeekVqaFrame(VqaPlayerState* vqa, int32_t frame, int32_t fromwhere);
+int32_t SeekVqaFrame(VqaPlayerState* vqa, int32_t framenum);
 
 // Loads the next frame into the loader's frame buffer, collecting its
 // codebook and sound on the way. Returns 0 when a frame was loaded, or

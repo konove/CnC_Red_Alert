@@ -831,19 +831,17 @@ int32_t LoadNextFrame(VqaPlayerState* vqa) {
  *     SeekVqaFrame - Position the movie stream to the specified frame.
  *
  * SYNOPSIS
- *     Frame = SeekVqaFrame(VQA, Frame, FromWhere)
+ *     Frame = SeekVqaFrame(VQA, Frame)
  *
- *     long SeekVqaFrame(VqaPlayerState *, int32_t, long);
+ *     long SeekVqaFrame(VqaPlayerState *, int32_t);
  *
  * FUNCTION
  *     This function sets the movie stream to the new frame specified by
- *     the 'offset' parameter. 'FromWhere' is a symbolic constant that is used
- *     to specify from where in the stream offset should be applied.
+ *     the 'Frame' parameter, counted from the start of the movie.
  *
  * INPUTS
  *     VQA       - Pointer to VqaPlayerState of movie to seek into.
  *     Frame     - Frame to seek to.
- *     FromWhere - Relative position indicator.
  *
  * RESULT
  *     Frame - New frame position, or a negative VQAERR_ code: kVqaEndOfMovie
@@ -852,8 +850,7 @@ int32_t LoadNextFrame(VqaPlayerState* vqa) {
  *
  ****************************************************************************/
 
-int32_t SeekVqaFrame(VqaPlayerState* vqa, int32_t framenum,
-                     int32_t /*fromwhere*/) {
+int32_t SeekVqaFrame(VqaPlayerState* vqa, int32_t framenum) {
   VqaFrame* frame = nullptr;
   int32_t rc = kVqaOk;
   /* Dereference commonly used data members for quick access. */
