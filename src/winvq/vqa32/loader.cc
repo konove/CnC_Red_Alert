@@ -105,37 +105,29 @@ static constexpr bool FitsInBuffer(int64_t offset, int64_t size,
   return offset >= 0 && size >= 0 && offset + size <= capacity;
 }
 
-int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
-                VqaConfig* config) {
+// Reads an opened movie's chunks up to its frame table, allocates its play
+// buffers, starts its sound and preloads the frame ring. Returns 0, or a
+// kVqaError* code with the movie left for the caller to close.
+static int32_t PrepareMovie(VqaPlayerState* state, VqaConfig* config) {
   ChunkHeader chunk{};
 
   VqaHeader* header = &state->header;
 
-  vqa_movie_loaded.store(false, std::memory_order_relaxed);
-
   // The file must be an IFF FORM of type WVQA.
-  if (!state->io->Open(filename)) {
-    return kVqaErrorOpen;
-  }
-
   if (!state->io->ReadObject(chunk)) {
-    CloseVqa(state);
     return kVqaErrorRead;
   }
 
   if (chunk.id != ID_FORM || chunk.size == 0) {
-    CloseVqa(state);
     return kVqaErrorNotVqa;
   }
 
   // The form type follows the FORM header.
   if (!state->io->ReadObject(chunk.id)) {
-    CloseVqa(state);
     return kVqaErrorRead;
   }
 
   if (chunk.id != kFormWvqa) {
-    CloseVqa(state);
     return kVqaErrorNotVqa;
   }
 
@@ -156,7 +148,6 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
 
   while (!found_frame_table) {
     if (!state->io->ReadObject(chunk)) {
-      CloseVqa(state);
       return kVqaErrorRead;
     }
 
@@ -164,17 +155,15 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
 
     // A negative size would make the skip below seek backwards.
     if (!IsValidChunkSize(chunk_bytes)) {
-      CloseVqa(state);
       return kVqaErrorNotVqa;
     }
 
     switch (chunk.id) {
       // The movie header, which sizes the play buffers.
       case kChunkVqhd:
-        // A second header would leak the first header's buffers.
+        // Only one header: the play buffers are sized from it.
         if (std::cmp_not_equal(chunk_bytes, sizeof(VqaHeader)) ||
             state->movie != nullptr) {
-          CloseVqa(state);
           return kVqaErrorNotVqa;
         }
 
@@ -182,14 +171,12 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
         if (!state->io->ReadObject(*header) ||
             !state->io->Seek(PadSize(chunk_bytes) - chunk_bytes,
                              SeekOrigin::kCurrent)) {
-          CloseVqa(state);
           return kVqaErrorRead;
         }
 
         // These fields are divisors when sizing buffers and timing playback.
         if (header->block_width == 0 || header->block_height == 0 ||
             header->frames_per_group == 0 || header->fps == 0) {
-          CloseVqa(state);
           return kVqaErrorNotVqa;
         }
 
@@ -218,13 +205,11 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
         if ((header->flags & kVqaHasAudio) != 0 &&
             (config->option_flags & kVqaOptionAudio) != 0 &&
             config->audio_block_bytes <= 0) {
-          CloseVqa(state);
           return kVqaErrorAudio;
         }
 
         state->movie = AllocateMovie(header, config);
         if (state->movie == nullptr) {
-          CloseVqa(state);
           return kVqaErrorNoMemory;
         }
 
@@ -234,12 +219,10 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
       // before the frames. A movie without a header before it cannot play.
       case kChunkFinf:
         if (state->movie == nullptr) {
-          CloseVqa(state);
           return kVqaErrorNotVqa;
         }
 
         if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
-          CloseVqa(state);
           return kVqaErrorSeek;
         }
 
@@ -249,7 +232,6 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
       // Chunks the player has no use for, such as PINF.
       default:
         if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
-          CloseVqa(state);
           return kVqaErrorSeek;
         }
         break;
@@ -271,7 +253,6 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
 
     // Originally HMI's DOS sound drivers; now the SDL mixer.
     if (OpenMovieAudio(state)) {
-      CloseVqa(state);
       return kVqaErrorAudio;
     }
 
@@ -291,11 +272,25 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
 
   // Preload the frame ring, so playback starts with frames in hand.
   if (PreloadFrames(state) != 0) {
-    CloseVqa(state);
     return kVqaErrorRead;
   }
 
   return 0;
+}
+
+int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
+                VqaConfig* config) {
+  vqa_movie_loaded.store(false, std::memory_order_relaxed);
+
+  if (!state->io->Open(filename)) {
+    return kVqaErrorOpen;
+  }
+
+  const int32_t result = PrepareMovie(state, config);
+  if (result != 0) {
+    CloseVqa(state);
+  }
+  return result;
 }
 
 void CloseVqa(VqaPlayerState* state) {
@@ -377,30 +372,23 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
     }
 
     switch (chunk->id) {
-      // A frame container.
+      // A frame container, of a key frame for VQFK.
       case kChunkVqfr:
-        if (LoadFrameContainer(state, chunk_bytes)) {
-          return kVqaErrorRead;
-        }
-
-        frame_loaded = true;
-        break;
-
-      // A key frame container.
       case kChunkVqfk:
         if (LoadFrameContainer(state, chunk_bytes)) {
           return kVqaErrorRead;
         }
 
-        // Flag this frame as being key.
-        frame->flags |= kFrameKey;
+        if (chunk->id == kChunkVqfk) {
+          frame->flags |= kFrameKey;
+        }
         frame_loaded = true;
         break;
 
       // Sound. SND* chunks are the primary track and SNA* the alternate one;
-      // the track not played is skipped. Before staging a chunk, the last
-      // one's sound moves from staging into the ring; with no room there the
-      // loader sleeps and resumes here.
+      // the track not played is skipped, and both with the sound off. Before
+      // staging a chunk, the last one's sound moves from staging into the
+      // ring; with no room there the loader sleeps and resumes here.
       case kChunkSnd0:
       case kChunkSnd1:
       case kChunkSnd2:
@@ -410,9 +398,10 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
         const bool alternate_chunk = chunk->id == kChunkSna0 ||
                                      chunk->id == kChunkSna1 ||
                                      chunk->id == kChunkSna2;
-        const bool alternate_track =
-            (state->config.option_flags & kVqaOptionAltAudio) != 0;
-        if (alternate_chunk != alternate_track) {
+        const uint32_t options = state->config.option_flags;
+        const bool alternate_track = (options & kVqaOptionAltAudio) != 0;
+        if ((options & kVqaOptionAudio) == 0 ||
+            alternate_chunk != alternate_track) {
           if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
             return kVqaErrorSeek;
           }
@@ -448,6 +437,14 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
   loader->current_frame = frame->next;
 
   return 0;
+}
+
+// Links nodes into a ring through their next pointers, the last to the first.
+template <class Node>
+static void LinkRing(std::vector<std::unique_ptr<Node>>& nodes) {
+  for (size_t i = 0; i < nodes.size(); i++) {
+    nodes.at(i)->next = nodes.at((i + 1) % nodes.size()).get();
+  }
 }
 
 // Allocates the play buffers of a movie with this header: the codebook and
@@ -495,11 +492,7 @@ static std::unique_ptr<VqaMovie> AllocateMovie(const VqaHeader* header,
     movie->codebooks.push_back(std::move(codebook));
   }
 
-  // Link the nodes into a ring.
-  for (size_t i = 0; i < movie->codebooks.size(); i++) {
-    const size_t next_index = (i + 1) % movie->codebooks.size();
-    movie->codebooks.at(i)->next = movie->codebooks.at(next_index).get();
-  }
+  LinkRing(movie->codebooks);
 
   // The loader starts assembling into the first node.
   VqaCodebook* const first_codebook = movie->codebooks.front().get();
@@ -519,11 +512,7 @@ static std::unique_ptr<VqaMovie> AllocateMovie(const VqaHeader* header,
     movie->frames.push_back(std::move(frame));
   }
 
-  // Link the nodes into a ring.
-  for (size_t i = 0; i < movie->frames.size(); i++) {
-    const size_t next_index = (i + 1) % movie->frames.size();
-    movie->frames.at(i)->next = movie->frames.at(next_index).get();
-  }
+  LinkRing(movie->frames);
 
   // The loader, the drawer and the flipper all start at the first frame.
   VqaFrame* const first_frame = movie->frames.front().get();
@@ -533,22 +522,16 @@ static std::unique_ptr<VqaMovie> AllocateMovie(const VqaHeader* header,
 
   // The image buffer: the caller's; else, when the player draws, its own the
   // size of the movie; else none, and the drawer draws nothing.
-  if (config->image_buffer.empty()) {
-    if ((config->draw_flags & kVqaDrawToBuffer) != 0) {
-      movie->image_storage.resize(
-          static_cast<std::size_t>(header->image_width) * header->image_height);
-      movie->drawer.image_buffer = movie->image_storage;
-
-      movie->drawer.image_width = header->image_width;
-      movie->drawer.image_height = header->image_height;
-    } else {
-      movie->drawer.image_width = config->image_width;
-      movie->drawer.image_height = config->image_height;
-    }
-  } else {
-    movie->drawer.image_buffer = config->image_buffer;
-    movie->drawer.image_width = config->image_width;
-    movie->drawer.image_height = config->image_height;
+  movie->drawer.image_buffer = config->image_buffer;
+  movie->drawer.image_width = config->image_width;
+  movie->drawer.image_height = config->image_height;
+  if (config->image_buffer.empty() &&
+      (config->draw_flags & kVqaDrawToBuffer) != 0) {
+    movie->image_storage.resize(static_cast<std::size_t>(header->image_width) *
+                                header->image_height);
+    movie->drawer.image_buffer = movie->image_storage;
+    movie->drawer.image_width = header->image_width;
+    movie->drawer.image_height = header->image_height;
   }
 
   // The sound's format, its ring and its staging buffer.
@@ -935,8 +918,21 @@ static int32_t LoadCompressedVectorPointers(const VqaPlayerState* state,
 // The sound chunk loaders stage a chunk's sound in audio.staging, for
 // CopyStagedAudio() to move into the ring. The movie's first sound chunk may
 // be larger than staging - it preloads the sound - and goes straight into the
-// ring instead; a larger chunk anywhere else is an error. With the sound off
-// they skip the chunk. Each returns 0, or kVqaErrorRead or kVqaErrorSeek.
+// ring instead; a larger chunk anywhere else is an error. They run only with
+// the sound on. Each returns 0, or kVqaErrorRead.
+
+// Accounts for the sound a preloading first chunk wrote at the start of the
+// ring: moves the write position past it, back to the start when it filled
+// the ring exactly, and marks the whole blocks it filled. The next chunk
+// completes a partial last block.
+static void CommitPreload(VqaAudio* audio, const VqaConfig& config,
+                          const int32_t bytes) {
+  audio->write_offset =
+      (audio->write_offset + bytes) % config.audio_buffer_bytes;
+  for (int32_t i = 0; i < bytes / config.audio_block_bytes; i++) {
+    audio->block_loaded.at(base::ToSize(i)) = 1;
+  }
+}
 
 // Loads an uncompressed sound chunk.
 static int32_t LoadSound(VqaPlayerState* state, int32_t chunk_bytes) {
@@ -944,14 +940,6 @@ static int32_t LoadSound(VqaPlayerState* state, int32_t chunk_bytes) {
   VqaAudio* audio = &movie->audio;
   VqaConfig* config = &state->config;
   const int32_t padded_bytes = PadSize(chunk_bytes);
-
-  // No sound to load into.
-  if ((config->option_flags & kVqaOptionAudio) == 0 || audio->ring.empty()) {
-    if (!state->io->Seek(padded_bytes, SeekOrigin::kCurrent)) {
-      return kVqaErrorSeek;
-    }
-    return 0;
-  }
 
   // The first chunk, too big for staging, preloads the ring.
   if (padded_bytes > audio->staging_capacity && audio->write_offset == 0) {
@@ -963,15 +951,7 @@ static int32_t LoadSound(VqaPlayerState* state, int32_t chunk_bytes) {
       return kVqaErrorRead;
     }
 
-    // A chunk that fills the ring exactly wraps the write back to its start.
-    audio->write_offset =
-        (audio->write_offset + chunk_bytes) % config->audio_buffer_bytes;
-
-    // Mark the whole blocks it filled; the next chunk completes a partial
-    // last one.
-    for (int32_t i = 0; i < chunk_bytes / config->audio_block_bytes; i++) {
-      audio->block_loaded.at(base::ToSize(i)) = 1;
-    }
+    CommitPreload(audio, *config, chunk_bytes);
 
     return 0;
   }
@@ -991,21 +971,12 @@ static int32_t LoadSound(VqaPlayerState* state, int32_t chunk_bytes) {
 
 // Loads a sound chunk in Westwood's ZAP ADPCM, which starts with a ZapHeader.
 static int32_t LoadZapSound(VqaPlayerState* state, int32_t chunk_bytes) {
-  std::span<unsigned char> compressed;
   ZapHeader zap_header{};
 
   VqaMovie* movie = state->movie.get();
   VqaAudio* audio = &movie->audio;
   VqaConfig* config = &state->config;
   int32_t padded_bytes = PadSize(chunk_bytes);
-
-  // No sound to load into.
-  if ((config->option_flags & kVqaOptionAudio) == 0 || audio->ring.empty()) {
-    if (!state->io->Seek(padded_bytes, SeekOrigin::kCurrent)) {
-      return kVqaErrorSeek;
-    }
-    return 0;
-  }
 
   // The ZAP header is part of the chunk; a shorter chunk would leave a
   // negative payload size.
@@ -1035,7 +1006,7 @@ static int32_t LoadZapSound(VqaPlayerState* state, int32_t chunk_bytes) {
       }
     } else {
       // Loaded at the end of the ring and decompressed towards its start.
-      compressed =
+      const auto compressed =
           std::span(audio->ring)
               .subspan(base::ToSize(config->audio_buffer_bytes - padded_bytes));
 
@@ -1050,13 +1021,7 @@ static int32_t LoadZapSound(VqaPlayerState* state, int32_t chunk_bytes) {
                  std::span(audio->ring).first(zap_header.UnCompSize));
     }
 
-    audio->write_offset = (audio->write_offset + zap_header.UnCompSize) %
-                          config->audio_buffer_bytes;
-
-    for (int32_t i = 0; i < zap_header.UnCompSize / config->audio_block_bytes;
-         i++) {
-      audio->block_loaded.at(base::ToSize(i)) = 1;
-    }
+    CommitPreload(audio, *config, zap_header.UnCompSize);
 
     return 0;
   }
@@ -1073,7 +1038,7 @@ static int32_t LoadZapSound(VqaPlayerState* state, int32_t chunk_bytes) {
     }
   } else {
     // Loaded at the end of staging and decompressed towards its start.
-    compressed =
+    const auto compressed =
         std::span(audio->staging)
             .subspan(base::ToSize(audio->staging_capacity - padded_bytes));
 
@@ -1093,20 +1058,10 @@ static int32_t LoadZapSound(VqaPlayerState* state, int32_t chunk_bytes) {
 
 // Loads a sound chunk in IMA ADPCM, 4 bits a sample.
 static int32_t LoadAdpcmSound(VqaPlayerState* state, int32_t chunk_bytes) {
-  std::span<unsigned char> compressed;
-
   VqaMovie* movie = state->movie.get();
   VqaAudio* audio = &movie->audio;
   VqaConfig* config = &state->config;
   const int32_t padded_bytes = PadSize(chunk_bytes);
-
-  // No sound to load into.
-  if ((config->option_flags & kVqaOptionAudio) == 0 || audio->ring.empty()) {
-    if (!state->io->Seek(padded_bytes, SeekOrigin::kCurrent)) {
-      return kVqaErrorSeek;
-    }
-    return 0;
-  }
 
   // Two samples a byte. 64-bit so an oversized chunk cannot overflow before
   // the bounds checks.
@@ -1120,13 +1075,13 @@ static int32_t LoadAdpcmSound(VqaPlayerState* state, int32_t chunk_bytes) {
 
   // The first chunk, too big for staging, preloads the ring.
   if (decoded_bytes > audio->staging_capacity && audio->write_offset == 0) {
-    if (padded_bytes > config->audio_buffer_bytes ||
-        decoded_bytes > config->audio_buffer_bytes) {
+    // decoded_bytes fits the ring, being above staging_capacity.
+    if (padded_bytes > config->audio_buffer_bytes) {
       return kVqaErrorRead;
     }
 
     // Loaded at the end of the ring and decompressed towards its start.
-    compressed =
+    const auto compressed =
         std::span(audio->ring)
             .subspan(base::ToSize(config->audio_buffer_bytes - padded_bytes));
 
@@ -1141,12 +1096,7 @@ static int32_t LoadAdpcmSound(VqaPlayerState* state, int32_t chunk_bytes) {
     audio->adpcm.dest = audio->ring;
     DecodeAdpcmSound(&audio->adpcm, decoded_bytes);
 
-    audio->write_offset =
-        (audio->write_offset + decoded_bytes) % config->audio_buffer_bytes;
-
-    for (int32_t i = 0; i < decoded_bytes / config->audio_block_bytes; i++) {
-      audio->block_loaded.at(base::ToSize(i)) = 1;
-    }
+    CommitPreload(audio, *config, decoded_bytes);
 
     return 0;
   }
@@ -1158,7 +1108,7 @@ static int32_t LoadAdpcmSound(VqaPlayerState* state, int32_t chunk_bytes) {
   }
 
   // Loaded at the end of staging and decompressed towards its start.
-  compressed =
+  const auto compressed =
       std::span(audio->staging)
           .subspan(base::ToSize(audio->staging_capacity - padded_bytes));
 
