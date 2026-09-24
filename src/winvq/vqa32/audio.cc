@@ -326,8 +326,8 @@ static int64_t RawClockTicks(const VqaPlayerState* state) {
   return played_samples * kVqaTicksPerSecond / audio.sample_rate;
 }
 
-void SetMovieClock(const VqaPlayerState* state, int64_t now_ticks,
-                   int clock_source) {
+void SetMovieClock(const VqaPlayerState* state, const int64_t now_ticks,
+                   const int clock_source) {
   // The audio clock, the default, needs sound playing; everything else runs
   // on the system clock.
   audio_clock =
