@@ -67,6 +67,7 @@
  ****************************************************************************/
 
 #include <algorithm>
+#include <atomic>
 #include <bit>
 #include <cstddef>
 #include <cstdint>
@@ -172,7 +173,7 @@ int32_t OpenVqa(VqaPlayerState* vqa, std::string_view filename,
   VqaPlayerState* vqap = vqa;
   VqaHeader* header = &vqap->header;
 
-  vqa_movie_loaded = false;
+  vqa_movie_loaded.store(false, std::memory_order_relaxed);
   /*-------------------------------------------------------------------------
    * VERIFY VALIDITY OF VQA FILE.
    *-----------------------------------------------------------------------*/

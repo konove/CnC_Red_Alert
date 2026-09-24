@@ -23,6 +23,8 @@
 #include <span>
 #include <string_view>
 
+#include "base/numeric.h"
+
 // File: the public interface of the VQA movie player - VqaPlayer, the
 // VqaConfig a movie is opened with, and the codes and flags that go with them.
 // The player's internal state is in vqaplayp.h.
@@ -80,7 +82,7 @@ constexpr int32_t kVqaErrorAudio = -12;
 constexpr int32_t kVqaPaused = -13;
 
 // The event passed to VqaConfig::event_handler.
-constexpr uint32_t kVqaEventSync = 1U << 1;
+constexpr uint32_t kVqaEventSync = base::Bit<uint32_t>(1);
 
 // VqaConfig: how a movie is played. Start from SetVqaConfigDefaults() and
 // change what differs; VqaPlayer::Open() copies it, and fills in the -1
@@ -141,12 +143,12 @@ struct VqaConfig {
 
 // Drawing flags (VqaConfig::draw_flags).
 // Decode into the image buffer; nothing is drawn without it.
-constexpr uint32_t kVqaDrawToBuffer = 1U << 0;
+constexpr uint32_t kVqaDrawToBuffer = base::Bit<uint32_t>(0);
 // Load only; frames are discarded undrawn.
-constexpr uint32_t kVqaDrawNothing = 1U << 1;
+constexpr uint32_t kVqaDrawNothing = base::Bit<uint32_t>(1);
 // Never skip frames to catch up. The audio callback clears it when the sound
 // runs dry.
-constexpr uint32_t kVqaDrawNoSkip = 1U << 2;
+constexpr uint32_t kVqaDrawNoSkip = base::Bit<uint32_t>(2);
 // Two bits naming the buffer corner the margins are measured from.
 constexpr uint32_t kVqaDrawOriginMask = 3U << 4;
 constexpr uint32_t kVqaDrawTopLeft = 0U << 4;
@@ -156,15 +158,15 @@ constexpr uint32_t kVqaDrawBottomLeft = 3U << 4;
 
 // Player options (VqaConfig::option_flags).
 // Play the sound track. Cleared by Open() when the movie has none.
-constexpr uint32_t kVqaOptionAudio = 1U << 0;
+constexpr uint32_t kVqaOptionAudio = base::Bit<uint32_t>(0);
 // Draw every frame as soon as it is loaded, ignoring the clock.
-constexpr uint32_t kVqaOptionStep = 1U << 1;
+constexpr uint32_t kVqaOptionStep = base::Bit<uint32_t>(1);
 // Seeking does not restore the palette.
-constexpr uint32_t kVqaOptionPaletteOff = 1U << 3;
+constexpr uint32_t kVqaOptionPaletteOff = base::Bit<uint32_t>(3);
 // Passed on to QueueVqaPalette().
-constexpr uint32_t kVqaOptionSlowPalette = 1U << 4;
+constexpr uint32_t kVqaOptionSlowPalette = base::Bit<uint32_t>(4);
 // Use the alternate sound track, if there is one.
-constexpr uint32_t kVqaOptionAltAudio = 1U << 6;
+constexpr uint32_t kVqaOptionAltAudio = base::Bit<uint32_t>(6);
 
 // The player's internal state; defined in vqaplayp.h.
 struct VqaPlayerState;

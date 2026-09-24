@@ -42,6 +42,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/numeric.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqaio.h"
 #include "winvq/vqa32/vqaplay.h"
@@ -91,7 +92,7 @@ struct VqaCodebook {
 
 // VqaCodebook flag, set by the loader for each new codebook: the codebook is
 // still compressed.
-constexpr uint32_t kCodebookCompressed = 1U << 1;
+constexpr uint32_t kCodebookCompressed = base::Bit<uint32_t>(1);
 
 // VqaFrame: one buffer in the ring of loaded frames. The loader fills it
 // and sets kFrameLoaded; the drawer decodes it; the flipper or a skip
@@ -119,14 +120,14 @@ struct VqaFrame {
 
 // VqaFrame flags. All clear means the buffer is free for the loader.
 // Loaded and waiting to be drawn.
-constexpr uint32_t kFrameLoaded = 1U << 0;
+constexpr uint32_t kFrameLoaded = base::Bit<uint32_t>(0);
 // Key frame: never skipped.
-constexpr uint32_t kFrameKey = 1U << 1;
+constexpr uint32_t kFrameKey = base::Bit<uint32_t>(1);
 // Carries a palette that must be set.
-constexpr uint32_t kFrameHasPalette = 1U << 2;
+constexpr uint32_t kFrameHasPalette = base::Bit<uint32_t>(2);
 // The palette and the vector pointers are still compressed.
-constexpr uint32_t kFramePaletteCompressed = 1U << 3;
-constexpr uint32_t kFramePointersCompressed = 1U << 4;
+constexpr uint32_t kFramePaletteCompressed = base::Bit<uint32_t>(3);
+constexpr uint32_t kFramePointersCompressed = base::Bit<uint32_t>(4);
 
 // VqaLoader: the loader's position in the file and in the buffer rings.
 struct VqaLoader {
@@ -186,7 +187,7 @@ struct VqaDrawer {
 };
 
 // Drawer flag: a skipped frame's palette is pending.
-constexpr uint32_t kDrawerPalettePending = 1U << 0;
+constexpr uint32_t kDrawerPalettePending = base::Bit<uint32_t>(0);
 
 // VqaFlipper: the frame the drawer finished, which ReleaseDrawnFrame()
 // releases. The name is from DOS, where this step showed the frame by flipping
@@ -199,7 +200,7 @@ struct VqaFlipper {
 // VqaAudio: the sound ring and the state shared with the SDL audio callback.
 //
 // The ring is block_count blocks of config.audio_block_bytes bytes. The
-// loader decompresses each frame's sound chunk into TempBuf, and
+// loader decompresses each frame's sound chunk into staging, and
 // CopyStagedAudio() moves it into the ring at write_offset, marking the blocks
 // it filled in block_loaded. The callback, on the audio thread, plays
 // play_block from play_offset and frees it once the next block is loaded; if it
@@ -217,10 +218,9 @@ struct VqaAudio {
   // Byte offset in the ring where the loader writes next.
   int32_t write_offset = 0;
   int32_t block_count = 0;
-  // The block being played, and the one after it (callback scratch).
+  // The block being played.
   int32_t play_block = 0;
-  int32_t next_block = 0;
-  // Bytes in TempBuf waiting for CopyStagedAudio(), 0 when it is empty.
+  // Bytes in staging waiting for CopyStagedAudio(), 0 when it is empty.
   int32_t staged_bytes = 0;
   int32_t staging_capacity = 0;
   uint32_t flags = 0;  // kAudio* bits
@@ -241,9 +241,9 @@ struct VqaAudio {
 
 // Audio flags.
 // The SDL stream and callback are installed.
-constexpr uint32_t kAudioOpen = 1U << 0;
+constexpr uint32_t kAudioOpen = base::Bit<uint32_t>(0);
 // The callback is playing the ring.
-constexpr uint32_t kAudioPlaying = 1U << 6;
+constexpr uint32_t kAudioPlaying = base::Bit<uint32_t>(6);
 
 // VqaMovie: everything a movie needs while it is open. Allocated by OpenVqa()
 // once the header is read and freed by CloseVqa().
@@ -285,19 +285,20 @@ struct VqaMovie {
 // VqaMovie flags.
 // A drawn frame waits for ReleaseDrawnFrame() to release it; no other frame is
 // drawn until then.
-constexpr uint32_t kMovieAwaitingRelease = 1U << 0;
+constexpr uint32_t kMovieAwaitingRelease = base::Bit<uint32_t>(0);
 // The drawer has a frame ready and is waiting on kMovieAwaitingRelease, so it
 // does not select another.
-constexpr uint32_t kMovieDrawerAsleep = 1U << 1;
+constexpr uint32_t kMovieDrawerAsleep = base::Bit<uint32_t>(1);
 // The loader stopped inside a sound chunk until the audio ring has room; see
 // chunk_header.
-constexpr uint32_t kMovieLoaderAsleep = 1U << 2;
-// The drawer and the loader have finished.
-constexpr uint32_t kMovieDrawerDone = 1U << 3;
-constexpr uint32_t kMovieLoaderDone = 1U << 4;
+constexpr uint32_t kMovieLoaderAsleep = base::Bit<uint32_t>(2);
+// The drawer and the loader have finished; kMovieDone is both.
+constexpr uint32_t kMovieDrawerDone = base::Bit<uint32_t>(3);
+constexpr uint32_t kMovieLoaderDone = base::Bit<uint32_t>(4);
+constexpr uint32_t kMovieDone = kMovieDrawerDone | kMovieLoaderDone;
 // PlayVqa() has configured the drawer and started the clock and sound.
-constexpr uint32_t kMovieStarted = 1U << 5;
-constexpr uint32_t kMoviePaused = 1U << 6;
+constexpr uint32_t kMovieStarted = base::Bit<uint32_t>(5);
+constexpr uint32_t kMoviePaused = base::Bit<uint32_t>(6);
 
 // VqaPlayerState: the player state behind VqaPlayer, which owns one; tests use
 // one directly to reach the internals. It outlives the movies opened on it.

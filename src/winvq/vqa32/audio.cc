@@ -60,11 +60,11 @@
  *
  ****************************************************************************/
 
-#include <vector>
-
+#include <atomic>
 #include <chrono>
 #include <cstdint>
 #include <span>
+#include <vector>
 
 #include "base/buffer.h"
 #include "base/numeric.h"
@@ -113,18 +113,16 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
                            .data(),
                        config->audio_block_bytes);
 
-    /* Compute the 'next_block' index */
-    audio->next_block = audio->play_block + 1;
-
-    if (audio->next_block >= audio->block_count) {
-      audio->next_block = 0;
+    int32_t next_block = audio->play_block + 1;
+    if (next_block >= audio->block_count) {
+      next_block = 0;
     }
 
     /* See if the next block has data in it; if so, update the audio
      * buffer play position & the 'play_block' value.
      * If not, don't change anything and replay this block.
      */
-    if (audio->block_loaded.at(base::ToSize(audio->next_block)) == 1) {
+    if (audio->block_loaded.at(base::ToSize(next_block)) == 1) {
       /* Update this block's status to loadable (0) */
       audio->block_loaded.at(base::ToSize(audio->play_block)) = 0;
 
@@ -138,7 +136,7 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
       }
       audio->blocks_played++;
     } else {
-      if (vqa_movie_loaded) {
+      if (vqa_movie_loaded.load(std::memory_order_relaxed)) {
         audio->blocks_played++;
       }
       /*

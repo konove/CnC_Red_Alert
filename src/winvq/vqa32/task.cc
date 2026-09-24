@@ -74,9 +74,9 @@ std::atomic<bool> vqa_movie_loaded = false;
 // runs ahead by up to frame_buffer_count frames, which is what absorbs a slow
 // read.
 int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
-  VqaMovie* movie = nullptr;
-  VqaConfig* config = nullptr;
-  VqaDrawer* drawer = nullptr;
+  VqaMovie* const movie = state->movie.get();
+  VqaDrawer* const drawer = &movie->drawer;
+  VqaConfig* const config = &state->config;
   int32_t result = 0;
 
 #ifdef _WIN32
@@ -86,10 +86,6 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
   DWORD process_priority = GetPriorityClass(GetCurrentProcess());
   SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
 #endif  // _WIN32
-
-  movie = state->movie.get();
-  drawer = &movie->drawer;
-  config = &state->config;
 
   // The first call starts playback. The sound starts first so the clock
   // below can run from it, and only if OpenVqa() preloaded some. With
@@ -103,7 +99,7 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
     }
 
     // Set the clock to the time of the first frame loaded, so it is due now.
-    const auto first_frame_time = movie->drawer.current_frame->frame_number *
+    const auto first_frame_time = drawer->current_frame->frame_number *
                                   kVqaTicksPerSecond / config->draw_rate;
 
     SetMovieClock(state, first_frame_time, config->clock_source);
@@ -154,8 +150,7 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
       }
 
       // Load, draw, load, draw... until both are done.
-      while ((movie->flags & (kMovieDrawerDone | kMovieLoaderDone)) !=
-             (kMovieDrawerDone | kMovieLoaderDone)) {
+      while ((movie->flags & kMovieDone) != kMovieDone) {
         if ((movie->flags & kMovieLoaderDone) == 0) {
           result = LoadNextFrame(state);
           // A full ring or a wait on the sound is retried next pass. The end
@@ -163,16 +158,16 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
           // loaded still play.
           if (result != 0 && result != kVqaNoBuffer && result != kVqaSleeping) {
             movie->flags |= kMovieLoaderDone;
+            // The flag carries no other data to the audio thread.
+            vqa_movie_loaded.store(true, std::memory_order_relaxed);
             result = 0;
           }
-        } else {
-          vqa_movie_loaded = true;
         }
 
         if ((config->draw_flags & kVqaDrawNothing) == 0) {
           result = DrawNextFrame(state);
           if (result == 0) {
-            result = movie->drawer.last_drawn_frame;
+            result = drawer->last_drawn_frame;
             // The frame is on screen (the frame_callback showed it), so its
             // buffer can go back to the loader.
             ReleaseDrawnFrame(state);
@@ -207,9 +202,7 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
       break;
   }
 
-  if ((movie->flags & (kMovieDrawerDone | kMovieLoaderDone)) ==
-          (kMovieDrawerDone | kMovieLoaderDone) ||
-      mode == kVqaModeStop) {
+  if ((movie->flags & kMovieDone) == kMovieDone || mode == kVqaModeStop) {
     // Read the clock before stopping the sound, since the clock is the
     // amount of sound played.
     movie->end_time = ReadMovieClock(state);

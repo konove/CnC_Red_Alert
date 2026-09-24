@@ -9,7 +9,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <cstring>
 #include <iterator>
 #include <memory>
 #include <span>
@@ -18,6 +17,7 @@
 #include <vector>
 
 #include "base/buffer.h"
+#include "base/numeric.h"
 #include "base/seek_origin.h"
 #include "base/types.h"
 #include "gtest/gtest.h"
@@ -61,10 +61,9 @@ class FakeVqaIo final : public VqaIo {
     if (fail_read || pos + bytes > static_cast<int64_t>(data.size())) {
       return false;
     }
-    base::CopyBytes(
-        buffer,
-        std::as_bytes(std::span(data).subspan(static_cast<size_t>(pos))),
-        buffer.size());
+    base::CopyBytes(buffer,
+                    std::as_bytes(std::span(data).subspan(base::ToSize(pos))),
+                    buffer.size());
     pos += bytes;
     return true;
   }
@@ -267,7 +266,7 @@ VqaHeader SmallHeader() {
   return header;
 }
 
-constexpr int kMaxCbSize = 376;
+constexpr int kCodebookCapacity = 376;
 
 std::vector<uint8_t> HeaderPayload(const VqaHeader& header) {
   std::vector<uint8_t> payload(sizeof(header));
@@ -433,10 +432,9 @@ TEST_F(VqaLoaderTest, PartialCompressedCodebookLoadsAtEstimatedOffset) {
   ASSERT_EQ(Open(), 0);
   // Groupsize 1: offset = codebook_capacity - (20 * 1 + 100).
   const VqaCodebook* codebook = state_.movie->loader.full_codebook;
-  EXPECT_EQ(codebook->compressed_offset, kMaxCbSize - 120);
-  EXPECT_EQ(
-      codebook->buffer.at(static_cast<size_t>(codebook->compressed_offset)),
-      0xAB);
+  EXPECT_EQ(codebook->compressed_offset, kCodebookCapacity - 120);
+  EXPECT_EQ(codebook->buffer.at(base::ToSize(codebook->compressed_offset)),
+            0xAB);
 }
 
 TEST_F(VqaLoaderTest, RejectsPartialCodebookWithNegativeOffset) {
@@ -520,7 +518,7 @@ TEST_F(VqaLoaderTest, TruncatedMovieStillFailsToOpen) {
   EXPECT_EQ(Open(), kVqaErrorRead);
 }
 
-TEST_F(VqaLoaderTest, RejectsAudioWithZeroHmiBufferSize) {
+TEST_F(VqaLoaderTest, RejectsAudioWithZeroBlockBytes) {
   VqaHeader header = SmallHeader();
   header.flags = kVqaHasAudio;
   fake_.data = MovieStart(header, {0, 0, 0});
@@ -578,7 +576,7 @@ TEST_F(VqaLoaderTest, SeekFrameLoadsFromTheFrameTable) {
   std::vector<uint32_t> entries(3);
   for (int i = 0; i < 3; ++i) {
     // Entries store half the file offset.
-    entries.at(static_cast<size_t>(i)) =
+    entries.at(base::ToSize(i)) =
         static_cast<uint32_t>((start + (i * kFrameBytes)) / 2);
   }
   fake_.data = MovieStart(SmallHeader(), entries);
