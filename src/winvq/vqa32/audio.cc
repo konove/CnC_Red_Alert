@@ -41,7 +41,8 @@
 
 // The sound system serves one movie at a time: the state below is shared by
 // every VqaPlayerState, and a second movie opened or started while one plays
-// takes it over.
+// takes it over. The callback reads it on the audio thread, so the main
+// thread changes what the callback reads only with the device locked.
 
 // The movie the callback plays, from StartMovieAudio() to StopMovieAudio();
 // nullptr otherwise.
@@ -171,10 +172,9 @@ int32_t OpenMovieAudio(VqaPlayerState* vqap) {
   StreamConvScale =
       (int64_t{bytes_per_second_in} * 32768) / bytes_per_second_out;
 
-  // TODO: written without the device lock, while the audio thread may be
-  // reading the slot in the client's callback - a data race. Every other
-  // write to the slot takes the lock.
+  SDL_LockAudioDevice(config->audio_device_id);
   *config->audio_callback = VQA_Audio_Callback;
+  SDL_UnlockAudioDevice(config->audio_device_id);
 
   audio->flags |= kAudioOpen;
   AudioFlags |= kAudioOpen;
@@ -213,21 +213,17 @@ void CloseMovieAudio(VqaPlayerState* vqap) {
 }
 
 int32_t StartMovieAudio(VqaPlayerState* vqap) {
-  // TODO: VQAP is set here and cleared in StopMovieAudio() without the device
-  // lock, while the callback reads it on the audio thread - a data race, as
-  // are the kAudioPlaying clear in StopMovieAudio() and VQAAudioPaused in
-  // PauseVqaAudio() and ResumeVqaAudio(). The writes here under the lock are
-  // the pattern the rest should follow.
-  VQAP = vqap;
-
   VqaConfig* config = &vqap->config;
   VqaAudio* audio = &vqap->movie->audio;
 
+  SDL_LockAudioDevice(config->audio_device_id);
+  VQAP = vqap;
+
   if (AudioFlags & kAudioPlaying) {
+    SDL_UnlockAudioDevice(config->audio_device_id);
     return -1;
   }
 
-  SDL_LockAudioDevice(config->audio_device_id);
   // The clock restarts from nothing played; PlayVqa() sets it with
   // SetMovieClock() right after.
   audio->blocks_played = 0;
@@ -243,6 +239,7 @@ int32_t StartMovieAudio(VqaPlayerState* vqap) {
 void StopMovieAudio(const VqaPlayerState* vqap) {
   VqaAudio* audio = &vqap->movie->audio;
 
+  SDL_LockAudioDevice(vqap->config.audio_device_id);
   if (AudioFlags & kAudioPlaying) {
     // The callback stops pulling from the ring. What it already converted
     // stays in SDLStream, and a restart after a pause plays it first: it is
@@ -252,6 +249,7 @@ void StopMovieAudio(const VqaPlayerState* vqap) {
   }
 
   VQAP = nullptr;
+  SDL_UnlockAudioDevice(vqap->config.audio_device_id);
 }
 
 int32_t CopyStagedAudio(VqaPlayerState* vqap) {
@@ -273,13 +271,14 @@ int32_t CopyStagedAudio(VqaPlayerState* vqap) {
     endblock -= audio->block_count;
   }
 
+  SDL_LockAudioDevice(config->audio_device_id);
+
   // The unplayed blocks are one run starting at play_block, so if the last
   // block the write reaches is free, so is every block before it.
   if (audio->block_loaded.at(base::ToSize(endblock)) == 1) {
+    SDL_UnlockAudioDevice(config->audio_device_id);
     return kVqaSleeping;
   }
-
-  SDL_LockAudioDevice(config->audio_device_id);
 
   // The write fits before the end of the ring.
   if (startblock <= endblock) {
@@ -329,14 +328,18 @@ int32_t CopyStagedAudio(VqaPlayerState* vqap) {
 void PauseVqaAudio() {
   if ((VQAP && VQAP->movie) &&
       (AudioFlags & kAudioPlaying && !VQAAudioPaused)) {
+    SDL_LockAudioDevice(VQAP->config.audio_device_id);
     VQAAudioPaused = true;
+    SDL_UnlockAudioDevice(VQAP->config.audio_device_id);
   }
 }
 
 void ResumeVqaAudio() {
   if ((VQAP && VQAP->movie) && (AudioFlags & kAudioPlaying && VQAAudioPaused)) {
     // The callback picks up at play_block, and the audio clock with it.
+    SDL_LockAudioDevice(VQAP->config.audio_device_id);
     VQAAudioPaused = false;
+    SDL_UnlockAudioDevice(VQAP->config.audio_device_id);
   }
 }
 
