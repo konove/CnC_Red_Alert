@@ -1,3 +1,5 @@
+// Decodes Westwood's compressed data blocks.
+
 #include "sdllib/iff.h"
 
 #include <cstddef>
@@ -24,20 +26,24 @@ size_t Uncompress_Data(std::span<const unsigned char> src,
   const auto payload = src.subspan(sizeof(header) + skip);
   const auto output = dst.first(header.Size);
   switch (static_cast<CompressionType>(header.Method)) {
-    case HORIZONTAL:
-      break;
-    case LCW:
-      return static_cast<size_t>(LCW_Uncompress(payload, output));
-    [[unlikely]] case LZW12:
-    case LZW14:
     case NOCOMPRESS:
-    default:
       if (payload.size() < output.size()) {
         return 0;
       }
       base::CopyBytes(std::as_writable_bytes(output), std::as_bytes(payload),
                       output.size());
       break;
+    case LCW:
+      return static_cast<size_t>(LCW_Uncompress(payload, output));
+    // Westwood's library returned Size for HORIZONTAL without writing anything
+    // (its RLE decoder was left out of the build) and copied LZW and unknown
+    // methods as if uncompressed. Either way the caller took garbage for a
+    // picture.
+    case HORIZONTAL:
+    case LZW12:
+    case LZW14:
+    default:
+      return 0;
   }
   return output.size();
 }

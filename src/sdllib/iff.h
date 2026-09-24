@@ -16,23 +16,9 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/***************************************************************************
- **   C O N F I D E N T I A L --- W E S T W O O D   A S S O C I A T E S   **
- ***************************************************************************
- *                                                                         *
- *                 Project Name : Part of the FILEIO Library               *
- *                                                                         *
- *                    File Name : IFF.H                                    *
- *                                                                         *
- *                   Programmer : Scott K. Bowen                           *
- *                                                                         *
- *                   Start Date : April 20, 1994                           *
- *                                                                         *
- *                  Last Update : April 20, 1994   [SKB]                   *
- *                                                                         *
- *-------------------------------------------------------------------------*
- * Functions:                                                              *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+// Westwood's compressed data block, the format of the .CPS pictures: a
+// CompHeaderType, a reserved area the header's Skip counts (a CPS keeps its
+// palette there), then the data itself.
 
 #ifndef CNC_RED_ALERT_SDLLIB_IFF_H_
 #define CNC_RED_ALERT_SDLLIB_IFF_H_
@@ -41,6 +27,7 @@
 #include <cstdint>
 #include <span>
 
+// The pixel layout a picture is loaded into. Only byte per pixel is used.
 enum class PicturePlaneType {
   BM_AMIGA = 0,  // Bit plane format (8K per bitplane).
   BM_MCGA = 1,   // Byte per pixel format (64K).
@@ -49,11 +36,8 @@ enum class PicturePlaneType {
 };
 using enum PicturePlaneType;
 
-/*
-**	This is the compression type code.  This value is used in the compressed
-**	file header to indicate the method of compression used.  Note that the
-**	LZW method may not be supported.
-*/
+// The compression method, as stored in CompHeaderType::Method. The values are
+// the file format's. Only NOCOMPRESS and LCW are decoded.
 enum class CompressionType {
   NOCOMPRESS,  // No compression (raw data).
   LZW12,       // LZW 12 bit codes.
@@ -63,21 +47,23 @@ enum class CompressionType {
 };
 using enum CompressionType;
 
-/*
-**	Compressed blocks of data must start with this header structure.
-**	Note that disk based compressed files have an additional two
-**	leading bytes that indicate the size of the entire file.
-*/
-
+// The header every compressed block starts with, little-endian and unpadded
+// as on disk. A block stored in a file is preceded by two more bytes giving
+// the size of the rest of it: this header, the skipped area and the data.
 #pragma pack(push, 1)
 struct CompHeaderType {
   char Method;    // Compression method (CompressionType).
   char pad;       // Reserved pad byte (always 0).
   uint32_t Size;  // Size of the uncompressed data.
-  int16_t Skip;   // Number of bytes to skip before data.
+  int16_t Skip;   // Bytes between this header and the data.
 };
 #pragma pack(pop)
 
+// Decodes the block in `src`, which starts with its CompHeaderType, into the
+// front of `dst`. Returns the number of bytes written: the header's Size for
+// uncompressed data, what the stream produced for LCW. Returns 0 for any other
+// method, a negative Skip, a `src` too short for the header and the skipped
+// area, or a `dst` too short for Size.
 size_t Uncompress_Data(std::span<const unsigned char> src,
                        std::span<unsigned char> dst);
 
