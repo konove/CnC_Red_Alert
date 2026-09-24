@@ -253,7 +253,6 @@ static int32_t Select_Frame(VqaPlayerState* vqap) {
 
   /* Find the frame # we should play (rounded to nearest frame): */
   const int64_t curtime = ReadMovieClock(vqap);
-  //	desiredframe = ((curtime * config->frame_rate) / kVqaTicksPerSecond);
   // MEG MOD 06.22.95 - Should look for the desired frame to draw, not load,
   // right?
   const int64_t desiredframe = curtime * config->draw_rate / kVqaTicksPerSecond;
