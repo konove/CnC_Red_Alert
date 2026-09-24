@@ -103,15 +103,15 @@ int32_t VQA_Play(VQAHandle* vqa, int32_t mode) {
   config = &vqa->config;
 
   // The first call starts playback. The sound starts first so the clock
-  // below can run from it, and only if VQA_Open() preloaded some.
+  // below can run from it, and only if VQA_Open() preloaded some. A movie
+  // whose audio ring came out empty (AudioBufSize 0, or -1 when 1.5 seconds
+  // of sound is less than one HMIBufSize block) plays silent.
   if ((vqabuf->Flags & VQADATF_PRIMED) == 0) {
     VQA_Configure_Drawer(vqa);
 
-    // TODO: IsLoaded is nullptr when the audio ring came out zero-length
-    // (AudioBufSize 0, or -1 with under 2/3 of an HMIBufSize block per
-    // second of sound), which crashes here.
     if ((config->OptionFlags & VQAOPTF_AUDIO) != 0 &&
-        vqabuf->Audio.IsLoaded[0] != 0) {
+        !vqabuf->Audio.IsLoadedStorage.empty() &&
+        vqabuf->Audio.IsLoadedStorage.front() != 0) {
       VQA_StartAudio(vqa);
     }
 

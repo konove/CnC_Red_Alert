@@ -5,6 +5,8 @@
 
 #include "winvq/vqa32/vqaplay.h"
 
+#include <SDL_audio.h>
+
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -319,7 +321,20 @@ class VqaLoaderTest : public testing::Test {
 
   int32_t Open() { return VQA_Open(&handle_, "test.vqa", &config_); }
 
+  // Turns the sound on. The player converts to audio_spec_ and installs its
+  // mixer in audio_callback_, which must outlive the movie.
+  void EnableAudio() {
+    audio_spec_.freq = 22050;
+    audio_spec_.format = AUDIO_S16;
+    audio_spec_.channels = 2;
+    config_.OptionFlags |= VQAOPTF_AUDIO;
+    config_.AudioSpec = &audio_spec_;
+    config_.AudioCallback = &audio_callback_;
+  }
+
   FakeVqaIo fake_;
+  SDL_AudioSpec audio_spec_{};
+  void (*audio_callback_)(uint8_t*, int) = nullptr;
   VQAHandle handle_;
   VQAConfig config_{};
 };
@@ -516,6 +531,32 @@ TEST_F(VqaLoaderTest, RejectsAudioWithZeroHmiBufferSize) {
 
   EXPECT_EQ(Open(), VQAERR_AUDIO);
   EXPECT_EQ(fake_.closes, 1);
+}
+
+// A movie of frame_count frames, each only the chunk that completes it.
+std::vector<uint8_t> EmptyFrames(const VqaHeader& header) {
+  std::vector<uint8_t> data =
+      MovieStart(header, std::vector<uint32_t>(header.frame_count));
+  for (int i = 0; i < int{header.frame_count}; ++i) {
+    AppendFrameEnd(data);
+  }
+  return data;
+}
+
+TEST_F(VqaLoaderTest, PlaysSilentlyWithoutAnAudioRing) {
+  VqaHeader header = SmallHeader();
+  header.frame_count = 1;
+  header.flags = kVqaHasAudio;
+  header.sample_rate = 22050;
+  header.channels = 1;
+  header.bits_per_sample = 8;
+  fake_.data = EmptyFrames(header);
+  EnableAudio();
+  config_.AudioBufSize = 0;
+  ASSERT_EQ(Open(), 0);
+
+  EXPECT_EQ(VQA_Play(&handle_, VQAMODE_RUN), VQAERR_EOF);
+  EXPECT_EQ(handle_.data->Audio.Flags & VQAAUDF_ISPLAYING, 0U);
 }
 
 TEST_F(VqaLoaderTest, SeekFrameLoadsFromTheFrameTable) {

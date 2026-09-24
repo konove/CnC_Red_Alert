@@ -25,5 +25,5 @@ include(Testing)
 add_gtest(
     NAME vqa32_test
     SOURCES vqaplay_test.cc unvq_test.cc
-    LIBS vqa32 base absl::core_headers
+    LIBS vqa32 base absl::core_headers SDL2::SDL2
 )
