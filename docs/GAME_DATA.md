@@ -21,6 +21,22 @@ whose key is RSA-wrapped, so `grep` over a `.MIX` finds nothing; and the current
 original archives inside `MAIN1.MIX`..`MAIN4.MIX`, so `GENERAL.MIX` only opens once its container is
 registered. `mixdump` registers the known archives outermost first for that reason.
 
+## Watching a movie
+
+`src/tools/vqaplay` (target `vqaplay`) plays one VQA movie in a window through `vqa32`, the games'
+file lookup and their sound mixer, so a movie loads, paces and sounds as it does in the game. It
+shows the palette as stored, without the 15% brightening Red Alert's movie screen adds. It opens the
+same archives as `mixdump` and works on either game's installation.
+
+```bash
+vqaplay <game-dir> AAGUN.VQA            # a movie in the archives (or loose in <game-dir>)
+vqaplay --paused --scale=3 intro.vqa    # a loose file, stopped on its first frame
+```
+
+Space pauses and resumes, Right or `.` shows the next frame and pauses, Esc or Q quits. `--mute`
+plays without sound and `--skip-late` drops late frames instead of showing every one. The title bar
+shows the frame number.
+
 ## A MIX index holds CRCs, not names
 
 Each entry records a CRC of the upper-cased filename (`CrcEngine::Compute`, `tech/crc.h`), the
