@@ -747,6 +747,16 @@ TEST_F(VqaLoaderTest, PlaysToTheEndWithoutAnImageBuffer) {
   EXPECT_EQ(result, kVqaEndOfMovie);
 }
 
+TEST_F(VqaLoaderTest, RejectsNegativeBufferCounts) {
+  fake_.data = EmptyFrames(SmallHeader());
+  config_.frame_buffer_count = -1;
+  EXPECT_EQ(Open(), kVqaErrorNoMemory);
+
+  config_.frame_buffer_count = 1;
+  config_.codebook_buffer_count = -1;
+  EXPECT_EQ(Open(), kVqaErrorNoMemory);
+}
+
 TEST_F(VqaLoaderTest, StopEndsPlaybackWithoutLoadingTheRest) {
   fake_.data = EmptyFrames(SmallHeader());
   ASSERT_EQ(Open(), 0);

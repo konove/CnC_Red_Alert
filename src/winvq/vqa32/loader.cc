@@ -785,10 +785,7 @@ int32_t SeekVqaFrame(VqaPlayerState* vqa, int32_t framenum) {
 // blocks. Returns nullptr when config asks for no codebook or frame buffers.
 static std::unique_ptr<VqaMovie> AllocBuffers(const VqaHeader* header,
                                               VqaConfig* config) {
-  // TODO: A negative count passes this check, and reserve() below then throws
-  // std::length_error (base::ToSize() only DCHECKs), where VqaConfig promises
-  // kVqaErrorNoMemory for any count below 1.
-  if (config->codebook_buffer_count == 0 || config->frame_buffer_count == 0) {
+  if (config->codebook_buffer_count <= 0 || config->frame_buffer_count <= 0) {
     return nullptr;
   }
 
