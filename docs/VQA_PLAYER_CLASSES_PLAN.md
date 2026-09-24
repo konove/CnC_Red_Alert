@@ -240,7 +240,7 @@ Files keep the EA header where they carry EA code; brand-new files (`chunk_reade
 | 1. Leaf building blocks | done                                      | 9605b860, f16e5ace, d2fb0bb2 |
 | 2. FrameRing            | done                                      | 2fa77d50                     |
 | 3. Audio split          | done; movies play with sound (user check) | 2d5c66db                     |
-| 4. MovieLoader          | done                                      | (next)                       |
-| 5. MovieDrawer          | todo                                      |                              |
+| 4. MovieLoader          | done                                      | 8dff973a                     |
+| 5. MovieDrawer          | done                                      | (next)                       |
 | 6. Public API + callers | todo                                      |                              |
 | 7. Tidy                 | todo                                      |                              |

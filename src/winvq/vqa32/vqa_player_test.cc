@@ -23,6 +23,8 @@
 #include "winvq/vqa32/audio_ring.h"
 #include "winvq/vqa32/frame_ring.h"
 #include "winvq/vqa32/lcw_buffer.h"
+#include "winvq/vqa32/movie_clock.h"
+#include "winvq/vqa32/movie_drawer.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player_state.h"
 #include "winvq/vqa32/vqa_test_util.h"
@@ -356,13 +358,12 @@ TEST_F(VqaLoaderTest, SkippedFramePaletteIsSetWithTheNextFrameDrawn) {
   ASSERT_EQ(Open(), 0);
   QueuedPalette().clear();
 
-  ConfigureDrawer(&state_);
   // 15 fps: tick 9 of 60 per second is frame 2, with 50 ms to spare before
   // frame 3 comes due.
   state_.movie->clock.Set(9, nullptr);
-  ASSERT_EQ(DrawNextFrame(&state_), 0);
+  ASSERT_EQ(state_.movie->drawer->DrawNextFrame(), DrawStatus::kDrawn);
 
-  EXPECT_EQ(state_.movie->drawer.last_drawn_frame, 2);
+  EXPECT_EQ(state_.movie->drawer->last_drawn_frame(), 2);
   ASSERT_EQ(QueuedPalette().size(), 768U);
   EXPECT_EQ(QueuedPalette().front(), 9);
 }
@@ -373,21 +374,20 @@ TEST_F(VqaLoaderTest, AnAudioUnderrunLetsTheDrawerSkip) {
   EnableAudio();
   config_.draw_flags = kVqaDrawNoSkip;
   ASSERT_EQ(Open(), 0);
-  ConfigureDrawer(&state_);
   // 15 fps: tick 9 of 60 per second is frame 2.
   state_.movie->clock.Set(9, nullptr);
 
   // Frame 0 is late, but skipping is off.
-  ASSERT_EQ(DrawNextFrame(&state_), 0);
-  EXPECT_EQ(state_.movie->drawer.last_drawn_frame, 0);
+  ASSERT_EQ(state_.movie->drawer->DrawNextFrame(), DrawStatus::kDrawn);
+  EXPECT_EQ(state_.movie->drawer->last_drawn_frame(), 0);
 
   // The sound runs dry: nothing follows the block playing.
   state_.movie->audio->Advance();
   ASSERT_TRUE(state_.movie->audio->underran());
 
   // Now frame 1 is skipped for frame 2, the one due.
-  ASSERT_EQ(DrawNextFrame(&state_), 0);
-  EXPECT_EQ(state_.movie->drawer.last_drawn_frame, 2);
+  ASSERT_EQ(state_.movie->drawer->DrawNextFrame(), DrawStatus::kDrawn);
+  EXPECT_EQ(state_.movie->drawer->last_drawn_frame(), 2);
 }
 
 TEST_F(VqaLoaderTest, RejectsUncompressedPaletteOver256Colors) {
@@ -560,7 +560,7 @@ TEST_F(VqaLoaderTest, PlaysToTheEndWithoutAnImageBuffer) {
   config_.draw_flags = 0;
   config_.option_flags = kVqaOptionStep;
   ASSERT_EQ(Open(), 0);
-  ASSERT_TRUE(state_.movie->drawer.image_buffer.empty());
+  ASSERT_TRUE(state_.movie->drawer->image_buffer().empty());
 
   int32_t result = 0;
   for (int i = 0; i < 20 && result != kVqaEndOfMovie; ++i) {
@@ -589,62 +589,60 @@ TEST_F(VqaLoaderTest, StopEndsPlaybackWithoutLoadingTheRest) {
 
 // Places the 8x8 SmallHeader() image in a 320x200 buffer, gap_x pixels
 // horizontally and gap_y vertically from the corner named by origin.
-VqaDrawer PlaceImage(uint32_t origin, int gap_x = 10, int gap_y = 20) {
-  VqaPlayerState state;
-  state.movie = std::make_unique<VqaMovie>(FrameRing(1, 1, 1, 1, 1));
-  state.movie->drawer.image_width = 320;
-  state.movie->drawer.image_height = 200;
-  state.movie->drawer.y2 = 12345;  // Stale value the placement must not read.
-  state.header = SmallHeader();
-  state.config.margin_x = gap_x;
-  state.config.margin_y = gap_y;
-  state.config.draw_flags = origin;
+ImagePlacement PlaceImage(uint32_t origin, int gap_x = 10, int gap_y = 20) {
+  FrameRing ring(1, 1, 1, 1, 1);
+  const MovieClock clock;
+  VqaConfig config;
+  SetVqaConfigDefaults(&config);
+  config.image_width = 320;
+  config.image_height = 200;
+  config.margin_x = gap_x;
+  config.margin_y = gap_y;
+  config.draw_flags = origin;
 
-  ConfigureDrawer(&state);
-
-  return state.movie->drawer;
+  return MovieDrawer(ring, clock, nullptr, SmallHeader(), config).placement();
 }
 
-TEST(VqaDrawerTest, TopLeftOrigin) {
-  const VqaDrawer drawer = PlaceImage(kVqaDrawTopLeft);
-  EXPECT_EQ(drawer.x1, 10);
-  EXPECT_EQ(drawer.x2, 17);
-  EXPECT_EQ(drawer.y1, 20);
-  EXPECT_EQ(drawer.y2, 27);
-  EXPECT_EQ(drawer.image_offset, (320 * 20) + 10);
+TEST(MovieDrawerTest, TopLeftOrigin) {
+  const ImagePlacement placement = PlaceImage(kVqaDrawTopLeft);
+  EXPECT_EQ(placement.x1, 10);
+  EXPECT_EQ(placement.x2, 17);
+  EXPECT_EQ(placement.y1, 20);
+  EXPECT_EQ(placement.y2, 27);
+  EXPECT_EQ(placement.offset, (320 * 20) + 10);
 }
 
-TEST(VqaDrawerTest, TopRightOrigin) {
+TEST(MovieDrawerTest, TopRightOrigin) {
   // Columns 302..309 leave a 10-column gap (310..319) on the right.
-  const VqaDrawer drawer = PlaceImage(kVqaDrawTopRight);
-  EXPECT_EQ(drawer.x1, 309);
-  EXPECT_EQ(drawer.x2, 302);
-  EXPECT_EQ(drawer.y1, 20);
-  EXPECT_EQ(drawer.y2, 27);
-  EXPECT_EQ(drawer.image_offset, (320 * 20) + 302);
+  const ImagePlacement placement = PlaceImage(kVqaDrawTopRight);
+  EXPECT_EQ(placement.x1, 309);
+  EXPECT_EQ(placement.x2, 302);
+  EXPECT_EQ(placement.y1, 20);
+  EXPECT_EQ(placement.y2, 27);
+  EXPECT_EQ(placement.offset, (320 * 20) + 302);
 }
 
-TEST(VqaDrawerTest, BottomLeftOrigin) {
+TEST(MovieDrawerTest, BottomLeftOrigin) {
   // Rows 172..179 leave a 20-row gap (180..199) at the bottom.
-  const VqaDrawer drawer = PlaceImage(kVqaDrawBottomLeft);
-  EXPECT_EQ(drawer.x1, 10);
-  EXPECT_EQ(drawer.x2, 17);
-  EXPECT_EQ(drawer.y1, 179);
-  EXPECT_EQ(drawer.y2, 172);
-  EXPECT_EQ(drawer.image_offset, (320 * 172) + 10);
+  const ImagePlacement placement = PlaceImage(kVqaDrawBottomLeft);
+  EXPECT_EQ(placement.x1, 10);
+  EXPECT_EQ(placement.x2, 17);
+  EXPECT_EQ(placement.y1, 179);
+  EXPECT_EQ(placement.y2, 172);
+  EXPECT_EQ(placement.offset, (320 * 172) + 10);
 }
 
-TEST(VqaDrawerTest, BottomRightOrigin) {
-  const VqaDrawer drawer = PlaceImage(kVqaDrawBottomRight);
-  EXPECT_EQ(drawer.x1, 309);
-  EXPECT_EQ(drawer.x2, 302);
-  EXPECT_EQ(drawer.y1, 179);
-  EXPECT_EQ(drawer.y2, 172);
-  EXPECT_EQ(drawer.image_offset, (320 * 172) + 302);
+TEST(MovieDrawerTest, BottomRightOrigin) {
+  const ImagePlacement placement = PlaceImage(kVqaDrawBottomRight);
+  EXPECT_EQ(placement.x1, 309);
+  EXPECT_EQ(placement.x2, 302);
+  EXPECT_EQ(placement.y1, 179);
+  EXPECT_EQ(placement.y2, 172);
+  EXPECT_EQ(placement.offset, (320 * 172) + 302);
 }
 
 #ifndef NDEBUG
-TEST(VqaDrawerDeathTest, ImageOutsideBufferFailsCheck) {
+TEST(MovieDrawerDeathTest, ImageOutsideBufferFailsCheck) {
   // A gap wider than the buffer would start drawing outside it.
   // The switch is inside GoogleTest's macro.
   // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)

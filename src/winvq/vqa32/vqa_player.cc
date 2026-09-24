@@ -25,7 +25,6 @@
 
 #include "winvq/vqa32/vqa_player.h"
 
-#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -41,6 +40,7 @@
 #include "winvq/vqa32/audio_ring.h"
 #include "winvq/vqa32/chunk_reader.h"
 #include "winvq/vqa32/frame_ring.h"
+#include "winvq/vqa32/movie_drawer.h"
 #include "winvq/vqa32/movie_loader.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player_state.h"
@@ -118,20 +118,6 @@ static std::unique_ptr<VqaMovie> AllocateMovie(const VqaHeader* header,
       FrameRing(config->frame_buffer_count, config->codebook_buffer_count,
                 codebook_capacity, pointers_capacity, palette_capacity));
   VqaMovie* movie = owned_movie.get();
-
-  // The image buffer: the caller's; else, when the player draws, its own the
-  // size of the movie; else none, and the drawer draws nothing.
-  movie->drawer.image_buffer = config->image_buffer;
-  movie->drawer.image_width = config->image_width;
-  movie->drawer.image_height = config->image_height;
-  if (config->image_buffer.empty() &&
-      (config->draw_flags & kVqaDrawToBuffer) != 0) {
-    movie->image_storage.resize(static_cast<std::size_t>(header->image_width) *
-                                header->image_height);
-    movie->drawer.image_buffer = movie->image_storage;
-    movie->drawer.image_width = header->image_width;
-    movie->drawer.image_height = header->image_height;
-  }
 
   // The sound's format, its ring and its staging buffer.
   if ((header->flags & kVqaHasAudio) != 0 &&
@@ -343,6 +329,8 @@ static int32_t PrepareMovie(VqaPlayerState* state, VqaConfig* config) {
       *state->io, *header, movie->ring, sound ? movie->audio.get() : nullptr,
       movie->audio_output.get(), audio_format,
       (config->option_flags & kVqaOptionAltAudio) != 0);
+  movie->drawer = std::make_unique<MovieDrawer>(
+      movie->ring, movie->clock, movie->audio.get(), *header, *config);
 
   // Preload the frame ring, so playback starts with frames in hand.
   if (PreloadFrames(state) != 0) {
@@ -399,7 +387,6 @@ static void StopMovieSound(const VqaMovie* movie) {
 // read.
 int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
   VqaMovie* const movie = state->movie.get();
-  VqaDrawer* const drawer = &movie->drawer;
   VqaConfig* const config = &state->config;
   int32_t result = 0;
 
@@ -415,7 +402,6 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
   // below can run from it, and only if OpenVqa() preloaded some. With
   // kVqaOptionAudio set the audio ring has at least one block.
   if ((movie->flags & kMovieStarted) == 0) {
-    ConfigureDrawer(state);
 
     if ((config->option_flags & kVqaOptionAudio) != 0 &&
         movie->audio->block_loaded(0)) {
@@ -488,25 +474,35 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
         }
 
         if ((config->draw_flags & kVqaDrawNothing) == 0) {
-          result = DrawNextFrame(state);
-          if (result == 0) {
-            result = drawer->last_drawn_frame;
-          } else {
-            // frame_callback asked to stop.
-            if (result == kVqaEndOfMovie) {
+          bool stopped = false;
+          switch (movie->drawer->DrawNextFrame()) {
+            case DrawStatus::kDrawn:
+              result = movie->drawer->last_drawn_frame();
               break;
-            }
+            // frame_callback asked to stop.
+            case DrawStatus::kStopped:
+              result = kVqaEndOfMovie;
+              stopped = true;
+              break;
             // Nothing left to draw once nothing more will be loaded.
-            if ((movie->flags & kMovieLoaderDone) != 0 &&
-                result == kVqaNoBuffer) {
-              movie->flags |= kMovieDrawerDone;
-            }
-
+            case DrawStatus::kNoFrame:
+              result = kVqaNoBuffer;
+              if ((movie->flags & kMovieLoaderDone) != 0) {
+                movie->flags |= kMovieDrawerDone;
+              }
+              break;
             // Too early for the next frame: let the client present or wait
             // instead of the loop spinning.
-            if (result == kVqaNotTime && config->event_handler != nullptr) {
-              config->event_handler(kVqaEventSync, nullptr, 0);
-            }
+            case DrawStatus::kNotTime:
+            default:
+              result = kVqaNotTime;
+              if (config->event_handler != nullptr) {
+                config->event_handler(kVqaEventSync, nullptr, 0);
+              }
+              break;
+          }
+          if (stopped) {
+            break;
           }
         } else {
           // Not drawing: discard each frame as soon as it is loaded.
