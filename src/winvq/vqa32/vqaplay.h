@@ -88,8 +88,6 @@ constexpr uint32_t kVqaEventSync = 1U << 1;
 // VqaConfig: how a movie is played. Start from SetVqaConfigDefaults() and
 // change what differs; VqaPlayer::Open() copies it, and fills in the -1
 // defaults from the movie's header in its copy.
-//
-// Fields marked "unused" are left from the DOS library and read by nothing.
 struct VqaConfig {
   // Called with the image buffer and frame number after each frame is
   // decoded, and with nullptr for each frame skipped to keep up. A nonzero
@@ -99,13 +97,6 @@ struct VqaConfig {
   // the next frame, so the client can present or wait instead of the player
   // spinning. nullptr = none.
   int32_t (*event_handler)(uint32_t event, void* buffer, int32_t nbytes){};
-  // kVqaEvent* bits the client wants. Unused: event_handler gets every event.
-  uint32_t NotifyFlags{};
-  // DOS video mode (vqm32/video.h). Unused.
-  int32_t Vmode{};
-  // Vertical blank bit polarity for the DOS page flip. Copied into VqaMovie
-  // and otherwise unused.
-  int32_t VBIBit{};
   // The caller's buffer to decode into, image_width x image_height bytes. Empty
   // = the player allocates one the size of the movie when kVqaDrawToBuffer is
   // set.
@@ -140,33 +131,15 @@ struct VqaConfig {
   // The device's output format; the movie's sound is converted to it.
   // Required when kVqaOptionAudio is set.
   void* audio_spec{};  // pointer to an SDL_AudioSpec
-  // Name of a VOC file to play instead of the movie's sound. Unused.
-  char* VocFile{};
   // The caller's audio ring buffer. Empty = the player allocates
   // audio_buffer_bytes bytes.
   std::span<unsigned char> audio_buffer;
   // Size of the audio ring in bytes. -1 = as many audio_block_bytes blocks as
   // fit in 1.5 seconds of the movie's sound; 0 = no ring, so no sound.
   int32_t audio_buffer_bytes{};
-  // Playback rate in samples per second. Unused.
-  int32_t AudioRate{};
-  // Playback volume, 0x00FF by default. Unused.
-  int32_t Volume{};
   // Size in bytes of one audio block, the unit the audio ring is filled and
   // played in. Must be positive when a movie with sound plays with audio on.
   int32_t audio_block_bytes{};
-  // HMI sound driver setup: handle, card ID, port, IRQ and DMA channel, -1
-  // meaning autodetect. Unused.
-  int32_t DigiHandle{};
-  int32_t DigiCard{};
-  int32_t DigiPort{};
-  int32_t DigiIRQ{};
-  int32_t DigiDMA{};
-  // Preferred language. Unused.
-  int32_t Language{};
-  // Fonts for subtitle captions and, in C&C, E.V.A. text. Unused.
-  char* CapFont{};
-  char* EVAFont{};  // For C&C Only
 };
 
 // Drawing flags (VqaConfig::draw_flags).
@@ -195,9 +168,6 @@ constexpr uint32_t kVqaOptionPaletteOff = 1U << 3;
 constexpr uint32_t kVqaOptionSlowPalette = 1U << 4;
 // Use the alternate sound track, if there is one.
 constexpr uint32_t kVqaOptionAltAudio = 1U << 6;
-// Show captions and, in C&C, E.V.A. text. Unused.
-#define VQAOPTF_CAPTIONS (1U << 7)
-#define VQAOPTF_EVA (1U << 8)
 
 // The player's internal state; defined in vqaplayp.h.
 struct VqaPlayerState;

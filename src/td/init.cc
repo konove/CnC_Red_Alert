@@ -2101,12 +2101,10 @@ void Anim_Init() {
   TheGameState().anim_control().event_handler = VQ_Event_Handler;
   TheGameState().anim_control().image_width = 320;
   TheGameState().anim_control().image_height = 200;
-  TheGameState().anim_control().Vmode = 0;
   TheGameState().anim_control().image_buffer =
       TheScreen().sys_mem_page().bytes();
   // AnimControl.VBIBit = VertBlank;
   // AnimControl.DrawFlags |= VQACFGF_TOPLEFT;
-  TheGameState().anim_control().option_flags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
 
   if (ThePalettes().slow_palette()) {
     TheGameState().anim_control().option_flags |= kVqaOptionSlowPalette;

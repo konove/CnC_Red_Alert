@@ -1330,8 +1330,6 @@ void Anim_Init() {
     TheGameState().anim_control().image_height = 400;
     TheGameState().anim_control().image_buffer = TheScreen().vq640().bytes();
   }
-  TheGameState().anim_control().Vmode = 0;
-  TheGameState().anim_control().option_flags |= VQAOPTF_CAPTIONS | VQAOPTF_EVA;
   if (ThePalettes().slow_palette()) {
     TheGameState().anim_control().option_flags |= kVqaOptionSlowPalette;
   }

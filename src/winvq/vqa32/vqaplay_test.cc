@@ -155,7 +155,6 @@ TEST(VqaConfigTest, DefaultConfigHasDocumentedDefaults) {
   EXPECT_EQ(config.option_flags, kVqaOptionAudio);
   EXPECT_EQ(config.frame_buffer_count, 6);
   EXPECT_EQ(config.codebook_buffer_count, 3);
-  EXPECT_EQ(config.Volume, 0x00FF);
 }
 
 TEST_F(VqaPlayTest, OpenReportsOpenErrorWhenHandlerCannotOpen) {
