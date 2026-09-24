@@ -360,20 +360,37 @@ int32_t DrawNextFrame(VqaPlayerState* vqa);
 // frees that frame's buffer for the loader.
 void ReleaseDrawnFrame(const VqaPlayerState* state);
 
-// Sets the movie clock to time (kVqaTicksPerSecond), using the kVqaClock*
-// method, or the best one available, as its source.
+// Makes the movie clock read time (kVqaTicksPerSecond) now, and picks what it
+// runs on: the sound played so far when method is kVqaClockDefault or
+// kVqaClockAudio and sound is playing, else the system clock. PlayVqa() calls
+// it when the movie starts and, with the time the pause began, when it
+// resumes, so a pause does not count.
 void SetMovieClock(VqaPlayerState* vqap, int64_t time, int method);
-// Returns the movie clock in kVqaTicksPerSecond.
+// Returns the movie clock in kVqaTicksPerSecond, from the source and offset
+// the last SetMovieClock() set.
 int64_t ReadMovieClock(VqaPlayerState* vqap);
 
-// Sound output. OpenMovieAudio() installs the SDL stream and callback,
-// StartMovieAudio() and StopMovieAudio() start and stop the callback playing
-// the ring, CloseMovieAudio() removes it all. CopyStagedAudio() moves the
-// staged sound into the ring, or returns kVqaSleeping if the ring has no room.
+// Sound output. The sound system plays one movie at a time; the functions
+// below keep its state in audio.cc, shared by every VqaPlayerState.
+//
+// Creates the SDL stream converting the movie's sound to config.audio_spec
+// and installs the player's mixer in config.audio_callback. Returns 0.
 int32_t OpenMovieAudio(VqaPlayerState* vqap);
+// Stops the sound and, when this is the last open movie, removes the mixer
+// and frees the stream.
 void CloseMovieAudio(VqaPlayerState* vqap);
+// Starts the mixer playing the movie's audio ring from play_block, with the
+// audio clock back at zero. Returns 0, or -1 if a movie's sound is already
+// playing.
 int32_t StartMovieAudio(VqaPlayerState* vqap);
+// Stops the mixer playing the ring; the sound already converted is kept for a
+// restart.
 void StopMovieAudio(const VqaPlayerState* vqap);
+// Moves the staged sound (staged_bytes of staging) into the ring at
+// write_offset, wrapping at its end, and marks the blocks it completes as
+// loaded. Returns 0, also when there is nothing to move or the sound is off,
+// or kVqaSleeping, with the sound still staged, when the blocks it would
+// overwrite have not played yet.
 int32_t CopyStagedAudio(VqaPlayerState* vqap);
 
 // Set once the loader has read the whole movie; from then on the audio
