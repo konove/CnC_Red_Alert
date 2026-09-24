@@ -140,8 +140,10 @@ int32_t VQA_Play(VQAHandle* vqa, int32_t mode) {
       rc = VQAERR_PAUSED;
       break;
 
-    // TODO: VQAMODE_STOP falls into the default case, so it plays the rest
-    // of the movie before shutting down below instead of stopping at once.
+    // Shut down below without loading or drawing anything more.
+    case VQAMODE_STOP:
+      break;
+
     case VQAMODE_RUN:
     case VQAMODE_WALK:
     default:

@@ -559,6 +559,14 @@ TEST_F(VqaLoaderTest, PlaysSilentlyWithoutAnAudioRing) {
   EXPECT_EQ(handle_.data->Audio.Flags & VQAAUDF_ISPLAYING, 0U);
 }
 
+TEST_F(VqaLoaderTest, StopEndsPlaybackWithoutLoadingTheRest) {
+  fake_.data = EmptyFrames(SmallHeader());
+  ASSERT_EQ(Open(), 0);
+
+  EXPECT_EQ(VQA_Play(&handle_, VQAMODE_STOP), VQAERR_EOF);
+  EXPECT_EQ(handle_.data->LoadedFrames, 1);
+}
+
 TEST_F(VqaLoaderTest, SeekFrameLoadsFromTheFrameTable) {
   constexpr int64_t kFrameBytes = 10;  // "VPT0", size and 2 payload bytes.
   const auto start =
