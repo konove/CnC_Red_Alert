@@ -349,8 +349,6 @@ void StopMovieAudio(const VqaPlayerState* vqap) {
 
   /* Just return if not playing */
   if (AudioFlags & kAudioPlaying) {
-    // audio->TimerHandle = nullptr;
-
     // TODO: stop buffer
 
     audio->flags &= ~kAudioPlaying;
