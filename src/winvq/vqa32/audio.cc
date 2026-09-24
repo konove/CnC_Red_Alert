@@ -388,11 +388,9 @@ int64_t ReadMovieClock(VqaPlayerState* vqap) {
     // No sound playing, or not asked for: the system clock.
     default:
     case kVqaClockSystem: {
-      // TODO: system_clock is the wall clock. An adjustment to it during a
-      // movie without sound (NTP, a manual change) moves the movie clock by
-      // the same amount, dropping a run of frames or freezing the movie for
-      // as long as the clock went back. steady_clock never jumps.
-      const auto now = std::chrono::system_clock::now();
+      // steady_clock, not the wall clock: an adjustment to that mid-movie
+      // would drop a run of frames, or freeze the movie while it caught up.
+      const auto now = std::chrono::steady_clock::now();
       const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                           now.time_since_epoch())
                           .count();
