@@ -255,7 +255,8 @@ int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
         static_cast<base::ssize>(size)) {
       return 0;
     }
-    return static_cast<int32_t>(Uncompress_Data(source, dest));
+    return static_cast<int32_t>(
+        Uncompress_Data(std::as_bytes(source), std::as_writable_bytes(dest)));
   };
   return decode();
 }

@@ -27,6 +27,8 @@
 #include <cstdint>
 #include <span>
 
+#include "base/types.h"
+
 // The pixel layout a picture is loaded into. Only byte per pixel is used.
 enum class PicturePlaneType {
   BM_AMIGA = 0,  // Bit plane format (8K per bitplane).
@@ -64,7 +66,7 @@ struct CompHeaderType {
 // uncompressed data, what the stream produced for LCW. Returns 0 for any other
 // method, a negative Skip, a `src` too short for the header and the skipped
 // area, or a `dst` too short for Size.
-size_t Uncompress_Data(std::span<const unsigned char> src,
-                       std::span<unsigned char> dst);
+base::ssize Uncompress_Data(std::span<const std::byte> src,
+                            std::span<std::byte> dst);
 
 #endif  // CNC_RED_ALERT_SDLLIB_IFF_H_

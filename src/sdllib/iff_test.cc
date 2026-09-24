@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/buffer.h"
+#include "base/types.h"
 #include "gtest/gtest.h"
 
 namespace {
@@ -35,10 +36,16 @@ std::vector<unsigned char> Block(CompressionType method, uint32_t size,
   return Block(static_cast<char>(method), size, skip, data);
 }
 
+// Uncompress_Data() over the byte views of `block` and `output`.
+base::ssize Decode(std::span<const unsigned char> block,
+                   std::span<unsigned char> output) {
+  return Uncompress_Data(std::as_bytes(block), std::as_writable_bytes(output));
+}
+
 TEST(UncompressDataTest, CopiesUncompressedDataAfterTheSkippedArea) {
   const auto block = Block(NOCOMPRESS, 3, 2, {1, 2, 3});
   std::array<unsigned char, 4> output{};
-  EXPECT_EQ(Uncompress_Data(block, output), 3U);
+  EXPECT_EQ(Decode(block, output), 3);
   EXPECT_EQ(output, (std::array<unsigned char, 4>{1, 2, 3, 0}));
 }
 
@@ -46,29 +53,28 @@ TEST(UncompressDataTest, DecodesLcw) {
   // Two literal bytes, then the end marker.
   const auto block = Block(LCW, 2, 0, {0x82, 7, 8, 0x80});
   std::array<unsigned char, 2> output{};
-  EXPECT_EQ(Uncompress_Data(block, output), 2U);
+  EXPECT_EQ(Decode(block, output), 2);
   EXPECT_EQ(output, (std::array<unsigned char, 2>{7, 8}));
 }
 
 TEST(UncompressDataTest, RejectsBadHeaders) {
   std::array<unsigned char, 4> output{};
-  EXPECT_EQ(Uncompress_Data(Block(NOCOMPRESS, 1, -1, {1}), output), 0U);
-  EXPECT_EQ(Uncompress_Data(Block(NOCOMPRESS, 1, 5, {}), output), 0U);
-  EXPECT_EQ(Uncompress_Data(Block(NOCOMPRESS, 5, 0, {1, 2, 3, 4, 5}), output),
-            0U);
-  EXPECT_EQ(Uncompress_Data(Block(NOCOMPRESS, 3, 0, {1, 2}), output), 0U);
+  EXPECT_EQ(Decode(Block(NOCOMPRESS, 1, -1, {1}), output), 0);
+  EXPECT_EQ(Decode(Block(NOCOMPRESS, 1, 5, {}), output), 0);
+  EXPECT_EQ(Decode(Block(NOCOMPRESS, 5, 0, {1, 2, 3, 4, 5}), output), 0);
+  EXPECT_EQ(Decode(Block(NOCOMPRESS, 3, 0, {1, 2}), output), 0);
 }
 
 TEST(UncompressDataTest, RejectsMethodsItCannotDecode) {
   for (const CompressionType method : {HORIZONTAL, LZW12, LZW14}) {
     std::array<unsigned char, 3> output{9, 9, 9};
-    EXPECT_EQ(Uncompress_Data(Block(method, 3, 0, {1, 2, 3}), output), 0U)
+    EXPECT_EQ(Decode(Block(method, 3, 0, {1, 2, 3}), output), 0)
         << static_cast<int>(method);
     EXPECT_EQ(output, (std::array<unsigned char, 3>{9, 9, 9}));
   }
   std::array<unsigned char, 3> output{};
   // Not a CompressionType at all.
-  EXPECT_EQ(Uncompress_Data(Block(char{9}, 3, 0, {1, 2, 3}), output), 0U);
+  EXPECT_EQ(Decode(Block(char{9}, 3, 0, {1, 2, 3}), output), 0);
 }
 
 }  // namespace

@@ -6,16 +6,16 @@
 #include <span>
 
 #include "base/buffer.h"
+#include "base/types.h"
 #include "sdllib/lcw_uncompress.h"
 
-size_t Uncompress_Data(std::span<const unsigned char> src,
-                       std::span<unsigned char> dst) {
+base::ssize Uncompress_Data(std::span<const std::byte> src,
+                            std::span<std::byte> dst) {
   if (src.size() < sizeof(CompHeaderType)) {
     return 0;
   }
   CompHeaderType header{};
-  base::CopyBytes(base::ObjectBytes(header), std::as_bytes(src),
-                  sizeof(header));
+  base::CopyBytes(base::ObjectBytes(header), src, sizeof(header));
   if (header.Skip < 0) {
     return 0;
   }
@@ -30,11 +30,10 @@ size_t Uncompress_Data(std::span<const unsigned char> src,
       if (payload.size() < output.size()) {
         return 0;
       }
-      base::CopyBytes(std::as_writable_bytes(output), std::as_bytes(payload),
-                      output.size());
+      base::CopyBytes(output, payload, output.size());
       break;
     case LCW:
-      return static_cast<size_t>(LCW_Uncompress(payload, output));
+      return LCW_Uncompress(payload, output);
     // Westwood's library returned Size for HORIZONTAL without writing anything
     // (its RLE decoder was left out of the build) and copied LZW and unknown
     // methods as if uncompressed. Either way the caller took garbage for a
@@ -45,5 +44,5 @@ size_t Uncompress_Data(std::span<const unsigned char> src,
     default:
       return 0;
   }
-  return output.size();
+  return std::ssize(output);
 }
