@@ -711,6 +711,26 @@ TEST_F(VqaLoaderTest, CopyStagedAudioWrapsAtTheEndOfTheRing) {
   EXPECT_EQ(audio.staged_bytes, 2048);
 }
 
+TEST_F(VqaLoaderTest, FirstSoundChunkFillingTheRingWrapsTheWriteOffset) {
+  fake_.data = MovieStart(SmallSoundHeader(), {0, 0, 0});
+  // Larger than staging, so it preloads the ring, and exactly as large.
+  AppendChunk(fake_.data, "SND0", std::vector<uint8_t>(4096, 0x80));
+  AppendFrameEnd(fake_.data);
+  AppendFrameEnd(fake_.data);
+  AppendFrameEnd(fake_.data);
+  EnableAudio();
+  config_.audio_buffer_bytes = 2 * 2048;
+  ASSERT_EQ(Open(), 0);
+  VqaAudio& audio = state_.movie->audio;
+  ASSERT_EQ(audio.write_offset, 0);
+
+  // Once both blocks have played, the next chunk goes in at the start.
+  std::ranges::fill(audio.block_loaded, int16_t{0});
+  audio.staged_bytes = 100;
+  EXPECT_EQ(CopyStagedAudio(&state_), 0);
+  EXPECT_EQ(audio.write_offset, 100);
+}
+
 TEST_F(VqaLoaderTest, StopEndsPlaybackWithoutLoadingTheRest) {
   fake_.data = EmptyFrames(SmallHeader());
   ASSERT_EQ(Open(), 0);

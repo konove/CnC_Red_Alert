@@ -1413,11 +1413,9 @@ static int32_t Load_SND0(VqaPlayerState* vqap, int32_t iffsize) {
       return kVqaErrorRead;
     }
 
-    // TODO: A chunk that fills the ring exactly leaves write_offset at the
-    // ring's size instead of wrapping it to 0; CopyStagedAudio() then starts
-    // at block block_count and throws std::out_of_range. Load_SND1() and
-    // Load_SND2() do the same.
-    audio->write_offset += iffsize;
+    // A chunk that fills the ring exactly wraps the write back to its start.
+    audio->write_offset =
+        (audio->write_offset + iffsize) % config->audio_buffer_bytes;
 
     // Mark the whole blocks it filled; the next chunk completes a partial
     // last one.
@@ -1500,7 +1498,8 @@ static int32_t Load_SND1(VqaPlayerState* vqap, int32_t iffsize) {
       AudioUnzap(loadbuf.data(), audio->ring.data(), zap.UnCompSize);
     }
 
-    audio->write_offset += zap.UnCompSize;
+    audio->write_offset =
+        (audio->write_offset + zap.UnCompSize) % config->audio_buffer_bytes;
 
     for (int32_t i = 0; i < zap.UnCompSize / config->audio_block_bytes; i++) {
       audio->block_loaded.at(base::ToSize(i)) = 1;
@@ -1585,7 +1584,8 @@ static int32_t Load_SND2(VqaPlayerState* vqap, int32_t iffsize) {
     audio->adpcm.dest = audio->ring;
     DecompressVqaSosData(&audio->adpcm, uncomp_size);
 
-    audio->write_offset += uncomp_size;
+    audio->write_offset =
+        (audio->write_offset + uncomp_size) % config->audio_buffer_bytes;
 
     for (int32_t i = 0; i < uncomp_size / config->audio_block_bytes; i++) {
       audio->block_loaded.at(base::ToSize(i)) = 1;
