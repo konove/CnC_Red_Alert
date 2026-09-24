@@ -267,25 +267,15 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
     // The decoder state runs on from chunk to chunk, so it starts once here.
     ResetAdpcmStream(&audio->adpcm);
 
-    // The track's format, and its sizes (which nothing reads now). A version 1
-    // track is always 22050 Hz 8-bit mono.
+    // The track's format. A version 1 track is always 22050 Hz 8-bit mono.
     if (header->version == kVqaVersion1) {
       audio->adpcm.bits_per_sample = 8;
-      audio->adpcm.uncomp_size = 22050 / header->fps * header->frame_count;
       audio->adpcm.channels = 1;
     } else {
       audio->adpcm.bits_per_sample =
           static_cast<int16_t>(audio->bits_per_sample);
-      audio->adpcm.uncomp_size = static_cast<uint32_t>(
-          audio->sample_rate / header->fps * (audio->bits_per_sample / 8) *
-          audio->channels * header->frame_count);
-
       audio->adpcm.channels = static_cast<int16_t>(audio->channels);
     }
-
-    audio->adpcm.comp_size =
-        audio->adpcm.uncomp_size /
-        static_cast<uint32_t>(audio->adpcm.bits_per_sample / 4);
   }
 
   // Preload the frame ring, so playback starts with frames in hand.

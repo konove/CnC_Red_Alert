@@ -40,8 +40,8 @@ int32_t AudioUnzap(std::span<const unsigned char> /*source*/,
 }
 
 void ResetAdpcmStream(AdpcmStream* stream) {
-  stream->predicted = stream->predicted2 = 0;
-  stream->step_index = stream->step_index2 = 0;
+  stream->predicted = 0;
+  stream->step_index = 0;
 }
 
 bool DecodeAdpcmSound(AdpcmStream* stream, int32_t output_bytes) {

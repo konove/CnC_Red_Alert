@@ -36,9 +36,6 @@
 #include <cstdint>
 #include <span>
 
-/* compression types */
-inline constexpr int kAdpcmType1 = 0;
-
 // AdpcmStream: an IMA ADPCM stream being decoded. The VQA loader sets
 // source, dest and the format for each sound chunk; the predictor and step
 // index carry the decoder's state from one chunk to the next.
@@ -46,46 +43,17 @@ struct AdpcmStream {
   std::span<const uint8_t> source;
   std::span<uint8_t> dest;
 
-  uint32_t comp_size;
-  uint32_t uncomp_size;
-
   int16_t bits_per_sample;
   int16_t channels;
 
-  // --- Channel 1 State ---
-  uint32_t sample_index;
+  // The decoder state: the last sample, and the index of the quantizer step
+  // the next code is scaled by.
   int32_t predicted;
-  int32_t difference;
-  int16_t code_buf;
-  int16_t code;
   int16_t step_index;
-  int16_t index;
-
-  // Channel 2 Data
-  uint32_t sample_index2;
-  int32_t predicted2;
-  int32_t difference2;
-  int16_t code_buf2;
-  int16_t code2;
-  int16_t step_index2;
-  int16_t index2;
 };
 
-/* compressed file type header */
-struct tagCOMPRESS_HEADER {
-  uint32_t dwType;                   // type of compression
-  uint32_t dwCompressedSize;         // compressed file size
-  uint32_t dwUnCompressedSize;       // uncompressed file size
-  uint32_t dwSourceBitSize;          // original bit size
-  char szName[16];                   // file type, for error checking
-};
-using SOS_COMPRESS_HEADER = tagCOMPRESS_HEADER;
-
-/* Prototypes */
-
-// Starts a stream: zeroes the predictors and step indexes of both channels.
+// Starts a stream: zeroes the predictor and the step index.
 void ResetAdpcmStream(AdpcmStream* stream);
-uint32_t VQA_sosCODECCompressData(AdpcmStream*, uint32_t);
 // Decodes IMA ADPCM from stream->source into output_bytes of stream->dest,
 // continuing from the state the last call left, and advances source and dest
 // past what it used. Only 16-bit mono is supported. Returns false, decoding
