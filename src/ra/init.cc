@@ -149,7 +149,6 @@
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
 #include "sdllib/file_system.h"
-#include "sdllib/iff.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
@@ -1777,7 +1776,7 @@ static void Init_Color_Remaps() {
 
   TheScreen().sys_mem_page().view().Clear();
   Load_Picture("PALETTE.CPS", TheScreen().sys_mem_page().bytes(),
-               TheScreen().sys_mem_page().bytes(), {}, BM_DEFAULT);
+               TheScreen().sys_mem_page().bytes(), {});
   TheScreen().sys_mem_page().view().BlitTo(TheScreen().hidden_view());
   for (const PlayerColorType pcolor :
        magic_enum::enum_values<PlayerColorType>()) {

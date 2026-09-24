@@ -29,15 +29,6 @@
 
 #include "base/types.h"
 
-// The pixel layout a picture is loaded into. Only byte per pixel is used.
-enum class PicturePlaneType {
-  BM_AMIGA = 0,  // Bit plane format (8K per bitplane).
-  BM_MCGA = 1,   // Byte per pixel format (64K).
-
-  BM_DEFAULT = BM_MCGA  // Default picture format.
-};
-using enum PicturePlaneType;
-
 // The compression method, as stored in CompressedBlockHeader::method. The
 // values are the file format's. Only NOCOMPRESS and LCW are decoded.
 enum class CompressionMethod {

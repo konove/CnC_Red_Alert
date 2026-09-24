@@ -60,7 +60,6 @@
 #include "ra/compat.h"
 #include "ra/game_clock.h"
 #include "ra/palette.h"
-#include "sdllib/iff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
@@ -271,8 +270,7 @@ struct TLucentType {
 };
 
 int Load_Picture(const char* filename, std::span<uint8_t> scratchbuf,
-                 std::span<uint8_t> destbuf, std::span<unsigned char> palette,
-                 PicturePlaneType format);
+                 std::span<uint8_t> destbuf, std::span<unsigned char> palette);
 std::span<unsigned char> Conquer_Build_Fading_Table(
     const PaletteClass& palette,
     std::span<unsigned char> dest ABSL_ATTRIBUTE_LIFETIME_BOUND, int color,

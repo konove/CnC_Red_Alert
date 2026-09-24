@@ -249,8 +249,7 @@ int32_t Load_Uncompress(ByteStream& file, std::span<uint8_t> uncomp_buff,
 }
 
 int Load_Picture(const char* filename, std::span<uint8_t> scratchbuf,
-                 std::span<uint8_t> destbuf, std::span<unsigned char> palette,
-                 PicturePlaneType /*unused*/) {
+                 std::span<uint8_t> destbuf, std::span<unsigned char> palette) {
   const auto file = OpenGameFile(filename);
   if (!file) {
     return 0;

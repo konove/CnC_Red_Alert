@@ -57,7 +57,6 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "port/format.h"
-#include "sdllib/iff.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 
