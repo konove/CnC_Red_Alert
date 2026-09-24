@@ -137,7 +137,7 @@ int32_t OpenVqa(VqaPlayerState* vqa, std::string_view filename,
 
   // Read the chunks in front of the frames, up to FINF, the last of them.
   // VQHD must come before it; anything else is skipped.
-  int32_t done = 0;
+  bool done = false;
 
   while (!done) {
     if (!vqap->io->ReadObject(chunk)) {
@@ -236,7 +236,7 @@ int32_t OpenVqa(VqaPlayerState* vqa, std::string_view filename,
           return kVqaErrorRead;
         }
 
-        done = 1;
+        done = true;
         break;
 
       // Chunks the player has no use for, such as PINF.
@@ -275,7 +275,7 @@ int32_t OpenVqa(VqaPlayerState* vqa, std::string_view filename,
     // track is always 22050 Hz 8-bit mono.
     if (header->version == kVqaVersion1) {
       audio->adpcm.bit_size = 8;
-      audio->adpcm.uncomp_size = 22050L / header->fps * header->frame_count;
+      audio->adpcm.uncomp_size = 22050 / header->fps * header->frame_count;
       audio->adpcm.channels = 1;
     } else {
       audio->adpcm.bit_size = static_cast<int16_t>(audio->bits_per_sample);
@@ -326,7 +326,7 @@ void CloseVqa(VqaPlayerState* vqa) {
 // header kept, and the next call resumes inside that chunk. So full buffers or
 // stalled sound never leave the loader stuck, whatever the buffer sizes.
 int32_t LoadNextFrame(VqaPlayerState* vqa) {
-  int32_t frame_loaded = 0;
+  bool frame_loaded = false;
 
   VqaPlayerState* vqa_handle_p = vqa;
   VqaMovie* vqabuf = vqa_handle_p->movie.get();
@@ -353,12 +353,12 @@ int32_t LoadNextFrame(VqaPlayerState* vqa) {
   // now because the last frame of a group completes the next codebook, which
   // moves full_codebook on.
   if (!(vqabuf->flags & kMovieLoaderAsleep)) {
-    frame_loaded = 0;
+    frame_loaded = false;
 
     curframe->codebook = loader->full_codebook;
   }
 
-  while (frame_loaded == 0) {
+  while (!frame_loaded) {
     // A resumed loader is inside a chunk already.
     if (!(vqabuf->flags & kMovieLoaderAsleep)) {
       if (!vqa_handle_p->io->ReadObject(*chunk)) {
@@ -378,7 +378,7 @@ int32_t LoadNextFrame(VqaPlayerState* vqa) {
           return kVqaErrorRead;
         }
 
-        frame_loaded = 1;
+        frame_loaded = true;
         break;
 
       // A key frame container.
@@ -389,7 +389,7 @@ int32_t LoadNextFrame(VqaPlayerState* vqa) {
 
         // Flag this frame as being key.
         curframe->flags |= kFrameKey;
-        frame_loaded = 1;
+        frame_loaded = true;
         break;
 
       // Full uncompressed codebook.
@@ -466,7 +466,7 @@ int32_t LoadNextFrame(VqaPlayerState* vqa) {
           return kVqaErrorRead;
         }
 
-        frame_loaded = 1;
+        frame_loaded = true;
         break;
 
       // Compressed vector pointers.
@@ -476,7 +476,7 @@ int32_t LoadNextFrame(VqaPlayerState* vqa) {
           return kVqaErrorRead;
         }
 
-        frame_loaded = 1;
+        frame_loaded = true;
         break;
 
       // Compressed vector pointers of a key frame, which is never skipped.
@@ -487,7 +487,7 @@ int32_t LoadNextFrame(VqaPlayerState* vqa) {
 
         // Flag this frame as being key.
         curframe->flags |= kFrameKey;
-        frame_loaded = 1;
+        frame_loaded = true;
         break;
 
       // Sound. SND* chunks are the primary track and SNA* the alternate one;
@@ -1492,7 +1492,7 @@ static int32_t Load_SND1(VqaPlayerState* vqap, int32_t iffsize) {
       // TODO: AudioUnzap() is a stub that writes nothing, so the ring keeps
       // the compressed bytes and whatever was there before, and plays them.
       // The shipped Red Alert movies have no SND1 sound.
-      AudioUnzap(loadbuf.data(), audio->ring.data(), zap.UnCompSize);
+      AudioUnzap(loadbuf, audio->ring.first(zap.UnCompSize));
     }
 
     audio->write_offset =
@@ -1525,7 +1525,7 @@ static int32_t Load_SND1(VqaPlayerState* vqap, int32_t iffsize) {
     }
 
     // TODO: As above, AudioUnzap() writes nothing.
-    AudioUnzap(loadbuf.data(), audio->staging.data(), zap.UnCompSize);
+    AudioUnzap(loadbuf, std::span(audio->staging).first(zap.UnCompSize));
   }
 
   audio->staged_bytes = zap.UnCompSize;

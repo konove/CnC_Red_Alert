@@ -46,29 +46,29 @@ struct SosCompressInfo {
   std::span<const uint8_t> source;
   std::span<uint8_t> dest;
 
-  std::uint32_t comp_size;
-  std::uint32_t uncomp_size;
+  uint32_t comp_size;
+  uint32_t uncomp_size;
 
-  std::int16_t bit_size;
-  std::int16_t channels;
+  int16_t bit_size;
+  int16_t channels;
 
   // --- Channel 1 State ---
-  std::uint32_t sample_index;
-  std::int32_t predicted;
-  std::int32_t difference;
-  std::int16_t code_buf;
-  std::int16_t code;
-  std::int16_t step_index;
-  std::int16_t index;
+  uint32_t sample_index;
+  int32_t predicted;
+  int32_t difference;
+  int16_t code_buf;
+  int16_t code;
+  int16_t step_index;
+  int16_t index;
 
   // Channel 2 Data
-  std::uint32_t sample_index2;
-  std::int32_t predicted2;
-  std::int32_t difference2;
-  std::int16_t code_buf2;
-  std::int16_t code2;
-  std::int16_t step_index2;
-  std::int16_t index2;
+  uint32_t sample_index2;
+  int32_t predicted2;
+  int32_t difference2;
+  int16_t code_buf2;
+  int16_t code2;
+  int16_t step_index2;
+  int16_t index2;
 };
 
 /* compressed file type header */

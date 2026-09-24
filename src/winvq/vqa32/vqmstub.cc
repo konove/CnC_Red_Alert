@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <span>
+#include <utility>
 
 #include "absl/strings/str_format.h"
 #include "base/array.h"
@@ -30,10 +31,10 @@ static constexpr int16_t kImaAdpcmStepTable[89] = {
     15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767};
 
 // The only ZAP decoder is the original assembly (vqm32/audunzap.asm), which
-// the SDL port does not build. Writing nothing, the stub cannot exceed the
-// destination size the loader passes; a real decoder must stop after size
-// bytes.
-int32_t AudioUnzap(void* /*source*/, void* /*dest*/, int32_t /*size*/) {
+// the SDL port does not build. Writing nothing, the stub cannot overrun dest;
+// a real decoder must stop at its end.
+int32_t AudioUnzap(std::span<const unsigned char> /*source*/,
+                   std::span<unsigned char> /*dest*/) {
   absl::PrintF("%s\n", __func__);
   return 0;
 }
@@ -53,8 +54,8 @@ bool DecompressVqaSosData(SosCompressInfo* info, int32_t uncomp_size) {
 
   auto in_ptr = info->source;
   auto out_ptr = info->dest;
-  if (uncomp_size < 0 || static_cast<size_t>(uncomp_size) > out_ptr.size() ||
-      static_cast<size_t>(uncomp_size / 4) > in_ptr.size()) {
+  if (uncomp_size < 0 || std::cmp_greater(uncomp_size, out_ptr.size()) ||
+      std::cmp_greater(uncomp_size / 4, in_ptr.size())) {
     return false;
   }
 
@@ -67,13 +68,14 @@ bool DecompressVqaSosData(SosCompressInfo* info, int32_t uncomp_size) {
     // A byte holds two 4-bit codes, the low nibble first.
     for (int i = 0; i < 2; ++i) {
       const auto nibble =
-          static_cast<std::uint8_t>(i == 0 ? raw_byte & 0x0F : raw_byte >> 4);
+          static_cast<uint8_t>(i == 0 ? raw_byte & 0x0F : raw_byte >> 4);
 
       // This sample uses the step size before the update below.
       const int step = base::At(kImaAdpcmStepTable, info->step_index);
 
       const int index_delta = base::At(kImaAdpcmIndexTable, nibble);
-      info->step_index = static_cast<std::int16_t>(std::clamp(info->step_index + index_delta, 0, 88));
+      info->step_index = static_cast<int16_t>(
+          std::clamp(info->step_index + index_delta, 0, 88));
 
       // The difference is (magnitude + 1/2) * step / 4, the magnitude being
       // the code's low 3 bits and bit 3 its sign. The IMA reference adds the
@@ -85,7 +87,7 @@ bool DecompressVqaSosData(SosCompressInfo* info, int32_t uncomp_size) {
       // The prediction saturates at the 16-bit range.
       info->predicted = std::clamp(info->predicted + diff, -32768, 32767);
 
-      const auto sample = static_cast<std::int16_t>(info->predicted);
+      const auto sample = static_cast<int16_t>(info->predicted);
       base::CopyBytes(std::as_writable_bytes(out_ptr),
                       base::ObjectBytes(sample), sizeof(sample));
       out_ptr = out_ptr.subspan(sizeof(sample));

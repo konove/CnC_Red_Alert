@@ -1,10 +1,12 @@
 #include "winvq/vqa32/unvq.h"
 
 #include <algorithm>
-#include <cstddef>
+#include <iterator>
 #include <span>
 
 #include "base/array.h"
+#include "base/numeric.h"
+#include "base/types.h"
 
 namespace {
 // Decodes blocks 4 pixels wide and block_height lines high. The sizes are
@@ -19,39 +21,42 @@ void DecodeBlocks(std::span<const unsigned char> codebook,
       blocks_per_row > stride / 4) {
     return;
   }
-  const auto columns = static_cast<size_t>(blocks_per_row);
-  const auto rows = static_cast<size_t>(num_rows);
-  const auto width = static_cast<size_t>(stride);
-  const auto height = static_cast<size_t>(block_height);
+  const base::ssize columns = blocks_per_row;
+  const base::ssize rows = num_rows;
+  const base::ssize width = stride;
+  const base::ssize height = block_height;
+  const base::ssize buffer_bytes = std::ssize(buffer);
+  const base::ssize codebook_bytes = std::ssize(codebook);
   // Two pointer bytes per block, and pixel rows for every block row; the
   // last pixel row needs only its blocks' width, not a whole stride.
-  if (rows > pointers.size() / 2 / columns || buffer.size() < columns * 4 ||
-      rows > (((buffer.size() - (columns * 4)) / width) + 1) / height) {
+  if (rows > std::ssize(pointers) / 2 / columns || buffer_bytes < columns * 4 ||
+      rows > (((buffer_bytes - (columns * 4)) / width) + 1) / height) {
     return;
   }
-  const auto entries = rows * columns;
-  for (size_t row = 0; row < rows; ++row) {
-    for (size_t col = 0; col < columns; ++col) {
-      const auto entry = (row * columns) + col;
+  const base::ssize entries = rows * columns;
+  for (base::ssize row = 0; row < rows; ++row) {
+    for (base::ssize col = 0; col < columns; ++col) {
+      const base::ssize entry = (row * columns) + col;
       const auto value = base::At(pointers, entry);
       const auto high = base::At(pointers, entries + entry);
       // A reserved high byte marks a solid block of the color in the low
       // byte.
       const bool solid = high == (block_height == 2 ? 0x0f : 0xff);
-      const auto code_offset =
-          ((static_cast<size_t>(high) * 256) + value) * 4 * height;
-      if (!solid && (code_offset > codebook.size() ||
-                     4 * height > codebook.size() - code_offset)) {
+      const base::ssize code_offset =
+          ((base::ssize{high} * 256) + value) * 4 * height;
+      if (!solid && (code_offset > codebook_bytes ||
+                     4 * height > codebook_bytes - code_offset)) {
         return;
       }
-      for (size_t line = 0; line < height; ++line) {
-        const auto destination =
-            buffer.subspan((((row * height) + line) * width) + (col * 4), 4);
+      for (base::ssize line = 0; line < height; ++line) {
+        const auto destination = buffer.subspan(
+            base::ToSize((((row * height) + line) * width) + (col * 4)), 4);
         if (solid) {
           std::ranges::fill(destination, value);
         } else {
-          std::ranges::copy(codebook.subspan(code_offset + (line * 4), 4),
-                            destination.begin());
+          std::ranges::copy(
+              codebook.subspan(base::ToSize(code_offset + (line * 4)), 4),
+              destination.begin());
         }
       }
     }

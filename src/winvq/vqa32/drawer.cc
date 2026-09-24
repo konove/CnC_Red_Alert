@@ -234,7 +234,7 @@ static int32_t Select_Frame(VqaPlayerState* vqap) {
       }
 
       // Clearing the flags hands the buffer back to the loader.
-      curframe->flags = 0L;
+      curframe->flags = 0;
       curframe = curframe->next;
       drawer->current_frame = curframe;
     } else {
