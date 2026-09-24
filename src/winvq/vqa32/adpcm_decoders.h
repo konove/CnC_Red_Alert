@@ -1,5 +1,5 @@
-// File: the decoders for a VQA movie's compressed sound: IMA ADPCM for SND2
-// chunks, and a stand-in for Westwood's ZAP for SND1 chunks.
+// File: the decoder for a VQA movie's SND2 sound, IMA ADPCM. SND1 sound is
+// Westwood's ZAP, which sdllib/aud_decoder.h decodes for the .AUD files.
 
 #ifndef CNC_RED_ALERT_WINVQ_VQA32_ADPCM_DECODERS_H_
 #define CNC_RED_ALERT_WINVQ_VQA32_ADPCM_DECODERS_H_
@@ -31,12 +31,5 @@ class ImaAdpcmDecoder {
   // Index in the step table of the quantizer step the next code is scaled by.
   int16_t step_index_ = 0;
 };
-
-// Meant to decompress ZAP (Westwood ADPCM) sound from source to fill dest,
-// returning the bytes written. The only ZAP decoder is the original assembly
-// (vqm32/audunzap.asm), which the SDL port does not build, so this writes
-// nothing and returns 0. The shipped Red Alert movies have no SND1 sound.
-int32_t DecodeZapSound(std::span<const unsigned char> source,
-                       std::span<unsigned char> dest);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQA32_ADPCM_DECODERS_H_

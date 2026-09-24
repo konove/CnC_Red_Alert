@@ -24,11 +24,6 @@ static constexpr int16_t kImaAdpcmStepTable[89] = {
     5894,  6484,  7132,  7845,  8630,  9493,  10442, 11487, 12635, 13899,
     15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767};
 
-int32_t DecodeZapSound(std::span<const unsigned char> /*source*/,
-                       std::span<unsigned char> /*dest*/) {
-  return 0;
-}
-
 bool ImaAdpcmDecoder::Supports(const int channels, const int bits_per_sample) {
   return channels == 1 && bits_per_sample == 16;
 }

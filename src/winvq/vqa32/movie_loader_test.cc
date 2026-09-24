@@ -89,6 +89,42 @@ TEST_F(MovieLoaderTest, StagesTheSoundOfTheTrackPlayed) {
   EXPECT_EQ(audio_->staged_bytes(), 4);
 }
 
+// A frame whose sound is a SND1 chunk: the ZAP header, then compressed.
+std::vector<uint8_t> ZapFrame(uint16_t uncompressed_size,
+                              const std::vector<uint8_t>& compressed) {
+  std::vector<uint8_t> payload = {
+      static_cast<uint8_t>(uncompressed_size & 0xFFU),
+      static_cast<uint8_t>(uncompressed_size >> 8U),
+      static_cast<uint8_t>(compressed.size() & 0xFFU),
+      static_cast<uint8_t>(compressed.size() >> 8U)};
+  payload.insert(payload.end(), compressed.begin(), compressed.end());
+  std::vector<uint8_t> data;
+  AppendChunk(data, "SND1", payload);
+  AppendFrameEnd(data);
+  return data;
+}
+
+TEST_F(MovieLoaderTest, DecodesZapSound) {
+  // Two 4-bit deltas from 0x80, +1 then +8, then the last sample twice. The
+  // odd payload is padded, and the pad byte must not be decoded.
+  io_.data = ZapFrame(4, {0x40, 0xF9, 0xC1});
+  MakeLoader(1, /*with_sound=*/true);
+
+  EXPECT_EQ(loader_->LoadNextFrame(), LoadStatus::kLoaded);
+  ASSERT_EQ(audio_->staged_bytes(), 4);
+  EXPECT_EQ(std::vector<uint8_t>(audio_->staging().begin(),
+                                 audio_->staging().begin() + 4),
+            (std::vector<uint8_t>{0x81, 0x89, 0x89, 0x89}));
+}
+
+TEST_F(MovieLoaderTest, ATruncatedZapChunkFails) {
+  // Two bytes of 4-bit deltas announced, one present.
+  io_.data = ZapFrame(4, {0x41, 0xF9});
+  MakeLoader(1, /*with_sound=*/true);
+
+  EXPECT_EQ(loader_->LoadNextFrame(), LoadStatus::kFailed);
+}
+
 TEST_F(MovieLoaderTest, WaitsForAFullFrameRing) {
   io_.data = SoundFrames(5);
   MakeLoader(5, /*with_sound=*/false);

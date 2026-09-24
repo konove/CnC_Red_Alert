@@ -25,10 +25,13 @@
 #include <cstdint>
 #include <iterator>
 #include <mutex>
+#include <optional>
 #include <span>
+#include <vector>
 
 #include "absl/log/log.h"
 #include "base/numeric.h"
+#include "sdllib/aud_decoder.h"
 #include "winvq/vqa32/adpcm_decoders.h"
 #include "winvq/vqa32/audio_output.h"
 #include "winvq/vqa32/audio_ring.h"
@@ -366,10 +369,19 @@ bool MovieLoader::LoadZapSound(const Chunk& chunk) {
     if (!reader_.Read(compressed, padded_bytes)) {
       return false;
     }
-    // TODO: DecodeZapSound() is a stub that writes nothing, so the target
-    // keeps the compressed bytes and whatever was there before, and plays
-    // them. The shipped Red Alert movies have no SND1 sound.
-    DecodeZapSound(compressed, target.first(base::ToSize(sound_bytes)));
+    // ZAP is the .AUD files' SCOMP_WESTWOOD compression. That decoder runs
+    // to the end of its input, where the original ran until the output was
+    // full, so it gets exactly the compressed bytes and not the pad byte.
+    if (int32_t{zap_header.compressed_size} > padded_bytes) {
+      return false;
+    }
+    const std::optional<std::vector<uint8_t>> samples = DecodeWestwoodBlock(
+        std::as_bytes(compressed.first(zap_header.compressed_size)));
+    if (!samples.has_value() || std::ssize(*samples) < sound_bytes) {
+      return false;
+    }
+    std::ranges::copy(std::span(*samples).first(base::ToSize(sound_bytes)),
+                      target.begin());
   }
 
   if (preload) {

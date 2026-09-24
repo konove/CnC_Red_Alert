@@ -65,12 +65,4 @@ TEST(ImaAdpcmDecoderTest, RefusesASourceTooShortToFillDest) {
   EXPECT_EQ(dest, (std::array<uint8_t, 8>{}));
 }
 
-TEST(ZapDecoderTest, IsAStubThatWritesNothing) {
-  const std::array<unsigned char, 4> source{1, 2, 3, 4};
-  std::array<unsigned char, 8> dest{};
-
-  EXPECT_EQ(DecodeZapSound(source, dest), 0);
-  EXPECT_EQ(dest, (std::array<unsigned char, 8>{}));
-}
-
 }  // namespace
