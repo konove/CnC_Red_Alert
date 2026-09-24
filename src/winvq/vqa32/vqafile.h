@@ -99,13 +99,13 @@ struct VQAHeader {
 #define VQAFINB_KEY 31   // Key frame.
 #define VQAFINB_PAL 30   // The frame carries a palette.
 #define VQAFINB_SYNC 29  // Audio synchronization point.
-#define VQAFINF_KEY (1L << VQAFINB_KEY)
+#define VQAFINF_KEY (uint32_t{1} << VQAFINB_KEY)
 #define VQAFINF_PAL (uint32_t{1} << VQAFINB_PAL)
-#define VQAFINF_SYNC (1L << VQAFINB_SYNC)
+#define VQAFINF_SYNC (uint32_t{1} << VQAFINB_SYNC)
 
 // Masks for the two halves of a FINF entry, and its byte offset in the file.
 #define VQAFINF_OFFSET 0x0FFFFFFFU
-#define VQAFINF_FLAGS 0xF0000000L
+#define VQAFINF_FLAGS 0xF0000000U
 #define VQAFRAME_OFFSET(a) (((a) & VQAFINF_OFFSET) * 2)
 
 // Vector pointer codes of the Run-Skip-Dump (RSD) pointer compression. The
