@@ -38,9 +38,6 @@
 #include "winvq/vqa32/vqa_player_state.h"
 #include "winvq/vqm32/compress.h"
 
-static int32_t SelectFrameToDraw(VqaPlayerState* state);
-static void DecompressFrame(VqaMovie* movie);
-
 static void DecodeNothing(std::span<const unsigned char> codebook,
                           std::span<const unsigned char> pointers,
                           std::span<unsigned char> buffer, int blocks_per_row,
@@ -267,15 +264,14 @@ static void DecompressFrame(VqaMovie* movie) {
 }
 
 int32_t DrawNextFrame(VqaPlayerState* state) {
-  auto* vqa_handle_p = state;
-  const VqaConfig* config = &vqa_handle_p->config;
-  VqaMovie* movie = vqa_handle_p->movie.get();
+  const VqaConfig* config = &state->config;
+  VqaMovie* movie = state->movie.get();
   VqaDrawer* drawer = &movie->drawer;
 
   // A drawer asleep has its frame selected and decompressed already, and is
   // only waiting for the last frame drawn to be released.
   if (!(movie->flags & kMovieDrawerAsleep)) {
-    if (const auto result = SelectFrameToDraw(vqa_handle_p); result != 0) {
+    if (const auto result = SelectFrameToDraw(state); result != 0) {
       return result;
     }
 

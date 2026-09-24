@@ -97,17 +97,16 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
                 VqaConfig* config) {
   ChunkHeader chunk{};
 
-  VqaPlayerState* vqap = state;
-  VqaHeader* header = &vqap->header;
+  VqaHeader* header = &state->header;
 
   vqa_movie_loaded.store(false, std::memory_order_relaxed);
 
   // The file must be an IFF FORM of type WVQA.
-  if (!vqap->io->Open(filename)) {
+  if (!state->io->Open(filename)) {
     return kVqaErrorOpen;
   }
 
-  if (!vqap->io->ReadObject(chunk)) {
+  if (!state->io->ReadObject(chunk)) {
     CloseVqa(state);
     return kVqaErrorRead;
   }
@@ -118,7 +117,7 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
   }
 
   // The form type follows the FORM header.
-  if (!vqap->io->ReadObject(chunk.id)) {
+  if (!state->io->ReadObject(chunk.id)) {
     CloseVqa(state);
     return kVqaErrorRead;
   }
@@ -131,20 +130,20 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
   // Play from a copy of the caller's configuration, or the defaults; the
   // header resolves its -1 fields below.
   if (config != nullptr) {
-    vqap->config = *config;
+    state->config = *config;
   } else {
-    SetVqaConfigDefaults(&vqap->config);
+    SetVqaConfigDefaults(&state->config);
   }
 
   // Only the copy from here on.
-  config = &vqap->config;
+  config = &state->config;
 
   // Read the chunks in front of the frames, up to FINF, the last of them.
   // VQHD must come before it; anything else is skipped.
   bool found_frame_table = false;
 
   while (!found_frame_table) {
-    if (!vqap->io->ReadObject(chunk)) {
+    if (!state->io->ReadObject(chunk)) {
       CloseVqa(state);
       return kVqaErrorRead;
     }
@@ -162,15 +161,15 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
       case kChunkVqhd:
         // A second header would leak the first header's buffers.
         if (std::cmp_not_equal(chunk_bytes, sizeof(VqaHeader)) ||
-            vqap->movie != nullptr) {
+            state->movie != nullptr) {
           CloseVqa(state);
           return kVqaErrorNotVqa;
         }
 
         // Read the header data, and skip the pad byte of an odd chunk.
-        if (!vqap->io->ReadObject(*header) ||
-            !vqap->io->Seek(PadSize(chunk_bytes) - chunk_bytes,
-                            SeekOrigin::kCurrent)) {
+        if (!state->io->ReadObject(*header) ||
+            !state->io->Seek(PadSize(chunk_bytes) - chunk_bytes,
+                             SeekOrigin::kCurrent)) {
           CloseVqa(state);
           return kVqaErrorRead;
         }
@@ -211,8 +210,8 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
           return kVqaErrorAudio;
         }
 
-        vqap->movie = AllocateMovie(header, config);
-        if (vqap->movie == nullptr) {
+        state->movie = AllocateMovie(header, config);
+        if (state->movie == nullptr) {
           CloseVqa(state);
           return kVqaErrorNoMemory;
         }
@@ -222,12 +221,12 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
       // The frame table, which the player does not use, is the last chunk
       // before the frames. A movie without a header before it cannot play.
       case kChunkFinf:
-        if (vqap->movie == nullptr) {
+        if (state->movie == nullptr) {
           CloseVqa(state);
           return kVqaErrorNotVqa;
         }
 
-        if (!vqap->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
+        if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
           CloseVqa(state);
           return kVqaErrorSeek;
         }
@@ -237,7 +236,7 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
 
       // Chunks the player has no use for, such as PINF.
       default:
-        if (!vqap->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
+        if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
           CloseVqa(state);
           return kVqaErrorSeek;
         }
@@ -250,16 +249,16 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
   // smaller than one block (audio_buffer_bytes below audio_block_bytes, or -1
   // when 1.5 seconds of sound is less than one block). No audio code runs for
   // such a movie, so none of it has to handle an empty ring.
-  if (vqap->movie->audio.block_loaded.empty()) {
+  if (state->movie->audio.block_loaded.empty()) {
     config->option_flags &= ~kVqaOptionAudio;
   }
 
   // Start the sound output and the ADPCM decoder for the track.
   if (config->option_flags & kVqaOptionAudio) {
-    VqaAudio* audio = &vqap->movie->audio;
+    VqaAudio* audio = &state->movie->audio;
 
     // Originally HMI's DOS sound drivers; now the SDL mixer.
-    if (OpenMovieAudio(vqap)) {
+    if (OpenMovieAudio(state)) {
       CloseVqa(state);
       return kVqaErrorAudio;
     }
@@ -288,15 +287,14 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
 }
 
 void CloseVqa(VqaPlayerState* state) {
-  auto* vqa_handle_p = state;
   // Audio is open only once OpenMovieAudio() has run. A failed OpenVqa() can
   // get here earlier, with no data and no audio callback to tear down.
-  if (vqa_handle_p->movie != nullptr &&
-      (vqa_handle_p->movie->audio.flags & kAudioOpen) != 0) {
-    CloseMovieAudio(vqa_handle_p);
+  if (state->movie != nullptr &&
+      (state->movie->audio.flags & kAudioOpen) != 0) {
+    CloseMovieAudio(state);
   }
 
-  vqa_handle_p->io->Close();
+  state->io->Close();
 
   // Also frees the play buffers.
   state->Reset();
@@ -316,8 +314,7 @@ void CloseVqa(VqaPlayerState* state) {
 int32_t LoadNextFrame(VqaPlayerState* state) {
   bool frame_loaded = false;
 
-  VqaPlayerState* vqa_handle_p = state;
-  VqaMovie* movie = vqa_handle_p->movie.get();
+  VqaMovie* movie = state->movie.get();
   VqaLoader* loader = &movie->loader;
   VqaFrame* frame = loader->current_frame;
   ChunkHeader* chunk = &loader->chunk_header;
@@ -326,7 +323,7 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
 
   // Every frame the header counts is loaded.
   if (std::cmp_greater_equal(loader->next_frame_number,
-                             vqa_handle_p->header.frame_count)) {
+                             state->header.frame_count)) {
     return kVqaEndOfMovie;
   }
 
@@ -340,15 +337,13 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
   // now because the last frame of a group completes the next codebook, which
   // moves full_codebook on.
   if (!(movie->flags & kMovieLoaderAsleep)) {
-    frame_loaded = false;
-
     frame->codebook = loader->full_codebook;
   }
 
   while (!frame_loaded) {
     // A resumed loader is inside a chunk already.
     if (!(movie->flags & kMovieLoaderAsleep)) {
-      if (!vqa_handle_p->io->ReadObject(*chunk)) {
+      if (!state->io->ReadObject(*chunk)) {
         return kVqaEndOfMovie;
       }
 
@@ -361,7 +356,7 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
     switch (chunk->id) {
       // A frame container.
       case kChunkVqfr:
-        if (LoadFrameContainer(vqa_handle_p, chunk_bytes)) {
+        if (LoadFrameContainer(state, chunk_bytes)) {
           return kVqaErrorRead;
         }
 
@@ -370,7 +365,7 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
 
       // A key frame container.
       case kChunkVqfk:
-        if (LoadFrameContainer(vqa_handle_p, chunk_bytes)) {
+        if (LoadFrameContainer(state, chunk_bytes)) {
           return kVqaErrorRead;
         }
 
@@ -381,35 +376,35 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
 
       // Full uncompressed codebook.
       case kChunkCbf0:
-        if (LoadFullCodebook(vqa_handle_p, chunk_bytes)) {
+        if (LoadFullCodebook(state, chunk_bytes)) {
           return kVqaErrorRead;
         }
         break;
 
       // Full compressed codebook.
       case kChunkCbfz:
-        if (LoadCompressedFullCodebook(vqa_handle_p, chunk_bytes)) {
+        if (LoadCompressedFullCodebook(state, chunk_bytes)) {
           return kVqaErrorRead;
         }
         break;
 
       // Partial uncompressed codebook.
       case kChunkCbp0:
-        if (LoadPartialCodebook(vqa_handle_p, chunk_bytes)) {
+        if (LoadPartialCodebook(state, chunk_bytes)) {
           return kVqaErrorRead;
         }
         break;
 
       // Partial compressed codebook.
       case kChunkCbpz:
-        if (LoadCompressedPartialCodebook(vqa_handle_p, chunk_bytes)) {
+        if (LoadCompressedPartialCodebook(state, chunk_bytes)) {
           return kVqaErrorRead;
         }
         break;
 
       // Uncompressed palette.
       case kChunkCpl0:
-        if (LoadPalette(vqa_handle_p, chunk_bytes)) {
+        if (LoadPalette(state, chunk_bytes)) {
           return kVqaErrorRead;
         }
 
@@ -419,7 +414,7 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
 
       // Compressed palette.
       case kChunkCplz:
-        if (LoadCompressedPalette(vqa_handle_p, chunk_bytes)) {
+        if (LoadCompressedPalette(state, chunk_bytes)) {
           return kVqaErrorRead;
         }
 
@@ -429,7 +424,7 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
 
       // Uncompressed vector pointers.
       case kChunkVpt0:
-        if (LoadVectorPointers(vqa_handle_p, chunk_bytes)) {
+        if (LoadVectorPointers(state, chunk_bytes)) {
           return kVqaErrorRead;
         }
 
@@ -439,7 +434,7 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
       // Compressed vector pointers.
       case kChunkVptz:
       case kChunkVptd:
-        if (LoadCompressedVectorPointers(vqa_handle_p, chunk_bytes)) {
+        if (LoadCompressedVectorPointers(state, chunk_bytes)) {
           return kVqaErrorRead;
         }
 
@@ -448,7 +443,7 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
 
       // Compressed vector pointers of a key frame, which is never skipped.
       case kChunkVptk:
-        if (LoadCompressedVectorPointers(vqa_handle_p, chunk_bytes)) {
+        if (LoadCompressedVectorPointers(state, chunk_bytes)) {
           return kVqaErrorRead;
         }
 
@@ -462,114 +457,108 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
       // one's sound moves from staging into the ring; with no room there the
       // loader sleeps and resumes here.
       case kChunkSnd0:
-        if (!(vqa_handle_p->config.option_flags & kVqaOptionAltAudio)) {
-          if (CopyStagedAudio(vqa_handle_p) == kVqaSleeping) {
+        if (!(state->config.option_flags & kVqaOptionAltAudio)) {
+          if (CopyStagedAudio(state) == kVqaSleeping) {
             movie->flags |= kMovieLoaderAsleep;
             return kVqaSleeping;
           }
           movie->flags &= ~kMovieLoaderAsleep;
 
-          if (LoadSound(vqa_handle_p, chunk_bytes) != 0) {
+          if (LoadSound(state, chunk_bytes) != 0) {
             return kVqaErrorRead;
           }
         } else {
-          if (!vqa_handle_p->io->Seek(PadSize(chunk_bytes),
-                                      SeekOrigin::kCurrent)) {
+          if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
             return kVqaErrorSeek;
           }
         }
         break;
 
       case kChunkSna0:
-        if (vqa_handle_p->config.option_flags & kVqaOptionAltAudio) {
-          if (CopyStagedAudio(vqa_handle_p) == kVqaSleeping) {
+        if (state->config.option_flags & kVqaOptionAltAudio) {
+          if (CopyStagedAudio(state) == kVqaSleeping) {
             movie->flags |= kMovieLoaderAsleep;
             return kVqaSleeping;
           }
           movie->flags &= ~kMovieLoaderAsleep;
 
-          if (LoadSound(vqa_handle_p, chunk_bytes) != 0) {
+          if (LoadSound(state, chunk_bytes) != 0) {
             return kVqaErrorRead;
           }
         } else {
-          if (!vqa_handle_p->io->Seek(PadSize(chunk_bytes),
-                                      SeekOrigin::kCurrent)) {
+          if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
             return kVqaErrorSeek;
           }
         }
         break;
 
       case kChunkSnd1:
-        if (!(vqa_handle_p->config.option_flags & kVqaOptionAltAudio)) {
-          if (CopyStagedAudio(vqa_handle_p) == kVqaSleeping) {
+        if (!(state->config.option_flags & kVqaOptionAltAudio)) {
+          if (CopyStagedAudio(state) == kVqaSleeping) {
             movie->flags |= kMovieLoaderAsleep;
             return kVqaSleeping;
           }
           movie->flags &= ~kMovieLoaderAsleep;
 
-          if (LoadZapSound(vqa_handle_p, chunk_bytes) != 0) {
+          if (LoadZapSound(state, chunk_bytes) != 0) {
             return kVqaErrorRead;
           }
         } else {
-          if (!vqa_handle_p->io->Seek(PadSize(chunk_bytes),
-                                      SeekOrigin::kCurrent)) {
+          if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
             return kVqaErrorSeek;
           }
         }
         break;
 
       case kChunkSna1:
-        if (vqa_handle_p->config.option_flags & kVqaOptionAltAudio) {
-          if (CopyStagedAudio(vqa_handle_p) == kVqaSleeping) {
+        if (state->config.option_flags & kVqaOptionAltAudio) {
+          if (CopyStagedAudio(state) == kVqaSleeping) {
             movie->flags |= kMovieLoaderAsleep;
             return kVqaSleeping;
           }
           movie->flags &= ~kMovieLoaderAsleep;
 
-          if (LoadZapSound(vqa_handle_p, chunk_bytes) != 0) {
+          if (LoadZapSound(state, chunk_bytes) != 0) {
             return kVqaErrorRead;
           }
         } else {
-          if (!vqa_handle_p->io->Seek(PadSize(chunk_bytes),
-                                      SeekOrigin::kCurrent)) {
+          if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
             return kVqaErrorSeek;
           }
         }
         break;
 
       case kChunkSnd2:
-        if (!(vqa_handle_p->config.option_flags & kVqaOptionAltAudio)) {
-          if (CopyStagedAudio(vqa_handle_p) == kVqaSleeping) {
+        if (!(state->config.option_flags & kVqaOptionAltAudio)) {
+          if (CopyStagedAudio(state) == kVqaSleeping) {
             movie->flags |= kMovieLoaderAsleep;
             return kVqaSleeping;
           }
           movie->flags &= ~kMovieLoaderAsleep;
 
-          if (LoadAdpcmSound(vqa_handle_p, chunk_bytes) != 0) {
+          if (LoadAdpcmSound(state, chunk_bytes) != 0) {
             return kVqaErrorRead;
           }
         } else {
-          if (!vqa_handle_p->io->Seek(PadSize(chunk_bytes),
-                                      SeekOrigin::kCurrent)) {
+          if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
             return kVqaErrorSeek;
           }
         }
         break;
 
       case kChunkSna2:
-        if (vqa_handle_p->config.option_flags & kVqaOptionAltAudio) {
-          if (CopyStagedAudio(vqa_handle_p) == kVqaSleeping) {
+        if (state->config.option_flags & kVqaOptionAltAudio) {
+          if (CopyStagedAudio(state) == kVqaSleeping) {
             movie->flags |= kMovieLoaderAsleep;
             return kVqaSleeping;
           }
           movie->flags &= ~kMovieLoaderAsleep;
 
-          if (LoadAdpcmSound(vqa_handle_p, chunk_bytes) != 0) {
+          if (LoadAdpcmSound(state, chunk_bytes) != 0) {
             return kVqaErrorRead;
           }
         } else {
-          if (!vqa_handle_p->io->Seek(PadSize(chunk_bytes),
-                                      SeekOrigin::kCurrent)) {
+          if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
             return kVqaErrorSeek;
           }
         }
@@ -577,8 +566,7 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
 
       // Skip any unknown chunks.
       default:
-        if (!vqa_handle_p->io->Seek(PadSize(chunk_bytes),
-                                    SeekOrigin::kCurrent)) {
+        if (!state->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
           return kVqaErrorSeek;
         }
         break;
