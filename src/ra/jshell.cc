@@ -67,7 +67,7 @@
 #include "ra/compat.h"
 #include "ra/palette.h"
 #include "ra/startup.h"
-#include "sdllib/iff.h"
+#include "sdllib/compressed_block.h"
 #include "sdllib/misc.h"
 #include "sdllib/ww_win.h"
 #include "tech/byte_stream.h"

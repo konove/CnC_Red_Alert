@@ -20,8 +20,8 @@
 // CompressedBlockHeader, a reserved area the header's skip_bytes counts (a CPS
 // keeps its palette there), then the data itself.
 
-#ifndef CNC_RED_ALERT_SDLLIB_IFF_H_
-#define CNC_RED_ALERT_SDLLIB_IFF_H_
+#ifndef CNC_RED_ALERT_SDLLIB_COMPRESSED_BLOCK_H_
+#define CNC_RED_ALERT_SDLLIB_COMPRESSED_BLOCK_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -60,4 +60,4 @@ struct CompressedBlockHeader {
 base::ssize UncompressBlock(std::span<const std::byte> block,
                             std::span<std::byte> dest);
 
-#endif  // CNC_RED_ALERT_SDLLIB_IFF_H_
+#endif  // CNC_RED_ALERT_SDLLIB_COMPRESSED_BLOCK_H_

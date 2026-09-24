@@ -69,7 +69,7 @@
 #include "port/format.h"
 #include "port/safe_string.h"
 #include "port/unaligned.h"
-#include "sdllib/iff.h"
+#include "sdllib/compressed_block.h"
 #include "sdllib/misc.h"
 #include "sdllib/tile.h"
 #include "sdllib/ww_win.h"

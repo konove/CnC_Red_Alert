@@ -1,6 +1,6 @@
 // UncompressBlock(): the header checks and which methods it decodes.
 
-#include "sdllib/iff.h"
+#include "sdllib/compressed_block.h"
 
 #include <array>
 #include <cstdint>

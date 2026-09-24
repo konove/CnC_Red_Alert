@@ -1,6 +1,6 @@
 // Decodes Westwood's compressed data blocks.
 
-#include "sdllib/iff.h"
+#include "sdllib/compressed_block.h"
 
 #include <cstddef>
 #include <span>
