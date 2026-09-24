@@ -253,23 +253,23 @@ void AppendChunk(std::vector<uint8_t>& out, const char* id,
 //   Max_CB_Size  = (16 * 4 * 2 + 250) & 0xFFFC = 376
 //   Max_Ptr_Size = (2 * 4 * 2 + 1024) & 0xFFFC = 1040
 //   Max_Pal_Size = (768 + 1024) & 0xFFFC       = 1792
-VQAHeader SmallHeader() {
-  VQAHeader header{};
-  header.Version = VQAHD_VER2;
-  header.Frames = 3;
-  header.ImageWidth = 8;
-  header.ImageHeight = 8;
-  header.BlockWidth = 4;
-  header.BlockHeight = 2;
-  header.FPS = 15;
-  header.Groupsize = 1;
-  header.CBentries = 16;
+VqaHeader SmallHeader() {
+  VqaHeader header{};
+  header.version = kVqaVersion2;
+  header.frame_count = 3;
+  header.image_width = 8;
+  header.image_height = 8;
+  header.block_width = 4;
+  header.block_height = 2;
+  header.fps = 15;
+  header.frames_per_group = 1;
+  header.codebook_entries = 16;
   return header;
 }
 
 constexpr int kMaxCbSize = 376;
 
-std::vector<uint8_t> HeaderPayload(const VQAHeader& header) {
+std::vector<uint8_t> HeaderPayload(const VqaHeader& header) {
   std::vector<uint8_t> payload(sizeof(header));
   base::CopyBytes(std::as_writable_bytes(std::span(payload)),
                   base::ObjectBytes(header), sizeof(header));
@@ -285,7 +285,7 @@ std::vector<uint8_t> FinfPayload(const std::vector<uint32_t>& entries) {
 }
 
 // Preamble, VQHD and FINF: everything VQA_Open() reads before the frames.
-std::vector<uint8_t> MovieStart(const VQAHeader& header,
+std::vector<uint8_t> MovieStart(const VqaHeader& header,
                                 const std::vector<uint32_t>& entries) {
   std::vector<uint8_t> data = ValidPreamble();
   AppendChunk(data, "VQHD", HeaderPayload(header));
@@ -343,8 +343,8 @@ TEST_F(VqaLoaderTest, FinfEntriesAreFourBytesEach) {
   EXPECT_EQ(handle_.data->FoffStorage.at(1), entries.at(1));
   EXPECT_EQ(handle_.data->FoffStorage.at(2), entries.at(2));
   // The flags occupy the top bits; the offset is stored halved.
-  EXPECT_NE(handle_.data->FoffStorage.at(0) & VQAFINF_PAL, 0);
-  EXPECT_EQ(VQAFRAME_OFFSET(handle_.data->FoffStorage.at(1)), 0x40);
+  EXPECT_NE(handle_.data->FoffStorage.at(0) & kFrameInfoHasPalette, 0);
+  EXPECT_EQ(FrameByteOffset(handle_.data->FoffStorage.at(1)), 0x40);
 }
 
 TEST_F(VqaLoaderTest, OversizedFinfChunkIsSkippedPastTheTable) {
@@ -368,8 +368,8 @@ TEST_F(VqaLoaderTest, RejectsFinfBeforeHeader) {
 }
 
 TEST_F(VqaLoaderTest, RejectsHeaderWithZeroGroupsize) {
-  VQAHeader header = SmallHeader();
-  header.Groupsize = 0;
+  VqaHeader header = SmallHeader();
+  header.frames_per_group = 0;
   fake_.data = MovieStart(header, {0, 0, 0});
   AppendFrameEnd(fake_.data);
 
@@ -377,8 +377,8 @@ TEST_F(VqaLoaderTest, RejectsHeaderWithZeroGroupsize) {
 }
 
 TEST_F(VqaLoaderTest, RejectsHeaderWithZeroBlockSize) {
-  VQAHeader header = SmallHeader();
-  header.BlockWidth = 0;
+  VqaHeader header = SmallHeader();
+  header.block_width = 0;
   fake_.data = MovieStart(header, {0, 0, 0});
   AppendFrameEnd(fake_.data);
 
@@ -438,8 +438,8 @@ TEST_F(VqaLoaderTest, RejectsPartialCodebookWithNegativeOffset) {
 TEST_F(VqaLoaderTest, RejectsPartialCodebooksOverflowingTheEnd) {
   // Groupsize 2: the first 20-byte part sets the offset to
   // 376 - (20 * 2 + 100) = 236; a 200-byte second part would end at 456.
-  VQAHeader header = SmallHeader();
-  header.Groupsize = 2;
+  VqaHeader header = SmallHeader();
+  header.frames_per_group = 2;
   fake_.data = MovieStart(header, {0, 0, 0});
   AppendChunk(fake_.data, "CBPZ", std::vector<uint8_t>(20));
   AppendChunk(fake_.data, "CBPZ", std::vector<uint8_t>(200));
@@ -488,8 +488,8 @@ INSTANTIATE_TEST_SUITE_P(AllBufferedChunks, VqaOversizedChunkTest,
 
 TEST_F(VqaLoaderTest, OpensMovieShorterThanFrameBuffers) {
   config_.NumFrameBufs = 3;
-  VQAHeader header = SmallHeader();
-  header.Frames = 1;
+  VqaHeader header = SmallHeader();
+  header.frame_count = 1;
   fake_.data = MovieStart(header, {0});
   AppendFrameEnd(fake_.data);
 
@@ -507,8 +507,8 @@ TEST_F(VqaLoaderTest, TruncatedMovieStillFailsToOpen) {
 }
 
 TEST_F(VqaLoaderTest, RejectsAudioWithZeroHmiBufferSize) {
-  VQAHeader header = SmallHeader();
-  header.Flags = VQAHDF_AUDIO;
+  VqaHeader header = SmallHeader();
+  header.flags = kVqaHasAudio;
   fake_.data = MovieStart(header, {0, 0, 0});
   AppendFrameEnd(fake_.data);
   config_.OptionFlags = VQAOPTF_AUDIO;

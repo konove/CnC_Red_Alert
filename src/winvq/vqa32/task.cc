@@ -330,9 +330,9 @@ auto VQA_SetStop(VQAHandle* vqa, int64_t stop) -> int64_t {
   /* Get a local pointer to the header. */
   auto* header = &vqa->header;
 
-  if (stop > 0 && std::cmp_greater_equal(header->Frames, stop)) {
-    oldstop = header->Frames;
-    header->Frames = static_cast<uint16_t>(stop);
+  if (stop > 0 && std::cmp_greater_equal(header->frame_count, stop)) {
+    oldstop = header->frame_count;
+    header->frame_count = static_cast<uint16_t>(stop);
   }
 
   return oldstop;
@@ -363,9 +363,9 @@ auto VQA_SetStop(VQAHandle* vqa, int64_t stop) -> int64_t {
 void VQA_GetInfo(VQAHandle* vqa, VQAInfo* info) {
   const auto* header = &vqa->header;
 
-  info->NumFrames = header->Frames;
-  info->ImageHeight = header->ImageHeight;
-  info->ImageWidth = header->ImageWidth;
+  info->NumFrames = header->frame_count;
+  info->ImageHeight = header->image_height;
+  info->ImageWidth = header->image_width;
   info->ImageBuf = vqa->data->Drawer.ImageBuf.data();
 }
 

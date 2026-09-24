@@ -80,7 +80,6 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
-#include "base/types.h"
 #include "winvq/vqa32/vqafile.h"
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqa32/vqaplayp.h"
@@ -93,9 +92,9 @@
  * PRIVATE DECLARATIONS
  *-------------------------------------------------------------------------*/
 
-static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config);
+static VQAData* AllocBuffers(const VqaHeader* header, VQAConfig* config);
 static void FreeBuffers(const VQAData* vqa, VQAConfig* config,
-                        VQAHeader* header);
+                        VqaHeader* header);
 static int32_t PrimeBuffers(VQAHandle* vqa);
 static int32_t Load_VQF(VQAHandle* vqap, int32_t iffsize);
 static int32_t Load_FINF(const VQAHandle* vqap, int32_t iffsize);
@@ -171,7 +170,7 @@ int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
 
   /* Dereference commonly used data members for quicker access. */
   VQAHandle* vqap = vqa;
-  VQAHeader* header = &vqap->header;
+  VqaHeader* header = &vqap->header;
 
   VQAMovieDone = 0;
   /*-------------------------------------------------------------------------
@@ -202,7 +201,7 @@ int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
   }
 
   /* Verify VQA */
-  if (chunk.id != ID_WVQA) {
+  if (chunk.id != kFormWvqa) {
     VQA_Close(vqa);
     return VQAERR_NOTVQA;
   }
@@ -244,9 +243,9 @@ int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
       /*---------------------------------------------------------------------
        * READ IN THE VQA HEADER.
        *-------------------------------------------------------------------*/
-      case ID_VQHD:
+      case kChunkVqhd:
         // A second header would leak the first header's buffers.
-        if (std::cmp_not_equal(chunk_size, sizeof(VQAHeader)) ||
+        if (std::cmp_not_equal(chunk_size, sizeof(VqaHeader)) ||
             vqap->data != nullptr) {
           VQA_Close(vqa);
           return VQAERR_NOTVQA;
@@ -261,8 +260,8 @@ int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
         }
 
         // These fields are divisors when sizing buffers and timing playback.
-        if (header->BlockWidth == 0 || header->BlockHeight == 0 ||
-            header->Groupsize == 0 || header->FPS == 0) {
+        if (header->block_width == 0 || header->block_height == 0 ||
+            header->frames_per_group == 0 || header->fps == 0) {
           VQA_Close(vqa);
           return VQAERR_NOTVQA;
         }
@@ -271,37 +270,37 @@ int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
          * SETUP THE CONFIGURATION FROM THE HEADER.
          *-----------------------------------------------------------------*/
         if (config->ImageWidth == -1) {
-          config->ImageWidth = header->ImageWidth;
+          config->ImageWidth = header->image_width;
         }
 
         if (config->ImageHeight == -1) {
-          config->ImageHeight = header->ImageHeight;
+          config->ImageHeight = header->image_height;
         }
 
         /* If Loaders frame rate is -1 then use the value from the header. */
         if (config->FrameRate == -1) {
-          config->FrameRate = header->FPS;
+          config->FrameRate = header->fps;
         }
 
         /* If Drawers frame rate is -1 then use the value from the header,
          * which will result in a "variable" frame rate.
          */
         if (config->DrawRate == -1) {
-          config->DrawRate = header->FPS;
+          config->DrawRate = header->fps;
         }
 
         /* Finally, if the DrawRate was set to -1 or 0 (ie MaxRate contained
          * bogus values), set it to the header value.
          */
         if (config->DrawRate == -1 || config->DrawRate == 0) {
-          config->DrawRate = header->FPS;
+          config->DrawRate = header->fps;
         }
 
         /* If an alternate audio track is not available then turn it off.
          * This enables the primary audio track to be played.
          */
-        if (header->Version > VQAHD_VER1 &&
-            !(header->Flags & VQAHDF_ALTAUDIO)) {
+        if (header->version > kVqaVersion1 &&
+            !(header->flags & kVqaHasAltAudio)) {
           config->OptionFlags &= ~VQAOPTF_ALTAUDIO;
         }
 
@@ -309,7 +308,7 @@ int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
          * ALLOCATE THE BUFFERS THAT WE NEED TO PLAY THE VQA.
          *-----------------------------------------------------------------*/
         // The audio setup divides by the HMI buffer size.
-        if ((header->Flags & VQAHDF_AUDIO) != 0 &&
+        if ((header->flags & kVqaHasAudio) != 0 &&
             (config->OptionFlags & VQAOPTF_AUDIO) != 0 &&
             config->HMIBufSize <= 0) {
           VQA_Close(vqa);
@@ -327,7 +326,7 @@ int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
       /*---------------------------------------------------------------------
        * READ FRAME INFORMATION
        *-------------------------------------------------------------------*/
-      case ID_FINF:
+      case kChunkFinf:
         // The frame table is sized from the header, so it must come first.
         if (vqap->data == nullptr) {
           VQA_Close(vqa);
@@ -365,7 +364,7 @@ int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
   /* If the movie does not contain an audio track make sure we won't try
    * to play one.
    */
-  if ((header->Flags & VQAHDF_AUDIO) == 0) {
+  if ((header->flags & kVqaHasAudio) == 0) {
     config->OptionFlags &= ~VQAOPTF_AUDIO;
   }
 
@@ -386,15 +385,16 @@ int32_t VQA_Open(VQAHandle* vqa, const char* filename, VQAConfig* config) {
     /* Initialize ADPCM information structure for audio stream. */
     VQA_sosCODECInitStream(&audio->ADPCM_Info);
 
-    if (header->Version == VQAHD_VER1) {
+    if (header->version == kVqaVersion1) {
       audio->ADPCM_Info.bit_size = 8;
-      audio->ADPCM_Info.uncomp_size = 22050L / header->FPS * header->Frames;
+      audio->ADPCM_Info.uncomp_size =
+          22050L / header->fps * header->frame_count;
       audio->ADPCM_Info.channels = 1;
     } else {
       audio->ADPCM_Info.bit_size = audio->BitsPerSample;
-      audio->ADPCM_Info.uncomp_size = audio->SampleRate / header->FPS *
+      audio->ADPCM_Info.uncomp_size = audio->SampleRate / header->fps *
                                       (audio->BitsPerSample >> 3) *
-                                      audio->Channels * header->Frames;
+                                      audio->Channels * header->frame_count;
 
       audio->ADPCM_Info.channels = audio->Channels;
     }
@@ -514,7 +514,7 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
 
   /* We have reached the end of the file if we loaded all the frames. */
   if (std::cmp_greater_equal(loader->CurFrameNum,
-                             vqa_handle_p->header.Frames)) {
+                             vqa_handle_p->header.frame_count)) {
     return VQAERR_EOF;
   }
 
@@ -564,7 +564,7 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
     /* Handle each chunk type */
     switch (chunk->id) {
       /* VQ Normal Frame */
-      case ID_VQFR:
+      case kChunkVqfr:
         if (Load_VQF(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
@@ -573,7 +573,7 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
         break;
 
       /* VQ Key Frame */
-      case ID_VQFK:
+      case kChunkVqfk:
         if (Load_VQF(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
@@ -584,35 +584,35 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
         break;
 
       /* Full uncompressed codebook */
-      case ID_CBF0:
+      case kChunkCbf0:
         if (Load_CBF0(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
         break;
 
       /* Full compressed codebook */
-      case ID_CBFZ:
+      case kChunkCbfz:
         if (Load_CBFZ(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
         break;
 
       /* Partial uncompressed codebook */
-      case ID_CBP0:
+      case kChunkCbp0:
         if (Load_CBP0(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
         break;
 
       /* Partial compressed codebook */
-      case ID_CBPZ:
+      case kChunkCbpz:
         if (Load_CBPZ(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
         break;
 
       /* Uncompressed palette */
-      case ID_CPL0:
+      case kChunkCpl0:
         if (Load_CPL0(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
@@ -632,7 +632,7 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
         break;
 
       /* Compressed palette */
-      case ID_CPLZ:
+      case kChunkCplz:
         if (Load_CPLZ(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
@@ -652,7 +652,7 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
         break;
 
       /* Uncompressed pointer data */
-      case ID_VPT0:
+      case kChunkVpt0:
         if (Load_VPT0(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
@@ -661,8 +661,8 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
         break;
 
       /* Compressed pointer data */
-      case ID_VPTZ:
-      case ID_VPTD:
+      case kChunkVptz:
+      case kChunkVptd:
         if (Load_VPTZ(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
@@ -671,7 +671,7 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
         break;
 
       /* Pointer data Key (Must draw) */
-      case ID_VPTK:
+      case kChunkVptk:
         if (Load_VPTZ(vqa_handle_p, iffsize)) {
           return VQAERR_READ;
         }
@@ -687,7 +687,7 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
          *    go into a sleep state.
          *  - Load the data into TempBuf.
          */
-      case ID_SND0:
+      case kChunkSnd0:
         if (!(vqa_handle_p->config.OptionFlags & VQAOPTF_ALTAUDIO)) {
           /* Move the last audio frame to the play buffer. */
           if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
@@ -707,7 +707,7 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
         }
         break;
 
-      case ID_SNA0:
+      case kChunkSna0:
         if (vqa_handle_p->config.OptionFlags & VQAOPTF_ALTAUDIO) {
           /* Move the last audio frame to the play buffer. */
           if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
@@ -733,7 +733,7 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
        *    go into a sleep state.
        *  - Load the data into TempBuf.
        */
-      case ID_SND1:
+      case kChunkSnd1:
         if (!(vqa_handle_p->config.OptionFlags & VQAOPTF_ALTAUDIO)) {
           /* Move the last audio frame to the play buffer. */
           if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
@@ -753,7 +753,7 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
         }
         break;
 
-      case ID_SNA1:
+      case kChunkSna1:
         if (vqa_handle_p->config.OptionFlags & VQAOPTF_ALTAUDIO) {
           /* Move the last audio frame to the play buffer. */
           if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
@@ -779,7 +779,7 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
        *    go into a sleep state.
        *  - Load the data into TempBuf.
        */
-      case ID_SND2:
+      case kChunkSnd2:
         if (!(vqa_handle_p->config.OptionFlags & VQAOPTF_ALTAUDIO)) {
           /* Move the last audio frame to the play buffer. */
           if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
@@ -799,7 +799,7 @@ int32_t VQA_LoadFrame(VQAHandle* vqa) {
         }
         break;
 
-      case ID_SNA2:
+      case kChunkSna2:
         if (vqa_handle_p->config.OptionFlags & VQAOPTF_ALTAUDIO) {
           /* Move the last audio frame to the play buffer. */
           if (CopyAudio(vqa_handle_p) == VQAERR_SLEEPING) {
@@ -885,7 +885,7 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
   VQAHandle* vqap = vqa;
   VQAData* vqabuf = vqap->data;
   VQALoader* loader = &vqabuf->Loader;
-  VQAHeader* header = &vqap->header;
+  VqaHeader* header = &vqap->header;
   VQAConfig* config = &vqap->config;
 
   VQAAudio* audio = &vqabuf->Audio;
@@ -899,7 +899,7 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
    */
   if (framenum < 0 || vqabuf->Foff == nullptr) {
     rc = VQAERR_SEEK;
-  } else if (std::cmp_greater_equal(framenum, header->Frames)) {
+  } else if (std::cmp_greater_equal(framenum, header->frame_count)) {
     rc = VQAERR_EOF;
   }
 
@@ -910,11 +910,11 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
       frame = loader->CurFrame;
 
       for (int32_t i = framenum; i >= 0; i--) {
-        if (vqabuf->FoffStorage.at(base::ToSize(i)) & VQAFINF_PAL) {
+        if (vqabuf->FoffStorage.at(base::ToSize(i)) & kFrameInfoHasPalette) {
           /* Seek to the palette frame. */
-          rc = vqap->io->Seek(static_cast<base::ssize>(VQAFRAME_OFFSET(
-                                  vqabuf->FoffStorage.at(base::ToSize(i)))),
-                              SeekOrigin::kBegin)
+          rc = vqap->io->Seek(
+                   FrameByteOffset(vqabuf->FoffStorage.at(base::ToSize(i))),
+                   SeekOrigin::kBegin)
                    ? VQAERR_NONE
                    : VQAERR_SEEK;
 
@@ -950,22 +950,22 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
     /* Build the codebook for the frame we are seeking to. */
     if (!rc) {
       /* Compute the starting group frame of the requested frame. */
-      int32_t group = framenum / header->Groupsize;
-      group = group * header->Groupsize;
+      int32_t group = framenum / header->frames_per_group;
+      group = group * header->frames_per_group;
 
       /* The codebook for the group we want to goto is found in the previous
        * group, with the exception of the very first group.
        */
-      if (std::cmp_greater_equal(group, header->Groupsize)) {
-        group -= header->Groupsize;
+      if (std::cmp_greater_equal(group, header->frames_per_group)) {
+        group -= header->frames_per_group;
       }
 
       /* Seek to the start of the group containing the partial codebooks for
        * the target frame.
        */
-      if (vqap->io->Seek(static_cast<base::ssize>(VQAFRAME_OFFSET(
-                             vqabuf->FoffStorage.at(base::ToSize(group)))),
-                         SeekOrigin::kBegin)) {
+      if (vqap->io->Seek(
+              FrameByteOffset(vqabuf->FoffStorage.at(base::ToSize(group))),
+              SeekOrigin::kBegin)) {
         /* Throw away any audio frames that were loaded. */
         if (config->OptionFlags & VQAOPTF_AUDIO && !audio->Buffer.empty()) {
           std::ranges::fill(audio->IsLoadedStorage, 0);
@@ -1053,7 +1053,7 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
  * SYNOPSIS
  *     VQAData = AllocBuffers(Header, Config)
  *
- *     VQAData *AllocBuffers(VQAHeader *, VQAConfig *);
+ *     VQAData *AllocBuffers(VqaHeader *, VQAConfig *);
  *
  * FUNCTION
  *     For those structures that contain buffer pointers (codebook nodes,
@@ -1072,7 +1072,7 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
  *       - vqa->Foff
  *
  * INPUTS
- *     Header - Pointer to VQAHeader structure.
+ *     Header - Pointer to VqaHeader structure.
  *     Config - Pointer to VQA configuration structure.
  *
  * RESULT
@@ -1080,7 +1080,7 @@ int32_t VQA_SeekFrame(VQAHandle* vqa, int32_t framenum, int32_t /*fromwhere*/) {
  *
  ****************************************************************************/
 
-static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config) {
+static VQAData* AllocBuffers(const VqaHeader* header, VQAConfig* config) {
   /* Check the configuration for valid values. */
   if (config->NumCBBufs == 0 || config->NumFrameBufs == 0) {
     return nullptr;
@@ -1102,7 +1102,8 @@ static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config) {
   /* Set maximum codebook size. */
   // The sizes are rounded down to a multiple of four.
   vqa->Max_CB_Size =
-      ((header->CBentries * header->BlockWidth * header->BlockHeight) + 250) /
+      ((header->codebook_entries * header->block_width * header->block_height) +
+       250) /
       4 * 4;
 
   /* Set maximum palette size. */
@@ -1110,14 +1111,15 @@ static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config) {
 
   /* Set maximum vector pointers size. */
   vqa->Max_Ptr_Size =
-      (((header->ImageWidth / header->BlockWidth) *
-        (header->ImageHeight / header->BlockHeight) * int{sizeof(int16_t)}) +
+      (((header->image_width / header->block_width) *
+        (header->image_height / header->block_height) * int{sizeof(int16_t)}) +
        1024) /
       4 * 4;
 
   /* Set the frame number of the frame containing the last codebook. */
   vqa->Loader.LastCBFrame =
-      ((header->Frames - 1) / header->Groupsize) * header->Groupsize;
+      ((header->frame_count - 1) / header->frames_per_group) *
+      header->frames_per_group;
 
   /*-------------------------------------------------------------------------
    * ALLOCATE THE CODEBOOK BUFFERS.
@@ -1191,14 +1193,14 @@ static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config) {
   if (config->ImageBuf.empty()) {
     /* Allocate our own buffer. */
     if ((config->DrawFlags & VQACFGF_BUFFER) != 0) {
-      vqa->ImageBufStorage.resize(static_cast<std::size_t>(header->ImageWidth) *
-                                  header->ImageHeight);
+      vqa->ImageBufStorage.resize(
+          static_cast<std::size_t>(header->image_width) * header->image_height);
       vqa->Drawer.ImageBuf = vqa->ImageBufStorage;
 
       /* Plugin image buffer information. */
-      vqa->Drawer.ImageWidth = header->ImageWidth;
-      vqa->Drawer.ImageHeight = header->ImageHeight;
-      vqa->MemUsed += header->ImageWidth * header->ImageHeight;
+      vqa->Drawer.ImageWidth = header->image_width;
+      vqa->Drawer.ImageHeight = header->image_height;
+      vqa->MemUsed += header->image_width * header->image_height;
     } else {
       vqa->Drawer.ImageWidth = config->ImageWidth;
       vqa->Drawer.ImageHeight = config->ImageHeight;
@@ -1213,27 +1215,27 @@ static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config) {
   /*-------------------------------------------------------------------------
    * ALLOCATE AND INITIALIZE AUDIO BUFFERS AND STRUCTURES.
    *-----------------------------------------------------------------------*/
-  if ((header->Flags & VQAHDF_AUDIO) != 0 &&
+  if ((header->flags & kVqaHasAudio) != 0 &&
       (config->OptionFlags & VQAOPTF_AUDIO) != 0) {
     /* Dereference audio structure for quick access. */
     VQAAudio* audio = &vqa->Audio;
 
     /* Version 1 VQA's only supported 22050 8 bit mono audio. */
-    if (header->Version < VQAHD_VER2) {
+    if (header->version < kVqaVersion2) {
       audio->SampleRate = 22050U;
       audio->Channels = 1;
       audio->BitsPerSample = 8;
       audio->BytesPerSec = 22050;
     } else {
       if (config->OptionFlags & VQAOPTF_ALTAUDIO &&
-          header->Flags & VQAHDF_ALTAUDIO) {
-        audio->SampleRate = header->AltSampleRate;
-        audio->Channels = header->AltChannels;
-        audio->BitsPerSample = header->AltBitsPerSample;
+          header->flags & kVqaHasAltAudio) {
+        audio->SampleRate = header->alt_sample_rate;
+        audio->Channels = header->alt_channels;
+        audio->BitsPerSample = header->alt_bits_per_sample;
       } else {
-        audio->SampleRate = header->SampleRate;
-        audio->Channels = header->Channels;
-        audio->BitsPerSample = header->BitsPerSample;
+        audio->SampleRate = header->sample_rate;
+        audio->Channels = header->channels;
+        audio->BitsPerSample = header->bits_per_sample;
       }
 
       audio->BytesPerSec =
@@ -1276,7 +1278,7 @@ static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config) {
       vqa->MemUsed += audio->NumAudBlocks * int32_t{sizeof(*audio->IsLoaded)};
 
       /* Allocate temporary staging buffer for the audio frames. */
-      audio->TempBufSize = (audio->BytesPerSec / header->FPS * 2) + 100;
+      audio->TempBufSize = (audio->BytesPerSec / header->fps * 2) + 100;
       audio->TempBufStorage.resize(base::ToSize(audio->TempBufSize));
       audio->TempBuf = audio->TempBufStorage.data();
 
@@ -1288,11 +1290,11 @@ static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config) {
   /*-------------------------------------------------------------------------
    * ALLOCATE THE FRAME INFORMATION TABLE.
    *-----------------------------------------------------------------------*/
-  vqa->FoffStorage.resize(header->Frames);
+  vqa->FoffStorage.resize(header->frame_count);
   vqa->Foff = vqa->FoffStorage.data();
 
   /* Keep a running total of memory usage. */
-  vqa->MemUsed += header->Frames * int32_t{sizeof(*vqa->Foff)};
+  vqa->MemUsed += header->frame_count * int32_t{sizeof(*vqa->Foff)};
 
   /* Release ownership - caller is responsible for the pointer now.
    * VQAHandle::VQABuf will own this pointer. */
@@ -1307,7 +1309,7 @@ static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config) {
  * SYNOPSIS
  *     FreeBuffers(VQAData, Config, Header)
  *
- *     void FreeBuffers(VQAData *, VQAConfig *, VQAHeader *);
+ *     void FreeBuffers(VQAData *, VQAConfig *, VqaHeader *);
  *
  * FUNCTION
  *      Free the buffers allocated by AllocBuffers().
@@ -1323,7 +1325,7 @@ static VQAData* AllocBuffers(const VQAHeader* header, VQAConfig* config) {
  ****************************************************************************/
 
 static void FreeBuffers(const VQAData* vqa, VQAConfig* /*config*/,
-                        VQAHeader* /*header*/) {
+                        VqaHeader* /*header*/) {
   /* With RAII, all we need to do is delete the VQAData structure.
    * The vectors and unique_ptrs inside will automatically clean up:
    * - FoffStorage (vector<uint32_t>)
@@ -1370,9 +1372,9 @@ int32_t PrimeBuffers(VQAHandle* vqa) {
     const int32_t rc = VQA_LoadFrame(vqa);
     if (rc == 0) {
       vqabuf->LoadedFrames++;
-    } else if (rc == VQAERR_EOF && std::cmp_greater_equal(
-                                       vqabuf->Loader.CurFrameNum,
-                                       vqa->header.Frames)) {
+    } else if (rc == VQAERR_EOF &&
+               std::cmp_greater_equal(vqabuf->Loader.CurFrameNum,
+                                      vqa->header.frame_count)) {
       // A movie with fewer frames than buffers ends while priming. Only an
       // end of file before the last frame (a truncated movie) is an error.
       break;
@@ -1438,35 +1440,35 @@ static int32_t Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
     /* Handle each chunk type */
     switch (chunk->id) {
       /* Full uncompressed codebook */
-      case ID_CBF0:
+      case kChunkCbf0:
         if (Load_CBF0(vqap, iffsize)) {
           return VQAERR_READ;
         }
         break;
 
       /* Full compressed codebook */
-      case ID_CBFZ:
+      case kChunkCbfz:
         if (Load_CBFZ(vqap, iffsize)) {
           return VQAERR_READ;
         }
         break;
 
       /* Partial uncompressed codebook */
-      case ID_CBP0:
+      case kChunkCbp0:
         if (Load_CBP0(vqap, iffsize)) {
           return VQAERR_READ;
         }
         break;
 
       /* Partial compressed codebook */
-      case ID_CBPZ:
+      case kChunkCbpz:
         if (Load_CBPZ(vqap, iffsize)) {
           return VQAERR_READ;
         }
         break;
 
       /* Uncompressed palette */
-      case ID_CPL0:
+      case kChunkCpl0:
         if (Load_CPL0(vqap, iffsize)) {
           return VQAERR_READ;
         }
@@ -1486,7 +1488,7 @@ static int32_t Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
         break;
 
       /* Compressed palette */
-      case ID_CPLZ:
+      case kChunkCplz:
         if (Load_CPLZ(vqap, iffsize)) {
           return VQAERR_READ;
         }
@@ -1506,22 +1508,22 @@ static int32_t Load_VQF(VQAHandle* vqap, int32_t frame_iffsize) {
         break;
 
       /* Uncompressed pointer data */
-      case ID_VPT0:
+      case kChunkVpt0:
         if (Load_VPT0(vqap, iffsize)) {
           return VQAERR_READ;
         }
         break;
 
       /* Compressed pointer data */
-      case ID_VPTZ:
-      case ID_VPTD:
+      case kChunkVptz:
+      case kChunkVptd:
         if (Load_VPTZ(vqap, iffsize)) {
           return VQAERR_READ;
         }
         break;
 
       /* Compressed pointer data */
-      case ID_VPTK:
+      case kChunkVptk:
         if (Load_VPTZ(vqap, iffsize)) {
           return VQAERR_READ;
         }
@@ -1745,7 +1747,7 @@ static int32_t Load_CBP0(const VQAHandle* vqap, int32_t iffsize) {
   /*-------------------------------------------------------------------------
    * PROCESS FULL CODEBOOK.
    *-----------------------------------------------------------------------*/
-  if (std::cmp_equal(loader->NumPartialCB, vqap->header.Groupsize)) {
+  if (std::cmp_equal(loader->NumPartialCB, vqap->header.frames_per_group)) {
     /* Reset the codebook accumulator values */
     loader->NumPartialCB = 0;
     loader->PartialCBSize = 0;
@@ -1801,7 +1803,7 @@ static int32_t Load_CBPZ(const VQAHandle* vqap, int32_t iffsize) {
     // A negative estimate would place the codebook before the buffer.
     const int64_t cboffset =
         int64_t{vqabuf->Max_CB_Size} -
-        ((int64_t{padsize} * vqap->header.Groupsize) + 100);
+        ((int64_t{padsize} * vqap->header.frames_per_group) + 100);
     if (cboffset < 0) {
       return VQAERR_READ;
     }
@@ -1835,7 +1837,7 @@ static int32_t Load_CBPZ(const VQAHandle* vqap, int32_t iffsize) {
   /*-------------------------------------------------------------------------
    * PROCESS FULL CODEBOOK.
    *-----------------------------------------------------------------------*/
-  if (std::cmp_equal(loader->NumPartialCB, vqap->header.Groupsize)) {
+  if (std::cmp_equal(loader->NumPartialCB, vqap->header.frames_per_group)) {
     /* Reset the codebook accumulator values. */
     loader->NumPartialCB = 0;
     loader->PartialCBSize = 0;

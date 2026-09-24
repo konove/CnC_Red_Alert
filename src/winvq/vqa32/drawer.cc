@@ -123,7 +123,7 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
   /* Dereference commonly used data members for quicker access. */
   VQAData* vqabuf = vqap->data;
   VQADrawer* drawer = &vqabuf->Drawer;
-  VQAHeader* header = &vqap->header;
+  VqaHeader* header = &vqap->header;
   VQAConfig* config = &vqap->config;
   const uint32_t origin = config->DrawFlags & VQACFGF_ORIGIN;
 
@@ -134,10 +134,10 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
    * Y1 = -1 -- Center image of the Y axis, otherwise use Y1 value.
    *-----------------------------------------------------------------------*/
   if (config->X1 == -1 && config->Y1 == -1) {
-    drawer->X1 = (drawer->ImageWidth - header->ImageWidth) / 2;
-    drawer->Y1 = (drawer->ImageHeight - header->ImageHeight) / 2;
-    drawer->X2 = drawer->X1 + header->ImageWidth - 1;
-    drawer->Y2 = drawer->Y1 + header->ImageHeight - 1;
+    drawer->X1 = (drawer->ImageWidth - header->image_width) / 2;
+    drawer->Y1 = (drawer->ImageHeight - header->image_height) / 2;
+    drawer->X2 = drawer->X1 + header->image_width - 1;
+    drawer->Y2 = drawer->Y1 + header->image_height - 1;
   } else {
     // config->X1/Y1 is the gap between the image and the buffer corner the
     // origin names, mirroring the top-left case: a zero gap puts the image
@@ -150,18 +150,18 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
 
     if (right) {
       drawer->X1 = drawer->ImageWidth - 1 - config->X1;
-      drawer->X2 = drawer->X1 - header->ImageWidth + 1;
+      drawer->X2 = drawer->X1 - header->image_width + 1;
     } else {
       drawer->X1 = config->X1;
-      drawer->X2 = drawer->X1 + header->ImageWidth - 1;
+      drawer->X2 = drawer->X1 + header->image_width - 1;
     }
 
     if (bottom) {
       drawer->Y1 = drawer->ImageHeight - 1 - config->Y1;
-      drawer->Y2 = drawer->Y1 - header->ImageHeight + 1;
+      drawer->Y2 = drawer->Y1 - header->image_height + 1;
     } else {
       drawer->Y1 = config->Y1;
-      drawer->Y2 = drawer->Y1 + header->ImageHeight - 1;
+      drawer->Y2 = drawer->Y1 + header->image_height - 1;
     }
   }
 
@@ -178,10 +178,10 @@ void VQA_Configure_Drawer(VQAHandle* vqap) {
    *-----------------------------------------------------------------------*/
 
   /* Pre-compute commonly used values for speed. */
-  drawer->BlocksPerRow = header->ImageWidth / header->BlockWidth;
-  drawer->NumRows = header->ImageHeight / header->BlockHeight;
+  drawer->BlocksPerRow = header->image_width / header->block_width;
+  drawer->NumRows = header->image_height / header->block_height;
   drawer->NumBlocks = drawer->BlocksPerRow * drawer->NumRows;
-  const uint32_t blkdim = BLOCK_DIM(header->BlockWidth, header->BlockHeight);
+  const uint32_t blkdim = BLOCK_DIM(header->block_width, header->block_height);
 
   /* Initialize draw routine vectors to a NOP routine in order to prevent
    * a crash.

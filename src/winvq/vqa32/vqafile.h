@@ -31,58 +31,61 @@
 #include <array>
 #include <cstdint>
 
+#include "base/types.h"
 #include "winvq/vqm32/iff.h"
 
-// VQAHeader: the payload of the VQHD chunk, read straight off the disk.
+// VqaHeader: the payload of the VQHD chunk, read straight off the disk.
 //
-// The loader rejects a VQHD whose size is not sizeof(VQAHeader), so the packing
+// The loader rejects a VQHD whose size is not sizeof(VqaHeader), so the packing
 // and field order are the file format. The fields are little-endian and read
 // raw, which assumes a little-endian host. A version 1 movie's audio fields are
 // ignored: its sound is always 22050 Hz 8-bit mono (see AllocBuffers in
 // loader.cc).
 #pragma pack(push, 1)
-struct VQAHeader {
-  uint16_t Version;      // VQAHD_VER1 or VQAHD_VER2
-  uint16_t Flags;        // VQAHDF_* bits
-  uint16_t Frames;       // Total number of frames in the movie
-  uint16_t ImageWidth;   // Frame width in pixels
-  uint16_t ImageHeight;  // Frame height in pixels
-  uint8_t BlockWidth;    // Compression block width in pixels, never 0
-  uint8_t BlockHeight;   // Compression block height in pixels, never 0
-  uint8_t FPS;           // Playback frame rate (frames per second), never 0
+struct VqaHeader {
+  uint16_t version;       // kVqaVersion1 or kVqaVersion2
+  uint16_t flags;         // kVqaHas* bits
+  uint16_t frame_count;   // Total number of frames in the movie
+  uint16_t image_width;   // Frame width in pixels
+  uint16_t image_height;  // Frame height in pixels
+  uint8_t block_width;    // Compression block width in pixels, never 0
+  uint8_t block_height;   // Compression block height in pixels, never 0
+  uint8_t fps;            // Playback frame rate (frames per second), never 0
   // Frames per codebook group, never 0. Each group's codebook arrives in
   // pieces (partial codebooks) during the previous group, which is why seeking
   // starts one group early.
-  uint8_t Groupsize;
+  uint8_t frames_per_group;
   // Number of single-color blocks. Unused by the player.
-  uint16_t Num1Colors;
-  uint16_t CBentries;  // Number of codebook entries, sizes the codebook buffer
+  uint16_t single_color_blocks;
+  uint16_t codebook_entries;  // Sizes the codebook buffer
   // Where the encoder wanted the frames drawn; 0xFFFF (-1) centers on that
   // axis. Unused by the player, which takes the position from VQAConfig.
-  uint16_t Xpos;
-  uint16_t Ypos;
-  uint16_t MaxFramesize;  // Size of the largest frame in bytes. Unused.
-  // The primary audio track, meaningful when Flags has VQAHDF_AUDIO.
-  uint16_t SampleRate;    // Sample rate in Hz
-  uint8_t Channels;       // Number of channels
-  uint8_t BitsPerSample;  // Sample bit depth
-  // The alternate audio track, meaningful when Flags has VQAHDF_ALTAUDIO.
-  uint16_t AltSampleRate;
-  uint8_t AltChannels;
-  uint8_t AltBitsPerSample;
-  std::array<uint16_t, 5> FutureUse;  // Reserved, pads the header to 42 bytes
+  uint16_t draw_x;
+  uint16_t draw_y;
+  uint16_t max_frame_bytes;  // Size of the largest frame. Unused.
+  // The primary audio track, meaningful when flags has kVqaHasAudio.
+  uint16_t sample_rate;     // Sample rate in Hz
+  uint8_t channels;         // Number of channels
+  uint8_t bits_per_sample;  // Sample bit depth
+  // The alternate audio track, meaningful when flags has kVqaHasAltAudio.
+  uint16_t alt_sample_rate;
+  uint8_t alt_channels;
+  uint8_t alt_bits_per_sample;
+  std::array<uint16_t, 5> reserved;  // Pads the header to 42 bytes
 };
 #pragma pack(pop)
 
-// VQAHeader::Version values.
-#define VQAHD_VER1 1
-#define VQAHD_VER2 2
+// VqaHeader::version values.
+constexpr uint16_t kVqaVersion1 = 1;
+constexpr uint16_t kVqaVersion2 = 2;
 
-// VQAHeader::Flags bit numbers (VQAHDB_*) and masks (VQAHDF_*).
-#define VQAHDB_AUDIO 0     // The movie has a primary audio track.
-#define VQAHDB_ALTAUDIO 1  // The movie has an alternate audio track.
-#define VQAHDF_AUDIO (1U << VQAHDB_AUDIO)
-#define VQAHDF_ALTAUDIO (1U << VQAHDB_ALTAUDIO)
+// VqaHeader::flags bit numbers.
+#define VQAHDB_AUDIO 0
+#define VQAHDB_ALTAUDIO 1
+
+// VqaHeader::flags bits.
+constexpr uint32_t kVqaHasAudio = 1U << 0;     // A primary audio track.
+constexpr uint32_t kVqaHasAltAudio = 1U << 1;  // An alternate audio track.
 
 // Frame information (FINF) entries.
 //
@@ -100,13 +103,20 @@ struct VQAHeader {
 #define VQAFINB_PAL 30   // The frame carries a palette.
 #define VQAFINB_SYNC 29  // Audio synchronization point.
 #define VQAFINF_KEY (uint32_t{1} << VQAFINB_KEY)
-#define VQAFINF_PAL (uint32_t{1} << VQAFINB_PAL)
 #define VQAFINF_SYNC (uint32_t{1} << VQAFINB_SYNC)
 
-// Masks for the two halves of a FINF entry, and its byte offset in the file.
-#define VQAFINF_OFFSET 0x0FFFFFFFU
 #define VQAFINF_FLAGS 0xF0000000U
-#define VQAFRAME_OFFSET(a) (((a) & VQAFINF_OFFSET) * 2)
+
+// The frame carries a palette (bit VQAFINB_PAL).
+constexpr uint32_t kFrameInfoHasPalette = uint32_t{1} << 30;
+
+// The offset half of a FINF entry.
+constexpr uint32_t kFrameInfoOffsetMask = 0x0FFFFFFFU;
+
+// Returns the byte offset in the file of the frame a FINF entry describes.
+constexpr base::ssize FrameByteOffset(uint32_t frame_info) {
+  return base::ssize{frame_info & kFrameInfoOffsetMask} * 2;
+}
 
 // Vector pointer codes of the Run-Skip-Dump (RSD) pointer compression. The
 // player does not decode RSD (it skips the VPTR and VPRZ chunks below), so
@@ -140,35 +150,51 @@ struct VQAHeader {
 // compare equal to an ID read raw from the disk. A "Z" suffix means the payload
 // is LCW compressed. The player skips the chunks it has no case for (NAME,
 // VPTR, VPRZ, SNDZ, SNAZ, CAP0, EVA0).
-#define ID_WVQA MakeId('W', 'V', 'Q', 'A')  // Westwood VQ Animation form.
-#define ID_VQHD MakeId('V', 'Q', 'H', 'D')  // VQ header (VQAHeader).
+constexpr int32_t kFormWvqa =
+    MakeId('W', 'V', 'Q', 'A');  // Westwood VQ Animation form.
+constexpr int32_t kChunkVqhd =
+    MakeId('V', 'Q', 'H', 'D');             // VQ header (VqaHeader).
 #define ID_NAME MakeId('N', 'A', 'M', 'E')  // Name string.
-#define ID_FINF MakeId('F', 'I', 'N', 'F')  // Frame information table.
-#define ID_VQFR MakeId('V', 'Q', 'F', 'R')  // VQ frame container.
-#define ID_VQFK MakeId('V', 'Q', 'F', 'K')  // VQ key frame container.
-#define ID_CBF0 MakeId('C', 'B', 'F', '0')  // Full codebook.
-#define ID_CBFZ MakeId('C', 'B', 'F', 'Z')  // Full codebook (compressed).
-#define ID_CBP0 MakeId('C', 'B', 'P', '0')  // Partial codebook.
-#define ID_CBPZ MakeId('C', 'B', 'P', 'Z')  // Partial codebook (compressed).
-#define ID_VPT0 MakeId('V', 'P', 'T', '0')  // Vector pointers.
-#define ID_VPTZ MakeId('V', 'P', 'T', 'Z')  // Vector pointers (compressed).
-#define ID_VPTK \
-  MakeId('V', 'P', 'T', 'K')  // Vector pointers (delta key frame).
-#define ID_VPTD MakeId('V', 'P', 'T', 'D')  // Vector pointers (delta).
+constexpr int32_t kChunkFinf =
+    MakeId('F', 'I', 'N', 'F');  // Frame information table.
+constexpr int32_t kChunkVqfr =
+    MakeId('V', 'Q', 'F', 'R');  // VQ frame container.
+constexpr int32_t kChunkVqfk =
+    MakeId('V', 'Q', 'F', 'K');  // VQ key frame container.
+constexpr int32_t kChunkCbf0 = MakeId('C', 'B', 'F', '0');  // Full codebook.
+constexpr int32_t kChunkCbfz =
+    MakeId('C', 'B', 'F', 'Z');  // Full codebook (compressed).
+constexpr int32_t kChunkCbp0 = MakeId('C', 'B', 'P', '0');  // Partial codebook.
+constexpr int32_t kChunkCbpz =
+    MakeId('C', 'B', 'P', 'Z');  // Partial codebook (compressed).
+constexpr int32_t kChunkVpt0 = MakeId('V', 'P', 'T', '0');  // Vector pointers.
+constexpr int32_t kChunkVptz =
+    MakeId('V', 'P', 'T', 'Z');  // Vector pointers (compressed).
+constexpr int32_t kChunkVptk =
+    MakeId('V', 'P', 'T', 'K');  // Vector pointers (delta key frame).
+constexpr int32_t kChunkVptd =
+    MakeId('V', 'P', 'T', 'D');             // Vector pointers (delta).
 #define ID_VPTR MakeId('V', 'P', 'T', 'R')  // Vector pointers (RSD compressed).
 #define ID_VPRZ MakeId('V', 'P', 'R', 'Z')  // Vector pointers (RSD, then LCW).
-#define ID_CPL0 MakeId('C', 'P', 'L', '0')  // Color palette.
-#define ID_CPLZ MakeId('C', 'P', 'L', 'Z')  // Color palette (compressed).
+constexpr int32_t kChunkCpl0 = MakeId('C', 'P', 'L', '0');  // Color palette.
+constexpr int32_t kChunkCplz =
+    MakeId('C', 'P', 'L', 'Z');  // Color palette (compressed).
 
 // Sound for the primary track (SND*) and the alternate track (SNA*); the
 // loader keeps one track and skips the other's chunks.
-#define ID_SND0 MakeId('S', 'N', 'D', '0')  // Sound (uncompressed).
-#define ID_SND1 MakeId('S', 'N', 'D', '1')  // Sound (Zap compressed).
-#define ID_SND2 MakeId('S', 'N', 'D', '2')  // Sound (ADPCM compressed).
+constexpr int32_t kChunkSnd0 =
+    MakeId('S', 'N', 'D', '0');  // Sound (uncompressed).
+constexpr int32_t kChunkSnd1 =
+    MakeId('S', 'N', 'D', '1');  // Sound (Zap compressed).
+constexpr int32_t kChunkSnd2 =
+    MakeId('S', 'N', 'D', '2');             // Sound (ADPCM compressed).
 #define ID_SNDZ MakeId('S', 'N', 'D', 'Z')  // Sound (LCW compressed).
-#define ID_SNA0 MakeId('S', 'N', 'A', '0')  // Sound (uncompressed).
-#define ID_SNA1 MakeId('S', 'N', 'A', '1')  // Sound (Zap compressed).
-#define ID_SNA2 MakeId('S', 'N', 'A', '2')  // Sound (ADPCM compressed).
+constexpr int32_t kChunkSna0 =
+    MakeId('S', 'N', 'A', '0');  // Sound (uncompressed).
+constexpr int32_t kChunkSna1 =
+    MakeId('S', 'N', 'A', '1');  // Sound (Zap compressed).
+constexpr int32_t kChunkSna2 =
+    MakeId('S', 'N', 'A', '2');             // Sound (ADPCM compressed).
 #define ID_SNAZ MakeId('S', 'N', 'A', 'Z')  // Sound (LCW compressed).
 
 #define ID_CAP0 MakeId('C', 'A', 'P', '0')  // Caption text.

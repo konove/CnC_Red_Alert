@@ -413,7 +413,7 @@ struct VQAData {
   std::vector<unsigned char> ImageBufStorage;
   // One FINF entry per header frame. Entries are 4 bytes on disk: the
   // VQAFINF_FLAGS bits on top and the halved file offset below (see
-  // VQAFRAME_OFFSET).
+  // FrameByteOffset).
   std::vector<uint32_t> FoffStorage;
 
   VQAFrameNode* FrameData = nullptr;  // Points to first node in FrameNodes
@@ -479,7 +479,7 @@ struct VQAHandle {
   VqaIo* io = nullptr;
   VQAData* data = nullptr;
   VQAConfig config{};
-  VQAHeader header{};
+  VqaHeader header{};
 };
 
 /*---------------------------------------------------------------------------
