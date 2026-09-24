@@ -602,6 +602,38 @@ TEST_F(VqaLoaderTest, PlaysSilentlyWithoutAnAudioRing) {
   EXPECT_EQ(state_.movie->audio.flags & kAudioPlaying, 0U);
 }
 
+TEST_F(VqaLoaderTest, WalkKeepsTheSoundPlayingUntilTheEnd) {
+  VqaHeader header = SmallHeader();
+  header.flags = kVqaHasAudio;
+  header.sample_rate = 22050;
+  header.channels = 1;
+  header.bits_per_sample = 8;
+  fake_.data = MovieStart(header, {0, 0, 0});
+  // More than one frame's staging buffer, so it loads straight into the
+  // audio ring as its first two blocks and the sound starts with the movie.
+  AppendChunk(fake_.data, "SND0", std::vector<uint8_t>(4096, 0x80));
+  AppendFrameEnd(fake_.data);
+  AppendFrameEnd(fake_.data);
+  AppendFrameEnd(fake_.data);
+  EnableAudio();
+  ASSERT_EQ(Open(), 0);
+
+  // Each walk moves one frame on; the sound, and the clock that follows it,
+  // must keep running between them.
+  PlayVqa(&state_, kVqaModeWalk);
+  EXPECT_NE(state_.movie->audio.flags & kAudioPlaying, 0U);
+  PlayVqa(&state_, kVqaModeWalk);
+  EXPECT_NE(state_.movie->audio.flags & kAudioPlaying, 0U);
+
+  // The walk that reaches the end stops it.
+  int32_t result = 0;
+  for (int i = 0; i < 10 && result != kVqaEndOfMovie; ++i) {
+    result = PlayVqa(&state_, kVqaModeWalk);
+  }
+  EXPECT_EQ(result, kVqaEndOfMovie);
+  EXPECT_EQ(state_.movie->audio.flags & kAudioPlaying, 0U);
+}
+
 TEST_F(VqaLoaderTest, StopEndsPlaybackWithoutLoadingTheRest) {
   fake_.data = EmptyFrames(SmallHeader());
   ASSERT_EQ(Open(), 0);

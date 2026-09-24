@@ -202,18 +202,20 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
       break;
   }
 
-  if ((movie->flags & kMovieDone) == kMovieDone || mode == kVqaModeStop) {
+  // Shut down when the movie has played out, was stopped, or its
+  // frame_callback asked to stop (the only source of kVqaEndOfMovie above).
+  // Only then does the sound stop: a walk returns with it still playing, since
+  // the next walk does not restart it and the clock runs from it.
+  if ((movie->flags & kMovieDone) == kMovieDone || mode == kVqaModeStop ||
+      result == kVqaEndOfMovie) {
     // Read the clock before stopping the sound, since the clock is the
     // amount of sound played.
     movie->end_time = ReadMovieClock(state);
+    if ((movie->audio.flags & kAudioPlaying) != 0) {
+      StopMovieAudio(state);
+    }
 
     result = kVqaEndOfMovie;
-  }
-
-  // Every return stops the sound, even a walk that will be called again;
-  // the next call does not restart it (only a resume from pause does).
-  if ((movie->audio.flags & kAudioPlaying) != 0) {
-    StopMovieAudio(state);
   }
 
 #ifdef _WIN32

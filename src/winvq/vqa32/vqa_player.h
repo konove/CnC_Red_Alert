@@ -42,7 +42,7 @@
 // Playback modes, the argument to VqaPlayer::Play().
 // Play the movie through to the end.
 constexpr int kVqaModeRun = 0;
-// Load and draw at most one frame, then return.
+// Load and draw at most one frame, then return with the sound playing.
 constexpr int kVqaModeWalk = 1;
 // Suspend playback and its audio.
 constexpr int kVqaModePause = 2;
@@ -213,8 +213,10 @@ class VqaPlayer {
   // Runs playback of the open movie in the given kVqaMode* mode. kVqaModeRun
   // blocks until the movie ends or frame_callback stops it, and returns
   // kVqaEndOfMovie. kVqaModeWalk returns after one frame: the number of the
-  // frame drawn, 0, or a state such as kVqaNotTime. A read error while loading
-  // ends the movie as if it were the last frame.
+  // frame drawn, 0, or a state such as kVqaNotTime, with the sound still
+  // playing; the walk that reaches the end returns kVqaEndOfMovie and stops
+  // it. A read error while loading ends the movie as if it were the last
+  // frame.
   int Play(int mode);
 
   // Repositions the open movie to the given frame, reloading the codebooks
