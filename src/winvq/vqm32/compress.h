@@ -50,8 +50,8 @@ int32_t LCW_Uncompress(std::span<const unsigned char> source,
 
 // Meant to decompress ZAP (Westwood ADPCM) sound from source to fill dest, and
 // return the bytes written. source and dest may overlap, with source at the
-// end. The SDL port has only a stub, in vqa32/vqmstub.cc, which writes nothing
-// and returns 0.
+// end. The SDL port has only a stub, in vqa32/adpcm_decoders.cc, which
+// writes nothing and returns 0.
 int32_t AudioUnzap(std::span<const unsigned char> source,
                    std::span<unsigned char> dest);
 
