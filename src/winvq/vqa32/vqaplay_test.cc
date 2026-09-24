@@ -553,7 +553,12 @@ TEST_F(VqaLoaderTest, PlaysSilentlyWithoutAnAudioRing) {
   EnableAudio();
   config_.audio_buffer_bytes = 0;
   ASSERT_EQ(Open(), 0);
+  // No sound path runs: the mixer was never installed.
+  EXPECT_EQ(state_.config.option_flags & kVqaOptionAudio, 0U);
+  EXPECT_EQ(audio_callback_, nullptr);
 
+  // A pause and resume must not start the sound either.
+  EXPECT_EQ(PlayVqa(&state_, kVqaModePause), kVqaPaused);
   EXPECT_EQ(PlayVqa(&state_, kVqaModeRun), kVqaEndOfMovie);
   EXPECT_EQ(state_.movie->audio.flags & kAudioPlaying, 0U);
 }

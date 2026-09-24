@@ -92,15 +92,13 @@ int32_t PlayVqa(VqaPlayerState* state, int32_t mode) {
   config = &state->config;
 
   // The first call starts playback. The sound starts first so the clock
-  // below can run from it, and only if OpenVqa() preloaded some. A movie
-  // whose audio ring came out empty (audio_buffer_bytes 0, or -1 when 1.5
-  // seconds of sound is less than one audio_block_bytes block) plays silent.
+  // below can run from it, and only if OpenVqa() preloaded some. With
+  // kVqaOptionAudio set the audio ring has at least one block.
   if ((movie->flags & kMovieStarted) == 0) {
     ConfigureDrawer(state);
 
     if ((config->option_flags & kVqaOptionAudio) != 0 &&
-        !movie->audio.block_loaded.empty() &&
-        movie->audio.block_loaded.front() != 0) {
+        movie->audio.block_loaded.at(0) != 0) {
       StartMovieAudio(state);
     }
 

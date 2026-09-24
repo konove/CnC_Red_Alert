@@ -360,10 +360,12 @@ int32_t OpenVqa(VqaPlayerState* vqa, std::string_view filename,
 
   /* Open VOC file if one is requested. */
 
-  /* If the movie does not contain an audio track make sure we won't try
-   * to play one.
-   */
-  if ((header->flags & kVqaHasAudio) == 0) {
+  // Play no sound when there is no audio ring block to play it from: the
+  // movie has no sound track, the caller turned it off, or the ring came out
+  // smaller than one block (audio_buffer_bytes 0, or -1 when 1.5 seconds of
+  // sound is less than one audio_block_bytes block). No audio code runs for
+  // such a movie, so none of it has to handle an empty ring.
+  if (vqap->movie->audio.block_loaded.empty()) {
     config->option_flags &= ~kVqaOptionAudio;
   }
 
