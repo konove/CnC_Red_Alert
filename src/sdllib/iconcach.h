@@ -16,29 +16,11 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/***********************************************************************************************
- ***             C O N F I D E N T I A L  ---  W E S T W O O D   S T U D I O S
- ****
- ***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Drawbuff - Westwood win95 library *
- *                                                                                             *
- *                    File Name : Iconcach.H *
- *                                                                                             *
- *                   Programmer : Steve Tall *
- *                                                                                             *
- *                   Start Date : November 8th, 1995 *
- *                                                                                             *
- *                  Last Update : November 16th, 1995 [ST] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Overview: This file cantains definition of the IconCacheClass and associated
- *non member     * function prototypes. *
- *                                                                                             *
- * Functions: * IconCacheClass::Get_Is_Cached -- member to allow access to
- *private IsCached flag           *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// Hooks of the Windows 95 library's icon cache (Steve Tall, November 1995),
+// which copied the terrain icon
+// sets into video memory so they could be drawn by the blitter. The port draws
+// every set from system memory (PixelView::DrawStamp), so the hooks are empty
+// and the constants and IconSetType below have no users.
 
 #ifndef CNC_RED_ALERT_SDLLIB_ICONCACH_H_
 #define CNC_RED_ALERT_SDLLIB_ICONCACH_H_
@@ -51,17 +33,18 @@
 #define MAX_ICON_SETS 100  // Maximum number of icon sets that can be registered
 #define MAX_LOOKUP_ENTRIES 3000  // Size of icon index table
 
-/*
-** Structure to keep track of registered icon sets
-**
-*/
-
+// A registered icon set and where its tiles start in the cache's lookup table.
 struct IconSetType {
   IControl_Type* IconSetPtr;  // Ptr to icon set data
   int IconListOffset;         // Offset into icon index table for this icon set
 };
 
+// Was: copy the cached icons back into video memory, which the system may
+// have discarded while the game was in the background. Now only prints its
+// name to stdout.
 extern void Restore_Cached_Icons();
+// Was: add `icon_data` to the sets the cache knows, and copy its icons into
+// video memory straight away if `pre_cache`. Now does nothing.
 extern void Register_Icon_Set(const void* icon_data, bool pre_cache);
 
 #endif  // CNC_RED_ALERT_SDLLIB_ICONCACH_H_

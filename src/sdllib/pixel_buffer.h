@@ -228,14 +228,20 @@ class PixelView {
   void RemapLocked(int x1, int y1, int width, int height,
                    std::span<const uint8_t> remap_table);
 
-  // Draws tile `icon` of an icon set at x,y, clipped to the
-  // WindowList entry `clip_window` rather than to the view - the map
+  // Draws cell `icon` of an icon set (a terrain template) at x,y, clipped to
+  // the WindowList entry `clip_window` rather than to the view - the map
   // draws its terrain through this. `remap_table` may be empty for no
   // remapping.
   void DrawStamp(std::span<const std::byte> icon_data, int icon, int x, int y,
                  std::span<const uint8_t> remap_table, int clip_window);
-  // Clipped to the rectangle given in view coordinates rather than to a
-  // WindowList entry.
+  // Clipped to the rectangle at min_x,min_y in view coordinates, max_x wide
+  // and max_y high, rather than to a WindowList entry. x,y are relative to
+  // the rectangle's corner. The set's map translates `icon` into the tile
+  // drawn; an empty cell, an icon or a tile outside the set, damaged set
+  // data, or a `remap_table` shorter than 256 draws nothing. Color 0 is
+  // transparent when the tile is flagged transparent, and whenever
+  // `remap_table` is given (tested after the remap). The buffer must be
+  // locked.
   void DrawStampLocked(std::span<const std::byte> icon_data, int icon, int x,
                        int y, std::span<const uint8_t> remap_table, int min_x,
                        int min_y, int max_x, int max_y);

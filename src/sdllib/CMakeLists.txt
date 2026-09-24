@@ -44,7 +44,7 @@ add_gtest(
 
 add_gtest(
         NAME sdllib_pixel_buffer_test
-        SOURCES pixel_buffer_test.cc
+        SOURCES pixel_buffer_test.cc iconcach_test.cc
         LIBS sdllib
 )
 
