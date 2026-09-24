@@ -27,8 +27,8 @@ struct TiberianDawnIconSetHeader {
   [[maybe_unused]] int16_t width;      // Width of icons (pixels).
   [[maybe_unused]] int16_t height;     // Height of icons (pixels).
   [[maybe_unused]] int16_t count;      // Number of (logical) icons in this set.
-  [[maybe_unused]] int16_t allocated;  // Was this iconset allocated?
-  [[maybe_unused]] int32_t size;       // Size of the whole iconset.
+  [[maybe_unused]] int16_t allocated;  // Was this IconSet allocated?
+  [[maybe_unused]] int32_t size;       // Size of the whole IconSet.
   int32_t icons;                       // Offset of the icon data.
   [[maybe_unused]] int32_t palettes;   // Offset of the palette data.
   [[maybe_unused]] int32_t remaps;     // Offset of the remap index data.
