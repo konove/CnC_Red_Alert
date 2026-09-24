@@ -19,7 +19,7 @@
 // File: the VQA loader. OpenVqa() reads a movie's header and frame table and
 // allocates its play buffers; LoadNextFrame() then reads the movie a frame at
 // a time into the ring of frame buffers, assembling the codebooks and staging
-// the sound on the way; SeekVqaFrame() repositions it, and CloseVqa() frees it.
+// the sound on the way; CloseVqa() frees it.
 //
 // Originally written by Bill Randolph and Denzil E. Long, Jr. at Westwood
 // Studios, August 1995.
@@ -44,14 +44,12 @@
 #include "winvq/vqa32/vqa_player_state.h"
 #include "winvq/vqm32/compress.h"
 #include "winvq/vqm32/iff.h"
-#include "winvq/vqm32/palette.h"
 #include "winvq/vqm32/soscomp.h"
 
 static std::unique_ptr<VqaMovie> AllocateMovie(const VqaHeader* header,
                                                VqaConfig* config);
 static int32_t PreloadFrames(VqaPlayerState* state);
 static int32_t LoadFrameContainer(VqaPlayerState* state, int32_t frame_bytes);
-static int32_t LoadFrameTable(const VqaPlayerState* state, int32_t chunk_bytes);
 static int32_t LoadFullCodebook(const VqaPlayerState* state,
                                 int32_t chunk_bytes);
 static int32_t LoadCompressedFullCodebook(const VqaPlayerState* state,
@@ -230,17 +228,17 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
 
         break;
 
-      // The frame table; the frames follow it.
+      // The frame table, which the player does not use, is the last chunk
+      // before the frames. A movie without a header before it cannot play.
       case kChunkFinf:
-        // The frame table is sized from the header, so it must come first.
         if (vqap->movie == nullptr) {
           CloseVqa(state);
           return kVqaErrorNotVqa;
         }
 
-        if (LoadFrameTable(vqap, chunk_bytes)) {
+        if (!vqap->io->Seek(PadSize(chunk_bytes), SeekOrigin::kCurrent)) {
           CloseVqa(state);
-          return kVqaErrorRead;
+          return kVqaErrorSeek;
         }
 
         found_frame_table = true;
@@ -637,166 +635,9 @@ int32_t LoadNextFrame(VqaPlayerState* state) {
   return 0;
 }
 
-// TODO: Three defects, none reachable from the games, which never seek. A
-// loader asleep in a sound chunk (kMovieLoaderAsleep) stays asleep, so the
-// first load after the seek resumes that chunk at the new file position and
-// reads frame data as sound. play_block is not reset with the audio ring, so
-// the sound starts from a stale block, out of step with the frames. And the
-// movie clock is not moved to the target frame, so the drawer waits until it
-// catches up by itself.
-int32_t SeekVqaFrame(VqaPlayerState* vqa, int32_t framenum) {
-  VqaFrame* frame = nullptr;
-  int32_t rc = kVqaOk;
-  VqaPlayerState* vqap = vqa;
-  VqaMovie* vqabuf = vqap->movie.get();
-  VqaLoader* loader = &vqabuf->loader;
-  VqaHeader* header = &vqap->header;
-  VqaConfig* config = &vqap->config;
-
-  VqaAudio* audio = &vqabuf->audio;
-
-  // The ring is about to be refilled.
-  const int32_t audio_on = audio->flags & kAudioPlaying;
-  StopMovieAudio(vqap);
-
-  if (framenum < 0) {
-    rc = kVqaErrorSeek;
-  } else if (std::cmp_greater_equal(framenum, header->frame_count)) {
-    rc = kVqaEndOfMovie;
-  }
-
-  if (rc == kVqaOk) {
-    // Set the palette in force at the target: load the nearest frame at or
-    // before it that carries one, and set its palette now.
-    if (!(config->option_flags & kVqaOptionPaletteOff)) {
-      frame = loader->current_frame;
-
-      for (int32_t i = framenum; i >= 0; i--) {
-        if (FrameHasPalette(vqabuf->frame_offsets.at(base::ToSize(i)))) {
-          rc = vqap->io->Seek(
-                   FrameByteOffset(vqabuf->frame_offsets.at(base::ToSize(i))),
-                   SeekOrigin::kBegin)
-                   ? kVqaOk
-                   : kVqaErrorSeek;
-
-          // Reset the loader to load into the current buffer, whatever it
-          // holds.
-          if (!rc) {
-            loader->partial_count = 0;
-            loader->partial_bytes = 0;
-            loader->full_codebook = vqabuf->codebooks.front().get();
-            loader->partial_codebook = vqabuf->codebooks.front().get();
-            loader->next_frame_number = 0;
-            frame->flags = 0;
-
-            if (LoadNextFrame(vqa) == 0) {
-              if (frame->flags & kFramePaletteCompressed) {
-                frame->palette_bytes = LCW_Uncompress(
-                    std::span(frame->palette)
-                        .subspan(base::ToSize(frame->palette_offset)),
-                    frame->palette);
-              }
-
-              SetPalette(frame->palette, frame->palette_bytes, 0);
-            }
-          } else {
-            rc = kVqaErrorSeek;
-          }
-          break;
-        }
-      }
-    }
-
-    // Rebuild the target's codebook, then load from the target on.
-    if (!rc) {
-      int32_t group = framenum / header->frames_per_group;
-      group = group * header->frames_per_group;
-
-      // A group's codebook arrives in pieces during the group before it, so
-      // loading starts there; the first group has its codebook whole.
-      if (std::cmp_greater_equal(group, header->frames_per_group)) {
-        group -= header->frames_per_group;
-      }
-
-      if (vqap->io->Seek(
-              FrameByteOffset(vqabuf->frame_offsets.at(base::ToSize(group))),
-              SeekOrigin::kBegin)) {
-        // Drop the sound loaded so far.
-        if (config->option_flags & kVqaOptionAudio && !audio->ring.empty()) {
-          std::ranges::fill(audio->block_loaded, 0);
-          std::ranges::fill(audio->ring, 0);
-
-          // Start writing half a second into the ring, and count that half
-          // second of silence as loaded, as the preload of a new movie would.
-          audio->write_offset = audio->sample_rate * audio->channels *
-                                (audio->bits_per_sample / 8) / 2;
-
-          for (int32_t i = 0;
-               i < audio->write_offset / config->audio_block_bytes; i++) {
-            audio->block_loaded.at(base::ToSize(i)) = 1;
-          }
-        }
-
-        // Load from the start of that group, as if the movie began there.
-        loader->partial_count = 0;
-        loader->partial_bytes = 0;
-        loader->full_codebook = vqabuf->codebooks.front().get();
-        loader->partial_codebook = vqabuf->codebooks.front().get();
-        loader->next_frame_number = group;
-
-        // Load the frames before the target only for their partial
-        // codebooks: each is released as soon as it is loaded, and its sound
-        // is dropped.
-        for (int32_t i = 0; i < framenum - group; i++) {
-          loader->current_frame->flags = 0;
-
-          audio->staged_bytes = 0;
-
-          rc = LoadNextFrame(vqa);
-          if (rc != 0) {
-            if (rc != kVqaNoBuffer && rc != kVqaSleeping) {
-              break;
-            }
-            rc = 0;
-          }
-        }
-
-        // Empty the whole frame ring, then refill it from the target.
-        if (!rc) {
-          loader->current_frame->flags = 0;
-          frame = loader->current_frame->next;
-
-          while (frame != loader->current_frame) {
-            frame->flags = 0;
-            frame = frame->next;
-          }
-
-          // The drawer starts where the loader does.
-          vqabuf->drawer.current_frame = loader->current_frame;
-
-          rc = PreloadFrames(vqa);
-
-          // Reaching the end while priming is not an error.
-          if (rc == 0 || rc == kVqaEndOfMovie) {
-            rc = framenum;
-          }
-        }
-      } else {
-        rc = kVqaErrorSeek;
-      }
-    }
-  }
-
-  if (audio_on) {
-    StartMovieAudio(vqap);
-  }
-
-  return rc;
-}
-
 // Allocates the play buffers of a movie with this header: the codebook and
 // frame rings, the image buffer when the player draws into its own, the audio
-// ring and staging buffer when the sound is on, and the frame table. Resolves
+// ring and staging buffer when the sound is on. Resolves
 // the -1 default of config->audio_buffer_bytes, and rounds it down to whole
 // blocks. Returns nullptr when config asks for no codebook or frame buffers.
 static std::unique_ptr<VqaMovie> AllocateMovie(const VqaHeader* header,
@@ -961,9 +802,6 @@ static std::unique_ptr<VqaMovie> AllocateMovie(const VqaHeader* header,
     }
   }
 
-  // The FINF frame table, one entry per frame.
-  movie->frame_offsets.resize(header->frame_count);
-
   return owned_movie;
 }
 
@@ -1116,32 +954,6 @@ static int32_t LoadFrameContainer(VqaPlayerState* state, int32_t frame_bytes) {
       default:
         return kVqaErrorRead;
     }
-  }
-
-  return 0;
-}
-
-// Reads the FINF frame table of iffsize bytes into frame_offsets. Returns 0,
-// or kVqaErrorRead or kVqaErrorSeek.
-static int32_t LoadFrameTable(const VqaPlayerState* state,
-                              int32_t chunk_bytes) {
-  VqaMovie* movie = state->movie.get();
-
-  // The table has one 4-byte entry per frame in the header. Copying no more
-  // than that and skipping the rest keeps an oversized chunk from writing
-  // past it; entries a short chunk leaves out stay zero.
-  const auto table_bytes =
-      static_cast<int64_t>(movie->frame_offsets.size() * sizeof(uint32_t));
-  const int64_t copy_bytes = std::min<int64_t>(chunk_bytes, table_bytes);
-  if (copy_bytes > 0 &&
-      !state->io->Read(std::as_writable_bytes(std::span(movie->frame_offsets))
-                           .first(base::ToSize(copy_bytes)))) {
-    return kVqaErrorRead;
-  }
-
-  const int64_t skip_bytes = PadSize(chunk_bytes) - copy_bytes;
-  if (skip_bytes > 0 && !state->io->Seek(skip_bytes, SeekOrigin::kCurrent)) {
-    return kVqaErrorSeek;
   }
 
   return 0;

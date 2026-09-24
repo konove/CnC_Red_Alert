@@ -32,7 +32,6 @@
 #include <cstdint>
 
 #include "base/numeric.h"
-#include "base/types.h"
 #include "winvq/vqm32/iff.h"
 
 // VqaHeader: the payload of the VQHD chunk, read straight off the disk.
@@ -96,19 +95,8 @@ constexpr uint16_t kVqaHasAltAudio = base::Bit<uint16_t>(1);
 //                  start of the file. Chunks are padded to even sizes, so
 //                  halving the offset loses nothing and reaches 512 MB.
 //
-// Seeking uses both: it replays the nearest palette frame at or before the
-// target, then starts reading at the codebook group before it. The player
-// reads no other flag.
-
-// Returns whether the frame a FINF entry describes carries a palette.
-constexpr bool FrameHasPalette(const uint32_t frame_info) {
-  return (frame_info & base::Bit<uint32_t>(30)) != 0;
-}
-
-// Returns the byte offset in the file of the frame a FINF entry describes.
-constexpr base::ssize FrameByteOffset(const uint32_t frame_info) {
-  return base::ssize{frame_info & 0x0FFFFFFFU} * 2;
-}
+// The player does not read the table: it only marks the end of the chunks in
+// front of the frames. The DOS player seeked with it.
 
 // VQA chunk IDs. MakeId packs the four characters in file order, so these
 // compare equal to an ID read raw from the disk. A "Z" suffix means the payload

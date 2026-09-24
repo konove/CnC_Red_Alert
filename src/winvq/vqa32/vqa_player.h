@@ -165,8 +165,6 @@ constexpr uint32_t kVqaDrawBottomLeft = 3U << 4;
 constexpr uint32_t kVqaOptionAudio = base::Bit<uint32_t>(0);
 // Draw every frame as soon as it is loaded, ignoring the clock.
 constexpr uint32_t kVqaOptionStep = base::Bit<uint32_t>(1);
-// Seeking does not restore the palette.
-constexpr uint32_t kVqaOptionPaletteOff = base::Bit<uint32_t>(3);
 // Passed on to QueueVqaPalette().
 constexpr uint32_t kVqaOptionSlowPalette = base::Bit<uint32_t>(4);
 // Use the alternate sound track, if there is one.
@@ -222,13 +220,6 @@ class VqaPlayer {
   // it. A read error while loading ends the movie as if it were the last
   // frame.
   int Play(int mode);
-
-  // Repositions the open movie to the given frame, reloading the codebooks
-  // from the start of the previous group and, unless kVqaOptionPaletteOff is
-  // set, the palette in force; the frame offsets come from the FINF table.
-  // frame counts from the start of the movie. Returns the frame number seeked
-  // to, or a negative kVqaError* code.
-  int SeekFrame(int frame);
 
  private:
   std::unique_ptr<VqaPlayerState> impl_;

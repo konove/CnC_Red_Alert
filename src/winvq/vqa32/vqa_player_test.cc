@@ -28,11 +28,10 @@
 #include "winvq/vqa32/vqa_player_state.h"
 #include "winvq/vqa32/vqaio.h"
 #include "winvq/vqm32/compress.h"
-#include "winvq/vqm32/palette.h"
 
 // Link-time stubs for symbols normally provided by the game or sdllib. The
-// tests never decode compressed data or set the hardware palette, so these
-// are never called; QueueVqaPalette() records what it was handed.
+// tests never decode compressed data, so LCW_Uncompress() is never called;
+// QueueVqaPalette() records what it was handed.
 
 // A copy of the palette last passed to QueueVqaPalette(), for the drawer
 // tests. The stub is a free function, so it cannot reach a fixture member.
@@ -45,9 +44,6 @@ int32_t LCW_Uncompress(std::span<const unsigned char> /*source*/,
                        std::span<unsigned char> /*dest*/) {
   return 0;
 }
-
-void SetPalette(std::span<uint8_t> /*palette*/, int32_t /*numbytes*/,
-                uint32_t /*slowpal*/) {}
 
 void QueueVqaPalette(std::span<uint8_t> palette, int32_t numbytes,
                      uint32_t /*slowpal*/) {
@@ -369,31 +365,14 @@ TEST_F(VqaLoaderTest, OpensMinimalMovie) {
   EXPECT_EQ(fake_.pos, static_cast<int64_t>(fake_.data.size()));
 }
 
-TEST_F(VqaLoaderTest, FinfEntriesAreFourBytesEach) {
-  const std::vector<uint32_t> entries = {0x40000010, 0x00000020, 0x80000030};
-  fake_.data = MovieStart(SmallHeader(), entries);
-  AppendFrameEnd(fake_.data);
-
-  ASSERT_EQ(Open(), 0);
-  ASSERT_EQ(state_.movie->frame_offsets.size(), entries.size());
-  EXPECT_EQ(state_.movie->frame_offsets.at(0), entries.at(0));
-  EXPECT_EQ(state_.movie->frame_offsets.at(1), entries.at(1));
-  EXPECT_EQ(state_.movie->frame_offsets.at(2), entries.at(2));
-  // The flags occupy the top bits; the offset is stored halved.
-  EXPECT_TRUE(FrameHasPalette(state_.movie->frame_offsets.at(0)));
-  EXPECT_EQ(FrameByteOffset(state_.movie->frame_offsets.at(1)), 0x40);
-}
-
-TEST_F(VqaLoaderTest, OversizedFinfChunkIsSkippedPastTheTable) {
+TEST_F(VqaLoaderTest, SkipsTheFrameTable) {
   // Eight entries for a three-frame movie.
   fake_.data =
       MovieStart(SmallHeader(), {0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80});
   AppendFrameEnd(fake_.data);
 
   ASSERT_EQ(Open(), 0);
-  ASSERT_EQ(state_.movie->frame_offsets.size(), 3U);
-  EXPECT_EQ(state_.movie->frame_offsets.at(2), 0x30U);
-  // The excess entries were skipped, so the frame after them still loaded.
+  // The table was skipped whole, so the frame after it loaded.
   EXPECT_EQ(fake_.pos, static_cast<int64_t>(fake_.data.size()));
 }
 
@@ -763,39 +742,6 @@ TEST_F(VqaLoaderTest, StopEndsPlaybackWithoutLoadingTheRest) {
 
   EXPECT_EQ(PlayVqa(&state_, kVqaModeStop), kVqaEndOfMovie);
   EXPECT_EQ(state_.movie->loader.next_frame_number, 1);
-}
-
-TEST_F(VqaLoaderTest, SeekFrameLoadsFromTheFrameTable) {
-  constexpr int64_t kFrameBytes = 10;  // "VPT0", size and 2 payload bytes.
-  const auto start =
-      static_cast<int64_t>(MovieStart(SmallHeader(), {0, 0, 0}).size());
-  std::vector<uint32_t> entries(3);
-  for (int i = 0; i < 3; ++i) {
-    // Entries store half the file offset.
-    entries.at(base::ToSize(i)) =
-        static_cast<uint32_t>((start + (i * kFrameBytes)) / 2);
-  }
-  fake_.data = MovieStart(SmallHeader(), entries);
-  for (int i = 0; i < 3; ++i) {
-    const auto tag = static_cast<uint8_t>(i);
-    AppendChunk(fake_.data, "VPT0", {tag, tag});
-  }
-  config_.option_flags = kVqaOptionPaletteOff;
-  ASSERT_EQ(Open(), 0);
-
-  // Groupsize 1: frame 1 is replayed for its codebook, then frame 2 primed.
-  EXPECT_EQ(SeekVqaFrame(&state_, 2), 2);
-  EXPECT_EQ(state_.movie->loader.next_frame_number, 3);
-  EXPECT_EQ(state_.movie->loader.current_frame->pointers.at(0), 2);
-}
-
-TEST_F(VqaLoaderTest, SeekFrameRejectsFramesOutsideTheMovie) {
-  fake_.data = MovieStart(SmallHeader(), {0, 0, 0});
-  AppendFrameEnd(fake_.data);
-  ASSERT_EQ(Open(), 0);
-
-  EXPECT_EQ(SeekVqaFrame(&state_, 3), kVqaEndOfMovie);
-  EXPECT_EQ(SeekVqaFrame(&state_, -1), kVqaErrorSeek);
 }
 
 // Places the 8x8 SmallHeader() image in a 320x200 buffer, gap_x pixels

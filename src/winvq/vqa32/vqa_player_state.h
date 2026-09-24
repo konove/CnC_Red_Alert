@@ -260,9 +260,6 @@ struct VqaMovie {
 
   // The image buffer, when the player allocated it.
   std::vector<unsigned char> image_storage;
-  // One FINF entry per header frame: 4 flag bits on top of the halved file
-  // offset (see FrameHasPalette and FrameByteOffset in vqa_format.h).
-  std::vector<uint32_t> frame_offsets;
 
   VqaAudio audio;
   VqaLoader loader{};
@@ -328,14 +325,13 @@ struct VqaPlayerState {
   VqaHeader header{};
 };
 
-// The player entry points behind VqaPlayer's Open(), Close(), Play() and
-// SeekFrame(); see vqa_player.h for what they do. OpenVqa() and CloseVqa() are
+// The player entry points behind VqaPlayer's Open(), Close() and Play(); see
+// vqa_player.h for what they do. OpenVqa() and CloseVqa() are
 // also the allocation and release of state->movie.
 int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
                 VqaConfig* config);
 void CloseVqa(VqaPlayerState* state);
 int32_t PlayVqa(VqaPlayerState* state, int32_t mode);
-int32_t SeekVqaFrame(VqaPlayerState* vqa, int32_t framenum);
 
 // Loads the next frame into the loader's frame buffer, collecting its
 // codebook and sound on the way. Returns 0 when a frame was loaded, or
