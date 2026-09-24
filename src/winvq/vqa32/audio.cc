@@ -45,11 +45,8 @@
  *----------------------------------------------------------------------------
  *
  * PUBLIC
- *     VQA_StartTimerInt - Initialize system timer interrupt.
- *     VQA_StopTimerInt  - Remove system timer interrupt.
  *     SetMovieClock      - Resets current time to given tick value.
  *     ReadMovieClock       - Return current time.
- *     VQA_TimerMethod   - Get timer method being used.
  *     OpenMovieAudio     - Open sound system.
  *     CloseMovieAudio    - Close sound system
  *     StartMovieAudio    - Starts audio playback
@@ -58,9 +55,8 @@
  * buf.
  *
  * PRIVATE
- *     TimerCallback - VQA timer event. (Called by HMI)
  *     AutoDetect    - Auto detect the sound card.
- *     audio_callback - Sound system callback.
+ *     AudioCallback - Sound system callback.
  *
  ****************************************************************************/
 
@@ -88,10 +84,7 @@
 
 static VqaPlayerState* VQAP = nullptr;
 static uint32_t AudioFlags = 0;  // VQAAUDF_* bits
-static int32_t TimerIntCount = 0;
-static uint16_t VQATimer = 0;
 static int TimerMethod;
-static int64_t VQATickCount = 0;
 
 static int64_t TickOffset = 0;
 
@@ -162,91 +155,6 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
 /****************************************************************************
  *
  * NAME
- *     VQA_StartTimerInt - Initialize system timer interrupt.
- *
- * SYNOPSIS
- *     Error = VQA_StartTimerInt(VQA, Init)
- *
- *     long VQA_StartTimerInt(VQAHandeP *, long);
- *
- * FUNCTION
- *     Initialize the HMI timer system and add our own timer event. If the
- *     system has already been initialized then we are given access to the
- *     the timer system.
- *
- * INPUTS
- *     VQA  - Pointer to private VqaPlayerState structure.
- *     Init - Initialize HMI timer system flag. (TRUE = Initialize)
- *
- * RESULT
- *     Error - 0 if successful, -1 if error.
- *
- ****************************************************************************/
-
-int32_t VQA_StartTimerInt(const VqaPlayerState* vqap, int32_t /*init*/) {
-  /* Dereference for quick access. */
-  VqaAudio* audio = &vqap->movie->audio;
-
-  /* Register the VQA_TickCount timer event. */
-  if ((AudioFlags & VQAAUDF_HMITIMER) == HMI_UNINIT << VQAAUDB_HMITIMER) {
-    // TODO: add timer (VQATimer)
-
-    if (VQATimer) {
-      /* Flag the timer interrupt as being registered. */
-      AudioFlags |= HMI_VQAINIT << VQAAUDB_HMITIMER;
-    } else {
-      return -1;
-    }
-  }
-
-  /* Flag availability of the timer interrupt. */
-  audio->flags |= HMI_VQAINIT << VQAAUDB_HMITIMER;
-
-  /* Increment the timer interrupt usage count. */
-  TimerIntCount++;
-
-  return 0;
-}
-
-/****************************************************************************
- *
- * NAME
- *     VQA_StopTimerInt - Remove system timer interrupt.
- *
- * SYNOPSIS
- *     VQA_StopTimerInt()
- *
- *     void VQA_StopTimerInt();
- *
- * FUNCTION
- *     Remove our timer event from the HMI timer system. Uninitialize the
- *     HMI timer system if we initialized it.
- *
- * INPUTS
- *     NONE
- *
- * RESULT
- *     NONE
- *
- ****************************************************************************/
-
-void VQA_StopTimerInt(VqaPlayerState* /*vqap*/) {
-  /* Decrement the timer interrupt usage count. */
-  if (TimerIntCount) {
-    TimerIntCount--;
-  }
-
-  /* Remove the timer interrupt if it is initialized and the use count is
-   * zero. The Windows player clears the shared availability flag either way
-   * (the DOS player cleared only the caller's).
-   */
-  // TODO: remove timer
-  AudioFlags &= ~VQAAUDF_HMITIMER;
-}
-
-/****************************************************************************
- *
- * NAME
  *     OpenMovieAudio - Open sound system.
  *
  * SYNOPSIS
@@ -309,8 +217,8 @@ int32_t OpenMovieAudio(VqaPlayerState* vqap) {
   // register our audio callback
   *config->audio_callback = VQA_Audio_Callback;
 
-  audio->flags |= HMI_VQAINIT << VQAAUDB_DIGIINIT;
-  AudioFlags |= HMI_VQAINIT << VQAAUDB_DIGIINIT;
+  audio->flags |= kAudioOpen;
+  AudioFlags |= kAudioOpen;
 
   OpenCount++;
 
@@ -348,9 +256,6 @@ void CloseMovieAudio(VqaPlayerState* vqap) {
   */
   StopMovieAudio(vqap);
 
-  audio->flags &= ~VQAAUDF_TIMERINIT;
-  AudioFlags &= ~VQAAUDF_TIMERINIT;
-
   // don't remove the callback if open was called multiple times
   OpenCount--;
   if (OpenCount) {
@@ -368,8 +273,8 @@ void CloseMovieAudio(VqaPlayerState* vqap) {
     SDLStream = nullptr;
   }
 
-  audio->flags &= ~VQAAUDF_DIGIINIT;
-  AudioFlags &= ~VQAAUDF_DIGIINIT;
+  audio->flags &= ~kAudioOpen;
+  AudioFlags &= ~kAudioOpen;
   AudioFlags &= ~kAudioPlaying;
 }
 
@@ -618,37 +523,12 @@ void ResumeVqaAudio() {
  ****************************************************************************/
 
 void SetMovieClock(VqaPlayerState* vqap, int64_t time, int method) {
-  /* If the client does not have a preferencee then pick a method
-   * based on the state of the player.
-   */
-  if (method == kVqaClockDefault) {
-    /* If we are playing audio, use the audio DMA position. */
-    if (AudioFlags & kAudioPlaying) {
-      method = kVqaClockAudio;
-    }
-
-    /* Otherwise use the HMI timer if it is initialized. */
-    else if (AudioFlags & VQAAUDF_HMITIMER) {
-      method = kVqaClockInterrupt;
-    }
-
-    /* If all else fails resort the the "jerky" DOS time. */
-    else {
-      method = kVqaClockSystem;
-    }
-  } else {
-    /* We cannot use the DMA position if there isn't any audio playing. */
-    if (!(AudioFlags & kAudioPlaying) && method == kVqaClockAudio) {
-      method = kVqaClockInterrupt;
-    }
-
-    /* We cannot use the timer if it has not been initialized. */
-    if (!(AudioFlags & VQAAUDF_HMITIMER) && method == kVqaClockInterrupt) {
-      method = kVqaClockSystem;
-    }
-  }
-
-  TimerMethod = method;
+  // The audio clock, the default, needs sound playing; everything else runs
+  // on the system clock.
+  const bool use_audio =
+      (method == kVqaClockDefault || method == kVqaClockAudio) &&
+      (AudioFlags & kAudioPlaying) != 0;
+  TimerMethod = use_audio ? kVqaClockAudio : kVqaClockSystem;
 
   TickOffset = 0;
   const int64_t curtime = ReadMovieClock(vqap);
@@ -750,12 +630,7 @@ int64_t ReadMovieClock(VqaPlayerState* vqap) {
       ticks += TickOffset;
       break;
 
-    /* No audio playing, but timer interrupt is going; use VQATickCount */
-    case kVqaClockInterrupt:
-      ticks = VQATickCount + TickOffset;
-      break;
-
-    /* No interrupts are going at all; use system time */
+    /* No audio playing; use system time */
     default:
     case kVqaClockSystem: {
       const auto now = std::chrono::system_clock::now();
@@ -770,26 +645,3 @@ int64_t ReadMovieClock(VqaPlayerState* vqap) {
 
   return ticks;
 }
-
-/****************************************************************************
- *
- * NAME
- *     VQA_TimerMethod - Get timer method being used.
- *
- * SYNOPSIS
- *     Method = VQA_TimerMethod()
- *
- *     long VQA_TimerMethod();
- *
- * FUNCTION
- *     Returns the ID of the current timer method being used.
- *
- * INPUTS
- *     NONE
- *
- * RESULT
- *     Method - Method used for the timer.
- *
- ****************************************************************************/
-
-int32_t VQA_TimerMethod() { return TimerMethod; }

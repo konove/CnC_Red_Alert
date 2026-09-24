@@ -223,7 +223,7 @@ struct VqaAudio {
   // Bytes in TempBuf waiting for CopyStagedAudio(), 0 when it is empty.
   int32_t staged_bytes = 0;
   int32_t staging_capacity = 0;
-  uint32_t flags = 0;  // kAudioPlaying and VQAAUDF_* bits
+  uint32_t flags = 0;  // kAudio* bits
   // Byte offset of play_block in the ring.
   int32_t play_offset = 0;
   // Format of the track being played, the primary or the alternate one.
@@ -239,23 +239,11 @@ struct VqaAudio {
   int blocks_played = 0;
 };
 
-// Audio flags. The two-bit fields hold an HMI_* state; DIGIINIT is set while
-// the SDL stream and callback are installed. The rest come from the DOS
-// library: TIMERINIT is only ever cleared, and HMITIMER is set only by
-// VQA_StartTimerInt(), which nothing calls.
-#define VQAAUDB_DIGIINIT 0   // Sound output initialized (2 bits)
-#define VQAAUDB_TIMERINIT 2  // HMI timer system initialized (2 bits)
-#define VQAAUDB_HMITIMER 4   // HMI timer callback initialized (2 bits)
-
-#define VQAAUDF_DIGIINIT (3U << VQAAUDB_DIGIINIT)
-#define VQAAUDF_TIMERINIT (3U << VQAAUDB_TIMERINIT)
-#define VQAAUDF_HMITIMER (3U << VQAAUDB_HMITIMER)
+// Audio flags.
+// The SDL stream and callback are installed.
+constexpr uint32_t kAudioOpen = 1U << 0;
 // The callback is playing the ring.
 constexpr uint32_t kAudioPlaying = 1U << 6;
-
-// States of the two-bit audio flag fields.
-#define HMI_UNINIT 0U   // Not initialized
-#define HMI_VQAINIT 1U  // Initialized by the player
 
 // VqaMovie: everything a movie needs while it is open. Allocated by OpenVqa()
 // once the header is read and freed by CloseVqa().
@@ -369,17 +357,11 @@ void ConfigureDrawer(VqaPlayerState* vqap);
 // frees that frame's buffer for the loader. Always returns 0.
 int64_t ReleaseDrawnFrame(const VqaPlayerState* state);
 
-// The DOS timer interrupt. VQA_StartTimerInt() and VQA_TimerMethod() have no
-// callers; VQA_StopTimerInt() only runs at close.
-int32_t VQA_StartTimerInt(const VqaPlayerState* vqap, int32_t init);
-void VQA_StopTimerInt(VqaPlayerState* vqap);
-
 // Sets the movie clock to time (kVqaTicksPerSecond), using the kVqaClock*
 // method, or the best one available, as its source.
 void SetMovieClock(VqaPlayerState* vqap, int64_t time, int method);
 // Returns the movie clock in kVqaTicksPerSecond.
 int64_t ReadMovieClock(VqaPlayerState* vqap);
-int32_t VQA_TimerMethod();
 
 // Sound output. OpenMovieAudio() installs the SDL stream and callback,
 // StartMovieAudio() and StopMovieAudio() start and stop the callback playing

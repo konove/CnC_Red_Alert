@@ -48,14 +48,11 @@ constexpr int kVqaModePause = 2;
 constexpr int kVqaModeStop = 3;
 
 // Clocks the player can pace frames by (VqaConfig::clock_source). The audio
-// clock is used only while sound plays and the interrupt clock never starts
-// on this port, so both fall back to the system clock.
+// clock, the amount of sound played so far, works only while sound plays;
+// otherwise the player falls back to the system clock.
 // Audio if playing, else the system clock.
 constexpr int kVqaClockDefault = -1;
 constexpr int kVqaClockSystem = 1;
-// Timer interrupt tick count.
-constexpr int kVqaClockInterrupt = 2;
-// Bytes of audio played so far.
 constexpr int kVqaClockAudio = 3;
 
 // Resolution of the player's clock: frame times are in ticks of 1/60 second.

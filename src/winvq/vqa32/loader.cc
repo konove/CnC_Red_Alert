@@ -438,10 +438,8 @@ void CloseVqa(VqaPlayerState* vqa) {
   // Audio is open only once OpenMovieAudio() has run. A failed OpenVqa() can
   // get here earlier, with no data and no audio callback to tear down.
   if (vqa_handle_p->movie != nullptr &&
-      (vqa_handle_p->movie->audio.flags & VQAAUDF_DIGIINIT) != 0) {
+      (vqa_handle_p->movie->audio.flags & kAudioOpen) != 0) {
     CloseMovieAudio(vqa_handle_p);
-  } else if ((vqa_handle_p->config.option_flags & kVqaOptionAudio) == 0) {
-    VQA_StopTimerInt(vqa_handle_p);
   }
 
   /* Close the VQA file */
