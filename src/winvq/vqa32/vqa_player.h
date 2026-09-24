@@ -18,12 +18,15 @@
 #ifndef CNC_RED_ALERT_WINVQ_VQA32_VQA_PLAYER_H_
 #define CNC_RED_ALERT_WINVQ_VQA32_VQA_PLAYER_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <span>
 #include <string_view>
 
 #include "base/numeric.h"
+
+struct SDL_AudioSpec;
 
 // File: the public interface of the VQA movie player - VqaPlayer, the
 // VqaConfig a movie is opened with, and the codes and flags that go with them.
@@ -126,10 +129,10 @@ struct VqaConfig {
   // The client's callback slot, which its SDL audio callback calls through.
   // While a movie with sound is open the player installs its mixer there,
   // and clears the slot when the movie closes.
-  void (**audio_callback)(uint8_t*, int){};
+  void (**audio_callback)(std::span<std::byte> device_buffer){};
   // The device's output format; the movie's sound is converted to it.
   // Required when kVqaOptionAudio is set.
-  void* audio_spec{};  // pointer to an SDL_AudioSpec
+  const SDL_AudioSpec* audio_spec{};
   // The caller's audio ring buffer. Empty = the player allocates
   // audio_buffer_bytes bytes.
   std::span<unsigned char> audio_buffer;

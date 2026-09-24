@@ -8,6 +8,7 @@
 #include <SDL_audio.h>
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
@@ -344,7 +345,7 @@ class VqaLoaderTest : public testing::Test {
 
   FakeVqaIo fake_;
   SDL_AudioSpec audio_spec_{};
-  void (*audio_callback_)(uint8_t*, int) = nullptr;
+  void (*audio_callback_)(std::span<std::byte>) = nullptr;
   VqaPlayerState state_;
   VqaConfig config_{};
 };
@@ -669,16 +670,16 @@ TEST_F(VqaLoaderTest, RingOfPartBlocksWrapsAfterTheLastWholeBlock) {
   ASSERT_EQ(audio.block_count, 2);
   ASSERT_EQ(StartMovieAudio(&state_), 0);
 
-  std::vector<uint8_t> device(256);
+  std::array<std::byte, 256> device{};
   for (int i = 0; i < 1000 && audio.play_block != 1; ++i) {
-    audio_callback_(device.data(), static_cast<int>(device.size()));
+    audio_callback_(device);
   }
   ASSERT_EQ(audio.play_block, 1);
 
   // Once the loader has refilled block 0, playing moves on to it.
   audio.block_loaded.at(0) = 1;
   for (int i = 0; i < 1000 && audio.play_block == 1; ++i) {
-    audio_callback_(device.data(), static_cast<int>(device.size()));
+    audio_callback_(device);
   }
   EXPECT_EQ(audio.play_block, 0);
   EXPECT_EQ(audio.play_offset, 0);

@@ -26,8 +26,11 @@
 // Studios, August 1995, for HMI's DOS sound drivers; ported to DirectSound by
 // Steve T. in January 1996, and later to SDL.
 
+#include <SDL_audio.h>
+
 #include <atomic>
 #include <chrono>
+#include <cstddef>
 #include <cstdint>
 #include <span>
 #include <vector>
@@ -36,8 +39,6 @@
 #include "base/numeric.h"
 #include "winvq/vqa32/vqa_player.h"
 #include "winvq/vqa32/vqa_player_state.h"
-
-#include <SDL_audio.h>
 
 // The sound system serves one movie at a time: the state below is shared by
 // every VqaPlayerState, and a second movie opened or started while one plays
@@ -69,9 +70,9 @@ static int64_t StreamConvScale = 1 << 15;
 
 // The mixer installed in the client's callback slot. The client's SDL audio
 // callback calls it on the audio thread, with the device locked, to fill
-// stream with len bytes of the movie's sound in the device's format; the
-// client has silenced the buffer first, so returning early plays silence.
-static void VQA_Audio_Callback(uint8_t* stream, int len) {
+// device_buffer with the movie's sound in the device's format; the client has
+// silenced the buffer first, so returning early plays silence.
+static void VQA_Audio_Callback(const std::span<std::byte> device_buffer) {
   if (!VQAP) {
     return;
   }
@@ -81,6 +82,7 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
   }
 
   auto* config = &VQAP->config;
+  const int len = static_cast<int>(device_buffer.size());
 
   // Convert whole ring blocks until there is a buffer's worth of output. The
   // remainder stays in SDLStream for the next call.
@@ -124,7 +126,7 @@ static void VQA_Audio_Callback(uint8_t* stream, int len) {
     }
   }
 
-  SDL_AudioStreamGet(SDLStream, stream, len);
+  SDL_AudioStreamGet(SDLStream, device_buffer.data(), len);
 }
 
 // Movies opened and not yet closed. Only the last close removes the stream
@@ -150,7 +152,7 @@ int32_t OpenMovieAudio(VqaPlayerState* vqap) {
     SDL_FreeAudioStream(SDLStream);
   }
 
-  const auto* spec = static_cast<SDL_AudioSpec*>(config->audio_spec);
+  const SDL_AudioSpec* spec = config->audio_spec;
 
   SDLStream = SDL_NewAudioStream(
       audio->bits_per_sample == 16 ? AUDIO_S16 : AUDIO_S8,

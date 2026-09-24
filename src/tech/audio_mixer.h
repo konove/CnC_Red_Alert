@@ -38,8 +38,9 @@
 #include "sdllib/aud_decoder.h"
 #include "tech/byte_stream.h"
 
-// What the VQA player installs to have its sound track mixed in first.
-using AudioCallback = void (*)(uint8_t* device_buffer, int device_bytes);
+// What the VQA player installs to have its sound track mixed in first. It
+// fills device_buffer, which arrives silenced, in the device's format.
+using AudioCallback = void (*)(std::span<std::byte> device_buffer);
 
 // Plays Westwood .AUD sounds on the SDL audio device: up to four at once, each
 // an in-memory sample or a score streamed from a file. A sound is known by the

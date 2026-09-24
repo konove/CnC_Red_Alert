@@ -167,7 +167,7 @@ void AudioMixer::DeviceCallback(void* mixer, uint8_t* device_buffer,
   auto& self = *static_cast<AudioMixer*>(mixer);
   // A movie's sound track goes in first.
   if (self.extra_callback_) {
-    self.extra_callback_(device_buffer, device_bytes);
+    self.extra_callback_(output);
   }
   self.Mix(output);
 }
