@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <span>
+#include <utility>
 
 #include "absl/log/check.h"
 #include "base/buffer.h"
@@ -310,17 +311,16 @@ int32_t DrawNextFrame(VqaPlayerState* vqa) {
 
   VqaFrame* curframe = drawer->current_frame;
 
-  // TODO: With no image buffer (kVqaDrawToBuffer clear and none provided) a
-  // centered image has an offset past the empty buffer, so this returns
-  // kVqaNoBuffer for every frame: nothing is released, the loader fills the
-  // ring and PlayVqa(kVqaModeRun) never returns. The defaults do this for a
-  // movie smaller than 320x200.
-  if (drawer->image_offset < 0 ||
-      base::ToSize(drawer->image_offset) > drawer->image_buffer.size()) {
-    return kVqaNoBuffer;
-  }
+  // Without a buffer (kVqaDrawToBuffer clear and none provided) a centered
+  // image's offset lies past the empty one. decode_frame then gets nothing and
+  // draws nothing, and the frame goes on to be released like any other.
+  const bool offset_in_buffer =
+      drawer->image_offset >= 0 &&
+      std::cmp_less_equal(drawer->image_offset, drawer->image_buffer.size());
   const auto buff =
-      drawer->image_buffer.subspan(base::ToSize(drawer->image_offset));
+      offset_in_buffer
+          ? drawer->image_buffer.subspan(base::ToSize(drawer->image_offset))
+          : std::span<unsigned char>{};
 
   const uint32_t slowpal =
       (config->option_flags & kVqaOptionSlowPalette) != 0 ? 1U : 0U;

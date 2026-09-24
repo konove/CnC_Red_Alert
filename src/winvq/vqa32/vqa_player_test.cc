@@ -731,6 +731,22 @@ TEST_F(VqaLoaderTest, FirstSoundChunkFillingTheRingWrapsTheWriteOffset) {
   EXPECT_EQ(audio.write_offset, 100);
 }
 
+TEST_F(VqaLoaderTest, PlaysToTheEndWithoutAnImageBuffer) {
+  // The defaults center the image in a 320x200 buffer, but with
+  // kVqaDrawToBuffer clear there is no buffer at all.
+  fake_.data = EmptyFrames(SmallHeader());
+  config_.draw_flags = 0;
+  config_.option_flags = kVqaOptionStep;
+  ASSERT_EQ(Open(), 0);
+  ASSERT_TRUE(state_.movie->drawer.image_buffer.empty());
+
+  int32_t result = 0;
+  for (int i = 0; i < 20 && result != kVqaEndOfMovie; ++i) {
+    result = PlayVqa(&state_, kVqaModeWalk);
+  }
+  EXPECT_EQ(result, kVqaEndOfMovie);
+}
+
 TEST_F(VqaLoaderTest, StopEndsPlaybackWithoutLoadingTheRest) {
   fake_.data = EmptyFrames(SmallHeader());
   ASSERT_EQ(Open(), 0);
