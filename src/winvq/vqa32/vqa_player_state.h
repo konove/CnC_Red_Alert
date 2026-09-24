@@ -43,39 +43,17 @@
 
 #include "base/numeric.h"
 #include "base/types.h"
-#include "winvq/vqa32/adpcm_decoders.h"
 #include "winvq/vqa32/audio_output.h"
 #include "winvq/vqa32/audio_ring.h"
 #include "winvq/vqa32/chunk_reader.h"
 #include "winvq/vqa32/frame_ring.h"
 #include "winvq/vqa32/lcw_buffer.h"
 #include "winvq/vqa32/movie_clock.h"
+#include "winvq/vqa32/movie_loader.h"
 #include "winvq/vqa32/vq_decoder.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player.h"
 #include "winvq/vqa32/vqaio.h"
-
-// VqaLoader: the loader's position in the file and in the buffer rings.
-struct VqaLoader {
-  // Index in the ring of the codebook the partial codebooks of the current
-  // group are collected into, to become the next group's codebook.
-  int partial_codebook = 0;
-  // Index of the last complete codebook, used by the frames being loaded.
-  int full_codebook = 0;
-  // Partial codebooks collected into partial_codebook so far, and their total
-  // size in bytes (compressed or not).
-  int32_t partial_count = 0;
-  int32_t partial_bytes = 0;
-  // Where compressed pieces collect in partial_codebook, estimated from the
-  // group's first piece.
-  int32_t partial_offset = 0;
-  // Number of the next frame to load; the movie is loaded when it reaches
-  // the header's frame count.
-  int32_t next_frame_number = 0;
-  // The chunk being loaded, kept so a loader woken from kMovieLoaderAsleep
-  // resumes inside it instead of reading a new one.
-  Chunk chunk;
-};
 
 // VqaDrawer: where and when the drawer decodes frames.
 struct VqaDrawer {
@@ -94,7 +72,7 @@ struct VqaDrawer {
   // drawn while kDrawerPalettePending is set, and its size in bytes. At most
   // 256 colors, which is why the loader rejects larger palettes.
   int32_t saved_palette_bytes;
-  std::array<unsigned char, 768> saved_palette;
+  std::array<unsigned char, kMaxPaletteBytes> saved_palette;
   // The image size in blocks, the geometry the decoder walks.
   int32_t blocks_per_row;
   int32_t block_rows;
@@ -125,10 +103,6 @@ struct VqaMovie {
   // The image buffer, when the player allocated it.
   std::vector<unsigned char> image_storage;
 
-  // The sound track's format, and the decoder state SND2 (IMA ADPCM) chunks
-  // carry from one to the next. Meaningful only with audio.
-  AudioFormat audio_format;
-  ImaAdpcmDecoder adpcm;
   // The sound on its way to the device, and what plays it; both empty when
   // the movie plays without sound. Declared in this order so the output,
   // whose mixer reads the ring, goes first.
@@ -136,24 +110,16 @@ struct VqaMovie {
   std::unique_ptr<AudioOutput> audio_output;
   // Paces the frames.
   MovieClock clock;
-  VqaLoader loader{};
+  // Reads the frames into ring; made once the sound is set up.
+  std::unique_ptr<MovieLoader> loader;
   VqaDrawer drawer{};
   uint32_t flags = 0;        // kMovie* bits
-  // Buffer sizes in bytes for one codebook, palette and set of vector
-  // pointers, computed from the header with slack for compressed data loaded
-  // at the end of the buffer.
-  int32_t codebook_capacity = 0;
-  int32_t palette_capacity = 0;
-  int32_t pointers_capacity = 0;
   // The clock reading (kVqaTicksPerSecond) when playback ended or was last
   // paused, where a resumed movie restarts the clock.
   int64_t end_time = 0;
 };
 
 // VqaMovie flags.
-// The loader stopped inside a sound chunk until the audio ring has room; see
-// chunk_header.
-constexpr uint32_t kMovieLoaderAsleep = base::Bit<uint32_t>(2);
 // The drawer and the loader have finished; kMovieDone is both.
 constexpr uint32_t kMovieDrawerDone = base::Bit<uint32_t>(3);
 constexpr uint32_t kMovieLoaderDone = base::Bit<uint32_t>(4);
@@ -199,12 +165,6 @@ int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
                 VqaConfig* config);
 void CloseVqa(VqaPlayerState* state);
 int32_t PlayVqa(VqaPlayerState* state, int32_t mode);
-
-// Loads the next frame into the loader's frame buffer, collecting its
-// codebook and sound on the way. Returns 0 when a frame was loaded, or
-// kVqaNoBuffer (no free buffer), kVqaSleeping (waiting on the audio
-// ring; call again to resume), kVqaEndOfMovie, or a read or seek error.
-int32_t LoadNextFrame(VqaPlayerState* state);
 
 // Places the image in the image buffer from config.margin_x/margin_y and the
 // origin flags, and picks the decoder for the movie's block size. Runs once,

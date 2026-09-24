@@ -273,25 +273,35 @@ TEST_F(VqaLoaderTest, PartialCompressedCodebookLoadsAtEstimatedOffset) {
   ASSERT_EQ(Open(), 0);
   // Groupsize 1: offset = codebook_capacity - (20 * 1 + 100).
   const LcwBuffer& codebook =
-      state_.movie->ring.codebook(state_.movie->loader.full_codebook).data;
+      state_.movie->ring.codebook(state_.movie->loader->full_codebook()).data;
   EXPECT_TRUE(codebook.compressed());
   EXPECT_EQ(base::At(codebook.data(), kCodebookCapacity - 121), 0);
   EXPECT_EQ(base::At(codebook.data(), kCodebookCapacity - 120), 0xAB);
 }
 
 TEST_F(VqaLoaderTest, FullCodebookDiscardsCollectedPieces) {
-  // Groupsize 2: one piece of the next codebook, then a full codebook. The
-  // next group's pieces must start from nothing again.
+  // Groupsize 2: a piece of the next codebook, then a full codebook, in frame
+  // 0. The two pieces in frames 1 and 2 must then make the next codebook from
+  // its start, not after the discarded piece.
+  config_.frame_buffer_count = 3;
+  config_.codebook_buffer_count = 2;
   VqaHeader header = SmallHeader();
   header.frames_per_group = 2;
   fake_.data = MovieStart(header, {0, 0, 0});
-  AppendChunk(fake_.data, "CBP0", std::vector<uint8_t>(20));
+  AppendChunk(fake_.data, "CBP0", std::vector<uint8_t>(20, 0xAA));
   AppendChunk(fake_.data, "CBF0", std::vector<uint8_t>(128));
+  AppendFrameEnd(fake_.data);
+  AppendChunk(fake_.data, "CBP0", std::vector<uint8_t>(20, 0xBB));
+  AppendFrameEnd(fake_.data);
+  AppendChunk(fake_.data, "CBP0", std::vector<uint8_t>(20, 0xCC));
   AppendFrameEnd(fake_.data);
 
   ASSERT_EQ(Open(), 0);
-  EXPECT_EQ(state_.movie->loader.partial_count, 0);
-  EXPECT_EQ(state_.movie->loader.partial_bytes, 0);
+  const LcwBuffer& codebook =
+      state_.movie->ring.codebook(state_.movie->loader->full_codebook()).data;
+  ASSERT_EQ(codebook.size(), 40);
+  EXPECT_EQ(base::At(codebook.contents(), 0), 0xBB);
+  EXPECT_EQ(base::At(codebook.contents(), 20), 0xCC);
 }
 
 TEST_F(VqaLoaderTest, RejectsPartialCodebookWithNegativeOffset) {
@@ -416,7 +426,7 @@ TEST_F(VqaLoaderTest, OpensMovieShorterThanFrameBuffers) {
   AppendFrameEnd(fake_.data);
 
   ASSERT_EQ(Open(), 0);
-  EXPECT_EQ(state_.movie->loader.next_frame_number, 1);
+  EXPECT_EQ(state_.movie->loader->next_frame_number(), 1);
 }
 
 TEST_F(VqaLoaderTest, TruncatedMovieStillFailsToOpen) {
@@ -574,7 +584,7 @@ TEST_F(VqaLoaderTest, StopEndsPlaybackWithoutLoadingTheRest) {
   ASSERT_EQ(Open(), 0);
 
   EXPECT_EQ(PlayVqa(&state_, kVqaModeStop), kVqaEndOfMovie);
-  EXPECT_EQ(state_.movie->loader.next_frame_number, 1);
+  EXPECT_EQ(state_.movie->loader->next_frame_number(), 1);
 }
 
 // Places the 8x8 SmallHeader() image in a 320x200 buffer, gap_x pixels

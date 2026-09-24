@@ -11,6 +11,9 @@
 #include "base/types.h"
 #include "winvq/vqa32/lcw_buffer.h"
 
+// The largest palette a frame can set: 256 colors of 3 bytes.
+inline constexpr int kMaxPaletteBytes = 256 * 3;
+
 // Codebook: the table of pixel blocks a frame's vector pointers index into.
 // One codebook serves every frame of a group, and the loader assembles the
 // next group's codebook from pieces carried by the current group's frames.
