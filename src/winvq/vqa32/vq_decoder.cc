@@ -1,4 +1,4 @@
-#include "winvq/vqa32/unvq.h"
+#include "winvq/vqa32/vq_decoder.h"
 
 #include <algorithm>
 #include <iterator>

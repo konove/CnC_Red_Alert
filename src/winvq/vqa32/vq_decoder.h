@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CNC_RED_ALERT_WINVQ_VQA32_UNVQ_H_
-#define CNC_RED_ALERT_WINVQ_VQA32_UNVQ_H_
+#ifndef CNC_RED_ALERT_WINVQ_VQA32_VQ_DECODER_H_
+#define CNC_RED_ALERT_WINVQ_VQA32_VQ_DECODER_H_
 
 // File: the VQ frame decoders, which rebuild a frame's pixels from its vector
 // pointers and the codebook of pixel blocks they index.
@@ -46,4 +46,4 @@ void DecodeFrame4x4(std::span<const unsigned char> codebook,
                     std::span<unsigned char> buffer, int blocks_per_row,
                     int block_rows, int stride);
 
-#endif  // CNC_RED_ALERT_WINVQ_VQA32_UNVQ_H_
+#endif  // CNC_RED_ALERT_WINVQ_VQA32_VQ_DECODER_H_

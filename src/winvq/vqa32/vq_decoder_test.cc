@@ -1,4 +1,4 @@
-#include "winvq/vqa32/unvq.h"
+#include "winvq/vqa32/vq_decoder.h"
 
 #include <array>
 #include <cstdint>
@@ -8,7 +8,7 @@
 #include "gtest/gtest.h"
 
 namespace {
-TEST(UnvqTest, DecodesUnalignedCodewordsToOddStrideRows) {
+TEST(VqDecoderTest, DecodesUnalignedCodewordsToOddStrideRows) {
   std::array<unsigned char, 17> codebook{};
   for (int i = 0; i < 16; ++i) {
     codebook.at(base::ToSize(i + 1)) = static_cast<uint8_t>(i + 1);
@@ -40,7 +40,7 @@ TEST(UnvqTest, DecodesUnalignedCodewordsToOddStrideRows) {
   EXPECT_EQ(output.at(10), 0xa5);
 }
 
-TEST(UnvqTest, FillsSolidBlocksWithoutTouchingRowPadding) {
+TEST(VqDecoderTest, FillsSolidBlocksWithoutTouchingRowPadding) {
   const std::array<unsigned char, 2> pointers4 = {0x81, 0xff};
   const std::array<unsigned char, 2> pointers2 = {0x81, 0x0f};
   std::array<unsigned char, 24> output{};
@@ -63,7 +63,7 @@ TEST(UnvqTest, FillsSolidBlocksWithoutTouchingRowPadding) {
   }
   EXPECT_EQ(output.at(10), 0xa5);
 }
-TEST(UnvqTest, RejectsTruncatedBuffersAndInvalidDimensions) {
+TEST(VqDecoderTest, RejectsTruncatedBuffersAndInvalidDimensions) {
   const std::array<unsigned char, 2> pointers{0x81, 0xff};
   std::array<unsigned char, 16> output{};
   output.fill(0xa5);

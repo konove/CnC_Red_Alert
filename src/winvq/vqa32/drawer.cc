@@ -32,7 +32,7 @@
 #include "absl/log/check.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
-#include "winvq/vqa32/unvq.h"
+#include "winvq/vqa32/vq_decoder.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player.h"
 #include "winvq/vqa32/vqa_player_state.h"
