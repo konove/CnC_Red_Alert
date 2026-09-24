@@ -19,7 +19,7 @@
 #include "base/seek_origin.h"
 #include "base/types.h"
 #include "gtest/gtest.h"
-#include "winvq/vqa32/vqafile.h"
+#include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqaio.h"
 #include "winvq/vqa32/vqaplayp.h"
 #include "winvq/vqm32/compress.h"

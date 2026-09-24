@@ -46,7 +46,7 @@
 #include <span>
 #include <vector>
 
-#include "winvq/vqa32/vqafile.h"
+#include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqaio.h"
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqm32/soscomp.h"
@@ -412,7 +412,7 @@ struct VQAData {
   // RAII storage for buffers
   std::vector<unsigned char> ImageBufStorage;
   // One FINF entry per header frame: 4 flag bits on top of the halved file
-  // offset (see FrameHasPalette and FrameByteOffset in vqafile.h).
+  // offset (see FrameHasPalette and FrameByteOffset in vqa_format.h).
   std::vector<uint32_t> FoffStorage;
 
   VQAFrameNode* FrameData = nullptr;  // Points to first node in FrameNodes

@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CNC_RED_ALERT_WINVQ_VQA32_VQAFILE_H_
-#define CNC_RED_ALERT_WINVQ_VQA32_VQAFILE_H_
+#ifndef CNC_RED_ALERT_WINVQ_VQA32_VQA_FORMAT_H_
+#define CNC_RED_ALERT_WINVQ_VQA32_VQA_FORMAT_H_
 
 // File: the on-disk layout of a VQA movie - the VQHD header, the FINF frame
 // table's bit fields, and the chunk IDs inside the WVQA form.
@@ -143,4 +143,4 @@ constexpr int32_t kChunkSna0 = MakeId('S', 'N', 'A', '0');  // Uncompressed.
 constexpr int32_t kChunkSna1 = MakeId('S', 'N', 'A', '1');  // Zap compressed.
 constexpr int32_t kChunkSna2 = MakeId('S', 'N', 'A', '2');  // ADPCM compressed.
 
-#endif  // CNC_RED_ALERT_WINVQ_VQA32_VQAFILE_H_
+#endif  // CNC_RED_ALERT_WINVQ_VQA32_VQA_FORMAT_H_

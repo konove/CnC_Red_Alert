@@ -80,7 +80,7 @@
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
-#include "winvq/vqa32/vqafile.h"
+#include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqaplay.h"
 #include "winvq/vqa32/vqaplayp.h"
 #include "winvq/vqm32/compress.h"

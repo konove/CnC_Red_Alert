@@ -60,7 +60,7 @@
 #include <mem.h>
 #include <process.h>
 #include <sys\timeb.h>
-#include <vqa32\vqafile.h>
+#include <vqa32\vqa_format.h>
 #include <vqa32\vqaplay.h>
 #include <vqm32\all.h>
 
