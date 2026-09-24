@@ -40,7 +40,7 @@
 // The loader rejects a VQHD whose size is not sizeof(VqaHeader), so the packing
 // and field order are the file format. The fields are little-endian and read
 // raw, which assumes a little-endian host. A version 1 movie's audio fields are
-// ignored: its sound is always 22050 Hz 8-bit mono (see AllocBuffers in
+// ignored: its sound is always 22050 Hz 8-bit mono (see AllocateMovie in
 // loader.cc).
 #pragma pack(push, 1)
 struct VqaHeader {

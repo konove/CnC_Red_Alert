@@ -39,66 +39,67 @@ int32_t AudioUnzap(std::span<const unsigned char> /*source*/,
   return 0;
 }
 
-void VQA_sosCODECInitStream(SosCompressInfo* info) {
-  info->predicted = info->predicted2 = 0;
-  info->step_index = info->step_index2 = 0;
+void ResetAdpcmStream(AdpcmStream* stream) {
+  stream->predicted = stream->predicted2 = 0;
+  stream->step_index = stream->step_index2 = 0;
 }
 
-bool DecompressVqaSosData(SosCompressInfo* info, int32_t uncomp_size) {
+bool DecodeAdpcmSound(AdpcmStream* stream, int32_t output_bytes) {
   // The only format the movies use; see soscomp.h.
-  if (info->channels != 1 || info->bit_size != 16) {
-    absl::FPrintF(stderr, "%s (%d/%d)\n", __func__, info->channels,
-                  info->bit_size);
+  if (stream->channels != 1 || stream->bits_per_sample != 16) {
+    absl::FPrintF(stderr, "%s (%d/%d)\n", __func__, stream->channels,
+                  stream->bits_per_sample);
     return false;
   }
 
-  auto in_ptr = info->source;
-  auto out_ptr = info->dest;
-  if (uncomp_size < 0 || std::cmp_greater(uncomp_size, out_ptr.size()) ||
-      std::cmp_greater(uncomp_size / 4, in_ptr.size())) {
+  auto input = stream->source;
+  auto output = stream->dest;
+  if (output_bytes < 0 || std::cmp_greater(output_bytes, output.size()) ||
+      std::cmp_greater(output_bytes / 4, input.size())) {
     return false;
   }
 
   // One input byte is two samples, 4 output bytes. A trailing part of that
-  // (uncomp_size not a multiple of 4) is left undecoded.
-  while (uncomp_size >= 4) {
-    const uint8_t raw_byte = in_ptr.front();
-    in_ptr = in_ptr.subspan(1);
+  // (output_bytes not a multiple of 4) is left undecoded.
+  while (output_bytes >= 4) {
+    const uint8_t code_pair = input.front();
+    input = input.subspan(1);
 
     // A byte holds two 4-bit codes, the low nibble first.
     for (int i = 0; i < 2; ++i) {
-      const auto nibble =
-          static_cast<uint8_t>(i == 0 ? raw_byte & 0x0F : raw_byte >> 4);
+      const auto code =
+          static_cast<uint8_t>(i == 0 ? code_pair & 0x0F : code_pair >> 4);
 
       // This sample uses the step size before the update below.
-      const int step = base::At(kImaAdpcmStepTable, info->step_index);
+      const int step = base::At(kImaAdpcmStepTable, stream->step_index);
 
-      const int index_delta = base::At(kImaAdpcmIndexTable, nibble);
-      info->step_index = static_cast<int16_t>(
-          std::clamp(info->step_index + index_delta, 0, 88));
+      const int index_delta = base::At(kImaAdpcmIndexTable, code);
+      stream->step_index = static_cast<int16_t>(
+          std::clamp(stream->step_index + index_delta, 0, 88));
 
       // The difference is (magnitude + 1/2) * step / 4, the magnitude being
       // the code's low 3 bits and bit 3 its sign. The IMA reference adds the
       // shifted steps bit by bit and truncates each; this truncates once, so
       // it can come out up to 3 higher.
-      const int sign = nibble & 8 ? -1 : 1;
-      const int diff = (((((nibble & 7) * 2) + 1) * step) / 8) * sign;
+      const int sign = code & 8 ? -1 : 1;
+      const int difference = (((((code & 7) * 2) + 1) * step) / 8) * sign;
 
       // The prediction saturates at the 16-bit range.
-      info->predicted = std::clamp(info->predicted + diff, -32768, 32767);
+      stream->predicted =
+          std::clamp(stream->predicted + difference, -32768, 32767);
 
-      const auto sample = static_cast<int16_t>(info->predicted);
-      base::CopyBytes(std::as_writable_bytes(out_ptr),
-                      base::ObjectBytes(sample), sizeof(sample));
-      out_ptr = out_ptr.subspan(sizeof(sample));
+      const auto sample = static_cast<int16_t>(stream->predicted);
+      base::CopyBytes(std::as_writable_bytes(output), base::ObjectBytes(sample),
+                      sizeof(sample));
+      output = output.subspan(sizeof(sample));
     }
 
-    uncomp_size -= 4;
+    output_bytes -= 4;
   }
 
   // The next chunk carries on from here.
-  info->source = in_ptr;
-  info->dest = out_ptr;
+  stream->source = input;
+  stream->dest = output;
 
   return true;
 }

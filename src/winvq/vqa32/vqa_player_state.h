@@ -178,7 +178,7 @@ struct VqaDrawer {
   // When the frame-skipping path last passed a frame; starts one second in
   // the past so the first frame is never early.
   int64_t last_time;  // In kVqaTicksPerSecond, as returned by ReadMovieClock().
-  // Number of the last frame selected for drawing. Select_Frame() draws
+  // Number of the last frame selected for drawing. SelectFrameToDraw() draws
   // regardless of the clock once frame_rate / 5 frames have passed since, so
   // at least 5 frames a second reach the screen.
   int32_t last_selected_frame;
@@ -230,7 +230,7 @@ struct VqaAudio {
   int bits_per_sample = 0;  // 8 or 16
   int32_t bytes_per_second = 0;
   // Decoder state for SND2 (IMA ADPCM) chunks, carried from chunk to chunk.
-  SosCompressInfo adpcm = {};
+  AdpcmStream adpcm = {};
   // Blocks handed to SDL since the sound started (a replayed block counts
   // only after the movie has loaded completely). ReadMovieClock() derives the
   // movie clock from it.
@@ -251,8 +251,8 @@ struct VqaMovie {
   // size has no routine.
   void (*decode_frame)(std::span<const unsigned char> codebook,
                        std::span<const unsigned char> pointers,
-                       std::span<unsigned char> buffer, int blocksperrow,
-                       int numrows, int bufwidth) = nullptr;
+                       std::span<unsigned char> buffer, int blocks_per_row,
+                       int block_rows, int stride) = nullptr;
 
   // RAII storage for nodes - these vectors own the node objects
   std::vector<std::unique_ptr<VqaCodebook>> codebooks;
@@ -331,9 +331,9 @@ struct VqaPlayerState {
 // The player entry points behind VqaPlayer's Open(), Close(), Play() and
 // SeekFrame(); see vqa_player.h for what they do. OpenVqa() and CloseVqa() are
 // also the allocation and release of state->movie.
-int32_t OpenVqa(VqaPlayerState* vqa, std::string_view filename,
+int32_t OpenVqa(VqaPlayerState* state, std::string_view filename,
                 VqaConfig* config);
-void CloseVqa(VqaPlayerState* vqa);
+void CloseVqa(VqaPlayerState* state);
 int32_t PlayVqa(VqaPlayerState* state, int32_t mode);
 int32_t SeekVqaFrame(VqaPlayerState* vqa, int32_t framenum);
 
@@ -341,18 +341,18 @@ int32_t SeekVqaFrame(VqaPlayerState* vqa, int32_t framenum);
 // codebook and sound on the way. Returns 0 when a frame was loaded, or
 // kVqaNoBuffer (no free buffer), kVqaSleeping (waiting on the audio
 // ring; call again to resume), kVqaEndOfMovie, or a read or seek error.
-int32_t LoadNextFrame(VqaPlayerState* vqa);
+int32_t LoadNextFrame(VqaPlayerState* state);
 
 // Places the image in the image buffer from config.margin_x/margin_y and the
 // origin flags, and picks the decoder for the movie's block size. Runs once,
 // when playback starts.
-void ConfigureDrawer(VqaPlayerState* vqap);
+void ConfigureDrawer(VqaPlayerState* state);
 
 // Decodes the drawer's next frame into the image buffer if it is due, hands it
 // to the frame callback, and leaves it for ReleaseDrawnFrame(). Returns 0 when
 // a frame was drawn; kVqaNotTime, kVqaNoBuffer or kVqaSleeping when none was;
 // or kVqaEndOfMovie when the frame callback asked to stop.
-int32_t DrawNextFrame(VqaPlayerState* vqa);
+int32_t DrawNextFrame(VqaPlayerState* state);
 
 // The page flip: once the drawer has drawn a frame (kMovieAwaitingRelease),
 // frees that frame's buffer for the loader.

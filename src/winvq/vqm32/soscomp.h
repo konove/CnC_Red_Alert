@@ -39,17 +39,17 @@
 /* compression types */
 inline constexpr int kAdpcmType1 = 0;
 
-// SosCompressInfo: an IMA ADPCM stream being decoded. The VQA loader sets
+// AdpcmStream: an IMA ADPCM stream being decoded. The VQA loader sets
 // source, dest and the format for each sound chunk; the predictor and step
 // index carry the decoder's state from one chunk to the next.
-struct SosCompressInfo {
+struct AdpcmStream {
   std::span<const uint8_t> source;
   std::span<uint8_t> dest;
 
   uint32_t comp_size;
   uint32_t uncomp_size;
 
-  int16_t bit_size;
+  int16_t bits_per_sample;
   int16_t channels;
 
   // --- Channel 1 State ---
@@ -84,12 +84,12 @@ using SOS_COMPRESS_HEADER = tagCOMPRESS_HEADER;
 /* Prototypes */
 
 // Starts a stream: zeroes the predictors and step indexes of both channels.
-void VQA_sosCODECInitStream(SosCompressInfo* /*info*/);
-uint32_t VQA_sosCODECCompressData(SosCompressInfo*, uint32_t);
-// Decodes IMA ADPCM from info->source into uncomp_size bytes of info->dest,
+void ResetAdpcmStream(AdpcmStream* stream);
+uint32_t VQA_sosCODECCompressData(AdpcmStream*, uint32_t);
+// Decodes IMA ADPCM from stream->source into output_bytes of stream->dest,
 // continuing from the state the last call left, and advances source and dest
 // past what it used. Only 16-bit mono is supported. Returns false, decoding
 // nothing, for another format or when either span is too short.
-bool DecompressVqaSosData(SosCompressInfo* /*info*/, int32_t /*uncomp_size*/);
+bool DecodeAdpcmSound(AdpcmStream* stream, int32_t output_bytes);
 
 #endif  // CNC_RED_ALERT_WINVQ_VQM32_SOSCOMP_H_
