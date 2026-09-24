@@ -283,6 +283,16 @@ VqaHeader SmallHeader() {
 
 constexpr int kCodebookCapacity = 376;
 
+// SmallHeader() with a sound track of 22050 Hz, 8-bit mono.
+VqaHeader SmallSoundHeader() {
+  VqaHeader header = SmallHeader();
+  header.flags = kVqaHasAudio;
+  header.sample_rate = 22050;
+  header.channels = 1;
+  header.bits_per_sample = 8;
+  return header;
+}
+
 std::vector<uint8_t> HeaderPayload(const VqaHeader& header) {
   std::vector<uint8_t> payload(sizeof(header));
   base::CopyBytes(std::as_writable_bytes(std::span(payload)),
@@ -584,12 +594,8 @@ std::vector<uint8_t> EmptyFrames(const VqaHeader& header) {
 }
 
 TEST_F(VqaLoaderTest, PlaysSilentlyWithoutAnAudioRing) {
-  VqaHeader header = SmallHeader();
+  VqaHeader header = SmallSoundHeader();
   header.frame_count = 1;
-  header.flags = kVqaHasAudio;
-  header.sample_rate = 22050;
-  header.channels = 1;
-  header.bits_per_sample = 8;
   fake_.data = EmptyFrames(header);
   EnableAudio();
   config_.audio_buffer_bytes = 0;
@@ -605,12 +611,7 @@ TEST_F(VqaLoaderTest, PlaysSilentlyWithoutAnAudioRing) {
 }
 
 TEST_F(VqaLoaderTest, WalkKeepsTheSoundPlayingUntilTheEnd) {
-  VqaHeader header = SmallHeader();
-  header.flags = kVqaHasAudio;
-  header.sample_rate = 22050;
-  header.channels = 1;
-  header.bits_per_sample = 8;
-  fake_.data = MovieStart(header, {0, 0, 0});
+  fake_.data = MovieStart(SmallSoundHeader(), {0, 0, 0});
   // More than one frame's staging buffer, so it loads straight into the
   // audio ring as its first two blocks and the sound starts with the movie.
   AppendChunk(fake_.data, "SND0", std::vector<uint8_t>(4096, 0x80));
@@ -637,12 +638,7 @@ TEST_F(VqaLoaderTest, WalkKeepsTheSoundPlayingUntilTheEnd) {
 }
 
 TEST_F(VqaLoaderTest, FailsToOpenWhenTheSoundCannotBeConverted) {
-  VqaHeader header = SmallHeader();
-  header.flags = kVqaHasAudio;
-  header.sample_rate = 22050;
-  header.channels = 1;
-  header.bits_per_sample = 8;
-  fake_.data = EmptyFrames(header);
+  fake_.data = EmptyFrames(SmallSoundHeader());
   EnableAudio();
   // Not an SDL sample format, so SDL cannot convert to it.
   audio_spec_.format = 0;
@@ -652,12 +648,7 @@ TEST_F(VqaLoaderTest, FailsToOpenWhenTheSoundCannotBeConverted) {
 }
 
 TEST_F(VqaLoaderTest, RingOfPartBlocksWrapsAfterTheLastWholeBlock) {
-  VqaHeader header = SmallHeader();
-  header.flags = kVqaHasAudio;
-  header.sample_rate = 22050;
-  header.channels = 1;
-  header.bits_per_sample = 8;
-  fake_.data = MovieStart(header, {0, 0, 0});
+  fake_.data = MovieStart(SmallSoundHeader(), {0, 0, 0});
   // Loads straight into the ring as its two whole blocks.
   AppendChunk(fake_.data, "SND0", std::vector<uint8_t>(4096, 0x80));
   AppendFrameEnd(fake_.data);
@@ -683,16 +674,10 @@ TEST_F(VqaLoaderTest, RingOfPartBlocksWrapsAfterTheLastWholeBlock) {
     audio_callback_(device);
   }
   EXPECT_EQ(audio.play_block, 0);
-  EXPECT_EQ(audio.play_offset, 0);
 }
 
 TEST_F(VqaLoaderTest, CopyStagedAudioWrapsAtTheEndOfTheRing) {
-  VqaHeader header = SmallHeader();
-  header.flags = kVqaHasAudio;
-  header.sample_rate = 22050;
-  header.channels = 1;
-  header.bits_per_sample = 8;
-  fake_.data = EmptyFrames(header);
+  fake_.data = EmptyFrames(SmallSoundHeader());
   EnableAudio();
   config_.audio_buffer_bytes = 4 * 2048;
   ASSERT_EQ(Open(), 0);

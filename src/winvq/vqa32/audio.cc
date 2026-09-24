@@ -42,19 +42,17 @@
 #include "winvq/vqa32/vqa_player_state.h"
 
 // The sound system serves one movie at a time: the state below is shared by
-// every VqaPlayerState, and a second movie opened or started while one plays
-// takes it over. The callback reads it on the audio thread, so the main
-// thread changes what the callback reads only with the device locked.
+// every VqaPlayerState, and a second movie opened while one is open takes it
+// over. The callback reads it on the audio thread, so the main thread changes
+// what the callback reads only with the device locked.
 
-// The movie the callback plays, from StartMovieAudio() to StopMovieAudio();
-// nullptr otherwise.
+// The movie whose sound is playing, from StartMovieAudio() to
+// StopMovieAudio(); nullptr while none is. That movie's audio.flags carry
+// kAudioPlaying too.
 static VqaPlayerState* playing_state = nullptr;
-// A movie's sound is playing, from StartMovieAudio() to StopMovieAudio();
-// that movie's audio.flags carry kAudioPlaying too.
-static bool sound_playing = false;
-// The clock SetMovieClock() chose, kVqaClockAudio or kVqaClockSystem. Zero
-// before the first call, which reads the system clock.
-static int active_clock;
+// SetMovieClock() chose the audio clock; otherwise the system clock runs the
+// movie.
+static bool audio_clock = false;
 
 // Added to the chosen clock so it reads the time SetMovieClock() was given.
 static int64_t clock_offset_ticks = 0;
@@ -69,6 +67,27 @@ static SDL_AudioStream* sound_converter = nullptr;
 // is 1.0), so ReadMovieClock() can count converted bytes as movie bytes.
 static int64_t converter_byte_ratio = 1 << 15;
 
+namespace {
+
+// Holds the SDL audio device's lock while in scope. The callback runs with the
+// device locked, so nothing it reads changes under it.
+class DeviceLock {
+ public:
+  explicit DeviceLock(const SDL_AudioDeviceID device) : device_(device) {
+    SDL_LockAudioDevice(device_);
+  }
+  ~DeviceLock() { SDL_UnlockAudioDevice(device_); }
+  DeviceLock(const DeviceLock&) = delete;
+  DeviceLock& operator=(const DeviceLock&) = delete;
+  DeviceLock(DeviceLock&&) = delete;
+  DeviceLock& operator=(DeviceLock&&) = delete;
+
+ private:
+  SDL_AudioDeviceID device_;
+};
+
+}  // namespace
+
 // The mixer installed in the client's callback slot. The client's SDL audio
 // callback calls it on the audio thread, with the device locked, to fill
 // device_buffer with the movie's sound in the device's format; the client has
@@ -78,7 +97,7 @@ static void MixMovieSound(const std::span<std::byte> device_buffer) {
     return;
   }
   auto* audio = &playing_state->movie->audio;
-  if (!(audio->flags & kAudioPlaying) || sound_paused || !sound_converter) {
+  if (!(audio->flags & kAudioPlaying) || sound_paused) {
     return;
   }
 
@@ -90,30 +109,20 @@ static void MixMovieSound(const std::span<std::byte> device_buffer) {
   while (SDL_AudioStreamAvailable(sound_converter) < device_bytes) {
     SDL_AudioStreamPut(sound_converter,
                        audio->ring
-                           .subspan(base::ToSize(audio->play_offset),
+                           .subspan(base::ToSize(audio->play_block *
+                                                 config->audio_block_bytes),
                                     base::ToSize(config->audio_block_bytes))
                            .data(),
                        config->audio_block_bytes);
 
-    int32_t next_block = audio->play_block + 1;
-    if (next_block >= audio->block_count) {
-      next_block = 0;
-    }
+    const int32_t next_block = (audio->play_block + 1) % audio->block_count;
 
     // Move on only once the loader has filled the next block, freeing this
     // one for it. Otherwise play this block again: the loader has fallen
     // behind, and a repeat is less jarring than a gap.
     if (audio->block_loaded.at(base::ToSize(next_block)) == 1) {
       audio->block_loaded.at(base::ToSize(audio->play_block)) = 0;
-
-      audio->play_offset += config->audio_block_bytes;
-      audio->play_block++;
-
-      // The ring is whole blocks, so this wraps together with next_block.
-      if (audio->play_offset >= config->audio_buffer_bytes) {
-        audio->play_offset = 0;
-        audio->play_block = 0;
-      }
+      audio->play_block = next_block;
       audio->blocks_played++;
     } else {
       // A repeat advances the clock only once the whole movie is loaded. Until
@@ -137,22 +146,9 @@ static int open_movie_count = 0;
 int32_t OpenMovieAudio(VqaPlayerState* state) {
   VqaConfig* config = &state->config;
   VqaAudio* audio = &state->movie->audio;
-
-  if (open_movie_count) {
-    // Another movie's stream is about to be freed; take the callback out
-    // first. The device lock waits for a call in progress to finish.
-    SDL_LockAudioDevice(config->audio_device_id);
-    *config->audio_callback = nullptr;
-    SDL_UnlockAudioDevice(config->audio_device_id);
-  }
-
-  if (sound_converter) {
-    SDL_FreeAudioStream(sound_converter);
-  }
-
   const SDL_AudioSpec* spec = config->audio_spec;
 
-  sound_converter = SDL_NewAudioStream(
+  SDL_AudioStream* const converter = SDL_NewAudioStream(
       audio->bits_per_sample == 16 ? AUDIO_S16 : AUDIO_S8,
       static_cast<uint8_t>(audio->channels), audio->sample_rate, spec->format,
       spec->channels, spec->freq);
@@ -160,21 +156,23 @@ int32_t OpenMovieAudio(VqaPlayerState* state) {
   // Without a stream the callback would play nothing and the audio clock never
   // move, so the movie would wait forever; the format's zero sample size would
   // also divide by zero below.
-  if (sound_converter == nullptr) {
+  if (converter == nullptr) {
     return -1;
   }
 
-  const int bytes_per_second_in =
-      audio->bits_per_sample / 8 * audio->channels * audio->sample_rate;
   const int bytes_per_second_out =
       SDL_AUDIO_BITSIZE(spec->format) / 8 * spec->channels * spec->freq;
-
   converter_byte_ratio =
-      (int64_t{bytes_per_second_in} * 32768) / bytes_per_second_out;
+      (int64_t{audio->bytes_per_second} * 32768) / bytes_per_second_out;
 
-  SDL_LockAudioDevice(config->audio_device_id);
-  *config->audio_callback = MixMovieSound;
-  SDL_UnlockAudioDevice(config->audio_device_id);
+  {
+    // Replaces the stream of a movie already open. The callback runs with the
+    // device locked, so it never sees the old stream freed.
+    const DeviceLock lock(config->audio_device_id);
+    SDL_FreeAudioStream(sound_converter);
+    sound_converter = converter;
+    *config->audio_callback = MixMovieSound;
+  }
 
   audio->flags |= kAudioOpen;
 
@@ -191,69 +189,56 @@ void CloseMovieAudio(VqaPlayerState* state) {
 
   // Another open movie still uses the stream and the callback.
   open_movie_count--;
-  if (open_movie_count) {
+  if (open_movie_count > 0) {
     return;
   }
 
-  // The device lock waits out a callback in progress, so the stream can be
-  // freed once the slot is clear.
-  SDL_LockAudioDevice(config->audio_device_id);
-  *config->audio_callback = nullptr;
-  SDL_UnlockAudioDevice(config->audio_device_id);
-
-  if (sound_converter) {
-    SDL_FreeAudioStream(sound_converter);
-    sound_converter = nullptr;
+  {
+    // The lock waits out a callback in progress, so the stream can be freed
+    // once the slot is clear.
+    const DeviceLock lock(config->audio_device_id);
+    *config->audio_callback = nullptr;
   }
+  SDL_FreeAudioStream(sound_converter);
+  sound_converter = nullptr;
 
   audio->flags &= ~kAudioOpen;
 }
 
 int32_t StartMovieAudio(VqaPlayerState* state) {
-  VqaConfig* config = &state->config;
-  VqaAudio* audio = &state->movie->audio;
-
-  SDL_LockAudioDevice(config->audio_device_id);
-  playing_state = state;
-
-  if (sound_playing) {
-    SDL_UnlockAudioDevice(config->audio_device_id);
+  const DeviceLock lock(state->config.audio_device_id);
+  if (playing_state != nullptr) {
     return -1;
   }
 
+  VqaAudio* audio = &state->movie->audio;
   // The clock restarts from nothing played; PlayVqa() sets it with
   // SetMovieClock() right after.
   audio->blocks_played = 0;
-
   audio->flags |= kAudioPlaying;
-  sound_playing = true;
-
-  SDL_UnlockAudioDevice(config->audio_device_id);
+  playing_state = state;
 
   return 0;
 }
 
 void StopMovieAudio(const VqaPlayerState* state) {
-  VqaAudio* audio = &state->movie->audio;
-
-  SDL_LockAudioDevice(state->config.audio_device_id);
-  if (sound_playing) {
+  const DeviceLock lock(state->config.audio_device_id);
+  if (playing_state != nullptr) {
     // The callback stops pulling from the ring. What it already converted
     // stays in sound_converter, and a restart after a pause plays it first: it
     // is where the sound had got to.
-    audio->flags &= ~kAudioPlaying;
-    sound_playing = false;
+    state->movie->audio.flags &= ~kAudioPlaying;
+    playing_state = nullptr;
   }
-
-  playing_state = nullptr;
-  SDL_UnlockAudioDevice(state->config.audio_device_id);
 }
 
 int32_t CopyStagedAudio(VqaPlayerState* state) {
   VqaAudio* audio = &state->movie->audio;
   VqaConfig* config = &state->config;
 
-  if ((config->option_flags & kVqaOptionAudio) == 0 || audio->ring.empty() ||
+  // With kVqaOptionAudio set the movie has a ring; OpenVqa() turns the option
+  // off otherwise.
+  if ((config->option_flags & kVqaOptionAudio) == 0 ||
       audio->staged_bytes == 0) {
     return 0;
   }
@@ -264,12 +249,11 @@ int32_t CopyStagedAudio(VqaPlayerState* state) {
   const int32_t end_block = (audio->write_offset + audio->staged_bytes) /
                             config->audio_block_bytes % audio->block_count;
 
-  SDL_LockAudioDevice(config->audio_device_id);
+  const DeviceLock lock(config->audio_device_id);
 
   // The unplayed blocks are one run starting at play_block, so if the last
   // block the write reaches is free, so is every block before it.
   if (audio->block_loaded.at(base::ToSize(end_block)) == 1) {
-    SDL_UnlockAudioDevice(config->audio_device_id);
     return kVqaSleeping;
   }
 
@@ -294,50 +278,31 @@ int32_t CopyStagedAudio(VqaPlayerState* state) {
     audio->block_loaded.at(base::ToSize(block)) = 1;
   }
 
-  SDL_UnlockAudioDevice(config->audio_device_id);
   return 0;
 }
 
-void PauseVqaAudio() {
-  if (sound_playing && playing_state != nullptr) {
-    SDL_LockAudioDevice(playing_state->config.audio_device_id);
-    sound_paused = true;
-    SDL_UnlockAudioDevice(playing_state->config.audio_device_id);
+// Pauses or resumes the playing movie's sound. On resume the callback picks
+// up at play_block, and the audio clock with it.
+static void SetSoundPaused(const bool paused) {
+  if (playing_state != nullptr) {
+    const DeviceLock lock(playing_state->config.audio_device_id);
+    sound_paused = paused;
   }
 }
 
-void ResumeVqaAudio() {
-  if (sound_playing && playing_state != nullptr) {
-    // The callback picks up at play_block, and the audio clock with it.
-    SDL_LockAudioDevice(playing_state->config.audio_device_id);
-    sound_paused = false;
-    SDL_UnlockAudioDevice(playing_state->config.audio_device_id);
-  }
-}
+void PauseVqaAudio() { SetSoundPaused(true); }
 
-void SetMovieClock(const VqaPlayerState* state, int64_t now_ticks,
-                   int clock_source) {
-  // The audio clock, the default, needs sound playing; everything else runs
-  // on the system clock.
-  const bool use_audio =
-      (clock_source == kVqaClockDefault || clock_source == kVqaClockAudio) &&
-      sound_playing;
-  active_clock = use_audio ? kVqaClockAudio : kVqaClockSystem;
+void ResumeVqaAudio() { SetSoundPaused(false); }
 
-  clock_offset_ticks = 0;
-  const int64_t clock_ticks = ReadMovieClock(state);
-  clock_offset_ticks = now_ticks - clock_ticks;
-}
-
-int64_t ReadMovieClock(const VqaPlayerState* state) {
-  // No sound playing, or not asked for: the system clock.
-  if (active_clock != kVqaClockAudio) {
+// The chosen clock without clock_offset_ticks, in kVqaTicksPerSecond.
+static int64_t RawClockTicks(const VqaPlayerState* state) {
+  if (!audio_clock) {
     // steady_clock, not the wall clock: an adjustment to that mid-movie would
     // drop a run of frames, or freeze the movie while it caught up.
     const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                         std::chrono::steady_clock::now().time_since_epoch())
                         .count();
-    return (ms * kVqaTicksPerSecond / 1000) + clock_offset_ticks;
+    return ms * kVqaTicksPerSecond / 1000;
   }
 
   // The audio clock: the movie bytes handed to the callback's stream, less
@@ -345,18 +310,32 @@ int64_t ReadMovieClock(const VqaPlayerState* state) {
   const VqaAudio& audio = state->movie->audio;
   const VqaConfig& config = state->config;
 
-  SDL_LockAudioDevice(config.audio_device_id);
-  int64_t played_bytes =
-      int64_t{audio.blocks_played} * config.audio_block_bytes;
-  // The queue is in the device's format; converter_byte_ratio turns it back
-  // into movie bytes. The device's own buffer is not counted, so the clock
-  // runs up to one buffer ahead of what is heard.
-  const int queued_bytes = SDL_AudioStreamAvailable(sound_converter);
-  played_bytes -= (queued_bytes * converter_byte_ratio) / 32768;
-  SDL_UnlockAudioDevice(config.audio_device_id);
+  int64_t played_bytes = 0;
+  {
+    const DeviceLock lock(config.audio_device_id);
+    played_bytes = int64_t{audio.blocks_played} * config.audio_block_bytes;
+    // The queue is in the device's format; converter_byte_ratio turns it back
+    // into movie bytes. The device's own buffer is not counted, so the clock
+    // runs up to one buffer ahead of what is heard.
+    const int queued_bytes = SDL_AudioStreamAvailable(sound_converter);
+    played_bytes -= (queued_bytes * converter_byte_ratio) / 32768;
+  }
 
   const int64_t played_samples =
       played_bytes / audio.channels / (audio.bits_per_sample / 8);
-  return (played_samples * kVqaTicksPerSecond / audio.sample_rate) +
-         clock_offset_ticks;
+  return played_samples * kVqaTicksPerSecond / audio.sample_rate;
+}
+
+void SetMovieClock(const VqaPlayerState* state, int64_t now_ticks,
+                   int clock_source) {
+  // The audio clock, the default, needs sound playing; everything else runs
+  // on the system clock.
+  audio_clock =
+      (clock_source == kVqaClockDefault || clock_source == kVqaClockAudio) &&
+      playing_state != nullptr;
+  clock_offset_ticks = now_ticks - RawClockTicks(state);
+}
+
+int64_t ReadMovieClock(const VqaPlayerState* state) {
+  return RawClockTicks(state) + clock_offset_ticks;
 }

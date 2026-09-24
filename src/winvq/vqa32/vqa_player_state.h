@@ -203,8 +203,8 @@ struct VqaFlipper {
 // loader decompresses each frame's sound chunk into staging, and
 // CopyStagedAudio() moves it into the ring at write_offset, marking the blocks
 // it filled in block_loaded. The callback, on the audio thread, plays
-// play_block from play_offset and frees it once the next block is loaded; if it
-// is not, it plays the block again. The loader sleeps (kVqaSleeping) while the
+// play_block and frees it once the next block is loaded; if it is not, it
+// plays the block again. The loader sleeps (kVqaSleeping) while the
 // block it would overwrite is still unplayed. Code on the main thread holds the
 // SDL device lock while changing what the callback reads.
 struct VqaAudio {
@@ -224,8 +224,6 @@ struct VqaAudio {
   int32_t staged_bytes = 0;
   int32_t staging_capacity = 0;
   uint32_t flags = 0;  // kAudio* bits
-  // Byte offset of play_block in the ring.
-  int32_t play_offset = 0;
   // Format of the track being played, the primary or the alternate one.
   int sample_rate = 0;
   int channels = 0;
