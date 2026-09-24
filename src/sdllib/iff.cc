@@ -11,8 +11,8 @@
 #include "port/unaligned.h"
 #include "sdllib/lcw_uncompress.h"
 
-base::ssize UncompressBlock(std::span<const std::byte> block,
-                            std::span<std::byte> dest) {
+base::ssize UncompressBlock(const std::span<const std::byte> block,
+                            const std::span<std::byte> dest) {
   if (block.size() < sizeof(CompressedBlockHeader)) {
     return 0;
   }
