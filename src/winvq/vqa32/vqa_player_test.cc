@@ -634,6 +634,21 @@ TEST_F(VqaLoaderTest, WalkKeepsTheSoundPlayingUntilTheEnd) {
   EXPECT_EQ(state_.movie->audio.flags & kAudioPlaying, 0U);
 }
 
+TEST_F(VqaLoaderTest, FailsToOpenWhenTheSoundCannotBeConverted) {
+  VqaHeader header = SmallHeader();
+  header.flags = kVqaHasAudio;
+  header.sample_rate = 22050;
+  header.channels = 1;
+  header.bits_per_sample = 8;
+  fake_.data = EmptyFrames(header);
+  EnableAudio();
+  // Not an SDL sample format, so SDL cannot convert to it.
+  audio_spec_.format = 0;
+
+  EXPECT_EQ(Open(), kVqaErrorAudio);
+  EXPECT_EQ(audio_callback_, nullptr);
+}
+
 TEST_F(VqaLoaderTest, StopEndsPlaybackWithoutLoadingTheRest) {
   fake_.data = EmptyFrames(SmallHeader());
   ASSERT_EQ(Open(), 0);

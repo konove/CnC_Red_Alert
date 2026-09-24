@@ -157,16 +157,17 @@ int32_t OpenMovieAudio(VqaPlayerState* vqap) {
 
   const auto* spec = static_cast<SDL_AudioSpec*>(config->audio_spec);
 
-  // TODO: SDL_NewAudioStream() fails on an invalid spec (a zero rate or
-  // channel count) and returns nullptr, which goes unnoticed: the function
-  // still returns 0, the callback then plays nothing, so the audio clock never
-  // moves and PlayVqa() waits forever for the next frame. A zero spec->freq
-  // also divides by zero below. It should return an error, which OpenVqa()
-  // turns into kVqaErrorAudio. Neither game passes such a spec.
   SDLStream = SDL_NewAudioStream(
       audio->bits_per_sample == 16 ? AUDIO_S16 : AUDIO_S8,
       static_cast<uint8_t>(audio->channels), audio->sample_rate, spec->format,
       spec->channels, spec->freq);
+  // SDL rejects a spec it cannot convert to, such as an unknown format.
+  // Without a stream the callback would play nothing and the audio clock never
+  // move, so the movie would wait forever; the format's zero sample size would
+  // also divide by zero below.
+  if (SDLStream == nullptr) {
+    return -1;
+  }
 
   const int bytes_per_second_in =
       audio->bits_per_sample / 8 * audio->channels * audio->sample_rate;

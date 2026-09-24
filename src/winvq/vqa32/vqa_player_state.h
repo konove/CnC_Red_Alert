@@ -374,7 +374,8 @@ int64_t ReadMovieClock(VqaPlayerState* vqap);
 // below keep its state in audio.cc, shared by every VqaPlayerState.
 //
 // Creates the SDL stream converting the movie's sound to config.audio_spec
-// and installs the player's mixer in config.audio_callback. Returns 0.
+// and installs the player's mixer in config.audio_callback. Returns 0, or -1
+// with nothing installed when SDL cannot convert to that spec.
 int32_t OpenMovieAudio(VqaPlayerState* vqap);
 // Stops the sound and, when this is the last open movie, removes the mixer
 // and frees the stream.
