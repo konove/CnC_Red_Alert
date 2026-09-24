@@ -40,8 +40,8 @@ int32_t AudioUnzap(std::span<const unsigned char> /*source*/,
 
 bool DecodeAdpcmSound(AdpcmStream* stream, const int channels,
                       const int bits_per_sample,
-                      std::span<const uint8_t> source,
-                      std::span<uint8_t> dest) {
+                      const std::span<const uint8_t> source,
+                      const std::span<uint8_t> dest) {
   // The only format the movies use; see soscomp.h.
   if (channels != 1 || bits_per_sample != 16) {
     absl::FPrintF(stderr, "%s (%d/%d)\n", __func__, channels, bits_per_sample);
