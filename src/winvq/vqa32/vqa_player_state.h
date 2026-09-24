@@ -365,10 +365,11 @@ void ReleaseDrawnFrame(const VqaPlayerState* state);
 // kVqaClockAudio and sound is playing, else the system clock. PlayVqa() calls
 // it when the movie starts and, with the time the pause began, when it
 // resumes, so a pause does not count.
-void SetMovieClock(VqaPlayerState* state, int64_t now_ticks, int clock_source);
+void SetMovieClock(const VqaPlayerState* state, int64_t now_ticks,
+                   int clock_source);
 // Returns the movie clock in kVqaTicksPerSecond, from the source and offset
 // the last SetMovieClock() set.
-int64_t ReadMovieClock(VqaPlayerState* state);
+int64_t ReadMovieClock(const VqaPlayerState* state);
 
 // Sound output. The sound system plays one movie at a time; the functions
 // below keep its state in audio.cc, shared by every VqaPlayerState.

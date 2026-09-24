@@ -18,6 +18,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/seek_origin.h"
@@ -683,6 +684,46 @@ TEST_F(VqaLoaderTest, RingOfPartBlocksWrapsAfterTheLastWholeBlock) {
   }
   EXPECT_EQ(audio.play_block, 0);
   EXPECT_EQ(audio.play_offset, 0);
+}
+
+TEST_F(VqaLoaderTest, CopyStagedAudioWrapsAtTheEndOfTheRing) {
+  VqaHeader header = SmallHeader();
+  header.flags = kVqaHasAudio;
+  header.sample_rate = 22050;
+  header.channels = 1;
+  header.bits_per_sample = 8;
+  fake_.data = EmptyFrames(header);
+  EnableAudio();
+  config_.audio_buffer_bytes = 4 * 2048;
+  ASSERT_EQ(Open(), 0);
+  VqaAudio& audio = state_.movie->audio;
+  ASSERT_EQ(audio.block_count, 4);
+
+  // 1000 bytes into block 0: nothing completed yet.
+  std::ranges::fill(audio.staging, uint8_t{1});
+  audio.staged_bytes = 1000;
+  EXPECT_EQ(CopyStagedAudio(&state_), 0);
+  EXPECT_EQ(audio.write_offset, 1000);
+  EXPECT_EQ(audio.staged_bytes, 0);
+  EXPECT_EQ(audio.block_loaded, (std::vector<int16_t>{0, 0, 0, 0}));
+
+  // From the middle of block 3 round to the middle of block 0, completing
+  // block 3 only.
+  audio.write_offset = (3 * 2048) + 1024;
+  std::ranges::fill(audio.staging, uint8_t{2});
+  audio.staged_bytes = 1024 + 500;
+  EXPECT_EQ(CopyStagedAudio(&state_), 0);
+  EXPECT_EQ(audio.write_offset, 500);
+  EXPECT_EQ(audio.block_loaded, (std::vector<int16_t>{0, 0, 0, 1}));
+  EXPECT_EQ(base::At(audio.ring, (4 * 2048) - 1), 2);
+  EXPECT_EQ(base::At(audio.ring, 499), 2);
+  EXPECT_EQ(base::At(audio.ring, 500), 1);
+
+  // Block 3 has not played, so a write that would reach it again waits.
+  audio.write_offset = 2 * 2048;
+  audio.staged_bytes = 2048;
+  EXPECT_EQ(CopyStagedAudio(&state_), kVqaSleeping);
+  EXPECT_EQ(audio.staged_bytes, 2048);
 }
 
 TEST_F(VqaLoaderTest, StopEndsPlaybackWithoutLoadingTheRest) {
