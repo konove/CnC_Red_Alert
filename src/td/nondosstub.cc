@@ -37,7 +37,6 @@
 #include "td/world.h"
 #include "tech/game_file.h"
 // #include "ra/filepcx.h"
-#include "sdllib/iconcach.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "td/interpal.h"
@@ -80,7 +79,6 @@ void Focus_Loss() {
 }
 
 void Focus_Restore() {
-  Restore_Cached_Icons();
   TheMap().Flag_To_Redraw(true);
   TheAudio().Resume();
 

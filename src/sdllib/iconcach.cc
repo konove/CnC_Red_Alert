@@ -1,17 +1,13 @@
 // Draws the tiles of an icon set, the format the map's terrain templates are
 // stored in: a header, the tiles' pixels one after another, a byte per tile
 // saying whether color 0 in it is transparent, and a map from a template's
-// cells to its tiles. What remains of the Windows 95 library's cache, which
-// kept icon sets in video memory, is two stubs.
-
-#include "sdllib/iconcach.h"
+// cells to its tiles.
 
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <span>
 
-#include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/numeric.h"
@@ -246,7 +242,3 @@ void PixelView::DrawStampLocked(std::span<const std::byte> icon_set, int cell,
     } while (--draw_height);
   }
 }
-
-void Restore_Cached_Icons() { absl::PrintF("%s\n", __func__); }
-
-void Register_Icon_Set(const void* /*icon_data*/, bool /*pre_cache*/) {}

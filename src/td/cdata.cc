@@ -57,7 +57,6 @@
 #include "base/array.h"
 #include "base/enum_array.h"
 #include "base/numeric.h"
-#include "sdllib/iconcach.h"
 #include "sdllib/memflag.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/tile.h"
@@ -1392,8 +1391,6 @@ void TemplateTypeClass::Init(TheaterType theater) {
       const auto ptr = MixArchive::RetrieveData(
           fullname);  // Working loaded iconset pointer.
       tplate.Set_Image_Data(ptr);
-      Register_Icon_Set(ptr.data(),
-                        true);  // Register icon set for video memory caching
     }
   }
 }

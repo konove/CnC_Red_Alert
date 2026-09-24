@@ -77,7 +77,6 @@
 #include "ra/type.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
-#include "sdllib/iconcach.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_win.h"
 #include "tech/mix_archive.h"
@@ -1855,10 +1854,6 @@ void TemplateTypeClass::Init(TheaterType theater) {
       // Working loaded iconset pointer.
       const auto data = MixArchive::RetrieveData(fullname);
       tplate.SetImage(data);
-      const void* ptr = data.data();
-
-      // Register icon set for video memory caching
-      Register_Icon_Set(ptr, true);
 
       tplate.Width = static_cast<unsigned char>(Get_IconSet_MapWidth(data));
       tplate.Height = static_cast<unsigned char>(Get_IconSet_MapHeight(data));

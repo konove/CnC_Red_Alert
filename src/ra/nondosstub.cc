@@ -40,7 +40,6 @@
 #include "ra/theme.h"
 #include "ra/winstub.h"
 #include "ra/world.h"
-#include "sdllib/iconcach.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/audio_mixer.h"
@@ -73,7 +72,6 @@ void Focus_Loss() {
 }
 
 void Focus_Restore() {
-  Restore_Cached_Icons();
   TheMap().Flag_To_Redraw(true);
   TheAudio().Resume();
   if (TheMouse()) {

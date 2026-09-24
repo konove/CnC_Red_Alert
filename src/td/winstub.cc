@@ -93,7 +93,6 @@ void Focus_Loss() {
 }
 
 void Focus_Restore() {
-  Restore_Cached_Icons();
   TheMap().Flag_To_Redraw(true);
   TheAudio().Resume();
   if (TheMouse()) {
