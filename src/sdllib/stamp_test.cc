@@ -23,9 +23,9 @@ constexpr std::array<uint8_t, 4> kSquare{1, 2, 3, 4};
 
 // Lays out a Red Alert icon set of one tile, `width` by `height`: the header,
 // the tile's pixels, its transparency flag and a one-cell map showing it.
-std::vector<std::byte> MakeIconSet(int16_t width, int16_t height,
+std::vector<std::byte> MakeIconSet(const int16_t width, const int16_t height,
                                    std::span<const uint8_t> pixels,
-                                   bool transparent = false) {
+                                   const bool transparent = false) {
   IControl_Type header{};
   header.Width = width;
   header.Height = height;
@@ -40,7 +40,7 @@ std::vector<std::byte> MakeIconSet(int16_t width, int16_t height,
   std::vector<std::byte> set(static_cast<size_t>(header.Size));
   port::WriteUnaligned(set, header);
   std::ranges::transform(pixels, set.begin() + header.Icons,
-                         [](uint8_t pixel) { return std::byte{pixel}; });
+                         [](const uint8_t pixel) { return std::byte{pixel}; });
   set.at(static_cast<size_t>(header.TransFlag)) = std::byte{transparent};
   set.at(static_cast<size_t>(header.Map)) = std::byte{0};
   return set;
@@ -50,7 +50,8 @@ std::vector<std::byte> MakeIconSet(int16_t width, int16_t height,
 class DrawStampTest : public testing::Test {
  protected:
   // Draws cell 0 of `set` at x,y, clipped to the whole page.
-  void Draw(std::span<const std::byte> set, int x = 0, int y = 0) {
+  void Draw(const std::span<const std::byte> set, const int x = 0,
+            const int y = 0) {
     page_.view().DrawStampLocked(set, 0, x, y, {}, 0, 0, 4, 4);
   }
 
@@ -145,7 +146,7 @@ TEST_F(DrawStampTest, RemapsAndTreatsRemappedZeroAsTransparent) {
 }
 
 TEST_F(DrawStampTest, ARemapTableShorterThan256DrawsNothing) {
-  const std::array<uint8_t, 16> remap{};
+  constexpr std::array<uint8_t, 16> remap{};
 
   page_.view().DrawStampLocked(MakeIconSet(2, 2, kSquare), 0, 0, 0, remap, 0, 0,
                                4, 4);
@@ -180,7 +181,7 @@ TEST_F(DrawStampTest, ASetTooShortForItsHeaderDrawsNothing) {
   Draw(MakeIconSet(2, 2, kSquare));
 
   std::ranges::fill(pixels_, 0);
-  const std::array<std::byte, 8> short_set{};
+  constexpr std::array<std::byte, 8> short_set{};
   Draw(short_set);
 
   EXPECT_EQ(pixels_, BlankPage());
