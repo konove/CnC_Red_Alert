@@ -18,9 +18,9 @@ target_sources(sdllib PUBLIC
 find_package(SDL2 REQUIRED)
 target_link_libraries(sdllib base SDL2::SDL2 absl::check absl::log absl::strings)
 
-# The fading-table builder and the per-frame window blit loop over every
-# palette entry or pixel.
-optimize_in_debug(misc.cc pixel_buffer.cc)
+# The fading-table builder, the per-frame window blit and the LCW decoder loop
+# over every palette entry, pixel or compressed byte.
+optimize_in_debug(misc.cc pixel_buffer.cc lcw_uncompress.cc)
 if (WIN32)
     # net_select.cc calls select() through Winsock.
     target_link_libraries(sdllib wsock32)
@@ -30,7 +30,7 @@ endif ()
 include(Testing)
 add_gtest(
         NAME sdllib_test
-        SOURCES font_test.cc xor_delta_test.cc aud_decoder_test.cc file_system_test.cc
+        SOURCES font_test.cc xor_delta_test.cc aud_decoder_test.cc file_system_test.cc lcw_uncompress_test.cc
         LIBS sdllib
 )
 
@@ -48,11 +48,9 @@ add_gtest(
         LIBS sdllib
 )
 
-# SetPalette() reaches the mouse cursor, which decompresses its shape; tech
-# depends on sdllib, so the decoder is compiled in directly.
 add_gtest(
         NAME sdllib_display_test
-        SOURCES display_test.cc ../tech/lcwuncmp.cc
+        SOURCES display_test.cc
         LIBS sdllib
 )
 
@@ -71,6 +69,6 @@ endif ()
 # Exercises the game's key-frame/delta chain using the real bounded LCW decoder.
 add_gtest(
         NAME keyframe_test
-        SOURCES keyframe_test.cc ../ra/2keyfram.cc ../tech/lcwuncmp.cc
+        SOURCES keyframe_test.cc ../ra/2keyfram.cc
         LIBS sdllib
 )

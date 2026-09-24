@@ -4,6 +4,7 @@
 #include <span>
 
 #include "base/buffer.h"
+#include "sdllib/lcw_uncompress.h"
 
 size_t Uncompress_Data(std::span<const unsigned char> src,
                        std::span<unsigned char> dst) {

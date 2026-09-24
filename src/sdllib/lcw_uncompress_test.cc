@@ -1,11 +1,12 @@
 // Destination bounds and back-reference regressions for the legacy LCW decoder.
 
+#include "sdllib/lcw_uncompress.h"
+
 #include <array>
 #include <span>
 #include <vector>
 
 #include "gtest/gtest.h"
-#include "sdllib/iff.h"
 
 namespace {
 

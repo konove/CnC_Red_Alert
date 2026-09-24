@@ -81,14 +81,4 @@ struct CompHeaderType {
 size_t Uncompress_Data(std::span<const unsigned char> src,
                        std::span<unsigned char> dst);
 
-/*========================= Assembly Functions ============================*/
-
-// Decodes a bounded LCW stream, returning the number of output bytes.
-int32_t LCW_Uncompress(std::span<const std::byte> source,
-                       std::span<std::byte> dest);
-int32_t LCW_Uncompress(std::span<const unsigned char> source,
-                       std::span<unsigned char> dest);
-
-/*=========================================================================*/
-
 #endif  // CNC_RED_ALERT_SDLLIB_IFF_H_

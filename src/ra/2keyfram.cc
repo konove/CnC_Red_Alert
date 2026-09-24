@@ -48,7 +48,7 @@
 #include "port/unaligned.h"
 #include "ra/defines.h"
 #include "ra/keyframe.h"
-#include "sdllib/iff.h"
+#include "sdllib/lcw_uncompress.h"
 #include "sdllib/xor_delta.h"
 #include "tech/2keyfbuf.h"
 

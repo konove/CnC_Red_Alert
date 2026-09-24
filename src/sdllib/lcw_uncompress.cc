@@ -35,13 +35,14 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
+#include "sdllib/lcw_uncompress.h"
+
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <span>
 
 #include "base/array.h"
-#include "sdllib/iff.h"
 
 int32_t LCW_Uncompress(std::span<const std::byte> source,
                        std::span<std::byte> dest) {

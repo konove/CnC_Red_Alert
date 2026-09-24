@@ -15,7 +15,7 @@
 #include "base/seek_origin.h"
 #include "base/types.h"
 #include "port/unaligned.h"
-#include "sdllib/iff.h"
+#include "sdllib/lcw_uncompress.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/xor_delta.h"
 #include "tech/byte_stream.h"
