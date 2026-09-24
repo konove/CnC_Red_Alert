@@ -10,9 +10,9 @@
 #include <span>
 
 #include "base/array.h"
-#include "base/buffer.h"
 #include "base/numeric.h"
 #include "base/types.h"
+#include "port/unaligned.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/tile.h"
 
@@ -45,8 +45,11 @@ static std::span<const std::byte> TableAt(std::span<const std::byte> icon_set,
 // What drawing a tile needs from an icon set, the tables as views into the
 // set's data.
 struct IconSetTables {
+  // Both positive.
   int tile_width = 0;
   int tile_height = 0;
+  // The tiles the set can actually draw: the header's count, cut down to what
+  // the pixel and transparency tables hold. Negative if the header's is.
   int tile_count = 0;
   // The tiles' pixels, tile_width * tile_height bytes each, from the start of
   // tile 0 to the end of the set.
@@ -60,7 +63,7 @@ struct IconSetTables {
 };
 
 // Reads the header of `icon_set`. Returns nullopt if the data is too short to
-// hold one.
+// hold one, or the tile size is not positive.
 //
 // The header is read on every draw rather than remembered by the set's
 // address: sets live in the theater's MIX archive, which a theater change
@@ -71,9 +74,10 @@ static std::optional<IconSetTables> ReadIconSet(
   if (icon_set.size() < sizeof(IControl_Type)) {
     return std::nullopt;
   }
-
-  IControl_Type header{};
-  base::CopyBytes(base::ObjectBytes(header), icon_set, sizeof(header));
+  const auto header = port::ReadUnaligned<IControl_Type>(icon_set);
+  if (header.Width <= 0 || header.Height <= 0) {
+    return std::nullopt;
+  }
 
   // Tell Tiberian Dawn's header from Red Alert's. In Tiberian Dawn's the
   // bytes of MapWidth and MapHeight are the low and high halves of Size, so a
@@ -84,18 +88,26 @@ static std::optional<IconSetTables> ReadIconSet(
   int32_t transparent_offset = header.TransFlag;
   int32_t cell_tiles_offset = header.Map;
   if (!header.MapHeight || header.MapWidth > 256) {
-    TiberianDawnIconSetHeader old_header{};
-    base::CopyBytes(base::ObjectBytes(old_header), icon_set,
-                    sizeof(old_header));
+    const auto old_header =
+        port::ReadUnaligned<TiberianDawnIconSetHeader>(icon_set);
     tiles_offset = old_header.icons;
     transparent_offset = old_header.trans_flag;
     cell_tiles_offset = old_header.map;
   }
+
+  const std::span<const std::byte> tiles = TableAt(icon_set, tiles_offset);
+  const std::span<const std::byte> transparent =
+      TableAt(icon_set, transparent_offset);
+  // A tile is one byte per pixel.
+  const base::ssize tile_bytes = base::ssize{header.Width} * header.Height;
+  const base::ssize tiles_held =
+      std::min(std::ssize(transparent), std::ssize(tiles) / tile_bytes);
   return IconSetTables{.tile_width = header.Width,
                        .tile_height = header.Height,
-                       .tile_count = header.Count,
-                       .tiles = TableAt(icon_set, tiles_offset),
-                       .transparent = TableAt(icon_set, transparent_offset),
+                       .tile_count = static_cast<int>(
+                           std::min<base::ssize>(header.Count, tiles_held)),
+                       .tiles = tiles,
+                       .transparent = transparent,
                        .cell_tiles = TableAt(icon_set, cell_tiles_offset)};
 }
 
@@ -121,73 +133,23 @@ void PixelView::DrawStampLocked(std::span<const std::byte> icon_set, int cell,
     tile = std::to_integer<uint8_t>(
         base::At(tables->cell_tiles, base::ToSize(cell)));
   }
-
-  // Every table is checked against the set's data, so a damaged set draws
-  // nothing rather than reading past it. A tile is one byte per pixel.
-  if (tile < 0 || tile >= tables->tile_count || tile_width <= 0 ||
-      tile_height <= 0 || base::ToSize(tile) >= tables->transparent.size() ||
-      base::ToSize(tile + 1) >
-          tables->tiles.size() / base::ToSize(tile_width * tile_height)) {
+  if (tile < 0 || tile >= tables->tile_count) {
     return;
   }
 
-  // The part of the tile left to draw once it is clipped.
-  int draw_width = tile_width;
-  int draw_height = tile_height;
-
-  auto src = tables->tiles.begin() +
-             (static_cast<base::ssize>(tile) * tile_width * tile_height);
-
-  // x,y arrive relative to the clip rectangle's corner; make them view
-  // coordinates, like the rectangle's exclusive right and bottom edges.
-  const int clip_right = clip_x + clip_width;
+  // x,y arrive relative to the clip rectangle's corner. Intersect the tile
+  // with the rectangle, in view coordinates.
   x += clip_x;
-  const int clip_bottom = clip_y + clip_height;
   y += clip_y;
-
-  // Nothing to draw if the tile starts past the rectangle's right or bottom
-  // edge...
-  if (x >= clip_right || y >= clip_bottom) {
+  const int left = std::max(x, clip_x);
+  const int top = std::max(y, clip_y);
+  const int right = std::min(x + tile_width, clip_x + clip_width);
+  const int bottom = std::min(y + tile_height, clip_y + clip_height);
+  if (left >= right || top >= bottom) {
     return;
   }
-
-  // ...or ends before its left or top edge. A tile ending exactly on the
-  // edge gets through here and is caught by the empty-size check below.
-  if (x + tile_width < clip_x || y + tile_height < clip_y) {
-    return;
-  }
-
-  // Clip the tile to the rectangle, moving src to the first pixel still
-  // drawn.
-  if (x < clip_x) {
-    src += clip_x - x;
-    draw_width -= clip_x - x;
-    x = clip_x;
-  }
-
-  // Source pixels to step over at the end of each row: the columns clipped
-  // on the left, and below those clipped on the right.
-  int src_skip = tile_width - draw_width;
-
-  if (x + draw_width > clip_right) {
-    const int unclipped_width = draw_width;
-    draw_width = clip_right - x;
-    src_skip += unclipped_width - draw_width;
-  }
-
-  if (y < clip_y) {
-    draw_height -= clip_y - y;
-    src += static_cast<base::ssize>(tile_width) * (clip_y - y);
-    y = clip_y;
-  }
-
-  if (y + draw_height > clip_bottom) {
-    draw_height = clip_bottom - y;
-  }
-
-  if (!draw_width || !draw_height) {
-    return;
-  }
+  const int draw_width = right - left;
+  const int draw_height = bottom - top;
 
   // Without a remap table the faster loops below are used. A table too short
   // to translate every color is refused rather than read past.
@@ -196,54 +158,46 @@ void PixelView::DrawStampLocked(std::span<const std::byte> icon_set, int cell,
     return;
   }
 
+  // The first pixel drawn, in the tile and in the view.
+  const auto src_start =
+      tables->tiles.begin() +
+      (static_cast<base::ssize>(tile) * tile_width * tile_height) +
+      (static_cast<base::ssize>(top - y) * tile_width) + (left - x);
   const base::ssize dst_stride = stride();
-  auto dst = pixels().begin() + x + (y * dst_stride);
+  const auto dst_start = pixels().begin() + left + (top * dst_stride);
 
-  // Destination bytes from the end of a drawn row to the start of the next.
-  const base::ssize dst_skip = dst_stride - draw_width;
+  // Draws the clipped tile with each pixel passed through `translate`,
+  // leaving the destination alone where that gives color 0.
+  const auto draw_transparent = [&](auto translate) {
+    for (int row = 0; row < draw_height; ++row) {
+      auto src = src_start + (static_cast<base::ssize>(row) * tile_width);
+      auto dst = dst_start + (row * dst_stride);
+      for (int column = 0; column < draw_width; ++column) {
+        const uint8_t pixel = translate(std::to_integer<uint8_t>(*src++));
+        if (pixel) {
+          *dst = pixel;
+        }
+        ++dst;
+      }
+    }
+  };
 
   if (remapping) {
-    // Remapped draw. Color 0 is tested after the remap, so it is transparent
-    // whatever the set's flag says, and a table that maps a color to 0 makes
-    // that color transparent too.
-    do {
-      for (int column = 0; column < draw_width; column++) {
-        const uint8_t pixel =
-            base::At(remap_table, std::to_integer<uint8_t>(*src++));
-        if (pixel) {
-          *dst = pixel;
-        }
-        dst++;
-      }
-
-      src += src_skip;
-      dst += dst_skip;
-    } while (--draw_height);
-  }
-  // Unremapped: the set's per-tile flag picks the transparent or the opaque
-  // loop.
-  else if (base::At(tables->transparent, base::ToSize(tile)) != std::byte{}) {
-    // Transparent draw: color 0 leaves the destination alone.
-    do {
-      for (int column = 0; column < draw_width; column++) {
-        const auto pixel = std::to_integer<uint8_t>(*src++);
-        if (pixel) {
-          *dst = pixel;
-        }
-        dst++;
-      }
-
-      src += src_skip;
-      dst += dst_skip;
-    } while (--draw_height);
+    // Color 0 is tested after the remap, so it is transparent whatever the
+    // set's flag says, and a table that maps a color to 0 makes that color
+    // transparent too.
+    draw_transparent(
+        [remap_table](uint8_t pixel) { return base::At(remap_table, pixel); });
+  } else if (base::At(tables->transparent, base::ToSize(tile)) != std::byte{}) {
+    // The set's per-tile flag: color 0 leaves the destination alone.
+    draw_transparent([](uint8_t pixel) { return pixel; });
   } else {
-    // Opaque draw: whole rows are copied.
-    do {
-      std::transform(src, src + draw_width, dst, [](std::byte value) {
-        return std::to_integer<uint8_t>(value);
-      });
-      dst += dst_stride;
-      src += tile_width;
-    } while (--draw_height);
+    // Opaque: whole rows are copied.
+    for (int row = 0; row < draw_height; ++row) {
+      const auto src = src_start + (static_cast<base::ssize>(row) * tile_width);
+      std::transform(
+          src, src + draw_width, dst_start + (row * dst_stride),
+          [](std::byte value) { return std::to_integer<uint8_t>(value); });
+    }
   }
 }
