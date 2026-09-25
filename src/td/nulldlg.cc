@@ -93,6 +93,7 @@
 #include "td/goptions.h"
 #include "td/house.h"
 #include "td/init.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/list.h"
 #include "td/mapedit.h"
@@ -1078,7 +1079,7 @@ GameType Select_Serial_Dialog() {
   base::At(buttons, 4) = &cancelbtn;
   base::At(buttons, curbutton)->Turn_On();
 
-  Keyboard::Clear();
+  TheKeyboard().Clear();
 
   smart_print_enabled = true;
 
@@ -3689,18 +3690,14 @@ int Com_Scenario_Dialog() {
       User clicks on a color button
       ------------------------------------------------------------------*/
       case KN_LMOUSE:
-        if ((engine::window::g_active_keyboard->click_x() >
-                 base::At(cbox_x, 0) &&
-             engine::window::g_active_keyboard->click_x() <
+        if ((TheKeyboard().click_x() > base::At(cbox_x, 0) &&
+             TheKeyboard().click_x() <
                  base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w &&
-             engine::window::g_active_keyboard->click_y() > d_color_y &&
-             engine::window::g_active_keyboard->click_y() <
-                 d_color_y + d_color_h) &&
+             TheKeyboard().click_y() > d_color_y &&
+             TheKeyboard().click_y() < d_color_y + d_color_h) &&
             (!ready_to_go)) {
           TheSession().preferred_color() =
-              (engine::window::g_active_keyboard->click_x() -
-               base::At(cbox_x, 0)) /
-              d_color_w;
+              (TheKeyboard().click_x() - base::At(cbox_x, 0)) / d_color_w;
           TheSession().color_index() = TheSession().preferred_color();
           display = REDRAW_COLORS;
 
@@ -3949,7 +3946,7 @@ int Com_Scenario_Dialog() {
             while (TheNetwork().null_modem().Num_Send() &&
                    SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) {
               TheNetwork().null_modem().Service();
-              Keyboard::Check();  // Make sure the message loop gets called
+              TheKeyboard().Peek();  // Make sure the message loop gets called
             }
 
             ready_to_go = true;
@@ -4201,7 +4198,7 @@ int Com_Scenario_Dialog() {
       while (TheNetwork().null_modem().Num_Send() &&
              SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) {
         TheNetwork().null_modem().Service();
-        Keyboard::Check();  // Make sure the message loop gets called
+        TheKeyboard().Peek();  // Make sure the message loop gets called
       }
     }
 
@@ -4508,7 +4505,7 @@ int Com_Scenario_Dialog() {
     while (TheNetwork().null_modem().Num_Send() &&
            SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) {
       TheNetwork().null_modem().Service();
-      Keyboard::Check();  // Make sure the message loop gets called
+      TheKeyboard().Peek();  // Make sure the message loop gets called
     }
 
     // clear queue to keep from doing any resends
@@ -5126,21 +5123,17 @@ int Com_Show_Scenario_Dialog() {
       User clicks on a color button
       ------------------------------------------------------------------*/
       case KN_LMOUSE:
-        if ((engine::window::g_active_keyboard->click_x() >
-                 base::At(cbox_x, 0) &&
-             engine::window::g_active_keyboard->click_x() <
+        if ((TheKeyboard().click_x() > base::At(cbox_x, 0) &&
+             TheKeyboard().click_x() <
                  base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w &&
-             engine::window::g_active_keyboard->click_y() > d_color_y &&
-             engine::window::g_active_keyboard->click_y() <
-                 d_color_y + d_color_h) &&
+             TheKeyboard().click_y() > d_color_y &&
+             TheKeyboard().click_y() < d_color_y + d_color_h) &&
             (!ready_to_go)) {
           /*.........................................................
           Compute my preferred color as the one I clicked on.
           .........................................................*/
           TheSession().preferred_color() =
-              (engine::window::g_active_keyboard->click_x() -
-               base::At(cbox_x, 0)) /
-              d_color_w;
+              (TheKeyboard().click_x() - base::At(cbox_x, 0)) / d_color_w;
           changed = 1;
           /*.........................................................
           If 'TheirColor' is set to the other player's color, make
@@ -5730,7 +5723,7 @@ int Com_Show_Scenario_Dialog() {
     while (TheNetwork().null_modem().Num_Send() &&
            SystemTicks() - starttime < PACKET_SENDING_TIMEOUT) {
       TheNetwork().null_modem().Service();
-      Keyboard::Check();  // Make sure the message loop gets called
+      TheKeyboard().Peek();  // Make sure the message loop gets called
     }
 
     // clear queue to keep from doing any resends

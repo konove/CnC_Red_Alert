@@ -78,7 +78,7 @@
 #include "engine/window/ww_mouse.h"
 #include "td/config.h"
 #include "td/control.h"
-#include "td/jshell.h"
+#include "td/input.h"
 #include "td/link.h"
 #include "td/palette.h"
 #include "td/screen.h"
@@ -441,9 +441,9 @@ engine::window::KeyNumber GadgetClass::Input(PixelView& view) {
   /*
   **	Fetch any pending keyboard input.
   */
-  engine::window::KeyNumber key = Keyboard::Check();
+  engine::window::KeyNumber key = TheKeyboard().Peek();
   if (key) {
-    key = Keyboard::Get();
+    key = TheKeyboard().Read();
   }
 
   if constexpr (config::kScenarioEditorEnabled) {
@@ -484,8 +484,8 @@ engine::window::KeyNumber GadgetClass::Input(PixelView& view) {
   */
   if (engine::window::KeyCode(key) == KN_LMOUSE ||
       engine::window::KeyCode(key) == KN_RMOUSE) {
-    mousex = engine::window::g_active_keyboard->click_x();
-    mousey = engine::window::g_active_keyboard->click_y();
+    mousex = TheKeyboard().click_x();
+    mousey = TheKeyboard().click_y();
   } else {
     mousex = Get_Mouse_X();
     mousey = Get_Mouse_Y();
@@ -532,12 +532,12 @@ engine::window::KeyNumber GadgetClass::Input(PixelView& view) {
     *isn't being *	held down, then we automatically know that it must be up
     *-- set the flag *	accordingly.
     */
-    if (Keyboard::Down(KN_LMOUSE)) {
+    if (engine::window::KeyBuffer::IsDown(KN_LMOUSE)) {
       flags |= kLeftHeld;
     } else {
       flags |= kLeftUp;
     }
-    if (Keyboard::Down(KN_RMOUSE)) {
+    if (engine::window::KeyBuffer::IsDown(KN_RMOUSE)) {
       flags |= kRightHeld;
     } else {
       flags |= kRightUp;

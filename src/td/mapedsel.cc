@@ -63,6 +63,7 @@
 #include "td/house.h"
 #include "td/infantry.h"
 #include "td/inline.h"
+#include "td/input.h"
 #include "td/list.h"
 #include "td/mapedit.h"
 #include "td/object.h"
@@ -94,8 +95,8 @@ int MapEditClass::Select_Object() {
   /*
   -------------------- See if an object was clicked on ---------------------
   */
-  int x = engine::window::g_active_keyboard->click_x();
-  int y = engine::window::g_active_keyboard->click_y();
+  int x = TheKeyboard().click_x();
+  int y = TheKeyboard().click_y();
 
   /*
   ............................ Get cell for x,y ............................

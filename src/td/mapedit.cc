@@ -91,6 +91,7 @@
 #include "td/gauge.h"
 #include "td/house.h"
 #include "td/inline.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/list.h"
 #include "td/menus.h"
@@ -1103,7 +1104,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
       /*
       ------------------------- Left Button DOWN -------------------------
       */
-      if (Keyboard::Down(KN_LMOUSE)) {
+      if (engine::window::KeyBuffer::IsDown(KN_LMOUSE)) {
         LMouseDown = true;
         /*
         ............... Placement mode: place an object .................
@@ -1139,8 +1140,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
                 ................ No object: select the cell ..................
                 */
                 TheWorld().current_cell() = Click_Cell_Calc(
-                    engine::window::g_active_keyboard->click_x(),
-                    engine::window::g_active_keyboard->click_y());
+                    TheKeyboard().click_x(), TheKeyboard().click_y());
                 TheScreen().hidden_page().view().Clear();
                 Flag_To_Redraw(true);
                 Render();

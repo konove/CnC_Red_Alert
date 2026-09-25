@@ -161,6 +161,7 @@
 #include "td/goptions.h"
 #include "td/house.h"
 #include "td/init.h"
+#include "td/input.h"
 #include "td/internet.h"
 #include "td/ipx.h"
 #include "td/ipxgconn.h"
@@ -1358,17 +1359,13 @@ static int Net_Join_Dialog() {
         if (joinstate > JOIN_NOTHING) {
           break;
         }
-        if (engine::window::g_active_keyboard->click_x() >
-                base::At(cbox_x, 0) &&
-            engine::window::g_active_keyboard->click_x() <
+        if (TheKeyboard().click_x() > base::At(cbox_x, 0) &&
+            TheKeyboard().click_x() <
                 base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w &&
-            engine::window::g_active_keyboard->click_y() > d_color_y &&
-            engine::window::g_active_keyboard->click_y() <
-                d_color_y + d_color_h) {
+            TheKeyboard().click_y() > d_color_y &&
+            TheKeyboard().click_y() < d_color_y + d_color_h) {
           TheSession().preferred_color() =
-              (engine::window::g_active_keyboard->click_x() -
-               base::At(cbox_x, 0)) /
-              d_color_w;
+              (TheKeyboard().click_x() - base::At(cbox_x, 0)) / d_color_w;
           TheSession().color_index() = TheSession().preferred_color();
 
           name_edt.Set_Color(
@@ -4408,7 +4405,7 @@ static void Wait_For_Focus() {
     CCDebugString("C&C95 - Waiting for game to come into focus.");
     do {
       CCDebugString(".");
-      Keyboard::Check();
+      TheKeyboard().Peek();
       if (!focus_timer.Time()) {
         focus_timer.Set(int64_t{5} * 60);
       }

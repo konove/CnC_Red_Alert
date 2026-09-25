@@ -57,36 +57,8 @@
 #include "base/numeric.h"
 #include "base/strings/format.h"
 #include "base/types.h"
-#include "engine/window/keyboard.h"
-#include "engine/window/ww_mouse.h"
 
 class ByteStream;
-
-/*
-**	Interface class to the keyboard. This insulates the game from library
-*vagaries. Most *	notable being the return values are declared as "int" in
-*the library whereas C&C *	expects it to be of KeyNumber.
-*/
-class Keyboard {
- public:
-  static engine::window::KeyNumber Get() {
-    return static_cast<engine::window::KeyNumber>(engine::window::ReadKey());
-  }
-  static engine::window::KeyNumber Check() {
-    return static_cast<engine::window::KeyNumber>(engine::window::PeekKey());
-  }
-  static engine::window::KeyAscii To_ASCII(engine::window::KeyNumber key) {
-    return static_cast<engine::window::KeyAscii>(
-        engine::window::KeyBuffer::ToAscii(key));
-  }
-  static void Clear() { engine::window::ClearKeys(); }
-  static void Stuff(engine::window::KeyNumber /*key*/) {}
-  static bool Down(engine::window::KeyNumber key) {
-    return engine::window::KeyBuffer::IsDown(key);
-  }
-  static int Mouse_X() { return Get_Mouse_X(); }
-  static int Mouse_Y() { return Get_Mouse_Y(); }
-};
 
 /*
 **	These templates allow enumeration types to have simple bitwise

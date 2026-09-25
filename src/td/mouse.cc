@@ -208,7 +208,8 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
  *player keyboard   * or mouse input code. It processes this code and updates
  *the mouse shape as appropriate.  *
  *                                                                                             *
- * INPUT:   input -- The player input code as returned from Keyboard::Get(). *
+ * INPUT:   input -- The player input code as returned from
+ * TheKeyboard().Read(). *
  *                                                                                             *
  *          x,y   -- The mouse coordinate values to use. *
  *                                                                                             *

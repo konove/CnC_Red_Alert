@@ -83,6 +83,7 @@
 #include "td/infantry.h"
 #include "td/ini.h"
 #include "td/inline.h"
+#include "td/input.h"
 #include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/logic.h"
@@ -433,7 +434,7 @@ void Do_Win() {
   Play_Movie(TheWorld().win_movie());
 #endif
 
-  Keyboard::Clear();
+  TheKeyboard().Clear();
 
   /*
   **	Do the ending screens only if not playing back a recorded game.
@@ -467,7 +468,7 @@ void Do_Win() {
 
 #ifdef NEWMENU
     if (TheWorld().scenario() >= 20) {
-      Keyboard::Clear();
+      TheKeyboard().Clear();
       TheWorld().score().Show();
       TheGameState().active() = false;
       Show_Mouse();
@@ -502,7 +503,7 @@ void Do_Win() {
     }
 
     if (!TheSpecial().IsJurassic || !TheGameState().thingies_enabled()) {
-      Keyboard::Clear();
+      TheKeyboard().Clear();
       TheWorld().score().Show();
 
       /*
@@ -518,7 +519,7 @@ void Do_Win() {
     }
     TheWorld().scenario()++;
 #endif
-    Keyboard::Clear();
+    TheKeyboard().Clear();
   }
 
   TheWorld().carry_over_money() = static_cast<int>(ThePlayer()->Credits);
@@ -654,7 +655,7 @@ void Do_Lose() {
   if (!TheSession().playback_game() &&
       !CCMessageBox().Process(TXT_TO_REPLAY, TXT_YES, TXT_NO)) {
     Hide_Mouse();
-    Keyboard::Clear();
+    TheKeyboard().Clear();
     Start_Scenario(TheWorld().scenario_name(), false);
     TheMap().Render();
   } else {
@@ -690,12 +691,12 @@ void Do_Restart() {
   }
   CCMessageBox().Process(TXT_RESTARTING, TXT_NONE);
   TheMap().Set_Default_Mouse(MOUSE_NORMAL);
-  Keyboard::Clear();
+  TheKeyboard().Clear();
   Start_Scenario(TheWorld().scenario_name(), false);
   if (hidden) {
     Hide_Mouse();
   }
-  Keyboard::Clear();
+  TheKeyboard().Clear();
   TheMap().Render();
 }
 

@@ -70,6 +70,7 @@
 #include "td/dialog.h"
 #include "td/foot.h"
 #include "td/inline.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/path_overlap.h"
@@ -964,7 +965,7 @@ end_of_list:
   if (TheDebugState().trace_path_search() && DrawPath) {
     Debug_Draw_Map("Final Generated Path", startcell, dest, false);
     Debug_Draw_Path(&path);
-    engine::window::ReadKey();
+    TheKeyboard().Read();
   }
   //	IsFindPath = false;
   return &path;
@@ -1588,7 +1589,7 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
   }
 
   if (pause) {
-    engine::window::ReadKey();
+    TheKeyboard().Read();
   }
   PixelView& view = TheScreen().visible_view();
 

@@ -68,7 +68,7 @@
 #include "base/numeric.h"
 #include "base/strings/safe_string.h"
 #include "engine/net/socket_bytes.h"
-#include "td/jshell.h"
+#include "td/input.h"
 #include "td/network.h"
 
 #ifdef _WIN32
@@ -301,7 +301,7 @@ int TcpipManagerClass::Read(std::span<std::byte> buffer, int buffer_len) {
   *notifications
   ** are done via messages.
   */
-  Keyboard::Check();
+  TheKeyboard().Peek();
 
   /*
   ** Copy any outstanding incoming data to the buffer provided
@@ -352,7 +352,7 @@ void TcpipManagerClass::Write(std::span<const std::byte> buffer,
     TXBufferHead %= WS_NUM_TX_BUFFERS;
   }
 
-  Keyboard::Check();
+  TheKeyboard().Peek();
 }
 
 /***********************************************************************************************

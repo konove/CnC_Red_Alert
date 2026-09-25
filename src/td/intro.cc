@@ -200,7 +200,7 @@ void Choose_Side() {
   Alloc_Object(new ScorePrintClass(show, TXT_SEL_TRANS, 103, 190, _graypal));
 #endif
 #endif
-  Keyboard::Clear();
+  TheKeyboard().Clear();
 
   while (Get_Mouse_State()) {
     Show_Mouse();
@@ -244,12 +244,11 @@ void Choose_Side() {
     if (frame >= anim.frame_count()) {
       frame = 0;
     }
-    if ((Keyboard::Check() && endframe == 255) &&
-        engine::window::KeyCode(Keyboard::Get()) == engine::window::KN_LMOUSE &&
-        (engine::window::g_active_keyboard->click_y() > 96 &&
-         engine::window::g_active_keyboard->click_y() < 300)) {
-      if (engine::window::g_active_keyboard->click_x() > 36 &&
-          engine::window::g_active_keyboard->click_x() < 296) {
+    if ((TheKeyboard().Peek() && endframe == 255) &&
+        engine::window::KeyCode(TheKeyboard().Read()) ==
+            engine::window::KN_LMOUSE &&
+        (TheKeyboard().click_y() > 96 && TheKeyboard().click_y() < 300)) {
+      if (TheKeyboard().click_x() > 36 && TheKeyboard().click_x() < 296) {
         // Chose GDI
         TheWorld().whom() = HOUSE_GOOD;
         TheWorld().scen_player() = SCEN_PLAYER_GDI;
@@ -258,8 +257,8 @@ void Choose_Side() {
         speechplaying = true;
         speech = speechg;
 
-      } else if (engine::window::g_active_keyboard->click_x() > 320 &&
-                 engine::window::g_active_keyboard->click_x() < 600) {
+      } else if (TheKeyboard().click_x() > 320 &&
+                 TheKeyboard().click_x() < 600) {
         // Chose Nod
         endframe = 14;
         TheWorld().whom() = HOUSE_BAD;
@@ -280,7 +279,7 @@ void Choose_Side() {
   Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), "SIDES.PAL");
   TheScreen().sys_mem_page().view().Clear();
 
-  Keyboard::Clear();
+  TheKeyboard().Clear();
 
   /*
   ** Skip the briefings if we're in special mode.

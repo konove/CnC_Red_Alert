@@ -69,7 +69,6 @@
 #include "td/gadget.h"
 #include "td/inline.h"
 #include "td/input.h"
-#include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/msglist.h"
 #include "td/palette.h"
@@ -272,10 +271,10 @@ void GScreenClass::Flag_To_Redraw(bool complete) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void GScreenClass::Input(engine::window::KeyNumber& key, int& x, int& y) {
-  key = Keyboard::Check();
+  key = TheKeyboard().Peek();
 
-  x = Keyboard::Mouse_X();
-  y = Keyboard::Mouse_Y();
+  x = Get_Mouse_X();
+  y = Get_Mouse_Y();
 
   if (Buttons) {
     /*
@@ -292,7 +291,7 @@ void GScreenClass::Input(engine::window::KeyNumber& key, int& x, int& y) {
 
   } else {
     if (key) {
-      key = Keyboard::Get();
+      key = TheKeyboard().Read();
     }
   }
   AI(key, x, y);

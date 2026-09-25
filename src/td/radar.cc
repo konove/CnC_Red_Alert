@@ -109,6 +109,7 @@
 #include "td/house.h"
 #include "td/infantry.h"
 #include "td/inline.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/mouse.h"
@@ -1433,8 +1434,8 @@ bool RadarClass::TacticalClass::Action(unsigned flags,
   *used. Other *	events must use the current mouse position globals.
   */
   if (flags & (kLeftPress | kLeftRelease | kRightPress | kRightRelease)) {
-    x = engine::window::g_active_keyboard->click_x();
-    y = engine::window::g_active_keyboard->click_y();
+    x = TheKeyboard().click_x();
+    y = TheKeyboard().click_y();
   } else {
     x = Get_Mouse_X();
     y = Get_Mouse_Y();

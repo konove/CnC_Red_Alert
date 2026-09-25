@@ -65,7 +65,6 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/gadget.h"
-#include "td/jshell.h"
 #include "td/txtlabel.h"
 
 using enum engine::window::KeyAscii;
@@ -624,7 +623,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
   ------------------------------------------------------------------------*/
   if (EditLabel) {
     const auto ascii = static_cast<engine::window::KeyAscii>(
-        Keyboard::To_ASCII(input) & 0x00ff);
+        engine::window::KeyBuffer::ToAscii(input) & 0x00ff);
 
     /*
     ** Allow numeric keypad presses to map to ascii numbers

@@ -68,6 +68,7 @@
 #include "td/game_state.h"
 #include "td/gamedlg.h"
 #include "td/init.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/loaddlg.h"
 #include "td/mapedit.h"
@@ -235,7 +236,7 @@ void GameOptionsClass::Process() {
                     GadgetClass::kLeftPress | GadgetClass::kRightPress))
       ->Add_Tail(*buttons);
 
-  Keyboard::Clear();
+  TheKeyboard().Clear();
 
   /*
   **	Main Processing Loop.
@@ -547,7 +548,7 @@ void GameOptionsClass::Process() {
   /*
   **	Redraw the map.
   */
-  Keyboard::Clear();
+  TheKeyboard().Clear();
   Call_Back();
   TheScreen().hidden_page().view().Clear();
   Call_Back();

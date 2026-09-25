@@ -238,7 +238,7 @@ bool Init_Game() {
                           CTRLSON | CTRLCON | PASSBREAKS | FILTERONLY |
                           TASKSWITCHABLE);
 #endif  // FIX_ME_LATER
-  Keyboard::Clear();
+  TheKeyboard().Clear();
   TheKeyboard().Clear();
 
   /*
@@ -321,8 +321,8 @@ bool Init_Game() {
   ** Process the message loop until we are in focus.
   */
   do {
-    DLOG(INFO) << "C&C95 - About to call Keyboard::Check";
-    Keyboard::Check();
+    DLOG(INFO) << "C&C95 - About to call TheKeyboard().Peek";
+    TheKeyboard().Peek();
   } while (!TheGameState().in_focus());
 
   DLOG(INFO) << "C&C95 - About to load the language file";
@@ -1049,11 +1049,11 @@ bool Select_Game(bool fade) {
           TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
           Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                           Call_Back);
-          engine::window::ClearKeys();
-          while (!engine::window::PeekKey()) {
+          TheKeyboard().Clear();
+          while (!TheKeyboard().Peek()) {
             Call_Back();
           }
-          engine::window::ReadKey();
+          TheKeyboard().Read();
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                           Call_Back);
           Show_Mouse();
@@ -1117,11 +1117,11 @@ bool Select_Game(bool fade) {
           TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
           Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                           Call_Back);
-          engine::window::ClearKeys();
-          while (!engine::window::PeekKey()) {
+          TheKeyboard().Clear();
+          while (!TheKeyboard().Peek()) {
             Call_Back();
           }
-          engine::window::ReadKeyAscii();
+          TheKeyboard().Read();
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                           Call_Back);
           Show_Mouse();
@@ -1380,7 +1380,7 @@ bool Select_Game(bool fade) {
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                               Call_Back);
             }
-            engine::window::ClearKeys();
+            TheKeyboard().Clear();
             count.Set(int64_t{kTimerSecond} * 3);
             while (count.Time()) {
               Call_Back();
@@ -1404,7 +1404,7 @@ bool Select_Game(bool fade) {
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                               Call_Back);
             }
-            engine::window::ClearKeys();
+            TheKeyboard().Clear();
             count.Set(int64_t{kTimerSecond} * 3);
             while (count.Time()) {
               Call_Back();
@@ -1428,7 +1428,7 @@ bool Select_Game(bool fade) {
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                               Call_Back);
             }
-            engine::window::ClearKeys();
+            TheKeyboard().Clear();
             count.Set(int64_t{kTimerSecond} * 3);
             while (count.Time()) {
               Call_Back();
@@ -1451,7 +1451,7 @@ bool Select_Game(bool fade) {
             Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                             Call_Back);
           }
-          engine::window::ClearKeys();
+          TheKeyboard().Clear();
           count.Set(int64_t{kTimerSecond} * 3);
           while (count.Time()) {
             Call_Back();
@@ -2029,7 +2029,7 @@ static void Play_Intro(bool for_real) {
 #endif
       nullptr};
 
-  Keyboard::Clear();
+  TheKeyboard().Clear();
   if (for_real) {
     Hide_Mouse();
     Play_Movie("LOGO", THEME_NONE, false);

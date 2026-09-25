@@ -64,6 +64,7 @@
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/game_state.h"
+#include "td/input.h"
 #include "td/interpal.h"
 #include "td/jshell.h"
 #include "td/palette.h"
@@ -82,8 +83,8 @@ void GDI_Ending() {
                     ThePalettes().title_palette());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
-  engine::window::ClearKeys();
-  engine::window::ReadKey();
+  TheKeyboard().Clear();
+  TheKeyboard().Read();
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
   TheScreen().visible_page().Clear();
 
@@ -115,7 +116,7 @@ void GDI_Ending() {
                                             0, 320, 199, 640, 398);
     Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                     Call_Back);
-    engine::window::ClearKeys();
+    TheKeyboard().Clear();
     count.Set(int64_t{kTimerSecond} * 3);
     while (count.Time()) {
       Call_Back();
@@ -135,7 +136,7 @@ void GDI_Ending() {
   TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
                                           0, 320, 199, 640, 398);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
-  engine::window::ClearKeys();
+  TheKeyboard().Clear();
   //	CountDownTimerClass count;
   count.Set(int64_t{kTimerSecond} * 3);
   while (count.Time()) {
@@ -216,7 +217,7 @@ void Nod_Ending() {
   Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
                        "SATSELIN.PAL");
 
-  Keyboard::Clear();
+  TheKeyboard().Clear();
   engine::audio::TheAudio().Play(kanefinl, 255, 128);
   engine::audio::TheAudio().Play(loopie6m, 255, 128);
 
@@ -233,19 +234,19 @@ void Nod_Ending() {
       Show_Mouse();
     }
     Call_Back_Delay(show, 1);
-    if (!Keyboard::Check()) {
+    if (!TheKeyboard().Peek()) {
       if (!engine::audio::TheAudio().IsPlaying(loopie6m.data())) {
         engine::audio::TheAudio().Play(loopie6m, 255, 128);
       }
     } else {
       if (engine::audio::TheAudio().IsPlaying(kanefinl.data())) {
-        engine::window::ClearKeys();
+        TheKeyboard().Clear();
       } else {
-        const auto key = static_cast<uint32_t>(Keyboard::Get());
+        const auto key = static_cast<uint32_t>(TheKeyboard().Read());
         if ((key & engine::window::kKeyCodeMask) == engine::window::KN_LMOUSE &&
             (key & engine::window::kKeyReleaseBit) == 0) {
-          const int mousex = engine::window::g_active_keyboard->click_x();
-          const int mousey = engine::window::g_active_keyboard->click_y();
+          const int mousex = TheKeyboard().click_x();
+          const int mousey = TheKeyboard().click_y();
           if (mousey >= 44 && mousey <= 354) {
             done = true;
             if (mousex < 320 && mousey < 200) {
@@ -281,7 +282,7 @@ void Nod_Ending() {
   show.text_page().view().FillRect(0, 360, 638, 398, 0);
 
   Hide_Mouse();
-  Keyboard::Clear();
+  TheKeyboard().Clear();
 
   engine::audio::TheAudio().Stop(kanefinl.data());
   engine::audio::TheAudio().Stop(loopie6m.data());
@@ -303,7 +304,7 @@ void Nod_Ending() {
                                             0, 320, 199, 640, 398);
     Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                     Call_Back);
-    engine::window::ClearKeys();
+    TheKeyboard().Clear();
     count.Set(int64_t{kTimerSecond} * 3);
     while (count.Time()) {
       Call_Back();
@@ -323,7 +324,7 @@ void Nod_Ending() {
   TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
                                           0, 320, 199, 640, 398);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
-  engine::window::ClearKeys();
+  TheKeyboard().Clear();
   //	CountDownTimerClass count;
   count.Set(int64_t{kTimerSecond} * 3);
   while (count.Time()) {

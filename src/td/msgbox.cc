@@ -61,6 +61,7 @@
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/goptions.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/screen.h"
 #include "td/text.h"
@@ -383,12 +384,12 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         */
         default:
 #ifdef NEVER
-          if (b1char == toupper(Keyboard::To_ASCII(
+          if (b1char == toupper(engine::window::KeyBuffer::ToAscii(
                             (engine::window::KeyNumber)(input & 0xFF)))) {
             selection = BUTTON_1;
             pressed = true;
           } else if (b2txt != NULL &&
-                     b2char == toupper(Keyboard::To_ASCII((
+                     b2char == toupper(engine::window::KeyBuffer::ToAscii((
                                    engine::window::KeyNumber)(input & 0xFF)))) {
             selection = BUTTON_2;
             pressed = true;
@@ -432,7 +433,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     while (timer.Time() > 0) {
       Call_Back();
     }
-    Keyboard::Clear();
+    TheKeyboard().Clear();
   }
 
   /*

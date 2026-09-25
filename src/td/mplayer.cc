@@ -86,6 +86,7 @@
 #include "td/house.h"
 #include "td/ini.h"
 #include "td/init.h"
+#include "td/input.h"
 #include "td/ipxmgr.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
@@ -245,7 +246,7 @@ GameType Select_MPlayer_Game() {
 
   base::At(buttons, curbutton)->Turn_On();
 
-  Keyboard::Clear();
+  TheKeyboard().Clear();
 
   /*
   -------------------------- Main Processing Loop --------------------------

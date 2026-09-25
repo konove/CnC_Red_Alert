@@ -842,7 +842,7 @@ void ScoreClass::Show() {
   max = static_cast<int>(std::max(static_cast<int32_t>(leadership),
                                   static_cast<int32_t>(efficiency)));
   int scorecounter = 0;
-  Keyboard::Clear();
+  TheKeyboard().Clear();
 
   show.AddTextRect(528, 52, 528, 52, 4 * 12, 12);
   show.AddTextRect(528, 76, 528, 76, 4 * 12, 12);
@@ -862,9 +862,9 @@ void ScoreClass::Show() {
     Call_Back_Delay(show, 1);
     engine::audio::TheAudio().Play(Beepy6, 255,
                                    TheOptions().Normalize_Sound(60));
-    if (engine::window::PeekKey() && i < max - 5) {
+    if (TheKeyboard().Peek() && i < max - 5) {
       i = 158;
-      Keyboard::Clear();
+      TheKeyboard().Clear();
     }
   }
   Count_Up_Print(show, font, "%3d", total, total, 264, 50);
@@ -942,8 +942,8 @@ void ScoreClass::Show() {
     Call_Back_Delay(show, 1);
   }
 
-  if (Keyboard::Check()) {
-    Keyboard::Clear();
+  if (TheKeyboard().Peek()) {
+    TheKeyboard().Clear();
   }
 
   if (player_house == HOUSE_GOOD) {
@@ -1046,7 +1046,7 @@ void ScoreClass::Show() {
   /*
   ** If the player's on the hall of fame, have him enter his name now
   */
-  Keyboard::Clear();
+  TheKeyboard().Clear();
   if (index < NUMFAMENAMES) {
     Input_Name(show, base::At(hallfame, index).name, HALLFAME_X,
                HALLFAME_Y + (index * 8), bluepal);
@@ -1067,7 +1067,7 @@ void ScoreClass::Show() {
     Cycle_Wait_Click(show);
   }
 
-  Keyboard::Clear();
+  TheKeyboard().Clear();
 
   /* get rid of all the animating objects */
   for (i = 0; i < MAXSCOREOBJS; i++) {
@@ -1135,8 +1135,8 @@ void Cycle_Wait_Click(Presentation& show) {
                                  .ID = 0};
   int packetlen = 0;
 
-  Keyboard::Clear();
-  while (minclicks || (!engine::window::PeekKey() && !ControlQ)) {
+  TheKeyboard().Clear();
+  while (minclicks || (!TheKeyboard().Peek() && !ControlQ)) {
     if (TheSession().type() == GAME_NULL_MODEM ||
         TheSession().type() == GAME_MODEM) {
       // GameToPlay == GAME_INTERNET) {
@@ -1167,7 +1167,7 @@ void Cycle_Wait_Click(Presentation& show) {
     Call_Back_Delay(show, 1);
     if (minclicks) {
       minclicks--;
-      Keyboard::Clear();
+      TheKeyboard().Clear();
     }
 
     counter = (counter + 1) % 8;
@@ -1192,7 +1192,7 @@ void Cycle_Wait_Click(Presentation& show) {
       Set_Palette(ThePalettes().title_palette());
     }
   }
-  Keyboard::Clear();
+  TheKeyboard().Clear();
 }
 
 // Not const: plays the score screen animation.
@@ -1298,7 +1298,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
     TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     // Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff , NULL);
 
-    if (!engine::window::PeekKey()) {
+    if (!TheKeyboard().Peek()) {
       Call_Back_Delay(show, 1);
     }
   }
@@ -1312,7 +1312,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
                    BUILDING_Y + 12);
     Count_Up_Print(show, font, "%d", q, CBKilled, BUILDING_X + 8,
                    BUILDING_Y + 24);
-    if (!engine::window::PeekKey()) {
+    if (!TheKeyboard().Peek()) {
       engine::audio::TheAudio().Play(Beepy6, 255,
                                      TheOptions().Normalize_Sound(110));
       Call_Back_Delay(show, 1);
@@ -1379,7 +1379,7 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
     }
 
     Count_Up_Print(show, font, "%d", i * gkilled / max, gkilled, 297, ypos + 2);
-    if (!engine::window::PeekKey()) {
+    if (!TheKeyboard().Peek()) {
       engine::audio::TheAudio().Play(Beepy6, 255,
                                      TheOptions().Normalize_Sound(110));
       Call_Back_Delay(show, 2);
@@ -1388,7 +1388,7 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
   CC_Draw_Shape(view, yellowptr, gdikilled, 172, ypos, WINDOW_MAIN,
                 SHAPE_WIN_REL, {}, {});
   Count_Up_Print(show, font, "%d", gkilled, gkilled, 297, ypos + 2);
-  if (!engine::window::PeekKey()) {
+  if (!TheKeyboard().Peek()) {
     Call_Back_Delay(show, 40);
   }
 
@@ -1404,14 +1404,14 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
 
     Count_Up_Print(show, font, "%d", i * nkilled / max, nkilled, 297,
                    ypos + 14);
-    if (!engine::window::PeekKey()) {
+    if (!TheKeyboard().Peek()) {
       engine::audio::TheAudio().Play(Beepy6, 255,
                                      TheOptions().Normalize_Sound(110));
       Call_Back_Delay(show, 2);
     }
   }
 
-  //	if (Keyboard::Check()) Keyboard::Clear();
+  //	if (TheKeyboard().Peek()) TheKeyboard().Clear();
 
   /*
   ** Make sure accurate count is printed at end
@@ -1419,7 +1419,7 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
   CC_Draw_Shape(view, redptr, nodkilled, 172, ypos + 12, WINDOW_MAIN,
                 SHAPE_WIN_REL, {}, {});
   Count_Up_Print(show, font, "%d", nkilled, nkilled, 297, ypos + 14);
-  if (!engine::window::PeekKey()) {
+  if (!TheKeyboard().Peek()) {
     Call_Back_Delay(show, 40);
   }
 }
@@ -1524,15 +1524,15 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show,
                      SCORETEXT_X + 64, CASUALTY_Y + 14);
       Count_Up_Print(show, font, "%d", i * CKilled / max, CKilled,
                      SCORETEXT_X + 64, CASUALTY_Y + 26);
-      if (!engine::window::PeekKey()) {
+      if (!TheKeyboard().Peek()) {
         Call_Back_Delay(show, 3);
       }
     }
     engine::audio::TheAudio().Play(Beepy6, 255,
                                    TheOptions().Normalize_Sound(110));
   }
-  if (engine::window::PeekKey()) {
-    Keyboard::Clear();
+  if (TheKeyboard().Peek()) {
+    TheKeyboard().Clear();
   }
 
   /*
@@ -1620,9 +1620,9 @@ void ScoreClass::Show_Credits(Presentation& show, int house,
                    static_cast<int>(ThePlayer()->Available_Money()),
                    base::At(_credpx, house), base::At(_credpy, house));
     Call_Back_Delay(show, 2);
-    if (engine::window::PeekKey()) {
+    if (TheKeyboard().Peek()) {
       i = static_cast<int>(ThePlayer()->Available_Money() - 5);
-      Keyboard::Clear();
+      TheKeyboard().Clear();
     }
   } while (i < ThePlayer()->Available_Money());
 
@@ -1747,12 +1747,12 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
     show.DrawTextRects();
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
 
-    if (engine::window::PeekKey()) {         // if (Keyboard::Check()) {
-      key = engine::window::ReadKeyAscii();  // key = Keyboard::Get();
+    if (TheKeyboard().Peek()) {
+      key = engine::window::KeyBuffer::ToAscii(TheKeyboard().Read());
 
       if (index == MAX_FAMENAME_LENGTH - 2) {
-        while (engine::window::PeekKey()) {
-          engine::window::ReadKeyAscii();
+        while (TheKeyboard().Peek()) {
+          TheKeyboard().Read();
         }
       }
 
@@ -2070,10 +2070,11 @@ void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,
 void Call_Back_Delay(Presentation& show, int time) {
   CountDownTimerClass cd;
 
-  if ((!ControlQ) && (Keyboard::Down(engine::window::KN_LCTRL) &&
-                      Keyboard::Down(engine::window::KN_Q))) {
+  if ((!ControlQ) &&
+      (engine::window::KeyBuffer::IsDown(engine::window::KN_LCTRL) &&
+       engine::window::KeyBuffer::IsDown(engine::window::KN_Q))) {
     ControlQ = true;
-    Keyboard::Clear();
+    TheKeyboard().Clear();
   }
 
   if (ControlQ) {

@@ -12,8 +12,8 @@
 #include "engine/window/keyboard.h"
 #include "td/debug_state.h"
 #include "td/game_state.h"
+#include "td/input.h"
 #include "td/interpal.h"
-#include "td/jshell.h"
 #include "td/palette.h"
 #include "td/screen.h"
 #include "td/winstub.h"
@@ -54,9 +54,9 @@ void MovieScreen::OnIdle() { engine::window::TheDisplay().EndFrame(); }
 
 bool MovieScreen::Present() {
   int key = 0;
-  if (Keyboard::Check()) {
-    key = Keyboard::Get();
-    Keyboard::Clear();
+  if (TheKeyboard().Peek()) {
+    key = TheKeyboard().Read();
+    TheKeyboard().Clear();
   }
 
   Interpolate_2X_Scale(&TheScreen().sys_mem_page(), &TheScreen().visible_view(),
@@ -64,7 +64,7 @@ bool MovieScreen::Present() {
 
   if ((TheGameState().breakout_allowed() || TheDebugState().developer_mode()) &&
       key == engine::window::KN_ESC) {
-    Keyboard::Clear();
+    TheKeyboard().Clear();
     broken_out_ = true;
     return false;
   }
@@ -74,7 +74,7 @@ bool MovieScreen::Present() {
   if (!TheGameState().in_focus()) {
     engine::audio::TheAudio().SetExtraPaused(true);
     while (!TheGameState().in_focus()) {
-      Keyboard::Check();
+      TheKeyboard().Peek();
       Check_For_Focus_Loss();
     }
   }

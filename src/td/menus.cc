@@ -68,6 +68,7 @@
 #include "td/game_state.h"
 #include "td/goptions.h"
 #include "td/init.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/mapedit.h"
 #include "td/menus.h"
@@ -267,7 +268,7 @@ void Setup_Menu(PixelView& view, const MenuConfig& menu,
   }
   MenuSkip = line_spacing;
   Show_Mouse();
-  Keyboard::Clear();
+  TheKeyboard().Clear();
 }
 
 /*=========================================================================*/
@@ -308,8 +309,9 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
   */
   int key = 0;
   TheGameState().unknown_key() = 0;
-  if (Keyboard::Check()) {
-    key = (Keyboard::Get() & 0x18FF); /* mask off all but release bit	*/
+  if (TheKeyboard().Peek()) {
+    key = (TheKeyboard().Read() &
+           0x18FF); /* mask off all but release bit	*/
   }
 
   /*
@@ -360,11 +362,9 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
     */
     case KN_RMOUSE:
     case KN_LMOUSE:
-      if (Coordinates_In_Region(engine::window::g_active_keyboard->click_x(),
-                                engine::window::g_active_keyboard->click_y(),
-                                mx1, my1, mx2, my2)) {
-        newitem =
-            (engine::window::g_active_keyboard->click_y() - my1) / menuskip;
+      if (Coordinates_In_Region(TheKeyboard().click_x(),
+                                TheKeyboard().click_y(), mx1, my1, mx2, my2)) {
+        newitem = (TheKeyboard().click_y() - my1) / menuskip;
       } else {
         TheGameState().unknown_key() =
             key;  //	Pass the unprocessed button click back.
@@ -396,8 +396,7 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
       for (int menu_item = 0; menu_item < menu.item_count; menu_item++) {
         if (toupper(*base::At(text, base::ToSize(Select_To_Entry(
                                         menu_item, field, index)))) ==
-            toupper(Keyboard::To_ASCII(
-                static_cast<engine::window::KeyNumber>(key % 256)))) {
+            toupper(engine::window::KeyBuffer::ToAscii(key % 256))) {
           newitem = select = menu_item;
           break;
         }
@@ -462,7 +461,7 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
     return (-1);
   }
   PixelView& view = TheScreen().visible_view();
-  Keyboard::Clear();
+  TheKeyboard().Clear();
 
   /*
   **	Determine the number of entries in this string.
@@ -505,7 +504,7 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
   Window_Box(view, WINDOW_MENU, blue ? BOXSTYLE_BLUE_UP : BOXSTYLE_RAISED);
   Setup_Menu(view, menu_config, strings, 0xFFFFL, 0, 0);
 
-  Keyboard::Clear();
+  TheKeyboard().Clear();
   int selection = -1;  // Selection from user.
   TheGameState().unknown_key() = 0;
   while (selection == -1) {
@@ -518,7 +517,7 @@ int Do_Menu(std::span<const char* const> strings, bool blue) {
       break;
     }
   }
-  Keyboard::Clear();
+  TheKeyboard().Clear();
   Hide_Mouse();
 
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
@@ -761,7 +760,7 @@ int Main_Menu(int timeout) {
   **	Initialize
   */
   PixelView& view = TheScreen().visible_view();
-  Keyboard::Clear();
+  TheKeyboard().Clear();
   starttime = SystemTicks();
 
   /*
@@ -816,7 +815,7 @@ int Main_Menu(int timeout) {
 #endif
   base::At(buttons, curbutton)->Turn_On();
 
-  Keyboard::Clear();
+  TheKeyboard().Clear();
 
   while (Get_Mouse_State() > 0) {
     Show_Mouse();

@@ -276,7 +276,7 @@ void Main_Game() {
     **	told the map to draw itself.
     */
     Fade_Palette_To(ThePalettes().game_palette(), kFadePaletteMedium, nullptr);
-    Keyboard::Clear();
+    TheKeyboard().Clear();
 
     /*
     ** Only show the mouse if we're not playing back a recording.
@@ -504,8 +504,8 @@ void Main_Game() {
                     ThePalettes().title_palette());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, NULL);
-  engine::window::ClearKeys();
-  engine::window::ReadKeyAscii();
+  TheKeyboard().Clear();
+  TheKeyboard().Read();
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, NULL);
 //		Show_Mouse();
 #else
@@ -2147,7 +2147,7 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
       std::ranges::fill(ThePalettes().black_palette(), 0x00);
     }
     TheGameState().preserve_movie_screen() = false;
-    Keyboard::Clear();
+    TheKeyboard().Clear();
 
     // The file, the screen and the sound device must outlive the player.
     GameFileVqaIo movie_io;
@@ -3041,7 +3041,7 @@ bool Force_CD_Available(int cd) {
       const bool old_in_main_loop = TheGameState().in_main_loop();
       TheGameState().in_main_loop() = true;
 
-      Keyboard::Clear();
+      TheKeyboard().Clear();
 
       while (Get_Mouse_State()) {
         Show_Mouse();

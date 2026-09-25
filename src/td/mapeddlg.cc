@@ -84,6 +84,7 @@
 #include "td/house.h"
 #include "td/ini.h"
 #include "td/inline.h"
+#include "td/input.h"
 #include "td/jshell.h"
 #include "td/list.h"
 #include "td/mapedit.h"
@@ -1267,63 +1268,61 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           /*
           ....................... Grab top left ........................
           */
-          delta1 = abs(engine::window::g_active_keyboard->click_x() - map_x1);
-          delta2 = abs(engine::window::g_active_keyboard->click_y() - map_y1);
+          delta1 = abs(TheKeyboard().click_x() - map_x1);
+          delta2 = abs(TheKeyboard().click_y() - map_y1);
           if (delta1 < 3 && delta2 < 3) {
             grabbed = 1;
-            mx = engine::window::g_active_keyboard->click_x();
-            my = engine::window::g_active_keyboard->click_y();
+            mx = TheKeyboard().click_x();
+            my = TheKeyboard().click_y();
             display = REDRAW_MAP;
             break;
           }
           /*
           ...................... Grab top right ........................
           */
-          delta1 = abs(engine::window::g_active_keyboard->click_x() - map_x2);
-          delta2 = abs(engine::window::g_active_keyboard->click_y() - map_y1);
+          delta1 = abs(TheKeyboard().click_x() - map_x2);
+          delta2 = abs(TheKeyboard().click_y() - map_y1);
           if (delta1 < 3 && delta2 < 3) {
             grabbed = 2;
-            mx = engine::window::g_active_keyboard->click_x();
-            my = engine::window::g_active_keyboard->click_y();
+            mx = TheKeyboard().click_x();
+            my = TheKeyboard().click_y();
             display = REDRAW_MAP;
             break;
           }
           /*
           ..................... Grab bottom right ......................
           */
-          delta1 = abs(engine::window::g_active_keyboard->click_x() - map_x2);
-          delta2 = abs(engine::window::g_active_keyboard->click_y() - map_y2);
+          delta1 = abs(TheKeyboard().click_x() - map_x2);
+          delta2 = abs(TheKeyboard().click_y() - map_y2);
           if (delta1 < 3 && delta2 < 3) {
             grabbed = 3;
-            mx = engine::window::g_active_keyboard->click_x();
-            my = engine::window::g_active_keyboard->click_y();
+            mx = TheKeyboard().click_x();
+            my = TheKeyboard().click_y();
             display = REDRAW_MAP;
             break;
           }
           /*
           ..................... Grab bottom left .......................
           */
-          delta1 = abs(engine::window::g_active_keyboard->click_x() - map_x1);
-          delta2 = abs(engine::window::g_active_keyboard->click_y() - map_y2);
+          delta1 = abs(TheKeyboard().click_x() - map_x1);
+          delta2 = abs(TheKeyboard().click_y() - map_y2);
           if (delta1 < 3 && delta2 < 3) {
             grabbed = 4;
-            mx = engine::window::g_active_keyboard->click_x();
-            my = engine::window::g_active_keyboard->click_y();
+            mx = TheKeyboard().click_x();
+            my = TheKeyboard().click_y();
             display = REDRAW_MAP;
             break;
           }
           /*
           ..................... Grab the whole map .....................
           */
-          delta1 = abs(engine::window::g_active_keyboard->click_x() -
-                       ((map_x1 + map_x2) / 2));
-          delta2 = abs(engine::window::g_active_keyboard->click_y() -
-                       ((map_y1 + map_y2) / 2));
+          delta1 = abs(TheKeyboard().click_x() - ((map_x1 + map_x2) / 2));
+          delta2 = abs(TheKeyboard().click_y() - ((map_y1 + map_y2) / 2));
           if (delta1 < (map_x2 - map_x1) / 4 &&
               delta2 < (map_y2 - map_y1) / 4) {
             grabbed = 5;
-            mx = engine::window::g_active_keyboard->click_x();
-            my = engine::window::g_active_keyboard->click_y();
+            mx = TheKeyboard().click_x();
+            my = TheKeyboard().click_y();
             display = REDRAW_MAP;
           }
           break;

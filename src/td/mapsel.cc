@@ -510,7 +510,7 @@ void Map_Selection() {
   std::array<unsigned char, 768> grey2palette{};
   std::array<unsigned char, 768> progresspalette{};
 
-  Keyboard::Clear();
+  TheKeyboard().Clear();
   // The score animations print this screen's captions in the score font; the
   // rectangles that clear them again are measured in it too.
   const FontStyle score_font = ScoreFontStyle();
@@ -630,10 +630,10 @@ void Map_Selection() {
 
   while (TheGameState().speech_timer().Time() || Is_Speaking()) {
     Call_Back();
-    //		if (Keyboard::Check()) CountDownTimer.Set(0);
+    //		if (TheKeyboard().Peek()) CountDownTimer.Set(0);
   }
 
-  //	Keyboard::Clear();
+  //	TheKeyboard().Clear();
 
   /*
   ** now make the grid appear
@@ -763,7 +763,7 @@ void Map_Selection() {
     }
 
     anim.DrawFrame(show.page().view(), frame++);
-    Call_Back_Delay(show, /*Keyboard::Check() ? 0 :*/ 3);
+    Call_Back_Delay(show, /*TheKeyboard().Peek() ? 0 :*/ 3);
   }
 
   show.text_page().view().FillRect(
@@ -781,7 +781,7 @@ void Map_Selection() {
 
   anim.Close();
 
-  Keyboard::Clear();
+  TheKeyboard().Clear();
   show.ClearTextRects();
 
   /*
@@ -1087,13 +1087,13 @@ void Map_Selection() {
     Show_Mouse();
   }
 
-  Keyboard::Clear();
+  TheKeyboard().Clear();
   while (!done) {
     Cycle_Call_Back_Delay(show, 1, progresspalette);
 
     // Check for the mouse button
-    if (Keyboard::Check() &&
-        engine::window::KeyCode(Keyboard::Get()) == engine::window::KN_LMOUSE) {
+    if (TheKeyboard().Peek() && engine::window::KeyCode(TheKeyboard().Read()) ==
+                                    engine::window::KN_LMOUSE) {
       for (selection = 0;
            selection < base::At(base::At(CountryArray, scenario).Choices,
                                 static_cast<int>(TheWorld().scen_dir()));
@@ -1468,14 +1468,14 @@ void Print_Statistics(Presentation& show, int country, int xpos, int ypos) {
       }
     }
   }
-  Keyboard::Clear();
-  while (Keyboard::Check()) {
-    Keyboard::Clear();
+  TheKeyboard().Clear();
+  while (TheKeyboard().Peek()) {
+    TheKeyboard().Clear();
   }
-  while (!Keyboard::Check() && !ControlQ) {
+  while (!TheKeyboard().Peek() && !ControlQ) {
     Call_Back_Delay(show, 1);
   }
-  Keyboard::Clear();
+  TheKeyboard().Clear();
 }
 
 #ifdef NEVER

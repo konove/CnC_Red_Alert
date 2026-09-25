@@ -64,7 +64,7 @@
 #include "td/gscreen.h"
 #include "td/heap.h"
 #include "td/house.h"
-#include "td/jshell.h"
+#include "td/input.h"
 #include "td/mapedit.h"
 #include "td/object.h"
 #include "td/object_heaps.h"
@@ -146,11 +146,11 @@ void Debug_Key(unsigned input) {
         break;
 
       case KN_P:
-        Keyboard::Clear();
-        while (!Keyboard::Check()) {
+        TheKeyboard().Clear();
+        while (!TheKeyboard().Peek()) {
           engine::audio::TheAudio().PumpStreams();
         }
-        Keyboard::Clear();
+        TheKeyboard().Clear();
         break;
 
       case KN_O: {

@@ -275,7 +275,7 @@ bool EditClass::Action(unsigned flags, engine::window::KeyNumber& key) {
 
     } else {
       const auto ascii = static_cast<engine::window::KeyAscii>(
-          Keyboard::To_ASCII(key) & 0x00ff);
+          engine::window::KeyBuffer::ToAscii(key) & 0x00ff);
 
       /*
       ** Allow numeric keypad presses to map to ascii numbers
@@ -299,7 +299,7 @@ bool EditClass::Action(unsigned flags, engine::window::KeyNumber& key) {
              ascii <= 127) ||
             key == KN_RETURN || key == KN_BACKSPACE) {
           if ((!(flags & kLeftRelease) && !(flags & kRightRelease)) &&
-              Handle_Key(Keyboard::To_ASCII(key))) {
+              Handle_Key(engine::window::KeyBuffer::ToAscii(key))) {
             flags &= ~kKeyboard;
             key = KN_NONE;
           }
