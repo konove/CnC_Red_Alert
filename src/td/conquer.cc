@@ -552,7 +552,7 @@ void Keyboard_Process(KeyNumber& input) {
   Message_Input(input);
 #endif
   /*
-  ** Use WWKEY values because KN values have kKeyVirtualBit or'd in with them
+  ** Use raw key numbers because KN values have kKeyVirtualBit or'd in with them
   ** and we need kKeyVirtualBit to still be set if it is.
   */
   const auto plain = static_cast<KeyNumber>(
