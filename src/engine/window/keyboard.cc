@@ -59,6 +59,15 @@ bool WWKeyboardClass::Put(int key) {
 }
 
 bool WWKeyboardClass::Put_Key_Message(unsigned vk_key, bool release) {
+  // Scancode 0 is a key SDL does not know: it would be indistinguishable from
+  // Check's empty-buffer result and leave Get spinning. Scancodes above 0xFF
+  // (SDL's media and browser keys) would spill into the modifier bits, where
+  // "next track" reads as a shifted right click. Neither has a key code, so
+  // drop them before any bit is added.
+  if (vk_key == 0 || vk_key > 0xFF) {
+    return false;
+  }
+
   // Mouse buttons get no modifier bits: the DOS version never set them, and
   // the click handlers compare the button without masking them off.
   if (vk_key != VK_LBUTTON && vk_key != VK_MBUTTON && vk_key != VK_RBUTTON) {
@@ -81,11 +90,6 @@ bool WWKeyboardClass::Put_Key_Message(unsigned vk_key, bool release) {
     vk_key |= WWKEY_RLS_BIT;
   }
 
-  // A zero key would be indistinguishable from Check's empty-buffer result and
-  // would leave Get spinning, so drop the unknown scancode instead.
-  if (vk_key == 0) {
-    return false;
-  }
   return Put(static_cast<int>(vk_key));
 }
 

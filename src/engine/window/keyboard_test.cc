@@ -3,6 +3,8 @@
 
 #include "engine/window/keyboard.h"
 
+#include <SDL_scancode.h>
+
 #include <cstdint>
 
 #include "engine/window/ww_mouse.h"
@@ -72,6 +74,22 @@ TEST_F(KeyboardTest, ClearDiscardsThePendingKey) {
 // would spin on it forever, so the unknown scancode must not reach the buffer.
 TEST_F(KeyboardTest, UnknownScancodeIsNotBuffered) {
   EXPECT_FALSE(keyboard.Put_Key_Message(0));
+
+  EXPECT_EQ(keyboard.Check(), 0);
+}
+
+// The release of an unknown key gains WWKEY_RLS_BIT, which must not smuggle
+// the zero scancode past the check.
+TEST_F(KeyboardTest, UnknownScancodeReleaseIsNotBuffered) {
+  EXPECT_FALSE(keyboard.Put_Key_Message(0, /*release=*/true));
+
+  EXPECT_EQ(keyboard.Check(), 0);
+}
+
+// SDL's media keys have scancodes above 0xFF, which would spill into the
+// modifier bits: "next track" (258) would read as a shifted right click.
+TEST_F(KeyboardTest, ScancodeAboveTheKeyCodeByteIsNotBuffered) {
+  EXPECT_FALSE(keyboard.Put_Key_Message(SDL_SCANCODE_AUDIONEXT));
 
   EXPECT_EQ(keyboard.Check(), 0);
 }
