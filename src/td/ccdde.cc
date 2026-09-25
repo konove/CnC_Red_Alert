@@ -88,7 +88,7 @@ extern void CCDebugString(const char* string);
  *                                                                                             *
  * HISTORY: * 6/8/96 3:19PM ST : Created *
  *=============================================================================================*/
-BOOL CALLBACK DDE_Callback(unsigned char* data, long length) {
+BOOL CALLBACK DDE_Callback(unsigned char* data, int32_t length) {
   return (DDEServer.Callback(data, length));
 }
 
@@ -180,7 +180,7 @@ DDEServerClass::~DDEServerClass() {
  *                                                                                             *
  * HISTORY: * 6/8/96 3:21PM ST : Created *
  *=============================================================================================*/
-BOOL DDEServerClass::Callback(unsigned char* data, long length) {
+BOOL DDEServerClass::Callback(unsigned char* data, int32_t length) {
   /*
   ** If the packet length < 0 then this is a special advisory packet
   */
@@ -212,7 +212,7 @@ BOOL DDEServerClass::Callback(unsigned char* data, long length) {
     /*
     ** Find out what kind of packet this is and its length.
     */
-    int* packet_pointer = (int*)data;
+    int* packet_pointer = reinterpret_cast<int*>(data);
     int actual_length = ntohl(*packet_pointer++);
     int packet_type = ntohl(*packet_pointer++);
 
@@ -342,7 +342,7 @@ BOOL Send_Data_To_DDE_Server(const char* data, int length, int packet_type) {
 
   char* poke_data = new char[length + 2 * sizeof(int)];
 
-  int* poke_data_int = (int*)poke_data;
+  int* poke_data_int = reinterpret_cast<int*>(poke_data);
 
   *poke_data_int = htonl(length + 2 * sizeof(int));
   *(poke_data_int + 1) = htonl(packet_type);

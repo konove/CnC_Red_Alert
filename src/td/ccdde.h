@@ -56,7 +56,7 @@ class DDEServerClass {
   int Get_MPlayer_Game_Info_Length() {
     return (MPlayerGameInfoLength);
   }  // Len of game info
-  BOOL Callback(unsigned char* data, long length);  // DDE callback function
+  BOOL Callback(unsigned char* data, int32_t length);  // DDE callback function
   void Delete_MPlayer_Game_Info();  // release the game info memory
   void Enable();                    // Enable the DDE callback
   void Disable();                   // Disable the DDE callback

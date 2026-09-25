@@ -646,7 +646,7 @@ void Send_Statistics_Packet() {
 
 #ifdef _WIN32
   CCDebugString("C&C95 - About to send stats packet to DDE server.\n");
-  while (!Send_Data_To_DDE_Server((char*)packet, packet_size,
+  while (!Send_Data_To_DDE_Server(static_cast<const char*>(packet), packet_size,
                                   DDEServerClass::DDE_PACKET_GAME_RESULTS)) {
     CCDebugString("C&C95 - Stats packet send failed.\n");
     send_timer.Set(60, true);

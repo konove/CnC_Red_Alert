@@ -208,7 +208,7 @@ bool TcpipManagerClass::Init() {
   /*
   ** Start WinSock, and fill in our WinSockData
   */
-  short version = (WINSOCK_MINOR_VER << 8) | WINSOCK_MAJOR_VER;
+  const WORD version = MAKEWORD(WINSOCK_MAJOR_VER, WINSOCK_MINOR_VER);
   int rc = WSAStartup(version, &WinsockInfo);
   if (rc != 0) {
     return (false);

@@ -61,6 +61,8 @@
 // Not self-contained: needs the types from <windows.h> above.
 #include <ddeml.h>
 
+#include <cstdint>
+
 #define DDE_ADVISE_CONNECT -1     // advisory "client has connected"
 #define DDE_ADVISE_DISCONNECT -2  // advisory "client has disconnected"
 
@@ -99,7 +101,7 @@ class Instance_Class {
   - sets up DNS for the server and registers a user callback to handle
     incoming data
   .....................................................................*/
-  BOOL Register_Server(BOOL(CALLBACK*)(LPBYTE, long));
+  BOOL Register_Server(BOOL(CALLBACK*)(LPBYTE, int32_t));
 
   /*.....................................................................
   Does a trial connect to the remote server.
@@ -132,7 +134,7 @@ class Instance_Class {
   static BOOL(CALLBACK* callback)(
 
       LPBYTE pointer,  // pointer to received data
-      long length      // if >0 length of received data
+      int32_t length   // if >0 length of received data
                        // if <0
                        //	-1 == client connect detected
                        // -2 == client disconnect detected

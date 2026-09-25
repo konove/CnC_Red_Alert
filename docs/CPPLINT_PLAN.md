@@ -101,3 +101,13 @@ row to run cpplint on the touched files; CLAUDE.md's Tools table and dependency 
     `unit.cc` and `wol_gsup.cc`, and a column header left over from `mapsel.cc`'s one-line table,
     deleted. `utf8`: two U+FFFD apostrophes in `wolapiob.cc`. `threadsafe_fn`: TD's `strtok` sat in
     `Version_Number()`'s dead `#ifdef OBSOLETE` body, deleted.
+  - `readability/casting`, `runtime/int`, `runtime/printf` (2026-09-25), 232 findings. 61 casts were
+    cpplint misreading `operator new(size_t /*unused*/)` once it strips the comment; every
+    `operator new` spells `std::size_t` now. The findings in code some platform compiles were fixed:
+    `reinterpret_cast`s and `MAKEWORD` in the Winsock and DDE code, `int32_t` for TD's own DDE
+    callback length, `static_cast` for the libserialport handle. The `long`s that implement the
+    WOLAPI COM interfaces keep them with a NOLINT naming both tools, and the MIDL-generated
+    `ra/wolapi/wolapi.h` is excluded. The other 130 sit in branches no build compiles: macros never
+    defined (`NOT_FOR_WIN95`, `OLDWAY`, `VIRTUAL_SUBNET_SERVER`, `NEVER`, `OBSOLETE`, `DEMO`, ...),
+    the `#else` of ones always defined (`DIAGONAL`, `FATSHIP`) and TD's language blocks. They stay
+    filtered until those branches are deleted.

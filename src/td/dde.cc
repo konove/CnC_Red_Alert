@@ -56,7 +56,7 @@ char Instance_Class::ascii_name[32];  // name of server
 
 BOOL(CALLBACK* Instance_Class::callback)(
     LPBYTE pointer,  // pointer to received data
-    long length      // length of received data or advisory flag
+    int32_t length   // length of received data or advisory flag
     ) = NULL;
 
 /***************************************************************************
@@ -184,7 +184,7 @@ BOOL Instance_Class::Enable_Callback(BOOL flag)  // enable or disable callback
  *=========================================================================*/
 
 BOOL Instance_Class::Register_Server(BOOL(CALLBACK* callback_fnc)(LPBYTE,
-                                                                  long)) {
+                                                                  int32_t)) {
   if (DdeNameService(id_inst, local_name, 0L, DNS_REGISTER) != 0L) {
     callback = callback_fnc;
     return (true);
