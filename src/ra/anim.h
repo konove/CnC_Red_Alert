@@ -77,8 +77,8 @@ class AnimClass final : public ObjectClass, public StageClass {
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator AnimType() const { return Class->Type; }
 
-  void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t size) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }

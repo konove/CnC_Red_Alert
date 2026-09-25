@@ -240,7 +240,7 @@ void TeamClass::Init() { TheObjectHeaps().team().Free_All(); }
  *                                                                                             *
  * HISTORY: * 09/21/1995 JLB : Created. *
  *=============================================================================================*/
-void* TeamClass::operator new(size_t /*unused*/) noexcept {
+void* TeamClass::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().team().Allocate();
   if (ptr != nullptr) {
     static_cast<TeamClass*>(ptr)->IsActive = true;

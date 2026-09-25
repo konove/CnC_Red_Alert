@@ -2037,7 +2037,7 @@ AnimTypeClass::AnimTypeClass(AnimType anim, const char* name, int size,
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* AnimTypeClass::operator new(size_t /*unused*/) noexcept {
+void* AnimTypeClass::operator new(std::size_t /*unused*/) noexcept {
   return TheTypeHeaps().anim().Alloc();
 }
 

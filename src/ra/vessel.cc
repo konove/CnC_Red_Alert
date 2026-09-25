@@ -231,7 +231,7 @@ VesselClass::~VesselClass() {
  *                                                                                             *
  * HISTORY: * 03/14/1996 JLB : Created. *
  *=============================================================================================*/
-void* VesselClass::operator new(size_t /*unused*/) noexcept {
+void* VesselClass::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().vessel().Alloc();
   if (ptr != nullptr) {
     static_cast<VesselClass*>(ptr)->IsActive = true;

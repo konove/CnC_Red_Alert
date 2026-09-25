@@ -150,7 +150,7 @@ TriggerTypeClass::TriggerTypeClass()
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* TriggerTypeClass::operator new(size_t /*unused*/) {
+void* TriggerTypeClass::operator new(std::size_t /*unused*/) {
   void* ptr = TheObjectHeaps().trigger_type().Allocate();
   if (ptr) {
     static_cast<TriggerTypeClass*>(ptr)->IsActive = true;

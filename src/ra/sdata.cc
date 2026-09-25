@@ -212,7 +212,7 @@ SmudgeTypeClass::SmudgeTypeClass(SmudgeType smudge, const char* ininame,
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* SmudgeTypeClass::operator new(size_t /*unused*/) noexcept {
+void* SmudgeTypeClass::operator new(std::size_t /*unused*/) noexcept {
   return TheTypeHeaps().smudge().Alloc();
 }
 

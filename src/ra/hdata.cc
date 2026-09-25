@@ -314,7 +314,7 @@ HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
  *                                                                                             *
  * HISTORY: * 09/04/1996 JLB : Created. *
  *=============================================================================================*/
-void* HouseTypeClass::operator new(size_t /*unused*/) noexcept {
+void* HouseTypeClass::operator new(std::size_t /*unused*/) noexcept {
   return TheTypeHeaps().house().Alloc();
 }
 

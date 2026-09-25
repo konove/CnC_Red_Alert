@@ -92,8 +92,8 @@ class VesselClass : public DriveClass {
   Timer<FrameTickSource> PulseCountDown{0};
 
   VesselClass(VesselType classid, HousesType house);
-  void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t size) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }

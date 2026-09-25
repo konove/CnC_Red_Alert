@@ -75,8 +75,8 @@ class AircraftClass : public FootClass, public FlyClass {
   CCPtr<AircraftTypeClass> Class;
 
   //-----------------------------------------------------------------------------
-  void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t /*unused*/) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }

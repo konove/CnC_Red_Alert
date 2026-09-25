@@ -233,8 +233,8 @@ class BuildingClass : public TechnoClass {
   /*---------------------------------------------------------------------
   **	Constructors, Destructors, and overloaded operators.
   */
-  void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t size) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }

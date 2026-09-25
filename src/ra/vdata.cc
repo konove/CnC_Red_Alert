@@ -271,7 +271,7 @@ VesselTypeClass::VesselTypeClass(VesselType type, int name, const char* ininame,
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* VesselTypeClass::operator new(size_t /*unused*/) noexcept {
+void* VesselTypeClass::operator new(std::size_t /*unused*/) noexcept {
   return TheTypeHeaps().vessel().Alloc();
 }
 

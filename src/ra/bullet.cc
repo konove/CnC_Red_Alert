@@ -229,7 +229,7 @@ BulletClass::~BulletClass() {
  *                                                                                             *
  * HISTORY: * 05/02/1994 JLB : Created. *
  *=============================================================================================*/
-void* BulletClass::operator new(size_t /*unused*/) noexcept {
+void* BulletClass::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().bullet().Allocate();
   if (ptr) {
     static_cast<BulletClass*>(ptr)->IsActive = true;

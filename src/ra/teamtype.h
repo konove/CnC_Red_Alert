@@ -139,8 +139,8 @@ class TeamTypeClass : public AbstractTypeClass {
   TeamTypeClass(TeamTypeClass&&) = delete;
   TeamTypeClass& operator=(TeamTypeClass&&) = delete;
 
-  void* operator new(size_t /*unused*/);
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t /*unused*/);
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }

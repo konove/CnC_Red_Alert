@@ -122,7 +122,7 @@ WeaponTypeClass::~WeaponTypeClass() {
  *                                                                                             *
  * HISTORY: * 07/17/1996 JLB : Created. *
  *=============================================================================================*/
-void* WeaponTypeClass::operator new(size_t /*unused*/) noexcept {
+void* WeaponTypeClass::operator new(std::size_t /*unused*/) noexcept {
   return TheTypeHeaps().weapon().Alloc();
 }
 

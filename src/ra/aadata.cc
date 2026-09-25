@@ -300,7 +300,7 @@ AircraftTypeClass::AircraftTypeClass(
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* AircraftTypeClass::operator new(size_t /*unused*/) noexcept {
+void* AircraftTypeClass::operator new(std::size_t /*unused*/) noexcept {
   return TheTypeHeaps().aircraft().Alloc();
 }
 

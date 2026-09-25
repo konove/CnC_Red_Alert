@@ -117,8 +117,8 @@ class TriggerTypeClass : public AbstractTypeClass {
   TriggerTypeClass(TriggerTypeClass&&) = delete;
   TriggerTypeClass& operator=(TriggerTypeClass&&) = delete;
 
-  void* operator new(size_t /*unused*/);
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t /*unused*/);
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }

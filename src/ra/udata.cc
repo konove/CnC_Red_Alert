@@ -894,7 +894,7 @@ UnitTypeClass::UnitTypeClass(
  *                                                                                             *
  * HISTORY: * 07/09/1996 JLB : Created. *
  *=============================================================================================*/
-void* UnitTypeClass::operator new(size_t /*unused*/) noexcept {
+void* UnitTypeClass::operator new(std::size_t /*unused*/) noexcept {
   return TheTypeHeaps().unit().Alloc();
 }
 

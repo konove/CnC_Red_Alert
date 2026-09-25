@@ -202,7 +202,7 @@ ResultType TerrainClass::Take_Damage(int& damage, int distance,
  *                                                                                             *
  * HISTORY: * 05/14/1994 JLB : Created. *
  *=============================================================================================*/
-void* TerrainClass::operator new(size_t /*unused*/) noexcept {
+void* TerrainClass::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().terrain().Allocate();
   if (ptr) {
     static_cast<TerrainClass*>(ptr)->IsActive = true;

@@ -397,7 +397,7 @@ TerrainTypeClass::TerrainTypeClass(TerrainType terrain, uint32_t theater,
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-void* TerrainTypeClass::operator new(size_t /*unused*/) noexcept {
+void* TerrainTypeClass::operator new(std::size_t /*unused*/) noexcept {
   return TheTypeHeaps().terrain().Alloc();
 }
 

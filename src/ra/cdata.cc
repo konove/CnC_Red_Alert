@@ -1256,7 +1256,7 @@ TemplateTypeClass::TemplateTypeClass(TemplateType iconset, int theater,
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void* TemplateTypeClass::operator new(size_t /*unused*/) noexcept {
+void* TemplateTypeClass::operator new(std::size_t /*unused*/) noexcept {
   return TheTypeHeaps().tmplate().Alloc();
 }
 

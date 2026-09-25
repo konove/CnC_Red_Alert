@@ -390,7 +390,7 @@ bool TriggerClass::Spring(TEventType event, ObjectClass* obj, CELL cell,
  *                                                                                             *
  * HISTORY: * 11/28/1994 BR : Created. *
  *=============================================================================================*/
-void* TriggerClass::operator new(size_t /*unused*/) noexcept {
+void* TriggerClass::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().trigger().Allocate();
   if (ptr) {
     static_cast<TriggerClass*>(ptr)->IsActive = true;

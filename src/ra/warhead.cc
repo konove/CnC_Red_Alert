@@ -98,7 +98,7 @@ WarheadTypeClass::WarheadTypeClass(const char* name)
  *                                                                                             *
  * HISTORY: * 07/19/1996 JLB : Created. *
  *=============================================================================================*/
-void* WarheadTypeClass::operator new(size_t /*unused*/) noexcept {
+void* WarheadTypeClass::operator new(std::size_t /*unused*/) noexcept {
   return TheTypeHeaps().warhead().Alloc();
 }
 

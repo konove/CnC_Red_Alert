@@ -98,7 +98,7 @@ BulletTypeClass::BulletTypeClass(const char* name) noexcept
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-void* BulletTypeClass::operator new(size_t /*unused*/) noexcept {
+void* BulletTypeClass::operator new(std::size_t /*unused*/) noexcept {
   return TheTypeHeaps().bullet().Alloc();
 }
 

@@ -998,7 +998,7 @@ InfantryTypeClass::InfantryTypeClass(
  *                                                                                             *
  * HISTORY: * 07/11/1996 JLB : Created. *
  *=============================================================================================*/
-void* InfantryTypeClass::operator new(size_t /*unused*/) noexcept {
+void* InfantryTypeClass::operator new(std::size_t /*unused*/) noexcept {
   return TheTypeHeaps().infantry().Alloc();
 }
 

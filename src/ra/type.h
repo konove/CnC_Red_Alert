@@ -183,8 +183,8 @@ class HouseTypeClass : public AbstractTypeClass {
 
   [[nodiscard]] std::span<const unsigned char> Remap_Table() const;
 
-  void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t /*unused*/) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }
@@ -784,8 +784,8 @@ class BuildingTypeClass : public TechnoTypeClass {
   // NOLINTNEXTLINE(*-explicit-constructor)
   operator StructType() const { return Type; }
 
-  void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t /*unused*/) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }
@@ -975,8 +975,8 @@ class UnitTypeClass : public TechnoTypeClass {
                 bool is_animating, bool is_jammer, bool is_gapper, int rotation,
                 int toffset, MissionType order, bool is_aftermath) noexcept;
 
-  void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t /*unused*/) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }
@@ -1072,8 +1072,8 @@ class VesselTypeClass : public TechnoTypeClass {
                   bool is_nominal, bool is_turret_equipped, int rotation,
                   int toffset, bool is_aftermath) noexcept;
 
-  void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t /*unused*/) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }
@@ -1211,8 +1211,8 @@ class InfantryTypeClass : public TechnoTypeClass {
           ABSL_ATTRIBUTE_LIFETIME_BOUND,
       bool is_aftermath) noexcept;
 
-  void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t /*unused*/) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }
@@ -1303,8 +1303,8 @@ class AircraftTypeClass : public TechnoTypeClass {
                     int landingspeed, int rotation,
                     MissionType deforder) noexcept;
 
-  void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t /*unused*/) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }
@@ -1487,8 +1487,8 @@ class BulletTypeClass : public ObjectTypeClass {
   //---------------------------------------------------------------------
   explicit BulletTypeClass(const char* name) noexcept;
 
-  void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t /*unused*/) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }
@@ -1548,8 +1548,8 @@ class TerrainTypeClass : public ObjectTypeClass {
       std::span<const int16_t> occupy ABSL_ATTRIBUTE_LIFETIME_BOUND,
       std::span<const int16_t> overlap ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept;
 
-  void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t /*unused*/) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }
@@ -1608,8 +1608,8 @@ class TemplateTypeClass : public ObjectTypeClass {
   TemplateTypeClass(TemplateType iconset, int theater, const char* ininame,
                     int fullname) noexcept;
 
-  void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t /*unused*/) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }
@@ -1794,8 +1794,8 @@ class AnimTypeClass : public ObjectTypeClass {
                 VocType sound, AnimType chainto) noexcept;
 
   static void Init_Heap();
-  void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t /*unused*/) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }
@@ -1897,8 +1897,8 @@ class OverlayTypeClass : public ObjectTypeClass {
                    bool iscrushable, bool istiberium, bool high, bool theater,
                    bool walltype, bool iscrate) noexcept;
 
-  void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t /*unused*/) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }
@@ -1968,8 +1968,8 @@ class SmudgeTypeClass : public ObjectTypeClass {
   SmudgeTypeClass(SmudgeType smudge, const char* ininame, int fullname,
                   int width, int height, bool isbib, bool iscrater) noexcept;
 
-  void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t /*unused*/) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }

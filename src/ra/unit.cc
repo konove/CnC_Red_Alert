@@ -225,7 +225,7 @@ static void Recoil_Adjust(DirType dir, int& x, int& y) {
  * HISTORY: * 04/11/1994 JLB : Created. * 04/21/1994 JLB : Converted to operator
  *new.                                               *
  *=============================================================================================*/
-void* UnitClass::operator new(size_t /*unused*/) noexcept {
+void* UnitClass::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().unit().Alloc();
   if (ptr != nullptr) {
     static_cast<UnitClass*>(ptr)->IsActive = true;
