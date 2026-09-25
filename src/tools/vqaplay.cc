@@ -1,7 +1,7 @@
 // File: vqaplay, a command line player for VQA movies, for watching one movie
 // or stepping through it frame by frame outside the games. It plays through
-// vqa32 exactly as the games do, and reads the movie through the games' file
-// lookup and their sound mixer.
+// engine_vqa exactly as the games do, and reads the movie through the games'
+// file lookup and their sound mixer.
 //
 //   vqaplay [options] <game-dir> <name>   a movie in an installation of either
 //                                         game, loose or in its archives

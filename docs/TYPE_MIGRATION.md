@@ -378,10 +378,10 @@ When encountering a virtual function with a legacy type:
 ## Enforcement
 
 clang-tidy's `google-runtime-int` rejects `short`, `long` and `long long` in every file the Linux
-build compiles, so new code cannot reintroduce them. Windows-only, DOS and unbuilt `winvq` sources
-still spell legacy types and are migrated only when they are built. The one suppression is the
-generated Westwood Online header `ra/wolapi/wolapi.h` and the two event-sink overrides that must
-match its Win32 COM signatures.
+build compiles, so new code cannot reintroduce them. Windows-only and DOS sources still spell legacy
+types and are migrated only when they are built. The one suppression is the generated Westwood
+Online header `ra/wolapi/wolapi.h` and the two event-sink overrides that must match its Win32 COM
+signatures.
 
 ## Migration Priority
 

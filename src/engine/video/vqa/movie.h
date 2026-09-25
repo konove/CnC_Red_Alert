@@ -1,5 +1,5 @@
 // File: Movie, an open VQA movie and everything playing it takes. VqaPlayer
-// is its public face; only vqa32 and its tests include this header.
+// is its public face; only engine_vqa and its tests include this header.
 
 #ifndef CNC_RED_ALERT_ENGINE_VIDEO_VQA_MOVIE_H_
 #define CNC_RED_ALERT_ENGINE_VIDEO_VQA_MOVIE_H_

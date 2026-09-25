@@ -188,6 +188,9 @@ ra/          → Red Alert (~200 files) [depends: engine_net, engine_window, eng
 td/          → Tiberian Dawn (~288 files) [depends: engine_net, engine_window, engine_video]
 ```
 
+The `[depends: ...]` list on each folder above is enforced, not just documented: an engine file may
+only include a folder its own library links, per `tools/check_layers.py` (see Key Files).
+
 **Class hierarchy:**
 `AbstractClass → ObjectClass → TechnoClass → FootClass → InfantryClass/AircraftClass/DriveClass` and
 `TechnoClass → BuildingClass`. Heavy virtual function usage.
@@ -393,13 +396,14 @@ Omit the `std::` prefix on fixed-width types. See `docs/TYPE_MIGRATION.md` for f
 
 ## Key Files
 
-| Purpose      | File(s)                                                    |
-| ------------ | ---------------------------------------------------------- |
-| Build config | `CMakeLists.txt`, `ra/CMakeLists.txt`, `td/CMakeLists.txt` |
-| Global state | `ra/externs.h`                                             |
-| Streams      | `engine/stream/byte_sink.h`, `engine/stream/byte_source.h` |
-| Graphics     | `engine/gfx/pixel_buffer.h`                                |
-| Video        | `engine/video/vqa/vqa_player.h`                            |
+| Purpose         | File(s)                                                                                                                                           |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Build config    | `CMakeLists.txt`, `ra/CMakeLists.txt`, `td/CMakeLists.txt`                                                                                        |
+| Global state    | `ra/externs.h`                                                                                                                                    |
+| Streams         | `engine/stream/byte_sink.h`, `engine/stream/byte_source.h`                                                                                        |
+| Graphics        | `engine/gfx/pixel_buffer.h`                                                                                                                       |
+| Engine layering | `tools/check_layers.py` (enforces the dependency order), `tools/engine_layout.py` (the folder/library table it reads), `engine_layers_test` ctest |
+| Video           | `engine/video/vqa/vqa_player.h`                                                                                                                   |
 
 ## Platform Notes
 

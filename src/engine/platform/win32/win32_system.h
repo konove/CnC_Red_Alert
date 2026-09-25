@@ -121,9 +121,9 @@ BOOL GetExitCodeProcess(HANDLE process, LPDWORD exit_code);
 
 // -- Windows ----------------------------------------------------------------
 
-// The game's window is an SDL_Window here (engine_window's Display::window_
-// is a void*), so
-// none of the HWND operations apply. They do nothing.
+// The game's window is not a Win32 HWND here -- the window layer owns it
+// through SDL instead -- so none of the HWND operations apply. They do
+// nothing.
 BOOL ShowWindow(HWND window, int show);
 BOOL SetForegroundWindow(HWND window);
 HWND GetTopWindow(HWND parent);

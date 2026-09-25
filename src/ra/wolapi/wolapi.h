@@ -35,8 +35,8 @@
 // IIDs that name them.
 //
 // It leans on the Win32 spellings (HRESULT, IUnknown, interface, LPCSTR)
-// rather than on windows.h. Off Windows those come from port/win32; on
-// Windows that header defers to the real SDK.
+// rather than on windows.h. Off Windows those come from engine/platform/win32;
+// on Windows that header defers to the real SDK.
 //
 // Six of the ten interfaces are used: IChat, IChatEvent, IDownload,
 // IDownloadEvent, INetUtil and INetUtilEvent. IRTPatcher, IRTPatcherEvent,

@@ -85,8 +85,8 @@ The signature lives in more places than the `.h`/`.cc` pair:
   `override` turns that into a compile error, so add it where it is missing first.
 - **RA and TD twins.** `src/ra` and `src/td` are separate targets with same-named, separately
   declared functions. Work in the game the user named; check the twin and report whether the same
-  claim holds there, but change it only if asked. A function in `sdllib`, `tech`, `port`, `base` or
-  `winvq` is shared, so its callers are in all of `src/`.
+  claim holds there, but change it only if asked. A function under `src/engine/` is shared, so its
+  callers are in all of `src/`.
 - **Overloads.** Make sure each call you count resolves to _this_ overload.
 
 ### 2. Find every caller, including the ones the build does not compile

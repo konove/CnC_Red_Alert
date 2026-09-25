@@ -189,9 +189,9 @@ Fix every finding unless the user picked some. For each one:
    out to be wrong is a good outcome: delete the TODO, put a comment there explaining why the code
    is right after all, and say so in the summary. Do not "fix" code you could not show to be broken.
 2. **Write the failing test first** when the code can be reached from a unit test (`add_gtest` in
-   the directory's `CMakeLists.txt`; `src/sdllib/wsa_test.cc` grew its playback tests this way,
-   commit `9405c688`). Run it against the unfixed code and watch it fail or crash — that is the
-   proof the bug was real, and it goes in the commit message ("against the previous code the
+   the directory's `CMakeLists.txt`; `src/engine/gfx/wsa_animation_test.cc` grew its playback tests
+   this way, commit `9405c688`). Run it against the unfixed code and watch it fail or crash — that
+   is the proof the bug was real, and it goes in the commit message ("against the previous code the
    resident-write test crashes"). Code tangled into the game globals often cannot be unit-tested;
    then say so, and describe how the fix was checked instead (the headless save/load smoke scripts
    in `tools/`, or reasoning from the callers).
@@ -216,7 +216,7 @@ logic change list it, explain what would play differently, and let the user deci
 
 ### Verify the fixes
 
-- Build both games when a shared directory (`sdllib`, `tech`, `port`, `base`, `winvq`) was touched:
+- Build both games when a shared directory under `src/engine/` was touched:
   `cmake --build build --parallel 22`
 - Run the tests: `ctest --test-dir build --output-on-failure` (or `-R <name>` for the new one while
   iterating).

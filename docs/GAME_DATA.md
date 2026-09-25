@@ -23,10 +23,10 @@ registered. `mixdump` registers the known archives outermost first for that reas
 
 ## Watching a movie
 
-`src/tools/vqaplay` (target `vqaplay`) plays one VQA movie in a window through `vqa32`, the games'
-file lookup and their sound mixer, so a movie loads, paces and sounds as it does in the game. It
-shows the palette as stored, without the 15% brightening Red Alert's movie screen adds. It opens the
-same archives as `mixdump` and works on either game's installation.
+`src/tools/vqaplay` (target `vqaplay`) plays one VQA movie in a window through `engine_vqa`, the
+games' file lookup and their sound mixer, so a movie loads, paces and sounds as it does in the game.
+It shows the palette as stored, without the 15% brightening Red Alert's movie screen adds. It opens
+the same archives as `mixdump` and works on either game's installation.
 
 ```bash
 vqaplay <game-dir> AAGUN.VQA            # a movie in the archives (or loose in <game-dir>)
@@ -39,10 +39,10 @@ shows the frame number.
 
 ## A MIX index holds CRCs, not names
 
-Each entry records a CRC of the upper-cased filename (`CrcEngine::Compute`, `tech/crc.h`), the
-offset and the size. The name itself is nowhere in the file. A lookup that misses therefore cannot
-tell "this file is absent" from "you guessed the name wrong", which makes guessing a poor way to
-answer questions about the data. Three things that do work:
+Each entry records a CRC of the upper-cased filename (`CrcEngine::Compute`, `engine/crypto/crc.h`),
+the offset and the size. The name itself is nowhere in the file. A lookup that misses therefore
+cannot tell "this file is absent" from "you guessed the name wrong", which makes guessing a poor way
+to answer questions about the data. Three things that do work:
 
 **Count the entries.** `--index` prints the whole index, so an archive that holds 116 entries of
 which 66 match a scenario-name CRC has 50 entries that are something else — a fact, rather than a

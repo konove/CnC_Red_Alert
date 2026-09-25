@@ -1,5 +1,5 @@
 // File: helpers for the VQA player tests: an in-memory VqaIo and builders
-// for small synthetic movies. Test-only; nothing in vqa32 includes it.
+// for small synthetic movies. Test-only; nothing in engine_vqa includes it.
 
 #ifndef CNC_RED_ALERT_ENGINE_VIDEO_VQA_VQA_TEST_UTIL_H_
 #define CNC_RED_ALERT_ENGINE_VIDEO_VQA_VQA_TEST_UTIL_H_
