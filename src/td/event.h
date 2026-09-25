@@ -44,8 +44,8 @@
 #include <cstdint>
 #include <cstring>
 
-#include "engine/base/buffer.h"
-#include "engine/base/enum_array.h"
+#include "base/buffer.h"
+#include "base/enum_array.h"
 #include "td/defines.h"
 #include "td/special.h"
 

@@ -59,8 +59,8 @@
 #include <string_view>
 
 #include "absl/strings/match.h"
+#include "base/enum_array.h"
 #include "engine/audio/audio_mixer.h"
-#include "engine/base/enum_array.h"
 #include "engine/file/game_file.h"
 #include "td/conquer.h"
 #include "td/debug_state.h"

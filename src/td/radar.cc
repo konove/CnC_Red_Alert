@@ -87,11 +87,11 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/clip.h"
-#include "engine/base/numeric.h"
-#include "engine/base/unaligned.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/clip.h"
+#include "base/numeric.h"
+#include "base/unaligned.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wwstd.h"

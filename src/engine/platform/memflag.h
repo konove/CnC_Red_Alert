@@ -41,8 +41,8 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "engine/base/flags.h"
-#include "engine/base/types.h"
+#include "base/flags.h"
+#include "base/types.h"
 
 // Memory Flags
 /*

@@ -5,8 +5,8 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 #include "engine/video/vqa/vqa_format.h"
 
 AudioFormat AudioFormat::FromHeader(const VqaHeader& header) {

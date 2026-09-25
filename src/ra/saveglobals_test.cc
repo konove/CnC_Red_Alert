@@ -7,9 +7,9 @@
 #include <type_traits>
 #include <vector>
 
-#include "engine/base/buffer.h"
-#include "engine/base/installed.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/buffer.h"
+#include "base/installed.h"
+#include "base/strings/safe_string.h"
 #include "engine/platform/ftimer.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"

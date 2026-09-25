@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/base/installed.h"
-#include "engine/base/random.h"
+#include "base/installed.h"
+#include "base/random.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"

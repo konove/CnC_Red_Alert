@@ -43,7 +43,7 @@
 #include <cstddef>
 #include <span>
 
-#include "engine/base/enum_array.h"
+#include "base/enum_array.h"
 #include "engine/platform/ftimer.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"

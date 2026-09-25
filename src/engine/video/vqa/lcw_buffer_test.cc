@@ -4,7 +4,7 @@
 #include <span>
 #include <vector>
 
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "engine/video/vqa/chunk_reader.h"
 #include "engine/video/vqa/vqa_test_util.h"
 #include "gtest/gtest.h"

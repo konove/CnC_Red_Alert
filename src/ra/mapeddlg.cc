@@ -52,11 +52,11 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/array.h"
-#include "engine/base/enum_array.h"
-#include "engine/base/numeric.h"
-#include "engine/base/strings/number_parse.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/array.h"
+#include "base/enum_array.h"
+#include "base/numeric.h"
+#include "base/strings/number_parse.h"
+#include "base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"

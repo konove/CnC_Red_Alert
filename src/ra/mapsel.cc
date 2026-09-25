@@ -31,8 +31,8 @@
 #include <string>
 #include <string_view>
 
+#include "base/array.h"
 #include "engine/audio/audio_mixer.h"
-#include "engine/base/array.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/glow_pulse.h"
 #include "engine/gfx/pixel_buffer.h"

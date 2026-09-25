@@ -50,8 +50,8 @@
 #include <span>
 #include <string_view>
 
-#include "engine/base/array.h"
-#include "engine/base/unaligned.h"
+#include "base/array.h"
+#include "base/unaligned.h"
 #include "engine/net/packet.h"
 #include "engine/platform/timer.h"
 #include "engine/platform/win32/win32_com.h"
@@ -193,7 +193,7 @@ static int32_t GameEndTime;
 #include "absl/strings/str_format.h"
 #endif
 
-#include "engine/base/strings/safe_string.h"
+#include "base/strings/safe_string.h"
 #include "engine/net/inet_text.h"
 #include "ra/config.h"
 #include "ra/wolapiob.h"

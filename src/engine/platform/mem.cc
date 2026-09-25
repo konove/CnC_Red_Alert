@@ -3,10 +3,10 @@
 #include <cstdlib>
 #include <span>
 
-#include "engine/base/buffer.h"
-#include "engine/base/flags.h"
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
+#include "base/buffer.h"
+#include "base/flags.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/platform/memflag.h"
 
 void (*Memory_Error)() = nullptr;

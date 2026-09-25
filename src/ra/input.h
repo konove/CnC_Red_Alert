@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "absl/base/attributes.h"
-#include "engine/base/installed.h"
+#include "base/installed.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/jshell.h"
 

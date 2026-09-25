@@ -33,7 +33,7 @@
 static bool ReregisterWolapiDLL();
 static void HandleDLLFail();
 
-#include "engine/base/bytes_of.h"
+#include "base/bytes_of.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/sleep.h"
 #include "engine/platform/win32/win32_registry.h"

@@ -57,9 +57,9 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/strings/number_parse.h"
-#include "engine/base/strings/tokenizer.h"
-#include "engine/base/types.h"
+#include "base/strings/number_parse.h"
+#include "base/strings/tokenizer.h"
+#include "base/types.h"
 #include "engine/stream/archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/building.h"

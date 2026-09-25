@@ -24,7 +24,7 @@
 #include <iterator>
 #include <vector>
 
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/ftimer.h"
 #include "engine/stream/archive.h"

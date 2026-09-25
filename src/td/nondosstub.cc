@@ -27,7 +27,7 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "engine/base/numeric.h"
+#include "base/numeric.h"
 #include "engine/file/game_file.h"
 #include "engine/stream/seek_origin.h"
 #include "td/defines.h"

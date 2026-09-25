@@ -67,10 +67,10 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/fixed.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/fixed.h"
+#include "base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/audio.h"
 #include "ra/building.h"

@@ -4,7 +4,7 @@
 #define CNC_RED_ALERT_TD_OBJECT_HEAPS_H_
 
 #include "absl/base/attributes.h"
-#include "engine/base/installed.h"
+#include "base/installed.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/building.h"

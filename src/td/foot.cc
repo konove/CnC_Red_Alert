@@ -104,9 +104,9 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 #include "engine/window/ww_mouse.h"
 #include "td/audio.h"
 #include "td/building.h"

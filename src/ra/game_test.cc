@@ -5,8 +5,8 @@
 #include <memory>
 #include <type_traits>
 
+#include "base/installed.h"
 #include "engine/audio/audio_mixer.h"
-#include "engine/base/installed.h"
 #include "gtest/gtest.h"
 #include "ra/assets.h"
 #include "ra/goptions.h"

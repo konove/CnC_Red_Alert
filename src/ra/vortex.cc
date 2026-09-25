@@ -72,9 +72,9 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"

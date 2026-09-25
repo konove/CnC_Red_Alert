@@ -69,9 +69,9 @@
 #include <span>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/array.h"
-#include "engine/base/strings/number_parse.h"
-#include "engine/base/strings/tokenizer.h"
+#include "base/array.h"
+#include "base/strings/number_parse.h"
+#include "base/strings/tokenizer.h"
 #include "td/building.h"
 #include "td/cell.h"
 #include "td/defines.h"

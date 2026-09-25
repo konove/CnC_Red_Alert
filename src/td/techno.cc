@@ -172,8 +172,8 @@
 #include <span>
 #include <utility>
 
-#include "engine/base/array.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/numeric.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"

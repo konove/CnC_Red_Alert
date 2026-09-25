@@ -45,9 +45,9 @@
 #include <cstring>
 #include <span>
 
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/enum_array.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/enum_array.h"
 #include "ra/defines.h"
 #include "ra/special.h"
 #include "ra/target.h"

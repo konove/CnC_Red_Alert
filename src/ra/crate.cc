@@ -43,7 +43,7 @@
 
 #include "ra/crate.h"
 
-#include "engine/base/fixed.h"
+#include "base/fixed.h"
 #include "ra/cell.h"
 #include "ra/defines.h"
 #include "ra/inline.h"

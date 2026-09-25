@@ -22,7 +22,7 @@
 #include <cstring>
 #include <string_view>
 
-#include "engine/base/strings/safe_string.h"
+#include "base/strings/safe_string.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/sleep.h"
 #include "engine/window/keyboard.h"

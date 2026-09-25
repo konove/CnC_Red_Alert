@@ -2,9 +2,9 @@
 #include <cstring>
 #include <iterator>
 
-#include "engine/base/array.h"
-#include "engine/base/strings/safe_string.h"
-#include "engine/base/types.h"
+#include "base/array.h"
+#include "base/strings/safe_string.h"
+#include "base/types.h"
 #include "ra/defines.h"
 #include "ra/type.h"
 #include "ra/world.h"

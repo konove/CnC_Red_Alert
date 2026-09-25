@@ -7,7 +7,7 @@
 #include <string_view>
 #include <vector>
 
-#include "engine/base/numeric.h"
+#include "base/numeric.h"
 #include "engine/codec/base64.h"
 #include "engine/crypto/int.h"
 #include "engine/crypto/pk.h"

@@ -65,7 +65,7 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
-#include "engine/base/fixed.h"
+#include "base/fixed.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "magic_enum/magic_enum.hpp"

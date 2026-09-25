@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "engine/video/vqa/audio_ring.h"
 #include "engine/video/vqa/frame_ring.h"
 #include "engine/video/vqa/lcw_buffer.h"

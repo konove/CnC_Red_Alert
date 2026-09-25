@@ -69,9 +69,9 @@
 
 #include "ra/options.h"
 
+#include "base/array.h"
+#include "base/fixed.h"
 #include "engine/audio/audio_mixer.h"
-#include "engine/base/array.h"
-#include "engine/base/fixed.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/hsv.h"

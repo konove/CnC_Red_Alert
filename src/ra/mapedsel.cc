@@ -47,8 +47,8 @@
 #include <cstdio>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/fixed.h"
-#include "engine/base/numeric.h"
+#include "base/fixed.h"
+#include "base/numeric.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/ww_mouse.h"
 #include "ra/base.h"

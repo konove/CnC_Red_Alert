@@ -6,9 +6,9 @@
 #include <span>
 #include <vector>
 
-#include "engine/base/buffer.h"
-#include "engine/base/installed.h"
-#include "engine/base/numeric.h"
+#include "base/buffer.h"
+#include "base/installed.h"
+#include "base/numeric.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"

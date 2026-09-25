@@ -49,12 +49,12 @@
 #include <span>
 #include <vector>
 
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/fixed.h"
-#include "engine/base/numeric.h"
-#include "engine/base/strings/safe_string.h"
-#include "engine/base/types.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/fixed.h"
+#include "base/numeric.h"
+#include "base/strings/safe_string.h"
+#include "base/types.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"

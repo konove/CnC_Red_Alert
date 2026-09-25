@@ -26,7 +26,7 @@
 
 #include <iterator>
 
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/ww_mouse.h"

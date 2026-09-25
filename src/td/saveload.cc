@@ -48,8 +48,8 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
-#include "engine/base/array.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/array.h"
+#include "base/strings/safe_string.h"
 #include "engine/file/disk_file.h"
 #include "engine/file/disk_stream.h"
 #include "engine/file/file_access.h"

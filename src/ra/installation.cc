@@ -27,8 +27,8 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
-#include "engine/base/numeric.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/numeric.h"
+#include "base/strings/safe_string.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/file/search_paths.h"

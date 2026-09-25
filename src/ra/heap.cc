@@ -60,10 +60,10 @@
 
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
-#include "engine/base/algorithm.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
+#include "base/algorithm.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
+#include "base/types.h"
 
 /***********************************************************************************************
  * FixedHeapClass::FixedHeapClass -- Normal constructor for heap management

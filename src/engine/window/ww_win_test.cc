@@ -6,7 +6,7 @@
 #include <SDL_events.h>
 #include <SDL_stdinc.h>
 
-#include "engine/base/installed.h"
+#include "base/installed.h"
 #include "engine/window/display.h"
 #include "gtest/gtest.h"
 

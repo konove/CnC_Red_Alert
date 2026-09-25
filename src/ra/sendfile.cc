@@ -52,9 +52,9 @@
 #include <string>
 #include <system_error>
 
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/strings/safe_string.h"
 #include "engine/file/disk_file.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"

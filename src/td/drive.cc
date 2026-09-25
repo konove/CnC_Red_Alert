@@ -75,9 +75,9 @@
 #include <span>
 #include <utility>
 
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/cell.h"

@@ -8,7 +8,7 @@
 #include <span>
 #include <string_view>
 
-#include "engine/base/types.h"
+#include "base/types.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
 #include "engine/video/vqa/vqaio.h"

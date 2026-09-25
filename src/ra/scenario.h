@@ -42,8 +42,8 @@
 
 #include <string_view>
 
-#include "engine/base/fixed.h"
-#include "engine/base/random.h"
+#include "base/fixed.h"
+#include "base/random.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/platform.h"
 #include "ra/defines.h"

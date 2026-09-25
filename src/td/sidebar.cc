@@ -99,9 +99,9 @@
 #include <span>
 #include <string>
 
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"

@@ -45,9 +45,9 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/base/array.h"
-#include "engine/base/fixed.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/fixed.h"
+#include "base/numeric.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"

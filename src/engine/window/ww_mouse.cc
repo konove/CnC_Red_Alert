@@ -17,10 +17,10 @@
 #include <vector>
 
 #include "absl/log/log.h"
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/codec/lcw_uncompress.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"

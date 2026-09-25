@@ -77,10 +77,10 @@
 #include <span>
 #include <utility>
 
-#include "engine/base/aligned_buffer.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
-#include "engine/base/unaligned.h"
+#include "base/aligned_buffer.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
+#include "base/unaligned.h"
 #include "td/combuf.h"
 #include "td/connect.h"
 #include "td/ipx.h"

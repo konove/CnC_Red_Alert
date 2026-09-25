@@ -52,8 +52,8 @@
 #include <span>
 #include <vector>
 
+#include "base/enum_array.h"
 #include "engine/audio/audio_mixer.h"
-#include "engine/base/enum_array.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "td/assets.h"

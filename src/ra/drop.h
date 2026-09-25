@@ -45,9 +45,9 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "engine/base/array.h"
-#include "engine/base/numeric.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/array.h"
+#include "base/numeric.h"
+#include "base/strings/safe_string.h"
 #include "engine/window/keyboard.h"
 #include "ra/control.h"
 #include "ra/defines.h"

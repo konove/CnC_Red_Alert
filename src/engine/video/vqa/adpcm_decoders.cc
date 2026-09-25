@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/base/array.h"
-#include "engine/base/unaligned.h"
+#include "base/array.h"
+#include "base/unaligned.h"
 
 // IMA ADPCM step index change for each 4-bit code: small codes step the
 // quantizer down, large ones up. The sign bit (8) does not matter.

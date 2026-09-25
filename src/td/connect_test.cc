@@ -7,8 +7,8 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "engine/base/buffer.h"
-#include "engine/base/unaligned.h"
+#include "base/buffer.h"
+#include "base/unaligned.h"
 #include "gtest/gtest.h"
 #include "td/combuf.h"
 #include "td/noseqcon.h"

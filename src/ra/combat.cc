@@ -45,8 +45,8 @@
 #include <algorithm>
 #include <iterator>
 
-#include "engine/base/array.h"
-#include "engine/base/fixed.h"
+#include "base/array.h"
+#include "base/fixed.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/cell.h"
 #include "ra/coord.h"

@@ -48,7 +48,7 @@
 
 #include <cstring>
 
-#include "engine/base/buffer.h"
+#include "base/buffer.h"
 #include "ra/ipx.h"
 
 /***************************************************************************

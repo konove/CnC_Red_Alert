@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "engine/base/installed.h"
+#include "base/installed.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/ww_mouse.h"
 #include "gtest/gtest.h"

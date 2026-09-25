@@ -47,7 +47,7 @@ class ArchiveWriter;
 #include <cstddef>
 #include <span>
 
-#include "engine/base/enum_array.h"
+#include "base/enum_array.h"
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
 #include "td/defines.h"

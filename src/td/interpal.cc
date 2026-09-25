@@ -47,7 +47,7 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/display.h"
 

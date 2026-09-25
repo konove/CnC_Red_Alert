@@ -5,7 +5,7 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"
 

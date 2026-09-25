@@ -56,8 +56,8 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 
 /***************************************************************************
  * CommBufferClass::CommBufferClass -- class constructor *

@@ -63,11 +63,11 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/bytes_of.h"
-#include "engine/base/numeric.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/bytes_of.h"
+#include "base/numeric.h"
+#include "base/strings/safe_string.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/shape.h"

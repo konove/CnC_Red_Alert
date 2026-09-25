@@ -17,7 +17,7 @@
 #include <string>
 #include <vector>
 
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "engine/crypto/blowfish_sink.h"
 #include "engine/crypto/crc.h"
 #include "engine/crypto/pk.h"

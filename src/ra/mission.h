@@ -40,7 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_MISSION_H_
 #define CNC_RED_ALERT_RA_MISSION_H_
 
-#include "engine/base/fixed.h"
+#include "base/fixed.h"
 #include "engine/platform/ftimer.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"

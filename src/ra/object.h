@@ -44,7 +44,7 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/base/fixed.h"
+#include "base/fixed.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/abstract.h"
 #include "ra/ccptr.h"

@@ -5,7 +5,7 @@
 
 #include <cstdint>
 
-#include "engine/base/installed.h"
+#include "base/installed.h"
 
 // The number of game frames since the scenario started. Every frame-based
 // timer measures against it, the simulation advances it once per logic

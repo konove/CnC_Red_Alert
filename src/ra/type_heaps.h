@@ -4,7 +4,7 @@
 #define CNC_RED_ALERT_RA_TYPE_HEAPS_H_
 
 #include "absl/base/attributes.h"
-#include "engine/base/installed.h"
+#include "base/installed.h"
 #include "ra/heap.h"
 #include "ra/type.h"
 #include "ra/warhead.h"

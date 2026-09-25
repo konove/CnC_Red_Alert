@@ -84,7 +84,7 @@
 #ifndef CNC_RED_ALERT_RA_GADGET_H_
 #define CNC_RED_ALERT_RA_GADGET_H_
 
-#include "engine/base/attributes.h"
+#include "base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "ra/defines.h"

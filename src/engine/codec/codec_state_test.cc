@@ -9,8 +9,8 @@
 #include <string_view>
 #include <vector>
 
-#include "engine/base/buffer.h"
-#include "engine/base/types.h"
+#include "base/buffer.h"
+#include "base/types.h"
 #include "engine/codec/base64.h"
 #include "engine/codec/base64_source.h"
 #include "engine/codec/block_codec.h"

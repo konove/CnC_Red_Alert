@@ -47,7 +47,7 @@
 #include <cstddef>
 #include <span>
 
-#include "engine/base/fixed.h"
+#include "base/fixed.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"

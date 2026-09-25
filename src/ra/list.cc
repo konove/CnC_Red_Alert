@@ -67,7 +67,7 @@
 #include <string_view>
 
 #include "absl/strings/match.h"
-#include "engine/base/numeric.h"
+#include "base/numeric.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"

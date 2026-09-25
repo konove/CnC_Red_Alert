@@ -47,8 +47,8 @@
 #include <span>
 #include <utility>
 
+#include "base/bytes_of.h"
 #include "engine/audio/audio_mixer.h"
-#include "engine/base/bytes_of.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wsa_animation.h"

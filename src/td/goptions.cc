@@ -48,7 +48,7 @@
 #include <iterator>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"

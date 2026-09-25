@@ -6,8 +6,8 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "engine/base/buffer.h"
-#include "engine/base/types.h"
+#include "base/buffer.h"
+#include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/tile.h"

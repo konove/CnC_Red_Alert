@@ -40,7 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_OPTIONS_H_
 #define CNC_RED_ALERT_RA_OPTIONS_H_
 
-#include "engine/base/fixed.h"
+#include "base/fixed.h"
 #include "engine/window/keyboard.h"
 #include "ra/palette.h"
 

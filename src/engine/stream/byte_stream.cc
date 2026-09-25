@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/stream/seek_origin.h"
 
 base::ssize ClampedSeek(const base::ssize position, const base::ssize size,

@@ -61,7 +61,7 @@
 #include <string>
 
 #include "absl/strings/match.h"
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"

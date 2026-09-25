@@ -9,10 +9,10 @@
 #include <optional>
 #include <span>
 
-#include "engine/base/array.h"
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
-#include "engine/base/unaligned.h"
+#include "base/array.h"
+#include "base/numeric.h"
+#include "base/types.h"
+#include "base/unaligned.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/tile.h"
 

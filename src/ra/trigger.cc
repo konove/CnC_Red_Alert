@@ -55,7 +55,7 @@
 #include <cstdint>
 
 #include "absl/log/check.h"
-#include "engine/base/numeric.h"
+#include "base/numeric.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/ftimer.h"

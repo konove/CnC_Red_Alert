@@ -53,9 +53,9 @@
 #include <random>
 #include <span>
 
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 #include "engine/crypto/digit_cursor.h"
 #include "engine/crypto/int.h"
 #include "engine/stream/byte_source.h"

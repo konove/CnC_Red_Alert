@@ -13,9 +13,9 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/array.h"
-#include "engine/base/numeric.h"
-#include "engine/base/unaligned.h"
+#include "base/array.h"
+#include "base/numeric.h"
+#include "base/unaligned.h"
 #include "engine/codec/aud_decoder.h"
 #include "engine/file/game_file.h"
 #include "engine/stream/byte_stream.h"

@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "engine/base/installed.h"
+#include "base/installed.h"
 #include "engine/gfx/pixel_surface.h"
 
 // Owns the one window the program opens, the renderer that presents it, and

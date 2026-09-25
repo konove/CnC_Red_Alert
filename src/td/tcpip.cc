@@ -63,10 +63,10 @@
 #include <cstring>
 #include <span>
 
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
+#include "base/strings/safe_string.h"
 #include "engine/net/socket_bytes.h"
 #include "td/jshell.h"
 #include "td/network.h"

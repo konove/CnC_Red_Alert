@@ -47,7 +47,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "engine/crypto/mp.h"
 #include "engine/stream/byte_source.h"
 

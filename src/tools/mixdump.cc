@@ -23,8 +23,8 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/array.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/numeric.h"
 #include "engine/file/disk_stream.h"
 #include "engine/file/file_access.h"
 #include "engine/file/mix_archive.h"

@@ -29,8 +29,8 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
+#include "base/numeric.h"
 #include "engine/audio/audio_mixer.h"
-#include "engine/base/numeric.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/stream/byte_stream.h"

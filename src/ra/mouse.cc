@@ -52,7 +52,7 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "engine/base/enum_array.h"
+#include "base/enum_array.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"

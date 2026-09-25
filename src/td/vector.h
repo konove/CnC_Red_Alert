@@ -61,9 +61,9 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "engine/base/array.h"
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
+#include "base/array.h"
+#include "base/numeric.h"
+#include "base/types.h"
 
 // IWYU pragma: no_include "td/cell.h"
 // IWYU pragma: no_include "td/nodename.h"

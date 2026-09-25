@@ -41,7 +41,7 @@
 
 #include <cstdint>
 
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"

@@ -51,7 +51,7 @@
 #include <cstddef>
 #include <span>
 
-#include "engine/base/enum_array.h"
+#include "base/enum_array.h"
 #include "engine/file/disk_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/shape.h"

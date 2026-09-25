@@ -40,7 +40,7 @@
 #ifndef CNC_RED_ALERT_RA_GOPTIONS_H_
 #define CNC_RED_ALERT_RA_GOPTIONS_H_
 
-#include "engine/base/installed.h"
+#include "base/installed.h"
 #include "ra/config.h"
 #include "ra/options.h"
 

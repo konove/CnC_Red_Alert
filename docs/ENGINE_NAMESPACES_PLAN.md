@@ -52,6 +52,6 @@ of each library shows no symbols outside `engine::`, `std::`, `absl::`.
 
 ## Progress
 
-- [ ] 1. `base` to `src/base/`
+- [x] 1. `base` to `src/base/`
 - [ ] 2. `engine::` for platform, crypto, file, net
 - [ ] 3. `/migrate-namespaces` policy; `engine::audio`

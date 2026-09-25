@@ -7,7 +7,7 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "engine/base/types.h"
+#include "base/types.h"
 #include "engine/stream/byte_source.h"
 #include "engine/stream/byte_stream.h"
 

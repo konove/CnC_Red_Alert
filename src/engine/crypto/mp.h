@@ -45,8 +45,8 @@
 #include <string_view>
 #include <utility>
 
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
+#include "base/array.h"
+#include "base/buffer.h"
 #include "engine/crypto/digit_cursor.h"
 #include "engine/stream/byte_source.h"
 

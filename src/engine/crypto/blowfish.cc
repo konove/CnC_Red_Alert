@@ -53,9 +53,9 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 
 /*
 **	Byte order controlled long integer. This integer is constructed

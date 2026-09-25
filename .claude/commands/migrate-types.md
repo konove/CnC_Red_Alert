@@ -48,8 +48,8 @@ Follow the conversion table in `docs/TYPE_MIGRATION.md`. Summary:
 - **`short`**: `int16_t` if size matters, `int` otherwise. **`unsigned short`**: `uint16_t` for
   protocol/bitfield/flags, `int16_t` or `int` for a number.
 - **`long long`**: `int64_t`. **`unsigned long long`**: `uint64_t` (bits) or `int64_t` (number).
-- **`size_t`** used as an index, count or size: `base::ssize` (`"engine/base/types.h"`). Keep
-  `size_t` only at STL/external API boundaries.
+- **`size_t`** used as an index, count or size: `base::ssize` (`"base/types.h"`). Keep `size_t` only
+  at STL/external API boundaries.
 
 Unsigned is justified for CRC/hash/checksum values, bitwise operations, flag masks, raw byte/pixel
 data, wire-format fields, modular arithmetic, and magic numbers compared as opaque values. Counts,
@@ -143,7 +143,7 @@ Keep what the code relies on:
    comments that describe the old type (a "pointer to buffer" parameter doc, a `-1 means none`
    sentinel that is now `.empty()`).
 4. Add the includes each new type needs (`<string>`, `<string_view>`, `<span>`, `<array>`,
-   `<vector>`, `<cstdint>`, `"engine/base/types.h"`); `misc-include-cleaner` will insist.
+   `<vector>`, `<cstdint>`, `"base/types.h"`); `misc-include-cleaner` will insist.
 
 ## Verify
 
@@ -159,8 +159,8 @@ Keep what the code relies on:
   in the foreground as its own command. New `std::string` members and spans are where
   `misc-include-cleaner`, the bounds checks and lifetime warnings speak up. Changing a header
   re-analyzes every file that includes it, which can surface an unused include that was there before
-  (`init.cc`'s `engine/base/numeric.h` when `init.h` gained `<string_view>`); removing it is part of
-  the change.
+  (`init.cc`'s `base/numeric.h` when `init.h` gained `<string_view>`); removing it is part of the
+  change.
 - If anything a save touches changed despite section 0, run `tools/ra_saveload_smoke.sh` (or `td_`)
   against the build.
 

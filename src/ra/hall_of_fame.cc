@@ -6,7 +6,7 @@
 #include <span>
 #include <string_view>
 
-#include "engine/base/buffer.h"
+#include "base/buffer.h"
 
 namespace {
 

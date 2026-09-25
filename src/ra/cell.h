@@ -43,9 +43,9 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
-#include "engine/base/enum_array.h"
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
+#include "base/enum_array.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/ccptr.h"
 #include "ra/config.h"

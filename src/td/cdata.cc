@@ -54,9 +54,9 @@
 #include <span>
 
 #include "absl/strings/match.h"
-#include "engine/base/array.h"
-#include "engine/base/enum_array.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/enum_array.h"
+#include "base/numeric.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"

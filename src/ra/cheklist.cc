@@ -55,7 +55,7 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/numeric.h"
+#include "base/numeric.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"

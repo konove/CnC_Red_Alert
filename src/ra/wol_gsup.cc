@@ -30,12 +30,12 @@
 
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
-#include "engine/base/strings/format.h"
-#include "engine/base/strings/number_parse.h"
-#include "engine/base/strings/tokenizer.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
+#include "base/strings/format.h"
+#include "base/strings/number_parse.h"
+#include "base/strings/tokenizer.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -83,7 +83,7 @@
 static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 
 #include "absl/log/check.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/strings/safe_string.h"
 #include "engine/file/search_paths.h"
 #include "engine/platform/sleep.h"
 #include "engine/platform/timer.h"

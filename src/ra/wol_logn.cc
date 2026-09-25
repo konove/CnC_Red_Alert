@@ -23,7 +23,7 @@
 #include <span>
 #include <string_view>
 
-#include "engine/base/strings/safe_string.h"
+#include "base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"

@@ -8,7 +8,7 @@
 #include <span>
 #include <vector>
 
-#include "engine/base/types.h"
+#include "base/types.h"
 #include "engine/crypto/blowfish.h"
 #include "engine/crypto/blowfish_sink.h"
 #include "engine/crypto/blowfish_source.h"

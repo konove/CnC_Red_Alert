@@ -9,7 +9,7 @@
 #include <span>
 #include <vector>
 
-#include "engine/base/types.h"
+#include "base/types.h"
 #include "engine/crypto/pk.h"
 #include "engine/crypto/pk_sink.h"
 #include "engine/crypto/pk_source.h"

@@ -44,8 +44,8 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/base/buffer.h"
-#include "engine/base/unaligned.h"
+#include "base/buffer.h"
+#include "base/unaligned.h"
 #include "engine/codec/lcw_uncompress.h"
 #include "engine/codec/xor_delta.h"
 #include "ra/defines.h"

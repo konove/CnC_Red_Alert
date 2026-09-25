@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "engine/window/ww_mouse.h"
 #include "engine/window/ww_win.h"
 

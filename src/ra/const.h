@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <string>
 
-#include "engine/base/enum_array.h"
+#include "base/enum_array.h"
 #include "engine/gfx/wwstd.h"
 #include "ra/config.h"
 #include "ra/defines.h"

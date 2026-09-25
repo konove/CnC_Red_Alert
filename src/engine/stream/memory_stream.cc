@@ -7,9 +7,9 @@
 #include <iterator>
 #include <span>
 
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
 

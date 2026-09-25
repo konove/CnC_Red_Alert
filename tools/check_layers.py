@@ -4,10 +4,10 @@
 Every engine target shares the src/ include root, so linking only proves that
 a library calls nothing it does not link; a header-only include from a folder
 the library may not see still builds. This script reads the include lines
-instead. It places each engine file in its folder under src/engine/ by its
-path (tools/engine_layout.py) and fails on:
+instead. It places each library file in its folder under src/engine/ or
+src/base/ by its path (tools/engine_layout.py) and fails on:
 
-- a source file under src/engine/ outside the known folders;
+- a source file under src/engine/ or src/base/ outside the known folders;
 - an include of a folder the file's library may not see (the plan's
   "Dependency order"), or of src/ra, src/td, src/tools or src/testing;
 - an SDL header outside window/, audio/, video/, video/vqa/ and
@@ -43,7 +43,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 
 # The top-level folders under src/ that hold project code. A quoted include
 # starting with one of them is a project include and must resolve.
-PROJECT_ROOTS = (layout.ENGINE_ROOT, "ra", "td", "tools", "testing")
+PROJECT_ROOTS = (*layout.LIBRARY_ROOTS, "ra", "td", "tools", "testing")
 
 # The folders engine code may never include: the games, the tools and the
 # test main sit above every engine library.
@@ -104,20 +104,20 @@ def is_sdl_header(name: str) -> bool:
 
 
 def engine_files(src_root: Path) -> list[str]:
-    """Returns every engine source file, relative to src_root."""
-    root = src_root / layout.ENGINE_ROOT
-    if not root.is_dir():
-        return []
+    """Returns every library source file, relative to src_root."""
+    roots = [src_root / root for root in layout.LIBRARY_ROOTS]
     return sorted(
         path.relative_to(src_root).as_posix()
+        for root in roots
+        if root.is_dir()
         for path in root.rglob("*")
         if path.is_file() and layout.is_source(path.name)
     )
 
 
 def folder_errors(files: list[str]) -> list[str]:
-    """Returns the files the layout cannot place: under src/engine/ but not
-    in a known folder."""
+    """Returns the files the layout cannot place: under a library root but
+    not in a known folder."""
     return [
         f"src/{path}: not in a known engine folder"
         for path in files

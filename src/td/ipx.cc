@@ -70,7 +70,7 @@
 #ifdef NOT_FOR_WIN95
 #include <cstdint>
 
-#include "engine/base/strings/safe_string.h"
+#include "base/strings/safe_string.h"
 #endif
 
 /***************************************************************************

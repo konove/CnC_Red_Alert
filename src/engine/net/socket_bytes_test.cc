@@ -2,7 +2,7 @@
 
 #include <type_traits>
 
-#include "engine/base/buffer.h"
+#include "base/buffer.h"
 #include "gtest/gtest.h"
 
 #ifdef _WIN32

@@ -66,8 +66,8 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "engine/base/array.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/numeric.h"
 
 /*
 **	This class is used to create and maintain an index. It does this by

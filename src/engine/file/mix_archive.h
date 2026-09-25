@@ -42,7 +42,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "engine/base/listnode.h"
+#include "base/listnode.h"
 #include "engine/crypto/pk.h"
 
 // An archive is opened, and its files are served, through OpenGameFile, so an

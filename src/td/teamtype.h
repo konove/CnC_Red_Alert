@@ -44,7 +44,7 @@ class ArchiveWriter;
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "engine/base/enum_array.h"
+#include "base/enum_array.h"
 #include "td/defines.h"
 #include "td/house.h"
 #include "td/target.h"

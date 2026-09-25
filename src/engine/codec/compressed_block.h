@@ -27,7 +27,7 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/base/types.h"
+#include "base/types.h"
 
 // The compression method, as stored in CompressedBlockHeader::method. The
 // values are the file format's. Only NOCOMPRESS and LCW are decoded.

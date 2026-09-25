@@ -34,9 +34,9 @@ class LayoutTest(unittest.TestCase):
             layout.allowed_libraries(library)  # Every dependency is known.
 
     def test_files_are_placed_by_path(self):
-        self.assertEqual(layout.library_folder_of("engine/base/types.h"), "base")
+        self.assertEqual(layout.library_folder_of("base/types.h"), "base")
         self.assertEqual(
-            layout.library_folder_of("engine/base/strings/format_test.cc"),
+            layout.library_folder_of("base/strings/format_test.cc"),
             "base/strings",
         )
         self.assertEqual(
@@ -50,6 +50,8 @@ class LayoutTest(unittest.TestCase):
             layout.library_folder_of("engine/net/serial/wincomm.cc"), "net/serial"
         )
         self.assertIsNone(layout.library_folder_of("engine/nowhere/x.h"))
+        self.assertIsNone(layout.library_folder_of("engine/base/types.h"))
+        self.assertIsNone(layout.library_folder_of("base/nowhere/x.h"))
         self.assertIsNone(layout.library_folder_of("engine/rgb.h"))  # No bare folder.
         self.assertIsNone(layout.library_folder_of("ra/techno.cc"))
         self.assertEqual(layout.library_of("net/serial"), "net")
@@ -74,19 +76,19 @@ class CheckerTest(unittest.TestCase):
 
     def test_includes_down_the_order_pass(self):
         self.write("engine/gfx/pixel_buffer.h")
-        self.write("engine/base/types.h")
+        self.write("base/types.h")
         self.write(
             "engine/window/display.cc",
             '#include "engine/gfx/pixel_buffer.h"\n#include <SDL.h>\n',
         )
         self.write(
-            "engine/base/strings/format.cc", '#include "engine/base/types.h"\n'
+            "base/strings/format.cc", '#include "base/types.h"\n'
         )
-        self.write("engine/base/clip.h", '#include "engine/base/strings/format.h"\n')
-        self.write("engine/base/strings/format.h")
+        self.write("base/clip.h", '#include "base/strings/format.h"\n')
+        self.write("base/strings/format.h")
         self.assertEqual(self.errors("engine/window/display.cc"), [])
-        self.assertEqual(self.errors("engine/base/strings/format.cc"), [])
-        self.assertEqual(self.errors("engine/base/clip.h"), [])  # base/strings is base.
+        self.assertEqual(self.errors("base/strings/format.cc"), [])
+        self.assertEqual(self.errors("base/clip.h"), [])  # base/strings is base.
 
     def test_include_up_the_order_fails(self):
         self.write("engine/window/display.h")
@@ -120,11 +122,11 @@ class CheckerTest(unittest.TestCase):
         self.write("ra/keyframe.h")
         self.write("engine/window/display.h")
         self.write(
-            "engine/base/fixed_test.cc",
+            "base/fixed_test.cc",
             '#include "ra/keyframe.h"\n#include "engine/window/display.h"\n'
             "#include <SDL.h>\n",
         )
-        self.assertEqual(self.errors("engine/base/fixed_test.cc"), [])
+        self.assertEqual(self.errors("base/fixed_test.cc"), [])
 
     def test_sdl_only_where_allowed(self):
         self.write("engine/platform/timer.cc", "#include <SDL_timer.h>\n")
@@ -165,9 +167,9 @@ class CheckerTest(unittest.TestCase):
         self.assertIn("no such file", errors[1])
 
     def test_project_header_named_like_sdl_is_layer_checked(self):
-        self.write("engine/base/SDL_util.h")
+        self.write("base/SDL_util.h")
         self.write("engine/window/SDL_glue.h")
-        self.write("engine/platform/mem.cc", '#include "engine/base/SDL_util.h"\n')
+        self.write("engine/platform/mem.cc", '#include "base/SDL_util.h"\n')
         self.write("engine/gfx/rgb.cc", '#include "engine/window/SDL_glue.h"\n')
         self.assertEqual(self.errors("engine/platform/mem.cc"), [])
         errors = self.errors("engine/gfx/rgb.cc")
@@ -195,6 +197,8 @@ class CheckerTest(unittest.TestCase):
 
     def test_folder_errors(self):
         paths = [
+            "base/nowhere/x.h",
+            "base/types.h",
             "engine/gfx/hsv.h",
             "engine/nowhere/x.cc",
         ]
@@ -204,11 +208,15 @@ class CheckerTest(unittest.TestCase):
         self.assertEqual(files, paths)
         errors = check_layers.folder_errors(files)
         self.assertEqual(
-            errors, ["src/engine/nowhere/x.cc: not in a known engine folder"]
+            errors,
+            [
+                "src/base/nowhere/x.h: not in a known engine folder",
+                "src/engine/nowhere/x.cc: not in a known engine folder",
+            ],
         )
 
     def test_non_source_files_are_ignored(self):
-        self.write("engine/base/CMakeLists.txt")
+        self.write("base/CMakeLists.txt")
         self.write("engine/gfx/README.md")
         self.assertEqual(check_layers.engine_files(self.src), [])
 

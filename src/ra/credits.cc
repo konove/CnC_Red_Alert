@@ -46,7 +46,7 @@
 #include <cstdint>
 #include <cstdlib>
 
-#include "engine/base/fixed.h"
+#include "base/fixed.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/ftimer.h"

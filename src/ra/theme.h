@@ -40,8 +40,8 @@
 #ifndef CNC_RED_ALERT_RA_THEME_H_
 #define CNC_RED_ALERT_RA_THEME_H_
 
-#include "engine/base/enum_array.h"
-#include "engine/base/installed.h"
+#include "base/enum_array.h"
+#include "base/installed.h"
 #include "ra/defines.h"
 
 class ThemeClass {

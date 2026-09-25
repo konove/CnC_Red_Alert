@@ -97,9 +97,9 @@
 #include <utility>
 
 #include "absl/log/check.h"
-#include "engine/base/array.h"
-#include "engine/base/fixed.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/fixed.h"
+#include "base/numeric.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"

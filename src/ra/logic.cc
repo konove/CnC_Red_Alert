@@ -43,7 +43,7 @@
 
 #include <cstdint>
 
-#include "engine/base/fixed.h"
+#include "base/fixed.h"
 #include "engine/platform/ftimer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"

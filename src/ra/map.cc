@@ -76,10 +76,10 @@
 #include <new>
 #include <span>
 
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/fixed.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/fixed.h"
+#include "base/numeric.h"
 #include "engine/codec/block_codec.h"
 #include "engine/codec/lcw_sink.h"
 #include "engine/codec/lcw_source.h"

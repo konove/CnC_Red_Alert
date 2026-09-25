@@ -21,7 +21,7 @@
 // page its pixels, and locking the surface a page borrows them from.
 //
 // The primitives all clip with the Cohen-Sutherland outcodes of
-// engine/base/clip.h and then walk whole rows.
+// base/clip.h and then walk whole rows.
 
 #include "engine/gfx/pixel_buffer.h"
 
@@ -39,11 +39,11 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/str_cat.h"
-#include "engine/base/array.h"
-#include "engine/base/clip.h"
-#include "engine/base/flags.h"
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
+#include "base/array.h"
+#include "base/clip.h"
+#include "base/flags.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/gfx/bitmap.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_surface.h"

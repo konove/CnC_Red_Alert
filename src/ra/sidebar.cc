@@ -100,11 +100,11 @@
 #include <string>
 
 #include "absl/log/check.h"
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/enum_array.h"
-#include "engine/base/fixed.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/enum_array.h"
+#include "base/fixed.h"
+#include "base/numeric.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rgb.h"

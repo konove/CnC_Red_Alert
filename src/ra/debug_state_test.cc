@@ -2,7 +2,7 @@
 
 #include "ra/debug_state.h"
 
-#include "engine/base/installed.h"
+#include "base/installed.h"
 #include "gtest/gtest.h"
 
 namespace {

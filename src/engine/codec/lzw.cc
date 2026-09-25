@@ -43,8 +43,8 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/base/array.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/numeric.h"
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
 

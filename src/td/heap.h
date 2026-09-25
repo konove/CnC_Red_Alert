@@ -47,8 +47,8 @@
 #include <vector>
 
 #include "absl/log/check.h"
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/stream/archive.h"
 #include "td/vector.h"
 

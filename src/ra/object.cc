@@ -115,8 +115,8 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "engine/base/fixed.h"
-#include "engine/base/numeric.h"
+#include "base/fixed.h"
+#include "base/numeric.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"

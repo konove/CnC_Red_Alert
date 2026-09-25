@@ -40,8 +40,8 @@
 
 #include <cstdint>
 
-#include "engine/base/array.h"
-#include "engine/base/random.h"
+#include "base/array.h"
+#include "base/random.h"
 #include "td/jshell.h"
 #include "td/randomstate.h"
 

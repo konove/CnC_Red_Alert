@@ -44,5 +44,5 @@ add_gtest(
 add_gtest(
         NAME engine_window_keyboard_test
         SOURCES keyboard_test.cc keyboard.cc
-        LIBS engine_base SDL2::SDL2 absl::strings absl::check absl::log
+        LIBS base SDL2::SDL2 absl::strings absl::check absl::log
 )

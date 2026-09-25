@@ -6,7 +6,7 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
-#include "engine/base/installed.h"
+#include "base/installed.h"
 #include "td/defines.h"
 
 // The developer and cheat switches, all of which start off. The command line

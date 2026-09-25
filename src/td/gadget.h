@@ -85,7 +85,7 @@
 #ifndef CNC_RED_ALERT_TD_GADGET_H_
 #define CNC_RED_ALERT_TD_GADGET_H_
 
-#include "engine/base/attributes.h"
+#include "base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "td/link.h"

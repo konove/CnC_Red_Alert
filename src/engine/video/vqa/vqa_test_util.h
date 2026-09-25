@@ -16,9 +16,9 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/stream/seek_origin.h"
 #include "engine/video/vqa/vqa_audio_device.h"
 #include "engine/video/vqa/vqa_format.h"

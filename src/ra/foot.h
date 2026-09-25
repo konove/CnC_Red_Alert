@@ -43,8 +43,8 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/base/array.h"
-#include "engine/base/fixed.h"
+#include "base/array.h"
+#include "base/fixed.h"
 #include "engine/platform/ftimer.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"

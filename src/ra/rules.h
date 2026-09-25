@@ -41,9 +41,9 @@
 #define CNC_RED_ALERT_RA_RULES_H_
 
 #include "absl/base/attributes.h"
-#include "engine/base/enum_array.h"
-#include "engine/base/fixed.h"
-#include "engine/base/installed.h"
+#include "base/enum_array.h"
+#include "base/fixed.h"
+#include "base/installed.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"

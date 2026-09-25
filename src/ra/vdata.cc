@@ -62,7 +62,7 @@
 #include <string>
 
 #include "absl/strings/match.h"
-#include "engine/base/trig.h"
+#include "base/trig.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"

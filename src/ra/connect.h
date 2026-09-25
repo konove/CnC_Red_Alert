@@ -116,7 +116,7 @@
 */
 #include <cstdint>
 
-#include "engine/base/enum_array.h"
+#include "base/enum_array.h"
 #include "ra/combuf.h"
 
 /*

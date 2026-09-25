@@ -49,10 +49,10 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "engine/base/array.h"
-#include "engine/base/enum_array.h"
-#include "engine/base/fixed.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/array.h"
+#include "base/enum_array.h"
+#include "base/fixed.h"
+#include "base/strings/safe_string.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
 #include "engine/platform/platform.h"

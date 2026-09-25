@@ -1,5 +1,5 @@
 // Checks CellClass::Adjacent_Cell's map-edge handling on a real cell array.
-#include "engine/base/installed.h"
+#include "base/installed.h"
 #include "gtest/gtest.h"
 #include "td/cell.h"
 #include "td/defines.h"

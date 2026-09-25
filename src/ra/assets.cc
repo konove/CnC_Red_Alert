@@ -7,8 +7,8 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/array.h"
-#include "engine/base/enum_array.h"
+#include "base/array.h"
+#include "base/enum_array.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "magic_enum/magic_enum.hpp"

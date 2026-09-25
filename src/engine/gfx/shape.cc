@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/base/numeric.h"
-#include "engine/base/unaligned.h"
+#include "base/numeric.h"
+#include "base/unaligned.h"
 
 char* ShapeBuffer;
 std::span<uint8_t> ShapeBufferBytes;

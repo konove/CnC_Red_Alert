@@ -6,8 +6,8 @@
 #include <span>
 #include <string_view>
 
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 
 std::string_view Extract_String(const std::span<const std::byte> data,
                                 const int index) {

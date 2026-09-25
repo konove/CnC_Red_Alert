@@ -21,8 +21,8 @@
 #include <memory>
 #include <span>
 
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 #include "engine/crypto/blowfish.h"
 #include "engine/crypto/blowfish_source.h"
 #include "engine/crypto/pk.h"

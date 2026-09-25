@@ -87,8 +87,8 @@
 #include <cstdlib>
 #include <iterator>
 
-#include "engine/base/array.h"
-#include "engine/base/random.h"
+#include "base/array.h"
+#include "base/random.h"
 #include "engine/file/string_table.h"
 #include "ra/assets.h"
 #include "ra/const.h"

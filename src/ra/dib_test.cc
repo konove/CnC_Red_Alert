@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "gtest/gtest.h"
 
 namespace {

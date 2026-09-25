@@ -52,8 +52,8 @@
 #include <span>
 
 #include "absl/strings/match.h"
-#include "engine/base/fixed.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/fixed.h"
+#include "base/strings/safe_string.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccini.h"
 #include "ra/defines.h"

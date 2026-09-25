@@ -60,10 +60,10 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "engine/base/enum_array.h"
-#include "engine/base/strings/number_parse.h"
-#include "engine/base/strings/safe_string.h"
-#include "engine/base/strings/tokenizer.h"
+#include "base/enum_array.h"
+#include "base/strings/number_parse.h"
+#include "base/strings/safe_string.h"
+#include "base/strings/tokenizer.h"
 #include "engine/stream/readline.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"

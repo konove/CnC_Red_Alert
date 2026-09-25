@@ -56,7 +56,7 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "engine/file/disk_file.h"
 #include "ra/config.h"
 #include "ra/installation.h"

@@ -35,7 +35,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "engine/base/installed.h"
+#include "base/installed.h"
 #include "engine/codec/aud_decoder.h"
 #include "engine/stream/byte_stream.h"
 

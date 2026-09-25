@@ -156,12 +156,12 @@ Execution, Deployment | CMake | Environment_ via `CMAKE_CXX_COMPILER_LAUNCHER=/u
 All source lives under `src/`:
 
 ```
+base/        → Vocabulary types and small value classes, shared by the engine, the games and the
+               tools: types.h (base::ssize), numeric.h, fixed.h, random.h; strings/ holds format,
+               safe_string, tokenizer, number_parse (target `base`) [depends: abseil, magic_enum]
 engine/      → The shared libraries, one folder per domain (docs/ENGINE_FOLDERS_PLAN.md)
-  base/      → Vocabulary types and small value classes: types.h (base::ssize), numeric.h, fixed.h,
-               random.h; strings/ holds format, safe_string, tokenizer, number_parse
-               (target `engine_base`) [depends: abseil, magic_enum]
   platform/  → OS services: environment, time, sleep, memory, files on disk; win32/ holds the Win32
-               API emulation (target `engine_platform`; links SDL2 for the timer) [depends: engine_base]
+               API emulation (target `engine_platform`; links SDL2 for the timer) [depends: base]
   stream/    → ByteSink/ByteSource/ByteStream and their adapters: archive, memory/range streams,
                span/stream sinks and sources, tee, readline (target `engine_stream`)
                [depends: engine_platform]
@@ -245,7 +245,7 @@ instantiation. Keep those with `#include "td/vector_impl.h"  // IWYU pragma: kee
 ### New Files
 
 - NO Electronic Arts copyright header (only applies to original EA code)
-- Use `#ifndef` guards: `<PROJECT>_<PATH>_<FILE>_H_` (e.g., `CNC_RED_ALERT_ENGINE_BASE_TYPES_H_`,
+- Use `#ifndef` guards: `<PROJECT>_<PATH>_<FILE>_H_` (e.g., `CNC_RED_ALERT_BASE_TYPES_H_`,
   `CNC_RED_ALERT_ENGINE_GFX_PIXEL_BUFFER_H_`)
 
 ### Documentation (Google Style - REQUIRED for new code)
@@ -288,8 +288,8 @@ which checks a literal format against its arguments at compile time:
 // sprintf(buf, "%s.INI", src)     →  absl::SNPrintF(buf, sizeof(buf), "%s.INI", src);
 // std::string result              →  absl::StrFormat("%s.INI", src);
 // printf / fprintf(fp, ...)       →  absl::PrintF(...) / absl::FPrintF(fp, ...);
-// strcpy + strcat                 →  base::SafeCopy / base::SafeAppend (engine/base/strings/safe_string.h)
-// run-time format (string table) →  base::FormatRuntime(Text_String(id), args...) (engine/base/strings/format.h)
+// strcpy + strcat                 →  base::SafeCopy / base::SafeAppend (base/strings/safe_string.h)
+// run-time format (string table) →  base::FormatRuntime(Text_String(id), args...) (base/strings/format.h)
 ```
 
 Game printers (`Fancy_Text_Print`, `Smart_Printf`, `Fatal`, ...) are variadic templates over the
@@ -370,9 +370,9 @@ arithmetic. Do not use unsigned merely to indicate a value is non-negative — u
 
 Use `int64_t` for values that could exceed 2^31, including intermediate calculations.
 
-For indices, counts, and sizes, use `base::ssize` (defined in `engine/base/types.h` as
-`std::ptrdiff_t`). Prefer this over `size_t` to avoid signed/unsigned comparison issues and to allow
-negative sentinel values. Include `"engine/base/types.h"` and link the `engine_base` library.
+For indices, counts, and sizes, use `base::ssize` (defined in `base/types.h` as `std::ptrdiff_t`).
+Prefer this over `size_t` to avoid signed/unsigned comparison issues and to allow negative sentinel
+values. Include `"base/types.h"` and link the `base` library.
 
 | Legacy Type                 | Replacement                                           |
 | --------------------------- | ----------------------------------------------------- |

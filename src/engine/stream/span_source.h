@@ -9,9 +9,9 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/stream/byte_source.h"
 
 // A chain source that hands out a caller-owned buffer until it runs out.

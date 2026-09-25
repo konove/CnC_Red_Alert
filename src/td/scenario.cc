@@ -57,8 +57,8 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/array.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/array.h"
+#include "base/strings/safe_string.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"

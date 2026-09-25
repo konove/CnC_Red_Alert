@@ -2,14 +2,18 @@
 
 docs/ENGINE_FOLDERS_PLAN.md moved the shared code that used to live in
 src/base, src/port, src/sdllib, src/tech and src/winvq under src/engine/, one
-folder per domain. This module is the one copy of that plan's library list
-and dependency order; tools/check_layers.py imports it to enforce them.
+folder per domain; docs/ENGINE_NAMESPACES_PLAN.md then moved the vocabulary
+library, base, back out to src/base/, beside the engine rather than in it.
+This module is the one copy of the library list and dependency order;
+tools/check_layers.py imports it to enforce them.
 
-Paths here are relative to src/ and always use '/'. A "folder" is a directory
-under src/engine/ ("gfx", "base/strings"); a "library" is the CMake target
-that builds it. Subfolders belong to their parent's library, except
-video/vqa, which is a library of its own. A file's folder is just its path
-under src/engine/ -- ra/, td/, tools/ and testing/ hold no engine code.
+Paths here are relative to src/ and always use '/'. A "folder" names a
+library's directory or a subdirectory of one ("gfx", "base/strings"); a
+"library" is the CMake target that builds it. Folders live under src/engine/,
+except those of TOP_LEVEL_LIBRARIES, which live at the top of src/
+(folder_path()). Subfolders belong to their parent's library, except
+video/vqa, which is a library of its own. ra/, td/, tools/ and testing/ hold
+no library code.
 """
 
 from __future__ import annotations
@@ -17,9 +21,16 @@ from __future__ import annotations
 # Where engine code lives, relative to src/.
 ENGINE_ROOT = "engine"
 
+# The libraries at the top of src/ rather than under engine/: the vocabulary
+# the engine, the games and the tools all share.
+TOP_LEVEL_LIBRARIES = ("base",)
+
+# The directories under src/ that hold library code.
+LIBRARY_ROOTS = (ENGINE_ROOT, *TOP_LEVEL_LIBRARIES)
+
 # Each library's folder and its CMake target.
 LIBRARIES = {
-    "base": "engine_base",
+    "base": "base",
     "platform": "engine_platform",
     "stream": "engine_stream",
     "codec": "engine_codec",
@@ -77,8 +88,16 @@ def library_of(folder: str) -> str:
 
 
 def folders() -> tuple[str, ...]:
-    """Returns every folder under engine/, libraries and subfolders."""
+    """Returns every folder, libraries and subfolders."""
     return tuple(LIBRARIES) + tuple(SUBFOLDERS)
+
+
+def folder_path(folder: str) -> str:
+    """Returns where folder lives, relative to src/ ("gfx" -> "engine/gfx",
+    "base/strings" -> "base/strings")."""
+    if library_of(folder).split("/", 1)[0] in TOP_LEVEL_LIBRARIES:
+        return folder
+    return f"{ENGINE_ROOT}/{folder}"
 
 
 def allowed_libraries(library: str) -> frozenset[str]:
@@ -109,15 +128,15 @@ def _stem(path: str) -> str:
 
 
 def library_folder_of(path: str) -> str | None:
-    """Returns the engine folder path belongs in, or None if it has none.
+    """Returns the folder path belongs in, or None if it has none.
 
-    path is relative to src/. Only files under src/engine/ are engine code;
-    a file in a known folder there ("engine/gfx/rgb.h" -> "gfx") is placed by
-    its own path, a file in an unknown one and everything else (the games,
-    tools, testing) returns None.
+    path is relative to src/. A file directly in a known folder
+    ("engine/gfx/rgb.h" -> "gfx", "base/strings/format.h" -> "base/strings")
+    is placed by its own path; a file in an unknown one and everything else
+    (the games, tools, testing) returns None.
     """
-    folder, _, _ = path.rpartition("/")
-    if folder == ENGINE_ROOT or folder.startswith(ENGINE_ROOT + "/"):
-        candidate = folder.removeprefix(ENGINE_ROOT + "/")
-        return candidate if candidate in folders() else None
+    directory, _, _ = path.rpartition("/")
+    for folder in folders():
+        if folder_path(folder) == directory:
+            return folder
     return None

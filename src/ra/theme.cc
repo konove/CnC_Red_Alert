@@ -61,10 +61,10 @@
 #include <string_view>
 
 #include "absl/strings/match.h"
+#include "base/enum_array.h"
+#include "base/fixed.h"
+#include "base/numeric.h"
 #include "engine/audio/audio_mixer.h"
-#include "engine/base/enum_array.h"
-#include "engine/base/fixed.h"
-#include "engine/base/numeric.h"
 #include "engine/file/game_file.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/debug_state.h"

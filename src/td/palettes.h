@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "engine/base/installed.h"
+#include "base/installed.h"
 
 // The 768-byte palettes (256 entries of 6-bit red, green and blue) the game
 // switches between. Game owns the one Palettes; everything else reaches it

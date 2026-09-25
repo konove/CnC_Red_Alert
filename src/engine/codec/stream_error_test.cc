@@ -10,8 +10,8 @@
 #include <string_view>
 #include <vector>
 
-#include "engine/base/array.h"
-#include "engine/base/types.h"
+#include "base/array.h"
+#include "base/types.h"
 #include "engine/codec/block_codec.h"
 #include "engine/codec/lzo_sink.h"
 #include "engine/codec/lzo_source.h"

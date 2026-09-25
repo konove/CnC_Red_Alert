@@ -229,7 +229,7 @@
 #include <span>
 #include <vector>
 
-#include "engine/base/enum_array.h"
+#include "base/enum_array.h"
 #include "td/combuf.h"
 
 #define CONN_DEBUG 0

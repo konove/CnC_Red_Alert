@@ -6,7 +6,7 @@
 #include <cstring>
 #include <span>
 
-#include "engine/base/buffer.h"
+#include "base/buffer.h"
 #include "gtest/gtest.h"
 #include "td/defines.h"
 #include "td/inline.h"

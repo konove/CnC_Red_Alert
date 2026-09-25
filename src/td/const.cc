@@ -40,7 +40,7 @@
 
 #include "td/const.h"
 
-#include "engine/base/enum_array.h"
+#include "base/enum_array.h"
 #include "engine/gfx/wwstd.h"
 #include "td/defines.h"
 #include "td/type.h"

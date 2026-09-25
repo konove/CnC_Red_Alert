@@ -1,8 +1,8 @@
 #include "engine/video/vqa/frame_ring.h"
 
 #include "absl/log/check.h"
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
+#include "base/numeric.h"
+#include "base/types.h"
 
 FrameRing::FrameRing(const int frame_count, const int codebook_count,
                      const base::ssize codebook_capacity,

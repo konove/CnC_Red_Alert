@@ -44,7 +44,7 @@
 #include <string>
 
 #include "absl/base/attributes.h"
-#include "engine/base/enum_array.h"
+#include "base/enum_array.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"

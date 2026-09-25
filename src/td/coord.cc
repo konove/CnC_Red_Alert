@@ -54,8 +54,8 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/base/array.h"
-#include "engine/base/trig.h"
+#include "base/array.h"
+#include "base/trig.h"
 #include "td/const.h"
 #include "td/defines.h"
 #include "td/display_constants.h"

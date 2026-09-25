@@ -43,11 +43,11 @@
 #include <cstddef>
 #include <span>
 
-#include "engine/base/bytes_of.h"
+#include "base/bytes_of.h"
 #ifdef NOT_FOR_WIN95
 #include <vector>
 
-#include "engine/base/buffer.h"
+#include "base/buffer.h"
 #endif
 
 #include <cstdint>

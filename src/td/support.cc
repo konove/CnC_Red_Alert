@@ -7,10 +7,10 @@
 #include <cstring>
 #include <span>
 
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
+#include "base/strings/safe_string.h"
 #include "engine/gfx/pixel_buffer.h"
 
 std::span<uint8_t> Conquer_Build_Fading_Table(std::span<const uint8_t> palette,

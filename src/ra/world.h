@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "engine/base/enum_array.h"
-#include "engine/base/installed.h"
+#include "base/enum_array.h"
+#include "base/installed.h"
 #include "ra/base.h"
 #include "ra/carry.h"
 #include "ra/defines.h"

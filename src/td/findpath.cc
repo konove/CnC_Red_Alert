@@ -59,9 +59,9 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "engine/base/array.h"
-#include "engine/base/enum_array.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/enum_array.h"
+#include "base/numeric.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"

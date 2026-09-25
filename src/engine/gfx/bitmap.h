@@ -5,7 +5,7 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "engine/base/numeric.h"
+#include "base/numeric.h"
 
 class BitmapClass {
  public:

@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "engine/base/unaligned.h"
+#include "base/unaligned.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_surface.h"
 #include "gtest/gtest.h"

@@ -41,7 +41,7 @@
 #ifndef CNC_RED_ALERT_TD_MISSION_H_
 #define CNC_RED_ALERT_TD_MISSION_H_
 
-#include "engine/base/enum_array.h"
+#include "base/enum_array.h"
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/object.h"

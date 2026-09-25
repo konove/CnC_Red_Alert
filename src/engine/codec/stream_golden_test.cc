@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "absl/strings/str_cat.h"
-#include "engine/base/types.h"
+#include "base/types.h"
 #include "engine/codec/base64.h"
 #include "engine/codec/base64_sink.h"
 #include "engine/codec/base64_source.h"

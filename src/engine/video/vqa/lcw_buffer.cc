@@ -2,8 +2,8 @@
 
 #include <span>
 
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/codec/lcw_uncompress.h"
 #include "engine/video/vqa/chunk_reader.h"
 

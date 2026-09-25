@@ -44,7 +44,7 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/base/enum_array.h"
+#include "base/enum_array.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/keyboard.h"
 #include "ra/control.h"

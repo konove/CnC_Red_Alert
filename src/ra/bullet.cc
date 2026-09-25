@@ -64,8 +64,8 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
-#include "engine/base/array.h"
-#include "engine/base/numeric.h"
+#include "base/array.h"
+#include "base/numeric.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "ra/aircraft.h"

@@ -15,9 +15,9 @@
 #include <span>
 #include <vector>
 
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/stream/byte_sink.h"
 
 // Whether a block codec link compresses or decompresses what passes it.

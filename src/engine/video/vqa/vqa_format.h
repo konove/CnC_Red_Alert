@@ -31,7 +31,7 @@
 #include <array>
 #include <cstdint>
 
-#include "engine/base/numeric.h"
+#include "base/numeric.h"
 
 // VqaHeader: the payload of the VQHD chunk, read straight off the disk.
 //

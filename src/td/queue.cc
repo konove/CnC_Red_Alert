@@ -87,11 +87,11 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
-#include "engine/base/strings/safe_string.h"
-#include "engine/base/unaligned.h"
+#include "base/array.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
+#include "base/strings/safe_string.h"
+#include "base/unaligned.h"
 #include "engine/platform/timer.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/window/keyboard.h"

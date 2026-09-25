@@ -41,7 +41,7 @@
 #ifndef CNC_RED_ALERT_TD_GOPTIONS_H_
 #define CNC_RED_ALERT_TD_GOPTIONS_H_
 
-#include "engine/base/installed.h"
+#include "base/installed.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "td/options.h"
 

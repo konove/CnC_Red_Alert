@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/base/buffer.h"
+#include "base/buffer.h"
 #include "gtest/gtest.h"
 #include "ra/profile.h"
 

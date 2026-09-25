@@ -51,8 +51,8 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/str_cat.h"
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
+#include "base/numeric.h"
+#include "base/types.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"

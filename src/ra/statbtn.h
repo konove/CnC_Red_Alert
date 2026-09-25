@@ -43,7 +43,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "engine/base/buff.h"
+#include "base/buff.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"

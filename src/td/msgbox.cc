@@ -48,9 +48,9 @@
 #include <span>
 #include <vector>
 
-#include "engine/base/array.h"
-#include "engine/base/numeric.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/array.h"
+#include "base/numeric.h"
+#include "base/strings/safe_string.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"

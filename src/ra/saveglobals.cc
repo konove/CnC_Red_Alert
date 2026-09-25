@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "engine/base/random.h"
+#include "base/random.h"
 #include "engine/platform/ftimer.h"
 #include "engine/stream/archive.h"
 #include "magic_enum/magic_enum.hpp"

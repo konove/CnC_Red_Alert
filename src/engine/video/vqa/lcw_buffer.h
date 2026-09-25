@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "engine/base/types.h"
+#include "base/types.h"
 #include "engine/video/vqa/chunk_reader.h"
 
 // A fixed-capacity buffer for data that arrives either raw or LCW compressed.

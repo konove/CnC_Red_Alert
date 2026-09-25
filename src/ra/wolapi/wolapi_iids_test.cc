@@ -1,6 +1,6 @@
 #include <cstdint>
 
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "engine/platform/win32/win32_com.h"
 #include "gtest/gtest.h"
 #include "ra/wolapi/wolapi.h"

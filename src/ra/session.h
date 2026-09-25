@@ -45,8 +45,8 @@
 #include <string>
 
 #include "absl/base/attributes.h"
-#include "engine/base/enum_array.h"
-#include "engine/base/installed.h"
+#include "base/enum_array.h"
+#include "base/installed.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/platform.h"
 #include "engine/stream/byte_sink.h"

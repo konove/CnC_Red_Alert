@@ -70,7 +70,7 @@ apply_dotenv_settings(td_archive_roundtrip_test)
 add_gtest(
     NAME td_saveload_test
     SOURCES savevalues_test.cc cellvalues.cc scorevalues.cc door.cc flasher.cc fuse.cc super.cc fixedmath.cc rand.cc
-    LIBS engine_base engine_stream
+    LIBS base engine_stream
 )
 
 target_compile_definitions(td_saveload_test PRIVATE TD=1)
@@ -86,31 +86,31 @@ apply_dotenv_settings(td_game_test)
 add_gtest(
     NAME td_assets_test
     SOURCES assets_test.cc assets.cc
-    LIBS engine_base engine_file magic_enum::magic_enum absl::check absl::log absl::strings
+    LIBS base engine_file magic_enum::magic_enum absl::check absl::log absl::strings
 )
 
 add_gtest(
     NAME td_debug_state_test
     SOURCES debug_state_test.cc
-    LIBS engine_base
+    LIBS base
 )
 
 add_gtest(
     NAME td_palettes_test
     SOURCES palettes_test.cc
-    LIBS engine_base
+    LIBS base
 )
 
 add_gtest(
     NAME td_screen_test
     SOURCES screen_test.cc screen.cc
-    LIBS engine_base engine_window
+    LIBS base engine_window
 )
 
 add_gtest(
     NAME td_heap_test
     SOURCES heap_test.cc heap.cc
-    LIBS engine_base engine_stream
+    LIBS base engine_stream
 )
 target_compile_definitions(td_heap_test PRIVATE TD=1)
 
@@ -123,21 +123,21 @@ target_compile_definitions(td_fixedmath_test PRIVATE TD=1)
 add_gtest(
     NAME td_connect_test
     SOURCES connect_test.cc connect.cc combuf.cc noseqcon.cc
-    LIBS engine_base absl::check absl::log
+    LIBS base absl::check absl::log
 )
 target_compile_definitions(td_connect_test PRIVATE TD=1)
 
 add_gtest(
     NAME td_coord_inline_test
     SOURCES coord_inline_test.cc
-    LIBS engine_base absl::check absl::log
+    LIBS base absl::check absl::log
 )
 target_compile_definitions(td_coord_inline_test PRIVATE TD=1)
 
 add_gtest(
     NAME td_path_overlap_test
     SOURCES path_overlap_test.cc
-    LIBS engine_base absl::check absl::log
+    LIBS base absl::check absl::log
 )
 target_compile_definitions(td_path_overlap_test PRIVATE TD=1)
 

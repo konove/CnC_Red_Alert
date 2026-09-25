@@ -47,9 +47,9 @@
 #include <span>
 
 #include "absl/strings/match.h"
-#include "engine/base/array.h"
-#include "engine/base/enum_array.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/array.h"
+#include "base/enum_array.h"
+#include "base/strings/safe_string.h"
 #include "td/conquer.h"
 #include "td/const.h"
 #include "td/defines.h"

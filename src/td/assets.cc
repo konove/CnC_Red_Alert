@@ -5,7 +5,7 @@
 #include <span>
 #include <vector>
 
-#include "engine/base/enum_array.h"
+#include "base/enum_array.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "magic_enum/magic_enum.hpp"

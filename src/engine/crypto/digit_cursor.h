@@ -9,8 +9,8 @@
 
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
-#include "engine/base/numeric.h"
-#include "engine/base/unaligned.h"
+#include "base/numeric.h"
+#include "base/unaligned.h"
 
 // Preserves the allocation's bounds while a legacy arithmetic loop walks in
 // either direction. Reads and writes copy the value representation, so viewing

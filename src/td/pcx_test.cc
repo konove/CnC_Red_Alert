@@ -9,7 +9,7 @@
 #include <string>
 #include <system_error>
 
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "gtest/gtest.h"

@@ -32,9 +32,9 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
-#include "engine/base/unaligned.h"
+#include "base/numeric.h"
+#include "base/types.h"
+#include "base/unaligned.h"
 
 // Byte offsets, within the font info block, of the two font-wide metrics the
 // game reads.

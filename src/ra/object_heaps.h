@@ -6,7 +6,7 @@
 #include <string>
 
 #include "absl/base/attributes.h"
-#include "engine/base/installed.h"
+#include "base/installed.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/building.h"

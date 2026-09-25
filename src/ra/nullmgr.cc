@@ -67,12 +67,12 @@
 #include <utility>
 
 #include "absl/log/log.h"
-#include "engine/base/aligned_buffer.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
-#include "engine/base/strings/number_parse.h"
-#include "engine/base/strings/safe_string.h"
-#include "engine/base/unaligned.h"
+#include "base/aligned_buffer.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
+#include "base/strings/number_parse.h"
+#include "base/strings/safe_string.h"
+#include "base/unaligned.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"

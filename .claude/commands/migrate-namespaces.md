@@ -123,10 +123,9 @@ qualify the entries (`gfx::PixelBuffer`).
    namespace (`PixelBuffer::Clear()`, not `gfx::PixelBuffer::Clear()` at global scope). The existing
    `static` functions and the `namespace {` block move inside unchanged. A `.cc` that defines a hook
    defines it outside the block.
-4. **Tests** go in the namespace with their own unnamed namespace inside, as
-   `engine/base/numeric_test.cc` does: `namespace gfx {` / `namespace {` ... `}  // namespace` /
-   `}  // namespace gfx`. A test stub for a hook stays global; a stub for a moved function moves
-   too.
+4. **Tests** go in the namespace with their own unnamed namespace inside, as `base/numeric_test.cc`
+   does: `namespace gfx {` / `namespace {` ... `}  // namespace` / `}  // namespace gfx`. A test
+   stub for a hook stays global; a stub for a moved function moves too.
 5. **Enumerators, in `.cc` files first.** Count each caller `.cc`'s uses of the enum's enumerators;
    where there are three or more, add `using enum <ns>::<Enum>;` after the includes and leave the
    file out of the enumerator mapping in the next step. Everything else - headers and the light
@@ -166,9 +165,9 @@ and the bugs found while reading go in the report for `/rename-google-style` and
   lists the library's external symbols outside its namespace (uppercase letters only, so `static`
   functions drop out). It should show only the hooks, `extern "C"` functions and other namespaces'
   specializations the report names. Run it before starting too: on a partly namespaced library it is
-  the inventory of what is left (`libengine_base.a` still shows `Buffer::Buffer(long)`). A
-  header-only file emits no symbols of its own, so for it this check proves nothing; the grep below
-  carries the weight.
+  the inventory of what is left (`libbase.a` still shows `Buffer::Buffer(long)`). A header-only file
+  emits no symbols of its own, so for it this check proves nothing; the grep below carries the
+  weight.
 - No unqualified use survives outside the namespace:
   `git grep -nwE '<Name>' -- src/ra src/td src/engine | grep -v '<ns>::<Name>'` over the table, read
   by hand (member names and the other game's twins will match and are fine).

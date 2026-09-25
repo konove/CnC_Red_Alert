@@ -42,7 +42,7 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "engine/base/array.h"
+#include "base/array.h"
 #include "engine/gfx/bitmap.h"
 #include "engine/gfx/pixel_surface.h"
 #include "engine/gfx/text_window.h"

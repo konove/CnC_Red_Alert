@@ -45,7 +45,7 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "engine/base/enum_array.h"
+#include "base/enum_array.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/ftimer.h"
 #include "ra/ccini.h"

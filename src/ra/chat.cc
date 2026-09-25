@@ -25,9 +25,9 @@
 #include <string>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/buffer.h"
-#include "engine/base/fixed.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/buffer.h"
+#include "base/fixed.h"
+#include "base/strings/safe_string.h"
 #include "engine/window/keyboard.h"
 #include "ra/audio.h"
 #include "ra/config.h"

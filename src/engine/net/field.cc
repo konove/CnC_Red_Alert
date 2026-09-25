@@ -41,8 +41,8 @@
 #include <span>
 #include <string_view>
 
-#include "engine/base/buffer.h"
-#include "engine/base/unaligned.h"
+#include "base/buffer.h"
+#include "base/unaligned.h"
 
 // htons/htonl
 #ifdef _WIN32

@@ -5,7 +5,7 @@
 
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
-#include "engine/base/strings/format.h"
+#include "base/strings/format.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"

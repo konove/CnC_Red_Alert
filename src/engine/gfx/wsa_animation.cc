@@ -8,12 +8,12 @@
 #include <utility>
 #include <vector>
 
-#include "engine/base/attributes.h"
-#include "engine/base/buffer.h"
-#include "engine/base/flags.h"
-#include "engine/base/numeric.h"
-#include "engine/base/types.h"
-#include "engine/base/unaligned.h"
+#include "base/attributes.h"
+#include "base/buffer.h"
+#include "base/flags.h"
+#include "base/numeric.h"
+#include "base/types.h"
+#include "base/unaligned.h"
 #include "engine/codec/lcw_uncompress.h"
 #include "engine/codec/xor_delta.h"
 #include "engine/file/game_file.h"

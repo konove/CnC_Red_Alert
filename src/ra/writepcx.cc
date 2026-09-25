@@ -40,8 +40,8 @@
 #include <cstring>
 #include <span>
 
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
+#include "base/array.h"
+#include "base/buffer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/stream/byte_stream.h"
 #include "ra/filepcx.h"

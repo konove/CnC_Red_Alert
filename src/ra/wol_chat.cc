@@ -24,7 +24,7 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/ftimer.h"

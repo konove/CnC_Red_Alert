@@ -51,9 +51,9 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
+#include "base/buffer.h"
+#include "base/numeric.h"
 #include "engine/audio/audio_mixer.h"
-#include "engine/base/buffer.h"
-#include "engine/base/numeric.h"
 #include "engine/platform/memflag.h"
 #include "engine/platform/timer.h"
 #include "engine/stream/byte_stream.h"

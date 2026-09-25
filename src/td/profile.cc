@@ -49,8 +49,8 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
-#include "engine/base/strings/number_parse.h"
-#include "engine/base/strings/safe_string.h"
+#include "base/strings/number_parse.h"
+#include "base/strings/safe_string.h"
 #include "engine/file/profile_buffer.h"
 #include "td/defines.h"
 

@@ -59,7 +59,7 @@
 #include <span>
 
 #include "absl/strings/match.h"
-#include "engine/base/numeric.h"
+#include "base/numeric.h"
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"

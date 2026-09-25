@@ -72,8 +72,8 @@
 
 #include <cstring>
 
-#include "engine/base/array.h"
-#include "engine/base/buffer.h"
+#include "base/array.h"
+#include "base/buffer.h"
 #include "td/ipx.h"
 
 // Only the virtual subnet server code uses this.

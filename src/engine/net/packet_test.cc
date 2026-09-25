@@ -8,7 +8,7 @@
 #include <memory>
 #include <span>
 
-#include "engine/base/buffer.h"
+#include "base/buffer.h"
 #include "engine/net/field.h"
 #include "gtest/gtest.h"
 

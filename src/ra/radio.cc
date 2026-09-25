@@ -46,7 +46,7 @@
 #include <cstdint>
 
 #include "absl/log/check.h"
-#include "engine/base/enum_array.h"
+#include "base/enum_array.h"
 #include "ra/defines.h"
 #include "ra/mission.h"
 #include "ra/techno.h"  // IWYU pragma: keep

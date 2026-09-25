@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <span>
 
-#include "engine/base/types.h"
+#include "base/types.h"
 #include "engine/crypto/sha.h"
 #include "engine/stream/byte_sink.h"
 
