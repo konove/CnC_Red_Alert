@@ -42,8 +42,8 @@ MODEL USE32 FLAT
 
 global	C _AbortModemFunctionPtr:dword
 global	C Memory_Error_Exit	:dword
-global	C MouseQX		:dword
-global	C MouseQY		:dword
+global	C click_x()		:dword
+global	C click_y()		:dword
 
 global	FastGetPortHardware_	:near
 global	FastSetPortHardware_	:near
@@ -884,7 +884,7 @@ endp		Asm_Create_Palette_Interpolation_Table
 
 _AbortModemFunctionPtr	dd	0
 Memory_Error_Exit	dd	0
-MouseQX			dd	0
-MouseQY			dd	0
+click_x()			dd	0
+click_y()			dd	0
 
 end

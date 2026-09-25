@@ -1049,11 +1049,11 @@ bool Select_Game(bool fade) {
           TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
           Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                           Call_Back);
-          Clear_KeyBuffer();
+          ClearKeys();
           while (!Check_Key_Num()) {
             Call_Back();
           }
-          Get_Key_Num();
+          ReadKey();
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                           Call_Back);
           Show_Mouse();
@@ -1117,11 +1117,11 @@ bool Select_Game(bool fade) {
           TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
           Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                           Call_Back);
-          Clear_KeyBuffer();
-          while (!Check_Key()) {
+          ClearKeys();
+          while (!PeekKey()) {
             Call_Back();
           }
-          Get_Key();
+          ReadKeyAscii();
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                           Call_Back);
           Show_Mouse();
@@ -1380,7 +1380,7 @@ bool Select_Game(bool fade) {
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                               Call_Back);
             }
-            Clear_KeyBuffer();
+            ClearKeys();
             count.Set(int64_t{kTimerSecond} * 3);
             while (count.Time()) {
               Call_Back();
@@ -1404,7 +1404,7 @@ bool Select_Game(bool fade) {
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                               Call_Back);
             }
-            Clear_KeyBuffer();
+            ClearKeys();
             count.Set(int64_t{kTimerSecond} * 3);
             while (count.Time()) {
               Call_Back();
@@ -1428,7 +1428,7 @@ bool Select_Game(bool fade) {
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                               Call_Back);
             }
-            Clear_KeyBuffer();
+            ClearKeys();
             count.Set(int64_t{kTimerSecond} * 3);
             while (count.Time()) {
               Call_Back();
@@ -1451,7 +1451,7 @@ bool Select_Game(bool fade) {
             Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                             Call_Back);
           }
-          Clear_KeyBuffer();
+          ClearKeys();
           count.Set(int64_t{kTimerSecond} * 3);
           while (count.Time()) {
             Call_Back();
@@ -1998,7 +1998,7 @@ bool Select_Game(bool fade) {
  * HISTORY: * 06/06/1995 BRR : Created. *
  *=============================================================================================*/
 static void Play_Intro(bool for_real) {
-  const bool playright = !Key_Down(KN_LCTRL) || !Key_Down(KN_RCTRL);
+  const bool playright = !IsKeyDown(KN_LCTRL) || !IsKeyDown(KN_RCTRL);
   static int _counter = -1;
   static const char* _names[] = {
 #ifdef DEMO

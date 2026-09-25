@@ -358,9 +358,10 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
     */
     case KN_RMOUSE:
     case KN_LMOUSE:
-      if (Coordinates_In_Region(ActiveKeyboard->MouseQX,
-                                ActiveKeyboard->MouseQY, mx1, my1, mx2, my2)) {
-        newitem = (ActiveKeyboard->MouseQY - my1) / menuskip;
+      if (Coordinates_In_Region(g_active_keyboard->click_x(),
+                                g_active_keyboard->click_y(), mx1, my1, mx2,
+                                my2)) {
+        newitem = (g_active_keyboard->click_y() - my1) / menuskip;
       } else {
         TheGameState().unknown_key() =
             key;  //	Pass the unprocessed button click back.

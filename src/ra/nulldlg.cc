@@ -3323,13 +3323,13 @@ int Com_Scenario_Dialog(bool skirmish) {
         User clicks on a color button
         ------------------------------------------------------------------*/
         case KN_LMOUSE:
-          if (TheKeyboard().MouseQX > cbox_x[0] &&
-              TheKeyboard().MouseQX <
+          if (TheKeyboard().click_x() > cbox_x[0] &&
+              TheKeyboard().click_x() <
                   cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
-              TheKeyboard().MouseQY > d_color_y &&
-              TheKeyboard().MouseQY < d_color_y + d_color_h) {
+              TheKeyboard().click_y() > d_color_y &&
+              TheKeyboard().click_y() < d_color_y + d_color_h) {
             TheSession().PrefColor = static_cast<PlayerColorType>(
-                (TheKeyboard().MouseQX - cbox_x[0]) / d_color_w);
+                (TheKeyboard().click_x() - cbox_x[0]) / d_color_w);
             TheSession().ColorIdx = TheSession().PrefColor;
             display = std::max(display, REDRAW_COLORS);
 
@@ -5103,16 +5103,16 @@ int Com_Show_Scenario_Dialog() {
       User clicks on a color button
       ------------------------------------------------------------------*/
       case KN_LMOUSE:
-        if (TheKeyboard().MouseQX > cbox_x[0] &&
-            TheKeyboard().MouseQX <
+        if (TheKeyboard().click_x() > cbox_x[0] &&
+            TheKeyboard().click_x() <
                 cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
-            TheKeyboard().MouseQY > d_color_y &&
-            TheKeyboard().MouseQY < d_color_y + d_color_h) {
+            TheKeyboard().click_y() > d_color_y &&
+            TheKeyboard().click_y() < d_color_y + d_color_h) {
           /*.........................................................
           Compute my preferred color as the one I clicked on.
           .........................................................*/
           TheSession().PrefColor = static_cast<PlayerColorType>(
-              (TheKeyboard().MouseQX - cbox_x[0]) / d_color_w);
+              (TheKeyboard().click_x() - cbox_x[0]) / d_color_w);
           changed = true;
 
           /*.........................................................

@@ -68,7 +68,7 @@ void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
 }
 
 static void SDL_Event_Handler(SDL_Event* event) {
-  if (TheKeyboard().Event_Handler(event)) {
+  if (TheKeyboard().HandleEvent(event)) {
     return;
   }
 

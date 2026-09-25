@@ -1356,13 +1356,13 @@ static int Net_Join_Dialog() {
         if (joinstate > JOIN_NOTHING) {
           break;
         }
-        if (ActiveKeyboard->MouseQX > base::At(cbox_x, 0) &&
-            ActiveKeyboard->MouseQX <
+        if (g_active_keyboard->click_x() > base::At(cbox_x, 0) &&
+            g_active_keyboard->click_x() <
                 base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w &&
-            ActiveKeyboard->MouseQY > d_color_y &&
-            ActiveKeyboard->MouseQY < d_color_y + d_color_h) {
+            g_active_keyboard->click_y() > d_color_y &&
+            g_active_keyboard->click_y() < d_color_y + d_color_h) {
           TheSession().preferred_color() =
-              (ActiveKeyboard->MouseQX - base::At(cbox_x, 0)) / d_color_w;
+              (g_active_keyboard->click_x() - base::At(cbox_x, 0)) / d_color_w;
           TheSession().color_index() = TheSession().preferred_color();
 
           name_edt.Set_Color(

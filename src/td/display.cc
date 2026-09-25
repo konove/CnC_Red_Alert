@@ -2806,8 +2806,8 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumber& key) {
   */
   bool edge = false;
   if (flags & (kLeftPress | kLeftRelease | kRightPress | kRightRelease)) {
-    x = ActiveKeyboard->MouseQX;
-    y = ActiveKeyboard->MouseQY;
+    x = g_active_keyboard->click_x();
+    y = g_active_keyboard->click_y();
   } else {
     x = Get_Mouse_X();
     y = Get_Mouse_Y();

@@ -1072,7 +1072,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
                 **	No object: select the cell
                 */
                 TheWorld().current_cell() = Click_Cell_Calc(
-                    TheKeyboard().MouseQX, TheKeyboard().MouseQY);
+                    TheKeyboard().click_x(), TheKeyboard().click_y());
                 TheScreen().hidden_view().Clear();
                 Flag_To_Redraw(true);
                 Render();

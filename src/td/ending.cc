@@ -82,8 +82,8 @@ void GDI_Ending() {
                     ThePalettes().title_palette());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
-  Clear_KeyBuffer();
-  Get_Key_Num();
+  ClearKeys();
+  ReadKey();
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, Call_Back);
   TheScreen().visible_page().Clear();
 
@@ -115,7 +115,7 @@ void GDI_Ending() {
                                             0, 320, 199, 640, 398);
     Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                     Call_Back);
-    Clear_KeyBuffer();
+    ClearKeys();
     count.Set(int64_t{kTimerSecond} * 3);
     while (count.Time()) {
       Call_Back();
@@ -135,7 +135,7 @@ void GDI_Ending() {
   TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
                                           0, 320, 199, 640, 398);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
-  Clear_KeyBuffer();
+  ClearKeys();
   //	CountDownTimerClass count;
   count.Set(int64_t{kTimerSecond} * 3);
   while (count.Time()) {
@@ -239,12 +239,12 @@ void Nod_Ending() {
       }
     } else {
       if (engine::audio::TheAudio().IsPlaying(kanefinl.data())) {
-        Clear_KeyBuffer();
+        ClearKeys();
       } else {
         const auto key = static_cast<uint32_t>(Keyboard::Get());
-        if ((key & kKeyCodeMask) == KN_LMOUSE && (key & WWKEY_RLS_BIT) == 0) {
-          const int mousex = ActiveKeyboard->MouseQX;
-          const int mousey = ActiveKeyboard->MouseQY;
+        if ((key & kKeyCodeMask) == KN_LMOUSE && (key & kKeyReleaseBit) == 0) {
+          const int mousex = g_active_keyboard->click_x();
+          const int mousey = g_active_keyboard->click_y();
           if (mousey >= 44 && mousey <= 354) {
             done = true;
             if (mousex < 320 && mousey < 200) {
@@ -302,7 +302,7 @@ void Nod_Ending() {
                                             0, 320, 199, 640, 398);
     Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                     Call_Back);
-    Clear_KeyBuffer();
+    ClearKeys();
     count.Set(int64_t{kTimerSecond} * 3);
     while (count.Time()) {
       Call_Back();
@@ -322,7 +322,7 @@ void Nod_Ending() {
   TheScreen().sys_mem_page().view().Scale(TheScreen().visible_view(), 0, 0, 0,
                                           0, 320, 199, 640, 398);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, Call_Back);
-  Clear_KeyBuffer();
+  ClearKeys();
   //	CountDownTimerClass count;
   count.Set(int64_t{kTimerSecond} * 3);
   while (count.Time()) {

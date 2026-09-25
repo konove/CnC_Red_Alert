@@ -860,7 +860,7 @@ void ScoreClass::Show() {
     Call_Back_Delay(show, 1);
     engine::audio::TheAudio().Play(Beepy6, 255,
                                    TheOptions().Normalize_Sound(60));
-    if (Check_Key() && i < max - 5) {
+    if (PeekKey() && i < max - 5) {
       i = 158;
       Keyboard::Clear();
     }
@@ -1134,7 +1134,7 @@ void Cycle_Wait_Click(Presentation& show) {
   int packetlen = 0;
 
   Keyboard::Clear();
-  while (minclicks || (!Check_Key() && !ControlQ)) {
+  while (minclicks || (!PeekKey() && !ControlQ)) {
     if (TheSession().type() == GAME_NULL_MODEM ||
         TheSession().type() == GAME_MODEM) {
       // GameToPlay == GAME_INTERNET) {
@@ -1296,7 +1296,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
     TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
     // Interpolate_2X_Scale( PseudoSeenBuff , &SeenBuff , NULL);
 
-    if (!Check_Key()) {
+    if (!PeekKey()) {
       Call_Back_Delay(show, 1);
     }
   }
@@ -1310,7 +1310,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
                    BUILDING_Y + 12);
     Count_Up_Print(show, font, "%d", q, CBKilled, BUILDING_X + 8,
                    BUILDING_Y + 24);
-    if (!Check_Key()) {
+    if (!PeekKey()) {
       engine::audio::TheAudio().Play(Beepy6, 255,
                                      TheOptions().Normalize_Sound(110));
       Call_Back_Delay(show, 1);
@@ -1377,7 +1377,7 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
     }
 
     Count_Up_Print(show, font, "%d", i * gkilled / max, gkilled, 297, ypos + 2);
-    if (!Check_Key()) {
+    if (!PeekKey()) {
       engine::audio::TheAudio().Play(Beepy6, 255,
                                      TheOptions().Normalize_Sound(110));
       Call_Back_Delay(show, 2);
@@ -1386,7 +1386,7 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
   CC_Draw_Shape(view, yellowptr, gdikilled, 172, ypos, WINDOW_MAIN,
                 SHAPE_WIN_REL, {}, {});
   Count_Up_Print(show, font, "%d", gkilled, gkilled, 297, ypos + 2);
-  if (!Check_Key()) {
+  if (!PeekKey()) {
     Call_Back_Delay(show, 40);
   }
 
@@ -1402,7 +1402,7 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
 
     Count_Up_Print(show, font, "%d", i * nkilled / max, nkilled, 297,
                    ypos + 14);
-    if (!Check_Key()) {
+    if (!PeekKey()) {
       engine::audio::TheAudio().Play(Beepy6, 255,
                                      TheOptions().Normalize_Sound(110));
       Call_Back_Delay(show, 2);
@@ -1417,7 +1417,7 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
   CC_Draw_Shape(view, redptr, nodkilled, 172, ypos + 12, WINDOW_MAIN,
                 SHAPE_WIN_REL, {}, {});
   Count_Up_Print(show, font, "%d", nkilled, nkilled, 297, ypos + 14);
-  if (!Check_Key()) {
+  if (!PeekKey()) {
     Call_Back_Delay(show, 40);
   }
 }
@@ -1522,14 +1522,14 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show,
                      SCORETEXT_X + 64, CASUALTY_Y + 14);
       Count_Up_Print(show, font, "%d", i * CKilled / max, CKilled,
                      SCORETEXT_X + 64, CASUALTY_Y + 26);
-      if (!Check_Key()) {
+      if (!PeekKey()) {
         Call_Back_Delay(show, 3);
       }
     }
     engine::audio::TheAudio().Play(Beepy6, 255,
                                    TheOptions().Normalize_Sound(110));
   }
-  if (Check_Key()) {
+  if (PeekKey()) {
     Keyboard::Clear();
   }
 
@@ -1618,7 +1618,7 @@ void ScoreClass::Show_Credits(Presentation& show, int house,
                    static_cast<int>(ThePlayer()->Available_Money()),
                    base::At(_credpx, house), base::At(_credpy, house));
     Call_Back_Delay(show, 2);
-    if (Check_Key()) {
+    if (PeekKey()) {
       i = static_cast<int>(ThePlayer()->Available_Money() - 5);
       Keyboard::Clear();
     }
@@ -1745,12 +1745,12 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
     show.DrawTextRects();
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
 
-    if (Check_Key()) {  // if (Keyboard::Check()) {
-      key = Get_Key();  // key = Keyboard::Get();
+    if (PeekKey()) {         // if (Keyboard::Check()) {
+      key = ReadKeyAscii();  // key = Keyboard::Get();
 
       if (index == MAX_FAMENAME_LENGTH - 2) {
-        while (Check_Key()) {
-          Get_Key();
+        while (PeekKey()) {
+          ReadKeyAscii();
         }
       }
 
@@ -1781,7 +1781,7 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
 
       } else if (key != KA_RETURN) {  // else if (key != KN_RETURN &&
                                       // key!=KN_KEYPAD_RETURN) {
-        ascii = key;                  // ascii = KN_To_KA(key);
+        ascii = key;                  // ascii = KeyToAscii(key);
         if (ascii >= 'a' && ascii <= 'z') {
           ascii -= 'a' - 'A';
         }

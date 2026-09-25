@@ -1394,12 +1394,12 @@ int MapEditClass::Load_Scenario() {
             /*
             **	Grab top left
             */
-            delta1 = abs(TheKeyboard().MouseQX - map_x1);
-            delta2 = abs(TheKeyboard().MouseQY - map_y1);
+            delta1 = abs(TheKeyboard().click_x() - map_x1);
+            delta2 = abs(TheKeyboard().click_y() - map_y1);
             if (delta1 < 3 && delta2 < 3) {
               grabbed = 1;
-              mx = TheKeyboard().MouseQX;
-              my = TheKeyboard().MouseQY;
+              mx = TheKeyboard().click_x();
+              my = TheKeyboard().click_y();
               display = REDRAW_MAP;
               break;
             }
@@ -1407,12 +1407,12 @@ int MapEditClass::Load_Scenario() {
             /*
             **	Grab top right
             */
-            delta1 = abs(TheKeyboard().MouseQX - map_x2);
-            delta2 = abs(TheKeyboard().MouseQY - map_y1);
+            delta1 = abs(TheKeyboard().click_x() - map_x2);
+            delta2 = abs(TheKeyboard().click_y() - map_y1);
             if (delta1 < 3 && delta2 < 3) {
               grabbed = 2;
-              mx = TheKeyboard().MouseQX;
-              my = TheKeyboard().MouseQY;
+              mx = TheKeyboard().click_x();
+              my = TheKeyboard().click_y();
               display = REDRAW_MAP;
               break;
             }
@@ -1420,12 +1420,12 @@ int MapEditClass::Load_Scenario() {
             /*
             **	Grab bottom right
             */
-            delta1 = abs(TheKeyboard().MouseQX - map_x2);
-            delta2 = abs(TheKeyboard().MouseQY - map_y2);
+            delta1 = abs(TheKeyboard().click_x() - map_x2);
+            delta2 = abs(TheKeyboard().click_y() - map_y2);
             if (delta1 < 3 && delta2 < 3) {
               grabbed = 3;
-              mx = TheKeyboard().MouseQX;
-              my = TheKeyboard().MouseQY;
+              mx = TheKeyboard().click_x();
+              my = TheKeyboard().click_y();
               display = REDRAW_MAP;
               break;
             }
@@ -1433,12 +1433,12 @@ int MapEditClass::Load_Scenario() {
             /*
             **	Grab bottom left
             */
-            delta1 = abs(TheKeyboard().MouseQX - map_x1);
-            delta2 = abs(TheKeyboard().MouseQY - map_y2);
+            delta1 = abs(TheKeyboard().click_x() - map_x1);
+            delta2 = abs(TheKeyboard().click_y() - map_y2);
             if (delta1 < 3 && delta2 < 3) {
               grabbed = 4;
-              mx = TheKeyboard().MouseQX;
-              my = TheKeyboard().MouseQY;
+              mx = TheKeyboard().click_x();
+              my = TheKeyboard().click_y();
               display = REDRAW_MAP;
               break;
             }
@@ -1446,13 +1446,13 @@ int MapEditClass::Load_Scenario() {
             /*
             **	Grab the whole map
             */
-            delta1 = abs(TheKeyboard().MouseQX - ((map_x1 + map_x2) / 2));
-            delta2 = abs(TheKeyboard().MouseQY - ((map_y1 + map_y2) / 2));
+            delta1 = abs(TheKeyboard().click_x() - ((map_x1 + map_x2) / 2));
+            delta2 = abs(TheKeyboard().click_y() - ((map_y1 + map_y2) / 2));
             if (delta1 < (map_x2 - map_x1) / 4 &&
                 delta2 < (map_y2 - map_y1) / 4) {
               grabbed = 5;
-              mx = TheKeyboard().MouseQX;
-              my = TheKeyboard().MouseQY;
+              mx = TheKeyboard().click_x();
+              my = TheKeyboard().click_y();
               display = REDRAW_MAP;
             }
             break;

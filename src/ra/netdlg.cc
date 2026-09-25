@@ -2085,13 +2085,13 @@ static int Net_Join_Dialog() {
           break;
         }
 
-        if (TheKeyboard().MouseQX > cbox_x[0] &&
-            TheKeyboard().MouseQX <
+        if (TheKeyboard().click_x() > cbox_x[0] &&
+            TheKeyboard().click_x() <
                 cbox_x[MAX_MPLAYER_COLORS - 1] + d_color_w &&
-            TheKeyboard().MouseQY > d_color_y &&
-            TheKeyboard().MouseQY < d_color_y + d_color_h) {
+            TheKeyboard().click_y() > d_color_y &&
+            TheKeyboard().click_y() < d_color_y + d_color_h) {
           TheSession().PrefColor = static_cast<PlayerColorType>(
-              (TheKeyboard().MouseQX - cbox_x[0]) / d_color_w);
+              (TheKeyboard().click_x() - cbox_x[0]) / d_color_w);
           TheSession().ColorIdx = TheSession().PrefColor;
 
           if (TheSession().ColorIdx == PCOLOR_DIALOG_BLUE) {

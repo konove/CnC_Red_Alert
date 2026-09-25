@@ -1833,8 +1833,8 @@ void MapEditClass::Place_Trigger() {
   /*
   -------------------- See if an object was clicked on ---------------------
   */
-  int x = ActiveKeyboard->MouseQX;
-  int y = ActiveKeyboard->MouseQY;
+  int x = g_active_keyboard->click_x();
+  int y = g_active_keyboard->click_y();
 
   /*
   ............................ Get cell for x,y ............................

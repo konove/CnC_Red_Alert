@@ -19,9 +19,9 @@ class WWMouseClass;
 // InstallMouse() once the video mode is set and destroyed by ShutDownEngine()
 // before the pages go.
 //
-// Constructing an Input also makes its keyboard engine_window's ActiveKeyboard,
-// which is what the Get_Key() family reads, and destroying one takes it
-// back out.
+// Constructing an Input also makes its keyboard engine_window's
+// g_active_keyboard, which is what the ReadKeyAscii() family reads, and
+// destroying one takes it back out.
 //
 // Game owns the one Input; everything else reaches it through TheKeyboard()
 // and TheMouse().

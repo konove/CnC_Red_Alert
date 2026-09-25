@@ -83,13 +83,13 @@ struct KeyboardClass : public KeyBuffer {
   // These deliberately hide the library's int-returning versions; narrowing to
   // the game's key enums is the only reason this interface class exists.
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  KeyNumber Get() { return static_cast<KeyNumber>(KeyBuffer::Get()); }
+  KeyNumber Get() { return static_cast<KeyNumber>(KeyBuffer::Read()); }
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  KeyNumber Check() { return static_cast<KeyNumber>(KeyBuffer::Check()); }
+  KeyNumber Check() { return static_cast<KeyNumber>(KeyBuffer::Peek()); }
   static KeyAscii To_ASCII(KeyNumber key) {
-    return static_cast<KeyAscii>(KeyBuffer::To_ASCII(key));
+    return static_cast<KeyAscii>(KeyBuffer::ToAscii(key));
   }
-  static bool Down(KeyNumber key) { return KeyBuffer::Down(key); }
+  static bool Down(KeyNumber key) { return KeyBuffer::IsDown(key); }
 
   static int Mouse_X() { return Get_Mouse_X(); }
   static int Mouse_Y() { return Get_Mouse_Y(); }

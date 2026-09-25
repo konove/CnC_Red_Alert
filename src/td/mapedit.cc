@@ -970,7 +970,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
     case (KN_Y | KN_ALT_BIT):
     case (KN_Z | KN_ALT_BIT):
       if (TheWorld().current_cell() != 0) {
-        waypt_idx = KN_To_KA(input & 0xff) - KA_a;
+        waypt_idx = KeyToAscii(input & 0xff) - KA_a;
         /*...............................................................
         Unflag cell for this waypoint if there is one
         ...............................................................*/
@@ -1001,7 +1001,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
       If there's a current cell, place the flag & waypoint there.
       ------------------------------------------------------------------*/
       if (TheWorld().current_cell() != 0) {
-        waypt_idx = (KN_To_KA(input & 0xff) - KA_1);
+        waypt_idx = (KeyToAscii(input & 0xff) - KA_1);
         house =
             static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + waypt_idx);
         if (HouseClass::As_Pointer(house)) {
@@ -1014,7 +1014,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
         waypoint.
         ------------------------------------------------------------------*/
         if (TheWorld().current_object().at(0) != nullptr) {
-          waypt_idx = (KN_To_KA(input & 0xff) - KA_1);
+          waypt_idx = (KeyToAscii(input & 0xff) - KA_1);
           house = static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) +
                                           waypt_idx);
           if (HouseClass::As_Pointer(house) &&
@@ -1136,7 +1136,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
                 ................ No object: select the cell ..................
                 */
                 TheWorld().current_cell() = Click_Cell_Calc(
-                    ActiveKeyboard->MouseQX, ActiveKeyboard->MouseQY);
+                    g_active_keyboard->click_x(), g_active_keyboard->click_y());
                 TheScreen().hidden_page().view().Clear();
                 Flag_To_Redraw(true);
                 Render();

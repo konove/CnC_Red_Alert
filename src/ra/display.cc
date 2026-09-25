@@ -2881,8 +2881,8 @@ bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumber& key) {
   *used. Other *	events must use the current mouse position globals.
   */
   if (flags & (kLeftPress | kLeftRelease | kRightPress | kRightRelease)) {
-    x = TheKeyboard().MouseQX;
-    y = TheKeyboard().MouseQY;
+    x = TheKeyboard().click_x();
+    y = TheKeyboard().click_y();
   } else {
     x = Get_Mouse_X();
     y = Get_Mouse_Y();

@@ -512,8 +512,8 @@ KeyNumber GadgetClass::Input(PixelView& view) {
   *to this function.
   */
   if ((key & 0xFF) == KN_LMOUSE || (key & 0xFF) == KN_RMOUSE) {
-    mousex = TheKeyboard().MouseQX;
-    mousey = TheKeyboard().MouseQY;
+    mousex = TheKeyboard().click_x();
+    mousey = TheKeyboard().click_y();
   } else {
     mousex = Get_Mouse_X();
     mousey = Get_Mouse_Y();

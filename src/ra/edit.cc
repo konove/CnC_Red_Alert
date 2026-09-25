@@ -143,8 +143,8 @@ bool EditClass::Action(unsigned flags, KeyNumber& key) {
           static_cast<KeyAscii>(KeyboardClass::To_ASCII(key) & 0xff);
 
       // Allow numeric keypad presses to map to ascii numbers.
-      if (key & WWKEY_VK_BIT && ascii >= '0' && ascii <= '9') {
-        key = static_cast<KeyNumber>(key & ~WWKEY_VK_BIT);
+      if (key & kKeyVirtualBit && ascii >= '0' && ascii <= '9') {
+        key = static_cast<KeyNumber>(key & ~kKeyVirtualBit);
         if ((!(flags & kLeftRelease) && !(flags & kRightRelease)) &&
             Handle_Key(ascii)) {
           flags &= ~kKeyboard;
@@ -153,7 +153,7 @@ bool EditClass::Action(unsigned flags, KeyNumber& key) {
 
       } else {
         // Filter out all special keys except return and backspace.
-        if ((!(key & WWKEY_VK_BIT) && ascii >= ' ' && ascii <= 255) ||
+        if ((!(key & kKeyVirtualBit) && ascii >= ' ' && ascii <= 255) ||
             key == KN_RETURN || key == KN_BACKSPACE) {
           if ((!(flags & kLeftRelease) && !(flags & kRightRelease)) &&
               Handle_Key(KeyboardClass::To_ASCII(key))) {

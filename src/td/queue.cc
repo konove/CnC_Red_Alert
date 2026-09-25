@@ -2004,7 +2004,7 @@ static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
   //........................................................................
   //	If user hits ESC, bail out
   //........................................................................
-  if (Check_Key() && (Get_Key_Num() == KN_ESC)) {
+  if (PeekKey() && (ReadKey() == KN_ESC)) {
     return 1;
   }
 
@@ -3412,7 +3412,7 @@ static void Queue_Playback() {
   //	If the user hits ESC, stop the playback
   //------------------------------------------------------------------------
   if (Check_Key_Num()) {
-    const int key = Get_Key();
+    const int key = ReadKeyAscii();
     //
     // If the user hit ESC, end the recording.  If this is an Attract-mode
     // recording, end it no matter what the user does (any key or mouse).

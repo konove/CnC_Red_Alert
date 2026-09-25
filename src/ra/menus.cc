@@ -279,8 +279,8 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
   TheGameState().unknown_key() = 0;
   if (TheKeyboard().Check()) {
     key = static_cast<uint32_t>(TheKeyboard().Get()) &
-          ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT |
-            WWKEY_CTRL_BIT); /* mask off all but release bit	*/
+          ~(kKeyShiftBit | kKeyAltBit |
+            kKeyCtrlBit); /* mask off all but release bit	*/
   }
 
   /*
@@ -333,9 +333,9 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
     */
     case KN_RMOUSE:
     case KN_LMOUSE:
-      if (Coordinates_In_Region(TheKeyboard().MouseQX, TheKeyboard().MouseQY,
-                                mx1, my1, mx2, my2)) {
-        newitem = (TheKeyboard().MouseQY - my1) / menuskip;
+      if (Coordinates_In_Region(TheKeyboard().click_x(),
+                                TheKeyboard().click_y(), mx1, my1, mx2, my2)) {
+        newitem = (TheKeyboard().click_y() - my1) / menuskip;
       } else {
         TheGameState().unknown_key() =
             static_cast<int>(key);  //	Pass the unprocessed button click back.
@@ -802,7 +802,8 @@ int Main_Menu(int32_t /*unused*/) {
         break;
 
       case KN_LMOUSE:
-        if (Coordinates_In_Region(TheKeyboard().MouseQX, TheKeyboard().MouseQY,
+        if (Coordinates_In_Region(TheKeyboard().click_x(),
+                                  TheKeyboard().click_y(),
 
                                   18, 20, 158, 48)) {
           Show_Who_Was_Responsible();
@@ -814,8 +815,9 @@ int Main_Menu(int32_t /*unused*/) {
         if (Is_Counterstrike_Installed() &&
             ((KeyboardClass::Down(KN_LSHIFT) ||
               KeyboardClass::Down(KN_RSHIFT)) &&
-             Coordinates_In_Region(TheKeyboard().MouseQX, TheKeyboard().MouseQY,
-                                   520, 0, 640, 100))) {
+             Coordinates_In_Region(TheKeyboard().click_x(),
+                                   TheKeyboard().click_y(), 520, 0, 640,
+                                   100))) {
           TheWorld().ants_enabled() = true;
           process = false;
           retval = 2;  //	To match SEL_START_NEW_GAME

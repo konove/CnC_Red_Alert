@@ -105,12 +105,12 @@ void Keyboard_Process(KeyNumber& input) {
   // key was pressed.
 
   constexpr unsigned kModifierBits =
-      unsigned{WWKEY_SHIFT_BIT} | unsigned{WWKEY_ALT_BIT} |
-      unsigned{WWKEY_CTRL_BIT} | unsigned{WWKEY_VK_BIT};
+      unsigned{kKeyShiftBit} | unsigned{kKeyAltBit} | unsigned{kKeyCtrlBit} |
+      unsigned{kKeyVirtualBit};
   const auto plain =
       static_cast<KeyNumber>(static_cast<unsigned>(input) & ~kModifierBits);
   const auto key = static_cast<KeyNumber>(static_cast<unsigned>(input) &
-                                          ~unsigned{WWKEY_VK_BIT});
+                                          ~unsigned{kKeyVirtualBit});
 
   if constexpr (config::kCheatKeysEnabled) {
     if (TheDebugState().developer_mode()) {
@@ -158,13 +158,13 @@ void Keyboard_Process(KeyNumber& input) {
   // if the SHIFT key is held down. It will create the team if the
   // CTRL or ALT key is held down.
   int action = 0;
-  if ((static_cast<unsigned>(input) & unsigned{WWKEY_SHIFT_BIT}) != 0U) {
+  if ((static_cast<unsigned>(input) & unsigned{kKeyShiftBit}) != 0U) {
     action = 1;
   }
-  if ((static_cast<unsigned>(input) & unsigned{WWKEY_ALT_BIT}) != 0U) {
+  if ((static_cast<unsigned>(input) & unsigned{kKeyAltBit}) != 0U) {
     action = 3;
   }
-  if ((static_cast<unsigned>(input) & unsigned{WWKEY_CTRL_BIT}) != 0U) {
+  if ((static_cast<unsigned>(input) & unsigned{kKeyCtrlBit}) != 0U) {
     action = 2;
   }
 

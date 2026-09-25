@@ -1432,8 +1432,8 @@ bool RadarClass::TacticalClass::Action(unsigned flags, KeyNumber& key) {
   *used. Other *	events must use the current mouse position globals.
   */
   if (flags & (kLeftPress | kLeftRelease | kRightPress | kRightRelease)) {
-    x = ActiveKeyboard->MouseQX;
-    y = ActiveKeyboard->MouseQY;
+    x = g_active_keyboard->click_x();
+    y = g_active_keyboard->click_y();
   } else {
     x = Get_Mouse_X();
     y = Get_Mouse_Y();

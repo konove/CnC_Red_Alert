@@ -480,8 +480,8 @@ KeyNumber GadgetClass::Input(PixelView& view) {
   *to this function.
   */
   if (KeyCode(key) == KN_LMOUSE || KeyCode(key) == KN_RMOUSE) {
-    mousex = ActiveKeyboard->MouseQX;
-    mousey = ActiveKeyboard->MouseQY;
+    mousex = g_active_keyboard->click_x();
+    mousey = g_active_keyboard->click_y();
   } else {
     mousex = Get_Mouse_X();
     mousey = Get_Mouse_Y();

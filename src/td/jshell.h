@@ -69,14 +69,14 @@ class ByteStream;
 */
 class Keyboard {
  public:
-  static KeyNumber Get() { return static_cast<KeyNumber>(Get_Key_Num()); }
+  static KeyNumber Get() { return static_cast<KeyNumber>(ReadKey()); }
   static KeyNumber Check() { return static_cast<KeyNumber>(Check_Key_Num()); }
   static KeyAscii To_ASCII(KeyNumber key) {
-    return static_cast<KeyAscii>(KN_To_KA(key));
+    return static_cast<KeyAscii>(KeyToAscii(key));
   }
-  static void Clear() { Clear_KeyBuffer(); }
+  static void Clear() { ClearKeys(); }
   static void Stuff(KeyNumber /*key*/) {}
-  static bool Down(KeyNumber key) { return Key_Down(key); }
+  static bool Down(KeyNumber key) { return IsKeyDown(key); }
   static int Mouse_X() { return Get_Mouse_X(); }
   static int Mouse_Y() { return Get_Mouse_Y(); }
 };

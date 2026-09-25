@@ -33,37 +33,37 @@ union SDL_Event;
 // enumeration, so they are unsigned bit masks that mix with KeyNumber freely.
 // The key code itself fills the low byte, which is why a scancode above 0xFF
 // cannot be represented.
-inline constexpr uint32_t WWKEY_SHIFT_BIT = 0x100;
-inline constexpr uint32_t WWKEY_CTRL_BIT = 0x200;
-inline constexpr uint32_t WWKEY_ALT_BIT = 0x400;
-inline constexpr uint32_t WWKEY_RLS_BIT = 0x800;
-inline constexpr uint32_t WWKEY_VK_BIT = 0x1000;
+inline constexpr uint32_t kKeyShiftBit = 0x100;
+inline constexpr uint32_t kKeyCtrlBit = 0x200;
+inline constexpr uint32_t kKeyAltBit = 0x400;
+inline constexpr uint32_t kKeyReleaseBit = 0x800;
+inline constexpr uint32_t kKeyVirtualBit = 0x1000;
 inline constexpr uint32_t WWKEY_DBL_BIT = 0x2000;
-inline constexpr uint32_t WWKEY_BTN_BIT = 0x8000;
+inline constexpr uint32_t kKeyButtonBit = 0x8000;
 
 // The part of a key value that says which key it is: the code and whether it
 // is a virtual key, without the shift, release, double-click and button bits
 // that say how it was pressed.
-inline constexpr uint32_t kKeyCodeMask = WWKEY_VK_BIT | 0xFFU;
+inline constexpr uint32_t kKeyCodeMask = kKeyVirtualBit | 0xFFU;
 
 // Returns which key `key` is, however it was pressed. A release matches too;
-// test WWKEY_RLS_BIT as well to tell a press from a release.
+// test kKeyReleaseBit as well to tell a press from a release.
 constexpr int KeyCode(const int key) {
   return static_cast<int>(static_cast<uint32_t>(key) & kKeyCodeMask);
 }
 
 // The queue of key presses, key releases and mouse clicks the game reads its
-// input from. Event_Handler() fills it from SDL events; the game drains it with
-// Check() and Get(). Each entry is a key number: a VK_* code in the low byte
-// with the WWKEY_* bits above it. A mouse click takes three entries - the
-// button, then the x and y position - and Get() returns the button and leaves
-// the position in MouseQX and MouseQY.
+// input from. HandleEvent() fills it from SDL events; the game drains it with
+// Peek() and Read(). Each entry is a key number: a VK_* code in the low byte
+// with the kKey*Bit flags above it. A mouse click takes three entries - the
+// button, then the x and y position - and Read() returns the button and leaves
+// the position in click_x() and click_y().
 //
 // Example:
-//   if (keyboard.Check() != 0) {
-//     const int key = keyboard.Get();
-//     if (KeyBuffer::Is_Mouse_Key(key)) {
-//       Click_At(keyboard.MouseQX, keyboard.MouseQY);
+//   if (keys.Peek() != 0) {
+//     const int key = keys.Read();
+//     if (KeyBuffer::IsMouseKey(key)) {
+//       Click_At(keys.click_x(), keys.click_y());
 //     }
 //   }
 class KeyBuffer {
@@ -73,31 +73,31 @@ class KeyBuffer {
   // Returns the key number at the head of the buffer without removing it, or 0
   // when no key is pending. Also pumps the SDL event loop, so callers that only
   // need that side effect may discard the result.
-  int Check();
+  int Peek();
 
   // Removes and returns the key number at the head of the buffer, pumping SDL
   // events until one arrives. For a mouse key, also stores the click position
-  // in MouseQX and MouseQY.
-  int Get();
+  // for click_x() and click_y().
+  int Read();
 
   // Appends one raw entry to the buffer. Returns false, dropping the entry, if
   // the buffer is full.
-  bool Put(int key);
+  bool Put(int entry);
 
-  // Queues the key or mouse button `vk_key` (a VK_* code), adding the
+  // Queues the key or mouse button `key_code` (a VK_* code), adding the
   // Shift, Ctrl and Alt bits for the modifier keys held right now and
-  // WWKEY_RLS_BIT for a `release`. A mouse button gets no modifier bits, as in
+  // kKeyReleaseBit for a `release`. A mouse button gets no modifier bits, as in
   // the DOS version; its position entries are the caller's to add. Returns
   // false if the key was dropped: the buffer is full, or the scancode is 0
   // (a key SDL does not know), negative, or above 0xFF (a media key, which has
   // no key code).
-  bool Put_Key_Message(int vk_key, bool release = false);
+  bool PutKey(int key_code, bool release = false);
 
-  // Returns the character `num` types on the current keyboard layout, with
+  // Returns the character `key` types on the current keyboard layout, with
   // Shift ignored, so letters come back lower case. Returns 0 for a release
   // and for a key that types no character up to 'z' (arrows, function keys,
   // Delete, the mouse buttons).
-  static int To_ASCII(int num);
+  static int ToAscii(int key);
 
   // Discards every pending entry.
   void Clear();
@@ -106,52 +106,57 @@ class KeyBuffer {
   // rather than from the buffer. Covers the left and right mouse buttons, and
   // either side of the keyboard for Shift, Ctrl and Alt. `key` is a bare key
   // code: with modifier bits set it names a different scancode.
-  static bool Down(int key);
+  static bool IsDown(int key);
 
   // Returns whether `key` is a mouse button, pressed or released, whatever
   // modifier bits it carries. In the buffer such an entry is followed by the
   // click's x and y position.
-  static bool Is_Mouse_Key(int key);
+  static bool IsMouseKey(int key);
 
   // Queues the key or click an SDL event carries; mouse motion moves the
   // cursor instead. Returns true only for a click, which it consumes, so the
   // game's own handler can skip it; everything else goes on to that handler.
-  bool Event_Handler(SDL_Event* event);
+  bool HandleEvent(SDL_Event* event);
 
-  // The position of the last mouse click Get() returned, in game pixels.
-  int MouseQX = 0;
-  int MouseQY = 0;
+  // The position of the last mouse click Read() returned, in game pixels.
+  [[nodiscard]] int click_x() const { return click_x_; }
+  [[nodiscard]] int click_y() const { return click_y_; }
 
  private:
   // Removes and returns the entry at the head of the buffer, stepping past a
-  // mouse key's two position entries after storing them in MouseQX and
-  // MouseQY.
+  // mouse key's two position entries after storing them in click_x_ and
+  // click_y_.
   int Buff_Get();
 
-  // A ring buffer of entries. Head == Tail means empty, so it holds at most
+  int click_x_ = 0;
+  int click_y_ = 0;
+
+  // A ring buffer of entries. head_ == tail_ means empty, so it holds at most
   // 255, and every index wraps modulo its size.
-  uint16_t Buffer[256]{};
-  int Head = 0;  // the entry Get() returns next
-  int Tail = 0;  // where Put() writes the next entry
+  uint16_t entries_[256]{};
+  int head_ = 0;  // the entry Read() returns next
+  int tail_ = 0;  // where Put() writes the next entry
 };
 
-// The keyboard the Get_Key() family reads. Each game points this at its own
-// keyboard when it builds one, and clears it again afterwards.
-extern KeyBuffer* ActiveKeyboard;
+// The key buffer the PeekKey() family reads. Each game points this at its own
+// buffer when it builds one, and clears it again afterwards.
+extern KeyBuffer* g_active_keyboard;
 
-// The legacy free-function spellings of the ActiveKeyboard members.
+// The legacy free-function spellings of the g_active_keyboard members.
 //
-// Check_Key and Check_Key_Num both peek at the pending key number. Check_Key
-// deliberately does not mirror Get_Key's ASCII translation: its callers test
-// whether any key is waiting, and To_ASCII reports 0 for key releases and for
-// keys that type no character.
-inline int Check_Key() { return ActiveKeyboard->Check(); }
-inline int Check_Key_Num() { return ActiveKeyboard->Check(); }
-inline int Get_Key() { return KeyBuffer::To_ASCII(ActiveKeyboard->Get()); }
-inline int Get_Key_Num() { return ActiveKeyboard->Get(); }
-inline bool Key_Down(int key) { return KeyBuffer::Down(key); }
-inline void Clear_KeyBuffer() { ActiveKeyboard->Clear(); }
-inline int KN_To_KA(int key) { return KeyBuffer::To_ASCII(key); }
+// PeekKey and Check_Key_Num both peek at the pending key number. PeekKey
+// deliberately does not mirror ReadKeyAscii's ASCII translation: its callers
+// test whether any key is waiting, and ToAscii reports 0 for key releases and
+// for keys that type no character.
+inline int PeekKey() { return g_active_keyboard->Peek(); }
+inline int Check_Key_Num() { return g_active_keyboard->Peek(); }
+inline int ReadKeyAscii() {
+  return KeyBuffer::ToAscii(g_active_keyboard->Read());
+}
+inline int ReadKey() { return g_active_keyboard->Read(); }
+inline bool IsKeyDown(int key) { return KeyBuffer::IsDown(key); }
+inline void ClearKeys() { g_active_keyboard->Clear(); }
+inline int KeyToAscii(int key) { return KeyBuffer::ToAscii(key); }
 // A key number already is a VK code in this port.
 inline int KN_To_VK(int key) { return key; }
 
@@ -284,7 +289,7 @@ inline int KN_To_VK(int key) { return key; }
 #define VK_DOWNRIGHT VK_NEXT
 #define VK_ALT VK_MENU
 
-// Characters as To_ASCII() reports them, with the WWKEY_* bits available for
+// Characters as ToAscii() reports them, with the kKey*Bit flags available for
 // callers that carry them along. The codes below the space are the text
 // printer's formatting commands (KA_MORE, KA_SETBKGDCOL, ...) and the control
 // keys. A character with modifier bits is a bit pattern rather than one of
@@ -410,10 +415,10 @@ enum KeyAscii {
   KA_BACKSPACE = '\b',
   KA_TAB = '\t',
 
-  KA_SHIFT_BIT = WWKEY_SHIFT_BIT,
-  KA_CTRL_BIT = WWKEY_CTRL_BIT,
-  KA_ALT_BIT = WWKEY_ALT_BIT,
-  KA_RLSE_BIT = WWKEY_RLS_BIT,
+  KA_SHIFT_BIT = kKeyShiftBit,
+  KA_CTRL_BIT = kKeyCtrlBit,
+  KA_ALT_BIT = kKeyAltBit,
+  KA_RLSE_BIT = kKeyReleaseBit,
 };
 
 // Key numbers: which key, as its VK_* code. The values combine with the
@@ -535,11 +540,11 @@ enum KeyNumber {
   KN_Y = VK_Y,
   KN_Z = VK_Z,
 
-  KN_SHIFT_BIT = WWKEY_SHIFT_BIT,
-  KN_CTRL_BIT = WWKEY_CTRL_BIT,
-  KN_ALT_BIT = WWKEY_ALT_BIT,
-  KN_RLSE_BIT = WWKEY_RLS_BIT,
-  KN_BUTTON = WWKEY_BTN_BIT,
+  KN_SHIFT_BIT = kKeyShiftBit,
+  KN_CTRL_BIT = kKeyCtrlBit,
+  KN_ALT_BIT = kKeyAltBit,
+  KN_RLSE_BIT = kKeyReleaseBit,
+  KN_BUTTON = kKeyButtonBit,
 };
 
 // Returns the KeyNumber that GadgetClass::Input() reports when the gadget with

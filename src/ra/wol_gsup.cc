@@ -1326,13 +1326,13 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             break;
           }
 
-          if (TheKeyboard().MouseQX > base::At(cbox_x, 0) &&
-              TheKeyboard().MouseQX <
+          if (TheKeyboard().click_x() > base::At(cbox_x, 0) &&
+              TheKeyboard().click_x() <
                   (base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w) &&
-              TheKeyboard().MouseQY > d_color_y &&
-              TheKeyboard().MouseQY < (d_color_y + d_color_h)) {
+              TheKeyboard().click_y() > d_color_y &&
+              TheKeyboard().click_y() < (d_color_y + d_color_h)) {
             TheSession().PrefColor = static_cast<PlayerColorType>(
-                (TheKeyboard().MouseQX - base::At(cbox_x, 0)) / d_color_w);
+                (TheKeyboard().click_x() - base::At(cbox_x, 0)) / d_color_w);
 
             //	Ensure that no one is using this color (to our knowledge).
             if (pILPlayers->FindColor(&ThePalettes().color_remaps().at(

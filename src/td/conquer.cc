@@ -502,8 +502,8 @@ void Main_Game() {
                     ThePalettes().title_palette());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, NULL);
-  Clear_KeyBuffer();
-  Get_Key();
+  ClearKeys();
+  ReadKeyAscii();
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, NULL);
 //		Show_Mouse();
 #else
@@ -552,11 +552,11 @@ void Keyboard_Process(KeyNumber& input) {
   Message_Input(input);
 #endif
   /*
-  ** Use WWKEY values because KN values have WWKEY_VK_BIT or'd in with them
-  ** and we need WWKEY_VK_BIT to still be set if it is.
+  ** Use WWKEY values because KN values have kKeyVirtualBit or'd in with them
+  ** and we need kKeyVirtualBit to still be set if it is.
   */
   const auto plain = static_cast<KeyNumber>(
-      input & ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT | WWKEY_CTRL_BIT));
+      input & ~(kKeyShiftBit | kKeyAltBit | kKeyCtrlBit));
 
   if constexpr (config::kCheatKeysEnabled) {
     if (TheDebugState().developer_mode()) {
@@ -613,13 +613,13 @@ void Keyboard_Process(KeyNumber& input) {
   **	CTRL or ALT key is held down.
   */
   int action = 0;
-  if (input & WWKEY_SHIFT_BIT) {
+  if (input & kKeyShiftBit) {
     action = 1;
   }
-  if (input & WWKEY_ALT_BIT) {
+  if (input & kKeyAltBit) {
     action = 3;
   }
-  if (input & WWKEY_CTRL_BIT) {
+  if (input & kKeyCtrlBit) {
     action = 2;
   }
 
@@ -1535,8 +1535,8 @@ TheaterType Theater_From_Name(const char* name) {
  * HISTORY: * 05/28/1994 JLB : Created. *
  *=============================================================================================*/
 FacingType KN_To_Facing(int input) {
-  const uint32_t key = static_cast<uint32_t>(input) &
-                       ~(WWKEY_ALT_BIT | WWKEY_SHIFT_BIT | WWKEY_CTRL_BIT);
+  const uint32_t key =
+      static_cast<uint32_t>(input) & ~(kKeyAltBit | kKeyShiftBit | kKeyCtrlBit);
   switch (key) {
     case KN_LEFT:
       return FACING_W;

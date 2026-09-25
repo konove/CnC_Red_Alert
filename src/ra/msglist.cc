@@ -998,14 +998,14 @@ int MessageListClass::Input(KeyNumber& input) {
     /*
     ** Allow numeric keypad presses to map to ascii numbers
     */
-    if (input & WWKEY_VK_BIT && ascii >= '0' && ascii <= '9') {
-      input = static_cast<KeyNumber>(input & ~WWKEY_VK_BIT);
+    if (input & kKeyVirtualBit && ascii >= '0' && ascii <= '9') {
+      input = static_cast<KeyNumber>(input & ~kKeyVirtualBit);
 
     } else {
       /*
       ** Filter out all special keys except return, escape and backspace
       */
-      if ((!(input & WWKEY_VK_BIT) && !(input & KN_BUTTON) && ascii >= ' ' &&
+      if ((!(input & kKeyVirtualBit) && !(input & KN_BUTTON) && ascii >= ' ' &&
            ascii <= 127) ||
           (input & 0xff) == (KN_RETURN & 0xff) ||
           (input & 0xff) == (KN_BACKSPACE & 0xff) ||

@@ -1,4 +1,4 @@
-// Tests for KeyBuffer: what Check() and Get() report, and how mouse clicks
+// Tests for KeyBuffer: what Peek() and Read() report, and how mouse clicks
 // and unknown keys are queued.
 
 #include "engine/window/keyboard.h"
@@ -20,89 +20,89 @@ void Update_Mouse_Pos(int /*x*/, int /*y*/) {}
 
 namespace {
 
-class KeyboardTest : public ::testing::Test {
+class KeyBufferTest : public ::testing::Test {
  protected:
-  KeyBuffer keyboard;
+  KeyBuffer keys;
 };
 
-TEST_F(KeyboardTest, CheckReportsZeroWhenNoKeyIsPending) {
-  EXPECT_EQ(keyboard.Check(), 0);
+TEST_F(KeyBufferTest, PeekReportsZeroWhenNoKeyIsPending) {
+  EXPECT_EQ(keys.Peek(), 0);
 }
 
-TEST_F(KeyboardTest, CheckReportsThePendingKeyNumber) {
-  ASSERT_TRUE(keyboard.Put(KN_F10));
+TEST_F(KeyBufferTest, PeekReportsThePendingKeyNumber) {
+  ASSERT_TRUE(keys.Put(KN_F10));
 
   // The bug this guards: a bool return collapsed every key to 1.
-  EXPECT_EQ(keyboard.Check(), KN_F10);
+  EXPECT_EQ(keys.Peek(), KN_F10);
 }
 
-TEST_F(KeyboardTest, CheckKeepsTheModifierBitsOfThePendingKey) {
+TEST_F(KeyBufferTest, PeekKeepsTheModifierBitsOfThePendingKey) {
   const int shifted =
-      static_cast<int>(static_cast<uint32_t>(KN_A) | WWKEY_SHIFT_BIT);
-  ASSERT_TRUE(keyboard.Put(shifted));
+      static_cast<int>(static_cast<uint32_t>(KN_A) | kKeyShiftBit);
+  ASSERT_TRUE(keys.Put(shifted));
 
-  EXPECT_EQ(keyboard.Check(), shifted);
+  EXPECT_EQ(keys.Peek(), shifted);
 }
 
-TEST_F(KeyboardTest, CheckDoesNotConsumeTheKey) {
-  ASSERT_TRUE(keyboard.Put(KN_ESC));
+TEST_F(KeyBufferTest, PeekDoesNotConsumeTheKey) {
+  ASSERT_TRUE(keys.Put(KN_ESC));
 
-  EXPECT_EQ(keyboard.Check(), KN_ESC);
-  EXPECT_EQ(keyboard.Check(), KN_ESC);
-  EXPECT_EQ(keyboard.Get(), KN_ESC);
-  EXPECT_EQ(keyboard.Check(), 0);
+  EXPECT_EQ(keys.Peek(), KN_ESC);
+  EXPECT_EQ(keys.Peek(), KN_ESC);
+  EXPECT_EQ(keys.Read(), KN_ESC);
+  EXPECT_EQ(keys.Peek(), 0);
 }
 
-TEST_F(KeyboardTest, CheckReportsKeysInTheOrderTheyWerePut) {
-  ASSERT_TRUE(keyboard.Put(KN_1));
-  ASSERT_TRUE(keyboard.Put(KN_2));
+TEST_F(KeyBufferTest, PeekReportsKeysInTheOrderTheyWerePut) {
+  ASSERT_TRUE(keys.Put(KN_1));
+  ASSERT_TRUE(keys.Put(KN_2));
 
-  EXPECT_EQ(keyboard.Check(), KN_1);
-  EXPECT_EQ(keyboard.Get(), KN_1);
-  EXPECT_EQ(keyboard.Check(), KN_2);
-  EXPECT_EQ(keyboard.Get(), KN_2);
+  EXPECT_EQ(keys.Peek(), KN_1);
+  EXPECT_EQ(keys.Read(), KN_1);
+  EXPECT_EQ(keys.Peek(), KN_2);
+  EXPECT_EQ(keys.Read(), KN_2);
 }
 
-TEST_F(KeyboardTest, ClearDiscardsThePendingKey) {
-  ASSERT_TRUE(keyboard.Put(KN_SPACE));
-  ASSERT_EQ(keyboard.Check(), KN_SPACE);
+TEST_F(KeyBufferTest, ClearDiscardsThePendingKey) {
+  ASSERT_TRUE(keys.Put(KN_SPACE));
+  ASSERT_EQ(keys.Peek(), KN_SPACE);
 
-  keyboard.Clear();
+  keys.Clear();
 
-  EXPECT_EQ(keyboard.Check(), 0);
+  EXPECT_EQ(keys.Peek(), 0);
 }
 
-// A zero key would be indistinguishable from Check's empty result, and Get
+// A zero key would be indistinguishable from Peek's empty result, and Read
 // would spin on it forever, so the unknown scancode must not reach the buffer.
-TEST_F(KeyboardTest, UnknownScancodeIsNotBuffered) {
-  EXPECT_FALSE(keyboard.Put_Key_Message(0));
+TEST_F(KeyBufferTest, UnknownScancodeIsNotBuffered) {
+  EXPECT_FALSE(keys.PutKey(0));
 
-  EXPECT_EQ(keyboard.Check(), 0);
+  EXPECT_EQ(keys.Peek(), 0);
 }
 
-// The release of an unknown key gains WWKEY_RLS_BIT, which must not smuggle
+// The release of an unknown key gains kKeyReleaseBit, which must not smuggle
 // the zero scancode past the check.
-TEST_F(KeyboardTest, UnknownScancodeReleaseIsNotBuffered) {
-  EXPECT_FALSE(keyboard.Put_Key_Message(0, /*release=*/true));
+TEST_F(KeyBufferTest, UnknownScancodeReleaseIsNotBuffered) {
+  EXPECT_FALSE(keys.PutKey(0, /*release=*/true));
 
-  EXPECT_EQ(keyboard.Check(), 0);
+  EXPECT_EQ(keys.Peek(), 0);
 }
 
 // SDL's media keys have scancodes above 0xFF, which would spill into the
 // modifier bits: "next track" (258) would read as a shifted right click.
-TEST_F(KeyboardTest, ScancodeAboveTheKeyCodeByteIsNotBuffered) {
-  EXPECT_FALSE(keyboard.Put_Key_Message(SDL_SCANCODE_AUDIONEXT));
+TEST_F(KeyBufferTest, ScancodeAboveTheKeyCodeByteIsNotBuffered) {
+  EXPECT_FALSE(keys.PutKey(SDL_SCANCODE_AUDIONEXT));
 
-  EXPECT_EQ(keyboard.Check(), 0);
+  EXPECT_EQ(keys.Peek(), 0);
 }
 
 // A click is three entries. When fewer than three slots are free, queuing the
-// button without its position would make Get() read the position from past
+// button without its position would make Read() read the position from past
 // the end of the queue.
-TEST_F(KeyboardTest, ClickThatDoesNotFitIsDroppedWhole) {
+TEST_F(KeyBufferTest, ClickThatDoesNotFitIsDroppedWhole) {
   // The buffer holds 255 entries; leave two free.
   for (int i = 0; i < 253; ++i) {
-    ASSERT_TRUE(keyboard.Put(KN_A));
+    ASSERT_TRUE(keys.Put(KN_A));
   }
   SDL_Event click{};
   click.button.type = SDL_MOUSEBUTTONDOWN;
@@ -111,15 +111,15 @@ TEST_F(KeyboardTest, ClickThatDoesNotFitIsDroppedWhole) {
   click.button.x = 10;
   click.button.y = 20;
 
-  keyboard.Event_Handler(&click);
+  keys.HandleEvent(&click);
 
   for (int i = 0; i < 253; ++i) {
-    ASSERT_EQ(keyboard.Get(), KN_A);
+    ASSERT_EQ(keys.Read(), KN_A);
   }
-  EXPECT_EQ(keyboard.Check(), 0);
+  EXPECT_EQ(keys.Peek(), 0);
 }
 
-TEST_F(KeyboardTest, ClickIsQueuedWithItsPosition) {
+TEST_F(KeyBufferTest, ClickIsQueuedWithItsPosition) {
   SDL_Event click{};
   click.button.type = SDL_MOUSEBUTTONDOWN;
   click.button.button = SDL_BUTTON_RIGHT;
@@ -127,29 +127,29 @@ TEST_F(KeyboardTest, ClickIsQueuedWithItsPosition) {
   click.button.x = 10;
   click.button.y = 20;
 
-  EXPECT_TRUE(keyboard.Event_Handler(&click));
+  EXPECT_TRUE(keys.HandleEvent(&click));
 
-  EXPECT_EQ(keyboard.Get(), KN_RMOUSE);
-  EXPECT_EQ(keyboard.MouseQX, 10);
-  EXPECT_EQ(keyboard.MouseQY, 20);
-  EXPECT_EQ(keyboard.Check(), 0);
+  EXPECT_EQ(keys.Read(), KN_RMOUSE);
+  EXPECT_EQ(keys.click_x(), 10);
+  EXPECT_EQ(keys.click_y(), 20);
+  EXPECT_EQ(keys.Peek(), 0);
 }
 
-TEST_F(KeyboardTest, MouseClickCoordinatesAreNotReportedAsKeys) {
+TEST_F(KeyBufferTest, MouseClickCoordinatesAreNotReportedAsKeys) {
   // Event_Handler queues a mouse key followed by its x and y position; a click
   // at the origin puts two zero entries in the buffer behind the key.
-  ASSERT_TRUE(keyboard.Put_Key_Message(VK_LBUTTON));
-  ASSERT_TRUE(keyboard.Put(0));
-  ASSERT_TRUE(keyboard.Put(0));
-  ASSERT_TRUE(keyboard.Put(KN_Y));
+  ASSERT_TRUE(keys.PutKey(VK_LBUTTON));
+  ASSERT_TRUE(keys.Put(0));
+  ASSERT_TRUE(keys.Put(0));
+  ASSERT_TRUE(keys.Put(KN_Y));
 
-  EXPECT_EQ(keyboard.Check(), KN_LMOUSE);
-  EXPECT_EQ(keyboard.Get(), KN_LMOUSE);
-  EXPECT_EQ(keyboard.MouseQX, 0);
-  EXPECT_EQ(keyboard.MouseQY, 0);
+  EXPECT_EQ(keys.Peek(), KN_LMOUSE);
+  EXPECT_EQ(keys.Read(), KN_LMOUSE);
+  EXPECT_EQ(keys.click_x(), 0);
+  EXPECT_EQ(keys.click_y(), 0);
 
   // The coordinates were stepped over rather than reported as a missing key.
-  EXPECT_EQ(keyboard.Check(), KN_Y);
+  EXPECT_EQ(keys.Peek(), KN_Y);
 }
 
 }  // namespace

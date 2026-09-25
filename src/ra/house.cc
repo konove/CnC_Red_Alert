@@ -2607,8 +2607,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
 
     case SPC_IRON_CURTAIN:
       if (SuperWeapon.at(SPC_IRON_CURTAIN).Is_Ready()) {
-        const int x = TheKeyboard().MouseQX - TheMap().TacPixelX;
-        const int y = TheKeyboard().MouseQY - TheMap().TacPixelY;
+        const int x = TheKeyboard().click_x() - TheMap().TacPixelX;
+        const int y = TheKeyboard().click_y() - TheMap().TacPixelY;
         TechnoClass* tech = TheMap().at(cell).Cell_Techno(x, y);
         if (tech) {
           switch (tech->What_Am_I()) {
@@ -2669,8 +2669,8 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
 
     case SPC_CHRONOSPHERE:
       if (SuperWeapon.at(SPC_CHRONOSPHERE).Is_Ready()) {
-        const int x = TheKeyboard().MouseQX - TheMap().TacPixelX;
-        const int y = TheKeyboard().MouseQY - TheMap().TacPixelY;
+        const int x = TheKeyboard().click_x() - TheMap().TacPixelX;
+        const int y = TheKeyboard().click_y() - TheMap().TacPixelY;
         TechnoClass* tech = TheMap().at(cell).Cell_Techno(x, y);
         if (tech && Is_Ally(tech)) {
           if (tech->What_Am_I() == RTTI_UNIT ||

@@ -97,8 +97,8 @@ int MapEditClass::Select_Object() {
   /*
   **	See if an object was clicked on
   */
-  int x = TheKeyboard().MouseQX;
-  int y = TheKeyboard().MouseQY;
+  int x = TheKeyboard().click_x();
+  int y = TheKeyboard().click_y();
 
   /*
   **	Get cell for x,y
