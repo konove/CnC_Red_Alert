@@ -3191,29 +3191,29 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
               base::ToSize(datasize));
           break;
 
-        case EventClass::ADDPLAYER:
-
+        case EventClass::ADDPLAYER: {
           base::CopyBytes(
               base::ObjectBytes(eventdata.Data.Variable.Size),
               buf.subspan(base::ToSize(pos) + sizeof(EventClass::EventType)),
               base::ToSize(datasize));
 
-          if (std::cmp_greater(eventdata.Data.Variable.Size,
+          const auto variable_size = eventdata.Data.Variable.Size;
+          if (std::cmp_greater(variable_size,
                                leftover - datasize - kEventTypeSize)) {
             return count;
           }
-          eventdata.Data.Variable.Pointer =
-              new char[eventdata.Data.Variable.Size];
+          eventdata.Data.Variable.Pointer = new char[variable_size];
           base::CopyBytes(
               eventdata.variable_bytes(),
               buf.subspan(base::ToSize(pos) + sizeof(EventClass::EventType) +
                           base::ToSize(datasize)),
-              eventdata.Data.Variable.Size);
+              variable_size);
 
-          pos += eventdata.Data.Variable.Size;
-          leftover -= eventdata.Data.Variable.Size;
+          pos += variable_size;
+          leftover -= variable_size;
 
           break;
+        }
 
         case EventClass::MEGAMISSION:
           // Validate the entire repetition run before adding any of its events.

@@ -2116,8 +2116,8 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
                         nullptr,        //	Thread handle not inheritable.
                         FALSE,          //	Set handle inheritance to false.
                         0,              //	No creation flags.
-                        nullptr,        //	Use parent�s environment block.
-                        nullptr,        //	Use parent�s starting directory.
+                        nullptr,        //	Use parent's environment block.
+                        nullptr,        //	Use parent's starting directory.
                         &si,            //	Pointer to STARTUPINFO structure.
                         &pi) &&
         pi.hProcess) {

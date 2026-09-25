@@ -322,7 +322,8 @@ class TechnoClass : public RadioClass,
   }
   CELL Nearby_Location(const TechnoClass* techno = nullptr) const;
   [[nodiscard]] const TechnoTypeClass* Techno_Type_Class() const {
-    return &dynamic_cast<const TechnoTypeClass&>(Class_Of());
+    const auto& type = dynamic_cast<const TechnoTypeClass&>(Class_Of());
+    return &type;
   }
   [[nodiscard]] bool Is_Visible_On_Radar() const;
   [[nodiscard]] int Anti_Air() const;

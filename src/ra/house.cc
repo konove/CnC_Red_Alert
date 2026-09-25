@@ -5602,7 +5602,8 @@ int HouseClass::AI_Unit() {
     */
     int bestval = -1;
     int bestcount = 0;
-    UnitType bestlist[magic_enum::enum_count<UnitType>()];
+    constexpr auto kUnitTypeCount = magic_enum::enum_count<UnitType>();
+    UnitType bestlist[kUnitTypeCount];
     for (const UnitType utype : magic_enum::enum_values<UnitType>()) {
       if (counter.at(utype) > 0 &&
           Can_Build(&UnitTypeClass::As_Reference(utype), Class->House) &&
@@ -5749,7 +5750,8 @@ int HouseClass::AI_Vessel() {
     */
     int bestval = -1;
     int bestcount = 0;
-    VesselType bestlist[magic_enum::enum_count<VesselType>()];
+    constexpr auto kVesselTypeCount = magic_enum::enum_count<VesselType>();
+    VesselType bestlist[kVesselTypeCount];
     for (const VesselType utype : magic_enum::enum_values<VesselType>()) {
       if (counter.at(utype) > 0 &&
           Can_Build(&VesselTypeClass::As_Reference(utype), Class->House) &&
@@ -5881,7 +5883,8 @@ int HouseClass::AI_Infantry() {
     */
     int bestval = -1;
     int bestcount = 0;
-    InfantryType bestlist[magic_enum::enum_count<InfantryType>()];
+    constexpr auto kInfantryTypeCount = magic_enum::enum_count<InfantryType>();
+    InfantryType bestlist[kInfantryTypeCount];
     for (const InfantryType utype : magic_enum::enum_values<InfantryType>()) {
       if ((utype != INFANTRY_DOG || !(IScan & kInfantryFlagDog)) &&
           (counter.at(utype) > 0 &&
