@@ -108,7 +108,7 @@ class WinsockInterfaceClass {
   bool Init();
   void Close();
 
-  virtual void Close_Socket() final;
+  void Close_Socket();
   virtual int Read(std::span<std::byte> buffer, int& buffer_len,
                    std::span<std::byte> address, int& address_len);
   virtual void WriteTo(std::span<const std::byte> buffer, int buffer_len,
@@ -119,7 +119,7 @@ class WinsockInterfaceClass {
   virtual bool Start_Listening();
   // final: nothing overrides these, and WinsockInterfaceClass::Close calls
   // them from the destructor.
-  virtual void Stop_Listening() final;
+  void Stop_Listening();
   virtual void Clear_Socket_Error(SOCKET socket);
   virtual bool Set_Socket_Options();
   virtual void Set_Broadcast_Address(const char* /*unused*/) {}

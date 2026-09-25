@@ -222,6 +222,8 @@ bool WinsockInterfaceClass::Start_Listening() {
  *                                                                                             *
  * HISTORY: * 8/5/97 12:06PM ST : Created *
  *=============================================================================================*/
+// Unregisters the socket's event callback, network state outside this object.
+// NOLINTNEXTLINE(readability-make-member-function-const)
 void WinsockInterfaceClass::Stop_Listening() {
   Socket_Unregister_Select(Socket);
 }

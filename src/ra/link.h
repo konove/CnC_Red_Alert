@@ -59,8 +59,8 @@ class LinkClass {
   virtual LinkClass& Add(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
   virtual LinkClass& Add_Tail(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
   virtual LinkClass& Add_Head(LinkClass& list) ABSL_ATTRIBUTE_LIFETIME_BOUND;
-  virtual LinkClass& Head_Of_List() ABSL_ATTRIBUTE_LIFETIME_BOUND final;
-  virtual LinkClass& Tail_Of_List() ABSL_ATTRIBUTE_LIFETIME_BOUND final;
+  LinkClass& Head_Of_List() ABSL_ATTRIBUTE_LIFETIME_BOUND;
+  LinkClass& Tail_Of_List() ABSL_ATTRIBUTE_LIFETIME_BOUND;
   virtual void Zap();
   virtual LinkClass* Remove() ABSL_ATTRIBUTE_LIFETIME_BOUND;
 

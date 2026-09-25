@@ -121,7 +121,7 @@ class ListClass : public ControlClass {
   // Replaces the text of the item at `index`; out-of-range indices are
   // ignored.
   void Set_Item(int index, std::string_view text);
-  virtual bool Remove_Scroll_Bar() final;
+  bool Remove_Scroll_Bar();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(const char* text);
   virtual void Set_Tabs(std::span<const int> tabs);
