@@ -103,6 +103,7 @@ target_link_libraries(ra_engine PUBLIC absl::strings magic_enum::magic_enum
         absl::core_headers
         absl::log
         absl::log_initialize
+        absl::no_destructor
         absl::str_format) # mpgdll wwipx32
 target_link_libraries(rasdl PRIVATE ra_engine)
 

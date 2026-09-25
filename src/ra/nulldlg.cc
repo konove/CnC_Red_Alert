@@ -62,6 +62,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/base/no_destructor.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
@@ -179,7 +180,9 @@ static SerialPacketType ReceivePacket;
 static char TheirName[MPLAYER_NAME_MAX];
 static PlayerColorType TheirColor;
 static HousesType TheirHouse;
-static std::string DialString;
+// An empty string does not allocate, so this cannot throw.
+// NOLINTNEXTLINE(bugprone-throwing-static-initialization)
+static absl::NoDestructor<std::string> DialString;
 static SerialSettingsType* DialSettings;
 
 #define PCOLOR_BROWN PCOLOR_GREY
@@ -1155,12 +1158,12 @@ GameType Select_Serial_Dialog() {
             SerialPort = new WinModemClass;
             if (Init_Null_Modem(settings)) {
               if (settings->CallWaitStringIndex == kCallWaitCustom) {
-                DialString = settings->CallWaitString;
+                *DialString = settings->CallWaitString;
               } else {
-                DialString = base::At(SessionClass::CallWaitStrings,
-                                      settings->CallWaitStringIndex);
+                *DialString = base::At(SessionClass::CallWaitStrings,
+                                       settings->CallWaitStringIndex);
               }
-              DialString +=
+              *DialString +=
                   TheSession().PhoneBook.at(TheSession().CurPhoneIdx)->Number;
 
               if (Dial_Modem(settings, false)) {
@@ -6978,7 +6981,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   }
 
   const DialStatusType dialstatus = TheNetwork().null_modem().Dial_Modem(
-      DialString.c_str(), settings->DialMethod, reconnect);
+      DialString->c_str(), settings->DialMethod, reconnect);
 
   if (reconnect) {
     /*
