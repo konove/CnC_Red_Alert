@@ -58,51 +58,11 @@
 #include "base/strings/format.h"
 #include "base/types.h"
 #include "engine/platform/timer.h"
-#include "engine/window/keyboard.h"
-#include "engine/window/ww_mouse.h"
 #include "ra/compat.h"
 #include "ra/game_clock.h"
 #include "ra/palette.h"
 
 class ByteStream;
-
-/*
-**	Interface class to the keyboard. This insulates the game from library
-*vagaries. Most *	notable being the return values are declared as "int" in
-*the library whereas C&C *	expects it to be of KeyNumber.
-*/
-struct KeyboardClass : public engine::window::KeyBuffer {
-  /*
-  **	This flag is used to indicate whether the WW library has taken over
-  **	the keyboard or not. If not, then the normal console input
-  **	takes precedence.
-  */
-  bool IsLibrary{true};
-
-  KeyboardClass() = default;
-  // These deliberately hide the library's int-returning versions; narrowing to
-  // the game's key enums is the only reason this interface class exists.
-  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  engine::window::KeyNumber Get() {
-    return static_cast<engine::window::KeyNumber>(
-        engine::window::KeyBuffer::Read());
-  }
-  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  engine::window::KeyNumber Check() {
-    return static_cast<engine::window::KeyNumber>(
-        engine::window::KeyBuffer::Peek());
-  }
-  static engine::window::KeyAscii To_ASCII(engine::window::KeyNumber key) {
-    return static_cast<engine::window::KeyAscii>(
-        engine::window::KeyBuffer::ToAscii(key));
-  }
-  static bool Down(engine::window::KeyNumber key) {
-    return engine::window::KeyBuffer::IsDown(key);
-  }
-
-  static int Mouse_X() { return Get_Mouse_X(); }
-  static int Mouse_Y() { return Get_Mouse_Y(); }
-};
 
 /*
 **	These templates allow enumeration types to have simple bitwise

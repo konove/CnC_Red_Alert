@@ -78,7 +78,6 @@
 #include "engine/net/socket_bytes.h"
 #include "ra/input.h"
 #include "ra/ipxaddr.h"
-#include "ra/jshell.h"
 
 #ifdef _WIN32
 #include <winsock.h>
@@ -373,7 +372,7 @@ int WinsockInterfaceClass::Read(std::span<std::byte> buffer, int& buffer_len,
   ** Call the message loop in case there are any outstanding winsock READ
   *messages.
   */
-  TheKeyboard().Check();
+  TheKeyboard().Peek();
 
   /*
   ** If there are no available packets then return 0
@@ -463,7 +462,7 @@ void WinsockInterfaceClass::WriteTo(std::span<const std::byte> buffer,
   /*
   ** Make sure the message loop gets called.
   */
-  TheKeyboard().Check();
+  TheKeyboard().Peek();
 }
 
 /***********************************************************************************************
@@ -509,7 +508,7 @@ void WinsockInterfaceClass::Broadcast(std::span<const std::byte> buffer,
   /*
   ** Make sure the message loop gets called.
   */
-  TheKeyboard().Check();
+  TheKeyboard().Peek();
 }
 
 /***********************************************************************************************

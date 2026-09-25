@@ -1489,7 +1489,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       cd.Set(5);
       do {
         ServiceRealTime();
-      } while (!TheKeyboard().Check() && cd.HasTimeLeft());
+      } while (!TheKeyboard().Peek() && cd.HasTimeLeft());
     }
   } while (base::At(buffer, ++bufindex));
 
@@ -1579,20 +1579,17 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
         // Check 'input' to see if it's the 1st char of button text
         default:
           if (b1char ==
-              toupper(KeyboardClass::To_ASCII(
-                  static_cast<engine::window::KeyNumber>(input & 0xFF)))) {
+              toupper(engine::window::KeyBuffer::ToAscii(input & 0xFF))) {
             selection = kButton1;
             pressed = true;
           } else if (b2txt != nullptr &&
-                     b2char == toupper(KeyboardClass::To_ASCII(
-                                   static_cast<engine::window::KeyNumber>(
-                                       input & 0xFF)))) {
+                     b2char == toupper(engine::window::KeyBuffer::ToAscii(
+                                   input & 0xFF))) {
             selection = kButton2;
             pressed = true;
           } else if (b3txt != nullptr &&
-                     b3char == toupper(KeyboardClass::To_ASCII(
-                                   static_cast<engine::window::KeyNumber>(
-                                       input & 0xFF)))) {
+                     b3char == toupper(engine::window::KeyBuffer::ToAscii(
+                                   input & 0xFF))) {
             selection = kButton3;
             pressed = true;
           }

@@ -63,7 +63,6 @@
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/input.h"
-#include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"

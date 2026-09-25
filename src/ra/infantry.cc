@@ -113,6 +113,7 @@
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rect.h"
+#include "engine/window/keyboard.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/audio.h"
@@ -2796,8 +2797,8 @@ ActionType InfantryClass::What_Action(ObjectClass* object) {
           // If it's a mechanic force-moving into an APC, don't try to heal it.
           if (*this == INFANTRY_MECHANIC && object->What_Am_I() == RTTI_UNIT &&
               *dynamic_cast<const UnitClass*>(object) == UNIT_APC &&
-              (KeyboardClass::Down(TheOptions().KeyForceMove1) ||
-               KeyboardClass::Down(TheOptions().KeyForceMove2))) {
+              (engine::window::KeyBuffer::IsDown(TheOptions().KeyForceMove1) ||
+               engine::window::KeyBuffer::IsDown(TheOptions().KeyForceMove2))) {
           } else {
             return ACTION_HEAL;
           }

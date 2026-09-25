@@ -1252,7 +1252,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    if (KeyboardClass::Down(KN_LMOUSE) || KeyboardClass::Down(KN_RMOUSE)) {
+    if (engine::window::KeyBuffer::IsDown(KN_LMOUSE) ||
+        engine::window::KeyBuffer::IsDown(KN_RMOUSE)) {
       timeToolTipAppear = Get_Time_Ms() + TOOLTIPDELAY;
       if (pToolTipHitLast && pToolTipHitLast->bShowing) {
         pToolTipHitLast->Unshow(view);
@@ -1274,8 +1275,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       if (pToolTipHit == pToolTipHitLast) {
         if (pToolTipHit && !pToolTipHit->bShowing &&
             Get_Time_Ms() > timeToolTipAppear &&
-            !(KeyboardClass::Down(KN_LMOUSE) ||
-              KeyboardClass::Down(KN_RMOUSE))) {
+            !(engine::window::KeyBuffer::IsDown(KN_LMOUSE) ||
+              engine::window::KeyBuffer::IsDown(KN_RMOUSE))) {
           pToolTipHit->Show(view);
         }
       } else {

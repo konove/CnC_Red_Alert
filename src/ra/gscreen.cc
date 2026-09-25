@@ -66,7 +66,6 @@
 #include "ra/gadget.h"
 #include "ra/inline.h"
 #include "ra/input.h"
-#include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/msglist.h"
 #include "ra/screen.h"
@@ -264,10 +263,10 @@ void GScreenClass::Flag_To_Redraw(bool complete) {
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 void GScreenClass::Input(engine::window::KeyNumber& key, int& x, int& y) {
-  key = TheKeyboard().Check();
+  key = TheKeyboard().Peek();
 
-  x = KeyboardClass::Mouse_X();
-  y = KeyboardClass::Mouse_Y();
+  x = Get_Mouse_X();
+  y = Get_Mouse_Y();
 
   if (Buttons != nullptr) {
     /*
@@ -284,7 +283,7 @@ void GScreenClass::Input(engine::window::KeyNumber& key, int& x, int& y) {
 
   } else {
     if (key != 0) {
-      key = TheKeyboard().Get();
+      key = TheKeyboard().Read();
     }
   }
 

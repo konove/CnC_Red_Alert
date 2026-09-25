@@ -80,7 +80,6 @@
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
-#include "ra/jshell.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
 #include "ra/txtlabel.h"
@@ -996,7 +995,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
   //------------------------------------------------------------------------
   if (IsEdit) {
     const auto ascii = static_cast<engine::window::KeyAscii>(
-        KeyboardClass::To_ASCII(input) & 0x00ff);
+        engine::window::KeyBuffer::ToAscii(input) & 0x00ff);
 
     /*
     ** Allow numeric keypad presses to map to ascii numbers
@@ -1015,7 +1014,7 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
           (input & 0xff) == (KN_RETURN & 0xff) ||
           (input & 0xff) == (KN_BACKSPACE & 0xff) ||
           (input & 0xff) == (KN_ESC & 0xff)) {
-        // ascii = (KeyAscii)(TheKeyboard().To_ASCII(input));
+        // ascii = (KeyAscii)(engine::window::KeyBuffer::ToAscii(input));
       } else {
         input = KN_NONE;
         return 0;

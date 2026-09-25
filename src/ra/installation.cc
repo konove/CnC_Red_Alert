@@ -41,7 +41,6 @@
 #include "ra/game_state.h"
 #include "ra/inline.h"
 #include "ra/input.h"
-#include "ra/jshell.h"
 #include "ra/mission_id.h"
 #include "ra/mplayer.h"
 #include "ra/msgbox.h"

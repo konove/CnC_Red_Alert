@@ -664,7 +664,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    if (KeyboardClass::Down(KN_LMOUSE) || KeyboardClass::Down(KN_RMOUSE)) {
+    if (engine::window::KeyBuffer::IsDown(KN_LMOUSE) ||
+        engine::window::KeyBuffer::IsDown(KN_RMOUSE)) {
       //	Mouse button is down.
       timeToolTipAppear = Get_Time_Ms() + TOOLTIPDELAY;
       if (pToolTipHitLast && pToolTipHitLast->bShowing) {
@@ -702,8 +703,8 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
           //	(Gadget must be
           // in controls list.)
           if (!pToolTipHit->bShowing && Get_Time_Ms() > timeToolTipAppear &&
-              !(KeyboardClass::Down(KN_LMOUSE) ||
-                KeyboardClass::Down(KN_RMOUSE))) {
+              !(engine::window::KeyBuffer::IsDown(KN_LMOUSE) ||
+                engine::window::KeyBuffer::IsDown(KN_RMOUSE))) {
             pToolTipHit->Show(view);
           } else if (pToolTipHit->bIconList &&
                      pToolTipHit->bOverDifferentLine()) {

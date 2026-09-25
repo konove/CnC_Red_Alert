@@ -501,7 +501,7 @@ void Memory_Error_Handler() {
 
   PostMessage(MainWindow, WM_DESTROY, 0, 0);
   do {
-    TheKeyboard().Check();
+    TheKeyboard().Peek();
   } while (ReadyToQuit == 1);
 
   ExitProcess(0);

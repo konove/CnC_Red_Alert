@@ -177,10 +177,7 @@ void ScrollClass::AI(engine::window::KeyNumber& input, int x, int y) {
         /*
         **	Increase the scroll rate if the mouse button is held down.
         */
-        //			if (TheKeyboard().Down(KN_LMOUSE)) {
-        //				rate = Bound(rate-3, 0, 4);
-        //			}
-        if (KeyboardClass::Down(engine::window::KN_RMOUSE)) {
+        if (engine::window::KeyBuffer::IsDown(engine::window::KN_RMOUSE)) {
           rate = Bound(rate + 1, 4,
                        static_cast<int>(sizeof(_rate) / sizeof(_rate[0])) - 1);
         }
@@ -211,7 +208,8 @@ void ScrollClass::AI(engine::window::KeyNumber& input, int x, int y) {
           **	If the mouse button is pressed or auto scrolling is active, then
           *scroll *	the map if the delay counter indicates.
           */
-          if (KeyboardClass::Down(engine::window::KN_LMOUSE) || IsAutoScroll) {
+          if (engine::window::KeyBuffer::IsDown(engine::window::KN_LMOUSE) ||
+              IsAutoScroll) {
             distance = base::At(_rate, rate);
 
             if (TheDebugState().map_editor_active()) {

@@ -77,7 +77,6 @@
 #include "ra/defines.h"
 #include "ra/filepcx.h"
 #include "ra/input.h"
-#include "ra/jshell.h"
 #include "ra/link.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
@@ -471,9 +470,9 @@ engine::window::KeyNumber GadgetClass::Input(PixelView& view) {
   /*
   **	Fetch any pending keyboard input.
   */
-  engine::window::KeyNumber key = TheKeyboard().Check();
+  engine::window::KeyNumber key = TheKeyboard().Peek();
   if (key != 0) {
-    key = TheKeyboard().Get();
+    key = TheKeyboard().Read();
   }
 
   if constexpr (config::kCheatKeysEnabled) {
@@ -563,12 +562,12 @@ engine::window::KeyNumber GadgetClass::Input(PixelView& view) {
     *isn't being *	held down, then we automatically know that it must be up
     *-- set the flag *	accordingly.
     */
-    if (KeyboardClass::Down(KN_LMOUSE)) {
+    if (engine::window::KeyBuffer::IsDown(KN_LMOUSE)) {
       flags |= kLeftHeld;
     } else {
       flags |= kLeftUp;
     }
-    if (KeyboardClass::Down(KN_RMOUSE)) {
+    if (engine::window::KeyBuffer::IsDown(KN_RMOUSE)) {
       flags |= kRightHeld;
     } else {
       flags |= kRightUp;

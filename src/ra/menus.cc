@@ -279,9 +279,9 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
   */
   uint32_t key = 0;  // Key number with its modifier bits.
   TheGameState().unknown_key() = 0;
-  if (TheKeyboard().Check()) {
+  if (TheKeyboard().Peek()) {
     key =
-        static_cast<uint32_t>(TheKeyboard().Get()) &
+        static_cast<uint32_t>(TheKeyboard().Read()) &
         ~(engine::window::kKeyShiftBit | engine::window::kKeyAltBit |
           engine::window::kKeyCtrlBit); /* mask off all but release bit	*/
   }
@@ -370,8 +370,7 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
       for (idx = 0; idx < base::At(menuptr, kItemshigh); idx++) {
         if (toupper(*base::At(
                 text, base::ToSize(Select_To_Entry(idx, field, index)))) ==
-            toupper(KeyboardClass::To_ASCII(
-                static_cast<engine::window::KeyNumber>(key & 0xFFU)))) {
+            toupper(engine::window::KeyBuffer::ToAscii(key & 0xFFU))) {
           newitem = select = idx;
           break;
         }
@@ -817,8 +816,8 @@ int Main_Menu(int32_t /*unused*/) {
           break;
         }
         if (Is_Counterstrike_Installed() &&
-            ((KeyboardClass::Down(KN_LSHIFT) ||
-              KeyboardClass::Down(KN_RSHIFT)) &&
+            ((engine::window::KeyBuffer::IsDown(KN_LSHIFT) ||
+              engine::window::KeyBuffer::IsDown(KN_RSHIFT)) &&
              Coordinates_In_Region(TheKeyboard().click_x(),
                                    TheKeyboard().click_y(), 520, 0, 640,
                                    100))) {

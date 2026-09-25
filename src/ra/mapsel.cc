@@ -182,7 +182,8 @@ static void PlayMapReveal(const std::string& animation_name,
   for (int frame = 1; frame < animation.frame_count(); frame++) {
     animation.DrawFrame(page.view(), frame);
     Interpolate_2X_Scale(&page, &TheScreen().visible_view(), {});
-    skip = skip || (KeyboardClass::Down(KN_LCTRL) && KeyboardClass::Down(KN_Q));
+    skip = skip || (engine::window::KeyBuffer::IsDown(KN_LCTRL) &&
+                    engine::window::KeyBuffer::IsDown(KN_Q));
     ServiceRealTimeFor(skip ? 0 : 2);
     for (const SoundCue& cue : kSoundCues) {
       if (cue.frame == frame) {
@@ -215,8 +216,8 @@ static int WaitForMissionChoice(PaletteClass& palette, const bool is_soviet) {
                                      cursor.StartFrame + cursor_frame));
     }
 
-    if (TheKeyboard().Check() &&
-        engine::window::KeyCode(TheKeyboard().Get()) == KN_LMOUSE) {
+    if (TheKeyboard().Peek() &&
+        engine::window::KeyCode(TheKeyboard().Read()) == KN_LMOUSE) {
       if (choice != -1) {
         PlayMapSound("TONEY10.AUD");
         return choice;

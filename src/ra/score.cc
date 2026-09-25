@@ -541,7 +541,7 @@ void ScoreClass::Presentation() {
   // The `BG` remnants here and in Do_GDI_Graph(): these pauses used to be
   // skipped once a key was waiting. With that disabled, Ctrl-Q (see
   // TickScoreScreen) is the only way to hurry the screen along.
-  /*BG	if (!TheKeyboard().Check()) */ TickScoreScreen(60);
+  /*BG	if (!TheKeyboard().Peek()) */ TickScoreScreen(60);
 
   // Show stats on # of units killed. The player's own side is always the upper
   // of the two rows.
@@ -699,7 +699,7 @@ void Cycle_Wait_Click(bool cycle) {
   int packetlen = 0;
 
   TheKeyboard().Clear();
-  while (minclicks || (!TheKeyboard().Check() && !ControlQ)) {
+  while (minclicks || (!TheKeyboard().Peek() && !ControlQ)) {
     if (TheSession().Type == GAME_NULL_MODEM ||
         TheSession().Type == GAME_MODEM) {
       // Send a timing packet if enough time has gone by, so the other machine
@@ -808,7 +808,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   CC_Draw_Shape(view, yellowptr, gdikilled, xpos * 2, ypos * 2, WINDOW_MAIN,
                 SHAPE_WIN_REL, {}, {});
   Count_Up_Print("%d", gkilled, gkilled, 297, ypos + 2, top_palette);
-  /*BG	if (!TheKeyboard().Check()) */ TickScoreScreen(40);
+  /*BG	if (!TheKeyboard().Peek()) */ TickScoreScreen(40);
 
   const std::span<const uint8_t> bottom_palette = house ? bluepal : redpal;
   for (int i = 1; i <= nodkilled; i++) {
@@ -832,7 +832,7 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
   CC_Draw_Shape(view, redptr, nodkilled, xpos * 2, (ypos + 12) * 2, WINDOW_MAIN,
                 SHAPE_WIN_REL, {}, {});
   Count_Up_Print("%d", nkilled, nkilled, 297, ypos + 14, bottom_palette);
-  /*BG	if (!TheKeyboard().Check()) */ TickScoreScreen(40);
+  /*BG	if (!TheKeyboard().Peek()) */ TickScoreScreen(40);
 }
 
 void ScoreClass::Show_Credits(int house, std::span<const uint8_t> pal) {
@@ -943,16 +943,16 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
     ServiceRealTime();
     Animate_Score_Objs();
     Animate_Cursor(index, ypos);
-    if (TheKeyboard().Check()) {
+    if (TheKeyboard().Peek()) {
       // Keep the character and drop the modifier bits.
-      key = KeyboardClass::To_ASCII(TheKeyboard().Get()) & 0xFF;
+      key = engine::window::KeyBuffer::ToAscii(TheKeyboard().Read()) & 0xFF;
       ServiceRealTime();
 
       // On the last letter, flush the type-ahead so that key repeat doesn't
       // keep overwriting it.
       if (index == kFameNameSize - 2) {
-        while (TheKeyboard().Check()) {
-          TheKeyboard().Get();
+        while (TheKeyboard().Peek()) {
+          TheKeyboard().Read();
         }
       }
 
@@ -1048,8 +1048,9 @@ void Animate_Cursor(int pos, int ypos) {
 }
 
 void TickScoreScreen(const int ticks) {
-  if (!ControlQ && KeyboardClass::Down(engine::window::KN_LCTRL) &&
-      KeyboardClass::Down(engine::window::KN_Q)) {
+  if (!ControlQ &&
+      engine::window::KeyBuffer::IsDown(engine::window::KN_LCTRL) &&
+      engine::window::KeyBuffer::IsDown(engine::window::KN_Q)) {
     ControlQ = true;
     TheKeyboard().Clear();
   }

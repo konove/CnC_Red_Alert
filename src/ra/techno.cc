@@ -3564,8 +3564,8 @@ void TechnoClass::Player_Assign_Mission(MissionType mission, TARGET target,
     *the ALT key was *	held down.
     */
     if (mission == MISSION_MOVE &&
-        (KeyboardClass::Down(TheOptions().KeyQueueMove1) ||
-         KeyboardClass::Down(TheOptions().KeyQueueMove2))) {
+        (engine::window::KeyBuffer::IsDown(TheOptions().KeyQueueMove1) ||
+         engine::window::KeyBuffer::IsDown(TheOptions().KeyQueueMove2))) {
       mission = MISSION_QMOVE;
     }
 
@@ -3606,12 +3606,15 @@ ActionType TechnoClass::What_Action(ObjectClass* object) {
       return ACTION_SELF;
     }
 
-    const bool altdown = KeyboardClass::Down(TheOptions().KeyForceMove1) ||
-                         KeyboardClass::Down(TheOptions().KeyForceMove2);
-    const bool ctrldown = KeyboardClass::Down(TheOptions().KeyForceAttack1) ||
-                          KeyboardClass::Down(TheOptions().KeyForceAttack2);
-    const bool shiftdown = KeyboardClass::Down(TheOptions().KeySelect1) ||
-                           KeyboardClass::Down(TheOptions().KeySelect2);
+    const bool altdown =
+        engine::window::KeyBuffer::IsDown(TheOptions().KeyForceMove1) ||
+        engine::window::KeyBuffer::IsDown(TheOptions().KeyForceMove2);
+    const bool ctrldown =
+        engine::window::KeyBuffer::IsDown(TheOptions().KeyForceAttack1) ||
+        engine::window::KeyBuffer::IsDown(TheOptions().KeyForceAttack2);
+    const bool shiftdown =
+        engine::window::KeyBuffer::IsDown(TheOptions().KeySelect1) ||
+        engine::window::KeyBuffer::IsDown(TheOptions().KeySelect2);
 
     /*
     **	Special guard area mission is possible if both the control and
@@ -3726,12 +3729,15 @@ ActionType TechnoClass::What_Action(CELL cell) const {
   const CellClass* cellptr = &TheMap().at(cell);
   const OverlayTypeClass* optr = nullptr;
 
-  bool ctrldown = KeyboardClass::Down(TheOptions().KeyForceAttack1) ||
-                  KeyboardClass::Down(TheOptions().KeyForceAttack2);
-  const bool shiftdown = KeyboardClass::Down(TheOptions().KeySelect1) ||
-                         KeyboardClass::Down(TheOptions().KeySelect2);
-  const bool altdown = KeyboardClass::Down(TheOptions().KeyForceMove1) ||
-                       KeyboardClass::Down(TheOptions().KeyForceMove2);
+  bool ctrldown =
+      engine::window::KeyBuffer::IsDown(TheOptions().KeyForceAttack1) ||
+      engine::window::KeyBuffer::IsDown(TheOptions().KeyForceAttack2);
+  const bool shiftdown =
+      engine::window::KeyBuffer::IsDown(TheOptions().KeySelect1) ||
+      engine::window::KeyBuffer::IsDown(TheOptions().KeySelect2);
+  const bool altdown =
+      engine::window::KeyBuffer::IsDown(TheOptions().KeyForceMove1) ||
+      engine::window::KeyBuffer::IsDown(TheOptions().KeyForceMove2);
 
   /*
   **	Disable recognizing the <CTRL> key forced fire option when dealing with
@@ -6614,7 +6620,7 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
     MaxPassengers = ini.Get_Int(Name(), "Passengers", MaxPassengers);
     ini.Get_String(Name(), "Image", GraphicName, GraphicName,
                    sizeof(GraphicName));
-    // TheKeyboard().Get();
+    // TheKeyboard().Read();
 
     IsLeader = false;
     if (PrimaryWeapon != nullptr && PrimaryWeapon->Attack > 0) {

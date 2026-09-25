@@ -799,7 +799,7 @@ void Show_Who_Was_Responsible() {
     ** Kill any spare time before blitting the hid page forward.
     */
     while (SystemTicks() - time < static_cast<int64_t>(frame) * speed &&
-           !TheKeyboard().Check()) {
+           !TheKeyboard().Peek()) {
     }
 
     /*
@@ -828,8 +828,8 @@ void Show_Who_Was_Responsible() {
     ** If user hits escape then break.
     */
     key = KN_NONE;
-    if (TheKeyboard().Check()) {
-      key = TheKeyboard().Get();
+    if (TheKeyboard().Peek()) {
+      key = TheKeyboard().Read();
       if (key == KN_ESC) {
         break;
       }
@@ -858,7 +858,7 @@ void Show_Who_Was_Responsible() {
       ** Kill any spare time
       */
       while (SystemTicks() - time < static_cast<int64_t>(frame) * speed &&
-             !TheKeyboard().Check()) {
+             !TheKeyboard().Peek()) {
       }
     }
   }

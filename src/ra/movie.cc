@@ -44,7 +44,6 @@
 #include "ra/game_state.h"
 #include "ra/input.h"
 #include "ra/interpal.h"
-#include "ra/jshell.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
@@ -104,8 +103,8 @@ class MovieScreen final : public VqaClient {
   // false when the player pressed Esc to stop the movie.
   bool Present() {
     int key = 0;
-    if (TheKeyboard().Check()) {
-      key = TheKeyboard().Get();
+    if (TheKeyboard().Peek()) {
+      key = TheKeyboard().Read();
       TheKeyboard().Clear();
     }
     if (TheScreen().is_vq640()) {

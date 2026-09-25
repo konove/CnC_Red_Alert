@@ -2289,7 +2289,7 @@ static void Bootstrap() {
   ** the screen.
   */
   do {
-    TheKeyboard().Check();
+    TheKeyboard().Peek();
   } while (!TheGameState().in_focus());
 
   /*

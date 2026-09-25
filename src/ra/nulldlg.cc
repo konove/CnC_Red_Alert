@@ -4244,7 +4244,7 @@ int Com_Scenario_Dialog(bool skirmish) {
             }
           }
 
-        } while (!TheKeyboard().Check() && !retry_setup);
+        } while (!TheKeyboard().Peek() && !retry_setup);
 
         // clear queue to keep from doing any resends
         TheNetwork().null_modem().Init_Send_Queue();

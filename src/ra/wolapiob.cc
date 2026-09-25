@@ -601,7 +601,7 @@ HRESULT WolapiObject::GetChatServer() {
          Get_Time_Ms() - dwTimeLimit < 60000) {
     while (Get_Time_Ms() < dwTimeNextPump) {
       ServiceRealTime();
-      if (KeyboardClass::Down(engine::window::KN_ESC)) {
+      if (engine::window::KeyBuffer::IsDown(engine::window::KN_ESC)) {
         bCancel = true;
         break;
       }
@@ -689,7 +689,7 @@ HRESULT WolapiObject::AttemptLogin(const char* szName, const char* szPass,
          Get_Time_Ms() - dwTimeStart < EMERGENCY_TIMEOUT) {
     while (Get_Time_Ms() < dwTimeNextPump) {
       ServiceRealTime();
-      if (KeyboardClass::Down(engine::window::KN_ESC)) {
+      if (engine::window::KeyBuffer::IsDown(engine::window::KN_ESC)) {
         bCancel = true;
         break;
       }

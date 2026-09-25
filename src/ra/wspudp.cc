@@ -65,7 +65,6 @@
 #include "engine/net/net_select.h"
 #include "engine/net/socket_bytes.h"
 #include "ra/input.h"
-#include "ra/jshell.h"
 #include "ra/network.h"
 #include "ra/winstub.h"
 #include "ra/wsproto.h"
@@ -318,7 +317,7 @@ void UDPInterfaceClass::Broadcast(std::span<const std::byte> buffer,
     /*
     ** Make sure the message loop gets called.
     */
-    TheKeyboard().Check();
+    TheKeyboard().Peek();
   }
 }
 

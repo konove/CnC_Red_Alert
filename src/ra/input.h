@@ -8,7 +8,7 @@
 #include "absl/base/attributes.h"
 #include "base/installed.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "ra/jshell.h"
+#include "engine/window/keyboard.h"
 
 class PixelView;
 class WWMouseClass;
@@ -27,7 +27,7 @@ class WWMouseClass;
 // and TheMouse().
 //
 // Example:
-//   if (TheKeyboard().Check()) { ... }
+//   if (TheKeyboard().Peek()) { ... }
 class Input {
  public:
   Input();
@@ -38,8 +38,8 @@ class Input {
   Input(Input&&) = delete;
   Input& operator=(Input&&) = delete;
 
-  KeyboardClass& keyboard() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return *keyboard_;
+  engine::window::KeyBuffer& keyboard() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return keyboard_;
   }
 
   // The mouse cursor, or null before InstallMouse() and after RemoveMouse().
@@ -55,7 +55,7 @@ class Input {
   void RemoveMouse();
 
  private:
-  std::unique_ptr<KeyboardClass> keyboard_;
+  engine::window::KeyBuffer keyboard_;
   std::unique_ptr<WWMouseClass> mouse_;
 };
 
@@ -64,7 +64,9 @@ class Input {
 inline Input& TheInput() { return base::Installed<Input>::Get(); }
 
 // Shorthands for the two devices.
-inline KeyboardClass& TheKeyboard() { return TheInput().keyboard(); }
+inline engine::window::KeyBuffer& TheKeyboard() {
+  return TheInput().keyboard();
+}
 inline WWMouseClass* TheMouse() { return TheInput().mouse(); }
 
 #endif  // CNC_RED_ALERT_RA_INPUT_H_

@@ -1037,7 +1037,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
       /*
       **	Left Button DOWN
       */
-      if (KeyboardClass::Down(KN_LMOUSE)) {
+      if (engine::window::KeyBuffer::IsDown(KN_LMOUSE)) {
         LMouseDown = true;
 
         /*

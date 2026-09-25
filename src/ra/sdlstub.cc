@@ -14,7 +14,6 @@
 #include "ra/config.h"
 #include "ra/game_state.h"
 #include "ra/input.h"
-#include "ra/jshell.h"
 #include "ra/language.h"
 #include "ra/msgbox.h"
 #include "ra/nullconn.h"
