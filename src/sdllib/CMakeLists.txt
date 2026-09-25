@@ -16,7 +16,8 @@ target_sources(sdllib PUBLIC
 )
 
 find_package(SDL2 REQUIRED)
-target_link_libraries(sdllib engine_base SDL2::SDL2 absl::check absl::log absl::strings)
+# misc.cc includes engine/platform/timer.h.
+target_link_libraries(sdllib engine_base engine_platform SDL2::SDL2 absl::check absl::log absl::strings)
 
 # The fading-table builder, the per-frame window blit and the LCW decoder loop
 # over every palette entry, pixel or compressed byte.
@@ -30,7 +31,7 @@ endif ()
 include(Testing)
 add_gtest(
         NAME sdllib_test
-        SOURCES font_test.cc xor_delta_test.cc aud_decoder_test.cc file_system_test.cc compressed_block_test.cc lcw_uncompress_test.cc ww_win_test.cc
+        SOURCES font_test.cc xor_delta_test.cc aud_decoder_test.cc compressed_block_test.cc lcw_uncompress_test.cc ww_win_test.cc
         LIBS sdllib
 )
 

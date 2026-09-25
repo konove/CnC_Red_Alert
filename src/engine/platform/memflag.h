@@ -33,8 +33,8 @@
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#ifndef CNC_RED_ALERT_SDLLIB_MEMFLAG_H_
-#define CNC_RED_ALERT_SDLLIB_MEMFLAG_H_
+#ifndef CNC_RED_ALERT_ENGINE_PLATFORM_MEMFLAG_H_
+#define CNC_RED_ALERT_ENGINE_PLATFORM_MEMFLAG_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -98,4 +98,4 @@ void Mem_Copy(std::span<const std::byte> source, std::span<std::byte> dest,
 extern void (*Memory_Error)();
 extern void (*Memory_Error_Exit)(char* string);
 
-#endif  // CNC_RED_ALERT_SDLLIB_MEMFLAG_H_
+#endif  // CNC_RED_ALERT_ENGINE_PLATFORM_MEMFLAG_H_

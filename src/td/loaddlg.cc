@@ -61,7 +61,7 @@
 #include "absl/strings/str_format.h"
 #include "engine/base/array.h"
 #include "engine/base/strings/safe_string.h"
-#include "sdllib/file_system.h"
+#include "engine/platform/file_system.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"

@@ -44,9 +44,9 @@
 #include <cstdint>
 #include <span>
 
+#include "engine/platform/timer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
-#include "sdllib/timer.h"
 #include "sdllib/wwstd.h"
 #include "td/conquer.h"
 #include "td/defines.h"

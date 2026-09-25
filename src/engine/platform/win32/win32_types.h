@@ -11,8 +11,8 @@
 // to be useful. Anything that is not required by a call site does not belong
 // here.
 
-#ifndef CNC_RED_ALERT_PORT_WIN32_WIN32_TYPES_H_
-#define CNC_RED_ALERT_PORT_WIN32_WIN32_TYPES_H_
+#ifndef CNC_RED_ALERT_ENGINE_PLATFORM_WIN32_WIN32_TYPES_H_
+#define CNC_RED_ALERT_ENGINE_PLATFORM_WIN32_WIN32_TYPES_H_
 
 #ifdef _WIN32
 
@@ -73,4 +73,4 @@ inline void* const INVALID_HANDLE_VALUE = &kInvalidHandleStorage;
 
 #endif  // _WIN32
 
-#endif  // CNC_RED_ALERT_PORT_WIN32_WIN32_TYPES_H_
+#endif  // CNC_RED_ALERT_ENGINE_PLATFORM_WIN32_WIN32_TYPES_H_

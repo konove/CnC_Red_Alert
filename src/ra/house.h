@@ -48,6 +48,7 @@
 #include "engine/base/array.h"
 #include "engine/base/enum_array.h"
 #include "engine/base/fixed.h"
+#include "engine/platform/ftimer.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -59,7 +60,6 @@
 #include "ra/target.h"
 #include "ra/type.h"
 #include "ra/utracker.h"
-#include "tech/ftimer.h"
 
 class FootClass;
 class FactoryClass;

@@ -2,3 +2,4 @@
 # Maintained by tools/move_engine_files.py.
 
 add_subdirectory(base)
+add_subdirectory(platform)

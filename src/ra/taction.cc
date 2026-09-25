@@ -65,6 +65,7 @@
 #include "engine/base/numeric.h"
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/tokenizer.h"
+#include "engine/platform/ftimer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -106,7 +107,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/ftimer.h"
 
 /*
 **	These are the text names for the various actions. If the action name

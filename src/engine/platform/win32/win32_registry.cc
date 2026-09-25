@@ -1,9 +1,9 @@
-#include "port/win32/win32_registry.h"
+#include "engine/platform/win32/win32_registry.h"
 
 #include <cstdint>
 #include <optional>
 
-#include "port/win32/win32_types.h"
+#include "engine/platform/win32/win32_types.h"
 
 #ifndef _WIN32
 

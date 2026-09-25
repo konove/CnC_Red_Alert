@@ -43,6 +43,7 @@
 #include <cstdint>
 #include <span>
 
+#include "engine/platform/ftimer.h"
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "ra/jshell.h"
@@ -51,7 +52,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
-#include "tech/ftimer.h"
 
 #define HELP_TEXT_COLOR 80  // 158		//Goldy/orange
 

@@ -36,8 +36,8 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
+#include "engine/platform/ftimer.h"
 #include "ra/jshell.h"
-#include "tech/ftimer.h"
 
 // Statistics for the mission in progress plus the score screen that presents
 // them. There is one instance, the global `Score`; it is part of the saved

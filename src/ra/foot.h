@@ -45,6 +45,7 @@
 
 #include "engine/base/array.h"
 #include "engine/base/fixed.h"
+#include "engine/platform/ftimer.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/face.h"
@@ -54,7 +55,6 @@
 #include "ra/radio.h"
 #include "ra/target.h"
 #include "ra/techno.h"
-#include "tech/ftimer.h"
 
 // Value of FootClass::Group meaning "not in any of the player's numbered
 // groups". Group is an unsigned char, so this cannot be -1 no matter how

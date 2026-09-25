@@ -43,6 +43,7 @@
 #include <cstddef>
 
 #include "absl/base/attributes.h"
+#include "engine/platform/ftimer.h"
 #include "ra/abstract.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -50,7 +51,6 @@
 #include "ra/jshell.h"
 #include "ra/object.h"
 #include "ra/teamtype.h"
-#include "tech/ftimer.h"
 
 /*
 ** Units are only allowed to stray a certain distance away from their

@@ -12,8 +12,8 @@
 //
 // Names follow the Win32 SDK, because the call sites spell them that way.
 
-#ifndef CNC_RED_ALERT_PORT_WIN32_WIN32_REGISTRY_H_
-#define CNC_RED_ALERT_PORT_WIN32_WIN32_REGISTRY_H_
+#ifndef CNC_RED_ALERT_ENGINE_PLATFORM_WIN32_WIN32_REGISTRY_H_
+#define CNC_RED_ALERT_ENGINE_PLATFORM_WIN32_WIN32_REGISTRY_H_
 
 #ifdef _WIN32
 
@@ -21,7 +21,7 @@
 
 #else
 
-#include "port/win32/win32_types.h"
+#include "engine/platform/win32/win32_types.h"
 
 inline constexpr LONG ERROR_SUCCESS = 0;
 inline constexpr LONG ERROR_FILE_NOT_FOUND = 2;
@@ -75,4 +75,4 @@ std::optional<uint32_t> ReadRegistryDword(HKEY root, const char* sub_key,
 
 }  // namespace port
 
-#endif  // CNC_RED_ALERT_PORT_WIN32_WIN32_REGISTRY_H_
+#endif  // CNC_RED_ALERT_ENGINE_PLATFORM_WIN32_WIN32_REGISTRY_H_

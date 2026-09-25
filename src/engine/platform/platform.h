@@ -1,7 +1,7 @@
 // File: Compile-time facts about the platform being built for.
 
-#ifndef CNC_RED_ALERT_PORT_PLATFORM_H_
-#define CNC_RED_ALERT_PORT_PLATFORM_H_
+#ifndef CNC_RED_ALERT_ENGINE_PLATFORM_PLATFORM_H_
+#define CNC_RED_ALERT_ENGINE_PLATFORM_PLATFORM_H_
 
 namespace port {
 
@@ -24,4 +24,4 @@ inline constexpr int kMaxExt = 256;
 
 }  // namespace port
 
-#endif  // CNC_RED_ALERT_PORT_PLATFORM_H_
+#endif  // CNC_RED_ALERT_ENGINE_PLATFORM_PLATFORM_H_

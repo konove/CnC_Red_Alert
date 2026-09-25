@@ -40,9 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_CRATE_H_
 #define CNC_RED_ALERT_RA_CRATE_H_
 
+#include "engine/platform/ftimer.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
-#include "tech/ftimer.h"
 
 class CrateClass {
  public:

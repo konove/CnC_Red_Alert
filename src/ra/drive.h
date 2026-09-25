@@ -40,11 +40,11 @@
 #ifndef CNC_RED_ALERT_RA_DRIVE_H_
 #define CNC_RED_ALERT_RA_DRIVE_H_
 
+#include "engine/platform/ftimer.h"
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "ra/foot.h"
 #include "ra/jshell.h"
-#include "tech/ftimer.h"
 
 /****************************************************************************
 **	Movable objects are handled by this class definition. Moveable objects

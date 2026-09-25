@@ -44,13 +44,13 @@
 #include <span>
 
 #include "engine/base/enum_array.h"
+#include "engine/platform/ftimer.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
 #include "ra/scroll.h"
 #include "sdllib/keyboard.h"
 #include "tech/byte_sink.h"
 #include "tech/byte_source.h"
-#include "tech/ftimer.h"
 
 class MouseClass : public ScrollClass {
  public:

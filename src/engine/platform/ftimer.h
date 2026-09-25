@@ -26,8 +26,8 @@
 //
 // Both serialize by value through Serialize().
 
-#ifndef CNC_RED_ALERT_TECH_FTIMER_H_
-#define CNC_RED_ALERT_TECH_FTIMER_H_
+#ifndef CNC_RED_ALERT_ENGINE_PLATFORM_FTIMER_H_
+#define CNC_RED_ALERT_ENGINE_PLATFORM_FTIMER_H_
 
 #include <concepts>
 #include <cstdint>
@@ -262,4 +262,4 @@ int64_t Timer<T>::Elapsed() const {
   return static_cast<int64_t>(T::Tick()) - start_tick_;
 }
 
-#endif  // CNC_RED_ALERT_TECH_FTIMER_H_
+#endif  // CNC_RED_ALERT_ENGINE_PLATFORM_FTIMER_H_

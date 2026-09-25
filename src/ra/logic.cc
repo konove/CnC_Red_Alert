@@ -44,6 +44,7 @@
 #include <cstdint>
 
 #include "engine/base/fixed.h"
+#include "engine/platform/ftimer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/audio.h"
@@ -68,7 +69,6 @@
 #include "ra/vortex.h"
 #include "ra/world.h"
 #include "session.h"
-#include "tech/ftimer.h"
 
 /***********************************************************************************************
  * LogicClass::AI -- Handles AI logic processing for game objects. *

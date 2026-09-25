@@ -41,11 +41,11 @@
 #define CNC_RED_ALERT_RA_MISSION_H_
 
 #include "engine/base/fixed.h"
+#include "engine/platform/ftimer.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
 #include "ra/object.h"
-#include "tech/ftimer.h"
 
 /****************************************************************************
 **	This handles order assignment and tracking. The order is used to guide

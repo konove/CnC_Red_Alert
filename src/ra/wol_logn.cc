@@ -24,9 +24,9 @@
 #include <string_view>
 
 #include "engine/base/strings/safe_string.h"
-#include "port/sleep.h"
-#include "port/win32/win32_com.h"
-#include "port/win32/win32_types.h"
+#include "engine/platform/sleep.h"
+#include "engine/platform/win32/win32_com.h"
+#include "engine/platform/win32/win32_types.h"
 #include "ra/bigcheck.h"
 #include "ra/config.h"
 #include "ra/conquer.h"

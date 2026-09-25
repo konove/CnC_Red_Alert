@@ -24,7 +24,7 @@
 // NOLINTBEGIN(bugprone-reserved-identifier,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
 
 // Every FTP_* value is built out of MAKE_HRESULT.
-#include "port/win32/win32_com.h"
+#include "engine/platform/win32/win32_com.h"
 
 // CFtp return codes.
 

@@ -44,10 +44,10 @@
 
 #include "engine/base/fixed.h"
 #include "engine/base/random.h"
-#include "port/platform.h"
+#include "engine/platform/ftimer.h"
+#include "engine/platform/platform.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
-#include "tech/ftimer.h"
 
 /*
 **	This class holds the information about the current game being played.

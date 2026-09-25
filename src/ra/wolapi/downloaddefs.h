@@ -24,7 +24,7 @@
 // NOLINTBEGIN(bugprone-reserved-identifier,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
 
 // Every DOWNLOAD_E_* and DOWNLOAD_S_* value is built out of MAKE_HRESULT.
-#include "port/win32/win32_com.h"
+#include "engine/platform/win32/win32_com.h"
 
 // CDownload statuses
 

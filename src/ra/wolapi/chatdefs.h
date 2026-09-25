@@ -24,7 +24,7 @@
 // NOLINTBEGIN(bugprone-reserved-identifier,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
 
 // Every CHAT_E_* and CHAT_S_* value is built out of MAKE_HRESULT.
-#include "port/win32/win32_com.h"
+#include "engine/platform/win32/win32_com.h"
 
 //
 // Response errors (Sent as arguments to the OnFoo calls)

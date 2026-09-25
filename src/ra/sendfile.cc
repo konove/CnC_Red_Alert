@@ -55,6 +55,7 @@
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/platform/ftimer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
@@ -79,7 +80,6 @@
 #include "sdllib/wwstd.h"
 #include "tech/disk_file.h"
 #include "tech/file_access.h"
-#include "tech/ftimer.h"
 #include "tech/game_file.h"
 
 static bool Receive_Remote_File(const char* file_name, int file_length,
@@ -87,9 +87,9 @@ static bool Receive_Remote_File(const char* file_name, int file_length,
 
 #define RESPONSE_TIMEOUT (int64_t{60} * 60)
 
+#include "engine/platform/timer.h"
 #include "ra/config.h"
 #include "ra/wolapiob.h"
-#include "sdllib/timer.h"
 
 namespace {
 

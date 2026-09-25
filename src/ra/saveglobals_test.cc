@@ -10,6 +10,7 @@
 #include "engine/base/buffer.h"
 #include "engine/base/installed.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/platform/ftimer.h"
 #include "gtest/gtest.h"
 #include "ra/defines.h"
 #include "ra/game_clock.h"
@@ -20,7 +21,6 @@
 #include "ra/special.h"
 #include "tech/archive.h"
 #include "tech/byte_sink.h"
-#include "tech/ftimer.h"
 #include "tech/span_source.h"
 
 // The game clock the scenario serializer reads; Game owns it in the real

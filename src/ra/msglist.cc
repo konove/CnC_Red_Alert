@@ -70,6 +70,7 @@
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/platform/timer.h"
 #include "ra/audio.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -81,7 +82,6 @@
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
-#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 

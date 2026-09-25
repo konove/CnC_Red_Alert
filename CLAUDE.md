@@ -157,11 +157,15 @@ engine/      → The shared libraries, moving here one folder at a time (docs/EN
   base/      → Vocabulary types and small value classes: types.h (base::ssize), numeric.h, fixed.h,
                random.h; strings/ holds format, safe_string, tokenizer, number_parse
                (target `engine_base`) [depends: abseil, magic_enum]
+  platform/  → OS services: environment, time, sleep, memory, files on disk; win32/ holds the Win32
+               API emulation (target `engine_platform`; links SDL2 for the timer) [depends: engine_base]
 base/        → seek_origin.h only, until it moves to engine/stream/ (header-only target `base`)
-port/        → Portability layer (Win32 emulation, sockets, environment) [depends: engine_base]
-sdllib/      → SDL2 abstraction (graphics, audio, input) [depends: SDL2, abseil]
+port/        → Sockets and the remaining Win32-adjacent helpers, until they move to engine/net/ and
+               engine/file/ [depends: engine_base]
+sdllib/      → SDL2 abstraction (graphics, audio, input) [depends: SDL2, abseil, engine_platform]
 winvq/vqa32  → VQA video codec (target name `vqa32`) [depends: engine_base, port, sdllib, SDL2]
-tech/        → Compression, encryption, ByteSink/ByteSource streams [depends: sdllib, port, vqa32]
+tech/        → Compression, encryption, ByteSink/ByteSource streams
+             [depends: sdllib, port, vqa32, engine_platform]
 ra/          → Red Alert (~200 files) [depends: tech, sdllib, port, vqa32]
 td/          → Tiberian Dawn (~288 files) [depends: tech, sdllib, port, vqa32]
 ```

@@ -6,8 +6,8 @@
 
 #include "absl/log/check.h"
 #include "engine/base/array.h"
+#include "engine/platform/timer.h"
 #include "sdllib/display.h"
-#include "sdllib/timer.h"
 
 unsigned char CurrentPalette[3 * 256];
 

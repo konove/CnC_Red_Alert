@@ -7,7 +7,7 @@
 #include "engine/base/flags.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
-#include "sdllib/memflag.h"
+#include "engine/platform/memflag.h"
 
 void (*Memory_Error)() = nullptr;
 void (*Memory_Error_Exit)(char* string) = nullptr;

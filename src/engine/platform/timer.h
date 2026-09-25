@@ -34,8 +34,8 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef CNC_RED_ALERT_SDLLIB_TIMER_H_
-#define CNC_RED_ALERT_SDLLIB_TIMER_H_
+#ifndef CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_
+#define CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_
 
 #include <atomic>
 #include <cstdint>
@@ -154,4 +154,4 @@ inline int64_t SystemTicks() {
   return g_tick_timer == nullptr ? 0 : g_tick_timer->TickCount();
 }
 
-#endif  // CNC_RED_ALERT_SDLLIB_TIMER_H_
+#endif  // CNC_RED_ALERT_ENGINE_PLATFORM_TIMER_H_

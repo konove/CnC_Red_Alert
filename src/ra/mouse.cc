@@ -53,6 +53,7 @@
 
 #include "absl/log/check.h"
 #include "engine/base/enum_array.h"
+#include "engine/platform/ftimer.h"
 #include "magic_enum/magic_enum.hpp"  // IWYU pragma: keep - used by an DCHECK() below.
 #include "ra/defines.h"
 #include "ra/jshell.h"
@@ -61,7 +62,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/ftimer.h"
 #include "tech/mix_archive.h"
 
 /*

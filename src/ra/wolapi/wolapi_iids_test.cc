@@ -1,8 +1,8 @@
 #include <cstdint>
 
 #include "engine/base/array.h"
+#include "engine/platform/win32/win32_com.h"
 #include "gtest/gtest.h"
-#include "port/win32/win32_com.h"
 #include "ra/wolapi/wolapi.h"
 
 namespace {

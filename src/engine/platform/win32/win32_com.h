@@ -17,8 +17,8 @@
 // Names follow the Win32 SDK rather than the project's Google style, because
 // the call sites spell them that way. On Windows the real SDK headers are used.
 
-#ifndef CNC_RED_ALERT_PORT_WIN32_WIN32_COM_H_
-#define CNC_RED_ALERT_PORT_WIN32_WIN32_COM_H_
+#ifndef CNC_RED_ALERT_ENGINE_PLATFORM_WIN32_WIN32_COM_H_
+#define CNC_RED_ALERT_ENGINE_PLATFORM_WIN32_WIN32_COM_H_
 
 #ifdef _WIN32
 
@@ -31,7 +31,7 @@
 
 #include <cstdint>
 
-#include "port/win32/win32_types.h"
+#include "engine/platform/win32/win32_types.h"
 
 // MIDL output and the code around it lean on these spellings. `interface` is a
 // macro on Windows too (objbase.h defines it as `struct`), which is why the
@@ -192,4 +192,4 @@ HRESULT CoCreateInstance(REFCLSID clsid, IUnknown* outer, DWORD context,
 #define COM_SINK_DESTRUCTOR(Class) ~Class() override
 #endif
 
-#endif  // CNC_RED_ALERT_PORT_WIN32_WIN32_COM_H_
+#endif  // CNC_RED_ALERT_ENGINE_PLATFORM_WIN32_WIN32_COM_H_

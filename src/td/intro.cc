@@ -48,10 +48,10 @@
 #include <utility>
 
 #include "engine/base/bytes_of.h"
+#include "engine/platform/timer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
-#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "td/conquer.h"
 #include "td/debug_state.h"

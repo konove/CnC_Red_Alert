@@ -44,6 +44,8 @@
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
+#include "engine/platform/ftimer.h"
+#include "engine/platform/timer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"  // IWYU pragma: keep
 #include "ra/audio.h"
@@ -106,13 +108,11 @@
 #include "sdllib/display.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
-#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/audio_mixer.h"
 #include "tech/disk_file.h"
 #include "tech/file_access.h"
-#include "tech/ftimer.h"
 #include "tech/glow_pulse.h"
 #include "tech/rgb.h"
 

@@ -24,7 +24,7 @@
 // NOLINTBEGIN(bugprone-reserved-identifier,clang-diagnostic-reserved-identifier,clang-diagnostic-reserved-macro-identifier)
 
 // Every NETUTIL_E_* and NETUTIL_S_* value is built out of MAKE_HRESULT.
-#include "port/win32/win32_com.h"
+#include "engine/platform/win32/win32_com.h"
 
 #define NETUTIL_E_ERROR MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 100)
 #define NETUTIL_E_BUSY MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 101)

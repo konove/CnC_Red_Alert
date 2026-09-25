@@ -57,11 +57,11 @@
 #include "engine/base/numeric.h"
 #include "engine/base/strings/format.h"
 #include "engine/base/types.h"
+#include "engine/platform/timer.h"
 #include "ra/compat.h"
 #include "ra/game_clock.h"
 #include "ra/palette.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 
 class ByteStream;

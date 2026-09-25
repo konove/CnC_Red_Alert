@@ -42,6 +42,7 @@
 #include <cstdint>
 
 #include "engine/base/array.h"
+#include "engine/platform/timer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
@@ -66,7 +67,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/text_window.h"
-#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"

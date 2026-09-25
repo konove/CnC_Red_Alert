@@ -37,13 +37,13 @@
 // Its own IID and CLSID typedefs are gone: they were a fallback for builds
 // with no COM headers, and defining IID as a struct whose first field is
 // `unsigned long` would make it 24 bytes here rather than 16, silently
-// corrupting every constant below. port/win32/win32_com.h supplies the real
-// 16-byte type and defines the two guards this file used to test.
+// corrupting every constant below. engine/platform/win32/win32_com.h supplies
+// the real 16-byte type and defines the two guards this file used to test.
 //
 // Exactly one definition of each constant may exist in the program, so this
 // file must never be #included anywhere.
 
-#include "port/win32/win32_com.h"
+#include "engine/platform/win32/win32_com.h"
 #include "ra/wolapi/wolapi.h"
 
 const IID IID_IRTPatcher = {0x925CDEDE,

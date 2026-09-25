@@ -46,6 +46,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/base/enum_array.h"
+#include "engine/platform/ftimer.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -58,7 +59,6 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/ftimer.h"
 
 #define MAX_DOOR_STAGE 18  // # of frames of door opening on weapons factory
 #define DOOR_OPEN_STAGE 9  // frame on which the door is entirely open

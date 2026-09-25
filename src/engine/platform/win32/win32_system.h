@@ -15,8 +15,8 @@
 // Names follow the Win32 SDK, because the call sites spell them that way. On
 // Windows the real SDK headers are used instead.
 
-#ifndef CNC_RED_ALERT_PORT_WIN32_WIN32_SYSTEM_H_
-#define CNC_RED_ALERT_PORT_WIN32_WIN32_SYSTEM_H_
+#ifndef CNC_RED_ALERT_ENGINE_PLATFORM_WIN32_WIN32_SYSTEM_H_
+#define CNC_RED_ALERT_ENGINE_PLATFORM_WIN32_WIN32_SYSTEM_H_
 
 #include <span>
 
@@ -30,7 +30,7 @@
 
 #include <cstring>
 
-#include "port/win32/win32_types.h"
+#include "engine/platform/win32/win32_types.h"
 
 // -- Files ------------------------------------------------------------------
 
@@ -136,4 +136,4 @@ DWORD GetLastError();
 
 #endif  // _WIN32
 
-#endif  // CNC_RED_ALERT_PORT_WIN32_WIN32_SYSTEM_H_
+#endif  // CNC_RED_ALERT_ENGINE_PLATFORM_WIN32_WIN32_SYSTEM_H_

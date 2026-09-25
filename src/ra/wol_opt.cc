@@ -19,7 +19,7 @@
 //	Wol_Opt.cpp - WW online options dialog.
 //	ajw 09/1/98
 
-#include "port/sleep.h"
+#include "engine/platform/sleep.h"
 #include "ra/bigcheck.h"
 #include "ra/config.h"
 #include "ra/conquer.h"

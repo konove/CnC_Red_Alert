@@ -52,9 +52,9 @@
 #include <span>
 
 #include "engine/base/enum_array.h"
+#include "engine/platform/timer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
-#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "td/defines.h"
 #include "td/jshell.h"

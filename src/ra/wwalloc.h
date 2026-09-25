@@ -24,6 +24,6 @@
 
 // The port uses the SDL allocation interface. Retain this legacy include name
 // without declaring a second, incompatible set of allocator functions.
-#include "sdllib/memflag.h"  // IWYU pragma: export
+#include "engine/platform/memflag.h"  // IWYU pragma: export
 
 #endif  // CNC_RED_ALERT_RA_WWALLOC_H_

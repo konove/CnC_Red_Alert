@@ -4,8 +4,8 @@
 // shims deliberately: this one is a real facility any code may want, not a
 // Windows name being emulated.
 
-#ifndef CNC_RED_ALERT_PORT_SLEEP_H_
-#define CNC_RED_ALERT_PORT_SLEEP_H_
+#ifndef CNC_RED_ALERT_ENGINE_PLATFORM_SLEEP_H_
+#define CNC_RED_ALERT_ENGINE_PLATFORM_SLEEP_H_
 
 #include <chrono>
 #include <thread>
@@ -23,4 +23,4 @@ inline void SleepMs(int milliseconds) {
 
 }  // namespace port
 
-#endif  // CNC_RED_ALERT_PORT_SLEEP_H_
+#endif  // CNC_RED_ALERT_ENGINE_PLATFORM_SLEEP_H_

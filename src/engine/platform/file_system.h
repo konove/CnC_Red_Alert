@@ -1,5 +1,5 @@
-#ifndef CNC_RED_ALERT_SDLLIB_FILE_SYSTEM_H_
-#define CNC_RED_ALERT_SDLLIB_FILE_SYSTEM_H_
+#ifndef CNC_RED_ALERT_ENGINE_PLATFORM_FILE_SYSTEM_H_
+#define CNC_RED_ALERT_ENGINE_PLATFORM_FILE_SYSTEM_H_
 
 // File: directory listing and free space for the working directory, over
 // std::filesystem.
@@ -31,4 +31,4 @@ std::vector<FoundFile> FindFiles(std::string_view pattern,
 // 0 if that cannot be determined.
 int64_t FreeDiskSpace();
 
-#endif  // CNC_RED_ALERT_SDLLIB_FILE_SYSTEM_H_
+#endif  // CNC_RED_ALERT_ENGINE_PLATFORM_FILE_SYSTEM_H_

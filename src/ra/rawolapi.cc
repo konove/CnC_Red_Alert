@@ -44,10 +44,11 @@
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/strings/tokenizer.h"
-#include "port/platform.h"
-#include "port/win32/win32_com.h"
-#include "port/win32/win32_system.h"
-#include "port/win32/win32_types.h"
+#include "engine/platform/platform.h"
+#include "engine/platform/timer.h"
+#include "engine/platform/win32/win32_com.h"
+#include "engine/platform/win32/win32_system.h"
+#include "engine/platform/win32/win32_types.h"
 #include "ra/audio.h"
 #include "ra/defines.h"
 #include "ra/inline.h"
@@ -65,7 +66,6 @@
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"
-#include "sdllib/timer.h"
 #include "tech/base64.h"
 
 namespace {

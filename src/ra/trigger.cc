@@ -56,6 +56,7 @@
 
 #include "absl/log/check.h"
 #include "engine/base/numeric.h"
+#include "engine/platform/ftimer.h"
 #include "ra/cell.h"
 #include "ra/config.h"
 #include "ra/defines.h"
@@ -77,7 +78,6 @@
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
-#include "tech/ftimer.h"
 
 /***********************************************************************************************
  * TriggerClass::Description -- Fetch a one line ASCII description of the

@@ -97,6 +97,7 @@
 #include "engine/base/random.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/unaligned.h"
+#include "engine/platform/ftimer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -156,7 +157,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/byte_stream.h"
-#include "tech/ftimer.h"
 
 // #include "ra/woldebug.h"
 #include "ra/config.h"

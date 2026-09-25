@@ -1,4 +1,4 @@
-#include "port/win32/win32_system.h"
+#include "engine/platform/win32/win32_system.h"
 
 #include <cstdio>
 #include <cstring>
@@ -11,9 +11,9 @@
 #include <system_error>
 
 #include "absl/base/attributes.h"
+#include "engine/platform/win32/win32_registry.h"
+#include "engine/platform/win32/win32_types.h"
 #include "gtest/gtest.h"
-#include "port/win32/win32_registry.h"
-#include "port/win32/win32_types.h"
 
 #ifndef _WIN32
 

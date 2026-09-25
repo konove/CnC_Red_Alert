@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 
-#include "tech/ftimer.h"
+#include "engine/platform/ftimer.h"
 #include "tech/rgb.h"
 
 // A fade toward black that swings back and forth, one step per `period` ticks

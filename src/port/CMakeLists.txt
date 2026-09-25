@@ -27,12 +27,6 @@ endif()
 include(Testing)
 add_gtest(
     NAME port_test
-    SOURCES env_test.cc inet_text_test.cc random_seed_test.cc profile_buffer_test.cc sleep_test.cc socket_bytes_test.cc
+    SOURCES inet_text_test.cc profile_buffer_test.cc socket_bytes_test.cc
     LIBS port engine_base
-)
-
-add_gtest(
-    NAME port_win32_test
-    SOURCES win32/win32_com_test.cc win32/win32_system_test.cc
-    LIBS port
 )

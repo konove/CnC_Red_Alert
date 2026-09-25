@@ -101,6 +101,7 @@
 #include "engine/base/array.h"
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
+#include "engine/platform/ftimer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/audio.h"
@@ -150,7 +151,6 @@
 #include "sdllib/shape.h"
 #include "sdllib/text_window.h"
 #include "sdllib/wwstd.h"
-#include "tech/ftimer.h"
 #include "tech/mix_archive.h"
 
 /***********************************************************************************************

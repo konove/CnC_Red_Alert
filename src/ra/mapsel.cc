@@ -32,6 +32,7 @@
 #include <string_view>
 
 #include "engine/base/array.h"
+#include "engine/platform/ftimer.h"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -57,7 +58,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/audio_mixer.h"
-#include "tech/ftimer.h"
 #include "tech/glow_pulse.h"
 #include "tech/mix_archive.h"
 #include "tech/rgb.h"

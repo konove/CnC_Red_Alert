@@ -21,7 +21,8 @@
 
 #include <algorithm>
 
-#include "port/win32/win32_types.h"
+#include "engine/platform/timer.h"
+#include "engine/platform/win32/win32_types.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -44,7 +45,6 @@
 #include "ra/wolstrng.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
-#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 
 //***********************************************************************************************

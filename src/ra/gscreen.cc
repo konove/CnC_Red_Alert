@@ -54,6 +54,7 @@
 
 #include <cstdint>
 
+#include "engine/platform/timer.h"
 #include "ra/config.h"
 #include "ra/debug_state.h"
 #include "ra/defines.h"
@@ -70,7 +71,6 @@
 #include "sdllib/display.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
-#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 
 GadgetClass* GScreenClass::Buttons = nullptr;

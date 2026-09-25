@@ -189,7 +189,7 @@ add_gtest(
 add_gtest(
     NAME ra_wolapi_iids_test
     SOURCES wolapi/wolapi_iids_test.cc wolapi/wolapi_iids.cc
-    LIBS port
+    LIBS port engine_platform
 )
 
 add_gtest(

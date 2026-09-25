@@ -9,8 +9,8 @@
 //   Seed = port::RandomSeed();
 //   Scen.sync_rng_.set_seed(static_cast<uint32_t>(Seed));
 
-#ifndef CNC_RED_ALERT_PORT_RANDOM_SEED_H_
-#define CNC_RED_ALERT_PORT_RANDOM_SEED_H_
+#ifndef CNC_RED_ALERT_ENGINE_PLATFORM_RANDOM_SEED_H_
+#define CNC_RED_ALERT_ENGINE_PLATFORM_RANDOM_SEED_H_
 
 namespace port {
 
@@ -20,4 +20,4 @@ namespace port {
 
 }  // namespace port
 
-#endif  // CNC_RED_ALERT_PORT_RANDOM_SEED_H_
+#endif  // CNC_RED_ALERT_ENGINE_PLATFORM_RANDOM_SEED_H_

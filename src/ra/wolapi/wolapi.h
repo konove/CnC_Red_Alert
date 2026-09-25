@@ -58,7 +58,7 @@
 // The NOLINT only reaches clang-tidy. The compiler still warns about the MIDL
 // guard macros while preprocessing, which stops clang-tidy-cache from hashing
 // every unit that includes this header (see CLAUDE.md), so silence that warning
-// here as port/win32/win32_com.h does.
+// here as engine/platform/win32/win32_com.h does.
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreserved-macro-identifier"
@@ -66,8 +66,8 @@
 
 #include <ctime>  // for time_t, which IChatEvent::OnServerBannedYou uses.
 
-#include "port/win32/win32_com.h"
-#include "port/win32/win32_types.h"
+#include "engine/platform/win32/win32_com.h"
+#include "engine/platform/win32/win32_types.h"
 
 /* Forward Declarations */
 

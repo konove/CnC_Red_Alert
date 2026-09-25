@@ -8,7 +8,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/base/installed.h"
-#include "sdllib/timer.h"
+#include "engine/platform/timer.h"
 #include "td/defines.h"
 
 // The flags that say what the game is doing right now: whether it is

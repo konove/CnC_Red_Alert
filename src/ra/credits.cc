@@ -47,6 +47,7 @@
 #include <cstdlib>
 
 #include "engine/base/fixed.h"
+#include "engine/platform/ftimer.h"
 #include "ra/audio.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -62,7 +63,6 @@
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
-#include "tech/ftimer.h"
 
 /***********************************************************************************************
  * CreditClass::CreditClass -- Default constructor for the credit class object.

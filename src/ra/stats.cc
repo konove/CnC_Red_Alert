@@ -52,7 +52,8 @@
 
 #include "engine/base/array.h"
 #include "engine/base/unaligned.h"
-#include "port/win32/win32_com.h"
+#include "engine/platform/timer.h"
+#include "engine/platform/win32/win32_com.h"
 #include "ra/aircraft.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -75,7 +76,6 @@
 #include "ra/version.h"
 #include "ra/vessel.h"
 #include "ra/world.h"
-#include "sdllib/timer.h"
 #include "tech/packet.h"
 
 #define FIELD_PACKET_TYPE "TYPE"

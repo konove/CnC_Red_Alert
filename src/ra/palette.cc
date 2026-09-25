@@ -14,8 +14,8 @@
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
 #include "engine/base/bytes_of.h"
+#include "engine/platform/timer.h"
 #include "sdllib/display.h"
-#include "sdllib/timer.h"
 #include "tech/rgb.h"
 
 PaletteClass PaletteClass::CurrentPalette;

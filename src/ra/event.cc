@@ -65,6 +65,7 @@
 #include "engine/base/enum_array.h"
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
+#include "engine/platform/ftimer.h"
 #include "ra/anim.h"
 #include "ra/audio.h"
 #include "ra/building.h"
@@ -104,7 +105,6 @@
 #include "ra/wolstrng.h"
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/ftimer.h"
 
 #ifdef _WIN32
 #endif  // _WIN32

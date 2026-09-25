@@ -48,8 +48,8 @@ class ArchiveWriter;
 #include <span>
 
 #include "engine/base/enum_array.h"
+#include "engine/platform/timer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/timer.h"
 #include "td/defines.h"
 #include "td/game_clock.h"
 #include "td/scroll.h"

@@ -21,8 +21,8 @@
 
 #include "ra/wol_main.h"
 
-#include "port/win32/win32_com.h"
-#include "port/win32/win32_types.h"
+#include "engine/platform/win32/win32_com.h"
+#include "engine/platform/win32/win32_types.h"
 #include "ra/defines.h"
 #include "ra/installation.h"
 #include "ra/network.h"
@@ -34,10 +34,10 @@ static bool ReregisterWolapiDLL();
 static void HandleDLLFail();
 
 #include "engine/base/bytes_of.h"
-#include "port/platform.h"
-#include "port/sleep.h"
-#include "port/win32/win32_registry.h"
-#include "port/win32/win32_system.h"
+#include "engine/platform/platform.h"
+#include "engine/platform/sleep.h"
+#include "engine/platform/win32/win32_registry.h"
+#include "engine/platform/win32/win32_system.h"
 #include "ra/msgbox.h"
 #include "ra/theme.h"
 

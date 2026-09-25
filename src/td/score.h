@@ -52,8 +52,8 @@ struct FontStyle;
 
 #include "absl/base/attributes.h"
 #include "engine/base/buffer.h"
+#include "engine/platform/timer.h"
 #include "sdllib/pixel_buffer.h"
-#include "sdllib/timer.h"
 #include "sdllib/wwstd.h"
 #include "td/presentation.h"
 

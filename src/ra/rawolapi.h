@@ -36,8 +36,8 @@
 // "Can't use namespaces in Watcom 10.5 it seems". The global has since been
 // renamed IsNetworkHost, so there is nothing left to collide with.
 #include "absl/base/attributes.h"
-#include "port/win32/win32_com.h"
-#include "port/win32/win32_types.h"
+#include "engine/platform/win32/win32_com.h"
+#include "engine/platform/win32/win32_types.h"
 #include "ra/config.h"
 #include "ra/defines.h"
 #include "ra/wolapi/chatdefs.h"

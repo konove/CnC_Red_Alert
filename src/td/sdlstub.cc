@@ -6,11 +6,11 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "engine/platform/timer.h"
 #include "sdllib/display.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
-#include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "td/game_state.h"
