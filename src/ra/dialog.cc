@@ -481,8 +481,7 @@ FontStyle TextFontStyle(TextPrintType flag) {
       if constexpr (config::kWolapiEnabled) {
         xspace -= 2;
         yspace += 2;
-      } else if constexpr (config::kBuildLanguage ==
-                           config::BuildLanguage::German) {
+      } else if constexpr (config::kIsGerman) {
         //	ajw: "I am implicitly assuming that TPF_TYPE was no longer being
         //	used, before I came along, despite the following."
         yspace += 4;  // VG 10/17/96

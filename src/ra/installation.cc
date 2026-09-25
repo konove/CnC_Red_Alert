@@ -51,10 +51,9 @@
 #include "ra/theme.h"
 
 const char* Game_Registry_Key() {
-  if constexpr (config::kBuildLanguage == config::BuildLanguage::French) {
+  if constexpr (config::kIsFrench) {
     return "SOFTWARE\\Westwood\\Alerte Rouge version Windows 95";
-  } else if constexpr (config::kBuildLanguage ==
-                       config::BuildLanguage::German) {
+  } else if constexpr (config::kIsGerman) {
     return "SOFTWARE\\Westwood\\Alarmstufe Rot Windows 95 Edition";
   } else {
     return "SOFTWARE\\Westwood\\Red Alert Windows 95 Edition";
@@ -116,13 +115,12 @@ bool Force_CD_Available(int cd_desired)  // ajw
   // Disc names as printed on the localized releases, in the language this
   // build was compiled for.
   static constexpr std::array<const char*, 5> kCdNames = [] {
-    if constexpr (config::kBuildLanguage == config::BuildLanguage::French) {
+    if constexpr (config::kIsFrench) {
       return std::array{
           "ALERTE ROUGE CD1",   "ALERTE ROUGE CD2", "CD Missions Taiga",
           "CD Missions M.A.D.", "ALERTE ROUGE DVD",
       };
-    } else if constexpr (config::kBuildLanguage ==
-                         config::BuildLanguage::German) {
+    } else if constexpr (config::kIsGerman) {
       return std::array{
           "ALARMSTUFE ROT CD1",       "ALARMSTUFE ROT CD2",
           "CD Gegenangriff einlegen", "CD TRANS einlegen",
@@ -223,10 +221,9 @@ bool Force_CD_Available(int cd_desired)  // ajw
       // The wording is fixed by the language this build was compiled for; only
       // the disc name varies.
       const auto insert_prompt = [&buffer](const char* disc_name) {
-        if constexpr (config::kBuildLanguage == config::BuildLanguage::French) {
+        if constexpr (config::kIsFrench) {
           absl::SNPrintF(buffer, sizeof(buffer), "Insèrez le %s", disc_name);
-        } else if constexpr (config::kBuildLanguage ==
-                             config::BuildLanguage::German) {
+        } else if constexpr (config::kIsGerman) {
           absl::SNPrintF(buffer, sizeof(buffer), "Bitte %s", disc_name);
         } else {
           absl::SNPrintF(buffer, sizeof(buffer), "Please insert the %s",
