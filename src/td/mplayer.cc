@@ -77,7 +77,6 @@
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/ww_mouse.h"
-#include "rand.h"
 #include "td/conquer.h"
 #include "td/control.h"
 #include "td/debug_state.h"

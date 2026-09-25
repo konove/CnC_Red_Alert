@@ -108,7 +108,6 @@
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/window/ww_mouse.h"
-#include "rand.h"
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/cell.h"

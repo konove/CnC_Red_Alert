@@ -74,8 +74,8 @@
 #include "engine/gfx/tile.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
-#include "support.h"
 #include "td/startup.h"
+#include "td/support.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *

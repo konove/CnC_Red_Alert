@@ -41,7 +41,6 @@
 
 #include "td/logic.h"
 
-#include "rand.h"
 #include "td/aircraft.h"
 #include "td/building.h"
 #include "td/defines.h"
@@ -54,6 +53,7 @@
 #include "td/mapedit.h"
 #include "td/object.h"
 #include "td/object_heaps.h"
+#include "td/rand.h"
 #include "td/session.h"
 #include "td/team.h"
 #include "td/type.h"
