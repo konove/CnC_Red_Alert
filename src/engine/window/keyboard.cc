@@ -21,7 +21,7 @@ KeyBuffer* g_active_keyboard = nullptr;
 // Mask for modifier keys that affect gameplay input.
 // Excludes toggle modifiers (Caps Lock, Num Lock, Scroll Lock) so that their
 // state doesn't interfere with keyboard handling.
-constexpr SDL_Keymod kInputModifierMask =
+constexpr auto kInputModifierMask =
     static_cast<SDL_Keymod>(uint32_t{KMOD_SHIFT} | uint32_t{KMOD_CTRL} |
                             uint32_t{KMOD_ALT} | uint32_t{KMOD_GUI});
 
@@ -56,7 +56,7 @@ int KeyBuffer::Read() {
   return key;
 }
 
-bool KeyBuffer::Put(int entry) {
+bool KeyBuffer::Put(const int entry) {
   // One slot always stays free: a full buffer would otherwise have head_ ==
   // tail_ and read as empty.
   const int next_tail = (tail_ + 1) % kBufferSize;
@@ -120,7 +120,7 @@ bool KeyBuffer::PutClick(const int button, const bool release, const int x,
   return true;
 }
 
-int KeyBuffer::ToAscii(int key) {
+int KeyBuffer::ToAscii(const int key) {
   // A key number is a scancode in the low byte with modifier bits above it.
   const auto bits = static_cast<uint32_t>(key);
   if (bits & kKeyReleaseBit) {
@@ -140,7 +140,7 @@ int KeyBuffer::ToAscii(int key) {
 
 void KeyBuffer::Clear() { head_ = tail_; }
 
-bool KeyBuffer::IsDown(int key) {
+bool KeyBuffer::IsDown(const int key) {
   switch (key) {
     // Gadgets poll the buttons through here to follow a drag or a held
     // button.
@@ -180,7 +180,7 @@ bool KeyBuffer::IsMouseKey(int key) {
   return key == VK_LBUTTON || key == VK_MBUTTON || key == VK_RBUTTON;
 }
 
-bool KeyBuffer::HandleEvent(SDL_Event* event) {
+bool KeyBuffer::HandleEvent(const SDL_Event* event) {
   switch (event->type) {
     case SDL_MOUSEBUTTONDOWN:
     case SDL_MOUSEBUTTONUP: {

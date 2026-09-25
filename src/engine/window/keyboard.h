@@ -122,7 +122,7 @@ class KeyBuffer {
   // Queues the key or click an SDL event carries; mouse motion moves the
   // cursor instead. Returns true only for a click, which it consumes, so the
   // game's own handler can skip it; everything else goes on to that handler.
-  bool HandleEvent(SDL_Event* event);
+  bool HandleEvent(const SDL_Event* event);
 
   // The position of the last mouse click Read() returned, in game pixels.
   [[nodiscard]] int click_x() const { return click_x_; }

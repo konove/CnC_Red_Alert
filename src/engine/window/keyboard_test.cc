@@ -117,7 +117,7 @@ TEST_F(KeyBufferTest, ClickThatDoesNotFitIsDroppedWhole) {
   for (int i = 0; i < 253; ++i) {
     ASSERT_TRUE(keys.Put(KN_A));
   }
-  SDL_Event click = MakeClick(SDL_BUTTON_LEFT, 10, 20);
+  const SDL_Event click = MakeClick(SDL_BUTTON_LEFT, 10, 20);
 
   keys.HandleEvent(&click);
 
@@ -128,7 +128,7 @@ TEST_F(KeyBufferTest, ClickThatDoesNotFitIsDroppedWhole) {
 }
 
 TEST_F(KeyBufferTest, ClickIsQueuedWithItsPosition) {
-  SDL_Event click = MakeClick(SDL_BUTTON_RIGHT, 10, 20);
+  const SDL_Event click = MakeClick(SDL_BUTTON_RIGHT, 10, 20);
 
   EXPECT_TRUE(keys.HandleEvent(&click));
 
