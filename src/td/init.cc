@@ -1050,7 +1050,7 @@ bool Select_Game(bool fade) {
           Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                           Call_Back);
           ClearKeys();
-          while (!Check_Key_Num()) {
+          while (!PeekKey()) {
             Call_Back();
           }
           ReadKey();
@@ -1998,7 +1998,8 @@ bool Select_Game(bool fade) {
  * HISTORY: * 06/06/1995 BRR : Created. *
  *=============================================================================================*/
 static void Play_Intro(bool for_real) {
-  const bool playright = !IsKeyDown(KN_LCTRL) || !IsKeyDown(KN_RCTRL);
+  const bool playright =
+      !KeyBuffer::IsDown(KN_LCTRL) || !KeyBuffer::IsDown(KN_RCTRL);
   static int _counter = -1;
   static const char* _names[] = {
 #ifdef DEMO

@@ -623,7 +623,7 @@ void Keyboard_Process(KeyNumber& input) {
     action = 2;
   }
 
-  switch (KN_To_VK(plain)) {
+  switch (static_cast<int>(plain)) {
     /*
     **	Center the map around the currently selected objects. If no
     **	objects are selected, then fall into the home case.
@@ -730,7 +730,7 @@ void Keyboard_Process(KeyNumber& input) {
     case VK_F9:
     case VK_F10:
       if (!TheDebugState().map_editor_active()) {
-        Handle_View(KN_To_VK(plain) - VK_F7, action);
+        Handle_View(plain - VK_F7, action);
       }
       break;
 
@@ -747,7 +747,7 @@ void Keyboard_Process(KeyNumber& input) {
     case VK_8:
     case VK_9:
     case VK_0:
-      Handle_Team(KN_To_VK(plain) - VK_1, action);
+      Handle_Team(plain - VK_1, action);
       break;
 
     /*

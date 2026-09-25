@@ -143,21 +143,15 @@ extern KeyBuffer* g_active_keyboard;
 
 // The legacy free-function spellings of the g_active_keyboard members.
 //
-// PeekKey and Check_Key_Num both peek at the pending key number. PeekKey
-// deliberately does not mirror ReadKeyAscii's ASCII translation: its callers
-// test whether any key is waiting, and ToAscii reports 0 for key releases and
-// for keys that type no character.
+// PeekKey deliberately does not mirror ReadKeyAscii's ASCII translation: its
+// callers test whether any key is waiting, and ToAscii reports 0 for key
+// releases and for keys that type no character.
 inline int PeekKey() { return g_active_keyboard->Peek(); }
-inline int Check_Key_Num() { return g_active_keyboard->Peek(); }
 inline int ReadKeyAscii() {
   return KeyBuffer::ToAscii(g_active_keyboard->Read());
 }
 inline int ReadKey() { return g_active_keyboard->Read(); }
-inline bool IsKeyDown(int key) { return KeyBuffer::IsDown(key); }
 inline void ClearKeys() { g_active_keyboard->Clear(); }
-inline int KeyToAscii(int key) { return KeyBuffer::ToAscii(key); }
-// A key number already is a VK code in this port.
-inline int KN_To_VK(int key) { return key; }
 
 // Key codes, named after the Windows virtual keys the original used. Their
 // values are the SDL scancodes of the same keys, so a key event needs no

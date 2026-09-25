@@ -1781,7 +1781,7 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
 
       } else if (key != KA_RETURN) {  // else if (key != KN_RETURN &&
                                       // key!=KN_KEYPAD_RETURN) {
-        ascii = key;                  // ascii = KeyToAscii(key);
+        ascii = key;                  // ascii = KeyBuffer::ToAscii(key);
         if (ascii >= 'a' && ascii <= 'z') {
           ascii -= 'a' - 'A';
         }

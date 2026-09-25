@@ -3411,7 +3411,7 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   //	If the user hits ESC, stop the playback
   //------------------------------------------------------------------------
-  if (Check_Key_Num()) {
+  if (PeekKey()) {
     const int key = ReadKeyAscii();
     //
     // If the user hit ESC, end the recording.  If this is an Attract-mode
