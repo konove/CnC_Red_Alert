@@ -69,11 +69,15 @@ class RandomClass {
   uint32_t seed_;
 };
 
-// A second, older byte generator, distinct from RandomClass. Tiberian Dawn's
-// map generator and a handful of visual-only effects still draw from it;
-// Red Alert only seeds RandNumb and never calls Random() itself. Every call
-// shifts and carries through the bytes of RandNumb and returns two of them
-// XORed together.
+// A second, older byte generator, distinct from RandomClass. Tiberian Dawn
+// still draws from it: terrain.cc's barnacle spore stage rolls whether to
+// start and stop sporing and calls Explosion_Damage, so it affects gameplay,
+// not just visuals; score.cc's post-mission infantry animation is the
+// visual-only caller. Red Alert only seeds RandNumb and never calls Random()
+// itself. RandNumb is saved with the game, so every caller's draw order has
+// to stay in sync across a save/load and across a multiplayer session. Every
+// call shifts and carries through the bytes of RandNumb and returns two of
+// them XORed together.
 uint8_t Random();
 
 // State behind Random(); the games seed it directly.
