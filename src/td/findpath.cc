@@ -1242,7 +1242,8 @@ bool FootClass::Follow_Edge(CELL start, CELL target, PathType* path,
     olddir = Next_Direction(
         newdir, static_cast<FacingType>(-static_cast<int>(search) * 3));
 #else
-    olddir = Next_Direction(newdir, (FacingType)(-(int)search * 4));
+    olddir = Next_Direction(
+        newdir, static_cast<FacingType>(-static_cast<int>(search) * 4));
 #endif
     oldcell = newcell;
   }

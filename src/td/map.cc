@@ -916,7 +916,7 @@ int32_t MapClass::Overpass() {
  *icons detected.                                       *
  *=============================================================================================*/
 #ifdef DEMO
-bool MapClass::Read_Binary(const char* root, unsigned long*)
+bool MapClass::Read_Binary(const char* root, uint32_t*)
 #else
 bool MapClass::Read_Binary(const char* root, uint32_t* crc)
 #endif

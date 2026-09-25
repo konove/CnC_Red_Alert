@@ -536,14 +536,18 @@ ResultType InfantryClass::Take_Damage(int& damage, int distance,
           if (damage == Infantry_Punch_Damage[1]) {
             addval++;
           }
-          Do_Action((DoType)((int)DO_PUNCH_HIT1 + addval), true);
+          Do_Action(
+              static_cast<DoType>(static_cast<int>(DO_PUNCH_HIT1) + addval),
+              true);
           break;
 
         case WARHEAD_FOOT:
           if (damage == Infantry_Kick_Damage[1]) {
             addval++;
           }
-          Do_Action((DoType)((int)DO_KICK_HIT1 + addval), true);
+          Do_Action(
+              static_cast<DoType>(static_cast<int>(DO_KICK_HIT1) + addval),
+              true);
           break;
       }
     } else {
@@ -1121,16 +1125,14 @@ void InfantryClass::AI() {
         /* If we're engaged in hand-to-hand combat, keep boxing */
         if (IsBoxing) {
           IsFiring = true;
-          if (((InfantryClass*)object)->Doing == DO_FIGHT_READY) {
-            Do_Action(
-                (DoType)((int)DO_PUNCH + (DoType)(Random_Pick(0, 1) == 1)),
-                true);
+          if (dynamic_cast<InfantryClass*>(object)->Doing == DO_FIGHT_READY) {
+            Do_Action(Random_Pick(0, 1) == 1 ? DO_KICK : DO_PUNCH, true);
           }
         } else {
           if (Is_Target_Infantry(TarCom) && (Distance(TarCom) <= 0x80) &&
               (Coord_Y(Coord) == Coord_Y(object->Coord))) {
             // Too close to shoot, so start hand-to-hand combat
-            if (Establish_Contact((TechnoClass*)object)) {
+            if (Establish_Contact(dynamic_cast<TechnoClass*>(object))) {
               if (Transmit_Message(RADIO_PREPARE_TO_BOX) == RADIO_ROGER) {
                 IsBoxing = true;
                 Do_Action(DO_ON_GUARD, true);
@@ -1535,7 +1537,7 @@ MoveBitType InfantryClass::Blocking_Object(const TechnoClass* techno,
       ** If the unit in question has a destination than we should
       ** be prepared to wait for the unit to get out of our way.
       */
-      if (((FootClass*)techno)->NavCom != kTargetNone) {
+      if (dynamic_cast<const FootClass*>(techno)->NavCom != kTargetNone) {
         return (MOVEF_MOVING_BLOCK);
       }
       return (MOVEF_TEMP);

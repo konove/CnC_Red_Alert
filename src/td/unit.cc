@@ -2765,10 +2765,11 @@ MoveBitType UnitClass::Blocking_Object(const TechnoClass* techno,
       ** If the unit in question has a destination than we should
       ** be prepared to wait for the unit to get out of our way.
       */
-      if (((FootClass*)techno)->NavCom != kTargetNone) {
+      if (dynamic_cast<const FootClass*>(techno)->NavCom != kTargetNone) {
         int face = Dir_Facing(PrimaryFacing);
         int techface =
-            Dir_Facing(((const FootClass*)techno)->PrimaryFacing) ^ 4;
+            Dir_Facing(dynamic_cast<const FootClass*>(techno)->PrimaryFacing) ^
+            4;
         if (face != techface &&
             Distance((const AbstractClass*)techno) > 0x1FF) {
           return (MOVE_BIT_MOVING_BLOCK);

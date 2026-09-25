@@ -206,7 +206,7 @@ static bool Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
 /*	RETURNS:	int the total number of items in the menu
  */
 /*=========================================================================*/
-int Find_Menu_Items(int maxitems, unsigned long field, char index) {
+int Find_Menu_Items(int maxitems, uint32_t field, char index) {
   int loop, ctr;
 
   if (field == 0xFFFFFFFFL) { /* if all bits are set	*/

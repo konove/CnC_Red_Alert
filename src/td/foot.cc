@@ -376,7 +376,7 @@ bool FootClass::Basic_Path() {
       ObjectClass* obj = TheMap()[mycell].Cell_Occupier();
       while (obj) {
         if (obj != this && obj->What_Am_I() == RTTI_INFANTRY) {
-          InfantryClass* inf = (InfantryClass*)obj;
+          auto* inf = dynamic_cast<InfantryClass*>(obj);
           if (inf->NavCom == NavCom && inf->Path[0] != FACING_NONE) {
             if (Coord_Cell(inf->Head_To_Coord()) == Coord_Cell(inf->Coord)) {
               Mem_Copy(std::as_bytes(std::span(inf->Path).subspan(1)),

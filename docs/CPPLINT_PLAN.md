@@ -67,7 +67,7 @@ row to run cpplint on the touched files; CLAUDE.md's Tools table and dependency 
 
 - [x] Step 1 (2026-09-25)
 - [x] Step 2 (2026-09-25): `cpplint_test` passes in 4.2 s locally.
-- [ ] Step 3
+- [x] Step 3 (2026-09-25): every category not in the permanent block is enforced.
   - `build/include` and `build/include_subdir` (2026-09-25). The first was hidden behind the
     second's filter: cpplint filters match by prefix. Its 5 findings were an `init.cc` duplicate and
     two dead files per game, `crew.cc` (only its comment header) and `findpath.h` (a free
@@ -111,3 +111,12 @@ row to run cpplint on the touched files; CLAUDE.md's Tools table and dependency 
     defined (`NOT_FOR_WIN95`, `OLDWAY`, `VIRTUAL_SUBNET_SERVER`, `NEVER`, `OBSOLETE`, `DEMO`, ...),
     the `#else` of ones always defined (`DIAGONAL`, `FATSHIP`) and TD's language blocks. They stay
     filtered until those branches are deleted.
+  - The dead-branch findings (2026-09-25), 130: migrated like live code rather than deleted, at the
+    user's request. Casts became `static_cast`/`reinterpret_cast`/`dynamic_cast` (downcasts follow
+    the live code's `dynamic_cast`), real-mode segment arithmetic goes through `uintptr_t`, `long`
+    and `short` became fixed-width, `sprintf`/`strcpy` became `absl::SNPrintF`/`base::SafeCopy`.
+    None of it compiles in any build, so each file was syntax-checked with its dead macro defined,
+    before and after: no new errors, and three old ones gone (`map.cc`'s `Read_Binary` signature,
+    the boxing punch/kick pick in `infantry.cc`, a corrupted byte in `ipx.cc`'s
+    `IPX_Close_Socket()`). The branches still fail to compile for reasons that predate this plan
+    (declarations long gone).

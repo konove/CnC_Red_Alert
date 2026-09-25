@@ -1340,9 +1340,8 @@ static const BuildingTypeClass ClassRoad(
     0,           // DRAIN:		Power points required.
     BSIZE_11,    // SIZE:			Building size.
     NULL,        // Preferred exit cell list.
-    (const short*)
-        List1,          // OCCUPYLIST:	List of active foundation squares.
-    (const short*)NULL  // OVERLAPLIST:List of overlap cell offset.
+    List1,       // OCCUPYLIST:	List of active foundation squares.
+    {}           // OVERLAPLIST:List of overlap cell offset.
 );
 #endif
 

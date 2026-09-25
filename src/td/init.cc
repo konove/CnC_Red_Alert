@@ -340,11 +340,12 @@ bool Init_Game() {
     char buffer[255];
     Set_Palette(ThePalettes().game_palette());
 #ifdef GERMAN
-    sprintf(buffer, "Command & Conquer kann Ihren Maustreiber nicht finden..");
+    absl::SNPrintF(buffer, sizeof(buffer),
+                   "Command & Conquer kann Ihren Maustreiber nicht finden..");
 #else
 #ifdef FRENCH
-    sprintf(
-        buffer,
+    absl::SNPrintF(
+        buffer, sizeof(buffer),
         "Command & Conquer ne peut pas détecter votre gestionnaire de souris.");
 #else
     absl::SNPrintF(buffer, sizeof(buffer),
@@ -2631,25 +2632,25 @@ void Parse_INI_File() {
   Fetch working pointer to the INI staging buffer. Make sure that the buffer
   is cleared out before proceeding.
   ------------------------------------------------------------------------*/
-  buffer = (char*)ShapeBuffer;
+  buffer = static_cast<char*>(ShapeBuffer);
   memset(buffer, '\0', ShapeBufferSize);
 
   /*------------------------------------------------------------------------
   Decode the desired section, entry, & name
   ------------------------------------------------------------------------*/
-  strcpy(section, coded_section);
+  base::SafeCopy(section, coded_section);
   len = strlen(coded_section);
   for (i = 0; i < len; i++) {
     section[i] -= 83;
   }
 
-  strcpy(entry, coded_entry);
+  base::SafeCopy(entry, coded_entry);
   len = strlen(coded_entry);
   for (i = 0; i < len; i++) {
     entry[i] -= 83;
   }
 
-  strcpy(name, coded_name);
+  base::SafeCopy(name, coded_name);
   len = strlen(coded_name);
   for (i = 0; i < len; i++) {
     name[i] -= 83;
@@ -2697,15 +2698,21 @@ void Parse_INI_File() {
 int Version_Number() {
 
 #ifdef FRENCH
-  sprintf(TheGameState().version_text(), ".02");  // Win95 french version number
+  absl::SNPrintF(TheGameState().version_text(),
+                 sizeof(TheGameState().version_text()),
+                 ".02");        // Win95 french version number
 #endif                          // FRENCH
 
 #ifdef GERMAN
-  sprintf(TheGameState().version_text(), ".01");  // Win95 german version number
+  absl::SNPrintF(TheGameState().version_text(),
+                 sizeof(TheGameState().version_text()),
+                 ".01");        // Win95 german version number
 #endif                          // GERMAN
 
 #ifdef JAPANESE
-  sprintf(TheGameState().version_text(), ".01");  // Win95 german version number
+  absl::SNPrintF(TheGameState().version_text(),
+                 sizeof(TheGameState().version_text()),
+                 ".01");        // Win95 german version number
 #endif                          // GERMAN
 
 #if !(defined(FRENCH) || defined(GERMAN) || defined(JAPANESE))

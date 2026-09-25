@@ -2577,14 +2577,13 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 #ifdef EDIT_IRQ
             irq_index = _irqidx[port_index];
             irqlist.Set_Selected_Index(irq_index);
-            item = (char*)irqlist.Current_Item();
-            temp = std::string_view(item).find(' ');
+            const std::string_view irq_item = irqlist.Current_Item();
+            temp = irq_item.find(' ');
             if (temp == std::string_view::npos) {
-              base::SafeCopy(irqbuf, std::string_view(item).substr(0, 2));
+              base::SafeCopy(irqbuf, irq_item.substr(0, 2));
             } else {
               pos = static_cast<int>(temp);
-              base::SafeCopy(
-                  irqbuf, std::string_view(item).substr(0, base::ToSize(pos)));
+              base::SafeCopy(irqbuf, irq_item.substr(0, base::ToSize(pos)));
               irqbuf[pos] = 0;
             }
             irq_edt.Clear_Focus();
@@ -2625,59 +2624,57 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         break;
 
 #ifdef EDIT_IRQ
-      case ButtonKey(kButtonIrq):
-        item = (char*)irqlist.Current_Item();
+      case ButtonKey(kButtonIrq): {
+        const std::string_view irq_item = irqlist.Current_Item();
         if (irq_index < 4) {
-          temp = std::string_view(item).find(' ');
+          temp = irq_item.find(' ');
           if (temp == std::string_view::npos) {
-            base::SafeCopy(irqbuf, item);
+            base::SafeCopy(irqbuf, irq_item);
           } else {
             pos = static_cast<int>(temp);
-            base::SafeCopy(irqbuf,
-                           std::string_view(item).substr(0, base::ToSize(pos)));
+            base::SafeCopy(irqbuf, irq_item.substr(0, base::ToSize(pos)));
             irqbuf[pos] = 0;
           }
           irq_edt.Set_Text(irqbuf, IRQBUF_MAX);
           irq_edt.Flag_To_Redraw();
         } else {
-          temp = std::string_view(item).find('-');
+          temp = irq_item.find('-');
           if (temp != std::string_view::npos) {
             pos = static_cast<int>(temp) + 2;
             len = static_cast<int>(std::string_view(irqbuf).size());
             irqlist.Set_Item(
                 irq_index,
-                std::string(item).substr(0, base::ToSize(pos)) + irqbuf);
+                std::string(irq_item).substr(0, base::ToSize(pos)) + irqbuf);
             display = REDRAW_BUTTONS;
           }
         }
         baud_edt.Set_Focus();
         baud_edt.Flag_To_Redraw();
         break;
+      }
 
       case ButtonKey(kButtonIrqlist):
         if (irqlist.Current_Index() != irq_index) {
           irq_index = irqlist.Current_Index();
-          item = (char*)irqlist.Current_Item();
+          const std::string_view irq_item = irqlist.Current_Item();
           if (irq_index < 4) {
-            temp = std::string_view(item).find(' ');
+            temp = irq_item.find(' ');
             if (temp == std::string_view::npos) {
-              base::SafeCopy(irqbuf, item);
+              base::SafeCopy(irqbuf, irq_item);
             } else {
               pos = static_cast<int>(temp);
-              base::SafeCopy(
-                  irqbuf, std::string_view(item).substr(0, base::ToSize(pos)));
+              base::SafeCopy(irqbuf, irq_item.substr(0, base::ToSize(pos)));
               irqbuf[pos] = 0;
             }
             irq_edt.Clear_Focus();
           } else {
-            temp = std::string_view(item).find('-');
+            temp = irq_item.find('-');
             if (temp != std::string_view::npos) {
               pos = static_cast<int>(temp) + 2;
-              if (std::string_view(item)[base::ToSize(pos)] == '?') {
+              if (irq_item[base::ToSize(pos)] == '?') {
                 irqbuf[0] = 0;
               } else {
-                base::SafeCopy(
-                    irqbuf, std::string_view(item).substr(base::ToSize(pos)));
+                base::SafeCopy(irqbuf, irq_item.substr(base::ToSize(pos)));
               }
             }
             irq_edt.Set_Focus();

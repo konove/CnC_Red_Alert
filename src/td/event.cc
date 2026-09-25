@@ -666,7 +666,8 @@ void EventClass::Execute() {
         if ((techno->What_Am_I() == RTTI_UNIT ||
              techno->What_Am_I() == RTTI_INFANTRY) &&
             Data.MegaMission.Mission == MISSION_GUARD_AREA) {
-          ((FootClass*)techno)->ArchiveTarget = Data.MegaMission.Destination;
+          dynamic_cast<FootClass*>(techno)->ArchiveTarget =
+              Data.MegaMission.Destination;
         }
 #endif
       }

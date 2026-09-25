@@ -462,7 +462,7 @@ bool ThemeClass::Is_Allowed(ThemeType index) {
 #ifdef DEMO
   char buffer[128];
 
-  sprintf(buffer, "%s.AUD", Base_Name(index));
+  absl::SNPrintF(buffer, sizeof(buffer), "%s.AUD", Base_Name(index));
   GameFile file(buffer);
   if (_themes[index].Scenario == 99 || !file.IsAvailable()) {
     _themes[index].Scenario = 99;
