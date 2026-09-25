@@ -41,6 +41,7 @@
 
 #include "td/gamedlg.h"
 
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/array.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
@@ -64,7 +65,6 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/visudlg.h"
-#include "tech/audio_mixer.h"
 
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *

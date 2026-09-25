@@ -62,6 +62,7 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
 #include "engine/base/bytes_of.h"
@@ -106,7 +107,6 @@
 #include "td/type.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/audio_mixer.h"
 
 #define SCORETEXT_X 184
 // #define SCORETEXT_Y 8

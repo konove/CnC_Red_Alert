@@ -40,6 +40,7 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/buffer.h"
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
@@ -114,7 +115,6 @@
 #include "sdllib/display.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/audio_mixer.h"
 
 // Cycles the animated palette entries. Two effects run off independent timers:
 // a white that pulses between bright and half-dark, used by the radar box and

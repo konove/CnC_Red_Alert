@@ -51,6 +51,7 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/platform/memflag.h"
@@ -73,7 +74,6 @@
 #include "td/session.h"
 #include "td/startup_options.h"
 #include "td/winstub.h"
-#include "tech/audio_mixer.h"
 
 // The two tests that link this file define TD_NO_ENTRY_POINT; these headers
 // serve only main().

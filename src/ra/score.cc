@@ -39,6 +39,7 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
 #include "engine/base/fixed.h"
@@ -85,7 +86,6 @@
 #include "ra/world.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/audio_mixer.h"
 
 // Layout, in 320x200 coordinates.
 

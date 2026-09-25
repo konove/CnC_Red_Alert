@@ -81,6 +81,7 @@
 #include "absl/log/log.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
 #include "engine/base/enum_array.h"
@@ -171,7 +172,6 @@
 #include "ra/world.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/audio_mixer.h"
 
 static void Remove_AI_Players();
 static void Create_Units(bool official);

@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "sdllib/display.h"
@@ -23,7 +24,6 @@
 #include "td/screen.h"
 #include "td/startup.h"
 #include "td/winstub.h"
-#include "tech/audio_mixer.h"
 
 void CCDebugString(const char* /*string*/) {}
 

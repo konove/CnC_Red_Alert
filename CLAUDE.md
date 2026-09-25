@@ -175,13 +175,16 @@ engine/      → The shared libraries, moving here one folder at a time (docs/EN
   gfx/       → Pixel buffers and everything that draws into them: bitmap, font, shape, stamp, tile,
                text windows, the fading table, PCX/WSA images and HSV/RGB conversion (target
                `engine_gfx`; no SDL) [depends: engine_file]
+  audio/     → The audio mixer (target `engine_audio`; links SDL2 for audio output)
+               [depends: engine_file, engine_codec]
 sdllib/      → The SDL2 window: presenting, palette, cursor, keyboard, event loop [depends: SDL2,
              abseil, engine_platform, engine_codec, engine_gfx]
 winvq/vqa32  → VQA video codec (target name `vqa32`) [depends: engine_base, engine_stream,
              engine_codec, sdllib, SDL2]
-tech/        → The audio mixer and the movie-file glue; archives and disk I/O moved to engine/file/,
-             packets and sockets to engine/net/, image formats to engine/gfx/ [depends: sdllib, vqa32,
-             engine_platform, engine_stream, engine_codec, engine_crypto, engine_file]
+tech/        → The movie-file glue: adapts the game's files and audio mixer for VQA playback;
+             archives and disk I/O moved to engine/file/, packets and sockets to engine/net/, image
+             formats to engine/gfx/, the audio mixer to engine/audio/ [depends: sdllib, vqa32,
+             engine_platform, engine_stream, engine_codec, engine_crypto, engine_file, engine_audio]
 ra/          → Red Alert (~200 files) [depends: tech, sdllib, vqa32, engine_net]
 td/          → Tiberian Dawn (~288 files) [depends: tech, sdllib, vqa32, engine_net]
 ```

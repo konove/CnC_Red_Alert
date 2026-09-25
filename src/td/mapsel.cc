@@ -50,6 +50,7 @@
 #include "absl/algorithm/container.h"
 #include "absl/random/random.h"
 #include "absl/strings/str_format.h"
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
 #include "engine/file/game_file.h"
@@ -82,7 +83,6 @@
 #include "td/theme.h"
 #include "td/type.h"
 #include "td/world.h"
-#include "tech/audio_mixer.h"
 
 #ifndef DEMO
 

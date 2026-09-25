@@ -36,6 +36,7 @@
 #include "td/winstub.h"
 #include "td/world.h"
 // #include "ra/filepcx.h"
+#include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/stream/byte_stream.h"
@@ -43,7 +44,6 @@
 #include "td/interpal.h"
 #include "td/mapedit.h"
 #include "td/theme.h"
-#include "tech/audio_mixer.h"
 
 static ThemeType OldTheme = THEME_NONE;
 

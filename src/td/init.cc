@@ -68,6 +68,7 @@
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_split.h"
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
 #include "engine/base/strings/number_parse.h"
@@ -153,7 +154,6 @@
 #include "td/unit.h"
 #include "td/winstub.h"
 #include "td/world.h"
-#include "tech/audio_mixer.h"
 
 #ifdef _WIN32
 #include "td/ccdde.h"

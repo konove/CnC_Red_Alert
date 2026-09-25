@@ -72,6 +72,7 @@
 #include <span>
 #include <string_view>
 
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/array.h"
 #include "engine/base/bytes_of.h"
 #include "engine/base/numeric.h"
@@ -90,7 +91,6 @@
 #include "td/profile.h"
 #include "td/session.h"
 #include "td/special.h"
-#include "tech/audio_mixer.h"
 
 /***********************************************************************************************
  * OptionsClass::OptionsClass -- The default constructor for the options class.

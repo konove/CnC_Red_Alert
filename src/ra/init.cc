@@ -84,6 +84,7 @@
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_split.h"
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
 #include "engine/base/fixed.h"
@@ -169,7 +170,6 @@
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/audio_mixer.h"
 
 static RemapControlType SidebarScheme;
 

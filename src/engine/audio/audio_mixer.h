@@ -20,8 +20,8 @@
 // audio device. It stands where the Westwood 32-bit library's sound driver did
 // (AUDIO.H, Phil W. Gorrow, March 1995).
 
-#ifndef CNC_RED_ALERT_TECH_AUDIO_MIXER_H_
-#define CNC_RED_ALERT_TECH_AUDIO_MIXER_H_
+#ifndef CNC_RED_ALERT_ENGINE_AUDIO_AUDIO_MIXER_H_
+#define CNC_RED_ALERT_ENGINE_AUDIO_AUDIO_MIXER_H_
 
 #include <SDL_audio.h>
 
@@ -239,4 +239,4 @@ class AudioMixer {
 // lifetime unless a test installed its own.
 inline AudioMixer& TheAudio() { return base::Installed<AudioMixer>::Get(); }
 
-#endif  // CNC_RED_ALERT_TECH_AUDIO_MIXER_H_
+#endif  // CNC_RED_ALERT_ENGINE_AUDIO_AUDIO_MIXER_H_

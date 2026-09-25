@@ -64,6 +64,7 @@
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
@@ -113,7 +114,6 @@
 #include "td/vector.h"
 #include "td/winstub.h"
 #include "td/world.h"
-#include "tech/audio_mixer.h"
 
 // Whether Smart_Print() echoes to stdout; on while a serial game runs.
 static bool smart_print_enabled = false;

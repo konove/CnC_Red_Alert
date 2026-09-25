@@ -69,6 +69,7 @@
 
 #include "ra/options.h"
 
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/array.h"
 #include "engine/base/fixed.h"
 #include "engine/file/file_access.h"
@@ -83,7 +84,6 @@
 #include "ra/session.h"
 #include "ra/theme.h"
 #include "sdllib/keyboard.h"
-#include "tech/audio_mixer.h"
 
 const char* const OptionsClass::HotkeyName = "WinHotkeys";
 

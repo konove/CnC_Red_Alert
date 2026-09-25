@@ -5,6 +5,7 @@
 
 #include <utility>
 
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/installed.h"
 #include "sdllib/display.h"
 #include "td/assets.h"
@@ -22,7 +23,6 @@
 #include "td/startup_options.h"
 #include "td/theme.h"
 #include "td/world.h"
-#include "tech/audio_mixer.h"
 
 // Owns the game's subsystems and so fixes the order they are built and torn
 // down in. Members are declared in dependency order, which C++ constructs

@@ -52,6 +52,7 @@
 #include <span>
 #include <vector>
 
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/enum_array.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
@@ -64,7 +65,6 @@
 #include "td/mapedit.h"
 #include "td/special.h"
 #include "td/world.h"
-#include "tech/audio_mixer.h"
 
 /***************************************************************************
 **	Controls what special effects may occur on the sound effect.

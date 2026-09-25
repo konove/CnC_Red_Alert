@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <span>
 
+#include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "sdllib/display.h"
 #include "sdllib/keyboard.h"
@@ -15,7 +16,6 @@
 #include "td/palette.h"
 #include "td/screen.h"
 #include "td/winstub.h"
-#include "tech/audio_mixer.h"
 #include "winvq/vqa32/vqa_player.h"
 
 namespace {

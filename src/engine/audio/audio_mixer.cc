@@ -1,4 +1,4 @@
-#include "tech/audio_mixer.h"
+#include "engine/audio/audio_mixer.h"
 
 #include <SDL_audio.h>
 #include <SDL_error.h>

@@ -19,7 +19,7 @@
 // Red Alert's sound effects and EVA speech: the tables that name the .AUD file
 // behind every VocType and VoxType, sound effects placed on the tactical map,
 // and the EVA speech queue with its two cached speech buffers. The sounds are
-// played by the global AudioMixer `Audio` (tech/audio_mixer.h).
+// played by the global AudioMixer `Audio` (engine/audio/audio_mixer.h).
 //
 // Originally AUDIO.CPP by Joe L. Bostic, started September 10, 1993.
 
@@ -34,6 +34,7 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/match.h"
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/array.h"
 #include "engine/base/enum_array.h"
 #include "engine/base/fixed.h"
@@ -53,7 +54,6 @@
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/world.h"
-#include "tech/audio_mixer.h"
 
 namespace {
 

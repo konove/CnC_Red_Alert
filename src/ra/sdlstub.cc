@@ -5,6 +5,7 @@
 
 #include <cstdlib>
 
+#include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/net/net_select.h"
 #include "ra/config.h"
@@ -23,7 +24,6 @@
 #include "sdllib/misc.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
-#include "tech/audio_mixer.h"
 
 void WWDebugString(const char* /*string*/) {}
 

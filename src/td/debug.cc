@@ -46,6 +46,7 @@
 #include <filesystem>
 
 #include "absl/strings/str_format.h"
+#include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
@@ -75,7 +76,6 @@
 #include "td/type.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/audio_mixer.h"
 
 /***********************************************************************************************
  * Debug_Key -- Debug mode keyboard processing. *

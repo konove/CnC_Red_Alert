@@ -47,6 +47,7 @@
 #include <span>
 #include <utility>
 
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/bytes_of.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -70,7 +71,6 @@
 #include "td/screen.h"
 #include "td/special.h"
 #include "td/world.h"
-#include "tech/audio_mixer.h"
 #include "tech/game_file_vqa_io.h"
 #include "tech/mixer_vqa_audio.h"
 #include "winvq/vqa32/vqa_player.h"

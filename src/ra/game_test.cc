@@ -5,6 +5,7 @@
 #include <memory>
 #include <type_traits>
 
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/installed.h"
 #include "gtest/gtest.h"
 #include "ra/assets.h"
@@ -16,7 +17,6 @@
 #include "ra/session.h"
 #include "ra/special.h"
 #include "ra/theme.h"
-#include "tech/audio_mixer.h"
 
 namespace {
 

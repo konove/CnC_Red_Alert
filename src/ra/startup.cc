@@ -29,6 +29,7 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
+#include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/memflag.h"
 #include "engine/platform/timer.h"
@@ -38,7 +39,6 @@
 #include "ra/palettes.h"
 #include "ra/screen.h"
 #include "sdllib/misc.h"
-#include "tech/audio_mixer.h"
 
 // The test that links this file defines RA_NO_ENTRY_POINT; these headers
 // serve only main() and the two helpers it calls.

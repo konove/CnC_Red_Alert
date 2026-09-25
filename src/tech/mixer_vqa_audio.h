@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "absl/base/attributes.h"
-#include "tech/audio_mixer.h"
+#include "engine/audio/audio_mixer.h"
 #include "winvq/vqa32/vqa_audio_device.h"
 
 // Plays a movie's sound on the game's AudioMixer, ahead of the game's own

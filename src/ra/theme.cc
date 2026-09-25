@@ -61,6 +61,7 @@
 #include <string_view>
 
 #include "absl/strings/match.h"
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/enum_array.h"
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
@@ -77,7 +78,6 @@
 #include "ra/text_ids.h"
 #include "ra/world.h"
 #include "session.h"
-#include "tech/audio_mixer.h"
 
 /*
 **	These are the actual filename list for the theme sample files.

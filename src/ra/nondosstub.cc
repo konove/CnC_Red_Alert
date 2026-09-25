@@ -29,6 +29,7 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
+#include "engine/audio/audio_mixer.h"
 #include "engine/base/numeric.h"
 #include "engine/file/game_file.h"
 #include "engine/gfx/pixel_buffer.h"
@@ -43,7 +44,6 @@
 #include "ra/winstub.h"
 #include "ra/world.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/audio_mixer.h"
 
 /***********************************************************************************************
  * Focus_Loss -- this function is called when a library function detects focus
