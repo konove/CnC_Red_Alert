@@ -74,11 +74,11 @@
 #include "absl/strings/str_format.h"
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
-#include "port/socket_bytes.h"
+#include "engine/net/net_select.h"
+#include "engine/net/socket_bytes.h"
 #include "ra/input.h"
 #include "ra/ipxaddr.h"
 #include "ra/jshell.h"
-#include "sdllib/net_select.h"
 
 #ifdef _WIN32
 #include <winsock.h>

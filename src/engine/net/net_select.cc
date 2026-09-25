@@ -1,4 +1,4 @@
-#include "sdllib/net_select.h"
+#include "engine/net/net_select.h"
 
 #include <algorithm>
 #include <forward_list>

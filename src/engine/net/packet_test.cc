@@ -1,6 +1,6 @@
 // Tests for the tagged-field packets sent to the Westwood statistics server.
 
-#include "tech/packet.h"
+#include "engine/net/packet.h"
 
 #include <array>
 #include <cstdint>
@@ -9,8 +9,8 @@
 #include <span>
 
 #include "engine/base/buffer.h"
+#include "engine/net/field.h"
 #include "gtest/gtest.h"
-#include "tech/field.h"
 
 namespace {
 

@@ -10,8 +10,8 @@
 //   recvfrom(sock, SocketBytes(receive_buffer), sizeof(receive_buffer), ...);
 //   bind(sock, SocketAddress(addr), sizeof(addr));
 
-#ifndef CNC_RED_ALERT_PORT_SOCKET_BYTES_H_
-#define CNC_RED_ALERT_PORT_SOCKET_BYTES_H_
+#ifndef CNC_RED_ALERT_ENGINE_NET_SOCKET_BYTES_H_
+#define CNC_RED_ALERT_ENGINE_NET_SOCKET_BYTES_H_
 
 #include "absl/base/attributes.h"
 
@@ -67,4 +67,4 @@ inline const sockaddr* SocketAddress(
   return reinterpret_cast<const sockaddr*>(&address);
 }
 
-#endif  // CNC_RED_ALERT_PORT_SOCKET_BYTES_H_
+#endif  // CNC_RED_ALERT_ENGINE_NET_SOCKET_BYTES_H_

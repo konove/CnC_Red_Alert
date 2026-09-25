@@ -52,6 +52,7 @@
 
 #include "engine/base/array.h"
 #include "engine/base/unaligned.h"
+#include "engine/net/packet.h"
 #include "engine/platform/timer.h"
 #include "engine/platform/win32/win32_com.h"
 #include "ra/aircraft.h"
@@ -76,7 +77,6 @@
 #include "ra/version.h"
 #include "ra/vessel.h"
 #include "ra/world.h"
-#include "tech/packet.h"
 
 #define FIELD_PACKET_TYPE "TYPE"
 #define FIELD_GAME_ID "IDNO"
@@ -194,7 +194,7 @@ static int32_t GameEndTime;
 #endif
 
 #include "engine/base/strings/safe_string.h"
-#include "port/inet_text.h"
+#include "engine/net/inet_text.h"
 #include "ra/config.h"
 #include "ra/wolapiob.h"
 

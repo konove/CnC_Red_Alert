@@ -23,10 +23,6 @@ target_link_libraries(sdllib engine_base engine_platform engine_codec SDL2::SDL2
 # The fading-table builder, the per-frame window blit and the LCW decoder loop
 # over every palette entry, pixel or compressed byte.
 optimize_in_debug(fading_table.cc pixel_buffer.cc)
-if (WIN32)
-    # net_select.cc calls select() through Winsock.
-    target_link_libraries(sdllib wsock32)
-endif ()
 
 # Tests
 include(Testing)
@@ -55,18 +51,6 @@ add_gtest(
         SOURCES display_test.cc
         LIBS sdllib
 )
-
-# optional serial port support
-find_library(LIBSERIALPORT_LIBRARIES serialport)
-find_path(LIBSERIALPORT_INCLUDE_DIR libserialport.h)
-if (LIBSERIALPORT_LIBRARIES AND LIBSERIALPORT_INCLUDE_DIR)
-    message("Found libserialport")
-    message("[MODEM NOISES]")
-
-    target_compile_definitions(sdllib PRIVATE LIBSERIALPORT)
-    target_include_directories(sdllib PRIVATE ${LIBSERIALPORT_INCLUDE_DIR})
-    target_link_libraries(sdllib ${LIBSERIALPORT_LIBRARIES})
-endif ()
 
 # Exercises the game's key-frame/delta chain using the real bounded LCW decoder.
 add_gtest(

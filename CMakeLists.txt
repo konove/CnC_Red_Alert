@@ -212,7 +212,6 @@ include(GoogleTest)
 enable_testing()
 
 add_subdirectory(src/engine)
-add_subdirectory(src/port)
 add_subdirectory(src/sdllib)
 add_subdirectory(src/winvq)
 add_subdirectory(third_party)

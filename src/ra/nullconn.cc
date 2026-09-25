@@ -53,8 +53,8 @@
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/base/unaligned.h"
+#include "engine/net/serial/wincomm.h"
 #include "ra/connect.h"
-#include "sdllib/wincomm.h"
 
 /***************************************************************************
  * NullModemConnClass::NullModemConnClass -- class constructor             *

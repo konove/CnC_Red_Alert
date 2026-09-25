@@ -92,7 +92,7 @@ apply_language_setting(rasdl)
 # interface-header-set verification compiles that header standalone.
 target_link_libraries(ra_engine PUBLIC absl::strings magic_enum::magic_enum
         tech
-        port
+        engine_net
         sdllib
         vqa32
         absl::check
@@ -109,13 +109,13 @@ include(Testing)
 add_gtest(
     NAME ra_ini_number_test
     SOURCES ini_number_test.cc ini.cc profile_buffer_test.cc profile.cc
-    LIBS tech port sdllib absl::strings absl::check absl::log magic_enum::magic_enum
+    LIBS tech sdllib absl::strings absl::check absl::log magic_enum::magic_enum
 )
 
 add_gtest(
     NAME ra_taction_test
     SOURCES taction_test.cc
-    LIBS engine_base port absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base absl::check absl::log magic_enum::magic_enum
 )
 
 # The real engine, with the startup helpers but no game entry point.
@@ -140,7 +140,7 @@ apply_language_setting(ra_drop_test)
 add_gtest(
     NAME ra_assets_test
     SOURCES assets_test.cc assets.cc ini.cc
-    LIBS engine_base port sdllib tech magic_enum::magic_enum absl::strings absl::check absl::log
+    LIBS engine_base sdllib tech magic_enum::magic_enum absl::strings absl::check absl::log
 )
 apply_language_setting(ra_assets_test)
 
@@ -189,13 +189,13 @@ add_gtest(
 add_gtest(
     NAME ra_wolapi_iids_test
     SOURCES wolapi/wolapi_iids_test.cc wolapi/wolapi_iids.cc
-    LIBS port engine_platform
+    LIBS engine_platform
 )
 
 add_gtest(
     NAME ra_winbits_test
     SOURCES winbits_test.cc winbits.cc dib.cc
-    LIBS engine_base tech port sdllib vqa32 absl::strings absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base tech sdllib vqa32 absl::strings absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_winbits_test)
 
@@ -238,7 +238,7 @@ apply_language_setting(ra_fixed_point_test)
 add_gtest(
     NAME ra_connect_test
     SOURCES connect_test.cc connect.cc combuf.cc
-    LIBS engine_base port absl::check absl::log
+    LIBS engine_base absl::check absl::log
 )
 
 

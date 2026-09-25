@@ -26,7 +26,7 @@ target_sources(tech PUBLIC
 find_package(SDL2 REQUIRED)
 target_link_libraries(tech
         PUBLIC engine_base engine_platform engine_stream engine_crypto engine_file absl::strings SDL2::SDL2
-        PRIVATE sdllib port vqa32 engine_codec
+        PRIVATE sdllib vqa32 engine_codec
 )
 
 # Tests
@@ -34,7 +34,6 @@ include(Testing)
 add_gtest(
     NAME tech_test
     SOURCES
-        packet_test.cc
         rgb_test.cc glow_pulse_test.cc wsa_animation_test.cc audio_mixer_test.cc
     LIBS tech
 )

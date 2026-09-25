@@ -62,13 +62,13 @@
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/base/unaligned.h"
-#include "port/socket_bytes.h"
+#include "engine/net/net_select.h"
+#include "engine/net/socket_bytes.h"
 #include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/network.h"
 #include "ra/winstub.h"
 #include "ra/wsproto.h"
-#include "sdllib/net_select.h"
 
 #ifdef _WIN32
 #include <nspapi.h>

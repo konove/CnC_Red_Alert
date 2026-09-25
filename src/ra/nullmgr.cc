@@ -73,6 +73,8 @@
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/unaligned.h"
+#include "engine/net/serial/modemreg.h"
+#include "engine/net/serial/wincomm.h"
 #include "ra/combuf.h"
 #include "ra/connect.h"
 #include "ra/conquer.h"
@@ -92,9 +94,7 @@
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
-#include "sdllib/modemreg.h"
 #include "sdllib/pixel_buffer.h"
-#include "sdllib/wincomm.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 

@@ -43,9 +43,9 @@
 #include <cstdint>
 #include <span>
 
+#include "engine/net/net_select.h"
 #include "ra/vector_dynamic.h"
 #include "ra/wsproto.h"
-#include "sdllib/net_select.h"
 
 /*
 ** Class to allow access to UDP specific portions of the Winsock interface.

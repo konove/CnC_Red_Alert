@@ -170,16 +170,17 @@ engine/      → The shared libraries, moving here one folder at a time (docs/EN
                [depends: engine_stream]
   file/      → Disk files, game files, MIX archives, search paths, the string table and the INI
                profile buffer (target `engine_file`) [depends: engine_codec, engine_crypto]
-port/        → Sockets, until they move to engine/net/ [depends: engine_base]
+  net/       → Packets and sockets; net/serial/ holds the null-modem driver (target `engine_net`;
+               wsock32 and ws2_32 on Windows) [depends: engine_platform]
 sdllib/      → SDL2 abstraction (graphics, audio, input) [depends: SDL2, abseil, engine_platform,
              engine_codec]
 winvq/vqa32  → VQA video codec (target name `vqa32`) [depends: engine_base, engine_stream,
-             engine_codec, port, sdllib, SDL2]
-tech/        → Image formats, the audio mixer, network packets and the movie-file glue; archives and
-             disk I/O moved to engine/file/ [depends: sdllib, port, vqa32, engine_platform,
+             engine_codec, sdllib, SDL2]
+tech/        → Image formats, the audio mixer and the movie-file glue; archives and disk I/O moved to
+             engine/file/, packets and sockets to engine/net/ [depends: sdllib, vqa32, engine_platform,
              engine_stream, engine_codec, engine_crypto, engine_file]
-ra/          → Red Alert (~200 files) [depends: tech, sdllib, port, vqa32]
-td/          → Tiberian Dawn (~288 files) [depends: tech, sdllib, port, vqa32]
+ra/          → Red Alert (~200 files) [depends: tech, sdllib, vqa32, engine_net]
+td/          → Tiberian Dawn (~288 files) [depends: tech, sdllib, vqa32, engine_net]
 ```
 
 **Class hierarchy:**

@@ -8,8 +8,8 @@
 //   address.s_addr = user_ip;
 //   pNetUtil->RequestPing(port::Ipv4Text(address).c_str(), 1000, &unused);
 
-#ifndef CNC_RED_ALERT_PORT_INET_TEXT_H_
-#define CNC_RED_ALERT_PORT_INET_TEXT_H_
+#ifndef CNC_RED_ALERT_ENGINE_NET_INET_TEXT_H_
+#define CNC_RED_ALERT_ENGINE_NET_INET_TEXT_H_
 
 #include <string>
 
@@ -26,4 +26,4 @@ namespace port {
 
 }  // namespace port
 
-#endif  // CNC_RED_ALERT_PORT_INET_TEXT_H_
+#endif  // CNC_RED_ALERT_ENGINE_NET_INET_TEXT_H_

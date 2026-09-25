@@ -32,7 +32,7 @@
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#include "tech/field.h"
+#include "engine/net/field.h"
 
 #include <algorithm>
 #include <cstddef>

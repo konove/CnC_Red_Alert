@@ -58,7 +58,7 @@ using HANDLE = void*;
 #define WM_USER 0x400
 #endif
 
-#include "sdllib/net_select.h"
+#include "engine/net/net_select.h"
 
 /*
 ** Misc defines

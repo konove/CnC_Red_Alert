@@ -43,8 +43,8 @@
  *                                                                                             *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
-#ifndef CNC_RED_ALERT_SDLLIB_WINCOMM_H_
-#define CNC_RED_ALERT_SDLLIB_WINCOMM_H_
+#ifndef CNC_RED_ALERT_ENGINE_NET_SERIAL_WINCOMM_H_
+#define CNC_RED_ALERT_ENGINE_NET_SERIAL_WINCOMM_H_
 
 #include <cstdint>
 
@@ -253,4 +253,4 @@ class WinNullModemClass : public WinModemClass {
 
 extern WinModemClass* SerialPort;
 
-#endif  // CNC_RED_ALERT_SDLLIB_WINCOMM_H_
+#endif  // CNC_RED_ALERT_ENGINE_NET_SERIAL_WINCOMM_H_

@@ -39,14 +39,14 @@
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#ifndef CNC_RED_ALERT_TECH_PACKET_H_
-#define CNC_RED_ALERT_TECH_PACKET_H_
+#ifndef CNC_RED_ALERT_ENGINE_NET_PACKET_H_
+#define CNC_RED_ALERT_ENGINE_NET_PACKET_H_
 
 #include <cstddef>
 #include <cstdint>
 #include <span>
 
-#include "tech/field.h"
+#include "engine/net/field.h"
 
 class PacketClass {
  public:
@@ -117,4 +117,4 @@ class PacketClass {
   FieldClass* Head;
 };
 
-#endif  // CNC_RED_ALERT_TECH_PACKET_H_
+#endif  // CNC_RED_ALERT_ENGINE_NET_PACKET_H_

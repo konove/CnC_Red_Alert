@@ -15,8 +15,8 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef CNC_RED_ALERT_SDLLIB_MODEMREG_H_
-#define CNC_RED_ALERT_SDLLIB_MODEMREG_H_
+#ifndef CNC_RED_ALERT_ENGINE_NET_SERIAL_MODEMREG_H_
+#define CNC_RED_ALERT_ENGINE_NET_SERIAL_MODEMREG_H_
 
 #include <string>
 
@@ -71,4 +71,4 @@ class ModemRegistryEntryClass {
   std::string NoFlowControl_;
 };
 
-#endif  // CNC_RED_ALERT_SDLLIB_MODEMREG_H_
+#endif  // CNC_RED_ALERT_ENGINE_NET_SERIAL_MODEMREG_H_

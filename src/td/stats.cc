@@ -54,6 +54,7 @@
 #include "engine/base/array.h"
 #include "engine/base/enum_array.h"
 #include "engine/file/game_file.h"
+#include "engine/net/packet.h"
 #include "engine/platform/timer.h"
 #include "sdllib/shape.h"
 #include "td/aircraft.h"
@@ -75,7 +76,6 @@
 #include "td/utracker.h"
 #include "td/winstub.h"
 #include "td/world.h"
-#include "tech/packet.h"
 
 #ifdef _WIN32
 #include "td/ccdde.h"

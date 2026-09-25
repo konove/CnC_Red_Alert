@@ -1,5 +1,5 @@
-#ifndef CNC_RED_ALERT_SDLLIB_NET_SELECT_H_
-#define CNC_RED_ALERT_SDLLIB_NET_SELECT_H_
+#ifndef CNC_RED_ALERT_ENGINE_NET_NET_SELECT_H_
+#define CNC_RED_ALERT_ENGINE_NET_NET_SELECT_H_
 
 enum class SocketEvent {
   SOCKEV_READ,
@@ -17,4 +17,4 @@ void Socket_Check_Write(int socket, bool check);
 
 void Socket_Select();
 
-#endif  // CNC_RED_ALERT_SDLLIB_NET_SELECT_H_
+#endif  // CNC_RED_ALERT_ENGINE_NET_NET_SELECT_H_

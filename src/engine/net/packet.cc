@@ -35,7 +35,7 @@
  *   PacketClass::~PacketClass -- destroys a packet class be freeing list  *
  *   PacketClass::Add_Field -- Adds a FieldClass entry to head of packet li*
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#include "tech/packet.h"
+#include "engine/net/packet.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -48,7 +48,7 @@
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/base/unaligned.h"
-#include "tech/field.h"
+#include "engine/net/field.h"
 
 // htons/ntohs
 #ifdef _WIN32

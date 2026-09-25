@@ -47,7 +47,7 @@ endif ()
 target_compile_definitions(td_engine PUBLIC TD=1)
 apply_dotenv_settings(td_engine)
 apply_dotenv_settings(tdsdl)
-target_link_libraries(td_engine PUBLIC tech port sdllib vqa32 absl::strings absl::algorithm absl::check absl::core_headers absl::log absl::log_initialize absl::random_random absl::span)
+target_link_libraries(td_engine PUBLIC tech engine_net sdllib vqa32 absl::strings absl::algorithm absl::check absl::core_headers absl::log absl::log_initialize absl::random_random absl::span)
 target_link_libraries(tdsdl PRIVATE td_engine)
 
 install(TARGETS tdsdl)
@@ -120,7 +120,7 @@ target_compile_definitions(td_fixedmath_test PRIVATE TD=1)
 add_gtest(
     NAME td_connect_test
     SOURCES connect_test.cc connect.cc combuf.cc noseqcon.cc
-    LIBS engine_base port absl::check absl::log
+    LIBS engine_base absl::check absl::log
 )
 target_compile_definitions(td_connect_test PRIVATE TD=1)
 

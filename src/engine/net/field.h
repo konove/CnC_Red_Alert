@@ -35,8 +35,8 @@
  *-------------------------------------------------------------------------*
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-#ifndef CNC_RED_ALERT_TECH_FIELD_H_
-#define CNC_RED_ALERT_TECH_FIELD_H_
+#ifndef CNC_RED_ALERT_ENGINE_NET_FIELD_H_
+#define CNC_RED_ALERT_ENGINE_NET_FIELD_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -86,4 +86,4 @@ class FieldClass {
   FieldClass* Next;         // pointer to the next field in the field list
 };
 
-#endif  // CNC_RED_ALERT_TECH_FIELD_H_
+#endif  // CNC_RED_ALERT_ENGINE_NET_FIELD_H_
