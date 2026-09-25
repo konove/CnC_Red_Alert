@@ -189,8 +189,8 @@ class TeamClass : public AbstractClass {
   TeamClass& operator=(TeamClass&&) = delete;
   [[nodiscard]] virtual RTTIType What_Am_I() const { return RTTI_TEAM; }
   void operator delete(void* ptr);
-  void* operator new(size_t size) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t size) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }

@@ -174,7 +174,7 @@ void FactoryClass::Init() { TheObjectHeaps().factory().Free_All(); }
  *                                                                                             *
  * HISTORY: * 12/26/1994 JLB : Created. *
  *=============================================================================================*/
-void* FactoryClass::operator new(size_t /*unused*/) noexcept {
+void* FactoryClass::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().factory().Allocate();
   if (ptr) {
     static_cast<FactoryClass*>(ptr)->IsActive = true;

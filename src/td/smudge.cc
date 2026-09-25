@@ -117,7 +117,7 @@ int SmudgeClass::Validate() const {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void* SmudgeClass::operator new(size_t /*unused*/) noexcept {
+void* SmudgeClass::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().smudge().Allocate();
   if (ptr) {
     static_cast<SmudgeClass*>(ptr)->IsActive = true;

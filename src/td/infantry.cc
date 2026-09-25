@@ -334,7 +334,7 @@ InfantryClass::~InfantryClass() {
  *                                                                                             *
  * HISTORY: * 09/01/1994 JLB : Created. *
  *=============================================================================================*/
-void* InfantryClass::operator new(size_t /*unused*/) noexcept {
+void* InfantryClass::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().infantry().Allocate();
   if (ptr) {
     static_cast<InfantryClass*>(ptr)->IsActive = true;

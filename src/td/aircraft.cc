@@ -227,7 +227,7 @@ TARGET AircraftClass::As_Target() const {
  *                                                                                             *
  * HISTORY: * 07/26/1994 JLB : Created. *
  *=============================================================================================*/
-void* AircraftClass::operator new(size_t /*unused*/) noexcept {
+void* AircraftClass::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().aircraft().Allocate();
   if (ptr) {
     static_cast<AircraftClass*>(ptr)->IsActive = true;

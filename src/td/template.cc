@@ -352,7 +352,7 @@ bool TemplateClass::Mark(MarkType mark) {
  *                                                                                             *
  * HISTORY: * 05/17/1994 JLB : Created. *
  *=============================================================================================*/
-void* TemplateClass::operator new(size_t /*unused*/) noexcept {
+void* TemplateClass::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().tmplate().Allocate();
   if (ptr) {
     static_cast<TemplateClass*>(ptr)->IsActive = true;

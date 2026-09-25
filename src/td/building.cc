@@ -2016,7 +2016,7 @@ void BuildingClass::Look(bool /*unused*/) {
  *allocation scheme                                               * 07/29/1994
  *JLB : Simplified. *
  *=============================================================================================*/
-void* BuildingClass::operator new(size_t /*unused*/) noexcept {
+void* BuildingClass::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().building().Allocate();
   if (ptr) {
     static_cast<BuildingClass*>(ptr)->IsActive = true;

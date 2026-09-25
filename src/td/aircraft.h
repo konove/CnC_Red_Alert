@@ -45,8 +45,8 @@ class AircraftClass : public FootClass, public FlyClass {
   template <class Archive>
   void Serialize(Archive& ar);
 
-  void* operator new(size_t /*unused*/) noexcept;
-  void* operator new(size_t /*unused*/,
+  void* operator new(std::size_t /*unused*/) noexcept;
+  void* operator new(std::size_t /*unused*/,
                      void* ptr ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept {
     return ptr;
   }

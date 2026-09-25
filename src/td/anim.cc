@@ -681,7 +681,7 @@ void AnimClass::Init() { TheObjectHeaps().anim().Free_All(); }
  *                                                                                             *
  * HISTORY: * 05/31/1994 JLB : Created. *
  *=============================================================================================*/
-void* AnimClass::operator new(size_t /*unused*/) noexcept {
+void* AnimClass::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().anim().Allocate();
   if (ptr) {
     static_cast<AnimClass*>(ptr)->IsActive = true;

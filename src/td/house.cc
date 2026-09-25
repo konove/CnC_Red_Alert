@@ -310,7 +310,7 @@ void HouseClass::One_Time() {
  *                                                                                             *
  * HISTORY: * 05/22/1994 JLB : Created. *
  *=============================================================================================*/
-void* HouseClass::operator new(size_t /*unused*/) noexcept {
+void* HouseClass::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().house().Allocate();
   if (ptr) {
     static_cast<HouseClass*>(ptr)->IsActive = true;

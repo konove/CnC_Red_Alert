@@ -148,7 +148,7 @@ void TeamClass::Init() {
   base::FillBytes(base::ObjectBytes(Success), 0, sizeof(Success));
 }
 
-void* TeamClass::operator new(size_t /*unused*/) noexcept {
+void* TeamClass::operator new(std::size_t /*unused*/) noexcept {
   void* ptr = TheObjectHeaps().team().Allocate();
   if (ptr) {
     static_cast<TeamClass*>(ptr)->IsActive = true;
