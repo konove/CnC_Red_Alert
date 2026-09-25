@@ -16,22 +16,11 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/***********************************************************************************************
- *                                                                                             *
- *                 Project Name : Westwood Keyboard Library *
- *                                                                                             *
- *                    File Name : KEYBOARD.H *
- *                                                                                             *
- *                   Programmer : Philip W. Gorrow *
- *                                                                                             *
- *                   Start Date : 10/16/95 *
- *                                                                                             *
- *                  Last Update : October 16, 1995 [PWG] *
- *                                                                                             *
- *---------------------------------------------------------------------------------------------*
- * Functions: *
- * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- *- - - - - - - */
+// File: The keyboard buffer the games read keys and mouse clicks from, the
+// key numbers (KN_*) and characters (KA_*) they are compared against, and the
+// modifier bits combined with both. It began as Philip W. Gorrow's Westwood
+// Keyboard Library (October 1995); the SDL port fills the buffer from SDL
+// events instead of Windows messages.
 
 #ifndef CNC_RED_ALERT_ENGINE_WINDOW_KEYBOARD_H_
 #define CNC_RED_ALERT_ENGINE_WINDOW_KEYBOARD_H_
@@ -42,6 +31,8 @@ union SDL_Event;
 
 // Modifier and state bits combined with a key number. They are flags, not an
 // enumeration, so they are unsigned bit masks that mix with KeyNumType freely.
+// The key code itself fills the low byte, which is why a scancode above 0xFF
+// cannot be represented.
 inline constexpr uint32_t WWKEY_SHIFT_BIT = 0x100;
 inline constexpr uint32_t WWKEY_CTRL_BIT = 0x200;
 inline constexpr uint32_t WWKEY_ALT_BIT = 0x400;
@@ -61,70 +52,98 @@ constexpr int KeyCode(const int key) {
   return static_cast<int>(static_cast<uint32_t>(key) & kKeyCodeMask);
 }
 
+// The queue of key presses, key releases and mouse clicks the game reads its
+// input from. Event_Handler() fills it from SDL events; the game drains it with
+// Check() and Get(). Each entry is a key number: a VK_* code in the low byte
+// with the WWKEY_* bits above it. A mouse click takes three entries - the
+// button, then the x and y position - and Get() returns the button and leaves
+// the position in MouseQX and MouseQY.
+//
+// Example:
+//   if (keyboard.Check() != 0) {
+//     const int key = keyboard.Get();
+//     if (WWKeyboardClass::Is_Mouse_Key(key)) {
+//       Click_At(keyboard.MouseQX, keyboard.MouseQY);
+//     }
+//   }
 class WWKeyboardClass {
  public:
-  /*===================================================================*/
-  /* Define the base constructor and destructors for the class */
-  /*===================================================================*/
   WWKeyboardClass();
 
-  /*===================================================================*/
-  /* Define the functions which work with the Keyboard Class
-   */
-  /*===================================================================*/
   // Returns the key number at the head of the buffer without removing it, or 0
   // when no key is pending. Also pumps the SDL event loop, so callers that only
   // need that side effect may discard the result.
   int Check();
-  int Get();          // gets a meta key from the keybuffer
-  bool Put(int key);  // dumps a key into the keybuffer
-  bool Put_Key_Message(
-      unsigned vk_key,
-      bool release = false);  // handles keyboard related message
-                              //   and mouse clicks and dbl clicks
-  static int To_ASCII(int num);  // converts keynum to ascii value
-  void Clear();               // clears all keys from keybuffer
-  static bool Down(int key);  // tests to see if a key is down
 
-  /*===================================================================*/
-  /* Define public routines which can be used on keys in general.
-   */
-  /*===================================================================*/
+  // Removes and returns the key number at the head of the buffer, pumping SDL
+  // events until one arrives. For a mouse key, also stores the click position
+  // in MouseQX and MouseQY.
+  int Get();
+
+  // Appends one raw entry to the buffer. Returns false, dropping the entry, if
+  // the buffer is full.
+  bool Put(int key);
+
+  // Queues the key or mouse button `vk_key` (a VK_* code), adding the
+  // Shift, Ctrl and Alt bits for the modifier keys held right now and
+  // WWKEY_RLS_BIT for a `release`. A mouse button gets no modifier bits, as in
+  // the DOS version; its position entries are the caller's to add. Returns
+  // false if the key was dropped: the buffer is full, or the scancode is 0
+  // (a key SDL does not know).
+  bool Put_Key_Message(unsigned vk_key, bool release = false);
+
+  // Returns the character `num` types on the current keyboard layout, with
+  // Shift ignored, so letters come back lower case. Returns 0 for a release
+  // and for a key that types no character up to 'z' (arrows, function keys,
+  // Delete, the mouse buttons).
+  static int To_ASCII(int num);
+
+  // Discards every pending entry.
+  void Clear();
+
+  // Returns whether `key` is held down right now, read from SDL's live state
+  // rather than from the buffer. Covers the left and right mouse buttons, and
+  // either side of the keyboard for Shift, Ctrl and Alt. `key` is a bare key
+  // code: with modifier bits set it names a different scancode.
+  static bool Down(int key);
+
+  // Returns whether `key` is a mouse button, pressed or released, whatever
+  // modifier bits it carries. In the buffer such an entry is followed by the
+  // click's x and y position.
   static bool Is_Mouse_Key(int key);
 
+  // Queues the key or click an SDL event carries; mouse motion moves the
+  // cursor instead. Returns true only for a click, which it consumes, so the
+  // game's own handler can skip it; everything else goes on to that handler.
   bool Event_Handler(SDL_Event* event);
 
-  /*===================================================================*/
-  /* Define the public access variables which are used with the */
-  /*   Keyboard Class.
-   */
-  /*===================================================================*/
+  // The position of the last mouse click Get() returned, in game pixels.
   int MouseQX = 0;
   int MouseQY = 0;
 
  private:
-  /*===================================================================*/
-  /* Define the private access functions which are used by keyboard
-   */
-  /*===================================================================*/
+  // Removes and returns the entry at the head of the buffer, stepping past a
+  // mouse key's two position entries after storing them in MouseQX and
+  // MouseQY.
   int Buff_Get();
 
-  /*===================================================================*/
-  /* Define the private access variables which are used with the
-   */
-  /*   Keyboard Class.
-   */
-  /*===================================================================*/
-  uint16_t Buffer[256]{};      // buffer which holds actual keypresses
-  int Head = 0;                // the head position in keyboard buffer
-  int Tail = 0;                // the tail position in keyboard buffer
+  // A ring buffer of entries. Head == Tail means empty, so it holds at most
+  // 255, and every index wraps modulo its size.
+  uint16_t Buffer[256]{};
+  int Head = 0;  // the entry Get() returns next
+  int Tail = 0;  // where Put() writes the next entry
 };
 
+// The keyboard the Get_Key() family reads. Each game points this at its own
+// keyboard when it builds one, and clears it again afterwards.
 extern WWKeyboardClass* ActiveKeyboard;
 
-// Both peek at the pending key number. Check_Key deliberately does not mirror
-// Get_Key's ASCII translation: its callers test whether any key is waiting, and
-// To_ASCII reports 0 for key releases and every non-alphanumeric key.
+// The legacy free-function spellings of the ActiveKeyboard members.
+//
+// Check_Key and Check_Key_Num both peek at the pending key number. Check_Key
+// deliberately does not mirror Get_Key's ASCII translation: its callers test
+// whether any key is waiting, and To_ASCII reports 0 for key releases and for
+// keys that type no character.
 inline int Check_Key() { return ActiveKeyboard->Check(); }
 inline int Check_Key_Num() { return ActiveKeyboard->Check(); }
 inline int Get_Key() {
@@ -134,9 +153,14 @@ inline int Get_Key_Num() { return ActiveKeyboard->Get(); }
 inline bool Key_Down(int key) { return WWKeyboardClass::Down(key); }
 inline void Clear_KeyBuffer() { ActiveKeyboard->Clear(); }
 inline int KN_To_KA(int key) { return WWKeyboardClass::To_ASCII(key); }
+// A key number already is a VK code in this port.
 inline int KN_To_VK(int key) { return key; }
 
-// these are (mostly) SDL_SCANCODE_x values
+// Key codes, named after the Windows virtual keys the original used. Their
+// values are the SDL scancodes of the same keys, so a key event needs no
+// translation. The mouse buttons take scancodes 1-3, which SDL never reports
+// for a key, and VK_CONTROL, VK_SHIFT and VK_MENU are the left-hand modifier
+// keys.
 #define VK_NONE 0
 #define VK_LBUTTON 1
 #define VK_RBUTTON 2
@@ -196,7 +220,7 @@ inline int KN_To_VK(int key) { return key; }
 #define VK_OEM_3 53     // `
 #define VK_OEM_COMMA 54
 #define VK_OEM_PERIOD 55
-#define VK_OEM_2 56
+#define VK_OEM_2 56  // /
 
 #define VK_CAPITAL 57
 
@@ -246,6 +270,7 @@ inline int KN_To_VK(int key) { return key; }
 #define VK_NUMPAD0 98
 #define VK_DECIMAL 99
 
+// The keypad 5, which Windows reports as Clear with Num Lock off.
 #define VK_CLEAR VK_NUMPAD5
 
 #define VK_SELECT 119
@@ -253,18 +278,20 @@ inline int KN_To_VK(int key) { return key; }
 #define VK_SHIFT 225
 #define VK_MENU 226
 
+// The navigation keys double as the diagonal scroll directions.
 #define VK_UPLEFT VK_HOME
 #define VK_UPRIGHT VK_PRIOR
 #define VK_DOWNLEFT VK_END
 #define VK_DOWNRIGHT VK_NEXT
 #define VK_ALT VK_MENU
 
-// A key code is a bit pattern (the code, modifier bits and the KN_BUTTON
-// composite) that the keyboard buffer stores as an integer, so it stays
-// unscoped.
+// Characters as To_ASCII() reports them, with the WWKEY_* bits available for
+// callers that carry them along. The codes below the space are the text
+// printer's formatting commands (KA_MORE, KA_SETBKGDCOL, ...) and the control
+// keys. A character with modifier bits is a bit pattern rather than one of
+// these values, so the enum stays unscoped.
 // NOLINTNEXTLINE(cppcoreguidelines-use-enum-class)
 enum KeyASCIIType {
-
   KA_NONE = 0,
   KA_MORE = 1,
   KA_SETBKGDCOL = 2,
@@ -274,22 +301,22 @@ enum KeyASCIIType {
   KA_SETX = 25,
   KA_SETY = 26,
 
-  KA_SPACE = 32,       /*   */
-  KA_EXCLAMATION = 33, /* ! */
-  KA_DQUOTE = 34,      /* " */
-  KA_POUND = 35,       /* # */
-  KA_DOLLAR = 36,      /* $ */
-  KA_PERCENT = 37,     /* % */
-  KA_AMPER = 38,       /* & */
-  KA_SQUOTE = 39,      /* ' */
-  KA_LPAREN = 40,      /* ( */
-  KA_RPAREN = 41,      /* ) */
-  KA_ASTERISK = 42,    /* * */
-  KA_PLUS = 43,        /* + */
-  KA_COMMA = 44,       /* , */
-  KA_MINUS = 45,       /* - */
-  KA_PERIOD = 46,      /* . */
-  KA_SLASH = 47,       /* / */
+  KA_SPACE = 32,        // space
+  KA_EXCLAMATION = 33,  // !
+  KA_DQUOTE = 34,       // "
+  KA_POUND = 35,        // #
+  KA_DOLLAR = 36,       // $
+  KA_PERCENT = 37,      // %
+  KA_AMPER = 38,        // &
+  KA_SQUOTE = 39,       // '
+  KA_LPAREN = 40,       // (
+  KA_RPAREN = 41,       // )
+  KA_ASTERISK = 42,     // *
+  KA_PLUS = 43,         // +
+  KA_COMMA = 44,        // ,
+  KA_MINUS = 45,        // -
+  KA_PERIOD = 46,       // .
+  KA_SLASH = 47,        // /
 
   KA_0 = 48,
   KA_1 = 49,
@@ -301,83 +328,83 @@ enum KeyASCIIType {
   KA_7 = 55,
   KA_8 = 56,
   KA_9 = 57,
-  KA_COLON = 58,        /* : */
-  KA_SEMICOLON = 59,    /* ; */
-  KA_LESS_THAN = 60,    /* < */
-  KA_EQUAL = 61,        /* = */
-  KA_GREATER_THAN = 62, /* > */
-  KA_QUESTION = 63,     /* ? */
+  KA_COLON = 58,         // :
+  KA_SEMICOLON = 59,     // ;
+  KA_LESS_THAN = 60,     // <
+  KA_EQUAL = 61,         // =
+  KA_GREATER_THAN = 62,  // >
+  KA_QUESTION = 63,      // ?
 
-  KA_AT = 64, /* @ */
-  KA_A = 65,  /* A */
-  KA_B = 66,  /* B */
-  KA_C = 67,  /* C */
-  KA_D = 68,  /* D */
-  KA_E = 69,  /* E */
-  KA_F = 70,  /* F */
-  KA_G = 71,  /* G */
-  KA_H = 72,  /* H */
+  KA_AT = 64,  // @
+  KA_A = 65,   // A
+  KA_B = 66,   // B
+  KA_C = 67,   // C
+  KA_D = 68,   // D
+  KA_E = 69,   // E
+  KA_F = 70,   // F
+  KA_G = 71,   // G
+  KA_H = 72,   // H
   // Key names spell their key's label, so I/1, O/0 and l/1 look alike by
   // design. NOLINTNEXTLINE(misc-confusable-identifiers)
-  KA_I = 73, /* I */
-  KA_J = 74, /* J */
-  KA_K = 75, /* K */
-  KA_L = 76, /* L */
-  KA_M = 77, /* M */
-  KA_N = 78, /* N */
+  KA_I = 73,  // I
+  KA_J = 74,  // J
+  KA_K = 75,  // K
+  KA_L = 76,  // L
+  KA_M = 77,  // M
+  KA_N = 78,  // N
   // NOLINTNEXTLINE(misc-confusable-identifiers)
-  KA_O = 79, /* O */
+  KA_O = 79,  // O
 
-  KA_P = 80,         /* P */
-  KA_Q = 81,         /* Q */
-  KA_R = 82,         /* R */
-  KA_S = 83,         /* S */
-  KA_T = 84,         /* T */
-  KA_U = 85,         /* U */
-  KA_V = 86,         /* V */
-  KA_W = 87,         /* W */
-  KA_X = 88,         /* X */
-  KA_Y = 89,         /* Y */
-  KA_Z = 90,         /* Z */
-  KA_LBRACKET = 91,  /* [ */
-  KA_BACKSLASH = 92, /* \ */
-  KA_RBRACKET = 93,  /* ] */
-  KA_CARROT = 94,    /* ^ */
-  KA_UNDERLINE = 95, /* _ */
+  KA_P = 80,          // P
+  KA_Q = 81,          // Q
+  KA_R = 82,          // R
+  KA_S = 83,          // S
+  KA_T = 84,          // T
+  KA_U = 85,          // U
+  KA_V = 86,          // V
+  KA_W = 87,          // W
+  KA_X = 88,          // X
+  KA_Y = 89,          // Y
+  KA_Z = 90,          // Z
+  KA_LBRACKET = 91,   // [
+  KA_BACKSLASH = 92,  // backslash
+  KA_RBRACKET = 93,   // ]
+  KA_CARROT = 94,     // ^
+  KA_UNDERLINE = 95,  // _
 
-  KA_GRAVE = 96, /* ` */
-  KA_a = 97,     /* a */
-  KA_b = 98,     /* b */
-  KA_c = 99,     /* c */
-  KA_d = 100,    /* d */
-  KA_e = 101,    /* e */
-  KA_f = 102,    /* f */
-  KA_g = 103,    /* g */
-  KA_h = 104,    /* h */
-  KA_i = 105,    /* i */
-  KA_j = 106,    /* j */
-  KA_k = 107,    /* k */
+  KA_GRAVE = 96,  // `
+  KA_a = 97,      // a
+  KA_b = 98,      // b
+  KA_c = 99,      // c
+  KA_d = 100,     // d
+  KA_e = 101,     // e
+  KA_f = 102,     // f
+  KA_g = 103,     // g
+  KA_h = 104,     // h
+  KA_i = 105,     // i
+  KA_j = 106,     // j
+  KA_k = 107,     // k
   // NOLINTNEXTLINE(misc-confusable-identifiers)
-  KA_l = 108, /* l */
-  KA_m = 109, /* m */
-  KA_n = 110, /* n */
-  KA_o = 111, /* o */
+  KA_l = 108,  // l
+  KA_m = 109,  // m
+  KA_n = 110,  // n
+  KA_o = 111,  // o
 
-  KA_p = 112,      /* p */
-  KA_q = 113,      /* q */
-  KA_r = 114,      /* r */
-  KA_s = 115,      /* s */
-  KA_t = 116,      /* t */
-  KA_u = 117,      /* u */
-  KA_v = 118,      /* v */
-  KA_w = 119,      /* w */
-  KA_x = 120,      /* x */
-  KA_y = 121,      /* y */
-  KA_z = 122,      /* z */
-  KA_LBRACE = 123, /* { */
-  KA_BAR = 124,    /* | */
-  KA_RBRACE = 125, /* ] */
-  KA_TILDA = 126,  /* ~ */
+  KA_p = 112,       // p
+  KA_q = 113,       // q
+  KA_r = 114,       // r
+  KA_s = 115,       // s
+  KA_t = 116,       // t
+  KA_u = 117,       // u
+  KA_v = 118,       // v
+  KA_w = 119,       // w
+  KA_x = 120,       // x
+  KA_y = 121,       // y
+  KA_z = 122,       // z
+  KA_LBRACE = 123,  // {
+  KA_BAR = 124,     // |
+  KA_RBRACE = 125,  // }
+  KA_TILDA = 126,   // ~
 
   KA_ESC = '\x1b',
   KA_RETURN = '\r',
@@ -390,6 +417,11 @@ enum KeyASCIIType {
   KA_RLSE_BIT = WWKEY_RLS_BIT,
 };
 
+// Key numbers: which key, as its VK_* code. The values combine with the
+// KN_*_BIT modifier bits and with KN_BUTTON (see ButtonKey()), so the enum
+// stays unscoped. Keys the port cannot tell apart share a value: the left
+// and right modifier keys, KN_DELETE and KN_E_DELETE, and each diagonal with
+// its navigation key. KN_E_* name the numeric keypad's cursor keys.
 // NOLINTNEXTLINE(cppcoreguidelines-use-enum-class)
 enum KeyNumType {
   KN_NONE = 0,

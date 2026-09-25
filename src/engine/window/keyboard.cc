@@ -14,8 +14,6 @@
 #include "engine/window/ww_mouse.h"
 #include "engine/window/ww_win.h"
 
-// The keyboard the Get_Key() family reads. Each game points this at its
-// own keyboard when it builds one, and clears it again afterwards.
 WWKeyboardClass* ActiveKeyboard = nullptr;
 
 // Mask for modifier keys that affect gameplay input.
@@ -28,7 +26,8 @@ constexpr SDL_Keymod kInputModifierMask =
 WWKeyboardClass::WWKeyboardClass() = default;
 
 int WWKeyboardClass::Check() {
-  // poll for events, return key if any pressed
+  // Pumping here is what lets the games' "wait for a key" loops, which only
+  // call Check(), ever see new input.
   SDL_Event_Loop();
 
   if (Head == Tail) {
@@ -47,6 +46,8 @@ int WWKeyboardClass::Get() {
 }
 
 bool WWKeyboardClass::Put(int key) {
+  // One slot always stays free: a full buffer would otherwise have Head ==
+  // Tail and read as empty.
   const int temp = (Tail + 1) % 256;
   if (temp != Head) {
     base::At(Buffer, Tail) = static_cast<uint16_t>(key);
@@ -58,19 +59,12 @@ bool WWKeyboardClass::Put(int key) {
 }
 
 bool WWKeyboardClass::Put_Key_Message(unsigned vk_key, bool release) {
-  //
-  // Get the status of keyboard modifiers, excluding toggle modifiers (Caps
-  // Lock, Num Lock). Note that we do not want to set the shift, ctrl and alt
-  // bits for Mouse keypresses as this would be incompatible with the dos
-  // version.
-  //
+  // Mouse buttons get no modifier bits: the DOS version never set them, and
+  // the click handlers compare the button without masking them off.
   if (vk_key != VK_LBUTTON && vk_key != VK_MBUTTON && vk_key != VK_RBUTTON) {
     const auto keymod =
         static_cast<SDL_Keymod>(SDL_GetModState() & kInputModifierMask);
 
-    //
-    // Set the proper bits for whatever the key we got is.
-    //
     if (keymod & KMOD_SHIFT) {
       vk_key |= WWKEY_SHIFT_BIT;
     }
@@ -87,10 +81,6 @@ bool WWKeyboardClass::Put_Key_Message(unsigned vk_key, bool release) {
     vk_key |= WWKEY_RLS_BIT;
   }
 
-  //
-  // Finally use the put command to enter the key into the keyboard
-  // system.
-  //
   // A zero key would be indistinguishable from Check's empty-buffer result and
   // would leave Get spinning, so drop the unknown scancode instead.
   if (vk_key == 0) {
@@ -100,17 +90,20 @@ bool WWKeyboardClass::Put_Key_Message(unsigned vk_key, bool release) {
 }
 
 int WWKeyboardClass::To_ASCII(int num) {
-  // A key number is a key code in the low byte with modifier bits above it.
+  // A key number is a scancode in the low byte with modifier bits above it.
   const auto bits = static_cast<uint32_t>(num);
   if (bits & WWKEY_RLS_BIT) {
     return 0;
   }
 
-  // this isn't great but we can't do much better without rewriting everything
-  // to use textinput events (SDL3 would allow passing the mods in)
+  // SDL_GetKeyFromScancode maps through the keyboard layout but takes no
+  // modifiers, so Shift never changes the result. Doing better needs SDL text
+  // input events (or SDL3, whose version takes the modifiers).
   const int key =
       SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(bits & 0xFF));
 
+  // SDL keycodes for keys that type a character are that character; every
+  // other key's code has SDLK_SCANCODE_MASK set and lands above 'z'.
   if (key <= SDLK_z) {
     return key;
   }
@@ -121,7 +114,7 @@ int WWKeyboardClass::To_ASCII(int num) {
 void WWKeyboardClass::Clear() { Head = Tail; }
 
 bool WWKeyboardClass::Down(int key) {
-  // gadget uses this to poll mouse buttons
+  // Gadgets poll the buttons through here to follow a drag or a held button.
   if (Is_Mouse_Key(key)) {
     const auto buttons = SDL_GetMouseState(nullptr, nullptr);
 
@@ -135,6 +128,8 @@ bool WWKeyboardClass::Down(int key) {
     }
   }
 
+  // SDL's modifier state covers both sides of the keyboard, which is what the
+  // KN_R* names (equal to their KN_L* twins) ask for.
   if (key == KN_LSHIFT || key == KN_LCTRL || key == KN_LALT) {
     const auto keymod =
         static_cast<SDL_Keymod>(SDL_GetModState() & kInputModifierMask);
@@ -164,6 +159,8 @@ bool WWKeyboardClass::Down(int key) {
 }
 
 bool WWKeyboardClass::Is_Mouse_Key(int key) {
+  // Only the key-code byte; the modifier and release bits say nothing about
+  // which key it is.
   key = static_cast<int>(static_cast<uint32_t>(key) & 0xFF);
   return key == VK_LBUTTON || key == VK_MBUTTON || key == VK_RBUTTON;
 }
@@ -172,12 +169,16 @@ bool WWKeyboardClass::Event_Handler(SDL_Event* event) {
   switch (event->type) {
     case SDL_MOUSEBUTTONDOWN:
     case SDL_MOUSEBUTTONUP: {
+      // SDL numbers the buttons left, middle, right; the VK codes go left,
+      // right, middle.
       int button = event->button.button;
       if (button == SDL_BUTTON_RIGHT) {
         button = VK_RBUTTON;
       } else if (button == SDL_BUTTON_MIDDLE) {
         button = VK_MBUTTON;
-      } else if (button != SDL_BUTTON_LEFT) {  // left == 1, which is the same
+      } else if (button != SDL_BUTTON_LEFT) {
+        // Extra buttons have no key code. SDL_BUTTON_LEFT is 1, already
+        // VK_LBUTTON.
         return false;
       }
 
@@ -190,6 +191,7 @@ bool WWKeyboardClass::Event_Handler(SDL_Event* event) {
 
     case SDL_KEYDOWN:
     case SDL_KEYUP:
+      // The key codes are SDL scancodes, so the scancode goes in unchanged.
       Put_Key_Message(event->key.keysym.scancode,
                       event->key.state == SDL_RELEASED);
       break;
@@ -207,15 +209,15 @@ bool WWKeyboardClass::Event_Handler(SDL_Event* event) {
 int WWKeyboardClass::Buff_Get() {
   while (!Check()) {
   }  // wait for key in buffer
-  const int temp = base::At(Buffer, Head);  // get key out of the buffer
-  int newhead = Head;                  // save off head for manipulation
-  if (Is_Mouse_Key(temp)) {            // if key is a mouse then
-    MouseQX =
-        base::At(Buffer, (Head + 1) % 256);        //		get the x and y pos
-    MouseQY = base::At(Buffer, (Head + 2) % 256);  //		from the buffer
-    newhead += 3;                      //		adjust head forward
+  const int temp = base::At(Buffer, Head);
+  int newhead = Head;
+  if (Is_Mouse_Key(temp)) {
+    // A click's position rides in the two entries behind the button.
+    MouseQX = base::At(Buffer, (Head + 1) % 256);
+    MouseQY = base::At(Buffer, (Head + 2) % 256);
+    newhead += 3;
   } else {
-    newhead += 1;  //		adjust head forward
+    newhead += 1;
   }
 
   newhead %= 256;

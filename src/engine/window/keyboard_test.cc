@@ -1,3 +1,6 @@
+// Tests for the WWKeyboardClass key buffer: what Check() and Get() report,
+// and how mouse clicks and unknown keys are queued.
+
 #include "engine/window/keyboard.h"
 
 #include <cstdint>
