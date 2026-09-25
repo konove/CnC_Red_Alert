@@ -115,7 +115,9 @@ touched files afterward.
 
 ## Progress
 
-- [ ] Step 1: engine returns the game's key types
-- [ ] Step 2: RA drops KeyboardClass
-- [ ] Step 3: TD drops the static Keyboard and stops reading the global
-- [ ] Step 4: delete the global and the free functions
+- [x] Step 1: engine returns the game's key types (92c9ada2)
+- [x] Step 2: RA drops KeyboardClass (ef2ff748)
+- [x] Step 3: TD drops the static Keyboard and stops reading the global (cf88407e)
+- [x] Step 4: delete the global and the free functions
+
+The key handling still wants a manual check on a real display (see Verification).

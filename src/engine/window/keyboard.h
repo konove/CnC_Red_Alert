@@ -558,22 +558,6 @@ class KeyBuffer {
   int tail_ = 0;  // where Put() writes the next entry
 };
 
-// The key buffer the PeekKey() family reads. Each game points this at its own
-// buffer when it builds one, and clears it again afterwards.
-extern KeyBuffer* g_active_keyboard;
-
-// The legacy free-function spellings of the g_active_keyboard members.
-//
-// PeekKey deliberately does not mirror ReadKeyAscii's ASCII translation: its
-// callers test whether any key is waiting, and ToAscii reports 0 for key
-// releases and for keys that type no character.
-inline int PeekKey() { return g_active_keyboard->Peek(); }
-inline int ReadKeyAscii() {
-  return KeyBuffer::ToAscii(g_active_keyboard->Read());
-}
-inline int ReadKey() { return g_active_keyboard->Read(); }
-inline void ClearKeys() { g_active_keyboard->Clear(); }
-
 }  // namespace engine::window
 
 #endif  // CNC_RED_ALERT_ENGINE_WINDOW_KEYBOARD_H_

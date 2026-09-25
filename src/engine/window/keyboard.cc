@@ -16,8 +16,6 @@
 
 namespace engine::window {
 
-KeyBuffer* g_active_keyboard = nullptr;
-
 // Mask for modifier keys that affect gameplay input.
 // Excludes toggle modifiers (Caps Lock, Num Lock, Scroll Lock) so that their
 // state doesn't interfere with keyboard handling.
