@@ -60,6 +60,12 @@ jobs:
       if: runner.os == 'Linux'
       run: sudo apt update && sudo apt install libsdl2-dev ninja-build
 
+    # For cpplint_test (docs/CPPLINT_PLAN.md). Pinned so findings do not shift
+    # with a new release; the other runners skip the test.
+    - name: Install cpplint
+      if: runner.os == 'Linux'
+      run: pipx install cpplint==2.0.2
+
     - name: Install build tools
       if: runner.os == 'macOS'
       run: brew install ninja

@@ -240,3 +240,17 @@ else ()
     message(WARNING "Python 3.10 or newer not found: the engine_layers_test "
             "check of the engine's include order will not run.")
 endif ()
+
+# The Google style checks that clang-format and clang-tidy leave out
+# (docs/CPPLINT_PLAN.md); the settings are in CPPLINT.cfg. Optional: CI's
+# Linux job installs cpplint, and the test is skipped where it is missing.
+find_program(CPPLINT_PROGRAM cpplint)
+if (Python3_Interpreter_FOUND AND CPPLINT_PROGRAM)
+    add_test(NAME cpplint_test
+            COMMAND Python3::Interpreter
+            "${CMAKE_SOURCE_DIR}/tools/run_cpplint.py"
+            --cpplint "${CPPLINT_PROGRAM}"
+            --src "${CMAKE_SOURCE_DIR}/src")
+else ()
+    message(STATUS "cpplint not found: cpplint_test will not run.")
+endif ()

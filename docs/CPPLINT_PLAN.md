@@ -65,6 +65,6 @@ row to run cpplint on the touched files; CLAUDE.md's Tools table and dependency 
 
 ## Progress
 
-- [ ] Step 1
-- [ ] Step 2
+- [x] Step 1 (2026-09-25)
+- [x] Step 2 (2026-09-25): `cpplint_test` passes in 4.2 s locally.
 - [ ] Step 3

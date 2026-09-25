@@ -52,6 +52,9 @@ brew install sdl2 llvm ninja
 **Note:** If clang-tidy is not installed, either install it (above) or build with
 `-DSTRICT_CHECKS=OFF` to disable static analysis.
 
+**Optional: cpplint** (`pipx install cpplint==2.0.2`, the version CI pins) adds the `cpplint_test`
+ctest; without it CMake skips the test.
+
 ### Optional: Faster Builds
 
 `ccache` (compile cache), `clang-tidy-cache` (clang-tidy cache) and `mold` (linker) are picked up
@@ -389,10 +392,11 @@ Omit the `std::` prefix on fixed-width types. See `docs/TYPE_MIGRATION.md` for f
 
 ## Tools Configuration
 
-| Tool       | Config File                          | Notes                                                 |
-| ---------- | ------------------------------------ | ----------------------------------------------------- |
-| clang-tidy | `.clang-tidy`                        | Many checks disabled for legacy code                  |
-| IWYU       | `cmake/IWYU.cmake`, `.iwyu_mappings` | Opt-in (`-DENABLE_IWYU=ON`); advice only, never fails |
+| Tool       | Config File                              | Notes                                                                                          |
+| ---------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| clang-tidy | `.clang-tidy`                            | Many checks disabled for legacy code                                                           |
+| IWYU       | `cmake/IWYU.cmake`, `.iwyu_mappings`     | Opt-in (`-DENABLE_IWYU=ON`); advice only, never fails                                          |
+| cpplint    | `CPPLINT.cfg` (root, `src/ra`, `src/td`) | `cpplint_test` ctest via `tools/run_cpplint.py`; filters and ratchet in `docs/CPPLINT_PLAN.md` |
 
 ## Key Files
 
