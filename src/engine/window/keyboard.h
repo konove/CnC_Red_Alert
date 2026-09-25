@@ -38,12 +38,11 @@ inline constexpr uint32_t kKeyCtrlBit = 0x200;
 inline constexpr uint32_t kKeyAltBit = 0x400;
 inline constexpr uint32_t kKeyReleaseBit = 0x800;
 inline constexpr uint32_t kKeyVirtualBit = 0x1000;
-inline constexpr uint32_t WWKEY_DBL_BIT = 0x2000;
 inline constexpr uint32_t kKeyButtonBit = 0x8000;
 
 // The part of a key value that says which key it is: the code and whether it
-// is a virtual key, without the shift, release, double-click and button bits
-// that say how it was pressed.
+// is a virtual key, without the shift, release and button bits that say how
+// it was pressed.
 inline constexpr uint32_t kKeyCodeMask = kKeyVirtualBit | 0xFFU;
 
 // Returns which key `key` is, however it was pressed. A release matches too;
@@ -165,7 +164,6 @@ inline int KN_To_VK(int key) { return key; }
 // translation. The mouse buttons take scancodes 1-3, which SDL never reports
 // for a key, and VK_CONTROL, VK_SHIFT and VK_MENU are the left-hand modifier
 // keys.
-#define VK_NONE 0
 #define VK_LBUTTON 1
 #define VK_RBUTTON 2
 #define VK_MBUTTON 3
@@ -277,17 +275,9 @@ inline int KN_To_VK(int key) { return key; }
 // The keypad 5, which Windows reports as Clear with Num Lock off.
 #define VK_CLEAR VK_NUMPAD5
 
-#define VK_SELECT 119
 #define VK_CONTROL 224
 #define VK_SHIFT 225
 #define VK_MENU 226
-
-// The navigation keys double as the diagonal scroll directions.
-#define VK_UPLEFT VK_HOME
-#define VK_UPRIGHT VK_PRIOR
-#define VK_DOWNLEFT VK_END
-#define VK_DOWNRIGHT VK_NEXT
-#define VK_ALT VK_MENU
 
 // Characters as ToAscii() reports them, with the kKey*Bit flags available for
 // callers that carry them along. The codes below the space are the text
