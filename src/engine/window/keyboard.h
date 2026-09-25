@@ -62,13 +62,13 @@ constexpr int KeyCode(const int key) {
 // Example:
 //   if (keyboard.Check() != 0) {
 //     const int key = keyboard.Get();
-//     if (WWKeyboardClass::Is_Mouse_Key(key)) {
+//     if (KeyBuffer::Is_Mouse_Key(key)) {
 //       Click_At(keyboard.MouseQX, keyboard.MouseQY);
 //     }
 //   }
-class WWKeyboardClass {
+class KeyBuffer {
  public:
-  WWKeyboardClass();
+  KeyBuffer();
 
   // Returns the key number at the head of the buffer without removing it, or 0
   // when no key is pending. Also pumps the SDL event loop, so callers that only
@@ -137,7 +137,7 @@ class WWKeyboardClass {
 
 // The keyboard the Get_Key() family reads. Each game points this at its own
 // keyboard when it builds one, and clears it again afterwards.
-extern WWKeyboardClass* ActiveKeyboard;
+extern KeyBuffer* ActiveKeyboard;
 
 // The legacy free-function spellings of the ActiveKeyboard members.
 //
@@ -147,13 +147,11 @@ extern WWKeyboardClass* ActiveKeyboard;
 // keys that type no character.
 inline int Check_Key() { return ActiveKeyboard->Check(); }
 inline int Check_Key_Num() { return ActiveKeyboard->Check(); }
-inline int Get_Key() {
-  return WWKeyboardClass::To_ASCII(ActiveKeyboard->Get());
-}
+inline int Get_Key() { return KeyBuffer::To_ASCII(ActiveKeyboard->Get()); }
 inline int Get_Key_Num() { return ActiveKeyboard->Get(); }
-inline bool Key_Down(int key) { return WWKeyboardClass::Down(key); }
+inline bool Key_Down(int key) { return KeyBuffer::Down(key); }
 inline void Clear_KeyBuffer() { ActiveKeyboard->Clear(); }
-inline int KN_To_KA(int key) { return WWKeyboardClass::To_ASCII(key); }
+inline int KN_To_KA(int key) { return KeyBuffer::To_ASCII(key); }
 // A key number already is a VK code in this port.
 inline int KN_To_VK(int key) { return key; }
 

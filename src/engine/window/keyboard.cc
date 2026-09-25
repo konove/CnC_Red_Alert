@@ -14,7 +14,7 @@
 #include "engine/window/ww_mouse.h"
 #include "engine/window/ww_win.h"
 
-WWKeyboardClass* ActiveKeyboard = nullptr;
+KeyBuffer* ActiveKeyboard = nullptr;
 
 // Mask for modifier keys that affect gameplay input.
 // Excludes toggle modifiers (Caps Lock, Num Lock, Scroll Lock) so that their
@@ -23,9 +23,9 @@ constexpr SDL_Keymod kInputModifierMask =
     static_cast<SDL_Keymod>(uint32_t{KMOD_SHIFT} | uint32_t{KMOD_CTRL} |
                             uint32_t{KMOD_ALT} | uint32_t{KMOD_GUI});
 
-WWKeyboardClass::WWKeyboardClass() = default;
+KeyBuffer::KeyBuffer() = default;
 
-int WWKeyboardClass::Check() {
+int KeyBuffer::Check() {
   // Pumping here is what lets the games' "wait for a key" loops, which only
   // call Check(), ever see new input.
   SDL_Event_Loop();
@@ -39,13 +39,13 @@ int WWKeyboardClass::Check() {
   return base::At(Buffer, Head);
 }
 
-int WWKeyboardClass::Get() {
+int KeyBuffer::Get() {
   while (!Check()) {
   }  // wait for key in buffer
   return Buff_Get();
 }
 
-bool WWKeyboardClass::Put(int key) {
+bool KeyBuffer::Put(int key) {
   // One slot always stays free: a full buffer would otherwise have Head ==
   // Tail and read as empty.
   const int temp = (Tail + 1) % 256;
@@ -58,7 +58,7 @@ bool WWKeyboardClass::Put(int key) {
   return false;
 }
 
-bool WWKeyboardClass::Put_Key_Message(const int vk_key, const bool release) {
+bool KeyBuffer::Put_Key_Message(const int vk_key, const bool release) {
   // Scancode 0 is a key SDL does not know: it would be indistinguishable from
   // Check's empty-buffer result and leave Get spinning. Scancodes above 0xFF
   // (SDL's media and browser keys) would spill into the modifier bits, where
@@ -95,7 +95,7 @@ bool WWKeyboardClass::Put_Key_Message(const int vk_key, const bool release) {
   return Put(static_cast<int>(key));
 }
 
-int WWKeyboardClass::To_ASCII(int num) {
+int KeyBuffer::To_ASCII(int num) {
   // A key number is a scancode in the low byte with modifier bits above it.
   const auto bits = static_cast<uint32_t>(num);
   if (bits & WWKEY_RLS_BIT) {
@@ -117,9 +117,9 @@ int WWKeyboardClass::To_ASCII(int num) {
   return 0;
 }
 
-void WWKeyboardClass::Clear() { Head = Tail; }
+void KeyBuffer::Clear() { Head = Tail; }
 
-bool WWKeyboardClass::Down(int key) {
+bool KeyBuffer::Down(int key) {
   // Gadgets poll the buttons through here to follow a drag or a held button.
   if (Is_Mouse_Key(key)) {
     const auto buttons = SDL_GetMouseState(nullptr, nullptr);
@@ -164,14 +164,14 @@ bool WWKeyboardClass::Down(int key) {
   return false;
 }
 
-bool WWKeyboardClass::Is_Mouse_Key(int key) {
+bool KeyBuffer::Is_Mouse_Key(int key) {
   // Only the key-code byte; the modifier and release bits say nothing about
   // which key it is.
   key = static_cast<int>(static_cast<uint32_t>(key) & 0xFF);
   return key == VK_LBUTTON || key == VK_MBUTTON || key == VK_RBUTTON;
 }
 
-bool WWKeyboardClass::Event_Handler(SDL_Event* event) {
+bool KeyBuffer::Event_Handler(SDL_Event* event) {
   switch (event->type) {
     case SDL_MOUSEBUTTONDOWN:
     case SDL_MOUSEBUTTONUP: {
@@ -217,7 +217,7 @@ bool WWKeyboardClass::Event_Handler(SDL_Event* event) {
   return false;
 }
 
-int WWKeyboardClass::Buff_Get() {
+int KeyBuffer::Buff_Get() {
   while (!Check()) {
   }  // wait for key in buffer
   const int temp = base::At(Buffer, Head);

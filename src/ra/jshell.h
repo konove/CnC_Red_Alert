@@ -71,7 +71,7 @@ class ByteStream;
 *vagaries. Most *	notable being the return values are declared as "int" in
 *the library whereas C&C *	expects it to be of KeyNumType.
 */
-struct KeyboardClass : public WWKeyboardClass {
+struct KeyboardClass : public KeyBuffer {
   /*
   **	This flag is used to indicate whether the WW library has taken over
   **	the keyboard or not. If not, then the normal console input
@@ -83,15 +83,13 @@ struct KeyboardClass : public WWKeyboardClass {
   // These deliberately hide the library's int-returning versions; narrowing to
   // the game's key enums is the only reason this interface class exists.
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  KeyNumType Get() { return static_cast<KeyNumType>(WWKeyboardClass::Get()); }
+  KeyNumType Get() { return static_cast<KeyNumType>(KeyBuffer::Get()); }
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  KeyNumType Check() {
-    return static_cast<KeyNumType>(WWKeyboardClass::Check());
-  }
+  KeyNumType Check() { return static_cast<KeyNumType>(KeyBuffer::Check()); }
   static KeyASCIIType To_ASCII(KeyNumType key) {
-    return static_cast<KeyASCIIType>(WWKeyboardClass::To_ASCII(key));
+    return static_cast<KeyASCIIType>(KeyBuffer::To_ASCII(key));
   }
-  static bool Down(KeyNumType key) { return WWKeyboardClass::Down(key); }
+  static bool Down(KeyNumType key) { return KeyBuffer::Down(key); }
 
   static int Mouse_X() { return Get_Mouse_X(); }
   static int Mouse_Y() { return Get_Mouse_Y(); }

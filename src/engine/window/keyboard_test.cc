@@ -1,5 +1,5 @@
-// Tests for the WWKeyboardClass key buffer: what Check() and Get() report,
-// and how mouse clicks and unknown keys are queued.
+// Tests for KeyBuffer: what Check() and Get() report, and how mouse clicks
+// and unknown keys are queued.
 
 #include "engine/window/keyboard.h"
 
@@ -22,7 +22,7 @@ namespace {
 
 class KeyboardTest : public ::testing::Test {
  protected:
-  WWKeyboardClass keyboard;
+  KeyBuffer keyboard;
 };
 
 TEST_F(KeyboardTest, CheckReportsZeroWhenNoKeyIsPending) {
