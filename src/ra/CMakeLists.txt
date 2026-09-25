@@ -90,10 +90,15 @@ apply_language_setting(ra_engine)
 apply_language_setting(rasdl)
 # magic_enum is PUBLIC because the public header defines.h includes it; the
 # interface-header-set verification compiles that header standalone.
+# sdlstub.cc includes SDL headers directly, so ra_engine links SDL2 itself
+# rather than relying on it arriving transitively through engine_window/
+# engine_video.
+find_package(SDL2 REQUIRED)
 target_link_libraries(ra_engine PUBLIC absl::strings magic_enum::magic_enum
         engine_net
         engine_window
         engine_video
+        SDL2::SDL2
         absl::check
         absl::core_headers
         absl::log

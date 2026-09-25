@@ -47,7 +47,11 @@ endif ()
 target_compile_definitions(td_engine PUBLIC TD=1)
 apply_dotenv_settings(td_engine)
 apply_dotenv_settings(tdsdl)
-target_link_libraries(td_engine PUBLIC engine_net engine_window engine_video absl::strings absl::algorithm absl::check absl::core_headers absl::log absl::log_initialize absl::random_random absl::span)
+# sdlstub.cc includes SDL headers directly, so td_engine links SDL2 itself
+# rather than relying on it arriving transitively through engine_window/
+# engine_video.
+find_package(SDL2 REQUIRED)
+target_link_libraries(td_engine PUBLIC engine_net engine_window engine_video SDL2::SDL2 absl::strings absl::algorithm absl::check absl::core_headers absl::log absl::log_initialize absl::random_random absl::span)
 target_link_libraries(tdsdl PRIVATE td_engine)
 
 install(TARGETS tdsdl)
