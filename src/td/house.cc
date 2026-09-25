@@ -2719,12 +2719,12 @@ bool HouseClass::Place_Object(RTTIType type, CELL cell) {
         TechnoClass* builder = tech->Who_Can_Build_Me(false, false);
         if (builder &&
             (tech->What_Am_I() != RTTI_BUILDING ||
-             dynamic_cast<BuildingClass*>(tech)->Passes_Proximity_Check(cell)))
-        /*
-        **	Ensures that the proximity check is performed even when the
-        *building is *	placed by way of a remote event.
-        */
-        {
+             dynamic_cast<BuildingClass*>(tech)->Passes_Proximity_Check(
+                 cell))) {
+          /*
+          **	Ensures that the proximity check is performed even when the
+          *building is *	placed by way of a remote event.
+          */
           builder->Transmit_Message(RADIO_HELLO, tech);
           if (tech->Unlimbo(Cell_Coord(cell))) {
             factory->Completed();

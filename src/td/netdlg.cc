@@ -590,12 +590,11 @@ bool Remote_Connect() {
     /*---------------------------------------------------------------------
           1 = user requests New Network Game
           ---------------------------------------------------------------------*/
-    if ((rc == 1) && Net_New_Dialog())
-    /*..................................................................
-    Pop up the New Network Game dialog; if user selects OK, return
-    'true'; otherwise, return to the Join Dialog.
-    ..................................................................*/
-    {
+    if ((rc == 1) && Net_New_Dialog()) {
+      /*..................................................................
+      Pop up the New Network Game dialog; if user selects OK, return
+      'true'; otherwise, return to the Join Dialog.
+      ..................................................................*/
       Write_MultiPlayer_Settings();
       TheNetwork().is_open() = false;
       TheNetwork().stealth() = stealth;
@@ -1581,16 +1580,14 @@ static int Net_Join_Dialog() {
 
             break;
           }
-        } else
-
+        } else if (input == ButtonKey(kButtonSend)) {
           /*...............................................................
           If we're already editing a message and the user clicks on
           'Send', translate our input to a Return so Messages.Input()
           will work properly.
           ...............................................................*/
-          if (input == ButtonKey(kButtonSend)) {
             input = KN_RETURN;
-          }
+        }
 
         /*...............................................................
         Manage the message system (get rid of old messages)
@@ -1799,53 +1796,45 @@ static int Net_Join_Dialog() {
           }
         }
       }
-    } else
-
+    } else if (event == EV_NEW_GAME && gamelist.Count() == 1) {
       /*.....................................................................
       If a new game is detected, and it's the first game on our list,
       automatically send out a player query for that game.
       .....................................................................*/
-      if (event == EV_NEW_GAME && gamelist.Count() == 1) {
         gamelist.Set_Selected_Index(0);
         game_index = gamelist.Current_Index();
         Send_Join_Queries(game_index, 0, 1);
-      } else
-
-        /*.....................................................................
-        If the game options have changed, print them.
-        .....................................................................*/
-        if (event == EV_GAME_OPTIONS) {
-          parms_received = 1;
-          display = REDRAW_MESSAGE;
-        } else
-
-          /*.....................................................................
-          Draw an incoming message
-          .....................................................................*/
-          if (event == EV_MESSAGE) {
-            display = REDRAW_MESSAGE;
-          } else
-
-            /*.....................................................................
-            A game before the one I've selected is gone, so we have a new index
-            now. 'game_index' must be kept set to the currently-selected list
-            item, so we send out queries for the currently-selected game.  It's
-            therefore imperative that we detect any changes to the game list. If
-            we're joined in a game, we must decrement our game_index to keep it
-            aligned with the game we're joined to.
-            .....................................................................*/
-            if (event == EV_GAME_SIGNOFF) {
-              if (joinstate == JOIN_CONFIRMED) {
-                game_index--;
-                join_index--;
-                gamelist.Set_Selected_Index(join_index);
-              } else {
-                gamelist.Flag_To_Redraw();
-                Clear_Player_List(&playerlist);
-                game_index = gamelist.Current_Index();
-                Send_Join_Queries(game_index, 0, 1);
-              }
-            }
+    } else if (event == EV_GAME_OPTIONS) {
+      /*.....................................................................
+      If the game options have changed, print them.
+      .....................................................................*/
+      parms_received = 1;
+      display = REDRAW_MESSAGE;
+    } else if (event == EV_MESSAGE) {
+      /*.....................................................................
+      Draw an incoming message
+      .....................................................................*/
+      display = REDRAW_MESSAGE;
+    } else if (event == EV_GAME_SIGNOFF) {
+      /*.....................................................................
+      A game before the one I've selected is gone, so we have a new index
+      now. 'game_index' must be kept set to the currently-selected list
+      item, so we send out queries for the currently-selected game.  It's
+      therefore imperative that we detect any changes to the game list. If
+      we're joined in a game, we must decrement our game_index to keep it
+      aligned with the game we're joined to.
+      .....................................................................*/
+      if (joinstate == JOIN_CONFIRMED) {
+        game_index--;
+        join_index--;
+        gamelist.Set_Selected_Index(join_index);
+      } else {
+        gamelist.Flag_To_Redraw();
+        Clear_Player_List(&playerlist);
+        game_index = gamelist.Current_Index();
+        Send_Join_Queries(game_index, 0, 1);
+      }
+    }
 
     /*---------------------------------------------------------------------
     Service the Ipx connections
@@ -2485,13 +2474,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
 
       retcode = EV_NEW_GAME;
     }
-  }
-
-  /*------------------------------------------------------------------------
-  NET_ANSWER_PLAYER: Another system is answering our PLAYER query, so add it
-  to our player list box & the Player Vector if it's new
-  ------------------------------------------------------------------------*/
-  else if (TheNetwork().global_packet().Command == NET_ANSWER_PLAYER) {
+  } else if (TheNetwork().global_packet().Command == NET_ANSWER_PLAYER) {
+    /*------------------------------------------------------------------------
+    NET_ANSWER_PLAYER: Another system is answering our PLAYER query, so add it
+    to our player list box & the Player Vector if it's new
+    ------------------------------------------------------------------------*/
     /*.....................................................................
     See if this name is unique
     .....................................................................*/
@@ -2569,13 +2556,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
 
       retcode = EV_NEW_PLAYER;
     }
-  }
-
-  /*------------------------------------------------------------------------
-  NET_CONFIRM_JOIN: The game owner has confirmed our JOIN query; mark us as
-  being confirmed, and start answering queries from other systems
-  ------------------------------------------------------------------------*/
-  else if (TheNetwork().global_packet().Command == NET_CONFIRM_JOIN) {
+  } else if (TheNetwork().global_packet().Command == NET_CONFIRM_JOIN) {
+    /*------------------------------------------------------------------------
+    NET_CONFIRM_JOIN: The game owner has confirmed our JOIN query; mark us as
+    being confirmed, and start answering queries from other systems
+    ------------------------------------------------------------------------*/
     if (*joinstate != JOIN_CONFIRMED) {
       base::SafeCopy(TheSession().game_name(),
                      TheNetwork().global_packet().Name);
@@ -2586,15 +2571,13 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       *joinstate = JOIN_CONFIRMED;
       retcode = EV_STATE_CHANGE;
     }
-  }
-
-  /*------------------------------------------------------------------------
-  NET_REJECT_JOIN: The game owner has turned down our JOIN query; restore
-  the dialog state to its first pop-up state.  Broadcast a sign-off to
-  tell all other systems that I'm no longer a part of any game; this way,
-  I'll be properly removed from their dialogs.
-  ------------------------------------------------------------------------*/
-  else if (TheNetwork().global_packet().Command == NET_REJECT_JOIN) {
+  } else if (TheNetwork().global_packet().Command == NET_REJECT_JOIN) {
+    /*------------------------------------------------------------------------
+    NET_REJECT_JOIN: The game owner has turned down our JOIN query; restore
+    the dialog state to its first pop-up state.  Broadcast a sign-off to
+    tell all other systems that I'm no longer a part of any game; this way,
+    I'll be properly removed from their dialogs.
+    ------------------------------------------------------------------------*/
     if (*joinstate != JOIN_REJECTED) {
       base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                       sizeof(GlobalPacketType));
@@ -2628,13 +2611,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       *joinstate = JOIN_REJECTED;
       retcode = EV_STATE_CHANGE;
     }
-  }
-
-  /*------------------------------------------------------------------------
-  NET_GAME_OPTIONS: The game owner has changed the game options & is sending
-  us the new values.
-  ------------------------------------------------------------------------*/
-  else if (TheNetwork().global_packet().Command == NET_GAME_OPTIONS) {
+  } else if (TheNetwork().global_packet().Command == NET_GAME_OPTIONS) {
+    /*------------------------------------------------------------------------
+    NET_GAME_OPTIONS: The game owner has changed the game options & is sending
+    us the new values.
+    ------------------------------------------------------------------------*/
     if (*joinstate == JOIN_CONFIRMED) {
       TheSession().credits() =
           static_cast<int>(TheNetwork().global_packet().ScenarioInfo.Credits);
@@ -2677,13 +2658,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
 
       retcode = EV_GAME_OPTIONS;
     }
-  }
-
-  /*------------------------------------------------------------------------
-  NET_SIGN_OFF: Another system is signing off: search for that system in
-  both the game list & player list, & remove it if found
-  ------------------------------------------------------------------------*/
-  else if (TheNetwork().global_packet().Command == NET_SIGN_OFF) {
+  } else if (TheNetwork().global_packet().Command == NET_SIGN_OFF) {
+    /*------------------------------------------------------------------------
+    NET_SIGN_OFF: Another system is signing off: search for that system in
+    both the game list & player list, & remove it if found
+    ------------------------------------------------------------------------*/
     /*.....................................................................
     Remove this name from the list of games
     .....................................................................*/
@@ -2747,12 +2726,10 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         }
       }
     }
-  }
-
-  /*------------------------------------------------------------------------
-  NET_GO: The game's owner is signalling us to start playing.
-  ------------------------------------------------------------------------*/
-  else if (TheNetwork().global_packet().Command == NET_GO) {
+  } else if (TheNetwork().global_packet().Command == NET_GO) {
+    /*------------------------------------------------------------------------
+    NET_GO: The game's owner is signalling us to start playing.
+    ------------------------------------------------------------------------*/
     if (*joinstate == JOIN_CONFIRMED) {
       TheSession().max_ahead() =
           TheNetwork().global_packet().ResponseTime.OneWay;
@@ -2760,12 +2737,10 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       retcode = EV_STATE_CHANGE;
       CCDebugString("C&C95 - Received the 'GO' packet\n");
     }
-  }
-
-  /*------------------------------------------------------------------------
-  NET_MESSAGE: Someone is sending us a message
-  ------------------------------------------------------------------------*/
-  else if (TheNetwork().global_packet().Command == NET_MESSAGE) {
+  } else if (TheNetwork().global_packet().Command == NET_MESSAGE) {
+    /*------------------------------------------------------------------------
+    NET_MESSAGE: Someone is sending us a message
+    ------------------------------------------------------------------------*/
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
                         TheNetwork().global_packet().Name,
                         TheNetwork().global_packet().Message.Buf);
@@ -3728,19 +3703,15 @@ static int Net_New_Dialog() {
         ...............................................................*/
         if (i == 1) {
           TheSession().messages().Draw(view);
-        }
-
-        /*...............................................................
-        If 'Input' returned 2, it means redraw the message display.
-        ...............................................................*/
-        else if (i == 2) {
+        } else if (i == 2) {
+          /*...............................................................
+          If 'Input' returned 2, it means redraw the message display.
+          ...............................................................*/
           display = std::max(display, REDRAW_MESSAGE);
-        }
-
-        /*...............................................................
-        If 'input' returned 3, it means send the current message.
-        ...............................................................*/
-        else if (i == 3) {
+        } else if (i == 3) {
+          /*...............................................................
+          If 'input' returned 3, it means send the current message.
+          ...............................................................*/
 
           sent_so_far = 0;
           magic_number = MESSAGE_HEAD_MAGIC_NUMBER;
@@ -4146,13 +4117,11 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       TheNetwork().ipx().Send_Global_Message(
           base::ObjectBytes(TheNetwork().global_packet()),
           sizeof(GlobalPacketType), 1, &TheNetwork().global_address());
-    }
-
-    /*.....................................................................
-    If this packet is NOT a resend, accept the player.  Grant him the
-    requested color if possible.
-    .....................................................................*/
-    else if (!resend) {
+    } else if (!resend) {
+      /*.....................................................................
+      If this packet is NOT a resend, accept the player.  Grant him the
+      requested color if possible.
+      .....................................................................*/
       /*..................................................................
       Add node to the Vector list
       ..................................................................*/
@@ -4216,13 +4185,11 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
 
       retval = EV_NEW_PLAYER;
     }
-  }
-
-  /*------------------------------------------------------------------------
-  NET_SIGN_OFF: Another system is signing off: search for that system in
-  the player list, & remove it if found
-  ------------------------------------------------------------------------*/
-  else if (TheNetwork().global_packet().Command == NET_SIGN_OFF) {
+  } else if (TheNetwork().global_packet().Command == NET_SIGN_OFF) {
+    /*------------------------------------------------------------------------
+    NET_SIGN_OFF: Another system is signing off: search for that system in
+    the player list, & remove it if found
+    ------------------------------------------------------------------------*/
     for (int i = 0; i < TheNetwork().players().Count(); i++) {
       /*
       ....................... Name found; remove it ......................
@@ -4247,12 +4214,10 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
         break;
       }
     }
-  }
-
-  /*------------------------------------------------------------------------
-  NET_MESSAGE: Someone is sending us a message
-  ------------------------------------------------------------------------*/
-  else if (TheNetwork().global_packet().Command == NET_MESSAGE) {
+  } else if (TheNetwork().global_packet().Command == NET_MESSAGE) {
+    /*------------------------------------------------------------------------
+    NET_MESSAGE: Someone is sending us a message
+    ------------------------------------------------------------------------*/
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
                         TheNetwork().global_packet().Name,
                         TheNetwork().global_packet().Message.Buf);
@@ -5476,46 +5441,40 @@ static int Net_Fake_Join_Dialog() {
           }
         }
       }
-    } else
-
+    } else if (event == EV_NEW_GAME && gamelist.Count() == 1) {
       /*.....................................................................
       If a new game is detected, and it's the first game on our list,
       automatically send out a player query for that game.
       .....................................................................*/
-      if (event == EV_NEW_GAME && gamelist.Count() == 1) {
         gamelist.Set_Selected_Index(0);
         game_index = gamelist.Current_Index();
         Send_Join_Queries(game_index, 0, 1);
-      } else
-
-        /*.....................................................................
-        If the game options have changed, print them; likewise draw an
-        incoming message.
-        .....................................................................*/
-        if (event == EV_GAME_OPTIONS || event == EV_MESSAGE) {
-          display = REDRAW_MESSAGE;
-        } else
-
-          /*.....................................................................
-          A game before the one I've selected is gone, so we have a new index
-          now. 'game_index' must be kept set to the currently-selected list
-          item, so we send out queries for the currently-selected game.  It's
-          therefore imperative that we detect any changes to the game list. If
-          we're joined in a game, we must decrement our game_index to keep it
-          aligned with the game we're joined to.
-          .....................................................................*/
-          if (event == EV_GAME_SIGNOFF) {
-            if (joinstate == JOIN_CONFIRMED) {
-              game_index--;
-              join_index--;
-              gamelist.Set_Selected_Index(join_index);
-            } else {
-              gamelist.Flag_To_Redraw();
-              Clear_Player_List(&playerlist);
-              game_index = gamelist.Current_Index();
-              Send_Join_Queries(game_index, 0, 1);
-            }
-          }
+    } else if (event == EV_GAME_OPTIONS || event == EV_MESSAGE) {
+      /*.....................................................................
+      If the game options have changed, print them; likewise draw an
+      incoming message.
+      .....................................................................*/
+      display = REDRAW_MESSAGE;
+    } else if (event == EV_GAME_SIGNOFF) {
+      /*.....................................................................
+      A game before the one I've selected is gone, so we have a new index
+      now. 'game_index' must be kept set to the currently-selected list
+      item, so we send out queries for the currently-selected game.  It's
+      therefore imperative that we detect any changes to the game list. If
+      we're joined in a game, we must decrement our game_index to keep it
+      aligned with the game we're joined to.
+      .....................................................................*/
+      if (joinstate == JOIN_CONFIRMED) {
+        game_index--;
+        join_index--;
+        gamelist.Set_Selected_Index(join_index);
+      } else {
+        gamelist.Flag_To_Redraw();
+        Clear_Player_List(&playerlist);
+        game_index = gamelist.Current_Index();
+        Send_Join_Queries(game_index, 0, 1);
+      }
+    }
 
     /*---------------------------------------------------------------------
     Service the Ipx connections

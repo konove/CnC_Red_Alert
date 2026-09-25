@@ -651,7 +651,7 @@ void Send_Statistics_Packet() {
     CCDebugString("C&C95 - Stats packet send failed.\n");
     send_timer.Set(60, true);
     while (send_timer.Time()) {
-    };
+    }
   }
 #endif
 

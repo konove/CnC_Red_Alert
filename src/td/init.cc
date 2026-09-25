@@ -1246,9 +1246,12 @@ bool Select_Game(bool fade) {
                 if (DDEServer.Get_MPlayer_Game_Info()) {
                   DLOG(INFO) << "C&C95 - About to call Read_Game_Options.";
                   Read_Game_Options(NULL);
-                } else
-#endif
+                } else {
                   Read_Game_Options("C&CSPAWN.INI");
+                }
+#else
+                Read_Game_Options("C&CSPAWN.INI");
+#endif
 
                 if (TheNetwork().is_server()) {
                   DLOG(INFO) << "C&C95 - About to call Server_Remote_Connect.";

@@ -174,7 +174,7 @@ inline int Pixel_To_Lepton(int pixel) {
 }
 inline COORDINATE XYP_Coord(int x, int y) {
   return XY_Coord(Pixel_To_Lepton(x), Pixel_To_Lepton(y));
-};
+}
 
 inline CELL Coord_XCell(COORDINATE coord) {
   return static_cast<uint8_t>(coord >> 8);

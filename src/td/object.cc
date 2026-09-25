@@ -546,27 +546,27 @@ bool ObjectClass::Can_Player_Move() const { return false; }
  *=============================================================================================*/
 COORDINATE ObjectClass::Target_Coord() const { return Center_Coord(); }
 
-COORDINATE ObjectClass::Center_Coord() const { return Coord; };
+COORDINATE ObjectClass::Center_Coord() const { return Coord; }
 COORDINATE ObjectClass::Render_Coord() const { return Center_Coord(); }
 COORDINATE ObjectClass::Docking_Coord() const { return Center_Coord(); }
-COORDINATE ObjectClass::Sort_Y() const { return Coord; };
-COORDINATE ObjectClass::Fire_Coord(int /*unused*/) const { return Coord; };
-void ObjectClass::Record_The_Kill(TechnoClass* /*unused*/) {};
-void ObjectClass::Do_Shimmer() {};
-int ObjectClass::Exit_Object(TechnoClass* /*unused*/) { return 0; };
-void ObjectClass::Hidden() {};
-void ObjectClass::Look(bool /*unused*/) {};
+COORDINATE ObjectClass::Sort_Y() const { return Coord; }
+COORDINATE ObjectClass::Fire_Coord(int /*unused*/) const { return Coord; }
+void ObjectClass::Record_The_Kill(TechnoClass* /*unused*/) {}
+void ObjectClass::Do_Shimmer() {}
+int ObjectClass::Exit_Object(TechnoClass* /*unused*/) { return 0; }
+void ObjectClass::Hidden() {}
+void ObjectClass::Look(bool /*unused*/) {}
 void ObjectClass::Active_Click_With(ActionType /*unused*/,
-                                    ObjectClass* /*unused*/) {};
-void ObjectClass::Active_Click_With(ActionType /*unused*/, CELL /*unused*/){};
-void ObjectClass::Clicked_As_Target(int /*unused*/) {};
+                                    ObjectClass* /*unused*/) {}
+void ObjectClass::Active_Click_With(ActionType /*unused*/, CELL /*unused*/) {}
+void ObjectClass::Clicked_As_Target(int /*unused*/) {}
 bool ObjectClass::In_Range(COORDINATE /*unused*/, int /*unused*/) const {
   return false;
-};
-int ObjectClass::Weapon_Range(int /*unused*/) const { return 0x0000; };
-TARGET ObjectClass::As_Target() const { return kTargetNone; };
-void ObjectClass::Scatter(COORDINATE /*unused*/, bool /*unused*/) {};
-bool ObjectClass::Catch_Fire() { return false; };
+}
+int ObjectClass::Weapon_Range(int /*unused*/) const { return 0x0000; }
+TARGET ObjectClass::As_Target() const { return kTargetNone; }
+void ObjectClass::Scatter(COORDINATE /*unused*/, bool /*unused*/) {}
+bool ObjectClass::Catch_Fire() { return false; }
 
 /***********************************************************************************************
  * ObjectClass::Fire_Out -- Informs object that attached animation has finished.
@@ -1445,14 +1445,14 @@ bool ObjectClass::Revealed(HouseClass* house) { return house != nullptr; }
 // These can't be made inline (for various reasons).
 std::span<const int16_t> ObjectClass::Occupy_List(bool placement) const {
   return Class_Of().Occupy_List(placement);
-};
+}
 std::span<const int16_t> ObjectClass::Overlap_List() const {
   return Class_Of().Overlap_List();
-};
+}
 BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
   return Class_Of().Who_Can_Build_Me(intheory, legal, Owner());
-};
+}
 int ObjectClass::Health_Ratio() const {
   return Cardinal_To_Fixed(Class_Of().MaxStrength, Strength);
-};
-int ObjectClass::Full_Name() const { return Class_Of().Full_Name(); };
+}
+int ObjectClass::Full_Name() const { return Class_Of().Full_Name(); }

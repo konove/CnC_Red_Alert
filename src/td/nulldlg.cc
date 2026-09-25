@@ -447,14 +447,13 @@ int Test_Null_Modem() {
             if (ReceivePacket.ID > SendPacket.ID) {
               process = false;
               retval = 2;
-            } else
+            } else if (ReceivePacket.ID == SendPacket.ID) {
               //
               // if they are equal then it's a loopback cable or a modem
               //
-              if (ReceivePacket.ID == SendPacket.ID) {
                 process = false;
                 retval = 3;
-              }
+            }
           }
         }
 
@@ -1207,12 +1206,10 @@ GameType Select_Serial_Dialog() {
 
           if (selectsettings) {
             CCMessageBox().Process(TXT_SELECT_SETTINGS);
-          }
-
-          /*
-          ** Remote-connect
-          */
-          else if (Phone_Dialog()) {
+          } else if (Phone_Dialog()) {
+            /*
+            ** Remote-connect
+            */
             if (TheNetwork()
                     .phone_book()
                     .at(TheNetwork().current_phone_index())
@@ -4039,19 +4036,15 @@ int Com_Scenario_Dialog() {
         ...............................................................*/
         if (i == 1) {
           TheSession().messages().Draw(view);
-        }
-
-        /*...............................................................
-        If 'Input' returned 2, it means redraw the message display.
-        ...............................................................*/
-        else if (i == 2) {
+        } else if (i == 2) {
+          /*...............................................................
+          If 'Input' returned 2, it means redraw the message display.
+          ...............................................................*/
           display = std::max(display, REDRAW_MESSAGE);
-        }
-
-        /*...............................................................
-        If 'input' returned 3, it means send the current message.
-        ...............................................................*/
-        else if (i == 3) {
+        } else if (i == 3) {
+          /*...............................................................
+          If 'input' returned 3, it means send the current message.
+          ...............................................................*/
 
           sent_so_far = 0;
           magic_number = MESSAGE_HEAD_MAGIC_NUMBER;

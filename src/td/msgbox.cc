@@ -163,13 +163,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   int width = 0;
   int height = 0;
 
-#ifdef JAPANESE
-  if (IsPicture) {
-    width = 90;
-    height = 140 - 60;
-  } else
-#endif
-    Format_Window_String(font, buffer, 255 * factor, width, height);
+  Format_Window_String(font, buffer, 255 * factor, width, height);
 
   // BG #ifdef JAPANESE
   // BG 	if(!IsPicture) {

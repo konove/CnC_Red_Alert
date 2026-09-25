@@ -122,7 +122,7 @@ class AircraftClass;
 #ifdef NEVER
 class TargetClass {
  public:
-  TargetClass() { Target.Raw = 0; };
+  TargetClass() { Target.Raw = 0; }
 
   /*
   **	This handles assignment from an integer and conversion
@@ -131,25 +131,25 @@ class TargetClass {
   inline TargetClass(int val, KindType kind) {
     Target.Component.Value = val;
     Target.Component.Kind = kind;
-  };
-  inline TargetClass(int val) { Target.Raw = val; };
-  inline operator int() { return Target.Raw; };
+  }
+  inline TargetClass(int val) { Target.Raw = val; }
+  inline operator int() { return Target.Raw; }
   // inline TargetClass & operator = (const int &val) {*((int*)this)=val; return
   // *this;};
 
-  inline bool Is_Filled() { return Target.Component.Kind != KIND_NONE; };
-  inline void Invalidate() { Target.Component.Kind = 0; };
-  inline bool Is_Cell() { return Target.Component.Kind == KIND_CELL; };
-  inline bool Is_Unit() { return Target.Component.Kind == KIND_UNIT; };
-  inline bool Is_Building() { return Target.Component.Kind == KIND_BUILDING; };
-  inline bool Is_Aircraft() { return Target.Component.Kind == KIND_AIRCRAFT; };
-  inline int As_Value() { return Target.Component.Value; };
-  inline KindType As_Kind() { return Target.Component.Kind; };
+  inline bool Is_Filled() { return Target.Component.Kind != KIND_NONE; }
+  inline void Invalidate() { Target.Component.Kind = 0; }
+  inline bool Is_Cell() { return Target.Component.Kind == KIND_CELL; }
+  inline bool Is_Unit() { return Target.Component.Kind == KIND_UNIT; }
+  inline bool Is_Building() { return Target.Component.Kind == KIND_BUILDING; }
+  inline bool Is_Aircraft() { return Target.Component.Kind == KIND_AIRCRAFT; }
+  inline int As_Value() { return Target.Component.Value; }
+  inline KindType As_Kind() { return Target.Component.Kind; }
 
   // Allows comparing one target to another (for equality).
   inline bool operator==(TargetClass t1) {
     return (Target.Raw == t1.Target.Raw);
-  };
+  }
 
   UnitClass* As_Unit();
   BuildingClass* As_Building();
@@ -191,7 +191,7 @@ TechnoClass* As_Techno(TARGET target);
 // TerrainClass * As_Terrain(TARGET target);
 TriggerClass* As_Trigger(TARGET target);
 UnitClass* As_Unit(TARGET target);
-inline bool Target_Legal(TARGET target) { return target != kTargetNone; };
+inline bool Target_Legal(TARGET target) { return target != kTargetNone; }
 ObjectClass* As_Object(TARGET target);
 
 #endif  // CNC_RED_ALERT_TD_TARGET_H_

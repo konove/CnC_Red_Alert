@@ -1631,13 +1631,12 @@ MoveType InfantryClass::Can_Enter_Cell(CELL cell, FacingType /*unused*/) const {
     if ((obj != this) &&
         ((Mission != MISSION_CAPTURE && Mission != MISSION_SABOTAGE) ||
          obj->What_Am_I() != RTTI_AIRCRAFT ||
-         !dynamic_cast<AircraftClass*>(obj)->In_Radio_Contact()))
-    /*
-    **	Special case check so that a landed aircraft that is in radio
-    *contact, will not block *	a capture attempt. It is presumed that
-    *this case happens when a helicopter is landed *	at a helipad.
-    */
-    {
+         !dynamic_cast<AircraftClass*>(obj)->In_Radio_Contact())) {
+      /*
+      **	Special case check so that a landed aircraft that is in radio
+      *contact, will not block *	a capture attempt. It is presumed that
+      *this case happens when a helicopter is landed *	at a helipad.
+      */
       /*
       **	Special check to always allow entry into the building that this
       *infantry *	is trying to capture.

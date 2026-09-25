@@ -1489,11 +1489,10 @@ void BuildingClass::AI() {
   */
   if ((Class->IsTurretEquipped && Mission != MISSION_CONSTRUCTION &&
        Mission != MISSION_DECONSTRUCTION) &&
-      PrimaryFacing.Is_Rotating())
-  /*
-  **	Rotate turret to match desired facing.
-  */
-  {
+      PrimaryFacing.Is_Rotating()) {
+    /*
+    **	Rotate turret to match desired facing.
+    */
     if (*this == STRUCT_SAM) {
       if (PrimaryFacing.Rotation_Adjust(15)) {
         Mark(MARK_CHANGE);

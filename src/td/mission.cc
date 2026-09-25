@@ -77,25 +77,25 @@
 
 MissionClass::MissionClass() { Timer = 0; }
 
-int MissionClass::Mission_Sleep() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Ambush() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Attack() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Capture() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Guard() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Guard_Area() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Harvest() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Hunt() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Timed_Hunt() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Move() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Retreat() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Return() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Stop() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Unload() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Enter() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Construction() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Deconstruction() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Repair() { return kTicksPerSecond * 30; };
-int MissionClass::Mission_Missile() { return kTicksPerSecond * 30; };
+int MissionClass::Mission_Sleep() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Ambush() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Attack() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Capture() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Guard() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Guard_Area() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Harvest() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Hunt() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Timed_Hunt() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Move() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Retreat() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Return() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Stop() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Unload() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Enter() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Construction() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Deconstruction() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Repair() { return kTicksPerSecond * 30; }
+int MissionClass::Mission_Missile() { return kTicksPerSecond * 30; }
 
 /***********************************************************************************************
  * MissionClass::Set_Mission -- Sets the mission to the specified value. *

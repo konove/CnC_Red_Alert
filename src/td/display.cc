@@ -3875,4 +3875,4 @@ void DisplayClass::Flag_Cell(CELL cell) {
   Flag_To_Redraw(false);
   IsDisplayToRedraw = true;
   CellRedraw.at(base::ToSize(cell)) = true;
-};
+}

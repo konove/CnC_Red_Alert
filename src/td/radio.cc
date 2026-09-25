@@ -202,4 +202,4 @@ bool RadioClass::Limbo() {
 RadioMessageType RadioClass::Transmit_Message(RadioMessageType message,
                                               RadioClass* to) {
   return Transmit_Message(message, DiscardedParam(), to);
-};
+}

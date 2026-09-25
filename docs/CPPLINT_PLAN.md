@@ -85,3 +85,11 @@ row to run cpplint on the touched files; CLAUDE.md's Tools table and dependency 
   - `readability/inheritance` (2026-09-25): 10 methods declared `virtual ... final` in the class
     that introduces them (`LinkClass::Head_Of_List()`, `ListClass::Remove_Scroll_Bar()`,
     `WinsockInterfaceClass::Close_Socket()`, ...), which nothing can override. Both keywords went.
+  - `readability/braces` (2026-09-25): 182 findings, none a missing brace - clang-tidy already
+    enforces those on compiled code. 71 were a `;` after a function body. The rest were comment
+    layouts: a trailing `// comment` or a `/* */` banner between a condition and its `{`, or between
+    `}` and `else`, which now sit inside the branch they describe. Five were cpplint misreading a
+    wrapped `else if constexpr (...)` condition; `config::kIsGerman`/`kIsFrench` (new in TD) keep
+    those on one line. Three more straddled a preprocessor branch: TD's `#ifndef DEMO` guards
+    (`DEMO` is never defined) and a dead `#ifdef JAPANESE` block went, and `init.cc`'s `_WIN32` else
+    gained its own `#else`.

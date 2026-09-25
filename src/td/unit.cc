@@ -1194,7 +1194,7 @@ void UnitClass::Active_Click_With(ActionType action, ObjectClass* object) {
 
 void UnitClass::Active_Click_With(ActionType action, CELL cell) {
   TarComClass::Active_Click_With(action, cell);
-};
+}
 
 /***********************************************************************************************
  * UnitClass::Enter_Idle_Mode -- Unit enters idle mode state. *

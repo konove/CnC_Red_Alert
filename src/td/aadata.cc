@@ -428,4 +428,4 @@ void AircraftTypeClass::Dimensions(int& width, int& height) const {
   height = 20;
 }
 
-RTTIType AircraftTypeClass::What_Am_I() const { return RTTI_AIRCRAFTTYPE; };
+RTTIType AircraftTypeClass::What_Am_I() const { return RTTI_AIRCRAFTTYPE; }

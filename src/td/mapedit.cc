@@ -1433,11 +1433,10 @@ void MapEditClass::Draw_It(PixelView& view, bool forced) {
   the HIDPAGE; then, update the buttons & text labels onto HIDPAGE;
   then invoke the parent's Redraw to blit the HIDPAGE to SEENPAGE.
   ------------------------------------------------------------------------*/
-  if (forced && TheWorld().current_object().Count())
-  /*
-  ....................... Update the text labels ........................
-  */
-  {
+  if (forced && TheWorld().current_object().Count()) {
+    /*
+    ....................... Update the text labels ........................
+    */
     /*
     ------------------ Display the object's name & ID ------------------
     */
