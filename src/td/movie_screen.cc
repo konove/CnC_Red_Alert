@@ -7,6 +7,7 @@
 
 #include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/video/vqa/vqa_player.h"
 #include "engine/window/display.h"
 #include "engine/window/keyboard.h"
 #include "td/debug_state.h"
@@ -16,7 +17,6 @@
 #include "td/palette.h"
 #include "td/screen.h"
 #include "td/winstub.h"
-#include "winvq/vqa32/vqa_player.h"
 
 namespace {
 

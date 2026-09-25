@@ -38,5 +38,5 @@ add_gtest(
             fixed_test.cc flags_test.cc hsv_test.cc installed_test.cc numeric_test.cc
             strings/format_test.cc strings/number_parse_test.cc strings/safe_string_test.cc
             strings/tokenizer_test.cc unaligned_test.cc
-        LIBS engine_base tech
+        LIBS engine_base engine_stream
 )

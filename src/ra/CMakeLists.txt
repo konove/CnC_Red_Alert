@@ -91,10 +91,9 @@ apply_language_setting(rasdl)
 # magic_enum is PUBLIC because the public header defines.h includes it; the
 # interface-header-set verification compiles that header standalone.
 target_link_libraries(ra_engine PUBLIC absl::strings magic_enum::magic_enum
-        tech
         engine_net
         engine_window
-        vqa32
+        engine_video
         absl::check
         absl::core_headers
         absl::log
@@ -109,7 +108,7 @@ include(Testing)
 add_gtest(
     NAME ra_ini_number_test
     SOURCES ini_number_test.cc ini.cc profile_buffer_test.cc profile.cc
-    LIBS tech absl::strings absl::check absl::log magic_enum::magic_enum
+    LIBS engine_file absl::strings absl::check absl::log magic_enum::magic_enum
 )
 
 add_gtest(
@@ -140,7 +139,7 @@ apply_language_setting(ra_drop_test)
 add_gtest(
     NAME ra_assets_test
     SOURCES assets_test.cc assets.cc ini.cc
-    LIBS engine_base tech magic_enum::magic_enum absl::strings absl::check absl::log
+    LIBS engine_base engine_file magic_enum::magic_enum absl::strings absl::check absl::log
 )
 apply_language_setting(ra_assets_test)
 
@@ -195,21 +194,21 @@ add_gtest(
 add_gtest(
     NAME ra_winbits_test
     SOURCES winbits_test.cc winbits.cc dib.cc
-    LIBS engine_base engine_gfx tech vqa32 absl::strings absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base engine_gfx absl::strings absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_winbits_test)
 
 add_gtest(
     NAME ra_heap_test
     SOURCES heap_test.cc heap.cc
-    LIBS engine_base tech absl::check absl::log absl::strings magic_enum::magic_enum
+    LIBS engine_base engine_stream absl::check absl::log absl::strings magic_enum::magic_enum
 )
 apply_language_setting(ra_heap_test)
 
 add_gtest(
     NAME ra_crate_test
     SOURCES crate_test.cc
-    LIBS engine_base tech absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base engine_stream absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_crate_test)
 
@@ -217,21 +216,21 @@ apply_language_setting(ra_crate_test)
 add_gtest(
     NAME ra_intro_test
     SOURCES intro_test.cc intro.cc
-    LIBS engine_base tech engine_window absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base engine_window absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_intro_test)
 
 add_gtest(
     NAME ra_saveglobals_test
     SOURCES saveglobals_test.cc saveglobals.cc ipxaddr.cc
-    LIBS engine_base tech absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base engine_stream absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_saveglobals_test)
 
 add_gtest(
     NAME ra_fixed_point_test
     SOURCES fixed_point_test.cc
-    LIBS engine_base tech absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base engine_gfx absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_fixed_point_test)
 

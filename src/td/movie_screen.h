@@ -3,7 +3,7 @@
 #ifndef CNC_RED_ALERT_TD_MOVIE_SCREEN_H_
 #define CNC_RED_ALERT_TD_MOVIE_SCREEN_H_
 
-#include "winvq/vqa32/vqa_player.h"
+#include "engine/video/vqa/vqa_player.h"
 
 // Copies each frame, centered, into the 320x200 system memory page, sets its
 // palette, and scales the page to the screen. Esc stops the movie where

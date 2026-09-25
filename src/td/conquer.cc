@@ -102,6 +102,9 @@
 #include "engine/stream/archive.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_stream.h"
+#include "engine/video/game_file_vqa_io.h"
+#include "engine/video/mixer_vqa_audio.h"
+#include "engine/video/vqa/vqa_player.h"
 #include "engine/window/display.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/misc.h"
@@ -174,9 +177,6 @@
 #include "td/vector.h"
 #include "td/winstub.h"
 #include "td/world.h"
-#include "tech/game_file_vqa_io.h"
-#include "tech/mixer_vqa_audio.h"
-#include "winvq/vqa32/vqa_player.h"
 
 #ifdef _WIN32
 #include "td/ccdde.h"

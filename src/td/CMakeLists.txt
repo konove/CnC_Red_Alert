@@ -47,7 +47,7 @@ endif ()
 target_compile_definitions(td_engine PUBLIC TD=1)
 apply_dotenv_settings(td_engine)
 apply_dotenv_settings(tdsdl)
-target_link_libraries(td_engine PUBLIC tech engine_net engine_window vqa32 absl::strings absl::algorithm absl::check absl::core_headers absl::log absl::log_initialize absl::random_random absl::span)
+target_link_libraries(td_engine PUBLIC engine_net engine_window engine_video absl::strings absl::algorithm absl::check absl::core_headers absl::log absl::log_initialize absl::random_random absl::span)
 target_link_libraries(tdsdl PRIVATE td_engine)
 
 install(TARGETS tdsdl)
@@ -66,7 +66,7 @@ apply_dotenv_settings(td_archive_roundtrip_test)
 add_gtest(
     NAME td_saveload_test
     SOURCES savevalues_test.cc cellvalues.cc scorevalues.cc door.cc flasher.cc fuse.cc super.cc fixedmath.cc rand.cc
-    LIBS engine_base tech
+    LIBS engine_base engine_stream
 )
 
 target_compile_definitions(td_saveload_test PRIVATE TD=1)
@@ -82,7 +82,7 @@ apply_dotenv_settings(td_game_test)
 add_gtest(
     NAME td_assets_test
     SOURCES assets_test.cc assets.cc
-    LIBS engine_base tech magic_enum::magic_enum absl::check absl::log absl::strings
+    LIBS engine_base engine_file magic_enum::magic_enum absl::check absl::log absl::strings
 )
 
 add_gtest(
@@ -106,14 +106,13 @@ add_gtest(
 add_gtest(
     NAME td_heap_test
     SOURCES heap_test.cc heap.cc
-    LIBS tech
+    LIBS engine_base engine_stream
 )
 target_compile_definitions(td_heap_test PRIVATE TD=1)
 
 add_gtest(
     NAME td_fixedmath_test
     SOURCES fixedmath_test.cc fixedmath.cc
-    LIBS tech
 )
 target_compile_definitions(td_fixedmath_test PRIVATE TD=1)
 

@@ -131,9 +131,9 @@ class AudioMixer {
   // device's format. The device callback; public for tests.
   void Mix(std::span<std::byte> output);
 
-  // The VQA player shares the device (see tech/mixer_vqa_audio.h): it locks
-  // it by id, converts to its format, and installs a callback that fills each
-  // device buffer before Mix() adds to it.
+  // The VQA player shares the device (see engine/video/mixer_vqa_audio.h): it
+  // locks it by id, converts to its format, and installs a callback that
+  // fills each device buffer before Mix() adds to it.
   [[nodiscard]] uint32_t device_id() const { return device_; }
   [[nodiscard]] const SDL_AudioSpec& output_spec() const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {

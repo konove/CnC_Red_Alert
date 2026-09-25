@@ -53,6 +53,9 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wsa_animation.h"
 #include "engine/platform/timer.h"
+#include "engine/video/game_file_vqa_io.h"
+#include "engine/video/mixer_vqa_audio.h"
+#include "engine/video/vqa/vqa_player.h"
 #include "engine/window/keyboard.h"
 #include "engine/window/misc.h"
 #include "engine/window/ww_mouse.h"
@@ -71,9 +74,6 @@
 #include "td/screen.h"
 #include "td/special.h"
 #include "td/world.h"
-#include "tech/game_file_vqa_io.h"
-#include "tech/mixer_vqa_audio.h"
-#include "winvq/vqa32/vqa_player.h"
 
 #ifndef DEMO
 

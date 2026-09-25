@@ -36,5 +36,5 @@ add_gtest(
         NAME engine_platform_test
         SOURCES env_test.cc file_system_test.cc ftimer_test.cc random_seed_test.cc sleep_test.cc
             win32/win32_com_test.cc win32/win32_system_test.cc
-        LIBS engine_platform tech
+        LIBS engine_platform engine_stream
 )

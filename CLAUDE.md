@@ -179,15 +179,13 @@ engine/      → The shared libraries, moving here one folder at a time (docs/EN
                [depends: engine_file, engine_codec]
   window/    → The SDL2 window: presenting, palette, cursor, keyboard, event loop (target
                `engine_window`; links SDL2) [depends: engine_gfx]
-winvq/vqa32  → VQA video codec (target name `vqa32`) [depends: engine_base, engine_stream,
-             engine_codec, SDL2]
-tech/        → The movie-file glue: adapts the game's files and audio mixer for VQA playback;
-             archives and disk I/O moved to engine/file/, packets and sockets to engine/net/, image
-             formats to engine/gfx/, the audio mixer to engine/audio/, the window to engine/window/
-             [depends: vqa32, engine_platform, engine_stream, engine_codec, engine_crypto,
-             engine_file, engine_audio]
-ra/          → Red Alert (~200 files) [depends: tech, engine_net, engine_window, vqa32]
-td/          → Tiberian Dawn (~288 files) [depends: tech, engine_net, engine_window, vqa32]
+  video/     → The movie-file glue: adapts the game's files and audio mixer for VQA playback
+               (target `engine_video`; links SDL2) [depends: engine_file, engine_audio,
+               engine_vqa]
+    vqa/     → The standalone VQA video codec, independent of engine/file and engine/audio
+               (target `engine_vqa`) [depends: engine_stream, engine_codec, SDL2]
+ra/          → Red Alert (~200 files) [depends: engine_net, engine_window, engine_video]
+td/          → Tiberian Dawn (~288 files) [depends: engine_net, engine_window, engine_video]
 ```
 
 **Class hierarchy:**
@@ -401,7 +399,7 @@ Omit the `std::` prefix on fixed-width types. See `docs/TYPE_MIGRATION.md` for f
 | Global state | `ra/externs.h`                                             |
 | Streams      | `engine/stream/byte_sink.h`, `engine/stream/byte_source.h` |
 | Graphics     | `engine/gfx/pixel_buffer.h`                                |
-| Video        | `winvq/vqa32/vqa_player.h`                                 |
+| Video        | `engine/video/vqa/vqa_player.h`                            |
 
 ## Platform Notes
 

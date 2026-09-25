@@ -41,10 +41,10 @@
 #include "engine/audio/audio_mixer.h"
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
-#include "tech/game_file_vqa_io.h"
-#include "tech/mixer_vqa_audio.h"
+#include "engine/video/game_file_vqa_io.h"
+#include "engine/video/mixer_vqa_audio.h"
+#include "engine/video/vqa/vqa_player.h"
 #include "tools/game_data.h"
-#include "winvq/vqa32/vqa_player.h"
 
 namespace {
 

@@ -213,9 +213,7 @@ include(GoogleTest)
 enable_testing()
 
 add_subdirectory(src/engine)
-add_subdirectory(src/winvq)
 add_subdirectory(third_party)
-add_subdirectory(src/tech)
 
 add_subdirectory(src/tools)
 add_subdirectory(src/ra)
