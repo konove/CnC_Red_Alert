@@ -48,7 +48,7 @@ class ArchiveWriter;
 
 #include "absl/base/attributes.h"
 #include "engine/base/numeric.h"
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "td/building.h"
 #include "td/defines.h"
 #include "td/foot.h"

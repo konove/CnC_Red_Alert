@@ -49,6 +49,7 @@
 #include "absl/strings/str_format.h"
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/base.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -72,7 +73,6 @@
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 
 /***************************************************************************

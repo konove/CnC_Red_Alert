@@ -68,11 +68,11 @@
 #include <string_view>
 
 #include "engine/base/numeric.h"
-#include "sdllib/font.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 #include "td/conquer.h"
 #include "td/control.h"
 #include "td/defines.h"

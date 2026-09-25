@@ -45,7 +45,7 @@
 #include <cstdint>
 #include <span>
 
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "td/bullet.h"
 #include "td/cargo.h"
 #include "td/crew.h"

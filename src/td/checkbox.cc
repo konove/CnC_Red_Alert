@@ -40,9 +40,9 @@
 
 #include "td/checkbox.h"
 
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/toggle.h"

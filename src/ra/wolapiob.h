@@ -35,12 +35,12 @@
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/platform.h"
 #include "ra/dib.h"
 #include "ra/iconlist.h"
 #include "ra/rawolapi.h"
 #include "ra/winbits.h"
-#include "sdllib/pixel_buffer.h"
 
 //***********************************************************************************************
 class IconListClass;

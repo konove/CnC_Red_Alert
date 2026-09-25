@@ -86,8 +86,8 @@
 #define CNC_RED_ALERT_TD_GADGET_H_
 
 #include "engine/base/attributes.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "td/link.h"
 
 class ControlClass;

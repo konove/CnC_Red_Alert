@@ -76,6 +76,8 @@
 #include "engine/file/disk_file.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/platform/env.h"
 #include "engine/platform/file_system.h"
 #include "engine/stream/archive.h"
@@ -104,8 +106,6 @@
 #include "ra/queue.h"
 #include "ra/unit.h"
 #include "ra/world.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
 
 // #include "WolDebug.h"
 

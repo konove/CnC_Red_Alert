@@ -43,13 +43,13 @@
 #include <cstddef>
 
 #include "absl/base/attributes.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/game_state.h"
 #include "ra/object.h"
 #include "ra/type.h"
-#include "sdllib/pixel_buffer.h"
 
 /******************************************************************************
 **	This class controls the overlay object. Overlay objects function

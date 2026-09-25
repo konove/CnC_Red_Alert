@@ -46,6 +46,10 @@
 #include "engine/base/types.h"
 #include "engine/file/disk_file.h"
 #include "engine/file/file_access.h"
+#include "engine/gfx/glow_pulse.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rgb.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/timer.h"
 #include "magic_enum/magic_enum.hpp"
@@ -109,12 +113,8 @@
 #include "ra/world.h"
 #include "sdllib/display.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 #include "tech/audio_mixer.h"
-#include "tech/glow_pulse.h"
-#include "tech/rgb.h"
 
 // Cycles the animated palette entries. Two effects run off independent timers:
 // a white that pulses between bright and half-dark, used by the radar box and

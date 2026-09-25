@@ -83,6 +83,7 @@
 #include "engine/codec/block_codec.h"
 #include "engine/codec/lcw_sink.h"
 #include "engine/codec/lcw_source.h"
+#include "engine/gfx/tile.h"
 #include "engine/platform/memflag.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
@@ -111,7 +112,6 @@
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
-#include "sdllib/tile.h"
 
 #define MCW MAP_CELL_W
 const int MapClass::RadiusOffset[] = {

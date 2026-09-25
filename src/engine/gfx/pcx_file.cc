@@ -1,0 +1,177 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/***************************************************************************
+ **   C O N F I D E N T I A L --- W E S T W O O D   A S S O C I A T E S   **
+ ***************************************************************************
+ *                                                                         *
+ *                 Project Name : iff                                      *
+ *                                                                         *
+ *                    File Name : WRITEPCX.CPP                             *
+ *                                                                         *
+ *                   Programmer : Julio R. Jerez                           *
+ *                                                                         *
+ *                   Start Date : May 2, 1995                              *
+ *                                                                         *
+ *                  Last Update : May 2, 1995   [JRJ]                      *
+ *                                                                         *
+ *-------------------------------------------------------------------------*
+ * Functions:                                                              *
+ * int Save_PCX_File (char* name, PixelView& pic, char* palette)*
+ *= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =*/
+
+#include "engine/gfx/pcx_file.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <span>
+
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/stream/byte_stream.h"
+
+static void Write_Pcx_ScanLine(ByteStream& file,
+                               std::span<const uint8_t> pixels);
+
+/***************************************************************************
+ * WRITE_PCX_FILE -- Write the data in ViewPort to a pcx file              *
+ *                                                                         *
+ *                                                                         *
+ *                                                                         *
+ * INPUT:  name is a NULL terminated string of the fromat [xxxx.pcx]
+ ** pic	 is a pointer to a PixelView or to a
+ ** PixelBuffer holding the picture.
+ ** palette is a pointer the the memry block holding the color 		*
+ ** palette of the picture.                                    *
+ *                                                                         *
+ * OUTPUT: FALSE  if the function fails zero otherwise *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   05/04/1995 JRJ : Created.                                             *
+ *   08/01/1995 SKB : Copy the palette so it is not modified.              *
+ *=========================================================================*/
+int Write_PCX_File(const char* name, PixelView& pic,
+                   std::span<const unsigned char> palette) {
+  unsigned char palcopy[256 * 3];
+  unsigned i = 0;
+  PCX_HEADER header = {10,  5,   1,  8, 0, 0,   319, 199,
+                       320, 200, {}, 0, 1, 320, 1,   {}};
+
+  const auto file = OpenGameFile(name, FileAccess::kWrite);
+  if (!file) {
+    return 0;
+  }
+
+  header.width = static_cast<int16_t>(pic.width() - 1);
+  header.height = static_cast<int16_t>(pic.height() - 1);
+  header.byte_per_line = static_cast<int16_t>(pic.width());
+  file->WriteObject(header);
+
+  const int VP_Scan_Line = pic.width() + pic.x_add();
+  PixelBuffer* Graphic_Buffer = pic.buffer();
+  const auto pixels = Graphic_Buffer->bytes().subspan(
+      base::ToSize((pic.y_pos() * VP_Scan_Line) + pic.x_pos()));
+  for (i = 0; i < static_cast<unsigned>(header.height) + 1; i++) {
+    Write_Pcx_ScanLine(
+        *file, pixels.subspan(i * static_cast<std::size_t>(VP_Scan_Line),
+                              static_cast<std::size_t>(header.byte_per_line)));
+  }
+  base::CopyBytes(base::ObjectBytes(palcopy), std::as_bytes(palette),
+                  sizeof(palcopy));
+  // Scale the 6-bit palette components to 8 bits.
+  for (unsigned char& component : palcopy) {
+    component = static_cast<unsigned char>(component << 2);
+  }
+  i = 0x0c;
+  file->Write(base::ObjectBytes(i).first(1));
+  file->Write(base::ObjectBytes(palcopy));
+  return 0;
+}
+
+/***************************************************************************
+ * WRITE_PCX_SCANLINE -- function to write a single pcx scanline to a file *
+ *                                                                         *
+ *                                                                         *
+ * INPUT:                                                                  *
+ *                                                                         *
+ * OUTPUT:                                                                 *
+ *                                                                         *
+ * WARNINGS:                                                               *
+ *                                                                         *
+ * HISTORY:                                                                *
+ *   05/04/1995 JRJ : Created.                                             *
+ *=========================================================================*/
+
+constexpr int kPoolSize = 2048;
+void Write_Pcx_ScanLine(ByteStream& file, std::span<const uint8_t> pixels) {
+  unsigned char pool[kPoolSize];
+
+  std::size_t used = 0;
+  if (pixels.empty()) {
+    return;
+  }
+
+  const auto write_char = [&](unsigned char x) {
+    base::At(pool, used++) = x;
+    if (used >= kPoolSize) {
+      file.Write(base::ObjectBytes(pool));
+      used = 0;
+    }
+  };
+  unsigned last = pixels.front();
+  unsigned rle = 1;
+
+  for (unsigned i = 1; i < pixels.size(); i++) {
+    const unsigned color = base::At(pixels, i);
+    if (color == last) {
+      rle++;
+      if (rle == 63) {
+        write_char(255);
+        write_char(static_cast<unsigned char>(color));
+        rle = 0;
+      }
+    } else {
+      if (rle) {
+        if (rle == 1 && (192 != (192 & last))) {
+          write_char(static_cast<unsigned char>(last));
+        } else {
+          write_char(static_cast<unsigned char>(rle | 192));
+          write_char(static_cast<unsigned char>(last));
+        }
+      }
+      last = color;
+      rle = 1;
+    }
+  }
+  if (rle) {
+    if (rle == 1 && (192 != (192 & last))) {
+      write_char(static_cast<unsigned char>(last));
+    } else {
+      write_char(static_cast<unsigned char>(rle | 192));
+      write_char(static_cast<unsigned char>(last));
+    }
+  }
+
+  file.Write(base::ObjectBytes(pool).first(used));
+}

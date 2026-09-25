@@ -158,6 +158,10 @@
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
+#include "engine/gfx/text_window.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/assets.h"
@@ -214,10 +218,6 @@
 #include "ra/world.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
-#include "sdllib/text_window.h"
-#include "sdllib/wwstd.h"
 
 /***************************************************************************
 **	Cloaking control values.

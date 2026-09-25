@@ -48,6 +48,10 @@
 #include "engine/base/array.h"
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/text_window.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/compat.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
@@ -72,14 +76,10 @@
 #include "ra/version.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"
-#include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/text_window.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
-#include "sdllib/wwstd.h"
 
 namespace {
 

@@ -11,7 +11,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/base/installed.h"
-#include "sdllib/pixel_surface.h"
+#include "engine/gfx/pixel_surface.h"
 
 // Owns the one window the program opens, the renderer that presents it, and
 // the 8-bit paletted surface the game draws the window's contents on. Each

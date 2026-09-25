@@ -44,13 +44,13 @@
 #include <cstdint>
 #include <span>
 
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/gadget.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 
 class RadarClass : public DisplayClass {
  public:

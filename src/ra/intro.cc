@@ -21,6 +21,7 @@
 
 #include "ra/intro.h"
 
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/defines.h"
 #include "ra/game_state.h"
 #include "ra/init.h"
@@ -30,7 +31,6 @@
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/text_ids.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 
 // ajw: in RA, all this did was play a movie. Denzil's DVD support uses it in

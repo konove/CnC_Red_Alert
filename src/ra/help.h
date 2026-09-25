@@ -43,6 +43,8 @@
 #include <cstdint>
 #include <span>
 
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/platform/ftimer.h"
 #include "ra/defines.h"
 #include "ra/face.h"
@@ -50,8 +52,6 @@
 #include "ra/tab.h"
 #include "ra/text_ids.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
 
 #define HELP_TEXT_COLOR 80  // 158		//Goldy/orange
 

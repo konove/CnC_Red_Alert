@@ -6,7 +6,7 @@
 #include <array>
 
 #include "absl/base/attributes.h"
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/pixel_buffer.h"
 
 // The two pages a full-screen presentation draws through - the score screens,
 // the map selection, the side choice and the Nod ending.

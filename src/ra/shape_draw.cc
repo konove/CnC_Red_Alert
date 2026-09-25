@@ -30,6 +30,13 @@
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
+#include "engine/gfx/2keyfbuf.h"
+#include "engine/gfx/bitmap.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
+#include "engine/gfx/shape.h"
+#include "engine/gfx/text_window.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/face.h"
@@ -37,13 +44,6 @@
 #include "ra/interpal.h"
 #include "ra/keyframe.h"
 #include "ra/screen.h"
-#include "sdllib/bitmap.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
-#include "sdllib/text_window.h"
-#include "sdllib/wwstd.h"
-#include "tech/2keyfbuf.h"
-#include "tech/rect.h"
 
 void CC_Draw_Shape(PixelView& view, const std::span<const std::byte> shapefile,
                    const int shape_num, const int x, const int y,

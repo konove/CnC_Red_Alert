@@ -48,7 +48,7 @@
 #include "engine/base/attributes.h"
 #include "engine/base/enum_array.h"
 #include "engine/base/numeric.h"
-#include "sdllib/wwstd.h"
+#include "engine/gfx/wwstd.h"
 #include "td/special.h"
 
 /**********************************************************************

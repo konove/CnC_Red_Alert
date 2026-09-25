@@ -49,13 +49,13 @@
 #include "engine/base/attributes.h"
 #include "engine/base/enum_array.h"
 #include "engine/base/strings/tokenizer.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/ftimer.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
 #include "ra/object.h"
 #include "ra/teamtype.h"
-#include "sdllib/pixel_buffer.h"
 
 /*
 **	These are the trigger events that are checked for and if qualified, they

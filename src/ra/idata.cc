@@ -64,6 +64,8 @@
 #include "absl/strings/match.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -85,8 +87,6 @@
 #include "ra/type.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 
 static DoInfoStruct DogDoControls[magic_enum::enum_count<DoType>()] = {
     {0, 1, 1},      // DO_STAND_READY

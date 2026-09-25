@@ -155,6 +155,7 @@
 #include "engine/base/numeric.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/types.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/audio.h"
@@ -216,7 +217,6 @@
 #include "ra/vessel.h"
 #include "ra/vortex.h"
 #include "ra/world.h"
-#include "sdllib/pixel_buffer.h"
 
 TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
 

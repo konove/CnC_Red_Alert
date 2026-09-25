@@ -41,8 +41,8 @@ size);
 
 #include <cstdint>
 
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/palette.h"
-#include "sdllib/pixel_buffer.h"
 
 class ByteStream;
 

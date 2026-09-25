@@ -45,9 +45,9 @@
 
 #include "ra/control.h"
 
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/gadget.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 
 /***********************************************************************************************
  * ControlClass::ControlClass -- Constructor for control class objects. *

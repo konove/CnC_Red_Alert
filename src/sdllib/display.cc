@@ -23,7 +23,7 @@
 
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
-#include "sdllib/pixel_surface.h"
+#include "engine/gfx/pixel_surface.h"
 #include "sdllib/ww_win.h"
 
 namespace {

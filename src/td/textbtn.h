@@ -42,7 +42,7 @@
 #define CNC_RED_ALERT_TD_TEXTBTN_H_
 
 #include "absl/base/attributes.h"
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "td/defines.h"
 #include "td/toggle.h"
 

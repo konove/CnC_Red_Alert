@@ -44,7 +44,7 @@
 #include <cstddef>
 #include <span>
 
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "td/toggle.h"
 
 class ShapeButtonClass final : public ToggleClass {

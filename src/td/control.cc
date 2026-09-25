@@ -71,8 +71,8 @@
  *=============================================================================================*/
 #include "td/control.h"
 
+#include "engine/gfx/pixel_buffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "td/gadget.h"
 
 ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,

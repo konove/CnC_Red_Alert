@@ -61,9 +61,9 @@
 
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
 #include "rand.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/cell.h"

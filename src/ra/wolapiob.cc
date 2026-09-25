@@ -31,6 +31,8 @@
 #include "engine/base/buffer.h"
 #include "engine/base/strings/number_parse.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rgb.h"
 #include "engine/platform/win32/win32_types.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -47,8 +49,6 @@
 #include "ra/wolapi/wolapi.h"
 #include "sdllib/display.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
-#include "tech/rgb.h"
 
 #ifdef _WIN32
 #include <winsock.h>

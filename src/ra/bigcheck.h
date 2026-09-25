@@ -24,8 +24,8 @@
 
 #include <string>
 
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/toggle.h"
-#include "sdllib/pixel_buffer.h"
 
 #define BIGCHECK_OFFSETX 20
 #define BIGCHECK_OFFSETY 0

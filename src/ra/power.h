@@ -44,6 +44,7 @@
 #include <cstdint>
 #include <span>
 
+#include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/ftimer.h"
 #include "ra/defines.h"
 #include "ra/display.h"
@@ -51,7 +52,6 @@
 #include "ra/jshell.h"
 #include "ra/radar.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 
 class PowerClass : public RadarClass {
  public:

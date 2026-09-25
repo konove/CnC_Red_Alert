@@ -41,9 +41,9 @@
 #define CNC_RED_ALERT_RA_TEXTBTN_H_
 
 #include "absl/base/attributes.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/defines.h"
 #include "ra/toggle.h"
-#include "sdllib/pixel_buffer.h"
 
 class TextButtonClass final : public ToggleClass {
  public:

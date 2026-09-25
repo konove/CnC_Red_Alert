@@ -16,9 +16,9 @@
 #include <span>
 
 #include "engine/base/types.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/defines.h"
 #include "ra/dib.h"
-#include "sdllib/pixel_buffer.h"
 
 // A window's pixels, locked from construction until destruction.
 //

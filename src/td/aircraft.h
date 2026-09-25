@@ -27,7 +27,7 @@ class ArchiveWriter;
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "td/bullet.h"
 #include "td/defines.h"
 #include "td/facing.h"

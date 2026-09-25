@@ -32,6 +32,7 @@
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
 #include "engine/base/trig.h"
+#include "engine/gfx/rect.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/const.h"
 #include "ra/defines.h"
@@ -39,7 +40,6 @@
 #include "ra/face.h"
 #include "ra/inline.h"
 #include "ra/target.h"
-#include "tech/rect.h"
 
 std::span<const int16_t> Coord_Spillage_List(const COORDINATE coord,
                                              const Rect& rect,

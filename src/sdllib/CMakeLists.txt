@@ -18,17 +18,15 @@ target_sources(sdllib PUBLIC
 find_package(SDL2 REQUIRED)
 # misc.cc includes engine/platform/timer.h. ww_mouse.cc calls
 # engine/codec/lcw_uncompress.h to decode the animated cursor shapes.
-target_link_libraries(sdllib engine_base engine_platform engine_codec SDL2::SDL2 absl::check absl::log absl::strings)
-
-# The fading-table builder, the per-frame window blit and the LCW decoder loop
-# over every palette entry, pixel or compressed byte.
-optimize_in_debug(fading_table.cc pixel_buffer.cc)
+# display.h and ww_mouse.h include engine/gfx/pixel_surface.h and
+# engine/gfx/pixel_buffer.h.
+target_link_libraries(sdllib engine_base engine_platform engine_codec engine_gfx SDL2::SDL2 absl::check absl::log absl::strings)
 
 # Tests
 include(Testing)
 add_gtest(
         NAME sdllib_test
-        SOURCES font_test.cc ww_win_test.cc
+        SOURCES ww_win_test.cc
         LIBS sdllib
 )
 
@@ -41,20 +39,7 @@ add_gtest(
 )
 
 add_gtest(
-        NAME sdllib_pixel_buffer_test
-        SOURCES pixel_buffer_test.cc stamp_test.cc
-        LIBS sdllib
-)
-
-add_gtest(
         NAME sdllib_display_test
         SOURCES display_test.cc
-        LIBS sdllib
-)
-
-# Exercises the game's key-frame/delta chain using the real bounded LCW decoder.
-add_gtest(
-        NAME keyframe_test
-        SOURCES keyframe_test.cc ../ra/2keyfram.cc
         LIBS sdllib
 )

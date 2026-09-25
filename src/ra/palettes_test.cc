@@ -3,9 +3,9 @@
 #include "ra/palettes.h"
 
 #include "engine/base/installed.h"
+#include "engine/gfx/rgb.h"
 #include "gtest/gtest.h"
 #include "ra/defines.h"
-#include "tech/rgb.h"
 
 namespace {
 

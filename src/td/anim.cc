@@ -66,10 +66,10 @@
 #include <span>
 
 #include "engine/base/array.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
 #include "rand.h"
 #include "sdllib/misc.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/cell.h"

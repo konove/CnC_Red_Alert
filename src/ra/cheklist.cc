@@ -56,13 +56,13 @@
 
 #include "absl/strings/str_format.h"
 #include "engine/base/numeric.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
 
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
                                TextPrintType flags,

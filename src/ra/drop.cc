@@ -46,13 +46,13 @@
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/gfx/font.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/edit.h"
 #include "ra/gadget.h"
 #include "ra/keyframe.h"
 #include "ra/link.h"
-#include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 
 DropListClass::DropListClass(int id, std::span<char> text, int max_len,

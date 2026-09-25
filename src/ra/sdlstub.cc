@@ -5,6 +5,7 @@
 
 #include <cstdlib>
 
+#include "engine/gfx/pixel_buffer.h"
 #include "engine/net/net_select.h"
 #include "ra/config.h"
 #include "ra/game_state.h"
@@ -20,7 +21,6 @@
 #include "ra/winstub.h"
 #include "sdllib/display.h"
 #include "sdllib/misc.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "tech/audio_mixer.h"

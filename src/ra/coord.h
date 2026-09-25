@@ -5,9 +5,9 @@
 #include <cstdint>
 #include <span>
 
+#include "engine/gfx/rect.h"
 #include "ra/defines.h"
 #include "ra/face.h"
-#include "tech/rect.h"
 
 // Returns a list of cell offsets that a dirty rectangle overlaps, relative to
 // the cell containing `coord`. The list is kRefreshEol-terminated. If

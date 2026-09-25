@@ -47,12 +47,12 @@
 #include "absl/strings/ascii.h"
 #include "engine/base/enum_array.h"
 #include "engine/base/strings/tokenizer.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/object.h"
 #include "ra/teamtype.h"
-#include "sdllib/pixel_buffer.h"
 
 enum class TActionType {
   TACTION_NONE,

@@ -55,6 +55,8 @@
 #include "engine/base/array.h"
 #include "engine/base/fixed.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"
 #include "ra/house.h"
@@ -65,8 +67,6 @@
 #include "ra/text_ids.h"
 #include "ra/world.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 
 /*
 **	Points to the shape to use for the "desired" power level indicator.

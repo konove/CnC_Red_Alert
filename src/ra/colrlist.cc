@@ -48,14 +48,14 @@
 #include <span>
 
 #include "engine/base/numeric.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
 #include "ra/text_ids.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
 
 /***************************************************************************
  * ColorListClass::ColorListClass -- class constructor                     *

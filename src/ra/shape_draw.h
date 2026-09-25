@@ -25,11 +25,11 @@
 #include <span>
 #include <vector>
 
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
+#include "engine/gfx/shape.h"
 #include "ra/defines.h"
 #include "ra/face.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
-#include "tech/rect.h"
 
 // Draws a shape into `view`. Every shape draw in the game goes through here.
 //

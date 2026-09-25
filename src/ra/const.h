@@ -5,10 +5,10 @@
 #include <string>
 
 #include "engine/base/enum_array.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/config.h"
 #include "ra/defines.h"
 #include "ra/text_ids.h"
-#include "sdllib/wwstd.h"
 
 /***************************************************************************
 **	These are the access passwords used to activate cheat mode, editor mode,

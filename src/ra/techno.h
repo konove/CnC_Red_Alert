@@ -46,6 +46,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/base/fixed.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/ftimer.h"
 #include "ra/bullet.h"
 #include "ra/cargo.h"
@@ -62,7 +63,6 @@
 #include "ra/radio.h"
 #include "ra/stage.h"
 #include "ra/type.h"
-#include "sdllib/pixel_buffer.h"
 
 /****************************************************************************
 **	This is the common data between building and units.

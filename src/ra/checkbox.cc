@@ -41,14 +41,14 @@
 
 #include "ra/checkbox.h"
 
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/compat.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/toggle.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 
 /***********************************************************************************************
  * CheckBoxClass::Draw_Me -- Draws the checkbox imagery. *

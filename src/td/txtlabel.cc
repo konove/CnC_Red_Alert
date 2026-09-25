@@ -55,8 +55,8 @@
  *=============================================================================================*/
 #include "td/txtlabel.h"
 
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "td/defines.h"
 #include "td/dialog.h"
 #include "td/gadget.h"

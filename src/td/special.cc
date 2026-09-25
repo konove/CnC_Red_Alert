@@ -43,10 +43,10 @@
 #include <iterator>
 
 #include "engine/base/array.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 #include "td/checkbox.h"
 #include "td/conquer.h"
 #include "td/defines.h"

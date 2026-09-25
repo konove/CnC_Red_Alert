@@ -37,9 +37,9 @@
 #include <string>
 
 #include "absl/base/attributes.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/list.h"
 #include "ra/vector.h"
-#include "sdllib/pixel_buffer.h"
 
 enum class ICONKIND {
   ICON_SHAPE = 0,  //	pIcon points to a shape.

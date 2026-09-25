@@ -78,7 +78,8 @@
 #include "engine/crypto/key_phrase_hash.h"
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
-#include "sdllib/shape.h"
+#include "engine/gfx/hsv.h"
+#include "engine/gfx/shape.h"
 #include "td/audio.h"
 #include "td/conquer.h"
 #include "td/defines.h"
@@ -90,7 +91,6 @@
 #include "td/session.h"
 #include "td/special.h"
 #include "tech/audio_mixer.h"
-#include "tech/hsv.h"
 
 /***********************************************************************************************
  * OptionsClass::OptionsClass -- The default constructor for the options class.

@@ -1,0 +1,143 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/***************************************************************************
+ **   C O N F I D E N T I A L --- W E S T W O O D    S T U D I O S        **
+ ***************************************************************************
+ *                                                                         *
+ *                 Project Name : WWLIB32                                  *
+ *                                                                         *
+ *                    File Name : SHAPE.H                                  *
+ *                                                                         *
+ *                   Programmer : Bill Randolph                            *
+ *                                                                         *
+ *                   Start Date : May 25, 1994                             *
+ *                                                                         *
+ *                  Last Update : September 14, 1994   [IML]               *
+ *                                                                         *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+#ifndef CNC_RED_ALERT_ENGINE_GFX_SHAPE_H_
+#define CNC_RED_ALERT_ENGINE_GFX_SHAPE_H_
+
+#include <cstddef>
+#include <cstdint>
+#include <span>
+
+#include "engine/base/attributes.h"
+#include "engine/base/flags.h"
+
+/*
+*********************************** Types ***********************************
+*/
+/*
+--------------------------- Shape creation flags ----------------------------
+*/
+// Shape creation flags.
+inline constexpr uint32_t kMakeshapeNormal =
+    0x0000;  // 256-color compressed shape
+inline constexpr uint32_t kMakeshapeCompact =
+    0x0001;  // 16-color shape (with built-in color table)
+inline constexpr uint32_t kMakeshapeNocomp = 0x0002;    // Uncompressed shape
+inline constexpr uint32_t kMakeshapeVariable = 0x0004;  // <16-color shape
+
+/*---------------------------------------------------------------------------
+Shape drawing flags:
+- The low byte is for coordinate transformations.
+- The high byte is for drawing effects.
+---------------------------------------------------------------------------*/
+enum class CNC_FLAG_ENUM ShapeFlags_Type : uint32_t {
+  SHAPE_NORMAL = 0x0000,        // Standard shape
+  SHAPE_HORZ_REV = 0x0001,      // Flipped horizontally
+  SHAPE_VERT_REV = 0x0002,      // Flipped vertically
+  SHAPE_SCALING = 0x0004,       // Scaled (WORD scale_x, WORD scale_y)
+  SHAPE_VIEWPORT_REL = 0x0010,  // Coords are window-relative
+  SHAPE_WIN_REL =
+      0x0010,  // Coordinates are window relative instead of absolute.
+  SHAPE_CENTER = 0x0020,  // Coords are based on shape's center pt
+  SHAPE_TRANS = 0x0040,
+  SHAPE_FADING = 0x0100,    // Fading effect (void * fading_table,
+                            //  WORD fading_num)
+  SHAPE_PREDATOR = 0x0200,  // Transparent warping effect
+  SHAPE_COMPACT = 0x0400,   // Never use this bit
+  SHAPE_PRIORITY = 0x0800,  // Use priority system when drawing
+  SHAPE_GHOST = 0x1000,     // Shape is drawn ghosted
+  SHAPE_SHADOW = 0x2000,
+  SHAPE_PARTIAL = 0x4000,
+  SHAPE_COLOR = 0x8000  // Remap the shape's colors
+                        //  (void * color_table)
+};
+using enum ShapeFlags_Type;
+template <>
+inline constexpr bool base::kIsFlagEnum<ShapeFlags_Type> = true;
+
+/*
+------------------------------- Shape header --------------------------------
+*/
+#pragma pack(push, 1)
+struct Shape_Type {
+  uint16_t ShapeType;            // 0 = normal, 1 = 16 colors,
+                                 // 2 = uncompressed, 4 = <16 colors
+  unsigned char Height;          // Height of the shape in scan lines
+  uint16_t Width;                // Width of the shape in bytes
+  unsigned char OriginalHeight;  // Original height of shape in scan lines
+  uint16_t ShapeSize;            // Size of the shape, including header
+  uint16_t DataLength;           // Size of the uncompressed shape (just data)
+  unsigned char Colortable[16];  // Optional color table for compact shape
+};
+
+/*
+------------------------------- Shape block ---------------------------------
+*/
+struct ShapeBlock_Type {
+  uint16_t NumShapes;  // number of shapes in the block
+  // Offsets follow the count in the file image; the struct is only ever read in
+  // place. NOLINTNEXTLINE(clang-diagnostic-c99-extensions)
+  uint32_t Offsets[];  // array of offsets to shape data
+                       //  (offsets within the shape block, with
+                       //  0 being the first offset value, not the
+                       //  start of the shape block)
+};
+#pragma pack(pop)
+
+/*
+******************************** Prototypes *********************************
+*/
+
+/*
+-------------------------------- prioinit.c ---------------------------------
+*/
+
+extern int ShapeBufferSize;
+extern char* ShapeBuffer;
+extern std::span<uint8_t> ShapeBufferBytes;
+
+/*
+---------------------------------- shape.c ----------------------------------
+*/
+int Extract_Shape_Count(std::span<const std::byte> buffer);
+std::span<const std::byte> Extract_Shape(std::span<const std::byte> buffer,
+                                         int shape);
+
+/*
+------------------------------- setshape.asm --------------------------------
+*/
+void Set_Shape_Buffer(std::span<uint8_t> buffer);
+
+#endif  // CNC_RED_ALERT_ENGINE_GFX_SHAPE_H_
+
+/****************************** End of shape.h *****************************/

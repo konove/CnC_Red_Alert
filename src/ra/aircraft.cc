@@ -123,6 +123,8 @@
 #include "engine/base/strings/tokenizer.h"
 #include "engine/base/trig.h"
 #include "engine/base/types.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/audio.h"
@@ -166,8 +168,6 @@
 #include "ra/vessel.h"
 #include "ra/weapon.h"
 #include "ra/world.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 
 /***********************************************************************************************
  * _Counts_As_Civ_Evac -- Is the specified object a candidate for civilian evac

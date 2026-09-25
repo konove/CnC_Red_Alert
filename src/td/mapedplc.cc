@@ -60,12 +60,12 @@
 #include <span>
 
 #include "engine/base/array.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/text_window.h"
+#include "engine/gfx/wwstd.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/text_window.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
-#include "sdllib/wwstd.h"
 #include "td/base.h"
 #include "td/building.h"
 #include "td/cell.h"

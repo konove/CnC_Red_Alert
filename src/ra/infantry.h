@@ -46,6 +46,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/base/enum_array.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/ftimer.h"
 #include "ra/bullet.h"
 #include "ra/ccini.h"
@@ -59,7 +60,6 @@
 #include "ra/object.h"
 #include "ra/techno.h"
 #include "ra/type.h"
-#include "sdllib/pixel_buffer.h"
 
 class InfantryClass final : public FootClass {
  public:

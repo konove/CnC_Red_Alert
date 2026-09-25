@@ -46,10 +46,11 @@
 #include <filesystem>
 
 #include "absl/strings/str_format.h"
+#include "engine/gfx/pcx_file.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/building.h"
@@ -75,7 +76,6 @@
 #include "td/vector.h"
 #include "td/world.h"
 #include "tech/audio_mixer.h"
-#include "tech/pcx_file.h"
 
 /***********************************************************************************************
  * Debug_Key -- Debug mode keyboard processing. *

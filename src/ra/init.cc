@@ -96,6 +96,10 @@
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/file/search_paths.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rgb.h"
+#include "engine/gfx/shape.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/platform/file_system.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/platform.h"
@@ -164,12 +168,8 @@
 #include "ra/world.h"
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 #include "tech/audio_mixer.h"
-#include "tech/rgb.h"
 
 static RemapControlType SidebarScheme;
 

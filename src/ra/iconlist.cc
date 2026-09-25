@@ -48,6 +48,10 @@
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/strings/tokenizer.h"
 #include "engine/base/types.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/dib.h"
@@ -56,12 +60,8 @@
 #include "ra/shape_draw.h"
 #include "ra/vector_dynamic.h"
 #include "ra/winbits.h"
-#include "sdllib/font.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 
 namespace {
 

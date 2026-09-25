@@ -45,9 +45,9 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"
-#include "sdllib/pixel_buffer.h"
 
 class TextLabelClass : public GadgetClass {
  public:

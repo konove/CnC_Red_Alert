@@ -147,6 +147,9 @@
 #include "engine/crypto/key_phrase_hash.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/timer.h"
@@ -205,11 +208,8 @@
 #include "ra/winstub.h"
 #include "ra/wol_main.h"
 #include "ra/world.h"
-#include "sdllib/font.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 
 // #define OLDWAY			1
 

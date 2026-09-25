@@ -6,9 +6,9 @@
 #include "absl/base/attributes.h"
 #include "engine/base/enum_array.h"
 #include "engine/base/installed.h"
+#include "engine/gfx/rgb.h"
 #include "ra/defines.h"
 #include "ra/palette.h"
-#include "tech/rgb.h"
 
 // The palettes the game switches between and the remap tables it draws text
 // and house colors with. Game owns the one Palettes; everything else reaches

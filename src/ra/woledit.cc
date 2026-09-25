@@ -25,16 +25,16 @@
 
 #include "ra/woledit.h"
 
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
 #include "ra/game_state.h"
 #include "ra/jshell.h"
-#include "sdllib/font.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
 
 //***********************************************************************************************
 void WOLEditClass::Draw_Text(PixelView& view, const char* text) {

@@ -46,12 +46,12 @@
 
 #include "absl/base/attributes.h"
 #include "engine/base/fixed.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/object.h"
 #include "ra/stage.h"
 #include "ra/type.h"
-#include "sdllib/pixel_buffer.h"
 
 /**********************************************************************************************
 **	This is the class that controls the shape animation objects. Shape

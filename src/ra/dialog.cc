@@ -66,6 +66,11 @@
 #include "engine/base/strings/format.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
+#include "engine/gfx/text_window.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/assets.h"
 #include "ra/config.h"
 #include "ra/debug_state.h"
@@ -78,12 +83,7 @@
 #include "ra/screen.h"
 #include "ra/shape_draw.h"
 #include "ra/text_ids.h"
-#include "sdllib/font.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
-#include "sdllib/text_window.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 
 /***********************************************************************************************
  * Dialog_Box -- draws a dialog background box *

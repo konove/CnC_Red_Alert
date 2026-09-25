@@ -21,6 +21,7 @@
 
 #include <algorithm>
 
+#include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "engine/platform/win32/win32_types.h"
 #include "ra/config.h"
@@ -44,7 +45,6 @@
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 
 //***********************************************************************************************

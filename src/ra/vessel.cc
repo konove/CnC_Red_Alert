@@ -83,6 +83,7 @@
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/tokenizer.h"
 #include "engine/base/types.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -121,7 +122,6 @@
 #include "ra/unit.h"
 #include "ra/weapon.h"
 #include "ra/world.h"
-#include "sdllib/pixel_buffer.h"
 
 /***********************************************************************************************
  * VesselClass::VesselClass -- Constructor for vessel class objects. *

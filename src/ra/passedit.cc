@@ -6,8 +6,8 @@
 #include <string_view>
 
 #include "engine/base/array.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/woledit.h"
-#include "sdllib/pixel_buffer.h"
 
 void PassEditClass::Set_Focus() {
   if (bClearOnNextSetFocus) {

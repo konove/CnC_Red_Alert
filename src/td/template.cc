@@ -68,7 +68,7 @@
 #include "engine/base/numeric.h"
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/tokenizer.h"
-#include "sdllib/tile.h"
+#include "engine/gfx/tile.h"
 #include "td/cell.h"
 #include "td/config.h"
 #include "td/conquer.h"

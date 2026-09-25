@@ -23,6 +23,7 @@
 #include <string_view>
 
 #include "engine/base/strings/safe_string.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/sleep.h"
 #include "ra/bigcheck.h"
 #include "ra/conquer.h"
@@ -44,7 +45,6 @@
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 
 // extern char* LoadShpFile( const char* szShpFile );

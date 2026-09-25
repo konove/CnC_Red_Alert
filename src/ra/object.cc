@@ -119,6 +119,9 @@
 #include "engine/base/numeric.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/text_window.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/abstract.h"
 #include "ra/anim.h"
 #include "ra/building.h"
@@ -153,9 +156,6 @@
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/text_window.h"
-#include "sdllib/wwstd.h"
 #include "session.h"
 
 /*

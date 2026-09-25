@@ -25,6 +25,9 @@
 
 #include "engine/base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/platform/sleep.h"
 #include "engine/platform/win32/win32_com.h"
 #include "engine/platform/win32/win32_types.h"
@@ -51,11 +54,8 @@
 #include "ra/wolapiob.h"
 #include "ra/woledit.h"
 #include "ra/wolstrng.h"
-#include "sdllib/font.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 
 static bool ReadSavedNicks(const WolapiObject* pWO, IconListClass& NickList,
                            std::span<char> szNameBuffer,

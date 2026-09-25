@@ -19,7 +19,7 @@
 #ifndef CNC_RED_ALERT_TD_CHECKBOX_H_
 #define CNC_RED_ALERT_TD_CHECKBOX_H_
 
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "td/toggle.h"
 
 // A small 7x7 checkbox gadget that draws an X when toggled on.

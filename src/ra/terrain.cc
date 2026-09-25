@@ -73,6 +73,8 @@
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
 #include "engine/base/strings/number_parse.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
 #include "ra/anim.h"
 #include "ra/ccini.h"
 #include "ra/cell.h"
@@ -97,8 +99,6 @@
 #include "ra/techno.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 
 /***********************************************************************************************
  * TerrainClass::~TerrainClass -- Default destructor for terrain class objects.

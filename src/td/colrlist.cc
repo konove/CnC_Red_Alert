@@ -68,8 +68,8 @@
 #include <span>
 
 #include "engine/base/numeric.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/dialog.h"

@@ -43,7 +43,7 @@
 
 #include <cstdint>
 
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/pixel_buffer.h"
 
 /****************************************************************************
 **	The animating credit counter display is controlled by this class.

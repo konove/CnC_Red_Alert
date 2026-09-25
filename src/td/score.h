@@ -52,9 +52,9 @@ struct FontStyle;
 
 #include "absl/base/attributes.h"
 #include "engine/base/buffer.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
 #include "td/presentation.h"
 
 class ScoreClass {

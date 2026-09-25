@@ -61,6 +61,8 @@
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/text_window.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/compat.h"
 #include "ra/const.h"
@@ -78,8 +80,6 @@
 #include "ra/type.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/text_window.h"
 
 static const TemplateTypeClass Empty(TEMPLATE_CLEAR1,
                                      kTheaterFlagTemperate | kTheaterFlagSnow |

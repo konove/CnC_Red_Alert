@@ -64,6 +64,8 @@
 #include "engine/base/array.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -82,8 +84,6 @@
 #include "ra/type_heaps.h"
 #include "ra/unit.h"
 #include "ra/world.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 
 /*
 **	This is the list of animation stages to use when the harvester

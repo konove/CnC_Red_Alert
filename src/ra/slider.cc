@@ -53,6 +53,7 @@
 
 #include "engine/base/fixed.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -61,7 +62,6 @@
 #include "ra/screen.h"
 #include "ra/shapebtn.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 
 /***********************************************************************************************

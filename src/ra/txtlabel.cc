@@ -40,11 +40,11 @@
 
 #include "ra/txtlabel.h"
 
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
 
 /***********************************************************************************************
  * TextLableClass::TextLabelClass -- Constructor *

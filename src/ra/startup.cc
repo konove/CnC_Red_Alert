@@ -29,6 +29,7 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/memflag.h"
 #include "engine/platform/timer.h"
 #include "ra/game.h"
@@ -37,7 +38,6 @@
 #include "ra/palettes.h"
 #include "ra/screen.h"
 #include "sdllib/misc.h"
-#include "sdllib/pixel_buffer.h"
 #include "tech/audio_mixer.h"
 
 // The test that links this file defines RA_NO_ENTRY_POINT; these headers
@@ -62,6 +62,8 @@
 #include "engine/file/disk_file.h"
 #include "engine/file/file_access.h"
 #include "engine/file/search_paths.h"
+#include "engine/gfx/text_window.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/platform/file_system.h"
 #include "engine/platform/win32/win32_registry.h"
 #include "engine/platform/win32/win32_system.h"
@@ -86,9 +88,7 @@
 #include "ra/startup_options.h"
 #include "ra/winstub.h"
 #include "ra/world.h"
-#include "sdllib/text_window.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 #endif  // RA_NO_ENTRY_POINT
 
 #ifdef _WIN32

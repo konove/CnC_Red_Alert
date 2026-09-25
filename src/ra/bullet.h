@@ -45,6 +45,7 @@
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/face.h"
@@ -53,7 +54,6 @@
 #include "ra/fuse.h"
 #include "ra/object.h"
 #include "ra/type.h"
-#include "sdllib/pixel_buffer.h"
 
 class BulletClass : public ObjectClass, public FlyClass, public FuseClass {
  public:

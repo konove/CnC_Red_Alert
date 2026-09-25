@@ -40,11 +40,11 @@
 #ifndef CNC_RED_ALERT_RA_SLIDER_H_
 #define CNC_RED_ALERT_RA_SLIDER_H_
 
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/control.h"
 #include "ra/gauge.h"
 #include "ra/shapebtn.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 
 /***************************************************************************
  * SliderClass -- Like a Windows ListBox structure

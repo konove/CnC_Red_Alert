@@ -44,6 +44,8 @@
 #include <iterator>
 
 #include "engine/base/array.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -76,9 +78,7 @@
 #include "ra/wolstrng.h"
 #include "ra/world.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *

@@ -58,8 +58,9 @@
 
 #include "absl/strings/str_format.h"
 #include "engine/base/array.h"
+#include "engine/gfx/pcx_file.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "td/config.h"
 #include "td/debug_state.h"
@@ -75,7 +76,6 @@
 #include "td/screen.h"
 #include "td/session.h"
 #include "td/world.h"
-#include "tech/pcx_file.h"
 
 GadgetClass* GScreenClass::Buttons = nullptr;
 

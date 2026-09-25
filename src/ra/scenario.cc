@@ -92,6 +92,9 @@
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
 #include "engine/file/search_paths.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/platform.h"
 #include "magic_enum/magic_enum.hpp"
@@ -166,11 +169,8 @@
 #include "ra/weapon.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"
-#include "sdllib/font.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 #include "tech/audio_mixer.h"
 
 static void Remove_AI_Players();

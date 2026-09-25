@@ -11,7 +11,7 @@
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/base/strings/safe_string.h"
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/pixel_buffer.h"
 
 std::span<uint8_t> Conquer_Build_Fading_Table(std::span<const uint8_t> palette,
                                               std::span<uint8_t> dest,

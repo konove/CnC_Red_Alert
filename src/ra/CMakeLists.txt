@@ -153,7 +153,7 @@ add_gtest(
 add_gtest(
     NAME ra_palettes_test
     SOURCES palettes_test.cc
-    LIBS engine_base tech magic_enum::magic_enum
+    LIBS engine_base engine_gfx magic_enum::magic_enum
 )
 apply_language_setting(ra_palettes_test)
 

@@ -43,6 +43,7 @@
 #include <cstddef>
 
 #include "absl/base/attributes.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -52,7 +53,6 @@
 #include "ra/stage.h"
 #include "ra/techno.h"
 #include "ra/type.h"
-#include "sdllib/pixel_buffer.h"
 
 /****************************************************************************
 **	Each type of terrain has certain pieces of static information associated

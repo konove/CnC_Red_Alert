@@ -125,6 +125,12 @@
 #include "engine/base/types.h"
 #include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/fading_table.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
+#include "engine/gfx/text_window.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
 #include "magic_enum/magic_enum.hpp"
@@ -182,15 +188,9 @@
 #include "ra/vessel.h"
 #include "ra/vortex.h"
 #include "ra/world.h"
-#include "sdllib/fading_table.h"
-#include "sdllib/font.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
-#include "sdllib/text_window.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
-#include "sdllib/wwstd.h"
 
 // Scratch space for packing and unpacking the MapPack INI block.
 static char map_pack_buffer[32000];

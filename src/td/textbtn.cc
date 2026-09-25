@@ -48,10 +48,10 @@
 #include "td/textbtn.h"
 
 #include "engine/base/numeric.h"
-#include "sdllib/font.h"
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 #include "td/conquer.h"
 #include "td/control.h"
 #include "td/defines.h"

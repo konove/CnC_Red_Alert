@@ -133,10 +133,10 @@ TU.
 
 **To check one file without re-analyzing the tree,** run `tools/strict_tu.py <files>`. It builds
 only the objects those sources produce, with the strict directory's own flags, caches and ninja —
-seconds, against the four minutes a change to a header with a 372-TU fan-out (`pixel_buffer.h`)
-costs at `-j14`. A header is checked through its sibling `.cc`. It proves nothing about the other
-includers of a changed header, so it is for the edit loop; the full strict build still gates the
-commit.
+seconds, against the four minutes a change to a header with a 372-TU fan-out
+(`engine/gfx/pixel_buffer.h`) costs at `-j14`. A header is checked through its sibling `.cc`. It
+proves nothing about the other includers of a changed header, so it is for the edit loop; the full
+strict build still gates the commit.
 
 Editing `.clang-tidy` re-checks the whole tree on the next build — its hash rides along in the
 clang-tidy command line, so a config change makes every object stale. No `clean` needed (and `clean`
@@ -172,13 +172,16 @@ engine/      → The shared libraries, moving here one folder at a time (docs/EN
                profile buffer (target `engine_file`) [depends: engine_codec, engine_crypto]
   net/       → Packets and sockets; net/serial/ holds the null-modem driver (target `engine_net`;
                wsock32 and ws2_32 on Windows) [depends: engine_platform]
-sdllib/      → SDL2 abstraction (graphics, audio, input) [depends: SDL2, abseil, engine_platform,
-             engine_codec]
+  gfx/       → Pixel buffers and everything that draws into them: bitmap, font, shape, stamp, tile,
+               text windows, the fading table, PCX/WSA images and HSV/RGB conversion (target
+               `engine_gfx`; no SDL) [depends: engine_file]
+sdllib/      → The SDL2 window: presenting, palette, cursor, keyboard, event loop [depends: SDL2,
+             abseil, engine_platform, engine_codec, engine_gfx]
 winvq/vqa32  → VQA video codec (target name `vqa32`) [depends: engine_base, engine_stream,
              engine_codec, sdllib, SDL2]
-tech/        → Image formats, the audio mixer and the movie-file glue; archives and disk I/O moved to
-             engine/file/, packets and sockets to engine/net/ [depends: sdllib, vqa32, engine_platform,
-             engine_stream, engine_codec, engine_crypto, engine_file]
+tech/        → The audio mixer and the movie-file glue; archives and disk I/O moved to engine/file/,
+             packets and sockets to engine/net/, image formats to engine/gfx/ [depends: sdllib, vqa32,
+             engine_platform, engine_stream, engine_codec, engine_crypto, engine_file]
 ra/          → Red Alert (~200 files) [depends: tech, sdllib, vqa32, engine_net]
 td/          → Tiberian Dawn (~288 files) [depends: tech, sdllib, vqa32, engine_net]
 ```
@@ -221,7 +224,7 @@ Chromium-style paths relative to the `src/` include root (configured via
 
 ```cpp
 #include "ra/object.h"           // Correct
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "object.h"              // WRONG - no relative paths
 #include "src/ra/object.h"       // WRONG - src/ is the include root, don't repeat it
 ```
@@ -393,7 +396,7 @@ Omit the `std::` prefix on fixed-width types. See `docs/TYPE_MIGRATION.md` for f
 | Build config | `CMakeLists.txt`, `ra/CMakeLists.txt`, `td/CMakeLists.txt` |
 | Global state | `ra/externs.h`                                             |
 | Streams      | `engine/stream/byte_sink.h`, `engine/stream/byte_source.h` |
-| Graphics     | `sdllib/pixel_buffer.h`                                    |
+| Graphics     | `engine/gfx/pixel_buffer.h`                                |
 | Video        | `winvq/vqa32/vqa_player.h`                                 |
 
 ## Platform Notes

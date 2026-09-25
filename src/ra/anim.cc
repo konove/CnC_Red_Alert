@@ -66,6 +66,8 @@
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
 #include "engine/base/fixed.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/audio.h"
 #include "ra/building.h"
@@ -99,8 +101,6 @@
 #include "ra/type.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 
 /***********************************************************************************************
  * Anim_From_Name -- Given a name, this finds the corresponding anim type. *

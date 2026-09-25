@@ -2,8 +2,8 @@
 """Runs the strict checks on just the translation units you edited.
 
 A full `cmake --build build-strict` re-analyzes every file that includes a
-changed header: 372 translation units for sdllib/pixel_buffer.h, about four
-minutes at -j14. While a file is still being modernized that is the wrong
+changed header: 372 translation units for engine/gfx/pixel_buffer.h, about
+four minutes at -j14. While a file is still being modernized that is the wrong
 trade, so this script builds only the objects belonging to the sources you
 name -- the same clang-tidy pass and clang compile ninja would run, with the
 same flags, ccache and clang-tidy cache -- and leaves the tree-wide pass for

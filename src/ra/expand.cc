@@ -52,6 +52,9 @@
 #include "engine/base/strings/safe_string.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -72,10 +75,7 @@
 #include "ra/wolstrng.h"
 #include "ra/world.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 
 // #define CS_DEBUG
 

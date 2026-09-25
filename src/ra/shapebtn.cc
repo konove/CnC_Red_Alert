@@ -45,14 +45,14 @@
 #include <cstddef>
 #include <span>
 
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/keyframe.h"
 #include "ra/screen.h"
 #include "ra/shape_draw.h"
 #include "ra/toggle.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 
 /***********************************************************************************************

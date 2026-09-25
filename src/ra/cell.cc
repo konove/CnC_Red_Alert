@@ -102,6 +102,10 @@
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
+#include "engine/gfx/text_window.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/platform/ftimer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
@@ -148,10 +152,6 @@
 #include "ra/vessel.h"
 #include "ra/vortex.h"
 #include "ra/world.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
-#include "sdllib/text_window.h"
-#include "sdllib/wwstd.h"
 
 /***********************************************************************************************
  * CellClass::CellClass -- Constructor for cell objects. *

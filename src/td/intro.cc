@@ -49,10 +49,11 @@
 
 #include "engine/base/bytes_of.h"
 #include "engine/file/game_file.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wsa_animation.h"
 #include "engine/platform/timer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "td/conquer.h"
 #include "td/debug_state.h"
@@ -72,7 +73,6 @@
 #include "tech/audio_mixer.h"
 #include "tech/game_file_vqa_io.h"
 #include "tech/mixer_vqa_audio.h"
-#include "tech/wsa_animation.h"
 #include "winvq/vqa32/vqa_player.h"
 
 #ifndef DEMO

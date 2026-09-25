@@ -20,8 +20,8 @@
 #include <cstdint>
 
 #include "engine/base/array.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/stream/archive.h"
-#include "sdllib/wwstd.h"
 #include "td/aircraft.h"
 #include "td/cell.h"
 #include "td/conquer.h"

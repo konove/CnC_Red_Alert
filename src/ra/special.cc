@@ -53,6 +53,9 @@
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/assets.h"
 #include "ra/checkbox.h"
 #include "ra/conquer.h"
@@ -75,11 +78,8 @@
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/world.h"
-#include "sdllib/font.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 
 #define kOptionWidth (236 * 2)
 #define kOptionHeight (162 * 2)

@@ -53,13 +53,13 @@
 #include "engine/base/enum_array.h"
 #include "engine/base/fixed.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rect.h"
 #include "engine/platform/platform.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "ra/object.h"
-#include "sdllib/pixel_buffer.h"
-#include "tech/rect.h"
 
 class WeaponTypeClass;
 

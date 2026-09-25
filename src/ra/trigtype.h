@@ -44,13 +44,13 @@
 #include <string>
 
 #include "absl/base/attributes.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/object.h"
 #include "ra/taction.h"
 #include "ra/tevent.h"
 #include "ra/type.h"
-#include "sdllib/pixel_buffer.h"
 
 /*
 **	There can be multiple trigger events and trigger actions. This

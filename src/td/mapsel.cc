@@ -54,14 +54,15 @@
 #include "engine/base/numeric.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
+#include "engine/gfx/wsa_animation.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
-#include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 #include "td/assets.h"
 #include "td/audio.h"
 #include "td/conquer.h"
@@ -82,7 +83,6 @@
 #include "td/type.h"
 #include "td/world.h"
 #include "tech/audio_mixer.h"
-#include "tech/wsa_animation.h"
 
 #ifndef DEMO
 

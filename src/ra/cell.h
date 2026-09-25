@@ -46,6 +46,7 @@
 #include "engine/base/enum_array.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/ccptr.h"
 #include "ra/config.h"
 #include "ra/defines.h"
@@ -54,7 +55,6 @@
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/unit.h"
-#include "sdllib/pixel_buffer.h"
 
 /****************************************************************************
 **	Each cell on the map is controlled by the following structure.

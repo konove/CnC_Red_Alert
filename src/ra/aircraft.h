@@ -45,6 +45,7 @@
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/ftimer.h"
 #include "ra/bullet.h"
 #include "ra/ccini.h"
@@ -59,7 +60,6 @@
 #include "ra/radio.h"
 #include "ra/techno.h"
 #include "ra/type.h"
-#include "sdllib/pixel_buffer.h"
 
 /*
 **	This aircraft class is used for all flying sentient objects. This

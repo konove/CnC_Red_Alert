@@ -23,10 +23,10 @@
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 
 // A text editing gadget that accepts keyboard input and displays the result.
 // Supports filtering by character type (alpha, numeric, misc) and optional

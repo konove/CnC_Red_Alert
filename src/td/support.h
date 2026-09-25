@@ -7,7 +7,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "td/config.h"
 
 std::span<uint8_t> Conquer_Build_Fading_Table(

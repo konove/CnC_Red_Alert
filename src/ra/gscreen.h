@@ -40,10 +40,10 @@
 #ifndef CNC_RED_ALERT_RA_GSCREEN_H_
 #define CNC_RED_ALERT_RA_GSCREEN_H_
 
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 
 class GScreenClass {
  public:

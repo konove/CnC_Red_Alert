@@ -41,8 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_SLIDER_H_
 #define CNC_RED_ALERT_TD_SLIDER_H_
 
+#include "engine/gfx/pixel_buffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "td/control.h"
 #include "td/gauge.h"
 #include "td/shapebtn.h"

@@ -44,8 +44,8 @@
 #include <cstddef>
 #include <span>
 
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "td/defines.h"
 #include "td/list.h"
 #include "td/vector.h"

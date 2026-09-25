@@ -42,7 +42,7 @@
 #define CNC_RED_ALERT_TD_GOPTIONS_H_
 
 #include "engine/base/installed.h"
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "td/options.h"
 
 class GameOptionsClass : public OptionsClass {

@@ -45,6 +45,7 @@
 #include <span>
 
 #include "engine/base/enum_array.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"
@@ -52,7 +53,6 @@
 #include "ra/shapebtn.h"
 #include "ra/stage.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 
 class InitClass {};
 

@@ -75,6 +75,8 @@
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/base.h"
@@ -123,9 +125,7 @@
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 
 char MapEditClass::HealthBuf[20];
 

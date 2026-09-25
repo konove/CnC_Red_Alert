@@ -61,6 +61,8 @@
 #include "engine/base/numeric.h"
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/tokenizer.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -75,8 +77,6 @@
 #include "ra/team.h"
 #include "ra/teamtype.h"
 #include "ra/world.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
 
 // The low nibble of the text print flags selects the font.
 static constexpr bool Is_Font(const TextPrintType flags,

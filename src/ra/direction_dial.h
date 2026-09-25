@@ -23,11 +23,11 @@
 #ifndef CNC_RED_ALERT_RA_DIRECTION_DIAL_H_
 #define CNC_RED_ALERT_RA_DIRECTION_DIAL_H_
 
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 
 // A round dial with eight decorations and a hand that the player turns by
 // clicking or dragging with the left mouse button. The hand snaps to the eight

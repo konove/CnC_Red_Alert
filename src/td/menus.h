@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <span>
 
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 
 struct MenuConfig {
   int x = 1;

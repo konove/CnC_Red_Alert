@@ -44,7 +44,7 @@
 #include <cstdint>
 #include <span>
 
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "td/abstract.h"
 #include "td/defines.h"
 

@@ -22,9 +22,9 @@
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
 #include "engine/codec/lcw_uncompress.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
 #include "sdllib/display.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 
 // Global flag to disable mouse grabbing (for debugging)
 bool NoMouseGrab = false;

@@ -38,6 +38,8 @@
 #include "engine/base/strings/tokenizer.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/win32/win32_types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -77,8 +79,6 @@
 #include "ra/world.h"
 #include "ra/wsproto.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
 
 static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 

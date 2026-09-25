@@ -48,6 +48,9 @@
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -58,11 +61,8 @@
 #include "ra/jshell.h"
 #include "ra/screen.h"
 #include "ra/textbtn.h"
-#include "sdllib/font.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 
 /***********************************************************************************************
  * WWMessageBox::Process -- pops up a message with yes/no, etc *

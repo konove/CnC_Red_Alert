@@ -63,6 +63,8 @@
 
 #include "absl/strings/match.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/ccptr.h"
@@ -76,8 +78,6 @@
 #include "ra/type.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 
 std::span<const std::byte> AircraftTypeClass::LRotorData = {};
 std::span<const std::byte> AircraftTypeClass::RRotorData = {};

@@ -78,6 +78,10 @@
 #include "engine/file/file_access.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rgb.h"
+#include "engine/gfx/shape.h"
+#include "engine/gfx/text_window.h"
 #include "engine/stream/archive.h"
 #include "ra/audio.h"
 #include "ra/building.h"
@@ -100,10 +104,6 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "ra/world.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
-#include "sdllib/text_window.h"
-#include "tech/rgb.h"
 
 /*
 ** Instance of chronal vortex class. This must be the only instance.

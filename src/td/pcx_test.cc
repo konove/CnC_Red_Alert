@@ -10,9 +10,9 @@
 #include <system_error>
 
 #include "engine/base/array.h"
+#include "engine/gfx/pcx_file.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "gtest/gtest.h"
-#include "sdllib/pixel_buffer.h"
-#include "tech/pcx_file.h"
 
 namespace {
 

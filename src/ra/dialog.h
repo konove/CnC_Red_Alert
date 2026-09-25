@@ -6,10 +6,10 @@
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "engine/base/strings/format.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/defines.h"
-#include "sdllib/font.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
 
 void Draw_Caption(PixelView& view, int text, int x, int y, int w);
 void Draw_Caption(PixelView& view, const char* text, int x, int y, int w);

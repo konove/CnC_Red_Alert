@@ -61,6 +61,8 @@
 #include "absl/strings/match.h"
 #include "engine/base/numeric.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/const.h"
 #include "ra/defines.h"
@@ -75,8 +77,6 @@
 #include "ra/type.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 
 static const int16_t List000011101000[] = {
     MAP_CELL_W, MAP_CELL_W + 1, MAP_CELL_W + 2, MAP_CELL_W * 2, kRefreshEol};

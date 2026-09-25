@@ -45,13 +45,13 @@
 
 #include "absl/base/attributes.h"
 #include "engine/base/enum_array.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/house.h"
 #include "ra/target.h"
 #include "ra/type.h"
-#include "sdllib/pixel_buffer.h"
 
 /*
 **	TeamMissionType: the various missions that a team can have.

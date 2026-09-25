@@ -67,6 +67,7 @@
 #include "absl/strings/str_format.h"
 #include "engine/file/disk_file.h"
 #include "engine/file/file_access.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/audio.h"
 #include "ra/config.h"
 #include "ra/control.h"
@@ -79,7 +80,6 @@
 #include "ra/palettes.h"
 #include "ra/screen.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 
 /*

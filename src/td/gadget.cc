@@ -72,8 +72,9 @@
 #include <filesystem>
 
 #include "absl/strings/str_format.h"
+#include "engine/gfx/pcx_file.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "td/config.h"
 #include "td/control.h"
@@ -81,7 +82,6 @@
 #include "td/link.h"
 #include "td/palette.h"
 #include "td/screen.h"
-#include "tech/pcx_file.h"
 
 GadgetClass* GadgetClass::StuckOn = nullptr;
 

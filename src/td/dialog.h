@@ -6,9 +6,9 @@
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "engine/base/strings/format.h"
-#include "sdllib/font.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "td/defines.h"
 #include "td/jshell.h"
 

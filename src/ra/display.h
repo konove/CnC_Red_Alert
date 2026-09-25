@@ -26,6 +26,8 @@
 
 #include "engine/base/enum_array.h"
 #include "engine/base/numeric.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
@@ -39,8 +41,6 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
 
 #define SIDE_BAR_TAC_WIDTH 10
 #define SIDE_BAR_TAC_HEIGHT 8

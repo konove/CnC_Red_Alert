@@ -47,6 +47,7 @@
 #include "absl/base/attributes.h"
 #include "engine/base/enum_array.h"
 #include "engine/base/installed.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/platform.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
@@ -61,7 +62,6 @@
 #include "ra/target.h"
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
-#include "sdllib/pixel_buffer.h"
 
 //---------------------------------------------------------------------------
 // Defines

@@ -8,13 +8,13 @@
 #include "absl/base/attributes.h"
 #include "engine/base/buffer.h"
 #include "engine/base/types.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/text_window.h"
+#include "engine/gfx/tile.h"
 #include "gtest/gtest.h"
 #include "ra/compat.h"
 #include "ra/defines.h"
 #include "ra/dib.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/text_window.h"
-#include "sdllib/tile.h"
 
 namespace {
 

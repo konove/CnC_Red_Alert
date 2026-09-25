@@ -52,6 +52,7 @@
 
 #include "absl/log/check.h"
 #include "engine/base/array.h"
+#include "engine/gfx/tile.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
@@ -62,7 +63,6 @@
 #include "ra/object_heaps.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
-#include "sdllib/tile.h"
 
 /***********************************************************************************************
  * TemplateClass::Init -- Resets the template object system. *

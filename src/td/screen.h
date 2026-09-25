@@ -6,7 +6,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/base/installed.h"
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/pixel_buffer.h"
 
 // Owns the full-screen pages, the 640x400 game-area views into them and the
 // staging page movies decode into. Game owns the one Screen; everything

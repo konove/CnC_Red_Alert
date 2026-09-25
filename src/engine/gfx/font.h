@@ -1,0 +1,224 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+// Westwood .FNT bitmap fonts: a view over the font data, and FontStyle, the
+// font, spacing and 16-entry glyph palette a print or measurement uses; there
+// is no current font, every caller passes its style. Originally the
+// Westwood 32-bit font library (FONT.H, Scott K. Bowen, June 1994), which split
+// these across SET_FONT.CPP, FONT.CPP and TEXTPRNT.ASM; the drawing itself is
+// PixelView::Print() in engine/gfx/pixel_buffer.cc.
+
+#ifndef CNC_RED_ALERT_ENGINE_GFX_FONT_H_
+#define CNC_RED_ALERT_ENGINE_GFX_FONT_H_
+
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <span>
+
+#include "absl/base/attributes.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
+#include "engine/base/unaligned.h"
+
+// Byte offsets, within the font info block, of the two font-wide metrics the
+// game reads.
+inline constexpr int kFontInfoMaxHeight = 4;
+inline constexpr int kFontInfoMaxWidth = 5;
+
+// Header of a Westwood .FNT file, stored little-endian at the start of the
+// font data and read by copying it straight into this struct, so it assumes a
+// little-endian host. The *_block fields are byte offsets from the start of the
+// font data to the named table.
+struct FontHeader {
+  uint16_t size;          // Total font file size.
+  uint8_t compression;    // Compression method (0 in all shipped fonts).
+  uint8_t num_blocks;     // Number of data blocks.
+  uint16_t info_block;    // Font-wide info (max glyph height/width).
+  uint16_t offset_block;  // Per-glyph data offsets (uint16 each).
+  uint16_t width_block;   // Per-glyph widths (uint8 each).
+  uint16_t data_block;    // Glyph pixel data (FontView reaches it through
+                          // offset_block, not through this field).
+  uint16_t height_block;  // Per-glyph heights (uint16 each): drawn rows in
+                          // the high byte, blank rows above in the low byte.
+};
+static_assert(sizeof(FontHeader) == 14,
+              "FontHeader must match the on-disk layout");
+
+// Non-owning view over Westwood .FNT font data. Provides typed access to the
+// per-glyph metric tables, which are byte-packed and unaligned in the blob.
+// Cheap to construct and copy; the font data must outlive the view.
+//
+// Malformed data never reads out of bounds: a table offset past the end of the
+// data, or a glyph entry past the end of its table, reads as 0 (or as an empty
+// span for GlyphData()), so a truncated font draws as blank glyphs.
+//
+// Each glyph is a box GlyphWidth() pixels wide and MaxHeight() rows tall:
+// GlyphBlankRowsAbove() empty rows, then GlyphHeight() rows of pixel data, then
+// empty rows to the bottom of the box.
+//
+// Example:
+//   FontView font(TheAssets().font(FontType::k8Point));
+//   int width = font.GlyphWidth(ch);
+class FontView {
+ public:
+  // A view of no font: every metric is 0 and every glyph is empty.
+  FontView() = default;
+
+  // data should hold a complete font file; the view reads the header eagerly
+  // and the metric tables lazily. Data shorter than the header gives a view
+  // whose every metric is 0.
+  explicit FontView(
+      const std::span<const std::byte> data ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : font_(data) {
+    if (std::ssize(font_) < base::ssize{sizeof(FontHeader)}) {
+      return;
+    }
+    const auto header = port::ReadUnaligned<FontHeader>(font_);
+    info_ = DataFrom(header.info_block);
+    offsets_ = DataFrom(header.offset_block);
+    widths_ = DataFrom(header.width_block);
+    heights_ = DataFrom(header.height_block);
+  }
+
+  // The font data the view reads; empty for a default-constructed view.
+  [[nodiscard]] std::span<const std::byte> data() const { return font_; }
+
+  // Height and width of the tallest and widest glyphs, in pixels.
+  [[nodiscard]] int MaxHeight() const {
+    return ReadByte(info_, kFontInfoMaxHeight);
+  }
+  [[nodiscard]] int MaxWidth() const {
+    return ReadByte(info_, kFontInfoMaxWidth);
+  }
+  // Width of the glyph for character in pixels, not counting any spacing.
+  [[nodiscard]] int GlyphWidth(const uint8_t character) const {
+    return ReadByte(widths_, character);
+  }
+  // Number of pixel rows stored for the glyph for character.
+  [[nodiscard]] int GlyphHeight(const uint8_t character) const {
+    return PackedHeight(character) / 256;
+  }
+  // Number of empty rows between the top of the line and the first stored row
+  // of the glyph for character.
+  [[nodiscard]] int GlyphBlankRowsAbove(const uint8_t character) const {
+    return PackedHeight(character) % 256;
+  }
+  // Returns the pixel rows of the glyph for character, or an empty span for
+  // malformed data. Each byte packs two 4-bit indices into the glyph palette,
+  // low nibble first, and each row starts on a byte boundary, so a row is
+  // (GlyphWidth() + 1) / 2 bytes.
+  [[nodiscard]] std::span<const std::byte> GlyphData(
+      const uint8_t character) const {
+    // The offset table holds one uint16 offset from the start of the font data
+    // per glyph.
+    const base::ssize glyph_bytes =
+        base::ssize{(GlyphWidth(character) + 1) / 2} * GlyphHeight(character);
+    return Slice(font_, ReadWord(offsets_, base::ssize{2} * character),
+                 glyph_bytes);
+  }
+
+ private:
+  // Returns count bytes of data from offset, or an empty span if any of them
+  // lies outside data. Every read goes through here, which is what keeps a
+  // malformed font in bounds; see the class comment.
+  static std::span<const std::byte> Slice(const std::span<const std::byte> data,
+                                          const base::ssize offset,
+                                          const base::ssize count) {
+    if (offset < 0 || count < 0 || offset > std::ssize(data) ||
+        count > std::ssize(data) - offset) {
+      return {};
+    }
+    return data.subspan(base::ToSize(offset), base::ToSize(count));
+  }
+  // ReadByte and ReadWord return 0 for an offset outside data.
+  static uint8_t ReadByte(const std::span<const std::byte> data,
+                          const base::ssize offset) {
+    const auto bytes = Slice(data, offset, 1);
+    return bytes.empty() ? 0 : std::to_integer<uint8_t>(bytes.front());
+  }
+  static uint16_t ReadWord(const std::span<const std::byte> data,
+                           const base::ssize offset) {
+    const auto bytes = Slice(data, offset, sizeof(uint16_t));
+    return bytes.empty() ? 0 : port::ReadUnaligned<uint16_t>(bytes);
+  }
+  [[nodiscard]] int PackedHeight(const uint8_t character) const {
+    return ReadWord(heights_, base::ssize{2} * character);
+  }
+  // Returns the font data from offset to the end, or an empty span if offset
+  // is past it. Tables carry no length in the header, so each is bounded only
+  // by the end of the data.
+  [[nodiscard]] std::span<const std::byte> DataFrom(
+      const base::ssize offset) const {
+    return Slice(font_, offset, std::ssize(font_) - offset);
+  }
+  std::span<const std::byte> font_;  // The whole font file.
+  // The header's tables, each running to the end of font_; empty if the
+  // header is missing or points past the end.
+  std::span<const std::byte> info_;
+  std::span<const std::byte> offsets_;
+  std::span<const std::byte> widths_;
+  std::span<const std::byte> heights_;
+};
+
+// Glyph pixel value -> screen colour table that leaves every value as it is.
+inline constexpr std::array<uint8_t, 16> kIdentityFontPalette{
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+};
+
+// Everything a print or a measurement needs to know about the font: the glyphs,
+// the extra spacing around them, and the colour each glyph pixel value maps to.
+// A plain value; the font data it views belongs to the caller (in the games,
+// to Assets), and must outlive it.
+//
+// Example:
+//   const FontStyle style{.font = FontView(data), .x_spacing = 1};
+//   view.Print(style, "Hello", x, y, fore, back);
+struct FontStyle {
+  FontView font;
+  int x_spacing = 0;  // Extra pixels after every glyph; may be negative.
+  int y_spacing = 0;  // Extra pixels between lines; may be negative.
+  // Maps the 4-bit glyph pixel values to screen colours. PixelView::Print()
+  // replaces entries 0 (background) and 1 (foreground) with its colours on a
+  // copy, so only entries 2-15 of a multi-colour font matter here. A 0 in the
+  // table is transparent: nothing is drawn.
+  std::array<uint8_t, 16> palette = kIdentityFontPalette;
+};
+
+// Returns the height of the tallest and the width of the widest glyph in
+// style, in pixels.
+int FontMaxHeight(const FontStyle& style);
+int FontMaxWidth(const FontStyle& style);
+
+// Returns the distance in pixels from one line of text in style to the next:
+// the tallest glyph plus the line spacing.
+int FontLineHeight(const FontStyle& style);
+
+// Returns the horizontal distance, in pixels, that printing character in style
+// advances by: its glyph width plus style.x_spacing.
+int CharPixelWidth(const FontStyle& style, char character);
+
+// Returns the width in pixels of the widest line of text in style, or 0 for
+// nullptr. Lines are separated by '\r' only, as the game's text strings are; a
+// '\n' is measured as a glyph, although PixelView::Print() breaks the line on
+// it. Every glyph counts style.x_spacing after it, the last one on a line
+// included, as Print() advances.
+int StringPixelWidth(const FontStyle& style, const char* text);
+
+#endif  // CNC_RED_ALERT_ENGINE_GFX_FONT_H_

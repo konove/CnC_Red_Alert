@@ -141,7 +141,7 @@
 #include "engine/base/numeric.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/strings/tokenizer.h"
-#include "sdllib/pixel_buffer.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/audio.h"

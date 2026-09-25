@@ -42,10 +42,10 @@
 
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
+#include "engine/gfx/pixel_buffer.h"
 #include "engine/stream/byte_stream.h"
 #include "ra/filepcx.h"
 #include "ra/palette.h"
-#include "sdllib/pixel_buffer.h"
 
 static void Write_Pcx_ScanLine(ByteStream& file, int scansize,
                                std::span<const uint8_t> pixels);

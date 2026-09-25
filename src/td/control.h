@@ -41,8 +41,8 @@
 #ifndef CNC_RED_ALERT_TD_CONTROL_H_
 #define CNC_RED_ALERT_TD_CONTROL_H_
 
+#include "engine/gfx/pixel_buffer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "td/gadget.h"
 #include "td/jshell.h"
 

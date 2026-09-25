@@ -45,10 +45,10 @@
   16  // Number of lookup tables required for vortex shading.
 #define VORTEX_FRAMES \
   16  // Number of frames in one complete rotation of the vortex.
+#include "engine/gfx/pixel_buffer.h"
 #include "ra/defines.h"
 #include "ra/object.h"
 #include "ra/palette.h"
-#include "sdllib/pixel_buffer.h"
 
 class ChronalVortexClass {
  public:

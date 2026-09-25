@@ -94,6 +94,9 @@
 #include "engine/base/numeric.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/shape.h"
+#include "engine/gfx/wwstd.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/audio.h"
 #include "ra/ccptr.h"
@@ -126,10 +129,7 @@
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 
 // void const * RadarClass::CoverShape;
 RadarClass::RTacticalClass RadarClass::RadarButton;

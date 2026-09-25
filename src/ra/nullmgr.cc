@@ -73,6 +73,9 @@
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/unaligned.h"
+#include "engine/gfx/font.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/net/serial/modemreg.h"
 #include "engine/net/serial/wincomm.h"
 #include "ra/combuf.h"
@@ -91,12 +94,9 @@
 #include "ra/session.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
-#include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 
 #ifdef _WIN32
 #include <windows.h>

@@ -60,7 +60,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/base/bytes_of.h"
-#include "sdllib/tile.h"
+#include "engine/gfx/tile.h"
 
 #ifndef SEEK_SET
 #define SEEK_SET 0  // Seek from start of file.

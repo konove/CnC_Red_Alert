@@ -5,9 +5,9 @@
 #include <cstdint>
 #include <span>
 
+#include "engine/gfx/pixel_buffer.h"
 #include "sdllib/display.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "td/debug_state.h"
 #include "td/game_state.h"
 #include "td/interpal.h"

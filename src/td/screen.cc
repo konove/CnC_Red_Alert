@@ -2,9 +2,9 @@
 
 #include "td/screen.h"
 
+#include "engine/gfx/pixel_buffer.h"
 #include "sdllib/display.h"
 #include "sdllib/misc.h"
-#include "sdllib/pixel_buffer.h"
 
 // The views start out covering a 640x480 page that does not exist yet, as the
 // original globals did; Init() attaches them to the real game area.

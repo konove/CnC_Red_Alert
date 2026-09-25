@@ -64,6 +64,8 @@
 #include "engine/base/strings/safe_string.h"
 #include "engine/file/disk_file.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/platform/file_system.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/platform.h"
@@ -91,9 +93,7 @@
 #include "ra/theme.h"
 #include "ra/toggle.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/wwstd.h"
 
 /***********************************************************************************************
  * LoadOptionsClass::LoadOptionsClass -- class constructor *

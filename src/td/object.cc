@@ -115,9 +115,9 @@
 
 #include "engine/base/array.h"
 #include "engine/file/mix_archive.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/text_window.h"
-#include "sdllib/wwstd.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/text_window.h"
+#include "engine/gfx/wwstd.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/building.h"

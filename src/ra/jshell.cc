@@ -65,14 +65,14 @@
 #include "engine/base/types.h"
 #include "engine/codec/compressed_block.h"
 #include "engine/file/game_file.h"
+#include "engine/gfx/fading_table.h"
+#include "engine/gfx/rgb.h"
+#include "engine/gfx/text_window.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
 #include "ra/compat.h"
 #include "ra/palette.h"
 #include "ra/startup.h"
-#include "sdllib/fading_table.h"
-#include "sdllib/text_window.h"
-#include "tech/rgb.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *

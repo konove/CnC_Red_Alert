@@ -44,10 +44,10 @@
 #include <cstdint>
 #include <span>
 
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/wwstd.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/tab.h"

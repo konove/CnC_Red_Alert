@@ -19,6 +19,7 @@
 //	Wol_Opt.cpp - WW online options dialog.
 //	ajw 09/1/98
 
+#include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/sleep.h"
 #include "ra/bigcheck.h"
 #include "ra/config.h"
@@ -36,7 +37,6 @@
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 // #include "ra/woldebug.h"
 

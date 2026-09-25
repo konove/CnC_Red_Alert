@@ -106,6 +106,11 @@
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
 #include "engine/file/mix_archive.h"
+#include "engine/gfx/pixel_buffer.h"
+#include "engine/gfx/rgb.h"
+#include "engine/gfx/shape.h"
+#include "engine/gfx/text_window.h"
+#include "engine/gfx/wwstd.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/audio.h"
 #include "ra/building.h"
@@ -140,11 +145,6 @@
 #include "ra/type.h"
 #include "ra/world.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/pixel_buffer.h"
-#include "sdllib/shape.h"
-#include "sdllib/text_window.h"
-#include "sdllib/wwstd.h"
-#include "tech/rgb.h"
 
 std::span<const std::byte> SidebarClass::SidebarShape = {};
 std::span<const std::byte> SidebarClass::SidebarMiddleShape = {};
