@@ -87,12 +87,6 @@ class WWKeyboardClass {
   static bool Down(int key);  // tests to see if a key is down
 
   /*===================================================================*/
-  /* Define the main hook for the message processing loop.
-   */
-  /*===================================================================*/
-  // void Message_Handler(HWND hwnd, UINT message, UINT wParam, long lParam);
-
-  /*===================================================================*/
   /* Define public routines which can be used on keys in general.
    */
   /*===================================================================*/
