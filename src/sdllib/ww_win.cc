@@ -12,6 +12,12 @@
 #include <emscripten/emscripten.h>
 #endif
 
+namespace {
+EventHandler g_event_handler = nullptr;
+}  // namespace
+
+void SetEventHandler(const EventHandler handler) { g_event_handler = handler; }
+
 int Change_Window(int /*windnum*/) {
   absl::PrintF("%s\n", __func__);
   return 0;
@@ -34,7 +40,9 @@ void SDL_Event_Loop() {
       TheDisplay().EndFrame();
       continue;
     }
-    SDL_Event_Handler(&event);
+    if (g_event_handler) {
+      g_event_handler(&event);
+    }
   }
 }
 

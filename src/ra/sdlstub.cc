@@ -56,9 +56,12 @@ static constexpr const char* kWindowName = [] {
   return "Red Alert";
 }();
 
+static void SDL_Event_Handler(SDL_Event* event);
+
 void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
                         int height) {
   TheDisplay().Init(kWindowName, width, height);
+  SetEventHandler(&SDL_Event_Handler);
 
   // Audio_Focus_Loss_Function = &Focus_Loss;
   Misc_Focus_Loss_Function = &Focus_Loss;
@@ -66,7 +69,7 @@ void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
   // Gbuffer_Focus_Loss_Function = &Focus_Loss;
 }
 
-void SDL_Event_Handler(SDL_Event* event) {
+static void SDL_Event_Handler(SDL_Event* event) {
   if (TheKeyboard().Event_Handler(event)) {
     return;
   }

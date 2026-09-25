@@ -15,7 +15,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/text_window.h"
 #include "sdllib/tile.h"
-#include "sdllib/ww_win.h"
 
 namespace {
 
@@ -23,9 +22,6 @@ constexpr int kWidth = 8;
 constexpr int kHeight = 4;
 
 }  // namespace
-
-// sdllib leaves this to the application. No test here pumps the event loop.
-void SDL_Event_Handler(SDL_Event* /*event*/) {}
 
 namespace {
 

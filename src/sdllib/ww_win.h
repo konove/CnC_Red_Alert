@@ -47,8 +47,15 @@ union SDL_Event;
 /*=========================================================================*/
 int Change_Window(int windnum);
 
+// Function type for the game's SDL event handler.
+using EventHandler = void (*)(SDL_Event* event);
+
+// Installs the game's event handler, called once per event SDL_Event_Loop
+// pumps (after Display's own redraw events are consumed and handled
+// internally). With none installed, pumped events are dropped.
+void SetEventHandler(EventHandler handler);
+
 void SDL_Event_Loop();
-void SDL_Event_Handler(SDL_Event* event);  // implemented in app
 void SDL_Send_Quit();
 
 extern int WindowColumns;

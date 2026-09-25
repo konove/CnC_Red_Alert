@@ -5,7 +5,6 @@
 
 #include "base/installed.h"
 #include "gtest/gtest.h"
-#include "sdllib/ww_win.h"
 #include "td/abstract.h"
 #include "td/audio.h"
 #include "td/cell.h"
@@ -41,8 +40,6 @@ SpecialClass special{};
 const base::Installed<SpecialClass>::Scope special_scope(special);
 }  // namespace
 void Speak(VoxType /*unused*/) {}
-// Linking the legacy byte RNG also pulls in the SDL event pump.
-void SDL_Event_Handler(SDL_Event* /*unused*/) {}
 namespace {
 
 template <class T>

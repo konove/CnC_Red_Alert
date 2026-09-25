@@ -4,7 +4,6 @@
 
 #include "sdllib/display.h"
 
-#include <SDL_events.h>
 #include <SDL_pixels.h>
 #include <SDL_render.h>
 #include <SDL_surface.h>
@@ -22,10 +21,6 @@
 #include "gtest/gtest.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/pixel_surface.h"
-#include "sdllib/ww_win.h"
-
-// The event loop calls back into the app; sdllib's tests do not have one.
-void SDL_Event_Handler(SDL_Event* /*event*/) {}
 
 namespace {
 
