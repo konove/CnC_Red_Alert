@@ -4,8 +4,7 @@
 
 #include <cstdint>
 
-#include <gtest/gtest.h>
-
+#include "gtest/gtest.h"
 #include "td/jshell.h"
 
 namespace {

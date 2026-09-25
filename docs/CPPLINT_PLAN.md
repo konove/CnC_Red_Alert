@@ -74,3 +74,6 @@ row to run cpplint on the touched files; CLAUDE.md's Tools table and dependency 
     `Optimize_Moves()` nothing defines; the real one is a `FootClass` member), now deleted. The 23
     directory-less includes gained `ra/` or `td/`, 4 of them duplicates that went instead, and
     `wspipx.cc`'s Windows branch includes the SDK's `<wsnwlink.h>` as a system header.
+  - `build/include_order` (2026-09-25): 16 findings in 7 files, plus the 7 other tests that spelled
+    `<gtest/gtest.h>`, which cpplint reads as a C system header; all 107 other includes of it are
+    `"gtest/gtest.h"`. `ra/netdlg.cc` had a second include block below its constants.

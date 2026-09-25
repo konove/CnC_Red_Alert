@@ -1,8 +1,8 @@
 // Fixed-point conversion helpers shared by gameplay and value tests.
 
-#include "td/jshell.h"
-
 #include <cstdint>
+
+#include "td/jshell.h"
 
 // Both helpers compute in unsigned 32-bit arithmetic so their results,
 // including the wraparound for inputs outside the game's range, match the
