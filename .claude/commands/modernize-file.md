@@ -1,5 +1,5 @@
 ---
-description: 'Take a legacy file (and its .h/.cc partner) through the whole modernization sequence in one go - dead code, comments and the bugs they turn up, integer types, Google-style names, simplification, IDE inspections, and finally the file name - committing each stage. Use whenever the user asks to "modernize", "update", "clean up", "do the usual pass on" or "go through" a file or pair of files, or asks for several of /remove-dead-code, /update-comments, /migrate-types, /rename-google-style, /simplify and /fix-ide-issues on the same file.'
+description: 'Take a legacy file (and its .h/.cc partner) through the whole modernization sequence in one go - dead code, comments and the bugs they turn up, integer types, Google-style names, simplification, the engine namespace, IDE inspections, and finally the file name - committing each stage. Use whenever the user asks to "modernize", "update", "clean up", "do the usual pass on" or "go through" a file or pair of files, or asks for several of /remove-dead-code, /update-comments, /migrate-types, /rename-google-style, /simplify, /migrate-namespaces and /fix-ide-issues on the same file.'
 ---
 
 Modernize: $ARGUMENTS
@@ -24,9 +24,12 @@ Each stage makes the next one cheaper or more accurate:
 4. **Names** after the types, so a name can carry the unit the type now states (`distance_cells`).
 5. **Simplify** what the earlier stages listed but kept out of their diffs - every one of them ends
    with "noticed but not changed", and the user always asks for those next.
-6. **IDE inspections** as the polish on the code as it finally stands; any earlier and the next
+6. **Namespace** once the names are final and the dead code is gone, so every caller is qualified
+   once, with the name it keeps, and nothing about to be deleted gets a qualifier. Only for
+   `src/engine` files; `src/ra` and `src/td` stay global.
+7. **IDE inspections** as the polish on the code as it finally stands; any earlier and the next
    stage would change what the IDE flags.
-7. **The file name last**, alone in its commit, so git's rename detection holds and every earlier
+8. **The file name last**, alone in its commit, so git's rename detection holds and every earlier
    commit reads under the path reviewers know.
 
 ## Before starting
@@ -35,7 +38,7 @@ Each stage makes the next one cheaper or more accurate:
   open. Note the twin in the other game (`src/ra` ↔ `src/td`): bug fixes go to it, nothing else
   does.
 - `git status`: unrelated changes stay in the tree and out of every commit (stage by path).
-- Ask the user once, now, to open **both** files (the `.h` too) in CLion. Stage 6 needs them; CLion
+- Ask the user once, now, to open **both** files (the `.h` too) in CLion. Stage 7 needs them; CLion
   only answers for open files, and a mid-run question stalls the run for nothing.
 - Keep a ledger in the scratchpad (`modernize-<file>.md`) with three lists: **bugs**, **noticed**
   (unused or constant parameters, redundant checks, tables that could be `constexpr`, functions
@@ -50,18 +53,18 @@ not been verified, splits RA and TD, and writes the message). A stage that finds
 commit and one line in the final report. Do not stop between stages to ask; the user asked for the
 whole run.
 
-**The full strict build runs once, not once per stage.** A run edits the same header six times, and
-each edit re-analyzes everything that includes it - four minutes for an
+**The full strict build runs once, not once per stage.** A run edits the same header seven times,
+and each edit re-analyzes everything that includes it - four minutes for an
 `engine/gfx/pixel_buffer.h`-sized fan-out, half an hour over a run. So during the stages, verify
 with `tools/strict_tu.py <touched files>` (the same clang-tidy pass and clang compile, on the
 objects those files build, in seconds) and tell `/commit` the full pass is deferred. The plain
 `cmake --build build --parallel 22` still runs every stage: it is what catches a rename that missed
 a call site anywhere in the tree.
 
-Then run `cmake --build build-strict --parallel 14` once, in the foreground, after stage 6 and
-before stage 7's commit - the last point where the code is final. What it reports is fixed there and
+Then run `cmake --build build-strict --parallel 14` once, in the foreground, after stage 7 and
+before stage 8's commit - the last point where the code is final. What it reports is fixed there and
 then: amend the stage commit it belongs to if that commit is still the tip, otherwise give the fix
-its own commit naming the stage it came from. Do not start stage 7 with findings outstanding, and do
+its own commit naming the stage it came from. Do not start stage 8 with findings outstanding, and do
 not end a run without that pass having been clean.
 
 **1. Dead code** - `/remove-dead-code <files>` in sweep mode. Unused parameters it notices go on the
@@ -77,9 +80,9 @@ behaviour are not applied: they go to **for the user**.
 then fix it at the end of this stage.
 
 **4. Names** - `/rename-google-style <files>`, **identifiers only**: stop before its file-rename
-step, which is stage 7. Identifiers means all of them - the types the files declare (including
+step, which is stage 8. Identifiers means all of them - the types the files declare (including
 dropping a `Class` suffix and picking a better name than the one under it), the parameters, and the
-locals, not just the functions and members. Settling the type name here is what lets stage 7 name
+locals, not just the functions and members. Settling the type name here is what lets stage 8 name
 the file once instead of twice. Leave out of the table anything the ledger already marks as going in
 stage 5 (a derivable member, a static that belongs elsewhere); renaming what is about to be deleted
 is churn in two commits. Its "noticed" and "unsure" lists go on the ledger.
@@ -90,10 +93,18 @@ through `/remove-dead-code <claim>`, the rest by hand, each only if it keeps beh
 the commit before stage 1) and apply what it finds on those files. Anything that would change
 behaviour goes to **for the user**.
 
-**6. IDE** - `/fix-ide-issues <files>`. If CLion still times out, say so in the report and skip
+**6. Namespace** - `/migrate-namespaces <files>`, for a file under `src/engine` that is not in its
+library's namespace yet; otherwise one line in the report and no commit. It runs in its single-file
+mode: the siblings it lists as now qualifying names they will drop later go on the ledger's
+**noticed** list and into the report. Its fan-out is tree-wide (every caller in `src/ra` and
+`src/td`), so the plain `build` must pass before the commit; its strict checks go through
+`tools/strict_tu.py` on every file it touched, like the other stages. Hooks it keeps global and any
+it would rather move go to **for the user**.
+
+**7. IDE** - `/fix-ide-issues <files>`. If CLion still times out, say so in the report and skip
 rather than guess.
 
-**7. File name** - the file-rename step of `/rename-google-style` (its section 5, step 7, and the
+**8. File name** - the file-rename step of `/rename-google-style` (its section 5, step 7, and the
 naming rules under "The file name is part of the pass"). If the name already fits, record why and
 make no commit.
 
@@ -103,13 +114,13 @@ confirm against the callers, failing test first where the code is reachable from
 twin fixed separately.
 
 If a stage cannot be made to build or pass the strict checks, stop there: report what was committed,
-what is left in the tree, and the error. That includes the full strict pass before stage 7: a run
+what is left in the tree, and the error. That includes the full strict pass before stage 8: a run
 that ends with it unclean is a failed run, however many stages committed.
 
 ## Report
 
 - One line per stage: the commit(s) it made (`git log --oneline <base>..HEAD`), or why there was
-  none, and what the full strict pass before stage 7 turned up.
+  none, and what the full strict pass before stage 8 turned up.
 - Bugs fixed, each with its commit and whether the twin got it.
 - **For the user**: behaviour-changing fixes not applied (what would play differently), names you
   were unsure of with the alternative, anything skipped (e.g. the IDE never answered).
