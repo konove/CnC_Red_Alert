@@ -51,8 +51,8 @@
 
 #include "absl/strings/str_format.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "td/base.h"
 #include "td/building.h"
 #include "td/conquer.h"

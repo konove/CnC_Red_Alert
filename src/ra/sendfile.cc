@@ -61,6 +61,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/ftimer.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
@@ -79,8 +81,6 @@
 #include "ra/session.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
 
 static bool Receive_Remote_File(const char* file_name, int file_length,
                                 int gametype);

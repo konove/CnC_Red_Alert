@@ -99,6 +99,8 @@
 #include "engine/base/unaligned.h"
 #include "engine/platform/ftimer.h"
 #include "engine/stream/byte_stream.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -155,8 +157,6 @@
 #include "ra/version.h"
 #include "ra/vessel.h"
 #include "ra/world.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
 
 // #include "ra/woldebug.h"
 #include "ra/config.h"

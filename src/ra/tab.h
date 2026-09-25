@@ -45,10 +45,10 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/ftimer.h"
+#include "engine/window/keyboard.h"
 #include "ra/credits.h"
 #include "ra/jshell.h"
 #include "ra/sidebar.h"
-#include "sdllib/keyboard.h"
 
 class TabClass : public SidebarClass {
  public:

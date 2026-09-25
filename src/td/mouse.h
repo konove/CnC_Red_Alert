@@ -49,7 +49,7 @@ class ArchiveWriter;
 
 #include "engine/base/enum_array.h"
 #include "engine/platform/timer.h"
-#include "sdllib/keyboard.h"
+#include "engine/window/keyboard.h"
 #include "td/defines.h"
 #include "td/game_clock.h"
 #include "td/scroll.h"

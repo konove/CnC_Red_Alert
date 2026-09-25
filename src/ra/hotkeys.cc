@@ -27,6 +27,7 @@
 #include <vector>
 
 #include "engine/base/array.h"
+#include "engine/window/keyboard.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -59,7 +60,6 @@
 #include "ra/unit.h"
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
-#include "sdllib/keyboard.h"
 
 // Records or restores one of the player's tactical-view bookmarks.
 // action: 0 = jump the view back to the remembered location,

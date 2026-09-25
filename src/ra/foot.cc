@@ -99,6 +99,7 @@
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/platform/memflag.h"
+#include "engine/window/ww_mouse.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/audio.h"
 #include "ra/building.h"
@@ -130,7 +131,6 @@
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/world.h"
-#include "sdllib/ww_mouse.h"
 
 /***********************************************************************************************
  * FootClass::FootClass -- Default constructor for foot class objects. *

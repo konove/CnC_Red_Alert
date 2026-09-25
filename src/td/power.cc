@@ -61,7 +61,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
-#include "sdllib/keyboard.h"
+#include "engine/window/keyboard.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/gadget.h"

@@ -56,6 +56,7 @@
 #include <array>
 
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/window/keyboard.h"
 #include "ra/ccini.h"
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -70,7 +71,6 @@
 #include "ra/textbtn.h"
 #include "ra/txtlabel.h"
 #include "ra/type.h"
-#include "sdllib/keyboard.h"
 
 /*
 **	This is the maximum # of ObjectTypeClasses the editor has to deal with.

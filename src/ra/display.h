@@ -28,6 +28,7 @@
 #include "engine/base/numeric.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/window/keyboard.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
@@ -40,7 +41,6 @@
 #include "ra/object.h"
 #include "ra/techno.h"
 #include "ra/type.h"
-#include "sdllib/keyboard.h"
 
 #define SIDE_BAR_TAC_WIDTH 10
 #define SIDE_BAR_TAC_HEIGHT 8

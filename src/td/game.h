@@ -7,7 +7,7 @@
 
 #include "engine/audio/audio_mixer.h"
 #include "engine/base/installed.h"
-#include "sdllib/display.h"
+#include "engine/window/display.h"
 #include "td/assets.h"
 #include "td/debug_state.h"
 #include "td/game_clock.h"

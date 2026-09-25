@@ -1,11 +1,11 @@
-#include "sdllib/ww_win.h"
+#include "engine/window/ww_win.h"
 
 #include <SDL_events.h>
 
 #include <cstdio>
 
 #include "absl/strings/str_format.h"
-#include "sdllib/display.h"
+#include "engine/window/display.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten/emscripten.h>

@@ -177,16 +177,17 @@ engine/      → The shared libraries, moving here one folder at a time (docs/EN
                `engine_gfx`; no SDL) [depends: engine_file]
   audio/     → The audio mixer (target `engine_audio`; links SDL2 for audio output)
                [depends: engine_file, engine_codec]
-sdllib/      → The SDL2 window: presenting, palette, cursor, keyboard, event loop [depends: SDL2,
-             abseil, engine_platform, engine_codec, engine_gfx]
+  window/    → The SDL2 window: presenting, palette, cursor, keyboard, event loop (target
+               `engine_window`; links SDL2) [depends: engine_gfx]
 winvq/vqa32  → VQA video codec (target name `vqa32`) [depends: engine_base, engine_stream,
-             engine_codec, sdllib, SDL2]
+             engine_codec, SDL2]
 tech/        → The movie-file glue: adapts the game's files and audio mixer for VQA playback;
              archives and disk I/O moved to engine/file/, packets and sockets to engine/net/, image
-             formats to engine/gfx/, the audio mixer to engine/audio/ [depends: sdllib, vqa32,
-             engine_platform, engine_stream, engine_codec, engine_crypto, engine_file, engine_audio]
-ra/          → Red Alert (~200 files) [depends: tech, sdllib, vqa32, engine_net]
-td/          → Tiberian Dawn (~288 files) [depends: tech, sdllib, vqa32, engine_net]
+             formats to engine/gfx/, the audio mixer to engine/audio/, the window to engine/window/
+             [depends: vqa32, engine_platform, engine_stream, engine_codec, engine_crypto,
+             engine_file, engine_audio]
+ra/          → Red Alert (~200 files) [depends: tech, engine_net, engine_window, vqa32]
+td/          → Tiberian Dawn (~288 files) [depends: tech, engine_net, engine_window, vqa32]
 ```
 
 **Class hierarchy:**

@@ -70,6 +70,8 @@
 #include "engine/platform/ftimer.h"
 #include "engine/platform/platform.h"
 #include "engine/stream/readline.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/audio.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
@@ -92,8 +94,6 @@
 #include "ra/textbtn.h"
 #include "ra/theme.h"
 #include "ra/toggle.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
 
 /***********************************************************************************************
  * LoadOptionsClass::LoadOptionsClass -- class constructor *

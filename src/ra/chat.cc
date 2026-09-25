@@ -28,6 +28,7 @@
 #include "engine/base/buffer.h"
 #include "engine/base/fixed.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/window/keyboard.h"
 #include "ra/audio.h"
 #include "ra/config.h"
 #include "ra/defines.h"
@@ -52,7 +53,6 @@
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"
-#include "sdllib/keyboard.h"
 
 // The key that answers a page from a Westwood Online user outside the
 // game.

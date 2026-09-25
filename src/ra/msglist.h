@@ -100,8 +100,8 @@
 #include "absl/base/attributes.h"
 #include "engine/base/array.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/window/keyboard.h"
 #include "ra/defines.h"
-#include "sdllib/keyboard.h"
 
 //***************************************************************************
 // Defines

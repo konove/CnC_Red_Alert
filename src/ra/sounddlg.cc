@@ -49,6 +49,8 @@
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/config.h"
 #include "ra/conquer.h"
@@ -67,8 +69,6 @@
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "ra/theme.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
 
 // The score list: each line is a track, with its theme kept alongside the
 // text.

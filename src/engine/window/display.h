@@ -1,7 +1,7 @@
 // File: Display, the program's window and what is shown in it.
 
-#ifndef CNC_RED_ALERT_SDLLIB_DISPLAY_H_
-#define CNC_RED_ALERT_SDLLIB_DISPLAY_H_
+#ifndef CNC_RED_ALERT_ENGINE_WINDOW_DISPLAY_H_
+#define CNC_RED_ALERT_ENGINE_WINDOW_DISPLAY_H_
 
 #include <chrono>
 #include <cstdint>
@@ -72,7 +72,7 @@ class Display : public PixelSurface {
   void Unlock() override;
 
   // The SDL_Renderer, as a void* so that callers need no SDL header. For
-  // sdllib's own drawing code; nullptr before Init().
+  // engine_window's own drawing code; nullptr before Init().
   [[nodiscard]] void* renderer() const { return renderer_; }
 
   // Sets the 256 RGB triples the paletted pixels are shown through and
@@ -191,4 +191,4 @@ inline Display& TheDisplay() { return base::Installed<Display>::Get(); }
 // exists, or after it is gone, asks this first.
 inline bool HasDisplay() { return base::Installed<Display>::IsInstalled(); }
 
-#endif  // CNC_RED_ALERT_SDLLIB_DISPLAY_H_
+#endif  // CNC_RED_ALERT_ENGINE_WINDOW_DISPLAY_H_

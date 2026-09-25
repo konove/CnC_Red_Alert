@@ -41,9 +41,9 @@
 #define CNC_RED_ALERT_RA_SCROLL_H_
 
 #include "engine/platform/ftimer.h"
+#include "engine/window/keyboard.h"
 #include "ra/help.h"
 #include "ra/jshell.h"
-#include "sdllib/keyboard.h"
 
 class ScrollClass : public HelpClass {
   /*

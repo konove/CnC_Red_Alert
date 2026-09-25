@@ -137,7 +137,7 @@
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
-#include "sdllib/misc.h"
+#include "engine/window/misc.h"
 #include "td/anim.h"
 #include "td/audio.h"
 #include "td/building.h"

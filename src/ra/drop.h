@@ -48,6 +48,7 @@
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/window/keyboard.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/edit.h"
@@ -55,7 +56,6 @@
 #include "ra/link.h"
 #include "ra/list.h"
 #include "ra/shapebtn.h"
-#include "sdllib/keyboard.h"
 
 class DropListClass : public EditClass {
  public:

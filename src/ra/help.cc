@@ -62,6 +62,8 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -69,8 +71,6 @@
 #include "ra/inline.h"
 #include "ra/tab.h"
 #include "ra/text_ids.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
 
 /*
 **	This is the holding buffer for the text overlap list. This buffer must

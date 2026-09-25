@@ -46,12 +46,12 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/ftimer.h"
+#include "engine/window/keyboard.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/gadget.h"
 #include "ra/jshell.h"
 #include "ra/radar.h"
-#include "sdllib/keyboard.h"
 
 class PowerClass : public RadarClass {
  public:

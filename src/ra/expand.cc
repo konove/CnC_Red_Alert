@@ -55,6 +55,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -74,8 +76,6 @@
 #include "ra/textbtn.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
 
 // #define CS_DEBUG
 

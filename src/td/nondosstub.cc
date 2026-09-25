@@ -40,7 +40,7 @@
 #include "engine/gfx/pcx_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/stream/byte_stream.h"
-#include "sdllib/ww_mouse.h"
+#include "engine/window/ww_mouse.h"
 #include "td/interpal.h"
 #include "td/mapedit.h"
 #include "td/theme.h"

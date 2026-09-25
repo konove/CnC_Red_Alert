@@ -7,8 +7,8 @@
 
 #include "engine/audio/audio_mixer.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "sdllib/display.h"
-#include "sdllib/keyboard.h"
+#include "engine/window/display.h"
+#include "engine/window/keyboard.h"
 #include "td/debug_state.h"
 #include "td/game_state.h"
 #include "td/interpal.h"

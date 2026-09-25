@@ -1,14 +1,14 @@
 // Tests for SDL_Event_Loop: the event and pump handlers the game installs.
 
-#include "sdllib/ww_win.h"
+#include "engine/window/ww_win.h"
 
 #include <SDL.h>
 #include <SDL_events.h>
 #include <SDL_stdinc.h>
 
 #include "engine/base/installed.h"
+#include "engine/window/display.h"
 #include "gtest/gtest.h"
-#include "sdllib/display.h"
 
 namespace {
 

@@ -149,7 +149,8 @@ if (MSVC)
             /wd4661 # missing template definitions, 10000s of these
     )
     # <windows.h> defines min/max macros that break std::min/std::max, and
-    # VK_* key codes that collide with the SDL-based ones in sdllib/keyboard.h.
+    # VK_* key codes that collide with the SDL-based ones in
+    # engine/window/keyboard.h.
     add_compile_definitions(NOMINMAX NOVIRTUALKEYCODES)
 else ()
     if (STRICT_CHECKS)
@@ -212,7 +213,6 @@ include(GoogleTest)
 enable_testing()
 
 add_subdirectory(src/engine)
-add_subdirectory(src/sdllib)
 add_subdirectory(src/winvq)
 add_subdirectory(third_party)
 add_subdirectory(src/tech)

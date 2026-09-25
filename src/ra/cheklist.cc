@@ -58,11 +58,11 @@
 #include "engine/base/numeric.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/window/keyboard.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/jshell.h"
 #include "ra/list.h"
-#include "sdllib/keyboard.h"
 
 CheckListClass::CheckListClass(int id, int x, int y, int w, int h,
                                TextPrintType flags,

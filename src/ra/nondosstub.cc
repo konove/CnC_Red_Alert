@@ -35,6 +35,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/filepcx.h"
 #include "ra/graphics_loader.h"
 #include "ra/input.h"
@@ -43,7 +44,6 @@
 #include "ra/theme.h"
 #include "ra/winstub.h"
 #include "ra/world.h"
-#include "sdllib/ww_mouse.h"
 
 /***********************************************************************************************
  * Focus_Loss -- this function is called when a library function detects focus

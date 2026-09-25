@@ -34,8 +34,8 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef CNC_RED_ALERT_SDLLIB_WW_WIN_H_
-#define CNC_RED_ALERT_SDLLIB_WW_WIN_H_
+#ifndef CNC_RED_ALERT_ENGINE_WINDOW_WW_WIN_H_
+#define CNC_RED_ALERT_ENGINE_WINDOW_WW_WIN_H_
 
 #include <cstdint>
 
@@ -82,4 +82,4 @@ extern char* TXT_MoreText;
 
 extern void (*Window_More_Ptr)(const char*, int, int, int);
 
-#endif  // CNC_RED_ALERT_SDLLIB_WW_WIN_H_
+#endif  // CNC_RED_ALERT_ENGINE_WINDOW_WW_WIN_H_

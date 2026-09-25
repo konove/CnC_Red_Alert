@@ -29,12 +29,12 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
 #include "ra/iconlist.h"
 #include "ra/winbits.h"
-#include "sdllib/ww_mouse.h"
 
 namespace {
 

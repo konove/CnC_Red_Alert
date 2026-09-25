@@ -8,7 +8,7 @@
 #include "absl/base/attributes.h"
 #include "engine/base/installed.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "sdllib/keyboard.h"
+#include "engine/window/keyboard.h"
 
 class PixelView;
 class WWMouseClass;
@@ -19,7 +19,7 @@ class WWMouseClass;
 // InstallMouse() once the video mode is set and destroyed by Prog_End()
 // before the pages go.
 //
-// Constructing an Input also makes its keyboard sdllib's ActiveKeyboard,
+// Constructing an Input also makes its keyboard engine_window's ActiveKeyboard,
 // which is what the Get_Key() family reads, and destroying one takes it
 // back out.
 //

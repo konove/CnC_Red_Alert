@@ -27,7 +27,7 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
-#include "sdllib/keyboard.h"
+#include "engine/window/keyboard.h"
 #include "td/defines.h"
 #include "winvq/vqa32/vqa_player.h"
 

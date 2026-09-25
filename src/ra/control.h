@@ -41,8 +41,8 @@
 #define CNC_RED_ALERT_RA_CONTROL_H_
 
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/window/keyboard.h"
 #include "ra/gadget.h"
-#include "sdllib/keyboard.h"
 
 /***************************************************************************
  * ControlClass -- Region tracking class

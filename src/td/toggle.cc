@@ -43,8 +43,8 @@
 
 #include "td/toggle.h"
 
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "td/control.h"
 #include "td/gadget.h"
 

@@ -34,10 +34,10 @@
  * Functions:                                                              *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-#ifndef CNC_RED_ALERT_SDLLIB_MISC_H_
-#define CNC_RED_ALERT_SDLLIB_MISC_H_
+#ifndef CNC_RED_ALERT_ENGINE_WINDOW_MISC_H_
+#define CNC_RED_ALERT_ENGINE_WINDOW_MISC_H_
 
-#include "sdllib/display.h"
+#include "engine/window/display.h"
 
 /*========================= C++ Routines ==================================*/
 
@@ -75,4 +75,4 @@ inline void Wait_Vert_Blank() { TheDisplay().EndFrame(); }
 
 /*=========================================================================*/
 
-#endif  // CNC_RED_ALERT_SDLLIB_MISC_H_
+#endif  // CNC_RED_ALERT_ENGINE_WINDOW_MISC_H_

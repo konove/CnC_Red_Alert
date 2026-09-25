@@ -133,6 +133,9 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
+#include "engine/window/ww_win.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/assets.h"
@@ -188,9 +191,6 @@
 #include "ra/vessel.h"
 #include "ra/vortex.h"
 #include "ra/world.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
-#include "sdllib/ww_win.h"
 
 // Scratch space for packing and unpacking the MapPack INI block.
 static char map_pack_buffer[32000];

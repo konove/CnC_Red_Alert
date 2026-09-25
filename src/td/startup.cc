@@ -57,8 +57,8 @@
 #include "engine/platform/memflag.h"
 #include "engine/platform/timer.h"
 #include "engine/stream/byte_stream.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/misc.h"
 #include "td/defines.h"
 #include "td/game.h"
 #include "td/game_state.h"
@@ -93,7 +93,7 @@
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/file_system.h"
-#include "sdllib/ww_mouse.h"
+#include "engine/window/ww_mouse.h"
 #include "td/conquer.h"
 #include "td/debug_state.h"
 #include "td/goptions.h"
@@ -150,7 +150,7 @@ static Game* game = nullptr;
 // Hands what the command line asked for to whatever owns it. The screen
 // mode, the IPX socket, the bridge network and the 1.07 compatibility flag
 // wait for Read_Setup_Options(), because the config file asks for them too.
-// Fills in the window rows sdllib holds the storage for. The first two are
+// Fills in the window rows engine_gfx holds the storage for. The first two are
 // the screen and the error window, and the system needs them where they
 // are.
 static void InitWindowList() {

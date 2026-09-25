@@ -49,14 +49,14 @@
 #include "engine/base/fixed.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
 #include "ra/jshell.h"
 #include "ra/screen.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
 
 /***************************************************************************
  * GaugeClass::GaugeClass -- class constructor                             *

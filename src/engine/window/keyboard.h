@@ -33,8 +33,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_SDLLIB_KEYBOARD_H_
-#define CNC_RED_ALERT_SDLLIB_KEYBOARD_H_
+#ifndef CNC_RED_ALERT_ENGINE_WINDOW_KEYBOARD_H_
+#define CNC_RED_ALERT_ENGINE_WINDOW_KEYBOARD_H_
 
 #include <cstdint>
 
@@ -557,4 +557,4 @@ inline KeyNumType operator~(const KeyNumType a) noexcept {
   return static_cast<KeyNumType>(~static_cast<uint32_t>(a));
 }
 
-#endif  // CNC_RED_ALERT_SDLLIB_KEYBOARD_H_
+#endif  // CNC_RED_ALERT_ENGINE_WINDOW_KEYBOARD_H_

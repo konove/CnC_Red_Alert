@@ -48,9 +48,9 @@
 #include <vector>
 
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/window/keyboard.h"
 #include "ra/defines.h"
 #include "ra/list.h"
-#include "sdllib/keyboard.h"
 
 // A list box whose items each carry a check mark the user can toggle by
 // clicking. The checked state lives next to the text, not in it: Get_Item

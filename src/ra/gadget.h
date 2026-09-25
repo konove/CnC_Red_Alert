@@ -86,9 +86,9 @@
 
 #include "engine/base/attributes.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/window/keyboard.h"
 #include "ra/defines.h"
 #include "ra/link.h"
-#include "sdllib/keyboard.h"
 
 class ControlClass;
 

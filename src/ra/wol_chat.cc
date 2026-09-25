@@ -32,6 +32,8 @@
 #include "engine/platform/timer.h"
 #include "engine/platform/win32/win32_com.h"
 #include "engine/platform/win32/win32_types.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/audio.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
@@ -59,8 +61,6 @@
 #include "ra/wolapi/wolapi.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
 
 // #include "ra/woldebug.h"
 

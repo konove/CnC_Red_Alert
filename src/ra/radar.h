@@ -45,12 +45,12 @@
 #include <span>
 
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/window/keyboard.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/gadget.h"
 #include "ra/house.h"
 #include "ra/jshell.h"
-#include "sdllib/keyboard.h"
 
 class RadarClass : public DisplayClass {
  public:

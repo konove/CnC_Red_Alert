@@ -110,6 +110,7 @@
 #include "engine/stream/span_source.h"
 #include "engine/stream/stream_sink.h"
 #include "engine/stream/stream_source.h"
+#include "engine/window/ww_mouse.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets.h"
 #include "ra/ccini.h"
@@ -169,7 +170,6 @@
 #include "ra/world.h"
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
-#include "sdllib/ww_mouse.h"
 
 static RemapControlType SidebarScheme;
 

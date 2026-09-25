@@ -1,4 +1,4 @@
-#include "sdllib/keyboard.h"
+#include "engine/window/keyboard.h"
 
 #include <SDL_events.h>
 #include <SDL_keyboard.h>
@@ -11,8 +11,8 @@
 #include <span>
 
 #include "engine/base/array.h"
-#include "sdllib/ww_mouse.h"
-#include "sdllib/ww_win.h"
+#include "engine/window/ww_mouse.h"
+#include "engine/window/ww_win.h"
 
 // The keyboard the Get_Key() family reads. Each game points this at its
 // own keyboard when it builds one, and clears it again afterwards.

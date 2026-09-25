@@ -362,7 +362,7 @@ class PixelBuffer {
 };
 
 // Inline rather than in the .cc because the window unit differs between the
-// two games, and sdllib is compiled once, without TD defined.
+// two games, and engine_gfx is compiled once, without TD defined.
 inline void PixelView::DrawStamp(const std::span<const std::byte> icon_set,
                                  const int cell, const int x, const int y,
                                  const std::span<const uint8_t> remap_table,

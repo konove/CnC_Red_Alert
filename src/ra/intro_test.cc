@@ -10,6 +10,7 @@
 
 #include "engine/base/installed.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/window/ww_mouse.h"
 #include "gtest/gtest.h"
 #include "ra/defines.h"
 #include "ra/game_state.h"
@@ -19,7 +20,6 @@
 #include "ra/msgbox.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
-#include "sdllib/ww_mouse.h"
 
 namespace {
 

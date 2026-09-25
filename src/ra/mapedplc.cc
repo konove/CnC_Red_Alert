@@ -64,6 +64,9 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
+#include "engine/window/ww_win.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/base.h"
 #include "ra/building.h"
@@ -96,9 +99,6 @@
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
-#include "sdllib/ww_win.h"
 
 /***************************************************************************
  * MapEditClass::Placement_Dialog -- adds an object to the scenario        *

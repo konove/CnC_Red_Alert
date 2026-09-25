@@ -20,7 +20,7 @@
 
 // File: Inter-player chat: composing, sending and receiving messages.
 
-#include "sdllib/keyboard.h"
+#include "engine/window/keyboard.h"
 
 // Processes inter-player message input. F1 through F8 open an editable message
 // addressed to one player or to everyone, and RETURN sends what has been typed.

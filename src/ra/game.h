@@ -7,6 +7,7 @@
 
 #include "engine/audio/audio_mixer.h"
 #include "engine/base/installed.h"
+#include "engine/window/display.h"
 #include "ra/assets.h"
 #include "ra/debug_state.h"
 #include "ra/game_clock.h"
@@ -25,7 +26,6 @@
 #include "ra/type_heaps.h"
 #include "ra/version.h"
 #include "ra/world.h"
-#include "sdllib/display.h"
 
 // Owns the game's subsystems and so fixes the order they are built and torn
 // down in. Members are declared in dependency order, which C++ constructs

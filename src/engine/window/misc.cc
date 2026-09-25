@@ -1,8 +1,8 @@
-#include "sdllib/misc.h"
+#include "engine/window/misc.h"
 
 #include "absl/strings/str_format.h"
 #include "engine/platform/timer.h"
-#include "sdllib/display.h"
+#include "engine/window/display.h"
 
 void (*Misc_Focus_Loss_Function)();
 void (*Misc_Focus_Restore_Function)();

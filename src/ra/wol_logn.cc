@@ -31,6 +31,8 @@
 #include "engine/platform/sleep.h"
 #include "engine/platform/win32/win32_com.h"
 #include "engine/platform/win32/win32_types.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/bigcheck.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
@@ -54,8 +56,6 @@
 #include "ra/wolapiob.h"
 #include "ra/woledit.h"
 #include "ra/wolstrng.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
 
 static bool ReadSavedNicks(const WolapiObject* pWO, IconListClass& NickList,
                            std::span<char> szNameBuffer,

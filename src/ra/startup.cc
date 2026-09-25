@@ -33,12 +33,12 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/memflag.h"
 #include "engine/platform/timer.h"
+#include "engine/window/misc.h"
 #include "ra/game.h"
 #include "ra/input.h"
 #include "ra/palette.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
-#include "sdllib/misc.h"
 
 // The test that links this file defines RA_NO_ENTRY_POINT; these headers
 // serve only main() and the two helpers it calls.
@@ -68,6 +68,7 @@
 #include "engine/platform/win32/win32_registry.h"
 #include "engine/platform/win32/win32_system.h"
 #include "engine/platform/win32/win32_types.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/debug_state.h"
@@ -88,7 +89,6 @@
 #include "ra/startup_options.h"
 #include "ra/winstub.h"
 #include "ra/world.h"
-#include "sdllib/ww_mouse.h"
 #endif  // RA_NO_ENTRY_POINT
 
 #ifdef _WIN32
@@ -131,7 +131,7 @@ void ShutDown() {
 // Hands what the command line asked for to whatever owns it. The screen
 // mode, the IPX socket and the bridge network wait for ReadConfigOptions(),
 // because the config file asks for them too.
-// Fills in the window rows sdllib holds the storage for. The first two are
+// Fills in the window rows engine_gfx holds the storage for. The first two are
 // the screen and the error window, and the system needs them where they
 // are.
 static void InitWindowList() {

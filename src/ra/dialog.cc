@@ -71,6 +71,7 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/assets.h"
 #include "ra/config.h"
 #include "ra/debug_state.h"
@@ -83,7 +84,6 @@
 #include "ra/screen.h"
 #include "ra/shape_draw.h"
 #include "ra/text_ids.h"
-#include "sdllib/ww_mouse.h"
 
 /***********************************************************************************************
  * Dialog_Box -- draws a dialog background box *

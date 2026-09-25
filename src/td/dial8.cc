@@ -63,8 +63,8 @@
 
 #include "engine/base/array.h"
 #include "engine/gfx/pixel_buffer.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "td/control.h"
 #include "td/defines.h"
 #include "td/dialog.h"

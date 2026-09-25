@@ -53,6 +53,9 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/timer.h"
+#include "engine/window/display.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"  // IWYU pragma: keep
 #include "ra/audio.h"
@@ -112,9 +115,6 @@
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"
-#include "sdllib/display.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
 
 // Cycles the animated palette entries. Two effects run off independent timers:
 // a white that pulses between bright and half-dark, used by the radar box and

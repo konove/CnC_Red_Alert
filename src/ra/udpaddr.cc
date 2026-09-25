@@ -24,6 +24,8 @@
 #include "engine/file/mix_archive.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/ccini.h"
 #include "ra/colrlist.h"
 #include "ra/config.h"
@@ -41,8 +43,6 @@
 #include "ra/winstub.h"
 #include "ra/wsproto.h"
 #include "ra/wspudp.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
 
 bool Get_Broadcast_Addresses() {
   const int d_dialog_w = 640;                             // dialog width

@@ -47,6 +47,9 @@
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
+#include "engine/window/ww_win.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
@@ -68,9 +71,6 @@
 #include "ra/textbtn.h"
 #include "ra/tracker.h"
 #include "ra/type.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
-#include "sdllib/ww_win.h"
 
 /***************************************************************************
  * MapEditClass::Handle_Teams -- main team-dialog-handling function        *

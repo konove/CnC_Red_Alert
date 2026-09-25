@@ -162,6 +162,8 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/misc.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/assets.h"
@@ -216,8 +218,6 @@
 #include "ra/warhead.h"
 #include "ra/weapon.h"
 #include "ra/world.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 
 /***************************************************************************
 **	Cloaking control values.

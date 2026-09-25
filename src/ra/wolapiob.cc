@@ -34,6 +34,8 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/rgb.h"
 #include "engine/platform/win32/win32_types.h"
+#include "engine/window/display.h"
+#include "engine/window/keyboard.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dib.h"
@@ -47,8 +49,6 @@
 #include "ra/type.h"
 #include "ra/wolapi/chatdefs.h"
 #include "ra/wolapi/wolapi.h"
-#include "sdllib/display.h"
-#include "sdllib/keyboard.h"
 
 #ifdef _WIN32
 #include <winsock.h>
@@ -80,6 +80,7 @@
 #include "engine/platform/win32/win32_com.h"
 #include "engine/platform/win32/win32_registry.h"
 #include "engine/platform/win32/win32_system.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/audio.h"
 #include "ra/config.h"
 #include "ra/inline.h"
@@ -93,7 +94,6 @@
 #include "ra/wol_gsup.h"
 #include "ra/wol_main.h"
 #include "ra/wolstrng.h"
-#include "sdllib/ww_mouse.h"
 
 static void HostNameFromGameChannelName(std::span<char> szNameToSet,
                                         const char* szChannelName);

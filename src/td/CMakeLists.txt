@@ -47,7 +47,7 @@ endif ()
 target_compile_definitions(td_engine PUBLIC TD=1)
 apply_dotenv_settings(td_engine)
 apply_dotenv_settings(tdsdl)
-target_link_libraries(td_engine PUBLIC tech engine_net sdllib vqa32 absl::strings absl::algorithm absl::check absl::core_headers absl::log absl::log_initialize absl::random_random absl::span)
+target_link_libraries(td_engine PUBLIC tech engine_net engine_window vqa32 absl::strings absl::algorithm absl::check absl::core_headers absl::log absl::log_initialize absl::random_random absl::span)
 target_link_libraries(tdsdl PRIVATE td_engine)
 
 install(TARGETS tdsdl)
@@ -82,7 +82,7 @@ apply_dotenv_settings(td_game_test)
 add_gtest(
     NAME td_assets_test
     SOURCES assets_test.cc assets.cc
-    LIBS engine_base sdllib tech magic_enum::magic_enum absl::check absl::log absl::strings
+    LIBS engine_base tech magic_enum::magic_enum absl::check absl::log absl::strings
 )
 
 add_gtest(
@@ -100,7 +100,7 @@ add_gtest(
 add_gtest(
     NAME td_screen_test
     SOURCES screen_test.cc screen.cc
-    LIBS engine_base sdllib
+    LIBS engine_base engine_window
 )
 
 add_gtest(

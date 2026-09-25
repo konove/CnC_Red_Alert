@@ -2,7 +2,7 @@
 // on and the textures that present it, and the pacing that keeps a loop that
 // presents while waiting for input from spinning a core.
 
-#include "sdllib/display.h"
+#include "engine/window/display.h"
 
 #include <SDL.h>
 #include <SDL_events.h>
@@ -24,7 +24,7 @@
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
 #include "engine/gfx/pixel_surface.h"
-#include "sdllib/ww_win.h"
+#include "engine/window/ww_win.h"
 
 namespace {
 

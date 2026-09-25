@@ -3,8 +3,8 @@
 #include <memory>
 
 #include "engine/gfx/pixel_buffer.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 
 namespace {
 // The cursor's hot-spot box, in pixels. The original picked a square large

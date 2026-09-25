@@ -42,7 +42,7 @@
 #define CNC_RED_ALERT_TD_SCROLL_H_
 
 #include "engine/platform/timer.h"
-#include "sdllib/keyboard.h"
+#include "engine/window/keyboard.h"
 #include "td/help.h"
 
 class ScrollClass : public HelpClass {

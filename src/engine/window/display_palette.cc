@@ -7,8 +7,8 @@
 #include <cstdint>
 #include <span>
 
-#include "sdllib/display.h"
-#include "sdllib/ww_mouse.h"
+#include "engine/window/display.h"
+#include "engine/window/ww_mouse.h"
 
 void Display::SetPalette(std::span<const uint8_t> palette) {
   UpdatePalette(palette);

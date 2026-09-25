@@ -47,10 +47,10 @@
 #include "engine/platform/ftimer.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
+#include "engine/window/keyboard.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
 #include "ra/scroll.h"
-#include "sdllib/keyboard.h"
 
 class MouseClass : public ScrollClass {
  public:

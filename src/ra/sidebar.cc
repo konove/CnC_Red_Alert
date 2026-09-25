@@ -111,6 +111,7 @@
 #include "engine/gfx/shape.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/window/keyboard.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/audio.h"
 #include "ra/building.h"
@@ -144,7 +145,6 @@
 #include "ra/text_ids.h"
 #include "ra/type.h"
 #include "ra/world.h"
-#include "sdllib/keyboard.h"
 
 std::span<const std::byte> SidebarClass::SidebarShape = {};
 std::span<const std::byte> SidebarClass::SidebarMiddleShape = {};

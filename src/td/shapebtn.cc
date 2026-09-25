@@ -47,7 +47,7 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
-#include "sdllib/ww_mouse.h"
+#include "engine/window/ww_mouse.h"
 #include "td/conquer.h"
 #include "td/control.h"
 #include "td/defines.h"

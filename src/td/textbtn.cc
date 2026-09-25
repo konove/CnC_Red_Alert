@@ -51,7 +51,7 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
-#include "sdllib/ww_mouse.h"
+#include "engine/window/ww_mouse.h"
 #include "td/conquer.h"
 #include "td/control.h"
 #include "td/defines.h"

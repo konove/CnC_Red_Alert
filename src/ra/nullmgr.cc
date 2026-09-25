@@ -78,6 +78,9 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/net/serial/modemreg.h"
 #include "engine/net/serial/wincomm.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/misc.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/combuf.h"
 #include "ra/connect.h"
 #include "ra/conquer.h"
@@ -94,9 +97,6 @@
 #include "ra/session.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
-#include "sdllib/ww_mouse.h"
 
 #ifdef _WIN32
 #include <windows.h>

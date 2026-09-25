@@ -29,7 +29,7 @@ namespace {
 // functions take the view to draw on, so the test hands them view().
 class TestScreen {
  public:
-  // sdllib holds the window rows and the game fills them in; one window
+  // engine_gfx holds the window rows and the game fills them in; one window
   // covering the whole buffer is all these tests need.
   TestScreen()
       : pixels_(std::size_t{kWidth} * kHeight, 0),

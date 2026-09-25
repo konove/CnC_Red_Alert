@@ -19,7 +19,7 @@
 namespace {
 
 // The icon set header of Tiberian Dawn, which lacks Red Alert's MapWidth,
-// MapHeight and ColorMap fields. sdllib is compiled without TD, so
+// MapHeight and ColorMap fields. engine_gfx is compiled without TD, so
 // IControl_Type is always Red Alert's layout and Tiberian Dawn's sets are read
 // through this one. Only the three table offsets are read; the rest hold
 // their place in the layout.

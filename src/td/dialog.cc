@@ -71,7 +71,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
-#include "sdllib/ww_mouse.h"
+#include "engine/window/ww_mouse.h"
 #include "td/assets.h"
 #include "td/conquer.h"
 #include "td/defines.h"

@@ -2,7 +2,7 @@
 // palette it shows it through, and the stretched movie frames it presents
 // instead of it.
 
-#include "sdllib/display.h"
+#include "engine/window/display.h"
 
 #include <SDL_pixels.h>
 #include <SDL_render.h>

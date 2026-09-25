@@ -47,6 +47,7 @@
 #include "engine/base/array.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/ftimer.h"
+#include "engine/window/keyboard.h"
 #include "ra/debug_state.h"
 #include "ra/defines.h"
 #include "ra/face.h"
@@ -56,7 +57,6 @@
 #include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/screen.h"
-#include "sdllib/keyboard.h"
 
 #define SCROLL_DELAY 1
 

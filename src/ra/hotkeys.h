@@ -20,8 +20,8 @@
 
 // File: Keyboard commands for the tactical map.
 
+#include "engine/window/keyboard.h"
 #include "ra/defines.h"
-#include "sdllib/keyboard.h"
 
 // Handles keyboard input while the tactical map is displayed. Consumes each
 // key it acts on by setting input to KN_NONE.

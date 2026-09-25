@@ -41,6 +41,8 @@
 #include "engine/gfx/wsa_animation.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/ftimer.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/ccptr.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -60,8 +62,6 @@
 #include "ra/theme.h"
 #include "ra/type.h"
 #include "ra/world.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
 
 // The scenario variant behind each hotspot, in the order of kHotspotCorners.
 constexpr ScenarioVarType kChoiceVariants[] = {SCEN_VAR_A, SCEN_VAR_B,

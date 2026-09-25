@@ -16,7 +16,7 @@
 #include "engine/base/bytes_of.h"
 #include "engine/gfx/rgb.h"
 #include "engine/platform/timer.h"
-#include "sdllib/display.h"
+#include "engine/window/display.h"
 
 PaletteClass PaletteClass::CurrentPalette;
 

@@ -42,7 +42,7 @@
 #define CNC_RED_ALERT_TD_SLIDER_H_
 
 #include "engine/gfx/pixel_buffer.h"
-#include "sdllib/keyboard.h"
+#include "engine/window/keyboard.h"
 #include "td/control.h"
 #include "td/gauge.h"
 #include "td/shapebtn.h"

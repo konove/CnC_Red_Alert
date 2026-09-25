@@ -76,6 +76,7 @@
 #include "engine/file/game_file.h"
 #include "engine/gfx/hsv.h"
 #include "engine/gfx/rgb.h"
+#include "engine/window/keyboard.h"
 #include "ra/audio.h"
 #include "ra/defines.h"
 #include "ra/ini.h"
@@ -83,7 +84,6 @@
 #include "ra/palettes.h"
 #include "ra/session.h"
 #include "ra/theme.h"
-#include "sdllib/keyboard.h"
 
 const char* const OptionsClass::HotkeyName = "WinHotkeys";
 

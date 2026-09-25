@@ -46,13 +46,13 @@
 
 #include "engine/base/enum_array.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/window/keyboard.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"
 #include "ra/power.h"
 #include "ra/shapebtn.h"
 #include "ra/stage.h"
-#include "sdllib/keyboard.h"
 
 class InitClass {};
 

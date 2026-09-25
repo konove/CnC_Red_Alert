@@ -98,6 +98,8 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/platform.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
@@ -170,8 +172,6 @@
 #include "ra/weapon.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
 
 static void Remove_AI_Players();
 static void Create_Units(bool official);

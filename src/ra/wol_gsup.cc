@@ -42,6 +42,7 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/win32/win32_types.h"
+#include "engine/window/keyboard.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/bigcheck.h"
 #include "ra/config.h"
@@ -78,7 +79,6 @@
 #include "ra/wolstrng.h"
 #include "ra/world.h"
 #include "ra/wsproto.h"
-#include "sdllib/keyboard.h"
 
 static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 
@@ -87,6 +87,7 @@ static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 #include "engine/file/search_paths.h"
 #include "engine/platform/sleep.h"
 #include "engine/platform/timer.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/audio.h"
 #include "ra/cheklist.h"
 #include "ra/dialog.h"
@@ -102,7 +103,6 @@ static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 #include "ra/shapebtn.h"
 #include "ra/statbtn.h"
 #include "ra/textbtn.h"
-#include "sdllib/ww_mouse.h"
 
 #define PARAMREFRESHWAIT 2000
 

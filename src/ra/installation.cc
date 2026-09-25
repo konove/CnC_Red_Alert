@@ -35,6 +35,7 @@
 #include "engine/gfx/rgb.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/win32/win32_registry.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/assets.h"
 #include "ra/config.h"
 #include "ra/game_state.h"
@@ -48,7 +49,6 @@
 #include "ra/palettes.h"
 #include "ra/text_ids.h"
 #include "ra/theme.h"
-#include "sdllib/ww_mouse.h"
 
 const char* Game_Registry_Key() {
   if constexpr (config::kBuildLanguage == config::BuildLanguage::French) {

@@ -49,6 +49,7 @@
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/config.h"
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -58,7 +59,6 @@
 #include "ra/screen.h"
 #include "ra/text_ids.h"
 #include "ra/toggle.h"
-#include "sdllib/ww_mouse.h"
 
 /***********************************************************************************************
  * TextButtonClass::TextButtonClass -- Normal constructor for a text button. *

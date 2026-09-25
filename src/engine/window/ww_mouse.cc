@@ -1,7 +1,7 @@
 // SDL2-based mouse cursor management. Handles decoding game cursor shapes,
 // scaling them for high-DPI displays, and synchronizing with palette changes.
 
-#include "sdllib/ww_mouse.h"
+#include "engine/window/ww_mouse.h"
 
 #include <SDL_events.h>
 #include <SDL_mouse.h>
@@ -24,7 +24,7 @@
 #include "engine/codec/lcw_uncompress.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
-#include "sdllib/display.h"
+#include "engine/window/display.h"
 
 // Global flag to disable mouse grabbing (for debugging)
 bool NoMouseGrab = false;

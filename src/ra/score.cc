@@ -55,6 +55,8 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/timer.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/assets.h"
 #include "ra/ccptr.h"
 #include "ra/config.h"
@@ -84,8 +86,6 @@
 #include "ra/theme.h"
 #include "ra/type.h"
 #include "ra/world.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
 
 // Layout, in 320x200 coordinates.
 

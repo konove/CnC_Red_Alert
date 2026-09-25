@@ -42,10 +42,10 @@
 
 #include "ra/toggle.h"
 
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/control.h"
 #include "ra/gadget.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
 
 /***********************************************************************************************
  * ToggleClass::ToggleClass -- Normal constructor for toggle button gadgets. *

@@ -93,7 +93,7 @@ apply_language_setting(rasdl)
 target_link_libraries(ra_engine PUBLIC absl::strings magic_enum::magic_enum
         tech
         engine_net
-        sdllib
+        engine_window
         vqa32
         absl::check
         absl::core_headers
@@ -109,7 +109,7 @@ include(Testing)
 add_gtest(
     NAME ra_ini_number_test
     SOURCES ini_number_test.cc ini.cc profile_buffer_test.cc profile.cc
-    LIBS tech sdllib absl::strings absl::check absl::log magic_enum::magic_enum
+    LIBS tech absl::strings absl::check absl::log magic_enum::magic_enum
 )
 
 add_gtest(
@@ -140,7 +140,7 @@ apply_language_setting(ra_drop_test)
 add_gtest(
     NAME ra_assets_test
     SOURCES assets_test.cc assets.cc ini.cc
-    LIBS engine_base sdllib tech magic_enum::magic_enum absl::strings absl::check absl::log
+    LIBS engine_base tech magic_enum::magic_enum absl::strings absl::check absl::log
 )
 apply_language_setting(ra_assets_test)
 
@@ -160,7 +160,7 @@ apply_language_setting(ra_palettes_test)
 add_gtest(
     NAME ra_screen_test
     SOURCES screen_test.cc screen.cc
-    LIBS engine_base sdllib
+    LIBS engine_base engine_window
 )
 
 add_gtest(
@@ -195,7 +195,7 @@ add_gtest(
 add_gtest(
     NAME ra_winbits_test
     SOURCES winbits_test.cc winbits.cc dib.cc
-    LIBS engine_base tech sdllib vqa32 absl::strings absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base engine_gfx tech vqa32 absl::strings absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_winbits_test)
 
@@ -217,14 +217,14 @@ apply_language_setting(ra_crate_test)
 add_gtest(
     NAME ra_intro_test
     SOURCES intro_test.cc intro.cc
-    LIBS engine_base tech sdllib absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base tech engine_window absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_intro_test)
 
 add_gtest(
     NAME ra_saveglobals_test
     SOURCES saveglobals_test.cc saveglobals.cc ipxaddr.cc
-    LIBS engine_base tech sdllib absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base tech absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_saveglobals_test)
 

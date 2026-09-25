@@ -68,6 +68,8 @@
 #include "engine/file/disk_file.h"
 #include "engine/file/file_access.h"
 #include "engine/gfx/pixel_buffer.h"
+#include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "ra/audio.h"
 #include "ra/config.h"
 #include "ra/control.h"
@@ -79,8 +81,6 @@
 #include "ra/link.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
-#include "sdllib/keyboard.h"
-#include "sdllib/ww_mouse.h"
 
 /*
 **	This records the current gadget the the gadget system is "stuck on".

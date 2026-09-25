@@ -28,5 +28,5 @@ target_sources(tech PUBLIC
 find_package(SDL2 REQUIRED)
 target_link_libraries(tech
         PUBLIC engine_base engine_platform engine_stream engine_crypto engine_file engine_audio absl::strings SDL2::SDL2
-        PRIVATE sdllib vqa32 engine_codec
+        PRIVATE vqa32 engine_codec
 )

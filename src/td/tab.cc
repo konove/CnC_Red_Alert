@@ -49,7 +49,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
 #include "engine/gfx/wwstd.h"
-#include "sdllib/keyboard.h"
+#include "engine/window/keyboard.h"
 #include "td/conquer.h"
 #include "td/credits.h"
 #include "td/debug_state.h"
