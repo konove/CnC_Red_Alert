@@ -6,7 +6,6 @@
 
 #include "absl/strings/str_format.h"
 #include "sdllib/display.h"
-#include "sdllib/net_select.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten/emscripten.h>
@@ -14,9 +13,11 @@
 
 namespace {
 EventHandler g_event_handler = nullptr;
+PumpHandler g_pump_handler = nullptr;
 }  // namespace
 
 void SetEventHandler(const EventHandler handler) { g_event_handler = handler; }
+void SetPumpHandler(const PumpHandler handler) { g_pump_handler = handler; }
 
 int Change_Window(int /*windnum*/) {
   absl::PrintF("%s\n", __func__);
@@ -30,9 +31,9 @@ void SDL_Event_Loop() {
   emscripten_sleep(0);
 #endif
 
-  // this is replacing WSAAsyncSelect, which would send through the windows
-  // event loop
-  Socket_Select();
+  if (g_pump_handler) {
+    g_pump_handler();
+  }
 
   SDL_Event event;
   while (SDL_PollEvent(&event)) {

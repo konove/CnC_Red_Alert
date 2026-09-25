@@ -55,6 +55,15 @@ using EventHandler = void (*)(SDL_Event* event);
 // internally). With none installed, pumped events are dropped.
 void SetEventHandler(EventHandler handler);
 
+// Function type for the game's per-pass pump hook.
+using PumpHandler = void (*)();
+
+// Installs the game's pump handler, called once per SDL_Event_Loop pass,
+// before events are polled. Red Alert uses this to pump its sockets
+// (Socket_Select); Tiberian Dawn installs none. With none installed,
+// SDL_Event_Loop does nothing extra per pass.
+void SetPumpHandler(PumpHandler handler);
+
 void SDL_Event_Loop();
 void SDL_Send_Quit();
 

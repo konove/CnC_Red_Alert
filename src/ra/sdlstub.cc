@@ -19,6 +19,7 @@
 #include "ra/winstub.h"
 #include "sdllib/display.h"
 #include "sdllib/misc.h"
+#include "sdllib/net_select.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
@@ -62,6 +63,9 @@ void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
                         int height) {
   TheDisplay().Init(kWindowName, width, height);
   SetEventHandler(&SDL_Event_Handler);
+  // Replaces WSAAsyncSelect, which would send through the Windows event
+  // loop.
+  SetPumpHandler(&Socket_Select);
 
   // Audio_Focus_Loss_Function = &Focus_Loss;
   Misc_Focus_Loss_Function = &Focus_Loss;
