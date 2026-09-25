@@ -77,3 +77,8 @@ row to run cpplint on the touched files; CLAUDE.md's Tools table and dependency 
   - `build/include_order` (2026-09-25): 16 findings in 7 files, plus the 7 other tests that spelled
     `<gtest/gtest.h>`, which cpplint reads as a C system header; all 107 other includes of it are
     `"gtest/gtest.h"`. `ra/netdlg.cc` had a second include block below its constants.
+  - `runtime/explicit` moved to the permanent block (2026-09-25). Of its 22 findings, 20 are
+    deliberate implicit conversions already marked `NOLINTNEXTLINE(*-explicit-constructor)` for
+    clang-tidy's `misc-explicit-constructor`, which enforces the rule on compiled code; cpplint
+    cannot read that comment. The other two sit in dead branches (`#ifdef NEVER` in `td/target.h`,
+    `#ifdef JAPANESE` in `td/msgbox.h`) and are `/remove-dead-code` material.
