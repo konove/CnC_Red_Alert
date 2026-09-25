@@ -1,11 +1,10 @@
 #include "engine/gfx/glow_pulse.h"
 
-#include <gtest/gtest.h>
-
 #include <cstdint>
 #include <vector>
 
 #include "engine/gfx/rgb.h"
+#include "gtest/gtest.h"
 
 namespace {
 

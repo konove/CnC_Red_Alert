@@ -1,11 +1,10 @@
 #include "engine/base/flags.h"
 
-#include <gtest/gtest.h>
-
 #include <cstdint>
 
 #include "engine/base/attributes.h"
 #include "engine/base/numeric.h"
+#include "gtest/gtest.h"
 
 namespace {
 

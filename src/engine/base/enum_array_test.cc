@@ -1,10 +1,9 @@
 #include "engine/base/enum_array.h"
 
-#include <gtest/gtest.h>
-
 #include <cstdint>
 
 #include "engine/base/types.h"
+#include "gtest/gtest.h"
 
 namespace base {
 namespace {

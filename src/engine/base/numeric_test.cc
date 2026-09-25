@@ -1,13 +1,12 @@
 #include "engine/base/numeric.h"
 
-#include <gtest/gtest.h>
-
 #include <cstddef>
 #include <cstdint>
 #include <limits>
 
 #include "engine/base/attributes.h"
 #include "engine/base/types.h"
+#include "gtest/gtest.h"
 
 namespace base {
 namespace {

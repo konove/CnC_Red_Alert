@@ -1,8 +1,8 @@
 #include "engine/base/hsv.h"
 
-#include <gtest/gtest.h>
-
 #include <algorithm>
+
+#include "gtest/gtest.h"
 
 namespace base {
 namespace {
