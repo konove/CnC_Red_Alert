@@ -51,10 +51,10 @@ commit and one line in the final report. Do not stop between stages to ask; the 
 whole run.
 
 **The full strict build runs once, not once per stage.** A run edits the same header six times, and
-each edit re-analyzes everything that includes it - four minutes for a `sdllib/pixel_buffer.h`-sized
-fan-out, half an hour over a run. So during the stages, verify with
-`tools/strict_tu.py <touched files>` (the same clang-tidy pass and clang compile, on the objects
-those files build, in seconds) and tell `/commit` the full pass is deferred. The plain
+each edit re-analyzes everything that includes it - four minutes for an
+`engine/gfx/pixel_buffer.h`-sized fan-out, half an hour over a run. So during the stages, verify
+with `tools/strict_tu.py <touched files>` (the same clang-tidy pass and clang compile, on the
+objects those files build, in seconds) and tell `/commit` the full pass is deferred. The plain
 `cmake --build build --parallel 22` still runs every stage: it is what catches a rename that missed
 a call site anywhere in the tree.
 

@@ -4,14 +4,10 @@
 Every engine target shares the src/ include root, so linking only proves that
 a library calls nothing it does not link; a header-only include from a folder
 the library may not see still builds. This script reads the include lines
-instead. It places each engine file in its folder under src/engine/ -- by the
-file map in tools/engine_layout.py while the file still sits in src/base,
-src/port, src/sdllib, src/tech or src/winvq, by its path once it has moved --
-and fails on:
+instead. It places each engine file in its folder under src/engine/ by its
+path (tools/engine_layout.py) and fails on:
 
-- a source file in those folders that the file map does not place, or a file
-  under src/engine/ outside the known folders;
-- a file map entry that names no file, old or moved;
+- a source file under src/engine/ outside the known folders;
 - an include of a folder the file's library may not see (the plan's
   "Dependency order"), or of src/ra, src/td, src/tools or src/testing;
 - an SDL header outside window/, audio/, video/, video/vqa/ and
@@ -21,12 +17,12 @@ and fails on:
   names no file.
 
 Project includes are checked whether written with quotes or angle brackets
-(src/ is on the include path, so <sdllib/display.h> compiles too).
+(src/ is on the include path, so <engine/window/display.h> compiles too).
 
 Tests (*_test.cc, *_test_util.h) link more than their library does, so they
-may include any folder, the games and SDL; the map rules and the last rule
+may include any folder, the games and SDL; the folder rule and the last rule
 still apply to them. Files that are not C++ (CMakeLists.txt, notes) are not
-mapped and not checked.
+placed and not checked.
 
 Usage:
   tools/check_layers.py
@@ -47,7 +43,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 
 # The top-level folders under src/ that hold project code. A quoted include
 # starting with one of them is a project include and must resolve.
-PROJECT_ROOTS = layout.OLD_ROOTS + (layout.ENGINE_ROOT, "ra", "td", "tools", "testing")
+PROJECT_ROOTS = (layout.ENGINE_ROOT, "ra", "td", "tools", "testing")
 
 # The folders engine code may never include: the games, the tools and the
 # test main sit above every engine library.
@@ -108,58 +104,32 @@ def is_sdl_header(name: str) -> bool:
 
 
 def engine_files(src_root: Path) -> list[str]:
-    """Returns every engine source file, old or moved, relative to src_root."""
-    moved = src_root / layout.ENGINE_ROOT
-    new = (
-        [
-            path.relative_to(src_root).as_posix()
-            for path in moved.rglob("*")
-            if path.is_file() and layout.is_source(path.name)
-        ]
-        if moved.is_dir()
-        else []
+    """Returns every engine source file, relative to src_root."""
+    root = src_root / layout.ENGINE_ROOT
+    if not root.is_dir():
+        return []
+    return sorted(
+        path.relative_to(src_root).as_posix()
+        for path in root.rglob("*")
+        if path.is_file() and layout.is_source(path.name)
     )
-    return sorted(layout.old_files(src_root) + new)
 
 
-def _covers(stem: str, old_folder: str, destination: str, path: str) -> bool:
-    """Returns whether the file map entry old_folder/stem names path, before
-    or after its move to destination."""
-    folder, _, name = path.rpartition("/")
-    if folder not in (old_folder, f"{layout.ENGINE_ROOT}/{destination}"):
-        return False
-    return stem == layout.ALL or stem in layout.entry_stems(name)
-
-
-def map_errors(files: list[str]) -> list[str]:
-    """Returns the files the layout cannot place and the stale map entries."""
-    errors = [
-        (
-            f"src/{path}: not in a known engine folder"
-            if path.startswith(layout.ENGINE_ROOT + "/")
-            else f"src/{path}: not in the engine file map (tools/engine_layout.py)"
-        )
+def folder_errors(files: list[str]) -> list[str]:
+    """Returns the files the layout cannot place: under src/engine/ but not
+    in a known folder."""
+    return [
+        f"src/{path}: not in a known engine folder"
         for path in files
-        if layout.destination_of(path) is None
+        if layout.library_folder_of(path) is None
     ]
-    for destination, sources in layout.FILE_MAP.items():
-        for old_folder, stems in sources.items():
-            for stem in stems:
-                if not any(
-                    _covers(stem, old_folder, destination, path) for path in files
-                ):
-                    errors.append(
-                        f"tools/engine_layout.py: {old_folder}/{stem} -> "
-                        f"{destination} names no file"
-                    )
-    return errors
 
 
 def include_errors(src_root: Path, path: str) -> list[str]:
     """Returns the include-rule violations in one engine file."""
-    folder = layout.destination_of(path)
+    folder = layout.library_folder_of(path)
     if folder is None:
-        return []  # Reported by map_errors().
+        return []  # Reported by folder_errors().
     library = layout.library_of(folder)
     allowed = layout.allowed_libraries(library)
     test = layout.is_test(path)
@@ -178,7 +148,8 @@ def include_errors(src_root: Path, path: str) -> list[str]:
         sibling = Path(os.path.normpath((src_root / path).parent / included))
         if root in PROJECT_ROOTS:
             # Angle brackets reach src/ too (it is on the include path), so
-            # <sdllib/display.h> is checked like "sdllib/display.h".
+            # <engine/window/display.h> is checked like
+            # "engine/window/display.h".
             if not (src_root / included).is_file():
                 errors.append(f"{where}: no such file under src/")
                 continue
@@ -205,9 +176,9 @@ def include_errors(src_root: Path, path: str) -> list[str]:
         if root in FORBIDDEN_ROOTS:
             errors.append(f"{where}: engine code may not include {root}/")
             continue
-        target = layout.destination_of(included)
+        target = layout.library_folder_of(included)
         if target is None:
-            continue  # An unmapped file, reported by map_errors().
+            continue  # An unplaced file, reported by folder_errors().
         target_library = layout.library_of(target)
         if target_library not in allowed:
             errors.append(
@@ -220,7 +191,7 @@ def include_errors(src_root: Path, path: str) -> list[str]:
 def check(src_root: Path) -> list[str]:
     """Returns every violation in the tree at src_root."""
     files = engine_files(src_root)
-    errors = map_errors(files)
+    errors = folder_errors(files)
     for path in files:
         errors.extend(include_errors(src_root, path))
     return errors

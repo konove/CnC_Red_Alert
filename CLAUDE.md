@@ -108,7 +108,7 @@ hash by re-running the compiler to preprocess the TU and gives up on any compile
 (`hash_inputs` returns `None`), and under `-Weverything` a single preprocessor warning in a widely
 included header is enough to disable it tree-wide. The `_MAX_PATH`-style defines in the former
 `src/port/ex_string.h` used to do exactly that: 14/40 RA TUs were cacheable. With them renamed
-(`kMaxPath` and friends) and the reserved MIDL macros in `src/port/win32/win32_com.h` and
+(`kMaxPath` and friends) and the reserved MIDL macros in `src/engine/platform/win32/win32_com.h` and
 `src/ra/wolapi/wolapi.h` wrapped in
 `#pragma clang diagnostic ignored "-Wreserved-macro-identifier"`, all 908 project TUs preprocess
 silently. Measured 2026-09-12 over the first 40 RA objects, deleted before each run with a fresh
@@ -153,7 +153,7 @@ Execution, Deployment | CMake | Environment_ via `CMAKE_CXX_COMPILER_LAUNCHER=/u
 All source lives under `src/`:
 
 ```
-engine/      → The shared libraries, moving here one folder at a time (docs/ENGINE_FOLDERS_PLAN.md)
+engine/      → The shared libraries, one folder per domain (docs/ENGINE_FOLDERS_PLAN.md)
   base/      → Vocabulary types and small value classes: types.h (base::ssize), numeric.h, fixed.h,
                random.h; strings/ holds format, safe_string, tokenizer, number_parse
                (target `engine_base`) [depends: abseil, magic_enum]
@@ -239,8 +239,8 @@ instantiation. Keep those with `#include "td/vector_impl.h"  // IWYU pragma: kee
 ### New Files
 
 - NO Electronic Arts copyright header (only applies to original EA code)
-- Use `#ifndef` guards: `<PROJECT>_<PATH>_<FILE>_H_` (e.g., `CNC_RED_ALERT_PORT_CHECK_H_`,
-  `CNC_RED_ALERT_SDLLIB_INCLUDE_GBUFFER_H_`)
+- Use `#ifndef` guards: `<PROJECT>_<PATH>_<FILE>_H_` (e.g., `CNC_RED_ALERT_ENGINE_BASE_TYPES_H_`,
+  `CNC_RED_ALERT_ENGINE_GFX_PIXEL_BUFFER_H_`)
 
 ### Documentation (Google Style - REQUIRED for new code)
 

@@ -9,9 +9,9 @@
   - See `docs/TYPE_MIGRATION.md` for full conversion rules
   - Use `/migrate-types <file>` command for per-file migration
 - Replace the manual `PixelView::Lock()`/`Unlock()` pairs with an RAII guard
-  - 31 sites left in `ra/`, `td/`, `tech/` and `sdllib/`, in five different shapes: unlock inside
-    the `if`, unlock outside it, bare `Lock()` with the result dropped, `Lock()` folded into a
-    larger `&&`, and two-view locks with hand-written unwind
+  - 31 sites left in `ra/`, `td/`, `engine/gfx/` and `engine/window/`, in five different shapes:
+    unlock inside the `if`, unlock outside it, bare `Lock()` with the result dropped, `Lock()`
+    folded into a larger `&&`, and two-view locks with hand-written unwind
   - A `[[nodiscard]] PixelLock` returned by `Lock()`, with `Unlock()` made private, would make the
     miswritten pattern stop compiling; guaranteed copy elision means it needs no move constructor
   - `ra/winbits.h`'s `LockedWindow` is the same idea already hand-rolled for one caller, and would
@@ -25,9 +25,9 @@
 ## Debugging
 
 - Add a Dear ImGui debug overlay to replace the deleted monochrome debug screen
-  - sdllib presents through `SDL_Renderer` (`sdllib/ww_win.cc`, `sdllib/pixel_buffer.cc`), so the
-    `imgui_impl_sdl2` + `imgui_impl_sdlrenderer2` backends drop in: feed `SDL_PollEvent` and draw
-    before `SDL_RenderPresent`
+  - `engine/window` presents through `SDL_Renderer` (`engine/window/ww_win.cc`,
+    `engine/gfx/pixel_buffer.cc`), so the `imgui_impl_sdl2` + `imgui_impl_sdlrenderer2` backends
+    drop in: feed `SDL_PollEvent` and draw before `SDL_RenderPresent`
   - A cheat-key window would show what the mono pages used to: selected object, house, logic/FPS and
     network queue state, read through accessors instead of a `Debug_Dump` hierarchy
 - RA's `BStart`/`BEnd` benchmark instrumentation is write-only since `Benchmarks()` went away

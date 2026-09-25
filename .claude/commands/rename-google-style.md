@@ -23,14 +23,14 @@ Rename what the named files **declare**: functions, types, constants, file-scope
 variables, data members, parameters and locals. Every use elsewhere follows. Names the files merely
 _use_ belong to some other file's pass.
 
-| Leave alone                                             | Why                                                                                                                                                                                                                    |
-| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Globals from `ra/externs.h`, names from other headers   | Not declared here; renaming them is a tree-wide job the user did not ask for.                                                                                                                                          |
-| A virtual override whose base is declared elsewhere     | The whole hierarchy has to move together. If the base _is_ in scope, every override in the tree follows.                                                                                                               |
-| Enumerators                                             | They were deliberately kept through the `enum class` migration, are used tree-wide through `using enum`, and `magic_enum` turns them into text. Ask before touching them.                                              |
-| Macros                                                  | Google style keeps macros `ALL_CAPS`. A macro that is really a constant is better turned into a `constexpr kName`, but say so rather than doing it silently.                                                           |
-| Text inside string literals                             | INI keys, file names and scenario codes look like identifiers and are not.                                                                                                                                             |
-| Tiberian Dawn's copy of an RA function, and the reverse | `src/ra` and `src/td` are separate targets that share many names. Rename within the game the file belongs to. Files under `sdllib`, `tech`, `port`, `base`, `winvq` are shared, so their callers are in all of `src/`. |
+| Leave alone                                             | Why                                                                                                                                                                                        |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Globals from `ra/externs.h`, names from other headers   | Not declared here; renaming them is a tree-wide job the user did not ask for.                                                                                                              |
+| A virtual override whose base is declared elsewhere     | The whole hierarchy has to move together. If the base _is_ in scope, every override in the tree follows.                                                                                   |
+| Enumerators                                             | They were deliberately kept through the `enum class` migration, are used tree-wide through `using enum`, and `magic_enum` turns them into text. Ask before touching them.                  |
+| Macros                                                  | Google style keeps macros `ALL_CAPS`. A macro that is really a constant is better turned into a `constexpr kName`, but say so rather than doing it silently.                               |
+| Text inside string literals                             | INI keys, file names and scenario codes look like identifiers and are not.                                                                                                                 |
+| Tiberian Dawn's copy of an RA function, and the reverse | `src/ra` and `src/td` are separate targets that share many names. Rename within the game the file belongs to. Files under `src/engine/` are shared, so their callers are in all of `src/`. |
 
 **Types declared in scope are renamed in this pass, not a later one.** A legacy `Class` / `Type`
 suffix (`FileClass` -> `File`) says nothing, so it goes - but dropping the suffix is only half of
@@ -154,7 +154,7 @@ because the file should be named after what it holds now:
   twin in the other game (`td/audio.cc` for `ra/ww_audio.cc`) and the original source (`AUDIO.CPP`)
   are worth matching, because they are what a reader compares against.
 - The new name must be free in its directory and should not echo a file in a shared directory that
-  holds something else: `ra/audio_mixer.h` next to `tech/audio_mixer.h` would mislead.
+  holds something else: `ra/audio_mixer.h` next to `engine/audio/audio_mixer.h` would mislead.
 - Tests follow their file: `wsa_test.cc` became `wsa_animation_test.cc`.
 
 ## 4. Build the rename table first

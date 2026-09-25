@@ -18,10 +18,10 @@ Check these first; they decide most of the file. A type here is part of an exter
 changing it changes that contract, not just the code:
 
 - **Anything a save game, recording or map save writes.** Each class's `Serialize()` feeds
-  `ArchiveWriter`/`ArchiveReader` (`tech/archive.h`) for save games (`saveload.cc`, checked against
-  `kSaveGameVersion`), multiplayer recordings (`init.cc`) and map state (`iomap.cc`). The archive
-  handles scalars, enums, C arrays and `char[]` directly; nothing writes a `std::string` today, and
-  the one vector (`Carryover`) goes through a hand-written count-plus-elements helper,
+  `ArchiveWriter`/`ArchiveReader` (`engine/stream/archive.h`) for save games (`saveload.cc`, checked
+  against `kSaveGameVersion`), multiplayer recordings (`init.cc`) and map state (`iomap.cc`). The
+  archive handles scalars, enums, C arrays and `char[]` directly; nothing writes a `std::string`
+  today, and the one vector (`Carryover`) goes through a hand-written count-plus-elements helper,
   `SerializeCarryover()`, that validates the count on load. So converting a serialized member is
   possible, but it changes the save format: a helper like that one, a `kSaveGameVersion` bump, and
   the save/load smoke test. That is its own change; list the member in the report instead.
@@ -148,9 +148,9 @@ Keep what the code relies on:
 ## Verify
 
 - If the file computes something others store or compare - a hash, a checksum, an encoded value -
-  pin its outputs with a test before converting (`tech/key_phrase_hash_test.cc` holds the historical
-  password codes), and run it after. A type change that alters one byte of the input changes every
-  result.
+  pin its outputs with a test before converting (`engine/crypto/key_phrase_hash_test.cc` holds the
+  historical password codes), and run it after. A type change that alters one byte of the input
+  changes every result.
 - `git clang-format -f -- <touched files>`.
 - `cmake --build build --parallel 22 && ctest --test-dir build --output-on-failure`; both games if a
   shared directory changed.

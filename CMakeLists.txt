@@ -90,7 +90,7 @@ if (STRICT_CHECKS)
     endif ()
     set(CMAKE_CXX_CLANG_TIDY
             "${CLANG_TIDY_PROGRAM}"
-            "--header-filter=${CMAKE_SOURCE_DIR}/src/(engine|base|port|sdllib|tech|winvq|ra|td)/.*"
+            "--header-filter=${CMAKE_SOURCE_DIR}/src/(engine|ra|td)/.*"
     )
     # Ninja decides what is stale from the command line and the declared inputs,
     # and .clang-tidy is neither: editing it leaves every object untouched and
@@ -222,8 +222,8 @@ add_subdirectory(src/td)
 # The engine's dependency order (docs/ENGINE_FOLDERS_PLAN.md). Linking cannot
 # enforce it: every target shares the src/ include root, so a header-only
 # include from a folder a library may not see still builds. The checker reads
-# the include lines against the file map and rule table in
-# tools/engine_layout.py; the second test covers the checker itself.
+# the include lines against the rule table in tools/engine_layout.py; the
+# second test covers the checker itself.
 find_package(Python3 3.10 COMPONENTS Interpreter)
 if (Python3_Interpreter_FOUND)
     add_test(NAME engine_layers_test
@@ -233,13 +233,8 @@ if (Python3_Interpreter_FOUND)
     add_test(NAME engine_layers_checker_test
             COMMAND Python3::Interpreter
             "${CMAKE_SOURCE_DIR}/tools/check_layers_test.py")
-    # The phase B move script (tools/move_engine_files.py).
-    add_test(NAME engine_move_script_test
-            COMMAND Python3::Interpreter
-            "${CMAKE_SOURCE_DIR}/tools/move_engine_files_test.py")
-    # All three import tools/engine_layout.py; keep its bytecode out of the tree.
+    # Both import tools/engine_layout.py; keep its bytecode out of the tree.
     set_tests_properties(engine_layers_test engine_layers_checker_test
-            engine_move_script_test
             PROPERTIES ENVIRONMENT PYTHONDONTWRITEBYTECODE=1)
 else ()
     message(WARNING "Python 3.10 or newer not found: the engine_layers_test "

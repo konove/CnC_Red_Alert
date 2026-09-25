@@ -55,8 +55,8 @@ Scale the work to the change:
 - Mid-run of a multi-stage command that says the full pass is deferred (`/modernize-file`): run
   `tools/strict_tu.py <touched files>` instead of the full strict build. It runs the same clang-tidy
   pass and clang compile on the objects those files build, and nothing else - seconds instead of the
-  four minutes a `sdllib/pixel_buffer.h` fan-out costs. Only the command that deferred it may do
-  this, and only because it runs the full pass before its own last commit.
+  four minutes an `engine/gfx/pixel_buffer.h` fan-out costs. Only the command that deferred it may
+  do this, and only because it runs the full pass before its own last commit.
 
 Things that look like failures but are not, and the reverse:
 
