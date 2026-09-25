@@ -22,6 +22,16 @@ class SearchPaths {
  public:
   SearchPaths() = delete;
 
+  // Locates a recognized CD, matching Get_CD_Index()'s signature: returns
+  // the CD's index in cd_drive, waiting up to timeout ticks, or -1 if the
+  // drive holds nothing recognized.
+  using CdProbe = int (*)(int cd_drive, int timeout);
+
+  // Installs the game's CD probe, used to resolve "?:" placeholders. With
+  // none installed (the default), "?:" entries are skipped instead of
+  // probed.
+  static void SetCdProbe(CdProbe probe);
+
   // Appends each directory in the semicolon-separated paths to the search
   // list, normalized to end in a separator. A directory written as "?:" is
   // added, with the drive letter filled in, only when the current CD drive
@@ -63,6 +73,7 @@ class SearchPaths {
 
   static int current_cd_drive_;
   static int last_cd_drive_;
+  static CdProbe cd_probe_;
 };
 
 #endif  // CNC_RED_ALERT_TECH_SEARCH_PATHS_H_

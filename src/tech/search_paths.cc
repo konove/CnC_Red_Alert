@@ -12,14 +12,13 @@
 
 #include "tech/disk_file.h"
 
-// Supplied by the game (ra/installation.cc): returns the index of the CD in
-// cd_drive, waiting up to timeout ticks, or -1 if none is recognized.
-extern int Get_CD_Index(int cd_drive, int timeout);
-
 std::vector<std::string> SearchPaths::directories_;
 std::string SearchPaths::history_;
 int SearchPaths::current_cd_drive_ = 0;
 int SearchPaths::last_cd_drive_ = 0;
+SearchPaths::CdProbe SearchPaths::cd_probe_ = nullptr;
+
+void SearchPaths::SetCdProbe(const CdProbe probe) { cd_probe_ = probe; }
 
 int SearchPaths::Add(const std::string_view paths) {
   if (paths.empty()) {
@@ -50,9 +49,11 @@ int SearchPaths::Scan(const std::string_view paths) {
     }
 
     // "?:" is a placeholder for the CD drive and is added only when that
-    // drive holds a recognized CD; Get_CD_Index waits up to two seconds.
+    // drive holds a recognized CD; the probe waits up to two seconds. With
+    // no probe installed, "?:" entries are skipped.
     if (path.starts_with("?:")) {
-      if (current_cd_drive_ && Get_CD_Index(current_cd_drive_, 120) >= 0) {
+      if (current_cd_drive_ && cd_probe_ &&
+          cd_probe_(current_cd_drive_, 120) >= 0) {
         path.at(0) = static_cast<char>(current_cd_drive_ + 'A');
         directories_.push_back(path);
         added = true;

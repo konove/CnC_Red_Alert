@@ -14,13 +14,6 @@
 #include "tech/pk.h"
 #include "tech/search_paths.h"
 
-// search_paths.cc calls the game's disc check through this hook. The tools
-// read an installed directory and never look for a disc.
-// NOLINTBEGIN(misc-use-internal-linkage): satisfies search_paths.cc's extern.
-int Get_CD_Index(int cd_drive, int timeout);
-int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) { return -1; }
-// NOLINTEND(misc-use-internal-linkage)
-
 namespace {
 
 // The archives the games register, outermost first. A nested archive can only

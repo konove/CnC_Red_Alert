@@ -12,17 +12,11 @@
 #include "gtest/gtest.h"
 #include "tech/disk_file.h"
 
-// SearchPaths resolves "?:" through the game's CD probe, declared only in
-// search_paths.cc. The tests set what it reports.
 namespace {
-int cd_index = -1;
-}  // namespace
-// NOLINTBEGIN(misc-use-internal-linkage): satisfies search_paths.cc's extern.
-int Get_CD_Index(int cd_drive, int timeout);
-int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) { return cd_index; }
-// NOLINTEND(misc-use-internal-linkage)
 
-namespace {
+// SearchPaths resolves "?:" through the CD probe the test installs.
+int cd_index = -1;
+int FakeCdProbe(int /*cd_drive*/, int /*timeout*/) { return cd_index; }
 
 void WriteFile(const std::filesystem::path& path, const std::string& bytes) {
   std::ofstream file(path, std::ios::binary);
@@ -45,10 +39,12 @@ class SearchPathsTest : public ::testing::Test {
     std::filesystem::create_directories(second_);
     SearchPaths::Clear();
     cd_index = -1;
+    SearchPaths::SetCdProbe(&FakeCdProbe);
   }
 
   void TearDown() override {
     SearchPaths::Clear();
+    SearchPaths::SetCdProbe(nullptr);
     std::filesystem::remove_all(root_);
   }
 
@@ -116,6 +112,13 @@ TEST_F(SearchPathsTest, CdPlaceholderNeedsARecognizedCd) {
   EXPECT_TRUE(SearchPaths::HasAny());
   EXPECT_EQ(SearchPaths::current_cd_drive(), 3);
   EXPECT_EQ(SearchPaths::last_cd_drive(), 0);
+}
+
+TEST_F(SearchPathsTest, CdPlaceholderIsSkippedWithNoProbeInstalled) {
+  SearchPaths::SetCdProbe(nullptr);
+  SearchPaths::SetCdDrive(3);
+  EXPECT_EQ(SearchPaths::Add("?:\\"), 1);
+  EXPECT_FALSE(SearchPaths::HasAny());
 }
 
 TEST_F(SearchPathsTest, RefreshRestoresClearedDirectories) {

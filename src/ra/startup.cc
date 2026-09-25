@@ -386,6 +386,7 @@ int main(const int argc, char* argv[])
   // drops that placeholder when the CD drive is 0, and the bootstrap in
   // init.cc reports a missing CD and quits when the list comes back empty.
   SearchPaths::SetCdDrive(-1);
+  SearchPaths::SetCdProbe(&Get_CD_Index);
 
   // IsFromInstall means "first launch after installing": play the intro
   // movie. The installer used to write PlayIntro=yes; with no entry it

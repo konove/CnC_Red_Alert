@@ -18,7 +18,6 @@ class ByteStream;
 std::vector<std::byte> LoadAllocData(ByteStream& file);
 std::vector<std::byte> LoadAllocData(ByteStream& /*file*/) { return {}; }
 const char* Language_Name(const char* /*basename*/) { return "CONQUER.ENG"; }
-int Get_CD_Index(int /*cd_drive*/, int /*timeout*/) { return -1; }
 // NOLINTEND(misc-use-internal-linkage)
 
 namespace {
