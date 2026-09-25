@@ -93,3 +93,11 @@ row to run cpplint on the touched files; CLAUDE.md's Tools table and dependency 
     those on one line. Three more straddled a preprocessor branch: TD's `#ifndef DEMO` guards
     (`DEMO` is never defined) and a dead `#ifdef JAPANESE` block went, and `init.cc`'s `_WIN32` else
     gained its own `#else`.
+  - The seven small categories (2026-09-25), 16 findings. `runtime/string`: `SearchPaths::history_`
+    and RA's `DialString` are `absl::NoDestructor<std::string>`. `runtime/arrays` (all false
+    positives): RA's `bestlist` arrays take a `k` constant for their size and `queue.cc` names the
+    variable event size. `runtime/casting`: `Techno_Type_Class()` binds the reference before taking
+    its address. `multiline_comment`/`multiline_string`: code commented out mid-statement in
+    `unit.cc` and `wol_gsup.cc`, and a column header left over from `mapsel.cc`'s one-line table,
+    deleted. `utf8`: two U+FFFD apostrophes in `wolapiob.cc`. `threadsafe_fn`: TD's `strtok` sat in
+    `Version_Number()`'s dead `#ifdef OBSOLETE` body, deleted.

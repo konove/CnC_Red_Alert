@@ -138,9 +138,7 @@ struct countrylist {
 } const CountryArray[27] = {
     // GDI SCENARIO CHOICES
     /*  0 */ {},
-    /*E  W*/ /* cont */ /* East colors */ /* West color*/ /* E frame   W frame
-                                                           */
-                                                          /*  1 */
+    /*  1 */
     {{1, 1},
      {0, 0},
      {3, 3},

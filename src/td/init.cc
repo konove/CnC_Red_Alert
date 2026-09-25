@@ -2695,65 +2695,6 @@ void Parse_INI_File() {
  * HISTORY: * 03/24/1995 JLB : Created. *
  *=============================================================================================*/
 int Version_Number() {
-#ifdef OBSOLETE
-  static bool initialized = false;
-  static int version;
-  static char* date = __DATE__;
-  static char* time = __TIME__;
-  static const char* months = "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC";
-
-  if (!initialized) {
-    char* ptr;
-    char* tok;
-
-    /*
-    **	Fetch the month and place in the first two digit positions.
-    */
-    strupr(date);
-    tok = strtok(date, " ");
-    ptr = strstr(months, tok);
-    if (ptr) {
-      version = (((ptr - months) / 3) + 1) * 10000;
-    }
-
-    /*
-    **	Fetch the date and place that in the next two digit positions.
-    */
-    tok = strtok(NULL, " ");
-    if (tok) {
-      version += atoi(tok) * 100;
-    }
-
-    /*
-    **	Fetch the time and place that in the last two digit positions.
-    */
-    tok = strtok(time, ": ");
-    if (tok) {
-      version += atoi(tok);
-    }
-
-    /*
-    **	Fetch the virgin text file (if present).
-    */
-    DiskFile file("VERSION.TXT");
-    if (file.IsAvailable()) {
-      file.ReadObject(TheGameState().version_text());
-      TheGameState().version_text()[sizeof(TheGameState().version_text()) - 1] =
-          '\0';
-      while (TheGameState()
-                 .version_text()[sizeof(TheGameState().version_text()) - 1] ==
-             '\r') {
-        TheGameState()
-            .version_text()[sizeof(TheGameState().version_text()) - 1] = '\0';
-      }
-    } else {
-      TheGameState().version_text()[0] = '\0';
-    }
-
-    initialized = true;
-  }
-  return (version);
-#endif
 
 #ifdef FRENCH
   sprintf(TheGameState().version_text(), ".02");  // Win95 french version number
