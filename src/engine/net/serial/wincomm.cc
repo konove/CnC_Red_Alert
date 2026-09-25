@@ -98,7 +98,7 @@ HANDLE WinModemClass::Serial_Port_Open(const char* /*device_name*/,
 void WinModemClass::Serial_Port_Close() {
 #ifdef LIBSERIALPORT
   if (PortHandle) {
-    sp_port* port = (sp_port*)PortHandle;
+    sp_port* port = static_cast<sp_port*>(PortHandle);
     sp_close(port);
     sp_free_port(port);
     PortHandle = NULL;
@@ -110,8 +110,8 @@ int WinModemClass::Read_From_Serial_Port([[maybe_unused]] void* dest_ptr,
                                          [[maybe_unused]] int buffer_len) {
 #ifdef LIBSERIALPORT
   if (PortHandle) {
-    sp_return result =
-        sp_nonblocking_read((sp_port*)PortHandle, dest_ptr, buffer_len);
+    sp_return result = sp_nonblocking_read(static_cast<sp_port*>(PortHandle),
+                                           dest_ptr, buffer_len);
 
     if (result > 0) {
       return result;
@@ -125,7 +125,7 @@ void WinModemClass::Write_To_Serial_Port([[maybe_unused]] const void* buffer,
                                          [[maybe_unused]] int length) {
 #ifdef LIBSERIALPORT
   if (PortHandle) {
-    sp_blocking_write((sp_port*)PortHandle, buffer, length, 0);
+    sp_blocking_write(static_cast<sp_port*>(PortHandle), buffer, length, 0);
   }
 #endif
 }
