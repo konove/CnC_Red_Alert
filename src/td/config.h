@@ -57,6 +57,9 @@ inline constexpr auto kBuildLanguage = BuildLanguage::Japanese;
 inline constexpr auto kBuildLanguage = BuildLanguage::English;
 #endif
 
+inline constexpr bool kIsGerman = kBuildLanguage == BuildLanguage::German;
+inline constexpr bool kIsFrench = kBuildLanguage == BuildLanguage::French;
+
 }  // namespace config
 
 #endif  // CNC_RED_ALERT_TD_CONFIG_H_

@@ -1326,9 +1326,7 @@ void Call_Back() {
             base::ObjectBytes(TheNetwork().global_packet()),
             &TheNetwork().global_packet_length(),
             &TheNetwork().global_address(), &TheNetwork().product_id()) &&
-        (TheNetwork().product_id() == IPXGlobalConnClass::kCommandAndConquer))
-
-    {
+        (TheNetwork().product_id() == IPXGlobalConnClass::kCommandAndConquer)) {
       /*
       **	If this is another player signing off, remove the connection &
       **	mark that player's house as non-human, so the computer will take
@@ -1943,12 +1941,11 @@ bool Main_Loop() {
     const char* error_msg = nullptr;
     const char* stop_msg = nullptr;
     const char* continue_msg = nullptr;
-    if constexpr (config::kBuildLanguage == config::BuildLanguage::German) {
+    if constexpr (config::kIsGerman) {
       error_msg = "Kartenfehler!";
       stop_msg = "Halt";
       continue_msg = "Weiter";
-    } else if constexpr (config::kBuildLanguage ==
-                         config::BuildLanguage::French) {
+    } else if constexpr (config::kIsFrench) {
       error_msg = "Erreur de carte!";
       stop_msg = "Stop";
       continue_msg = "Continuer";
