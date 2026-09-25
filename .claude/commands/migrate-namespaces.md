@@ -43,12 +43,14 @@ structs, enums, type aliases, templates, free functions, operators, global varia
 pointers, constants - with where it goes and its fan-out (`git grep -nw '<name>' -- src | wc -l`).
 Most rows are "into the namespace". These are not, or need more than the wrapper:
 
-**Hooks the games define.** An engine header can declare a function each game defines: `Prog_End()`
-in `engine/window/misc.h` ("Each game defines it in its startup.cc"). Find them by locating every
-declared function's definition: one under `src/ra` or `src/td` is a hook. Moved into the namespace,
-the declaration becomes `engine::window::Prog_End` while both games still define `::Prog_End`, and
-the link fails. Keep hooks global: declare them after the namespace block under a comment saying the
-game defines them. Moving a hook in (and making each game define it inside
+**Hooks the games define.** An engine header can declare a function each game defines. Find them by
+locating every declared function's definition: one under `src/ra` or `src/td` is a hook. Then check
+that the engine calls it (`git grep -nw '<Name>' -- src/engine`): if only the games do, it is not a
+hook but a game declaration in the wrong header - `Prog_End()` and `Shake_Screen()` in
+`engine/window/misc.h` were (`f4d2c6e2`) - and it moves to the games' own headers instead. A real
+hook moved into the namespace becomes `engine::window::Name` while both games still define `::Name`,
+and the link fails. Keep hooks global: declare them after the namespace block under a comment saying
+the game defines them. Moving a hook in (and making each game define it inside
 `namespace engine::window { }`) is a design change; list it for the user instead.
 
 **Test stubs.** The opposite case: `engine/window/keyboard_test.cc` compiles `keyboard.cc` alone and
