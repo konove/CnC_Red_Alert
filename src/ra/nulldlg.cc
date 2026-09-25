@@ -3753,9 +3753,11 @@ int Com_Scenario_Dialog(bool skirmish) {
         if (playerlist.Count()) {
 #ifdef OLDWAY
           if (TheSession().House == HOUSE_GOOD) {
-            sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
+            absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
+                           Text_String(TXT_ALLIES));
           } else {
-            sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
+            absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
+                           Text_String(TXT_SOVIET));
           }
 #else   // OLDWAY
           absl::SNPrintF(
@@ -3936,9 +3938,11 @@ int Com_Scenario_Dialog(bool skirmish) {
               //.........................................................
 #ifdef OLDWAY
               if (TheSession().House == HOUSE_GOOD) {
-                sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
+                absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
+                               Text_String(TXT_ALLIES));
               } else {
-                sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
+                absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
+                               Text_String(TXT_SOVIET));
               }
 #else   // OLDWAY
               absl::SNPrintF(
@@ -3954,9 +3958,11 @@ int Com_Scenario_Dialog(bool skirmish) {
 
 #ifdef OLDWAY
               if (TheirHouse == HOUSE_GOOD) {
-                sprintf(item, "%s\t%s", TheirName, Text_String(TXT_ALLIES));
+                absl::SNPrintF(item, sizeof(item), "%s\t%s", TheirName,
+                               Text_String(TXT_ALLIES));
               } else {
-                sprintf(item, "%s\t%s", TheirName, Text_String(TXT_SOVIET));
+                absl::SNPrintF(item, sizeof(item), "%s\t%s", TheirName,
+                               Text_String(TXT_SOVIET));
               }
 #else   // OLDWAY
               absl::SNPrintF(
@@ -5309,9 +5315,11 @@ int Com_Show_Scenario_Dialog() {
       if (playerlist.Count()) {
 #ifdef OLDWAY
         if (TheSession().House == HOUSE_GOOD) {
-          sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
+          absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
+                         Text_String(TXT_ALLIES));
         } else {
-          sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
+          absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
+                         Text_String(TXT_SOVIET));
         }
 #else   // OLDWAY
         absl::SNPrintF(
@@ -5607,9 +5615,11 @@ int Com_Show_Scenario_Dialog() {
             gamelist.Set_Item(0, item);
 #ifdef OLDWAY
             if (TheSession().House == HOUSE_GOOD) {
-              sprintf(item, "%s\t%s", namebuf, Text_String(TXT_ALLIES));
+              absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
+                             Text_String(TXT_ALLIES));
             } else {
-              sprintf(item, "%s\t%s", namebuf, Text_String(TXT_SOVIET));
+              absl::SNPrintF(item, sizeof(item), "%s\t%s", namebuf,
+                             Text_String(TXT_SOVIET));
             }
 #else  // OLDWAY
             absl::SNPrintF(
@@ -5626,9 +5636,11 @@ int Com_Show_Scenario_Dialog() {
 
 #ifdef OLDWAY
             if (TheirHouse == HOUSE_GOOD) {
-              sprintf(item, "%s\t%s", TheirName, Text_String(TXT_ALLIES));
+              absl::SNPrintF(item, sizeof(item), "%s\t%s", TheirName,
+                             Text_String(TXT_ALLIES));
             } else {
-              sprintf(item, "%s\t%s", TheirName, Text_String(TXT_SOVIET));
+              absl::SNPrintF(item, sizeof(item), "%s\t%s", TheirName,
+                             Text_String(TXT_SOVIET));
             }
 #else   // OLDWAY
             absl::SNPrintF(

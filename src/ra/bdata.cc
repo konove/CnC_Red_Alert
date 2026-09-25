@@ -172,9 +172,10 @@ static const int16_t ListSPen[] = {0,
                                    kRefreshEol};
 static const int16_t OListSPen[] = {kRefreshEol};
 #else
-static const short ListSPen[] = {1,       MCW,           MCW + 1,
-                                 MCW + 2, MCW + MCW + 1, kRefreshEol};
-static const short OListSPen[] = {0, 2, MCW + MCW, MCW + MCW + 2, kRefreshEol};
+static const int16_t ListSPen[] = {1,       MCW,           MCW + 1,
+                                   MCW + 2, MCW + MCW + 1, kRefreshEol};
+static const int16_t OListSPen[] = {0, 2, MCW + MCW, MCW + MCW + 2,
+                                    kRefreshEol};
 #endif
 static const int16_t OListWestwood[] = {0, MCW, kRefreshEol};
 static const int16_t StoreList[] = {0, kRefreshEol};
