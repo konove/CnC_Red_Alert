@@ -84,7 +84,6 @@
 #include "ra/display_constants.h"
 #include "ra/game_clock.h"
 #include "ra/inline.h"
-#include "ra/keyframe.h"
 #include "ra/layer.h"
 #include "ra/map.h"
 #include "ra/mapedit.h"
@@ -891,9 +890,6 @@ void ChronalVortexClass::Render(PixelView& view) {
             if (cellptr->Overlay != OVERLAY_NONE) {
               const OverlayTypeClass& otype =
                   OverlayTypeClass::As_Reference(cellptr->Overlay);
-              IsTheaterShape = static_cast<bool>(
-                  otype.IsTheater);  // Tell Build_Frame if this overlay is
-                                     // theater specific
               CC_Draw_Shape(RenderBuffer.view(), otype.Get_Image_Data(),
                             cellptr->OverlayData,
                             (x * CELL_PIXEL_W) + (CELL_PIXEL_W >> 1),
@@ -901,8 +897,6 @@ void ChronalVortexClass::Render(PixelView& view) {
                             WINDOW_TACTICAL,
                             SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
                             DisplayClass::UnitShadow);
-
-              IsTheaterShape = false;
             }
           }
         }

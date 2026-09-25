@@ -407,11 +407,9 @@ void TerrainClass::Draw_It(PixelView& view, int x, int y,
       flags = flags | SHAPE_FADING;
     }
 
-    IsTheaterShape = true;
     CC_Draw_Shape(view, shapedata, shapenum, x, y, window,
                   flags | SHAPE_WIN_REL | SHAPE_GHOST, MouseClass::FadingLight,
                   MouseClass::UnitShadow);
-    IsTheaterShape = false;
   }
 }
 

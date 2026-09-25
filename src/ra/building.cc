@@ -158,7 +158,6 @@
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/keyframe.h"
 #include "ra/mapedit.h"
 #include "ra/mission.h"
 #include "ra/network.h"
@@ -801,10 +800,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
   /*
   **	Actually draw the building shape.
   */
-  IsTheaterShape = Class->IsTheater;  // Let Build_Frame know if this is a
-                                      // theater specific shape
   Techno_Draw_Object(view, shapefile, Shape_Number(), x, y, window);
-  IsTheaterShape = false;
 
   /*
   ** Patch for adding overlay onto weapon factory.  Only add the overlay if

@@ -1839,7 +1839,6 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
       *6:01PM
       */
       if (shapenum != kSbBlank || shapefile.data() != LogoShapes.data()) {
-        IsTheaterShape = true;  // This shape is theater specific
         CC_Draw_Shape(
             view, shapefile, shapenum,
             x -
@@ -1854,7 +1853,6 @@ void SidebarClass::StripClass::Draw_It(PixelView& view, bool complete) {
             SHAPE_NORMAL | SHAPE_WIN_REL |
                 (!remapper.empty() ? SHAPE_FADING : SHAPE_NORMAL),
             remapper);
-        IsTheaterShape = false;
 
         /*
         **	Darken this object because it cannot be produced or is otherwise

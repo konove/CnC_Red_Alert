@@ -804,9 +804,7 @@ void BuildingClass::Draw_It(PixelView& view, int x, int y,
   /*
   **	Actually draw the building shape.
   */
-  IsTheaterShape = Class->IsTheater;
   Techno_Draw_Object(view, shapefile, shapenum, x, y, window);
-  IsTheaterShape = false;
 
   /*
   ** Patch for adding overlay onto weapon factory.  Only add the overlay if

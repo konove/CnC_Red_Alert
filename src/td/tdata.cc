@@ -61,7 +61,6 @@
 #include "td/house.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/object.h"
 #include "td/terrain.h"
 #include "td/type.h"
@@ -674,10 +673,8 @@ void TerrainTypeClass::Init(TheaterType theater) {
                 .string();
         terrain.Set_Image_Data(MixArchive::RetrieveData(fullname));
 
-        IsTheaterShape = true;
         terrain.Set_Radar_Icon(
             Get_Radar_Icon(terrain.Get_Image_Data(), 0, 1, 3));
-        IsTheaterShape = false;
       }
     }
   }

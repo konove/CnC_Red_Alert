@@ -7,8 +7,6 @@
 
 #include "absl/base/attributes.h"
 
-extern bool IsTheaterShape;
-
 std::span<uint8_t> Build_Frame(std::span<const std::byte> data, uint16_t frame,
                                std::span<uint8_t> destination);
 uint16_t Get_Build_Frame_Count(std::span<const std::byte> data);

@@ -67,7 +67,6 @@
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
-#include "ra/keyframe.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/shape_draw.h"
@@ -384,7 +383,6 @@ void SmudgeTypeClass::Display(PixelView& view, int x, int y,
   x += base::At(base::At(WindowList, static_cast<int>(window)), kWindowX);
   y += base::At(base::At(WindowList, static_cast<int>(window)), kWindowY);
 
-  IsTheaterShape = true;  // Smudges are theater specific
   if (!ptr.empty()) {
     for (int w = 0; w < Width; w++) {
       for (int h = 0; h < Height; h++) {
@@ -393,7 +391,6 @@ void SmudgeTypeClass::Display(PixelView& view, int x, int y,
       }
     }
   }
-  IsTheaterShape = false;
 }
 
 /***********************************************************************************************
@@ -483,9 +480,7 @@ ObjectClass* SmudgeTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
 void SmudgeTypeClass::Draw_It(PixelView& view, int x, int y, int data) const {
   const auto ptr = Get_Image_Data();
   if (!ptr.empty()) {
-    IsTheaterShape = true;  // Smudges are theater specific
     CC_Draw_Shape(view, ptr, data, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);
-    IsTheaterShape = false;
   }
 }
 

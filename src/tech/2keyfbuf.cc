@@ -1,40 +1,25 @@
 // re-implemented from assembly in 2keyfbuf.asm
 #include "tech/2keyfbuf.h"
 
-#include <bit>
 #include <cstddef>
 #include <cstdint>
-#include <cstdio>
-#include <cstring>
 #include <span>
 
-#include "absl/strings/str_format.h"
 #include "base/array.h"
 #include "base/buffer.h"
 #include "base/clip.h"
 #include "base/numeric.h"
 #include "base/types.h"
-#include "port/unaligned.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 
-// should match 2keyfram.cpp
-struct ShapeHeaderType {
-  unsigned draw_flags;  // only 16 bits used
-  char* shape_data;     // really an offset
-  int shape_buffer;     // 0 or 1
-};
-
-// Per-line blit effect bits stored in the shape header's line flags.
+// Per-line blit effect bits, computed fresh for every draw.
 constexpr uint32_t kBlitTransparent = 1;
 constexpr uint32_t kBlitGhost = 2;
 constexpr uint32_t kBlitFading = 4;
 constexpr uint32_t kBlitPredator = 8;
-constexpr uint32_t kBlitSkip = 16;
-// The first four, used for the "old" draw.
 constexpr uint32_t kBlitOld =
     kBlitTransparent | kBlitGhost | kBlitFading | kBlitPredator;
-constexpr uint32_t kBlitAll = kBlitOld | kBlitSkip;
 
 // The predator table walk is legacy signed byte-offset arithmetic from the
 // assembler blitter: a negative predator offset is meant to walk backwards
@@ -51,50 +36,6 @@ static int16_t BFPredNegTable[]{-1, -3, -2, -5, -2, -4, -3, -1,
                                 0, 0, 0, 0, 0, 0, 0, 0};
 
 static int16_t BFPredTable[]{1, 3, 2, 5, 2, 3, 4, 1};
-
-static void Setup_Shape_Header(int pixel_width, int pixel_height,
-                               std::span<const std::byte> src,
-                               ShapeHeaderType& header,
-                               std::span<std::byte> line_flags_out,
-                               ShapeFlags_Type flags,
-                               std::span<const uint8_t> /*Translucent*/,
-                               std::span<const uint8_t> IsTranslucent) {
-  header.draw_flags = static_cast<uint32_t>(ShapeEffectFlags(flags));
-  std::size_t input = 0;
-  std::size_t output = 0;
-  do {
-    uint32_t line_flags = 0;
-    int trans_count = 0;
-    int x_count = pixel_width;
-    do {
-      const int pixel = std::to_integer<uint8_t>(base::At(src, input++));
-      if (!pixel && base::Any(flags & SHAPE_TRANS)) {
-        line_flags = kBlitTransparent;
-        trans_count++;  // keep track of number of transparent pixels
-      } else {
-        if (base::Any(flags & SHAPE_PREDATOR)) {
-          line_flags |= kBlitPredator;
-        }
-
-        if (base::Any(flags & SHAPE_GHOST) &&
-            base::At(IsTranslucent, static_cast<std::size_t>(pixel)) != 0xFF) {
-          line_flags |= kBlitGhost;
-        }
-
-        if (base::Any(flags & SHAPE_FADING)) {
-          line_flags |= kBlitFading;
-        }
-      }
-    } while (--x_count);
-
-    // all pixels in the line were transparent so we dont need to draw it at all
-    if (line_flags & kBlitTransparent && trans_count == pixel_width) {
-      line_flags = kBlitSkip;
-    }
-
-    base::At(line_flags_out, output++) = static_cast<std::byte>(line_flags);
-  } while (--pixel_height != 0);
-}
 
 // single helper that handles all combinations
 // templated on flags to avoid writing every combination
@@ -169,29 +110,6 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
   std::span<const uint8_t> FadingTable;
   int FadingNum = 0;
 
-  ShapeHeaderType header{};
-  std::span<std::byte> header_bytes;
-
-  bool use_new_draw = !UseOldShapeDraw && UseBigShapeBuffer;
-
-  // Save the line attributes pointers and modify the src pointer to point to
-  // the actual image.
-  if (use_new_draw) {
-    if (src.size() < sizeof(ShapeHeaderType) + static_cast<std::size_t>(h)) {
-      return;
-    }
-    header_bytes = src;
-    header = port::ReadUnaligned<ShapeHeaderType>(src);
-    const auto shape_buffer = std::as_writable_bytes(
-        header.shape_buffer ? TheaterShapeBufferBytes : BigShapeBufferBytes);
-    const auto offset = std::bit_cast<uintptr_t>(header.shape_data);
-    if (offset > shape_buffer.size()) {
-      return;
-    }
-    src = shape_buffer.subspan(offset);
-  }
-  // else just use the old shape drawing system
-
   if (static_cast<std::size_t>(w) * static_cast<std::size_t>(h) > src.size()) {
     return;
   }
@@ -222,31 +140,6 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
         return;
       }
     }
-  }
-
-  // If this is the first time through for this shape then
-  // set up the shape header
-
-  bool use_all_flags = false;
-
-  if (use_new_draw &&
-      (header.draw_flags == ~0U ||
-       header.draw_flags != static_cast<uint32_t>(ShapeEffectFlags(flags)))) {
-    Setup_Shape_Header(w, h, src, header,
-                       header_bytes.subspan(sizeof(ShapeHeaderType)), flags,
-                       Translucent, IsTranslucent);
-    port::WriteUnaligned(header_bytes, header);
-    // ShapeJumpTableAddress = AllFlagsJumpTable;
-    use_all_flags = true;
-  } else {
-    // int eax = 0;
-    // if (flags & SHAPE_PREDATOR) eax |= kBlitPredator;
-    // if (flags & SHAPE_FADING) eax |= kBlitFading;
-    // if (flags & SHAPE_TRANS) eax |= kBlitTransparent;
-    // if (flags & SHAPE_GHOST) eax |= kBlitGhost;
-    //
-    // eax <<= 7;
-    // ShapeJumpTableAddress = NewShapeJumpTable + eax
   }
 
   // are we fading this shape
@@ -322,10 +215,6 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
   }
 
   if (base::Any(code0 | code1)) {
-    // If the shape needs to be clipped then we cant handle it with the new
-    // header system so draw it with the old shape drawer.
-    use_new_draw = false;
-
     // apply clip
     if (base::Any(code0 & OutCode::kLeft)) {
       src_x0 -= dst_x0;
@@ -353,131 +242,108 @@ void Buffer_Frame_To_Page(int x, int y, const int w, const int h,
       dest.pixels().subspan(base::ToSize(dst_x0 + (dst_y0 * dst_area)));
   const int dst_adjust_width = static_cast<int>(dst_area - (dst_x1 - dst_x0));
 
-  if (!use_new_draw) {
-    if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
-      return;
-    }
+  if (dst_x1 <= dst_x0 || dst_y1 <= dst_y0) {
+    return;
+  }
 
-    const int pixel_count = dst_x1 - dst_x0;
-    int line_count = dst_y1 - dst_y0;
+  const int pixel_count = dst_x1 - dst_x0;
+  int line_count = dst_y1 - dst_y0;
 
-    switch (jflags & kBlitOld) {
-      case 0:  // BF_Copy
-      {
-        // copy lines
-        do {
-          base::CopyBytes(std::as_writable_bytes(dst_offset), src_offset,
-                          pixel_count);
-          if (line_count > 1) {
-            src_offset = src_offset.subspan(base::ToSize(w));
-          }
-          if (line_count > 1) {
-            dst_offset = dst_offset.subspan(base::ToSize(dst_area));
-          }
-        } while (--line_count);
-        break;
-      }
-      case kBlitTransparent:  // BF_Trans
-        Do_Old_Blit<kBlitTransparent>(line_count, pixel_count, src_offset,
-                                      dst_offset, src_adjust_width,
-                                      dst_adjust_width, Translucent,
-                                      IsTranslucent, FadingNum, FadingTable);
-        break;
-      case kBlitGhost:  // BF_Ghost
-        Do_Old_Blit<kBlitGhost>(line_count, pixel_count, src_offset, dst_offset,
-                                src_adjust_width, dst_adjust_width, Translucent,
-                                IsTranslucent, FadingNum, FadingTable);
-        break;
-      case kBlitGhost | kBlitTransparent:  // BF_Ghost_Trans
-        Do_Old_Blit<kBlitGhost | kBlitTransparent>(
-            line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
-            dst_adjust_width, Translucent, IsTranslucent, FadingNum,
-            FadingTable);
-        break;
-      case kBlitFading:  // BF_Fading
-        Do_Old_Blit<kBlitFading>(line_count, pixel_count, src_offset,
-                                 dst_offset, src_adjust_width, dst_adjust_width,
-                                 Translucent, IsTranslucent, FadingNum,
-                                 FadingTable);
-        break;
-      case kBlitFading | kBlitTransparent:  // BF_Fading_Trans
-        Do_Old_Blit<kBlitFading | kBlitTransparent>(
-            line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
-            dst_adjust_width, Translucent, IsTranslucent, FadingNum,
-            FadingTable);
-        break;
-      case kBlitFading | kBlitGhost:  // BF_Ghost_Fading
-        Do_Old_Blit<kBlitFading | kBlitGhost>(
-            line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
-            dst_adjust_width, Translucent, IsTranslucent, FadingNum,
-            FadingTable);
-        break;
-      case kBlitFading | kBlitGhost |
-          kBlitTransparent:  // BF_Ghost_Fading_Trans
-        Do_Old_Blit<kBlitFading | kBlitGhost | kBlitTransparent>(
-            line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
-            dst_adjust_width, Translucent, IsTranslucent, FadingNum,
-            FadingTable);
-        break;
-      case kBlitPredator:  // BF_Predator
-        Do_Old_Blit<kBlitPredator>(line_count, pixel_count, src_offset,
-                                   dst_offset, src_adjust_width,
-                                   dst_adjust_width, Translucent, IsTranslucent,
-                                   FadingNum, FadingTable);
-        break;
-      case kBlitPredator | kBlitTransparent:  // BF_Predator_Trans
-        Do_Old_Blit<kBlitPredator | kBlitTransparent>(
-            line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
-            dst_adjust_width, Translucent, IsTranslucent, FadingNum,
-            FadingTable);
-        break;
-      case kBlitPredator | kBlitGhost:  // BF_Predator_Ghost
-        Do_Old_Blit<kBlitPredator | kBlitGhost>(
-            line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
-            dst_adjust_width, Translucent, IsTranslucent, FadingNum,
-            FadingTable);
-        break;
-      case kBlitPredator | kBlitGhost |
-          kBlitTransparent:  // BF_Predator_Ghost_Trans
-        Do_Old_Blit<kBlitPredator | kBlitGhost | kBlitTransparent>(
-            line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
-            dst_adjust_width, Translucent, IsTranslucent, FadingNum,
-            FadingTable);
-        break;
-      case kBlitPredator | kBlitFading:  // BF_Predator_Fading
-        Do_Old_Blit<kBlitPredator | kBlitFading>(
-            line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
-            dst_adjust_width, Translucent, IsTranslucent, FadingNum,
-            FadingTable);
-        break;
-      case kBlitPredator | kBlitFading |
-          kBlitTransparent:  // BF_Predator_Fading_Trans
-        Do_Old_Blit<kBlitPredator | kBlitFading | kBlitTransparent>(
-            line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
-            dst_adjust_width, Translucent, IsTranslucent, FadingNum,
-            FadingTable);
-        break;
-      case kBlitPredator | kBlitFading |
-          kBlitGhost:  // BF_Predator_Ghost_Fading
-        Do_Old_Blit<kBlitPredator | kBlitFading | kBlitGhost>(
-            line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
-            dst_adjust_width, Translucent, IsTranslucent, FadingNum,
-            FadingTable);
-        break;
-      case kBlitPredator | kBlitFading | kBlitGhost |
-          kBlitTransparent:  // BF_Predator_Ghost_Fading_Trans
-        Do_Old_Blit<kBlitPredator | kBlitFading | kBlitGhost |
-                    kBlitTransparent>(line_count, pixel_count, src_offset,
-                                      dst_offset, src_adjust_width,
-                                      dst_adjust_width, Translucent,
-                                      IsTranslucent, FadingNum, FadingTable);
-        break;
-      default:
-        break;
+  switch (jflags & kBlitOld) {
+    case 0:  // BF_Copy
+    {
+      // copy lines
+      do {
+        base::CopyBytes(std::as_writable_bytes(dst_offset), src_offset,
+                        pixel_count);
+        if (line_count > 1) {
+          src_offset = src_offset.subspan(base::ToSize(w));
+        }
+        if (line_count > 1) {
+          dst_offset = dst_offset.subspan(base::ToSize(dst_area));
+        }
+      } while (--line_count);
+      break;
     }
-  } else {
-    // super jump table fun!
-    absl::PrintF("%s new f %x all flags %i\n", __func__,
-                 header.draw_flags & kBlitAll, static_cast<int>(use_all_flags));
+    case kBlitTransparent:  // BF_Trans
+      Do_Old_Blit<kBlitTransparent>(
+          line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
+          dst_adjust_width, Translucent, IsTranslucent, FadingNum, FadingTable);
+      break;
+    case kBlitGhost:  // BF_Ghost
+      Do_Old_Blit<kBlitGhost>(line_count, pixel_count, src_offset, dst_offset,
+                              src_adjust_width, dst_adjust_width, Translucent,
+                              IsTranslucent, FadingNum, FadingTable);
+      break;
+    case kBlitGhost | kBlitTransparent:  // BF_Ghost_Trans
+      Do_Old_Blit<kBlitGhost | kBlitTransparent>(
+          line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
+          dst_adjust_width, Translucent, IsTranslucent, FadingNum, FadingTable);
+      break;
+    case kBlitFading:  // BF_Fading
+      Do_Old_Blit<kBlitFading>(line_count, pixel_count, src_offset, dst_offset,
+                               src_adjust_width, dst_adjust_width, Translucent,
+                               IsTranslucent, FadingNum, FadingTable);
+      break;
+    case kBlitFading | kBlitTransparent:  // BF_Fading_Trans
+      Do_Old_Blit<kBlitFading | kBlitTransparent>(
+          line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
+          dst_adjust_width, Translucent, IsTranslucent, FadingNum, FadingTable);
+      break;
+    case kBlitFading | kBlitGhost:  // BF_Ghost_Fading
+      Do_Old_Blit<kBlitFading | kBlitGhost>(
+          line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
+          dst_adjust_width, Translucent, IsTranslucent, FadingNum, FadingTable);
+      break;
+    case kBlitFading | kBlitGhost | kBlitTransparent:  // BF_Ghost_Fading_Trans
+      Do_Old_Blit<kBlitFading | kBlitGhost | kBlitTransparent>(
+          line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
+          dst_adjust_width, Translucent, IsTranslucent, FadingNum, FadingTable);
+      break;
+    case kBlitPredator:  // BF_Predator
+      Do_Old_Blit<kBlitPredator>(
+          line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
+          dst_adjust_width, Translucent, IsTranslucent, FadingNum, FadingTable);
+      break;
+    case kBlitPredator | kBlitTransparent:  // BF_Predator_Trans
+      Do_Old_Blit<kBlitPredator | kBlitTransparent>(
+          line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
+          dst_adjust_width, Translucent, IsTranslucent, FadingNum, FadingTable);
+      break;
+    case kBlitPredator | kBlitGhost:  // BF_Predator_Ghost
+      Do_Old_Blit<kBlitPredator | kBlitGhost>(
+          line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
+          dst_adjust_width, Translucent, IsTranslucent, FadingNum, FadingTable);
+      break;
+    case kBlitPredator | kBlitGhost |
+        kBlitTransparent:  // BF_Predator_Ghost_Trans
+      Do_Old_Blit<kBlitPredator | kBlitGhost | kBlitTransparent>(
+          line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
+          dst_adjust_width, Translucent, IsTranslucent, FadingNum, FadingTable);
+      break;
+    case kBlitPredator | kBlitFading:  // BF_Predator_Fading
+      Do_Old_Blit<kBlitPredator | kBlitFading>(
+          line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
+          dst_adjust_width, Translucent, IsTranslucent, FadingNum, FadingTable);
+      break;
+    case kBlitPredator | kBlitFading |
+        kBlitTransparent:  // BF_Predator_Fading_Trans
+      Do_Old_Blit<kBlitPredator | kBlitFading | kBlitTransparent>(
+          line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
+          dst_adjust_width, Translucent, IsTranslucent, FadingNum, FadingTable);
+      break;
+    case kBlitPredator | kBlitFading | kBlitGhost:  // BF_Predator_Ghost_Fading
+      Do_Old_Blit<kBlitPredator | kBlitFading | kBlitGhost>(
+          line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
+          dst_adjust_width, Translucent, IsTranslucent, FadingNum, FadingTable);
+      break;
+    case kBlitPredator | kBlitFading | kBlitGhost |
+        kBlitTransparent:  // BF_Predator_Ghost_Fading_Trans
+      Do_Old_Blit<kBlitPredator | kBlitFading | kBlitGhost | kBlitTransparent>(
+          line_count, pixel_count, src_offset, dst_offset, src_adjust_width,
+          dst_adjust_width, Translucent, IsTranslucent, FadingNum, FadingTable);
+      break;
+    default:
+      break;
   }
 }

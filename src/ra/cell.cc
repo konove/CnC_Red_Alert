@@ -120,7 +120,6 @@
 #include "ra/infantry.h"
 #include "ra/inline.h"
 #include "ra/jshell.h"
-#include "ra/keyframe.h"
 #include "ra/layer.h"
 #include "ra/logic.h"
 #include "ra/mapedit.h"
@@ -1166,15 +1165,11 @@ void CellClass::Draw_It(PixelView& view, int x, int y, bool objects) const {
       */
       if (Overlay != OVERLAY_NONE) {
         const OverlayTypeClass& otype = OverlayTypeClass::As_Reference(Overlay);
-        IsTheaterShape =
-            static_cast<bool>(otype.IsTheater);  // Tell Build_Frame if this
-                                                 // overlay is theater specific
         CC_Draw_Shape(view, otype.Get_Image_Data(), OverlayData,
                       x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
                       WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
                       DisplayClass::UnitShadow);
-        IsTheaterShape = false;
       }
 
       if constexpr (config::kScenarioEditorEnabled) {

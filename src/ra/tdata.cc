@@ -66,7 +66,6 @@
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
-#include "ra/keyframe.h"
 #include "ra/mapedit.h"
 #include "ra/object.h"
 #include "ra/shape_draw.h"
@@ -535,10 +534,7 @@ void TerrainTypeClass::Init(TheaterType theater) {
                 .string();
         terrain.SetImage(MixArchive::RetrieveData(fullname));
 
-        IsTheaterShape =
-            true;  // Let Build_Frame know that this is a theater specific shape
         terrain.RadarIcon = Get_Radar_Icon(terrain.Get_Image_Data(), 0, 1, 3);
-        IsTheaterShape = false;
       }
     }
   }
@@ -589,10 +585,8 @@ TerrainType TerrainTypeClass::From_Name(const char* name) {
 void TerrainTypeClass::Display(PixelView& view, int x, int y,
                                WindowNumberType window,
                                HousesType /*unused*/) const {
-  IsTheaterShape = true;
   CC_Draw_Shape(view, Get_Image_Data(), 0, x, y, window,
                 SHAPE_NORMAL | SHAPE_CENTER | SHAPE_WIN_REL);
-  IsTheaterShape = false;
 }
 
 /***********************************************************************************************

@@ -71,7 +71,6 @@
 #include "ra/heap.h"
 #include "ra/house.h"
 #include "ra/inline.h"
-#include "ra/keyframe.h"
 #include "ra/mapedit.h"
 #include "ra/mouse.h"
 #include "ra/object.h"
@@ -759,10 +758,8 @@ void OverlayTypeClass::Display(PixelView& view, int x, int y,
       frame = 2;
     }
 
-    IsTheaterShape = IsTheater;
     CC_Draw_Shape(view, Get_Image_Data(), frame, x, y, window,
                   SHAPE_NORMAL | SHAPE_CENTER | SHAPE_WIN_REL);
-    IsTheaterShape = false;
   }
 }
 
@@ -853,13 +850,11 @@ ObjectClass* OverlayTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
  * HISTORY: * 08/12/1994 JLB : Created. *
  *=============================================================================================*/
 void OverlayTypeClass::Draw_It(PixelView& view, int x, int y, int data) const {
-  IsTheaterShape = IsTheater;
   CC_Draw_Shape(view, Get_Image_Data(), data,
                 TheMap().TacPixelX + x + (CELL_PIXEL_W >> 1),
                 TheMap().TacPixelY + y + (CELL_PIXEL_H >> 1), WINDOW_MAIN,
                 SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
                 MouseClass::UnitShadow);
-  IsTheaterShape = false;
 }
 
 /***********************************************************************************************
@@ -894,10 +889,7 @@ void OverlayTypeClass::Init(TheaterType theater) {
       }
       overlay.SetImage(MixArchive::RetrieveData(fullname));
 
-      IsTheaterShape = overlay.IsTheater;  // Tell Build_Frame if this is a
-                                           // theater specific shape
       overlay.RadarIcon = Get_Radar_Icon(overlay.Get_Image_Data(), 0, -1, 3);
-      IsTheaterShape = false;
     }
   }
 }

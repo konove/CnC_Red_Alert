@@ -114,7 +114,6 @@
 #include "td/infantry.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/layer.h"
 #include "td/logic.h"
 #include "td/mapedit.h"
@@ -1043,13 +1042,11 @@ void CellClass::Draw_It(PixelView& view, int x, int y, int draw_type) const {
       */
       if (Overlay != OVERLAY_NONE) {
         const OverlayTypeClass& otype = OverlayTypeClass::As_Reference(Overlay);
-        IsTheaterShape = static_cast<bool>(otype.IsTheater);
         CC_Draw_Shape(view, otype.Get_Image_Data(), OverlayData,
                       x + (CELL_PIXEL_W >> 1), y + (CELL_PIXEL_H >> 1),
                       WINDOW_TACTICAL,
                       SHAPE_CENTER | SHAPE_WIN_REL | SHAPE_GHOST, {},
                       MouseClass::UnitShadow);
-        IsTheaterShape = false;
       }
 
       if constexpr (config::kScenarioEditorEnabled) {

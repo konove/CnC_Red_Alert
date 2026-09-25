@@ -33,27 +33,4 @@ void Buffer_Frame_To_Page(int x, int y, int w, int h, std::span<std::byte> src,
                           PixelView& dest, ShapeFlags_Type flags,
                           const ShapeEffects& effects = {});
 
-// Returns the drawing-effect bits of `flags` that a cached shape header is
-// keyed on. Buffer_Frame_To_Page precomputes one line-blit flag per scan line
-// for a shape, and that cache is only valid for a later draw requesting the
-// same effects, so the stored key and the key it is compared against must come
-// from here rather than be spelled out twice.
-constexpr ShapeFlags_Type ShapeEffectFlags(const ShapeFlags_Type flags) {
-  return flags & (SHAPE_TRANS | SHAPE_FADING | SHAPE_PREDATOR | SHAPE_GHOST);
-}
-
-// Selects the pre-Win95 shape blitter. Set by the game's CC_Draw_Shape()
-// around the rotate-and-scale path, which produces raw shape data the new
-// blitter cannot read.
-inline bool UseOldShapeDraw = false;
-
-// Uncompressed shape buffers owned by the game's keyframe loader. While
-// UseBigShapeBuffer is set, cached shape headers hold offsets from the start of
-// the big buffer, or of the theater buffer for theater-specific shapes.
-extern char* BigShapeBufferStart;
-extern std::span<char> BigShapeBufferBytes;
-extern std::span<char> TheaterShapeBufferBytes;
-extern char* TheaterShapeBufferStart;
-extern bool UseBigShapeBuffer;
-
 #endif  // CNC_RED_ALERT_TECH_2KEYFBUF_H_

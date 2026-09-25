@@ -67,7 +67,6 @@
 #include "td/house.h"
 #include "td/inline.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/object.h"
 #include "td/smudge.h"
 #include "td/type.h"
@@ -421,9 +420,7 @@ ObjectClass* SmudgeTypeClass::Create_One_Of(HouseClass* /*unused*/) const {
 void SmudgeTypeClass::Draw_It(PixelView& view, int x, int y, int data) const {
   const auto ptr = Get_Image_Data();
   if (!ptr.empty()) {
-    IsTheaterShape = true;  // Smudges are theater specific
     CC_Draw_Shape(view, ptr, data, x, y, WINDOW_TACTICAL, SHAPE_WIN_REL);
-    IsTheaterShape = false;
   }
 }
 

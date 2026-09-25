@@ -68,7 +68,6 @@
 #include "td/display_constants.h"
 #include "td/house.h"
 #include "td/jshell.h"
-#include "td/keyframe.h"
 #include "td/mapedit.h"
 #include "td/mouse.h"
 #include "td/object.h"
@@ -907,10 +906,8 @@ void OverlayTypeClass::Init(TheaterType theater) {
       }
       overlay.Set_Image_Data(MixArchive::RetrieveData(fullname));
 
-      IsTheaterShape = overlay.IsTheater;
       overlay.Set_Radar_Icon(
           Get_Radar_Icon(overlay.Get_Image_Data(), 0, -1, 3));
-      IsTheaterShape = false;
     }
   }
 }

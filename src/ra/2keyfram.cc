@@ -50,7 +50,6 @@
 #include "ra/keyframe.h"
 #include "sdllib/lcw_uncompress.h"
 #include "sdllib/xor_delta.h"
-#include "tech/2keyfbuf.h"
 
 struct KeyFrameHeaderType {
   uint16_t frames;
@@ -61,19 +60,6 @@ struct KeyFrameHeaderType {
   uint16_t largest_frame_size;
   uint16_t flags;
 };
-
-// The uncompressed-shape cache was never finished: nothing sets
-// UseBigShapeBuffer, so Build_Frame always decodes into the caller's buffer.
-// tech/2keyfbuf.cc still reads these three to choose its draw path, so the
-// definitions stay.
-char* BigShapeBufferStart = nullptr;
-std::span<char> BigShapeBufferBytes;
-char* TheaterShapeBufferStart = nullptr;
-std::span<char> TheaterShapeBufferBytes;
-bool UseBigShapeBuffer = false;
-// Set by the type classes around Build_Frame for theater-specific shapes; only
-// the uncompressed-shape cache ever read it.
-bool IsTheaterShape = false;
 
 namespace {
 KeyFrameHeaderType Header(std::span<const std::byte> data) {

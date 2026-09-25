@@ -7,8 +7,6 @@
 
 #include "absl/base/attributes.h"
 
-extern bool IsTheaterShape;
-
 int Get_Last_Frame_Length();
 std::span<uint8_t> Build_Frame(std::span<const std::byte> data, uint16_t frame,
                                std::span<uint8_t> destination);

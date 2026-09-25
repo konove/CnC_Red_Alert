@@ -3225,11 +3225,9 @@ void BuildingTypeClass::Display(PixelView& view, int x, int y,
                                 HousesType /*unused*/) const {
   auto ptr = Get_Cameo_Data();
   if (ptr.empty()) {
-    IsTheaterShape = IsTheater;
     ptr = Get_Image_Data();
   }
   CC_Draw_Shape(view, ptr, 0, x, y, window, SHAPE_CENTER | SHAPE_WIN_REL);
-  IsTheaterShape = false;
 }
 
 /***********************************************************************************************
