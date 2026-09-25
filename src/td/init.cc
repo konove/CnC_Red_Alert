@@ -1543,7 +1543,7 @@ bool Select_Game(bool fade) {
   ** back a recording, init the Seed to a random value.
   */
   if (TheSession().type() == GAME_NORMAL && !TheSession().playback_game()) {
-    TheWorld().seed() = platform::RandomSeed();
+    TheWorld().seed() = engine::platform::RandomSeed();
   }
 
   /*

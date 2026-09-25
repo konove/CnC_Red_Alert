@@ -443,8 +443,9 @@ void Send_Statistics_Packet() {
                     //	This is a private network address - ignore it and go on
                     // to next.
                   } else {
-                    base::SafeCopy(szIPAddress,
-                                   net::Ipv4Text(address.sin_addr).c_str());
+                    base::SafeCopy(
+                        szIPAddress,
+                        engine::net::Ipv4Text(address.sin_addr).c_str());
                     break;
                   }
                 }

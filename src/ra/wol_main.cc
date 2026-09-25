@@ -202,10 +202,10 @@ bool ReregisterWolapiDLL() {
   //	Attempt to reregister wolapi.dll.
   //	Returns true if we think we succeeded.
   HKEY hKey = nullptr;
-  char szInstallPath[platform::kMaxPath];
+  char szInstallPath[engine::platform::kMaxPath];
   if (::RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Westwood\\WOLAPI", 0,
                      KEY_READ, &hKey) == ERROR_SUCCESS) {
-    DWORD dwBufSize = platform::kMaxPath;
+    DWORD dwBufSize = engine::platform::kMaxPath;
     if (::RegQueryValueEx(hKey, "InstallPath", nullptr, nullptr,
                           base::BytesOf(szInstallPath),
                           &dwBufSize) == ERROR_SUCCESS) {
@@ -239,7 +239,7 @@ bool ReregisterWolapiDLL() {
       // necessary. 	Something about Neal's extra threads only getting
       // half-way set up before they get deleted. 	(The extra threads
       // shouldn't really be created in this case, anyway...)
-      platform::SleepMs(1000);
+      engine::platform::SleepMs(1000);
       FreeLibrary(hLib);
       FindClose(handle);
     } else {

@@ -3045,7 +3045,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   Init random-number generator, & create a seed to be used for all random
   numbers from here on out
   ........................................................................*/
-  TheWorld().seed() = platform::RandomSeed();
+  TheWorld().seed() = engine::platform::RandomSeed();
 
   /*........................................................................
   Init the message display system
@@ -4406,9 +4406,10 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
         if (IsMissionAftermath(
                 TheSession().Scenarios.at(index)->Get_Filename())) {
           // debugprint("a 1match!\n");
-          base::SafeCopy(std::span(filename).first(platform::kMaxFname +
-                                                   platform::kMaxExt + 1),
-                         TheSession().Scenarios.at(index)->Get_Filename());
+          base::SafeCopy(
+              std::span(filename).first(engine::platform::kMaxFname +
+                                        engine::platform::kMaxExt + 1),
+              TheSession().Scenarios.at(index)->Get_Filename());
           return true;
         }
 
@@ -4417,9 +4418,10 @@ bool Find_Local_Scenario(const char* description, std::span<char> filename,
         */
         if (official || (std::string_view(digest) == digest_buffer)) {
           // debugprint("a match!\n");
-          base::SafeCopy(std::span(filename).first(platform::kMaxFname +
-                                                   platform::kMaxExt + 1),
-                         TheSession().Scenarios.at(index)->Get_Filename());
+          base::SafeCopy(
+              std::span(filename).first(engine::platform::kMaxFname +
+                                        engine::platform::kMaxExt + 1),
+              TheSession().Scenarios.at(index)->Get_Filename());
           return true;
         }
       }

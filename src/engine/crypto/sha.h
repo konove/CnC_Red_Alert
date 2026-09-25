@@ -70,7 +70,7 @@ class SHAEngine {
 
  private:
   // The five 32-bit words the algorithm accumulates.
-  using Accumulator = crypto::Sha1State;
+  using Accumulator = engine::crypto::Sha1State;
 
   /*
   **	This holds the calculated final result. It is cached
@@ -90,7 +90,7 @@ class SHAEngine {
   // Source data is grouped into blocks of this size. Sizes are constexpr int
   // rather than enumerators: sizeof() makes an enumerator unsigned, which turns
   // every comparison against an int index into a sign mismatch.
-  static constexpr int SRC_BLOCK_SIZE = crypto::kSha1BlockSize;
+  static constexpr int SRC_BLOCK_SIZE = engine::crypto::kSha1BlockSize;
 
   // Processes a partially filled source accumulator buffer.
   void Process_Partial(std::span<const std::byte>& data);

@@ -3,11 +3,11 @@
 #include <cstdint>
 #include <random>
 
-namespace platform {
+namespace engine::platform {
 
 int RandomSeed() {
   std::random_device device;
   return static_cast<int>(device() & uint32_t{0x7fffffff});
 }
 
-}  // namespace platform
+}  // namespace engine::platform

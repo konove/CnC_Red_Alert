@@ -4,7 +4,7 @@
 #include <optional>
 #include <string>
 
-namespace platform {
+namespace engine::platform {
 
 std::optional<std::string> GetEnv(const char* name) {
   // The value is copied before anything else can touch the environment; the
@@ -18,4 +18,4 @@ std::optional<std::string> GetEnv(const char* name) {
   return std::string(value);
 }
 
-}  // namespace platform
+}  // namespace engine::platform

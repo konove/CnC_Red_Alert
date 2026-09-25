@@ -609,8 +609,8 @@ HRESULT WolapiObject::GetChatServer() {
     //		debugprint( "PumpMessages after RequestServerList...\n" );
     pChat->PumpMessages();
     dwTimeNextPump = Get_Time_Ms() + PUMPSLEEPDURATION;
-    //        platform::SleepMs( PUMPSLEEPDURATION );	//	Can't do because
-    //        we want to ServiceRealTime()
+    //        engine::platform::SleepMs( PUMPSLEEPDURATION );	//	Can't do
+    //        because we want to ServiceRealTime()
     //	If an "update list" of patches has been received, instead of a server
     // list, this flag will have been set 	for us describing the results.
     // We'll either cancel log in or trigger game exit.
@@ -1450,7 +1450,7 @@ void WolapiObject::RequestPlayerPings() {
         int iUnused = 0;
         in_addr inaddrUser{};
         inaddrUser.s_addr = UserIP;
-        const std::string szIP = net::Ipv4Text(inaddrUser);
+        const std::string szIP = engine::net::Ipv4Text(inaddrUser);
         //				debugprint( "RequestPing of %s, ipaddr
         // of %i, aka %s\n", (char*)pUser->name, UserIP, szIP );
         pNetUtil->RequestPing(szIP.c_str(), 1000, &iUnused);
@@ -2045,8 +2045,8 @@ bool WolapiObject::DoWebRegistration() {
     GenericErrorMessage();
     return false;
   }
-  char szPath[platform::kMaxPath + 1];
-  DWORD dwBufSize = platform::kMaxPath;
+  char szPath[engine::platform::kMaxPath + 1];
+  DWORD dwBufSize = engine::platform::kMaxPath;
   if (RegQueryValueEx(hKey, "InstallPath", nullptr, nullptr,
                       base::BytesOf(szPath), &dwBufSize) != ERROR_SUCCESS) {
     GenericErrorMessage();
@@ -2102,7 +2102,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
   si.cb = sizeof(si);
 
   if (*szWebBrowser) {
-    char szCommandLine[platform::kMaxPath + 300];
+    char szCommandLine[engine::platform::kMaxPath + 300];
     absl::SNPrintF(szCommandLine, sizeof(szCommandLine), "\"%s\" %s",
                    szWebBrowser, szURL);
     //		debugprint( "About to CreateProcess: '%s'\n", szCommandLine );
@@ -2130,7 +2130,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
       for (;;) {
         DWORD dwActive = 0;
         ServiceRealTime();
-        platform::SleepMs(200);
+        engine::platform::SleepMs(200);
         ::GetExitCodeProcess(pi.hProcess, &dwActive);
         if (dwActive != STILL_ACTIVE || TheGameState().cancel_msgbox()) {
           //	Either user closed the browser app, or game is starting and we
@@ -3190,7 +3190,7 @@ bool WolapiObject::Pump_DisconnectPinging() {
       //	Ping opponent.
       in_addr inaddr{};
       inaddr.s_addr = TournamentOpponentIP;
-      const std::string szIP = net::Ipv4Text(inaddr);
+      const std::string szIP = engine::net::Ipv4Text(inaddr);
       //		debugprint( "RequestPing ( opponent )\n" );
       if (pNetUtil->RequestPing(szIP.c_str(), 1000, &iUnused) != S_OK) {
         //			debugprint( "RequestPing() ( opponent )

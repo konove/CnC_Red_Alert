@@ -153,7 +153,7 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
   char c_dir = 0;     // character representing direction type
   char c_var = 0;     // character representing variation type
   ScenarioVarType i = SCEN_VAR_NONE;
-  char fname[platform::kMaxFname + platform::kMaxExt];
+  char fname[engine::platform::kMaxFname + engine::platform::kMaxExt];
 
   /*
   ** Set the player-type value.
@@ -280,7 +280,8 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
 bool Read_Scenario_Ini(const char* root, bool fresh) {
-  char fname[platform::kMaxFname + platform::kMaxExt];  // full INI filename
+  char fname[engine::platform::kMaxFname +
+             engine::platform::kMaxExt];  // full INI filename
   char buf[128];                      // Working string staging buffer.
   int rndmax = 0;
   int rndmin = 0;
@@ -704,7 +705,8 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
  *=============================================================================================*/
 void Write_Scenario_Ini(const char* root) {
   if constexpr (config::kCheatKeysEnabled) {
-    char fname[platform::kMaxFname + platform::kMaxExt];  // full scenario name
+    char fname[engine::platform::kMaxFname +
+               engine::platform::kMaxExt];  // full scenario name
     HousesType house = HOUSE_NONE;
 
     /*

@@ -921,7 +921,7 @@ bool MapClass::Read_Binary(const char* root, uint32_t*)
 bool MapClass::Read_Binary(const char* root, uint32_t* crc)
 #endif
 {
-  char fname[platform::kMaxFname + platform::kMaxExt];
+  char fname[engine::platform::kMaxFname + engine::platform::kMaxExt];
   int i = 0;
 
   /*
@@ -998,7 +998,7 @@ bool MapClass::Read_Binary(const char* root, uint32_t* crc)
  * HISTORY: * 11/14/1994 BR : Created. *
  *=============================================================================================*/
 bool MapClass::Write_Binary(const char* root) {
-  char fname[platform::kMaxFname + platform::kMaxExt];
+  char fname[engine::platform::kMaxFname + engine::platform::kMaxExt];
 
   /*
   **	Filename = INI name with BIN extension.

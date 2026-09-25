@@ -61,13 +61,13 @@ const char* Game_Registry_Key() {
 }
 
 bool ReadInstallerFlag(const char* value_name) {
-  return platform::ReadRegistryDword(HKEY_LOCAL_MACHINE, Game_Registry_Key(),
-                                     value_name)
+  return engine::platform::ReadRegistryDword(HKEY_LOCAL_MACHINE,
+                                             Game_Registry_Key(), value_name)
              .value_or(0) != 0;
 }
 
 bool Is_Counterstrike_Installed() {
-  if constexpr (platform::kIsWindows) {
+  if constexpr (engine::platform::kIsWindows) {
     static const bool installed = ReadInstallerFlag("CStrikeInstalled");
     return installed;
   } else {
@@ -76,7 +76,7 @@ bool Is_Counterstrike_Installed() {
 }
 
 bool Is_Aftermath_Installed() {
-  if constexpr (platform::kIsWindows) {
+  if constexpr (engine::platform::kIsWindows) {
     static const bool installed = ReadInstallerFlag("AftermathInstalled");
     return installed;
   } else {

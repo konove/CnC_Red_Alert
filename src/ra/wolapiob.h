@@ -326,7 +326,7 @@ class WolapiObject {
       false};  //	If set true, causes logout and deletion of
                // wolapi object.
 
-  char szWebBrowser[platform::kMaxPath + 1]{};
+  char szWebBrowser[engine::platform::kMaxPath + 1]{};
 
   //	For "disconnect pinging".
   bool bDoingDisconnectPinging{false};

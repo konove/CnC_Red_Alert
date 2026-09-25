@@ -1433,7 +1433,8 @@ void Call_Back() {
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
 const char* Language_Name(const char* basename) {
-  static char _fullname[platform::kMaxFname + platform::kMaxExt];
+  static char
+      _fullname[engine::platform::kMaxFname + engine::platform::kMaxExt];
 
   if (!basename) {
     return nullptr;
@@ -1868,7 +1869,7 @@ bool Main_Loop() {
     log_heap(TheObjectHeaps().aircraft(), "aircraftstate");
     class MapHashSink : public ByteSink {
      public:
-      bool trace = platform::GetEnv("TD_MAP_TRACE").has_value();
+      bool trace = engine::platform::GetEnv("TD_MAP_TRACE").has_value();
       std::string fields;
       uint64_t hash = 14695981039346656037ULL;
       bool Write(std::span<const std::byte> bytes) override {

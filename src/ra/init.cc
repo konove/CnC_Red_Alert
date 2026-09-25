@@ -1657,7 +1657,7 @@ void Init_Random() {
     if (TheStartupOptions().custom_seed != 0) {
       TheWorld().seed() = TheStartupOptions().custom_seed;
     } else {
-      TheWorld().seed() = platform::RandomSeed();
+      TheWorld().seed() = engine::platform::RandomSeed();
     }
   }
 
@@ -2594,7 +2594,7 @@ static bool bUsingDVD = false;
 // Whether the installer recorded a DVD edition. Off Windows there is no
 // installer, and the disc logic treats the data on disk as the DVD.
 static bool Is_DVD_Installed() {
-  if constexpr (platform::kIsWindows) {
+  if constexpr (engine::platform::kIsWindows) {
     return ReadInstallerFlag("DVD");
   } else {
     return true;

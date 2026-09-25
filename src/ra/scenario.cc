@@ -1680,7 +1680,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
   char c_player = 0;  // character representing player type
   char c_dir = 0;     // character representing direction type
   char c_var = 0;     // character representing variation type
-  char fname[platform::kMaxFname + platform::kMaxExt];
+  char fname[engine::platform::kMaxFname + engine::platform::kMaxExt];
 
   /*
   ** Set the player-type value.
@@ -1874,8 +1874,8 @@ void ScenarioClass::Set_Scenario_Name(const char* name) {
  * HISTORY: * 10/07/1992 JLB : Created.  V.Grippi added CS check 2/5/97 *
  *=============================================================================================*/
 bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
-  //	char fname[platform::kMaxFname+platform::kMaxExt]; // full INI
-  // filename
+  //	// full INI filename
+  //	char fname[engine::platform::kMaxFname+engine::platform::kMaxExt];
 
   TheWorld().scenario_init()++;
 

@@ -64,7 +64,7 @@ LONG RegCloseKey(HKEY key);
 #include <cstdint>
 #include <optional>
 
-namespace platform {
+namespace engine::platform {
 
 // Reads the REG_DWORD value `value_name` from `sub_key` under `root`, which is
 // how the installer recorded which expansions it put on disk. Returns nullopt
@@ -73,6 +73,6 @@ namespace platform {
 std::optional<uint32_t> ReadRegistryDword(HKEY root, const char* sub_key,
                                           const char* value_name);
 
-}  // namespace platform
+}  // namespace engine::platform
 
 #endif  // CNC_RED_ALERT_ENGINE_PLATFORM_WIN32_WIN32_REGISTRY_H_

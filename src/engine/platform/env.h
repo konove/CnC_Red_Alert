@@ -5,7 +5,7 @@
 // hold a string of their own and the one getenv call is documented here.
 //
 // Example:
-//   if (const auto path = platform::GetEnv("RA_SAVE_DUMP")) {
+//   if (const auto path = engine::platform::GetEnv("RA_SAVE_DUMP")) {
 //     dump_file.Open(path->c_str(), FileAccess::kWrite);
 //   }
 
@@ -15,12 +15,12 @@
 #include <optional>
 #include <string>
 
-namespace platform {
+namespace engine::platform {
 
 // Returns the value of the environment variable `name`, or nullopt when it is
 // not set. A variable set to the empty string yields an empty string.
 [[nodiscard]] std::optional<std::string> GetEnv(const char* name);
 
-}  // namespace platform
+}  // namespace engine::platform
 
 #endif  // CNC_RED_ALERT_ENGINE_PLATFORM_ENV_H_

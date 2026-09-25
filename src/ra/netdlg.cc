@@ -4415,7 +4415,7 @@ static int Net_New_Dialog() {
   //	Init random-number generator, & create a seed to be used for all random
   //	numbers from here on out
   //------------------------------------------------------------------------
-  TheWorld().seed() = platform::RandomSeed();
+  TheWorld().seed() = engine::platform::RandomSeed();
 
   //------------------------------------------------------------------------
   //	Init the message display system
@@ -7298,7 +7298,7 @@ void Start_WWChat(ColorListClass* playerlist) {
   // Ensure a different sequence each time
   //------------------------------------------------------------------------
   TheScenario().sync_rng_.set_seed(
-      static_cast<uint32_t>(platform::RandomSeed()));
+      static_cast<uint32_t>(engine::platform::RandomSeed()));
 
   //------------------------------------------------------------------------
   // Add myself to the player list

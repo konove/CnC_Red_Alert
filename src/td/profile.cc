@@ -105,7 +105,7 @@ const char* WWGetPrivateProfileString(const char* section, const char* key,
     return dest.data();
   }
   const std::string_view text(ini_data);
-  const auto found = file::ReadProfile(text, section, key, def, dest);
+  const auto found = engine::file::ReadProfile(text, section, key, def, dest);
   return found ? text.substr(*found).data() : nullptr;
 }
 
@@ -114,5 +114,5 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
   if (profile.empty() || section == nullptr) {
     return true;
   }
-  return file::WriteProfile(profile, section, entry, string);
+  return engine::file::WriteProfile(profile, section, entry, string);
 }

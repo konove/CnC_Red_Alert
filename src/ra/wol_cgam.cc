@@ -236,7 +236,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
       Show_Mouse();
     }
     //	Be nice to other apps.
-    platform::SleepMs(50);
+    engine::platform::SleepMs(50);
 
     /*
     **	Get user input.

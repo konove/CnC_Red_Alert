@@ -1282,7 +1282,7 @@ uint32_t SessionClass::Compute_Unique_ID() {
   //------------------------------------------------------------------------
   // Add in every byte in the user's path environment variable
   //------------------------------------------------------------------------
-  if (const auto path = platform::GetEnv("PATH")) {
+  if (const auto path = engine::platform::GetEnv("PATH")) {
     for (const char byte : *path) {
       Add_CRC(&id, static_cast<uint32_t>(byte));
     }

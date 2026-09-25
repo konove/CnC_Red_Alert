@@ -3468,7 +3468,7 @@ int Com_Scenario_Dialog() {
   Init random-number generator, & create a seed to be used for all random
   numbers from here on out
   ........................................................................*/
-  TheWorld().seed() = platform::RandomSeed();
+  TheWorld().seed() = engine::platform::RandomSeed();
 
   /*........................................................................
   Init the message display system

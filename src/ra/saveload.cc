@@ -472,7 +472,7 @@ static void Put_All(ByteSink& pipe, int save_net) {
  *   02/27/1996 JLB : Uses simpler game control value save operation.      *
  *=========================================================================*/
 bool Save_Game(int id, const std::string_view descr, bool /*unused*/) {
-  char name[platform::kMaxFname + platform::kMaxExt];
+  char name[engine::platform::kMaxFname + engine::platform::kMaxExt];
   int save_net = 0;  // 1 = save network/modem game
 
   const int scenario = TheScenario().Scenario;   // get current scenario #
@@ -550,7 +550,8 @@ bool Save_Game(int id, const std::string_view descr, bool /*unused*/) {
 
   // Tee the field-wise body before compression. The dump has Section tags
   // but no save header, encryption, or digest, so it can be compared directly.
-  const std::string dump_path = platform::GetEnv("RA_SAVE_DUMP").value_or("");
+  const std::string dump_path =
+      engine::platform::GetEnv("RA_SAVE_DUMP").value_or("");
   std::unique_ptr<DiskStream> dump_file;
   if (!dump_path.empty()) {
     dump_file = OpenDiskFile(dump_path, FileAccess::kWrite);
@@ -624,7 +625,7 @@ bool Save_Game(int id, const std::string_view descr, bool /*unused*/) {
  ** 1/20/97  V.Grippi Added expansion CD check                            *
  *=========================================================================*/
 bool Load_Game(int id) {
-  char name[platform::kMaxFname + platform::kMaxExt];
+  char name[engine::platform::kMaxFname + engine::platform::kMaxExt];
   HousesType house = HOUSE_NONE;
   char descr_buf[kDescripMax];
   int load_net = 0;  // 1 = save network/modem game
@@ -1322,7 +1323,7 @@ bool Load_MPlayer_Values(ByteSource& file) {
  *=========================================================================*/
 bool Get_Savefile_Info(int id, std::span<char> buf, size_t buf_size,
                        unsigned* scenp, HousesType* housep) {
-  char name[platform::kMaxFname + platform::kMaxExt];
+  char name[engine::platform::kMaxFname + engine::platform::kMaxExt];
   char descr_buf[kDescripMax];
 
   /*

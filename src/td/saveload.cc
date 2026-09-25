@@ -102,7 +102,7 @@
 
 // Write the theater/map, object heaps, ordered layers, and globals as fields.
 bool Save_Game(int id, const char* descr) {
-  char name[platform::kMaxFname + platform::kMaxExt];
+  char name[engine::platform::kMaxFname + engine::platform::kMaxExt];
   int32_t version = 0;
   char descr_buf[kDescripMax]{};
 
@@ -243,7 +243,7 @@ bool Save_Game(int id, const char* descr) {
 
 // Load heaps before ordered object lists; rebuild runtime placement/UI state last.
 bool Load_Game(int id) {
-  char name[platform::kMaxFname + platform::kMaxExt];
+  char name[engine::platform::kMaxFname + engine::platform::kMaxExt];
   int32_t version = 0;
   unsigned scenario = 0;
   HousesType house = HOUSE_NONE;
@@ -574,7 +574,7 @@ bool Load_Misc_Values(ArchiveReader& file) {
  *=========================================================================*/
 bool Get_Savefile_Info(int id, std::span<char> buf, unsigned* scenp,
                        HousesType* housep) {
-  char name[platform::kMaxFname + platform::kMaxExt];
+  char name[engine::platform::kMaxFname + engine::platform::kMaxExt];
   int32_t version = 0;
   char descr_buf[kDescripMax];
 

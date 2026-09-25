@@ -12,7 +12,7 @@
 #include "absl/strings/match.h"
 #include "base/strings/safe_string.h"
 
-namespace file {
+namespace engine::file {
 namespace {
 
 struct Section {
@@ -181,4 +181,4 @@ bool WriteProfile(std::span<char> storage, std::string_view section,
   return true;
 }
 
-}  // namespace file
+}  // namespace engine::file

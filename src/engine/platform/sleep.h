@@ -10,7 +10,7 @@
 #include <chrono>
 #include <thread>
 
-namespace platform {
+namespace engine::platform {
 
 // Blocks the calling thread for at least `milliseconds`. The thread wakes no
 // earlier, but the scheduler decides how much later.
@@ -21,6 +21,6 @@ inline void SleepMs(int milliseconds) {
   std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
-}  // namespace platform
+}  // namespace engine::platform
 
 #endif  // CNC_RED_ALERT_ENGINE_PLATFORM_SLEEP_H_

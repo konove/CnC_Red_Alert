@@ -16,7 +16,7 @@
 #include <immintrin.h>
 #endif
 
-namespace crypto {
+namespace engine::crypto {
 namespace {
 
 // Reads a big-endian word, whatever the host byte order.
@@ -223,4 +223,4 @@ void Sha1Compress(Sha1State& state, std::span<const std::byte> blocks) {
   }
 }
 
-}  // namespace crypto
+}  // namespace engine::crypto

@@ -187,7 +187,8 @@ class World {
   int scenario_ = 0;
   ScenarioPlayerType scen_player_{};
   ScenarioDirType scen_dir_{};
-  char scenario_name_[platform::kMaxFname + platform::kMaxExt]{};
+  char
+      scenario_name_[engine::platform::kMaxFname + engine::platform::kMaxExt]{};
 
   int carry_over_money_ = 0;
   int carry_over_percent_ = 0;
@@ -206,11 +207,11 @@ class World {
   CELL current_cell_ = 0;
 
   char briefing_text_[512]{};
-  char intro_movie_[platform::kMaxFname + platform::kMaxExt]{};
-  char brief_movie_[platform::kMaxFname + platform::kMaxExt]{};
-  char action_movie_[platform::kMaxFname + platform::kMaxExt]{};
-  char win_movie_[platform::kMaxFname + platform::kMaxExt]{};
-  char lose_movie_[platform::kMaxFname + platform::kMaxExt]{};
+  char intro_movie_[engine::platform::kMaxFname + engine::platform::kMaxExt]{};
+  char brief_movie_[engine::platform::kMaxFname + engine::platform::kMaxExt]{};
+  char action_movie_[engine::platform::kMaxFname + engine::platform::kMaxExt]{};
+  char win_movie_[engine::platform::kMaxFname + engine::platform::kMaxExt]{};
+  char lose_movie_[engine::platform::kMaxFname + engine::platform::kMaxExt]{};
   ThemeType transit_theme_ = THEME_NONE;
 
   int end_count_down_ = 0;

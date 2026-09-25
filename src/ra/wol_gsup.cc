@@ -721,7 +721,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                      pILScens->Get_Item(pILScens->Current_Index()));
     }
 
-    TheWorld().seed() = platform::RandomSeed();
+    TheWorld().seed() = engine::platform::RandomSeed();
   }
 
   //------------------------------------------------------------------------
@@ -1245,7 +1245,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       Show_Mouse();
     }
     //	Be nice to other apps.
-    platform::SleepMs(50);
+    engine::platform::SleepMs(50);
 
     //.....................................................................
     //	Get user input

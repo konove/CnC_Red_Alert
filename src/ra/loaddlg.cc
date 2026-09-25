@@ -208,8 +208,8 @@ bool LoadOptionsClass::Process() {
   int game_idx = 0;                    // index of game to save/load/etc
   int game_num = 0;                    // file number of game to load/save/etc
   char game_descr[kDescripMax] = {0};  // save-game description
-  char fname[platform::kMaxFname +
-             platform::kMaxExt];  // for generating filename to delete
+  char fname[engine::platform::kMaxFname +
+             engine::platform::kMaxExt];  // for generating filename to delete
 
   /*
   **	Buttons
