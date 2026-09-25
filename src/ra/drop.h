@@ -78,7 +78,7 @@ class DropListClass : public EditClass {
   virtual int Current_Index();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(const char* text);
-  void Peer_To_Peer(unsigned flags, KeyNumType& /*key*/ /*unused*/,
+  void Peer_To_Peer(unsigned flags, KeyNumber& /*key*/ /*unused*/,
                     ControlClass& whom) override;
   void Clear_Focus() override;
   [[nodiscard]] virtual int Count() const { return List.Count(); }
@@ -147,7 +147,7 @@ class TDropListClass : public EditClass {
   virtual int Current_Index();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(T text);
-  void Peer_To_Peer(unsigned flags, KeyNumType& /*key*/,
+  void Peer_To_Peer(unsigned flags, KeyNumber& /*key*/,
                     ControlClass& whom) override;
   void Clear_Focus() override;
   [[nodiscard]] virtual int Count() const { return List.Count(); }
@@ -268,7 +268,7 @@ void TDropListClass<T>::Clear_Focus() {
 }
 
 template <class T>
-void TDropListClass<T>::Peer_To_Peer(unsigned flags, KeyNumType& key,
+void TDropListClass<T>::Peer_To_Peer(unsigned flags, KeyNumber& key,
                                      ControlClass& whom) {
   if ((&whom == &DropButton) && (flags & kLeftRelease)) {
     if (IsDropped) {

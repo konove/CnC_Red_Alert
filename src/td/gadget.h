@@ -126,7 +126,7 @@ class GadgetClass : public LinkClass {
   /*
   **	Gadget list management functions.
   */
-  virtual KeyNumType Input(PixelView& view);
+  virtual KeyNumber Input(PixelView& view);
   virtual void Draw_All(PixelView& view, bool forced = true);
   virtual void Delete_List();
   virtual ControlClass* Extract_Gadget(unsigned id);
@@ -142,7 +142,7 @@ class GadgetClass : public LinkClass {
   virtual void Enable();
   [[nodiscard]] virtual unsigned Get_ID() const { return 0; }
   virtual void Flag_To_Redraw();
-  virtual void Peer_To_Peer(unsigned /*unused*/, KeyNumType& /*unused*/,
+  virtual void Peer_To_Peer(unsigned /*unused*/, KeyNumber& /*unused*/,
                             ControlClass& /*unused*/) {}
   virtual void Set_Focus();
   virtual void Clear_Focus();
@@ -178,7 +178,7 @@ class GadgetClass : public LinkClass {
   *mouse *	input indicates. This is the main method by which this button
   *performs a useful *	function.
   */
-  virtual bool Action(unsigned flags, KeyNumType& key);
+  virtual bool Action(unsigned flags, KeyNumber& key);
 
   /*
   **	If there is a sticky button being processed, then this will point to it.
@@ -238,7 +238,7 @@ class GadgetClass : public LinkClass {
   unsigned Flags = 0;
 
  private:
-  virtual bool Clicked_On(KeyNumType& key, unsigned flags, int x, int y);
+  virtual bool Clicked_On(KeyNumber& key, unsigned flags, int x, int y);
 };
 
 #endif  // CNC_RED_ALERT_TD_GADGET_H_

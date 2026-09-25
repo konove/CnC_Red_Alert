@@ -1332,7 +1332,7 @@ void RadarClass::Radar_Anim(PixelView& view) {
  *with click or drag.                                   * 12/31/1994 JLB : Uses
  *mouse coordinate parameters.                                        *
  *=============================================================================================*/
-void RadarClass::AI(KeyNumType& input, int x, int y) {
+void RadarClass::AI(KeyNumber& input, int x, int y) {
   /*
   ** Check to see if we need to animate the radar cursor
   */
@@ -1396,7 +1396,7 @@ void RadarClass::AI(KeyNumType& input, int x, int y) {
  *                                                                                             *
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
-bool RadarClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
+bool RadarClass::TacticalClass::Action(unsigned flags, KeyNumber& key) {
   int x = 0;
   int y = 0;                      // Sub cell pixel coordinates.
   ObjectClass* object = nullptr;  // what object is in the cell

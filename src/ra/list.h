@@ -109,7 +109,7 @@ class ListClass : public ControlClass {
   virtual int Step_Selected_Index(int step);
   void Flag_To_Redraw() final;
 
-  void Peer_To_Peer(unsigned flags, KeyNumType& key,
+  void Peer_To_Peer(unsigned flags, KeyNumber& key,
                     ControlClass& whom) override;
   // Removes the first item whose text equals `text` (nullptr: nothing).
   virtual void Remove_Item(const char* text);
@@ -139,7 +139,7 @@ class ListClass : public ControlClass {
   GadgetClass* Remove() override;
 
  protected:
-  bool Action(unsigned flags, KeyNumType& key) override;
+  bool Action(unsigned flags, KeyNumber& key) override;
   virtual void Draw_Entry(PixelView& view, int index, int x, int y, int width,
                           bool selected);
 
@@ -218,7 +218,7 @@ class TListClass final : public ControlClass {
   void Flag_To_Redraw() override;
   [[nodiscard]] T Get_Item(int index) const { return List.at(index); }
 
-  void Peer_To_Peer(unsigned flags, KeyNumType& key,
+  void Peer_To_Peer(unsigned flags, KeyNumber& key,
                     ControlClass& whom) override;
   void Remove_Item(T /*text*/);
   void Remove_Index(int /*index*/);
@@ -240,7 +240,7 @@ class TListClass final : public ControlClass {
   GadgetClass* Remove() override;
 
  protected:
-  bool Action(unsigned flags, KeyNumType& key) override;
+  bool Action(unsigned flags, KeyNumber& key) override;
 
   /*
   **	This controls what the text looks like. It uses the basic TPF_ flags
@@ -426,7 +426,7 @@ void TListClass<T>::Remove_Item(T text) {
 }
 
 template <class T>
-bool TListClass<T>::Action(unsigned flags, KeyNumType& key) {
+bool TListClass<T>::Action(unsigned flags, KeyNumber& key) {
   if (flags & kLeftRelease) {
     key = KN_NONE;
     flags &= (~kLeftRelease);
@@ -540,7 +540,7 @@ int TListClass<T>::Current_Index() const {
 }
 
 template <class T>
-void TListClass<T>::Peer_To_Peer(unsigned flags, KeyNumType& /*unused*/,
+void TListClass<T>::Peer_To_Peer(unsigned flags, KeyNumber& /*unused*/,
                                  ControlClass& whom) {
   if (flags & kLeftRelease) {
     if (&whom == &UpGadget) {

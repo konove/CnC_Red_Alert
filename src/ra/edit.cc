@@ -119,7 +119,7 @@ bool EditClass::Draw_Me(PixelView& view, const bool forced) {
   return false;
 }
 
-bool EditClass::Action(unsigned flags, KeyNumType& key) {
+bool EditClass::Action(unsigned flags, KeyNumber& key) {
   if (IsReadOnly) {
     return false;
   }
@@ -140,11 +140,11 @@ bool EditClass::Action(unsigned flags, KeyNumType& key) {
 
     } else {
       const auto ascii =
-          static_cast<KeyASCIIType>(KeyboardClass::To_ASCII(key) & 0xff);
+          static_cast<KeyAscii>(KeyboardClass::To_ASCII(key) & 0xff);
 
       // Allow numeric keypad presses to map to ascii numbers.
       if (key & WWKEY_VK_BIT && ascii >= '0' && ascii <= '9') {
-        key = static_cast<KeyNumType>(key & ~WWKEY_VK_BIT);
+        key = static_cast<KeyNumber>(key & ~WWKEY_VK_BIT);
         if ((!(flags & kLeftRelease) && !(flags & kRightRelease)) &&
             Handle_Key(ascii)) {
           flags &= ~kKeyboard;
@@ -191,7 +191,7 @@ void EditClass::Draw_Text(PixelView& view, const char* text) {
   }
 }
 
-bool EditClass::Handle_Key(KeyASCIIType ascii) {
+bool EditClass::Handle_Key(KeyAscii ascii) {
   switch (ascii) {
     // A zero key code can arrive if a subclass consumed the event.
     case 0:
@@ -338,7 +338,7 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
       }
 
       if (EditFlags.uppercase && isalpha(ascii) != 0) {
-        ascii = static_cast<KeyASCIIType>(toupper(ascii));
+        ascii = static_cast<KeyAscii>(toupper(ascii));
       }
 
       // Reject characters not matching any enabled EditStyle category.

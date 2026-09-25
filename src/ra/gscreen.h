@@ -70,8 +70,8 @@ class GScreenClass {
   /*
   **	Player I/O is routed through here. It is called every game tick.
   */
-  virtual void Input(KeyNumType& key, int& x, int& y);
-  virtual void AI(KeyNumType& /*unused*/, int /*unused*/, int /*unused*/) {}
+  virtual void Input(KeyNumber& key, int& x, int& y);
+  virtual void AI(KeyNumber& /*unused*/, int /*unused*/, int /*unused*/) {}
   virtual void Add_A_Button(GadgetClass& gadget);
   virtual void Remove_A_Button(GadgetClass& gadget);
 

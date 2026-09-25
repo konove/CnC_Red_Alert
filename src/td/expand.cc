@@ -230,7 +230,7 @@ bool Expansion_Dialog() {
       Show_Mouse();
     }
 
-    const KeyNumType input = buttons->Input(view);
+    const KeyNumber input = buttons->Input(view);
     switch (static_cast<int>(input)) {
       case KN_RETURN:
       case ButtonKey(200):
@@ -371,7 +371,7 @@ bool Bonus_Dialog() {
       Show_Mouse();
     }
 
-    const KeyNumType input = buttons->Input(view);
+    const KeyNumber input = buttons->Input(view);
     switch (static_cast<int>(input)) {
       case KN_RETURN:
       case ButtonKey(200):

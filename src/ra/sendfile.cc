@@ -456,7 +456,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
     }
 
     if (process) {
-      const KeyNumType input = cancelbtn.Input(view);
+      const KeyNumber input = cancelbtn.Input(view);
 
       /*
       ---------------------------- Process input ----------------------------
@@ -778,7 +778,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
     }
 
     if (process) {
-      const KeyNumType input = cancelbtn.Input(view);
+      const KeyNumber input = cancelbtn.Input(view);
 
       /*
       ---------------------------- Process input ----------------------------

@@ -206,7 +206,7 @@ void Special_Dialog(bool simple) {
       Show_Mouse();
     }
 
-    const KeyNumType input = buttons->Input(view);
+    const KeyNumber input = buttons->Input(view);
     switch (static_cast<int>(input)) {
       case KN_ESC:
       case ButtonKey(200):
@@ -443,7 +443,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
     /*
     **	Fetch and process input.
     */
-    const KeyNumType input = buttonlist->Input(view);  // user input
+    const KeyNumber input = buttonlist->Input(view);  // user input
     if (first) {
       button2.Set_Focus();
       button2.Flag_To_Redraw();
@@ -585,7 +585,7 @@ int Fetch_Difficulty(bool amath) {
     /*
     **	Fetch and process input.
     */
-    const KeyNumType input = buttonlist->Input(view);
+    const KeyNumber input = buttonlist->Input(view);
 
     switch (static_cast<int>(input)) {
       case KN_RETURN:

@@ -193,7 +193,7 @@ class MapEditClass : public MouseClass {
   MapEditClass();
   void One_Time() override;  // One-time init
   void Init_IO() override;   // Inits button list
-  void AI(KeyNumType& input, int x, int y) override;
+  void AI(KeyNumber& input, int x, int y) override;
   void Draw_It(PixelView& view, bool forced = true) override;
   bool Scroll_Map(DirType facing, int& distance, bool really = true) override;
   //		virtual void Flag_To_Redraw(bool complete);

@@ -202,7 +202,7 @@ void Special_Dialog() {
       Show_Mouse();
     }
 
-    const KeyNumType input = buttons->Input(view);
+    const KeyNumber input = buttons->Input(view);
     switch (static_cast<int>(input)) {
       case KN_ESC:
       case ButtonKey(200):

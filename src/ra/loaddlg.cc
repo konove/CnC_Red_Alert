@@ -330,7 +330,7 @@ bool LoadOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    KeyNumType input = commands->Input(view);
+    KeyNumber input = commands->Input(view);
 
     /*
     **	The first time through the processing loop, set the edit

@@ -110,7 +110,7 @@ class ListClass : public ControlClass {
       ABSL_ATTRIBUTE_LIFETIME_BOUND;
   virtual int Step_Selected_Index(int step);
 
-  void Peer_To_Peer(unsigned flags, KeyNumType& key,
+  void Peer_To_Peer(unsigned flags, KeyNumber& key,
                     ControlClass& whom) override;
   // Removes the first item whose text equals `text` (nullptr: nothing).
   virtual void Remove_Item(const char* text);
@@ -138,7 +138,7 @@ class ListClass : public ControlClass {
   GadgetClass* Remove() override;
 
  protected:
-  bool Action(unsigned flags, KeyNumType& key) override;
+  bool Action(unsigned flags, KeyNumber& key) override;
   virtual void Draw_Entry(PixelView& view, int index, int x, int y, int width,
                           bool selected);
 

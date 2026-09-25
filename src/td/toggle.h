@@ -80,7 +80,7 @@ class ToggleClass : public ControlClass {
   bool IsToggleType : 1 {false};
 
  protected:
-  bool Action(unsigned flags, KeyNumType& key) override;
+  bool Action(unsigned flags, KeyNumber& key) override;
 };
 
 #endif  // CNC_RED_ALERT_TD_TOGGLE_H_

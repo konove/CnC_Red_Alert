@@ -334,7 +334,7 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     /*
     **	Get user input
     */
-    const KeyNumType input = commands->Input(view);
+    const KeyNumber input = commands->Input(view);
 
     /*
     **	Process input
@@ -682,7 +682,7 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Get user input.
     */
-    const KeyNumType input = commands->Input(view);  // user input
+    const KeyNumber input = commands->Input(view);  // user input
 
     /*
     **	Process input.

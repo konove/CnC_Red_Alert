@@ -96,7 +96,7 @@ bool CheckListClass::Is_Checked(int index) const {
   return index >= 0 && index < Count() && Checked.at(base::ToSize(index));
 }
 
-bool CheckListClass::Action(unsigned flags, KeyNumType& key) {
+bool CheckListClass::Action(unsigned flags, KeyNumber& key) {
   /*
   ** If this is a read-only list, it's a display-only device
   */

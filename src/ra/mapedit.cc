@@ -485,7 +485,7 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
  * HISTORY:                                                                *
  *   10/20/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::AI(KeyNumType& input, int x, int y) {
+void MapEditClass::AI(KeyNumber& input, int x, int y) {
   int rc = 0;
   CELL cell = 0;
   int found = 0;  // for removing a waypoint label
@@ -2015,7 +2015,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
     /*
     **	Get user input.
     */
-    KeyNumType input = commands->Input(view);
+    KeyNumber input = commands->Input(view);
 
     /*
     **	The first time through the processing loop, set the edit

@@ -282,7 +282,7 @@ int Test_Null_Modem() {
   Dialog variables
   ........................................................................*/
   bool process = true;  // process while true
-  KeyNumType input = KN_NONE;
+  KeyNumber input = KN_NONE;
 
   int retval = 0;
   int64_t starttime = 0;
@@ -713,7 +713,7 @@ static int Reconnect_Null_Modem() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input(view);
+    const KeyNumber input = commands->Input(view);
 
     /*
     ............................ Process input ............................
@@ -1127,7 +1127,7 @@ GameType Select_Serial_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input(view);
+    const KeyNumber input = commands->Input(view);
 
     /*
     ............................ Process input ............................
@@ -1584,7 +1584,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input(view);
+    const KeyNumber input = commands->Input(view);
 
     /*
     ---------------------------- Process input ----------------------------
@@ -1904,7 +1904,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input = KN_NONE;
+  KeyNumber input = KN_NONE;
   char* item = nullptr;  // general-purpose string
   size_t temp = 0;       // general-purpose string
 
@@ -3228,7 +3228,7 @@ int Com_Scenario_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input = KN_NONE;
+  KeyNumber input = KN_NONE;
 
   char namebuf[MPLAYER_NAME_MAX] = {0};  // buffer for player's name
   char credbuf[CREDITSBUF_MAX];          // for credit edit box
@@ -4689,7 +4689,7 @@ int Com_Show_Scenario_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input = KN_NONE;
+  KeyNumber input = KN_NONE;
 
   char namebuf[MPLAYER_NAME_MAX] = {0};  // buffer for player's name
   const int cbox_x[] = {d_dialog_cx,
@@ -6024,7 +6024,7 @@ static int Phone_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    KeyNumType input = commands->Input(view);
+    KeyNumber input = commands->Input(view);
 
     if (firsttime) {
       numedit.Set_Focus();
@@ -6623,7 +6623,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     /*
     ........................... Get user input ............................
     */
-    KeyNumType input = commands->Input(view);
+    KeyNumber input = commands->Input(view);
 
     if (firsttime) {
       nameedit.Set_Focus();

@@ -54,7 +54,7 @@ class TabClass : public SidebarClass {
   void ResetTransientUiState() override;
   TabClass();
 
-  void AI(KeyNumType& input, int x, int y) override;
+  void AI(KeyNumber& input, int x, int y) override;
   void Draw_It(PixelView& view, bool complete = false) override;
 
   void One_Time() override;  // One-time inits

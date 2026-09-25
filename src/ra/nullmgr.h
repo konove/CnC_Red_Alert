@@ -88,7 +88,7 @@ class NullModemClass : public ConnManClass {
   char ModemEscapeCode{'+'};
 
   static void (*OrigAbortModemFunc)(int);
-  static KeyNumType Input;
+  static KeyNumber Input;
   static GadgetClass* Commands;  // button list
 
   /*

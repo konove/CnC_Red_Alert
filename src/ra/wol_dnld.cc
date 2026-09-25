@@ -190,7 +190,7 @@ bool WOL_Download_Dialog(IDownload* pDownload,
     }
 
     if (process) {
-      const KeyNumType input = cancelbtn.Input(view);
+      const KeyNumber input = cancelbtn.Input(view);
       switch (static_cast<int>(input)) {
         /*
         ** Cancel. Just return to the main menu

@@ -99,7 +99,7 @@ class MessageListClass {
   **	Maintenance routines
   */
   int Manage();
-  int Input(KeyNumType& input);
+  int Input(KeyNumber& input);
   void Draw(PixelView& view);
   int Num_Messages();
   void Set_Width(int width);

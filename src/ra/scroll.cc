@@ -96,7 +96,7 @@ ScrollClass::ScrollClass() { Counter.Set(SCROLL_DELAY); }
  *smooth scrolling.                                      * 08/25/1995 JLB :
  *Handles new scrolling option.                                            *
  *=============================================================================================*/
-void ScrollClass::AI(KeyNumType& input, int x, int y) {
+void ScrollClass::AI(KeyNumber& input, int x, int y) {
   bool player_scrolled = false;
   static DirType direction;
   int rate = 0;

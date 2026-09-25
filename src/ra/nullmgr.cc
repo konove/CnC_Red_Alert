@@ -117,7 +117,7 @@
 
 void (*NullModemClass::OrigAbortModemFunc)(int);
 
-KeyNumType NullModemClass::Input;
+KeyNumber NullModemClass::Input;
 GadgetClass* NullModemClass::Commands;  // button list
 
 /***************************************************************************

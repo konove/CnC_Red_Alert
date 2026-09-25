@@ -911,7 +911,7 @@ static int Net_Join_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input = KN_NONE;
+  KeyNumber input = KN_NONE;
   const int cbox_x[] = {d_gdi_x,
                         d_gdi_x + d_color_w,
                         d_gdi_x + (d_color_w * 2),
@@ -2971,7 +2971,7 @@ static int Net_New_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input = KN_NONE;
+  KeyNumber input = KN_NONE;
 
   char credbuf[CREDITSBUF_MAX];  // for credit edit box
 
@@ -4499,7 +4499,7 @@ static int Net_Fake_New_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input = KN_NONE;
+  KeyNumber input = KN_NONE;
 
   char credbuf[CREDITSBUF_MAX];  // for credit edit box
 
@@ -5132,7 +5132,7 @@ static int Net_Fake_Join_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input = KN_NONE;
+  KeyNumber input = KN_NONE;
 
   JoinStateType joinstate = JOIN_NOTHING;  // current "state" of this dialog
   int game_index = -1;                     // index of currently-selected game

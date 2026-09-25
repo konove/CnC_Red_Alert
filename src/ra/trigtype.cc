@@ -1515,7 +1515,7 @@ bool TriggerTypeClass::Edit() {
     /*
     **	Get user input
     */
-    const KeyNumType input = commands->Input(view);
+    const KeyNumber input = commands->Input(view);
 
     /*
     **	Process input

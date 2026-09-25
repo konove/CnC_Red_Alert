@@ -95,7 +95,7 @@ class SidebarClass : public PowerClass {
   void Init_Theater(TheaterType theater) override;  // Theater-specific inits
   static void Reload_Sidebar();  // Loads house-specific sidebar art
 
-  void AI(KeyNumType& input, int x, int y) override;
+  void AI(KeyNumber& input, int x, int y) override;
   void Draw_It(PixelView& view, bool complete) override;
   void Refresh_Cells(CELL cell, std::span<const int16_t> list) override;
 
@@ -103,7 +103,7 @@ class SidebarClass : public PowerClass {
   bool Abandon_Production(RTTIType type, int factory);
   bool Activate(int control);
   bool Add(RTTIType type, int ID);
-  bool Sidebar_Click(KeyNumType& input, int x, int y);
+  bool Sidebar_Click(KeyNumber& input, int x, int y);
   void Recalc();
   bool Factory_Link(int factory, RTTIType type, int id);
 
@@ -122,7 +122,7 @@ class SidebarClass : public PowerClass {
       int Index{0};
 
      protected:
-      bool Action(unsigned flags, KeyNumType& key) override;
+      bool Action(unsigned flags, KeyNumber& key) override;
     };
 
    public:
@@ -132,7 +132,7 @@ class SidebarClass : public PowerClass {
     bool Add(RTTIType type, int ID);
     bool Abandon_Production(int factory);
     bool Scroll(bool up);
-    bool AI(KeyNumType& input, int x, int y);
+    bool AI(KeyNumber& input, int x, int y);
     void Draw_It(PixelView& view, bool complete);
     static void One_Time(int id);
     void Init_Clear();
@@ -329,7 +329,7 @@ class SidebarClass : public PowerClass {
                       (kSideHeight - 1) * 2, kLeftUp) {}
 
    protected:
-    bool Action(unsigned flags, KeyNumType& key) override;
+    bool Action(unsigned flags, KeyNumber& key) override;
   };
 
   /*

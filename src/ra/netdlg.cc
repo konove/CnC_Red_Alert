@@ -1517,7 +1517,7 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input = KN_NONE;
+  KeyNumber input = KN_NONE;
   const int cbox_x[] = {
       d_color_x,
       d_color_x + d_color_w,
@@ -4217,7 +4217,7 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input = KN_NONE;
+  KeyNumber input = KN_NONE;
 
   int64_t ok_timer = 0;  // for timing OK button
   int index = 0;         // index for rejecting a player

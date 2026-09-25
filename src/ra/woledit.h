@@ -41,7 +41,7 @@ class WOLEditClass : public EditClass {
       : EditClass(id, text, max_len, flags, x, y, w, h, style) {}
 
  protected:
-  bool Action(unsigned flags, KeyNumType& key) override;  //	Override of base
+  bool Action(unsigned flags, KeyNumber& key) override;  //	Override of base
   void Draw_Text(PixelView& view,
                  const char* text) override;  //	Override of base
 };

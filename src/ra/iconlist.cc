@@ -506,7 +506,7 @@ void IconListClass::Draw_Entry(PixelView& view, int index, int x, int y,
 }
 
 //***********************************************************************************************
-bool IconListClass::Action(unsigned flags, KeyNumType& key) {
+bool IconListClass::Action(unsigned flags, KeyNumber& key) {
   //	Overriding of function is for the sake of MultiSelecting only.
   if ((iSelectType == 2) && (!(flags & kLeftRelease)) &&
       (!(flags & kKeyboard))) {

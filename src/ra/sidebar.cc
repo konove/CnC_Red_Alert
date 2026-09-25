@@ -814,7 +814,7 @@ void SidebarClass::Draw_It(PixelView& view, bool complete) {
  *   12/31/1994 JLB : Uses mouse coordinate parameters. * 06/27/1995 JLB : <TAB>
  *key toggles sidebar.                                               *
  *=============================================================================================*/
-void SidebarClass::AI(KeyNumType& input, int x, int y) {
+void SidebarClass::AI(KeyNumber& input, int x, int y) {
   const bool redraw = false;
 
   /*
@@ -1386,7 +1386,7 @@ void SidebarClass::StripClass::Flag_To_Redraw() {
  * HISTORY: * 12/31/1994 JLB : Created. * 12/31/1994 JLB : Uses mouse coordinate
  *parameters.                                        *
  *=============================================================================================*/
-bool SidebarClass::StripClass::AI(KeyNumType& input, int /*unused*/,
+bool SidebarClass::StripClass::AI(KeyNumber& input, int /*unused*/,
                                   int /*unused*/) {
   bool redraw = false;
 
@@ -1961,7 +1961,7 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
  *to regular event type.                             *
  *=============================================================================================*/
 bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
-                                                   KeyNumType& key) {
+                                                   KeyNumber& key) {
   const int index = Strip->TopIndex + Index;
   const RTTIType otype = base::At(Strip->Buildables, index).BuildableType;
   const int oid = base::At(Strip->Buildables, index).BuildableID;
@@ -2205,7 +2205,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
  * HISTORY: * 03/28/1995 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::SBGadgetClass::Action(unsigned /*flags*/,
-                                         KeyNumType& /*key*/) {
+                                         KeyNumber& /*key*/) {
   TheMap().Help_Text(TXT_NONE);
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
   return true;

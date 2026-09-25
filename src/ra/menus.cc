@@ -367,8 +367,8 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
       for (idx = 0; idx < base::At(menuptr, kItemshigh); idx++) {
         if (toupper(*base::At(
                 text, base::ToSize(Select_To_Entry(idx, field, index)))) ==
-            toupper(KeyboardClass::To_ASCII(
-                static_cast<KeyNumType>(key & 0xFFU)))) {
+            toupper(
+                KeyboardClass::To_ASCII(static_cast<KeyNumber>(key & 0xFFU)))) {
           newitem = select = idx;
           break;
         }
@@ -729,7 +729,7 @@ int Main_Menu(int32_t /*unused*/) {
     /*
     **	Get and process player input.
     */
-    const KeyNumType input = commands->Input(view);  // input from user
+    const KeyNumber input = commands->Input(view);  // input from user
 
     /*
     **	Dispatch the input to be processed.

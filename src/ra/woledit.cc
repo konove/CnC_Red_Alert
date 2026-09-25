@@ -62,7 +62,7 @@ void WOLEditClass::Draw_Text(PixelView& view, const char* text) {
 // key.) 	Again, I'm not about to change the base class directly, as I'm
 // trying to have as minimal an affect as possible on 	the current game code.
 // -ajw
-bool WOLEditClass::Action(unsigned flags, KeyNumType& key) {
+bool WOLEditClass::Action(unsigned flags, KeyNumber& key) {
   //	(Mostly duplicated from base class ::Action)
   /*	For some painful reason, IsReadOnly is private in the base class, so I
      can't do the following. For this reason, don't make a WOLEditClass edit box
@@ -105,13 +105,13 @@ bool WOLEditClass::Action(unsigned flags, KeyNumType& key) {
 
     } else {
       const auto ascii =
-          static_cast<KeyASCIIType>(KeyboardClass::To_ASCII(key) & 0xff);
+          static_cast<KeyAscii>(KeyboardClass::To_ASCII(key) & 0xff);
 
       //
       // Allow numeric keypad presses to map to ascii numbers
       //
       if ((key & WWKEY_VK_BIT) && ascii >= '0' && ascii <= '9') {
-        key = static_cast<KeyNumType>(key & ~WWKEY_VK_BIT);
+        key = static_cast<KeyNumber>(key & ~WWKEY_VK_BIT);
         if (((!(flags & kLeftRelease)) && (!(flags & kRightRelease))) &&
             Handle_Key(ascii)) {
           flags &= ~kKeyboard;

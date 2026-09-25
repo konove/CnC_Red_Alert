@@ -272,7 +272,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     **	Get user input.
     */
     TheGameState().tab_key_pressed() = false;
-    const KeyNumType input = commands->Input(view);
+    const KeyNumber input = commands->Input(view);
 
     /*
     **	The first time through the processing loop, set the edit
@@ -294,7 +294,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     //		*/
     /*		if (input == KN_RETURN || input == (kButtonConnect|KN_BUTTON)) {
                             ToggleClass * toggle = NULL;
-                            input = (KeyNumType)(kButtonConnect|KN_BUTTON);
+                            input = (KeyNumber)(kButtonConnect|KN_BUTTON);
                             CancelBtn.Turn_Off();
                             toggle =
        (ToggleClass*)commands->Extract_Gadget(kButtonConnect); if (toggle !=

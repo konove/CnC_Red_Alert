@@ -168,7 +168,7 @@ static void CyclePalette() {
 // erased from the hidden page first so the next render draws it afresh.
 static void ProcessInput() {
   TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
-  KeyNumType input = KN_NONE;
+  KeyNumber input = KN_NONE;
   int x = 0;
   int y = 0;
   TheMap().Input(input, x, y);

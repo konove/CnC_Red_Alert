@@ -71,7 +71,7 @@ class PowerClass : public RadarClass {
 
   void Init_Clear() override;  // Clears all to known state
   void Draw_It(PixelView& view, bool complete = false) override;
-  void AI(KeyNumType& input, int x, int y) override;
+  void AI(KeyNumber& input, int x, int y) override;
   void Refresh_Cells(CELL cell, std::span<const int16_t> list) override;
   //		virtual void Must_Redraw_Sidebar();
 
@@ -94,7 +94,7 @@ class PowerClass : public RadarClass {
               true) {}
 
    protected:
-    bool Action(unsigned flags, KeyNumType& key) override;
+    bool Action(unsigned flags, KeyNumber& key) override;
     friend class PowerClass;
   };
 

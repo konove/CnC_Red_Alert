@@ -72,7 +72,7 @@ DirectionDial::DirectionDial(const int id, const int x, const int y,
   }
 }
 
-bool DirectionDial::Action(const unsigned flags, KeyNumType& key) {
+bool DirectionDial::Action(const unsigned flags, KeyNumber& key) {
   // We might end up clearing the event bits. Make sure that the sticky
   // process is properly updated anyway: it is what makes StuckOn this dial
   // from the press to the release.

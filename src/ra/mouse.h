@@ -69,7 +69,7 @@ class MouseClass : public ScrollClass {
   void One_Time() override;    // One-time inits
   void Init_Clear() override;  // Clears all to known state
 
-  void AI(KeyNumType& input, int x, int y) override;
+  void AI(KeyNumber& input, int x, int y) override;
   bool Override_Mouse_Shape(MouseType mouse, bool wsmall = false) override;
   void Revert_Mouse_Shape() override;
   [[nodiscard]] MouseType Get_Mouse_Shape() const override {

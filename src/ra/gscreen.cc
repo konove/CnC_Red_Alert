@@ -263,7 +263,7 @@ void GScreenClass::Flag_To_Redraw(bool complete) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Input(KeyNumType& key, int& x, int& y) {
+void GScreenClass::Input(KeyNumber& key, int& x, int& y) {
   key = TheKeyboard().Check();
 
   x = KeyboardClass::Mouse_X();

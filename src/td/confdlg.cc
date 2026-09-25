@@ -183,7 +183,7 @@ bool ConfirmationClass::Process(const char* string) {
     /*
     **	Get user input.
     */
-    const KeyNumType input = yesbtn.Input(view);
+    const KeyNumber input = yesbtn.Input(view);
 
     /*
     **	Process Input.

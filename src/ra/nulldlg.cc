@@ -466,7 +466,7 @@ int Test_Null_Modem() {
     /*
     ** Get user input
     */
-    const KeyNumType input = commands->Input(view);
+    const KeyNumber input = commands->Input(view);
 
     /*
     ** Process input
@@ -689,7 +689,7 @@ static int Reconnect_Null_Modem() {
     /*
     ** Get user input
     */
-    const KeyNumType input = commands->Input(view);
+    const KeyNumber input = commands->Input(view);
 
     /*
     ** Process input
@@ -1059,7 +1059,7 @@ GameType Select_Serial_Dialog() {
     /*
     ** Get user input
     */
-    const KeyNumType input = commands->Input(view);
+    const KeyNumber input = commands->Input(view);
 
     /*
     ** Process input
@@ -1496,7 +1496,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumType input = commands->Input(view);
+    const KeyNumber input = commands->Input(view);
 
     /*
     ---------------------------- Process input ----------------------------
@@ -2102,7 +2102,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     /*
     ** Get user input
     */
-    KeyNumType input = commands->Input(view);
+    KeyNumber input = commands->Input(view);
 
     if (firsttime) {
       //			port_edt.Set_Focus();
@@ -2730,7 +2730,7 @@ int Com_Scenario_Dialog(bool skirmish) {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input = KN_NONE;
+  KeyNumber input = KN_NONE;
 
   const int playertabs[] = {77 * 2};     // tabs for player list box
   const int optiontabs[] = {8};          // tabs for player list box
@@ -5074,7 +5074,7 @@ int Com_Show_Scenario_Dialog() {
     */
     messages_have_focus = TheSession().Messages.Has_Edit_Focus();
     const bool droplist_is_dropped = housebtn.IsDropped;
-    KeyNumType input = commands->Input(view);
+    KeyNumber input = commands->Input(view);
 
     /*
     ** Sort out the input focus between the name edit box and the message system
@@ -6236,7 +6236,7 @@ static int Phone_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    KeyNumType input = commands->Input(view);
+    KeyNumber input = commands->Input(view);
 
     if (firsttime) {
       numedit.Set_Focus();
@@ -6786,7 +6786,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     /*
     ........................... Get user input ............................
     */
-    KeyNumType input = commands->Input(view);
+    KeyNumber input = commands->Input(view);
 
     if (firsttime) {
       nameedit.Set_Focus();

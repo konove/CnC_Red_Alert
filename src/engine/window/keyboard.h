@@ -30,7 +30,7 @@
 union SDL_Event;
 
 // Modifier and state bits combined with a key number. They are flags, not an
-// enumeration, so they are unsigned bit masks that mix with KeyNumType freely.
+// enumeration, so they are unsigned bit masks that mix with KeyNumber freely.
 // The key code itself fills the low byte, which is why a scancode above 0xFF
 // cannot be represented.
 inline constexpr uint32_t WWKEY_SHIFT_BIT = 0x100;
@@ -290,7 +290,7 @@ inline int KN_To_VK(int key) { return key; }
 // keys. A character with modifier bits is a bit pattern rather than one of
 // these values, so the enum stays unscoped.
 // NOLINTNEXTLINE(cppcoreguidelines-use-enum-class)
-enum KeyASCIIType {
+enum KeyAscii {
   KA_NONE = 0,
   KA_MORE = 1,
   KA_SETBKGDCOL = 2,
@@ -422,7 +422,7 @@ enum KeyASCIIType {
 // and right modifier keys, KN_DELETE and KN_E_DELETE, and each diagonal with
 // its navigation key. KN_E_* name the numeric keypad's cursor keys.
 // NOLINTNEXTLINE(cppcoreguidelines-use-enum-class)
-enum KeyNumType {
+enum KeyNumber {
   KN_NONE = 0,
 
   KN_0 = VK_0,
@@ -542,7 +542,7 @@ enum KeyNumType {
   KN_BUTTON = WWKEY_BTN_BIT,
 };
 
-// Returns the KeyNumType that GadgetClass::Input() reports when the gadget with
+// Returns the KeyNumber that GadgetClass::Input() reports when the gadget with
 // the given ID is triggered. The KN_BUTTON bit distinguishes a gadget event
 // from a real keypress, letting both share one switch on the input value.
 //
@@ -555,31 +555,30 @@ enum KeyNumType {
 //     case ButtonKey(BUTTON_CANCEL):
 //       ...
 //   }
-constexpr KeyNumType ButtonKey(const int id) {
+constexpr KeyNumber ButtonKey(const int id) {
   // A gadget ID is not a key code, so the value never names an enumerator.
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
-  return static_cast<KeyNumType>(static_cast<uint32_t>(id) | KN_BUTTON);
+  return static_cast<KeyNumber>(static_cast<uint32_t>(id) | KN_BUTTON);
 }
 
 // A key number is a key code in the low bits with the KN_*_BIT modifier and
 // release bits above it, so a combined or masked value rarely names an
-// enumerator. These operators define that representation for KeyNumType in
+// enumerator. These operators define that representation for KeyNumber in
 // place of the games' generic enum operators, and are the only place the
 // analyzer's named-enumerator model of the type is set aside.
-constexpr KeyNumType operator|(const KeyNumType a,
-                               const KeyNumType b) noexcept {
+constexpr KeyNumber operator|(const KeyNumber a, const KeyNumber b) noexcept {
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
-  return static_cast<KeyNumType>(static_cast<uint32_t>(a) |
-                                 static_cast<uint32_t>(b));
+  return static_cast<KeyNumber>(static_cast<uint32_t>(a) |
+                                static_cast<uint32_t>(b));
 }
-inline KeyNumType operator&(const KeyNumType a, const KeyNumType b) noexcept {
+inline KeyNumber operator&(const KeyNumber a, const KeyNumber b) noexcept {
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
-  return static_cast<KeyNumType>(static_cast<uint32_t>(a) &
-                                 static_cast<uint32_t>(b));
+  return static_cast<KeyNumber>(static_cast<uint32_t>(a) &
+                                static_cast<uint32_t>(b));
 }
-inline KeyNumType operator~(const KeyNumType a) noexcept {
+inline KeyNumber operator~(const KeyNumber a) noexcept {
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
-  return static_cast<KeyNumType>(~static_cast<uint32_t>(a));
+  return static_cast<KeyNumber>(~static_cast<uint32_t>(a));
 }
 
 #endif  // CNC_RED_ALERT_ENGINE_WINDOW_KEYBOARD_H_

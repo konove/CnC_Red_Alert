@@ -970,7 +970,7 @@ int MessageListClass::Manage() {
  * HISTORY:                                                                *
  *   05/05/1995 BRR : Created.                                             *
  *=========================================================================*/
-int MessageListClass::Input(KeyNumType& input) {
+int MessageListClass::Input(KeyNumber& input) {
   int retcode = 0;
 
   //------------------------------------------------------------------------
@@ -993,13 +993,13 @@ int MessageListClass::Input(KeyNumType& input) {
   //------------------------------------------------------------------------
   if (IsEdit) {
     const auto ascii =
-        static_cast<KeyASCIIType>(KeyboardClass::To_ASCII(input) & 0x00ff);
+        static_cast<KeyAscii>(KeyboardClass::To_ASCII(input) & 0x00ff);
 
     /*
     ** Allow numeric keypad presses to map to ascii numbers
     */
     if (input & WWKEY_VK_BIT && ascii >= '0' && ascii <= '9') {
-      input = static_cast<KeyNumType>(input & ~WWKEY_VK_BIT);
+      input = static_cast<KeyNumber>(input & ~WWKEY_VK_BIT);
 
     } else {
       /*
@@ -1010,7 +1010,7 @@ int MessageListClass::Input(KeyNumType& input) {
           (input & 0xff) == (KN_RETURN & 0xff) ||
           (input & 0xff) == (KN_BACKSPACE & 0xff) ||
           (input & 0xff) == (KN_ESC & 0xff)) {
-        // ascii = (KeyASCIIType)(TheKeyboard().To_ASCII(input));
+        // ascii = (KeyAscii)(TheKeyboard().To_ASCII(input));
       } else {
         input = KN_NONE;
         return 0;

@@ -65,18 +65,18 @@ class ByteStream;
 /*
 **	Interface class to the keyboard. This insulates the game from library
 *vagaries. Most *	notable being the return values are declared as "int" in
-*the library whereas C&C *	expects it to be of KeyNumType.
+*the library whereas C&C *	expects it to be of KeyNumber.
 */
 class Keyboard {
  public:
-  static KeyNumType Get() { return static_cast<KeyNumType>(Get_Key_Num()); }
-  static KeyNumType Check() { return static_cast<KeyNumType>(Check_Key_Num()); }
-  static KeyASCIIType To_ASCII(KeyNumType key) {
-    return static_cast<KeyASCIIType>(KN_To_KA(key));
+  static KeyNumber Get() { return static_cast<KeyNumber>(Get_Key_Num()); }
+  static KeyNumber Check() { return static_cast<KeyNumber>(Check_Key_Num()); }
+  static KeyAscii To_ASCII(KeyNumber key) {
+    return static_cast<KeyAscii>(KN_To_KA(key));
   }
   static void Clear() { Clear_KeyBuffer(); }
-  static void Stuff(KeyNumType /*key*/) {}
-  static bool Down(KeyNumType key) { return Key_Down(key); }
+  static void Stuff(KeyNumber /*key*/) {}
+  static bool Down(KeyNumber key) { return Key_Down(key); }
   static int Mouse_X() { return Get_Mouse_X(); }
   static int Mouse_Y() { return Get_Mouse_Y(); }
 };

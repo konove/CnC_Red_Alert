@@ -466,7 +466,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
       Show_Mouse();
     }
 
-    const KeyNumType input = buttons->Input(view);
+    const KeyNumber input = buttons->Input(view);
     switch (static_cast<int>(input)) {
       case ButtonKey(200):
         TheWorld().whom() = list.Current_Object().House;

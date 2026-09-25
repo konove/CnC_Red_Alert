@@ -977,7 +977,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   //........................................................................
   // Other misc variables
   //........................................................................
-  KeyNumType input = KN_NONE;  // for user input
+  KeyNumber input = KN_NONE;  // for user input
   int x = 0;
   int y = 0;  // for map input
   RetcodeType rc = RC_NORMAL;

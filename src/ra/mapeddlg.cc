@@ -809,7 +809,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Get user input
       */
-      const KeyNumType input = commands->Input(view);
+      const KeyNumber input = commands->Input(view);
 
       /*
       **	Process input
@@ -1370,7 +1370,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Process user input
       */
-      const KeyNumType input = commands->Input(view);  // user input
+      const KeyNumber input = commands->Input(view);  // user input
 
       /*
       **	Normal button processing: This is done when the mouse button is
@@ -2313,7 +2313,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Get user input
       */
-      const KeyNumType input = commands->Input(view);
+      const KeyNumber input = commands->Input(view);
 
       /*
       **	Process input
@@ -2807,7 +2807,7 @@ int MapEditClass::Load_Scenario() {
       /*
       **	Get user input
       */
-      const KeyNumType input = commands->Input(view);
+      const KeyNumber input = commands->Input(view);
 
       /*
       **	Process input

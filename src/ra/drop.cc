@@ -121,7 +121,7 @@ void DropListClass::Set_Selected_Index(int index) {
 
 void DropListClass::Clear_Focus() { Collapse(); }
 
-void DropListClass::Peer_To_Peer(unsigned flags, KeyNumType& key,
+void DropListClass::Peer_To_Peer(unsigned flags, KeyNumber& key,
                                  ControlClass& whom) {
   if ((&whom == &DropButton) && (flags & kLeftRelease)) {
     if (IsDropped) {

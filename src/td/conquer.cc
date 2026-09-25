@@ -215,7 +215,7 @@ static TrapObjectType trap_object = {nullptr};
 **	Function prototypes for this module **
 *****************************************/
 #ifndef DEMO
-static void Message_Input(KeyNumType& input);
+static void Message_Input(KeyNumber& input);
 #endif
 static bool Color_Cycle();
 static bool Map_Edit_Loop();
@@ -534,7 +534,7 @@ void Main_Game() {
  *control hotkeys.                                    *
  *=============================================================================================*/
 extern int DebugColour;
-void Keyboard_Process(KeyNumType& input) {
+void Keyboard_Process(KeyNumber& input) {
   ObjectClass* obj = nullptr;
   int index = 0;
 
@@ -555,7 +555,7 @@ void Keyboard_Process(KeyNumType& input) {
   ** Use WWKEY values because KN values have WWKEY_VK_BIT or'd in with them
   ** and we need WWKEY_VK_BIT to still be set if it is.
   */
-  const auto plain = static_cast<KeyNumType>(
+  const auto plain = static_cast<KeyNumber>(
       input & ~(WWKEY_SHIFT_BIT | WWKEY_ALT_BIT | WWKEY_CTRL_BIT));
 
   if constexpr (config::kCheatKeysEnabled) {
@@ -862,7 +862,7 @@ void Keyboard_Process(KeyNumType& input) {
  * HISTORY: * 05/22/1995 BRR : Created. * 03/26/1995  ST : Modified to break up
  *longer messages into multiple packets               *
  *=============================================================================================*/
-static void Message_Input(KeyNumType& input) {
+static void Message_Input(KeyNumber& input) {
   char txt[MAX_MESSAGE_LENGTH + 12];
   int sent_so_far = 0;
   uint16_t magic_number = 0;
@@ -1592,7 +1592,7 @@ static void Sync_Delay() {
 
     if (TheGameState().special_dialog() == SDLG_NONE) {
       TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
-      KeyNumType input = KN_NONE;
+      KeyNumber input = KN_NONE;
       int x = 0;
       int y = 0;
       TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
@@ -1622,7 +1622,7 @@ static void Sync_Delay() {
  *=============================================================================================*/
 
 bool Main_Loop() {
-  KeyNumType input = KN_NONE;  // Player input.
+  KeyNumber input = KN_NONE;  // Player input.
   int x = 0;
   int y = 0;
 
@@ -1987,7 +1987,7 @@ bool Map_Edit_Loop() {
   /*
   **	Get user input (keys, mouse clicks).
   */
-  KeyNumType input = KN_NONE;
+  KeyNumber input = KN_NONE;
 
   int x = 0;
   int y = 0;

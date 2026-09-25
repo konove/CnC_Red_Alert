@@ -69,7 +69,7 @@ class ByteStream;
 /*
 **	Interface class to the keyboard. This insulates the game from library
 *vagaries. Most *	notable being the return values are declared as "int" in
-*the library whereas C&C *	expects it to be of KeyNumType.
+*the library whereas C&C *	expects it to be of KeyNumber.
 */
 struct KeyboardClass : public KeyBuffer {
   /*
@@ -83,13 +83,13 @@ struct KeyboardClass : public KeyBuffer {
   // These deliberately hide the library's int-returning versions; narrowing to
   // the game's key enums is the only reason this interface class exists.
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  KeyNumType Get() { return static_cast<KeyNumType>(KeyBuffer::Get()); }
+  KeyNumber Get() { return static_cast<KeyNumber>(KeyBuffer::Get()); }
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  KeyNumType Check() { return static_cast<KeyNumType>(KeyBuffer::Check()); }
-  static KeyASCIIType To_ASCII(KeyNumType key) {
-    return static_cast<KeyASCIIType>(KeyBuffer::To_ASCII(key));
+  KeyNumber Check() { return static_cast<KeyNumber>(KeyBuffer::Check()); }
+  static KeyAscii To_ASCII(KeyNumber key) {
+    return static_cast<KeyAscii>(KeyBuffer::To_ASCII(key));
   }
-  static bool Down(KeyNumType key) { return KeyBuffer::Down(key); }
+  static bool Down(KeyNumber key) { return KeyBuffer::Down(key); }
 
   static int Mouse_X() { return Get_Mouse_X(); }
   static int Mouse_Y() { return Get_Mouse_Y(); }

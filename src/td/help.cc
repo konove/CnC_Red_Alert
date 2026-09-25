@@ -164,7 +164,7 @@ std::span<const int16_t> HelpClass::Overlap_List() const {
  * HISTORY: * 11/18/1994 JLB : Created. * 12/31/1994 JLB : Uses mouse
  *coordinates as passed in.                                     *
  *=============================================================================================*/
-void HelpClass::AI(KeyNumType& key, int x, int y) {
+void HelpClass::AI(KeyNumber& key, int x, int y) {
   /*
   **	If there is any keyboard input, then the help text goes away.
   */

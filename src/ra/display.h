@@ -128,7 +128,7 @@ class DisplayClass : public MapClass {
   /*
   **	General display/map/interface support functionality.
   */
-  void AI(KeyNumType& input, int x, int y) override;
+  void AI(KeyNumber& input, int x, int y) override;
   void Draw_It(PixelView& view, bool forced = false) override;
 
   /*
@@ -294,7 +294,7 @@ class DisplayClass : public MapClass {
               true) {}
 
    protected:
-    bool Action(unsigned flags, KeyNumType& key) override;
+    bool Action(unsigned flags, KeyNumber& key) override;
   };
   friend class TacticalClass;
 

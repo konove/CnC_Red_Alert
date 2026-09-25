@@ -4190,7 +4190,7 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
           TheScenario().FadeTimer.Set(kGrayFadeTime);
         }
         if (TheMap().IsTargettingMode == kSpcChrono2) {
-          KeyNumType input = KN_RMOUSE;
+          KeyNumber input = KN_RMOUSE;
           TheMap().AI(input, 0, 0);
         }
       }

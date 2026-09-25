@@ -100,7 +100,7 @@ ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-bool ControlClass::Action(unsigned flags, KeyNumType& key) {
+bool ControlClass::Action(unsigned flags, KeyNumber& key) {
   /*
   **	Only if the flags indicate that a recognized action has occurred, do the
   **	normal processing of this gadget and set return value to the gadget ID.

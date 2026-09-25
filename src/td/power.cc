@@ -289,7 +289,7 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
  * HISTORY: * 12/20/1994 JLB : Created. * 12/31/1994 JLB : Uses mouse coordinate
  *parameters.                                        *
  *=============================================================================================*/
-void PowerClass::AI(KeyNumType& input, int x, int y) {
+void PowerClass::AI(KeyNumber& input, int x, int y) {
   //	if (!IsActive) {
   //		IsActive = true;
   //		IsToRedraw = true;
@@ -452,7 +452,7 @@ int PowerClass::Power_Height(int value) const {
  *                                                                                             *
  * HISTORY: * 08/07/1995 JLB : Created. *
  *=============================================================================================*/
-bool PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumType& key) {
+bool PowerClass::PowerButtonClass::Action(unsigned flags, KeyNumber& key) {
   if (!TheMap().IsSidebarActive) {
     return false;
   }

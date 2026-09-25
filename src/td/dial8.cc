@@ -160,7 +160,7 @@ Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
  * HISTORY:                                                                *
  *   02/06/1995 BR : Created.                                              *
  *=========================================================================*/
-bool Dial8Class::Action(unsigned flags, KeyNumType& key) {
+bool Dial8Class::Action(unsigned flags, KeyNumber& key) {
   static int is_sel = 0;
 
   /*

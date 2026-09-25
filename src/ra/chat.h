@@ -28,7 +28,7 @@
 // The two session types put the text on the wire differently -- a serial
 // packet or an IPX global packet -- but both build the same message from the
 // same edit buffer.
-void Message_Input(KeyNumType& input);
+void Message_Input(KeyNumber& input);
 
 // Services the IPX connection and dispatches any global packet that arrived:
 // sign-offs, player chat, or a game-setup packet.

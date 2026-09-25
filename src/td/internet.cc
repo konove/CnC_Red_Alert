@@ -485,7 +485,7 @@ bool Do_The_Internet_Menu_Thang() {
 
   char users_name[256];
   const int buffer_len = sizeof(users_name);
-  KeyNumType input = KN_NONE;
+  KeyNumber input = KN_NONE;
 
   if (!TheSpecial().IsFromWChat && !TheGameState().spawned_from_chat()) {
     /*

@@ -217,7 +217,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   //------------------------------------------------------------------------
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumType input = KN_NONE;
+  KeyNumber input = KN_NONE;
 
   Stopwatch<SystemTickSource> lastclick_timer;
   int lastclick_idx = 0;  // index of item last clicked on

@@ -99,7 +99,7 @@ ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-bool ControlClass::Action(unsigned flags, KeyNumType& key) {
+bool ControlClass::Action(unsigned flags, KeyNumber& key) {
   /*
   **	If there is a peer link established, inform that gadget of this
   **	action call.

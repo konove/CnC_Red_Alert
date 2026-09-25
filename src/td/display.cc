@@ -974,7 +974,7 @@ void DisplayClass::Cursor_Mark(CELL pos, bool on) {
  *Takes mouse coordinates as parameters.                                   *
  *   06/27/1995 JLB : Breaks out of rubber band mode if mouse leaves map. *
  *=============================================================================================*/
-void DisplayClass::AI(KeyNumType& input, int x, int y) {
+void DisplayClass::AI(KeyNumber& input, int x, int y) {
   if (IsRubberBand &&
       (Get_Mouse_X() < TacPixelX || Get_Mouse_Y() < TacPixelY ||
        Get_Mouse_X() >= TacPixelX + Lepton_To_Pixel(TacLeptonWidth) ||
@@ -2792,7 +2792,7 @@ void DisplayClass::Refresh_Band() {
  *                                                                                             *
  * HISTORY: * 02/17/1995 JLB : Created. *
  *=============================================================================================*/
-bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumType& key) {
+bool DisplayClass::TacticalClass::Action(unsigned flags, KeyNumber& key) {
   int x = 0;
   int y = 0;  // Sub cell pixel coordinates.
   ObjectClass* object = nullptr;

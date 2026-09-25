@@ -542,7 +542,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
   display = REDRAW_ALL;  // redraw level
   bProcess = true;       // process while true
-  KeyNumType input = KN_NONE;
+  KeyNumber input = KN_NONE;
 
   DWORD timeWaitingToStartTimeout = 0;  //	Set when the wait begins.
 

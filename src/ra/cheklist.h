@@ -91,7 +91,7 @@ class CheckListClass : public ListClass {
   static constexpr int kUncheckChar = ' ';
 
  protected:
-  bool Action(unsigned flags, KeyNumType& key) override;
+  bool Action(unsigned flags, KeyNumber& key) override;
   void Draw_Entry(PixelView& view, int index, int x, int y, int width,
                   bool selected) override;
 

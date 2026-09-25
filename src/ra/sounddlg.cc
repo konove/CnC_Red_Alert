@@ -366,7 +366,7 @@ void SoundControlsClass::Process() {
     /*
     **	Get user input.
     */
-    const KeyNumType input = optionsbtn->Input(view);
+    const KeyNumber input = optionsbtn->Input(view);
 
     /*
     **	Process Input.

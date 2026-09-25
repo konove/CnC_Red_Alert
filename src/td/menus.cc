@@ -392,7 +392,7 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
       for (int menu_item = 0; menu_item < menu.item_count; menu_item++) {
         if (toupper(*base::At(text, base::ToSize(Select_To_Entry(
                                         menu_item, field, index)))) ==
-            toupper(Keyboard::To_ASCII(static_cast<KeyNumType>(key % 256)))) {
+            toupper(Keyboard::To_ASCII(static_cast<KeyNumber>(key % 256)))) {
           newitem = select = menu_item;
           break;
         }
@@ -608,7 +608,7 @@ int Main_Menu(int timeout) {
 #ifdef NEWMENU
   const bool expansions = Expansion_Present();
 #endif
-  KeyNumType input = KN_NONE;  // input from user
+  KeyNumber input = KN_NONE;  // input from user
   int retval = 0;    // return value
   int curbutton = 0;
 #ifdef NEWMENU

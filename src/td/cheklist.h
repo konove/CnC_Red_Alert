@@ -84,7 +84,7 @@ class CheckListClass : public ListClass {
   void Set_Read_Only(bool rdonly) { IsReadOnly = rdonly; }
 
  protected:
-  bool Action(unsigned flags, KeyNumType& key) override;
+  bool Action(unsigned flags, KeyNumber& key) override;
 
  private:
   bool IsReadOnly{false};

@@ -271,7 +271,7 @@ bool GaugeClass::Draw_Me(PixelView& view, bool forced) {
  *                                                                                             *
  * WARNINGS:   none * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-bool GaugeClass::Action(unsigned flags, KeyNumType& key) {
+bool GaugeClass::Action(unsigned flags, KeyNumber& key) {
   /*
   ** If there's no thumb on this gauge, it's a display-only device; ignore
   ** any input.

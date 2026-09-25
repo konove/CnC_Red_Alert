@@ -90,7 +90,7 @@ static void Handle_View(const int view, const int action) {
 // ever acted on once no matter how many clauses could match it. Message input
 // gets first refusal for that reason: a player typing chat must not also be
 // commanding their units.
-void Keyboard_Process(KeyNumType& input) {
+void Keyboard_Process(KeyNumber& input) {
   ObjectClass* obj = nullptr;
 
   // Don't do anything if there is not keyboard event.
@@ -108,9 +108,9 @@ void Keyboard_Process(KeyNumType& input) {
       unsigned{WWKEY_SHIFT_BIT} | unsigned{WWKEY_ALT_BIT} |
       unsigned{WWKEY_CTRL_BIT} | unsigned{WWKEY_VK_BIT};
   const auto plain =
-      static_cast<KeyNumType>(static_cast<unsigned>(input) & ~kModifierBits);
-  const auto key = static_cast<KeyNumType>(static_cast<unsigned>(input) &
-                                           ~unsigned{WWKEY_VK_BIT});
+      static_cast<KeyNumber>(static_cast<unsigned>(input) & ~kModifierBits);
+  const auto key = static_cast<KeyNumber>(static_cast<unsigned>(input) &
+                                          ~unsigned{WWKEY_VK_BIT});
 
   if constexpr (config::kCheatKeysEnabled) {
     if (TheDebugState().developer_mode()) {

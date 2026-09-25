@@ -164,7 +164,7 @@ GadgetClass::~GadgetClass() {
  *                                                                         *
  * HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
-bool GadgetClass::Clicked_On(KeyNumType& key, unsigned flags, int mousex,
+bool GadgetClass::Clicked_On(KeyNumber& key, unsigned flags, int mousex,
                              int mousey) {
   /*
   **	Set flags to match only those events that occur AND are being looked
@@ -347,7 +347,7 @@ void GadgetClass::Delete_List() {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-bool GadgetClass::Action(unsigned flags, KeyNumType& /*unused*/) {
+bool GadgetClass::Action(unsigned flags, KeyNumber& /*unused*/) {
   /*
   **	If any of the event flags are active, then this indicates that something
   *probably *	has changed the gadget. Flag the gadget to be redrawn. Also,
@@ -419,7 +419,7 @@ void GadgetClass::Draw_All(PixelView& view, bool forced) {
  *                                                                         *
  * HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
-KeyNumType GadgetClass::Input(PixelView& view) {
+KeyNumber GadgetClass::Input(PixelView& view) {
   int mousex = 0;
   int mousey = 0;
   bool forced = false;
@@ -438,7 +438,7 @@ KeyNumType GadgetClass::Input(PixelView& view) {
   /*
   **	Fetch any pending keyboard input.
   */
-  KeyNumType key = Keyboard::Check();
+  KeyNumber key = Keyboard::Check();
   if (key) {
     key = Keyboard::Get();
   }

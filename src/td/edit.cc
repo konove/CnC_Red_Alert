@@ -237,7 +237,7 @@ bool EditClass::Draw_Me(PixelView& view, bool forced) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-bool EditClass::Action(unsigned flags, KeyNumType& key) {
+bool EditClass::Action(unsigned flags, KeyNumber& key) {
   /*
   ** If this is a read-only edit box, it's a display-only device
   */
@@ -272,13 +272,13 @@ bool EditClass::Action(unsigned flags, KeyNumType& key) {
 
     } else {
       const auto ascii =
-          static_cast<KeyASCIIType>(Keyboard::To_ASCII(key) & 0x00ff);
+          static_cast<KeyAscii>(Keyboard::To_ASCII(key) & 0x00ff);
 
       /*
       ** Allow numeric keypad presses to map to ascii numbers
       */
       if (key & WWKEY_VK_BIT && ascii >= '0' && ascii <= '9') {
-        key = static_cast<KeyNumType>(key & ~WWKEY_VK_BIT);
+        key = static_cast<KeyNumber>(key & ~WWKEY_VK_BIT);
 
         if ((!(flags & kLeftRelease) && !(flags & kRightRelease)) &&
             Handle_Key(ascii)) {
@@ -398,7 +398,7 @@ void EditClass::Draw_Text(PixelView& view, const char* text) {
  *                                                                                             *
  * WARNINGS:   none * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-bool EditClass::Handle_Key(KeyASCIIType ascii) {
+bool EditClass::Handle_Key(KeyAscii ascii) {
   switch (ascii) {
     /*
     **	Handle the special case of a non-keyboard event. It is possible that
@@ -579,7 +579,7 @@ bool EditClass::Handle_Key(KeyASCIIType ascii) {
       *alphabetic *	character to upper case.
       */
       if (base::Any(EditFlags & UPPERCASE) && isalpha(ascii)) {
-        ascii = static_cast<KeyASCIIType>(toupper(ascii));
+        ascii = static_cast<KeyAscii>(toupper(ascii));
       }
 
       if ((!base::Any(EditFlags & NUMERIC) || !isdigit(ascii)) &&
