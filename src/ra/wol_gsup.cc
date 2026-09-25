@@ -3430,17 +3430,7 @@ bool WOL_GameSetupDialog::bNeedScenarioDownload() {
       // false.\n" );
       bRequestedScenarioDownload = false;
       return false;
-    } /*			if( !Session.ScenarioIsOfficial )
-                        {
-                                bRequestedScenarioDownload = true;
-                                return true;
-                        }
-                        else
-                        {
-//				debugprint( "bNeedScenarioDownload
-fatal\n" ); Fatal( "" );
-                        }
-*/
+    }
     //			debugprint( "Requesting download\n" );
     ////	ajw  Shouldn't be happening with am maps when i have am...?
     bRequestedScenarioDownload = true;  //	All maps are downloadable.

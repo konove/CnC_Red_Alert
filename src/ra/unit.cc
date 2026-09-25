@@ -4231,9 +4231,7 @@ FireErrorType UnitClass::Can_Fire(TARGET target, int which) const {
     /*
     **	If this unit cannot fire while moving, then bail.
     */
-    if (Class->IsNoFireWhileMoving /*!Class->IsTurretEquipped ||
-                                      Class->IsLockTurret*/
-        && Target_Legal(NavCom)) {
+    if (Class->IsNoFireWhileMoving && Target_Legal(NavCom)) {
       return FIRE_MOVING;
     }
 
