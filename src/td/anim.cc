@@ -68,7 +68,6 @@
 #include "base/array.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
-#include "engine/window/misc.h"
 #include "td/audio.h"
 #include "td/building.h"
 #include "td/cell.h"
@@ -97,6 +96,7 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
+#include "td/winstub.h"
 #include "td/world.h"
 
 /***********************************************************************************************

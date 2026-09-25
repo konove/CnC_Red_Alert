@@ -26,6 +26,9 @@ void Create_Main_Window(void* instance, int command_show, int width,
 void Load_Title_Screen(const char* name, PixelView* video_page,
                        std::span<unsigned char> palette);
 
+// Jolts the visible page up and down `shakes` times, for explosions.
+void ShakeScreen(int shakes);
+
 // Called when the window loses and regains the input focus.
 void Focus_Loss();
 void Focus_Restore();

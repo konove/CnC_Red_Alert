@@ -12,6 +12,10 @@
 // with `exit_code`.
 [[noreturn]] void EmergencyExit(int exit_code);
 
+// Cleans up the engine systems the game started (audio, mouse, tick timer)
+// before the process exits. ShutDown() calls it.
+void ShutDownEngine();
+
 // Releases everything the game set up - ShutDownEngine() and the Game, which
 // owns the video pages - so the caller only has to exit. Every way out of the
 // game goes through it: every return from main(), EmergencyExit(), the

@@ -33,7 +33,6 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/memflag.h"
 #include "engine/platform/timer.h"
-#include "engine/window/misc.h"
 #include "ra/game.h"
 #include "ra/input.h"
 #include "ra/palette.h"
@@ -125,7 +124,7 @@ void ShutDown() {
 }
 
 // The test that links this file defines RA_NO_ENTRY_POINT: it needs
-// ShutDown() and ShutDownEngine(), which the engine calls, but not main().
+// ShutDown() and ShutDownEngine(), but not main().
 #ifndef RA_NO_ENTRY_POINT
 
 // Hands what the command line asked for to whatever owns it. The screen

@@ -203,6 +203,7 @@
 #include "td/unit.h"
 #include "td/utracker.h"
 #include "td/vector.h"
+#include "td/winstub.h"
 #include "td/world.h"
 
 constexpr int kSamUnderground =

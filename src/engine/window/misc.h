@@ -16,24 +16,14 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// File: Leftovers of the Westwood 32-bit library's MISC.H (Scott K. Bowen,
-// August 1994) that the games still call: waiting a number of ticks, and the
-// two exit and screen-shake hooks the games define themselves.
+// File: WaitTicks(), what the games still call of the Westwood 32-bit
+// library's MISC.H (Scott K. Bowen, August 1994).
 
 #ifndef CNC_RED_ALERT_ENGINE_WINDOW_MISC_H_
 #define CNC_RED_ALERT_ENGINE_WINDOW_MISC_H_
 
-// Cleans up the library systems (audio, mouse, tick timer, ...) before the
-// process exits. Each game defines it in its startup.cc.
-void ShutDownEngine();
-
 // Waits `ticks` ticks of the 60 Hz tick timer, presenting a frame on each
 // pass so that the window stays responsive meanwhile. Needs InitTickTimer().
 void WaitTicks(int ticks);
-
-// Jolts the visible page up and down `shakes` times, for explosions. Only
-// Tiberian Dawn defines it (td/sdlstub.cc); Red Alert has its own
-// Shake_The_Screen() and must not call it.
-void ShakeScreen(int shakes);
 
 #endif  // CNC_RED_ALERT_ENGINE_WINDOW_MISC_H_

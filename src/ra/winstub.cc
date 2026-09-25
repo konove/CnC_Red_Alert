@@ -57,6 +57,7 @@
 #include "ra/network.h"
 #include "ra/palettes.h"
 #include "ra/screen.h"
+#include "ra/startup.h"
 
 unsigned long CCFocusMessage =
     WM_USER + 50;  // Private message for receiving application focus

@@ -78,7 +78,6 @@
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/misc.h"
 #include "engine/window/ww_mouse.h"
 #include "td/assets.h"
 #include "td/audio.h"
@@ -106,6 +105,7 @@
 #include "td/theme.h"
 #include "td/type.h"
 #include "td/vector.h"
+#include "td/winstub.h"
 #include "td/world.h"
 
 #define SCORETEXT_X 184

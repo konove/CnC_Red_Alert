@@ -50,6 +50,7 @@
 #include "td/input.h"
 #include "td/network.h"
 #include "td/screen.h"
+#include "td/startup.h"
 #include "td/tcpip.h"
 
 void output(short, short) {}
