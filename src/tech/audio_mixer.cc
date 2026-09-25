@@ -16,8 +16,8 @@
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
 #include "engine/base/unaligned.h"
+#include "engine/codec/aud_decoder.h"
 #include "engine/stream/byte_stream.h"
-#include "sdllib/aud_decoder.h"
 #include "tech/game_file.h"
 
 static int ChannelCount(const AudHeader& header) {

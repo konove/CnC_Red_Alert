@@ -31,7 +31,7 @@
 
 #include "absl/log/log.h"
 #include "engine/base/numeric.h"
-#include "sdllib/aud_decoder.h"
+#include "engine/codec/aud_decoder.h"
 #include "winvq/vqa32/adpcm_decoders.h"
 #include "winvq/vqa32/audio_output.h"
 #include "winvq/vqa32/audio_ring.h"

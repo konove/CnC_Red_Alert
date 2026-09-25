@@ -1,0 +1,290 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/LZW.CPP 1     3/03/97 10:25a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : LZW.CPP *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 08/28/96 *
+ *                                                                                             *
+ *                  Last Update : August 28, 1996 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: * Find_Child_Node -- Find a matching dictionary entry. *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#include "engine/codec/lzw.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <span>
+
+#include "engine/base/array.h"
+#include "engine/base/numeric.h"
+#include "engine/stream/span_sink.h"
+#include "engine/stream/span_source.h"
+
+LZWEngine::LZWEngine() { Reset(); }
+
+void LZWEngine::Reset() {
+  for (auto& i : dict) {
+    i.Make_Unused();
+  }
+}
+
+int LZWEngine::Compress(std::span<const std::byte> input,
+                        std::span<std::byte> output) {
+  SpanSource instraw(input);
+  SpanSink outpipe(output);
+
+  CodeType string_code = kEndOfStream;
+  CodeType next_code = kFirstCode;
+
+  string_code = 0;
+  // Only the low byte is read: the first code is a literal character.
+  if (instraw.Read(
+          std::as_writable_bytes(std::span(&string_code, 1)).first(1)) == 0) {
+    string_code = kEndOfStream;
+  }
+
+  for (;;) {
+    /*
+    **	Fetch a character from the source data stream. If exhausted,
+    **	then break out of the process loop so that the final code
+    **	can be written out.
+    */
+    unsigned char character = 0;
+    if (!instraw.ReadObject(character)) {
+      break;
+    }
+
+    /*
+    **	See if there is a match for the current code and current
+    **	character. A match indicates that there is already a
+    **	dictionary entry that fully represents the character
+    **	sequence.
+    */
+    const int index = Find_Child_Node(string_code, character);
+
+    /*
+    **	If a code match was found, then set the current code
+    **	value to this code value that represents the concatenation
+    **	of the previous code value and the current character.
+    */
+    if (index != -1 && base::At(dict, index).CodeValue != -1) {
+      string_code = base::At(dict, index).CodeValue;
+    } else {
+      /*
+      **	Since no exact match was found, then create a new code
+      **	entry that represents the current code and character
+      **	value concatenated. This presumes there is room in the
+      **	code table.
+      */
+      if (index != -1 && next_code <= kMaxCode) {
+        base::At(dict, index) = CodeClass(next_code, string_code, character);
+        next_code++;
+      }
+
+      /*
+      **	Output the code to the compression stream and reset the
+      **	current code value to match the current character. This
+      **	has the effect of clearing out the current character
+      **	sequence scan in preparation for building a new one. It
+      **	also ensures that the character will be written out.
+      */
+      outpipe.WriteObject(string_code);
+      string_code = character;
+    }
+  }
+
+  outpipe.WriteObject(string_code);
+  if (string_code != kEndOfStream) {
+    string_code = kEndOfStream;
+    outpipe.WriteObject(string_code);
+  }
+
+  return static_cast<int>(outpipe.bytes_written());
+}
+
+int LZWEngine::Uncompress(std::span<const std::byte> input,
+                          std::span<std::byte> output) {
+  SpanSource instraw(input);
+  SpanSink outpipe(output);
+
+  CodeType old_code = 0;
+  if (instraw.Read(std::as_writable_bytes(std::span(&old_code, 1))) == 0) {
+    return static_cast<int>(outpipe.bytes_written());
+  }
+  // The first code is always a literal byte.
+  if (old_code < 0 || old_code > 255) {
+    return static_cast<int>(outpipe.bytes_written());
+  }
+
+  auto character = static_cast<unsigned char>(old_code);
+  outpipe.WriteObject(character);
+
+  int count = 0;
+  CodeType new_code = 0;
+  CodeType next_code = kFirstCode;
+  for (;;) {
+    if (instraw.Read(std::as_writable_bytes(std::span(&new_code, 1))) == 0) {
+      break;
+    }
+
+    if (new_code == kEndOfStream) {
+      break;
+    }
+
+    // A valid stream only references defined entries or the one about to be
+    // defined. Anything else would walk dict out of bounds.
+    if (new_code < 0 || new_code > next_code) {
+      break;
+    }
+
+    /*
+    ** This code checks for the CHARACTER+STRING+CHARACTER+STRING+CHARACTER
+    ** case which generates an undefined code.  It handles it by decoding
+    ** the last code, and adding a single character to the end of the decode
+    *string.
+    */
+    if (new_code >= next_code) {
+      decode_stack[0] = character;
+      count = 1;
+      count += Decode_String(std::span(decode_stack).subspan(1), old_code);
+    } else {
+      count = Decode_String(decode_stack, new_code);
+    }
+
+    character = base::At(decode_stack, count - 1);
+    while (count > 0) {
+      --count;
+      outpipe.WriteObject(base::At(decode_stack, count));
+    }
+
+    /*
+    **	Add the new code sequence to the dictionary (presuming there is still
+    **	room).
+    */
+    if (next_code <= kMaxCode) {
+      base::At(dict, next_code) = CodeClass(next_code, old_code, character);
+      next_code++;
+    }
+    old_code = new_code;
+  }
+
+  return static_cast<int>(outpipe.bytes_written());
+}
+
+int LZWEngine::Make_LZW_Hash(CodeType code, unsigned char character) {
+  constexpr unsigned kShift = kBits - 8;
+  return static_cast<int>((uint32_t{character} << kShift) ^
+                          static_cast<uint32_t>(code));
+}
+
+int LZWEngine::Find_Child_Node(CodeType parent_code,
+                               unsigned char child_character) {
+  /*
+  **	Fetch the first try index for the code and character.
+  */
+  int hash_index = Make_LZW_Hash(parent_code, child_character);
+
+  /*
+  **	Base the hash-miss-try-again-displacement value on the current
+  **	index. [Shouldn't the value be some large prime number???].
+  */
+  int offset = 1;
+  if (hash_index != 0) {
+    offset = kTableSize - hash_index;
+  }
+
+  /*
+  **	Keep offsetting through the dictionary until an exact match is
+  **	found for the code and character specified.
+  */
+  const int initial = hash_index;
+  while (
+      !base::At(dict, hash_index).Is_Matching(parent_code, child_character)) {
+    /*
+    **	Stop searching if an unused index is found since this means that
+    **	a match doesn't exist in the table at all.
+    */
+    if (base::At(dict, hash_index).Is_Unused()) {
+      break;
+    }
+
+    /*
+    **	Bump the hash index to another value such that sequential bumps
+    **	will not result in the same index value until all of the table
+    **	has been scanned.
+    */
+    hash_index -= offset;
+    if (hash_index < 0) {
+      hash_index += kTableSize;
+    }
+
+    /*
+    **	If the entire table has been scanned and no match or unused
+    **	entry was found, then return a special value indicating this
+    **	condition.
+    */
+    if (initial == hash_index) {
+      hash_index = -1;
+      break;
+    }
+  }
+  return hash_index;
+}
+
+int LZWEngine::Decode_String(std::span<unsigned char> output, CodeType code) {
+  int count = 0;
+  while (code > 255) {
+    if (static_cast<std::size_t>(count) >= output.size()) {
+      return count;
+    }
+    base::At(output, base::ToSize(count)) = base::At(dict, code).CharValue;
+    count++;
+    code = base::At(dict, code).ParentCode;
+  }
+  if (static_cast<std::size_t>(count) >= output.size()) {
+    return count;
+  }
+  base::At(output, base::ToSize(count)) = static_cast<unsigned char>(code);
+  count++;
+  return count;
+}
+
+int LZW_Uncompress(std::span<const std::byte> input,
+                   std::span<std::byte> output) {
+  LZWEngine lzw;
+  return lzw.Uncompress(input, output);
+}
+
+int LZW_Compress(std::span<const std::byte> input,
+                 std::span<std::byte> output) {
+  LZWEngine lzw;
+  return lzw.Compress(input, output);
+}

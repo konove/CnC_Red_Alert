@@ -36,8 +36,8 @@
 
 #include "absl/base/attributes.h"
 #include "engine/base/installed.h"
+#include "engine/codec/aud_decoder.h"
 #include "engine/stream/byte_stream.h"
-#include "sdllib/aud_decoder.h"
 
 // What the VQA player installs to have its sound track mixed in first. It
 // fills device_buffer, which arrives silenced, in the device's format.

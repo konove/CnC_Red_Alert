@@ -15,8 +15,10 @@ target_sources(vqa32 PUBLIC
         FILES ${VQA32_HEADERS}
 )
 
-# vqaio.h and chunk_reader.cc use engine/stream/seek_origin.h.
-target_link_libraries(vqa32 PUBLIC engine_base engine_stream PRIVATE port sdllib absl::log)
+# vqaio.h and chunk_reader.cc use engine/stream/seek_origin.h. lcw_buffer.cc
+# and movie_loader.cc decode through engine/codec/lcw_uncompress.h and
+# aud_decoder.h.
+target_link_libraries(vqa32 PUBLIC engine_base engine_stream PRIVATE port sdllib engine_codec absl::log)
 
 find_package(SDL2 REQUIRED)
 target_link_libraries(vqa32 PRIVATE SDL2::SDL2)

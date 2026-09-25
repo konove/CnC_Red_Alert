@@ -16,12 +16,13 @@ target_sources(sdllib PUBLIC
 )
 
 find_package(SDL2 REQUIRED)
-# misc.cc includes engine/platform/timer.h.
-target_link_libraries(sdllib engine_base engine_platform SDL2::SDL2 absl::check absl::log absl::strings)
+# misc.cc includes engine/platform/timer.h. ww_mouse.cc calls
+# engine/codec/lcw_uncompress.h to decode the animated cursor shapes.
+target_link_libraries(sdllib engine_base engine_platform engine_codec SDL2::SDL2 absl::check absl::log absl::strings)
 
 # The fading-table builder, the per-frame window blit and the LCW decoder loop
 # over every palette entry, pixel or compressed byte.
-optimize_in_debug(fading_table.cc pixel_buffer.cc lcw_uncompress.cc)
+optimize_in_debug(fading_table.cc pixel_buffer.cc)
 if (WIN32)
     # net_select.cc calls select() through Winsock.
     target_link_libraries(sdllib wsock32)
@@ -31,7 +32,7 @@ endif ()
 include(Testing)
 add_gtest(
         NAME sdllib_test
-        SOURCES font_test.cc xor_delta_test.cc aud_decoder_test.cc compressed_block_test.cc lcw_uncompress_test.cc ww_win_test.cc
+        SOURCES font_test.cc ww_win_test.cc
         LIBS sdllib
 )
 

@@ -4,7 +4,7 @@
 
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
-#include "sdllib/lcw_uncompress.h"
+#include "engine/codec/lcw_uncompress.h"
 #include "winvq/vqa32/chunk_reader.h"
 
 LcwBuffer::LcwBuffer(const base::ssize capacity)

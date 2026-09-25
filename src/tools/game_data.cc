@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "engine/base/numeric.h"
-#include "tech/base64.h"
+#include "engine/codec/base64.h"
 #include "tech/int.h"
 #include "tech/mix_archive.h"
 #include "tech/pk.h"

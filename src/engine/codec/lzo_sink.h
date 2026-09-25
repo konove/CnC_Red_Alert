@@ -1,0 +1,15 @@
+// File: LzoSink, a sink that LZO-compresses or decompresses in blocks.
+
+#ifndef CNC_RED_ALERT_ENGINE_CODEC_LZO_SINK_H_
+#define CNC_RED_ALERT_ENGINE_CODEC_LZO_SINK_H_
+
+#include "engine/codec/block_backends.h"
+#include "engine/stream/transform_sink.h"
+
+// Compresses or decompresses the bytes written to it with LZO; see BlockCodec.
+//
+// Example:
+//   LzoSink compressor(CodecMode::kCompress, file_sink, 4096);
+using LzoSink = TransformSink<LzoCodec>;
+
+#endif  // CNC_RED_ALERT_ENGINE_CODEC_LZO_SINK_H_

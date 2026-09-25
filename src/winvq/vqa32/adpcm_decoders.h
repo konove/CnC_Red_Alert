@@ -1,5 +1,6 @@
 // File: the decoder for a VQA movie's SND2 sound, IMA ADPCM. SND1 sound is
-// Westwood's ZAP, which sdllib/aud_decoder.h decodes for the .AUD files.
+// Westwood's ZAP, which engine/codec/aud_decoder.h decodes for the .AUD
+// files.
 
 #ifndef CNC_RED_ALERT_WINVQ_VQA32_ADPCM_DECODERS_H_
 #define CNC_RED_ALERT_WINVQ_VQA32_ADPCM_DECODERS_H_

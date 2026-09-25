@@ -46,10 +46,10 @@
 
 #include "engine/base/buffer.h"
 #include "engine/base/unaligned.h"
+#include "engine/codec/lcw_uncompress.h"
+#include "engine/codec/xor_delta.h"
 #include "ra/defines.h"
 #include "ra/keyframe.h"
-#include "sdllib/lcw_uncompress.h"
-#include "sdllib/xor_delta.h"
 
 struct KeyFrameHeaderType {
   uint16_t frames;

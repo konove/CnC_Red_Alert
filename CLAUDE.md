@@ -162,14 +162,18 @@ engine/      → The shared libraries, moving here one folder at a time (docs/EN
   stream/    → ByteSink/ByteSource/ByteStream and their adapters: archive, memory/range streams,
                span/stream sinks and sources, tee, readline (target `engine_stream`)
                [depends: engine_platform]
+  codec/     → Compression and encoding: LCW, LZW, base64, the block codec backends, the .AUD
+               decoders and the animated-cursor XOR delta (target `engine_codec`; links `lzo`)
+               [depends: engine_stream]
 port/        → Sockets and the remaining Win32-adjacent helpers, until they move to engine/net/ and
                engine/file/ [depends: engine_base]
-sdllib/      → SDL2 abstraction (graphics, audio, input) [depends: SDL2, abseil, engine_platform]
-winvq/vqa32  → VQA video codec (target name `vqa32`) [depends: engine_base, engine_stream, port,
-             sdllib, SDL2]
-tech/        → Compression, encryption, archives, crypto and the audio mixer, built on
-             engine/stream/'s ByteSink/ByteSource [depends: sdllib, port, vqa32, engine_platform,
-             engine_stream]
+sdllib/      → SDL2 abstraction (graphics, audio, input) [depends: SDL2, abseil, engine_platform,
+             engine_codec]
+winvq/vqa32  → VQA video codec (target name `vqa32`) [depends: engine_base, engine_stream,
+             engine_codec, port, sdllib, SDL2]
+tech/        → Encryption, archives, crypto and the audio mixer, built on engine/stream/'s
+             ByteSink/ByteSource and engine/codec/'s .AUD decoder [depends: sdllib, port, vqa32,
+             engine_platform, engine_stream, engine_codec]
 ra/          → Red Alert (~200 files) [depends: tech, sdllib, port, vqa32]
 td/          → Tiberian Dawn (~288 files) [depends: tech, sdllib, port, vqa32]
 ```

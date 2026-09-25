@@ -80,6 +80,9 @@
 #include "engine/base/buffer.h"
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
+#include "engine/codec/block_codec.h"
+#include "engine/codec/lcw_sink.h"
+#include "engine/codec/lcw_source.h"
 #include "engine/platform/memflag.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
@@ -109,9 +112,6 @@
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
 #include "sdllib/tile.h"
-#include "tech/block_codec.h"
-#include "tech/lcw_sink.h"
-#include "tech/lcw_source.h"
 
 #define MCW MAP_CELL_W
 const int MapClass::RadiusOffset[] = {

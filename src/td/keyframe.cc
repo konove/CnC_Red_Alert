@@ -49,8 +49,8 @@
 
 #include "engine/base/buffer.h"
 #include "engine/base/unaligned.h"
-#include "sdllib/lcw_uncompress.h"
-#include "sdllib/xor_delta.h"
+#include "engine/codec/lcw_uncompress.h"
+#include "engine/codec/xor_delta.h"
 #include "td/defines.h"
 
 struct KeyFrameHeaderType {
