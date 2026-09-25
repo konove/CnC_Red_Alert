@@ -82,3 +82,6 @@ row to run cpplint on the touched files; CLAUDE.md's Tools table and dependency 
     clang-tidy's `misc-explicit-constructor`, which enforces the rule on compiled code; cpplint
     cannot read that comment. The other two sit in dead branches (`#ifdef NEVER` in `td/target.h`,
     `#ifdef JAPANESE` in `td/msgbox.h`) and are `/remove-dead-code` material.
+  - `readability/inheritance` (2026-09-25): 10 methods declared `virtual ... final` in the class
+    that introduces them (`LinkClass::Head_Of_List()`, `ListClass::Remove_Scroll_Bar()`,
+    `WinsockInterfaceClass::Close_Socket()`, ...), which nothing can override. Both keywords went.
