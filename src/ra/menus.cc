@@ -53,7 +53,7 @@
 #include "engine/gfx/text_window.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/misc.h"
+#include "engine/window/wait_ticks.h"
 #include "engine/window/ww_mouse.h"
 #include "engine/window/ww_win.h"
 #include "ra/compat.h"

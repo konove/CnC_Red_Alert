@@ -151,7 +151,7 @@
 #include "base/strings/tokenizer.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/shape.h"
-#include "engine/window/misc.h"
+#include "engine/window/wait_ticks.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/assets.h"

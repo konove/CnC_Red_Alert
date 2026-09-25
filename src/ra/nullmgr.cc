@@ -79,7 +79,7 @@
 #include "engine/net/serial/modemreg.h"
 #include "engine/net/serial/wincomm.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/misc.h"
+#include "engine/window/wait_ticks.h"
 #include "engine/window/ww_mouse.h"
 #include "ra/combuf.h"
 #include "ra/connect.h"

@@ -1,4 +1,4 @@
-#include "engine/window/misc.h"
+#include "engine/window/wait_ticks.h"
 
 #include "engine/platform/timer.h"
 #include "engine/window/display.h"

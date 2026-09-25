@@ -19,8 +19,8 @@
 // File: WaitTicks(), what the games still call of the Westwood 32-bit
 // library's MISC.H (Scott K. Bowen, August 1994).
 
-#ifndef CNC_RED_ALERT_ENGINE_WINDOW_MISC_H_
-#define CNC_RED_ALERT_ENGINE_WINDOW_MISC_H_
+#ifndef CNC_RED_ALERT_ENGINE_WINDOW_WAIT_TICKS_H_
+#define CNC_RED_ALERT_ENGINE_WINDOW_WAIT_TICKS_H_
 
 namespace engine::window {
 
@@ -30,4 +30,4 @@ void WaitTicks(int ticks);
 
 }  // namespace engine::window
 
-#endif  // CNC_RED_ALERT_ENGINE_WINDOW_MISC_H_
+#endif  // CNC_RED_ALERT_ENGINE_WINDOW_WAIT_TICKS_H_
