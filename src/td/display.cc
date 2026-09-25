@@ -1827,26 +1827,11 @@ void DisplayClass::Draw_It(PixelView& view, bool forced) {
       if (!forced && (oldw != Lepton_To_Pixel(TacLeptonWidth) ||
                       oldh != Lepton_To_Pixel(TacLeptonHeight))) {
         Set_Cursor_Pos(-1);
-        /*
-        ** If hid page is in video memory then we may nned to blit from the seen
-        *page to
-        **  avoid blitting an overlapped region.
-        */
-        if (TheScreen().hidden_view().NeedsLock() && !OverlappedVideoBlits) {
-          Hide_Mouse();
-          TheScreen().visible_view().BlitTo(
-              TheScreen().hidden_view(), (oldx < 0 ? -oldx : 0) + TacPixelX,
-              (oldy < 0 ? -oldy : 0) + TacPixelY,
-              (oldx < 0 ? 0 : oldx) + TacPixelX,
-              (oldy < 0 ? 0 : oldy) + TacPixelY, oldw, oldh);
-          Show_Mouse();
-        } else {
-          TheScreen().hidden_view().BlitTo(
-              TheScreen().hidden_view(), (oldx < 0 ? -oldx : 0) + TacPixelX,
-              (oldy < 0 ? -oldy : 0) + TacPixelY,
-              (oldx < 0 ? 0 : oldx) + TacPixelX,
-              (oldy < 0 ? 0 : oldy) + TacPixelY, oldw, oldh);
-        }
+        TheScreen().hidden_view().BlitTo(
+            TheScreen().hidden_view(), (oldx < 0 ? -oldx : 0) + TacPixelX,
+            (oldy < 0 ? -oldy : 0) + TacPixelY,
+            (oldx < 0 ? 0 : oldx) + TacPixelX,
+            (oldy < 0 ? 0 : oldy) + TacPixelY, oldw, oldh);
       } else {
         forced = true;
       }

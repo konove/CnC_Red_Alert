@@ -130,7 +130,6 @@
 #include "ra/world.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/modemreg.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
@@ -457,15 +456,6 @@ int Test_Null_Modem() {
   */
   while (process) {
     /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      commands->Draw_All(view);
-    }
-    /*
     ** Invoke game callback
     */
     ServiceRealTime();
@@ -688,15 +678,6 @@ static int Reconnect_Null_Modem() {
   */
   int64_t starttime = lastmsgtime = SystemTicks();
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      commands->Draw_All(view);
-    }
     /*
     ** Invoke game callback
     */
@@ -1049,15 +1030,6 @@ GameType Select_Serial_Dialog() {
     /*
     ** Refresh display if needed
     */
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     if (display != REDRAW_NONE) {
       Hide_Mouse();
@@ -1464,15 +1436,6 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
   ** Main process loop
   */
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ........................ Invoke game callback .........................
@@ -2074,15 +2037,6 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       port_edt.Set_Read_Only(true);
     }
 
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
     /*
     ** Refresh display if needed
     */
@@ -3170,15 +3124,6 @@ int Com_Scenario_Dialog(bool skirmish) {
       */
       ServiceRealTime();
 
-      /*
-      ** If we have just received input focus again after running in the
-      *background then
-      ** we need to redraw.
-      */
-      if (AllSurfaces.SurfacesRestored) {
-        AllSurfaces.SurfacesRestored = false;
-        display = REDRAW_ALL;
-      }
 
       /*
       ...................... Refresh display if needed ......................
@@ -4938,15 +4883,6 @@ int Com_Show_Scenario_Dialog() {
     */
     ServiceRealTime();
 
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ...................... Refresh display if needed ......................
@@ -6245,15 +6181,6 @@ static int Phone_Dialog() {
     ServiceRealTime();
 
     /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
-    /*
     ...................... Refresh display if needed ......................
     */
     if (display != REDRAW_NONE) {
@@ -6806,15 +6733,6 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     */
     ServiceRealTime();
 
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
     /*
     ...................... Refresh display if needed ......................
     */

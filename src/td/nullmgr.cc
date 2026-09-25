@@ -1436,16 +1436,6 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   while (process) {
     // Timer_Test(__LINE__, __FILE__);
 
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      CCDebugString("C&C95 - About to restore video surfaces.\n");
-      AllSurfaces.SurfacesRestored = false;
-      Commands->Draw_All(view);
-    }
 
     // Timer_Test(__LINE__, __FILE__);
 
@@ -1628,15 +1618,6 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   process = true;
   int delay = 60000;
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ...................... Refresh display if needed ......................

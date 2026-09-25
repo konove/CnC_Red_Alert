@@ -200,7 +200,6 @@
 #include "ra/world.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
@@ -1770,15 +1769,6 @@ static int Net_Join_Dialog() {
       display = std::max(display, REDRAW_BACKGROUND);
     }
 
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
     //.....................................................................
     //	Refresh display if needed
     //.....................................................................
@@ -4516,15 +4506,6 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   while (process) {
 
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
     //.....................................................................
     //	Refresh display if needed
     //.....................................................................
@@ -5731,15 +5712,6 @@ void Net_Reconnect_Dialog(bool reconn, bool fresh, int oldest_index,
   // Every line of the dialog prints in this.
   const FontStyle font = TextFontStyle(TPF_CENTER | kTpfText);
 
-  /*
-  ** If we have just received input focus again after running in the
-  * background then
-  ** we need to redraw.
-  */
-  if (AllSurfaces.SurfacesRestored) {
-    AllSurfaces.SurfacesRestored = false;
-    fresh = true;
-  }
 
   //------------------------------------------------------------------------
   //	Draw the dialog from scratch

@@ -50,7 +50,6 @@
 #include "port/bytes_of.h"
 #include "port/safe_string.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
@@ -213,15 +212,6 @@ bool Expansion_Dialog() {
   while (process) {
     Call_Back();
 
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = true;
-    }
 
     if (display) {
       display = false;
@@ -364,15 +354,6 @@ bool Bonus_Dialog() {
   while (process) {
     Call_Back();
 
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = true;
-    }
 
     if (display) {
       display = false;

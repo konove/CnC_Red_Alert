@@ -2293,7 +2293,6 @@ static void Bootstrap() {
   do {
     TheKeyboard().Check();
   } while (!TheGameState().in_focus());
-  AllSurfaces.SurfacesRestored = false;
 
   /*
   **	Register and make resident all local mixfiles with particular emphasis

@@ -93,7 +93,6 @@
 #include "base/numeric.h"
 #include "port/unaligned.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
@@ -1670,37 +1669,17 @@ void RadarClass::Set_Radar_Position(CELL cell) {
 
       if (!forced && (radw != RadarWidth || radh != RadarHeight)) {
         /*
-        ** Blit the section that is actually overlapping.
+        ** Blit the section that is actually overlapping. The library always
+        ** does overlapped blits in software, so this is always a single
+        ** pass.
         */
-        if (OverlappedVideoBlits || !TheScreen().hidden_view().NeedsLock()) {
-          TheScreen().hidden_view().BlitTo(
-              TheScreen().hidden_view(),
-              ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
-              ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY,
-              ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
-              ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,
-              radw * ZoomFactor, radh * ZoomFactor);
-        } else {
-          /*
-          ** System does not support overlapped blitting of video surfaces.
-          ** Blit it in 2 stages using an intermediate buffer.
-          */
-          PixelBuffer temp_surface;
-          temp_surface.Init(((RadarWidth + 16) / 16) * 16,
-                            ((RadarHeight + 16) / 16) * 16, {}, 0);
-
-          TheScreen().hidden_view().BlitTo(
-              temp_surface.view(),
-              ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
-              ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY, 0,
-              0, RadarWidth, RadarHeight);
-
-          temp_surface.view().BlitTo(
-              TheScreen().hidden_view(), 0, 0,
-              ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
-              ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,
-              radw * ZoomFactor, radh * ZoomFactor);
-        }
+        TheScreen().hidden_view().BlitTo(
+            TheScreen().hidden_view(),
+            ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
+            ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY,
+            ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
+            ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,
+            radw * ZoomFactor, radh * ZoomFactor);
 
         /*
         ** Now we need to flag the section of the map that is going to redraw.

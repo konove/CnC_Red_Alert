@@ -561,8 +561,6 @@ void Read_Setup_Options(ByteStream& config_file,
   config_file.Read(std::as_writable_bytes(std::span(profile_storage))
                        .first(profile_storage.size() - 1));
 
-  AllowHardwareBlitFills =
-      WWGetPrivateProfileInt("Options", "HardwareFills", 1, buffer) != 0;
   // Resolution=yes and -480 both ask for a 480-line mode; Screen::Init()
   // letterboxes the 400-line game area inside it.
   TheScreen().set_mode_height(

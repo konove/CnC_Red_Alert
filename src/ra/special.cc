@@ -77,7 +77,6 @@
 #include "ra/world.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -442,14 +441,6 @@ const char* Fetch_Password(int caption, int message, int btext) {
     ServiceRealTime();
 
     /*
-    ** Handle possible surface loss due to a focus switch
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      break;
-    }
-
-    /*
     **	Fetch and process input.
     */
     const KeyNumType input = buttonlist->Input(view);  // user input
@@ -590,15 +581,6 @@ int Fetch_Difficulty(bool amath) {
     **	Invoke game callback.
     */
     ServiceRealTime();
-
-    /*
-    ** Handle possible surface loss due to a focus switch
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      redraw = true;
-      continue;
-    }
 
     /*
     **	Fetch and process input.

@@ -74,7 +74,6 @@
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -363,15 +362,6 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
   */
 
   do {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     PumpWolapi();
 
@@ -674,15 +664,6 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   int block_number = 0;
 
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     PumpWolapi();
 

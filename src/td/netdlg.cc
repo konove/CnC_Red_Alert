@@ -143,7 +143,6 @@
 #include "port/unaligned.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
@@ -1059,15 +1058,6 @@ static int Net_Join_Dialog() {
   ---------------------------- Processing loop -----------------------------
   */
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ...................... Refresh display if needed ......................
@@ -3264,15 +3254,6 @@ static int Net_New_Dialog() {
   ---------------------------- Processing loop -----------------------------
   */
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ...................... Refresh display if needed ......................
@@ -4461,7 +4442,6 @@ static void Wait_For_Focus() {
 
     } while (!TheGameState().in_focus());
     CCDebugString("\n");
-    AllSurfaces.SurfacesRestored = false;
   }
 }
 
@@ -4691,15 +4671,6 @@ static int Net_Fake_New_Dialog() {
   */
   CCDebugString("C&C95 - Entering join dialogue loop\n");
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ...................... Refresh display if needed ......................
@@ -5287,15 +5258,6 @@ static int Net_Fake_Join_Dialog() {
   */
   CCDebugString("C&C95 - Entering join dialogue loop\n");
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ...................... Refresh display if needed ......................

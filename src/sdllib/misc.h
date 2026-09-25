@@ -64,20 +64,6 @@ extern void (*Misc_Focus_Loss_Function)();
 */
 extern void (*Misc_Focus_Restore_Function)();
 
-class SurfaceMonitorClass {
- public:
-  bool SurfacesRestored;
-};
-
-extern SurfaceMonitorClass AllSurfaces;  // List of all direct draw surfaces
-
-extern bool OverlappedVideoBlits;  // Can video driver blit overlapped regions?
-
-// Set from the "HardwareFills" ini option at startup. Nothing reads it any
-// more: it chose between a DirectDraw blitter fill and a software one, and
-// only the software one survives.
-extern bool AllowHardwareBlitFills;
-
 // Cleans up the library systems (audio, mouse, tick timer, ...) before the
 // process exits. Each game defines it in its startup.cc.
 void Prog_End();

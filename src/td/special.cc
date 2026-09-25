@@ -44,7 +44,6 @@
 
 #include "base/array.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -178,15 +177,6 @@ void Special_Dialog() {
   bool display = true;
   bool process = true;
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = true;
-    }
 
     if (TheSession().type() == GAME_NORMAL) {
       Call_Back();

@@ -59,7 +59,6 @@
 #include "base/numeric.h"
 #include "port/safe_string.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/text_window.h"
 #include "sdllib/timer.h"
@@ -408,15 +407,6 @@ int MapEditClass::Select_Team(const char* caption) {
   RedrawType display = REDRAW_ALL;  // requested redraw level
   bool process = true;              // loop while true
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ........................ Invoke game callback .........................
@@ -1027,15 +1017,6 @@ int MapEditClass::Edit_Team() {
   RedrawType display = REDRAW_ALL;  // requested redraw level
   bool process = true;              // loop while true
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ........................ Invoke game callback .........................
@@ -1698,15 +1679,6 @@ int MapEditClass::Team_Members(HousesType house) {
   RedrawType display = REDRAW_ALL;  // requested redraw level
   bool process = true;              // loop while true
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     **	Invoke game callback.

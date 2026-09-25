@@ -125,7 +125,6 @@
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
@@ -1932,51 +1931,17 @@ void RadarClass::Set_Radar_Position(CELL cell) {
 
       if (!forced && (radw != RadarWidth || radh != RadarHeight)) {
         /*
-        ** Blit the section that is actually overlapping.
-        **
-        ** If the video card isnt able to blit overlapped regions then we have
-        ** to do the blit in two stages via an intermediate buffer. The test to
-        *allow
-        ** overlapped blits is done in the library at the time of setting the
-        *video mode.
+        ** Blit the section that is actually overlapping. The library always
+        ** does overlapped blits in software, so this is always a single
+        ** pass.
         */
-        if (OverlappedVideoBlits || !TheScreen().hidden_view().NeedsLock()) {
-          /*
-          ** Overlapped blits are OK or we dont have a video memory hid page so
-          *blits are
-          ** always done in software by the library anyway.
-          */
-          TheScreen().hidden_view().BlitTo(
-              TheScreen().hidden_view(),
-              ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
-              ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY,
-              ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
-              ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,
-              radw * ZoomFactor, radh * ZoomFactor);
-
-        } else {
-          /*
-          ** Create a temporary intermediate surface
-          */
-          PixelBuffer temp_surface;
-          temp_surface.Init(((RadarWidth + 16) / 16) * 16,
-                            ((RadarHeight + 16) / 16) * 16, {}, 0);
-
-          /*
-          ** Do the blit in 2 stages.
-          */
-          TheScreen().hidden_view().BlitTo(
-              temp_surface.view(),
-              ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
-              ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY, 0,
-              0, RadarWidth, RadarHeight);
-
-          temp_surface.view().BlitTo(
-              TheScreen().hidden_view(), 0, 0,
-              ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
-              ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,
-              radw * ZoomFactor, radh * ZoomFactor);
-        }
+        TheScreen().hidden_view().BlitTo(
+            TheScreen().hidden_view(),
+            ((radx < 0 ? -radx : 0) * ZoomFactor) + RadX + RadOffX + BaseX,
+            ((rady < 0 ? -rady : 0) * ZoomFactor) + RadY + RadOffY + BaseY,
+            ((radx < 0 ? 0 : radx) * ZoomFactor) + RadX + RadOffX + BaseX,
+            ((rady < 0 ? 0 : rady) * ZoomFactor) + RadY + RadOffY + BaseY,
+            radw * ZoomFactor, radh * ZoomFactor);
 
         /*
         ** Now we need to flag the section of the map that is going to redraw.

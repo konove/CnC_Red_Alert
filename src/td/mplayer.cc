@@ -70,7 +70,6 @@
 #include "port/tokenizer.h"
 #include "rand.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/timer.h"
@@ -254,15 +253,6 @@ GameType Select_MPlayer_Game() {
   bool process = true;              // loop while true
   bool pressed = false;
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ........................ Invoke game callback .........................
@@ -1297,15 +1287,6 @@ int Surrender_Dialog() {
   RedrawType display = REDRAW_ALL;  // requested redraw level
   bool process = true;              // loop while true
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ........................ Invoke game callback .........................

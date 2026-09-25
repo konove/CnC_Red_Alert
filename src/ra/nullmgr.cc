@@ -1332,15 +1332,6 @@ DialStatusType NullModemClass::Dial_Modem(const char* string,
   process = true;
   int delay = ModemWaitCarrier;
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      Commands->Draw_All(view);
-    }
 
     delay = SerialPort->Get_Modem_Result(delay, buffer.c_str(), 81);
 
@@ -1503,15 +1494,6 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   process = true;
   int delay = 60000;
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*.....................................................................
     Refresh display if needed

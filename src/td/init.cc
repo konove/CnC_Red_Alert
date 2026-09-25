@@ -324,7 +324,6 @@ bool Init_Game() {
     DLOG(INFO) << "C&C95 - About to call Keyboard::Check";
     Keyboard::Check();
   } while (!TheGameState().in_focus());
-  AllSurfaces.SurfacesRestored = false;
 
   DLOG(INFO) << "C&C95 - About to load the language file";
   TheAssets().LoadStrings();
@@ -859,15 +858,6 @@ bool Select_Game(bool fade) {
         gameloaded = true;
         process = false;
         continue;
-      }
-      /*
-      ** If we have just received input focus again after running in the
-      *background then
-      ** we need to redraw.
-      */
-      if (AllSurfaces.SurfacesRestored) {
-        AllSurfaces.SurfacesRestored = false;
-        display = true;
       }
 
       /*

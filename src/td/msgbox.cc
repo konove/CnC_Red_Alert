@@ -52,7 +52,6 @@
 #include "port/safe_string.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
@@ -284,16 +283,6 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
     process = true;
     pressed = false;
     while (process) {
-      /*
-      ** If we have just received input focus again after running in the
-      *background then
-      ** we need to redraw.
-      */
-      if (AllSurfaces.SurfacesRestored) {
-        AllSurfaces.SurfacesRestored = false;
-        seen_buff_save.view().BlitTo(TheScreen().visible_page().view());
-        display = true;
-      }
 
       if (display) {
         display = false;

@@ -51,7 +51,6 @@
 #include "base/array.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/text_window.h"
@@ -243,15 +242,6 @@ void GameOptionsClass::Process() {
   bool process = true;
   pressed = false;
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = true;
-    }
 
     /*
     **	Invoke game callback.

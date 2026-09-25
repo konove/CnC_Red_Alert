@@ -182,12 +182,10 @@ static void ApplyStartupOptions(const StartupOptions& options) {
 }
 
 // Reads the config-file options that have to be known before the window and
-// the network exist: blit fills, the screen height, the IPX socket and a
-// bridge network. The command line wins wherever it asked for the same thing.
+// the network exist: the screen height, the IPX socket and a bridge network.
+// The command line wins wherever it asked for the same thing.
 static void ReadConfigOptions(const INIClass& ini,
                               const StartupOptions& options) {
-  AllowHardwareBlitFills = ini.Get_Bool("Options", "HardwareFills", true);
-
   // Resolution=yes and -480 both ask for a 480-line mode; Screen::Init()
   // letterboxes the 400-line game area inside it.
   TheScreen().set_mode_height(

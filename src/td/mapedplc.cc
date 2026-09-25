@@ -61,7 +61,6 @@
 
 #include "base/array.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/text_window.h"
 #include "sdllib/ww_mouse.h"
@@ -479,15 +478,6 @@ int MapEditClass::Placement_Dialog() {
   RedrawType display = REDRAW_ALL;  // display level
   bool process = true;              // loop while true
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ........................ Invoke game callback .........................

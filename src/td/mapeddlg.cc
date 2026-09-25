@@ -64,7 +64,6 @@
 #include "port/safe_string.h"
 #include "port/tokenizer.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
@@ -701,15 +700,6 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   RedrawType display = REDRAW_ALL;  // requested redraw level
   bool process = true;              // loop while true
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ........................ Invoke game callback .........................
@@ -1022,15 +1012,6 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
   RedrawType display = REDRAW_ALL;  // requested redraw level
   bool process = true;              // Loop while true
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ------------------------ Invoke game callback -------------------------
@@ -1828,15 +1809,6 @@ int MapEditClass::Scenario_Dialog() {
   RedrawType display = REDRAW_ALL;  // true = re-draw everything
   bool process = true;              // loop while true
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ........................ Invoke game callback .........................
@@ -2434,15 +2406,6 @@ int MapEditClass::Select_Trigger() {
   RedrawType display = REDRAW_ALL;  // requested redraw level
   bool process = true;              // loop while true
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ........................ Invoke game callback .........................
@@ -2875,15 +2838,6 @@ int MapEditClass::Edit_Trigger() {
   RedrawType display = REDRAW_ALL;  // requested redraw level
   bool process = true;              // loop while true
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ........................ Invoke game callback .........................
@@ -3355,15 +3309,6 @@ int MapEditClass::Import_Triggers() {
   RedrawType display = REDRAW_ALL;  // requested redraw level
   bool process = true;              // loop while true
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ........................ Invoke game callback .........................
@@ -3680,15 +3625,6 @@ int MapEditClass::Import_Teams() {
   RedrawType display = REDRAW_ALL;  // requested redraw level
   bool process = true;              // loop while true
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = REDRAW_ALL;
-    }
 
     /*
     ........................ Invoke game callback .........................

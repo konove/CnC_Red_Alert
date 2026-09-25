@@ -93,7 +93,6 @@
 #include "port/safe_string.h"
 #include "port/unaligned.h"
 #include "sdllib/keyboard.h"
-#include "sdllib/misc.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "td/building.h"
@@ -1986,14 +1985,6 @@ static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
   //------------------------------------------------------------------------
   const int new_time = static_cast<int>(timeout_timer->Time() / 60);
 
-  //--------------------------------------------------------------------------------
-  // If we have just received input focus again after running in the background
-  // then we need to redraw the whole dialog.
-  //--------------------------------------------------------------------------------
-  if (AllSurfaces.SurfacesRestored) {
-    AllSurfaces.SurfacesRestored = false;
-    fresh = true;
-  }
 
   //------------------------------------------------------------------------
   // If the timer has changed, or 'fresh' is set, redraw the dialog

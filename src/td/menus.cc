@@ -823,15 +823,6 @@ int Main_Menu(int timeout) {
   bool display = true;
   bool process = true;
   while (process) {
-    /*
-    ** If we have just received input focus again after running in the
-    *background then
-    ** we need to redraw.
-    */
-    if (AllSurfaces.SurfacesRestored) {
-      AllSurfaces.SurfacesRestored = false;
-      display = true;
-    }
 
     /*
     **	If timeout expires, bail
