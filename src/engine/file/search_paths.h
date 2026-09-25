@@ -9,6 +9,8 @@
 #include <string_view>
 #include <vector>
 
+#include "absl/base/no_destructor.h"
+
 // The registry of directories to look in for a data file that is not in the
 // current directory. Directories are added from semicolon-separated lists
 // such as the -CD command line switch; "?:" stands for the current CD drive.
@@ -69,7 +71,7 @@ class SearchPaths {
   static std::vector<std::string> directories_;
 
   // Every list ever passed to Add(), joined by ';', for Refresh().
-  static std::string history_;
+  static absl::NoDestructor<std::string> history_;
 
   static int current_cd_drive_;
   static int last_cd_drive_;

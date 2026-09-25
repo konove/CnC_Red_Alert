@@ -10,10 +10,13 @@
 #include <string_view>
 #include <vector>
 
+#include "absl/base/no_destructor.h"
 #include "engine/file/disk_file.h"
 
 std::vector<std::string> SearchPaths::directories_;
-std::string SearchPaths::history_;
+// An empty string does not allocate, so this cannot throw.
+// NOLINTNEXTLINE(bugprone-throwing-static-initialization)
+absl::NoDestructor<std::string> SearchPaths::history_;
 int SearchPaths::current_cd_drive_ = 0;
 int SearchPaths::last_cd_drive_ = 0;
 SearchPaths::CdProbe SearchPaths::cd_probe_ = nullptr;
@@ -24,10 +27,10 @@ int SearchPaths::Add(const std::string_view paths) {
   if (paths.empty()) {
     return 0;
   }
-  if (!history_.empty()) {
-    history_ += ';';
+  if (!history_->empty()) {
+    *history_ += ';';
   }
-  history_ += paths;
+  *history_ += paths;
   return Scan(paths);
 }
 
@@ -72,7 +75,7 @@ void SearchPaths::Clear() { directories_.clear(); }
 
 void SearchPaths::Refresh() {
   Clear();
-  Scan(history_);
+  Scan(*history_);
 }
 
 bool SearchPaths::HasAny() { return !directories_.empty(); }

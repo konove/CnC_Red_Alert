@@ -22,7 +22,7 @@ target_sources(engine_file PUBLIC
 )
 
 target_link_libraries(engine_file
-        PUBLIC engine_codec engine_crypto absl::core_headers
+        PUBLIC engine_codec engine_crypto absl::core_headers absl::no_destructor
         PRIVATE absl::check absl::strings
 )
 
