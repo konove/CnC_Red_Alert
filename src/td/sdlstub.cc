@@ -56,11 +56,6 @@ void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
                         int height) {
   TheDisplay().Init(WINDOW_NAME, width, height);
   SetEventHandler(&SDL_Event_Handler);
-
-  // Audio_Focus_Loss_Function = &Focus_Loss;
-  Misc_Focus_Loss_Function = &Focus_Loss;
-  Misc_Focus_Restore_Function = &Focus_Restore;
-  // Gbuffer_Focus_Loss_Function = &Focus_Loss;
 }
 
 static void SDL_Event_Handler(SDL_Event* event) {

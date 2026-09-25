@@ -335,8 +335,6 @@ void Create_Main_Window(HANDLE instance, int command_show, int width,
   CCFocusMessage = RegisterWindowMessage("CC_GOT_FOCUS");
 
   Audio_Focus_Loss_Function = &Focus_Loss;
-  Misc_Focus_Loss_Function = &Focus_Loss;
-  Misc_Focus_Restore_Function = &Focus_Restore;
   Gbuffer_Focus_Loss_Function = &Focus_Loss;
 }
 

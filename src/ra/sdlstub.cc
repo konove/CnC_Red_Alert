@@ -9,7 +9,6 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/net/net_select.h"
 #include "engine/window/display.h"
-#include "engine/window/misc.h"
 #include "engine/window/ww_mouse.h"
 #include "engine/window/ww_win.h"
 #include "ra/config.h"
@@ -66,11 +65,6 @@ void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
   // Replaces WSAAsyncSelect, which would send through the Windows event
   // loop.
   SetPumpHandler(&Socket_Select);
-
-  // Audio_Focus_Loss_Function = &Focus_Loss;
-  Misc_Focus_Loss_Function = &Focus_Loss;
-  Misc_Focus_Restore_Function = &Focus_Restore;
-  // Gbuffer_Focus_Loss_Function = &Focus_Loss;
 }
 
 static void SDL_Event_Handler(SDL_Event* event) {

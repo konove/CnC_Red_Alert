@@ -49,16 +49,6 @@
 // TheDisplay().SetVideoMode(); the surface is always 8-bit, whatever
 // `bits_per_pixel` says. Returns false if SDL could not create it.
 bool Set_Video_Mode(int w, int h, int bits_per_pixel);
-void Wait_Blit();
-
-/*
-** Pointer to function to call if we detect a focus loss
-*/
-extern void (*Misc_Focus_Loss_Function)();
-/*
-** Pointer to function to call if we detect a surface restore
-*/
-extern void (*Misc_Focus_Restore_Function)();
 
 // Cleans up the library systems (audio, mouse, tick timer, ...) before the
 // process exits. Each game defines it in its startup.cc.
