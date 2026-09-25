@@ -60,7 +60,7 @@ static void SDL_Event_Handler(SDL_Event* event);
 
 void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
                         int height) {
-  TheDisplay().Init(kWindowName, width, height);
+  engine::window::TheDisplay().Init(kWindowName, width, height);
   SetEventHandler(&SDL_Event_Handler);
   // Replaces WSAAsyncSelect, which would send through the Windows event
   // loop.

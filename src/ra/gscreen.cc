@@ -465,7 +465,7 @@ void Shake_The_Screen(int shakes) {
         break;
     }
     while (x == SystemTicks()) {
-      TheDisplay().EndFrame();
+      engine::window::TheDisplay().EndFrame();
     }
   }
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());

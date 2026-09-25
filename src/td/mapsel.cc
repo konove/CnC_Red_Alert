@@ -604,7 +604,7 @@ void Map_Selection() {
   greyearth2.DrawFrame(TheScreen().sys_mem_page().view(), 0);
 
   Increase_Palette_Luminance(grey2palette, 30, 30, 30, 63);
-  TheDisplay().EndFrame();
+  engine::window::TheDisplay().EndFrame();
   Set_Palette(grey2palette);
 
   TheScreen().sys_mem_page().view().BlitTo(show.page().view());

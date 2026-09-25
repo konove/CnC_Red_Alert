@@ -204,7 +204,7 @@ void Nod_Ending() {
   Play_Movie("NODFINAL", THEME_NONE, false);
 
   Hide_Mouse();
-  TheDisplay().EndFrame();
+  engine::window::TheDisplay().EndFrame();
   Set_Palette(base::UnsignedBytes(localpal));
 #ifdef NOT_FOR_WIN95
   base::CopyBytes(std::as_writable_bytes(TheScreen().visible_view().bytes()),

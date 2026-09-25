@@ -32,12 +32,12 @@ void Fade_Palette_To(std::span<const unsigned char> palette, int fade,
             old_val + ((new_val - old_val) * cur_time / fade));
       }
 
-      TheDisplay().SetPalette(fade_palette);
+      engine::window::TheDisplay().SetPalette(fade_palette);
       if (callback) {
         callback();
       }
       else {  // make sure we actually display the fade
-        TheDisplay().EndFrame();
+        engine::window::TheDisplay().EndFrame();
       }
 
       if (cur_time == fade) {
@@ -53,5 +53,5 @@ void Set_Palette(std::span<const unsigned char> palette) {
   CHECK_GE(palette.size(), sizeof(CurrentPalette));
   std::ranges::copy(palette.first(sizeof(CurrentPalette)),
                     std::span(CurrentPalette).begin());
-  TheDisplay().SetPalette(palette);
+  engine::window::TheDisplay().SetPalette(palette);
 }

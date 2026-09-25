@@ -53,7 +53,7 @@ static void SDL_Event_Handler(SDL_Event* event);
 
 void Create_Main_Window(HANDLE /*instance*/, int /*command_show*/, int width,
                         int height) {
-  TheDisplay().Init(WINDOW_NAME, width, height);
+  engine::window::TheDisplay().Init(WINDOW_NAME, width, height);
   SetEventHandler(&SDL_Event_Handler);
 }
 
@@ -119,7 +119,7 @@ void ShakeScreen(int shakes) {
         break;
     }
     while (x == SystemTicks()) {
-      TheDisplay().EndFrame();
+      engine::window::TheDisplay().EndFrame();
     }
   }
 

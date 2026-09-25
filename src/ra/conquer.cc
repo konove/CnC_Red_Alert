@@ -384,7 +384,7 @@ void RunGame() {
 
 void ServiceRealTime() {
   ServiceBackgroundTasks();
-  TheDisplay().EndFrame();
+  engine::window::TheDisplay().EndFrame();
 }
 
 void ServiceRealTimeFor(const int ticks) {

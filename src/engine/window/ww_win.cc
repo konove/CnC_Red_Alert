@@ -37,8 +37,8 @@ void SDL_Event_Loop() {
 
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
-    if (TheDisplay().IsRedrawEvent(event.type)) {
-      TheDisplay().EndFrame();
+    if (engine::window::TheDisplay().IsRedrawEvent(event.type)) {
+      engine::window::TheDisplay().EndFrame();
       continue;
     }
     if (g_event_handler) {

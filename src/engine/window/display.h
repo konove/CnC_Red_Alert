@@ -13,6 +13,8 @@
 #include "base/installed.h"
 #include "engine/gfx/pixel_surface.h"
 
+namespace engine::window {
+
 // Owns the one window the program opens, the renderer that presents it, and
 // the 8-bit paletted surface the game draws the window's contents on. Each
 // game's Game owns the one Display, declared before its Screen, and
@@ -190,5 +192,7 @@ inline Display& TheDisplay() { return base::Installed<Display>::Get(); }
 // Whether a Display is installed. Code that also runs before the window
 // exists, or after it is gone, asks this first.
 inline bool HasDisplay() { return base::Installed<Display>::IsInstalled(); }
+
+}  // namespace engine::window
 
 #endif  // CNC_RED_ALERT_ENGINE_WINDOW_DISPLAY_H_

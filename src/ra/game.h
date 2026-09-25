@@ -65,8 +65,8 @@ class Game {
   GameClock game_clock_;
   base::Installed<GameClock>::Scope game_clock_scope_{game_clock_};
   // Before Screen, which attaches its visible page to the window.
-  Display display_;
-  base::Installed<Display>::Scope display_scope_{display_};
+  engine::window::Display display_;
+  base::Installed<engine::window::Display>::Scope display_scope_{display_};
   Screen screen_;
   base::Installed<Screen>::Scope screen_scope_{screen_};
   Palettes palettes_;

@@ -17,7 +17,7 @@
 //
 // Example:
 //   PixelBuffer page;
-//   page.Init(640, 400, TheDisplay());
+//   page.Init(640, 400, engine::window::TheDisplay());
 //   page.view().Clear();  // Locks the surface, clears it, unlocks it.
 class PixelSurface {
  public:

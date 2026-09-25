@@ -76,7 +76,7 @@ class MovieScreen final : public VqaClient {
   bool OnFrameSkipped(int /*frame_number*/) override { return Present(); }
 
   // Too early for the next frame: wait for the display's next frame.
-  void OnIdle() override { TheDisplay().EndFrame(); }
+  void OnIdle() override { engine::window::TheDisplay().EndFrame(); }
 
   // Whether the player pressed Esc to stop the movie.
   [[nodiscard]] bool broken_out() const { return broken_out_; }
@@ -134,7 +134,7 @@ class MovieScreen final : public VqaClient {
         Check_For_Focus_Loss();
       }
     }
-    TheDisplay().EndFrame();
+    engine::window::TheDisplay().EndFrame();
     return true;
   }
 

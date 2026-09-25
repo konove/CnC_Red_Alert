@@ -39,8 +39,9 @@ class WwWinTest : public ::testing::Test {
     SetPumpHandler(nullptr);
   }
 
-  Display display_;
-  const base::Installed<Display>::Scope display_scope_{display_};
+  engine::window::Display display_;
+  const base::Installed<engine::window::Display>::Scope display_scope_{
+      display_};
 };
 
 TEST_F(WwWinTest, EventLoopCallsTheInstalledHandler) {

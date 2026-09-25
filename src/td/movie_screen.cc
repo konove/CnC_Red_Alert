@@ -50,7 +50,7 @@ bool MovieScreen::OnFrameSkipped(const int /*frame_number*/) {
   return Present();
 }
 
-void MovieScreen::OnIdle() { TheDisplay().EndFrame(); }
+void MovieScreen::OnIdle() { engine::window::TheDisplay().EndFrame(); }
 
 bool MovieScreen::Present() {
   int key = 0;
@@ -79,6 +79,6 @@ bool MovieScreen::Present() {
     }
   }
 
-  TheDisplay().EndFrame();
+  engine::window::TheDisplay().EndFrame();
   return true;
 }

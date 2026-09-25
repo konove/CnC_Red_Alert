@@ -10,7 +10,11 @@
 #include "engine/window/display.h"
 #include "engine/window/ww_mouse.h"
 
+namespace engine::window {
+
 void Display::SetPalette(std::span<const uint8_t> palette) {
   UpdatePalette(palette);
   Update_Mouse_Palette();
 }
+
+}  // namespace engine::window

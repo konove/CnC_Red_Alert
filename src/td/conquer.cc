@@ -1270,7 +1270,7 @@ bool Color_Cycle() {
   *palette must be *	passed to the system.
   */
   if (changed) {
-    TheDisplay().EndFrame();
+    engine::window::TheDisplay().EndFrame();
     Set_Palette(ThePalettes().game_palette());
     return true;
   }
@@ -1412,7 +1412,7 @@ void Call_Back() {
   }
 #endif
 
-  TheDisplay().EndFrame();
+  engine::window::TheDisplay().EndFrame();
 }
 
 /***********************************************************************************************

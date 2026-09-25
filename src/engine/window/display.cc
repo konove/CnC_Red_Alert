@@ -26,6 +26,8 @@
 #include "engine/gfx/pixel_surface.h"
 #include "engine/window/ww_win.h"
 
+namespace engine::window {
+
 namespace {
 
 // The game's resolution is scaled up by this much to get the window size.
@@ -429,3 +431,5 @@ void Display::SetMouseGrab(bool grab) {
   SDL_SetWindowGrab(static_cast<SDL_Window*>(window_),
                     grab ? SDL_TRUE : SDL_FALSE);
 }
+
+}  // namespace engine::window

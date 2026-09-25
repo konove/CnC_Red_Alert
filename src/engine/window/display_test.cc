@@ -22,6 +22,7 @@
 #include "engine/gfx/pixel_surface.h"
 #include "gtest/gtest.h"
 
+namespace engine::window {
 namespace {
 
 // Returns a 6-bit VGA palette that is black but for `color` at `index`.
@@ -197,3 +198,4 @@ TEST_F(DisplayTest, RejectsFramesThatDoNotMatchTheirSize) {
 }
 
 }  // namespace
+}  // namespace engine::window

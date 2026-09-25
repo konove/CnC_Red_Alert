@@ -2136,11 +2136,12 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
           //	Either user closed the browser app, or game is starting and we
           // should return focus to game.
           TheGameState().cancel_msgbox() = false;
-          TheDisplay().Restore();
+          engine::window::TheDisplay().Restore();
           break;
         }
-        if (TheDisplay().HasInputFocus()) {
-          TheDisplay().Restore();  //	In case it was topmost but minimized.
+        if (engine::window::TheDisplay().HasInputFocus()) {
+          engine::window::TheDisplay()
+              .Restore();  //	In case it was topmost but minimized.
           break;
         }
       }
@@ -2157,7 +2158,7 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
       //			debugprint( "ShellExecute\n" );
       //	ShellExecute failed as well. Just print a message instead.
       ThePalettes().game_palette().Set();
-      TheDisplay().Restore();
+      engine::window::TheDisplay().Restore();
       char szError[300];
       Format_Runtime_Text(szError, sizeof(szError), TXT_WOL_CANTLAUNCHBROWSER,
                           szURL);

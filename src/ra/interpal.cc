@@ -115,7 +115,7 @@ void Interpolate_2X_Scale(PixelBuffer* source, PixelView* /*unused*/,
                           const char* /*unused*/) {
   // SDL stretches the frame to the window, in the palette already set.
   source->LockSurface();
-  TheDisplay().PresentScaledFrame(source->bytes(), source->width(),
-                                  source->height());
+  engine::window::TheDisplay().PresentScaledFrame(
+      source->bytes(), source->width(), source->height());
   source->UnlockSurface();
 }

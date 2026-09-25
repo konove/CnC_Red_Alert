@@ -500,7 +500,7 @@ bool Init_Game() {
   }
 
   Hide_Mouse();
-  TheDisplay().EndFrame();
+  engine::window::TheDisplay().EndFrame();
   if (!TheSpecial().IsFromInstall) {
     Set_Palette(ThePalettes().title_palette());
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());

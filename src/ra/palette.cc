@@ -52,12 +52,12 @@ void PaletteClass::Set(int fade, void (*callback)()) {
                                        ((new_val - old_val) * cur_time / fade));
       }
 
-      TheDisplay().SetPalette(fade_palette);
+      engine::window::TheDisplay().SetPalette(fade_palette);
       if (callback) {
         callback();
       } else {
         // make sure we actually display the fade
-        TheDisplay().EndFrame();
+        engine::window::TheDisplay().EndFrame();
       }
 
       if (cur_time == fade) {
@@ -74,7 +74,7 @@ void PaletteClass::Set(int fade, void (*callback)()) {
   }
 
   CurrentPalette = *this;
-  TheDisplay().SetPalette(*this);
+  engine::window::TheDisplay().SetPalette(*this);
 }
 
 // the only code that uses these two (Play_Movie and OptionsClass::Proccess)
@@ -130,5 +130,5 @@ void Set_Palette(std::span<const unsigned char> palette) {
   }
   base::CopyBytes(std::as_writable_bytes(PaletteClass::CurrentPalette.bytes()),
                   std::as_bytes(palette), PaletteClass::COLOR_COUNT * 3);
-  TheDisplay().SetPalette(palette);
+  engine::window::TheDisplay().SetPalette(palette);
 }

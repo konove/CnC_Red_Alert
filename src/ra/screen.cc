@@ -14,9 +14,10 @@ Screen::Screen()
       vq640_(kWidth, kHeight) {}
 
 bool Screen::Init() {
-  bool mode_set = TheDisplay().SetVideoMode(kWidth, mode_height_);
+  bool mode_set =
+      engine::window::TheDisplay().SetVideoMode(kWidth, mode_height_);
   if (!mode_set && mode_height_ == kHeight) {
-    mode_set = TheDisplay().SetVideoMode(kWidth, 480);
+    mode_set = engine::window::TheDisplay().SetVideoMode(kWidth, 480);
     if (mode_set) {
       mode_height_ = 480;
     }
@@ -25,7 +26,7 @@ bool Screen::Init() {
     return false;
   }
 
-  visible_page_.Init(kWidth, mode_height_, TheDisplay());
+  visible_page_.Init(kWidth, mode_height_, engine::window::TheDisplay());
   hidden_page_.Init(kWidth, mode_height_, {}, 0);
 
   // A 480-line mode letterboxes the 400-line game area in the middle.

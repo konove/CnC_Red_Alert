@@ -211,7 +211,7 @@ void Choose_Side() {
       (speechplaying && engine::audio::TheAudio().IsPlaying(speech.data()))) {
     anim.DrawFrame(TheScreen().sys_mem_page().view(), frame++);
     if (setpalette) {
-      TheDisplay().EndFrame();
+      engine::window::TheDisplay().EndFrame();
       Set_Palette(ThePalettes().title_palette());
       setpalette = 0;
     }
