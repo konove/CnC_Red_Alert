@@ -163,7 +163,7 @@ void Set_Window(int window, int x, int y, int w, int h) {
  * HISTORY: * 10/17/1994 JLB : Created. *
  *=============================================================================================*/
 void Fatal_Message(const std::string_view message) {
-  // Prog_End();
+  // ShutDownEngine();
   absl::FPrintF(stderr, "%s", message);
   EmergencyExit(EXIT_FAILURE);
 }

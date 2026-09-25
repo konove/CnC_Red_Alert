@@ -33,16 +33,16 @@ bool Set_Video_Mode(int w, int h, int bits_per_pixel);
 
 // Cleans up the library systems (audio, mouse, tick timer, ...) before the
 // process exits. Each game defines it in its startup.cc.
-void Prog_End();
+void ShutDownEngine();
 
-// Waits `duration` ticks of the 60 Hz tick timer, presenting a frame on each
+// Waits `ticks` ticks of the 60 Hz tick timer, presenting a frame on each
 // pass so that the window stays responsive meanwhile. Needs InitTickTimer().
-void Delay(int duration);
+void WaitTicks(int ticks);
 
 // Jolts the visible page up and down `shakes` times, for explosions. Only
 // Tiberian Dawn defines it (td/sdlstub.cc); Red Alert has its own
 // Shake_The_Screen() and must not call it.
-void Shake_Screen(int shakes);
+void ShakeScreen(int shakes);
 
 // Ends the frame, presenting it. The name is DOS's: there the games waited for
 // the vertical blank before touching the palette or the visible page, and

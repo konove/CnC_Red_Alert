@@ -3825,7 +3825,7 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   if (CurrentFrame() >= TheSession().TrapPrintCRC) {
     Print_CRCs(nullptr);
-    // Prog_End();
+    // ShutDownEngine();
     EmergencyExit(0);
   }
 

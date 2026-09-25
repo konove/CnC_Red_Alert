@@ -458,7 +458,7 @@ void Do_Win() {
         TheGameState().active() = false;
         Show_Mouse();
         return;
-        //				Prog_End();
+        //				ShutDownEngine();
         //				exit(0);
         //				break;
     }
@@ -477,7 +477,7 @@ void Do_Win() {
 
     if (ThePlayer()->Class->House == HOUSE_BAD && TheWorld().scenario() == 13) {
       Nod_Ending();
-      // Prog_End();
+      // ShutDownEngine();
       // exit(0);
       TheScreen().visible_view().Clear();
       Show_Mouse();
@@ -487,7 +487,7 @@ void Do_Win() {
     if (ThePlayer()->Class->House == HOUSE_GOOD &&
         TheWorld().scenario() == 15) {
       GDI_Ending();
-      // Prog_End();
+      // ShutDownEngine();
       // exit(0);
       TheScreen().visible_view().Clear();
       Show_Mouse();

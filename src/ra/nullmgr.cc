@@ -1651,7 +1651,7 @@ bool NullModemClass::Hangup_Modem() {
   ** Toggle DTR low then high
   */
   SerialPort->Set_Serial_DTR(false);
-  Delay(3200 / 60);
+  WaitTicks(3200 / 60);
   SerialPort->Set_Serial_DTR(true);
 
   status = Send_Modem_Command("AT", '\r', buffer, 81, DEFAULT_TIMEOUT, 1);

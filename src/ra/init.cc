@@ -2041,7 +2041,7 @@ static void Init_CDROM_Access() {
           ThePalettes().game_palette().Set();
           Show_Mouse();
           WWMessageBox().Process(TXT_CD_ERROR1, TXT_OK);
-          // Prog_End();
+          // ShutDownEngine();
           EmergencyExit(EXIT_FAILURE);
 
         case 2:
@@ -2050,7 +2050,7 @@ static void Init_CDROM_Access() {
           Show_Mouse();
           if (WWMessageBox().Process(TXT_CD_DIALOG_1, TXT_OK, TXT_CANCEL) ==
               1) {
-            // Prog_End();
+            // ShutDownEngine();
             EmergencyExit(EXIT_FAILURE);
           }
           Hide_Mouse();
@@ -2060,7 +2060,7 @@ static void Init_CDROM_Access() {
           TheScreen().visible_page().view().Clear();
           Show_Mouse();
           if (!Force_CD_Available(TheGameState().required_cd())) {
-            // Prog_End();
+            // ShutDownEngine();
             EmergencyExit(EXIT_FAILURE);
           }
           Hide_Mouse();
@@ -2387,7 +2387,7 @@ static void Init_Mouse() {
     ThePalettes().game_palette().Set();
     TheScreen().visible_page().view().Clear();
     WWMessageBox().Process(kLanguageText.no_mouse, TXT_OK);
-    // Prog_End();
+    // ShutDownEngine();
     EmergencyExit(1);
   }
 

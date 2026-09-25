@@ -190,7 +190,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
     case WM_DESTROY:
       CCDebugString("C&C95 - WM_DESTROY message received.\n");
       CCDebugString("C&C95 - About to call Prog_End.\n");
-      Prog_End();
+      ShutDownEngine();
       CCDebugString("C&C95 - About to Invalidate_Cached_Icons.\n");
       Invalidate_Cached_Icons();
       AllSurfaces.Release();
@@ -543,7 +543,7 @@ void Memory_Error_Handler() {
     Show_Mouse();
   };
   CCMessageBox().Process("Error - out of memory.", "Abort", false);
-  Prog_End();
+  ShutDownEngine();
   Invalidate_Cached_Icons();
   PostQuitMessage(0);
   ExitProcess(0);

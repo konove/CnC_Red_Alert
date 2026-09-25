@@ -54,7 +54,7 @@ TypeHeaps::TypeHeaps() {
 TypeHeaps::~TypeHeaps() {
   // TFixedIHeapClass frees its buffer without running element destructors,
   // so the owning members of every type object are released by hand. This
-  // ran in Prog_End() before the heaps moved here.
+  // ran in ShutDownEngine() before the heaps moved here.
   //
   // TODO: it does not actually return the memory. LeakSanitizer reports the
   // same 26 KB of DimensionData and RadarIcon storage whether this loop runs

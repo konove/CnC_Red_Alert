@@ -180,7 +180,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       ** Windoze message says we have to shut down. Try and do it cleanly.
       */
     case WM_DESTROY:
-      Prog_End();
+      ShutDownEngine();
       Invalidate_Cached_Icons();
       AllSurfaces.Release();
       Reset_Video_Mode();

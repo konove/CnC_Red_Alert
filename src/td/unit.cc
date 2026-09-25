@@ -860,7 +860,7 @@ ResultType UnitClass::Take_Damage(int& damage, int distance,
       **	screen when they are destroyed.
       */
       if (Class->MaxStrength > 400) {
-        Shake_Screen(3);
+        ShakeScreen(3);
       }
     }
 

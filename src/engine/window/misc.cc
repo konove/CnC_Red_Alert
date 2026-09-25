@@ -9,8 +9,8 @@ bool Set_Video_Mode(int w, int h, int /*bits_per_pixel*/) {
   return TheDisplay().SetVideoMode(w, h);
 }
 
-void Delay(int duration) {
-  const auto target = g_tick_timer->TickCount() + duration;
+void WaitTicks(int ticks) {
+  const auto target = g_tick_timer->TickCount() + ticks;
 
   while (g_tick_timer->TickCount() < target) {
     TheDisplay().EndFrame();

@@ -1062,7 +1062,7 @@ bool Load_Game(int id) {
   }
 
   if (!Force_CD_Available(TheGameState().required_cd())) {
-    // Prog_End();
+    // ShutDownEngine();
     EmergencyExit(EXIT_FAILURE);
   }
 

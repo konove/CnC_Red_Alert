@@ -154,11 +154,11 @@ static void Flash_Line(PixelView& view, const char* text, int xpix, int ypix,
     Hide_Mouse();
     Fancy_Text_Print(view, text, xpix, ypix, hfgc, bgc,
                      TPF_8POINT | TPF_DROPSHADOW);
-    Delay(2);
+    WaitTicks(2);
     Fancy_Text_Print(view, text, xpix, ypix, nfgc, bgc,
                      TPF_8POINT | TPF_DROPSHADOW);
     Show_Mouse();
-    Delay(2);
+    WaitTicks(2);
   }
 }
 

@@ -91,7 +91,7 @@ static void SDL_Event_Handler(SDL_Event* event) {
 
 // SHAKESCR.ASM in WIN32LIB
 // based on Shake_The_Screen in RA's conquer.cpp
-void Shake_Screen(int shakes) {
+void ShakeScreen(int shakes) {
   shakes += shakes;
 
   Hide_Mouse();

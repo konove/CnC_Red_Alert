@@ -747,7 +747,7 @@ void MapEditClass::AI(KeyNumType& input, int x, int y) {
           Changed = false;
         }
       }
-      // Prog_End();
+      // ShutDownEngine();
       EmergencyExit(0);
 
     /*
@@ -1896,7 +1896,7 @@ HousesType MapEditClass::Cycle_House(HousesType curhouse,
  *   12/12/1994 BR : Created.                                              *
  *=========================================================================*/
 void MapEditClass::Fatal(int txt) {
-  // Prog_End();
+  // ShutDownEngine();
   absl::PrintF("%s\n", Text_String(txt));
   EmergencyExit(EXIT_FAILURE);
 }

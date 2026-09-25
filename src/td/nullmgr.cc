@@ -1402,7 +1402,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   // start waiting
 
   // CCDebugString ("C&C95 - About to delay for 2 seconds.\n");
-  // Delay(120);
+  // WaitTicks(120);
   // HMSetDialingMethod( Port, (int)method );
   CCDebugString("C&C95 - About to set modem dial type.\n");
   SerialPort->Set_Modem_Dial_Type(static_cast<WinCommDialMethodType>(method));
@@ -1781,7 +1781,7 @@ bool NullModemClass::Hangup_Modem() {
   }
 
   SerialPort->Set_Serial_DTR(false);
-  Delay(3200 / 60);
+  WaitTicks(3200 / 60);
   SerialPort->Set_Serial_DTR(true);
 
   // SetDtr( Port, 0 );

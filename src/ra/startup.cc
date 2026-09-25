@@ -18,8 +18,8 @@
 
 // Red Alert's process entry point and exit paths: main() sets up the
 // library systems, reads the options needed before the window exists, and
-// hands over to RunGame(); Prog_End(), EmergencyExit() and the memory-error
-// hooks tear it all down again.
+// hands over to RunGame(); ShutDownEngine(), EmergencyExit() and the
+// memory-error hooks tear it all down again.
 //
 // Originally STARTUP.CPP by Joe L. Bostic, October 1994.
 
@@ -110,7 +110,7 @@
 static Game* game = nullptr;
 
 void ShutDown() {
-  // Everything Prog_End() takes down belongs to the Game, so there is
+  // Everything ShutDownEngine() takes down belongs to the Game, so there is
   // nothing to do before one is built or after one is gone. A test that
   // reaches an error exit without a Game gets here too.
   if (game == nullptr) {
@@ -119,13 +119,13 @@ void ShutDown() {
 
   // Nothing is left for an allocation failure from here on to clean up.
   Memory_Error_Exit = ExitWithError;
-  Prog_End();
+  ShutDownEngine();
   delete game;
   game = nullptr;
 }
 
 // The test that links this file defines RA_NO_ENTRY_POINT: it needs
-// ShutDown() and Prog_End(), which the engine calls, but not main().
+// ShutDown() and ShutDownEngine(), which the engine calls, but not main().
 #ifndef RA_NO_ENTRY_POINT
 
 // Hands what the command line asked for to whatever owns it. The screen
@@ -424,7 +424,7 @@ int main(const int argc, char* argv[])
 
 #endif  // RA_NO_ENTRY_POINT
 
-void Prog_End() {
+void ShutDownEngine() {
   engine::audio::TheAudio().Close();
   TheInput().RemoveMouse();
   ShutdownTickTimer();

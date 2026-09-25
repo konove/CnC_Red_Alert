@@ -34,7 +34,7 @@
  *                  Last Update : May 3, 1995   [BWG] *
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
- * Functions: * Call_Back_Delay -- Combines Call_Back() and Delay() functions *
+ * Functions: * Call_Back_Delay -- Combines Call_Back() and WaitTicks()     *
  *   Draw_Bar_Graphs -- Draw "Casualties" bar graphs * Draw_InfantryMan -- Draw
  *one guy in score screen, update animation                        *
  *   Draw_Infantrymen -- Draw all the guys on the score screen *
@@ -1234,7 +1234,7 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
     if (i >= 60) {
       shapenum = Extract_Shape_Count(factptr) - 2;  // some damage
       if (i == 60) {
-        Shake_Screen(6);
+        ShakeScreen(6);
         Sound_Effect(VOC_CRUMBLE, VOL_FULL, 0);
       }
       if (i > 65) {
@@ -2052,7 +2052,7 @@ void Draw_Bar_Graphs(PixelView& view, int i, int gkilled, int nkilled,
 }
 
 /***************************************************************************
- * Call_Back_Delay -- Combines Call_Back() and Delay() functions           *
+ * Call_Back_Delay -- Combines Call_Back() and WaitTicks() functions           *
  *                                                                         *
  *    This is just to cut down on code size and typing a little.           *
  *                                                                         *

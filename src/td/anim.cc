@@ -1173,7 +1173,7 @@ void AnimClass::Middle() {
                         Cell_Coord(tcell));
       }
     }
-    Shake_Screen(3);
+    ShakeScreen(3);
     if (TheSession().type() == GAME_NORMAL) {
       Fade_Palette_To(ThePalettes().game_palette(), 15, nullptr);
     }

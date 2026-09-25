@@ -1971,7 +1971,7 @@ bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
       ThePalettes().game_palette().Set(kFadePaletteFast, ServiceRealTime);
     }
     if (!Force_CD_Available(TheGameState().required_cd())) {
-      // Prog_End();
+      // ShutDownEngine();
       EmergencyExit(EXIT_FAILURE);
     }
   } else {

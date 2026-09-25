@@ -12,11 +12,11 @@
 // with `exit_code`.
 [[noreturn]] void EmergencyExit(int exit_code);
 
-// Releases everything the game set up - Prog_End() and the Game, which owns
-// the video pages - so the caller only has to exit. Every way out of the game
-// goes through it: every return from main(), EmergencyExit(), the memory-error
-// exits and the SDL quit handler. It does not draw, so it is safe before the
-// video pages exist.
+// Releases everything the game set up - ShutDownEngine() and the Game, which
+// owns the video pages - so the caller only has to exit. Every way out of the
+// game goes through it: every return from main(), EmergencyExit(), the
+// memory-error exits and the SDL quit handler. It does not draw, so it is safe
+// before the video pages exist.
 void ShutDown();
 
 #endif  // CNC_RED_ALERT_RA_STARTUP_H_

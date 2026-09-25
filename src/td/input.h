@@ -16,7 +16,7 @@ class WWMouseClass;
 // The two devices the player plays with. The keyboard exists for the whole
 // of a Game, because the startup path reads keys before there is a window;
 // the mouse cursor needs a page to draw itself over, so it is created by
-// InstallMouse() once the video mode is set and destroyed by Prog_End()
+// InstallMouse() once the video mode is set and destroyed by ShutDownEngine()
 // before the pages go.
 //
 // Constructing an Input also makes its keyboard engine_window's ActiveKeyboard,
@@ -49,7 +49,7 @@ class Input {
   // set; calling it again replaces the cursor.
   void InstallMouse(PixelView& page);
 
-  // Destroys the cursor. Prog_End() calls this before the video pages go.
+  // Destroys the cursor. ShutDownEngine() calls this before the video pages go.
   void RemoveMouse();
 
  private:

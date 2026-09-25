@@ -3472,7 +3472,7 @@ BulletClass* TechnoClass::Fire_At(TARGET target, int which) {
         tech->Clicked_As_Target(4);
       }
 
-      Delay(1);  // Make sure line is visible briefly
+      WaitTicks(1);  // Make sure line is visible briefly
       if (gonnadraw) {
         TheMap().Flag_To_Redraw(true);
       }

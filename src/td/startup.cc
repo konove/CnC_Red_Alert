@@ -35,7 +35,7 @@
  *                                                                                             *
  *---------------------------------------------------------------------------------------------*
  * Functions: * Delete_Swap_Files -- Deletes previously existing swap files. *
- *   Prog_End -- Cleans up library systems in prep for game exit. * main --
+ *   ShutDownEngine -- Cleans up library systems before game exit. * main --
  *Initial startup routine (preps library systems). *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
@@ -482,7 +482,7 @@ int main(int argc, char* argv[])
 #endif  // TD_NO_ENTRY_POINT
 
 /***********************************************************************************************
- * Prog_End -- Cleans up library systems in prep for game exit. *
+ * ShutDownEngine -- Cleans up library systems in prep for game exit. *
  *                                                                                             *
  *    This routine should be called before the game terminates. It handles
  *cleaning up         * library systems so that a graceful return to the host
@@ -496,7 +496,7 @@ int main(int argc, char* argv[])
  *                                                                                             *
  * HISTORY: * 03/20/1995 JLB : Created. *
  *=============================================================================================*/
-void Prog_End() {
+void ShutDownEngine() {
 #ifndef DEMO
   if (TheSession().type() == GAME_MODEM ||
       TheSession().type() == GAME_NULL_MODEM) {
@@ -526,7 +526,7 @@ void Print_Error_Exit(char* string) {
 }
 
 void ShutDown() {
-  // Everything Prog_End() takes down belongs to the Game, so there is
+  // Everything ShutDownEngine() takes down belongs to the Game, so there is
   // nothing to do before one is built or after one is gone. A test that
   // reaches an error exit without a Game gets here too.
   if (game == nullptr) {
@@ -535,7 +535,7 @@ void ShutDown() {
 
   // Nothing is left for an allocation failure from here on to clean up.
   Memory_Error_Exit = Print_Error_Exit;
-  Prog_End();
+  ShutDownEngine();
   delete game;
   game = nullptr;
 }
