@@ -113,9 +113,9 @@ PacketClass::PacketClass(std::span<const std::byte> curbuf)
   if (curbuf.size() < 4) {
     return;
   }
-  Size = ntohs(port::ReadUnaligned<uint16_t>(curbuf));
+  Size = ntohs(base::ReadUnaligned<uint16_t>(curbuf));
   ID = static_cast<int16_t>(
-      ntohs(port::ReadUnaligned<uint16_t>(curbuf.subspan(2))));
+      ntohs(base::ReadUnaligned<uint16_t>(curbuf.subspan(2))));
   if (Size < 4 || Size > curbuf.size()) {
     return;
   }
@@ -123,8 +123,8 @@ PacketClass::PacketClass(std::span<const std::byte> curbuf)
   while (curbuf.size() >= FIELD_HEADER_SIZE) {
     auto* field = new FieldClass;
     base::CopyBytes(base::ObjectBytes(field->ID), curbuf, 4);
-    field->DataType = port::ReadUnaligned<uint16_t>(curbuf.subspan(4));
-    field->Size = port::ReadUnaligned<uint16_t>(curbuf.subspan(6));
+    field->DataType = base::ReadUnaligned<uint16_t>(curbuf.subspan(4));
+    field->Size = base::ReadUnaligned<uint16_t>(curbuf.subspan(6));
     curbuf = curbuf.subspan(FIELD_HEADER_SIZE);
     const std::size_t size = ntohs(field->Size);
     const std::size_t pad = (4 - (size % 4)) % 4;
@@ -193,9 +193,9 @@ char* PacketClass::Create_Comms_Packet(int& size) {
   //
   // write the size into the packet header
   //
-  port::WriteUnaligned(curbuf, htons(static_cast<uint16_t>(size)));
+  base::WriteUnaligned(curbuf, htons(static_cast<uint16_t>(size)));
   curbuf = curbuf.subspan(sizeof(uint16_t));
-  port::WriteUnaligned(curbuf, htons(static_cast<uint16_t>(ID)));
+  base::WriteUnaligned(curbuf, htons(static_cast<uint16_t>(ID)));
   curbuf = curbuf.subspan(sizeof(int16_t));
 
   //
@@ -213,8 +213,8 @@ char* PacketClass::Create_Comms_Packet(int& size) {
     // Copy the adjusted header into the buffer and then advance the buffer
     //
     base::CopyBytes(curbuf, base::ObjectBytes(current->ID), 4);
-    port::WriteUnaligned(curbuf.subspan(4), current->DataType);
-    port::WriteUnaligned(curbuf.subspan(6), current->Size);
+    base::WriteUnaligned(curbuf.subspan(4), current->DataType);
+    base::WriteUnaligned(curbuf.subspan(6), current->Size);
     curbuf = curbuf.subspan(FIELD_HEADER_SIZE);
 
     //
@@ -283,7 +283,7 @@ FieldClass* PacketClass::Find_Field(const char* id) {
 bool PacketClass::Get_Field(const char* id, char& data) {
   const FieldClass* field = Find_Field(id);
   if (field) {
-    data = port::ReadUnaligned<char>(field->Data);
+    data = base::ReadUnaligned<char>(field->Data);
   }
   return field != nullptr;
 }
@@ -306,7 +306,7 @@ bool PacketClass::Get_Field(const char* id, char& data) {
 bool PacketClass::Get_Field(const char* id, unsigned char& data) {
   const FieldClass* field = Find_Field(id);
   if (field) {
-    data = port::ReadUnaligned<unsigned char>(field->Data);
+    data = base::ReadUnaligned<unsigned char>(field->Data);
   }
   return field != nullptr;
 }
@@ -329,7 +329,7 @@ bool PacketClass::Get_Field(const char* id, unsigned char& data) {
 bool PacketClass::Get_Field(const char* id, int16_t& data) {
   const FieldClass* field = Find_Field(id);
   if (field) {
-    data = port::ReadUnaligned<int16_t>(field->Data);
+    data = base::ReadUnaligned<int16_t>(field->Data);
   }
   return field != nullptr;
 }
@@ -352,7 +352,7 @@ bool PacketClass::Get_Field(const char* id, int16_t& data) {
 bool PacketClass::Get_Field(const char* id, uint16_t& data) {
   const FieldClass* field = Find_Field(id);
   if (field) {
-    data = port::ReadUnaligned<uint16_t>(field->Data);
+    data = base::ReadUnaligned<uint16_t>(field->Data);
   }
   return field != nullptr;
 }
@@ -375,7 +375,7 @@ bool PacketClass::Get_Field(const char* id, uint16_t& data) {
 bool PacketClass::Get_Field(const char* id, int32_t& data) {
   const FieldClass* field = Find_Field(id);
   if (field) {
-    data = port::ReadUnaligned<int32_t>(field->Data);
+    data = base::ReadUnaligned<int32_t>(field->Data);
   }
   return field != nullptr;
 }
@@ -433,7 +433,7 @@ bool PacketClass::Get_Field(const char* id, std::span<char> data) {
 bool PacketClass::Get_Field(const char* id, uint32_t& data) {
   const FieldClass* field = Find_Field(id);
   if (field) {
-    data = port::ReadUnaligned<uint32_t>(field->Data);
+    data = base::ReadUnaligned<uint32_t>(field->Data);
   }
   return field != nullptr;
 }

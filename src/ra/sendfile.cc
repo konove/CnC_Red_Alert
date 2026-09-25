@@ -174,7 +174,7 @@ bool Get_Scenario_File_From_Host(std::span<char> return_name, size_t dest_size,
       if ((TheNetwork().null_modem().Get_Message(
                base::ObjectBytes(receive_packet), &packet_len) > 0) &&
           (receive_packet.Command == SERIAL_FILE_INFO)) {
-        port::SafeCopy(
+        base::SafeCopy(
             return_name.first(std::min(return_name.size(), dest_size)),
             receive_packet.ScenarioInfo.ShortFileName);
         file_length = static_cast<int>(receive_packet.ScenarioInfo.FileLength);
@@ -193,7 +193,7 @@ bool Get_Scenario_File_From_Host(std::span<char> return_name, size_t dest_size,
            sender_address == TheSession().HostAddress))
       // WWDebugString ("RA95 - Got packet from host\n");
       {
-        port::SafeCopy(
+        base::SafeCopy(
             return_name.first(std::min(return_name.size(), dest_size)),
             net_receive_packet.ScenarioInfo.ShortFileName);
         file_length =
@@ -605,10 +605,10 @@ bool Send_Remote_File(const char* file_name, int gametype) {
   */
   if (!gametype) {
     file_info.Command = SERIAL_FILE_INFO;
-    port::SafeCopy(file_info.ScenarioInfo.ShortFileName, file_name);
+    base::SafeCopy(file_info.ScenarioInfo.ShortFileName, file_name);
     //	If we're sending an official map, always send it to 'download.tmp'.
     if (IsMissionCounterstrike(file_name) || IsMissionAftermath(file_name)) {
-      port::SafeCopy(file_info.ScenarioInfo.ShortFileName, "DOWNLOAD.TMP");
+      base::SafeCopy(file_info.ScenarioInfo.ShortFileName, "DOWNLOAD.TMP");
     }
     file_info.ScenarioInfo.FileLength = static_cast<unsigned>(file_length);
     TheNetwork().null_modem().Send_Message(base::ObjectBytes(file_info),
@@ -619,11 +619,11 @@ bool Send_Remote_File(const char* file_name, int gametype) {
     }
   } else {
     net_file_info.Command = NET_FILE_INFO;
-    port::SafeCopy(net_file_info.ScenarioInfo.ShortFileName, file_name);
+    base::SafeCopy(net_file_info.ScenarioInfo.ShortFileName, file_name);
     //		debugprint( "Uploading '%s'\n", file_name );
     //	If we're sending an official map, always send it to 'download.tmp'.
     if (IsMissionCounterstrike(file_name) || IsMissionAftermath(file_name)) {
-      port::SafeCopy(net_file_info.ScenarioInfo.ShortFileName, "DOWNLOAD.TMP");
+      base::SafeCopy(net_file_info.ScenarioInfo.ShortFileName, "DOWNLOAD.TMP");
     }
     //		debugprint( "ShortFileName is '%s'\n",
     // net_file_info.ScenarioInfo.ShortFileName );

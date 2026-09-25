@@ -208,8 +208,8 @@ bool LoadOptionsClass::Process() {
   int game_idx = 0;                    // index of game to save/load/etc
   int game_num = 0;                    // file number of game to load/save/etc
   char game_descr[kDescripMax] = {0};  // save-game description
-  char fname[port::kMaxFname +
-             port::kMaxExt];  // for generating filename to delete
+  char fname[platform::kMaxFname +
+             platform::kMaxExt];  // for generating filename to delete
 
   /*
   **	Buttons
@@ -538,7 +538,7 @@ bool LoadOptionsClass::Process() {
           ** it is, set the edit buffer to empty.
           */
           if (game_idx != 0) {
-            port::SafeCopy(game_descr, listbtn.Get_Item(game_idx));
+            base::SafeCopy(game_descr, listbtn.Get_Item(game_idx));
 
             /*
             **	Strip any leading parenthesis off of the description.
@@ -642,7 +642,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   */
   if (Style == SAVE) {
     fdata = new FileEntryClass;
-    port::SafeCopy(fdata->Descr, Text_String(TXT_EMPTY_SLOT));
+    base::SafeCopy(fdata->Descr, Text_String(TXT_EMPTY_SLOT));
     fdata->DateTime = 0xffffffff;  // will always be first
     Files.Add(fdata);
   }
@@ -667,7 +667,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
 
       fdata->Descr[0] = '\0';
       if (!ok) {
-        port::SafeCopy(fdata->Descr, Text_String(TXT_OLD_GAME));
+        base::SafeCopy(fdata->Descr, Text_String(TXT_OLD_GAME));
       } else {
         if (IsSovietHouse(house)) {
           absl::SNPrintF(fdata->Descr, sizeof(fdata->Descr), "(%s) ",
@@ -677,7 +677,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
                          Text_String(TXT_ALLIES));
         }
       }
-      port::SafeAppend(fdata->Descr, descr);
+      base::SafeAppend(fdata->Descr, descr);
       fdata->Valid = ok;
       fdata->Scenario = scenario;
       fdata->House = house;
@@ -758,7 +758,7 @@ int LoadOptionsClass::Num_From_Ext(const char* fname) {
 
   int num = 0;
   if (ext.size() > 1) {  // Has more than just '.'
-    num = tech::ParseIntegerOr<int>(std::string_view(ext).substr(1), 0);
+    num = base::ParseIntegerOr<int>(std::string_view(ext).substr(1), 0);
   }
   return num;
 }

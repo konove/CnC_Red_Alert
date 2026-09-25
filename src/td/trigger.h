@@ -185,7 +185,7 @@ class TriggerClass {
   [[nodiscard]] const char* Get_Name() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return Name;
   }
-  void Set_Name(const char* buf) { port::SafeCopy(Name, buf); }
+  void Set_Name(const char* buf) { base::SafeCopy(Name, buf); }
 
   /*
   **	Utility routines

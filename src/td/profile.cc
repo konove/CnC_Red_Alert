@@ -79,7 +79,7 @@ unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
                                 const char* profile) {
   char buffer[16];
   WWGetPrivateProfileString(section, entry, "0", buffer, profile);
-  return tech::ParseHexOr<uint32_t>(buffer, 0);
+  return base::ParseHexOr<uint32_t>(buffer, 0);
 }
 
 int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
@@ -87,7 +87,7 @@ int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
   char buffer[16];
   absl::SNPrintF(buffer, sizeof(buffer), "%d", def);
   WWGetPrivateProfileString(section, entry, buffer, buffer, profile);
-  return tech::ParseIntegerOr<int>(buffer, def);
+  return base::ParseIntegerOr<int>(buffer, def);
 }
 
 bool WWWritePrivateProfileInt(const char* section, const char* entry, int value,
@@ -101,11 +101,11 @@ const char* WWGetPrivateProfileString(const char* section, const char* key,
                                       const char* def, std::span<char> dest,
                                       const char* ini_data) {
   if (ini_data == nullptr || section == nullptr) {
-    port::SafeCopy(dest, def);
+    base::SafeCopy(dest, def);
     return dest.data();
   }
   const std::string_view text(ini_data);
-  const auto found = port::ReadProfile(text, section, key, def, dest);
+  const auto found = file::ReadProfile(text, section, key, def, dest);
   return found ? text.substr(*found).data() : nullptr;
 }
 
@@ -114,5 +114,5 @@ bool WWWritePrivateProfileString(const char* section, const char* entry,
   if (profile.empty() || section == nullptr) {
     return true;
   }
-  return port::WriteProfile(profile, section, entry, string);
+  return file::WriteProfile(profile, section, entry, string);
 }

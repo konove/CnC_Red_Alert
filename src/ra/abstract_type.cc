@@ -12,7 +12,7 @@
 AbstractTypeClass::AbstractTypeClass(const RTTIType rtti, const int id,
                                      const int name, const char* ini) noexcept
     : RTTI(rtti), ID(id), FullName(name) {
-  port::SafeCopy(IniName, ini);
+  base::SafeCopy(IniName, ini);
 }
 
 COORDINATE AbstractTypeClass::Coord_Fixup(const COORDINATE coord) const {

@@ -6,7 +6,7 @@
 // Example:
 //   in_addr address{};
 //   address.s_addr = user_ip;
-//   pNetUtil->RequestPing(port::Ipv4Text(address).c_str(), 1000, &unused);
+//   pNetUtil->RequestPing(net::Ipv4Text(address).c_str(), 1000, &unused);
 
 #ifndef CNC_RED_ALERT_ENGINE_NET_INET_TEXT_H_
 #define CNC_RED_ALERT_ENGINE_NET_INET_TEXT_H_
@@ -19,11 +19,11 @@
 #include <netinet/in.h>
 #endif
 
-namespace port {
+namespace net {
 
 // Returns `address` as "a.b.c.d".
 [[nodiscard]] std::string Ipv4Text(const in_addr& address);
 
-}  // namespace port
+}  // namespace net
 
 #endif  // CNC_RED_ALERT_ENGINE_NET_INET_TEXT_H_

@@ -264,7 +264,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
               if (offset >= storage.size()) {
                 return txtlabel;
               }
-              port::SafeCopy(
+              base::SafeCopy(
                   storage.subspan(offset).first(std::min<size_t>(
                       storage.size() - offset, COMPAT_MESSAGE_LENGTH - 4)),
                   incoming.substr(incoming_colon + 1));
@@ -376,7 +376,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
       base::At(BufferAvail, i) = 0;
       base::FillBytes(base::ObjectBytes(base::At(MessageBuffers, i)), 0,
                       MAX_MESSAGE_LENGTH + 30);
-      port::SafeCopy(base::At(MessageBuffers, i), txt);
+      base::SafeCopy(base::At(MessageBuffers, i), txt);
 
       /*
       ** If this is a segment from a larger message then put it in the right
@@ -402,7 +402,7 @@ TextLabelClass* MessageListClass::Add_Message(char* txt, int color,
             if (magic_number - segment != MESSAGE_HEAD_MAGIC_NUMBER) {
               std::ranges::fill(slot, ' ');
             } else {
-              port::SafeCopy(slot, incoming.substr(colon + 1));
+              base::SafeCopy(slot, incoming.substr(colon + 1));
             }
           }
           base::At(destination, std::min(destination.size(),

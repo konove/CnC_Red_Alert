@@ -12,7 +12,7 @@ namespace {
 
 // Returns the 16-bit sample at index in a decoded buffer.
 int16_t SampleAt(std::span<const uint8_t> samples, int index) {
-  return port::ReadUnaligned<int16_t>(
+  return base::ReadUnaligned<int16_t>(
       std::as_bytes(samples.subspan(base::ToSize(index * 2), 2)));
 }
 

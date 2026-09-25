@@ -119,7 +119,7 @@ class AbstractTypeClass {
   [[nodiscard]] const char* Name() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return IniName;
   }
-  void Set_Name(const char* buf) { port::SafeCopy(IniName, buf); }
+  void Set_Name(const char* buf) { base::SafeCopy(IniName, buf); }
   // Returns a bit flag of houses allowed to own this type. Base allows all;
   // derived classes override to restrict ownership.
   [[nodiscard]] virtual uint32_t Get_Ownable() const;
@@ -141,7 +141,7 @@ class HouseTypeClass : public AbstractTypeClass {
   **	This is the filename suffix to use when creating a house specific
   **	file name. It is three characters long.
   */
-  char Suffix[port::kMaxExt]{};
+  char Suffix[platform::kMaxExt]{};
 
   /*
   **	This is the "lemon percentage" to use when determining if a particular
@@ -206,7 +206,7 @@ class HouseTypeClass : public AbstractTypeClass {
 class ObjectTypeClass : public AbstractTypeClass {
  public:
   // Base filename for graphic data. Empty string indicates no graphic.
-  char GraphicName[port::kMaxFname]{};
+  char GraphicName[platform::kMaxFname]{};
 
   /*
   **	Is this object squashable by heavy vehicles?  If it is, then the vehicle

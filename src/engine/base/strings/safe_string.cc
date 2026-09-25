@@ -5,7 +5,7 @@
 #include <span>
 #include <string_view>
 
-namespace port {
+namespace base {
 
 void SafeCopy(std::span<char> dest, const char* src) {
   if (dest.empty()) {
@@ -69,4 +69,4 @@ char* CloneString(const char* src) {
   return dest;
 }
 
-}  // namespace port
+}  // namespace base

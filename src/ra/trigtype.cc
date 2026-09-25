@@ -1019,7 +1019,7 @@ bool TriggerTypeClass::Edit() {
   EditClass name_edt(kNameEdit, namebuf, sizeof(namebuf),
                      TPF_EFNT | TPF_NOSHADOW, kDialogX + 40, kDialogY + 30, 40,
                      9, EditClass::kAlphanumeric);
-  port::SafeCopy(namebuf, IniName);  // Name
+  base::SafeCopy(namebuf, IniName);  // Name
 
   /*
   **	Create the list of house's allowed for trigger.
@@ -1578,7 +1578,7 @@ bool TriggerTypeClass::Edit() {
           case NEED_TIME:
           case NEED_NUMBER:
             Event1.Data.Value =
-                tech::ParseIntegerOr<int>(event1data.Get_Text(), 0);
+                base::ParseIntegerOr<int>(event1data.Get_Text(), 0);
             break;
 
           case NEED_STRUCTURE:
@@ -1636,7 +1636,7 @@ bool TriggerTypeClass::Edit() {
           case NEED_TIME:
           case NEED_NUMBER:
             Event2.Data.Value =
-                tech::ParseIntegerOr<int>(event2data.Get_Text(), 0);
+                base::ParseIntegerOr<int>(event2data.Get_Text(), 0);
             break;
 
           case NEED_STRUCTURE:
@@ -1707,7 +1707,7 @@ bool TriggerTypeClass::Edit() {
 
           case NEED_NUMBER:
             Action1.Data.Value =
-                tech::ParseIntegerOr<int>(action1data.Get_Text(), 0);
+                base::ParseIntegerOr<int>(action1data.Get_Text(), 0);
             break;
 
           case NEED_WAYPOINT:
@@ -1778,7 +1778,7 @@ bool TriggerTypeClass::Edit() {
 
           case NEED_NUMBER:
             Action2.Data.Value =
-                tech::ParseIntegerOr<int>(action2data.Get_Text(), 0);
+                base::ParseIntegerOr<int>(action2data.Get_Text(), 0);
             break;
 
           case NEED_WAYPOINT:
@@ -2100,14 +2100,14 @@ void TriggerTypeClass::Fill_In(const char* name, char* entry) {
   */
   Set_Name(name);
 
-  port::Tokenizer tokens(entry, ",");
+  base::Tokenizer tokens(entry, ",");
   IsPersistant =
-      static_cast<PersistantType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
-  House = static_cast<HousesType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+      static_cast<PersistantType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+  House = static_cast<HousesType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
   EventControl =
-      static_cast<MultiStyleType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+      static_cast<MultiStyleType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
   ActionControl =
-      static_cast<MultiStyleType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+      static_cast<MultiStyleType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
   Event1.Read_INI(tokens);
   Event2.Read_INI(tokens);

@@ -63,7 +63,7 @@ void DecodeDelta(const std::span<uint8_t> target,
         if (delta.size() < 2) {
           return;
         }
-        const auto code = port::ReadUnaligned<uint16_t>(delta);
+        const auto code = base::ReadUnaligned<uint16_t>(delta);
         delta = delta.subspan(2);
         if (code == 0) {
           return;

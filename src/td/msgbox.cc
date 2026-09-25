@@ -161,7 +161,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   **	These dimensions will control how the dialog box looks.
   */
   base::At(buffer, BUFFSIZE - 1) = 0;
-  port::SafeCopy(std::span(buffer).first(BUFFSIZE - 1), msg);
+  base::SafeCopy(std::span(buffer).first(BUFFSIZE - 1), msg);
   int width = 0;
   int height = 0;
 

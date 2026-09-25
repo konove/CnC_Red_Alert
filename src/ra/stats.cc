@@ -432,7 +432,7 @@ void Send_Statistics_Packet() {
                       reinterpret_cast<const std::byte*>(info->ai_addr),
                       info->ai_addrlen);
                   const auto address =
-                      port::ReadUnaligned<sockaddr_in>(address_bytes);
+                      base::ReadUnaligned<sockaddr_in>(address_bytes);
                   //	Is it an address in a private network? If so we
                   // should ignore it. First and second octets.
                   const uint32_t ip = ntohl(address.sin_addr.s_addr);
@@ -443,8 +443,8 @@ void Send_Statistics_Packet() {
                     //	This is a private network address - ignore it and go on
                     // to next.
                   } else {
-                    port::SafeCopy(szIPAddress,
-                                   port::Ipv4Text(address.sin_addr).c_str());
+                    base::SafeCopy(szIPAddress,
+                                   net::Ipv4Text(address.sin_addr).c_str());
                     break;
                   }
                 }

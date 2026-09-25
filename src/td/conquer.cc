@@ -890,7 +890,7 @@ static void Message_Input(KeyNumType& input) {
         TheSession().type() == GAME_MODEM) {
       //|| GameToPlay == GAME_INTERNET) {
       if (input == KN_F1 || input == KN_F1 + TheSession().max_players() - 1) {
-        port::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
+        base::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
 
         TheSession().messages().Add_Edit(
             base::At(TheSession().text_colors(), TheSession().color_index()),
@@ -910,7 +910,7 @@ static void Message_Input(KeyNumType& input) {
         if (input == KN_F1 + TheSession().max_players() - 1 &&
             TheSession().messages().Get_Edit_Buf() == nullptr) {
           message_address = IPXAddressClass();           // set to broadcast
-          port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
+          base::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
 
           TheSession().messages().Add_Edit(
               base::At(TheSession().text_colors(), TheSession().color_index()),
@@ -983,7 +983,7 @@ static void Message_Input(KeyNumType& input) {
     us a version of it later.
     .....................................................................*/
     if (!std::string_view(TheSession().messages().Get_Edit_Buf()).empty()) {
-      port::SafeCopy(TheSession().last_message(),
+      base::SafeCopy(TheSession().last_message(),
                      TheSession().messages().Get_Edit_Buf());
     }
 
@@ -1030,8 +1030,8 @@ static void Message_Input(KeyNumType& input) {
         auto* serial_packet = &packet;
 
         serial_packet->Command = SERIAL_MESSAGE;
-        port::SafeCopy(serial_packet->Name, TheSession().player_name());
-        port::SafeCopy(
+        base::SafeCopy(serial_packet->Name, TheSession().player_name());
+        base::SafeCopy(
             std::span(serial_packet->Message).first(COMPAT_MESSAGE_LENGTH - 4),
             std::string_view(TheSession().messages().Get_Edit_Buf())
                 .substr(base::ToSize(sent_so_far)));
@@ -1063,10 +1063,10 @@ static void Message_Input(KeyNumType& input) {
         /*
         ** Flag this message segment as either a message head or a message tail.
         */
-        port::WriteUnaligned(base::ObjectBytes(serial_packet->Message)
+        base::WriteUnaligned(base::ObjectBytes(serial_packet->Message)
                                  .subspan(COMPAT_MESSAGE_LENGTH - 4),
                              magic_number);
-        port::WriteUnaligned(base::ObjectBytes(serial_packet->Message)
+        base::WriteUnaligned(base::ObjectBytes(serial_packet->Message)
                                  .subspan(COMPAT_MESSAGE_LENGTH - 2),
                              crc);
         serial_packet->ID = TheSession().local_id();
@@ -1093,9 +1093,9 @@ static void Message_Input(KeyNumType& input) {
 
         while (sent_so_far < message_length) {
           TheNetwork().global_packet().Command = NET_MESSAGE;
-          port::SafeCopy(TheNetwork().global_packet().Name,
+          base::SafeCopy(TheNetwork().global_packet().Name,
                          TheSession().player_name());
-          port::SafeCopy(
+          base::SafeCopy(
               std::span(TheNetwork().global_packet().Message.Buf)
                   .first(COMPAT_MESSAGE_LENGTH - 4),
               std::string_view(TheSession().messages().Get_Edit_Buf())
@@ -1131,11 +1131,11 @@ static void Message_Input(KeyNumType& input) {
           ** Flag this message segment as either a message head or a message
           *tail.
           */
-          port::WriteUnaligned(
+          base::WriteUnaligned(
               base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
                   .subspan(COMPAT_MESSAGE_LENGTH - 4),
               magic_number);
-          port::WriteUnaligned(
+          base::WriteUnaligned(
               base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
                   .subspan(COMPAT_MESSAGE_LENGTH - 2),
               crc);
@@ -1369,10 +1369,10 @@ void Call_Back() {
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
                                 TheNetwork().global_packet().Name,
                                 TheNetwork().global_packet().Message.Buf);
-            magic_number = port::ReadUnaligned<uint16_t>(
+            magic_number = base::ReadUnaligned<uint16_t>(
                 base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
                     .subspan(COMPAT_MESSAGE_LENGTH - 4));
-            crc = port::ReadUnaligned<uint16_t>(
+            crc = base::ReadUnaligned<uint16_t>(
                 base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
                     .subspan(COMPAT_MESSAGE_LENGTH - 2));
             color = static_cast<int>(MPlayerID_To_ColorIndex(
@@ -1393,7 +1393,7 @@ void Call_Back() {
             */
             if (!std::string_view(TheNetwork().global_packet().Message.Buf)
                      .empty()) {
-              port::SafeCopy(TheSession().last_message(),
+              base::SafeCopy(TheSession().last_message(),
                              TheNetwork().global_packet().Message.Buf);
             }
           }
@@ -1435,7 +1435,7 @@ void Call_Back() {
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
 const char* Language_Name(const char* basename) {
-  static char _fullname[port::kMaxFname + port::kMaxExt];
+  static char _fullname[platform::kMaxFname + platform::kMaxExt];
 
   if (!basename) {
     return nullptr;
@@ -1870,7 +1870,7 @@ bool Main_Loop() {
     log_heap(TheObjectHeaps().aircraft(), "aircraftstate");
     class MapHashSink : public ByteSink {
      public:
-      bool trace = port::GetEnv("TD_MAP_TRACE").has_value();
+      bool trace = platform::GetEnv("TD_MAP_TRACE").has_value();
       std::string fields;
       uint64_t hash = 14695981039346656037ULL;
       bool Write(std::span<const std::byte> bytes) override {
@@ -3249,7 +3249,7 @@ std::span<const std::byte> Hires_Retrieve(const char* name) {
   if (Screen::kWidth != 320) {
     absl::SNPrintF(filename, sizeof(filename), "H%s", name);
   } else {
-    port::SafeCopy(filename, name);
+    base::SafeCopy(filename, name);
   }
   return MixArchive::RetrieveData(filename);
 }

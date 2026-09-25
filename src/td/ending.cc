@@ -205,14 +205,14 @@ void Nod_Ending() {
 
   Hide_Mouse();
   Wait_Vert_Blank();
-  Set_Palette(port::UnsignedBytes(localpal));
+  Set_Palette(base::UnsignedBytes(localpal));
 #ifdef NOT_FOR_WIN95
   base::CopyBytes(std::as_writable_bytes(TheScreen().visible_view().bytes()),
                   std::as_writable_bytes(std::span(satpic)), satpic.size());
 #endif  // NOT_FOR_WIN95
   Show_Mouse();
 
-  Increase_Palette_Luminance(port::UnsignedBytes(localpal), 30, 30, 30, 63);
+  Increase_Palette_Luminance(base::UnsignedBytes(localpal), 30, 30, 30, 63);
   Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(),
                        "SATSELIN.PAL");
 
@@ -332,6 +332,6 @@ void Nod_Ending() {
 
   Play_Movie("CC2TEASE");
 
-  delete[] port::CharBytes(std::span(localpal)).data();
+  delete[] base::CharBytes(std::span(localpal)).data();
 }
 #endif

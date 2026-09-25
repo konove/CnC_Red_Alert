@@ -163,7 +163,7 @@ void Check_From_WChat(const char* wchat_name) {
       }
       return;
     }
-    port::SafeCopy(TheNetwork().westwood_address(), key_string);
+    base::SafeCopy(TheNetwork().westwood_address(), key_string);
 
     /*
     ** Get the port number
@@ -179,7 +179,7 @@ void Check_From_WChat(const char* wchat_name) {
       return;
     }
 
-    TheNetwork().westwood_port() = tech::ParseIntegerOr<int>(key_string, 0);
+    TheNetwork().westwood_port() = base::ParseIntegerOr<int>(key_string, 0);
 
     /*
     ** Get host or client
@@ -242,7 +242,7 @@ int Read_Game_Options(const char* name) {
   char filename[256] = {"INVALID.123"};
 
   if (name) {
-    port::SafeCopy(filename, name);
+    base::SafeCopy(filename, name);
   }
 
   /*------------------------------------------------------------------------
@@ -270,7 +270,7 @@ int Read_Game_Options(const char* name) {
   ------------------------------------------------------------------------*/
   WWGetPrivateProfileString("Options", "Handle", "Noname",
                             TheSession().player_name(), buffer);
-  port::SafeCopy(TheSession().game_name(), TheSession().player_name());
+  base::SafeCopy(TheSession().game_name(), TheSession().player_name());
   TheSession().color_index() =
       WWGetPrivateProfileInt("Options", "Color", 0, buffer);
   TheSession().preferred_color() = TheSession().color_index();
@@ -451,7 +451,7 @@ bool Do_The_Internet_Menu_Thang() {
   // Format_Window_String inserts line breaks in place, so format a copy rather
   // than the shared string table.
   char buffer[80 * 3];
-  port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
+  base::SafeCopy(buffer, Text_String(TXT_CONNECTING));
   Format_Window_String(TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW), buffer,
                        view.height(), width, height);
 

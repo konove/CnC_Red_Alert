@@ -236,7 +236,7 @@ TDropListClass<T>* TDropListClass<T>::Remove() {
 
 template <class T>
 int TDropListClass<T>::Add_Item(T item) {
-  port::SafeCopy(String.first(base::ToSize(MaxLength)), item->Description());
+  base::SafeCopy(String.first(base::ToSize(MaxLength)), item->Description());
   Flag_To_Redraw();
   return List.Add_Item(item);
 }
@@ -255,7 +255,8 @@ template <class T>
 void TDropListClass<T>::Set_Selected_Index(int index) {
   if (static_cast<unsigned>(index) < static_cast<unsigned>(List.Count())) {
     List.Set_Selected_Index(index);
-    port::SafeCopy(String.first(base::ToSize(MaxLength)), List.Get_Item(Current_Index())->Description());
+    base::SafeCopy(String.first(base::ToSize(MaxLength)),
+                   List.Get_Item(Current_Index())->Description());
   } else {
     base::At(String, 0) = '\0';
   }
@@ -279,7 +280,8 @@ void TDropListClass<T>::Peer_To_Peer(unsigned flags, KeyNumType& key,
   }
 
   if (&whom == &List) {
-    port::SafeCopy(String.first(base::ToSize(MaxLength)), List.Current_Item()->Description());
+    base::SafeCopy(String.first(base::ToSize(MaxLength)),
+                   List.Current_Item()->Description());
     Flag_To_Redraw();
     key = ButtonKey(static_cast<int>(ID));
   }

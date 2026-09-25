@@ -9,7 +9,7 @@
 
 #include "engine/base/buffer.h"
 
-namespace port {
+namespace base {
 
 // Reads a native-representation value from at least sizeof(T) readable bytes.
 // The source must be non-null and contain a valid representation of T.
@@ -29,6 +29,6 @@ void WriteUnaligned(std::span<std::byte> destination, const T& value) {
   base::CopyBytes(destination, base::ObjectBytes(value), sizeof(value));
 }
 
-}  // namespace port
+}  // namespace base
 
 #endif  // CNC_RED_ALERT_ENGINE_BASE_UNALIGNED_H_

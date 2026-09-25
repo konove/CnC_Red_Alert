@@ -14,9 +14,9 @@ namespace {
 TEST(InetTextTest, FormatsDottedDecimal) {
   in_addr address{};
   address.s_addr = htonl(0x7f000001);
-  EXPECT_EQ(port::Ipv4Text(address), "127.0.0.1");
+  EXPECT_EQ(net::Ipv4Text(address), "127.0.0.1");
   address.s_addr = htonl(0xc0a80a0b);
-  EXPECT_EQ(port::Ipv4Text(address), "192.168.10.11");
+  EXPECT_EQ(net::Ipv4Text(address), "192.168.10.11");
 }
 
 }  // namespace

@@ -38,7 +38,7 @@ std::vector<std::byte> MakeIconSet(const int16_t width, const int16_t height,
   header.Size = header.Map + 1;
 
   std::vector<std::byte> set(static_cast<size_t>(header.Size));
-  port::WriteUnaligned(set, header);
+  base::WriteUnaligned(set, header);
   std::ranges::transform(pixels, set.begin() + header.Icons,
                          [](const uint8_t pixel) { return std::byte{pixel}; });
   set.at(static_cast<size_t>(header.TransFlag)) = std::byte{transparent};

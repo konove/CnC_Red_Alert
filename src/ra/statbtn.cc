@@ -185,7 +185,7 @@ void StaticButtonClass::Set_Text(const char* text) {
     String = nullptr;
   }
 
-  String = port::CloneString(text);
+  String = base::CloneString(text);
 
   Flag_To_Redraw();
 }

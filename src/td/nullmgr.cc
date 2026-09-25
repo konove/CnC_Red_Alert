@@ -721,7 +721,7 @@ int NullModemClass::Service() {
   ------------------------------------------------------------------------*/
   int pos = -1;  // current position in RXBuf
   for (i = 0; i <= RXCount - static_cast<int>(sizeof(int16_t)); i++) {
-    if (port::ReadUnaligned<uint16_t>(std::as_writable_bytes(std::span(RXBuf))
+    if (base::ReadUnaligned<uint16_t>(std::as_writable_bytes(std::span(RXBuf))
                                           .subspan(base::ToSize(i))) ==
         PACKET_SERIAL_START) {
       pos = i;
@@ -761,7 +761,7 @@ int NullModemClass::Service() {
   /*------------------------------------------------------------------------
   A start code was found; check the packet's length & CRC
   ------------------------------------------------------------------------*/
-  header = port::ReadUnaligned<SerialHeaderType>(
+  header = base::ReadUnaligned<SerialHeaderType>(
       std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos)));
 
   /*........................................................................
@@ -834,7 +834,7 @@ int NullModemClass::Service() {
   start-code, move the rest to the front of the buffer, & return.
   We'll continue parsing this data when we're called next time.
   ........................................................................*/
-  crc = port::ReadUnaligned<SerialCRCType>(
+  crc = base::ReadUnaligned<SerialCRCType>(
       std::as_writable_bytes(std::span(RXBuf))
           .subspan(base::ToSize(pos) + sizeof(SerialHeaderType) + length));
   if (NullModemConnClass::Compute_CRC(
@@ -990,7 +990,7 @@ std::span<const std::byte> NullModemClass::Oldest_Send() {
         Connection->Queue->Get_Send(i);  // ptr to send entry header
     if (send_entry) {
       auto* packet =
-          port::AlignedObject<CommHeaderType>(send_entry->Buffer.data());
+          base::AlignedObject<CommHeaderType>(send_entry->Buffer.data());
       if (packet->Code ==
               static_cast<unsigned char>(ConnectionClass::PACKET_DATA_ACK) &&
           send_entry->IsACK == 0) {
@@ -1039,7 +1039,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   **	Determine the dimensions of the text to be used for the dialog box.
   **	These dimensions will control how the dialog box looks.
   */
-  port::SafeCopy(buffer, Text_String(TXT_INITIALIZING_MODEM));
+  base::SafeCopy(buffer, Text_String(TXT_INITIALIZING_MODEM));
 
   const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(font, buffer, view.height(), width, height);
@@ -1129,13 +1129,13 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     ** This character acts as a carriage return/pause.
     */
     std::vector<char> istr(str_length);
-    port::SafeCopy(istr,
+    base::SafeCopy(istr,
                    TheNetwork().init_strings().at(settings->InitStringIndex));
 
     /*
     ** Tokenise the string and send it in chunks
     */
-    port::Tokenizer tokens(istr.data(), "|");
+    base::Tokenizer tokens(istr.data(), "|");
     char* tokenptr = tokens.Next();
     while (tokenptr) {
       status =
@@ -1168,7 +1168,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
       ** Send the init string for hardware flow control
       */
       if (TheNetwork().modem_registry()->Get_Modem_Hardware_Flow_Control()) {
-        port::SafeAppend(
+        base::SafeAppend(
             send_string,
             TheNetwork().modem_registry()->Get_Modem_Hardware_Flow_Control());
         status = Send_Modem_Command(send_string, '\r', buffer, 81,
@@ -1184,7 +1184,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
       ** Send the init string for no flow control
       */
       if (TheNetwork().modem_registry()->Get_Modem_No_Flow_Control()) {
-        port::SafeAppend(
+        base::SafeAppend(
             send_string,
             TheNetwork().modem_registry()->Get_Modem_No_Flow_Control());
         status = Send_Modem_Command(send_string, '\r', buffer, 81,
@@ -1202,7 +1202,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     */
     if (settings->Compression) {
       if (TheNetwork().modem_registry()->Get_Modem_Compression_Enable()) {
-        port::SafeAppend(
+        base::SafeAppend(
             send_string,
             TheNetwork().modem_registry()->Get_Modem_Compression_Enable());
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
@@ -1214,7 +1214,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
       }
     } else {
       if (TheNetwork().modem_registry()->Get_Modem_Compression_Disable()) {
-        port::SafeAppend(
+        base::SafeAppend(
             send_string,
             TheNetwork().modem_registry()->Get_Modem_Compression_Disable());
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
@@ -1231,7 +1231,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
     */
     if (settings->ErrorCorrection) {
       if (TheNetwork().modem_registry()->Get_Modem_Error_Correction_Enable()) {
-        port::SafeAppend(
+        base::SafeAppend(
             send_string,
             TheNetwork().modem_registry()->Get_Modem_Error_Correction_Enable());
         Send_Modem_Command(send_string, '\r', buffer, 81, DEFAULT_TIMEOUT, 1);
@@ -1243,7 +1243,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
       }
     } else {
       if (TheNetwork().modem_registry()->Get_Modem_Error_Correction_Disable()) {
-        port::SafeAppend(send_string,
+        base::SafeAppend(send_string,
                          TheNetwork()
                              .modem_registry()
                              ->Get_Modem_Error_Correction_Disable());
@@ -1332,9 +1332,9 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
   **	These dimensions will control how the dialog box looks.
   */
   if (reconnect) {
-    port::SafeCopy(buffer, Text_String(TXT_MODEM_CONNERR_REDIALING));
+    base::SafeCopy(buffer, Text_String(TXT_MODEM_CONNERR_REDIALING));
   } else {
-    port::SafeCopy(buffer, Text_String(TXT_DIALING));
+    base::SafeCopy(buffer, Text_String(TXT_DIALING));
   }
 
   // Timer_Test(__LINE__, __FILE__);
@@ -1471,7 +1471,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
 
     if (process) {
       if (std::string_view(buffer).starts_with("CON")) {
-        port::SafeCopy(ModemRXString, buffer);
+        base::SafeCopy(ModemRXString, buffer);
         dialstatus = DIAL_CONNECTED;
         process = false;
       } else if (std::string_view(buffer).starts_with("BUSY")) {
@@ -1566,9 +1566,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   **	These dimensions will control how the dialog box looks.
   */
   if (reconnect) {
-    port::SafeCopy(text_buffer, Text_String(TXT_MODEM_CONNERR_WAITING));
+    base::SafeCopy(text_buffer, Text_String(TXT_MODEM_CONNERR_WAITING));
   } else {
-    port::SafeCopy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
+    base::SafeCopy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
   }
 
   const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
@@ -1674,7 +1674,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
     if (process) {
       if (std::string_view(comm_buffer).starts_with("RING")) {
-        port::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
+        base::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
 
         Format_Window_String(font, text_buffer, view.height(), width, height);
 
@@ -1698,7 +1698,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
         delay = ModemWaitCarrier;
         display = REDRAW_ALL;
       } else if (std::string_view(comm_buffer).starts_with("CON")) {
-        port::SafeCopy(ModemRXString, comm_buffer);
+        base::SafeCopy(ModemRXString, comm_buffer);
         dialstatus = DIAL_CONNECTED;
         process = false;
       } else if (std::string_view(comm_buffer).starts_with("BUSY")) {
@@ -2106,7 +2106,7 @@ int NullModemClass::Verify_And_Convert_To_Int(char* buffer) {
   }
 
   if (value == 0) {
-    value = tech::ParseIntegerOr<int>(buffer, 0);
+    value = base::ParseIntegerOr<int>(buffer, 0);
   }
 
   return value;

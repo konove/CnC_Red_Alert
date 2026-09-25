@@ -327,12 +327,12 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     ........................ Fill in name & house .........................
     */
-    port::SafeCopy(team_name, TheObjectHeaps().team_type().Ptr(i)->IniName);
-    port::SafeAppend(team_name, "\t");
-    port::SafeAppend(team_name, HouseTypeClass::As_Reference(
+    base::SafeCopy(team_name, TheObjectHeaps().team_type().Ptr(i)->IniName);
+    base::SafeAppend(team_name, "\t");
+    base::SafeAppend(team_name, HouseTypeClass::As_Reference(
                                     TheObjectHeaps().team_type().Ptr(i)->House)
                                     .Suffix);
-    port::SafeAppend(team_name, "\t");
+    base::SafeAppend(team_name, "\t");
 
     /*
     ................ Fill in class & count for all classes ................
@@ -354,11 +354,11 @@ int MapEditClass::Select_Team(const char* caption) {
               std::string_view(base::At(teamtext, i)).size() + 6 <
           kTeamtxtLen) {
         if (j > 0) {
-          port::SafeAppend(team_name, ", ");
+          base::SafeAppend(team_name, ", ");
         }
-        port::SafeAppend(team_name, txt);
+        base::SafeAppend(team_name, txt);
       } else {
-        port::SafeAppend(team_name, "...");
+        base::SafeAppend(team_name, "...");
         break;
       }
     }
@@ -904,7 +904,7 @@ int MapEditClass::Edit_Team() {
   /*
   ........................... Copy team's state ............................
   */
-  port::SafeCopy(name_buf, CurTeam->IniName);
+  base::SafeCopy(name_buf, CurTeam->IniName);
   absl::SNPrintF(recr_buf, sizeof(recr_buf), "%d", CurTeam->RecruitPriority);
   absl::SNPrintF(maxnum_buf, sizeof(maxnum_buf), "%d", CurTeam->MaxAllowed);
   absl::SNPrintF(initnum_buf, sizeof(initnum_buf), "%d", CurTeam->InitNum);
@@ -1245,7 +1245,7 @@ int MapEditClass::Edit_Team() {
                 toupper(base::At(arg_buf, 0)) - 'A';
           } else {
             base::At(missions, i).Argument =
-                tech::ParseIntegerOr<int>(arg_buf, 0);
+                base::ParseIntegerOr<int>(arg_buf, 0);
           }
           missioncount++;
 
@@ -1372,11 +1372,11 @@ int MapEditClass::Edit_Team() {
   ------------------------ Save selections & return ------------------------
   */
   CurTeam->Set_Name(name_buf);
-  CurTeam->RecruitPriority = tech::ParseIntegerOr<int>(recr_buf, 0);
+  CurTeam->RecruitPriority = base::ParseIntegerOr<int>(recr_buf, 0);
   CurTeam->MaxAllowed =
-      static_cast<unsigned char>(tech::ParseIntegerOr<int>(maxnum_buf, 0));
+      static_cast<unsigned char>(base::ParseIntegerOr<int>(maxnum_buf, 0));
   CurTeam->InitNum =
-      static_cast<unsigned char>(tech::ParseIntegerOr<int>(initnum_buf, 0));
+      static_cast<unsigned char>(base::ParseIntegerOr<int>(initnum_buf, 0));
   CurTeam->IsRoundAbout = roundabout != 0;
   CurTeam->IsLearning = learning != 0;
   CurTeam->IsSuicide = suicide != 0;

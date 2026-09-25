@@ -192,7 +192,7 @@ SessionClass::SessionClass()
   SerialDefaults.DialMethod = DIAL_TOUCH_TONE;  // set from INI file
   SerialDefaults.InitStringIndex = 0;           // set from INI file
   SerialDefaults.CallWaitStringIndex = 0;       // set from INI file
-  port::SafeCopy(SerialDefaults.CallWaitString, "");
+  base::SafeCopy(SerialDefaults.CallWaitString, "");
 
   TrapObject.Ptr.All = nullptr;  // ptr to object being trapped
 
@@ -566,7 +566,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       base::At(entry_buffer, 0) = 0;
       ini.Get_String("InitStrings", ini.Get_Entry("InitStrings", index),
                      nullptr, entry_buffer, INITSTRBUF_MAX);
-      std::ranges::transform(port::MutableCString(entry), entry,
+      std::ranges::transform(base::MutableCString(entry), entry,
                              absl::ascii_toupper);
       InitStrings.Add(entry);
     }
@@ -576,7 +576,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       entry = new char[INITSTRBUF_MAX];
       // The freshly allocated entry contains INITSTRBUF_MAX characters.
       // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-      port::SafeCopy(std::span(entry, INITSTRBUF_MAX), "ATZ");
+      base::SafeCopy(std::span(entry, INITSTRBUF_MAX), "ATZ");
       InitStrings.Add(entry);
       SerialDefaults.InitStringIndex = 0;
     }
@@ -592,11 +592,11 @@ void SessionClass::Read_MultiPlayer_Settings() {
                      buf, sizeof(buf));
 
       //	Extract name, phone # & serial port settings
-      port::Tokenizer tokens(buf, "|");
+      base::Tokenizer tokens(buf, "|");
       char* tokenptr = tokens.Next();  // ptr to token
       if (tokenptr) {
-        port::SafeCopy(phone->Name, tokenptr);
-        std::ranges::transform(port::MutableCString(phone->Name), phone->Name,
+        base::SafeCopy(phone->Name, tokenptr);
+        std::ranges::transform(base::MutableCString(phone->Name), phone->Name,
                                absl::ascii_toupper);
       } else {
         phone->Name[0] = 0;
@@ -604,8 +604,8 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
       tokenptr = tokens.Next();
       if (tokenptr) {
-        port::SafeCopy(phone->Number, tokenptr);
-        std::ranges::transform(port::MutableCString(phone->Number),
+        base::SafeCopy(phone->Number, tokenptr);
+        std::ranges::transform(base::MutableCString(phone->Number),
                                phone->Number, absl::ascii_toupper);
       } else {
         phone->Number[0] = 0;
@@ -613,7 +613,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
       tokenptr = tokens.Next();
       if (tokenptr) {
-        if (const auto value = tech::ParseHex<int>(tokenptr)) {
+        if (const auto value = base::ParseHex<int>(tokenptr)) {
           phone->Settings.Port = *value;
         }
       } else {
@@ -622,14 +622,14 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
       tokenptr = tokens.Next();
       if (tokenptr) {
-        phone->Settings.IRQ = tech::ParseIntegerOr<int>(tokenptr, 0);
+        phone->Settings.IRQ = base::ParseIntegerOr<int>(tokenptr, 0);
       } else {
         phone->Settings.IRQ = -1;
       }
 
       tokenptr = tokens.Next();
       if (tokenptr) {
-        phone->Settings.Baud = tech::ParseIntegerOr<int>(tokenptr, 0);
+        phone->Settings.Baud = base::ParseIntegerOr<int>(tokenptr, 0);
       } else {
         phone->Settings.Baud = -1;
       }
@@ -644,7 +644,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       */
       tokenptr = tokens.Next();
       if (tokenptr) {
-        port::SafeCopy(buf, tokenptr);
+        base::SafeCopy(buf, tokenptr);
 
         // find dial method
 
@@ -666,18 +666,18 @@ void SessionClass::Read_MultiPlayer_Settings() {
 
         if (i == static_cast<int>(DIAL_METHODS)) {
           phone->Settings.Compression =
-              tech::ParseIntegerOr<int>(tokenptr, 0) != 0;
+              base::ParseIntegerOr<int>(tokenptr, 0) != 0;
 
           tokenptr = tokens.Next();
           if (tokenptr) {
             phone->Settings.ErrorCorrection =
-                tech::ParseIntegerOr<int>(tokenptr, 0) != 0;
+                base::ParseIntegerOr<int>(tokenptr, 0) != 0;
           }
 
           tokenptr = tokens.Next();
           if (tokenptr) {
             phone->Settings.HardwareFlowControl =
-                tech::ParseIntegerOr<int>(tokenptr, 0) != 0;
+                base::ParseIntegerOr<int>(tokenptr, 0) != 0;
           }
 
           tokenptr = tokens.Next();
@@ -685,7 +685,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       }
 
       if (tokenptr) {
-        port::SafeCopy(buf, tokenptr);
+        base::SafeCopy(buf, tokenptr);
 
         //	find dial method
         for (i = 0; i < static_cast<int>(DIAL_METHODS); i++) {
@@ -707,7 +707,7 @@ void SessionClass::Read_MultiPlayer_Settings() {
       tokenptr = tokens.Next();
       if (tokenptr) {
         phone->Settings.InitStringIndex =
-            tech::ParseIntegerOr<int>(tokenptr, 0);
+            base::ParseIntegerOr<int>(tokenptr, 0);
       } else {
         phone->Settings.InitStringIndex = 0;
       }
@@ -715,14 +715,14 @@ void SessionClass::Read_MultiPlayer_Settings() {
       tokenptr = tokens.Next();
       if (tokenptr) {
         phone->Settings.CallWaitStringIndex =
-            tech::ParseIntegerOr<int>(tokenptr, 0);
+            base::ParseIntegerOr<int>(tokenptr, 0);
       } else {
         phone->Settings.CallWaitStringIndex = kCallWaitCustom;
       }
 
       tokenptr = tokens.Next();
       if (tokenptr) {
-        port::SafeCopy(phone->Settings.CallWaitString, tokenptr);
+        base::SafeCopy(phone->Settings.CallWaitString, tokenptr);
       } else {
         phone->Settings.CallWaitString[0] = 0;
       }
@@ -755,13 +755,13 @@ void SessionClass::Read_MultiPlayer_Settings() {
     }
 
     ini.Get_String("SyncBug", "Coord", "0", buf, 80);
-    TrapCoord = tech::ParseHexOr<uint32_t>(buf, 0);
+    TrapCoord = base::ParseHexOr<uint32_t>(buf, 0);
 
     ini.Get_String("SyncBug", "Target", "0", buf, 80);
-    TrapTarget = static_cast<TARGET>(tech::ParseHexOr<uint32_t>(buf, 0));
+    TrapTarget = static_cast<TARGET>(base::ParseHexOr<uint32_t>(buf, 0));
 
     ini.Get_String("SyncBug", "Cell", "0", buf, 80);
-    CELL const cell = tech::ParseIntegerOr<CELL>(buf, 0);
+    CELL const cell = base::ParseIntegerOr<CELL>(buf, 0);
     if (cell) {
       TrapCell = &TheMap().at(cell);
     }
@@ -1282,7 +1282,7 @@ uint32_t SessionClass::Compute_Unique_ID() {
   //------------------------------------------------------------------------
   // Add in every byte in the user's path environment variable
   //------------------------------------------------------------------------
-  if (const auto path = port::GetEnv("PATH")) {
+  if (const auto path = platform::GetEnv("PATH")) {
     for (const char byte : *path) {
       Add_CRC(&id, static_cast<uint32_t>(byte));
     }
@@ -1330,21 +1330,21 @@ void MultiMission::Draw_It(PixelView& view, int /*unused*/, int x, int y,
 
 void MultiMission::Set_Description(const char* description) {
   if (description != nullptr) {
-    port::SafeCopy(ScenarioDescription, description);
+    base::SafeCopy(ScenarioDescription, description);
   }
 }
 
 void MultiMission::Set_Filename(const char* filename) {
   if (filename != nullptr) {
-    port::SafeCopy(Filename, filename);
+    base::SafeCopy(Filename, filename);
   }
 }
 
 void MultiMission::Set_Digest(const char* digest) {
   if (digest != nullptr) {
-    port::SafeCopy(Digest, digest);
+    base::SafeCopy(Digest, digest);
   } else {
-    port::SafeCopy(Digest, "NODIGEST");
+    base::SafeCopy(Digest, "NODIGEST");
   }
 }
 

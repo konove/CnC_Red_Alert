@@ -31,7 +31,7 @@ class DigitCursor {
     explicit Reference(std::span<std::byte> bytes) : bytes_(bytes) {}
     // A digit reference participates in arithmetic exactly like its value.
     // NOLINTNEXTLINE(*-explicit-constructor)
-    operator Value() const { return port::ReadUnaligned<Value>(bytes_); }
+    operator Value() const { return base::ReadUnaligned<Value>(bytes_); }
     Reference(const Reference&) = default;
     Reference(Reference&&) = default;
     ~Reference() = default;
@@ -39,7 +39,7 @@ class DigitCursor {
       return *this = static_cast<Value>(other);
     }
     Reference& operator=(Value value) {
-      port::WriteUnaligned(bytes_, value);
+      base::WriteUnaligned(bytes_, value);
       return *this;
     }
     Reference& operator=(const Reference& other) {
@@ -126,7 +126,7 @@ class DigitCursor {
     const auto bytes =
         bytes_.subspan(base::ToSize(index) * sizeof(Value), sizeof(Value));
     if constexpr (std::is_const_v<T>) {
-      return port::ReadUnaligned<Value>(bytes);
+      return base::ReadUnaligned<Value>(bytes);
     } else {
       return Reference(bytes);
     }

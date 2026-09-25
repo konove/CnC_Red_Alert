@@ -102,7 +102,7 @@ std::span<const unsigned char> Small_Icon(std::span<const std::byte> iconptr,
   if (iconptr.size() < sizeof(IControl_Type)) {
     return {};
   }
-  const auto control = port::ReadUnaligned<IControl_Type>(iconptr);
+  const auto control = base::ReadUnaligned<IControl_Type>(iconptr);
   const auto map = Get_Icon_Set_Map(iconptr);
   if (iconnum < 0 || base::ToSize(iconnum) >= map.size() || control.Icons < 0) {
     return {};
@@ -176,7 +176,7 @@ void Fatal_Message(const std::string_view message) {
 void Format_Runtime_Text(std::span<char> buffer, const size_t size,
                          const char* format,
                          const absl::Span<const absl::FormatArg> args) {
-  port::SafeCopy(buffer.first(size), port::FormatRuntime(format, args).c_str());
+  base::SafeCopy(buffer.first(size), base::FormatRuntime(format, args).c_str());
 }
 
 #ifdef NEVER

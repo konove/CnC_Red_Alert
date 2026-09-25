@@ -5,7 +5,7 @@
 #include "absl/log/check.h"
 #include "engine/base/strings/safe_string.h"
 
-namespace port {
+namespace base {
 
 Tokenizer::Tokenizer(char* text, const char* delimiters)
     : cursor_(MutableCString(text)), delimiters_(delimiters) {
@@ -37,4 +37,4 @@ char* Tokenizer::Next(const char* delimiters) {
   return start;
 }
 
-}  // namespace port
+}  // namespace base

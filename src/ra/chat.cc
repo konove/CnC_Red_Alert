@@ -94,7 +94,7 @@ constexpr KeyNumType kPageRespondKey = KN_RETURN;  // KN_COMMA
   // still takes exactly one %s before using it.
   const auto format = absl::ParsedFormat<'s'>::New(Text_String(TXT_TO));
   if (format != nullptr) {
-    port::SafeCopy(
+    base::SafeCopy(
         txt, absl::StrFormat(*format, TheNetwork().wolapi()->szExternalPager)
                  .c_str());
   }
@@ -116,16 +116,16 @@ constexpr KeyNumType kPageRespondKey = KN_RETURN;  // KN_COMMA
 // the edit buffer, 4 for one that spilled into the overflow buffer.
 static void Send_Network_Chat_Message(const int rc) {
   TheSession().GPacket.Command = NET_MESSAGE;
-  port::SafeCopy(TheSession().GPacket.Name, TheSession().Players.at(0)->Name);
+  base::SafeCopy(TheSession().GPacket.Name, TheSession().Players.at(0)->Name);
   TheSession().GPacket.Message.Color = TheSession().ColorIdx;
   TheSession().GPacket.Message.NameCRC =
       Compute_Name_CRC(TheSession().GameName);
 
   if (rc == 3) {
-    port::SafeCopy(TheSession().GPacket.Message.Buf,
+    base::SafeCopy(TheSession().GPacket.Message.Buf,
                    TheSession().Messages.Get_Edit_Buf());
   } else {
-    port::SafeCopy(TheSession().GPacket.Message.Buf,
+    base::SafeCopy(TheSession().GPacket.Message.Buf,
                    TheSession().Messages.Get_Overflow_Buf());
     TheSession().Messages.Clear_Overflow_Buf();
   }
@@ -157,7 +157,7 @@ static void Send_Network_Chat_Message(const int rc) {
 
   // Store this message in our LastMessage buffer; the computer may send us a
   // version of it later.
-  port::SafeCopy(TheSession().LastMessage, TheSession().GPacket.Message.Buf);
+  base::SafeCopy(TheSession().LastMessage, TheSession().GPacket.Message.Buf);
 }
 
 void Message_Input(KeyNumType& input) {
@@ -191,7 +191,7 @@ void Message_Input(KeyNumType& input) {
     if (TheSession().Type == GAME_NULL_MODEM ||
         TheSession().Type == GAME_MODEM) {
       if (input == KN_F1 || input == KN_F1 + TheSession().MaxPlayers - 1) {
-        port::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
+        base::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
 
         TheSession().Messages.Add_Edit(
             TheSession().ColorIdx,
@@ -207,7 +207,7 @@ void Message_Input(KeyNumType& input) {
       // ObiWan mode) F8 = "To All:"
       if (input == KN_F1 + TheSession().MaxPlayers - 1) {
         TheSession().MessageAddress = IPXAddressClass();  // set to broadcast
-        port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
+        base::SafeCopy(txt, Text_String(TXT_TO_ALL));     // "To All:"
 
         TheSession().Messages.Add_Edit(
             TheSession().ColorIdx,
@@ -224,7 +224,7 @@ void Message_Input(KeyNumType& input) {
         // translation still takes exactly one %s before using it.
         const auto format = absl::ParsedFormat<'s'>::New(Text_String(TXT_TO));
         if (format != nullptr) {
-          port::SafeCopy(
+          base::SafeCopy(
               txt,
               absl::StrFormat(*format, TheNetwork().ipx().Connection_Name(id))
                   .c_str());
@@ -281,14 +281,14 @@ void Message_Input(KeyNumType& input) {
           .Command = SERIAL_MESSAGE, .Name = {}, .ID = 0, .ScenarioInfo = {}};
       auto* serial_packet = &packet_storage;
 
-      port::SafeCopy(serial_packet->Name, TheSession().Players.at(0)->Name);
+      base::SafeCopy(serial_packet->Name, TheSession().Players.at(0)->Name);
       serial_packet->ID = static_cast<unsigned char>(TheSession().ColorIdx);
 
       if (rc == 3) {
-        port::SafeCopy(serial_packet->Message.Message,
+        base::SafeCopy(serial_packet->Message.Message,
                        TheSession().Messages.Get_Edit_Buf());
       } else {
-        port::SafeCopy(serial_packet->Message.Message,
+        base::SafeCopy(serial_packet->Message.Message,
                        TheSession().Messages.Get_Overflow_Buf());
         TheSession().Messages.Clear_Overflow_Buf();
       }
@@ -306,7 +306,7 @@ void Message_Input(KeyNumType& input) {
           TheRules().NewUnitsEnabled) {
         Enable_Secret_Units();
       }
-      port::SafeCopy(TheSession().LastMessage, serial_packet->Message.Message);
+      base::SafeCopy(TheSession().LastMessage, serial_packet->Message.Message);
     } else if (TheSession().Type == GAME_IPX ||
                TheSession().Type == GAME_INTERNET) {
       if constexpr (config::kWolapiEnabled) {
@@ -411,7 +411,7 @@ void IPX_Call_Back() {
           TheMap().Flag_To_Redraw(true);
 
           // Save this message in our last-message buffer
-          port::SafeCopy(TheSession().LastMessage,
+          base::SafeCopy(TheSession().LastMessage,
                          TheSession().GPacket.Message.Buf);
         }
       } else {

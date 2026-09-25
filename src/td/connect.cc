@@ -232,7 +232,7 @@ SendQueueType* ConnectionClass::OldestUnackedSend(
         continue;
       }
       const CommHeaderType* packet =
-          port::AlignedObject<CommHeaderType>(entry->Buffer.data());
+          base::AlignedObject<CommHeaderType>(entry->Buffer.data());
       if (packet->Code == static_cast<unsigned char>(PACKET_DATA_ACK) &&
           entry->IsACK == 0) {
         if (oldest == nullptr || entry->FirstTime < oldest->FirstTime) {

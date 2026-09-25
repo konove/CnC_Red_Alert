@@ -16,12 +16,12 @@
 #include <immintrin.h>
 #endif
 
-namespace tech {
+namespace crypto {
 namespace {
 
 // Reads a big-endian word, whatever the host byte order.
 uint32_t ReadBigEndian32(std::span<const std::byte> bytes) {
-  const auto value = port::ReadUnaligned<uint32_t>(bytes);
+  const auto value = base::ReadUnaligned<uint32_t>(bytes);
   if constexpr (std::endian::native == std::endian::little) {
     return std::byteswap(value);
   }
@@ -105,7 +105,7 @@ template <int G>
   constexpr int kCur = G % 4;
   if constexpr (G < 4) {
     std::get<kCur>(regs.msg) = _mm_shuffle_epi8(
-        port::ReadUnaligned<__m128i>(block.template subspan<G * 16, 16>()),
+        base::ReadUnaligned<__m128i>(block.template subspan<G * 16, 16>()),
         byte_swap);
   }
   const __m128i msg = std::get<kCur>(regs.msg);
@@ -147,7 +147,7 @@ template <int... G>
   const auto state_bytes = std::as_writable_bytes(std::span(state));
   ShaNiRegisters regs{};
   regs.abcd = _mm_shuffle_epi32(
-      port::ReadUnaligned<__m128i>(state_bytes.first(16)), 0x1B);
+      base::ReadUnaligned<__m128i>(state_bytes.first(16)), 0x1B);
   std::get<0>(regs.e) =
       _mm_set_epi32(static_cast<int>(std::get<4>(state)), 0, 0, 0);
 
@@ -162,7 +162,7 @@ template <int... G>
     regs.abcd = _mm_add_epi32(regs.abcd, abcd_save);
   }
 
-  port::WriteUnaligned(state_bytes.first(16),
+  base::WriteUnaligned(state_bytes.first(16),
                        _mm_shuffle_epi32(regs.abcd, 0x1B));
   std::get<4>(state) =
       static_cast<uint32_t>(_mm_extract_epi32(std::get<0>(regs.e), 3));
@@ -223,4 +223,4 @@ void Sha1Compress(Sha1State& state, std::span<const std::byte> blocks) {
   }
 }
 
-}  // namespace tech
+}  // namespace crypto

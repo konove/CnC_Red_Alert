@@ -35,7 +35,7 @@ LONG RegCloseKey(HKEY /*key*/) { return ERROR_SUCCESS; }
 
 #endif  // _WIN32
 
-namespace port {
+namespace platform {
 
 std::optional<uint32_t> ReadRegistryDword(HKEY root, const char* sub_key,
                                           const char* value_name) {
@@ -64,4 +64,4 @@ std::optional<uint32_t> ReadRegistryDword(HKEY root, const char* sub_key,
 #endif
 }
 
-}  // namespace port
+}  // namespace platform

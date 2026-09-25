@@ -8,7 +8,7 @@ namespace {
 
 TEST(SleepTest, WaitsAtLeastTheRequestedTime) {
   const auto start = std::chrono::steady_clock::now();
-  port::SleepMs(20);
+  platform::SleepMs(20);
   const auto elapsed = std::chrono::steady_clock::now() - start;
 
   // Only the lower bound is asserted. How much later the scheduler gets around
@@ -18,8 +18,8 @@ TEST(SleepTest, WaitsAtLeastTheRequestedTime) {
 
 TEST(SleepTest, NonPositiveDurationsReturnImmediately) {
   const auto start = std::chrono::steady_clock::now();
-  port::SleepMs(0);
-  port::SleepMs(-5);
+  platform::SleepMs(0);
+  platform::SleepMs(-5);
   const auto elapsed = std::chrono::steady_clock::now() - start;
 
   EXPECT_LT(elapsed, std::chrono::seconds(1));

@@ -7,7 +7,7 @@
 
 #include "absl/strings/ascii.h"
 
-namespace tech {
+namespace base {
 
 std::optional<uint32_t> ParseDecimalBits(std::string_view text) {
   text = absl::StripAsciiWhitespace(text);
@@ -46,4 +46,4 @@ int ParseIniIntegerOr(std::string_view text, int fallback) {
   return ParseIniInteger(text).value_or(fallback);
 }
 
-}  // namespace tech
+}  // namespace base

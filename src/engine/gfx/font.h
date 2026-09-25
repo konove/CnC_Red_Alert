@@ -89,7 +89,7 @@ class FontView {
     if (std::ssize(font_) < base::ssize{sizeof(FontHeader)}) {
       return;
     }
-    const auto header = port::ReadUnaligned<FontHeader>(font_);
+    const auto header = base::ReadUnaligned<FontHeader>(font_);
     info_ = DataFrom(header.info_block);
     offsets_ = DataFrom(header.offset_block);
     widths_ = DataFrom(header.width_block);
@@ -155,7 +155,7 @@ class FontView {
   static uint16_t ReadWord(const std::span<const std::byte> data,
                            const base::ssize offset) {
     const auto bytes = Slice(data, offset, sizeof(uint16_t));
-    return bytes.empty() ? 0 : port::ReadUnaligned<uint16_t>(bytes);
+    return bytes.empty() ? 0 : base::ReadUnaligned<uint16_t>(bytes);
   }
   [[nodiscard]] int PackedHeight(const uint8_t character) const {
     return ReadWord(heights_, base::ssize{2} * character);

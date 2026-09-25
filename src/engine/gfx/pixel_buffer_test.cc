@@ -332,7 +332,7 @@ TEST(BlitTest, FullSourceOverhangingTwoEdgesCarriesTheSourceAlong) {
 std::vector<std::byte> MakePrintFont() {
   std::vector<std::byte> blob(42, std::byte{0});
   const auto word = [&blob](int offset, int value) {
-    port::WriteUnaligned(std::span(blob).subspan(static_cast<size_t>(offset)),
+    base::WriteUnaligned(std::span(blob).subspan(static_cast<size_t>(offset)),
                          static_cast<uint16_t>(value));
   };
   const auto byte = [&blob](int offset, int value) {

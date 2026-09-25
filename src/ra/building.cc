@@ -5771,7 +5771,7 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
     /*
     **	1st token: house name.
     */
-    port::Tokenizer tokens(buf, ",");
+    base::Tokenizer tokens(buf, ",");
     const HousesType bhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Building house.
 
@@ -5786,19 +5786,19 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
       /*
       **	3rd token: strength.
       */
-      int strength = tech::ParseIntegerOr<int>(tokens.Next(), 0);
+      int strength = base::ParseIntegerOr<int>(tokens.Next(), 0);
 
       /*
       **	4th token: cell #.
       */
       CELL const cell =
-          tech::ParseIntegerOr<CELL>(tokens.Next(), 0);  // Cell of building.
+          base::ParseIntegerOr<CELL>(tokens.Next(), 0);  // Cell of building.
 
       /*
       **	5th token: facing.
       */
       const auto facing =
-          static_cast<DirType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+          static_cast<DirType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
       /*
       **	6th token: triggername (can be nullptr).
@@ -5808,13 +5808,13 @@ void BuildingClass::Read_INI(CCINIClass& ini) {
       bool sellable = false;
       const char* token_pointer = tokens.Next();
       if (token_pointer) {
-        sellable = tech::ParseIntegerOr<int>(token_pointer, 0) != 0;
+        sellable = base::ParseIntegerOr<int>(token_pointer, 0) != 0;
       }
 
       bool rebuild = false;
       token_pointer = tokens.Next();
       if (token_pointer) {
-        rebuild = tech::ParseIntegerOr<int>(token_pointer, 0) != 0;
+        rebuild = base::ParseIntegerOr<int>(token_pointer, 0) != 0;
       }
 
       auto* b = new BuildingClass(classid, bhouse);  // Working unit pointer.

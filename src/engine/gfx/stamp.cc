@@ -79,7 +79,7 @@ static std::optional<IconSetTables> ReadIconSet(
   if (icon_set.size() < sizeof(IControl_Type)) {
     return std::nullopt;
   }
-  const auto header = port::ReadUnaligned<IControl_Type>(icon_set);
+  const auto header = base::ReadUnaligned<IControl_Type>(icon_set);
   if (header.Width <= 0 || header.Height <= 0) {
     return std::nullopt;
   }
@@ -94,7 +94,7 @@ static std::optional<IconSetTables> ReadIconSet(
   int32_t cell_tiles_offset = header.Map;
   if (!header.MapHeight || header.MapWidth > 256) {
     const auto old_header =
-        port::ReadUnaligned<TiberianDawnIconSetHeader>(icon_set);
+        base::ReadUnaligned<TiberianDawnIconSetHeader>(icon_set);
     tiles_offset = old_header.icons;
     transparent_offset = old_header.trans_flag;
     cell_tiles_offset = old_header.map;

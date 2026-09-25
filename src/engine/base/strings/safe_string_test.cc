@@ -6,7 +6,7 @@
 #include "engine/base/array.h"
 #include "gtest/gtest.h"
 
-namespace port {
+namespace base {
 namespace {
 
 // SafeCopy tests
@@ -148,4 +148,4 @@ TEST(CloneStringTest, EmptyString) {
 }
 
 }  // namespace
-}  // namespace port
+}  // namespace base

@@ -153,7 +153,7 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
   char c_dir = 0;     // character representing direction type
   char c_var = 0;     // character representing variation type
   ScenarioVarType i = SCEN_VAR_NONE;
-  char fname[port::kMaxFname + port::kMaxExt];
+  char fname[platform::kMaxFname + platform::kMaxExt];
 
   /*
   ** Set the player-type value.
@@ -280,7 +280,7 @@ void Set_Scenario_Name(char* buf, int scenario, ScenarioPlayerType player,
  * HISTORY: * 10/07/1992 JLB : Created. *
  *=============================================================================================*/
 bool Read_Scenario_Ini(const char* root, bool fresh) {
-  char fname[port::kMaxFname + port::kMaxExt];  // full INI filename
+  char fname[platform::kMaxFname + platform::kMaxExt];  // full INI filename
   char buf[128];                      // Working string staging buffer.
   int rndmax = 0;
   int rndmin = 0;
@@ -567,7 +567,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
     }
     // Really old and ugly code - refactor.
     // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
-    port::SafeAppend(stage, " ");
+    base::SafeAppend(stage, " ");
     stage = stage.subspan(std::string_view(stage.data()).size());
   }
 
@@ -600,7 +600,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
       }
       // Really old and ugly code - refactor.
       // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.strcpy)
-      port::SafeAppend(work, " ");
+      base::SafeAppend(work, " ");
       work = work.subspan(std::string_view(work.data()).size());
     }
   }
@@ -704,7 +704,7 @@ bool Read_Scenario_Ini(const char* root, bool fresh) {
  *=============================================================================================*/
 void Write_Scenario_Ini(const char* root) {
   if constexpr (config::kCheatKeysEnabled) {
-    char fname[port::kMaxFname + port::kMaxExt];  // full scenario name
+    char fname[platform::kMaxFname + platform::kMaxExt];  // full scenario name
     HousesType house = HOUSE_NONE;
 
     /*
@@ -751,42 +751,42 @@ void Write_Scenario_Ini(const char* root) {
     }
 
     WWWritePrivateProfileString("Basic", "Intro", TheWorld().intro_movie(),
-                                port::CharBytes(ShapeBufferBytes));
+                                base::CharBytes(ShapeBufferBytes));
     WWWritePrivateProfileString("Basic", "Brief", TheWorld().brief_movie(),
-                                port::CharBytes(ShapeBufferBytes));
+                                base::CharBytes(ShapeBufferBytes));
     WWWritePrivateProfileString("Basic", "Win", TheWorld().win_movie(),
-                                port::CharBytes(ShapeBufferBytes));
+                                base::CharBytes(ShapeBufferBytes));
     WWWritePrivateProfileString("Basic", "Lose", TheWorld().lose_movie(),
-                                port::CharBytes(ShapeBufferBytes));
+                                base::CharBytes(ShapeBufferBytes));
     WWWritePrivateProfileString("Basic", "Action", TheWorld().action_movie(),
-                                port::CharBytes(ShapeBufferBytes));
+                                base::CharBytes(ShapeBufferBytes));
     WWWritePrivateProfileString("Basic", "Player", ThePlayer()->Class->IniName,
-                                port::CharBytes(ShapeBufferBytes));
+                                base::CharBytes(ShapeBufferBytes));
     WWWritePrivateProfileString(
         "Basic", "Theme", ThemeClass::Base_Name(TheWorld().transit_theme()),
-        port::CharBytes(ShapeBufferBytes));
+        base::CharBytes(ShapeBufferBytes));
     WWWritePrivateProfileInt("Basic", "BuildLevel", TheWorld().build_level(),
-                             port::CharBytes(ShapeBufferBytes));
+                             base::CharBytes(ShapeBufferBytes));
     WWWritePrivateProfileInt(
         "Basic", "CarryOverMoney",
         Fixed_To_Cardinal(100, TheWorld().carry_over_percent()),
-        port::CharBytes(ShapeBufferBytes));
+        base::CharBytes(ShapeBufferBytes));
     WWWritePrivateProfileInt("Basic", "carry_over_cap", carry_over_cap,
-                             port::CharBytes(ShapeBufferBytes));
+                             base::CharBytes(ShapeBufferBytes));
 
-    TeamTypeClass::Write_INI(port::CharBytes(ShapeBufferBytes), true);
-    TriggerClass::Write_INI(port::CharBytes(ShapeBufferBytes), true);
-    TheMap().Write_INI(port::CharBytes(ShapeBufferBytes));
+    TeamTypeClass::Write_INI(base::CharBytes(ShapeBufferBytes), true);
+    TriggerClass::Write_INI(base::CharBytes(ShapeBufferBytes), true);
+    TheMap().Write_INI(base::CharBytes(ShapeBufferBytes));
     MapEditClass::Write_Binary(root);
-    HouseClass::Write_INI(port::CharBytes(ShapeBufferBytes));
-    UnitClass::Write_INI(port::CharBytes(ShapeBufferBytes));
-    InfantryClass::Write_INI(port::CharBytes(ShapeBufferBytes));
-    BuildingClass::Write_INI(port::CharBytes(ShapeBufferBytes));
-    TerrainClass::Write_INI(port::CharBytes(ShapeBufferBytes));
-    OverlayClass::Write_INI(port::CharBytes(ShapeBufferBytes));
-    SmudgeClass::Write_INI(port::CharBytes(ShapeBufferBytes));
+    HouseClass::Write_INI(base::CharBytes(ShapeBufferBytes));
+    UnitClass::Write_INI(base::CharBytes(ShapeBufferBytes));
+    InfantryClass::Write_INI(base::CharBytes(ShapeBufferBytes));
+    BuildingClass::Write_INI(base::CharBytes(ShapeBufferBytes));
+    TerrainClass::Write_INI(base::CharBytes(ShapeBufferBytes));
+    OverlayClass::Write_INI(base::CharBytes(ShapeBufferBytes));
+    SmudgeClass::Write_INI(base::CharBytes(ShapeBufferBytes));
 
-    TheWorld().base().Write_INI(port::CharBytes(ShapeBufferBytes));
+    TheWorld().base().Write_INI(base::CharBytes(ShapeBufferBytes));
 
     /*
     **	Write the scenario data out to a file.
@@ -810,8 +810,8 @@ void Write_Scenario_Ini(const char* root) {
                      "; Master Trigger & Team List.\r\n");
     }
 
-    TeamTypeClass::Write_INI(port::CharBytes(ShapeBufferBytes), false);
-    TriggerClass::Write_INI(port::CharBytes(ShapeBufferBytes), false);
+    TeamTypeClass::Write_INI(base::CharBytes(ShapeBufferBytes), false);
+    TriggerClass::Write_INI(base::CharBytes(ShapeBufferBytes), false);
 
     if (const auto out = OpenGameFile("MASTER.INI", FileAccess::kWrite)) {
       out->Write(std::as_bytes(ShapeBufferBytes)
@@ -891,7 +891,7 @@ static void Assign_Houses() {
     **	Set the house's IsHuman, Credits, ActLike, & RemapTable
     */
     base::FillBytes(base::ObjectBytes(housep->Name), 0, MPLAYER_NAME_MAX);
-    port::SafeCopy(housep->Name, base::At(TheSession().player_names(), i));
+    base::SafeCopy(housep->Name, base::At(TheSession().player_names(), i));
     housep->IsHuman = true;
     housep->Init_Data(color, pref_house, TheSession().credits());
 

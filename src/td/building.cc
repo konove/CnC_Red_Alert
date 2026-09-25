@@ -3486,7 +3486,7 @@ void BuildingClass::Read_INI(char* buffer) {
     /*
     **	1st token: house name.
     */
-    port::Tokenizer tokens(buf, ",");
+    base::Tokenizer tokens(buf, ",");
     const HousesType bhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Building house.
 
@@ -3501,19 +3501,19 @@ void BuildingClass::Read_INI(char* buffer) {
       /*
       **	3rd token: strength.
       */
-      int strength = tech::ParseIntegerOr<int>(tokens.Next(), 0);
+      int strength = base::ParseIntegerOr<int>(tokens.Next(), 0);
 
       /*
       **	4th token: cell #.
       */
       CELL const cell =
-          tech::ParseIntegerOr<CELL>(tokens.Next(), 0);  // Cell of building.
+          base::ParseIntegerOr<CELL>(tokens.Next(), 0);  // Cell of building.
 
       /*
       **	5th token: facing.
       */
       const auto facing =
-          static_cast<DirType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+          static_cast<DirType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
       /*
       **	6th token: triggername (can be NULL).

@@ -13,14 +13,14 @@ namespace {
 std::vector<std::byte> FrameFile() {
   // Three 2x2 frames: an LCW key frame, a key delta, and a chained delta.
   std::vector<std::byte> data(64);
-  port::WriteUnaligned<uint16_t>(data, 3);
-  port::WriteUnaligned<uint16_t>(std::span(data).subspan(6), 2);
-  port::WriteUnaligned<uint16_t>(std::span(data).subspan(8), 2);
-  port::WriteUnaligned<uint32_t>(std::span(data).subspan(14), 0x80000028U);
-  port::WriteUnaligned<uint32_t>(std::span(data).subspan(22), 0x4000002eU);
-  port::WriteUnaligned<uint32_t>(std::span(data).subspan(26), 40);
-  port::WriteUnaligned<uint32_t>(std::span(data).subspan(30), 0x20000036U);
-  port::WriteUnaligned<uint32_t>(std::span(data).subspan(34), 1);
+  base::WriteUnaligned<uint16_t>(data, 3);
+  base::WriteUnaligned<uint16_t>(std::span(data).subspan(6), 2);
+  base::WriteUnaligned<uint16_t>(std::span(data).subspan(8), 2);
+  base::WriteUnaligned<uint32_t>(std::span(data).subspan(14), 0x80000028U);
+  base::WriteUnaligned<uint32_t>(std::span(data).subspan(22), 0x4000002eU);
+  base::WriteUnaligned<uint32_t>(std::span(data).subspan(26), 40);
+  base::WriteUnaligned<uint32_t>(std::span(data).subspan(30), 0x20000036U);
+  base::WriteUnaligned<uint32_t>(std::span(data).subspan(34), 1);
   const std::array<uint8_t, 22> stream{
       0x84, 1, 2, 3, 4, 0x80,         // LCW literal and stop.
       4,    1, 1, 1, 1, 0x80, 0, 0,   // XOR key delta.
@@ -50,7 +50,7 @@ TEST(KeyFrameBoundsTest, RejectsSmallDestinationsAndInvalidOffsets) {
   EXPECT_EQ(output.front(), 0xa5);
   std::array<uint8_t, 4> full{};
   EXPECT_TRUE(Build_Frame(std::span(data).first(15), 0, full).empty());
-  port::WriteUnaligned<uint32_t>(std::span(data).subspan(14), 0x80ffffffU);
+  base::WriteUnaligned<uint32_t>(std::span(data).subspan(14), 0x80ffffffU);
   EXPECT_TRUE(Build_Frame(data, 0, full).empty());
 }
 }  // namespace

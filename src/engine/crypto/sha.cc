@@ -88,7 +88,7 @@ void SHAEngine::Process_Partial(std::span<const std::byte>& data) {
   data = data.subspan(count);
   PartialCount += static_cast<int>(count);
   if (PartialCount == SRC_BLOCK_SIZE) {
-    tech::Sha1Compress(Acc, base::ObjectBytes(Partial));
+    crypto::Sha1Compress(Acc, base::ObjectBytes(Partial));
     Length += SRC_BLOCK_SIZE;
     PartialCount = 0;
   }
@@ -116,7 +116,7 @@ void SHAEngine::Hash(std::span<const std::byte> data) {
   Process_Partial(data);
   // All whole blocks in one call, so the hardware path runs uninterrupted.
   const std::size_t whole = data.size() - (data.size() % SRC_BLOCK_SIZE);
-  tech::Sha1Compress(Acc, data.first(whole));
+  crypto::Sha1Compress(Acc, data.first(whole));
   Length += static_cast<int32_t>(whole);
   data = data.subspan(whole);
   Process_Partial(data);
@@ -177,7 +177,7 @@ Sha1Digest SHAEngine::Digest() const {
     if (partialcount + 1 < SRC_BLOCK_SIZE) {
       std::ranges::fill(base::Suffix(partial, partialcount + 1), '\0');
     }
-    tech::Sha1Compress(acc, base::ObjectBytes(partial));
+    crypto::Sha1Compress(acc, base::ObjectBytes(partial));
     partialcount = 0;
   } else {
     partialcount++;
@@ -188,9 +188,9 @@ Sha1Digest SHAEngine::Digest() const {
   **	last 8 bytes of the pseudo-source data.
   */
   std::ranges::fill(base::Suffix(partial, partialcount), '\0');
-  port::WriteUnaligned(base::ObjectBytes(partial).last(4),
+  base::WriteUnaligned(base::ObjectBytes(partial).last(4),
                        Reverse_LONG(static_cast<uint32_t>(length * 8)));
-  tech::Sha1Compress(acc, base::ObjectBytes(partial));
+  crypto::Sha1Compress(acc, base::ObjectBytes(partial));
 
   // Each word is stored most significant byte first.
   for (std::size_t word = 0; word < acc.size(); ++word) {

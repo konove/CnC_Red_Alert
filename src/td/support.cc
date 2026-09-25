@@ -113,7 +113,7 @@ void Fat_Put_Pixel(PixelView& view, int x, int y, std::uint8_t color,
 
 // from RA readline.cpp
 void strtrim(char* buffer) {
-  const auto storage = port::MutableCString(buffer);
+  const auto storage = base::MutableCString(buffer);
   if (storage.empty()) {
     return;
   }

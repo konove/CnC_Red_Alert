@@ -433,7 +433,7 @@ uint32_t CCINIClass::Get_Owners(const char* section, const char* entry,
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     ownable = 0;
-    port::Tokenizer tokens(buffer, ",");
+    base::Tokenizer tokens(buffer, ",");
     while (const char* name = tokens.Next()) {
       ownable |= Owner_From_Name(name);
     }
@@ -1342,7 +1342,7 @@ TerrainType CCINIClass::Get_TerrainType(const char* section, const char* entry,
   char buffer[128];
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
-    return TerrainTypeClass::From_Name(port::Tokenizer(buffer, ",").Next());
+    return TerrainTypeClass::From_Name(base::Tokenizer(buffer, ",").Next());
   }
   return defvalue;
 }
@@ -1401,7 +1401,7 @@ uint64_t CCINIClass::Get_Buildings(const char* section, const char* entry,
 
   if (Get_String(section, entry, "", buffer, sizeof(buffer))) {
     pre = 0;
-    port::Tokenizer tokens(buffer, ",");
+    base::Tokenizer tokens(buffer, ",");
     while (const char* token = tokens.Next()) {
       const StructType building = BuildingTypeClass::From_Name(token);
       if (building != STRUCT_NONE) {

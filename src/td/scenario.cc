@@ -721,8 +721,8 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
   if (name) {
 #ifdef JAPANESE
     char fname[14];
-    port::SafeCopy(fname, name);
-    port::SafeAppend(fname, ".CPS");
+    base::SafeCopy(fname, name);
+    base::SafeAppend(fname, ".CPS");
 
     if (GameFile(fname).IsAvailable()) {
       CCMessageBox box(TXT_NONE, true);
@@ -753,8 +753,8 @@ bool Restate_Mission(const char* name, int right_btn, int left_btn) {
     if (!std::string_view(TheWorld().briefing_text()).empty()) {
       static char _buff[512];
 
-      port::SafeCopy(_buff, TheWorld().briefing_text());
-      // port::SafeCopy(_ShapeBuffer, BriefingText);
+      base::SafeCopy(_buff, TheWorld().briefing_text());
+      // base::SafeCopy(_ShapeBuffer, BriefingText);
 
       const bool hidden = Get_Mouse_State() != 0;
       if (hidden) {

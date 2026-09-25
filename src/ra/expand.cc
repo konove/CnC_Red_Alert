@@ -358,21 +358,21 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
   */
   char buffer[128];
   char buffer2[128];
-  const auto sbuffer = port::CharBytes(ShapeBufferBytes);
+  const auto sbuffer = base::CharBytes(ShapeBufferBytes);
   for (int index = 20; index < 36 + 18; index++) {
 #ifndef CS_DEBUG
-    port::SafeCopy(buffer, base::At(ExpandNames, index - 20));
-    port::SafeCopy(buffer2, base::At(ExpandNames, index - 20));
+    base::SafeCopy(buffer, base::At(ExpandNames, index - 20));
+    base::SafeCopy(buffer2, base::At(ExpandNames, index - 20));
 #else
-    port::SafeCopy(buffer, TestNames2[index]);
-    port::SafeCopy(buffer2, TestNames2[index]);
+    base::SafeCopy(buffer, TestNames2[index]);
+    base::SafeCopy(buffer2, TestNames2[index]);
 #endif
     if (buffer[0] == 0) {
       break;
     }
 
-    port::SafeAppend(buffer, ".INI");
-    port::SafeAppend(buffer2, ".INI");
+    base::SafeAppend(buffer, ".INI");
+    base::SafeAppend(buffer2, ".INI");
     TheScenario().Set_Scenario_Name(buffer);
     TheScenario().Scenario = index;
     bool bOk = false;
@@ -395,13 +395,13 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
           WWGetPrivateProfileString("Basic", "Name", "x", buffer,
                                     sbuffer.data());
           if constexpr (config::kIsEnglish) {
-            port::SafeCopy(obj.Name, buffer);
+            base::SafeCopy(obj.Name, buffer);
           } else {
-            port::SafeCopy(obj.Name,
+            base::SafeCopy(obj.Name,
                            base::At(kTranslatedMissionNames,
                                     base::ToSize(index - kMissionNameOffset)));
           }
-          port::SafeCopy(obj.FullName, buffer2);
+          base::SafeCopy(obj.FullName, buffer2);
           obj.House = HOUSE_GOOD;
           obj.Scenario = index;
           list.Add_Object(obj);
@@ -416,13 +416,13 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
           WWGetPrivateProfileString("Basic", "Name", "x", buffer,
                                     sbuffer.data());
           if constexpr (config::kIsEnglish) {
-            port::SafeCopy(obj.Name, buffer);
+            base::SafeCopy(obj.Name, buffer);
           } else {
-            port::SafeCopy(obj.Name,
+            base::SafeCopy(obj.Name,
                            base::At(kTranslatedMissionNames,
                                     base::ToSize(index - kMissionNameOffset)));
           }
-          port::SafeCopy(obj.FullName, buffer2);
+          base::SafeCopy(obj.FullName, buffer2);
           obj.House = HOUSE_BAD;
           obj.Scenario = index;
           list.Add_Object(obj);
@@ -471,7 +471,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
       case ButtonKey(200):
         TheWorld().whom() = list.Current_Object().House;
         TheScenario().Scenario = list.Current_Object().Scenario;
-        port::SafeCopy(TheScenario().ScenarioName,
+        base::SafeCopy(TheScenario().ScenarioName,
                        list.Current_Object().FullName);
         process = false;
         okval = true;
@@ -486,7 +486,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
       case KN_RETURN:
         TheWorld().whom() = list.Current_Object().House;
         TheScenario().Scenario = list.Current_Object().Scenario;
-        port::SafeCopy(TheScenario().ScenarioName,
+        base::SafeCopy(TheScenario().ScenarioName,
                        list.Current_Object().FullName);
         process = false;
         okval = true;

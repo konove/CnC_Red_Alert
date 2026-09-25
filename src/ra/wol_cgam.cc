@@ -236,7 +236,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
       Show_Mouse();
     }
     //	Be nice to other apps.
-    port::SleepMs(50);
+    platform::SleepMs(50);
 
     /*
     **	Get user input.
@@ -353,7 +353,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     pWO->bPump_In_Call_Back = true;
     if (std::string_view(pEditDlg->Show()) == Text_String(TXT_OK) &&
         *pEditDlg->szEdit) {
-      port::SafeCopy(cgiReturn.szPassword, pEditDlg->szEdit);
+      base::SafeCopy(cgiReturn.szPassword, pEditDlg->szEdit);
     } else {
       cgiReturn.bCreateGame = false;  //	Cancel creation.
     }

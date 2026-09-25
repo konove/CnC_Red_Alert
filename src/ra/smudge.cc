@@ -311,17 +311,17 @@ void SmudgeClass::Read_INI(CCINIClass& ini) {
     const char* entry = ini.Get_Entry(INI_Name(), index);
 
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
-    port::Tokenizer tokens(buf, ",");
+    base::Tokenizer tokens(buf, ",");
     const SmudgeType smudge =
         SmudgeTypeClass::From_Name(tokens.Next());  // Smudge type.
     if (smudge != SMUDGE_NONE) {
       const char* ptr = tokens.Next();
       if (ptr != nullptr) {
         int data = 0;
-        const CELL cell = tech::ParseIntegerOr<CELL>(ptr, 0);
+        const CELL cell = base::ParseIntegerOr<CELL>(ptr, 0);
         ptr = tokens.Next();
         if (ptr != nullptr) {
-          data = tech::ParseIntegerOr<int>(ptr, 0);
+          data = base::ParseIntegerOr<int>(ptr, 0);
         }
         new SmudgeClass(smudge, Cell_Coord(cell));
         if (TheMap().at(cell).Smudge == smudge && data != 0) {

@@ -9,7 +9,7 @@
 
 #include "absl/strings/numbers.h"
 
-namespace tech {
+namespace base {
 
 // Parses a complete decimal integer, allowing a sign and surrounding ASCII
 // whitespace. Returns nullopt for malformed input or values outside T's range.
@@ -102,6 +102,6 @@ std::optional<int> ParseIniInteger(std::string_view text);
 // As ParseIniInteger(), returning `fallback` for empty or invalid text.
 int ParseIniIntegerOr(std::string_view text, int fallback);
 
-}  // namespace tech
+}  // namespace base
 
 #endif  // CNC_RED_ALERT_ENGINE_BASE_STRINGS_NUMBER_PARSE_H_

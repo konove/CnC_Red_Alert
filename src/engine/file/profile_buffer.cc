@@ -12,7 +12,7 @@
 #include "absl/strings/match.h"
 #include "engine/base/strings/safe_string.h"
 
-namespace port {
+namespace file {
 namespace {
 
 struct Section {
@@ -177,8 +177,8 @@ bool WriteProfile(std::span<char> storage, std::string_view section,
   if (result.size() >= storage.size()) {
     return false;
   }
-  SafeCopy(storage.first(result.size() + 1), result.c_str());
+  base::SafeCopy(storage.first(result.size() + 1), result.c_str());
   return true;
 }
 
-}  // namespace port
+}  // namespace file

@@ -10,7 +10,7 @@
 #include <sys/socket.h>
 #endif
 
-namespace port {
+namespace net {
 
 std::string Ipv4Text(const in_addr& address) {
   char text[INET_ADDRSTRLEN] = {};
@@ -22,4 +22,4 @@ std::string Ipv4Text(const in_addr& address) {
   return {text};
 }
 
-}  // namespace port
+}  // namespace net

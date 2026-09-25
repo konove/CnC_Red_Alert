@@ -658,7 +658,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       Show_Mouse();
     }
     //	Be nice to other apps.
-    port::SleepMs(50);
+    platform::SleepMs(50);
 
     //.....................................................................
     //	Get user input
@@ -1174,7 +1174,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
       return false;
     }
     pChannel = &ChannelWhenNameOnly;
-    port::SafeCopy(WolTextBuffer(pChannel->name), szChannelName);
+    base::SafeCopy(WolTextBuffer(pChannel->name), szChannelName);
   }
 
   if (bGame && pChannel->currentUsers >=
@@ -1210,7 +1210,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
                   if( !pEditDlg->Show() || !*pEditDlg->szEdit )
                           return false;
 
-                  port::SafeCopy( (char*)pChannel->key, pEditDlg->szEdit );
+                  base::SafeCopy( (char*)pChannel->key, pEditDlg->szEdit );
           }
   */
   bool bKeepTrying = true;
@@ -1218,7 +1218,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
   //	Set password automatically for our lobbies, if trying to join one.
   const int iLobby = iChannelLobbyNumber(WolText(pChannel->name));
   if (iLobby != -1) {
-    port::SafeCopy(WolTextBuffer(pChannel->key), LOBBYPASSWORD);
+    base::SafeCopy(WolTextBuffer(pChannel->key), LOBBYPASSWORD);
   }
 
   char szSuccessfulPassword[WOL_PASSWORD_LEN + 5];
@@ -1251,8 +1251,8 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
           break;
         }
         pWO->bPump_In_Call_Back = false;
-        port::SafeCopy(WolTextBuffer(pChannel->key), pEditDlg->szEdit);
-        port::SafeCopy(szSuccessfulPassword, pEditDlg->szEdit);
+        base::SafeCopy(WolTextBuffer(pChannel->key), pEditDlg->szEdit);
+        base::SafeCopy(szSuccessfulPassword, pEditDlg->szEdit);
         delete pEditDlg;
         break;
       }
@@ -1314,7 +1314,7 @@ bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist, Channel* pChannel,
     CreateGameInfo.bTournament = pChannel->tournament != 0;
     if (*szSuccessfulPassword) {
       CreateGameInfo.bPrivate = true;
-      port::SafeCopy(CreateGameInfo.szPassword, szSuccessfulPassword);
+      base::SafeCopy(CreateGameInfo.szPassword, szSuccessfulPassword);
     } else {
       CreateGameInfo.bPrivate = false;
       *CreateGameInfo.szPassword = 0;

@@ -241,7 +241,7 @@ HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
       RemapTable(remap),
       RemapColor(remapcolor),
       Prefix(prefix) {
-  port::SafeCopy(Suffix, ext);
+  base::SafeCopy(Suffix, ext);
   base::At(Suffix, 3) = '\0';
 }
 

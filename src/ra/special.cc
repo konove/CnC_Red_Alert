@@ -374,7 +374,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
   **	Determine the dimensions of the text to be used for the dialog box.
   **	These dimensions will control how the dialog box looks.
   */
-  port::SafeCopy(buffer, Text_String(message));
+  base::SafeCopy(buffer, Text_String(message));
   int width = 0;
   int height = 0;
   Format_Window_String(font, buffer, 255, width, height);
@@ -492,7 +492,7 @@ int Fetch_Difficulty(bool amath) {
   **	the text into appropriate spacing.
   */
   char buffer[512];
-  port::SafeCopy(buffer, Text_String(TXT_DIFFICULTY));
+  base::SafeCopy(buffer, Text_String(TXT_DIFFICULTY));
   // If it's an aftermath mission, trim the sentence to get rid of the campaign
   // stuff.
   if (amath) {

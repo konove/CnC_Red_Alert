@@ -168,7 +168,7 @@ void BaseClass::Read_INI(char* buffer) {
     /*
     ** Set the node's building type
     */
-    port::Tokenizer tokens(buf, ",");
+    base::Tokenizer tokens(buf, ",");
     node.Type = BuildingTypeClass::From_Name(tokens.Next());
 
     /*
@@ -178,7 +178,7 @@ void BaseClass::Read_INI(char* buffer) {
     if (coordinate_text == nullptr) {
       continue;
     }
-    const auto coordinate = tech::ParseDecimalBits(coordinate_text);
+    const auto coordinate = base::ParseDecimalBits(coordinate_text);
     if (!coordinate) {
       continue;
     }

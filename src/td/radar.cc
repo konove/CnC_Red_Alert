@@ -877,9 +877,9 @@ void RadarClass::Plot_Radar_Pixel(PixelView& view, CELL cell) {
         // The icon map and pixel offsets belong to the serialized iconset.
         if (data.size() >= 32 && logical_icon >= 0) {
           const auto map_offset =
-              port::ReadUnaligned<uint32_t>(data.subspan(28));
+              base::ReadUnaligned<uint32_t>(data.subspan(28));
           const auto pixel_offset =
-              port::ReadUnaligned<uint32_t>(data.subspan(12));
+              base::ReadUnaligned<uint32_t>(data.subspan(12));
           const auto map_index = static_cast<std::size_t>(map_offset) +
                                  static_cast<std::size_t>(logical_icon);
           if (map_index < data.size()) {

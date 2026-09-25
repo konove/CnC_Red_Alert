@@ -171,7 +171,7 @@ void Fatal_Message(const std::string_view message) {
 void Format_Runtime_Text(std::span<char> buffer, const size_t size,
                          const char* format,
                          const absl::Span<const absl::FormatArg> args) {
-  port::SafeCopy(buffer.first(size), port::FormatRuntime(format, args).c_str());
+  base::SafeCopy(buffer.first(size), base::FormatRuntime(format, args).c_str());
 }
 
 /***********************************************************************************************

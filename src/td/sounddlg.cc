@@ -197,9 +197,9 @@ void SoundControlsClass::Process() {
   */
   char filename[30];
   if (factor == 1) {
-    port::SafeCopy(filename, "BTN-ST.SHP");
+    base::SafeCopy(filename, "BTN-ST.SHP");
   } else {
-    port::SafeCopy(filename, "BTN-STH.SHP");
+    base::SafeCopy(filename, "BTN-STH.SHP");
   }
   ShapeButtonClass stopbtn(kButtonStop, MixArchive::RetrieveData(filename),
                            Option_X + Stop_X, Option_Y + Stop_Y);
@@ -208,9 +208,9 @@ void SoundControlsClass::Process() {
   **	Start playing button.
   */
   if (factor == 1) {
-    port::SafeCopy(filename, "BTN-PL.SHP");
+    base::SafeCopy(filename, "BTN-PL.SHP");
   } else {
-    port::SafeCopy(filename, "BTN-PLH.SHP");
+    base::SafeCopy(filename, "BTN-PLH.SHP");
   }
 
   ShapeButtonClass playbtn(kButtonPlay, MixArchive::RetrieveData(filename),

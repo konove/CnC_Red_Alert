@@ -62,13 +62,13 @@ const char* Game_Registry_Key() {
 }
 
 bool ReadInstallerFlag(const char* value_name) {
-  return port::ReadRegistryDword(HKEY_LOCAL_MACHINE, Game_Registry_Key(),
-                                 value_name)
+  return platform::ReadRegistryDword(HKEY_LOCAL_MACHINE, Game_Registry_Key(),
+                                     value_name)
              .value_or(0) != 0;
 }
 
 bool Is_Counterstrike_Installed() {
-  if constexpr (port::kIsWindows) {
+  if constexpr (platform::kIsWindows) {
     static const bool installed = ReadInstallerFlag("CStrikeInstalled");
     return installed;
   } else {
@@ -77,7 +77,7 @@ bool Is_Counterstrike_Installed() {
 }
 
 bool Is_Aftermath_Installed() {
-  if constexpr (port::kIsWindows) {
+  if constexpr (platform::kIsWindows) {
     static const bool installed = ReadInstallerFlag("AftermathInstalled");
     return installed;
   } else {
@@ -246,7 +246,7 @@ bool Force_CD_Available(int cd_desired)  // ajw
         const auto format =
             absl::ParsedFormat<'d', 's'>::New(Text_String(text));
         if (format != nullptr) {
-          port::SafeCopy(buffer,
+          base::SafeCopy(buffer,
                          absl::StrFormat(*format, cd_desired + 1,
                                          kCdNames.at(base::ToSize(cd_desired)))
                              .c_str());

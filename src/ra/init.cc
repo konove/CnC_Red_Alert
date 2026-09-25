@@ -1297,7 +1297,7 @@ std::optional<IPXAddressClass> ParseDestNet(const std::string_view address) {
   int i = 0;
   for (const std::string_view piece :
        absl::StrSplit(address, '.', absl::SkipEmpty())) {
-    const auto byte = tech::ParseHex<uint8_t>(piece);
+    const auto byte = base::ParseHex<uint8_t>(piece);
     if (!byte || i >= 10) {
       i = 0;  // Reject the address instead of accepting a partial network.
       break;
@@ -1323,7 +1323,7 @@ std::optional<IPXAddressClass> ParseDestNet(const std::string_view address) {
 // [0, 0x4000). Anything else leaves the socket alone.
 static std::optional<uint16_t> ParseSocketArgument(
     std::string_view offset_text) {
-  const auto offset = tech::ParseInteger<int>(offset_text);
+  const auto offset = base::ParseInteger<int>(offset_text);
   if (!offset || *offset < 0 || *offset >= 0x4000) {
     return std::nullopt;
   }
@@ -1523,7 +1523,7 @@ std::optional<StartupOptions> Parse_Command_Line(
     if constexpr (config::kCheatKeysEnabled) {
       // Specify the random number seed (for debugging)
       if (string.contains("-SEED")) {
-        options.custom_seed = tech::ParseIntegerOr<uint16_t>(
+        options.custom_seed = base::ParseIntegerOr<uint16_t>(
             string.substr(std::string_view("-SEED").size()),
             options.custom_seed);
         continue;
@@ -1538,11 +1538,11 @@ std::optional<StartupOptions> Parse_Command_Line(
     // Developer switches for save-game checks; see Select_Game and
     // RunFrame.
     if (string.starts_with("-LOADGAME")) {
-      options.load_game = tech::ParseIntegerOr<int>(string.substr(9), -1);
+      options.load_game = base::ParseIntegerOr<int>(string.substr(9), -1);
       continue;
     }
     if (string.starts_with("-QUITFRAME")) {
-      options.quit_at_frame = tech::ParseIntegerOr<int>(string.substr(10), -1);
+      options.quit_at_frame = base::ParseIntegerOr<int>(string.substr(10), -1);
       // Nobody watches an automated run; its fades only add wall time.
       options.disable_fades = true;
       continue;
@@ -1556,7 +1556,7 @@ std::optional<StartupOptions> Parse_Command_Line(
       continue;
     }
     if (string.starts_with("-SAVESLOT")) {
-      options.save_slot = tech::ParseIntegerOr<int>(string.substr(9), -1);
+      options.save_slot = base::ParseIntegerOr<int>(string.substr(9), -1);
       continue;
     }
 
@@ -1658,7 +1658,7 @@ void Init_Random() {
     if (TheStartupOptions().custom_seed != 0) {
       TheWorld().seed() = TheStartupOptions().custom_seed;
     } else {
-      TheWorld().seed() = port::RandomSeed();
+      TheWorld().seed() = platform::RandomSeed();
     }
   }
 
@@ -2595,7 +2595,7 @@ static bool bUsingDVD = false;
 // Whether the installer recorded a DVD edition. Off Windows there is no
 // installer, and the disc logic treats the data on disk as the DVD.
 static bool Is_DVD_Installed() {
-  if constexpr (port::kIsWindows) {
+  if constexpr (platform::kIsWindows) {
     return ReadInstallerFlag("DVD");
   } else {
     return true;

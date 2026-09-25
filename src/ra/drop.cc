@@ -100,7 +100,7 @@ DropListClass* DropListClass::Remove() {
 }
 
 int DropListClass::Add_Item(const char* text) {
-  port::SafeCopy(std::span(String).first(base::ToSize(MaxLength)), text);
+  base::SafeCopy(std::span(String).first(base::ToSize(MaxLength)), text);
   Flag_To_Redraw();
   return List.Add_Item(text);
 }
@@ -112,7 +112,8 @@ int DropListClass::Current_Index() { return List.Current_Index(); }
 void DropListClass::Set_Selected_Index(int index) {
   if (static_cast<unsigned>(index) < static_cast<unsigned>(List.Count())) {
     List.Set_Selected_Index(index);
-    port::SafeCopy(std::span(String).first(base::ToSize(MaxLength)), List.Get_Item(Current_Index()));
+    base::SafeCopy(std::span(String).first(base::ToSize(MaxLength)),
+                   List.Get_Item(Current_Index()));
   } else {
     base::At(String, 0) = '\0';
   }
@@ -132,7 +133,8 @@ void DropListClass::Peer_To_Peer(unsigned flags, KeyNumType& key,
   }
 
   if (&whom == &List) {
-    port::SafeCopy(std::span(String).first(base::ToSize(MaxLength)), List.Current_Item());
+    base::SafeCopy(std::span(String).first(base::ToSize(MaxLength)),
+                   List.Current_Item());
     Flag_To_Redraw();
     key = ButtonKey(static_cast<int>(ID));
   }

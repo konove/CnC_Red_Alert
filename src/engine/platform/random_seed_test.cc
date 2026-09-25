@@ -9,7 +9,7 @@ namespace {
 TEST(RandomSeedTest, IsNonNegativeAndVaries) {
   std::set<int> seeds;
   for (int i = 0; i < 16; ++i) {
-    const int seed = port::RandomSeed();
+    const int seed = platform::RandomSeed();
     EXPECT_GE(seed, 0);
     seeds.insert(seed);
   }

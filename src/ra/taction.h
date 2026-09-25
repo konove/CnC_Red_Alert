@@ -149,7 +149,7 @@ struct TActionClass {
     ar(Action, Team, Trigger, Data.Value);
   }
   // Reads the action fields from the trigger entry `tokens` is parsing.
-  void Read_INI(port::Tokenizer& tokens);
+  void Read_INI(base::Tokenizer& tokens);
   void Build_INI_Entry(std::string& buffer) const;
 
   bool operator()(HousesType house, ObjectClass* object, int id, CELL cell);

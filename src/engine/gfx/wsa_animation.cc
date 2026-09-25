@@ -265,7 +265,7 @@ int64_t WsaAnimation::ResidentFrameOffset(const int frame) const {
       base::ToSize(frame) >= file_buffer.size() / sizeof(uint32_t)) {
     return 0;
   }
-  const auto offset = port::ReadUnaligned<uint32_t>(
+  const auto offset = base::ReadUnaligned<uint32_t>(
       file_buffer.subspan(base::ToSize(frame) * sizeof(uint32_t)));
   return offset == 0 ? 0 : offset - offset_bias_;
 }

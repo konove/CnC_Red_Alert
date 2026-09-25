@@ -488,7 +488,7 @@ HouseClass::HouseClass(HousesType house)
       SuperClass(kTicksPerMinute * TheRules().GPSTime, true, VOX_NONE, VOX_NONE,
                  VOX_NOT_READY, VOX_INSUFFICIENT_POWER);
 
-  port::SafeCopy(IniName, Text_String(TXT_COMPUTER));  // Default computer name.
+  base::SafeCopy(IniName, Text_String(TXT_COMPUTER));  // Default computer name.
   TheWorld().house_triggers().at(house).Clear();
   Make_Ally(house);
   Assign_Handicap(TheScenario().CDifficulty);
@@ -2545,7 +2545,7 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
         if (ttype == nullptr) {
           ttype = new TeamTypeClass;
           if (ttype != nullptr) {
-            port::SafeCopy(ttype->IniName, "@PINF");
+            base::SafeCopy(ttype->IniName, "@PINF");
             ttype->IsTransient = true;
             ttype->IsPrebuilt = false;
             ttype->IsReinforcable = false;
@@ -3675,7 +3675,7 @@ void HouseClass::Tally_Score() {
       **	Initialize this new score entry
       */
       base::At(TheSession().Score, score_index).Wins = 0;
-      port::SafeCopy(base::At(TheSession().Score, score_index).Name,
+      base::SafeCopy(base::At(TheSession().Score, score_index).Name,
                      hptr->IniName);
       for (int& Kill : base::At(TheSession().Score, score_index).Kills) {
         Kill = -1;

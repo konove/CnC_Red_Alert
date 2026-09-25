@@ -172,7 +172,7 @@ bool WarheadTypeClass::Read_INI(CCINIClass& ini) {
     char buffer[128];
     if (ini.Get_String(Name(), "Verses", "100%%,100%%,100%%,100%%,100%%",
                        buffer, sizeof(buffer))) {
-      port::Tokenizer tokens(buffer, ",");
+      base::Tokenizer tokens(buffer, ",");
       for (const ArmorType armor : magic_enum::enum_values<ArmorType>()) {
         Modifier.at(armor) = fixed::FromString(tokens.Next());
       }

@@ -862,7 +862,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
   /*
   ------------------------ Save selections & return ------------------------
   */
-  (*scen_nump) = tech::ParseIntegerOr<int>(scen_buf, 0);
+  (*scen_nump) = base::ParseIntegerOr<int>(scen_buf, 0);
 
   return 0;
 }
@@ -2000,10 +2000,10 @@ int MapEditClass::Scenario_Dialog() {
     /*
     .............................. Credits ................................
     */
-    gdi_credits = tech::ParseIntegerOr<decltype(gdi_credits)>(gdicred_buf, 0);
-    nod_credits = tech::ParseIntegerOr<decltype(nod_credits)>(nodcred_buf, 0);
+    gdi_credits = base::ParseIntegerOr<decltype(gdi_credits)>(gdicred_buf, 0);
+    nod_credits = base::ParseIntegerOr<decltype(nod_credits)>(nodcred_buf, 0);
     neut_credits =
-        tech::ParseIntegerOr<decltype(neut_credits)>(neutcred_buf, 0);
+        base::ParseIntegerOr<decltype(neut_credits)>(neutcred_buf, 0);
     HouseClass::As_Pointer(HOUSE_GOOD)->Credits = gdi_credits * 1000L;
     HouseClass::As_Pointer(HOUSE_BAD)->Credits = nod_credits * 1000L;
     HouseClass::As_Pointer(HOUSE_NEUTRAL)->Credits = neut_credits * 1000L;
@@ -2017,7 +2017,7 @@ int MapEditClass::Scenario_Dialog() {
   /*
   ........................... Sidebar build level ..........................
   */
-  TheWorld().build_level() = tech::ParseIntegerOr<int>(level_buf, 0);
+  TheWorld().build_level() = base::ParseIntegerOr<int>(level_buf, 0);
 
   /*........................................................................
   Change the theater:
@@ -2334,28 +2334,28 @@ int MapEditClass::Select_Trigger() {
     if (TriggerClass::Event_Need_House(
             TheObjectHeaps().trigger().Ptr(i)->Event)) {
       if (TheObjectHeaps().trigger().Ptr(i)->House != HOUSE_NONE) {
-        port::SafeAppend(trigger_text,
+        base::SafeAppend(trigger_text,
                          HouseTypeClass::As_Reference(
                              TheObjectHeaps().trigger().Ptr(i)->House)
                              .Suffix);
       } else {
-        port::SafeAppend(trigger_text, "!!!");
+        base::SafeAppend(trigger_text, "!!!");
       }
     } else {
-      port::SafeAppend(trigger_text, "   ");
+      base::SafeAppend(trigger_text, "   ");
     }
 
     /*
     .......................... Add the team name ..........................
     */
-    port::SafeAppend(trigger_text, "\t");
+    base::SafeAppend(trigger_text, "\t");
     if (TriggerClass::Action_Need_Team(
             TheObjectHeaps().trigger().Ptr(i)->Action)) {
       if (TheObjectHeaps().trigger().Ptr(i)->Team) {
-        port::SafeAppend(trigger_text,
+        base::SafeAppend(trigger_text,
                          TheObjectHeaps().trigger().Ptr(i)->Team->IniName);
       } else {
-        port::SafeAppend(trigger_text, "!!!");
+        base::SafeAppend(trigger_text, "!!!");
       }
     }
 
@@ -2782,7 +2782,7 @@ int MapEditClass::Edit_Trigger() {
     action_idx = TriggerClass::ACTION_WIN;
   }
 
-  port::SafeCopy(namebuf, CurTrigger->Get_Name());  // Name
+  base::SafeCopy(namebuf, CurTrigger->Get_Name());  // Name
   name_edt.Set_Text(namebuf, 5);
 
   if (TriggerClass::Event_Need_Data(event_idx)) {
@@ -3077,7 +3077,7 @@ int MapEditClass::Edit_Trigger() {
     .............................. Set Data ...............................
     */
     if (TriggerClass::Event_Need_Data(event_idx)) {
-      CurTrigger->Data = tech::ParseIntegerOr<int64_t>(databuf, 0);
+      CurTrigger->Data = base::ParseIntegerOr<int64_t>(databuf, 0);
     }
 
     /*
@@ -3250,7 +3250,7 @@ int MapEditClass::Import_Triggers() {
     /*
     ** Parse the INI entry
     */
-    port::Tokenizer tokens(buf, ",");
+    base::Tokenizer tokens(buf, ",");
     char* eventptr = tokens.Next();
     char* actionptr = tokens.Next();
     tokens.Next();  // data, unused
@@ -3269,12 +3269,12 @@ int MapEditClass::Import_Triggers() {
             TriggerClass::Event_From_Name(eventptr))) {
       const HousesType house = HouseTypeClass::From_Name(houseptr);
       if (house != HOUSE_NONE) {
-        port::SafeAppend(item, HouseTypeClass::As_Reference(house).Suffix);
+        base::SafeAppend(item, HouseTypeClass::As_Reference(house).Suffix);
       } else {
-        port::SafeAppend(item, "!!!");
+        base::SafeAppend(item, "!!!");
       }
     } else {
-      port::SafeAppend(item, "   ");
+      base::SafeAppend(item, "   ");
     }
 
     /*
@@ -3564,12 +3564,12 @@ int MapEditClass::Import_Teams() {
     /*
     ** Parse the INI entry
     */
-    port::Tokenizer tokens(buf, ",");
+    base::Tokenizer tokens(buf, ",");
     char* houseptr = tokens.Next();
     for (i = 0; i < 9; i++) {
       tokens.Next();  // flags and counts, unused
     }
-    const int numclasses = tech::ParseIntegerOr<int>(tokens.Next(), 0);
+    const int numclasses = base::ParseIntegerOr<int>(tokens.Next(), 0);
 
     /*
     ** Generate the descriptive string
@@ -3577,17 +3577,17 @@ int MapEditClass::Import_Teams() {
     absl::SNPrintF(item, sizeof(item), " %s\t", tbuffer);
     const HousesType house = HouseTypeClass::From_Name(houseptr);
     if (house != HOUSE_NONE) {
-      port::SafeAppend(item, HouseTypeClass::As_Reference(house).Suffix);
+      base::SafeAppend(item, HouseTypeClass::As_Reference(house).Suffix);
     } else {
-      port::SafeAppend(item, "!!!");
+      base::SafeAppend(item, "!!!");
     }
-    port::SafeAppend(item, "\t");
+    base::SafeAppend(item, "\t");
 
     char* classptr = tokens.Next();
     for (i = 0; i < numclasses; i++) {
       if (std::string_view(item).size() + std::string_view(classptr).size() <
           kItemSize) {
-        port::SafeAppend(item, classptr);
+        base::SafeAppend(item, classptr);
         classptr = tokens.Next();
       } else {
         break;

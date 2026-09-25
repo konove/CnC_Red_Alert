@@ -194,7 +194,7 @@ int IconListClass::Add_Item(
       //	Format_Window_String_New.
       const std::size_t iTextSize = std::string_view(text).size() + 51;
       std::vector<char> szText(iTextSize);
-      port::SafeCopy(szText, text);
+      base::SafeCopy(szText, text);
 
       int iWidthMax = 0;
       int iHeight = 0;
@@ -221,7 +221,7 @@ int IconListClass::Add_Item(
       }
 
       //	Each break character causes a line to be added to list.
-      port::Tokenizer tokens(szText.data(), "\r\n\v\f");
+      base::Tokenizer tokens(szText.data(), "\r\n\v\f");
       std::size_t next_char = 0;
       while (const char* szToken = tokens.Next()) {
         while (std::cmp_less(next_char, szToken - szText.data())) {

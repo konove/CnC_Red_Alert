@@ -706,7 +706,7 @@ int NullModemClass::Service() {
   ------------------------------------------------------------------------*/
   int pos = -1;  // current position in RXBuf
   for (i = 0; i <= RXCount - static_cast<int>(sizeof(int16_t)); i++) {
-    if (port::ReadUnaligned<uint16_t>(std::as_writable_bytes(std::span(RXBuf))
+    if (base::ReadUnaligned<uint16_t>(std::as_writable_bytes(std::span(RXBuf))
                                           .subspan(base::ToSize(i))) ==
         PACKET_SERIAL_START) {
       pos = i;
@@ -746,7 +746,7 @@ int NullModemClass::Service() {
   /*------------------------------------------------------------------------
   A start code was found; check the packet's length & CRC
   ------------------------------------------------------------------------*/
-  header = port::ReadUnaligned<SerialHeaderType>(
+  header = base::ReadUnaligned<SerialHeaderType>(
       std::as_writable_bytes(std::span(RXBuf)).subspan(base::ToSize(pos)));
 
   /*------------------------------------------------------------------------
@@ -819,7 +819,7 @@ int NullModemClass::Service() {
   start-code, move the rest to the front of the buffer, & return.
   We'll continue parsing this data when we're called next time.
   ------------------------------------------------------------------------*/
-  crc = port::ReadUnaligned<SerialCRCType>(
+  crc = base::ReadUnaligned<SerialCRCType>(
       std::as_writable_bytes(std::span(RXBuf))
           .subspan(base::ToSize(pos) + sizeof(SerialHeaderType) + length));
   if (NullModemConnClass::Compute_CRC(
@@ -975,7 +975,7 @@ std::span<const std::byte> NullModemClass::Oldest_Send() {
         Connection->Queue->Get_Send(i);  // ptr to send entry header
     if (send_entry) {
       auto* packet =
-          port::AlignedObject<CommHeaderType>(send_entry->Buffer.data());
+          base::AlignedObject<CommHeaderType>(send_entry->Buffer.data());
       if (packet->Code ==
               static_cast<unsigned char>(ConnectionClass::PACKET_DATA_ACK) &&
           send_entry->IsACK == 0) {
@@ -1030,7 +1030,7 @@ int NullModemClass::Detect_Modem(SerialSettingsType* settings, bool reconnect) {
   Determine the dimensions of the text to be used for the dialog box.
   These dimensions will control how the dialog box looks.
   ------------------------------------------------------------------------*/
-  port::SafeCopy(buffer, Text_String(TXT_INITIALIZING_MODEM));
+  base::SafeCopy(buffer, Text_String(TXT_INITIALIZING_MODEM));
 
   PixelView& view = TheScreen().visible_view();
 
@@ -1444,9 +1444,9 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
   These dimensions will control how the dialog box looks.
   ------------------------------------------------------------------------*/
   if (reconnect) {
-    port::SafeCopy(text_buffer, Text_String(TXT_MODEM_CONNERR_WAITING));
+    base::SafeCopy(text_buffer, Text_String(TXT_MODEM_CONNERR_WAITING));
   } else {
-    port::SafeCopy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
+    base::SafeCopy(text_buffer, Text_String(TXT_WAITING_FOR_CALL));
   }
 
   PixelView& view = TheScreen().visible_view();
@@ -1549,7 +1549,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
 
     if (process) {
       if (std::string_view(comm_buffer).starts_with("RING")) {
-        port::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
+        base::SafeCopy(text_buffer, Text_String(TXT_ANSWERING));
 
         Format_Window_String(font, text_buffer, view.height(), width, height);
 
@@ -1976,7 +1976,7 @@ int NullModemClass::Verify_And_Convert_To_Int(char* buffer) {
   }
 
   if (value == 0) {
-    value = tech::ParseIntegerOr<int>(buffer, 0);
+    value = base::ParseIntegerOr<int>(buffer, 0);
   }
 
   return value;

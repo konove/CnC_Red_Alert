@@ -728,7 +728,7 @@ void Fancy_Text_Print(PixelView& view, const char* text, const int x,
                       const TextPrintType flag,
                       const absl::Span<const absl::FormatArg> args) {
   if (text) {
-    const std::string formatted = port::FormatRuntime(text, args);
+    const std::string formatted = base::FormatRuntime(text, args);
     Simple_Text_Print(view, formatted.c_str(), x, y, fore, back, flag);
   }
 }
@@ -769,7 +769,7 @@ void Conquer_Clip_Text_Print(PixelView& view, const char* text, int x, int y,
     return;
   }
   char buffer[512];
-  port::SafeCopy(buffer, text);
+  base::SafeCopy(buffer, text);
   const FontStyle font = TextFontStyle(flag);
   std::span<char> source(buffer);
   int offset = 0;

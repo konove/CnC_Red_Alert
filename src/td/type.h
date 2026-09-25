@@ -263,7 +263,7 @@ class AbstractTypeClass {
 
   [[nodiscard]] virtual COORDINATE Coord_Fixup(COORDINATE coord) const;
   [[nodiscard]] virtual int Full_Name() const;
-  void Set_Name(const char* buf) { port::SafeCopy(IniName, buf); }
+  void Set_Name(const char* buf) { base::SafeCopy(IniName, buf); }
   [[nodiscard]] virtual uint16_t Get_Ownable() const;
 };
 

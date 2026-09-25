@@ -2206,7 +2206,7 @@ bool RadarClass::Draw_House_Info(PixelView& view) {
       }
       Fancy_Text_Print(view, txt, RadX + RadOffX + 12, y, color, kBlack, style);
     } else {
-      port::SafeCopy(txt, "________");
+      base::SafeCopy(txt, "________");
     }
     y += 12 + 1;
 
@@ -2312,7 +2312,7 @@ void RadarClass::Draw_Names(PixelView& view) const {
                    ptr->IsHuman ? ptr->IniName : Text_String(TXT_COMPUTER));
 
     if (std::string_view(txt).empty()) {
-      port::SafeCopy(txt, "________");
+      base::SafeCopy(txt, "________");
     }
 
     /*

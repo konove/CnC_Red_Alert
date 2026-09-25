@@ -51,7 +51,7 @@ TEST_F(QueueAlignmentTest, ReceivesPacketHeaderAtOddAddress) {
   header.MagicNumber = 0x1234;
   header.Code = static_cast<unsigned char>(ConnectionClass::PACKET_DATA_NOACK);
   header.PacketID = 7;
-  port::WriteUnaligned(std::as_writable_bytes(std::span(bytes)).subspan(1),
+  base::WriteUnaligned(std::as_writable_bytes(std::span(bytes)).subspan(1),
                        header);
   bytes.at(1 + sizeof(header)) = 0x6b;
   EXPECT_TRUE(connection.Receive_Packet(
@@ -79,9 +79,9 @@ TEST_F(QueueAlignmentTest, ExtractsCompressedFrameAndPayloadFromOddAddress) {
       offsetof(EventClass, Data) + sizeof(frame.Data.FrameInfo);
   base::CopyBytes(packet, base::ObjectBytes(frame), header_size);
   const auto payload = packet.subspan(header_size);
-  port::WriteUnaligned(payload, EventClass::RESPONSE_TIME);
+  base::WriteUnaligned(payload, EventClass::RESPONSE_TIME);
   decltype(frame.Data.FrameInfo.Delay) const delay = 9;
-  port::WriteUnaligned(payload.subspan(sizeof(EventClass::EventType)), delay);
+  base::WriteUnaligned(payload.subspan(sizeof(EventClass::EventType)), delay);
   const int size = static_cast<int>(
       header_size + sizeof(EventClass::EventType) + sizeof(delay));
   EXPECT_EQ(Extract_Compressed_Events(packet, size), 2);
@@ -101,7 +101,7 @@ TEST_F(QueueAlignmentTest, ExtractsUncompressedEventWithoutMutatingPacket) {
   event.Frame = 321;
   event.IsExecuted = true;
   event.Data.FrameInfo.Delay = 11;
-  port::WriteUnaligned(std::as_writable_bytes(std::span(bytes)).subspan(1),
+  base::WriteUnaligned(std::as_writable_bytes(std::span(bytes)).subspan(1),
                        event);
   const auto before = bytes;
   EXPECT_EQ(
@@ -137,7 +137,7 @@ TEST_F(QueueAlignmentTest, RejectsTruncatedMissionRun) {
       offsetof(EventClass, Data) + sizeof(frame.Data.FrameInfo);
   base::CopyBytes(bytes, base::ObjectBytes(frame), header_size);
   const auto mission = std::span(bytes).subspan(header_size);
-  port::WriteUnaligned(mission, EventClass::MEGAMISSION);
+  base::WriteUnaligned(mission, EventClass::MEGAMISSION);
   base::At(mission, sizeof(EventClass::EventType)) = std::byte{2};
   const int size =
       static_cast<int>(header_size + sizeof(EventClass::EventType) + 1 +

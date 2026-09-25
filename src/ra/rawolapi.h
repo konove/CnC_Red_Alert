@@ -56,7 +56,7 @@
 // struct that holds it.
 //
 // Example:
-//   port::SafeCopy(user.name_buffer, WolText(pUser->name));
+//   base::SafeCopy(user.name_buffer, WolText(pUser->name));
 inline char* WolText(unsigned char* text ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   return reinterpret_cast<char*>(text);

@@ -1173,7 +1173,7 @@ void TriggerClass::Fill_In(char* name, char* entry) {
   */
   Set_Name(name);
 
-  port::Tokenizer tokens(entry, ",");
+  base::Tokenizer tokens(entry, ",");
 
   /*
   **	1st token: Event.
@@ -1188,7 +1188,7 @@ void TriggerClass::Fill_In(char* name, char* entry) {
   /*
   **	3rd token: Data.
   */
-  DataCopy = Data = tech::ParseIntegerOr<int64_t>(tokens.Next(), 0);
+  DataCopy = Data = base::ParseIntegerOr<int64_t>(tokens.Next(), 0);
 
   /*
   **	4th token: House.
@@ -1209,7 +1209,7 @@ void TriggerClass::Fill_In(char* name, char* entry) {
   */
   char* p = tokens.Next();
   if (p) {
-    IsPersistant = static_cast<PersistantType>(tech::ParseIntegerOr<int>(p, 0));
+    IsPersistant = static_cast<PersistantType>(base::ParseIntegerOr<int>(p, 0));
   } else {
     IsPersistant = VOLATILE;
   }

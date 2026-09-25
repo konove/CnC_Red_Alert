@@ -491,7 +491,7 @@ void TcpipManagerClass::Copy_To_In_Buffer(int bytes) {
  * HISTORY: * 3/20/96 3:19PM ST : Created *
  *=============================================================================================*/
 void TcpipManagerClass::Set_Host_Address(char* address) {
-  port::SafeCopy(HostAddress, address);
+  base::SafeCopy(HostAddress, address);
 }
 
 /***********************************************************************************************

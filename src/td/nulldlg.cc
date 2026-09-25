@@ -300,7 +300,7 @@ int Test_Null_Modem() {
   **	Determine the dimensions of the text to be used for the dialog box.
   **	These dimensions will control how the dialog box looks.
   */
-  port::SafeCopy(buffer, Text_String(TXT_WAITING_CONNECT));
+  base::SafeCopy(buffer, Text_String(TXT_WAITING_CONNECT));
   const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(font, buffer, 200 * factor, width, height);
 
@@ -657,7 +657,7 @@ static int Reconnect_Null_Modem() {
   **	Determine the dimensions of the text to be used for the dialog box.
   **	These dimensions will control how the dialog box looks.
   */
-  port::SafeCopy(buffer, Text_String(TXT_NULL_CONNERR_CHECK_CABLES));
+  base::SafeCopy(buffer, Text_String(TXT_NULL_CONNERR_CHECK_CABLES));
   const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(font, buffer, 200, width, height);
 
@@ -877,7 +877,7 @@ void Destroy_Null_Connection(int id, int error) {
             base::At(TheSession().player_ids(), j + 1);
         base::At(TheSession().player_houses(), j) =
             base::At(TheSession().player_houses(), j + 1);
-        port::SafeCopy(base::At(TheSession().player_names(), j),
+        base::SafeCopy(base::At(TheSession().player_names(), j),
                        base::At(TheSession().player_names(), j + 1));
         base::At(TheSession().their_process_time(), j) =
             base::At(TheSession().their_process_time(), j + 1);
@@ -1230,13 +1230,13 @@ GameType Select_Serial_Dialog() {
 
             if (Init_Null_Modem(settings)) {
               if (settings->CallWaitStringIndex == kCallWaitCustom) {
-                port::SafeCopy(DialString, settings->CallWaitString);
+                base::SafeCopy(DialString, settings->CallWaitString);
               } else {
-                port::SafeCopy(
+                base::SafeCopy(
                     DialString,
                     base::At(call_wait_strings, settings->CallWaitStringIndex));
               }
-              port::SafeAppend(DialString,
+              base::SafeAppend(DialString,
                                TheNetwork()
                                    .phone_book()
                                    .at(TheNetwork().current_phone_index())
@@ -1468,12 +1468,12 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
   /*
   ** Initialise the button text
   */
-  port::SafeCopy(compress_text, settings->Compression ? Text_String(TXT_ON)
+  base::SafeCopy(compress_text, settings->Compression ? Text_String(TXT_ON)
                                                       : Text_String(TXT_OFF));
-  port::SafeCopy(correction_text, settings->ErrorCorrection
+  base::SafeCopy(correction_text, settings->ErrorCorrection
                                       ? Text_String(TXT_ON)
                                       : Text_String(TXT_OFF));
-  port::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
+  base::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
                                        ? Text_String(TXT_ON)
                                        : Text_String(TXT_OFF));
 
@@ -1595,21 +1595,21 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     switch (static_cast<int>(input)) {
       case ButtonKey(kButtonCompression):
         settings->Compression = !settings->Compression;
-        port::SafeCopy(compress_text, settings->Compression
+        base::SafeCopy(compress_text, settings->Compression
                                           ? Text_String(TXT_ON)
                                           : Text_String(TXT_OFF));
         break;
 
       case ButtonKey(kButtonErrorCorrection):
         settings->ErrorCorrection = !settings->ErrorCorrection;
-        port::SafeCopy(correction_text, settings->ErrorCorrection
+        base::SafeCopy(correction_text, settings->ErrorCorrection
                                             ? Text_String(TXT_ON)
                                             : Text_String(TXT_OFF));
         break;
 
       case ButtonKey(kButtonHardwareFlowControl):
         settings->HardwareFlowControl = !settings->HardwareFlowControl;
-        port::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
+        base::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
                                              ? Text_String(TXT_ON)
                                              : Text_String(TXT_OFF));
         break;
@@ -1619,15 +1619,15 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
         settings->ErrorCorrection = false;
         settings->HardwareFlowControl = true;
 
-        port::SafeCopy(compress_text, settings->Compression
+        base::SafeCopy(compress_text, settings->Compression
                                           ? Text_String(TXT_ON)
                                           : Text_String(TXT_OFF));
 
-        port::SafeCopy(correction_text, settings->ErrorCorrection
+        base::SafeCopy(correction_text, settings->ErrorCorrection
                                             ? Text_String(TXT_ON)
                                             : Text_String(TXT_OFF));
 
-        port::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
+        base::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
                                              ? Text_String(TXT_ON)
                                              : Text_String(TXT_OFF));
 
@@ -2055,7 +2055,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   */
   tempsettings = *settings;
 
-  port::SafeCopy(init_text, base::At(init_types, tempsettings.Init));
+  base::SafeCopy(init_text, base::At(init_types, tempsettings.Init));
 
   if (tempsettings.Port == 0) {
     tempsettings.Port = 0x2f8;
@@ -2077,22 +2077,22 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   switch (tempsettings.IRQ) {
     case (2):
       irq_index = 0;
-      port::SafeCopy(irqbuf, "2");
+      base::SafeCopy(irqbuf, "2");
       break;
 
     case (3):
       irq_index = 1;
-      port::SafeCopy(irqbuf, "3");
+      base::SafeCopy(irqbuf, "3");
       break;
 
     case (4):
       irq_index = 2;
-      port::SafeCopy(irqbuf, "4");
+      base::SafeCopy(irqbuf, "4");
       break;
 
     case (5):
       irq_index = 3;
-      port::SafeCopy(irqbuf, "5");
+      base::SafeCopy(irqbuf, "5");
       break;
 
     default:
@@ -2102,7 +2102,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       if (temp != std::string_view::npos) {
         pos = static_cast<int>(temp) + 2;
         len = static_cast<int>(std::string_view(irqbuf).size());
-        port::SafeCopy(std::span(irqname[4]).subspan(base::ToSize(pos)),
+        base::SafeCopy(std::span(irqname[4]).subspan(base::ToSize(pos)),
                        irqbuf);
         base::At(irqname[4], pos + len) = 0;
       }
@@ -2147,7 +2147,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   for (i = 0; i < 10; i++) {
     TheNetwork().modem_registry() = new ModemRegistryEntryClass(i);
     if (TheNetwork().modem_registry()->Get_Modem_Name()) {
-      port::SafeCopy(base::At(modemnames, modems_found),
+      base::SafeCopy(base::At(modemnames, modems_found),
                      TheNetwork().modem_registry()->Get_Modem_Name());
       portlist.Add_Item(base::At(modemnames, modems_found++));
       port_custom_index++;
@@ -2168,7 +2168,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       if (absl::EqualsIgnoreCase(portlist.Get_Item(i),
                                  tempsettings.ModemName)) {
         port_index = i;
-        port::SafeCopy(portbuf, tempsettings.ModemName);
+        base::SafeCopy(portbuf, tempsettings.ModemName);
         break;
       }
     }
@@ -2181,10 +2181,10 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       if (temp != std::string_view::npos) {
         pos = static_cast<int>(temp) + 2;
         len = static_cast<int>(std::string_view(tempsettings.ModemName).size());
-        port::SafeCopy(std::span(custom_port).subspan(base::ToSize(pos)),
+        base::SafeCopy(std::span(custom_port).subspan(base::ToSize(pos)),
                        tempsettings.ModemName);
         base::At(custom_port, pos + len) = 0;
-        port::SafeCopy(portbuf, tempsettings.ModemName);
+        base::SafeCopy(portbuf, tempsettings.ModemName);
         port_index = port_custom_index;
       }
     }
@@ -2194,22 +2194,22 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     switch (tempsettings.Port) {
       case 0x3f8:
         port_index = 0;
-        port::SafeCopy(portbuf, "COM1");
+        base::SafeCopy(portbuf, "COM1");
         break;
 
       case 0x2f8:
         port_index = 1;
-        port::SafeCopy(portbuf, "COM2");
+        base::SafeCopy(portbuf, "COM2");
         break;
 
       case 0x3e8:
         port_index = 2;
-        port::SafeCopy(portbuf, "COM3");
+        base::SafeCopy(portbuf, "COM3");
         break;
 
       case 0x2e8:
         port_index = 3;
-        port::SafeCopy(portbuf, "COM4");
+        base::SafeCopy(portbuf, "COM4");
         break;
 
       default:
@@ -2220,7 +2220,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         if (temp != std::string_view::npos) {
           pos = static_cast<int>(temp) + 2;
           len = static_cast<int>(std::string_view(portbuf).size());
-          port::SafeCopy(std::span(custom_port).subspan(base::ToSize(pos)),
+          base::SafeCopy(std::span(custom_port).subspan(base::ToSize(pos)),
                          portbuf);
           base::At(custom_port, pos + len) = 0;
         }
@@ -2277,18 +2277,18 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         pos = static_cast<int>(temp) + 2;
         len = static_cast<int>(
             std::string_view(tempsettings.CallWaitString).size());
-        port::SafeCopy(std::span(base::At(call_wait_strings, i))
+        base::SafeCopy(std::span(base::At(call_wait_strings, i))
                            .subspan(base::ToSize(pos)),
                        tempsettings.CallWaitString);
         base::At(base::At(call_wait_strings, i), pos + len) = 0;
         if (i == cwaitstr_index) {
-          port::SafeCopy(cwaitstrbuf,
+          base::SafeCopy(cwaitstrbuf,
                          std::string_view(item).substr(base::ToSize(pos)));
         }
       }
     } else {
       if (i == cwaitstr_index) {
-        port::SafeCopy(cwaitstrbuf, base::At(call_wait_strings, i));
+        base::SafeCopy(cwaitstrbuf, base::At(call_wait_strings, i));
       }
     }
     cwaitstrlist.Add_Item(base::At(call_wait_strings, i));
@@ -2456,10 +2456,10 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           const char* const current = portlist.Current_Item();
           const auto space = std::string_view(current).find(' ');
           if (space == std::string_view::npos) {
-            port::SafeCopy(portbuf, current);
+            base::SafeCopy(portbuf, current);
           } else {
             pos = static_cast<int>(space);
-            port::SafeCopy(portbuf, std::string_view(current).substr(
+            base::SafeCopy(portbuf, std::string_view(current).substr(
                                         0, base::ToSize(pos)));
             base::At(portbuf, pos) = 0;
           }
@@ -2470,27 +2470,27 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           irq_edt.Flag_To_Redraw();
 #endif  // EDIT_IRQ
         } else {
-          std::ranges::transform(port::MutableCString(portbuf), portbuf,
+          std::ranges::transform(base::MutableCString(portbuf), portbuf,
                                  absl::ascii_toupper);
           if (absl::EqualsIgnoreCase(portbuf, "3F8")) {
             port_index = 0;
             portlist.Set_Selected_Index(port_index);
-            port::SafeCopy(portbuf, "COM1");
+            base::SafeCopy(portbuf, "COM1");
             display = REDRAW_BUTTONS;
           } else if (absl::EqualsIgnoreCase(portbuf, "2F8")) {
             port_index = 1;
             portlist.Set_Selected_Index(port_index);
-            port::SafeCopy(portbuf, "COM2");
+            base::SafeCopy(portbuf, "COM2");
             display = REDRAW_BUTTONS;
           } else if (absl::EqualsIgnoreCase(portbuf, "3E8")) {
             port_index = 2;
             portlist.Set_Selected_Index(port_index);
-            port::SafeCopy(portbuf, "COM3");
+            base::SafeCopy(portbuf, "COM3");
             display = REDRAW_BUTTONS;
           } else if (absl::EqualsIgnoreCase(portbuf, "2E8")) {
             port_index = 3;
             portlist.Set_Selected_Index(port_index);
-            port::SafeCopy(portbuf, "COM4");
+            base::SafeCopy(portbuf, "COM4");
             display = REDRAW_BUTTONS;
           } else if (std::string_view(portbuf).starts_with("COM")) {
             display = REDRAW_BUTTONS;
@@ -2519,7 +2519,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                   temp = std::string_view(custom_port).find('-');
                   if (temp != std::string_view::npos) {
                     pos = static_cast<int>(temp) + 2;
-                    port::SafeCopy(
+                    base::SafeCopy(
                         std::span(custom_port)
                             .subspan(base::ToSize(pos))
                             .first(sizeof(custom_port) - base::ToSize(pos)),
@@ -2540,7 +2540,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             temp = std::string_view(custom_port).find('-');
             if (temp != std::string_view::npos) {
               pos = static_cast<int>(temp) + 2;
-              port::SafeCopy(
+              base::SafeCopy(
                   std::span(custom_port)
                       .subspan(base::ToSize(pos))
                       .first(sizeof(custom_port) - base::ToSize(pos)),
@@ -2566,10 +2566,10 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           if (port_index < 4) {
             const auto sep = std::string_view(current).find(' ');
             if (sep == std::string_view::npos) {
-              port::SafeCopy(portbuf, current);
+              base::SafeCopy(portbuf, current);
             } else {
               pos = static_cast<int>(sep);
-              port::SafeCopy(portbuf, std::string_view(current).substr(
+              base::SafeCopy(portbuf, std::string_view(current).substr(
                                           0, base::ToSize(pos)));
               base::At(portbuf, pos) = 0;
             }
@@ -2583,10 +2583,10 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
             item = (char*)irqlist.Current_Item();
             temp = std::string_view(item).find(' ');
             if (temp == std::string_view::npos) {
-              port::SafeCopy(irqbuf, std::string_view(item).substr(0, 2));
+              base::SafeCopy(irqbuf, std::string_view(item).substr(0, 2));
             } else {
               pos = static_cast<int>(temp);
-              port::SafeCopy(
+              base::SafeCopy(
                   irqbuf, std::string_view(item).substr(0, base::ToSize(pos)));
               irqbuf[pos] = 0;
             }
@@ -2603,7 +2603,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
                 if (std::string_view(current).at(base::ToSize(pos)) == '?') {
                   base::At(portbuf, 0) = 0;
                 } else {
-                  port::SafeCopy(portbuf, std::string_view(current).substr(
+                  base::SafeCopy(portbuf, std::string_view(current).substr(
                                               base::ToSize(pos)));
                 }
               }
@@ -2612,7 +2612,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
               /*
               ** Must be a modem name entry so just copy iy
               */
-              port::SafeCopy(portbuf, current);
+              base::SafeCopy(portbuf, current);
             }
           }
           port_edt.Set_Text(portbuf, PORTBUF_MAX);
@@ -2633,10 +2633,10 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         if (irq_index < 4) {
           temp = std::string_view(item).find(' ');
           if (temp == std::string_view::npos) {
-            port::SafeCopy(irqbuf, item);
+            base::SafeCopy(irqbuf, item);
           } else {
             pos = static_cast<int>(temp);
-            port::SafeCopy(irqbuf,
+            base::SafeCopy(irqbuf,
                            std::string_view(item).substr(0, base::ToSize(pos)));
             irqbuf[pos] = 0;
           }
@@ -2664,10 +2664,10 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           if (irq_index < 4) {
             temp = std::string_view(item).find(' ');
             if (temp == std::string_view::npos) {
-              port::SafeCopy(irqbuf, item);
+              base::SafeCopy(irqbuf, item);
             } else {
               pos = static_cast<int>(temp);
-              port::SafeCopy(
+              base::SafeCopy(
                   irqbuf, std::string_view(item).substr(0, base::ToSize(pos)));
               irqbuf[pos] = 0;
             }
@@ -2679,7 +2679,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
               if (std::string_view(item)[base::ToSize(pos)] == '?') {
                 irqbuf[0] = 0;
               } else {
-                port::SafeCopy(
+                base::SafeCopy(
                     irqbuf, std::string_view(item).substr(base::ToSize(pos)));
               }
             }
@@ -2698,7 +2698,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 #endif  // EDIT_IRQ
 
       case ButtonKey(kButtonBaud):
-        port::SafeCopy(baudbuf, baudlist.Current_Item());
+        base::SafeCopy(baudbuf, baudlist.Current_Item());
         baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
         initstr_edt.Set_Focus();
         initstr_edt.Flag_To_Redraw();
@@ -2708,7 +2708,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case ButtonKey(kButtonBaudlist):
         if (baudlist.Current_Index() != baud_index) {
           baud_index = baudlist.Current_Index();
-          port::SafeCopy(baudbuf, baudlist.Current_Item());
+          base::SafeCopy(baudbuf, baudlist.Current_Item());
           baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
           baud_edt.Clear_Focus();
           display = REDRAW_BUTTONS;
@@ -2718,7 +2718,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       case ButtonKey(kButtonInitstrlist):
         if (initstrlist.Current_Index() != initstr_index) {
           initstr_index = initstrlist.Current_Index();
-          port::SafeCopy(initstrbuf, initstrlist.Current_Item());
+          base::SafeCopy(initstrbuf, initstrlist.Current_Item());
           initstr_edt.Set_Text(initstrbuf, INITSTRBUF_MAX);
         }
         initstr_edt.Set_Focus();
@@ -2733,11 +2733,11 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
         item = new char[INITSTRBUF_MAX]{};
 
-        std::ranges::transform(port::MutableCString(initstrbuf), initstrbuf,
+        std::ranges::transform(base::MutableCString(initstrbuf), initstrbuf,
                                absl::ascii_toupper);
         // This allocation above owns exactly INITSTRBUF_MAX characters.
         // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-        port::SafeCopy(std::span(item, INITSTRBUF_MAX), initstrbuf);
+        base::SafeCopy(std::span(item, INITSTRBUF_MAX), initstrbuf);
 
         TheNetwork().init_strings().Add(item);
         Build_Init_String_Listbox(&initstrlist, &initstr_edt, initstrbuf,
@@ -2748,7 +2748,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         for (i = 0; i < TheNetwork().init_strings().Count(); i++) {
           if (item == TheNetwork().init_strings().at(i)) {
             initstr_index = i;
-            port::SafeCopy(initstrbuf,
+            base::SafeCopy(initstrbuf,
                            TheNetwork().init_strings().at(initstr_index));
             initstr_edt.Set_Text(initstrbuf, INITSTRBUF_MAX);
             initstrlist.Set_Selected_Index(initstr_index);
@@ -2777,7 +2777,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           temp = std::string_view(item).find('-');
           if (temp != std::string_view::npos) {
             pos = static_cast<int>(temp) + 2;
-            port::SafeCopy(
+            base::SafeCopy(
                 std::span(base::At(call_wait_strings, kCallWaitCustom))
                     .subspan(base::ToSize(pos)),
                 cwaitstrbuf);
@@ -2792,13 +2792,13 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
           cwaitstr_index = cwaitstrlist.Current_Index();
           const char* const current = cwaitstrlist.Current_Item();
           if (cwaitstr_index < 3) {
-            port::SafeCopy(cwaitstrbuf, current);
+            base::SafeCopy(cwaitstrbuf, current);
             cwaitstr_edt.Clear_Focus();
           } else {
             const auto sep = std::string_view(current).find('-');
             if (sep != std::string_view::npos) {
               pos = static_cast<int>(sep) + 2;
-              port::SafeCopy(cwaitstrbuf, std::string_view(current).substr(
+              base::SafeCopy(cwaitstrbuf, std::string_view(current).substr(
                                               base::ToSize(pos)));
             }
             cwaitstr_edt.Set_Focus();
@@ -2854,13 +2854,13 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
           default:
             if (port_index == port_custom_index) {
-              port::SafeCopy(tempsettings.ModemName, portbuf);
+              base::SafeCopy(tempsettings.ModemName, portbuf);
               tempsettings.Port = 1;
             } else {
               /*
               ** Must be a modem name index
               */
-              port::SafeCopy(tempsettings.ModemName, portlist.Current_Item());
+              base::SafeCopy(tempsettings.ModemName, portlist.Current_Item());
               tempsettings.Port = 1;
             }
             break;
@@ -2886,13 +2886,13 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
 
           default:
             tempsettings.IRQ =
-                tech::ParseIntegerOr<int>(irqbuf, tempsettings.IRQ);
+                base::ParseIntegerOr<int>(irqbuf, tempsettings.IRQ);
             break;
         }
 #endif  // EDIT_IRQ
 
         tempsettings.Baud =
-            tech::ParseIntegerOr<int>(baudbuf, tempsettings.Baud);
+            base::ParseIntegerOr<int>(baudbuf, tempsettings.Baud);
 
         tempsettings.InitStringIndex = initstr_index;
         tempsettings.CallWaitStringIndex = cwaitstr_index;
@@ -2901,13 +2901,13 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         temp = std::string_view(item).find('-');
         if (temp != std::string_view::npos) {
           pos = static_cast<int>(temp) + 2;
-          port::SafeCopy(cwaitstrbuf,
+          base::SafeCopy(cwaitstrbuf,
                          std::string_view(item).substr(base::ToSize(pos)));
         } else {
           base::At(cwaitstrbuf, 0) = 0;
         }
 
-        port::SafeCopy(tempsettings.CallWaitString, cwaitstrbuf);
+        base::SafeCopy(tempsettings.CallWaitString, cwaitstrbuf);
 
         {
           const DetectPortType dpstatus =
@@ -3025,7 +3025,7 @@ static void Build_Init_String_Listbox(ListClass* list, EditClass* edit,
   Fill in initstring edit buffer
   ........................................................................*/
   if (curidx > -1) {
-    port::SafeCopy(std::span(buf).first(INITSTRBUF_MAX),
+    base::SafeCopy(std::span(buf).first(INITSTRBUF_MAX),
                    TheNetwork().init_strings().at(curidx));
     edit->Set_Text(buf, INITSTRBUF_MAX);
     list->Set_Selected_Index(curidx);
@@ -3385,7 +3385,7 @@ int Com_Scenario_Dialog() {
   ........................................................................*/
   TheSession().color_index() =
       TheSession().preferred_color();  // init my preferred color
-  port::SafeCopy(namebuf, TheSession().player_name());  // set my name
+  base::SafeCopy(namebuf, TheSession().player_name());  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
   name_edt.Set_Color(
       base::At(TheSession().text_colors(), TheSession().color_index()));
@@ -3464,7 +3464,7 @@ int Com_Scenario_Dialog() {
   ........................................................................*/
   for (i = 0; i < TheSession().scenarios().Count(); i++) {
     char* const scenario = TheSession().scenarios().at(i);
-    std::ranges::transform(port::MutableCString(scenario), scenario,
+    std::ranges::transform(base::MutableCString(scenario), scenario,
                            absl::ascii_toupper);
     scenariolist.Add_Item(scenario);
   }
@@ -3474,7 +3474,7 @@ int Com_Scenario_Dialog() {
   Init random-number generator, & create a seed to be used for all random
   numbers from here on out
   ........................................................................*/
-  TheWorld().seed() = port::RandomSeed();
+  TheWorld().seed() = platform::RandomSeed();
 
   /*........................................................................
   Init the message display system
@@ -3707,8 +3707,8 @@ int Com_Scenario_Dialog() {
           name_edt.Set_Color(
               base::At(TheSession().text_colors(), TheSession().color_index()));
           name_edt.Flag_To_Redraw();
-          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(TheSession().player_name(), namebuf);
+          TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
+          base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
           changed = 1;
         }
@@ -3722,8 +3722,8 @@ int Com_Scenario_Dialog() {
         if (!ready_to_go) {
           credit_edt.Clear_Focus();
           credit_edt.Flag_To_Redraw();
-          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(TheSession().player_name(), namebuf);
+          TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
+          base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
           changed = 1;
         }
@@ -3737,8 +3737,8 @@ int Com_Scenario_Dialog() {
           TheSession().house() = HOUSE_GOOD;
           gdibtn.Turn_On();
           nodbtn.Turn_Off();
-          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(TheSession().player_name(), namebuf);
+          TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
+          base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
@@ -3748,8 +3748,8 @@ int Com_Scenario_Dialog() {
           TheSession().house() = HOUSE_BAD;
           gdibtn.Turn_Off();
           nodbtn.Turn_On();
-          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(TheSession().player_name(), namebuf);
+          TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
+          base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
@@ -3761,8 +3761,8 @@ int Com_Scenario_Dialog() {
         if (!ready_to_go) {
           name_edt.Clear_Focus();
           name_edt.Flag_To_Redraw();
-          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(TheSession().player_name(), namebuf);
+          TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
+          base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
@@ -3774,8 +3774,8 @@ int Com_Scenario_Dialog() {
         if (scenariolist.Current_Index() != TheSession().scenario_index() &&
             !ready_to_go) {
           TheSession().scenario_index() = scenariolist.Current_Index();
-          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(TheSession().player_name(), namebuf);
+          TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
+          base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
@@ -3839,14 +3839,14 @@ int Com_Scenario_Dialog() {
                             base::At(TheSession().unit_count_min(), 0))) +
                 base::At(TheSession().unit_count_min(), 1);
           }
-          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+          TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
           countgauge.Set_Maximum(
               base::At(TheSession().unit_count_max(), TheSession().bases()) -
               base::At(TheSession().unit_count_min(), TheSession().bases()));
           countgauge.Set_Value(
               TheSession().unit_count() -
               base::At(TheSession().unit_count_min(), TheSession().bases()));
-          port::SafeCopy(TheSession().player_name(), namebuf);
+          base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
           display = REDRAW_ALL;
         }
@@ -3870,8 +3870,8 @@ int Com_Scenario_Dialog() {
             tiberiumbtn.Turn_On();
             tiberiumbtn.Set_Text(TXT_TIBERIUM_ON);
           }
-          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(TheSession().player_name(), namebuf);
+          TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
+          base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
@@ -3890,8 +3890,8 @@ int Com_Scenario_Dialog() {
             goodiesbtn.Turn_On();
             goodiesbtn.Set_Text(TXT_CRATES_ON);
           }
-          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(TheSession().player_name(), namebuf);
+          TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
+          base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
@@ -3918,8 +3918,8 @@ int Com_Scenario_Dialog() {
             ghostsbtn.Turn_Off();
             ghostsbtn.Set_Text(TXT_AI_PLAYERS_OFF);
           }
-          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
-          port::SafeCopy(TheSession().player_name(), namebuf);
+          TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
+          base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
@@ -4000,7 +4000,7 @@ int Com_Scenario_Dialog() {
               input == KN_F4) {
             base::FillBytes(base::ObjectBytes(txt), 0, 80);
 
-            port::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
+            base::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
 
             TheSession().messages().Add_Edit(
                 base::At(TheSession().text_colors(),
@@ -4063,10 +4063,10 @@ int Com_Scenario_Dialog() {
 
           while (sent_so_far < message_length) {
             SendPacket.Command = SERIAL_MESSAGE;
-            port::SafeCopy(SendPacket.Name, TheSession().player_name());
+            base::SafeCopy(SendPacket.Name, TheSession().player_name());
             SendPacket.ID = static_cast<unsigned char>(Build_MPlayerID(
                 TheSession().color_index(), TheSession().house()));
-            port::SafeCopy(
+            base::SafeCopy(
                 std::span(SendPacket.Message).first(COMPAT_MESSAGE_LENGTH - 4),
                 std::string_view(TheSession().messages().Get_Edit_Buf())
                     .substr(base::ToSize(sent_so_far)));
@@ -4098,10 +4098,10 @@ int Com_Scenario_Dialog() {
             }
 
             base::At(SendPacket.Message, COMPAT_MESSAGE_LENGTH - 5) = 0;
-            port::WriteUnaligned(base::ObjectBytes(SendPacket.Message)
+            base::WriteUnaligned(base::ObjectBytes(SendPacket.Message)
                                      .subspan(COMPAT_MESSAGE_LENGTH - 4),
                                  magic_number);
-            port::WriteUnaligned(base::ObjectBytes(SendPacket.Message)
+            base::WriteUnaligned(base::ObjectBytes(SendPacket.Message)
                                      .subspan(COMPAT_MESSAGE_LENGTH - 2),
                                  crc);
 
@@ -4137,8 +4137,8 @@ int Com_Scenario_Dialog() {
     /*---------------------------------------------------------------------
     Detect editing of the credits buffer, transmit new values to players
     ---------------------------------------------------------------------*/
-    if (tech::ParseIntegerOr<int>(credbuf, 0) != old_cred) {
-      old_cred = Bound(tech::ParseIntegerOr<int>(credbuf, 0), 0, 9999);
+    if (base::ParseIntegerOr<int>(credbuf, 0) != old_cred) {
+      old_cred = Bound(base::ParseIntegerOr<int>(credbuf, 0), 0, 9999);
       TheSession().credits() = old_cred;
       transmit = 1;
       absl::SNPrintF(credbuf, sizeof(credbuf), "%d", TheSession().credits());
@@ -4149,7 +4149,7 @@ int Com_Scenario_Dialog() {
     Detect editing of the name buffer, transmit new values to players
     ---------------------------------------------------------------------*/
     if (std::string_view(namebuf) != TheSession().player_name()) {
-      port::SafeCopy(TheSession().player_name(), namebuf);
+      base::SafeCopy(TheSession().player_name(), namebuf);
       transmit = 1;
       changed = 1;
     }
@@ -4162,7 +4162,7 @@ int Com_Scenario_Dialog() {
     ---------------------------------------------------------------------*/
     if (transmit && SystemTicks() - transmittime > PACKET_RETRANS_TIME) {
       SendPacket.Command = SERIAL_GAME_OPTIONS;
-      port::SafeCopy(SendPacket.Name, TheSession().player_name());
+      base::SafeCopy(SendPacket.Name, TheSession().player_name());
 #ifdef PATCH
       if (TheGameState().compatibility_v107()) {
         SendPacket.Version = 1;
@@ -4255,7 +4255,7 @@ int Com_Scenario_Dialog() {
       }
 
       const auto event =
-          port::ReadUnaligned<EventClass>(base::ObjectBytes(ReceivePacket));
+          base::ReadUnaligned<EventClass>(base::ObjectBytes(ReceivePacket));
       if (event.Type <= EventClass::FRAMEINFO) {
         if (SystemTicks() - lastredrawtime > PACKET_REDRAW_TIME) {
           lastredrawtime = SystemTicks();
@@ -4300,7 +4300,7 @@ int Com_Scenario_Dialog() {
             // Smart_Printf( "received game options\n" );
             oppscorescreen = false;
             gameoptions = true;
-            port::SafeCopy(TheirName, ReceivePacket.Name);
+            base::SafeCopy(TheirName, ReceivePacket.Name);
             TheirColor = ReceivePacket.Color;
             TheirHouse = ReceivePacket.House;
             transmit = 1;
@@ -4353,10 +4353,10 @@ int Com_Scenario_Dialog() {
             oppscorescreen = false;
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
                                 ReceivePacket.Name, ReceivePacket.Message);
-            magic_number = port::ReadUnaligned<uint16_t>(
+            magic_number = base::ReadUnaligned<uint16_t>(
                 base::ObjectBytes(ReceivePacket.Message)
                     .subspan(COMPAT_MESSAGE_LENGTH - 4));
-            crc = port::ReadUnaligned<uint16_t>(
+            crc = base::ReadUnaligned<uint16_t>(
                 base::ObjectBytes(ReceivePacket.Message)
                     .subspan(COMPAT_MESSAGE_LENGTH - 2));
             TheSession().messages().Add_Message(
@@ -4462,15 +4462,15 @@ int Com_Scenario_Dialog() {
     if (TheirID < TheSession().local_id()) {
       base::At(TheSession().player_ids(), 0) = TheirID;
       base::At(TheSession().player_ids(), 1) = TheSession().local_id();
-      port::SafeCopy(base::At(TheSession().player_names(), 0), TheirName);
-      port::SafeCopy(base::At(TheSession().player_names(), 1),
+      base::SafeCopy(base::At(TheSession().player_names(), 0), TheirName);
+      base::SafeCopy(base::At(TheSession().player_names(), 1),
                      TheSession().player_name());
     } else {
       base::At(TheSession().player_ids(), 0) = TheSession().local_id();
       base::At(TheSession().player_ids(), 1) = TheirID;
-      port::SafeCopy(base::At(TheSession().player_names(), 0),
+      base::SafeCopy(base::At(TheSession().player_names(), 0),
                      TheSession().player_name());
-      port::SafeCopy(base::At(TheSession().player_names(), 1), TheirName);
+      base::SafeCopy(base::At(TheSession().player_names(), 1), TheirName);
     }
 
     /*.....................................................................
@@ -4784,7 +4784,7 @@ int Com_Show_Scenario_Dialog() {
   ........................................................................*/
   TheSession().color_index() =
       TheSession().preferred_color();  // init my preferred color
-  port::SafeCopy(namebuf, TheSession().player_name());  // set my name
+  base::SafeCopy(namebuf, TheSession().player_name());  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
   name_edt.Set_Color(
       base::At(TheSession().text_colors(), TheSession().color_index()));
@@ -4966,7 +4966,7 @@ int Com_Show_Scenario_Dialog() {
                                kTBlack,
                                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
             } else {
-              port::SafeCopy(txt, Text_String(TXT_NOT_FOUND));
+              base::SafeCopy(txt, Text_String(TXT_NOT_FOUND));
 
               Fancy_Text_Print(view, txt, d_dialog_cx, d_scenario_y, kRed,
                                kTBlack,
@@ -5027,9 +5027,9 @@ int Com_Show_Scenario_Dialog() {
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (TheSession().bases()) {
-              port::SafeCopy(txt, Text_String(TXT_ON));
+              base::SafeCopy(txt, Text_String(TXT_ON));
             } else {
-              port::SafeCopy(txt, Text_String(TXT_OFF));
+              base::SafeCopy(txt, Text_String(TXT_OFF));
             }
             Fancy_Text_Print(view, txt, d_dialog_cx, d_bases_y, kCcGreen,
                              kTBlack,
@@ -5044,9 +5044,9 @@ int Com_Show_Scenario_Dialog() {
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (TheSession().tiberium()) {
-              port::SafeCopy(txt, Text_String(TXT_ON));
+              base::SafeCopy(txt, Text_String(TXT_ON));
             } else {
-              port::SafeCopy(txt, Text_String(TXT_OFF));
+              base::SafeCopy(txt, Text_String(TXT_OFF));
             }
             Fancy_Text_Print(view, txt, d_dialog_cx, d_tiberium_y, kCcGreen,
                              kTBlack,
@@ -5061,9 +5061,9 @@ int Com_Show_Scenario_Dialog() {
                 TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
             if (TheSession().crates()) {
-              port::SafeCopy(txt, Text_String(TXT_ON));
+              base::SafeCopy(txt, Text_String(TXT_ON));
             } else {
-              port::SafeCopy(txt, Text_String(TXT_OFF));
+              base::SafeCopy(txt, Text_String(TXT_OFF));
             }
             Fancy_Text_Print(view, txt, d_dialog_cx, d_goodies_y, kCcGreen,
                              kTBlack,
@@ -5073,14 +5073,14 @@ int Com_Show_Scenario_Dialog() {
             Capture the flag or AI player ON/OFF
             ............................................................*/
             if (TheSpecial().IsCaptureTheFlag) {
-              port::SafeCopy(txt, Text_String(TXT_CAPTURE_THE_FLAG));
-              port::SafeAppend(txt, ":");
+              base::SafeCopy(txt, Text_String(TXT_CAPTURE_THE_FLAG));
+              base::SafeAppend(txt, ":");
               Fancy_Text_Print(
                   view, txt, d_dialog_cx - (3 * factor), d_ghosts_y, kCcGreen,
                   kTBlack,
                   TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
-              port::SafeCopy(txt, Text_String(TXT_ON));
+              base::SafeCopy(txt, Text_String(TXT_ON));
               Fancy_Text_Print(view, txt, d_dialog_cx, d_ghosts_y, kCcGreen,
                                kTBlack,
                                TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
@@ -5094,9 +5094,9 @@ int Com_Show_Scenario_Dialog() {
                   TPF_RIGHT | TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_NOSHADOW);
 
               if (TheSession().ghosts()) {
-                port::SafeCopy(txt, Text_String(TXT_ON));
+                base::SafeCopy(txt, Text_String(TXT_ON));
               } else {
-                port::SafeCopy(txt, Text_String(TXT_OFF));
+                base::SafeCopy(txt, Text_String(TXT_OFF));
               }
               Fancy_Text_Print(view, txt, d_dialog_cx, d_ghosts_y, kCcGreen,
                                kTBlack,
@@ -5156,7 +5156,7 @@ int Com_Show_Scenario_Dialog() {
               base::At(TheSession().text_colors(), TheSession().color_index()));
           name_edt.Flag_To_Redraw();
           display = REDRAW_COLORS;
-          port::SafeCopy(TheSession().player_name(), namebuf);
+          base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
 
@@ -5170,7 +5170,7 @@ int Com_Show_Scenario_Dialog() {
           TheSession().house() = HOUSE_GOOD;
           gdibtn.Turn_On();
           nodbtn.Turn_Off();
-          port::SafeCopy(TheSession().player_name(), namebuf);
+          base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
@@ -5180,7 +5180,7 @@ int Com_Show_Scenario_Dialog() {
           TheSession().house() = HOUSE_BAD;
           gdibtn.Turn_Off();
           nodbtn.Turn_On();
-          port::SafeCopy(TheSession().player_name(), namebuf);
+          base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
         }
         break;
@@ -5190,7 +5190,7 @@ int Com_Show_Scenario_Dialog() {
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonName):
         if (!ready_to_go) {
-          port::SafeCopy(TheSession().player_name(), namebuf);
+          base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
           changed = 1;
         }
@@ -5228,7 +5228,7 @@ int Com_Show_Scenario_Dialog() {
                 input == KN_F4) {
               base::FillBytes(base::ObjectBytes(txt), 0, 80);
 
-              port::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
+              base::SafeCopy(txt, Text_String(TXT_MESSAGE));  // "Message:"
 
               TheSession().messages().Add_Edit(
                   base::At(TheSession().text_colors(),
@@ -5289,10 +5289,10 @@ int Com_Show_Scenario_Dialog() {
 
                 while (sent_so_far < message_length) {
                   SendPacket.Command = SERIAL_MESSAGE;
-                  port::SafeCopy(SendPacket.Name, TheSession().player_name());
+                  base::SafeCopy(SendPacket.Name, TheSession().player_name());
                   SendPacket.ID = static_cast<unsigned char>(Build_MPlayerID(
                       TheSession().color_index(), TheSession().house()));
-                  port::SafeCopy(
+                  base::SafeCopy(
                       std::span(SendPacket.Message)
                           .first(COMPAT_MESSAGE_LENGTH - 4),
                       std::string_view(TheSession().messages().Get_Edit_Buf())
@@ -5328,10 +5328,10 @@ int Com_Show_Scenario_Dialog() {
                   }
 
                   base::At(SendPacket.Message, COMPAT_MESSAGE_LENGTH - 5) = 0;
-                  port::WriteUnaligned(base::ObjectBytes(SendPacket.Message)
+                  base::WriteUnaligned(base::ObjectBytes(SendPacket.Message)
                                            .subspan(COMPAT_MESSAGE_LENGTH - 4),
                                        magic_number);
-                  port::WriteUnaligned(base::ObjectBytes(SendPacket.Message)
+                  base::WriteUnaligned(base::ObjectBytes(SendPacket.Message)
                                            .subspan(COMPAT_MESSAGE_LENGTH - 2),
                                        crc);
 
@@ -5371,7 +5371,7 @@ int Com_Show_Scenario_Dialog() {
     Detect editing of the name buffer, transmit new values to players
     ---------------------------------------------------------------------*/
     if (std::string_view(namebuf) != TheSession().player_name()) {
-      port::SafeCopy(TheSession().player_name(), namebuf);
+      base::SafeCopy(TheSession().player_name(), namebuf);
       transmit = 1;
       changed = 1;
     }
@@ -5381,7 +5381,7 @@ int Com_Show_Scenario_Dialog() {
     ---------------------------------------------------------------------*/
     if (transmit && SystemTicks() - transmittime > PACKET_RETRANS_TIME) {
       SendPacket.Command = SERIAL_GAME_OPTIONS;
-      port::SafeCopy(SendPacket.Name, TheSession().player_name());
+      base::SafeCopy(SendPacket.Name, TheSession().player_name());
 #ifdef PATCH
       if (TheGameState().compatibility_v107()) {
         SendPacket.Version = 1;
@@ -5447,7 +5447,7 @@ int Com_Show_Scenario_Dialog() {
       }
 
       const auto event =
-          port::ReadUnaligned<EventClass>(base::ObjectBytes(ReceivePacket));
+          base::ReadUnaligned<EventClass>(base::ObjectBytes(ReceivePacket));
       if (event.Type <= EventClass::FRAMEINFO) {
         if (SystemTicks() - lastredrawtime > PACKET_REDRAW_TIME) {
           lastredrawtime = SystemTicks();
@@ -5491,7 +5491,7 @@ int Com_Show_Scenario_Dialog() {
             display = REDRAW_MESSAGE;
             parms_received = 1;
 
-            port::SafeCopy(TheirName, ReceivePacket.Name);
+            base::SafeCopy(TheirName, ReceivePacket.Name);
             TheirColor = ReceivePacket.Color;
             TheirHouse = ReceivePacket.House;
 
@@ -5621,10 +5621,10 @@ int Com_Show_Scenario_Dialog() {
             oppscorescreen = false;
             Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
                                 ReceivePacket.Name, ReceivePacket.Message);
-            magic_number = port::ReadUnaligned<uint16_t>(
+            magic_number = base::ReadUnaligned<uint16_t>(
                 base::ObjectBytes(ReceivePacket.Message)
                     .subspan(COMPAT_MESSAGE_LENGTH - 4));
-            crc = port::ReadUnaligned<uint16_t>(
+            crc = base::ReadUnaligned<uint16_t>(
                 base::ObjectBytes(ReceivePacket.Message)
                     .subspan(COMPAT_MESSAGE_LENGTH - 2));
             TheSession().messages().Add_Message(
@@ -5707,15 +5707,15 @@ int Com_Show_Scenario_Dialog() {
     if (TheirID < TheSession().local_id()) {
       base::At(TheSession().player_ids(), 0) = TheirID;
       base::At(TheSession().player_ids(), 1) = TheSession().local_id();
-      port::SafeCopy(base::At(TheSession().player_names(), 0), TheirName);
-      port::SafeCopy(base::At(TheSession().player_names(), 1),
+      base::SafeCopy(base::At(TheSession().player_names(), 0), TheirName);
+      base::SafeCopy(base::At(TheSession().player_names(), 1),
                      TheSession().player_name());
     } else {
       base::At(TheSession().player_ids(), 0) = TheSession().local_id();
       base::At(TheSession().player_ids(), 1) = TheirID;
-      port::SafeCopy(base::At(TheSession().player_names(), 0),
+      base::SafeCopy(base::At(TheSession().player_names(), 0),
                      TheSession().player_name());
-      port::SafeCopy(base::At(TheSession().player_names(), 1), TheirName);
+      base::SafeCopy(base::At(TheSession().player_names(), 1), TheirName);
     }
 
     /*.....................................................................
@@ -6057,7 +6057,7 @@ static int Phone_Dialog() {
         ...............................................................*/
         if (phonelist.Current_Index() != TheNetwork().current_phone_index()) {
           TheNetwork().current_phone_index() = phonelist.Current_Index();
-          port::SafeCopy(phone_num, TheNetwork()
+          base::SafeCopy(phone_num, TheNetwork()
                                         .phone_book()
                                         .at(TheNetwork().current_phone_index())
                                         ->Number);
@@ -6098,7 +6098,7 @@ static int Phone_Dialog() {
           for (int i = 0; i < TheNetwork().phone_book().Count(); i++) {
             if (p_entry == TheNetwork().phone_book().at(i)) {
               TheNetwork().current_phone_index() = i;
-              port::SafeCopy(phone_num,
+              base::SafeCopy(phone_num,
                              TheNetwork()
                                  .phone_book()
                                  .at(TheNetwork().current_phone_index())
@@ -6153,7 +6153,7 @@ static int Phone_Dialog() {
                     TheNetwork().current_phone_index()) ==
                 TheNetwork().phone_book().at(i)) {
               TheNetwork().current_phone_index() = i;
-              port::SafeCopy(phone_num,
+              base::SafeCopy(phone_num,
                              TheNetwork()
                                  .phone_book()
                                  .at(TheNetwork().current_phone_index())
@@ -6222,8 +6222,8 @@ static int Phone_Dialog() {
           }
 
           p_entry = new PhoneEntryClass();
-          port::SafeCopy(p_entry->Name, "NONAME");
-          port::SafeCopy(p_entry->Number, phone_num);
+          base::SafeCopy(p_entry->Name, "NONAME");
+          base::SafeCopy(p_entry->Number, phone_num);
           p_entry->Settings.Port = 0;
           p_entry->Settings.IRQ = -1;
           p_entry->Settings.Baud = -1;
@@ -6333,23 +6333,23 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
   ........................................................................*/
   for (int i = 0; i < TheNetwork().phone_book().Count(); i++) {
     if (std::string_view(TheNetwork().phone_book().at(i)->Name).empty()) {
-      port::SafeCopy(phonename, " ");
+      base::SafeCopy(phonename, " ");
     } else {
-      port::SafeCopy(phonename, TheNetwork().phone_book().at(i)->Name);
+      base::SafeCopy(phonename, TheNetwork().phone_book().at(i)->Name);
     }
 
     if (std::string_view(TheNetwork().phone_book().at(i)->Number).empty()) {
-      port::SafeCopy(phonenum, " ");
+      base::SafeCopy(phonenum, " ");
     } else {
       if (std::string_view(TheNetwork().phone_book().at(i)->Number).size() <
           15) {
-        port::SafeCopy(phonenum, TheNetwork().phone_book().at(i)->Number);
+        base::SafeCopy(phonenum, TheNetwork().phone_book().at(i)->Number);
       } else {
-        port::SafeCopy(phonenum,
+        base::SafeCopy(phonenum,
                        std::string_view(TheNetwork().phone_book().at(i)->Number)
                            .substr(0, 12));
         base::At(phonenum, 12) = 0;
-        port::SafeAppend(phonenum, "...");
+        base::SafeAppend(phonenum, "...");
       }
     }
 
@@ -6379,7 +6379,7 @@ static void Build_Phone_Listbox(ListClass* list, EditClass* edit,
   Fill in phone number edit buffer
   ........................................................................*/
   if (TheNetwork().current_phone_index() > -1) {
-    port::SafeCopy(std::span(buf).first(PhoneEntryClass::kPhoneMaxNum),
+    base::SafeCopy(std::span(buf).first(PhoneEntryClass::kPhoneMaxNum),
                    TheNetwork()
                        .phone_book()
                        .at(TheNetwork().current_phone_index())
@@ -6569,10 +6569,10 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     custom = 1;
   }
 
-  port::SafeCopy(namebuf, phone->Name);
+  base::SafeCopy(namebuf, phone->Name);
   nameedit.Set_Text(namebuf, PhoneEntryClass::kPhoneMaxName);
 
-  port::SafeCopy(numbuf, phone->Number);
+  base::SafeCopy(numbuf, phone->Number);
   numedit.Set_Text(numbuf, PhoneEntryClass::kPhoneMaxNum);
 
   /*
@@ -6704,15 +6704,15 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
   If 'Save', save all current settings
   ------------------------------------------------------------------------*/
   if (rc) {
-    port::SafeCopy(phone->Name, absl::AsciiStrToUpper(namebuf));
+    base::SafeCopy(phone->Name, absl::AsciiStrToUpper(namebuf));
 
     // if nothing was entered then make if NONAME
 
     if (!base::At(phone->Name, 0)) {
-      port::SafeCopy(phone->Name, "NONAME");
+      base::SafeCopy(phone->Name, "NONAME");
     }
 
-    port::SafeCopy(phone->Number, absl::AsciiStrToUpper(numbuf));
+    base::SafeCopy(phone->Number, absl::AsciiStrToUpper(numbuf));
 
     if (custom) {
       phone->Settings = settings;

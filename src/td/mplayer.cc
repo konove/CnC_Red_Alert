@@ -484,7 +484,7 @@ void Read_MultiPlayer_Settings() {
   WWGetPrivateProfileString("SerialDefaults", "Port", "0",
                             std::span(buf).first(static_cast<std::size_t>(5)),
                             buffer);
-  if (const auto value = tech::ParseHex<int>(buf)) {
+  if (const auto value = base::ParseHex<int>(buf)) {
     TheNetwork().serial_defaults().Port = *value;
   }
   TheNetwork().serial_defaults().IRQ =
@@ -568,7 +568,7 @@ void Read_MultiPlayer_Settings() {
     WWGetPrivateProfileString("InitStrings", tbuffer, nullptr, entry_storage,
                               buffer);
 
-    std::ranges::transform(port::MutableCString(entry), entry,
+    std::ranges::transform(base::MutableCString(entry), entry,
                            absl::ascii_toupper);
 
     TheNetwork().init_strings().Add(entry);
@@ -584,7 +584,7 @@ void Read_MultiPlayer_Settings() {
     // This allocation owns exactly INITSTRBUF_MAX writable characters.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
     const std::span<char> entry_storage(entry, INITSTRBUF_MAX);
-    port::SafeCopy(entry_storage, "ATZ");
+    base::SafeCopy(entry_storage, "ATZ");
     TheNetwork().init_strings().Add(entry);
     TheNetwork().serial_defaults().InitStringIndex = 0;
   }
@@ -621,11 +621,11 @@ void Read_MultiPlayer_Settings() {
     /*.....................................................................
     Extract name, phone # & serial port settings
     .....................................................................*/
-    port::Tokenizer tokens(buf, "|");
+    base::Tokenizer tokens(buf, "|");
     char* tokenptr = tokens.Next();  // ptr to token
     if (tokenptr) {
-      port::SafeCopy(phone->Name, tokenptr);
-      std::ranges::transform(port::MutableCString(phone->Name), phone->Name,
+      base::SafeCopy(phone->Name, tokenptr);
+      std::ranges::transform(base::MutableCString(phone->Name), phone->Name,
                              absl::ascii_toupper);
     } else {
       base::At(phone->Name, 0) = 0;
@@ -633,8 +633,8 @@ void Read_MultiPlayer_Settings() {
 
     tokenptr = tokens.Next();
     if (tokenptr) {
-      port::SafeCopy(phone->Number, tokenptr);
-      std::ranges::transform(port::MutableCString(phone->Number), phone->Number,
+      base::SafeCopy(phone->Number, tokenptr);
+      std::ranges::transform(base::MutableCString(phone->Number), phone->Number,
                              absl::ascii_toupper);
     } else {
       base::At(phone->Number, 0) = 0;
@@ -642,7 +642,7 @@ void Read_MultiPlayer_Settings() {
 
     tokenptr = tokens.Next();
     if (tokenptr) {
-      if (const auto value = tech::ParseHex<int>(tokenptr)) {
+      if (const auto value = base::ParseHex<int>(tokenptr)) {
         phone->Settings.Port = *value;
       }
     } else {
@@ -651,21 +651,21 @@ void Read_MultiPlayer_Settings() {
 
     tokenptr = tokens.Next();
     if (tokenptr) {
-      phone->Settings.IRQ = tech::ParseIntegerOr<int>(tokenptr, 0);
+      phone->Settings.IRQ = base::ParseIntegerOr<int>(tokenptr, 0);
     } else {
       phone->Settings.IRQ = -1;
     }
 
     tokenptr = tokens.Next();
     if (tokenptr) {
-      phone->Settings.Baud = tech::ParseIntegerOr<int>(tokenptr, 0);
+      phone->Settings.Baud = base::ParseIntegerOr<int>(tokenptr, 0);
     } else {
       phone->Settings.Baud = -1;
     }
 
     tokenptr = tokens.Next();
     if (tokenptr) {
-      phone->Settings.Compression = tech::ParseIntegerOr<int>(tokenptr, 0) != 0;
+      phone->Settings.Compression = base::ParseIntegerOr<int>(tokenptr, 0) != 0;
     } else {
       phone->Settings.Compression = false;
     }
@@ -673,7 +673,7 @@ void Read_MultiPlayer_Settings() {
     tokenptr = tokens.Next();
     if (tokenptr) {
       phone->Settings.ErrorCorrection =
-          tech::ParseIntegerOr<int>(tokenptr, 0) != 0;
+          base::ParseIntegerOr<int>(tokenptr, 0) != 0;
     } else {
       phone->Settings.ErrorCorrection = false;
     }
@@ -681,14 +681,14 @@ void Read_MultiPlayer_Settings() {
     tokenptr = tokens.Next();
     if (tokenptr) {
       phone->Settings.HardwareFlowControl =
-          tech::ParseIntegerOr<int>(tokenptr, 0) != 0;
+          base::ParseIntegerOr<int>(tokenptr, 0) != 0;
     } else {
       phone->Settings.HardwareFlowControl = true;
     }
 
     tokenptr = tokens.Next();
     if (tokenptr) {
-      port::SafeCopy(buf, tokenptr);
+      base::SafeCopy(buf, tokenptr);
 
       // find dial method
 
@@ -711,7 +711,7 @@ void Read_MultiPlayer_Settings() {
 
     tokenptr = tokens.Next();
     if (tokenptr) {
-      phone->Settings.InitStringIndex = tech::ParseIntegerOr<int>(tokenptr, 0);
+      phone->Settings.InitStringIndex = base::ParseIntegerOr<int>(tokenptr, 0);
     } else {
       phone->Settings.InitStringIndex = 0;
     }
@@ -719,14 +719,14 @@ void Read_MultiPlayer_Settings() {
     tokenptr = tokens.Next();
     if (tokenptr) {
       phone->Settings.CallWaitStringIndex =
-          tech::ParseIntegerOr<int>(tokenptr, 0);
+          base::ParseIntegerOr<int>(tokenptr, 0);
     } else {
       phone->Settings.CallWaitStringIndex = kCallWaitCustom;
     }
 
     tokenptr = tokens.Next();
     if (tokenptr) {
-      port::SafeCopy(phone->Settings.CallWaitString, tokenptr);
+      base::SafeCopy(phone->Settings.CallWaitString, tokenptr);
     } else {
       base::At(phone->Settings.CallWaitString, 0) = 0;
     }
@@ -772,12 +772,12 @@ void Read_MultiPlayer_Settings() {
     WWGetPrivateProfileString(
         "SyncBug", "Coord", "0",
         std::span(buf).first(static_cast<std::size_t>(80)), buffer);
-    TheDebugState().trap_coord() = tech::ParseHexOr<uint32_t>(buf, 0);
+    TheDebugState().trap_coord() = base::ParseHexOr<uint32_t>(buf, 0);
 
     WWGetPrivateProfileString(
         "SyncBug", "this", "0",
         std::span(buf).first(static_cast<std::size_t>(80)), buffer);
-    if (const auto trap_this = tech::ParseHex<uintptr_t>(buf)) {
+    if (const auto trap_this = base::ParseHex<uintptr_t>(buf)) {
       TheDebugState().trap_this() = std::bit_cast<void*>(*trap_this);
     }
   }
@@ -815,73 +815,73 @@ void Write_MultiPlayer_Settings() {
   ------------------------------------------------------------------------*/
   WWWritePrivateProfileInt("MultiPlayer", "PhoneIndex",
                            TheNetwork().current_phone_index(),
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("MultiPlayer", "Color",
                            TheSession().preferred_color(),
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("MultiPlayer", "Side",
                            static_cast<int>(TheSession().house()),
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileString("MultiPlayer", "Handle",
                               TheSession().player_name(),
-                              port::CharBytes(ShapeBufferBytes));
+                              base::CharBytes(ShapeBufferBytes));
 
   /*------------------------------------------------------------------------
   Clear all existing SerialDefault entries.
   ------------------------------------------------------------------------*/
   WWWritePrivateProfileString("SerialDefaults", nullptr, nullptr,
-                              port::CharBytes(ShapeBufferBytes));
+                              base::CharBytes(ShapeBufferBytes));
 
   /*------------------------------------------------------------------------
   Save default serial settings in opposite order you want to see them
   ------------------------------------------------------------------------*/
   WWWritePrivateProfileString("SerialDefaults", "CallWaitString",
                               TheNetwork().serial_defaults().CallWaitString,
-                              port::CharBytes(ShapeBufferBytes));
+                              base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "CallWaitStringIndex",
                            TheNetwork().serial_defaults().CallWaitStringIndex,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "InitStringIndex",
                            TheNetwork().serial_defaults().InitStringIndex,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "Init",
                            TheNetwork().serial_defaults().Init ? 1 : 0,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileString(
       "SerialDefaults", "DialMethod",
       kDialMethodCheck.at(TheNetwork().serial_defaults().DialMethod),
-      port::CharBytes(ShapeBufferBytes));
+      base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "Baud",
                            TheNetwork().serial_defaults().Baud,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "IRQ",
                            TheNetwork().serial_defaults().IRQ,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   absl::SNPrintF(
       buf, sizeof(buf), "%x",
       static_cast<unsigned int>(TheNetwork().serial_defaults().Port));
   WWWritePrivateProfileString("SerialDefaults", "Port", buf,
-                              port::CharBytes(ShapeBufferBytes));
+                              base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileString("SerialDefaults", "ModemName",
                               TheNetwork().serial_defaults().ModemName,
-                              port::CharBytes(ShapeBufferBytes));
+                              base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("SerialDefaults", "Compression",
                            TheNetwork().serial_defaults().Compression ? 1 : 0,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt(
       "SerialDefaults", "ErrorCorrection",
       TheNetwork().serial_defaults().ErrorCorrection ? 1 : 0,
-      port::CharBytes(ShapeBufferBytes));
+      base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt(
       "SerialDefaults", "HardwareFlowControl",
       TheNetwork().serial_defaults().HardwareFlowControl ? 1 : 0,
-      port::CharBytes(ShapeBufferBytes));
+      base::CharBytes(ShapeBufferBytes));
 
   /*------------------------------------------------------------------------
   Clear all existing InitString entries.
   ------------------------------------------------------------------------*/
   WWWritePrivateProfileString("InitStrings", nullptr, nullptr,
-                              port::CharBytes(ShapeBufferBytes));
+                              base::CharBytes(ShapeBufferBytes));
 
   /*------------------------------------------------------------------------
   Save all InitString entries.  In descending order so they come out in
@@ -892,14 +892,14 @@ void Write_MultiPlayer_Settings() {
     absl::SNPrintF(buf, sizeof(buf), "%03d", i);
     WWWritePrivateProfileString("InitStrings", buf,
                                 TheNetwork().init_strings().at(i),
-                                port::CharBytes(ShapeBufferBytes));
+                                base::CharBytes(ShapeBufferBytes));
   }
 
   /*------------------------------------------------------------------------
   Clear all existing Phone Book entries.
   ------------------------------------------------------------------------*/
   WWWritePrivateProfileString("PhoneBook", nullptr, nullptr,
-                              port::CharBytes(ShapeBufferBytes));
+                              base::CharBytes(ShapeBufferBytes));
 
   /*------------------------------------------------------------------------
   Save all Phone Book entries.
@@ -925,7 +925,7 @@ void Write_MultiPlayer_Settings() {
         TheNetwork().phone_book().at(i)->Settings.CallWaitString);
     absl::SNPrintF(entrytext, sizeof(entrytext), "%03d", i);
     WWWritePrivateProfileString("PhoneBook", entrytext, buf,
-                                port::CharBytes(ShapeBufferBytes));
+                                base::CharBytes(ShapeBufferBytes));
   }
 
   /*------------------------------------------------------------------------
@@ -1147,7 +1147,7 @@ static void Garble_Message(std::span<char> buf) {
     }
     --punctuation;
   }
-  port::SafeCopy(punct, message.substr(punctuation));
+  base::SafeCopy(punct, message.substr(punctuation));
   base::At(buf, punctuation) = '\0';
 
   for (auto& word : words) {
@@ -1157,12 +1157,12 @@ static void Garble_Message(std::span<char> buf) {
   /*------------------------------------------------------------------------
   Copy the original buffer
   ------------------------------------------------------------------------*/
-  port::SafeCopy(txt, buf.data());
+  base::SafeCopy(txt, buf.data());
 
   /*------------------------------------------------------------------------
   Split it up into words
   ------------------------------------------------------------------------*/
-  port::Tokenizer tokens(txt, " ");
+  base::Tokenizer tokens(txt, " ");
   char* p = tokens.Next();
   int numwords = 0;  // # words in the phrase
   while (p) {
@@ -1183,14 +1183,14 @@ static void Garble_Message(std::span<char> buf) {
       i--;
       continue;
     }
-    port::SafeAppend(std::span(buf).first(MAX_MESSAGE_LENGTH),
+    base::SafeAppend(std::span(buf).first(MAX_MESSAGE_LENGTH),
                      base::At(words, j));
     base::At(words, j) = nullptr;
     if (i < numwords - 1) {
-      port::SafeAppend(std::span(buf).first(MAX_MESSAGE_LENGTH), " ");
+      base::SafeAppend(std::span(buf).first(MAX_MESSAGE_LENGTH), " ");
     }
   }
-  port::SafeAppend(std::span(buf).first(MAX_MESSAGE_LENGTH), punct);
+  base::SafeAppend(std::span(buf).first(MAX_MESSAGE_LENGTH), punct);
 }
 
 /***************************************************************************

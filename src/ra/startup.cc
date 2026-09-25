@@ -294,7 +294,7 @@ int main(const int argc, char* argv[])
     // value only once the exe is gone, so a failed delete is retried next
     // launch.
     if (RegQueryValueEx(wol_key, "WolapiInstallComplete", nullptr, nullptr,
-                        port::BytesOf(install_complete),
+                        base::BytesOf(install_complete),
                         &value_size) == ERROR_SUCCESS &&
         (!setup_exe_found || DeleteFile("wolsetup.exe"))) {
       RegDeleteValue(wol_key, "WolapiInstallComplete");

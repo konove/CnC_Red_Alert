@@ -661,7 +661,7 @@ void IPXManagerClass::Set_Connection_Parms(int index, int id, char* name) {
   }
 
   base::At(Connection, index)->ID = id;
-  port::SafeCopy(base::At(Connection, index)->Name, name);
+  base::SafeCopy(base::At(Connection, index)->Name, name);
 
 } /* end of Set_Connection_Parms */
 
@@ -940,7 +940,7 @@ int IPXManagerClass::Service() {
       if (packetlen) {
         cur_data_buf = base::ObjectBytes(temp_receive_buffer)
                            .first(base::ToSize(packetlen));
-        address = port::ReadUnaligned<IPXAddressClass>(
+        address = base::ReadUnaligned<IPXAddressClass>(
             base::ObjectBytes(temp_address));
 
         if (std::cmp_less(packetlen, sizeof(CommHeaderType)) ||
@@ -948,7 +948,7 @@ int IPXManagerClass::Service() {
           continue;
         }
         cur_data_buf = cur_data_buf.first(base::ToSize(packetlen));
-        packet_storage = port::ReadUnaligned<CommHeaderType>(cur_data_buf);
+        packet_storage = base::ReadUnaligned<CommHeaderType>(cur_data_buf);
         if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
           /*
           ** Put the packet in the Global Queue

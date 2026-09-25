@@ -149,12 +149,12 @@ void FieldClass::Host_To_Net() {
 
     case TYPE_SHORT:
     case TYPE_UNSIGNED_SHORT:
-      port::WriteUnaligned(Data, htons(port::ReadUnaligned<uint16_t>(Data)));
+      base::WriteUnaligned(Data, htons(base::ReadUnaligned<uint16_t>(Data)));
       break;
 
     case TYPE_LONG:
     case TYPE_UNSIGNED_LONG:
-      port::WriteUnaligned(Data, htonl(port::ReadUnaligned<uint32_t>(Data)));
+      base::WriteUnaligned(Data, htonl(base::ReadUnaligned<uint32_t>(Data)));
       break;
 
     //
@@ -204,12 +204,12 @@ void FieldClass::Net_To_Host() {
 
     case TYPE_SHORT:
     case TYPE_UNSIGNED_SHORT:
-      port::WriteUnaligned(Data, ntohs(port::ReadUnaligned<uint16_t>(Data)));
+      base::WriteUnaligned(Data, ntohs(base::ReadUnaligned<uint16_t>(Data)));
       break;
 
     case TYPE_LONG:
     case TYPE_UNSIGNED_LONG:
-      port::WriteUnaligned(Data, ntohl(port::ReadUnaligned<uint32_t>(Data)));
+      base::WriteUnaligned(Data, ntohl(base::ReadUnaligned<uint32_t>(Data)));
       break;
 
     //

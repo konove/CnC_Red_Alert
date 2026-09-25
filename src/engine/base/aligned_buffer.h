@@ -8,7 +8,7 @@
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
 
-namespace port {
+namespace base {
 
 // Returns the object at storage, checking its alignment. storage must be null
 // or point to a live T (including implicitly created objects in allocated
@@ -30,6 +30,6 @@ T* RestoreMutableObject(const void* storage ABSL_ATTRIBUTE_LIFETIME_BOUND) {
   return AlignedObject<T>(const_cast<void*>(storage));
 }
 
-}  // namespace port
+}  // namespace base
 
 #endif  // CNC_RED_ALERT_ENGINE_BASE_ALIGNED_BUFFER_H_

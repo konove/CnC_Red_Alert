@@ -89,7 +89,7 @@ bool ConfirmationClass::Process(const char* string) {
   /*
   **	Set up the window.  Window x-coords are in bytes not pixels.
   */
-  port::SafeCopy(buffer, string);
+  base::SafeCopy(buffer, string);
   const FontStyle font = TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW);
   Format_Window_String(font, buffer, 200 * factor, width, height);
   width += 60 * factor;

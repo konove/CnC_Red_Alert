@@ -377,7 +377,7 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
       base::FillBytes(base::ObjectBytes(*packet), 0, sizeof(GlobalPacketType));
 
       mypacket.Command = NET_ANSWER_GAME;
-      port::SafeCopy(mypacket.Name, TheSession().game_name());
+      base::SafeCopy(mypacket.Name, TheSession().game_name());
 #ifdef PATCH
       if (TheGameState().compatibility_v107()) {
         mypacket.GameInfo.Version = 1;
@@ -404,7 +404,7 @@ bool Process_Global_Packet(GlobalPacketType* packet, IPXAddressClass* address) {
     base::FillBytes(base::ObjectBytes(*packet), 0, sizeof(GlobalPacketType));
 
     mypacket.Command = NET_ANSWER_PLAYER;
-    port::SafeCopy(mypacket.Name, TheSession().player_name());
+    base::SafeCopy(mypacket.Name, TheSession().player_name());
     mypacket.PlayerInfo.House = TheSession().house();
     mypacket.PlayerInfo.Color =
         static_cast<unsigned int>(TheSession().color_index());
@@ -485,7 +485,7 @@ void Destroy_Connection(int id, int error) {
             base::At(TheSession().player_ids(), j + 1);
         base::At(TheSession().player_houses(), j) =
             base::At(TheSession().player_houses(), j + 1);
-        port::SafeCopy(base::At(TheSession().player_names(), j),
+        base::SafeCopy(base::At(TheSession().player_names(), j),
                        base::At(TheSession().player_names(), j + 1));
         base::At(TheSession().their_process_time(), j) =
             base::At(TheSession().their_process_time(), j + 1);
@@ -1026,7 +1026,7 @@ static int Net_Join_Dialog() {
   */
   TheSession().color_index() =
       TheSession().preferred_color();  // init my preferred color
-  port::SafeCopy(namebuf, TheSession().player_name());  // set my name
+  base::SafeCopy(namebuf, TheSession().player_name());  // set my name
   name_edt.Set_Text(namebuf, MPLAYER_NAME_MAX);
   name_edt.Set_Color(
       base::At(TheSession().text_colors(), TheSession().color_index()));
@@ -1442,7 +1442,7 @@ static int Net_Join_Dialog() {
                         sizeof(GlobalPacketType));
 
         TheNetwork().global_packet().Command = NET_SIGN_OFF;
-        port::SafeCopy(TheNetwork().global_packet().Name,
+        base::SafeCopy(TheNetwork().global_packet().Name,
                        TheSession().player_name());
 
         /*...............................................................
@@ -1542,8 +1542,8 @@ static int Net_Join_Dialog() {
         /*
         .................... Save player & game name ....................
         */
-        port::SafeCopy(TheSession().player_name(), namebuf);
-        port::SafeCopy(TheSession().game_name(), namebuf);
+        base::SafeCopy(TheSession().player_name(), namebuf);
+        base::SafeCopy(TheSession().game_name(), namebuf);
 
         name_edt.Clear_Focus();
         name_edt.Flag_To_Redraw();
@@ -1564,7 +1564,7 @@ static int Net_Join_Dialog() {
               input == ButtonKey(kButtonSend) || input == KN_F4) {
             base::FillBytes(base::ObjectBytes(txt), 0, 80);
 
-            port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
+            base::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
 
             TheSession().messages().Add_Edit(
                 base::At(TheSession().text_colors(),
@@ -1632,8 +1632,8 @@ static int Net_Join_Dialog() {
 
               while (sent_so_far < message_length) {
                 TheNetwork().global_packet().Command = NET_MESSAGE;
-                port::SafeCopy(TheNetwork().global_packet().Name, namebuf);
-                port::SafeCopy(
+                base::SafeCopy(TheNetwork().global_packet().Name, namebuf);
+                base::SafeCopy(
                     std::span(TheNetwork().global_packet().Message.Buf)
                         .first(COMPAT_MESSAGE_LENGTH - 4),
                     std::string_view(TheSession().messages().Get_Edit_Buf())
@@ -1670,11 +1670,11 @@ static int Net_Join_Dialog() {
 
                 base::At(TheNetwork().global_packet().Message.Buf,
                          COMPAT_MESSAGE_LENGTH - 5) = 0;
-                port::WriteUnaligned(
+                base::WriteUnaligned(
                     base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
                         .subspan(COMPAT_MESSAGE_LENGTH - 4),
                     magic_number);
-                port::WriteUnaligned(
+                base::WriteUnaligned(
                     base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
                         .subspan(COMPAT_MESSAGE_LENGTH - 2),
                     crc);
@@ -1764,7 +1764,7 @@ static int Net_Join_Dialog() {
                                                TheSession().color_index())));
 
           who = new NodeNameType;
-          port::SafeCopy(who->Name, TheSession().player_name());
+          base::SafeCopy(who->Name, TheSession().player_name());
           who->Address = IPXAddressClass();
           who->Player.House = TheSession().house();
           who->Player.Color =
@@ -1910,7 +1910,7 @@ static int Net_Join_Dialog() {
                       sizeof(GlobalPacketType));
 
       TheNetwork().global_packet().Command = NET_SIGN_OFF;
-      port::SafeCopy(TheNetwork().global_packet().Name,
+      base::SafeCopy(TheNetwork().global_packet().Name,
                      TheSession().player_name());
 
       for (i = 0; i < TheNetwork().players().Count(); i++) {
@@ -2006,10 +2006,10 @@ static int Net_Join_Dialog() {
       ..................................................................*/
       for (i = 0; i < TheSession().player_count(); i++) {
         if (base::At(TheSession().player_ids(), i) == TheSession().local_id()) {
-          port::SafeCopy(base::At(TheSession().player_names(), i),
+          base::SafeCopy(base::At(TheSession().player_names(), i),
                          TheSession().player_name());
         } else {
-          port::SafeCopy(base::At(TheSession().player_names(), i),
+          base::SafeCopy(base::At(TheSession().player_names(), i),
                          TheNetwork().ipx().Connection_Name(
                              base::At(TheSession().player_ids(), i)));
         }
@@ -2220,7 +2220,7 @@ static bool Request_To_Join(const char* playername, int join_index,
   /*
   ----------------------------- Save game name -----------------------------
   */
-  port::SafeCopy(TheSession().player_name(), playername);
+  base::SafeCopy(TheSession().player_name(), playername);
 
   /*
   ----------------------- Send packet to game's owner ----------------------
@@ -2229,7 +2229,7 @@ static bool Request_To_Join(const char* playername, int join_index,
                   sizeof(GlobalPacketType));
 
   TheNetwork().global_packet().Command = NET_QUERY_JOIN;
-  port::SafeCopy(TheNetwork().global_packet().Name, TheSession().player_name());
+  base::SafeCopy(TheNetwork().global_packet().Name, TheSession().player_name());
   TheNetwork().global_packet().PlayerInfo.House = house;
   TheNetwork().global_packet().PlayerInfo.Color =
       static_cast<unsigned int>(color);
@@ -2314,7 +2314,7 @@ static void Send_Join_Queries(int curgame, int gamenow, int playernow) {
                     sizeof(GlobalPacketType));
 
     TheNetwork().global_packet().Command = NET_QUERY_PLAYER;
-    port::SafeCopy(TheNetwork().global_packet().Name,
+    base::SafeCopy(TheNetwork().global_packet().Name,
                    TheNetwork().games().at(curgame)->Name);
 
     TheNetwork().ipx().Send_Global_Message(
@@ -2461,7 +2461,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       Create a new node structure, fill it in, add it to 'Games'
       ..................................................................*/
       who = new NodeNameType;
-      port::SafeCopy(who->Name, TheNetwork().global_packet().Name);
+      base::SafeCopy(who->Name, TheNetwork().global_packet().Name);
       who->Address = TheNetwork().global_address();
       who->Game.Version = TheNetwork().global_packet().GameInfo.Version;
       who->Game.IsOpen = TheNetwork().global_packet().GameInfo.IsOpen;
@@ -2505,7 +2505,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       ..................................................................*/
       if (TheNetwork().players().at(i)->Address ==
           TheNetwork().global_address()) {
-        port::SafeCopy(TheNetwork().players().at(i)->Name,
+        base::SafeCopy(TheNetwork().players().at(i)->Name,
                        TheNetwork().global_packet().Name);
         TheNetwork().players().at(i)->Player.House =
             TheNetwork().global_packet().PlayerInfo.House;
@@ -2544,7 +2544,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       Create & add a node to the Vector
       ..................................................................*/
       who = new NodeNameType;
-      port::SafeCopy(who->Name, TheNetwork().global_packet().Name);
+      base::SafeCopy(who->Name, TheNetwork().global_packet().Name);
       who->Address = TheNetwork().global_address();
       who->Player.House = TheNetwork().global_packet().PlayerInfo.House;
       who->Player.Color = static_cast<unsigned char>(
@@ -2577,7 +2577,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
   ------------------------------------------------------------------------*/
   else if (TheNetwork().global_packet().Command == NET_CONFIRM_JOIN) {
     if (*joinstate != JOIN_CONFIRMED) {
-      port::SafeCopy(TheSession().game_name(),
+      base::SafeCopy(TheSession().game_name(),
                      TheNetwork().global_packet().Name);
       TheSession().house() = TheNetwork().global_packet().PlayerInfo.House;
       TheSession().color_index() =
@@ -2600,7 +2600,7 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
                       sizeof(GlobalPacketType));
 
       TheNetwork().global_packet().Command = NET_SIGN_OFF;
-      port::SafeCopy(TheNetwork().global_packet().Name,
+      base::SafeCopy(TheNetwork().global_packet().Name,
                      TheSession().player_name());
 
       TheNetwork().ipx().Send_Global_Message(
@@ -2769,10 +2769,10 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
                         TheNetwork().global_packet().Name,
                         TheNetwork().global_packet().Message.Buf);
-    const auto magic_number = port::ReadUnaligned<uint16_t>(
+    const auto magic_number = base::ReadUnaligned<uint16_t>(
         base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
             .subspan(COMPAT_MESSAGE_LENGTH - 4));
-    const auto crc = port::ReadUnaligned<uint16_t>(
+    const auto crc = base::ReadUnaligned<uint16_t>(
         base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
             .subspan(COMPAT_MESSAGE_LENGTH - 2));
     const int color = static_cast<int>(
@@ -3201,7 +3201,7 @@ static int Net_New_Dialog() {
   ........................................................................*/
   for (i = 0; i < TheSession().scenarios().Count(); i++) {
     char* const scenario = TheSession().scenarios().at(i);
-    std::ranges::transform(port::MutableCString(scenario), scenario,
+    std::ranges::transform(base::MutableCString(scenario), scenario,
                            absl::ascii_toupper);
     scenariolist.Add_Item(scenario);
   }
@@ -3220,7 +3220,7 @@ static int Net_New_Dialog() {
   Init random-number generator, & create a seed to be used for all random
   numbers from here on out
   ........................................................................*/
-  TheWorld().seed() = port::RandomSeed();
+  TheWorld().seed() = platform::RandomSeed();
 
   /*........................................................................
   Init the message display system
@@ -3371,7 +3371,7 @@ static int Net_New_Dialog() {
       case ButtonKey(kButtonScenariolist):
         if (scenariolist.Current_Index() != TheSession().scenario_index()) {
           TheSession().scenario_index() = scenariolist.Current_Index();
-          TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+          TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
           transmit = 1;
         }
         break;
@@ -3454,7 +3454,7 @@ static int Net_New_Dialog() {
       User edits the credits value; retransmit new game options
       ------------------------------------------------------------------*/
       case ButtonKey(kButtonCredits):
-        TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+        TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
         transmit = 1;
         break;
 
@@ -3496,7 +3496,7 @@ static int Net_New_Dialog() {
                           base::At(TheSession().unit_count_min(), 0))) +
               base::At(TheSession().unit_count_min(), 1);
         }
-        TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+        TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
         countgauge.Set_Maximum(
             base::At(TheSession().unit_count_max(), TheSession().bases()) -
             base::At(TheSession().unit_count_min(), TheSession().bases()));
@@ -3525,7 +3525,7 @@ static int Net_New_Dialog() {
           tiberiumbtn.Turn_On();
           tiberiumbtn.Set_Text(TXT_TIBERIUM_ON);
         }
-        TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+        TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
         transmit = 1;
         break;
 
@@ -3542,7 +3542,7 @@ static int Net_New_Dialog() {
           goodiesbtn.Turn_On();
           goodiesbtn.Set_Text(TXT_CRATES_ON);
         }
-        TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+        TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
         transmit = 1;
         break;
 
@@ -3572,7 +3572,7 @@ static int Net_New_Dialog() {
           }
         }
 
-        TheSession().credits() = tech::ParseIntegerOr<int>(credbuf, 0);
+        TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
         transmit = 1;
         break;
 
@@ -3619,7 +3619,7 @@ static int Net_New_Dialog() {
                         sizeof(GlobalPacketType));
 
         TheNetwork().global_packet().Command = NET_SIGN_OFF;
-        port::SafeCopy(TheNetwork().global_packet().Name,
+        base::SafeCopy(TheNetwork().global_packet().Name,
                        TheSession().player_name());
 
         /*...............................................................
@@ -3685,7 +3685,7 @@ static int Net_New_Dialog() {
               input == KN_F4) {
             base::FillBytes(base::ObjectBytes(txt), 0, 80);
 
-            port::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
+            base::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
 
             TheSession().messages().Add_Edit(
                 base::At(TheSession().text_colors(),
@@ -3753,9 +3753,9 @@ static int Net_New_Dialog() {
             base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                             sizeof(GlobalPacketType));
             TheNetwork().global_packet().Command = NET_MESSAGE;
-            port::SafeCopy(TheNetwork().global_packet().Name,
+            base::SafeCopy(TheNetwork().global_packet().Name,
                            TheSession().player_name());
-            port::SafeCopy(
+            base::SafeCopy(
                 std::span(TheNetwork().global_packet().Message.Buf)
                     .first(COMPAT_MESSAGE_LENGTH - 4),
                 std::string_view(TheSession().messages().Get_Edit_Buf())
@@ -3790,11 +3790,11 @@ static int Net_New_Dialog() {
 
             base::At(TheNetwork().global_packet().Message.Buf,
                      COMPAT_MESSAGE_LENGTH - 5) = 0;
-            port::WriteUnaligned(
+            base::WriteUnaligned(
                 base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
                     .subspan(COMPAT_MESSAGE_LENGTH - 4),
                 magic_number);
-            port::WriteUnaligned(
+            base::WriteUnaligned(
                 base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
                     .subspan(COMPAT_MESSAGE_LENGTH - 2),
                 crc);
@@ -3839,8 +3839,8 @@ static int Net_New_Dialog() {
     /*---------------------------------------------------------------------
     Detect editing of the credits buffer, transmit new values to players
     ---------------------------------------------------------------------*/
-    if (tech::ParseIntegerOr<int>(credbuf, 0) != old_cred) {
-      old_cred = Bound(tech::ParseIntegerOr<int>(credbuf, 0), 0, 9999);
+    if (base::ParseIntegerOr<int>(credbuf, 0) != old_cred) {
+      old_cred = Bound(base::ParseIntegerOr<int>(credbuf, 0), 0, 9999);
       TheSession().credits() = old_cred;
       transmit = 1;
       absl::SNPrintF(credbuf, sizeof(credbuf), "%d", TheSession().credits());
@@ -4016,10 +4016,10 @@ static int Net_New_Dialog() {
     .....................................................................*/
     for (i = 0; i < TheSession().player_count(); i++) {
       if (base::At(TheSession().player_ids(), i) == TheSession().local_id()) {
-        port::SafeCopy(base::At(TheSession().player_names(), i),
+        base::SafeCopy(base::At(TheSession().player_names(), i),
                        TheSession().player_name());
       } else {
-        port::SafeCopy(base::At(TheSession().player_names(), i),
+        base::SafeCopy(base::At(TheSession().player_names(), i),
                        TheNetwork().ipx().Connection_Name(
                            base::At(TheSession().player_ids(), i)));
       }
@@ -4157,7 +4157,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
       Add node to the Vector list
       ..................................................................*/
       auto* who = new NodeNameType;  // node to add to Players Vector
-      port::SafeCopy(who->Name, TheNetwork().global_packet().Name);
+      base::SafeCopy(who->Name, TheNetwork().global_packet().Name);
       who->Address = TheNetwork().global_address();
       who->Player.House = TheNetwork().global_packet().PlayerInfo.House;
       TheNetwork().players().Add(who);
@@ -4205,7 +4205,7 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
                       sizeof(GlobalPacketType));
 
       TheNetwork().global_packet().Command = NET_CONFIRM_JOIN;
-      port::SafeCopy(TheNetwork().global_packet().Name,
+      base::SafeCopy(TheNetwork().global_packet().Name,
                      TheSession().player_name());
       TheNetwork().global_packet().PlayerInfo.House = who->Player.House;
       TheNetwork().global_packet().PlayerInfo.Color = who->Player.Color;
@@ -4256,10 +4256,10 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist) {
     Format_Runtime_Text(txt, sizeof(txt), Text_String(TXT_FROM),
                         TheNetwork().global_packet().Name,
                         TheNetwork().global_packet().Message.Buf);
-    const auto magic_number = port::ReadUnaligned<uint16_t>(
+    const auto magic_number = base::ReadUnaligned<uint16_t>(
         base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
             .subspan(COMPAT_MESSAGE_LENGTH - 4));
-    const auto crc = port::ReadUnaligned<uint16_t>(
+    const auto crc = base::ReadUnaligned<uint16_t>(
         base::ObjectBytes(TheNetwork().global_packet().Message.Buf)
             .subspan(COMPAT_MESSAGE_LENGTH - 2));
     const int color = static_cast<int>(
@@ -4296,8 +4296,8 @@ uint32_t Compute_Name_CRC(const char* name) {
   char buf[80];
   uint32_t crc = 0L;
 
-  port::SafeCopy(buf, name);
-  std::ranges::transform(port::MutableCString(buf), buf, absl::ascii_toupper);
+  base::SafeCopy(buf, name);
+  std::ranges::transform(base::MutableCString(buf), buf, absl::ascii_toupper);
 
   for (int i = 0; std::cmp_less(i, std::string_view(buf).size()); i++) {
     Add_CRC(&crc, static_cast<uint32_t>(base::At(buf, i)));
@@ -4501,7 +4501,7 @@ static int Net_Fake_New_Dialog() {
   // Format_Window_String inserts line breaks in place, so format a copy rather
   // than the shared string table.
   char buffer[80 * 3];
-  port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
+  base::SafeCopy(buffer, Text_String(TXT_CONNECTING));
   Format_Window_String(TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW), buffer,
                        view.height(), width, height);
 
@@ -4618,7 +4618,7 @@ static int Net_Fake_New_Dialog() {
   Init random-number generator, & create a seed to be used for all random
   numbers from here on out
   ........................................................................*/
-  TheWorld().seed() = port::RandomSeed();
+  TheWorld().seed() = platform::RandomSeed();
 
   /*------------------------------------------------------------------------
   Add myself to the list.  Note that since I'm not in the Players Vector,
@@ -4655,7 +4655,7 @@ static int Net_Fake_New_Dialog() {
   memset(&TheNetwork().global_packet(), 0, sizeof(GlobalPacketType));
 
   TheNetwork().global_packet().Command = (NetCommandType)50;  // Invalid command
-  port::SafeCopy(TheNetwork().global_packet().Name, TheSession().player_name());
+  base::SafeCopy(TheNetwork().global_packet().Name, TheSession().player_name());
   TheNetwork().ipx().Send_Global_Message(
       base::ObjectBytes(TheNetwork().global_packet()), sizeof(GlobalPacketType),
       0, NULL);
@@ -4725,7 +4725,7 @@ static int Net_Fake_New_Dialog() {
                         sizeof(GlobalPacketType));
 
         TheNetwork().global_packet().Command = NET_SIGN_OFF;
-        port::SafeCopy(TheNetwork().global_packet().Name,
+        base::SafeCopy(TheNetwork().global_packet().Name,
                        TheSession().player_name());
 
         /*...............................................................
@@ -4960,7 +4960,7 @@ static int Net_Fake_New_Dialog() {
       char flopbuf[128];
       absl::SNPrintF(
           flopbuf, sizeof(flopbuf), "Sending 'GO' packet to address %d\n",
-          port::ReadUnaligned<uint16_t>(
+          base::ReadUnaligned<uint16_t>(
               base::ObjectBytes(TheNetwork().players().at(i)->Address)));
       CCDebugString(flopbuf);
 
@@ -5032,10 +5032,10 @@ static int Net_Fake_New_Dialog() {
     .....................................................................*/
     for (i = 0; i < TheSession().player_count(); i++) {
       if (base::At(TheSession().player_ids(), i) == TheSession().local_id()) {
-        port::SafeCopy(base::At(TheSession().player_names(), i),
+        base::SafeCopy(base::At(TheSession().player_names(), i),
                        TheSession().player_name());
       } else {
-        port::SafeCopy(base::At(TheSession().player_names(), i),
+        base::SafeCopy(base::At(TheSession().player_names(), i),
                        TheNetwork().ipx().Connection_Name(
                            base::At(TheSession().player_ids(), i)));
       }
@@ -5132,7 +5132,7 @@ static int Net_Fake_Join_Dialog() {
   // Format_Window_String inserts line breaks in place, so format a copy rather
   // than the shared string table.
   char buffer[80 * 3];
-  port::SafeCopy(buffer, Text_String(TXT_CONNECTING));
+  base::SafeCopy(buffer, Text_String(TXT_CONNECTING));
   Format_Window_String(TextFontStyle(TPF_6PT_GRAD | TPF_NOSHADOW), buffer,
                        view.height(), width, height);
 
@@ -5323,7 +5323,7 @@ static int Net_Fake_Join_Dialog() {
                         sizeof(GlobalPacketType));
 
         TheNetwork().global_packet().Command = NET_SIGN_OFF;
-        port::SafeCopy(TheNetwork().global_packet().Name,
+        base::SafeCopy(TheNetwork().global_packet().Name,
                        TheSession().player_name());
 
         /*...............................................................
@@ -5446,7 +5446,7 @@ static int Net_Fake_Join_Dialog() {
                                                TheSession().color_index())));
 
           who = new NodeNameType;
-          port::SafeCopy(who->Name, TheSession().player_name());
+          base::SafeCopy(who->Name, TheSession().player_name());
           who->Address = IPXAddressClass();
           who->Player.House = TheSession().house();
           who->Player.Color =
@@ -5589,7 +5589,7 @@ static int Net_Fake_Join_Dialog() {
                       sizeof(GlobalPacketType));
 
       TheNetwork().global_packet().Command = NET_SIGN_OFF;
-      port::SafeCopy(TheNetwork().global_packet().Name,
+      base::SafeCopy(TheNetwork().global_packet().Name,
                      TheSession().player_name());
 
       for (i = 0; i < TheNetwork().players().Count(); i++) {
@@ -5703,10 +5703,10 @@ static int Net_Fake_Join_Dialog() {
       ..................................................................*/
       for (i = 0; i < TheSession().player_count(); i++) {
         if (base::At(TheSession().player_ids(), i) == TheSession().local_id()) {
-          port::SafeCopy(base::At(TheSession().player_names(), i),
+          base::SafeCopy(base::At(TheSession().player_names(), i),
                          TheSession().player_name());
         } else {
-          port::SafeCopy(base::At(TheSession().player_names(), i),
+          base::SafeCopy(base::At(TheSession().player_names(), i),
                          TheNetwork().ipx().Connection_Name(
                              base::At(TheSession().player_ids(), i)));
         }

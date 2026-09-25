@@ -1807,10 +1807,10 @@ static RetcodeType Process_Serial_Packet(
                         serial_packet->Name, serial_packet->Message);
 
     const auto magic_number =
-        port::ReadUnaligned<uint16_t>(base::ObjectBytes(serial_packet->Message)
+        base::ReadUnaligned<uint16_t>(base::ObjectBytes(serial_packet->Message)
                                           .subspan(COMPAT_MESSAGE_LENGTH - 4));
     const auto crc =
-        port::ReadUnaligned<uint16_t>(base::ObjectBytes(serial_packet->Message)
+        base::ReadUnaligned<uint16_t>(base::ObjectBytes(serial_packet->Message)
                                           .subspan(COMPAT_MESSAGE_LENGTH - 2));
 
     TheSession().messages().Add_Message(
@@ -1824,7 +1824,7 @@ static RetcodeType Process_Serial_Packet(
     //	Save this message in our last-message buffer
     //.....................................................................
     if (!std::string_view(serial_packet->Message).empty()) {
-      port::SafeCopy(TheSession().last_message(), serial_packet->Message);
+      base::SafeCopy(TheSession().last_message(), serial_packet->Message);
     }
 
     //.....................................................................
@@ -2216,9 +2216,9 @@ static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
   finfo->Data.FrameInfo.CRC = GameCRC;
   finfo->Data.FrameInfo.CommandCount = static_cast<uint16_t>(num_cmds);
   finfo->Data.FrameInfo.Delay = static_cast<unsigned char>(frame_delay);
-  port::WriteUnaligned(buf, frame_info);
-  port::WriteUnaligned(buf, frame_info);
-  port::WriteUnaligned(buf, frame_info);
+  base::WriteUnaligned(buf, frame_info);
+  base::WriteUnaligned(buf, frame_info);
+  base::WriteUnaligned(buf, frame_info);
 
   //------------------------------------------------------------------------
   // Initialize the # of bytes processed; this is protocol-specific
@@ -2534,7 +2534,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
       //..................................................................
       case EventClass::RESPONSE_TIME:
 
-        port::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
+        base::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
 
         base::CopyBytes(
             buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
@@ -2580,7 +2580,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
                 static_cast<std::byte>(numunits);
           }
 
-          port::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
+          base::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
 
           base::CopyBytes(
               buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType) +
@@ -2622,7 +2622,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
       case EventClass::PROCESS_TIME:
       case EventClass::LAST_EVENT:
       default:
-        port::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
+        base::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
 
         base::CopyBytes(
             buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
@@ -2729,7 +2729,7 @@ int Extract_Uncompressed_Events(std::span<const std::byte> buf, int bufsize) {
   //------------------------------------------------------------------------
   while (std::cmp_greater_equal(leftover, sizeof(EventClass))) {
     event_storage =
-        port::ReadUnaligned<EventClass>(buf.subspan(base::ToSize(pos)));
+        base::ReadUnaligned<EventClass>(buf.subspan(base::ToSize(pos)));
 
     //.....................................................................
     // add event to the DoList, only if it's not a FRAMESYNC
@@ -2807,7 +2807,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
   if (std::cmp_less(leftover, sizeof(EventClass::EventType))) {
     return count;
   }
-  event_type = port::ReadUnaligned<EventClass::EventType>(
+  event_type = base::ReadUnaligned<EventClass::EventType>(
       buf.subspan(base::ToSize(pos)));
   if (event_type < EventClass::EMPTY || event_type >= EventClass::LAST_EVENT) {
     return count;
@@ -2973,7 +2973,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
         if (std::cmp_less(leftover, sizeof(EventClass::EventType))) {
           return count;
         }
-        event_type = port::ReadUnaligned<EventClass::EventType>(
+        event_type = base::ReadUnaligned<EventClass::EventType>(
             buf.subspan(base::ToSize(pos)));
         if (event_type < EventClass::EMPTY ||
             event_type >= EventClass::LAST_EVENT) {
@@ -2995,7 +2995,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
       if (std::cmp_less(leftover, sizeof(EventClass::EventType))) {
         return count;
       }
-      event_type = port::ReadUnaligned<EventClass::EventType>(
+      event_type = base::ReadUnaligned<EventClass::EventType>(
           buf.subspan(base::ToSize(pos)));
       if (event_type < EventClass::EMPTY ||
           event_type >= EventClass::LAST_EVENT) {

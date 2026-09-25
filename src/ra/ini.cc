@@ -232,7 +232,7 @@ bool INIClass::Load(ByteSource& file) {
     if (close != std::string_view::npos) {
       base::At(buffer, close) = '\0';
     }
-    strtrim(port::MutableCString(buffer));
+    strtrim(base::MutableCString(buffer));
     auto* secptr = new INISection(buffer);
     if (secptr == nullptr) {
       Clear();
@@ -278,7 +278,7 @@ bool INIClass::Load(ByteSource& file) {
       base::At(buffer, split) = '\0';
       const auto value = std::span(buffer).subspan(split + 1);
       char* divider = value.data();
-      strtrim(port::MutableCString(buffer));
+      strtrim(base::MutableCString(buffer));
       if (std::string_view(buffer).empty()) {
         continue;
       }
@@ -651,7 +651,7 @@ bool INIClass::Put_TextBlock(const char* section, const char* text) {
   while (!remaining.empty()) {
     char buffer[128];
 
-    port::SafeCopy(std::span(buffer).first(76), remaining);
+    base::SafeCopy(std::span(buffer).first(76), remaining);
 
     char b[32];
     absl::SNPrintF(b, sizeof(b), "%d", index);
@@ -677,7 +677,7 @@ bool INIClass::Put_TextBlock(const char* section, const char* text) {
         base::At(buffer, count) = '\0';
       }
 
-      strtrim(port::MutableCString(buffer));
+      strtrim(base::MutableCString(buffer));
       Put_String(section, b, buffer);
       index++;
       remaining.remove_prefix(base::ToSize(count));
@@ -833,7 +833,7 @@ int INIClass::Get_Int(const char* section, const char* entry,
 
   const INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr) {
-    return tech::ParseIniIntegerOr(entryptr->Value, defvalue);
+    return base::ParseIniIntegerOr(entryptr->Value, defvalue);
   }
   return defvalue;
 }
@@ -903,7 +903,7 @@ int INIClass::Get_Hex(const char* section, const char* entry,
 
   const INIEntry* entryptr = Find_Entry(section, entry);
   if (entryptr) {
-    if (const auto value = tech::ParseHex<uint32_t>(entryptr->Value)) {
+    if (const auto value = base::ParseHex<uint32_t>(entryptr->Value)) {
       return static_cast<int>(*value);
     }
   }
@@ -1015,7 +1015,7 @@ int INIClass::Get_String(const char* section, const char* entry,
   }
   // A caller may use its output as the default. Copy before clearing it.
   const std::string value = defvalue == nullptr ? "" : defvalue;
-  port::SafeCopy(buffer, value.c_str());
+  base::SafeCopy(buffer, value.c_str());
   strtrim(buffer);
   return static_cast<int>(std::string_view(buffer.data()).size());
 }

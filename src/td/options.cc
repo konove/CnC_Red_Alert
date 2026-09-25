@@ -665,31 +665,31 @@ void OptionsClass::Save_Settings() const {
   **	Save Options settings
   */
   WWWritePrivateProfileInt("Options", "GameSpeed", static_cast<int>(GameSpeed),
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("Options", "ScrollRate", ScrollRate,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("Options", "Brightness", Brightness,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("Options", "Volume", Volume,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("Options", "ScoreVolume", ScoreVolume,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("Options", "Contrast", Contrast,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("Options", "Color", Color,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("Options", "Tint", Tint,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("Options", "AutoScroll", AutoScroll,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("Options", "IsScoreRepeat", IsScoreRepeat,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("Options", "IsScoreShuffle", IsScoreShuffle,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("Options", "DeathAnnounce", IsDeathAnnounce,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
   WWWritePrivateProfileInt("Options", "FreeScrolling", IsFreeScroll,
-                           port::CharBytes(ShapeBufferBytes));
+                           base::CharBytes(ShapeBufferBytes));
 
   /*
   **	Write the INI data out to a file.

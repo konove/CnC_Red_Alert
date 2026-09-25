@@ -46,7 +46,7 @@ void Draw_Box(PixelView& view, int x, int y, int w, int h, BoxStyleEnum up,
 void Window_Box(PixelView& view, WindowNumberType window, BoxStyleEnum style);
 // Prints `text`, formatted with `args` as printf would, in the color scheme
 // with a drop shadow. A text that is not a format for `args` prints verbatim
-// (see port::FormatRuntime); a nullptr text only applies the flags.
+// (see base::FormatRuntime); a nullptr text only applies the flags.
 void Fancy_Text_Print(PixelView& view, const char* text, int x, int y,
                       RemapControlType* fore, int back, TextPrintType flag,
                       absl::Span<const absl::FormatArg> args = {});
@@ -60,7 +60,7 @@ template <typename... Args>
 void Fancy_Text_Print(PixelView& view, const char* text, int x, int y,
                       RemapControlType* fore, int back, TextPrintType flag,
                       const Args&... args) {
-  const auto packed = port::MakeFormatArgs(args...);
+  const auto packed = base::MakeFormatArgs(args...);
   Fancy_Text_Print(view, text, x, y, fore, back, flag,
                    absl::MakeConstSpan(packed));
 }
@@ -69,7 +69,7 @@ template <typename... Args>
 void Fancy_Text_Print(PixelView& view, int text, int x, int y,
                       RemapControlType* fore, int back, TextPrintType flag,
                       const Args&... args) {
-  const auto packed = port::MakeFormatArgs(args...);
+  const auto packed = base::MakeFormatArgs(args...);
   Fancy_Text_Print(view, text, x, y, fore, back, flag,
                    absl::MakeConstSpan(packed));
 }
@@ -103,7 +103,7 @@ template <typename... Args>
   requires(sizeof...(Args) > 0)
 void Plain_Text_Print(PixelView& view, int text, int x, int y, int fore,
                       int back, TextPrintType flag, const Args&... args) {
-  const auto packed = port::MakeFormatArgs(args...);
+  const auto packed = base::MakeFormatArgs(args...);
   Plain_Text_Print(view, text, x, y, fore, back, flag,
                    absl::MakeConstSpan(packed));
 }
@@ -111,7 +111,7 @@ template <typename... Args>
   requires(sizeof...(Args) > 0)
 void Plain_Text_Print(PixelView& view, const char* text, int x, int y, int fore,
                       int back, TextPrintType flag, const Args&... args) {
-  const auto packed = port::MakeFormatArgs(args...);
+  const auto packed = base::MakeFormatArgs(args...);
   Plain_Text_Print(view, text, x, y, fore, back, flag,
                    absl::MakeConstSpan(packed));
 }

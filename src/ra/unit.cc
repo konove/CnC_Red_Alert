@@ -4703,7 +4703,7 @@ void UnitClass::Read_INI(CCINIClass& ini) {
 
     ini.Get_String(INI_Name(), entry, nullptr, buf, sizeof(buf));
 
-    port::Tokenizer tokens(buf, ",\r\n");
+    base::Tokenizer tokens(buf, ",\r\n");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Unit house.
     if (inhouse != HOUSE_NONE) {
@@ -4716,14 +4716,14 @@ void UnitClass::Read_INI(CCINIClass& ini) {
           /*
           **	Read the raw data.
           */
-          const int strength = tech::ParseIntegerOr<int>(tokens.Next(), 0);
+          const int strength = base::ParseIntegerOr<int>(tokens.Next(), 0);
 
-          const CELL cell = tech::ParseIntegerOr<CELL>(tokens.Next(), 0);
+          const CELL cell = base::ParseIntegerOr<CELL>(tokens.Next(), 0);
 
           const COORDINATE coord = Cell_Coord(cell);
 
           const auto dir =
-              static_cast<DirType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+              static_cast<DirType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
           const MissionType mission =
               Mission_From_Name(tokens.Next());
 

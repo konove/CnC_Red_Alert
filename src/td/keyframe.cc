@@ -83,8 +83,8 @@ bool FrameEntry(std::span<const std::byte> data, uint16_t frame,
   if (entry > data.size() || data.size() - entry < 8) {
     return false;
   }
-  offset = port::ReadUnaligned<uint32_t>(data.subspan(entry));
-  reference = port::ReadUnaligned<uint32_t>(data.subspan(entry + 4));
+  offset = base::ReadUnaligned<uint32_t>(data.subspan(entry));
+  reference = base::ReadUnaligned<uint32_t>(data.subspan(entry + 4));
   return true;
 }
 }  // namespace

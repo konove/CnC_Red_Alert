@@ -6,18 +6,18 @@
 // the srand/rand pairs that used the C library generator only for this.
 //
 // Example:
-//   Seed = port::RandomSeed();
+//   Seed = platform::RandomSeed();
 //   Scen.sync_rng_.set_seed(static_cast<uint32_t>(Seed));
 
 #ifndef CNC_RED_ALERT_ENGINE_PLATFORM_RANDOM_SEED_H_
 #define CNC_RED_ALERT_ENGINE_PLATFORM_RANDOM_SEED_H_
 
-namespace port {
+namespace platform {
 
 // Returns a non-negative seed from std::random_device. Non-negative keeps the
 // range rand() had, since seeds travel in packets and INI files as int.
 [[nodiscard]] int RandomSeed();
 
-}  // namespace port
+}  // namespace platform
 
 #endif  // CNC_RED_ALERT_ENGINE_PLATFORM_RANDOM_SEED_H_

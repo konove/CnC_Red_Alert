@@ -3296,7 +3296,7 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
     /*
     **	1st token: house name.
     */
-    port::Tokenizer tokens(buf, ",\n\r");
+    base::Tokenizer tokens(buf, ",\n\r");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Infantry house.
     if (inhouse != HOUSE_NONE) {
@@ -3313,19 +3313,19 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           /*
           **	3rd token: strength.
           */
-          const int strength = tech::ParseIntegerOr<int>(tokens.Next(), 0);
+          const int strength = base::ParseIntegerOr<int>(tokens.Next(), 0);
 
           /*
           **	4th token: cell #.
           */
-          const CELL cell = tech::ParseIntegerOr<CELL>(tokens.Next(), 0);
+          const CELL cell = base::ParseIntegerOr<CELL>(tokens.Next(), 0);
           COORDINATE coord = Cell_Coord(cell);
 
           /*
           **	5th token: cell sub-location.
           */
           const int sub =
-              std::clamp(tech::ParseIntegerOr<int>(tokens.Next(","), 0), 0, 4);
+              std::clamp(base::ParseIntegerOr<int>(tokens.Next(","), 0), 0, 4);
           coord =
               Coord_Add(Coord_Whole(coord), base::At(StoppingCoordAbs, sub));
 
@@ -3337,7 +3337,7 @@ void InfantryClass::Read_INI(CCINIClass& ini) {
           char* validation = tokens.Next();
           if (validation) {
             dir =
-                static_cast<DirType>(tech::ParseIntegerOr<int>(validation, 0));
+                static_cast<DirType>(base::ParseIntegerOr<int>(validation, 0));
             validation = tokens.Next();
             if (validation) {
               tp = TriggerTypeClass::From_Name(validation);

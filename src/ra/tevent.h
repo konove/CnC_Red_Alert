@@ -172,7 +172,7 @@ struct TEventClass {
   bool operator()(TDEventClass& td, TEventType event, HousesType house,
                   const ObjectClass* object, bool forced) const;
   // Reads the event fields from the trigger entry `tokens` is parsing.
-  void Read_INI(port::Tokenizer& tokens);
+  void Read_INI(base::Tokenizer& tokens);
   void Build_INI_Entry(std::string& buffer) const;
 };
 

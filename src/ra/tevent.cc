@@ -664,21 +664,21 @@ void TEventClass::Build_INI_Entry(std::string& buffer) const {
  *                                                                                             *
  * HISTORY: * 11/28/1995 JLB : Created. *
  *=============================================================================================*/
-void TEventClass::Read_INI(port::Tokenizer& tokens) {
+void TEventClass::Read_INI(base::Tokenizer& tokens) {
   const char* token = nullptr;
   switch (TheWorld().new_ini_format()) {
     default:
       Event =
-          static_cast<TEventType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
-      Team.Set_Raw(tech::ParseIntegerOr<int>(tokens.Next(), 0));
-      Data.Value = tech::ParseIntegerOr<int>(tokens.Next(), 0);
+          static_cast<TEventType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      Team.Set_Raw(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
       break;
 
     case 1:
       token = tokens.Next();
       Event = TEVENT_NONE;
       if (token) {
-        Event = static_cast<TEventType>(tech::ParseIntegerOr<int>(token, 0));
+        Event = static_cast<TEventType>(base::ParseIntegerOr<int>(token, 0));
       }
 
       token = tokens.Next();
@@ -687,22 +687,22 @@ void TEventClass::Read_INI(port::Tokenizer& tokens) {
       if (token) {
         if (Event_Needs(Event) == NEED_TEAM) {
           Team = TheObjectHeaps().team_type().Raw_Ptr(
-              tech::ParseIntegerOr<int>(token, 0));
+              base::ParseIntegerOr<int>(token, 0));
         } else {
-          Data.Value = tech::ParseIntegerOr<int>(token, 0);
+          Data.Value = base::ParseIntegerOr<int>(token, 0);
         }
       }
       break;
 
     case 0:
       Event =
-          static_cast<TEventType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+          static_cast<TEventType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
       tokens.Next();  // Old-format field, unused.
       tokens.Next();  // Old-format field, unused.
 
       Team = TeamTypeClass::From_Name(tokens.Next());
-      Data.Value = tech::ParseIntegerOr<int>(tokens.Next(), 0);
+      Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
       tokens.Next();  // Old-format field, unused.
       break;
   }

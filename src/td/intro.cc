@@ -315,8 +315,8 @@ void Choose_Side() {
     TheGameState().preserve_movie_screen() = true;
   }
   TheAudio().Stop(statichandle);
-  delete[] port::CharBytes(std::span(staticaud)).data();
-  delete[] port::CharBytes(std::span(speechg)).data();
-  delete[] port::CharBytes(std::span(speechn)).data();
+  delete[] base::CharBytes(std::span(staticaud)).data();
+  delete[] base::CharBytes(std::span(speechg)).data();
+  delete[] base::CharBytes(std::span(speechn)).data();
 }
 #endif

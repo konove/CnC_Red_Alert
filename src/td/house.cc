@@ -382,7 +382,7 @@ HouseClass::HouseClass(HousesType house)
   NewActiveAScan = 0;
   ActiveAScan = 0;
 
-  port::SafeCopy(Name, "Computer");  // Default computer name.
+  base::SafeCopy(Name, "Computer");  // Default computer name.
   JustBuilt = STRUCT_NONE;
   AlertTime = 0;
   IsAlerted = false;
@@ -1746,7 +1746,7 @@ void HouseClass::Read_INI(char* buffer) {
           std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
           buffer);
       if (!std::string_view(buf).empty()) {
-        port::Tokenizer tokens(buf, ", \t");
+        base::Tokenizer tokens(buf, ", \t");
         const char* tok = tokens.Next();
         while (tok) {
           const HousesType h = HouseTypeClass::From_Name(tok);
@@ -1802,9 +1802,9 @@ void HouseClass::Write_INI(std::span<char> buffer) {
       for (HousesType house = HOUSE_FIRST; house < HOUSE_COUNT; house++) {
         if (p->Is_Ally(house)) {
           if (!first) {
-            port::SafeAppend(sbuffer, ",");
+            base::SafeAppend(sbuffer, ",");
           }
-          port::SafeAppend(sbuffer, As_Pointer(house)->Class->IniName);
+          base::SafeAppend(sbuffer, As_Pointer(house)->Class->IniName);
           first = false;
         }
       }
@@ -3989,7 +3989,7 @@ void HouseClass::MPlayer_Defeated() {
         Initialize this score entry
         ...............................................................*/
         base::At(TheSession().scores(), base::At(score_index, i)).Wins = 0;
-        port::SafeCopy(
+        base::SafeCopy(
             base::At(TheSession().scores(), base::At(score_index, i)).Name,
             base::At(TheSession().player_names(), i));
         for (int& Kill :

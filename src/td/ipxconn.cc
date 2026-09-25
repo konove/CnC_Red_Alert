@@ -124,7 +124,7 @@ IPXConnClass::IPXConnClass(int numsend, int numreceive, int maxlen,
     Address = *address;
   }
   ID = id;
-  port::SafeCopy(Name, name);
+  base::SafeCopy(Name, name);
 
   if (!TheNetwork().winsock().Get_Connected()) {
     /*------------------------------------------------------------------------

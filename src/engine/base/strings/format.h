@@ -10,7 +10,7 @@
 // Example:
 //   // "%s is defeated" from the string table
 //   const std::string line =
-//       port::FormatRuntime(Text_String(TXT_DEFEATED), name);
+//       base::FormatRuntime(Text_String(TXT_DEFEATED), name);
 
 #ifndef CNC_RED_ALERT_ENGINE_BASE_STRINGS_FORMAT_H_
 #define CNC_RED_ALERT_ENGINE_BASE_STRINGS_FORMAT_H_
@@ -23,7 +23,7 @@
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 
-namespace port {
+namespace base {
 
 // Packs `args` into the span form the out-of-line printers take. The array
 // only points at `args`, so it must not outlive them.
@@ -48,6 +48,6 @@ std::string FormatRuntime(std::string_view format, const Args&... args) {
   return FormatRuntime(format, absl::MakeConstSpan(packed));
 }
 
-}  // namespace port
+}  // namespace base
 
 #endif  // CNC_RED_ALERT_ENGINE_BASE_STRINGS_FORMAT_H_

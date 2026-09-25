@@ -16,7 +16,7 @@ base::ssize UncompressBlock(const std::span<const std::byte> block,
   if (block.size() < sizeof(CompressedBlockHeader)) {
     return 0;
   }
-  const auto header = port::ReadUnaligned<CompressedBlockHeader>(block);
+  const auto header = base::ReadUnaligned<CompressedBlockHeader>(block);
   if (header.skip_bytes < 0) {
     return 0;
   }

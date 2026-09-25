@@ -55,7 +55,7 @@ int AbstractClass::Distance(const TARGET target) const {
 // Initializes the display name and INI identifier for this object type.
 AbstractTypeClass::AbstractTypeClass(const int name, const char* ini) noexcept
     : Name(name) {
-  port::SafeCopy(IniName, ini);
+  base::SafeCopy(IniName, ini);
   base::At(IniName, sizeof(IniName) - 1) = '\0';
 }
 

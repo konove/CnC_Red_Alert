@@ -49,7 +49,7 @@ Packet MakePacket(ConnectionClass::ConnectionEnum code, uint32_t id,
   header.Code = static_cast<unsigned char>(code);
   header.PacketID = id;
   Packet packet{};
-  port::WriteUnaligned(base::ObjectBytes(packet), header);
+  base::WriteUnaligned(base::ObjectBytes(packet), header);
   packet.back() = payload;
   return packet;
 }

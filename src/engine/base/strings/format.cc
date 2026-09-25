@@ -7,7 +7,7 @@
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 
-namespace port {
+namespace base {
 
 std::string FormatRuntime(const std::string_view format,
                           const absl::Span<const absl::FormatArg> args) {
@@ -23,4 +23,4 @@ std::string FormatRuntime(const std::string_view format,
   return out;
 }
 
-}  // namespace port
+}  // namespace base

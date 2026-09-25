@@ -697,7 +697,7 @@ bool TeamTypeClass::Edit() {
   EditClass name_edt(kButtonName, name_buf, sizeof(name_buf),
                      TPF_EFNT | TPF_NOSHADOW, kDNameX, kDNameY, kEdWidth, 9,
                      EditClass::kAlphanumeric);
-  port::SafeCopy(name_buf, IniName);
+  base::SafeCopy(name_buf, IniName);
   commands = &name_edt;
 
   /*
@@ -1132,7 +1132,7 @@ bool TeamTypeClass::Edit() {
               break;
 
             case NEED_QUARRY:
-              port::SafeCopy(
+              base::SafeCopy(
                   qlist.Get_Text_Buffer(),
                   QuarryName.at(missionlist2.Current_Item()->Data.Quarry));
               break;
@@ -1195,7 +1195,7 @@ bool TeamTypeClass::Edit() {
               break;
 
             case NEED_NUMBER:
-              tm->Data.Value = tech::ParseIntegerOr<int>(arg_edt.Get_Text(), 0);
+              tm->Data.Value = base::ParseIntegerOr<int>(arg_edt.Get_Text(), 0);
               break;
 
             case NEED_HEX_NUMBER:
@@ -1261,7 +1261,7 @@ bool TeamTypeClass::Edit() {
               break;
 
             case NEED_NUMBER:
-              tm->Data.Value = tech::ParseIntegerOr<int>(arg_edt.Get_Text(), 0);
+              tm->Data.Value = base::ParseIntegerOr<int>(arg_edt.Get_Text(), 0);
               break;
 
             case NEED_HEX_NUMBER:
@@ -1328,7 +1328,7 @@ bool TeamTypeClass::Edit() {
               break;
 
             case NEED_NUMBER:
-              tm->Data.Value = tech::ParseIntegerOr<int>(arg_edt.Get_Text(), 0);
+              tm->Data.Value = base::ParseIntegerOr<int>(arg_edt.Get_Text(), 0);
               break;
 
             case NEED_HEX_NUMBER:
@@ -1412,9 +1412,9 @@ bool TeamTypeClass::Edit() {
       case ButtonKey(kButtonOk):
         strtrim(name_edt.Get_Text_Buffer());
         if (!std::string_view(name_edt.Get_Text()).empty()) {
-          port::SafeCopy(IniName, name_edt.Get_Text());
+          base::SafeCopy(IniName, name_edt.Get_Text());
         } else {
-          port::SafeCopy(IniName, "----");
+          base::SafeCopy(IniName, "----");
         }
 
         IsRoundAbout = roundbtn.IsOn;
@@ -1423,11 +1423,11 @@ bool TeamTypeClass::Edit() {
         IsPrebuilt = prebuildbtn.IsOn;
         IsReinforcable = reinforcebtn.IsOn;
 
-        RecruitPriority = tech::ParseIntegerOr<int>(recr_edt.Get_Text(), 0);
+        RecruitPriority = base::ParseIntegerOr<int>(recr_edt.Get_Text(), 0);
         InitNum = static_cast<unsigned char>(
-            tech::ParseIntegerOr<int>(initnum_edt.Get_Text(), 0));
+            base::ParseIntegerOr<int>(initnum_edt.Get_Text(), 0));
         MaxAllowed = static_cast<unsigned char>(
-            tech::ParseIntegerOr<int>(maxnum_edt.Get_Text(), 0));
+            base::ParseIntegerOr<int>(maxnum_edt.Get_Text(), 0));
         House = HousesType(housebtn.Current_Index());
         Trigger = nullptr;
         if (triggerbtn.Current_Index() > 0) {
@@ -1544,19 +1544,19 @@ const char* TeamTypeClass::Member_Description() const {
     for (int index = 0; index < ClassCount; index++) {
       char txt[10];
 
-      port::SafeAppend(buffer, base::At(Members, index).Class->IniName);
-      port::SafeAppend(buffer, ":");
+      base::SafeAppend(buffer, base::At(Members, index).Class->IniName);
+      base::SafeAppend(buffer, ":");
 
       absl::SNPrintF(txt, sizeof(txt), "%d", base::At(Members, index).Quantity);
-      port::SafeAppend(buffer, txt);
+      base::SafeAppend(buffer, txt);
 
       if (index < ClassCount - 1) {
-        port::SafeAppend(buffer, ",");
+        base::SafeAppend(buffer, ",");
       }
     }
 
     if (std::string_view(buffer).size() > 25) {
-      port::SafeCopy(std::span(buffer).subspan(25 - 3, 4), "...");
+      base::SafeCopy(std::span(buffer).subspan(25 - 3, 4), "...");
     }
 
     return buffer;
@@ -1634,11 +1634,11 @@ const char* TeamMissionClass::Description(int index) const {
 
     switch (TeamMission_Needs(Mission)) {
       case NEED_MISSION:
-        port::SafeAppend(buffer, MissionClass::Mission_Name(Data.Mission));
+        base::SafeAppend(buffer, MissionClass::Mission_Name(Data.Mission));
         break;
 
       case NEED_FORMATION:
-        port::SafeAppend(buffer, FormationName.at(Data.Formation));
+        base::SafeAppend(buffer, FormationName.at(Data.Formation));
         break;
 
       case NEED_NUMBER:
@@ -1655,7 +1655,7 @@ const char* TeamMissionClass::Description(int index) const {
         break;
 
       case NEED_QUARRY:
-        port::SafeAppend(buffer, QuarryName.at(Data.Quarry));
+        base::SafeAppend(buffer, QuarryName.at(Data.Quarry));
         break;
 
       case NEED_WAYPOINT:
@@ -1791,13 +1791,13 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
   */
   Set_Name(name);
 
-  port::Tokenizer tokens(entry, ",");
-  House = static_cast<HousesType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+  base::Tokenizer tokens(entry, ",");
+  House = static_cast<HousesType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
   uint32_t code = 0;
   switch (TheWorld().new_ini_format()) {
     default:
-      code = tech::ParseIntegerOr<uint32_t>(tokens.Next(), 0);
+      code = base::ParseIntegerOr<uint32_t>(tokens.Next(), 0);
       IsRoundAbout = (code & 0x0001) != 0;
       IsSuicide = (code & 0x0002) != 0;
       IsAutocreate = (code & 0x0004) != 0;
@@ -1807,24 +1807,24 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
 
     case 0:
     case 1:
-      IsRoundAbout = tech::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-      IsSuicide = tech::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-      IsAutocreate = tech::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-      IsPrebuilt = tech::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
-      IsReinforcable = tech::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+      IsRoundAbout = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+      IsSuicide = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+      IsAutocreate = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+      IsPrebuilt = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
+      IsReinforcable = base::ParseIntegerOr<int>(tokens.Next(), 0) != 0;
       break;
   }
 
-  RecruitPriority = tech::ParseIntegerOr<int>(tokens.Next(), 0);
+  RecruitPriority = base::ParseIntegerOr<int>(tokens.Next(), 0);
   InitNum =
-      static_cast<unsigned char>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+      static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
   MaxAllowed =
-      static_cast<unsigned char>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
-  Origin = tech::ParseIntegerOr<int>(tokens.Next(), 0);
+      static_cast<unsigned char>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+  Origin = base::ParseIntegerOr<int>(tokens.Next(), 0);
 
   switch (TheWorld().new_ini_format()) {
     default:
-      Trigger.Set_Raw(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+      Trigger.Set_Raw(base::ParseIntegerOr<int>(tokens.Next(), 0));
       break;
 
     case 0:
@@ -1836,7 +1836,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
   /*
   **	Fetch the team member types and quantity values.
   */
-  ClassCount = tech::ParseIntegerOr<int>(tokens.Next(), -1);
+  ClassCount = base::ParseIntegerOr<int>(tokens.Next(), -1);
   if (ClassCount < 0 || ClassCount > kMaxTeamClasscount) {
     ClassCount = 0;
     MissionCount = 0;
@@ -1889,7 +1889,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
     */
     if (otype) {
       base::At(Members, index).Class = otype;
-      base::At(Members, index).Quantity = tech::ParseIntegerOr<int>(p2, 0);
+      base::At(Members, index).Quantity = base::ParseIntegerOr<int>(p2, 0);
     } else {
       ClassCount--;
       if (index == 0) {
@@ -1902,7 +1902,7 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
   /*
   **	Fetch the missions assigned to this team type.
   */
-  MissionCount = tech::ParseIntegerOr<int>(tokens.Next(), -1);
+  MissionCount = base::ParseIntegerOr<int>(tokens.Next(), -1);
   if (MissionCount < 0 || MissionCount > kMaxTeamMissions) {
     ClassCount = 0;
     MissionCount = 0;
@@ -1910,16 +1910,16 @@ void TeamTypeClass::Fill_In(const char* name, char* entry) {
   }
   for (int index = 0; index < MissionCount; index++) {
     base::At(MissionList, index).Mission = static_cast<TeamMissionType>(
-        tech::ParseIntegerOr<int>(tokens.Next(",:"), 0));
+        base::ParseIntegerOr<int>(tokens.Next(",:"), 0));
     base::At(MissionList, index).Data.Value =
-        tech::ParseIntegerOr<int>(tokens.Next(",:"), 0);
+        base::ParseIntegerOr<int>(tokens.Next(",:"), 0);
   }
 
   if (TheWorld().new_ini_format() < 2) {
     /*
     **	Fetch the trigger ID.
     */
-    Trigger.Set_Raw(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+    Trigger.Set_Raw(base::ParseIntegerOr<int>(tokens.Next(), 0));
   }
 }
 

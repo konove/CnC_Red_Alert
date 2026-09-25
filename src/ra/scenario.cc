@@ -219,9 +219,9 @@ ScenarioClass::ScenarioClass()
   for (int index = 0; index < std::ssize(Waypoint); index++) {
     base::At(Waypoint, index) = -1;
   }
-  port::SafeCopy(Description, "");
-  port::SafeCopy(ScenarioName, "");
-  port::SafeCopy(BriefingText, "");
+  base::SafeCopy(Description, "");
+  base::SafeCopy(ScenarioName, "");
+  base::SafeCopy(BriefingText, "");
   base::FillBytes(base::ObjectBytes(GlobalFlags), '\0', sizeof(GlobalFlags));
   base::FillBytes(base::ObjectBytes(Views), '\0', sizeof(Views));
 }
@@ -1680,7 +1680,7 @@ void ScenarioClass::Set_Scenario_Name(int scenario, ScenarioPlayerType player,
   char c_player = 0;  // character representing player type
   char c_dir = 0;     // character representing direction type
   char c_var = 0;     // character representing variation type
-  char fname[port::kMaxFname + port::kMaxExt];
+  char fname[platform::kMaxFname + platform::kMaxExt];
 
   /*
   ** Set the player-type value.
@@ -1821,13 +1821,13 @@ void ScenarioClass::AdvanceToNextScenario(const ScenarioVarType variant) {
 }
 
 void ScenarioClass::SetScenarioVariant(const ScenarioVarType variant) {
-  port::SafeCopy(ScenarioName,
+  base::SafeCopy(ScenarioName,
                  MissionWithVariant(ScenarioName, VariantLetter(variant)));
 }
 
 void ScenarioClass::Set_Scenario_Name(const char* name) {
   if (name != nullptr) {
-    port::SafeCopy(ScenarioName, name);
+    base::SafeCopy(ScenarioName, name);
     base::At(ScenarioName, std::ssize(ScenarioName) - 1) = '\0';
 
     char buf[3];
@@ -1851,7 +1851,7 @@ void ScenarioClass::Set_Scenario_Name(const char* name) {
 
       Scenario = (36 * first) + second;
     } else {
-      Scenario = tech::ParseIntegerOr<int>(buf, 0);
+      Scenario = base::ParseIntegerOr<int>(buf, 0);
     }
   }
 }
@@ -1874,8 +1874,7 @@ void ScenarioClass::Set_Scenario_Name(const char* name) {
  * HISTORY: * 10/07/1992 JLB : Created.  V.Grippi added CS check 2/5/97 *
  *=============================================================================================*/
 bool Read_Scenario_INI(const char* fname, bool /*unused*/) {
-  //	char fname[port::kMaxFname+port::kMaxExt];			// full
-  //INI
+  //	char fname[platform::kMaxFname+platform::kMaxExt]; // full INI
   // filename
 
   TheWorld().scenario_init()++;
@@ -2452,9 +2451,9 @@ void Assign_Houses() {
     //.....................................................................
     house = static_cast<HousesType>(i + static_cast<int>(HOUSE_MULTI1));
     housep = HouseClass::As_Pointer(house);
-    port::SafeCopy(housep->IniName, TheSession().Players.at(index)->Name);
+    base::SafeCopy(housep->IniName, TheSession().Players.at(index)->Name);
     // A second copy that stays put for the whole game -- see InitialName.
-    port::SafeCopy(housep->InitialName, TheSession().Players.at(index)->Name);
+    base::SafeCopy(housep->InitialName, TheSession().Players.at(index)->Name);
     housep->IsHuman = true;
     housep->Init_Data(TheSession().Players.at(index)->Player.Color,
                       TheSession().Players.at(index)->Player.House,
@@ -2510,7 +2509,7 @@ void Assign_Houses() {
     housep->IsHuman = false;
     housep->IsStarted = true;
 
-    port::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
+    base::SafeCopy(housep->IniName, Text_String(TXT_COMPUTER));
 
     if (TheSession().Type != GAME_NORMAL) {
       housep->IQ = TheRules().MaxIQ;
@@ -3222,12 +3221,12 @@ void Disect_Scenario_Name(const char* name_data, int& scenario,
   **	Fetch the scenario number.
   */
   char buf[3];
-  port::SafeCopy(buf, name.substr(3, 2));
+  base::SafeCopy(buf, name.substr(3, 2));
   base::At(buf, 2) = '\0';
   char first = base::At(buf, 0);
   char second = base::At(buf, 1);
   if (first <= '9' && second <= '9') {
-    scenario = tech::ParseIntegerOr<int>(buf, 0);
+    scenario = base::ParseIntegerOr<int>(buf, 0);
   } else {
     if (first <= '9') {
       first -= '0';

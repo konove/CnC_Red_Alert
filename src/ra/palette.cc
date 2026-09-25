@@ -117,11 +117,11 @@ int PaletteClass::Closest_Color(const RGBClass& col) const {
 }
 
 PaletteClass::operator unsigned char*() noexcept {
-  return port::BytesOf(data_);
+  return base::BytesOf(data_);
 }
 
 PaletteClass::operator const unsigned char*() const {
-  return port::BytesOf(data_);
+  return base::BytesOf(data_);
 }
 
 void Set_Palette(std::span<const unsigned char> palette) {

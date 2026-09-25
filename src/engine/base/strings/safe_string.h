@@ -6,7 +6,7 @@
 
 #include "absl/base/attributes.h"
 
-namespace port {
+namespace base {
 
 // Copies a terminated source into dest, truncating and zero-padding the rest.
 // Empty destinations are ignored; a null source sets the first byte to NUL.
@@ -37,6 +37,6 @@ std::span<char> MutableCString(char* text ABSL_ATTRIBUTE_LIFETIME_BOUND);
 // If `src` is null, returns nullptr.
 char* CloneString(const char* src);
 
-}  // namespace port
+}  // namespace base
 
 #endif  // CNC_RED_ALERT_ENGINE_BASE_STRINGS_SAFE_STRING_H_

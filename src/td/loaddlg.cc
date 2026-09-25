@@ -486,7 +486,7 @@ bool LoadOptionsClass::Process() {
           ** it is, set the edit buffer to empty.
           */
           if (game_idx != 0) {
-            port::SafeCopy(game_descr, listbtn.Get_Item(game_idx));
+            base::SafeCopy(game_descr, listbtn.Get_Item(game_idx));
           } else {
             base::At(game_descr, 0) = 0;
           }
@@ -574,7 +574,7 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
   */
   if (Style == SAVE) {
     fdata = new FileEntryClass;
-    port::SafeCopy(fdata->Descr, Text_String(TXT_EMPTY_SLOT));
+    base::SafeCopy(fdata->Descr, Text_String(TXT_EMPTY_SLOT));
     fdata->DateTime = 0xffffffff;  // will always be first
     Files.Add(fdata);
   }
@@ -597,9 +597,9 @@ void LoadOptionsClass::Fill_List(ListClass* list) {
 
     base::At(fdata->Descr, 0) = '\0';
     if (!ok) {
-      port::SafeCopy(fdata->Descr, Text_String(TXT_OLD_GAME));
+      base::SafeCopy(fdata->Descr, Text_String(TXT_OLD_GAME));
     }
-    port::SafeAppend(fdata->Descr, descr);
+    base::SafeAppend(fdata->Descr, descr);
     fdata->Valid = ok;
     fdata->Scenario = scenario;
     fdata->House = house;

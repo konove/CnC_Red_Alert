@@ -172,7 +172,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
       Show_Mouse();
     }
     //	Be nice to other apps.
-    port::SleepMs(50);
+    platform::SleepMs(50);
 
     /*
     **	Get user input.

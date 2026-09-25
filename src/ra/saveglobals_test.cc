@@ -118,7 +118,7 @@ TEST(SaveGlobalsTest, TruncatedScoreFails) {
 
 TEST(SaveGlobalsTest, PlayerRecordPreservesNameAddressAndPlayerFields) {
   NodeNameType player{};
-  port::SafeCopy(player.Name, "Player");
+  base::SafeCopy(player.Name, "Player");
   NetNumType network = {1, 2, 3, 4};
   NetNodeType node = {5, 6, 7, 8, 9, 10};
   player.Address.Set_Address(network, node);

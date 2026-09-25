@@ -110,7 +110,7 @@ void AudioMixer::RefillConverter(Channel& channel) const {
       return;
     }
     const auto block_header =
-        port::ReadUnaligned<AudBlockHeader>(channel.remaining_input);
+        base::ReadUnaligned<AudBlockHeader>(channel.remaining_input);
     channel.remaining_input =
         channel.remaining_input.subspan(sizeof(block_header));
     if (block_header.compressed_bytes > channel.remaining_input.size() ||
@@ -207,13 +207,13 @@ void AudioMixer::Mix(const std::span<std::byte> output) {
     const int sample_count = mix_bytes / int{sizeof(int16_t)};
     for (int s = 0; s < sample_count; s++) {
       const auto slot = output.subspan(base::ToSize(s) * sizeof(int16_t));
-      const int mixed_so_far = port::ReadUnaligned<int16_t>(slot);
+      const int mixed_so_far = base::ReadUnaligned<int16_t>(slot);
       // Floor division of a signed sample product keeps the mix rounding.
       const int product =
           base::At(std::span(mix_buffer_), s) * channel.amplitude;
       const int scaled = product >> 15;  // NOLINT(bugprone-signed-bitwise)
       // Loud sounds on top of each other clip; wrapping would crackle.
-      port::WriteUnaligned(slot, static_cast<int16_t>(std::clamp(
+      base::WriteUnaligned(slot, static_cast<int16_t>(std::clamp(
                                      mixed_so_far + scaled, -32768, 32767)));
     }
   }
@@ -433,7 +433,7 @@ int AudioMixer::Play(std::span<const std::byte> sample, int priority,
   if (sample.size() < sizeof(AudHeader)) {
     return -1;
   }
-  const auto header = port::ReadUnaligned<AudHeader>(sample);
+  const auto header = base::ReadUnaligned<AudHeader>(sample);
 
   if (!IsSupported(header, /*allow_westwood=*/true)) {
     LogUnsupported(header);

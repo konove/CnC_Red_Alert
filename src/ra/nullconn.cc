@@ -183,7 +183,7 @@ int NullModemConnClass::Send(std::span<const std::byte> buf, int buflen,
   /*------------------------------------------------------------------------
   Package the data into the Send Buffer
   ------------------------------------------------------------------------*/
-  auto* header = port::AlignedObject<SerialHeaderType>(SendBuf.data());
+  auto* header = base::AlignedObject<SerialHeaderType>(SendBuf.data());
   header->MagicNumber = PACKET_SERIAL_START;
   header->Length = static_cast<uint16_t>(buflen);
   header->MagicNumber2 = PACKET_SERIAL_VERIFY;
@@ -193,7 +193,7 @@ int NullModemConnClass::Send(std::span<const std::byte> buf, int buflen,
       std::as_writable_bytes(std::span(SendBuf)).subspan(base::ToSize(sendlen)),
       buf, base::ToSize(buflen));
   sendlen += buflen;
-  port::WriteUnaligned(
+  base::WriteUnaligned(
       std::as_writable_bytes(std::span(SendBuf)).subspan(base::ToSize(sendlen)),
       Compute_CRC(buf, buflen));
   sendlen += static_cast<int>(sizeof(int));

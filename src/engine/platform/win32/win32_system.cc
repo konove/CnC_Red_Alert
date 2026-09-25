@@ -47,7 +47,7 @@ HANDLE FindFirstFile(LPCSTR file_name, WIN32_FIND_DATA* find_data) {
   find_data->nFileSizeHigh = static_cast<DWORD>(size >> 32U);
 
   const std::string name = path.filename().string();
-  port::SafeCopy(find_data->cFileName, name.c_str());
+  base::SafeCopy(find_data->cFileName, name.c_str());
 
   return &kFoundHandleStorage;
 }
@@ -116,7 +116,7 @@ DWORD GetCurrentDirectory(std::span<char> buffer) {
   if (failed || path.size() + 1 > buffer.size()) {
     return 0;
   }
-  port::SafeCopy(buffer.first(path.size() + 1), path.c_str());
+  base::SafeCopy(buffer.first(path.size() + 1), path.c_str());
   return static_cast<DWORD>(path.size());
 }
 

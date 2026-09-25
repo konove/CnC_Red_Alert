@@ -103,16 +103,16 @@ template <int N, int M>
 bool ParseHostAndPort(const unsigned char (&conndata)[N], char (&host)[M],
                       int& port) {
   char buffer[N];
-  port::SafeCopy(buffer, WolText(conndata));
-  port::Tokenizer tokens(buffer, ";");
+  base::SafeCopy(buffer, WolText(conndata));
+  base::Tokenizer tokens(buffer, ";");
   tokens.Next();  // label, unused
   const char* const host_text = tokens.Next();
   const char* const port_text = tokens.Next();
   if (host_text == nullptr || port_text == nullptr) {
     return false;
   }
-  port::SafeCopy(host, host_text);
-  port = tech::ParseIntegerOr<int>(port_text, 0);
+  base::SafeCopy(host, host_text);
+  port = base::ParseIntegerOr<int>(port_text, 0);
   return true;
 }
 
@@ -268,7 +268,7 @@ STDMETHODIMP RAChatEventSink::OnPaged(HRESULT /*res*/, User* pUser,
         TPF_6PT_GRAD | TPF_USE_GRAD_PAL | TPF_FULLSHADOW,
         TheRules().MessageDelay * kTicksPerMinute);
     if (!pOwner->bFreezeExternalPager) {
-      port::SafeCopy(pOwner->szExternalPager, WolText(pUser->name));
+      base::SafeCopy(pOwner->szExternalPager, WolText(pUser->name));
     }
     TheMap().Flag_To_Redraw(true);
   }
@@ -354,7 +354,7 @@ STDMETHODIMP RAChatEventSink::OnConnection(HRESULT hRes, LPCSTR motd) {
 
     char szError[150];
     ChatDefAsText(szError, sizeof(szError), hRes);
-    port::SafeAppend(szError, " (Connect Error)");
+    base::SafeAppend(szError, " (Connect Error)");
     //		debugprint( szError );
   }
 
@@ -637,7 +637,7 @@ STDMETHODIMP RAChatEventSink::OnPublicMessage(HRESULT /*res*/,
     if (std::string_view(szMessage).starts_with("#ajw")) {
       if (std::string_view(szMessage).size() > 4) {
         const int i =
-            tech::ParseIntegerOr<int>(std::string_view(szMessage).substr(4), 0);
+            base::ParseIntegerOr<int>(std::string_view(szMessage).substr(4), 0);
         if (i >= static_cast<int>(VOX_ACCOMPLISHED) &&
             i <= static_cast<int>(VOX_LOAD1) && pOwner->bEggSounds) {
           Speak(static_cast<VoxType>(i));
@@ -690,7 +690,7 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
     if (!bSpecialMessage(szMessage)) {
       if (std::string_view(szMessage).starts_with("#ajw")) {
         if (std::string_view(szMessage).size() > 4) {
-          const int i = tech::ParseIntegerOr<int>(
+          const int i = base::ParseIntegerOr<int>(
               std::string_view(szMessage).substr(4), 0);
           if (i >= static_cast<int>(VOX_ACCOMPLISHED) &&
               i <= static_cast<int>(VOX_LOAD1) && pOwner->bEggSounds) {
@@ -705,7 +705,7 @@ STDMETHODIMP RAChatEventSink::OnPrivateMessage(HRESULT /*res*/,
       }
     } else {
       char szOut[kMessageMax];
-      port::SafeCopy(szOut, std::string_view(szMessage).substr(8));
+      base::SafeCopy(szOut, std::string_view(szMessage).substr(8));
       pOwner->pChat->RequestPublicMessage(szOut);
       char szPrint[kMessageMax];
       absl::SNPrintF(szPrint, sizeof(szPrint), "%s: %s", pOwner->szMyName,
@@ -726,7 +726,7 @@ bool RAChatEventSink::bSpecialMessage(const char* szMessage) {
   }
   const UtcDate today = TodayUtc();
   const int iCode =
-      tech::ParseIntegerOr<int>(std::string_view(szMessage).substr(4, 4), 0);
+      base::ParseIntegerOr<int>(std::string_view(szMessage).substr(4, 4), 0);
   // The code mixes the date fields as bit patterns.
   const uint32_t expected = (static_cast<uint32_t>(today.month * 99) ^
                              static_cast<uint32_t>(today.day * 33)) ^
@@ -1012,14 +1012,14 @@ bool RAChatEventSink::DownloadUpdates(Update* pUpdateList, int iUpdates) {
   Update* pUpdate = pUpdateList;
   int iUpdateCurrent = 0;
   //	Save current directory.
-  char szCurDirSave[port::kMaxPath];
+  char szCurDirSave[platform::kMaxPath];
   ::GetCurrentDirectory(szCurDirSave);
   while (pUpdate) {
     ++iUpdateCurrent;
     char szTitle[120];
     Format_Runtime_Text(szTitle, sizeof(szTitle), TXT_WOL_DOWNLOADING,
                         iUpdateCurrent, iUpdates);
-    char fullpath[port::kMaxPath];
+    char fullpath[platform::kMaxPath];
     absl::SNPrintF(fullpath, sizeof(fullpath), "%s\\%s",
                    WolText(pUpdate->patchpath), WolText(pUpdate->patchfile));
     //	Downloading in WOLAPI is in a state of disarray somewhat.
@@ -1307,7 +1307,7 @@ STDMETHODIMP RAChatEventSink::OnPrivateGameOptions(HRESULT /*res*/, User* pUser,
   //	DebugChatDef( hRes );
 
   char szRequestCopy[600];
-  port::SafeCopy(szRequestCopy, szRequest);
+  base::SafeCopy(szRequestCopy, szRequest);
 
   if (pOwner->pGSupDlg) {
     if (pOwner->pGSupDlg->bHost) {
@@ -1331,7 +1331,7 @@ STDMETHODIMP RAChatEventSink::OnPublicGameOptions(HRESULT /*res*/,
   //	debugprint( ">>> OnPublicGameOptions: %s\n", szInform );
 
   char szInformCopy[600];
-  port::SafeCopy(szInformCopy, szInform);
+  base::SafeCopy(szInformCopy, szInform);
 
   if (pOwner->pGSupDlg) {
     pOwner->pGSupDlg->ProcessInform(szInformCopy);
@@ -2088,11 +2088,11 @@ int iChannelLobbyNumber(const char* szChannelName) {
   //	Returns lobby number of channel, or -1 for "channel is not a lobby".
   if (std::string_view(szChannelName).starts_with(LOB_PREFIX)) {
     char szNum[10];
-    port::SafeCopy(szNum, std::string_view(szChannelName)
+    base::SafeCopy(szNum, std::string_view(szChannelName)
                               .substr(std::string_view(LOB_PREFIX).size()));
     //		debugprint( " ^ iChannelLobbyNumber returning atoi of %s\n",
     // szNum );
-    return tech::ParseIntegerOr<int>(szNum, 0);
+    return base::ParseIntegerOr<int>(szNum, 0);
   }
   return -1;
 }
@@ -2106,7 +2106,7 @@ void InterpretLobbyNumber(std::span<char> szLobbyNameToSet, int iLobby) {
       "The Hive",     "North by Northwest", "Decatur High", "Damnation Alley",
   };
   if (iLobby >= 0 && std::cmp_less(iLobby, std::size(kLobbyNames))) {
-    port::SafeCopy(szLobbyNameToSet, base::At(kLobbyNames, iLobby));
+    base::SafeCopy(szLobbyNameToSet, base::At(kLobbyNames, iLobby));
   } else {
     absl::SNPrintF(szLobbyNameToSet.data(), szLobbyNameToSet.size(),
                    "%ith Division", iLobby);

@@ -6560,7 +6560,7 @@ bool TechnoTypeClass::Read_INI(CCINIClass& ini) {
              xx++) {
           if ((std::string_view(base::At(kNameOverrides, base::ToSize(xx))) ==
                buffer)) {
-            port::SafeCopy(buffer,
+            base::SafeCopy(buffer,
                            base::At(kNameOverrides, base::ToSize(xx + 1)));
             break;
           }

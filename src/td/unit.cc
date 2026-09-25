@@ -3509,7 +3509,7 @@ void UnitClass::Read_INI(char* buffer) {
         INI_Name(), tbuffer, nullptr,
         std::span(buf).first(static_cast<std::size_t>(sizeof(buf) - 1)),
         buffer);
-    port::Tokenizer tokens(buf, ",\r\n");
+    base::Tokenizer tokens(buf, ",\r\n");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next(","));  // Unit house.
     if (inhouse != HOUSE_NONE) {
@@ -3522,11 +3522,11 @@ void UnitClass::Read_INI(char* buffer) {
           /*
           **	Read the raw data.
           */
-          const int strength = tech::ParseIntegerOr<int>(tokens.Next(), 0);
+          const int strength = base::ParseIntegerOr<int>(tokens.Next(), 0);
           const COORDINATE coord =
-              Cell_Coord(tech::ParseIntegerOr<CELL>(tokens.Next(), 0));
+              Cell_Coord(base::ParseIntegerOr<CELL>(tokens.Next(), 0));
           const auto dir =
-              static_cast<DirType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+              static_cast<DirType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
           const MissionType mission = Mission_From_Name(tokens.Next(",\n\r"));
           unit->Trigger = TriggerClass::As_Pointer(tokens.Next());
           if (unit->Trigger) {

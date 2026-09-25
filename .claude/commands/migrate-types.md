@@ -75,7 +75,7 @@ Decide by what the code does with the characters:
 | `char*` returned from a function                                  | `std::string` if it pointed at a static or temporary buffer; `std::string_view` if it points into data that outlives the caller (a string table, MIX data) |
 | `strcmp` / `stricmp` / `strncmp`                                  | `==`, `absl::EqualsIgnoreCase`, `absl::StartsWith`                                                                                                         |
 | `strlen`                                                          | `.size()`                                                                                                                                                  |
-| `strchr` / `strstr` / `strtok`                                    | `.find()`, `absl::StrSplit`, `port::Tokenizer`                                                                                                             |
+| `strchr` / `strstr` / `strtok`                                    | `.find()`, `absl::StrSplit`, `base::Tokenizer`                                                                                                             |
 
 The traps, all of which have happened here:
 

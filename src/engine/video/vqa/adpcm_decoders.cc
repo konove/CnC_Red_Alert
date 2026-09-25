@@ -65,7 +65,7 @@ bool ImaAdpcmDecoder::Decode(const std::span<const uint8_t> source,
       predicted_ = std::clamp(predicted_ + difference, -32768, 32767);
 
       const auto sample = static_cast<int16_t>(predicted_);
-      port::WriteUnaligned(std::as_writable_bytes(output), sample);
+      base::WriteUnaligned(std::as_writable_bytes(output), sample);
       output = output.subspan(sizeof(sample));
     }
   }

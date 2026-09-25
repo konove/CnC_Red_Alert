@@ -23,7 +23,7 @@ uint32_t HashKeyPhrase(const std::string_view phrase) {
   // most 127 characters and stopped at an embedded NUL; keep both limits.
   // SafeCopy() zero-fills the rest of the buffer, as the original's strncpy()
   // did, and an empty phrase's padding reads those zeros.
-  port::SafeCopy(phrase_buffer, phrase);
+  base::SafeCopy(phrase_buffer, phrase);
   const int length =
       static_cast<int>(std::string_view(phrase_buffer.data()).size());
 

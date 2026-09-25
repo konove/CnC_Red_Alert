@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <span>
 
-namespace tech {
+namespace crypto {
 
 // The five 32-bit words SHA-1 accumulates, A first.
 using Sha1State = std::array<uint32_t, 5>;
@@ -27,6 +27,6 @@ void Sha1CompressPortable(Sha1State& state, std::span<const std::byte> blocks);
 [[nodiscard]] bool Sha1HardwareAvailable();
 void Sha1CompressHardware(Sha1State& state, std::span<const std::byte> blocks);
 
-}  // namespace tech
+}  // namespace crypto
 
 #endif  // CNC_RED_ALERT_ENGINE_CRYPTO_SHA1_COMPRESS_H_

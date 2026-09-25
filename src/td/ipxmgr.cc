@@ -1033,7 +1033,7 @@ int IPXManagerClass::Service() {
         continue;
       }
       cur_data_buf = cur_data_buf.first(base::ToSize(packetlen));
-      packet_storage = port::ReadUnaligned<CommHeaderType>(cur_data_buf);
+      packet_storage = base::ReadUnaligned<CommHeaderType>(cur_data_buf);
       if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
         /*..................................................................
         Put the packet in the Global Queue
@@ -1066,7 +1066,7 @@ int IPXManagerClass::Service() {
     }
   } else {
     while (IPX_Get_Outstanding_Buffer95(&base::At(temp_receive_buffer, 0))) {
-      header_storage = port::ReadUnaligned<IPXHeaderType>(
+      header_storage = base::ReadUnaligned<IPXHeaderType>(
           base::ObjectBytes(temp_receive_buffer));
       cur_header_buf = &header_storage;
       cur_data_buf =
@@ -1093,7 +1093,7 @@ int IPXManagerClass::Service() {
         continue;
       }
       cur_data_buf = cur_data_buf.first(base::ToSize(packetlen));
-      packet_storage = port::ReadUnaligned<CommHeaderType>(cur_data_buf);
+      packet_storage = base::ReadUnaligned<CommHeaderType>(cur_data_buf);
 
       if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
         /*..................................................................

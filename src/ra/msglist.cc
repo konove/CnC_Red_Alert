@@ -333,7 +333,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
   if (name) {
     absl::SNPrintF(message, sizeof(message), "%s:%s", name, txt);
   } else {
-    port::SafeCopy(message, txt);
+    base::SafeCopy(message, txt);
   }
 
   //------------------------------------------------------------------------
@@ -356,7 +356,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
       mess_start = 0;
     }
     for (int j = 1; std::cmp_less(j, std::string_view(txt).size()); j++) {
-      port::SafeCopy(base::Suffix(temp, mess_start),
+      base::SafeCopy(base::Suffix(temp, mess_start),
                      std::string_view(txt).substr(0, base::ToSize(j)));
       base::At(temp, mess_start + j) = 0;
       wid = StringPixelWidth(font, temp);
@@ -411,7 +411,7 @@ TextLabelClass* MessageListClass::Add_Message(const char* name, int id,
       base::At(BufferAvail, i) = 0;
       base::FillBytes(base::ObjectBytes(base::At(MessageBuffers, i)), 0,
                       MAX_MESSAGE_LENGTH + 30);
-      port::SafeCopy(base::At(MessageBuffers, i), message);
+      base::SafeCopy(base::At(MessageBuffers, i), message);
       found = 1;
       break;
     }
@@ -625,9 +625,9 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
     const int name_width = StringPixelWidth(font, tlabel->Text) -
                            StringPixelWidth(font, msg.data());
 
-    port::SafeCopy(std::span(concat_test).first(base::ToSize(MaxChars)),
+    base::SafeCopy(std::span(concat_test).first(base::ToSize(MaxChars)),
                    msg.data());
-    port::SafeAppend(std::span(concat_test).first(base::ToSize(MaxChars)), txt);
+    base::SafeAppend(std::span(concat_test).first(base::ToSize(MaxChars)), txt);
     int width = StringPixelWidth(font, concat_test.data()) + name_width;
     min_chars = 10;
 
@@ -639,15 +639,15 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
         break;
       }
 
-      port::SafeCopy(std::span(concat_test).first(base::ToSize(MaxChars)),
+      base::SafeCopy(std::span(concat_test).first(base::ToSize(MaxChars)),
                      msg.data());
-      port::SafeAppend(std::span(concat_test).first(base::ToSize(MaxChars)),
+      base::SafeAppend(std::span(concat_test).first(base::ToSize(MaxChars)),
                        txt);
 
       width = StringPixelWidth(font, concat_test.data()) + name_width;
     }
 
-    port::SafeAppend(msg, txt);
+    base::SafeAppend(msg, txt);
   }
 
   //------------------------------------------------------------------------
@@ -661,7 +661,7 @@ int MessageListClass::Concat_Message(const char* name, int id, const char* txt,
     max_chars = std::max<int>(
         static_cast<int>(std::string_view(msg.data()).size()), min_chars);
     Trim_Message({}, msg, min_chars, max_chars, 0);
-    port::SafeCopy(msg, txt);
+    base::SafeCopy(msg, txt);
   }
 
   //------------------------------------------------------------------------
@@ -779,7 +779,7 @@ TextLabelClass* MessageListClass::Add_Edit(PlayerColorType color,
   //	Initialize the buffer positions; create a new text label object
   //------------------------------------------------------------------------
   base::FillBytes(base::ObjectBytes(EditBuf), 0, sizeof(EditBuf));
-  port::SafeCopy(EditBuf, to);
+  base::SafeCopy(EditBuf, to);
   OverflowBuf[0] = 0;
   EditCurPos = EditInitPos = static_cast<int>(std::string_view(to).size());
   EditLabel = new TextLabelClass(

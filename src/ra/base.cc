@@ -354,13 +354,13 @@ void BaseClass::Read_INI(CCINIClass& ini) {
     /*
     ** Set the node's building type
     */
-    port::Tokenizer tokens(buf, ",");
+    base::Tokenizer tokens(buf, ",");
     node.Type = BuildingTypeClass::From_Name(tokens.Next());
 
     /*
     ** Read & set the node's coordinate
     */
-    node.Cell = tech::ParseIntegerOr<CELL>(tokens.Next(), 0);
+    node.Cell = base::ParseIntegerOr<CELL>(tokens.Next(), 0);
 
     /*
     ** Add this node to the Base's list

@@ -308,21 +308,21 @@ void TActionClass::Build_INI_Entry(std::string& buffer) const {
  *                                                                                             *
  * HISTORY: * 02/22/1996 JLB : Created. *
  *=============================================================================================*/
-void TActionClass::Read_INI(port::Tokenizer& tokens) {
+void TActionClass::Read_INI(base::Tokenizer& tokens) {
   switch (TheWorld().new_ini_format()) {
     default: {
       Action =
-          static_cast<TActionType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
-      Team.Set_Raw(tech::ParseIntegerOr<int>(tokens.Next(), 0));
-      Trigger.Set_Raw(tech::ParseIntegerOr<int>(tokens.Next(), 0));
-      Data.Value = tech::ParseIntegerOr<int>(tokens.Next(), 0);
+          static_cast<TActionType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      Team.Set_Raw(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      Trigger.Set_Raw(base::ParseIntegerOr<int>(tokens.Next(), 0));
+      Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
       break;
     }
 
     case 1:
     case 0:
       Action =
-          static_cast<TActionType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+          static_cast<TActionType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
 
       const char* ptr = tokens.Next();
       Team = TeamTypeClass::From_Name(ptr);
@@ -335,7 +335,7 @@ void TActionClass::Read_INI(port::Tokenizer& tokens) {
       const char* trig_name = tokens.Next();
       PendingTriggerName = trig_name != nullptr ? trig_name : "";
 
-      Data.Value = tech::ParseIntegerOr<int>(tokens.Next(), 0);
+      Data.Value = base::ParseIntegerOr<int>(tokens.Next(), 0);
       break;
   }
 

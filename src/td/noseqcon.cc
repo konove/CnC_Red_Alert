@@ -188,21 +188,21 @@ int NonSequencedConnClass::Send_Packet(std::span<const std::byte> buf,
   /*........................................................................
   Set the magic # for the packet
   ........................................................................*/
-  port::AlignedObject<CommHeaderType>(PacketBuf.data())->MagicNumber = MagicNum;
+  base::AlignedObject<CommHeaderType>(PacketBuf.data())->MagicNumber = MagicNum;
 
   /*........................................................................
   Set the packet Code: DATA_ACK if it requires an ACK, NOACK if it doesn't
   Set the packet ID to the appropriate counter value.
   ........................................................................*/
   if (ack_req) {
-    port::AlignedObject<CommHeaderType>(PacketBuf.data())->Code =
+    base::AlignedObject<CommHeaderType>(PacketBuf.data())->Code =
         static_cast<unsigned char>(PACKET_DATA_ACK);
-    port::AlignedObject<CommHeaderType>(PacketBuf.data())->PacketID =
+    base::AlignedObject<CommHeaderType>(PacketBuf.data())->PacketID =
         NumSendAck;
   } else {
-    port::AlignedObject<CommHeaderType>(PacketBuf.data())->Code =
+    base::AlignedObject<CommHeaderType>(PacketBuf.data())->Code =
         static_cast<unsigned char>(PACKET_DATA_NOACK);
-    port::AlignedObject<CommHeaderType>(PacketBuf.data())->PacketID =
+    base::AlignedObject<CommHeaderType>(PacketBuf.data())->PacketID =
         NumSendNoAck;
   }
 
@@ -268,7 +268,7 @@ int NonSequencedConnClass::Receive_Packet(std::span<std::byte> buf,
       base::ToSize(buflen) > buf.size()) {
     return 0;
   }
-  auto packet_storage = port::ReadUnaligned<CommHeaderType>(buf);
+  auto packet_storage = base::ReadUnaligned<CommHeaderType>(buf);
   CommHeaderType* packet = &packet_storage;  // ptr to packet header
   if (packet->MagicNumber != MagicNum) {
     // Smart_Printf( "Bad Magic Number\n" );
@@ -290,7 +290,7 @@ int NonSequencedConnClass::Receive_Packet(std::span<std::byte> buf,
       */
       if (send_entry != nullptr) {
         entry_data =
-            port::AlignedObject<CommHeaderType>(send_entry->Buffer.data());
+            base::AlignedObject<CommHeaderType>(send_entry->Buffer.data());
         /*
         .............. If ACK is for this entry, mark it ................
         */
@@ -363,7 +363,7 @@ int NonSequencedConnClass::Receive_Packet(std::span<std::byte> buf,
         rec_entry = Queue->Get_Receive(i);
         if (rec_entry) {
           entry_data =
-              port::AlignedObject<CommHeaderType>(rec_entry->Buffer.data());
+              base::AlignedObject<CommHeaderType>(rec_entry->Buffer.data());
           /*...........................................................
           Packet is found; it's a resend
           ...........................................................*/
@@ -423,7 +423,7 @@ int NonSequencedConnClass::Receive_Packet(std::span<std::byte> buf,
 
             if (rec_entry) {
               entry_data =
-                  port::AlignedObject<CommHeaderType>(rec_entry->Buffer.data());
+                  base::AlignedObject<CommHeaderType>(rec_entry->Buffer.data());
 
               /*......................................................
               Entry is found
@@ -493,7 +493,7 @@ int NonSequencedConnClass::Get_Packet(std::span<std::byte> buf, int* buflen) {
     .....................................................................*/
     if (rec_entry && rec_entry->IsRead == 0) {
       auto* entry_data =
-          port::AlignedObject<CommHeaderType>(rec_entry->Buffer.data());
+          base::AlignedObject<CommHeaderType>(rec_entry->Buffer.data());
 
       /*..................................................................
       If this is a DATA_ACK packet, its ID must be one greater than
@@ -584,7 +584,7 @@ int NonSequencedConnClass::Service_Send_Queue() {
       ................ Update this queue's response time .................
       */
       packet_hdr =
-          port::AlignedObject<CommHeaderType>(send_entry->Buffer.data());
+          base::AlignedObject<CommHeaderType>(send_entry->Buffer.data());
       if (packet_hdr->Code == static_cast<unsigned char>(PACKET_DATA_ACK)) {
         Queue->Add_Delay(Time() - send_entry->FirstTime);
       }
@@ -633,7 +633,7 @@ int NonSequencedConnClass::Service_Send_Queue() {
         it will just be removed from the queue.
         ...............................................................*/
         packet_hdr =
-            port::AlignedObject<CommHeaderType>(send_entry->Buffer.data());
+            base::AlignedObject<CommHeaderType>(send_entry->Buffer.data());
         if (packet_hdr->Code == static_cast<unsigned char>(PACKET_DATA_NOACK)) {
           send_entry->IsACK = 1;
         }
@@ -698,7 +698,7 @@ int NonSequencedConnClass::Service_Receive_Queue() {
         Queue->Get_Receive(i);  // ptr to receive entry header
 
     if (rec_entry->IsRead) {
-      auto* packet_hdr = port::AlignedObject<CommHeaderType>(
+      auto* packet_hdr = base::AlignedObject<CommHeaderType>(
           rec_entry->Buffer.data());  // packet header
 
       if (packet_hdr->Code == static_cast<unsigned char>(PACKET_DATA_NOACK)) {

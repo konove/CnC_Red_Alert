@@ -189,7 +189,7 @@ template <typename... Args>
 // handed in by a caller), with `args` into `buffer`, which holds `size` bytes.
 // The result is always null terminated and truncated rather than allowed to
 // overflow. Each conversion is checked against its argument; a format that
-// does not match `args` is copied unformatted (see port::FormatRuntime).
+// does not match `args` is copied unformatted (see base::FormatRuntime).
 void Format_Runtime_Text(std::span<char> buffer, size_t size,
                          const char* format,
                          absl::Span<const absl::FormatArg> args = {});
@@ -197,7 +197,7 @@ template <typename... Args>
   requires(sizeof...(Args) > 0)
 void Format_Runtime_Text(std::span<char> buffer, const size_t size,
                          const char* format, const Args&... args) {
-  const auto packed = port::MakeFormatArgs(args...);
+  const auto packed = base::MakeFormatArgs(args...);
   Format_Runtime_Text(buffer, size, format, absl::MakeConstSpan(packed));
 }
 

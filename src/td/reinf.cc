@@ -574,7 +574,7 @@ bool Create_Special_Reinforcement(const HouseClass* house,
       /*
       **	Fill in the team characteristics.
       */
-      port::SafeCopy(team->IniName, "TEMP");
+      base::SafeCopy(team->IniName, "TEMP");
       team->IsReinforcable = false;
       team->IsTransient = true;
       team->ClassCount = 1;

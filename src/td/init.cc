@@ -837,7 +837,7 @@ bool Select_Game(bool fade) {
 
     while (process) {
       if (!startup_game_started && options.new_game.size() >= 5) {
-        TheWorld().scenario() = tech::ParseIntegerOr<int>(
+        TheWorld().scenario() = base::ParseIntegerOr<int>(
             std::string_view{options.new_game}.substr(3, 2), 0);
         TheWorld().scen_player() =
             options.new_game.at(2) == 'B' ? SCEN_PLAYER_NOD : SCEN_PLAYER_GDI;
@@ -1539,7 +1539,7 @@ bool Select_Game(bool fade) {
   ** back a recording, init the Seed to a random value.
   */
   if (TheSession().type() == GAME_NORMAL && !TheSession().playback_game()) {
-    TheWorld().seed() = port::RandomSeed();
+    TheWorld().seed() = platform::RandomSeed();
   }
 
   /*
@@ -1579,7 +1579,7 @@ bool Select_Game(bool fade) {
   */
   if (!gameloaded) {
     if (!startup_game_started && TheStartupOptions().new_game.size() >= 5) {
-      port::SafeCopy(TheWorld().scenario_name(),
+      base::SafeCopy(TheWorld().scenario_name(),
                      TheStartupOptions().new_game.c_str());
       startup_game_started = true;
     } else if (TheDebugState().map_editor_active()) {
@@ -2060,7 +2060,7 @@ std::optional<IPXAddressClass> ParseDestNet(const std::string_view address) {
   int i = 0;
   for (const std::string_view piece :
        absl::StrSplit(address, '.', absl::SkipEmpty())) {
-    const auto byte = tech::ParseHex<uint8_t>(piece);
+    const auto byte = base::ParseHex<uint8_t>(piece);
     if (!byte || i >= 10) {
       i = 0;  // Reject the address instead of accepting a partial network.
       break;
@@ -2086,7 +2086,7 @@ std::optional<IPXAddressClass> ParseDestNet(const std::string_view address) {
 // [0, 0x4000). Anything else leaves the socket alone.
 static std::optional<uint16_t> ParseSocketArgument(
     std::string_view offset_text) {
-  const auto offset = tech::ParseInteger<int>(offset_text);
+  const auto offset = base::ParseInteger<int>(offset_text);
   if (!offset || *offset < 0 || *offset >= 0x4000) {
     return std::nullopt;
   }
@@ -2124,7 +2124,7 @@ std::optional<StartupOptions> Parse_Command_Line(
 
     if (string.starts_with("-SEED")) {
       options.custom_seed =
-          tech::ParseIntegerOr<uint16_t>(string.substr(5), options.custom_seed);
+          base::ParseIntegerOr<uint16_t>(string.substr(5), options.custom_seed);
       continue;
     }
     if (string.starts_with("-NEWGAME")) {
@@ -2135,15 +2135,15 @@ std::optional<StartupOptions> Parse_Command_Line(
       continue;
     }
     if (string.starts_with("-LOADGAME")) {
-      options.load_game = tech::ParseIntegerOr<int>(string.substr(9), -1);
+      options.load_game = base::ParseIntegerOr<int>(string.substr(9), -1);
       continue;
     }
     if (string.starts_with("-QUITFRAME")) {
-      options.quit_at_frame = tech::ParseIntegerOr<int>(string.substr(10), -1);
+      options.quit_at_frame = base::ParseIntegerOr<int>(string.substr(10), -1);
       continue;
     }
     if (string.starts_with("-SAVESLOT")) {
-      options.save_slot = tech::ParseIntegerOr<int>(string.substr(9), -1);
+      options.save_slot = base::ParseIntegerOr<int>(string.substr(9), -1);
       continue;
     }
     if (std::string_view(string) == "-GLOBALTEST") {
@@ -2775,7 +2775,7 @@ int Version_Number() {
   if (const auto file = OpenDiskFile("VERSION.TXT")) {
     file->ReadObject(version);
   }
-  port::SafeAppend(
+  base::SafeAppend(
       TheGameState().version_text(),
       std::string_view(version,
                        static_cast<size_t>(std::ranges::find(version, '\0') -

@@ -31,17 +31,17 @@ void UnsetVar(const char* name) {
 TEST(EnvTest, ReturnsValueEmptyValueAndUnsetDistinctly) {
   SetVar("CNC_ENV_TEST_VALUE", "abc");
   UnsetVar("CNC_ENV_TEST_UNSET");
-  EXPECT_EQ(port::GetEnv("CNC_ENV_TEST_VALUE"), "abc");
+  EXPECT_EQ(platform::GetEnv("CNC_ENV_TEST_VALUE"), "abc");
 #ifndef _WIN32
   SetVar("CNC_ENV_TEST_EMPTY", "");
-  EXPECT_EQ(port::GetEnv("CNC_ENV_TEST_EMPTY"), "");
+  EXPECT_EQ(platform::GetEnv("CNC_ENV_TEST_EMPTY"), "");
 #endif
-  EXPECT_FALSE(port::GetEnv("CNC_ENV_TEST_UNSET").has_value());
+  EXPECT_FALSE(platform::GetEnv("CNC_ENV_TEST_UNSET").has_value());
 }
 
 TEST(EnvTest, CopyOutlivesLaterChanges) {
   SetVar("CNC_ENV_TEST_COPY", "first");
-  const auto copy = port::GetEnv("CNC_ENV_TEST_COPY");
+  const auto copy = platform::GetEnv("CNC_ENV_TEST_COPY");
   SetVar("CNC_ENV_TEST_COPY", "second");
   EXPECT_EQ(copy, "first");
 }

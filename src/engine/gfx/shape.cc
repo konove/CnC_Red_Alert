@@ -15,7 +15,7 @@ int Extract_Shape_Count(std::span<const std::byte> buffer) {
   if (buffer.size() < sizeof(uint16_t)) {
     return 0;
   }
-  return port::ReadUnaligned<uint16_t>(buffer);
+  return base::ReadUnaligned<uint16_t>(buffer);
 }
 
 std::span<const std::byte> Extract_Shape(std::span<const std::byte> buffer,
@@ -28,7 +28,7 @@ std::span<const std::byte> Extract_Shape(std::span<const std::byte> buffer,
   if (entry > buffer.size() || buffer.size() - entry < sizeof(uint32_t)) {
     return {};
   }
-  const auto offset = port::ReadUnaligned<uint32_t>(buffer.subspan(entry));
+  const auto offset = base::ReadUnaligned<uint32_t>(buffer.subspan(entry));
   if (buffer.size() < 2 || offset > buffer.size() - 2) {
     return {};
   }
@@ -36,7 +36,7 @@ std::span<const std::byte> Extract_Shape(std::span<const std::byte> buffer,
   if (data.size() < 10) {
     return {};
   }
-  const auto size = port::ReadUnaligned<uint16_t>(data.subspan(6));
+  const auto size = base::ReadUnaligned<uint16_t>(data.subspan(6));
   return size >= 10 && size <= data.size() ? data.first(size)
                                            : std::span<const std::byte>{};
 }

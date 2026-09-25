@@ -296,7 +296,7 @@ HouseTypeClass::HouseTypeClass(HousesType house, const char* ini, int fullname,
       ROFBias(1),
       CostBias(1),
       BuildSpeedBias(1) {
-  port::SafeCopy(Suffix, ext);
+  base::SafeCopy(Suffix, ext);
 }
 
 /***********************************************************************************************

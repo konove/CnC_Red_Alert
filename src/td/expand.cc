@@ -170,13 +170,13 @@ bool Expansion_Dialog() {
   /*
   **	Add in all the expansion scenarios.
   */
-  const auto sbuffer = port::CharBytes(ShapeBufferBytes);
+  const auto sbuffer = base::CharBytes(ShapeBufferBytes);
   for (int index = 20; index < 60; index++) {
     char buffer[128];
 
     Set_Scenario_Name(buffer, index, SCEN_PLAYER_GDI, SCEN_DIR_EAST,
                       SCEN_VAR_A);
-    port::SafeAppend(buffer, ".INI");
+    base::SafeAppend(buffer, ".INI");
     if (const auto file = OpenGameFile(buffer)) {
       file->Read(sbuffer, 1000);
       base::At(sbuffer, 1000) = '\r';
@@ -193,7 +193,7 @@ bool Expansion_Dialog() {
 
     Set_Scenario_Name(buffer, index, SCEN_PLAYER_NOD, SCEN_DIR_EAST,
                       SCEN_VAR_A);
-    port::SafeAppend(buffer, ".INI");
+    base::SafeAppend(buffer, ".INI");
     if (const auto file = OpenGameFile(buffer)) {
       file->Read(sbuffer, 1000);
       base::At(sbuffer, 1000) = '\r';
@@ -326,7 +326,7 @@ bool Bonus_Dialog() {
 
     Set_Scenario_Name(buffer, index, SCEN_PLAYER_GDI, SCEN_DIR_EAST,
                       SCEN_VAR_A);
-    port::SafeAppend(buffer, ".INI");
+    base::SafeAppend(buffer, ".INI");
     if (GameFileExists(buffer)) {
       list.Add_Scenario(
           index, std::format("GDI: {}", Text_String(base::At(gdi_scen_names,
@@ -339,7 +339,7 @@ bool Bonus_Dialog() {
 
     Set_Scenario_Name(buffer, index, SCEN_PLAYER_NOD, SCEN_DIR_EAST,
                       SCEN_VAR_A);
-    port::SafeAppend(buffer, ".INI");
+    base::SafeAppend(buffer, ".INI");
     if (GameFileExists(buffer)) {
       list.Add_Scenario(
           index, std::format("NOD: {}", Text_String(base::At(nod_scen_names,

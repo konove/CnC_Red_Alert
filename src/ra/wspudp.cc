@@ -232,7 +232,7 @@ bool UDPInterfaceClass::Open_Socket(SOCKET /*unused*/) {
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
     const std::span<const std::byte> address_bytes(bytes, info->ai_addrlen);
     const uint32_t address =
-        port::ReadUnaligned<sockaddr_in>(address_bytes).sin_addr.s_addr;
+        base::ReadUnaligned<sockaddr_in>(address_bytes).sin_addr.s_addr;
 
     char temp[128];
     absl::SNPrintF(temp, sizeof(temp),

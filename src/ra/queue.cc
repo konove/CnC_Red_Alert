@@ -2025,7 +2025,7 @@ static RetcodeType Process_Serial_Packet(
     //	Save this message in our last-message buffer
     //.....................................................................
     if (!std::string_view(serial_packet->Message.Message).empty()) {
-      port::SafeCopy(TheSession().LastMessage, serial_packet->Message.Message);
+      base::SafeCopy(TheSession().LastMessage, serial_packet->Message.Message);
     }
 
     //.....................................................................
@@ -2423,9 +2423,9 @@ static int Build_Send_Packet(std::span<std::byte> buf, int bufsize,
   finfo->Data.FrameInfo.CRC = GameCRC;
   finfo->Data.FrameInfo.CommandCount = static_cast<uint16_t>(num_cmds);
   finfo->Data.FrameInfo.Delay = static_cast<unsigned char>(frame_delay);
-  port::WriteUnaligned(buf, frame_info);
-  port::WriteUnaligned(buf, frame_info);
-  port::WriteUnaligned(buf, frame_info);
+  base::WriteUnaligned(buf, frame_info);
+  base::WriteUnaligned(buf, frame_info);
+  base::WriteUnaligned(buf, frame_info);
 
   //------------------------------------------------------------------------
   // Initialize the # of bytes processed; this is protocol-specific
@@ -2815,7 +2815,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
       //..................................................................
       case EventClass::RESPONSE_TIME:
 
-        port::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
+        base::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
 
         base::CopyBytes(
             buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
@@ -2861,7 +2861,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
                 static_cast<std::byte>(numunits);
           }
 
-          port::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
+          base::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
 
           base::CopyBytes(
               buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType) +
@@ -2878,7 +2878,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
       // Variable-sized packets: Copy the packet Size & the buffer
       //..................................................................
       case EventClass::ADDPLAYER:
-        port::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
+        base::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
 
         base::CopyBytes(
             buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
@@ -2929,7 +2929,7 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
       case EventClass::RETRACT_DRAW:
       case EventClass::LAST_EVENT:
       default:
-        port::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
+        base::WriteUnaligned(buf.subspan(base::ToSize(size)), eventtype);
 
         base::CopyBytes(
             buf.subspan(base::ToSize(size) + sizeof(EventClass::EventType)),
@@ -3042,7 +3042,7 @@ int Extract_Uncompressed_Events(std::span<const std::byte> buf, int bufsize) {
     TheKeyboard().Check();
 
     event_storage =
-        port::ReadUnaligned<EventClass>(buf.subspan(base::ToSize(pos)));
+        base::ReadUnaligned<EventClass>(buf.subspan(base::ToSize(pos)));
 
     //.....................................................................
     // add event to the DoList, only if it's not a FRAMESYNC
@@ -3141,7 +3141,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
   if (std::cmp_less(leftover, sizeof(EventClass::EventType))) {
     return count;
   }
-  event_type = port::ReadUnaligned<EventClass::EventType>(
+  event_type = base::ReadUnaligned<EventClass::EventType>(
       buf.subspan(base::ToSize(pos)));
   if (event_type < EventClass::EMPTY || event_type >= EventClass::LAST_EVENT) {
     return count;
@@ -3336,7 +3336,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
         if (std::cmp_less(leftover, sizeof(EventClass::EventType))) {
           return count;
         }
-        event_type = port::ReadUnaligned<EventClass::EventType>(
+        event_type = base::ReadUnaligned<EventClass::EventType>(
             buf.subspan(base::ToSize(pos)));
         if (event_type < EventClass::EMPTY ||
             event_type >= EventClass::LAST_EVENT) {
@@ -3358,7 +3358,7 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
       if (std::cmp_less(leftover, sizeof(EventClass::EventType))) {
         return count;
       }
-      event_type = port::ReadUnaligned<EventClass::EventType>(
+      event_type = base::ReadUnaligned<EventClass::EventType>(
           buf.subspan(base::ToSize(pos)));
       if (event_type < EventClass::EMPTY ||
           event_type >= EventClass::LAST_EVENT) {
@@ -3591,7 +3591,7 @@ static int Execute_DoList(int max_houses, HousesType base_house,
               hptr->IsHuman = false;
               hptr->IQ = TheRules().MaxIQ;
               HouseClass::Computer_Paranoid();
-              port::SafeCopy(hptr->IniName, Text_String(TXT_COMPUTER));
+              base::SafeCopy(hptr->IniName, Text_String(TXT_COMPUTER));
               TheSession().NumPlayers--;
             }
           }

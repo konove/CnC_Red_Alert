@@ -7,7 +7,7 @@
 #include <span>
 #include <string_view>
 
-namespace port {
+namespace file {
 
 // Reads a trimmed value, or the default when absent, into output. A null key
 // enumerates complete key names separated by NUL, with a final extra NUL when
@@ -26,5 +26,5 @@ std::optional<std::size_t> ReadProfile(std::string_view text,
 bool WriteProfile(std::span<char> storage, std::string_view section,
                   const char* key, const char* value);
 
-}  // namespace port
+}  // namespace file
 #endif  // CNC_RED_ALERT_ENGINE_FILE_PROFILE_BUFFER_H_

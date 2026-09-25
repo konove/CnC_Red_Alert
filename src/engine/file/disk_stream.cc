@@ -77,7 +77,7 @@ std::unique_ptr<DiskStream> DiskStream::Open(const std::string_view path,
 
 base::ssize DiskStream::Read(const std::span<std::byte> buffer) {
   try {
-    return file_.sgetn(port::CharBytes(buffer).data(), std::ssize(buffer));
+    return file_.sgetn(base::CharBytes(buffer).data(), std::ssize(buffer));
   } catch (const std::ios_base::failure&) {
     // A real I/O error (EIO from a failing disk, a dropped network share)
     // throws instead of returning a short count; report it through ok(), as
@@ -89,7 +89,7 @@ base::ssize DiskStream::Read(const std::span<std::byte> buffer) {
 
 base::ssize DiskStream::Write(const std::span<const std::byte> buffer) {
   const base::ssize written =
-      file_.sputn(port::CharBytes(buffer).data(), std::ssize(buffer));
+      file_.sputn(base::CharBytes(buffer).data(), std::ssize(buffer));
   if (written != std::ssize(buffer)) {
     failed_ = true;
   }

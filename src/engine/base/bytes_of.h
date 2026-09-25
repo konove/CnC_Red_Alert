@@ -6,7 +6,7 @@
 //
 // Example:
 //   uint32_t value = 0;
-//   RegQueryValueEx(key, "Setting", nullptr, nullptr, port::BytesOf(value),
+//   RegQueryValueEx(key, "Setting", nullptr, nullptr, base::BytesOf(value),
 //                   &size);
 
 #ifndef CNC_RED_ALERT_ENGINE_BASE_BYTES_OF_H_
@@ -18,7 +18,7 @@
 
 #include "absl/base/attributes.h"
 
-namespace port {
+namespace base {
 
 // Viewing an object's representation through unsigned char* is one of the
 // few things reinterpret_cast is defined for; keeping it here keeps it out of
@@ -53,19 +53,9 @@ auto CharBytes(std::span<T, Extent> bytes) {
   return std::span<Char>(chars, bytes.size());
 }
 
-// An unsigned character may alias byte storage. Preserve the source span's
-// actual capacity and constness for byte-oriented graphics APIs.
-template <typename T, std::size_t Extent>
-  requires(sizeof(T) == 1 && std::is_trivially_copyable_v<T>)
-auto UnsignedBytes(std::span<T, Extent> bytes) {
-  using Byte = std::conditional_t<std::is_const_v<T>, const unsigned char, unsigned char>;
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  auto* data = reinterpret_cast<Byte*>(bytes.data());
-  // The source span proves the complete extent; unsigned char has size one.
-  // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-  return std::span<Byte>(data, bytes.size());
-}
+// UnsignedBytes (the same unsigned-char view, for any trivially copyable T,
+// not just byte-sized ones) is in engine/base/buffer.h.
 
-}  // namespace port
+}  // namespace base
 
 #endif  // CNC_RED_ALERT_ENGINE_BASE_BYTES_OF_H_

@@ -282,8 +282,8 @@ which checks a literal format against its arguments at compile time:
 // sprintf(buf, "%s.INI", src)     →  absl::SNPrintF(buf, sizeof(buf), "%s.INI", src);
 // std::string result              →  absl::StrFormat("%s.INI", src);
 // printf / fprintf(fp, ...)       →  absl::PrintF(...) / absl::FPrintF(fp, ...);
-// strcpy + strcat                 →  port::SafeCopy / port::SafeAppend (engine/base/strings/safe_string.h)
-// run-time format (string table) →  port::FormatRuntime(Text_String(id), args...) (engine/base/strings/format.h)
+// strcpy + strcat                 →  base::SafeCopy / base::SafeAppend (engine/base/strings/safe_string.h)
+// run-time format (string table) →  base::FormatRuntime(Text_String(id), args...) (engine/base/strings/format.h)
 ```
 
 Game printers (`Fancy_Text_Print`, `Smart_Printf`, `Fatal`, ...) are variadic templates over the

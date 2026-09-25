@@ -3091,7 +3091,7 @@ void InfantryClass::Read_INI(char* buffer) {
     /*
     **	1st token: house name.
     */
-    port::Tokenizer tokens(buf, ",\n\r");
+    base::Tokenizer tokens(buf, ",\n\r");
     const HousesType inhouse =
         HouseTypeClass::From_Name(tokens.Next());  // Infantry house.
     if (inhouse != HOUSE_NONE) {
@@ -3108,20 +3108,20 @@ void InfantryClass::Read_INI(char* buffer) {
           /*
           **	3rd token: strength.
           */
-          const int strength = tech::ParseIntegerOr<int>(tokens.Next(), 0);
+          const int strength = base::ParseIntegerOr<int>(tokens.Next(), 0);
 
           /*
           **	4th token: cell #.
           */
           COORDINATE coord =
-              Cell_Coord(tech::ParseIntegerOr<CELL>(tokens.Next(), 0));
+              Cell_Coord(base::ParseIntegerOr<CELL>(tokens.Next(), 0));
 
           /*
           **	5th token: cell sub-location.
           */
           coord = Coord_Add(
               coord & 0xFF00FF00L,
-              base::At(StoppingCoordAbs, std::clamp(tech::ParseIntegerOr<int>(
+              base::At(StoppingCoordAbs, std::clamp(base::ParseIntegerOr<int>(
                                                         tokens.Next(","), 0),
                                                     0, 4)));
 
@@ -3130,7 +3130,7 @@ void InfantryClass::Read_INI(char* buffer) {
           */
           const MissionType mission = Mission_From_Name(tokens.Next());
           const auto dir =
-              static_cast<DirType>(tech::ParseIntegerOr<int>(tokens.Next(), 0));
+              static_cast<DirType>(base::ParseIntegerOr<int>(tokens.Next(), 0));
           infantry->Trigger = TriggerClass::As_Pointer(tokens.Next());
           if (infantry->Trigger) {
             infantry->Trigger->AttachCount++;

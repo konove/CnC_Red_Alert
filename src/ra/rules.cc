@@ -694,11 +694,11 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         /*
         **	Share odds.
         */
-        port::Tokenizer tokens(buffer, ",");
+        base::Tokenizer tokens(buffer, ",");
         char* token = tokens.Next();
         if (token) {
-          strtrim(port::MutableCString(token));
-          crate_shares_.at(crate) = tech::ParseIntegerOr<int>(token, 0);
+          strtrim(base::MutableCString(token));
+          crate_shares_.at(crate) = base::ParseIntegerOr<int>(token, 0);
         }
 
         /*
@@ -706,7 +706,7 @@ bool RulesClass::Powerups(CCINIClass& ini) {
         */
         token = tokens.Next();
         if (token) {
-          strtrim(port::MutableCString(token));
+          strtrim(base::MutableCString(token));
           crate_anims_.at(crate) = Anim_From_Name(token);
         }
 
@@ -719,8 +719,8 @@ bool RulesClass::Powerups(CCINIClass& ini) {
                std::string_view(token).contains('%'))) {
             crate_data_.at(crate) = fixed::FromString(token) * 256;
           } else {
-            strtrim(port::MutableCString(token));
-            crate_data_.at(crate) = tech::ParseIntegerOr<int>(token, 0);
+            strtrim(base::MutableCString(token));
+            crate_data_.at(crate) = base::ParseIntegerOr<int>(token, 0);
           }
         }
       }
@@ -800,10 +800,10 @@ bool RulesClass::Themes(CCINIClass& ini) {
 
         ini.Get_String(THEMECONTROL, ThemeClass::Base_Name(theme), "", buffer,
                        sizeof(buffer));
-        port::Tokenizer tokens(buffer, ",");
+        base::Tokenizer tokens(buffer, ",");
         const char* token = tokens.Next();
         if (token != nullptr) {
-          scen = tech::ParseIntegerOr<int>(token, 0);
+          scen = base::ParseIntegerOr<int>(token, 0);
         }
 
         token = tokens.Next();

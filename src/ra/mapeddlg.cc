@@ -327,7 +327,7 @@ int MapEditClass::Load_Scenario() {
     Clear_Vector(&TheSession().Players);
 
     auto* who = new NodeNameType;  // node to add to Players
-    port::SafeCopy(who->Name, TheSession().Handle);
+    base::SafeCopy(who->Name, TheSession().Handle);
     who->Player.House = TheSession().House;
     who->Player.Color = TheSession().ColorIdx;
     TheSession().Players.Add(who);
@@ -946,7 +946,7 @@ int MapEditClass::Load_Scenario() {
     **	Save selections & return
     */
     if (base::At(scen_buf, 0) <= '9' && base::At(scen_buf, 1) <= '9') {
-      scen_nump = tech::ParseIntegerOr<int>(scen_buf, 0);
+      scen_nump = base::ParseIntegerOr<int>(scen_buf, 0);
     } else {
       char first = base::At(scen_buf, 0);
       char second = base::At(scen_buf, 1);
@@ -1752,7 +1752,7 @@ int MapEditClass::Load_Scenario() {
     theaterbtn.Set_Selected_Index(static_cast<int>(orig_theater));
 
     char description[kDescripMax] = "";
-    port::SafeCopy(description, TheScenario().Description);
+    base::SafeCopy(description, TheScenario().Description);
     EditClass desc(kButtonDescription, description, sizeof(description),
                    TPF_EFNT | TPF_NOSHADOW,
                    theaterbtn.X + theaterbtn.Width + 15, theaterbtn.Y, 160);
@@ -1874,7 +1874,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Intro movie name.
     */
-    char introtext[port::kMaxFname + port::kMaxExt];
+    char introtext[platform::kMaxFname + platform::kMaxExt];
     DropListClass intro(kButtonIntro, introtext, sizeof(introtext),
                         TPF_EFNT | TPF_NOSHADOW, theaterbtn.X,
                         theaterbtn.Y + theaterbtn.Height + 24, 50, 7 * 10,
@@ -1889,7 +1889,7 @@ int MapEditClass::Load_Scenario() {
     /*
     **	Briefing movie name.
     */
-    char brieftext[port::kMaxFname + port::kMaxExt];
+    char brieftext[platform::kMaxFname + platform::kMaxExt];
     DropListClass briefing(kButtonBriefing, brieftext, sizeof(brieftext),
                            TPF_EFNT | TPF_NOSHADOW, intro.X + intro.Width + 10,
                            intro.Y, 50, 7 * 10,
@@ -1901,7 +1901,7 @@ int MapEditClass::Load_Scenario() {
     }
     briefing.Set_Selected_Index(static_cast<int>(TheScenario().BriefMovie) + 1);
 
-    char actiontext[port::kMaxFname + port::kMaxExt];
+    char actiontext[platform::kMaxFname + platform::kMaxExt];
     DropListClass action(kButtonAction, actiontext, sizeof(actiontext),
                          TPF_EFNT | TPF_NOSHADOW,
                          briefing.X + briefing.Width + 10, briefing.Y, 50,
@@ -1913,7 +1913,7 @@ int MapEditClass::Load_Scenario() {
     }
     action.Set_Selected_Index(static_cast<int>(TheScenario().ActionMovie) + 1);
 
-    char wintext[port::kMaxFname + port::kMaxExt];
+    char wintext[platform::kMaxFname + platform::kMaxExt];
     DropListClass win(kButtonWin, wintext, sizeof(wintext),
                       TPF_EFNT | TPF_NOSHADOW, action.X + action.Width + 10,
                       action.Y, 50, 7 * 10,
@@ -1925,7 +1925,7 @@ int MapEditClass::Load_Scenario() {
     }
     win.Set_Selected_Index(static_cast<int>(TheScenario().WinMovie) + 1);
 
-    char losetext[port::kMaxFname + port::kMaxExt];
+    char losetext[platform::kMaxFname + platform::kMaxExt];
     DropListClass lose(kButtonLose, losetext, sizeof(losetext),
                        TPF_EFNT | TPF_NOSHADOW, win.X + win.Width + 10, win.Y,
                        50, 7 * 10, MixArchive::RetrieveData("EBTN-UP.SHP"),
@@ -2443,7 +2443,7 @@ int MapEditClass::Load_Scenario() {
       }
     }
     ThePlayer()->IsPlayerControl = true;
-    port::SafeCopy(TheScenario().Description, desc.Get_Text());
+    base::SafeCopy(TheScenario().Description, desc.Get_Text());
     base::At(TheScenario().Description, sizeof(TheScenario().Description) - 1) =
         '\0';
     TheScenario().IntroMovie = VQType(intro.Current_Index() - 1);

@@ -266,7 +266,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       Show_Mouse();
     }
     //	Be nice to other apps.
-    port::SleepMs(50);
+    platform::SleepMs(50);
 
     /*
     **	Get user input.
@@ -450,9 +450,9 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
                                 }
         */
       case ButtonKey(kListboxNicks):
-        port::SafeCopy(szNameBuffer,
+        base::SafeCopy(szNameBuffer,
                        NickList.Get_Item(NickList.Current_Index()));
-        port::SafeCopy(szPassBuffer, NickList.Get_Item_ExtraDataString(
+        base::SafeCopy(szPassBuffer, NickList.Get_Item_ExtraDataString(
                                          NickList.Current_Index()));
         NameEdit.Flag_To_Redraw();
         PassEdit.Flag_To_Redraw();
@@ -507,8 +507,8 @@ bool ReadSavedNicks(const WolapiObject* pWO, IconListClass& NickList,
     if ((pWO->pChat->GetNick(i, &szNick, &szPass) == S_OK) && (*szNick)) {
       NickList.Add_Item(szNick, nullptr, nullptr, ICON_SHAPE, szPass);
       if (i == 1) {
-        port::SafeCopy(szNameBuffer, szNick);
-        port::SafeCopy(szPassBuffer, szPass);
+        base::SafeCopy(szNameBuffer, szNick);
+        base::SafeCopy(szPassBuffer, szPass);
         bReturn = true;
       }
     }

@@ -144,7 +144,7 @@ class ScenarioClass {
   /*
   **	The full name of the scenario (as it exists on disk).
   */
-  char ScenarioName[port::kMaxFname + port::kMaxExt]{};
+  char ScenarioName[platform::kMaxFname + platform::kMaxExt]{};
 
   /*
   **	Description of the scenario.

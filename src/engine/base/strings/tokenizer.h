@@ -10,10 +10,10 @@
 //
 // Example:
 //   char entry[] = "GDI,E1,256,1234";
-//   port::Tokenizer tokens(entry, ",");
+//   base::Tokenizer tokens(entry, ",");
 //   const HousesType house = HouseTypeClass::From_Name(tokens.Next());
 //   const InfantryType type = InfantryTypeClass::From_Name(tokens.Next());
-//   const int strength = tech::ParseIntegerOr<int>(tokens.Next(), 0);
+//   const int strength = base::ParseIntegerOr<int>(tokens.Next(), 0);
 
 #ifndef CNC_RED_ALERT_ENGINE_BASE_STRINGS_TOKENIZER_H_
 #define CNC_RED_ALERT_ENGINE_BASE_STRINGS_TOKENIZER_H_
@@ -22,7 +22,7 @@
 
 #include "absl/base/attributes.h"
 
-namespace port {
+namespace base {
 
 class Tokenizer {
  public:
@@ -48,6 +48,6 @@ class Tokenizer {
   const char* delimiters_;
 };
 
-}  // namespace port
+}  // namespace base
 
 #endif  // CNC_RED_ALERT_ENGINE_BASE_STRINGS_TOKENIZER_H_

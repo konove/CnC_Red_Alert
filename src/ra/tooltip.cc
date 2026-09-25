@@ -60,9 +60,9 @@ ToolTipClass::ToolTipClass(GadgetClass* gadget, const char* szText, int x_show,
 {
   if (szText != nullptr &&
       std::string_view(szText).size() > TOOLTIPTEXT_MAX_LEN) {
-    port::SafeCopy(szTip, "Tooltip too long!");
+    base::SafeCopy(szTip, "Tooltip too long!");
   } else {
-    port::SafeCopy(szTip, szText != nullptr ? szText : "");
+    base::SafeCopy(szTip, szText != nullptr ? szText : "");
   }
 
                               // call, for god's sake.

@@ -50,17 +50,17 @@ TEST(Sha1CompressTest, KnownDigests) {
 }
 
 TEST(Sha1CompressTest, HardwareMatchesPortable) {
-  if (!tech::Sha1HardwareAvailable()) {
+  if (!crypto::Sha1HardwareAvailable()) {
     GTEST_SKIP() << "CPU has no SHA extensions";
   }
   for (const int blocks : {1, 2, 3, 17, 1000}) {
     const std::vector<std::byte> input =
-        TestBytes(blocks * tech::kSha1BlockSize);
-    tech::Sha1State portable = {0x67452301U, 0xefcdab89U, 0x98badcfeU,
-                                0x10325476U, 0xc3d2e1f0U};
-    tech::Sha1State hardware = portable;
-    tech::Sha1CompressPortable(portable, input);
-    tech::Sha1CompressHardware(hardware, input);
+        TestBytes(blocks * crypto::kSha1BlockSize);
+    crypto::Sha1State portable = {0x67452301U, 0xefcdab89U, 0x98badcfeU,
+                                  0x10325476U, 0xc3d2e1f0U};
+    crypto::Sha1State hardware = portable;
+    crypto::Sha1CompressPortable(portable, input);
+    crypto::Sha1CompressHardware(hardware, input);
     EXPECT_EQ(hardware, portable) << blocks << " blocks";
   }
 }

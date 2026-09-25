@@ -3,7 +3,7 @@
 #ifndef CNC_RED_ALERT_ENGINE_PLATFORM_PLATFORM_H_
 #define CNC_RED_ALERT_ENGINE_PLATFORM_PLATFORM_H_
 
-namespace port {
+namespace platform {
 
 // True when building for Windows. For choosing a path with `if constexpr`
 // where both sides compile on every platform, so the other side is still
@@ -22,6 +22,6 @@ inline constexpr int kMaxPath = 260;
 inline constexpr int kMaxFname = 256;
 inline constexpr int kMaxExt = 256;
 
-}  // namespace port
+}  // namespace platform
 
 #endif  // CNC_RED_ALERT_ENGINE_PLATFORM_PLATFORM_H_

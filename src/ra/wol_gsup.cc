@@ -569,7 +569,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
   if (!pWO->OnEnteringGameSetup()) {  //	Gets a userlist setup, among
                                       // other
                                       // things.
-    port::SafeCopy(szNameOfHostWhoJustBailedOnUs,
+    base::SafeCopy(szNameOfHostWhoJustBailedOnUs,
                    TXT_WOL_THEGAMEHOST);  //	Will cause immediate exit.
   }
 
@@ -717,11 +717,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                                          // in list matching selected scenario.
       //			pStaticDescrip->Set_Text( pILScens->Get_Item(
       // pILScens->Current_Index() ), false );
-      port::SafeCopy(szScenarioNameDisplay,
+      base::SafeCopy(szScenarioNameDisplay,
                      pILScens->Get_Item(pILScens->Current_Index()));
     }
 
-    TheWorld().seed() = port::RandomSeed();
+    TheWorld().seed() = platform::RandomSeed();
   }
 
   //------------------------------------------------------------------------
@@ -1181,7 +1181,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           }
           //					pStaticDescrip->Set_Text( txt,
           // false );
-          port::SafeCopy(szScenarioNameDisplay, txt);
+          base::SafeCopy(szScenarioNameDisplay, txt);
 
           //	Show icon for gamekind of scenario.
           const dib::Image* pIcon = nullptr;
@@ -1205,7 +1205,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
           absl::SNPrintF(txt, sizeof(txt), "%s", TXT_WOL_SCENARIONAMEWAIT);
           //					pStaticDescrip->Set_Text( txt,
           // false );
-          port::SafeCopy(szScenarioNameDisplay, txt);
+          base::SafeCopy(szScenarioNameDisplay, txt);
         }
 
         //	Print scenario name.
@@ -1245,7 +1245,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       Show_Mouse();
     }
     //	Be nice to other apps.
-    port::SleepMs(50);
+    platform::SleepMs(50);
 
     //.....................................................................
     //	Get user input
@@ -1479,7 +1479,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
             }
             //						pStaticDescrip->Set_Text(
             // pILScens->Get_Item( pILScens->Current_Index() ), false );
-            port::SafeCopy(szScenarioNameDisplay,
+            base::SafeCopy(szScenarioNameDisplay,
                            pILScens->Get_Item(pILScens->Current_Index()));
             // if (display < REDRAW_PARMS) display = REDRAW_PARMS;
             display = REDRAW_ALL;
@@ -2181,7 +2181,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
   if (std::string_view(szRequest).size() < 3 || szRequest.at(2) != ' ') {
     return;
   }
-  const auto option = tech::ParseInteger<int>(szRequest.substr(0, 2));
+  const auto option = base::ParseInteger<int>(szRequest.substr(0, 2));
   if (!option) {
     return;
   }
@@ -2190,7 +2190,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
 
   switch (opt) {
     case WOL_GAMEOPT_REQCOLOR: {
-      const auto color = tech::ParseInteger<int>(szRequest);
+      const auto color = base::ParseInteger<int>(szRequest);
       if (!color || *color < 0 ||
           std::cmp_greater_equal(*color,
                                  magic_enum::enum_count<PlayerColorType>())) {
@@ -2218,7 +2218,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
     }
     case WOL_GAMEOPT_REQHOUSE: {
       const auto HouseChoice =
-          static_cast<HousesType>(tech::ParseIntegerOr<int>(szRequest, 0));
+          static_cast<HousesType>(base::ParseIntegerOr<int>(szRequest, 0));
       //		debugprint( "Host received: '%s' changed house to
       //%u.\n", (char*)pUser->name, HouseChoice );
       SetPlayerHouse(WolText(pUser->name), HouseChoice);
@@ -2230,7 +2230,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
     case WOL_GAMEOPT_REQACCEPT:
       //	Does Param ID of accept request match the last param change ID
       // sent? See notes at top.
-      if (std::cmp_equal(tech::ParseIntegerOr<int>(szRequest, 0),
+      if (std::cmp_equal(base::ParseIntegerOr<int>(szRequest, 0),
                          nHostLastParamID)) {
         //			debugprint( "Host received valid accept from
         //'%s'.\n", (char*)pUser->name );
@@ -2253,7 +2253,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
     case WOL_GAMEOPT_REQSTART:
       //	Does Param ID of accept request match the last param change ID
       // sent? See notes at top.
-      if (std::cmp_equal(tech::ParseIntegerOr<int>(szRequest, 0),
+      if (std::cmp_equal(base::ParseIntegerOr<int>(szRequest, 0),
                          nHostLastParamID) &&
           bWaitingToStart)  //	Otherwise ignore - it's old and
                             // we don't care. (Incredibly
@@ -2277,7 +2277,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
     case WOL_GAMEOPT_REQSTART_BUTNEEDSCENARIO:
       //	Does Param ID of accept request match the last param change ID
       // sent? See notes at top.
-      if (std::cmp_equal(tech::ParseIntegerOr<int>(szRequest, 0),
+      if (std::cmp_equal(base::ParseIntegerOr<int>(szRequest, 0),
                          nHostLastParamID) &&
           bWaitingToStart)  //	Otherwise ignore - it's old and
                             // we don't care. (Incredibly
@@ -2302,7 +2302,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
       // messages/gameopts are getting delayed" problem in chatserver...
       // (I don't want to end up leaving the channel before guests get my go
       // message.)
-      port::SafeCopy(szTriggerGameStartInfo, szRequest);
+      base::SafeCopy(szTriggerGameStartInfo, szRequest);
       break;
     case WOL_GAMEOPT::WOL_GAMEOPT_INFCOLOR:
     case WOL_GAMEOPT::WOL_GAMEOPT_INFPARAMS:
@@ -2320,7 +2320,7 @@ void WOL_GameSetupDialog::ProcessGuestRequest(User* pUser,
 
 //***********************************************************************************************
 void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
-  auto szInform = port::MutableCString(inform_data);
+  auto szInform = base::MutableCString(inform_data);
   //	Process inform message arriving from game host.
   //	debugprint( "ProcessInform: '%s'\n", szInform );
   if (!bHost) {
@@ -2329,7 +2329,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
       return;
     }
     const auto option =
-        tech::ParseInteger<int>(std::string_view{szInform.data(), 2});
+        base::ParseInteger<int>(std::string_view{szInform.data(), 2});
     if (!option) {
       return;
     }
@@ -2348,7 +2348,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
           return;
         }
         const auto color =
-            tech::ParseInteger<int>(std::string_view{szInform.data(), 2});
+            base::ParseInteger<int>(std::string_view{szInform.data(), 2});
         if (!color || *color < 0 ||
             std::cmp_greater_equal(*color,
                                    magic_enum::enum_count<PlayerColorType>())) {
@@ -2371,14 +2371,14 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
           return;
         }
         const auto param_id =
-            tech::ParseInteger<int>(std::string_view{szInform.data(), 6});
+            base::ParseInteger<int>(std::string_view{szInform.data(), 6});
         if (!param_id || *param_id < 0) {
           return;
         }
         nGuestLastParamID = *param_id;
         szInform = szInform.subspan(7);
         const auto house =
-            tech::ParseInteger<int>(std::string_view{szInform.data(), 2});
+            base::ParseInteger<int>(std::string_view{szInform.data(), 2});
         if (!house || *house < 0 ||
             std::cmp_greater_equal(*house,
                                    magic_enum::enum_count<HousesType>())) {
@@ -2423,7 +2423,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
         //			debugprint( "Guest received
         // WOL_GAMEOPT_INFSTART.\n" );
         nGuestLastParamID =
-            tech::ParseIntegerOr<int>(std::string_view(szInform.data()), 0);
+            base::ParseIntegerOr<int>(std::string_view(szInform.data()), 0);
         //	The following check is not necessary. Rules.ini, if manually
         // replaced by a cheater, is not reloaded. 	So prior checks (that
         // occur on game params receives) are sufficient.
@@ -2490,7 +2490,7 @@ void WOL_GameSetupDialog::ProcessInform(char* inform_data) {
         break;
       case WOL_GAMEOPT_INFGO:
         //	Host says start game right now.
-        port::SafeCopy(szTriggerGameStartInfo, szInform.data());
+        base::SafeCopy(szTriggerGameStartInfo, szInform.data());
         //	If we are in a modal dialog, we must have arrived here through
         // ServiceRealTime()'s PumpMessages. Set global that will 	force a
         // cancel out of the dialog.
@@ -2633,17 +2633,17 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   //	(Or if an error occurs due to the packet being incorrect - which
   // happened once in test...)
 
-  port::Tokenizer tokens(szParams, " ");
+  base::Tokenizer tokens(szParams, " ");
 
   const char* szToken = tokens.Next();
-  nGuestLastParamID = tech::ParseIntegerOr<int>(szToken, 0);
+  nGuestLastParamID = base::ParseIntegerOr<int>(szToken, 0);
 
   //	Read in length of following string.
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  int iLen = tech::ParseIntegerOr<int>(szToken, -1);
+  int iLen = base::ParseIntegerOr<int>(szToken, -1);
   //	The string follows the 3-digit length and may contain spaces, so it is
   //	read from the unparsed text rather than as a token.
   char* const szRemaining = tokens.Remaining();
@@ -2654,13 +2654,13 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
     return false;
   }
   //	Read in string.
-  port::SafeCopy(TheSession().Options.ScenarioDescription,
+  base::SafeCopy(TheSession().Options.ScenarioDescription,
                  std::string_view(szRemaining).substr(0, base::ToSize(iLen)));
   //	Null-terminate.
   base::At(TheSession().Options.ScenarioDescription, iLen) = 0;
   //	Resume parsing after the string.
-  tokens = port::Tokenizer(
-      port::MutableCString(szRemaining).subspan(base::ToSize(iLen) + 1).data(),
+  tokens = base::Tokenizer(
+      base::MutableCString(szRemaining).subspan(base::ToSize(iLen) + 1).data(),
       " ");
 
   // debugprint( "scenario description is '%s'\n",
@@ -2672,13 +2672,13 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
     return false;
   }
   TheSession().ScenarioFileLength =
-      static_cast<unsigned int>(tech::ParseIntegerOr<int>(szToken, 0));
+      static_cast<unsigned int>(base::ParseIntegerOr<int>(szToken, 0));
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  port::SafeCopy(TheSession().ScenarioFileName, szToken);
+  base::SafeCopy(TheSession().ScenarioFileName, szToken);
 
   //	//	Read in length of following string.
   //	szToken = strtok( nullptr, szDelimiter );
@@ -2691,7 +2691,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  iLen = tech::ParseIntegerOr<int>(
+  iLen = base::ParseIntegerOr<int>(
       szToken, 0);  //	1 or 0, indicating if there is a digest following.
   if (iLen) {
     //		//	Set string pointer to start of string (previous field is
@@ -2721,115 +2721,115 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  TheSession().ScenarioIsOfficial = tech::ParseIntegerOr<int>(szToken, 0) != 0;
+  TheSession().ScenarioIsOfficial = base::ParseIntegerOr<int>(szToken, 0) != 0;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  TheSession().Options.Credits = tech::ParseIntegerOr<int>(szToken, 0);
+  TheSession().Options.Credits = base::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  TheSession().Options.Bases = tech::ParseIntegerOr<int>(szToken, 0);
+  TheSession().Options.Bases = base::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  TheSession().Options.Tiberium = tech::ParseIntegerOr<int>(szToken, 0);
+  TheSession().Options.Tiberium = base::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  TheSession().Options.Goodies = tech::ParseIntegerOr<int>(szToken, 0);
+  TheSession().Options.Goodies = base::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  TheWorld().build_level() = tech::ParseIntegerOr<int>(szToken, 0);
+  TheWorld().build_level() = base::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  TheSession().Options.UnitCount = tech::ParseIntegerOr<int>(szToken, 0);
+  TheSession().Options.UnitCount = base::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  TheSession().Options.AIPlayers = tech::ParseIntegerOr<int>(szToken, 0);
+  TheSession().Options.AIPlayers = base::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  TheWorld().seed() = tech::ParseIntegerOr<int>(szToken, 0);
+  TheWorld().seed() = base::ParseIntegerOr<int>(szToken, 0);
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   TheSpecial().IsShadowGrow =
-      (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+      (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   TheSpecial().IsSpeedBuild =
-      (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+      (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   TheSpecial().IsFromInstall =
-      (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+      (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   TheSpecial().IsCaptureTheFlag =
-      (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+      (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  TheSpecial().IsInert = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+  TheSpecial().IsInert = (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   TheSpecial().IsThreePoint =
-      (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+      (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  TheSpecial().IsTGrowth = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+  TheSpecial().IsTGrowth = (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  TheSpecial().IsTSpread = (tech::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
+  TheSpecial().IsTSpread = (base::ParseIntegerOr<int>(szToken, 0) == 0) ? 0 : 1;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
   TheOptions().GameSpeed =
-      static_cast<unsigned int>(tech::ParseIntegerOr<int>(szToken, 0));
+      static_cast<unsigned int>(base::ParseIntegerOr<int>(szToken, 0));
 
   szToken = tokens.Next();
   if (!szToken) {
@@ -2841,19 +2841,19 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
   if (!szToken) {
     return false;
   }
-  bAftermathUnits = tech::ParseIntegerOr<int>(szToken, 0) != 0;
+  bAftermathUnits = base::ParseIntegerOr<int>(szToken, 0) != 0;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  bSlowUnitBuildRate = tech::ParseIntegerOr<int>(szToken, 0) != 0;
+  bSlowUnitBuildRate = base::ParseIntegerOr<int>(szToken, 0) != 0;
 
   szToken = tokens.Next();
   if (!szToken) {
     return false;
   }
-  const int iRulesID = tech::ParseIntegerOr<int>(szToken, 0);
+  const int iRulesID = base::ParseIntegerOr<int>(szToken, 0);
 
   return (TheRules().rule_ini().Get_Unique_ID() == iRulesID);
 }
@@ -2862,7 +2862,7 @@ bool WOL_GameSetupDialog::AcceptParams(char* szParams) {
 void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
   //	Sets values in a GAMEPARAMS to the current game settings.
 
-  port::SafeCopy(GParams.GPacket.ScenarioInfo.Scenario,
+  base::SafeCopy(GParams.GPacket.ScenarioInfo.Scenario,
                  TheSession()
                      .Scenarios.at(TheSession().Options.ScenarioIndex)
                      ->Description());
@@ -2870,7 +2870,7 @@ void WOL_GameSetupDialog::SetGParamsToCurrent(GAMEPARAMS& GParams) const {
       GameFileSize(TheSession()
                        .Scenarios.at(TheSession().Options.ScenarioIndex)
                        ->Get_Filename()));
-  port::SafeCopy(GParams.GPacket.ScenarioInfo.ShortFileName,
+  base::SafeCopy(GParams.GPacket.ScenarioInfo.ShortFileName,
                  TheSession()
                      .Scenarios.at(TheSession().Options.ScenarioIndex)
                      ->Get_Filename());
@@ -3159,7 +3159,7 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
   //	A guest (not myself) has entered the game channel.
   //	debugprint( "OnGuestJoin()\n" );
   const std::string szPrint =
-      port::FormatRuntime(TXT_WOL_PLAYERJOINEDGAME, WolText(pUser->name));
+      base::FormatRuntime(TXT_WOL_PLAYERJOINEDGAME, WolText(pUser->name));
   WOL_PrintMessage(*pILDisc, szPrint.c_str(), WOLCOLORREMAP_LOCALMACHINEMESS);
 
   ClearAllAccepts();
@@ -3221,20 +3221,20 @@ void WOL_GameSetupDialog::OnGuestJoin(User* pUser) {
           char szSendHouse[50];
           absl::SNPrintF(szSendHouse, sizeof(szSendHouse), " 1 %02i",
                          static_cast<int>(House));
-          port::SafeAppend(szSendPiece, szSendHouse);
+          base::SafeAppend(szSendPiece, szSendHouse);
         } else {
           //	Player must not have told me what house he is yet. Don't send
           // house value.
-          port::SafeAppend(szSendPiece, " 0");
+          base::SafeAppend(szSendPiece, " 0");
         }
       } else {
         //	Player is the new guest himself. Don't send house value.
-        port::SafeAppend(szSendPiece, " 0");
+        base::SafeAppend(szSendPiece, " 0");
       }
 
       //	Acceptedness must be false! No need to send.
 
-      port::SafeAppend(szSend, szSendPiece);
+      base::SafeAppend(szSend, szSendPiece);
     }
     pWO->SendGameOpt(szSend, pUser);
 
@@ -3261,10 +3261,10 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
   }
   //	Process a received WOL_GAMEOPT_INFNEWGUESTPLAYERINFO message.
   //	szMsg has already been stripped of 2 bytes header.
-  port::Tokenizer tokens(szMsg, " ");
+  base::Tokenizer tokens(szMsg, " ");
 
   const char* szToken = tokens.Next();
-  const auto player_count = tech::ParseInteger<int>(szToken);
+  const auto player_count = base::ParseInteger<int>(szToken);
   if (!player_count || *player_count < 0 || *player_count > 8 ||
       std::string_view(szToken).size() != 2) {
     return;
@@ -3274,7 +3274,7 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
   for (unsigned int nPlayer = 0; nPlayer != nPlayers; ++nPlayer) {
     //	Read in length of following string.
     szToken = tokens.Next();
-    const int iLen = tech::ParseIntegerOr<int>(szToken, -1);
+    const int iLen = base::ParseIntegerOr<int>(szToken, -1);
     //	The name follows the 2-digit length and may contain spaces, so it is
     //	read from the unparsed text rather than as a token.
     char* const szRemaining = tokens.Remaining();
@@ -3286,13 +3286,13 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
 
     //	Read in string.
     char szPlayerName[50];
-    port::SafeCopy(szPlayerName,
+    base::SafeCopy(szPlayerName,
                    std::string_view(szRemaining).substr(0, base::ToSize(iLen)));
     //	Null-terminate.
     base::At(szPlayerName, iLen) = 0;
 
     //	Resume parsing after the name.
-    tokens = port::Tokenizer(port::MutableCString(szRemaining)
+    tokens = base::Tokenizer(base::MutableCString(szRemaining)
                                  .subspan(base::ToSize(iLen) + 1)
                                  .data(),
                              " ");
@@ -3300,18 +3300,18 @@ void WOL_GameSetupDialog::AcceptNewGuestPlayerInfo(char* szMsg) {
     //	Read color.
     szToken = tokens.Next();
     const auto Color =
-        static_cast<PlayerColorType>(tech::ParseIntegerOr<int>(szToken, 0));
+        static_cast<PlayerColorType>(base::ParseIntegerOr<int>(szToken, 0));
     SetPlayerColor(szPlayerName, Color);
 
     //	Read whether there is a house field.
     szToken = tokens.Next();
-    const bool bHouseField = tech::ParseIntegerOr<int>(szToken, 0) != 0;
+    const bool bHouseField = base::ParseIntegerOr<int>(szToken, 0) != 0;
 
     if (bHouseField) {
       //	Read house.
       szToken = tokens.Next();
       const auto House =
-          static_cast<HousesType>(tech::ParseIntegerOr<int>(szToken, 0));
+          static_cast<HousesType>(base::ParseIntegerOr<int>(szToken, 0));
       SetPlayerHouse(szPlayerName, House);
     }
 
@@ -3333,7 +3333,7 @@ void WOL_GameSetupDialog::OnGuestLeave(User* pUser) {
   if (pUser->flags & CHAT_USER_CHANNELOWNER) {
     //	Host is leaving the channel. We must be a guest, and so must leave also.
     // This will trigger exit.
-    port::SafeCopy(szNameOfHostWhoJustBailedOnUs, WolText(pUser->name));
+    base::SafeCopy(szNameOfHostWhoJustBailedOnUs, WolText(pUser->name));
   } else {
     ClearAllAccepts();
   }
@@ -3485,7 +3485,7 @@ void WOL_GameSetupDialog::HostSaysGo() {
         szUser, sizeof(szUser), " %s %02i", WolText(pUser->name),
         Color);  //	What if player left just now, and got removed from list.
                  // Ok to continue and fail on game start?
-    port::SafeAppend(szSend, szUser);
+    base::SafeAppend(szSend, szUser);
     pUser = pUser->next;
   }
   if (!pWO->SendGo(szSend)) {
@@ -3536,10 +3536,10 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   // Session.Handle,
   // sizeof(Session.Handle), buffer);
 
-  port::SafeCopy(TheSession().Handle, pWO->szMyName);
+  base::SafeCopy(TheSession().Handle, pWO->szMyName);
 
   //	GameName will be the host's name...
-  port::SafeCopy(TheSession().GameName, pWO->pGameHostName());
+  base::SafeCopy(TheSession().GameName, pWO->pGameHostName());
   //	debugprint( "Session.GameName is %s\n", Session.GameName );
 
   //	gotit	Session.ColorIdx = (PlayerColorType)
@@ -3634,14 +3634,14 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   }
 
   //	Parse szGoMessage to iterate through players.
-  port::Tokenizer tokens(szGoMessage, " ");
+  base::Tokenizer tokens(szGoMessage, " ");
   char szPlayerName[WOL_NAME_LEN_MAX];
 
   while (const char* szToken = tokens.Next()) {
-    port::SafeCopy(szPlayerName, szToken);
+    base::SafeCopy(szPlayerName, szToken);
 
     const auto Color = static_cast<PlayerColorType>(
-        tech::ParseIntegerOr<int>(tokens.Next(), 0));
+        base::ParseIntegerOr<int>(tokens.Next(), 0));
     SetPlayerColor(szPlayerName, Color);  //	ajw note: inserts if not found.
   }
 
@@ -3649,7 +3649,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   DCHECK(pILPlayers->Find(pWO->szMyName) != -1);
 
   auto* pPlayerNew = new NodeNameType;
-  port::SafeCopy(pPlayerNew->Name, pWO->szMyName);  //	"Name" is 12 chars max.
+  base::SafeCopy(pPlayerNew->Name, pWO->szMyName);  //	"Name" is 12 chars max.
   // pPlayerNew->Address = Session.GAddress;
   pPlayerNew->Player.House = GetPlayerHouse(pWO->szMyName);
   // debugprint( "ME: pPlayerNew->Player.House = %i\n", pPlayerNew->Player.House
@@ -3679,7 +3679,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       //			debugprint( "Creating player node '%s'\n",
       // szPlayerName );
       pPlayerNew = new NodeNameType;
-      port::SafeCopy(pPlayerNew->Name, szPlayerName);
+      base::SafeCopy(pPlayerNew->Name, szPlayerName);
       //	Get player's IP address from pChatSink...
       uint32_t lAddress =
           pWO->pChatSink->GetPlayerGameIP(szPlayerName);  // ntohl(
@@ -3716,7 +3716,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
           static_cast<const User*>(pILPlayers->Get_Item_ExtraDataPtr(iItem));
       if (pUser && pUser->flags & CHAT_USER_CHANNELOWNER) {
         TheSession().HostAddress = pPlayerNew->Address;
-        port::SafeCopy(szHostName, WolText(pUser->name));
+        base::SafeCopy(szHostName, WolText(pUser->name));
         /*
                                         //	debugging
                                         NetNumType netxxx;
@@ -3799,7 +3799,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
         bExitForGameTrigger = false;
         *szTriggerGameStartInfo = 0;
         //	Trigger the "our host just left the channel" code...
-        port::SafeCopy(szNameOfHostWhoJustBailedOnUs, szHostName);
+        base::SafeCopy(szNameOfHostWhoJustBailedOnUs, szHostName);
         return;
       }
       //	Wait for download from game host.
@@ -3812,13 +3812,13 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
         bExitForGameTrigger = false;
         *szTriggerGameStartInfo = 0;
         //	Trigger the "our host just left the channel" code...
-        port::SafeCopy(szNameOfHostWhoJustBailedOnUs, szHostName);
+        base::SafeCopy(szNameOfHostWhoJustBailedOnUs, szHostName);
         return;
       }
       TheScenario().Scenario = TheSession().Options.ScenarioIndex;
       //			debugprint( "Scen.Scenario = %i\n",
       // Scen.Scenario );
-      port::SafeCopy(TheScenario().ScenarioName, TheSession().ScenarioFileName);
+      base::SafeCopy(TheScenario().ScenarioName, TheSession().ScenarioFileName);
       //			debugprint( "Scen.ScenarioName = %s\n",
       // Scen.ScenarioName );
     } else {
@@ -3842,7 +3842,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       TheScenario().Scenario = TheSession().Options.ScenarioIndex;
       //			debugprint( "Scen.Scenario = %i\n",
       // Scen.Scenario );
-      port::SafeCopy(TheScenario().ScenarioName,
+      base::SafeCopy(TheScenario().ScenarioName,
                      TheSession()
                          .Scenarios.at(TheSession().Options.ScenarioIndex)
                          ->Get_Filename());
@@ -3853,12 +3853,12 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
   {
     TheScenario().Scenario = TheSession().Options.ScenarioIndex;
     //		debugprint( "Scen.Scenario = %i\n", Scen.Scenario );
-    port::SafeCopy(TheScenario().ScenarioName,
+    base::SafeCopy(TheScenario().ScenarioName,
                    TheSession()
                        .Scenarios.at(TheSession().Options.ScenarioIndex)
                        ->Get_Filename());
     //		debugprint( "Scen.ScenarioName = %s\n", Scen.ScenarioName );
-    port::SafeCopy(TheSession().Options.ScenarioDescription,
+    base::SafeCopy(TheSession().Options.ScenarioDescription,
                    TheSession()
                        .Scenarios.at(TheSession().Options.ScenarioIndex)
                        ->Description());
