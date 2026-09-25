@@ -20,7 +20,7 @@
 #include <cmath>
 #include <cstdint>
 
-#include "hsv.h"
+#include "tech/hsv.h"
 
 void RGBClass::Adjust(const int ratio, const RGBClass& target) {
   // FIX: The original code used (ratio & 0xFF), which caused the fade

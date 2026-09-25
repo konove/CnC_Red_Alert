@@ -12,3 +12,4 @@
 /strict-build.*
 /.idea
 .env
+__pycache__/

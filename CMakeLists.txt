@@ -221,3 +221,25 @@ add_subdirectory(src/tech)
 add_subdirectory(src/tools)
 add_subdirectory(src/ra)
 add_subdirectory(src/td)
+
+# The engine's dependency order (docs/ENGINE_FOLDERS_PLAN.md). Linking cannot
+# enforce it: every target shares the src/ include root, so a header-only
+# include from a folder a library may not see still builds. The checker reads
+# the include lines against the file map and rule table in
+# tools/engine_layout.py; the second test covers the checker itself.
+find_package(Python3 3.10 COMPONENTS Interpreter)
+if (Python3_Interpreter_FOUND)
+    add_test(NAME engine_layers_test
+            COMMAND Python3::Interpreter
+            "${CMAKE_SOURCE_DIR}/tools/check_layers.py"
+            --src "${CMAKE_SOURCE_DIR}/src")
+    add_test(NAME engine_layers_checker_test
+            COMMAND Python3::Interpreter
+            "${CMAKE_SOURCE_DIR}/tools/check_layers_test.py")
+    # Both import tools/engine_layout.py; keep its bytecode out of the tree.
+    set_tests_properties(engine_layers_test engine_layers_checker_test
+            PROPERTIES ENVIRONMENT PYTHONDONTWRITEBYTECODE=1)
+else ()
+    message(WARNING "Python 3.10 or newer not found: the engine_layers_test "
+            "check of the engine's include order will not run.")
+endif ()
