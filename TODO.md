@@ -34,9 +34,6 @@
 - Tidy `Buffer_Frame_To_Page` (`engine/gfx/2keyfbuf.*`) now the uncompressed-shape cache is gone
   - Its source span can be `std::span<const std::byte>`: the cached-header write was the only write
   - Rename `Do_Old_Blit`/`kBlitOld`; there is no "new" blit path any more
-- Delete the dead declarations left in `engine/window/misc.h`
-  - `Wait_Blit` has no callers; `Misc_Focus_Loss_Function`/`Misc_Focus_Restore_Function` are only
-    written (`ra/sdlstub.cc`, `td/sdlstub.cc`), never called
 - Remove the blank lines left where the `AllSurfaces.SurfacesRestored` blocks were deleted
   - About 44 `while (process) {` loops now open with a blank line, some sites have two in a row
     (`td/nulldlg.cc`, `td/queue.cc`, `ra/goptions.cc`); `git clang-format` does not touch lines that
