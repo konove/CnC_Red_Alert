@@ -61,7 +61,6 @@
 #include "ra/config.h"
 #include "ra/installation.h"
 #include "ra/rawolapi.h"
-#include "version.h"
 
 /****************************** Globals ************************************/
 //---------------------------------------------------------------------------

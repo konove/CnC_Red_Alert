@@ -59,6 +59,7 @@
 #include "ra/object_heaps.h"
 #include "ra/rules.h"
 #include "ra/scenario.h"
+#include "ra/session.h"
 #include "ra/special.h"
 #include "ra/target.h"
 #include "ra/team.h"
@@ -68,7 +69,6 @@
 #include "ra/vector_dynamic.h"
 #include "ra/vortex.h"
 #include "ra/world.h"
-#include "session.h"
 
 /***********************************************************************************************
  * LogicClass::AI -- Handles AI logic processing for game objects. *

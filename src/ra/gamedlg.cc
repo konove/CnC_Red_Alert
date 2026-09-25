@@ -61,6 +61,8 @@
 #include "ra/options.h"
 #include "ra/queue.h"
 #include "ra/screen.h"
+#include "ra/session.h"
+#include "ra/slider.h"
 #include "ra/sounddlg.h"
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
@@ -69,8 +71,6 @@
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 #include "ra/world.h"
-#include "session.h"
-#include "slider.h"
 
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *

@@ -200,7 +200,6 @@ static void Init_Random();
 static bool Load_Recording_Values(ByteStream& file);
 static bool Save_Recording_Values(ByteStream& file);
 
-#include "ra/config.h"
 #include "ra/expand.h"
 #include "ra/wol_main.h"
 

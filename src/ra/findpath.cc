@@ -72,9 +72,9 @@
 #include "ra/inline.h"
 #include "ra/mapedit.h"
 #include "ra/path_overlap.h"
+#include "ra/session.h"
 #include "ra/team.h"
 #include "ra/teamtype.h"
-#include "session.h"
 
 /*
 **	When an edge search is started, it can be performed CLOCKwise or

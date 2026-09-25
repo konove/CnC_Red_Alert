@@ -97,7 +97,6 @@
 #include <utility>
 
 #include "absl/log/check.h"
-#include "config.h"
 #include "engine/base/array.h"
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"

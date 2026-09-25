@@ -75,9 +75,9 @@
 #include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/scenario.h"
+#include "ra/session.h"
 #include "ra/text_ids.h"
 #include "ra/world.h"
-#include "session.h"
 
 /*
 **	These are the actual filename list for the theme sample files.

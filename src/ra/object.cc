@@ -147,6 +147,7 @@
 #include "ra/radio.h"
 #include "ra/rules.h"
 #include "ra/selection.h"
+#include "ra/session.h"
 #include "ra/target.h"
 #include "ra/techno.h"
 #include "ra/tevent.h"
@@ -156,7 +157,6 @@
 #include "ra/type.h"
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
-#include "session.h"
 
 /*
 **	Selected objects have a special marking box around them. This is the

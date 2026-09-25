@@ -55,7 +55,7 @@
 *before watcom will
 ** compile it, it has been incorporated into the project.
 */
-#include "wsnwlink.h"
+#include <wsnwlink.h>
 #else
 
 #endif
