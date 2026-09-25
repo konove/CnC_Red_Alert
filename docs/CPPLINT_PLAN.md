@@ -68,3 +68,9 @@ row to run cpplint on the touched files; CLAUDE.md's Tools table and dependency 
 - [x] Step 1 (2026-09-25)
 - [x] Step 2 (2026-09-25): `cpplint_test` passes in 4.2 s locally.
 - [ ] Step 3
+  - `build/include` and `build/include_subdir` (2026-09-25). The first was hidden behind the
+    second's filter: cpplint filters match by prefix. Its 5 findings were an `init.cc` duplicate and
+    two dead files per game, `crew.cc` (only its comment header) and `findpath.h` (a free
+    `Optimize_Moves()` nothing defines; the real one is a `FootClass` member), now deleted. The 23
+    directory-less includes gained `ra/` or `td/`, 4 of them duplicates that went instead, and
+    `wspipx.cc`'s Windows branch includes the SDK's `<wsnwlink.h>` as a system header.
