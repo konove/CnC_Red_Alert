@@ -3,6 +3,8 @@
 
 #include "engine/window/keyboard.h"
 
+#include <SDL_events.h>
+#include <SDL_mouse.h>
 #include <SDL_scancode.h>
 
 #include <cstdint>
@@ -91,6 +93,45 @@ TEST_F(KeyboardTest, UnknownScancodeReleaseIsNotBuffered) {
 TEST_F(KeyboardTest, ScancodeAboveTheKeyCodeByteIsNotBuffered) {
   EXPECT_FALSE(keyboard.Put_Key_Message(SDL_SCANCODE_AUDIONEXT));
 
+  EXPECT_EQ(keyboard.Check(), 0);
+}
+
+// A click is three entries. When fewer than three slots are free, queuing the
+// button without its position would make Get() read the position from past
+// the end of the queue.
+TEST_F(KeyboardTest, ClickThatDoesNotFitIsDroppedWhole) {
+  // The buffer holds 255 entries; leave two free.
+  for (int i = 0; i < 253; ++i) {
+    ASSERT_TRUE(keyboard.Put(KN_A));
+  }
+  SDL_Event click{};
+  click.button.type = SDL_MOUSEBUTTONDOWN;
+  click.button.button = SDL_BUTTON_LEFT;
+  click.button.state = SDL_PRESSED;
+  click.button.x = 10;
+  click.button.y = 20;
+
+  keyboard.Event_Handler(&click);
+
+  for (int i = 0; i < 253; ++i) {
+    ASSERT_EQ(keyboard.Get(), KN_A);
+  }
+  EXPECT_EQ(keyboard.Check(), 0);
+}
+
+TEST_F(KeyboardTest, ClickIsQueuedWithItsPosition) {
+  SDL_Event click{};
+  click.button.type = SDL_MOUSEBUTTONDOWN;
+  click.button.button = SDL_BUTTON_RIGHT;
+  click.button.state = SDL_PRESSED;
+  click.button.x = 10;
+  click.button.y = 20;
+
+  EXPECT_TRUE(keyboard.Event_Handler(&click));
+
+  EXPECT_EQ(keyboard.Get(), KN_RMOUSE);
+  EXPECT_EQ(keyboard.MouseQX, 10);
+  EXPECT_EQ(keyboard.MouseQY, 20);
   EXPECT_EQ(keyboard.Check(), 0);
 }
 

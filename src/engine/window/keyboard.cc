@@ -186,6 +186,12 @@ bool WWKeyboardClass::Event_Handler(SDL_Event* event) {
         return false;
       }
 
+      // A click is three entries, queued all or not at all: a button without
+      // its position would make Buff_Get read one from past the tail.
+      const int free_entries = (Head - Tail + 255) % 256;
+      if (free_entries < 3) {
+        return true;
+      }
       Put_Key_Message(static_cast<unsigned>(button),
                       event->button.state == SDL_RELEASED);
       Put(event->button.x);
