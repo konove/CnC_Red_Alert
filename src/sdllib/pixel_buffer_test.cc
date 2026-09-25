@@ -1,22 +1,21 @@
-// Tests for PixelView and PixelBuffer: locking, the lifetime of the
-// globals that point at them, and the clipping the drawing primitives do.
+// Tests for PixelView and PixelBuffer: locking, both of memory and of a
+// PixelSurface, and the clipping the drawing primitives do.
 
 #include "sdllib/pixel_buffer.h"
-
-#include <SDL_events.h>
 
 #include <array>
 #include <cstddef>
 #include <cstdint>
 #include <numeric>
+#include <optional>
+#include <span>
 #include <vector>
 
+#include "absl/base/attributes.h"
 #include "gtest/gtest.h"
 #include "port/unaligned.h"
 #include "sdllib/font.h"
-
-// ww_win.cc, pulled in through pixel_buffer, dispatches events to the app.
-void SDL_Event_Handler(SDL_Event* /*event*/) {}
+#include "sdllib/pixel_surface.h"
 
 namespace {
 
@@ -74,6 +73,136 @@ TEST(GraphicViewPortLockTest, MemoryBufferLocksWithoutCounting) {
   view.Unlock();
   view.Unlock();
   EXPECT_EQ(view.lock_count(), 0);
+}
+
+// A surface of plain memory that counts the locks it sees and can be told to
+// refuse them, standing in for the window.
+class FakeSurface final : public PixelSurface {
+ public:
+  // `pitch` bytes to a row, so a pitch wider than the page leaves padding
+  // that drawing must skip.
+  FakeSurface(int pitch, int height)
+      : pixels_(static_cast<size_t>(pitch) * static_cast<size_t>(height)),
+        pitch_(pitch) {}
+
+  std::optional<Pixels> Lock() override {
+    ++lock_calls_;
+    if (refuse_lock_) {
+      return std::nullopt;
+    }
+    return Pixels{.bytes = pixels_, .pitch = pitch_};
+  }
+  void Unlock() override { ++unlock_calls_; }
+
+  void set_refuse_lock(bool refuse) { refuse_lock_ = refuse; }
+  [[nodiscard]] const std::vector<uint8_t>& pixels() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return pixels_;
+  }
+  [[nodiscard]] int lock_calls() const { return lock_calls_; }
+  [[nodiscard]] int unlock_calls() const { return unlock_calls_; }
+
+ private:
+  std::vector<uint8_t> pixels_;
+  int pitch_;
+  bool refuse_lock_ = false;
+  int lock_calls_ = 0;
+  int unlock_calls_ = 0;
+};
+
+// The window page has no pixels of its own: they exist only while the
+// surface is locked.
+TEST(SurfaceBufferTest, HasNoPixelsUntilLocked) {
+  FakeSurface surface(4, 2);
+  PixelBuffer page;
+  page.Init(4, 2, surface);
+
+  EXPECT_TRUE(page.HasSurface());
+  EXPECT_TRUE(page.view().NeedsLock());
+  EXPECT_TRUE(page.bytes().empty());
+  EXPECT_EQ(surface.lock_calls(), 0);
+}
+
+// Locks nest, and only the outermost pair reaches the surface, which
+// PixelSurface promises its implementations.
+TEST(SurfaceBufferTest, OnlyTheOutermostLockReachesTheSurface) {
+  FakeSurface surface(4, 2);
+  PixelBuffer page;
+  page.Init(4, 2, surface);
+
+  ASSERT_TRUE(page.LockSurface());
+  ASSERT_TRUE(page.LockSurface());
+  EXPECT_EQ(page.lock_count(), 2);
+  EXPECT_EQ(surface.lock_calls(), 1);
+  EXPECT_EQ(page.bytes().size(), 8U);
+
+  page.UnlockSurface();
+  EXPECT_EQ(surface.unlock_calls(), 0);
+  page.UnlockSurface();
+  EXPECT_EQ(surface.unlock_calls(), 1);
+  EXPECT_EQ(page.lock_count(), 0);
+  EXPECT_TRUE(page.bytes().empty());
+}
+
+// The surface's rows can be wider than the page; drawing has to step over
+// the padding rather than run on into the next row.
+TEST(SurfaceBufferTest, DrawsIntoTheSurfaceSkippingItsRowPadding) {
+  FakeSurface surface(4, 2);
+  PixelBuffer page;
+  page.Init(3, 2, surface);
+
+  page.view().Clear(7);
+
+  EXPECT_EQ(surface.pixels(), (std::vector<uint8_t>{7, 7, 7, 0,  //
+                                                    7, 7, 7, 0}));
+  EXPECT_EQ(surface.lock_calls(), 1);
+  EXPECT_EQ(surface.unlock_calls(), 1);
+}
+
+// A view onto part of the page reaches the surface's pixels at its own
+// corner once locked.
+TEST(SurfaceBufferTest, AViewLocksThePageAndFindsItsCorner) {
+  FakeSurface surface(4, 3);
+  PixelBuffer page;
+  page.Init(3, 3, surface);
+  PixelView view(&page, 1, 1, 2, 2);
+
+  view.PutPixel(0, 0, 5);
+
+  EXPECT_EQ(surface.pixels(), (std::vector<uint8_t>{0, 0, 0, 0,  //
+                                                    0, 5, 0, 0,  //
+                                                    0, 0, 0, 0}));
+}
+
+// A surface that refuses the lock leaves the page unlocked, and drawing
+// becomes a no-op that never unlocks what it could not lock.
+TEST(SurfaceBufferTest, ARefusedLockDrawsNothing) {
+  FakeSurface surface(2, 2);
+  surface.set_refuse_lock(true);
+  PixelBuffer page;
+  page.Init(2, 2, surface);
+
+  EXPECT_FALSE(page.LockSurface());
+  EXPECT_EQ(page.lock_count(), 0);
+  page.view().Clear(7);
+
+  EXPECT_EQ(surface.unlock_calls(), 0);
+  EXPECT_EQ(surface.pixels(), (std::vector<uint8_t>{0, 0, 0, 0}));
+}
+
+// Giving the page memory again lets go of the surface.
+TEST(SurfaceBufferTest, InitWithMemoryDetachesTheSurface) {
+  FakeSurface surface(2, 2);
+  PixelBuffer page;
+  page.Init(2, 2, surface);
+  std::vector<uint8_t> pixels(size_t{2} * 2, 0);
+
+  page.Init(2, 2, pixels, 0);
+  page.view().Clear(3);
+
+  EXPECT_FALSE(page.HasSurface());
+  EXPECT_EQ(surface.lock_calls(), 0);
+  EXPECT_EQ(pixels, (std::vector<uint8_t>{3, 3, 3, 3}));
 }
 
 // Returns `count` pixels numbered from 1, so that every pixel of a test image

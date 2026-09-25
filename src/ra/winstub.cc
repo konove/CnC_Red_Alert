@@ -182,8 +182,6 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
     case WM_DESTROY:
       Prog_End();
       Invalidate_Cached_Icons();
-      TheScreen().visible_page().ReleaseSurfaces();
-      TheScreen().hidden_page().ReleaseSurfaces();
       AllSurfaces.Release();
       Reset_Video_Mode();
       Stop_Profiler();

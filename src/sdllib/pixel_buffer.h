@@ -20,7 +20,7 @@
 // onto them.
 //
 // A PixelBuffer owns a rectangle of 8-bit paletted pixels: either plain
-// memory or, for the one buffer the window shows, an SDL surface whose pixels
+// memory or, for the one buffer the window shows, a PixelSurface whose pixels
 // exist only while it is locked. A PixelView is a rectangular window onto such
 // a buffer. Coordinates passed to a view are relative to its corner and are
 // clipped to it, so the drawing primitives need to know nothing about the page
@@ -40,25 +40,12 @@
 #include <cstdint>
 #include <memory>
 #include <span>
-#include <vector>
 
 #include "absl/base/attributes.h"
 #include "base/array.h"
-#include "base/attributes.h"
-#include "base/flags.h"
 #include "sdllib/bitmap.h"
+#include "sdllib/pixel_surface.h"
 #include "sdllib/ww_win.h"
-
-// How PixelBuffer::Init() should back the buffer.
-enum class CNC_FLAG_ENUM PixelBufferFlags {
-  BUFFER_NONE = 0,
-  // The buffer is the one the window shows. Init() creates an SDL surface
-  // and texture for it instead of allocating memory.
-  BUFFER_VISIBLE = 2,
-};
-using enum PixelBufferFlags;
-template <>
-inline constexpr bool base::kIsFlagEnum<PixelBufferFlags> = true;
 
 // The VGA mode the games were written for. Both still decode their
 // low-resolution movies at this size, whatever video mode is set.
@@ -271,9 +258,9 @@ class PixelView {
 // pages movies decode into.
 //
 // The pixels come from one of three places, chosen by Init(): a span the
-// caller owns, a block the buffer allocates and owns, or - with
-// BUFFER_VISIBLE - an SDL surface, whose pixels only exist between
-// LockSurface() and UnlockSurface().
+// caller owns, a block the buffer allocates and owns, or a PixelSurface -
+// the window - whose pixels only exist between LockSurface() and
+// UnlockSurface().
 //
 // A buffer draws nothing itself; view() hands out the view covering all of
 // it, and every drawing primitive lives there.
@@ -291,22 +278,24 @@ class PixelBuffer {
   // Leaves the buffer empty; Init() gives it pixels later. Screen's pages
   // are built this way, before there is a window to size them against.
   PixelBuffer();
-  // Detaches this buffer from the Display if it is the window's page.
-  ~PixelBuffer();
+  ~PixelBuffer() = default;
 
   PixelBuffer(const PixelBuffer&) = delete;
   PixelBuffer& operator=(const PixelBuffer&) = delete;
   PixelBuffer(PixelBuffer&&) = delete;
   PixelBuffer& operator=(PixelBuffer&&) = delete;
 
-  // Gives the buffer its pixels, replacing whatever it had. With
-  // BUFFER_VISIBLE it creates the window's surface and texture;
-  // otherwise it takes `buffer`, or allocates
-  // `byte_count` bytes when `buffer` is empty. CHECK-fails if a
-  // caller-supplied
-  // buffer is too small for width * height.
+  // Gives the buffer its pixels, replacing whatever it had: it takes
+  // `buffer`, or allocates `byte_count` bytes (width * height when zero) when
+  // `buffer` is empty. CHECK-fails if the pixels are too few for
+  // width * height.
   void Init(int width, int height, std::span<uint8_t> buffer,
-            int32_t byte_count, PixelBufferFlags flags);
+            int32_t byte_count);
+  // Makes the buffer a width x height page of `surface`, whose pixels it
+  // borrows between LockSurface() and UnlockSurface() and otherwise has none.
+  // The surface must outlive the buffer, or be replaced by a later Init()
+  // first; a lock CHECK-fails if the surface is smaller than the page.
+  void Init(int width, int height, PixelSurface& surface);
 
   // The view covering the whole buffer. Everything that draws goes through a
   // view; this is the one for callers that want the entire page.
@@ -314,32 +303,29 @@ class PixelBuffer {
 
   [[nodiscard]] int width() const { return width_; }
   [[nodiscard]] int height() const { return height_; }
-  // Padding kept past the end of every row. Zero for every buffer the games
-  // create; a view copies it so its rows still line up.
+  // Padding kept past the end of every row: zero for memory, and whatever the
+  // surface keeps past width() for a surface's buffer. A view copies it so its
+  // rows still line up.
   [[nodiscard]] int pitch() const { return pitch_; }
-  // The buffer's whole allocation. Empty before Init(), and empty for the
-  // window's buffer while its surface is unlocked.
+  // The buffer's whole allocation. Empty before Init(), and empty for a
+  // surface's buffer while the surface is unlocked.
   [[nodiscard]] std::span<uint8_t> bytes() { return bytes_; }
 
-  // Whether this is the buffer the window shows, that is whether it was
-  // initialized with BUFFER_VISIBLE.
-  [[nodiscard]] bool IsWindowSurface() const {
-    return window_texture_ != nullptr;
-  }
+  // Whether the pixels belong to a PixelSurface, that is whether the buffer
+  // has to be locked before they can be touched.
+  [[nodiscard]] bool HasSurface() const { return surface_ != nullptr; }
 
-  // Locks and unlocks the underlying SDL surface. Callers normally use
-  // PixelView::Lock/Unlock, which also reattach the view to the freshly
-  // locked pixels.
+  // Locks and unlocks the attached surface. Locks nest: only the outermost
+  // pair reaches the surface. LockSurface() returns false if the surface
+  // could not be locked, in which case the matching UnlockSurface() must not
+  // be called. Both succeed and count nothing for a buffer without a surface.
+  // Callers normally use PixelView::Lock/Unlock, which also reattach the view
+  // to the freshly locked pixels.
   bool LockSurface();
   void UnlockSurface();
   // How deep the nested LockSurface() calls are; the surface is locked while
   // this is non-zero.
   [[nodiscard]] int lock_count() const { return lock_count_; }
-
-  // Releases the window texture and surfaces Init() created for a visible
-  // buffer, and cancels its pending redraw. The destructor calls it; calling
-  // it again does nothing.
-  void ReleaseSurfaces();
 
   // Draws `bitmap` onto this buffer with its centre landing on `center`, scaled
   // and rotated. `scale` is 24.8 fixed point (0x100 = 1.0) and is ignored when
@@ -349,67 +335,25 @@ class PixelBuffer {
   void DrawScaledRotated(const BitmapClass& bitmap, const TPoint2D& center,
                          int32_t scale, uint8_t angle);
 
-  // Presents the buffer's current contents. UnlockSurface() calls it with
-  // `end_frame` false, which only arms a timer to redraw if nothing else
-  // presents within the next frame; Display::EndFrame() passes true to present
-  // immediately.
-  void Present(bool end_frame) const;
-  // Sets the 256 RGB triples the paletted pixels are shown through, and
-  // redraws with them. Anything already presented changes color, the way a
-  // VGA palette write did.
-  void UpdatePalette(std::span<const uint8_t> palette);
-  // The SDL_Palette of the display surface, as a void* so that callers need
-  // no SDL header.
-  [[nodiscard]] const void* palette() const;
-
-  // Presents `frame`, `width` x `height` pixels, stretched to the
-  // window by SDL rather than by the game - this is how a 320x200 movie
-  // fills a 640x400 screen without the game scaling every frame itself.
-  // Uses the palette already set via UpdatePalette. The frame stays on screen,
-  // following later UpdatePalette() calls the way a VGA screen would, until
-  // something is drawn to the display surface.
-  void PresentScaledFrame(std::span<const uint8_t> frame, int width,
-                          int height);
-  // Drops the scaling texture, so the next present shows the display
-  // surface again. UnlockSurface() calls it as soon as anything draws.
-  void DropScaledFrame();
-
- protected:
-  void CreateDisplaySurface();
-  void DestroyDisplaySurface();
-  // SDL types, held as void* so that this header pulls in no SDL headers.
-  void* window_texture_ = nullptr;   // SDL_Texture*, the window's contents
-  void* palette_surface_ = nullptr;  // SDL_Surface*, the 8-bit pixels
-  void* scaled_frame_texture_ =
-      nullptr;  // SDL_Texture* for low-res content scaling
-  int scaled_frame_width_ = 0;
-  int scaled_frame_height_ = 0;
-
  private:
-  // Converts scaled_frame_ to RGBA with the current palette and uploads it to
-  // scaled_frame_texture_. Returns false if SDL refused the texture.
-  bool UploadScaledFrame();
-
-  // The paletted pixels behind scaled_frame_texture_, scaled_frame_width_ x
-  // scaled_frame_height_. The texture holds baked colors, so a palette change
-  // has to convert these again. Empty while there is no texture.
-  std::vector<uint8_t> scaled_frame_;
-
   int width_ = 0;
   int height_ = 0;
-  // Padding kept past the end of every row; zero for every buffer the games
-  // create.
+  // Padding kept past the end of every row; zero for memory, set from the
+  // surface's rows by LockSurface().
   int pitch_ = 0;
   // How deep the nested LockSurface() calls are; the surface is locked while
   // this is non-zero.
   int lock_count_ = 0;
 
   // The pixels, wherever they came from: owned_pixels_, the caller's span, or
-  // the locked SDL surface. Empty when the window's surface is unlocked.
+  // the locked surface. Empty while surface_ is unlocked.
   std::span<uint8_t> bytes_;
   // The allocation behind bytes_ when the buffer allocated its own pixels;
-  // null when the pixels are the caller's or the SDL surface's.
+  // null when the pixels are the caller's or the surface's.
   std::unique_ptr<uint8_t[]> owned_pixels_;
+  // Where the pixels come from while locked; null for a buffer of plain
+  // memory. Not owned.
+  PixelSurface* surface_ = nullptr;
 
   // The view onto all of this buffer. Attached to `this` by the constructors
   // and re-attached whenever the pixels move: Init(), LockSurface() and

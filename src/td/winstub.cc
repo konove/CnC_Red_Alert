@@ -193,9 +193,6 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
       Prog_End();
       CCDebugString("C&C95 - About to Invalidate_Cached_Icons.\n");
       Invalidate_Cached_Icons();
-      CCDebugString("C&C95 - About to release the video surfaces.\n");
-      TheScreen().visible_page().ReleaseSurfaces();
-      TheScreen().hidden_page().ReleaseSurfaces();
       AllSurfaces.Release();
       if (!InDebugger) {
         CCDebugString("C&C95 - About to reset the video mode.\n");

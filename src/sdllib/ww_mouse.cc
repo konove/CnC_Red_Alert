@@ -197,10 +197,11 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot,
         surface.subspan(base::ToSize(y * sdl_surf->pitch)).begin());
   }
 
-  if (HasDisplay() && TheDisplay().window_page() != nullptr) {
+  const auto* window_pal =
+      HasDisplay() ? static_cast<const SDL_Palette*>(TheDisplay().palette())
+                   : nullptr;
+  if (window_pal != nullptr) {
     // Sync cursor palette with game palette. Index 0 is transparent.
-    const auto* window_pal =
-        static_cast<const SDL_Palette*>(TheDisplay().window_page()->palette());
     // SDL owns ncolors color entries in this palette.
     SDL_SetPaletteColors(
         sdl_surf->format->palette,
@@ -273,7 +274,7 @@ void WWMouseClass::Clear_Cursor_Clip() { TheDisplay().SetMouseGrab(false); }
 // SDL bakes palette colors into the cursor at creation time, so we must
 // recreate the cursor whenever the game palette changes.
 void WWMouseClass::Update_Palette() {
-  if (!HasDisplay() || TheDisplay().window_page() == nullptr || !sdl_surface_) {
+  if (!HasDisplay() || TheDisplay().palette() == nullptr || !sdl_surface_) {
     return;
   }
 
@@ -286,7 +287,7 @@ void WWMouseClass::Update_Palette() {
   PaletteDirty = false;
 
   const auto* window_pal =
-      static_cast<const SDL_Palette*>(TheDisplay().window_page()->palette());
+      static_cast<const SDL_Palette*>(TheDisplay().palette());
   // SDL owns ncolors entries in the window palette.
   SDL_SetPaletteColors(
       sdl_surface_->format->palette,

@@ -682,7 +682,7 @@ void Show_Who_Was_Responsible() {
     base::At(SlideBuffers, index) = new PixelBuffer;
     base::At(SlideBuffers, index)
         ->Init(TheScreen().visible_view().width(),
-               TheScreen().visible_view().height(), {}, 0, BUFFER_NONE);
+               TheScreen().visible_view().height(), {}, 0);
     Load_Title_Screen(base::Suffix(base::At(SlideNames, index), 0).data(),
                       &base::At(SlideBuffers, index)->view(),
                       base::At(SlidePals, index));
@@ -693,7 +693,7 @@ void Show_Who_Was_Responsible() {
   // blitted.
   BackgroundPage = new PixelBuffer;
   BackgroundPage->Init(TheScreen().visible_view().width(),
-                       TheScreen().visible_view().height(), {}, 0, BUFFER_NONE);
+                       TheScreen().visible_view().height(), {}, 0);
 
   TheScreen().visible_view().BlitTo(BackgroundPage->view());
 

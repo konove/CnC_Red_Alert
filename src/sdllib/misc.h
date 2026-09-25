@@ -49,6 +49,9 @@
 /* The following prototypes are for the file: DDRAW.CPP
  */
 /*=========================================================================*/
+// Gives the window a w x h paletted surface through
+// TheDisplay().SetVideoMode(); the surface is always 8-bit, whatever
+// `bits_per_pixel` says. Returns false if SDL could not create it.
 bool Set_Video_Mode(int w, int h, int bits_per_pixel);
 void Wait_Blit();
 

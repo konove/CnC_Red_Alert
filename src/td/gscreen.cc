@@ -432,8 +432,7 @@ static void Add_Current_Screen() {
     base::At(ScreenList, CurrentScreen) = new PixelBuffer;
     base::At(ScreenList, CurrentScreen)
         ->Init(TheScreen().visible_view().width(),
-               TheScreen().visible_view().height(), {}, 0,
-               static_cast<PixelBufferFlags>(0));
+               TheScreen().visible_view().height(), {}, 0);
     TheScreen().visible_view().BlitTo(
         base::At(ScreenList, CurrentScreen)->view());
 

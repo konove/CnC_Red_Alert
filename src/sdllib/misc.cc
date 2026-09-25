@@ -24,9 +24,9 @@ int RandNumb;
 void (*Misc_Focus_Loss_Function)();
 void (*Misc_Focus_Restore_Function)();
 
-bool Set_Video_Mode(int /*w*/, int /*h*/, int /*bits_per_pixel*/) {
+bool Set_Video_Mode(int w, int h, int /*bits_per_pixel*/) {
   absl::PrintF("%s\n", __func__);
-  return true;
+  return TheDisplay().SetVideoMode(w, h);
 }
 
 void Wait_Blit() {

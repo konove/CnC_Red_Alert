@@ -26,9 +26,8 @@ bool Screen::Init() {
     return false;
   }
 
-  visible_page_.Init(kWidth, mode_height_, {}, 0, BUFFER_VISIBLE);
-  TheDisplay().AttachWindowPage(visible_page_);
-  hidden_page_.Init(kWidth, mode_height_, {}, 0, BUFFER_NONE);
+  visible_page_.Init(kWidth, mode_height_, TheDisplay());
+  hidden_page_.Init(kWidth, mode_height_, {}, 0);
 
   // A 480-line mode letterboxes the 400-line game area in the middle.
   const int letterbox_top = (mode_height_ - kHeight) / 2;

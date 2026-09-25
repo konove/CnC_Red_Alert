@@ -1687,7 +1687,7 @@ void RadarClass::Set_Radar_Position(CELL cell) {
           */
           PixelBuffer temp_surface;
           temp_surface.Init(((RadarWidth + 16) / 16) * 16,
-                            ((RadarHeight + 16) / 16) * 16, {}, 0, BUFFER_NONE);
+                            ((RadarHeight + 16) / 16) * 16, {}, 0);
 
           TheScreen().hidden_view().BlitTo(
               temp_surface.view(),

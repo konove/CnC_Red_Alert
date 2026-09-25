@@ -8,12 +8,9 @@
 #include <span>
 
 #include "sdllib/display.h"
-#include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 
 void Display::SetPalette(std::span<const uint8_t> palette) {
-  if (window_page_ != nullptr) {
-    window_page_->UpdatePalette(palette);
-  }
+  UpdatePalette(palette);
   Update_Mouse_Palette();
 }

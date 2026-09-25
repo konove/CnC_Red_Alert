@@ -113,9 +113,9 @@ void Increase_Palette_Luminance(std::span<unsigned char> palette,
  *=========================================================================*/
 void Interpolate_2X_Scale(PixelBuffer* source, PixelView* /*unused*/,
                           const char* /*unused*/) {
-  // Render using SDL scaling - palette already set via UpdatePalette
+  // SDL stretches the frame to the window, in the palette already set.
   source->LockSurface();
-  TheDisplay().window_page()->PresentScaledFrame(
-      source->bytes(), source->width(), source->height());
+  TheDisplay().PresentScaledFrame(source->bytes(), source->width(),
+                                  source->height());
   source->UnlockSurface();
 }

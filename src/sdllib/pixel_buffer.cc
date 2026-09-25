@@ -18,18 +18,12 @@
 
 // File: The out-of-line members of PixelView and PixelBuffer: attaching a view
 // to a page, the drawing primitives that work on the locked pixels, giving a
-// page its pixels, and - for the one page the window shows - the SDL surface
-// and textures behind it and the presenting done through them.
+// page its pixels, and locking the surface a page borrows them from.
 //
 // The primitives all clip with the Cohen-Sutherland outcodes of base/clip.h
 // and then walk whole rows.
 
 #include "sdllib/pixel_buffer.h"
-
-#include <SDL_pixels.h>
-#include <SDL_render.h>
-#include <SDL_stdinc.h>
-#include <SDL_surface.h>
 
 #include <algorithm>
 #include <array>
@@ -38,6 +32,7 @@
 #include <cstdint>
 #include <memory>
 #include <numbers>
+#include <optional>
 #include <span>
 #include <string_view>
 #include <utility>
@@ -50,9 +45,8 @@
 #include "base/numeric.h"
 #include "base/types.h"
 #include "sdllib/bitmap.h"
-#include "sdllib/display.h"
 #include "sdllib/font.h"
-#include "sdllib/ww_win.h"
+#include "sdllib/pixel_surface.h"
 
 PixelView::PixelView(PixelBuffer* buffer, const int x, const int y,
                      const int width, const int height) {
@@ -138,8 +132,8 @@ int PixelView::lock_count() const {
 bool PixelView::NeedsLock() const {
   // Named for the DirectDraw surfaces this used to mean; callers read it as
   // "do the pixels have to be locked before they can be touched", which is
-  // true of exactly the window's surface.
-  return buffer_ != nullptr && buffer_->IsWindowSurface();
+  // true of exactly the buffers that borrow a surface's pixels.
+  return buffer_ != nullptr && buffer_->HasSurface();
 }
 
 void PixelView::PutPixel(const int x, const int y, const uint8_t color) {
@@ -1098,7 +1092,7 @@ PixelBuffer::PixelBuffer(const int width, const int height,
                          const std::span<uint8_t> buffer,
                          const int32_t byte_count)
     : PixelBuffer() {
-  Init(width, height, buffer, byte_count, BUFFER_NONE);
+  Init(width, height, buffer, byte_count);
 }
 
 PixelBuffer::PixelBuffer(const int width, const int height,
@@ -1112,38 +1106,22 @@ PixelBuffer::PixelBuffer() {
   whole_.Attach(this, 0, 0, 0, 0);
 }
 
-PixelBuffer::~PixelBuffer() {
-  ReleaseSurfaces();
-  if (HasDisplay() && TheDisplay().window_page() == this) {
-    TheDisplay().DetachWindowPage();
-  }
-}
-
 void PixelBuffer::Init(const int width, const int height,
                        const std::span<uint8_t> buffer,
-                       const int32_t byte_count, const PixelBufferFlags flags) {
+                       const int32_t byte_count) {
   CHECK_GE(width, 0);
   CHECK_GE(height, 0);
   CHECK_GE(byte_count, 0);
+  CHECK_EQ(lock_count_, 0);
   const auto pixel_count = base::ToSize(width) * base::ToSize(height);
-  if (!base::Any(flags & BUFFER_VISIBLE)) {
-    CHECK_LE(pixel_count,
-             buffer.empty()
-                 ? (byte_count == 0 ? pixel_count : base::ToSize(byte_count))
-                 : buffer.size());
-  }
+  const auto size = byte_count == 0 ? pixel_count : base::ToSize(byte_count);
+  CHECK_LE(pixel_count, buffer.empty() ? size : buffer.size());
   width_ = width;
   height_ = height;
   pitch_ = 0;
+  surface_ = nullptr;
 
-  if (base::Any(flags & BUFFER_VISIBLE)) {
-    // The pixels are the SDL surface's; bytes_ points at them only between
-    // LockSurface() and UnlockSurface().
-    owned_pixels_.reset();
-    bytes_ = {};
-    CreateDisplaySurface();
-  } else if (buffer.empty()) {
-    const auto size = byte_count == 0 ? pixel_count : base::ToSize(byte_count);
+  if (buffer.empty()) {
     owned_pixels_ = std::make_unique<uint8_t[]>(size);
     // The allocation above holds exactly `size` bytes.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
@@ -1156,32 +1134,40 @@ void PixelBuffer::Init(const int width, const int height,
   whole_.Attach(this, 0, 0, width_, height_);
 }
 
-void PixelBuffer::ReleaseSurfaces() { DestroyDisplaySurface(); }
+void PixelBuffer::Init(const int width, const int height,
+                       PixelSurface& surface) {
+  CHECK_GE(width, 0);
+  CHECK_GE(height, 0);
+  CHECK_EQ(lock_count_, 0);
+  width_ = width;
+  height_ = height;
+  pitch_ = 0;
+  surface_ = &surface;
+  // The pixels are the surface's; bytes_ points at them only between
+  // LockSurface() and UnlockSurface().
+  owned_pixels_.reset();
+  bytes_ = {};
 
-namespace {
-
-// The renderer, which every texture and present in this file needs.
-SDL_Renderer* Renderer() {
-  return static_cast<SDL_Renderer*>(TheDisplay().renderer());
+  whole_.Attach(this, 0, 0, width_, height_);
 }
 
-}  // namespace
-
 bool PixelBuffer::LockSurface() {
-  if (!palette_surface_) {
+  if (surface_ == nullptr) {
     return true;
   }
 
-  if (!lock_count_) {
-    if (SDL_LockSurface(static_cast<SDL_Surface*>(palette_surface_)) != 0) {
+  if (lock_count_ == 0) {
+    const std::optional<PixelSurface::Pixels> pixels = surface_->Lock();
+    if (!pixels.has_value()) {
       return false;
     }
-    const auto* surface = static_cast<SDL_Surface*>(palette_surface_);
-    // SDL_LockSurface exposes pitch bytes for each of the surface's rows until
-    // it is unlocked.
-    // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    bytes_ = std::span(static_cast<uint8_t*>(surface->pixels),
-                       base::ToSize(surface->pitch) * base::ToSize(surface->h));
+    // A surface smaller than the page would let every primitive run off the
+    // end of its rows; that is a mismatch between Init() and the surface.
+    CHECK_GE(pixels->pitch, width_);
+    CHECK_GE(pixels->bytes.size(),
+             base::ToSize(pixels->pitch) * base::ToSize(height_));
+    bytes_ = pixels->bytes;
+    pitch_ = pixels->pitch - width_;
     whole_.Attach(this, 0, 0, width_, height_);
   }
 
@@ -1190,230 +1176,17 @@ bool PixelBuffer::LockSurface() {
 }
 
 void PixelBuffer::UnlockSurface() {
-  if (!palette_surface_ || !lock_count_) {
+  if (surface_ == nullptr || lock_count_ == 0) {
     return;
   }
 
   lock_count_--;
 
-  if (!lock_count_) {
-    SDL_UnlockSurface(static_cast<SDL_Surface*>(palette_surface_));
+  if (lock_count_ == 0) {
     bytes_ = {};
     // The pixels are gone until the next lock; leave no view pointing at them.
     whole_.Attach(this, 0, 0, width_, height_);
-    // Content was drawn to palette_surface_ - clear VQA texture to switch back
-    // to normal rendering mode
-    if (scaled_frame_texture_) {
-      DropScaledFrame();
-    }
-    Present(false);
-  }
-}
-
-void PixelBuffer::Present(const bool end_frame) const {
-  // If VQA texture exists, keep presenting it (for animations like map select
-  // that need to preserve the last frame indefinitely)
-  if (scaled_frame_texture_) {
-    TheDisplay().CancelRedrawTimer();
-
-    if (!end_frame) {
-      return;
-    }
-
-    // Present the VQA frame
-    SDL_RenderClear(Renderer());
-    SDL_RenderCopy(Renderer(), static_cast<SDL_Texture*>(scaled_frame_texture_),
-                   nullptr, nullptr);
-    TheDisplay().PresentFrame();
-    SDL_Event_Loop();
-    return;
-  }
-
-  auto* window_tex = static_cast<SDL_Texture*>(window_texture_);
-
-  // Nothing asked for the frame to end, so leave the drawing in the surface
-  // and let the redraw timer present it.
-  if (!end_frame) {
-    TheDisplay().ArmRedrawTimer();
-    return;
-  }
-
-  TheDisplay().CancelRedrawTimer();
-
-  // blit from paletted surface
-  SDL_Surface* tmp_surf = nullptr;
-  SDL_LockTextureToSurface(window_tex, nullptr, &tmp_surf);
-  SDL_BlitSurface(static_cast<SDL_Surface*>(palette_surface_), nullptr,
-                  tmp_surf, nullptr);
-  SDL_UnlockTexture(window_tex);
-
-  // copy to screen
-  SDL_RenderClear(Renderer());
-  SDL_RenderCopy(Renderer(), window_tex, nullptr, nullptr);
-  TheDisplay().PresentFrame();
-
-  // update the event loop here too for now
-  SDL_Event_Loop();
-}
-
-void PixelBuffer::UpdatePalette(const std::span<const uint8_t> palette) {
-  auto* sdl_pal = static_cast<SDL_Surface*>(palette_surface_)->format->palette;
-  if (palette.size() / 3 < base::ToSize(sdl_pal->ncolors)) {
-    return;
-  }
-  // SDL owns exactly ncolors entries in the surface palette.
-  const auto colors =
-      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-      std::span(sdl_pal->colors, base::ToSize(sdl_pal->ncolors));
-
-  bool changed = false;
-
-  for (int i = 0; i < sdl_pal->ncolors; i++) {
-    // convert from 6-bit
-    const int new_r = (base::At(palette, base::ToSize((i * 3) + 0)) * 4) +
-                      (base::At(palette, base::ToSize((i * 3) + 0)) / 16);
-    const int new_g = (base::At(palette, base::ToSize((i * 3) + 1)) * 4) +
-                      (base::At(palette, base::ToSize((i * 3) + 1)) / 16);
-    const int new_b = (base::At(palette, base::ToSize((i * 3) + 2)) * 4) +
-                      (base::At(palette, base::ToSize((i * 3) + 2)) / 16);
-    changed = changed ||
-              std::cmp_not_equal(base::At(colors, base::ToSize(i)).r, new_r) ||
-              std::cmp_not_equal(base::At(colors, base::ToSize(i)).g, new_g) ||
-              std::cmp_not_equal(base::At(colors, base::ToSize(i)).b, new_b);
-    base::At(colors, base::ToSize(i)).r = static_cast<Uint8>(new_r);
-    base::At(colors, base::ToSize(i)).g = static_cast<Uint8>(new_g);
-    base::At(colors, base::ToSize(i)).b = static_cast<Uint8>(new_b);
-  }
-
-  if (!changed) {
-    return;
-  }
-
-  // make sure it gets updated
-  SDL_SetPaletteColors(sdl_pal, sdl_pal->colors, 0, sdl_pal->ncolors);
-
-  // A scaled frame holds baked colors; the next end of frame presents it.
-  if (scaled_frame_texture_) {
-    UploadScaledFrame();
-  }
-
-  Present(false);
-}
-
-const void* PixelBuffer::palette() const {
-  return static_cast<SDL_Surface*>(palette_surface_)->format->palette;
-}
-
-void PixelBuffer::CreateDisplaySurface() {
-  window_texture_ =
-      SDL_CreateTexture(Renderer(), SDL_PIXELFORMAT_RGB888,
-                        SDL_TEXTUREACCESS_STREAMING, width_, height_);
-  palette_surface_ = SDL_CreateRGBSurface(0, width_, height_, 8, 0, 0, 0, 0);
-}
-
-void PixelBuffer::DestroyDisplaySurface() {
-  // Only the window page can have armed the timer, and only it has surfaces
-  // to release; ~Display cancels anything still pending.
-  if (window_texture_ != nullptr && HasDisplay()) {
-    TheDisplay().CancelRedrawTimer();
-  }
-  DropScaledFrame();
-  if (window_texture_) {
-    SDL_DestroyTexture(static_cast<SDL_Texture*>(window_texture_));
-    window_texture_ = nullptr;
-  }
-  if (palette_surface_) {
-    SDL_FreeSurface(static_cast<SDL_Surface*>(palette_surface_));
-    palette_surface_ = nullptr;
-  }
-}
-
-void PixelBuffer::PresentScaledFrame(std::span<const uint8_t> frame,
-                                     const int width, const int height) {
-  if (width <= 0 || height <= 0) {
-    return;
-  }
-  const auto frame_width = base::ToSize(width);
-  const auto frame_height = base::ToSize(height);
-  if (frame_width > frame.size() / frame_height || !palette_surface_) {
-    return;
-  }
-  TheDisplay().CancelRedrawTimer();
-
-  // Create intermediate texture on first use or if size changed
-  if (!scaled_frame_texture_ || scaled_frame_width_ != width ||
-      scaled_frame_height_ != height) {
-    if (scaled_frame_texture_) {
-      SDL_DestroyTexture(static_cast<SDL_Texture*>(scaled_frame_texture_));
-    }
-    scaled_frame_texture_ =
-        SDL_CreateTexture(Renderer(), SDL_PIXELFORMAT_RGBA32,
-                          SDL_TEXTUREACCESS_STREAMING, width, height);
-    SDL_SetTextureScaleMode(static_cast<SDL_Texture*>(scaled_frame_texture_),
-                            SDL_ScaleModeBest);
-    scaled_frame_width_ = width;
-    scaled_frame_height_ = height;
-  }
-
-  scaled_frame_.assign(
-      frame.begin(),
-      frame.begin() + static_cast<std::ptrdiff_t>(frame_width * frame_height));
-  if (!UploadScaledFrame()) {
-    return;
-  }
-
-  // Trigger immediate present via Present
-  Present(true);
-}
-
-bool PixelBuffer::UploadScaledFrame() {
-  const auto frame_width = base::ToSize(scaled_frame_width_);
-  const std::span<const uint8_t> frame = scaled_frame_;
-
-  // Get the palette already set via UpdatePalette (already 8-bit RGB)
-  const auto* sdl_pal =
-      static_cast<SDL_Surface*>(palette_surface_)->format->palette;
-
-  // Convert paletted pixels to RGBA and upload to intermediate texture
-  void* pixels = nullptr;
-  int pitch = 0;
-  if (SDL_LockTexture(static_cast<SDL_Texture*>(scaled_frame_texture_), nullptr,
-                      &pixels, &pitch) != 0) {
-    return false;
-  }
-  // SDL_LockTexture exposes pitch bytes for each texture row.
-  const auto dest =
-      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-      std::span(static_cast<uint32_t*>(pixels),
-                base::ToSize(pitch / 4) * base::ToSize(scaled_frame_height_));
-  // SDL owns exactly ncolors entries in the surface palette.
-  const auto colors =
-      // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-      std::span(sdl_pal->colors, base::ToSize(sdl_pal->ncolors));
-  for (int y = 0; y < scaled_frame_height_; y++) {
-    for (int x = 0; x < scaled_frame_width_; x++) {
-      const uint8_t idx =
-          base::At(frame, (base::ToSize(y) * frame_width) + base::ToSize(x));
-      // Use palette already converted to 8-bit by UpdatePalette
-      const uint8_t r = base::At(colors, idx).r;
-      const uint8_t g = base::At(colors, idx).g;
-      const uint8_t b = base::At(colors, idx).b;
-      base::At(dest,
-               (base::ToSize(y) * base::ToSize(pitch / 4)) + base::ToSize(x)) =
-          0xFFU << 24U | uint32_t{b} << 16U | uint32_t{g} << 8U | r;
-    }
-  }
-  SDL_UnlockTexture(static_cast<SDL_Texture*>(scaled_frame_texture_));
-  return true;
-}
-
-void PixelBuffer::DropScaledFrame() {
-  if (scaled_frame_texture_) {
-    SDL_DestroyTexture(static_cast<SDL_Texture*>(scaled_frame_texture_));
-    scaled_frame_texture_ = nullptr;
-    scaled_frame_width_ = 0;
-    scaled_frame_height_ = 0;
-    scaled_frame_.clear();
+    surface_->Unlock();
   }
 }
 
