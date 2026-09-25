@@ -1,6 +1,6 @@
 // Bounded access to the legacy games' in-memory INI text.
-#ifndef CNC_RED_ALERT_PORT_PROFILE_BUFFER_H_
-#define CNC_RED_ALERT_PORT_PROFILE_BUFFER_H_
+#ifndef CNC_RED_ALERT_ENGINE_FILE_PROFILE_BUFFER_H_
+#define CNC_RED_ALERT_ENGINE_FILE_PROFILE_BUFFER_H_
 
 #include <cstddef>
 #include <optional>
@@ -27,4 +27,4 @@ bool WriteProfile(std::span<char> storage, std::string_view section,
                   const char* key, const char* value);
 
 }  // namespace port
-#endif  // CNC_RED_ALERT_PORT_PROFILE_BUFFER_H_
+#endif  // CNC_RED_ALERT_ENGINE_FILE_PROFILE_BUFFER_H_

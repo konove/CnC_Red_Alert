@@ -3,7 +3,7 @@
 //
 // Originally CCFILE.CPP by Joe L. Bostic, started August 8, 1994.
 
-#include "tech/game_file.h"
+#include "engine/file/game_file.h"
 
 #include <filesystem>
 #include <memory>
@@ -14,14 +14,14 @@
 #include <utility>
 
 #include "engine/base/types.h"
+#include "engine/file/disk_file.h"
+#include "engine/file/disk_stream.h"
+#include "engine/file/file_access.h"
+#include "engine/file/mix_archive.h"
+#include "engine/file/search_paths.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/memory_stream.h"
 #include "engine/stream/range_stream.h"
-#include "tech/disk_file.h"
-#include "tech/disk_stream.h"
-#include "tech/file_access.h"
-#include "tech/mix_archive.h"
-#include "tech/search_paths.h"
 
 std::unique_ptr<ByteStream> OpenGameFile(const std::string_view name,
                                          const FileAccess access) {

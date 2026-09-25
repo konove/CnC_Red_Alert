@@ -110,6 +110,8 @@
 #include "engine/base/numeric.h"
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/types.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
 #include "sdllib/fading_table.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
@@ -160,8 +162,6 @@
 #include "td/unit.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
 
 // The current theater's art and icons, registered and cached by
 // Init_Theater().

@@ -53,6 +53,7 @@
 
 #include "absl/log/check.h"
 #include "engine/base/enum_array.h"
+#include "engine/file/mix_archive.h"
 #include "engine/platform/ftimer.h"
 #include "magic_enum/magic_enum.hpp"  // IWYU pragma: keep - used by an DCHECK() below.
 #include "ra/defines.h"
@@ -62,7 +63,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/mix_archive.h"
 
 /*
 **	This points to the loaded mouse shapes.

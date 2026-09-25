@@ -8,9 +8,9 @@
 #include <string_view>
 
 #include "engine/base/types.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
 #include "engine/stream/seek_origin.h"
-#include "tech/file_access.h"
-#include "tech/game_file.h"
 
 bool GameFileVqaIo::Open(const std::string_view name) {
   stream_ = OpenGameFile(name, FileAccess::kRead);

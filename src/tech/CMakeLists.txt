@@ -16,13 +16,16 @@ target_sources(tech PUBLIC
 )
 
 # audio_mixer.h shows SDL audio types to whoever includes it.
-# glow_pulse.h includes engine/platform/ftimer.h. disk_file.h, game_file.h and
-# many other public headers include engine/stream/byte_stream.h and friends.
-# mix_archive.h's public MixArchive::Register() takes a const PKey*, so
-# engine_crypto is PUBLIC.
+# glow_pulse.h includes engine/platform/ftimer.h; game_file_vqa_io.h and
+# audio_mixer.h include engine/stream/byte_stream.h and friends.
+# audio_mixer.cc, pcx_file.cc, game_file_vqa_io.cc and wsa_animation.cc still
+# use engine/file privately; no public tech header exposes engine/crypto or
+# engine/file any more. Both stay PUBLIC anyway: dozens of ra/ and td/
+# translation units include those headers directly and, until they link the
+# engine libraries themselves, reach them only through tech's PUBLIC link.
 find_package(SDL2 REQUIRED)
 target_link_libraries(tech
-        PUBLIC engine_base engine_platform engine_stream engine_crypto absl::strings SDL2::SDL2
+        PUBLIC engine_base engine_platform engine_stream engine_crypto engine_file absl::strings SDL2::SDL2
         PRIVATE sdllib port vqa32 engine_codec
 )
 
@@ -31,9 +34,7 @@ include(Testing)
 add_gtest(
     NAME tech_test
     SOURCES
-        mix_archive_test.cc
-        packet_test.cc disk_file_test.cc
-        search_paths_test.cc disk_stream_test.cc game_file_test.cc
+        packet_test.cc
         rgb_test.cc glow_pulse_test.cc wsa_animation_test.cc audio_mixer_test.cc
     LIBS tech
 )

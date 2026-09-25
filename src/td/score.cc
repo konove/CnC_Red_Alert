@@ -67,6 +67,9 @@
 #include "engine/base/bytes_of.h"
 #include "engine/base/numeric.h"
 #include "engine/base/random.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
 #include "engine/platform/timer.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
@@ -103,9 +106,6 @@
 #include "td/vector.h"
 #include "td/world.h"
 #include "tech/audio_mixer.h"
-#include "tech/file_access.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
 #include "tech/wsa_animation.h"
 
 #define SCORETEXT_X 184

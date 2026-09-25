@@ -54,6 +54,7 @@
 #include <cstdio>
 
 #include "absl/strings/str_format.h"
+#include "engine/file/game_file.h"
 #include "engine/platform/timer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -73,7 +74,6 @@
 #include "td/winstub.h"
 #include "td/world.h"
 #include "tech/audio_mixer.h"
-#include "tech/game_file.h"
 
 void GDI_Ending() {
 #ifdef DEMO

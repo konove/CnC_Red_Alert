@@ -3,7 +3,7 @@
 
 // File: ByteStream, a seekable source or sink of bytes with no name. The
 // three kinds the game composes each have their own header: DiskStream (a file
-// on disk, tech/disk_stream.h), MemoryStream (a block of memory,
+// on disk, engine/file/disk_stream.h), MemoryStream (a block of memory,
 // engine/stream/memory_stream.h) and RangeStream (a window onto another
 // stream, engine/stream/range_stream.h). A file inside a mixfile inside
 // another mixfile is a RangeStream over a RangeStream over a DiskStream.

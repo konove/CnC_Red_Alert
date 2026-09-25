@@ -30,6 +30,7 @@
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
 #include "engine/base/strings/number_parse.h"
+#include "engine/file/mix_archive.h"
 #include "engine/platform/win32/win32_types.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -47,7 +48,6 @@
 #include "sdllib/display.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/mix_archive.h"
 #include "tech/rgb.h"
 
 #ifdef _WIN32

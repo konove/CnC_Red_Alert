@@ -62,6 +62,8 @@
 #include "engine/base/numeric.h"
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/file/disk_file.h"
+#include "engine/file/mix_archive.h"
 #include "engine/platform/file_system.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/platform.h"
@@ -92,8 +94,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/disk_file.h"
-#include "tech/mix_archive.h"
 
 /***********************************************************************************************
  * LoadOptionsClass::LoadOptionsClass -- class constructor *

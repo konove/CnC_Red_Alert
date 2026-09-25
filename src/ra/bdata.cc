@@ -79,6 +79,7 @@
 #include "engine/base/array.h"
 #include "engine/base/enum_array.h"
 #include "engine/base/fixed.h"
+#include "engine/file/mix_archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets.h"
 #include "ra/building.h"
@@ -108,7 +109,6 @@
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
-#include "tech/mix_archive.h"
 
 #define FATSHIP
 

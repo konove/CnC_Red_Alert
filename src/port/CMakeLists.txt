@@ -27,6 +27,6 @@ endif()
 include(Testing)
 add_gtest(
     NAME port_test
-    SOURCES inet_text_test.cc profile_buffer_test.cc socket_bytes_test.cc
+    SOURCES inet_text_test.cc socket_bytes_test.cc
     LIBS port engine_base
 )

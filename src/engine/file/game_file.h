@@ -1,5 +1,5 @@
-#ifndef CNC_RED_ALERT_TECH_GAME_FILE_H_
-#define CNC_RED_ALERT_TECH_GAME_FILE_H_
+#ifndef CNC_RED_ALERT_ENGINE_FILE_GAME_FILE_H_
+#define CNC_RED_ALERT_ENGINE_FILE_GAME_FILE_H_
 
 // File: opening the game's data as a ByteStream. A name is looked up as a
 // loose file through SearchPaths first and then inside the registered
@@ -14,8 +14,8 @@
 #include <string_view>
 
 #include "engine/base/types.h"
+#include "engine/file/file_access.h"
 #include "engine/stream/byte_stream.h"
-#include "tech/file_access.h"
 
 // Returns a stream over the bytes of name resolved the way the game looks up
 // data: writes never search the search paths or the archives, going straight
@@ -41,4 +41,4 @@ base::ssize GameFileSize(std::string_view name);
 // there is none; a file packed in an archive cannot be deleted.
 bool DeleteGameFile(std::string_view name);
 
-#endif  // CNC_RED_ALERT_TECH_GAME_FILE_H_
+#endif  // CNC_RED_ALERT_ENGINE_FILE_GAME_FILE_H_

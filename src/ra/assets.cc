@@ -9,11 +9,11 @@
 #include "absl/strings/str_format.h"
 #include "engine/base/array.h"
 #include "engine/base/enum_array.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/defines.h"
 #include "ra/ini.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
 
 namespace {
 

@@ -53,6 +53,7 @@
 #include "absl/strings/match.h"
 #include "engine/base/enum_array.h"
 #include "engine/base/numeric.h"
+#include "engine/file/mix_archive.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/conquer.h"
@@ -65,7 +66,6 @@
 #include "td/terrain.h"
 #include "td/type.h"
 #include "td/world.h"
-#include "tech/mix_archive.h"
 
 #define TREE_NORMAL 600
 // #define TREE_WEAK 400

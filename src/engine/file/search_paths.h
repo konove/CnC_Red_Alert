@@ -1,5 +1,5 @@
-#ifndef CNC_RED_ALERT_TECH_SEARCH_PATHS_H_
-#define CNC_RED_ALERT_TECH_SEARCH_PATHS_H_
+#ifndef CNC_RED_ALERT_ENGINE_FILE_SEARCH_PATHS_H_
+#define CNC_RED_ALERT_ENGINE_FILE_SEARCH_PATHS_H_
 
 // File: the directories the game searches for loose data files, and the
 // lookup of a file name through them.
@@ -76,4 +76,4 @@ class SearchPaths {
   static CdProbe cd_probe_;
 };
 
-#endif  // CNC_RED_ALERT_TECH_SEARCH_PATHS_H_
+#endif  // CNC_RED_ALERT_ENGINE_FILE_SEARCH_PATHS_H_

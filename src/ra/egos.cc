@@ -55,6 +55,7 @@
 #include "engine/base/numeric.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/types.h"
+#include "engine/file/game_file.h"
 #include "engine/platform/memflag.h"
 #include "engine/platform/timer.h"
 #include "ra/conquer.h"
@@ -75,7 +76,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/game_file.h"
 
 /*
 ** List of Ego Class instances

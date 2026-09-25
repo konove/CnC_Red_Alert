@@ -86,6 +86,9 @@
 #include "absl/log/globals.h"
 #include "absl/log/initialize.h"
 #include "absl/strings/match.h"
+#include "engine/file/disk_file.h"
+#include "engine/file/file_access.h"
+#include "engine/file/search_paths.h"
 #include "engine/platform/file_system.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/text_window.h"
@@ -96,9 +99,6 @@
 #include "td/goptions.h"
 #include "td/special.h"
 #include "td/world.h"
-#include "tech/disk_file.h"
-#include "tech/file_access.h"
-#include "tech/search_paths.h"
 #endif  // TD_NO_ENTRY_POINT
 
 #ifdef _WIN32

@@ -49,6 +49,7 @@
 #include "engine/base/bytes_of.h"
 #include "engine/base/numeric.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/file/game_file.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
@@ -69,7 +70,6 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 #include "td/world.h"
-#include "tech/game_file.h"
 
 #ifdef NEWMENU
 

@@ -73,6 +73,11 @@
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/crypto/key_phrase_hash.h"
+#include "engine/file/disk_file.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
+#include "engine/file/search_paths.h"
 #include "engine/platform/file_system.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/timer.h"
@@ -149,11 +154,6 @@
 #include "td/winstub.h"
 #include "td/world.h"
 #include "tech/audio_mixer.h"
-#include "tech/disk_file.h"
-#include "tech/file_access.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
-#include "tech/search_paths.h"
 
 #ifdef _WIN32
 #include "td/ccdde.h"

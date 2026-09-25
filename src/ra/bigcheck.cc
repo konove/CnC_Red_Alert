@@ -21,6 +21,7 @@
 
 #include "ra/bigcheck.h"
 
+#include "engine/file/mix_archive.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"
@@ -31,7 +32,6 @@
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/mix_archive.h"
 
 //***********************************************************************************************
 bool BigCheckBoxClass::Draw_Me(PixelView& view, bool forced) {

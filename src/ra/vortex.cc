@@ -75,6 +75,9 @@
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
 #include "engine/stream/archive.h"
 #include "ra/audio.h"
 #include "ra/building.h"
@@ -100,9 +103,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/text_window.h"
-#include "tech/file_access.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
 #include "tech/rgb.h"
 
 /*

@@ -52,6 +52,8 @@
 #include "absl/strings/str_format.h"
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
 #include "engine/platform/timer.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
@@ -80,8 +82,6 @@
 #include "td/type.h"
 #include "td/world.h"
 #include "tech/audio_mixer.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
 #include "tech/wsa_animation.h"
 
 #ifndef DEMO

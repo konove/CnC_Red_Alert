@@ -50,6 +50,9 @@
 #include "absl/strings/str_format.h"
 #include "engine/base/array.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/file/disk_file.h"
+#include "engine/file/disk_stream.h"
+#include "engine/file/file_access.h"
 #include "engine/platform/platform.h"
 #include "engine/stream/archive.h"
 #include "engine/stream/stream_sink.h"
@@ -92,9 +95,6 @@
 #include "td/unit.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/disk_file.h"
-#include "tech/disk_stream.h"
-#include "tech/file_access.h"
 
 /*
 ********************************** Defines **********************************

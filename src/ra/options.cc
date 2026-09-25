@@ -71,6 +71,8 @@
 
 #include "engine/base/array.h"
 #include "engine/base/fixed.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
 #include "ra/audio.h"
 #include "ra/defines.h"
 #include "ra/ini.h"
@@ -80,8 +82,6 @@
 #include "ra/theme.h"
 #include "sdllib/keyboard.h"
 #include "tech/audio_mixer.h"
-#include "tech/file_access.h"
-#include "tech/game_file.h"
 #include "tech/hsv.h"
 #include "tech/rgb.h"
 

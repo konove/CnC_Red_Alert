@@ -91,6 +91,11 @@
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/types.h"
 #include "engine/crypto/key_phrase_hash.h"
+#include "engine/file/disk_stream.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
+#include "engine/file/search_paths.h"
 #include "engine/platform/file_system.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/platform.h"
@@ -164,12 +169,7 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/audio_mixer.h"
-#include "tech/disk_stream.h"
-#include "tech/file_access.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
 #include "tech/rgb.h"
-#include "tech/search_paths.h"
 
 static RemapControlType SidebarScheme;
 

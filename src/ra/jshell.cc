@@ -64,6 +64,7 @@
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/types.h"
 #include "engine/codec/compressed_block.h"
+#include "engine/file/game_file.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
 #include "ra/compat.h"
@@ -71,7 +72,6 @@
 #include "ra/startup.h"
 #include "sdllib/fading_table.h"
 #include "sdllib/text_window.h"
-#include "tech/game_file.h"
 #include "tech/rgb.h"
 
 /***********************************************************************************************

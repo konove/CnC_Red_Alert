@@ -30,6 +30,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/base/numeric.h"
+#include "engine/file/game_file.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
 #include "ra/filepcx.h"
@@ -43,7 +44,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/audio_mixer.h"
-#include "tech/game_file.h"
 
 /***********************************************************************************************
  * Focus_Loss -- this function is called when a library function detects focus

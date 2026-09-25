@@ -27,6 +27,7 @@
 #include "absl/strings/match.h"
 #include "engine/base/enum_array.h"
 #include "engine/base/numeric.h"
+#include "engine/file/mix_archive.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/aircraft.h"
@@ -42,7 +43,6 @@
 #include "td/object_heaps.h"
 #include "td/type.h"
 #include "td/world.h"
-#include "tech/mix_archive.h"
 
 std::span<const std::byte> AircraftTypeClass::LRotorData = {};
 std::span<const std::byte> AircraftTypeClass::RRotorData = {};

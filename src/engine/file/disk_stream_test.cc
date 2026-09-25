@@ -1,6 +1,6 @@
 // Tests for DiskStream, the ByteStream over a file on disk.
 
-#include "tech/disk_stream.h"
+#include "engine/file/disk_stream.h"
 
 #include <array>
 #include <cstddef>
@@ -15,11 +15,11 @@
 #include <utility>
 #include <vector>
 
+#include "engine/file/file_access.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/range_stream.h"
 #include "engine/stream/seek_origin.h"
 #include "gtest/gtest.h"
-#include "tech/file_access.h"
 
 #ifdef __linux__
 #include <linux/prctl.h>

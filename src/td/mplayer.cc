@@ -69,6 +69,8 @@
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/strings/tokenizer.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
 #include "engine/platform/timer.h"
 #include "rand.h"
 #include "sdllib/keyboard.h"
@@ -102,8 +104,6 @@
 #include "td/textbtn.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/file_access.h"
-#include "tech/game_file.h"
 
 static void Garble_Message(std::span<char> buf);
 

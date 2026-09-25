@@ -57,6 +57,7 @@
 #include "absl/strings/match.h"
 #include "engine/base/array.h"
 #include "engine/base/enum_array.h"
+#include "engine/file/mix_archive.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/text_window.h"
@@ -71,7 +72,6 @@
 #include "td/smudge.h"
 #include "td/type.h"
 #include "td/world.h"
-#include "tech/mix_archive.h"
 
 static const SmudgeTypeClass Crater1(
 

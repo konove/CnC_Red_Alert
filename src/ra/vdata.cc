@@ -63,6 +63,7 @@
 
 #include "absl/strings/match.h"
 #include "engine/base/trig.h"
+#include "engine/file/mix_archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -80,7 +81,6 @@
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
-#include "tech/mix_archive.h"
 
 // Submarine
 static const VesselTypeClass VesselSubmarine(

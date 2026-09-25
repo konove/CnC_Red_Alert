@@ -72,6 +72,9 @@
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/unaligned.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
+#include "engine/file/search_paths.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/random_seed.h"
@@ -140,9 +143,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/audio_mixer.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
-#include "tech/search_paths.h"
 
 // #include "WolDebug.h"
 

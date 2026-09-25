@@ -50,6 +50,8 @@
 #include "engine/base/bytes_of.h"
 #include "engine/base/numeric.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -74,8 +76,6 @@
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
 
 // #define CS_DEBUG
 

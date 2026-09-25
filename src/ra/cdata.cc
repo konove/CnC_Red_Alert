@@ -60,6 +60,7 @@
 #include "absl/strings/match.h"
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
+#include "engine/file/mix_archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/compat.h"
 #include "ra/const.h"
@@ -79,7 +80,6 @@
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/text_window.h"
-#include "tech/mix_archive.h"
 
 static const TemplateTypeClass Empty(TEMPLATE_CLEAR1,
                                      kTheaterFlagTemperate | kTheaterFlagSnow |

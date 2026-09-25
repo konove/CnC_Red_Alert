@@ -44,10 +44,10 @@
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
 #include "engine/stream/byte_stream.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/file_access.h"
-#include "tech/game_file.h"
 
 static void Write_Pcx_ScanLine(ByteStream& file,
                                std::span<const uint8_t> pixels);

@@ -70,6 +70,11 @@
 #include "engine/crypto/sha.h"
 #include "engine/crypto/sha1_sink.h"
 #include "engine/crypto/sha1_source.h"
+#include "engine/file/disk_file.h"
+#include "engine/file/disk_stream.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
+#include "engine/file/search_paths.h"
 #include "engine/platform/env.h"
 #include "engine/platform/platform.h"
 #include "engine/stream/archive.h"
@@ -137,11 +142,6 @@
 #include "ra/vessel.h"
 #include "ra/vortex.h"
 #include "ra/world.h"
-#include "tech/disk_file.h"
-#include "tech/disk_stream.h"
-#include "tech/file_access.h"
-#include "tech/game_file.h"
-#include "tech/search_paths.h"
 
 #define SAVE_BLOCK_SIZE 4096
 

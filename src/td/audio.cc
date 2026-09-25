@@ -53,6 +53,8 @@
 #include <vector>
 
 #include "engine/base/enum_array.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
 #include "td/assets.h"
 #include "td/defines.h"
 #include "td/game_state.h"
@@ -63,8 +65,6 @@
 #include "td/special.h"
 #include "td/world.h"
 #include "tech/audio_mixer.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
 
 /***************************************************************************
 **	Controls what special effects may occur on the sound effect.

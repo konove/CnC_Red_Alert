@@ -73,6 +73,9 @@
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/strings/tokenizer.h"
 #include "engine/base/types.h"
+#include "engine/file/disk_file.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
 #include "engine/platform/env.h"
 #include "engine/platform/file_system.h"
 #include "engine/stream/archive.h"
@@ -103,9 +106,6 @@
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
-#include "tech/disk_file.h"
-#include "tech/file_access.h"
-#include "tech/game_file.h"
 
 // #include "WolDebug.h"
 

@@ -29,6 +29,9 @@
 #include "absl/strings/str_format.h"
 #include "engine/base/numeric.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
+#include "engine/file/search_paths.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/win32/win32_registry.h"
 #include "ra/assets.h"
@@ -45,10 +48,7 @@
 #include "ra/text_ids.h"
 #include "ra/theme.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
 #include "tech/rgb.h"
-#include "tech/search_paths.h"
 
 const char* Game_Registry_Key() {
   if constexpr (config::kBuildLanguage == config::BuildLanguage::French) {

@@ -2,7 +2,7 @@
 // free functions that replace the GameFile class, over loose files and
 // cached, uncached and nested mixfiles.
 
-#include "tech/game_file.h"
+#include "engine/file/game_file.h"
 
 #include <bit>
 #include <cstdint>
@@ -19,12 +19,12 @@
 #include "absl/base/attributes.h"
 #include "absl/strings/ascii.h"
 #include "engine/crypto/crc.h"
+#include "engine/file/file_access.h"
+#include "engine/file/mix_archive.h"
+#include "engine/file/search_paths.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
 #include "gtest/gtest.h"
-#include "tech/file_access.h"
-#include "tech/mix_archive.h"
-#include "tech/search_paths.h"
 
 namespace {
 

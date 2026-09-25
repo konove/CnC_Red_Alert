@@ -60,6 +60,7 @@
 #include "absl/strings/match.h"
 #include "engine/base/enum_array.h"
 #include "engine/base/numeric.h"
+#include "engine/file/mix_archive.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/conquer.h"
@@ -74,7 +75,6 @@
 #include "td/overlay.h"
 #include "td/type.h"
 #include "td/world.h"
-#include "tech/mix_archive.h"
 
 static const OverlayTypeClass Road(
     OVERLAY_ROAD,  // Overlay type number.

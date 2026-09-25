@@ -1,6 +1,6 @@
 // Tests for SearchPaths and FindExistingFile.
 
-#include "tech/search_paths.h"
+#include "engine/file/search_paths.h"
 
 #include <filesystem>
 #include <fstream>
@@ -9,8 +9,8 @@
 #include <string>
 
 #include "absl/strings/ascii.h"
+#include "engine/file/disk_file.h"
 #include "gtest/gtest.h"
-#include "tech/disk_file.h"
 
 namespace {
 

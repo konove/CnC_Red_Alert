@@ -168,15 +168,16 @@ engine/      → The shared libraries, moving here one folder at a time (docs/EN
   crypto/    → Ciphers, hashes and bignum public-key: Blowfish, SHA-1, the RSA-style bignum and
                PKey (target `engine_crypto`; sibling of engine/codec/, neither includes the other)
                [depends: engine_stream]
-port/        → Sockets and the remaining Win32-adjacent helpers, until they move to engine/net/ and
-               engine/file/ [depends: engine_base]
+  file/      → Disk files, game files, MIX archives, search paths, the string table and the INI
+               profile buffer (target `engine_file`) [depends: engine_codec, engine_crypto]
+port/        → Sockets, until they move to engine/net/ [depends: engine_base]
 sdllib/      → SDL2 abstraction (graphics, audio, input) [depends: SDL2, abseil, engine_platform,
              engine_codec]
 winvq/vqa32  → VQA video codec (target name `vqa32`) [depends: engine_base, engine_stream,
              engine_codec, port, sdllib, SDL2]
-tech/        → Archives and the audio mixer, built on engine/stream/'s ByteSink/ByteSource,
-             engine/codec/'s .AUD decoder and engine/crypto/'s ciphers [depends: sdllib, port, vqa32,
-             engine_platform, engine_stream, engine_codec, engine_crypto]
+tech/        → Image formats, the audio mixer, network packets and the movie-file glue; archives and
+             disk I/O moved to engine/file/ [depends: sdllib, port, vqa32, engine_platform,
+             engine_stream, engine_codec, engine_crypto, engine_file]
 ra/          → Red Alert (~200 files) [depends: tech, sdllib, port, vqa32]
 td/          → Tiberian Dawn (~288 files) [depends: tech, sdllib, port, vqa32]
 ```

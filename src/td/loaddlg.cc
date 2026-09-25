@@ -61,6 +61,7 @@
 #include "absl/strings/str_format.h"
 #include "engine/base/array.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/file/disk_file.h"
 #include "engine/platform/file_system.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
@@ -87,7 +88,6 @@
 #include "td/textbtn.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/disk_file.h"
 
 /***********************************************************************************************
  * LoadOptionsClass::LoadOptionsClass -- class constructor *

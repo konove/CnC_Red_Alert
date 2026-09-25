@@ -48,6 +48,7 @@
 #include <span>
 
 #include "engine/base/fixed.h"
+#include "engine/file/mix_archive.h"
 #include "ra/credits.h"
 #include "ra/debug_state.h"
 #include "ra/defines.h"
@@ -67,7 +68,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/wwstd.h"
-#include "tech/mix_archive.h"
 
 std::span<const std::byte> TabClass::TabShape = {};
 

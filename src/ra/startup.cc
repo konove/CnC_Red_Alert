@@ -59,6 +59,9 @@
 #include "engine/base/buffer.h"
 #include "engine/base/bytes_of.h"
 #include "engine/base/numeric.h"
+#include "engine/file/disk_file.h"
+#include "engine/file/file_access.h"
+#include "engine/file/search_paths.h"
 #include "engine/platform/file_system.h"
 #include "engine/platform/win32/win32_registry.h"
 #include "engine/platform/win32/win32_system.h"
@@ -86,9 +89,6 @@
 #include "sdllib/text_window.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/disk_file.h"
-#include "tech/file_access.h"
-#include "tech/search_paths.h"
 #endif  // RA_NO_ENTRY_POINT
 
 #ifdef _WIN32

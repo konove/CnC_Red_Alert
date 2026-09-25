@@ -49,6 +49,8 @@
 #include <cstddef>
 #include <filesystem>
 
+#include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
+#include "engine/file/mix_archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccini.h"
 #include "ra/defines.h"
@@ -57,8 +59,6 @@
 #include "ra/text_ids.h"
 #include "ra/type.h"
 #include "ra/type_heaps.h"
-#include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
-#include "tech/mix_archive.h"
 
 /***********************************************************************************************
  * BulletTypeClass::BulletTypeClass -- Constructor for bullet type objects. *

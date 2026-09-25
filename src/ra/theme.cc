@@ -64,6 +64,7 @@
 #include "engine/base/enum_array.h"
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
+#include "engine/file/game_file.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/debug_state.h"
 #include "ra/defines.h"
@@ -77,7 +78,6 @@
 #include "ra/world.h"
 #include "session.h"
 #include "tech/audio_mixer.h"
-#include "tech/game_file.h"
 
 /*
 **	These are the actual filename list for the theme sample files.

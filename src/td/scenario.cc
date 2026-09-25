@@ -59,6 +59,7 @@
 #include "absl/strings/str_format.h"
 #include "engine/base/array.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/file/game_file.h"
 #include "engine/platform/timer.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
@@ -109,7 +110,6 @@
 #include "td/vector.h"
 #include "td/winstub.h"
 #include "td/world.h"
-#include "tech/game_file.h"
 
 /***********************************************************************************************
  * Start_Scenario -- Starts the scenario. *

@@ -38,6 +38,8 @@
 #include "engine/base/enum_array.h"
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets.h"
 #include "ra/config.h"
@@ -52,8 +54,6 @@
 #include "ra/mapedit.h"
 #include "ra/world.h"
 #include "tech/audio_mixer.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
 
 namespace {
 

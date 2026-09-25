@@ -145,6 +145,8 @@
 #include "engine/base/random.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/crypto/key_phrase_hash.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/timer.h"
@@ -208,8 +210,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
 
 // #define OLDWAY			1
 
@@ -226,10 +226,10 @@ constexpr uint32_t kWestwoodChatCode = 0x72A47EF6;  // "HAPPY WITS"
 #include <iterator>
 #include <utility>
 
+#include "engine/file/search_paths.h"
 #include "ra/config.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
-#include "tech/search_paths.h"
 
 //---------------------------------------------------------------------------
 //	The possible states of the join-game dialog

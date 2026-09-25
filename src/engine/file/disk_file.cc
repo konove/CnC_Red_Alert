@@ -20,7 +20,7 @@
 //
 // Originally RAWFILE.CPP by Joe L. Bostic, August 8, 1994.
 
-#include "tech/disk_file.h"
+#include "engine/file/disk_file.h"
 
 #include <memory>
 #include <optional>
@@ -28,8 +28,8 @@
 #include <string_view>
 
 #include "absl/strings/ascii.h"
-#include "tech/disk_stream.h"
-#include "tech/file_access.h"
+#include "engine/file/disk_stream.h"
+#include "engine/file/file_access.h"
 
 std::optional<std::string> FindExistingFile(const std::string_view path) {
   // Opening is the existence test; it is what Open() will do next.

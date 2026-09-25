@@ -15,8 +15,8 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef CNC_RED_ALERT_SDLLIB_STRING_TABLE_H_
-#define CNC_RED_ALERT_SDLLIB_STRING_TABLE_H_
+#ifndef CNC_RED_ALERT_ENGINE_FILE_STRING_TABLE_H_
+#define CNC_RED_ALERT_ENGINE_FILE_STRING_TABLE_H_
 
 #include <cstddef>
 #include <span>
@@ -28,4 +28,4 @@
 // data is empty or index is out of bounds.
 std::string_view Extract_String(std::span<const std::byte> data, int index);
 
-#endif  // CNC_RED_ALERT_SDLLIB_STRING_TABLE_H_
+#endif  // CNC_RED_ALERT_ENGINE_FILE_STRING_TABLE_H_

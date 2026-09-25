@@ -76,6 +76,8 @@
 #include "engine/base/bytes_of.h"
 #include "engine/base/numeric.h"
 #include "engine/crypto/key_phrase_hash.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
 #include "sdllib/shape.h"
 #include "td/audio.h"
 #include "td/conquer.h"
@@ -88,8 +90,6 @@
 #include "td/session.h"
 #include "td/special.h"
 #include "tech/audio_mixer.h"
-#include "tech/file_access.h"
-#include "tech/game_file.h"
 #include "tech/hsv.h"
 
 /***********************************************************************************************

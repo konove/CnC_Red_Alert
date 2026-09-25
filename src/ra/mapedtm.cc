@@ -42,6 +42,7 @@
 #include <cstdint>
 
 #include "engine/base/array.h"
+#include "engine/file/mix_archive.h"
 #include "engine/platform/timer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccptr.h"
@@ -70,7 +71,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
-#include "tech/mix_archive.h"
 
 /***************************************************************************
  * MapEditClass::Handle_Teams -- main team-dialog-handling function        *

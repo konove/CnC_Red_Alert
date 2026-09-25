@@ -83,6 +83,7 @@
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/strings/tokenizer.h"
+#include "engine/file/mix_archive.h"
 #include "engine/stream/readline.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccini.h"
@@ -120,7 +121,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/mix_archive.h"
 
 static int atoh(const char* str);
 

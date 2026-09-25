@@ -51,6 +51,8 @@
 #include <filesystem>
 
 #include "engine/base/fixed.h"
+#include "engine/file/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
+#include "engine/file/mix_archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/const.h"
 #include "ra/defines.h"
@@ -60,8 +62,6 @@
 #include "ra/type.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
-#include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
-#include "tech/mix_archive.h"
 
 static const AnimTypeClass AtomBomb(
     ANIM_ATOM_BLAST,  // Animation number.

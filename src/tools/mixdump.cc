@@ -25,9 +25,9 @@
 #include "absl/strings/str_format.h"
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
-#include "tech/disk_stream.h"
-#include "tech/file_access.h"
-#include "tech/mix_archive.h"
+#include "engine/file/disk_stream.h"
+#include "engine/file/file_access.h"
+#include "engine/file/mix_archive.h"
 #include "tools/game_data.h"
 
 namespace {

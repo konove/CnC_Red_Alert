@@ -17,8 +17,8 @@
 #include "engine/base/numeric.h"
 #include "engine/base/unaligned.h"
 #include "engine/codec/aud_decoder.h"
+#include "engine/file/game_file.h"
 #include "engine/stream/byte_stream.h"
-#include "tech/game_file.h"
 
 static int ChannelCount(const AudHeader& header) {
   return (header.flags & kAudFlagStereo) != 0 ? 2 : 1;

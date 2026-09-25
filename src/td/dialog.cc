@@ -66,6 +66,7 @@
 #include "engine/base/numeric.h"
 #include "engine/base/strings/format.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/file/mix_archive.h"
 #include "sdllib/font.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/text_window.h"
@@ -78,7 +79,6 @@
 #include "td/jshell.h"
 #include "td/screen.h"
 #include "td/text.h"
-#include "tech/mix_archive.h"
 
 /***********************************************************************************************
  * Dialog_Box -- draws a dialog background box *

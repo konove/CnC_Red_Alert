@@ -65,6 +65,7 @@
 #include "engine/base/numeric.h"
 #include "engine/base/strings/format.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/file/mix_archive.h"
 #include "ra/assets.h"
 #include "ra/config.h"
 #include "ra/debug_state.h"
@@ -83,7 +84,6 @@
 #include "sdllib/text_window.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/mix_archive.h"
 
 /***********************************************************************************************
  * Dialog_Box -- draws a dialog background box *

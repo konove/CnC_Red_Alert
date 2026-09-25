@@ -1,4 +1,4 @@
-#include "sdllib/string_table.h"
+#include "engine/file/string_table.h"
 
 #include <algorithm>
 #include <cstddef>

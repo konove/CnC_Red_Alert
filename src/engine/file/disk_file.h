@@ -16,8 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CNC_RED_ALERT_TECH_DISK_FILE_H_
-#define CNC_RED_ALERT_TECH_DISK_FILE_H_
+#ifndef CNC_RED_ALERT_ENGINE_FILE_DISK_FILE_H_
+#define CNC_RED_ALERT_ENGINE_FILE_DISK_FILE_H_
 
 // File: opening a single file on disk as a ByteStream, and the
 // case-insensitive existence check the game's lookups share.
@@ -29,9 +29,9 @@
 #include <string>
 #include <string_view>
 
+#include "engine/file/disk_stream.h"
+#include "engine/file/file_access.h"
 #include "engine/stream/byte_stream.h"
-#include "tech/disk_stream.h"
-#include "tech/file_access.h"
 
 // Returns path if a file exists there, otherwise the lowercased path if a file
 // exists there (game data is named in upper case, while Unix installs often
@@ -44,4 +44,4 @@ std::optional<std::string> FindExistingFile(std::string_view path);
 std::unique_ptr<DiskStream> OpenDiskFile(std::string_view path,
                                          FileAccess access = FileAccess::kRead);
 
-#endif  // CNC_RED_ALERT_TECH_DISK_FILE_H_
+#endif  // CNC_RED_ALERT_ENGINE_FILE_DISK_FILE_H_

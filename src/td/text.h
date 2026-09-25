@@ -1,7 +1,7 @@
 #ifndef CNC_RED_ALERT_TD_TEXT_H_
 #define CNC_RED_ALERT_TD_TEXT_H_
 
-#include "sdllib/string_table.h"
+#include "engine/file/string_table.h"
 #include "td/assets.h"
 #include "td/conquer.h"
 

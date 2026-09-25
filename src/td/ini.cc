@@ -68,6 +68,8 @@
 #include "engine/base/bytes_of.h"
 #include "engine/base/numeric.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
 #include "engine/platform/platform.h"
 #include "sdllib/shape.h"
 #include "td/base.h"
@@ -107,8 +109,6 @@
 #include "td/vector.h"
 #include "td/winstub.h"
 #include "td/world.h"
-#include "tech/file_access.h"
-#include "tech/game_file.h"
 
 // The most money a scenario lets the player carry over from the last one,
 // from its [Basic] CarryOverCap; negative means uncapped.

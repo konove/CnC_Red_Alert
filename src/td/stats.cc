@@ -53,6 +53,7 @@
 #include "absl/strings/str_format.h"
 #include "engine/base/array.h"
 #include "engine/base/enum_array.h"
+#include "engine/file/game_file.h"
 #include "engine/platform/timer.h"
 #include "sdllib/shape.h"
 #include "td/aircraft.h"
@@ -74,7 +75,6 @@
 #include "td/utracker.h"
 #include "td/winstub.h"
 #include "td/world.h"
-#include "tech/game_file.h"
 #include "tech/packet.h"
 
 #ifdef _WIN32

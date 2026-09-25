@@ -110,6 +110,7 @@
 #include "engine/base/numeric.h"
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/tokenizer.h"
+#include "engine/file/mix_archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/audio.h"
@@ -151,7 +152,6 @@
 #include "ra/weapon.h"
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/mix_archive.h"
 #include "tech/rect.h"
 
 const int InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,

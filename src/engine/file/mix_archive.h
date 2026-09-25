@@ -30,8 +30,8 @@
 //   list MixArchive::Cache("GENERAL.MIX");     // Load into RAM void* data =
 //   MixArchive::Retrieve("MOUSE.SHP");
 
-#ifndef CNC_RED_ALERT_TECH_MIX_ARCHIVE_H_
-#define CNC_RED_ALERT_TECH_MIX_ARCHIVE_H_
+#ifndef CNC_RED_ALERT_ENGINE_FILE_MIX_ARCHIVE_H_
+#define CNC_RED_ALERT_ENGINE_FILE_MIX_ARCHIVE_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -155,4 +155,4 @@ class MixArchive : public Node<MixArchive> {
   inline static List<MixArchive> MixList;
 };
 
-#endif  // CNC_RED_ALERT_TECH_MIX_ARCHIVE_H_
+#endif  // CNC_RED_ALERT_ENGINE_FILE_MIX_ARCHIVE_H_

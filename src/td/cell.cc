@@ -92,6 +92,7 @@
 #include "absl/log/check.h"
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
+#include "engine/file/mix_archive.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "sdllib/wwstd.h"
@@ -132,7 +133,6 @@
 #include "td/utracker.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/mix_archive.h"
 
 // #define FIXUP 0
 

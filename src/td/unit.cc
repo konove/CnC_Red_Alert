@@ -134,6 +134,7 @@
 #include "engine/base/enum_array.h"
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/tokenizer.h"
+#include "engine/file/mix_archive.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
@@ -181,7 +182,6 @@
 #include "td/utracker.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/mix_archive.h"
 
 /*
 ** This contains the value of the Virtual Function Table Pointer

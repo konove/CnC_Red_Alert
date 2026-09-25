@@ -65,6 +65,8 @@
 #include <cstdio>
 
 #include "absl/strings/str_format.h"
+#include "engine/file/disk_file.h"
+#include "engine/file/file_access.h"
 #include "ra/audio.h"
 #include "ra/config.h"
 #include "ra/control.h"
@@ -79,8 +81,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/disk_file.h"
-#include "tech/file_access.h"
 
 /*
 **	This records the current gadget the the gadget system is "stuck on".

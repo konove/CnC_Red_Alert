@@ -29,6 +29,7 @@
 #include <span>
 
 #include "absl/log/log.h"
+#include "engine/file/game_file.h"
 #include "ra/const.h"
 #include "ra/debug_state.h"
 #include "ra/defines.h"
@@ -47,7 +48,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/audio_mixer.h"
-#include "tech/game_file.h"
 #include "tech/game_file_vqa_io.h"
 #include "tech/mixer_vqa_audio.h"
 #include "winvq/vqa32/vqa_player.h"

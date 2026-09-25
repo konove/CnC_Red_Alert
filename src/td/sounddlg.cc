@@ -49,6 +49,7 @@
 #include "absl/strings/str_format.h"
 #include "engine/base/numeric.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/file/mix_archive.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
@@ -67,7 +68,6 @@
 #include "td/slider.h"
 #include "td/textbtn.h"
 #include "td/theme.h"
-#include "tech/mix_archive.h"
 
 // The score list: each line is a track, with its theme kept alongside the
 // text.

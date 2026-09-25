@@ -57,6 +57,7 @@
 #include "engine/base/array.h"
 #include "engine/base/enum_array.h"
 #include "engine/base/numeric.h"
+#include "engine/file/mix_archive.h"
 #include "engine/platform/memflag.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/text_window.h"
@@ -73,7 +74,6 @@
 #include "td/template.h"
 #include "td/type.h"
 #include "td/world.h"
-#include "tech/mix_archive.h"
 
 static const char slope00000001[] = {7, -1};
 static const char slope000000101[] = {6, 8, -1};

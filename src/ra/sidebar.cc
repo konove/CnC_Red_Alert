@@ -105,6 +105,7 @@
 #include "engine/base/enum_array.h"
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
+#include "engine/file/mix_archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/audio.h"
 #include "ra/building.h"
@@ -143,7 +144,6 @@
 #include "sdllib/shape.h"
 #include "sdllib/text_window.h"
 #include "sdllib/wwstd.h"
-#include "tech/mix_archive.h"
 #include "tech/rgb.h"
 
 std::span<const std::byte> SidebarClass::SidebarShape = {};

@@ -102,6 +102,8 @@
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
@@ -138,8 +140,6 @@
 #include "td/text.h"
 #include "td/type.h"
 #include "td/world.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
 
 /***************************************************************************
 **	This holds the translucent table for use with the construction clock

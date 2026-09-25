@@ -44,13 +44,13 @@
 #include <span>
 
 #include "engine/base/enum_array.h"
+#include "engine/file/disk_file.h"
+#include "engine/file/mix_archive.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/jshell.h"
 #include "td/keyframe.h"
 #include "td/type.h"
-#include "tech/disk_file.h"
-#include "tech/mix_archive.h"
 
 // Dinosaur death animations
 static const AnimTypeClass TricDie(

@@ -88,6 +88,8 @@
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/unaligned.h"
 #include "engine/crypto/crc.h"
+#include "engine/file/mix_archive.h"
+#include "engine/file/search_paths.h"
 #include "engine/platform/env.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/timer.h"
@@ -173,9 +175,7 @@
 #include "tech/2keyfbuf.h"
 #include "tech/audio_mixer.h"
 #include "tech/game_file_vqa_io.h"
-#include "tech/mix_archive.h"
 #include "tech/mixer_vqa_audio.h"
-#include "tech/search_paths.h"
 #include "winvq/vqa32/vqa_player.h"
 
 #ifdef _WIN32

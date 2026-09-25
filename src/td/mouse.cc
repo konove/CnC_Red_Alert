@@ -52,6 +52,8 @@
 #include <span>
 
 #include "engine/base/enum_array.h"
+#include "engine/file/disk_file.h"
+#include "engine/file/mix_archive.h"
 #include "engine/platform/timer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
@@ -59,8 +61,6 @@
 #include "td/defines.h"
 #include "td/jshell.h"
 #include "td/scroll.h"
-#include "tech/disk_file.h"
-#include "tech/mix_archive.h"
 
 /*
 **	This points to the loaded mouse shapes.

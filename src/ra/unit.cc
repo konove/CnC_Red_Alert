@@ -116,6 +116,7 @@
 #include "engine/base/fixed.h"
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/tokenizer.h"
+#include "engine/file/mix_archive.h"
 #include "engine/platform/ftimer.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
@@ -169,7 +170,6 @@
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
-#include "tech/mix_archive.h"
 
 /***********************************************************************************************
  * Recoil_Adjust -- Adjust pixel values in direction specified. *

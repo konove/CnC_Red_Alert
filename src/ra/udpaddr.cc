@@ -20,6 +20,8 @@
 #include <string>
 
 #include "absl/strings/str_format.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
 #include "ra/ccini.h"
 #include "ra/colrlist.h"
 #include "ra/config.h"
@@ -41,8 +43,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
 
 bool Get_Broadcast_Addresses() {
   const int d_dialog_w = 640;                             // dialog width

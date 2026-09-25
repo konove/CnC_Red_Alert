@@ -1,5 +1,5 @@
-#ifndef CNC_RED_ALERT_TECH_FILE_ACCESS_H_
-#define CNC_RED_ALERT_TECH_FILE_ACCESS_H_
+#ifndef CNC_RED_ALERT_ENGINE_FILE_FILE_ACCESS_H_
+#define CNC_RED_ALERT_ENGINE_FILE_FILE_ACCESS_H_
 
 #include <cstdint>
 
@@ -23,4 +23,4 @@ constexpr bool HasAccess(FileAccess rights, FileAccess test) {
   return (static_cast<uint32_t>(rights) & static_cast<uint32_t>(test)) != 0;
 }
 
-#endif  // CNC_RED_ALERT_TECH_FILE_ACCESS_H_
+#endif  // CNC_RED_ALERT_ENGINE_FILE_FILE_ACCESS_H_

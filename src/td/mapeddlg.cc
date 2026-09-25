@@ -64,6 +64,7 @@
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/strings/tokenizer.h"
+#include "engine/file/game_file.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
@@ -103,7 +104,6 @@
 #include "td/type.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/game_file.h"
 
 /***************************************************************************
  * MapEditClass::New_Scenario -- creates a new scenario                    *

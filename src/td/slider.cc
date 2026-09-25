@@ -51,6 +51,7 @@
 
 #include <algorithm>
 
+#include "engine/file/mix_archive.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
@@ -62,7 +63,6 @@
 #include "td/jshell.h"
 #include "td/screen.h"
 #include "td/shapebtn.h"
-#include "tech/mix_archive.h"
 
 /***********************************************************************************************
  * SliderClass::SliderClass -- Normal constructor for a slider (with thumb)

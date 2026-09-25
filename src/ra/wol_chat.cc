@@ -25,6 +25,7 @@
 
 #include "absl/strings/str_format.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/file/mix_archive.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/sleep.h"
 #include "engine/platform/timer.h"
@@ -60,7 +61,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/mix_archive.h"
 
 // #include "ra/woldebug.h"
 

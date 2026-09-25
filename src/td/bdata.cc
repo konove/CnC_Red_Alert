@@ -73,6 +73,7 @@
 #include "engine/base/array.h"
 #include "engine/base/enum_array.h"
 #include "engine/base/numeric.h"
+#include "engine/file/mix_archive.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/assets.h"
@@ -97,7 +98,6 @@
 #include "td/type.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/mix_archive.h"
 
 #define MCW MAP_CELL_W
 

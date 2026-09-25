@@ -11,8 +11,8 @@
 #include "engine/codec/base64.h"
 #include "engine/crypto/int.h"
 #include "engine/crypto/pk.h"
-#include "tech/mix_archive.h"
-#include "tech/search_paths.h"
+#include "engine/file/mix_archive.h"
+#include "engine/file/search_paths.h"
 
 namespace {
 

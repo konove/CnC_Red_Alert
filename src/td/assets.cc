@@ -6,12 +6,12 @@
 #include <vector>
 
 #include "engine/base/enum_array.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/jshell.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
 
 namespace {
 

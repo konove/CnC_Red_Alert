@@ -48,6 +48,7 @@
 #include <utility>
 
 #include "engine/base/bytes_of.h"
+#include "engine/file/game_file.h"
 #include "engine/platform/timer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -69,7 +70,6 @@
 #include "td/special.h"
 #include "td/world.h"
 #include "tech/audio_mixer.h"
-#include "tech/game_file.h"
 #include "tech/game_file_vqa_io.h"
 #include "tech/mixer_vqa_audio.h"
 #include "tech/wsa_animation.h"

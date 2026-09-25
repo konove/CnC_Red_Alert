@@ -57,6 +57,7 @@
 
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
+#include "engine/file/mix_archive.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
@@ -70,7 +71,6 @@
 #include "td/radar.h"
 #include "td/screen.h"
 #include "td/world.h"
-#include "tech/mix_archive.h"
 
 std::span<const std::byte> PowerClass::PowerShape;
 std::span<const std::byte> PowerClass::PowerBarShape;

@@ -2,7 +2,7 @@
 // several, and one archive nested inside another - the shape the shipped
 // data has and that tools/mixdump reads.
 
-#include "tech/mix_archive.h"
+#include "engine/file/mix_archive.h"
 
 #include <algorithm>
 #include <bit>

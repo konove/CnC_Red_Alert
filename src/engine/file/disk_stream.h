@@ -1,5 +1,5 @@
-#ifndef CNC_RED_ALERT_TECH_DISK_STREAM_H_
-#define CNC_RED_ALERT_TECH_DISK_STREAM_H_
+#ifndef CNC_RED_ALERT_ENGINE_FILE_DISK_STREAM_H_
+#define CNC_RED_ALERT_ENGINE_FILE_DISK_STREAM_H_
 
 // File: DiskStream, a ByteStream over one file on disk.
 
@@ -10,9 +10,9 @@
 #include <string_view>
 
 #include "engine/base/types.h"
+#include "engine/file/file_access.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
-#include "tech/file_access.h"
 
 // A file on disk, open from construction until destruction.
 class DiskStream final : public ByteStream {
@@ -58,4 +58,4 @@ class DiskStream final : public ByteStream {
   bool failed_ = false;
 };
 
-#endif  // CNC_RED_ALERT_TECH_DISK_STREAM_H_
+#endif  // CNC_RED_ALERT_ENGINE_FILE_DISK_STREAM_H_

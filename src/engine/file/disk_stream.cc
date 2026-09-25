@@ -1,6 +1,6 @@
 // File: the DiskStream implementation, over std::filebuf.
 
-#include "tech/disk_stream.h"
+#include "engine/file/disk_stream.h"
 
 #include <cstddef>
 #include <filesystem>
@@ -16,8 +16,8 @@
 
 #include "engine/base/bytes_of.h"
 #include "engine/base/types.h"
+#include "engine/file/file_access.h"
 #include "engine/stream/seek_origin.h"
-#include "tech/file_access.h"
 
 namespace {
 std::ios_base::seekdir SeekDir(const SeekOrigin origin) {

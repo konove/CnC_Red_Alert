@@ -114,6 +114,7 @@
 #include <span>
 
 #include "engine/base/array.h"
+#include "engine/file/mix_archive.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/text_window.h"
 #include "sdllib/wwstd.h"
@@ -149,7 +150,6 @@
 #include "td/unit.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/mix_archive.h"
 
 std::span<const std::byte> ObjectTypeClass::SelectShapes = {};
 

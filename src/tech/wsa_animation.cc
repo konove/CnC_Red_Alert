@@ -16,10 +16,10 @@
 #include "engine/base/unaligned.h"
 #include "engine/codec/lcw_uncompress.h"
 #include "engine/codec/xor_delta.h"
+#include "engine/file/game_file.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/game_file.h"
 
 namespace {
 

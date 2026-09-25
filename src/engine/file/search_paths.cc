@@ -1,7 +1,7 @@
 // File: SearchPaths implementation. Originally the static part of CDFILE.CPP
 // by Joe L. Bostic, October 18, 1994.
 
-#include "tech/search_paths.h"
+#include "engine/file/search_paths.h"
 
 #include <filesystem>
 #include <optional>
@@ -10,7 +10,7 @@
 #include <string_view>
 #include <vector>
 
-#include "tech/disk_file.h"
+#include "engine/file/disk_file.h"
 
 std::vector<std::string> SearchPaths::directories_;
 std::string SearchPaths::history_;

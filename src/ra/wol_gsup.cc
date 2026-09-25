@@ -36,6 +36,8 @@
 #include "engine/base/strings/format.h"
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/tokenizer.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/win32/win32_types.h"
 #include "magic_enum/magic_enum.hpp"
@@ -77,13 +79,12 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
 
 static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 
 #include "absl/log/check.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/file/search_paths.h"
 #include "engine/platform/sleep.h"
 #include "engine/platform/timer.h"
 #include "ra/audio.h"
@@ -102,7 +103,6 @@ static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 #include "ra/statbtn.h"
 #include "ra/textbtn.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/search_paths.h"
 
 #define PARAMREFRESHWAIT 2000
 

@@ -60,6 +60,7 @@
 
 #include "absl/strings/match.h"
 #include "engine/base/enum_array.h"
+#include "engine/file/game_file.h"
 #include "td/conquer.h"
 #include "td/debug_state.h"
 #include "td/defines.h"
@@ -72,7 +73,6 @@
 #include "td/text.h"
 #include "td/world.h"
 #include "tech/audio_mixer.h"
-#include "tech/game_file.h"
 
 /*
 **	These are the actual filename list for the theme sample files.

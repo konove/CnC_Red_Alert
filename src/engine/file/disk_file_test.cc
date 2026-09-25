@@ -1,7 +1,7 @@
 // Tests for FindExistingFile's lowercase-name retry and OpenDiskFile, the
 // free functions that replace the DiskFile class.
 
-#include "tech/disk_file.h"
+#include "engine/file/disk_file.h"
 
 #include <filesystem>
 #include <fstream>
@@ -13,9 +13,9 @@
 #include <string_view>
 
 #include "absl/strings/ascii.h"
+#include "engine/file/disk_stream.h"
+#include "engine/file/file_access.h"
 #include "gtest/gtest.h"
-#include "tech/disk_stream.h"
-#include "tech/file_access.h"
 
 namespace {
 

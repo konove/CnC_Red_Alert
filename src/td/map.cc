@@ -70,6 +70,8 @@
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
 #include "engine/platform/memflag.h"
 #include "engine/platform/platform.h"
 #include "rand.h"
@@ -92,8 +94,6 @@
 #include "td/type.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/file_access.h"
-#include "tech/game_file.h"
 
 #define MCW MAP_CELL_W
 const int MapClass::RadiusOffset[] = {

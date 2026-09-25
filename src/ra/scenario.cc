@@ -87,6 +87,11 @@
 #include "engine/base/numeric.h"
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/file/disk_file.h"
+#include "engine/file/file_access.h"
+#include "engine/file/game_file.h"
+#include "engine/file/mix_archive.h"
+#include "engine/file/search_paths.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/platform.h"
 #include "magic_enum/magic_enum.hpp"
@@ -167,11 +172,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/audio_mixer.h"
-#include "tech/disk_file.h"
-#include "tech/file_access.h"
-#include "tech/game_file.h"
-#include "tech/mix_archive.h"
-#include "tech/search_paths.h"
 
 static void Remove_AI_Players();
 static void Create_Units(bool official);

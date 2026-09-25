@@ -2,7 +2,7 @@
 //
 // Originally MIXFILE.CPP by Joe L. Bostic, August 8, 1994.
 
-#include "tech/mix_archive.h"
+#include "engine/file/mix_archive.h"
 
 #include <algorithm>
 #include <bit>
@@ -30,11 +30,11 @@
 #include "engine/crypto/pk_source.h"
 #include "engine/crypto/sha.h"
 #include "engine/crypto/sha1_source.h"
+#include "engine/file/game_file.h"
 #include "engine/stream/byte_source.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
 #include "engine/stream/stream_source.h"
-#include "tech/game_file.h"
 
 bool MixArchive::Open(std::string_view filename, const PKey* key) {
   const auto file = OpenGameFile(filename);
