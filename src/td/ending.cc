@@ -58,8 +58,8 @@
 #include "engine/file/game_file.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
+#include "engine/window/display.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/misc.h"
 #include "engine/window/ww_mouse.h"
 #include "td/conquer.h"
 #include "td/defines.h"
@@ -204,7 +204,7 @@ void Nod_Ending() {
   Play_Movie("NODFINAL", THEME_NONE, false);
 
   Hide_Mouse();
-  Wait_Vert_Blank();
+  TheDisplay().EndFrame();
   Set_Palette(base::UnsignedBytes(localpal));
 #ifdef NOT_FOR_WIN95
   base::CopyBytes(std::as_writable_bytes(TheScreen().visible_view().bytes()),

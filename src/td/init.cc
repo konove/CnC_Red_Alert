@@ -86,8 +86,8 @@
 #include "engine/platform/random_seed.h"
 #include "engine/platform/timer.h"
 #include "engine/stream/byte_stream.h"
+#include "engine/window/display.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/misc.h"
 #include "engine/window/ww_mouse.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
@@ -500,7 +500,7 @@ bool Init_Game() {
   }
 
   Hide_Mouse();
-  Wait_Vert_Blank();
+  TheDisplay().EndFrame();
   if (!TheSpecial().IsFromInstall) {
     Set_Palette(ThePalettes().title_palette());
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());

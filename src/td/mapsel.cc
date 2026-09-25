@@ -61,8 +61,8 @@
 #include "engine/gfx/wsa_animation.h"
 #include "engine/gfx/wwstd.h"
 #include "engine/platform/timer.h"
+#include "engine/window/display.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/misc.h"
 #include "engine/window/ww_mouse.h"
 #include "td/assets.h"
 #include "td/audio.h"
@@ -604,7 +604,7 @@ void Map_Selection() {
   greyearth2.DrawFrame(TheScreen().sys_mem_page().view(), 0);
 
   Increase_Palette_Luminance(grey2palette, 30, 30, 30, 63);
-  Wait_Vert_Blank();
+  TheDisplay().EndFrame();
   Set_Palette(grey2palette);
 
   TheScreen().sys_mem_page().view().BlitTo(show.page().view());

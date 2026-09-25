@@ -17,19 +17,11 @@
 */
 
 // File: Leftovers of the Westwood 32-bit library's MISC.H (Scott K. Bowen,
-// August 1994) that the games still call: setting the video mode, waiting a
-// number of ticks, ending a frame, and the two exit and screen-shake hooks the
-// games define themselves.
+// August 1994) that the games still call: waiting a number of ticks, and the
+// two exit and screen-shake hooks the games define themselves.
 
 #ifndef CNC_RED_ALERT_ENGINE_WINDOW_MISC_H_
 #define CNC_RED_ALERT_ENGINE_WINDOW_MISC_H_
-
-#include "engine/window/display.h"
-
-// Gives the window a w x h paletted surface through
-// TheDisplay().SetVideoMode(); the surface is always 8-bit, whatever
-// `bits_per_pixel` says. Returns false if SDL could not create it.
-bool Set_Video_Mode(int w, int h, int bits_per_pixel);
 
 // Cleans up the library systems (audio, mouse, tick timer, ...) before the
 // process exits. Each game defines it in its startup.cc.
@@ -43,10 +35,5 @@ void WaitTicks(int ticks);
 // Tiberian Dawn defines it (td/sdlstub.cc); Red Alert has its own
 // Shake_The_Screen() and must not call it.
 void ShakeScreen(int shakes);
-
-// Ends the frame, presenting it. The name is DOS's: there the games waited for
-// the vertical blank before touching the palette or the visible page, and
-// presenting is what now stands in for that wait.
-inline void Wait_Vert_Blank() { TheDisplay().EndFrame(); }
 
 #endif  // CNC_RED_ALERT_ENGINE_WINDOW_MISC_H_

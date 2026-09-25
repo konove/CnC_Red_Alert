@@ -107,7 +107,6 @@
 #include "engine/video/vqa/vqa_player.h"
 #include "engine/window/display.h"
 #include "engine/window/keyboard.h"
-#include "engine/window/misc.h"
 #include "engine/window/ww_mouse.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
@@ -1271,7 +1270,7 @@ bool Color_Cycle() {
   *palette must be *	passed to the system.
   */
   if (changed) {
-    Wait_Vert_Blank();
+    TheDisplay().EndFrame();
     Set_Palette(ThePalettes().game_palette());
     return true;
   }

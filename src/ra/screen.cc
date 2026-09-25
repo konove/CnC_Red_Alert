@@ -4,7 +4,6 @@
 
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/window/display.h"
-#include "engine/window/misc.h"
 
 // The views start out covering a 640x480 page that does not exist yet, as the
 // original globals did; Init() attaches them to the real game area.
@@ -15,9 +14,9 @@ Screen::Screen()
       vq640_(kWidth, kHeight) {}
 
 bool Screen::Init() {
-  bool mode_set = Set_Video_Mode(kWidth, mode_height_, 8);
+  bool mode_set = TheDisplay().SetVideoMode(kWidth, mode_height_);
   if (!mode_set && mode_height_ == kHeight) {
-    mode_set = Set_Video_Mode(kWidth, 480, 8);
+    mode_set = TheDisplay().SetVideoMode(kWidth, 480);
     if (mode_set) {
       mode_height_ = 480;
     }
