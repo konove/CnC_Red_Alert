@@ -22,8 +22,12 @@
 #ifndef CNC_RED_ALERT_ENGINE_WINDOW_MISC_H_
 #define CNC_RED_ALERT_ENGINE_WINDOW_MISC_H_
 
+namespace engine::window {
+
 // Waits `ticks` ticks of the 60 Hz tick timer, presenting a frame on each
 // pass so that the window stays responsive meanwhile. Needs InitTickTimer().
 void WaitTicks(int ticks);
+
+}  // namespace engine::window
 
 #endif  // CNC_RED_ALERT_ENGINE_WINDOW_MISC_H_

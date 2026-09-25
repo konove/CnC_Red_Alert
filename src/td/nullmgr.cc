@@ -1781,7 +1781,7 @@ bool NullModemClass::Hangup_Modem() {
   }
 
   SerialPort->Set_Serial_DTR(false);
-  WaitTicks(3200 / 60);
+  engine::window::WaitTicks(3200 / 60);
   SerialPort->Set_Serial_DTR(true);
 
   // SetDtr( Port, 0 );

@@ -1088,7 +1088,7 @@ BulletClass* BuildingClass::Fire_At(TARGET target, int which) {
             view.DrawLine(x + 1, y, x1, y1, 0x7D);
             view.DrawLine(x - 1, y, x1, y1, 0x7D);
             view.DrawLine(x, y, x1, y1, 0x7F);
-            WaitTicks(1);  // Make sure line is visible briefly
+            engine::window::WaitTicks(1);  // Make sure line is visible briefly
             TheMap().Flag_To_Redraw(true);
           }
           new SmudgeClass(Random_Pick(SMUDGE_SCORCH1, SMUDGE_SCORCH6),
