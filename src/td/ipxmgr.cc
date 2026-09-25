@@ -899,7 +899,7 @@ int IPXManagerClass::Get_Private_Message(std::span<std::byte> buf, int* buflen,
 
 #ifdef VIRTUAL_SUBNET_SERVER
   if (TheNetwork().winsock().Get_Connected()) {
-    vss = (int)TheNetwork().use_subnet_server();
+    vss = int{TheNetwork().use_subnet_server()};
   }
 #endif  // VIRTUAL_SUBNET_SERVER
 
@@ -998,8 +998,9 @@ int IPXManagerClass::Service() {
       /*
       ** Get a pointer to the data header and swap the bit mask
       */
-      cur_header_buf = (IPXHEADER*)&temp_receive_buffer[0];  // NULL;
-      unsigned short* swapptr = (unsigned short*)cur_header_buf;
+      cur_header_buf =
+          reinterpret_cast<IPXHEADER*>(&temp_receive_buffer[0]);  // NULL;
+      uint16_t* swapptr = reinterpret_cast<uint16_t*>(cur_header_buf);
       *swapptr = ntohs(*swapptr);
 
       cur_data_buf = base::ObjectBytes(temp_receive_buffer).subspan(2);
@@ -1161,7 +1162,7 @@ int IPXManagerClass::Service() {
     Examine the Magic Number of the received packet to determine if this
     packet goes into the Global Queue, or into one of the Private Queues
     .....................................................................*/
-    packet = (CommHeaderType*)CurDataBuf;
+    packet = reinterpret_cast<CommHeaderType*>(CurDataBuf);
     if (packet->MagicNumber == GlobalChannel->Magic_Num()) {
       /*..................................................................
       Put the packet in the Global Queue
@@ -1195,8 +1196,9 @@ int IPXManagerClass::Service() {
     Go to the next packet buffer
     .....................................................................*/
     CurIndex++;
-    CurHeaderBuf = (IPXHeaderType*)(((char*)CurHeaderBuf) + FullPacketLen);
-    CurDataBuf = ((char*)CurDataBuf) + FullPacketLen;
+    CurHeaderBuf = reinterpret_cast<IPXHeaderType*>(
+        reinterpret_cast<char*>(CurHeaderBuf) + FullPacketLen);
+    CurDataBuf += FullPacketLen;
     if (CurIndex >= NumBufs) {
       CurHeaderBuf = FirstHeaderBuf;
       CurDataBuf = FirstDataBuf;
@@ -1474,7 +1476,7 @@ int32_t IPXManagerClass::Response_Time() {
   int vss = 0;
 
   if (TheNetwork().winsock().Get_Connected()) {
-    vss = (int)TheNetwork().use_subnet_server();
+    vss = int{TheNetwork().use_subnet_server()};
   }
 
   for (i = 0; i < NumConnections - vss; i++) {
@@ -1628,7 +1630,7 @@ int IPXManagerClass::Alloc_RealMode_Mem() {
   int size;                 // required size of allocation
   unsigned char* realmode;  // start addresses of real-mode data
   int realmodelen;          // length of real-mode data
-  unsigned long func_val;
+  uintptr_t func_val;
   char* p;  // for parsing buffer
   int i;
 
@@ -1691,7 +1693,8 @@ int IPXManagerClass::Alloc_RealMode_Mem() {
   Selector = regs.w.dx;
   Segment = regs.w.ax;
   RealMemSize = size;
-  RealModeData = (RealModeDataType*)(((long)Segment) << 4);
+  RealModeData =
+      reinterpret_cast<RealModeDataType*>(static_cast<uintptr_t>(Segment) << 4);
 
   /*------------------------------------------------------------------------
   Lock the memory (since we're servicing interrupts with it)
@@ -1703,10 +1706,10 @@ int IPXManagerClass::Alloc_RealMode_Mem() {
   memset(&regs, 0, sizeof(regs));
   segread(&sregs);
   regs.x.eax = DPMI_LOCK_MEM;  // DPMI function to call
-  regs.x.ebx = ((long)RealModeData & 0xffff0000) >> 16;
-  regs.x.ecx = ((long)RealModeData & 0x0000ffff);
-  regs.x.esi = ((long)RealMemSize & 0xffff0000) >> 16;
-  regs.x.edi = ((long)RealMemSize & 0x0000ffff);
+  regs.x.ebx = (reinterpret_cast<uintptr_t>(RealModeData) & 0xffff0000) >> 16;
+  regs.x.ecx = (reinterpret_cast<uintptr_t>(RealModeData) & 0x0000ffff);
+  regs.x.esi = (static_cast<uint32_t>(RealMemSize) & 0xffff0000) >> 16;
+  regs.x.edi = (static_cast<uint32_t>(RealMemSize) & 0x0000ffff);
   int386x(DPMI_INT, &regs, &regs, &sregs);  // call DPMI
   /*........................................................................
   If the carry flag is set, DPMI is indicating an error.
@@ -1723,14 +1726,14 @@ int IPXManagerClass::Alloc_RealMode_Mem() {
   /*------------------------------------------------------------------------
   Copy the Real-mode code into our memory buffer
   ------------------------------------------------------------------------*/
-  p = (char*)(((long)Segment) << 4);
+  p = reinterpret_cast<char*>(static_cast<uintptr_t>(Segment) << 4);
   base::CopyBytes(p, realmode, realmodelen);
   p += realmodelen;
 
   /*------------------------------------------------------------------------
   Compute & save the entry point for the real-mode packet handler
   ------------------------------------------------------------------------*/
-  func_val = (unsigned long)RealModeData;
+  func_val = reinterpret_cast<uintptr_t>(RealModeData);
   Handler = (((func_val & 0xffff0) << 12) |
              ((func_val & 0x000f) + RealModeData->FuncOffset));
 
@@ -1739,35 +1742,37 @@ int IPXManagerClass::Alloc_RealMode_Mem() {
   ------------------------------------------------------------------------*/
   ListenECB = &(RealModeData->ListenECB);
 
-  FirstHeaderBuf = (IPXHeaderType*)p;
-  FirstDataBuf = (((char*)FirstHeaderBuf) + sizeof(IPXHeaderType));
+  FirstHeaderBuf = reinterpret_cast<IPXHeaderType*>(p);
+  FirstDataBuf =
+      reinterpret_cast<char*>(FirstHeaderBuf) + sizeof(IPXHeaderType);
   CurIndex = 0;
   CurHeaderBuf = FirstHeaderBuf;
   CurDataBuf = FirstDataBuf;
   p += FullPacketLen * NumBufs;
 
-  SendECB = (ECBType*)p;
+  SendECB = reinterpret_cast<ECBType*>(p);
   p += sizeof(ECBType);
 
-  SendHeader = (IPXHeaderType*)p;
+  SendHeader = reinterpret_cast<IPXHeaderType*>(p);
   p += sizeof(IPXHeaderType);
 
-  SendBuf = (char*)p;
+  SendBuf = p;
   p += PacketLen;
 
-  BufferFlags = (char*)p;
+  BufferFlags = p;
 
   /*------------------------------------------------------------------------
   Fill in the real-mode routine's data (The ECB will be filled in when we
   command IPX to Listen).
   ------------------------------------------------------------------------*/
-  RealModeData->NumBufs = (short)NumBufs;
-  RealModeData->BufferFlags = (char*)((((long)BufferFlags & 0xffff0) << 12) |
-                                      ((long)BufferFlags & 0x0000f));
-  RealModeData->PacketSize = (short)FullPacketLen;
-  RealModeData->FirstPacketBuf =
-      (IPXHeaderType*)((((long)FirstHeaderBuf & 0xffff0) << 12) |
-                       ((long)FirstHeaderBuf & 0x0000f));
+  RealModeData->NumBufs = static_cast<int16_t>(NumBufs);
+  RealModeData->BufferFlags = reinterpret_cast<char*>(
+      ((reinterpret_cast<uintptr_t>(BufferFlags) & 0xffff0) << 12) |
+      (reinterpret_cast<uintptr_t>(BufferFlags) & 0x0000f));
+  RealModeData->PacketSize = static_cast<int16_t>(FullPacketLen);
+  RealModeData->FirstPacketBuf = reinterpret_cast<IPXHeaderType*>(
+      ((reinterpret_cast<uintptr_t>(FirstHeaderBuf) & 0xffff0) << 12) |
+      (reinterpret_cast<uintptr_t>(FirstHeaderBuf) & 0x0000f));
   RealModeData->CurIndex = 0;
   RealModeData->CurPacketBuf = RealModeData->FirstPacketBuf;
   RealModeData->Semaphore = 0;
@@ -1827,10 +1832,10 @@ int IPXManagerClass::Free_RealMode_Mem() {
   memset(&regs, 0, sizeof(regs));
   segread(&sregs);
   regs.x.eax = DPMI_UNLOCK_MEM;  // DPMI function to call
-  regs.x.ebx = ((long)RealModeData & 0xffff0000) >> 16;
-  regs.x.ecx = ((long)RealModeData & 0x0000ffff);
-  regs.x.esi = ((long)RealMemSize & 0xffff0000) >> 16;
-  regs.x.edi = ((long)RealMemSize & 0x0000ffff);
+  regs.x.ebx = (reinterpret_cast<uintptr_t>(RealModeData) & 0xffff0000) >> 16;
+  regs.x.ecx = (reinterpret_cast<uintptr_t>(RealModeData) & 0x0000ffff);
+  regs.x.esi = (static_cast<uint32_t>(RealMemSize) & 0xffff0000) >> 16;
+  regs.x.edi = (static_cast<uint32_t>(RealMemSize) & 0x0000ffff);
   int386x(DPMI_INT, &regs, &regs, &sregs);  // call DPMI
   /*........................................................................
   If the carry flag is set, DPMI is indicating an error.

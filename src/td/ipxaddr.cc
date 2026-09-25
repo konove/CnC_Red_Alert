@@ -76,6 +76,11 @@
 #include "engine/base/buffer.h"
 #include "td/ipx.h"
 
+// Only the virtual subnet server code uses this.
+#ifdef VIRTUAL_SUBNET_SERVER
+#include <cstdint>
+#endif
+
 IPXAddressClass::IPXAddressClass() noexcept {
   base::At(NetworkNumber, 0) = 0xff;
   base::At(NetworkNumber, 1) = 0xff;
@@ -201,7 +206,7 @@ void IPXAddressClass::Set_Address(IPXHeaderType* header) {
   if (TheNetwork().winsock().Get_Connected()) {
     memset(NetworkNumber, 1, 4);
     memset(NodeAddress, 0, 6);
-    unsigned short target_mask = *(unsigned short*)header;
+    uint16_t target_mask = *reinterpret_cast<uint16_t*>(header);
     /*
     ** If this is a head to head game (no VSS) --
     **  If mask is 0 then this packet was broadcast from the other player
@@ -214,7 +219,7 @@ void IPXAddressClass::Set_Address(IPXHeaderType* header) {
       target_mask ^= 3;
     }
 
-    *(unsigned short*)&NodeAddress[0] = target_mask;
+    *reinterpret_cast<uint16_t*>(&NodeAddress[0]) = target_mask;
 
   } else {
     memcpy(NetworkNumber, header->SourceNetworkNumber, 4);

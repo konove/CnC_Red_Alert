@@ -296,9 +296,9 @@ bool IPXConnClass::Start_Listening() {
 #else
 
   void* hdr_ptr;
-  unsigned long hdr_val;
+  uintptr_t hdr_val;
   void* buf_ptr;
-  unsigned long buf_val;
+  uintptr_t buf_val;
   int rc;
 
   /*------------------------------------------------------------------------
@@ -324,11 +324,13 @@ bool IPXConnClass::Start_Listening() {
   /*------------------------------------------------------------------------
   Convert protected-mode ptrs to real-mode ptrs
   ------------------------------------------------------------------------*/
-  hdr_val = (unsigned long)ListenHeader;
-  hdr_ptr = (void*)(((hdr_val & 0xffff0) << 12) | (hdr_val & 0x000f));
+  hdr_val = reinterpret_cast<uintptr_t>(ListenHeader);
+  hdr_ptr =
+      reinterpret_cast<void*>(((hdr_val & 0xffff0) << 12) | (hdr_val & 0x000f));
 
-  buf_val = (unsigned long)ListenBuf;
-  buf_ptr = (void*)(((buf_val & 0xffff0) << 12) | (buf_val & 0x000f));
+  buf_val = reinterpret_cast<uintptr_t>(ListenBuf);
+  buf_ptr =
+      reinterpret_cast<void*>(((buf_val & 0xffff0) << 12) | (buf_val & 0x000f));
 
   /*------------------------------------------------------------------------
   Fill in the ECB
@@ -338,9 +340,9 @@ bool IPXConnClass::Start_Listening() {
   ListenECB->Packet[0].Address = hdr_ptr;
   ListenECB->Packet[0].Length = sizeof(IPXHeaderType);
   ListenECB->Packet[1].Address = buf_ptr;
-  ListenECB->Packet[1].Length = (unsigned short)PacketLen;
+  ListenECB->Packet[1].Length = static_cast<uint16_t>(PacketLen);
 
-  ((long&)ListenECB->Event_Service_Routine) = Handler;
+  reinterpret_cast<int32_t&>(ListenECB->Event_Service_Routine) = Handler;
 
   /*------------------------------------------------------------------------
   Command IPX to listen
@@ -584,15 +586,16 @@ int IPXConnClass::Send_To(std::span<const std::byte> buf, int buflen,
     /*
     ** Use first two bytes of ipx address as target mask
     */
-    unsigned short* maskptr = (unsigned short*)&send_address[0];
-    unsigned short target_mask = *maskptr;
+    uint16_t* maskptr = reinterpret_cast<uint16_t*>(&send_address[0]);
+    uint16_t target_mask = *maskptr;
 
     char* tempsend = new char[buflen + sizeof(target_mask)];
 
-    *(unsigned short*)tempsend = htons(target_mask);
+    *reinterpret_cast<uint16_t*>(tempsend) = htons(target_mask);
     base::CopyBytes(tempsend + 2, buf, buflen);
 
-    TheNetwork().winsock().Write((void*)tempsend, buflen + sizeof(target_mask));
+    TheNetwork().winsock().Write(static_cast<void*>(tempsend),
+                                 buflen + sizeof(target_mask));
     delete[] tempsend;
 #else   // VIRTUAL_SUBNET_SERVER
     TheNetwork().winsock().Write(buf, buflen);
@@ -653,13 +656,13 @@ int IPXConnClass::Send_To(std::span<const std::byte> buf, int buflen,
 int IPXConnClass::Broadcast(std::span<const std::byte> buf, int buflen) {
   if (TheNetwork().winsock().Get_Connected()) {
 #ifdef VIRTUAL_SUBNET_SERVER
-    char* tempsend = new char[buflen + sizeof(unsigned short)];
+    char* tempsend = new char[buflen + sizeof(uint16_t)];
     base::CopyBytes(tempsend + 2, buf, buflen);
     *tempsend = 0;
     *(tempsend + 1) = 0;
 
-    TheNetwork().winsock().Write((void*)tempsend,
-                                 buflen + sizeof(unsigned short));
+    TheNetwork().winsock().Write(static_cast<void*>(tempsend),
+                                 buflen + sizeof(uint16_t));
     delete[] tempsend;
 #else   // VIRTUAL_SUBNET_SERVER
     TheNetwork().winsock().Write(buf, buflen);

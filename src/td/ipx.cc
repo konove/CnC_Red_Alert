@@ -66,6 +66,13 @@
 
 #include "td/ipx95.h"
 
+// Only the DOS real-mode IPX code uses these.
+#ifdef NOT_FOR_WIN95
+#include <cstdint>
+
+#include "engine/base/strings/safe_string.h"
+#endif
+
 /***************************************************************************
  * IPX_SPX_Installed -- checks for installation of IPX/SPX                 *
  *                                                                         *
@@ -192,7 +199,7 @@ bool IPX_SPX_Installed() {
  *   12/15/1994 BR : Created.                                              *
  *=========================================================================*/
 #ifdef NOT_FOR_WIN95
-int IPX_Open_Socket(unsigned short socket) {
+int IPX_Open_Socket(uint16_t socket) {
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;
@@ -250,7 +257,7 @@ int IPX_Open_Socket(unsigned short socket) {
  *   12/15/1994 BR : Created.                                              *
  *=========================================================================*/
 #ifdef NOT_FOR_WIN95
-int IPX_Close_Socket(u nsigned short socket) {
+int IPX_Close_Socket(uint16_t socket) {
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;
@@ -371,26 +378,26 @@ int IPX_Get_Connection_Number() {
 #ifdef NOT_FOR_WIN95
 int IPX_Get_1st_Connection_Num(char* username) {
   struct request_buffer {
-    unsigned short len;          // username length + 5
+    uint16_t len;                // username length + 5
     unsigned char buffer_type;   // ConnectionNum = 0x15
-    unsigned short object_type;  // set ot 0x0100
+    uint16_t object_type;        // set ot 0x0100
     unsigned char name_len;      // length of username
     char name[48];               // copy of username
-    unsigned short reserved;
+    uint16_t reserved;
   };
   struct reply_buffer {
-    unsigned short len;
+    uint16_t len;
     unsigned char number_connections;   // will be 0 - 100
     unsigned char connection_num[100];  // array of connection numbers
-    unsigned short reserved[2];
+    uint16_t reserved[2];
   };
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;
   struct request_buffer* reqbuf;
   struct reply_buffer* replybuf;
-  unsigned short segment;   // for DOS allocation
-  unsigned short selector;  // for DOS allocation
+  uint16_t segment;         // for DOS allocation
+  uint16_t selector;        // for DOS allocation
   int num_conns;            // # connections returned
   int conn_num;             // connection number
   int rc;
@@ -419,18 +426,19 @@ int IPX_Get_1st_Connection_Num(char* username) {
   ........................................................................*/
   segment = regs.w.ax;
   selector = regs.w.dx;
-  reqbuf = (struct request_buffer*)(segment << 4);
-  replybuf =
-      (struct reply_buffer*)(((char*)reqbuf) + sizeof(struct request_buffer));
+  reqbuf =
+      reinterpret_cast<request_buffer*>(static_cast<uintptr_t>(segment) << 4);
+  replybuf = reinterpret_cast<reply_buffer*>(reinterpret_cast<char*>(reqbuf) +
+                                             sizeof(request_buffer));
 
   /*------------------------------------------------------------------------
   Init the contents of the request & reply buffers
   ------------------------------------------------------------------------*/
-  reqbuf->len = (unsigned short)(strlen(username) + 5);
+  reqbuf->len = static_cast<uint16_t>(strlen(username) + 5);
   reqbuf->buffer_type = 0x15;
   reqbuf->object_type = 0x0100;
-  reqbuf->name_len = (unsigned char)strlen(username);
-  strcpy(reqbuf->name, username);
+  reqbuf->name_len = static_cast<unsigned char>(strlen(username));
+  base::SafeCopy(reqbuf->name, username);
   reqbuf->reserved = reqbuf->reserved;  // prevent compiler warning
   replybuf->len = 101;
   replybuf->reserved[0] = replybuf->reserved[0];  // prevent compiler warning
@@ -467,7 +475,7 @@ int IPX_Get_1st_Connection_Num(char* username) {
   ------------------------------------------------------------------------*/
   rc = (rmi.eax & 0x00ff);                      // if AL !=0, error
   num_conns = replybuf->number_connections;     // # times user is logged in
-  conn_num = (int)replybuf->connection_num[0];  // 1st connection #
+  conn_num = int{replybuf->connection_num[0]};  // 1st connection #
 
   /*------------------------------------------------------------------------
   Free DOS memory
@@ -521,23 +529,23 @@ int IPX_Get_Internet_Address(int connection_number,
                              unsigned char* network_number,
                              unsigned char* physical_node) {
   struct request_buffer {
-    unsigned short len;
+    uint16_t len;
     unsigned char buffer_type;        // Internet = 0x13
     unsigned char connection_number;  // Conn. Number to translate
   };
   struct reply_buffer {
-    unsigned short len;
+    uint16_t len;
     unsigned char network_number[4];  // filled in by IPX
     unsigned char physical_node[6];   // filled in by IPX
-    unsigned short server_socket;     // filled in by IPX, but don't use!
+    uint16_t server_socket;           // filled in by IPX, but don't use!
   };
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;
   struct request_buffer* reqbuf;
   struct reply_buffer* replybuf;
-  unsigned short segment;   // for DOS allocation
-  unsigned short selector;  // for DOS allocation
+  uint16_t segment;   // for DOS allocation
+  uint16_t selector;  // for DOS allocation
 
   /*------------------------------------------------------------------------
   Error if invalid connection is given
@@ -570,9 +578,10 @@ int IPX_Get_Internet_Address(int connection_number,
   ........................................................................*/
   segment = regs.w.ax;
   selector = regs.w.dx;
-  reqbuf = (struct request_buffer*)(segment << 4);
-  replybuf =
-      (struct reply_buffer*)(((char*)reqbuf) + sizeof(struct request_buffer));
+  reqbuf =
+      reinterpret_cast<request_buffer*>(static_cast<uintptr_t>(segment) << 4);
+  replybuf = reinterpret_cast<reply_buffer*>(reinterpret_cast<char*>(reqbuf) +
+                                             sizeof(request_buffer));
 
   /*------------------------------------------------------------------------
   Init the contents of the request & reply buffers
@@ -653,25 +662,25 @@ int IPX_Get_Internet_Address(int connection_number,
 #ifdef NOT_FOR_WIN95
 int IPX_Get_User_ID(int connection_number, char* user_id) {
   struct request_buffer {
-    unsigned short len;
+    uint16_t len;
     unsigned char buffer_type;        // 0x16 = UserID buffer type
     unsigned char connection_number;  // Connection Number to get ID for
   };
   struct reply_buffer {
-    unsigned short len;
+    uint16_t len;
     unsigned char object_id[4];
     unsigned char object_type[2];
     char object_name[48];
     char login_time[7];
-    unsigned short reserved;
+    uint16_t reserved;
   };
   union REGS regs;
   struct SREGS sregs;
   RMIType rmi;
   struct request_buffer* reqbuf;
   struct reply_buffer* replybuf;
-  unsigned short segment;   // for DOS allocation
-  unsigned short selector;  // for DOS allocation
+  uint16_t segment;   // for DOS allocation
+  uint16_t selector;  // for DOS allocation
 
   /*------------------------------------------------------------------------
   Error if invalid connection is given
@@ -704,9 +713,10 @@ int IPX_Get_User_ID(int connection_number, char* user_id) {
   ........................................................................*/
   segment = regs.w.ax;
   selector = regs.w.dx;
-  reqbuf = (struct request_buffer*)(segment << 4);
-  replybuf =
-      (struct reply_buffer*)(((char*)reqbuf) + sizeof(struct request_buffer));
+  reqbuf =
+      reinterpret_cast<request_buffer*>(static_cast<uintptr_t>(segment) << 4);
+  replybuf = reinterpret_cast<reply_buffer*>(reinterpret_cast<char*>(reqbuf) +
+                                             sizeof(request_buffer));
 
   /*------------------------------------------------------------------------
   Init the contents of the request & reply buffers
@@ -826,8 +836,8 @@ int IPX_Listen_For_Packet(struct ECB* ecb_ptr) {
   Fill in registers for the interrupt call
   ........................................................................*/
   rmi.ebx = IPX_LISTEN_FOR_PACKET;
-  rmi.es = (short)((long)ecb_ptr >> 4);
-  rmi.esi = (long)((long)ecb_ptr & 0x000f);
+  rmi.es = static_cast<int16_t>(reinterpret_cast<uintptr_t>(ecb_ptr) >> 4);
+  rmi.esi = static_cast<int32_t>(reinterpret_cast<uintptr_t>(ecb_ptr) & 0x000f);
   /*........................................................................
   call DPMI
   ........................................................................*/
@@ -905,8 +915,8 @@ void IPX_Send_Packet(struct ECB* ecb_ptr) {
   Fill in registers for the interrupt call
   ........................................................................*/
   rmi.ebx = IPX_SEND_PACKET;
-  rmi.es = (short)((long)ecb_ptr >> 4);
-  rmi.esi = (long)((long)ecb_ptr & 0x000f);
+  rmi.es = static_cast<int16_t>(reinterpret_cast<uintptr_t>(ecb_ptr) >> 4);
+  rmi.esi = static_cast<int32_t>(reinterpret_cast<uintptr_t>(ecb_ptr) & 0x000f);
   /*........................................................................
   call DPMI
   ........................................................................*/
@@ -946,12 +956,11 @@ void IPX_Send_Packet(struct ECB* ecb_ptr) {
  *=========================================================================*/
 #ifdef NOT_FOR_WIN95
 int IPX_Get_Local_Target(unsigned char* dest_network, unsigned char* dest_node,
-                         unsigned short dest_socket,
-                         unsigned char* bridge_address) {
+                         uint16_t dest_socket, unsigned char* bridge_address) {
   struct request_buffer {
     unsigned char network_number[4];
     unsigned char physical_node[6];
-    unsigned short socket;
+    uint16_t socket;
   };
   struct reply_buffer {
     unsigned char local_target[6];
@@ -962,8 +971,8 @@ int IPX_Get_Local_Target(unsigned char* dest_network, unsigned char* dest_node,
   RMIType rmi;
   struct request_buffer* reqbuf;
   struct reply_buffer* replybuf;
-  unsigned short segment;   // for DOS allocation
-  unsigned short selector;  // for DOS allocation
+  uint16_t segment;   // for DOS allocation
+  uint16_t selector;  // for DOS allocation
 
   /*------------------------------------------------------------------------
   Allocate DOS memory to store the buffers passed to the interrupt
@@ -989,9 +998,10 @@ int IPX_Get_Local_Target(unsigned char* dest_network, unsigned char* dest_node,
   ........................................................................*/
   segment = regs.w.ax;
   selector = regs.w.dx;
-  reqbuf = (struct request_buffer*)(segment << 4);
-  replybuf =
-      (struct reply_buffer*)(((char*)reqbuf) + sizeof(struct request_buffer));
+  reqbuf =
+      reinterpret_cast<request_buffer*>(static_cast<uintptr_t>(segment) << 4);
+  replybuf = reinterpret_cast<reply_buffer*>(reinterpret_cast<char*>(reqbuf) +
+                                             sizeof(request_buffer));
 
   /*------------------------------------------------------------------------
   Init the contents of the request & reply buffers
@@ -1084,8 +1094,8 @@ int IPX_Cancel_Event(struct ECB* ecb_ptr) {
   Fill in registers for the interrupt call
   ........................................................................*/
   rmi.ebx = IPX_CANCEL_EVENT;
-  rmi.es = (short)((long)ecb_ptr >> 4);
-  rmi.esi = (long)((long)ecb_ptr & 0x000f);
+  rmi.es = static_cast<int16_t>(reinterpret_cast<uintptr_t>(ecb_ptr) >> 4);
+  rmi.esi = static_cast<int32_t>(reinterpret_cast<uintptr_t>(ecb_ptr) & 0x000f);
   /*........................................................................
   call DPMI
   ........................................................................*/
