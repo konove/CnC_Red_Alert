@@ -58,15 +58,17 @@ bool WWKeyboardClass::Put(int key) {
   return false;
 }
 
-bool WWKeyboardClass::Put_Key_Message(unsigned vk_key, bool release) {
+bool WWKeyboardClass::Put_Key_Message(const int vk_key, const bool release) {
   // Scancode 0 is a key SDL does not know: it would be indistinguishable from
   // Check's empty-buffer result and leave Get spinning. Scancodes above 0xFF
   // (SDL's media and browser keys) would spill into the modifier bits, where
   // "next track" reads as a shifted right click. Neither has a key code, so
   // drop them before any bit is added.
-  if (vk_key == 0 || vk_key > 0xFF) {
+  if (vk_key <= 0 || vk_key > 0xFF) {
     return false;
   }
+  // The key number under construction; the WWKEY_* bits are ORed in.
+  auto key = static_cast<uint32_t>(vk_key);
 
   // Mouse buttons get no modifier bits: the DOS version never set them, and
   // the click handlers compare the button without masking them off.
@@ -75,22 +77,22 @@ bool WWKeyboardClass::Put_Key_Message(unsigned vk_key, bool release) {
         static_cast<SDL_Keymod>(SDL_GetModState() & kInputModifierMask);
 
     if (keymod & KMOD_SHIFT) {
-      vk_key |= WWKEY_SHIFT_BIT;
+      key |= WWKEY_SHIFT_BIT;
     }
 
     if (keymod & KMOD_CTRL) {
-      vk_key |= WWKEY_CTRL_BIT;
+      key |= WWKEY_CTRL_BIT;
     }
 
     if (keymod & KMOD_ALT) {
-      vk_key |= WWKEY_ALT_BIT;
+      key |= WWKEY_ALT_BIT;
     }
   }
   if (release) {
-    vk_key |= WWKEY_RLS_BIT;
+    key |= WWKEY_RLS_BIT;
   }
 
-  return Put(static_cast<int>(vk_key));
+  return Put(static_cast<int>(key));
 }
 
 int WWKeyboardClass::To_ASCII(int num) {
@@ -156,7 +158,7 @@ bool WWKeyboardClass::Down(int key) {
     // SDL_GetKeyboardState returns exactly numkeys state bytes.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
     const std::span states(keys, static_cast<size_t>(numkeys));
-    return base::At(states, static_cast<size_t>(key)) != 0;
+    return base::At(states, key) != 0;
   }
 
   return false;
@@ -192,8 +194,7 @@ bool WWKeyboardClass::Event_Handler(SDL_Event* event) {
       if (free_entries < 3) {
         return true;
       }
-      Put_Key_Message(static_cast<unsigned>(button),
-                      event->button.state == SDL_RELEASED);
+      Put_Key_Message(button, event->button.state == SDL_RELEASED);
       Put(event->button.x);
       Put(event->button.y);
       return true;

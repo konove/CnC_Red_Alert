@@ -89,9 +89,9 @@ class WWKeyboardClass {
   // WWKEY_RLS_BIT for a `release`. A mouse button gets no modifier bits, as in
   // the DOS version; its position entries are the caller's to add. Returns
   // false if the key was dropped: the buffer is full, or the scancode is 0
-  // (a key SDL does not know) or above 0xFF (a media key, which has no key
-  // code).
-  bool Put_Key_Message(unsigned vk_key, bool release = false);
+  // (a key SDL does not know), negative, or above 0xFF (a media key, which has
+  // no key code).
+  bool Put_Key_Message(int vk_key, bool release = false);
 
   // Returns the character `num` types on the current keyboard layout, with
   // Shift ignored, so letters come back lower case. Returns 0 for a release
