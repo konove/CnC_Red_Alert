@@ -6,11 +6,11 @@
 #include <SDL_mouse.h>
 #include <SDL_scancode.h>
 
-#include <cstddef>
 #include <cstdint>
 #include <span>
 
 #include "base/array.h"
+#include "base/numeric.h"
 #include "engine/window/ww_mouse.h"
 #include "engine/window/ww_win.h"
 
@@ -38,9 +38,11 @@ int KeyBuffer::Peek() {
 }
 
 int KeyBuffer::Read() {
-  while (!Peek()) {
-  }  // wait for key in buffer
-  const int key = base::At(entries_, head_);
+  // Peek() pumps SDL events, so the wait ends as soon as a key arrives.
+  int key = Peek();
+  while (key == 0) {
+    key = Peek();
+  }
   int entry_count = 1;
   if (IsMouseKey(key)) {
     // A click's position rides in the two entries behind the button.
@@ -71,36 +73,49 @@ bool KeyBuffer::PutKey(const int key_code, const bool release) {
   // (SDL's media and browser keys) would spill into the modifier bits, where
   // "next track" reads as a shifted right click. Neither has a key code, so
   // drop them before any bit is added.
-  if (key_code <= 0 || key_code > 0xFF) {
+  if (key_code <= 0 || key_code > int{kScancodeMask}) {
     return false;
   }
-  // The key number under construction; the WWKEY_* bits are ORed in.
   auto key_number = static_cast<uint32_t>(key_code);
 
-  // Mouse buttons get no modifier bits: the DOS version never set them, and
-  // the click handlers compare the button without masking them off.
-  if (key_code != VK_LBUTTON && key_code != VK_MBUTTON &&
-      key_code != VK_RBUTTON) {
-    const auto keymod =
-        static_cast<SDL_Keymod>(SDL_GetModState() & kInputModifierMask);
-
-    if (keymod & KMOD_SHIFT) {
-      key_number |= kKeyShiftBit;
-    }
-
-    if (keymod & KMOD_CTRL) {
-      key_number |= kKeyCtrlBit;
-    }
-
-    if (keymod & KMOD_ALT) {
-      key_number |= kKeyAltBit;
-    }
+  const auto keymod =
+      static_cast<SDL_Keymod>(SDL_GetModState() & kInputModifierMask);
+  if (keymod & KMOD_SHIFT) {
+    key_number |= kKeyShiftBit;
+  }
+  if (keymod & KMOD_CTRL) {
+    key_number |= kKeyCtrlBit;
+  }
+  if (keymod & KMOD_ALT) {
+    key_number |= kKeyAltBit;
   }
   if (release) {
     key_number |= kKeyReleaseBit;
   }
 
   return Put(static_cast<int>(key_number));
+}
+
+bool KeyBuffer::PutClick(const int button, const bool release, const int x,
+                         const int y) {
+  // A click is three entries, queued all or not at all: a button without its
+  // position would make Read() take one from past the tail. Put() keeps one
+  // slot free, so that slot does not count.
+  const int free_entries = (head_ - tail_ + kBufferSize - 1) % kBufferSize;
+  if (free_entries < 3) {
+    return false;
+  }
+
+  // No modifier bits: the DOS version never set them on a button, and the
+  // click handlers compare the button without masking them off.
+  auto key_number = static_cast<uint32_t>(button);
+  if (release) {
+    key_number |= kKeyReleaseBit;
+  }
+  Put(static_cast<int>(key_number));
+  Put(x);
+  Put(y);
+  return true;
 }
 
 int KeyBuffer::ToAscii(int key) {
@@ -114,49 +129,33 @@ int KeyBuffer::ToAscii(int key) {
   // modifiers, so Shift never changes the result. Doing better needs SDL text
   // input events (or SDL3, whose version takes the modifiers).
   const int keycode =
-      SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(bits & 0xFF));
+      SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(bits & kScancodeMask));
 
   // SDL keycodes for keys that type a character are that character; every
   // other key's code has SDLK_SCANCODE_MASK set and lands above 'z'.
-  if (keycode <= SDLK_z) {
-    return keycode;
-  }
-
-  return 0;
+  return keycode <= SDLK_z ? keycode : 0;
 }
 
 void KeyBuffer::Clear() { head_ = tail_; }
 
 bool KeyBuffer::IsDown(int key) {
-  // Gadgets poll the buttons through here to follow a drag or a held button.
-  if (IsMouseKey(key)) {
-    const auto buttons = SDL_GetMouseState(nullptr, nullptr);
-
-    switch (key) {
-      case KN_LMOUSE:
-        return (buttons & SDL_BUTTON_LMASK) != 0;
-      case KN_RMOUSE:
-        return (buttons & SDL_BUTTON_RMASK) != 0;
-      default:
-        break;
-    }
-  }
-
-  // SDL's modifier state covers both sides of the keyboard, which is what the
-  // KN_R* names (equal to their KN_L* twins) ask for.
-  if (key == KN_LSHIFT || key == KN_LCTRL || key == KN_LALT) {
-    const auto keymod =
-        static_cast<SDL_Keymod>(SDL_GetModState() & kInputModifierMask);
-    switch (key) {
-      case KN_LSHIFT:
-        return (keymod & KMOD_SHIFT) != 0;
-      case KN_LCTRL:
-        return (keymod & KMOD_CTRL) != 0;
-      case KN_LALT:
-        return (keymod & KMOD_ALT) != 0;
-      default:
-        break;
-    }
+  switch (key) {
+    // Gadgets poll the buttons through here to follow a drag or a held
+    // button.
+    case KN_LMOUSE:
+      return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_LMASK) != 0;
+    case KN_RMOUSE:
+      return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_RMASK) != 0;
+    // SDL's modifier state covers both sides of the keyboard, which is what
+    // the KN_R* names (equal to their KN_L* twins) ask for.
+    case KN_LSHIFT:
+      return (SDL_GetModState() & KMOD_SHIFT) != 0;
+    case KN_LCTRL:
+      return (SDL_GetModState() & KMOD_CTRL) != 0;
+    case KN_LALT:
+      return (SDL_GetModState() & KMOD_ALT) != 0;
+    default:
+      break;
   }
 
   int key_count = 0;
@@ -165,7 +164,7 @@ bool KeyBuffer::IsDown(int key) {
   if (key >= 0 && key < key_count) {
     // SDL_GetKeyboardState returns exactly key_count state bytes.
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
-    const std::span states(key_states, static_cast<size_t>(key_count));
+    const std::span states(key_states, base::ToSize(key_count));
     return base::At(states, key) != 0;
   }
 
@@ -175,7 +174,7 @@ bool KeyBuffer::IsDown(int key) {
 bool KeyBuffer::IsMouseKey(int key) {
   // Only the key-code byte; the modifier and release bits say nothing about
   // which key it is.
-  key = static_cast<int>(static_cast<uint32_t>(key) & 0xFF);
+  key = static_cast<int>(static_cast<uint32_t>(key) & kScancodeMask);
   return key == VK_LBUTTON || key == VK_MBUTTON || key == VK_RBUTTON;
 }
 
@@ -196,15 +195,8 @@ bool KeyBuffer::HandleEvent(SDL_Event* event) {
         return false;
       }
 
-      // A click is three entries, queued all or not at all: a button without
-      // its position would make Read() take one from past the tail.
-      const int free_entries = (head_ - tail_ + kBufferSize - 1) % kBufferSize;
-      if (free_entries < 3) {
-        return true;
-      }
-      PutKey(button, event->button.state == SDL_RELEASED);
-      Put(event->button.x);
-      Put(event->button.y);
+      PutClick(button, event->button.state == SDL_RELEASED, event->button.x,
+               event->button.y);
       return true;
     }
 

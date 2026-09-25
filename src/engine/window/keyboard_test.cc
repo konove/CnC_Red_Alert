@@ -6,6 +6,7 @@
 #include <SDL_events.h>
 #include <SDL_mouse.h>
 #include <SDL_scancode.h>
+#include <SDL_stdinc.h>
 
 #include <cstdint>
 
@@ -19,6 +20,17 @@ void SDL_Event_Loop() {}
 void Update_Mouse_Pos(int /*x*/, int /*y*/) {}
 
 namespace {
+
+// Returns a press of the SDL mouse `button` at `x`, `y`.
+SDL_Event MakeClick(const Uint8 button, const Sint32 x, const Sint32 y) {
+  SDL_Event click{};
+  click.button.type = SDL_MOUSEBUTTONDOWN;
+  click.button.button = button;
+  click.button.state = SDL_PRESSED;
+  click.button.x = x;
+  click.button.y = y;
+  return click;
+}
 
 class KeyBufferTest : public ::testing::Test {
  protected:
@@ -104,12 +116,7 @@ TEST_F(KeyBufferTest, ClickThatDoesNotFitIsDroppedWhole) {
   for (int i = 0; i < 253; ++i) {
     ASSERT_TRUE(keys.Put(KN_A));
   }
-  SDL_Event click{};
-  click.button.type = SDL_MOUSEBUTTONDOWN;
-  click.button.button = SDL_BUTTON_LEFT;
-  click.button.state = SDL_PRESSED;
-  click.button.x = 10;
-  click.button.y = 20;
+  SDL_Event click = MakeClick(SDL_BUTTON_LEFT, 10, 20);
 
   keys.HandleEvent(&click);
 
@@ -120,12 +127,7 @@ TEST_F(KeyBufferTest, ClickThatDoesNotFitIsDroppedWhole) {
 }
 
 TEST_F(KeyBufferTest, ClickIsQueuedWithItsPosition) {
-  SDL_Event click{};
-  click.button.type = SDL_MOUSEBUTTONDOWN;
-  click.button.button = SDL_BUTTON_RIGHT;
-  click.button.state = SDL_PRESSED;
-  click.button.x = 10;
-  click.button.y = 20;
+  SDL_Event click = MakeClick(SDL_BUTTON_RIGHT, 10, 20);
 
   EXPECT_TRUE(keys.HandleEvent(&click));
 
@@ -136,11 +138,9 @@ TEST_F(KeyBufferTest, ClickIsQueuedWithItsPosition) {
 }
 
 TEST_F(KeyBufferTest, MouseClickCoordinatesAreNotReportedAsKeys) {
-  // Event_Handler queues a mouse key followed by its x and y position; a click
-  // at the origin puts two zero entries in the buffer behind the key.
-  ASSERT_TRUE(keys.PutKey(VK_LBUTTON));
-  ASSERT_TRUE(keys.Put(0));
-  ASSERT_TRUE(keys.Put(0));
+  // A click queues the button followed by its x and y position; one at the
+  // origin puts two zero entries in the buffer behind the button.
+  ASSERT_TRUE(keys.PutClick(VK_LBUTTON, /*release=*/false, 0, 0));
   ASSERT_TRUE(keys.Put(KN_Y));
 
   EXPECT_EQ(keys.Peek(), KN_LMOUSE);

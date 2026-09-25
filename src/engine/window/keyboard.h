@@ -40,10 +40,13 @@ inline constexpr uint32_t kKeyReleaseBit = 0x800;
 inline constexpr uint32_t kKeyVirtualBit = 0x1000;
 inline constexpr uint32_t kKeyButtonBit = 0x8000;
 
+// The low byte of a key number, which holds the key's scancode.
+inline constexpr uint32_t kScancodeMask = 0xFFU;
+
 // The part of a key value that says which key it is: the code and whether it
 // is a virtual key, without the shift, release and button bits that say how
 // it was pressed.
-inline constexpr uint32_t kKeyCodeMask = kKeyVirtualBit | 0xFFU;
+inline constexpr uint32_t kKeyCodeMask = kKeyVirtualBit | kScancodeMask;
 
 // Returns which key `key` is, however it was pressed. A release matches too;
 // test kKeyReleaseBit as well to tell a press from a release.
@@ -81,14 +84,18 @@ class KeyBuffer {
   // the buffer is full.
   bool Put(int entry);
 
-  // Queues the key or mouse button `key_code` (a VK_* code), adding the
-  // Shift, Ctrl and Alt bits for the modifier keys held right now and
-  // kKeyReleaseBit for a `release`. A mouse button gets no modifier bits, as in
-  // the DOS version; its position entries are the caller's to add. Returns
-  // false if the key was dropped: the buffer is full, or the scancode is 0
-  // (a key SDL does not know), negative, or above 0xFF (a media key, which has
-  // no key code).
+  // Queues the key `key_code` (a VK_* code), adding the Shift, Ctrl and Alt
+  // bits for the modifier keys held right now and kKeyReleaseBit for a
+  // `release`. Returns false if the key was dropped: the buffer is full, or
+  // the scancode is 0 (a key SDL does not know), negative, or above 0xFF (a
+  // media key, which has no key code). Mouse buttons go through PutClick().
   bool PutKey(int key_code, bool release = false);
+
+  // Queues a click of the mouse `button` (VK_LBUTTON, VK_MBUTTON or
+  // VK_RBUTTON) at `x`, `y`: the button, with kKeyReleaseBit for a `release`
+  // but no modifier bits, as in the DOS version, followed by the position.
+  // Returns false, queuing nothing, if the three entries do not all fit.
+  bool PutClick(int button, bool release, int x, int y);
 
   // Returns the character `key` types on the current keyboard layout, with
   // Shift ignored, so letters come back lower case. Returns 0 for a release
