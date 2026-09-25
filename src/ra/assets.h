@@ -12,8 +12,8 @@
 #include "absl/base/attributes.h"
 #include "engine/base/enum_array.h"
 #include "engine/base/installed.h"
+#include "engine/crypto/pk.h"
 #include "ra/defines.h"
-#include "tech/pk.h"
 
 class MixArchive;
 

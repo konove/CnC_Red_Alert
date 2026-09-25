@@ -24,17 +24,17 @@
 #include "absl/strings/match.h"
 #include "engine/base/buffer.h"
 #include "engine/base/listnode.h"
+#include "engine/crypto/blowfish_source.h"
+#include "engine/crypto/crc.h"
+#include "engine/crypto/pk.h"
+#include "engine/crypto/pk_source.h"
+#include "engine/crypto/sha.h"
+#include "engine/crypto/sha1_source.h"
 #include "engine/stream/byte_source.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
 #include "engine/stream/stream_source.h"
-#include "tech/blowfish_source.h"
-#include "tech/crc.h"
 #include "tech/game_file.h"
-#include "tech/pk.h"
-#include "tech/pk_source.h"
-#include "tech/sha.h"
-#include "tech/sha1_source.h"
 
 bool MixArchive::Open(std::string_view filename, const PKey* key) {
   const auto file = OpenGameFile(filename);

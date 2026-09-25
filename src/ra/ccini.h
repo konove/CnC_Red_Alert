@@ -42,12 +42,12 @@
 
 #include <cstdint>
 
+#include "engine/crypto/sha.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
 #include "engine/stream/byte_stream.h"
 #include "ra/defines.h"
 #include "ra/ini.h"
-#include "tech/sha.h"
 
 class TriggerTypeClass;
 

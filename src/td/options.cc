@@ -75,6 +75,7 @@
 #include "engine/base/array.h"
 #include "engine/base/bytes_of.h"
 #include "engine/base/numeric.h"
+#include "engine/crypto/key_phrase_hash.h"
 #include "sdllib/shape.h"
 #include "td/audio.h"
 #include "td/conquer.h"
@@ -90,7 +91,6 @@
 #include "tech/file_access.h"
 #include "tech/game_file.h"
 #include "tech/hsv.h"
-#include "tech/key_phrase_hash.h"
 
 /***********************************************************************************************
  * OptionsClass::OptionsClass -- The default constructor for the options class.

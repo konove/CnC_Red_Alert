@@ -15,6 +15,8 @@
 #include "engine/codec/block_codec.h"
 #include "engine/codec/lzo_sink.h"
 #include "engine/codec/lzo_source.h"
+#include "engine/crypto/blowfish.h"
+#include "engine/crypto/blowfish_sink.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_stream.h"
 #include "engine/stream/seek_origin.h"
@@ -22,8 +24,6 @@
 #include "engine/stream/stream_sink.h"
 #include "engine/stream/stream_source.h"
 #include "gtest/gtest.h"
-#include "tech/blowfish.h"
-#include "tech/blowfish_sink.h"
 
 namespace {
 

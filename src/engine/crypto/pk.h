@@ -1,0 +1,106 @@
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/PK.H 1     3/03/97 10:25a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S
+ ****
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer *
+ *                                                                                             *
+ *                    File Name : PK.H *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic *
+ *                                                                                             *
+ *                   Start Date : 07/03/96 *
+ *                                                                                             *
+ *                  Last Update : July 3, 1996 [JLB] *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions: *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ *- - - - - - - */
+
+#ifndef CNC_RED_ALERT_ENGINE_CRYPTO_PK_H_
+#define CNC_RED_ALERT_ENGINE_CRYPTO_PK_H_
+
+#include <cstddef>
+#include <cstdint>
+#include <span>
+
+#include "engine/crypto/int.h"
+#include "engine/stream/byte_source.h"
+
+/*
+**	This class holds a public or private key used in Public Key
+*Cryptography. It also serves *	as the conduit for encrypting/decrypting data
+*using that key. Cryptography, using this *	method, has a couple of
+*characteristics that affect how it is used. One, the process of
+**	encrypting/decrypting is very slow. This limits the effective quantity
+*of data that can *	be processed. Two, the ciphertext is larger than the
+*plaintext. This property generally *	limits its use to streaming data as
+*opposed to random access data. The data is processed *	in blocks. The size of
+*the ciphertext and plaintext blocks can be determined only from *	the key
+*itself.
+**
+**	A reasonable use of this technology would be to encrypt only critical
+*data such as the *	password for a fast general purpose cryptographic
+*algorithm.
+*/
+class PKey {
+ public:
+  PKey() noexcept : Modulus(0), Exponent(0), BitPrecision(0) {}
+  PKey(std::span<const std::byte> exponent,
+       std::span<const std::byte> modulus);  // DER initialization.
+
+  [[nodiscard]] int Encrypt(std::span<const std::byte> source,
+                            std::span<std::byte> dest) const;
+  [[nodiscard]] int Decrypt(std::span<const std::byte> source,
+                            std::span<std::byte> dest) const;
+
+  static void Generate(ByteSource& random, int bits, PKey& fastkey,
+                       PKey& slowkey);
+
+  [[nodiscard]] int Plain_Block_Size() const { return (BitPrecision - 1) / 8; }
+  [[nodiscard]] int Crypt_Block_Size() const { return Plain_Block_Size() + 1; }
+  [[nodiscard]] int Block_Count(int plaintext_length) const {
+    return ((plaintext_length - 1) / Plain_Block_Size()) + 1;
+  }
+
+  [[nodiscard]] int Encode_Modulus(std::span<std::byte> buffer) const;
+  [[nodiscard]] int Encode_Exponent(std::span<std::byte> buffer) const;
+
+  void Decode_Modulus(std::span<const std::byte> buffer);
+  void Decode_Exponent(std::span<const std::byte> buffer);
+
+  static uint32_t Fast_Exponent() { return 65537; }
+
+ private:
+  // p*q
+  BigInt Modulus;
+
+  // 65537 or
+  // inverse of (p-1)(q-1).
+  BigInt Exponent;
+
+  // Maximum bits allowed for block.
+  int BitPrecision;
+};
+
+#endif  // CNC_RED_ALERT_ENGINE_CRYPTO_PK_H_

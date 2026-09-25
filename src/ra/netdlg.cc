@@ -144,6 +144,7 @@
 #include "engine/base/numeric.h"
 #include "engine/base/random.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/crypto/key_phrase_hash.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/timer.h"
@@ -208,7 +209,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/game_file.h"
-#include "tech/key_phrase_hash.h"
 #include "tech/mix_archive.h"
 
 // #define OLDWAY			1

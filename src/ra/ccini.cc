@@ -110,6 +110,9 @@
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
 #include "engine/base/strings/tokenizer.h"
+#include "engine/crypto/crc.h"
+#include "engine/crypto/sha.h"
+#include "engine/crypto/sha1_sink.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
 #include "engine/stream/byte_stream.h"
@@ -128,9 +131,6 @@
 #include "ra/type.h"
 #include "ra/warhead.h"
 #include "ra/weapon.h"
-#include "tech/crc.h"
-#include "tech/sha.h"
-#include "tech/sha1_sink.h"
 /***********************************************************************************************
  * CCINIClass::Load -- Load the INI database from the file specified. *
  *                                                                                             *

@@ -22,16 +22,16 @@
 #include "engine/codec/lzo_source.h"
 #include "engine/codec/lzw_sink.h"
 #include "engine/codec/lzw_source.h"
+#include "engine/crypto/blowfish.h"
+#include "engine/crypto/blowfish_sink.h"
+#include "engine/crypto/blowfish_source.h"
+#include "engine/crypto/sha.h"
+#include "engine/crypto/sha1_sink.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
 #include "engine/stream/span_sink.h"
 #include "engine/stream/span_source.h"
 #include "gtest/gtest.h"
-#include "tech/blowfish.h"
-#include "tech/blowfish_sink.h"
-#include "tech/blowfish_source.h"
-#include "tech/sha.h"
-#include "tech/sha1_sink.h"
 
 namespace {
 

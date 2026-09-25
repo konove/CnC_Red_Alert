@@ -6,7 +6,7 @@
 
 #include <string_view>
 
-#include "tech/pk.h"
+#include "engine/crypto/pk.h"
 
 // The public key the shipped archives' indexes are encrypted with. The first
 // call builds it; it lives as long as the program, which the archives

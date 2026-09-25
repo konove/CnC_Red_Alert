@@ -72,6 +72,7 @@
 #include "engine/base/buffer.h"
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/safe_string.h"
+#include "engine/crypto/key_phrase_hash.h"
 #include "engine/platform/file_system.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/timer.h"
@@ -151,7 +152,6 @@
 #include "tech/disk_file.h"
 #include "tech/file_access.h"
 #include "tech/game_file.h"
-#include "tech/key_phrase_hash.h"
 #include "tech/mix_archive.h"
 #include "tech/search_paths.h"
 

@@ -1,0 +1,23 @@
+// File: BlowfishSink, a sink that encrypts or decrypts with Blowfish.
+
+#ifndef CNC_RED_ALERT_ENGINE_CRYPTO_BLOWFISH_SINK_H_
+#define CNC_RED_ALERT_ENGINE_CRYPTO_BLOWFISH_SINK_H_
+
+#include "engine/crypto/blowfish_codec.h"
+#include "engine/stream/transform_sink.h"
+
+// Encrypts or decrypts the bytes written to it in whole 8-byte blocks; a
+// shorter tail passes through unchanged at Flush.
+//
+// Example:
+//   BlowfishSink cipher(CipherMode::kEncrypt, file_sink);
+//   cipher.Key(key, BlowfishEngine::kMaxKeyLength);
+class BlowfishSink : public TransformSink<BlowfishCodec> {
+ public:
+  using TransformSink::TransformSink;
+
+  // Keys the cipher. Until then bytes pass through unchanged.
+  void Key(std::span<const std::byte> key) { codec().Key(key); }
+};
+
+#endif  // CNC_RED_ALERT_ENGINE_CRYPTO_BLOWFISH_SINK_H_

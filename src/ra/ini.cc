@@ -92,6 +92,9 @@
 #include "engine/codec/base64.h"
 #include "engine/codec/base64_sink.h"
 #include "engine/codec/base64_source.h"
+#include "engine/crypto/crc.h"
+#include "engine/crypto/int.h"
+#include "engine/crypto/pk.h"
 #include "engine/stream/byte_sink.h"
 #include "engine/stream/byte_source.h"
 #include "engine/stream/byte_stream.h"
@@ -100,9 +103,6 @@
 #include "engine/stream/span_source.h"
 #include "engine/stream/stream_sink.h"
 #include "engine/stream/stream_source.h"
-#include "tech/crc.h"
-#include "tech/int.h"
-#include "tech/pk.h"
 
 /***********************************************************************************************
  * INIClass::~INIClass -- Destructor for INI handler. *

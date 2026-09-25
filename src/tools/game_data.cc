@@ -9,9 +9,9 @@
 
 #include "engine/base/numeric.h"
 #include "engine/codec/base64.h"
-#include "tech/int.h"
+#include "engine/crypto/int.h"
+#include "engine/crypto/pk.h"
 #include "tech/mix_archive.h"
-#include "tech/pk.h"
 #include "tech/search_paths.h"
 
 namespace {

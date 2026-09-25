@@ -141,6 +141,7 @@
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/unaligned.h"
+#include "engine/crypto/crc.h"
 #include "engine/platform/random_seed.h"
 #include "engine/platform/timer.h"
 #include "sdllib/font.h"
@@ -184,7 +185,6 @@
 #include "td/vector.h"
 #include "td/winstub.h"
 #include "td/world.h"
-#include "tech/crc.h"
 
 #ifdef _WIN32
 #include "td/ccdde.h"

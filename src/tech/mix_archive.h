@@ -43,7 +43,7 @@
 
 #include "absl/base/attributes.h"
 #include "engine/base/listnode.h"
-#include "tech/pk.h"
+#include "engine/crypto/pk.h"
 
 // An archive is opened, and its files are served, through OpenGameFile, so an
 // archive packed inside another registered archive works too.

@@ -18,13 +18,13 @@
 #include <vector>
 
 #include "engine/base/array.h"
+#include "engine/crypto/blowfish_sink.h"
+#include "engine/crypto/crc.h"
+#include "engine/crypto/pk.h"
+#include "engine/crypto/pk_sink.h"
+#include "engine/crypto/random_source.h"
 #include "engine/stream/byte_sink.h"
 #include "gtest/gtest.h"
-#include "tech/blowfish_sink.h"
-#include "tech/crc.h"
-#include "tech/pk.h"
-#include "tech/pk_sink.h"
-#include "tech/random_source.h"
 
 namespace {
 
