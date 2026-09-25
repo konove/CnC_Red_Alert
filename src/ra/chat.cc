@@ -354,9 +354,7 @@ void IPX_Call_Back() {
       TheNetwork().ipx().Get_Global_Message(
           base::ObjectBytes(TheSession().GPacket), &TheSession().GPacketlen,
           &TheSession().GAddress, &TheSession().GProductID) &&
-      (TheSession().GProductID == IPXGlobalConnClass::kCommandAndConquer0))
-
-  {
+      (TheSession().GProductID == IPXGlobalConnClass::kCommandAndConquer0)) {
     // If this is another player signing off, remove the connection &
     // mark that player's house as non-human, so the computer will take
     // it over.

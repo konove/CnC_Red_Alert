@@ -789,11 +789,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         ClearAllAccepts();
       } else {
         User* pUserHost = pWO->pGameHost();
-        if (pUserHost)  //	Else we have not received the user list yet and
-                        // don't know who the host is. 	We'll keep trying this
-                        // until we get a host - HousePrevious keeps us
-                        // triggering until then.
-        {
+        if (pUserHost) {
+          //	Else we have not received the user list yet and
+          // don't know who the host is. 	We'll keep trying this
+          // until we get a host - HousePrevious keeps us
+          // triggering until then.
           //					debugprint( "Session.House
           // changed.\n" ); 	Tell host we changed our house.
           char szSend[20];
@@ -858,9 +858,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       RESULT_WOLGSUP_FATALERROR;	//	Return with an error value.
                               break;
       */
-    } else if (*szNameOfHostWhoJustBailedOnUs)  //	Host left channel -
-                                                // cancel setup.
-    {
+    } else if (*szNameOfHostWhoJustBailedOnUs) {
+      //	Host left channel -
+      // cancel setup.
       //			debugprint( "Guest about to exit game setup
       // dialog because host bailed on us.\n" );
       if (ExitGameChannel()) {
@@ -1609,9 +1609,9 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         if (!bHost) {
           //	Guest wishes to accept game params.
           User* pUserHost = pWO->pGameHost();
-          if (pUserHost)  //	Else it's too early to even be thinking about
-                          // accepting, anyway.
-          {
+          if (pUserHost) {
+            //	Else it's too early to even be thinking about
+            // accepting, anyway.
             //	Set ourself as accepted. We want to do this immediately so the
             // user has feedback for pressing button. 	Besides, the host is
             // guaranteed to allow this and set us to "accepted", unless it is
@@ -1648,11 +1648,10 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
                Force_Scenario_Available(
                    TheSession()
                        .Scenarios.at(TheSession().Options.ScenarioIndex)
-                       ->Get_Filename())))
-          //	Force user to put the correct disk in before proceeding. (Not
-          // crucial, but can lead to ugly 	timeouts if the scenario has to
-          // be downloaded before game start.)
-          {
+                       ->Get_Filename()))) {
+            //	Force user to put the correct disk in before proceeding. (Not
+            // crucial, but can lead to ugly 	timeouts if the scenario has to
+            // be downloaded before game start.)
             //	Go into "waiting to start" mode, tell guests to, and
             // wait for responses.
             bWaitingToStart = true;
@@ -3849,8 +3848,7 @@ void WOL_GameSetupDialog::TriggerGameStart(char* szGoMessage) {
       //			debugprint( "Scen.ScenarioName = %s\n",
       // Scen.ScenarioName );
     }
-  } else  //	bHost
-  {
+  } else {  //	bHost
     TheScenario().Scenario = TheSession().Options.ScenarioIndex;
     //		debugprint( "Scen.Scenario = %i\n", Scen.Scenario );
     base::SafeCopy(TheScenario().ScenarioName,

@@ -1799,17 +1799,17 @@ bool ObjectClass::Attach_Trigger(TriggerClass* trigger) {
 // These can't be made inline (for various reasons).
 std::span<const int16_t> ObjectClass::Occupy_List(bool placement) const {
   return Class_Of().Occupy_List(placement);
-};
+}
 std::span<const int16_t> ObjectClass::Overlap_List(bool /*unused*/) const {
   return Class_Of().Overlap_List();
-};
+}
 BuildingClass* ObjectClass::Who_Can_Build_Me(bool intheory, bool legal) const {
   return Class_Of().Who_Can_Build_Me(intheory, legal, Owner());
-};
+}
 fixed ObjectClass::Health_Ratio() const {
   return {Strength, Class_Of().MaxStrength};
-};
-int ObjectClass::Full_Name() const { return Class_Of().Full_Name(); };
+}
+int ObjectClass::Full_Name() const { return Class_Of().Full_Name(); }
 
 //**********************************************************************************************
 // MODULE SEPARATION -- ObjectTypeClass member functions follow.

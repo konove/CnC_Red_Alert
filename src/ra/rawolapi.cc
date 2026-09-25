@@ -1826,8 +1826,7 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(
                                 pLadderNew->losses, pLadderNew->points);
             pOwner->bMyRecordUpdated = true;
           }
-        } else  //	sku must be LADDER_CODE_AM
-        {
+        } else {  //	sku must be LADDER_CODE_AM
           if (!pLadderTailAM) {
             //	First Ladder in list.
             pLadderListAM = pLadderNew;  //	This is the head of our Ladder

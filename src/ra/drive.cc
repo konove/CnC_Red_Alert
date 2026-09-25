@@ -1254,9 +1254,7 @@ void DriveClass::AI() {
   if (IsMoebius &&
       (What_Am_I() != RTTI_UNIT ||
        dynamic_cast<UnitClass*>(this)->Class->Type != UNIT_CHRONOTANK) &&
-      MoebiusCountDown.IsFinished())
-
-  {
+      MoebiusCountDown.IsFinished()) {
     IsMoebius = false;
     Teleport_To(MoebiusCell);
     MoebiusCell = 0;

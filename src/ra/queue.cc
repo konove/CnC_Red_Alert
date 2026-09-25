@@ -795,13 +795,11 @@ static void Queue_AI_Multiplayer() {
       TheSession().LoadGame = false;
     }
 
-  }  // end of Frame 0 wait
-
-  //------------------------------------------------------------------------
-  // Adjust connection timing parameters every 128 frames.
-  //------------------------------------------------------------------------
-
-  else if (CurrentFrame() % 128 == 0) {
+    // end of Frame 0 wait
+  } else if (CurrentFrame() % 128 == 0) {
+    //------------------------------------------------------------------------
+    // Adjust connection timing parameters every 128 frames.
+    //------------------------------------------------------------------------
     //
     // If we're using the new spiffy protocol, do proper timing handling.
     // If we're the net "master", compute our desired frame rate & new
@@ -1186,17 +1184,15 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
       //..................................................................
       if (rc == RC_PLAYER_READY) {
         num_ready++;
-      }
-      //..................................................................
-      // Scenario's don't match
-      //..................................................................
-      else if (rc == RC_SCENARIO_MISMATCH) {
+      } else if (rc == RC_SCENARIO_MISMATCH) {
+        //..................................................................
+        // Scenario's don't match
+        //..................................................................
         return RC_SCENARIO_MISMATCH;
-      }
-      //..................................................................
-      // DoList was full
-      //..................................................................
-      else if (rc == RC_DOLIST_FULL) {
+      } else if (rc == RC_DOLIST_FULL) {
+        //..................................................................
+        // DoList was full
+        //..................................................................
         return RC_DOLIST_FULL;
       }
 
@@ -1602,15 +1598,14 @@ static int Send_Packets(ConnManClass* net,
   if (net->Private_Num_Send() >= 4) {
     cap = 0;
     do_once = 1;
-  }
-  //........................................................................
-  // If there are 2 or more packets queued, the entire packet we send must
-  // fit within a single ComQueue buffer, so limit # events to 5.
-  // (The Modem connection manager has a max buffer size of 200 bytes, which
-  // is large enough for 6 uncompressed events, which leaves room for 5
-  // events plus a FRAMEINFO.)
-  //........................................................................
-  else if (net->Private_Num_Send() >= 2) {
+  } else if (net->Private_Num_Send() >= 2) {
+    //........................................................................
+    // If there are 2 or more packets queued, the entire packet we send must
+    // fit within a single ComQueue buffer, so limit # events to 5.
+    // (The Modem connection manager has a max buffer size of 200 bytes, which
+    // is large enough for 6 uncompressed events, which leaves room for 5
+    // events plus a FRAMEINFO.)
+    //........................................................................
     cap = 5;
     do_once = 1;
 
@@ -1901,13 +1896,11 @@ static RetcodeType Process_Receive_Packet(ConnManClass* net,
     }
 
     base::At(their_recv, base::ToSize(index)) += i;
-  }
-
-  //------------------------------------------------------------------------
-  //	If the event was a FRAMESYNC packet, there will be no commands to add,
-  //	but we must check the ScenarioCRC value.
-  //------------------------------------------------------------------------
-  else if (event->Data.FrameInfo.CRC != TheWorld().scenario_crc()) {
+  } else if (event->Data.FrameInfo.CRC != TheWorld().scenario_crc()) {
+    //------------------------------------------------------------------------
+    //	If the event was a FRAMESYNC packet, there will be no commands to add,
+    //	but we must check the ScenarioCRC value.
+    //------------------------------------------------------------------------
     return RC_SCENARIO_MISMATCH;
   }
 
@@ -2278,13 +2271,11 @@ static int Handle_Timeout(ConnManClass* net, std::span<int64_t> their_frame,
       }
       return 1;
     }
-  }
-
-  //------------------------------------------------------------------------
-  //	For network, destroy the oldest connection
-  //------------------------------------------------------------------------
-  else if (TheSession().Type == GAME_IPX ||
-           TheSession().Type == GAME_INTERNET) {
+  } else if (TheSession().Type == GAME_IPX ||
+             TheSession().Type == GAME_INTERNET) {
+    //------------------------------------------------------------------------
+    //	For network, destroy the oldest connection
+    //------------------------------------------------------------------------
     int64_t j = 0x7fffffff;  // oldest frame number seen so far
     int oldest_index = 0;    // index of person requiring a reconnect
     for (int i = 0; i < net->Num_Connections(); i++) {
@@ -2749,18 +2740,16 @@ int Add_Compressed_Events(std::span<std::byte> buf, int bufsize,
         numunits = 0;
         missiondup = false;
       }
-    }
-
-    //.....................................................................
-    // The previous event is not a MEGAMISSION but the current event is:
-    // Set up a new run of MegaMissions:
-    // - Init 'unitsptr' to buffer pos after next EventType
-    // - set total # bytes to store to 'datasize' + sizeof(EventType) +
-    //   sizeof (numunits)
-    // - init the MegaMission rep count to 1
-    // - clear the MegaMission rep flag
-    //.....................................................................
-    else if (eventtype == EventClass::MEGAMISSION) {
+    } else if (eventtype == EventClass::MEGAMISSION) {
+      //.....................................................................
+      // The previous event is not a MEGAMISSION but the current event is:
+      // Set up a new run of MegaMissions:
+      // - Init 'unitsptr' to buffer pos after next EventType
+      // - set total # bytes to store to 'datasize' + sizeof(EventType) +
+      //   sizeof (numunits)
+      // - init the MegaMission rep count to 1
+      // - clear the MegaMission rep flag
+      //.....................................................................
       if (TheDebugState().print_events()) {
         absl::PrintF("  New MEGAMISSION run:\n");
       }
@@ -3173,11 +3162,10 @@ int Extract_Compressed_Events(std::span<const std::byte> buf, int bufsize) {
         //...............................................................
         pos += offsetof(EventClass, Data) - sizeof(EventClass::EventType);
         leftover -= offsetof(EventClass, Data) - sizeof(EventClass::EventType);
-      }
-      //..................................................................
-      // if MEGAMISSION event get the number of units (events to generate)
-      //..................................................................
-      else if (event_type == EventClass::MEGAMISSION) {
+      } else if (event_type == EventClass::MEGAMISSION) {
+        //..................................................................
+        // if MEGAMISSION event get the number of units (events to generate)
+        //..................................................................
         numunits = std::to_integer<unsigned char>(
             base::At(buf, base::ToSize(pos) + sizeof(eventdata.Type)));
         pos += sizeof(numunits);
@@ -3595,12 +3583,10 @@ static int Execute_DoList(int max_houses, HousesType base_house,
               TheSession().NumPlayers--;
             }
           }
-        }
-
-        //...............................................................
-        //	For a FRAMEINFO event, check the CRC value.
-        //...............................................................
-        else if (TheNetwork().do_list().at(j).Type == EventClass::FRAMEINFO) {
+        } else if (TheNetwork().do_list().at(j).Type == EventClass::FRAMEINFO) {
+          //...............................................................
+          //	For a FRAMEINFO event, check the CRC value.
+          //...............................................................
           //............................................................
           // Skip the CRC check if we're less than 32 frames into the game;
           // this will prevent a newly-loaded modem game from instantly

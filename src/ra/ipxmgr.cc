@@ -1008,11 +1008,10 @@ int IPXManagerClass::Service() {
                   if (TheSession().Players.at(k)->Player.ID ==
                       static_cast<HousesType>(id)) {
                     const int iConnectionIndex = Connection_Index(id);
-                    if (iConnectionIndex !=
-                        kConnectionNone)  //	(else
-                                          // Create_Connections() has not
-                                          // yet been called)
-                    {
+                    if (iConnectionIndex != kConnectionNone) {
+                      //	(else
+                      // Create_Connections() has not
+                      // yet been called)
                       /*
                       ** Found a likely candidate. Update his address. It
                       *should be OK to drop this

@@ -919,7 +919,7 @@ template <class T>
 T Random_Pick(T a, T b) {
   return T(TheScenario().sync_rng_.InRange(static_cast<int>(a),
                                            static_cast<int>(b)));
-};
+}
 
 /***********************************************************************************************
  * Percent_Chance -- Calculate a percentage chance event. *
@@ -967,7 +967,7 @@ inline bool Percent_Chance(int percent) {
 template <class T>
 T Sim_Random_Pick(T a, T b) {
   return T(LocalRandom().InRange(static_cast<int>(a), static_cast<int>(b)));
-};
+}
 
 /***********************************************************************************************
  * Sim_Percent_Chance -- Calculates a percentage chance event for local events.

@@ -477,8 +477,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         } else if (pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
           pWO->OnExitingChatChannel();
           pWO->EnterLevel_Lobbies();
-        } else  //	Must be WOL_LEVEL_INOFFICIALCHATCHANNEL.
-        {
+        } else {  //	Must be WOL_LEVEL_INOFFICIALCHATCHANNEL.
           pWO->OnExitingChatChannel();
           pWO->EnterLevel_OfficialChat();
         }
@@ -697,10 +696,9 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     if (pToolTipHead) {
       ToolTipClass* pToolTipHit = pToolTipHead->GetToolTipHit();
       if (pToolTipHit == pToolTipHitLast) {
-        if (pToolTipHit &&
-            bLinkInList(commands, pToolTipHit->pGadget))  //	(Gadget must be
-                                                          // in controls list.)
-        {
+        if (pToolTipHit && bLinkInList(commands, pToolTipHit->pGadget)) {
+          //	(Gadget must be
+          // in controls list.)
           if (!pToolTipHit->bShowing && Get_Time_Ms() > timeToolTipAppear &&
               !(KeyboardClass::Down(KN_LMOUSE) ||
                 KeyboardClass::Down(KN_RMOUSE))) {

@@ -190,9 +190,8 @@ bool Get_Scenario_File_From_Host(std::span<char> return_name, size_t dest_size,
               base::ObjectBytes(net_receive_packet), &receive_packet_length,
               &sender_address, &product_id) &&
           (net_receive_packet.Command == NET_FILE_INFO &&
-           sender_address == TheSession().HostAddress))
-      // WWDebugString ("RA95 - Got packet from host\n");
-      {
+           sender_address == TheSession().HostAddress)) {
+        // WWDebugString ("RA95 - Got packet from host\n");
         base::SafeCopy(
             return_name.first(std::min(return_name.size(), dest_size)),
             net_receive_packet.ScenarioInfo.ShortFileName);
@@ -435,9 +434,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
               &sender_address, &product_id) &&
           (receive_packet.Command == SERIAL_FILE_CHUNK &&
            sender_address == TheSession().HostAddress) &&
-          (receive_packet.BlockNumber == last_received_block + 1))
-
-      {
+          (receive_packet.BlockNumber == last_received_block + 1)) {
         save_file->Write(receive_packet.RawData, receive_packet.BlockLength);
         total_length += receive_packet.BlockLength;
         last_received_block++;

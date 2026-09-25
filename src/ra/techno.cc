@@ -5826,12 +5826,11 @@ void TechnoClass::Draw_Pips(PixelView& view, int x, int y,
         CC_Draw_Shape(view, ObjectTypeClass::PipShapes, static_cast<int>(shape),
                       x + (index * 3), y, window, SHAPE_CENTER | SHAPE_WIN_REL);
       }
-    }
-    /*
-    ** Check if it's a Chrono tank, to show the recharge gauge.
-    */
-    else if (What_Am_I() == RTTI_UNIT &&
-             *dynamic_cast<const UnitClass*>(this) == UNIT_CHRONOTANK) {
+    } else if (What_Am_I() == RTTI_UNIT &&
+               *dynamic_cast<const UnitClass*>(this) == UNIT_CHRONOTANK) {
+      /*
+      ** Check if it's a Chrono tank, to show the recharge gauge.
+      */
       for (int index = 0; index < 5; index++) {
         PipEnum shape = PIP_EMPTY;
         if (index < pips) {

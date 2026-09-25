@@ -1396,13 +1396,12 @@ void HouseClass::Super_Weapon_Handler() {
     if (((!(ActiveBScan & kStructFlagChronosphere) &&
           !SuperWeapon.at(SPC_CHRONOSPHERE).Is_One_Time()) ||
          IsDefeated) &&
-        SuperWeapon.at(SPC_CHRONOSPHERE).Remove())
-    /*
-    **	Remove the chronosphere when there is no chronosphere facility.
-    **	Note that this will not remove the one time created
-    *chronosphere.
-    */
-    {
+        SuperWeapon.at(SPC_CHRONOSPHERE).Remove()) {
+      /*
+      **	Remove the chronosphere when there is no chronosphere facility.
+      **	Note that this will not remove the one time created
+      *chronosphere.
+      */
       if (this == ThePlayer()) {
         if (TheMap().IsTargettingMode == SPC_CHRONOSPHERE ||
             TheMap().IsTargettingMode == kSpcChrono2) {
@@ -1457,13 +1456,12 @@ void HouseClass::Super_Weapon_Handler() {
     if (((!(ActiveBScan & kStructFlagIronCurtain) &&
           !SuperWeapon.at(SPC_IRON_CURTAIN).Is_One_Time()) ||
          IsDefeated) &&
-        SuperWeapon.at(SPC_IRON_CURTAIN).Remove())
-    /*
-    **	Remove the iron curtain when there is no iron curtain facility.
-    **	Note that this will not remove the one time created iron
-    *curtain.
-    */
-    {
+        SuperWeapon.at(SPC_IRON_CURTAIN).Remove()) {
+      /*
+      **	Remove the iron curtain when there is no iron curtain facility.
+      **	Note that this will not remove the one time created iron
+      *curtain.
+      */
       if (this == ThePlayer()) {
         if (TheMap().IsTargettingMode == SPC_IRON_CURTAIN) {
           TheMap().IsTargettingMode = SPC_NONE;
@@ -1513,12 +1511,11 @@ void HouseClass::Super_Weapon_Handler() {
     }
     if (((!present && !SuperWeapon.at(SPC_SONAR_PULSE).Is_One_Time()) ||
          IsDefeated) &&
-        SuperWeapon.at(SPC_SONAR_PULSE).Remove())
-    /*
-    **	Remove the sonar pulse when there is no spied-upon enemy sub
-    *pen. *	Note that this will not remove the one time created sonar pulse.
-    */
-    {
+        SuperWeapon.at(SPC_SONAR_PULSE).Remove()) {
+      /*
+      **	Remove the sonar pulse when there is no spied-upon enemy sub
+      *pen. *	Note that this will not remove the one time created sonar pulse.
+      */
       if (this == ThePlayer()) {
         TheMap().Column[1].Flag_To_Redraw();
       }

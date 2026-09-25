@@ -1573,19 +1573,17 @@ void WolapiObject::SendMessage(const char* szMessage, IconListClass& ILUsers,
         bEggSounds = false;
         return;
       }
-      if (absl::EqualsIgnoreCase(
-              szMessage, "/usersounds"))  //	Left as obvious text in the exe,
-                                          //for someone to find...
-                                          //:-)
-      {
+      if (absl::EqualsIgnoreCase(szMessage, "/usersounds")) {
+        //	Left as obvious text in the exe,
+        // for someone to find...
+        //:-)
         bEggSounds = true;
         return;
       }
-      if (absl::EqualsIgnoreCase(
-              szMessage, "/8playergames"))  //	Left as obvious text in the exe,
-                                            //for someone to find...
-                                            //:-)
-      {
+      if (absl::EqualsIgnoreCase(szMessage, "/8playergames")) {
+        //	Left as obvious text in the exe,
+        // for someone to find...
+        //:-)
         bEgg8Player = true;
         return;
       }
@@ -2122,9 +2120,8 @@ bool WolapiObject::SpawnBrowser(const char* szURL) {
                         nullptr,        //	Use parent�s starting directory.
                         &si,            //	Pointer to STARTUPINFO structure.
                         &pi) &&
-        pi.hProcess)  //	Pointer to PROCESS_INFORMATION structure.
-
-    {
+        pi.hProcess) {
+      //	Pointer to PROCESS_INFORMATION structure.
       //				debugprint( "CreateProcess: '%s'\n",
       // szCommandLine );
       bSuccess = true;
@@ -2314,13 +2311,12 @@ bool WolapiObject::EnterLevel_Games() {
   // convenience later.
   for (unsigned int i = 0; i + 2 < nGameTypeInfos; i++) {
     const int iType = GameTypeInfos.at(base::ToSize(i)).iGameType;
-    if (iType != GAME_TYPE)  //	Else it is our game - skip it here since we put
-                             // it at the top.
-    {
-      if (iType != 2 && iType != 3 &&
-          iType != 4)  //	Hack needed for the time being, to prevent the
-                       // old ra games from being seen.
-      {
+    if (iType != GAME_TYPE) {
+      //	Else it is our game - skip it here since we put
+      // it at the top.
+      if (iType != 2 && iType != 3 && iType != 4) {
+        //	Hack needed for the time being, to prevent the
+        // old ra games from being seen.
         char szHelp[200];
         Format_Runtime_Text(szHelp, sizeof(szHelp),
                             TXT_WOL_TTIP_CHANNELTYPE_GAMESOFTYPE,

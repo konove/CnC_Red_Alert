@@ -227,7 +227,7 @@ TriggerClass* As_Trigger(TARGET target);
 TriggerTypeClass* As_TriggerType(TARGET target);
 UnitClass* As_Unit(TARGET target);
 VesselClass* As_Vessel(TARGET target);
-inline bool Target_Legal(TARGET target) { return target != kTargetNone; };
+inline bool Target_Legal(TARGET target) { return target != kTargetNone; }
 ObjectClass* As_Object(TARGET target);
 
 #endif  // CNC_RED_ALERT_RA_TARGET_H_

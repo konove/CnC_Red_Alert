@@ -2205,14 +2205,12 @@ static int Net_Join_Dialog() {
           //............................................................
           if (joinstate == JOIN_CONFIRMED || joinstate == JOIN_WAIT_CONFIRM) {
             gamelist.Set_Selected_Index(game_index);
-          }
-
-          //............................................................
-          // If we're not in a game, and the user clicks on a different
-          // entry, clear the player list & send a player query;
-          // init the click timer, to detect a double-click of this item.
-          //............................................................
-          else if (gamelist.Current_Index() != game_index) {
+          } else if (gamelist.Current_Index() != game_index) {
+            //............................................................
+            // If we're not in a game, and the user clicks on a different
+            // entry, clear the player list & send a player query;
+            // init the click timer, to detect a double-click of this item.
+            //............................................................
             Clear_Listbox(&playerlist);
             Clear_Vector(&TheSession().Players);
             game_index = gamelist.Current_Index();
@@ -3585,13 +3583,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
 
       retcode = EV_NEW_GAME;
     }
-  }
-
-  //------------------------------------------------------------------------
-  //	NET_ANSWER_PLAYER: Another system is answering our PLAYER query, so add
-  // it to our player list box & the Player Vector if it's new
-  //------------------------------------------------------------------------
-  else if (TheSession().GPacket.Command == NET_ANSWER_PLAYER) {
+  } else if (TheSession().GPacket.Command == NET_ANSWER_PLAYER) {
+    //------------------------------------------------------------------------
+    //	NET_ANSWER_PLAYER: Another system is answering our PLAYER query, so add
+    // it to our player list box & the Player Vector if it's new
+    //------------------------------------------------------------------------
     //.....................................................................
     //	See if this name is unique
     //.....................................................................
@@ -3702,13 +3698,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
 
       retcode = EV_NEW_PLAYER;
     }
-  }
-
-  //------------------------------------------------------------------------
-  //	NET_CONFIRM_JOIN: The game owner has confirmed our JOIN query; mark us
-  // as being confirmed, and start answering queries from other systems
-  //------------------------------------------------------------------------
-  else if (TheSession().GPacket.Command == NET_CONFIRM_JOIN) {
+  } else if (TheSession().GPacket.Command == NET_CONFIRM_JOIN) {
+    //------------------------------------------------------------------------
+    //	NET_CONFIRM_JOIN: The game owner has confirmed our JOIN query; mark us
+    // as being confirmed, and start answering queries from other systems
+    //------------------------------------------------------------------------
     if (*joinstate != JOIN_CONFIRMED) {
       base::SafeCopy(TheSession().GameName, TheSession().GPacket.Name);
       TheSession().House = TheSession().GPacket.PlayerInfo.House;
@@ -3717,13 +3711,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       *joinstate = JOIN_CONFIRMED;
       retcode = EV_STATE_CHANGE;
     }
-  }
-
-  //------------------------------------------------------------------------
-  //	NET_REJECT_JOIN: The game owner has turned down our JOIN query; restore
-  //	the dialog state to its first pop-up state.
-  //------------------------------------------------------------------------
-  else if (TheSession().GPacket.Command == NET_REJECT_JOIN) {
+  } else if (TheSession().GPacket.Command == NET_REJECT_JOIN) {
+    //------------------------------------------------------------------------
+    //	NET_REJECT_JOIN: The game owner has turned down our JOIN query; restore
+    //	the dialog state to its first pop-up state.
+    //------------------------------------------------------------------------
     //.....................................................................
     // If we're confirmed in a game, broadcast a sign-off to tell all other
     // systems that I'm no longer a part of any game; this way, I'll be
@@ -3769,22 +3761,19 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       *joinstate = JOIN_REJECTED;
       *why = REJECT_BY_OWNER;
       retcode = EV_STATE_CHANGE;
-    }
-    //.....................................................................
-    // If we're waiting for confirmation & got rejected, tell the user why
-    //.....................................................................
-    else if (*joinstate == JOIN_WAIT_CONFIRM) {
+    } else if (*joinstate == JOIN_WAIT_CONFIRM) {
+      //.....................................................................
+      // If we're waiting for confirmation & got rejected, tell the user why
+      //.....................................................................
       *why = static_cast<RejectType>(TheSession().GPacket.Reject.Why);
       *joinstate = JOIN_REJECTED;
       retcode = EV_STATE_CHANGE;
     }
-  }
-
-  //------------------------------------------------------------------------
-  //	NET_GAME_OPTIONS: The game owner has changed the game options & is
-  // sending us the new values.
-  //------------------------------------------------------------------------
-  else if (TheSession().GPacket.Command == NET_GAME_OPTIONS) {
+  } else if (TheSession().GPacket.Command == NET_GAME_OPTIONS) {
+    //------------------------------------------------------------------------
+    //	NET_GAME_OPTIONS: The game owner has changed the game options & is
+    // sending us the new values.
+    //------------------------------------------------------------------------
     if (*joinstate == JOIN_CONFIRMED || *joinstate == JOIN_WAIT_CONFIRM) {
       TheSession().Options.Credits = TheSession().GPacket.ScenarioInfo.Credits;
       TheSession().Options.Bases = TheSession().GPacket.ScenarioInfo.IsBases;
@@ -3848,13 +3837,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
 
       retcode = EV_GAME_OPTIONS;
     }
-  }
-
-  //------------------------------------------------------------------------
-  //	NET_SIGN_OFF: Another system is signing off: search for that system in
-  //	both the game list & player list, & remove it if found
-  //------------------------------------------------------------------------
-  else if (TheSession().GPacket.Command == NET_SIGN_OFF) {
+  } else if (TheSession().GPacket.Command == NET_SIGN_OFF) {
+    //------------------------------------------------------------------------
+    //	NET_SIGN_OFF: Another system is signing off: search for that system in
+    //	both the game list & player list, & remove it if found
+    //------------------------------------------------------------------------
     //.....................................................................
     //	Remove this name from the list of games
     //.....................................................................
@@ -3947,36 +3934,30 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
         }
       }
     }
-  }
-
-  //------------------------------------------------------------------------
-  //	NET_GO: The game's owner is signalling us to start playing.
-  //------------------------------------------------------------------------
-  else if (TheSession().GPacket.Command == NET_GO) {
+  } else if (TheSession().GPacket.Command == NET_GO) {
+    //------------------------------------------------------------------------
+    //	NET_GO: The game's owner is signalling us to start playing.
+    //------------------------------------------------------------------------
     if (*joinstate == JOIN_CONFIRMED) {
       TheSession().MaxAhead = TheSession().GPacket.ResponseTime.OneWay;
       *joinstate = JOIN_GAME_START;
       retcode = EV_STATE_CHANGE;
       TheSession().HostAddress = TheSession().GAddress;
     }
-  }
-
-  //------------------------------------------------------------------------
-  //	NET_LOADGAME: The game's owner is signalling us to start playing.
-  //------------------------------------------------------------------------
-  else if (TheSession().GPacket.Command == NET_LOADGAME) {
+  } else if (TheSession().GPacket.Command == NET_LOADGAME) {
+    //------------------------------------------------------------------------
+    //	NET_LOADGAME: The game's owner is signalling us to start playing.
+    //------------------------------------------------------------------------
     if (*joinstate == JOIN_CONFIRMED) {
       TheSession().MaxAhead = TheSession().GPacket.ResponseTime.OneWay;
       *joinstate = JOIN_GAME_START_LOAD;
       retcode = EV_STATE_CHANGE;
     }
-  }
-
-  //------------------------------------------------------------------------
-  // NET_CHAT_ANNOUNCE: Someone is ready to chat; add them to our list, if
-  // they aren't already on it, and it's not myself.
-  //------------------------------------------------------------------------
-  else if (TheSession().GPacket.Command == NET_CHAT_ANNOUNCE) {
+  } else if (TheSession().GPacket.Command == NET_CHAT_ANNOUNCE) {
+    //------------------------------------------------------------------------
+    // NET_CHAT_ANNOUNCE: Someone is ready to chat; add them to our list, if
+    // they aren't already on it, and it's not myself.
+    //------------------------------------------------------------------------
     found = 0;
     //.....................................................................
     // If this packet is from myself, don't add it to the list
@@ -4014,13 +3995,11 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
       who->Chat.Color = TheSession().GPacket.Chat.Color;
       TheSession().Chat.Add(who);
     }
-  }
-
-  //------------------------------------------------------------------------
-  // NET_CHAT_REQUEST: Someone is requesting a CHAT_ANNOUNCE from us; send
-  // one to him directly.
-  //------------------------------------------------------------------------
-  else if (TheSession().GPacket.Command == NET_CHAT_REQUEST) {
+  } else if (TheSession().GPacket.Command == NET_CHAT_REQUEST) {
+    //------------------------------------------------------------------------
+    // NET_CHAT_REQUEST: Someone is requesting a CHAT_ANNOUNCE from us; send
+    // one to him directly.
+    //------------------------------------------------------------------------
     if (*joinstate != JOIN_WAIT_CONFIRM && *joinstate != JOIN_CONFIRMED) {
       base::FillBytes(base::ObjectBytes(TheSession().GPacket), 0,
                       sizeof(TheSession().GPacket));
@@ -4037,12 +4016,10 @@ static JoinEventType Get_Join_Responses(JoinStateType* joinstate,
 
       TheNetwork().ipx().Service();
     }
-  }
-
-  //------------------------------------------------------------------------
-  // NET_MESSAGE: Someone is sending us a message
-  //------------------------------------------------------------------------
-  else if (TheSession().GPacket.Command == NET_MESSAGE) {
+  } else if (TheSession().GPacket.Command == NET_MESSAGE) {
+    //------------------------------------------------------------------------
+    // NET_MESSAGE: Someone is sending us a message
+    //------------------------------------------------------------------------
     //.....................................................................
     // If we're in a game, the sender must be in our game.
     //.....................................................................
@@ -5569,13 +5546,11 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
 
       retval = EV_NEW_PLAYER;
     }
-  }
-
-  //------------------------------------------------------------------------
-  //	NET_SIGN_OFF: Another system is signing off: search for that system in
-  //	the player list, & remove it if found
-  //------------------------------------------------------------------------
-  else if (TheSession().GPacket.Command == NET_SIGN_OFF) {
+  } else if (TheSession().GPacket.Command == NET_SIGN_OFF) {
+    //------------------------------------------------------------------------
+    //	NET_SIGN_OFF: Another system is signing off: search for that system in
+    //	the player list, & remove it if found
+    //------------------------------------------------------------------------
     for (int i = 0; i < TheSession().Players.Count(); i++) {
       //..................................................................
       //	Name found; remove it
@@ -5610,12 +5585,10 @@ static JoinEventType Get_NewGame_Responses(ColorListClass* playerlist,
         break;
       }
     }
-  }
-
-  //------------------------------------------------------------------------
-  //	NET_MESSAGE: Someone is sending us a message
-  //------------------------------------------------------------------------
-  else if (TheSession().GPacket.Command == NET_MESSAGE) {
+  } else if (TheSession().GPacket.Command == NET_MESSAGE) {
+    //------------------------------------------------------------------------
+    //	NET_MESSAGE: Someone is sending us a message
+    //------------------------------------------------------------------------
     TheSession().Messages.Add_Message(
         TheSession().GPacket.Name,
         static_cast<int>(TheSession().GPacket.Message.Color ==
@@ -7378,12 +7351,11 @@ void Start_WWChat(ColorListClass* playerlist) {
           base::At(WWPersons, i).Color == PCOLOR_DIALOG_BLUE
               ? &ThePalettes().color_remaps().at(PCOLOR_REALLY_BLUE)
               : &ThePalettes().color_remaps().at(base::At(WWPersons, i).Color));
-    }
-    //.....................................................................
-    // If this entry's name is the same as the previous, copy the color
-    // value from the previous entry.
-    //.....................................................................
-    else if (i > 0) {
+    } else if (i > 0) {
+      //.....................................................................
+      // If this entry's name is the same as the previous, copy the color
+      // value from the previous entry.
+      //.....................................................................
       base::At(WWPersons, i).Color = base::At(WWPersons, i - 1).Color;
     }
   }

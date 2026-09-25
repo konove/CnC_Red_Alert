@@ -6052,12 +6052,11 @@ void BuildingClass::Factory_AI() {
   */
   if ((House->IsStarted && Mission != MISSION_CONSTRUCTION &&
        Mission != MISSION_DECONSTRUCTION) &&
-      (Class->ToBuild != RTTI_NONE))
-  /*
-  **	Buildings that produce other objects have special factory logic handled
-  *here.
-  */
-  {
+      (Class->ToBuild != RTTI_NONE)) {
+    /*
+    **	Buildings that produce other objects have special factory logic handled
+    *here.
+    */
     if (Factory.Is_Valid()) {
       /*
       **	If production has halted, then just abort production and make

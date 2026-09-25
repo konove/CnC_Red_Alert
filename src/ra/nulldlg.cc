@@ -4244,11 +4244,10 @@ int Com_Scenario_Dialog(bool skirmish) {
       }
 
     } else {
-      if ((!recsignedoff) && (!skirmish))
-      /*.....................................................................
-      Broadcast my sign-off over my network
-      .....................................................................*/
-      {
+      if ((!recsignedoff) && (!skirmish)) {
+        /*.....................................................................
+        Broadcast my sign-off over my network
+        .....................................................................*/
         base::FillBytes(base::ObjectBytes(SendPacket), 0, sizeof(SendPacket));
         SendPacket.Command = SERIAL_SIGN_OFF;
         SendPacket.ScenarioInfo.Color =
