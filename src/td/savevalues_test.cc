@@ -5,6 +5,9 @@
 
 #include "engine/base/installed.h"
 #include "engine/base/random.h"
+#include "engine/stream/archive.h"
+#include "engine/stream/span_sink.h"
+#include "engine/stream/span_source.h"
 #include "gtest/gtest.h"
 #include "td/abstract.h"
 #include "td/audio.h"
@@ -27,9 +30,6 @@
 #include "td/stage.h"
 #include "td/super.h"
 #include "td/teamtype.h"
-#include "tech/archive.h"
-#include "tech/span_sink.h"
-#include "tech/span_source.h"
 
 // The value tests need a frame source and the command overrides the
 // serializers read, but no game session.

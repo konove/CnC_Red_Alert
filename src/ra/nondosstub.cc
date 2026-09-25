@@ -29,8 +29,9 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
-#include "base/seek_origin.h"
 #include "engine/base/numeric.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/seek_origin.h"
 #include "ra/filepcx.h"
 #include "ra/graphics_loader.h"
 #include "ra/input.h"
@@ -42,7 +43,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "tech/audio_mixer.h"
-#include "tech/byte_stream.h"
 #include "tech/game_file.h"
 
 /***********************************************************************************************

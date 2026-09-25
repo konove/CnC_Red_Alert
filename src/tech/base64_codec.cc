@@ -9,8 +9,8 @@
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
+#include "engine/stream/byte_sink.h"
 #include "tech/base64.h"
-#include "tech/byte_sink.h"
 
 bool Base64Codec::Process(std::span<const std::byte> in, ByteSink& out) {
   bool written = true;

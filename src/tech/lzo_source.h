@@ -3,8 +3,8 @@
 #ifndef CNC_RED_ALERT_TECH_LZO_SOURCE_H_
 #define CNC_RED_ALERT_TECH_LZO_SOURCE_H_
 
+#include "engine/stream/transform_source.h"
 #include "tech/block_backends.h"
-#include "tech/transform_source.h"
 
 // Compresses or decompresses the bytes read through it with LZO; see
 // BlockCodec.

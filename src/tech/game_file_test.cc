@@ -18,9 +18,9 @@
 
 #include "absl/base/attributes.h"
 #include "absl/strings/ascii.h"
-#include "base/seek_origin.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/seek_origin.h"
 #include "gtest/gtest.h"
-#include "tech/byte_stream.h"
 #include "tech/crc.h"
 #include "tech/file_access.h"
 #include "tech/mix_archive.h"

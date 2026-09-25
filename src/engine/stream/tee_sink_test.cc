@@ -1,10 +1,10 @@
-#include "tech/tee_sink.h"
+#include "engine/stream/tee_sink.h"
 
 #include <array>
 #include <span>
 
+#include "engine/stream/span_sink.h"
 #include "gtest/gtest.h"
-#include "tech/span_sink.h"
 
 namespace {
 

@@ -14,9 +14,9 @@
 #include <system_error>
 #include <utility>
 
-#include "base/seek_origin.h"
 #include "engine/base/bytes_of.h"
 #include "engine/base/types.h"
+#include "engine/stream/seek_origin.h"
 #include "tech/file_access.h"
 
 namespace {

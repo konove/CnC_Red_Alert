@@ -18,7 +18,7 @@
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
-#include "tech/byte_sink.h"
+#include "engine/stream/byte_sink.h"
 
 // Whether a block codec link compresses or decompresses what passes it.
 enum class CodecMode { kCompress, kDecompress };

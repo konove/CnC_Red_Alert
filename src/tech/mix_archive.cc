@@ -22,19 +22,19 @@
 #include "absl/log/check.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
-#include "base/seek_origin.h"
 #include "engine/base/buffer.h"
 #include "engine/base/listnode.h"
+#include "engine/stream/byte_source.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/seek_origin.h"
+#include "engine/stream/stream_source.h"
 #include "tech/blowfish_source.h"
-#include "tech/byte_source.h"
-#include "tech/byte_stream.h"
 #include "tech/crc.h"
 #include "tech/game_file.h"
 #include "tech/pk.h"
 #include "tech/pk_source.h"
 #include "tech/sha.h"
 #include "tech/sha1_source.h"
-#include "tech/stream_source.h"
 
 bool MixArchive::Open(std::string_view filename, const PKey* key) {
   const auto file = OpenGameFile(filename);

@@ -44,7 +44,7 @@
 #include <cstdint>
 #include <span>
 
-#include "tech/byte_source.h"
+#include "engine/stream/byte_source.h"
 #include "tech/int.h"
 
 /*

@@ -21,8 +21,8 @@
 
 #include <memory>
 
+#include "engine/stream/byte_source.h"
 #include "tech/blowfish_source.h"
-#include "tech/byte_source.h"
 #include "tech/pk.h"
 
 // Reads the PK-encrypted blowfish key header from source, decrypts it,

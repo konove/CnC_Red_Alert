@@ -13,8 +13,8 @@
 #include <span>
 
 #include "engine/base/types.h"
+#include "engine/stream/byte_sink.h"
 #include "tech/blowfish.h"
-#include "tech/byte_sink.h"
 
 // A ByteCodec that encrypts or decrypts whole 8-byte blocks. A tail shorter
 // than a block passes through unchanged when flushed, and so does everything

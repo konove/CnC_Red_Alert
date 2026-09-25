@@ -14,13 +14,13 @@
 #include <utility>
 
 #include "engine/base/types.h"
-#include "tech/byte_stream.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/memory_stream.h"
+#include "engine/stream/range_stream.h"
 #include "tech/disk_file.h"
 #include "tech/disk_stream.h"
 #include "tech/file_access.h"
-#include "tech/memory_stream.h"
 #include "tech/mix_archive.h"
-#include "tech/range_stream.h"
 #include "tech/search_paths.h"
 
 std::unique_ptr<ByteStream> OpenGameFile(const std::string_view name,

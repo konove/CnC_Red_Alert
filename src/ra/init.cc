@@ -94,6 +94,11 @@
 #include "engine/platform/ftimer.h"
 #include "engine/platform/platform.h"
 #include "engine/platform/random_seed.h"
+#include "engine/stream/archive.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/span_source.h"
+#include "engine/stream/stream_sink.h"
+#include "engine/stream/stream_source.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets.h"
 #include "ra/ccini.h"
@@ -157,9 +162,7 @@
 #include "sdllib/shape.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/archive.h"
 #include "tech/audio_mixer.h"
-#include "tech/byte_stream.h"
 #include "tech/disk_stream.h"
 #include "tech/file_access.h"
 #include "tech/game_file.h"
@@ -167,9 +170,6 @@
 #include "tech/mix_archive.h"
 #include "tech/rgb.h"
 #include "tech/search_paths.h"
-#include "tech/span_source.h"
-#include "tech/stream_sink.h"
-#include "tech/stream_source.h"
 
 static RemapControlType SidebarScheme;
 

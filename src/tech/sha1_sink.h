@@ -3,9 +3,9 @@
 #ifndef CNC_RED_ALERT_TECH_SHA1_SINK_H_
 #define CNC_RED_ALERT_TECH_SHA1_SINK_H_
 
+#include "engine/stream/transform_sink.h"
 #include "tech/sha.h"
 #include "tech/sha1_codec.h"
-#include "tech/transform_sink.h"
 
 // Passes bytes on unchanged while hashing them.
 //

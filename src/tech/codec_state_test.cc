@@ -11,14 +11,15 @@
 
 #include "engine/base/buffer.h"
 #include "engine/base/types.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_source.h"
+#include "engine/stream/span_source.h"
 #include "gtest/gtest.h"
 #include "tech/base64.h"
 #include "tech/base64_source.h"
 #include "tech/block_codec.h"
 #include "tech/blowfish.h"
 #include "tech/blowfish_source.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_source.h"
 #include "tech/lcw.h"
 #include "tech/lcw_sink.h"
 #include "tech/lcw_source.h"
@@ -29,7 +30,6 @@
 #include "tech/mp.h"
 #include "tech/sha.h"
 #include "tech/sha1_source.h"
-#include "tech/span_source.h"
 
 namespace {
 class RecordingSink : public ByteSink {

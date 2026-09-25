@@ -1,4 +1,4 @@
-#include "tech/archive.h"
+#include "engine/stream/archive.h"
 
 #include <array>
 #include <cstddef>
@@ -7,10 +7,10 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/span_sink.h"
+#include "engine/stream/span_source.h"
 #include "gtest/gtest.h"
-#include "tech/byte_sink.h"
-#include "tech/span_sink.h"
-#include "tech/span_source.h"
 
 namespace {
 

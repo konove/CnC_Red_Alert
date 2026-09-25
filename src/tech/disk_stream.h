@@ -9,9 +9,9 @@
 #include <span>
 #include <string_view>
 
-#include "base/seek_origin.h"
 #include "engine/base/types.h"
-#include "tech/byte_stream.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/seek_origin.h"
 #include "tech/file_access.h"
 
 // A file on disk, open from construction until destruction.

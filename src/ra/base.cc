@@ -60,6 +60,7 @@
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/tokenizer.h"
 #include "engine/base/types.h"
+#include "engine/stream/archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/building.h"
 #include "ra/ccini.h"
@@ -72,7 +73,6 @@
 #include "ra/object.h"
 #include "ra/type.h"
 #include "ra/world.h"
-#include "tech/archive.h"
 
 /***********************************************************************************************
  * BaseNodeClass::operator == -- equality operator *

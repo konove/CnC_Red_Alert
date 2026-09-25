@@ -9,13 +9,13 @@
 #include <vector>
 
 #include "engine/base/types.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_source.h"
+#include "engine/stream/span_source.h"
 #include "gtest/gtest.h"
 #include "tech/blowfish.h"
 #include "tech/blowfish_sink.h"
 #include "tech/blowfish_source.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_source.h"
-#include "tech/span_source.h"
 
 namespace {
 

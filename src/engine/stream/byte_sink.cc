@@ -15,14 +15,23 @@
 **	You should have received a copy of the GNU General Public License
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef CNC_RED_ALERT_TECH_READLINE_H_
-#define CNC_RED_ALERT_TECH_READLINE_H_
 
+#include "engine/stream/byte_sink.h"
+
+#include <cstddef>
 #include <span>
 
-#include "tech/byte_source.h"
+bool ChainedSink::Write(std::span<const std::byte> bytes) {
+  return ok() && next_.Write(bytes);
+}
 
-void strtrim(std::span<char> buffer);
-int Read_Line(ByteSource& file, std::span<char> buffer, bool& eof);
+bool ChainedSink::Flush() {
+  next_.Flush();
+  return ok();
+}
 
-#endif  // CNC_RED_ALERT_TECH_READLINE_H_
+bool ChainedSink::Finish() {
+  Flush();
+  next_.Finish();
+  return ok();
+}

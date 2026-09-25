@@ -9,15 +9,15 @@
 #include <vector>
 
 #include "engine/base/types.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_source.h"
+#include "engine/stream/span_sink.h"
+#include "engine/stream/span_source.h"
 #include "gtest/gtest.h"
 #include "tech/block_codec.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_source.h"
 #include "tech/lcw.h"
 #include "tech/lcw_sink.h"
 #include "tech/lcw_source.h"
-#include "tech/span_sink.h"
-#include "tech/span_source.h"
 
 namespace {
 

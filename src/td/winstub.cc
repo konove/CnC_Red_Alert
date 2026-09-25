@@ -43,7 +43,7 @@
 
 #include "td/winstub.h"
 
-#include "base/seek_origin.h"
+#include "engine/stream/seek_origin.h"
 #include "sdllib/pixel_buffer.h"
 #include "td/function.h"
 #include "td/game_state.h"

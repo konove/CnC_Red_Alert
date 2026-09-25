@@ -1,5 +1,5 @@
-#ifndef CNC_RED_ALERT_TECH_RANGE_STREAM_H_
-#define CNC_RED_ALERT_TECH_RANGE_STREAM_H_
+#ifndef CNC_RED_ALERT_ENGINE_STREAM_RANGE_STREAM_H_
+#define CNC_RED_ALERT_ENGINE_STREAM_RANGE_STREAM_H_
 
 // File: RangeStream, a read-only ByteStream over a window of another stream.
 
@@ -7,9 +7,9 @@
 #include <memory>
 #include <span>
 
-#include "base/seek_origin.h"
 #include "engine/base/types.h"
-#include "tech/byte_stream.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/seek_origin.h"
 
 // A read-only window of size bytes starting offset bytes into another
 // stream, which it owns. Reads never leave the window, and positions are
@@ -54,4 +54,4 @@ class RangeStream final : public ByteStream {
   base::ssize inner_position_ = -1;
 };
 
-#endif  // CNC_RED_ALERT_TECH_RANGE_STREAM_H_
+#endif  // CNC_RED_ALERT_ENGINE_STREAM_RANGE_STREAM_H_

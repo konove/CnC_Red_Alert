@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_TECH_BYTE_SINK_H_
-#define CNC_RED_ALERT_TECH_BYTE_SINK_H_
+#ifndef CNC_RED_ALERT_ENGINE_STREAM_BYTE_SINK_H_
+#define CNC_RED_ALERT_ENGINE_STREAM_BYTE_SINK_H_
 
 #include <cstddef>
 #include <span>
@@ -133,4 +133,4 @@ class NullSink : public ByteSink {
   bool Write(std::span<const std::byte> /*bytes*/) override { return true; }
 };
 
-#endif  // CNC_RED_ALERT_TECH_BYTE_SINK_H_
+#endif  // CNC_RED_ALERT_ENGINE_STREAM_BYTE_SINK_H_

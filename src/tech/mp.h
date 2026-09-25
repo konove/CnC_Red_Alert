@@ -47,7 +47,7 @@
 
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
-#include "tech/byte_source.h"
+#include "engine/stream/byte_source.h"
 #include "tech/digit_cursor.h"
 
 extern uint16_t primeTable[3511];

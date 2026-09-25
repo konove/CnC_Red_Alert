@@ -9,10 +9,10 @@
 
 #include "absl/base/attributes.h"
 #include "engine/base/installed.h"
+#include "engine/stream/byte_stream.h"
 #include "td/defines.h"
 #include "td/msglist.h"
 #include "td/vector.h"
-#include "tech/byte_stream.h"
 
 // What kind of game is being played and, when it is a multiplayer one, who
 // is in it and under what rules. Red Alert gathers the same state into a

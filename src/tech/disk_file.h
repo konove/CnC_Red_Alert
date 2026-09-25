@@ -29,7 +29,7 @@
 #include <string>
 #include <string_view>
 
-#include "tech/byte_stream.h"
+#include "engine/stream/byte_stream.h"
 #include "tech/disk_stream.h"
 #include "tech/file_access.h"
 

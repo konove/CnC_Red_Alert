@@ -1,11 +1,11 @@
 // Field-wise TD AI base and layer records.
 #include <cstdint>
 
+#include "engine/stream/archive.h"
 #include "td/base.h"
 #include "td/defines.h"
 #include "td/layer.h"
 #include "td/serialize.h"
-#include "tech/archive.h"
 
 template <class Archive>
 void BaseClass::Serialize(Archive& ar) {

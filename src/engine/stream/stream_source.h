@@ -1,5 +1,5 @@
-#ifndef CNC_RED_ALERT_TECH_STREAM_SOURCE_H_
-#define CNC_RED_ALERT_TECH_STREAM_SOURCE_H_
+#ifndef CNC_RED_ALERT_ENGINE_STREAM_STREAM_SOURCE_H_
+#define CNC_RED_ALERT_ENGINE_STREAM_STREAM_SOURCE_H_
 
 // File: StreamSource, a ByteSource over an already-open ByteStream.
 
@@ -8,8 +8,8 @@
 
 #include "absl/base/attributes.h"
 #include "engine/base/types.h"
-#include "tech/byte_source.h"
-#include "tech/byte_stream.h"
+#include "engine/stream/byte_source.h"
+#include "engine/stream/byte_stream.h"
 
 // A source that reads an open stream from its current position. It neither
 // opens nor closes the stream; whoever owns the stream does.
@@ -38,4 +38,4 @@ class StreamSource : public ByteSource {
   ByteStream& stream_;
 };
 
-#endif  // CNC_RED_ALERT_TECH_STREAM_SOURCE_H_
+#endif  // CNC_RED_ALERT_ENGINE_STREAM_STREAM_SOURCE_H_

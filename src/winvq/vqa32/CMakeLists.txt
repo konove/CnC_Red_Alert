@@ -15,7 +15,8 @@ target_sources(vqa32 PUBLIC
         FILES ${VQA32_HEADERS}
 )
 
-target_link_libraries(vqa32 PUBLIC engine_base PRIVATE port sdllib absl::log)
+# vqaio.h and chunk_reader.cc use engine/stream/seek_origin.h.
+target_link_libraries(vqa32 PUBLIC engine_base engine_stream PRIVATE port sdllib absl::log)
 
 find_package(SDL2 REQUIRED)
 target_link_libraries(vqa32 PRIVATE SDL2::SDL2)

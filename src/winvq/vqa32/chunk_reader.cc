@@ -5,7 +5,7 @@
 #include <expected>
 #include <optional>
 
-#include "base/seek_origin.h"
+#include "engine/stream/seek_origin.h"
 
 namespace {
 

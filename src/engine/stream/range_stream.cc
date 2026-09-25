@@ -1,6 +1,6 @@
 // File: the RangeStream implementation.
 
-#include "tech/range_stream.h"
+#include "engine/stream/range_stream.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -9,10 +9,10 @@
 #include <span>
 #include <utility>
 
-#include "base/seek_origin.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
-#include "tech/byte_stream.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/seek_origin.h"
 
 RangeStream::RangeStream(std::unique_ptr<ByteStream> inner,
                          const base::ssize offset, const base::ssize size)

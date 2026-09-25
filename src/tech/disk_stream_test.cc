@@ -15,11 +15,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/seek_origin.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/range_stream.h"
+#include "engine/stream/seek_origin.h"
 #include "gtest/gtest.h"
-#include "tech/byte_stream.h"
 #include "tech/file_access.h"
-#include "tech/range_stream.h"
 
 #ifdef __linux__
 #include <linux/prctl.h>

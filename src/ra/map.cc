@@ -81,6 +81,8 @@
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
 #include "engine/platform/memflag.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_source.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/ccptr.h"
@@ -108,8 +110,6 @@
 #include "ra/world.h"
 #include "sdllib/tile.h"
 #include "tech/block_codec.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_source.h"
 #include "tech/lcw_sink.h"
 #include "tech/lcw_source.h"
 

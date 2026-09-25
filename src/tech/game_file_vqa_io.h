@@ -8,9 +8,9 @@
 #include <span>
 #include <string_view>
 
-#include "base/seek_origin.h"
 #include "engine/base/types.h"
-#include "tech/byte_stream.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/seek_origin.h"
 #include "winvq/vqa32/vqaio.h"
 
 // Serves movie data through the game's file lookup (OpenGameFile), so a

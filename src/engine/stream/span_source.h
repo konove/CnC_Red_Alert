@@ -1,7 +1,7 @@
 // File: SpanSource, a byte source that reads memory the caller owns.
 
-#ifndef CNC_RED_ALERT_TECH_SPAN_SOURCE_H_
-#define CNC_RED_ALERT_TECH_SPAN_SOURCE_H_
+#ifndef CNC_RED_ALERT_ENGINE_STREAM_SPAN_SOURCE_H_
+#define CNC_RED_ALERT_ENGINE_STREAM_SPAN_SOURCE_H_
 
 #include <algorithm>
 #include <cstddef>
@@ -12,7 +12,7 @@
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
-#include "tech/byte_source.h"
+#include "engine/stream/byte_source.h"
 
 // A chain source that hands out a caller-owned buffer until it runs out.
 //
@@ -46,4 +46,4 @@ class SpanSource : public ByteSource {
   base::ssize index_ = 0;  // Bytes handed out so far.
 };
 
-#endif  // CNC_RED_ALERT_TECH_SPAN_SOURCE_H_
+#endif  // CNC_RED_ALERT_ENGINE_STREAM_SPAN_SOURCE_H_

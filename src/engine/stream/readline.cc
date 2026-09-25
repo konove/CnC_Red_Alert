@@ -16,7 +16,7 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "tech/readline.h"
+#include "engine/stream/readline.h"
 
 #include <algorithm>
 #include <cctype>
@@ -26,7 +26,7 @@
 #include <string_view>
 
 #include "engine/base/array.h"
-#include "tech/byte_source.h"
+#include "engine/stream/byte_source.h"
 
 void strtrim(std::span<char> buffer) {
   const auto end = std::ranges::find(buffer, '\0');

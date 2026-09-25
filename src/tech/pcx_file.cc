@@ -44,8 +44,8 @@
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
+#include "engine/stream/byte_stream.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/byte_stream.h"
 #include "tech/file_access.h"
 #include "tech/game_file.h"
 

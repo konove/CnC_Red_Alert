@@ -1,17 +1,17 @@
 // File: the MemoryStream implementation.
 
-#include "tech/memory_stream.h"
+#include "engine/stream/memory_stream.h"
 
 #include <algorithm>
 #include <cstddef>
 #include <iterator>
 #include <span>
 
-#include "base/seek_origin.h"
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
-#include "tech/byte_stream.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/seek_origin.h"
 
 base::ssize MemoryStream::Read(const std::span<std::byte> buffer) {
   const base::ssize count =

@@ -1,8 +1,8 @@
 // File: TransformSource, the pull adapter that runs a ByteCodec over the
 // bytes read from its source.
 
-#ifndef CNC_RED_ALERT_TECH_TRANSFORM_SOURCE_H_
-#define CNC_RED_ALERT_TECH_TRANSFORM_SOURCE_H_
+#ifndef CNC_RED_ALERT_ENGINE_STREAM_TRANSFORM_SOURCE_H_
+#define CNC_RED_ALERT_ENGINE_STREAM_TRANSFORM_SOURCE_H_
 
 #include <algorithm>
 #include <concepts>
@@ -17,9 +17,9 @@
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
-#include "tech/byte_codec.h"
-#include "tech/byte_source.h"
-#include "tech/vector_sink.h"
+#include "engine/stream/byte_codec.h"
+#include "engine/stream/byte_source.h"
+#include "engine/stream/vector_sink.h"
 
 // A chain link that reads from its source, transforms the bytes with codec C
 // and hands out the result. When the source runs out, the codec is flushed
@@ -106,4 +106,4 @@ class TransformSource : public ChainedSource {
   bool exhausted_ = false;  // The source ran out and the codec was flushed.
 };
 
-#endif  // CNC_RED_ALERT_TECH_TRANSFORM_SOURCE_H_
+#endif  // CNC_RED_ALERT_ENGINE_STREAM_TRANSFORM_SOURCE_H_

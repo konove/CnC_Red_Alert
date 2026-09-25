@@ -61,7 +61,6 @@
 
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
-#include "base/seek_origin.h"
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
@@ -69,13 +68,14 @@
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/types.h"
 #include "engine/base/unaligned.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/seek_origin.h"
 #include "sdllib/compressed_block.h"
 #include "sdllib/fading_table.h"
 #include "sdllib/text_window.h"
 #include "sdllib/tile.h"
 #include "support.h"
 #include "td/startup.h"
-#include "tech/byte_stream.h"
 
 /***********************************************************************************************
  * Small_Icon -- Create a small icon from a big one. *

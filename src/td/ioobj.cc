@@ -45,6 +45,7 @@
 #include <utility>
 
 #include "engine/base/array.h"
+#include "engine/stream/archive.h"
 #include "td/abstract.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
@@ -87,7 +88,6 @@
 #include "td/type.h"
 #include "td/unit.h"
 #include "td/vector.h"
-#include "tech/archive.h"
 
 template <class Archive>
 void FactoryClass::Serialize(Archive& ar) {

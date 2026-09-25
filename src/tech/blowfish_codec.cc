@@ -8,8 +8,8 @@
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
+#include "engine/stream/byte_sink.h"
 #include "tech/blowfish.h"
-#include "tech/byte_sink.h"
 
 void BlowfishCodec::Key(std::span<const std::byte> key) {
   if (!engine_.has_value()) {

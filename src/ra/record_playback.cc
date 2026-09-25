@@ -23,6 +23,7 @@
 
 #include <cstdint>
 
+#include "engine/stream/byte_stream.h"
 #include "ra/defines.h"
 #include "ra/game_state.h"
 #include "ra/house.h"
@@ -33,7 +34,6 @@
 #include "ra/target.h"
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
-#include "tech/byte_stream.h"
 
 // Recording state for the current frame, consumed and cleared by
 // Do_Record_Playback().

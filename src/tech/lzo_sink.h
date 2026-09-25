@@ -3,8 +3,8 @@
 #ifndef CNC_RED_ALERT_TECH_LZO_SINK_H_
 #define CNC_RED_ALERT_TECH_LZO_SINK_H_
 
+#include "engine/stream/transform_sink.h"
 #include "tech/block_backends.h"
-#include "tech/transform_sink.h"
 
 // Compresses or decompresses the bytes written to it with LZO; see BlockCodec.
 //

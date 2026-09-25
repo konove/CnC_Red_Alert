@@ -1,7 +1,7 @@
 // Tests for the ByteStream helpers (typed reads, ReadBytes, ReadString),
 // exercised through a MemoryStream.
 
-#include "tech/byte_stream.h"
+#include "engine/stream/byte_stream.h"
 
 #include <array>
 #include <cstddef>
@@ -13,8 +13,8 @@
 
 #include "engine/base/array.h"
 #include "engine/base/buffer.h"
+#include "engine/stream/memory_stream.h"
 #include "gtest/gtest.h"
-#include "tech/memory_stream.h"
 
 namespace {
 

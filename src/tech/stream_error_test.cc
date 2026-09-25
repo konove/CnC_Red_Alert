@@ -10,20 +10,20 @@
 #include <string_view>
 #include <vector>
 
-#include "base/seek_origin.h"
 #include "engine/base/array.h"
 #include "engine/base/types.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/seek_origin.h"
+#include "engine/stream/span_sink.h"
+#include "engine/stream/stream_sink.h"
+#include "engine/stream/stream_source.h"
 #include "gtest/gtest.h"
 #include "tech/block_codec.h"
 #include "tech/blowfish.h"
 #include "tech/blowfish_sink.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_stream.h"
 #include "tech/lzo_sink.h"
 #include "tech/lzo_source.h"
-#include "tech/span_sink.h"
-#include "tech/stream_sink.h"
-#include "tech/stream_source.h"
 
 namespace {
 

@@ -10,9 +10,9 @@
 #include <span>
 #include <vector>
 
+#include "engine/stream/memory_stream.h"
 #include "gtest/gtest.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/memory_stream.h"
 
 namespace {
 

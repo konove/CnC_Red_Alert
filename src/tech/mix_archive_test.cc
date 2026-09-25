@@ -18,9 +18,9 @@
 #include <vector>
 
 #include "engine/base/array.h"
+#include "engine/stream/byte_sink.h"
 #include "gtest/gtest.h"
 #include "tech/blowfish_sink.h"
-#include "tech/byte_sink.h"
 #include "tech/crc.h"
 #include "tech/pk.h"
 #include "tech/pk_sink.h"

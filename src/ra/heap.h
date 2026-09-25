@@ -53,11 +53,11 @@
 #include "absl/strings/str_cat.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
+#include "engine/stream/archive.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_source.h"
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
-#include "tech/archive.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_source.h"
 
 // Fixed-size block memory allocator that manages a pool of uniformly-sized
 // memory blocks.

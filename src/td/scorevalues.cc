@@ -1,6 +1,6 @@
 // Persistent score counters; presentation resources are rebuilt locally.
+#include "engine/stream/archive.h"
 #include "td/score.h"
-#include "tech/archive.h"
 
 template <class Archive>
 void ScoreClass::Serialize(Archive& ar) {

@@ -65,6 +65,7 @@
 #include "engine/platform/file_system.h"
 #include "engine/platform/ftimer.h"
 #include "engine/platform/platform.h"
+#include "engine/stream/readline.h"
 #include "ra/audio.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
@@ -93,7 +94,6 @@
 #include "sdllib/wwstd.h"
 #include "tech/disk_file.h"
 #include "tech/mix_archive.h"
-#include "tech/readline.h"
 
 /***********************************************************************************************
  * LoadOptionsClass::LoadOptionsClass -- class constructor *

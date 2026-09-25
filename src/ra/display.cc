@@ -123,6 +123,8 @@
 #include "engine/base/numeric.h"
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/types.h"
+#include "engine/stream/span_sink.h"
+#include "engine/stream/span_source.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"
 #include "ra/assets.h"
@@ -189,8 +191,6 @@
 #include "sdllib/wwstd.h"
 #include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
 #include "tech/mix_archive.h"
-#include "tech/span_sink.h"
-#include "tech/span_source.h"
 
 // Scratch space for packing and unpacking the MapPack INI block.
 static char map_pack_buffer[32000];

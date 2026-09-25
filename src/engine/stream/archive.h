@@ -1,5 +1,5 @@
-#ifndef CNC_RED_ALERT_TECH_ARCHIVE_H_
-#define CNC_RED_ALERT_TECH_ARCHIVE_H_
+#ifndef CNC_RED_ALERT_ENGINE_STREAM_ARCHIVE_H_
+#define CNC_RED_ALERT_ENGINE_STREAM_ARCHIVE_H_
 
 // Binary archive over the ByteSink/ByteSource chain, used for saved games.
 //
@@ -33,8 +33,8 @@
 #include <utility>
 
 #include "absl/base/attributes.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_source.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_source.h"
 
 // Integers and enums the archive writes directly, each at its own width.
 // `long` cannot be rejected here because int64_t is `long` on LP64;
@@ -229,4 +229,4 @@ concept Serializable =
     std::same_as<decltype(&T::template Serialize<ArchiveWriter>),
                  void (T::*)(ArchiveWriter&)>;
 
-#endif  // CNC_RED_ALERT_TECH_ARCHIVE_H_
+#endif  // CNC_RED_ALERT_ENGINE_STREAM_ARCHIVE_H_

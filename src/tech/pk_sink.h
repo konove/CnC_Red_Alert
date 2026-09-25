@@ -21,8 +21,8 @@
 
 #include <memory>
 
+#include "engine/stream/byte_sink.h"
 #include "tech/blowfish_sink.h"
-#include "tech/byte_sink.h"
 #include "tech/pk.h"
 #include "tech/random_source.h"
 

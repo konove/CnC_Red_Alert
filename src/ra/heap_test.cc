@@ -5,15 +5,15 @@
 #include <span>
 #include <vector>
 
+#include "engine/stream/archive.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/span_source.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "ra/queue.h"
 #include "ra/search.h"
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
-#include "tech/archive.h"
-#include "tech/byte_sink.h"
-#include "tech/span_source.h"
 
 namespace {
 TEST(VectorStorageTest, BorrowedStorageRetainsExtentAndDoesNotGrow) {

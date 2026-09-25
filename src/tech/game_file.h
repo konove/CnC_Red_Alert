@@ -14,7 +14,7 @@
 #include <string_view>
 
 #include "engine/base/types.h"
-#include "tech/byte_stream.h"
+#include "engine/stream/byte_stream.h"
 #include "tech/file_access.h"
 
 // Returns a stream over the bytes of name resolved the way the game looks up

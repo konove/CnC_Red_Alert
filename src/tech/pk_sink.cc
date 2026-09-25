@@ -24,9 +24,9 @@
 
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
+#include "engine/stream/byte_sink.h"
 #include "tech/blowfish.h"
 #include "tech/blowfish_sink.h"
-#include "tech/byte_sink.h"
 #include "tech/pk.h"
 #include "tech/random_source.h"
 

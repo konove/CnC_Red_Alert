@@ -8,17 +8,17 @@
 #include <utility>
 #include <vector>
 
-#include "base/seek_origin.h"
 #include "engine/base/attributes.h"
 #include "engine/base/buffer.h"
 #include "engine/base/flags.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
 #include "engine/base/unaligned.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/seek_origin.h"
 #include "sdllib/lcw_uncompress.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/xor_delta.h"
-#include "tech/byte_stream.h"
 #include "tech/game_file.h"
 
 namespace {

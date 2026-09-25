@@ -2,15 +2,15 @@
 // pushes bytes through and TransformSource pulls bytes through, so that each
 // transform is written once for both directions.
 
-#ifndef CNC_RED_ALERT_TECH_BYTE_CODEC_H_
-#define CNC_RED_ALERT_TECH_BYTE_CODEC_H_
+#ifndef CNC_RED_ALERT_ENGINE_STREAM_BYTE_CODEC_H_
+#define CNC_RED_ALERT_ENGINE_STREAM_BYTE_CODEC_H_
 
 #include <concepts>
 #include <cstddef>
 #include <span>
 
 #include "engine/base/types.h"
-#include "tech/byte_sink.h"
+#include "engine/stream/byte_sink.h"
 
 // A byte transform, such as a compressor or a cipher.
 //
@@ -37,4 +37,4 @@ concept ByteCodec =
       { const_codec.BytesWanted(output_needed) } -> std::same_as<base::ssize>;
     };
 
-#endif  // CNC_RED_ALERT_TECH_BYTE_CODEC_H_
+#endif  // CNC_RED_ALERT_ENGINE_STREAM_BYTE_CODEC_H_

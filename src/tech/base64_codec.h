@@ -11,8 +11,8 @@
 #include <span>
 
 #include "engine/base/types.h"
+#include "engine/stream/byte_sink.h"
 #include "tech/base64.h"
-#include "tech/byte_sink.h"
 
 // A ByteCodec that encodes three bytes at a time into four characters, or
 // decodes four characters at a time into up to three bytes. Flush encodes a

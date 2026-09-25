@@ -20,6 +20,7 @@
 #include <cstdint>
 
 #include "engine/base/array.h"
+#include "engine/stream/archive.h"
 #include "sdllib/wwstd.h"
 #include "td/aircraft.h"
 #include "td/cell.h"
@@ -41,7 +42,6 @@
 #include "td/tab.h"
 #include "td/type.h"
 #include "td/world.h"
-#include "tech/archive.h"
 
 template <class Archive>
 void CellClass::Serialize(Archive& ar) {

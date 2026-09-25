@@ -1,13 +1,13 @@
 // Copies a sink's input to an optional diagnostic sink.
 
-#ifndef CNC_RED_ALERT_TECH_TEE_SINK_H_
-#define CNC_RED_ALERT_TECH_TEE_SINK_H_
+#ifndef CNC_RED_ALERT_ENGINE_STREAM_TEE_SINK_H_
+#define CNC_RED_ALERT_ENGINE_STREAM_TEE_SINK_H_
 
 #include <cstddef>
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "tech/byte_sink.h"
+#include "engine/stream/byte_sink.h"
 
 // Forwards bytes to the main sink and copies them to a diagnostic sink.
 // Both sinks must outlive this sink. Diagnostic failures never affect the
@@ -34,4 +34,4 @@ class TeeSink : public ChainedSink {
   bool copy_ok_ = true;
 };
 
-#endif  // CNC_RED_ALERT_TECH_TEE_SINK_H_
+#endif  // CNC_RED_ALERT_ENGINE_STREAM_TEE_SINK_H_

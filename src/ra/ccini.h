@@ -42,11 +42,11 @@
 
 #include <cstdint>
 
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_source.h"
+#include "engine/stream/byte_stream.h"
 #include "ra/defines.h"
 #include "ra/ini.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_source.h"
-#include "tech/byte_stream.h"
 #include "tech/sha.h"
 
 class TriggerTypeClass;

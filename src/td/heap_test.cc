@@ -5,12 +5,12 @@
 #include <cstdint>
 #include <span>
 
+#include "engine/stream/archive.h"
+#include "engine/stream/span_sink.h"
+#include "engine/stream/span_source.h"
 #include "gtest/gtest.h"
 #include "td/vector.h"
 #include "td/vector_impl.h"  // IWYU pragma: keep
-#include "tech/archive.h"
-#include "tech/span_sink.h"
-#include "tech/span_source.h"
 
 template class VectorClass<void*>;
 template class DynamicVectorClass<void*>;

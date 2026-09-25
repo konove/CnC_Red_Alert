@@ -4,6 +4,7 @@
 
 #include "engine/base/random.h"
 #include "engine/platform/ftimer.h"
+#include "engine/stream/archive.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/carry.h"
 #include "ra/defines.h"
@@ -12,7 +13,6 @@
 #include "ra/score.h"
 #include "ra/session.h"
 #include "ra/special.h"
-#include "tech/archive.h"
 
 template <class Archive>
 void ScenarioClass::Serialize(Archive& ar) {

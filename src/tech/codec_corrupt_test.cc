@@ -11,17 +11,17 @@
 #include <vector>
 
 #include "engine/base/types.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_source.h"
+#include "engine/stream/span_source.h"
 #include "gtest/gtest.h"
 #include "tech/block_codec.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_source.h"
 #include "tech/lcw_sink.h"
 #include "tech/lcw_source.h"
 #include "tech/lzo_sink.h"
 #include "tech/lzo_source.h"
 #include "tech/lzw_sink.h"
 #include "tech/lzw_source.h"
-#include "tech/span_source.h"
 
 namespace {
 

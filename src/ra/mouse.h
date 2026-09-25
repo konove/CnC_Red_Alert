@@ -45,12 +45,12 @@
 
 #include "engine/base/enum_array.h"
 #include "engine/platform/ftimer.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_source.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
 #include "ra/scroll.h"
 #include "sdllib/keyboard.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_source.h"
 
 class MouseClass : public ScrollClass {
  public:

@@ -48,7 +48,7 @@
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
 #include "engine/base/array.h"
-#include "tech/byte_source.h"
+#include "engine/stream/byte_source.h"
 #include "tech/mp.h"
 
 template <class T>

@@ -37,8 +37,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  *- - - - - - - */
 
-#ifndef CNC_RED_ALERT_TECH_BYTE_SOURCE_H_
-#define CNC_RED_ALERT_TECH_BYTE_SOURCE_H_
+#ifndef CNC_RED_ALERT_ENGINE_STREAM_BYTE_SOURCE_H_
+#define CNC_RED_ALERT_ENGINE_STREAM_BYTE_SOURCE_H_
 
 #include <cstddef>
 #include <span>
@@ -117,4 +117,4 @@ class ChainedSource : public ByteSource {
   ByteSource& source_;
 };
 
-#endif  // CNC_RED_ALERT_TECH_BYTE_SOURCE_H_
+#endif  // CNC_RED_ALERT_ENGINE_STREAM_BYTE_SOURCE_H_

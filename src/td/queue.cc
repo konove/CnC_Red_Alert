@@ -93,6 +93,7 @@
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/unaligned.h"
 #include "engine/platform/timer.h"
+#include "engine/stream/byte_stream.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/ww_mouse.h"
 #include "td/building.h"
@@ -128,7 +129,6 @@
 #include "td/unit.h"
 #include "td/winstub.h"
 #include "td/world.h"
-#include "tech/byte_stream.h"
 
 /********************************** Globals *********************************/
 //---------------------------------------------------------------------------

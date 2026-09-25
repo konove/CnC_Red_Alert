@@ -46,7 +46,7 @@
 
 #include "engine/base/random.h"
 #include "engine/base/types.h"
-#include "tech/byte_source.h"
+#include "engine/stream/byte_source.h"
 
 /*
 **	This is a straw terminator class. It will generate random numbers to

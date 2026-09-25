@@ -48,6 +48,9 @@
 #include "engine/base/enum_array.h"
 #include "engine/base/installed.h"
 #include "engine/platform/platform.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_source.h"
+#include "engine/stream/byte_stream.h"
 #include "ra/connect.h"
 #include "ra/defines.h"
 #include "ra/event.h"
@@ -59,9 +62,6 @@
 #include "ra/vector_dynamic.h"
 #include "ra/version.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_source.h"
-#include "tech/byte_stream.h"
 
 //---------------------------------------------------------------------------
 // Defines

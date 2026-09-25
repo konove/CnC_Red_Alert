@@ -8,10 +8,10 @@
 #include <string_view>
 #include <vector>
 
+#include "engine/stream/archive.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/span_source.h"
 #include "gtest/gtest.h"
-#include "tech/archive.h"
-#include "tech/byte_sink.h"
-#include "tech/span_source.h"
 
 namespace {
 

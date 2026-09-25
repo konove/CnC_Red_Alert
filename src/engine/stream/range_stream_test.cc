@@ -1,6 +1,6 @@
 // Tests for RangeStream, the read-only window onto another stream.
 
-#include "tech/range_stream.h"
+#include "engine/stream/range_stream.h"
 
 #include <cstddef>
 #include <memory>
@@ -9,10 +9,10 @@
 #include <string_view>
 #include <utility>
 
-#include "base/seek_origin.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/memory_stream.h"
+#include "engine/stream/seek_origin.h"
 #include "gtest/gtest.h"
-#include "tech/byte_stream.h"
-#include "tech/memory_stream.h"
 
 namespace {
 

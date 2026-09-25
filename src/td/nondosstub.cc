@@ -27,8 +27,8 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "base/seek_origin.h"
 #include "engine/base/numeric.h"
+#include "engine/stream/seek_origin.h"
 #include "td/defines.h"
 #include "td/game_state.h"
 #include "td/input.h"
@@ -36,13 +36,13 @@
 #include "td/world.h"
 #include "tech/game_file.h"
 // #include "ra/filepcx.h"
+#include "engine/stream/byte_stream.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "td/interpal.h"
 #include "td/mapedit.h"
 #include "td/theme.h"
 #include "tech/audio_mixer.h"
-#include "tech/byte_stream.h"
 #include "tech/pcx_file.h"
 
 static ThemeType OldTheme = THEME_NONE;

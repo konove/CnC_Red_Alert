@@ -8,14 +8,14 @@
 #include <string_view>
 #include <vector>
 
-#include "base/seek_origin.h"
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/memory_stream.h"
+#include "engine/stream/seek_origin.h"
 #include "gtest/gtest.h"
 #include "sdllib/aud_decoder.h"
-#include "tech/byte_stream.h"
-#include "tech/memory_stream.h"
 
 namespace {
 

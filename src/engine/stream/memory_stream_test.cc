@@ -1,15 +1,15 @@
 // Tests for MemoryStream, the read-only ByteStream over borrowed bytes.
 
-#include "tech/memory_stream.h"
+#include "engine/stream/memory_stream.h"
 
 #include <cstddef>
 #include <span>
 #include <string>
 #include <string_view>
 
-#include "base/seek_origin.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/seek_origin.h"
 #include "gtest/gtest.h"
-#include "tech/byte_stream.h"
 
 namespace {
 

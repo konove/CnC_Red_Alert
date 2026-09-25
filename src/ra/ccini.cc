@@ -110,6 +110,11 @@
 #include "engine/base/fixed.h"
 #include "engine/base/numeric.h"
 #include "engine/base/strings/tokenizer.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_source.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/stream_sink.h"
+#include "engine/stream/stream_source.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/adata.h"
 #include "ra/anim.h"
@@ -123,14 +128,9 @@
 #include "ra/type.h"
 #include "ra/warhead.h"
 #include "ra/weapon.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_source.h"
-#include "tech/byte_stream.h"
 #include "tech/crc.h"
 #include "tech/sha.h"
 #include "tech/sha1_sink.h"
-#include "tech/stream_sink.h"
-#include "tech/stream_source.h"
 /***********************************************************************************************
  * CCINIClass::Load -- Load the INI database from the file specified. *
  *                                                                                             *

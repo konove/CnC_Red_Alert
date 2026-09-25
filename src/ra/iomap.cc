@@ -26,6 +26,9 @@
 
 #include "engine/base/array.h"
 #include "engine/platform/ftimer.h"
+#include "engine/stream/archive.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_source.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
 #include "ra/crate.h"
@@ -48,9 +51,6 @@
 #include "ra/type.h"
 #include "ra/world.h"
 #include "sdllib/wwstd.h"
-#include "tech/archive.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_source.h"
 
 // ID comes from the sparse map index. Movement zones are rebuilt by
 // Post_Load_Game(), so they do not make an otherwise empty cell worth saving.

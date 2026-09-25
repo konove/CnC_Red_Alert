@@ -45,8 +45,8 @@
 
 #include "engine/base/array.h"
 #include "engine/base/numeric.h"
-#include "tech/span_sink.h"
-#include "tech/span_source.h"
+#include "engine/stream/span_sink.h"
+#include "engine/stream/span_source.h"
 
 LZWEngine::LZWEngine() { Reset(); }
 

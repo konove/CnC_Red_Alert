@@ -3,8 +3,8 @@
 #ifndef CNC_RED_ALERT_TECH_BASE64_SINK_H_
 #define CNC_RED_ALERT_TECH_BASE64_SINK_H_
 
+#include "engine/stream/transform_sink.h"
 #include "tech/base64_codec.h"
-#include "tech/transform_sink.h"
 
 // Encodes or decodes the bytes written to it; see Base64Codec.
 //

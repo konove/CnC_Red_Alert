@@ -1,8 +1,8 @@
 // File: TransformSink, the push adapter that runs a ByteCodec over the bytes
 // written to it.
 
-#ifndef CNC_RED_ALERT_TECH_TRANSFORM_SINK_H_
-#define CNC_RED_ALERT_TECH_TRANSFORM_SINK_H_
+#ifndef CNC_RED_ALERT_ENGINE_STREAM_TRANSFORM_SINK_H_
+#define CNC_RED_ALERT_ENGINE_STREAM_TRANSFORM_SINK_H_
 
 #include <concepts>
 #include <cstddef>
@@ -11,8 +11,8 @@
 #include <utility>
 
 #include "absl/base/attributes.h"
-#include "tech/byte_codec.h"
-#include "tech/byte_sink.h"
+#include "engine/stream/byte_codec.h"
+#include "engine/stream/byte_sink.h"
 
 // A chain link that transforms the bytes written to it with codec C and
 // writes the result to the next sink. Flush emits what the codec buffers.
@@ -67,4 +67,4 @@ class TransformSink : public ChainedSink {
   C codec_;
 };
 
-#endif  // CNC_RED_ALERT_TECH_TRANSFORM_SINK_H_
+#endif  // CNC_RED_ALERT_ENGINE_STREAM_TRANSFORM_SINK_H_

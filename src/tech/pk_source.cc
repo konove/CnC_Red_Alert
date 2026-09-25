@@ -23,9 +23,9 @@
 
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
+#include "engine/stream/byte_source.h"
 #include "tech/blowfish.h"
 #include "tech/blowfish_source.h"
-#include "tech/byte_source.h"
 #include "tech/pk.h"
 
 namespace {

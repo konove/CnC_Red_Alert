@@ -1,12 +1,12 @@
-#ifndef CNC_RED_ALERT_TECH_BYTE_STREAM_H_
-#define CNC_RED_ALERT_TECH_BYTE_STREAM_H_
+#ifndef CNC_RED_ALERT_ENGINE_STREAM_BYTE_STREAM_H_
+#define CNC_RED_ALERT_ENGINE_STREAM_BYTE_STREAM_H_
 
 // File: ByteStream, a seekable source or sink of bytes with no name. The
 // three kinds the game composes each have their own header: DiskStream (a file
 // on disk, tech/disk_stream.h), MemoryStream (a block of memory,
-// tech/memory_stream.h) and RangeStream (a window onto another stream,
-// tech/range_stream.h). A file inside a mixfile inside another mixfile is a
-// RangeStream over a RangeStream over a DiskStream.
+// engine/stream/memory_stream.h) and RangeStream (a window onto another
+// stream, engine/stream/range_stream.h). A file inside a mixfile inside
+// another mixfile is a RangeStream over a RangeStream over a DiskStream.
 
 #include <cstddef>
 #include <span>
@@ -15,10 +15,10 @@
 #include <vector>
 
 #include "absl/log/check.h"
-#include "base/seek_origin.h"
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
+#include "engine/stream/seek_origin.h"
 
 // A seekable sequence of bytes. Positions are measured from the start of the
 // stream.
@@ -138,4 +138,4 @@ class ByteStream {
 base::ssize ClampedSeek(base::ssize position, base::ssize size,
                         base::ssize offset, SeekOrigin origin);
 
-#endif  // CNC_RED_ALERT_TECH_BYTE_STREAM_H_
+#endif  // CNC_RED_ALERT_ENGINE_STREAM_BYTE_STREAM_H_

@@ -12,6 +12,10 @@
 
 #include "absl/strings/str_cat.h"
 #include "engine/base/types.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_source.h"
+#include "engine/stream/span_sink.h"
+#include "engine/stream/span_source.h"
 #include "gtest/gtest.h"
 #include "tech/base64.h"
 #include "tech/base64_sink.h"
@@ -20,8 +24,6 @@
 #include "tech/blowfish.h"
 #include "tech/blowfish_sink.h"
 #include "tech/blowfish_source.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_source.h"
 #include "tech/lcw_sink.h"
 #include "tech/lcw_source.h"
 #include "tech/lzo_sink.h"
@@ -30,8 +32,6 @@
 #include "tech/lzw_source.h"
 #include "tech/sha.h"
 #include "tech/sha1_sink.h"
-#include "tech/span_sink.h"
-#include "tech/span_source.h"
 
 namespace {
 

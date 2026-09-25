@@ -64,6 +64,7 @@
 #include "engine/base/strings/number_parse.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/base/strings/tokenizer.h"
+#include "engine/stream/readline.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/ccini.h"
@@ -79,7 +80,6 @@
 #include "ra/warhead.h"
 #include "ra/weapon.h"
 #include "ra/world.h"
-#include "tech/readline.h"
 
 /***********************************************************************************************
  * _Scale_To_256 -- Scales a 1..100 number into a 1..255 number. *

@@ -52,6 +52,8 @@
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/base/strings/number_parse.h"
+#include "engine/stream/span_sink.h"
+#include "engine/stream/span_source.h"
 #include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/cell.h"
@@ -68,8 +70,6 @@
 #include "tech/block_codec.h"
 #include "tech/lcw_sink.h"
 #include "tech/lcw_source.h"
-#include "tech/span_sink.h"
-#include "tech/span_source.h"
 
 // Scratch space for packing and unpacking the OverlayPack INI block.
 static char overlay_pack_buffer[32000];

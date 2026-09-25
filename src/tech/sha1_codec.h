@@ -8,7 +8,7 @@
 #include <span>
 
 #include "engine/base/types.h"
-#include "tech/byte_sink.h"
+#include "engine/stream/byte_sink.h"
 #include "tech/sha.h"
 
 // A ByteCodec that passes bytes through unchanged while hashing them.

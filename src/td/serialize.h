@@ -6,8 +6,8 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
+#include "engine/stream/archive.h"
 #include "td/defines.h"
-#include "tech/archive.h"
 
 class ObjectClass;
 template <class T> class DynamicVectorClass;

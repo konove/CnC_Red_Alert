@@ -51,6 +51,9 @@
 #include "engine/base/array.h"
 #include "engine/base/strings/safe_string.h"
 #include "engine/platform/platform.h"
+#include "engine/stream/archive.h"
+#include "engine/stream/stream_sink.h"
+#include "engine/stream/stream_source.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/base.h"
@@ -89,12 +92,9 @@
 #include "td/unit.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/archive.h"
 #include "tech/disk_file.h"
 #include "tech/disk_stream.h"
 #include "tech/file_access.h"
-#include "tech/stream_sink.h"
-#include "tech/stream_source.h"
 
 /*
 ********************************** Defines **********************************

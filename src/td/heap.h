@@ -49,8 +49,8 @@
 #include "absl/log/check.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
+#include "engine/stream/archive.h"
 #include "td/vector.h"
-#include "tech/archive.h"
 
 // Heap templates are generic - users must include type headers themselves.
 // IWYU pragma: no_include "td/aircraft.h"

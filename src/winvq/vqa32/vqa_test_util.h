@@ -16,10 +16,10 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "base/seek_origin.h"
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
+#include "engine/stream/seek_origin.h"
 #include "winvq/vqa32/vqa_audio_device.h"
 #include "winvq/vqa32/vqa_format.h"
 #include "winvq/vqa32/vqa_player.h"

@@ -8,13 +8,13 @@
 
 #include "engine/base/installed.h"
 #include "engine/platform/ftimer.h"
+#include "engine/stream/archive.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/span_source.h"
 #include "gtest/gtest.h"
 #include "ra/defines.h"
 #include "ra/game_clock.h"
 #include "ra/jshell.h"
-#include "tech/archive.h"
-#include "tech/byte_sink.h"
-#include "tech/span_source.h"
 
 // The game clock Game owns in the real game.
 namespace {

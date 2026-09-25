@@ -47,12 +47,12 @@
 
 #include "engine/base/fixed.h"
 #include "engine/base/listnode.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_source.h"
+#include "engine/stream/byte_stream.h"
 #include "ra/defines.h"
 #include "ra/object.h"
 #include "ra/search.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_source.h"
-#include "tech/byte_stream.h"
 #include "tech/crc.h"
 #include "tech/pk.h"
 

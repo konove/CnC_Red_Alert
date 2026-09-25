@@ -1,6 +1,6 @@
 // File: the ByteStream helpers and ClampedSeek.
 
-#include "tech/byte_stream.h"
+#include "engine/stream/byte_stream.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-#include "base/seek_origin.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
+#include "engine/stream/seek_origin.h"
 
 base::ssize ClampedSeek(const base::ssize position, const base::ssize size,
                         const base::ssize offset, const SeekOrigin origin) {

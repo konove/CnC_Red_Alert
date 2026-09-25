@@ -3,6 +3,7 @@
 #include <concepts>
 #include <cstdint>
 
+#include "engine/stream/archive.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/building.h"
@@ -24,7 +25,6 @@
 #include "ra/unit.h"
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
-#include "tech/archive.h"
 
 namespace {
 

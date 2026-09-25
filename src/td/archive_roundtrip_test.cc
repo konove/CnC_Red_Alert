@@ -9,6 +9,9 @@
 #include "engine/base/buffer.h"
 #include "engine/base/installed.h"
 #include "engine/base/numeric.h"
+#include "engine/stream/archive.h"
+#include "engine/stream/span_sink.h"
+#include "engine/stream/span_source.h"
 #include "gtest/gtest.h"
 #include "td/cell.h"
 #include "td/debug_state.h"
@@ -30,9 +33,6 @@
 #include "td/trigger.h"
 #include "td/unit.h"
 #include "td/world.h"
-#include "tech/archive.h"
-#include "tech/span_sink.h"
-#include "tech/span_source.h"
 
 // The frame counter and the object heaps every suite in this binary needs;
 // Game owns them in the real game.

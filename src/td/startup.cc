@@ -55,6 +55,7 @@
 #include "engine/base/numeric.h"
 #include "engine/platform/memflag.h"
 #include "engine/platform/timer.h"
+#include "engine/stream/byte_stream.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
 #include "td/defines.h"
@@ -73,7 +74,6 @@
 #include "td/startup_options.h"
 #include "td/winstub.h"
 #include "tech/audio_mixer.h"
-#include "tech/byte_stream.h"
 
 // The two tests that link this file define TD_NO_ENTRY_POINT; these headers
 // serve only main().

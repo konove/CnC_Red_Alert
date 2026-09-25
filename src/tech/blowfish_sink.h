@@ -3,8 +3,8 @@
 #ifndef CNC_RED_ALERT_TECH_BLOWFISH_SINK_H_
 #define CNC_RED_ALERT_TECH_BLOWFISH_SINK_H_
 
+#include "engine/stream/transform_sink.h"
 #include "tech/blowfish_codec.h"
-#include "tech/transform_sink.h"
 
 // Encrypts or decrypts the bytes written to it in whole 8-byte blocks; a
 // shorter tail passes through unchanged at Flush.

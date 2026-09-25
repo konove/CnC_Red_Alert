@@ -1,5 +1,5 @@
-#ifndef CNC_RED_ALERT_TECH_STREAM_SINK_H_
-#define CNC_RED_ALERT_TECH_STREAM_SINK_H_
+#ifndef CNC_RED_ALERT_ENGINE_STREAM_STREAM_SINK_H_
+#define CNC_RED_ALERT_ENGINE_STREAM_STREAM_SINK_H_
 
 // File: StreamSink, a ByteSink over an already-open ByteStream.
 
@@ -8,8 +8,8 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_stream.h"
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_stream.h"
 
 // A sink that writes an open stream at its current position. It neither
 // opens nor closes the stream; whoever owns the stream does.
@@ -48,4 +48,4 @@ class StreamSink : public ByteSink {
   ByteStream& stream_;
 };
 
-#endif  // CNC_RED_ALERT_TECH_STREAM_SINK_H_
+#endif  // CNC_RED_ALERT_ENGINE_STREAM_STREAM_SINK_H_

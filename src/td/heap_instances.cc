@@ -1,5 +1,6 @@
 // Explicit heap instantiations, separate from the allocator for unit tests.
 
+#include "engine/stream/archive.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/building.h"
@@ -16,7 +17,6 @@
 #include "td/terrain.h"
 #include "td/trigger.h"
 #include "td/unit.h"
-#include "tech/archive.h"
 
 // Every object heap now declares its own field-wise serializer.
 static_assert(Serializable<AircraftClass>);

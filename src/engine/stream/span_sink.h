@@ -1,7 +1,7 @@
 // File: SpanSink, a byte sink that stores into memory the caller owns.
 
-#ifndef CNC_RED_ALERT_TECH_SPAN_SINK_H_
-#define CNC_RED_ALERT_TECH_SPAN_SINK_H_
+#ifndef CNC_RED_ALERT_ENGINE_STREAM_SPAN_SINK_H_
+#define CNC_RED_ALERT_ENGINE_STREAM_SPAN_SINK_H_
 
 #include <algorithm>
 #include <cstddef>
@@ -11,7 +11,7 @@
 #include "engine/base/buffer.h"
 #include "engine/base/numeric.h"
 #include "engine/base/types.h"
-#include "tech/byte_sink.h"
+#include "engine/stream/byte_sink.h"
 
 // A chain terminator that stores into a caller-owned buffer.
 //
@@ -52,4 +52,4 @@ class SpanSink : public ByteSink {
   base::ssize index_ = 0;  // Bytes stored so far.
 };
 
-#endif  // CNC_RED_ALERT_TECH_SPAN_SINK_H_
+#endif  // CNC_RED_ALERT_ENGINE_STREAM_SPAN_SINK_H_

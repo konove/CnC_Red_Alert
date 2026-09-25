@@ -3,8 +3,8 @@
 #ifndef CNC_RED_ALERT_TECH_BASE64_SOURCE_H_
 #define CNC_RED_ALERT_TECH_BASE64_SOURCE_H_
 
+#include "engine/stream/transform_source.h"
 #include "tech/base64_codec.h"
-#include "tech/transform_source.h"
 
 // Encodes or decodes the bytes read through it; see Base64Codec.
 //

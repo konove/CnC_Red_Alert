@@ -1,14 +1,14 @@
 // File: VectorSink, a byte sink that appends to a std::vector.
 
-#ifndef CNC_RED_ALERT_TECH_VECTOR_SINK_H_
-#define CNC_RED_ALERT_TECH_VECTOR_SINK_H_
+#ifndef CNC_RED_ALERT_ENGINE_STREAM_VECTOR_SINK_H_
+#define CNC_RED_ALERT_ENGINE_STREAM_VECTOR_SINK_H_
 
 #include <cstddef>
 #include <span>
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "tech/byte_sink.h"
+#include "engine/stream/byte_sink.h"
 
 // A chain terminator that appends every byte to a caller-owned vector. It
 // never fails.
@@ -33,4 +33,4 @@ class VectorSink : public ByteSink {
   std::vector<std::byte>& bytes_;
 };
 
-#endif  // CNC_RED_ALERT_TECH_VECTOR_SINK_H_
+#endif  // CNC_RED_ALERT_ENGINE_STREAM_VECTOR_SINK_H_

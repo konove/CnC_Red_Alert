@@ -42,6 +42,8 @@
 
 #include <cstdint>
 
+#include "engine/stream/byte_sink.h"
+#include "engine/stream/byte_source.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
 #include "ra/crate.h"
@@ -50,8 +52,6 @@
 #include "ra/house.h"
 #include "ra/object.h"
 #include "ra/vector.h"
-#include "tech/byte_sink.h"
-#include "tech/byte_source.h"
 
 class MapClass : public GScreenClass {
  public:

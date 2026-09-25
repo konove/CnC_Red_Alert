@@ -1,5 +1,5 @@
-#ifndef CNC_RED_ALERT_TECH_MEMORY_STREAM_H_
-#define CNC_RED_ALERT_TECH_MEMORY_STREAM_H_
+#ifndef CNC_RED_ALERT_ENGINE_STREAM_MEMORY_STREAM_H_
+#define CNC_RED_ALERT_ENGINE_STREAM_MEMORY_STREAM_H_
 
 // File: MemoryStream, a read-only ByteStream over bytes someone else owns.
 
@@ -8,9 +8,9 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "base/seek_origin.h"
 #include "engine/base/types.h"
-#include "tech/byte_stream.h"
+#include "engine/stream/byte_stream.h"
+#include "engine/stream/seek_origin.h"
 
 // A read-only view of bytes that someone else owns and keeps alive for as
 // long as the stream is used, such as a file inside a cached mixfile.
@@ -37,4 +37,4 @@ class MemoryStream final : public ByteStream {
   base::ssize position_ = 0;
 };
 
-#endif  // CNC_RED_ALERT_TECH_MEMORY_STREAM_H_
+#endif  // CNC_RED_ALERT_ENGINE_STREAM_MEMORY_STREAM_H_
