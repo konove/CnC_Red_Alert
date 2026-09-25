@@ -72,7 +72,7 @@ bool MovieScreen::Present() {
   // The movie's clock follows its sound, so pausing the sound holds the
   // frames too; Check_For_Focus_Loss() resumes it with the focus.
   if (!TheGameState().in_focus()) {
-    TheAudio().SetExtraPaused(true);
+    engine::audio::TheAudio().SetExtraPaused(true);
     while (!TheGameState().in_focus()) {
       Keyboard::Check();
       Check_For_Focus_Loss();

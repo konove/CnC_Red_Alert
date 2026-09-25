@@ -343,7 +343,8 @@ int main(int argc, char* argv[])
       Create_Main_Window(nullptr, 0, Screen::kWidth, TheScreen().mode_height());
       CCDebugString("C&C95 - Initialising audio.\n");
 
-      TheGameState().sound_on() = TheAudio().Open(11025 * 2, /*stereo=*/false);
+      TheGameState().sound_on() =
+          engine::audio::TheAudio().Open(11025 * 2, /*stereo=*/false);
 
       ThePalettes().title_palette().assign(768, 0);
 
@@ -503,7 +504,7 @@ void Prog_End() {
   }
 #endif
   CCDebugString("C&C95 - About to call CloseAudio.\n");
-  TheAudio().Close();
+  engine::audio::TheAudio().Close();
   CCDebugString("C&C95 - Returned from CloseAudio.\n");
   CCDebugString("C&C95 - Deleting mouse object.\n");
   TheInput().RemoveMouse();

@@ -217,15 +217,15 @@ void Nod_Ending() {
                        "SATSELIN.PAL");
 
   Keyboard::Clear();
-  TheAudio().Play(kanefinl, 255, 128);
-  TheAudio().Play(loopie6m, 255, 128);
+  engine::audio::TheAudio().Play(kanefinl, 255, 128);
+  engine::audio::TheAudio().Play(loopie6m, 255, 128);
 
   bool mouseshown = false;
   bool done = false;
   int selection = 1;
   bool printedtext = false;
   while (!done) {
-    if (!printedtext && !TheAudio().IsPlaying(kanefinl.data())) {
+    if (!printedtext && !engine::audio::TheAudio().IsPlaying(kanefinl.data())) {
       printedtext = true;
       Alloc_Object(new ScorePrintClass(show, Text_String(TXT_SEL_TARGET), 0,
                                        180, _tanpal));
@@ -234,11 +234,11 @@ void Nod_Ending() {
     }
     Call_Back_Delay(show, 1);
     if (!Keyboard::Check()) {
-      if (!TheAudio().IsPlaying(loopie6m.data())) {
-        TheAudio().Play(loopie6m, 255, 128);
+      if (!engine::audio::TheAudio().IsPlaying(loopie6m.data())) {
+        engine::audio::TheAudio().Play(loopie6m, 255, 128);
       }
     } else {
-      if (TheAudio().IsPlaying(kanefinl.data())) {
+      if (engine::audio::TheAudio().IsPlaying(kanefinl.data())) {
         Clear_KeyBuffer();
       } else {
         const auto key = static_cast<uint32_t>(Keyboard::Get());
@@ -282,8 +282,8 @@ void Nod_Ending() {
   Hide_Mouse();
   Keyboard::Clear();
 
-  TheAudio().Stop(kanefinl.data());
-  TheAudio().Stop(loopie6m.data());
+  engine::audio::TheAudio().Stop(kanefinl.data());
+  engine::audio::TheAudio().Stop(loopie6m.data());
 
   absl::SNPrintF(fname, sizeof(fname), "NODEND%d", selection);
   TheGameState().preserve_movie_screen() = true;

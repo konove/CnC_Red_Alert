@@ -6985,7 +6985,7 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
     while (wait.Time()) {
       ServiceRealTime();
     }
-    TheAudio().Close();
+    engine::audio::TheAudio().Close();
     ServiceRealTime();
     wait.Set(60, true);
     while (wait.Time()) {
@@ -7048,7 +7048,8 @@ static bool Dial_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Restore audio capability
   */
-  TheGameState().sound_on() = TheAudio().Open(11025 * 2, /*stereo=*/false);
+  TheGameState().sound_on() =
+      engine::audio::TheAudio().Open(11025 * 2, /*stereo=*/false);
   if (TheGameState().sound_on()) {
     TheTheme().Play_Song(old_theme);
   }
@@ -7157,7 +7158,7 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
     while (wait.Time()) {
       ServiceRealTime();
     }
-    TheAudio().Close();
+    engine::audio::TheAudio().Close();
     ServiceRealTime();
     wait.Set(60, true);
     while (wait.Time()) {
@@ -7206,7 +7207,8 @@ static bool Answer_Modem(SerialSettingsType* settings, bool reconnect) {
   /*
   ** Restore audio capability
   */
-  TheGameState().sound_on() = TheAudio().Open(11025 * 2, /*stereo=*/false);
+  TheGameState().sound_on() =
+      engine::audio::TheAudio().Open(11025 * 2, /*stereo=*/false);
   if (TheGameState().sound_on()) {
     TheTheme().Play_Song(old_theme);
   }

@@ -339,7 +339,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
   CELL cell_pos = 0;
 
   if (!TheOptions().Volume || voc == VOC_NONE || !TheGameState().sound_on() ||
-      !TheAudio().is_open()) {
+      !engine::audio::TheAudio().is_open()) {
     return;
   }
   if (coord) {
@@ -406,7 +406,7 @@ void Sound_Effect(VocType voc, COORDINATE coord, int variation) {
 int Sound_Effect(VocType voc, VolType volume, int variation,
                  int16_t pan_value) {
   if (!TheOptions().Volume || voc == VOC_NONE || !TheGameState().sound_on() ||
-      !TheAudio().is_open()) {
+      !engine::audio::TheAudio().is_open()) {
     return -1;
   }
 
@@ -449,7 +449,7 @@ int Sound_Effect(VocType voc, VolType volume, int variation,
   */
   if (!ptr.empty()) {
     const int vol = static_cast<int>(volume);
-    return TheAudio().Play(
+    return engine::audio::TheAudio().Play(
         ptr, Fixed_To_Cardinal(SoundEffectName.at(voc).Priority, vol), vol,
         pan_value);
   }
@@ -578,8 +578,8 @@ static VoxType speak_queue = VOX_NONE;
  * HISTORY: * 11/12/1994 JLB : Created. *
  *=============================================================================================*/
 void Speak(VoxType voice) {
-  if (TheOptions().Volume && TheAudio().is_open() && voice != VOX_NONE &&
-      voice != speak_queue && voice != CurrentVoice &&
+  if (TheOptions().Volume && engine::audio::TheAudio().is_open() &&
+      voice != VOX_NONE && voice != speak_queue && voice != CurrentVoice &&
       speak_queue == VOX_NONE) {
     speak_queue = voice;
   }
@@ -602,12 +602,12 @@ void Speak(VoxType voice) {
  *=============================================================================================*/
 void Speak_AI() {
   static VoxType _last = VOX_NONE;
-  if (!TheAudio().is_open()) {
+  if (!engine::audio::TheAudio().is_open()) {
     return;
   }
 
   std::vector<std::byte>& speech_buffer = TheAssets().speech_buffer();
-  if (!TheAudio().IsPlaying(speech_buffer.data())) {
+  if (!engine::audio::TheAudio().IsPlaying(speech_buffer.data())) {
     CurrentVoice = VOX_NONE;
     if (speak_queue != VOX_NONE) {
       if (speak_queue != _last) {
@@ -617,12 +617,13 @@ void Speak_AI() {
 
         if (const auto file = OpenGameFile(name)) {
           if (file->Read(std::span(speech_buffer), SPEECH_BUFFER_SIZE)) {
-            TheAudio().Play(speech_buffer, 254, TheOptions().Volume);
+            engine::audio::TheAudio().Play(speech_buffer, 254,
+                                           TheOptions().Volume);
           }
         }
         _last = speak_queue;
       } else {
-        TheAudio().Play(speech_buffer, 254, TheOptions().Volume);
+        engine::audio::TheAudio().Play(speech_buffer, 254, TheOptions().Volume);
       }
       speak_queue = VOX_NONE;
     }
@@ -648,8 +649,8 @@ void Stop_Speaking() {
   // Cleared here, not left for the next Speak_AI(), so that Speak() does not
   // drop the voice just stopped as one still being said.
   CurrentVoice = VOX_NONE;
-  if (TheAudio().is_open()) {
-    TheAudio().Stop(TheAssets().speech_buffer().data());
+  if (engine::audio::TheAudio().is_open()) {
+    engine::audio::TheAudio().Stop(TheAssets().speech_buffer().data());
   }
 }
 
@@ -670,7 +671,7 @@ void Stop_Speaking() {
  *=============================================================================================*/
 bool Is_Speaking() {
   Speak_AI();
-  return TheAudio().is_open() &&
-         (speak_queue != VOX_NONE ||
-          TheAudio().IsPlaying(TheAssets().speech_buffer().data()));
+  return engine::audio::TheAudio().is_open() &&
+         (speak_queue != VOX_NONE || engine::audio::TheAudio().IsPlaying(
+                                         TheAssets().speech_buffer().data()));
 }

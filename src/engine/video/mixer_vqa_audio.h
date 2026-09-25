@@ -16,11 +16,12 @@
 // must outlive the open movie, and the mixer must outlive it.
 //
 // Example:
-//   MixerVqaAudio movie_audio(TheAudio());
+//   MixerVqaAudio movie_audio(engine::audio::TheAudio());
 //   auto player = VqaPlayer::Open(io, name, screen, &movie_audio);
 class MixerVqaAudio final : public VqaAudioDevice {
  public:
-  explicit MixerVqaAudio(AudioMixer& mixer ABSL_ATTRIBUTE_LIFETIME_BOUND)
+  explicit MixerVqaAudio(
+      engine::audio::AudioMixer& mixer ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : mixer_(&mixer) {}
 
   [[nodiscard]] const SDL_AudioSpec& spec() const override {
@@ -34,7 +35,7 @@ class MixerVqaAudio final : public VqaAudioDevice {
   void unlock() override { SDL_UnlockAudioDevice(mixer_->device_id()); }
 
  private:
-  AudioMixer* mixer_;
+  engine::audio::AudioMixer* mixer_;
 };
 
 #endif  // CNC_RED_ALERT_ENGINE_VIDEO_MIXER_VQA_AUDIO_H_

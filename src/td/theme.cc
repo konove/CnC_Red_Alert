@@ -196,7 +196,7 @@ const char* ThemeClass::Full_Name(ThemeType theme) {
  *as it is about to play it.                           *
  *=============================================================================================*/
 void ThemeClass::AI() {
-  if (TheAudio().is_open() && !TheDebugState().quiet()) {
+  if (engine::audio::TheAudio().is_open() && !TheDebugState().quiet()) {
     if (TheGameState().scores_present() && TheOptions().ScoreVolume &&
         !Still_Playing() && Pending != THEME_NONE) {
       /*
@@ -213,7 +213,7 @@ void ThemeClass::AI() {
       Play_Song(Pending);
       Pending = THEME_PICK_ANOTHER;
     }
-    TheAudio().PumpStreams();
+    engine::audio::TheAudio().PumpStreams();
   }
 }
 
@@ -284,7 +284,7 @@ ThemeType ThemeClass::Next_Song(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 void ThemeClass::Queue_Song(ThemeType theme) {
-  if (TheGameState().scores_present() && TheAudio().is_open() &&
+  if (TheGameState().scores_present() && engine::audio::TheAudio().is_open() &&
       !TheDebugState().quiet() &&
       (Pending == THEME_NONE || Pending == THEME_PICK_ANOTHER)) {
     if (!TheOptions().ScoreVolume && theme != THEME_NONE) {
@@ -292,7 +292,7 @@ void ThemeClass::Queue_Song(ThemeType theme) {
     }
 
     Pending = theme;
-    TheAudio().FadeOut(Current, kThemeDelay);
+    engine::audio::TheAudio().FadeOut(Current, kThemeDelay);
   }
 }
 
@@ -313,7 +313,7 @@ void ThemeClass::Queue_Song(ThemeType theme) {
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
 int ThemeClass::Play_Song(ThemeType theme) {
-  if (TheGameState().scores_present() && TheAudio().is_open() &&
+  if (TheGameState().scores_present() && engine::audio::TheAudio().is_open() &&
       !TheDebugState().quiet() && TheOptions().ScoreVolume) {
     Stop();
     Score = theme;
@@ -322,7 +322,8 @@ int ThemeClass::Play_Song(ThemeType theme) {
       if (_themes[theme].Scenario != 99) {
         GameFile file(Theme_File_Name(theme));
         if (file.IsAvailable()) {
-          Current = TheAudio().Stream(Theme_File_Name(theme), 0xFF);
+          Current =
+              engine::audio::TheAudio().Stream(Theme_File_Name(theme), 0xFF);
         } else {
           Current = -1;
         }
@@ -330,7 +331,7 @@ int ThemeClass::Play_Song(ThemeType theme) {
         Current = -1;
       }
 #else
-      Current = TheAudio().Stream(Theme_File_Name(theme), 0xFF);
+      Current = engine::audio::TheAudio().Stream(Theme_File_Name(theme), 0xFF);
 #endif
     }
   }
@@ -411,10 +412,10 @@ int ThemeClass::Track_Length(ThemeType theme) {
  * HISTORY: * 09/08/1994 JLB : Created. *
  *=============================================================================================*/
 void ThemeClass::Stop() {
-  if ((TheGameState().scores_present() && TheAudio().is_open() &&
+  if ((TheGameState().scores_present() && engine::audio::TheAudio().is_open() &&
        !TheDebugState().quiet()) &&
       (Current != -1)) {
-    TheAudio().Stop(Current);
+    engine::audio::TheAudio().Stop(Current);
     Current = -1;
     Score = THEME_NONE;
     Pending = THEME_NONE;
@@ -435,9 +436,9 @@ void ThemeClass::Stop() {
  * HISTORY: * 12/20/1994 JLB : Created. *
  *=============================================================================================*/
 bool ThemeClass::Still_Playing() const {
-  if (TheGameState().scores_present() && TheAudio().is_open() &&
+  if (TheGameState().scores_present() && engine::audio::TheAudio().is_open() &&
       Current != -1 && !TheDebugState().quiet()) {
-    return TheAudio().IsPlaying(Current);
+    return engine::audio::TheAudio().IsPlaying(Current);
   }
   return false;
 }

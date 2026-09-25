@@ -129,7 +129,7 @@ class MovieScreen final : public VqaClient {
     // The movie's clock follows its sound, so pausing the sound holds the
     // frames too; Check_For_Focus_Loss() resumes it with the focus.
     if (!TheGameState().in_focus()) {
-      TheAudio().SetExtraPaused(true);
+      engine::audio::TheAudio().SetExtraPaused(true);
       while (!TheGameState().in_focus()) {
         Check_For_Focus_Loss();
       }
@@ -187,8 +187,9 @@ void Play_Movie(const char* name, const ThemeType theme, bool clear_screen) {
     // The file, the screen and the sound device must outlive the player.
     GameFileVqaIo movie_io;
     MovieScreen screen;
-    MixerVqaAudio movie_audio(TheAudio());
-    const bool with_sound = !TheDebugState().quiet() && TheAudio().is_open();
+    MixerVqaAudio movie_audio(engine::audio::TheAudio());
+    const bool with_sound =
+        !TheDebugState().quiet() && engine::audio::TheAudio().is_open();
 
     if (auto player = VqaPlayer::Open(movie_io, fullname, screen,
                                       with_sound ? &movie_audio : nullptr)) {

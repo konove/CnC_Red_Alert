@@ -84,7 +84,7 @@ void Focus_Loss() {
     }
   }
   TheTheme().Stop();
-  TheAudio().Pause();
+  engine::audio::TheAudio().Pause();
   if (TheMouse()) {
     TheMouse()->Clear_Cursor_Clip();
   }
@@ -92,7 +92,7 @@ void Focus_Loss() {
 
 void Focus_Restore() {
   TheMap().Flag_To_Redraw(true);
-  TheAudio().Resume();
+  engine::audio::TheAudio().Resume();
   if (TheMouse()) {
     TheMouse()->Set_Cursor_Clip();
   }
@@ -130,7 +130,7 @@ void Check_For_Focus_Loss() {
   }
 
   if (!focus_last_time && TheGameState().in_focus()) {
-    TheAudio().SetExtraPaused(true);
+    engine::audio::TheAudio().SetExtraPaused(true);
     CountDownTimerClass cd;
     cd.Set(60 * 1);
 
@@ -144,7 +144,7 @@ void Check_For_Focus_Loss() {
       }
 
     } while (cd.Time());
-    TheAudio().SetExtraPaused(false);
+    engine::audio::TheAudio().SetExtraPaused(false);
     // AllSurfaces.Restore_Surfaces();
     // VisiblePage.Clear();
     // HiddenPage.Clear();
@@ -161,7 +161,7 @@ long FAR PASCAL _export Windows_Procedure(HWND hwnd, UINT message, UINT wParam,
   int low_param = LOWORD(wParam);
 
   if (message == CCFocusMessage) {
-    TheAudio().Resume();
+    engine::audio::TheAudio().Resume();
     if (!TheGameState().in_movie()) {
       TheTheme().Queue_Song(OldTheme);
       OldTheme = THEME_NONE;

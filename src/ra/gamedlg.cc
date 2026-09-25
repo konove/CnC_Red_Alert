@@ -473,7 +473,7 @@ void GameControlsClass::Process() {
           break;
 
         case kButtonSound:
-          if (!TheAudio().is_open()) {
+          if (!engine::audio::TheAudio().is_open()) {
             WWMessageBox().Process(Text_String(TXT_NO_SOUND_CARD));
             process = true;
             display = true;

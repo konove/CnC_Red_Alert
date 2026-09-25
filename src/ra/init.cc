@@ -2420,7 +2420,7 @@ static void Init_Bulk_Data() {
   **	Cache the main game data. This operation can take a very long time.
   */
   MixArchive::Cache("CONQUER.MIX");
-  if (TheAudio().is_open() && !TheDebugState().quiet()) {
+  if (engine::audio::TheAudio().is_open() && !TheDebugState().quiet()) {
     MixArchive::Cache("SOUNDS.MIX");
     MixArchive::Cache("RUSSIAN.MIX");
     MixArchive::Cache("ALLIES.MIX");

@@ -364,10 +364,12 @@ void ScoreCredsClass::Update() {
       Stage = 0;
     }
     if (Stage < 22) {
-      TheAudio().Play(Clock1, 255, TheOptions().Normalize_Sound(70));
+      engine::audio::TheAudio().Play(Clock1, 255,
+                                     TheOptions().Normalize_Sound(70));
     } else {
       if (Stage == 24) {
-        TheAudio().Play(CashTurn, 255, TheOptions().Normalize_Sound(70));
+        engine::audio::TheAudio().Play(CashTurn, 255,
+                                       TheOptions().Normalize_Sound(70));
       }
     }
     CC_Draw_Shape(show_.page().view(), DataPtr, Stage, XPos, YPos, WINDOW_MAIN,
@@ -784,7 +786,8 @@ void ScoreClass::Show() {
   Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), inter_pal);
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteFast, Call_Back);
 
-  TheAudio().Play(country4, 255, TheOptions().Normalize_Sound(90));
+  engine::audio::TheAudio().Play(country4, 255,
+                                 TheOptions().Normalize_Sound(90));
 
   int frame = 1;
   while (frame < anim.frame_count()) {
@@ -831,7 +834,7 @@ void ScoreClass::Show() {
   Alloc_Object(new ScorePrintClass(show, TXT_SCORE_LEAD, 182, 26, greenpal));
   Alloc_Object(new ScorePrintClass(show, TXT_SCORE_EFFI, 182, 38, greenpal));
   Alloc_Object(new ScorePrintClass(show, TXT_SCORE_TOTA, 182, 50, greenpal));
-  TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(120));
+  engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(120));
   Call_Back_Delay(show, 13);
 
   max = static_cast<int>(std::max(static_cast<int32_t>(leadership),
@@ -855,7 +858,8 @@ void ScoreClass::Show() {
     }
     Print_Minutes(show, font, minutes);
     Call_Back_Delay(show, 1);
-    TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Sound(60));
+    engine::audio::TheAudio().Play(Beepy6, 255,
+                                   TheOptions().Normalize_Sound(60));
     if (Check_Key() && i < max - 5) {
       i = 158;
       Keyboard::Clear();
@@ -874,7 +878,7 @@ void ScoreClass::Show() {
   /*
   ** Show stats on # of units killed
   */
-  TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
+  engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
   Alloc_Object(new ScorePrintClass(show, TXT_SCORE_CASU,
                                    base::At(_casuax, house),
                                    base::At(_casuay, house), redpal));
@@ -902,7 +906,7 @@ void ScoreClass::Show() {
   /*
   ** Print out stats on buildings destroyed
   */
-  TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
+  engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
   if (player_house == HOUSE_GOOD) {
     Alloc_Object(new ScorePrintClass(show, TXT_SCORE_BUIL, 144, 126, greenpal));
     Call_Back_Delay(show, 9);
@@ -947,7 +951,7 @@ void ScoreClass::Show() {
   /*
   ** Hall of fame display and processing
   */
-  TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
+  engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(90));
   Alloc_Object(new ScorePrintClass(show, TXT_SCORE_TOP, 28, 110, bluepal));
   Call_Back_Delay(show, 9);
 
@@ -1307,7 +1311,8 @@ void ScoreClass::Do_Nod_Buildings_Graph(Presentation& show,
     Count_Up_Print(show, font, "%d", q, CBKilled, BUILDING_X + 8,
                    BUILDING_Y + 24);
     if (!Check_Key()) {
-      TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Sound(110));
+      engine::audio::TheAudio().Play(Beepy6, 255,
+                                     TheOptions().Normalize_Sound(110));
       Call_Back_Delay(show, 1);
     }
   }
@@ -1373,7 +1378,8 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
 
     Count_Up_Print(show, font, "%d", i * gkilled / max, gkilled, 297, ypos + 2);
     if (!Check_Key()) {
-      TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Sound(110));
+      engine::audio::TheAudio().Play(Beepy6, 255,
+                                     TheOptions().Normalize_Sound(110));
       Call_Back_Delay(show, 2);
     }
   }
@@ -1397,7 +1403,8 @@ void ScoreClass::Do_GDI_Graph(Presentation& show, const FontStyle& font,
     Count_Up_Print(show, font, "%d", i * nkilled / max, nkilled, 297,
                    ypos + 14);
     if (!Check_Key()) {
-      TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Sound(110));
+      engine::audio::TheAudio().Play(Beepy6, 255,
+                                     TheOptions().Normalize_Sound(110));
       Call_Back_Delay(show, 2);
     }
   }
@@ -1519,7 +1526,8 @@ void ScoreClass::Do_Nod_Casualties_Graph(Presentation& show,
         Call_Back_Delay(show, 3);
       }
     }
-    TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Sound(110));
+    engine::audio::TheAudio().Play(Beepy6, 255,
+                                   TheOptions().Normalize_Sound(110));
   }
   if (Check_Key()) {
     Keyboard::Clear();
@@ -1791,7 +1799,8 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
           base::At(str, base::ToSize(index)) = static_cast<char>(ascii);
           base::At(str, base::ToSize(index + 1)) = 0;
 
-          TheAudio().Play(keystrok, 255, TheOptions().Normalize_Sound(255));
+          engine::audio::TheAudio().Play(keystrok, 255,
+                                         TheOptions().Normalize_Sound(255));
           const int objindex = Alloc_Object(
               new ScoreScaleClass(show, str.subspan(base::ToSize(index)).data(),
                                   xpos + (index * 6), ypos, pal));

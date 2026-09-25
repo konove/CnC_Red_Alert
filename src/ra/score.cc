@@ -195,7 +195,8 @@ void ScoreCredsClass::Update() {
       Stage = 0;
     }
     // One tick of sound per frame of the spinning credits symbol.
-    TheAudio().Play(Clock1, 255, TheOptions().Normalize_Volume(130));
+    engine::audio::TheAudio().Play(Clock1, 255,
+                                   TheOptions().Normalize_Volume(130));
     CC_Draw_Shape(TheScreen().visible_view(), DataPtr, Stage, XPos, YPos,
                   WINDOW_MAIN, SHAPE_WIN_REL, {}, {});
   }
@@ -385,7 +386,8 @@ void ScoreClass::Presentation() {
   Increase_Palette_Luminance(score_palette, 30, 30, 30, 63);
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   score_palette.Set(kFadePaletteFast, ServiceRealTime);
-  TheAudio().Play(country4, 255, TheOptions().Normalize_Volume(150));
+  engine::audio::TheAudio().Play(country4, 255,
+                                 TheOptions().Normalize_Volume(150));
 
   // Background's up, so now start the animations that loop for the whole
   // screen: the clock and the two hall of fame ornaments. They take slots 0..2
@@ -405,7 +407,7 @@ void ScoreClass::Presentation() {
   Alloc_Object(new ScorePrintClass(TXT_SCORE_LEAD, 164, 26, greenpal));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_EFFI, 164, 38, greenpal));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TOTA, 164, 50, greenpal));
-  TheAudio().Play(sfx4, 255, TheOptions().Normalize_Volume(150));
+  engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Volume(150));
   TickScoreScreen(13);
 
   TheKeyboard().Clear();
@@ -500,7 +502,8 @@ void ScoreClass::Presentation() {
     }
     Print_Minutes(minutes, greenpal);
     TickScoreScreen(1);
-    TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Volume(100));
+    engine::audio::TheAudio().Play(Beepy6, 255,
+                                   TheOptions().Normalize_Volume(100));
     if (i >= 30 && lead == leadership && econo == economy) {
       break;
     }
@@ -540,7 +543,7 @@ void ScoreClass::Presentation() {
 
   // Show stats on # of units killed. The player's own side is always the upper
   // of the two rows.
-  TheAudio().Play(sfx4, 255, TheOptions().Normalize_Volume(150));
+  engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Volume(150));
   // The original selected the second layout for Soviet players on DOS only;
   // at this resolution both sides share entry 0.
   const int indx = 0;
@@ -563,7 +566,7 @@ void ScoreClass::Presentation() {
   Do_GDI_Graph(yellowptr, redptr, GKilled + CKilled, NKilled, 89);
 
   // Print out stats on buildings destroyed, laid out like the casualties above.
-  TheAudio().Play(sfx4, 255, TheOptions().Normalize_Volume(150));
+  engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Volume(150));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_BUIL, 144, 126, greenpal));
   TickScoreScreen(9);
   if (house) {
@@ -591,7 +594,7 @@ void ScoreClass::Presentation() {
     Show_Credits(house, greenpal);
   }
   // Hall of fame display and processing.
-  TheAudio().Play(sfx4, 255, TheOptions().Normalize_Volume(150));
+  engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Volume(150));
   Alloc_Object(new ScorePrintClass(TXT_SCORE_TOP, 28, 110, greenpal));
   TickScoreScreen(9);
 
@@ -796,7 +799,8 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
 
     Count_Up_Print("%d", CountUpValue(gkilled, i, gdikilled), gkilled, 297,
                    ypos + 2, top_palette);
-    TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Volume(150));
+    engine::audio::TheAudio().Play(Beepy6, 255,
+                                   TheOptions().Normalize_Volume(150));
     TickScoreScreen(2);
   }
   CC_Draw_Shape(view, yellowptr, gdikilled, xpos * 2, ypos * 2, WINDOW_MAIN,
@@ -816,7 +820,8 @@ void ScoreClass::Do_GDI_Graph(std::span<const std::byte> yellowptr,
 
     Count_Up_Print("%d", CountUpValue(nkilled, i, nodkilled), nkilled, 297,
                    ypos + 14, bottom_palette);
-    TheAudio().Play(Beepy6, 255, TheOptions().Normalize_Volume(150));
+    engine::audio::TheAudio().Play(Beepy6, 255,
+                                   TheOptions().Normalize_Volume(150));
     TickScoreScreen(2);
   }
 
@@ -990,7 +995,8 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
           base::At(str, base::ToSize(index)) = static_cast<char>(ascii);
           base::At(str, base::ToSize(index + 1)) = 0;
 
-          TheAudio().Play(keystrok, 255, TheOptions().Normalize_Volume(150));
+          engine::audio::TheAudio().Play(keystrok, 255,
+                                         TheOptions().Normalize_Volume(150));
           // Echo the letter and wait until its animation has finished and
           // freed its slot, so that letters appear strictly one at a time.
           const int objindex = Alloc_Object(

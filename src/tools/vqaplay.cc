@@ -281,7 +281,7 @@ int Play(const Options& options) {
   // The file, the window and the sound must outlive the player.
   GameFileVqaIo io;
   MovieWindow window(options.name, options.scale);
-  AudioMixer mixer;
+  engine::audio::AudioMixer mixer;
   MixerVqaAudio movie_audio(mixer);
   // The games' own rate; the movie's sound is converted to it.
   const bool with_sound = !options.mute && mixer.Open(22050, false);

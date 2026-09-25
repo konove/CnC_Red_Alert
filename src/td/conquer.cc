@@ -1305,7 +1305,7 @@ void Call_Back() {
   /*
   **	Score maintenance
   */
-  if (TheAudio().is_open()) {
+  if (engine::audio::TheAudio().is_open()) {
     TheTheme().AI();
     Speak_AI();
   }
@@ -1666,7 +1666,8 @@ bool Main_Loop() {
   *start one *	playing. This is usually the symptom of there being no
   *transition score.
   */
-  if (TheAudio().is_open() && TheTheme().What_Is_Playing() == THEME_NONE) {
+  if (engine::audio::TheAudio().is_open() &&
+      TheTheme().What_Is_Playing() == THEME_NONE) {
     TheTheme().Queue_Song(THEME_PICK_ANOTHER);
   }
 
@@ -2147,8 +2148,9 @@ void Play_Movie(const char* name, ThemeType theme, bool clear_screen) {
     // The file, the screen and the sound device must outlive the player.
     GameFileVqaIo movie_io;
     MovieScreen screen;
-    MixerVqaAudio movie_audio(TheAudio());
-    const bool with_sound = !TheDebugState().quiet() && TheAudio().is_open();
+    MixerVqaAudio movie_audio(engine::audio::TheAudio());
+    const bool with_sound =
+        !TheDebugState().quiet() && engine::audio::TheAudio().is_open();
 
     if (auto player = VqaPlayer::Open(movie_io, fullname, screen,
                                       with_sound ? &movie_audio : nullptr)) {

@@ -359,7 +359,8 @@ int main(const int argc, char* argv[])
 
   Create_Main_Window(nullptr, 0, Screen::kWidth, TheScreen().mode_height());
   // 22050 Hz mono.
-  TheGameState().sound_on() = TheAudio().Open(11025 * 2, /*stereo=*/false);
+  TheGameState().sound_on() =
+      engine::audio::TheAudio().Open(11025 * 2, /*stereo=*/false);
 
   if (!TheScreen().Init()) {
     ShutDown();
@@ -424,7 +425,7 @@ int main(const int argc, char* argv[])
 #endif  // RA_NO_ENTRY_POINT
 
 void Prog_End() {
-  TheAudio().Close();
+  engine::audio::TheAudio().Close();
   TheInput().RemoveMouse();
   ShutdownTickTimer();
 }

@@ -17,6 +17,7 @@
 #include "engine/stream/seek_origin.h"
 #include "gtest/gtest.h"
 
+namespace engine::audio {
 namespace {
 
 constexpr int kRate = 22050;
@@ -346,3 +347,4 @@ TEST_F(AudioMixerTest, ScoreVolumeScalesScoresOnly) {
 }
 
 }  // namespace
+}  // namespace engine::audio

@@ -92,8 +92,8 @@ class Game {
   SpecialClass special_{};
   base::Installed<SpecialClass>::Scope special_scope_{special_};
   // The mixer comes before the music player, which plays through it.
-  AudioMixer audio_;
-  base::Installed<AudioMixer>::Scope audio_scope_{audio_};
+  engine::audio::AudioMixer audio_;
+  base::Installed<engine::audio::AudioMixer>::Scope audio_scope_{audio_};
   ThemeClass theme_;
   base::Installed<ThemeClass>::Scope theme_scope_{theme_};
   SessionClass session_;

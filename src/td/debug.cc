@@ -146,7 +146,7 @@ void Debug_Key(unsigned input) {
       case KN_P:
         Keyboard::Clear();
         while (!Keyboard::Check()) {
-          TheAudio().PumpStreams();
+          engine::audio::TheAudio().PumpStreams();
         }
         Keyboard::Clear();
         break;

@@ -589,7 +589,8 @@ void Map_Selection() {
 
   Increase_Palette_Luminance(localpalette, 30, 30, 30, 63);
 
-  TheAudio().Play(appear1, 255, TheOptions().Normalize_Sound(110));
+  engine::audio::TheAudio().Play(appear1, 255,
+                                 TheOptions().Normalize_Sound(110));
   Fade_Palette_To(localpalette, kFadePaletteMedium, Call_Back);
   for (int i = 1; i < greyearth.frame_count(); i++) {
     Call_Back_Delay(show, 4);
@@ -640,30 +641,36 @@ void Map_Selection() {
   TheScreen().sys_mem_page().view().BlitTo(show.page().view());
   Interpolate_2X_Scale(&show.page(), &TheScreen().visible_view(), {});
 
-  TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(130));
-  TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
+  engine::audio::TheAudio().Play(sfx4, 255, TheOptions().Normalize_Sound(130));
+  engine::audio::TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
 
   int frame = 1;
 
   while (frame < anim.frame_count()) {
     if (frame == 16 || frame == 33 || frame == 44 || frame == 70 ||
         frame == 73) {
-      TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
+      engine::audio::TheAudio().Play(text2, 255,
+                                     TheOptions().Normalize_Sound(90));
     }
     if (frame == 21 || frame == 27) {
-      TheAudio().Play(target1, 255, TheOptions().Normalize_Sound(90));
+      engine::audio::TheAudio().Play(target1, 255,
+                                     TheOptions().Normalize_Sound(90));
     }
     if (frame == 45 || frame == 47 || frame == 49) {
-      TheAudio().Play(beepy6, 255, TheOptions().Normalize_Sound(90));
+      engine::audio::TheAudio().Play(beepy6, 255,
+                                     TheOptions().Normalize_Sound(90));
     }
     if (frame == 51) {
-      TheAudio().Play(world2, 255, TheOptions().Normalize_Sound(90));
+      engine::audio::TheAudio().Play(world2, 255,
+                                     TheOptions().Normalize_Sound(90));
     }
     if (frame == 70 || frame == 72) {
-      TheAudio().Play(beepy2, 255, TheOptions().Normalize_Sound(90));
+      engine::audio::TheAudio().Play(beepy2, 255,
+                                     TheOptions().Normalize_Sound(90));
     }
     if (frame == 74) {
-      TheAudio().Play(target2, 255, TheOptions().Normalize_Sound(110));
+      engine::audio::TheAudio().Play(target2, 255,
+                                     TheOptions().Normalize_Sound(110));
     }
 
     // the HEARTH_* animations don't have the text, but the EARTH_* ones do
@@ -810,7 +817,7 @@ void Map_Selection() {
   const int xcoord = house == HOUSE_GOOD ? 0 : 204;
   TheScreen().sys_mem_page().view().BlitTo(backpage.view(), xcoord, 1, 0, 0,
                                            20 * 6, 8);
-  TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
+  engine::audio::TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
   if (house == HOUSE_GOOD) {
     Alloc_Object(new ScorePrintClass(show, TXT_MAP_GDI, 0, 2, greenpal));
   } else {
@@ -818,7 +825,8 @@ void Map_Selection() {
   }
   Call_Back_Delay(show, 60);
 
-  TheAudio().Play(country1, 255, TheOptions().Normalize_Sound(90));
+  engine::audio::TheAudio().Play(country1, 255,
+                                 TheOptions().Normalize_Sound(90));
   progress.DrawFrame(TheScreen().sys_mem_page().view(), startframe + 1);
   progress.DrawFrame(TheScreen().sys_mem_page().view(), startframe + 1);
   Bit_It_In(show, 0, 0, 320, 200, &TheScreen().sys_mem_page(), &show.page(), 1,
@@ -845,7 +853,8 @@ void Map_Selection() {
   TheScreen().sys_mem_page().view().BlitTo(backpage.view(), xcoord, 1, 0, 0,
                                            20 * 6, 8);
   if (!lastscenario) {
-    TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
+    engine::audio::TheAudio().Play(text2, 255,
+                                   TheOptions().Normalize_Sound(90));
     if (house == HOUSE_GOOD) {
       Alloc_Object(new ScorePrintClass(show, TXT_MAP_NOD, 0, 12, greenpal));
     } else {
@@ -855,7 +864,8 @@ void Map_Selection() {
     Call_Back_Delay(show, 65);
   }
 
-  TheAudio().Play(country1, 255, TheOptions().Normalize_Sound(90));
+  engine::audio::TheAudio().Play(country1, 255,
+                                 TheOptions().Normalize_Sound(90));
   progress.DrawFrame(TheScreen().sys_mem_page().view(), startframe + 2);
   Bit_It_In(show, 0, 0, 320, 200, &TheScreen().sys_mem_page(), &show.page(), 1,
             true);
@@ -882,7 +892,7 @@ void Map_Selection() {
   /*
   ** Now print the text over the page
   */
-  TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
+  engine::audio::TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
   Alloc_Object(new ScorePrintClass(show, TXT_MAP_LOCATE, 0, 160, greenpal));
   Call_Back_Delay(show, 20);
   Alloc_Object(
@@ -931,13 +941,16 @@ void Map_Selection() {
   for (frame = 0; frame < (lastscenario ? progress.frame_count() - 4 : 13);
        frame++) {
     if (!frame) {
-      TheAudio().Play(beepy3, 255, TheOptions().Normalize_Sound(90));
+      engine::audio::TheAudio().Play(beepy3, 255,
+                                     TheOptions().Normalize_Sound(90));
     }
     if (frame == 2) {
-      TheAudio().Play(beepy3, 255, TheOptions().Normalize_Sound(90));
+      engine::audio::TheAudio().Play(beepy3, 255,
+                                     TheOptions().Normalize_Sound(90));
     }
     if (frame == 6) {
-      TheAudio().Play(newtarg1, 255, TheOptions().Normalize_Sound(90));
+      engine::audio::TheAudio().Play(newtarg1, 255,
+                                     TheOptions().Normalize_Sound(90));
     }
 
     if (lastscenario) {
@@ -1025,7 +1038,7 @@ void Map_Selection() {
   int selection = 0;
   int color = 0;
   // erase the "Locating Coordinates" message...
-  TheAudio().Play(beepy6, 255, TheOptions().Normalize_Sound(90));
+  engine::audio::TheAudio().Play(beepy6, 255, TheOptions().Normalize_Sound(90));
   if (!lastscenario) {
 #if (defined(GERMAN) || defined(FRENCH))
     TheScreen().sys_mem_page().FillRect(0, 160, 20 * 6, 186, kTBlack);
@@ -1063,7 +1076,7 @@ void Map_Selection() {
     }
   }
 
-  TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
+  engine::audio::TheAudio().Play(text2, 255, TheOptions().Normalize_Sound(90));
   Alloc_Object(
       new ScorePrintClass(show, TXT_MAP_SELECT, attackxcoord, 160, greenpal));
   Cycle_Call_Back_Delay(show, 16, progresspalette);
@@ -1100,11 +1113,13 @@ void Map_Selection() {
         if (base::At(base::At(base::At(CountryArray, scenario).CountryColor,
                               static_cast<int>(TheWorld().scen_dir())),
                      selection) == color) {
-          TheAudio().Play(world2, 255, TheOptions().Normalize_Sound(90));
+          engine::audio::TheAudio().Play(world2, 255,
+                                         TheOptions().Normalize_Sound(90));
           done = 1;
           break;
         }
-        TheAudio().Play(scold1, 255, TheOptions().Normalize_Sound(90));
+        engine::audio::TheAudio().Play(scold1, 255,
+                                       TheOptions().Normalize_Sound(90));
       }
     }
   }

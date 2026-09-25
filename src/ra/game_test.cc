@@ -38,7 +38,7 @@ TEST(GameTest, InstallsItsSubsystemsForItsLifetime) {
            base::Installed<RulesClass>::IsInstalled() &&
            base::Installed<GameOptionsClass>::IsInstalled() &&
            base::Installed<SpecialClass>::IsInstalled() &&
-           base::Installed<AudioMixer>::IsInstalled() &&
+           base::Installed<engine::audio::AudioMixer>::IsInstalled() &&
            base::Installed<ThemeClass>::IsInstalled() &&
            base::Installed<SessionClass>::IsInstalled() &&
            base::Installed<Network>::IsInstalled();

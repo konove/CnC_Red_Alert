@@ -20,6 +20,8 @@
 #include "engine/file/game_file.h"
 #include "engine/stream/byte_stream.h"
 
+namespace engine::audio {
+
 static int ChannelCount(const AudHeader& header) {
   return (header.flags & kAudFlagStereo) != 0 ? 2 : 1;
 }
@@ -537,3 +539,5 @@ void AudioMixer::Resume() { SDL_PauseAudioDevice(device_, 0); }
 
 // NOLINTNEXTLINE(readability-make-member-function-const)
 void AudioMixer::Pause() { SDL_PauseAudioDevice(device_, 1); }
+
+}  // namespace engine::audio

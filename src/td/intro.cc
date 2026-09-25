@@ -115,9 +115,11 @@ void Choose_Side() {
 
   // The io objects, the screen and the audio device must outlive the open
   // players.
-  MixerVqaAudio movie_audio(TheAudio());
+  MixerVqaAudio movie_audio(engine::audio::TheAudio());
   MixerVqaAudio* const audio =
-      !TheDebugState().quiet() && TheAudio().is_open() ? &movie_audio : nullptr;
+      !TheDebugState().quiet() && engine::audio::TheAudio().is_open()
+          ? &movie_audio
+          : nullptr;
   MovieScreen movie_screen;
   GameFileVqaIo gdibrief_io;
   GameFileVqaIo nodbrief_io;
@@ -180,7 +182,7 @@ void Choose_Side() {
   // setpalette = 1;
   //}
 
-  int statichandle = TheAudio().Play(staticaud, 255, 64);
+  int statichandle = engine::audio::TheAudio().Play(staticaud, 255, 64);
   CountDownTimerClass sample_timer;
   sample_timer.Set(0x3f);
   Alloc_Object(new ScorePrintClass(show, TXT_GDI_NAME, 0, 180, yellowpal));
@@ -204,8 +206,9 @@ void Choose_Side() {
     Show_Mouse();
   }
 
-  while (endframe != frame ||
-         (speechplaying && TheAudio().IsPlaying(speech.data()))) {
+  while (
+      endframe != frame ||
+      (speechplaying && engine::audio::TheAudio().IsPlaying(speech.data()))) {
     anim.DrawFrame(TheScreen().sys_mem_page().view(), frame++);
     if (setpalette) {
       Wait_Vert_Blank();
@@ -218,9 +221,10 @@ void Choose_Side() {
     /*
     ** If the sample has stopped or is about to then restart it
     */
-    if (!TheAudio().IsPlaying(staticaud.data()) || !sample_timer.Time()) {
-      TheAudio().Stop(statichandle);
-      statichandle = TheAudio().Play(staticaud, 255, 64);
+    if (!engine::audio::TheAudio().IsPlaying(staticaud.data()) ||
+        !sample_timer.Time()) {
+      engine::audio::TheAudio().Stop(statichandle);
+      statichandle = engine::audio::TheAudio().Play(staticaud, 255, 64);
       sample_timer.Set(0x3f);
     }
     Call_Back_Delay(show, 3);  // delay only if haven't clicked
@@ -248,7 +252,7 @@ void Choose_Side() {
         TheWorld().whom() = HOUSE_GOOD;
         TheWorld().scen_player() = SCEN_PLAYER_GDI;
         endframe = 0;
-        TheAudio().Play(speechg);
+        engine::audio::TheAudio().Play(speechg);
         speechplaying = true;
         speech = speechg;
 
@@ -258,7 +262,7 @@ void Choose_Side() {
         endframe = 14;
         TheWorld().whom() = HOUSE_BAD;
         TheWorld().scen_player() = SCEN_PLAYER_NOD;
-        TheAudio().Play(speechn);
+        engine::audio::TheAudio().Play(speechn);
         speechplaying = true;
         speech = speechn;
       }
@@ -314,7 +318,7 @@ void Choose_Side() {
   } else {
     TheGameState().preserve_movie_screen() = true;
   }
-  TheAudio().Stop(statichandle);
+  engine::audio::TheAudio().Stop(statichandle);
   delete[] base::CharBytes(std::span(staticaud)).data();
   delete[] base::CharBytes(std::span(speechg)).data();
   delete[] base::CharBytes(std::span(speechn)).data();

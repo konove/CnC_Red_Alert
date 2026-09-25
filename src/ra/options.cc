@@ -130,7 +130,9 @@ OptionsClass::OptionsClass()
  *=============================================================================================*/
 // Not const: applies the score volume to the audio system.
 // NOLINTNEXTLINE(readability-make-member-function-const)
-void OptionsClass::One_Time() { TheAudio().SetScoreVolume(ScoreVolume * 256); }
+void OptionsClass::One_Time() {
+  engine::audio::TheAudio().SetScoreVolume(ScoreVolume * 256);
+}
 
 /***********************************************************************************************
  * OptionsClass::Set_Shuffle -- Controls the play shuffle setting. *
@@ -184,7 +186,7 @@ void OptionsClass::Set_Repeat(bool on) { IsScoreRepeat = on; }
  *=============================================================================================*/
 void OptionsClass::Set_Score_Volume(fixed volume, bool feedback) {
   ScoreVolume = fixed(volume).Sub_Saturate(1);
-  TheAudio().SetScoreVolume(ScoreVolume * 256);
+  engine::audio::TheAudio().SetScoreVolume(ScoreVolume * 256);
   if (feedback && !TheTheme().Still_Playing()) {
     PlaySoundEffect(VOC_BEEP, ScoreVolume);
   }

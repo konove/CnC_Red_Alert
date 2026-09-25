@@ -396,8 +396,8 @@ void ServiceRealTimeFor(const int ticks) {
 
 void ServiceBackgroundTasks() {
   // Music and speech maintenance
-  if (TheAudio().is_open()) {
-    TheAudio().PumpStreams();
+  if (engine::audio::TheAudio().is_open()) {
+    engine::audio::TheAudio().PumpStreams();
     TheTheme().AI();
     ServiceSpeech();
   }
@@ -670,7 +670,8 @@ bool RunFrame() {
   // If there is no theme playing, but it looks like one is required, then
   // start one playing. This is usually the symptom of there being no
   // transition score.
-  if (TheAudio().is_open() && TheTheme().What_Is_Playing() == THEME_NONE) {
+  if (engine::audio::TheAudio().is_open() &&
+      TheTheme().What_Is_Playing() == THEME_NONE) {
     TheTheme().Queue_Song(THEME_PICK_ANOTHER);
   }
 

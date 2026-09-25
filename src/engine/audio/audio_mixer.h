@@ -39,6 +39,8 @@
 #include "engine/codec/aud_decoder.h"
 #include "engine/stream/byte_stream.h"
 
+namespace engine::audio {
+
 // What the VQA player installs to have its sound track mixed in first. It
 // fills device_buffer, which arrives silenced, in the device's format.
 using AudioCallback = std::function<void(std::span<std::byte> device_buffer)>;
@@ -52,11 +54,11 @@ using AudioCallback = std::function<void(std::span<std::byte> device_buffer)>;
 // main thread, which must call PumpStreams() regularly to keep scores fed.
 //
 // Example:
-//   AudioMixer audio;
-//   if (audio.Open(22050, /*stereo=*/false)) {
-//     const int score = audio.Stream("BIGF226M.AUD", 255);
-//     audio.Play(MixArchive::RetrieveData("CANNON1.AUD"));
-//     while (audio.IsPlaying(score)) { audio.PumpStreams(); }
+//   engine::audio::AudioMixer mixer;
+//   if (mixer.Open(22050, /*stereo=*/false)) {
+//     const int score = mixer.Stream("BIGF226M.AUD", 255);
+//     mixer.Play(MixArchive::RetrieveData("CANNON1.AUD"));
+//     while (mixer.IsPlaying(score)) { mixer.PumpStreams(); }
 //   }
 class AudioMixer {
  public:
@@ -238,5 +240,7 @@ class AudioMixer {
 // Returns the mixer the game installed. CHECK-fails outside a Game's
 // lifetime unless a test installed its own.
 inline AudioMixer& TheAudio() { return base::Installed<AudioMixer>::Get(); }
+
+}  // namespace engine::audio
 
 #endif  // CNC_RED_ALERT_ENGINE_AUDIO_AUDIO_MIXER_H_

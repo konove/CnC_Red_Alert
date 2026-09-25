@@ -519,7 +519,7 @@ bool Init_Game() {
   **	Cache the main game data. This operation can take a very long time.
   */
   MixArchive::Cache("CONQUER.MIX");
-  if (TheAudio().is_open() && !TheDebugState().quiet()) {
+  if (engine::audio::TheAudio().is_open() && !TheDebugState().quiet()) {
     MixArchive::Cache("SOUNDS.MIX");
     if (TheSpecial().IsJuvenile) {
       (void)MixArchive::Register("ZOUNDS.MIX");
@@ -625,7 +625,7 @@ bool Init_Game() {
 void Uninit_Game() {
   // The audio thread keeps mixing whatever is playing, straight out of the
   // speech buffer and the MIX archives freed below; stop it first.
-  TheAudio().Close();
+  engine::audio::TheAudio().Close();
 
   delete MouseClass::ShadowPage;
   MouseClass::ShadowPage = nullptr;
