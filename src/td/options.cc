@@ -75,7 +75,6 @@
 #include "base/array.h"
 #include "base/numeric.h"
 #include "port/bytes_of.h"
-#include "sdllib/misc.h"
 #include "sdllib/shape.h"
 #include "td/audio.h"
 #include "td/conquer.h"
@@ -90,6 +89,7 @@
 #include "tech/audio_mixer.h"
 #include "tech/file_access.h"
 #include "tech/game_file.h"
+#include "tech/hsv.h"
 #include "tech/key_phrase_hash.h"
 
 /***********************************************************************************************

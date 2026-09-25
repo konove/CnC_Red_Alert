@@ -68,7 +68,7 @@
 #include "ra/palette.h"
 #include "ra/startup.h"
 #include "sdllib/compressed_block.h"
-#include "sdllib/misc.h"
+#include "sdllib/fading_table.h"
 #include "sdllib/text_window.h"
 #include "tech/byte_stream.h"
 #include "tech/game_file.h"

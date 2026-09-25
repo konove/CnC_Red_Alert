@@ -70,7 +70,7 @@
 #include "port/safe_string.h"
 #include "port/unaligned.h"
 #include "sdllib/compressed_block.h"
-#include "sdllib/misc.h"
+#include "sdllib/fading_table.h"
 #include "sdllib/text_window.h"
 #include "sdllib/tile.h"
 #include "support.h"

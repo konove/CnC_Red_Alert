@@ -5,7 +5,6 @@
 
 #include "base/installed.h"
 #include "gtest/gtest.h"
-#include "sdllib/misc.h"
 #include "sdllib/ww_win.h"
 #include "td/abstract.h"
 #include "td/audio.h"
@@ -29,6 +28,7 @@
 #include "td/super.h"
 #include "td/teamtype.h"
 #include "tech/archive.h"
+#include "tech/random.h"
 #include "tech/span_sink.h"
 #include "tech/span_source.h"
 

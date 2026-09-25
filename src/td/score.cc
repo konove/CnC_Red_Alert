@@ -105,6 +105,7 @@
 #include "tech/file_access.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
+#include "tech/random.h"
 #include "tech/wsa_animation.h"
 
 #define SCORETEXT_X 184

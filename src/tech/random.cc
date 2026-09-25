@@ -18,10 +18,13 @@
 
 #include "tech/random.h"
 
+#include <array>
 #include <bit>
 #include <cstdint>
+#include <span>
 #include <utility>
 
+#include "base/buffer.h"
 #include "base/numeric.h"
 
 RandomClass::RandomClass(const uint32_t seed) noexcept : seed_(seed) {}
@@ -70,4 +73,33 @@ int RandomClass::InRange(int low, int high) {
 
   // Bias the in-range pick up to the requested starting point.
   return pick + low;
+}
+
+int RandNumb;
+
+uint8_t Random() {
+  // The generator shifts and carries through the bytes of RandNumb, low byte
+  // first, so it works on a copy of them and stores the result back.
+  std::array<uint8_t, sizeof(RandNumb)> r{};
+  base::CopyBytes(std::as_writable_bytes(std::span(r)),
+                  base::ObjectBytes(RandNumb), sizeof(RandNumb));
+
+  uint8_t tmp = r.at(0) >> 1;
+  const uint8_t c = tmp & 1;
+  tmp >>= 1;
+
+  const uint8_t c1 = r.at(2) & 0x80;
+  r.at(2) = static_cast<uint8_t>((r.at(2) * 2) + c);
+
+  const uint8_t c2 = r.at(1) & 0x80;
+  r.at(1) = static_cast<uint8_t>((r.at(1) * 2) + (c1 / 128));
+
+  tmp = static_cast<uint8_t>(tmp - (r.at(0) + (1 - c2)));
+  const uint8_t c3 = tmp & 1;
+
+  r.at(0) = static_cast<uint8_t>((r.at(0) / 2) + (c3 * 128));
+
+  base::CopyBytes(base::ObjectBytes(RandNumb), std::as_bytes(std::span(r)),
+                  sizeof(RandNumb));
+  return r.at(0) ^ r.at(1);
 }

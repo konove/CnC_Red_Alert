@@ -1,7 +1,6 @@
 #ifndef CNC_RED_ALERT_TD_RAND_H_
 #define CNC_RED_ALERT_TD_RAND_H_
 
-#include "sdllib/misc.h"
 #include "td/randomstate.h"
 
 int Sim_IRandom(int minval, int maxval);

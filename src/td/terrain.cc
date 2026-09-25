@@ -85,7 +85,6 @@
 #include "base/numeric.h"
 #include "port/tokenizer.h"
 #include "rand.h"
-#include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/anim.h"
@@ -110,6 +109,7 @@
 #include "td/vector.h"
 #include "td/world.h"
 #include "tech/number_parse.h"
+#include "tech/random.h"
 
 #define BARNACLE_STAGE 22
 #define FIRST_SPORE_STAGE 30

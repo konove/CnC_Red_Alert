@@ -69,4 +69,14 @@ class RandomClass {
   uint32_t seed_;
 };
 
+// A second, older byte generator, distinct from RandomClass. Tiberian Dawn's
+// map generator and a handful of visual-only effects still draw from it;
+// Red Alert only seeds RandNumb and never calls Random() itself. Every call
+// shifts and carries through the bytes of RandNumb and returns two of them
+// XORed together.
+uint8_t Random();
+
+// State behind Random(); the games seed it directly.
+extern int RandNumb;
+
 #endif  // CNC_RED_ALERT_TECH_RANDOM_H_

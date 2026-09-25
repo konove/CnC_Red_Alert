@@ -74,4 +74,12 @@ class HSVClass {
   unsigned char Value;
 };
 
+// Free-function HSV/RGB conversions at the VGA 6-bit gun range (0..63),
+// distinct from HSVClass and base::HsvToRgb8(), which work at the full
+// 8-bit range. Only Tiberian Dawn's options dialog uses these.
+void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
+                        unsigned int* h, unsigned int* s, unsigned int* v);
+void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
+                        unsigned int* r, unsigned int* g, unsigned int* b);
+
 #endif  // CNC_RED_ALERT_TECH_HSV_H_

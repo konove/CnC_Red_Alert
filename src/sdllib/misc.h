@@ -37,10 +37,6 @@
 #ifndef CNC_RED_ALERT_SDLLIB_MISC_H_
 #define CNC_RED_ALERT_SDLLIB_MISC_H_
 
-#include <cstdint>
-#include <span>
-
-#include "absl/base/attributes.h"
 #include "sdllib/display.h"
 
 /*========================= C++ Routines ==================================*/
@@ -74,25 +70,8 @@ void Prog_End();
 /*=========================================================================*/
 void Delay(int duration);
 
-// extras for TD
-std::uint8_t Random();
-
 void Shake_Screen(int shakes);
 inline void Wait_Vert_Blank() { TheDisplay().EndFrame(); }
-
-void Convert_RGB_To_HSV(unsigned int r, unsigned int g, unsigned int b,
-                        unsigned int* h, unsigned int* s, unsigned int* v);
-void Convert_HSV_To_RGB(unsigned int h, unsigned int s, unsigned int v,
-                        unsigned int* r, unsigned int* g, unsigned int* b);
-
-/*========================= Assembly Routines ==============================*/
-
-std::span<uint8_t> Build_Fading_Table(
-    std::span<const uint8_t> palette,
-    std::span<uint8_t> dest ABSL_ATTRIBUTE_LIFETIME_BOUND, int color, int frac);
-
-// Legacy byte generator state behind Random(); the games seed it.
-extern int RandNumb;
 
 /*=========================================================================*/
 

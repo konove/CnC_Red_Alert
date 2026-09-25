@@ -41,7 +41,6 @@
 #include <cstdint>
 
 #include "base/array.h"
-#include "sdllib/misc.h"
 #include "td/jshell.h"
 #include "td/randomstate.h"
 #include "tech/random.h"
