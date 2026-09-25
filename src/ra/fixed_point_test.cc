@@ -3,8 +3,7 @@
 
 #include <cstdint>
 
-#include <gtest/gtest.h>
-
+#include "gtest/gtest.h"
 #include "ra/coord.h"
 
 namespace {

@@ -130,8 +130,10 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <iterator>
 #include <span>
 #include <string_view>
+#include <utility>
 
 #include "absl/log/check.h"
 #include "absl/strings/ascii.h"
@@ -147,6 +149,7 @@
 #include "engine/crypto/key_phrase_hash.h"
 #include "engine/file/game_file.h"
 #include "engine/file/mix_archive.h"
+#include "engine/file/search_paths.h"
 #include "engine/gfx/font.h"
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/gfx/wwstd.h"
@@ -160,6 +163,7 @@
 #include "ra/ccini.h"
 #include "ra/cheklist.h"
 #include "ra/colrlist.h"
+#include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/coord.h"
 #include "ra/debug_state.h"
@@ -209,6 +213,8 @@
 #include "ra/version.h"
 #include "ra/winstub.h"
 #include "ra/wol_main.h"
+#include "ra/wolapiob.h"
+#include "ra/wolstrng.h"
 #include "ra/world.h"
 
 // #define OLDWAY			1
@@ -222,14 +228,6 @@ constexpr size_t kGameListItemSize = MPLAYER_NAME_MAX + 64;
 // themselves. The original phrase is unknown and the hash collides freely;
 // "HAPPY WITS" is one of many phrases that produce this code.
 constexpr uint32_t kWestwoodChatCode = 0x72A47EF6;  // "HAPPY WITS"
-
-#include <iterator>
-#include <utility>
-
-#include "engine/file/search_paths.h"
-#include "ra/config.h"
-#include "ra/wolapiob.h"
-#include "ra/wolstrng.h"
 
 //---------------------------------------------------------------------------
 //	The possible states of the join-game dialog

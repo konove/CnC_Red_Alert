@@ -3,9 +3,9 @@
 
 #include <cstddef>
 #include <span>
+#include <string_view>
 
 #include "absl/base/attributes.h"
-#include <string_view>
 
 int WWGetPrivateProfileInt(const char* section, const char* entry, int def,
                            const char* profile);

@@ -41,8 +41,9 @@
 
 #include <cstdint>
 #include <span>
-#include "absl/base/attributes.h"
 #include <vector>
+
+#include "absl/base/attributes.h"
 
 /*
 ** UnitTracker Class
