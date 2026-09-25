@@ -872,8 +872,7 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
         y1 += -x1 * (y2 - y1) / (x2 - x1);
       }
       x1 = 0;
-    } else if (base::Any(code0 & OutCode::kRight))  // right
-    {
+    } else if (base::Any(code0 & OutCode::kRight)) {  // right
       if (x2 != x1) {
         y1 += (width - 1 - x1) * (y2 - y1) / (x2 - x1);
       }
@@ -886,8 +885,7 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
         x1 = x1 + (-y1 * (x2 - x1) / (y2 - y1));
       }
       y1 = 0;
-    } else if (base::Any(code0 & OutCode::kBelow))  // bottom
-    {
+    } else if (base::Any(code0 & OutCode::kBelow)) {  // bottom
       if (y2 != y1) {
         x1 = x1 + ((height - 1 - y1) * (x2 - x1) / (y2 - y1));
       }
@@ -902,8 +900,7 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
         y2 = y2 + (-x2 * (y1 - y2) / (x1 - x2));
       }
       x2 = 0;
-    } else if (base::Any(code1 & OutCode::kRight))  // right
-    {
+    } else if (base::Any(code1 & OutCode::kRight)) {  // right
       if (x1 != x2) {
         y2 = y2 + ((width - 1 - x2) * (y1 - y2) / (x1 - x2));
       }
@@ -916,8 +913,7 @@ void PixelView::DrawLineLocked(int x1, int y1, int x2, int y2,
         x2 = x2 + (-y2 * (x1 - x2) / (y1 - y2));
       }
       y2 = 0;
-    } else if (base::Any(code1 & OutCode::kBelow))  // bottom
-    {
+    } else if (base::Any(code1 & OutCode::kBelow)) {  // bottom
       if (y1 != y2) {
         x2 = x2 + ((height - 1 - y2) * (x1 - x2) / (y1 - y2));
       }
