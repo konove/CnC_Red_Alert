@@ -26,7 +26,16 @@ Measured on the tree at 23e83b30.
   through the linker instead of a header -- engine code calling what only the games define:
   `Get_CD_Index` (`tech/search_paths.cc`), `SDL_Event_Handler` (`sdllib/ww_win.cc`), and
   `BigShapeBufferBytes`, `TheaterShapeBufferBytes`, `UseBigShapeBuffer` (`tech/2keyfbuf.cc`). Every
-  test that links those libraries stubs them.
+  test that links those libraries stubs them. The last three are dead: no game ever sets
+  `UseBigShapeBuffer` (`ra/2keyfram.cc` says so), so the uncompressed-shape-cache branch of
+  `2keyfbuf.cc` never runs.
+- The event loop (`sdllib/ww_win.cc`) calls `Socket_Select()` on every pump, so the window depends
+  on the sockets. Only RA's `wsproto`/`wspudp` use `net_select.h`; TD pumps RA's sockets for
+  nothing.
+- SDL headers are included by `timer`, `display`, `keyboard`, `ww_mouse`, `ww_win`, `pixel_buffer`,
+  `audio_mixer`, `mixer_vqa_audio.h` and `vqa32/audio_output`.
+- `port::` (22 files) and `tech::` (`number_parse`, `sha1_compress`) name where code came from, the
+  same way the folders do.
 - `tech` links `vqa32` only for two adapters, `game_file_vqa_io` and `mixer_vqa_audio`.
 - Outside `sdllib`, the window-surface half of `PixelBuffer` (`BUFFER_VISIBLE`, `UpdatePalette`,
   `PresentScaledFrame`, `LockSurface`, `ReleaseSurfaces`, `window_page`) is used by four files:
@@ -65,7 +74,7 @@ A library may include and link only what it points at, and what those point at.
 ```
 base <- platform <- stream <- codec  <- file <- gfx <- window <- games
                            <- crypto <-
-base <- platform <- net                           window -> net   (the event loop polls sockets)
+base <- platform <- net                                   <- games
 stream, codec <- video/vqa
 file, audio, video/vqa <- video
 file, codec <- audio
@@ -77,6 +86,13 @@ file, codec <- audio
 
 Tests may link more than their library does. `fixed_test` exercising `Serialize()` over a stream
 archive is fine even though `fixed.h` is in `base`.
+
+SDL headers are allowed only in `window/`, `audio/`, `video/`, `video/vqa/` and `platform/timer.cc`.
+Everything else, `gfx` included, compiles without them; tests are exempt.
+
+A file-format parser lives with what it produces: pixels go to `gfx` (PCX, WSA, shapes), sound
+samples that both movies and the mixer decode go to `codec` (`aud_decoder`), and formats that
+produce neither (INI, the string table) go to `file`.
 
 ### Targets
 
@@ -117,7 +133,7 @@ File names do not change, only folders. Tests go with the file they test.
 | `engine/net/serial/`   | sdllib: modemreg, wincomm                                                                                                                                                                                                                                                                                                         |
 | `engine/gfx/`          | sdllib: bitmap, font, pixel_buffer, shape, stamp, tile, wwstd; tech: 2keyfbuf, glow_pulse, hsv, pcx_file, rect, rgb, wsa_animation; plus what phase A splits out (text windows, fading table, HSV conversion)                                                                                                                     |
 | `engine/audio/`        | tech: audio_mixer                                                                                                                                                                                                                                                                                                                 |
-| `engine/window/`       | sdllib: display, display_palette, keyboard, misc (what remains of it), ww_mouse, ww_win; test keyframe; plus phase A's `window_surface`                                                                                                                                                                                           |
+| `engine/window/`       | sdllib: display, display_palette, keyboard, misc (what remains of it), ww_mouse, ww_win; test keyframe                                                                                                                                                                                                                            |
 | `engine/video/`        | tech: game_file_vqa_io, mixer_vqa_audio                                                                                                                                                                                                                                                                                           |
 | `engine/video/vqa/`    | all of winvq/vqa32                                                                                                                                                                                                                                                                                                                |
 
@@ -139,14 +155,17 @@ Drawing code has no business with any of that.
 - gfx gains a `PixelSurface` interface: `Lock()` returns the pixels (a span and a pitch) or fails,
   `Unlock()` gives them back. `PixelBuffer::LockSurface()` / `UnlockSurface()` delegate to an
   attached `PixelSurface*`; a buffer with none is plain memory, as every buffer but one is today.
-- window gains `WindowSurface`, which implements `PixelSurface` over the SDL texture and palette
-  surface and owns everything SDL now in `PixelBuffer`: create/destroy, present on unlock, the
-  redraw timer, `UpdatePalette`, `palette()`, the scaled-frame texture. `Display` attaches to it
-  instead of to a `PixelBuffer`.
+- `Display` implements `PixelSurface` itself and takes over everything SDL now in `PixelBuffer`: the
+  window texture and 8-bit palette surface (created and destroyed with the video mode), present on
+  unlock, the redraw timer, `UpdatePalette`, `palette()`, and `PresentScaledFrame` /
+  `DropScaledFrame` with their texture. `Display` already owns the window and outlives every page,
+  so no third class is needed, and it stops holding a `PixelBuffer*`: the page points at the
+  surface, not the other way round. `AttachPage` and `~PixelBuffer`'s detach go away.
 - `BUFFER_VISIBLE` and `PixelBufferFlags` go away. `ra/screen.cc`, `td/screen.cc`, `ra/interpal.cc`
-  and `td/interpal.cc` build the window page as a `PixelBuffer` with a `WindowSurface` attached and
-  call the palette and movie functions on the surface.
-- `pixel_buffer.cc` loses its SDL includes and `display.h`.
+  and `td/interpal.cc` attach the window page to `TheDisplay()` and call the palette and movie
+  functions on `Display`.
+- `pixel_buffer.cc` loses its SDL includes and `display.h`; the SDL half of `pixel_buffer_test`
+  moves to `display_test`.
 
 This is the one change the unit tests cannot fully see. Verify it by running both games: the menus,
 a palette fade, the intro movie (`PresentScaledFrame`) and an in-game screen.
@@ -156,7 +175,8 @@ a palette fade, the intro movie (`PresentScaledFrame`) and an in-game screen.
 `WindowList`, the `kWindow*` column indices and `WinX`/`WinY`/`Window` are the games' text-window
 geometry; `PixelView::DrawStamp` clips against them. Move them into a gfx header (`text_window.h`,
 storage in a matching `.cc`). `ww_win.h` keeps `SDL_Event_Loop`, `SDL_Send_Quit` and
-`Change_Window`, and `pixel_buffer.h` stops including it.
+`Change_Window`, and `pixel_buffer.h` stops including it. Only the declarations move; renaming
+`WindowList` and friends to say "text window" is left for later (35 files).
 
 ### A3. Split `misc.h`
 
@@ -178,18 +198,23 @@ Used by 61 files. By destination:
   entries are skipped.
 - `SDL_Event_Loop` calls a handler the game registers (`SetEventHandler`) instead of the extern
   `SDL_Event_Handler`. The test stubs of `SDL_Event_Handler` go away.
-- `2keyfbuf.cc` defines `BigShapeBufferBytes`, `TheaterShapeBufferBytes` and `UseBigShapeBuffer`,
-  and the games assign them, the way `WindowList` already works. Their definitions in `ra/` and
-  `td/` are deleted.
+- `SDL_Event_Loop` stops calling `Socket_Select()`. It calls a pump handler the game registers
+  (`SetPumpHandler`) once per pass instead; RA registers `Socket_Select`, TD registers nothing.
+  `ww_win.cc` drops `net_select.h`, and `window` no longer depends on `net`.
+- The uncompressed-shape cache goes: `2keyfbuf.cc`'s `use_new_draw` branch, and
+  `BigShapeBufferBytes`, `TheaterShapeBufferBytes`, `UseBigShapeBuffer`, `UseOldShapeDraw`, the two
+  `*ShapeBufferStart` pointers and `IsTheaterShape` in both games. Nothing ever set them.
 
 After A4, each library links with only the libraries below it; no test defines a game symbol to
 satisfy a library.
 
 ### A5. The checker
 
-`tools/check_layers.py` holds the file-to-folder rule (after phase B, just the path) and the allowed
-dependency table above, and fails on any include that goes against it. It runs as a ctest
-(`engine_layers_test`) so the order holds after this plan; linking alone would not catch a
+`tools/engine_layout.py` holds the one file map (the table above) and the allowed dependency table;
+the checker and the move script both import it, so the two cannot drift. `tools/check_layers.py`
+maps each file to its folder (after phase B, just the path) and fails on any include that goes
+against the dependency table, and on any SDL header outside the folders allowed one. It runs as a
+ctest (`engine_layers_test`) so the order holds after this plan; linking alone would not catch a
 header-only include from a lower folder, since every target shares the `src/` include root. During
 phase A it runs against the file map above and must pass before phase B starts.
 
@@ -210,13 +235,17 @@ only its declared dependencies:
 10. `window`
 11. `video/vqa` + `video`
 12. Delete the emptied `port/`, `sdllib/`, `tech/`, `winvq/` and their targets; tidy the checker's
-    rule table to plain paths.
+    rule table to plain paths and drop the file map from `engine_layout.py`.
+13. Namespaces follow folders: what was in `port::` or `tech::` takes its new folder's name
+    (`base::`, `platform::`, `net::`, `file::`, `crypto::`; the Win32 registry goes to `platform::`
+    with the rest of `win32/`). Compiler-driven, one commit. Code with no namespace today stays
+    without one.
 
 Until step 12 the old targets keep whatever has not moved yet and link the new targets for what has.
 
 ### The move script
 
-`tools/move_engine_files.py <folder>` reads the file map (one table in the script) and, for the
+`tools/move_engine_files.py <folder>` reads the file map from `tools/engine_layout.py` and, for the
 named destination:
 
 - `git mv`s each file, so history and blame follow (`git log --follow`);
@@ -257,8 +286,10 @@ In the step that makes them stale:
   `2keyfbuf`, `wwstd`, `misc`. These belong to `/modernize-file` passes.
 - Two LCW decoders (`codec/lcw` and `codec/lcw_uncompress`) and two HSV headers (`base/hsv.h`,
   `gfx/hsv.h`), now side by side.
-- The event loop polling sockets (`window` → `net`). Legal in the order above, but the games' main
-  loops are the natural caller.
+- Renaming `WindowList`, `WinX`, `WinY` and `Window` to say "text window".
+- The timer on `std::thread`/`std::chrono` instead of `SDL_AddTimer`, so that nothing below
+  `audio`/`window` links SDL.
+- Namespaces for engine code that has none today (`PixelBuffer`, `Display`, the streams).
 - Subfolders inside `ra/` and `td/`.
 - The unbuilt EA reference trees at the repository root (`win32lib/`, `wwflat32/`, `vq/`, `ipx/`,
   `launcher/`, `launch/`).
