@@ -45,6 +45,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
+#include <span>
 #include <vector>
 
 #include "engine/base/array.h"
@@ -108,9 +109,6 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   std::vector<uint8_t> back;
   bool display = false;  // display level
   int realval[5];
-
-  PixelBuffer seen_buff_save(TheScreen().visible_page().width(),
-                             TheScreen().visible_page().height(), {});
 
   const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
@@ -186,11 +184,6 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
 
   const int x = (TheScreen().visible_view().width() - width) / 2;
   const int y = (TheScreen().visible_view().height() - height) / 2;
-
-  /*
-  **	Other inits.
-  */
-  TheScreen().visible_page().view().BlitTo(seen_buff_save.view());
 
   /*
   **	Initialize the button structures. All are initialized, even though one
