@@ -4,9 +4,9 @@
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
 #include "tech/rgb.h"
-#include "base/array.h"
-#include "base/buffer.h"
 
 class PaletteClass {
  public:

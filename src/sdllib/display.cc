@@ -21,8 +21,8 @@
 #include <thread>
 #include <utility>
 
-#include "base/array.h"
-#include "base/numeric.h"
+#include "engine/base/array.h"
+#include "engine/base/numeric.h"
 #include "sdllib/pixel_surface.h"
 #include "sdllib/ww_win.h"
 

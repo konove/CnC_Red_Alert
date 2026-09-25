@@ -25,7 +25,7 @@
 #include <span>
 #include <string_view>
 
-#include "base/array.h"
+#include "engine/base/array.h"
 #include "tech/byte_source.h"
 
 void strtrim(std::span<char> buffer) {

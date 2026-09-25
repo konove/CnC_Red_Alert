@@ -48,9 +48,9 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
-#include "base/array.h"
+#include "engine/base/array.h"
+#include "engine/base/strings/safe_string.h"
 #include "port/platform.h"
-#include "port/safe_string.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
 #include "td/base.h"

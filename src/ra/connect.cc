@@ -54,11 +54,11 @@
 #include <span>
 #include <utility>
 
-#include "base/buffer.h"
-#include "base/enum_array.h"
-#include "base/numeric.h"
-#include "port/aligned_buffer.h"
-#include "port/unaligned.h"
+#include "engine/base/aligned_buffer.h"
+#include "engine/base/buffer.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/numeric.h"
+#include "engine/base/unaligned.h"
 #include "ra/combuf.h"
 
 /*

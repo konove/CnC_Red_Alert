@@ -49,11 +49,12 @@
 #include <span>
 #include <vector>
 
-#include "base/array.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
-#include "base/types.h"
-#include "port/safe_string.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/fixed.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/safe_string.h"
+#include "engine/base/types.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -74,7 +75,6 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/fixed.h"
 #include "tech/game_file.h"
 
 /*

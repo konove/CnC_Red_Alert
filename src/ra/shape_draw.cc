@@ -27,9 +27,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/array.h"
-#include "base/numeric.h"
-#include "base/types.h"
+#include "engine/base/array.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 #include "ra/defines.h"
 #include "ra/display.h"
 #include "ra/face.h"

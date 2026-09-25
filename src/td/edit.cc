@@ -54,8 +54,8 @@
 #include <string_view>
 #include <utility>
 
-#include "base/array.h"
-#include "base/numeric.h"
+#include "engine/base/array.h"
+#include "engine/base/numeric.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"

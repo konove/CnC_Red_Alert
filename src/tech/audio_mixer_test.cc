@@ -8,10 +8,10 @@
 #include <string_view>
 #include <vector>
 
-#include "base/buffer.h"
-#include "base/numeric.h"
 #include "base/seek_origin.h"
-#include "base/types.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 #include "gtest/gtest.h"
 #include "sdllib/aud_decoder.h"
 #include "tech/byte_stream.h"

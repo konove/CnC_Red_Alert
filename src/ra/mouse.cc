@@ -52,7 +52,7 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "base/enum_array.h"
+#include "engine/base/enum_array.h"
 #include "magic_enum/magic_enum.hpp"  // IWYU pragma: keep - used by an DCHECK() below.
 #include "ra/defines.h"
 #include "ra/jshell.h"

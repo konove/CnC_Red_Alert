@@ -4,7 +4,7 @@
 #define CNC_RED_ALERT_RA_GAME_STATE_H_
 
 #include "absl/base/attributes.h"
-#include "base/installed.h"
+#include "engine/base/installed.h"
 #include "ra/defines.h"
 
 // The flags that say what the game is doing right now: whether it is

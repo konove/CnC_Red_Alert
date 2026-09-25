@@ -42,7 +42,7 @@
 
 #include <cstdint>
 
-#include "base/enum_array.h"
+#include "engine/base/enum_array.h"
 #include "ra/defines.h"
 #include "ra/mission.h"
 #include "ra/object.h"

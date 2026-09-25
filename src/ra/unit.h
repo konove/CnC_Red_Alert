@@ -45,6 +45,7 @@
 #include <span>
 
 #include "absl/base/attributes.h"
+#include "engine/base/fixed.h"
 #include "ra/bullet.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -58,7 +59,6 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/fixed.h"
 #include "tech/ftimer.h"
 
 /****************************************************************************

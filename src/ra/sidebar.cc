@@ -100,10 +100,11 @@
 #include <string>
 
 #include "absl/log/check.h"
-#include "base/array.h"
-#include "base/buffer.h"
-#include "base/enum_array.h"
-#include "base/numeric.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/fixed.h"
+#include "engine/base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/audio.h"
 #include "ra/building.h"
@@ -142,7 +143,6 @@
 #include "sdllib/shape.h"
 #include "sdllib/text_window.h"
 #include "sdllib/wwstd.h"
-#include "tech/fixed.h"
 #include "tech/mix_archive.h"
 #include "tech/rgb.h"
 

@@ -5,7 +5,7 @@
 
 #include <utility>
 
-#include "base/installed.h"
+#include "engine/base/installed.h"
 #include "ra/assets.h"
 #include "ra/debug_state.h"
 #include "ra/game_clock.h"

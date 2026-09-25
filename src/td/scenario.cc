@@ -57,8 +57,8 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "port/safe_string.h"
+#include "engine/base/array.h"
+#include "engine/base/strings/safe_string.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"

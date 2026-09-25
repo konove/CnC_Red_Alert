@@ -76,8 +76,8 @@
 #include <cstdint>
 #include <span>
 
-#include "base/buffer.h"
-#include "base/numeric.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
 
 CommBufferClass::CommBufferClass(int numsend, int numreceive, int maxlen)
     : MaxSend(numsend),

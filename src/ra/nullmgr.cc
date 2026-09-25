@@ -67,11 +67,12 @@
 #include <utility>
 
 #include "absl/log/log.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
-#include "port/aligned_buffer.h"
-#include "port/safe_string.h"
-#include "port/unaligned.h"
+#include "engine/base/aligned_buffer.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/safe_string.h"
+#include "engine/base/unaligned.h"
 #include "ra/combuf.h"
 #include "ra/connect.h"
 #include "ra/conquer.h"
@@ -96,7 +97,6 @@
 #include "sdllib/wincomm.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/number_parse.h"
 
 #ifdef _WIN32
 #include <windows.h>

@@ -5,9 +5,9 @@
 #include <optional>
 #include <span>
 
-#include "base/array.h"
-#include "base/numeric.h"
-#include "base/types.h"
+#include "engine/base/array.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 
 namespace {
 // Decodes blocks 4 pixels wide and block_height lines high. The sizes are

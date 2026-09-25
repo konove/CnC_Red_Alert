@@ -67,9 +67,9 @@
 #include <span>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/numeric.h"
-#include "base/types.h"
+#include "engine/base/array.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 #include "port/platform.h"
 #include "rand.h"
 #include "sdllib/memflag.h"

@@ -61,7 +61,8 @@
 #include <algorithm>
 #include <cstddef>
 
-#include "base/array.h"
+#include "engine/base/array.h"
+#include "engine/base/fixed.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -74,7 +75,6 @@
 #include "ra/techno.h"
 #include "ra/type.h"
 #include "ra/world.h"
-#include "tech/fixed.h"
 
 /***********************************************************************************************
  * FactoryClass::FactoryClass -- Default constructor for factory objects. *

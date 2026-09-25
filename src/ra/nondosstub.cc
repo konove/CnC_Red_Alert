@@ -29,8 +29,8 @@
 #include <string_view>
 
 #include "absl/base/attributes.h"
-#include "base/numeric.h"
 #include "base/seek_origin.h"
+#include "engine/base/numeric.h"
 #include "ra/filepcx.h"
 #include "ra/graphics_loader.h"
 #include "ra/input.h"

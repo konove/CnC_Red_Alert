@@ -67,7 +67,7 @@
 #include <cstddef>
 #include <span>
 
-#include "base/numeric.h"
+#include "engine/base/numeric.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
 #include "td/conquer.h"

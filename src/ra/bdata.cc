@@ -76,8 +76,9 @@
 #include <string>
 
 #include "absl/strings/match.h"
-#include "base/array.h"
-#include "base/enum_array.h"
+#include "engine/base/array.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/fixed.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/assets.h"
 #include "ra/building.h"
@@ -107,7 +108,6 @@
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
-#include "tech/fixed.h"
 #include "tech/mix_archive.h"
 
 #define FATSHIP

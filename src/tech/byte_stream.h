@@ -15,10 +15,10 @@
 #include <vector>
 
 #include "absl/log/check.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
 #include "base/seek_origin.h"
-#include "base/types.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 
 // A seekable sequence of bytes. Positions are measured from the start of the
 // stream.

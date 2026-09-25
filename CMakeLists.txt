@@ -90,7 +90,7 @@ if (STRICT_CHECKS)
     endif ()
     set(CMAKE_CXX_CLANG_TIDY
             "${CLANG_TIDY_PROGRAM}"
-            "--header-filter=${CMAKE_SOURCE_DIR}/src/(base|port|sdllib|tech|winvq|ra|td)/.*"
+            "--header-filter=${CMAKE_SOURCE_DIR}/src/(engine|base|port|sdllib|tech|winvq|ra|td)/.*"
     )
     # Ninja decides what is stale from the command line and the declared inputs,
     # and .clang-tidy is neither: editing it leaves every object untouched and
@@ -211,6 +211,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 include(GoogleTest)
 enable_testing()
 
+add_subdirectory(src/engine)
 add_subdirectory(src/base)
 add_subdirectory(src/port)
 add_subdirectory(src/sdllib)

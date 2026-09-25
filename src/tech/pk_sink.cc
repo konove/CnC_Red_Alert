@@ -22,8 +22,8 @@
 #include <memory>
 #include <span>
 
-#include "base/buffer.h"
-#include "base/numeric.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
 #include "tech/blowfish.h"
 #include "tech/blowfish_sink.h"
 #include "tech/byte_sink.h"

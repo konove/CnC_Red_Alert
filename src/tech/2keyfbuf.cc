@@ -5,11 +5,11 @@
 #include <cstdint>
 #include <span>
 
-#include "base/array.h"
-#include "base/buffer.h"
-#include "base/clip.h"
-#include "base/numeric.h"
-#include "base/types.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/clip.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 

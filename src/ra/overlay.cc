@@ -49,8 +49,9 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/number_parse.h"
 #include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/cell.h"
@@ -67,7 +68,6 @@
 #include "tech/block_codec.h"
 #include "tech/lcw_sink.h"
 #include "tech/lcw_source.h"
-#include "tech/number_parse.h"
 #include "tech/span_sink.h"
 #include "tech/span_source.h"
 

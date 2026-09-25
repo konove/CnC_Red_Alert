@@ -45,10 +45,10 @@
 #include <string>
 #include <vector>
 
-#include "base/array.h"
-#include "base/numeric.h"
-#include "port/bytes_of.h"
-#include "port/safe_string.h"
+#include "engine/base/array.h"
+#include "engine/base/bytes_of.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/safe_string.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"

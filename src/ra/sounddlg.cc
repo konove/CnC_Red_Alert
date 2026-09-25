@@ -44,7 +44,8 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
-#include "base/numeric.h"
+#include "engine/base/fixed.h"
+#include "engine/base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/config.h"
 #include "ra/conquer.h"
@@ -67,7 +68,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/fixed.h"
 #include "tech/mix_archive.h"
 
 // The score list: each line is a track, with its theme kept alongside the

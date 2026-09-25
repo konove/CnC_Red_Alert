@@ -40,8 +40,8 @@
 #include <cstring>
 #include <span>
 
-#include "base/array.h"
-#include "base/buffer.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
 #include "ra/filepcx.h"
 #include "ra/palette.h"
 #include "sdllib/pixel_buffer.h"

@@ -1,3 +1,5 @@
+# What is left of src/base until phase B's stream step moves seek_origin.h to
+# src/engine/stream/; everything else went to engine_base (src/engine/base/).
 add_library(base INTERFACE)
 
 file(GLOB_RECURSE BASE_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
@@ -6,14 +8,4 @@ target_sources(base PUBLIC
         FILE_SET HEADERS
         BASE_DIRS ${CMAKE_SOURCE_DIR}/src
         FILES ${BASE_HEADERS}
-)
-
-target_link_libraries(base INTERFACE absl::check magic_enum::magic_enum)
-
-# Tests
-include(Testing)
-add_gtest(
-        NAME base_test
-        SOURCES buffer_test.cc array_test.cc clip_test.cc enum_array_test.cc flags_test.cc hsv_test.cc installed_test.cc numeric_test.cc
-        LIBS base absl::core_headers
 )

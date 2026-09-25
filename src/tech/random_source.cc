@@ -48,7 +48,7 @@
 
 #include "tech/random_source.h"
 
-#include "base/array.h"
+#include "engine/base/array.h"
 
 // explicit_bzero is a C library extension that <cstring> does not declare.
 #include <string.h>  // NOLINT(modernize-deprecated-headers)
@@ -62,9 +62,9 @@
 #include <span>
 #include <utility>
 
-#include "base/buffer.h"
-#include "base/numeric.h"
-#include "base/types.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 #include "tech/sha.h"
 
 namespace {

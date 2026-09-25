@@ -24,7 +24,7 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
-#include "port/safe_string.h"
+#include "engine/base/strings/safe_string.h"
 #include "port/sleep.h"
 #include "port/win32/win32_com.h"
 #include "port/win32/win32_types.h"

@@ -54,8 +54,8 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "base/buffer.h"
-#include "port/safe_string.h"
+#include "engine/base/buffer.h"
+#include "engine/base/strings/safe_string.h"
 #include "ra/connect.h"
 #include "ra/ipx.h"
 #include "ra/ipxaddr.h"

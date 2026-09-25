@@ -30,13 +30,14 @@
 
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/format.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/tokenizer.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/format.h"
 #include "port/random_seed.h"
-#include "port/tokenizer.h"
 #include "port/win32/win32_types.h"
 #include "ra/bigcheck.h"
 #include "ra/config.h"
@@ -78,12 +79,11 @@
 #include "sdllib/wwstd.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
-#include "tech/number_parse.h"
 
 static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 
 #include "absl/log/check.h"
-#include "port/safe_string.h"
+#include "engine/base/strings/safe_string.h"
 #include "port/sleep.h"
 #include "ra/audio.h"
 #include "ra/cheklist.h"

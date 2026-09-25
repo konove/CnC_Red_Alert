@@ -45,8 +45,9 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "base/array.h"
-#include "base/enum_array.h"
+#include "engine/base/array.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/fixed.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
@@ -58,7 +59,6 @@
 #include "ra/target.h"
 #include "ra/type.h"
 #include "ra/utracker.h"
-#include "tech/fixed.h"
 #include "tech/ftimer.h"
 
 class FootClass;

@@ -4,7 +4,7 @@
 #define CNC_RED_ALERT_RA_SCREEN_H_
 
 #include "absl/base/attributes.h"
-#include "base/installed.h"
+#include "engine/base/installed.h"
 #include "sdllib/pixel_buffer.h"
 
 // Owns the full-screen pages, the 640x400 game-area views into them and the

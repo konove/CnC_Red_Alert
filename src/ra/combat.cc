@@ -45,7 +45,8 @@
 #include <algorithm>
 #include <iterator>
 
-#include "base/array.h"
+#include "engine/base/array.h"
+#include "engine/base/fixed.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/cell.h"
 #include "ra/coord.h"
@@ -61,7 +62,6 @@
 #include "ra/type.h"
 #include "ra/warhead.h"
 #include "ra/world.h"
-#include "tech/fixed.h"
 
 /***********************************************************************************************
  * Modify_Damage -- Adjusts damage to reflect the nature of the target. *

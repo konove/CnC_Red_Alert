@@ -39,11 +39,12 @@
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/buffer.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/safe_string.h"
+#include "engine/base/strings/tokenizer.h"
 #include "port/platform.h"
-#include "port/safe_string.h"
-#include "port/tokenizer.h"
 #include "port/win32/win32_com.h"
 #include "port/win32/win32_system.h"
 #include "port/win32/win32_types.h"
@@ -66,7 +67,6 @@
 #include "ra/world.h"
 #include "sdllib/timer.h"
 #include "tech/base64.h"
-#include "tech/number_parse.h"
 
 namespace {
 

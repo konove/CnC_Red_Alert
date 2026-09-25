@@ -40,10 +40,10 @@
 
 #include <cstdint>
 
-#include "base/array.h"
+#include "engine/base/array.h"
+#include "engine/base/random.h"
 #include "td/jshell.h"
 #include "td/randomstate.h"
-#include "tech/random.h"
 
 static int SimRandIndex = 0;
 

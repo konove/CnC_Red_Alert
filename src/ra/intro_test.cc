@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/installed.h"
+#include "engine/base/installed.h"
 #include "gtest/gtest.h"
 #include "ra/defines.h"
 #include "ra/game_state.h"

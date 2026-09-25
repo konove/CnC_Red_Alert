@@ -59,8 +59,9 @@
 #include <span>
 #include <string_view>
 
-#include "base/array.h"
-#include "port/safe_string.h"
+#include "engine/base/array.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/safe_string.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
@@ -89,7 +90,6 @@
 #include "tech/disk_file.h"
 #include "tech/disk_stream.h"
 #include "tech/game_file.h"
-#include "tech/number_parse.h"
 
 #ifdef _WIN32
 #include "td/ccdde.h"

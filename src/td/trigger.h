@@ -49,8 +49,8 @@ class ArchiveWriter;
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "base/array.h"
-#include "port/safe_string.h"
+#include "engine/base/array.h"
+#include "engine/base/strings/safe_string.h"
 #include "td/defines.h"
 #include "td/object.h"
 #include "td/teamtype.h"

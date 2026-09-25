@@ -32,7 +32,7 @@
 #include <windows.h>
 #endif
 
-#include "base/buffer.h"
+#include "engine/base/buffer.h"
 #include "winvq/vqa32/audio_output.h"
 #include "winvq/vqa32/audio_ring.h"
 #include "winvq/vqa32/chunk_reader.h"

@@ -5,9 +5,9 @@
 #include <iterator>
 #include <span>
 
-#include "base/buffer.h"
-#include "base/numeric.h"
-#include "base/types.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 #include "tech/blowfish.h"
 #include "tech/byte_sink.h"
 

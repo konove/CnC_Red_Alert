@@ -44,13 +44,13 @@
 #include <cstdint>
 #include <span>
 
+#include "engine/base/fixed.h"
 #include "ra/abstract.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "ra/jshell.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/fixed.h"
 
 class BuildingClass;
 class HouseClass;

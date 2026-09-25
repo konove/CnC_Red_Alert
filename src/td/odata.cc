@@ -58,8 +58,8 @@
 #include <string>
 
 #include "absl/strings/match.h"
-#include "base/enum_array.h"
-#include "base/numeric.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/numeric.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
 #include "td/conquer.h"

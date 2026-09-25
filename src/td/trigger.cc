@@ -75,8 +75,9 @@
 
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "port/tokenizer.h"
+#include "engine/base/array.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/tokenizer.h"
 #include "reinf.h"
 #include "td/anim.h"
 #include "td/building.h"
@@ -105,7 +106,6 @@
 #include "td/unit.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/number_parse.h"
 
 static void Do_All_To_Hunt();
 

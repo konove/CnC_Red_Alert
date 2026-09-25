@@ -58,7 +58,8 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
-#include "port/tokenizer.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/tokenizer.h"
 #include "td/cell.h"
 #include "td/config.h"
 #include "td/conquer.h"
@@ -71,7 +72,6 @@
 #include "td/type.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/number_parse.h"
 
 HousesType SmudgeClass::ToOwn = HOUSE_NONE;
 

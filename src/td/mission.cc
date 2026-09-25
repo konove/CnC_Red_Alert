@@ -69,7 +69,7 @@
 #include "td/mission.h"
 
 #include "absl/strings/match.h"
-#include "base/enum_array.h"
+#include "engine/base/enum_array.h"
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/jshell.h"

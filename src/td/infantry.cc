@@ -121,11 +121,12 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/buffer.h"
-#include "base/enum_array.h"
-#include "base/numeric.h"
-#include "port/tokenizer.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/tokenizer.h"
 #include "sdllib/pixel_buffer.h"
 #include "td/aircraft.h"
 #include "td/anim.h"
@@ -167,7 +168,6 @@
 #include "td/utracker.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/number_parse.h"
 
 const int InfantryClass::HumanShape[32] = {0, 0, 7, 7, 7, 7, 6, 6, 6, 6, 5,
                                            5, 5, 5, 5, 4, 4, 4, 3, 3, 3, 3,

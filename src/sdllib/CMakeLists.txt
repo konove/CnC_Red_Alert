@@ -16,7 +16,7 @@ target_sources(sdllib PUBLIC
 )
 
 find_package(SDL2 REQUIRED)
-target_link_libraries(sdllib base SDL2::SDL2 absl::check absl::log absl::strings)
+target_link_libraries(sdllib engine_base SDL2::SDL2 absl::check absl::log absl::strings)
 
 # The fading-table builder, the per-frame window blit and the LCW decoder loop
 # over every palette entry, pixel or compressed byte.
@@ -39,7 +39,7 @@ add_gtest(
 add_gtest(
         NAME sdllib_keyboard_test
         SOURCES keyboard_test.cc keyboard.cc
-        LIBS base SDL2::SDL2 absl::strings absl::check absl::log
+        LIBS engine_base SDL2::SDL2 absl::strings absl::check absl::log
 )
 
 add_gtest(

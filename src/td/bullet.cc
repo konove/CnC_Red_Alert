@@ -59,8 +59,8 @@
 #include <cstdint>
 #include <span>
 
-#include "base/array.h"
-#include "base/numeric.h"
+#include "engine/base/array.h"
+#include "engine/base/numeric.h"
 #include "rand.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"

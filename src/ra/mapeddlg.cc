@@ -52,12 +52,13 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/enum_array.h"
-#include "base/numeric.h"
+#include "engine/base/array.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/safe_string.h"
 #include "magic_enum/magic_enum.hpp"
 #include "port/platform.h"
-#include "port/safe_string.h"
 #include "ra/base.h"
 #include "ra/ccptr.h"
 #include "ra/cell.h"
@@ -109,7 +110,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/mix_archive.h"
-#include "tech/number_parse.h"
 
 /***************************************************************************
  * MapEditClass::New_Scenario -- creates a new scenario                    *

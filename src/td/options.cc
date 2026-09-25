@@ -72,9 +72,9 @@
 #include <span>
 #include <string_view>
 
-#include "base/array.h"
-#include "base/numeric.h"
-#include "port/bytes_of.h"
+#include "engine/base/array.h"
+#include "engine/base/bytes_of.h"
+#include "engine/base/numeric.h"
 #include "sdllib/shape.h"
 #include "td/audio.h"
 #include "td/conquer.h"

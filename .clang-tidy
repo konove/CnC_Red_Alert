@@ -144,7 +144,7 @@ Checks: '*,
          -readability-trailing-comma,
          '
 WarningsAsErrors: '*'
-HeaderFilterRegex: '.*/CnC_Red_Alert/src/(base|port|sdllib|tech|jshell|winvq|ra|td)/.*'
+HeaderFilterRegex: '.*/CnC_Red_Alert/src/(engine|base|port|sdllib|tech|jshell|winvq|ra|td)/.*'
 FormatStyle: file
 CheckOptions:
   # glibc spells POSIX declarations through private headers: htonl and in_addr

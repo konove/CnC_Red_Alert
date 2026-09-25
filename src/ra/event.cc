@@ -61,9 +61,10 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/enum_array.h"
-#include "base/numeric.h"
+#include "engine/base/array.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/fixed.h"
+#include "engine/base/numeric.h"
 #include "ra/anim.h"
 #include "ra/audio.h"
 #include "ra/building.h"
@@ -103,7 +104,6 @@
 #include "ra/wolstrng.h"
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/fixed.h"
 #include "tech/ftimer.h"
 
 #ifdef _WIN32

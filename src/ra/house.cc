@@ -149,12 +149,13 @@
 #include "absl/base/attributes.h"
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
-#include "base/array.h"
-#include "base/enum_array.h"
-#include "base/numeric.h"
-#include "base/types.h"
+#include "engine/base/array.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/fixed.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/safe_string.h"
+#include "engine/base/types.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/audio.h"
 #include "ra/base.h"
@@ -216,7 +217,6 @@
 #include "ra/vortex.h"
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/fixed.h"
 
 TFixedIHeapClass<HouseClass::BuildChoiceClass> HouseClass::BuildChoice;
 

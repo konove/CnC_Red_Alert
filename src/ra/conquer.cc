@@ -40,9 +40,10 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
-#include "base/types.h"
+#include "engine/base/buffer.h"
+#include "engine/base/fixed.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/aircraft.h"  // IWYU pragma: keep
 #include "ra/audio.h"
@@ -111,7 +112,6 @@
 #include "tech/audio_mixer.h"
 #include "tech/disk_file.h"
 #include "tech/file_access.h"
-#include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/glow_pulse.h"
 #include "tech/rgb.h"

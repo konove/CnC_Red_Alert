@@ -3,7 +3,7 @@
 #ifndef CNC_RED_ALERT_RA_DEBUG_STATE_H_
 #define CNC_RED_ALERT_RA_DEBUG_STATE_H_
 
-#include "base/installed.h"
+#include "engine/base/installed.h"
 
 // The developer and cheat switches, all of which start off. The command line
 // turns some of them on before the game starts (see StartupOptions and

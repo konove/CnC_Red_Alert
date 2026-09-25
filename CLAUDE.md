@@ -153,10 +153,14 @@ Execution, Deployment | CMake | Environment_ via `CMAKE_CXX_COMPILER_LAUNCHER=/u
 All source lives under `src/`:
 
 ```
-port/        → Portability layer (string utilities) [standalone]
-base/        → Header-only utilities: types.h (base::ssize), algorithm.h, trig.h [standalone]
+engine/      → The shared libraries, moving here one folder at a time (docs/ENGINE_FOLDERS_PLAN.md)
+  base/      → Vocabulary types and small value classes: types.h (base::ssize), numeric.h, fixed.h,
+               random.h; strings/ holds format, safe_string, tokenizer, number_parse
+               (target `engine_base`) [depends: abseil, magic_enum]
+base/        → seek_origin.h only, until it moves to engine/stream/ (header-only target `base`)
+port/        → Portability layer (Win32 emulation, sockets, environment) [depends: engine_base]
 sdllib/      → SDL2 abstraction (graphics, audio, input) [depends: SDL2, abseil]
-winvq/vqa32  → VQA video codec (target name `vqa32`) [depends: base, port, sdllib, SDL2]
+winvq/vqa32  → VQA video codec (target name `vqa32`) [depends: engine_base, port, sdllib, SDL2]
 tech/        → Compression, encryption, ByteSink/ByteSource streams [depends: sdllib, port, vqa32]
 ra/          → Red Alert (~200 files) [depends: tech, sdllib, port, vqa32]
 td/          → Tiberian Dawn (~288 files) [depends: tech, sdllib, port, vqa32]
@@ -256,8 +260,8 @@ which checks a literal format against its arguments at compile time:
 // sprintf(buf, "%s.INI", src)     →  absl::SNPrintF(buf, sizeof(buf), "%s.INI", src);
 // std::string result              →  absl::StrFormat("%s.INI", src);
 // printf / fprintf(fp, ...)       →  absl::PrintF(...) / absl::FPrintF(fp, ...);
-// strcpy + strcat                 →  port::SafeCopy / port::SafeAppend (port/safe_string.h)
-// run-time format (string table) →  port::FormatRuntime(Text_String(id), args...) (port/format.h)
+// strcpy + strcat                 →  port::SafeCopy / port::SafeAppend (engine/base/strings/safe_string.h)
+// run-time format (string table) →  port::FormatRuntime(Text_String(id), args...) (engine/base/strings/format.h)
 ```
 
 Game printers (`Fancy_Text_Print`, `Smart_Printf`, `Fatal`, ...) are variadic templates over the
@@ -338,9 +342,9 @@ arithmetic. Do not use unsigned merely to indicate a value is non-negative — u
 
 Use `int64_t` for values that could exceed 2^31, including intermediate calculations.
 
-For indices, counts, and sizes, use `base::ssize` (defined in `base/types.h` as `std::ptrdiff_t`).
-Prefer this over `size_t` to avoid signed/unsigned comparison issues and to allow negative sentinel
-values. Include `"base/types.h"` and link the `base` library.
+For indices, counts, and sizes, use `base::ssize` (defined in `engine/base/types.h` as
+`std::ptrdiff_t`). Prefer this over `size_t` to avoid signed/unsigned comparison issues and to allow
+negative sentinel values. Include `"engine/base/types.h"` and link the `engine_base` library.
 
 | Legacy Type                 | Replacement                                           |
 | --------------------------- | ----------------------------------------------------- |

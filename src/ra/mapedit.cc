@@ -71,8 +71,9 @@
 
 #include "absl/log/log.h"
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/numeric.h"
+#include "engine/base/array.h"
+#include "engine/base/fixed.h"
+#include "engine/base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/base.h"
 #include "ra/building.h"
@@ -124,7 +125,6 @@
 #include "sdllib/timer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/fixed.h"
 #include "tech/mix_archive.h"
 
 char MapEditClass::HealthBuf[20];

@@ -43,10 +43,10 @@
 #include <cstdint>
 #include <vector>
 
+#include "engine/base/buff.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/buff.h"
 
 class StaticButtonClass final : public GadgetClass {
  public:

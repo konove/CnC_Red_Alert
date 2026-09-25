@@ -49,9 +49,9 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "base/array.h"
-#include "base/enum_array.h"
-#include "port/safe_string.h"
+#include "engine/base/array.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/strings/safe_string.h"
 #include "sdllib/pixel_buffer.h"
 #include "td/defines.h"
 #include "td/object.h"

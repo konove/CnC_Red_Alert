@@ -27,9 +27,9 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
-#include "base/numeric.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/safe_string.h"
 #include "port/platform.h"
-#include "port/safe_string.h"
 #include "port/win32/win32_registry.h"
 #include "ra/assets.h"
 #include "ra/config.h"

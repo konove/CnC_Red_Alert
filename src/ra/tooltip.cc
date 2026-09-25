@@ -23,9 +23,9 @@
 #include <cstring>
 #include <string_view>
 
-#include "base/numeric.h"
-#include "base/types.h"
-#include "port/safe_string.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/safe_string.h"
+#include "engine/base/types.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"

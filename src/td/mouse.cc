@@ -51,7 +51,7 @@
 #include <cstddef>
 #include <span>
 
-#include "base/enum_array.h"
+#include "engine/base/enum_array.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/shape.h"
 #include "sdllib/timer.h"

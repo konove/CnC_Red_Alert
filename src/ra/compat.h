@@ -45,7 +45,7 @@
 #include <span>
 #include <utility>
 
-#include "base/buffer.h"
+#include "engine/base/buffer.h"
 
 // #define movmem(a,b,c) memmove(b,a,c)
 
@@ -59,7 +59,7 @@
 #define Size_Of_Region(a, b) ((a) * (b))
 
 #include "absl/base/attributes.h"
-#include "port/bytes_of.h"
+#include "engine/base/bytes_of.h"
 #include "sdllib/tile.h"
 
 #ifndef SEEK_SET

@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cstdint>
 
-#include "base/array.h"
+#include "engine/base/array.h"
 #include "gtest/gtest.h"
 #include "winvq/vqa32/vqa_format.h"
 

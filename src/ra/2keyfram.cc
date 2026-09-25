@@ -44,8 +44,8 @@
 #include <cstdint>
 #include <span>
 
-#include "base/buffer.h"
-#include "port/unaligned.h"
+#include "engine/base/buffer.h"
+#include "engine/base/unaligned.h"
 #include "ra/defines.h"
 #include "ra/keyframe.h"
 #include "sdllib/lcw_uncompress.h"

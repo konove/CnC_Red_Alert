@@ -116,12 +116,14 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "base/array.h"
-#include "base/enum_array.h"
-#include "base/trig.h"
-#include "base/types.h"
+#include "engine/base/array.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/fixed.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/tokenizer.h"
+#include "engine/base/trig.h"
+#include "engine/base/types.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/tokenizer.h"
 #include "ra/anim.h"
 #include "ra/audio.h"
 #include "ra/building.h"
@@ -166,8 +168,6 @@
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
-#include "tech/fixed.h"
-#include "tech/number_parse.h"
 
 /***********************************************************************************************
  * _Counts_As_Civ_Evac -- Is the specified object a candidate for civilian evac

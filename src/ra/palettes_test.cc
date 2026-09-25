@@ -2,7 +2,7 @@
 
 #include "ra/palettes.h"
 
-#include "base/installed.h"
+#include "engine/base/installed.h"
 #include "gtest/gtest.h"
 #include "ra/defines.h"
 #include "tech/rgb.h"

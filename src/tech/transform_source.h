@@ -14,9 +14,9 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
-#include "base/types.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 #include "tech/byte_codec.h"
 #include "tech/byte_source.h"
 #include "tech/vector_sink.h"

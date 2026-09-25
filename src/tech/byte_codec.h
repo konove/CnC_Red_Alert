@@ -9,7 +9,7 @@
 #include <cstddef>
 #include <span>
 
-#include "base/types.h"
+#include "engine/base/types.h"
 #include "tech/byte_sink.h"
 
 // A byte transform, such as a compressor or a cipher.

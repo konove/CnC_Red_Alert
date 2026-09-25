@@ -55,7 +55,7 @@
 #include <cstdint>
 
 #include "absl/log/check.h"
-#include "base/numeric.h"
+#include "engine/base/numeric.h"
 #include "ra/cell.h"
 #include "ra/config.h"
 #include "ra/defines.h"

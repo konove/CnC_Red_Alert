@@ -54,7 +54,8 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
-#include "port/tokenizer.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/tokenizer.h"
 #include "ra/ccini.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
@@ -66,7 +67,6 @@
 #include "ra/object_heaps.h"
 #include "ra/type_heaps.h"
 #include "ra/world.h"
-#include "tech/number_parse.h"
 
 HousesType SmudgeClass::ToOwn = HOUSE_NONE;
 

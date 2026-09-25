@@ -26,8 +26,8 @@
 #ifndef CNC_RED_ALERT_RA_AUDIO_H_
 #define CNC_RED_ALERT_RA_AUDIO_H_
 
+#include "engine/base/fixed.h"
 #include "ra/defines.h"
-#include "tech/fixed.h"
 
 // Returns the sound effect whose root file name matches `name`, ignoring case,
 // or VOC_NONE if none does or `name` is nullptr. Scenario and INI files name

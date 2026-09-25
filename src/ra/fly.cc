@@ -44,11 +44,11 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include "engine/base/fixed.h"
 #include "ra/coord.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"
 #include "ra/face.h"
-#include "tech/fixed.h"
 
 /***********************************************************************************************
  * FlyClass::Physics -- Performs vector physics (movement). *

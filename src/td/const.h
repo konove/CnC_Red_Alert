@@ -1,7 +1,7 @@
 #ifndef CNC_RED_ALERT_TD_CONST_H_
 #define CNC_RED_ALERT_TD_CONST_H_
 
-#include "base/enum_array.h"
+#include "engine/base/enum_array.h"
 #include "td/defines.h"
 
 class WeaponTypeClass;   // IWYU pragma: keep

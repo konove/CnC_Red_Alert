@@ -103,12 +103,13 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/buffer.h"
-#include "base/clip.h"
-#include "base/enum_array.h"
-#include "base/numeric.h"
-#include "base/types.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/clip.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/types.h"
 #include "sdllib/fading_table.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
@@ -161,7 +162,6 @@
 #include "td/world.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
-#include "tech/number_parse.h"
 
 // The current theater's art and icons, registered and cached by
 // Init_Theater().

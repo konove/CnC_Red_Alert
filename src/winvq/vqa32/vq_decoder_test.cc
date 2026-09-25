@@ -5,7 +5,7 @@
 #include <optional>
 #include <span>
 
-#include "base/numeric.h"
+#include "engine/base/numeric.h"
 #include "gtest/gtest.h"
 
 namespace {

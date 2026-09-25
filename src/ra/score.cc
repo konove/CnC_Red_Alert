@@ -39,9 +39,10 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/fixed.h"
+#include "engine/base/numeric.h"
 #include "ra/assets.h"
 #include "ra/ccptr.h"
 #include "ra/config.h"
@@ -80,7 +81,6 @@
 #include "sdllib/wwstd.h"
 #include "tech/audio_mixer.h"
 #include "tech/file_access.h"
-#include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"

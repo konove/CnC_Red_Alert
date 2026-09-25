@@ -40,11 +40,11 @@
 #ifndef CNC_RED_ALERT_RA_FOOT_H_
 #define CNC_RED_ALERT_RA_FOOT_H_
 
+#include <cstdint>
 #include <span>
 
-#include "base/array.h"
-#include <cstdint>
-
+#include "engine/base/array.h"
+#include "engine/base/fixed.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/face.h"
@@ -54,7 +54,6 @@
 #include "ra/radio.h"
 #include "ra/target.h"
 #include "ra/techno.h"
-#include "tech/fixed.h"
 #include "tech/ftimer.h"
 
 // Value of FootClass::Group meaning "not in any of the player's numbered

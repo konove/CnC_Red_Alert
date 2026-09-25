@@ -52,11 +52,11 @@
 
 #include <algorithm>
 
+#include "engine/base/fixed.h"
 #include "ra/audio.h"
 #include "ra/config.h"
 #include "ra/defines.h"
 #include "ra/special.h"
-#include "tech/fixed.h"
 
 /***********************************************************************************************
  * SuperClass::SuperClass -- Constructor for special super weapon objects. *

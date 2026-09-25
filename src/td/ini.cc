@@ -63,12 +63,12 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
-#include "port/bytes_of.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/bytes_of.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/safe_string.h"
 #include "port/platform.h"
-#include "port/safe_string.h"
 #include "sdllib/shape.h"
 #include "td/base.h"
 #include "td/building.h"

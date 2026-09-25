@@ -7,8 +7,8 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "base/array.h"
-#include "base/numeric.h"
+#include "engine/base/array.h"
+#include "engine/base/numeric.h"
 
 // Overlap bitmaps are arrays of 32-bit words: cell N lives in word N / 32, at
 // bit N % 32.

@@ -83,7 +83,8 @@
 #include <utility>
 
 #include "absl/log/check.h"
-#include "base/array.h"
+#include "engine/base/array.h"
+#include "engine/base/fixed.h"
 #include "ra/abstract.h"
 #include "ra/aircraft.h"
 #include "ra/audio.h"
@@ -115,7 +116,6 @@
 #include "ra/vector_dynamic.h"
 #include "ra/vessel.h"
 #include "ra/world.h"
-#include "tech/fixed.h"
 
 /***********************************************************************************************
  * _Is_It_Breathing -- Checks to see if unit is an active team member. *

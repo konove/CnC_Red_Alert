@@ -49,16 +49,16 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "base/array.h"
-#include "base/enum_array.h"
+#include "engine/base/array.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/fixed.h"
+#include "engine/base/strings/safe_string.h"
 #include "port/platform.h"
-#include "port/safe_string.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/face.h"
 #include "ra/object.h"
 #include "sdllib/pixel_buffer.h"
-#include "tech/fixed.h"
 #include "tech/rect.h"
 
 class WeaponTypeClass;

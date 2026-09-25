@@ -40,7 +40,7 @@
 
 #include "ra/gamedlg.h"
 
-#include "base/array.h"
+#include "engine/base/array.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"

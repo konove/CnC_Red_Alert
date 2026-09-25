@@ -9,9 +9,9 @@
 #include <string_view>
 
 #include "absl/strings/ascii.h"
-#include "base/array.h"
-#include "base/numeric.h"
-#include "port/safe_string.h"
+#include "engine/base/array.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/safe_string.h"
 #include "tech/crc.h"
 
 uint32_t HashKeyPhrase(const std::string_view phrase) {

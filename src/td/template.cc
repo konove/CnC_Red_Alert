@@ -64,9 +64,10 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/numeric.h"
-#include "port/tokenizer.h"
+#include "engine/base/array.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/tokenizer.h"
 #include "sdllib/tile.h"
 #include "td/cell.h"
 #include "td/config.h"
@@ -81,7 +82,6 @@
 #include "td/type.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/number_parse.h"
 
 /***********************************************************************************************
  * TemplateClass::Validate -- validates template pointer

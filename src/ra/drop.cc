@@ -43,9 +43,9 @@
 #include <span>
 
 #include "absl/strings/match.h"
-#include "base/array.h"
-#include "base/numeric.h"
-#include "port/safe_string.h"
+#include "engine/base/array.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/safe_string.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/edit.h"

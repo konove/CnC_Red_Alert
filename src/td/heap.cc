@@ -61,8 +61,8 @@
 #include <new>
 #include <span>
 
-#include "base/algorithm.h"
-#include "base/numeric.h"
+#include "engine/base/algorithm.h"
+#include "engine/base/numeric.h"
 
 /***********************************************************************************************
  * FixedHeapClass::FixedHeapClass -- Normal constructor for heap management

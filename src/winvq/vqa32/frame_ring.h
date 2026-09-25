@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "absl/base/attributes.h"
-#include "base/numeric.h"
-#include "base/types.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 #include "winvq/vqa32/lcw_buffer.h"
 
 // The largest palette a frame can set: 256 colors of 3 bytes.

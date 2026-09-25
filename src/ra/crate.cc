@@ -43,6 +43,7 @@
 
 #include "ra/crate.h"
 
+#include "engine/base/fixed.h"
 #include "ra/cell.h"
 #include "ra/defines.h"
 #include "ra/inline.h"
@@ -50,7 +51,6 @@
 #include "ra/overlay.h"
 #include "ra/rules.h"
 #include "ra/world.h"
-#include "tech/fixed.h"
 
 /***********************************************************************************************
  * CrateClass::Remove_It -- Removes the crate from wherever it is. *

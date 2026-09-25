@@ -97,9 +97,10 @@
 #include <utility>
 
 #include "absl/log/check.h"
-#include "base/array.h"
-#include "base/numeric.h"
 #include "config.h"
+#include "engine/base/array.h"
+#include "engine/base/fixed.h"
+#include "engine/base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/audio.h"
@@ -149,7 +150,6 @@
 #include "sdllib/shape.h"
 #include "sdllib/text_window.h"
 #include "sdllib/wwstd.h"
-#include "tech/fixed.h"
 #include "tech/ftimer.h"
 #include "tech/mix_archive.h"
 

@@ -27,7 +27,7 @@
 #include <cstdint>
 #include <span>
 
-#include "base/types.h"
+#include "engine/base/types.h"
 #include "winvq/vqa32/audio_ring.h"
 #include "winvq/vqa32/frame_ring.h"
 #include "winvq/vqa32/movie_clock.h"

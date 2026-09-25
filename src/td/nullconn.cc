@@ -49,11 +49,11 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "base/array.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
-#include "port/aligned_buffer.h"
-#include "port/unaligned.h"
+#include "engine/base/aligned_buffer.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/unaligned.h"
 #include "sdllib/wincomm.h"
 #include "td/connect.h"
 #include "td/defines.h"

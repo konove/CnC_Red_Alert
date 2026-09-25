@@ -11,9 +11,9 @@
 #include <thread>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/buffer.h"
-#include "port/bytes_of.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/bytes_of.h"
 #include "sdllib/display.h"
 #include "sdllib/timer.h"
 #include "tech/rgb.h"

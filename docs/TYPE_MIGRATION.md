@@ -68,7 +68,8 @@ values.
 4. **Use `int64_t` for big values** -- when a value could exceed 2^31 or intermediate calculations
    could overflow.
 5. **`size_t`** is acceptable in STL interfaces. For indices, counts, and sizes in project code,
-   prefer **`base::ssize`** (from `"base/types.h"`), a signed type alias for `std::ptrdiff_t`.
+   prefer **`base::ssize`** (from `"engine/base/types.h"`), a signed type alias for
+   `std::ptrdiff_t`.
 6. **No `std::` prefix** on fixed-width types (`int32_t`, not `std::int32_t`).
 7. **Use `absl::StrFormat`/`absl::StrCat`** for string formatting, not printf format specifiers.
 
@@ -87,7 +88,7 @@ values.
 | `unsigned short` (bitfield/protocol) | `uint16_t`                                                       | Bit patterns are valid unsigned use        |
 | `long long`                          | `int64_t`                                                        | Use standard fixed-width type              |
 | `unsigned long long`                 | `uint64_t` (bitfield) or `int64_t` (number)                      | Same rules apply                           |
-| `size_t` (index/count/size)          | `base::ssize` (from `"base/types.h"`)                            | Signed; avoids signed/unsigned mismatches  |
+| `size_t` (index/count/size)          | `base::ssize` (from `"engine/base/types.h"`)                     | Signed; avoids signed/unsigned mismatches  |
 | `size_t` (STL interface boundary)    | **Keep as `size_t`**                                             | Match STL/external API expectations        |
 
 ### Decision Flowchart: Is This Unsigned Type a Number or a Bit Pattern?
@@ -161,7 +162,7 @@ short ID;                                  // --> int16_t ID;
 // src/ra/vector.h -- container size and index type
 int Length() const;                        // --> base::ssize Length() const;
 int ID(const T& ptr);                      // --> base::ssize ID(const T& ptr);
-base::ssize VectorMax;                     // capacity (include "base/types.h", link base)
+base::ssize VectorMax;                     // capacity (include "engine/base/types.h", link engine_base)
 ```
 
 ## Type Conversion Casts
@@ -359,7 +360,8 @@ When encountering a virtual function with a legacy type:
    - `short` without size constraint -> `int` (but `int16_t` is fine too for consistency)
    - `unsigned short` protocol/bitfield -> `uint16_t`
    - `unsigned short` number -> `int16_t` or `int`
-   - `size_t` used as index/count/size -> `base::ssize` (include `"base/types.h"`, link `base`)
+   - `size_t` used as index/count/size -> `base::ssize` (include `"engine/base/types.h"`, link
+     `engine_base`)
 
 4. **Add `#include <cstdint>`** if not already present and fixed-width types were introduced.
 

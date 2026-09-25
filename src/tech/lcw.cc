@@ -44,9 +44,9 @@
 #include <span>
 #include <vector>
 
-#include "base/array.h"
-#include "base/numeric.h"
-#include "base/types.h"
+#include "engine/base/array.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 
 int LcwUncompBounded(std::span<const std::byte> source,
                      std::span<std::byte> dest) {

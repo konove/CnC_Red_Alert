@@ -63,11 +63,12 @@
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/enum_array.h"
-#include "port/bytes_of.h"
-#include "port/safe_string.h"
-#include "port/tokenizer.h"
+#include "engine/base/array.h"
+#include "engine/base/bytes_of.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/safe_string.h"
+#include "engine/base/strings/tokenizer.h"
 #include "rand.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
@@ -103,7 +104,6 @@
 #include "td/world.h"
 #include "tech/file_access.h"
 #include "tech/game_file.h"
-#include "tech/number_parse.h"
 
 static void Garble_Message(std::span<char> buf);
 

@@ -15,7 +15,7 @@
 #include <cstdint>
 #include <span>
 
-#include "base/types.h"
+#include "engine/base/types.h"
 #include "ra/defines.h"
 #include "ra/dib.h"
 #include "sdllib/pixel_buffer.h"

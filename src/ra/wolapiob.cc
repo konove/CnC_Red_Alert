@@ -27,8 +27,9 @@
 #include "absl/log/log.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/buffer.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/strings/number_parse.h"
 #include "port/win32/win32_types.h"
 #include "ra/conquer.h"
 #include "ra/defines.h"
@@ -47,7 +48,6 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "tech/mix_archive.h"
-#include "tech/number_parse.h"
 #include "tech/rgb.h"
 
 #ifdef _WIN32
@@ -55,7 +55,6 @@
 #else
 #include <arpa/inet.h>
 #endif
-
 
 #include <algorithm>
 #include <array>
@@ -70,12 +69,12 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/str_split.h"
-#include "base/numeric.h"
-#include "port/bytes_of.h"
-#include "port/format.h"
+#include "engine/base/bytes_of.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/format.h"
+#include "engine/base/strings/safe_string.h"
 #include "port/inet_text.h"
 #include "port/platform.h"
-#include "port/safe_string.h"
 #include "port/sleep.h"
 #include "port/win32/win32_com.h"
 #include "port/win32/win32_registry.h"

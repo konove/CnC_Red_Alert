@@ -42,7 +42,7 @@
 #include <cstdint>
 #include <span>
 
-#include "base/array.h"
+#include "engine/base/array.h"
 
 int32_t LCW_Uncompress(std::span<const std::byte> source,
                        std::span<std::byte> dest) {

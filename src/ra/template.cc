@@ -51,7 +51,7 @@
 #include <utility>
 
 #include "absl/log/check.h"
-#include "base/array.h"
+#include "engine/base/array.h"
 #include "ra/cell.h"
 #include "ra/coord.h"
 #include "ra/defines.h"

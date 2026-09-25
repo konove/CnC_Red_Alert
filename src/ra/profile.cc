@@ -49,12 +49,12 @@
 #include <string_view>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/safe_string.h"
 #include "port/profile_buffer.h"
-#include "port/safe_string.h"
-#include "tech/number_parse.h"
 
 unsigned WWGetPrivateProfileHex(const char* section, const char* entry,
                                 const char* profile) {

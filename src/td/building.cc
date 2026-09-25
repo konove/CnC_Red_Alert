@@ -145,9 +145,10 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/enum_array.h"
-#include "port/tokenizer.h"
+#include "engine/base/array.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/tokenizer.h"
 #include "rand.h"
 #include "reinf.h"
 #include "sdllib/misc.h"
@@ -203,7 +204,6 @@
 #include "td/utracker.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/number_parse.h"
 
 constexpr int kSamUnderground =
     0;  // Launcher is underground and awaiting orders.

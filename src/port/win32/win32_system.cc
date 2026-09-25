@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "port/safe_string.h"
+#include "engine/base/strings/safe_string.h"
 #include "port/win32/win32_types.h"
 
 #ifndef _WIN32

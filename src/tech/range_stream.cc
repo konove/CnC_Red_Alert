@@ -9,9 +9,9 @@
 #include <span>
 #include <utility>
 
-#include "base/numeric.h"
 #include "base/seek_origin.h"
-#include "base/types.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 #include "tech/byte_stream.h"
 
 RangeStream::RangeStream(std::unique_ptr<ByteStream> inner,

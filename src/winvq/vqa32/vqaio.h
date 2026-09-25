@@ -10,10 +10,10 @@
 #include <string_view>
 #include <type_traits>
 
-#include "base/buffer.h"
-#include "base/numeric.h"
 #include "base/seek_origin.h"
-#include "base/types.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 
 class VqaIo {
  public:

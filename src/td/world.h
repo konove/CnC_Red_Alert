@@ -6,8 +6,8 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
-#include "base/enum_array.h"
-#include "base/installed.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/installed.h"
 #include "port/platform.h"
 #include "td/base.h"
 #include "td/defines.h"

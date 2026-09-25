@@ -24,8 +24,8 @@
 #include <span>
 #include <vector>
 
-#include "base/enum_array.h"
-#include "base/numeric.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/numeric.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/display_constants.h"

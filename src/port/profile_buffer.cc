@@ -10,7 +10,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/strings/match.h"
-#include "port/safe_string.h"
+#include "engine/base/strings/safe_string.h"
 
 namespace port {
 namespace {

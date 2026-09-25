@@ -40,9 +40,9 @@
 #ifndef CNC_RED_ALERT_RA_OPTIONS_H_
 #define CNC_RED_ALERT_RA_OPTIONS_H_
 
+#include "engine/base/fixed.h"
 #include "ra/palette.h"
 #include "sdllib/keyboard.h"
-#include "tech/fixed.h"
 
 class OptionsClass {
  public:

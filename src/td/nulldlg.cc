@@ -64,12 +64,13 @@
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/safe_string.h"
+#include "engine/base/unaligned.h"
 #include "port/random_seed.h"
-#include "port/safe_string.h"
-#include "port/unaligned.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/modemreg.h"
@@ -113,7 +114,6 @@
 #include "td/world.h"
 #include "tech/audio_mixer.h"
 #include "tech/crc.h"
-#include "tech/number_parse.h"
 
 // Whether Smart_Print() echoes to stdout; on while a serial game runs.
 static bool smart_print_enabled = false;

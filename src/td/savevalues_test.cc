@@ -3,7 +3,8 @@
 #include <cstdint>
 #include <span>
 
-#include "base/installed.h"
+#include "engine/base/installed.h"
+#include "engine/base/random.h"
 #include "gtest/gtest.h"
 #include "td/abstract.h"
 #include "td/audio.h"
@@ -27,7 +28,6 @@
 #include "td/super.h"
 #include "td/teamtype.h"
 #include "tech/archive.h"
-#include "tech/random.h"
 #include "tech/span_sink.h"
 #include "tech/span_source.h"
 

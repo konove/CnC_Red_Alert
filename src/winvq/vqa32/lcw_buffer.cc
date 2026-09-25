@@ -2,8 +2,8 @@
 
 #include <span>
 
-#include "base/numeric.h"
-#include "base/types.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 #include "sdllib/lcw_uncompress.h"
 #include "winvq/vqa32/chunk_reader.h"
 

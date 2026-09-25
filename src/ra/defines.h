@@ -42,12 +42,12 @@
 #include <span>
 #include <utility>
 
-#include "base/attributes.h"
-#include "base/enum_array.h"
-#include "base/numeric.h"
+#include "engine/base/attributes.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/fixed.h"
+#include "engine/base/numeric.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/jshell.h"
-#include "tech/fixed.h"
 
 /**********************************************************************
 **	Optional parameter control for special options.

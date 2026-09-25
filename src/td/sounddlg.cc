@@ -47,8 +47,8 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
-#include "base/numeric.h"
-#include "port/safe_string.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/safe_string.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"

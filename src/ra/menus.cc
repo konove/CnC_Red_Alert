@@ -45,8 +45,9 @@
 #include <cstdint>
 #include <span>
 
-#include "base/array.h"
-#include "base/numeric.h"
+#include "engine/base/array.h"
+#include "engine/base/fixed.h"
+#include "engine/base/numeric.h"
 #include "ra/compat.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
@@ -79,7 +80,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
-#include "tech/fixed.h"
 
 namespace {
 

@@ -49,7 +49,7 @@ class ArchiveWriter;
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "base/enum_array.h"
+#include "engine/base/enum_array.h"
 #include "td/defines.h"
 #include "td/ftimer.h"
 #include "td/jshell.h"

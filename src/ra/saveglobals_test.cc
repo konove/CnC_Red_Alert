@@ -7,10 +7,10 @@
 #include <type_traits>
 #include <vector>
 
-#include "base/buffer.h"
-#include "base/installed.h"
+#include "engine/base/buffer.h"
+#include "engine/base/installed.h"
+#include "engine/base/strings/safe_string.h"
 #include "gtest/gtest.h"
-#include "port/safe_string.h"
 #include "ra/defines.h"
 #include "ra/game_clock.h"
 #include "ra/ipx.h"

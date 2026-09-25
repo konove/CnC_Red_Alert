@@ -7,9 +7,9 @@
 #include <span>
 
 #include "absl/base/attributes.h"
-#include "base/buffer.h"
+#include "engine/base/buffer.h"
+#include "engine/base/unaligned.h"
 #include "gtest/gtest.h"
-#include "port/unaligned.h"
 #include "ra/combuf.h"
 
 namespace {

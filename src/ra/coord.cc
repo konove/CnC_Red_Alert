@@ -29,9 +29,9 @@
 #include <iterator>
 #include <span>
 
-#include "base/array.h"
-#include "base/numeric.h"
-#include "base/trig.h"
+#include "engine/base/array.h"
+#include "engine/base/numeric.h"
+#include "engine/base/trig.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/const.h"
 #include "ra/defines.h"

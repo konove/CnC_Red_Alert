@@ -30,7 +30,7 @@
 #include <vector>
 
 #include "absl/log/log.h"
-#include "base/numeric.h"
+#include "engine/base/numeric.h"
 #include "sdllib/aud_decoder.h"
 #include "winvq/vqa32/adpcm_decoders.h"
 #include "winvq/vqa32/audio_output.h"

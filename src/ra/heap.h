@@ -51,8 +51,8 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/str_cat.h"
-#include "base/numeric.h"
-#include "base/types.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 #include "ra/vector.h"
 #include "ra/vector_dynamic.h"
 #include "tech/archive.h"

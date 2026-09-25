@@ -15,8 +15,8 @@
 #include <utility>
 
 #include "base/seek_origin.h"
-#include "base/types.h"
-#include "port/bytes_of.h"
+#include "engine/base/bytes_of.h"
+#include "engine/base/types.h"
 #include "tech/file_access.h"
 
 namespace {

@@ -4,9 +4,9 @@
 #include <cstdint>
 #include <span>
 
-#include "base/numeric.h"
+#include "engine/base/numeric.h"
+#include "engine/base/unaligned.h"
 #include "gtest/gtest.h"
-#include "port/unaligned.h"
 
 namespace {
 

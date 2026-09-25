@@ -42,12 +42,12 @@
 
 #include <string_view>
 
+#include "engine/base/fixed.h"
+#include "engine/base/random.h"
 #include "port/platform.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
-#include "tech/fixed.h"
 #include "tech/ftimer.h"
-#include "tech/random.h"
 
 /*
 **	This class holds the information about the current game being played.

@@ -66,10 +66,10 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
-#include "port/safe_string.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/safe_string.h"
 #include "ra/audio.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"

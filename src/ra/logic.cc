@@ -43,6 +43,7 @@
 
 #include <cstdint>
 
+#include "engine/base/fixed.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/anim.h"
 #include "ra/audio.h"
@@ -67,7 +68,6 @@
 #include "ra/vortex.h"
 #include "ra/world.h"
 #include "session.h"
-#include "tech/fixed.h"
 #include "tech/ftimer.h"
 
 /***********************************************************************************************

@@ -46,6 +46,7 @@
 
 #include <algorithm>
 
+#include "engine/base/fixed.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -56,7 +57,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/fixed.h"
 
 /***************************************************************************
  * GaugeClass::GaugeClass -- class constructor                             *

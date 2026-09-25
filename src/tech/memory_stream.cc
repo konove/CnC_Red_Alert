@@ -7,10 +7,10 @@
 #include <iterator>
 #include <span>
 
-#include "base/buffer.h"
-#include "base/numeric.h"
 #include "base/seek_origin.h"
-#include "base/types.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 #include "tech/byte_stream.h"
 
 base::ssize MemoryStream::Read(const std::span<std::byte> buffer) {

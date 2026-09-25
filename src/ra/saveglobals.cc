@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "engine/base/random.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/carry.h"
 #include "ra/defines.h"
@@ -12,7 +13,6 @@
 #include "ra/special.h"
 #include "tech/archive.h"
 #include "tech/ftimer.h"
-#include "tech/random.h"
 
 template <class Archive>
 void ScenarioClass::Serialize(Archive& ar) {

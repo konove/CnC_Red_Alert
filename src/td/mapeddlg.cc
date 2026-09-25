@@ -59,10 +59,11 @@
 #include <vector>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/numeric.h"
-#include "port/safe_string.h"
-#include "port/tokenizer.h"
+#include "engine/base/array.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/safe_string.h"
+#include "engine/base/strings/tokenizer.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
@@ -103,7 +104,6 @@
 #include "td/vector.h"
 #include "td/world.h"
 #include "tech/game_file.h"
-#include "tech/number_parse.h"
 
 /***************************************************************************
  * MapEditClass::New_Scenario -- creates a new scenario                    *

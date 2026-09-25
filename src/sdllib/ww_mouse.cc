@@ -17,10 +17,10 @@
 #include <vector>
 
 #include "absl/log/log.h"
-#include "base/array.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
-#include "base/types.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 #include "sdllib/display.h"
 #include "sdllib/lcw_uncompress.h"
 #include "sdllib/pixel_buffer.h"

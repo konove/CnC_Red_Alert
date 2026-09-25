@@ -45,8 +45,8 @@
 
 #include "ra/statbtn.h"
 
-#include "base/numeric.h"
-#include "port/safe_string.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/safe_string.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"

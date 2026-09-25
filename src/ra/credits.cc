@@ -46,6 +46,7 @@
 #include <cstdint>
 #include <cstdlib>
 
+#include "engine/base/fixed.h"
 #include "ra/audio.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -61,7 +62,6 @@
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
-#include "tech/fixed.h"
 #include "tech/ftimer.h"
 
 /***********************************************************************************************

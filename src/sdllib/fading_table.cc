@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <span>
 
-#include "base/array.h"
+#include "engine/base/array.h"
 
 std::span<uint8_t> Build_Fading_Table(std::span<const uint8_t> palette,
                                       std::span<uint8_t> dest, int color,

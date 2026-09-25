@@ -59,8 +59,8 @@
 #include <system_error>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "port/safe_string.h"
+#include "engine/base/array.h"
+#include "engine/base/strings/safe_string.h"
 #include "sdllib/file_system.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"

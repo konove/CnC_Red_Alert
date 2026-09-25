@@ -42,7 +42,7 @@
 #include <cstdint>
 
 #include "absl/base/attributes.h"
-#include "base/installed.h"
+#include "engine/base/installed.h"
 
 #define VERSION_RED_ALERT_104 0x00010000  // Shipped US version number
 #define VERSION_RED_ALERT_107 0x00011000  // Shipped Counterstrike number

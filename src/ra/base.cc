@@ -57,9 +57,10 @@
 #include <cstring>
 
 #include "absl/strings/str_format.h"
-#include "base/types.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/tokenizer.h"
+#include "engine/base/types.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/tokenizer.h"
 #include "ra/building.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -72,7 +73,6 @@
 #include "ra/type.h"
 #include "ra/world.h"
 #include "tech/archive.h"
-#include "tech/number_parse.h"
 
 /***********************************************************************************************
  * BaseNodeClass::operator == -- equality operator *

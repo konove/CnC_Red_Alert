@@ -43,10 +43,10 @@
 #include <cstddef>
 
 #include "absl/base/attributes.h"
-#include "base/enum_array.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/fixed.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
-#include "tech/fixed.h"
 
 /**********************************************************************
 **	Each of the warhead types has specific characteristics. This structure

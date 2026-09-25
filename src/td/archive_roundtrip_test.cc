@@ -6,9 +6,9 @@
 #include <span>
 #include <vector>
 
-#include "base/buffer.h"
-#include "base/installed.h"
-#include "base/numeric.h"
+#include "engine/base/buffer.h"
+#include "engine/base/installed.h"
+#include "engine/base/numeric.h"
 #include "gtest/gtest.h"
 #include "td/cell.h"
 #include "td/debug_state.h"

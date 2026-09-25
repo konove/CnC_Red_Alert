@@ -52,7 +52,7 @@
 #include <span>
 #include <vector>
 
-#include "base/enum_array.h"
+#include "engine/base/enum_array.h"
 #include "td/assets.h"
 #include "td/defines.h"
 #include "td/game_state.h"

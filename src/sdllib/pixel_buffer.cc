@@ -20,8 +20,8 @@
 // to a page, the drawing primitives that work on the locked pixels, giving a
 // page its pixels, and locking the surface a page borrows them from.
 //
-// The primitives all clip with the Cohen-Sutherland outcodes of base/clip.h
-// and then walk whole rows.
+// The primitives all clip with the Cohen-Sutherland outcodes of
+// engine/base/clip.h and then walk whole rows.
 
 #include "sdllib/pixel_buffer.h"
 
@@ -39,11 +39,11 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/str_cat.h"
-#include "base/array.h"
-#include "base/clip.h"
-#include "base/flags.h"
-#include "base/numeric.h"
-#include "base/types.h"
+#include "engine/base/array.h"
+#include "engine/base/clip.h"
+#include "engine/base/flags.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
 #include "sdllib/bitmap.h"
 #include "sdllib/font.h"
 #include "sdllib/pixel_surface.h"

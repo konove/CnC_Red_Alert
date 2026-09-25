@@ -43,7 +43,7 @@
 #include <cstddef>
 #include <span>
 
-#include "base/enum_array.h"
+#include "engine/base/enum_array.h"
 #include "ra/defines.h"
 #include "ra/jshell.h"
 #include "ra/scroll.h"

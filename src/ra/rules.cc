@@ -60,10 +60,11 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "base/enum_array.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/safe_string.h"
+#include "engine/base/strings/tokenizer.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/safe_string.h"
-#include "port/tokenizer.h"
 #include "ra/anim.h"
 #include "ra/ccini.h"
 #include "ra/const.h"
@@ -78,7 +79,6 @@
 #include "ra/warhead.h"
 #include "ra/weapon.h"
 #include "ra/world.h"
-#include "tech/number_parse.h"
 #include "tech/readline.h"
 
 /***********************************************************************************************

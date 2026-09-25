@@ -55,10 +55,12 @@
 #include <utility>
 
 #include "absl/strings/match.h"
-#include "base/array.h"
-#include "base/enum_array.h"
-#include "base/numeric.h"
-#include "port/tokenizer.h"
+#include "engine/base/array.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/fixed.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/tokenizer.h"
 #include "ra/ccptr.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
@@ -75,8 +77,6 @@
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/wwstd.h"
-#include "tech/fixed.h"
-#include "tech/number_parse.h"
 
 // The low nibble of the text print flags selects the font.
 static constexpr bool Is_Font(const TextPrintType flags,

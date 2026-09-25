@@ -50,8 +50,8 @@
 #include <span>
 #include <string_view>
 
-#include "base/array.h"
-#include "port/unaligned.h"
+#include "engine/base/array.h"
+#include "engine/base/unaligned.h"
 #include "port/win32/win32_com.h"
 #include "ra/aircraft.h"
 #include "ra/building.h"
@@ -193,8 +193,8 @@ static int32_t GameEndTime;
 #include "absl/strings/str_format.h"
 #endif
 
+#include "engine/base/strings/safe_string.h"
 #include "port/inet_text.h"
-#include "port/safe_string.h"
 #include "ra/config.h"
 #include "ra/wolapiob.h"
 

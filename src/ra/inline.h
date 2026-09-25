@@ -87,7 +87,8 @@
 #include <cstdlib>
 #include <iterator>
 
-#include "base/array.h"
+#include "engine/base/array.h"
+#include "engine/base/random.h"
 #include "ra/assets.h"
 #include "ra/const.h"
 #include "ra/coord.h"
@@ -97,7 +98,6 @@
 #include "ra/scenario.h"
 #include "ra/world.h"
 #include "sdllib/string_table.h"
-#include "tech/random.h"
 
 // Source of random numbers for events that must NOT affect game logic, such
 // as cosmetic animations and one-machine-only effects. Because it never

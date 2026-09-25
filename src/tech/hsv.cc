@@ -46,7 +46,7 @@
 #include <cstdint>
 
 #include "absl/log/check.h"
-#include "base/hsv.h"
+#include "engine/base/hsv.h"
 #include "tech/rgb.h"
 
 const HSVClass HSVClass::BlackColor(0, 0, 0);

@@ -71,10 +71,11 @@
 
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
-#include "base/numeric.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/safe_string.h"
+#include "engine/base/strings/tokenizer.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/safe_string.h"
-#include "port/tokenizer.h"
 #include "ra/audio.h"
 #include "ra/ccini.h"
 #include "ra/ccptr.h"
@@ -107,7 +108,6 @@
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
 #include "tech/mix_archive.h"
-#include "tech/number_parse.h"
 
 // The low nibble of the text print flags selects the font.
 static constexpr bool Is_Font(const TextPrintType flags,

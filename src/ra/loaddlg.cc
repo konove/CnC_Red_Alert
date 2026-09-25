@@ -58,10 +58,11 @@
 
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/safe_string.h"
 #include "port/platform.h"
-#include "port/safe_string.h"
 #include "ra/audio.h"
 #include "ra/config.h"
 #include "ra/conquer.h"
@@ -92,7 +93,6 @@
 #include "tech/disk_file.h"
 #include "tech/ftimer.h"
 #include "tech/mix_archive.h"
-#include "tech/number_parse.h"
 #include "tech/readline.h"
 
 /***********************************************************************************************

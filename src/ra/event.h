@@ -40,14 +40,14 @@
 #ifndef CNC_RED_ALERT_RA_EVENT_H_
 #define CNC_RED_ALERT_RA_EVENT_H_
 
-#include <cstdint>
 #include <cstddef>
-#include <span>
-#include "base/buffer.h"
-#include "base/array.h"
+#include <cstdint>
 #include <cstring>
+#include <span>
 
-#include "base/enum_array.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/enum_array.h"
 #include "ra/defines.h"
 #include "ra/special.h"
 #include "ra/target.h"

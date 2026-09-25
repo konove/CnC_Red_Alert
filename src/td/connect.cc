@@ -46,9 +46,9 @@
 #include <cstdint>
 #include <span>
 
-#include "base/enum_array.h"
-#include "base/numeric.h"
-#include "port/aligned_buffer.h"
+#include "engine/base/aligned_buffer.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/numeric.h"
 #include "td/combuf.h"
 
 /*

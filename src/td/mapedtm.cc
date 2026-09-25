@@ -55,9 +55,10 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/numeric.h"
-#include "port/safe_string.h"
+#include "engine/base/array.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/safe_string.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/text_window.h"
@@ -83,7 +84,6 @@
 #include "td/textbtn.h"
 #include "td/type.h"
 #include "td/world.h"
-#include "tech/number_parse.h"
 
 /***************************************************************************
  * MapEditClass::Handle_Teams -- main team-dialog-handling function        *

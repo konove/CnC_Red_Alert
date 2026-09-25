@@ -52,8 +52,9 @@
 #include <span>
 
 #include "absl/strings/match.h"
+#include "engine/base/fixed.h"
+#include "engine/base/strings/safe_string.h"
 #include "magic_enum/magic_enum.hpp"
-#include "port/safe_string.h"
 #include "ra/ccini.h"
 #include "ra/defines.h"
 #include "ra/heap.h"
@@ -61,7 +62,6 @@
 #include "ra/text_ids.h"
 #include "ra/type.h"
 #include "ra/type_heaps.h"
-#include "tech/fixed.h"
 
 static const HouseTypeClass HouseEngland(
     HOUSE_ENGLAND,

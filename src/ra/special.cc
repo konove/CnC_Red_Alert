@@ -50,9 +50,9 @@
 #include <string_view>
 #include <utility>
 
-#include "base/array.h"
-#include "base/buffer.h"
-#include "port/safe_string.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/strings/safe_string.h"
 #include "ra/assets.h"
 #include "ra/checkbox.h"
 #include "ra/conquer.h"

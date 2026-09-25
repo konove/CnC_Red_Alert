@@ -5,10 +5,10 @@
 #include <cstddef>
 #include <span>
 
-#include "base/buffer.h"
-#include "base/numeric.h"
-#include "base/types.h"
-#include "port/unaligned.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/types.h"
+#include "engine/base/unaligned.h"
 #include "sdllib/lcw_uncompress.h"
 
 base::ssize UncompressBlock(const std::span<const std::byte> block,

@@ -155,9 +155,9 @@
 #include <utility>
 
 #include "absl/log/check.h"
-#include "base/array.h"
-#include "base/numeric.h"
-#include "port/safe_string.h"
+#include "engine/base/array.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/safe_string.h"
 #include "ra/aircraft.h"
 #include "ra/anim.h"
 #include "ra/assets.h"

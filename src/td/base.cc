@@ -69,8 +69,9 @@
 #include <span>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "port/tokenizer.h"
+#include "engine/base/array.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/tokenizer.h"
 #include "td/building.h"
 #include "td/cell.h"
 #include "td/defines.h"
@@ -80,7 +81,6 @@
 #include "td/type.h"
 #include "td/vector.h"
 #include "td/world.h"
-#include "tech/number_parse.h"
 
 bool BaseNodeClass::operator==(const BaseNodeClass& node) const {
   return Type == node.Type && Coord == node.Coord;

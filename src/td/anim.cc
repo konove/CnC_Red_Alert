@@ -65,7 +65,7 @@
 #include <cstdlib>
 #include <span>
 
-#include "base/array.h"
+#include "engine/base/array.h"
 #include "rand.h"
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"

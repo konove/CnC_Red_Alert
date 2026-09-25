@@ -42,7 +42,8 @@
 
 #include <iterator>
 
-#include "base/array.h"
+#include "engine/base/array.h"
+#include "engine/base/fixed.h"
 #include "ra/conquer.h"
 #include "ra/control.h"
 #include "ra/defines.h"
@@ -59,7 +60,6 @@
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
 #include "sdllib/wwstd.h"
-#include "tech/fixed.h"
 
 /***********************************************************************************************
  * VisualControlsClass::Process -- Process the visual control dialog box. *

@@ -44,9 +44,9 @@
 #include <cstdint>
 #include <span>
 
-#include "base/types.h"
+#include "engine/base/random.h"
+#include "engine/base/types.h"
 #include "tech/byte_source.h"
-#include "tech/random.h"
 
 /*
 **	This is a straw terminator class. It will generate random numbers to

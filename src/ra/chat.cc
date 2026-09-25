@@ -25,8 +25,9 @@
 #include <string>
 
 #include "absl/strings/str_format.h"
-#include "base/buffer.h"
-#include "port/safe_string.h"
+#include "engine/base/buffer.h"
+#include "engine/base/fixed.h"
+#include "engine/base/strings/safe_string.h"
 #include "ra/audio.h"
 #include "ra/config.h"
 #include "ra/defines.h"
@@ -52,7 +53,6 @@
 #include "ra/wolstrng.h"
 #include "ra/world.h"
 #include "sdllib/keyboard.h"
-#include "tech/fixed.h"
 
 // The key that answers a page from a Westwood Online user outside the
 // game.

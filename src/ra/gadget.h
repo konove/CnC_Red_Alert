@@ -84,7 +84,7 @@
 #ifndef CNC_RED_ALERT_RA_GADGET_H_
 #define CNC_RED_ALERT_RA_GADGET_H_
 
-#include "base/attributes.h"
+#include "engine/base/attributes.h"
 #include "ra/defines.h"
 #include "ra/link.h"
 #include "sdllib/keyboard.h"

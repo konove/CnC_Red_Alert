@@ -52,9 +52,9 @@
 #include <string>
 #include <system_error>
 
-#include "base/array.h"
-#include "base/buffer.h"
-#include "port/safe_string.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/strings/safe_string.h"
 #include "ra/defines.h"
 #include "ra/dialog.h"
 #include "ra/gadget.h"

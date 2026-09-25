@@ -44,7 +44,7 @@
 #include <cstdint>
 #include <span>
 
-#include "base/enum_array.h"
+#include "engine/base/enum_array.h"
 #include "ra/control.h"
 #include "ra/defines.h"
 #include "ra/gadget.h"

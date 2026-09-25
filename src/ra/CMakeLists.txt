@@ -115,7 +115,7 @@ add_gtest(
 add_gtest(
     NAME ra_taction_test
     SOURCES taction_test.cc
-    LIBS base port absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base port absl::check absl::log magic_enum::magic_enum
 )
 
 # The real engine, with the startup helpers but no game entry point.
@@ -140,27 +140,27 @@ apply_language_setting(ra_drop_test)
 add_gtest(
     NAME ra_assets_test
     SOURCES assets_test.cc assets.cc ini.cc
-    LIBS base port sdllib tech magic_enum::magic_enum absl::strings absl::check absl::log
+    LIBS engine_base port sdllib tech magic_enum::magic_enum absl::strings absl::check absl::log
 )
 apply_language_setting(ra_assets_test)
 
 add_gtest(
     NAME ra_debug_state_test
     SOURCES debug_state_test.cc
-    LIBS base
+    LIBS engine_base
 )
 
 add_gtest(
     NAME ra_palettes_test
     SOURCES palettes_test.cc
-    LIBS base tech magic_enum::magic_enum
+    LIBS engine_base tech magic_enum::magic_enum
 )
 apply_language_setting(ra_palettes_test)
 
 add_gtest(
     NAME ra_screen_test
     SOURCES screen_test.cc screen.cc
-    LIBS base sdllib
+    LIBS engine_base sdllib
 )
 
 add_gtest(
@@ -177,13 +177,13 @@ add_gtest(
 add_gtest(
     NAME ra_hall_of_fame_test
     SOURCES hall_of_fame_test.cc hall_of_fame.cc
-    LIBS base
+    LIBS engine_base
 )
 
 add_gtest(
     NAME ra_dib_test
     SOURCES dib_test.cc dib.cc
-    LIBS base absl::core_headers
+    LIBS engine_base absl::core_headers
 )
 
 add_gtest(
@@ -195,21 +195,21 @@ add_gtest(
 add_gtest(
     NAME ra_winbits_test
     SOURCES winbits_test.cc winbits.cc dib.cc
-    LIBS base tech port sdllib vqa32 absl::strings absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base tech port sdllib vqa32 absl::strings absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_winbits_test)
 
 add_gtest(
     NAME ra_heap_test
     SOURCES heap_test.cc heap.cc
-    LIBS base tech absl::check absl::log absl::strings magic_enum::magic_enum
+    LIBS engine_base tech absl::check absl::log absl::strings magic_enum::magic_enum
 )
 apply_language_setting(ra_heap_test)
 
 add_gtest(
     NAME ra_crate_test
     SOURCES crate_test.cc
-    LIBS base tech absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base tech absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_crate_test)
 
@@ -217,35 +217,35 @@ apply_language_setting(ra_crate_test)
 add_gtest(
     NAME ra_intro_test
     SOURCES intro_test.cc intro.cc
-    LIBS base tech sdllib absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base tech sdllib absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_intro_test)
 
 add_gtest(
     NAME ra_saveglobals_test
     SOURCES saveglobals_test.cc saveglobals.cc ipxaddr.cc
-    LIBS base tech sdllib absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base tech sdllib absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_saveglobals_test)
 
 add_gtest(
     NAME ra_fixed_point_test
     SOURCES fixed_point_test.cc
-    LIBS base tech absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base tech absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_fixed_point_test)
 
 add_gtest(
     NAME ra_connect_test
     SOURCES connect_test.cc connect.cc combuf.cc
-    LIBS base port absl::check absl::log
+    LIBS engine_base port absl::check absl::log
 )
 
 
 add_gtest(
     NAME ra_path_overlap_test
     SOURCES path_overlap_test.cc
-    LIBS base absl::check absl::log magic_enum::magic_enum
+    LIBS engine_base absl::check absl::log magic_enum::magic_enum
 )
 apply_language_setting(ra_path_overlap_test)
 
@@ -263,5 +263,5 @@ endif ()
 add_gtest(
     NAME ra_utracker_test
     SOURCES utracker_test.cc utracker.cc
-    LIBS base
+    LIBS engine_base
 )

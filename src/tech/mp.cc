@@ -100,9 +100,9 @@
 #include <string_view>
 
 #include "absl/log/check.h"
-#include "base/array.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
 #include "tech/byte_source.h"
 #include "tech/digit_cursor.h"
 

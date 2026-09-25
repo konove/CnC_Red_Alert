@@ -115,7 +115,8 @@
 #include <span>
 
 #include "absl/log/check.h"
-#include "base/numeric.h"
+#include "engine/base/fixed.h"
+#include "engine/base/numeric.h"
 #include "ra/abstract.h"
 #include "ra/anim.h"
 #include "ra/building.h"
@@ -155,7 +156,6 @@
 #include "sdllib/wwstd.h"
 #include "session.h"
 #include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.
-#include "tech/fixed.h"
 #include "tech/mix_archive.h"
 
 /*

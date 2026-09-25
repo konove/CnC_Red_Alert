@@ -54,13 +54,13 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/match.h"
+#include "engine/base/fixed.h"
 #include "magic_enum/magic_enum.hpp"
 #include "ra/ccini.h"
 #include "ra/const.h"
 #include "ra/defines.h"
 #include "ra/object.h"
 #include "ra/rules.h"
-#include "tech/fixed.h"
 
 /***********************************************************************************************
  * MissionClass::MissionClass -- Default constructor for the mission object

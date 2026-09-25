@@ -47,7 +47,8 @@
 #include <cstdio>
 
 #include "absl/strings/str_format.h"
-#include "base/numeric.h"
+#include "engine/base/fixed.h"
+#include "engine/base/numeric.h"
 #include "ra/base.h"
 #include "ra/building.h"
 #include "ra/ccptr.h"
@@ -73,7 +74,6 @@
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/ww_mouse.h"
-#include "tech/fixed.h"
 
 /***************************************************************************
  * Select_Object -- selects an object for processing                       *

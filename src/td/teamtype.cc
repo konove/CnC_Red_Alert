@@ -64,11 +64,12 @@
 
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/enum_array.h"
-#include "base/numeric.h"
-#include "port/safe_string.h"
-#include "port/tokenizer.h"
+#include "engine/base/array.h"
+#include "engine/base/enum_array.h"
+#include "engine/base/numeric.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/safe_string.h"
+#include "engine/base/strings/tokenizer.h"
 #include "td/config.h"
 #include "td/conquer.h"
 #include "td/defines.h"
@@ -81,7 +82,6 @@
 #include "td/trigger.h"
 #include "td/type.h"
 #include "td/world.h"
-#include "tech/number_parse.h"
 
 /*
 ********************************** Globals **********************************

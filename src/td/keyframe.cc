@@ -47,8 +47,8 @@
 #include <cstdint>
 #include <span>
 
-#include "base/buffer.h"
-#include "port/unaligned.h"
+#include "engine/base/buffer.h"
+#include "engine/base/unaligned.h"
 #include "sdllib/lcw_uncompress.h"
 #include "sdllib/xor_delta.h"
 #include "td/defines.h"

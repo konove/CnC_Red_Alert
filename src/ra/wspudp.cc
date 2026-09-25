@@ -59,10 +59,10 @@
 
 #include "absl/log/check.h"
 #include "absl/strings/str_format.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
+#include "engine/base/buffer.h"
+#include "engine/base/numeric.h"
+#include "engine/base/unaligned.h"
 #include "port/socket_bytes.h"
-#include "port/unaligned.h"
 #include "ra/input.h"
 #include "ra/jshell.h"
 #include "ra/network.h"

@@ -62,10 +62,11 @@
 #include <utility>
 
 #include "absl/strings/str_format.h"
-#include "base/array.h"
-#include "base/buffer.h"
-#include "base/numeric.h"
-#include "port/bytes_of.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/bytes_of.h"
+#include "engine/base/numeric.h"
+#include "engine/base/random.h"
 #include "sdllib/font.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -105,7 +106,6 @@
 #include "tech/file_access.h"
 #include "tech/game_file.h"
 #include "tech/mix_archive.h"
-#include "tech/random.h"
 #include "tech/wsa_animation.h"
 
 #define SCORETEXT_X 184

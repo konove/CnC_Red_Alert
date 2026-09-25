@@ -72,8 +72,8 @@
 
 #include <cstring>
 
-#include "base/array.h"
-#include "base/buffer.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
 #include "td/ipx.h"
 
 IPXAddressClass::IPXAddressClass() noexcept {

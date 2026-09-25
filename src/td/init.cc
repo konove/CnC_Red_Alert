@@ -68,10 +68,11 @@
 #include "absl/strings/match.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_split.h"
-#include "base/array.h"
-#include "base/buffer.h"
+#include "engine/base/array.h"
+#include "engine/base/buffer.h"
+#include "engine/base/strings/number_parse.h"
+#include "engine/base/strings/safe_string.h"
 #include "port/random_seed.h"
-#include "port/safe_string.h"
 #include "sdllib/file_system.h"
 #include "sdllib/keyboard.h"
 #include "sdllib/misc.h"
@@ -152,7 +153,6 @@
 #include "tech/game_file.h"
 #include "tech/key_phrase_hash.h"
 #include "tech/mix_archive.h"
-#include "tech/number_parse.h"
 #include "tech/search_paths.h"
 
 #ifdef _WIN32
