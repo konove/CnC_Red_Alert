@@ -330,7 +330,7 @@ bool LoadOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view);
 
     /*
     **	The first time through the processing loop, set the edit
@@ -349,11 +349,12 @@ bool LoadOptionsClass::Process() {
     **	If the <RETURN> key was pressed, then default to the appropriate
     **	action button according to the style of this dialog box.
     */
-    if (input == KN_RETURN || input == ButtonKey(kButtonEdit)) {
+    if (input == engine::window::KN_RETURN ||
+        input == engine::window::ButtonKey(kButtonEdit)) {
       ToggleClass* toggle = nullptr;
       switch (Style) {
         case SAVE:
-          input = ButtonKey(kButtonSave);
+          input = engine::window::ButtonKey(kButtonSave);
           cancelbtn.Turn_Off();
           //					cancelbtn.IsOn = false;
           toggle =
@@ -366,7 +367,7 @@ bool LoadOptionsClass::Process() {
           break;
 
         case LOAD:
-          input = ButtonKey(kButtonLoad);
+          input = engine::window::ButtonKey(kButtonLoad);
           //					cancelbtn.IsOn = false;
           cancelbtn.Turn_Off();
           toggle =
@@ -378,7 +379,7 @@ bool LoadOptionsClass::Process() {
           break;
 
         case WWDELETE:
-          input = ButtonKey(kButtonDelete);
+          input = engine::window::ButtonKey(kButtonDelete);
           //					cancelbtn.IsOn = false;
           cancelbtn.Turn_Off();
           toggle = dynamic_cast<ToggleClass*>(
@@ -405,7 +406,7 @@ bool LoadOptionsClass::Process() {
       ** Load: if load fails, present a message, and stay in the dialog
       ** to allow the user to try another game
       */
-      case ButtonKey(kButtonLoad):
+      case engine::window::ButtonKey(kButtonLoad):
         game_idx = listbtn.Current_Index();
         if (game_idx < 0 || game_idx >= Files.Count()) {
           break;
@@ -440,9 +441,9 @@ bool LoadOptionsClass::Process() {
       /*
       ** Save: Save the game & exit the dialog
       */
-      case ButtonKey(kButtonEdit):
+      case engine::window::ButtonKey(kButtonEdit):
 
-      case ButtonKey(kButtonSave):
+      case engine::window::ButtonKey(kButtonSave):
         if (std::string_view(game_descr).empty()) {
           WWMessageBox().Process(TXT_MUSTENTER_DESCRIPTION);
           firsttime = true;
@@ -485,7 +486,7 @@ bool LoadOptionsClass::Process() {
       ** Delete: delete the file & stay in the dialog, to allow the user
       ** to delete multiple files.
       */
-      case ButtonKey(kButtonDelete):
+      case engine::window::ButtonKey(kButtonDelete):
         game_idx = listbtn.Current_Index();
         if (game_idx < 0 || game_idx >= Files.Count()) {
           break;
@@ -525,7 +526,7 @@ bool LoadOptionsClass::Process() {
       ** item; if so, and if we're in SAVE mode, copy the list item into
       ** the save-game description field.
       */
-      case ButtonKey(kButtonList):
+      case engine::window::ButtonKey(kButtonList):
         if (Style != SAVE) {
           break;
         }
@@ -565,8 +566,8 @@ bool LoadOptionsClass::Process() {
       /*
       ** ESC/Cancel: break
       */
-      case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::KN_ESC:
+      case engine::window::ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;

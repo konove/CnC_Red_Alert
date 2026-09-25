@@ -14,6 +14,8 @@
 #include "engine/window/ww_mouse.h"
 #include "engine/window/ww_win.h"
 
+namespace engine::window {
+
 KeyBuffer* g_active_keyboard = nullptr;
 
 // Mask for modifier keys that affect gameplay input.
@@ -215,3 +217,5 @@ bool KeyBuffer::HandleEvent(SDL_Event* event) {
 
   return false;
 }
+
+}  // namespace engine::window

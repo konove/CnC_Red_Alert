@@ -99,7 +99,7 @@ ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-bool ControlClass::Action(unsigned flags, KeyNumber& key) {
+bool ControlClass::Action(unsigned flags, engine::window::KeyNumber& key) {
   /*
   **	If there is a peer link established, inform that gadget of this
   **	action call.
@@ -114,9 +114,9 @@ bool ControlClass::Action(unsigned flags, KeyNumber& key) {
   */
   if (flags) {
     if (ID) {
-      key = ButtonKey(static_cast<int>(ID));
+      key = engine::window::ButtonKey(static_cast<int>(ID));
     } else {
-      key = KN_NONE;
+      key = engine::window::KN_NONE;
     }
   }
 

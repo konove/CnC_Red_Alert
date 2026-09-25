@@ -83,6 +83,8 @@
 #include "td/palette.h"
 #include "td/screen.h"
 
+using enum engine::window::KeyNumber;
+
 GadgetClass* GadgetClass::StuckOn = nullptr;
 
 /*
@@ -164,8 +166,8 @@ GadgetClass::~GadgetClass() {
  *                                                                         *
  * HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
-bool GadgetClass::Clicked_On(KeyNumber& key, unsigned flags, int mousex,
-                             int mousey) {
+bool GadgetClass::Clicked_On(engine::window::KeyNumber& key, unsigned flags,
+                             int mousex, int mousey) {
   /*
   **	Set flags to match only those events that occur AND are being looked
   *for. If *	the result is NULL, then we know that this button should be
@@ -347,7 +349,8 @@ void GadgetClass::Delete_List() {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-bool GadgetClass::Action(unsigned flags, KeyNumber& /*unused*/) {
+bool GadgetClass::Action(unsigned flags,
+                         engine::window::KeyNumber& /*unused*/) {
   /*
   **	If any of the event flags are active, then this indicates that something
   *probably *	has changed the gadget. Flag the gadget to be redrawn. Also,
@@ -419,7 +422,7 @@ void GadgetClass::Draw_All(PixelView& view, bool forced) {
  *                                                                         *
  * HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
-KeyNumber GadgetClass::Input(PixelView& view) {
+engine::window::KeyNumber GadgetClass::Input(PixelView& view) {
   int mousex = 0;
   int mousey = 0;
   bool forced = false;
@@ -438,7 +441,7 @@ KeyNumber GadgetClass::Input(PixelView& view) {
   /*
   **	Fetch any pending keyboard input.
   */
-  KeyNumber key = Keyboard::Check();
+  engine::window::KeyNumber key = Keyboard::Check();
   if (key) {
     key = Keyboard::Get();
   }
@@ -479,9 +482,10 @@ KeyNumber GadgetClass::Input(PixelView& view) {
   *the click occured *	rather the the mouse position at the time we get around
   *to this function.
   */
-  if (KeyCode(key) == KN_LMOUSE || KeyCode(key) == KN_RMOUSE) {
-    mousex = g_active_keyboard->click_x();
-    mousey = g_active_keyboard->click_y();
+  if (engine::window::KeyCode(key) == KN_LMOUSE ||
+      engine::window::KeyCode(key) == KN_RMOUSE) {
+    mousex = engine::window::g_active_keyboard->click_x();
+    mousey = engine::window::g_active_keyboard->click_y();
   } else {
     mousex = Get_Mouse_X();
     mousey = Get_Mouse_Y();

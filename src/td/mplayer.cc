@@ -104,6 +104,8 @@
 #include "td/vector.h"
 #include "td/world.h"
 
+using enum engine::window::KeyNumber;
+
 static void Garble_Message(std::span<char> buf);
 
 // The modem dial prefix for each dial method: tone or pulse.
@@ -287,24 +289,25 @@ GameType Select_MPlayer_Game() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumber input = commands->Input(view);  // input from user
+    const engine::window::KeyNumber input =
+        commands->Input(view);  // input from user
 
     /*
     ............................ Process input ............................
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonModemserial):
+      case engine::window::ButtonKey(kButtonModemserial):
         selection = kButtonModemserial;
         pressed = true;
         break;
 
-      case ButtonKey(kButtonIpx):
+      case engine::window::ButtonKey(kButtonIpx):
         selection = kButtonIpx;
         pressed = true;
         break;
 
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         selection = kButtonCancel;
         pressed = true;
         break;
@@ -1329,20 +1332,20 @@ int Surrender_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view);
 
     /*
     ............................ Process input ............................
     */
     switch (static_cast<int>(input)) {
       case KN_RETURN:
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         retcode = 1;
         process = false;
         break;
 
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         retcode = 0;
         process = false;
         break;

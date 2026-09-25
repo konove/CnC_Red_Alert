@@ -78,6 +78,8 @@
 #include "ra/wolstrng.h"
 #include "ra/world.h"
 
+using enum engine::window::KeyNumber;
+
 /***********************************************************************************************
  * Select_MPlayer_Game -- prompts user for NULL-Modem, Modem, or Network game *
  *                                                                                             *
@@ -283,34 +285,35 @@ GameType Select_MPlayer_Game() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    const KeyNumber input = commands->Input(view);  // input from user
+    const engine::window::KeyNumber input =
+        commands->Input(view);  // input from user
 
     //.....................................................................
     //	Process input
     //.....................................................................
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonModemserial):
+      case engine::window::ButtonKey(kButtonModemserial):
         selection = kButtonModemserial;
         pressed = true;
         break;
 
-      case ButtonKey(kButtonSkirmish):
+      case engine::window::ButtonKey(kButtonSkirmish):
         selection = kButtonSkirmish;
         pressed = true;
         break;
 
-      case ButtonKey(kButtonIpx):
+      case engine::window::ButtonKey(kButtonIpx):
         selection = kButtonIpx;
         pressed = true;
         break;
 
-      case ButtonKey(kButtonWol):  //	ajw
+      case engine::window::ButtonKey(kButtonWol):  //	ajw
         selection = kButtonWol;
         pressed = true;
         break;
 
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         selection = kButtonCancel;
         pressed = true;
         break;
@@ -615,18 +618,18 @@ int Surrender_Dialog(const char* text) {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    const KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view);
 
     //.....................................................................
     //	Process input
     //.....................................................................
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         retcode = 1;
         process = false;
         break;
 
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         retcode = 0;
         process = false;
         break;
@@ -797,18 +800,18 @@ int Abort_Dialog() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    const KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view);
 
     //.....................................................................
     //	Process input
     //.....................................................................
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonYes):
+      case engine::window::ButtonKey(kButtonYes):
         retcode = 1;
         process = false;
         break;
 
-      case ButtonKey(kButtonNo):
+      case engine::window::ButtonKey(kButtonNo):
         retcode = 0;
         process = false;
         break;

@@ -63,7 +63,7 @@ bool MovieScreen::Present() {
                        nullptr);
 
   if ((TheGameState().breakout_allowed() || TheDebugState().developer_mode()) &&
-      key == KN_ESC) {
+      key == engine::window::KN_ESC) {
     Keyboard::Clear();
     broken_out_ = true;
     return false;

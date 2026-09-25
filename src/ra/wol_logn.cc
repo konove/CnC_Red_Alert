@@ -272,7 +272,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     **	Get user input.
     */
     TheGameState().tab_key_pressed() = false;
-    const KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view);
 
     /*
     **	The first time through the processing loop, set the edit
@@ -326,16 +326,16 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
       /*
       ** ESC/Cancel: break
       */
-      case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::KN_ESC:
+      case engine::window::ButtonKey(kButtonCancel):
         iReturn = 0;
         process = false;
         break;
 
-      case KN_RETURN:
-      case ButtonKey(kEditboxName):
-      case ButtonKey(kEditboxPass):
-      case ButtonKey(kButtonConnect): {
+      case engine::window::KN_RETURN:
+      case engine::window::ButtonKey(kEditboxName):
+      case engine::window::ButtonKey(kEditboxPass):
+      case engine::window::ButtonKey(kButtonConnect): {
         if (std::string_view(szNameBuffer).empty()) {
           WWMessageBox().Process(TXT_WOL_MISSINGNAME);
           firsttime = true;  //	Bloody hack.
@@ -449,7 +449,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
                                         break;
                                 }
         */
-      case ButtonKey(kListboxNicks):
+      case engine::window::ButtonKey(kListboxNicks):
         base::SafeCopy(szNameBuffer,
                        NickList.Get_Item(NickList.Current_Index()));
         base::SafeCopy(szPassBuffer, NickList.Get_Item_ExtraDataString(
@@ -465,10 +465,10 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
         //				display = true;
         break;
 
-      case ButtonKey(kButtonSavecheck):
+      case engine::window::ButtonKey(kButtonSavecheck):
         break;
 
-      case ButtonKey(kButtonDelete):
+      case engine::window::ButtonKey(kButtonDelete):
         if (NickList.Count() > 0) {
           DeleteNick(pWO, NickList.Current_Index() + 1);
           NickList.Remove_Item(NickList.Current_Index());

@@ -1049,11 +1049,11 @@ bool Select_Game(bool fade) {
           TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
           Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                           Call_Back);
-          ClearKeys();
-          while (!PeekKey()) {
+          engine::window::ClearKeys();
+          while (!engine::window::PeekKey()) {
             Call_Back();
           }
-          ReadKey();
+          engine::window::ReadKey();
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                           Call_Back);
           Show_Mouse();
@@ -1117,11 +1117,11 @@ bool Select_Game(bool fade) {
           TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
           Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                           Call_Back);
-          ClearKeys();
-          while (!PeekKey()) {
+          engine::window::ClearKeys();
+          while (!engine::window::PeekKey()) {
             Call_Back();
           }
-          ReadKeyAscii();
+          engine::window::ReadKeyAscii();
           Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium,
                           Call_Back);
           Show_Mouse();
@@ -1380,7 +1380,7 @@ bool Select_Game(bool fade) {
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                               Call_Back);
             }
-            ClearKeys();
+            engine::window::ClearKeys();
             count.Set(int64_t{kTimerSecond} * 3);
             while (count.Time()) {
               Call_Back();
@@ -1404,7 +1404,7 @@ bool Select_Game(bool fade) {
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                               Call_Back);
             }
-            ClearKeys();
+            engine::window::ClearKeys();
             count.Set(int64_t{kTimerSecond} * 3);
             while (count.Time()) {
               Call_Back();
@@ -1428,7 +1428,7 @@ bool Select_Game(bool fade) {
               Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                               Call_Back);
             }
-            ClearKeys();
+            engine::window::ClearKeys();
             count.Set(int64_t{kTimerSecond} * 3);
             while (count.Time()) {
               Call_Back();
@@ -1451,7 +1451,7 @@ bool Select_Game(bool fade) {
             Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium,
                             Call_Back);
           }
-          ClearKeys();
+          engine::window::ClearKeys();
           count.Set(int64_t{kTimerSecond} * 3);
           while (count.Time()) {
             Call_Back();
@@ -1999,7 +1999,8 @@ bool Select_Game(bool fade) {
  *=============================================================================================*/
 static void Play_Intro(bool for_real) {
   const bool playright =
-      !KeyBuffer::IsDown(KN_LCTRL) || !KeyBuffer::IsDown(KN_RCTRL);
+      !engine::window::KeyBuffer::IsDown(engine::window::KN_LCTRL) ||
+      !engine::window::KeyBuffer::IsDown(engine::window::KN_RCTRL);
   static int _counter = -1;
   static const char* _names[] = {
 #ifdef DEMO

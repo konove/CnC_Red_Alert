@@ -94,8 +94,8 @@ int MapEditClass::Select_Object() {
   /*
   -------------------- See if an object was clicked on ---------------------
   */
-  int x = g_active_keyboard->click_x();
-  int y = g_active_keyboard->click_y();
+  int x = engine::window::g_active_keyboard->click_x();
+  int y = engine::window::g_active_keyboard->click_y();
 
   /*
   ............................ Get cell for x,y ............................

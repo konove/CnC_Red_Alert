@@ -71,6 +71,8 @@
 #include "td/textbtn.h"
 #include "td/world.h"
 
+using enum engine::window::KeyNumber;
+
 #ifdef NEWMENU
 
 bool Expansion_Present() { return GameFileExists("EXPAND.DAT"); }
@@ -230,10 +232,10 @@ bool Expansion_Dialog() {
       Show_Mouse();
     }
 
-    const KeyNumber input = buttons->Input(view);
+    const engine::window::KeyNumber input = buttons->Input(view);
     switch (static_cast<int>(input)) {
       case KN_RETURN:
-      case ButtonKey(200):
+      case engine::window::ButtonKey(200):
         if (list.Current_Item()[0] == 'G') {
           TheWorld().scen_player() = SCEN_PLAYER_GDI;
         } else {
@@ -247,7 +249,7 @@ bool Expansion_Dialog() {
         break;
 
       case KN_ESC:
-      case ButtonKey(201):
+      case engine::window::ButtonKey(201):
         TheWorld().scen_player() = SCEN_PLAYER_GDI;
         TheWorld().scen_dir() = SCEN_DIR_EAST;
         TheWorld().whom() = HOUSE_GOOD;
@@ -371,10 +373,10 @@ bool Bonus_Dialog() {
       Show_Mouse();
     }
 
-    const KeyNumber input = buttons->Input(view);
+    const engine::window::KeyNumber input = buttons->Input(view);
     switch (static_cast<int>(input)) {
       case KN_RETURN:
-      case ButtonKey(200):
+      case engine::window::ButtonKey(200):
         if (list.Current_Item()[0] == 'G') {
           TheWorld().scen_player() = SCEN_PLAYER_GDI;
         } else {
@@ -388,7 +390,7 @@ bool Bonus_Dialog() {
         break;
 
       case KN_ESC:
-      case ButtonKey(201):
+      case engine::window::ButtonKey(201):
         TheWorld().scen_player() = SCEN_PLAYER_GDI;
         TheWorld().scen_dir() = SCEN_DIR_EAST;
         TheWorld().whom() = HOUSE_GOOD;

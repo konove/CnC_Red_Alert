@@ -19,6 +19,7 @@
 void SDL_Event_Loop() {}
 void Update_Mouse_Pos(int /*x*/, int /*y*/) {}
 
+namespace engine::window {
 namespace {
 
 // Returns a press of the SDL mouse `button` at `x`, `y`.
@@ -153,3 +154,4 @@ TEST_F(KeyBufferTest, MouseClickCoordinatesAreNotReportedAsKeys) {
 }
 
 }  // namespace
+}  // namespace engine::window

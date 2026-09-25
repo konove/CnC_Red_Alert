@@ -77,6 +77,8 @@
 #include "td/vector.h"
 #include "td/world.h"
 
+using enum engine::window::KeyNumber;
+
 /***********************************************************************************************
  * Debug_Key -- Debug mode keyboard processing. *
  *                                                                                             *

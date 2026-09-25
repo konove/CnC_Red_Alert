@@ -221,6 +221,8 @@
 #include "td/vector.h"
 #include "td/world.h"
 
+using enum engine::window::KeyNumber;
+
 /***************************************************************************
 **	Cloaking control values.
 */

@@ -63,6 +63,8 @@
 #include "td/textbtn.h"
 #include "td/world.h"
 
+using enum engine::window::KeyNumber;
+
 #define kOptionWidth 236
 #define kOptionHeight 162
 #define kOptionX ((320 - kOptionWidth) / 2)
@@ -202,10 +204,10 @@ void Special_Dialog() {
       Show_Mouse();
     }
 
-    const KeyNumber input = buttons->Input(view);
+    const engine::window::KeyNumber input = buttons->Input(view);
     switch (static_cast<int>(input)) {
       case KN_ESC:
-      case ButtonKey(200):
+      case engine::window::ButtonKey(200):
         process = false;
         for (const auto& _option : _options) {
           switch (_option.Description) {
@@ -267,7 +269,7 @@ void Special_Dialog() {
         TheNetwork().out_list().Add(EventClass(oldspecial));
         break;
 
-      case ButtonKey(201):
+      case engine::window::ButtonKey(201):
         process = false;
         break;
 

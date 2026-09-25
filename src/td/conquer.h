@@ -844,7 +844,7 @@ std::span<const std::byte> Hires_Retrieve(const char* name);
 int Get_Resolution_Factor();
 
 // Processes the tactical map input codes.
-void Keyboard_Process(KeyNumber& input);
+void Keyboard_Process(engine::window::KeyNumber& input);
 // Tiles `shapefile`'s frame `shapenum` over the given rectangle of `view`.
 void CC_Texture_Fill(PixelView& view, std::span<const std::byte> shapefile,
                      int shapenum, int xpos, int ypos, int width, int height);

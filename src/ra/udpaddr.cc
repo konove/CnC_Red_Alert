@@ -201,7 +201,7 @@ bool Get_Broadcast_Addresses() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    const KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view);
 
     //.....................................................................
     //	Process input
@@ -211,11 +211,11 @@ bool Get_Broadcast_Addresses() {
       // ESC / CANCEL: send a SIGN_OFF
       // - If we're part of a game, stay in this dialog; otherwise, exit
       //..................................................................
-      case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::KN_ESC:
+      case engine::window::ButtonKey(kButtonCancel):
         return false;
 
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         process = false;
         break;
       default:

@@ -222,7 +222,7 @@ bool MouseClass::Override_Mouse_Shape(MouseType mouse, bool wwsmall) {
  *   05/28/1995 JLB : Moderates animation so is more steady regardless of speed.
  ** 06/30/1995 JLB : Uses constant timer system. *
  *=============================================================================================*/
-void MouseClass::AI(KeyNumber& input, int x, int y) {
+void MouseClass::AI(engine::window::KeyNumber& input, int x, int y) {
   //	bool doit = false;
   std::span<const std::byte> mouse_shape_ptr;
   const MouseStruct* control = &MouseControl.at(CurrentMouseShape);

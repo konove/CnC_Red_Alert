@@ -111,6 +111,9 @@
 #include "td/vector.h"
 #include "td/world.h"
 
+using enum engine::window::KeyAscii;
+using enum engine::window::KeyNumber;
+
 /*
 ****************************** Globals/Externs ******************************
 */
@@ -541,7 +544,7 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
  * HISTORY:                                                                *
  *   10/20/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::AI(KeyNumber& input, int x, int y) {
+void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
   int rc = 0;
   CELL cell = 0;
   int found = 0;      // for removing a waypoint label
@@ -970,7 +973,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
     case (KN_Y | KN_ALT_BIT):
     case (KN_Z | KN_ALT_BIT):
       if (TheWorld().current_cell() != 0) {
-        waypt_idx = KeyBuffer::ToAscii(input & 0xff) - KA_a;
+        waypt_idx = engine::window::KeyBuffer::ToAscii(input & 0xff) - KA_a;
         /*...............................................................
         Unflag cell for this waypoint if there is one
         ...............................................................*/
@@ -1001,7 +1004,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
       If there's a current cell, place the flag & waypoint there.
       ------------------------------------------------------------------*/
       if (TheWorld().current_cell() != 0) {
-        waypt_idx = (KeyBuffer::ToAscii(input & 0xff) - KA_1);
+        waypt_idx = (engine::window::KeyBuffer::ToAscii(input & 0xff) - KA_1);
         house =
             static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) + waypt_idx);
         if (HouseClass::As_Pointer(house)) {
@@ -1014,7 +1017,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
         waypoint.
         ------------------------------------------------------------------*/
         if (TheWorld().current_object().at(0) != nullptr) {
-          waypt_idx = (KeyBuffer::ToAscii(input & 0xff) - KA_1);
+          waypt_idx = (engine::window::KeyBuffer::ToAscii(input & 0xff) - KA_1);
           house = static_cast<HousesType>(static_cast<int>(HOUSE_MULTI1) +
                                           waypt_idx);
           if (HouseClass::As_Pointer(house) &&
@@ -1096,7 +1099,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
     - Toggle LMouseDown
     - release any grabbed object
     ---------------------------------------------------------------------*/
-    case ButtonKey(kMapArea):
+    case engine::window::ButtonKey(kMapArea):
       /*
       ------------------------- Left Button DOWN -------------------------
       */
@@ -1136,7 +1139,8 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
                 ................ No object: select the cell ..................
                 */
                 TheWorld().current_cell() = Click_Cell_Calc(
-                    g_active_keyboard->click_x(), g_active_keyboard->click_y());
+                    engine::window::g_active_keyboard->click_x(),
+                    engine::window::g_active_keyboard->click_y());
                 TheScreen().hidden_page().view().Clear();
                 Flag_To_Redraw(true);
                 Render();
@@ -1245,13 +1249,13 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
     /*---------------------------------------------------------------------
     Object-Editing button: House Button
     ---------------------------------------------------------------------*/
-    case ButtonKey(kPopupGdi):
-    case ButtonKey(kPopupNod):
-    case ButtonKey(kPopupNeutral):
-    case ButtonKey(kPopupMulti1):
-    case ButtonKey(kPopupMulti2):
-    case ButtonKey(kPopupMulti3):
-    case ButtonKey(kPopupMulti4):
+    case engine::window::ButtonKey(kPopupGdi):
+    case engine::window::ButtonKey(kPopupNod):
+    case engine::window::ButtonKey(kPopupNeutral):
+    case engine::window::ButtonKey(kPopupMulti1):
+    case engine::window::ButtonKey(kPopupMulti2):
+    case engine::window::ButtonKey(kPopupMulti3):
+    case engine::window::ButtonKey(kPopupMulti4):
       /*..................................................................
       Convert input value into a house value; assume HOUSE_GOOD is 0
       ..................................................................*/
@@ -1275,7 +1279,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
     /*---------------------------------------------------------------------
     Object-Editing button: Mission
     ---------------------------------------------------------------------*/
-    case ButtonKey(kPopupMissionlist):
+    case engine::window::ButtonKey(kPopupMissionlist):
       if (TheWorld().current_object().at(0)->Is_Techno()) {
         /*
         ........................ Set new mission ........................
@@ -1295,7 +1299,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
     /*---------------------------------------------------------------------
     Object-Editing button: Health
     ---------------------------------------------------------------------*/
-    case ButtonKey(kPopupHealthgauge):
+    case engine::window::ButtonKey(kPopupHealthgauge):
       if (TheWorld().current_object().at(0)->Is_Techno()) {
         /*
         .......... Derive strength from current gauge reading ...........
@@ -1333,7 +1337,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
     /*---------------------------------------------------------------------
     Object-Editing button: Facing
     ---------------------------------------------------------------------*/
-    case ButtonKey(kPopupFacingdial):
+    case engine::window::ButtonKey(kPopupFacingdial):
       if (TheWorld().current_object().at(0)->Is_Techno()) {
         auto* techno =
             dynamic_cast<TechnoClass*>(TheWorld().current_object().at(0));
@@ -1364,7 +1368,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
     /*---------------------------------------------------------------------
     Object-Editing button: Facing
     ---------------------------------------------------------------------*/
-    case ButtonKey(kPopupBasepercent):
+    case engine::window::ButtonKey(kPopupBasepercent):
       if (BaseGauge->Get_Value() != BasePercent) {
         BasePercent = BaseGauge->Get_Value();
         Build_Base_To(BasePercent);

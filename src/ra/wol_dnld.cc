@@ -190,13 +190,13 @@ bool WOL_Download_Dialog(IDownload* pDownload,
     }
 
     if (process) {
-      const KeyNumber input = cancelbtn.Input(view);
+      const engine::window::KeyNumber input = cancelbtn.Input(view);
       switch (static_cast<int>(input)) {
         /*
         ** Cancel. Just return to the main menu
         */
-        case KN_ESC:
-        case ButtonKey(kButtonCancel):
+        case engine::window::KN_ESC:
+        case engine::window::ButtonKey(kButtonCancel):
           pDownload->Abort();
           process = false;
           bReturn = false;

@@ -86,6 +86,8 @@
 #include "td/theme.h"
 #include "td/world.h"
 
+using enum engine::window::KeyNumber;
+
 void GameOptionsClass::Adjust_Variables_For_Resolution() {
   const int factor = TheScreen().visible_view().width() == 320 ? 1 : 2;
 
@@ -329,44 +331,44 @@ void GameOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    const KeyNumber input = buttons->Input(view);
+    const engine::window::KeyNumber input = buttons->Input(view);
 
     /*
     **	Process Input.
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonRestate):
+      case engine::window::ButtonKey(kButtonRestate):
         selection = kButtonRestate;
         pressed = true;
         break;
 
-      case ButtonKey(kButtonLoad):
+      case engine::window::ButtonKey(kButtonLoad):
         selection = kButtonLoad;
         pressed = true;
         break;
 
-      case ButtonKey(kButtonSave):
+      case engine::window::ButtonKey(kButtonSave):
         selection = kButtonSave;
         pressed = true;
         break;
 
-      case ButtonKey(kButtonDelete):
+      case engine::window::ButtonKey(kButtonDelete):
         selection = kButtonDelete;
         pressed = true;
         break;
 
-      case ButtonKey(kButtonQuit):
+      case engine::window::ButtonKey(kButtonQuit):
         selection = kButtonQuit;
         pressed = true;
         break;
 
-      case ButtonKey(kButtonGame):
+      case engine::window::ButtonKey(kButtonGame):
         selection = kButtonGame;
         pressed = true;
         break;
 
       case KN_ESC:
-      case ButtonKey(kButtonResume):
+      case engine::window::ButtonKey(kButtonResume):
         selection = kButtonResume;
         pressed = true;
         break;

@@ -62,6 +62,8 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 
+using enum engine::window::KeyNumber;
+
 bool ConfirmationClass::Process(int text) { return Process(Text_String(text)); }
 
 /***********************************************************************************************
@@ -183,19 +185,19 @@ bool ConfirmationClass::Process(const char* string) {
     /*
     **	Get user input.
     */
-    const KeyNumber input = yesbtn.Input(view);
+    const engine::window::KeyNumber input = yesbtn.Input(view);
 
     /*
     **	Process Input.
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonYes):
+      case engine::window::ButtonKey(kButtonYes):
         selection = kButtonYes;
         pressed = true;
         break;
 
       case KN_ESC:
-      case ButtonKey(kButtonNo):
+      case engine::window::ButtonKey(kButtonNo):
         selection = kButtonNo;
         pressed = true;
         break;

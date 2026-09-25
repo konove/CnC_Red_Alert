@@ -69,6 +69,9 @@
 #include "td/jshell.h"
 #include "td/screen.h"
 
+using enum engine::window::KeyAscii;
+using enum engine::window::KeyNumber;
+
 /***********************************************************************************************
  * EditClass::EditClass -- Normal constructor for edit class object. *
  *                                                                                             *
@@ -237,7 +240,7 @@ bool EditClass::Draw_Me(PixelView& view, bool forced) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-bool EditClass::Action(unsigned flags, KeyNumber& key) {
+bool EditClass::Action(unsigned flags, engine::window::KeyNumber& key) {
   /*
   ** If this is a read-only edit box, it's a display-only device
   */
@@ -271,14 +274,16 @@ bool EditClass::Action(unsigned flags, KeyNumber& key) {
       flags = 0;
 
     } else {
-      const auto ascii =
-          static_cast<KeyAscii>(Keyboard::To_ASCII(key) & 0x00ff);
+      const auto ascii = static_cast<engine::window::KeyAscii>(
+          Keyboard::To_ASCII(key) & 0x00ff);
 
       /*
       ** Allow numeric keypad presses to map to ascii numbers
       */
-      if (key & kKeyVirtualBit && ascii >= '0' && ascii <= '9') {
-        key = static_cast<KeyNumber>(key & ~kKeyVirtualBit);
+      if (key & engine::window::kKeyVirtualBit && ascii >= '0' &&
+          ascii <= '9') {
+        key = static_cast<engine::window::KeyNumber>(
+            key & ~engine::window::kKeyVirtualBit);
 
         if ((!(flags & kLeftRelease) && !(flags & kRightRelease)) &&
             Handle_Key(ascii)) {
@@ -290,7 +295,8 @@ bool EditClass::Action(unsigned flags, KeyNumber& key) {
         /*
         ** Filter out all special keys except return and backspace
         */
-        if ((!(key & kKeyVirtualBit) && ascii >= ' ' && ascii <= 127) ||
+        if ((!(key & engine::window::kKeyVirtualBit) && ascii >= ' ' &&
+             ascii <= 127) ||
             key == KN_RETURN || key == KN_BACKSPACE) {
           if ((!(flags & kLeftRelease) && !(flags & kRightRelease)) &&
               Handle_Key(Keyboard::To_ASCII(key))) {
@@ -398,7 +404,7 @@ void EditClass::Draw_Text(PixelView& view, const char* text) {
  *                                                                                             *
  * WARNINGS:   none * HISTORY: * 01/21/1995 JLB : Created. *
  *=============================================================================================*/
-bool EditClass::Handle_Key(KeyAscii ascii) {
+bool EditClass::Handle_Key(engine::window::KeyAscii ascii) {
   switch (ascii) {
     /*
     **	Handle the special case of a non-keyboard event. It is possible that
@@ -579,7 +585,7 @@ bool EditClass::Handle_Key(KeyAscii ascii) {
       *alphabetic *	character to upper case.
       */
       if (base::Any(EditFlags & UPPERCASE) && isalpha(ascii)) {
-        ascii = static_cast<KeyAscii>(toupper(ascii));
+        ascii = static_cast<engine::window::KeyAscii>(toupper(ascii));
       }
 
       if ((!base::Any(EditFlags & NUMERIC) || !isdigit(ascii)) &&

@@ -63,6 +63,8 @@
 #include "ra/type.h"
 #include "ra/world.h"
 
+using enum engine::window::KeyNumber;
+
 // The scenario variant behind each hotspot, in the order of kHotspotCorners.
 constexpr ScenarioVarType kChoiceVariants[] = {SCEN_VAR_A, SCEN_VAR_B,
                                                SCEN_VAR_C};
@@ -213,7 +215,8 @@ static int WaitForMissionChoice(PaletteClass& palette, const bool is_soviet) {
                                      cursor.StartFrame + cursor_frame));
     }
 
-    if (TheKeyboard().Check() && KeyCode(TheKeyboard().Get()) == KN_LMOUSE) {
+    if (TheKeyboard().Check() &&
+        engine::window::KeyCode(TheKeyboard().Get()) == KN_LMOUSE) {
       if (choice != -1) {
         PlayMapSound("TONEY10.AUD");
         return choice;

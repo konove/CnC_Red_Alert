@@ -81,6 +81,8 @@
 #include "ra/wolstrng.h"
 #include "ra/world.h"
 
+using enum engine::window::KeyNumber;
+
 namespace {
 
 // The flags every menu item prints with.
@@ -278,9 +280,10 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
   uint32_t key = 0;  // Key number with its modifier bits.
   TheGameState().unknown_key() = 0;
   if (TheKeyboard().Check()) {
-    key = static_cast<uint32_t>(TheKeyboard().Get()) &
-          ~(kKeyShiftBit | kKeyAltBit |
-            kKeyCtrlBit); /* mask off all but release bit	*/
+    key =
+        static_cast<uint32_t>(TheKeyboard().Get()) &
+        ~(engine::window::kKeyShiftBit | engine::window::kKeyAltBit |
+          engine::window::kKeyCtrlBit); /* mask off all but release bit	*/
   }
 
   /*
@@ -367,8 +370,8 @@ int Check_Menu(PixelView& view, int menu, std::span<const char* const> text,
       for (idx = 0; idx < base::At(menuptr, kItemshigh); idx++) {
         if (toupper(*base::At(
                 text, base::ToSize(Select_To_Entry(idx, field, index)))) ==
-            toupper(
-                KeyboardClass::To_ASCII(static_cast<KeyNumber>(key & 0xFFU)))) {
+            toupper(KeyboardClass::To_ASCII(
+                static_cast<engine::window::KeyNumber>(key & 0xFFU)))) {
           newitem = select = idx;
           break;
         }
@@ -729,19 +732,20 @@ int Main_Menu(int32_t /*unused*/) {
     /*
     **	Get and process player input.
     */
-    const KeyNumber input = commands->Input(view);  // input from user
+    const engine::window::KeyNumber input =
+        commands->Input(view);  // input from user
 
     /*
     **	Dispatch the input to be processed.
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonExpand):
-      case ButtonKey(kButtonExpandAm):
-      case ButtonKey(kButtonStart):
-      case ButtonKey(kButtonLoad):
-      case ButtonKey(kButtonMulti):
-      case ButtonKey(kButtonIntro):
-      case ButtonKey(kButtonExit):
+      case engine::window::ButtonKey(kButtonExpand):
+      case engine::window::ButtonKey(kButtonExpandAm):
+      case engine::window::ButtonKey(kButtonStart):
+      case engine::window::ButtonKey(kButtonLoad):
+      case engine::window::ButtonKey(kButtonMulti):
+      case engine::window::ButtonKey(kButtonIntro):
+      case engine::window::ButtonKey(kButtonExit):
         retval = (input & 0x7FFF) - kButtonExpand;
         process = false;
         break;

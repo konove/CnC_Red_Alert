@@ -121,12 +121,12 @@ void DropListClass::Set_Selected_Index(int index) {
 
 void DropListClass::Clear_Focus() { Collapse(); }
 
-void DropListClass::Peer_To_Peer(unsigned flags, KeyNumber& key,
+void DropListClass::Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
                                  ControlClass& whom) {
   if ((&whom == &DropButton) && (flags & kLeftRelease)) {
     if (IsDropped) {
       Collapse();
-      key = ButtonKey(static_cast<int>(ID));
+      key = engine::window::ButtonKey(static_cast<int>(ID));
     } else {
       Expand();
     }
@@ -136,7 +136,7 @@ void DropListClass::Peer_To_Peer(unsigned flags, KeyNumber& key,
     base::SafeCopy(std::span(String).first(base::ToSize(MaxLength)),
                    List.Current_Item());
     Flag_To_Redraw();
-    key = ButtonKey(static_cast<int>(ID));
+    key = engine::window::ButtonKey(static_cast<int>(ID));
   }
 }
 

@@ -814,7 +814,7 @@ void SidebarClass::Draw_It(PixelView& view, bool complete) {
  *   12/31/1994 JLB : Uses mouse coordinate parameters. * 06/27/1995 JLB : <TAB>
  *key toggles sidebar.                                               *
  *=============================================================================================*/
-void SidebarClass::AI(KeyNumber& input, int x, int y) {
+void SidebarClass::AI(engine::window::KeyNumber& input, int x, int y) {
   const bool redraw = false;
 
   /*
@@ -839,15 +839,15 @@ void SidebarClass::AI(KeyNumber& input, int x, int y) {
       Activate_Repair(0);
     }
 
-    if (input == ButtonKey(kButtonRepair)) {
+    if (input == engine::window::ButtonKey(kButtonRepair)) {
       Repair_Mode_Control(-1);
     }
 
-    if (input == ButtonKey(kButtonZoom)) {
+    if (input == engine::window::ButtonKey(kButtonZoom)) {
       Zoom_Mode_Control();
     }
 
-    if (input == ButtonKey(kButtonUpgrade)) {
+    if (input == engine::window::ButtonKey(kButtonUpgrade)) {
       Sell_Mode_Control(-1);
     }
 
@@ -1386,22 +1386,22 @@ void SidebarClass::StripClass::Flag_To_Redraw() {
  * HISTORY: * 12/31/1994 JLB : Created. * 12/31/1994 JLB : Uses mouse coordinate
  *parameters.                                        *
  *=============================================================================================*/
-bool SidebarClass::StripClass::AI(KeyNumber& input, int /*unused*/,
-                                  int /*unused*/) {
+bool SidebarClass::StripClass::AI(engine::window::KeyNumber& input,
+                                  int /*unused*/, int /*unused*/) {
   bool redraw = false;
 
   /*
   **	If this is scroll button for this side strip, then scroll the strip as
   **	indicated.
   */
-  if (input == ButtonKey(static_cast<int>(
+  if (input == engine::window::ButtonKey(static_cast<int>(
                    base::At(UpButton, ID).ID))) {  // && !IsScrolling
     base::At(UpButton, ID).IsPressed = false;
     if (!Scroll(true)) {
       PlaySoundEffect(VOC_SCOLD);
     }
   }
-  if (input == ButtonKey(static_cast<int>(
+  if (input == engine::window::ButtonKey(static_cast<int>(
                    base::At(DownButton, ID).ID))) {  // && !IsScrolling
     base::At(DownButton, ID).IsPressed = false;
     if (!Scroll(false)) {
@@ -1960,8 +1960,8 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
  * HISTORY: * 01/19/1995 JLB : Created. * 10/09/1996 JLB : Sonar pulse converted
  *to regular event type.                             *
  *=============================================================================================*/
-bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
-                                                   KeyNumber& key) {
+bool SidebarClass::StripClass::SelectClass::Action(
+    unsigned flags, engine::window::KeyNumber& key) {
   const int index = Strip->TopIndex + Index;
   const RTTIType otype = base::At(Strip->Buildables, index).BuildableType;
   const int oid = base::At(Strip->Buildables, index).BuildableID;
@@ -2205,7 +2205,7 @@ bool SidebarClass::StripClass::SelectClass::Action(unsigned flags,
  * HISTORY: * 03/28/1995 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::SBGadgetClass::Action(unsigned /*flags*/,
-                                         KeyNumber& /*key*/) {
+                                         engine::window::KeyNumber& /*key*/) {
   TheMap().Help_Text(TXT_NONE);
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
   return true;

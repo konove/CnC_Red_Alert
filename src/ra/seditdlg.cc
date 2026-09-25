@@ -246,7 +246,7 @@ const char* SimpleEditDlgClass::Show() {
     /*
     **	Get user input.
     */
-    KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view);
 
     /*
     **	The first time through the processing loop, set the edit
@@ -264,23 +264,23 @@ const char* SimpleEditDlgClass::Show() {
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on
     // the key up, 	though this dialog handled the key down. ajw
-    if (KeyboardClass::Down(KN_ESC)) {
+    if (KeyboardClass::Down(engine::window::KN_ESC)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {
-      input = ButtonKey(kButtonCancel);
+      input = engine::window::ButtonKey(kButtonCancel);
       bEscapeDown = false;
     }
-    if (KeyboardClass::Down(KN_RETURN)) {
+    if (KeyboardClass::Down(engine::window::KN_RETURN)) {
       bReturnDown = true;
     } else if (bReturnDown) {
-      input = ButtonKey(kButtonOk);
+      input = engine::window::ButtonKey(kButtonOk);
       bReturnDown = false;
     }
 
     //	I really hate to do this, but...      ajw
     if (TheGameState().cancel_msgbox()) {
       TheGameState().cancel_msgbox() = false;
-      input = ButtonKey(kButtonCancel);
+      input = engine::window::ButtonKey(kButtonCancel);
     }
 
     if (TheGameState().disable_msgbox()) {
@@ -309,19 +309,20 @@ const char* SimpleEditDlgClass::Show() {
     */
     switch (static_cast<int>(input)) {
         //		case ( KN_ESC ):
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         szReturn = szCancelButton;
         process = false;
         break;
 
         //		case KN_RETURN:
-      case ButtonKey(kButtonEdit):  //	(Return pressed while on edit.)
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(
+          kButtonEdit):  //	(Return pressed while on edit.)
+      case engine::window::ButtonKey(kButtonOk):
         szReturn = szOkButton;
         process = false;
         break;
 
-      case ButtonKey(kButtonMiddle):
+      case engine::window::ButtonKey(kButtonMiddle):
         szReturn = szMiddleButton;
         process = false;
         break;

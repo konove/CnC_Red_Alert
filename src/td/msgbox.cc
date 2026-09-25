@@ -66,6 +66,8 @@
 #include "td/text.h"
 #include "td/textbtn.h"
 
+using enum engine::window::KeyNumber;
+
 #ifdef JAPANESE
 CCMessageBox::CCMessageBox(int caption, bool pict)
     : Caption(caption), IsPicture(pict) {}
@@ -101,7 +103,7 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
   char buffer[BUFFSIZE];
   int retval = -1;   // The pressed button's index: 0, 1 or 2.
   bool process = false;        // loop while true
-  KeyNumber input = KN_NONE;   // user input
+  engine::window::KeyNumber input = KN_NONE;  // user input
   int selection = 0;
   bool pressed = false;
   int curbutton = 0;
@@ -381,13 +383,13 @@ int CCMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
         */
         default:
 #ifdef NEVER
-          if (b1char ==
-              toupper(Keyboard::To_ASCII((KeyNumber)(input & 0xFF)))) {
+          if (b1char == toupper(Keyboard::To_ASCII(
+                            (engine::window::KeyNumber)(input & 0xFF)))) {
             selection = BUTTON_1;
             pressed = true;
           } else if (b2txt != NULL &&
-                     b2char == toupper(Keyboard::To_ASCII(
-                                   (KeyNumber)(input & 0xFF)))) {
+                     b2char == toupper(Keyboard::To_ASCII((
+                                   engine::window::KeyNumber)(input & 0xFF)))) {
             selection = BUTTON_2;
             pressed = true;
           }

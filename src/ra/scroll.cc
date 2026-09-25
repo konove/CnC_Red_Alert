@@ -96,7 +96,7 @@ ScrollClass::ScrollClass() { Counter.Set(SCROLL_DELAY); }
  *smooth scrolling.                                      * 08/25/1995 JLB :
  *Handles new scrolling option.                                            *
  *=============================================================================================*/
-void ScrollClass::AI(KeyNumber& input, int x, int y) {
+void ScrollClass::AI(engine::window::KeyNumber& input, int x, int y) {
   bool player_scrolled = false;
   static DirType direction;
   int rate = 0;
@@ -180,7 +180,7 @@ void ScrollClass::AI(KeyNumber& input, int x, int y) {
         //			if (TheKeyboard().Down(KN_LMOUSE)) {
         //				rate = Bound(rate-3, 0, 4);
         //			}
-        if (KeyboardClass::Down(KN_RMOUSE)) {
+        if (KeyboardClass::Down(engine::window::KN_RMOUSE)) {
           rate = Bound(rate + 1, 4,
                        static_cast<int>(sizeof(_rate) / sizeof(_rate[0])) - 1);
         }
@@ -211,7 +211,7 @@ void ScrollClass::AI(KeyNumber& input, int x, int y) {
           **	If the mouse button is pressed or auto scrolling is active, then
           *scroll *	the map if the delay counter indicates.
           */
-          if (KeyboardClass::Down(KN_LMOUSE) || IsAutoScroll) {
+          if (KeyboardClass::Down(engine::window::KN_LMOUSE) || IsAutoScroll) {
             distance = base::At(_rate, rate);
 
             if (TheDebugState().map_editor_active()) {

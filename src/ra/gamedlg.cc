@@ -72,6 +72,8 @@
 #include "ra/wolstrng.h"
 #include "ra/world.h"
 
+using enum engine::window::KeyNumber;
+
 /***********************************************************************************************
  * OptionsClass::Process -- Handles all the options graphic interface. *
  *                                                                                             *
@@ -312,38 +314,38 @@ void GameControlsClass::Process() {
     /*
     **	Get user input.
     */
-    const KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view);
 
     /*
     **	Process input.
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonSpeed):
+      case engine::window::ButtonKey(kButtonSpeed):
         curbutton = kButtonSpeed - kButtonFirst;
         refresh = true;
         break;
 
-      case ButtonKey(kButtonScrollrate):
+      case engine::window::ButtonKey(kButtonScrollrate):
         curbutton = kButtonScrollrate - kButtonFirst;
         refresh = true;
         break;
 
-      case ButtonKey(kButtonVisual):
+      case engine::window::ButtonKey(kButtonVisual):
         selection = kButtonVisual;
         pressed = true;
         break;
 
-      case ButtonKey(kButtonSound):
+      case engine::window::ButtonKey(kButtonSound):
         selection = kButtonSound;
         pressed = true;
         break;
 
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         selection = kButtonOk;
         pressed = true;
         break;
 
-      case ButtonKey(kButtonWolapi):
+      case engine::window::ButtonKey(kButtonWolapi):
         selection = kButtonWolapi;
         pressed = true;
         break;

@@ -190,6 +190,8 @@
 #include "td/ccdde.h"
 #endif
 
+using enum engine::window::KeyNumber;
+
 // Which multiplayer colors the players in the game dialog have taken; nonzero
 // means taken.
 static int color_used[MAX_MPLAYER_COLORS];
@@ -911,7 +913,7 @@ static int Net_Join_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumber input = KN_NONE;
+  engine::window::KeyNumber input = KN_NONE;
   const int cbox_x[] = {d_gdi_x,
                         d_gdi_x + d_color_w,
                         d_gdi_x + (d_color_w * 2),
@@ -1356,13 +1358,17 @@ static int Net_Join_Dialog() {
         if (joinstate > JOIN_NOTHING) {
           break;
         }
-        if (g_active_keyboard->click_x() > base::At(cbox_x, 0) &&
-            g_active_keyboard->click_x() <
+        if (engine::window::g_active_keyboard->click_x() >
+                base::At(cbox_x, 0) &&
+            engine::window::g_active_keyboard->click_x() <
                 base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w &&
-            g_active_keyboard->click_y() > d_color_y &&
-            g_active_keyboard->click_y() < d_color_y + d_color_h) {
+            engine::window::g_active_keyboard->click_y() > d_color_y &&
+            engine::window::g_active_keyboard->click_y() <
+                d_color_y + d_color_h) {
           TheSession().preferred_color() =
-              (g_active_keyboard->click_x() - base::At(cbox_x, 0)) / d_color_w;
+              (engine::window::g_active_keyboard->click_x() -
+               base::At(cbox_x, 0)) /
+              d_color_w;
           TheSession().color_index() = TheSession().preferred_color();
 
           name_edt.Set_Color(
@@ -1380,7 +1386,7 @@ static int Net_Join_Dialog() {
       - Clear the player list
       - Send an immediate player query
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonGamelist):
+      case engine::window::ButtonKey(kButtonGamelist):
         if (joinstate == JOIN_CONFIRMED) {
           gamelist.Set_Selected_Index(game_index);
         } else {
@@ -1395,13 +1401,13 @@ static int Net_Join_Dialog() {
       /*------------------------------------------------------------------
       House Buttons: set the player's desired House
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonGdi):
+      case engine::window::ButtonKey(kButtonGdi):
         TheSession().house() = HOUSE_GOOD;
         gdibtn.Turn_On();
         nodbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonNod):
+      case engine::window::ButtonKey(kButtonNod):
         TheSession().house() = HOUSE_BAD;
         gdibtn.Turn_Off();
         nodbtn.Turn_On();
@@ -1411,7 +1417,7 @@ static int Net_Join_Dialog() {
       JOIN: send a join request packet & switch to waiting-for-confirmation
       mode.  (Request_To_Join fills in MPlayerName with my namebuf.)
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonJoin):
+      case engine::window::ButtonKey(kButtonJoin):
         name_edt.Clear_Focus();
         name_edt.Flag_To_Redraw();
 
@@ -1436,7 +1442,7 @@ static int Net_Join_Dialog() {
           break;
         }
         [[fallthrough]];
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                         sizeof(GlobalPacketType));
 
@@ -1513,7 +1519,7 @@ static int Net_Join_Dialog() {
       /*------------------------------------------------------------------
       NEW: bail out with return code 1
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonNew):
+      case engine::window::ButtonKey(kButtonNew):
         /*
         .................. Force user to enter a name ...................
         */
@@ -1560,7 +1566,8 @@ static int Net_Join_Dialog() {
         ...............................................................*/
         if (TheSession().messages().Get_Edit_Buf() == nullptr) {
           if ((input == KN_M && joinstate == JOIN_CONFIRMED) ||
-              input == ButtonKey(kButtonSend) || input == KN_F4) {
+              input == engine::window::ButtonKey(kButtonSend) ||
+              input == KN_F4) {
             base::FillBytes(base::ObjectBytes(txt), 0, 80);
 
             base::SafeCopy(txt, Text_String(TXT_TO_ALL));  // "To All:"
@@ -1580,7 +1587,7 @@ static int Net_Join_Dialog() {
 
             break;
           }
-        } else if (input == ButtonKey(kButtonSend)) {
+        } else if (input == engine::window::ButtonKey(kButtonSend)) {
           /*...............................................................
           If we're already editing a message and the user clicks on
           'Send', translate our input to a Return so Messages.Input()
@@ -2971,7 +2978,7 @@ static int Net_New_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumber input = KN_NONE;
+  engine::window::KeyNumber input = KN_NONE;
 
   char credbuf[CREDITSBUF_MAX];  // for credit edit box
 
@@ -3343,7 +3350,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       New Scenario selected.
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonScenariolist):
+      case engine::window::ButtonKey(kButtonScenariolist):
         if (scenariolist.Current_Index() != TheSession().scenario_index()) {
           TheSession().scenario_index() = scenariolist.Current_Index();
           TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
@@ -3355,7 +3362,7 @@ static int Net_New_Dialog() {
       Reject the currently-selected player (don't allow rejecting myself,
       who will be the first entry in the list)
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonReject):
+      case engine::window::ButtonKey(kButtonReject):
         index = playerlist.Current_Index();
         if (index == 0) {
           CCMessageBox().Process(TXT_CANT_REJECT_SELF, TXT_OOPS);
@@ -3381,7 +3388,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       User adjusts max # units
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonCount):
+      case engine::window::ButtonKey(kButtonCount):
         TheSession().unit_count() =
             countgauge.Get_Value() +
             base::At(TheSession().unit_count_min(), TheSession().bases());
@@ -3403,7 +3410,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       User adjusts build level
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonLevel):
+      case engine::window::ButtonKey(kButtonLevel):
         TheWorld().build_level() =
             std::min(levelgauge.Get_Value() + 1, MPLAYER_BUILD_LEVEL_MAX);
 
@@ -3428,7 +3435,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       User edits the credits value; retransmit new game options
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonCredits):
+      case engine::window::ButtonKey(kButtonCredits):
         TheSession().credits() = base::ParseIntegerOr<int>(credbuf, 0);
         transmit = 1;
         break;
@@ -3441,7 +3448,7 @@ static int Net_New_Dialog() {
         using the current gauge setting
       - Change the unit count gauge limit & value
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonBases):
+      case engine::window::ButtonKey(kButtonBases):
         if (TheSession().bases()) {
           TheSession().bases() = 0;
           basesbtn.Turn_Off();
@@ -3486,7 +3493,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       Toggle tiberium
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonTiberium):
+      case engine::window::ButtonKey(kButtonTiberium):
         if (TheSession().tiberium()) {
           TheSession().tiberium() = 0;
           TheSpecial().IsTGrowth = 0;
@@ -3507,7 +3514,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       Toggle goodies
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonGoodies):
+      case engine::window::ButtonKey(kButtonGoodies):
         if (TheSession().crates()) {
           TheSession().crates() = 0;
           goodiesbtn.Turn_Off();
@@ -3524,7 +3531,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       Toggle ghosts/capture-the-flag
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonGhosts):
+      case engine::window::ButtonKey(kButtonGhosts):
         if (!TheSession().ghosts() &&
             !TheSpecial().IsCaptureTheFlag) {  // ghosts OFF => ghosts ON
           TheSession().ghosts() = 1;
@@ -3554,7 +3561,7 @@ static int Net_New_Dialog() {
       /*------------------------------------------------------------------
       OK: exit loop with true status
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         /*...............................................................
         If a new player has joined in the last second, don't allow
         an OK; force a wait longer than 1 second (to give all players
@@ -3589,7 +3596,7 @@ static int Net_New_Dialog() {
           break;
         }
         [[fallthrough]];
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                         sizeof(GlobalPacketType));
 
@@ -3656,7 +3663,8 @@ static int Net_New_Dialog() {
         F4/SEND/'M' = send a message
         ...............................................................*/
         if (TheSession().messages().Get_Edit_Buf() == nullptr) {
-          if (input == KN_M || input == ButtonKey(kButtonSend) ||
+          if (input == KN_M ||
+              input == engine::window::ButtonKey(kButtonSend) ||
               input == KN_F4) {
             base::FillBytes(base::ObjectBytes(txt), 0, 80);
 
@@ -3680,7 +3688,7 @@ static int Net_New_Dialog() {
           'Send', translate our input to a Return so Messages.Input()
           will work properly.
           ...............................................................*/
-          if (input == ButtonKey(kButtonSend)) {
+          if (input == engine::window::ButtonKey(kButtonSend)) {
             input = KN_RETURN;
           }
         }
@@ -4499,7 +4507,7 @@ static int Net_Fake_New_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumber input = KN_NONE;
+  engine::window::KeyNumber input = KN_NONE;
 
   char credbuf[CREDITSBUF_MAX];  // for credit edit box
 
@@ -4685,7 +4693,7 @@ static int Net_Fake_New_Dialog() {
       CANCEL: send a SIGN_OFF, bail out with error code
       ------------------------------------------------------------------*/
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                         sizeof(GlobalPacketType));
 
@@ -5132,7 +5140,7 @@ static int Net_Fake_Join_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumber input = KN_NONE;
+  engine::window::KeyNumber input = KN_NONE;
 
   JoinStateType joinstate = JOIN_NOTHING;  // current "state" of this dialog
   int game_index = -1;                     // index of currently-selected game
@@ -5283,7 +5291,7 @@ static int Net_Fake_Join_Dialog() {
       - If we're part of a game, stay in this dialog; otherwise, exit
       ------------------------------------------------------------------*/
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         base::FillBytes(base::ObjectBytes(TheNetwork().global_packet()), 0,
                         sizeof(GlobalPacketType));
 

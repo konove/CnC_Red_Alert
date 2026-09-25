@@ -71,7 +71,7 @@ class ByteStream;
 *vagaries. Most *	notable being the return values are declared as "int" in
 *the library whereas C&C *	expects it to be of KeyNumber.
 */
-struct KeyboardClass : public KeyBuffer {
+struct KeyboardClass : public engine::window::KeyBuffer {
   /*
   **	This flag is used to indicate whether the WW library has taken over
   **	the keyboard or not. If not, then the normal console input
@@ -83,13 +83,22 @@ struct KeyboardClass : public KeyBuffer {
   // These deliberately hide the library's int-returning versions; narrowing to
   // the game's key enums is the only reason this interface class exists.
   // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  KeyNumber Get() { return static_cast<KeyNumber>(KeyBuffer::Read()); }
-  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
-  KeyNumber Check() { return static_cast<KeyNumber>(KeyBuffer::Peek()); }
-  static KeyAscii To_ASCII(KeyNumber key) {
-    return static_cast<KeyAscii>(KeyBuffer::ToAscii(key));
+  engine::window::KeyNumber Get() {
+    return static_cast<engine::window::KeyNumber>(
+        engine::window::KeyBuffer::Read());
   }
-  static bool Down(KeyNumber key) { return KeyBuffer::IsDown(key); }
+  // NOLINTNEXTLINE(bugprone-derived-method-shadowing-base-method)
+  engine::window::KeyNumber Check() {
+    return static_cast<engine::window::KeyNumber>(
+        engine::window::KeyBuffer::Peek());
+  }
+  static engine::window::KeyAscii To_ASCII(engine::window::KeyNumber key) {
+    return static_cast<engine::window::KeyAscii>(
+        engine::window::KeyBuffer::ToAscii(key));
+  }
+  static bool Down(engine::window::KeyNumber key) {
+    return engine::window::KeyBuffer::IsDown(key);
+  }
 
   static int Mouse_X() { return Get_Mouse_X(); }
   static int Mouse_Y() { return Get_Mouse_Y(); }

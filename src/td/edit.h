@@ -107,10 +107,10 @@ class EditClass : public ControlClass {
   */
   int Color{kCcGreen};
 
-  bool Action(unsigned flags, KeyNumber& key) override;
+  bool Action(unsigned flags, engine::window::KeyNumber& key) override;
   virtual void Draw_Background(PixelView& view);
   virtual void Draw_Text(PixelView& view, const char* text);
-  virtual bool Handle_Key(KeyAscii ascii);
+  virtual bool Handle_Key(engine::window::KeyAscii ascii);
 
  private:
   bool IsReadOnly = false;

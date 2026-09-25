@@ -485,7 +485,7 @@ bool Do_The_Internet_Menu_Thang() {
 
   char users_name[256];
   const int buffer_len = sizeof(users_name);
-  KeyNumber input = KN_NONE;
+  engine::window::KeyNumber input = engine::window::KN_NONE;
 
   if (!TheSpecial().IsFromWChat && !TheGameState().spawned_from_chat()) {
     /*
@@ -580,8 +580,8 @@ bool Do_The_Internet_Menu_Thang() {
       /*
       ** Cancel. Just return to the main menu
       */
-      case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::KN_ESC:
+      case engine::window::ButtonKey(kButtonCancel):
         process = false;
 #ifdef _WIN32
         Send_Data_To_DDE_Server(packet, strlen(packet),

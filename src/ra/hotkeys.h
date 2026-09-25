@@ -25,7 +25,7 @@
 
 // Handles keyboard input while the tactical map is displayed. Consumes each
 // key it acts on by setting input to KN_NONE.
-void Keyboard_Process(KeyNumber& input);
+void Keyboard_Process(engine::window::KeyNumber& input);
 
 // Converts a keyboard code into the compass direction it represents, or
 // FACING_NONE for a key that is not directional. Used for keyboard scrolling.

@@ -496,151 +496,203 @@ void OptionsClass::Load_Settings() {
       ini.Get_Bool(OPTIONS, "SlowPalette", ThePalettes().slow_palette()));
   IsPaletteScroll = ini.Get_Bool(OPTIONS, "PaletteScroll", IsPaletteScroll);
 
-  KeyForceMove1 = static_cast<KeyNumber>(
+  KeyForceMove1 = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyForceMove1", KeyForceMove1));
-  KeyForceMove2 = static_cast<KeyNumber>(
+  KeyForceMove2 = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyForceMove2", KeyForceMove2));
-  KeyForceAttack1 = static_cast<KeyNumber>(
+  KeyForceAttack1 = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyForceAttack1", KeyForceAttack1));
-  KeyForceAttack2 = static_cast<KeyNumber>(
+  KeyForceAttack2 = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyForceAttack2", KeyForceAttack2));
-  KeySelect1 =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeySelect1", KeySelect1));
-  KeySelect2 =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeySelect2", KeySelect2));
-  KeyScatter =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyScatter", KeyScatter));
-  KeyStop = static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyStop", KeyStop));
-  KeyGuard =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyGuard", KeyGuard));
-  KeyNext = static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyNext", KeyNext));
-  KeyPrevious = static_cast<KeyNumber>(
+  KeySelect1 = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeySelect1", KeySelect1));
+  KeySelect2 = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeySelect2", KeySelect2));
+  KeyScatter = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyScatter", KeyScatter));
+  KeyStop = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyStop", KeyStop));
+  KeyGuard = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyGuard", KeyGuard));
+  KeyNext = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyNext", KeyNext));
+  KeyPrevious = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyPrevious", KeyPrevious));
-  KeyFormation = static_cast<KeyNumber>(
+  KeyFormation = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyFormation", KeyFormation));
-  KeyHome1 =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyHome1", KeyHome1));
-  KeyHome2 =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyHome2", KeyHome2));
-  KeyBase = static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyBase", KeyBase));
-  KeyResign =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyResign", KeyResign));
-  KeyAlliance = static_cast<KeyNumber>(
+  KeyHome1 = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyHome1", KeyHome1));
+  KeyHome2 = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyHome2", KeyHome2));
+  KeyBase = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyBase", KeyBase));
+  KeyResign = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyResign", KeyResign));
+  KeyAlliance = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyAlliance", KeyAlliance));
-  KeyBookmark1 = static_cast<KeyNumber>(
+  KeyBookmark1 = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyBookmark1", KeyBookmark1));
-  KeyBookmark2 = static_cast<KeyNumber>(
+  KeyBookmark2 = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyBookmark2", KeyBookmark2));
-  KeyBookmark3 = static_cast<KeyNumber>(
+  KeyBookmark3 = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyBookmark3", KeyBookmark3));
-  KeyBookmark4 = static_cast<KeyNumber>(
+  KeyBookmark4 = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyBookmark4", KeyBookmark4));
-  KeySelectView = static_cast<KeyNumber>(
+  KeySelectView = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeySelectView", KeySelectView));
-  KeyRepair = static_cast<KeyNumber>(
+  KeyRepair = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyRepairToggle", KeyRepair));
-  KeyRepairOn = static_cast<KeyNumber>(
+  KeyRepairOn = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyRepairOn", KeyRepairOn));
-  KeyRepairOff = static_cast<KeyNumber>(
+  KeyRepairOff = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyRepairOff", KeyRepairOff));
-  KeySell =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeySellToggle", KeySell));
-  KeySellOn =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeySellOn", KeySellOn));
-  KeySellOff =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeySellOff", KeySellOff));
-  KeyMap =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyMapToggle", KeyMap));
-  KeySidebarUp = static_cast<KeyNumber>(
+  KeySell = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeySellToggle", KeySell));
+  KeySellOn = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeySellOn", KeySellOn));
+  KeySellOff = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeySellOff", KeySellOff));
+  KeyMap = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyMapToggle", KeyMap));
+  KeySidebarUp = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeySidebarUp", KeySidebarUp));
-  KeySidebarDown = static_cast<KeyNumber>(
+  KeySidebarDown = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeySidebarDown", KeySidebarDown));
-  KeyOption1 =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyOption1", KeyOption1));
-  KeyOption2 =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyOption2", KeyOption2));
-  KeyScrollLeft = static_cast<KeyNumber>(
+  KeyOption1 = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyOption1", KeyOption1));
+  KeyOption2 = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyOption2", KeyOption2));
+  KeyScrollLeft = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyScrollLeft", KeyScrollLeft));
-  KeyScrollRight = static_cast<KeyNumber>(
+  KeyScrollRight = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyScrollRight", KeyScrollRight));
-  KeyScrollUp = static_cast<KeyNumber>(
+  KeyScrollUp = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyScrollUp", KeyScrollUp));
-  KeyScrollDown = static_cast<KeyNumber>(
+  KeyScrollDown = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyScrollDown", KeyScrollDown));
-  KeyQueueMove1 = static_cast<KeyNumber>(
+  KeyQueueMove1 = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyQueueMove1", KeyQueueMove1));
-  KeyQueueMove2 = static_cast<KeyNumber>(
+  KeyQueueMove2 = static_cast<engine::window::KeyNumber>(
       ini.Get_Int(HotkeyName, "KeyQueueMove2", KeyQueueMove2));
-  KeyTeam1 =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyTeam1", KeyTeam1));
-  KeyTeam2 =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyTeam2", KeyTeam2));
-  KeyTeam3 =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyTeam3", KeyTeam3));
-  KeyTeam4 =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyTeam4", KeyTeam4));
-  KeyTeam5 =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyTeam5", KeyTeam5));
-  KeyTeam6 =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyTeam6", KeyTeam6));
-  KeyTeam7 =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyTeam7", KeyTeam7));
-  KeyTeam8 =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyTeam8", KeyTeam8));
-  KeyTeam9 =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyTeam9", KeyTeam9));
-  KeyTeam10 =
-      static_cast<KeyNumber>(ini.Get_Int(HotkeyName, "KeyTeam10", KeyTeam10));
+  KeyTeam1 = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyTeam1", KeyTeam1));
+  KeyTeam2 = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyTeam2", KeyTeam2));
+  KeyTeam3 = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyTeam3", KeyTeam3));
+  KeyTeam4 = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyTeam4", KeyTeam4));
+  KeyTeam5 = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyTeam5", KeyTeam5));
+  KeyTeam6 = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyTeam6", KeyTeam6));
+  KeyTeam7 = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyTeam7", KeyTeam7));
+  KeyTeam8 = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyTeam8", KeyTeam8));
+  KeyTeam9 = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyTeam9", KeyTeam9));
+  KeyTeam10 = static_cast<engine::window::KeyNumber>(
+      ini.Get_Int(HotkeyName, "KeyTeam10", KeyTeam10));
 
-  KeyForceMove1 = static_cast<KeyNumber>(KeyForceMove1 & ~kKeyVirtualBit);
-  KeyForceMove2 = static_cast<KeyNumber>(KeyForceMove2 & ~kKeyVirtualBit);
-  KeyForceAttack1 = static_cast<KeyNumber>(KeyForceAttack1 & ~kKeyVirtualBit);
-  KeyForceAttack2 = static_cast<KeyNumber>(KeyForceAttack2 & ~kKeyVirtualBit);
-  KeySelect1 = static_cast<KeyNumber>(KeySelect1 & ~kKeyVirtualBit);
-  KeySelect2 = static_cast<KeyNumber>(KeySelect2 & ~kKeyVirtualBit);
-  KeyScatter = static_cast<KeyNumber>(KeyScatter & ~kKeyVirtualBit);
-  KeyStop = static_cast<KeyNumber>(KeyStop & ~kKeyVirtualBit);
-  KeyGuard = static_cast<KeyNumber>(KeyGuard & ~kKeyVirtualBit);
-  KeyNext = static_cast<KeyNumber>(KeyNext & ~kKeyVirtualBit);
-  KeyPrevious = static_cast<KeyNumber>(KeyPrevious & ~kKeyVirtualBit);
-  KeyFormation = static_cast<KeyNumber>(KeyFormation & ~kKeyVirtualBit);
-  KeyHome1 = static_cast<KeyNumber>(KeyHome1 & ~kKeyVirtualBit);
-  KeyHome2 = static_cast<KeyNumber>(KeyHome2 & ~kKeyVirtualBit);
-  KeyBase = static_cast<KeyNumber>(KeyBase & ~kKeyVirtualBit);
-  KeyResign = static_cast<KeyNumber>(KeyResign & ~kKeyVirtualBit);
-  KeyAlliance = static_cast<KeyNumber>(KeyAlliance & ~kKeyVirtualBit);
-  KeyBookmark1 = static_cast<KeyNumber>(KeyBookmark1 & ~kKeyVirtualBit);
-  KeyBookmark2 = static_cast<KeyNumber>(KeyBookmark2 & ~kKeyVirtualBit);
-  KeyBookmark3 = static_cast<KeyNumber>(KeyBookmark3 & ~kKeyVirtualBit);
-  KeyBookmark4 = static_cast<KeyNumber>(KeyBookmark4 & ~kKeyVirtualBit);
-  KeySelectView = static_cast<KeyNumber>(KeySelectView & ~kKeyVirtualBit);
-  KeyRepair = static_cast<KeyNumber>(KeyRepair & ~kKeyVirtualBit);
-  KeyRepairOn = static_cast<KeyNumber>(KeyRepairOn & ~kKeyVirtualBit);
-  KeyRepairOff = static_cast<KeyNumber>(KeyRepairOff & ~kKeyVirtualBit);
-  KeySell = static_cast<KeyNumber>(KeySell & ~kKeyVirtualBit);
-  KeySellOn = static_cast<KeyNumber>(KeySellOn & ~kKeyVirtualBit);
-  KeySellOff = static_cast<KeyNumber>(KeySellOff & ~kKeyVirtualBit);
-  KeyMap = static_cast<KeyNumber>(KeyMap & ~kKeyVirtualBit);
-  KeySidebarUp = static_cast<KeyNumber>(KeySidebarUp & ~kKeyVirtualBit);
-  KeySidebarDown = static_cast<KeyNumber>(KeySidebarDown & ~kKeyVirtualBit);
-  KeyOption1 = static_cast<KeyNumber>(KeyOption1 & ~kKeyVirtualBit);
-  KeyOption2 = static_cast<KeyNumber>(KeyOption2 & ~kKeyVirtualBit);
-  KeyScrollLeft = static_cast<KeyNumber>(KeyScrollLeft & ~kKeyVirtualBit);
-  KeyScrollRight = static_cast<KeyNumber>(KeyScrollRight & ~kKeyVirtualBit);
-  KeyScrollUp = static_cast<KeyNumber>(KeyScrollUp & ~kKeyVirtualBit);
-  KeyScrollDown = static_cast<KeyNumber>(KeyScrollDown & ~kKeyVirtualBit);
-  KeyQueueMove1 = static_cast<KeyNumber>(KeyQueueMove1 & ~kKeyVirtualBit);
-  KeyQueueMove2 = static_cast<KeyNumber>(KeyQueueMove2 & ~kKeyVirtualBit);
-  KeyTeam1 = static_cast<KeyNumber>(KeyTeam1 & ~kKeyVirtualBit);
-  KeyTeam2 = static_cast<KeyNumber>(KeyTeam2 & ~kKeyVirtualBit);
-  KeyTeam3 = static_cast<KeyNumber>(KeyTeam3 & ~kKeyVirtualBit);
-  KeyTeam4 = static_cast<KeyNumber>(KeyTeam4 & ~kKeyVirtualBit);
-  KeyTeam5 = static_cast<KeyNumber>(KeyTeam5 & ~kKeyVirtualBit);
-  KeyTeam6 = static_cast<KeyNumber>(KeyTeam6 & ~kKeyVirtualBit);
-  KeyTeam7 = static_cast<KeyNumber>(KeyTeam7 & ~kKeyVirtualBit);
-  KeyTeam8 = static_cast<KeyNumber>(KeyTeam8 & ~kKeyVirtualBit);
-  KeyTeam9 = static_cast<KeyNumber>(KeyTeam9 & ~kKeyVirtualBit);
-  KeyTeam10 = static_cast<KeyNumber>(KeyTeam10 & ~kKeyVirtualBit);
+  KeyForceMove1 = static_cast<engine::window::KeyNumber>(
+      KeyForceMove1 & ~engine::window::kKeyVirtualBit);
+  KeyForceMove2 = static_cast<engine::window::KeyNumber>(
+      KeyForceMove2 & ~engine::window::kKeyVirtualBit);
+  KeyForceAttack1 = static_cast<engine::window::KeyNumber>(
+      KeyForceAttack1 & ~engine::window::kKeyVirtualBit);
+  KeyForceAttack2 = static_cast<engine::window::KeyNumber>(
+      KeyForceAttack2 & ~engine::window::kKeyVirtualBit);
+  KeySelect1 = static_cast<engine::window::KeyNumber>(
+      KeySelect1 & ~engine::window::kKeyVirtualBit);
+  KeySelect2 = static_cast<engine::window::KeyNumber>(
+      KeySelect2 & ~engine::window::kKeyVirtualBit);
+  KeyScatter = static_cast<engine::window::KeyNumber>(
+      KeyScatter & ~engine::window::kKeyVirtualBit);
+  KeyStop = static_cast<engine::window::KeyNumber>(
+      KeyStop & ~engine::window::kKeyVirtualBit);
+  KeyGuard = static_cast<engine::window::KeyNumber>(
+      KeyGuard & ~engine::window::kKeyVirtualBit);
+  KeyNext = static_cast<engine::window::KeyNumber>(
+      KeyNext & ~engine::window::kKeyVirtualBit);
+  KeyPrevious = static_cast<engine::window::KeyNumber>(
+      KeyPrevious & ~engine::window::kKeyVirtualBit);
+  KeyFormation = static_cast<engine::window::KeyNumber>(
+      KeyFormation & ~engine::window::kKeyVirtualBit);
+  KeyHome1 = static_cast<engine::window::KeyNumber>(
+      KeyHome1 & ~engine::window::kKeyVirtualBit);
+  KeyHome2 = static_cast<engine::window::KeyNumber>(
+      KeyHome2 & ~engine::window::kKeyVirtualBit);
+  KeyBase = static_cast<engine::window::KeyNumber>(
+      KeyBase & ~engine::window::kKeyVirtualBit);
+  KeyResign = static_cast<engine::window::KeyNumber>(
+      KeyResign & ~engine::window::kKeyVirtualBit);
+  KeyAlliance = static_cast<engine::window::KeyNumber>(
+      KeyAlliance & ~engine::window::kKeyVirtualBit);
+  KeyBookmark1 = static_cast<engine::window::KeyNumber>(
+      KeyBookmark1 & ~engine::window::kKeyVirtualBit);
+  KeyBookmark2 = static_cast<engine::window::KeyNumber>(
+      KeyBookmark2 & ~engine::window::kKeyVirtualBit);
+  KeyBookmark3 = static_cast<engine::window::KeyNumber>(
+      KeyBookmark3 & ~engine::window::kKeyVirtualBit);
+  KeyBookmark4 = static_cast<engine::window::KeyNumber>(
+      KeyBookmark4 & ~engine::window::kKeyVirtualBit);
+  KeySelectView = static_cast<engine::window::KeyNumber>(
+      KeySelectView & ~engine::window::kKeyVirtualBit);
+  KeyRepair = static_cast<engine::window::KeyNumber>(
+      KeyRepair & ~engine::window::kKeyVirtualBit);
+  KeyRepairOn = static_cast<engine::window::KeyNumber>(
+      KeyRepairOn & ~engine::window::kKeyVirtualBit);
+  KeyRepairOff = static_cast<engine::window::KeyNumber>(
+      KeyRepairOff & ~engine::window::kKeyVirtualBit);
+  KeySell = static_cast<engine::window::KeyNumber>(
+      KeySell & ~engine::window::kKeyVirtualBit);
+  KeySellOn = static_cast<engine::window::KeyNumber>(
+      KeySellOn & ~engine::window::kKeyVirtualBit);
+  KeySellOff = static_cast<engine::window::KeyNumber>(
+      KeySellOff & ~engine::window::kKeyVirtualBit);
+  KeyMap = static_cast<engine::window::KeyNumber>(
+      KeyMap & ~engine::window::kKeyVirtualBit);
+  KeySidebarUp = static_cast<engine::window::KeyNumber>(
+      KeySidebarUp & ~engine::window::kKeyVirtualBit);
+  KeySidebarDown = static_cast<engine::window::KeyNumber>(
+      KeySidebarDown & ~engine::window::kKeyVirtualBit);
+  KeyOption1 = static_cast<engine::window::KeyNumber>(
+      KeyOption1 & ~engine::window::kKeyVirtualBit);
+  KeyOption2 = static_cast<engine::window::KeyNumber>(
+      KeyOption2 & ~engine::window::kKeyVirtualBit);
+  KeyScrollLeft = static_cast<engine::window::KeyNumber>(
+      KeyScrollLeft & ~engine::window::kKeyVirtualBit);
+  KeyScrollRight = static_cast<engine::window::KeyNumber>(
+      KeyScrollRight & ~engine::window::kKeyVirtualBit);
+  KeyScrollUp = static_cast<engine::window::KeyNumber>(
+      KeyScrollUp & ~engine::window::kKeyVirtualBit);
+  KeyScrollDown = static_cast<engine::window::KeyNumber>(
+      KeyScrollDown & ~engine::window::kKeyVirtualBit);
+  KeyQueueMove1 = static_cast<engine::window::KeyNumber>(
+      KeyQueueMove1 & ~engine::window::kKeyVirtualBit);
+  KeyQueueMove2 = static_cast<engine::window::KeyNumber>(
+      KeyQueueMove2 & ~engine::window::kKeyVirtualBit);
+  KeyTeam1 = static_cast<engine::window::KeyNumber>(
+      KeyTeam1 & ~engine::window::kKeyVirtualBit);
+  KeyTeam2 = static_cast<engine::window::KeyNumber>(
+      KeyTeam2 & ~engine::window::kKeyVirtualBit);
+  KeyTeam3 = static_cast<engine::window::KeyNumber>(
+      KeyTeam3 & ~engine::window::kKeyVirtualBit);
+  KeyTeam4 = static_cast<engine::window::KeyNumber>(
+      KeyTeam4 & ~engine::window::kKeyVirtualBit);
+  KeyTeam5 = static_cast<engine::window::KeyNumber>(
+      KeyTeam5 & ~engine::window::kKeyVirtualBit);
+  KeyTeam6 = static_cast<engine::window::KeyNumber>(
+      KeyTeam6 & ~engine::window::kKeyVirtualBit);
+  KeyTeam7 = static_cast<engine::window::KeyNumber>(
+      KeyTeam7 & ~engine::window::kKeyVirtualBit);
+  KeyTeam8 = static_cast<engine::window::KeyNumber>(
+      KeyTeam8 & ~engine::window::kKeyVirtualBit);
+  KeyTeam9 = static_cast<engine::window::KeyNumber>(
+      KeyTeam9 & ~engine::window::kKeyVirtualBit);
+  KeyTeam10 = static_cast<engine::window::KeyNumber>(
+      KeyTeam10 & ~engine::window::kKeyVirtualBit);
 }
 
 /***********************************************************************************************

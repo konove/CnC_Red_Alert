@@ -36,6 +36,8 @@
 #include "ra/game_state.h"
 #include "ra/jshell.h"
 
+using enum engine::window::KeyNumber;
+
 //***********************************************************************************************
 void WOLEditClass::Draw_Text(PixelView& view, const char* text) {
   //	Only difference between this and EditClass: cursor shows up when
@@ -62,7 +64,7 @@ void WOLEditClass::Draw_Text(PixelView& view, const char* text) {
 // key.) 	Again, I'm not about to change the base class directly, as I'm
 // trying to have as minimal an affect as possible on 	the current game code.
 // -ajw
-bool WOLEditClass::Action(unsigned flags, KeyNumber& key) {
+bool WOLEditClass::Action(unsigned flags, engine::window::KeyNumber& key) {
   //	(Mostly duplicated from base class ::Action)
   /*	For some painful reason, IsReadOnly is private in the base class, so I
      can't do the following. For this reason, don't make a WOLEditClass edit box
@@ -104,14 +106,16 @@ bool WOLEditClass::Action(unsigned flags, KeyNumber& key) {
       flags = 0;
 
     } else {
-      const auto ascii =
-          static_cast<KeyAscii>(KeyboardClass::To_ASCII(key) & 0xff);
+      const auto ascii = static_cast<engine::window::KeyAscii>(
+          KeyboardClass::To_ASCII(key) & 0xff);
 
       //
       // Allow numeric keypad presses to map to ascii numbers
       //
-      if ((key & kKeyVirtualBit) && ascii >= '0' && ascii <= '9') {
-        key = static_cast<KeyNumber>(key & ~kKeyVirtualBit);
+      if ((key & engine::window::kKeyVirtualBit) && ascii >= '0' &&
+          ascii <= '9') {
+        key = static_cast<engine::window::KeyNumber>(
+            key & ~engine::window::kKeyVirtualBit);
         if (((!(flags & kLeftRelease)) && (!(flags & kRightRelease))) &&
             Handle_Key(ascii)) {
           flags &= ~kKeyboard;
@@ -122,7 +126,8 @@ bool WOLEditClass::Action(unsigned flags, KeyNumber& key) {
         //
         // Filter out all special keys except return and backspace
         //
-        if ((!(key & kKeyVirtualBit) && ascii >= ' ' && ascii <= 255) ||
+        if ((!(key & engine::window::kKeyVirtualBit) && ascii >= ' ' &&
+             ascii <= 255) ||
             key == KN_RETURN || key == KN_BACKSPACE) {
           if (((!(flags & kLeftRelease)) && (!(flags & kRightRelease))) &&
               Handle_Key(KeyboardClass::To_ASCII(key))) {

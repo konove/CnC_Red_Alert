@@ -115,6 +115,8 @@
 #include "td/winstub.h"
 #include "td/world.h"
 
+using enum engine::window::KeyNumber;
+
 // Whether Smart_Print() echoes to stdout; on while a serial game runs.
 static bool smart_print_enabled = false;
 
@@ -282,7 +284,7 @@ int Test_Null_Modem() {
   Dialog variables
   ........................................................................*/
   bool process = true;  // process while true
-  KeyNumber input = KN_NONE;
+  engine::window::KeyNumber input = KN_NONE;
 
   int retval = 0;
   int64_t starttime = 0;
@@ -484,7 +486,7 @@ int Test_Null_Modem() {
     */
     switch (static_cast<int>(input)) {
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         // Smart_Printf( "Canceled waiting for SERIAL_CONNECT\n" );
         retval = 0;
         process = false;
@@ -713,14 +715,14 @@ static int Reconnect_Null_Modem() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view);
 
     /*
     ............................ Process input ............................
     */
     switch (static_cast<int>(input)) {
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         retval = 0;
         process = false;
         break;
@@ -1127,34 +1129,34 @@ GameType Select_Serial_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view);
 
     /*
     ............................ Process input ............................
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonDial):
+      case engine::window::ButtonKey(kButtonDial):
         selection = kButtonDial;
         pressed = true;
         break;
 
-      case ButtonKey(kButtonAnswer):
+      case engine::window::ButtonKey(kButtonAnswer):
         selection = kButtonAnswer;
         pressed = true;
         break;
 
-      case ButtonKey(kButtonNullmodem):
+      case engine::window::ButtonKey(kButtonNullmodem):
         selection = kButtonNullmodem;
         pressed = true;
         break;
 
-      case ButtonKey(kButtonSettings):
+      case engine::window::ButtonKey(kButtonSettings):
         selection = kButtonSettings;
         pressed = true;
         break;
 
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         selection = kButtonCancel;
         pressed = true;
         break;
@@ -1584,34 +1586,34 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view);
 
     /*
     ---------------------------- Process input ----------------------------
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonCompression):
+      case engine::window::ButtonKey(kButtonCompression):
         settings->Compression = !settings->Compression;
         base::SafeCopy(compress_text, settings->Compression
                                           ? Text_String(TXT_ON)
                                           : Text_String(TXT_OFF));
         break;
 
-      case ButtonKey(kButtonErrorCorrection):
+      case engine::window::ButtonKey(kButtonErrorCorrection):
         settings->ErrorCorrection = !settings->ErrorCorrection;
         base::SafeCopy(correction_text, settings->ErrorCorrection
                                             ? Text_String(TXT_ON)
                                             : Text_String(TXT_OFF));
         break;
 
-      case ButtonKey(kButtonHardwareFlowControl):
+      case engine::window::ButtonKey(kButtonHardwareFlowControl):
         settings->HardwareFlowControl = !settings->HardwareFlowControl;
         base::SafeCopy(flowcontrol_text, settings->HardwareFlowControl
                                              ? Text_String(TXT_ON)
                                              : Text_String(TXT_OFF));
         break;
 
-      case ButtonKey(kButtonDefault):
+      case engine::window::ButtonKey(kButtonDefault):
         settings->Compression = false;
         settings->ErrorCorrection = false;
         settings->HardwareFlowControl = true;
@@ -1631,7 +1633,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
         display = std::max(display, REDRAW_BUTTONS);
         break;
 
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         process = false;
         break;
       default:
@@ -1904,7 +1906,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumber input = KN_NONE;
+  engine::window::KeyNumber input = KN_NONE;
   char* item = nullptr;  // general-purpose string
   size_t temp = 0;       // general-purpose string
 
@@ -2443,12 +2445,12 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     ---------------------------- Process input ----------------------------
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonAdvanced):
+      case engine::window::ButtonKey(kButtonAdvanced):
         Advanced_Modem_Settings(&tempsettings);
         display = REDRAW_ALL;
         break;
 
-      case ButtonKey(kButtonPort):
+      case engine::window::ButtonKey(kButtonPort):
         if (port_index < 4) {
           const char* const current = portlist.Current_Item();
           const auto space = std::string_view(current).find(' ');
@@ -2556,7 +2558,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         }
         break;
 
-      case ButtonKey(kButtonPortlist):
+      case engine::window::ButtonKey(kButtonPortlist):
         if (portlist.Current_Index() != port_index) {
           port_index = portlist.Current_Index();
           const char* const current = portlist.Current_Item();
@@ -2624,7 +2626,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         break;
 
 #ifdef EDIT_IRQ
-      case ButtonKey(kButtonIrq): {
+      case engine::window::ButtonKey(kButtonIrq): {
         const std::string_view irq_item = irqlist.Current_Item();
         if (irq_index < 4) {
           temp = irq_item.find(' ');
@@ -2653,7 +2655,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         break;
       }
 
-      case ButtonKey(kButtonIrqlist):
+      case engine::window::ButtonKey(kButtonIrqlist):
         if (irqlist.Current_Index() != irq_index) {
           irq_index = irqlist.Current_Index();
           const std::string_view irq_item = irqlist.Current_Item();
@@ -2691,7 +2693,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         break;
 #endif  // EDIT_IRQ
 
-      case ButtonKey(kButtonBaud):
+      case engine::window::ButtonKey(kButtonBaud):
         base::SafeCopy(baudbuf, baudlist.Current_Item());
         baud_edt.Set_Text(baudbuf, BAUDBUF_MAX);
         initstr_edt.Set_Focus();
@@ -2699,7 +2701,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         display = REDRAW_BUTTONS;
         break;
 
-      case ButtonKey(kButtonBaudlist):
+      case engine::window::ButtonKey(kButtonBaudlist):
         if (baudlist.Current_Index() != baud_index) {
           baud_index = baudlist.Current_Index();
           base::SafeCopy(baudbuf, baudlist.Current_Item());
@@ -2709,7 +2711,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         }
         break;
 
-      case ButtonKey(kButtonInitstrlist):
+      case engine::window::ButtonKey(kButtonInitstrlist):
         if (initstrlist.Current_Index() != initstr_index) {
           initstr_index = initstrlist.Current_Index();
           base::SafeCopy(initstrbuf, initstrlist.Current_Item());
@@ -2723,7 +2725,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       /*------------------------------------------------------------------
       Add a new InitString entry
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonAdd):
+      case engine::window::ButtonKey(kButtonAdd):
 
         item = new char[INITSTRBUF_MAX]{};
 
@@ -2756,7 +2758,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       /*------------------------------------------------------------------
       Delete the current InitString entry
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonDelete):
+      case engine::window::ButtonKey(kButtonDelete):
 
         if (TheNetwork().init_strings().Count() && initstr_index != -1) {
           TheNetwork().init_strings().Delete(initstr_index);
@@ -2765,7 +2767,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         }
         break;
 
-      case ButtonKey(kButtonCwaitstr):
+      case engine::window::ButtonKey(kButtonCwaitstr):
         if (cwaitstr_index >= kCallWaitCustom) {
           item = base::At(call_wait_strings, kCallWaitCustom);
           temp = std::string_view(item).find('-');
@@ -2781,7 +2783,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         }
         break;
 
-      case ButtonKey(kButtonCwaitstrlist):
+      case engine::window::ButtonKey(kButtonCwaitstrlist):
         if (cwaitstrlist.Current_Index() != cwaitstr_index) {
           cwaitstr_index = cwaitstrlist.Current_Index();
           const char* const current = cwaitstrlist.Current_Item();
@@ -2808,13 +2810,13 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
         display = REDRAW_BUTTONS;
         break;
 
-      case ButtonKey(kButtonTone):
+      case engine::window::ButtonKey(kButtonTone):
         tempsettings.DialMethod = DIAL_TOUCH_TONE;
         tonebtn.Turn_On();
         pulsebtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonPulse):
+      case engine::window::ButtonKey(kButtonPulse):
         tempsettings.DialMethod = DIAL_PULSE;
         tonebtn.Turn_Off();
         pulsebtn.Turn_On();
@@ -2824,7 +2826,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       SAVE: save the com settings
       ------------------------------------------------------------------*/
       case KN_RETURN:
-      case ButtonKey(kButtonSave):
+      case engine::window::ButtonKey(kButtonSave):
         switch (port_index) {
           case 0:
             tempsettings.Port = 0x3f8;
@@ -2925,7 +2927,7 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
       CANCEL: send a SIGN_OFF, bail out with error code
       ------------------------------------------------------------------*/
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         process = false;
         rc = 0;
         break;
@@ -3228,7 +3230,7 @@ int Com_Scenario_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumber input = KN_NONE;
+  engine::window::KeyNumber input = KN_NONE;
 
   char namebuf[MPLAYER_NAME_MAX] = {0};  // buffer for player's name
   char credbuf[CREDITSBUF_MAX];          // for credit edit box
@@ -3687,14 +3689,18 @@ int Com_Scenario_Dialog() {
       User clicks on a color button
       ------------------------------------------------------------------*/
       case KN_LMOUSE:
-        if ((g_active_keyboard->click_x() > base::At(cbox_x, 0) &&
-             g_active_keyboard->click_x() <
+        if ((engine::window::g_active_keyboard->click_x() >
+                 base::At(cbox_x, 0) &&
+             engine::window::g_active_keyboard->click_x() <
                  base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w &&
-             g_active_keyboard->click_y() > d_color_y &&
-             g_active_keyboard->click_y() < d_color_y + d_color_h) &&
+             engine::window::g_active_keyboard->click_y() > d_color_y &&
+             engine::window::g_active_keyboard->click_y() <
+                 d_color_y + d_color_h) &&
             (!ready_to_go)) {
           TheSession().preferred_color() =
-              (g_active_keyboard->click_x() - base::At(cbox_x, 0)) / d_color_w;
+              (engine::window::g_active_keyboard->click_x() -
+               base::At(cbox_x, 0)) /
+              d_color_w;
           TheSession().color_index() = TheSession().preferred_color();
           display = REDRAW_COLORS;
 
@@ -3712,7 +3718,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       User edits the name field; retransmit new game options
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonName):
+      case engine::window::ButtonKey(kButtonName):
         if (!ready_to_go) {
           credit_edt.Clear_Focus();
           credit_edt.Flag_To_Redraw();
@@ -3726,7 +3732,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       House Buttons: set the player's desired House
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonGdi):
+      case engine::window::ButtonKey(kButtonGdi):
         if (!ready_to_go) {
           TheSession().house() = HOUSE_GOOD;
           gdibtn.Turn_On();
@@ -3737,7 +3743,7 @@ int Com_Scenario_Dialog() {
         }
         break;
 
-      case ButtonKey(kButtonNod):
+      case engine::window::ButtonKey(kButtonNod):
         if (!ready_to_go) {
           TheSession().house() = HOUSE_BAD;
           gdibtn.Turn_Off();
@@ -3751,7 +3757,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       User edits the credits value; retransmit new game options
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonCredits):
+      case engine::window::ButtonKey(kButtonCredits):
         if (!ready_to_go) {
           name_edt.Clear_Focus();
           name_edt.Flag_To_Redraw();
@@ -3764,7 +3770,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       New Scenario selected.
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonScenariolist):
+      case engine::window::ButtonKey(kButtonScenariolist):
         if (scenariolist.Current_Index() != TheSession().scenario_index() &&
             !ready_to_go) {
           TheSession().scenario_index() = scenariolist.Current_Index();
@@ -3777,7 +3783,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       User adjusts max # units
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonCount):
+      case engine::window::ButtonKey(kButtonCount):
         if (!ready_to_go) {
           TheSession().unit_count() =
               countgauge.Get_Value() +
@@ -3790,7 +3796,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       User adjusts build level
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonLevel):
+      case engine::window::ButtonKey(kButtonLevel):
         if (!ready_to_go) {
           TheWorld().build_level() =
               std::min(levelgauge.Get_Value() + 1, MPLAYER_BUILD_LEVEL_MAX);
@@ -3802,7 +3808,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       Toggle bases
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonBases):
+      case engine::window::ButtonKey(kButtonBases):
         if (!ready_to_go) {
           if (TheSession().bases()) {
             TheSession().bases() = 0;
@@ -3849,7 +3855,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       Toggle tiberium
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonTiberium):
+      case engine::window::ButtonKey(kButtonTiberium):
         if (!ready_to_go) {
           if (TheSession().tiberium()) {
             TheSession().tiberium() = 0;
@@ -3873,7 +3879,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       Toggle goodies
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonGoodies):
+      case engine::window::ButtonKey(kButtonGoodies):
         if (!ready_to_go) {
           if (TheSession().crates()) {
             TheSession().crates() = 0;
@@ -3893,7 +3899,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       Toggle ghosts
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonGhosts):
+      case engine::window::ButtonKey(kButtonGhosts):
         if (!ready_to_go) {
           if (!TheSession().ghosts() &&
               !TheSpecial().IsCaptureTheFlag) {  // ghosts OFF => ghosts ON
@@ -3921,7 +3927,7 @@ int Com_Scenario_Dialog() {
       /*------------------------------------------------------------------
       OK: exit loop with true status
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         if (!ready_to_go) {
           //
           // make sure we got a game options packet from the other player
@@ -3971,7 +3977,7 @@ int Com_Scenario_Dialog() {
         }
 
         [[fallthrough]];
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         if (!ready_to_go) {
           process = false;
           rc = 0;
@@ -3990,7 +3996,8 @@ int Com_Scenario_Dialog() {
         F4/SEND/'M' = send a message
         ...............................................................*/
         if (TheSession().messages().Get_Edit_Buf() == nullptr) {
-          if (input == KN_M || input == ButtonKey(kButtonSend) ||
+          if (input == KN_M ||
+              input == engine::window::ButtonKey(kButtonSend) ||
               input == KN_F4) {
             base::FillBytes(base::ObjectBytes(txt), 0, 80);
 
@@ -4011,7 +4018,7 @@ int Com_Scenario_Dialog() {
             break;
           }
         } else {
-          if (input == ButtonKey(kButtonSend)) {
+          if (input == engine::window::ButtonKey(kButtonSend)) {
             input = KN_RETURN;
           }
         }
@@ -4689,7 +4696,7 @@ int Com_Show_Scenario_Dialog() {
   ........................................................................*/
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumber input = KN_NONE;
+  engine::window::KeyNumber input = KN_NONE;
 
   char namebuf[MPLAYER_NAME_MAX] = {0};  // buffer for player's name
   const int cbox_x[] = {d_dialog_cx,
@@ -5119,17 +5126,21 @@ int Com_Show_Scenario_Dialog() {
       User clicks on a color button
       ------------------------------------------------------------------*/
       case KN_LMOUSE:
-        if ((g_active_keyboard->click_x() > base::At(cbox_x, 0) &&
-             g_active_keyboard->click_x() <
+        if ((engine::window::g_active_keyboard->click_x() >
+                 base::At(cbox_x, 0) &&
+             engine::window::g_active_keyboard->click_x() <
                  base::At(cbox_x, MAX_MPLAYER_COLORS - 1) + d_color_w &&
-             g_active_keyboard->click_y() > d_color_y &&
-             g_active_keyboard->click_y() < d_color_y + d_color_h) &&
+             engine::window::g_active_keyboard->click_y() > d_color_y &&
+             engine::window::g_active_keyboard->click_y() <
+                 d_color_y + d_color_h) &&
             (!ready_to_go)) {
           /*.........................................................
           Compute my preferred color as the one I clicked on.
           .........................................................*/
           TheSession().preferred_color() =
-              (g_active_keyboard->click_x() - base::At(cbox_x, 0)) / d_color_w;
+              (engine::window::g_active_keyboard->click_x() -
+               base::At(cbox_x, 0)) /
+              d_color_w;
           changed = 1;
           /*.........................................................
           If 'TheirColor' is set to the other player's color, make
@@ -5155,7 +5166,7 @@ int Com_Show_Scenario_Dialog() {
       /*------------------------------------------------------------------
       House Buttons: set the player's desired House
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonGdi):
+      case engine::window::ButtonKey(kButtonGdi):
         if (!ready_to_go) {
           TheSession().house() = HOUSE_GOOD;
           gdibtn.Turn_On();
@@ -5165,7 +5176,7 @@ int Com_Show_Scenario_Dialog() {
         }
         break;
 
-      case ButtonKey(kButtonNod):
+      case engine::window::ButtonKey(kButtonNod):
         if (!ready_to_go) {
           TheSession().house() = HOUSE_BAD;
           gdibtn.Turn_Off();
@@ -5178,7 +5189,7 @@ int Com_Show_Scenario_Dialog() {
       /*------------------------------------------------------------------
       User edits the name value; retransmit
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonName):
+      case engine::window::ButtonKey(kButtonName):
         if (!ready_to_go) {
           base::SafeCopy(TheSession().player_name(), namebuf);
           transmit = 1;
@@ -5198,7 +5209,7 @@ int Com_Show_Scenario_Dialog() {
         }
 
         [[fallthrough]];
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         if (!ready_to_go) {
           process = false;
           rc = 0;
@@ -5214,7 +5225,8 @@ int Com_Show_Scenario_Dialog() {
           F4/SEND/'M' = send a message
           ...............................................................*/
           if (TheSession().messages().Get_Edit_Buf() == nullptr) {
-            if (input == KN_M || input == ButtonKey(kButtonSend) ||
+            if (input == KN_M ||
+                input == engine::window::ButtonKey(kButtonSend) ||
                 input == KN_F4) {
               base::FillBytes(base::ObjectBytes(txt), 0, 80);
 
@@ -5233,7 +5245,7 @@ int Com_Show_Scenario_Dialog() {
               break;
             }
           } else {
-            if (input == ButtonKey(kButtonSend)) {
+            if (input == engine::window::ButtonKey(kButtonSend)) {
               input = KN_RETURN;
             }
           }
@@ -6024,7 +6036,7 @@ static int Phone_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view);
 
     if (firsttime) {
       numedit.Set_Focus();
@@ -6040,7 +6052,7 @@ static int Phone_Dialog() {
       /*------------------------------------------------------------------
       New phone listing selected.
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonPhonelist):
+      case engine::window::ButtonKey(kButtonPhonelist):
         /*...............................................................
         Detect a change in the selected item; update CurPhoneIdx, and
         the edit box buffer.
@@ -6059,7 +6071,7 @@ static int Phone_Dialog() {
       /*------------------------------------------------------------------
       Add a new entry
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonAdd):
+      case engine::window::ButtonKey(kButtonAdd):
 
         /*...............................................................
         Allocate a new phone book entry
@@ -6110,7 +6122,7 @@ static int Phone_Dialog() {
       /*------------------------------------------------------------------
       Edit the current entry
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonEdit):
+      case engine::window::ButtonKey(kButtonEdit):
 
         /*...............................................................
         Do nothing if no entry is selected.
@@ -6161,7 +6173,7 @@ static int Phone_Dialog() {
       /*------------------------------------------------------------------
       Delete the current entry
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonDelete):
+      case engine::window::ButtonKey(kButtonDelete):
 
         /*...............................................................
         Do nothing if no entry is selected.
@@ -6191,7 +6203,7 @@ static int Phone_Dialog() {
         dialbtn.Draw_Me(view, true);
         [[fallthrough]];
 
-      case ButtonKey(kButtonDial):
+      case engine::window::ButtonKey(kButtonDial):
 
         /*...............................................................
         If no item is selected, just dial the number in the phone #
@@ -6243,7 +6255,7 @@ static int Phone_Dialog() {
       CANCEL: bail out
       ------------------------------------------------------------------*/
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         process = false;
         rc = 0;
         break;
@@ -6623,7 +6635,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     /*
     ........................... Get user input ............................
     */
-    KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view);
 
     if (firsttime) {
       nameedit.Set_Focus();
@@ -6636,7 +6648,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     ---------------------------- Process input ----------------------------
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonName):
+      case engine::window::ButtonKey(kButtonName):
         numedit.Set_Focus();
         numedit.Flag_To_Redraw();
         break;
@@ -6649,7 +6661,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       /*------------------------------------------------------------------
       Use Default Serial Settings
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonDefault):
+      case engine::window::ButtonKey(kButtonDefault):
         custombtn.Turn_Off();
         defaultbtn.Turn_On();
         custom = 0;
@@ -6658,7 +6670,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       /*------------------------------------------------------------------
       Use Custom Serial Settings
       ------------------------------------------------------------------*/
-      case ButtonKey(kButtonCustom):
+      case engine::window::ButtonKey(kButtonCustom):
         if (Com_Settings_Dialog(&settings)) {
           custombtn.Turn_On();
           defaultbtn.Turn_Off();
@@ -6671,7 +6683,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       CANCEL: bail out
       ------------------------------------------------------------------*/
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         process = false;
         rc = 0;
         break;
@@ -6680,7 +6692,7 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
       Save: save changes
       ------------------------------------------------------------------*/
       case KN_RETURN:
-      case ButtonKey(kButtonSave):
+      case engine::window::ButtonKey(kButtonSave):
         process = false;
         rc = 1;
         break;

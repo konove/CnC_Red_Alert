@@ -176,7 +176,7 @@ class MessageListClass {
   // Maintenance routines
   //.....................................................................
   int Manage();
-  int Input(KeyNumber& input);
+  int Input(engine::window::KeyNumber& input);
   void Draw(PixelView& view);
   int Num_Messages();
   void Set_Width(int width);

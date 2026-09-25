@@ -73,7 +73,7 @@ class ScrollClass : public HelpClass {
 
   bool Set_Autoscroll(int control);
 
-  void AI(KeyNumber& input, int x, int y) override;
+  void AI(engine::window::KeyNumber& input, int x, int y) override;
   void Init_IO() override {
     Counter.Set(0);
     HelpClass::Init_IO();

@@ -100,16 +100,16 @@ ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-bool ControlClass::Action(unsigned flags, KeyNumber& key) {
+bool ControlClass::Action(unsigned flags, engine::window::KeyNumber& key) {
   /*
   **	Only if the flags indicate that a recognized action has occurred, do the
   **	normal processing of this gadget and set return value to the gadget ID.
   */
   if (flags) {
     if (ID) {
-      key = ButtonKey(static_cast<int>(ID));
+      key = engine::window::ButtonKey(static_cast<int>(ID));
     } else {
-      key = KN_NONE;
+      key = engine::window::KN_NONE;
     }
   }
 

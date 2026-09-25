@@ -38,6 +38,8 @@
 #include "ra/wol_main.h"
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
+
+using enum engine::window::KeyNumber;
 // #include "ra/woldebug.h"
 
 //***********************************************************************************************
@@ -177,7 +179,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     /*
     **	Get user input.
     */
-    KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view);
 
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on
@@ -185,7 +187,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     if (KeyboardClass::Down(KN_ESC)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {
-      input = ButtonKey(kButtonOk);
+      input = engine::window::ButtonKey(kButtonOk);
       bEscapeDown = false;
     }
     if (KeyboardClass::Down(KN_RETURN)) {
@@ -195,7 +197,7 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
     } else {
       bIgnoreReturnDown = false;
       if (bReturnDown) {
-        input = ButtonKey(kButtonOk);
+        input = engine::window::ButtonKey(kButtonOk);
         bReturnDown = false;
       }
     }
@@ -206,22 +208,22 @@ bool WOL_Options_Dialog(WolapiObject* pWO, bool bCalledFromGame) {
 
     if (TheGameState().cancel_msgbox()) {
       TheGameState().cancel_msgbox() = false;
-      input = ButtonKey(kButtonOk);
+      input = engine::window::ButtonKey(kButtonOk);
     }
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         process = false;
         break;
 
-      case ButtonKey(kCheckFind):
-      case ButtonKey(kCheckPage):
-      case ButtonKey(kCheckLanguage):
-      case ButtonKey(kCheckAllgames):
+      case engine::window::ButtonKey(kCheckFind):
+      case engine::window::ButtonKey(kCheckPage):
+      case engine::window::ButtonKey(kCheckLanguage):
+      case engine::window::ButtonKey(kCheckAllgames):
         pWO->SetOptions(FindCheck.IsOn, PageCheck.IsOn, LanguageCheck.IsOn,
                         !GamescopeCheck.IsOn);
         break;
 
-      case ButtonKey(kCheckRankam):
+      case engine::window::ButtonKey(kCheckRankam):
         pWO->bShowRankRA = !RankAMCheck.IsOn;
         pWO->bMyRecordUpdated = true;
         pWO->bShowRankUpdated = true;

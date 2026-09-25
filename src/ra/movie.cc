@@ -120,7 +120,7 @@ class MovieScreen final : public VqaClient {
 
     if ((TheGameState().breakout_allowed() ||
          TheDebugState().developer_mode()) &&
-        key == KN_ESC) {
+        key == engine::window::KN_ESC) {
       TheKeyboard().Clear();
       broken_out_ = true;
       return false;

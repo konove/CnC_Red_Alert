@@ -68,7 +68,7 @@ class HelpClass : public TabClass {
   void Init_Clear() override;  // Clears all to known state
 
   void Draw_It(PixelView& view, bool forced = false) override;
-  void AI(KeyNumber& key, int x, int y) override;
+  void AI(engine::window::KeyNumber& key, int x, int y) override;
   bool Scroll_Map(DirType facing, int& distance, bool really) override;
   void Set_Tactical_Position(COORDINATE coord) override;
 

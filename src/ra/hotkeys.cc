@@ -61,6 +61,8 @@
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
 
+using enum engine::window::KeyNumber;
+
 // Records or restores one of the player's tactical-view bookmarks.
 // action: 0 = jump the view back to the remembered location,
 //         1 = remember the current view location.
@@ -90,7 +92,7 @@ static void Handle_View(const int view, const int action) {
 // ever acted on once no matter how many clauses could match it. Message input
 // gets first refusal for that reason: a player typing chat must not also be
 // commanding their units.
-void Keyboard_Process(KeyNumber& input) {
+void Keyboard_Process(engine::window::KeyNumber& input) {
   ObjectClass* obj = nullptr;
 
   // Don't do anything if there is not keyboard event.
@@ -104,13 +106,14 @@ void Keyboard_Process(KeyNumber& input) {
   // comparison to KN_1, for example, will yield true if in fact the "1"
   // key was pressed.
 
-  constexpr unsigned kModifierBits =
-      unsigned{kKeyShiftBit} | unsigned{kKeyAltBit} | unsigned{kKeyCtrlBit} |
-      unsigned{kKeyVirtualBit};
-  const auto plain =
-      static_cast<KeyNumber>(static_cast<unsigned>(input) & ~kModifierBits);
-  const auto key = static_cast<KeyNumber>(static_cast<unsigned>(input) &
-                                          ~unsigned{kKeyVirtualBit});
+  constexpr unsigned kModifierBits = unsigned{engine::window::kKeyShiftBit} |
+                                     unsigned{engine::window::kKeyAltBit} |
+                                     unsigned{engine::window::kKeyCtrlBit} |
+                                     unsigned{engine::window::kKeyVirtualBit};
+  const auto plain = static_cast<engine::window::KeyNumber>(
+      static_cast<unsigned>(input) & ~kModifierBits);
+  const auto key = static_cast<engine::window::KeyNumber>(
+      static_cast<unsigned>(input) & ~unsigned{engine::window::kKeyVirtualBit});
 
   if constexpr (config::kCheatKeysEnabled) {
     if (TheDebugState().developer_mode()) {
@@ -158,13 +161,16 @@ void Keyboard_Process(KeyNumber& input) {
   // if the SHIFT key is held down. It will create the team if the
   // CTRL or ALT key is held down.
   int action = 0;
-  if ((static_cast<unsigned>(input) & unsigned{kKeyShiftBit}) != 0U) {
+  if ((static_cast<unsigned>(input) & unsigned{engine::window::kKeyShiftBit}) !=
+      0U) {
     action = 1;
   }
-  if ((static_cast<unsigned>(input) & unsigned{kKeyAltBit}) != 0U) {
+  if ((static_cast<unsigned>(input) & unsigned{engine::window::kKeyAltBit}) !=
+      0U) {
     action = 3;
   }
-  if ((static_cast<unsigned>(input) & unsigned{kKeyCtrlBit}) != 0U) {
+  if ((static_cast<unsigned>(input) & unsigned{engine::window::kKeyCtrlBit}) !=
+      0U) {
     action = 2;
   }
 

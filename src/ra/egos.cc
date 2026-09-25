@@ -77,6 +77,8 @@
 #include "ra/theme.h"
 #include "ra/vector_dynamic.h"
 
+using enum engine::window::KeyNumber;
+
 /*
 ** List of Ego Class instances
 **  There will be one instance for each line of text.

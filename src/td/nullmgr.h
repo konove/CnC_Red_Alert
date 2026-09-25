@@ -94,7 +94,7 @@ class NullModemClass : public ConnManClass {
   char ModemEscapeCode{'+'};
 
   static void (*OrigAbortModemFunc)(int);
-  static KeyNumber Input;
+  static engine::window::KeyNumber Input;
   static GadgetClass* Commands;  // button list
 
   /*

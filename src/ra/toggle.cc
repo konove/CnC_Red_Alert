@@ -129,7 +129,7 @@ void ToggleClass::Turn_Off() {
  * HISTORY: * 01/14/1995 JLB : Created. * 02/02/1995 JLB : Left press doesn't
  *get passed to other buttons now                       *
  *=============================================================================================*/
-bool ToggleClass::Action(unsigned flags, KeyNumber& key) {
+bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key) {
   /*
   **	If there are no action flag bits set, then this must be a forced call. A
   *forced call *	must never actually function like a real call, but
@@ -168,7 +168,7 @@ bool ToggleClass::Action(unsigned flags, KeyNumber& key) {
     Flag_To_Redraw();
     flags &= ~unsigned{kLeftPress};
     ControlClass::Action(flags, key);
-    key = KN_NONE;  // erase the event
+    key = engine::window::KN_NONE;  // erase the event
     return true;    // stop processing other buttons now
   }
 

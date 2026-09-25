@@ -77,7 +77,7 @@ class SliderClass final : public GaugeClass {
   bool Bump(bool up);
   bool Step(bool up);
   bool Draw_Me(PixelView& view, bool forced) override;
-  void Peer_To_Peer(unsigned flags, KeyNumber& key,
+  void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
                     ControlClass& whom) override;
 
   int Thumb_Pixels() override { return ThumbSize; }
@@ -109,7 +109,7 @@ class SliderClass final : public GaugeClass {
   int ThumbSize = 0;
   int ThumbStart = 0;  // x or y position for the thumb
 
-  bool Action(unsigned flags, KeyNumber& key) override;
+  bool Action(unsigned flags, engine::window::KeyNumber& key) override;
   void Draw_Thumb(PixelView& view) override;
 
  private:

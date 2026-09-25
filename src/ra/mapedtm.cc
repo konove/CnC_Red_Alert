@@ -72,6 +72,8 @@
 #include "ra/tracker.h"
 #include "ra/type.h"
 
+using enum engine::window::KeyNumber;
+
 /***************************************************************************
  * MapEditClass::Handle_Teams -- main team-dialog-handling function        *
  *                                                                         *
@@ -334,35 +336,35 @@ int MapEditClass::Select_Team(const char* /*unused*/) {
     /*
     **	Get user input
     */
-    const KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view);
 
     /*
     **	Process input
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kTeamList):
+      case engine::window::ButtonKey(kTeamList):
         CurTeam = teamlist.Current_Item();
         break;
 
-      case ButtonKey(kButtonEdit):
+      case engine::window::ButtonKey(kButtonEdit):
         if (teamlist.Count()) {
           process = false;
           edit_team = true;
         }
         break;
 
-      case ButtonKey(kButtonNew):
+      case engine::window::ButtonKey(kButtonNew):
         process = false;
         new_team = true;
         break;
 
-      case ButtonKey(kButtonDelete):
+      case engine::window::ButtonKey(kButtonDelete):
         process = false;
         del_team = true;
         break;
 
       case KN_RETURN:
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         process = false;
         break;
       default:
@@ -682,7 +684,8 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Get user input.
     */
-    const KeyNumber input = commands->Input(view);  // user input
+    const engine::window::KeyNumber input =
+        commands->Input(view);  // user input
 
     /*
     **	Process input.
@@ -718,14 +721,14 @@ int MapEditClass::Team_Members(HousesType house) {
       /*
       **	OK: save values & return.
       */
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         process = false;
         break;
 
       /*
       **	Cancel: abort & return.
       */
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;

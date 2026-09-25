@@ -29,6 +29,8 @@
 
 union SDL_Event;
 
+namespace engine::window {
+
 // Modifier and state bits combined with a key number. They are flags, not an
 // enumeration, so they are unsigned bit masks that mix with KeyNumber freely.
 // The key code itself fills the low byte, which is why a scancode above 0xFF
@@ -64,7 +66,7 @@ constexpr int KeyCode(const int key) {
 // Example:
 //   if (keys.Peek() != 0) {
 //     const int key = keys.Read();
-//     if (KeyBuffer::IsMouseKey(key)) {
+//     if (engine::window::KeyBuffer::IsMouseKey(key)) {
 //       Click_At(keys.click_x(), keys.click_y());
 //     }
 //   }
@@ -542,8 +544,8 @@ enum KeyNumber {
 //
 // Example:
 //   switch (input) {
-//     case KN_ESC:
-//     case ButtonKey(BUTTON_CANCEL):
+//     case engine::window::KN_ESC:
+//     case engine::window::ButtonKey(BUTTON_CANCEL):
 //       ...
 //   }
 constexpr KeyNumber ButtonKey(const int id) {
@@ -571,5 +573,7 @@ inline KeyNumber operator~(const KeyNumber a) noexcept {
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
   return static_cast<KeyNumber>(~static_cast<uint32_t>(a));
 }
+
+}  // namespace engine::window
 
 #endif  // CNC_RED_ALERT_ENGINE_WINDOW_KEYBOARD_H_

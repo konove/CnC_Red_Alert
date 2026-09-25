@@ -100,6 +100,8 @@
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
 
+using enum engine::window::KeyNumber;
+
 /***************************************************************************
  * MapEditClass::Placement_Dialog -- adds an object to the scenario        *
  *                                                                         *
@@ -512,7 +514,8 @@ int MapEditClass::Placement_Dialog() {
     /*
     **	Get user input
     */
-    const KeyNumber input = commands->Input(view);  // user input
+    const engine::window::KeyNumber input =
+        commands->Input(view);  // user input
 
     /*
     **	Process user input
@@ -521,7 +524,7 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	GDI House
       */
-      case ButtonKey(kButtonHouse):
+      case engine::window::ButtonKey(kButtonHouse):
         house = HousesType(housebtn.Current_Index());
 
         /*
@@ -535,7 +538,7 @@ int MapEditClass::Placement_Dialog() {
       **	Next in list
       */
       case KN_RIGHT:
-      case ButtonKey(kButtonNext):
+      case engine::window::ButtonKey(kButtonNext):
         /*
         **	Increment to next obj
         */
@@ -553,7 +556,7 @@ int MapEditClass::Placement_Dialog() {
       **	Previous in list
       */
       case KN_LEFT:
-      case ButtonKey(kButtonPrev):
+      case engine::window::ButtonKey(kButtonPrev):
 
         /*
         **	Decrement to prev obj
@@ -570,20 +573,20 @@ int MapEditClass::Placement_Dialog() {
       /*
       **	Select a class type
       */
-      case ButtonKey(kButtonTemplate):
-      case ButtonKey(kButtonOverlay):
-      case ButtonKey(kButtonSmudge):
-      case ButtonKey(kButtonTerrain):
-      case ButtonKey(kButtonUnit):
-      case ButtonKey(kButtonInfantry):
-      case ButtonKey(kButtonAircraft):
-      case ButtonKey(kButtonBuilding):
-      case ButtonKey(kButtonAir):
+      case engine::window::ButtonKey(kButtonTemplate):
+      case engine::window::ButtonKey(kButtonOverlay):
+      case engine::window::ButtonKey(kButtonSmudge):
+      case engine::window::ButtonKey(kButtonTerrain):
+      case engine::window::ButtonKey(kButtonUnit):
+      case engine::window::ButtonKey(kButtonInfantry):
+      case engine::window::ButtonKey(kButtonAircraft):
+      case engine::window::ButtonKey(kButtonBuilding):
+      case engine::window::ButtonKey(kButtonAir):
 
         /*
         **	Find index of class
         */
-        typeindex = input - ButtonKey(kButtonTemplate);
+        typeindex = input - engine::window::ButtonKey(kButtonTemplate);
 
         /*
         **	If no objects of that type, do nothing
@@ -652,7 +655,7 @@ int MapEditClass::Placement_Dialog() {
       **	OK
       */
       case KN_RETURN:
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         cancel = false;
         process = false;
         break;
@@ -661,7 +664,7 @@ int MapEditClass::Placement_Dialog() {
       **	Cancel
       */
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;

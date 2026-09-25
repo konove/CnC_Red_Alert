@@ -217,6 +217,8 @@
 #include "ra/wolstrng.h"
 #include "ra/world.h"
 
+using enum engine::window::KeyNumber;
+
 // #define OLDWAY			1
 
 // Size of the heap buffers holding the "xxx's Game" entries of the game list:
@@ -1517,7 +1519,7 @@ static int Net_Join_Dialog() {
   //------------------------------------------------------------------------
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumber input = KN_NONE;
+  engine::window::KeyNumber input = KN_NONE;
   const int cbox_x[] = {
       d_color_x,
       d_color_x + d_color_w,
@@ -2117,7 +2119,7 @@ static int Net_Join_Dialog() {
       //..................................................................
       //	User clicks on the game list:
       //..................................................................
-      case ButtonKey(kButtonGamelist):
+      case engine::window::ButtonKey(kButtonGamelist):
         //...............................................................
         // Handle a double-click
         //...............................................................
@@ -2223,13 +2225,13 @@ static int Net_Join_Dialog() {
       //..................................................................
       //	House Buttons: set the player's desired House
       //..................................................................
-      case ButtonKey(kButtonGdi):
+      case engine::window::ButtonKey(kButtonGdi):
         TheSession().House = HOUSE_GOOD;
         gdibtn.Turn_On();
         nodbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonNod):
+      case engine::window::ButtonKey(kButtonNod):
         TheSession().House = HOUSE_BAD;
         gdibtn.Turn_Off();
         nodbtn.Turn_On();
@@ -2241,7 +2243,7 @@ static int Net_Join_Dialog() {
       //	JOIN: send a join request packet & switch to waiting-for-
       // confirmation mode.
       //..................................................................
-      case ButtonKey(kButtonJoin):
+      case engine::window::ButtonKey(kButtonJoin):
         name_edt.Clear_Focus();
         name_edt.Flag_To_Redraw();
         base::SafeCopy(TheSession().Handle, namebuf);
@@ -2264,7 +2266,7 @@ static int Net_Join_Dialog() {
       // - If we're part of a game, stay in this dialog; otherwise, exit
       //..................................................................
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         if (housebtn.IsDropped) {
           housebtn.Collapse();
         }
@@ -2322,7 +2324,7 @@ static int Net_Join_Dialog() {
       //..................................................................
       //	NEW: bail out with return code 1
       //..................................................................
-      case ButtonKey(kButtonNew):
+      case engine::window::ButtonKey(kButtonNew):
         //...............................................................
         //	Force user to enter a name
         //...............................................................
@@ -4217,7 +4219,7 @@ static int Net_New_Dialog() {
   //------------------------------------------------------------------------
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumber input = KN_NONE;
+  engine::window::KeyNumber input = KN_NONE;
 
   int64_t ok_timer = 0;  // for timing OK button
   int index = 0;         // index for rejecting a player
@@ -4625,7 +4627,7 @@ static int Net_New_Dialog() {
       //	New Scenario selected.
       //..................................................................
       // All scenarios now allowable as downloads. ajw
-      case ButtonKey(kButtonScenariolist):
+      case engine::window::ButtonKey(kButtonScenariolist):
         if (scenariolist.Current_Index() !=
             TheSession().Options.ScenarioIndex) {
           TheSession().Options.ScenarioIndex = scenariolist.Current_Index();
@@ -4636,7 +4638,7 @@ static int Net_New_Dialog() {
       //	Reject the currently-selected player (don't allow rejecting
       // myself, 	who will be the first entry in the list)
       //..................................................................
-      case ButtonKey(kButtonReject):
+      case engine::window::ButtonKey(kButtonReject):
         index = playerlist.Current_Index();
 
         if (index == 0) {
@@ -4668,7 +4670,7 @@ static int Net_New_Dialog() {
       //..................................................................
       //	User adjusts max # units
       //..................................................................
-      case ButtonKey(kButtonCount):
+      case engine::window::ButtonKey(kButtonCount):
         TheSession().Options.UnitCount =
             countgauge.Get_Value() +
             base::At(SessionClass::CountMin, TheSession().Options.Bases);
@@ -4679,7 +4681,7 @@ static int Net_New_Dialog() {
       //..................................................................
       //	User adjusts build level
       //..................................................................
-      case ButtonKey(kButtonLevel):
+      case engine::window::ButtonKey(kButtonLevel):
         TheWorld().build_level() =
             std::min(levelgauge.Get_Value() + 1, MPLAYER_BUILD_LEVEL_MAX);
         transmit = 1;
@@ -4690,7 +4692,7 @@ static int Net_New_Dialog() {
       //	User edits the credits value; retransmit new game options
       // Round the credits to the nearest 500.
       //..................................................................
-      case ButtonKey(kButtonCredits):
+      case engine::window::ButtonKey(kButtonCredits):
         TheSession().Options.Credits = creditsgauge.Get_Value();
         TheSession().Options.Credits =
             (TheSession().Options.Credits + 250) / 500 * 500;
@@ -4701,7 +4703,7 @@ static int Net_New_Dialog() {
       //..................................................................
       //	User adjusts # of AI players
       //..................................................................
-      case ButtonKey(kButtonAiplayers):
+      case engine::window::ButtonKey(kButtonAiplayers):
         TheSession().Options.AIPlayers = aiplayersgauge.Get_Value();
         if (TheSession().Options.AIPlayers + TheSession().Players.Count() >
             TheRules().MaxPlayers) {  // if it's pegged, max it out
@@ -4721,7 +4723,7 @@ static int Net_New_Dialog() {
       // Also, if Tiberium gets toggled, we have to set the flags
       // in SpecialClass.
       //..................................................................
-      case ButtonKey(kButtonOptions):
+      case engine::window::ButtonKey(kButtonOptions):
         if ((TheSpecial().IsCaptureTheFlag != 0) != optionlist.Is_Checked(3) &&
             !TheSpecial().IsCaptureTheFlag) {
           optionlist.Check_Item(0, true);
@@ -4772,8 +4774,8 @@ static int Net_New_Dialog() {
       //..................................................................
       //	OK: exit loop with true status
       //..................................................................
-      case ButtonKey(kButtonLoad):
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonLoad):
+      case engine::window::ButtonKey(kButtonOk):
         //...............................................................
         //	If a new player has joined in the last second, don't allow
         //	an OK; force a wait longer than 1 second (to give all players
@@ -4802,7 +4804,7 @@ static int Net_New_Dialog() {
           PlaySoundEffect(VOC_SYS_ERROR);
           display = REDRAW_MESSAGE;
         }
-        if (input == ButtonKey(kButtonLoad)) {
+        if (input == engine::window::ButtonKey(kButtonLoad)) {
           load_game = 1;
         } else {
           load_game = 0;
@@ -4813,7 +4815,7 @@ static int Net_New_Dialog() {
       //	CANCEL: send a SIGN_OFF, bail out with error code
       //..................................................................
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         base::FillBytes(base::ObjectBytes(TheSession().GPacket), 0,
                         sizeof(TheSession().GPacket));
 

@@ -85,6 +85,8 @@
 #include "td/slider.h"
 #include "td/text.h"
 
+using enum engine::window::KeyNumber;
+
 /***************************************************************************
  * ListClass::ListClass -- class constructor                               *
  *                                                                         *
@@ -277,7 +279,7 @@ void ListClass::Remove_Item(int index) {
  *                                                                         *
  * HISTORY:          01/05/1995 MML : Created.                             *
  *=========================================================================*/
-bool ListClass::Action(unsigned flags, KeyNumber& key) {
+bool ListClass::Action(unsigned flags, engine::window::KeyNumber& key) {
   if (flags & kLeftRelease) {
     key = KN_NONE;
     flags &= ~kLeftRelease;
@@ -492,7 +494,8 @@ int ListClass::Current_Index() const { return SelectedIndex; }
  *                                                                                             *
  * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-void ListClass::Peer_To_Peer(unsigned flags, KeyNumber& /*unused*/,
+void ListClass::Peer_To_Peer(unsigned flags,
+                             engine::window::KeyNumber& /*unused*/,
                              ControlClass& whom) {
   if (flags & kLeftRelease) {
     if (&whom == &UpGadget) {

@@ -54,9 +54,11 @@
 #include "ra/wolstrng.h"
 #include "ra/world.h"
 
+using enum engine::window::KeyNumber;
+
 // The key that answers a page from a Westwood Online user outside the
 // game.
-constexpr KeyNumber kPageRespondKey = KN_RETURN;  // KN_COMMA
+constexpr engine::window::KeyNumber kPageRespondKey = KN_RETURN;  // KN_COMMA
 
 // Opens an editable reply addressed to the Westwood Online user who paged us
 // from outside the game, or reports that nobody has paged.
@@ -160,7 +162,7 @@ static void Send_Network_Chat_Message(const int rc) {
   base::SafeCopy(TheSession().LastMessage, TheSession().GPacket.Message.Buf);
 }
 
-void Message_Input(KeyNumber& input) {
+void Message_Input(engine::window::KeyNumber& input) {
   char txt[MAX_MESSAGE_LENGTH + 32];
 
   // Check keyboard input for a request to send a message.
@@ -240,7 +242,7 @@ void Message_Input(KeyNumber& input) {
   }
 
   // Process message-system input; send the message out if RETURN is hit.
-  const KeyNumber copy_input = input;
+  const engine::window::KeyNumber copy_input = input;
   const int rc = TheSession().Messages.Input(input);
 
   // If a single character has been added to an edit buffer, update the

@@ -879,7 +879,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   //........................................................................
   // Other misc variables
   //........................................................................
-  KeyNumber input = KN_NONE;  // for user input
+  engine::window::KeyNumber input = engine::window::KN_NONE;  // for user input
   int x = 0;
   int y = 0;  // for map input
   RetcodeType rc = RC_NORMAL;
@@ -2004,7 +2004,8 @@ static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
   //........................................................................
   //	If user hits ESC, bail out
   //........................................................................
-  if (PeekKey() && (ReadKey() == KN_ESC)) {
+  if (engine::window::PeekKey() &&
+      (engine::window::ReadKey() == engine::window::KN_ESC)) {
     return 1;
   }
 
@@ -3411,13 +3412,13 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   //	If the user hits ESC, stop the playback
   //------------------------------------------------------------------------
-  if (PeekKey()) {
-    const int key = ReadKeyAscii();
+  if (engine::window::PeekKey()) {
+    const int key = engine::window::ReadKeyAscii();
     //
     // If the user hit ESC, end the recording.  If this is an Attract-mode
     // recording, end it no matter what the user does (any key or mouse).
     //
-    if (key == KA_ESC || TheSession().allow_attract()) {
+    if (key == engine::window::KA_ESC || TheSession().allow_attract()) {
       TheGameState().active() = false;
       return;
     }

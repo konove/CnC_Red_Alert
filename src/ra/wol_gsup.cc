@@ -80,6 +80,8 @@
 #include "ra/world.h"
 #include "ra/wsproto.h"
 
+using enum engine::window::KeyNumber;
+
 static int ScenarioIndex_From_Filename(const char* szScenarioFilename);
 
 #include "absl/log/check.h"
@@ -542,7 +544,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
 
   display = REDRAW_ALL;  // redraw level
   bProcess = true;       // process while true
-  KeyNumber input = KN_NONE;
+  engine::window::KeyNumber input = KN_NONE;
 
   DWORD timeWaitingToStartTimeout = 0;  //	Set when the wait begins.
 
@@ -1355,7 +1357,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         }
         break;
 
-      case ButtonKey(kButtonDisconnect):
+      case engine::window::ButtonKey(kButtonDisconnect):
         if (WWMessageBox().Process(TXT_WOL_CONFIRMLOGOUT, TXT_YES, TXT_NO) ==
             0) {
           //					debugprint( "Logging out from
@@ -1369,48 +1371,48 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         bHackFocus = true;
         break;
 
-      case ButtonKey(kButtonRefresh):  //	Always disabled.
+      case engine::window::ButtonKey(kButtonRefresh):  //	Always disabled.
         break;
 
-      case ButtonKey(kButtonSquelch):
+      case engine::window::ButtonKey(kButtonSquelch):
         pWO->DoSquelch(pILPlayers);
         break;
 
-      case ButtonKey(kButtonBan):
+      case engine::window::ButtonKey(kButtonBan):
         pWO->DoKick(pILPlayers, true);
         //				display = REDRAW_ALL;
         break;
 
-      case ButtonKey(kButtonKick):
+      case engine::window::ButtonKey(kButtonKick):
         pWO->DoKick(pILPlayers, false);
         //				display = REDRAW_ALL;
         break;
 
-      case ButtonKey(kButtonFindpage):
+      case engine::window::ButtonKey(kButtonFindpage):
         pWO->DoFindPage();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case ButtonKey(kButtonOptions):
+      case engine::window::ButtonKey(kButtonOptions):
         pWO->DoOptions();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case ButtonKey(kButtonLadder):
+      case engine::window::ButtonKey(kButtonLadder):
         pWO->DoLadder();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case ButtonKey(kButtonHelp):
+      case engine::window::ButtonKey(kButtonHelp):
         pWO->DoHelp();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case ButtonKey(kButtonHouse):
+      case engine::window::ButtonKey(kButtonHouse):
         TheSession().House = static_cast<HousesType>(
             pDropListHouse->Current_Index() + static_cast<int>(HOUSE_USSR));
         /*
@@ -1438,11 +1440,11 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         PlaySoundEffect(VOC_OPTIONS_CHANGED);
         break;
 
-      case ButtonKey(kButtonAftermathunits):
+      case engine::window::ButtonKey(kButtonAftermathunits):
         bAftermathUnits = pCheckAftermathUnits->IsOn;
         break;
 
-      case ButtonKey(kButtonSendedit):
+      case engine::window::ButtonKey(kButtonSendedit):
         //	Enter has been pressed - was caught by pEditSend control.
         pWO->SendMessage(pEditSend->Get_Text(), *pILPlayers, false);
         //	Clear pEditSend, reset focus.
@@ -1452,7 +1454,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         pEditSend->Flag_To_Redraw();
         break;
 
-      case ButtonKey(kButtonAction):
+      case engine::window::ButtonKey(kButtonAction):
         //	Enter has been pressed - was caught by pEditSend control.
         pWO->SendMessage(pEditSend->Get_Text(), *pILPlayers, true);
         //	Clear pEditSend, reset focus.
@@ -1465,7 +1467,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //..................................................................
       //	New Scenario selected.
       //..................................................................
-      case ButtonKey(kButtonScenariolist): {
+      case engine::window::ButtonKey(kButtonScenariolist): {
         if (pILScens->Count()) {
           const int iSelectedScenIndex = ItemExtraDataAsInt(
               pILScens->Get_Item_ExtraDataPtr(pILScens->Current_Index()));
@@ -1491,7 +1493,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //..................................................................
       //	User adjusts max # units
       //..................................................................
-      case ButtonKey(kButtonCount):
+      case engine::window::ButtonKey(kButtonCount):
         TheSession().Options.UnitCount =
             pGaugeCount->Get_Value() +
             base::At(SessionClass::CountMin, TheSession().Options.Bases);
@@ -1502,7 +1504,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //..................................................................
       //	User adjusts build level
       //..................................................................
-      case ButtonKey(kButtonLevel):
+      case engine::window::ButtonKey(kButtonLevel):
         TheWorld().build_level() = pGaugeLevel->Get_Value() + 1;
         TheWorld().build_level() =
             std::min(TheWorld().build_level(),
@@ -1516,7 +1518,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //	User edits the credits value; retransmit new game options
       // Round the credits to the nearest 500.
       //..................................................................
-      case ButtonKey(kButtonCredits):
+      case engine::window::ButtonKey(kButtonCredits):
         TheSession().Options.Credits = pGaugeCredits->Get_Value();
         TheSession().Options.Credits =
             ((TheSession().Options.Credits + 250) / 500) * 500;
@@ -1527,7 +1529,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       //..................................................................
       //	User adjusts # of AI players
       //..................................................................
-      case ButtonKey(kButtonAiplayers):
+      case engine::window::ButtonKey(kButtonAiplayers):
         TheSession().Options.AIPlayers = pGaugeAIPlayers->Get_Value();
         //				if
         //(Session.Options.AIPlayers+Session.Players.Count() >
@@ -1549,7 +1551,7 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       // Also, if Tiberium gets toggled, we have to set the flags
       // in SpecialClass.
       //..................................................................
-      case ButtonKey(kButtonParams):
+      case engine::window::ButtonKey(kButtonParams):
         bRetractHouseDropDown = true;
         if ((TheSpecial().IsCaptureTheFlag != 0) !=
                 pCheckListOptions->Is_Checked(3) &&
@@ -1605,7 +1607,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         PlaySoundEffect(VOC_OPTIONS_CHANGED);
         break;
 
-      case ButtonKey(kButtonAcceptstart):  //	'Accept' or 'Start Game' button.
+      case engine::window::ButtonKey(
+          kButtonAcceptstart):  //	'Accept' or 'Start Game' button.
         if (!bHost) {
           //	Guest wishes to accept game params.
           User* pUserHost = pWO->pGameHost();
@@ -1666,16 +1669,16 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         }
         break;
 
-      case ButtonKey(kButtonScenarioRa):
+      case engine::window::ButtonKey(kButtonScenarioRa):
         ScenarioDisplayMode(SCENARIO_RA);
         break;
-      case ButtonKey(kButtonScenarioCs):
+      case engine::window::ButtonKey(kButtonScenarioCs):
         ScenarioDisplayMode(SCENARIO_CS);
         break;
-      case ButtonKey(kButtonScenarioAm):
+      case engine::window::ButtonKey(kButtonScenarioAm):
         ScenarioDisplayMode(SCENARIO_AM);
         break;
-      case ButtonKey(kButtonScenarioUser):
+      case engine::window::ButtonKey(kButtonScenarioUser):
         ScenarioDisplayMode(SCENARIO_USER);
         break;
 
@@ -1689,8 +1692,8 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
         }
         break;
 
-      case ButtonKey(kButtonLeave):
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonLeave):
+      case engine::window::ButtonKey(kButtonCancel):
         if (ExitGameChannel()) {
           pWO->RejoinLobbyAfterGame();
           bProcess = false;

@@ -106,6 +106,8 @@
 #include <windows.h>
 #endif
 
+using enum engine::window::KeyNumber;
+
 // the following line was taken from Greenleaf's <ibmkeys.h> <asciidef.h>
 // because of other define conflicts
 
@@ -119,7 +121,7 @@
 
 void (*NullModemClass::OrigAbortModemFunc)(int);
 
-KeyNumber NullModemClass::Input;
+engine::window::KeyNumber NullModemClass::Input;
 GadgetClass* NullModemClass::Commands;  // button list
 
 /***************************************************************************
@@ -1460,7 +1462,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
 
     switch (static_cast<int>(Input)) {
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         dialstatus = DIAL_CANCELED;
         process = false;
         break;
@@ -1662,7 +1664,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     }
     switch (static_cast<int>(Input)) {
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         //				Sound_Effect(VOC_BUTTON,255);
         dialstatus = DIAL_CANCELED;
         process = false;
@@ -1960,7 +1962,7 @@ int NullModemClass::Abort_Modem()
 
   switch (static_cast<int>(Input)) {
     case KN_ESC:
-    case ButtonKey(kButtonCancel):
+    case engine::window::ButtonKey(kButtonCancel):
       return ASUSERABORT;
     default:
       break;

@@ -173,6 +173,8 @@
 #include "ra/wolstrng.h"
 #include "ra/world.h"
 
+using enum engine::window::KeyNumber;
+
 static void Remove_AI_Players();
 static void Create_Units(bool official);
 static CELL Clip_Scatter(CELL cell, int maxdist);
@@ -1511,7 +1513,8 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
       ServiceRealTime();
 
       // Fetch and process input.
-      const KeyNumber input = buttonlist->Input(view);  // user input
+      const engine::window::KeyNumber input =
+          buttonlist->Input(view);  // user input
       switch (static_cast<uint32_t>(input)) {
         case kBriefingButtonFlag | uint32_t{kButton1}:
           selection = base::At(realval, 0);
@@ -1575,18 +1578,21 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
         // Check 'input' to see if it's the 1st char of button text
         default:
-          if (b1char == toupper(KeyboardClass::To_ASCII(
-                            static_cast<KeyNumber>(input & 0xFF)))) {
+          if (b1char ==
+              toupper(KeyboardClass::To_ASCII(
+                  static_cast<engine::window::KeyNumber>(input & 0xFF)))) {
             selection = kButton1;
             pressed = true;
           } else if (b2txt != nullptr &&
                      b2char == toupper(KeyboardClass::To_ASCII(
-                                   static_cast<KeyNumber>(input & 0xFF)))) {
+                                   static_cast<engine::window::KeyNumber>(
+                                       input & 0xFF)))) {
             selection = kButton2;
             pressed = true;
           } else if (b3txt != nullptr &&
                      b3char == toupper(KeyboardClass::To_ASCII(
-                                   static_cast<KeyNumber>(input & 0xFF)))) {
+                                   static_cast<engine::window::KeyNumber>(
+                                       input & 0xFF)))) {
             selection = kButton3;
             pressed = true;
           }

@@ -62,6 +62,8 @@
 #include "ra/wolapiob.h"
 #include "ra/wolstrng.h"
 
+using enum engine::window::KeyNumber;
+
 // #include "ra/woldebug.h"
 
 static bool EnterChannel(WolapiObject* pWO, IconListClass& chatlist,
@@ -217,7 +219,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
   //------------------------------------------------------------------------
   RedrawType display = REDRAW_ALL;  // redraw level
   bool process = true;              // process while true
-  KeyNumber input = KN_NONE;
+  engine::window::KeyNumber input = KN_NONE;
 
   Stopwatch<SystemTickSource> lastclick_timer;
   int lastclick_idx = 0;  // index of item last clicked on
@@ -722,7 +724,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     //	Process input
     //.....................................................................
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonSendedit):
+      case engine::window::ButtonKey(kButtonSendedit):
         //	Enter has been pressed - was caught by sendedit control.
         if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
             pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
@@ -745,7 +747,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       case KN_LMOUSE:
         break;
 
-      case ButtonKey(kButtonExpandchannels):
+      case engine::window::ButtonKey(kButtonExpandchannels):
         if (OnExpandChannelList(chanlist, userlist)) {
           //	Hide userlist.
           if (ExpandUserBtn.Get_Next() == &userlist) {
@@ -785,7 +787,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         display = REDRAW_ALL;
         break;
 
-      case ButtonKey(kButtonExpandusers):
+      case engine::window::ButtonKey(kButtonExpandusers):
         if (OnExpandUserList(chanlist, userlist)) {
           //	Hide chanlist controls.
           if (ExpandChanBtn.Get_Next() == &chanlist) {
@@ -819,7 +821,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         display = REDRAW_ALL;
         break;
 
-      case ButtonKey(kButtonChanlist):
+      case engine::window::ButtonKey(kButtonChanlist):
         //	User clicks on the game list.
         //...............................................................
         // Handle a double-click
@@ -848,7 +850,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
         break;
 
-      case ButtonKey(kButtonJoin):
+      case engine::window::ButtonKey(kButtonJoin):
         //	Pressing the join button is exactly like doubleclicking on the
         // selected index in chanlist, except: 		if the first item is
         // selected, ignore, unless we are at the top level
@@ -865,11 +867,11 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
         break;
 
-      case ButtonKey(kButtonUserlist):
+      case engine::window::ButtonKey(kButtonUserlist):
         //	User clicks on user list.
         break;
 
-      case ButtonKey(kButtonCreate):
+      case engine::window::ButtonKey(kButtonCreate):
         switch (pWO->CurrentLevel) {
           case WOL_LEVEL_INCHATCHANNEL:
             //					debugprint( "%s\n",
@@ -910,7 +912,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         bHackFocus = true;
         break;
 
-      case ButtonKey(kButtonLeave):
+      case engine::window::ButtonKey(kButtonLeave):
         //	Because of the way things are set up, this is exactly like
         // selecting the first item in chanlist. 	(Button is disabled when
         // this is not appropriate.)
@@ -918,31 +920,31 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         display = REDRAW_ALL;
         break;
 
-      case ButtonKey(kButtonRefresh):
+      case engine::window::ButtonKey(kButtonRefresh):
         pWO->dwTimeNextChannelUpdate = Get_Time_Ms();
         break;
 
-      case ButtonKey(kButtonSquelch):
+      case engine::window::ButtonKey(kButtonSquelch):
         pWO->DoSquelch(&userlist);
         break;
 
-      case ButtonKey(kButtonBan):
+      case engine::window::ButtonKey(kButtonBan):
         pWO->DoKick(&userlist, true);
         //				display = REDRAW_ALL;
         break;
 
-      case ButtonKey(kButtonKick):
+      case engine::window::ButtonKey(kButtonKick):
         pWO->DoKick(&userlist, false);
         //				display = REDRAW_ALL;
         break;
 
-      case ButtonKey(kButtonFindpage):
+      case engine::window::ButtonKey(kButtonFindpage):
         pWO->DoFindPage();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case ButtonKey(kButtonOptions):
+      case engine::window::ButtonKey(kButtonOptions):
         pWO->DoOptions();
         display = REDRAW_ALL;
         bHackFocus = true;
@@ -952,7 +954,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         //				break;			ajw
         // Put back in?
 
-      case ButtonKey(kButtonBack):
+      case engine::window::ButtonKey(kButtonBack):
         //	Pressing the back button is exactly like doubleclicking on the
         // top item in chanlist, except 	when we're at the top level.
         if (pWO->CurrentLevel != WOL_LEVEL_TOP) {
@@ -962,7 +964,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
         //	Note no break; here. Fall through if at top level.
         [[fallthrough]];
-      case ButtonKey(kButtonDisconnect):
+      case engine::window::ButtonKey(kButtonDisconnect):
         if (WWMessageBox().Process(TXT_WOL_CONFIRMLOGOUT, TXT_YES, TXT_NO) ==
             0) {
           if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
@@ -977,7 +979,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         bHackFocus = true;
         break;
 
-      case ButtonKey(kButtonAction):
+      case engine::window::ButtonKey(kButtonAction):
         if (pWO->CurrentLevel == WOL_LEVEL_INCHATCHANNEL ||
             pWO->CurrentLevel == WOL_LEVEL_INLOBBY) {
           pWO->SendMessage(sendedit.Get_Text(), userlist, true);
@@ -997,24 +999,24 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
         }
         break;
 
-      case ButtonKey(kButtonLadder):
+      case engine::window::ButtonKey(kButtonLadder):
         pWO->DoLadder();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case ButtonKey(kButtonHelp):
+      case engine::window::ButtonKey(kButtonHelp):
         pWO->DoHelp();
         display = REDRAW_ALL;
         bHackFocus = true;
         break;
 
-      case ButtonKey(kButtonRankra):
+      case engine::window::ButtonKey(kButtonRankra):
         pWO->bShowRankRA = true;
         pWO->bShowRankUpdated = true;
         break;
 
-      case ButtonKey(kButtonRankam):
+      case engine::window::ButtonKey(kButtonRankam):
         pWO->bShowRankRA = false;
         pWO->bShowRankUpdated = true;
         break;

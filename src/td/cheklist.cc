@@ -139,7 +139,7 @@ bool CheckListClass::Is_Checked(int index) const {
  * HISTORY:                                                                *
  *   02/16/1995 BR : Created.                                              *
  *=========================================================================*/
-bool CheckListClass::Action(unsigned flags, KeyNumber& key) {
+bool CheckListClass::Action(unsigned flags, engine::window::KeyNumber& key) {
   /*
   ** If this is a read-only list, it's a display-only device
   */

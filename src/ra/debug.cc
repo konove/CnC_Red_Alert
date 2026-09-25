@@ -72,6 +72,8 @@
 #include "ra/weapon.h"
 #include "ra/world.h"
 
+using enum engine::window::KeyNumber;
+
 /***********************************************************************************************
  * Debug_Key -- Debug mode keyboard processing. *
  *                                                                                             *

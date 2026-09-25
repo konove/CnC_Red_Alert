@@ -122,6 +122,8 @@
 #include "ra/type.h"
 #include "ra/world.h"
 
+using enum engine::window::KeyNumber;
+
 static int atoh(const char* str);
 
 /***********************************************************************************************
@@ -1091,7 +1093,7 @@ bool TeamTypeClass::Edit() {
     /*
     **	Get user input
     */
-    const KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view);
 
     /*
     **	Process input
@@ -1102,7 +1104,7 @@ bool TeamTypeClass::Edit() {
       *Argument *	field to reflect the current value. This only serves as
       *an aide to editing *	the team mission list.
       */
-      case ButtonKey(kButtonMission2):
+      case engine::window::ButtonKey(kButtonMission2):
         if (missionlist2.Count() && lastcount == missionlist2.Count() &&
             lastbutton == kButtonMission2 &&
             lastindex == missionlist2.Current_Index()) {
@@ -1176,7 +1178,7 @@ bool TeamTypeClass::Edit() {
       **	Add current mission data to current position of team mission
       *list. Any *	subsequent missions get moved downward.
       */
-      case ButtonKey(kButtonInsert):
+      case engine::window::ButtonKey(kButtonInsert):
         if (missionlist2.Count() < kMaxTeamMissions) {
           auto* tm = new TeamMissionClass;
           tm->Mission = TeamMissionType(missionlist1.Current_Index());
@@ -1242,7 +1244,7 @@ bool TeamTypeClass::Edit() {
       /*
       **	Add mission data to the end of the mission list.
       */
-      case ButtonKey(kButtonAdd):
+      case engine::window::ButtonKey(kButtonAdd):
         if (missionlist2.Count() < kMaxTeamMissions) {
           auto* tm = new TeamMissionClass;
           tm->Mission = TeamMissionType(missionlist1.Current_Index());
@@ -1309,7 +1311,7 @@ bool TeamTypeClass::Edit() {
       **	Replace the currently selected mission with the work mission
       *data.
       */
-      case ButtonKey(kButtonReplace):
+      case engine::window::ButtonKey(kButtonReplace):
         if (missionlist2.Count()) {
           TeamMissionClass* tm = missionlist2.Current_Item();
           tm->Mission = TeamMissionType(missionlist1.Current_Index());
@@ -1375,7 +1377,7 @@ bool TeamTypeClass::Edit() {
       /*
       **	Delete the currently selected mission.
       */
-      case ButtonKey(kButtonDelete):
+      case engine::window::ButtonKey(kButtonDelete):
         if (missionlist2.Count()) {
           const TeamMissionClass* tm = missionlist2.Current_Item();
           missionlist2.Remove_Index(missionlist2.Current_Index());
@@ -1387,7 +1389,7 @@ bool TeamTypeClass::Edit() {
       /*
       **	Invoke the members dialog
       */
-      case ButtonKey(kButtonMembers):
+      case engine::window::ButtonKey(kButtonMembers):
 
         /*
         **	Take editor focus away
@@ -1409,7 +1411,7 @@ bool TeamTypeClass::Edit() {
       **	When the OK button is selected, lift the values from the dialog
       *box *	and place them into the team type object.
       */
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         strtrim(name_edt.Get_Text_Buffer());
         if (!std::string_view(name_edt.Get_Text()).empty()) {
           base::SafeCopy(IniName, name_edt.Get_Text());
@@ -1459,7 +1461,7 @@ bool TeamTypeClass::Edit() {
       /*
       **	Cancel: return
       */
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;

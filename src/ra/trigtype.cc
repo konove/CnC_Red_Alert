@@ -109,6 +109,8 @@
 #include "ra/type.h"
 #include "ra/world.h"
 
+using enum engine::window::KeyNumber;
+
 // The low nibble of the text print flags selects the font.
 static constexpr bool Is_Font(const TextPrintType flags,
                               const TextPrintType font) {
@@ -1515,38 +1517,38 @@ bool TriggerTypeClass::Edit() {
     /*
     **	Get user input
     */
-    const KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view);
 
     /*
     **	Process input
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonEvent):
+      case engine::window::ButtonKey(kButtonEvent):
         eventflag = (eventflag + 1) % 4;
         display = true;
         break;
 
-      case ButtonKey(kButtonAction):
+      case engine::window::ButtonKey(kButtonAction):
         actionflag = !actionflag;
         display = true;
         break;
 
-      case ButtonKey(kDataSpeech1):
+      case engine::window::ButtonKey(kDataSpeech1):
         Speak(VoxType(speechtype1list.Current_Index()));
         display = true;
         break;
 
-      case ButtonKey(kDataSpeech2):
+      case engine::window::ButtonKey(kDataSpeech2):
         Speak(VoxType(speechtype2list.Current_Index()));
         display = true;
         break;
 
-      case ButtonKey(kDataSound1):
+      case engine::window::ButtonKey(kDataSound1):
         PlaySoundEffect(VocType(soundtype1list.Current_Index()));
         display = true;
         break;
 
-      case ButtonKey(kDataSound2):
+      case engine::window::ButtonKey(kDataSound2):
         PlaySoundEffect(VocType(soundtype2list.Current_Index()));
         display = true;
         break;
@@ -1556,7 +1558,7 @@ bool TriggerTypeClass::Edit() {
       *their *	respective positions within the trigger object.
       */
       case KN_RETURN:
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         House = HousesType(housebtn.Current_Index());
         IsPersistant = PersistantType(persbtn.Current_Index());
         if (std::string_view(namebuf).empty()) {
@@ -1827,7 +1829,7 @@ bool TriggerTypeClass::Edit() {
         return true;
 
       case KN_ESC:
-      case ButtonKey(kKbuttoncancel):
+      case engine::window::ButtonKey(kKbuttoncancel):
         process = false;
         [[fallthrough]];
 

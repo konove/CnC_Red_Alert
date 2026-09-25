@@ -181,6 +181,8 @@
 #include "td/ccdde.h"
 #endif
 
+using enum engine::window::KeyNumber;
+
 // Holds the end of the current frame; Main_Loop() sets it and Sync_Delay()
 // waits it out.
 static CountDownTimerClass frame_timer{0L};
@@ -215,7 +217,7 @@ static TrapObjectType trap_object = {nullptr};
 **	Function prototypes for this module **
 *****************************************/
 #ifndef DEMO
-static void Message_Input(KeyNumber& input);
+static void Message_Input(engine::window::KeyNumber& input);
 #endif
 static bool Color_Cycle();
 static bool Map_Edit_Loop();
@@ -502,8 +504,8 @@ void Main_Game() {
                     ThePalettes().title_palette());
   TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
   Fade_Palette_To(ThePalettes().title_palette(), kFadePaletteMedium, NULL);
-  ClearKeys();
-  ReadKeyAscii();
+  engine::window::ClearKeys();
+  engine::window::ReadKeyAscii();
   Fade_Palette_To(ThePalettes().black_palette(), kFadePaletteMedium, NULL);
 //		Show_Mouse();
 #else
@@ -534,7 +536,7 @@ void Main_Game() {
  *control hotkeys.                                    *
  *=============================================================================================*/
 extern int DebugColour;
-void Keyboard_Process(KeyNumber& input) {
+void Keyboard_Process(engine::window::KeyNumber& input) {
   ObjectClass* obj = nullptr;
   int index = 0;
 
@@ -555,8 +557,9 @@ void Keyboard_Process(KeyNumber& input) {
   ** Use raw key numbers because KN values have kKeyVirtualBit or'd in with them
   ** and we need kKeyVirtualBit to still be set if it is.
   */
-  const auto plain = static_cast<KeyNumber>(
-      input & ~(kKeyShiftBit | kKeyAltBit | kKeyCtrlBit));
+  const auto plain = static_cast<engine::window::KeyNumber>(
+      input & ~(engine::window::kKeyShiftBit | engine::window::kKeyAltBit |
+                engine::window::kKeyCtrlBit));
 
   if constexpr (config::kCheatKeysEnabled) {
     if (TheDebugState().developer_mode()) {
@@ -613,13 +616,13 @@ void Keyboard_Process(KeyNumber& input) {
   **	CTRL or ALT key is held down.
   */
   int action = 0;
-  if (input & kKeyShiftBit) {
+  if (input & engine::window::kKeyShiftBit) {
     action = 1;
   }
-  if (input & kKeyAltBit) {
+  if (input & engine::window::kKeyAltBit) {
     action = 3;
   }
-  if (input & kKeyCtrlBit) {
+  if (input & engine::window::kKeyCtrlBit) {
     action = 2;
   }
 
@@ -862,7 +865,7 @@ void Keyboard_Process(KeyNumber& input) {
  * HISTORY: * 05/22/1995 BRR : Created. * 03/26/1995  ST : Modified to break up
  *longer messages into multiple packets               *
  *=============================================================================================*/
-static void Message_Input(KeyNumber& input) {
+static void Message_Input(engine::window::KeyNumber& input) {
   char txt[MAX_MESSAGE_LENGTH + 12];
   int sent_so_far = 0;
   uint16_t magic_number = 0;
@@ -1536,7 +1539,9 @@ TheaterType Theater_From_Name(const char* name) {
  *=============================================================================================*/
 FacingType KN_To_Facing(int input) {
   const uint32_t key =
-      static_cast<uint32_t>(input) & ~(kKeyAltBit | kKeyShiftBit | kKeyCtrlBit);
+      static_cast<uint32_t>(input) &
+      ~(engine::window::kKeyAltBit | engine::window::kKeyShiftBit |
+        engine::window::kKeyCtrlBit);
   switch (key) {
     case KN_LEFT:
       return FACING_W;
@@ -1592,7 +1597,7 @@ static void Sync_Delay() {
 
     if (TheGameState().special_dialog() == SDLG_NONE) {
       TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
-      KeyNumber input = KN_NONE;
+      engine::window::KeyNumber input = KN_NONE;
       int x = 0;
       int y = 0;
       TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
@@ -1622,7 +1627,7 @@ static void Sync_Delay() {
  *=============================================================================================*/
 
 bool Main_Loop() {
-  KeyNumber input = KN_NONE;  // Player input.
+  engine::window::KeyNumber input = KN_NONE;  // Player input.
   int x = 0;
   int y = 0;
 
@@ -1987,7 +1992,7 @@ bool Map_Edit_Loop() {
   /*
   **	Get user input (keys, mouse clicks).
   */
-  KeyNumber input = KN_NONE;
+  engine::window::KeyNumber input = KN_NONE;
 
   int x = 0;
   int y = 0;

@@ -64,6 +64,8 @@
 #include "ra/screen.h"
 #include "ra/shapebtn.h"
 
+using enum engine::window::KeyNumber;
+
 /***********************************************************************************************
  * SliderClass::SliderClass -- Normal constructor for a slider (with thumb)
  *gadget.            *
@@ -226,7 +228,7 @@ void SliderClass::Recalc_Thumb() {
  *consumed and further processing of the gadget list should be   * aborted? *
  * WARNINGS:   none * HISTORY:    01/15/1995 JLB : Created. *
  *=============================================================================================*/
-bool SliderClass::Action(unsigned flags, KeyNumber& key) {
+bool SliderClass::Action(unsigned flags, engine::window::KeyNumber& key) {
   /*
   **	Handle the mouse click in a special way. If the click was not on the
   *thumb, then *	jump the thumb position one "step" in the appropriate
@@ -383,7 +385,8 @@ bool SliderClass::Draw_Me(PixelView& view, bool forced) {
  *-- Which gadget is being touched.                                         *
  * OUTPUT:  none * WARNINGS:   none * HISTORY:    01/16/1995 JLB : Created. *
  *=============================================================================================*/
-void SliderClass::Peer_To_Peer(unsigned flags, KeyNumber& /*unused*/,
+void SliderClass::Peer_To_Peer(unsigned flags,
+                               engine::window::KeyNumber& /*unused*/,
                                ControlClass& whom) {
   if (flags & kLeftRelease) {
     if (&whom == PlusGadget) {

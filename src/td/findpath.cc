@@ -964,7 +964,7 @@ end_of_list:
   if (TheDebugState().trace_path_search() && DrawPath) {
     Debug_Draw_Map("Final Generated Path", startcell, dest, false);
     Debug_Draw_Path(&path);
-    ReadKey();
+    engine::window::ReadKey();
   }
   //	IsFindPath = false;
   return &path;
@@ -1588,7 +1588,7 @@ void FootClass::Debug_Draw_Map(const char* txt, CELL start, CELL dest,
   }
 
   if (pause) {
-    ReadKey();
+    engine::window::ReadKey();
   }
   PixelView& view = TheScreen().visible_view();
 

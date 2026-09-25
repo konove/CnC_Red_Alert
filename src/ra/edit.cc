@@ -42,6 +42,9 @@
 #include "ra/jshell.h"
 #include "ra/screen.h"
 
+using enum engine::window::KeyAscii;
+using enum engine::window::KeyNumber;
+
 namespace {
 void PrepareEditBuffer(std::span<char>& buffer, int capacity) {
   if (buffer.empty() || capacity <= 0) {
@@ -119,7 +122,7 @@ bool EditClass::Draw_Me(PixelView& view, const bool forced) {
   return false;
 }
 
-bool EditClass::Action(unsigned flags, KeyNumber& key) {
+bool EditClass::Action(unsigned flags, engine::window::KeyNumber& key) {
   if (IsReadOnly) {
     return false;
   }
@@ -139,12 +142,14 @@ bool EditClass::Action(unsigned flags, KeyNumber& key) {
       flags = 0;
 
     } else {
-      const auto ascii =
-          static_cast<KeyAscii>(KeyboardClass::To_ASCII(key) & 0xff);
+      const auto ascii = static_cast<engine::window::KeyAscii>(
+          KeyboardClass::To_ASCII(key) & 0xff);
 
       // Allow numeric keypad presses to map to ascii numbers.
-      if (key & kKeyVirtualBit && ascii >= '0' && ascii <= '9') {
-        key = static_cast<KeyNumber>(key & ~kKeyVirtualBit);
+      if (key & engine::window::kKeyVirtualBit && ascii >= '0' &&
+          ascii <= '9') {
+        key = static_cast<engine::window::KeyNumber>(
+            key & ~engine::window::kKeyVirtualBit);
         if ((!(flags & kLeftRelease) && !(flags & kRightRelease)) &&
             Handle_Key(ascii)) {
           flags &= ~kKeyboard;
@@ -153,7 +158,8 @@ bool EditClass::Action(unsigned flags, KeyNumber& key) {
 
       } else {
         // Filter out all special keys except return and backspace.
-        if ((!(key & kKeyVirtualBit) && ascii >= ' ' && ascii <= 255) ||
+        if ((!(key & engine::window::kKeyVirtualBit) && ascii >= ' ' &&
+             ascii <= 255) ||
             key == KN_RETURN || key == KN_BACKSPACE) {
           if ((!(flags & kLeftRelease) && !(flags & kRightRelease)) &&
               Handle_Key(KeyboardClass::To_ASCII(key))) {
@@ -191,7 +197,7 @@ void EditClass::Draw_Text(PixelView& view, const char* text) {
   }
 }
 
-bool EditClass::Handle_Key(KeyAscii ascii) {
+bool EditClass::Handle_Key(engine::window::KeyAscii ascii) {
   switch (ascii) {
     // A zero key code can arrive if a subclass consumed the event.
     case 0:
@@ -338,7 +344,7 @@ bool EditClass::Handle_Key(KeyAscii ascii) {
       }
 
       if (EditFlags.uppercase && isalpha(ascii) != 0) {
-        ascii = static_cast<KeyAscii>(toupper(ascii));
+        ascii = static_cast<engine::window::KeyAscii>(toupper(ascii));
       }
 
       // Reject characters not matching any enabled EditStyle category.

@@ -75,6 +75,8 @@
 #include "td/textbtn.h"
 #include "td/world.h"
 
+using enum engine::window::KeyNumber;
+
 static bool Coordinates_In_Region(int x, int y, int inx1, int iny1, int inx2,
                                   int iny2);
 static int Select_To_Entry(int select, uint32_t bitfield, int index);
@@ -358,10 +360,11 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
     */
     case KN_RMOUSE:
     case KN_LMOUSE:
-      if (Coordinates_In_Region(g_active_keyboard->click_x(),
-                                g_active_keyboard->click_y(), mx1, my1, mx2,
-                                my2)) {
-        newitem = (g_active_keyboard->click_y() - my1) / menuskip;
+      if (Coordinates_In_Region(engine::window::g_active_keyboard->click_x(),
+                                engine::window::g_active_keyboard->click_y(),
+                                mx1, my1, mx2, my2)) {
+        newitem =
+            (engine::window::g_active_keyboard->click_y() - my1) / menuskip;
       } else {
         TheGameState().unknown_key() =
             key;  //	Pass the unprocessed button click back.
@@ -393,7 +396,8 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
       for (int menu_item = 0; menu_item < menu.item_count; menu_item++) {
         if (toupper(*base::At(text, base::ToSize(Select_To_Entry(
                                         menu_item, field, index)))) ==
-            toupper(Keyboard::To_ASCII(static_cast<KeyNumber>(key % 256)))) {
+            toupper(Keyboard::To_ASCII(
+                static_cast<engine::window::KeyNumber>(key % 256)))) {
           newitem = select = menu_item;
           break;
         }
@@ -609,7 +613,7 @@ int Main_Menu(int timeout) {
 #ifdef NEWMENU
   const bool expansions = Expansion_Present();
 #endif
-  KeyNumber input = KN_NONE;  // input from user
+  engine::window::KeyNumber input = KN_NONE;  // input from user
   int retval = 0;    // return value
   int curbutton = 0;
 #ifdef NEWMENU
@@ -904,23 +908,23 @@ int Main_Menu(int timeout) {
     input = commands->Input(view);
     switch (static_cast<int>(input)) {
 #ifdef NEWMENU
-      case ButtonKey(kButtonExpand):
-      case ButtonKey(kButtonInternet):
+      case engine::window::ButtonKey(kButtonExpand):
+      case engine::window::ButtonKey(kButtonInternet):
 #else
 #define kButtonExpand kButtonStart
 #endif
-      case ButtonKey(kButtonStart):
+      case engine::window::ButtonKey(kButtonStart):
 #ifdef BONUS_MISSIONS
-      case ButtonKey(kButtonBonus):
+      case engine::window::ButtonKey(kButtonBonus):
 #endif  // BONUS_MISSIONS
-      case ButtonKey(kButtonLoad):
-      case ButtonKey(kButtonMulti):
-      case ButtonKey(kButtonIntro):
-      case ButtonKey(kButtonExit):
+      case engine::window::ButtonKey(kButtonLoad):
+      case engine::window::ButtonKey(kButtonMulti):
+      case engine::window::ButtonKey(kButtonIntro):
+      case engine::window::ButtonKey(kButtonExit):
         retval = (input & 0x7FFF) - kButtonExpand;
 #ifdef DEMO
         // The demo shifts every button after Start up by one.
-        if (input != ButtonKey(kButtonStart)) {
+        if (input != engine::window::ButtonKey(kButtonStart)) {
           retval += 1;
         }
 #endif  // DEMO

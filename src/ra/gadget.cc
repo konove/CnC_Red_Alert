@@ -82,6 +82,8 @@
 #include "ra/palettes.h"
 #include "ra/screen.h"
 
+using enum engine::window::KeyNumber;
+
 /*
 **	This records the current gadget the the gadget system is "stuck on".
 *Such a *	gadget will be processed to the exclusion of all others until
@@ -194,8 +196,8 @@ GadgetClass::~GadgetClass() {
  *                                                                         *
  * HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
-bool GadgetClass::Clicked_On(KeyNumber& key, unsigned flags, int mousex,
-                             int mousey) {
+bool GadgetClass::Clicked_On(engine::window::KeyNumber& key, unsigned flags,
+                             int mousex, int mousey) {
   /*
   **	Set flags to match only those events that occur AND are being looked
   *for. If *	the result is NULL, then we know that this button should be
@@ -377,7 +379,8 @@ void GadgetClass::Delete_List() {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-bool GadgetClass::Action(unsigned flags, KeyNumber& /*unused*/) {
+bool GadgetClass::Action(unsigned flags,
+                         engine::window::KeyNumber& /*unused*/) {
   /*
   **	If any of the event flags are active, then this indicates that something
   *probably *	has changed the gadget. Flag the gadget to be redrawn. Also,
@@ -449,7 +452,7 @@ void GadgetClass::Draw_All(PixelView& view, bool forced) {
  *                                                                         *
  * HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
-KeyNumber GadgetClass::Input(PixelView& view) {
+engine::window::KeyNumber GadgetClass::Input(PixelView& view) {
   int mousex = 0;
   int mousey = 0;
   bool forced = false;
@@ -468,7 +471,7 @@ KeyNumber GadgetClass::Input(PixelView& view) {
   /*
   **	Fetch any pending keyboard input.
   */
-  KeyNumber key = TheKeyboard().Check();
+  engine::window::KeyNumber key = TheKeyboard().Check();
   if (key != 0) {
     key = TheKeyboard().Get();
   }

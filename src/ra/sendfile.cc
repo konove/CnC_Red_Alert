@@ -456,7 +456,7 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
     }
 
     if (process) {
-      const KeyNumber input = cancelbtn.Input(view);
+      const engine::window::KeyNumber input = cancelbtn.Input(view);
 
       /*
       ---------------------------- Process input ----------------------------
@@ -465,8 +465,8 @@ bool Receive_Remote_File(const char* file_name, int file_length, int gametype) {
         /*
         ** Cancel. Just return to the main menu
         */
-        case KN_ESC:
-        case ButtonKey(kButtonCancel):
+        case engine::window::KN_ESC:
+        case engine::window::ButtonKey(kButtonCancel):
           process = false;
           return_code = false;
           break;
@@ -778,7 +778,7 @@ bool Send_Remote_File(const char* file_name, int gametype) {
     }
 
     if (process) {
-      const KeyNumber input = cancelbtn.Input(view);
+      const engine::window::KeyNumber input = cancelbtn.Input(view);
 
       /*
       ---------------------------- Process input ----------------------------
@@ -787,8 +787,8 @@ bool Send_Remote_File(const char* file_name, int gametype) {
         /*
         ** Cancel. Just return to the main menu
         */
-        case KN_ESC:
-        case ButtonKey(kButtonCancel):
+        case engine::window::KN_ESC:
+        case engine::window::ButtonKey(kButtonCancel):
           process = false;
           return_code = false;
           break;

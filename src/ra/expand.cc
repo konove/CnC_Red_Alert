@@ -466,9 +466,9 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
       Show_Mouse();
     }
 
-    const KeyNumber input = buttons->Input(view);
+    const engine::window::KeyNumber input = buttons->Input(view);
     switch (static_cast<int>(input)) {
-      case ButtonKey(200):
+      case engine::window::ButtonKey(200):
         TheWorld().whom() = list.Current_Object().House;
         TheScenario().Scenario = list.Current_Object().Scenario;
         base::SafeCopy(TheScenario().ScenarioName,
@@ -477,13 +477,13 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
         okval = true;
         break;
 
-      case KN_ESC:
-      case ButtonKey(201):
+      case engine::window::KN_ESC:
+      case engine::window::ButtonKey(201):
         process = false;
         okval = false;
         break;
 
-      case KN_RETURN:
+      case engine::window::KN_RETURN:
         TheWorld().whom() = list.Current_Object().House;
         TheScenario().Scenario = list.Current_Object().Scenario;
         base::SafeCopy(TheScenario().ScenarioName,

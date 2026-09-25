@@ -85,6 +85,9 @@
 #include "ra/screen.h"
 #include "ra/txtlabel.h"
 
+using enum engine::window::KeyAscii;
+using enum engine::window::KeyNumber;
+
 /**************************** Globals **************************************/
 
 /***************************************************************************
@@ -970,7 +973,7 @@ int MessageListClass::Manage() {
  * HISTORY:                                                                *
  *   05/05/1995 BRR : Created.                                             *
  *=========================================================================*/
-int MessageListClass::Input(KeyNumber& input) {
+int MessageListClass::Input(engine::window::KeyNumber& input) {
   int retcode = 0;
 
   //------------------------------------------------------------------------
@@ -992,21 +995,23 @@ int MessageListClass::Input(KeyNumber& input) {
   //	If we're in 'edit mode', handle keys
   //------------------------------------------------------------------------
   if (IsEdit) {
-    const auto ascii =
-        static_cast<KeyAscii>(KeyboardClass::To_ASCII(input) & 0x00ff);
+    const auto ascii = static_cast<engine::window::KeyAscii>(
+        KeyboardClass::To_ASCII(input) & 0x00ff);
 
     /*
     ** Allow numeric keypad presses to map to ascii numbers
     */
-    if (input & kKeyVirtualBit && ascii >= '0' && ascii <= '9') {
-      input = static_cast<KeyNumber>(input & ~kKeyVirtualBit);
+    if (input & engine::window::kKeyVirtualBit && ascii >= '0' &&
+        ascii <= '9') {
+      input = static_cast<engine::window::KeyNumber>(
+          input & ~engine::window::kKeyVirtualBit);
 
     } else {
       /*
       ** Filter out all special keys except return, escape and backspace
       */
-      if ((!(input & kKeyVirtualBit) && !(input & KN_BUTTON) && ascii >= ' ' &&
-           ascii <= 127) ||
+      if ((!(input & engine::window::kKeyVirtualBit) && !(input & KN_BUTTON) &&
+           ascii >= ' ' && ascii <= 127) ||
           (input & 0xff) == (KN_RETURN & 0xff) ||
           (input & 0xff) == (KN_BACKSPACE & 0xff) ||
           (input & 0xff) == (KN_ESC & 0xff)) {

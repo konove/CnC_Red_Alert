@@ -348,7 +348,7 @@ bool LoadOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view);
 
     /*
     **	The first time through the processing loop, set the edit
@@ -367,18 +367,18 @@ bool LoadOptionsClass::Process() {
     **	If the <RETURN> key was pressed, then default to the appropriate
     **	action button according to the style of this dialog box.
     */
-    if (input == KN_RETURN) {
+    if (input == engine::window::KN_RETURN) {
       switch (Style) {
         case SAVE:
-          input = ButtonKey(kButtonSave);
+          input = engine::window::ButtonKey(kButtonSave);
           break;
 
         case LOAD:
-          input = ButtonKey(kButtonLoad);
+          input = engine::window::ButtonKey(kButtonLoad);
           break;
 
         case WWDELETE:
-          input = ButtonKey(kButtonDelete);
+          input = engine::window::ButtonKey(kButtonDelete);
           break;
         case LoadStyleType::NONE:
         default:
@@ -394,7 +394,7 @@ bool LoadOptionsClass::Process() {
       ** Load: if load fails, present a message, and stay in the dialog
       ** to allow the user to try another game
       */
-      case ButtonKey(kButtonLoad):
+      case engine::window::ButtonKey(kButtonLoad):
         game_idx = listbtn.Current_Index();
         game_num = Files.at(game_idx)->Num;
         if (Files.at(game_idx)->Valid) {
@@ -416,7 +416,7 @@ bool LoadOptionsClass::Process() {
       /*
       ** Save: Save the game & exit the dialog
       */
-      case ButtonKey(kButtonSave):
+      case engine::window::ButtonKey(kButtonSave):
         if (std::string_view(game_descr).empty()) {
           CCMessageBox().Process(TXT_MUSTENTER_DESCRIPTION);
           firsttime = true;
@@ -447,7 +447,7 @@ bool LoadOptionsClass::Process() {
       ** Delete: delete the file & stay in the dialog, to allow the user
       ** to delete multiple files.
       */
-      case ButtonKey(kButtonDelete):
+      case engine::window::ButtonKey(kButtonDelete):
         game_idx = listbtn.Current_Index();
         game_num = Files.at(game_idx)->Num;
         if (CCMessageBox().Process(TXT_DELETE_FILE_QUERY, TXT_YES, TXT_NO) ==
@@ -474,7 +474,7 @@ bool LoadOptionsClass::Process() {
       ** item; if so, and if we're in SAVE mode, copy the list item into
       ** the save-game description field.
       */
-      case ButtonKey(kButtonList):
+      case engine::window::ButtonKey(kButtonList):
         if (Style != SAVE) {
           break;
         }
@@ -497,8 +497,8 @@ bool LoadOptionsClass::Process() {
       /*
       ** ESC/Cancel: break
       */
-      case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::KN_ESC:
+      case engine::window::ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;

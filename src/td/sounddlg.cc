@@ -390,46 +390,46 @@ void SoundControlsClass::Process() {
     /*
     **	Get user input.
     */
-    const KeyNumber input = optionsbtn->Input(view);
+    const engine::window::KeyNumber input = optionsbtn->Input(view);
 
     /*
     **	Process Input.
     */
     switch (static_cast<int>(input)) {
-      case KN_ESC:
-      case ButtonKey(kButtonOptions):
+      case engine::window::KN_ESC:
+      case engine::window::ButtonKey(kButtonOptions):
         process = false;
         break;
 
       /*
       **	Control music volume.
       */
-      case ButtonKey(kSliderMusic):
+      case engine::window::ButtonKey(kSliderMusic):
         TheOptions().Set_Score_Volume(music.Get_Value());
         break;
 
       /*
       **	Control sound volume.
       */
-      case ButtonKey(kSliderSound):
+      case engine::window::ButtonKey(kSliderSound):
         TheOptions().Set_Sound_Volume(sound.Get_Value(), true);
         break;
 
-      case ButtonKey(kButtonListbox):
+      case engine::window::ButtonKey(kButtonListbox):
         break;
 
       /*
       **	Stop all themes from playing.
       */
-      case ButtonKey(kButtonStop):
+      case engine::window::ButtonKey(kButtonStop):
         TheTheme().Queue_Song(THEME_NONE);
         break;
 
       /*
       **	Start the currently selected theme to play.
       */
-      case KN_SPACE:
-      case ButtonKey(kButtonPlay):
+      case engine::window::KN_SPACE:
+      case engine::window::ButtonKey(kButtonPlay):
         if (listbox.Count()) {
           TheTheme().Queue_Song(listbox.Current_Theme());
         }
@@ -438,7 +438,7 @@ void SoundControlsClass::Process() {
       /*
       **	Toggle the shuffle button.
       */
-      case ButtonKey(kButtonShuffle):
+      case engine::window::ButtonKey(kButtonShuffle):
         shufflebtn.Set_Text(shufflebtn.IsOn ? TXT_ON : TXT_OFF);
         TheOptions().Set_Shuffle(shufflebtn.IsOn);
         break;
@@ -446,7 +446,7 @@ void SoundControlsClass::Process() {
       /*
       **	Toggle the repeat button.
       */
-      case ButtonKey(kButtonRepeat):
+      case engine::window::ButtonKey(kButtonRepeat):
         repeatbtn.Set_Text(repeatbtn.IsOn ? TXT_ON : TXT_OFF);
         TheOptions().Set_Repeat(repeatbtn.IsOn);
         break;

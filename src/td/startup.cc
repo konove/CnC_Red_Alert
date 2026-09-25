@@ -513,7 +513,7 @@ void ShutDownEngine() {
 
 void Print_Error_End_Exit(char* string) {
   absl::PrintF("%s\n", string);
-  ReadKeyAscii();
+  engine::window::ReadKeyAscii();
   ShutDown();
   absl::PrintF("%s\n", string);
   exit(1);

@@ -241,21 +241,21 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     /*
     **	Get user input.
     */
-    KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view);
 
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on
     // the key up, 	though this dialog handled the key down. ajw
-    if (KeyboardClass::Down(KN_ESC)) {
+    if (KeyboardClass::Down(engine::window::KN_ESC)) {
       bEscapeDown = true;
     } else if (bEscapeDown) {
-      input = ButtonKey(kButtonCancel);
+      input = engine::window::ButtonKey(kButtonCancel);
       bEscapeDown = false;
     }
-    if (KeyboardClass::Down(KN_RETURN)) {
+    if (KeyboardClass::Down(engine::window::KN_RETURN)) {
       bReturnDown = true;
     } else if (bReturnDown) {
-      input = ButtonKey(kButtonOk);
+      input = engine::window::ButtonKey(kButtonOk);
       bReturnDown = false;
     }
 
@@ -264,16 +264,16 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     */
 
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         cgiReturn.bCreateGame = true;
         process = false;
         break;
 
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         process = false;
         break;
 
-      case ButtonKey(kGaugePlayercount):
+      case engine::window::ButtonKey(kGaugePlayercount):
         if (PlayerCountGauge.Get_Value() != 0 && cgiReturn.bTournament) {
           WWMessageBox().Process(TXT_WOL_TOURNAMENTPLAYERLIMIT);
           PlayerCountGauge.Set_Value(0);
@@ -286,7 +286,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
         PlayerCountStatic.Draw_Me(view);
         break;
 
-      case ButtonKey(kCheckTournament):
+      case engine::window::ButtonKey(kCheckTournament):
         cgiReturn.bTournament = TournamentCheck.IsOn;
         if (cgiReturn.bTournament) {
           PlayerCountGauge.Set_Value(0);
@@ -301,11 +301,11 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
         //					PlayerCountGauge.Enable();
         break;
 
-      case ButtonKey(kCheckPrivacy):
+      case engine::window::ButtonKey(kCheckPrivacy):
         cgiReturn.bPrivate = PrivacyCheck.IsOn;
         break;
 
-      case ButtonKey(kCheckRa):
+      case engine::window::ButtonKey(kCheckRa):
         if (RA_Check.IsOn) {
           //	Box was checked.
           CS_Check.Turn_Off();
@@ -316,7 +316,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
           RA_Check.Turn_On();
         }
         break;
-      case ButtonKey(kCheckCs):
+      case engine::window::ButtonKey(kCheckCs):
         if (CS_Check.IsOn) {
           //	Box was checked.
           RA_Check.Turn_Off();
@@ -327,7 +327,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
           CS_Check.Turn_On();
         }
         break;
-      case ButtonKey(kCheckAm):
+      case engine::window::ButtonKey(kCheckAm):
         if (AM_Check.IsOn) {
           //	Box was checked.
           RA_Check.Turn_Off();

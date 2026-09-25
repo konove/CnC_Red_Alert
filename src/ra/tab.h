@@ -57,7 +57,7 @@ class TabClass : public SidebarClass {
 
   TabClass();
 
-  void AI(KeyNumber& input, int x, int y) override;
+  void AI(engine::window::KeyNumber& input, int x, int y) override;
   void Draw_It(PixelView& view, bool complete = false) override;
   static void Draw_Credits_Tab(PixelView& view);
   static void Hilite_Tab(PixelView& view, int tab);

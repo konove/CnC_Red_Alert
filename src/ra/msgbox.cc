@@ -64,6 +64,8 @@
 #include "ra/screen.h"
 #include "ra/textbtn.h"
 
+using enum engine::window::KeyNumber;
+
 /***********************************************************************************************
  * WWMessageBox::Process -- pops up a message with yes/no, etc *
  *                                                                                             *
@@ -282,7 +284,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       /*
       **	Fetch and process input.
       */
-      KeyNumber input = buttonlist->Input(view);
+      engine::window::KeyNumber input = buttonlist->Input(view);
       //	I really hate to do this, but...      ajw
       if (TheGameState().cancel_msgbox()) {
         TheGameState().cancel_msgbox() = false;

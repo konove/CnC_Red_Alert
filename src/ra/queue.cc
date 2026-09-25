@@ -977,7 +977,7 @@ static RetcodeType Wait_For_Players(int first_time, ConnManClass* net,
   //........................................................................
   // Other misc variables
   //........................................................................
-  KeyNumber input = KN_NONE;  // for user input
+  engine::window::KeyNumber input = engine::window::KN_NONE;  // for user input
   int x = 0;
   int y = 0;  // for map input
   RetcodeType rc = RC_NORMAL;
@@ -2214,7 +2214,8 @@ static int Process_Reconnect_Dialog(
   //........................................................................
   //	If user hits ESC, bail out
   //........................................................................
-  if (TheKeyboard().Check() && (TheKeyboard().Get() == KN_ESC)) {
+  if (TheKeyboard().Check() &&
+      (TheKeyboard().Get() == engine::window::KN_ESC)) {
     return 1;
   }
 
@@ -3796,7 +3797,7 @@ static void Queue_Playback() {
   //------------------------------------------------------------------------
   if (TheKeyboard().Check()) {
     const int key = TheKeyboard().Get();
-    if (key == KA_ESC || TheSession().Attract) {
+    if (key == engine::window::KA_ESC || TheSession().Attract) {
       TheGameState().active() = false;
       return;
     }

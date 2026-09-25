@@ -61,6 +61,8 @@
 #include "ra/text_ids.h"
 #include "ra/textbtn.h"
 
+using enum engine::window::KeyNumber;
+
 /***********************************************************************************************
  * VisualControlsClass::Process -- Process the visual control dialog box. *
  *                                                                                             *
@@ -249,31 +251,31 @@ void VisualControlsClass::Process() {
     /*
     **	Get and process player input.
     */
-    const KeyNumber input = optionsbtn.Input(view);
+    const engine::window::KeyNumber input = optionsbtn.Input(view);
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonBrightness):
+      case engine::window::ButtonKey(kButtonBrightness):
         TheOptions().Set_Brightness(fixed(brightness.Get_Value(), 256));
         break;
 
-      case ButtonKey(kButtonColor):
+      case engine::window::ButtonKey(kButtonColor):
         TheOptions().Set_Saturation(fixed(color.Get_Value(), 256));
         break;
 
-      case ButtonKey(kButtonContrast):
+      case engine::window::ButtonKey(kButtonContrast):
         TheOptions().Set_Contrast(fixed(contrast.Get_Value(), 256));
         break;
 
-      case ButtonKey(kButtonTint):
+      case engine::window::ButtonKey(kButtonTint):
         TheOptions().Set_Tint(fixed(tint.Get_Value(), 256));
         break;
 
-      case ButtonKey(kButtonReset):
+      case engine::window::ButtonKey(kButtonReset):
         selection = kButtonReset;
         pressed = true;
         break;
 
       case KN_ESC:
-      case ButtonKey(kButtonOptions):
+      case engine::window::ButtonKey(kButtonOptions):
         selection = kButtonOptions;
         pressed = true;
         break;

@@ -101,7 +101,7 @@ ScrollClass::ScrollClass() {
  *Handles new scrolling option.                                            *
  *=============================================================================================*/
 #define EVA_WIDTH 80
-void ScrollClass::AI(KeyNumber& input, int x, int y) {
+void ScrollClass::AI(engine::window::KeyNumber& input, int x, int y) {
   static DirType direction;
   bool player_scrolled = false;
 
@@ -185,7 +185,7 @@ void ScrollClass::AI(KeyNumber& input, int x, int y) {
         //			if (Keyboard::Down(KN_LMOUSE)) {
         //				rate = Bound(rate-3, 0, 4);
         //			}
-        if (Keyboard::Down(KN_RMOUSE)) {
+        if (Keyboard::Down(engine::window::KN_RMOUSE)) {
           rate = Bound(
               rate + 1, 4,
               static_cast<int>(sizeof(_rate) / sizeof(base::At(_rate, 0))) - 1);
@@ -219,7 +219,7 @@ void ScrollClass::AI(KeyNumber& input, int x, int y) {
           **	If the mouse button is pressed or auto scrolling is active, then
           *scroll *	the map if the delay counter indicates.
           */
-          if (Keyboard::Down(KN_LMOUSE) || IsAutoScroll) {
+          if (Keyboard::Down(engine::window::KN_LMOUSE) || IsAutoScroll) {
             distance = base::At(_rate, rate);
             Scroll_Map(direction, distance, true);
 

@@ -38,7 +38,9 @@ class Input {
   Input(Input&&) = delete;
   Input& operator=(Input&&) = delete;
 
-  KeyBuffer& keyboard() ABSL_ATTRIBUTE_LIFETIME_BOUND { return keyboard_; }
+  engine::window::KeyBuffer& keyboard() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return keyboard_;
+  }
 
   // The mouse cursor, or null before InstallMouse() and after RemoveMouse().
   WWMouseClass* mouse() ABSL_ATTRIBUTE_LIFETIME_BOUND { return mouse_.get(); }
@@ -51,7 +53,7 @@ class Input {
   void RemoveMouse();
 
  private:
-  KeyBuffer keyboard_;
+  engine::window::KeyBuffer keyboard_;
   std::unique_ptr<WWMouseClass> mouse_;
 };
 
@@ -60,7 +62,9 @@ class Input {
 inline Input& TheInput() { return base::Installed<Input>::Get(); }
 
 // Shorthands for the two devices.
-inline KeyBuffer& TheKeyboard() { return TheInput().keyboard(); }
+inline engine::window::KeyBuffer& TheKeyboard() {
+  return TheInput().keyboard();
+}
 inline WWMouseClass* TheMouse() { return TheInput().mouse(); }
 
 #endif  // CNC_RED_ALERT_TD_INPUT_H_

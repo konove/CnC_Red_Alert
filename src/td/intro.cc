@@ -245,11 +245,11 @@ void Choose_Side() {
       frame = 0;
     }
     if ((Keyboard::Check() && endframe == 255) &&
-        KeyCode(Keyboard::Get()) == KN_LMOUSE &&
-        (g_active_keyboard->click_y() > 96 &&
-         g_active_keyboard->click_y() < 300)) {
-      if (g_active_keyboard->click_x() > 36 &&
-          g_active_keyboard->click_x() < 296) {
+        engine::window::KeyCode(Keyboard::Get()) == engine::window::KN_LMOUSE &&
+        (engine::window::g_active_keyboard->click_y() > 96 &&
+         engine::window::g_active_keyboard->click_y() < 300)) {
+      if (engine::window::g_active_keyboard->click_x() > 36 &&
+          engine::window::g_active_keyboard->click_x() < 296) {
         // Chose GDI
         TheWorld().whom() = HOUSE_GOOD;
         TheWorld().scen_player() = SCEN_PLAYER_GDI;
@@ -258,8 +258,8 @@ void Choose_Side() {
         speechplaying = true;
         speech = speechg;
 
-      } else if (g_active_keyboard->click_x() > 320 &&
-                 g_active_keyboard->click_x() < 600) {
+      } else if (engine::window::g_active_keyboard->click_x() > 320 &&
+                 engine::window::g_active_keyboard->click_x() < 600) {
         // Chose Nod
         endframe = 14;
         TheWorld().whom() = HOUSE_BAD;

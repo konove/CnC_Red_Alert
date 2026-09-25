@@ -91,6 +91,8 @@
 #include "td/vector.h"
 #include "td/world.h"
 
+using enum engine::window::KeyNumber;
+
 /***************************************************************************
  * MapEditClass::Placement_Dialog -- adds an object to the scenario        *
  *                                                                         *
@@ -636,7 +638,8 @@ int MapEditClass::Placement_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumber input = commands->Input(view);  // user input
+    const engine::window::KeyNumber input =
+        commands->Input(view);  // user input
 
     /*
     ------------------------- Process user input --------------------------
@@ -645,13 +648,13 @@ int MapEditClass::Placement_Dialog() {
       /*
       ---------------------------- GDI House -----------------------------
       */
-      case ButtonKey(kButtonGdi):
-      case ButtonKey(kButtonNod):
-      case ButtonKey(kButtonNeutral):
-      case ButtonKey(kButtonMulti1):
-      case ButtonKey(kButtonMulti2):
-      case ButtonKey(kButtonMulti3):
-      case ButtonKey(kButtonMulti4): {
+      case engine::window::ButtonKey(kButtonGdi):
+      case engine::window::ButtonKey(kButtonNod):
+      case engine::window::ButtonKey(kButtonNeutral):
+      case engine::window::ButtonKey(kButtonMulti1):
+      case engine::window::ButtonKey(kButtonMulti2):
+      case engine::window::ButtonKey(kButtonMulti3):
+      case engine::window::ButtonKey(kButtonMulti4): {
         const auto house = static_cast<HousesType>(
             static_cast<int>(input & ~KN_BUTTON) - kButtonGdi);
         /*
@@ -675,7 +678,7 @@ int MapEditClass::Placement_Dialog() {
       --------------------------- Next in list ---------------------------
       */
       case KN_RIGHT:
-      case ButtonKey(kButtonNext):
+      case engine::window::ButtonKey(kButtonNext):
         /*
         ..................... Increment to next obj .....................
         */
@@ -701,7 +704,7 @@ int MapEditClass::Placement_Dialog() {
       ------------------------- Previous in list -------------------------
       */
       case KN_LEFT:
-      case ButtonKey(kButtonPrev):
+      case engine::window::ButtonKey(kButtonPrev):
         /*
         ..................... Decrement to prev obj .....................
         */
@@ -726,18 +729,18 @@ int MapEditClass::Placement_Dialog() {
       /*
       ----------------------- Select a class type ------------------------
       */
-      case ButtonKey(kButtonTemplate):
-      case ButtonKey(kButtonOverlay):
-      case ButtonKey(kButtonSmudge):
-      case ButtonKey(kButtonTerrain):
-      case ButtonKey(kButtonUnit):
-      case ButtonKey(kButtonInfantry):
-      case ButtonKey(kButtonAircraft):
-      case ButtonKey(kButtonBuilding):
+      case engine::window::ButtonKey(kButtonTemplate):
+      case engine::window::ButtonKey(kButtonOverlay):
+      case engine::window::ButtonKey(kButtonSmudge):
+      case engine::window::ButtonKey(kButtonTerrain):
+      case engine::window::ButtonKey(kButtonUnit):
+      case engine::window::ButtonKey(kButtonInfantry):
+      case engine::window::ButtonKey(kButtonAircraft):
+      case engine::window::ButtonKey(kButtonBuilding):
         /*
         ...................... Find index of class ......................
         */
-        typeindex = input - ButtonKey(kButtonTemplate);
+        typeindex = input - engine::window::ButtonKey(kButtonTemplate);
 
         /*
         ............ If no objects of that type, do nothing .............
@@ -839,7 +842,7 @@ int MapEditClass::Placement_Dialog() {
       -------------------------------- OK --------------------------------
       */
       case KN_RETURN:
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         cancel = false;
         process = false;
         break;
@@ -848,7 +851,7 @@ int MapEditClass::Placement_Dialog() {
       ------------------------------ Cancel ------------------------------
       */
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;
@@ -1833,8 +1836,8 @@ void MapEditClass::Place_Trigger() {
   /*
   -------------------- See if an object was clicked on ---------------------
   */
-  int x = g_active_keyboard->click_x();
-  int y = g_active_keyboard->click_y();
+  int x = engine::window::g_active_keyboard->click_x();
+  int y = engine::window::g_active_keyboard->click_y();
 
   /*
   ............................ Get cell for x,y ............................

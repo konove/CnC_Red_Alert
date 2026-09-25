@@ -109,7 +109,7 @@ class ListClass : public ControlClass {
   virtual int Step_Selected_Index(int step);
   void Flag_To_Redraw() final;
 
-  void Peer_To_Peer(unsigned flags, KeyNumber& key,
+  void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
                     ControlClass& whom) override;
   // Removes the first item whose text equals `text` (nullptr: nothing).
   virtual void Remove_Item(const char* text);
@@ -139,7 +139,7 @@ class ListClass : public ControlClass {
   GadgetClass* Remove() override;
 
  protected:
-  bool Action(unsigned flags, KeyNumber& key) override;
+  bool Action(unsigned flags, engine::window::KeyNumber& key) override;
   virtual void Draw_Entry(PixelView& view, int index, int x, int y, int width,
                           bool selected);
 
@@ -218,7 +218,7 @@ class TListClass final : public ControlClass {
   void Flag_To_Redraw() override;
   [[nodiscard]] T Get_Item(int index) const { return List.at(index); }
 
-  void Peer_To_Peer(unsigned flags, KeyNumber& key,
+  void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& key,
                     ControlClass& whom) override;
   void Remove_Item(T /*text*/);
   void Remove_Index(int /*index*/);
@@ -240,7 +240,7 @@ class TListClass final : public ControlClass {
   GadgetClass* Remove() override;
 
  protected:
-  bool Action(unsigned flags, KeyNumber& key) override;
+  bool Action(unsigned flags, engine::window::KeyNumber& key) override;
 
   /*
   **	This controls what the text looks like. It uses the basic TPF_ flags
@@ -426,9 +426,9 @@ void TListClass<T>::Remove_Item(T text) {
 }
 
 template <class T>
-bool TListClass<T>::Action(unsigned flags, KeyNumber& key) {
+bool TListClass<T>::Action(unsigned flags, engine::window::KeyNumber& key) {
   if (flags & kLeftRelease) {
-    key = KN_NONE;
+    key = engine::window::KN_NONE;
     flags &= (~kLeftRelease);
     ControlClass::Action(flags, key);
     return true;
@@ -441,12 +441,12 @@ bool TListClass<T>::Action(unsigned flags, KeyNumber& key) {
     **	Process the keyboard character. If indicated, consume this
     *keyboard event *	so that the edit gadget ID number is not returned.
     */
-    if (key == KN_UP) {
+    if (key == engine::window::KN_UP) {
       Step_Selected_Index(-1);
-      key = KN_NONE;
-    } else if (key == KN_DOWN) {
+      key = engine::window::KN_NONE;
+    } else if (key == engine::window::KN_DOWN) {
       Step_Selected_Index(1);
-      key = KN_NONE;
+      key = engine::window::KN_NONE;
     } else {
       flags &= ~kKeyboard;
     }
@@ -540,7 +540,8 @@ int TListClass<T>::Current_Index() const {
 }
 
 template <class T>
-void TListClass<T>::Peer_To_Peer(unsigned flags, KeyNumber& /*unused*/,
+void TListClass<T>::Peer_To_Peer(unsigned flags,
+                                 engine::window::KeyNumber& /*unused*/,
                                  ControlClass& whom) {
   if (flags & kLeftRelease) {
     if (&whom == &UpGadget) {

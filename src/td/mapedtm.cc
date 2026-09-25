@@ -85,6 +85,8 @@
 #include "td/type.h"
 #include "td/world.h"
 
+using enum engine::window::KeyNumber;
+
 /***************************************************************************
  * MapEditClass::Handle_Teams -- main team-dialog-handling function        *
  *                                                                         *
@@ -445,38 +447,39 @@ int MapEditClass::Select_Team(const char* caption) {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumber input = commands->Input(view);  // user input
+    const engine::window::KeyNumber input =
+        commands->Input(view);  // user input
 
     /*
     ............................ Process input ............................
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kTeamList):
+      case engine::window::ButtonKey(kTeamList):
         def_idx = teamlist.Current_Index();
         if (def_idx < TheObjectHeaps().team_type().Count()) {
           CurTeam = TheObjectHeaps().team_type().Ptr(def_idx);
         }
         break;
 
-      case ButtonKey(kButtonEdit):
+      case engine::window::ButtonKey(kButtonEdit):
         if (CurTeam) {  // only allow if there's one selected
           process = false;
           edit_team = true;
         }
         break;
 
-      case ButtonKey(kButtonNew):
+      case engine::window::ButtonKey(kButtonNew):
         process = false;
         new_team = true;
         break;
 
-      case ButtonKey(kButtonDelete):
+      case engine::window::ButtonKey(kButtonDelete):
         process = false;
         del_team = true;
         break;
 
       case KN_RETURN:
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         process = false;
         break;
       default:
@@ -1075,23 +1078,23 @@ int MapEditClass::Edit_Team() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view);
 
     /*
     ............................ Process input ............................
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonName):
-      case ButtonKey(kButtonRecruit):
-      case ButtonKey(kButtonMaxnum):
-      case ButtonKey(kButtonInitnum):
-      case ButtonKey(kButtonFear):
+      case engine::window::ButtonKey(kButtonName):
+      case engine::window::ButtonKey(kButtonRecruit):
+      case engine::window::ButtonKey(kButtonMaxnum):
+      case engine::window::ButtonKey(kButtonInitnum):
+      case engine::window::ButtonKey(kButtonFear):
         break;
 
       /*..................................................................
       Toggle RoundAbout
       ..................................................................*/
-      case ButtonKey(kButtonRoundabout):
+      case engine::window::ButtonKey(kButtonRoundabout):
         if (roundabout) {
           roundabout = 0;
           roundbtn.Turn_Off();
@@ -1104,7 +1107,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Toggle Learning
       ..................................................................*/
-      case ButtonKey(kButtonLearning):
+      case engine::window::ButtonKey(kButtonLearning):
         if (learning) {
           learning = 0;
           learnbtn.Turn_Off();
@@ -1117,7 +1120,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Toggle Suicide
       ..................................................................*/
-      case ButtonKey(kButtonSuicide):
+      case engine::window::ButtonKey(kButtonSuicide):
         if (suicide) {
           suicide = 0;
           suicidebtn.Turn_Off();
@@ -1130,7 +1133,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Toggle Spy
       ..................................................................*/
-      case ButtonKey(kButtonAuto):
+      case engine::window::ButtonKey(kButtonAuto):
         if (autocreate) {
           autocreate = 0;
           autocreatebtn.Turn_Off();
@@ -1143,7 +1146,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Toggle Mercenary
       ..................................................................*/
-      case ButtonKey(kButtonMercenary):
+      case engine::window::ButtonKey(kButtonMercenary):
         if (mercenary) {
           mercenary = 0;
           mercbtn.Turn_Off();
@@ -1153,7 +1156,7 @@ int MapEditClass::Edit_Team() {
         }
         break;
 
-      case ButtonKey(kButtonPrebuilt):
+      case engine::window::ButtonKey(kButtonPrebuilt):
         if (prebuilt) {
           prebuilt = 0;
           prebuiltbtn.Turn_Off();
@@ -1163,7 +1166,7 @@ int MapEditClass::Edit_Team() {
         }
         break;
 
-      case ButtonKey(kButtonReinforce):
+      case engine::window::ButtonKey(kButtonReinforce):
         if (reinforce) {
           reinforce = 0;
           reinforcebtn.Turn_Off();
@@ -1176,14 +1179,14 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Select a Mission on the left-hand mission list
       ..................................................................*/
-      case ButtonKey(kButtonMission1):
+      case engine::window::ButtonKey(kButtonMission1):
         break;
 
       /*..................................................................
       Select a Mission on the right-hand mission list; update the Argument
       field to reflect the current value
       ..................................................................*/
-      case ButtonKey(kButtonMission2):
+      case engine::window::ButtonKey(kButtonMission2):
         if (missionlist2.Count() > 0 &&
             missionlist2.Current_Index() != curmission) {
           curmission = missionlist2.Current_Index();
@@ -1202,15 +1205,15 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Copy mission from left list box to right list box
       ..................................................................*/
-      case ButtonKey(kButtonAdd):
-      case ButtonKey(kButtonInsert):
+      case engine::window::ButtonKey(kButtonAdd):
+      case engine::window::ButtonKey(kButtonInsert):
         if (missioncount < TeamTypeClass::kMaxTeamMissions) {
           /*
           ** Set 'i' to the position we're going to add into; this will
           ** be just AFTER the current item if we're adding, and it will
           ** be the current item if we're inserting.
           */
-          if (input == ButtonKey(kButtonAdd)) {
+          if (input == engine::window::ButtonKey(kButtonAdd)) {
             i = missionlist2.Current_Index() + 1;
             i = std::max(i, 0);
             i = std::min(i, missioncount);
@@ -1264,7 +1267,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Delete mission from right-hand list box
       ..................................................................*/
-      case ButtonKey(kButtonDel):
+      case engine::window::ButtonKey(kButtonDel):
         if (missioncount > 0) {
           i = missionlist2.Current_Index();
           if (i < 0 || i >= missioncount) {
@@ -1298,13 +1301,13 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Set house
       ..................................................................*/
-      case ButtonKey(kButtonGdi):
-      case ButtonKey(kButtonNod):
-      case ButtonKey(kButtonNeu):
-      case ButtonKey(kButtonMulti1):
-      case ButtonKey(kButtonMulti2):
-      case ButtonKey(kButtonMulti3):
-      case ButtonKey(kButtonMulti4):
+      case engine::window::ButtonKey(kButtonGdi):
+      case engine::window::ButtonKey(kButtonNod):
+      case engine::window::ButtonKey(kButtonNeu):
+      case engine::window::ButtonKey(kButtonMulti1):
+      case engine::window::ButtonKey(kButtonMulti2):
+      case engine::window::ButtonKey(kButtonMulti3):
+      case engine::window::ButtonKey(kButtonMulti4):
         house = static_cast<HousesType>(static_cast<int>(input & ~KN_BUTTON) -
                                         kButtonGdi);
         Set_House_Buttons(house, commands, kButtonGdi);
@@ -1313,7 +1316,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Invoke the members dialog
       ..................................................................*/
-      case ButtonKey(kButtonMembers):
+      case engine::window::ButtonKey(kButtonMembers):
         /*
         .................... Take editor focus away .....................
         */
@@ -1333,7 +1336,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       OK: return
       ..................................................................*/
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         cancel = false;
         process = false;
         break;
@@ -1341,7 +1344,7 @@ int MapEditClass::Edit_Team() {
       /*..................................................................
       Cancel: return
       ..................................................................*/
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;
@@ -1736,7 +1739,8 @@ int MapEditClass::Team_Members(HousesType house) {
     /*
     **	Get user input.
     */
-    const KeyNumber input = commands->Input(view);  // user input
+    const engine::window::KeyNumber input =
+        commands->Input(view);  // user input
 
     /*
     **	Process input.
@@ -1772,14 +1776,14 @@ int MapEditClass::Team_Members(HousesType house) {
       /*
       **	OK: save values & return.
       */
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         process = false;
         break;
 
       /*
       **	Cancel: abort & return.
       */
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;

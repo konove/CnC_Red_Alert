@@ -60,6 +60,8 @@
 #include "td/slider.h"
 #include "td/textbtn.h"
 
+using enum engine::window::KeyNumber;
+
 /***********************************************************************************************
  * VisualControlsClass::Process -- Process the visual control dialog box. *
  *                                                                                             *
@@ -247,31 +249,31 @@ void VisualControlsClass::Process() {
     /*
     **	Get and process player input.
     */
-    const KeyNumber input = optionsbtn.Input(view);
+    const engine::window::KeyNumber input = optionsbtn.Input(view);
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonBrightness):
+      case engine::window::ButtonKey(kButtonBrightness):
         TheOptions().Set_Brightness(brightness.Get_Value());
         break;
 
-      case ButtonKey(kButtonColor):
+      case engine::window::ButtonKey(kButtonColor):
         TheOptions().Set_Color(color.Get_Value());
         break;
 
-      case ButtonKey(kButtonContrast):
+      case engine::window::ButtonKey(kButtonContrast):
         TheOptions().Set_Contrast(contrast.Get_Value());
         break;
 
-      case ButtonKey(kButtonTint):
+      case engine::window::ButtonKey(kButtonTint):
         TheOptions().Set_Tint(tint.Get_Value());
         break;
 
-      case ButtonKey(kButtonReset):
+      case engine::window::ButtonKey(kButtonReset):
         selection = kButtonReset;
         pressed = true;
         break;
 
       case KN_ESC:
-      case ButtonKey(kButtonOptions):
+      case engine::window::ButtonKey(kButtonOptions):
         selection = kButtonOptions;
         pressed = true;
         break;

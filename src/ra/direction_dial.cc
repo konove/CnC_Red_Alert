@@ -72,7 +72,8 @@ DirectionDial::DirectionDial(const int id, const int x, const int y,
   }
 }
 
-bool DirectionDial::Action(const unsigned flags, KeyNumber& key) {
+bool DirectionDial::Action(const unsigned flags,
+                           engine::window::KeyNumber& key) {
   // We might end up clearing the event bits. Make sure that the sticky
   // process is properly updated anyway: it is what makes StuckOn this dial
   // from the press to the release.
@@ -95,14 +96,14 @@ bool DirectionDial::Action(const unsigned flags, KeyNumber& key) {
       // The dial has not moved; kill the event so the owner sees nothing.
       // ControlClass::Action leaves `key` alone when given no flags, so it
       // has to be cleared here.
-      key = KN_NONE;
+      key = engine::window::KN_NONE;
       ControlClass::Action(0, key);
     }
     return true;
   }
   // Otherwise nothing changed. A release ends the drag and is swallowed.
   if (flags & kLeftRelease) {
-    key = KN_NONE;
+    key = engine::window::KN_NONE;
   }
   return ControlClass::Action(0, key);
 }

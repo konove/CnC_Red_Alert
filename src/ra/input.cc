@@ -15,10 +15,10 @@ constexpr int kCursorHeight = 48;
 }  // namespace
 
 Input::Input() : keyboard_(std::make_unique<KeyboardClass>()) {
-  g_active_keyboard = keyboard_.get();
+  engine::window::g_active_keyboard = keyboard_.get();
 }
 
-Input::~Input() { g_active_keyboard = nullptr; }
+Input::~Input() { engine::window::g_active_keyboard = nullptr; }
 
 void Input::InstallMouse(PixelView& page) {
   mouse_ = std::make_unique<WWMouseClass>(&page, kCursorWidth, kCursorHeight);

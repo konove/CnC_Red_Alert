@@ -87,6 +87,8 @@
 #include "ra/type.h"
 #include "ra/world.h"
 
+using enum engine::window::KeyAscii;
+
 // Layout, in 320x200 coordinates.
 
 // Length in pixels of a full Do_GDI_Graph() bar. Frame N of a bar shape file is
@@ -1046,7 +1048,8 @@ void Animate_Cursor(int pos, int ypos) {
 }
 
 void TickScoreScreen(const int ticks) {
-  if (!ControlQ && KeyboardClass::Down(KN_LCTRL) && KeyboardClass::Down(KN_Q)) {
+  if (!ControlQ && KeyboardClass::Down(engine::window::KN_LCTRL) &&
+      KeyboardClass::Down(engine::window::KN_Q)) {
     ControlQ = true;
     TheKeyboard().Clear();
   }

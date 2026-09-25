@@ -81,6 +81,8 @@
 #include "ra/textbtn.h"
 #include "ra/world.h"
 
+using enum engine::window::KeyNumber;
+
 #define kOptionWidth (236 * 2)
 #define kOptionHeight (162 * 2)
 #define kOptionX ((640 - kOptionWidth) / 2)
@@ -206,10 +208,10 @@ void Special_Dialog(bool simple) {
       Show_Mouse();
     }
 
-    const KeyNumber input = buttons->Input(view);
+    const engine::window::KeyNumber input = buttons->Input(view);
     switch (static_cast<int>(input)) {
       case KN_ESC:
-      case ButtonKey(200):
+      case engine::window::ButtonKey(200):
         process = false;
         for (const auto& _option : _options) {
           const bool setting = _option.Setting;
@@ -232,7 +234,7 @@ void Special_Dialog(bool simple) {
         }
         break;
 
-      case ButtonKey(201):
+      case engine::window::ButtonKey(201):
         process = false;
         break;
 
@@ -443,7 +445,8 @@ const char* Fetch_Password(int caption, int message, int btext) {
     /*
     **	Fetch and process input.
     */
-    const KeyNumber input = buttonlist->Input(view);  // user input
+    const engine::window::KeyNumber input =
+        buttonlist->Input(view);  // user input
     if (first) {
       button2.Set_Focus();
       button2.Flag_To_Redraw();
@@ -585,7 +588,7 @@ int Fetch_Difficulty(bool amath) {
     /*
     **	Fetch and process input.
     */
-    const KeyNumber input = buttonlist->Input(view);
+    const engine::window::KeyNumber input = buttonlist->Input(view);
 
     switch (static_cast<int>(input)) {
       case KN_RETURN:

@@ -78,7 +78,8 @@ class DropListClass : public EditClass {
   virtual int Current_Index();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(const char* text);
-  void Peer_To_Peer(unsigned flags, KeyNumber& /*key*/ /*unused*/,
+  void Peer_To_Peer(unsigned flags,
+                    engine::window::KeyNumber& /*key*/ /*unused*/,
                     ControlClass& whom) override;
   void Clear_Focus() override;
   [[nodiscard]] virtual int Count() const { return List.Count(); }
@@ -147,7 +148,7 @@ class TDropListClass : public EditClass {
   virtual int Current_Index();
   virtual void Set_Selected_Index(int index);
   virtual void Set_Selected_Index(T text);
-  void Peer_To_Peer(unsigned flags, KeyNumber& /*key*/,
+  void Peer_To_Peer(unsigned flags, engine::window::KeyNumber& /*key*/,
                     ControlClass& whom) override;
   void Clear_Focus() override;
   [[nodiscard]] virtual int Count() const { return List.Count(); }
@@ -268,12 +269,13 @@ void TDropListClass<T>::Clear_Focus() {
 }
 
 template <class T>
-void TDropListClass<T>::Peer_To_Peer(unsigned flags, KeyNumber& key,
+void TDropListClass<T>::Peer_To_Peer(unsigned flags,
+                                     engine::window::KeyNumber& key,
                                      ControlClass& whom) {
   if ((&whom == &DropButton) && (flags & kLeftRelease)) {
     if (IsDropped) {
       Collapse();
-      key = ButtonKey(static_cast<int>(ID));
+      key = engine::window::ButtonKey(static_cast<int>(ID));
     } else {
       Expand();
     }
@@ -283,7 +285,7 @@ void TDropListClass<T>::Peer_To_Peer(unsigned flags, KeyNumber& key,
     base::SafeCopy(String.first(base::ToSize(MaxLength)),
                    List.Current_Item()->Description());
     Flag_To_Redraw();
-    key = ButtonKey(static_cast<int>(ID));
+    key = engine::window::ButtonKey(static_cast<int>(ID));
   }
 }
 

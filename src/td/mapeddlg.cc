@@ -105,6 +105,8 @@
 #include "td/vector.h"
 #include "td/world.h"
 
+using enum engine::window::KeyNumber;
+
 /***************************************************************************
  * MapEditClass::New_Scenario -- creates a new scenario                    *
  *                                                                         *
@@ -743,13 +745,13 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
     /*
     ........................... Get user input ............................
     */
-    const KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view);
 
     /*
     ............................ Process input ............................
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kButtonVarA):
+      case engine::window::ButtonKey(kButtonVarA):
         (*varp) = SCEN_VAR_A;
         varabtn.Turn_On();
         varbbtn.Turn_Off();
@@ -758,7 +760,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
         varlbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonVarB):
+      case engine::window::ButtonKey(kButtonVarB):
         (*varp) = SCEN_VAR_B;
         varabtn.Turn_Off();
         varbbtn.Turn_On();
@@ -767,7 +769,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
         varlbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonVarC):
+      case engine::window::ButtonKey(kButtonVarC):
         (*varp) = SCEN_VAR_C;
         varabtn.Turn_Off();
         varbbtn.Turn_Off();
@@ -776,7 +778,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
         varlbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonVarD):
+      case engine::window::ButtonKey(kButtonVarD):
         (*varp) = SCEN_VAR_D;
         varabtn.Turn_Off();
         varbbtn.Turn_Off();
@@ -785,7 +787,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
         varlbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonVarL):
+      case engine::window::ButtonKey(kButtonVarL):
         (*varp) = SCEN_VAR_LOSE;
         varabtn.Turn_Off();
         varbbtn.Turn_Off();
@@ -794,33 +796,33 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
         varlbtn.Turn_On();
         break;
 
-      case ButtonKey(kButtonEast):
+      case engine::window::ButtonKey(kButtonEast):
         (*dirp) = SCEN_DIR_EAST;
         eastbtn.Turn_On();
         westbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonWest):
+      case engine::window::ButtonKey(kButtonWest):
         (*dirp) = SCEN_DIR_WEST;
         eastbtn.Turn_Off();
         westbtn.Turn_On();
         break;
 
-      case ButtonKey(kButtonGdi):
+      case engine::window::ButtonKey(kButtonGdi):
         (*playerp) = SCEN_PLAYER_GDI;
         gdibtn.Turn_On();
         nodbtn.Turn_Off();
         playermbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonNod):
+      case engine::window::ButtonKey(kButtonNod):
         (*playerp) = SCEN_PLAYER_NOD;
         gdibtn.Turn_Off();
         nodbtn.Turn_On();
         playermbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonMplayer):
+      case engine::window::ButtonKey(kButtonMplayer):
         (*playerp) = SCEN_PLAYER_MPLAYER;
         gdibtn.Turn_Off();
         nodbtn.Turn_Off();
@@ -828,18 +830,18 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
         break;
 
       case KN_RETURN:
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         cancel = false;
         process = false;
         break;
 
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;
 
-      case ButtonKey(kButtonScenario):
+      case engine::window::ButtonKey(kButtonScenario):
       default:
         break;
     }
@@ -1241,7 +1243,8 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
     /*
     ------------------------- Process user input --------------------------
     */
-    const KeyNumber input = commands->Input(view);  // user input
+    const engine::window::KeyNumber input =
+        commands->Input(view);  // user input
     /*.....................................................................
     Normal button processing: This is done when the mouse button is NOT
     being held down ('grabbed' is 0).
@@ -1249,13 +1252,13 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
     if (grabbed == 0) {
       switch (static_cast<int>(input)) {
         case KN_RETURN:
-        case ButtonKey(kButtonOk):
+        case engine::window::ButtonKey(kButtonOk):
           cancel = false;
           process = false;
           break;
 
         case KN_ESC:
-        case ButtonKey(kButtonCancel):
+        case engine::window::ButtonKey(kButtonCancel):
           cancel = true;
           process = false;
           break;
@@ -1264,61 +1267,63 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
           /*
           ....................... Grab top left ........................
           */
-          delta1 = abs(g_active_keyboard->click_x() - map_x1);
-          delta2 = abs(g_active_keyboard->click_y() - map_y1);
+          delta1 = abs(engine::window::g_active_keyboard->click_x() - map_x1);
+          delta2 = abs(engine::window::g_active_keyboard->click_y() - map_y1);
           if (delta1 < 3 && delta2 < 3) {
             grabbed = 1;
-            mx = g_active_keyboard->click_x();
-            my = g_active_keyboard->click_y();
+            mx = engine::window::g_active_keyboard->click_x();
+            my = engine::window::g_active_keyboard->click_y();
             display = REDRAW_MAP;
             break;
           }
           /*
           ...................... Grab top right ........................
           */
-          delta1 = abs(g_active_keyboard->click_x() - map_x2);
-          delta2 = abs(g_active_keyboard->click_y() - map_y1);
+          delta1 = abs(engine::window::g_active_keyboard->click_x() - map_x2);
+          delta2 = abs(engine::window::g_active_keyboard->click_y() - map_y1);
           if (delta1 < 3 && delta2 < 3) {
             grabbed = 2;
-            mx = g_active_keyboard->click_x();
-            my = g_active_keyboard->click_y();
+            mx = engine::window::g_active_keyboard->click_x();
+            my = engine::window::g_active_keyboard->click_y();
             display = REDRAW_MAP;
             break;
           }
           /*
           ..................... Grab bottom right ......................
           */
-          delta1 = abs(g_active_keyboard->click_x() - map_x2);
-          delta2 = abs(g_active_keyboard->click_y() - map_y2);
+          delta1 = abs(engine::window::g_active_keyboard->click_x() - map_x2);
+          delta2 = abs(engine::window::g_active_keyboard->click_y() - map_y2);
           if (delta1 < 3 && delta2 < 3) {
             grabbed = 3;
-            mx = g_active_keyboard->click_x();
-            my = g_active_keyboard->click_y();
+            mx = engine::window::g_active_keyboard->click_x();
+            my = engine::window::g_active_keyboard->click_y();
             display = REDRAW_MAP;
             break;
           }
           /*
           ..................... Grab bottom left .......................
           */
-          delta1 = abs(g_active_keyboard->click_x() - map_x1);
-          delta2 = abs(g_active_keyboard->click_y() - map_y2);
+          delta1 = abs(engine::window::g_active_keyboard->click_x() - map_x1);
+          delta2 = abs(engine::window::g_active_keyboard->click_y() - map_y2);
           if (delta1 < 3 && delta2 < 3) {
             grabbed = 4;
-            mx = g_active_keyboard->click_x();
-            my = g_active_keyboard->click_y();
+            mx = engine::window::g_active_keyboard->click_x();
+            my = engine::window::g_active_keyboard->click_y();
             display = REDRAW_MAP;
             break;
           }
           /*
           ..................... Grab the whole map .....................
           */
-          delta1 = abs(g_active_keyboard->click_x() - ((map_x1 + map_x2) / 2));
-          delta2 = abs(g_active_keyboard->click_y() - ((map_y1 + map_y2) / 2));
+          delta1 = abs(engine::window::g_active_keyboard->click_x() -
+                       ((map_x1 + map_x2) / 2));
+          delta2 = abs(engine::window::g_active_keyboard->click_y() -
+                       ((map_y1 + map_y2) / 2));
           if (delta1 < (map_x2 - map_x1) / 4 &&
               delta2 < (map_y2 - map_y1) / 4) {
             grabbed = 5;
-            mx = g_active_keyboard->click_x();
-            my = g_active_keyboard->click_y();
+            mx = engine::window::g_active_keyboard->click_x();
+            my = engine::window::g_active_keyboard->click_y();
             display = REDRAW_MAP;
           }
           break;
@@ -1878,7 +1883,8 @@ int MapEditClass::Scenario_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumber input = commands->Input(view);  // input from user
+    const engine::window::KeyNumber input =
+        commands->Input(view);  // input from user
 
     /*
     ............................ Process input ............................
@@ -1887,15 +1893,15 @@ int MapEditClass::Scenario_Dialog() {
       /*..................................................................
       Credit edit boxes: no need for any action
       ..................................................................*/
-      case ButtonKey(kTeditGdicred):
-      case ButtonKey(kTeditNodcred):
-      case ButtonKey(kTeditNeutcred):
+      case engine::window::ButtonKey(kTeditGdicred):
+      case engine::window::ButtonKey(kTeditNodcred):
+      case engine::window::ButtonKey(kTeditNeutcred):
         break;
 
       /*..................................................................
       GDI Edge buttons: turn this one on, others off, save the edge value
       ..................................................................*/
-      case ButtonKey(kButtonGdiN):
+      case engine::window::ButtonKey(kButtonGdiN):
         gdi_edge = SOURCE_NORTH;
         gdinbtn.Turn_On();
         gdiebtn.Turn_Off();
@@ -1903,7 +1909,7 @@ int MapEditClass::Scenario_Dialog() {
         gdiwbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonGdiE):
+      case engine::window::ButtonKey(kButtonGdiE):
         gdi_edge = SOURCE_EAST;
         gdinbtn.Turn_Off();
         gdiebtn.Turn_On();
@@ -1911,7 +1917,7 @@ int MapEditClass::Scenario_Dialog() {
         gdiwbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonGdiS):
+      case engine::window::ButtonKey(kButtonGdiS):
         gdi_edge = SOURCE_SOUTH;
         gdinbtn.Turn_Off();
         gdiebtn.Turn_Off();
@@ -1919,7 +1925,7 @@ int MapEditClass::Scenario_Dialog() {
         gdiwbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonGdiW):
+      case engine::window::ButtonKey(kButtonGdiW):
         gdi_edge = SOURCE_WEST;
         gdinbtn.Turn_Off();
         gdiebtn.Turn_Off();
@@ -1930,7 +1936,7 @@ int MapEditClass::Scenario_Dialog() {
       /*..................................................................
       NOD Edge buttons: turn this one on, others off, save the edge value
       ..................................................................*/
-      case ButtonKey(kButtonNodN):
+      case engine::window::ButtonKey(kButtonNodN):
         nod_edge = SOURCE_NORTH;
         nodnbtn.Turn_On();
         nodebtn.Turn_Off();
@@ -1938,7 +1944,7 @@ int MapEditClass::Scenario_Dialog() {
         nodwbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonNodE):
+      case engine::window::ButtonKey(kButtonNodE):
         nod_edge = SOURCE_EAST;
         nodnbtn.Turn_Off();
         nodebtn.Turn_On();
@@ -1946,7 +1952,7 @@ int MapEditClass::Scenario_Dialog() {
         nodwbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonNodS):
+      case engine::window::ButtonKey(kButtonNodS):
         nod_edge = SOURCE_SOUTH;
         nodnbtn.Turn_Off();
         nodebtn.Turn_Off();
@@ -1954,7 +1960,7 @@ int MapEditClass::Scenario_Dialog() {
         nodwbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonNodW):
+      case engine::window::ButtonKey(kButtonNodW):
         nod_edge = SOURCE_WEST;
         nodnbtn.Turn_Off();
         nodebtn.Turn_Off();
@@ -1963,13 +1969,13 @@ int MapEditClass::Scenario_Dialog() {
         break;
 
       case KN_RETURN:
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         cancel = false;
         process = false;
         break;
 
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;
@@ -2445,38 +2451,39 @@ int MapEditClass::Select_Trigger() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumber input = commands->Input(view);  // user input
+    const engine::window::KeyNumber input =
+        commands->Input(view);  // user input
 
     /*
     ............................ Process input ............................
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kTriggerList):
+      case engine::window::ButtonKey(kTriggerList):
         def_idx = triggerlist.Current_Index();
         if (def_idx < TheObjectHeaps().trigger().Count()) {
           CurTrigger = TheObjectHeaps().trigger().Ptr(def_idx);
         }
         break;
 
-      case ButtonKey(kButtonEdit):
+      case engine::window::ButtonKey(kButtonEdit):
         if (CurTrigger) {  // only allow if there's one selected
           process = false;
           edit_trig = true;
         }
         break;
 
-      case ButtonKey(kButtonNew):
+      case engine::window::ButtonKey(kButtonNew):
         process = false;
         new_trig = true;
         break;
 
-      case ButtonKey(kButtonDelete):
+      case engine::window::ButtonKey(kButtonDelete):
         process = false;
         del_trig = true;
         break;
 
       case KN_RETURN:
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         process = false;
         break;
       default:
@@ -2957,13 +2964,14 @@ int MapEditClass::Edit_Trigger() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumber input = commands->Input(view);  // user input
+    const engine::window::KeyNumber input =
+        commands->Input(view);  // user input
 
     /*
     ............................ Process input ............................
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kEventList):
+      case engine::window::ButtonKey(kEventList):
         if (eventlist.Current_Index() != static_cast<int>(event_idx)) {
           event_idx = EventType(eventlist.Current_Index());
           base::At(databuf, 0) = 0;
@@ -2975,32 +2983,32 @@ int MapEditClass::Edit_Trigger() {
         }
         break;
 
-      case ButtonKey(kActionList):
+      case engine::window::ButtonKey(kActionList):
         if (actionlist.Current_Index() != static_cast<int>(action_idx)) {
           action_idx = TriggerClass::ActionType(actionlist.Current_Index());
           display = REDRAW_ALL;
         }
         break;
 
-      case ButtonKey(kNameEdit):
-      case ButtonKey(kDataEdit):
+      case engine::window::ButtonKey(kNameEdit):
+      case engine::window::ButtonKey(kDataEdit):
         break;
 
-      case ButtonKey(kButtonGdi):
-      case ButtonKey(kButtonNod):
-      case ButtonKey(kButtonNeutral):
-      case ButtonKey(kButtonMulti1):
-      case ButtonKey(kButtonMulti2):
-      case ButtonKey(kButtonMulti3):
-      case ButtonKey(kButtonMulti4):
-      case ButtonKey(kButtonMulti5):
-      case ButtonKey(kButtonMulti6):
+      case engine::window::ButtonKey(kButtonGdi):
+      case engine::window::ButtonKey(kButtonNod):
+      case engine::window::ButtonKey(kButtonNeutral):
+      case engine::window::ButtonKey(kButtonMulti1):
+      case engine::window::ButtonKey(kButtonMulti2):
+      case engine::window::ButtonKey(kButtonMulti3):
+      case engine::window::ButtonKey(kButtonMulti4):
+      case engine::window::ButtonKey(kButtonMulti5):
+      case engine::window::ButtonKey(kButtonMulti6):
         house = static_cast<HousesType>(static_cast<int>(input & ~KN_BUTTON) -
                                         kButtonGdi);
         Set_House_Buttons(house, commands, kButtonGdi);
         break;
 
-      case ButtonKey(kButtonTeam):
+      case engine::window::ButtonKey(kButtonTeam):
         Handle_Teams("Select a Team");
         if (CurTeam) {
           CurTrigger->Team = CurTeam;
@@ -3011,21 +3019,21 @@ int MapEditClass::Edit_Trigger() {
         display = REDRAW_ALL;
         break;
 
-      case ButtonKey(kButtonVolatile):
+      case engine::window::ButtonKey(kButtonVolatile):
         persistant = TriggerClass::VOLATILE;
         volatilebtn.Turn_On();
         persistbtn.Turn_Off();
         semipersistbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonPersist):
+      case engine::window::ButtonKey(kButtonPersist):
         persistant = TriggerClass::PERSISTANT;
         volatilebtn.Turn_Off();
         persistbtn.Turn_On();
         semipersistbtn.Turn_Off();
         break;
 
-      case ButtonKey(kButtonSemipersist):
+      case engine::window::ButtonKey(kButtonSemipersist):
         persistant = TriggerClass::SEMIPERSISTANT;
         volatilebtn.Turn_Off();
         persistbtn.Turn_Off();
@@ -3033,12 +3041,12 @@ int MapEditClass::Edit_Trigger() {
         break;
 
       case KN_RETURN:
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         process = false;
         break;
 
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;
@@ -3346,22 +3354,23 @@ int MapEditClass::Import_Triggers() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumber input = commands->Input(view);  // user input
+    const engine::window::KeyNumber input =
+        commands->Input(view);  // user input
 
     /*
     ............................ Process input ............................
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kTriggerList):
+      case engine::window::ButtonKey(kTriggerList):
         break;
 
       case KN_RETURN:
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         process = false;
         break;
 
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;
@@ -3662,22 +3671,23 @@ int MapEditClass::Import_Teams() {
     /*
     ........................... Get user input ............................
     */
-    const KeyNumber input = commands->Input(view);  // user input
+    const engine::window::KeyNumber input =
+        commands->Input(view);  // user input
 
     /*
     ............................ Process input ............................
     */
     switch (static_cast<int>(input)) {
-      case ButtonKey(kTeamList):
+      case engine::window::ButtonKey(kTeamList):
         break;
 
       case KN_RETURN:
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         process = false;
         break;
 
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         cancel = true;
         process = false;
         break;

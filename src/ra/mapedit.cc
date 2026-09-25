@@ -127,6 +127,8 @@
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
 
+using enum engine::window::KeyNumber;
+
 char MapEditClass::HealthBuf[20];
 
 /***************************************************************************
@@ -485,7 +487,7 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
  * HISTORY:                                                                *
  *   10/20/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::AI(KeyNumber& input, int x, int y) {
+void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
   int rc = 0;
   CELL cell = 0;
   int found = 0;  // for removing a waypoint label
@@ -1030,7 +1032,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
     **	- Toggle LMouseDown
     **	- release any grabbed object
     */
-    case ButtonKey(kMapArea):
+    case engine::window::ButtonKey(kMapArea):
 
       /*
       **	Left Button DOWN
@@ -1184,7 +1186,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
     /*
     **	Object-Editing button: House Button
     */
-    case ButtonKey(kPopupHouselist):
+    case engine::window::ButtonKey(kPopupHouselist):
       /*
       **	Determine the house desired by examining the currently
       **	selected index in the house list gadget.
@@ -1238,7 +1240,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
       // Flag_To_Redraw(true); 			input = KN_NONE;
       // break;
 
-    case ButtonKey(kPopupSellable):
+    case engine::window::ButtonKey(kPopupSellable):
       if (TheWorld().current_object().at(0)->What_Am_I() == RTTI_BUILDING) {
         auto* building =
             dynamic_cast<BuildingClass*>(TheWorld().current_object().at(0));
@@ -1257,7 +1259,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
       }
       break;
 
-    case ButtonKey(kPopupRebuildable):
+    case engine::window::ButtonKey(kPopupRebuildable):
       if (TheWorld().current_object().at(0)->What_Am_I() == RTTI_BUILDING) {
         auto* building =
             dynamic_cast<BuildingClass*>(TheWorld().current_object().at(0));
@@ -1278,7 +1280,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
     /*
     **	Object-Editing button: Mission
     */
-    case ButtonKey(kPopupMissionlist):
+    case engine::window::ButtonKey(kPopupMissionlist):
       if (TheWorld().current_object().at(0)->Is_Techno()) {
         /*
         **	Set new mission
@@ -1299,7 +1301,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
     /*
     **	Object-Editing button: Health
     */
-    case ButtonKey(kPopupHealthgauge):
+    case engine::window::ButtonKey(kPopupHealthgauge):
       if (TheWorld().current_object().at(0)->Is_Techno()) {
         /*
         **	Derive strength from current gauge reading
@@ -1340,7 +1342,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
     /*
     **	Object-Editing button: Facing
     */
-    case ButtonKey(kPopupFacingdial):
+    case engine::window::ButtonKey(kPopupFacingdial):
       if (TheWorld().current_object().at(0)->Is_Techno()) {
         auto* techno =
             dynamic_cast<TechnoClass*>(TheWorld().current_object().at(0));
@@ -1370,7 +1372,7 @@ void MapEditClass::AI(KeyNumber& input, int x, int y) {
     /*
     **	Object-Editing button: Facing
     */
-    case ButtonKey(kPopupBasepercent):
+    case engine::window::ButtonKey(kPopupBasepercent):
       if (BaseGauge->Get_Value() != TheScenario().Percent) {
         TheScenario().Percent = BaseGauge->Get_Value();
         Build_Base_To(TheScenario().Percent);
@@ -2015,7 +2017,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
     /*
     **	Get user input.
     */
-    KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view);
 
     /*
     **	The first time through the processing loop, set the edit
@@ -2035,7 +2037,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
     **	action button according to the style of this dialog box.
     */
     if (input == KN_RETURN) {
-      input = ButtonKey(kButtonOk);
+      input = engine::window::ButtonKey(kButtonOk);
     }
 
     /*
@@ -2046,7 +2048,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
       ** Load: if load fails, present a message, and stay in the dialog
       ** to allow the user to try another game
       */
-      case ButtonKey(kButtonOk):
+      case engine::window::ButtonKey(kButtonOk):
         Hide_Mouse();
         TheScreen().visible_view().Clear();
         ThePalettes().game_palette().Set();
@@ -2059,7 +2061,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
       ** ESC/Cancel: break
       */
       case KN_ESC:
-      case ButtonKey(kButtonCancel):
+      case engine::window::ButtonKey(kButtonCancel):
         Hide_Mouse();
         TheScreen().visible_view().Clear();
         ThePalettes().game_palette().Set();

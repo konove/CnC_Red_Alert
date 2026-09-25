@@ -66,8 +66,9 @@ class GScreenClass : public VectorClass<CellClass> {
   /*
   **	Player I/O is routed through here. It is called every game tick.
   */
-  virtual void Input(KeyNumber& key, int& x, int& y);
-  virtual void AI(KeyNumber& /*unused*/, int /*unused*/, int /*unused*/) {}
+  virtual void Input(engine::window::KeyNumber& key, int& x, int& y);
+  virtual void AI(engine::window::KeyNumber& /*unused*/, int /*unused*/,
+                  int /*unused*/) {}
   virtual void Add_A_Button(GadgetClass& gadget);
   virtual void Remove_A_Button(GadgetClass& gadget);
 

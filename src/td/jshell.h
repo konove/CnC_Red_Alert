@@ -69,14 +69,21 @@ class ByteStream;
 */
 class Keyboard {
  public:
-  static KeyNumber Get() { return static_cast<KeyNumber>(ReadKey()); }
-  static KeyNumber Check() { return static_cast<KeyNumber>(PeekKey()); }
-  static KeyAscii To_ASCII(KeyNumber key) {
-    return static_cast<KeyAscii>(KeyBuffer::ToAscii(key));
+  static engine::window::KeyNumber Get() {
+    return static_cast<engine::window::KeyNumber>(engine::window::ReadKey());
   }
-  static void Clear() { ClearKeys(); }
-  static void Stuff(KeyNumber /*key*/) {}
-  static bool Down(KeyNumber key) { return KeyBuffer::IsDown(key); }
+  static engine::window::KeyNumber Check() {
+    return static_cast<engine::window::KeyNumber>(engine::window::PeekKey());
+  }
+  static engine::window::KeyAscii To_ASCII(engine::window::KeyNumber key) {
+    return static_cast<engine::window::KeyAscii>(
+        engine::window::KeyBuffer::ToAscii(key));
+  }
+  static void Clear() { engine::window::ClearKeys(); }
+  static void Stuff(engine::window::KeyNumber /*key*/) {}
+  static bool Down(engine::window::KeyNumber key) {
+    return engine::window::KeyBuffer::IsDown(key);
+  }
   static int Mouse_X() { return Get_Mouse_X(); }
   static int Mouse_Y() { return Get_Mouse_Y(); }
 };
