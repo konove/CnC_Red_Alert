@@ -302,7 +302,7 @@ bool WinsockInterfaceClass::Init() {
   ** says that a buffer of that size gets overrun.
   */
   char* buffer = new char[sizeof(WSADATA) + 1024];
-  WSADATA* winsock_info = (WSADATA*)(&buffer[0]);
+  auto* winsock_info = reinterpret_cast<WSADATA*>(buffer);
 #endif
 
   /*
@@ -317,7 +317,7 @@ bool WinsockInterfaceClass::Init() {
   /*
   ** Start WinSock, and fill in our Winsock info structure
   */
-  short version = (WINSOCK_MINOR_VER << 8) | WINSOCK_MAJOR_VER;
+  const WORD version = MAKEWORD(WINSOCK_MAJOR_VER, WINSOCK_MINOR_VER);
   int rc = WSAStartup(version, winsock_info);
   if (rc != 0) {
     char out[128];

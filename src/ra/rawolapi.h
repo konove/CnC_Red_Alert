@@ -369,10 +369,12 @@ class RANetUtilEventSink :
 
   STDMETHOD(OnGameresSent)(HRESULT res) override;
   STDMETHOD(OnLadderList)
-  // NOLINTNEXTLINE(google-runtime-int) - matches the generated COM interface.
+  // Matches the generated COM interface.
+  // NOLINTNEXTLINE(google-runtime-int, runtime/int)
   (HRESULT res, Ladder* list, int totalCount, long timeStamp, int keyRung)
       override;
-  // NOLINTNEXTLINE(google-runtime-int) - matches the generated COM interface.
+  // Matches the generated COM interface.
+  // NOLINTNEXTLINE(google-runtime-int, runtime/int)
   STDMETHOD(OnPing)(HRESULT res, int time, unsigned long ip,
                     int handle) override;
 

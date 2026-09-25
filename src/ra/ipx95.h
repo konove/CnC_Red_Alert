@@ -46,6 +46,8 @@
 #ifndef CNC_RED_ALERT_RA_IPX95_H_
 #define CNC_RED_ALERT_RA_IPX95_H_
 
+#include <cstdint>
+
 /*
 ** Types for function pointers
 */
@@ -59,8 +61,8 @@ using IPXStartListening95Type = int (*)();
 using IPXOpenSocket95Type = int (*)(int);
 using IPXCloseSocket95Type = void (*)(int);
 using IPXGetConnectionNumber95Type = int (*)();
-using IPXGetLocalTarget95 = int (*)(unsigned char*, unsigned char*,
-                                    unsigned short, unsigned char*);
+using IPXGetLocalTarget95 = int (*)(unsigned char*, unsigned char*, uint16_t,
+                                    unsigned char*);
 
 /*
 ** Function pointers

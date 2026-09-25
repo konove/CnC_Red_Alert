@@ -1786,7 +1786,8 @@ STDMETHODIMP RANetUtilEventSink::OnGameresSent(HRESULT hRes) {
 //***********************************************************************************************
 STDMETHODIMP RANetUtilEventSink::OnLadderList(
     HRESULT hRes, Ladder* pLadderListIn, int /*totalCount*/,
-    // NOLINTNEXTLINE(google-runtime-int) - matches the generated COM interface.
+    // Matches the generated COM interface.
+    // NOLINTNEXTLINE(google-runtime-int, runtime/int)
     long /*timeStamp*/, int /*keyRung*/) {
   //	Maintenance of ladders list is like that for channels list above.
   //	DeleteLadderList();		-> This is done once, before a set of
@@ -1860,7 +1861,8 @@ STDMETHODIMP RANetUtilEventSink::OnLadderList(
 //***********************************************************************************************
 STDMETHODIMP RANetUtilEventSink::OnPing(
     HRESULT hRes, int time,
-    // NOLINTNEXTLINE(google-runtime-int) - matches the generated COM interface.
+    // Matches the generated COM interface.
+    // NOLINTNEXTLINE(google-runtime-int, runtime/int)
     unsigned long ip, int /*handle*/) {
   if (pOwner->bDoingDisconnectPinging) {
     //		debugprint( ">>> OnPing got : ip %i, time %i, ", ip, time );
