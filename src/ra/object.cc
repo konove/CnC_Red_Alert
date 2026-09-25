@@ -151,7 +151,7 @@
 #include "ra/vector_dynamic.h"
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
-#include "sdllib/ww_win.h"
+#include "sdllib/text_window.h"
 #include "sdllib/wwstd.h"
 #include "session.h"
 #include "tech/disk_file.h"  // IWYU pragma: keep - used by the debug-only loose-file override below.

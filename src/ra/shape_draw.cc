@@ -40,7 +40,7 @@
 #include "sdllib/bitmap.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
-#include "sdllib/ww_win.h"
+#include "sdllib/text_window.h"
 #include "sdllib/wwstd.h"
 #include "tech/2keyfbuf.h"
 #include "tech/rect.h"

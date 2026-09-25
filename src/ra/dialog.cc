@@ -80,8 +80,8 @@
 #include "sdllib/font.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
+#include "sdllib/text_window.h"
 #include "sdllib/ww_mouse.h"
-#include "sdllib/ww_win.h"
 #include "sdllib/wwstd.h"
 #include "tech/mix_archive.h"
 

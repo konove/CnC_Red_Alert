@@ -99,7 +99,7 @@
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
-#include "sdllib/ww_win.h"
+#include "sdllib/text_window.h"
 #include "tech/archive.h"
 #include "tech/file_access.h"
 #include "tech/game_file.h"

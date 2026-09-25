@@ -78,7 +78,7 @@
 #include "ra/world.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
-#include "sdllib/ww_win.h"
+#include "sdllib/text_window.h"
 #include "tech/mix_archive.h"
 
 static const SmudgeTypeClass Crater1(

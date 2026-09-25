@@ -60,7 +60,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
-#include "sdllib/ww_win.h"
+#include "sdllib/text_window.h"
 #include "td/conquer.h"
 #include "td/defines.h"
 #include "td/gadget.h"

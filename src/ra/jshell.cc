@@ -69,7 +69,7 @@
 #include "ra/startup.h"
 #include "sdllib/compressed_block.h"
 #include "sdllib/misc.h"
-#include "sdllib/ww_win.h"
+#include "sdllib/text_window.h"
 #include "tech/byte_stream.h"
 #include "tech/game_file.h"
 #include "tech/rgb.h"

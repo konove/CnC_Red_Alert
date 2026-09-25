@@ -106,7 +106,7 @@
 #include "sdllib/keyboard.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
-#include "sdllib/ww_win.h"
+#include "sdllib/text_window.h"
 #include "td/assets.h"
 #include "td/audio.h"
 #include "td/building.h"

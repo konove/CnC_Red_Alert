@@ -216,7 +216,7 @@
 #include "sdllib/misc.h"
 #include "sdllib/pixel_buffer.h"
 #include "sdllib/shape.h"
-#include "sdllib/ww_win.h"
+#include "sdllib/text_window.h"
 #include "sdllib/wwstd.h"
 
 /***************************************************************************

@@ -12,15 +12,6 @@
 #include <emscripten/emscripten.h>
 #endif
 
-// The window rows the games draw text into. sdllib owns the storage and
-// each game fills in its own rows at startup, which is what kept every
-// game and every test that links sdllib defining this array for itself.
-int WindowList[kWindowCount][8]{};
-
-unsigned int WinX;
-unsigned int WinY;
-unsigned int Window;
-
 int Change_Window(int /*windnum*/) {
   absl::PrintF("%s\n", __func__);
   return 0;

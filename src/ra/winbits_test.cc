@@ -13,6 +13,7 @@
 #include "ra/defines.h"
 #include "ra/dib.h"
 #include "sdllib/pixel_buffer.h"
+#include "sdllib/text_window.h"
 #include "sdllib/tile.h"
 #include "sdllib/ww_win.h"
 

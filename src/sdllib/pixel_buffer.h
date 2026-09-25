@@ -45,7 +45,7 @@
 #include "base/array.h"
 #include "sdllib/bitmap.h"
 #include "sdllib/pixel_surface.h"
-#include "sdllib/ww_win.h"
+#include "sdllib/text_window.h"
 
 // The VGA mode the games were written for. Both still decode their
 // low-resolution movies at this size, whatever video mode is set.
