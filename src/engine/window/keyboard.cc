@@ -25,24 +25,26 @@ constexpr auto kInputModifierMask =
     static_cast<SDL_Keymod>(uint32_t{KMOD_SHIFT} | uint32_t{KMOD_CTRL} |
                             uint32_t{KMOD_ALT} | uint32_t{KMOD_GUI});
 
-int KeyBuffer::Peek() {
+KeyNumber KeyBuffer::Peek() {
   // Pumping here is what lets the games' "wait for a key" loops, which only
   // call Peek(), ever see new input.
   SDL_Event_Loop();
 
   if (head_ == tail_) {
-    return 0;
+    return KN_NONE;
   }
 
   // head_ always addresses a key entry: Read steps past the two coordinate
   // entries that follow a mouse key, so a click at x or y 0 is never read here.
-  return base::At(entries_, head_);
+  // An entry carries modifier bits, so it rarely names an enumerator.
+  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
+  return static_cast<KeyNumber>(base::At(entries_, head_));
 }
 
-int KeyBuffer::Read() {
+KeyNumber KeyBuffer::Read() {
   // Peek() pumps SDL events, so the wait ends as soon as a key arrives.
-  int key = Peek();
-  while (key == 0) {
+  KeyNumber key = Peek();
+  while (key == KN_NONE) {
     key = Peek();
   }
   int entry_count = 1;
@@ -120,11 +122,11 @@ bool KeyBuffer::PutClick(const int button, const bool release, const int x,
   return true;
 }
 
-int KeyBuffer::ToAscii(const int key) {
+KeyAscii KeyBuffer::ToAscii(const int key) {
   // A key number is a scancode in the low byte with modifier bits above it.
   const auto bits = static_cast<uint32_t>(key);
   if (bits & kKeyReleaseBit) {
-    return 0;
+    return KA_NONE;
   }
 
   // SDL_GetKeyFromScancode maps through the keyboard layout but takes no
@@ -135,7 +137,7 @@ int KeyBuffer::ToAscii(const int key) {
 
   // SDL keycodes for keys that type a character are that character; every
   // other key's code has SDLK_SCANCODE_MASK set and lands above 'z'.
-  return keycode <= SDLK_z ? keycode : 0;
+  return keycode <= SDLK_z ? static_cast<KeyAscii>(keycode) : KA_NONE;
 }
 
 void KeyBuffer::Clear() { head_ = tail_; }

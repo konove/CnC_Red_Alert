@@ -56,107 +56,6 @@ constexpr int KeyCode(const int key) {
   return static_cast<int>(static_cast<uint32_t>(key) & kKeyCodeMask);
 }
 
-// The queue of key presses, key releases and mouse clicks the game reads its
-// input from. HandleEvent() fills it from SDL events; the game drains it with
-// Peek() and Read(). Each entry is a key number: a VK_* code in the low byte
-// with the kKey*Bit flags above it. A mouse click takes three entries - the
-// button, then the x and y position - and Read() returns the button and leaves
-// the position in click_x() and click_y().
-//
-// Example:
-//   if (keys.Peek() != 0) {
-//     const int key = keys.Read();
-//     if (engine::window::KeyBuffer::IsMouseKey(key)) {
-//       Click_At(keys.click_x(), keys.click_y());
-//     }
-//   }
-class KeyBuffer {
- public:
-  // Returns the key number at the head of the buffer without removing it, or 0
-  // when no key is pending. Also pumps the SDL event loop, so callers that only
-  // need that side effect may discard the result.
-  int Peek();
-
-  // Removes and returns the key number at the head of the buffer, pumping SDL
-  // events until one arrives. For a mouse key, also stores the click position
-  // for click_x() and click_y().
-  int Read();
-
-  // Appends one raw entry to the buffer. Returns false, dropping the entry, if
-  // the buffer is full.
-  bool Put(int entry);
-
-  // Queues the key `key_code` (a VK_* code), adding the Shift, Ctrl and Alt
-  // bits for the modifier keys held right now and kKeyReleaseBit for a
-  // `release`. Returns false if the key was dropped: the buffer is full, or
-  // the scancode is 0 (a key SDL does not know), negative, or above 0xFF (a
-  // media key, which has no key code). Mouse buttons go through PutClick().
-  bool PutKey(int key_code, bool release = false);
-
-  // Queues a click of the mouse `button` (VK_LBUTTON, VK_MBUTTON or
-  // VK_RBUTTON) at `x`, `y`: the button, with kKeyReleaseBit for a `release`
-  // but no modifier bits, as in the DOS version, followed by the position.
-  // Returns false, queuing nothing, if the three entries do not all fit.
-  bool PutClick(int button, bool release, int x, int y);
-
-  // Returns the character `key` types on the current keyboard layout, with
-  // Shift ignored, so letters come back lower case. Returns 0 for a release
-  // and for a key that types no character up to 'z' (arrows, function keys,
-  // Delete, the mouse buttons).
-  static int ToAscii(int key);
-
-  // Discards every pending entry.
-  void Clear();
-
-  // Returns whether `key` is held down right now, read from SDL's live state
-  // rather than from the buffer. Covers the left and right mouse buttons, and
-  // either side of the keyboard for Shift, Ctrl and Alt. `key` is a bare key
-  // code: with modifier bits set it names a different scancode.
-  static bool IsDown(int key);
-
-  // Returns whether `key` is a mouse button, pressed or released, whatever
-  // modifier bits it carries. In the buffer such an entry is followed by the
-  // click's x and y position.
-  static bool IsMouseKey(int key);
-
-  // Queues the key or click an SDL event carries; mouse motion moves the
-  // cursor instead. Returns true only for a click, which it consumes, so the
-  // game's own handler can skip it; everything else goes on to that handler.
-  bool HandleEvent(const SDL_Event* event);
-
-  // The position of the last mouse click Read() returned, in game pixels.
-  [[nodiscard]] int click_x() const { return click_x_; }
-  [[nodiscard]] int click_y() const { return click_y_; }
-
- private:
-  int click_x_ = 0;
-  int click_y_ = 0;
-
-  static constexpr int kBufferSize = 256;
-
-  // A ring buffer of entries. head_ == tail_ means empty, so it holds at most
-  // kBufferSize - 1, and every index wraps modulo kBufferSize.
-  uint16_t entries_[kBufferSize]{};
-  int head_ = 0;  // the entry Read() returns next
-  int tail_ = 0;  // where Put() writes the next entry
-};
-
-// The key buffer the PeekKey() family reads. Each game points this at its own
-// buffer when it builds one, and clears it again afterwards.
-extern KeyBuffer* g_active_keyboard;
-
-// The legacy free-function spellings of the g_active_keyboard members.
-//
-// PeekKey deliberately does not mirror ReadKeyAscii's ASCII translation: its
-// callers test whether any key is waiting, and ToAscii reports 0 for key
-// releases and for keys that type no character.
-inline int PeekKey() { return g_active_keyboard->Peek(); }
-inline int ReadKeyAscii() {
-  return KeyBuffer::ToAscii(g_active_keyboard->Read());
-}
-inline int ReadKey() { return g_active_keyboard->Read(); }
-inline void ClearKeys() { g_active_keyboard->Clear(); }
-
 // Key codes, named after the Windows virtual keys the original used. Their
 // values are the SDL scancodes of the same keys, so a key event needs no
 // translation. The mouse buttons take scancodes 1-3, which SDL never reports
@@ -573,6 +472,107 @@ inline KeyNumber operator~(const KeyNumber a) noexcept {
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
   return static_cast<KeyNumber>(~static_cast<uint32_t>(a));
 }
+
+// The queue of key presses, key releases and mouse clicks the game reads its
+// input from. HandleEvent() fills it from SDL events; the game drains it with
+// Peek() and Read(). Each entry is a key number: a VK_* code in the low byte
+// with the kKey*Bit flags above it. A mouse click takes three entries - the
+// button, then the x and y position - and Read() returns the button and leaves
+// the position in click_x() and click_y().
+//
+// Example:
+//   if (keys.Peek() != KN_NONE) {
+//     const KeyNumber key = keys.Read();
+//     if (engine::window::KeyBuffer::IsMouseKey(key)) {
+//       Click_At(keys.click_x(), keys.click_y());
+//     }
+//   }
+class KeyBuffer {
+ public:
+  // Returns the key number at the head of the buffer without removing it, or
+  // KN_NONE when no key is pending. Also pumps the SDL event loop, so callers
+  // that only need that side effect may discard the result.
+  KeyNumber Peek();
+
+  // Removes and returns the key number at the head of the buffer, pumping SDL
+  // events until one arrives. For a mouse key, also stores the click position
+  // for click_x() and click_y().
+  KeyNumber Read();
+
+  // Appends one raw entry to the buffer. Returns false, dropping the entry, if
+  // the buffer is full.
+  bool Put(int entry);
+
+  // Queues the key `key_code` (a VK_* code), adding the Shift, Ctrl and Alt
+  // bits for the modifier keys held right now and kKeyReleaseBit for a
+  // `release`. Returns false if the key was dropped: the buffer is full, or
+  // the scancode is 0 (a key SDL does not know), negative, or above 0xFF (a
+  // media key, which has no key code). Mouse buttons go through PutClick().
+  bool PutKey(int key_code, bool release = false);
+
+  // Queues a click of the mouse `button` (VK_LBUTTON, VK_MBUTTON or
+  // VK_RBUTTON) at `x`, `y`: the button, with kKeyReleaseBit for a `release`
+  // but no modifier bits, as in the DOS version, followed by the position.
+  // Returns false, queuing nothing, if the three entries do not all fit.
+  bool PutClick(int button, bool release, int x, int y);
+
+  // Returns the character `key` types on the current keyboard layout, with
+  // Shift ignored, so letters come back lower case. Returns KA_NONE for a
+  // release and for a key that types no character up to 'z' (arrows, function
+  // keys, Delete, the mouse buttons).
+  static KeyAscii ToAscii(int key);
+
+  // Discards every pending entry.
+  void Clear();
+
+  // Returns whether `key` is held down right now, read from SDL's live state
+  // rather than from the buffer. Covers the left and right mouse buttons, and
+  // either side of the keyboard for Shift, Ctrl and Alt. `key` is a bare key
+  // code: with modifier bits set it names a different scancode.
+  static bool IsDown(int key);
+
+  // Returns whether `key` is a mouse button, pressed or released, whatever
+  // modifier bits it carries. In the buffer such an entry is followed by the
+  // click's x and y position.
+  static bool IsMouseKey(int key);
+
+  // Queues the key or click an SDL event carries; mouse motion moves the
+  // cursor instead. Returns true only for a click, which it consumes, so the
+  // game's own handler can skip it; everything else goes on to that handler.
+  bool HandleEvent(const SDL_Event* event);
+
+  // The position of the last mouse click Read() returned, in game pixels.
+  [[nodiscard]] int click_x() const { return click_x_; }
+  [[nodiscard]] int click_y() const { return click_y_; }
+
+ private:
+  int click_x_ = 0;
+  int click_y_ = 0;
+
+  static constexpr int kBufferSize = 256;
+
+  // A ring buffer of entries. head_ == tail_ means empty, so it holds at most
+  // kBufferSize - 1, and every index wraps modulo kBufferSize.
+  uint16_t entries_[kBufferSize]{};
+  int head_ = 0;  // the entry Read() returns next
+  int tail_ = 0;  // where Put() writes the next entry
+};
+
+// The key buffer the PeekKey() family reads. Each game points this at its own
+// buffer when it builds one, and clears it again afterwards.
+extern KeyBuffer* g_active_keyboard;
+
+// The legacy free-function spellings of the g_active_keyboard members.
+//
+// PeekKey deliberately does not mirror ReadKeyAscii's ASCII translation: its
+// callers test whether any key is waiting, and ToAscii reports 0 for key
+// releases and for keys that type no character.
+inline int PeekKey() { return g_active_keyboard->Peek(); }
+inline int ReadKeyAscii() {
+  return KeyBuffer::ToAscii(g_active_keyboard->Read());
+}
+inline int ReadKey() { return g_active_keyboard->Read(); }
+inline void ClearKeys() { g_active_keyboard->Clear(); }
 
 }  // namespace engine::window
 
