@@ -236,8 +236,13 @@ if (Python3_Interpreter_FOUND)
     add_test(NAME engine_layers_checker_test
             COMMAND Python3::Interpreter
             "${CMAKE_SOURCE_DIR}/tools/check_layers_test.py")
-    # Both import tools/engine_layout.py; keep its bytecode out of the tree.
+    # The phase B move script (tools/move_engine_files.py).
+    add_test(NAME engine_move_script_test
+            COMMAND Python3::Interpreter
+            "${CMAKE_SOURCE_DIR}/tools/move_engine_files_test.py")
+    # All three import tools/engine_layout.py; keep its bytecode out of the tree.
     set_tests_properties(engine_layers_test engine_layers_checker_test
+            engine_move_script_test
             PROPERTIES ENVIRONMENT PYTHONDONTWRITEBYTECODE=1)
 else ()
     message(WARNING "Python 3.10 or newer not found: the engine_layers_test "
