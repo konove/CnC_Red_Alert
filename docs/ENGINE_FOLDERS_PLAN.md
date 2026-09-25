@@ -293,3 +293,44 @@ In the step that makes them stale:
 - Subfolders inside `ra/` and `td/`.
 - The unbuilt EA reference trees at the repository root (`win32lib/`, `wwflat32/`, `vq/`, `ipx/`,
   `launcher/`, `launch/`).
+
+## Outcome
+
+Execution mostly followed the plan above; where it differed:
+
+`port/`, `sdllib/`, `tech/` and `winvq/` were deleted as each one emptied out, not held to step 12
+as planned. `base/CMakeLists.txt` went with the `stream` move (step 3), `port/CMakeLists.txt` with
+`net` (step 7), `sdllib/CMakeLists.txt` with `window` (step 10), and `tech/CMakeLists.txt` and
+`winvq/CMakeLists.txt` both with `video/vqa` (step 11), since that move took the last files each
+root had left. Step 12 was left with only the move script and the file map in
+`tools/engine_layout.py` to drop, plus the checker's rule table to tidy to plain paths; that
+happened in one commit (`489fdde3`).
+
+`keyframe_test` ended up with `gfx` rather than `window` as the file map planned: the test exercises
+the key-frame/delta chain through `PixelBuffer` and `2keyfram.cc`, nothing in `window`, so it moved
+with its dependency instead. The HSV conversion functions (`Convert_RGB_To_HSV`,
+`Convert_HSV_To_RGB`) that A3 pulled out of `misc.h` landed in `engine/gfx/hsv.h`, reusing the name
+of the old `tech/hsv.h` they came from rather than a new header name; `engine/base/hsv.h`, the HSV
+value type from the old `base/hsv.h`, is a different file that happens to share a basename one
+folder over.
+
+The move script (`tools/move_engine_files.py`, deleted in step 12) formatted only the lines it
+changed with plain `clang-format --lines`, not `git clang-format`: many legacy files were not
+clang-format clean to begin with, and `git clang-format` would have reformatted them whole just
+because one line in the diff touched them.
+
+A3 and A4 each took more than the one commit the plan sketched. A3 (splitting `misc.h`) went out as
+a dead-code deletion first (`6be19256`, the DirectDraw surface monitor and constant blit flags,
+which had no callers left) and then the actual split (`02e91bed`), so the split diff would not also
+be a deletion diff. A4 (game-supplied symbols) went out one hook per commit: the CD probe
+(`0f171ec9`), the event handler (`bd043a26`), the pump handler (`d97607dc`), and the uncompressed
+shape cache removal, once per game.
+
+One thing the plan did not anticipate: `ra_engine` and `td_engine` now link `SDL2::SDL2` directly.
+`sdlstub.cc` in both games includes SDL headers, and until the final review that only worked because
+SDL arrived transitively through `engine_window`/`engine_video`'s public link; see the "final
+whole-branch review" fix for this branch.
+
+Outstanding from A1: the real-display check (menus, a palette fade, the intro movie via
+`PresentScaledFrame`, and an in-game screen) still needs a human to run both games and look, not
+just the unit tests A1 could reach.
