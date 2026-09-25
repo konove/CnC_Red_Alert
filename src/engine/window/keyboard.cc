@@ -23,8 +23,6 @@ constexpr SDL_Keymod kInputModifierMask =
     static_cast<SDL_Keymod>(uint32_t{KMOD_SHIFT} | uint32_t{KMOD_CTRL} |
                             uint32_t{KMOD_ALT} | uint32_t{KMOD_GUI});
 
-KeyBuffer::KeyBuffer() = default;
-
 int KeyBuffer::Peek() {
   // Pumping here is what lets the games' "wait for a key" loops, which only
   // call Peek(), ever see new input.
@@ -34,7 +32,7 @@ int KeyBuffer::Peek() {
     return 0;
   }
 
-  // head_ always addresses a key entry: Buff_Get steps past the two coordinate
+  // head_ always addresses a key entry: Read steps past the two coordinate
   // entries that follow a mouse key, so a click at x or y 0 is never read here.
   return base::At(entries_, head_);
 }
@@ -42,13 +40,22 @@ int KeyBuffer::Peek() {
 int KeyBuffer::Read() {
   while (!Peek()) {
   }  // wait for key in buffer
-  return Buff_Get();
+  const int key = base::At(entries_, head_);
+  int entry_count = 1;
+  if (IsMouseKey(key)) {
+    // A click's position rides in the two entries behind the button.
+    click_x_ = base::At(entries_, (head_ + 1) % kBufferSize);
+    click_y_ = base::At(entries_, (head_ + 2) % kBufferSize);
+    entry_count = 3;
+  }
+  head_ = (head_ + entry_count) % kBufferSize;
+  return key;
 }
 
 bool KeyBuffer::Put(int entry) {
   // One slot always stays free: a full buffer would otherwise have head_ ==
   // tail_ and read as empty.
-  const int next_tail = (tail_ + 1) % 256;
+  const int next_tail = (tail_ + 1) % kBufferSize;
   if (next_tail != head_) {
     base::At(entries_, tail_) = static_cast<uint16_t>(entry);
 
@@ -127,9 +134,9 @@ bool KeyBuffer::IsDown(int key) {
 
     switch (key) {
       case KN_LMOUSE:
-        return (buttons & SDL_BUTTON(1)) != 0;
+        return (buttons & SDL_BUTTON_LMASK) != 0;
       case KN_RMOUSE:
-        return (buttons & SDL_BUTTON(3)) != 0;
+        return (buttons & SDL_BUTTON_RMASK) != 0;
       default:
         break;
     }
@@ -190,8 +197,8 @@ bool KeyBuffer::HandleEvent(SDL_Event* event) {
       }
 
       // A click is three entries, queued all or not at all: a button without
-      // its position would make Buff_Get read one from past the tail.
-      const int free_entries = (head_ - tail_ + 255) % 256;
+      // its position would make Read() take one from past the tail.
+      const int free_entries = (head_ - tail_ + kBufferSize - 1) % kBufferSize;
       if (free_entries < 3) {
         return true;
       }
@@ -215,23 +222,4 @@ bool KeyBuffer::HandleEvent(SDL_Event* event) {
   }
 
   return false;
-}
-
-int KeyBuffer::Buff_Get() {
-  while (!Peek()) {
-  }  // wait for key in buffer
-  const int temp = base::At(entries_, head_);
-  int newhead = head_;
-  if (IsMouseKey(temp)) {
-    // A click's position rides in the two entries behind the button.
-    click_x_ = base::At(entries_, (head_ + 1) % 256);
-    click_y_ = base::At(entries_, (head_ + 2) % 256);
-    newhead += 3;
-  } else {
-    newhead += 1;
-  }
-
-  newhead %= 256;
-  head_ = newhead;
-  return temp;
 }

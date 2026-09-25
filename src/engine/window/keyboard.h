@@ -67,8 +67,6 @@ constexpr int KeyCode(const int key) {
 //   }
 class KeyBuffer {
  public:
-  KeyBuffer();
-
   // Returns the key number at the head of the buffer without removing it, or 0
   // when no key is pending. Also pumps the SDL event loop, so callers that only
   // need that side effect may discard the result.
@@ -122,17 +120,14 @@ class KeyBuffer {
   [[nodiscard]] int click_y() const { return click_y_; }
 
  private:
-  // Removes and returns the entry at the head of the buffer, stepping past a
-  // mouse key's two position entries after storing them in click_x_ and
-  // click_y_.
-  int Buff_Get();
-
   int click_x_ = 0;
   int click_y_ = 0;
 
+  static constexpr int kBufferSize = 256;
+
   // A ring buffer of entries. head_ == tail_ means empty, so it holds at most
-  // 255, and every index wraps modulo its size.
-  uint16_t entries_[256]{};
+  // kBufferSize - 1, and every index wraps modulo kBufferSize.
+  uint16_t entries_[kBufferSize]{};
   int head_ = 0;  // the entry Read() returns next
   int tail_ = 0;  // where Put() writes the next entry
 };
