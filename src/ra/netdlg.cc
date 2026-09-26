@@ -2047,7 +2047,7 @@ static int Net_Join_Dialog() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    input = commands->Input(view);
+    input = commands->Input(view).key;
 
     if (input & KN_BUTTON) {
       housebtn.Collapse();
@@ -4617,7 +4617,7 @@ static int Net_New_Dialog() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    input = commands->Input(view);
+    input = commands->Input(view).key;
 
     //.....................................................................
     //	Process input

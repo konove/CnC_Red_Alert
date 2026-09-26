@@ -468,7 +468,7 @@ int Test_Null_Modem() {
     /*
     ** Get user input
     */
-    const engine::window::KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view).key;
 
     /*
     ** Process input
@@ -691,7 +691,7 @@ static int Reconnect_Null_Modem() {
     /*
     ** Get user input
     */
-    const engine::window::KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view).key;
 
     /*
     ** Process input
@@ -1061,7 +1061,7 @@ GameType Select_Serial_Dialog() {
     /*
     ** Get user input
     */
-    const engine::window::KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view).key;
 
     /*
     ** Process input
@@ -1498,7 +1498,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     /*
     ........................... Get user input ............................
     */
-    const engine::window::KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view).key;
 
     /*
     ---------------------------- Process input ----------------------------
@@ -2104,12 +2104,12 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     /*
     ** Get user input
     */
-    engine::window::KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view).key;
 
     if (firsttime) {
       //			port_edt.Set_Focus();
       port_edt.Flag_To_Redraw();
-      input = commands->Input(view);
+      input = commands->Input(view).key;
       firsttime = false;
     }
 
@@ -3290,7 +3290,7 @@ int Com_Scenario_Dialog(bool skirmish) {
       */
       messages_have_focus = TheSession().Messages.Has_Edit_Focus();
       const bool droplist_is_dropped = housebtn.IsDropped;
-      input = commands->Input(view);
+      input = commands->Input(view).key;
 
       /*
       ** Sort out the input focus between the name edit box and the message
@@ -5076,7 +5076,7 @@ int Com_Show_Scenario_Dialog() {
     */
     messages_have_focus = TheSession().Messages.Has_Edit_Focus();
     const bool droplist_is_dropped = housebtn.IsDropped;
-    engine::window::KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view).key;
 
     /*
     ** Sort out the input focus between the name edit box and the message system
@@ -6238,12 +6238,12 @@ static int Phone_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    engine::window::KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view).key;
 
     if (firsttime) {
       numedit.Set_Focus();
       numedit.Flag_To_Redraw();
-      input = commands->Input(view);
+      input = commands->Input(view).key;
       firsttime = false;
     }
 
@@ -6788,12 +6788,12 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     /*
     ........................... Get user input ............................
     */
-    engine::window::KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view).key;
 
     if (firsttime) {
       nameedit.Set_Focus();
       nameedit.Flag_To_Redraw();
-      input = commands->Input(view);
+      input = commands->Input(view).key;
       firsttime = false;
     }
 

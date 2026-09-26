@@ -515,7 +515,7 @@ int MapEditClass::Placement_Dialog() {
     **	Get user input
     */
     const engine::window::KeyNumber input =
-        commands->Input(view);  // user input
+        commands->Input(view).key;  // user input
 
     /*
     **	Process user input

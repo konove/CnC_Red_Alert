@@ -246,7 +246,7 @@ const char* SimpleEditDlgClass::Show() {
     /*
     **	Get user input.
     */
-    engine::window::KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view).key;
 
     /*
     **	The first time through the processing loop, set the edit

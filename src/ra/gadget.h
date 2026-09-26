@@ -125,7 +125,10 @@ class GadgetClass : public LinkClass {
   /*
   **	Gadget list management functions.
   */
-  virtual engine::window::KeyNumber Input(PixelView& view);
+  // Reads one input event, if any, offers it to the gadgets in this list and
+  // redraws them on `view`. Returns the event; when a gadget acted on it, its
+  // key is that gadget's ButtonKey().
+  virtual engine::window::InputEvent Input(PixelView& view);
   virtual void Draw_All(PixelView& view, bool forced = true);
   virtual void Delete_List();
   virtual ControlClass* Extract_Gadget(unsigned id);

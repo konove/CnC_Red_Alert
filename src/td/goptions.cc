@@ -332,7 +332,7 @@ void GameOptionsClass::Process() {
     /*
     **	Get user input.
     */
-    const engine::window::KeyNumber input = buttons->Input(view);
+    const engine::window::KeyNumber input = buttons->Input(view).key;
 
     /*
     **	Process Input.

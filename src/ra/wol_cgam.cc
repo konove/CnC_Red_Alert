@@ -241,7 +241,7 @@ CREATEGAMEINFO WOL_CreateGame_Dialog(WolapiObject* pWO) {
     /*
     **	Get user input.
     */
-    engine::window::KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view).key;
 
     //	My hack for triggering escape and return on key up instead of down...
     //	The problem that was occurring was that the calling dialog would act on

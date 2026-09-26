@@ -2017,7 +2017,7 @@ bool MapEditClass::Get_Waypoint_Name(std::span<char> wayptname) {
     /*
     **	Get user input.
     */
-    engine::window::KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view).key;
 
     /*
     **	The first time through the processing loop, set the edit

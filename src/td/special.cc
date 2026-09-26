@@ -204,7 +204,7 @@ void Special_Dialog() {
       Show_Mouse();
     }
 
-    const engine::window::KeyNumber input = buttons->Input(view);
+    const engine::window::KeyNumber input = buttons->Input(view).key;
     switch (static_cast<int>(input)) {
       case KN_ESC:
       case engine::window::ButtonKey(200):

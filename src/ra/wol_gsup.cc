@@ -1259,12 +1259,12 @@ RESULT_WOLGSUP WOL_GameSetupDialog::Show() {
       }
     }
 
-    input = commands->Input(view);
+    input = commands->Input(view).key;
 
     if (bHackFocus) {
       pEditSend->Set_Focus();
       pEditSend->Flag_To_Redraw();
-      input = commands->Input(view);
+      input = commands->Input(view).key;
       bHackFocus = false;
     }
 

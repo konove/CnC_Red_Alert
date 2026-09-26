@@ -746,7 +746,7 @@ int MapEditClass::Pick_Scenario(const char* caption, int* scen_nump,
     /*
     ........................... Get user input ............................
     */
-    const engine::window::KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view).key;
 
     /*
     ............................ Process input ............................
@@ -1245,7 +1245,7 @@ int MapEditClass::Size_Map(int x, int y, int w, int h) {
     ------------------------- Process user input --------------------------
     */
     const engine::window::KeyNumber input =
-        commands->Input(view);  // user input
+        commands->Input(view).key;  // user input
     /*.....................................................................
     Normal button processing: This is done when the mouse button is NOT
     being held down ('grabbed' is 0).
@@ -1883,7 +1883,7 @@ int MapEditClass::Scenario_Dialog() {
     ........................... Get user input ............................
     */
     const engine::window::KeyNumber input =
-        commands->Input(view);  // input from user
+        commands->Input(view).key;  // input from user
 
     /*
     ............................ Process input ............................
@@ -2451,7 +2451,7 @@ int MapEditClass::Select_Trigger() {
     ........................... Get user input ............................
     */
     const engine::window::KeyNumber input =
-        commands->Input(view);  // user input
+        commands->Input(view).key;  // user input
 
     /*
     ............................ Process input ............................
@@ -2964,7 +2964,7 @@ int MapEditClass::Edit_Trigger() {
     ........................... Get user input ............................
     */
     const engine::window::KeyNumber input =
-        commands->Input(view);  // user input
+        commands->Input(view).key;  // user input
 
     /*
     ............................ Process input ............................
@@ -3353,7 +3353,7 @@ int MapEditClass::Import_Triggers() {
     ........................... Get user input ............................
     */
     const engine::window::KeyNumber input =
-        commands->Input(view);  // user input
+        commands->Input(view).key;  // user input
 
     /*
     ............................ Process input ............................
@@ -3670,7 +3670,7 @@ int MapEditClass::Import_Teams() {
     ........................... Get user input ............................
     */
     const engine::window::KeyNumber input =
-        commands->Input(view);  // user input
+        commands->Input(view).key;  // user input
 
     /*
     ............................ Process input ............................

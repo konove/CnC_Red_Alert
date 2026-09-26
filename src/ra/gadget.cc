@@ -451,7 +451,7 @@ void GadgetClass::Draw_All(PixelView& view, bool forced) {
  *                                                                         *
  * HISTORY:    01/03/1995 MML : Created.                                   *
  *=========================================================================*/
-engine::window::KeyNumber GadgetClass::Input(PixelView& view) {
+engine::window::InputEvent GadgetClass::Input(PixelView& view) {
   int mousex = 0;
   int mousey = 0;
   bool forced = false;
@@ -470,10 +470,12 @@ engine::window::KeyNumber GadgetClass::Input(PixelView& view) {
   /*
   **	Fetch any pending keyboard input.
   */
-  engine::window::KeyNumber key = TheKeyboard().Peek();
-  if (key != 0) {
-    key = TheKeyboard().Read();
+  engine::window::InputEvent event;
+  if (TheKeyboard().Peek() != KN_NONE) {
+    event = TheKeyboard().ReadEvent();
   }
+  // A gadget that acts on the event replaces its key with the gadget's ID.
+  engine::window::KeyNumber key = event.key;
 
   if constexpr (config::kCheatKeysEnabled) {
     /*
@@ -513,9 +515,9 @@ engine::window::KeyNumber GadgetClass::Input(PixelView& view) {
   *the click occurred *	rather the the mouse position at the time we get around
   *to this function.
   */
-  if (KeyCode(key) == KN_LMOUSE || KeyCode(key) == KN_RMOUSE) {
-    mousex = TheKeyboard().click_x();
-    mousey = TheKeyboard().click_y();
+  if (event.IsClick()) {
+    mousex = event.x;
+    mousey = event.y;
   } else {
     mousex = Get_Mouse_X();
     mousey = Get_Mouse_Y();
@@ -526,19 +528,18 @@ engine::window::KeyNumber GadgetClass::Input(PixelView& view) {
   **	buttons so that they can determine what action to perform (if any).
   */
   unsigned flags = 0;
-  if (key) {
-    if (key == KN_LMOUSE) {
-      flags |= kLeftPress;
-    }
-    if (key == KN_RMOUSE) {
-      flags |= kRightPress;
-    }
-    if (key == Released(KN_LMOUSE)) {
-      flags |= kLeftRelease;
-    }
-    if (key == Released(KN_RMOUSE)) {
-      flags |= kRightRelease;
-    }
+  using engine::window::MouseButton;
+  if (event.IsPress(MouseButton::kLeft)) {
+    flags |= kLeftPress;
+  }
+  if (event.IsPress(MouseButton::kRight)) {
+    flags |= kRightPress;
+  }
+  if (event.IsRelease(MouseButton::kLeft)) {
+    flags |= kLeftRelease;
+  }
+  if (event.IsRelease(MouseButton::kRight)) {
+    flags |= kRightRelease;
   }
 
   /*
@@ -632,7 +633,8 @@ engine::window::KeyNumber GadgetClass::Input(PixelView& view) {
       }
     }
   }
-  return key;
+  event.key = key;
+  return event;
 }
 
 /***********************************************************************************************

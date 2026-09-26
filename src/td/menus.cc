@@ -904,7 +904,7 @@ int Main_Menu(int timeout) {
     /*
     **	Get and process player input.
     */
-    input = commands->Input(view);
+    input = commands->Input(view).key;
     switch (static_cast<int>(input)) {
 #ifdef NEWMENU
       case engine::window::ButtonKey(kButtonExpand):

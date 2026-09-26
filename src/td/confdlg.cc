@@ -185,7 +185,7 @@ bool ConfirmationClass::Process(const char* string) {
     /*
     **	Get user input.
     */
-    const engine::window::KeyNumber input = yesbtn.Input(view);
+    const engine::window::KeyNumber input = yesbtn.Input(view).key;
 
     /*
     **	Process Input.

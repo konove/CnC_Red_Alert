@@ -466,7 +466,7 @@ bool Expansion_Dialog(bool bCounterstrike)  //	If not bCounterstrike, then this
       Show_Mouse();
     }
 
-    const engine::window::KeyNumber input = buttons->Input(view);
+    const engine::window::KeyNumber input = buttons->Input(view).key;
     switch (static_cast<int>(input)) {
       case engine::window::ButtonKey(200):
         TheWorld().whom() = list.Current_Object().House;

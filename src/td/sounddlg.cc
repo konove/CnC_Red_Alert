@@ -390,7 +390,7 @@ void SoundControlsClass::Process() {
     /*
     **	Get user input.
     */
-    const engine::window::KeyNumber input = optionsbtn->Input(view);
+    const engine::window::KeyNumber input = optionsbtn->Input(view).key;
 
     /*
     **	Process Input.

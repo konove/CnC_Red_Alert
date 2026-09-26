@@ -272,7 +272,7 @@ int WOL_Login_Dialog(WolapiObject* pWO) {
     **	Get user input.
     */
     TheGameState().tab_key_pressed() = false;
-    const engine::window::KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view).key;
 
     /*
     **	The first time through the processing loop, set the edit

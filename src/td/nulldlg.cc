@@ -480,7 +480,7 @@ int Test_Null_Modem() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input(view);
+    input = commands->Input(view).key;
 
     /*
     ............................ Process input ............................
@@ -716,7 +716,7 @@ static int Reconnect_Null_Modem() {
     /*
     ........................... Get user input ............................
     */
-    const engine::window::KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view).key;
 
     /*
     ............................ Process input ............................
@@ -1130,7 +1130,7 @@ GameType Select_Serial_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    const engine::window::KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view).key;
 
     /*
     ............................ Process input ............................
@@ -1587,7 +1587,7 @@ static void Advanced_Modem_Settings(SerialSettingsType* settings) {
     /*
     ........................... Get user input ............................
     */
-    const engine::window::KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view).key;
 
     /*
     ---------------------------- Process input ----------------------------
@@ -2433,12 +2433,12 @@ static int Com_Settings_Dialog(SerialSettingsType* settings) {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input(view);
+    input = commands->Input(view).key;
 
     if (firsttime) {
       port_edt.Set_Focus();
       port_edt.Flag_To_Redraw();
-      input = commands->Input(view);
+      input = commands->Input(view).key;
       firsttime = 0;
     }
 
@@ -3680,7 +3680,7 @@ int Com_Scenario_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input(view);
+    input = commands->Input(view).key;
 
     /*
     ---------------------------- Process input ----------------------------
@@ -5113,7 +5113,7 @@ int Com_Show_Scenario_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    input = commands->Input(view);
+    input = commands->Input(view).key;
 
     /*
     ---------------------------- Process input ----------------------------
@@ -6029,12 +6029,12 @@ static int Phone_Dialog() {
     /*
     ........................... Get user input ............................
     */
-    engine::window::KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view).key;
 
     if (firsttime) {
       numedit.Set_Focus();
       numedit.Flag_To_Redraw();
-      input = commands->Input(view);
+      input = commands->Input(view).key;
       firsttime = 0;
     }
 
@@ -6628,12 +6628,12 @@ static int Edit_Phone_Dialog(PhoneEntryClass* phone) {
     /*
     ........................... Get user input ............................
     */
-    engine::window::KeyNumber input = commands->Input(view);
+    engine::window::KeyNumber input = commands->Input(view).key;
 
     if (firsttime) {
       nameedit.Set_Focus();
       nameedit.Flag_To_Redraw();
-      input = commands->Input(view);
+      input = commands->Input(view).key;
       firsttime = 0;
     }
 

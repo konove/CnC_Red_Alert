@@ -730,7 +730,7 @@ int Main_Menu(int32_t /*unused*/) {
     **	Get and process player input.
     */
     const engine::window::KeyNumber input =
-        commands->Input(view);  // input from user
+        commands->Input(view).key;  // input from user
 
     /*
     **	Dispatch the input to be processed.

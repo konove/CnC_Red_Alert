@@ -571,7 +571,7 @@ bool Do_The_Internet_Menu_Thang() {
 #endif
 
     // input = buttons->Input();
-    input = cancelbtn.Input(view);
+    input = cancelbtn.Input(view).key;
 
     /*
     ---------------------------- Process input ----------------------------

@@ -287,7 +287,7 @@ void GScreenClass::Input(engine::window::KeyNumber& key, int& x, int& y) {
       Flag_To_Redraw(false);
     }
 
-    key = Buttons->Input(TheScreen().hidden_view());
+    key = Buttons->Input(TheScreen().hidden_view()).key;
 
   } else {
     if (key) {

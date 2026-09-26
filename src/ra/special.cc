@@ -208,7 +208,7 @@ void Special_Dialog(bool simple) {
       Show_Mouse();
     }
 
-    const engine::window::KeyNumber input = buttons->Input(view);
+    const engine::window::KeyNumber input = buttons->Input(view).key;
     switch (static_cast<int>(input)) {
       case KN_ESC:
       case engine::window::ButtonKey(200):
@@ -446,7 +446,7 @@ const char* Fetch_Password(int caption, int message, int btext) {
     **	Fetch and process input.
     */
     const engine::window::KeyNumber input =
-        buttonlist->Input(view);  // user input
+        buttonlist->Input(view).key;  // user input
     if (first) {
       button2.Set_Focus();
       button2.Flag_To_Redraw();
@@ -588,7 +588,7 @@ int Fetch_Difficulty(bool amath) {
     /*
     **	Fetch and process input.
     */
-    const engine::window::KeyNumber input = buttonlist->Input(view);
+    const engine::window::KeyNumber input = buttonlist->Input(view).key;
 
     switch (static_cast<int>(input)) {
       case KN_RETURN:

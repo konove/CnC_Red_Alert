@@ -286,7 +286,7 @@ GameType Select_MPlayer_Game() {
     //	Get user input
     //.....................................................................
     const engine::window::KeyNumber input =
-        commands->Input(view);  // input from user
+        commands->Input(view).key;  // input from user
 
     //.....................................................................
     //	Process input
@@ -618,7 +618,7 @@ int Surrender_Dialog(const char* text) {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    const engine::window::KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view).key;
 
     //.....................................................................
     //	Process input
@@ -800,7 +800,7 @@ int Abort_Dialog() {
     //.....................................................................
     //	Get user input
     //.....................................................................
-    const engine::window::KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view).key;
 
     //.....................................................................
     //	Process input

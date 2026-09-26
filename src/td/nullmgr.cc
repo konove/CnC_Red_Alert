@@ -1457,7 +1457,7 @@ DialStatusType NullModemClass::Dial_Modem(char* string, DialMethodType method,
     */
     CCDebugString("C&C95 - About to check for keyboard input.\n");
     if (!Input) {
-      Input = Commands->Input(view);
+      Input = Commands->Input(view).key;
     }
 
     switch (static_cast<int>(Input)) {
@@ -1660,7 +1660,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     ............................ Process input ............................
     */
     if (!Input) {
-      Input = Commands->Input(view);
+      Input = Commands->Input(view).key;
     }
     switch (static_cast<int>(Input)) {
       case KN_ESC:
@@ -1958,7 +1958,7 @@ int NullModemClass::Abort_Modem()
   */
   // Installed only by Setup_Abort_Modem(), which Dial_Modem() and
   // Answer_Modem() call while their dialog is up on the visible page.
-  Input = Commands->Input(TheScreen().visible_view());
+  Input = Commands->Input(TheScreen().visible_view()).key;
 
   switch (static_cast<int>(Input)) {
     case KN_ESC:

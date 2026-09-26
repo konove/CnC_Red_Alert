@@ -314,7 +314,7 @@ void GameControlsClass::Process() {
     /*
     **	Get user input.
     */
-    const engine::window::KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view).key;
 
     /*
     **	Process input.

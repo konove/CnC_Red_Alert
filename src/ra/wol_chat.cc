@@ -679,7 +679,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
       pToolTipHitLast->Unshow(view);
     }
 
-    input = commands->Input(view);
+    input = commands->Input(view).key;
 
     //	This hack, used elsewhere in this form, appears to be the standard dodge
     // around GadgetClass::Input's 	tendency to remove any focus the first
@@ -690,7 +690,7 @@ int WOL_Chat_Dialog(WolapiObject* pWO) {
     if (bHackFocus) {
       sendedit.Set_Focus();
       sendedit.Flag_To_Redraw();
-      input = commands->Input(view);
+      input = commands->Input(view).key;
       bHackFocus = false;
     }
 

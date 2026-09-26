@@ -1534,7 +1534,7 @@ DialStatusType NullModemClass::Answer_Modem(bool reconnect) {
     Process input
     .....................................................................*/
     if (!Input) {
-      Input = Commands->Input(view);
+      Input = Commands->Input(view).key;
     }
     switch (static_cast<int>(Input)) {
       case KN_ESC:
@@ -1827,7 +1827,7 @@ int NullModemClass::Abort_Modem() {
   ** the visible page, which is the page this used to find in the global.
   */
   PixelView& view = TheScreen().visible_view();
-  Input = Commands->Input(view);
+  Input = Commands->Input(view).key;
 
   switch (static_cast<int>(Input)) {
     case KN_ESC:

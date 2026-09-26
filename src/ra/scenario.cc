@@ -1514,7 +1514,7 @@ int ShowBriefingMessageBox(std::string_view msg, int left_btn, int right_btn,
 
       // Fetch and process input.
       const engine::window::KeyNumber input =
-          buttonlist->Input(view);  // user input
+          buttonlist->Input(view).key;  // user input
       switch (static_cast<uint32_t>(input)) {
         case kBriefingButtonFlag | uint32_t{kButton1}:
           selection = base::At(realval, 0);

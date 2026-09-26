@@ -284,7 +284,7 @@ int WWMessageBox::Process(const char* msg, const char* b1txt, const char* b2txt,
       /*
       **	Fetch and process input.
       */
-      engine::window::KeyNumber input = buttonlist->Input(view);
+      engine::window::KeyNumber input = buttonlist->Input(view).key;
       //	I really hate to do this, but...      ajw
       if (TheGameState().cancel_msgbox()) {
         TheGameState().cancel_msgbox() = false;

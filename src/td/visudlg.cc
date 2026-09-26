@@ -249,7 +249,7 @@ void VisualControlsClass::Process() {
     /*
     **	Get and process player input.
     */
-    const engine::window::KeyNumber input = optionsbtn.Input(view);
+    const engine::window::KeyNumber input = optionsbtn.Input(view).key;
     switch (static_cast<int>(input)) {
       case engine::window::ButtonKey(kButtonBrightness):
         TheOptions().Set_Brightness(brightness.Get_Value());

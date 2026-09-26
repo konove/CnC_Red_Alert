@@ -448,7 +448,7 @@ int MapEditClass::Select_Team(const char* caption) {
     ........................... Get user input ............................
     */
     const engine::window::KeyNumber input =
-        commands->Input(view);  // user input
+        commands->Input(view).key;  // user input
 
     /*
     ............................ Process input ............................
@@ -1078,7 +1078,7 @@ int MapEditClass::Edit_Team() {
     /*
     ........................... Get user input ............................
     */
-    const engine::window::KeyNumber input = commands->Input(view);
+    const engine::window::KeyNumber input = commands->Input(view).key;
 
     /*
     ............................ Process input ............................
@@ -1739,7 +1739,7 @@ int MapEditClass::Team_Members(HousesType house) {
     **	Get user input.
     */
     const engine::window::KeyNumber input =
-        commands->Input(view);  // user input
+        commands->Input(view).key;  // user input
 
     /*
     **	Process input.
