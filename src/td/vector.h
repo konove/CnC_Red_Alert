@@ -80,6 +80,11 @@
 *the integral type were known. *	This efficiency can be implemented by
 *deriving an integral vector template *	from this one in order to supply more
 *efficient routines.
+*
+* Nothing is virtual: no code reaches a vector through a base pointer, and
+* portability-template-virtual-member-function reports every virtual member a
+* translation unit does not instantiate. DynamicVectorClass hides the members
+* it redefines.
 */
 template <class T>
 class VectorClass {
@@ -89,7 +94,7 @@ class VectorClass {
   // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
   explicit VectorClass(base::ssize size = 0, std::span<T> array = {});
   VectorClass(const VectorClass& /*vector*/);  // Copy constructor.
-  virtual ~VectorClass();
+  ~VectorClass();
   VectorClass(VectorClass&&) = delete;
   VectorClass& operator=(VectorClass&&) = delete;
 
@@ -108,18 +113,17 @@ class VectorClass {
 
  private:
   // The copying half of operator=, without the Clear() that precedes it. The
-  // copy constructor uses this directly: Clear() is virtual (DynamicVectorClass
-  // overrides it to reset ActiveCount) and a constructor cannot reach that
-  // override, while a freshly built vector has nothing to clear anyway.
+  // copy constructor uses this directly, since a freshly built vector has
+  // nothing to clear.
   void Copy_From(const VectorClass& vector);
 
  public:
-  virtual bool operator==(const VectorClass& /*vector*/) const;
-  virtual bool Resize(base::ssize newsize, std::span<T> array = {});
-  virtual void Clear();
+  bool operator==(const VectorClass& /*vector*/) const;
+  bool Resize(base::ssize newsize, std::span<T> array = {});
+  void Clear();
   [[nodiscard]] base::ssize Length() const { return VectorMax; }
-  virtual int ID(const T* ptr);  // Pointer based identification.
-  virtual int ID(const T& object);  // Value based identification.
+  int ID(const T* ptr);     // Pointer based identification.
+  int ID(const T& object);  // Value based identification.
 
  protected:
   // The pointer and count retain their historical serialized layout. Every
@@ -165,10 +169,10 @@ class DynamicVectorClass : public VectorClass<T> {
   explicit DynamicVectorClass(base::ssize size = 0, std::span<T> array = {});
 
   // Change maximum size of vector.
-  bool Resize(base::ssize newsize, std::span<T> array = {}) override;
+  bool Resize(base::ssize newsize, std::span<T> array = {});
 
   // Resets and frees the vector array.
-  void Clear() override {
+  void Clear() {
     ActiveCount = 0;
     VectorClass<T>::Clear();
   }
@@ -203,8 +207,8 @@ class DynamicVectorClass : public VectorClass<T> {
   // Fetch current growth step rate.
   int Growth_Step() { return GrowthStep; }
 
-  int ID(const T* ptr) override { return VectorClass<T>::ID(ptr); }
-  int ID(const T& ptr) override;
+  using VectorClass<T>::ID;
+  int ID(const T& ptr);
 
  protected:
   /*

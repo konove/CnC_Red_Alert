@@ -16,10 +16,10 @@ class DynamicVectorClass : public VectorClass<T> {
   explicit DynamicVectorClass(base::ssize size = 0, std::span<T> array = {});
 
   // Change maximum size of vector.
-  bool Resize(base::ssize newsize, std::span<T> array = {}) override;
+  bool Resize(base::ssize newsize, std::span<T> array = {});
 
   // Resets and frees the vector array.
-  void Clear() override {
+  void Clear() {
     ActiveCount = 0;
     VectorClass<T>::Clear();
   }
@@ -59,8 +59,8 @@ class DynamicVectorClass : public VectorClass<T> {
   // Fetch current growth step rate.
   [[nodiscard]] base::ssize Growth_Step() const { return GrowthStep; }
 
-  base::ssize ID(const T* ptr) override { return VectorClass<T>::ID(ptr); }
-  base::ssize ID(const T& ptr) override;
+  using VectorClass<T>::ID;
+  base::ssize ID(const T& ptr);
 
  protected:
   // Number of valid elements (may be less than capacity).

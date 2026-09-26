@@ -33,6 +33,11 @@
 
 // Resizable array of arbitrary objects. Not optimized for integral types -
 // consider a specialized version for char/int if performance is critical.
+//
+// Nothing is virtual: no code reaches a vector through a base pointer, and
+// portability-template-virtual-member-function reports every virtual member a
+// translation unit does not instantiate. DynamicVectorClass hides the members
+// it redefines.
 template <typename T>
 class VectorClass {
  public:
@@ -41,7 +46,7 @@ class VectorClass {
   // NOLINTNEXTLINE(clang-diagnostic-lifetime-safety-intra-tu-constructor-suggestions)
   explicit VectorClass(base::ssize size = 0, std::span<T> array = {});
   VectorClass(const VectorClass& /*vector*/);  // Copy constructor.
-  virtual ~VectorClass();
+  ~VectorClass();
   VectorClass(VectorClass&&) = delete;
   VectorClass& operator=(VectorClass&&) = delete;
 
@@ -58,13 +63,12 @@ class VectorClass {
   const T& operator[](base::ssize index) const { return at(index); }
   VectorClass& operator=(
       const VectorClass& /*vector*/);  // Assignment operator.
-  virtual bool operator==(
-      const VectorClass& /*vector*/) const;  // Equality operator.
-  virtual bool Resize(base::ssize newsize, std::span<T> array = {});
-  virtual void Clear();
+  bool operator==(const VectorClass& /*vector*/) const;  // Equality operator.
+  bool Resize(base::ssize newsize, std::span<T> array = {});
+  void Clear();
   [[nodiscard]] base::ssize Length() const { return VectorMax; }
-  virtual base::ssize ID(const T* ptr);  // Pointer based identification.
-  virtual base::ssize ID(const T& object);  // Value based identification.
+  base::ssize ID(const T* ptr);     // Pointer based identification.
+  base::ssize ID(const T& object);  // Value based identification.
 
  protected:
   // The pointer and count retain their historical serialized layout. Every

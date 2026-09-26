@@ -50,7 +50,7 @@ class ArchiveWriter;
 class LayerClass : public DynamicVectorClass<ObjectClass*> {
  public:
   LayerClass() = default;
-  ~LayerClass() override;
+  virtual ~LayerClass();
   LayerClass(const LayerClass&) = delete;
   LayerClass& operator=(const LayerClass&) = delete;
   LayerClass(LayerClass&&) = delete;

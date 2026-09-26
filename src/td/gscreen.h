@@ -52,6 +52,11 @@ class GScreenClass : public VectorClass<CellClass> {
  public:
   virtual void ResetTransientUiState();
   GScreenClass();
+  virtual ~GScreenClass() = default;
+  GScreenClass(const GScreenClass&) = delete;
+  GScreenClass& operator=(const GScreenClass&) = delete;
+  GScreenClass(GScreenClass&&) = delete;
+  GScreenClass& operator=(GScreenClass&&) = delete;
 
   /*
   ** Initialization
