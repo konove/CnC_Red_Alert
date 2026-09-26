@@ -213,7 +213,8 @@ void WWMouseClass::Set_Cursor(int xhotspot, int yhotspot,
             .subspan(1)
             .data(),
         1, 255);
-    sdl_surf->format->palette->colors[0].a = 0;
+    // An 8-bit surface's palette has 256 entries; entry 0 is transparent.
+    sdl_surf->format->palette->colors->a = 0;
   }
 
   SDLCursorPtr sdl_cursor(

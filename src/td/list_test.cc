@@ -114,13 +114,15 @@ TEST_F(TdCheckListClassTest, CheckItemWritesTheGlyphIntoTheOwnedText) {
 
   list.Check_Item(0, 1);
   EXPECT_TRUE(list.Is_Checked(0));
-  EXPECT_EQ(list.Get_Item(0)[0], CheckListClass::kCheckChar);
+  EXPECT_EQ(std::string_view(list.Get_Item(0)).front(),
+            CheckListClass::kCheckChar);
   EXPECT_EQ(std::string_view(list.Get_Item(0)).substr(1), "trigger");
   EXPECT_EQ(source, " trigger");
 
   list.Check_Item(0, 0);
   EXPECT_FALSE(list.Is_Checked(0));
-  EXPECT_EQ(list.Get_Item(0)[0], CheckListClass::kUncheckChar);
+  EXPECT_EQ(std::string_view(list.Get_Item(0)).front(),
+            CheckListClass::kUncheckChar);
 
   list.Check_Item(3, 1);
   EXPECT_FALSE(list.Is_Checked(3));

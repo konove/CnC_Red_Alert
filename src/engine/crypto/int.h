@@ -396,11 +396,11 @@ class Int {
     void Increment(const RemainderTable& rtQ) {
       HasZeroEntry = false;
       for (unsigned int i = 0; i < std::ssize(primeTable); i++) {
-        table[i] += rtQ.table[i];
-        if (table[i] >= primeTable[i]) {
-          table[i] -= primeTable[i];
+        base::At(table, i) += base::At(rtQ.table, i);
+        if (base::At(table, i) >= base::At(primeTable, i)) {
+          base::At(table, i) -= base::At(primeTable, i);
         }
-        HasZeroEntry = HasZeroEntry || table[i] == 0;
+        HasZeroEntry = HasZeroEntry || base::At(table, i) == 0;
       }
     }
 
@@ -414,11 +414,11 @@ T Gcd(const T& a, const T& n) {
   T g[3] = {n, a, 0UL};
 
   unsigned int i = 1;
-  while (!!g[i % 3]) {
-    g[(i + 1) % 3] = g[(i - 1) % 3] % g[i % 3];
+  while (!!base::At(g, i % 3)) {
+    base::At(g, (i + 1) % 3) = base::At(g, (i - 1) % 3) % base::At(g, i % 3);
     i++;
   }
-  return g[(i - 1) % 3];
+  return base::At(g, (i - 1) % 3);
 }
 
 template <class T>

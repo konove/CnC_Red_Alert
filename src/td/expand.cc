@@ -43,6 +43,7 @@
 #include <format>
 #include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/array.h"
@@ -236,7 +237,7 @@ bool Expansion_Dialog() {
     switch (static_cast<int>(input)) {
       case KN_RETURN:
       case engine::window::ButtonKey(200):
-        if (list.Current_Item()[0] == 'G') {
+        if (std::string_view(list.Current_Item()).starts_with('G')) {
           TheWorld().scen_player() = SCEN_PLAYER_GDI;
         } else {
           TheWorld().scen_player() = SCEN_PLAYER_NOD;
@@ -377,7 +378,7 @@ bool Bonus_Dialog() {
     switch (static_cast<int>(input)) {
       case KN_RETURN:
       case engine::window::ButtonKey(200):
-        if (list.Current_Item()[0] == 'G') {
+        if (std::string_view(list.Current_Item()).starts_with('G')) {
           TheWorld().scen_player() = SCEN_PLAYER_GDI;
         } else {
           TheWorld().scen_player() = SCEN_PLAYER_NOD;

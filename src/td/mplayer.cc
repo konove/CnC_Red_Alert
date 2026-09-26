@@ -566,7 +566,7 @@ void Read_MultiPlayer_Settings() {
     // NOLINTNEXTLINE(clang-diagnostic-unsafe-buffer-usage-in-container)
     const std::span<char> entry_storage(entry, INITSTRBUF_MAX);
 
-    entry[0] = 0;
+    entry_storage.front() = '\0';
 
     WWGetPrivateProfileString("InitStrings", tbuffer, nullptr, entry_storage,
                               buffer);

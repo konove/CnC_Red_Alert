@@ -1,6 +1,7 @@
 #include "base/enum_array.h"
 
 #include <cstdint>
+#include <string_view>
 
 #include "base/types.h"
 #include "gtest/gtest.h"
@@ -27,7 +28,7 @@ TEST(EnumArrayTest, SizeFollowsTheEnum) {
 
 TEST(EnumArrayTest, IsAConstantExpressionAggregate) {
   static constexpr EnumArray<Fruit, const char*> kNames = {"apple", "pear", "plum"};
-  static_assert(kNames.at(Fruit::kPear)[0] == 'p');
+  static_assert(std::string_view(kNames.at(Fruit::kPear)) == "pear");
   static_assert(decltype(kNames)::size() == 3);
 }
 

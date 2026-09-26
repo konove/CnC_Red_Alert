@@ -113,6 +113,9 @@ struct GUID {
   std::uint16_t Data3;
   std::uint8_t Data4[8];
 
+  // The check sees the synthesized loop over Data4, whose index is bounded by
+  // the array's own extent.
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
   friend constexpr bool operator==(const GUID&, const GUID&) = default;
 };
 static_assert(sizeof(GUID) == 16);
