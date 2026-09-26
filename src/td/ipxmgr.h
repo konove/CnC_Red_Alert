@@ -189,6 +189,9 @@ class IPXManagerClass : public ConnManClass {
   Initialization routines.
   .....................................................................*/
   int Init();
+  // Stops listening for packets, if the manager is. Reaches Winsock through
+  // TheNetwork(), so the owner calls it while Network is installed.
+  void Stop_Listening();
   [[nodiscard]] int Is_IPX() const;
   void Set_Timing(int32_t retrydelta, int32_t maxretries,
                   int32_t timeout) override;

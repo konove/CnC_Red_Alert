@@ -180,10 +180,7 @@ IPXManagerClass::~IPXManagerClass() {
   /*------------------------------------------------------------------------
   Stop all IPX events
   ------------------------------------------------------------------------*/
-  if (Listening) {
-    IPXConnClass::Stop_Listening();
-    Listening = false;
-  }
+  Stop_Listening();
 
   /*------------------------------------------------------------------------
   Free all protected-mode memory
@@ -241,10 +238,7 @@ int IPXManagerClass::Init() {
     /*------------------------------------------------------------------------
     Stop Listening
     ------------------------------------------------------------------------*/
-    if (Listening) {
-      IPXConnClass::Stop_Listening();
-      Listening = false;
-    }
+    Stop_Listening();
 
     /*------------------------------------------------------------------------
     Free Real-mode memory
@@ -314,6 +308,13 @@ int IPXManagerClass::Init() {
   Listening = true;
 
   return 1;
+}
+
+void IPXManagerClass::Stop_Listening() {
+  if (Listening) {
+    IPXConnClass::Stop_Listening();
+    Listening = false;
+  }
 }
 
 /***************************************************************************
