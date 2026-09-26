@@ -112,7 +112,8 @@ class SliderClass final : public GaugeClass {
   int ThumbSize = 0;
   int ThumbStart = 0;  // x or y position for the thumb
 
-  bool Action(unsigned flags, engine::window::KeyNumber& key) override;
+  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+              int y) override;
   void Draw_Thumb(PixelView& view) override;
 
  private:

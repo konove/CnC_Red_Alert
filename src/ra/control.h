@@ -89,7 +89,8 @@ class ControlClass : public GadgetClass {
   [[nodiscard]] unsigned Get_ID() const override;
 
  protected:
-  bool Action(unsigned flags, engine::window::KeyNumber& key) override;
+  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+              int y) override;
 
   /*
   **	This points to the peer button to inform when something happens to this

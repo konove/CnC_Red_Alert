@@ -99,7 +99,8 @@ class EditClass : public ControlClass {
   // Processes mouse and keyboard events. Sets focus on left-click; inserts
   // characters on keypress. Returns the gadget ID on RETURN, clears focus
   // on ESC.
-  bool Action(unsigned flags, engine::window::KeyNumber& key) override;
+  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+              int y) override;
 
   // Draws the gadget background. Called with the mouse hidden.
   virtual void Draw_Background(PixelView& view);

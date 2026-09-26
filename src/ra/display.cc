@@ -2869,25 +2869,12 @@ void DisplayClass::Refresh_Band() {
  * HISTORY: * 02/17/1995 JLB : Created. *
  *=============================================================================================*/
 bool DisplayClass::TacticalClass::Action(unsigned flags,
-                                         engine::window::KeyNumber& key) {
-  int x = 0;
-  int y = 0;  // Sub cell pixel coordinates.
+                                         engine::window::KeyNumber& key, int x,
+                                         int y) {
   ObjectClass* object = nullptr;
   ActionType action =
       ACTION_NONE;  // Action possible with currently selected object.
 
-  /*
-  **	Set some working variables that depend on the mouse position. For the
-  *press *	or release event, special mouse queuing storage variables are
-  *used. Other *	events must use the current mouse position globals.
-  */
-  if (flags & (kLeftPress | kLeftRelease | kRightPress | kRightRelease)) {
-    x = TheKeyboard().click_x();
-    y = TheKeyboard().click_y();
-  } else {
-    x = Get_Mouse_X();
-    y = Get_Mouse_Y();
-  }
   const bool edge = y == 0 || x == 0 ||
                     x == TheScreen().visible_view().width() - 1 ||
                     y == TheScreen().visible_view().height() - 1;
@@ -3090,7 +3077,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
     }
   }
 
-  return GadgetClass::Action(0, key);
+  return GadgetClass::Action(0, key, x, y);
 }
 
 /***********************************************************************************************

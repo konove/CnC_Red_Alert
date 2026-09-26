@@ -2794,29 +2794,16 @@ void DisplayClass::Refresh_Band() {
  * HISTORY: * 02/17/1995 JLB : Created. *
  *=============================================================================================*/
 bool DisplayClass::TacticalClass::Action(unsigned flags,
-                                         engine::window::KeyNumber& key) {
-  int x = 0;
-  int y = 0;  // Sub cell pixel coordinates.
+                                         engine::window::KeyNumber& key, int x,
+                                         int y) {
   ObjectClass* object = nullptr;
   ActionType action =
       ACTION_NONE;  // Action possible with currently selected object.
 
-  /*
-  **	Set some working variables that depend on the mouse position. For the
-  *press *	or release event, special mouse queuing storage variables are
-  *used. Other *	events must use the current mouse position globals.
-  */
+  // Only a hovering mouse, not a click, is at the screen's edge.
   bool edge = false;
-  if (flags & (kLeftPress | kLeftRelease | kRightPress | kRightRelease)) {
-    x = TheKeyboard().click_x();
-    y = TheKeyboard().click_y();
-  } else {
-    x = Get_Mouse_X();
-    y = Get_Mouse_Y();
-
-    if (x == 0 || y == 199 || x == 319) {
-      edge = true;
-    }
+  if (!(flags & (kLeftPress | kLeftRelease | kRightPress | kRightRelease))) {
+    edge = x == 0 || y == 199 || x == 319;
   }
   const COORDINATE coord = TheMap().Pixel_To_Coord(x, y);
   const CELL cell = Coord_Cell(coord);
@@ -2978,7 +2965,7 @@ bool DisplayClass::TacticalClass::Action(unsigned flags,
     }
   }
 
-  return GadgetClass::Action(0, key);
+  return GadgetClass::Action(0, key, x, y);
 }
 
 /***********************************************************************************************

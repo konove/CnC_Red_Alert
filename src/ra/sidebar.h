@@ -122,7 +122,8 @@ class SidebarClass : public PowerClass {
       int Index{0};
 
      protected:
-      bool Action(unsigned flags, engine::window::KeyNumber& key) override;
+      bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+                  int y) override;
     };
 
    public:
@@ -329,7 +330,8 @@ class SidebarClass : public PowerClass {
                       (kSideHeight - 1) * 2, kLeftUp) {}
 
    protected:
-    bool Action(unsigned flags, engine::window::KeyNumber& key) override;
+    bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+                int y) override;
   };
 
   /*

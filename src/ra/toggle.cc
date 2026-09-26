@@ -129,7 +129,8 @@ void ToggleClass::Turn_Off() {
  * HISTORY: * 01/14/1995 JLB : Created. * 02/02/1995 JLB : Left press doesn't
  *get passed to other buttons now                       *
  *=============================================================================================*/
-bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key) {
+bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
+                         int y) {
   /*
   **	If there are no action flag bits set, then this must be a forced call. A
   *forced call *	must never actually function like a real call, but
@@ -167,7 +168,7 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key) {
     IsPressed = true;
     Flag_To_Redraw();
     flags &= ~unsigned{kLeftPress};
-    ControlClass::Action(flags, key);
+    ControlClass::Action(flags, key, x, y);
     key = engine::window::KN_NONE;  // erase the event
     return true;    // stop processing other buttons now
   }
@@ -188,5 +189,5 @@ bool ToggleClass::Action(unsigned flags, engine::window::KeyNumber& key) {
   **	Do normal button processing. This ends up causing the button's ID number
   *to *	be returned from the controlling Input() function.
   */
-  return ControlClass::Action(flags, key);
+  return ControlClass::Action(flags, key, x, y);
 }

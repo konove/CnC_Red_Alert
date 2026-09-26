@@ -68,7 +68,8 @@ class Dial8Class : public ControlClass {
   /*
   ** Overloaded event processing routine
   */
-  bool Action(unsigned flags, engine::window::KeyNumber& key) override;
+  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+              int y) override;
 
  private:
   int FaceX;             // x-coord of center of face

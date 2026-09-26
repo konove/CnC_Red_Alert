@@ -239,7 +239,8 @@ bool EditClass::Draw_Me(PixelView& view, bool forced) {
  *                                                                                             *
  * HISTORY: * 06/25/1995 JLB : Created. *
  *=============================================================================================*/
-bool EditClass::Action(unsigned flags, engine::window::KeyNumber& key) {
+bool EditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
+                       int y) {
   /*
   ** If this is a read-only edit box, it's a display-only device
   */
@@ -296,7 +297,7 @@ bool EditClass::Action(unsigned flags, engine::window::KeyNumber& key) {
     }
   }
 
-  return ControlClass::Action(flags, key);
+  return ControlClass::Action(flags, key, x, y);
 }
 
 /***********************************************************************************************

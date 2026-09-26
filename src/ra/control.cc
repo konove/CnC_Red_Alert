@@ -100,7 +100,8 @@ ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-bool ControlClass::Action(unsigned flags, engine::window::KeyNumber& key) {
+bool ControlClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
+                          int y) {
   /*
   **	Only if the flags indicate that a recognized action has occurred, do the
   **	normal processing of this gadget and set return value to the gadget ID.
@@ -121,7 +122,7 @@ bool ControlClass::Action(unsigned flags, engine::window::KeyNumber& key) {
     Peer->Peer_To_Peer(flags, key, *this);
   }
 
-  return GadgetClass::Action(flags, key);
+  return GadgetClass::Action(flags, key, x, y);
 }
 
 /***********************************************************************************************

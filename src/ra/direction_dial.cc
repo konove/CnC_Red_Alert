@@ -72,8 +72,8 @@ DirectionDial::DirectionDial(const int id, const int x, const int y,
   }
 }
 
-bool DirectionDial::Action(const unsigned flags,
-                           engine::window::KeyNumber& key) {
+bool DirectionDial::Action(const unsigned flags, engine::window::KeyNumber& key,
+                           int x, int y) {
   // We might end up clearing the event bits. Make sure that the sticky
   // process is properly updated anyway: it is what makes StuckOn this dial
   // from the press to the release.
@@ -91,13 +91,13 @@ bool DirectionDial::Action(const unsigned flags,
     if (facing_ != old_facing) {
       // Report the change: ControlClass::Action notifies the peer, replaces
       // `key` with the button ID for the owner and asks for a redraw.
-      ControlClass::Action(flags, key);
+      ControlClass::Action(flags, key, x, y);
     } else {
       // The dial has not moved; kill the event so the owner sees nothing.
       // ControlClass::Action leaves `key` alone when given no flags, so it
       // has to be cleared here.
       key = engine::window::KN_NONE;
-      ControlClass::Action(0, key);
+      ControlClass::Action(0, key, x, y);
     }
     return true;
   }
@@ -105,7 +105,7 @@ bool DirectionDial::Action(const unsigned flags,
   if (flags & kLeftRelease) {
     key = engine::window::KN_NONE;
   }
-  return ControlClass::Action(0, key);
+  return ControlClass::Action(0, key, x, y);
 }
 
 bool DirectionDial::Draw_Me(PixelView& view, const bool forced) {

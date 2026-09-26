@@ -78,7 +78,8 @@ bool BigCheckBoxClass::Draw_Me(PixelView& view, bool forced) {
 }
 
 //***********************************************************************************************
-bool BigCheckBoxClass::Action(unsigned flags, engine::window::KeyNumber& key) {
+bool BigCheckBoxClass::Action(unsigned flags, engine::window::KeyNumber& key,
+                              int x, int y) {
   /*	if( flags & kLeftPress )
           {
                   if (IsOn) {
@@ -88,5 +89,5 @@ bool BigCheckBoxClass::Action(unsigned flags, engine::window::KeyNumber& key) {
                   }
           }
   */
-  return ToggleClass::Action(flags, key);
+  return ToggleClass::Action(flags, key, x, y);
 }

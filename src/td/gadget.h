@@ -177,12 +177,12 @@ class GadgetClass : public LinkClass {
   */
   virtual void Sticky_Process(unsigned flags);
 
-  /*
-  **	This is the action functio that will be called whenever the flags and
-  *mouse *	input indicates. This is the main method by which this button
-  *performs a useful *	function.
-  */
-  virtual bool Action(unsigned flags, engine::window::KeyNumber& key);
+  // Acts on the input `flags` and `key` describe, the main way a gadget does
+  // its job. `x` and `y` are where it happened: a click's position for a
+  // press or release, the mouse's for anything else. A gadget that acts on a
+  // key replaces `key` with its ButtonKey(). Returns whether it acted.
+  virtual bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+                      int y);
 
   /*
   **	If there is a sticky button being processed, then this will point to it.

@@ -139,7 +139,8 @@ class ListClass : public ControlClass {
   GadgetClass* Remove() override;
 
  protected:
-  bool Action(unsigned flags, engine::window::KeyNumber& key) override;
+  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+              int y) override;
   virtual void Draw_Entry(PixelView& view, int index, int x, int y, int width,
                           bool selected);
 
@@ -240,7 +241,8 @@ class TListClass final : public ControlClass {
   GadgetClass* Remove() override;
 
  protected:
-  bool Action(unsigned flags, engine::window::KeyNumber& key) override;
+  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+              int y) override;
 
   /*
   **	This controls what the text looks like. It uses the basic TPF_ flags
@@ -426,11 +428,12 @@ void TListClass<T>::Remove_Item(T text) {
 }
 
 template <class T>
-bool TListClass<T>::Action(unsigned flags, engine::window::KeyNumber& key) {
+bool TListClass<T>::Action(unsigned flags, engine::window::KeyNumber& key,
+                           int x, int y) {
   if (flags & kLeftRelease) {
     key = engine::window::KN_NONE;
     flags &= (~kLeftRelease);
-    ControlClass::Action(flags, key);
+    ControlClass::Action(flags, key, x, y);
     return true;
   }
   /*
@@ -457,7 +460,7 @@ bool TListClass<T>::Action(unsigned flags, engine::window::KeyNumber& key) {
     SelectedIndex = CurrentTopIndex + index;
     SelectedIndex = std::min<int>(SelectedIndex, static_cast<int>(List.Count()) - 1);
   }
-  return ControlClass::Action(flags, key);
+  return ControlClass::Action(flags, key, x, y);
 }
 
 template <class T>

@@ -279,11 +279,12 @@ void ListClass::Remove_Item(int index) {
  *                                                                         *
  * HISTORY:          01/05/1995 MML : Created.                             *
  *=========================================================================*/
-bool ListClass::Action(unsigned flags, engine::window::KeyNumber& key) {
+bool ListClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
+                       int y) {
   if (flags & kLeftRelease) {
     key = KN_NONE;
     flags &= ~kLeftRelease;
-    ControlClass::Action(flags, key);
+    ControlClass::Action(flags, key, x, y);
     return true;
   }
   /*	--------------------------------------------------
@@ -310,7 +311,7 @@ bool ListClass::Action(unsigned flags, engine::window::KeyNumber& key) {
     SelectedIndex = CurrentTopIndex + index;
     SelectedIndex = std::min<int>(SelectedIndex, Count() - 1);
   }
-  return ControlClass::Action(flags, key);
+  return ControlClass::Action(flags, key, x, y);
 }
 
 /***********************************************************************************************

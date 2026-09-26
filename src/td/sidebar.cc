@@ -2160,7 +2160,7 @@ void SidebarClass::StripClass::SelectClass::Set_Owner(StripClass& strip,
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::StripClass::SelectClass::Action(
-    unsigned flags, engine::window::KeyNumber& key) {
+    unsigned flags, engine::window::KeyNumber& key, int x, int y) {
   const int index = Strip->TopIndex + Index;
   const RTTIType otype = base::At(Strip->Buildables, index).BuildableType;
   const int oid = base::At(Strip->Buildables, index).BuildableID;
@@ -2360,7 +2360,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
         */
         if (fnumber == -1 && genfactory != -1) {
           Speak(VOX_NO_FACTORY);
-          ControlClass::Action(flags, key);
+          ControlClass::Action(flags, key, x, y);
           return true;
         }
 
@@ -2446,7 +2446,7 @@ bool SidebarClass::StripClass::SelectClass::Action(
     }
   }
 
-  ControlClass::Action(flags, key);
+  ControlClass::Action(flags, key, x, y);
   return true;
 }
 
@@ -2469,7 +2469,8 @@ bool SidebarClass::StripClass::SelectClass::Action(
  * HISTORY: * 03/28/1995 JLB : Created. *
  *=============================================================================================*/
 bool SidebarClass::SBGadgetClass::Action(unsigned /*flags*/,
-                                         engine::window::KeyNumber& /*key*/) {
+                                         engine::window::KeyNumber& /*key*/,
+                                         int /*x*/, int /*y*/) {
   TheMap().Help_Text(TXT_NONE);
   TheMap().Override_Mouse_Shape(MOUSE_NORMAL, false);
   return true;

@@ -160,7 +160,8 @@ Dial8Class::Dial8Class(int id, int x, int y, int w, int h, DirType dir)
  * HISTORY:                                                                *
  *   02/06/1995 BR : Created.                                              *
  *=========================================================================*/
-bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key) {
+bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key, int x,
+                        int y) {
   static int is_sel = 0;
 
   /*
@@ -197,14 +198,14 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key) {
     */
     if (Facing != OldFacing) {
       OldFacing = Facing;
-      ControlClass::Action(flags, key);
+      ControlClass::Action(flags, key, x, y);
       return true;
     }
     /*
      **	Dial hasn't moved; kill the event & return
      */
     key = engine::window::KN_NONE;
-    ControlClass::Action(0, key);
+    ControlClass::Action(0, key, x, y);
     return true;
   }
   /*
@@ -215,7 +216,7 @@ bool Dial8Class::Action(unsigned flags, engine::window::KeyNumber& key) {
     key = engine::window::KN_NONE;
     is_sel = 0;
   }
-  return ControlClass::Action(0, key);
+  return ControlClass::Action(0, key, x, y);
 }
 
 /***************************************************************************

@@ -188,7 +188,7 @@ bool GadgetClass::Clicked_On(engine::window::KeyNumber& key, unsigned flags,
       (flags &&
        static_cast<unsigned>(mousex - X) < static_cast<unsigned>(Width) &&
        static_cast<unsigned>(mousey - Y) < static_cast<unsigned>(Height))) {
-    return Action(flags, key);
+    return Action(flags, key, mousex, mousey);
   }
   return false;
 }
@@ -349,8 +349,8 @@ void GadgetClass::Delete_List() {
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-bool GadgetClass::Action(unsigned flags,
-                         engine::window::KeyNumber& /*unused*/) {
+bool GadgetClass::Action(unsigned flags, engine::window::KeyNumber& /*unused*/,
+                         int /*x*/, int /*y*/) {
   /*
   **	If any of the event flags are active, then this indicates that something
   *probably *	has changed the gadget. Flag the gadget to be redrawn. Also,

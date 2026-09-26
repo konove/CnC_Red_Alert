@@ -57,7 +57,8 @@ class BigCheckBoxClass : public ToggleClass {
   }
 
  protected:
-  bool Action(unsigned flags, engine::window::KeyNumber& key) override;
+  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+              int y) override;
   TextPrintType TextFlags;
   std::string szCaption;
 };

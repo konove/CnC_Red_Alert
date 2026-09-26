@@ -294,7 +294,8 @@ class DisplayClass : public MapClass {
               true) {}
 
    protected:
-    bool Action(unsigned flags, engine::window::KeyNumber& key) override;
+    bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+                int y) override;
   };
   friend class TacticalClass;
 

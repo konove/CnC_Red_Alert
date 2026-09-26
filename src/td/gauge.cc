@@ -271,7 +271,8 @@ bool GaugeClass::Draw_Me(PixelView& view, bool forced) {
  *                                                                                             *
  * WARNINGS:   none * HISTORY: * 01/16/1995 JLB : Created. *
  *=============================================================================================*/
-bool GaugeClass::Action(unsigned flags, engine::window::KeyNumber& key) {
+bool GaugeClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
+                        int y) {
   /*
   ** If there's no thumb on this gauge, it's a display-only device; ignore
   ** any input.
@@ -330,7 +331,7 @@ bool GaugeClass::Action(unsigned flags, engine::window::KeyNumber& key) {
     */
     if (!Set_Value(Pixel_To_Value(IsHorizontal ? Get_Mouse_X() - ClickDiff
                                                : Get_Mouse_Y() - ClickDiff))) {
-      ControlClass::Action(0, key);
+      ControlClass::Action(0, key, x, y);
       key = engine::window::KN_NONE;
       return true;
     }
@@ -344,7 +345,7 @@ bool GaugeClass::Action(unsigned flags, engine::window::KeyNumber& key) {
     */
     flags &= ~kLeftHeld;
   }
-  return ControlClass::Action(flags, key);
+  return ControlClass::Action(flags, key, x, y);
 }
 
 /***********************************************************************************************

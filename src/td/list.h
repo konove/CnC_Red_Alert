@@ -138,7 +138,8 @@ class ListClass : public ControlClass {
   GadgetClass* Remove() override;
 
  protected:
-  bool Action(unsigned flags, engine::window::KeyNumber& key) override;
+  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+              int y) override;
   virtual void Draw_Entry(PixelView& view, int index, int x, int y, int width,
                           bool selected);
 

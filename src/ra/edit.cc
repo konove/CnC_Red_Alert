@@ -121,7 +121,8 @@ bool EditClass::Draw_Me(PixelView& view, const bool forced) {
   return false;
 }
 
-bool EditClass::Action(unsigned flags, engine::window::KeyNumber& key) {
+bool EditClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
+                       int y) {
   if (IsReadOnly) {
     return false;
   }
@@ -158,7 +159,7 @@ bool EditClass::Action(unsigned flags, engine::window::KeyNumber& key) {
     }
   }
 
-  return ControlClass::Action(flags, key);
+  return ControlClass::Action(flags, key, x, y);
 }
 
 void EditClass::Draw_Background(PixelView& view) {

@@ -292,11 +292,12 @@ void ListClass::Set_Item(int index, std::string_view text) {
  *                                                                         *
  * HISTORY:          01/05/1995 MML : Created.                             *
  *=========================================================================*/
-bool ListClass::Action(unsigned flags, engine::window::KeyNumber& key) {
+bool ListClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
+                       int y) {
   if (flags & kLeftRelease) {
     key = KN_NONE;
     flags &= ~kLeftRelease;
-    ControlClass::Action(flags, key);
+    ControlClass::Action(flags, key, x, y);
     return true;
   }
   /*
@@ -326,7 +327,7 @@ bool ListClass::Action(unsigned flags, engine::window::KeyNumber& key) {
       SelectedIndex = 0;
     }
   }
-  return ControlClass::Action(flags, key);
+  return ControlClass::Action(flags, key, x, y);
 }
 
 /***********************************************************************************************

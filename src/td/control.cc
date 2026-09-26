@@ -99,7 +99,8 @@ ControlClass::ControlClass(unsigned id, int x, int y, int w, int h,
  *                                                                                             *
  * HISTORY: * 01/15/1995 JLB : Created. *
  *=============================================================================================*/
-bool ControlClass::Action(unsigned flags, engine::window::KeyNumber& key) {
+bool ControlClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
+                          int y) {
   /*
   **	If there is a peer link established, inform that gadget of this
   **	action call.
@@ -120,7 +121,7 @@ bool ControlClass::Action(unsigned flags, engine::window::KeyNumber& key) {
     }
   }
 
-  return GadgetClass::Action(flags, key);
+  return GadgetClass::Action(flags, key, x, y);
 }
 
 /***********************************************************************************************

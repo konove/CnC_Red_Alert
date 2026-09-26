@@ -95,7 +95,8 @@ bool CheckBoxClass::Draw_Me(PixelView& view, bool forced) {
  *                                                                                             *
  * HISTORY: * 07/06/1996 JLB : Created. *
  *=============================================================================================*/
-bool CheckBoxClass::Action(unsigned flags, engine::window::KeyNumber& key) {
+bool CheckBoxClass::Action(unsigned flags, engine::window::KeyNumber& key,
+                           int x, int y) {
   if (flags & kLeftRelease) {
     if (IsOn) {
       Turn_Off();
@@ -103,5 +104,5 @@ bool CheckBoxClass::Action(unsigned flags, engine::window::KeyNumber& key) {
       Turn_On();
     }
   }
-  return ToggleClass::Action(flags, key);
+  return ToggleClass::Action(flags, key, x, y);
 }

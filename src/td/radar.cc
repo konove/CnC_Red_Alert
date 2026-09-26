@@ -1398,9 +1398,8 @@ void RadarClass::AI(engine::window::KeyNumber& input, int x, int y) {
  * HISTORY: * 05/08/1995 JLB : Created. *
  *=============================================================================================*/
 bool RadarClass::TacticalClass::Action(unsigned flags,
-                                       engine::window::KeyNumber& key) {
-  int x = 0;
-  int y = 0;                      // Sub cell pixel coordinates.
+                                       engine::window::KeyNumber& key, int x,
+                                       int y) {
   ObjectClass* object = nullptr;  // what object is in the cell
   ActionType action =
       ACTION_NONE;  // Action possible with currently selected object.
@@ -1424,22 +1423,10 @@ bool RadarClass::TacticalClass::Action(unsigned flags,
   ** Disable processing if the player names are up
   */
   if (TheMap().Is_Player_Names()) {
-    GadgetClass::Action(0, key);
+    GadgetClass::Action(0, key, x, y);
     return true;
   }
 
-  /*
-  **	Set some working variables that depend on the mouse position. For the
-  *press *	or release event, special mouse queuing storage variables are
-  *used. Other *	events must use the current mouse position globals.
-  */
-  if (flags & (kLeftPress | kLeftRelease | kRightPress | kRightRelease)) {
-    x = TheKeyboard().click_x();
-    y = TheKeyboard().click_y();
-  } else {
-    x = Get_Mouse_X();
-    y = Get_Mouse_Y();
-  }
 
   const int result = TheMap().Click_In_Radar(x, y, false);
 
@@ -1576,7 +1563,7 @@ bool RadarClass::TacticalClass::Action(unsigned flags,
   if (result == -1) {
     TheMap().Override_Mouse_Shape(MOUSE_NORMAL, true);
   }
-  GadgetClass::Action(0, key);
+  GadgetClass::Action(0, key, x, y);
   return true;
 }
 

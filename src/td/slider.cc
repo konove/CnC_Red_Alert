@@ -213,7 +213,8 @@ void SliderClass::Recalc_Thumb() {
  *consumed and further processing of the gadget list should be   * aborted? *
  * WARNINGS:   none * HISTORY:    01/15/1995 JLB : Created. *
  *=============================================================================================*/
-bool SliderClass::Action(unsigned flags, engine::window::KeyNumber& key) {
+bool SliderClass::Action(unsigned flags, engine::window::KeyNumber& key, int x,
+                         int y) {
   /*
   **	Handle the mouse click in a special way. If the click was not on the
   *thumb, then *	jump the thumb position one "step" in the appropriate
@@ -239,17 +240,17 @@ bool SliderClass::Action(unsigned flags, engine::window::KeyNumber& key) {
     */
     if (mouse < edge + ThumbStart) {
       Bump(true);
-      GaugeClass::Action(0, key);
+      GaugeClass::Action(0, key, x, y);
       key = KN_NONE;
       return true;
     }
     if (mouse > edge + ThumbStart + ThumbSize) {
       Bump(false);
-      GaugeClass::Action(0, key);
+      GaugeClass::Action(0, key, x, y);
       key = KN_NONE;
       return true;
     }
-    GaugeClass::Action(flags, key);
+    GaugeClass::Action(flags, key, x, y);
     key = KN_NONE;
     return true;
   }
@@ -257,7 +258,7 @@ bool SliderClass::Action(unsigned flags, engine::window::KeyNumber& key) {
   /*
   **  CHANGE GAUGECLASS::ACTION -- REMOVE (kLeftRelease) FROM IF STMT
   */
-  return GaugeClass::Action(flags, key);
+  return GaugeClass::Action(flags, key, x, y);
 }
 
 /***********************************************************************************************

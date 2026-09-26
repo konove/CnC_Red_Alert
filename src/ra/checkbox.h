@@ -51,7 +51,8 @@ class CheckBoxClass : public ToggleClass {
   bool Draw_Me(PixelView& view, bool forced = false) override;
 
  protected:
-  bool Action(unsigned flags, engine::window::KeyNumber& key) override;
+  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+              int y) override;
 };
 
 #endif  // CNC_RED_ALERT_RA_CHECKBOX_H_

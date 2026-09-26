@@ -79,7 +79,8 @@ class ToggleClass : public ControlClass {
   bool IsToggleType : 1 {false};
 
  protected:
-  bool Action(unsigned flags, engine::window::KeyNumber& key) override;
+  bool Action(unsigned flags, engine::window::KeyNumber& key, int x,
+              int y) override;
 };
 
 #endif  // CNC_RED_ALERT_RA_TOGGLE_H_
