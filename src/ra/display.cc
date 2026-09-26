@@ -3769,40 +3769,48 @@ void DisplayClass::Mouse_Left_Release(CELL cell, int x, int y,
           }
         }
 
+        // Where in the cell the player aimed, for the weapons that act on the
+        // unit nearest it. A click on the radar has no such spot, so it aims
+        // at the cell's center.
+        const COORDINATE where =
+            wsmall
+                ? CellCenterFraction()
+                : Coord_Fraction(Pixel_To_Coord(x + TacPixelX, y + TacPixelY));
         if (action == ACTION_NUKE_BOMB) {
           TheNetwork().out_list().Add(
               EventClass(EventClass::SPECIAL_PLACE,
-                         static_cast<int>(SPC_NUCLEAR_BOMB), cell));
+                         static_cast<int>(SPC_NUCLEAR_BOMB), cell, where));
         }
 
         if (action == ACTION_PARA_BOMB) {
           TheNetwork().out_list().Add(
               EventClass(EventClass::SPECIAL_PLACE,
-                         static_cast<int>(SPC_PARA_BOMB), cell));
+                         static_cast<int>(SPC_PARA_BOMB), cell, where));
         }
         if (action == ACTION_PARA_INFANTRY) {
           TheNetwork().out_list().Add(
               EventClass(EventClass::SPECIAL_PLACE,
-                         static_cast<int>(SPC_PARA_INFANTRY), cell));
+                         static_cast<int>(SPC_PARA_INFANTRY), cell, where));
         }
         if (action == ACTION_SPY_MISSION) {
           TheNetwork().out_list().Add(
               EventClass(EventClass::SPECIAL_PLACE,
-                         static_cast<int>(SPC_SPY_MISSION), cell));
+                         static_cast<int>(SPC_SPY_MISSION), cell, where));
         }
         if (action == ACTION_IRON_CURTAIN) {
           TheNetwork().out_list().Add(
               EventClass(EventClass::SPECIAL_PLACE,
-                         static_cast<int>(SPC_IRON_CURTAIN), cell));
+                         static_cast<int>(SPC_IRON_CURTAIN), cell, where));
         }
         if (action == ACTION_CHRONOSPHERE) {
           TheNetwork().out_list().Add(
               EventClass(EventClass::SPECIAL_PLACE,
-                         static_cast<int>(SPC_CHRONOSPHERE), cell));
+                         static_cast<int>(SPC_CHRONOSPHERE), cell, where));
         }
         if (action == ACTION_CHRONO2) {
-          TheNetwork().out_list().Add(EventClass(
-              EventClass::SPECIAL_PLACE, static_cast<int>(kSpcChrono2), cell));
+          TheNetwork().out_list().Add(EventClass(EventClass::SPECIAL_PLACE,
+                                                 static_cast<int>(kSpcChrono2),
+                                                 cell, where));
         }
       }
 

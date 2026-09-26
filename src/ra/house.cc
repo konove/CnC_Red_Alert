@@ -2443,7 +2443,7 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
 
   if (bestptr) {
     const CELL cell = Coord_Cell(bestptr->Center_Coord());
-    Place_Special_Blast(id, cell);
+    Place_Special_Blast(id, cell, CellCenterFraction());
   }
 }
 
@@ -2467,7 +2467,8 @@ void HouseClass::Special_Weapon_AI(SpecialWeaponType id) {
  *effect for nuclear bomb.                                   * 07/28/1995 JLB :
  *Revamped to use super weapon class controller.                           *
  *=============================================================================================*/
-bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
+bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell,
+                                     COORDINATE where) {
   CHECK_HEAP_SLOT(TheObjectHeaps().house(), this);
 
   BuildingClass* launchsite = nullptr;
@@ -2607,9 +2608,9 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
 
     case SPC_IRON_CURTAIN:
       if (SuperWeapon.at(SPC_IRON_CURTAIN).Is_Ready()) {
-        const int x = TheKeyboard().click_x() - TheMap().TacPixelX;
-        const int y = TheKeyboard().click_y() - TheMap().TacPixelY;
-        TechnoClass* tech = TheMap().at(cell).Cell_Techno(x, y);
+        TechnoClass* tech = TheMap().at(cell).Cell_Techno(
+            Lepton_To_Pixel(static_cast<LEPTON>(Coord_XLepton(where))),
+            Lepton_To_Pixel(static_cast<LEPTON>(Coord_YLepton(where))));
         if (tech) {
           switch (tech->What_Am_I()) {
             case RTTI_UNIT:
@@ -2669,9 +2670,9 @@ bool HouseClass::Place_Special_Blast(SpecialWeaponType id, CELL cell) {
 
     case SPC_CHRONOSPHERE:
       if (SuperWeapon.at(SPC_CHRONOSPHERE).Is_Ready()) {
-        const int x = TheKeyboard().click_x() - TheMap().TacPixelX;
-        const int y = TheKeyboard().click_y() - TheMap().TacPixelY;
-        TechnoClass* tech = TheMap().at(cell).Cell_Techno(x, y);
+        TechnoClass* tech = TheMap().at(cell).Cell_Techno(
+            Lepton_To_Pixel(static_cast<LEPTON>(Coord_XLepton(where))),
+            Lepton_To_Pixel(static_cast<LEPTON>(Coord_YLepton(where))));
         if (tech && Is_Ally(tech)) {
           if (tech->What_Am_I() == RTTI_UNIT ||
               tech->What_Am_I() == RTTI_INFANTRY ||

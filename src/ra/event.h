@@ -194,6 +194,9 @@ class EventClass {
     struct {
       int ID;
       CELL Cell;
+      // Where in Cell it was placed, as a sub-cell coordinate: the weapons
+      // that act on one unit take the one nearest this spot.
+      COORDINATE Where;
     } Special;
 
     /*
@@ -264,7 +267,9 @@ class EventClass {
 
   EventClass(EventType type, RTTIType object, int id);
   EventClass(EventType type, RTTIType object, CELL cell);
-  EventClass(EventType type, int id, CELL cell);
+  // A special weapon `id` placed at `where`, a sub-cell coordinate within
+  // `cell`.
+  EventClass(EventType type, int id, CELL cell, COORDINATE where);
   EventClass(AnimType anim, HousesType owner, COORDINATE coord);
   EventClass(void* ptr, uint32_t size);
   EventClass(EventType type, std::span<std::byte> payload);

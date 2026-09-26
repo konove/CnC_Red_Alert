@@ -127,6 +127,7 @@
 #include "ra/gadget.h"
 #include "ra/heap.h"
 #include "ra/house.h"
+#include "ra/inline.h"
 #include "ra/jshell.h"
 #include "ra/mapedit.h"
 #include "ra/network.h"
@@ -2027,7 +2028,8 @@ bool SidebarClass::StripClass::SelectClass::Action(
           Speak(VOX_SELECT_TARGET);
         } else {
           TheNetwork().out_list().Add(EventClass(
-              EventClass::SPECIAL_PLACE, static_cast<int>(SPC_SONAR_PULSE), 0));
+              EventClass::SPECIAL_PLACE, static_cast<int>(SPC_SONAR_PULSE), 0,
+              CellCenterFraction()));
         }
       } else {
         ThePlayer()->SuperWeapon.at(spc).Impatient_Click();

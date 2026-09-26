@@ -461,13 +461,15 @@ EventClass::EventClass(EventType type, RTTIType object, CELL cell) : EventClass(
  *                                                                                             *
  * HISTORY: * 05/18/1995 JLB : Created. *
  *=============================================================================================*/
-EventClass::EventClass(EventType type, int id, CELL cell) : EventClass() {
+EventClass::EventClass(EventType type, int id, CELL cell, COORDINATE where)
+    : EventClass() {
   ID = static_cast<unsigned>(ThePlayer()->ID);
   Type = type;
   // Frame is a 26-bit field in the packet; the global counter is long.
   Frame = static_cast<unsigned>(CurrentFrame());
   Data.Special.ID = id;
   Data.Special.Cell = cell;
+  Data.Special.Where = where;
 }
 
 /***********************************************************************************************
@@ -883,7 +885,8 @@ void EventClass::Execute() {
     */
     case SPECIAL_PLACE:
       TheObjectHeaps().house().Raw_Ptr(ID)->Place_Special_Blast(
-          static_cast<SpecialWeaponType>(Data.Special.ID), Data.Special.Cell);
+          static_cast<SpecialWeaponType>(Data.Special.ID), Data.Special.Cell,
+          Data.Special.Where);
       break;
 
     /*

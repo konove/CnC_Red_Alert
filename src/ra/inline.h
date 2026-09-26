@@ -175,6 +175,11 @@ inline COORDINATE XY_Coord(LEPTON x, LEPTON y) noexcept {
   return coord.Coord;
 }
 
+// Returns the sub-cell coordinate of a cell's center.
+inline COORDINATE CellCenterFraction() noexcept {
+  return XY_Coord(CELL_LEPTON_W / 2, CELL_LEPTON_H / 2);
+}
+
 /***********************************************************************************************
  * XYP_COORD -- Convert pixel components into a coordinate value. *
  *                                                                                             *
