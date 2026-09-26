@@ -52,9 +52,9 @@ auto UnsignedBytes(std::span<T, Extent> objects) {
 
 // Copies count bytes, checking both spans before access. The ranges must not
 // overlap unless their starts are identical; use MoveBytes for overlap.
-inline void CopyBytes(std::span<std::byte> dest,
-                      std::span<const std::byte> source,
-                      std::integral auto count) {
+void CopyBytes(const std::span<std::byte> dest,
+               const std::span<const std::byte> source,
+               std::integral auto count) {
   CHECK(std::cmp_greater_equal(+count, 0));
   CHECK(std::cmp_less_equal(+count, dest.size()));
   CHECK(std::cmp_less_equal(+count, source.size()));
@@ -65,9 +65,9 @@ inline void CopyBytes(std::span<std::byte> dest,
 }
 
 // Copies count bytes safely in either overlapping direction.
-inline void MoveBytes(std::span<std::byte> dest,
-                      std::span<const std::byte> source,
-                      std::integral auto count) {
+void MoveBytes(const std::span<std::byte> dest,
+               const std::span<const std::byte> source,
+               std::integral auto count) {
   CHECK(std::cmp_greater_equal(+count, 0));
   CHECK(std::cmp_less_equal(+count, dest.size()));
   CHECK(std::cmp_less_equal(+count, source.size()));
@@ -81,8 +81,8 @@ inline void MoveBytes(std::span<std::byte> dest,
 }
 
 // Fills count bytes, with the same low-byte conversion as memset.
-inline void FillBytes(std::span<std::byte> dest, int value,
-                      std::integral auto count) {
+void FillBytes(const std::span<std::byte> dest, const int value,
+               std::integral auto count) {
   CHECK(std::cmp_greater_equal(+count, 0));
   CHECK(std::cmp_less_equal(+count, dest.size()));
   std::ranges::fill(dest.first(static_cast<std::size_t>(count)),
@@ -90,15 +90,15 @@ inline void FillBytes(std::span<std::byte> dest, int value,
 }
 
 // Compares count bytes as unsigned values, returning their first difference.
-inline int CompareBytes(std::span<const std::byte> left,
-                        std::span<const std::byte> right,
-                        std::integral auto count) {
+int CompareBytes(const std::span<const std::byte> left,
+                 const std::span<const std::byte> right,
+                 std::integral auto count) {
   CHECK(std::cmp_greater_equal(+count, 0));
   CHECK(std::cmp_less_equal(+count, left.size()));
   CHECK(std::cmp_less_equal(+count, right.size()));
   for (std::size_t i = 0; i < static_cast<std::size_t>(count); ++i) {
-    const int difference = std::to_integer<int>(base::At(left, i)) -
-                           std::to_integer<int>(base::At(right, i));
+    const int difference =
+        std::to_integer<int>(At(left, i)) - std::to_integer<int>(At(right, i));
     if (difference != 0) {
       return difference;
     }

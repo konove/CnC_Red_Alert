@@ -39,12 +39,12 @@ TEST(BufferTest, PreservesObjectAndArrayExtent) {
   EXPECT_EQ(bytes.size(), sizeof(values));
   base::At(bytes, 2) = std::byte{9};
   EXPECT_EQ(values[2], 9);
-  const unsigned char immutable[2] = {5, 6};
+  constexpr unsigned char immutable[2] = {5, 6};
   EXPECT_EQ(base::At(base::ObjectBytes(immutable), 1), std::byte{6});
 }
 
 TEST(BufferTest, CopiesOnlyTheRequestedPrefix) {
-  const unsigned char source[4] = {1, 2, 3, 4};
+  constexpr unsigned char source[4] = {1, 2, 3, 4};
   unsigned char dest[4] = {8, 8, 8, 8};
   base::CopyBytes(base::ObjectBytes(dest), base::ObjectBytes(source), 2);
   EXPECT_EQ(dest[0], 1);
@@ -54,14 +54,13 @@ TEST(BufferTest, CopiesOnlyTheRequestedPrefix) {
 }
 
 TEST(BufferTest, MovesInBothOverlappingDirections) {
-  std::array<std::byte, 4> bytes = {std::byte{1}, std::byte{2}, std::byte{3},
-                                    std::byte{4}};
+  std::array bytes = {std::byte{1}, std::byte{2}, std::byte{3}, std::byte{4}};
   base::MoveBytes(std::span(bytes).subspan(1), bytes, 3);
-  EXPECT_EQ(bytes, (std::array<std::byte, 4>{std::byte{1}, std::byte{1},
-                                             std::byte{2}, std::byte{3}}));
+  EXPECT_EQ(bytes, (std::array{std::byte{1}, std::byte{1}, std::byte{2},
+                               std::byte{3}}));
   base::MoveBytes(bytes, std::span(bytes).subspan(1), 3);
-  EXPECT_EQ(bytes, (std::array<std::byte, 4>{std::byte{1}, std::byte{2},
-                                             std::byte{3}, std::byte{3}}));
+  EXPECT_EQ(bytes, (std::array{std::byte{1}, std::byte{2}, std::byte{3},
+                               std::byte{3}}));
   base::MoveBytes(bytes, bytes, 4);
   EXPECT_EQ(bytes.at(0), std::byte{1});
 }
@@ -75,8 +74,8 @@ TEST(BufferTest, FillUsesTheLowByteAndPreservesTheSuffix) {
 }
 
 TEST(BufferTest, CompareUsesUnsignedBytes) {
-  const unsigned char left[3] = {0, 255, 0};
-  const unsigned char right[3] = {0, 127, 1};
+  constexpr unsigned char left[3] = {0, 255, 0};
+  constexpr unsigned char right[3] = {0, 127, 1};
   EXPECT_EQ(
       base::CompareBytes(base::ObjectBytes(left), base::ObjectBytes(right), 1),
       0);
@@ -90,7 +89,7 @@ TEST(BufferTest, CompareUsesUnsignedBytes) {
 
 TEST(BufferDeathTest, RejectsInvalidCountsBeforeAccess) {
   unsigned char bytes[3] = {};
-  const unsigned char source[2] = {};
+  constexpr unsigned char source[2] = {};
   // The switches and formatted diagnostics are inside GoogleTest's macro.
   // NOLINTNEXTLINE(clang-diagnostic-switch-default,clang-diagnostic-unsafe-buffer-usage-in-libc-call)
   EXPECT_DEATH(
