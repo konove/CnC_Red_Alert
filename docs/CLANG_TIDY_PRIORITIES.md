@@ -126,7 +126,7 @@ primary.
 | `clang-diagnostic-unsafe-buffer-usage`                          | Enabled | Commit `Enforce clang unsafe buffer diagnostics repository-wide`: bounded APIs throughout both games and shared libraries; both exclusions removed. All 952 project source/header units pass full configured analysis, all 547 tests pass, and both save/load checks match. See [the completed plan and validation record](UNSAFE_BUFFER_USAGE_PLAN.md).                                                                     |
 | `cppcoreguidelines-pro-bounds-avoid-unchecked-container-access` | Enabled | Commit `Enable checked container access across both games`: replace 4,089 unchecked-access sites with checked accessors; preserve container storage and enforce active queue bounds. Plan [UNCHECKED_CONTAINER_ACCESS_PLAN.md](UNCHECKED_CONTAINER_ACCESS_PLAN.md); see review below.                                                                                                                                        |
 | `cppcoreguidelines-pro-bounds-constant-array-index`             | Enabled | Commit `Enable the constant-index and pointer-arithmetic bounds checks`: 13 reports left after the unsafe-buffer and checked-access work; the bignum remainder table and `Gcd` index through `base::At`, and the defaulted `GUID` comparison carries a reasoned suppression. Plan [BOUNDS_PROFILE_PLAN.md](BOUNDS_PROFILE_PLAN.md); see review below.                                                                        |
-| `cppcoreguidelines-owning-memory`                               | Skipped | Commit `Document P3 checks the legacy-code policy rules out`: 1,240 reports, raw `new`/`delete` ownership across the object heaps, dialogs and buffers; `gsl::owner` or smart pointers everywhere is exactly what CLAUDE.md's legacy-code rules list it under changes to avoid unless requested. See review below.                                                                                                           |
+| `cppcoreguidelines-owning-memory`                               | Enabled | Commit `Enable cppcoreguidelines-owning-memory`: pooled game and type objects are created and destroyed through `base::NewPooled`/`base::DeletePooled`; everything else owns through `std::unique_ptr`, containers or stack objects. Nine reasoned suppressions. Plan [OWNING_MEMORY_PLAN.md](OWNING_MEMORY_PLAN.md); see review below.                                                                                      |
 | `cppcoreguidelines-no-malloc`                                   | Enabled | Commit `Hold INI section and entry names in std::string`: the 3 reports were RA's `INIEntry` and `INISection` freeing names that `ini.cc` had `strdup`ed at 4 sites; the names are now `std::string`, and the 12 readers use `.c_str()`, `.data()` and `.size()`.                                                                                                                                                            |
 | `hicpp-no-malloc`                                               | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-no-malloc` on older tools.                                                                                                                                                                                                                                                                                                                                            |
 | `cppcoreguidelines-pro-type-union-access`                       | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 1,438 reports on the event, target and packet unions, whose layouts are part of the network and save formats. See review below.                                                                                                                                                                                                                         |
@@ -1384,6 +1384,9 @@ Many of the C arrays are fixed-layout data tables, network packets and save stru
 container type would change more than spelling. These stay open to targeted work — a specific
 ownership bug, a specific array overrun — rather than tree-wide enforcement.
 
+Superseded on 2026-09-26 for `cppcoreguidelines-owning-memory`, which is now enforced; see "Owning
+memory enablement" below.
+
 ### Buffer, union and boolean conversion policy (2026-09-12)
 
 Measured in the combined sweep, and retained as exclusions:
@@ -1882,6 +1885,52 @@ a raw pointer (`p[0]`), and it cannot see the subscript in a loop the compiler s
 
 Verification: the isolated sweep of both checks reports nothing and no translation unit fails to
 compile; the full strict build and the GCC build; CTest (858 tests) in both.
+
+### Owning memory enablement (2026-09-26)
+
+`cppcoreguidelines-owning-memory` is now enforced; the plan is
+[OWNING_MEMORY_PLAN.md](OWNING_MEMORY_PLAN.md). It was skipped on 2026-09-12 as a smart-pointers-
+everywhere change; the project has since made modernization its goal, and a re-sweep of the skipped
+rows found it down from 1,240 to 843 reports, the first P3 row and the one with direct defect value.
+
+- **Pooled objects.** Every class with a class-specific `operator new` (the units, animations,
+  bullets, teams, triggers, houses, factories and Red Alert's type classes) allocates from a pool
+  that owns the object. `base/pooled.h` adds `base::NewPooled<T>(args...)` and
+  `base::DeletePooled(p)`, the only two places such an object is created or destroyed with a bare
+  `new` or `delete`, each with one suppression. All 1,044 creations and 169 deletions go through
+  them, not just the 180 reported: the check does not report a `new` whose result is discarded.
+  Forwarding makes literal arguments `int`, so `AnimClass` takes its delay and loop count as `int`
+  and `TerrainClass` defaults its cell like `TemplateClass` and `OverlayClass`.
+- **Registries and lists** own their entries: `MixArchive`'s registry, the session's players, games,
+  chat, phone book, scenarios and init strings (a small `OwnedVector<T>` in `ra/owned_vector.h`
+  keeps Red Alert's `Count()`/`at()` readers unchanged), TD's network lists, the score screens'
+  animation slots, the message list's labels, the load dialogs' file entries, the credits lines, the
+  INI sections and entries (the intrusive `List`/`Node` base is deleted), the WOL sinks' copied
+  lists, and `PacketClass`'s fields (values now).
+- **Owning members and globals** are `std::unique_ptr`: the network transport, WOL object and modem
+  registry, `SerialPort`, the IPX connections, the unit trackers, the slider buttons, the WOL
+  dialogs' gadgets, `ShadowPage`, the tick timer and the startup `Game`.
+- **Buffers** are containers: `Buffer`, the vector templates' storage, `IndexClass`'s table, the
+  statistics packet (`Create_Comms_Packet` returns a `std::vector<char>`), TD's intro and ending
+  audio. Dialog gadgets that lived for one function are stack objects or local `unique_ptr`s.
+- **Dead code went with it:** `Alloc`/`Free`/`Resize_Alloc` in `engine/platform/mem.cc` (whose
+  `Resize_Alloc` `realloc`ed memory from `new[]`), `base::CloneString`, `GadgetClass::Delete_List`,
+  `Clear_Vector`, `base/listnode.*`.
+
+The conversion fixed real defects: a use-after-free in the WOL saved chat (`DeleteSavedChat` left
+`pChatSaveLast` dangling), `delete[]` on phone book entries created with `new` and `delete` on
+`new char[]` init strings, and leaks — entries removed from the TD games and players lists, the
+credits lines, the special and game options dialogs' check boxes on every opening, the WOL game user
+and Aftermath ladder lists, the private-message user list, the network subsystems at exit.
+
+The nine suppressions: the two in `base/pooled.h`; three COM sinks owned by their reference count,
+whose `Release()` runs `delete this`; the `fclose` in `queue.cc`'s debug-dump deleter;
+`EventClass::Allocate_Variable`/`Free_Variable`, since an ADDPLAYER event is a trivially copyable
+record that travels by value through the queues and over the wire, so its payload belongs to the one
+copy that is executed or dropped; and a placement `new` into a test's own byte array.
+
+Verification: an isolated sweep over every translation unit reports nothing; the full strict build
+and the GCC build; CTest in both; both save/load smoke tests.
 
 ### Nodiscard review (2026-09-12)
 

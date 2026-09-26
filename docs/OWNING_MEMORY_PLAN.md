@@ -3,7 +3,11 @@
 Written 2026-09-26 against `.clang-tidy` and clang-tidy 23.1.2. Companion to the
 `cppcoreguidelines-owning-memory` row in [CLANG_TIDY_PRIORITIES.md](CLANG_TIDY_PRIORITIES.md).
 
-**Status: planned.**
+**Status: complete (2026-09-26).** The check is enforced; the results are in the "Owning memory
+enablement" review in CLANG_TIDY_PRIORITIES.md. Step 1 is 3301f035, step 2 b5fac972 (1,044 creations
+and 169 deletions of pooled objects, far more than the 180 reported `new` sites because the check
+does not report a `new` whose result is discarded), steps 3 and 4 6bdd2b15 (528 findings in 81
+files, by seven parallel agents on disjoint file groups).
 
 ## Context
 
