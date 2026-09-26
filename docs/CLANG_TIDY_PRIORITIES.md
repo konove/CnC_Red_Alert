@@ -125,14 +125,14 @@ primary.
 | --------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `clang-diagnostic-unsafe-buffer-usage`                          | Enabled | Commit `Enforce clang unsafe buffer diagnostics repository-wide`: bounded APIs throughout both games and shared libraries; both exclusions removed. All 952 project source/header units pass full configured analysis, all 547 tests pass, and both save/load checks match. See [the completed plan and validation record](UNSAFE_BUFFER_USAGE_PLAN.md).                                                                     |
 | `cppcoreguidelines-pro-bounds-avoid-unchecked-container-access` | Enabled | Commit `Enable checked container access across both games`: replace 4,089 unchecked-access sites with checked accessors; preserve container storage and enforce active queue bounds. Plan [UNCHECKED_CONTAINER_ACCESS_PLAN.md](UNCHECKED_CONTAINER_ACCESS_PLAN.md); see review below.                                                                                                                                        |
-| `cppcoreguidelines-pro-bounds-constant-array-index`             | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 3,365 reports of runtime indices into fixed game tables. See review below.                                                                                                                                                                                                                                                                              |
+| `cppcoreguidelines-pro-bounds-constant-array-index`             | Enabled | Commit `Enable the constant-index and pointer-arithmetic bounds checks`: 13 reports left after the unsafe-buffer and checked-access work; the bignum remainder table and `Gcd` index through `base::At`, and the defaulted `GUID` comparison carries a reasoned suppression. Plan [BOUNDS_PROFILE_PLAN.md](BOUNDS_PROFILE_PLAN.md); see review below.                                                                        |
 | `cppcoreguidelines-owning-memory`                               | Skipped | Commit `Document P3 checks the legacy-code policy rules out`: 1,240 reports, raw `new`/`delete` ownership across the object heaps, dialogs and buffers; `gsl::owner` or smart pointers everywhere is exactly what CLAUDE.md's legacy-code rules list it under changes to avoid unless requested. See review below.                                                                                                           |
 | `cppcoreguidelines-no-malloc`                                   | Enabled | Commit `Hold INI section and entry names in std::string`: the 3 reports were RA's `INIEntry` and `INISection` freeing names that `ini.cc` had `strdup`ed at 4 sites; the names are now `std::string`, and the 12 readers use `.c_str()`, `.data()` and `.size()`.                                                                                                                                                            |
 | `hicpp-no-malloc`                                               | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-no-malloc` on older tools.                                                                                                                                                                                                                                                                                                                                            |
 | `cppcoreguidelines-pro-type-union-access`                       | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 1,438 reports on the event, target and packet unions, whose layouts are part of the network and save formats. See review below.                                                                                                                                                                                                                         |
 | `cppcoreguidelines-pro-bounds-array-to-pointer-decay`           | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 4,423 reports, mostly C strings and fixed arrays passed to C-style APIs. See review below.                                                                                                                                                                                                                                                              |
 | `hicpp-no-array-decay`                                          | Legacy  | Unavailable in LLVM 23; review with `cppcoreguidelines-pro-bounds-array-to-pointer-decay` on older tools.                                                                                                                                                                                                                                                                                                                    |
-| `cppcoreguidelines-pro-bounds-pointer-arithmetic`               | Skipped | Commit `Document buffer, union and boolean conversion check policy`: 2,491 reports in the pixel, audio, compression and crypto loops that walk raw buffers. See review below.                                                                                                                                                                                                                                                |
+| `cppcoreguidelines-pro-bounds-pointer-arithmetic`               | Enabled | Commit `Enable the constant-index and pointer-arithmetic bounds checks`: 10 reports left, all `p[0]` on a C string or SDL pointer, now read through `*p`, a span or `std::string_view`. Plan [BOUNDS_PROFILE_PLAN.md](BOUNDS_PROFILE_PLAN.md); see review below.                                                                                                                                                             |
 | `modernize-avoid-c-arrays`                                      | Skipped | Commit `Document P3 checks the legacy-code policy rules out`: 2,252 reports; many arrays are fixed-layout game data, packet and save structures, and STL containers everywhere is what CLAUDE.md's legacy-code rules list it under changes to avoid unless requested. See review below.                                                                                                                                      |
 | `cppcoreguidelines-avoid-c-arrays`                              | Skipped | Alias of `modernize-avoid-c-arrays`; skipped with it.                                                                                                                                                                                                                                                                                                                                                                        |
 | `hicpp-avoid-c-arrays`                                          | Legacy  | Unavailable in LLVM 23; review with `modernize-avoid-c-arrays` on older tools.                                                                                                                                                                                                                                                                                                                                               |
@@ -1405,6 +1405,10 @@ buffer API that carries the size, after which these checks can be revisited per 
 `port::AlignedObject` and typed buffer helpers already added for cast alignment are the start of
 that API.
 
+Superseded on 2026-09-26 for `pro-bounds-constant-array-index` and `pro-bounds-pointer-arithmetic`:
+the span-based API arrived with the unsafe-buffer and checked-access enablements, and both checks
+are now enforced; see "Bounds index and pointer arithmetic enablement" below.
+
 The union reports are the event, target and packet unions, whose layouts are part of the network and
 savegame formats; replacing them with variants changes those formats.
 
@@ -1851,6 +1855,33 @@ Verification: the isolated sweep reports nothing; the full strict build and the 
 (858 tests) in both; the RA save/load smoke test (240 positions, plus the fixture load) and the TD
 smoke test (5,742 states). Saves are field-wise, so dropping the vectors' vptr changes no format.
 The excluded-name count drops by one.
+
+### Bounds index and pointer arithmetic enablement (2026-09-26)
+
+`cppcoreguidelines-pro-bounds-constant-array-index` and
+`cppcoreguidelines-pro-bounds-pointer-arithmetic` are now enforced; the plan is
+[BOUNDS_PROFILE_PLAN.md](BOUNDS_PROFILE_PLAN.md). The 2026-09-12 policy kept them out until a
+span-based buffer API existed. That API came with `clang-diagnostic-unsafe-buffer-usage` and
+`pro-bounds-avoid-unchecked-container-access`, and a re-sweep of every skipped P2–P4 check over the
+1,080 translation units found these two down from 3,365 and 2,491 reports to 13 and 10, while every
+other skip still has hundreds.
+
+The two checks close gaps the unsafe-buffer diagnostic leaves open: it accepts a constant index into
+a raw pointer (`p[0]`), and it cannot see the subscript in a loop the compiler synthesizes.
+
+- `engine/crypto/int.h`: the second `RemainderTable::Increment` indexed its arrays directly while
+  the first used `base::At`; both now do, as does `Gcd`'s rotation through `T g[3]`.
+- `engine/platform/win32/win32_com.h`: the defaulted `GUID::operator==` compares `Data4[8]` in a
+  synthesized loop bounded by the array's extent, so it carries a reasoned `NOLINTNEXTLINE`. `Data4`
+  stays a C array to mirror the Windows `GUID`.
+- `p[0]` on a C string or SDL pointer (10): RA's briefing message box reads the button hotkeys with
+  `*b1txt`, its own idiom for the labels; TD's expansion dialogs test the side with
+  `std::string_view(...).starts_with('G')`; TD's `Read_MultiPlayer_Settings` terminates each INI
+  entry through the span that already wraps it; the cursor palette's transparent entry is
+  `colors->a`; two tests read through `std::string_view`.
+
+Verification: the isolated sweep of both checks reports nothing and no translation unit fails to
+compile; the full strict build and the GCC build; CTest (858 tests) in both.
 
 ### Nodiscard review (2026-09-12)
 

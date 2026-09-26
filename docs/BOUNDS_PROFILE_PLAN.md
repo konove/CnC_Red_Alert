@@ -5,6 +5,9 @@ Written 2026-09-26 against `.clang-tidy` and clang-tidy 23.1.2. Companion to the
 `cppcoreguidelines-pro-bounds-pointer-arithmetic` rows in
 [CLANG_TIDY_PRIORITIES.md](CLANG_TIDY_PRIORITIES.md).
 
+**Status: complete (2026-09-26).** Both checks are enabled; the results are in the "Bounds index and
+pointer arithmetic enablement" review in CLANG_TIDY_PRIORITIES.md.
+
 ## Context
 
 Both checks were skipped on 2026-09-12 with 3,365 and 2,491 reports, under the "Buffer, union and
@@ -47,8 +50,8 @@ the compiler synthesizes, which `constant-array-index` reports.
 - `ra/scenario.cc` (3): the first letters of the three message-box button labels, for hotkeys. The
   same function already tests the labels with `*b1txt == '\0'`.
 - `td/expand.cc` (2): `list.Current_Item()[0] == 'G'` to pick the side in the two expansion dialogs.
-- `td/mplayer.cc` (1): terminating a fresh `new char[INITSTRBUF_MAX]` through the raw pointer, one
-  line after wrapping it in the span `entry_storage`.
+- `td/mplayer.cc` (1): `Read_MultiPlayer_Settings` terminating a fresh `new char[INITSTRBUF_MAX]`
+  through the raw pointer, one line after wrapping it in the span `entry_storage`.
 - `engine/window/ww_mouse.cc` (1): clearing entry 0's alpha in the SDL cursor palette.
 - `base/enum_array_test.cc` (1), `td/list_test.cc` (2): tests reading the first character of a
   returned C string.
@@ -56,8 +59,8 @@ the compiler synthesizes, which `constant-array-index` reports.
 ## Plan
 
 1. **Fix the sites.**
-   - `int.h`: `base::At` in the second `Increment`, like the first; `Gcd` holds `std::array<T, 3>`
-     and indexes it with `base::At`.
+   - `int.h`: `base::At` in the second `Increment`, like the first; `Gcd` indexes its `T g[3]`
+     through `base::At` too (it has no `std::array` overload).
    - `win32_com.h`: a reasoned `NOLINTNEXTLINE` on the defaulted `operator==`.
    - `scenario.cc`: `*b1txt` (and b2, b3), the function's own idiom.
    - `expand.cc`: `std::string_view(list.Current_Item()).starts_with('G')`.
