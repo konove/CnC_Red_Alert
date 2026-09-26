@@ -11,6 +11,7 @@
 #include <system_error>
 #include <utility>
 #include <vector>
+#include <version>
 
 #include "absl/strings/ascii.h"
 
@@ -79,8 +80,15 @@ std::vector<FoundFile> FindFiles(const std::string_view pattern,
     if (stat_error) {
       continue;
     }
+    // The standard lets file_clock offer either to_sys() or to_utc(), and
+    // clock_cast() picks whichever exists; libc++ (macOS) has no clock_cast()
+    // but does have to_sys(), and MSVC's file_clock has only to_utc().
+#if __cpp_lib_chrono >= 201907L
     const auto system_time =
         std::chrono::clock_cast<std::chrono::system_clock>(written);
+#else
+    const auto system_time = std::chrono::file_clock::to_sys(written);
+#endif
     found.push_back(
         {.name = std::move(name),
          .modified = std::chrono::duration_cast<std::chrono::seconds>(
