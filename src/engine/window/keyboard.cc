@@ -277,11 +277,11 @@ bool KeyBuffer::IsDown(const int key) {
     // SDL's modifier state covers both sides of the keyboard, which is what
     // the KN_R* names (equal to their KN_L* twins) ask for.
     case KN_LSHIFT:
-      return (SDL_GetModState() & KMOD_SHIFT) != 0;
+      return IsShiftDown();
     case KN_LCTRL:
-      return (SDL_GetModState() & KMOD_CTRL) != 0;
+      return IsCtrlDown();
     case KN_LALT:
-      return (SDL_GetModState() & KMOD_ALT) != 0;
+      return IsAltDown();
     default:
       break;
   }
@@ -368,5 +368,11 @@ int WindowsKeyFromKey(const KeyNumber key) {
   }
   return 0;
 }
+
+bool IsShiftDown() { return (SDL_GetModState() & KMOD_SHIFT) != 0; }
+
+bool IsCtrlDown() { return (SDL_GetModState() & KMOD_CTRL) != 0; }
+
+bool IsAltDown() { return (SDL_GetModState() & KMOD_ALT) != 0; }
 
 }  // namespace engine::window

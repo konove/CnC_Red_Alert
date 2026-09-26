@@ -46,12 +46,6 @@ inline constexpr uint32_t kKeyButtonBit = 0x8000;
 // The low byte of a key number, which holds the key's scancode.
 inline constexpr uint32_t kScancodeMask = 0xFFU;
 
-// Returns which key `key` is, however it was pressed. A release matches too;
-// test kKeyReleaseBit as well to tell a press from a release.
-constexpr int KeyCode(const int key) {
-  return static_cast<int>(static_cast<uint32_t>(key) & kScancodeMask);
-}
-
 // Key numbers: which key, as its SDL scancode, so a key event needs no
 // translation. The mouse buttons take 1-3, which SDL leaves unused. The values
 // combine with the KN_*_BIT modifier bits and with KN_BUTTON (see ButtonKey()),
@@ -185,15 +179,57 @@ constexpr KeyNumber operator|(const KeyNumber a, const KeyNumber b) noexcept {
   return static_cast<KeyNumber>(static_cast<uint32_t>(a) |
                                 static_cast<uint32_t>(b));
 }
-inline KeyNumber operator&(const KeyNumber a, const KeyNumber b) noexcept {
+constexpr KeyNumber operator&(const KeyNumber a, const KeyNumber b) noexcept {
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
   return static_cast<KeyNumber>(static_cast<uint32_t>(a) &
                                 static_cast<uint32_t>(b));
 }
-inline KeyNumber operator~(const KeyNumber a) noexcept {
+constexpr KeyNumber operator~(const KeyNumber a) noexcept {
   // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
   return static_cast<KeyNumber>(~static_cast<uint32_t>(a));
 }
+
+// Returns `key` with Shift, Ctrl or Alt held, or released. They are constexpr,
+// so a dialog can switch on them:
+//   case engine::window::Alt(engine::window::KN_X):
+constexpr KeyNumber Shift(const KeyNumber key) { return key | KN_SHIFT_BIT; }
+constexpr KeyNumber Ctrl(const KeyNumber key) { return key | KN_CTRL_BIT; }
+constexpr KeyNumber Alt(const KeyNumber key) { return key | KN_ALT_BIT; }
+constexpr KeyNumber Released(const KeyNumber key) { return key | KN_RLSE_BIT; }
+
+// Returns which key `key` is, without the modifier, release and button bits
+// that say how it was pressed. A release matches too; test IsRelease() as well
+// to tell a press from a release.
+constexpr KeyNumber KeyCode(const KeyNumber key) {
+  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
+  return static_cast<KeyNumber>(static_cast<uint32_t>(key) & kScancodeMask);
+}
+
+// Returns whether `key` was pressed with Shift, Ctrl or Alt held, or is a
+// release.
+constexpr bool HasShift(const KeyNumber key) {
+  return (static_cast<uint32_t>(key) & kKeyShiftBit) != 0;
+}
+constexpr bool HasCtrl(const KeyNumber key) {
+  return (static_cast<uint32_t>(key) & kKeyCtrlBit) != 0;
+}
+constexpr bool HasAlt(const KeyNumber key) {
+  return (static_cast<uint32_t>(key) & kKeyAltBit) != 0;
+}
+constexpr bool IsRelease(const KeyNumber key) {
+  return (static_cast<uint32_t>(key) & kKeyReleaseBit) != 0;
+}
+
+// Returns the gadget ID that ButtonKey() packed into `key`.
+constexpr int ButtonId(const KeyNumber key) {
+  return static_cast<int>(static_cast<uint32_t>(key) & ~kKeyButtonBit);
+}
+
+// Returns whether Shift, Ctrl or Alt is held down right now, on either side
+// of the keyboard.
+bool IsShiftDown();
+bool IsCtrlDown();
+bool IsAltDown();
 
 // Returns the key that the Windows virtual-key code in the low byte of
 // `windows_key` names, with the Shift, Ctrl, Alt and release bits above it

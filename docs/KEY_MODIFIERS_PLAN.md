@@ -104,6 +104,6 @@ Manual check on a real display:
 
 ## Progress
 
-- [ ] Step 1: helpers
+- [x] Step 1: helpers
 - [ ] Step 2: sweep the call sites
 - [ ] Step 3: live mouse state leaves `KeyBuffer::IsDown()`

@@ -214,5 +214,33 @@ TEST(WindowsKeyTest, WritesTheGenericModifierCode) {
   EXPECT_EQ(WindowsKeyFromKey(KN_RALT), 0x12);  // VK_MENU
 }
 
+// The helpers are constexpr so that dialogs can use them as case labels.
+static_assert(Alt(KN_X) == (KN_X | KN_ALT_BIT));
+static_assert(KeyCode(Alt(Shift(KN_UP))) == KN_UP);
+static_assert(ButtonId(ButtonKey(42)) == 42);
+
+TEST(KeyModifierTest, AddsAndReportsEachModifier) {
+  EXPECT_TRUE(HasShift(Shift(KN_A)));
+  EXPECT_TRUE(HasCtrl(Ctrl(KN_A)));
+  EXPECT_TRUE(HasAlt(Alt(KN_A)));
+  EXPECT_TRUE(IsRelease(Released(KN_A)));
+
+  EXPECT_FALSE(HasShift(KN_A));
+  EXPECT_FALSE(HasCtrl(Alt(KN_A)));
+  EXPECT_FALSE(HasAlt(Ctrl(KN_A)));
+  EXPECT_FALSE(IsRelease(Shift(KN_A)));
+}
+
+TEST(KeyModifierTest, KeyCodeDropsEveryFlag) {
+  EXPECT_EQ(KeyCode(Released(Ctrl(Alt(Shift(KN_Q))))), KN_Q);
+  EXPECT_EQ(KeyCode(Released(KN_LMOUSE)), KN_LMOUSE);
+  EXPECT_EQ(KeyCode(KN_NONE), KN_NONE);
+}
+
+TEST(KeyModifierTest, ButtonIdUndoesButtonKey) {
+  EXPECT_EQ(ButtonId(ButtonKey(0)), 0);
+  EXPECT_EQ(ButtonId(ButtonKey(100)), 100);
+}
+
 }  // namespace
 }  // namespace engine::window
