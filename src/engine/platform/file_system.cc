@@ -11,7 +11,7 @@
 #include <system_error>
 #include <utility>
 #include <vector>
-#include <version>
+#include <version>  // IWYU pragma: keep
 
 #include "absl/strings/ascii.h"
 
