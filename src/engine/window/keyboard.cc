@@ -36,7 +36,7 @@ struct WindowsKey {
 // comes first, so WindowsKeyFromKey() gives it back. The mouse buttons' codes
 // (1, 2 and 4) are missing: a click is not a key.
 constexpr WindowsKey kWindowsKeys[] = {
-    {0x08, SDL_SCANCODE_BACKSPACE},
+    {.windows_key = 0x08, .key = SDL_SCANCODE_BACKSPACE},
     {0x09, SDL_SCANCODE_TAB},
     {0x0C, SDL_SCANCODE_KP_5},  // VK_CLEAR: keypad 5 with Num Lock off
     {0x0D, SDL_SCANCODE_RETURN},
@@ -301,10 +301,10 @@ bool KeyBuffer::HandleEvent(const SDL_Event* event) {
 KeyNumber KeyFromWindowsKey(const int windows_key) {
   const auto bits = static_cast<uint32_t>(windows_key);
   const auto code = static_cast<int>(bits & kScancodeMask);
-  for (const WindowsKey& entry : kWindowsKeys) {
-    if (entry.windows_key == code) {
+  for (const auto& [windows_code, key] : kWindowsKeys) {
+    if (windows_code == code) {
       // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
-      return static_cast<KeyNumber>(static_cast<uint32_t>(entry.key) |
+      return static_cast<KeyNumber>(static_cast<uint32_t>(key) |
                                     (bits & kHotkeyModifierBits));
     }
   }
