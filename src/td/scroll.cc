@@ -49,6 +49,7 @@
 #include "engine/gfx/pixel_buffer.h"
 #include "engine/platform/timer.h"
 #include "engine/window/keyboard.h"
+#include "engine/window/ww_mouse.h"
 #include "td/defines.h"
 #include "td/face.h"
 #include "td/goptions.h"
@@ -182,7 +183,7 @@ void ScrollClass::AI(engine::window::KeyNumber& input, int x, int y) {
         /*
         **	Increase the scroll rate if the mouse button is held down.
         */
-        if (engine::window::KeyBuffer::IsDown(engine::window::KN_RMOUSE)) {
+        if (IsRightButtonDown()) {
           rate = Bound(
               rate + 1, 4,
               static_cast<int>(sizeof(_rate) / sizeof(base::At(_rate, 0))) - 1);
@@ -216,8 +217,7 @@ void ScrollClass::AI(engine::window::KeyNumber& input, int x, int y) {
           **	If the mouse button is pressed or auto scrolling is active, then
           *scroll *	the map if the delay counter indicates.
           */
-          if (engine::window::KeyBuffer::IsDown(engine::window::KN_LMOUSE) ||
-              IsAutoScroll) {
+          if (IsLeftButtonDown() || IsAutoScroll) {
             distance = base::At(_rate, rate);
             Scroll_Map(direction, distance, true);
 

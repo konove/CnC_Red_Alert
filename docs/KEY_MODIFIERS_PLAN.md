@@ -114,4 +114,6 @@ Manual check on a real display:
   What is left spells the bits only in commented-out code and in `td/msgbox.cc`'s `#ifdef NEVER`
   block.
 
-- [ ] Step 3: live mouse state leaves `KeyBuffer::IsDown()`
+- [x] Step 3: live mouse state leaves `KeyBuffer::IsDown()`. The games ask `IsLeftButtonDown()` and
+      `IsRightButtonDown()` in `ww_mouse.h`; `IsDown()` still answers for a mouse button by asking
+      them, because a hotkey binding may name one.

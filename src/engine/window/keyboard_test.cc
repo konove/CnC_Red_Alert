@@ -14,10 +14,12 @@
 #include "engine/window/ww_win.h"
 #include "gtest/gtest.h"
 
-// The two hooks keyboard.cc calls out to. Stubbing them keeps the buffer
+// The hooks keyboard.cc calls out to. Stubbing them keeps the buffer
 // semantics under test deterministic and free of a real event pump.
 void SDL_Event_Loop() {}
 void Update_Mouse_Pos(int /*x*/, int /*y*/) {}
+bool IsLeftButtonDown() { return false; }
+bool IsRightButtonDown() { return false; }
 
 namespace engine::window {
 namespace {

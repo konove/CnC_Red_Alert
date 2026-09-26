@@ -268,12 +268,11 @@ void KeyBuffer::Clear() { head_ = tail_; }
 
 bool KeyBuffer::IsDown(const int key) {
   switch (key) {
-    // Gadgets poll the buttons through here to follow a drag or a held
-    // button.
+    // A hotkey binding may name a mouse button.
     case KN_LMOUSE:
-      return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_LMASK) != 0;
+      return IsLeftButtonDown();
     case KN_RMOUSE:
-      return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_RMASK) != 0;
+      return IsRightButtonDown();
     // SDL's modifier state covers both sides of the keyboard, which is what
     // the KN_R* names (equal to their KN_L* twins) ask for.
     case KN_LSHIFT:

@@ -304,9 +304,11 @@ class KeyBuffer {
   void Clear();
 
   // Returns whether `key` is held down right now, read from SDL's live state
-  // rather than from the buffer. Covers the left and right mouse buttons, and
-  // either side of the keyboard for Shift, Ctrl and Alt. `key` is a bare key
-  // code: with modifier bits set it names a different scancode.
+  // rather than from the buffer. Covers either side of the keyboard for Shift,
+  // Ctrl and Alt, and the left and right mouse buttons, which a hotkey binding
+  // may name; code that means the mouse asks IsLeftButtonDown() and
+  // IsRightButtonDown() in ww_mouse.h. `key` is a bare key code: with modifier
+  // bits set it names a different scancode.
   static bool IsDown(int key);
 
   // Returns whether `key` is a mouse button, pressed or released, whatever

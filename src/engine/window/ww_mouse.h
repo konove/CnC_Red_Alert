@@ -145,6 +145,11 @@ void Set_Mouse_Cursor(int hotx, int hoty, std::span<const std::byte> cursor);
 int Get_Mouse_X();
 int Get_Mouse_Y();
 
+// Returns whether the left or right mouse button is held down right now, read
+// from SDL's live state rather than from the queued clicks.
+bool IsLeftButtonDown();
+bool IsRightButtonDown();
+
 void Update_Mouse_Palette();
 void Update_Mouse_Pos(int x, int y);
 

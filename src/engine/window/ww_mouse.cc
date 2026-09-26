@@ -355,6 +355,14 @@ void Set_Mouse_Cursor(int hotx, int hoty, std::span<const std::byte> cursor) {
   }
 }
 
+bool IsLeftButtonDown() {
+  return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_LMASK) != 0;
+}
+
+bool IsRightButtonDown() {
+  return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_RMASK) != 0;
+}
+
 int Get_Mouse_X() {
   if (Mouse) {
     return Mouse->Get_Mouse_X();

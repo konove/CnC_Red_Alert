@@ -532,12 +532,12 @@ engine::window::KeyNumber GadgetClass::Input(PixelView& view) {
     *isn't being *	held down, then we automatically know that it must be up
     *-- set the flag *	accordingly.
     */
-    if (engine::window::KeyBuffer::IsDown(KN_LMOUSE)) {
+    if (IsLeftButtonDown()) {
       flags |= kLeftHeld;
     } else {
       flags |= kLeftUp;
     }
-    if (engine::window::KeyBuffer::IsDown(KN_RMOUSE)) {
+    if (IsRightButtonDown()) {
       flags |= kRightHeld;
     } else {
       flags |= kRightUp;
