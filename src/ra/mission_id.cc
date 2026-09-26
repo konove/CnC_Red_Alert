@@ -1,6 +1,7 @@
 #include "ra/mission_id.h"
 
 #include <charconv>
+#include <memory>
 #include <string>
 #include <string_view>
 
@@ -19,7 +20,8 @@ bool IsMissionCounterstrike(const std::string_view file_name) {
   // first non-digit (e.g. the house letters in "SCM25EA.INI").
   const std::string_view number = file_name.substr(3, 3);
   int scenario_number = 0;
-  std::from_chars(number.begin(), number.end(), scenario_number);
+  std::from_chars(std::to_address(number.begin()),
+                  std::to_address(number.end()), scenario_number);
   return scenario_number > 24;
 }
 
