@@ -4196,8 +4196,11 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
           TheScenario().FadeTimer.Set(kGrayFadeTime);
         }
         if (TheMap().IsTargettingMode == kSpcChrono2) {
-          engine::window::KeyNumber input = engine::window::KN_RMOUSE;
-          TheMap().AI(input, 0, 0);
+          // A right-click ends the Chronosphere's targeting.
+          engine::window::InputEvent right_click{
+              .key = engine::window::KN_RMOUSE,
+              .button = engine::window::MouseButton::kRight};
+          TheMap().AI(right_click, 0, 0);
         }
       }
       break;

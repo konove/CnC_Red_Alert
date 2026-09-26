@@ -1535,7 +1535,7 @@ void RadarClass::Radar_Anim(PixelView& view) {
  *with click or drag.                                   * 12/31/1994 JLB : Uses
  *mouse coordinate parameters.                                        *
  *=============================================================================================*/
-void RadarClass::AI(engine::window::KeyNumber& input, int x, int y) {
+void RadarClass::AI(engine::window::InputEvent& event, int x, int y) {
   /*
   ** Check to see if we need to animate the radar cursor
   */
@@ -1610,7 +1610,7 @@ void RadarClass::AI(engine::window::KeyNumber& input, int x, int y) {
     }
   }
 
-  DisplayClass::AI(input, x, y);
+  DisplayClass::AI(event, x, y);
 }
 
 /***********************************************************************************************

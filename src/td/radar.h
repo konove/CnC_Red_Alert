@@ -81,7 +81,7 @@ class RadarClass : public DisplayClass {
 
   bool Map_Cell(CELL cell, HouseClass* house) override;
   CELL Click_Cell_Calc(int x, int y) override;
-  void AI(engine::window::KeyNumber& input, int x, int y) override;
+  void AI(engine::window::InputEvent& event, int x, int y) override;
   void Draw_It(PixelView& view, bool forced = false) override;
   void Refresh_Cells(CELL cell, std::span<const int16_t> list) override;
   void Set_Map_Dimensions(int x, int y, int w, int h) override;

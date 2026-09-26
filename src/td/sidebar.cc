@@ -770,7 +770,8 @@ void SidebarClass::Draw_It(PixelView& view, bool complete) {
  *   12/31/1994 JLB : Uses mouse coordinate parameters. * 06/27/1995 JLB : <TAB>
  *key toggles sidebar.                                               *
  *=============================================================================================*/
-void SidebarClass::AI(engine::window::KeyNumber& input, int x, int y) {
+void SidebarClass::AI(engine::window::InputEvent& event, int x, int y) {
+  engine::window::KeyNumber& input = event.key;
   bool redraw = false;
 
   /*
@@ -884,7 +885,7 @@ void SidebarClass::AI(engine::window::KeyNumber& input, int x, int y) {
     Upgrade.Turn_Off();
   }
 
-  PowerClass::AI(input, x, y);
+  PowerClass::AI(event, x, y);
 }
 
 /***********************************************************************************************

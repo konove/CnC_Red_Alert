@@ -487,7 +487,8 @@ bool MapEditClass::Add_To_List(const ObjectTypeClass* object) {
  * HISTORY:                                                                *
  *   10/20/1994 BR : Created.                                              *
  *=========================================================================*/
-void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
+void MapEditClass::AI(engine::window::InputEvent& event, int x, int y) {
+  engine::window::KeyNumber& input = event.key;
   int rc = 0;
   CELL cell = 0;
   int found = 0;  // for removing a waypoint label
@@ -548,7 +549,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
   **	For normal game mode, jump to the parent's AI routine.
   */
   if (!TheDebugState().map_editor_active()) {
-    MouseClass::AI(input, x, y);
+    MouseClass::AI(event, x, y);
     return;
   }
 
@@ -1389,7 +1390,7 @@ void MapEditClass::AI(engine::window::KeyNumber& input, int x, int y) {
   /*
   **	Call parent's AI routine
   */
-  MouseClass::AI(input, x, y);
+  MouseClass::AI(event, x, y);
 }
 
 /***************************************************************************

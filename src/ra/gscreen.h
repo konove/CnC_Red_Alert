@@ -67,11 +67,14 @@ class GScreenClass {
   virtual void Init_IO();                          // Inits button list
   virtual void Init_Theater(TheaterType theater);  // Theater-specific inits
 
-  /*
-  **	Player I/O is routed through here. It is called every game tick.
-  */
-  virtual void Input(engine::window::KeyNumber& key, int& x, int& y);
-  virtual void AI(engine::window::KeyNumber& /*unused*/, int /*unused*/,
+  // Reads one input event, if any, runs it through the map's gadgets and
+  // AI(), and returns what is left of it. Called every game tick. Sets `x`
+  // and `y` to the mouse's position.
+  virtual engine::window::InputEvent Input(int& x, int& y);
+
+  // Lets each map layer act on `event`, with the mouse at `x`, `y`. A layer
+  // that uses up the event's key sets it to KN_NONE.
+  virtual void AI(engine::window::InputEvent& /*unused*/, int /*unused*/,
                   int /*unused*/) {}
   virtual void Add_A_Button(GadgetClass& gadget);
   virtual void Remove_A_Button(GadgetClass& gadget);

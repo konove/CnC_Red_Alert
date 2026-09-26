@@ -95,7 +95,7 @@ class SidebarClass : public PowerClass {
   void Init_Theater(TheaterType theater) override;  // Theater-specific inits
   static void Reload_Sidebar();  // Loads house-specific sidebar art
 
-  void AI(engine::window::KeyNumber& input, int x, int y) override;
+  void AI(engine::window::InputEvent& event, int x, int y) override;
   void Draw_It(PixelView& view, bool complete) override;
   void Refresh_Cells(CELL cell, std::span<const int16_t> list) override;
 

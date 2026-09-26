@@ -262,32 +262,23 @@ void GScreenClass::Flag_To_Redraw(bool complete) {
  *                                                                                             *
  * HISTORY: * 01/19/1995 JLB : Created. *
  *=============================================================================================*/
-void GScreenClass::Input(engine::window::KeyNumber& key, int& x, int& y) {
-  key = TheKeyboard().Peek();
-
+engine::window::InputEvent GScreenClass::Input(int& x, int& y) {
   x = Get_Mouse_X();
   y = Get_Mouse_Y();
 
+  engine::window::InputEvent event;
   if (Buttons != nullptr) {
-    /*
-    ** If any buttons need redrawing, they will do so in the Input routine, and
-    ** they should draw themselves to the hidden_view.  So, flag ourselves for a
-    *Blit
-    ** to show the newly drawn buttons.
-    */
+    // The buttons draw themselves to the hidden page, so a redraw needs a
+    // blit to show.
     if (Buttons->Is_List_To_Redraw()) {
       Flag_To_Redraw(false);
     }
-
-    key = Buttons->Input(TheScreen().hidden_view()).key;
-
-  } else {
-    if (key != 0) {
-      key = TheKeyboard().Read();
-    }
+    event = Buttons->Input(TheScreen().hidden_view());
+  } else if (TheKeyboard().Peek() != engine::window::KN_NONE) {
+    event = TheKeyboard().ReadEvent();
   }
-
-  AI(key, x, y);
+  AI(event, x, y);
+  return event;
 }
 
 /***********************************************************************************************

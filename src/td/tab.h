@@ -54,7 +54,7 @@ class TabClass : public SidebarClass {
   void ResetTransientUiState() override;
   TabClass();
 
-  void AI(engine::window::KeyNumber& input, int x, int y) override;
+  void AI(engine::window::InputEvent& event, int x, int y) override;
   void Draw_It(PixelView& view, bool complete = false) override;
 
   void One_Time() override;  // One-time inits

@@ -128,7 +128,7 @@ class DisplayClass : public MapClass {
   /*
   **	General display/map/interface support functionality.
   */
-  void AI(engine::window::KeyNumber& input, int x, int y) override;
+  void AI(engine::window::InputEvent& event, int x, int y) override;
   void Draw_It(PixelView& view, bool forced = false) override;
 
   /*

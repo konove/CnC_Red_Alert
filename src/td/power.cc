@@ -289,7 +289,7 @@ void PowerClass::Draw_It(PixelView& view, bool complete) {
  * HISTORY: * 12/20/1994 JLB : Created. * 12/31/1994 JLB : Uses mouse coordinate
  *parameters.                                        *
  *=============================================================================================*/
-void PowerClass::AI(engine::window::KeyNumber& input, int x, int y) {
+void PowerClass::AI(engine::window::InputEvent& event, int x, int y) {
   //	if (!IsActive) {
   //		IsActive = true;
   //		IsToRedraw = true;
@@ -365,7 +365,7 @@ void PowerClass::AI(engine::window::KeyNumber& input, int x, int y) {
       Flag_To_Redraw(false);
     }
   }
-  RadarClass::AI(input, x, y);
+  RadarClass::AI(event, x, y);
 }
 
 /***********************************************************************************************

@@ -171,7 +171,7 @@ static void ProcessInput() {
   engine::window::KeyNumber input = engine::window::KN_NONE;
   int x = 0;
   int y = 0;
-  TheMap().Input(input, x, y);
+  input = TheMap().Input(x, y).key;
   if (input != engine::window::KN_NONE) {
     Keyboard_Process(input);
   }

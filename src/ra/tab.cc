@@ -203,7 +203,8 @@ void TabClass::Hilite_Tab(PixelView& view, int tab) {
  *handle mouse shape properly.                                    * 08/25/1995
  *JLB : Handles new scrolling option. *
  *=============================================================================================*/
-void TabClass::AI(engine::window::KeyNumber& input, int x, int y) {
+void TabClass::AI(engine::window::InputEvent& event, int x, int y) {
+  engine::window::KeyNumber& input = event.key;
   if (y >= 0 && y < TAB_HEIGHT * 2 &&
       x < TheScreen().visible_view().width() - 1 && x > 0) {
     bool ok = false;
@@ -240,7 +241,7 @@ void TabClass::AI(engine::window::KeyNumber& input, int x, int y) {
 
   Credits.AI();
 
-  SidebarClass::AI(input, x, y);
+  SidebarClass::AI(event, x, y);
 }
 
 /***********************************************************************************************

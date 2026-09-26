@@ -102,7 +102,7 @@ ScrollClass::ScrollClass() {
  *Handles new scrolling option.                                            *
  *=============================================================================================*/
 #define EVA_WIDTH 80
-void ScrollClass::AI(engine::window::KeyNumber& input, int x, int y) {
+void ScrollClass::AI(engine::window::InputEvent& event, int x, int y) {
   static DirType direction;
   bool player_scrolled = false;
 
@@ -238,7 +238,7 @@ void ScrollClass::AI(engine::window::KeyNumber& input, int x, int y) {
     }
   }
 
-  HelpClass::AI(input, x, y);
+  HelpClass::AI(event, x, y);
 }
 
 /***********************************************************************************************

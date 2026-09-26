@@ -163,7 +163,7 @@ std::span<const int16_t> HelpClass::Overlap_List() const {
  * HISTORY: * 11/18/1994 JLB : Created. * 12/31/1994 JLB : Uses mouse
  *coordinates as passed in.                                     *
  *=============================================================================================*/
-void HelpClass::AI(engine::window::KeyNumber& key, int x, int y) {
+void HelpClass::AI(engine::window::InputEvent& event, int x, int y) {
   if (CountDownTimer.IsFinished() && !IsRight && (x != X || y != Y)) {
     Help_Text(TXT_NONE);
   }
@@ -193,7 +193,7 @@ void HelpClass::AI(engine::window::KeyNumber& key, int x, int y) {
     }
   }
 
-  TabClass::AI(key, x, y);
+  TabClass::AI(event, x, y);
 }
 
 /***********************************************************************************************

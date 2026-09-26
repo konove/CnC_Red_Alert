@@ -1595,7 +1595,7 @@ static void Sync_Delay() {
       int x = 0;
       int y = 0;
       TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
-      TheMap().Input(input, x, y);
+      input = TheMap().Input(x, y).key;
       if (input) {
         Keyboard_Process(input);
       }
@@ -1688,7 +1688,7 @@ bool Main_Loop() {
       (TheGameState().special_dialog() == SDLG_NONE &&
        TheGameState().in_focus())) {
     TheMouse()->Erase_Mouse(&TheScreen().hidden_view(), true);
-    TheMap().Input(input, x, y);
+    input = TheMap().Input(x, y).key;
     if (input) {
       Keyboard_Process(input);
     }
@@ -1990,7 +1990,7 @@ bool Map_Edit_Loop() {
 
   int x = 0;
   int y = 0;
-  TheMap().Input(input, x, y);
+  input = TheMap().Input(x, y).key;
 
   /*
   **	Process keypress.
