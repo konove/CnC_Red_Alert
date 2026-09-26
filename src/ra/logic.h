@@ -48,6 +48,13 @@
 // least affected.
 class LogicClass : public LayerClass {
  public:
+  LogicClass() = default;
+  ~LogicClass() override;
+  LogicClass(const LogicClass&) = delete;
+  LogicClass& operator=(const LogicClass&) = delete;
+  LogicClass(LogicClass&&) = delete;
+  LogicClass& operator=(LogicClass&&) = delete;
+
   void AI();
   static void Detach(TARGET target, bool all = true);
 };

@@ -70,6 +70,8 @@
 #include "ra/vortex.h"
 #include "ra/world.h"
 
+LogicClass::~LogicClass() = default;
+
 /***********************************************************************************************
  * LogicClass::AI -- Handles AI logic processing for game objects. *
  *                                                                                             *

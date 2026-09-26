@@ -2022,6 +2022,8 @@ AnimTypeClass::AnimTypeClass(AnimType anim, const char* name, int size,
       Sound(soundid),
       ChainTo(chainto) {}
 
+AnimTypeClass::~AnimTypeClass() = default;
+
 /***********************************************************************************************
  * AnimTypeClass::operator new -- Allocate an animation type object from private
  *pool.         *

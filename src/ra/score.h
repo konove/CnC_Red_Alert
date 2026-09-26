@@ -157,7 +157,7 @@ class ScoreAnimClass {
   // Advances the animation if AnimTimer has run out. May `delete this`, so the
   // caller must not touch the object afterwards.
   virtual void Update() {}
-  virtual ~ScoreAnimClass() = default;
+  virtual ~ScoreAnimClass();
   ScoreAnimClass(const ScoreAnimClass&) = delete;
   ScoreAnimClass& operator=(const ScoreAnimClass&) = delete;
   ScoreAnimClass(ScoreAnimClass&&) = delete;

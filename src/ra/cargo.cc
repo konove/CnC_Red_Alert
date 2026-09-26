@@ -44,6 +44,8 @@
 #include "ra/foot.h"
 #include "ra/object.h"
 
+CargoClass::~CargoClass() { CargoHold = nullptr; }
+
 /***********************************************************************************************
  * CargoClass::Attach -- Add unit to cargo hold. *
  *                                                                                             *

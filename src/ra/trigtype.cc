@@ -136,6 +136,8 @@ TriggerTypeClass::TriggerTypeClass()
                         TheObjectHeaps().trigger_type().ID(this), TXT_NONE,
                         "x") {}
 
+TriggerTypeClass::~TriggerTypeClass() = default;
+
 /***********************************************************************************************
  * TriggerTypeClass::operator new -- Allocates a trigger type class object. *
  *                                                                                             *

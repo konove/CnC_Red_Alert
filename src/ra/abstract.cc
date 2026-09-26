@@ -28,6 +28,8 @@
 #include "ra/target.h"
 #include "ra/type.h"
 
+AbstractClass::~AbstractClass() = default;
+
 DirType AbstractClass::Direction(const TARGET target) const {
   return ::Direction(Center_Coord(), As_Coord(target));
 }

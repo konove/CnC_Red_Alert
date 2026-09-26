@@ -55,7 +55,7 @@ class CargoClass {
   // Saved-game support; defined in ioobj.cc.
   template <class Archive>
   void Serialize(Archive& ar);
-  virtual ~CargoClass() { CargoHold = nullptr; }
+  virtual ~CargoClass();
   CargoClass(const CargoClass&) = delete;
   CargoClass& operator=(const CargoClass&) = delete;
   CargoClass(CargoClass&&) = delete;

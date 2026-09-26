@@ -210,6 +210,8 @@ TeamTypeClass::TeamTypeClass()
     : AbstractTypeClass(RTTI_TEAMTYPE, TheObjectHeaps().team_type().ID(this),
                         TXT_NONE, "") {}
 
+TeamTypeClass::~TeamTypeClass() = default;
+
 /***************************************************************************
  * TeamTypeClass::Init -- pre-scenario initialization                      *
  *                                                                         *

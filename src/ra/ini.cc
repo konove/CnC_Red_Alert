@@ -120,6 +120,10 @@
  *=============================================================================================*/
 INIClass::~INIClass() { Clear(); }
 
+INIClass::INIEntry::~INIEntry() = default;
+
+INIClass::INISection::~INISection() { EntryList.Delete(); }
+
 /***********************************************************************************************
  * INIClass::Clear -- Clears out a section (or all sections) of the INI data. *
  *                                                                                             *

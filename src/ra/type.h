@@ -1792,6 +1792,11 @@ class AnimTypeClass : public ObjectTypeClass {
                 bool isflame, fixed damage, int delaytime, int start,
                 int loopstart, int loopend, int stages, int loops,
                 VocType sound, AnimType chainto) noexcept;
+  ~AnimTypeClass() override;
+  AnimTypeClass(const AnimTypeClass&) = default;
+  AnimTypeClass& operator=(const AnimTypeClass&) = delete;
+  AnimTypeClass(AnimTypeClass&&) = default;
+  AnimTypeClass& operator=(AnimTypeClass&&) = default;
 
   static void Init_Heap();
   void* operator new(std::size_t /*unused*/) noexcept;

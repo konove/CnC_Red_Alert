@@ -111,7 +111,7 @@ class TriggerTypeClass : public AbstractTypeClass {
   MultiStyleType ActionControl = MULTI_ONLY;
 
   TriggerTypeClass();
-  ~TriggerTypeClass() override = default;
+  ~TriggerTypeClass() override;
   TriggerTypeClass(const TriggerTypeClass&) = delete;
   TriggerTypeClass& operator=(const TriggerTypeClass&) = delete;
   TriggerTypeClass(TriggerTypeClass&&) = delete;

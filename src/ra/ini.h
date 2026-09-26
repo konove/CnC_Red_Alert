@@ -147,7 +147,7 @@ class INIClass {
   struct INIEntry : Node<INIEntry> {
     explicit INIEntry(const char* entry = "", const char* value = "")
         : Entry(entry), Value(value) {}
-    ~INIEntry() override = default;
+    ~INIEntry() override;
     INIEntry(const INIEntry&) = delete;
     INIEntry& operator=(const INIEntry&) = delete;
     INIEntry(INIEntry&&) = delete;
@@ -166,7 +166,7 @@ class INIClass {
   */
   struct INISection : Node<INISection> {
     explicit INISection(const char* section) : Section(section) {}
-    ~INISection() override { EntryList.Delete(); }
+    ~INISection() override;
     INISection(const INISection&) = delete;
     INISection& operator=(const INISection&) = delete;
     INISection(INISection&&) = delete;

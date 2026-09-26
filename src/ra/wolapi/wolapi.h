@@ -466,6 +466,13 @@ extern const IID IID_IChatEvent;
 interface DECLSPEC_UUID("4DD3BAF6-7579-11D1-B1C6-006097176556") IChatEvent
     : public IUnknown {
  public:
+  IChatEvent() = default;
+  COM_SINK_DESTRUCTOR(IChatEvent);
+  IChatEvent(const IChatEvent&) = delete;
+  IChatEvent& operator=(const IChatEvent&) = delete;
+  IChatEvent(IChatEvent&&) = delete;
+  IChatEvent& operator=(IChatEvent&&) = delete;
+
   virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE OnServerList(
       /* [in] */ HRESULT res,
       /* [in] */ Server __RPC_FAR * servers) = 0;
@@ -635,6 +642,13 @@ extern const IID IID_IDownloadEvent;
 interface DECLSPEC_UUID("6869E99D-9FB4-11D1-9DC8-006097C54321") IDownloadEvent
     : public IUnknown {
  public:
+  IDownloadEvent() = default;
+  COM_SINK_DESTRUCTOR(IDownloadEvent);
+  IDownloadEvent(const IDownloadEvent&) = delete;
+  IDownloadEvent& operator=(const IDownloadEvent&) = delete;
+  IDownloadEvent(IDownloadEvent&&) = delete;
+  IDownloadEvent& operator=(IDownloadEvent&&) = delete;
+
   virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE OnEnd() = 0;
 
   virtual /* [helpstring] */ HRESULT STDMETHODCALLTYPE OnError(int error) = 0;
@@ -702,6 +716,13 @@ extern const IID IID_INetUtilEvent;
 interface DECLSPEC_UUID("B832B0AC-A7D3-11D1-97C3-00609706FA0C") INetUtilEvent
     : public IUnknown {
  public:
+  INetUtilEvent() = default;
+  COM_SINK_DESTRUCTOR(INetUtilEvent);
+  INetUtilEvent(const INetUtilEvent&) = delete;
+  INetUtilEvent& operator=(const INetUtilEvent&) = delete;
+  INetUtilEvent(INetUtilEvent&&) = delete;
+  INetUtilEvent& operator=(INetUtilEvent&&) = delete;
+
   virtual /* [helpstring][id] */ HRESULT STDMETHODCALLTYPE OnPing(
       HRESULT res, int time, unsigned long ip, int handle) = 0;
 

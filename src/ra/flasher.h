@@ -69,7 +69,7 @@ class FlasherClass {
     FlashCount = flash_count;
     IsBlushing = is_blushing;
   }
-  virtual ~FlasherClass() = default;
+  virtual ~FlasherClass();
   FlasherClass(const FlasherClass&) = delete;
   FlasherClass& operator=(const FlasherClass&) = delete;
   FlasherClass(FlasherClass&&) = delete;

@@ -117,6 +117,8 @@ bool BaseNodeClass::operator!=(const BaseNodeClass& node) const {
  *=============================================================================================*/
 bool BaseNodeClass::operator>(const BaseNodeClass& /*unused*/) { return true; }
 
+BaseClass::~BaseClass() { Nodes.Clear(); }
+
 /***********************************************************************************************
  * BaseClass::Is_Built -- Tells if given item in the list has been built yet *
  *                                                                                             *

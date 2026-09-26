@@ -166,6 +166,8 @@ ScoreAnimClass::ScoreAnimClass(int x, int y, std::string_view text)
   AnimTimer.Set(0);
 }
 
+ScoreAnimClass::~ScoreAnimClass() = default;
+
 ScoreTimeClass::ScoreTimeClass(int xpos, int ypos,
                                std::span<const std::byte> data, int maxval,
                                int xtimer)

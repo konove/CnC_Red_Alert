@@ -105,6 +105,8 @@ VersionClass::VersionClass() {
   VersionName[0] = '\0';
 }
 
+VersionClass::~VersionClass() = default;
+
 /***************************************************************************
  * VersionClass::Version_Number -- Returns program version number          *
  *                                                                         *

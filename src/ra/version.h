@@ -100,7 +100,7 @@ class VersionClass {
   // Constructor/Destructor
   //.....................................................................
   VersionClass();
-  virtual ~VersionClass() = default;
+  virtual ~VersionClass();
   VersionClass(const VersionClass&) = delete;
   VersionClass& operator=(const VersionClass&) = delete;
   VersionClass(VersionClass&&) = delete;
