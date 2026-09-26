@@ -165,10 +165,7 @@ IPXManagerClass::~IPXManagerClass() {
   //------------------------------------------------------------------------
   //	Stop all IPX events
   //------------------------------------------------------------------------
-  if (Listening) {
-    IPXConnClass::Stop_Listening();
-    Listening = false;
-  }
+  Stop_Listening();
 
   //------------------------------------------------------------------------
   //	Free all protected-mode memory
@@ -226,10 +223,7 @@ int IPXManagerClass::Init() {
     //------------------------------------------------------------------------
     //	Stop Listening
     //------------------------------------------------------------------------
-    if (Listening) {
-      IPXConnClass::Stop_Listening();
-      Listening = false;
-    }
+    Stop_Listening();
 
     //------------------------------------------------------------------------
     //	Free Real-mode memory
@@ -302,6 +296,13 @@ int IPXManagerClass::Init() {
   return 1;
 
 } /* end of Init */
+
+void IPXManagerClass::Stop_Listening() {
+  if (Listening) {
+    IPXConnClass::Stop_Listening();
+    Listening = false;
+  }
+}
 
 /***************************************************************************
  * IPXManagerClass::Is_IPX -- tells if IPX is installed or not

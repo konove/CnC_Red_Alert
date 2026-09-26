@@ -51,4 +51,16 @@ TEST(GameTest, InstallsItsSubsystemsForItsLifetime) {
   EXPECT_FALSE(installed());
 }
 
+// The IPX manager stops listening when it is destroyed, and that reaches the
+// transport through TheNetwork(), so the network has to be torn down while
+// it is still installed.
+TEST(GameTest, TearsDownANetworkThatIsListening) {
+  auto game = std::make_unique<Game>();
+  // An Internet session listens without opening an IPX socket.
+  TheSession().Type = GAME_INTERNET;
+  ASSERT_EQ(TheNetwork().ipx().Init(), 1);
+  game.reset();
+  EXPECT_FALSE(base::Installed<Network>::IsInstalled());
+}
+
 }  // namespace

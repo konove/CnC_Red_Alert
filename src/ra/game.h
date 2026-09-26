@@ -45,7 +45,9 @@
 class Game {
  public:
   Game() = default;
-  ~Game() = default;
+  // Stops the IPX manager listening first: that goes through TheNetwork(),
+  // which no longer resolves by the time network_ is destroyed.
+  ~Game() { network_.ipx().Stop_Listening(); }
 
   Game(const Game&) = delete;
   Game& operator=(const Game&) = delete;
