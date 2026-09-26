@@ -3796,8 +3796,8 @@ static void Queue_Playback() {
   //	If the user hits ESC, stop the playback
   //------------------------------------------------------------------------
   if (TheKeyboard().Peek()) {
-    const int key = TheKeyboard().Read().key;
-    if (key == '\x1b' || TheSession().Attract) {
+    if (TheKeyboard().Read().key == engine::window::KN_ESC ||
+        TheSession().Attract) {
       TheGameState().active() = false;
       return;
     }
