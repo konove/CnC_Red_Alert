@@ -41,7 +41,7 @@ Assets::Assets() {
   }
 }
 
-Assets::~Assets() = default;
+Assets::~Assets() { MixArchive::Free_All(); }
 
 void Assets::LoadFonts() {
   for (const FontType type : magic_enum::enum_values<FontType>()) {

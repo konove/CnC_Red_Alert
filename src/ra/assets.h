@@ -61,6 +61,8 @@ class Assets {
   static constexpr int kSpeechSlotCount = 2;
 
   Assets();
+  // Frees every registered MIX archive. The spans here point into their
+  // cached data, and the game reads neither once its Assets is gone.
   ~Assets();
 
   Assets(const Assets&) = delete;
