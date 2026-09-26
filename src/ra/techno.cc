@@ -4196,9 +4196,10 @@ ResultType TechnoClass::Take_Damage(int& damage, int distance,
           TheScenario().FadeTimer.Set(kGrayFadeTime);
         }
         if (TheMap().IsTargettingMode == kSpcChrono2) {
-          // A right-click ends the Chronosphere's targeting.
+          // Meant to end the Chronosphere's targeting, but no map layer acts
+          // on a right-click handed to AI(): the tactical gadget takes those
+          // before AI() runs. See docs/INPUT_EVENTS_PLAN.md.
           engine::window::InputEvent right_click{
-              .key = engine::window::KN_RMOUSE,
               .button = engine::window::MouseButton::kRight};
           TheMap().AI(right_click, 0, 0);
         }

@@ -829,7 +829,7 @@ void Show_Who_Was_Responsible() {
     */
     key = KN_NONE;
     if (TheKeyboard().Peek()) {
-      key = TheKeyboard().Read();
+      key = TheKeyboard().Read().key;
       if (key == KN_ESC) {
         break;
       }

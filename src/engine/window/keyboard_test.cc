@@ -17,8 +17,6 @@
 // semantics under test deterministic and free of a real event pump.
 void SDL_Event_Loop() {}
 void Update_Mouse_Pos(int /*x*/, int /*y*/) {}
-bool IsLeftButtonDown() { return false; }
-bool IsRightButtonDown() { return false; }
 
 namespace engine::window {
 namespace {
@@ -40,49 +38,49 @@ class KeyBufferTest : public ::testing::Test {
 };
 
 TEST_F(KeyBufferTest, PeekReportsZeroWhenNoKeyIsPending) {
-  EXPECT_EQ(keys.Peek(), 0);
+  EXPECT_FALSE(keys.Peek());
 }
 
 TEST_F(KeyBufferTest, PeekReportsThePendingKeyNumber) {
   ASSERT_TRUE(keys.Put({.key = KN_F10}));
 
   // The bug this guards: a bool return collapsed every key to 1.
-  EXPECT_EQ(keys.Peek(), KN_F10);
+  EXPECT_EQ(keys.Peek().key, KN_F10);
 }
 
 TEST_F(KeyBufferTest, PeekKeepsTheModifierBitsOfThePendingKey) {
   const KeyNumber shifted = Shift(KN_A);
   ASSERT_TRUE(keys.Put({.key = shifted}));
 
-  EXPECT_EQ(keys.Peek(), shifted);
+  EXPECT_EQ(keys.Peek().key, shifted);
 }
 
 TEST_F(KeyBufferTest, PeekDoesNotConsumeTheKey) {
   ASSERT_TRUE(keys.Put({.key = KN_ESC}));
 
-  EXPECT_EQ(keys.Peek(), KN_ESC);
-  EXPECT_EQ(keys.Peek(), KN_ESC);
-  EXPECT_EQ(keys.Read(), KN_ESC);
-  EXPECT_EQ(keys.Peek(), 0);
+  EXPECT_EQ(keys.Peek().key, KN_ESC);
+  EXPECT_EQ(keys.Peek().key, KN_ESC);
+  EXPECT_EQ(keys.Read().key, KN_ESC);
+  EXPECT_FALSE(keys.Peek());
 }
 
 TEST_F(KeyBufferTest, PeekReportsKeysInTheOrderTheyWerePut) {
   ASSERT_TRUE(keys.Put({.key = KN_1}));
   ASSERT_TRUE(keys.Put({.key = KN_2}));
 
-  EXPECT_EQ(keys.Peek(), KN_1);
-  EXPECT_EQ(keys.Read(), KN_1);
-  EXPECT_EQ(keys.Peek(), KN_2);
-  EXPECT_EQ(keys.Read(), KN_2);
+  EXPECT_EQ(keys.Peek().key, KN_1);
+  EXPECT_EQ(keys.Read().key, KN_1);
+  EXPECT_EQ(keys.Peek().key, KN_2);
+  EXPECT_EQ(keys.Read().key, KN_2);
 }
 
 TEST_F(KeyBufferTest, ClearDiscardsThePendingKey) {
   ASSERT_TRUE(keys.Put({.key = KN_SPACE}));
-  ASSERT_EQ(keys.Peek(), KN_SPACE);
+  ASSERT_EQ(keys.Peek().key, KN_SPACE);
 
   keys.Clear();
 
-  EXPECT_EQ(keys.Peek(), 0);
+  EXPECT_FALSE(keys.Peek());
 }
 
 // A zero key would be indistinguishable from Peek's empty result, and Read
@@ -90,7 +88,7 @@ TEST_F(KeyBufferTest, ClearDiscardsThePendingKey) {
 TEST_F(KeyBufferTest, UnknownScancodeIsNotBuffered) {
   EXPECT_FALSE(keys.PutKey(0));
 
-  EXPECT_EQ(keys.Peek(), 0);
+  EXPECT_FALSE(keys.Peek());
 }
 
 // The release of an unknown key gains kKeyReleaseBit, which must not smuggle
@@ -98,7 +96,7 @@ TEST_F(KeyBufferTest, UnknownScancodeIsNotBuffered) {
 TEST_F(KeyBufferTest, UnknownScancodeReleaseIsNotBuffered) {
   EXPECT_FALSE(keys.PutKey(0, /*release=*/true));
 
-  EXPECT_EQ(keys.Peek(), 0);
+  EXPECT_FALSE(keys.Peek());
 }
 
 // SDL's media keys have scancodes above 0xFF, which would spill into the
@@ -106,7 +104,7 @@ TEST_F(KeyBufferTest, UnknownScancodeReleaseIsNotBuffered) {
 TEST_F(KeyBufferTest, ScancodeAboveTheKeyCodeByteIsNotBuffered) {
   EXPECT_FALSE(keys.PutKey(SDL_SCANCODE_AUDIONEXT));
 
-  EXPECT_EQ(keys.Peek(), 0);
+  EXPECT_FALSE(keys.Peek());
 }
 
 // A click is one event, whatever position it carries, so a full buffer drops
@@ -121,9 +119,9 @@ TEST_F(KeyBufferTest, ClickIntoAFullBufferIsDropped) {
   keys.HandleEvent(&click);
 
   for (int i = 0; i < 255; ++i) {
-    ASSERT_EQ(keys.Read(), KN_A);
+    ASSERT_EQ(keys.Read().key, KN_A);
   }
-  EXPECT_EQ(keys.Peek(), KN_NONE);
+  EXPECT_FALSE(keys.Peek());
 }
 
 TEST_F(KeyBufferTest, ClickIsQueuedWithItsButtonAndPosition) {
@@ -131,21 +129,21 @@ TEST_F(KeyBufferTest, ClickIsQueuedWithItsButtonAndPosition) {
 
   EXPECT_TRUE(keys.HandleEvent(&click));
 
-  const InputEvent event = keys.ReadEvent();
+  const InputEvent event = keys.Read();
   EXPECT_TRUE(event.IsPress(MouseButton::kRight));
   EXPECT_EQ(event.x, 10);
   EXPECT_EQ(event.y, 20);
-  EXPECT_EQ(keys.Peek(), KN_NONE);
+  EXPECT_FALSE(keys.Peek());
 }
 
-// Until the games read clicks from the event, a click also carries its old
-// key number and leaves its position in click_x() and click_y().
-TEST_F(KeyBufferTest, ClickStillReadsAsItsKeyNumber) {
+// A click has no key: it is the button and where it was clicked.
+TEST_F(KeyBufferTest, ClickHasNoKey) {
   ASSERT_TRUE(keys.PutClick(MouseButton::kLeft, /*release=*/true, 30, 40));
 
-  EXPECT_EQ(keys.Read(), Released(KN_LMOUSE));
-  EXPECT_EQ(keys.click_x(), 30);
-  EXPECT_EQ(keys.click_y(), 40);
+  const InputEvent event = keys.Read();
+  EXPECT_EQ(event.key, KN_NONE);
+  EXPECT_TRUE(event.IsRelease(MouseButton::kLeft));
+  EXPECT_TRUE(event);
 }
 
 TEST_F(KeyBufferTest, ClicksAndKeysComeOutInOrder) {
@@ -153,15 +151,15 @@ TEST_F(KeyBufferTest, ClicksAndKeysComeOutInOrder) {
   ASSERT_TRUE(keys.PutClick(MouseButton::kMiddle, /*release=*/false, 0, 0));
   ASSERT_TRUE(keys.Put({.key = KN_Y}));
 
-  EXPECT_EQ(keys.ReadEvent().key, KN_Q);
-  EXPECT_TRUE(keys.ReadEvent().IsPress(MouseButton::kMiddle));
-  EXPECT_EQ(keys.ReadEvent().key, KN_Y);
+  EXPECT_EQ(keys.Read().key, KN_Q);
+  EXPECT_TRUE(keys.Read().IsPress(MouseButton::kMiddle));
+  EXPECT_EQ(keys.Read().key, KN_Y);
 }
 
 TEST_F(KeyBufferTest, KeyEventIsNoClick) {
   ASSERT_TRUE(keys.Put({.key = KN_ESC}));
 
-  const InputEvent event = keys.ReadEvent();
+  const InputEvent event = keys.Read();
   EXPECT_FALSE(event.IsClick());
   EXPECT_FALSE(event.IsPress(MouseButton::kLeft));
 }
@@ -201,10 +199,12 @@ TEST(WindowsKeyTest, CarriesTheModifierBitsAndDropsTheVirtualKeyBit) {
             static_cast<int>(0x41U | kKeyShiftBit | kKeyReleaseBit));
 }
 
-TEST(WindowsKeyTest, MapsTheMouseButtons) {
-  EXPECT_EQ(KeyFromWindowsKey(1), KN_LMOUSE);
-  EXPECT_EQ(KeyFromWindowsKey(2), KN_RMOUSE);
-  EXPECT_EQ(KeyFromWindowsKey(4), KN_MMOUSE);  // VK_MBUTTON is 4, not 3
+// The Windows game could store a mouse button as a hotkey; the port has no
+// key for one.
+TEST(WindowsKeyTest, MouseButtonCodesNameNoKey) {
+  EXPECT_EQ(KeyFromWindowsKey(1), KN_NONE);  // VK_LBUTTON
+  EXPECT_EQ(KeyFromWindowsKey(2), KN_NONE);  // VK_RBUTTON
+  EXPECT_EQ(KeyFromWindowsKey(4), KN_NONE);  // VK_MBUTTON
 }
 
 // Saving a hotkey and loading it back gives the same key, for every key a
@@ -246,7 +246,7 @@ TEST(KeyModifierTest, AddsAndReportsEachModifier) {
 
 TEST(KeyModifierTest, KeyCodeDropsEveryFlag) {
   EXPECT_EQ(KeyCode(Released(Ctrl(Alt(Shift(KN_Q))))), KN_Q);
-  EXPECT_EQ(KeyCode(Released(KN_LMOUSE)), KN_LMOUSE);
+  EXPECT_EQ(KeyCode(Released(KN_ESC)), KN_ESC);
   EXPECT_EQ(KeyCode(KN_NONE), KN_NONE);
 }
 

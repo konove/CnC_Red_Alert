@@ -274,8 +274,8 @@ engine::window::InputEvent GScreenClass::Input(int& x, int& y) {
       Flag_To_Redraw(false);
     }
     event = Buttons->Input(TheScreen().hidden_view());
-  } else if (TheKeyboard().Peek() != engine::window::KN_NONE) {
-    event = TheKeyboard().ReadEvent();
+  } else if (TheKeyboard().Peek()) {
+    event = TheKeyboard().Read();
   }
   AI(event, x, y);
   return event;

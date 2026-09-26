@@ -1748,7 +1748,7 @@ void ScoreClass::Input_Name(Presentation& show, std::span<char> str, int xpos,
     TheScreen().hidden_view().BlitTo(TheScreen().visible_view());
 
     if (TheKeyboard().Peek()) {
-      key = engine::window::KeyBuffer::ToAscii(TheKeyboard().Read());
+      key = engine::window::KeyBuffer::ToAscii(TheKeyboard().Read().key);
 
       if (index == MAX_FAMENAME_LENGTH - 2) {
         while (TheKeyboard().Peek()) {

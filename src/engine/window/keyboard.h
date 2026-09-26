@@ -47,12 +47,11 @@ inline constexpr uint32_t kKeyButtonBit = 0x8000;
 inline constexpr uint32_t kScancodeMask = 0xFFU;
 
 // Key numbers: which key, as its SDL scancode, so a key event needs no
-// translation. The mouse buttons take 1-3, which SDL leaves unused. The values
-// combine with the KN_*_BIT modifier bits and with KN_BUTTON (see ButtonKey()),
-// so the enum stays unscoped. Keys the port cannot tell apart share a value:
-// each right-hand modifier key is its left-hand twin, and each diagonal is its
-// navigation key. Only the keys the games name are listed; any other scancode
-// still arrives as its number.
+// translation. The values combine with the KN_*_BIT modifier bits and with
+// KN_BUTTON (see ButtonKey()), so the enum stays unscoped. Keys the port cannot
+// tell apart share a value: each right-hand modifier key is its left-hand twin,
+// and each diagonal is its navigation key. Only the keys the games name are
+// listed; any other scancode still arrives as its number.
 // NOLINTNEXTLINE(cppcoreguidelines-use-enum-class)
 enum KeyNumber {
   KN_NONE = SDL_SCANCODE_UNKNOWN,
@@ -109,8 +108,6 @@ enum KeyNumber {
   KN_LALT = SDL_SCANCODE_LALT,
   KN_LCTRL = SDL_SCANCODE_LCTRL,
   KN_LEFT = SDL_SCANCODE_LEFT,
-  KN_LMOUSE = 1,
-  KN_MMOUSE = 3,
   KN_LSHIFT = SDL_SCANCODE_LSHIFT,
   KN_M = SDL_SCANCODE_M,
   KN_N = SDL_SCANCODE_N,
@@ -126,7 +123,6 @@ enum KeyNumber {
   KN_RCTRL = SDL_SCANCODE_LCTRL,
   KN_RETURN = SDL_SCANCODE_RETURN,
   KN_RIGHT = SDL_SCANCODE_RIGHT,
-  KN_RMOUSE = 2,
   KN_RSHIFT = SDL_SCANCODE_LSHIFT,
   KN_S = SDL_SCANCODE_S,
   KN_SLASH = SDL_SCANCODE_SLASH,
@@ -254,13 +250,11 @@ int WindowsKeyFromKey(KeyNumber key);
 // A mouse button, as a click in the input queue names it.
 enum class MouseButton { kNone, kLeft, kRight, kMiddle };
 
-// One entry from the input queue: a key press or release, or a mouse click.
-// Until the games stop reading clicks as key numbers
-// (docs/INPUT_EVENTS_PLAN.md), a click's `key` also holds the button's
-// KN_*MOUSE number, with KN_RLSE_BIT for a release.
+// One entry from the input queue: a key press or release, or a mouse click. A
+// click has no key. An empty event - no key, no click - is false.
 //
 // Example:
-//   const engine::window::InputEvent event = keys.ReadEvent();
+//   const engine::window::InputEvent event = keys.Read();
 //   if (event.IsPress(engine::window::MouseButton::kLeft)) {
 //     Click_At(event.x, event.y);
 //   }
@@ -278,6 +272,9 @@ struct InputEvent {
     return key == KN_NONE && button == MouseButton::kNone;
   }
 
+  // Returns whether the event holds a key or a click.
+  explicit operator bool() const { return !IsEmpty(); }
+
   // Returns whether the event is a click, of any button, down or up.
   [[nodiscard]] bool IsClick() const { return button != MouseButton::kNone; }
 
@@ -292,31 +289,25 @@ struct InputEvent {
 
 // The queue of key presses, key releases and mouse clicks the game reads its
 // input from, in the order they happened. HandleEvent() fills it from SDL
-// events; the game drains it with Peek() and ReadEvent() (or Read(), for the
-// key number alone). Read() also leaves a click's position in click_x() and
-// click_y() for the code that has not moved to events yet.
+// events; the game drains it with Peek() and Read().
 //
 // Example:
-//   if (keys.Peek() != KN_NONE) {
-//     const InputEvent event = keys.ReadEvent();
+//   if (keys.Peek()) {
+//     const InputEvent event = keys.Read();
 //     if (event.IsClick()) {
 //       Click_At(event.x, event.y);
 //     }
 //   }
 class KeyBuffer {
  public:
-  // Returns the key number of the event at the head of the buffer without
-  // removing it, or KN_NONE when nothing is pending. Also pumps the SDL event
-  // loop, so callers that only need that side effect may discard the result.
-  KeyNumber Peek();
+  // Returns the event at the head of the buffer without removing it, or an
+  // empty event when nothing is pending. Also pumps the SDL event loop, so
+  // callers that only need that side effect may discard the result.
+  InputEvent Peek();
 
   // Removes and returns the event at the head of the buffer, pumping SDL
-  // events until one arrives. For a click, also stores its position for
-  // click_x() and click_y().
-  InputEvent ReadEvent();
-
-  // Returns ReadEvent()'s key number.
-  KeyNumber Read() { return ReadEvent().key; }
+  // events until one arrives.
+  InputEvent Read();
 
   // Appends `event` to the buffer. Returns false, dropping it, if the buffer
   // is full.
@@ -329,15 +320,14 @@ class KeyBuffer {
   // media key, which has no key code). Mouse buttons go through PutClick().
   bool PutKey(int key_code, bool release = false);
 
-  // Queues a click of the mouse `button` at `x`, `y`, or its `release`. The
-  // click's key number carries no modifier bits, as in the DOS version.
+  // Queues a click of the mouse `button` at `x`, `y`, or its `release`.
   // Returns false if the buffer is full.
   bool PutClick(MouseButton button, bool release, int x, int y);
 
   // Returns the character `key` types on the current keyboard layout, with
   // Shift ignored, so letters come back lower case. Returns '\0' for a
   // release and for a key that types no character up to 'z' (arrows, function
-  // keys, Delete, the mouse buttons).
+  // keys, Delete).
   static char ToAscii(int key);
 
   // Discards every pending entry.
@@ -345,10 +335,9 @@ class KeyBuffer {
 
   // Returns whether `key` is held down right now, read from SDL's live state
   // rather than from the buffer. Covers either side of the keyboard for Shift,
-  // Ctrl and Alt, and the left and right mouse buttons, which a hotkey binding
-  // may name; code that means the mouse asks IsLeftButtonDown() and
-  // IsRightButtonDown() in ww_mouse.h. `key` is a bare key code: with modifier
-  // bits set it names a different scancode.
+  // Ctrl and Alt. `key` is a bare key code: with modifier bits set it names a
+  // different scancode. The mouse buttons are IsLeftButtonDown() and
+  // IsRightButtonDown() in ww_mouse.h.
   static bool IsDown(int key);
 
   // Queues the key or click an SDL event carries; mouse motion moves the
@@ -356,20 +345,13 @@ class KeyBuffer {
   // game's own handler can skip it; everything else goes on to that handler.
   bool HandleEvent(const SDL_Event* event);
 
-  // The position of the last mouse click Read() returned, in game pixels.
-  [[nodiscard]] int click_x() const { return click_x_; }
-  [[nodiscard]] int click_y() const { return click_y_; }
-
  private:
-  int click_x_ = 0;
-  int click_y_ = 0;
-
   static constexpr int kBufferSize = 256;
 
   // A ring buffer of events. head_ == tail_ means empty, so it holds at most
   // kBufferSize - 1, and every index wraps modulo kBufferSize.
   InputEvent events_[kBufferSize]{};
-  int head_ = 0;  // the event ReadEvent() returns next
+  int head_ = 0;  // the event Read() returns next
   int tail_ = 0;  // where Put() writes the next event
 };
 

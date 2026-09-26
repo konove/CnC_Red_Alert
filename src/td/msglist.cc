@@ -610,13 +610,6 @@ int MessageListClass::Input(engine::window::KeyNumber& input) {
   }
 
   /*------------------------------------------------------------------------
-  Leave mouse events alone.
-  ------------------------------------------------------------------------*/
-  if (KeyCode(input) == KN_LMOUSE || KeyCode(input) == KN_RMOUSE) {
-    return 0;
-  }
-
-  /*------------------------------------------------------------------------
   If we're in 'edit mode', handle keys
   ------------------------------------------------------------------------*/
   if (EditLabel) {

@@ -2215,7 +2215,7 @@ static int Process_Reconnect_Dialog(
   //	If user hits ESC, bail out
   //........................................................................
   if (TheKeyboard().Peek() &&
-      (TheKeyboard().Read() == engine::window::KN_ESC)) {
+      (TheKeyboard().Read().key == engine::window::KN_ESC)) {
     return 1;
   }
 
@@ -3796,7 +3796,7 @@ static void Queue_Playback() {
   //	If the user hits ESC, stop the playback
   //------------------------------------------------------------------------
   if (TheKeyboard().Peek()) {
-    const int key = TheKeyboard().Read();
+    const int key = TheKeyboard().Read().key;
     if (key == '\x1b' || TheSession().Attract) {
       TheGameState().active() = false;
       return;

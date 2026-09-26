@@ -944,7 +944,7 @@ void ScoreClass::Input_Name(std::span<char> str, int xpos, int ypos,
     Animate_Score_Objs();
     Animate_Cursor(index, ypos);
     if (TheKeyboard().Peek()) {
-      key = engine::window::KeyBuffer::ToAscii(TheKeyboard().Read());
+      key = engine::window::KeyBuffer::ToAscii(TheKeyboard().Read().key);
       ServiceRealTime();
 
       // On the last letter, flush the type-ahead so that key repeat doesn't

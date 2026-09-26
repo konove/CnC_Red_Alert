@@ -246,7 +246,7 @@ void Choose_Side() {
     }
     engine::window::InputEvent click;
     if (TheKeyboard().Peek() && endframe == 255) {
-      click = TheKeyboard().ReadEvent();
+      click = TheKeyboard().Read();
     }
     if (click.button == engine::window::MouseButton::kLeft && click.y > 96 &&
         click.y < 300) {

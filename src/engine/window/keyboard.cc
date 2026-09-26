@@ -33,11 +33,9 @@ struct WindowsKey {
 // they name here. A key number is an SDL scancode, so most entries name one.
 // The left and right modifier codes land on the KN_L* numbers, as the key
 // numbers do; where two codes name one key, the one the Windows game wrote
-// comes first, so WindowsKeyFromKey() gives it back.
+// comes first, so WindowsKeyFromKey() gives it back. The mouse buttons' codes
+// (1, 2 and 4) are missing: a click is not a key.
 constexpr WindowsKey kWindowsKeys[] = {
-    {0x01, KN_LMOUSE},
-    {0x02, KN_RMOUSE},
-    {0x04, KN_MMOUSE},
     {0x08, SDL_SCANCODE_BACKSPACE},
     {0x09, SDL_SCANCODE_TAB},
     {0x0C, SDL_SCANCODE_KP_5},  // VK_CLEAR: keypad 5 with Num Lock off
@@ -149,29 +147,23 @@ constexpr WindowsKey kWindowsKeys[] = {
 constexpr uint32_t kHotkeyModifierBits =
     kKeyShiftBit | kKeyCtrlBit | kKeyAltBit | kKeyReleaseBit;
 
-KeyNumber KeyBuffer::Peek() {
+InputEvent KeyBuffer::Peek() {
   // Pumping here is what lets the games' "wait for a key" loops, which only
   // call Peek(), ever see new input.
   SDL_Event_Loop();
 
   if (head_ == tail_) {
-    return KN_NONE;
+    return {};
   }
-  return base::At(events_, head_).key;
+  return base::At(events_, head_);
 }
 
-InputEvent KeyBuffer::ReadEvent() {
+InputEvent KeyBuffer::Read() {
   // Peek() pumps SDL events, so the wait ends as soon as an event arrives.
-  // Every queued event has a key number, a click's included, so KN_NONE
-  // means empty.
-  while (Peek() == KN_NONE) {
+  while (!Peek()) {
   }
   const InputEvent event = base::At(events_, head_);
   head_ = (head_ + 1) % kBufferSize;
-  if (event.IsClick()) {
-    click_x_ = event.x;
-    click_y_ = event.y;
-  }
   return event;
 }
 
@@ -219,18 +211,7 @@ bool KeyBuffer::PutKey(const int key_code, const bool release) {
 
 bool KeyBuffer::PutClick(const MouseButton button, const bool release,
                          const int x, const int y) {
-  // The click's key number, which the games still read clicks by.
-  KeyNumber key = KN_LMOUSE;
-  if (button == MouseButton::kRight) {
-    key = KN_RMOUSE;
-  } else if (button == MouseButton::kMiddle) {
-    key = KN_MMOUSE;
-  }
-  return Put({.key = release ? Released(key) : key,
-              .button = button,
-              .release = release,
-              .x = x,
-              .y = y});
+  return Put({.button = button, .release = release, .x = x, .y = y});
 }
 
 char KeyBuffer::ToAscii(const int key) {
@@ -255,11 +236,6 @@ void KeyBuffer::Clear() { head_ = tail_; }
 
 bool KeyBuffer::IsDown(const int key) {
   switch (key) {
-    // A hotkey binding may name a mouse button.
-    case KN_LMOUSE:
-      return IsLeftButtonDown();
-    case KN_RMOUSE:
-      return IsRightButtonDown();
     // SDL's modifier state covers both sides of the keyboard, which is what
     // the KN_R* names (equal to their KN_L* twins) ask for.
     case KN_LSHIFT:

@@ -116,7 +116,24 @@ Manual check on a real display:
 
 ## Progress
 
-- [x] Phase 1: engine event. `KeyBuffer::IsMouseKey()` had no callers left and went here.
-- [ ] Phase 2: the two funnels return events
-- [ ] Phase 3: consumers move to the event
-- [ ] Phase 4: flip
+- [x] Phase 1: engine event (f1fd1d77). `KeyBuffer::IsMouseKey()` had no callers left and went here.
+- [x] Phase 2: the funnels return events (3815d7d8, e998ffb2). `GadgetClass::Action()` also gained
+      the input's position (23cd1172), since the tactical and radar gadgets read it from
+      `click_x()`.
+- [x] Phase 3: consumers move to the event (140c04df, 6200ff66, 53370e26, ea1b6d93).
+  - A gadget that takes a click clears the event's button, so a click still in the event is one no
+    gadget took; its position stays for whoever handles the gadget's key.
+  - The menus hand an unused click back through `GameState::unknown_input()`, an `InputEvent`, in
+    place of the int `unknown_key()`.
+  - The Iron Curtain and Chronosphere read their aim point from `click_x()`/`click_y()` inside a
+    network event (a multiplayer desync, measured from the wrong origin as well). The
+    `SPECIAL_PLACE` event now carries the sub-cell aim point.
+- [x] Phase 4: flip. A click has no key; `Peek()`/`Read()` return events; `KN_LMOUSE`, `KN_RMOUSE`,
+      `KN_MMOUSE`, `click_x()`/`click_y()` and `IsDown()`'s mouse cases are gone, and
+      `KeyFromWindowsKey()` no longer maps the mouse codes.
+
+## Open
+
+- `TechnoClass::Take_Damage()` (RA) hands the map a synthetic right-click to end the Chronosphere's
+  targeting, but no map layer acts on a right-click passed to `AI()`: the tactical gadget takes real
+  ones first. It never worked, before or after this plan.

@@ -2005,7 +2005,7 @@ static int Process_Reconnect_Dialog(CountDownTimerClass* timeout_timer,
   //	If user hits ESC, bail out
   //........................................................................
   if (TheKeyboard().Peek() &&
-      (TheKeyboard().Read() == engine::window::KN_ESC)) {
+      (TheKeyboard().Read().key == engine::window::KN_ESC)) {
     return 1;
   }
 
@@ -3413,7 +3413,8 @@ static void Queue_Playback() {
   //	If the user hits ESC, stop the playback
   //------------------------------------------------------------------------
   if (TheKeyboard().Peek()) {
-    const char key = engine::window::KeyBuffer::ToAscii(TheKeyboard().Read());
+    const char key =
+        engine::window::KeyBuffer::ToAscii(TheKeyboard().Read().key);
     //
     // If the user hit ESC, end the recording.  If this is an Attract-mode
     // recording, end it no matter what the user does (any key or mouse).

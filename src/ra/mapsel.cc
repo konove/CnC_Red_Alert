@@ -216,8 +216,8 @@ static int WaitForMissionChoice(PaletteClass& palette, const bool is_soviet) {
                                      cursor.StartFrame + cursor_frame));
     }
 
-    if (TheKeyboard().Peek() && TheKeyboard().ReadEvent().button ==
-                                    engine::window::MouseButton::kLeft) {
+    if (TheKeyboard().Peek() &&
+        TheKeyboard().Read().button == engine::window::MouseButton::kLeft) {
       if (choice != -1) {
         PlayMapSound("TONEY10.AUD");
         return choice;

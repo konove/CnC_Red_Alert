@@ -310,7 +310,7 @@ int Check_Menu(PixelView& view, MenuConfig& menu,
   engine::window::InputEvent input_event;
   TheGameState().unknown_input() = {};
   if (TheKeyboard().Peek()) {
-    input_event = TheKeyboard().ReadEvent();
+    input_event = TheKeyboard().Read();
   }
   // The key without its modifier bits; a release stays a release. A click is
   // handled below, not as a key.

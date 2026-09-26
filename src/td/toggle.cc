@@ -118,9 +118,8 @@ void ToggleClass::Turn_Off() {
  *                                                                                             *
  * INPUT:   flags -- The event flags that triggered this button. *
  *                                                                                             *
- *          key   -- The keyboard code associated with this event. Usually this
- *is KN_LMOUSE   * or similar, but it could be a regular key if this text button
- *is given    * a hotkey. *
+ *          key   -- The key that triggered this event: KN_NONE for a mouse
+ *                   click, or a regular key if this text button has a hotkey. *
  *                                                                                             *
  * OUTPUT:  Returns whatever the lower level processing for buttons decides.
  *This is usually   * true. *

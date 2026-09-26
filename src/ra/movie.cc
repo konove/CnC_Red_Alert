@@ -104,7 +104,7 @@ class MovieScreen final : public VqaClient {
   bool Present() {
     int key = 0;
     if (TheKeyboard().Peek()) {
-      key = TheKeyboard().Read();
+      key = TheKeyboard().Read().key;
       TheKeyboard().Clear();
     }
     if (TheScreen().is_vq640()) {

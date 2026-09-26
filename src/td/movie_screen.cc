@@ -55,7 +55,7 @@ void MovieScreen::OnIdle() { engine::window::TheDisplay().EndFrame(); }
 bool MovieScreen::Present() {
   int key = 0;
   if (TheKeyboard().Peek()) {
-    key = TheKeyboard().Read();
+    key = TheKeyboard().Read().key;
     TheKeyboard().Clear();
   }
 

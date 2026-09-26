@@ -471,8 +471,8 @@ engine::window::InputEvent GadgetClass::Input(PixelView& view) {
   **	Fetch any pending keyboard input.
   */
   engine::window::InputEvent event;
-  if (TheKeyboard().Peek() != KN_NONE) {
-    event = TheKeyboard().ReadEvent();
+  if (TheKeyboard().Peek()) {
+    event = TheKeyboard().Read();
   }
   // A gadget that acts on the event replaces its key with the gadget's ID.
   engine::window::KeyNumber key = event.key;
@@ -555,7 +555,7 @@ engine::window::InputEvent GadgetClass::Input(PixelView& view) {
   *This *	allows keyboard events to fall through normally even if the
   *mouse is over a *	gadget that is flagged for kLeftUp or kRightUp.
   */
-  if (!key) {
+  if (!event) {
     /*
     **	Check for the mouse being held down. We can't use the normal input
     *system *	for this, so we must examine the actual current state of the

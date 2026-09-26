@@ -242,7 +242,7 @@ void Nod_Ending() {
       if (engine::audio::TheAudio().IsPlaying(kanefinl.data())) {
         TheKeyboard().Clear();
       } else {
-        const engine::window::InputEvent event = TheKeyboard().ReadEvent();
+        const engine::window::InputEvent event = TheKeyboard().Read();
         if (event.IsPress(engine::window::MouseButton::kLeft)) {
           const int mousex = event.x;
           const int mousey = event.y;
