@@ -153,5 +153,66 @@ TEST_F(KeyBufferTest, MouseClickCoordinatesAreNotReportedAsKeys) {
   EXPECT_EQ(keys.Peek(), KN_Y);
 }
 
+// The hotkeys a Steam install's REDALERT.INI stores, as Windows virtual-key
+// codes, and the keys they name.
+TEST(WindowsKeyTest, TranslatesTheShippedHotkeys) {
+  EXPECT_EQ(KeyFromWindowsKey(18), KN_LALT);     // VK_MENU
+  EXPECT_EQ(KeyFromWindowsKey(17), KN_LCTRL);    // VK_CONTROL
+  EXPECT_EQ(KeyFromWindowsKey(16), KN_LSHIFT);   // VK_SHIFT
+  EXPECT_EQ(KeyFromWindowsKey(83), KN_S);        // 'S'
+  EXPECT_EQ(KeyFromWindowsKey(49), KN_1);        // '1'
+  EXPECT_EQ(KeyFromWindowsKey(48), KN_0);        // '0'
+  EXPECT_EQ(KeyFromWindowsKey(36), KN_HOME);     // VK_HOME
+  EXPECT_EQ(KeyFromWindowsKey(103), KN_E_HOME);  // VK_NUMPAD7
+  EXPECT_EQ(KeyFromWindowsKey(120), KN_F9);      // VK_F9
+  EXPECT_EQ(KeyFromWindowsKey(38), KN_UP);       // VK_UP
+  EXPECT_EQ(KeyFromWindowsKey(27), KN_ESC);      // VK_ESCAPE
+  EXPECT_EQ(KeyFromWindowsKey(32), KN_SPACE);    // VK_SPACE
+}
+
+TEST(WindowsKeyTest, NoKeyStaysNoKey) {
+  EXPECT_EQ(KeyFromWindowsKey(0), KN_NONE);
+  EXPECT_EQ(WindowsKeyFromKey(KN_NONE), 0);
+}
+
+TEST(WindowsKeyTest, UnknownCodesNameNoKey) {
+  EXPECT_EQ(KeyFromWindowsKey(0xFF), KN_NONE);
+  EXPECT_EQ(KeyFromWindowsKey(0x0E), KN_NONE);
+}
+
+TEST(WindowsKeyTest, CarriesTheModifierBitsAndDropsTheVirtualKeyBit) {
+  // 0x41 is 'A'; 0x1000 marked a virtual key in the Windows game.
+  EXPECT_EQ(KeyFromWindowsKey(static_cast<int>(0x41U | 0x1000U | kKeyCtrlBit)),
+            KN_A | KN_CTRL_BIT);
+  EXPECT_EQ(WindowsKeyFromKey(KN_A | KN_SHIFT_BIT | KN_RLSE_BIT),
+            static_cast<int>(0x41U | kKeyShiftBit | kKeyReleaseBit));
+}
+
+TEST(WindowsKeyTest, MapsTheMouseButtons) {
+  EXPECT_EQ(KeyFromWindowsKey(1), KN_LMOUSE);
+  EXPECT_EQ(KeyFromWindowsKey(2), KN_RMOUSE);
+  EXPECT_EQ(KeyFromWindowsKey(4), KN_MMOUSE);  // VK_MBUTTON is 4, not 3
+}
+
+// Saving a hotkey and loading it back gives the same key, for every key a
+// default binding uses.
+TEST(WindowsKeyTest, RoundTripsTheDefaultBindings) {
+  for (const KeyNumber key :
+       {KN_LALT, KN_LCTRL, KN_LSHIFT, KN_X, KN_S, KN_G, KN_N,  KN_B,
+        KN_F,    KN_HOME,  KN_E_HOME, KN_H, KN_R, KN_A, KN_F9, KN_F10,
+        KN_F11,  KN_F12,   KN_E,      KN_T, KN_Y, KN_U, KN_UP, KN_DOWN,
+        KN_ESC,  KN_SPACE, KN_Q,      KN_1, KN_2, KN_3, KN_4,  KN_5,
+        KN_6,    KN_7,     KN_8,      KN_9, KN_0}) {
+    EXPECT_EQ(KeyFromWindowsKey(WindowsKeyFromKey(key)), key) << key;
+  }
+}
+
+// The left and right modifier keys share a key number, which is written back
+// as the generic code the Windows game used.
+TEST(WindowsKeyTest, WritesTheGenericModifierCode) {
+  EXPECT_EQ(KeyFromWindowsKey(0xA5), KN_RALT);  // VK_RMENU
+  EXPECT_EQ(WindowsKeyFromKey(KN_RALT), 0x12);  // VK_MENU
+}
+
 }  // namespace
 }  // namespace engine::window

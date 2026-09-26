@@ -194,6 +194,18 @@ inline KeyNumber operator~(const KeyNumber a) noexcept {
   return static_cast<KeyNumber>(~static_cast<uint32_t>(a));
 }
 
+// Returns the key that the Windows virtual-key code in the low byte of
+// `windows_key` names, with the Shift, Ctrl, Alt and release bits above it
+// carried over. This is the form the original Windows game stored hotkeys in
+// (REDALERT.INI's [WinHotkeys]). Returns KN_NONE for 0 and for a code that
+// names no key here.
+KeyNumber KeyFromWindowsKey(int windows_key);
+
+// Returns the Windows virtual-key code for `key`, with its Shift, Ctrl, Alt and
+// release bits carried over: the inverse of KeyFromWindowsKey(). Returns 0 for
+// KN_NONE and for a key that has no Windows code.
+int WindowsKeyFromKey(KeyNumber key);
+
 // The queue of key presses, key releases and mouse clicks the game reads its
 // input from. HandleEvent() fills it from SDL events; the game drains it with
 // Peek() and Read(). Each entry is a key number: a scancode in the low byte

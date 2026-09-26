@@ -23,6 +23,132 @@ constexpr auto kInputModifierMask =
     static_cast<SDL_Keymod>(uint32_t{KMOD_SHIFT} | uint32_t{KMOD_CTRL} |
                             uint32_t{KMOD_ALT} | uint32_t{KMOD_GUI});
 
+// A Windows virtual-key code and the key number it names.
+struct WindowsKey {
+  int windows_key;
+  int key;
+};
+
+// The Windows virtual-key codes the original Windows game used, and the keys
+// they name here. A key number is an SDL scancode, so most entries name one.
+// The left and right modifier codes land on the KN_L* numbers, as the key
+// numbers do; where two codes name one key, the one the Windows game wrote
+// comes first, so WindowsKeyFromKey() gives it back.
+constexpr WindowsKey kWindowsKeys[] = {
+    {0x01, KN_LMOUSE},
+    {0x02, KN_RMOUSE},
+    {0x04, KN_MMOUSE},
+    {0x08, SDL_SCANCODE_BACKSPACE},
+    {0x09, SDL_SCANCODE_TAB},
+    {0x0C, SDL_SCANCODE_KP_5},  // VK_CLEAR: keypad 5 with Num Lock off
+    {0x0D, SDL_SCANCODE_RETURN},
+    {0x10, KN_LSHIFT},
+    {0x11, KN_LCTRL},
+    {0x12, KN_LALT},
+    {0x13, SDL_SCANCODE_PAUSE},
+    {0x14, SDL_SCANCODE_CAPSLOCK},
+    {0x1B, SDL_SCANCODE_ESCAPE},
+    {0x20, SDL_SCANCODE_SPACE},
+    {0x21, SDL_SCANCODE_PAGEUP},
+    {0x22, SDL_SCANCODE_PAGEDOWN},
+    {0x23, SDL_SCANCODE_END},
+    {0x24, SDL_SCANCODE_HOME},
+    {0x25, SDL_SCANCODE_LEFT},
+    {0x26, SDL_SCANCODE_UP},
+    {0x27, SDL_SCANCODE_RIGHT},
+    {0x28, SDL_SCANCODE_DOWN},
+    {0x2C, SDL_SCANCODE_PRINTSCREEN},
+    {0x2D, SDL_SCANCODE_INSERT},
+    {0x2E, SDL_SCANCODE_DELETE},
+    {0x30, SDL_SCANCODE_0},
+    {0x31, SDL_SCANCODE_1},
+    {0x32, SDL_SCANCODE_2},
+    {0x33, SDL_SCANCODE_3},
+    {0x34, SDL_SCANCODE_4},
+    {0x35, SDL_SCANCODE_5},
+    {0x36, SDL_SCANCODE_6},
+    {0x37, SDL_SCANCODE_7},
+    {0x38, SDL_SCANCODE_8},
+    {0x39, SDL_SCANCODE_9},
+    {0x41, SDL_SCANCODE_A},
+    {0x42, SDL_SCANCODE_B},
+    {0x43, SDL_SCANCODE_C},
+    {0x44, SDL_SCANCODE_D},
+    {0x45, SDL_SCANCODE_E},
+    {0x46, SDL_SCANCODE_F},
+    {0x47, SDL_SCANCODE_G},
+    {0x48, SDL_SCANCODE_H},
+    {0x49, SDL_SCANCODE_I},
+    {0x4A, SDL_SCANCODE_J},
+    {0x4B, SDL_SCANCODE_K},
+    {0x4C, SDL_SCANCODE_L},
+    {0x4D, SDL_SCANCODE_M},
+    {0x4E, SDL_SCANCODE_N},
+    {0x4F, SDL_SCANCODE_O},
+    {0x50, SDL_SCANCODE_P},
+    {0x51, SDL_SCANCODE_Q},
+    {0x52, SDL_SCANCODE_R},
+    {0x53, SDL_SCANCODE_S},
+    {0x54, SDL_SCANCODE_T},
+    {0x55, SDL_SCANCODE_U},
+    {0x56, SDL_SCANCODE_V},
+    {0x57, SDL_SCANCODE_W},
+    {0x58, SDL_SCANCODE_X},
+    {0x59, SDL_SCANCODE_Y},
+    {0x5A, SDL_SCANCODE_Z},
+    {0x60, SDL_SCANCODE_KP_0},
+    {0x61, SDL_SCANCODE_KP_1},
+    {0x62, SDL_SCANCODE_KP_2},
+    {0x63, SDL_SCANCODE_KP_3},
+    {0x64, SDL_SCANCODE_KP_4},
+    {0x65, SDL_SCANCODE_KP_5},
+    {0x66, SDL_SCANCODE_KP_6},
+    {0x67, SDL_SCANCODE_KP_7},
+    {0x68, SDL_SCANCODE_KP_8},
+    {0x69, SDL_SCANCODE_KP_9},
+    {0x6A, SDL_SCANCODE_KP_MULTIPLY},
+    {0x6B, SDL_SCANCODE_KP_PLUS},
+    {0x6D, SDL_SCANCODE_KP_MINUS},
+    {0x6E, SDL_SCANCODE_KP_PERIOD},
+    {0x6F, SDL_SCANCODE_KP_DIVIDE},
+    {0x70, SDL_SCANCODE_F1},
+    {0x71, SDL_SCANCODE_F2},
+    {0x72, SDL_SCANCODE_F3},
+    {0x73, SDL_SCANCODE_F4},
+    {0x74, SDL_SCANCODE_F5},
+    {0x75, SDL_SCANCODE_F6},
+    {0x76, SDL_SCANCODE_F7},
+    {0x77, SDL_SCANCODE_F8},
+    {0x78, SDL_SCANCODE_F9},
+    {0x79, SDL_SCANCODE_F10},
+    {0x7A, SDL_SCANCODE_F11},
+    {0x7B, SDL_SCANCODE_F12},
+    {0x90, SDL_SCANCODE_NUMLOCKCLEAR},
+    {0x91, SDL_SCANCODE_SCROLLLOCK},
+    {0xA0, KN_LSHIFT},
+    {0xA1, KN_RSHIFT},
+    {0xA2, KN_LCTRL},
+    {0xA3, KN_RCTRL},
+    {0xA4, KN_LALT},
+    {0xA5, KN_RALT},
+    {0xBA, SDL_SCANCODE_SEMICOLON},
+    {0xBB, SDL_SCANCODE_EQUALS},
+    {0xBC, SDL_SCANCODE_COMMA},
+    {0xBD, SDL_SCANCODE_MINUS},
+    {0xBE, SDL_SCANCODE_PERIOD},
+    {0xBF, SDL_SCANCODE_SLASH},
+    {0xC0, SDL_SCANCODE_GRAVE},
+    {0xDB, SDL_SCANCODE_LEFTBRACKET},
+    {0xDC, SDL_SCANCODE_BACKSLASH},
+    {0xDD, SDL_SCANCODE_RIGHTBRACKET},
+    {0xDE, SDL_SCANCODE_APOSTROPHE},
+};
+
+// The bits above the key code that a stored hotkey keeps. The Windows game's
+// virtual-key bit (0x1000) and anything higher are dropped.
+constexpr uint32_t kHotkeyModifierBits =
+    kKeyShiftBit | kKeyCtrlBit | kKeyAltBit | kKeyReleaseBit;
+
 KeyNumber KeyBuffer::Peek() {
   // Pumping here is what lets the games' "wait for a key" loops, which only
   // call Peek(), ever see new input.
@@ -216,6 +342,31 @@ bool KeyBuffer::HandleEvent(const SDL_Event* event) {
   }
 
   return false;
+}
+
+KeyNumber KeyFromWindowsKey(const int windows_key) {
+  const auto bits = static_cast<uint32_t>(windows_key);
+  const auto code = static_cast<int>(bits & kScancodeMask);
+  for (const WindowsKey& entry : kWindowsKeys) {
+    if (entry.windows_key == code) {
+      // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
+      return static_cast<KeyNumber>(static_cast<uint32_t>(entry.key) |
+                                    (bits & kHotkeyModifierBits));
+    }
+  }
+  return KN_NONE;
+}
+
+int WindowsKeyFromKey(const KeyNumber key) {
+  const auto bits = static_cast<uint32_t>(key);
+  const auto code = static_cast<int>(bits & kScancodeMask);
+  for (const WindowsKey& entry : kWindowsKeys) {
+    if (entry.key == code) {
+      return static_cast<int>(static_cast<uint32_t>(entry.windows_key) |
+                              (bits & kHotkeyModifierBits));
+    }
+  }
+  return 0;
 }
 
 }  // namespace engine::window
