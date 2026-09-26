@@ -40,7 +40,7 @@ constexpr base::EnumArray<FontType, FontSource> kFontSources = {
 
 Assets::Assets() { speech_buffer_.resize(SPEECH_BUFFER_SIZE); }
 
-Assets::~Assets() = default;
+Assets::~Assets() { MixArchive::Free_All(); }
 
 void Assets::LoadFonts() {
   for (const FontType type : magic_enum::enum_values<FontType>()) {

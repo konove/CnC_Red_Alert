@@ -47,6 +47,8 @@ enum class FontType {
 class Assets {
  public:
   Assets();
+  // Frees every registered MIX archive. The spans here point into their
+  // cached data, and the game reads neither once its Assets is gone.
   ~Assets();
 
   Assets(const Assets&) = delete;
